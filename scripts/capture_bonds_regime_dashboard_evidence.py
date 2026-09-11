@@ -96,9 +96,10 @@ def fixture_vm() -> dict:
     glance/world/changed rows the wrap actually reads, not a live bake.
     """
     from tests.test_bonds_divergence_gate import _base_ctx
-    from scripts.build_bonds import divergence_card_state
+    from scripts.build_bonds import _watching, divergence_card_state
 
     ctx = _base_ctx()
+    ctx["watching"] = _watching(ctx["vm"])
     ctx["changed"] = [
         {
             "when": "09-08",
@@ -185,7 +186,7 @@ def fixture_vm() -> dict:
     }
     ctx["intl"] = {
         "global": {"avg_10y": 4.05, "direction": "rising", "avg_10y_chg_63d_bp": 18},
-        "us_vs_world": {"us_premium_bp": 42},
+        "us_vs_world": {"us_premium_bp": 42, "premium_direction": "rising"},
         "em": {"em_oas": 2.9, "pctile": 35, "emb_trend": "down", "direction": "stable"},
         "countries": [
             {"code": "US", "en": "United States", "zh": "美国", "y10": 4.18,
@@ -277,11 +278,16 @@ def fixture_vm() -> dict:
         {"en": "Credit", "zh": "信用", "val": 22, "vg": ("·", "context")},
         {"en": "Rates vol", "zh": "利率波动", "val": 28, "vg": ("✓", "measured")},
     ]
-    # §3 fail-closed DELAYED — past ready_date, last_obs present. Named in README.
+    # §3 fail-closed DELAYED + dated last_obs. r3: the producer now derives
+    # last_obs from theme_daily.parquet, so this dated DELAYED branch is the
+    # one production reaches when the series exists. last_obs-missing copy is
+    # the honest "awaiting the daily series" fallback (no "feed started" claim).
     ctx["div_card"] = divergence_card_state(False, "2026-08-14", "2026-08-01", "2026-09-10")
     ctx["STALE_GATE_FIXTURE"] = (
+        "r3 production-reachable DELAYED: "
         "divergence_card_state(ready=False, ready_date='2026-08-14', "
-        "last_obs='2026-08-01', as_of='2026-09-10') → DELAYED"
+        "last_obs='2026-08-01'  # stand-in for theme_daily max as_of, "
+        "as_of='2026-09-10')"
     )
     return ctx
 
@@ -827,9 +833,104 @@ def _write_readme(manifest: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
-def main() -> int:
+def _recapture_stale_gate() -> int:
+    """Re-shoot the DELAYED pair only. Does not wipe the 48 REST cells."""
+    from scripts.capture_page_evidence import CaptureUnavailable, serve_site_dir
+
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError as exc:
+        raise CaptureUnavailable(f"playwright is not importable: {exc}") from exc
+
+    scratch = Path(tempfile.mkdtemp(prefix="bonds_s3_stale_"))
+    try:
+        write_fixture_site(scratch)
+        httpd, port = serve_site_dir(scratch)
+        base = f"http://127.0.0.1:{port}"
+        manager = sync_playwright().start()
+        browser = None
+        aliases: dict[str, str] = {}
+        try:
+            browser = manager.chromium.launch(headless=True)
+            for theme in THEMES:
+                got = _capture_cell(
+                    browser, base, width=1440, height=900,
+                    locale="en", theme=theme,
+                    selector='[data-card="stocks-vs-bonds"]',
+                )
+                png = got["png"]
+                name, digest, pw, ph = content_address_png(png, CELLS_DIR)
+                alias = f"stale-gate-{theme}-en-desktop.png"
+                (CELLS_DIR / alias).write_bytes(png)
+                aliases[alias] = name
+                print(
+                    f"  stale-gate {theme}: cells/{alias} -> {name} "
+                    f"{pw}x{ph} sha256={digest[:12]}",
+                    flush=True,
+                )
+        finally:
+            if browser is not None:
+                browser.close()
+            manager.stop()
+            httpd.shutdown()
+
+        man_path = OUT_DIR / "manifest.json"
+        if man_path.exists():
+            man = json.loads(man_path.read_text(encoding="utf-8"))
+            man.setdefault("aliases", {}).update(aliases)
+            fixture = (
+                "r3 production-reachable DELAYED: last_obs derived from "
+                "theme_daily in the producer; fixture last_obs='2026-08-01' "
+                "stands in for that dated branch"
+            )
+            for page in man.get("pages") or []:
+                for st in page.get("states") or []:
+                    if st.get("subject") == "stale-gate" or st.get("force_state") == "stale-delayed":
+                        theme = st.get("theme")
+                        alias = f"stale-gate-{theme}-en-desktop.png"
+                        if alias in aliases:
+                            st["alias"] = alias
+                            st["file"] = f"cells/{aliases[alias]}"
+                            st["fixture"] = fixture
+                            st["captured"] = True
+            man_path.write_text(json.dumps(man, indent=2) + "\n", encoding="utf-8")
+        readme = OUT_DIR / "README.md"
+        if readme.exists():
+            text = readme.read_text(encoding="utf-8")
+            old = (
+                "`divergence_card_state(ready=False, ready_date='2026-08-14', "
+                "last_obs='2026-08-01', as_of='2026-09-10')` → **DELAYED**."
+            )
+            new = (
+                "r3 production-reachable DELAYED: producer derives `last_obs` from "
+                "`theme_daily.parquet` (the series it already loads). Fixture "
+                "`last_obs='2026-08-01'` stands in for that dated branch so the "
+                "crop shows `Data delayed since 01 Aug 2026`. The last_obs-missing "
+                "copy is now `Data delayed — awaiting the daily series` (no "
+                "manufactured 'feed started' claim) and is the empty-series fallback."
+            )
+            if old in text:
+                readme.write_text(text.replace(old, new), encoding="utf-8")
+        print("stale-gate recapture done", flush=True)
+        return 0
+    finally:
+        shutil.rmtree(scratch, ignore_errors=True)
+
+
+def main(argv: list[str] | None = None) -> int:
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--stale-only", action="store_true",
+        help="Recapture the DELAYED pair only; leave the 48 REST cells.",
+    )
+    args = parser.parse_args(argv)
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     CELLS_DIR.mkdir(parents=True, exist_ok=True)
+    if args.stale_only:
+        return _recapture_stale_gate()
+
     for stale in CELLS_DIR.glob("*.png"):
         stale.unlink()
 

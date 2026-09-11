@@ -19,7 +19,7 @@ Spec G4 names a 4-subject 32-crop matrix; the seat and the round-2 brief expand 
 
 ## Stale-date gate fixture
 
-`divergence_card_state(ready=False, ready_date='2026-08-14', last_obs='2026-08-01', as_of='2026-09-10')` → **DELAYED**.
+r3 production-reachable DELAYED: producer derives `last_obs` from `theme_daily.parquet` (the series it already loads). Fixture `last_obs='2026-08-01'` stands in for that dated branch so the crop shows `Data delayed since 01 Aug 2026`. The last_obs-missing copy is now `Data delayed — awaiting the daily series` (no manufactured 'feed started' claim) and is the empty-series fallback.
 Captured as `stale-gate-dark-en-desktop.png` and `stale-gate-light-en-desktop.png` (`force_state: stale-delayed`).
 Refusal copy must be visible; no scored verdict painted.
 
@@ -98,9 +98,9 @@ Spec G4's original 32-crop matrix is 4 subjects; the round-2 brief expands it to
 | changed | 8 | **PASS** | ≤4 DecisionRows; EN/ZH each one language; stance chips; 390 wraps the clause onto a second line (spec DecisionRow stack); dark = luminance panel, light = white card + hairline. |
 | drivers | 8 | **PASS** | Exactly four panels; each first line is a plain-word read; one as-of per panel; no bare `r` / `Betas` / `2s10s` / `TP-adjusted` / `1y z` / `Recession-IC` at rest (receipts live on `.lens-q`); 1440 is 2-col; 390 is a swipe strip, never stacked full-width cards. Dark = luminance panels, no shadow; light = white cards, hairline, ring-not-glow. ZH uses 正常/偏紧/平静, not HEALTHY/TIGHT. |
 | world | 8 | **PASS** | 8-row sovereign table + tailwind/headwind list; 390 table scrolls inside `.sc-wrap` (left four columns in the crop, remaining columns reachable by the wrap's own scroller — not page h-scroll). ZH names 美国/德国/日本…; `EMB` is the fund ticker, not a state enum. Light = white material + hairline; dark = luminance. |
-| watching | 8 | **PASS** | 3 `.watch-cond` (inside ≥2 ≤4); each is condition → what it would change; no 证伪/falsifier; `.watch-foot` in the crop's language. Dark luminance panels; light white cards. |
+| watching | 8 | **PASS** | 3 `.watch-cond` (inside ≥2 ≤4); each is condition → what it would change; no 证伪/falsifier; `.watch-foot` in the crop's language. Dark luminance panels; light white cards. r3: producer watching copy is now VM-derived (un-inverted fixture no longer presupposes inversion); these 8 cells are r2 pixels and were not recaptured. |
 | deeper | 8 | **PASS** | Named landings wrap; light hover is ring-not-glow (CSS); ZH labels are 中文; 390 wraps, no page h-scroll. |
-| stale-gate | 2 | **PASS** | `force_state: stale-delayed`. Dark+light EN 1440. Refusal copy `Data delayed since 01 Aug 2026` + `.empty-why` visible; no scored verdict. Dark: panel drops one luminance stop (`.cc-delayed`, no alarm fill). Light: white card, hairline only, no shadow. |
+| stale-gate | 2 | **PASS** | r3 recapture, production-reachable DELAYED+dated last_obs. `force_state: stale-delayed`. Dark+light EN 1440. Refusal copy `Data delayed since 01 Aug 2026` + `.empty-why` visible; no scored verdict. Dark: panel drops one luminance stop (`.cc-delayed`, no alarm fill). Light: white card, hairline only, no shadow. |
 
 ## Composition / floor fixes made this round
 

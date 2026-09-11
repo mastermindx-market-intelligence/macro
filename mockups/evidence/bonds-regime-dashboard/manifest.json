@@ -1196,7 +1196,7 @@
           "height": 134,
           "applied_theme": "dark",
           "applied_locale": "en",
-          "fixture": "divergence_card_state(False, '2026-08-14', '2026-08-01', '2026-09-10')"
+          "fixture": "r3 production-reachable DELAYED: last_obs derived from theme_daily in the producer; fixture last_obs='2026-08-01' stands in for that dated branch"
         },
         {
           "viewport": "desktop",
@@ -1216,7 +1216,7 @@
           "height": 134,
           "applied_theme": "light",
           "applied_locale": "en",
-          "fixture": "divergence_card_state(False, '2026-08-14', '2026-08-01', '2026-09-10')"
+          "fixture": "r3 production-reachable DELAYED: last_obs derived from theme_daily in the producer; fixture last_obs='2026-08-01' stands in for that dated branch"
         }
       ],
       "metrics": {},

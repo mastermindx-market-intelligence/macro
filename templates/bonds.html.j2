@@ -2,7 +2,7 @@
 <span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
 {%- endmacro %}
 {% macro lens(en, zh='') -%}
-<button type="button" class="lens-q" aria-label="Why" data-tip-en="{{ en }}" data-tip-zh="{{ zh if zh else en }}">?</button>
+<button type="button" class="lens-q" aria-label="{{ en }}" data-tip-en="{{ en }}" data-tip-zh="{{ zh if zh else en }}">?</button>
 {%- endmacro %}
 {% macro kpi(label, zh, val, unit='', sub='') -%}
 <div class="kpi">{{ t(label, zh) }}<b>{% if val is none %}<span class="faint">—</span>{% else %}{{ val }}{{ unit }}{% endif %}</b>{% if sub %}<span class="ksub">{{ sub }}</span>{% endif %}</div>
@@ -387,14 +387,14 @@ html[data-theme="light"] .depth a:hover{box-shadow:0 2px 6px color-mix(in srgb,v
 .empty-why{color:var(--muted);font-size:13px;margin-top:6px;line-height:1.45}
 .cc-delayed{background:var(--panel2);box-shadow:none}
 html[data-theme="light"] .cc-delayed{background:var(--card);box-shadow:none;border:1px solid var(--line)}
-.world-list{margin:8px 0 0;padding:0;list-style:none}
+.world-list{margin:8px 0 0;padding:0;list-style:none;max-width:36rem}
 .world-list li{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px}
 .world-list li:last-child{border-bottom:none}
 .landing{margin-top:36px}
 .landing-kicker{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
 @media(max-width:820px){.mx-vh{grid-template-columns:1fr}.drivers{grid-template-columns:1fr}.watch{grid-template-columns:1fr}}
 @media(max-width:640px){
-  .drivers{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;padding-bottom:6px}
+  .drivers{display:flex;align-items:start;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;padding-bottom:6px}
   .drivers>.panel{flex:0 0 86%;scroll-snap-align:start}
   .mtiles2{grid-template-columns:repeat(2,1fr)}
   .mx-vh-word{font-size:32px}
@@ -519,7 +519,7 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
         <span class="pill">{% if hero.dd_rail %}{{ t('Drawdown risk', '回撤风险') }}{% else %}{{ t('Drawdown risk: ' ~ (hero.dd_band_en or ''), '回撤风险：' ~ (hero.dd_band_zh or '')) }}{% endif %}{% if hero.dd_score is not none %}{{ lens('Scored ' ~ hero.dd_score ~ ' out of 100, where 100 is the highest risk this model measures.', '评分 ' ~ hero.dd_score ~ '/100，100 为该模型可测的最高风险。') }}{% endif %}</span>
         {% endif %}
         <span class="dtp-chip dtp-chip--live"><i></i><span class="l-en">LIVE</span><span class="l-zh">实时</span></span>
-        <span class="dtp-asof">{{ t('As of', '截至') }} {{ hero.as_of or as_of }}</span>
+        <span class="dtp-asof"><span class="l-en">As of {{ hero.as_of or as_of }}</span><span class="l-zh">截至 {{ hero.as_of_zh or as_of_zh or as_of }}</span></span>
       </div>
       {% if hero.caveat_en %}<div class="mx-callout"><b class="l-en">Read the score with care:</b><b class="l-zh">读数注意：</b>
         <span class="l-en">{{ hero.caveat_en.split(':', 1)[1] if ':' in (hero.caveat_en or '') else hero.caveat_en }}</span>
@@ -585,7 +585,7 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
         </div>
         {% if vm.curve.tax_en %}<p class="tax-note" style="margin-top:10px"><span class="l-en">{{ vm.curve.tax_en }}</span><span class="l-zh">{{ vm.curve.tax_zh }}</span></p>{% endif %}
         <span class="pill" style="margin-top:10px">{{ t('Other curve reads', '其他曲线读数') }}{{ lens('Near-term forward spread ' ~ vm.curve.ntfs ~ 'pp — the front-end version of the slope, cleaner when markets are pricing Fed cuts. 2s10s ' ~ vm.curve.spread_2s10s ~ 'pp — the 2-year against the 10-year. Term-premium-adjusted slope ' ~ vm.curve.curve_tp_adj ~ 'pp — the slope with low-term-premium noise removed.', '近端远期利差 ' ~ vm.curve.ntfs ~ 'pp——斜率的前端版本，在市场为降息定价时更清晰。2年/10年利差 ' ~ vm.curve.spread_2s10s ~ 'pp——2年期对10年期。期限溢价调整斜率 ' ~ vm.curve.curve_tp_adj ~ 'pp——剔除低期限溢价噪音后的斜率。') }}</span>
-        <div class="dtp-asof" style="margin-top:10px">{{ t('As of', '截至') }} {{ as_of }}</div>
+        <div class="dtp-asof" style="margin-top:10px"><span class="l-en">As of {{ as_of }}</span><span class="l-zh">截至 {{ as_of_zh or as_of }}</span></div>
       </div>
 
       <div class="panel" id="credit">
@@ -597,7 +597,7 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
           <div class="mtile"><div class="mtile-lbl">{{ t('IG OAS', '投资级利差') }}</div><div class="mtile-val tnum">{% if vm.credit.ig_oas is not none %}{{ vm.credit.ig_oas }}%{% else %}—{% endif %}</div></div>
           <div class="mtile"><div class="mtile-lbl">{{ t('Excess bond premium', '超额债券溢价') }}</div><div class="mtile-val tnum">{% if vm.credit.ebp is not none %}{{ vm.credit.ebp }}%{% else %}—{% endif %}</div></div>
         </div>
-        <div class="dtp-asof" style="margin-top:10px">{{ t('As of', '截至') }} {{ as_of }}</div>
+        <div class="dtp-asof" style="margin-top:10px"><span class="l-en">As of {{ as_of }}</span><span class="l-zh">截至 {{ as_of_zh or as_of }}</span></div>
       </div>
 
       <div class="panel" id="real">
@@ -629,7 +629,7 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
         </div>
         <div class="flag info" style="margin-top:10px">ℹ {{ t('Context only. The same factors helped most with drawdown control, not precise return timing.', '仅供参考。同类因子主要帮助控制回撤，而非精确择时收益。') }}</div>
         {% endif %}
-        <div class="dtp-asof" style="margin-top:10px">{{ t('As of', '截至') }} {{ as_of }}</div>
+        <div class="dtp-asof" style="margin-top:10px"><span class="l-en">As of {{ as_of }}</span><span class="l-zh">截至 {{ as_of_zh or as_of }}</span></div>
       </div>
 
       <div class="panel" id="stress">
@@ -657,7 +657,7 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
           (<b>{% if (vm.health.calib.edge_pp or 0) >= 0 %}+{% endif %}{{ vm.health.calib.edge_pp }}pp</b>).
           <span class="faint">{{ t('Glyphs: ✓ measured · ~ directional · · context.', '符号：✓ 已校准 · ~ 有方向 · · 仅背景。') }}</span></div>
         {% endif %}
-        <div class="dtp-asof" style="margin-top:10px">{{ t('As of', '截至') }} {{ as_of }}</div>
+        <div class="dtp-asof" style="margin-top:10px"><span class="l-en">As of {{ as_of }}</span><span class="l-zh">截至 {{ as_of_zh or as_of }}</span></div>
       </div>
     </div>
     <details style="margin-top:14px">
@@ -678,12 +678,19 @@ html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
     <h2 class="band-label"><span class="l-en">Bonds &amp; the world</span><span class="l-zh">债券与全球市场</span></h2>
     {% if intl %}
     {% set g = intl.global %}{% set uw = intl.us_vs_world %}
-    {% set GDIR = {'rising': (C.red, 'rising', '上行'), 'falling': (C.green, 'falling', '下行'), 'stable': (C.muted, 'stable', '平稳')} %}
-    {% set gd = GDIR.get(g.direction, (C.muted, g.direction, g.direction)) %}
-    <p class="drv-read"><b><span class="l-en">Global 10-year yields average {{ g.avg_10y }}% and are {{ gd[1] }} — the world is tightening.</span><span class="l-zh">全球10年期收益率均值{{ g.avg_10y }}%且持续上行——全球融资成本在收紧。</span></b></p>
+    {% set GDIR = {
+      'rising': (C.red, 'rising', '上行', 'tightening', '在收紧', '且持续上行'),
+      'falling': (C.green, 'falling', '下行', 'easing', '在放松', '且持续下行'),
+      'stable': (C.muted, 'stable', '平稳', 'steady', '持稳', '且走势平稳')
+    } %}
+    {% set gd = GDIR.get(g.direction) %}
+    {% set GAPDIR = {'rising': ('widening', '走阔'), 'falling': ('narrowing', '收窄'), 'stable': ('stable', '平稳')} %}
+    {% set gapw = GAPDIR.get(uw.premium_direction, ('unresolved', '待确认')) %}
+    {% set emw = GAPDIR.get(intl.em.direction if intl.em else none, ('unresolved', '待确认')) %}
+    <p class="drv-read"><b>{% if gd %}<span class="l-en">Global 10-year yields average {{ g.avg_10y }}% and are {{ gd[1] }} — the world is {{ gd[3] }}.</span><span class="l-zh">全球10年期收益率均值{{ g.avg_10y }}%{{ gd[5] }}——全球融资成本{{ gd[4] }}。</span>{% else %}<span class="l-en">Global 10-year yields average {{ g.avg_10y }}% — world direction still reading.</span><span class="l-zh">全球10年期收益率均值{{ g.avg_10y }}%——全球方向仍在读数。</span>{% endif %}</b></p>
     <div style="margin:6px 0 10px">
-      <span class="band-chip" style="background:{{ gd[0] }}">{{ t('Global 10y', '全球10年期') }} {{ g.avg_10y }}% · {{ t(gd[1], gd[2]) }} {{ '%+.0f'|format(g.avg_10y_chg_63d_bp) if g.avg_10y_chg_63d_bp is not none else '' }}bp/3m</span>
-      {% if uw.us_premium_bp is not none %}<span class="band-chip" style="background:{{ C.blue }};margin-left:6px">{{ t('US vs world', '美国 vs 世界') }} {{ '%+.0f'|format(uw.us_premium_bp) }}bp{{ lens('The US 10-year sits ' ~ ('%+.0f'|format(uw.us_premium_bp)) ~ 'bp above the GDP-weighted rest of the world and the gap is widening — the dollar rate-differential anchor. Emerging-market hard-currency spread ' ~ (intl.em.em_oas if intl.em and intl.em.em_oas is not none else '—') ~ '% (stable).', '美国10年期较GDP加权的世界其余部分高' ~ ('%+.0f'|format(uw.us_premium_bp)) ~ '基点，且利差持续走阔——这是美元的利差之锚。新兴市场硬通货利差' ~ (intl.em.em_oas if intl.em and intl.em.em_oas is not none else '—') ~ '%（平稳）。') }}</span>{% endif %}
+      <span class="band-chip" style="background:{{ (gd[0] if gd else C.muted) }}">{{ t('Global 10y', '全球10年期') }} {{ g.avg_10y }}% · {{ t((gd[1] if gd else 'unresolved'), (gd[2] if gd else '待定')) }} {{ '%+.0f'|format(g.avg_10y_chg_63d_bp) if g.avg_10y_chg_63d_bp is not none else '' }}bp/3m</span>
+      {% if uw.us_premium_bp is not none %}<span class="band-chip" style="background:{{ C.blue }};margin-left:6px">{{ t('US vs world', '美国 vs 世界') }} {{ '%+.0f'|format(uw.us_premium_bp) }}bp{{ lens('The US 10-year sits ' ~ ('%+.0f'|format(uw.us_premium_bp)) ~ 'bp above the GDP-weighted rest of the world and the gap is ' ~ gapw[0] ~ ' — the dollar rate-differential anchor. Emerging-market hard-currency spread ' ~ (intl.em.em_oas if intl.em and intl.em.em_oas is not none else '—') ~ '% (' ~ emw[0] ~ ').', '美国10年期较GDP加权的世界其余部分高' ~ ('%+.0f'|format(uw.us_premium_bp)) ~ '基点，且利差' ~ gapw[1] ~ '——这是美元的利差之锚。新兴市场硬通货利差' ~ (intl.em.em_oas if intl.em and intl.em.em_oas is not none else '—') ~ '%（' ~ emw[1] ~ '）。') }}</span>{% endif %}
     </div>
     <div class="sc-wrap"><div class="sc-scroll">
     <table class="sc-tbl">
@@ -1192,7 +1199,7 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
       {% if div_card.last_obs %}
       <span class="l-en">Data delayed since {{ div_card.last_obs }}</span><span class="l-zh">数据自 {{ div_card.last_obs }} 起未更新</span>
       {% else %}
-      <span class="l-en">Data delayed — no daily price since the feed started</span><span class="l-zh">数据延迟——自数据启用以来无日度价格</span>
+      <span class="l-en">Data delayed — awaiting the daily series</span><span class="l-zh">数据延迟——等待日度序列</span>
       {% endif %}
     </p>
     <p class="empty-why">

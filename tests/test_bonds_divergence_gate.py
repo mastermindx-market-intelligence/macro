@@ -15,7 +15,14 @@ import pytest
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from scripts.build_bonds import divergence_card_state  # noqa: E402
+from scripts.build_bonds import (  # noqa: E402
+    _agree_band,
+    _changed_rows,
+    _hero_pack,
+    _series_last_obs,
+    _watching,
+    divergence_card_state,
+)
 
 TMPL = ROOT / "templates"
 
@@ -99,6 +106,7 @@ def _base_ctx(**overrides):
             "gold": "#C8A53B", "teal": "#1F8A70",
         },
         "as_of": "Sep 10, 2026",
+        "as_of_zh": "2026年9月10日",
         "as_of_iso": "2026-09-10",
         "built": "2026-09-10 00:00 UTC",
         "span": "2014-01-01..2026-09-10",
@@ -193,6 +201,7 @@ def _base_ctx(**overrides):
             "stance_en": "Watch — don't chase", "stance_zh": "观察，勿追",
             "stance_cls": "mx-stance-warn",
             "as_of": "Sep 10, 2026",
+            "as_of_zh": "2026年9月10日",
             "caveat_en": ("Read the score with care: the recession-risk input is at the "
                           "bottom of its scale (0.0/100) — a rail, not a fine-grained measurement."),
             "caveat_zh": "读数注意：衰退风险分项已触及量表下限（0.0/100）——这是量表边界，并非精细测量。",
@@ -304,7 +313,7 @@ def test_g3_missing_unparseable_does_not_raise():
         dc = divergence_card_state(False, bad, None, AS_OF)
         html = _render(div_card=dc, as_of_iso=AS_OF)
         card = _card_html(html)
-        assert "Data delayed — no daily price since the feed started" in card
+        assert "Data delayed — awaiting the daily series" in card
         assert "building" not in card.lower()
 
 
@@ -347,14 +356,26 @@ def test_g3_property_no_past_or_future_leak(ready_date, last_obs):
         assert d <= as_of_d, f"DELAYED card leaked date {raw} > as_of {as_of_d}"
 
 
+# Pre-fix template bytes (origin/main before this packet). Inline so the
+# positive control cannot shell out to `git show origin/main` — after squash-
+# merge origin/main IS this template, and blobless/offline checkouts have no
+# object. Never git-show a live ref from a gate test.
+_OLD_TEMPLATE_STOCKS_VS_BONDS = """
+  <div class="card cs-card cs-neutral">
+    <h2>{{ t('Stocks vs their bonds', '股票与其债券') }}</h2>
+    <p class="cc-verdict-lead">
+      <span class="l-en">The divergence read builds after ~1 month of daily history — the risk sign is stocks rising while their bonds weaken.</span><span class="l-zh">该背离指标需约1个月的日度数据积累——风险信号为股价上涨而债券走弱。</span>
+    </p>
+    <span class="faint" style="font-size:12px;display:block;margin-top:8px">
+      <span class="l-en">History building · check back 14 Aug 2026</span><span class="l-zh">数据积累中 · 2026年8月14日后可查看</span>
+    </span>
+  </div>
+"""
+
+
 def test_g3_old_template_had_the_literal():
-    """Positive control: origin/main template still contains the hardcoded date."""
-    import subprocess
-    old = subprocess.check_output(
-        ["git", "show", "origin/main:templates/bonds.html.j2"],
-        cwd=str(ROOT),
-    ).decode()
-    assert "check back 14 Aug 2026" in old
+    """Positive control: the pre-fix template contained the hardcoded date."""
+    assert "check back 14 Aug 2026" in _OLD_TEMPLATE_STOCKS_VS_BONDS
     new = (TMPL / "bonds.html.j2").read_text()
     assert "check back 14 Aug 2026" not in new
 
@@ -442,15 +463,74 @@ def test_g2_no_bare_r_in_transmission_rows():
     assert html  # render must succeed with the glossed template
 
 
+def _intl(*, direction="rising", avg=4.05, premium_direction="rising",
+          em_direction="stable"):
+    return {
+        "global": {"avg_10y": avg, "direction": direction, "avg_10y_chg_63d_bp": 18},
+        "us_vs_world": {"us_premium_bp": 42, "premium_direction": premium_direction},
+        "em": {"em_oas": 2.9, "pctile": 35, "emb_trend": "down", "direction": em_direction},
+        "countries": [],
+    }
+
+
+def _world_en_subtitle(html: str) -> str:
+    m = re.search(
+        r'data-l1="world"[\s\S]*?<p class="drv-read"><b>([\s\S]*?)</b></p>',
+        html,
+    )
+    assert m, "world subtitle not found"
+    en = re.search(r'class="l-en">(.*?)</span>', m.group(1))
+    assert en, m.group(1)
+    return re.sub(r"<[^>]+>", "", en.group(1))
+
+
+def _en_word_count(s: str) -> int:
+    return len(s.replace("—", " ").split())
+
+
 def test_g2_subtitle_word_count():
-    """The two rewritten Tier-1 subtitles are ≤14 EN words (frozen strings)."""
-    en5 = "Global 10-year yields average 4.05% and are rising — the world is tightening."
-    en6 = "Bonds are a tailwind for 6 markets and a headwind for 5."
-    assert len(en5.replace("—", " ").split()) == 12
-    assert len(en6.replace("—", " ").split()) == 12
+    """Tier-1 world + transmission subtitles are ≤14 EN words on a rendered VM."""
+    rising = _world_en_subtitle(_render(intl=_intl(direction="rising")))
+    falling = _world_en_subtitle(_render(intl=_intl(direction="falling")))
+    stable = _world_en_subtitle(_render(intl=_intl(direction="stable")))
+    unread = _world_en_subtitle(_render(intl=_intl(direction=None)))
+    assert _en_word_count(rising) <= 14, rising
+    assert _en_word_count(falling) <= 14, falling
+    assert _en_word_count(stable) <= 14, stable
+    assert _en_word_count(unread) <= 14, unread
     src = (TMPL / "bonds.html.j2").read_text()
-    assert "the world is tightening" in src
     assert "a tailwind for" in src
+    en6 = "Bonds are a tailwind for 6 markets and a headwind for 5."
+    assert _en_word_count(en6) == 12
+
+
+def test_world_subtitle_follows_global_direction():
+    """B1: conclusion words bind to g.direction; a hardcoded tightening fails."""
+    src = (TMPL / "bonds.html.j2").read_text()
+    assert "the world is tightening" not in src
+    assert "且持续上行——全球融资成本在收紧" not in src
+    rising = _render(intl=_intl(direction="rising"))
+    falling = _render(intl=_intl(direction="falling"))
+    stable = _render(intl=_intl(direction="stable"))
+    unread = _render(intl=_intl(direction=None))
+    assert "the world is tightening" in rising
+    assert "全球融资成本在收紧" in rising
+    assert "且持续上行" in rising
+    assert "the world is easing" in falling
+    assert "全球融资成本在放松" in falling
+    assert "且持续下行" in falling
+    assert "the world is tightening" not in falling
+    assert "且持续上行" not in falling
+    assert "the world is steady" in stable
+    assert "全球融资成本持稳" in stable
+    assert "world direction still reading" in unread
+    assert "全球方向仍在读数" in unread
+    # M1: lens tip binds intl.em.direction / uw.premium_direction
+    assert "the gap is widening" in rising
+    assert "the gap is narrowing" in _render(
+        intl=_intl(direction="falling", premium_direction="falling"))
+    assert "(stable)" in rising
+    assert "(widening)" in _render(intl=_intl(em_direction="rising"))
 
 
 def test_g2_watch_foot_and_empty_changed():
@@ -458,3 +538,135 @@ def test_g2_watch_foot_and_empty_changed():
     assert "Windows, not certainties — re-drawn nightly." in html
     assert "是窗口，不是定论——每晚重新校准。" in html
     assert "No state changes in the last 120 days — the bond regime has been steady." in html
+
+
+def _pack_vm(**overrides) -> dict:
+    vm = {
+        "health": {
+            "score": 88, "label": "healthy", "label_zh": "健康",
+            "phase_en": "Late-cycle", "phase_zh": "周期晚段",
+            "recession_risk": 7.0, "drawdown_risk": 7.0,
+        },
+        "curve": {"spread_2s10s": 0.4, "inverted": False, "tp_adj_inverted": False},
+        "credit": {"band_en": "tight"},
+        "stress": {"band_en": "calm"},
+        "alarms": [],
+    }
+    for k, v in overrides.items():
+        if isinstance(v, dict) and isinstance(vm.get(k), dict):
+            vm[k] = {**vm[k], **v}
+        else:
+            vm[k] = v
+    return vm
+
+
+def test_watching_uninverted_stressed_has_no_inverted_or_calm_premise():
+    """M2: un-inverted curve + stressed credit must not claim still-inverted / calm."""
+    rows = _watching(_pack_vm(
+        curve={"inverted": False, "tp_adj_inverted": False},
+        credit={"band_en": "distress"},
+    ))
+    blob = " ".join(
+        f"{r['cond_en']} {r['then_en']} {r['cond_zh']} {r['then_zh']}" for r in rows
+    ).lower()
+    assert "still inverted" not in blob
+    assert "un-invert" not in blob
+    assert "解除倒挂" not in blob
+    assert "credit calm" not in blob
+    assert "from calm" not in blob
+    assert "从平静" not in blob
+
+
+def test_watching_unknown_is_cautious():
+    rows = _watching({"curve": {}, "credit": {}, "cross": {}})
+    blob = " ".join(r["cond_en"].lower() for r in rows)
+    assert "un-invert" not in blob
+    assert "from calm" not in blob
+    assert "not assume" in blob or "leaves its current band" in blob
+
+
+def test_uninversion_row_is_not_ignore():
+    """M3: alarm-grade uninversion must not say Ignore — already reflected."""
+    rows = _changed_rows([{
+        "day": "2026-09-01",
+        "events": [{
+            "type": "uninversion",
+            "ts": "2026-09-01",
+            "headline": "Curve un-inverted",
+            "headline_zh": "曲线解除倒挂",
+            "label": "Curve",
+            "label_zh": "曲线",
+        }],
+    }])
+    assert rows
+    assert rows[0]["stance_en"] != "Ignore — already reflected"
+    assert rows[0]["stance_en"] == "Protect gains"
+    assert rows[0]["stance_zh"] == "保护收益"
+
+
+def test_rail_caveat_floor_vs_ceiling():
+    """M4: 0.0 is the floor; 100.0 is the ceiling with the true value."""
+    h0 = _hero_pack(_pack_vm(health={"recession_risk": 0.0}), "Sep 10, 2026", "late")
+    assert h0["caveat_en"]
+    assert "bottom" in h0["caveat_en"]
+    assert "0.0/100" in h0["caveat_en"]
+    assert "top" not in h0["caveat_en"]
+    assert "下限" in h0["caveat_zh"]
+    h100 = _hero_pack(_pack_vm(health={"recession_risk": 100.0}), "Sep 10, 2026", "late")
+    assert h100["caveat_en"]
+    assert "top" in h100["caveat_en"]
+    assert "100.0/100" in h100["caveat_en"]
+    assert "bottom" not in h100["caveat_en"]
+    assert "上限" in h100["caveat_zh"]
+    assert h100["rec_rail"] is True
+    assert h100["rec_band_en"] is None
+
+
+def test_missing_2s10s_is_not_flat():
+    """M5: absent 2s10s must not coerce to a 'flat' shape claim."""
+    h = _hero_pack(_pack_vm(curve={
+        "spread_2s10s": None, "inverted": False, "tp_adj_inverted": False,
+    }), "Sep 10, 2026", "late")
+    assert "flat" not in h["clause_en"]
+    assert "平坦" not in h["clause_zh"]
+    assert "unresolved" in h["clause_en"]
+    assert "待确认" in h["clause_zh"]
+
+
+def test_series_last_obs_from_theme_daily(tmp_path):
+    """M6: last_obs is the newest as_of on the series the producer already loads."""
+    cm = tmp_path / "corp_bonds" / "credit_momentum.json"
+    series = cm.parent / "series"
+    series.mkdir(parents=True)
+    cm.write_text("{}")
+    pd = pytest.importorskip("pandas")
+    df = pd.DataFrame({
+        "as_of": ["2026-07-10", "2026-08-03", "2026-07-20"],
+        "theme": ["hyperscaler_credit"] * 3,
+        "g_spread_bp_pw": [80.0, 82.0, 81.0],
+    })
+    df.to_parquet(series / "theme_daily.parquet")
+    assert _series_last_obs(cm) == "2026-08-03"
+    assert _series_last_obs(None) is None
+    missing = tmp_path / "empty" / "credit_momentum.json"
+    missing.parent.mkdir()
+    missing.write_text("{}")
+    assert _series_last_obs(missing) is None
+
+
+def test_tz_aware_ready_date_does_not_raise():
+    """m1: tz-aware ready_date compares; never TypeError."""
+    future = divergence_card_state(
+        False, "2026-12-01T00:00:00+00:00", None, "2026-09-10")
+    assert future["state"] == "building"
+    past = divergence_card_state(
+        False, "2026-08-01T00:00:00+00:00", None, "2026-09-10")
+    assert past["state"] == "delayed"
+
+
+def test_agree_band_guards_bad_input():
+    """m2: unparseable agreement degrades; does not ValueError the build."""
+    assert _agree_band(None)[0] == "factors are split"
+    assert _agree_band("nope")[0] == "factors are split"
+    assert _agree_band(object())[0] == "factors are split"
+    assert _agree_band(0.9)[0] == "factors strongly agree"
