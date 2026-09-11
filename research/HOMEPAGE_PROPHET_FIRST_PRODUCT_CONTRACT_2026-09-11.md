@@ -1,155 +1,128 @@
-# Prophet-first homepage: product contract and bounded continuation
+# Native homepage preservation: product contract and bounded recovery
 
-**Status:** Chairman-directed positioning correction; design/proof contract, not a
-released homepage. Production implementation remains on existing macro PR #7034.
-**Intent source:** current live Chairman correction, preserved in #7034 comment5628766666,
-and the subsequent request to record the failure and continue the corrected project.
-**Procedure pin:** Mastermind 797cfd0b1001d9dfe6fe9030af80ecdab0e1220d,
-Skillpack 1.0.1 / bootstrap 1. This document does not amend that Skillpack.
-**Source observations:** homepage 175bfd3bb20a2a6503d670f55055a77cd420a53f;
-public showcase and default-branch evidence b5c3d35ca4725992933680ddbdafd374e9ae162b.
+**Current direction:** preserve the native front cover; no replacement design.
+**Intent:** Chairman's supplied native screenshot and rejection of both replacements,
+recorded on macro#7034 in comment5629746461. This narrows the earlier Prophet
+positioning correction5628766666; it does not revoke Prophet's flagship role.
+**Procedure:** Mastermind protected068dcc1533776672844b36ffcde30fad68a4317f,
+Skillpack1.0.1/bootstrap1. This file does not change that Skillpack.
 **Lesson:** DSC:HOMEPAGE-THESIS-DRIFT-DESPITE-TECHNICAL-PASS.
 
-## 1. The outcome, before the interface
+The existing filename is preserved so old links resolve to the corrected decision.
+The earlier version at7a5b04eba24f69b694639d6d54cc65174962885b prescribed a new
+Prophet-first composition. That visual prescription and its integration sequence are
+superseded. The standalone prototype is retained as rejected historical evidence only.
 
-The primary customer wants useful stock signals and connected intelligence without
-having to perform all the scanning, searching and synthesis. The flagship is Prophet,
-not a general company-research workspace or an empty AI prompt. MastermindX is the
-umbrella product; market, theme, company and event intelligence support its stock
-opportunity experience. Terminal and AI provide optional inspection and follow-up.
+## 1. Product job and visual design are separate
 
-The machine job is to deliver a useful result: the named opportunity, the owner's
-published signal/setup state, relevant conditions, concise supporting context and
-cautions, and material subsequent changes. The customer retains judgment. Missing
-inputs, no qualifying setup and invalidated conditions are useful honest states.
+MastermindX should deliver useful stock signals and connected intelligence. Prophet
+is the flagship. Market conditions, sectors/themes, company/event evidence, AI and
+Terminal can support the result without making users do all the scanning and synthesis.
+Do not replace that job with a company worksheet or an empty prompt.
 
-The intended advantage is the combination of selection, context, clarity and
-follow-through, not an unsupported claim that stock picks or AI chat are unique.
-The intended repeat-use loop is receive -> understand -> follow -> receive changes.
-Delivery channels, cadence, personalized monitoring and every V4 intelligence family
-must be verified separately before copy presents them as available.
+This product thesis does not require replacing the native headline, making a Prophet
+card the largest element, changing buttons, reordering cards or inventing new navigation.
+The native broad intelligence-system presentation is compatible with the flagship job.
+"Desk" is not a forbidden word. A useful prepared result must be available through the
+real journey, but a screenshot is not proof of that journey or its access conditions.
 
-**First useful result:** understand a concrete Prophet signal and its qualifications
-without first entering a ticker, prompting AI, building a watchlist or opening citations.
-A public demonstration may precede lawful authentication for the full product.
+## 2. Accepted baseline
 
-## 2. Message and visual hierarchy
+Keep the centered cover, native headline treatment and gradient, light field/fine lines,
+CTA arrangement, and visible five-card composition with its existing depth and scale.
+No company-research worksheet, standalone signal-panel replacement, collapsed preview,
+third mockup, headline rewrite or card reorder is authorized by this continuation.
 
-Working first-screen copy:
+Reference screenshot SHA256:
+`f2bd45667810b8593234ec5204f6a2a098318a5a8ac6a7d31fbb796a540133cf`.
+This identifies the supplied image, not a production commit or a data-freshness receipt.
 
-- Eyebrow: **PROPHET BY MASTERMINDX**.
-- Headline: **Stock signals. Intelligence delivered.**
-- Supporting line: **Find stock opportunities without doing all the research yourself.**
-- Primary CTA: **Explore Prophet**; existing source destination `us_stocks.html`.
-- Secondary CTA: **See a signal explained**; anchored to the visible example.
+Recovered native repository source:
+- macro main `bbf6c1e65fc9cad1ba40efa26126cc60036713d0`.
+- `templates/index.html` = `site/index.html`, blob `83dc2cdef25f2869465f8492f45aab28a736dd67`.
+- `templates/landing.css` = `site/landing.css`, blob `4866885b4abd7fe2da059392c7bc46a703892970`.
 
-This is proposed product copy, not evidence of conversion lift or a promise that every
-future capability is live. Preserve meaningful EN/ZH parity without literal jargon.
+The source's signed-out CTA says Start free; the supplied screenshot shows Open the
+dashboard. Do not call that a defect or rewrite it until the actual authentication/state
+behavior is established. Match states when comparing images. Source equality is not
+proof the live host is serving those bytes.
 
-Use the existing premium light-only page, system/San Francisco-style bold typography,
-existing blue/ink tokens, restrained depth and a legible dark product plate. Do not
-replace the visual identity with a plain report or a scattered miniature-dashboard wall.
-The main chart/card must carry information rather than fabricated movement.
+## 3. Permitted repair scope
 
-Prophet is a direct first-class navigation destination. Research and AI stay available
-as supporting depth. The first major demonstration precedes the Terminal/product catalog
-and does not require opening a collapsed disclosure. The AAPL research example may
-remain deeper on the page; it is not the flagship acquisition proof.
+Start from the native implementation, not the rejected source on7034 or the prototype
+on7063. Reuse existing acquisition-truth work on6842, mobile work on7025/7026 and logo
+work on6988 where applicable. Do not merge overlapping alternatives blindly.
 
-## 3. One opportunity, connected explanation
+A candidate must name its observed failure, minimum correction, affected paths and
+preserved behavior. Fixing stale snapshots, same-date corrections, fabricated numeric
+movement, broken destinations or demonstrable mobile/accessibility failures is useful;
+changing the composition to make the task look substantial is not.
 
-The main product card shows the owner-published signal, ticker, dated price/zone and
-only source-supported grade/conditions. Alongside it, a prepared concise explanation
-states what the card says and the most important cautions. Supporting information must
-refer to this same opportunity, not unrelated macro widgets.
+Keep financial values grounded in actual observations. Correct truth labels through the
+smallest existing display surface; do not treat the accepted screenshot as permission
+to retain misleading freshness claims. Preserve independent decorative motion and
+product depth where they do not falsify numeric observations or signal authority.
 
-Do not fabricate a favorable causal narrative merely because a card has a BUY label.
-When the public artifact provides cautions but not a positive rationale, say so or limit
-the explanation to those supported fields. Narrative depth is a later owner-consumer
-integration requirement, not permission to invent evidence now.
+The previous delayed-winners prototype is not the public current signal feed, a random
+sample or representative performance. Its historic values and tests cannot authorize
+new claims, API access, personal monitoring, entry availability or delivery channels.
 
-Use one main example and a small contrasting WAIT example to show useful restraint.
-A score is an owner grade, not a probability. A stage or old BUY label is not current
-entry availability. Do not silently turn a snapshot comparison into a new signal.
+## 4. Source, correction and authority boundaries
 
-## 4. Data, time, access and correction contract
+Use existing compiler/preview/serving owners. Preserve a valid older payload only with
+its real date/status. Accept valid same-date corrections; reject malformed/older
+replacements as specified by the existing recovery. Known-empty and unavailable are
+not interchangeable. Do not create replacement stores, queues, score meanings, ranking
+rules, entitlement gates or a new publication path.
 
-| Surface | Verified source fact | Allowed use / required boundary |
-|---|---|---|
-| Public example | `site/prophet/showcase.json`, blob598ff702353792a4373cce6058337d94f5f33753, schema `prophet.showcase/v2`, kind `delayed_winners`, as_of2026-08-21, 12 cards | Historical interface illustration with visible date and winner-selection disclosure; not today's feed or representative performance. |
-| Existing embedded island | #7034 still embeds as_of2026-07-06 | Do not resurrect the stale island; compose through the existing #6842 preview/correction owner. |
-| Real product destination | Existing Prophet CTA points to `us_stocks.html` | Preserve this owner route; verify normal-route access and useful first frame before release. A URL in source is not browser proof. |
-| Full Prophet data | `site/prophet/index.json` exists; this turn's bounded file read returned no text | Unknown content in this observation, not zero candidates. Do not bypass public/paid boundaries to fill the marketing preview. |
-| Source-native caution | HOOD historical card flags accounting quality and a weakening Financials basket | May be summarized as caution, never recast as bullish confirmation or a new sizing recommendation. |
+Parent source-writer custody is still separate from the closed R2 review. No timeout,
+missing response or old branch label proves abandonment. Current Chairman intent
+permits recovery, not overwriting an unknown in-flight effect. Reconcile before writing
+a started source branch; isolated evidence composition is not branch takeover.
 
-A deliberately historical example and stale current data are different states. Label
-the historical example as historical. A failed or overdue current feed must not retain
-a fresh badge or silently masquerade as history. Show unavailable/last verified time
-without manufacturing a BUY. Known-empty must differ from failed/unreadable.
+Previously rejected signup diagnostics and full-page quote-test write remain stopped.
+Do not rephrase, split, reroute or delegate those actions. Existing allowed tests may
+be rerun with their original scope. State any unproved acceptance surface accurately.
 
-Preserve last valid data only with its true date and status. Same-date corrections must
-be accepted when the owner revision changes; later receipt time alone must not turn old
-observations into fresh signals. Use the existing snapshot/compiler/serving owners.
+## 5. Integration order
 
-No new provider, event store, candidate identity, ranker, entitlement gate, publication
-plane, alert queue or analytics store is part of this homepage slice.
+1. Correct this existing contract, the existing discovery and prototype README so a
+   new session does not recover a rejected design as the next implementation task.
+2. Pin native source and existing repair identities. Compose already-authorized
+   corrections in an isolated evidence directory; preserve headline, cover structure,
+   card ordering, shared CSS and unrelated source changes.
+3. Run the applicable existing compiler, paired-source and browser/component tests.
+   Compare native and candidate at matching states. Report deliberately changed text
+   separately from geometry, without hiding defects or freezing fabricated data as law.
+4. Reconcile the actual started source owner/effects before source integration on the
+   appropriate existing repair carrier. Do not create another production homepage PR.
+5. Require independent bounded review, current binding CI and ordinary publication,
+   then actual EN/ZH desktop/mobile visitor proof. Source/local proof is not delivery.
 
-## 5. Bounded implementation order
+The first repair may be small. The full flagship ambition is not reduced by a small
+PR, nor does that ambition authorize expanding the PR into a new product design.
 
-1. Preserve the Chairman correction and failure lesson in Macro's existing Agent OS
-   and research homes. Do not put current product state into procedural Skillpack files.
-2. Establish the first-screen composition in a separate, explicitly nonshipping
-   prototype using the already-public historical artifact. Exercise EN/ZH, no-JS,
-   narrow/tablet/desktop, keyboard, reduced motion and typed unavailable/empty states.
-3. Reconcile the current source writer/effects on #7034 before applying any source
-   change. Preserve #7025/#7026 mobile, #6842 acquisition-truth and #6988 logo custody.
-   A closed reviewer or absent response is not source-writer release.
-4. Integrate one useful vertical on the same #7034 carrier: visible Prophet-first
-   message/navigation + legible truthful example + prepared explanation + real board CTA
-   + regression tests + paired output/cache updates. Do not add future alert delivery.
-5. Obtain independent product-fit and implementation review on the actual integrated
-   head; run existing owning tests and binding CI; then ordinary publication and real
-   EN/ZH mobile/desktop visitor proof. No source-only or prototype success is SHIPPED.
+## 6. Acceptance
 
-The historical-preview prototype is not a replacement for the live product ambition.
-Its known limits become named implementation requirements, not a quieter product thesis.
+PRODUCT FIT: keep the delivered-intelligence job; verify the real destination and
+first useful result rather than inferring them from a marketing screenshot.
 
-## 6. Acceptance: two independent verdicts
+IMPLEMENTATION CORRECTNESS: preserve field meanings, source time, correction behavior,
+access limits, link behavior, language meaning, keyboard usability and paired output.
 
-**PRODUCT FIT:** the visitor can identify Prophet's stock-signal job, understand a
-prepared result and its caveat, and reach the promised product without first performing
-research. The main narrative demonstrates connected intelligence and reduced effort.
-A compact opportunity card with optional depth is preferred to explanatory walls.
+DESIGN PRESERVATION: compare against the native cover, not the rejected prototype.
+Retain the composition unless a separately accepted minimal correction demonstrates
+an improvement. A test should not require a different headline, CTA, card hierarchy or
+standalone example just because those appeared in the rejected proposal.
 
-**IMPLEMENTATION CORRECTNESS:** field fidelity, time/revision/empty/error honesty,
-entitlements, actual CTA destination, bilingual meaning, keyboard/accessibility,
-responsive layout, no invented number motion, source/test parity and normal publication.
+Stop on changed anchors, active conflicting writers, unknown effects, failed proof or
+unsupported claims. No green test count grants a visual redesign or release waiver.
+Keep exact identities, tested states, limitations and next action in the existing record.
 
-Reject each negative case, even with green CSS/unit/CI tests:
+## 7. Current continuation
 
-- Prophet only appears in metadata, a footer, a hidden panel or a headline keyword.
-- The main demonstration is company research and the user assembles the answer.
-- Explore Prophet lands in an empty Terminal or needs an AI prompt for initial value.
-- Delayed winners look current or imply a representative success rate.
-- A historical BUY or numeric grade is labeled current entry-open or win probability.
-- An unsupported AI explanation changes rank, signal, entry, sizing or trade authority.
-- Failed data looks like an empty market; stale data gets a new freshness date.
-- A nominally bilingual layout loses signal meaning or clips its caveat on mobile.
-
-Structural tests catch specific omissions; they do not prove comprehension, taste,
-usefulness or retention. Those require independent review and real visitor evidence.
-Measure time to first useful result, correct product comprehension, successful transition
-into Prophet and useful return behavior using the existing analytics owner. Do not
-maximize evidence clicks or page count as a proxy for convenience. No conversion claim
-is approved by this contract.
-
-## 7. Scope stop and continuation
-
-Stop before changing shared source when writer/effect state is unresolved; continue
-with disjoint design/proof work, not a second source writer. Stop a proposed claim when
-its supporting product behavior is unverified; keep the ambition and identify the gap.
-
-The completion handoff must preserve the product contract, exact source/proof identities,
-what changed, what remains false, same-carrier custody and the next observable action.
-Current project state remains PARTIAL. The next useful deliverable is the actual
-Prophet-first first screen and journey proof, not another old-head typography report.
+The native page remains the implementation starting point.7034 is a held rejected
+research-first source, not a native baseline;7063 is a held records/prototype proposal.
+The immediate useful work is native-preserving repair composition and proof plus actual
+source-custody reconciliation, not another replacement cover or typography experiment.
+No deployment, conversion improvement or unattended continuation is claimed here.

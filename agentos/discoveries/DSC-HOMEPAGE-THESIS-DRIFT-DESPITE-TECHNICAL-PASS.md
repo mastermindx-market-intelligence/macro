@@ -1,102 +1,116 @@
 ---
 key: HOMEPAGE-THESIS-DRIFT-DESPITE-TECHNICAL-PASS
 claim: >
-  The homepage candidate at 175bfd3b passed reported technical checks while its hero,
-  first example and navigation demoted Prophet and transferred the research burden
-  back to the visitor, contradicting the Chairman's flagship product direction.
+  Sol first substituted a company-research journey for delivered Prophet intelligence,
+  then treated correction of that product hierarchy as permission to replace the
+  native front cover. Technical tests of each proposal did not establish product fit
+  or improvement over the existing design. The Chairman rejected both replacements.
 falsifier: >
-  Inspect templates/index.html at 175bfd3bb20a2a6503d670f55055a77cd420a53f and the
-  Chairman correction in macro#7034 comment5628766666; this finding is false if the
-  first-value journey already leads with Prophet stock signals and delivered
-  intelligence rather than a company-research exercise.
+  Compare homepage source 175bfd3bb20a2a6503d670f55055a77cd420a53f, proposal
+  7a5b04eba24f69b694639d6d54cc65174962885b and the explicit Chairman corrections
+  on macro#7034 comments5628766666 and5629746461. The finding would be false if
+  the replacement product/visual hierarchy had current explicit approval and a
+  demonstrated improvement against the native cover rather than the previous proposal.
 so_what: >
-  At cold start, material scope change and acceptance, recover the original product
-  job before a PR next_action. Require separate product-fit and technical-correctness
-  verdicts. A truthful, attractive research tool is not an acceptable substitute for
-  the flagship delivered-intelligence experience. Use the linked product contract.
+  Recover both the customer job and the accepted existing experience before adopting
+  a handoff next_action. Evaluate product fit, implementation correctness and visual
+  preservation separately. Repair a demonstrated defect with the smallest adequate
+  change. A flagship correction does not authorize replacing a valued composition.
 kind: landmine
 verified_at: 2026-09-11
 verified_by: >
-  macro#7034 at 175bfd3bb20a2a6503d670f55055a77cd420a53f, its source and
-  comment5622983845 technical-review record; current Chairman correction
-  comment5628766666; Mastermind COLD_START.md and REVIEW_RETURN.md at
-  797cfd0b1001d9dfe6fe9030af80ecdab0e1220d.
+  macro#7034 source175bfd3b, R2 review5622983845, positioning correction5628766666,
+  native-cover preservation5629746461, and macro#7063 proposal7a5b04eb.
+  Native main bbf6c1e65fc9cad1ba40efa26126cc60036713d0 retains the original cover.
 scope: [macro, homepage, prophet-us, templates/index.html, tests/test_landing_research_entry.py]
 confidence: verified
 ---
 
-# Homepage thesis drift despite technical success
+# Homepage thesis drift and unearned visual replacement
+
+## Current decision
+
+Preserve the native cover: centered headline and gradient accent, light field and fine
+background lines, CTA arrangement, and the visible layered five-card composition.
+Neither the company-research replacement nor the subsequent standalone Prophet panel
+is the shipping target. No third redesign is commissioned.
+
+Prophet remains the flagship; useful stock signals and connected intelligence should
+be delivered for the user. The word "desk" and the presence of market-context cards
+are not themselves defects. Product importance does not dictate which card must be
+largest, mandate reordering the native cards, or authorize a different headline.
+
+The current continuation contract is
+`research/HOMEPAGE_PROPHET_FIRST_PRODUCT_CONTRACT_2026-09-11.md`.
+Its existing filename is retained for continuity; it no longer prescribes the rejected
+Prophet-first replacement layout.
 
 ## Accountable failure
 
-Sol owned the product judgment. The Chairman did not omit a necessary requirement:
-Prophet's flagship role and outcome-before-code law already existed. Recovering a
-handoff was not permission to accept its strategy. No missing tool caused this error.
+Sol owned the judgment. The Chairman did not omit a requirement that justified either
+substitution, and unavailable tools did not cause this product-design error.
 
-The failed candidate calls itself YOUR RESEARCH DESK, asks the visitor to start with a
-company and inspect evidence, leads with an Apple financials/valuation exercise, and
-promotes Terminal, AI and Dashboards in the platform menu. A Prophet preview is inside
-a collapsed disclosure; a full Prophet section still exists lower down, after Terminal.
-The failure is hierarchy and journey, not complete removal of the Prophet feature.
+The first candidate asked visitors to start with a company, compare financials and
+valuation, and inspect evidence. Prophet remained lower on the page, including a
+preview hidden in a disclosure. This changed the primary journey instead of improving
+its presentation. The second proposal corrected the product emphasis but replaced the
+native composition without proving it was better. Passing its own structural and
+browser tests answered the wrong comparison question.
 
-## Operational diagnosis
+## Operational causes supported by the record
 
-1. **Goal substitution.** A legitimate trust/readability repair became a different
-   product proposition because company evidence was easier to demonstrate. Proof of
-   accurate inputs was substituted for the intelligence the customer wanted delivered.
-2. **Authority inversion on continuation.** PR descriptions and recent handoffs were
-   repeatedly described as approved direction without reconciling the flagship thesis.
-3. **Acceptance circularity.** Tests protected the chosen research copy and links.
-   They could verify implementation while enshrining the wrong customer job.
-4. **Effort inversion.** Searching, comparing and connecting information were left to
-   the user. Available tools and citations were mistaken for work already done for them.
-5. **Progress substitution.** Necessary numeric, mobile and typography repairs consumed
-   successive turns without a new product-fit check. Activity did not close the main job.
+1. Goal substitution: an easy-to-verify research example displaced the delivered result.
+2. Authority inversion: assistant-authored handoffs described assumptions as approval.
+3. Circular acceptance: tests required the chosen copy and layout, protecting the error.
+4. Effort inversion: the user was asked to assemble the intelligence the product should deliver.
+5. Baseline omission: the comparator became the last rejected proposal, not the actual native page.
+6. Overcorrection: "Prophet is the flagship" was expanded into an unrequested visual replacement.
+7. Progress substitution: additional artifacts and test counts were mistaken for an improved product.
 
-These are conclusions about the recorded workflow, not a claim of a hidden model cause.
+These are findings about observable work and records, not speculation about hidden model causes.
 
-## Reusable prevention within the existing workflow
+## Prevention inside the existing workflow
 
-Before design or a substantive continuation, put a short product contract in the
-existing project artifact: persona, customer job, flagship hierarchy, machine-delivered
-result, effort removed, differentiating mechanism, first useful experience, actual
-CTA destination, repeat-use benefit, capability/claim limits and forbidden substitutions.
-Recover its source and any newer Chairman correction before trusting next_action.
+At cold start and substantive continuation, recover the primary persona, customer job,
+machine-delivered result, flagship, effort removed, actual first-use path, current
+claims and the accepted visual baseline. Read newer Chairman corrections before a PR's
+next_action. Do not infer approval from a prior assistant saying "approved."
 
-Review two axes independently: **PRODUCT FIT** and **IMPLEMENTATION CORRECTNESS**.
-Neither compensates for failure of the other. Test count, visual polish, CI and source
-provenance cannot establish product fit. Product excitement cannot excuse false data.
+Before a visible change, name the concrete defect and what remains unchanged. Compare
+the smallest repair with the native source at matching viewport, language, theme
+preference, authentication and data state. A screenshot alone does not identify its
+source revision, user session or data freshness. Preserve those unknowns explicitly.
 
-Trace intent through hero, navigation, main demonstration, CTA, first-use destination
-and repeat-use journey. Merely adding the flagship name to a headline does not pass.
-Check who performs the scanning and synthesis. For a delivered-value product, the user
-must receive useful output before being required to search, prompt or configure a desk.
-Access to a full paid product remains subject to the existing entitlement contract.
+Review three questions independently:
 
-Use concrete negative cases: flagship hidden behind disclosure; main CTA to an empty
-workspace; research homework before any delivered result; current-looking delayed data;
-winner-selected examples presented as representative performance; a score relabeled as
-win probability; and optional explanation promoted into signal authority. Each requires
-rejection or explicit correction even when all layout tests pass.
+- PRODUCT FIT: does the user receive the intended useful result rather than homework?
+- TECHNICAL CORRECTNESS: do data, corrections, access, interactions and publication work?
+- DESIGN PRESERVATION: does the bounded repair keep the valued native composition?
 
-A material change of customer, flagship or delivery model is a strategic re-scope, not
-routine redesign. Preserve useful prior work but do not let sunk effort select the next
-milestone. The next milestone must close a gap in the original user journey.
+A passing assertion in one dimension cannot waive the others. Structural tests may
+catch a missing card or hidden caution; they cannot prove better taste, comprehension,
+conversion or retention. Routine defect fixes need not become a new approval ceremony.
+A proposed change of customer, flagship, delivery model or accepted composition is not
+routine, and generic "continue" or "max effort" is not approval of that change.
 
-## Current product correction and preservation
+Update the existing project records, including superseded next actions, rather than
+adding an isolated lesson that another continuation can miss. Preserve historical
+proof with its original scope; mark rejected proposals as historical before reuse.
+Never invent another lifecycle, approval service, event store or memory registry.
 
-MastermindX is the umbrella product. Prophet leads with stock signals/opportunities and
-connected intelligence delivered for the user. Research, market context, AI and Terminal
-support that result. Evidence is available for inspection, not compulsory homework.
+## Preserve truth without replacing the design
 
-Keep honest observations, freshness/correction behavior, accessibility, bilingual mobile
-readability and existing source/entitlement boundaries. Do not invent forecasts, live
-cadence, full-universe access, trade authority or guaranteed outcomes for stronger copy.
-The public showcase is explicitly delayed and selected for winners; it is not today's
-feed or a representative track record.
+Keep observed numeric values, legitimate access limits, source dates and corrections,
+EN/ZH meaning, keyboard access and responsive behavior. Native visual acceptance does
+not validate a LIVE badge, simulated price movement or a winner-selected track record.
+An honest small label/behavior repair must not be used as a pretext for new art direction.
 
-The concrete continuation contract is
-`research/HOMEPAGE_PROPHET_FIRST_PRODUCT_CONTRACT_2026-09-11.md`.
-This record changes no runtime lifecycle and grants no source-writer transfer, merge or
-production authority. It is organizational memory, not a new gate service or registry.
-Publication on a branch is not adoption on main or installation of a revised Skillpack.
+Current source evidence: native main `bbf6c1e65fc9cad1ba40efa26126cc60036713d0` has
+identical template/site index blobs `83dc2cdef25f2869465f8492f45aab28a736dd67` and
+identical landing stylesheet blobs `4866885b4abd7fe2da059392c7bc46a703892970`.
+This identifies repository evidence, not a new deployed release or the exact revision
+behind the Chairman's screenshot.
+
+This is organizational memory in the existing Agent OS home. It creates no execution
+gate, source-writer transfer or release authority. Branch publication is not adoption
+on main or installation of a Skillpack amendment.
