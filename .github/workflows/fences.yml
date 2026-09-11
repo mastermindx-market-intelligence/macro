@@ -152,7 +152,7 @@ jobs:
               exit 1
             fi
             if ! MERGE_BASE=$(git merge-base "$TESTED_BASE_SHA" "$SUBJECT_HEAD_SHA"); then
-              echo "::error::self-mod-fence: could not establish exact PR ancestry after bounded exact-parent deepening — fail-closed." >&2
+              echo "::error::self-mod-fence: could not establish exact PR ancestry after bounded exact-parent deepening; could not establish exact PR ancestry inside the bounded checkout — fail-closed." >&2
               exit 1
             fi
           fi
