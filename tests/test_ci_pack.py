@@ -3466,6 +3466,19 @@ CURATED_EXCLUSIVE = {
     "inline-js",
     "unrun-picks-boards",
     "intelligence-registry",
+    # 2026-09-11 current-main scope repair. These three jobs entered after the
+    # last accepted fanout ceiling and inherited opaque fallback roots from
+    # subprocess/filesystem probes. Their manifest paths now name the imported
+    # closure and actual test subjects, restoring 130/126/121 without raising a
+    # ceiling or dropping any owned dependency.
+    "ccw-w3-credit-momentum",
+    "market-os-macro-workspaces",
+    "public-render-fastlane",
+    # 2026-09-11: the five macro-turnaround suites deliberately exercise
+    # subprocess/filesystem refusal paths. Inference would widen them across
+    # config/, scripts/, and tests/; the declared source/replay closure keeps
+    # those negative-path probes code-gated without turning the job always-on.
+    "macro-turnaround-research",
     # 2026-08-14 wave 2: the manifest grew 180→193 jobs and the new fallback
     # riders pushed scripts/build_free_content.py to 127 > 126, redding pack-1
     # fleet-wide. Curated: the three NEW subject-guards whose owner-written

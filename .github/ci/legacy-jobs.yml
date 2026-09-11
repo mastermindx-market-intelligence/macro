@@ -6244,6 +6244,38 @@ jobs:
   ccw-w3-credit-momentum:
     if: ${{ false }}
     gate: code
+    scope: exclusive
+    # Current-main fanout repair 2026-09-11: test_credit_window intentionally
+    # scans selected code/data boundaries, so generic inference promoted those
+    # probes to engine/** fallback and ran this credit organ on unrelated Prophet
+    # changes. The declaration below names the actual imported modules, tests,
+    # and the three tracked series whose repository identities the suite checks.
+    paths:
+      - "collectors/base.py"
+      - "collectors/corp_bond_holdings.py"
+      - "collectors/etf_holdings.py"
+      - "collectors/finra_corp_bonds.py"
+      - "collectors/holdings.py"
+      - "engine/__init__.py"
+      - "engine/bonds.py"
+      - "engine/bonds_alerts.py"
+      - "engine/canon.py"
+      - "engine/conditions.py"
+      - "engine/credit_momentum.py"
+      - "engine/credit_window.py"
+      - "engine/indicators.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/store.py"
+      - "data/yahoo/_MOVE.parquet"
+      - "data/fred/BAMLH0A0HYM2.parquet"
+      - "data/archive/BAMLH0A0HYM2.parquet"
+      - "data/fred/BAMLC0A0CM.parquet"
+      - "data/archive/BAMLC0A0CM.parquet"
+      - "tests/test_corp_bond_holdings.py"
+      - "tests/test_credit_momentum.py"
+      - "tests/test_credit_window.py"
+      - "tests/test_finra_corp_bonds.py"
     # CCW-W3 credit momentum organ:
     #   engine/credit_momentum.py — spread velocity/pctile, oscillator states
     #     (secondary per CCW-R15), density gate, composition suppression,
@@ -8940,6 +8972,37 @@ jobs:
   public-render-fastlane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
     gate: code
+    scope: exclusive
+    # Current-main fanout repair 2026-09-11: the full help-directory suite owns
+    # one scripts.build_site integration test. Keeping that whole file in this
+    # minimal job made inference claim nearly every engine/script/template path
+    # even though the integration node was deselected here. The full suite now
+    # runs once in unrun-site-surfaces; this job keeps the fast-path and contract
+    # suites over their exact public-builder closure.
+    paths:
+      - "config/plans.yml"
+      - "lib/__init__.py"
+      - "lib/chat_allowance.py"
+      - "lib/config.py"
+      - "lib/help_directory.py"
+      - "lib/pages.py"
+      - "scripts/__init__.py"
+      - "scripts/build_public_pages.py"
+      - "scripts/ci/public_render.sh"
+      - "templates/_navlinks.html.j2"
+      - "templates/_public_chrome_css.html.j2"
+      - "templates/_public_chrome_js.html.j2"
+      - "templates/_public_footer.html.j2"
+      - "templates/_public_nav.html.j2"
+      - "templates/help.html.j2"
+      - "templates/measurement.html.j2"
+      - "templates/methodology.html.j2"
+      - "templates/plans.html.j2"
+      - "templates/seo_base.html.j2"
+      - "templates/support.html.j2"
+      - "templates/unsubscribe.html.j2"
+      - "tests/test_help_directory_contract.py"
+      - "tests/test_public_render_fastlane.py"
     # Public fast-path contract (2026-07-28): scripts/build_public_pages.py plus
     # the render.yml/public-render.yml surface split. Named by ZERO workflows
     # until now, so it rotted red on main invisibly — #3856 moved the founding
@@ -8960,16 +9023,8 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pyyaml jinja2
-      # --deselect: test_build_site_renders_help_page_with_the_full_view_model imports
-      # scripts.build_site, which imports numpy/pandas/plotly -- none on this job's
-      # minimal line. It was collected fine (the import is inside the test body, not at
-      # module scope) but FAILED at run time under this exact venv (verified: ModuleNotFoundError:
-      # numpy), a second instance of the same class of break the B-F13-3 round-3 BLOCKER
-      # fixed for tests/test_support_tier_routing.py -- found empirically while proving
-      # THAT fix in a clean venv, not by the round-2 review. It now runs instead in
-      # unrun-site-surfaces, which already imports scripts.build_site under its full deps.
       - name: public fastlane split + rendered pricing copy pins
-        run: python -m pytest tests/test_public_render_fastlane.py tests/test_help_directory.py tests/test_help_directory_contract.py -q --deselect tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model
+        run: python -m pytest tests/test_public_render_fastlane.py tests/test_help_directory_contract.py -q
 
   press-lane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -10165,14 +10220,13 @@ jobs:
       # failure a reader sees.
       - name: US board freshness truth — vintage stamp, card date, delayed banner
         run: python -m pytest tests/test_us_board_freshness_truth.py -q
-      # B-F13-3 round-3: test_build_site_renders_help_page_with_the_full_view_model
-      # imports scripts.build_site, which needs numpy/pandas/plotly -- absent from
-      # public-render-fastlane's minimal (pytest pyyaml jinja2) line it used to run on.
-      # It rides this lane instead: scripts.build_site is already imported by every step
-      # above, so no new dependency is added, and this lane already owns build_site.py's
-      # panels/view-models. Deselected from public-render-fastlane's step (see that job).
-      - name: scripts/build_site.py's help page call shape (B-F13-3 BLOCKER-1 regression guard)
-        run: python -m pytest tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model -q
+      # B-F13-3 plus the public-fastlane scope repair: this full suite contains
+      # the scripts.build_site integration node and therefore belongs in the lane
+      # that already installs and owns build_site's complete render dependencies.
+      # Running the whole file here preserves every help-directory assertion once,
+      # while the minimal public job owns only its narrow fast-path/contract suites.
+      - name: help directory — public builder plus full-site integration
+        run: python -m pytest tests/test_help_directory.py -q
 
   unrun-release-forecast:
     # the macro-release forecast producer — projections, benchmarks and the graded forward ledger.
@@ -13961,6 +14015,7 @@ jobs:
   market-os-macro-workspaces:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
     gate: code
+    scope: exclusive
     # Market Ontology F01 R1A: mastermind.macro_workspace_snapshot.v1 producer
     # (US Liquidity Regime composer), fail-closed contract validator, atomic
     # publisher, CLI exit-code law, and the bounded read-only machine consumer.
@@ -13970,6 +14025,9 @@ jobs:
     paths:
       - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
       - "engine/market_os/**"
+      - "lib/__init__.py"
+      - "lib/macro_suite_labels.py"
+      - "lib/macro_suite_view.py"
       - "scripts/build_macro_workspaces.py"
       - "tests/test_macro_workspace_build.py"
       - "tests/test_macro_workspace_business_activity.py"
@@ -14021,6 +14079,46 @@ jobs:
           tests/test_macro_workspace_prior_publication.py
           tests/test_macro_workspace_rates_curves.py
           tests/test_macro_workspace_trade_flows.py
+          -q
+
+  macro-turnaround-research:
+    # Point-in-time macro-turnaround research is a code-gated source capability,
+    # not a data-health or render lane. `if: false` keeps this a legacy status
+    # definition; run_ci_pack executes it inside the merge-gate packs. The job
+    # owns one deterministic engine/replay contract and its immutable CLIs.
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/macro_turnaround.py"
+      - "engine/macro_turnaround_replay.py"
+      - "engine/release_target_truth.py"
+      - "scripts/__init__.py"
+      - "scripts/build_macro_turnaround_research.py"
+      - "scripts/replay_macro_turnaround.py"
+      - "tests/test_macro_turnaround_research.py"
+      - "tests/test_macro_turnaround_replay.py"
+      - "tests/test_macro_turnaround_replay_cli.py"
+      - "tests/test_macro_turnaround_feature_honesty.py"
+      - "tests/test_macro_turnaround_evidence_change.py"
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install point-in-time replay test dependencies
+        run: pip install pytest pandas pyarrow pyyaml
+      - name: point-in-time macro turnaround research — replay, corrections, immutable output, authority ceiling
+        run: >-
+          python -m pytest
+          tests/test_macro_turnaround_research.py
+          tests/test_macro_turnaround_replay.py
+          tests/test_macro_turnaround_replay_cli.py
+          tests/test_macro_turnaround_feature_honesty.py
+          tests/test_macro_turnaround_evidence_change.py
           -q
 
   market-os-macro-suite-pages:
