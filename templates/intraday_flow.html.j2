@@ -187,6 +187,7 @@
   .basket-scroll { display:flex; gap:6px; flex-wrap:wrap; }
 
   .leaders-wrap { overflow-x:auto; }
+  .ift-see-all { appearance:none; -webkit-appearance:none; background:none; border:0; padding:0; margin:0; font:inherit; color:inherit; cursor:pointer; text-decoration:underline; letter-spacing:inherit; }
   table.leaders { width:100%; border-collapse:collapse; font-size:13px; }
   table.leaders th { padding:9px 11px; text-align:left; font-size:var(--fs-micro); font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); border-bottom:1px solid var(--hair-strong); cursor:pointer; white-space:nowrap; user-select:none; }
   table.leaders th:hover { color:var(--text); }
@@ -327,7 +328,11 @@ html[data-theme="light"] :is(
       <div class="hero-ctx">
         <div class="ctx-row"><span class="ctx-ic">⚡</span><span id="ctx-strong">{{ t('Waiting for the tape…','等待资金带……') }}</span></div>
         <div class="ctx-row muted"><span class="ctx-ic">🧭</span><span id="ctx-watch">{{ t('The board below carries every name and the reasoning behind each call.','下方看板列出每只标的及其结论依据。') }}</span></div>
-        <div class="ctx-stamp" id="ift-stamp">{{ t('Base:', '基础：') }} {{ ift.as_of if ift.as_of else '—' }} · <span class="l-en">tape loading…</span><span class="l-zh">资金带加载中…</span></div>
+        {% if ift.as_of_display and ift.as_of_display.en %}
+        <div class="ctx-stamp" id="ift-stamp">{{ t('Board built ' ~ ift.as_of_display.en ~ ' · still connecting', '看板构建于' ~ ift.as_of_display.zh ~ ' · 连接中') }}{{ help('quotes still connecting · tape still connecting · options still connecting', '行情 连接中 · 资金带 连接中 · 期权流 连接中') }}</div>
+        {% else %}
+        <div class="ctx-stamp" id="ift-stamp">{{ t("Board can't load right now — the plain-word calls below are from the last build", "看板暂时无法加载——下方结论来自上一次构建") }}</div>
+        {% endif %}
       </div>
     </div>
   </div>
@@ -527,6 +532,8 @@ var quotesStatus = 'connecting', pulseStatus = 'connecting', flowStatus = 'conne
 var sortCol = 'rvol', sortDir = -1;
 var activeBasket = 'all', activeStance = 'all', searchQ = '', groupByStance = true;
 var openRows = {};     // ticker -> true when detail expanded
+var BOARD_CAP = 8;
+var boardExpanded = false;
 
 // ── Stance lane metadata (labels localized; keys deterministic) ────────────
 var STANCE_META = {
@@ -666,13 +673,13 @@ function boardPulseCoverage() {
   }
   return resolved / leaders.length;
 }
-function feedWord(status, zh) {
-  if (zh) {
-    if (status === 'live') return '已接入';
-    if (status === 'unavailable') return '不可用';
-    return '连接中';
+function feedWord(status, zh, lane) {
+  if (status === 'live') {
+    if (lane === 'options') return zh ? '流数据已送达' : 'carrying flow';
+    return zh ? '行情已送达' : 'carrying prices';
   }
-  return status === 'live' ? 'live' : (status === 'unavailable' ? 'unavailable' : 'connecting');
+  if (status === 'unavailable') return zh ? '行情未送达' : 'prices not coming through';
+  return zh ? '连接中' : 'still connecting';
 }
 
 // ── Stance (mirror engine/intraday_flow.stance — deterministic precedence) ─
@@ -861,7 +868,7 @@ function fetchFlow() {
         Object.keys(enrich.tickers).forEach(function(root){
           var te = enrich.tickers[root] || {}, badges = [];
           var bc = te.badge_counts || {};
-          ['WHALE','FRESH','Z_OUTLIER','SIZE_VS_OI','REPEAT_HITTER'].forEach(function(b){ if (bc[b]>0) badges.push(b+'×'+bc[b]); });
+          ['WHALE','FRESH','Z_OUTLIER','SIZE_VS_OI','REPEAT_HITTER'].forEach(function(b){ if (bc[b]>0) badges.push(tapeChip(b, bc[b])); });
           var ex = flowState[root] || {}; ex.badges = badges; ex.session_tier = te.session_tier || ex.session_tier; flowState[root] = ex;
         });
       } else {
@@ -875,7 +882,7 @@ function fetchFlow() {
         });
         Object.keys(byRoot).forEach(function(root){
           var r = byRoot[root], badges = [];
-          ['WHALE','FRESH','Z_OUTLIER','SIZE_VS_OI','REPEAT_HITTER'].forEach(function(b){ if (r.counts[b]>0) badges.push(b+'×'+r.counts[b]); });
+          ['WHALE','FRESH','Z_OUTLIER','SIZE_VS_OI','REPEAT_HITTER'].forEach(function(b){ if (r.counts[b]>0) badges.push(tapeChip(b, r.counts[b])); });
           var ex = flowState[root] || {}; ex.badges = badges; ex.session_tier = r.tier || ex.session_tier; flowState[root] = ex;
         });
       }
@@ -942,18 +949,22 @@ function fetchRootFlow(root) {
 function updateFlowStamp(asof, meta) {
   var stamp = document.getElementById('ift-stamp');
   if (!stamp) return;
-  var base = '{{ ift.as_of if ift.as_of else "—" }}';
-  var rth = isMarketHours();
-  var tapeEn = rth
-    ? (asof ? 'tape source as of '+asof : 'tape source time unavailable')
-    : (asof ? 'tape off-hours · last-session source as of '+asof : 'tape off-hours · source time unavailable');
-  var tapeZh = rth
-    ? (asof ? '资金带 来源截至 '+asof : '资金带 来源时间不可用')
-    : (asof ? '资金带 非交易时段 · 上一交易时段来源截至 '+asof : '资金带 非交易时段 · 来源时间不可用');
-  var baseReady = leaders.length > 0 && base && base !== '—';
-  var srcEn = (baseReady ? 'BASE ready' : 'BASE unavailable')+' · quotes '+feedWord(quotesStatus,false)+' · tape '+feedWord(pulseStatus,false)+' · options '+feedWord(flowStatus,false);
-  var srcZh = (baseReady ? 'BASE就绪' : 'BASE不可用')+' · 行情 '+feedWord(quotesStatus,true)+' · 实时带 '+feedWord(pulseStatus,true)+' · 期权流 '+feedWord(flowStatus,true);
-  stamp.innerHTML = lz('Base: '+base+' · '+tapeEn+' · '+srcEn, '基础：'+base+' · '+tapeZh+' · '+srcZh);
+  var disp = (BASE_DATA && BASE_DATA.as_of_display) || {};
+  var asOfEn = disp.en || '';
+  var asOfZh = disp.zh || '';
+  if (!leaders.length || !asOfEn) {
+    stamp.innerHTML = lz(
+      "Board can't load right now — the plain-word calls below are from the last build",
+      "看板暂时无法加载——下方结论来自上一次构建"
+    );
+    return;
+  }
+  var tipEn = 'quotes '+feedWord(quotesStatus,false)+' · tape '+feedWord(pulseStatus,false)+' · options '+feedWord(flowStatus,false,'options');
+  var tipZh = '行情 '+feedWord(quotesStatus,true)+' · 资金带 '+feedWord(pulseStatus,true)+' · 期权流 '+feedWord(flowStatus,true,'options');
+  var covEn = quotesStatus === 'live' ? 'tape '+feedWord(quotesStatus,false) : feedWord(quotesStatus,false);
+  var covZh = feedWord(quotesStatus,true);
+  stamp.innerHTML = lz('Board built '+asOfEn+' · '+covEn, '看板构建于'+asOfZh+' · '+covZh)
+    + '<span class="help">?<span class="tip">'+lz(tipEn, tipZh)+'</span></span>';
 }
 
 // ══ compute-once pipeline (shared by hero, spotlight, board) ═══════════════
@@ -1063,7 +1074,7 @@ function buildHero(rows, counts) {
     var v = counts[k]||0; if (v<=0) return;
     var meta = STANCE_META[k], cls = 'lane-'+laneSuffix(k);
     seg += '<div class="comp-seg '+cls+'" style="flex:'+v+' '+v+' 0%"></div>';
-    leg += '<span class="cl-item"><span class="cl-dot '+cls+'"></span>'+lz(meta.en,meta.zh)+' '+v+'</span>';
+    leg += '<span class="cl-item"><span class="cl-dot '+cls+'"></span>'+lz(meta.en,meta.zh)+'</span>';
   });
   var comp = document.getElementById('comp-bar'); if (comp) comp.innerHTML = seg || '<div class="comp-seg" style="flex:1;background:var(--muted);opacity:.3"></div>';
   var legEl = document.getElementById('comp-legend'); if (legEl) legEl.innerHTML = leg;
@@ -1154,7 +1165,7 @@ function spotCard(r, i) {
   var bk = (l.baskets||[]).slice(0,1).map(prettyBasket).join('');
   return '<article class="spot-card '+meta.lane+breathe+'">'
     + '<div class="spot-hd">'
-    +   '<div><a class="spot-tk" href="stock.html#'+l.ticker+'">'+esc(l.ticker)+'</a>'+(bk?'<div class="spot-tk-sub">'+esc(bk)+'</div>':'')+'</div>'
+    +   '<div><a class="spot-tk" href="stock.html#'+l.ticker+'">'+esc(l.ticker)+'</a>'+(bk?'<div class="spot-tk-sub">'+bk+'</div>':'')+'</div>'
     +   '<span class="stance-pill '+meta.lane+'"><span class="sp-dot"></span>'+lz(meta.en,meta.zh)+'</span>'
     + '</div>'
     + '<p class="spot-reason">'+lz(st.reason_en, st.reason_zh)+'</p>'
@@ -1175,7 +1186,7 @@ function buildRow(row) {
 
   var bk = (leader.baskets || []).slice(0,1).map(function(b){ return prettyBasket(b); }).join('');
   var nameCell = '<td><a class="tk-link" href="stock.html#'+tk+'">'+tk+'</a>'
-    + (bk ? '<div class="tk-baskets">'+esc(bk)+'</div>' : '') + '</td>';
+    + (bk ? '<div class="tk-baskets">'+bk+'</div>' : '') + '</td>';
 
   var pill = '<span class="stance-pill '+meta.lane+'"><span class="sp-dot"></span>' + lz(meta.en, meta.zh) + '</span>';
   var reason = '<div class="stance-reason '+(stance.muted?'muted':'')+'">'+lz(stance.reason_en, stance.reason_zh)+'</div>';
@@ -1212,7 +1223,7 @@ function buildRow(row) {
     lean = '<div class="metric-sub muted">'+lz('off-hours','非交易时段')+'</div>';
   }
   var badges = flow && flow.badges ? flow.badges : [];
-  var badgeHtml = badges.length ? '<div class="chip-row">'+badges.slice(0,3).map(function(b){ return '<span class="badge badge-blue">'+esc(b)+'</span>'; }).join('')+'</div>' : '';
+  var badgeHtml = badges.length ? '<div class="chip-row">'+badges.slice(0,3).map(function(b){ return '<span class="badge badge-blue">'+b+'</span>'; }).join('')+'</div>' : '';
   var tapeCell = '<td class="hide-narrow"><span class="metric-lead '+vwapCls+'">'+vwapWord+'</span>'+lean+badgeHtml+'</td>';
 
   var dealerCell = '<td class="dealer-cell hide-narrow">'+dealerCompact(d, quote)+'</td>';
@@ -1230,9 +1241,30 @@ function buildRow(row) {
 }
 
 function prettyBasket(b) {
-  var m = { mag7:'Mag7', ai_infra:'AI Infra', ai_software:'AI Software', ai_semiconductors:'AI Semis',
-    semicap_equipment:'Semicap', reshoring:'Reshoring', defense:'Defense', power_grid:'Power Grid' };
-  return m[b] || b;
+  var m = {
+    mag7: ['Mag7', 'Mag7'],
+    ai_infra: ['AI Infra', 'AI基础'],
+    ai_software: ['AI Software', 'AI软件'],
+    ai_semiconductors: ['AI Semis', 'AI芯片'],
+    semicap_equipment: ['Semicap', '设备'],
+    reshoring: ['Reshoring', '回流'],
+    defense: ['Defense', '国防'],
+    power_grid: ['Power Grid', '电网']
+  };
+  var pair = m[b];
+  if (!pair) { var s = esc(b); return lz(s, s); }
+  return lz(pair[0], pair[1]);
+}
+var TAPE_CHIPS = {
+  WHALE: ['big block', '大单'],
+  FRESH: ['new position', '新建仓'],
+  SIZE_VS_OI: ['size vs open interest', '规模对比未平仓'],
+  Z_OUTLIER: ['unusual size', '异常规模'],
+  REPEAT_HITTER: ['repeat buyer', '重复买入']
+};
+function tapeChip(kind, n) {
+  var pair = TAPE_CHIPS[kind] || [kind, kind];
+  return lz(pair[0]+'×'+n, pair[1]+'×'+n);
 }
 
 // ── Dealer compact (ceiling / floor / move / hole) ─────────────────────────
@@ -1364,15 +1396,26 @@ function applyView() {
   var detailByTk = {};
   [].slice.call(tbody.querySelectorAll('tr.detail-row')).forEach(function(d){ detailByTk[d.getAttribute('data-detail')] = d; });
   sortRows(leadRows);
-  var visible = 0, curGroup = null, frag = document.createDocumentFragment();
+  var matching = [], curGroup = null, frag = document.createDocumentFragment();
   leadRows.forEach(function(r){
-    var tk = r.getAttribute('data-ticker'), k = Number(r.getAttribute('data-k')||0);
+    var tk = r.getAttribute('data-ticker');
     var st = r.getAttribute('data-stance'), baskets = r.getAttribute('data-baskets')||'all';
     var show = true;
     if (activeBasket !== 'all' && baskets.indexOf(activeBasket) < 0 && baskets !== 'all') show = false;
     if (activeStance !== 'all' && st !== activeStance) show = false;
     if (searchQ && tk.indexOf(searchQ.toUpperCase()) < 0) show = false;
     if (!show) { r.style.display='none'; if (detailByTk[tk]) detailByTk[tk].style.display='none'; return; }
+    matching.push(r);
+  });
+  var total = matching.length;
+  var showN = (boardExpanded || total <= BOARD_CAP) ? total : BOARD_CAP;
+  matching.forEach(function(r, i){
+    var tk = r.getAttribute('data-ticker'), st = r.getAttribute('data-stance');
+    if (i >= showN) {
+      r.style.display='none';
+      if (detailByTk[tk]) detailByTk[tk].style.display='none';
+      return;
+    }
     if (groupByStance && st !== curGroup) {
       curGroup = st;
       var meta = STANCE_META[st] || STANCE_META.stand_aside;
@@ -1382,11 +1425,19 @@ function applyView() {
     }
     r.style.display=''; frag.appendChild(r);
     if (detailByTk[tk]) { detailByTk[tk].style.display=''; frag.appendChild(detailByTk[tk]); }
-    visible++;
   });
   tbody.appendChild(frag);
   var lbl = document.getElementById('count-label');
-  if (lbl) lbl.innerHTML = lz(visible+' of '+leadRows.length+' leaders shown', '显示 '+visible+' / '+leadRows.length+' 只');
+  if (lbl) {
+    if (total > BOARD_CAP && !boardExpanded) {
+      lbl.innerHTML = lz('Showing '+showN+' of '+total+' leaders · ', '显示 '+showN+' / '+total+' 只 · ')
+        + '<button type="button" class="ift-see-all" id="ift-see-all">'
+        + lz('See all '+total, '查看全部 '+total+' 只')
+        + '</button>';
+    } else {
+      lbl.innerHTML = '';
+    }
+  }
   var ths = document.querySelectorAll('table.leaders th[data-col]');
   ths.forEach(function(th){ th.classList.remove('sort-asc','sort-desc'); if (!groupByStance && th.getAttribute('data-col')===sortCol) th.classList.add(sortDir<0?'sort-desc':'sort-asc'); });
 }
@@ -1474,6 +1525,13 @@ if (_lb) _lb.addEventListener('click', function(e){
   exp.textContent = openRows[tk] ? '▾' : '▸';
   var dr = document.querySelector('tr.detail-row[data-detail="'+tk+'"]');
   if (dr) dr.classList.toggle('open', openRows[tk]);
+});
+var countLabel = document.getElementById('count-label');
+if (countLabel) countLabel.addEventListener('click', function(e){
+  var btn = e.target && e.target.closest ? e.target.closest('.ift-see-all') : null;
+  if (!btn) return;
+  boardExpanded = true;
+  applyView();
 });
 var searchEl = document.getElementById('ift-search');
 if (searchEl) {

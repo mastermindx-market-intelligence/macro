@@ -144,12 +144,13 @@ def _region(src: str, start: str, end: str) -> str:
     return src[i:src.index(end, i)]
 
 
-# Every region below is Jinja-free; the page's only {{ }} in this half sits inside
-# updateFlowStamp, which is stubbed by the harness rather than extracted.
+# Every region below is Jinja-free. fetchFlow maps tape badges at construction
+# through tapeChip (lexicon lives beside prettyBasket); the harness stubs lz.
 REGIONS = (
     ("function snapUrl", "function computeLegs"),   # url helpers, ET clock, derived metrics
     ("function computeLegs", "function dealerOf"),  # the confluence legs incl. L5
     ("var flowMeta", "function updateFlowStamp"),  # fetchFlow, bestTier, fetchRootFlow
+    ("var TAPE_CHIPS", "function dealerCompact"),  # tapeChip used at construction
 )
 
 
@@ -183,6 +184,7 @@ def _run(
         function render() {}
         function scheduleRender() {}
         function updateFlowStamp() {}
+        function lz(en, zh){ return '<span class="l-en">'+en+'</span><span class="l-zh">'+(zh||en)+'</span>'; }
         globalThis.fetch = function (url) {
           FETCHED.push(url);
           var body = null;
@@ -460,8 +462,15 @@ def test_flow_copy_makes_no_fixed_cadence_or_unstamped_live_claim(path):
     assert "2-3min RTH" not in src
     assert "asof ? 'as of '+asof : 'live'" not in src
     assert "asof ? '截至 '+asof : '实时'" not in src
-    assert "last-session source as of" in src
-    assert "上一交易时段来源截至" in src
+    # W11 r1: the stamp is one humanized line; ISO as-of and BASE/live vocab are gone.
+    assert "last-session source as of" not in src
+    assert "上一交易时段来源截至" not in src
+    assert "BASE ready" not in src
+    assert "BASE就绪" not in src
+    assert "Board built " in src
+    assert "看板构建于" in src
+    assert "carrying prices" in src
+    assert "行情已送达" in src
 
 
 @PAGES
