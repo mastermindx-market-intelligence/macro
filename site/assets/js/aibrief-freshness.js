@@ -2,9 +2,9 @@
  *
  * The canonical brief bodies remain server-rendered by the existing shared Jinja
  * renderer. This client never interprets model JSON and never reimplements that
- * renderer. It periodically fetches the canonical aibrief.html, compares each
- * lens's ISO state-as-of date, and swaps in only a strictly newer rendered body.
- * A failed request leaves the last valid body untouched.
+ * renderer. It fetches the canonical aibrief.html, compares each lens's rendered
+ * state, and swaps in a newer date or a corrected body on the same date. A failed
+ * request leaves the last valid body untouched.
  */
 (function (root, factory) {
   "use strict";
@@ -64,6 +64,10 @@
       return value;
     }
 
+    function markupOf(node) {
+      return node && typeof node.outerHTML === "string" ? node.outerHTML : "";
+    }
+
     function cloneInto(documentRef, node) {
       if (documentRef && typeof documentRef.importNode === "function") {
         return documentRef.importNode(node, true);
@@ -105,7 +109,12 @@
         if (!candidate) return;
 
         var currentDate = dateOf(current);
-        if (currentDate && candidate.date <= currentDate) return;
+        if (currentDate && candidate.date < currentDate) return;
+        if (currentDate && candidate.date === currentDate) {
+          var currentMarkup = markupOf(current);
+          var candidateMarkup = markupOf(candidate.node);
+          if (!currentMarkup || !candidateMarkup || currentMarkup === candidateMarkup) return;
+        }
 
         var replacement = cloneInto(localDocument, candidate.node);
         if (replaceNode(current, replacement)) changed += 1;
