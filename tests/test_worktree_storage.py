@@ -504,6 +504,7 @@ class ImmutableLocalTests(unittest.TestCase):
                 r = self.repo()
                 marker = r.parent / ('HOOK_EXECUTED-' + hook)
                 p = r / '.git/hooks' / hook
+                p.parent.mkdir(exist_ok=True)
                 p.write_text('#!/bin/sh\ntouch ' + str(marker) + '\n')
                 p.chmod(0o700)
                 with self.assertRaisesRegex(s.StorageError, 'executable checkout'):
