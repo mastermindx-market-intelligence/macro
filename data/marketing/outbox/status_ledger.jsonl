@@ -5982,3 +5982,4 @@
 {"id":"ob-2026-09-10-009c1adb19","from":"queued","to":"approved","at":"2026-09-11T00:00:12Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
 {"id":"ob-2026-09-10-009c1adb19","from":"approved","to":"posting","at":"2026-09-11T00:00:23Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-09-10-009c1adb19","from":"posting","to":"posted","at":"2026-09-11T00:00:23Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6aa3449771ba1c02ccede3be","external_url":null,"at":"2026-09-11T00:00:12Z","booked_at":"2026-09-11T00:00:12Z"}}
+{"id":"ob-2026-09-11-a9cbc61e0a","from":"queued","to":"quarantined","at":"2026-09-11T01:25:46Z","actor":"approval-desk","note":"approval-desk: session_language: today_word_off_session:today's","receipt":null}
