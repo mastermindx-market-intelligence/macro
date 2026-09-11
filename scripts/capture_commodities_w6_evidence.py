@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Element-screenshot evidence for commodities.html W6 (round 3).
+"""Element-screenshot evidence for commodities.html W6 (round 4).
 
 Captures dark+light × EN+ZH × 1440/390 of the page plus the packet's named
 proof crops on a fixture-rendered commodities wrap (sparse trees have no
@@ -147,6 +147,8 @@ def fixture_vm() -> dict:
     W6 r2 page-test idiom (test_hero_current_shaped_board_is_selective), not a
     live bake.
     """
+    from datetime import date as _date
+
     from engine.commodity_confluence import _lbl
     from scripts.build_commodities import (
         CONVICTION_LABELS,
@@ -158,6 +160,7 @@ def fixture_vm() -> dict:
         _plain_cycle,
         _plain_cycle_state,
         _sync_read,
+        resolve_catalyst_row,
         sector_stance,
     )
 
@@ -185,7 +188,7 @@ def fixture_vm() -> dict:
         cells = []
         for name in grp_members:
             shock, mom, chg, cycle = _HEAT[name]
-            tone, st_en, st_zh = _heat_cell(shock, mom)
+            tone, st_en, st_zh = _heat_cell(shock, mom, _STRETCHED.get(name, "Neutral"))
             cyc_en, cyc_zh = _plain_cycle_state(cycle, False) if cycle else ("", "")
             en, zh = MEMBER_LABELS[name]
             cells.append({
@@ -292,14 +295,16 @@ def fixture_vm() -> dict:
         "regime": "Neutral", "dollar_dir": "strengthening", "growth_dir": "rising",
     }
     catalysts = [
-        {"date": "2026-09-16", "time_et": "14:00", "type": "FOMC",
-         "type_en": "Fed meeting", "type_zh": "美联储会议",
-         "label": "FOMC decision", "label_zh": "美联储议息决议",
-         "assets": ["gold", "oil"], "days_out": 5},
-        {"date": "2026-09-17", "time_et": "10:30", "type": "EIA_WPSR",
-         "type_en": "EIA oil report", "type_zh": "EIA油品报告",
-         "label": "Weekly petroleum status", "label_zh": "周度石油库存",
-         "assets": ["oil"], "days_out": 6},
+        resolve_catalyst_row(
+            {"date": "2026-09-16", "time_et": "14:00", "type": "FOMC",
+             "label": "FOMC decision", "assets": ["gold", "oil"]},
+            _date(2026, 9, 11),
+        ),
+        resolve_catalyst_row(
+            {"date": "2026-09-17", "time_et": "10:30", "type": "EIA_WPSR",
+             "label": "EIA crude/petroleum inventories", "assets": ["oil"]},
+            _date(2026, 9, 11),
+        ),
     ]
     timeline = [{
         "day": "2026-09-10", "daylabel": "2026-09-10",
@@ -326,7 +331,6 @@ def fixture_vm() -> dict:
         "as_of": "Sep 10, 2026", "built": "2026-09-10 12:00 UTC",
         "cal_span": "2000-01-03..2026-09-10",
         "timeline_days": 30, "n_alerts": 2,
-        "news_disclaimer": "unused — template now ships the one true sentence",
         "oil_episode": None, "coverage": None,
         "idx_ew_spark": [380, 385, 390, 398, 392, 405, 410, 412],
         "conviction_labels": CONVICTION_LABELS,
@@ -461,7 +465,7 @@ def _new_page(browser, *, width, height, locale, theme, touch=False):
     return context, page
 
 
-def _capture(scratch: Path) -> dict:
+def _capture(scratch: Path, subjects: set[str] | None = None) -> dict:
     from scripts.capture_page_evidence import CaptureUnavailable, serve_site_dir
 
     try:
@@ -498,6 +502,15 @@ def _capture(scratch: Path) -> dict:
                     "full_viewport": False, "clip_sels": [".legend", ".grp", ".hgrid"],
                     "action": "scroll-grains", "touch": False,
                 })
+    # R-M1: heating oil is board-stretched + normal/bull → Extended (amber edge).
+    for locale in LOCALES:
+        for theme in THEMES:
+            jobs.append({
+                "subject": "a-heat-extended", "viewport": "desktop", "locale": locale,
+                "theme": theme, "width": 1440, "height": 900,
+                "full_viewport": False, "clip_sels": [".legend", ".grp", ".hgrid"],
+                "action": "scroll-energy-heat", "touch": False,
+            })
     # (b) live strip + oil grid cell.
     for theme in THEMES:
         jobs.append({
@@ -556,6 +569,8 @@ def _capture(scratch: Path) -> dict:
         "full_viewport": True, "clip_sels": None,
         "action": "tap-lens", "touch": True,
     })
+    if subjects:
+        jobs = [j for j in jobs if j["subject"] in subjects]
 
     try:
         manager = sync_playwright().start()
@@ -609,6 +624,18 @@ def _capture(scratch: Path) -> dict:
                               }
                             }"""
                         )
+                    elif action == "scroll-energy-heat":
+                        page.evaluate(
+                            """() => {
+                              const g = [...document.querySelectorAll('.grp')]
+                                .find(el => /Energy|能源/.test(el.textContent || ''));
+                              if (g) g.scrollIntoView({block: 'center'});
+                              else {
+                                const legend = document.querySelector('.legend');
+                                if (legend) legend.scrollIntoView({block: 'start'});
+                              }
+                            }"""
+                        )
                     elif action == "scroll-energy":
                         page.evaluate(
                             """() => {
@@ -653,65 +680,72 @@ def _capture(scratch: Path) -> dict:
                     elif action == "scroll-timeline":
                         page.locator(".timeline").first.scroll_into_view_if_needed()
                     elif action == "focus-lens":
-                        page.locator(".sechd").first.scroll_into_view_if_needed()
-                        btn = page.locator(".sechd .cmdty-lens").first
+                        page.locator(".board").first.scroll_into_view_if_needed()
+                        btn = page.locator(".rcpt-list .lens-q").first
                         btn.focus()
-                        page.evaluate(
-                            """() => {
-                              document.querySelectorAll('.cmdty-lens.cmdty-tip-open')
-                                .forEach(el => el.classList.remove('cmdty-tip-open'));
-                              const q = document.querySelector('.sechd .cmdty-lens');
-                              if (q) q.classList.add('cmdty-tip-open');
-                            }"""
-                        )
-                        page.wait_for_timeout(120)
+                        page.wait_for_timeout(180)
+                        page.wait_for_selector(".lens-pop.open", timeout=4000)
                         box = page.evaluate(
                             """() => {
-                              const sechd = document.querySelector('.sechd');
                               const board = document.querySelector('.board');
-                              const els = [sechd, board].filter(Boolean);
+                              const pop = document.querySelector('.lens-pop.open');
+                              const els = [board, pop].filter(Boolean);
                               let x=Infinity,y=Infinity,r=-Infinity,b=-Infinity;
                               for (const el of els) {
                                 const rect = el.getBoundingClientRect();
                                 x=Math.min(x,rect.x); y=Math.min(y,rect.y);
                                 r=Math.max(r,rect.right); b=Math.max(b,rect.bottom);
                               }
-                              const pad=12; const extraY=70; const extraX=380;
+                              const pad=12;
                               return {
                                 x: Math.max(0, x-pad),
-                                y: Math.max(0, y-extraY),
-                                width: Math.min(window.innerWidth - Math.max(0, x-pad), r-x+extraX),
-                                height: Math.min(window.innerHeight, b-y+extraY+pad)
+                                y: Math.max(0, y-pad),
+                                width: Math.min(window.innerWidth - Math.max(0, x-pad), r-x+2*pad),
+                                height: Math.min(window.innerHeight, b-y+2*pad)
                               };
                             }"""
                         )
                         if box and box.get("width", 0) >= 4:
                             job["_direct_clip"] = box
                     elif action == "tap-lens":
-                        page.locator(".sechd").first.scroll_into_view_if_needed()
-                        btn = page.locator(".sechd .cmdty-lens").first
-                        btn.tap(timeout=5000)
-                        page.wait_for_timeout(200)
-                        opened = page.evaluate(
-                            """() => !!document.querySelector('.sechd .cmdty-lens.cmdty-tip-open')"""
+                        page.locator(".board").first.scroll_into_view_if_needed()
+                        btn = page.locator(".rcpt-list .lens-q").first
+                        btn.scroll_into_view_if_needed()
+                        # DOM click, not Playwright tap/hover: pointerover+click on a
+                        # non-(hover:none) harness flashes the dedicated .lens-q shut.
+                        btn.evaluate("el => el.click()")
+                        page.wait_for_selector(".lens-pop.open", timeout=4000)
+                        page.wait_for_timeout(280)
+                        job["tap_opened"] = True
+                        job["hover_none"] = page.evaluate(
+                            "() => window.matchMedia('(hover: none)').matches"
                         )
-                        job["tap_opened"] = bool(opened)
-                        if not opened:
-                            page.evaluate(
-                                """() => {
-                                  const q = document.querySelector('.sechd .cmdty-lens');
-                                  if (q) q.classList.add('cmdty-tip-open');
-                                }"""
-                            )
-                    clip_sels = job.get("clip_sels")
-                    if action == "scroll-grains":
-                        # Clip legend + the grains heading + its member grid only
-                        # (not every .hgrid — that would swallow energy/metals too).
                         box = page.evaluate(
                             """() => {
+                              const pop = document.querySelector('.lens-pop.open');
+                              if (!pop) return null;
+                              const rect = pop.getBoundingClientRect();
+                              const pad = 8;
+                              return {
+                                x: Math.max(0, rect.x - pad),
+                                y: Math.max(0, rect.y - pad),
+                                width: Math.min(window.innerWidth, rect.width + 2 * pad),
+                                height: Math.min(window.innerHeight, rect.height + 2 * pad)
+                              };
+                            }"""
+                        )
+                        if box and box.get("width", 0) >= 4 and box.get("height", 0) >= 4:
+                            job["_direct_clip"] = box
+                            job["full_viewport"] = False
+                    clip_sels = job.get("clip_sels")
+                    if action in ("scroll-grains", "scroll-energy-heat"):
+                        needle = "Energy|能源" if action == "scroll-energy-heat" else "Grains|谷物"
+                        box = page.evaluate(
+                            """(needle) => {
                               const legend = document.querySelector('.legend');
+                              const re = new RegExp(needle);
                               const g = [...document.querySelectorAll('.grp')]
-                                .find(el => /Grains|谷物/.test(el.textContent || ''));
+                                .find(el => re.test(el.textContent || ''));
                               const grid = g ? g.nextElementSibling : null;
                               const els = [legend, g, grid].filter(Boolean);
                               if (!els.length) return null;
@@ -727,7 +761,8 @@ def _capture(scratch: Path) -> dict:
                                 width: Math.min(window.innerWidth, r-x+2*pad),
                                 height: Math.min(window.innerHeight, b-y+2*pad)
                               };
-                            }"""
+                            }""",
+                            needle,
                         )
                         if box and box.get("width", 0) >= 4:
                             clip_sels = None
@@ -757,6 +792,8 @@ def _capture(scratch: Path) -> dict:
                     })
                     if "tap_opened" in job:
                         entry["tap_opened"] = job["tap_opened"]
+                    if "hover_none" in job:
+                        entry["hover_none"] = job["hover_none"]
                 except Exception as exc:
                     entry.update({
                         "captured": False,
@@ -851,7 +888,7 @@ def _capture(scratch: Path) -> dict:
 
 def _write_readme(manifest: dict) -> str:
     lines = [
-        "# Commodities W6 — evidence matrix (round 3)",
+        "# Commodities W6 — evidence matrix (round 4)",
         "",
         "Packet REQUIRED EVIDENCE MATRIX: dark × light × EN × ZH × 1440/390 "
         "(8 base shots) plus named proof crops (a)–(g).",
@@ -904,13 +941,14 @@ def _write_readme(manifest: dict) -> str:
         "",
         "| Proof | What it must show | Aliases | Overlay | Verdict |",
         "|---|---|---|---|---|",
-        "| (a) heat-grid blow-off | Legend beside Sugar/Corn/Soybeans; blow-off ≠ green; M-A3 digit amber | `a-heat-blowoff-*` | see table | PENDING-JUDGE |",
+        "| (a) heat-grid blow-off | Legend (incl. Extended) beside Sugar/Corn/Soybeans; blow-off ≠ green | `a-heat-blowoff-*` | see table | PENDING-JUDGE |",
+        "| (a2) Extended member | Heating oil amber-edge Extended, not green Momentum up | `a-heat-extended-*` | see table | PENDING-JUDGE |",
         "| (b) one number per window | Live oil 1-day beside oil grid 1-month | `b-live-oil-*` | see table | PENDING-JUDGE |",
-        "| (c) ATF 1440 hero = board | Hero is first content; **In favour — 3 of 17 stretched** | `atf-*-desktop` | see table | PENDING-JUDGE |",
+        "| (c) ATF 1440 hero = board | Hero names counted members (Heating Oil, Corn, Soybeans) | `atf-*-desktop` | see table | PENDING-JUDGE |",
         "| (d) missing cycle | Cotton detail shows the sentence, not a dash | `d-cycle-missing-*` | see table | PENDING-JUDGE |",
         "| (e) Dollar row | Oil: value; cotton: omitted (never `Dollar: ·`) | `e-dollar-*` | see table | PENDING-JUDGE |",
-        "| (f) ZH catalysts + timeline | No EN leaks | `f-catalysts-zh-*`, `f-timeline-zh-*` | see table | PENDING-JUDGE |",
-        "| (g) LENS keyboard/tap | `?` button focus-visible + 390 tap stays open | `g-lens-*` | see table | PENDING-JUDGE |",
+        "| (f) ZH catalysts + timeline | Production-shaped label_zh; no EN leaks | `f-catalysts-zh-*`, `f-timeline-zh-*` | see table | PENDING-JUDGE |",
+        "| (g) canonical LENS | `.lens-q` tap/focus; machine-term rc visible in `.lens-pop` | `g-lens-*` | see table | PENDING-JUDGE |",
         "",
         "## Capture-harness disclosure",
         "",
@@ -928,20 +966,55 @@ def _write_readme(manifest: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    import argparse
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument(
+        "--subjects", default="",
+        help="comma-separated subjects to recapture; others are kept on disk",
+    )
+    args = ap.parse_args(argv)
+    wanted = {s.strip() for s in args.subjects.split(",") if s.strip()} or None
+
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     CELLS_DIR.mkdir(parents=True, exist_ok=True)
-    for stale in CELLS_DIR.glob("*.png"):
-        stale.unlink()
+    if wanted:
+        for stale in CELLS_DIR.glob("*.png"):
+            if any(stale.name.startswith(f"{s}-") for s in wanted):
+                stale.unlink()
+    else:
+        for stale in CELLS_DIR.glob("*.png"):
+            stale.unlink()
 
     scratch = Path(tempfile.mkdtemp(prefix="cmdty_w6_evidence_"))
     try:
         print("rendering commodities.html.j2 (fixture VM)", flush=True)
         write_fixture_site(scratch)
-        payloads = _capture(scratch)
-        (OUT_DIR / "manifest.json").write_text(
-            json.dumps(payloads["manifest"], indent=2) + "\n", encoding="utf-8"
-        )
+        payloads = _capture(scratch, subjects=wanted)
+        manifest = payloads["manifest"]
+        man_path = OUT_DIR / "manifest.json"
+        if wanted and man_path.exists():
+            prev = json.loads(man_path.read_text(encoding="utf-8"))
+            keep = [p for p in prev.get("pages", []) if p.get("subject") not in wanted]
+            merged_pages = keep + manifest["pages"]
+            prev.update({
+                "generated_at": manifest["generated_at"],
+                "pages": merged_pages,
+                "aliases": {**prev.get("aliases", {}), **manifest.get("aliases", {})},
+                "axes": manifest.get("axes", prev.get("axes")),
+                "selection": manifest.get("selection"),
+                "outcome": manifest["outcome"] if manifest["outcome"] != "captured"
+                else prev.get("outcome", "captured"),
+                "totals": {
+                    "pages": len(merged_pages),
+                    "states_attempted": sum(len(p["states"]) for p in merged_pages),
+                    "states_captured": sum(
+                        1 for p in merged_pages for s in p["states"] if s.get("captured")
+                    ),
+                },
+            })
+            manifest = prev
+        man_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
         (OUT_DIR / "EVIDENCE.yml").write_text(
             "schema: mastermind.page_evidence_receipt.v1\n"
             "changed_paths:\n"
@@ -950,11 +1023,11 @@ def main() -> int:
             encoding="utf-8",
         )
         (OUT_DIR / "README.md").write_text(
-            _write_readme(payloads["manifest"]), encoding="utf-8"
+            _write_readme(manifest), encoding="utf-8"
         )
-        totals = payloads["manifest"]["totals"]
+        totals = manifest["totals"]
         print(
-            f"outcome: {payloads['outcome']}\n"
+            f"outcome: {manifest.get('outcome')}\n"
             f"pages: {totals['pages']}  states: "
             f"{totals['states_captured']}/{totals['states_attempted']} captured",
             flush=True,

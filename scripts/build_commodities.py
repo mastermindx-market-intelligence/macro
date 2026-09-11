@@ -198,6 +198,44 @@ CATALYST_TYPE_LABELS: dict[str, tuple[str, str]] = {
     "OPEC":     ("OPEC meeting",   "OPEC会议"),
 }
 
+# Catalyst EVENT labels → ZH twin. Production always emits label_zh; missing
+# keys fall through to a prettified English stand-in (never blank, never raise).
+CATALYST_LABEL_ZH: dict[str, str] = {
+    "FOMC decision": "美联储议息决议",
+    "FOMC rate decision": "美联储议息会议",
+    "EIA crude/petroleum inventories": "EIA 原油库存周报",
+    "OPEC ministerial meeting": "OPEC 部长级会议",
+}
+
+
+def _prettify_label(s: str | None) -> str:
+    return (s or "").replace("_", " ").strip()
+
+
+def resolve_catalyst_row(cat: dict, build_date) -> dict:
+    """Attach type_en/zh, label_zh, days_out. Never blocks on a missing ZH."""
+    from datetime import date as _date
+    _type = cat.get("type", "") or ""
+    _bi = CATALYST_TYPE_LABELS.get(
+        _type, (_prettify_label(_type) or _type, _prettify_label(_type) or _type),
+    )
+    label = cat.get("label") or ""
+    existing_zh = (cat.get("label_zh") or "").strip()
+    label_zh = (
+        existing_zh
+        or CATALYST_LABEL_ZH.get(label)
+        or _prettify_label(label)
+        or _bi[1]
+        or "Event"
+    )
+    try:
+        _cat_date = _date.fromisoformat(cat["date"])
+        _days_out = (_cat_date - build_date).days
+    except Exception:  # noqa: BLE001
+        _days_out = None
+    return {**cat, "type_en": _bi[0], "type_zh": _bi[1],
+            "label_zh": label_zh, "days_out": _days_out}
+
 # Plain bilingual names for likely_cause slugs from commodity_news.py
 CAUSE_LABELS: dict[str, tuple[str, str]] = {
     "supply_disruption":          ("supply disruption",        "供应中断"),
@@ -680,6 +718,19 @@ _CONF_STATE_ACTION: dict[str, tuple[str, str]] = {
     "Neutral":                    ("Watch — not enough signal yet", "观望——信号不足"),
 }
 
+# Take-profits BOARD states — ONE counted set. Hero n_top, board.tops, and
+# the heat-grid "never green on a counted member" treatment all key off this.
+BOARD_TOP_STATES = frozenset({
+    "Blowing off — extended",
+    "Extended — late cycle",
+    "Euphoric top — rolling over",
+})
+
+
+def is_board_stretched(state: str | None) -> bool:
+    """True iff this confluence state is a take-profits BOARD row."""
+    return (state or "") in BOARD_TOP_STATES
+
 # Grid groupings: class → (en_label, zh_label)
 _GRID_GROUPS: list[tuple[str, str, str, list[str]]] = [
     ("energy",   "Energy",       "能源",      ["oil", "natgas", "gasoline", "heating_oil"]),
@@ -687,6 +738,35 @@ _GRID_GROUPS: list[tuple[str, str, str, list[str]]] = [
     ("grains",   "Grains & Softs","谷物与软商品",
      ["corn", "wheat", "soybeans", "live_cattle", "coffee", "sugar", "cocoa", "cotton"]),
 ]
+_GRID_MEMBER_ORDER: tuple[str, ...] = tuple(
+    n for _k, _e, _z, ns in _GRID_GROUPS for n in ns
+)
+
+
+def stretched_members(members_conf: list) -> list[dict]:
+    """Take-profits board set in grid order — the counted set the hero names."""
+    by_name: dict[str, dict] = {}
+    extras: list[dict] = []
+    for m in members_conf or []:
+        if not is_board_stretched(m.get("state")):
+            continue
+        name = m.get("name") or ""
+        if name in by_name:
+            continue
+        by_name[name] = m
+        if name not in _GRID_MEMBER_ORDER:
+            extras.append(m)
+    return [by_name[n] for n in _GRID_MEMBER_ORDER if n in by_name] + extras
+
+
+def _stretched_name_list(members: list[dict]) -> tuple[str, str]:
+    ens, zhs = [], []
+    for m in members:
+        name = m.get("name") or ""
+        en, zh = MEMBER_LABELS.get(name, (name.replace("_", " ").title(), name))
+        ens.append(en)
+        zhs.append(zh)
+    return ", ".join(ens), "、".join(zhs)
 
 
 def _plain_mom_state(s: str | None) -> tuple[str, str]:
@@ -703,18 +783,25 @@ def _plain_shock(s: str | None) -> tuple[str, str]:
 
 # Heat-grid legend: each (tone, token, en, zh) is reachable from _heat_cell.
 HEAT_LEGEND: list[tuple[str, str, str, str]] = [
-    ("c-up",      "--up",    "Momentum up",   "短期动量向上"),
-    ("c-dn",      "--dn",    "Momentum down", "短期动量转弱"),
-    ("c-blowoff", "--amb",   "Blow-off",      "喷发"),
-    ("c-washout", "--blue",  "Washing out",   "洗盘"),
-    ("c-flat",    "--line2", "Mixed",         "中性"),
+    ("c-up",       "--up",    "Momentum up",   "短期动量向上"),
+    ("c-dn",       "--dn",    "Momentum down", "短期动量转弱"),
+    ("c-blowoff",  "--amb",   "Blow-off",      "喷发"),
+    ("c-extended", "--amb",   "Extended",      "超涨延伸"),
+    ("c-washout",  "--blue",  "Washing out",   "洗盘"),
+    ("c-flat",     "--line2", "Mixed",         "中性"),
 ]
 
 
-def _heat_cell(shock_st: str | None, mom_state: str | None) -> tuple[str, str, str]:
+def _heat_cell(
+    shock_st: str | None,
+    mom_state: str | None,
+    board_state: str | None = None,
+) -> tuple[str, str, str]:
     """Heat-grid tone + short-state. Shock outranks momentum so a blow-off
-    can never paint as trending-up green. All four shock-enum values route
-    before momentum; unknown momentum falls through to Mixed, never a slug."""
+    can never paint as trending-up green. A take-profits BOARD member whose
+    shock is normal never paints green either (amber edge, word Extended).
+    All four shock-enum values route first; unknown momentum falls through
+    to Mixed, never a slug."""
     shock_st = (shock_st or "").strip()
     mom_state = (mom_state or "").strip()
     if shock_st == "blowoff":
@@ -729,6 +816,8 @@ def _heat_cell(shock_st: str | None, mom_state: str | None) -> tuple[str, str, s
     if shock_st == "exogenous_pressure":
         en, zh = _plain_shock("exogenous_pressure")
         return "c-washout", en, zh
+    if is_board_stretched(board_state):
+        return "c-extended", "Extended", "超涨延伸"
     if mom_state == "bull":
         en, zh = _plain_mom_state("bull")
         return "c-up", en, zh
@@ -740,8 +829,11 @@ def _heat_cell(shock_st: str | None, mom_state: str | None) -> tuple[str, str, s
 
 
 def _chg_tone(cell_tone: str, chg: float | None) -> str:
-    """Change-digit class: shock rows inherit the shock tone, not the sign."""
+    """Change-digit class: shock / board-stretched rows inherit the actionable
+    tone, not the sign — a counted member must never paint a green digit."""
     if cell_tone == "c-blowoff":
+        return "amb"
+    if cell_tone == "c-extended":
         return "amb"
     if cell_tone == "c-washout":
         return "blue"
@@ -889,11 +981,11 @@ def sector_stance(
         n_bull = breadth.get("n_bull_momentum") or 0
         n_up = breadth.get("n_up_trend") or 0
 
-        top_states = {"Blowing off — extended", "Extended — late cycle",
-                      "Euphoric top — rolling over"}
         bottom_states = {"Washout bottom forming", "Basing — early bottom signs"}
 
-        n_top = sum(1 for m in members_conf if (m.get("state") or "") in top_states)
+        stretched = stretched_members(members_conf)
+        n_top = len(stretched)
+        names_en, names_zh = _stretched_name_list(stretched)
         n_bot = sum(1 for m in members_conf if (m.get("state") or "") in bottom_states)
 
         frac_top = n_top / max(1, n_board)
@@ -904,7 +996,7 @@ def sector_stance(
             in_sync = _sync_read(breadth.get("trend_diversity")).get("in_sync")
 
         index_conf = (conf.get("index") or {}) if isinstance(conf, dict) else {}
-        index_top = (index_conf.get("state") or "") in top_states
+        index_top = is_board_stretched(index_conf.get("state"))
         shock_firing = (index_shock or "") in _INDEX_BLOWOFF_SHOCKS
         index_protect = index_top or shock_firing
 
@@ -915,12 +1007,17 @@ def sector_stance(
                 sub_en = "The index itself is blowing off — trim, don't add."
                 sub_zh = "指数本身处于喷发——减仓，勿追加。"
             elif n_top == 1:
-                sub_en = f"1 of {total} commodities is stretched or euphoric — trim, don't add."
-                sub_zh = f"{total}个品种中有1个处于超买或亢奋状态——减仓，勿追加。"
+                named = f" ({names_en})" if names_en else ""
+                named_zh = f"（{names_zh}）" if names_zh else ""
+                sub_en = (f"1 of {total} commodities is stretched or euphoric"
+                          f"{named} — trim, don't add.")
+                sub_zh = f"{total}个品种中有1个处于超买或亢奋状态{named_zh}——减仓，勿追加。"
             else:
-                sub_en = (f"{n_top} of {total} commodities are stretched or euphoric "
-                          "— trim, don't add.")
-                sub_zh = f"{total}个品种中有{n_top}个处于超买或亢奋状态——减仓，勿追加。"
+                named = f" ({names_en})" if names_en else ""
+                named_zh = f"（{names_zh}）" if names_zh else ""
+                sub_en = (f"{n_top} of {total} commodities are stretched or euphoric"
+                          f"{named} — trim, don't add.")
+                sub_zh = f"{total}个品种中有{n_top}个处于超买或亢奋状态{named_zh}——减仓，勿追加。"
             return {
                 "word_en": "Protect gains",  "word_zh": "保护利润",
                 "sub_en":  sub_en, "sub_zh": sub_zh, "tone": "protect",
@@ -930,11 +1027,15 @@ def sector_stance(
         if n_top >= 1:
             total = int(n_board)
             if n_top == 1:
-                sub_en = f"1 of {total} stretched; trim that, don't add"
-                sub_zh = f"{total}个品种中有1个超涨——减那个，勿追加。"
+                named = f" ({names_en})" if names_en else ""
+                named_zh = f"（{names_zh}）" if names_zh else ""
+                sub_en = f"1 of {total} stretched{named}; trim that, don't add"
+                sub_zh = f"{total}个品种中有1个超涨{named_zh}——减那个，勿追加。"
             else:
-                sub_en = f"{n_top} of {total} stretched; trim those, don't add"
-                sub_zh = f"{total}个品种中有{n_top}个超涨——减那些，勿追加。"
+                named = f" ({names_en})" if names_en else ""
+                named_zh = f"（{names_zh}）" if names_zh else ""
+                sub_en = f"{n_top} of {total} stretched{named}; trim those, don't add"
+                sub_zh = f"{total}个品种中有{n_top}个超涨{named_zh}——减那些，勿追加。"
             return {
                 "word_en": "In favour",  "word_zh": "倾向做多",
                 "sub_en":  sub_en, "sub_zh": sub_zh, "tone": "selective",
@@ -1081,7 +1182,7 @@ def _build_sector_vm_inner(
     cycle_dominant: dict | None = max(cycle_summary, key=lambda e: e["count"]) if cycle_summary else None
 
     # --- board (tops + bottoms) -----------------------------------------------
-    top_states   = {"Blowing off — extended", "Extended — late cycle", "Euphoric top — rolling over"}
+    # tops use the shared BOARD_TOP_STATES predicate (is_board_stretched).
     bottom_states = {"Washout bottom forming", "Basing — early bottom signs",
                      "Washing out — high risk"}
 
@@ -1093,11 +1194,11 @@ def _build_sector_vm_inner(
         # pick the dominant score side
         bot_score = m.get("bottom_score") or 0
         top_score = m.get("top_score") or 0
-        score = top_score if state in top_states else bot_score
+        score = top_score if is_board_stretched(state) else bot_score
         # fired receipt — de-slug labels already embedded in commodity_confluence._LABELS
         bottom_fired = m.get("bottom_fired") or []
         top_fired    = m.get("top_fired") or []
-        receipt = top_fired if state in top_states else bottom_fired
+        receipt = top_fired if is_board_stretched(state) else bottom_fired
         return {
             "name":        name,
             "label_en":    en,
@@ -1110,7 +1211,7 @@ def _build_sector_vm_inner(
         }
 
     tops    = sorted(
-        [_board_entry(m) for m in members_conf if (m.get("state") or "") in top_states],
+        [_board_entry(m) for m in members_conf if is_board_stretched(m.get("state"))],
         key=lambda x: -(x["score"] or 0)
     )
     bottoms = sorted(
@@ -1138,7 +1239,7 @@ def _build_sector_vm_inner(
         _basing   = bool(_mconf.get("basing"))
         _igniting = bool(_mconf.get("armed_recent"))
         _dual     = _dual_read(mom_state, str(last.get("ts_trend", "") or ""), _roc20(cl))
-        tone, mom_en, mom_zh = _heat_cell(shock_st, mom_state)
+        tone, mom_en, mom_zh = _heat_cell(shock_st, mom_state, _mconf.get("state"))
         cyc_en, cyc_zh = _plain_cycle_state(cycle_ph, _basing)
         chg_tone = _chg_tone(tone, chg)
 
@@ -1477,7 +1578,6 @@ def main() -> int:
     from engine import commodity_news
     ncfg = config.load().get("commodity_news", {})
     catalysts = commodity_news.upcoming_catalysts(horizon_days=ncfg.get("catalysts_horizon_days", 14))
-    news_disclaimer = commodity_news.DISCLAIMER_TEXT
     if commodity_news.enabled():
         annotated = 0
         for day in timeline:
@@ -1517,19 +1617,9 @@ def main() -> int:
     env = Environment(loader=FileSystemLoader(str(config.ROOT / "templates")), autoescape=True)
     env.globals.update(tr=tr, td=td)
     env.filters["money"] = lambda v: ("—" if v is None else f"${v:,.2f}")
-    # Resolve catalyst type slugs to bilingual labels + days_out countdown for the template
-    from datetime import date as _date
+    # Resolve catalyst type slugs + ZH event label + days_out for the template
     _build_date = results["gold"].index.max().date()
-    catalysts_resolved = []
-    for _cat in (catalysts or []):
-        _type = _cat.get("type", "")
-        _bi = CATALYST_TYPE_LABELS.get(_type, (_type.replace("_", " "), _type.replace("_", " ")))
-        try:
-            _cat_date = _date.fromisoformat(_cat["date"])
-            _days_out = (_cat_date - _build_date).days
-        except Exception:  # noqa: BLE001
-            _days_out = None
-        catalysts_resolved.append({**_cat, "type_en": _bi[0], "type_zh": _bi[1], "days_out": _days_out})
+    catalysts_resolved = [resolve_catalyst_row(_cat, _build_date) for _cat in (catalysts or [])]
     # Cross-asset read (display-tier CONTEXT, not a scored signal): oil trend-episode
     # -> Canadian energy (XEG), using the frozen C1 episode definition. See
     # research/COMMODITY_C1R2_OIL_XEG_PREREG.md and engine/trend_episode.py.
@@ -1563,7 +1653,7 @@ def main() -> int:
             C=C, as_of=as_of, built=built, cal_span=cal_span, complex=cx,
             assets=assets, order=ORDER, timeline=timeline,
             timeline_days=acfg["timeline_days"], n_alerts=len(recent_events),
-            catalysts=catalysts_resolved, news_disclaimer=news_disclaimer,
+            catalysts=catalysts_resolved,
             vm=vm, idx_ew_spark=idx_ew_spark, oil_episode=oil_episode,
             conviction_labels=CONVICTION_LABELS, coverage=coverage)
     except Exception as _re:  # noqa: BLE001 — never crash the whole site build

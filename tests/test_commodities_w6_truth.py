@@ -34,6 +34,8 @@ from engine.commodity_confluence import (  # noqa: E402
 )
 from engine.commodity_index import _chg_1m  # noqa: E402
 from scripts.build_commodities import (  # noqa: E402
+    BOARD_TOP_STATES,
+    CATALYST_LABEL_ZH,
     CHG_1D_BARS,
     CHG_1M_BARS,
     FRAC_TOP_PROTECT,
@@ -47,7 +49,10 @@ from scripts.build_commodities import (  # noqa: E402
     _plain_shock,
     _sync_read,
     asset_vm,
+    is_board_stretched,
+    resolve_catalyst_row,
     sector_stance,
+    stretched_members,
 )
 
 # Real 17-member complex order (engine/commodity_confluence + _GRID_GROUPS).
@@ -117,6 +122,7 @@ def test_heat_cell_branch_order_shock_before_momentum() -> None:
     wash = src.find('shock_st == "washout"')
     exo_bid = src.find('shock_st == "exogenous_bid"')
     exo_prs = src.find('shock_st == "exogenous_pressure"')
+    stretched = src.find("is_board_stretched")
     bull = src.find('mom_state == "bull"')
     bear = src.find('mom_state == "bear"')
     assert blow != -1 and wash != -1 and exo_bid != -1 and exo_prs != -1
@@ -125,6 +131,7 @@ def test_heat_cell_branch_order_shock_before_momentum() -> None:
     assert wash < bull, "washout must be evaluated before bull momentum"
     assert exo_bid < bull, "exogenous_bid must be evaluated before bull momentum"
     assert exo_prs < bull, "exogenous_pressure must be evaluated before bull momentum"
+    assert stretched != -1 and exo_prs < stretched < bull
     assert bull < bear
 
 
@@ -156,14 +163,15 @@ def test_every_legend_word_is_reachable_from_a_real_branch() -> None:
     reachable_en = set()
     reachable_tones = set()
     probes = [
-        ("blowoff", "bull"),
-        ("washout", "bear"),
-        ("normal", "bull"),
-        ("normal", "bear"),
-        ("normal", "neutral"),
+        ("blowoff", "bull", None),
+        ("washout", "bear", None),
+        ("normal", "bull", None),
+        ("normal", "bear", None),
+        ("normal", "neutral", None),
+        ("normal", "bull", "Extended — late cycle"),
     ]
-    for shock, mom in probes:
-        tone, en, zh = _heat_cell(shock, mom)
+    for shock, mom, board in probes:
+        tone, en, zh = _heat_cell(shock, mom, board)
         reachable_en.add(en)
         reachable_tones.add(tone)
         assert en in legend, f"legend missing reachable word {en!r}"
@@ -184,6 +192,7 @@ def test_producer_no_longer_emits_c_wash() -> None:
     src = inspect.getsource(_heat_cell)
     assert '"c-wash"' not in src
     assert '"c-blowoff"' in src and '"c-washout"' in src
+    assert '"c-extended"' in src
 
 
 def test_page_css_splits_blowoff_and_washout() -> None:
@@ -191,10 +200,14 @@ def test_page_css_splits_blowoff_and_washout() -> None:
     assert "/* post-stack: consolidate */" in src
     assert ".cell.c-blowoff" in src
     assert ".cell.c-washout" in src
+    assert ".cell.c-extended" in src
     # n5: producer cannot emit c-wash; don't keep a dead back-compat selector.
     assert ".cell.c-wash," not in src
     assert ".cell.c-wash " not in src
     assert ".cell.c-wash{" not in src
+    # r4 R-m2: chg_sign is gone; .c-flat.pos/.neg are dead.
+    assert ".cell.c-flat.pos" not in src
+    assert ".cell.c-flat.neg" not in src
 
 
 def test_unknown_mom_and_shock_never_echo_the_slug() -> None:
@@ -435,6 +448,7 @@ def test_hero_current_shaped_board_is_selective() -> None:
     """origin/main latest.json shape: 3 stretched of 17, index Neutral/normal.
 
     3/17 ≈ 0.176 < 0.25 → In favour, not Act, not Protect.
+    Sub names the counted members so the count is auditable at Tier 2.
     """
     st = sector_stance(
         {"members": _board({
@@ -449,6 +463,12 @@ def test_hero_current_shaped_board_is_selective() -> None:
     assert st["tone"] == "selective"
     assert st["word_en"] == "In favour"
     assert "3 of 17 stretched" in st["sub_en"]
+    assert "Heating Oil" in st["sub_en"]
+    assert "Corn" in st["sub_en"]
+    assert "Soybeans" in st["sub_en"]
+    assert "取暖油" in st["sub_zh"]
+    assert "玉米" in st["sub_zh"]
+    assert "大豆" in st["sub_zh"]
     assert "in sync" not in st["sub_en"]
     assert st["word_en"] != "Act"
     assert st["tone"] != "protect"
@@ -573,8 +593,63 @@ def test_lbl_explain_is_not_the_chip_label() -> None:
         assert code in _EXPLAIN
     src = _tpl()
     assert 'data-tip-en="{{ rc.label_en }}"' not in src
+    assert 'data-tip-en="{{ rc.explain_en }}"' in src
     assert "rc.explain_en" in src
     assert "rc.tip_en" in src  # machine term stays on data-tip-rc
+
+
+def test_shared_predicate_is_the_one_counted_set() -> None:
+    """R-M1: hero count, board.tops, and heat-grid non-green share one predicate."""
+    assert BOARD_TOP_STATES == set(_TOP_STATES)
+    members = _board({
+        "heating_oil": "Extended — late cycle",
+        "corn": "Blowing off — extended",
+        "soybeans": "Blowing off — extended",
+        "sugar": "Neutral",
+    })
+    counted = [m["name"] for m in stretched_members(members)]
+    assert counted == ["heating_oil", "corn", "soybeans"]
+    assert "sugar" not in counted
+    st = sector_stance({"members": members}, _breadth(diversity=0.2))
+    assert st["tone"] == "selective"
+    assert "3 of 17 stretched" in st["sub_en"]
+    for name in counted:
+        assert is_board_stretched(next(m["state"] for m in members if m["name"] == name))
+
+
+def test_counted_set_equals_grid_nongreen_for_board_stretched() -> None:
+    """A board-stretched member can never paint c-up, even on (normal, bull)."""
+    heat = {
+        "heating_oil": ("normal", "bull", "Extended — late cycle"),
+        "corn": ("blowoff", "bull", "Blowing off — extended"),
+        "soybeans": ("blowoff", "bull", "Blowing off — extended"),
+    }
+    for name, (shock, mom, state) in heat.items():
+        tone, en, _zh = _heat_cell(shock, mom, state)
+        assert tone != "c-up", name
+        assert _chg_tone(tone, 5.5) != "up", name
+        assert is_board_stretched(state)
+
+
+def test_fixture_heating_oil_and_sugar_rendering() -> None:
+    """Capture fixture's two divergence cases: heating_oil Extended, sugar Blow-off."""
+    ho_tone, ho_en, ho_zh = _heat_cell("normal", "bull", "Extended — late cycle")
+    assert ho_tone == "c-extended"
+    assert ho_en == "Extended"
+    assert ho_zh == "超涨延伸"
+    assert _chg_tone(ho_tone, 5.5) == "amb"
+
+    su_tone, su_en, su_zh = _heat_cell("blowoff", "bull", "Neutral")
+    assert su_tone == "c-blowoff"
+    assert su_en == "Blow-off"
+    assert su_zh == "喷发"
+    assert not is_board_stretched("Neutral")
+    assert _chg_tone(su_tone, 11.0) == "amb"
+
+    # Uncounted + normal + bull still greens — sugar is the shock case, oil isn't stretched.
+    oil_tone, oil_en, _ = _heat_cell("normal", "bull", "Neutral")
+    assert oil_tone == "c-up"
+    assert oil_en == "Momentum up"
 
 
 def test_blowoff_positive_chg_digit_is_amber_not_green() -> None:
@@ -640,25 +715,30 @@ def test_live_tile_emdash_is_not_green() -> None:
 
 
 # --------------------------------------------------------------------------- #
-# W6 r3 — LENS keyboard/tap + ZH catalyst/disclaimer (evidence-round composition)
+# W6 r4 — canonical LENS + ZH catalysts (release repairs)
 # --------------------------------------------------------------------------- #
-def test_early_warning_lens_is_a_button_not_a_row_host() -> None:
-    """Packet (g): dedicated `?` button; data-tip is NOT on a tabindex row."""
+def test_early_warning_lens_is_canonical_lens_q() -> None:
+    """Packet (g) + R-M2: dedicated `?` button on the site LENS, not a page popover."""
     src = _tpl()
     start = src.index("Early warnings forming")
-    block = src[start: start + 900]
-    assert 'class="q cmdty-lens"' in block
-    assert "data-cmdty-tip-en=" in block
+    block = src[start: start + 1100]
+    assert 'class="q lens-q"' in block
+    assert 'data-tip-en="Early-warning list' in block
     assert "<button type=\"button\"" in block
-    assert 'data-tip-en="Early-warning list' not in block
-    assert "pointerdown" in src
-    assert "cmdty-tip-open" in src
+    assert "data-cmdty-tip-en=" not in src
+    assert "cmdty-tip-open" not in src
+    assert "cmdty-lens" not in src
+    assert "data-aria-en=" in block
+    assert "data-aria-zh=" in block
 
 
-def test_receipt_chips_use_cmdty_lens_buttons() -> None:
+def test_receipt_chips_use_canonical_lens_q() -> None:
     src = _tpl()
-    assert src.count('class="cmdty-lens"') >= 3
-    assert 'data-tip-en="{{ rc.explain_en }}"' not in src
+    assert src.count("lens-q") >= 4
+    assert 'data-tip-en="{{ rc.explain_en }}"' in src
+    assert 'data-tip-rc-en="{{ rc.tip_en }}"' in src
+    assert "rcpt-item" in src
+    assert '{% if not loop.last %} · {% endif %}' not in src
 
 
 def test_catalyst_label_uses_t_not_td() -> None:
@@ -673,6 +753,44 @@ def test_disclaimer_is_the_one_true_sentence() -> None:
     src = _tpl()
     assert "Scheduled dates, not forecasts." in src
     assert "{{ news_disclaimer }}" not in src
+    builder = _BUILDER.read_text()
+    assert "news_disclaimer" not in builder
+
+
+def test_catalyst_zh_is_emitted_by_producer() -> None:
+    """R-M3: production-shaped catalyst carries label_zh from the LEX / fallback."""
+    from datetime import date as _date
+    row = resolve_catalyst_row(
+        {"date": "2026-09-16", "type": "FOMC", "label": "FOMC decision",
+         "assets": ["gold", "oil"]},
+        _date(2026, 9, 11),
+    )
+    assert row["label_zh"] == CATALYST_LABEL_ZH["FOMC decision"]
+    assert row["label_zh"] == "美联储议息决议"
+    assert row["type_en"] == "Fed meeting"
+    assert row["type_zh"] == "美联储会议"
+    assert row["days_out"] == 5
+
+    eia = resolve_catalyst_row(
+        {"date": "2026-09-17", "type": "EIA_WPSR",
+         "label": "EIA crude/petroleum inventories", "assets": ["oil"]},
+        _date(2026, 9, 11),
+    )
+    assert eia["label_zh"] == "EIA 原油库存周报"
+
+    unknown = resolve_catalyst_row(
+        {"date": "2026-09-20", "type": "WEIRD_EVENT", "label": "weird_event_name"},
+        _date(2026, 9, 11),
+    )
+    assert unknown["label_zh"] == "weird event name"  # prettified, never blank
+
+    env = Environment()
+    html = env.from_string(
+        '{% macro t(en, zh="") %}{{ zh or en }}{% endmacro %}'
+        "{{ t(c.label, c.label_zh) }}"
+    ).render(c=row)
+    assert html == "美联储议息决议"
+    assert "{{ t(c.label, c.label_zh) }}" in _tpl()
 
 
 def test_timeline_asset_uses_zh_twin() -> None:
@@ -689,3 +807,32 @@ def test_heat_grid_empty_cycle_is_not_an_emdash() -> None:
     assert "m.cycle_phase_en or '—'" not in grid
     assert "no cycle" in grid
     assert "无周期" in grid
+
+
+def test_capture_fixture_matches_production_shape() -> None:
+    """heating_oil Extended / sugar Blow-off; catalysts get label_zh from the resolver."""
+    from scripts.capture_commodities_w6_evidence import fixture_vm
+
+    cap = (_REPO / "scripts" / "capture_commodities_w6_evidence.py").read_text()
+    assert "周度石油库存" not in cap  # no invented ZH
+    assert "resolve_catalyst_row" in cap
+
+    vm = fixture_vm()["vm"]
+    cells = [c for g in vm["grid"] for c in g["members"]]
+    ho = next(c for c in cells if c["name"] == "heating_oil")
+    su = next(c for c in cells if c["name"] == "sugar")
+    assert ho["tone"] == "c-extended"
+    assert ho["state_short_en"] == "Extended"
+    assert ho["state_short_zh"] == "超涨延伸"
+    assert ho["chg_tone"] == "amb"
+    assert su["tone"] == "c-blowoff"
+    assert su["state_short_en"] == "Blow-off"
+    assert "Heating Oil" in vm["stance"]["sub_en"]
+    assert "Corn" in vm["stance"]["sub_en"]
+    assert "Soybeans" in vm["stance"]["sub_en"]
+
+    cats = fixture_vm()["catalysts"]
+    assert all("label_zh" in c and c["label_zh"] for c in cats)
+    assert cats[0]["label_zh"] == "美联储议息决议"
+    assert cats[1]["label"] == "EIA crude/petroleum inventories"
+    assert cats[1]["label_zh"] == "EIA 原油库存周报"
