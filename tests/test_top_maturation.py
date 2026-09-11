@@ -537,6 +537,7 @@ def test_theme_counts_drop_sector_aggregates_and_non_us_baskets(tmp_path, quiet_
     assert "Technology" not in labels and "CN Solar" not in labels
     for t in _tier_of(ctx)["theme_counts"]:
         assert t["extended"] >= t["watch"] + t["thinning"] + t["breaking"]
+        assert "members" in t and t["members"] >= t["extended"]
 
 
 def test_rows_are_sorted_by_trailing_gain_inside_every_group(tmp_path, quiet_lane):

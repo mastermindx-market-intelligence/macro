@@ -10,6 +10,7 @@ Everything runs on tiny in-memory fixtures — no data store, no network.
 """
 from __future__ import annotations
 
+import html as html_lib
 import json
 import re
 import sys
@@ -63,6 +64,8 @@ def _row(ticker="NVDA", r126=0.62, legs=None, analog="full", spark=None,
     elif analog == "thin":
         ag = {"n": 5, "topped_63td": 2, "median_further_gain": None,
               "median_drop_from_high": None, "track": "D"}
+    elif isinstance(analog, dict):
+        ag = analog
     else:
         ag = None
     return {
@@ -87,7 +90,8 @@ def _ctx(states=None, **kw):
         "states": {"extended_healthy": [], "extended_watch": [], "thinning": [],
                    "breaking": []},
         "theme_counts": [{"basket": "AI Semiconductors", "basket_zh": "人工智能半导体",
-                          "extended": 19, "watch": 4, "thinning": 2, "breaking": 1}],
+                          "members": 40, "extended": 19, "watch": 4, "thinning": 2,
+                          "breaking": 1}],
     }
     if states:
         base["states"].update(states)
@@ -314,3 +318,197 @@ def test_builder_falls_open_to_the_warm_null_when_the_data_root_is_empty(tmp_pat
     monkeypatch.setattr(bwh, "_data_dir", lambda r: r / "data")
     out = bwh.build(root)
     assert "has not landed yet" in out.read_text()
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# W15 r1 — theme-bar honesty, x-in-10 rates, subset honest-N, footer demotion
+# ══════════════════════════════════════════════════════════════════════════════
+#: The nine-row table the packet measured. `members` is the true basket size;
+#: `extended` is how many of those names sit on this board; aging = watch+thin+break.
+_THEME_ROWS = (
+    # basket, members, extended, watch, thinning, breaking
+    ("Cybersecurity", 10, 5, 5, 0, 0),
+    ("US Energy Complex", 22, 4, 0, 0, 0),
+    ("AI Software & Platforms", 17, 3, 3, 0, 0),
+    ("Non-AI Tech & Hardware", 13, 3, 1, 0, 0),
+    ("AI Infrastructure", 24, 2, 0, 0, 0),
+    ("Managed Care & Insurers", 9, 2, 1, 0, 0),
+    ("Non-AI Software", 14, 1, 1, 0, 0),
+    ("Semiconductor Equipment (WFE)", 16, 1, 1, 0, 0),
+    ("Robotics & Automation", 12, 1, 1, 0, 0),
+)
+
+
+def _theme_counts():
+    rows = []
+    for name, members, extended, watch, thinning, breaking in _THEME_ROWS:
+        rows.append({
+            "basket": name, "basket_zh": name,
+            "members": members, "extended": extended,
+            "watch": watch, "thinning": thinning, "breaking": breaking,
+        })
+    return rows
+
+
+def _thm_blocks(html):
+    return re.findall(
+        r'<div class="thm">\s*<span class="tname"[^>]*>(.*?)</span>\s*'
+        r'<span class="tcount">(.*?)</span>\s*'
+        r'<span class="bar" style="width:([^"]+)"',
+        html, re.S)
+
+
+def test_p0_1_theme_bars_scale_off_members_and_name_the_population(tmp_path):
+    """Bar width tracks true theme size; the count names both populations.
+
+    Cybersecurity (10 members) used to render wider than AI Infrastructure (24)
+    because `--w` scaled off `extended`. After the fix the 24-member bar is the
+    widest, and no row's count can be read as "every name in the theme".
+    """
+    html = _render(tmp_path, _ctx({"extended_watch": [_row()]},
+                                  theme_counts=_theme_counts()))
+    blocks = _thm_blocks(html)
+    assert len(blocks) == 9
+    by_name = {}
+    for tname, tcount, width in blocks:
+        name = html_lib.unescape(re.search(r'<span class="l-en">([^<]+)</span>', tname).group(1))
+        by_name[name] = (float(width.rstrip("%")), tcount)
+    cyber_w, cyber_body = by_name["Cybersecurity"]
+    infra_w, infra_body = by_name["AI Infrastructure"]
+    assert infra_w > cyber_w, (
+        f"AI Infrastructure(24) bar {infra_w} must be wider than Cybersecurity(10) {cyber_w}")
+    tmax = max(r[1] for r in _THEME_ROWS)
+    for name, members, extended, watch, thinning, breaking in _THEME_ROWS:
+        w, body = by_name[name]
+        want = round(members / tmax * 100, 1)
+        assert w == want, f"{name}: width={w}, want {want} (members={members})"
+        tmat = watch + thinning + breaking
+        if tmat == extended:
+            verb = "is" if tmat == 1 else "are"
+            assert f"{extended} of its {members} names are on this board — all {tmat} {verb} aging" in body
+            assert f"该主题 {members} 只中有 {extended} 只在本板上，{tmat} 只都在老化" in body
+        elif tmat == 0:
+            assert f"{extended} of its {members} names are on this board — none are aging" in body
+            assert f"该主题 {members} 只中有 {extended} 只在本板上，没有在老化的" in body
+        else:
+            assert f"{extended} of its {members} names are on this board" in body
+            assert f"该主题 {members} 只中有 {extended} 只在本板上" in body
+    note = html.split('aria-label="Themes by state"', 1)[1].split("</section>", 1)[0]
+    assert "the bar width is the size of the theme" in note
+    assert "条形的宽度代表主题的大小" in note
+    # the note's promise is no longer falsified by any row: widths are monotonic
+    # with members (ties allowed).
+    ordered = sorted((by_name[n][0], m) for n, m, *_ in _THEME_ROWS)
+    members_only = [m for _, m in ordered]
+    assert members_only == sorted(members_only)
+
+
+def test_p0_2_x_in_10_form_both_lanes_and_no_one_in_one(tmp_path):
+    """32/40 → about 8 in 10; 27/40 → about 7 in 10; zero '1 in 1' smears."""
+    for topped, en, zh in ((32, "about 8 in 10", "大约 10 段里有 8 段"),
+                           (27, "about 7 in 10", "大约 10 段里有 7 段")):
+        html = _render(tmp_path, _ctx({"extended_watch": [_row(analog={
+            "n": 40, "topped_63td": topped, "median_further_gain": 0.11,
+            "median_drop_from_high": -0.24, "track": "W"})]}))
+        assert en in html
+        assert zh in html
+        assert re.search(r"about 1 in 1[^0-9]", html) is None
+        assert "大约每 1 段有 1 段" not in html
+
+
+def test_p1_1_subset_honest_n_suppresses_n1_and_prints_n8(tmp_path):
+    """Each subset row is gated on its own n, not the library n."""
+    # n_surv = 1: suppress the typical-gain figure.
+    html = _render(tmp_path, _ctx({"extended_watch": [_row(analog={
+        "n": 40, "topped_63td": 39, "median_further_gain": 1.43,
+        "median_drop_from_high": -0.24, "track": "W"})]}))
+    assert "only 1 of them carried on — too few to call typical" in html
+    assert "其中只有 1 段继续上行 —— 样本太少，不足以称作典型" in html
+    assert "a typical further gain" not in html
+    assert "典型的后续涨幅" not in html
+    # library-level thin floor is NOT what fired — n=40 is shown as a pattern.
+    assert "too few to read as a pattern" not in html
+
+    # n_surv = 8: print the figure with the subset n inline.
+    html = _render(tmp_path, _ctx({"extended_watch": [_row(analog={
+        "n": 40, "topped_63td": 32, "median_further_gain": 1.43,
+        "median_drop_from_high": -0.24, "track": "W"})]}))
+    assert "a typical further gain of <b>+143%</b> — across those 8" in html
+    assert "典型的后续涨幅为 <b>+143%</b> —— 基于这 8 段" in html
+    assert "too few to call typical" not in html
+
+
+def test_p1_2_bare_em_dashes_become_lib_null_tips(tmp_path):
+    """The three atrz rows with no distance print 'not measurable' + a why, both lanes."""
+    rows = [_row(ticker=tk, analog=None) for tk in ("CXM", "PFGC", "RUSHA")]
+    for r in rows:
+        r["atr_x"] = None
+        r["r126"] = 0.4
+    html = _render(tmp_path, {
+        **_ctx(),
+        "tiers": [{
+            "key": "atrz", "readable": True, "figure": "atr_x",
+            "library": _ctx()["library"],
+            "states": {"extended_healthy": [], "extended_watch": [],
+                       "thinning": [], "breaking": rows, "no_read": []},
+        }],
+    })
+    assert html.count("not measurable") == 3
+    assert html.count("无法测算") == 3
+    assert html.count('class="lib-null"') >= 3
+    assert "a figure here would be a guess" in html
+    assert "写一个数字会是猜测" in html
+    assert ">—<" not in html
+    assert '<span class="fig neutral">—</span>' not in html
+
+
+def test_p1_3_wfe_acronym_gets_a_data_tip_both_lanes(tmp_path):
+    """Rename blast radius is estate-wide; this PR ships the data-tip fallback."""
+    html = _render(tmp_path, _ctx({"extended_watch": [_row()]},
+                                  theme_counts=_theme_counts()))
+    assert "Semiconductor Equipment (WFE)" in html
+    assert 'data-tip-en="WFE means wafer-fab equipment' in html
+    assert 'data-tip-zh="WFE 指晶圆厂设备' in html
+
+
+def test_p1_4_footer_is_one_sentence_at_rest_and_demotes_the_rest(tmp_path):
+    html = _render(tmp_path, _ctx({"extended_watch": [_row()]}))
+    sp = html.split('class="smallprint"', 1)[1]
+    # first l-en / l-zh in the footer are the at-rest sentence.
+    en = re.search(r'<span class="l-en">(.*?)</span>', sp, re.S).group(1)
+    zh = re.search(r'<span class="l-zh">(.*?)</span>', sp, re.S).group(1)
+    assert en == ("US names only — these are what similar past runs did, "
+                  "history rather than forecasts, and nothing here ranks, "
+                  "gates or sizes anything.")
+    assert zh == ("仅限美股 —— 这些是历史上相似行情走过的路，属于历史而非预测；"
+                  "本页任何内容都不参与排序、准入或仓位。")
+    assert en.count(".") == 1
+    assert "Each group is measured" not in en
+    assert "Tonight:" not in en
+    assert "just left a group" not in en.lower()
+    # demoted, not deleted — they live in the footer LENS tip.
+    assert "Each group is measured only against its own history" in sp
+    assert "每个分组只对照自己的历史来衡量" in sp
+    assert "A name that has just left a group" in sp
+    assert "刚离开某个分组的个股" in sp
+    assert "1,506" in sp  # screened count, now in the tip
+
+
+def test_p1_5_backdrop_209_names_its_population_both_lanes(tmp_path):
+    html = _render(tmp_path, _ctx({"extended_watch": [_row()]},
+                                  macro_backdrop={"froth_quadrant": "narrowing_top",
+                                                  "stage3_count": 209}))
+    assert "<b>209</b> US names across the whole market already read as topping" in html
+    assert "全市场已有 <b>209</b> 只美股被判为见顶阶段" in html
+    assert "US names already read as topping" not in html.replace(
+        "US names across the whole market already read as topping", "")
+
+
+def test_p2_2_theme_panel_carries_a_stance_both_lanes(tmp_path):
+    html = _render(tmp_path, _ctx({"extended_watch": [_row()]},
+                                  theme_counts=_theme_counts()))
+    sec = html.split('aria-label="Themes by state"', 1)[1].split("</section>", 1)[0]
+    hd = html_lib.unescape(sec.split('class="sec-hd"', 1)[1].split("</div>", 1)[0])
+    assert "Watch — don't chase" in hd
+    assert "观望——勿追涨" in hd
+    assert 'class="stance"' in hd

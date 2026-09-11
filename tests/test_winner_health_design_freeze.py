@@ -204,7 +204,10 @@ def test_w2b_trend_figure_is_neutral_and_honest_dashes_when_absent():
 
     ctx = _three_tier(tiers=[_tier("atrz", {"breaking": [_row(ticker="ABC", atr_x=None)]})])
     html = _template().render(wh=ctx)
-    assert '<span class="fig neutral">—</span>' in html, "the honest dash did not reach the new figure"
+    assert "not measurable" in html and "无法测算" in html
+    assert 'class="lib-null"' in html
+    assert 'data-tip-en="' in html and 'data-tip-zh="' in html
+    assert '<span class="fig neutral">—</span>' not in html, "a bare em dash reached the figure cell"
 
 
 def test_w2b_tape_lag_chip_renders_only_when_the_tape_is_actually_behind():

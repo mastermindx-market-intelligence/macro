@@ -127,19 +127,30 @@
       {%- if a.track != 'W' %} {{ t('It also draws only on names with long price history, so runs that ended in a delisting are under-represented.',
                                     '而且它只取有长期价格历史的个股，因此以退市收场的行情在样本中偏少。') }}{% endif %}</div>
     {%- else %}
+    {%- set n_fall = a.topped_63td if a.topped_63td is not none else 0 %}
+    {%- set n_surv = a.n - n_fall %}
+    {%- set in10 = ((10 * n_fall / a.n) | round | int) if (a.n and n_fall) else none %}
     <div class="lensx-rows">
       <div class="lensx-row warn">
         <span class="lensx-k">{{ t('Fell back hard', '大幅回落') }}</span>
-        <span class="lensx-v"><span class="l-en"><b>{{ a.topped_63td }} of {{ a.n }}</b> dropped {{ lib.drawdown_pct | default(20) }}% or more from their high within three months{% if a.topped_63td %} — about 1 in {{ ((a.n / a.topped_63td) | round | int) if a.topped_63td else '—' }}{% endif %}.</span><span class="l-zh"><b>{{ a.n }} 段里有 {{ a.topped_63td }} 段</b>在三个月内从高点回落 {{ lib.drawdown_pct | default(20) }}% 或更多{% if a.topped_63td %} —— 大约每 {{ ((a.n / a.topped_63td) | round | int) if a.topped_63td else '—' }} 段有 1 段{% endif %}。</span></span>
+        <span class="lensx-v"><span class="l-en"><b>{{ n_fall }} of {{ a.n }}</b> dropped {{ lib.drawdown_pct | default(20) }}% or more from their high within three months{% if in10 is not none %} — about {{ in10 }} in 10{% endif %}.</span><span class="l-zh"><b>{{ a.n }} 段里有 {{ n_fall }} 段</b>在三个月内从高点回落 {{ lib.drawdown_pct | default(20) }}% 或更多{% if in10 is not none %} —— 大约 10 段里有 {{ in10 }} 段{% endif %}。</span></span>
       </div>
       <div class="lensx-row up">
         <span class="lensx-k">{{ t('Kept going', '继续上行') }}</span>
-        <span class="lensx-v"><span class="l-en">The other <b>{{ a.n - a.topped_63td }}</b> carried on{% if a.median_further_gain is not none %} — a typical further gain of <b>{{ pc(a.median_further_gain) }}</b>{% endif %}.</span><span class="l-zh">其余 <b>{{ a.n - a.topped_63td }}</b> 段继续上行{% if a.median_further_gain is not none %}，典型的后续涨幅为 <b>{{ pc(a.median_further_gain) }}</b>{% endif %}。</span></span>
+        <span class="lensx-v">{%- if n_surv < 5 -%}
+          <span class="l-en">only {{ n_surv }} of them carried on — too few to call typical</span><span class="l-zh">其中只有 {{ n_surv }} 段继续上行 —— 样本太少，不足以称作典型</span>
+        {%- else -%}
+          <span class="l-en">The other <b>{{ n_surv }}</b> carried on{% if a.median_further_gain is not none %} — a typical further gain of <b>{{ pc(a.median_further_gain) }}</b> — across those {{ n_surv }}{% endif %}.</span><span class="l-zh">其余 <b>{{ n_surv }}</b> 段继续上行{% if a.median_further_gain is not none %}，典型的后续涨幅为 <b>{{ pc(a.median_further_gain) }}</b> —— 基于这 {{ n_surv }} 段{% endif %}。</span>
+        {%- endif -%}</span>
       </div>
-      {%- if a.median_drop_from_high is not none %}
+      {%- if n_fall > 0 and (n_fall < 5 or a.median_drop_from_high is not none) %}
       <div class="lensx-row dn">
         <span class="lensx-k">{{ t('When they fell', '回落时') }}</span>
-        <span class="lensx-v"><span class="l-en">The typical drop from the high was <b>{{ pc(a.median_drop_from_high) }}</b>.</span><span class="l-zh">从高点回落的典型幅度是 <b>{{ pc(a.median_drop_from_high) }}</b>。</span></span>
+        <span class="lensx-v">{%- if n_fall < 5 -%}
+          <span class="l-en">only {{ n_fall }} of them fell back — too few to call typical</span><span class="l-zh">其中只有 {{ n_fall }} 段回落 —— 样本太少，不足以称作典型</span>
+        {%- elif a.median_drop_from_high is not none -%}
+          <span class="l-en">The typical drop from the high was <b>{{ pc(a.median_drop_from_high) }}</b> — across those {{ n_fall }}.</span><span class="l-zh">从高点回落的典型幅度是 <b>{{ pc(a.median_drop_from_high) }}</b> —— 基于这 {{ n_fall }} 段。</span>
+        {%- endif -%}</span>
       </div>
       {%- endif %}
     </div>
@@ -178,7 +189,7 @@
 {%- if fg == 'atr_x' -%}
   {%- if r.atr_x is defined and r.atr_x is not none -%}
   <span class="fig neutral">{{ '%.1f' % r.atr_x }}×</span>
-  {%- else -%}<span class="fig neutral">—</span>{%- endif -%}
+  {%- else -%}<span class="lib-null" data-tip-en="This name has no above-trend distance tonight — a figure here would be a guess, so it is left blank." data-tip-zh="今晚算不出这只个股相对均线的距离 —— 写一个数字会是猜测，因此留空。">{{ t('not measurable', '无法测算') }}</span>{%- endif -%}
 {%- elif fg == 'r63' -%}
   <span class="fig{{ ' dn' if (r.r63 is defined and r.r63 is not none and r.r63 < 0) else '' }}">{{ pc(r.r63) }}</span>
 {%- else -%}
@@ -539,17 +550,19 @@ a{color:var(--ink-link, var(--link));text-decoration:none}
 .sec{margin:38px 0 0}
 .sec-hd{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:0 0 4px}
 .sec-hd h2{margin:0;font-size:16px;font-weight:750;letter-spacing:-.018em;color:var(--text)}
+.sec-hd .stance{font-size:12px;font-weight:700;color:var(--m2);white-space:nowrap}
 .sec-hd .note{font-size:12.5px;color:var(--muted-strong)}
+.thm .tname[data-tip-en]{cursor:help;border-bottom:1px dotted color-mix(in srgb,var(--text) 22%,transparent)}
 .themes{display:grid;grid-template-columns:repeat(auto-fill,minmax(276px,1fr));gap:9px 22px;
   margin-top:14px}
 .thm{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 12px;align-items:baseline;
   padding:9px 0;border-bottom:1px solid var(--hair)}
-.thm .tname{font-size:13px;font-weight:650;color:var(--text);overflow:hidden;text-overflow:ellipsis;
+.thm .tname{grid-column:1 / -1;font-size:13px;font-weight:650;color:var(--text);overflow:hidden;text-overflow:ellipsis;
   white-space:nowrap}
-.thm .tcount{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
-/* honest shared scale: bar WIDTH is proportional to the largest theme, so a
-   3-name theme can never look like a 30-name theme. 1px gaps + a track border
-   keep the segments visible on white (light-parity law). */
+.thm .tcount{grid-column:1 / -1;font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;
+  white-space:normal;line-height:1.45}
+/* 1px gaps + a track border keep the segments visible on white
+   (light-parity law). */
 .bar{grid-column:1 / -1;height:7px;border-radius:2px;display:flex;gap:1px;overflow:hidden;
   background:color-mix(in srgb,var(--text) 6%,transparent);
   box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--text) 9%,transparent);margin-top:3px}
@@ -883,7 +896,7 @@ a.tk:hover{color:var(--ink-link, var(--link))}
     <span class="bk">{{ t('Backdrop', '大环境') }}</span>
     {%- if fq %}<span>{{ t(fq[0], fq[1]) }}</span>{% endif %}
     {%- if fq and bd.stage3_count is not none %}<span class="sep">·</span>{% endif %}
-    {%- if bd.stage3_count is not none %}<span><span class="l-en"><b>{{ bd.stage3_count }}</b> US names already read as topping</span><span class="l-zh">已有 <b>{{ bd.stage3_count }}</b> 只美股被判为见顶阶段</span></span>{% endif %}
+    {%- if bd.stage3_count is not none %}<span><span class="l-en"><b>{{ bd.stage3_count }}</b> US names across the whole market already read as topping</span><span class="l-zh">全市场已有 <b>{{ bd.stage3_count }}</b> 只美股被判为见顶阶段</span></span>{% endif %}
     {{ lens.lens(
          kind='read',
          ill=lens.ILL_QUAD,
@@ -1000,22 +1013,26 @@ a.tk:hover{color:var(--ink-link, var(--link))}
 
     {#- ONE tomography on the page, and it belongs to the primary tier. -#}
     {%- if T.key == 'primary' and T.theme_counts %}
-    {%- set tmax = (T.theme_counts | map(attribute='extended') | select('number') | list | max) if T.theme_counts else 1 %}
+    {%- set _msizes = T.theme_counts | map(attribute='members') | select('number') | list %}
+    {%- set _esizes = T.theme_counts | map(attribute='extended') | select('number') | list %}
+    {%- set tmax = (_msizes | max) if _msizes else ((_esizes | max) if _esizes else 1) %}
     <section class="sec" aria-label="Themes by state">
       <div class="sec-hd">
         <h2>{{ t('How much of each theme is aging', '各主题老化到什么程度') }}</h2>
+        <span class="stance">{{ t("Watch — don't chase", '观望——勿追涨') }}</span>
         <span class="note">{{ t('Counts only — the bar width is the size of the theme, so a small group can never look like a big one.',
                                 '只是计数 —— 条形的宽度代表主题的大小，小主题不会被画得跟大主题一样。') }}</span>
       </div>
       <div class="themes">
         {%- for th in T.theme_counts %}
         {%- set tot = (th.extended or 0) %}
+        {%- set members = th.members if (th.members is defined and th.members) else tot %}
         {%- set tmat = (th.watch or 0) + (th.thinning or 0) + (th.breaking or 0) %}
         {%- set clean = tot - tmat if tot > tmat else 0 %}
-        <div class="thm" style="--w:{{ ((tot / tmax * 100) | round(1)) if tmax else 100 }}%">
-          <span class="tname"><span class="l-en">{{ th.basket }}</span><span class="l-zh">{{ th.basket_zh | default(th.basket, true) }}</span></span>
-          <span class="tcount"><span class="l-en">{{ tmat }} of {{ tot }}</span><span class="l-zh">{{ tot }} 只中 {{ tmat }} 只</span></span>
-          <span class="bar" style="width:var(--w)" aria-hidden="true">
+        <div class="thm">
+          <span class="tname"{% if th.basket and '(WFE)' in th.basket %} data-tip-en="WFE means wafer-fab equipment — the machines that make chips." data-tip-zh="WFE 指晶圆厂设备，即制造芯片的机器。"{% endif %}><span class="l-en">{{ th.basket }}</span><span class="l-zh">{{ th.basket_zh | default(th.basket, true) }}</span></span>
+          <span class="tcount"><span class="l-en">{{ tot }} of its {{ members }} names are on this board — {% if tmat == 0 %}none are aging{% elif tmat == tot %}all {{ tmat }} {{ 'is' if tmat == 1 else 'are' }} aging{% elif tmat == 1 %}1 is aging{% else %}{{ tmat }} are aging{% endif %}</span><span class="l-zh">该主题 {{ members }} 只中有 {{ tot }} 只在本板上，{% if tmat == 0 %}没有在老化的{% elif tmat == tot %}{{ tmat }} 只都在老化{% else %}其中 {{ tmat }} 只在老化{% endif %}</span></span>
+          <span class="bar" style="width:{{ ((members / tmax * 100) | round(1)) if tmax else 100 }}%" aria-hidden="true">
             {%- if clean %}<i class="b1" style="flex:{{ clean }}"></i>{% endif %}
             {%- if th.watch %}<i class="b2" style="flex:{{ th.watch }}"></i>{% endif %}
             {%- if th.thinning %}<i class="b3" style="flex:{{ th.thinning }}"></i>{% endif %}
@@ -1066,15 +1083,34 @@ a.tk:hover{color:var(--ink-link, var(--link))}
   {% endif %}
 
   {# ══ small print — ONE merged line ══ #}
-  <p class="smallprint">
+  {#- Hosts a LENS `?`, so this MUST be a <div>: lens() emits block-level
+      children, and a <div> start tag auto-closes an open <p>. -#}
+  <div class="smallprint">
     {#- `extended_n` has LEFT the small print — it is per tier now and lives on
         the shelf, and a cross-tier total would be a number with no referent. The
         board-membership sentence is re-scoped from "the extended band" to "a
         group" because each tier has its own band; the 21-session window itself is
-        untouched. -#}
-    <span class="l-en">US names only — the library counts are what similar past runs did, history rather than forecasts, and nothing on this page ranks, gates or sizes anything. Each group is measured only against its own history, and the counts never add up to a total.{% if WH and WH.universe_n %} Tonight: <b>{{ '{:,}'.format(WH.universe_n) }}</b> US names screened{% if WH.asof %}, read <b>{{ WH.asof }}</b>{% endif %}.{% endif %} A name that has just left a group stays listed there only while we read the change; a name you cannot find anywhere on this page did not clear any of the three bars.</span>
-    <span class="l-zh">仅限美股 —— 资料库中的次数是历史上相似行情走过的路，属于历史而非预测；本页任何内容都不参与排序、准入或仓位。每个分组只对照自己的历史来衡量，各组数字不能相加。{% if WH and WH.universe_n %}今晚：筛查 <b>{{ '{:,}'.format(WH.universe_n) }}</b> 只美股{% if WH.asof %}，判读日期 <b>{{ WH.asof }}</b>{% endif %}。{% endif %}刚离开某个分组的个股，仅在我们判读这一变化期间保留在该组；在本页任何地方都找不到的个股，说明它今晚没有达到这三道门槛中的任何一道。</span>
-  </p>
+        untouched. At rest: the honesty sentence only. The other three clauses
+        live in the LENS tip (demotion, not deletion). -#}
+    <span class="l-en">US names only — these are what similar past runs did, history rather than forecasts, and nothing here ranks, gates or sizes anything.</span>
+    <span class="l-zh">仅限美股 —— 这些是历史上相似行情走过的路，属于历史而非预测；本页任何内容都不参与排序、准入或仓位。</span>
+    {{ lens.lens(
+         kind='read',
+         ill=lens.ILL_SHELF,
+         kick=('How to read this board','如何读这块看板'),
+         title=('What the small print covers','这段说明还覆盖什么'),
+         rows=[
+           {'tone':'info','k':('Each group','每个分组'),
+            'v':('Each group is measured only against its own history, and the counts never add up to a total.',
+                 '每个分组只对照自己的历史来衡量，各组数字不能相加。')},
+           {'tone':'info','k':('Tonight\'s screen','今晚的筛查'),
+            'v':(('Tonight: ' ~ '{:,}'.format(WH.universe_n) ~ ' US names screened' ~ ((', read ' ~ WH.asof) if (WH and WH.asof) else '') ~ '.') if (WH and WH.universe_n) else 'The screened count and read date print here the night the read lands.',
+                 (('今晚：筛查 ' ~ '{:,}'.format(WH.universe_n) ~ ' 只美股' ~ (('，判读日期 ' ~ WH.asof) if (WH and WH.asof) else '') ~ '。') if (WH and WH.universe_n) else '筛查只数和判读日期会在夜间判读落地后显示在这里。'))},
+           {'tone':'info','k':('Just left a group','刚离开某组'),
+            'v':('A name that has just left a group stays listed there only while we read the change; a name you cannot find anywhere on this page did not clear any of the three bars.',
+                 '刚离开某个分组的个股，仅在我们判读这一变化期间保留在该组；在本页任何地方都找不到的个股，说明它今晚没有达到这三道门槛中的任何一道。')}],
+         receipt=('display only · no rank, gate or position size','仅供展示 · 不参与排序、准入或仓位')) }}
+  </div>
 
 </div>
 </body>
