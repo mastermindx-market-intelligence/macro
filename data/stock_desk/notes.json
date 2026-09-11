@@ -1,181 +1,171 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-09-09",
-  "generated_at": "2026-09-10T12:11:15.677833+00:00",
+  "as_of": "2026-09-10",
+  "generated_at": "2026-09-11T14:31:53.246514+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-09-09-ADM-20260910121115-1",
+      "id": "2026-09-10-ADM-20260911143153-1",
       "ticker": "ADM",
-      "name": null,
-      "lean": "constructive",
-      "conviction": "low",
-      "horizon_d": 30,
-      "thesis": "High-confluence leader with a fresh SUE (z 1.28, 36 days) and revisions tailwind; the validated PEAD leg plus clean accounting supports giving the momentum the benefit of the doubt over a 30-day window, provided entry stays disciplined near current levels.",
-      "evidence": [
-        "verdict: High-confluence leader (context)",
-        "SUE z 1.28, validated tier, fresh (36d)",
-        "revisions z 1.0 present",
-        "accounting clean",
-        "board state: FRESH BUY, off high only -2.6%"
-      ],
-      "dissent": "The trust tier is 'event-edge' context, not a standalone alpha signal; the cross-sectional rank itself has no validated forward edge at this horizon, so the constructive lean leans almost entirely on the PEAD/revisions legs that are only ~0 information-coefficient at quarterly cadence.",
-      "falsifier": {
-        "text": "SUE decays into negative revision territory or price breaks below the pre-earnings reaction low while the broader market holds",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "ADM",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 30
-        }
-      },
-      "check_by": "2026-10-21",
-      "engine_verdict": "High-confluence leader (context)"
-    },
-    {
-      "id": "2026-09-09-VRT-20260910121115-2",
-      "ticker": "VRT",
-      "name": null,
-      "lean": "constructive",
-      "conviction": "low",
-      "horizon_d": 30,
-      "thesis": "Building a base with a very fresh SUE (z 1.28, 11 days) and TURN SIGNALED state; the constructive lean is supported by the validated earnings-surprise leg and the turn state, but accounting 'watch' caps conviction.",
-      "evidence": [
-        "verdict: Constructive \u2014 building a base",
-        "SUE z 1.28, validated tier, fresh (11d)",
-        "board state: TURN SIGNALED",
-        "accounting watch flag"
-      ],
-      "dissent": "The base-building read could be a dead-cat bounce after the -22.7% off-high drawdown; the accounting watch flag and negative tailwind (z -0.344) suggest the turn may not hold without a fundamental catalyst.",
-      "falsifier": {
-        "text": "price fails to hold the higher low and breaks back below the base's midpoint while the S&P 500 trades flat or up",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "VRT",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 30
-        }
-      },
-      "check_by": "2026-10-21",
-      "engine_verdict": "Constructive \u2014 building a base"
-    },
-    {
-      "id": "2026-09-09-LTC-20260910121115-3",
-      "ticker": "LTC",
       "name": null,
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "No clear edge: selection z is slightly negative, revision z -1.46 is bearish, and the board says HOLD \u2014 EXTENDED. The risk controls (extension brake, accounting watch) argue for watching rather than chasing; no directional claim is defensible.",
+      "horizon_d": 21,
+      "thesis": "A high-confluence 'fresh buy' leader, but the entry axis is only 52nd percentile and urgency reads 'caution', signaling extension risk. The trust tier is context-level only, so the right posture is watch, don't chase; shorting a strong leader on extension alone has been directionally wrong ~83% of the time on this desk.",
       "evidence": [
-        "verdict: Neutral \u2014 no clear edge",
-        "revisions z -1.46 (literature tier)",
-        "board state: HOLD \u2014 EXTENDED",
-        "accounting watch flag"
+        "Verdict: 'High-confluence leader (context)' \u2014 band constructive",
+        "Entry axis 0.1 z / 52nd pct with 'caution' urgency on board",
+        "Off high only -0.3% \u2014 little pullback cushion",
+        "Trust tier: event-edge (context), not validated standalone"
       ],
-      "dissent": "The name is only -1.4% off its high with 'up' direction, and a momentum continuation could easily make a neutral stance look underweight in retrospect.",
+      "dissent": "SUE z of 1.28 and positive revisions are real earnings signals; if the tape stays calm risk-on, the lack of pullback may not matter and price could continue grinding higher.",
       "falsifier": {
-        "text": "price makes a new 52-week high on above-average volume without any revisions upgrade",
+        "text": "ADM breaks above its recent high on above-average volume without a deeper pullback, resuming clear upside momentum",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-10-07",
+      "check_by": "2026-10-09",
+      "engine_verdict": "High-confluence leader (context)"
+    },
+    {
+      "id": "2026-09-10-KEYS-20260911143153-2",
+      "ticker": "KEYS",
+      "name": null,
+      "lean": "constructive",
+      "conviction": "low",
+      "horizon_d": 21,
+      "thesis": "A 'turn signaled' leader with strong revisions (z 1.9) and momentum (z 1.25), sitting -11.3% off its high with good entry posture. The validated revision leg and favorable turn-on-pullback setup support a modest constructive lean, though the accounting watch caps conviction.",
+      "evidence": [
+        "Verdict band constructive \u2014 'Leader \u00b7 accounting watch'",
+        "Revisions z 1.9 (literature tier) \u2014 strongest selection leg",
+        "Entry axis 64th pct / z 0.91, urgency 'now', -11.3% off high",
+        "Board state 'TURN SIGNALED', dir up"
+      ],
+      "dissent": "Accounting watch flag plus a quality axis at only 54th percentile; if the accounting concern is real, it could undermine the earnings/revisions story and the turn could fail.",
+      "falsifier": {
+        "text": "KEYS resumes its downtrend and breaks below the recent swing low that marked the suspected turn",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "KEYS",
+          "vs": "SPY",
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 21
+        }
+      },
+      "check_by": "2026-10-09",
+      "engine_verdict": "Leader \u00b7 accounting watch \u2014 confirm before adding"
+    },
+    {
+      "id": "2026-09-10-LTC-20260911143153-3",
+      "ticker": "LTC",
+      "name": null,
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 21,
+      "thesis": "Engine labels it 'no clear edge' with a neutral band. Selection is mixed (positive SUE, negative revisions z -1.47, weak momentum), quality is in watch territory, and the board says 'HOLD \u2014 EXTENDED', all of which argue for standing aside rather than taking either direction.",
+      "evidence": [
+        "Verdict: 'Neutral \u2014 no clear edge'",
+        "Revisions z -1.47 offsets near-flat SUE",
+        "Quality accounting watch, z -0.58 / 41st pct",
+        "Board 'HOLD \u2014 EXTENDED' with only -0.2% off high"
+      ],
+      "dissent": "Insider presence (validated, z 0.18) and a fresh SUE (12 days) could be early-stage positive signals that precede the revision cycle turning.",
+      "falsifier": {
+        "text": "LTC closes the extension gap and breaks decisively above its prior high, showing the 'extended' tag was premature and a genuine trend has resumed",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-10-09",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-09-FLR-20260910121115-4",
-      "ticker": "FLR",
+      "id": "2026-09-10-WFC-20260911143153-4",
+      "ticker": "WFC",
       "name": null,
-      "lean": "cautious",
+      "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 30,
-      "thesis": "No edge but multiple bearish signals: SUE z -2.29 (11 days) is a strong earnings misfire, accounting is flagged 'warn', and the board is HOLD \u2014 EXTENDED. The validated SUE leg supports a cautious lean relative to the S&P 500 over a monthly horizon.",
+      "horizon_d": 21,
+      "thesis": "The 'fresh buy' board read is undercut by a neutral engine verdict, weak momentum (z -0.61), negative revisions, and an accounting watch. The Financials basket fading caution suggests trimming bias without a directional edge to justify a bearish lean either.",
       "evidence": [
-        "SUE z -2.29, validated tier, fresh (11d) \u2014 bearish",
-        "accounting warn flag",
-        "board state: HOLD \u2014 EXTENDED",
-        "momentum z -0.2 (context)"
+        "Verdict: 'Neutral \u2014 no clear edge'",
+        "Momentum z -0.61 and revisions z -0.07",
+        "Quality accounting watch at 36th pct \u2014 worst quality flag in this set",
+        "Caution: Financials basket fading"
       ],
-      "dissent": "The entry axis is slightly positive (z 0.11) and the board direction is 'up'; a mean-reversion bounce off the -1.5% off-high could make a cautious lean wrong if macro sentiment lifts the whole sector.",
+      "dissent": "SUE z 0.96 (fresh, 12 days) and strong entry axis (64th pct) could drive a beat-driven pop that overrides the weak factor profile in the short window.",
       "falsifier": {
-        "text": "earnings revisions turn positive and price closes above its 50-day moving average while the S&P 500 is flat or down",
+        "text": "WFC breaks above its recent high on strong bank-sector tape, driven by a positive earnings or guidance catalyst",
         "check": {
-          "kind": "rel_return",
-          "subject_ticker": "FLR",
-          "vs": "SPY",
-          "op": ">",
-          "threshold": 0.05,
-          "horizon_d": 30
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-10-21",
+      "check_by": "2026-10-09",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-09-NX-20260910121115-5",
-      "ticker": "NX",
+      "id": "2026-09-10-CSR-20260911143153-5",
+      "ticker": "CSR",
       "name": null,
-      "lean": "cautious",
-      "conviction": "low",
-      "horizon_d": 30,
-      "thesis": "Lagging \u2014 relative weakness is the verdict, with negative SUE (z -0.53 at 72 days stale), negative revisions (z -1.09), and an entry axis loaded with extension/lottery-spike risk. The deterministic lagging verdict is the actual bearish signal, not mere extension, so a cautious lean is defensible.",
-      "evidence": [
-        "verdict: Lagging \u2014 relative weakness",
-        "revisions z -1.09 (literature tier)",
-        "SUE z -0.53, stale (72d)",
-        "entry z -1.41 with lottery-spike flag",
-        "accounting warn"
-      ],
-      "dissent": "The name is small and off-high only -3.1%; a sharp idiosyncratic squeeze or an M&A rumor could cause an outsized bounce that outruns the cautious lean over a short horizon.",
-      "falsifier": {
-        "text": "price breaks out above its recent extension high and the lottery-spike flag clears on sustained volume",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "NX",
-          "vs": "SPY",
-          "op": ">",
-          "threshold": 0.05,
-          "horizon_d": 30
-        }
-      },
-      "check_by": "2026-10-21",
-      "engine_verdict": "Lagging \u2014 relative weakness"
-    },
-    {
-      "id": "2026-09-09-SGI-20260910121115-6",
-      "ticker": "SGI",
-      "name": null,
-      "lean": "cautious",
+      "lean": "constructive",
       "conviction": "medium",
-      "horizon_d": 30,
-      "thesis": "Verdict is lagging \u2014 relative weakness with a fresh SUE of only -0.22 but steeply negative revisions (z -1.34) and negative momentum. Despite a TURN SIGNALED, the entry 'now/imminent' urgency combined with a -28.7% off-high drawdown makes this a weak-lagging name where cautious direction has been historically more reliable than chasing the turn.",
+      "horizon_d": 21,
+      "thesis": "The strongest transparent setup in this set: revisions z 1.94 is the highest literature-tier read here, paired with validated SUE and insider legs. A -16.7% drawdown with 'TURN SIGNALED' and 'imminent' urgency means the base-building setup comes with real cushion, not chase risk.",
       "evidence": [
-        "verdict: Lagging \u2014 relative weakness",
-        "revisions z -1.34 (literature tier)",
-        "momentum z -0.74 (context)",
-        "off-high -28.7% with TURN SIGNALED",
-        "accounting watch"
+        "Verdict: 'Constructive \u2014 building a base'",
+        "Revisions z 1.94 \u2014 highest revisions read across picks",
+        "Entry 55th pct with vol-squeeze, off -16.7% from high",
+        "Board 'TURN SIGNALED', urgency 'imminent'"
       ],
-      "dissent": "The entry axis is positive (z 0.43) and the board says TURN SIGNALED, so a sharp reversal from deeply oversold levels could outpace the S&P 500 over 30 days, especially if the SUE stabilizes.",
+      "dissent": "Momentum z -0.19 and accounting watch flag mean the base could be a descending continuation rather than an accumulation phase; if the turn fails, the deep pullback may simply be the market's correct verdict.",
       "falsifier": {
-        "text": "price closes above its 20-day moving average for five consecutive sessions while the S&P 500 is flat",
+        "text": "CSR breaks below the low that defines its current base, confirming the pullback as a downtrend continuation rather than a turn",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "SGI",
+          "subject_ticker": "CSR",
           "vs": "SPY",
-          "op": ">",
-          "threshold": 0.05,
-          "horizon_d": 30
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 21
         }
       },
-      "check_by": "2026-10-21",
-      "engine_verdict": "Lagging \u2014 relative weakness"
+      "check_by": "2026-10-09",
+      "engine_verdict": "Constructive \u2014 building a base"
+    },
+    {
+      "id": "2026-09-10-AN-20260911143153-6",
+      "ticker": "AN",
+      "name": null,
+      "lean": "constructive",
+      "conviction": "low",
+      "horizon_d": 21,
+      "thesis": "Earnings-led base builder: SUE z 1.32 is the strongest validated earnings read in the group with 41 days of freshness, clean accounting, and a -9% off-high with 'TURN SIGNALED'. The quality flag is clean and the selection z is positive even net of flat momentum.",
+      "evidence": [
+        "Verdict: 'Constructive \u2014 building a base'",
+        "SUE z 1.32 / fresh_days 41 \u2014 strongest validated earnings leg",
+        "Quality clean \u2014 only name in set without an accounting watch",
+        "Entry 64th pct with 'now' urgency, -9% off high",
+        "Selection z 0.34 / 55th pct"
+      ],
+      "dissent": "Revisions z is only 0.38 (weak literature signal) and momentum is flat (-0.04); a SUE-driven pop may already be in the price and the 'base' could stall without fresh revision support.",
+      "falsifier": {
+        "text": "AN breaks below the recent low it has been building above, showing the earnings signal was fully priced and failed to produce follow-through",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "AN",
+          "vs": "SPY",
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 21
+        }
+      },
+      "check_by": "2026-10-09",
+      "engine_verdict": "Constructive \u2014 building a base"
     }
   ],
   "disclaimer": "Accountable AI judgment on the deterministic top picks. The cross-sectional rank has no validated forward edge; these leans are fallible, falsifiable conditionals graded against reality \u2014 never position sizes. See the track record."
