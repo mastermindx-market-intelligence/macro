@@ -46,7 +46,21 @@ SECTOR_STATES = (
     "FRESH BUY",
     "RALLY ON",
     "WAIT",
+    "BUY ZONE",
+    "TOP WATCH",
+    "DECLINE",
+    "ACCUMULATION",
+    "BASING",
 )
+LANE_TAGS = {
+    "buy_soon": ("WAIT", "等待"),
+    "on_the_run": ("DON'T CHASE", "勿追"),
+    "take_profits": ("TRIM", "减仓"),
+    "hold": ("HOLD", "持有"),
+    "avoid": ("STAND ASIDE", "回避"),
+}
+OPEN_TAG_EN = ("BUY ZONE", "FRESH BUY", "ENTER", "ACCUMULATE", "RALLY ON")
+OPEN_TAG_ZH = ("买入区", "建仓", "加仓")
 
 
 def hit_in_10(rate: float) -> int:
@@ -134,6 +148,26 @@ def _visible_pop(html: str) -> str:
     return html
 
 
+def _row_pop_tag(html: str) -> str:
+    """Outer .row-pop-tag element, both language legs."""
+    m = re.search(
+        r'<span class="row-pop-tag[^"]*">.*?</span>',
+        html, re.S)
+    if not m:
+        return ""
+    chunk = m.group(0)
+    # 2-tuple tags wrap two inner spans; extend to the outer closer.
+    if chunk.count("<span") > 1:
+        start = html.index(m.group(0))
+        rest = html[start:]
+        m2 = re.match(
+            r'<span class="row-pop-tag[^"]*"><span class="l-en">[^<]*</span>'
+            r'<span class="l-zh">[^<]*</span></span>', rest)
+        if m2:
+            return m2.group(0)
+    return chunk
+
+
 # ── B1 ──────────────────────────────────────────────────────────────────────
 
 def test_b1_missing_verdict_never_prints_mixed_en_or_zh():
@@ -187,6 +221,27 @@ def test_b2_lane_state_sweep_no_open_verb_in_wait_lanes():
     assert "HOLD" in hold_html or "持有" in hold_html
 
 
+def test_b2_sector_leg_tag_is_lane_word_cycle_state_in_body():
+    """B2 is absolute and per-language on the SECTOR leg: the visible tag is the
+    lane word; cycle state (BUY ZONE / 买入区) is body context, never the tag."""
+    rows = []
+    for lane, (en, zh) in LANE_TAGS.items():
+        for label in SECTOR_STATES:
+            board = _empty_board()
+            board[lane] = [_sector(label)]
+            html = _render_board(board, host="sector_central")
+            tag = _row_pop_tag(html)
+            tag_txt = tag.replace("&#39;", "'").replace("&amp;", "&")
+            assert en in tag_txt, f"{lane} × {label}: tag missing {en!r}: {tag}"
+            assert zh in tag_txt, f"{lane} × {label}: tag missing {zh!r}: {tag}"
+            for v in OPEN_TAG_EN + OPEN_TAG_ZH:
+                assert v not in tag, f"{lane} × {label}: open word {v!r} in tag {tag}"
+            # Cycle state demoted into the popover body (stats), both legs.
+            assert f'class="l-en">{label}<' in html or f">{label}<" in html
+            rows.append((lane, label, en, zh))
+    assert len(rows) == len(LANE_TAGS) * len(SECTOR_STATES)
+
+
 def test_b2_buy_now_may_still_open():
     html = _visible_pop(_render_board(
         {**_empty_board(), "buy_now": [_theme("enter", label="ENTER", label_zh="建仓")]},
@@ -202,7 +257,9 @@ def test_p1_1_no_n_or_rank_ic_at_rest_x_in_10_form():
     grader = html[html.index("function renderGrader"):html.index("function focusDelegate")]
     assert "cross-sectional rank-IC" not in grader
     assert grader.count("rank-IC") == 1  # receipt line only
-    assert "data-tip-rc-en" in grader and "data-tip-rc-zh" in grader
+    assert "data-tip-rc-" not in grader
+    assert 'class="ftr-t1-help" data-tip-en="' in grader
+    assert 'data-tip-zh="' in grader
     assert "about '" in grader and " in 10" in grader
     assert "约10次中有" in grader
     assert " · n=" not in grader
@@ -227,6 +284,12 @@ def test_p1_2_no_bare_las_pctile_slug_at_rest():
     assert "蓄势信号已收敛" not in rest
     assert "Lead pace" in lead
     assert "领先节奏" in lead
+    track = src[src.index("function trackBox"):src.index("function leadershipStrip")]
+    assert "about " in track and " in 10" in track
+    assert "约10次中有" in track
+    assert "data-tip-en=" in track and "data-tip-zh=" in track
+    assert "data-tip-rc-" not in track
+    assert "n=" in track  # receipt, not at rest
     assert "Relative strength" in lead
     assert "相对强度" in lead
     assert "STAGE_WORD" in src
@@ -269,15 +332,22 @@ def test_p1_6_no_gate_architecture_at_rest():
     html = _render_page()
     assert "One gated read per sector" not in html
     assert "gated, graded calls" not in html
+    assert "gated conviction" not in html
     assert "One scored read per sector" in html
     assert "Lanes are the only scored calls" in html
+    assert "scored conviction" in html
 
 
 def test_p1_7_backtested_gate_promoted_to_plain_stat():
+    src = (ROOT / "scripts" / "build_site.py").read_text(encoding="utf-8")
+    assert 'stat_en = "backtested gate: trim"' not in src
+    assert 'stat_zh = "回测门槛：减仓"' not in src
+    assert 'stat_en = "risk check: trim"' in src
+    assert 'stat_zh = "风险检查：减仓"' in src
     html = _render_board(
         {**_empty_board(), "take_profits": [
-            _sector("ROLLING OVER", stat_en="backtested gate: trim",
-                    stat_zh="回测门槛：减仓", gate_override=True)]},
+            _sector("ROLLING OVER", stat_en="risk check: trim",
+                    stat_zh="风险检查：减仓", gate_override=True)]},
         host="sector_central")
     assert "backtested gate: trim" not in html
     assert "回测门槛：减仓" not in html
@@ -349,8 +419,10 @@ def test_p2_3_host_flag_us_stocks_unchanged():
     html = _render_board(board)  # default host = us_stocks
     assert "Theme reasons → Sector Intelligence" in html
     assert "full list on Sector Intelligence" in html
-    assert 'class="pg-more' in html
     assert "+5 more" in html
+    # Permanent cross-page overflow must NOT carry .pg-more (dashboard hydration
+    # would strip a correct link). The sign-in ab_more() still uses .pg-more.
+    assert 'class="pg-more' not in html
 
 
 def test_p2_4_watch_strip_separated_counts_untouched():
@@ -377,22 +449,64 @@ def test_p2_4_watch_strip_separated_counts_untouched():
     assert "Gold Miners" in html
 
 
-def test_p2_5_breadth_tiles_have_null_sentences_not_dashes():
+def test_p2_5_breadth_tiles_bake_skeleton_not_null_sentence():
     html = _render_page()
     chunk = html[html.index('id="internals-section"'):html.index('id="sc-heatmap"')]
     assert 'id="mkt-breadth">—<' not in chunk.replace(" ", "")
-    assert "Not in tonight" in chunk
-    assert "不在今晚的构建中" in chunk
-    assert "lanes above are unaffected" in chunk or "上方操作清单不受影响" in chunk
+    assert "Not in tonight" not in chunk
+    assert "不在今晚的构建中" not in chunk
+    assert "class=\"skel\"" in chunk or "class='skel'" in chunk
+    src = PAGE_TPL.read_text(encoding="utf-8")
+    ri = src[src.index("function renderInternals"):src.index("function boot()",
+             src.index("function renderInternals"))]
+    assert "Not in tonight" in ri
+    assert "不在今晚的构建中" in ri
+    assert "lanes above are unaffected" in ri
 
 
-def test_p2_6_as_of_unknown_not_dash():
+def test_p2_5_breadth_tiles_bake_values_when_builder_has_them():
+    html = _render_page(market_concentration={
+        "verdict": "narrow", "adv": 1200, "dec": 1800, "ad_ratio": 0.67,
+        "nh": 40, "nl": 90, "pct_above_200": 35.0,
+    })
+    chunk = html[html.index('id="internals-section"'):html.index('id="sc-heatmap"')]
+    assert "Not in tonight" not in chunk
+    assert "Narrow" in chunk and "狭窄" in chunk
+    assert "1200" in chunk and "1800" in chunk
+    assert ">40<" in chunk and ">90<" in chunk
+    assert "35" in chunk
+
+
+def test_p2_5_js_branch_map_empty_vs_reject():
+    src = PAGE_TPL.read_text(encoding="utf-8")
+    assert "function __siBreadthFail" in src
+    assert "This read is being updated." in src
+    assert "该读数更新中。" in src
+    boot = src[src.index("function __siBoot"):src.index("function __siWireTrace")]
+    assert "__siBreadthFail" in boot
+    ri = src[src.index("function renderInternals"):src.index("function boot()",
+             src.index("function renderInternals"))]
+    assert "Not in tonight" in ri
+    assert "lanes above are unaffected" in ri
+
+
+def test_p2_6_as_of_bakes_value_or_skeleton_unknown_only_post_resolve():
     html = _render_page()
     src = PAGE_TPL.read_text(encoding="utf-8")
     assert "BASKETS.as_of||'—'" not in src.replace(" ", "")
-    assert "date unknown" in html
-    assert "日期未知" in html
-    assert "asof-unknown" in html
+    asof = html[html.index('id="asof"'):html.index('id="asof"') + 280]
+    assert "date unknown" not in asof
+    assert "日期未知" not in asof
+    assert "skel" in asof
+    populated = _render_page(baskets_as_of="2026-09-10")
+    asof_p = populated[populated.index('id="asof"'):populated.index('id="asof"') + 80]
+    assert "2026-09-10" in asof_p
+    assert "date unknown" not in asof_p
+    assert "date unknown" in src and "日期未知" in src
+    assert "BASKETS.as_of" in src
+    fail = src[src.index("function __siBreadthFail"):src.index("function __siBoot")]
+    assert "This read is being updated." in fail
+    assert "getElementById('asof')" in fail
 
 
 def test_p2_7_geometry_true_skeleton_not_empty_loading():
@@ -429,6 +543,37 @@ def test_p3_2_score_demoted_from_rest():
     assert 'class="act-row-score' not in html
     assert "row-pop-score" in html
     assert ">72<" in html or ">72</strong>" in html
+
+
+def test_p3_2_score_kept_on_us_stocks_host():
+    html = _render_board(
+        {**_empty_board(), "buy_now": [_theme("accumulate", score=72)]})
+    assert 'class="act-row-score' in html
+    assert ">72<" in html
+
+
+def test_us_stocks_host_zero_unintended_delta():
+    """Sibling host keeps CTA, +N (without .pg-more), score chips; no empty watch strip."""
+    board = {**_empty_board(), "buy_now": [_theme("accumulate", score=72)],
+             "more": {"buy_now": 5}}
+    stocks = _render_board(board)
+    si = _render_board(board, host="sector_central")
+    assert "Theme reasons → Sector Intelligence" in stocks
+    assert "Theme reasons → Sector Intelligence" not in si
+    assert "+5 more" in stocks and "full list on Sector Intelligence" in stocks
+    assert "+5 more" not in si
+    assert 'class="pg-more' not in stocks
+    assert 'class="act-row-score' in stocks
+    assert 'class="act-row-score' not in si
+    assert 'class="act-watch-strip"' not in stocks
+    empty_si = _render_board(_empty_board(), host="sector_central")
+    assert 'class="act-watch-strip"' not in empty_si
+
+
+def test_nit12_flag_restored_on_h1():
+    html = _render_page()
+    assert "US Sector Intelligence 🇺🇸" in html
+    assert "美国行业情报 🇺🇸" in html
 
 
 def test_p3_3_emoji_replaced_with_monoline():

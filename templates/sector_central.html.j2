@@ -16,7 +16,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>US Sector Intelligence — sectors, themes &amp; rotation — Mastermind</title>
-{% set seo_title = "US Sector Intelligence — Mastermind" %}{% set seo_desc = "Every US sector, theme and rotation in one read — cycle position, gated conviction, the rotation map, turns, flows and breadth. Updated nightly." %}{% set seo_path = "sector_central.html" %}
+{% set seo_title = "US Sector Intelligence — Mastermind" %}{% set seo_desc = "Every US sector, theme and rotation in one read — cycle position, scored conviction, the rotation map, turns, flows and breadth. Updated nightly." %}{% set seo_path = "sector_central.html" %}
 {% include "_seo_head.html.j2" %}
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="theme.css">
@@ -2141,9 +2141,9 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
   {% set _hero_cls = 'strain' if _tc_st == 'strain' else ('steady' if _tc_st == 'steady' else '') %}
   <section class="rvx-hero rvx-reveal {{ _hero_cls }}">
     <div class="rvx-eyebrow">
-      <h1>{{ t('US Sector Intelligence', '美国行业情报') }}</h1>
+      <h1>{{ t('US Sector Intelligence 🇺🇸', '美国行业情报 🇺🇸') }}</h1>
       <span class="rvx-mut" id="hero-count"></span>
-      <span class="as-of">{{ t('as of', '截至') }} <span id="asof" class="asof-unknown">{{ t('date unknown', '日期未知') }}</span></span>
+      <span class="as-of">{{ t('as of', '截至') }} {% if baskets_as_of is defined and baskets_as_of %}<span id="asof">{{ baskets_as_of | e }}</span>{% else %}<span id="asof" class="asof-unknown"><span class="skel" style="display:inline-block;height:11px;width:72px;vertical-align:middle"></span></span>{% endif %}</span>
     </div>
     <div class="rvx-hgrid">
       <div>
@@ -2191,7 +2191,7 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
   {% else %}
   {# ── Fallback hero when theme_context absent ── #}
   <section class="rvx-hero rvx-reveal">
-    <div class="rvx-eyebrow"><h1>{{ t('US Sector Intelligence', '美国行业情报') }}</h1><span class="rvx-mut" id="hero-count"></span><span class="as-of">{{ t('as of', '截至') }} <span id="asof" class="asof-unknown">{{ t('date unknown', '日期未知') }}</span></span></div>
+    <div class="rvx-eyebrow"><h1>{{ t('US Sector Intelligence 🇺🇸', '美国行业情报 🇺🇸') }}</h1><span class="rvx-mut" id="hero-count"></span><span class="as-of">{{ t('as of', '截至') }} {% if baskets_as_of is defined and baskets_as_of %}<span id="asof">{{ baskets_as_of | e }}</span>{% else %}<span id="asof" class="asof-unknown"><span class="skel" style="display:inline-block;height:11px;width:72px;vertical-align:middle"></span></span>{% endif %}</span></div>
     <div class="rvx-vword">{{ t('Thematic', '主题') }} <span class="ac">{{ t('baskets', '篮子') }}</span></div>
     <p class="rvx-vsub" id="story">{{ t('Equal-weight US theme baskets measured against the S&P 500. Use them to see which themes are leading or fading.', '等权重美国主题篮子，对标标普 500。用于观察哪些主题在走强或走弱。') }}</p>
     <div class="rvx-chips ctx" style="margin-top:12px">
@@ -2416,11 +2416,43 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
   <section class="rvx-sec rvx-reveal" id="internals-section" style="animation-delay:.15s">
     <div class="rvx-sec-h"><h2>{{ t('Under the hood', '市场内部') }}</h2><span class="q">{{ t('— is the whole market participating?', '— 整个市场都在参与吗？') }}</span></div>
     <p class="rvx-sec-sub" id="internals-sub">{{ t('Breadth tells you whether the rotation is a broad tide or a narrow few. Be selective when it is narrow.', '广度告诉你这是全面上涨还是少数领涨。领涨面窄时应精挑细选。') }}</p>
+    {%- set _mc = market_concentration if market_concentration is defined and market_concentration else none -%}
+    {%- set _mc_v = _mc.get('verdict') if _mc else none -%}
+    {%- set _mc_known = _mc_v in ('narrow', 'broad', 'mixed') -%}
+    {%- set _skel = '<span class="skel" style="display:inline-block;height:16px;width:48%;vertical-align:middle"></span>' -%}
     <div class="rvx-internals">
-      <div class="rvx-gcard verdict"><div class="gl">{{ t('MARKET BREADTH', '市场广度') }}</div><div class="gbig" id="mkt-breadth">{{ t('Not in tonight\'s build', '不在今晚的构建中') }}</div><div class="gm" id="mkt-breadth-sub">{{ t('Breadth isn\'t in tonight\'s build — the lanes above are unaffected.', '广度不在今晚的构建中 — 上方操作清单不受影响。') }}</div></div>
-      <div class="rvx-gcard"><div class="gl">{{ t('Advancers / Decliners', '上涨 / 下跌') }}</div><div class="gv" id="mkt-ad">{{ t('Not in tonight\'s build', '不在今晚的构建中') }}</div><div class="gm" id="mkt-ad-sub">{{ t('Advance/decline isn\'t in tonight\'s build — the lanes above are unaffected.', '涨跌家数不在今晚的构建中 — 上方操作清单不受影响。') }}</div><div class="rvx-minibar"><i id="mkt-ad-bar"></i></div></div>
-      <div class="rvx-gcard"><div class="gl">{{ t('52-wk highs / lows', '52周新高 / 新低') }}</div><div class="gv" id="mkt-hilo">{{ t('Not in tonight\'s build', '不在今晚的构建中') }}</div><div class="gm" id="mkt-hilo-sub">{{ t('New highs and lows aren\'t in tonight\'s build — the lanes above are unaffected.', '新高新低不在今晚的构建中 — 上方操作清单不受影响。') }}</div><div class="rvx-minibar"><i id="mkt-hilo-bar"></i></div></div>
-      <div class="rvx-gcard"><div class="gl">{{ t('Above 200-day', '站上200日线') }}</div><div class="gv" id="mkt-above">{{ t('Not in tonight\'s build', '不在今晚的构建中') }}</div><div class="gm" id="mkt-above-sub">{{ t('The 200-day share isn\'t in tonight\'s build — the lanes above are unaffected.', '站上200日线的比例不在今晚的构建中 — 上方操作清单不受影响。') }}</div><div class="rvx-minibar"><i id="mkt-above-bar"></i></div></div>
+      <div class="rvx-gcard verdict"><div class="gl">{{ t('MARKET BREADTH', '市场广度') }}</div>
+        {%- if _mc_known -%}
+        <div class="gbig" id="mkt-breadth" style="color:{% if _mc_v == 'broad' %}var(--up){% elif _mc_v == 'narrow' %}var(--down){% else %}var(--warn){% endif %}">{% if _mc_v == 'broad' %}{{ t('Broad', '广泛') }}{% elif _mc_v == 'narrow' %}{{ t('Narrow', '狭窄') }}{% else %}{{ t('Mixed', '中性') }}{% endif %}</div>
+        <div class="gm" id="mkt-breadth-sub">{% if _mc_v == 'broad' %}{{ t('Broad participation — a risk-on tide.', '广泛参与 — 全面上涨。') }}{% elif _mc_v == 'narrow' %}{{ t('Narrow — a few names carry it.', '狭窄 — 少数个股主导。') }}{% else %}{{ t('No strong consensus. Leadership is narrow.', '无明显共识，领涨面较窄。') }}{% endif %}</div>
+        {%- else -%}
+        <div class="gbig" id="mkt-breadth">{{ _skel | safe }}</div><div class="gm" id="mkt-breadth-sub"></div>
+        {%- endif -%}
+      </div>
+      <div class="rvx-gcard"><div class="gl">{{ t('Advancers / Decliners', '上涨 / 下跌') }}</div>
+        {%- if _mc and _mc.get('adv') is not none and _mc.get('dec') is not none -%}
+        <div class="gv" id="mkt-ad">{{ _mc.adv }}<span class="rvx-mut" style="font-size:13px"> / </span>{{ _mc.dec }}</div>
+        <div class="gm" id="mkt-ad-sub">{{ t('A/D', '涨跌比') }}{% if _mc.get('ad_ratio') is not none %} {{ '%.2f'|format(_mc.ad_ratio) }}{% endif %}</div>
+        {%- else -%}
+        <div class="gv" id="mkt-ad">{{ _skel | safe }}</div><div class="gm" id="mkt-ad-sub"></div>
+        {%- endif -%}
+        <div class="rvx-minibar"><i id="mkt-ad-bar"></i></div></div>
+      <div class="rvx-gcard"><div class="gl">{{ t('52-wk highs / lows', '52周新高 / 新低') }}</div>
+        {%- if _mc and _mc.get('nh') is not none -%}
+        <div class="gv" id="mkt-hilo"><span class="rvx-up">{{ _mc.nh }}</span><span class="rvx-mut" style="font-size:13px"> / </span><span class="rvx-dn">{{ _mc.nl }}</span></div>
+        <div class="gm" id="mkt-hilo-sub">{% if (_mc.nh or 0) >= (_mc.nl or 0) %}{{ t('more highs than lows', '新高多于新低') }}{% else %}{{ t('more lows than highs', '新低多于新高') }}{% endif %}</div>
+        {%- else -%}
+        <div class="gv" id="mkt-hilo">{{ _skel | safe }}</div><div class="gm" id="mkt-hilo-sub"></div>
+        {%- endif -%}
+        <div class="rvx-minibar"><i id="mkt-hilo-bar"></i></div></div>
+      <div class="rvx-gcard"><div class="gl">{{ t('Above 200-day', '站上200日线') }}</div>
+        {%- if _mc and _mc.get('pct_above_200') is not none -%}
+        <div class="gv" id="mkt-above">{{ _mc.pct_above_200 | round | int }}<span style="font-size:13px">%</span></div>
+        <div class="gm" id="mkt-above-sub">{% if _mc.pct_above_200 >= 60 %}{{ t('healthy majority', '健康多数') }}{% elif _mc.pct_above_200 >= 40 %}{{ t('split', '中性') }}{% else %}{{ t('weak', '偏弱') }}{% endif %}</div>
+        {%- else -%}
+        <div class="gv" id="mkt-above">{{ _skel | safe }}</div><div class="gm" id="mkt-above-sub"></div>
+        {%- endif -%}
+        <div class="rvx-minibar"><i id="mkt-above-bar"></i></div></div>
       <div class="rvx-gcard"><div class="gl">{{ t('Money flow', '资金流向') }}</div>
         {% if flow is defined and flow and flow.cluster %}
         {% set FLOW_V_EN = {'concentrated':'Crowding into a few','broad':'Spread across many','mixed':'No single group leads'} %}
@@ -3134,9 +3166,25 @@ try{ if(window.__siViewReads) window.__siViewReads(BASKETS); }catch(e){ console.
 }
 /* ── Sector Intelligence glue: payload fetch, lane trace expands, map scope link, alerts ── */
 function __siFetch(u){ return fetch(u,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }); }
+function __siBreadthFail(){
+  var zh=document.documentElement.getAttribute('data-lang')==='zh';
+  var msg=zh?'该读数更新中。':'This read is being updated.';
+  ['mkt-breadth','mkt-ad','mkt-hilo','mkt-above'].forEach(function(id){
+    var e=document.getElementById(id); if(e) e.textContent=msg;
+  });
+  ['mkt-breadth-sub','mkt-ad-sub','mkt-hilo-sub','mkt-above-sub'].forEach(function(id){
+    var e=document.getElementById(id); if(e) e.textContent='';
+  });
+  var ao=document.getElementById('asof');
+  if(ao){ ao.textContent=msg; ao.classList.add('asof-unknown'); }
+}
 function __siBoot(){
   __siFetch('basketdata/baskets.json').then(function(p){ __siInitPage(p); })
-    .catch(function(){ var el=document.getElementById('actnow'); if(el) el.innerHTML='<div class="rvx-lane-desc">'+ (document.documentElement.getAttribute('data-lang')==='zh' ? '数据加载失败 — 请刷新。' : 'Data failed to load — please refresh.') +'</div>'; });
+    .catch(function(){
+      var el=document.getElementById('actnow');
+      if(el) el.innerHTML='<div class="rvx-lane-desc">'+ (document.documentElement.getAttribute('data-lang')==='zh' ? '数据加载失败 — 请刷新。' : 'Data failed to load — please refresh.') +'</div>';
+      __siBreadthFail();
+    });
 }
 function __siWireTrace(){
   var lanes=document.getElementById('actnow'); if(!lanes||lanes.__siTraceWired) return; lanes.__siTraceWired=true;
@@ -3196,7 +3244,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
   var M = D.market || {}, GR = D.grader || {};
   function lang(){ return document.documentElement.getAttribute("data-lang") === "zh" ? "zh" : "en"; }
   function L(en, zh){ return '<span class="l-en">'+en+'</span><span class="l-zh">'+(zh==null?en:zh)+'</span>'; }
-  function esc(s){ return (s==null?'':String(s)).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c];}); }
+  function esc(s){ return (s==null?'':String(s)).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
   function pc(x){ return (x>0?'+':'')+x.toFixed(1)+'%'; }
   var asof=document.getElementById('scc-asof'); if(asof) asof.textContent=D.as_of||'';
 
@@ -3449,7 +3497,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
       cells.push('<div class="gr-cell"><div class="rg-k">'+k+'</div>'+
         '<div class="rg-v" style="font-size:16px">'+L('about '+x+' in 10','约10次中有'+x+'次')+'</div>'+
         '<div class="rg-d">'+L('directional calls held','方向判断成立')+
-        ' <span class="ftr-t1-help" data-tip-rc-en="'+esc(rcEn)+'" data-tip-rc-zh="'+esc(rcZh)+'">?</span></div></div>');
+        ' <span class="ftr-t1-help" data-tip-en="'+esc(rcEn)+'" data-tip-zh="'+esc(rcZh)+'">?</span></div></div>');
     });
     el.hidden=false;
     el.innerHTML='<h2>'+L('Self-grader — measured accuracy','自评分器 — 已衡量准确度')+'</h2>'+
@@ -3543,14 +3591,24 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
       + '<span class="tr-txt">' + L((tr.n_snapshots || 0) + ' calls logged over ' + days + (days === 1 ? ' day' : ' days'), (tr.n_snapshots || 0) + ' 条记录，历时 ' + days + ' 天') + '</span>';
     var h21 = (tr.horizons || {})['21'];
     if (tr.any_matured && h21 && h21.n_matured) {
-      var bs = h21.by_stage || {}, parts = [];
+      var bs = h21.by_stage || {}, parts = [], rcBitsEn = [], rcBitsZh = [];
       ['running', 'coiling', 'coiling_primed'].forEach(function (st) {
         if (bs[st] && bs[st].hit_rate != null) {
           var w = STAGE_WORD[st] || [st, st];
-          parts.push(L(w[0], w[1]) + ' ' + Math.round(bs[st].hit_rate * 100) + '%');
+          var nSt = bs[st].n || bs[st].n_matured || h21.n_matured || 0;
+          var x = Math.round(Number(bs[st].hit_rate) * 10);
+          if (!(x >= 0)) x = 0; if (x > 10) x = 10;
+          parts.push(L(w[0], w[1]) + ' ' + L('about ' + x + ' in 10', '约10次中有' + x + '次'));
+          rcBitsEn.push(w[0] + ' n=' + nSt + ' hit-rate ' + Math.round(bs[st].hit_rate * 100) + '%');
+          rcBitsZh.push(w[1] + ' n=' + nSt + ' 命中率 ' + Math.round(bs[st].hit_rate * 100) + '%');
         }
       });
-      if (parts.length) h += ' · <span class="tr-txt">' + L('21d hit-rate: ', '21日命中率：') + parts.join(', ') + '</span>';
+      if (parts.length) {
+        var rcEn = 'Technical receipt: 21d n=' + (h21.n_matured || 0) + ' · ' + rcBitsEn.join(' · ') + '.';
+        var rcZh = '技术说明：21日 n=' + (h21.n_matured || 0) + ' · ' + rcBitsZh.join(' · ') + '。';
+        h += ' · <span class="tr-txt">' + L('21d hit-rate: ', '21日命中率：') + parts.join(', ')
+          + ' <span class="ftr-t1-help" data-tip-en="' + esc(rcEn) + '" data-tip-zh="' + esc(rcZh) + '">?</span></span>';
+      }
     } else {
       h += ' · <span class="tr-txt" style="color:var(--muted)">' + L('grades mature at 5 / 10 / 21 / 63d — measured, not asserted', '5 / 10 / 21 / 63 日后成熟评级——实测而非断言') + '</span>';
     }

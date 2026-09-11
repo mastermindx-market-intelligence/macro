@@ -418,12 +418,17 @@ def main() -> int:
     # the display half that #4642 dropped when it transplanted the us_stocks board over
     # sector_central's own five lanes; the engine and builder halves never stopped.
     _bottoming = None
+    _mc = None
+    _baskets_as_of = None
     try:
         _bk_p = site / "basketdata" / "baskets.json"
         if _bk_p.exists():
             _bk = json.loads(_bk_p.read_text(encoding="utf-8")) or {}
+            _baskets_as_of = _bk.get("as_of") or None
+            _ti = _bk.get("theme_intel") or {}
+            _mc = _ti.get("market_concentration") or None
             _bottoming = build_bottoming_context(
-                ((_bk.get("theme_intel") or {}).get("act_now")), _action_board
+                _ti.get("act_now"), _action_board
             )
             if _bottoming is not None:
                 log.info(
@@ -468,6 +473,8 @@ def main() -> int:
             flow=ctx.get("flow"),
             basket_member_syms=ctx.get("basket_member_syms") or [],
             action_board=_action_board,
+            market_concentration=_mc,
+            baskets_as_of=_baskets_as_of,
             generated_utc=ctx.get("generated_utc") or data.get("as_of") or "")
         write_page(site / "sector_central.html", html, encoding="utf-8")
     except Exception as e:  # noqa: BLE001 — a template error must NOT abort the daily engine job

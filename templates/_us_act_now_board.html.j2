@@ -88,9 +88,13 @@
   @media (max-width: 900px) { .actiongrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 560px) { .actiongrid { grid-template-columns: minmax(0, 1fr); } }
   /* Watch strip sits under the five action lanes, not in the same badge row.
-     Counts stay as authored (header vs watch) — the composition is the fix. */
+     Counts stay as authored (header vs watch) — the composition is the fix.
+     Styled only on the sector_central host; us_stocks does not separate a watch
+     strip, so the dashed rule must not leak onto that page. */
+  {%- if _ab_on_si %}
   .act-watch-strip { margin-top: 12px; padding-top: 12px;
     border-top: 1px dashed color-mix(in srgb, var(--line) 80%, transparent); }
+  {%- endif %}
   /* V2 action board — lane column card, restyled to the china anv2 lane idiom
      (operator request 2026-07-11): panel card, 14px radius, 3px accent bar inside
      the header, colored uppercase lane titles, chips-below-name rows.
@@ -368,21 +372,26 @@
     {%- set _sp = namespace(tone=_stag_tone) -%}
     {%- if lane == 'buy_soon' -%}
       {%- set _sp.tone = 'warn' -%}
+      {%- set _sp.tag = ('WAIT', '等待') -%}
       {%- set _sp.read = ('Not a buy yet','尚不可买') -%}
       {%- set _sp.take = ('Setting up — wait for the trigger, not a buy yet.','构筑中 — 等待触发，尚不可买。') -%}
     {%- elif lane == 'on_the_run' -%}
       {%- set _sp.tone = 'warn' -%}
+      {%- set _sp.tag = ("DON'T CHASE", '勿追') -%}
       {%- set _sp.read = ('Wait for a pullback','等待回调') -%}
       {%- set _sp.take = ('Uptrend intact but extended · wait for a pullback.','趋势完好但已延伸 · 等待回调。') -%}
     {%- elif lane == 'take_profits' -%}
       {%- set _sp.tone = 'dn' -%}
+      {%- set _sp.tag = ('TRIM', '减仓') -%}
       {%- set _sp.read = ('Protect gains','保护利润') -%}
       {%- set _sp.take = ('Momentum is fading — protect gains; do not add.','动能转弱 — 保护利润，不要加码。') -%}
     {%- elif lane in ('hold', 'avoid') -%}
       {%- set _sp.tone = 'warn' -%}
+      {%- set _sp.tag = ('HOLD', '持有') if lane == 'hold' else ('STAND ASIDE', '回避') -%}
       {%- set _sp.read = ('No new buying','不新开仓') -%}
       {%- set _sp.take = ('Hold what you own · no new buying.','持有勿动 · 不新开仓。') -%}
     {%- else -%}
+      {%- set _sp.tag = (td(x.label),) -%}
       {%- set _sp.read = ('Trend confirmed','趋势已确认') if _lbl in _up_labels
               else (('Early turn','早期转向') if _lbl in _warn_labels
               else (('Momentum fading','动能转弱') if _lbl in _reduce_labels
@@ -406,6 +415,9 @@
       {%- set _ = _stats.append({'label': ('Breadth','广度'), 'val': '%d/%d'|format(x.buy_zone, x.n_holdings),
                                  'sub': ('in buy zone','处于买入区')}) -%}
     {%- endif -%}
+    {%- if x.get('label') -%}
+      {%- set _ = _stats.append({'label': ('Cycle state','周期状态'), 'val': (x.label, tr(x.label))}) -%}
+    {%- endif -%}
     {%- set _bars = [] -%}
     {%- if x.get('rsi_3d') is not none and x.get('rsi_3d') is defined and x.get('stoch_3d') is not none and x.get('stoch_3d') is defined -%}
       {%- set _ = _bars.append({'label': 'RSI', 'pct': x.rsi_3d, 'val': '%.0f'|format(x.rsi_3d)}) -%}
@@ -425,14 +437,12 @@
       'kind': 'sector', 'mark': icon('sector'), 'tone': _sp.tone,
       'eyebrow': ('Sector pulse · ' ~ x.ticker, '板块脉搏 · ' ~ x.ticker),
       'name': (x.name|e, tr(x.name)|e),
-      'tag': (td(x.label),),
+      'tag': _sp.tag,
       'kicker': ('Current setup','当前形态'),
       'read': _sp.read,
       'sub': (_sub_en|trim, _sub_zh|trim),
       'bars': _bars, 'stats': _stats,
-      'takeaway': ('Signals disagree. Keep size small until they align.','信号不一致，等待同步前保持小仓位。')
-              if (x.get('two_reads_chip') or x.get('ew_two_reads') or x.get('conflict_reason_en'))
-              else _sp.take,
+      'takeaway': _sp.take,
       'foot': ('Click row for the full sector view','点击查看完整板块详情'),
       'foot_b': (x.ticker ~ ' ↗', x.ticker ~ ' ↗'),
     }) }}
@@ -506,9 +516,7 @@
       'read': _tp.read,
       'trust': _trust, 'stats': _stats,
       'leaders': {'label': ('Leaders','龙头'), 'val': x.top_members[:3] | join(' · ')} if x.get('top_members') else none,
-      'takeaway': ('Signals disagree. Wait for breadth and price to align.','信号不一致，等待广度与价格同步。')
-              if x.get('conflict_reason_en')
-              else _tp.take,
+      'takeaway': _tp.take,
       'foot': ('Click row for holdings and full history','点击查看持仓与完整历史'),
       'foot_b': ('Open ↗','打开 ↗'),
     }) }}
@@ -530,13 +538,7 @@
         {{- ab_recov(x) -}}
       </span>
       {%- endif %}
-      {%- if x.get('stat_en') -%}
-        {%- if x.stat_en == 'backtested gate: trim' -%}
-      <span class="act-row-stat"><span class="l-en">risk check: trim</span><span class="l-zh">风险检查：减仓</span></span>
-        {%- else -%}
-      <span class="act-row-stat"><span class="l-en">{{ x.stat_en }}</span><span class="l-zh">{{ x.get('stat_zh', x.stat_en) }}</span></span>
-        {%- endif -%}
-      {%- endif %}
+      {%- if x.get('stat_en') %}<span class="act-row-stat"><span class="l-en">{{ x.stat_en }}</span><span class="l-zh">{{ x.get('stat_zh', x.stat_en) }}</span></span>{%- endif %}
       {{ ab_sector_pop(x, lane) }}
     </a>
     {%- endmacro -%}
@@ -551,6 +553,9 @@
         {%- if x.get('book_wt') %}<span class="ai-book" data-tip-en="This theme has a {{ '%.0f'|format(x.book_wt*100) }}% weight in the model portfolio and has passed its trend-risk check." data-tip-zh="该主题在模型组合中的权重为 {{ '%.0f'|format(x.book_wt*100) }}%，并已通过趋势风险检查。">&#9733;{{ '%.0f'|format(x.book_wt*100) }}%</span>{%- endif %}
         {%- if x.validated %}<span class="ai-val" data-tip-en="Risk check passed — the trend is intact and has not begun a damaging fade." data-tip-zh="风险检查通过 — 趋势仍然完整，尚未出现明显恶化。">&#10003;</span>{%- else %}<span class="ai-lens" data-tip-en="Leadership only — this shows what is leading, but it has not improved the buy decision." data-tip-zh="仅显示领先方向 — 可看出谁在领涨，但尚未改善买入判断。">&asymp;</span>{%- endif %}
         {%- if x.get('run_reason_en') %}<span class="ai-lens" data-tip-en="{{ x.run_reason_en }}" data-tip-zh="{{ x.get('run_reason_zh', x.run_reason_en) }}">&#8635;</span>{%- endif %}
+        {%- if not _ab_on_si and x.get('score') is not none and x.get('score') is defined %}{%- set _sc = x.score -%}
+        <span class="act-row-score{% if _sc >= 60 %} act-score-hi{% elif _sc >= 40 %} act-score-mid{% else %} act-score-lo{% endif %}">{{ '%.0f'|format(_sc) }}</span>
+        {%- endif %}
       </span>
       {#- FIX 1: conflict chip (warn tone) when theme was demoted from buy lanes -#}
       {#- The ab_chip() call keeps its exact pinned spelling (tests/test_theme_scoring_conflicted.py
@@ -625,7 +630,7 @@
             {% if x.kind == 'theme' %}{{ ab_theme_row(x, 'buy_now') }}{% else %}{{ ab_sector_row(x, 'buy_now') }}{% endif %}
           {% else %}<p class="muted sm" style="padding:8px 12px">{{ t('None today — nothing has fully confirmed a fresh cycle low.', '今日无 — 尚无标的完全确认新的周期低点。') }}</p>{% endfor %}
           {% if _ab_gate and (action_board.get('buy_now') or [])|length > (_bn_rows|length) %}{{ ab_more((action_board.get('buy_now') or [])|length - (_bn_rows|length)) }}{% endif %}
-          {%- if not _ab_on_si and _more_bn > 0 %}<p class="pg-more muted sm" style="padding:4px 12px 8px"><a href="sector_central.html#actnow-section"><span class="l-en">+{{ _more_bn }} more — full list on Sector Intelligence →</span><span class="l-zh">还有 {{ _more_bn }} 个 — 完整列表见行业情报页 →</span></a></p>{%- endif %}
+          {%- if not _ab_on_si and _more_bn > 0 %}<p class="muted sm" style="padding:4px 12px 8px"><a href="sector_central.html#actnow-section"><span class="l-en">+{{ _more_bn }} more — full list on Sector Intelligence →</span><span class="l-zh">还有 {{ _more_bn }} 个 — 完整列表见行业情报页 →</span></a></p>{%- endif %}
         </div>
         {% if _bn_cnt > 3 and not _ab_gate %}<button class="lst-more act-more" type="button" aria-expanded="false" style="margin:6px 10px 8px;width:calc(100% - 20px)"><span class="lm-show">{{ t('Show more','显示更多') }} ({{ _bn_cnt - 3 }}) ▾</span><span class="lm-hide">{{ t('Show less','收起') }} ▴</span></button>{% endif %}
       </div>
@@ -644,7 +649,7 @@
             {% if x.kind == 'theme' %}{{ ab_theme_row(x, 'buy_soon') }}{% else %}{{ ab_sector_row(x, 'buy_soon') }}{% endif %}
           {% else %}<p class="muted sm" style="padding:8px 12px">{{ t('No imminent setups.', '暂无临近的构筑。') }}</p>{% endfor %}
           {% if _ab_gate and (action_board.get('buy_soon') or [])|length > (_bs_rows|length) %}{{ ab_more((action_board.get('buy_soon') or [])|length - (_bs_rows|length)) }}{% endif %}
-          {%- if not _ab_on_si and _more_bs > 0 %}<p class="pg-more muted sm" style="padding:4px 12px 8px"><a href="sector_central.html#actnow-section"><span class="l-en">+{{ _more_bs }} more — full list on Sector Intelligence →</span><span class="l-zh">还有 {{ _more_bs }} 个 — 完整列表见行业情报页 →</span></a></p>{%- endif %}
+          {%- if not _ab_on_si and _more_bs > 0 %}<p class="muted sm" style="padding:4px 12px 8px"><a href="sector_central.html#actnow-section"><span class="l-en">+{{ _more_bs }} more — full list on Sector Intelligence →</span><span class="l-zh">还有 {{ _more_bs }} 个 — 完整列表见行业情报页 →</span></a></p>{%- endif %}
         </div>
         {% if _bs_cnt > 3 and not _ab_gate %}<button class="lst-more act-more" type="button" aria-expanded="false" style="margin:6px 10px 8px;width:calc(100% - 20px)"><span class="lm-show">{{ t('Show more','显示更多') }} ({{ _bs_cnt - 3 }}) ▾</span><span class="lm-hide">{{ t('Show less','收起') }} ▴</span></button>{% endif %}
       </div>
@@ -663,7 +668,7 @@
             {% if x.kind == 'theme' %}{{ ab_theme_row(x, 'on_the_run') }}{% else %}{{ ab_sector_row(x, 'on_the_run') }}{% endif %}
           {% else %}<p class="muted sm" style="padding:8px 12px">{{ t('Nothing extended right now.', '当前无过度延伸的标的。') }}</p>{% endfor %}
           {% if _ab_gate and (action_board.get('on_the_run') or [])|length > (_run_rows|length) %}{{ ab_more((action_board.get('on_the_run') or [])|length - (_run_rows|length)) }}{% endif %}
-          {%- if not _ab_on_si and _more_run > 0 %}<p class="pg-more muted sm" style="padding:4px 12px 8px"><a href="sector_central.html#actnow-section"><span class="l-en">+{{ _more_run }} more — full list on Sector Intelligence →</span><span class="l-zh">还有 {{ _more_run }} 个 — 完整列表见行业情报页 →</span></a></p>{%- endif %}
+          {%- if not _ab_on_si and _more_run > 0 %}<p class="muted sm" style="padding:4px 12px 8px"><a href="sector_central.html#actnow-section"><span class="l-en">+{{ _more_run }} more — full list on Sector Intelligence →</span><span class="l-zh">还有 {{ _more_run }} 个 — 完整列表见行业情报页 →</span></a></p>{%- endif %}
         </div>
         {% if _run_cnt > 3 and not _ab_gate %}<button class="lst-more act-more" type="button" aria-expanded="false" style="margin:6px 10px 8px;width:calc(100% - 20px)"><span class="lm-show">{{ t('Show more','显示更多') }} ({{ _run_cnt - 3 }}) ▾</span><span class="lm-hide">{{ t('Show less','收起') }} ▴</span></button>{% endif %}
       </div>
@@ -682,7 +687,7 @@
             {% if x.kind == 'theme' %}{{ ab_theme_row(x, 'take_profits') }}{% else %}{{ ab_sector_row(x, 'take_profits') }}{% endif %}
           {% else %}<p class="muted sm" style="padding:8px 12px">{{ t('Nothing topping.', '无标的做顶。') }}</p>{% endfor %}
           {% if _ab_gate and (action_board.get('take_profits') or [])|length > (_tp_rows|length) %}{{ ab_more((action_board.get('take_profits') or [])|length - (_tp_rows|length)) }}{% endif %}
-          {%- if not _ab_on_si and _more_tp > 0 %}<p class="pg-more muted sm" style="padding:4px 12px 8px"><a href="sector_central.html#actnow-section"><span class="l-en">+{{ _more_tp }} more — full list on Sector Intelligence →</span><span class="l-zh">还有 {{ _more_tp }} 个 — 完整列表见行业情报页 →</span></a></p>{%- endif %}
+          {%- if not _ab_on_si and _more_tp > 0 %}<p class="muted sm" style="padding:4px 12px 8px"><a href="sector_central.html#actnow-section"><span class="l-en">+{{ _more_tp }} more — full list on Sector Intelligence →</span><span class="l-zh">还有 {{ _more_tp }} 个 — 完整列表见行业情报页 →</span></a></p>{%- endif %}
         </div>
         {% if _tp_cnt > 3 and not _ab_gate %}<button class="lst-more act-more" type="button" aria-expanded="false" style="margin:6px 10px 8px;width:calc(100% - 20px)"><span class="lm-show">{{ t('Show more','显示更多') }} ({{ _tp_cnt - 3 }}) ▾</span><span class="lm-hide">{{ t('Show less','收起') }} ▴</span></button>{% endif %}
       </div>
@@ -706,7 +711,7 @@
             {% if x.kind == 'theme' %}<div data-theme-id="{{ x.slug or x.ticker }}">{{ ab_theme_row(x, 'avoid') }}</div>{% else %}{{ ab_sector_row(x, 'avoid') }}{% endif %}
           {% endfor %}
           {% if _ab_gate and _hold_cnt > ((_hold_rows|length) + (_avoid_rows|length)) %}{{ ab_more(_hold_cnt - (_hold_rows|length) - (_avoid_rows|length)) }}{% endif %}
-          {%- if not _ab_on_si and _more_hold > 0 %}<p class="pg-more muted sm" style="padding:4px 12px 8px"><a href="sector_central.html#actnow-section"><span class="l-en">+{{ _more_hold }} more — full list on Sector Intelligence →</span><span class="l-zh">还有 {{ _more_hold }} 个 — 完整列表见行业情报页 →</span></a></p>{%- endif %}
+          {%- if not _ab_on_si and _more_hold > 0 %}<p class="muted sm" style="padding:4px 12px 8px"><a href="sector_central.html#actnow-section"><span class="l-en">+{{ _more_hold }} more — full list on Sector Intelligence →</span><span class="l-zh">还有 {{ _more_hold }} 个 — 完整列表见行业情报页 →</span></a></p>{%- endif %}
         </div>
         {% if _hold_cnt > 3 and not _ab_gate %}
         <button class="lst-more" type="button" aria-expanded="false" style="margin:6px 10px 8px;width:calc(100% - 20px)"><span class="lm-show">{{ t('Show more', '显示更多') }} ({{ _hold_cnt - 3 }}) ▾</span><span class="lm-hide">{{ t('Show less', '收起') }} ▴</span></button>
@@ -714,13 +719,16 @@
       </div>
     </div>
       {#- ---- WATCH STRIP: BOTTOMING WATCH (W-A, #4599; restored after #4642) ----
-          Not a sixth action lane — a full-width watch strip under the five. Renders
-          only where a bottoming payload is passed (the SI Overview); self-hides on
-          us_stocks.html, whose action_board carries no bottoming keys. Outside
-          .actiongrid so its badge cannot be summed with the five lane counts. -#}
+          Not a sixth action lane — a full-width watch strip under the five. Emit
+          the wrapper only when watch rows exist (an empty wrapper painted a
+          dashed rule on us_stocks). Styled only on the sector_central host.
+          Outside .actiongrid so its badge cannot be summed with the five lane
+          counts. -#}
+    {%- if bottoming is defined and bottoming and (bottoming.get('bottoming_watch') or []) %}
     <div class="act-watch-strip">
       {% include "_us_bottoming_watch.html.j2" %}
     </div>
+    {%- endif %}
   </div>{# /panel — What to act on now (standouts split into their own panel 2026-07-11) #}
 {%- endif -%}
 {% endif %}
