@@ -28,6 +28,30 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_sector_central")
 
 
+def read_sector_participation_20() -> dict:
+    """W1: bounded, read-only attach of the 20-session participation artifact,
+    if the existing breadth owner has published one — this builder never fetches
+    market data itself (research/skylit/W1_SOURCE_IMPLEMENTATION_RULING_2026-09-11.md
+    §2: "The builder must not fetch market data"). Never raises: absence is the
+    expected, honest "missing input" state while the licensed acquisition remains
+    unwired from the nightly collector run (a separate, explicitly gated step)."""
+    try:
+        ppath = config.data_dir() / "breadth" / "sector_participation_20.parquet"
+        if not ppath.exists():
+            return {"available": False, "note": "not yet published"}
+        import pandas as pd  # local: keeps this module import-light (test_import_stays_light)
+        part = pd.read_parquet(ppath)
+        return {
+            "available": not part.empty,
+            "basis": "split_adjusted",
+            "window_sessions": 20,
+            "as_of": part.index.max().isoformat() if not part.empty else None,
+        }
+    except Exception as e:  # noqa: BLE001 — additive, never fatal
+        log.warning("sector_central: W1 participation read failed: %s", e)
+        return {"available": False, "note": "read error"}
+
+
 #: Board lanes that carry the reduce-side read. The graduation-gap chip only ever
 #: belongs on these — a name the cycle organ reads as recovering while the longer
 #: trend still says reduce. Stamping it on a buy-side lane would invert its meaning.
@@ -352,6 +376,11 @@ def main() -> int:
         n_logged = 0
         log.warning("sector_central: grader failed: %s", e)
         data["grader"] = {"available": False, "note": "grader error"}
+
+    # W1: 20-session sector participation — a separate DESCRIPTIVE context attached
+    # AFTER the grader above, never inside cc.compute() or the graded object
+    # (research/skylit/W1_SOURCE_IMPLEMENTATION_RULING_2026-09-11.md §2).
+    data["sector_participation"] = read_sector_participation_20()
 
     payload = "window.SECTOR_CENTRAL=" + json.dumps(data, separators=(",", ":"), ensure_ascii=False) + ";\n"
     (site / "sector_central_data.js").write_text(payload, encoding="utf-8")
