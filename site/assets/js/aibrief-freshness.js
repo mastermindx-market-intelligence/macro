@@ -2,9 +2,9 @@
  *
  * The canonical brief bodies remain server-rendered by the existing shared Jinja
  * renderer. This client never interprets model JSON and never reimplements that
- * renderer. It periodically fetches the canonical aibrief.html, compares each
- * lens's ISO state-as-of date, and swaps in only a strictly newer rendered body.
- * A failed request leaves the last valid body untouched.
+ * renderer. It periodically fetches the current page's own rendered HTML,
+ * compares each lens's ISO state-as-of date, and swaps in only a strictly newer
+ * rendered body. A failed request leaves the last valid body untouched.
  */
 (function (root, factory) {
   "use strict";
@@ -106,7 +106,7 @@
 
         var currentDate = dateOf(current);
         // Equal-date wrappers can contain surface-specific caller/footer markup.
-        // Only a strictly newer state date is safe to move cross-surface.
+        // Only a strictly newer state date is safe to move.
         if (currentDate && candidate.date <= currentDate) return;
 
         var replacement = cloneInto(localDocument, candidate.node);
@@ -130,11 +130,15 @@
       var lastStartedAt = 0;
       var bound = false;
 
-      function canonicalUrl(stamp) {
+      function surfaceUrl(stamp) {
         var href = (windowRef.location && windowRef.location.href)
           || (documentRef && documentRef.baseURI)
           || "http://localhost/";
-        var url = new URL("/aibrief.html", href);
+        var url = new URL(href);
+        // A hash names an in-page dialog and any existing query may select a
+        // presentation mode. Fetch the canonical bytes for this same surface.
+        url.hash = "";
+        url.search = "";
         url.searchParams.set("brief_refresh", String(stamp));
         return url.href;
       }
@@ -166,7 +170,7 @@
         var request = Promise.resolve()
           .then(function () {
             if (typeof fetchRef !== "function") throw new Error("fetch unavailable");
-            return fetchRef(canonicalUrl(startedAt), {
+            return fetchRef(surfaceUrl(startedAt), {
               cache: "no-store",
               credentials: "same-origin",
               headers: { Accept: "text/html" }
