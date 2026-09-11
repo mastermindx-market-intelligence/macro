@@ -6,7 +6,7 @@
 <span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
 {%- endmacro %}
 {% macro help(en, zh='') -%}
-<span class="help">?<span class="tip"><span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span></span></span>
+<span class="help" tabindex="0" role="button">?<span class="tip"><span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span></span></span>
 {%- endmacro %}
 {%- set _acc = accumulation if (accumulation is defined and accumulation) else [] -%}
 {%- set _acc_n = _acc | length -%}
@@ -21,10 +21,13 @@
     {%- if _acc_asof -%}
     <span class="dtp-asof"><span class="l-en">as of {{ _acc_asof }}</span><span class="l-zh">截至 {{ _acc_asof }}</span></span>
     {%- endif -%}
+    {%- if _acc_n > 8 -%}
+    <span class="muted" style="font-size:12px;font-weight:400;float:right"><span class="l-en">Top 8 · {{ _acc_n }} tracked</span><span class="l-zh">前 8 · 共 {{ _acc_n }} 项跟踪</span></span>
+    {%- endif -%}
   </h2>
   <p style="font-size:12.5px;color:color-mix(in srgb,var(--text) 72%,transparent);margin:2px 0 12px;line-height:1.5;max-width:78ch"><span class="l-en">Holdings gaining ETF weight faster than price alone explains — a heads-up on quiet accumulation, not a buy list.</span><span class="l-zh">板块 ETF 中权重增长快于价格本身的持仓 — 悄然增持的提示信号，而非买入清单。</span></p>
   {% if _acc_n %}
-    <table>
+    <div class="tbl-scroll"><table>
       <tr>
         <th class="l">{{ t('sector', '板块') }}</th>
         <th class="l">{{ t('stock', '个股') }}</th>
@@ -41,11 +44,11 @@
         <td class="{{ 'pos' if a.active_change >= 0 else 'neg' }}"><b>{{ "%+.2f" | format(a.active_change) }}pp</b></td>
         <td class="muted"{% if a.get('flow_mn') is not none %} data-sort="{{ a.flow_mn }}"{% endif %}>{{ a.flow_str }}</td>
         <td class="l">
-          {% if a.ladder %}<span class="pill st-{{ a.ladder.state | replace(' ', '_') }}">{{ td(a.ladder.label) }}</span>{% if a.confirmed %} ✅{% endif %}{% else %}<span class="muted"><span class="l-en">no signal yet</span><span class="l-zh">暂无信号</span></span>{% endif %}{% if a.vol and a.vol.surging %} <span title="volume {{ a.vol.ratio }}× its recent average">📊</span>{% endif %}
+          {% if a.ladder %}<span class="pill st-{{ a.ladder.state | replace(' ', '_') }}">{{ td(a.ladder.label) }}</span>{% if a.confirmed %} ✅{% endif %}{% else %}<span class="muted"><span class="l-en">no signal yet</span><span class="l-zh">暂无信号</span></span>{% endif %}{% if a.vol and a.vol.surging %} <span class="muted" data-tip-en="volume {{ a.vol.ratio }}× its recent average" data-tip-zh="成交量为其近期均值的 {{ a.vol.ratio }} 倍"><span class="l-en">vol</span><span class="l-zh">量</span></span>{% endif %}
         </td>
       </tr>
       {% endfor %}
-    </table>
+    </table></div>
   {% else %}
     <p class="muted">{{ t('Building — needs at least two daily holdings snapshots per fund (collection began 2026-06-11). Decomposed accumulation signals appear once a second snapshot lands.', '构建中 — 每只基金至少需要两个每日持仓快照（采集自 2026-06-11 开始）。第二个快照落地后将显示拆解后的增持信号。') }}</p>
   {% endif %}

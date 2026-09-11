@@ -1,0 +1,7 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/_mag7_tape_strip.html.j2
+  - templates/_us_act_now_board.html.j2
+  - templates/dashboard.html.j2
+  - templates/_accumulation_watch.html.j2
+manifest: mockups/evidence/us-stocks-compression/manifest.json

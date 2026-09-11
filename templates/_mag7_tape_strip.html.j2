@@ -121,11 +121,12 @@
   }
   .acb-tape-eyebrow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
   html[data-lang="zh"] .acb-tape-eyebrow{letter-spacing:.06em}
-  .acb-tape-sym{font-weight:700}
-  .acb-tape-fig{font-variant-numeric:tabular-nums;font-weight:700}
+  .acb-tape-line{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;min-width:0}
+  .acb-tape-sym{font-weight:700;white-space:nowrap}
+  .acb-tape-fig{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
   .acb-tape-fig.is-up{color:var(--ink-up, var(--up))}
   .acb-tape-fig.is-down{color:var(--ink-down, var(--down))}
-  .acb-tape-say{font-size:12.5px;color:color-mix(in srgb,var(--text) 78%,transparent)}
+  .acb-tape-say{font-size:12.5px;color:color-mix(in srgb,var(--text) 78%,transparent);flex:1 1 12em;min-width:0}
   .acb-tape-asof{margin-left:auto;font-size:11px;color:var(--muted)}
   .acb-tape-foot{flex:1 0 100%;margin:6px 0 0;font-size:12.5px;line-height:1.5}
   .m7t-rare{color:var(--muted)}

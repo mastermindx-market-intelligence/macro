@@ -9,7 +9,7 @@
 {% import "_prophet_receipts.html.j2" as pvr %}
 {% import "_decision_card.html.j2" as dc %}
 {% macro help(en, zh='') -%}
-<span class="help">?<span class="tip"><span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span></span></span>
+<span class="help" tabindex="0" role="button">?<span class="tip"><span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span></span></span>
 {%- endmacro %}
 {% macro t(en, zh='') -%}
 <span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
@@ -331,6 +331,7 @@
           width: 15px; height: 15px; border-radius: 50%; border: 1px solid var(--muted);
           color: var(--muted); font-size: 10px; font-weight: 600; cursor: help;
           position: relative; vertical-align: middle; margin-left: 5px; flex: none; }
+  .help:focus-visible { outline: 2px solid var(--ink-info, var(--link)); outline-offset: 2px; }
   .help .tip { display: none; position: absolute; bottom: 140%; left: 50%;
                transform: translateX(-50%); width: 330px;
                background: var(--panel); border: 1px solid var(--line);
@@ -340,14 +341,16 @@
                letter-spacing: normal; box-shadow: var(--popover-shadow);
                pointer-events: auto; cursor: auto; white-space: normal;
                max-height: min(60vh, 420px); overflow-y: auto; overscroll-behavior: contain; }
-  /* invisible hover pad across the gap between the ? icon and the tip box —
-     without it the :hover chain breaks mid-travel and the tip vanishes before
-     the cursor can reach (and scroll) it. Lives on .help, not .tip: the tip
-     is a scroll container (overflow-y:auto), which clips its own pseudos. */
-  .help:hover::before { content: ''; position: absolute; bottom: 100%; left: -30px; right: -30px; height: 10px; }
-  .help:hover .tip, .help.tip-open .tip { display: block; }
+  /* Tap-open class is the coarse-pointer floor (S1 flash-and-vanish). Hover
+     pad + :hover open stay on fine pointers only — a tap on 390 must not
+     flash the tip via :hover then drop it when the hover ends. */
+  .help.tip-open .tip { display: block; }
+  @media (hover: hover) and (pointer: fine) {
+    .help:hover::before { content: ''; position: absolute; bottom: 100%; left: -30px; right: -30px; height: 10px; }
+    .help:hover .tip { display: block; }
+    th .help:hover::before, .help.below:hover::before { bottom: auto; top: 100%; }
+  }
   th .help .tip, .help.below .tip { bottom: auto; top: 140%; }
-  th .help:hover::before, .help.below:hover::before { bottom: auto; top: 100%; }
   /* keep tooltips on-screen near the right/left viewport edges */
   .help.edge-right .tip { left: auto; right: 0; transform: none; }
   .help.edge-left .tip { left: 0; right: auto; transform: none; }
@@ -2229,17 +2232,20 @@
      rules below come after the include so they still win. #}
   {% include "_stocks_header_css.html.j2" %}
   <style id="stocks-home-css">
-  /* Keep the two strongest existing surfaces exactly as designed:
-     #action-board first, then the Prophet #us-standouts scorecards. Remove only
-     the duplicated research boards that pushed both below the fold. */
+  /* S2 compression: the surviving L1 panels stay in flow (#action-board,
+     #us-standouts, #dash-tape-band, #equity-scoreboard, #sectors,
+     #dash-mtf-section, #holdings). Hide only leftover research boards that
+     are not in the frozen 7-panel list. */
   body.page-stocks #sector-heat,
   body.page-stocks #sentiment-regime,
-  body.page-stocks #cross-asset-macro,
-  body.page-stocks #dash-tape-band,
-  body.page-stocks #equity-scoreboard,
-  body.page-stocks #sectors,
-  body.page-stocks #dash-mtf-section,
-  body.page-stocks #holdings{display:none!important}
+  body.page-stocks #cross-asset-macro{display:none!important}
+  /* Aurora CSS is scoped to body.page-macro; the markup still emits on stocks
+     and the unstyled bloom sits on the L1 tables. Hide it here. */
+  body.page-stocks .mx5-aurora{display:none}
+  @media (max-width: 560px){
+    #holdings h2 a{float:none !important;display:inline-block;margin:4px 12px 0 0 !important}
+    #accumulation h2 .muted{float:none;display:inline-block;margin:4px 0 0}
+  }
   /* post-stack: consolidate */
   .dtp-token.loading{color:var(--muted);border-color:var(--line)}
   .dtp-token.loading .dtp-dot{background:var(--muted);animation:none}
@@ -17592,7 +17598,7 @@ html[data-theme="light"] :is(
       <a href="etfs.html" class="muted" style="font-size:12px;font-weight:400;float:right">{% if _hold_n > 8 %}{{ t('See all ' ~ _hold_n ~ ' →', '查看全部 ' ~ _hold_n ~ ' 项 →') }}{% else %}{{ t('Full board →', '完整看板 →') }}{% endif %}</a>
     </h2>
     {% if _hold_rows %}
-      <table>
+      <div class="tbl-scroll"><table>
         <tr><th class="l">{{ t('fund', '基金') }}</th><th class="l">{{ t('stock', '个股') }}</th><th class="l">{{ t('sector', '板块') }}</th><th class="r">{{ t('weight', '权重') }}</th><th class="r">{{ t('conviction Δwt', '信念权重Δ') }}</th><th class="l">{{ t('technical', '技术面') }}</th></tr>
         {% for h in _hold_rows %}
         <tr><td class="l"><b>{{ h.fund }}</b></td>
@@ -17602,7 +17608,7 @@ html[data-theme="light"] :is(
             <td class="r {{ ('pos' if h.conviction_pp >= 0 else 'neg') if h.get('conviction_pp') is not none else 'muted' }}"><b>{% if h.get('conviction_pp') is not none %}{{ "%+.2f" | format(h.conviction_pp) }}pp{% else %}—{% endif %}</b></td>
             <td class="l">{% if h.ladder %}<span class="pill st-{{ h.ladder.state | replace(' ', '_') }}">{{ td(h.ladder.label) }}</span>{% if h.confirmed %} ✅{% endif %}{% else %}<span class="muted"><span class="l-en">no signal yet</span><span class="l-zh">暂无信号</span></span>{% endif %}</td></tr>
         {% endfor %}
-      </table>
+      </table></div>
     {% else %}
       <p class="muted">{{ t('No significant manager moves in the current window (needs a few trading days of snapshots).', '当前窗口内无显著的经理人动作（需要数个交易日的快照）。') }}</p>
     {% endif %}
@@ -17764,24 +17770,36 @@ window.__CHART_SWAP__ = {
     if (h) place(h);
   }, true);
 
-  /* MOB-03: tap-to-toggle on touch devices; close on outside tap.
-     Clicks INSIDE the open tip body (scrolling, selecting text) must not
-     toggle it closed — only the ? icon itself toggles. */
+  /* MOB-03 / S1 flash-and-vanish: pointerdown (capture) owns open/close on
+     coarse pointers. :hover is gated to fine pointers in CSS; a tap must not
+     flash the nested .tip then drop it when hover ends. Clicks INSIDE the
+     open tip body (scrolling, selecting text) must not toggle it closed. */
   var _tipOpen = null;
-  document.addEventListener('click', function(e){
+  function _toggleHelpTip(h){
+    if(_tipOpen && _tipOpen !== h){ _tipOpen.classList.remove('tip-open'); _tipOpen=null; }
+    var wasOpen = h.classList.contains('tip-open');
+    h.classList.toggle('tip-open', !wasOpen);
+    _tipOpen = wasOpen ? null : h;
+    if(!wasOpen) place(h);
+  }
+  document.addEventListener('pointerdown', function(e){
     if(e.target.closest && e.target.closest('.help .tip')) return;
     var h = e.target.closest && e.target.closest('.help');
     if(h){
+      e.preventDefault();
       e.stopPropagation();
-      if(_tipOpen && _tipOpen !== h){ _tipOpen.classList.remove('tip-open'); _tipOpen=null; }
-      var wasOpen = h.classList.contains('tip-open');
-      h.classList.toggle('tip-open', !wasOpen);
-      _tipOpen = wasOpen ? null : h;
-      if(!wasOpen) place(h);
+      _toggleHelpTip(h);
       return;
     }
-    /* outside tap closes open tip */
     if(_tipOpen){ _tipOpen.classList.remove('tip-open'); _tipOpen=null; }
+  }, true);
+  document.addEventListener('keydown', function(e){
+    var h = e.target && e.target.closest && e.target.closest('.help');
+    if(!h) return;
+    if(e.key === 'Enter' || e.key === ' '){
+      e.preventDefault();
+      _toggleHelpTip(h);
+    }
   });
 })();
 </script>

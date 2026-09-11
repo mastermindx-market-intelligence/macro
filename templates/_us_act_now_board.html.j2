@@ -18,7 +18,7 @@
    overlay, two-reads) is pre-merged onto each item by action_board(), so the board
    needs nothing from the view-model but action_board (shock_state is optional/guarded). -#}
 {% macro help(en, zh='') -%}
-<span class="help">?<span class="tip"><span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span></span></span>
+<span class="help" tabindex="0" role="button">?<span class="tip"><span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span></span></span>
 {%- endmacro %}
 {% macro t(en, zh='') -%}
 <span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
@@ -259,6 +259,7 @@
           width: 15px; height: 15px; border-radius: 50%; border: 1px solid var(--muted);
           color: var(--muted); font-size: 10px; font-weight: 600; cursor: help;
           position: relative; vertical-align: middle; margin-left: 5px; flex: none; }
+  .help:focus-visible { outline: 2px solid var(--ink-info, var(--link)); outline-offset: 2px; }
   .help .tip { display: none; position: absolute; bottom: 140%; left: 50%;
                transform: translateX(-50%); width: 330px;
                background: var(--panel); border: 1px solid var(--line);
@@ -268,14 +269,16 @@
                letter-spacing: normal; box-shadow: var(--popover-shadow);
                pointer-events: auto; cursor: auto; white-space: normal;
                max-height: min(60vh, 420px); overflow-y: auto; overscroll-behavior: contain; }
-  /* invisible hover pad across the gap between the ? icon and the tip box —
-     without it the :hover chain breaks mid-travel and the tip vanishes before
-     the cursor can reach (and scroll) it. Lives on .help, not .tip: the tip
-     is a scroll container (overflow-y:auto), which clips its own pseudos. */
-  .help:hover::before { content: ''; position: absolute; bottom: 100%; left: -30px; right: -30px; height: 10px; }
-  .help:hover .tip, .help.tip-open .tip { display: block; }
+  /* Tap-open class is the coarse-pointer floor (S1 flash-and-vanish). Hover
+     pad + :hover open stay on fine pointers only — a tap on 390 must not
+     flash the tip via :hover then drop it when the hover ends. */
+  .help.tip-open .tip { display: block; }
+  @media (hover: hover) and (pointer: fine) {
+    .help:hover::before { content: ''; position: absolute; bottom: 100%; left: -30px; right: -30px; height: 10px; }
+    .help:hover .tip { display: block; }
+    th .help:hover::before, .help.below:hover::before { bottom: auto; top: 100%; }
+  }
   th .help .tip, .help.below .tip { bottom: auto; top: 140%; }
-  th .help:hover::before, .help.below:hover::before { bottom: auto; top: 100%; }
   /* keep tooltips on-screen near the right/left viewport edges */
   .help.edge-right .tip { left: auto; right: 0; transform: none; }
   .help.edge-left .tip { left: 0; right: auto; transform: none; }

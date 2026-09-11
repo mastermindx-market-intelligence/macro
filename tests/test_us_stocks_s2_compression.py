@@ -209,20 +209,102 @@ def test_sectors_receipt_sweep_and_band_boundaries():
     assert "日线／3 日线／周线是否一致" in sec
 
 
-def test_lex_holds_six_theme_keys_and_skips_neocloud():
-    """S2 §4: six frozen keys land; Neocloud is held for the seat."""
+def test_lex_holds_theme_keys_and_neocloud_gpu_rental_ruling():
+    """S2 §4 + seat ruling: combined Neocloud / AI Data Center key ships the
+    GPU-rental ZH; the overbroad 新一代云服务商 candidate is rejected."""
     for en, zh in (
         ("Uranium", "铀矿"),
         ("Junior Gold Miners", "小型黄金矿商"),
         ("Meme / Retail", "迷因股／散户"),
         ("AI & Big Data", "人工智能与大数据"),
         ("AI Data Center", "人工智能数据中心"),
+        ("Neocloud / AI Data Center", "新型 GPU 云服务商 / AI 数据中心"),
     ):
         assert i18n.LEX[en] == zh
     assert "Neocloud" not in i18n.LEX
-    assert "Neocloud / AI Data Center" not in i18n.LEX
-    html = i18n.td("Uranium")
-    assert "铀矿" in str(html)
+    assert "新一代云服务商" not in i18n.LEX.values()
+    html = i18n.td("Neocloud / AI Data Center")
+    assert "新型 GPU 云服务商 / AI 数据中心" in str(html)
+    page = _stocks(holdings_changes=[{**_hold_row(1), "sector": "Neocloud / AI Data Center"}])
+    hold = page[page.index('id="holdings"'):]
+    assert "新型 GPU 云服务商 / AI 数据中心" in hold
+    assert "新一代云服务商" not in hold
+
+
+def _acc_row(i: int) -> dict:
+    return {
+        "fund": "XLK", "sector": "Information Technology",
+        "ticker": f"A{i:02d}", "name": f"Name {i}",
+        "raw_change": 0.10, "active_change": 0.20, "active_pct": 0.01,
+        "flow_str": "$1M", "flow_mn": 1.0,
+        "direction": "up", "confirmed": False,
+        "ladder": None, "window": "2026-09-01..2026-09-08", "vol": None,
+    }
+
+
+def test_accumulation_cap_label_present_when_n_gt_8():
+    """Seat ruling: labelled cap, no link. N is the producer list length."""
+    html = _env().get_template("_accumulation_watch.html.j2").render(
+        accumulation=[_acc_row(i) for i in range(12)])
+    assert "Top 8 · 12 tracked" in html
+    assert "前 8 · 共 12 项跟踪" in html
+    assert html.count("<tr>") == 9  # header + 8 data
+    h2 = html[html.index("<h2>"):html.index("</h2>")]
+    assert "<a " not in h2
+    assert "See all" not in html
+    assert "查看全部" not in html
+    assert 'class="tbl-scroll"' in html
+
+
+def test_accumulation_cap_label_absent_when_n_le_8():
+    html = _env().get_template("_accumulation_watch.html.j2").render(
+        accumulation=[_acc_row(i) for i in range(5)])
+    assert "Top 8" not in html
+    assert "前 8" not in html
+    assert html.count("<tr>") == 6  # header + 5
+
+
+def test_surviving_l1_panels_are_not_display_none():
+    """S2 §1.2: the frozen 7 stay in flow; leftover research boards stay hidden."""
+    html = _stocks()
+    hide_start = html.index("body.page-stocks #sector-heat")
+    hide_end = html.index("{display:none!important}", hide_start)
+    hide = html[hide_start:hide_end]
+    for pid in ("dash-tape-band", "equity-scoreboard", "sectors",
+                "dash-mtf-section", "holdings"):
+        assert pid not in hide, pid
+    assert "sector-heat" in hide
+    assert "sentiment-regime" in hide
+    assert "cross-asset-macro" in hide
+
+
+def test_holdings_table_scrolls_in_container():
+    html = _stocks(holdings_changes=[_hold_row(i) for i in range(12)])
+    hold = html[html.index('id="holdings"'):]
+    hold = hold[:hold.index('id="health"')] if 'id="health"' in hold else hold
+    assert 'class="tbl-scroll"' in hold
+
+
+def test_evidence_fixture_render_carries_subjects_and_control_has_no_tape():
+    """Round-2 capture VM: four G-gate subjects present; control has no tape."""
+    from scripts.capture_us_stocks_compression_evidence import (
+        render_sector_central_control, render_stocks_page,
+    )
+    html = render_stocks_page()
+    for pid in L1_IDS:
+        assert f'id="{pid}"' in html, pid
+    assert 'class="acb-tape"' in html
+    assert "Theme heat &amp; reasons → Sector Intelligence" in html
+    assert "See all 12 →" in html
+    assert "新型 GPU 云服务商 / AI 数据中心" in html
+    assert "no signal yet" in html
+    assert 'class="mtf-skel"' in html
+    assert "body.page-stocks #holdings{display:none!important}" not in html
+    assert "body.page-stocks .mx5-aurora{display:none}" in html
+    ctrl = render_sector_central_control()
+    assert 'id="action-board"' in ctrl
+    assert "acb-tape" not in ctrl
+    assert "Mega-cap tape" not in ctrl
 
 
 def test_macro_mode_untouched_by_demotion():

@@ -315,6 +315,7 @@ LEX: dict[str, str] = {
     "Meme / Retail": "迷因股／散户",
     "AI & Big Data": "人工智能与大数据",
     "AI Data Center": "人工智能数据中心",
+    "Neocloud / AI Data Center": "新型 GPU 云服务商 / AI 数据中心",
     "Memory, HBM & Storage": "存储、HBM 与存储设备",
     "AI Semiconductors": "AI 半导体",
     "Semiconductor Equipment (WFE)": "半导体设备（WFE）",
