@@ -283,195 +283,6 @@ html.has-js .rv.in{opacity:1;transform:none;transition:opacity .55s ease,transfo
 .powered .bolt{width:16px;height:16px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;
   background:linear-gradient(135deg,var(--link),var(--info));color:#0f1115;font-size:10px;font-weight:900;}
 
-/* ══ SECURITY STATE — the Decision Spine ═══════════════════════════════════
-   Six separate reads on one listing, each carrying its own coverage state.
-   The composition decisions, written down because they are choices:
-
-   · ONE panel holding six cells, not six floating panels. The job is "one
-     coherent answer you can audit"; six independent cards read as six
-     independent widgets. The cell is the .ci-lens idiom (panel2 tint, hairline,
-     left rail) widened to a three-column grid — house idiom extended, not a
-     second card system. Nesting depth stays 2.
-   · The LEFT RAIL is the signature, and its SHAPE is the state class, not just
-     its hue: solid = covered · dashed = interrupted (stale/partial/corrected) ·
-     hairline = absent (unavailable/not covered/not applicable/rights blocked) ·
-     split = contradicted. Hue is never the only channel, so the grid survives
-     zh, light mode and colour blindness. The chip dot repeats the same four
-     shapes at glyph scale, and the tally ticks below the grid repeat them
-     again — the strip is literally the grid's legend.
-   · Absence is GREY. Only a contradiction between sources earns --act. An
-     unavailable owner painted red would be a finding nobody made.
-   · Ink marks epistemic status, never content: a covered card's answer prints
-     in --text, a degraded card's headline prints in its state ink.
-   · No composite. No total row, no score, no average, anywhere.               */
-.ss-t-ok  {--ss-c:var(--ok);  --ss-ink:var(--ink-ok,  var(--ok));}
-.ss-t-warn{--ss-c:var(--warn);--ss-ink:var(--ink-warn,var(--warn));}
-.ss-t-act {--ss-c:var(--act); --ss-ink:var(--ink-act, var(--act));}
-.ss-t-off {--ss-c:var(--muted);--ss-ink:var(--muted);}
-.ss-tone-ink{color:var(--ss-ink);}
-
-.ss-mod{margin-top:20px;}
-.ss-sub{margin:-4px 0 15px;max-width:76ch;font-size:12.5px;line-height:1.55;color:var(--muted);}
-.ss-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
-.ss-cell{position:relative;display:flex;flex-direction:column;min-width:0;
-  padding:14px 15px 12px 17px;border:1px solid var(--hair);border-radius:13px;
-  background:color-mix(in srgb,var(--panel2) 62%,transparent);}
-.ss-cell::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:3px;}
-.ss-r-solid::before {background:var(--ss-c);}
-.ss-r-dash::before  {background:repeating-linear-gradient(180deg,var(--ss-c) 0 11px,transparent 11px 17px);}
-.ss-r-hollow::before{left:1px;width:1px;background:color-mix(in srgb,var(--ss-c) 85%,transparent);}
-.ss-r-split::before {background:linear-gradient(180deg,var(--warn) 0 50%,var(--act) 50% 100%);}
-
-.ss-axis{display:flex;align-items:center;gap:9px;margin:0 0 9px;min-width:0;
-  font-size:10px;font-weight:780;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
-.ss-axis>span:first-child{min-width:0;overflow-wrap:anywhere;}
-.ss-chip{display:inline-flex;align-items:center;gap:5px;flex:0 0 auto;margin-left:auto;
-  padding:2px 8px;border-radius:999px;font-size:9.5px;font-weight:720;letter-spacing:.01em;text-transform:none;
-  color:var(--ss-ink);background:color-mix(in srgb,var(--ss-c) 12%,transparent);
-  border:1px solid color-mix(in srgb,var(--ss-c) 30%,transparent);}
-/* the chip dot is the rail vocabulary at glyph scale */
-.ss-chip::before{content:"";flex:0 0 auto;width:5px;height:5px;border-radius:50%;background:var(--ss-c);}
-.ss-r-dash   .ss-chip::before{width:7px;height:2px;border-radius:1px;}
-.ss-r-hollow .ss-chip::before{background:transparent;box-shadow:inset 0 0 0 1px var(--ss-c);}
-.ss-r-split  .ss-chip::before{border-radius:1px;background:linear-gradient(90deg,var(--warn) 0 50%,var(--act) 50% 100%);}
-
-.ss-head{margin:0;font-size:14.5px;font-weight:700;line-height:1.32;letter-spacing:-.012em;
-  color:var(--text);overflow-wrap:anywhere;}
-.ss-cell:not(.is-ok) .ss-head{color:var(--ss-ink);}
-.ss-body{margin:7px 0 0;font-size:12.5px;line-height:1.55;color:var(--text);overflow-wrap:anywhere;}
-.ss-why{margin:6px 0 0;font-size:11.5px;line-height:1.5;color:var(--muted);overflow-wrap:anywhere;}
-.ss-note{margin:10px 0 0;padding-top:10px;border-top:1px solid var(--hair);
-  font-size:11.5px;line-height:1.5;color:var(--muted);min-width:0;}
-.ss-note b{display:block;margin-bottom:4px;font-size:9.5px;font-weight:780;letter-spacing:.08em;
-  text-transform:uppercase;color:var(--muted);}
-.ss-note .v{color:var(--text);font-weight:600;overflow-wrap:anywhere;}
-.ss-list{list-style:none;margin:0;padding:0;}
-.ss-list li{position:relative;padding:2px 0 2px 13px;color:var(--text);overflow-wrap:anywhere;}
-.ss-list li::before{content:"";position:absolute;left:1px;top:10px;width:5px;height:1px;background:var(--muted);}
-.ss-more{display:block;margin-top:4px;}
-
-.ss-foot{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;width:100%;margin-top:auto;
-  padding:11px 0 0;border:0;border-top:1px solid var(--hair);background:none;text-align:left;
-  appearance:none;cursor:pointer;font:inherit;color:inherit;transition:color .16s ease;}
-.ss-foot .ss-clock{font-size:10.5px;line-height:1.4;color:var(--muted);font-variant-numeric:tabular-nums;
-  min-width:0;overflow-wrap:anywhere;}
-.ss-foot .ss-go{margin-left:auto;flex:0 0 auto;font-size:10.5px;font-weight:700;color:var(--muted);white-space:nowrap;}
-.ss-foot .ss-go::after{content:" \2192";}
-.ss-foot:hover .ss-go,.ss-foot:focus-visible .ss-go{color:var(--ink-link, var(--link));}
-.ss-foot:focus-visible{outline:2px solid color-mix(in srgb,var(--link) 72%,transparent);outline-offset:3px;border-radius:4px;}
-
-/* the one flag: identity that is not proven, or a read that could not be built.
-   It names what failed AND what still works — never a bare degraded panel. */
-.ss-flag{display:block;margin:0 0 14px;padding:11px 14px;border-radius:11px;
-  border:1px solid color-mix(in srgb,var(--ss-c) 26%,var(--hair));border-left:3px solid var(--ss-c);
-  background:color-mix(in srgb,var(--ss-c) 7%,transparent);font-size:12px;line-height:1.55;color:var(--text);}
-.ss-flag b{display:block;margin-bottom:3px;font-size:11.5px;font-weight:750;color:var(--ss-ink);}
-
-/* evidence strip — the grid's legend and its one panel-level as-of */
-.ss-ev{display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap;margin-top:16px;padding-top:13px;
-  border-top:1px solid var(--hair);}
-.ss-ev-label{flex:0 0 auto;font-size:10px;font-weight:780;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);}
-.ss-tally{display:flex;align-items:center;gap:6px 14px;flex-wrap:wrap;min-width:0;font-size:11.5px;color:var(--muted);}
-.ss-tally>span{display:inline-flex;align-items:center;gap:6px;min-width:0;}
-.ss-tally b{color:var(--text);font-weight:700;font-variant-numeric:tabular-nums;}
-.ss-tick{flex:0 0 auto;width:3px;height:12px;border-radius:2px;background:var(--ss-c);}
-.ss-tick.ss-r-dash  {background:repeating-linear-gradient(180deg,var(--ss-c) 0 3px,transparent 3px 6px);}
-.ss-tick.ss-r-hollow{width:1px;background:color-mix(in srgb,var(--ss-c) 85%,transparent);}
-.ss-tick.ss-r-split {background:linear-gradient(180deg,var(--warn) 0 50%,var(--act) 50% 100%);}
-.ss-ev .gbtn{margin-left:auto;flex:0 0 auto;}
-
-/* hero chip — additive, one element, jumps to the section it summarises */
-.ss-hchip{display:inline-flex;align-items:center;gap:6px;flex:0 0 auto;padding:4px 11px;border-radius:999px;
-  font-size:10.5px;font-weight:700;line-height:1.35;white-space:nowrap;color:var(--ss-ink);
-  background:color-mix(in srgb,var(--ss-c) 11%,transparent);
-  border:1px solid color-mix(in srgb,var(--ss-c) 28%,transparent);transition:border-color .16s ease;}
-.ss-hchip::before{content:"";flex:0 0 auto;width:5px;height:5px;border-radius:50%;background:var(--ss-c);}
-.ss-hchip:hover{border-color:color-mix(in srgb,var(--ss-c) 54%,transparent);}
-.ss-hchip:focus-visible{outline:2px solid color-mix(in srgb,var(--link) 72%,transparent);outline-offset:2px;}
-
-/* drilldown internals — reuse .dpanel/.dkv/.dnotes; mono is for the machine
-   identifiers only (owner object ids, recipe id, gate codes), never for words */
-.ss-dp{margin:0 0 8px;font-size:13px;line-height:1.6;}
-.ss-dp:last-child{margin-bottom:0;}
-.ss-dp.mut{font-size:12.5px;color:var(--muted);}
-.ss-id{font-family:var(--font-mono);font-size:11px;letter-spacing:0;overflow-wrap:anywhere;}
-.ss-gate{padding:9px 0;border-bottom:1px solid var(--hair);}
-.ss-gate:last-child{border-bottom:0;}
-.ss-gate .g{font-size:12.5px;font-weight:650;line-height:1.45;}
-.ss-gate .c{display:block;margin-top:3px;color:var(--muted);}
-.ss-gate .w{display:block;margin-top:4px;font-size:11.5px;line-height:1.5;color:var(--muted);}
-.ss-gate .w em{font-style:normal;font-weight:650;color:var(--text);}
-.ss-receipt{margin-top:8px;font-size:11.5px;line-height:1.55;color:var(--muted);}
-
-/* ── the provenance register ──────────────────────────────────────────────
-   Two kinds of line live in this panel: values quoted from an owner, and
-   values worked out here from those quotes. Quoting is the majority and the
-   default, so the QUOTED lines carry no mark at all and the worked-out ones
-   carry this tag — mark the exception, not the rule, or the mark stops
-   meaning anything. It is a tag, not a badge: hairline, muted, no hue, so it
-   never competes with the state rail for attention.                        */
-.ss-prov{display:inline-flex;align-items:center;flex:0 0 auto;margin-left:8px;padding:1px 6px;
-  border:1px solid var(--hair);border-radius:5px;vertical-align:middle;
-  font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
-  line-height:1.6;white-space:nowrap;color:var(--muted);}
-.dpanel h3 .ss-prov{position:relative;top:-1px;}
-
-/* estimated timing — an estimate that could be mistaken for a diary entry is
-   the failure mode this element exists to prevent, so the qualifier sits on
-   its own line under the window rather than in a tooltip. */
-.ss-est{display:block;margin-top:2px;font-size:10.5px;line-height:1.45;color:var(--ink-warn,var(--warn));}
-.ss-when{font-variant-numeric:tabular-nums;}
-
-/* nested owner reads inside one leg (opportunity context) */
-.ss-subs{display:flex;flex-direction:column;gap:4px;}
-.ss-sub-r{display:flex;align-items:baseline;gap:8px;min-width:0;}
-.ss-sub-r>.n{min-width:0;overflow-wrap:anywhere;color:var(--text);}
-.ss-sub-r>.s{margin-left:auto;flex:0 0 auto;font-size:10.5px;font-weight:650;color:var(--ss-ink);}
-.ss-sub-r>.s::before{content:"";display:inline-block;width:5px;height:5px;margin-right:5px;
-  border-radius:50%;background:var(--ss-c);vertical-align:middle;}
-.ss-sub-r.ss-r-hollow>.s::before{background:transparent;box-shadow:inset 0 0 0 1px var(--ss-c);}
-.ss-sub-r.ss-r-dash>.s::before{width:7px;height:2px;border-radius:1px;}
-
-/* identity receipt rows — R1…R9, one block each, in the .ss-gate family */
-.ss-chk{padding:11px 0;border-bottom:1px solid var(--hair);}
-.ss-chk:last-child{border-bottom:0;}
-.ss-chk-h{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;}
-.ss-chk-h .r{font-family:var(--font-mono);font-size:11.5px;font-weight:700;color:var(--text);}
-.ss-chk-h .v{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ss-ink);}
-.ss-chk-h .v::before{content:"";display:inline-block;width:5px;height:5px;margin-right:5px;
-  border-radius:50%;background:var(--ss-c);vertical-align:middle;}
-.ss-chk-h .c{margin-left:auto;color:var(--muted);}
-.ss-chk-d{margin:4px 0 0;font-size:12px;line-height:1.5;color:var(--text);overflow-wrap:anywhere;}
-.ss-chk-s{margin:4px 0 0;font-size:10.5px;line-height:1.5;color:var(--muted);overflow-wrap:anywhere;}
-.ss-chk-v{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 10px;margin-top:6px;}
-.ss-chk-v dt,.ss-chk-v dd{margin:0;font-family:var(--font-mono);font-size:10.5px;line-height:1.55;
-  overflow-wrap:anywhere;}
-.ss-chk-v dt{color:var(--muted);}
-.ss-chk-v dd{color:var(--text);}
-
-[data-lang="zh"] :is(.ss-axis,.ss-ev-label,.ss-note b,.ss-prov,.ss-chk-h .v){letter-spacing:0;text-transform:none;}
-
-/* Light is designed, not translated: a 10% mix of a hue with `transparent`
-   sits on white glass and disappears, so light tints mix with #fff instead,
-   and the hairline rail is given more ink to stay ≥3:1 on white. */
-[data-theme="light"] .ss-cell{background:var(--panel2);}
-[data-theme="light"] .ss-chip{background:color-mix(in srgb,var(--ss-c) 13%,#fff);
-  border-color:color-mix(in srgb,var(--ss-c) 42%,transparent);}
-[data-theme="light"] .ss-flag{background:color-mix(in srgb,var(--ss-c) 9%,#fff);}
-[data-theme="light"] .ss-hchip{background:color-mix(in srgb,var(--ss-c) 12%,#fff);
-  border-color:color-mix(in srgb,var(--ss-c) 40%,transparent);}
-[data-theme="light"] :is(.ss-r-hollow::before,.ss-tick.ss-r-hollow){background:var(--ss-c);}
-
-@media(max-width:1023px){.ss-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
-@media(max-width:640px){
-  .ss-mod{padding:18px 16px 18px;}
-  .ss-grid{grid-template-columns:minmax(0,1fr);gap:10px;}
-  .ss-cell{padding:13px 14px 11px 16px;}
-  .ss-sub{margin:-2px 0 14px;font-size:12px;}
-  .ss-foot{padding-top:14px;padding-bottom:2px;min-height:40px;}
-  .ss-ev .gbtn{width:100%;justify-content:center;margin-left:0;min-height:40px;}
-}
-
 /* two-column zone */
 .cols{display:grid;grid-template-columns:minmax(0,1fr) 322px;gap:20px;margin-top:20px;align-items:start;}
 .main-col,.rail-col{display:flex;flex-direction:column;gap:20px;min-width:0;}
@@ -734,6 +545,20 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
 .dpanel:last-child{margin-bottom:0;}
 .dpanel h3{margin:0 0 10px;font-size:12px;font-weight:650;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;}
 .dpanel .dfoot{margin-top:8px;font-size:11.5px;color:var(--muted);line-height:1.5;}
+/* macro PR 6920 round-4 review MAJOR-3 fix: round-3's `.dfoot .c` rule set
+   only `color:var(--muted)`, identical to the `.dpanel .dfoot` color it
+   inherits already — a no-op, so the code sat inline with the sentence,
+   indistinguishable from the prose (each refusal/disclosure line also ran
+   on into the next via " · ", a run-on paragraph). Each line now gets its
+   own row (`<br>` in the template between items) and the code is a real
+   bordered pill — same family as `.ci-tag`/`.ss-chip`/`.schip` elsewhere in
+   this file, using the shared pill-radius token (`--r-pill`, same fallback
+   convention `templates/reference.html.j2` already uses), a `--hair`
+   border and a `--muted`-tinted fill, never a new palette or component. */
+.dfoot-row{display:inline-block;}
+.dfoot .c{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:var(--r-pill,999px);
+  border:1px solid var(--hair);background:color-mix(in srgb,var(--muted) 12%,transparent);
+  color:var(--muted);font-size:9.5px;letter-spacing:.02em;}
 .dcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;}
 .dcard{background:color-mix(in srgb,var(--panel2) 55%,transparent);border:1px solid var(--hair);border-radius:12px;padding:11px 13px;}
 .dcard .dk{font-size:10.5px;font-weight:650;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;}
