@@ -713,7 +713,7 @@ html[data-theme="light"] .stn .lab{color:color-mix(in srgb,var(--sc,var(--muted)
     <div class="hero-grid">
       <div class="arc-wrap" id="arc-wrap"></div>
       <div>
-        <p class="arc-stance-eyebrow">{{ t('Market weather', '市场天气') }}</p>
+        <p class="arc-stance-eyebrow">{{ t('US market weather', '美股市场天气') }}</p>
         {% if weather == 'advancing' %}
           <h2 class="arc-state"><span class="l-en">Most stocks are <span class="accent">advancing</span></span><span class="l-zh">多数股票<span class="accent">正在上升</span></span></h2>
           <p class="arc-stance"><span class="l-en">Good weather for fresh breakouts — but the advance is broad and mature, so <span class="em">be picky, not greedy</span>.</span><span class="l-zh">适合新突破的好天气 —— 但涨势已广且成熟，<span class="em">要挑，别贪</span>。</span></p>
@@ -864,7 +864,7 @@ html[data-theme="light"] .stn .lab{color:color-mix(in srgb,var(--sc,var(--muted)
      SURFACE D — EARNINGS CALLS (Calls table · Season · Comparison)
      Row-click opens the transcript reader drawer (the "I can't view
      the transcripts" fix). Region toggle shared; scores are the
-     0–30 tone / 0–10 result pair scored from the imported analysis.
+     published 0–100 tone / 0–10 result pair (same vocabulary as the Screener).
      ============================================================ #}
   <section class="surface" id="s-earnings" role="tabpanel" hidden>
     <div class="subtabs">
@@ -1023,10 +1023,10 @@ html[data-theme="light"] .stn .lab{color:color-mix(in srgb,var(--sc,var(--muted)
     if(v==null)return '<span class="chip plain">—</span>';
     return '<span class="chip plain" data-tip-en="Typical weekly move as a share of price — how jumpy the stock is." data-tip-zh="每周典型波动占股价的比例 —— 该股有多跳。">'+(Math.round(v*1000)/10)+'%</span>';
   }
-  /* ec_sent is a −1..1 tone fraction → 0..100 upbeat scale */
+  /* ec_sent / ec_perf arrive already on the published scale (tone 0–100, result 0–10). */
   function ecSent(v){
     if(v==null)return chip(null,'','No earnings call scored yet.','暂无财报电话会评分。');
-    var pct=Math.round((v+1)/2*100),cls=pct>=66?'c-up':pct>=45?'c-info':'c-dn';
+    var pct=Math.round(v),cls=pct>=66?'c-up':pct>=45?'c-info':'c-dn';
     var tE='How upbeat the last earnings call sounded, 0–100 ('+pct+' = '+(pct>=66?'confident':pct>=45?'balanced':'cautious')+').';
     var tZ='最近一次财报电话会语气有多正面，0–100（'+pct+' = '+(pct>=66?'自信':pct>=45?'中性':'谨慎')+'）。';
     return chip(pct,cls,tE,tZ);
@@ -1142,7 +1142,7 @@ html[data-theme="light"] .stn .lab{color:color-mix(in srgb,var(--sc,var(--muted)
     else if(f.stage&&f.stage!=='fresh'&&String(row.stage)!==f.stage)return false;
     if(f.weeks!=null&&(row.weeks_in_stage==null||row.weeks_in_stage>f.weeks))return false;
     if(f.atr!=null&&(row.atr_ext==null||row.atr_ext>f.atr))return false;
-    if(f.ecs!=null){var pct=row.ec_sent==null?null:(row.ec_sent+1)/2*100;if(pct==null||pct<f.ecs)return false;}
+    if(f.ecs!=null&&(row.ec_sent==null||row.ec_sent<f.ecs))return false;
     if(f.ecp!=null&&(row.ec_perf==null||row.ec_perf<f.ecp))return false;
     if(f.rating!=null&&(row.rating==null||row.rating<f.rating))return false;
     return true;
@@ -1164,8 +1164,22 @@ html[data-theme="light"] .stn .lab{color:color-mix(in srgb,var(--sc,var(--muted)
     });
     renderBody();
     var showing=qs('#screener-showing');
-    if(showing)showing.innerHTML=TT('Showing <b>'+VIEW.length.toLocaleString()+'</b> of <b>'+RAW.length.toLocaleString()+'</b>','显示 <b>'+RAW.length.toLocaleString()+'</b> 中的 <b>'+VIEW.length.toLocaleString()+'</b> 只');
+    if(showing){
+      var currentPop=RAW.filter(isCurrentRow);
+      var nCur=VIEW.filter(isCurrentRow).length;
+      var nStale=VIEW.filter(isStaleRow).length;
+      var denom=currentPop.length;
+      var en='Showing <b>'+nCur.toLocaleString()+'</b> of <b>'+denom.toLocaleString()+'</b> current';
+      var zh='显示 <b>'+denom.toLocaleString()+'</b> 只当前股票中的 <b>'+nCur.toLocaleString()+'</b> 只';
+      if(nStale){
+        en+=' · <b>'+nStale.toLocaleString()+'</b> stale shown for context';
+        zh+=' · 另有 <b>'+nStale.toLocaleString()+'</b> 只过时数据仅供参考';
+      }
+      showing.innerHTML=TT(en,zh);
+    }
   }
+  function isStaleRow(row){return row.stage_current===false;}
+  function isCurrentRow(row){return row.stage_current!==false;}
   function renderHead(){
     var tr=qs('#screener-head');if(!tr)return;
     tr.innerHTML=COLS.map(function(c){
@@ -1252,7 +1266,7 @@ html[data-theme="light"] .stn .lab{color:color-mix(in srgb,var(--sc,var(--muted)
     var tagHtml=tags.length?('<div class="facts">'+tags.map(function(t){var p=tagPos(t);return '<span class="tagpill '+(p===1?'pos':p===0?'neg':'')+'" style="padding:3px 9px">'+esc(tagLabel(t))+'</span>';}).join('')+'</div>'):('<p class="mut" style="font-size:12px">'+TT('No earnings tags on this name yet.','该股暂无财报标签。')+'</p>');
     var ecHtml='';
     if(row.ec_sent!=null){
-      var pct=Math.round((row.ec_sent+1)/2*100);
+      var pct=Math.round(row.ec_sent);
       ecHtml='<div class="ec-block" style="margin-top:12px"><h4>'+TT('Last earnings call','最近财报会')+'</h4>'+
         '<div class="ec-hi '+(pct>=55?'pos':'neg')+'"><span class="lab">'+TT('Call tone','电话会语气')+'</span>'+
         TT('Sounded '+(pct>=66?'confident':pct>=45?'balanced':'cautious')+' ('+pct+'/100); the numbers came in '+(row.ec_perf>=7?'strong':row.ec_perf>=4?'okay':'soft')+' ('+ (row.ec_perf==null?'—':row.ec_perf)+'/10).',
@@ -1316,10 +1330,10 @@ html[data-theme="light"] .stn .lab{color:color-mix(in srgb,var(--sc,var(--muted)
 
   /* ---- CSV export ---- */
   function exportCSV(){
-    var head=['Ticker','Name','Industry','IndPctile','SATA','dSATA','Stage','StageLabel','Weeks','ATRExt','ATRpctPrice','Tags','ECtone0_100','ECresult','Rating'];
+    var head=['Ticker','Name','Industry','IndPctile','SATA','dSATA','Stage','StageLabel','Weeks','ATRExt','ATRpctPrice','Tags','EC Tone','EC Result','Rating'];
     var lines=[head.join(',')];
     VIEW.forEach(function(r){
-      var tone=r.ec_sent==null?'':Math.round((r.ec_sent+1)/2*100);
+      var tone=r.ec_sent==null?'':Math.round(r.ec_sent);
       var cells=[r.ticker,r.name,r.sector,r.industry_percentile,r.sata_score,r.sata_change_1w,r.stage,r.stage_label,r.weeks_in_stage,r.atr_ext,r.atr_pct_price,(r.tags||[]).join('|'),tone,r.ec_perf,r.rating];
       lines.push(cells.map(function(c){c=c==null?'':String(c);return /[,"\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c;}).join(','));
     });
@@ -1337,7 +1351,7 @@ html[data-theme="light"] .stn .lab{color:color-mix(in srgb,var(--sc,var(--muted)
       renderHead();applyView();
     }).catch(function(){
       var body=qs('#screener-body');
-      if(body)body.innerHTML='<tr><td colspan="16"><div class="empty" style="border:none;background:none"><div class="ico">🌙</div><h3>'+TT('Warming up','正在预热')+'</h3><p>'+TT('The screener table is generated tonight. Check back after the first stage run.','选股器表格今晚生成。首次阶段运行后再来查看。')+'</p></div></td></tr>';
+      if(body)body.innerHTML='<tr><td colspan="16"><div class="empty" style="border:none;background:none"><div class="ico">🌙</div><h3>'+TT('Warming up','正在预热')+'</h3><p>'+TT('The screener table isn\'t available yet. Check back after the first stage run.','选股器表格暂不可用。首次阶段运行后再来查看。')+'</p></div></td></tr>';
     });
   }
 
@@ -1393,11 +1407,11 @@ html[data-theme="light"] .stn .lab{color:color-mix(in srgb,var(--sc,var(--muted)
   function renderBoard(){
     var body=qs('#board-body');if(!body)return;
     var d=BOARD[boardCadence];
-    if(!d){body.innerHTML='<tr><td colspan="'+BCOLS.length+'"><div class="empty" style="border:none;background:none"><div class="ico">🌙</div><h3>'+TT('Warming up','正在预热')+'</h3><p>'+TT('The board is generated tonight. Check back after the first stage run.','榜单今晚生成。首次阶段运行后再来查看。')+'</p></div></td></tr>';return;}
+    if(!d){body.innerHTML='<tr><td colspan="'+BCOLS.length+'"><div class="empty" style="border:none;background:none"><div class="ico">🌙</div><h3>'+TT('Warming up','正在预热')+'</h3><p>'+TT('The board isn\'t available yet. Check back after the first stage run.','榜单暂不可用。首次阶段运行后再来查看。')+'</p></div></td></tr>';return;}
     var rows=boardRows();
     var showing=qs('#board-showing');
     if(showing)showing.innerHTML=TT('<b>'+rows.length.toLocaleString()+'</b> fresh advances','<b>'+rows.length.toLocaleString()+'</b> 只新转强');
-    if(!rows.length){body.innerHTML='<tr><td colspan="'+BCOLS.length+'"><div class="empty" style="border:none;background:none;padding:34px 0"><div class="ico">🍃</div><h3>'+TT('No fresh advances here','此处暂无新转强')+'</h3><p>'+TT('No names turned fresh Stage-2 in this region. Try All regions.','该地区暂无刚转入上升的股票。可切换到「全部」地区。')+'</p></div></td></tr>';return;}
+    if(!rows.length){body.innerHTML='<tr><td colspan="'+BCOLS.length+'"><div class="empty" style="border:none;background:none;padding:34px 0"><div class="ico">🍃</div><h3>'+TT('No fresh advances here','此处暂无新转强')+'</h3><p>'+TT('No names turned fresh Stage-2 in this region.','该地区暂无刚转入上升的股票。')+'</p></div></td></tr>';return;}
     body.innerHTML=rows.slice(0,400).map(function(r){
       var pv=priceVs30w(r),st=boardStance(r);
       var rs=r.mansfield_rs;
@@ -1481,13 +1495,7 @@ html[data-theme="light"] .stn .lab{color:color-mix(in srgb,var(--sc,var(--muted)
   }
   function pickRegion(map){
     if(!map)return null;
-    var r=dataRegion();
-    if(r==='all'){ /* merge all regions into one list, dedup by industry_id */
-      var out=[],seen={};
-      Object.keys(map).forEach(function(k){(map[k]||[]).forEach(function(row){var id=row.industry_id||row.industry;if(!seen[id]){seen[id]=1;out.push(row);}});});
-      return out;
-    }
-    return map[r]||[];
+    return map[dataRegion()]||[];
   }
   /* rank → colour on the green(best=1)→amber→red(worst) ramp */
   function rankColor(rank,maxRank){
@@ -1536,7 +1544,7 @@ html[data-theme="light"] .stn .lab{color:color-mix(in srgb,var(--sc,var(--muted)
   }
 
   function heatGrid(regionMap,cellFn,legendRev,maxForColor){
-    var r=dataRegion();var reg=(r==='all')?(regionMap.USA||regionMap[Object.keys(regionMap)[0]]):regionMap[r];
+    var r=dataRegion();var reg=regionMap[r];
     if(!reg||!reg.rows||!reg.rows.length)return indEmpty();
     var weeks=reg.weeks||[];
     var head='<tr><th class="hind">'+LT('Industry','行业')+'</th>'+weeks.map(function(w){return '<th>'+esc((w||'').slice(5))+'</th>';}).join('')+'</tr>';
@@ -1555,7 +1563,7 @@ html[data-theme="light"] .stn .lab{color:color-mix(in srgb,var(--sc,var(--muted)
     var h=IND.heat&&IND.heat.history;
     if(!h)return null;
     if(h.status==='unavailable'){
-      return '<div class="empty soon"><div class="ico">📈</div><h3>'+TT('Rank history unavailable','排名历史暂不可用')+'</h3><p>'+TT('No house-native weekly rank history has accrued yet. Check back after the next completed Stage week.','尚未累积任何自建的每周排名历史。请在下一个已完成的阶段周后再来查看。')+'</p></div>';
+      return '<div class="empty soon"><div class="ico">📈</div><h3>'+TT('Rank history unavailable','排名历史暂不可用')+'</h3><p>'+TT('No weekly rank history has accrued yet. Check back after the next completed Stage week.','尚未累积任何每周排名历史。请在下一个已完成的阶段周后再来查看。')+'</p></div>';
     }
     if(h.status==='accruing'){
       var n=h.weeks_available||0,tgt=h.weeks_target||26,fw=esc(h.first_week||'—');
@@ -1588,7 +1596,7 @@ html[data-theme="light"] .stn .lab{color:color-mix(in srgb,var(--sc,var(--muted)
        EquityDesk grid seed. */
     var exact=region==='US'?'USA':region;
     var coarse=dataRegion();
-    var reg=exact==='all'?(map.USA||map[Object.keys(map)[0]]):(map[exact]||map[coarse]);
+    var reg=map[exact]||map[coarse];
     if(!reg||!reg.rows||!reg.rows.length)return indEmpty();
     var weeks=reg.weeks||[];
     /* find the value range for the combined ramp */
@@ -1706,7 +1714,7 @@ html[data-theme="light"] .stn .lab{color:color-mix(in srgb,var(--sc,var(--muted)
   }
 
   function indEmpty(){
-    return '<div class="empty soon"><div class="ico">🌙</div><h3>'+TT('Warming up','正在预热')+'</h3><p>'+TT('This view is generated tonight. Try another region, or check back after the first run.','该视图今晚生成。可切换地区，或首次运行后再来查看。')+'</p></div>';
+    return '<div class="empty soon"><div class="ico">🌙</div><h3>'+TT('Industry rankings aren\'t available','行业排名暂不可用')+'</h3><p>'+TT('The file for this view didn\'t load. The Screener and Stage Board still work.','该视图的数据文件未能加载。选股器与阶段异动仍可用。')+'</p></div>';
   }
   function renderIndustries(){
     var host=qs('#ind-body');if(!host)return;
@@ -1738,33 +1746,30 @@ html[data-theme="light"] .stn .lab{color:color-mix(in srgb,var(--sc,var(--muted)
   }
 
   /* =====================================================================
-     SHARED — earnings-tone helpers. These artifacts carry a 0–30 tone
-     (ec_sent) and a 0–10 result (ec_perf); DIFFERENT scale from the
-     screener's −1..1 tone, so they get their own helpers. Every plain-word
-     meaning lives on Tier 1 (data-tip / inline word); receipts on hover.
+     SHARED — earnings-tone helpers. Feeds publish tone 0–100 and result
+     0–10 (same vocabulary as the Screener). Every plain-word meaning lives
+     on Tier 1 (data-tip / inline word); receipts on hover.
      ===================================================================== */
-  function toneClass(sent30){ /* 0–30 tone → band class */
-    if(sent30==null)return 'mid';
-    return sent30>=20?'up':sent30>=11?'mid':sent30>=4?'amb':'dn';
+  function toneClass(sent){ /* 0–100 tone → band class */
+    if(sent==null)return 'mid';
+    return sent>=67?'up':sent>=37?'mid':sent>=13?'amb':'dn';
   }
-  function toneWord(sent30){
-    if(sent30==null)return ['—','—'];
-    if(sent30>=20)return ['Upbeat','偏乐观'];
-    if(sent30>=11)return ['Balanced','中性'];
-    if(sent30>=4)return ['Guarded','谨慎'];
+  function toneWord(sent){
+    if(sent==null)return ['—','—'];
+    if(sent>=67)return ['Upbeat','偏乐观'];
+    if(sent>=37)return ['Balanced','中性'];
+    if(sent>=13)return ['Guarded','谨慎'];
     return ['Downbeat','偏消极'];
   }
-  function tonePct(sent30){ /* 0–30 → 0–100 for the gauge/bar width */
-    if(sent30==null)return 0;
-    return Math.max(0,Math.min(100,Math.round(sent30/30*100)));
+  function tonePct(sent){
+    if(sent==null)return 0;
+    return Math.max(0,Math.min(100,Math.round(sent)));
   }
-  /* ec_perf is a signed result, roughly −12..+12 (positive = beat, negative = miss) */
+  /* ec_perf is published 0–10 (same bands the Screener teaches). */
   function perfWord(p){
     if(p==null)return ['—','—'];
-    if(p>=5)return ['numbers beat','数据超预期'];
-    if(p>=1)return ['numbers ahead','数据略好'];
-    if(p>-1)return ['numbers in line','数据基本符合'];
-    if(p>-5)return ['numbers light','数据略逊'];
+    if(p>=7)return ['numbers beat','数据超预期'];
+    if(p>=4)return ['numbers in line','数据基本符合'];
     return ['numbers missed','数据不及预期'];
   }
   /* free-form earnings tag slug → readable label (source data is EN only;
@@ -1785,14 +1790,14 @@ html[data-theme="light"] .stn .lab{color:color-mix(in srgb,var(--sc,var(--muted)
     var parts=String(s).split(/\n+/).map(function(x){return x.trim();}).filter(Boolean);
     return parts.map(function(p){return p.replace(/^\s*\d+[.)]\s*/,'').trim();}).filter(Boolean);
   }
-  function ecScoreCell(sent30,perf10){
-    var cls=toneClass(sent30);var w=tonePct(sent30);
-    var tw=toneWord(sent30),pw=perfWord(perf10);
-    var pd=(perf10==null?'—':(perf10>0?'+':'')+perf10);
-    var tE='Call tone '+(sent30==null?'—':sent30)+' of 30 ('+tw[0].toLowerCase()+'); '+pw[0]+' ('+pd+'). Higher tone = the more upbeat the call sounded.';
-    var tZ='电话会语气 '+(sent30==null?'—':sent30)+'/30（'+tw[1]+'）；'+pw[1]+'（'+pd+'）。语气越高＝电话会越正面。';
+  function ecScoreCell(sent,perf10){
+    var cls=toneClass(sent);var w=tonePct(sent);
+    var tw=toneWord(sent),pw=perfWord(perf10);
+    var pd=(perf10==null?'—':perf10);
+    var tE='Call tone '+(sent==null?'—':sent)+' of 100 ('+tw[0].toLowerCase()+'); '+pw[0]+' ('+pd+'/10). Higher tone = the more upbeat the call sounded.';
+    var tZ='电话会语气 '+(sent==null?'—':sent)+'/100（'+tw[1]+'）；'+pw[1]+'（'+pd+'/10）。语气越高＝电话会越正面。';
     return '<span class="ecscore '+cls+'" data-tip-en="'+esc(tE)+'" data-tip-zh="'+esc(tZ)+'">'+
-      '<span class="duo"><span class="tone">'+(sent30==null?'—':sent30)+'</span><span class="perf">'+pd+'</span></span>'+
+      '<span class="duo"><span class="tone">'+(sent==null?'—':sent)+'</span><span class="perf">'+pd+'</span></span>'+
       '<span class="bar"><i style="width:'+w+'%"></i></span></span>';
   }
 
@@ -1808,7 +1813,7 @@ html[data-theme="light"] .stn .lab{color:color-mix(in srgb,var(--sc,var(--muted)
     {k:'gics_industry',en:'Industry',zh:'行业'},
     {k:'quarter',en:'Quarter',zh:'季度'},
     {k:'call_date',en:'Call date',zh:'电话会日期'},
-    {k:'ec_sent',en:'Tone / result',zh:'语气/结果',num:true,tip:['Call tone 0–30 over result 0–10.','电话会语气0–30，结果0–10。']},
+    {k:'ec_sent',en:'Tone / result',zh:'语气/结果',num:true,tip:['Call tone 0–100 over result 0–10.','电话会语气0–100，结果0–10。']},
     {k:'_tone',en:'Read',zh:'评语',tip:['A one-word read of the call tone.','对电话会语气的一句话概括。']},
     {k:'_hi',en:'Highlights',zh:'要点',tip:['Positive vs negative points the call raised.','电话会提到的正面与负面要点数。']},
     {k:'_tags',en:'Themes',zh:'主题',sortable:false}
@@ -1822,9 +1827,9 @@ html[data-theme="light"] .stn .lab{color:color-mix(in srgb,var(--sc,var(--muted)
     rows=rows.filter(function(r){return ernRegionOf(r)===region;});
     if(search){var s=search.toLowerCase();rows=rows.filter(function(r){return (r.ticker||'').toLowerCase().indexOf(s)>=0||(r.company_name||'').toLowerCase().indexOf(s)>=0;});}
     if(ernFilters.ind)rows=rows.filter(function(r){return r.gics_industry===ernFilters.ind;});
-    if(ernFilters.band==='up')rows=rows.filter(function(r){return r.ec_sent!=null&&r.ec_sent>=20;});
-    else if(ernFilters.band==='mid')rows=rows.filter(function(r){return r.ec_sent!=null&&r.ec_sent>=11&&r.ec_sent<20;});
-    else if(ernFilters.band==='dn')rows=rows.filter(function(r){return r.ec_sent!=null&&r.ec_sent<11;});
+    if(ernFilters.band==='up')rows=rows.filter(function(r){return r.ec_sent!=null&&r.ec_sent>=67;});
+    else if(ernFilters.band==='mid')rows=rows.filter(function(r){return r.ec_sent!=null&&r.ec_sent>=37&&r.ec_sent<67;});
+    else if(ernFilters.band==='dn')rows=rows.filter(function(r){return r.ec_sent!=null&&r.ec_sent<37;});
     rows.sort(function(a,b){
       var av=a[ernSortKey],bv=b[ernSortKey];
       if(av==null)av=-Infinity;if(bv==null)bv=-Infinity;
@@ -1837,8 +1842,8 @@ html[data-theme="light"] .stn .lab{color:color-mix(in srgb,var(--sc,var(--muted)
     if(!ERN.table||!(ERN.table.rows||[]).length)return ernEmpty();
     var dataStatus=ERN.table.data_status||'empty';
     var healthNote='';
-    if(dataStatus==='degraded')healthNote='<p class="subcap" style="color:var(--ink-warn, var(--amber))">⚠ '+LT('Showing the committed latest-call fallback; fiscal quarter comparisons are unavailable until the current history generation returns.','当前显示已提交的最近电话会回退数据；最新历史数据恢复前，季度对比不可用。')+'</p>';
-    else if(dataStatus==='stale')healthNote='<p class="subcap" style="color:var(--ink-warn, var(--amber))">⚠ '+LT('The earnings history is stale. Latest call: ','财报历史数据已过期。最近电话会：')+esc(ERN.table.latest_call_date||'—')+'.</p>';
+    if(dataStatus==='degraded')healthNote='<p class="subcap" style="color:var(--ink-warn, var(--amber))">⚠ '+LT('We\'re showing the last complete set of earnings calls because the latest history hasn\'t arrived. Quarter-over-quarter comparison is paused; the calls table still works.','目前显示上一份完整的财报电话会，因为最新历史尚未到达。季度对比暂停；电话会明细仍可用。')+'</p>';
+    else if(dataStatus==='stale')healthNote='<p class="subcap" style="color:var(--ink-warn, var(--amber))">⚠ '+LT('Earnings history is more than two weeks old. Latest call: ','财报历史已超过两周。最近电话会：')+esc(ERN.table.latest_call_date||'—')+LT('. The calls table still works; newer calls will appear when they land.','。电话会明细仍可用；新的电话会到达后会显示。')+'</p>';
     var inds=ernIndustries();
     /* opt() — single-language <option> label carrying both langs on data-en/zh
        (the l-en/l-zh span trick is flattened inside <option>; relangOptions()
@@ -1940,12 +1945,18 @@ html[data-theme="light"] .stn .lab{color:color-mix(in srgb,var(--sc,var(--muted)
     var status=(ERN.table&&ERN.table.data_status)||'empty';
     var latest=(ERN.table&&ERN.table.latest_call_date)||'';
     if(status==='degraded'){
-      return '<div class="empty soon"><div class="ico">⚠️</div><h3>'+TT('Historical lane degraded','历史数据通道降级')+'</h3><p>'+TT('Recent calls remain available, but quarter-over-quarter history is incomplete. The ingestion heartbeat has been flagged for repair.','近期电话会仍可用，但季度对比历史不完整。系统已将摄取异常标记为待修复。')+(latest?' '+TT('Latest call: ','最新电话会：')+esc(latest)+'.':'')+'</p></div>';
+      return '<div class="empty soon"><div class="ico">⚠️</div><h3>'+TT('Earnings history is incomplete','财报历史不完整')+'</h3><p>'+TT('Recent calls remain available, but quarter-over-quarter history is incomplete. The Screener, Stage Board and Industries are unaffected. We\'re repairing the history feed.','近期电话会仍可用，但季度对比历史不完整。选股器、阶段异动与行业视图不受影响，我们正在修复历史数据。')+(latest?' '+TT('Latest call: ','最新电话会：')+esc(latest)+'.':'')+'</p></div>';
     }
     if(status==='stale'){
-      return '<div class="empty soon"><div class="ico">⚠️</div><h3>'+TT('Earnings history stale','财报历史数据已过期')+'</h3><p>'+TT('No verified call generation has landed within 14 days. Latest call: ','过去14天内没有新的已验证电话会批次。最近电话会：')+esc(latest||'—')+'.</p></div>';
+      return '<div class="empty soon"><div class="ico">⚠️</div><h3>'+TT('Earnings history is more than two weeks old','财报历史已超过两周')+'</h3><p>'+TT('No new verified earnings call has landed in 14 days. Latest call: ','过去14天内没有新的已验证电话会。最近电话会：')+esc(latest||'—')+'. '+TT('The Screener, Stage Board and Industries are unaffected.','选股器、阶段异动与行业视图不受影响。')+'</p></div>';
     }
-    return '<div class="empty soon"><div class="ico">⚠️</div><h3>'+TT('Earnings data unavailable','财报数据不可用')+'</h3><p>'+TT('This is an ingestion-health failure, not a scheduled warm-up. The source heartbeat and data contract need attention.','这是数据摄取健康异常，不是等待今晚生成。需要检查数据源心跳与数据合约。')+'</p></div>';
+    return '<div class="empty soon"><div class="ico">⚠️</div><h3>'+TT('Earnings calls aren\'t loading','财报电话会暂时无法加载')+'</h3><p>'+TT('Our earnings feed is down; the Screener, Stage Board and Industries are unaffected. We\'re on it.','财报数据源中断；选股器、阶段异动与行业视图不受影响，我们正在修复。')+'</p></div>';
+  }
+  function altEmpty(){
+    return '<div class="empty soon"><div class="ico">⚠️</div><h3>'+TT('Alt-data topics aren\'t loading','另类数据话题暂时无法加载')+'</h3><p>'+TT('The trending-topics feed is down; the Screener, Stage Board and Industries are unaffected. We\'re on it.','热门话题数据源中断；选股器、阶段异动与行业视图不受影响，我们正在修复。')+'</p></div>';
+  }
+  function resEmpty(){
+    return '<div class="empty soon"><div class="ico">🌙</div><h3>'+TT('Company primers are being written','公司简介正在撰写中')+'</h3><p>'+TT('This desk fills in as primers land. The Screener and Stage Board are unaffected.','本栏会随简介完成情况更新。选股器与阶段异动不受影响。')+'</p></div>';
   }
   function renderErn(){
     var host=qs('#ern-body');if(!host)return;
@@ -2001,8 +2012,8 @@ html[data-theme="light"] .stn .lab{color:color-mix(in srgb,var(--sc,var(--muted)
     /* tone gauge */
     var tw=toneWord(r.ec_sent),pw=perfWord(r.ec_perf),cls=toneClass(r.ec_sent),pct=tonePct(r.ec_sent);
     qs('#reader-gauge').innerHTML='<span class="val" style="--ec:var(--'+(cls==='up'?'up':cls==='dn'?'down':cls==='amb'?'s3':'info')+')">'+
-      (r.ec_sent==null?'—':r.ec_sent)+'<small>/30</small></span>'+
-      '<div class="track" data-tip-en="Call tone, 0–30 — how upbeat the call sounded. '+esc(tw[0])+'; '+esc(pw[0])+'." data-tip-zh="电话会语气，0–30 —— 电话会有多正面。'+esc(tw[1])+'；'+esc(pw[1])+'。"><span class="pin" style="left:'+pct+'%"></span></div>'+
+      (r.ec_sent==null?'—':r.ec_sent)+'<small>/100</small></span>'+
+      '<div class="track" data-tip-en="Call tone, 0–100 — how upbeat the call sounded. '+esc(tw[0])+'; '+esc(pw[0])+'." data-tip-zh="电话会语气，0–100 —— 电话会有多正面。'+esc(tw[1])+'；'+esc(pw[1])+'。"><span class="pin" style="left:'+pct+'%"></span></div>'+
       '<span class="toneword '+cls+'">'+LT(tw[0],tw[1])+'</span>';
     /* body */
     var pos=splitHighlights(r.positive_highlights),neg=splitHighlights(r.negative_highlights);
@@ -2090,7 +2101,7 @@ html[data-theme="light"] .stn .lab{color:color-mix(in srgb,var(--sc,var(--muted)
   }
   function renderAlt(){
     var host=qs('#alt-body');if(!host)return;
-    if(!ALT||!ALT.sources){host.innerHTML=ernEmpty();return;}
+    if(!ALT||!ALT.sources){host.innerHTML=altEmpty();return;}
     host.innerHTML='<div class="altwrap">'+['google','reddit','wikipedia','tiktok'].map(altColumn).join('')+'</div>';
     var prov=qs('#alt-prov');
     if(prov)prov.innerHTML=LT('YoY = how much bigger the topic is than a year ago. Google, Reddit and Wikipedia run live forward from a seed backfill; TikTok is seed-only until a lawful live source exists. Matching to a stock is the source model’s guess — sanity-check it.','同比 = 该话题相比一年前扩大的幅度。Google、Reddit、维基百科在种子回填基础上持续实时更新；TikTok 在合规实时来源出现前仅为种子数据。与个股的匹配来自来源模型的推断 —— 请自行核对。');
@@ -2124,7 +2135,7 @@ html[data-theme="light"] .stn .lab{color:color-mix(in srgb,var(--sc,var(--muted)
   }
   function renderRes(){
     var host=qs('#res-body');if(!host)return;
-    if(!RES||!(RES.items||[]).length){host.innerHTML=ernEmpty();var c0=qs('#res-count');if(c0)c0.innerHTML='';return;}
+    if(!RES||!(RES.items||[]).length){host.innerHTML=resEmpty();var c0=qs('#res-count');if(c0)c0.innerHTML='';return;}
     var its=resItems();
     var cnt=qs('#res-count');
     if(cnt)cnt.innerHTML=TT('<b>'+its.length.toLocaleString()+'</b> compan'+(its.length===1?'y':'ies')+(search?' matching':''),'<b>'+its.length.toLocaleString()+'</b> 家公司'+(search?'（匹配）':''));
@@ -2157,17 +2168,23 @@ html[data-theme="light"] .stn .lab{color:color-mix(in srgb,var(--sc,var(--muted)
      region toggle can't do anything useful, so disable Europe/Asia rather than
      letting a click blank the view. Research is company-index only. */
   var REGION_AGNOSTIC={research:1,altdata:1};
+  /* Live price feed is US-only. Seed/other-market buttons empty the Screener,
+     Board and Industries with a false "loosen a filter" reason — disable them
+     on the same path Research/Alt-Data already uses. */
+  var REGION_COVERED={US:1};
   function syncRegionToggle(name){
     var agnostic=!!REGION_AGNOSTIC[name];
-    /* Research / Alt-Data are one combined company index — the region toggle
-       can't split them, so disable every button (there is no "All" fallback to
-       snap to). The active US-default filter is simply ignored by these two
-       surfaces, and the buttons re-enable on return to a region-aware tab. */
+    /* Research / Alt-Data are one combined company index — disable every
+       button (there is no "All" fallback to snap to). On region-aware tabs,
+       keep US and disable the four uncovered markets with the real reason. */
     qsa('#region-seg button').forEach(function(b){
-      b.disabled=agnostic;
-      b.style.opacity=agnostic?'0.4':'';
-      b.style.cursor=agnostic?'not-allowed':'';
+      var cov=!!REGION_COVERED[b.getAttribute('data-region')];
+      var off=agnostic||!cov;
+      b.disabled=off;
+      b.style.opacity=off?'0.4':'';
+      b.style.cursor=off?'not-allowed':'';
       if(agnostic){b.setAttribute('data-tip-en','This view is one combined company index — not split by region.');b.setAttribute('data-tip-zh','该视图为合并的公司索引 —— 不按地区拆分。');}
+      else if(!cov){b.setAttribute('data-tip-en','US coverage only for now; other markets land when their price feed is wired');b.setAttribute('data-tip-zh','目前仅覆盖美股；其他市场待行情接入后上线');}
       else{b.removeAttribute('data-tip-en');b.removeAttribute('data-tip-zh');}
     });
   }
@@ -2191,7 +2208,7 @@ html[data-theme="light"] .stn .lab{color:color-mix(in srgb,var(--sc,var(--muted)
     qsa('.tab').forEach(function(t){t.addEventListener('click',function(){selectTab(t.getAttribute('data-tab'),true);});
       t.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key==='ArrowLeft'){var tabs=qsa('.tab');var i=tabs.indexOf(t);var j=e.key==='ArrowRight'?(i+1)%tabs.length:(i-1+tabs.length)%tabs.length;tabs[j].focus();tabs[j].click();}});
     });
-    qsa('#region-seg button').forEach(function(b){b.addEventListener('click',function(){qsa('#region-seg button').forEach(function(x){x.setAttribute('aria-pressed','false');});b.setAttribute('aria-pressed','true');region=b.getAttribute('data-region');applyView();if(boardLoaded.done){renderBoard();renderBoardProv();}if(indLoaded.done)renderIndustries();if(ernLoaded.done)renderErn();if(resLoaded.done)renderRes();});});
+    qsa('#region-seg button').forEach(function(b){b.addEventListener('click',function(){if(b.disabled)return;qsa('#region-seg button').forEach(function(x){x.setAttribute('aria-pressed','false');});b.setAttribute('aria-pressed','true');region=b.getAttribute('data-region');applyView();if(boardLoaded.done){renderBoard();renderBoardProv();}if(indLoaded.done)renderIndustries();if(ernLoaded.done)renderErn();if(resLoaded.done)renderRes();});});
     /* board cadence toggle */
     qsa('#board-seg button').forEach(function(b){b.addEventListener('click',function(){selectCadence(b.getAttribute('data-cadence'));});});
     /* industries inner sub-tabs */

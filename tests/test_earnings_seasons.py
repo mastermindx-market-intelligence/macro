@@ -367,6 +367,35 @@ def test_earnings_table_cap_and_order(tmp_path):
     assert out["cap"] == 5
 
 
+def test_publish_ec_scale_one_vocabulary():
+    """W7 M3: signed −1..1 and desk 0–30 both print the same 0–100 tone."""
+    assert eq.publish_ec_tone(1.0, native="signed1") == 100.0
+    assert eq.publish_ec_tone(0.0, native="signed1") == 50.0
+    assert eq.publish_ec_tone(-1.0, native="signed1") == 0.0
+    assert eq.publish_ec_tone(30, native="desk30") == 100.0
+    assert eq.publish_ec_tone(12, native="desk30") == 50.0
+    assert eq.publish_ec_tone(30, native="desk30") == eq.publish_ec_tone(
+        1.0, native="signed1")
+    assert eq.publish_ec_result(8.4, native="ten") == 8.4
+    assert eq.publish_ec_result(12, native="signed12") == 10.0
+    assert eq.publish_ec_result(-12, native="signed12") == 0.0
+    assert eq.publish_ec_result(0, native="signed12") == 5.0
+    assert eq.publish_ec_tone(None, native="signed1") is None
+    assert eq.publish_ec_result(None, native="ten") is None
+
+
+def test_earnings_table_publishes_one_ec_scale(tmp_path):
+    """W7 M3: earnings_table.json uses the same 0–100 / 0–10 vocabulary."""
+    recs = [_call("NEW", "Newest", "Hardware", "2026-07-17", 30, 12, 42)]
+    _write_backfill(tmp_path, recs)
+    out = eq.earnings_table(root=tmp_path, cap=5, write=False)
+    r = out["rows"][0]
+    assert r["ec_sent"] == 100.0
+    assert r["ec_perf"] == 10.0
+    assert 0.0 <= r["ec_sent"] <= 100.0
+    assert 0.0 <= r["ec_perf"] <= 10.0
+
+
 # ── 6. fail-open on empty / missing seed ────────────────────────────────────
 def test_all_surfaces_fail_open_empty(tmp_path):
     # No backfill parquet written at all.

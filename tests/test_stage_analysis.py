@@ -327,6 +327,24 @@ def test_region_toggle_seed_rows_appended(env):
     assert br["USA"]["live"] > 0 and br["USA"]["seed"] == 0
 
 
+def test_screener_json_publishes_ec_tone_0_100_and_result_0_10(env):
+    """W7 M3: screener.json emits the published 0–100 / 0–10 vocabulary.
+
+    Seed overview stores desk 0–30 / signed −12..12; the JSON feed must not.
+    """
+    dr, _ = env
+    _write_overview_seed(dr, [_ov_row("BBVA.MC", "EUROPE", 87)])
+    sa.build_context_feed(root=dr, asof="2026-07-17")
+    sc = json.loads((dr / "stage_analysis" / "screener.json").read_text())
+    eu = next(r for r in sc["rows"] if r["ticker"] == "BBVA.MC")
+    # desk sent 20 → ((20-12)/18 + 1) / 2 * 100 = 72.2
+    # signed perf 10 → (10+12)/2.4 = 9.166… → 9.2
+    assert eu["ec_sent"] == 72.2
+    assert eu["ec_perf"] == 9.2
+    assert 0.0 <= eu["ec_sent"] <= 100.0
+    assert 0.0 <= eu["ec_perf"] <= 10.0
+
+
 def test_live_frame_populates_industry_ranks_flows_and_screener(env):
     """The classifier's same-day frame, not an optional stage seed, powers all
     industry surfaces and immediately fills the screener's industry context."""
@@ -1608,6 +1626,17 @@ def test_population_partition_exact_counts_and_denominator(tmp_path, monkeypatch
     assert sila_row["stage_week_end"] == "2026-06-26"
     assert sila_row["rating"] is None          # no current rank
     assert sila_row["fresh"] is True           # lifecycle fresh + stale observation
+
+    # W7 M1: hero counts (stale-excluded) ARE the default-view screener
+    # denominator from this same feed. Stale is a labelled slice, not a
+    # second total. Predicate matches the page: stage_current!==false.
+    current_rows = [r for r in screener["rows"] if r.get("stage_current") is not False]
+    stale_rows = [r for r in screener["rows"] if r.get("stage_current") is False]
+    hero_total = screener["counts"]["total"]
+    assert hero_total == contract["counts"]["total"] == 2
+    assert len(current_rows) == hero_total
+    assert {r["ticker"] for r in current_rows} == {"AAPL", "MSFT"}
+    assert len(stale_rows) == 1 and stale_rows[0]["ticker"] == "SILA"
 
 
 def test_screener_row_carries_observation_truth_fields(env):

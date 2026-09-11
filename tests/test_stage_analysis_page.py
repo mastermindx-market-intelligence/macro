@@ -539,3 +539,117 @@ def test_hero_clock_can_wrap_on_narrow_viewports():
     assert ".asof .clk{display:inline-block}" in html
     # Dates themselves must never break mid-token.
     assert ".asof b{" in html and "white-space:nowrap}" in html
+
+
+# ---------------------------------------------------------------------------
+# W7 round 1 — P0 truth blockers + pipeline strings
+# ---------------------------------------------------------------------------
+
+_W7_PIPELINE_BAN = (
+    "ingestion-health",
+    "摄取健康",
+    "source heartbeat",
+    "数据源心跳",
+    "data contract",
+    "数据合约",
+    "call generation",
+    "批次",
+    "history generation",
+    "Historical lane",
+    "历史数据通道",
+    "committed latest-call fallback",
+    "ECtone0_100",
+    "Try All regions",
+    "generated tonight",
+    "今晚生成",
+)
+
+
+def test_w7_screener_showing_uses_current_population_not_raw_length():
+    """M1: the current population is the page's one canonical count.
+
+    Hero counts exclude stale; the Screener must not use RAW.length as the
+    of-N denominator. Stale rows print as a labelled slice.
+    """
+    html = _render_with_fixture()
+    assert "stale shown for context" in html
+    assert "只过时数据仅供参考" in html
+    assert "function isCurrentRow" in html
+    assert "function isStaleRow" in html
+    assert "row.stage_current!==false" in html
+    assert "of <b>'+RAW.length" not in html
+    assert "of <b>'+denom.toLocaleString()+'</b> current" in html
+
+
+def test_w7_research_and_altdata_own_empty_states():
+    """C1: Research items:0 names the Research surface, never Earnings."""
+    html = _render_with_fixture()
+    assert "function resEmpty()" in html
+    assert "function altEmpty()" in html
+    assert "Company primers are being written" in html
+    assert "公司简介正在撰写中" in html
+    assert "The Screener and Stage Board are unaffected" in html
+    assert "host.innerHTML=resEmpty()" in html
+    assert "host.innerHTML=altEmpty()" in html
+    assert "host.innerHTML=ernEmpty()" not in html
+
+
+def test_w7_research_empty_never_says_earnings_unavailable():
+    html = _render_with_fixture()
+    res_fn = html.split("function resEmpty()", 1)[1].split("function ", 1)[0]
+    assert "Earnings data unavailable" not in res_fn
+    assert "Earnings calls aren" not in res_fn
+    assert "财报数据不可用" not in res_fn
+    assert "Company primers are being written" in res_fn
+
+
+def test_w7_one_published_ec_scale_on_the_page():
+    """M3: one 0–100 / 0–10 vocabulary; client-side conversions deleted."""
+    html = _render_with_fixture()
+    assert "(row.ec_sent+1)/2*100" not in html
+    assert "(r.ec_sent+1)/2*100" not in html
+    assert "sent30/30*100" not in html
+    assert "ECtone0_100" not in html
+    assert "'EC Tone'" in html
+    assert "<small>/100</small>" in html
+    assert "<small>/30</small>" not in html
+    assert "Call tone 0–100 over result 0–10" in html
+    assert "Call tone 0–30 over result 0–10" not in html
+    assert "ec_sent is a −1..1" not in html
+
+
+def test_w7_region_control_is_honest():
+    """M2: four uncovered region buttons disabled; no phantom All; US eyebrow."""
+    html = _render_with_fixture()
+    assert "US market weather" in html
+    assert "美股市场天气" in html
+    assert "var REGION_COVERED={US:1}" in html
+    assert "US coverage only for now; other markets land when their price feed is wired" in html
+    assert "目前仅覆盖美股；其他市场待行情接入后上线" in html
+    assert "Try All regions" not in html
+    assert "可切换到「全部」地区" not in html
+    assert "if(r==='all')" not in html
+    assert "exact==='all'" not in html
+    assert "r==='all'" not in html
+
+
+def test_w7_pipeline_strings_removed_from_page():
+    """C2–C4/M6: ernEmpty AND the populated-table health banner."""
+    html = _render_with_fixture()
+    for banned in _W7_PIPELINE_BAN:
+        assert banned not in html, f"banned pipeline string still on page: {banned!r}"
+    assert "Earnings calls aren" in html
+    assert "财报电话会暂时无法加载" in html
+    assert "Our earnings feed is down; the Screener, Stage Board and Industries are unaffected." in html
+    assert "showing the last complete set of earnings calls" in html
+
+
+def test_w7_indempty_is_the_file_arm():
+    """C7: region arm unreachable after M2; file arm, no 'generated tonight'."""
+    html = _render_with_fixture()
+    ind = html.split("function indEmpty()", 1)[1].split("function ", 1)[0]
+    assert "Industry rankings aren" in ind
+    assert "The file for this view didn" in ind
+    assert "generated tonight" not in ind
+    assert "Try another region" not in ind
+    assert "今晚生成" not in ind
