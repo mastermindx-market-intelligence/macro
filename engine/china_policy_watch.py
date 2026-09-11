@@ -5,7 +5,7 @@ but PBoC-and-State-Council-centric. Fans together, with no new scoring:
 
   * PBoC stance + rate corridor + FX/reserves  (engine/china_pboc_stance.py)
   * NBS latest-prints board                      (china_macro / china_credit stores)
-  * Official policy tape                         (filtered china_news_intel PIT bus)
+  * Policy tape                                  (filtered china_news_intel PIT bus)
   * Curated intel substrate                      (data/china_policy/intel.json:
       thesis · NPC targets · sector-policy matrix · falsifiable prediction ledger)
 
@@ -77,10 +77,21 @@ def _host(url: str) -> str:
     return h[4:] if h.startswith("www.") else h
 
 
-def _official_hosts() -> set[str]:
-    """Hostnames of engine.china_news.OFFICIAL_PAGES (www. stripped)."""
+def _china_news_cfg() -> dict:
+    """Same config block the official-pages fetcher reads."""
+    from engine.china_news import _cfg
+    return _cfg()
+
+
+def _official_pages() -> list[dict]:
+    """Fetcher source: cfg['official_pages'] or the OFFICIAL_PAGES constant."""
     from engine.china_news import OFFICIAL_PAGES
-    return {_host(p.get("url", "")) for p in OFFICIAL_PAGES} - {""}
+    return _china_news_cfg().get("official_pages") or OFFICIAL_PAGES
+
+
+def _official_hosts() -> set[str]:
+    """Hostnames of the same official-pages list the fetcher uses (www. stripped)."""
+    return {_host(p.get("url", "")) for p in _official_pages()} - {""}
 
 
 def _host_in(host: str, hosts: set[str]) -> bool:
@@ -91,20 +102,69 @@ def _host_in(host: str, hosts: set[str]) -> bool:
     return any(host.endswith("." + h) for h in hosts if h)
 
 
-def row_is_china_policy(title: str, url: str, source_tier: int) -> bool:
-    """China-desk gate for the official policy tape.
+def _china_native_hosts() -> set[str]:
+    """china_native / zh NEWS_PAGES domains (yicai.com, stcn.com, …)."""
+    from engine.china_news import NEWS_PAGES
+    hosts = set()
+    for p in NEWS_PAGES:
+        if p.get("tier") == "china_native" or p.get("source_lang") == "zh":
+            d = (p.get("domain") or _host(p.get("url", ""))).casefold()
+            if d:
+                hosts.add(d)
+    return hosts
+
+
+def _host_anchors_china(host: str) -> bool:
+    """Hostname leg of the China gate.
+
+    `_host()` lowercases; `_is_china_anchored` casefolds strong tokens, so
+    chinadaily.com.cn matches "China". yicai.com has no token — it lands via
+    the china_native page list. A .cn TLD is itself a China domain anchor
+    (cls.cn), after the theme slice has already restricted the row.
+    """
+    h = (host or "").casefold()
+    if not h:
+        return False
+    from engine.china_news import _is_china_anchored
+    if _is_china_anchored(h):
+        return True
+    if h.endswith(".cn"):
+        return True
+    return _host_in(h, _china_native_hosts())
+
+
+def _official_page_name(host: str) -> str:
+    for p in _official_pages():
+        ph = _host(p.get("url", ""))
+        if ph and _host_in(host, {ph}):
+            return str(p.get("name") or ph)
+    return ""
+
+
+def _source_chip(url: str, source: str) -> str:
+    """Per-row officialness: official-page name if the host is one, else the host."""
+    host = _host(url)
+    return _official_page_name(host) or host or (source or "")
+
+
+def row_is_china_policy(title: str, url: str, source_tier: int = 0, *,
+                        official_hosts: set[str] | None = None) -> bool:
+    """China-desk gate for the policy tape.
 
     Keep a row when (a) a China anchor lands in the title or hostname, or
-    (b) it is source_tier==1 from the OFFICIAL_PAGES set. A Eurozone/Fed
-    monetary flash on a global wire must not fill this card.
+    (b) source_tier==1 (official-pages fetch tag — the docstring promise),
+    or (c) the host is in the same official-pages list the fetcher uses
+    (config `official_pages` or OFFICIAL_PAGES). A Eurozone/Fed monetary
+    flash on a global wire must not fill this card.
     """
+    if int(source_tier or 0) == 1:
+        return True
     host = _host(url)
-    # Official PBoC/NBS/… hosts are themselves a China domain anchor
-    # (covers source_tier==1 from OFFICIAL_PAGES, and the same hosts at any tier).
-    if _host_in(host, _official_hosts()):
+    hosts = official_hosts if official_hosts is not None else _official_hosts()
+    if _host_in(host, hosts):
         return True
     from engine.china_news import _is_china_anchored
-    return _is_china_anchored(title or "") or _is_china_anchored(host)
+    return _is_china_anchored(title or "") or _host_anchors_china(host)
 
 
 def _select_policy_feed_rows(df, top_n: int = 12) -> list[dict]:
@@ -114,13 +174,18 @@ def _select_policy_feed_rows(df, top_n: int = 12) -> list[dict]:
         return []
     mask = (df["source_tier"] == 1) | (df["theme"].isin(_POLICY_THEMES))
     sub = df[mask].sort_values("first_seen_utc", ascending=False)
+    official_hosts = _official_hosts()
     out = []
     for r in sub.itertuples():
         if not row_is_china_policy(getattr(r, "title", ""), getattr(r, "url", ""),
-                                   getattr(r, "source_tier", 0)):
+                                   getattr(r, "source_tier", 0),
+                                   official_hosts=official_hosts):
             continue
         tl = ni.THEME_LABEL.get(r.theme, (r.theme, r.theme))
-        out.append({"title": r.title, "url": r.url, "source": r.source,
+        url = r.url
+        src = r.source
+        out.append({"title": r.title, "url": url, "source": src,
+                    "source_chip": _source_chip(url, src),
                     "theme": r.theme, "theme_en": tl[0], "theme_zh": tl[1],
                     "tier": int(r.source_tier),
                     "scheduled_ref": getattr(r, "scheduled_ref", "") or ""})
@@ -129,19 +194,29 @@ def _select_policy_feed_rows(df, top_n: int = 12) -> list[dict]:
     return out
 
 
-def _policy_feed(top_n: int = 12) -> list[dict]:
-    """Official / policy-themed slice of the china_news_intel PIT bus, China-gated."""
+def _policy_feed(top_n: int = 12) -> tuple[str, list[dict]]:
+    """China-gated policy-tape slice.
+
+    Returns (status, rows):
+      * ``ok`` — one or more China rows survived the gate
+      * ``quiet`` — the parquet loaded, but zero China rows survived
+      * ``unavailable`` — missing parquet or a read exception
+    Quiet and unavailable must not share a UI sentence.
+    """
     try:
         import pandas as pd
         from engine import china_news_intel as ni
         path = ni._events_path()
         if not path.exists():
-            return []
+            return "unavailable", []
         df = pd.read_parquet(path)
-        return _select_policy_feed_rows(df, top_n=top_n)
+        rows = _select_policy_feed_rows(df, top_n=top_n)
+        if rows:
+            return "ok", rows
+        return "quiet", []
     except Exception as e:  # noqa: BLE001
         log.debug("china policy feed unavailable (%s)", e)
-        return []
+        return "unavailable", []
 
 
 def _intel() -> dict:
@@ -194,7 +269,7 @@ def snapshot(asof: date | str | None = None) -> dict | None:
         pboc = china_pboc_stance.snapshot(asof)
         intel = _intel()
         prints = _nbs_prints()
-        feed = _policy_feed()
+        feed_status, feed = _policy_feed()
         if pboc is None and not prints and not intel:
             return None
         # Audit fix: annotate the intel substrate with live date status so the template can
@@ -212,7 +287,9 @@ def snapshot(asof: date | str | None = None) -> dict | None:
             "schema": SCHEMA, "is_context_only": True,
             "asof": (str(asof) if asof else (pboc or {}).get("asof") or str(date.today())),
             "built": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
-            "pboc": pboc, "nbs_prints": prints, "policy_feed": feed, "intel": intel,
+            "pboc": pboc, "nbs_prints": prints,
+            "policy_feed": feed, "policy_feed_status": feed_status,
+            "intel": intel,
             "intel_dates": intel_dates,
             "national_team": national_team,
             "latest": _compact(pboc, intel),

@@ -685,7 +685,11 @@ def _is_china_anchored(text: str) -> bool:
     context at all (a UK piece renders HM Treasury as plain 财政部). PURE."""
     blob = text or ""
     neut = _FOREIGN_CB.sub("", blob)
-    if any(tok in neut for tok in _CN_ANCHOR_STRONG):
+    # ASCII tokens in _CN_ANCHOR_STRONG are capitalized ("China","PBoC"); hosts
+    # and some wires arrive lowercased. Casefold both sides so chinadaily.com.cn
+    # and "pboc cuts rates" still match. CJK tokens are unchanged by casefold.
+    neut_cf = neut.casefold()
+    if any(tok.casefold() in neut_cf for tok in _CN_ANCHOR_STRONG):
         return True
     if _FOREIGN_CB.search(blob):
         return False

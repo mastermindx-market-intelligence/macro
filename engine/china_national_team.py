@@ -480,8 +480,11 @@ def _eval_pboc_posture() -> tuple[dict, str | None]:
     fires = stance in ("easing", "neutral") and z <= _FR007_STRESS_Z
     fired_en = f"PBoC easing into tight liquidity (FR007 z {z:+.2f})"
     fired_zh = f"央行逆势宽松，资金面偏紧（FR007 z {z:+.2f}）"
-    quiet_en = f"FR007 z {z:+.2f} — the stress-support coincidence is not on"
-    quiet_zh = f"FR007 z {z:+.2f} — 未同时满足资金偏紧与支持立场"
+    # Packet item 14: FR007 "easing into stress" sign is UNSETTLED — quiet copy
+    # is observable-only (the z, and that this tell is not firing). No causal
+    # or directional reading until the engine lane rules.
+    quiet_en = f"FR007 z {z:+.2f} — posture tell not firing"
+    quiet_zh = f"FR007 z {z:+.2f} — 姿态信号未触发"
     rec_en, rec_zh = (fired_en, fired_zh) if fires else (quiet_en, quiet_zh)
     return _tell("pboc_posture", "firing" if fires else "quiet",
                  strength=_clamp01(-z / 3.0) if fires else 0.0, value_fmt=f"{z:+.2f}z",
@@ -546,11 +549,14 @@ def _eval_margin_recovery() -> tuple[dict, str | None]:
     fired_en = "Margin balance turning up (leverage returning)"
     fired_zh = "两融余额企稳回升（杠杆资金回流）"
     mag = abs(last_tick)
+    # fin_balance is 亿元. EN glance converts 亿→¥bn via /10 (same arithmetic
+    # as FX 亿美元→USD bn); ZH keeps 亿.
+    mag_bn = mag / 10.0
     if last_tick < 0:
-        quiet_en = f"Margin balance fell {mag:.0f}亿 last session"
+        quiet_en = f"Margin balance fell ¥{mag_bn:.1f}bn last session"
         quiet_zh = f"两融余额上一交易日减少{mag:.0f}亿"
     elif last_tick > 0:
-        quiet_en = f"Margin balance rose {mag:.0f}亿 last session"
+        quiet_en = f"Margin balance rose ¥{mag_bn:.1f}bn last session"
         quiet_zh = f"两融余额上一交易日增加{mag:.0f}亿"
     else:
         quiet_en = "Margin balance unchanged last session"

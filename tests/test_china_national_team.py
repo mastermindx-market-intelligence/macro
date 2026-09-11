@@ -290,9 +290,22 @@ def test_quiet_tells_do_not_claim_firing_copy(monkeypatch, tmp_path):
     pd.DataFrame({"fin_balance": bal}).to_parquet(mdir / "balance.parquet")
     margin, _ = nt._eval_margin_recovery()
     assert margin["state"] == "quiet"
-    assert margin["receipt_en"] == "Margin balance fell 32亿 last session"
+    assert margin["receipt_en"] == "Margin balance fell ¥3.2bn last session"
+    assert "¥" in margin["receipt_en"] and "bn" in margin["receipt_en"]
+    assert "亿" not in margin["receipt_en"]
     assert margin["receipt_zh"] == "两融余额上一交易日减少32亿"
     _assert_quiet_clean(margin)
+
+    # rose branch also converts 亿→¥bn; prior 5d slope up so the tell stays quiet.
+    bal_up = pd.Series([100, 101, 102, 103, 104, 105, 106, 107, 108, 140], index=idx)
+    pd.DataFrame({"fin_balance": bal_up}).to_parquet(mdir / "balance.parquet")
+    margin_up, _ = nt._eval_margin_recovery()
+    assert margin_up["state"] == "quiet"
+    assert margin_up["receipt_en"] == "Margin balance rose ¥3.2bn last session"
+    assert "¥" in margin_up["receipt_en"] and "bn" in margin_up["receipt_en"]
+    assert "亿" not in margin_up["receipt_en"]
+    assert margin_up["receipt_zh"] == "两融余额上一交易日增加32亿"
+    _assert_quiet_clean(margin_up)
 
     # buyback: w/w deceleration — quiet, signed pct, never +-N%.
     ledger = pd.DataFrame({
@@ -316,6 +329,11 @@ def test_quiet_tells_do_not_claim_firing_copy(monkeypatch, tmp_path):
                         lambda asof=None: {"stance": "tightening"})
     pboc_tell, _ = nt._eval_pboc_posture()
     assert pboc_tell["state"] == "quiet"
+    assert pboc_tell["receipt_en"] == "FR007 z +0.40 — posture tell not firing"
+    assert pboc_tell["receipt_zh"] == "FR007 z +0.40 — 姿态信号未触发"
+    assert "stress-support" not in pboc_tell["receipt_en"]
+    assert "easing into" not in pboc_tell["receipt_en"]
+    assert "资金偏紧" not in pboc_tell["receipt_zh"]
     _assert_quiet_clean(pboc_tell)
 
 

@@ -389,13 +389,14 @@
   </div>
   {% endif %}
 
-  <!-- official policy tape -->
+  <!-- policy tape -->
   <div class="cnx-card">
-    <div class="cnx-ctitle">📰 {{ t('Official policy tape', '官方政策快讯') }}</div>
+    <div class="cnx-ctitle">📰 {{ t('Policy tape', '政策快讯') }}</div>
     {% if pw.policy_feed %}
     <ul class="feed">
       {% for it in pw.policy_feed %}
       <li>
+        {% if it.source_chip %}<span class="tag">{{ it.source_chip }}</span>{% endif %}
         <span class="tag">{{ bl(it.theme_en, it.theme_zh) }}</span>
         <div class="tt">
           {% if it.url %}<a href="{{ it.url }}" target="_blank" rel="noopener">{{ it.title }}</a>{% else %}{{ it.title }}{% endif %}
@@ -404,6 +405,9 @@
       </li>
       {% endfor %}
     </ul>
+    {% elif pw.policy_feed_status == 'unavailable' %}
+    <p class="empty">{{ t("Policy tape unavailable right now — source didn't load", '政策快讯暂不可用——数据源未加载') }}</p>
+    <p class="empty-why">{{ t('This is a missing source, not a quiet tape. Other panels on this page are still current.', '这是数据源未加载，不是快讯为空。本页其他栏目仍为最新。') }}</p>
     {% else %}
     <p class="empty">{{ t('No China official policy items on the tape right now.', '当前暂无中国官方政策快讯。') }}</p>
     <p class="empty-why">{{ t('This desk only shows China-relevant official and policy rows. A quiet tape is not a missing page.', '本栏只收录与中国相关的官方与政策条目。快讯为空不等于页面缺失。') }}</p>
