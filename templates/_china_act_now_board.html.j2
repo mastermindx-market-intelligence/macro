@@ -148,14 +148,36 @@
           the stats grid does not carry, and sub is where the US sector card already
           puts its own state line. tr() is a global, not a filter — hence the loop. -#}
       {%- set _rsn_en = row.reasons[:2] | join(' · ') if row.reasons else '' -%}
+      {#- P3g: dual-emit the window + bench tokens the way the visible row does
+          (t('20d','20日') / t('vs CSI 300','相对沪深300')). Split on " vs " so
+          hk/canada ZH copy gets THEIR bench names; do not substring-replace a
+          joined English string. Routing keys / engine reason strings stay. -#}
+      {%- set _BENCH_ZH = {
+        'CSI 300': '沪深300',
+        'Hang Seng': '恒生指数',
+        'Hang Seng Index': '恒生指数',
+        'S&P/TSX': '标普/TSX',
+        'S&P/TSX Composite': '标普/TSX',
+      } -%}
       {%- set _rsn_zh_parts = [] -%}
-      {%- for _r in (row.reasons[:2] if row.reasons else []) -%}{%- set _ = _rsn_zh_parts.append(tr(_r)) -%}{%- endfor -%}
-      {#- P3g: reuse the visible-row dual-emit lexicon so ZH never embeds
-          "20d … vs CSI 300". Routing keys / engine reason strings stay. -#}
-      {%- set _rsn_zh = _rsn_zh_parts | join(' · ')
-           | replace('vs CSI 300', '相对沪深300')
-           | replace('20d ', '20日 ')
-           | replace('5d ', '5日 ') -%}
+      {%- for _r in (row.reasons[:2] if row.reasons else []) -%}
+        {%- set _vs = _r.rsplit(' vs ', 1) -%}
+        {%- if _vs|length == 2 -%}
+          {%- set _pre = _vs[0] -%}
+          {%- set _bench = _vs[1] -%}
+          {%- set _bzh = _BENCH_ZH.get(_bench, _bench) -%}
+          {%- if _pre.startswith('20d ') -%}
+            {%- set _ = _rsn_zh_parts.append('20日 ' ~ _pre[4:] ~ ' 相对' ~ _bzh) -%}
+          {%- elif _pre.startswith('5d ') -%}
+            {%- set _ = _rsn_zh_parts.append('5日 ' ~ _pre[3:] ~ ' 相对' ~ _bzh) -%}
+          {%- else -%}
+            {%- set _ = _rsn_zh_parts.append(_pre ~ ' 相对' ~ _bzh) -%}
+          {%- endif -%}
+        {%- else -%}
+          {%- set _ = _rsn_zh_parts.append(tr(_r)) -%}
+        {%- endif -%}
+      {%- endfor -%}
+      {%- set _rsn_zh = _rsn_zh_parts | join(' · ') -%}
       {#- P1a display twins — routing key `tag` is untouched (engine/cycles.py). -#}
       {%- set _TAG_EN = {'WATCH': 'Early sign', 'UNCONFIRMED — HIGH RISK': 'Not yet confirmed — high risk'} -%}
       {%- set _TAG_ZH = {'WATCH': '初步迹象', 'UNCONFIRMED — HIGH RISK': '尚未确认——高风险'} -%}

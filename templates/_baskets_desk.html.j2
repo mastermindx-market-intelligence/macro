@@ -253,14 +253,17 @@
   .dual-chip .dc-trend { color:var(--ink-down, var(--down)); }
   .dual-chip .dc-sep   { color:var(--muted); font-weight:400; }
   .dual-chip .dc-tape  { color:var(--ink-up, var(--up)); }
-  /* Compact Explore (China SI): extra desk modules land in <details>, not L1. */
-  .si-more { margin:12px 0; border:1px solid var(--line); border-radius:var(--r-card,12px);
+  {# Compact Explore chrome is host-flagged (si_explore_compact) AND page-class
+     scoped so hk/canada/intl/factorwatch do not receive unused details CSS. #}
+  {% if si_explore_compact|default(false) %}
+  body.page-sector-central .si-more { margin:12px 0; border:1px solid var(--line); border-radius:var(--r-card,12px);
     padding:8px 12px; background:var(--panel); }
-  .si-more > summary { cursor:pointer; font-weight:650; font-size:13px;
+  body.page-sector-central .si-more > summary { cursor:pointer; font-weight:650; font-size:13px;
     list-style:none; display:flex; align-items:center; gap:6px; }
-  .si-more > summary::-webkit-details-marker { display:none; }
-  .si-more > summary::before { content:'▸'; color:var(--muted); }
-  .si-more[open] > summary::before { content:'▾'; }
+  body.page-sector-central .si-more > summary::-webkit-details-marker { display:none; }
+  body.page-sector-central .si-more > summary::before { content:'▸'; color:var(--muted); }
+  body.page-sector-central .si-more[open] > summary::before { content:'▾'; }
+  {% endif %}
 </style>
   {# validated sleeve-size chip (rendered client-side; empty for markets without one).
      China SI Explore demotes this host off L1 (R1); JS mount stays. #}
@@ -402,6 +405,20 @@
   </section>
 {% if si_explore_compact|default(false) %}
 </details>
+<script>
+(function(){
+  var d=document.getElementById('si-theme-desk-more');
+  if(!d) return;
+  d.addEventListener('toggle', function(){
+    var grid=document.getElementById('theme-desk');
+    if(!grid) return;
+    delete grid.dataset.smInit;
+    var bar=grid.nextElementSibling;
+    if(bar && bar.classList.contains('sm-bar')) bar.remove();
+    if(typeof window.initShowMore==='function') window.initShowMore();
+  });
+})();
+</script>
 <details class="si-more" id="si-concentration-more">
 <summary>{{ t('Market concentration', '市场集中度') }}</summary>
 {% endif %}

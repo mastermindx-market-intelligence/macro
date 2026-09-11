@@ -396,8 +396,9 @@
   },
   {
    "match": "validated credit/vol/margin regime",
-   "backing": "the credit/vol/margin regime gate (vol_regime + credit/liquidity overlays) — the validated conditioning regime; gated-confluence read. The CN sector desk uses the SAME conditioning-regime object as a gate; the claim is that the regime read is validated (vol_regime + credit/liquidity overlays), NOT that a CN-specific application was validated — the copy gates with it, never ranks on it. Dated 2026-09-11 W14: sector_central_china footer no longer emits this phrase (Law-2/Law-4 one-sentence rewrite); stock and us_stocks still do, so the row stays.",
+   "backing": "the credit/vol/margin regime gate (vol_regime + credit/liquidity overlays) — the validated conditioning regime; gated-confluence read. The CN sector desk uses the SAME conditioning-regime object as a gate; the claim is that the regime read is validated (vol_regime + credit/liquidity overlays), NOT that a CN-specific application was validated — the copy gates with it, never ranks on it. Dated 2026-09-11 W14: the TEMPLATE no longer emits this phrase; the rendered site copy lags until the post-merge render — prune this surface in a follow-up once site/ re-bakes clean. stock and us_stocks still do, so the row stays.",
    "surfaces": [
+    "sector_central_china",
     "stock",
     "us_stocks"
    ]

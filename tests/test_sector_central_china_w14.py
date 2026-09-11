@@ -243,8 +243,13 @@ def test_p1d_near_normal_word_and_sigma_in_tip() -> None:
 def test_p1f_footer_one_sentence_both_lanes() -> None:
     html = _render_page()
     foot = html[html.index("<footer>"): html.index("</footer>")]
-    assert "The conviction read blends credit, volatility and margin conditions with the pattern's conditional odds." in foot
-    assert "信念读数由信用、波动率和融资环境，以及走势的条件概率共同决定" in foot
+    assert (
+        "The conviction read blends credit, volatility and margin conditions "
+        "with the pattern's conditional odds — context, not investment advice."
+    ) in foot
+    assert "信念读数由信用、波动率和融资环境，以及走势的条件概率共同决定——仅供参考，非投资建议。" in foot
+    assert "not investment advice" in foot
+    assert "非投资建议" in foot
     for banned in (
         "gated-confluence",
         "validated credit/vol/margin",
@@ -253,11 +258,13 @@ def test_p1f_footer_one_sentence_both_lanes() -> None:
         "confluence",
     ):
         assert banned not in foot
-    # one EN sentence, one ZH sentence (no stacked period-pairs in either span)
+    # one EN sentence, one ZH sentence (disclaimer is a clause, not a second sentence)
     en = re.search(r'class="l-en">(.*?)</span>', foot, re.S).group(1).strip()
     zh = re.search(r'class="l-zh">(.*?)</span>', foot, re.S).group(1).strip()
     assert en.count(".") == 1
     assert zh.count("。") == 1
+    assert en.count("—") == 1
+    assert "——" in zh
 
 
 # ---------------------------------------------------------------------------
@@ -373,6 +380,25 @@ def test_p3g_row_pop_sub_zh_reuses_visible_dual_emit() -> None:
     assert 'class="l-zh">20日 +4.2% 相对沪深300' in block
 
 
+@pytest.mark.parametrize(
+    "reason,zh_bench",
+    (
+        ("20d +4.2% vs Hang Seng", "相对恒生指数"),
+        ("20d +4.2% vs S&P/TSX", "相对标普/TSX"),
+    ),
+)
+def test_p3g_sibling_zh_benches_dual_emit(reason, zh_bench) -> None:
+    html = _render_anv2({"buy_now": [_blank_row(
+        kind="THEME", name="Theme", name_zh="主题", score=50,
+        reco="accumulate", reco_en="Accumulate", reco_zh="积累",
+        rel20=0.042, reasons=[reason],
+    )]})
+    block = html[html.index('class="row-pop-sub"'): html.index('class="row-pop-sub"') + 320]
+    assert f'class="l-en">{reason}' in block
+    assert f'class="l-zh">20日 +4.2% {zh_bench}' in block
+    assert f'vs {reason.split(" vs ", 1)[1]}' not in block.split('class="l-zh">', 1)[1]
+
+
 # ---------------------------------------------------------------------------
 # DNT — composition identities that must survive
 # ---------------------------------------------------------------------------
@@ -389,6 +415,37 @@ def test_dnt_quiet_tape_and_northbound_verbatim() -> None:
     assert "当前无活跃中国轮动事件——安静状态是有效状态。" in html
     assert "Northbound daily flow is no longer published (since Aug 2024)" in html
     assert "北向每日净买入自2024年8月起已停止披露" in html
+
+
+def test_r2_si_more_css_host_scoped() -> None:
+    compact = _render_desk("CSI 300", "沪深300", compact=True)
+    sibling = _render_desk("Hang Seng", "恒生指数", compact=False)
+    assert "body.page-sector-central .si-more" in compact
+    assert "body.page-sector-central .si-more" not in sibling
+    assert "si-theme-desk-more" in compact
+    assert "si-theme-desk-more" not in sibling
+
+
+def test_r2_lens_q_keyboard_parity() -> None:
+    html = _render_page()
+    assert 'class="lens-q"' in html
+    assert 'tabindex="0"' in html[html.index('class="lens-q"'): html.index('class="lens-q"') + 400]
+    assert 'role="button"' in html[html.index('class="lens-q"'): html.index('class="lens-q"') + 400]
+
+
+def test_r2_theme_desk_details_reinit_showmore() -> None:
+    html = _render_desk("CSI 300", "沪深300", compact=True)
+    chunk = html[html.index("si-theme-desk-more"): html.index("si-concentration-more")]
+    assert 'addEventListener(\'toggle\'' in chunk or 'addEventListener("toggle"' in chunk
+    assert "initShowMore" in chunk
+    assert "dataset.smInit" in chunk
+
+
+def test_r2_si_links_one_idiom_note_demoted() -> None:
+    html = _render_page()
+    assert "si-links-note" not in html
+    assert 'id="reversal-sleeve-card"' in html
+    assert "monthly contrarian basket" in html  # lives in the LENS tip, not the band
 
 
 def test_dnt8_act_now_four_lanes_survive() -> None:

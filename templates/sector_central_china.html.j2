@@ -127,14 +127,26 @@
   .si-sec-h h2 { font-size:17px; font-weight:760; margin:0; }
   .si-sec-h .si-sec-sub { font-size:12.5px; color:var(--muted); }
   .sr-foot { color:var(--muted); font-size:11px; margin:16px 2px 0; line-height:1.6; }
-  .si-links { display:flex; gap:9px; flex-wrap:wrap; margin:16px 0 4px; }
+  /* W14 r2 new chrome — DARK and LIGHT are two art directions, not a token swap.
+     DARK TREATMENT (command center): luminance tiles (--panel / --panel2), hairline
+     --line, instrument-calm, no glow. .si-links is one family of tagged chips;
+     .skel-slot is a quiet --panel2 shimmer; .mx-error button is a --panel2 chip.
+     LIGHT TREATMENT (research workspace): white --panel paper, hairline --line,
+     short cool shadow instead of glow. .si-links a pick up the desk-tile shadow
+     already used by .rvx-hero; .skel-slot shimmer mixes --text into --panel
+     (paper, not a dark wash); .mx-error button is paper with a warn-tinted
+     hairline. Mechanisms that differ: fill (luminance tile vs paper), depth
+     (none vs short shadow), skeleton mix target (--panel2 vs --panel).
+     Theme-specific degraded: a closed .si-more is a hairline summary in both
+     themes; light adds the paper shadow so the closed block does not flatten
+     into the canvas. */
+  .si-links { display:flex; gap:9px; flex-wrap:wrap; margin:16px 0 4px; align-items:center; }
   .si-links a { font-size:12.5px; border:1px solid var(--line); border-radius:9px; padding:7px 12px;
     background:var(--panel2, var(--panel)); display:inline-flex; align-items:center; gap:7px; }
   .si-links a:hover { border-color: var(--muted); }
   .si-links .dash-icon { width:14px; height:14px; flex:none; }
   .si-links .sc-tag { font-size:10px; font-weight:700; letter-spacing:.04em; padding:1px 6px;
     border-radius:var(--r-ctl,8px); border:1px solid var(--line); }
-  .si-links-note { font-size:12px; color:var(--muted); align-self:center; max-width:42ch; }
   .si-sec-h .finder { margin:8px 0 0; }
   .skel-slot { display:flex; flex-direction:column; gap:8px; padding:12px 0; }
   .skel-slot .skel { height:14px; width:70%; }
@@ -143,6 +155,31 @@
   .mx-error button { min-height:40px; min-width:40px; margin-top:6px; cursor:pointer;
     background:var(--panel2); color:var(--text); border:1px solid var(--line); border-radius:var(--r-ctl,8px);
     padding:4px 12px; font-size:12px; }
+  /* post-stack: consolidate */
+  html[data-theme="light"] body.page-sector-central .si-more {
+    background: var(--panel);
+    border-color: var(--line);
+    box-shadow: 0 1px 2px color-mix(in srgb, var(--text) 5%, transparent),
+                0 8px 20px -12px color-mix(in srgb, var(--text) 10%, transparent);
+  }
+  html[data-theme="light"] body.page-sector-central .si-links a {
+    background: var(--panel);
+    border-color: var(--line);
+    box-shadow: 0 1px 2px color-mix(in srgb, var(--text) 6%, transparent);
+  }
+  html[data-theme="light"] body.page-sector-central .si-links a:hover {
+    border-color: color-mix(in srgb, var(--link) 40%, var(--line));
+  }
+  html[data-theme="light"] body.page-sector-central .skel-slot .skel {
+    background: linear-gradient(90deg, var(--panel) 25%, color-mix(in srgb, var(--text) 8%, var(--panel)) 45%, var(--panel) 65%);
+    background-size: 200% 100%;
+  }
+  html[data-theme="light"] body.page-sector-central .mx-error button {
+    background: var(--panel);
+    color: var(--text);
+    border-color: color-mix(in srgb, var(--warn) 35%, var(--line));
+    box-shadow: 0 1px 2px color-mix(in srgb, var(--text) 6%, transparent);
+  }
 </style>
 <style>
   * { box-sizing: border-box; }
@@ -1207,7 +1244,7 @@ function renderCn(ev, partJson){
     var sbStr = (sbz>=0?'+':'')+sbz.toFixed(2)+'σ';
     var flowWord = sbz>1?t('elevated inflow','流入偏强'):sbz<-1?t('elevated outflow','流出偏强'):t('near normal','接近常态');
     connectHtml += '<b>'+t('Southbound flow','南向资金')+': '+esc(flowWord)+'</b>';
-    connectHtml += ' <span class="lens-q" data-tip-en="How unusual this southbound print is versus its own history" data-tip-zh="南向净买入相对自身历史有多反常" data-tip-rc-en="'+esc(sbStr)+' versus its own history" data-tip-rc-zh="'+esc(sbStr)+' 相对自身历史">?</span> · ';
+    connectHtml += ' <span class="lens-q" data-lens-kind="define" tabindex="0" role="button" aria-label="Southbound flow — what this means" data-tip-en="How unusual this southbound print is versus its own history" data-tip-zh="南向净买入相对自身历史有多反常" data-tip-rc-en="'+esc(sbStr)+' versus its own history" data-tip-rc-zh="'+esc(sbStr)+' 相对自身历史">?</span> · ';
   }else{
     connectHtml += '<span class="mx-empty-why">'+t('Southbound flow is not in this feed','南向资金不在本数据源')+'</span> · ';
   }
@@ -1345,12 +1382,13 @@ _rcCnObs.observe(document.documentElement,{attributes:true,attributeFilter:['dat
     {%- set _ex_zh = ('+' ~ '%.2f'|format(_ex) ~ '%/次') if _ex is not none else '+0.43%/次' -%}
     {%- set _nreb = (_ss.n_rebalances|string) if _ss and _ss.n_rebalances is defined and _ss.n_rebalances is not none else '349' -%}
     {# R1: reversal-sleeve-card leaves L1; id kept for LEGACY_ANCHORS. Stats live in the LENS. #}
+    {# One idiom: tagged links + the LENS `?`. The 42ch prose note is demoted
+       into the tip (rows[0] / body) so the band is not four mixed chrome families. #}
     <div class="si-links">
       <a href="cn_reversal_sleeve.html" id="reversal-sleeve-card">
         <span class="sc-tag">{{ t('VALIDATED EDGE','已验证优势') }}</span>
         <span class="l-en">Reversal Sleeve →</span><span class="l-zh">反转组合 →</span>
       </a>
-      <span class="si-links-note">{{ t('A monthly contrarian basket: portfolio-level, high variance, small size.','按月逆向篮子：组合层面、波动高、仓位宜小。') }}</span>
       {{ lens.lens(
           kind='record', ill=lens.ILL_DIAL,
           kick=('Reversal Sleeve','反转组合'),
@@ -1399,7 +1437,7 @@ _rcCnObs.observe(document.documentElement,{attributes:true,attributeFilter:['dat
   </section>{# /si-view confluence #}
 
   <footer>
-    <span class="l-en">The conviction read blends credit, volatility and margin conditions with the pattern's conditional odds.</span><span class="l-zh">信念读数由信用、波动率和融资环境，以及走势的条件概率共同决定。</span>
+    <span class="l-en">The conviction read blends credit, volatility and margin conditions with the pattern's conditional odds — context, not investment advice.</span><span class="l-zh">信念读数由信用、波动率和融资环境，以及走势的条件概率共同决定——仅供参考，非投资建议。</span>
   </footer>
   {# The page footer rides INSIDE the stage on purpose. The rail is sticky within
      .si-shell, so anything left outside the shell shortens the rail's containing
