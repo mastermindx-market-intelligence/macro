@@ -10,13 +10,15 @@ claim: >
   successful view remains mounted. Source repair alone cannot establish the
   separately governed candidate consumer capability.
 falsifier: >
+  Re-run the host-qualified and source checks documented at
+  research/options_estate/OPTIONS_HOST_TOPOLOGY_AND_CONSUMER_RECOVERY_2026-09-11.md:1.
   Reinspect the device-qualified 2026-09-11 native observation records and pinned
-  Terminal/Macro sources in the companion report. Evidence that the scheduled
-  host actually had the target volume at that observation, or that the pinned
-  mount/producer consumed and continuously subscribed to the measured candidate
-  feed, refutes the corresponding claim. A later restored source or changed UI
-  requires a dated amendment. A same-named path on another device does not by
-  itself refute the original host-qualified absence.
+  Terminal/Macro sources named there. Evidence that the scheduled host actually
+  had the target volume at that observation, or that the pinned mount/producer
+  consumed and continuously subscribed to the measured candidate feed, refutes
+  the corresponding claim. A later restored source or changed UI requires a
+  dated amendment. A same-named path on another device does not by itself refute
+  the original host-qualified absence.
 so_what: >
   Qualify the existing permitted source-host/store/licensed-writer binding
   before moving data or services. Preserve the single canonical resolver/store,
@@ -31,8 +33,9 @@ verified_by: >
   Native Mini file/path and mount reads at 2026-09-11T02:46:11.601899Z plus
   successful external-physical disk inventory; separate Studio directory and
   manifest reads after successful ping 2026-09-11T02:49:15.207Z. Exact host IDs,
-  limits and paths in research/options_estate/OPTIONS_HOST_TOPOLOGY_AND_CONSUMER_RECOVERY_2026-09-11.md.
-  Macro 43470274d542fdf0cfd59f77a938338f5778dea3 and Terminal
+  limits and paths are recorded at
+  research/options_estate/OPTIONS_HOST_TOPOLOGY_AND_CONSUMER_RECOVERY_2026-09-11.md:1
+  on #7027. Macro 43470274d542fdf0cfd59f77a938338f5778dea3 and Terminal
   bad423f529d8460bbc83c67f92199ae4ff1b3163 pinned source reads, including
   OptionsAlphaView blob010bb32fa66630af37baa4fbf470012b3ba727db and
   flowClientCache blob60d21525a91237c68154620dce17b44073a772fb.
