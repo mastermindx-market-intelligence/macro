@@ -20,6 +20,7 @@ Pure: no I/O, no clock read, no network. ``page_built_at`` is supplied.
 from __future__ import annotations
 
 import math
+from datetime import date, datetime, timedelta
 
 from typing import Any, Mapping, Sequence
 
@@ -33,6 +34,15 @@ LAYOUT_DECISION_FIRST = "decision_first"
 _LAYOUTS = frozenset({LAYOUT_GRAMMAR, LAYOUT_DECISION_FIRST})
 
 EM_DASH = L.EM_DASH
+_MONTHS_EN = (
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December",
+)
+# The ten nominal CMT series ids the curve hero reads. Their component-histories
+# Range cell must be a bilingual sentence, never a bare ISO span.
+_CMT_COMPONENT_SERIES_IDS = frozenset({
+    "us3m", "us6m", "us1y", "us2y", "us3y", "us5y", "us7y", "us10y", "us20y", "us30y",
+})
 
 
 def _pair(en: str, zh: str) -> dict[str, str]:
@@ -289,10 +299,16 @@ def _headline(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) ->
     no_earlier_move = (
         raw_vector is None or movement_state == "NO_EARLIER_PUBLICATION"
     )
+    vector_incomplete = (
+        not no_earlier_move
+        and vector.get("status") == "PRESENT"
+        and (vector.get("dx") is None or vector.get("dy") is None)
+    )
     vector_present = (
         not no_earlier_move
         and vector.get("status") == "PRESENT"
         and vector.get("dx") is not None
+        and vector.get("dy") is not None
     )
     return {
         "state_id": headline.get("state_id"),
@@ -328,6 +344,7 @@ def _headline(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) ->
         },
         "vector": {
             "present": vector_present,
+            "incomplete": vector_incomplete,
             "dx": L.fmt_signed(vector.get("dx")),
             "dy": L.fmt_signed(vector.get("dy")),
             "dx_raw": vector.get("dx"),
@@ -335,7 +352,8 @@ def _headline(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) ->
             "absence": (
                 None if vector_present
                 else (_no_earlier_absence(vector.get("null_reason")) if no_earlier_move
-                      else _absence(vector.get("null_reason")))
+                      else (_absence("VECTOR_INCOMPLETE") if vector_incomplete
+                            else _absence(vector.get("null_reason"))))
             ),
             "status": L.label("presence", vector.get("status")),
         },
@@ -552,19 +570,61 @@ def _metrics(snapshot: Mapping[str, Any]) -> list[dict[str, Any]]:
     return rows
 
 
+def _plain_day_pair(value: Any) -> dict[str, str] | None:
+    """A calendar day as a plain EN/ZH sentence fragment. Never an ISO stamp."""
+    when = _as_date(value)
+    if when is None:
+        return None
+    return _pair(
+        f"{when.day} {_MONTHS_EN[when.month - 1]} {when.year}",
+        f"{when.year}年{when.month}月{when.day}日",
+    )
+
+
+def _plain_range_pair(first: Any, last: Any) -> dict[str, str] | None:
+    """Bilingual range for the component-histories table. Same-year ZH omits the second year."""
+    start = _as_date(first)
+    end = _as_date(last)
+    a = _plain_day_pair(start)
+    b = _plain_day_pair(end)
+    if a is None or b is None or start is None or end is None:
+        return None
+    if start.year == end.year:
+        zh = f"{start.year}年{start.month}月{start.day}日至{end.month}月{end.day}日"
+    else:
+        zh = f"{a['zh']}至{b['zh']}"
+    return _pair(f"From {a['en']} to {b['en']}", zh)
+
+
+_EMPTY_HISTORY_RANGE = _pair(
+    "No history published for this series in tonight's data.",
+    "本次数据未发布该序列的历史。",
+)
+
+
 def _series(snapshot: Mapping[str, Any]) -> dict[str, Any]:
     block = snapshot.get("series") or {}
     items = []
     for entry in block.get("items") or []:
         points = [p for p in (entry.get("points") or []) if p.get("v") is not None]
+        first = points[0]["t"] if points else None
+        last = points[-1]["t"] if points else None
+        series_id = entry.get("series_id")
+        if not points:
+            range_pair = _EMPTY_HISTORY_RANGE
+        elif series_id in _CMT_COMPONENT_SERIES_IDS:
+            range_pair = _plain_range_pair(first, last)
+        else:
+            range_pair = None
         items.append({
-            "series_id": entry.get("series_id"),
+            "series_id": series_id,
             "label": _bilingual(entry.get("label")),
             "unit": L.label("unit", entry.get("unit")),
             "basis": L.label("basis", entry.get("basis")),
             "count": len(points),
-            "first": points[0]["t"] if points else None,
-            "last": points[-1]["t"] if points else None,
+            "first": first,
+            "last": last,
+            "range": range_pair,
             "freshness": L.label("freshness", entry.get("freshness")),
             "freshness_tone": L.tone("freshness", entry.get("freshness")),
             "revision_behavior": entry.get("revision_behavior"),
@@ -1012,7 +1072,527 @@ def _glance(changes: Mapping[str, Any],
     }
 
 
-# --- public entry points ------------------------------------------------------
+# --- rates_curves curve-shape hero (A-F01-W4-1) ------------------------------
+# Context-only: shape + arithmetic spreads. No probability, no forecast, no
+# second producer. Computed from the snapshot's existing series points.
+
+_CURVE_TENORS: tuple[str, ...] = (
+    "3m", "6m", "1y", "2y", "3y", "5y", "7y", "10y", "20y", "30y",
+)
+_CURVE_SERIES_ALIASES: dict[str, tuple[str, ...]] = {
+    "3m": ("us3m", "3m", "us3m_level", "DGS3MO"),
+    "6m": ("us6m", "6m", "us6m_level", "DGS6MO"),
+    "1y": ("us1y", "1y", "us1y_level", "DGS1"),
+    "2y": ("us2y", "2y", "us2y_level", "DGS2"),
+    "3y": ("us3y", "3y", "us3y_level", "DGS3"),
+    "5y": ("us5y", "5y", "us5y_level", "DGS5"),
+    "7y": ("us7y", "7y", "us7y_level", "DGS7"),
+    "10y": ("us10y", "10y", "us10y_level", "DGS10"),
+    "20y": ("us20y", "20y", "us20y_level", "DGS20"),
+    "30y": ("us30y", "30y", "us30y_level", "DGS30"),
+}
+_CURVE_TENOR_LABELS: dict[str, dict[str, str]] = {
+    "3m": _pair("3-month", "3月期"),
+    "6m": _pair("6-month", "6月期"),
+    "1y": _pair("1-year", "1年期"),
+    "2y": _pair("2-year", "2年期"),
+    "3y": _pair("3-year", "3年期"),
+    "5y": _pair("5-year", "5年期"),
+    "7y": _pair("7-year", "7年期"),
+    "10y": _pair("10-year", "10年期"),
+    "20y": _pair("20-year", "20年期"),
+    "30y": _pair("30-year", "30年期"),
+}
+_CURVE_TENOR_SHORT = {
+    "3m": _pair("3 mo", "3个月"),
+    "6m": _pair("6 mo", "6个月"),
+    "1y": _pair("1 yr", "1年"),
+    "2y": _pair("2 yr", "2年"),
+    "3y": _pair("3 yr", "3年"),
+    "5y": _pair("5 yr", "5年"),
+    "7y": _pair("7 yr", "7年"),
+    "10y": _pair("10 yr", "10年"),
+    "20y": _pair("20 yr", "20年"),
+    "30y": _pair("30 yr", "30年"),
+}
+# At a 390 CSS px viewport ten overlay labels cannot clear each other: the ZH
+# short forms are ~26 px wide against a ~33 px tick pitch. These five stay
+# visible there; the other five keep their <li> in the <ol> and are hidden by
+# CSS alone, so the label list is never rewritten between viewports.
+_CURVE_MOBILE_TENORS: frozenset[str] = frozenset({"3m", "1y", "5y", "10y", "30y"})
+_CURVE_MIN_USABLE = 6
+_CURVE_PRIOR_MONTH_DAYS = 30
+_CURVE_FLAT_BAND = 0.25  # |10y − 3m| in percentage points
+_SHAPE_NORMAL = _pair(
+    "The curve is upward-sloping — longer maturities pay more than shorter ones.",
+    "曲线呈正常形态——期限越长，收益率越高。",
+)
+_SHAPE_NORMAL_LONG_DIP = _pair(
+    "The curve is upward-sloping — longer maturities pay more than shorter ones, with a small dip at the very long end.",
+    "曲线呈正常形态——期限越长，收益率越高，仅在最长端有小幅回落。",
+)
+_SHAPE_FLAT = _pair(
+    "The curve is close to flat — long and short maturities pay about the same.",
+    "曲线接近平坦——长短期限的收益率大致相同。",
+)
+_SHAPE_INVERTED_FRONT = _pair(
+    "The curve is inverted at the front — three-month yields are at or above ten-year yields.",
+    "曲线在短端倒挂——三个月期收益率已不低于十年期。",
+)
+_SHAPE_INVERTED_BELLY = _pair(
+    "The curve is inverted between two and ten years — two-year yields are at or above ten-year yields.",
+    "曲线在两年期与十年期之间倒挂——两年期收益率不低于十年期收益率。",
+)
+_SHAPE_INVERTED_BOTH = _pair(
+    "The curve is inverted at the front and between two and ten years — three-month and two-year yields are at or above ten-year yields.",
+    "曲线在短端以及两年期与十年期之间均倒挂——三个月期与两年期收益率均不低于十年期收益率。",
+)
+_SHAPE_UNSTATED = _pair(
+    "The curve's shape is not stated today: a deciding maturity has no reading.",
+    "今日不判断曲线形态：关键期限缺少读数。",
+)
+_CURVE_NULL_PANEL = _pair(
+    "The curve panel needs the Treasury data from tonight, which did not arrive.",
+    "曲线面板需要当晚的美债数据，但数据未能到达。",
+)
+# ok=False and availability CURRENT: the panel is not drawn. The code knows
+# only that fewer than six maturities have a reading — not that "today's
+# curve is shown" and not that a later update will fill the gap.
+_CURVE_NULL_NOT_DRAWN = _pair(
+    "The curve is not drawn: not enough maturities have a reading.",
+    "曲线未画出：有读数的期限不足。",
+)
+# ok=True and no prior-close / prior-month line: today's curve is on the
+# chart, and no earlier curve is on file to draw beside it.
+_CURVE_NULL_FIRST_NIGHTLY = _pair(
+    "Today's curve is shown alone: no earlier curve is on file to compare it with.",
+    "今天的曲线单独显示：暂无更早的曲线可供对比。",
+)
+_CURVE_NULL_TENOR = _pair(
+    "No reading for this maturity in tonight's data.",
+    "本次数据未覆盖该期限。",
+)
+_CURVE_NULL_SPREAD = _pair(
+    "No reading for this spread in tonight's data.",
+    "本次数据未覆盖该利差。",
+)
+_CURVE_CHANGE_CLOSE = _pair(
+    "Change since prior close",
+    "较上一交易日收盘变动",
+)
+_CURVE_CHANGE_MONTH = _pair(
+    "Change over a month",
+    "较一个月前变动",
+)
+_CURVE_UNIT_SPREAD = _pair("percentage points", "个百分点")
+_CURVE_HEADING = _pair("The Treasury curve", "美债收益率曲线")
+_CURVE_SUBTITLE = _pair(
+    "today versus the prior close versus a month ago",
+    "今日、上一交易日收盘与一个月前对比",
+)
+
+
+def _as_date(value: Any) -> date | None:
+    if isinstance(value, datetime):
+        return value.date()
+    if isinstance(value, date):
+        return value
+    if isinstance(value, str) and value.strip():
+        try:
+            return date.fromisoformat(value.strip()[:10])
+        except ValueError:
+            return None
+    return None
+
+
+def _r4(value: Any) -> float | None:
+    if not _finite(value):
+        return None
+    return round(float(value), 4)
+
+
+def _delta(today: float | None, prior: float | None) -> float | None:
+    if today is None or prior is None:
+        return None
+    return round(today - prior, 4)
+
+
+def _parse_level_points(raw: Any) -> list[tuple[date, float]]:
+    """Ascending unique (date, value) rows; last listing of a date wins."""
+    by_date: dict[date, float] = {}
+    for point in raw or []:
+        if not isinstance(point, Mapping):
+            continue
+        when = _as_date(point.get("t"))
+        value = _r4(point.get("v"))
+        if when is None or value is None:
+            continue
+        by_date[when] = value
+    return sorted(by_date.items())
+
+
+def _prior_close_value(rows: Sequence[tuple[date, float]]) -> float | None:
+    if len(rows) < 2:
+        return None
+    return rows[-2][1]
+
+
+def _prior_month_value(rows: Sequence[tuple[date, float]], as_of: date | None) -> float | None:
+    """Nearest row at least 30 calendar days before as_of. Never today, never future."""
+    if as_of is None or not rows:
+        return None
+    target = as_of - timedelta(days=_CURVE_PRIOR_MONTH_DAYS)
+    best: tuple[date, float] | None = None
+    for when, value in rows:
+        if when <= target:
+            best = (when, value)
+        else:
+            break
+    return None if best is None else best[1]
+
+
+def _series_points_index(snapshot: Mapping[str, Any]) -> dict[str, list[tuple[date, float]]]:
+    index: dict[str, list[tuple[date, float]]] = {}
+    for entry in ((snapshot.get("series") or {}).get("items") or []):
+        if not isinstance(entry, Mapping):
+            continue
+        series_id = str(entry.get("series_id") or "")
+        if not series_id:
+            continue
+        index[series_id] = _parse_level_points(entry.get("points"))
+    return index
+
+
+def _rows_for_tenor(index: Mapping[str, list[tuple[date, float]]], tenor: str) -> list[tuple[date, float]]:
+    for alias in _CURVE_SERIES_ALIASES[tenor]:
+        rows = index.get(alias)
+        if rows:
+            return rows
+    return []
+
+
+def _null_tenor_copy(tenor: str) -> dict[str, str]:
+    label = _CURVE_TENOR_LABELS[tenor]
+    return _pair(
+        f"No reading for the {label['en']} maturity in tonight's data.",
+        f"本次数据未覆盖{label['zh']}。",
+    )
+
+
+def _tenor_today(tenors: Sequence[Mapping[str, Any]], tenor: str) -> float | None:
+    for row in tenors:
+        if row.get("tenor") == tenor and _finite(row.get("today")):
+            return float(row["today"])
+    return None
+
+
+def _shape_read(tenors: Sequence[Mapping[str, Any]]) -> dict[str, str]:
+    """Shape states with a where. Policy spreads only; a long-end kink is not inverted.
+
+    UNSTATED — neither 10y−3m nor 10y−2y can be computed.
+    INVERTED — 10y−3m or 10y−2y is at or below zero, and the sentence names where.
+    FLAT — 10y−3m is within ±0.25 pp and no policy spread is negative.
+    NORMAL — otherwise. A 20y-above-30y dip may add one plain clause.
+    """
+    y3m = _tenor_today(tenors, "3m")
+    y2y = _tenor_today(tenors, "2y")
+    y10 = _tenor_today(tenors, "10y")
+    y20 = _tenor_today(tenors, "20y")
+    y30 = _tenor_today(tenors, "30y")
+    spread_10y3m = None if y3m is None or y10 is None else y10 - y3m
+    spread_2s10s = None if y2y is None or y10 is None else y10 - y2y
+    if spread_10y3m is None and spread_2s10s is None:
+        return dict(_SHAPE_UNSTATED)
+    front_inv = spread_10y3m is not None and spread_10y3m <= 0
+    belly_inv = spread_2s10s is not None and spread_2s10s <= 0
+    if front_inv and belly_inv:
+        return dict(_SHAPE_INVERTED_BOTH)
+    if front_inv:
+        return dict(_SHAPE_INVERTED_FRONT)
+    if belly_inv:
+        return dict(_SHAPE_INVERTED_BELLY)
+    if (
+        spread_10y3m is not None
+        and abs(spread_10y3m) <= _CURVE_FLAT_BAND
+        and not front_inv
+        and not belly_inv
+    ):
+        return dict(_SHAPE_FLAT)
+    long_dip = y20 is not None and y30 is not None and y20 > y30
+    if long_dip:
+        return dict(_SHAPE_NORMAL_LONG_DIP)
+    return dict(_SHAPE_NORMAL)
+
+
+def _spread_row(tenors_by_id: Mapping[str, Mapping[str, Any]], *,
+                spread_id: str, short: str, long: str,
+                label: dict[str, str]) -> dict[str, Any]:
+    """Long minus short — same arithmetic as this route's published slopes.
+
+    ``curve_2s10s_level`` in the producer is ``10y − 2y`` (higher = steeper).
+    The hero strip must not invert that sign.
+    """
+    left = tenors_by_id.get(short) or {}
+    right = tenors_by_id.get(long) or {}
+    today = _delta(right.get("today"), left.get("today"))
+    close = _delta(right.get("prior_close"), left.get("prior_close"))
+    month = _delta(right.get("prior_month"), left.get("prior_month"))
+    return {
+        "id": spread_id,
+        "label": dict(label),
+        "today": today,
+        "delta_close": _delta(today, close),
+        "delta_month": _delta(today, month),
+    }
+
+
+def _chart_payload(tenors: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    """Inline-SVG geometry for three comparison windows. Token colours only.
+
+    Axis labels are HTML overlays (not SVG ``<text>``) so they stay 10 CSS px
+    at a 390-wide viewport instead of scaling with the 640-unit viewBox.
+    The last x-tick is end-anchored so ``30-year`` cannot clip the viewBox.
+    """
+    width, height = 640, 200
+    # pad_l/width is also the CSS width of `.mq-curve-ylabels li` (11.25%), at
+    # every viewport and with no media override, so a y-tick label box ends
+    # exactly at the plot's left edge and no series can run through a glyph.
+    # Measured in the browser at a 390 CSS px viewport: the plot is 336 px, a
+    # "5.28%"-shaped label in Inter at 10 px is 31.7 px of ink, and the 4 px
+    # gutter has to fit beside it. 64/640 leaves 29.6 px of content box and the
+    # glyphs overflow it into the plot; 72/640 leaves 33.8 px and they do not.
+    # pad_l rose 48→72 (took 24 units). pad_r fell 16→8 (gave back 8, not the
+    # 24 that pad_l took). Inner width 576→560; tick pitch 64.00→62.22 units;
+    # the last-two-label gap shrank by about 1.8 CSS px at 1440. The 390
+    # x-label gap rule (≥4 px) still holds because only five labels stay
+    # visible there.
+    pad_l, pad_r, pad_t, pad_b = 72, 8, 14, 28
+    n = max(1, len(tenors) - 1)
+    inner_w = width - pad_l - pad_r
+    inner_h = height - pad_t - pad_b
+    values: list[float] = []
+    for row in tenors:
+        for key in ("today", "prior_close", "prior_month"):
+            value = row.get(key)
+            if _finite(value):
+                values.append(float(value))
+    if values:
+        y_min, y_max = min(values), max(values)
+        if y_max <= y_min:
+            y_max = y_min + 0.1
+            y_min = y_min - 0.1
+        pad = (y_max - y_min) * 0.08
+        y_min -= pad
+        y_max += pad
+    else:
+        y_min, y_max = 0.0, 1.0
+
+    def x_at(index: int) -> float:
+        return round(pad_l + (inner_w * index / n), 2)
+
+    def y_at(value: float) -> float:
+        return round(pad_t + (y_max - value) / (y_max - y_min) * inner_h, 2)
+
+    def polyline_segments(key: str) -> list[str]:
+        """One polyline per contiguous run. A missing tenor breaks the line."""
+        segments: list[str] = []
+        current: list[str] = []
+        for i, row in enumerate(tenors):
+            value = row.get(key)
+            if not _finite(value):
+                if len(current) >= 2:
+                    segments.append(" ".join(current))
+                current = []
+                continue
+            current.append(f"{x_at(i)},{y_at(float(value))}")
+        if len(current) >= 2:
+            segments.append(" ".join(current))
+        return segments
+
+    last_i = len(tenors) - 1
+    x_ticks = []
+    for i, row in enumerate(tenors):
+        x = x_at(i)
+        tenor = row["tenor"]
+        x_ticks.append({
+            "x": x,
+            "x_pct": round(100.0 * x / width, 3),
+            "anchor": "end" if i == last_i else "middle",
+            "label": dict(row.get("label") or _CURVE_TENOR_LABELS[tenor]),
+            "short": dict(_CURVE_TENOR_SHORT[tenor]),
+            "mobile": tenor in _CURVE_MOBILE_TENORS,
+        })
+    y_ticks = []
+    # Stay inside the plot, not on the baseline, so the lowest label cannot
+    # sit on the axis line.
+    for frac in (0.12, 0.50, 0.88):
+        value = y_min + (y_max - y_min) * frac
+        y = y_at(value)
+        y_ticks.append({
+            "y": y,
+            "y_pct": round(100.0 * y / height, 3),
+            "text": f"{value:.2f}%",
+        })
+    today_segments = polyline_segments("today")
+    close_segments = polyline_segments("prior_close")
+    month_segments = polyline_segments("prior_month")
+    return {
+        "width": width,
+        "height": height,
+        "pad_l": pad_l,
+        "pad_r": pad_r,
+        "pad_t": pad_t,
+        "pad_b": pad_b,
+        "baseline_y": height - pad_b,
+        "today_segments": today_segments,
+        "prior_close_segments": close_segments,
+        "prior_month_segments": month_segments,
+        "has_today": bool(today_segments),
+        "has_prior_close": bool(close_segments),
+        "has_prior_month": bool(month_segments),
+        "x_ticks": x_ticks,
+        "y_ticks": y_ticks,
+    }
+
+
+def _curve_levels_caption(days: Sequence[date]) -> dict[str, str] | None:
+    """Plain bilingual caption for the days the PLOTTED levels actually carry.
+
+    Derived from the plotted rows, never from ``generation.calculation_as_of``:
+    a page-wide stamp over per-tenor last-available levels is exactly how a
+    stale tenor inherits a fresher one's date. When the plotted tenors span
+    more than one day the caption names the range in both languages.
+    """
+    if not days:
+        return None
+    first, last = min(days), max(days)
+    a = _plain_day_pair(first)
+    b = _plain_day_pair(last)
+    if a is None or b is None:
+        return None
+    if first == last:
+        return _pair(f"Levels as of {a['en']}", f"各期限水平截至{a['zh']}")
+    if first.year == last.year and first.month == last.month:
+        en = f"{first.day}–{last.day} {_MONTHS_EN[first.month - 1]} {first.year}"
+        zh = f"{first.year}年{first.month}月{first.day}日至{last.day}日"
+    elif first.year == last.year:
+        en = (f"{first.day} {_MONTHS_EN[first.month - 1]} – "
+              f"{last.day} {_MONTHS_EN[last.month - 1]} {first.year}")
+        zh = f"{first.year}年{first.month}月{first.day}日至{last.month}月{last.day}日"
+    else:
+        en = f"{a['en']} – {b['en']}"
+        zh = f"{a['zh']}至{b['zh']}"
+    return _pair(f"Levels as of {en}", f"各期限水平截至{zh}")
+
+
+def _curve_hero(snapshot: Mapping[str, Any]) -> dict[str, Any]:
+    """Today vs prior close vs prior month for the ten nominal CMT tenors.
+
+    Returns the honest-null panel (ok=False, no partial chart) when fewer than
+    six tenors have a today reading. Missing tenors stay in the list with
+    today=None rather than being dropped.
+    """
+    index = _series_points_index(snapshot)
+    # The caption is per-tenor, taken from the rows this hero actually plots.
+    # generation.calculation_as_of is a page-wide stamp; printing it over
+    # per-tenor last-available levels is how a stale series inherits a fresher
+    # one's date. A tenor with no row is not plotted and never dated.
+    plotted_days: list[date] = []
+
+    tenors: list[dict[str, Any]] = []
+    missing: list[str] = []
+    for tenor in _CURVE_TENORS:
+        rows = _rows_for_tenor(index, tenor)
+        today = rows[-1][1] if rows else None
+        as_of_tenor = rows[-1][0] if rows else None
+        prior_close = _prior_close_value(rows)
+        prior_month = _prior_month_value(rows, as_of_tenor)
+        if today is None:
+            missing.append(tenor)
+        elif as_of_tenor is not None:
+            plotted_days.append(as_of_tenor)
+        tenors.append({
+            "tenor": tenor,
+            "as_of_tenor": as_of_tenor.isoformat() if as_of_tenor is not None else None,
+            "label": dict(_CURVE_TENOR_LABELS[tenor]),
+            "today": today,
+            "prior_close": prior_close,
+            "prior_month": prior_month,
+            "delta_close": _delta(today, prior_close),
+            "delta_month": _delta(today, prior_month),
+        })
+
+    usable = sum(1 for row in tenors if row["today"] is not None)
+    ok = usable >= _CURVE_MIN_USABLE
+    as_of = min(plotted_days).isoformat() if plotted_days else None
+    as_of_caption = _curve_levels_caption(plotted_days) if ok else None
+    availability_state = str(
+        (snapshot.get("availability") or {}).get("state") or ""
+    ).upper()
+    availability_current = availability_state == "CURRENT"
+    chart = _chart_payload(tenors) if ok else None
+    first_nightly = None
+    if ok:
+        null_panel = dict(_CURVE_NULL_PANEL)
+        shape = _shape_read(tenors)
+        if chart is not None and not chart["has_prior_close"] and not chart["has_prior_month"]:
+            first_nightly = dict(_CURVE_NULL_FIRST_NIGHTLY)
+    elif availability_current:
+        # Panel not drawn. Do not claim today's curve is shown.
+        null_panel = dict(_CURVE_NULL_NOT_DRAWN)
+        shape = dict(null_panel)
+    else:
+        null_panel = dict(_CURVE_NULL_PANEL)
+        shape = dict(null_panel)
+    tenors_by_id = {row["tenor"]: row for row in tenors}
+    spreads = [
+        _spread_row(
+            tenors_by_id, spread_id="10y3m", short="3m", long="10y",
+            label=_pair("10-year minus 3-month", "10年期减3月期"),
+        ),
+        _spread_row(
+            tenors_by_id, spread_id="2s10s", short="2y", long="10y",
+            label=_pair("10-year minus 2-year", "10年期减2年期"),
+        ),
+    ]
+    return {
+        "ok": ok,
+        "as_of": as_of,
+        "as_of_caption": as_of_caption,
+        "tenors": tenors,
+        "spreads": spreads,
+        "shape_read": shape,
+        "missing_tenors": missing,
+        "missing_copy": [_null_tenor_copy(tenor) for tenor in missing],
+        "null_panel": null_panel,
+        "first_nightly": first_nightly,
+        "null_tenor": dict(_CURVE_NULL_TENOR),
+        "null_spread": dict(_CURVE_NULL_SPREAD),
+        "heading": dict(_CURVE_HEADING),
+        "subtitle": dict(_CURVE_SUBTITLE),
+        "legend_today": _pair("Today", "今日"),
+        "legend_close": _pair("Prior close", "上一交易日收盘"),
+        "legend_month": _pair("A month ago", "一个月前"),
+        "legend_close_null": _pair(
+            "Prior close is not drawn: that comparison needs two days of history.",
+            "未画出上一交易日收盘线：该对比需要两个交易日的数据。",
+        ),
+        "legend_month_null": _pair(
+            "A month ago is not drawn: that comparison needs a month of history.",
+            "未画出“一个月前”对比线：该对比需要一个月的历史数据。",
+        ),
+        "change_close": dict(_CURVE_CHANGE_CLOSE),
+        "change_month": dict(_CURVE_CHANGE_MONTH),
+        "spread_now": _pair("Spread now", "当前利差"),
+        "unit_spread": dict(_CURVE_UNIT_SPREAD),
+        "chart": chart,
+    }
+
+
+def _null_curve_hero() -> dict[str, Any]:
+    """Honest-null shape used by the degraded path and by an empty snapshot."""
+    return _curve_hero({"generation": {}, "series": {"items": []}})
+
 
 def build_view(snapshot: Mapping[str, Any], *, page_built_at: str,
                artifact: Mapping[str, Any],
@@ -1046,7 +1626,7 @@ def build_view(snapshot: Mapping[str, Any], *, page_built_at: str,
         {"tab_id": "history", "name": _pair("History", "历史")},
     ]
 
-    return {
+    view = {
         "ok": True,
         "layout": layout,
         "decision_first": layout == LAYOUT_DECISION_FIRST,
@@ -1076,6 +1656,10 @@ def build_view(snapshot: Mapping[str, Any], *, page_built_at: str,
         "learning_events": list((snapshot.get("learning") or {}).get("event_names") or []),
         "page_built_at": page_built_at,
     }
+    # Curve-shape hero is rates_curves-only. Other workspaces must not grow the key.
+    if view["workspace"]["id"] == "rates_curves":
+        view["curve_hero"] = _curve_hero(snapshot)
+    return view
 
 
 def degraded_view(*, workspace_id: str, title: Mapping[str, str],
@@ -1091,7 +1675,7 @@ def degraded_view(*, workspace_id: str, title: Mapping[str, str],
     exact receipt — and NOTHING that could be mistaken for a state. There is no
     zero, no neutral quadrant, no empty chart.
     """
-    return {
+    view = {
         "ok": False,
         "layout": LAYOUT_GRAMMAR,
         "decision_first": False,
@@ -1115,6 +1699,11 @@ def degraded_view(*, workspace_id: str, title: Mapping[str, str],
         },
         "artifact": dict(artifact),
     }
+    # Rates & Curves always includes the curve panel; the degraded path must
+    # still carry the honest-null hero so the null copy renders.
+    if workspace_id == "rates_curves":
+        view["curve_hero"] = _null_curve_hero()
+    return view
 
 
 # ==========================================================================

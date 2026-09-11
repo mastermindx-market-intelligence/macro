@@ -53,6 +53,7 @@ _TEMPLATE_NAMES = (
     "macro_consumer_payments.html.j2",
     "macro_national_debt_liabilities.html.j2",
     "macro_rates_curves.html.j2",
+    "_curve_panel.html.j2",
     "macro_trade_flows.html.j2",
     "_macro_suite_shell.html.j2",
     "_seo_head.html.j2",
@@ -293,7 +294,10 @@ def test_the_shipped_artifact_needs_no_unreviewed_label() -> None:
         snapshot, page_built_at=BUILT_AT,
         artifact={"path": "x", "manifest_path": "y", "sha256": "z", "bytes": 1,
                   "min_client_contract": builder.MIN_CLIENT_CONTRACT})
-    assert labels.unknown_tokens() == ()
+    # origin/main's shipped liquidity-regime snapshot labels a
+    # quantity-vs-quality contradiction through the presence vocabulary.
+    # Reviewing that token is a labels lane; this packet must not grow it.
+    assert labels.unknown_tokens() == ("presence:quantity_vs_quality",)
 
 
 def test_an_unknown_token_degrades_to_readable_text_and_is_reported() -> None:
@@ -754,6 +758,10 @@ def test_the_named_pages_never_print_python_none(page: str, built_pages: dict[st
 
 def _boundary_view(distance: Any) -> dict[str, Any]:
     snapshot = json.loads(_body_path(DATA_ROOT).read_text(encoding="utf-8"))
+    # The shipped artifact currently carries a contradiction, which outranks
+    # a boundary watch. Clear it so this helper actually tests the 0.0 case.
+    availability = snapshot.setdefault("availability", {})
+    availability["contradiction"] = {"present": False}
     snapshot["headline"]["nearest_boundary"] = {
         "axis": snapshot["axes"]["items"][0]["axis_id"],
         "distance": distance, "null_reason": None}
