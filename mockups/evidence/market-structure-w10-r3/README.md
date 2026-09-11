@@ -22,18 +22,19 @@ track. Stance chips keep their existing wash.
 ## LIGHT TREATMENT
 
 Research workspace: cool canvas, white material, hairline discipline, shadow
-instead of glow. The watching band is a paper plate on `--bg` (the canvas,
-not the white card `--panel`) with an 8% ink shadow — never the dark 7%
-blue wash transplanted onto white. Swipe-strip cards pick up the same 8%
-ink shadow so a peeked next card reads as a stacked sheet, not a glowing
-tile. Token substitution alone is not this design: the band's ground and
-the strip's card shadow are light-only mechanisms.
+instead of glow. The watching band is a recessed well inside the white
+`.glass` card (`background: var(--bg)` against the hero's white glass, plus
+an 8% ink shadow) — not a paper plate raised on the page canvas. Never the
+dark 7% blue wash transplanted onto white. Swipe-strip cards pick up the
+same 8% ink shadow so a peeked next card reads as a stacked sheet, not a
+glowing tile. Token substitution alone is not this design: the band's
+ground and the strip's card shadow are light-only mechanisms.
 
 ## Intentional differences
 
 | Mechanism | Dark | Light |
 |---|---|---|
-| Watching-band ground | 7% blue wash on graphite | `--bg` canvas + 8% ink shadow |
+| Watching-band ground | 7% blue wash on graphite | recessed `--bg` well inside the white `.glass` + 8% ink shadow |
 | Watching-band border | hairline `--line` | same hairline, no glow |
 | Swipe-strip cards | graphite panels, no extra shadow | 8% ink shadow on the panel |
 | Hero / chips | unchanged r2 treatments | unchanged r2 treatments |
@@ -99,10 +100,10 @@ the strip's card shadow are light-only mechanisms.
 | `B-watch-band-light-en.png` | P8 watching band folded into the hero | light | en | yes | none (aurora/sky-fx/FAB hidden) |
 | `B-watch-band-dark-zh.png` | P8 watching band folded into the hero | dark | zh | yes | none (aurora/sky-fx/FAB hidden) |
 | `B-watch-band-light-zh.png` | P8 watching band folded into the hero | light | zh | yes | none (aurora/sky-fx/FAB hidden) |
-| `B-swipe-390-dark-en.png` | P9 swipe strip at 390 (next-card peek, top-aligned) | dark | en | yes | none (aurora/sky-fx/FAB hidden) |
-| `B-swipe-390-light-en.png` | P9 swipe strip at 390 (next-card peek, top-aligned) | light | en | yes | none (aurora/sky-fx/FAB hidden) |
-| `B-swipe-390-dark-zh.png` | P9 swipe strip at 390 (next-card peek, top-aligned) | dark | zh | yes | none (aurora/sky-fx/FAB hidden) |
-| `B-swipe-390-light-zh.png` | P9 swipe strip at 390 (next-card peek, top-aligned) | light | zh | yes | none (aurora/sky-fx/FAB hidden) |
+| `B-swipe-390-dark-en.png` | P9 swipe strip at 390 (next-card peek, equal-height cards, content top-anchored) | dark | en | yes | none (aurora/sky-fx/FAB hidden) |
+| `B-swipe-390-light-en.png` | P9 swipe strip at 390 (next-card peek, equal-height cards, content top-anchored) | light | en | yes | none (aurora/sky-fx/FAB hidden) |
+| `B-swipe-390-dark-zh.png` | P9 swipe strip at 390 (next-card peek, equal-height cards, content top-anchored) | dark | zh | yes | none (aurora/sky-fx/FAB hidden) |
+| `B-swipe-390-light-zh.png` | P9 swipe strip at 390 (next-card peek, equal-height cards, content top-anchored) | light | zh | yes | none (aurora/sky-fx/FAB hidden) |
 
 ## C — synthetic proofs
 
@@ -124,14 +125,35 @@ horizontally (that is the reduction). `.kpi-row` / `.vix-row` wrap.
 
 ## E — producer-regression tests
 
-Named in the worker report: `test_p0_template_consumes_note_en` /
-`test_p0_gamma_long_to_short_chip_renders_producer_note` (consumes-what-the-
-producer-emits) and `test_p1_hero_distance_round_trips_from_emitted_spot_flip`
-(`/spot` round-trip). P8 adds `test_p8_watch_band_binds_stubbed_flip_not_fixture_default`.
+Re-run at head `03eebd10e7d343c955fe960cdeebb411ed916c7d` (pipe-free):
+
+```
+tests/test_build_market_structure_page.py::test_p0_template_consumes_note_en PASSED
+tests/test_build_market_structure_page.py::test_p0_gamma_long_to_short_chip_renders_producer_note PASSED
+tests/test_build_market_structure_page.py::test_p1_hero_distance_round_trips_from_emitted_spot_flip PASSED
+tests/test_build_market_structure_page.py::test_p8_watch_band_binds_stubbed_flip_not_fixture_default PASSED
+============================== 4 passed in 2.35s ===============================
+```
 
 ## F — design-system gates
 
-Run on the diff after capture; outputs live in the worker report.
+Re-run at the same head against `git diff f6d512195596 HEAD`:
+
+```
+python3 scripts/check_design_system.py --mode enforce-added --diff-file /tmp/mstruct-w10-r4-code.diff
+::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (19037 further pre-existing, non-blocking finding(s) in the estate — run --mode report for the full census)
+design-system ratchet — mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 19037)
+EXIT_DS=0
+
+python3 scripts/check_runtime_style_injection.py
+runtime style injection guard REFUSED: sparse worktree — site not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+EXIT_RSI=1
+
+python3 scripts/check_ui_visual_evidence.py --diff-file /tmp/mstruct-w10-r4-code.diff
+EXIT_UVE=0
+```
+
+REFUSED-on-sparse for `check_runtime_style_injection.py` is lawful on this tree (`data/`, `site/`, `verify_shots` omitted). Direct inspection: zero `style.textContent` / `createElement('style')` / `insertRule` in the template; new rules sit in the governed `<style>` block.
 
 ## Disclosed hides
 

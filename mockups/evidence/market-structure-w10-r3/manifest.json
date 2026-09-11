@@ -1,10 +1,10 @@
 {
   "schema": "mastermind.p0_evidence.v2",
-  "generated_at": "2026-09-11T07:12:13Z",
+  "generated_at": "2026-09-11T07:41:36Z",
   "tool": "scripts/capture_market_structure_w10_r3.py",
   "target": "market_structure.html",
   "page_id": "market_structure",
-  "head": "a5eeffa136c4b6d4160d6117bcadada187edf4d3",
+  "head": "03eebd10e7d343c955fe960cdeebb411ed916c7d",
   "axes": {
     "viewports": {
       "desktop": [
@@ -29,14 +29,14 @@
     ]
   },
   "aliases": {
-    "A-desktop-dark-en.png": "cells/682f6ed697eba650.png",
-    "A-desktop-dark-zh.png": "cells/af8623cef98d240c.png",
-    "A-desktop-light-en.png": "cells/9ea9ff20717f5f75.png",
-    "A-desktop-light-zh.png": "cells/82c7535a8166c572.png",
+    "A-desktop-dark-en.png": "cells/f431c3871b1bb0d3.png",
+    "A-desktop-dark-zh.png": "cells/54e7aa4a58b2f020.png",
+    "A-desktop-light-en.png": "cells/70dd16cd57eb6b86.png",
+    "A-desktop-light-zh.png": "cells/0610d6f4b9f628ef.png",
     "A-mobile-dark-en.png": "cells/bf897bbf021c1341.png",
-    "A-mobile-dark-zh.png": "cells/1aab3e7a260ded09.png",
+    "A-mobile-dark-zh.png": "cells/7560a86a06b85deb.png",
     "A-mobile-light-en.png": "cells/312eabc0f686981a.png",
-    "A-mobile-light-zh.png": "cells/1b99f2ce2396486c.png",
+    "A-mobile-light-zh.png": "cells/aa88cdb13b493baf.png",
     "B-changed-dark-en.png": "cells/d10ed403a267efed.png",
     "B-changed-light-en.png": "cells/7b84149510628c1c.png",
     "B-changed-dark-zh.png": "cells/1b06bc6d3329417b.png",
@@ -57,10 +57,10 @@
     "B-stance-flows-light-en.png": "cells/b3a34a32fa507f26.png",
     "B-stance-flows-dark-zh.png": "cells/d51f1e97cec0ab2d.png",
     "B-stance-flows-light-zh.png": "cells/532cf90907598f88.png",
-    "B-stance-disp-dark-en.png": "cells/d8b9aaa4c191a677.png",
-    "B-stance-disp-light-en.png": "cells/885dce191b3ea5bf.png",
-    "B-stance-disp-dark-zh.png": "cells/dc1d7c4f732d255a.png",
-    "B-stance-disp-light-zh.png": "cells/2e157a41953476fe.png",
+    "B-stance-disp-dark-en.png": "cells/cc4665f4c0242cc6.png",
+    "B-stance-disp-light-en.png": "cells/5f5e584fe6a4cbda.png",
+    "B-stance-disp-dark-zh.png": "cells/ca50bf8e79cae329.png",
+    "B-stance-disp-light-zh.png": "cells/631d99972f36a946.png",
     "B-stance-vol-dark-en.png": "cells/3983f1325edff7fe.png",
     "B-stance-vol-light-en.png": "cells/f3d78d01eca8a6f6.png",
     "B-stance-vol-dark-zh.png": "cells/16748e8317fbe191.png",
@@ -69,14 +69,14 @@
     "B-stance-week-light-en.png": "cells/3325210820e69ff5.png",
     "B-stance-week-dark-zh.png": "cells/d48c66dd74f6d227.png",
     "B-stance-week-light-zh.png": "cells/57ac2d4be28b69a6.png",
-    "B-watch-band-dark-en.png": "cells/17657ccf5ed4d496.png",
-    "B-watch-band-light-en.png": "cells/379c99f5c9ff375c.png",
-    "B-watch-band-dark-zh.png": "cells/586de85252113c8b.png",
-    "B-watch-band-light-zh.png": "cells/24bdd4cc94640e1a.png",
-    "B-swipe-390-dark-en.png": "cells/c337b9d782833fd4.png",
-    "B-swipe-390-light-en.png": "cells/cd747880da81ce84.png",
-    "B-swipe-390-dark-zh.png": "cells/9b2104f24a13e6ee.png",
-    "B-swipe-390-light-zh.png": "cells/6d9a21496a965354.png",
+    "B-watch-band-dark-en.png": "cells/8741714e39d62f50.png",
+    "B-watch-band-light-en.png": "cells/cb79b7493e1f7935.png",
+    "B-watch-band-dark-zh.png": "cells/d9bcbe46cb9dbba0.png",
+    "B-watch-band-light-zh.png": "cells/bf208a94c552cd8b.png",
+    "B-swipe-390-dark-en.png": "cells/c3aee55bf55164a8.png",
+    "B-swipe-390-light-en.png": "cells/e3ceb7851cbf54f7.png",
+    "B-swipe-390-dark-zh.png": "cells/cce555364c05bc7c.png",
+    "B-swipe-390-light-zh.png": "cells/d8cf89839d967f76.png",
     "C-ord1-dark-en.png": "cells/7dd704855dd05e25.png",
     "C-ord1-light-en.png": "cells/82e74fefe03e7dc9.png",
     "C-ord2-dark-en.png": "cells/d5ac0be31c9e1628.png",
@@ -223,10 +223,10 @@
           "viewport_height": 900,
           "subject": "baseline",
           "captured": true,
-          "file": "cells/682f6ed697eba650.png",
+          "file": "cells/f431c3871b1bb0d3.png",
           "alias": "A-desktop-dark-en.png",
-          "sha256": "682f6ed697eba650c48b48c5816bad944fb5bb032d1e1ef3e37762b7f788d810",
-          "bytes": 288869,
+          "sha256": "f431c3871b1bb0d3bb99256587bf483744f6b3eb46a7da7d9e7117f74baef462",
+          "bytes": 288829,
           "width": 1440,
           "height": 900,
           "applied_theme": "dark",
@@ -244,7 +244,7 @@
               "opacity": "1"
             },
             "watch": {
-              "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+              "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
               "color": "rgb(227, 233, 242)",
               "background": "color(srgb 0.364706 0.545098 1 / 0.07)",
               "display": "block",
@@ -290,10 +290,10 @@
           "viewport_height": 900,
           "subject": "baseline",
           "captured": true,
-          "file": "cells/af8623cef98d240c.png",
+          "file": "cells/54e7aa4a58b2f020.png",
           "alias": "A-desktop-dark-zh.png",
-          "sha256": "af8623cef98d240c6e47b3f28c3c137af169b6d9b3f1c9e80e2adaa31ef3f52e",
-          "bytes": 275397,
+          "sha256": "54e7aa4a58b2f0201b6a04c0d61d06cfcdb59d85a8bd4045da86caa41e44301c",
+          "bytes": 276164,
           "width": 1440,
           "height": 900,
           "applied_theme": "dark",
@@ -311,7 +311,7 @@
               "opacity": "1"
             },
             "watch": {
-              "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 1个月隐含相关性维持在近两年20百分位及以下时，选股行情成立；升至80百分位则个股开始同涨同跌。 ?",
+              "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 若1个月隐含相关性回落至近两年20百分位，选股窗口才会打开——当前为第21百分位；升至80百分位及以上则个股同涨同跌。 ?",
               "color": "rgb(227, 233, 242)",
               "background": "color(srgb 0.364706 0.545098 1 / 0.07)",
               "display": "block",
@@ -357,10 +357,10 @@
           "viewport_height": 900,
           "subject": "baseline",
           "captured": true,
-          "file": "cells/9ea9ff20717f5f75.png",
+          "file": "cells/70dd16cd57eb6b86.png",
           "alias": "A-desktop-light-en.png",
-          "sha256": "9ea9ff20717f5f754cff5bf2ad00502a1215f367d46d3d8e25522c394afec72e",
-          "bytes": 257544,
+          "sha256": "70dd16cd57eb6b868f29206fe2f6d9cd61c32febad3f3d2f7c7479c4c7eb6302",
+          "bytes": 257734,
           "width": 1440,
           "height": 900,
           "applied_theme": "light",
@@ -378,7 +378,7 @@
               "opacity": "1"
             },
             "watch": {
-              "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+              "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
               "color": "rgb(26, 33, 51)",
               "background": "rgb(232, 235, 241)",
               "display": "block",
@@ -424,10 +424,10 @@
           "viewport_height": 900,
           "subject": "baseline",
           "captured": true,
-          "file": "cells/82c7535a8166c572.png",
+          "file": "cells/0610d6f4b9f628ef.png",
           "alias": "A-desktop-light-zh.png",
-          "sha256": "82c7535a8166c572280d4c934c39e8d9edc17d87f2d95b4a6b095662136c9b78",
-          "bytes": 252846,
+          "sha256": "0610d6f4b9f628efed2e977a4326a2cb84455ead170621c8e5d2ab4b703aa51d",
+          "bytes": 253868,
           "width": 1440,
           "height": 900,
           "applied_theme": "light",
@@ -445,7 +445,7 @@
               "opacity": "1"
             },
             "watch": {
-              "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 1个月隐含相关性维持在近两年20百分位及以下时，选股行情成立；升至80百分位则个股开始同涨同跌。 ?",
+              "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 若1个月隐含相关性回落至近两年20百分位，选股窗口才会打开——当前为第21百分位；升至80百分位及以上则个股同涨同跌。 ?",
               "color": "rgb(26, 33, 51)",
               "background": "rgb(232, 235, 241)",
               "display": "block",
@@ -512,7 +512,7 @@
               "opacity": "1"
             },
             "watch": {
-              "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+              "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
               "color": "rgb(227, 233, 242)",
               "background": "color(srgb 0.364706 0.545098 1 / 0.07)",
               "display": "block",
@@ -532,8 +532,8 @@
             "firstDriver": {
               "text": "2 Dealer exposure history ? 1M 3M 6M 1Y All GEX (dealer options exposure) bars coloured by dealer regime · SPX line against the flip level (amber dashed) · series from 2026-06-15",
               "color": "rgb(227, 233, 242)",
-              "background": "rgba(0, 0, 0, 0)",
-              "display": "block",
+              "background": "rgb(21, 24, 32)",
+              "display": "flex",
               "visibility": "visible",
               "fontSize": "15px",
               "opacity": "1"
@@ -558,10 +558,10 @@
           "viewport_height": 844,
           "subject": "baseline",
           "captured": true,
-          "file": "cells/1aab3e7a260ded09.png",
+          "file": "cells/7560a86a06b85deb.png",
           "alias": "A-mobile-dark-zh.png",
-          "sha256": "1aab3e7a260ded09fa2921594508b6eb64f0e234bdffae35280d74474dc5bef5",
-          "bytes": 163703,
+          "sha256": "7560a86a06b85debc14e922893f08672d57e1722bf7eff4afc8d29a52011c146",
+          "bytes": 163671,
           "width": 390,
           "height": 844,
           "applied_theme": "dark",
@@ -579,7 +579,7 @@
               "opacity": "1"
             },
             "watch": {
-              "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 1个月隐含相关性维持在近两年20百分位及以下时，选股行情成立；升至80百分位则个股开始同涨同跌。 ?",
+              "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 若1个月隐含相关性回落至近两年20百分位，选股窗口才会打开——当前为第21百分位；升至80百分位及以上则个股同涨同跌。 ?",
               "color": "rgb(227, 233, 242)",
               "background": "color(srgb 0.364706 0.545098 1 / 0.07)",
               "display": "block",
@@ -599,8 +599,8 @@
             "firstDriver": {
               "text": "2 做市商敞口历史 ? 1M 3M 6M 1Y 全部 GEX（做市商期权敞口）柱图按做市商制度着色 · 标普500线对照翻转点（琥珀色虚线） · 数据自 2026-06-15",
               "color": "rgb(227, 233, 242)",
-              "background": "rgba(0, 0, 0, 0)",
-              "display": "block",
+              "background": "rgb(21, 24, 32)",
+              "display": "flex",
               "visibility": "visible",
               "fontSize": "15px",
               "opacity": "1"
@@ -646,7 +646,7 @@
               "opacity": "1"
             },
             "watch": {
-              "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+              "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
               "color": "rgb(26, 33, 51)",
               "background": "rgb(232, 235, 241)",
               "display": "block",
@@ -666,8 +666,8 @@
             "firstDriver": {
               "text": "2 Dealer exposure history ? 1M 3M 6M 1Y All GEX (dealer options exposure) bars coloured by dealer regime · SPX line against the flip level (amber dashed) · series from 2026-06-15",
               "color": "rgb(26, 33, 51)",
-              "background": "rgba(0, 0, 0, 0)",
-              "display": "block",
+              "background": "rgb(255, 255, 255)",
+              "display": "flex",
               "visibility": "visible",
               "fontSize": "15px",
               "opacity": "1"
@@ -692,10 +692,10 @@
           "viewport_height": 844,
           "subject": "baseline",
           "captured": true,
-          "file": "cells/1b99f2ce2396486c.png",
+          "file": "cells/aa88cdb13b493baf.png",
           "alias": "A-mobile-light-zh.png",
-          "sha256": "1b99f2ce2396486c1a69e153d1ff41d58cd4d19dfcc069c4be45ed704ff86f5c",
-          "bytes": 151290,
+          "sha256": "aa88cdb13b493baf0ab6dcfa3c69698609e6303dc8b06cc5cf24160b6a4f0e37",
+          "bytes": 151122,
           "width": 390,
           "height": 844,
           "applied_theme": "light",
@@ -713,7 +713,7 @@
               "opacity": "1"
             },
             "watch": {
-              "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 1个月隐含相关性维持在近两年20百分位及以下时，选股行情成立；升至80百分位则个股开始同涨同跌。 ?",
+              "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 若1个月隐含相关性回落至近两年20百分位，选股窗口才会打开——当前为第21百分位；升至80百分位及以上则个股同涨同跌。 ?",
               "color": "rgb(26, 33, 51)",
               "background": "rgb(232, 235, 241)",
               "display": "block",
@@ -733,8 +733,8 @@
             "firstDriver": {
               "text": "2 做市商敞口历史 ? 1M 3M 6M 1Y 全部 GEX（做市商期权敞口）柱图按做市商制度着色 · 标普500线对照翻转点（琥珀色虚线） · 数据自 2026-06-15",
               "color": "rgb(26, 33, 51)",
-              "background": "rgba(0, 0, 0, 0)",
-              "display": "block",
+              "background": "rgb(255, 255, 255)",
+              "display": "flex",
               "visibility": "visible",
               "fontSize": "15px",
               "opacity": "1"
@@ -786,7 +786,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7497 This shock-absorber read holds while SPX stays above 7497. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7497 This shock-absorber read holds while SPX stays above 7497. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
           "color": "rgb(227, 233, 242)",
           "background": "color(srgb 0.364706 0.545098 1 / 0.07)",
           "display": "block",
@@ -855,7 +855,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7497 This shock-absorber read holds while SPX stays above 7497. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7497 This shock-absorber read holds while SPX stays above 7497. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
           "color": "rgb(26, 33, 51)",
           "background": "rgb(232, 235, 241)",
           "display": "block",
@@ -924,7 +924,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7497 标普500保持在 7497 之上 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 1个月隐含相关性维持在近两年20百分位及以下时，选股行情成立；升至80百分位则个股开始同涨同跌。 ?",
+          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7497 标普500保持在 7497 之上 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 若1个月隐含相关性回落至近两年20百分位，选股窗口才会打开——当前为第21百分位；升至80百分位及以上则个股同涨同跌。 ?",
           "color": "rgb(227, 233, 242)",
           "background": "color(srgb 0.364706 0.545098 1 / 0.07)",
           "display": "block",
@@ -993,7 +993,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7497 标普500保持在 7497 之上 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 1个月隐含相关性维持在近两年20百分位及以下时，选股行情成立；升至80百分位则个股开始同涨同跌。 ?",
+          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7497 标普500保持在 7497 之上 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 若1个月隐含相关性回落至近两年20百分位，选股窗口才会打开——当前为第21百分位；升至80百分位及以上则个股同涨同跌。 ?",
           "color": "rgb(26, 33, 51)",
           "background": "rgb(232, 235, 241)",
           "display": "block",
@@ -1062,7 +1062,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
           "color": "rgb(227, 233, 242)",
           "background": "color(srgb 0.364706 0.545098 1 / 0.07)",
           "display": "block",
@@ -1131,7 +1131,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
           "color": "rgb(26, 33, 51)",
           "background": "rgb(232, 235, 241)",
           "display": "block",
@@ -1200,7 +1200,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 1个月隐含相关性维持在近两年20百分位及以下时，选股行情成立；升至80百分位则个股开始同涨同跌。 ?",
+          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 若1个月隐含相关性回落至近两年20百分位，选股窗口才会打开——当前为第21百分位；升至80百分位及以上则个股同涨同跌。 ?",
           "color": "rgb(227, 233, 242)",
           "background": "color(srgb 0.364706 0.545098 1 / 0.07)",
           "display": "block",
@@ -1269,7 +1269,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 1个月隐含相关性维持在近两年20百分位及以下时，选股行情成立；升至80百分位则个股开始同涨同跌。 ?",
+          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 若1个月隐含相关性回落至近两年20百分位，选股窗口才会打开——当前为第21百分位；升至80百分位及以上则个股同涨同跌。 ?",
           "color": "rgb(26, 33, 51)",
           "background": "rgb(232, 235, 241)",
           "display": "block",
@@ -1338,7 +1338,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
           "color": "rgb(227, 233, 242)",
           "background": "color(srgb 0.364706 0.545098 1 / 0.07)",
           "display": "block",
@@ -1407,7 +1407,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
           "color": "rgb(26, 33, 51)",
           "background": "rgb(232, 235, 241)",
           "display": "block",
@@ -1476,7 +1476,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 1个月隐含相关性维持在近两年20百分位及以下时，选股行情成立；升至80百分位则个股开始同涨同跌。 ?",
+          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 若1个月隐含相关性回落至近两年20百分位，选股窗口才会打开——当前为第21百分位；升至80百分位及以上则个股同涨同跌。 ?",
           "color": "rgb(227, 233, 242)",
           "background": "color(srgb 0.364706 0.545098 1 / 0.07)",
           "display": "block",
@@ -1545,7 +1545,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 1个月隐含相关性维持在近两年20百分位及以下时，选股行情成立；升至80百分位则个股开始同涨同跌。 ?",
+          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 若1个月隐含相关性回落至近两年20百分位，选股窗口才会打开——当前为第21百分位；升至80百分位及以上则个股同涨同跌。 ?",
           "color": "rgb(26, 33, 51)",
           "background": "rgb(232, 235, 241)",
           "display": "block",
@@ -1614,7 +1614,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
           "color": "rgb(227, 233, 242)",
           "background": "color(srgb 0.364706 0.545098 1 / 0.07)",
           "display": "block",
@@ -1683,7 +1683,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
           "color": "rgb(26, 33, 51)",
           "background": "rgb(232, 235, 241)",
           "display": "block",
@@ -1752,7 +1752,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 1个月隐含相关性维持在近两年20百分位及以下时，选股行情成立；升至80百分位则个股开始同涨同跌。 ?",
+          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 若1个月隐含相关性回落至近两年20百分位，选股窗口才会打开——当前为第21百分位；升至80百分位及以上则个股同涨同跌。 ?",
           "color": "rgb(227, 233, 242)",
           "background": "color(srgb 0.364706 0.545098 1 / 0.07)",
           "display": "block",
@@ -1821,7 +1821,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 1个月隐含相关性维持在近两年20百分位及以下时，选股行情成立；升至80百分位则个股开始同涨同跌。 ?",
+          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 若1个月隐含相关性回落至近两年20百分位，选股窗口才会打开——当前为第21百分位；升至80百分位及以上则个股同涨同跌。 ?",
           "color": "rgb(26, 33, 51)",
           "background": "rgb(232, 235, 241)",
           "display": "block",
@@ -1890,7 +1890,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
           "color": "rgb(227, 233, 242)",
           "background": "color(srgb 0.364706 0.545098 1 / 0.07)",
           "display": "block",
@@ -1959,7 +1959,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
           "color": "rgb(26, 33, 51)",
           "background": "rgb(232, 235, 241)",
           "display": "block",
@@ -2028,7 +2028,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 1个月隐含相关性维持在近两年20百分位及以下时，选股行情成立；升至80百分位则个股开始同涨同跌。 ?",
+          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 若1个月隐含相关性回落至近两年20百分位，选股窗口才会打开——当前为第21百分位；升至80百分位及以上则个股同涨同跌。 ?",
           "color": "rgb(227, 233, 242)",
           "background": "color(srgb 0.364706 0.545098 1 / 0.07)",
           "display": "block",
@@ -2097,7 +2097,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 1个月隐含相关性维持在近两年20百分位及以下时，选股行情成立；升至80百分位则个股开始同涨同跌。 ?",
+          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 若1个月隐含相关性回落至近两年20百分位，选股窗口才会打开——当前为第21百分位；升至80百分位及以上则个股同涨同跌。 ?",
           "color": "rgb(26, 33, 51)",
           "background": "rgb(232, 235, 241)",
           "display": "block",
@@ -2145,11 +2145,11 @@
       "subject": "stance-disp",
       "label": "stock-picker stance line",
       "captured": true,
-      "file": "cells/d8b9aaa4c191a677.png",
+      "file": "cells/cc4665f4c0242cc6.png",
       "alias": "B-stance-disp-dark-en.png",
-      "sha256": "d8b9aaa4c191a677db2d311ba716627c4de6e7ee856388bcf6c99d13ca007ebc",
-      "bytes": 5292,
-      "width": 406,
+      "sha256": "cc4665f4c0242cc6d7e1cd5b52095769cbeb50633632628214d8277e0dd539ae",
+      "bytes": 3944,
+      "width": 313,
       "height": 27,
       "applied_theme": "dark",
       "applied_locale": "en",
@@ -2166,7 +2166,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
           "color": "rgb(227, 233, 242)",
           "background": "color(srgb 0.364706 0.545098 1 / 0.07)",
           "display": "block",
@@ -2214,11 +2214,11 @@
       "subject": "stance-disp",
       "label": "stock-picker stance line",
       "captured": true,
-      "file": "cells/885dce191b3ea5bf.png",
+      "file": "cells/5f5e584fe6a4cbda.png",
       "alias": "B-stance-disp-light-en.png",
-      "sha256": "885dce191b3ea5bfaa55a6122cec82cec972d32c6a901998e90a5c29d21efa84",
-      "bytes": 5493,
-      "width": 406,
+      "sha256": "5f5e584fe6a4cbdaa909d47a7ad9cfb071fbd8b75a9aff1245cacf9cf2a2fa18",
+      "bytes": 4043,
+      "width": 313,
       "height": 27,
       "applied_theme": "light",
       "applied_locale": "en",
@@ -2235,7 +2235,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
           "color": "rgb(26, 33, 51)",
           "background": "rgb(232, 235, 241)",
           "display": "block",
@@ -2283,11 +2283,11 @@
       "subject": "stance-disp",
       "label": "stock-picker stance line",
       "captured": true,
-      "file": "cells/dc1d7c4f732d255a.png",
+      "file": "cells/ca50bf8e79cae329.png",
       "alias": "B-stance-disp-dark-zh.png",
-      "sha256": "dc1d7c4f732d255a86e91d69ea5d2037b2d073643620eda5debf98aab236be41",
-      "bytes": 5860,
-      "width": 303,
+      "sha256": "ca50bf8e79cae329744062a5d09ad4ad58ccfee3b806201b1662974b428895e7",
+      "bytes": 3219,
+      "width": 191,
       "height": 27,
       "applied_theme": "dark",
       "applied_locale": "zh",
@@ -2304,7 +2304,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 1个月隐含相关性维持在近两年20百分位及以下时，选股行情成立；升至80百分位则个股开始同涨同跌。 ?",
+          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 若1个月隐含相关性回落至近两年20百分位，选股窗口才会打开——当前为第21百分位；升至80百分位及以上则个股同涨同跌。 ?",
           "color": "rgb(227, 233, 242)",
           "background": "color(srgb 0.364706 0.545098 1 / 0.07)",
           "display": "block",
@@ -2352,11 +2352,11 @@
       "subject": "stance-disp",
       "label": "stock-picker stance line",
       "captured": true,
-      "file": "cells/2e157a41953476fe.png",
+      "file": "cells/631d99972f36a946.png",
       "alias": "B-stance-disp-light-zh.png",
-      "sha256": "2e157a41953476fec30854da0871d4a9cfbf5e27ab3e260a8e20ae5da8bd668a",
-      "bytes": 5956,
-      "width": 303,
+      "sha256": "631d99972f36a946846caa4b733cb5a79502a5011f6f5f365a61075940f41224",
+      "bytes": 3315,
+      "width": 191,
       "height": 27,
       "applied_theme": "light",
       "applied_locale": "zh",
@@ -2373,7 +2373,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 1个月隐含相关性维持在近两年20百分位及以下时，选股行情成立；升至80百分位则个股开始同涨同跌。 ?",
+          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 若1个月隐含相关性回落至近两年20百分位，选股窗口才会打开——当前为第21百分位；升至80百分位及以上则个股同涨同跌。 ?",
           "color": "rgb(26, 33, 51)",
           "background": "rgb(232, 235, 241)",
           "display": "block",
@@ -2442,7 +2442,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
           "color": "rgb(227, 233, 242)",
           "background": "color(srgb 0.364706 0.545098 1 / 0.07)",
           "display": "block",
@@ -2511,7 +2511,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
           "color": "rgb(26, 33, 51)",
           "background": "rgb(232, 235, 241)",
           "display": "block",
@@ -2580,7 +2580,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 1个月隐含相关性维持在近两年20百分位及以下时，选股行情成立；升至80百分位则个股开始同涨同跌。 ?",
+          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 若1个月隐含相关性回落至近两年20百分位，选股窗口才会打开——当前为第21百分位；升至80百分位及以上则个股同涨同跌。 ?",
           "color": "rgb(227, 233, 242)",
           "background": "color(srgb 0.364706 0.545098 1 / 0.07)",
           "display": "block",
@@ -2649,7 +2649,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 1个月隐含相关性维持在近两年20百分位及以下时，选股行情成立；升至80百分位则个股开始同涨同跌。 ?",
+          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 若1个月隐含相关性回落至近两年20百分位，选股窗口才会打开——当前为第21百分位；升至80百分位及以上则个股同涨同跌。 ?",
           "color": "rgb(26, 33, 51)",
           "background": "rgb(232, 235, 241)",
           "display": "block",
@@ -2718,7 +2718,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
           "color": "rgb(227, 233, 242)",
           "background": "color(srgb 0.364706 0.545098 1 / 0.07)",
           "display": "block",
@@ -2787,7 +2787,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
           "color": "rgb(26, 33, 51)",
           "background": "rgb(232, 235, 241)",
           "display": "block",
@@ -2856,7 +2856,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 1个月隐含相关性维持在近两年20百分位及以下时，选股行情成立；升至80百分位则个股开始同涨同跌。 ?",
+          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 若1个月隐含相关性回落至近两年20百分位，选股窗口才会打开——当前为第21百分位；升至80百分位及以上则个股同涨同跌。 ?",
           "color": "rgb(227, 233, 242)",
           "background": "color(srgb 0.364706 0.545098 1 / 0.07)",
           "display": "block",
@@ -2925,7 +2925,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 1个月隐含相关性维持在近两年20百分位及以下时，选股行情成立；升至80百分位则个股开始同涨同跌。 ?",
+          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 若1个月隐含相关性回落至近两年20百分位，选股窗口才会打开——当前为第21百分位；升至80百分位及以上则个股同涨同跌。 ?",
           "color": "rgb(26, 33, 51)",
           "background": "rgb(232, 235, 241)",
           "display": "block",
@@ -2973,10 +2973,10 @@
       "subject": "watch-band",
       "label": "P8 watching band folded into the hero",
       "captured": true,
-      "file": "cells/17657ccf5ed4d496.png",
+      "file": "cells/8741714e39d62f50.png",
       "alias": "B-watch-band-dark-en.png",
-      "sha256": "17657ccf5ed4d496749ce236dd53b686554cf092e870b27aea392902a7a235db",
-      "bytes": 34442,
+      "sha256": "8741714e39d62f50af179a6afd2e4505bd9798345ac55f41d13b8021f98276d5",
+      "bytes": 34159,
       "width": 1090,
       "height": 196,
       "applied_theme": "dark",
@@ -2994,7 +2994,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
           "color": "rgb(227, 233, 242)",
           "background": "color(srgb 0.364706 0.545098 1 / 0.07)",
           "display": "block",
@@ -3042,10 +3042,10 @@
       "subject": "watch-band",
       "label": "P8 watching band folded into the hero",
       "captured": true,
-      "file": "cells/379c99f5c9ff375c.png",
+      "file": "cells/cb79b7493e1f7935.png",
       "alias": "B-watch-band-light-en.png",
-      "sha256": "379c99f5c9ff375cd386d0c5fc904bb03eb2cbbf0440b588289ded66d78119f2",
-      "bytes": 31459,
+      "sha256": "cb79b7493e1f793527943ec75eb90b69349fb394cabc41bc30100037175627a1",
+      "bytes": 31533,
       "width": 1090,
       "height": 196,
       "applied_theme": "light",
@@ -3063,7 +3063,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
           "color": "rgb(26, 33, 51)",
           "background": "rgb(232, 235, 241)",
           "display": "block",
@@ -3111,10 +3111,10 @@
       "subject": "watch-band",
       "label": "P8 watching band folded into the hero",
       "captured": true,
-      "file": "cells/586de85252113c8b.png",
+      "file": "cells/d9bcbe46cb9dbba0.png",
       "alias": "B-watch-band-dark-zh.png",
-      "sha256": "586de85252113c8ba3322912ef8a809efbf195b20ffd2cef56b7eb36a02711e0",
-      "bytes": 33912,
+      "sha256": "d9bcbe46cb9dbba0c5a8601445963934739443ea6239b3f48063513205505cc3",
+      "bytes": 35106,
       "width": 1090,
       "height": 177,
       "applied_theme": "dark",
@@ -3132,7 +3132,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 1个月隐含相关性维持在近两年20百分位及以下时，选股行情成立；升至80百分位则个股开始同涨同跌。 ?",
+          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 若1个月隐含相关性回落至近两年20百分位，选股窗口才会打开——当前为第21百分位；升至80百分位及以上则个股同涨同跌。 ?",
           "color": "rgb(227, 233, 242)",
           "background": "color(srgb 0.364706 0.545098 1 / 0.07)",
           "display": "block",
@@ -3180,10 +3180,10 @@
       "subject": "watch-band",
       "label": "P8 watching band folded into the hero",
       "captured": true,
-      "file": "cells/24bdd4cc94640e1a.png",
+      "file": "cells/bf208a94c552cd8b.png",
       "alias": "B-watch-band-light-zh.png",
-      "sha256": "24bdd4cc94640e1aab6090cb2002bc5d99857a817cd138828ccd8d76d0e50ac7",
-      "bytes": 33354,
+      "sha256": "bf208a94c552cd8b4278865546d9e21c9bddb9a8d25ca41ca3e76bfcd4081402",
+      "bytes": 34569,
       "width": 1090,
       "height": 177,
       "applied_theme": "light",
@@ -3201,7 +3201,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 1个月隐含相关性维持在近两年20百分位及以下时，选股行情成立；升至80百分位则个股开始同涨同跌。 ?",
+          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 若1个月隐含相关性回落至近两年20百分位，选股窗口才会打开——当前为第21百分位；升至80百分位及以上则个股同涨同跌。 ?",
           "color": "rgb(26, 33, 51)",
           "background": "rgb(232, 235, 241)",
           "display": "block",
@@ -3247,14 +3247,14 @@
       "viewport_height": 844,
       "force_state": "swipe-390",
       "subject": "swipe-390",
-      "label": "P9 swipe strip at 390 (next-card peek, top-aligned)",
+      "label": "P9 swipe strip at 390 (next-card peek, equal-height cards, content top-anchored)",
       "captured": true,
-      "file": "cells/c337b9d782833fd4.png",
+      "file": "cells/c3aee55bf55164a8.png",
       "alias": "B-swipe-390-dark-en.png",
-      "sha256": "c337b9d782833fd4cd3df568b8f95d920b159bef2a24c69da96e1cf3b3891b88",
-      "bytes": 73160,
+      "sha256": "c3aee55bf55164a8b1bb757300ba95abdff27f69ad794da0ae78b41c765bbe47",
+      "bytes": 42546,
       "width": 350,
-      "height": 999,
+      "height": 1085,
       "applied_theme": "dark",
       "applied_locale": "en",
       "body_class": "page-msp",
@@ -3270,7 +3270,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
           "color": "rgb(227, 233, 242)",
           "background": "color(srgb 0.364706 0.545098 1 / 0.07)",
           "display": "block",
@@ -3290,8 +3290,8 @@
         "firstDriver": {
           "text": "2 Dealer exposure history ? 1M 3M 6M 1Y All GEX (dealer options exposure) bars coloured by dealer regime · SPX line against the flip level (amber dashed) · series from 2026-06-15",
           "color": "rgb(227, 233, 242)",
-          "background": "rgba(0, 0, 0, 0)",
-          "display": "block",
+          "background": "rgb(21, 24, 32)",
+          "display": "flex",
           "visibility": "visible",
           "fontSize": "15px",
           "opacity": "1"
@@ -3316,14 +3316,14 @@
       "viewport_height": 844,
       "force_state": "swipe-390",
       "subject": "swipe-390",
-      "label": "P9 swipe strip at 390 (next-card peek, top-aligned)",
+      "label": "P9 swipe strip at 390 (next-card peek, equal-height cards, content top-anchored)",
       "captured": true,
-      "file": "cells/cd747880da81ce84.png",
+      "file": "cells/e3ceb7851cbf54f7.png",
       "alias": "B-swipe-390-light-en.png",
-      "sha256": "cd747880da81ce84b2a7433382a13815d6d1f2e5fc0e5ffcc4c301642a5e6dff",
-      "bytes": 67955,
+      "sha256": "e3ceb7851cbf54f79dbf9a5e16f620358420748635f5d40591a809043735061c",
+      "bytes": 42520,
       "width": 350,
-      "height": 999,
+      "height": 1085,
       "applied_theme": "light",
       "applied_locale": "en",
       "body_class": "page-msp",
@@ -3339,7 +3339,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7663 This shock-absorber read holds while SPX stays below 7663. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
           "color": "rgb(26, 33, 51)",
           "background": "rgb(232, 235, 241)",
           "display": "block",
@@ -3359,8 +3359,8 @@
         "firstDriver": {
           "text": "2 Dealer exposure history ? 1M 3M 6M 1Y All GEX (dealer options exposure) bars coloured by dealer regime · SPX line against the flip level (amber dashed) · series from 2026-06-15",
           "color": "rgb(26, 33, 51)",
-          "background": "rgba(0, 0, 0, 0)",
-          "display": "block",
+          "background": "rgb(255, 255, 255)",
+          "display": "flex",
           "visibility": "visible",
           "fontSize": "15px",
           "opacity": "1"
@@ -3385,14 +3385,14 @@
       "viewport_height": 844,
       "force_state": "swipe-390",
       "subject": "swipe-390",
-      "label": "P9 swipe strip at 390 (next-card peek, top-aligned)",
+      "label": "P9 swipe strip at 390 (next-card peek, equal-height cards, content top-anchored)",
       "captured": true,
-      "file": "cells/9b2104f24a13e6ee.png",
+      "file": "cells/cce555364c05bc7c.png",
       "alias": "B-swipe-390-dark-zh.png",
-      "sha256": "9b2104f24a13e6eeed34c60223f2cfc8ce86ae328d704c4c7d2f8a2ffdb1b61e",
-      "bytes": 79955,
+      "sha256": "cce555364c05bc7c283282dbc500611a01f9251dc42eadfec5609d1c108c6145",
+      "bytes": 44052,
       "width": 350,
-      "height": 932,
+      "height": 985,
       "applied_theme": "dark",
       "applied_locale": "zh",
       "body_class": "page-msp",
@@ -3408,7 +3408,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 1个月隐含相关性维持在近两年20百分位及以下时，选股行情成立；升至80百分位则个股开始同涨同跌。 ?",
+          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 若1个月隐含相关性回落至近两年20百分位，选股窗口才会打开——当前为第21百分位；升至80百分位及以上则个股同涨同跌。 ?",
           "color": "rgb(227, 233, 242)",
           "background": "color(srgb 0.364706 0.545098 1 / 0.07)",
           "display": "block",
@@ -3428,8 +3428,8 @@
         "firstDriver": {
           "text": "2 做市商敞口历史 ? 1M 3M 6M 1Y 全部 GEX（做市商期权敞口）柱图按做市商制度着色 · 标普500线对照翻转点（琥珀色虚线） · 数据自 2026-06-15",
           "color": "rgb(227, 233, 242)",
-          "background": "rgba(0, 0, 0, 0)",
-          "display": "block",
+          "background": "rgb(21, 24, 32)",
+          "display": "flex",
           "visibility": "visible",
           "fontSize": "15px",
           "opacity": "1"
@@ -3454,14 +3454,14 @@
       "viewport_height": 844,
       "force_state": "swipe-390",
       "subject": "swipe-390",
-      "label": "P9 swipe strip at 390 (next-card peek, top-aligned)",
+      "label": "P9 swipe strip at 390 (next-card peek, equal-height cards, content top-anchored)",
       "captured": true,
-      "file": "cells/6d9a21496a965354.png",
+      "file": "cells/d8cf89839d967f76.png",
       "alias": "B-swipe-390-light-zh.png",
-      "sha256": "6d9a21496a965354e7cbb2a799cf1b1416d7e7d33741dadc8e978c353e7fdadc",
-      "bytes": 74664,
+      "sha256": "d8cf89839d967f765714dcfa38dc1b230dccd2a3a88de2537f9200254c3e0c4a",
+      "bytes": 43856,
       "width": 350,
-      "height": 932,
+      "height": 985,
       "applied_theme": "light",
       "applied_locale": "zh",
       "body_class": "page-msp",
@@ -3477,7 +3477,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 1个月隐含相关性维持在近两年20百分位及以下时，选股行情成立；升至80百分位则个股开始同涨同跌。 ?",
+          "text": "我们在看什么 窗口，并非定论 — 每晚重算。 翻转点 7663 标普500保持在 7663 之下 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。 选股窗口 若1个月隐含相关性回落至近两年20百分位，选股窗口才会打开——当前为第21百分位；升至80百分位及以上则个股同涨同跌。 ?",
           "color": "rgb(26, 33, 51)",
           "background": "rgb(232, 235, 241)",
           "display": "block",
@@ -3497,8 +3497,8 @@
         "firstDriver": {
           "text": "2 做市商敞口历史 ? 1M 3M 6M 1Y 全部 GEX（做市商期权敞口）柱图按做市商制度着色 · 标普500线对照翻转点（琥珀色虚线） · 数据自 2026-06-15",
           "color": "rgb(26, 33, 51)",
-          "background": "rgba(0, 0, 0, 0)",
-          "display": "block",
+          "background": "rgb(255, 255, 255)",
+          "display": "flex",
           "visibility": "visible",
           "fontSize": "15px",
           "opacity": "1"
@@ -3547,7 +3547,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7497 This shock-absorber read holds while SPX stays above 7497. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7497 This shock-absorber read holds while SPX stays above 7497. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
           "color": "rgb(227, 233, 242)",
           "background": "color(srgb 0.364706 0.545098 1 / 0.07)",
           "display": "block",
@@ -3616,7 +3616,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7497 This shock-absorber read holds while SPX stays above 7497. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7497 This shock-absorber read holds while SPX stays above 7497. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
           "color": "rgb(26, 33, 51)",
           "background": "rgb(232, 235, 241)",
           "display": "block",
@@ -3685,7 +3685,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7497 This shock-absorber read holds while SPX stays above 7497. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7497 This shock-absorber read holds while SPX stays above 7497. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
           "color": "rgb(227, 233, 242)",
           "background": "color(srgb 0.364706 0.545098 1 / 0.07)",
           "display": "block",
@@ -3754,7 +3754,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7497 This shock-absorber read holds while SPX stays above 7497. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7497 This shock-absorber read holds while SPX stays above 7497. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
           "color": "rgb(26, 33, 51)",
           "background": "rgb(232, 235, 241)",
           "display": "block",
@@ -3823,7 +3823,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7497 This shock-absorber read holds while SPX stays above 7497. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7497 This shock-absorber read holds while SPX stays above 7497. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
           "color": "rgb(227, 233, 242)",
           "background": "color(srgb 0.364706 0.545098 1 / 0.07)",
           "display": "block",
@@ -3892,7 +3892,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7497 This shock-absorber read holds while SPX stays above 7497. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7497 This shock-absorber read holds while SPX stays above 7497. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
           "color": "rgb(26, 33, 51)",
           "background": "rgb(232, 235, 241)",
           "display": "block",
@@ -3961,7 +3961,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7497 This shock-absorber read holds while SPX stays above 7497. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7497 This shock-absorber read holds while SPX stays above 7497. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
           "color": "rgb(227, 233, 242)",
           "background": "color(srgb 0.364706 0.545098 1 / 0.07)",
           "display": "block",
@@ -4030,7 +4030,7 @@
           "opacity": "1"
         },
         "watch": {
-          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7497 This shock-absorber read holds while SPX stays above 7497. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions hold while 1-month i",
+          "text": "WHAT WE'RE WATCHING Windows, not certainties — re-drawn nightly. Flip level 7497 This shock-absorber read holds while SPX stays above 7497. A close through that level is the window where dealer hedging would switch. Stock-picker window Stock-picker conditions would open if 1-mont",
           "color": "rgb(26, 33, 51)",
           "background": "rgb(232, 235, 241)",
           "display": "block",

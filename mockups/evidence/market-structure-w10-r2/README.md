@@ -1,5 +1,7 @@
 # Market Structure — W10 r2 evidence (6 crops)
 
+SUPERSEDED by the r3/r4 matrix; manifest head predates its own features (capture-from-dirty-tree, disclosed 2026-09-11)
+
 Fixture-rendered `templates/market_structure.html.j2` (no live `data/` bake).
 Playwright seeds `localStorage` (`theme`, `lang`, clears `themeAuto`), sets
 `window.__skyDeck = true` (bows out of theme.js `skyToggleFx` sun/moon
