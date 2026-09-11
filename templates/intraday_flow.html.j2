@@ -351,6 +351,10 @@ html[data-theme="light"] body.page-intraday-flow .lens-pop {
   border-color:var(--line);
   box-shadow:0 10px 28px -12px color-mix(in srgb, var(--text) 22%, transparent);
 }
+/* Feed-status tip: three block rows, one per lane. The in-row delimiter is
+   ' · '; rows themselves are block elements, never joined by that same mark. */
+body.page-intraday-flow .lens-pop .ift-feed-row { display:block; }
+body.page-intraday-flow .lens-pop .ift-feed-row + .ift-feed-row { margin-top:0.4em; }
 </style>
 </head>
 <body class="page-intraday-flow tape-quiet">
@@ -478,7 +482,7 @@ html[data-theme="light"] body.page-intraday-flow .lens-pop {
           <th data-col="ticker" class="col-ticker">{{ t('Name', '代码') }}<span class="sort-ic"></span></th>
           <th data-col="stance" class="col-stance">{{ t('The call', '结论') }}<span class="sort-ic"></span></th>
           <th data-col="last" class="col-last hide-narrow">{{ t('Price', '价格') }}<span class="sort-ic"></span></th>
-          <th data-col="rvol" class="sort-desc col-rvol">{{ t('Volume', '成交量') }}{{ help('Today\'s volume vs a normal day at this exact time. “2.4× normal” means 2.4 times the usual pace. “Holding” = buyers keep closing bars in the upper half on above-normal volume.', '今日成交量与该时段正常水平之比。“2.4×正常”即为通常速度的2.4倍。“持稳”=买盘持续将K线收在上半段且量高于正常。') }}<span class="sort-ic"></span></th>
+          <th data-col="rvol" class="sort-desc col-rvol">{{ t('Volume', '成交量') }}{{ help('This session\'s volume vs a normal day at this exact time. “2.4× normal” means 2.4 times the usual pace. “Holding” = buyers keep closing bars in the upper half on above-normal volume.', '本时段成交量与同一时段正常水平之比。“2.4×正常”即为通常速度的2.4倍。“持稳”=买盘持续将K线收在上半段且量高于正常。') }}<span class="sort-ic"></span></th>
           <th data-col="tape" class="col-tape hide-narrow">{{ t('Tape', '盘口') }}{{ help('Where price sits vs the session’s average price (VWAP) and whether the options tape is leaning call-heavy or put-heavy. The options lean is approximate (~soft) — a lean, not a confirmation.', '价格相对当日均价（VWAP）的位置，以及期权带偏看涨还是看跌。期权倾向为近似（~软性）——只作倾向，不作确认。') }}</th>
           <th data-col="dealer" class="col-dealer hide-narrow">{{ t('Dealer map', '做市商地图') }}{{ help('From daily options chains: the nearby ceiling/floor levels dealers defend, the day’s expected move, and whether price is being pinned. A levels-and-timing map for stops — never a direction call, and single-name gamma is a near-constant product trait, not a signal.', '来自每日期权链：做市商防守的上方天花板/下方地板价位、当日预期波动幅度、以及价格是否被钉住。仅为止损用的价位与择时地图——非方向判断；单只标的gamma为近乎恒定的产品属性，非信号。') }}</th>
           <th data-col="expand" class="col-expand"></th>
@@ -743,15 +747,16 @@ function boardPulseCoverage() {
 }
 function feedWord(status, lane) {
   // Bare status phrase, lane-aware, never containing the lane noun.
+  // Same mechanism both languages: quotes=prices/报价, tape=trades/成交, options=flow/流数据.
   if (status === 'connecting') return { en:'still connecting', zh:'连接中' };
   if (status === 'live') {
-    if (lane === 'tape') return { en:'carrying the tape', zh:'已送达' };
-    if (lane === 'options') return { en:'carrying flow', zh:'已送达' };
-    return { en:'carrying prices', zh:'已送达' };
+    if (lane === 'tape') return { en:'carrying trades', zh:'成交已送达' };
+    if (lane === 'options') return { en:'carrying flow', zh:'流数据已送达' };
+    return { en:'carrying prices', zh:'报价已送达' };
   }
-  if (lane === 'tape') return { en:'tape data not coming through', zh:'未送达' };
-  if (lane === 'options') return { en:'flow not coming through', zh:'未送达' };
-  return { en:'prices not coming through', zh:'未送达' };
+  if (lane === 'tape') return { en:'trades not coming through', zh:'成交未送达' };
+  if (lane === 'options') return { en:'flow not coming through', zh:'流数据未送达' };
+  return { en:'prices not coming through', zh:'报价未送达' };
 }
 function feedTipRow(status, lane) {
   var lab = { quotes:['quotes','行情'], tape:['tape','资金带'], options:['options','期权流'] }[lane] || ['quotes','行情'];
@@ -760,19 +765,17 @@ function feedTipRow(status, lane) {
 }
 function feedHeadline(q, t, o) {
   var rank = { live:0, connecting:1, unavailable:2 };
+  function rk(s){ var r = rank[s]; return r == null ? 1 : r; }
   var lanes = [{id:'quotes', s:q},{id:'tape', s:t},{id:'options', s:o}];
   if (q==='live' && t==='live' && o==='live') return { en:'all feeds carrying', zh:'各路数据已送达' };
-  var worst = Math.max(rank[q]||0, rank[t]||0, rank[o]||0);
-  var at = lanes.filter(function(l){ return (rank[l.s]||0)===worst; });
+  var worst = Math.max(rk(q), rk(t), rk(o));
+  var at = lanes.filter(function(l){ return rk(l.s)===worst; });
+  // Connecting (one lane or a tie) never prints "not coming through".
+  if (worst === 1) return { en:'feeds still connecting', zh:'数据连接中' };
   if (at.length >= 2) return { en:'some feeds not coming through', zh:'部分数据未送达' };
-  var lane = at[0].id, st = at[0].s;
-  if (st === 'connecting') {
-    if (lane==='quotes') return { en:'quotes still connecting', zh:'行情连接中' };
-    if (lane==='tape') return { en:'tape still connecting', zh:'资金带连接中' };
-    return { en:'options still connecting', zh:'期权流连接中' };
-  }
+  var lane = at[0].id;
   if (lane==='quotes') return { en:'prices not coming through', zh:'行情数据未送达' };
-  if (lane==='tape') return { en:'tape data not coming through', zh:'资金带数据未送达' };
+  if (lane==='tape') return { en:'trades not coming through', zh:'资金带数据未送达' };
   return { en:'options flow not coming through', zh:'期权流数据未送达' };
 }
 
@@ -1061,10 +1064,13 @@ function updateFlowStamp(asof, meta) {
   var tipT = feedTipRow(pulseStatus,'tape');
   var tipO = feedTipRow(flowStatus,'options');
   var head = feedHeadline(quotesStatus, pulseStatus, flowStatus);
-  var tipEn = tipQ.en+' · '+tipT.en+' · '+tipO.en;
-  var tipZh = tipQ.zh+' · '+tipT.zh+' · '+tipO.zh;
+  function tipRowHtml(r){
+    return '<div class="ift-feed-row">'+lz(esc(r.en), esc(r.zh))+'</div>';
+  }
+  var tipHtml = '<div class="lens-body">'+tipRowHtml(tipQ)+tipRowHtml(tipT)+tipRowHtml(tipO)+'</div>';
   stamp.innerHTML = lz('Board built '+asOfEn+' · '+head.en, '看板构建于'+asOfZh+' · '+head.zh)
-    + '<button type="button" class="lens-q" aria-label="Feed status" data-tip-en="'+esc(tipEn)+'" data-tip-zh="'+esc(tipZh)+'">?</button>';
+    + '<button type="button" class="lens-q" aria-label="Feed status">'
+    + '?<span class="lens-src" data-lens-kind="define" hidden>'+tipHtml+'</span></button>';
 }
 
 // ══ compute-once pipeline (shared by hero, spotlight, board) ═══════════════

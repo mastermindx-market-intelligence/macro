@@ -57,9 +57,7 @@ rules.
 **Degraded (light and dark):** quotes outage during RTH paints `No read` /
 `暂无判断` with `Prices aren't coming through — no read on this name right now`
 / `行情未送达——该标的暂无判断`. Stamp headline `prices not coming through` /
-`行情数据未送达`. No `live` / `实时` in `#ift-stamp`. The labelled slice
-`setups live` / `活跃布局` is DO-NOT-TOUCH #8 and does not assert real-time
-pricing.
+`行情数据未送达`. no freshness-claiming live/实时 string; the labelled signal-count 'setups live' is present and seat-ratified 2026-09-11.
 
 **Scope note:** Tape and Dealer-map columns are `hide-narrow` and do not
 render ≤820px. C1 chip proofs are desktop-only. 390w shots prove the mobile
@@ -74,8 +72,8 @@ Quotes forced unavailable during RTH. Visible-text grep for `live`/`实时`:
 
 | Cell | `#ift-stamp` | visible `live`/`实时` hits |
 |---|---|---|
-| `d-quotes-outage-dark-en-1440` | `Board built 10 Sep 11:34pm UTC · prices not coming through` | `setups live` only (DNT #8, not in stamp) |
-| `d-quotes-outage-light-en-1440` | same | `setups live` only |
+| `d-quotes-outage-dark-en-1440` | `Board built 10 Sep 11:34pm UTC · prices not coming through` | no freshness-claiming live/实时 string; the labelled signal-count 'setups live' is present and seat-ratified 2026-09-11 |
+| `d-quotes-outage-light-en-1440` | same | same |
 | `d-quotes-outage-dark-zh-1440` | `看板构建于9月10日 23:34 UTC · 行情数据未送达` | none (`活跃布局`, no `实时`) |
 | `d-quotes-outage-light-zh-1440` | same | none |
 
@@ -117,8 +115,8 @@ overlay-clean is per-crop (viewport frame after overlay removal).
 | `c-spotlight-empty-light-en-1440` | `e12016f3d9978cf7.png` | light | en | 1440×900 | true | same empty on white |
 | `c-spotlight-empty-dark-zh-1440` | `e98f3a67b5e0fe29.png` | dark | zh | 1440×900 | true | 当前无新布局 |
 | `c-spotlight-empty-light-zh-1440` | `40b9790b7dc71efa.png` | light | zh | 1440×900 | true | 当前无新布局 |
-| `d-quotes-outage-dark-en-1440` | `f18f871d70a26b7d.png` | dark | en | 1440×900 | true | P0: No read rows; stamp prices not coming through |
-| `d-quotes-outage-light-en-1440` | `dba64794252f1398.png` | light | en | 1440×900 | true | No read on white |
+| `d-quotes-outage-dark-en-1440` | `f18f871d70a26b7d.png` | dark | en | 1440×900 | true | P0: No read rows; stamp prices not coming through; no freshness-claiming live/实时 string; the labelled signal-count 'setups live' is present and seat-ratified 2026-09-11 |
+| `d-quotes-outage-light-en-1440` | `dba64794252f1398.png` | light | en | 1440×900 | true | No read on white; setups live seat-ratified |
 | `d-quotes-outage-dark-zh-1440` | `48f1384b26a057cd.png` | dark | zh | 1440×900 | true | 暂无判断; 行情数据未送达 |
 | `d-quotes-outage-light-zh-1440` | `cf2e3181ebe01cac.png` | light | zh | 1440×900 | true | 暂无判断 |
 | `e-options-outage-dark-en-1440` | `00d24df3ac2de8cc.png` | dark | en | 1440×900 | true | stamp `options flow not coming through` |

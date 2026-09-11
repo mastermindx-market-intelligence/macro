@@ -121,6 +121,7 @@ def test_evidence_cells_carry_overlay_clean_column():
         hits = cell.get("live_hits") or []
         stamp_hits = [h for h in hits if h.get("in_stamp")]
         assert not stamp_hits, stamp_hits
+        # no freshness-claiming live/实时 string; the labelled signal-count 'setups live' is present and seat-ratified 2026-09-11
         pricing = [
             h for h in hits
             if re.search(r"\blive\b|实时", h.get("text") or "")

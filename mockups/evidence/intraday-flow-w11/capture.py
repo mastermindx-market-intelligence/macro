@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
-"""S1-rig evidence matrix for intraday_flow W11 r3.
+"""S1-rig evidence matrix for intraday_flow W11 r4.
 
 Fixture feeds + the real page body classes. Playwright, __skyDeck seed,
 overlay hide, reduced-motion, content-addressed PNGs, overlay-clean column,
 at-rest text via computed styles (never HTML source).
+
+Refuses to run on a dirty tree and stamps `git rev-parse HEAD` at capture
+time so a working-tree edit cannot wear a prior committed sha.
 
 Home: mockups/evidence/intraday-flow-w11/
 Recapture: python3 mockups/evidence/intraday-flow-w11/capture.py
@@ -430,13 +433,32 @@ def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def _git_head() -> str:
+def _require_clean_head() -> tuple[str, str]:
+    """Refuse a dirty tree; return (HEAD sha, porcelain text which must be '')."""
     import subprocess
+    porcelain = subprocess.run(
+        ["git", "status", "--porcelain"], cwd=str(ROOT),
+        capture_output=True, text=True, check=False,
+    )
+    dirty = (porcelain.stdout or "").rstrip("\n")
+    if dirty:
+        raise SystemExit(
+            "capture refused: working tree is dirty. Recapture must run at a "
+            "committed head with empty `git status --porcelain`.\n" + dirty
+        )
     r = subprocess.run(
         ["git", "rev-parse", "HEAD"], cwd=str(ROOT),
         capture_output=True, text=True, check=False,
     )
-    return (r.stdout or "").strip()
+    head = (r.stdout or "").strip()
+    if not head:
+        raise SystemExit("capture refused: could not resolve HEAD")
+    return head, dirty
+
+
+def _git_head() -> str:
+    head, _porcelain = _require_clean_head()
+    return head
 
 
 CELLS: list[dict] = []
@@ -605,6 +627,7 @@ def _wait_ready(page, spec: dict) -> None:
 
 
 def capture() -> int:
+    head, porcelain = _require_clean_head()
     open_payload = _payload(OPEN_SPEC)
     quiet_spec = tuple((tk, b, "quiet") for tk, b, _k in OPEN_SPEC)
     quiet_payload = _payload(quiet_spec)
@@ -615,7 +638,7 @@ def capture() -> int:
     if "if (!window.__IFT_HOLD)" not in open_html:
         raise SystemExit("hold patch did not land")
 
-    staging = Path(tempfile.mkdtemp(prefix="iflow-w11-r3-"))
+    staging = Path(tempfile.mkdtemp(prefix="iflow-w11-r4-"))
     httpd = None
     shots: list[dict] = []
     try:
@@ -719,9 +742,10 @@ def capture() -> int:
             browser.close()
 
         generated = _now_iso()
-        head = _git_head()
         cells_doc = {
             "captured_at": generated,
+            "capture_sha": head,
+            "porcelain_at_capture": porcelain,
             "rig": "S1 fixture-feeds + real body classes (Playwright, overlay hide, __skyDeck, reduced-motion)",
             "overlays_hidden": list(OVERLAY_SELECTORS),
             "fixture_n": FIXTURE_N,
@@ -800,8 +824,8 @@ def capture() -> int:
             "capture_sha": head,
             "tool": {
                 "module_ref": "mockups/evidence/intraday-flow-w11/capture.py",
-                "version": "w11-r3-s1",
-                "user_agent": "mastermind-iflow-w11-r3",
+                "version": "w11-r4-s1",
+                "user_agent": "mastermind-iflow-w11-r4",
             },
             "target": {"resolved_sha_or_none": head},
             "axes": {
@@ -826,6 +850,8 @@ def capture() -> int:
                     f"fixture N={FIXTURE_N} (count-true: default board shows 8 of {FIXTURE_N}; "
                     "expansion renders exactly that many rows)"
                 ),
+                "porcelain_at_capture": porcelain,
+                "capture_sha_source": "git rev-parse HEAD after empty git status --porcelain",
             },
             "pages": pages,
         }
@@ -841,6 +867,8 @@ def capture() -> int:
             "cells": len(shots),
             "overlay_clean": sum(1 for s in shots if s["overlay_clean"]),
             "fixture_n": FIXTURE_N,
+            "capture_sha": head,
+            "porcelain_at_capture": porcelain,
         }, indent=2))
         return 0
     finally:

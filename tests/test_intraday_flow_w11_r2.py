@@ -60,10 +60,14 @@ def _stamp(q: str, p: str, f: str, *, disp: bool = True, leaders: int = 1) -> di
       while ((m=re.exec(h))) o.push(m[1]);
       return o;
     }}
-    var tipEn = (h.match(/data-tip-en="([^"]*)/) || [])[1] || '';
-    var tipZh = (h.match(/data-tip-zh="([^"]*)/) || [])[1] || '';
+    var tipRowsEn = [], tipRowsZh = [];
+    var re = /class="ift-feed-row"><span class="l-en">([^<]*)<\\/span><span class="l-zh">([^<]*)<\\/span><\\/div>/g;
+    var m;
+    while ((m = re.exec(h))) {{ tipRowsEn.push(m[1]); tipRowsZh.push(m[2]); }}
     process.stdout.write(JSON.stringify({{
-      en: pick('en'), zh: pick('zh'), raw: h, tipEn: tipEn, tipZh: tipZh
+      en: pick('en'), zh: pick('zh'), raw: h,
+      tipEn: tipRowsEn.join('\\n'), tipZh: tipRowsZh.join('\\n'),
+      tipRowsEn: tipRowsEn, tipRowsZh: tipRowsZh
     }}));
     """
     return _run_node(script)
@@ -142,14 +146,14 @@ LANES = ("quotes", "tape", "options")
 STATES = ("live", "unavailable", "connecting")
 
 FEED_MATRIX = {
-    ("quotes", "live"): ("carrying prices", "已送达"),
-    ("quotes", "unavailable"): ("prices not coming through", "未送达"),
+    ("quotes", "live"): ("carrying prices", "报价已送达"),
+    ("quotes", "unavailable"): ("prices not coming through", "报价未送达"),
     ("quotes", "connecting"): ("still connecting", "连接中"),
-    ("tape", "live"): ("carrying the tape", "已送达"),
-    ("tape", "unavailable"): ("tape data not coming through", "未送达"),
+    ("tape", "live"): ("carrying trades", "成交已送达"),
+    ("tape", "unavailable"): ("trades not coming through", "成交未送达"),
     ("tape", "connecting"): ("still connecting", "连接中"),
-    ("options", "live"): ("carrying flow", "已送达"),
-    ("options", "unavailable"): ("flow not coming through", "未送达"),
+    ("options", "live"): ("carrying flow", "流数据已送达"),
+    ("options", "unavailable"): ("flow not coming through", "流数据未送达"),
     ("options", "connecting"): ("still connecting", "连接中"),
 }
 
@@ -185,8 +189,8 @@ def test_feedword_matrix_3_lanes_x_4_states_x_2_languages():
             en, zh = FEED_MATRIX[(lane, state)]
             assert got["en"] == en, (lane, state, got)
             assert got["zh"] == zh, (lane, state, got)
-            assert lane not in got["en"] or state != "live" or lane == "tape"
-            # ZH phrase never contains the lane noun.
+            assert lane not in got["en"], (lane, state, got)
+            # Phrase never contains the lane noun in either language.
             for noun in ("行情", "资金带", "期权流"):
                 assert noun not in got["zh"]
 
@@ -202,11 +206,20 @@ def test_mixed_state_headline_names_the_true_worst_lane():
     assert "tape carrying" not in en
     assert "all feeds carrying" not in en
     assert "some feeds" not in en
-    # tip rows each true, no noun stutter
-    assert r["tipEn"] == (
-        "quotes · carrying prices · tape · still connecting · options · flow not coming through"
-    )
-    assert r["tipZh"] == "行情 · 已送达 · 资金带 · 连接中 · 期权流 · 未送达"
+    # tip rows each true, no noun stutter; rows are block elements, not one ' · ' string
+    assert r["tipRowsEn"] == [
+        "quotes · carrying prices",
+        "tape · still connecting",
+        "options · flow not coming through",
+    ]
+    assert r["tipRowsZh"] == [
+        "行情 · 报价已送达",
+        "资金带 · 连接中",
+        "期权流 · 流数据未送达",
+    ]
+    assert "quotes · carrying prices · tape" not in r["raw"]
+    assert "行情 · 报价已送达 · 资金带" not in r["raw"]
+    assert "tape · carrying the tape" not in r["raw"]
     assert "行情 行情" not in r["raw"]
     assert "行情 行情" not in r["tipZh"]
 
@@ -223,11 +236,11 @@ def test_headline_all_carrying_all_unavailable_and_each_single_degraded():
 
     cases = [
         ("unavailable", "live", "live", "prices not coming through", "行情数据未送达"),
-        ("live", "unavailable", "live", "tape data not coming through", "资金带数据未送达"),
+        ("live", "unavailable", "live", "trades not coming through", "资金带数据未送达"),
         ("live", "live", "unavailable", "options flow not coming through", "期权流数据未送达"),
-        ("connecting", "live", "live", "quotes still connecting", "行情连接中"),
-        ("live", "connecting", "live", "tape still connecting", "资金带连接中"),
-        ("live", "live", "connecting", "options still connecting", "期权流连接中"),
+        ("connecting", "live", "live", "feeds still connecting", "数据连接中"),
+        ("live", "connecting", "live", "feeds still connecting", "数据连接中"),
+        ("live", "live", "connecting", "feeds still connecting", "数据连接中"),
     ]
     for q, p, f, en, zh in cases:
         r = _stamp(q, p, f)
@@ -416,8 +429,9 @@ def test_stamp_tip_is_canonical_lens_not_page_local_help():
     src = _src()
     stamp_js = _region(src, "function updateFlowStamp", "// ══ compute-once")
     assert "lens-q" in stamp_js
-    assert "data-tip-en" in stamp_js
-    assert "data-tip-zh" in stamp_js
+    assert "lens-src" in stamp_js
+    assert "ift-feed-row" in stamp_js
+    assert "data-tip-en" not in stamp_js
     assert '<span class="help">' not in stamp_js
     assert "class=\"tip\"" not in stamp_js
     # other sanctioned help() tips on the page remain

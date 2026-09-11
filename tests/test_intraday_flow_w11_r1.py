@@ -76,11 +76,15 @@ def test_feedword_source_is_coverage_vocab_both_lanes():
     assert "未送达" in fn
     assert "连接中" in fn
     assert "carrying flow" in fn
-    assert "carrying the tape" in fn
+    assert "carrying trades" in fn
+    assert "carrying the tape" not in fn
     assert "'live'" not in fn or "status === 'live'" in fn
     assert "已接入" not in fn
     assert "不可用" not in fn
     assert "行情已送达" not in fn  # ZH noun lives on the tip label, not in the phrase
+    assert "报价已送达" in fn
+    assert "成交已送达" in fn
+    assert "流数据已送达" in fn
 
 
 @needs_node
@@ -119,12 +123,18 @@ def test_stamp_at_full_quotes_coverage_prints_no_live_or_realtime():
     assert "看板构建于9月10日 23:34 UTC · 各路数据已送达" in zh
     assert "carrying flow" in html  # options lane, in the tip
     assert "quotes · carrying prices" in html
-    assert "tape · carrying the tape" in html
+    assert "tape · carrying trades" in html
+    assert "tape · carrying the tape" not in html
     assert "options · carrying flow" in html
-    assert "行情 · 已送达" in html
+    assert "行情 · 报价已送达" in html
+    assert "资金带 · 成交已送达" in html
+    assert "期权流 · 流数据已送达" in html
     assert "行情 行情" not in html
+    assert html.count('class="ift-feed-row"') == 3
+    assert "quotes · carrying prices · tape" not in html
     assert "?" in html
     assert "lens-q" in html
+    assert "lens-src" in html
 
 
 @needs_node
