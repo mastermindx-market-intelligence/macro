@@ -210,20 +210,7 @@ def _base_ctx(**overrides):
             "rec_score": 0.0, "dd_score": 7.0,
         },
         "changed": [],
-        "watching": [
-            {"cond_en": "The curve un-inverts while short rates fall",
-             "cond_zh": "曲线在短端利率下行时解除倒挂",
-             "then_en": "…would mark the late-cycle handoff and move the stance toward Protect gains.",
-             "then_zh": "…将标志周期晚段交接，立场转向「保护收益」。"},
-            {"cond_en": "High-yield spreads move from calm into elevated",
-             "cond_zh": "高收益利差从平静升至偏高",
-             "then_en": "…would flip the credit driver and cap the health read.",
-             "then_zh": "…将翻转信用驱动并压制健康度读数。"},
-            {"cond_en": "Stock-bond correlation turns positive and stays there",
-             "cond_zh": "股债相关性转正并维持",
-             "then_en": "…would mean the Treasury hedge has stopped working.",
-             "then_zh": "…意味着国债对冲已失效。"},
-        ],
+        "watching": [],
         "div_card": divergence_card_state(False, None, None, "2026-09-10"),
         "n_tailwind": 6, "n_headwind": 5,
         "agree_en": "factors mostly agree", "agree_zh": "各因子多数一致",
@@ -231,6 +218,8 @@ def _base_ctx(**overrides):
         "u": u,
     }
     ctx.update(overrides)
+    if "watching" not in overrides:
+        ctx["watching"] = _watching(ctx.get("vm") or {})
     return ctx
 
 
@@ -287,14 +276,17 @@ def test_g3_future_ready_date_is_building():
 
 
 def test_g3_past_ready_date_is_delayed():
-    """Case 2: ready_date in the past, not ready → DELAYED; no 'building'."""
+    """Case 2: ready_date in the past AND last_obs < as_of → dated DELAYED."""
     dc = divergence_card_state(False, "2026-08-14", "2026-08-01", AS_OF)
     html = _render(div_card=dc, as_of_iso=AS_OF)
     card = _card_html(html)
+    assert dc["cause"] == "stale"
     assert "Data delayed since 01 Aug 2026" in card
     assert "building" not in card.lower()
     assert "数据积累中" not in card
-    assert "The daily price feed for these bonds has not updated" in card
+    assert "The daily series has not updated" in card
+    assert "daily price feed" not in card.lower()
+    assert "isn't live yet" not in card
 
 
 def test_g3_equal_date_is_delayed():
@@ -340,20 +332,35 @@ def _parse_date(s: str) -> date:
     ("2026-08-14", "2026-08-01"),
     (AS_OF, None),
     (None, None),
+    (None, AS_OF),
+    ("2026-08-14", AS_OF),
+    (None, "2026-09-11"),
 ])
 def test_g3_property_no_past_or_future_leak(ready_date, last_obs):
-    """Case 5: every rendered date in the card is <= as_of OR the card is BUILDING."""
+    """Case 5: DELAYED never prints a date on or after as_of; last_obs==as_of is unbuilt."""
     dc = divergence_card_state(False, ready_date, last_obs, AS_OF)
     html = _render(div_card=dc, as_of_iso=AS_OF)
     card = _card_html(html)
     as_of_d = date(2026, 9, 10)
     building = "History building" in card
+    lo = None
+    if last_obs:
+        try:
+            lo = date.fromisoformat(last_obs)
+        except ValueError:
+            lo = None
+    if not building:
+        assert "delayed since today" not in card.lower()
+        if lo is None or lo >= as_of_d:
+            assert "Data delayed since" not in card
+        else:
+            assert "Data delayed since" in card
+            assert dc["cause"] == "stale"
     for raw in _DATE_RE.findall(card):
-        # findall with one group returns strings
         d = _parse_date(raw if isinstance(raw, str) else raw[0])
         if building:
             continue
-        assert d <= as_of_d, f"DELAYED card leaked date {raw} > as_of {as_of_d}"
+        assert d < as_of_d, f"DELAYED card leaked date {raw} >= as_of {as_of_d}"
 
 
 # Pre-fix template bytes (origin/main before this packet). Inline so the
@@ -629,8 +636,63 @@ def test_missing_2s10s_is_not_flat():
     }), "Sep 10, 2026", "late")
     assert "flat" not in h["clause_en"]
     assert "平坦" not in h["clause_zh"]
-    assert "unresolved" in h["clause_en"]
-    assert "待确认" in h["clause_zh"]
+    assert "unresolved" not in h["clause_en"]
+    assert "shape is not readable yet" in h["clause_en"]
+    assert "形态尚不可读" in h["clause_zh"]
+
+
+def test_delayed_card_three_true_causes():
+    """R1: DELAYED copy states only the true cause. last_obs==as_of is unbuilt."""
+    stale = divergence_card_state(False, None, "2026-08-01", AS_OF)
+    assert stale["state"] == "delayed"
+    assert stale["cause"] == "stale"
+    assert stale["last_obs"] == "01 Aug 2026"
+    stale_card = _card_html(_render(div_card=stale, as_of_iso=AS_OF))
+    assert "Data delayed since 01 Aug 2026" in stale_card
+    assert "数据自 01 Aug 2026 起未更新" in stale_card
+    assert "The daily series has not updated" in stale_card
+    assert "isn't live yet" not in stale_card
+    assert "awaiting the daily series" not in stale_card
+    assert "daily price feed" not in stale_card.lower()
+
+    current = divergence_card_state(False, None, AS_OF, AS_OF)
+    assert current["state"] == "delayed"
+    assert current["cause"] == "unbuilt"
+    assert current["last_obs"] is None
+    current_card = _card_html(_render(div_card=current, as_of_iso=AS_OF))
+    assert "This read isn't live yet — the comparison engine hasn't produced it" in current_card
+    assert "该读数尚未上线——比较引擎尚未产出" in current_card
+    assert "Data delayed since" not in current_card
+    assert "delayed since today" not in current_card.lower()
+    assert "has not updated" not in current_card
+    assert "daily price feed" not in current_card.lower()
+    assert "awaiting the daily series" not in current_card
+
+    ahead = divergence_card_state(False, "2026-08-14", "2026-09-11", AS_OF)
+    assert ahead["cause"] == "unbuilt"
+    assert ahead["last_obs"] is None
+    ahead_card = _card_html(_render(div_card=ahead, as_of_iso=AS_OF))
+    assert "This read isn't live yet" in ahead_card
+    assert "Data delayed since" not in ahead_card
+
+    missing = divergence_card_state(False, None, None, AS_OF)
+    assert missing["state"] == "delayed"
+    assert missing["cause"] == "awaiting"
+    assert missing["last_obs"] is None
+    missing_card = _card_html(_render(div_card=missing, as_of_iso=AS_OF))
+    assert "Data delayed — awaiting the daily series" in missing_card
+    assert "数据延迟——等待日度序列" in missing_card
+    assert "Data delayed since" not in missing_card
+    assert "isn't live yet" not in missing_card
+
+
+def test_base_ctx_watching_follows_producer():
+    """r3 minor: fixture watching is _watching(vm), not a leftover inverted premise."""
+    ctx = _base_ctx()
+    assert ctx["watching"] == _watching(ctx["vm"])
+    blob = " ".join(r["cond_en"] for r in ctx["watching"]).lower()
+    assert "un-invert" not in blob
+    assert "inverts again" in blob
 
 
 def test_series_last_obs_from_theme_daily(tmp_path):

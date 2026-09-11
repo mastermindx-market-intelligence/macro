@@ -1196,14 +1196,22 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
     </span>
     {% else %}
     <p class="cc-verdict-lead">
-      {% if div_card.last_obs %}
+      {% if div_card.cause == 'stale' and div_card.last_obs %}
       <span class="l-en">Data delayed since {{ div_card.last_obs }}</span><span class="l-zh">数据自 {{ div_card.last_obs }} 起未更新</span>
+      {% elif div_card.cause == 'unbuilt' %}
+      <span class="l-en">This read isn't live yet — the comparison engine hasn't produced it</span><span class="l-zh">该读数尚未上线——比较引擎尚未产出</span>
       {% else %}
       <span class="l-en">Data delayed — awaiting the daily series</span><span class="l-zh">数据延迟——等待日度序列</span>
       {% endif %}
     </p>
     <p class="empty-why">
-      <span class="l-en">The daily price feed for these bonds has not updated, so the divergence read cannot be scored.</span><span class="l-zh">这些债券的日度价格未更新，因此无法计算背离读数。</span>
+      {% if div_card.cause == 'stale' %}
+      <span class="l-en">The daily series has not updated, so the divergence read cannot be scored.</span><span class="l-zh">日度序列尚未更新，因此无法计算背离读数。</span>
+      {% elif div_card.cause == 'unbuilt' %}
+      <span class="l-en">No scored comparison is on this page until that engine run exists.</span><span class="l-zh">在该引擎产出之前，本页不会显示已评分的比较读数。</span>
+      {% else %}
+      <span class="l-en">The daily series isn't available yet, so the divergence read cannot be scored.</span><span class="l-zh">日度序列尚不可用，因此无法计算背离读数。</span>
+      {% endif %}
     </p>
     {% endif %}
   </div>

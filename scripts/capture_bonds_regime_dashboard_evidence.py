@@ -49,6 +49,7 @@ THEMES = ("dark", "light")
 
 _STATE_SEED_SCRIPT = """
 (state) => {
+  window.__skyDeck = true;  // bow out of theme.js skyToggleFx (~1100ms sun/moon)
   try {
     localStorage.setItem('theme', state.theme);
     localStorage.removeItem('themeAuto');
@@ -59,6 +60,7 @@ _STATE_SEED_SCRIPT = """
 
 _APPLY_STATE_SCRIPT = """
 (state) => {
+  window.__skyDeck = true;
   const docEl = document.documentElement;
   if (typeof window.setTheme === 'function') { window.setTheme(state.theme); }
   else {
@@ -72,6 +74,31 @@ _APPLY_STATE_SCRIPT = """
     try { localStorage.setItem('lang', state.locale); } catch (e) {}
   }
   return {theme: docEl.getAttribute('data-theme'), locale: docEl.getAttribute('data-lang')};
+}
+"""
+
+_HIDE_DECOR = (
+    "#mmb-root,#mmb-boot,#mmb-launch,.sky-fx,.mx5-aurora,.theme-fab{"
+    "display:none!important;visibility:hidden!important;opacity:0!important}"
+)
+
+_OVERLAY_PROBE = """
+() => {
+  const sels = ['.sky-fx', '.mx5-aurora', '#mmb-boot', '#mmb-launch',
+                '#mmb-root', '.theme-fab'];
+  const hits = [];
+  for (const sel of sels) {
+    for (const el of document.querySelectorAll(sel)) {
+      const st = getComputedStyle(el);
+      const r = el.getBoundingClientRect();
+      if (st.display === 'none' || st.visibility === 'hidden') continue;
+      const op = parseFloat(st.opacity || '1');
+      if (!Number.isFinite(op) || op === 0) continue;
+      if (r.width < 1 || r.height < 1) continue;
+      hits.push(sel);
+    }
+  }
+  return hits;
 }
 """
 
@@ -278,16 +305,13 @@ def fixture_vm() -> dict:
         {"en": "Credit", "zh": "信用", "val": 22, "vg": ("·", "context")},
         {"en": "Rates vol", "zh": "利率波动", "val": 28, "vg": ("✓", "measured")},
     ]
-    # §3 fail-closed DELAYED + dated last_obs. r3: the producer now derives
-    # last_obs from theme_daily.parquet, so this dated DELAYED branch is the
-    # one production reaches when the series exists. last_obs-missing copy is
-    # the honest "awaiting the daily series" fallback (no "feed started" claim).
+    # Default fixture is DELAYED cause=stale (last_obs < as_of). Branch 2
+    # (unbuilt: last_obs >= as_of) is a second HTML written by --r4.
     ctx["div_card"] = divergence_card_state(False, "2026-08-14", "2026-08-01", "2026-09-10")
     ctx["STALE_GATE_FIXTURE"] = (
-        "r3 production-reachable DELAYED: "
+        "r4 DELAYED cause=stale: "
         "divergence_card_state(ready=False, ready_date='2026-08-14', "
-        "last_obs='2026-08-01'  # stand-in for theme_daily max as_of, "
-        "as_of='2026-09-10')"
+        "last_obs='2026-08-01', as_of='2026-09-10')"
     )
     return ctx
 
@@ -311,18 +335,19 @@ def render_fixture_html(vm: dict | None = None) -> str:
     return env.get_template("bonds_s3.html.j2").render(**(vm or fixture_vm()))
 
 
-def write_fixture_site(scratch: Path) -> None:
+def write_fixture_site(scratch: Path, vm: dict | None = None,
+                       filename: str = "bonds_s3.html") -> None:
     scratch.mkdir(parents=True, exist_ok=True)
     shutil.copy(TEMPLATES_DIR / "theme.js", scratch / "theme.js")
     if (TEMPLATES_DIR / "illus.css").exists():
         shutil.copy(TEMPLATES_DIR / "illus.css", scratch / "illus.css")
-    html = render_fixture_html()
+    html = render_fixture_html(vm)
     html = html.replace(
         "</head>",
-        "<style>#mmb-root,#mmb-boot,#mmb-launch{display:none!important}</style></head>",
+        f"<style>{_HIDE_DECOR}</style></head>",
         1,
     )
-    (scratch / "bonds_s3.html").write_text(html, encoding="utf-8")
+    (scratch / filename).write_text(html, encoding="utf-8")
 
 
 def _git_head_of_repo() -> tuple[str | None, str | None]:
@@ -381,7 +406,8 @@ def _shot_one(page, selector: str, scratch_wait: bool = True) -> bytes:
 
 
 def _capture_cell(browser, base: str, *, width: int, height: int, locale: str,
-                  theme: str, selector: str, extra_ctx: dict | None = None) -> dict:
+                  theme: str, selector: str, extra_ctx: dict | None = None,
+                  page_name: str = "bonds_s3.html") -> dict:
     state = {"theme": theme, "locale": locale}
     context = browser.new_context(
         viewport={"width": width, "height": height},
@@ -395,12 +421,12 @@ def _capture_cell(browser, base: str, *, width: int, height: int, locale: str,
     )
     page = context.new_page()
     try:
-        url = f"{base}/bonds_s3.html"
+        url = f"{base}/{page_name}"
         response = page.goto(url, wait_until="load", timeout=30000)
         if response is None or not response.ok:
             raise RuntimeError(f"HTTP {getattr(response, 'status', 'none')}")
         page.wait_for_timeout(250)
-        page.add_style_tag(content="#mmb-root,#mmb-boot,#mmb-launch{display:none!important;visibility:hidden!important}")
+        page.add_style_tag(content=_HIDE_DECOR)
         applied = page.evaluate(_APPLY_STATE_SCRIPT.strip(), state) or {}
         if applied.get("theme") != theme or applied.get("locale") != locale:
             raise RuntimeError(
@@ -409,7 +435,9 @@ def _capture_cell(browser, base: str, *, width: int, height: int, locale: str,
             )
         page.wait_for_timeout(150)
         png = _shot_one(page, selector)
-        return {"png": png, "applied": applied}
+        overlay_hits = page.evaluate(_OVERLAY_PROBE.strip()) or []
+        overlay = "clean" if not overlay_hits else "dirty:" + ",".join(overlay_hits)
+        return {"png": png, "applied": applied, "overlay": overlay}
     finally:
         context.close()
 
@@ -478,6 +506,7 @@ def _capture(scratch: Path) -> dict:
                                         "height": ph,
                                         "applied_theme": applied.get("theme"),
                                         "applied_locale": applied.get("locale"),
+                                        "overlay": got.get("overlay", "clean"),
                                     }
                                 )
                             except Exception as exc:
@@ -545,9 +574,10 @@ def _capture(scratch: Path) -> dict:
                             "height": ph,
                             "applied_theme": applied.get("theme"),
                             "applied_locale": applied.get("locale"),
+                            "overlay": got.get("overlay", "clean"),
                             "fixture": (
-                                "divergence_card_state(False, '2026-08-14', "
-                                "'2026-08-01', '2026-09-10')"
+                                "r4 DELAYED cause=stale: divergence_card_state("
+                                "False, '2026-08-14', '2026-08-01', '2026-09-10')"
                             ),
                         }
                     )
@@ -763,8 +793,8 @@ def _capture(scratch: Path) -> dict:
                 "vector-polish, seo head, live chart SVGs (skeleton geometry)."
             ),
             "stale_gate_fixture": (
-                "divergence_card_state(False, '2026-08-14', '2026-08-01', "
-                "'2026-09-10') → DELAYED"
+                "r4 DELAYED cause=stale: last_obs='2026-08-01' < as_of; "
+                "cause=unbuilt captured separately as unbuilt-gate"
             ),
         },
         "g8": g8,
@@ -833,40 +863,160 @@ def _write_readme(manifest: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
-def _recapture_stale_gate() -> int:
-    """Re-shoot the DELAYED pair only. Does not wipe the 48 REST cells."""
+def _shot_and_store(browser, base, *, width, height, locale, theme, selector,
+                    alias, extra: dict | None = None,
+                    page_name: str = "bonds_s3.html") -> dict:
+    got = _capture_cell(
+        browser, base, width=width, height=height,
+        locale=locale, theme=theme, selector=selector,
+        page_name=page_name,
+    )
+    png = got["png"]
+    name, digest, pw, ph = content_address_png(png, CELLS_DIR)
+    (CELLS_DIR / alias).write_bytes(png)
+    row = {
+        "captured": True,
+        "file": f"cells/{name}",
+        "alias": alias,
+        "sha256": digest,
+        "bytes": len(png),
+        "width": pw,
+        "height": ph,
+        "applied_theme": (got.get("applied") or {}).get("theme"),
+        "applied_locale": (got.get("applied") or {}).get("locale"),
+        "overlay": got.get("overlay", "clean"),
+        "content_name": name,
+    }
+    if extra:
+        row.update(extra)
+    print(
+        f"  {alias}: {name} {pw}x{ph} overlay={row['overlay']} "
+        f"sha256={digest[:12]}",
+        flush=True,
+    )
+    return row
+
+
+def _patch_manifest_cell(man: dict, *, alias: str, row: dict,
+                         match) -> None:
+    """Update the first state row matching `match`; append if none."""
+    man.setdefault("aliases", {})[alias] = row["content_name"]
+    for page in man.get("pages") or []:
+        for st in page.get("states") or []:
+            if match(st):
+                st.update({k: v for k, v in row.items() if k != "content_name"})
+                return
+    # Extra force_state cells attach to the last page so REST still has 8.
+    if man.get("pages"):
+        man["pages"][-1].setdefault("states", []).append(
+            {k: v for k, v in row.items() if k != "content_name"}
+        )
+
+
+def _recapture_r4() -> int:
+    """Recapture r4-changed cells. Does not wipe hero/changed/deeper/drivers@1440."""
     from scripts.capture_page_evidence import CaptureUnavailable, serve_site_dir
+    from scripts.build_bonds import divergence_card_state
 
     try:
         from playwright.sync_api import sync_playwright
     except ImportError as exc:
         raise CaptureUnavailable(f"playwright is not importable: {exc}") from exc
 
-    scratch = Path(tempfile.mkdtemp(prefix="bonds_s3_stale_"))
+    scratch = Path(tempfile.mkdtemp(prefix="bonds_s3_r4_"))
     try:
         write_fixture_site(scratch)
+        unbuilt = fixture_vm()
+        unbuilt["div_card"] = divergence_card_state(
+            False, None, "2026-09-10", "2026-09-10")
+        write_fixture_site(scratch, vm=unbuilt, filename="bonds_s3_unbuilt.html")
         httpd, port = serve_site_dir(scratch)
         base = f"http://127.0.0.1:{port}"
         manager = sync_playwright().start()
         browser = None
-        aliases: dict[str, str] = {}
+        captured: dict[str, dict] = {}
         try:
             browser = manager.chromium.launch(headless=True)
+            for viewport, (width, height) in VIEWPORTS.items():
+                for locale in LOCALES:
+                    for theme in THEMES:
+                        alias = f"watching-{theme}-{locale}-{viewport}.png"
+                        captured[alias] = _shot_and_store(
+                            browser, base, width=width, height=height,
+                            locale=locale, theme=theme,
+                            selector='[data-l1="watching"]', alias=alias,
+                            extra={"subject": "watching", "viewport": viewport,
+                                   "locale": locale, "theme": theme,
+                                   "viewport_width": width, "viewport_height": height,
+                                   "access": "anonymous",
+                                   "force_state": None, "r4": True},
+                        )
+            for viewport, (width, height) in VIEWPORTS.items():
+                for locale in LOCALES:
+                    for theme in THEMES:
+                        alias = f"world-{theme}-{locale}-{viewport}.png"
+                        captured[alias] = _shot_and_store(
+                            browser, base, width=width, height=height,
+                            locale=locale, theme=theme,
+                            selector='[data-l1="world"]', alias=alias,
+                            extra={"subject": "world", "viewport": viewport,
+                                   "locale": locale, "theme": theme,
+                                   "viewport_width": width, "viewport_height": height,
+                                   "access": "anonymous",
+                                   "force_state": None, "r4": True},
+                        )
+            for locale in LOCALES:
+                for theme in THEMES:
+                    alias = f"drivers-{theme}-{locale}-mobile.png"
+                    captured[alias] = _shot_and_store(
+                        browser, base, width=390, height=844,
+                        locale=locale, theme=theme,
+                        selector='[data-l1="drivers"]', alias=alias,
+                        extra={"subject": "drivers", "viewport": "mobile",
+                               "locale": locale, "theme": theme,
+                               "viewport_width": 390, "viewport_height": 844,
+                               "access": "anonymous",
+                               "force_state": None, "r4": True},
+                    )
             for theme in THEMES:
-                got = _capture_cell(
+                alias = f"stale-gate-{theme}-en-desktop.png"
+                captured[alias] = _shot_and_store(
                     browser, base, width=1440, height=900,
                     locale="en", theme=theme,
-                    selector='[data-card="stocks-vs-bonds"]',
+                    selector='[data-card="stocks-vs-bonds"]', alias=alias,
+                    extra={
+                        "subject": "stale-gate", "viewport": "desktop",
+                        "locale": "en", "theme": theme,
+                        "viewport_width": 1440, "viewport_height": 900,
+                        "access": "anonymous",
+                        "force_state": "stale-delayed",
+                        "fixture": (
+                            "r4 DELAYED cause=stale: last_obs='2026-08-01' "
+                            "< as_of='2026-09-10'"
+                        ),
+                        "r4": True,
+                    },
                 )
-                png = got["png"]
-                name, digest, pw, ph = content_address_png(png, CELLS_DIR)
-                alias = f"stale-gate-{theme}-en-desktop.png"
-                (CELLS_DIR / alias).write_bytes(png)
-                aliases[alias] = name
-                print(
-                    f"  stale-gate {theme}: cells/{alias} -> {name} "
-                    f"{pw}x{ph} sha256={digest[:12]}",
-                    flush=True,
+            for theme in THEMES:
+                alias = f"unbuilt-gate-{theme}-en-desktop.png"
+                captured[alias] = _shot_and_store(
+                    browser, base,
+                    width=1440, height=900,
+                    locale="en", theme=theme,
+                    selector='[data-card="stocks-vs-bonds"]', alias=alias,
+                    page_name="bonds_s3_unbuilt.html",
+                    extra={
+                        "subject": "unbuilt-gate", "viewport": "desktop",
+                        "locale": "en", "theme": theme,
+                        "viewport_width": 1440, "viewport_height": 900,
+                        "access": "anonymous",
+                        "force_state": "unbuilt-delayed",
+                        "fixture": (
+                            "r4 DELAYED cause=unbuilt: last_obs == as_of "
+                            "'2026-09-10' — series current, engine unbuilt"
+                        ),
+                        "r4": True,
+                    },
                 )
         finally:
             if browser is not None:
@@ -875,46 +1025,48 @@ def _recapture_stale_gate() -> int:
             httpd.shutdown()
 
         man_path = OUT_DIR / "manifest.json"
-        if man_path.exists():
-            man = json.loads(man_path.read_text(encoding="utf-8"))
-            man.setdefault("aliases", {}).update(aliases)
-            fixture = (
-                "r3 production-reachable DELAYED: last_obs derived from "
-                "theme_daily in the producer; fixture last_obs='2026-08-01' "
-                "stands in for that dated branch"
-            )
-            for page in man.get("pages") or []:
-                for st in page.get("states") or []:
-                    if st.get("subject") == "stale-gate" or st.get("force_state") == "stale-delayed":
-                        theme = st.get("theme")
-                        alias = f"stale-gate-{theme}-en-desktop.png"
-                        if alias in aliases:
-                            st["alias"] = alias
-                            st["file"] = f"cells/{aliases[alias]}"
-                            st["fixture"] = fixture
-                            st["captured"] = True
-            man_path.write_text(json.dumps(man, indent=2) + "\n", encoding="utf-8")
-        readme = OUT_DIR / "README.md"
-        if readme.exists():
-            text = readme.read_text(encoding="utf-8")
-            old = (
-                "`divergence_card_state(ready=False, ready_date='2026-08-14', "
-                "last_obs='2026-08-01', as_of='2026-09-10')` → **DELAYED**."
-            )
-            new = (
-                "r3 production-reachable DELAYED: producer derives `last_obs` from "
-                "`theme_daily.parquet` (the series it already loads). Fixture "
-                "`last_obs='2026-08-01'` stands in for that dated branch so the "
-                "crop shows `Data delayed since 01 Aug 2026`. The last_obs-missing "
-                "copy is now `Data delayed — awaiting the daily series` (no "
-                "manufactured 'feed started' claim) and is the empty-series fallback."
-            )
-            if old in text:
-                readme.write_text(text.replace(old, new), encoding="utf-8")
-        print("stale-gate recapture done", flush=True)
+        man = json.loads(man_path.read_text(encoding="utf-8")) if man_path.exists() else {
+            "schema": "mastermind.p0_evidence.v2", "pages": [], "aliases": {},
+        }
+        for alias, row in captured.items():
+            subject = row.get("subject")
+            theme = row.get("theme")
+            locale = row.get("locale")
+            viewport = row.get("viewport")
+            force = row.get("force_state")
+
+            def _match(st, s=subject, t=theme, l=locale, v=viewport, f=force, a=alias):
+                if st.get("alias") == a:
+                    return True
+                if f:
+                    return (st.get("subject") == s and st.get("theme") == t
+                            and st.get("force_state") == f)
+                return (st.get("subject") == s and st.get("theme") == t
+                        and st.get("locale") == l and st.get("viewport") == v
+                        and st.get("force_state") is None)
+
+            _patch_manifest_cell(man, alias=alias, row=row, match=_match)
+
+        fs = set(man.get("axes", {}).get("force_states") or [])
+        fs.update(["stale-delayed", "unbuilt-delayed"])
+        man.setdefault("axes", {})["force_states"] = sorted(fs)
+        man.setdefault("honesty", {})["stale_gate_fixture"] = (
+            "r4: cause=stale last_obs<'2026-09-10'; cause=unbuilt last_obs==as_of"
+        )
+        man.setdefault("honesty", {})["skydeck"] = (
+            "window.__skyDeck=true before setTheme; .sky-fx/.mx5-aurora/"
+            "#mmb-boot hidden; overlay probe recorded per recaptured cell"
+        )
+        man_path.write_text(json.dumps(man, indent=2) + "\n", encoding="utf-8")
+        print(f"r4 recapture done: {len(captured)} cells", flush=True)
         return 0
     finally:
         shutil.rmtree(scratch, ignore_errors=True)
+
+
+def _recapture_stale_gate() -> int:
+    """Back-compat: --stale-only now runs the r4 recapture set."""
+    return _recapture_r4()
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -925,11 +1077,15 @@ def main(argv: list[str] | None = None) -> int:
         "--stale-only", action="store_true",
         help="Recapture the DELAYED pair only; leave the 48 REST cells.",
     )
+    parser.add_argument(
+        "--r4", action="store_true",
+        help="Recapture watching×8, world×8, drivers@390×4, delayed branch 1+2.",
+    )
     args = parser.parse_args(argv)
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     CELLS_DIR.mkdir(parents=True, exist_ok=True)
-    if args.stale_only:
-        return _recapture_stale_gate()
+    if args.r4 or args.stale_only:
+        return _recapture_r4()
 
     for stale in CELLS_DIR.glob("*.png"):
         stale.unlink()

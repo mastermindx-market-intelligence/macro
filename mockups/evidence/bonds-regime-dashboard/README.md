@@ -1,13 +1,14 @@
-# Bonds regime-dashboard S3 — evidence matrix (round 2)
+# Bonds regime-dashboard S3 — evidence matrix (round 4)
 
 Six L1 subjects × dark/light × EN/ZH × 1440/390.
-Spec G4 names a 4-subject 32-crop matrix; the seat and the round-2 brief expand that to the six L1 blocks, so the product of those axes is 48 cells, plus a stale-date gate pair.
+Spec G4 names a 4-subject 32-crop matrix; the seat and the round-2 brief expand that to the six L1 blocks, so the product of those axes is 48 cells, plus DELAYED-card force_state pairs (stale + unbuilt).
 
 ## Fixture
 
 - Source: `templates/bonds.html.j2` L1 wrap + page-scoped `<style>` (site-nav / seo / vector-polish stripped).
-- VM: `scripts/capture_bonds_regime_dashboard_evidence.fixture_vm` (starts from `tests.test_bonds_divergence_gate._base_ctx`, the page-test idiom).
-- Theme/lang: Playwright seeds localStorage then calls `window.setTheme` / `window.setLang`; a mismatch refuses the cell.
+- VM: `scripts/capture_bonds_regime_dashboard_evidence.fixture_vm` (starts from `tests.test_bonds_divergence_gate._base_ctx`, the page-test idiom). Watching is `_watching(vm)` — un-inverted fixture no longer presupposes inversion.
+- Theme/lang: Playwright seeds `window.__skyDeck = true` then localStorage, then calls `window.setTheme` / `window.setLang`; a mismatch refuses the cell. `__skyDeck` bows out of `theme.js` `skyToggleFx` (the ~1100ms sun/moon disc).
+- Decorative hide (disclosed): `#mmb-boot`, `#mmb-launch`, `#mmb-root`, `.sky-fx`, `.mx5-aurora`, `.theme-fab`. This page does not ship an aurora or theme FAB; the hide is belt-and-suspenders. Overlay probe runs after every recaptured shot.
 
 ## Honest differences from live `site/bonds.html`
 
@@ -17,10 +18,14 @@ Spec G4 names a 4-subject 32-crop matrix; the seat and the round-2 brief expand 
 - Sparse checkout has no `data/`; this is why the wrap is fixture-rendered.
 - The Mastermind boot launcher (`#mmb-boot`) is hidden so it does not overlay the crops.
 
-## Stale-date gate fixture
+## Delayed-card fixtures (r4 true-cause)
 
-r3 production-reachable DELAYED: producer derives `last_obs` from `theme_daily.parquet` (the series it already loads). Fixture `last_obs='2026-08-01'` stands in for that dated branch so the crop shows `Data delayed since 01 Aug 2026`. The last_obs-missing copy is now `Data delayed — awaiting the daily series` (no manufactured 'feed started' claim) and is the empty-series fallback.
-Captured as `stale-gate-dark-en-desktop.png` and `stale-gate-light-en-desktop.png` (`force_state: stale-delayed`).
+Three DELAYED causes; only branch 1 and branch 2 are cropped (dark+light EN 1440). Branch 3 is test-pinned, not cropped.
+
+1. **stale** (`last_obs < as_of`): `divergence_card_state(False, '2026-08-14', '2026-08-01', '2026-09-10')` → `Data delayed since 01 Aug 2026` + series-not-updated why. Aliases `stale-gate-*-en-desktop.png` (`force_state: stale-delayed`).
+2. **unbuilt** (`last_obs >= as_of`): `divergence_card_state(False, None, '2026-09-10', '2026-09-10')` → `This read isn't live yet — the comparison engine hasn't produced it`. No date, no feed-delay. Aliases `unbuilt-gate-*-en-desktop.png` (`force_state: unbuilt-delayed`).
+3. **awaiting** (series missing): `Data delayed — awaiting the daily series`. Not cropped this round.
+
 Refusal copy must be visible; no scored verdict painted.
 
 ## Cells
@@ -77,6 +82,8 @@ Refusal copy must be visible; no scored verdict painted.
 | deeper | light | zh | mobile | `deeper-light-zh-mobile.png` | yes |
 | stale-gate | dark | en | desktop | `stale-gate-dark-en-desktop.png` | yes |
 | stale-gate | light | en | desktop | `stale-gate-light-en-desktop.png` | yes |
+| unbuilt-gate | dark | en | desktop | `unbuilt-gate-dark-en-desktop.png` | yes |
+| unbuilt-gate | light | en | desktop | `unbuilt-gate-light-en-desktop.png` | yes |
 
 ## G8 floor
 
@@ -94,13 +101,45 @@ Spec G4's original 32-crop matrix is 4 subjects; the round-2 brief expands it to
 
 | Subject | Cells | G4 verdict | Notes |
 |---|---|---|---|
-| hero | 8 | **PASS** | One regime word (`HEALTHY, LATE-CYCLE` / `健康 · 周期晚段`) is the largest, highest-contrast element; one clause; stance chip (`Watch — don't chase` / `观察，勿追`); caveat sits under the headline, never behind a hover; exactly one `.dtp-asof`; dark = luminance field, no drop shadow; light = white card on cool canvas, 1px hairline + soft shadow, no glow bleed; ZH has no Latin state enum; 390 stacks with no page h-scroll. Gauge + `.mx-skel` at true geometry. Residual: as-of date stays `Sep 10, 2026` in ZH. |
-| changed | 8 | **PASS** | ≤4 DecisionRows; EN/ZH each one language; stance chips; 390 wraps the clause onto a second line (spec DecisionRow stack); dark = luminance panel, light = white card + hairline. |
-| drivers | 8 | **PASS** | Exactly four panels; each first line is a plain-word read; one as-of per panel; no bare `r` / `Betas` / `2s10s` / `TP-adjusted` / `1y z` / `Recession-IC` at rest (receipts live on `.lens-q`); 1440 is 2-col; 390 is a swipe strip, never stacked full-width cards. Dark = luminance panels, no shadow; light = white cards, hairline, ring-not-glow. ZH uses 正常/偏紧/平静, not HEALTHY/TIGHT. |
-| world | 8 | **PASS** | 8-row sovereign table + tailwind/headwind list; 390 table scrolls inside `.sc-wrap` (left four columns in the crop, remaining columns reachable by the wrap's own scroller — not page h-scroll). ZH names 美国/德国/日本…; `EMB` is the fund ticker, not a state enum. Light = white material + hairline; dark = luminance. |
-| watching | 8 | **PASS** | 3 `.watch-cond` (inside ≥2 ≤4); each is condition → what it would change; no 证伪/falsifier; `.watch-foot` in the crop's language. Dark luminance panels; light white cards. r3: producer watching copy is now VM-derived (un-inverted fixture no longer presupposes inversion); these 8 cells are r2 pixels and were not recaptured. |
-| deeper | 8 | **PASS** | Named landings wrap; light hover is ring-not-glow (CSS); ZH labels are 中文; 390 wraps, no page h-scroll. |
-| stale-gate | 2 | **PASS** | r3 recapture, production-reachable DELAYED+dated last_obs. `force_state: stale-delayed`. Dark+light EN 1440. Refusal copy `Data delayed since 01 Aug 2026` + `.empty-why` visible; no scored verdict. Dark: panel drops one luminance stop (`.cc-delayed`, no alarm fill). Light: white card, hairline only, no shadow. |
+| hero | 8 | **PASS** | r2 pixels (hero copy unchanged this round). One regime word (`HEALTHY, LATE-CYCLE` / `健康 · 周期晚段`) is the largest, highest-contrast element; one clause; stance chip (`Watch — don't chase` / `观察，勿追`); caveat sits under the headline, never behind a hover; exactly one `.dtp-asof`; dark = luminance field, no drop shadow; light = white card on cool canvas, 1px hairline + soft shadow, no glow bleed; ZH has no Latin state enum; 390 stacks with no page h-scroll. Gauge + `.mx-skel` at true geometry. Residual: as-of date stays `Sep 10, 2026` in ZH. |
+| changed | 8 | **PASS** | r2 pixels (changed copy unchanged this round). ≤4 DecisionRows; EN/ZH each one language; stance chips; 390 wraps the clause onto a second line (spec DecisionRow stack); dark = luminance panel, light = white card + hairline. |
+| drivers | 8 | **PASS** (390 recaptured; 1440 still r2) | Exactly four panels; each first line is a plain-word read; one as-of per panel; no bare `r` / `Betas` / `2s10s` / `TP-adjusted` / `1y z` / `Recession-IC` at rest (receipts live on `.lens-q`); 1440 is 2-col (r2 pixels — `align-items:start` is a 390 rule, so 1440 composition is unchanged). r4 390: swipe strip, never stacked full-width cards; the second card peeks and top-aligns rather than stretching (m4). Dark = luminance panels, no shadow; light = white cards, hairline, ring-not-glow. ZH uses 曲线与增长/正常/偏紧, not HEALTHY/TIGHT. Overlay=clean. |
+| world | 8 | **PASS** | r4 recapture. Subtitle binds `g.direction` (`the world is tightening` / `全球融资成本在收紧` on the rising fixture). 8-row sovereign table + tailwind/headwind list; `.world-list{max-width:36rem}` is visible at 1440 (list does not span the crop). 390 table scrolls inside `.sc-wrap` (left four columns in the crop). EN 390 dark/light and ZH 390 dark are byte-identical to r2 (`36rem` does not bind at 364px); recaptured anyway, overlay=clean. ZH names 美国/德国/日本…; `EMB` is the fund ticker, not a state enum. Light = white material + hairline; dark = luminance. |
+| watching | 8 | **PASS** | r4 recapture. 3 `.watch-cond`; VM-derived copy (`The curve inverts again while growth still holds` / `增长仍在时曲线再次倒挂`) — the r2 "un-inverts" premise is gone. Each is condition → what it would change; no 证伪/falsifier; `.watch-foot` in the crop's language. 390 stacks. Dark luminance panels; light white cards + hairline. Overlay=clean. |
+| deeper | 8 | **PASS** | r2 pixels (deeper copy unchanged this round). Named landings wrap; light hover is ring-not-glow (CSS); ZH labels are 中文; 390 wraps, no page h-scroll. |
+| stale-gate | 2 | **PASS** | r4 recapture, DELAYED cause=stale. Dark+light EN 1440. Lead `Data delayed since 01 Aug 2026`; why `The daily series has not updated…`; no scored verdict, no "price feed" claim. Dark: panel drops one luminance stop (`.cc-delayed`, no alarm fill). Light: white card, hairline only, no shadow. Overlay=clean. |
+| unbuilt-gate | 2 | **PASS** | r4 new, DELAYED cause=unbuilt (`last_obs == as_of`). Dark+light EN 1440. Lead `This read isn't live yet — the comparison engine hasn't produced it`; why names the missing engine run; **no date, no feed-delay**. Same delayed material as stale-gate (luminance drop / white hairline card), not an alarm. Overlay=clean. |
+
+## r4 recapture overlay column
+
+`window.__skyDeck=true` before `setTheme`. Probe selectors: `.sky-fx`, `.mx5-aurora`, `#mmb-boot`, `#mmb-launch`, `#mmb-root`, `.theme-fab`. `clean` = none of those were visible in the shot.
+
+| Alias | Overlay | Judgment |
+|---|---|---|
+| `watching-dark-en-desktop.png` | clean | PASS — "inverts again while growth still holds"; 3 luminance panels |
+| `watching-light-en-desktop.png` | clean | PASS — same copy; white cards + hairline |
+| `watching-dark-zh-desktop.png` | clean | PASS — `增长仍在时曲线再次倒挂`; no Latin enum |
+| `watching-light-zh-desktop.png` | clean | PASS — same ZH; white cards |
+| `watching-dark-en-mobile.png` | clean | PASS — 390 stacks 3 cards |
+| `watching-light-en-mobile.png` | clean | PASS — 390 stacks; white cards |
+| `watching-dark-zh-mobile.png` | clean | PASS — 390 ZH stack |
+| `watching-light-zh-mobile.png` | clean | PASS — 390 ZH stack; white cards |
+| `world-dark-en-desktop.png` | clean | PASS — tightening bound to rising; list capped 36rem |
+| `world-light-en-desktop.png` | clean | PASS — white material + hairline; same IA |
+| `world-dark-zh-desktop.png` | clean | PASS — `全球融资成本在收紧`; 美国/德国/日本 |
+| `world-light-zh-desktop.png` | clean | PASS — ZH light; white + hairline |
+| `world-dark-en-mobile.png` | clean | PASS — byte-identical to r2 (36rem inert at 364px); table in `.sc-wrap` |
+| `world-light-en-mobile.png` | clean | PASS — byte-identical to r2; light hairline |
+| `world-dark-zh-mobile.png` | clean | PASS — byte-identical to r2; ZH names |
+| `world-light-zh-mobile.png` | clean | PASS — ZH 390 light (new hash); table scroller |
+| `drivers-dark-en-mobile.png` | clean | PASS — swipe strip, next card peeks, top-aligned |
+| `drivers-light-en-mobile.png` | clean | PASS — white swipe cards, top-aligned |
+| `drivers-dark-zh-mobile.png` | clean | PASS — `曲线与增长` / `正常`; swipe |
+| `drivers-light-zh-mobile.png` | clean | PASS — ZH light swipe |
+| `stale-gate-dark-en-desktop.png` | clean | PASS — dated delay, series-not-updated why |
+| `stale-gate-light-en-desktop.png` | clean | PASS — white hairline card; same copy |
+| `unbuilt-gate-dark-en-desktop.png` | clean | PASS — not-live copy; no date |
+| `unbuilt-gate-light-en-desktop.png` | clean | PASS — white hairline; not-live copy |
 
 ## Composition / floor fixes made this round
 

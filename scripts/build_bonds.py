@@ -160,17 +160,38 @@ def divergence_card_state(ready, ready_date, last_obs, as_of) -> dict:
 
     READY — divergence_ready is true (placeholder yields; the scored read is out of scope).
     BUILDING — not ready AND ready_date parses AND ready_date > as_of (strict).
-    DELAYED — every other case (missing/None/unparseable/<= as_of). No past date can render
-    because the only branch that prints a date is BUILDING, which has already proved it is future.
+    DELAYED — every other case (missing/None/unparseable/<= as_of). Three honest
+    causes; last_obs is emitted only when it is strictly older than as_of:
+      stale    — last_obs < as_of (dated delay copy)
+      unbuilt  — last_obs >= as_of (series current; the comparison engine is not live)
+      awaiting — last_obs missing/unparseable, or as_of unparseable so stale cannot
+                 be proved. Never "delayed since today".
     """
     if ready:
-        return {"state": "ready", "ready_date": None, "last_obs": None}
+        return {"state": "ready", "ready_date": None, "last_obs": None, "cause": None}
     rd = _parse_iso_date(ready_date)
     ao = _parse_iso_date(as_of)
     if rd is not None and ao is not None and rd > ao:
-        return {"state": "building", "ready_date": _fmt_card_date(rd), "last_obs": None}
+        return {
+            "state": "building", "ready_date": _fmt_card_date(rd),
+            "last_obs": None, "cause": None,
+        }
     lo = _parse_iso_date(last_obs)
-    return {"state": "delayed", "ready_date": None, "last_obs": _fmt_card_date(lo)}
+    if lo is not None and ao is not None and lo < ao:
+        return {
+            "state": "delayed", "ready_date": None,
+            "last_obs": _fmt_card_date(lo), "cause": "stale",
+        }
+    if lo is not None and ao is not None:
+        # last_obs >= as_of: series is current (or ahead). Do not date-claim a delay.
+        return {
+            "state": "delayed", "ready_date": None,
+            "last_obs": None, "cause": "unbuilt",
+        }
+    return {
+        "state": "delayed", "ready_date": None,
+        "last_obs": None, "cause": "awaiting",
+    }
 
 
 def _risk_band(score) -> tuple[tuple[str, str] | None, bool]:
@@ -299,7 +320,13 @@ def _hero_pack(vm: dict, as_of_disp: str, phase_key: str | None) -> dict:
     curve_key = _curve_clause_key(cu)
     credit_key = (cr.get("band_en") or "normal").lower()
     vol_key = (st.get("band_en") or "normal").lower()
-    curve_w = _CURVE_CLAUSE.get(curve_key, ("unresolved", "待确认"))
+    curve_w = _CURVE_CLAUSE.get(curve_key)
+    if curve_w is None:
+        curve_frag_en = "the curve's shape is not readable yet"
+        curve_frag_zh = "曲线形态尚不可读"
+    else:
+        curve_frag_en = f"the curve is {curve_w[0]}"
+        curve_frag_zh = f"曲线{curve_w[1]}"
     credit_w = _CREDIT_CLAUSE.get(credit_key, _CREDIT_CLAUSE["normal"])
     vol_w = _VOL_CLAUSE.get(vol_key, _VOL_CLAUSE["normal"])
     phase_s = _PHASE_SHORT.get(phase_key or "", ("—", "—"))
@@ -325,9 +352,9 @@ def _hero_pack(vm: dict, as_of_disp: str, phase_key: str | None) -> dict:
         "word_en": f"{band_en}, {phase_w[0]}",
         "word_zh": f"{band_zh} · {phase_w[1]}",
         "clause_en": (f"Bonds are {band_clause} and the cycle is {phase_s[0]}: "
-                      f"the curve is {curve_w[0]}, credit is {credit_w[0]}, "
+                      f"{curve_frag_en}, credit is {credit_w[0]}, "
                       f"rate swings are {vol_w[0]}."),
-        "clause_zh": (f"债市{band_zh}、周期处于{phase_s[1]}：曲线{curve_w[1]}，"
+        "clause_zh": (f"债市{band_zh}、周期处于{phase_s[1]}：{curve_frag_zh}，"
                       f"信用{credit_w[1]}，利率波动{vol_w[1]}。"),
         "stance_en": stance_en, "stance_zh": stance_zh, "stance_cls": stance_cls,
         "as_of": as_of_disp,
@@ -985,8 +1012,9 @@ def build_corp_credit_vm(data_root: Path | None = None) -> dict:
     divergence_accruing = all(d.get("quadrant") == "accruing" for d in divergence) if divergence else True
     # No scored divergence read ships in this packet (engine-lane). last_obs is
     # the newest as_of on theme_daily.parquet — the series this producer already
-    # loads for theme levels. None when that series is underivable; DELAYED then
-    # uses the awaiting-series copy, never a manufactured "feed started" claim.
+    # loads for theme levels. None when that series is underivable. The card
+    # helper (not this flag) chooses among stale / unbuilt / awaiting copy;
+    # a current series must not be blamed on a feed delay.
     divergence_ready = False
     divergence_ready_date = None
     divergence_last_obs = _series_last_obs(cm_path)
