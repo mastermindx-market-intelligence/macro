@@ -154,6 +154,14 @@ def test_holdings_capped_at_eight_with_counted_see_all():
     # h2 tooltip still names the full destination board (trims & every fund)
     h2 = hold[hold.index("<h2>"):hold.index("</h2>")]
     assert "incl. trims &amp; every fund" in h2 or "incl. trims & every fund" in h2
+    assert 'class="hold-link-rail"' in h2
+    assert 'float:right' not in h2  # no inline consecutive floats
+    assert 'href="etfs.html"' in h2[h2.index("hold-link-rail"):]
+    assert 'href="sector_central.html#accumulation-section"' in h2[h2.index("hold-link-rail"):]
+    css = html[html.index('id="stocks-home-css"'):html.index(
+        "</style>", html.index('id="stocks-home-css"'))]
+    assert ".hold-link-rail" in css
+    assert "gap:12px" in css
 
 
 def test_holdings_drops_count_when_universe_unknown():
@@ -471,9 +479,13 @@ def test_three_day_signal_canary_and_else_branch_band_words():
     assert "turning up" in up and "正在转强" in up
     assert "MACD ↑" not in visible(up)
     assert "MACD ↑" in up  # raw carried in the tip
+    assert "Raw: MACD ↑" in up
+    assert "原始：MACD ↑" in up
     dn = signal_td("MACDDN")
     assert "rolling over" in dn and "正在回落" in dn
     assert "MACD ↓" not in visible(dn)
+    assert "Raw: MACD ↓" in dn
+    assert "原始：MACD ↓" in dn
     stup = signal_td("STUP")
     assert "washed out" in stup and "超卖" in stup
     assert "StochRSI" not in visible(stup)
@@ -496,6 +508,13 @@ def test_three_day_signal_canary_and_else_branch_band_words():
         assert "新交叉" in vis_td, ticker
         assert raw not in vis_td, ticker
         assert raw in td, ticker
+    unk = signal_td("UNK")
+    unk_zh = re.search(r'data-tip-zh="([^"]*)"', unk).group(1)
+    unk_en = re.search(r'data-tip-en="([^"]*)"', unk).group(1)
+    assert "未映射的 3 日读数。" in unk_zh
+    assert "原始：XYZ oscillator burst" in unk_zh
+    assert unk_zh != "XYZ oscillator burst"  # never bare EN as ZH
+    assert "Unmapped 3-day reading. Raw: XYZ oscillator burst" in unk_en
     none = signal_td("NONE")
     assert "no fresh cross" in none
     assert "fresh cross" not in visible(none).replace("no fresh cross", "")
@@ -526,3 +545,75 @@ def test_etf_page_accumulation_caps_at_page_top_n_and_drops_cash():
     # highest conviction of the 60 is T059 (1.59); the 40th is T020 (1.20)
     assert dest[0]["ticker"] == "T059"
     assert dest[-1]["ticker"] == "T020"
+
+
+def test_unknown_variant_ampersand_single_escape_under_autoescape():
+    """NIT-1: production autoescape=True — drop |e so & is not &amp;amp;."""
+    import jinja2
+
+    flags_off = {"macd_up_3d": False, "macd_dn_3d": False,
+                 "stoch_up_3d": False, "stoch_dn_3d": False}
+    env = _env()
+    auto = jinja2.Environment(loader=env.loader, autoescape=True)
+    auto.filters.update(env.filters)
+    auto.globals.update(env.globals)
+    vm = dict(_base_vm())
+    vm.update(
+        sector_setups={
+            "sectors": [_sector_row(
+                ticker="AMP", signal_txt="A&B oscillator burst", stoch_3d=50,
+                flags=flags_off,
+            )],
+            "n_buy": 1, "n_avoid": 0, "n_tactical": 0,
+        }
+    )
+    html = auto.get_template("dashboard.html.j2").render(**vm, mode="stocks")
+    sec = html[html.index('id="sectors"'):html.index('id="dash-mtf-section"')]
+    i = sec.index("<b>AMP</b>")
+    row = sec[sec.rfind("<tr>", 0, i):sec.index("</tr>", i)]
+    cells = re.findall(r"<td\b.*?</td>", row, flags=re.S)
+    td = cells[2]
+    assert "A&amp;B" in td
+    assert "A&amp;amp;B" not in td
+    assert "原始：A&amp;B" in td
+    assert "Unmapped 3-day reading. Raw: A&amp;B" in td
+    src = (TPL / "dashboard.html.j2").read_text(encoding="utf-8")
+    assert "{{ _raw|striptags|e }}" not in src
+    assert "Unmapped 3-day reading. Raw: {{ _raw|striptags }}" in src
+
+
+def test_capture_helpers_refuse_silent_heal_and_keep_shared_hash(tmp_path):
+    """MINOR-2: README heals fail loud; content-hash unlink checks sibling aliases."""
+    from scripts.capture_us_stocks_compression_evidence import (
+        HOLDINGS_LINK_CELLS,
+        _assert_replaced,
+        _unlink_orphaned_hashes,
+    )
+
+    assert len(HOLDINGS_LINK_CELLS) == 8
+    assert ("dark", "en", "desktop") in HOLDINGS_LINK_CELLS
+    assert ("light", "zh", "desktop") in HOLDINGS_LINK_CELLS
+    assert _assert_replaced("abc", "b", "B") == "aBc"
+    with pytest.raises(RuntimeError, match="README heal missed"):
+        _assert_replaced("abc", "zzz", "Z")
+
+    cells = tmp_path / "cells"
+    root = tmp_path / "out"
+    cells.mkdir()
+    root.mkdir()
+    shared = "deadbeefdeadbeef.png"
+    orphan = "orphanorphanorpha.png"
+    (cells / shared).write_bytes(b"x")
+    (root / shared).write_bytes(b"x")
+    (cells / orphan).write_bytes(b"y")
+    (root / orphan).write_bytes(b"y")
+    aliases = {
+        "holdings-a.png": shared,
+        "holdings-b.png": shared,
+        "other.png": "keep.png",
+    }
+    _unlink_orphaned_hashes((cells, root), aliases, {shared, orphan})
+    assert (cells / shared).exists()  # still mapped by holdings-a/b
+    assert (root / shared).exists()
+    assert not (cells / orphan).exists()
+    assert not (root / orphan).exists()

@@ -1,10 +1,11 @@
-# US stocks S2 compression — evidence matrix (round 3)
+# US stocks S2 compression — evidence matrix (round 5)
+
+Provenance: holdings 8/8 recaptured in one `--holdings-link-only` run for S2 r5 (flex/gap link-rail) on parent `f2a8882c781b`. The other 40 REST cells + control were not recaptured this round and still date to the round-3 matrix. REST cells on disk: 48/48 (true of the bytes in this tree; mixed capture generations, disclosed per subject below).
 
 Four L1 subjects × dark/light × EN/ZH × 1440/390, plus two demotion
 landings on the real `sector_central.html.j2` path (same 8-cell matrix),
 plus one sector_central action-board control crop proving the megacap
 strip does not leak.
-REST cells captured: 48/48.
 
 ## Fixture
 
@@ -102,7 +103,7 @@ Spec §0.3's 16-crop floor is `{dark,light}×{EN,ZH}` at 1440 plus the same four
 |---|---|---|---|
 | action-board (C1 + C4 theme link) | 8 | **PASS** | Header + megacap strip read as one block; one as-of stamp; figure is the only saturated ink; light crop shows the `--panel2` inset band; 390 wraps; no aurora/sky-fx/FAB over the IN-FAVOUR lane. |
 | sectors (C2) | 8 | **PASS** | Band words (`washed out`/`超卖`, `mid-range`/`中位`, `stretched`/`拉伸`, `even odds`/`胜率接近五五`, `more often up`/`多数时候上涨`, `rolling over`/`正在回落`, `turning up`/`正在转强`); no `usually up`; seasonality is magnitude only; table scrolls inside `.tbl-scroll` at 390. |
-| holdings (C3 + C4 accumulation link + nulls) | 8 | **PASS** | Exactly 8 data rows; `See all 24 accumulating →` / `查看全部 24 项增持 →` (destination accumulate N, not the sliced 12); technical `no signal yet` / `暂无信号`; ZH 390 nowraps inside `.tbl-scroll` (min-width 640px) instead of crushing columns. No moon glyph / FAB over rows. |
+| holdings (C3 + C4 accumulation link + nulls) | 8 | **PASS** | Recaptured all 8 at this r5 tree in one run. Exactly 8 data rows; `See all 24 accumulating →` / `查看全部 24 项增持 →` (destination accumulate N, not the sliced 12); header link-rail is flex/gap 12px so the two links do not run on (EN desktop `SEE ALL 24 ACCUMULATING →` sits apart from `ACCUMULATION WATCH → SECTOR INTELLIGENCE`; ZH desktop `查看全部 24 项增持 →` alongside `增持监测 → 行业情报页` evidenced). 390 wraps, no overlap, no page h-scroll. technical `no signal yet` / `暂无信号`; ZH 390 nowraps inside `.tbl-scroll` (min-width 640px). No moon glyph / FAB over rows. |
 | dash-mtf (C5) | 8 | **PASS** | Skeleton at true geometry (30px header + 38px rows), no words; dark shimmer = lift; light shimmer = grey wash. |
 | accumulation-landing | 8 | **PASS** | `#accumulation` inside `#si-movement` on the real sector_central path; help/tip + tbl-scroll self-styled; `Top 8 · 24 tracked`. |
 | theme-tape-landing | 8 | **PASS** | `#theme-tape` inside `#explore-section` on the real sector_central path; CSS retargeted off `body.page-stocks` onto `#theme-tape`. |

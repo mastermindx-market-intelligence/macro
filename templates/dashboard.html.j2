@@ -2242,14 +2242,24 @@
   /* Aurora CSS is scoped to body.page-macro; the markup still emits on stocks
      and the unstyled bloom sits on the L1 tables. Hide it here. */
   body.page-stocks .mx5-aurora{display:none}
-  @media (max-width: 560px){
-    #holdings h2 a{float:none !important;display:inline-block;margin:4px 12px 0 0 !important}
-  }
   body.page-stocks #holdings .tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
   body.page-stocks #holdings .tbl-scroll table{min-width:640px}
   body.page-stocks #holdings .tbl-scroll th,
   body.page-stocks #holdings .tbl-scroll td{white-space:nowrap}
   /* post-stack: consolidate */
+  /* Holdings header link-rail: two distinct links, not consecutive right-floats
+     that butt (SEE ALL … →ACCUMULATION WATCH). Flex/gap keeps the 12px split
+     at ZH desktop (longer) and wraps cleanly at 390. */
+  body.page-stocks #holdings h2 .hold-link-rail{
+    float:right;display:inline-flex;flex-wrap:wrap;align-items:baseline;gap:12px;
+    font-size:12px;font-weight:400;max-width:100%;
+  }
+  body.page-stocks #holdings h2 .hold-link-rail a{float:none;margin:0}
+  @media (max-width: 560px){
+    body.page-stocks #holdings h2 .hold-link-rail{
+      float:none;display:flex;margin:4px 0 0;width:100%;
+    }
+  }
   .dtp-token.loading{color:var(--muted);border-color:var(--line)}
   .dtp-token.loading .dtp-dot{background:var(--muted);animation:none}
   html[data-theme="light"] .dtp-token.loading,
@@ -17526,7 +17536,7 @@ html[data-theme="light"] :is(
         {%- set _stoch_up = _f.get('stoch_up_3d') or ('StochRSI ↑' in _raw) -%}
         {%- set _stoch_dn = _f.get('stoch_dn_3d') or ('StochRSI ↓' in _raw) -%}
         {%- set _plain_none = (not _raw) or ('no fresh cross' in _raw) or ('无新交叉' in _raw) -%}
-        <td class="l" style="font-size:12px"{% if _f.get('macd_dn_3d') %} data-tip-en="3-day MACD has crossed down. This is the rolling-over case the column describes — the signal that fired is a down-cross, not an entry.{% if r.signal_txt and '<' not in _raw %} Raw: {{ r.signal_txt }}{% endif %}" data-tip-zh="3 日 MACD 已下穿。即本列所说的「回落」情形 — 触发的是下穿信号，不是入场。"{% elif _f.get('macd_up_3d') %} data-tip-en="3-day MACD has crossed up. This is the turning-up case — the signal that fired is an up-cross, not an entry.{% if r.signal_txt and '<' not in _raw %} Raw: {{ r.signal_txt }}{% endif %}" data-tip-zh="3 日 MACD 已上穿。即「转强」情形 — 触发的是上穿信号，不是入场。"{% elif _stoch_up %} data-tip-en="StochRSI ↑20 — 3-day stochastic crossed up through the washed-out end (20). Machine term demoted; not an entry." data-tip-zh="StochRSI ↑20 — 3 日随机指标从超卖端（20）上穿。机器术语已下放到悬停；不是入场。"{% elif _stoch_dn %} data-tip-en="StochRSI ↓80 — 3-day stochastic crossed down through the stretched end (80). Machine term demoted; not an entry." data-tip-zh="StochRSI ↓80 — 3 日随机指标从拉伸端（80）下穿。机器术语已下放到悬停；不是入场。"{% elif _f.get('setup_up_3d') %} data-tip-en="MACD curling up — 3-day MACD is turning up but has not crossed. Machine term demoted." data-tip-zh="MACD curling up — 3 日 MACD 上弯但尚未交叉。机器术语已下放到悬停。"{% elif _f.get('setup_dn_3d') %} data-tip-en="MACD rolling down — 3-day MACD is turning down but has not crossed. Machine term demoted." data-tip-zh="MACD rolling down — 3 日 MACD 下弯但尚未交叉。机器术语已下放到悬停。"{% elif _f.get('stoch_roll_d') or _f.get('rsi_roll_d') %} data-tip-en="daily momentum rolling down — daily stochastic/RSI tell. Machine term demoted." data-tip-zh="daily momentum rolling down — 日线随机/RSI 回落。机器术语已下放到悬停。"{% elif _f.get('macd_up_d') or _f.get('stoch_up_d') %} data-tip-en="daily turning up — daily MACD/stochastic tell. Machine term demoted." data-tip-zh="daily turning up — 日线转上。机器术语已下放到悬停。"{% elif not _plain_none %} data-tip-en="{{ _raw|striptags|e }}" data-tip-zh="{{ _raw|striptags|e }}"{% endif %}>{% if _f.get('macd_dn_3d') %}<span class="l-en">rolling over</span><span class="l-zh">正在回落</span>{% elif _f.get('macd_up_3d') %}<span class="l-en">turning up</span><span class="l-zh">正在转强</span>{% elif _stoch_up %}<span class="l-en">washed out</span><span class="l-zh">超卖</span>{% elif _stoch_dn %}<span class="l-en">stretched</span><span class="l-zh">拉伸</span>{% elif not _plain_none %}<span class="l-en">fresh cross</span><span class="l-zh">新交叉</span>{% else %}{{ r.signal_txt }}{% endif %}</td>
+        <td class="l" style="font-size:12px"{% if _f.get('macd_dn_3d') %} data-tip-en="3-day MACD has crossed down. This is the rolling-over case the column describes — the signal that fired is a down-cross, not an entry.{% if r.signal_txt and '<' not in _raw %} Raw: {{ r.signal_txt }}{% endif %}" data-tip-zh="3 日 MACD 已下穿。即本列所说的「回落」情形 — 触发的是下穿信号，不是入场。{% if r.signal_txt and '<' not in _raw %} 原始：{{ r.signal_txt }}{% endif %}"{% elif _f.get('macd_up_3d') %} data-tip-en="3-day MACD has crossed up. This is the turning-up case — the signal that fired is an up-cross, not an entry.{% if r.signal_txt and '<' not in _raw %} Raw: {{ r.signal_txt }}{% endif %}" data-tip-zh="3 日 MACD 已上穿。即「转强」情形 — 触发的是上穿信号，不是入场。{% if r.signal_txt and '<' not in _raw %} 原始：{{ r.signal_txt }}{% endif %}"{% elif _stoch_up %} data-tip-en="StochRSI ↑20 — 3-day stochastic crossed up through the washed-out end (20). Machine term demoted; not an entry." data-tip-zh="StochRSI ↑20 — 3 日随机指标从超卖端（20）上穿。机器术语已下放到悬停；不是入场。"{% elif _stoch_dn %} data-tip-en="StochRSI ↓80 — 3-day stochastic crossed down through the stretched end (80). Machine term demoted; not an entry." data-tip-zh="StochRSI ↓80 — 3 日随机指标从拉伸端（80）下穿。机器术语已下放到悬停；不是入场。"{% elif _f.get('setup_up_3d') %} data-tip-en="MACD curling up — 3-day MACD is turning up but has not crossed. Machine term demoted." data-tip-zh="MACD curling up — 3 日 MACD 上弯但尚未交叉。机器术语已下放到悬停。"{% elif _f.get('setup_dn_3d') %} data-tip-en="MACD rolling down — 3-day MACD is turning down but has not crossed. Machine term demoted." data-tip-zh="MACD rolling down — 3 日 MACD 下弯但尚未交叉。机器术语已下放到悬停。"{% elif _f.get('stoch_roll_d') or _f.get('rsi_roll_d') %} data-tip-en="daily momentum rolling down — daily stochastic/RSI tell. Machine term demoted." data-tip-zh="daily momentum rolling down — 日线随机/RSI 回落。机器术语已下放到悬停。"{% elif _f.get('macd_up_d') or _f.get('stoch_up_d') %} data-tip-en="daily turning up — daily MACD/stochastic tell. Machine term demoted." data-tip-zh="daily turning up — 日线转上。机器术语已下放到悬停。"{% elif not _plain_none %} data-tip-en="Unmapped 3-day reading. Raw: {{ _raw|striptags }}" data-tip-zh="未映射的 3 日读数。原始：{{ _raw|striptags }}"{% endif %}>{% if _f.get('macd_dn_3d') %}<span class="l-en">rolling over</span><span class="l-zh">正在回落</span>{% elif _f.get('macd_up_3d') %}<span class="l-en">turning up</span><span class="l-zh">正在转强</span>{% elif _stoch_up %}<span class="l-en">washed out</span><span class="l-zh">超卖</span>{% elif _stoch_dn %}<span class="l-en">stretched</span><span class="l-zh">拉伸</span>{% elif not _plain_none %}<span class="l-en">fresh cross</span><span class="l-zh">新交叉</span>{% else %}{{ r.signal_txt }}{% endif %}</td>
         <td class="{{ 'pos' if r.tech_ok else '' }}" style="font-size:12px">{{ r.tech_str }}</td>
         <td style="font-size:12px"{% if r.get('stoch_3d') is number %} data-tip-en="RSI {{ r.rsi_3d|round|int if r.get('rsi_3d') is number else '—' }} · Stochastic {{ r.stoch_3d|round|int }} on the 3-day chart. Under 20 on the stochastic is the washed-out end; over 80 is the stretched end. Momentum readings only — never a signal on their own." data-tip-zh="3 日图上 RSI {{ r.rsi_3d|round|int if r.get('rsi_3d') is number else '—' }} · 随机指标 {{ r.stoch_3d|round|int }}。随机指标低于 20 为超卖端，高于 80 为拉伸端。仅为动量读数，绝不单独作为信号。"{% endif %}>{% if r.get('stoch_3d') is number %}{% if r.stoch_3d <= 20 %}<span class="l-en">washed out</span><span class="l-zh">超卖</span>{% elif r.stoch_3d >= 80 %}<span class="l-en">stretched</span><span class="l-zh">拉伸</span>{% else %}<span class="l-en">mid-range</span><span class="l-zh">中位</span>{% endif %}{% else %}{{ r.osc_str }}{% endif %}</td>
         <td class="{% if r.rs_60d and r.rs_60d > 0 %}pos{% elif r.rs_60d and r.rs_60d < 0 %}neg{% endif %}" data-sort="{{ r.rs_60d or 0 }}">{{ r.rs_str }}</td>
@@ -17602,8 +17612,10 @@ html[data-theme="light"] :is(
   <div class="panel span12" id="holdings">
     <h2>{{ t("Real fund moves — strongest conviction", '基金真实动作 — 信念最强') }}
       {{ help("The top conviction-ranked ACCUMULATION decisions across curated thematic/industry funds (SPDR sector, Global X) and actively managed funds (ARK), with mechanical flow AND price moves stripped out. Conviction = percentage POINTS of fund weight the manager actually committed — so a real add to a meaningful position outranks a tiny position doubling. The full board (incl. trims & every fund) is the 🐳 Real fund moves page.", "在精选的主题／行业基金（SPDR 板块、Global X）与主动管理基金（ARK）中，按信念排序的最强增持决策，已剔除机械性资金流与价格变动。信念 = 经理人实际投入的基金权重百分点——因此对有意义仓位的真实增持会胜过微小仓位的翻倍。完整看板（含减持与全部基金）见 🐳 基金真实动作 页面。") }}
-      <a href="sector_central.html#accumulation-section" class="muted" style="font-size:12px;font-weight:400;float:right;margin-right:12px"><span class="l-en">Accumulation watch → Sector Intelligence</span><span class="l-zh">增持监测 → 行业情报页</span></a>
-      <a href="etfs.html" class="muted" style="font-size:12px;font-weight:400;float:right">{% if _hold_uni and _hold_uni > 8 %}{{ t('See all ' ~ _hold_uni ~ ' accumulating →', '查看全部 ' ~ _hold_uni ~ ' 项增持 →') }}{% else %}{{ t('Full board →', '完整看板 →') }}{% endif %}</a>
+      <span class="hold-link-rail">
+        <a href="etfs.html" class="muted">{% if _hold_uni and _hold_uni > 8 %}{{ t('See all ' ~ _hold_uni ~ ' accumulating →', '查看全部 ' ~ _hold_uni ~ ' 项增持 →') }}{% else %}{{ t('Full board →', '完整看板 →') }}{% endif %}</a>
+        <a href="sector_central.html#accumulation-section" class="muted"><span class="l-en">Accumulation watch → Sector Intelligence</span><span class="l-zh">增持监测 → 行业情报页</span></a>
+      </span>
     </h2>
     {% if _hold_rows %}
       <div class="tbl-scroll"><table>

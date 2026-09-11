@@ -956,7 +956,7 @@ def _write_readme(manifest: dict) -> str:
         "|---|---|---|---|",
         "| action-board (C1 + C4 theme link) | 8 | **PASS** | Header + megacap strip read as one block; one as-of stamp; figure is the only saturated ink; light crop shows the `--panel2` inset band; 390 wraps; no aurora/sky-fx/FAB over the IN-FAVOUR lane. |",
         "| sectors (C2) | 8 | **PASS** | Band words (`washed out`/`超卖`, `mid-range`/`中位`, `stretched`/`拉伸`, `even odds`/`胜率接近五五`, `more often up`/`多数时候上涨`, `rolling over`/`正在回落`, `turning up`/`正在转强`); no `usually up`; seasonality is magnitude only; table scrolls inside `.tbl-scroll` at 390. |",
-        "| holdings (C3 + C4 accumulation link + nulls) | 8 | **PASS** | Exactly 8 data rows; `See all 24 →` (universe, not the sliced 12); technical `no signal yet` / `暂无信号`; ZH 390 nowraps inside `.tbl-scroll` (min-width 640px) instead of crushing columns. No moon glyph / FAB over rows. |",
+        "| holdings (C3 + C4 accumulation link + nulls) | 8 | **PASS** | Exactly 8 data rows; `See all 24 accumulating →` / `查看全部 24 项增持 →` (destination accumulate N, not the sliced 12); header link-rail is flex/gap 12px (two discrete links, not a run-on); technical `no signal yet` / `暂无信号`; ZH 390 nowraps inside `.tbl-scroll` (min-width 640px) instead of crushing columns. No moon glyph / FAB over rows. |",
         "| dash-mtf (C5) | 8 | **PASS** | Skeleton at true geometry (30px header + 38px rows), no words; dark shimmer = lift; light shimmer = grey wash. |",
         "| accumulation-landing | 8 | **PASS** | `#accumulation` inside `#si-movement` on the real sector_central path; help/tip + tbl-scroll self-styled; `Top 8 · 24 tracked`. |",
         "| theme-tape-landing | 8 | **PASS** | `#theme-tape` inside `#explore-section` on the real sector_central path; CSS retargeted off `body.page-stocks` onto `#theme-tape`. |",
@@ -976,17 +976,82 @@ def _write_readme(manifest: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
-HOLDINGS_LINK_CELLS = (
-    ("dark", "zh", "mobile"),
-    ("light", "en", "desktop"),
+HOLDINGS_LINK_CELLS = tuple(
+    (theme, locale, viewport)
+    for theme in THEMES
+    for locale in LOCALES
+    for viewport in ("desktop", "mobile")
 )
 
 
-def recapture_holdings_link_cells() -> int:
-    """Replace only the two holdings cells whose counted-link wording changed.
+def _assert_replaced(text: str, old: str, new: str) -> str:
+    """str.replace heal that fails loudly on drift instead of a silent no-op."""
+    if old not in text:
+        raise RuntimeError(f"README heal missed: expected {old!r} to be present")
+    return text.replace(old, new, 1)
 
-    Does not wipe sibling subjects. Patches manifest aliases + the two state
-    rows, and the README holdings verdict line.
+
+def _unlink_orphaned_hashes(
+    folders: tuple[Path, ...],
+    aliases: dict[str, str],
+    candidates: set[str],
+) -> None:
+    """Unlink a content-hash file only when no alias still maps to it."""
+    live = set(aliases.values())
+    for digest_name in candidates:
+        if not digest_name or digest_name in live:
+            continue
+        for folder in folders:
+            stale = folder / digest_name
+            if stale.is_file() and stale.name == digest_name:
+                stale.unlink()
+
+
+_HOLDINGS_RAIL_PROBE = """
+() => {
+  const rail = document.querySelector('#holdings .hold-link-rail');
+  if (!rail) return {ok: false, reason: 'no-rail'};
+  const links = Array.from(rail.querySelectorAll('a')).filter(a => {
+    const r = a.getBoundingClientRect();
+    return r.width > 0 && r.height > 0;
+  });
+  const pageScroll = document.body.scrollWidth > document.documentElement.clientWidth + 1;
+  const boxes = links.map(a => {
+    const r = a.getBoundingClientRect();
+    return {
+      text: (a.innerText || '').replace(/\\s+/g, ' ').trim(),
+      left: r.left, right: r.right, top: r.top, bottom: r.bottom,
+    };
+  });
+  let overlap = false;
+  let minGap = null;
+  let sameRow = false;
+  for (let i = 0; i < boxes.length; i++) {
+    for (let j = i + 1; j < boxes.length; j++) {
+      const a = boxes[i], b = boxes[j];
+      const separated = a.right <= b.left + 0.5 || b.right <= a.left + 0.5
+                     || a.bottom <= b.top + 0.5 || b.bottom <= a.top + 0.5;
+      if (!separated) overlap = true;
+      if (Math.abs(a.top - b.top) < 4) {
+        sameRow = true;
+        const gap = a.left < b.left ? (b.left - a.right) : (a.left - b.right);
+        if (minGap === null || gap < minGap) minGap = gap;
+      }
+    }
+  }
+  return {
+    ok: links.length === 2 && !overlap && !pageScroll,
+    nVisible: links.length, overlap, pageScroll, sameRow, minGap, boxes,
+  };
+}
+"""
+
+
+def recapture_holdings_link_cells() -> int:
+    """Replace all 8 holdings REST cells at the current tree in one run.
+
+    Does not wipe sibling subjects. Patches manifest aliases + holdings state
+    rows, and the README provenance + holdings verdict (asserted replaces).
     """
     from scripts.capture_page_evidence import CaptureUnavailable, serve_site_dir
 
@@ -1010,6 +1075,7 @@ def recapture_holdings_link_cells() -> int:
             manager.stop()
             raise CaptureUnavailable(f"no chromium binary is installed: {exc}") from exc
         written: dict[str, dict] = {}
+        orphan_hashes: set[str] = set()
         try:
             for theme, locale, viewport in HOLDINGS_LINK_CELLS:
                 width, height = VIEWPORTS[viewport]
@@ -1039,6 +1105,17 @@ def recapture_holdings_link_cells() -> int:
                             f"observed {applied!r}"
                         )
                     overlay_clean = bool(page.evaluate(_HIDE_OVERLAYS_SCRIPT.strip()))
+                    rail = page.evaluate(_HOLDINGS_RAIL_PROBE.strip()) or {}
+                    if not rail.get("ok"):
+                        raise RuntimeError(
+                            f"holdings rail probe failed {theme}/{locale}/{viewport}: {rail!r}"
+                        )
+                    if viewport == "desktop" and rail.get("sameRow") and (
+                        rail.get("minGap") is None or float(rail["minGap"]) < 10
+                    ):
+                        raise RuntimeError(
+                            f"holdings rail gap too small {theme}/{locale}/{viewport}: {rail!r}"
+                        )
                     png = _capture_one(page, "#holdings")
                     name, digest, pw, ph = content_address_png(png, OUT_DIR)
                     alias = f"holdings-{theme}-{locale}-{viewport}.png"
@@ -1050,10 +1127,7 @@ def recapture_holdings_link_cells() -> int:
                     (CELLS_DIR / alias).write_bytes(png)
                     (CELLS_DIR / name).write_bytes(png)
                     if old_hash and old_hash != name:
-                        for folder in (CELLS_DIR, OUT_DIR):
-                            stale = folder / old_hash
-                            if stale.exists() and stale.name != alias:
-                                stale.unlink()
+                        orphan_hashes.add(old_hash)
                     written[alias] = {
                         "file": name,
                         "sha256": digest,
@@ -1066,8 +1140,20 @@ def recapture_holdings_link_cells() -> int:
                         "viewport": viewport,
                         "locale": locale,
                         "theme": theme,
+                        "rail": {
+                            "sameRow": rail.get("sameRow"),
+                            "minGap": rail.get("minGap"),
+                            "overlap": rail.get("overlap"),
+                            "pageScroll": rail.get("pageScroll"),
+                            "texts": [b.get("text") for b in (rail.get("boxes") or [])],
+                        },
                     }
-                    print(f"  recaptured {alias} -> {name}", flush=True)
+                    print(
+                        f"  recaptured {alias} -> {name} "
+                        f"gap={rail.get('minGap')} sameRow={rail.get('sameRow')} "
+                        f"texts={written[alias]['rail']['texts']!r}",
+                        flush=True,
+                    )
                 finally:
                     context.close()
         finally:
@@ -1098,16 +1184,58 @@ def recapture_holdings_link_cells() -> int:
                         "applied_theme": rec["applied_theme"],
                         "applied_locale": rec["applied_locale"],
                     })
+    _unlink_orphaned_hashes((CELLS_DIR, OUT_DIR), aliases, orphan_hashes)
     man_path.write_text(json.dumps(man, indent=2) + "\n", encoding="utf-8")
 
+    parent_sha, _gitdir = _git_head_of_repo()
+    parent_s = (parent_sha or "unknown")[:12]
     readme = (OUT_DIR / "README.md").read_text(encoding="utf-8")
-    readme = readme.replace(
-        "`See all 24 →` (universe, not the sliced 12)",
-        "`See all 24 accumulating →` / `查看全部 24 项增持 →` (destination accumulate N, not the sliced 12)",
+    readme = _assert_replaced(
+        readme,
+        (
+            "# US stocks S2 compression — evidence matrix (round 3)\n"
+            "\n"
+            "Four L1 subjects × dark/light × EN/ZH × 1440/390, plus two demotion\n"
+            "landings on the real `sector_central.html.j2` path (same 8-cell matrix),\n"
+            "plus one sector_central action-board control crop proving the megacap\n"
+            "strip does not leak.\n"
+            "REST cells captured: 48/48.\n"
+        ),
+        (
+            "# US stocks S2 compression — evidence matrix (round 5)\n"
+            "\n"
+            f"Provenance: holdings 8/8 recaptured in one `--holdings-link-only` run "
+            f"for S2 r5 (flex/gap link-rail) on parent `{parent_s}`. The other 40 "
+            f"REST cells + control were not recaptured this round and still date to "
+            f"the round-3 matrix. REST cells on disk: 48/48 (true of the bytes in this "
+            f"tree; mixed capture generations, disclosed per subject below).\n"
+            "\n"
+            "Four L1 subjects × dark/light × EN/ZH × 1440/390, plus two demotion\n"
+            "landings on the real `sector_central.html.j2` path (same 8-cell matrix),\n"
+            "plus one sector_central action-board control crop proving the megacap\n"
+            "strip does not leak.\n"
+        ),
     )
-    readme = readme.replace(
-        "Holdings label uses `holdings_universe_n=24`.",
-        "Holdings label uses `holdings_universe_n=24` (destination-true count in the fixture; noun is 'accumulating' / '项增持').",
+    readme = _assert_replaced(
+        readme,
+        (
+            "| holdings (C3 + C4 accumulation link + nulls) | 8 | **PASS** | "
+            "Exactly 8 data rows; `See all 24 accumulating →` / `查看全部 24 项增持 →` "
+            "(destination accumulate N, not the sliced 12); technical `no signal yet` / "
+            "`暂无信号`; ZH 390 nowraps inside `.tbl-scroll` (min-width 640px) instead of "
+            "crushing columns. No moon glyph / FAB over rows. |"
+        ),
+        (
+            "| holdings (C3 + C4 accumulation link + nulls) | 8 | **PASS** | "
+            "Recaptured all 8 at this r5 tree in one run. Exactly 8 data rows; "
+            "`See all 24 accumulating →` / `查看全部 24 项增持 →` (destination accumulate N, "
+            "not the sliced 12); header link-rail is flex/gap 12px so the two links do "
+            "not run on (EN desktop `SEE ALL 24 ACCUMULATING →` sits apart from "
+            "`ACCUMULATION WATCH → SECTOR INTELLIGENCE`; ZH desktop `查看全部 24 项增持 →` "
+            "alongside `增持监测 → 行业情报页` evidenced). 390 wraps, no overlap, no page "
+            "h-scroll. technical `no signal yet` / `暂无信号`; ZH 390 nowraps inside "
+            "`.tbl-scroll` (min-width 640px). No moon glyph / FAB over rows. |"
+        ),
     )
     (OUT_DIR / "README.md").write_text(readme, encoding="utf-8")
     missing = [
@@ -1126,7 +1254,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--holdings-link-only", action="store_true",
-        help="Recapture only holdings dark-zh-mobile + light-en-desktop.",
+        help="Recapture all 8 holdings REST cells (dark/light × EN/ZH × 1440/390).",
     )
     args = parser.parse_args(argv)
     if args.holdings_link_only:
