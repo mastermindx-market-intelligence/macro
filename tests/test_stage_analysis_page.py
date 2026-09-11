@@ -815,3 +815,87 @@ process.stdout.write(JSON.stringify(out));
     assert out["nStale"] == 1
     assert out["nUnknown"] == 1  # UNK only; EU rows are other-region
     assert out["denom"] != out["rawLength"]
+
+
+# ---------------------------------------------------------------------------
+# W7 round 3 — evidence-gate pins (Setup / CSV / TAG_META / RS / skeleton / tips)
+# ---------------------------------------------------------------------------
+
+def test_w7_r3_setup_prints_plain_word_not_enum():
+    """M8: Setup column shows Cleanest/Solid at rest; T1/T2 live in the tip."""
+    html = _render_with_fixture()
+    assert "Cleanest" in html
+    assert "最干净" in html
+    assert "Solid" in html
+    assert "较扎实" in html
+    assert "T1 — cleanest setup tier" in html
+    assert "T2 — solid setup tier" in html
+    assert "esc(r.gate_tier)" not in html
+
+
+def test_w7_r3_csv_headers_are_display_names_both_lanes():
+    """M13: CSV header is the same vocabulary the table teaches, both lanes."""
+    html = _render_with_fixture()
+    csv_fn = html.split("function exportCSV()", 1)[1].split("function ", 1)[0]
+    assert "ECtone0_100" not in csv_fn
+    assert "IndPctile" not in csv_fn
+    assert "'Call tone'" in csv_fn
+    assert "'Earnings result'" in csv_fn
+    assert "'Trend quality'" in csv_fn
+    assert "'财报语气'" in csv_fn
+    assert "'综合评分'" in csv_fn
+    assert "isZH()" in csv_fn
+
+
+def test_w7_r3_tag_meta_covers_live_slugs_and_zh_fallback_is_not_english():
+    """M4: TAG_META covers the live slugs; ZH fallback is not title-cased English."""
+    html = _render_with_fixture()
+    for slug in (
+        "guidance_raise", "macro_sensitivity", "capital_allocation",
+        "credit_quality", "regional_banks", "loan_growth",
+        "net_interest_margin", "commercial_banking", "wealth_management",
+        "cost_control", "supply_constraint",
+    ):
+        assert f"'{slug}'" in html, f"TAG_META missing {slug}"
+    assert "'ai':{en:'AI',zh:'人工智能'" in html
+    assert "'m&a':{en:'M&A',zh:'并购'" in html
+    assert "function tagNeutralZh(" in html
+    ern = html.split("function ernTagLabel(", 1)[1].split("function ", 1)[0]
+    assert "TAG_META[slug]" in ern
+    assert "tagNeutralZh" in ern
+
+
+def test_w7_r3_industries_ranking_headers_are_plain_words():
+    """M7: Ranking headers are plain words in both lanes; RS jargon is gone."""
+    html = _render_with_fixture()
+    assert "RS momentum" not in html
+    assert "RS动能" not in html
+    assert "RS accel" not in html
+    assert "RS加速" not in html
+    assert "Trend strength" in html
+    assert "趋势强度" in html
+    assert "Still speeding up" in html
+    assert "是否仍在加速" in html
+
+
+def test_w7_r3_loading_states_are_wordless_skeletons():
+    """C14: six loading hosts are wordless skeletons at table geometry."""
+    html = _render_with_fixture()
+    assert html.count('class="sk-load"') >= 6
+    assert "Loading the universe" not in html
+    assert "正在加载全市场" not in html
+    assert "Loading the board" not in html
+    assert "Loading industries" not in html
+
+
+def test_w7_r3_filter_tips_are_keyboard_and_pointer_reachable():
+    """C9 + §14: nine filter ? buttons carry bilingual tips and a pointerdown path."""
+    html = _render_with_fixture()
+    assert html.count('class="tip-q"') >= 10  # 9 filters + region
+    assert "Industry rank ≥" in html
+    assert "Trend quality ≥" in html
+    assert "Call tone ≥" in html
+    assert "Earnings result ≥" in html
+    assert "pointerdown" in html
+    assert "tip-open" in html
+    assert "w7-r3-light" in html
