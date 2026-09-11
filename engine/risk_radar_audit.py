@@ -400,6 +400,23 @@ def _history_point(payload: dict) -> dict:
     }
 
 
+def _publication_day(value) -> pd.Timestamp | None:
+    """Normalize a canonical ISO as-of to its timezone-free publication date."""
+    if not isinstance(value, str):
+        return None
+    text = value.strip()
+    if len(text) < 10 or (len(text) > 10 and text[10] not in ("T", " ")):
+        return None
+    try:
+        day = datetime.strptime(text[:10], "%Y-%m-%d").date()
+        ts = pd.Timestamp(text)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    if pd.isna(ts):
+        return None
+    return pd.Timestamp(day)
+
+
 def _state_label(state, language: str) -> str:
     key = str(state or "")
     pair = _STATE_DISPLAY.get(key)
@@ -450,22 +467,24 @@ def publication_change(snap: dict, root=None) -> dict:
         return {**base, "null_reason": "CURRENT_ASOF_MISSING"}
 
     try:
-        current_ts = pd.Timestamp(current_asof).normalize()
+        current_ts = _publication_day(current_asof)
+        if current_ts is None:
+            return {**base, "null_reason": "CURRENT_ASOF_INVALID"}
         # Keep the first publication for each date: the ledger's own contract is
-        # FIRST-WRITER-WINS, and comparison must preserve that identity if malformed duplicate
-        # rows ever appear.
+        # FIRST-WRITER-WINS, and comparison must preserve that identity even if equivalent
+        # date/timestamp spellings appear in malformed historical data.
         by_day: dict[str, tuple[pd.Timestamp, dict]] = {}
         for row in _read(_path(root)):
             if not isinstance(row, dict):
                 continue
-            day = str(row.get("asof") or "")
-            if not day or day in by_day:
+            raw_asof = row.get("asof")
+            ts = _publication_day(raw_asof)
+            if ts is None:
                 continue
-            try:
-                ts = pd.Timestamp(day).normalize()
-            except Exception:  # noqa: BLE001 — malformed ledger row is skipped, not fatal
+            day_key = ts.date().isoformat()
+            if day_key in by_day:
                 continue
-            by_day[day] = (ts, row)
+            by_day[day_key] = (ts, row)
         ordered = sorted(by_day.values(), key=lambda item: item[0])
         earlier = [(ts, row) for ts, row in ordered if ts < current_ts]
         history_rows = earlier[-(_CHANGE_HISTORY_POINTS - 1):]
@@ -527,8 +546,12 @@ def publication_change(snap: dict, root=None) -> dict:
             week_score = _change_num(week_row.get("top_score"))
             week_delta = (round(current_score - week_score, 1)
                           if current_score is not None and week_score is not None else None)
-            week = {"available": True, "asof": str(week_row.get("asof")),
-                    "score": week_score, "delta": week_delta}
+            if week_score is None:
+                week = {"available": False, "null_reason": "WEEK_SCORE_MISSING",
+                        "asof": str(week_row.get("asof")), "score": None, "delta": None}
+            else:
+                week = {"available": True, "asof": str(week_row.get("asof")),
+                        "score": week_score, "delta": week_delta}
         else:
             week = {"available": False, "null_reason": "NO_WEEK_REFERENCE"}
 

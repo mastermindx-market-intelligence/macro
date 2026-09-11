@@ -183,12 +183,13 @@ def transition_state_change(hist: pd.DataFrame, f: pd.DataFrame) -> Alert | None
         detail_zh.append("原因：" + cause_zh)
     suffix_en = ("; " + "; ".join(detail_en)) if detail_en else ""
     suffix_zh = ("；" + "；".join(detail_zh)) if detail_zh else ""
+    n_flags = _int_or_zero(cur.get("n_flags"))
     return Alert("transition_state_change", sev,
                  f"Transition state {prev_key} -> {cur_key} "
-                 f"({int(cur['n_flags'])} flags active){suffix_en}",
+                 f"({n_flags} flags active){suffix_en}",
                  message_zh=f"转换状态 {_TS_PLAIN_ZH.get(prev_key, prev_key)}"
                             f" -> {_TS_PLAIN_ZH.get(cur_key, cur_key)}"
-                            f"（{int(cur['n_flags'])} 个预警激活）{suffix_zh}")
+                            f"（{n_flags} 个预警激活）{suffix_zh}")
 
 
 def axis_confidence_floor(hist: pd.DataFrame, f: pd.DataFrame) -> list[Alert]:

@@ -690,8 +690,18 @@ def test_publication_change_skips_non_object_json_rows(tmp_path) -> None:
     )
     p = tmp_path / "data" / "risk_radar" / "forward_log.jsonl"
     p.parent.mkdir(parents=True, exist_ok=True)
+    malformed_object = {"asof": 17, "state": "risk-off", "top_score": 99.0}
+    non_iso_object = {"asof": "2000", "state": "risk-off", "top_score": 98.0}
     p.write_text(
-        "\n".join((json.dumps(17), json.dumps(["bad"]), json.dumps(prior))) + "\n",
+        "\n".join(
+            (
+                json.dumps(17),
+                json.dumps(["bad"]),
+                json.dumps(malformed_object),
+                json.dumps(non_iso_object),
+                json.dumps(prior),
+            )
+        ) + "\n",
         encoding="utf-8",
     )
 
@@ -700,7 +710,97 @@ def test_publication_change_skips_non_object_json_rows(tmp_path) -> None:
     assert change["available"] is True
     assert change["prior_asof"] == "2026-09-08"
     assert change["null_reason"] is None
+    assert change["week"] == {"available": False, "null_reason": "NO_WEEK_REFERENCE"}
+    assert all(point["asof"] != "17" for point in change["history"])
 
+
+@pytest.mark.parametrize(
+    ("current_asof", "prior_asof"),
+    [
+        ("2026-09-09T07:16:50+00:00", "2026-09-08"),
+        ("2026-09-09", "2026-09-08T21:00:00-04:00"),
+        ("2026-09-09 07:16:50+00:00", "2026-09-08 21:00:00-04:00"),
+    ],
+)
+def test_publication_change_compares_date_and_timestamp_asofs(
+    tmp_path, current_asof: str, prior_asof: str
+) -> None:
+    """ISO timestamp variants must retain publication-date identity, not fail comparison."""
+    prior = _ledger_row(
+        prior_asof, "caution", 75.1, 75.1, "caution",
+        [_leg("growth_cyc_def", 0.798)],
+    )
+    _write_ledger(tmp_path, [prior])
+    current = _current_snapshot()
+    current["asof"] = current_asof
+
+    change = rra.publication_change(current, root=tmp_path)
+
+    assert change["available"] is True
+    assert change["prior_asof"] == prior_asof
+    assert change["score"]["prior"] == 75.1
+    assert change["null_reason"] is None
+
+
+def test_publication_change_invalid_current_asof_is_typed_absence(tmp_path) -> None:
+    """A malformed current publication date must not trigger a permissive parser fallback."""
+    prior = _ledger_row(
+        "2026-09-08", "caution", 75.1, 75.1, "caution",
+        [_leg("growth_cyc_def", 0.798)],
+    )
+    _write_ledger(tmp_path, [prior])
+    current = _current_snapshot()
+    current["asof"] = "today"
+
+    change = rra.publication_change(current, root=tmp_path)
+
+    assert change["available"] is False
+    assert change["null_reason"] == "CURRENT_ASOF_INVALID"
+    assert change["prior_asof"] is None
+
+
+
+def test_publication_change_first_writer_wins_across_same_day_asof_formats(tmp_path) -> None:
+    """Equivalent date/timestamp spellings are one publication day for ledger identity."""
+    first = _ledger_row(
+        "2026-09-08T02:00:00+00:00", "caution", 75.1, 75.1, "caution",
+        [_leg("growth_cyc_def", 0.798)],
+    )
+    duplicate = _ledger_row(
+        "2026-09-08", "calm", 1.0, 1.0, "calm", [],
+    )
+    _write_ledger(tmp_path, [first, duplicate])
+
+    change = rra.publication_change(_current_snapshot(), root=tmp_path)
+
+    assert change["available"] is True
+    assert change["prior_asof"] == first["asof"]
+    assert change["score"]["prior"] == 75.1
+
+
+def test_publication_change_week_missing_score_is_typed_absence(tmp_path) -> None:
+    """A dated but scoreless week row is provenance, not an available numeric reference."""
+    week = _ledger_row(
+        "2026-09-02", "caution", 70.0, 70.0, "caution",
+        [_leg("growth_cyc_def", 0.76)],
+    )
+    week["top_score"] = None
+    prior = _ledger_row(
+        "2026-09-08", "caution", 75.1, 75.1, "caution",
+        [_leg("growth_cyc_def", 0.798)],
+    )
+    _write_ledger(tmp_path, [week, prior])
+
+    change = rra.publication_change(_current_snapshot(), root=tmp_path)
+
+    assert change["available"] is True
+    assert change["week"] == {
+        "available": False,
+        "null_reason": "WEEK_SCORE_MISSING",
+        "asof": "2026-09-02",
+        "score": None,
+        "delta": None,
+    }
 
 def test_radar_card_partial_change_shape_fails_soft(monkeypatch) -> None:
     """A historical comparison with nullable numerics must not take down Jinja."""
@@ -796,6 +896,25 @@ def test_publication_change_translates_dominant_scare_in_both_languages(tmp_path
     assert "credit" not in change["summary_zh"]
     assert "growth" not in change["summary_zh"]
 
+
+
+def test_transition_alert_nullable_flag_count_is_typed_zero() -> None:
+    """A state transition survives absent count metadata and reports an honest zero."""
+    idx = pd.bdate_range("2026-09-08", periods=2)
+    hist = pd.DataFrame({
+        "quad": ["Q1", "Q1"],
+        "transition_state": ["STABLE", "WEAKENING"],
+        "n_flags": [0, pd.NA],
+        "growth_confidence": [0.6, 0.6],
+        "inflation_confidence": [0.6, 0.6],
+        "flag_breadth_price": [False, False],
+    }, index=idx)
+
+    alert = transition_state_change(hist, pd.DataFrame())
+
+    assert alert is not None
+    assert "(0 flags active)" in alert.message
+    assert "（0 个预警激活）" in alert.message_zh
 
 def test_transition_alert_missing_state_is_typed_absence() -> None:
     """A historical row without a transition state is absence, not an alert crash."""
