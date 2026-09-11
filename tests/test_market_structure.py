@@ -331,6 +331,7 @@ class TestCor1mRegime:
         )
         assert result["cor1m_pctile_2y"] is not None
         assert result["cor1m_pctile_2y"] >= 80
+        assert result["cor1m_available"] is True
 
     def test_low_correlation_is_dispersion(self, tmp_path):
         """When the latest reading is at the 5th pctile of its own history → dispersion."""
@@ -344,6 +345,7 @@ class TestCor1mRegime:
         assert result["cor1m_pctile_2y"] <= 20
         assert result["cor1m_pctile_lo"] == 20
         assert result["cor1m_pctile_hi"] == 80
+        assert result["cor1m_available"] is True
 
     def test_mid_correlation_is_normal(self, tmp_path):
         """A value near the median → 'normal'."""
@@ -356,6 +358,15 @@ class TestCor1mRegime:
         assert result["cor1m_regime"] == "normal", (
             f"Expected 'normal' for median correlation; got {result['cor1m_regime']}"
         )
+        assert result["cor1m_available"] is True
+
+    def test_missing_cor1m_emits_unavailable_flag(self, tmp_path):
+        from scripts.build_market_structure import _build_dispersion_block
+        result = _build_dispersion_block(tmp_path / "data")
+        assert result["cor1m_available"] is False
+        assert result["cor1m_pctile_2y"] is None
+        assert result["cor1m_pctile_lo"] == 20
+        assert result["cor1m_pctile_hi"] == 80
 
 
 # ===========================================================================
@@ -500,15 +511,25 @@ class TestSystematicWindowAndNearFlat:
         assert _cta_near_flat(None) is False
 
     def test_short_series_emits_actual_window_n(self):
+        """Three real flow observations emit 3 — never the default 5."""
+        from scripts.build_market_structure import _FLOW_WINDOW, _flow_window_n
+        idx = pd.bdate_range("2020-01-01", periods=3)
+        series = pd.Series([1.0, 2.0, 3.0], index=idx)
+        n = _flow_window_n(series, _FLOW_WINDOW)
+        assert _FLOW_WINDOW == 5
+        assert n == 3, f"short 3-obs series must emit window 3, got {n}"
+        assert n < _FLOW_WINDOW
+
+    def test_short_price_series_with_nan_flows_emits_zero(self):
+        """A 3-bar close series that cannot populate VC/CTA flows emits 0, not 3 or 5."""
         from scripts.build_market_structure import _FLOW_WINDOW, _build_systematic_block
         closes = _trend_up_series(n=3)
         block, _hist = _build_systematic_block(closes)
         assert _FLOW_WINDOW == 5
         n = block["flow_window_n"]
-        assert n == 3, f"short 3-bar series must emit window 3, got {n}"
-        assert block["vc"]["flow_window_n"] == 3
-        assert block["cta"]["flow_window_n"] == 3
-        assert n < _FLOW_WINDOW
+        assert n == 0, f"all-NaN flows must emit window 0, got {n}"
+        assert block["vc"]["flow_window_n"] == 0
+        assert block["cta"]["flow_window_n"] == 0
 
     def test_long_series_emits_full_five_day_window(self):
         from scripts.build_market_structure import _build_systematic_block
@@ -519,6 +540,14 @@ class TestSystematicWindowAndNearFlat:
         assert block["cta"]["flow_window_n"] == 5
         assert "cta_near_flat" in block["cta"]
         assert isinstance(block["cta"]["cta_near_flat"], bool)
+
+    def test_all_nan_series_emits_window_n_zero(self):
+        from scripts.build_market_structure import _FLOW_WINDOW, _flow_window_n
+        idx = pd.bdate_range("2020-01-01", periods=10)
+        series = pd.Series([np.nan] * 10, index=idx)
+        n = _flow_window_n(series, _FLOW_WINDOW)
+        assert n == 0
+        assert n != _FLOW_WINDOW
 
 
 # ===========================================================================

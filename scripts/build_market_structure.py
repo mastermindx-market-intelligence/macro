@@ -543,6 +543,7 @@ def _build_dispersion_block(data_dir: Path) -> dict:
         "cor1m_pctile_2y": None,
         "cor1m_pctile_lo": _COR1M_PCTILE_LO,
         "cor1m_pctile_hi": _COR1M_PCTILE_HI,
+        "cor1m_available": False,
         "cor3m": None, "dspx": None, "history": [],
     }
     try:
@@ -612,6 +613,7 @@ def _build_dispersion_block(data_dir: Path) -> dict:
             "cor1m_pctile_2y":  round(pctile_2y, 1) if pctile_2y is not None else None,
             "cor1m_pctile_lo":  _COR1M_PCTILE_LO,
             "cor1m_pctile_hi":  _COR1M_PCTILE_HI,
+            "cor1m_available":  pctile_2y is not None,
             "cor3m":            cor3m_v,
             "dspx":             dspx_v,
             "history":          hist_rows,
@@ -754,11 +756,14 @@ def _safe_float(v) -> float | None:
 
 
 def _flow_window_n(series: pd.Series, window: int = _FLOW_WINDOW) -> int:
-    """Actual observation count the rolling window used at the last row."""
+    """Actual observation count the rolling window used at the last row.
+
+    All-NaN (or empty) → 0. Never fall back to `window` — that re-opens the
+    "claims N days over a shorter / empty window" honesty defect.
+    """
     if series is None or len(series) == 0:
         return 0
-    obs = int(series.tail(window).notna().sum())
-    return obs if obs > 0 else int(min(window, len(series)))
+    return int(series.tail(window).notna().sum())
 
 
 def _cta_near_flat(flow_5d: float | None) -> bool:

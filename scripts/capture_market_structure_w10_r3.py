@@ -319,7 +319,7 @@ def main() -> int:
         ("watch-band", "p1.html", "#watch-band",
          "P8 watching band folded into the hero", "desktop"),
         ("swipe-390", "p1.html", "#msp-drivers",
-         "P9 swipe strip at 390 (next-card peek, top-aligned)", "mobile"),
+         "P9 swipe strip at 390 (next-card peek, equal-height cards, content top-anchored)", "mobile"),
     )
     b_cells = (
         ("dark", "en"), ("light", "en"), ("dark", "zh"), ("light", "zh"),
@@ -619,18 +619,19 @@ track. Stance chips keep their existing wash.
 ## LIGHT TREATMENT
 
 Research workspace: cool canvas, white material, hairline discipline, shadow
-instead of glow. The watching band is a paper plate on `--bg` (the canvas,
-not the white card `--panel`) with an 8% ink shadow — never the dark 7%
-blue wash transplanted onto white. Swipe-strip cards pick up the same 8%
-ink shadow so a peeked next card reads as a stacked sheet, not a glowing
-tile. Token substitution alone is not this design: the band's ground and
-the strip's card shadow are light-only mechanisms.
+instead of glow. The watching band is a recessed well inside the white
+`.glass` card (`background: var(--bg)` against the hero's white glass, plus
+an 8% ink shadow) — not a paper plate raised on the page canvas. Never the
+dark 7% blue wash transplanted onto white. Swipe-strip cards pick up the
+same 8% ink shadow so a peeked next card reads as a stacked sheet, not a
+glowing tile. Token substitution alone is not this design: the band's
+ground and the strip's card shadow are light-only mechanisms.
 
 ## Intentional differences
 
 | Mechanism | Dark | Light |
 |---|---|---|
-| Watching-band ground | 7% blue wash on graphite | `--bg` canvas + 8% ink shadow |
+| Watching-band ground | 7% blue wash on graphite | recessed `--bg` well inside the white `.glass` + 8% ink shadow |
 | Watching-band border | hairline `--line` | same hairline, no glow |
 | Swipe-strip cards | graphite panels, no extra shadow | 8% ink shadow on the panel |
 | Hero / chips | unchanged r2 treatments | unchanged r2 treatments |

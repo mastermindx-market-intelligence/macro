@@ -213,7 +213,8 @@ html[data-theme="light"] .rc.cutting.near-flat{color:var(--mut);border-color:col
 .warmup .empty-why{display:block;font-size:12px;color:var(--faint);margin:8px auto 0;font-weight:400;max-width:52ch;line-height:1.5}
 /* ── watching band (folded into the hero — not a 7th L1) ──
    DARK: inset instrument plate, 7% blue wash on graphite, hairline, no glow.
-   LIGHT: paper plate on the canvas, cool hairline, ink shadow instead of glow.
+   LIGHT: recessed well inside the white .glass card (var(--bg) ground + 8%
+   ink shadow), cool hairline — not a paper plate raised on the page canvas.
    Shared: kicker + two conditions; mechanics live in the `?` tip. */
 .watch-band{margin-top:14px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-card);background:color-mix(in srgb,var(--blue) 7%,transparent)}
 html[data-theme="light"] .watch-band{background:var(--bg);box-shadow:0 1px 2px color-mix(in srgb,var(--tx) 8%,transparent)}
@@ -228,15 +229,17 @@ html[data-lang="zh"] .watch-k{letter-spacing:0;text-transform:none}
 /* post-stack: consolidate */
 /* §10-D mobile reduction: hero + chips + first driver panel in the first
    swipe; remaining drivers collapse to a swipe strip with next-card peek
-   (86%) and top-aligned cards. Strip scroll is the only horizontal motion;
-   the page itself must not scroll sideways in either language (§15).
+   (86%). Cards share the tallest card's height (align-items:stretch); card
+   content stays top-anchored inside (.msp-driver justify-content:flex-start).
+   Strip scroll is the only horizontal motion; the page itself must not
+   scroll sideways in either language (§15).
    .kpi-row / .vix-row already wrap — restated here so the reduction cannot
    silently undo them. */
 @media(max-width:640px){
   html,body{overflow-x:hidden}
   .wrap{overflow-x:hidden;max-width:100%}
-  .msp-drivers{display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;gap:12px;align-items:flex-start;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;padding-bottom:10px}
-  .msp-driver{flex:0 0 86%;scroll-snap-align:start;min-width:0}
+  .msp-drivers{display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;gap:12px;align-items:stretch;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;padding-bottom:10px}
+  .msp-driver{flex:0 0 86%;scroll-snap-align:start;min-width:0;display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card);padding:4px 12px 12px}
   .msp-driver .sec-head{margin-top:8px}
   .kpi-row,.vix-row{flex-wrap:wrap}
   .watch-band{padding:8px 10px;margin-top:10px}
@@ -393,12 +396,16 @@ html[data-theme="light"] :is(
   </span></span>
 
   {# P8 — Archetype-D watching band, folded into the hero (L1 stays 6).
-     Bind producer emissions only: gamma.gamma_flip, disp.cor1m_pctile_lo/hi.
+     Bind producer emissions only: gamma.gamma_flip, disp.cor1m_available,
+     disp.cor1m_pctile_2y / _lo / _hi. Do NOT infer availability from lo/hi
+     presence — the fail-open null dict still emits 20/80.
      Projection-window vocabulary — never falsifier/refutation/证伪. #}
   {% set _watch_flip = gamma.gamma_flip if gamma.gamma_flip is not none else none %}
   {% set _watch_lo = disp.cor1m_pctile_lo if (disp is not none and disp.cor1m_pctile_lo is defined and disp.cor1m_pctile_lo is not none) else none %}
   {% set _watch_hi = disp.cor1m_pctile_hi if (disp is not none and disp.cor1m_pctile_hi is defined and disp.cor1m_pctile_hi is not none) else none %}
-  {% if _watch_flip is not none or _watch_lo is not none %}
+  {% set _watch_pct = disp.cor1m_pctile_2y if (disp is not none and disp.cor1m_pctile_2y is defined and disp.cor1m_pctile_2y is not none) else none %}
+  {% set _cor1m_avail = (disp.cor1m_available) if (disp is not none and disp.cor1m_available is defined and disp.cor1m_available) else false %}
+  {% if _watch_flip is not none or disp is not none %}
   <div class="watch-band" id="watch-band">
     <div class="watch-k">{{ t("What we're watching", '我们在看什么') }}</div>
     <p class="watch-kicker">{{ t('Windows, not certainties — re-drawn nightly.', '窗口，并非定论 — 每晚重算。') }}</p>
@@ -415,11 +422,21 @@ html[data-theme="light"] :is(
         {% endif %}
       </li>
       {% endif %}
-      {% if _watch_lo is not none and _watch_hi is not none %}
+      {% if disp is not none %}
       <li>
         <b>{{ t('Stock-picker window', '选股窗口') }}</b>
-        <span class="l-en">Stock-picker conditions hold while 1-month implied correlation stays at or below the {{ _watch_lo|int }}th percentile of the last two years; the {{ _watch_hi|int }}th is the window where stocks start moving together.</span>
-        <span class="l-zh">1个月隐含相关性维持在近两年{{ _watch_lo|int }}百分位及以下时，选股行情成立；升至{{ _watch_hi|int }}百分位则个股开始同涨同跌。</span>
+        {% if _cor1m_avail and _watch_pct is not none and _watch_lo is not none and _watch_hi is not none %}
+          {% if _watch_pct|float <= _watch_lo|float %}
+        <span class="l-en">Stock-picker conditions hold while 1-month implied correlation stays at or below the {{ _watch_lo|int }}th percentile of the last two years — it is there now ({{ ord_n(_watch_pct) }}).</span>
+        <span class="l-zh">1个月隐含相关性维持在近两年{{ _watch_lo|int }}百分位及以下时，选股行情成立——当前正处该区间（第{{ _watch_pct|float|round|int }}百分位）。</span>
+          {% else %}
+        <span class="l-en">Stock-picker conditions would open if 1-month implied correlation falls to the {{ _watch_lo|int }}th percentile of the last two years — it is at the {{ ord_n(_watch_pct) }} now; at the {{ _watch_hi|int }}th and above, stocks move together.</span>
+        <span class="l-zh">若1个月隐含相关性回落至近两年{{ _watch_lo|int }}百分位，选股窗口才会打开——当前为第{{ _watch_pct|float|round|int }}百分位；升至{{ _watch_hi|int }}百分位及以上则个股同涨同跌。</span>
+          {% endif %}
+        {% else %}
+        <span class="l-en">Stock-picker read is being updated.</span>
+        <span class="l-zh">选股读数更新中。</span>
+        {% endif %}
       </li>
       {% endif %}
     </ul>
@@ -524,11 +541,15 @@ html[data-theme="light"] :is(
 
 {% if sys is not none %}
 <div class="agree {{ agree if agree is not none else '' }}">
+  {% if _wn > 0 %}
   {% if agree == 'aligned_adding' %}<span class="l-en">Machine money: aligned · both adding over {{ _wn }} days</span><span class="l-zh">机器资金：一致 · 两路{{ _wn }}日同步加仓</span>
   {% elif agree == 'aligned_cutting' %}<span class="l-en">Machine money: aligned · both cutting over {{ _wn }} days</span><span class="l-zh">机器资金：一致 · 两路{{ _wn }}日同步减仓</span>
   {% elif agree == 'split' %}<span class="l-en">Machine money: split — signals disagree over {{ _wn }} days</span><span class="l-zh">机器资金：分歧 — {{ _wn }}日信号不一致</span>
   {% elif agree == 'paused' %}<span class="l-en">Machine money: both paused over the last {{ _wn }} days</span><span class="l-zh">机器资金：两路近{{ _wn }}日均暂停</span>
   {% else %}<span class="l-en">Agreement: {{ agree if agree is not none else 'unknown' }}</span><span class="l-zh">共识：{{ agree if agree is not none else '未知' }}</span>
+  {% endif %}
+  {% else %}
+  <span class="l-en">Machine money: window is being updated.</span><span class="l-zh">机器资金：窗口更新中。</span>
   {% endif %}
 </div>
 {% if agree == 'aligned_adding' %}
@@ -548,11 +569,11 @@ html[data-theme="light"] :is(
     {% if vc is not none %}
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap">
       {% if vc.alloc_bn is not none %}<div style="font-size:17px;font-weight:800;color:var(--ink)">${{ '%.0f'|format(vc.alloc_bn|float) }}B</div>{% endif %}
-      {% if vc.state is not none %}<span class="rc {{ vc.state }}">{% if vc.state=='adding' %}<span class="l-en">Adding over {{ _vc_wn }} days</span><span class="l-zh">{{ _vc_wn }}日加仓中</span>{% elif vc.state=='cutting' %}<span class="l-en">Cutting over {{ _vc_wn }} days</span><span class="l-zh">{{ _vc_wn }}日减仓中</span>{% else %}<span class="l-en">Pausing over {{ _vc_wn }} days</span><span class="l-zh">{{ _vc_wn }}日暂停</span>{% endif %}</span>{% endif %}
+      {% if vc.state is not none %}<span class="rc {{ vc.state }}">{% if _vc_wn > 0 %}{% if vc.state=='adding' %}<span class="l-en">Adding over {{ _vc_wn }} days</span><span class="l-zh">{{ _vc_wn }}日加仓中</span>{% elif vc.state=='cutting' %}<span class="l-en">Cutting over {{ _vc_wn }} days</span><span class="l-zh">{{ _vc_wn }}日减仓中</span>{% else %}<span class="l-en">Pausing over {{ _vc_wn }} days</span><span class="l-zh">{{ _vc_wn }}日暂停</span>{% endif %}{% else %}<span class="l-en">window is being updated</span><span class="l-zh">窗口更新中</span>{% endif %}</span>{% endif %}
     </div>
     <div class="badge-stack">
       {% if vc.flow_1d_bn is not none %}<span class="badge {{ 'up' if vc.flow_1d_bn|float >= 0 else 'dn' }}">{% if vc.flow_1d_bn|float >= 0 %}▲{% else %}▼{% endif %} ${{ '%.1f'|format(vc.flow_1d_bn|float|abs) }}B {{ t('today', '今日') }}</span>{% endif %}
-      {% if vc.flow_5d_bn is not none %}<span class="badge {{ 'up' if vc.flow_5d_bn|float >= 0 else 'dn' }}">{% if vc.flow_5d_bn|float >= 0 %}▲{% else %}▼{% endif %} ${{ '%.1f'|format(vc.flow_5d_bn|float|abs) }}B <span class="l-en">over {{ _vc_wn }} days</span><span class="l-zh">{{ _vc_wn }}日累计</span></span>{% endif %}
+      {% if vc.flow_5d_bn is not none %}<span class="badge {{ 'up' if vc.flow_5d_bn|float >= 0 else 'dn' }}">{% if vc.flow_5d_bn|float >= 0 %}▲{% else %}▼{% endif %} ${{ '%.1f'|format(vc.flow_5d_bn|float|abs) }}B {% if _vc_wn > 0 %}<span class="l-en">over {{ _vc_wn }} days</span><span class="l-zh">{{ _vc_wn }}日累计</span>{% else %}<span class="l-en">window is being updated</span><span class="l-zh">窗口更新中</span>{% endif %}</span>{% endif %}
     </div>
     {% if vc.alloc_frac is not none %}<div class="kpi-row" style="margin-top:10px"><div class="kpi"><b>{{ '%.0f'|format(vc.alloc_frac|float * 100) }}%</b>{{ t('of target allocation deployed', '目标仓位已部署') }}</div></div>{% endif %}
     {% else %}<span class="faint">{{ t('No data', '暂无数据') }}</span>{% endif %}
@@ -566,12 +587,12 @@ html[data-theme="light"] :is(
       {% if cta.score is not none %}<div style="font-size:17px;font-weight:800;color:var(--ink)">{% if cta.score|float >= 0 %}+{% endif %}{{ '%.2f'|format(cta.score|float) }} <small style="font-size:12px;font-weight:500;color:var(--faint)">{{ t('trend score', '趋势分数') }}</small></div>{% endif %}
       {% if cta.score is not none %}{% set _cs = cta.score|float %}<span class="rc {{ 'adding' if _cs > 0.15 else ('cutting' if _cs < -0.15 else 'pausing') }}">{% if _cs > 0.15 %}<span class="l-en">Positioned long</span><span class="l-zh">持多仓</span>{% elif _cs < -0.15 %}<span class="l-en">Positioned short</span><span class="l-zh">持空仓</span>{% else %}<span class="l-en">Near flat</span><span class="l-zh">接近空仓</span>{% endif %}</span>{% endif %}
       {% if cta.state is not none %}
-      <span class="rc {{ cta.state }}{% if _cta_near %} near-flat{% endif %}">{% if cta.state=='adding' %}<span class="l-en">adding exposure over {{ _cta_wn }} days</span><span class="l-zh">{{ _cta_wn }}日加仓中</span>{% elif cta.state=='cutting' %}<span class="l-en">trimming exposure over {{ _cta_wn }} days</span><span class="l-zh">{{ _cta_wn }}日减仓中</span>{% else %}<span class="l-en">holding steady over {{ _cta_wn }} days</span><span class="l-zh">{{ _cta_wn }}日持稳</span>{% endif %}</span>{% endif %}
+      <span class="rc {{ cta.state }}{% if _cta_near %} near-flat{% endif %}">{% if _cta_wn > 0 %}{% if cta.state=='adding' %}<span class="l-en">adding exposure over {{ _cta_wn }} days</span><span class="l-zh">{{ _cta_wn }}日加仓中</span>{% elif cta.state=='cutting' %}<span class="l-en">trimming exposure over {{ _cta_wn }} days</span><span class="l-zh">{{ _cta_wn }}日减仓中</span>{% else %}<span class="l-en">holding steady over {{ _cta_wn }} days</span><span class="l-zh">{{ _cta_wn }}日持稳</span>{% endif %}{% else %}<span class="l-en">window is being updated</span><span class="l-zh">窗口更新中</span>{% endif %}</span>{% endif %}
     </div>
     {% if cta.z is not none %}{% set _cz = cta.z|float %}<div style="font-size:12px;color:var(--mut);margin-bottom:6px">{% if _cz <= -0.3 %}<span class="l-en">Lighter than their 1-year norm ({{ '%.1f'|format(_cz) }})</span><span class="l-zh">仓位低于近一年常态（{{ '%.1f'|format(_cz) }}）</span>{% elif _cz >= 0.3 %}<span class="l-en">Heavier than their 1-year norm (+{{ '%.1f'|format(_cz) }})</span><span class="l-zh">仓位高于近一年常态（+{{ '%.1f'|format(_cz) }}）</span>{% else %}<span class="l-en">Near their 1-year norm</span><span class="l-zh">接近近一年常态</span>{% endif %}</div>{% endif %}
     <div class="badge-stack">
       {% if cta.flow_1d is not none %}<span class="badge {{ 'up' if cta.flow_1d|float >= 0 else 'dn' }}">{% if cta.flow_1d|float >= 0 %}▲{% else %}▼{% endif %} {{ '%.1f'|format(cta.flow_1d|float|abs) }} {{ t('today', '今日') }}</span>{% endif %}
-      {% if cta.flow_5d is not none %}<span class="badge {{ 'up' if cta.flow_5d|float >= 0 else 'dn' }}">{% if cta.flow_5d|float >= 0 %}▲{% else %}▼{% endif %} {{ '%.1f'|format(cta.flow_5d|float|abs) }} <span class="l-en">over {{ _cta_wn }} days</span><span class="l-zh">{{ _cta_wn }}日累计</span></span>{% endif %}
+      {% if cta.flow_5d is not none %}<span class="badge {{ 'up' if cta.flow_5d|float >= 0 else 'dn' }}">{% if cta.flow_5d|float >= 0 %}▲{% else %}▼{% endif %} {{ '%.1f'|format(cta.flow_5d|float|abs) }} {% if _cta_wn > 0 %}<span class="l-en">over {{ _cta_wn }} days</span><span class="l-zh">{{ _cta_wn }}日累计</span>{% else %}<span class="l-en">window is being updated</span><span class="l-zh">窗口更新中</span>{% endif %}</span>{% endif %}
     </div>
     {% else %}<span class="faint">{{ t('No data', '暂无数据') }}</span>{% endif %}
   </div>

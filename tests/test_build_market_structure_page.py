@@ -620,8 +620,10 @@ def test_p7_section4_kpi_row_keeps_at_most_two_at_rest():
     chunk = panel[row_at: chart_at if chart_at != -1 else len(panel)]
     kpis = re.findall(r'<div class="kpi">', chunk)
     assert len(kpis) <= 2, f"§4 rest KPI count {len(kpis)} exceeds 2"
-    assert "stocks are moving more on their own stories than usual" in chunk
-    assert "个股比往常更按自身故事走动" in chunk
+    # Fixture pct=21.4 classifies normal (lo=20/hi=80) — the rest gloss must
+    # match that class, not the stale 'dispersion' chip the fixture used to wear.
+    assert "a mix of shared and stock-specific moves" in chunk
+    assert "共性与个股因素交织" in chunk
     assert "that's why this prints green" in chunk
     assert "因此标为绿色" in chunk
     # demoted numbers still live in the panel tip
@@ -733,15 +735,18 @@ def test_p8_watch_band_renders_producer_flip_and_thresholds():
     assert "above 7497" in band
     assert "标普500保持在 7497" in band
     assert "之上" in band
-    # fixture thresholds 20 / 80
+    # fixture thresholds 20 / 80 — 21.4 is normal, so the "would open" form
     assert "20th percentile of the last two years" in band
     assert "80th" in band
     assert "近两年20百分位" in band
     assert "80百分位" in band
+    assert "would open" in band
+    assert "选股窗口才会打开" in band
     src = (REPO / "templates" / "market_structure.html.j2").read_text(encoding="utf-8")
     assert "gamma.gamma_flip" in src
     assert "cor1m_pctile_lo" in src
     assert "cor1m_pctile_hi" in src
+    assert "cor1m_available" in src
     assert "7663" not in src
 
 
@@ -796,7 +801,8 @@ def test_p9_swipe_strip_css_and_wrap_confirmation():
     assert "/* post-stack: consolidate */" in src
     assert "scroll-snap-type:x mandatory" in src
     assert "flex:0 0 86%" in src
-    assert "align-items:flex-start" in src
+    assert re.search(r"\.msp-drivers\{[^}]*align-items:stretch", src)
+    assert re.search(r"\.msp-driver\{[^}]*justify-content:flex-start", src)
     assert "scroll-snap-align:start" in src
     assert ".kpi-row,.vix-row{flex-wrap:wrap}" in src
     assert "html,body{overflow-x:hidden}" in src
@@ -806,3 +812,124 @@ def test_p9_swipe_strip_css_and_wrap_confirmation():
     # wrapping still present on the page CSS
     assert ".kpi-row{display:flex;gap:14px 22px;flex-wrap:wrap" in src
     assert ".vix-row{display:flex;gap:8px;flex-wrap:wrap" in src
+
+
+_WOULD_OPEN_EN = (
+    "Stock-picker conditions would open if 1-month implied correlation "
+    "falls to the 20th percentile of the last two years — it is at the "
+)
+_WOULD_OPEN_ZH = (
+    "若1个月隐含相关性回落至近两年20百分位，选股窗口才会打开——当前为第"
+)
+_HOLD_EN = (
+    "Stock-picker conditions hold while 1-month implied correlation stays "
+    "at or below the 20th percentile of the last two years — it is there now ("
+)
+_HOLD_ZH = (
+    "1个月隐含相关性维持在近两年20百分位及以下时，选股行情成立——"
+    "当前正处该区间"
+)
+_CAUTIOUS_EN = "Stock-picker read is being updated."
+_CAUTIOUS_ZH = "选股读数更新中。"
+
+
+def test_p8_watch_band_bullet2_fixture_would_open_both_lanes():
+    """Fixture pct=21.4 classifies normal → the 'would open' form, both lanes."""
+    html = _render_with_fixture()
+    band = _watch_band(html)
+    assert _WOULD_OPEN_EN + "21st now" in band
+    assert "at the 80th and above, stocks move together." in band
+    assert _WOULD_OPEN_ZH + "21百分位" in band
+    assert "升至80百分位及以上则个股同涨同跌。" in band
+    assert _HOLD_EN not in band
+    assert "it is there now" not in band
+    assert _HOLD_ZH not in band
+    assert _CAUTIOUS_EN not in band
+    assert _CAUTIOUS_ZH not in band
+
+
+def test_p8_watch_band_bullet2_agrees_with_section4_stance():
+    """Band bullet form must agree with §4's stance classification.
+
+    The committed fixture is normal (pct=21.4, lo=20, hi=80) so §4 is the
+    middling chip and the band must never render the dispersion 'hold —
+    there now' form.
+    """
+    html = _render_with_fixture()
+    band = _watch_band(html)
+    assert "Watch — don't chase; conditions are middling." in html
+    assert "观望——不追单，环境中性。" in html
+    assert _WOULD_OPEN_EN in band
+    assert _WOULD_OPEN_ZH in band
+    assert _HOLD_EN not in band
+    assert "it is there now" not in band
+    assert _HOLD_ZH not in band
+    assert "Get ready — conditions favour stock-picking over index bets." not in html
+
+
+def test_p8_watch_band_bullet2_hold_when_pct_at_or_below_lo(tmp_path):
+    """Stub pct ≤ 20 → the 'hold — there now' form, both lanes."""
+    raw = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    raw["dispersion"]["cor1m_pctile_2y"] = 15
+    raw["dispersion"]["cor1m_regime"] = "dispersion"
+    raw["dispersion"]["cor1m_available"] = True
+    stub = tmp_path / "disp_hold.json"
+    stub.write_text(json.dumps(raw), encoding="utf-8")
+    html = render(REPO, fixture=stub)
+    band = _watch_band(html)
+    assert _HOLD_EN + "15th)." in band
+    assert _HOLD_ZH in band
+    assert "第15百分位" in band
+    assert _WOULD_OPEN_EN not in band
+    assert _WOULD_OPEN_ZH not in band
+    assert "Get ready — conditions favour stock-picking over index bets." in html
+    assert "做好准备——当前环境有利于选股而非指数操作。" in html
+
+
+def test_p8_watch_band_bullet2_null_dispersion_is_cautious(tmp_path):
+    """Fail-open null dict still emits lo/hi — flag, not lo/hi, gates the bullet."""
+    raw = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    raw["dispersion"] = {
+        "cor1m": None,
+        "cor1m_regime": None,
+        "cor1m_1y_delta": None,
+        "cor1m_pctile_2y": None,
+        "cor1m_pctile_lo": 20,
+        "cor1m_pctile_hi": 80,
+        "cor1m_available": False,
+        "cor3m": None,
+        "dspx": None,
+        "history": [],
+    }
+    stub = tmp_path / "disp_null.json"
+    stub.write_text(json.dumps(raw), encoding="utf-8")
+    html = render(REPO, fixture=stub)
+    band = _watch_band(html)
+    assert _CAUTIOUS_EN in band
+    assert _CAUTIOUS_ZH in band
+    assert _WOULD_OPEN_EN not in band
+    assert _HOLD_EN not in band
+    assert "20th percentile" not in band
+    assert "80th" not in band
+    assert "21st" not in band
+    assert "21百分位" not in band
+    assert "it is there now" not in band
+    assert "would open" not in band
+
+
+def test_m1_zero_window_uses_unavailable_form_both_lanes(tmp_path):
+    """n==0 must not claim 'over 0 days' and must not silently default to 5."""
+    raw = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    raw["systematic"]["flow_window_n"] = 0
+    raw["systematic"]["vc"]["flow_window_n"] = 0
+    raw["systematic"]["cta"]["flow_window_n"] = 0
+    stub = tmp_path / "win0.json"
+    stub.write_text(json.dumps(raw), encoding="utf-8")
+    html = render(REPO, fixture=stub)
+    assert "Adding over 0 days" not in html
+    assert "Adding over 5 days" not in html
+    assert "over 0 days" not in html
+    assert "0日加仓中" not in html
+    assert "5日加仓中" not in html
+    assert "window is being updated" in html
+    assert "窗口更新中" in html

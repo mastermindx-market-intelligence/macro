@@ -6454,11 +6454,12 @@
   },
   "dispersion": {
     "cor1m": 0.336,
-    "cor1m_regime": "dispersion",
+    "cor1m_regime": "normal",
     "cor1m_1y_delta": -0.118,
     "cor1m_pctile_2y": 21.4,
     "cor1m_pctile_lo": 20,
     "cor1m_pctile_hi": 80,
+    "cor1m_available": true,
     "cor3m": 0.381,
     "dspx": 22.4,
     "history": [
