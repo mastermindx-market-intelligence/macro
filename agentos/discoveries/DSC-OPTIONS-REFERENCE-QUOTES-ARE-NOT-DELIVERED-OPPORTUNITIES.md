@@ -11,14 +11,16 @@ claim: >
   earlier publication. Neither finding is a license to rewrite the frozen ruler
   or weaken the transaction ordering.
 falsifier: >
-  Inspect the pinned runbook and cohort/poller blobs in the companion research
-  record. Refute the boundary finding by showing the exact helper uses a later
-  availability/client clock, or refute the barrier finding with a source path
-  that durably exposes the same governed event before the identified barriers.
-  The native three-definition fixture's original receipt can be checked against
-  SHA-256 9f99e1759a373a7196fa375cdb5a18b2d1877935b6a74a10373482ebe9dcaa68.
-  A later changed implementation requires a dated amendment. Synthetic
-  examples are deductions under their assumptions, not claims of vendor returns.
+  Reproduce the source and fixture checks from
+  research/options_estate/OPTIONS_REFERENCE_DELIVERY_AND_MODEL_ACCEPTANCE_2026-09-11.md:1.
+  Inspect the pinned runbook and cohort/poller blobs named there. Refute the
+  boundary finding by showing the exact helper uses a later availability/client
+  clock, or refute the barrier finding with a source path that durably exposes
+  the same governed event before the identified barriers. The native
+  three-definition fixture's original receipt can be checked against SHA-256
+  9f99e1759a373a7196fa375cdb5a18b2d1877935b6a74a10373482ebe9dcaa68.
+  A later changed implementation requires a dated amendment. Synthetic examples
+  are deductions under their assumptions, not claims of vendor returns.
 so_what: >
   Reuse the existing private comparison/evidence owner and preserve its original
   reference convention. Review a separate delivery-conditioned ruler with exact
@@ -31,8 +33,11 @@ so_what: >
 kind: architecture
 verified_at: 2026-09-11
 verified_by: >
-  Sol pinned source reads: cohort blob b84426de82c9d55caa26e9dd95092460be6dda1b,
-  runbook blob 410fd67dcfb3253f96ae7afc832119059a4c2ad1 and poller blob
+  Reproducibility receipt and exact source identities are recorded at
+  research/options_estate/OPTIONS_REFERENCE_DELIVERY_AND_MODEL_ACCEPTANCE_2026-09-11.md:1
+  on the #7027 carrier. Sol pinned source reads: cohort blob
+  b84426de82c9d55caa26e9dd95092460be6dda1b, runbook blob
+  410fd67dcfb3253f96ae7afc832119059a4c2ad1 and poller blob
   4f7280d1f96e76cfcaf9382eec124ea13aa9d6d1. Native existing-object read verified
   cohort SHA-256 55ebf34be6ae56565eab36a4b4568a6f63331bc7d7c3c962285d87173ad4fb78,
   then executed only NbboCohortError, _utc and effective_boundary on a synthetic
