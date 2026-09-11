@@ -323,8 +323,8 @@
         {%- elif _st == 'undated_among' %}
           {%- set _uname_en = (_ul or [_u0, _u0])[0] %}
           {%- set _uname_zh = (_ul or [_u0, _u0])[1] %}
-          {{ t('Oldest dated feed · '~b.max_staleness_days~'d · '~_uname_en~': no timestamp.',
-               '最旧有时间数据源 · '~b.max_staleness_days~'天 · '~_uname_zh~'：无时间戳') }}
+          {{ t('Oldest dated feed · '~b.max_staleness_days~'d — '~_uname_en~' has no timestamp.',
+               '最旧有时间数据源 · '~b.max_staleness_days~'天——'~_uname_zh~'无时间戳') }}
         {%- elif _st == 'all_stale' %}
           {{ t('No feed is current — oldest '~b.max_staleness_days~'d.',
                '所有数据源均非最新——最旧 '~b.max_staleness_days~' 天。') }}

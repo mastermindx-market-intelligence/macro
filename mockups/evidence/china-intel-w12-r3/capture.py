@@ -22,6 +22,7 @@ Usage::
 """
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
 import shutil
@@ -499,31 +500,41 @@ def _cells() -> list[dict]:
                     judged=("full-page baseline — lead brief above fold, "
                             "B1 chip + as-of, command 8+expander, stances"))
 
-    # B1 five states, both lanes, both themes (copy + visual)
+    # B1 five states, both lanes, both themes (copy + visual).
+    # state-2 / state-4 union the hero as-of stamp so the chip-beside-stamp
+    # frame is in the crop, not only on fp-* / state-1 cells.
+    stamp = [".ci-hero .dtp"]
     b1 = (
         ("b1-state1", "b1-fresh", ".cmdbar",
-         "state-1 suppressed — labeled absence: cmdbar without the chip"),
+         "state-1 suppressed — labeled absence: cmdbar without the chip",
+         []),
         ("b1-state2", "b1-mixed", ".cmdbar .mc.warn",
-         "state-2 mixed — names a still-current feed"),
+         "state-2 mixed — names a still-current feed; chip beside as-of stamp",
+         stamp),
         ("b1-state3", "b1-all_stale", ".cmdbar .mc.warn",
-         "state-3 all-stale — no feed is current"),
+         "state-3 all-stale — no feed is current",
+         []),
         ("b1-state4", "b1-outage", ".cmdbar .mc.warn",
-         "state-4 outage — timestamps unavailable, never suppressed"),
+         "state-4 outage — timestamps unavailable, never suppressed; chip beside as-of stamp",
+         stamp),
         ("b1-state5", "b1-undated", ".cmdbar .mc.warn",
-         "state-5 undated-among — dated oldest + undated named"),
+         "state-5 undated-among — dated oldest + undated named; clause-split",
+         []),
     )
-    for cid, fx, sel, judged in b1:
+    for cid, fx, sel, judged, extra in b1:
         for theme in ("dark", "light"):
             for loc in ("en", "zh"):
                 add(id=f"{cid}-{theme}-{loc}", fixture=fx, theme=theme,
                     locale=loc, w=1440, h=900, vp="desktop", sel=sel,
+                    extra=extra,
                     full=False, tip=None, sample=".cmdbar", root=".ci-wrap",
                     judged=judged)
 
-    # Regime: tilted EN green / tilted ZH red / labeled neutral
+    # Regime: tilt is word + signed number + link-tinted ring.
+    # Hex is computed-style only on b.on; visible-ink hex parked per packet D8.
     for loc, judged in (
-        ("en", "F3 tilted EN — risk-on #1f9a55 / rgb(31, 154, 85)"),
-        ("zh", "F3 tilted ZH — 红涨绿跌 flip #d23f3f / rgb(210, 63, 63)"),
+        ("en", "F3 tilted EN — word (Risk-on) + signed number + link-tinted ring; hex is computed-style only; visible-ink hex parked per packet D8"),
+        ("zh", "F3 tilted ZH — word (偏好风险) + signed number + link-tinted ring; lane-symmetric; hex is computed-style only; visible-ink hex parked per packet D8"),
     ):
         for theme in ("dark", "light"):
             add(id=f"regime-tilted-{theme}-{loc}", fixture="regime-tilted",
@@ -627,20 +638,47 @@ def _write_readme(sha: str, rows: list[dict], hscroll: dict) -> None:
         "",
         "**DARK TREATMENT:** command center — graphite panels, instrument-calm chips,",
         "restrained amber on the staleness/outage chip, luminance depth on dated",
-        "brief cards and the method band. Regime hex is a signed instrument",
-        "(green risk-on / red risk-off in EN; ZH flips).",
+        "brief cards and the method band. Regime tilt is carried by the WORD",
+        "(Risk-on vs Neutral), the SIGNED NUMBER (+0.40 vs +0.00), and a",
+        "link-tinted ring on `.mc.hot`. Hex on `b.on` is computed-style only;",
+        "visible-ink hex parked per packet D8.",
         "",
         "**LIGHT TREATMENT:** research workspace — cool canvas, white card material,",
         "hairline borders, shadow instead of glow; same IA, chip states, dates,",
-        "source chips, and regime hex. Warn bloom is suppressed; ink + hairline",
-        "carry the stale/outage state.",
+        "source chips, and the same word + signed-number + ring tilt. Warn bloom",
+        "is suppressed; ink + hairline carry the stale/outage state. Hex remains",
+        "computed-style only; visible-ink hex parked per packet D8.",
         "",
         "**Intentional differences:** glow vs shadow; warn bloom vs ink hairline.",
         "Shared: five-state B1 chip, dated-card identity (as-of + source chip),",
-        "method-band directory, regime colour (ZH-flipped).",
+        "method-band directory, regime tilt (word + signed number + ring;",
+        "ZH-flipped computed-style hex parked per D8).",
         "",
         "Theme-specific degraded states are captured in BOTH themes",
         "(`degraded-dark-*` / `degraded-light-*`).",
+        "",
+        "## Visible-ink follow-up (F3) — root cause",
+        "",
+        "r3 named `.cmdbar .mc span { color: var(--muted) }` as outranking",
+        "`.regime .on` on `<b class=\"on\">`. That host match is false (`<b>` is",
+        "not a `span`; `.cmdbar .mc:not(.regime) b` is excluded by `.regime`).",
+        "",
+        "Cascade probe (getComputedStyle + CDP `CSS.getMatchedStylesForNode`",
+        "on the regime-tilted fixture, dark EN):",
+        "- `b.on` computes `rgb(31, 154, 85)` via `.regime .on` (the computed-style",
+        "  gate is true of the host).",
+        "- Glyphs live in the inner `t()` spans (`span.l-en` / `span.l-zh`). The",
+        "  only matched color rule on those spans is `.cmdbar .mc span { color:",
+        "  var(--muted) }` → `rgb(139, 147, 161)` (`--muted` `#8b93a1`). Inherited",
+        "  `.regime .on` loses to that own-color declaration.",
+        "- Hex is computed-style only; visible-ink hex parked per packet D8.",
+        "  No CSS change this round.",
+        "",
+        "## CORRECTIONS (r3 release record)",
+        "",
+        "- Analogs ship `Ignore` / 「可忽略」 lawfully (packet line 27 doctrine",
+        "  vocabulary). The r2 DONE-map line \"Analogs keep Watch\" is superseded.",
+        "  No template change.",
         "",
         "## Horizontal page scroll at 390w",
         "",
@@ -672,19 +710,61 @@ def _write_readme(sha: str, rows: list[dict], hscroll: dict) -> None:
     (OUT / "README.md").write_text("\n".join(lines), encoding="utf-8")
 
 
-def main() -> int:
+def _parse_only(argv: list[str] | None) -> set[str] | None:
+    parser = argparse.ArgumentParser(prog="capture.py")
+    parser.add_argument(
+        "--only", default="",
+        help="comma-separated cell ids; merge into the existing matrix",
+    )
+    args = parser.parse_args(argv)
+    only = {s.strip() for s in args.only.split(",") if s.strip()}
+    return only or None
+
+
+def _load_existing() -> tuple[dict[str, dict], dict[str, dict]]:
+    cells_path = OUT / "cells.json"
+    if not cells_path.exists():
+        return {}, {}
+    payload = json.loads(cells_path.read_text(encoding="utf-8"))
+    cells = payload.get("cells") or {}
+    hscroll = payload.get("h_scroll_390") or {}
+    return cells, hscroll
+
+
+def _drop_unreferenced_twins(keep: set[str]) -> None:
+    keep_names = {Path(p).name for p in keep}
+    for png in CELLS.glob("*.png"):
+        stem = png.stem
+        if len(stem) == 16 and all(c in "0123456789abcdef" for c in stem):
+            if png.name not in keep_names:
+                png.unlink()
+
+
+def main(argv: list[str] | None = None) -> int:
     from playwright.sync_api import sync_playwright
 
+    only = _parse_only(argv)
     sha = _head_sha()
     CELLS.mkdir(parents=True, exist_ok=True)
-    for stale in CELLS.glob("*.png"):
-        stale.unlink()
 
     spec = _cells()
+    spec_by_id = {c["id"]: c for c in spec}
+    if only:
+        missing = sorted(only - set(spec_by_id))
+        if missing:
+            raise SystemExit(f"unknown cell ids: {missing}")
+        spec_run = [c for c in spec if c["id"] in only]
+        existing_cells, existing_hscroll = _load_existing()
+    else:
+        for stale in CELLS.glob("*.png"):
+            stale.unlink()
+        spec_run = spec
+        existing_cells, existing_hscroll = {}, {}
+
     staging = Path(tempfile.mkdtemp(prefix="chintel-w12-r3-"))
     httpd = None
     rows: list[dict] = []
-    hscroll: dict[str, dict] = {}
+    hscroll: dict[str, dict] = dict(existing_hscroll)
     try:
         _prepare(staging)
         httpd, port = serve_site_dir(staging)
@@ -693,7 +773,7 @@ def main() -> int:
             current = None  # (fixture, w, h)
             context = None
             page = None
-            for cell in spec:
+            for cell in spec_run:
                 key = (cell["fixture"], cell["w"], cell["h"])
                 if current != key:
                     if context is not None:
@@ -822,6 +902,18 @@ def main() -> int:
             httpd.shutdown()
         shutil.rmtree(staging, ignore_errors=True)
 
+    captured = {r["id"]: r for r in rows}
+    merged: dict[str, dict] = dict(existing_cells)
+    merged.update(captured)
+    # Caption truth travels with the spec, including cells not recaptured.
+    for cid, cell in spec_by_id.items():
+        if cid in merged:
+            merged[cid]["judged"] = cell["judged"]
+    ordered = [merged[c["id"]] for c in spec if c["id"] in merged]
+    keep_twins = {r["twin"] for r in ordered if r.get("twin")}
+    keep_twins |= {r["file"] for r in ordered if r.get("file")}
+    _drop_unreferenced_twins(keep_twins)
+
     receipt = {
         "captured_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "sha": sha,
@@ -831,7 +923,7 @@ def main() -> int:
         "overlays_hidden": list(OVERLAY_SELECTORS),
         "canvas_margin_px": CANVAS_MARGIN,
         "h_scroll_390": hscroll,
-        "cells": {r["id"]: r for r in rows},
+        "cells": {r["id"]: r for r in ordered},
     }
     (OUT / "cells.json").write_text(
         json.dumps(receipt, indent=2) + "\n", encoding="utf-8"
@@ -844,8 +936,9 @@ def main() -> int:
             "sha": sha,
             "rig": receipt["rig"],
             "overlays_hidden": list(OVERLAY_SELECTORS),
-            "selection": [r["id"] for r in rows],
-            "totals": {"states": len(rows), "captured": len(rows), "failed": 0},
+            "selection": [r["id"] for r in ordered],
+            "totals": {"states": len(ordered), "captured": len(ordered),
+                       "failed": 0},
             "h_scroll_390": hscroll,
             "cells": {
                 r["id"]: {
@@ -853,16 +946,17 @@ def main() -> int:
                     "theme": r["theme"], "locale": r["locale"],
                     "vp": r["vp"], "fixture": r["fixture"],
                     "overlay": r["overlay"],
-                    "SETTLE": r["SETTLE"].get("column"),
+                    "SETTLE": (r.get("SETTLE") or {}).get("column"),
                     "clip_kind": (r.get("clip") or {}).get("kind"),
-                } for r in rows
+                    "judged": r.get("judged"),
+                } for r in ordered
             },
         }, indent=2) + "\n",
         encoding="utf-8",
     )
-    _write_readme(sha, rows, hscroll)
+    _write_readme(sha, ordered, hscroll)
     print(json.dumps({
-        "sha": sha, "n": len(rows),
+        "sha": sha, "n": len(ordered), "recaptured": list(captured),
         "h_scroll_390": hscroll,
         "out": str(OUT),
     }, indent=2))

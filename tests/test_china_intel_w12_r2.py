@@ -143,8 +143,11 @@ def test_b1_state5_undated_among_dated_joins_naming_both_lanes():
     assert rec["age"] == 70
     html = _render(b, cmd_full=_cmd(2))
     en, zh = _chip_lanes(html)
-    assert "Oldest dated feed · 70d · News: no timestamp." in en
-    assert "最旧有时间数据源 · 70天 · 新闻：无时间戳" in zh
+    assert "Oldest dated feed · 70d — News has no timestamp." in en
+    assert "最旧有时间数据源 · 70天——新闻无时间戳" in zh
+    # Clause split: the age and the named undated feed are distinct.
+    assert "70d · News" not in en
+    assert "70天 · 新闻" not in zh
 
 
 def test_b1_no_stale_fallback_into_working():
