@@ -514,3 +514,162 @@ body{margin:0;padding-top:24px;background:var(--bg);color:var(--text)}
   .mh-deck{font-size:.95rem}
   .mh-stand{font-size:.86rem}
 }
+
+/* ── Research Implications (F10-X1) ────────────────────────────────────────
+   Two frozen estimator runs whose honest headline is that NEITHER is usable:
+   one failed its own estimator-unbiasedness check, one is missing an input receipt. The
+   templated answer — big number, small label, coloured badge — is exactly
+   wrong here, because it makes the number the hero when the number is the one
+   thing the reader must not act on. So the state leads, and a full-height
+   verdict rail binds that state to every figure in the card: you cannot read a
+   value without the verdict sitting in peripheral vision.
+
+   Red vs amber is this section's real content, and the page had no vocabulary
+   for the difference before: --act = tested and FAILED; --warn = NOT JUDGED,
+   an input receipt is absent. Collapsing those two into one "bad" colour would
+   destroy the distinction the cards exist to make.
+
+   The two themes are two art directions, not one skin:
+   dark  = instrument panel — card lifted off the canvas by luminance, hairline
+           borders, the rail carries a soft bloom.
+   light = research sheet — white paper on the cool canvas, zero glow; depth
+           comes from a shadow and a crisper rule. Same structure, same
+           semantics, different material. */
+.ric-lede{font-size:.83rem;line-height:1.65;color:var(--muted);max-width:74ch;
+  margin:12px 0 18px;padding-left:15px}
+
+/* Filters hide, never reorder — a sort control would imply a ranking. */
+.ric-filter{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 22px;padding:0;border:0}
+.ric-filter legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.ric-fbtn{padding:5px 12px;border-radius:var(--r-pill,999px);border:1px solid var(--border);
+  background:transparent;color:var(--muted);font-size:.76rem;cursor:pointer;
+  font-family:var(--font-ui);transition:color .15s,border-color .15s,background .15s}
+.ric-fbtn:hover{color:var(--text);border-color:color-mix(in srgb,var(--text) 28%,transparent)}
+.ric-fbtn[aria-pressed="true"]{background:var(--accent-deep);border-color:var(--accent-deep);
+  color:var(--text);font-weight:600}
+html[data-theme="light"] .ric-fbtn[aria-pressed="true"]{color:var(--panel)}
+.ric-fbtn:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+.ric-cards{display:flex;flex-direction:column;gap:20px}
+.ric-card{display:grid;grid-template-columns:5px minmax(0,1fr);
+  border:1px solid var(--border);border-radius:var(--r-card,12px);overflow:hidden;
+  background:var(--card)}
+.ric-card[hidden]{display:none}
+.ric-rail{background:var(--muted)}
+.ric-card.ric-s-complete .ric-rail{background:var(--ink-ok)}
+.ric-card.ric-s-diagnostic .ric-rail{background:repeating-linear-gradient(180deg,var(--muted) 0 10px,transparent 10px 16px)}
+.ric-card.ric-s-stale .ric-rail{background:repeating-linear-gradient(135deg, var(--muted) 0 3px, transparent 3px 6px)}
+.ric-card.ric-s-missing .ric-rail{background:var(--warn)}
+.ric-card.ric-s-failed  .ric-rail{background:var(--act)}
+.ric-card.ric-s-incomplete .ric-rail{background:var(--warn)}
+html[data-theme="dark"] .ric-card.ric-s-complete .ric-rail{box-shadow:0 0 12px 0 color-mix(in srgb,var(--ink-ok) 55%,transparent)}
+html[data-theme="dark"] .ric-card.ric-s-diagnostic .ric-rail{box-shadow:0 0 12px 0 color-mix(in srgb,var(--muted) 40%,transparent)}
+html[data-theme="dark"] .ric-card.ric-s-stale .ric-rail{box-shadow:0 0 12px 0 color-mix(in srgb,var(--muted) 40%,transparent)}
+html[data-theme="dark"] .ric-card.ric-s-missing .ric-rail{box-shadow:0 0 12px 0 color-mix(in srgb,var(--warn) 55%,transparent)}
+html[data-theme="dark"] .ric-card.ric-s-failed  .ric-rail{box-shadow:0 0 12px 0 color-mix(in srgb,var(--act) 55%,transparent)}
+html[data-theme="dark"] .ric-card.ric-s-incomplete .ric-rail{box-shadow:0 0 12px 0 color-mix(in srgb,var(--warn) 55%,transparent)}
+/* Light: paper, not panel — the glow is removed outright and depth is a shadow. */
+html[data-theme="light"] .ric-card{background:var(--panel);box-shadow:var(--card-shadow)}
+html[data-theme="light"] .ric-rail{box-shadow:none}
+
+.ric-body{padding:20px 22px;min-width:0}
+.ric-hd{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.ric-state{font-size:.78rem;font-weight:700;letter-spacing:.02em;color:var(--muted)}
+.ric-card.ric-s-complete .ric-state{color:var(--ink-ok)}
+.ric-card.ric-s-stale .ric-state{color:var(--muted)}
+.ric-card.ric-s-other .ric-state{color:var(--muted)}
+.ric-card.ric-s-missing .ric-state{color:var(--warn-ink)}
+.ric-card.ric-s-failed  .ric-state{color:var(--act-ink)}
+.ric-card.ric-s-incomplete .ric-state{color:var(--warn-ink)}
+.ric-q{font-size:1rem;font-weight:700;line-height:1.45;margin:0 0 8px;color:var(--text)}
+.ric-estimand{font-size:.82rem;line-height:1.6;color:var(--muted);margin:0 0 16px;max-width:70ch}
+
+/* Figures: last row fills leftover columns instead of leaving empty tracks. */
+.ric-figs{display:flex;flex-wrap:wrap;align-items:flex-start;gap:12px;margin:0 0 16px}
+.ric-fig{flex:1 1 190px;padding:10px 12px;border-radius:var(--r-ctl,8px);
+  background:color-mix(in srgb,var(--text) 4%,transparent)}
+html[data-theme="light"] .ric-fig{background:color-mix(in srgb,var(--text) 5%,transparent)}
+.ric-fig-l{display:block;font-size:.7rem;color:var(--muted);margin-bottom:4px;line-height:1.35}
+.ric-fig-v{font-family:var(--font-mono,ui-monospace,SFMono-Regular,Menlo,monospace);
+  font-size:.95rem;font-weight:600;color:var(--text);font-variant-numeric:tabular-nums}
+.ric-fig-u{font-size:.68rem;color:var(--muted);margin-left:5px;font-weight:400}
+.ric-fig-sub{display:block;margin-top:3px;font-family:var(--font-sans,system-ui,sans-serif);
+  font-size:.65rem;line-height:1.4;color:var(--muted);font-weight:400}
+/* A null is typed, never zero: the em dash is the value, the reason is beside it. */
+.ric-null{color:var(--muted);font-weight:400}
+.ric-why{display:block;font-size:.68rem;color:var(--muted);margin-top:5px;line-height:1.45}
+
+/* Ordered effect path — drawn ONLY where the owner marked the horizons ordered. */
+.ric-path{margin:4px 0 18px;padding:14px 14px 10px;border-radius:var(--r-btn,10px);
+  border:1px solid var(--border);background:color-mix(in srgb,var(--text) 3%,transparent)}
+html[data-theme="light"] .ric-path{background:var(--panel)}
+.ric-path-t{font-size:.72rem;color:var(--muted);margin-bottom:8px;line-height:1.45}
+.ric-path svg{display:block;width:100%;height:auto;overflow:visible}
+.ric-path-zero{stroke:var(--border);stroke-width:1;stroke-dasharray:3 3}
+.ric-path-anchor{stroke:color-mix(in srgb,var(--text) 30%,transparent);stroke-width:1}
+.ric-path-selected{stroke:var(--warn);stroke-width:1;stroke-dasharray:2 3}
+.ric-path-line{fill:none;stroke:var(--blue);stroke-width:2;
+  stroke-linejoin:round;stroke-linecap:round}
+.ric-path-dot{fill:var(--blue)}
+.ric-path-dot-selected{fill:var(--warn);stroke:var(--panel);stroke-width:1.5}
+.ric-path-ax{font-family:var(--font-mono,ui-monospace,SFMono-Regular,Menlo,monospace);
+  font-size:9px;fill:var(--muted)}
+.ric-path-callout{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline;
+  margin-top:6px;font-size:.7rem;line-height:1.45;color:var(--muted)}
+.ric-path-callout code{font-size:.62rem;color:var(--warn-ink);background:color-mix(in srgb,var(--warn) 12%,transparent);
+  padding:2px 6px;border-radius:var(--r-ctl,8px)}
+
+/* Gate outcomes: the PC-1/PC-2 story, in the contract's own pass/fail terms. */
+.ric-gates-l{font-size:.72rem;font-weight:600;letter-spacing:.04em;color:var(--muted);
+  text-transform:uppercase;margin:0 0 8px}
+.ric-gates{display:flex;flex-direction:column;gap:8px;margin:0 0 4px}
+.ric-gate{font-size:.78rem;line-height:1.55;display:flex;align-items:flex-start;gap:8px}
+.ric-gate::before{content:"";flex:0 0 8px;width:8px;height:8px;margin-top:.45em;border-radius:var(--r-pill,999px)}
+.ric-gate.ric-g-met::before{background:var(--ink-ok)}
+.ric-gate.ric-g-not::before{background:var(--act)}
+.ric-gate.ric-g-not .ric-g-lead{font-weight:600}
+.ric-gate-b{min-width:0}
+.ric-gate-n{color:var(--muted);display:block;margin-top:2px;font-size:.74rem}
+
+/* Progressive disclosure: the lab page may go deep, but not all at once. */
+.ric-more{border-top:1px solid var(--border);margin-top:4px}
+.ric-more>summary{list-style:none;cursor:pointer;padding:11px 2px 11px 0;
+  font-size:.78rem;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:8px}
+.ric-more>summary::-webkit-details-marker{display:none}
+.ric-more>summary:hover{color:var(--text)}
+.ric-more>summary:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:var(--r-ctl,8px)}
+.ric-more>summary::before{content:"+";font-family:var(--font-mono,ui-monospace,monospace);
+  font-size:.9rem;line-height:1;width:11px;color:var(--muted);transition:transform .18s}
+.ric-more[open]>summary::before{content:"−"}
+.ric-gate .ric-more{border-top:none;margin-top:2px}
+.ric-gate .ric-more>summary{padding:4px 0}
+.ric-more-b{padding:2px 0 16px;font-size:.79rem;line-height:1.65;color:var(--muted)}
+.ric-list{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:9px}
+.ric-list li{padding-left:13px;position:relative}
+.ric-list li::before{content:"";position:absolute;left:0;top:.62em;width:5px;height:1px;background:var(--muted)}
+.ric-count{font-family:var(--font-mono,ui-monospace,monospace);color:var(--text);font-weight:600}
+
+/* Receipts: a citation without a digest is not a receipt. */
+.ric-rc{display:grid;grid-template-columns:auto minmax(0,1fr);gap:5px 12px;
+  font-family:var(--font-mono,ui-monospace,SFMono-Regular,Menlo,monospace);font-size:.68rem;line-height:1.6}
+.ric-rc dt{color:var(--muted)}
+.ric-rc dd{margin:0;color:var(--text);word-break:break-all}
+
+/* Zero authority is a claim the reader must be able to check, not an omission. */
+.ric-auth{margin-top:14px;padding-top:13px;border-top:1px solid var(--border);
+  font-size:.72rem;color:var(--muted);line-height:1.6}
+.ric-auth-f{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.ric-auth-f code{font-size:.64rem;padding:2px 6px;border-radius:var(--r-ctl,8px);
+  background:color-mix(in srgb,var(--text) 7%,transparent);color:var(--muted)}
+
+@media (max-width:640px){
+  .ric-body{padding:16px 15px}
+  .ric-figs{gap:9px}
+  .ric-fig{flex-basis:100%}
+  .ric-q{font-size:.94rem}
+  .ric-rc{grid-template-columns:1fr;gap:2px 0}
+  .ric-rc dt{margin-top:6px}
+}
+@media (prefers-reduced-motion:reduce){
+  .ric-fbtn,.ric-more>summary::before{transition:none}
+}
