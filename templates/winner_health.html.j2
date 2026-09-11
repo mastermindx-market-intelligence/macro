@@ -731,6 +731,14 @@ html[data-theme="light"] .tnull{background:var(--panel);
   outline-offset:1px}
 html[data-theme="light"] .wh-find input{background:var(--panel);
   box-shadow:0 1px 2px color-mix(in srgb,var(--text) 10%,transparent)}
+.wh-find-null{margin:14px 0 4px;padding:12px 14px;max-width:46ch;
+  color:var(--muted-strong);font-size:14px;line-height:1.55;
+  background:color-mix(in srgb,var(--panel) 82%,transparent);
+  border:1px solid var(--line);border-radius:var(--r-ctl,8px)}
+.wh-find-null[hidden]{display:none!important}
+.wh-find-null b{color:var(--text);font-weight:700;font-variant-numeric:tabular-nums}
+html[data-theme="light"] .wh-find-null{background:var(--panel);
+  box-shadow:0 1px 2px color-mix(in srgb,var(--text) 10%,transparent)}
 .wh-more{display:inline-flex;align-items:center;gap:6px;margin:10px 0 0;padding:7px 12px;
   font:inherit;font-size:12.5px;font-weight:650;color:var(--text);cursor:pointer;
   background:color-mix(in srgb,var(--panel) 70%,transparent);
@@ -973,9 +981,14 @@ a.tk:hover{color:var(--ink-link, var(--link))}
     <label class="wh-find-lab" for="wh-find-q">{{ t('Find a name', '查找代码') }}</label>
     <input id="wh-find-q" type="search" autocomplete="off" spellcheck="false"
            aria-label="Find a ticker"
+           data-aria-en="Find a ticker" data-aria-zh="查找代码"
            data-ph-en="Ticker or name" data-ph-zh="代码或名称"
            placeholder="Ticker or name">
   </div>
+  <p id="wh-find-null" class="wh-find-null" hidden role="status" aria-live="polite">
+    <span class="l-en">No name matching "<b data-find-q></b>" is on this board — it isn't tracked here.</span>
+    <span class="l-zh">没有匹配「<b data-find-q></b>」的标的在本板上——该标的不在跟踪范围内。</span>
+  </p>
   {%- for T in TIERS %}
   {%- set M = TIER_META.get(T.key) or TIER_META['primary'] %}
   {%- set st = T.states or {} %}
@@ -1112,18 +1125,12 @@ a.tk:hover{color:var(--ink-link, var(--link))}
             <span class="l-en">{{ tot }} of its {{ members }} names are on this board — {{ tmat }} are aging.</span><span class="l-zh">该主题 {{ members }} 只中有 {{ tot }} 只在本板上，其中 {{ tmat }} 只在老化。</span>
             {%- endif -%}
           {%- else -%}
-            {%- if tot == 1 and tmat == 1 -%}
-            <span class="l-en">1 name on this board is aging.</span><span class="l-zh">本板上有 1 只在老化。</span>
-            {%- elif tot == 1 -%}
-            <span class="l-en">1 name on this board — it is not aging yet.</span><span class="l-zh">本板上有 1 只，尚未老化。</span>
-            {%- elif tmat == 0 -%}
-            <span class="l-en">{{ tot }} names on this board — none are aging.</span><span class="l-zh">本板上有 {{ tot }} 只，没有在老化的。</span>
+            {%- if tmat == 0 -%}
+            <span class="l-en">{% if tot == 1 %}1 name on this board{% else %}{{ tot }} names on this board{% endif %} — none are aging.</span><span class="l-zh">本板上有 {{ tot }} 只——没有在老化的。</span>
             {%- elif tmat == tot -%}
-            <span class="l-en">{{ tot }} names on this board are aging.</span><span class="l-zh">本板上有 {{ tot }} 只在老化。</span>
-            {%- elif tmat == 1 -%}
-            <span class="l-en">{{ tot }} names on this board — 1 is aging.</span><span class="l-zh">本板上有 {{ tot }} 只，其中 1 只在老化。</span>
+            <span class="l-en">{% if tot == 1 %}1 name on this board{% else %}{{ tot }} names on this board{% endif %} — all {{ tot }} are aging.</span><span class="l-zh">本板上有 {{ tot }} 只——{{ tot }} 只都在老化。</span>
             {%- else -%}
-            <span class="l-en">{{ tot }} names on this board — {{ tmat }} are aging.</span><span class="l-zh">本板上有 {{ tot }} 只，其中 {{ tmat }} 只在老化。</span>
+            <span class="l-en">{% if tot == 1 %}1 name on this board{% else %}{{ tot }} names on this board{% endif %} — {{ tmat }} of {{ tot }} are aging.</span><span class="l-zh">本板上有 {{ tot }} 只——其中 {{ tmat }} 只在老化。</span>
             {%- endif -%}
           {%- endif -%}</span>
           {%- if has_members and tmax %}
@@ -1175,7 +1182,7 @@ a.tk:hover{color:var(--ink-link, var(--link))}
       {%- if capped %}
       <button type="button" class="wh-more" data-n="{{ n_rows }}" aria-expanded="false">
         <span class="wh-more-open"><span class="l-en">See all {{ n_rows }}</span><span class="l-zh">查看全部 {{ n_rows }} 只</span></span>
-        <span class="wh-more-close" hidden><span class="l-en">Show top {{ ROW_CAP }} ↑</span><span class="l-zh">只看前 {{ ROW_CAP }} 只</span></span>
+        <span class="wh-more-close" hidden><span class="l-en">Show top {{ ROW_CAP }} ↑</span><span class="l-zh">只看前 {{ ROW_CAP }} 只 ↑</span></span>
       </button>
       {%- endif %}
       {%- endif %}
@@ -1222,8 +1229,15 @@ a.tk:hover{color:var(--ink-link, var(--link))}
 (function(){
   var q = document.getElementById('wh-find-q');
   if (!q) return;
-  var zh = document.documentElement.getAttribute('data-lang') === 'zh';
-  q.placeholder = q.getAttribute(zh ? 'data-ph-zh' : 'data-ph-en') || q.placeholder;
+  var nul = document.getElementById('wh-find-null');
+  function bindFindChrome(){
+    var zh = document.documentElement.getAttribute('data-lang') === 'zh';
+    q.placeholder = q.getAttribute(zh ? 'data-ph-zh' : 'data-ph-en') || q.placeholder;
+    var aria = q.getAttribute(zh ? 'data-aria-zh' : 'data-aria-en');
+    if (aria) q.setAttribute('aria-label', aria);
+  }
+  bindFindChrome();
+  document.addEventListener('langchange', bindFindChrome);
   function setOpen(box, btn, open){
     if (!box) return;
     box.classList.toggle('is-open', !!open);
@@ -1237,10 +1251,14 @@ a.tk:hover{color:var(--ink-link, var(--link))}
   function applyFind(){
     var needle = (q.value || '').trim().toLowerCase();
     var filtering = needle.length > 0;
+    var totalHits = 0;
     document.querySelectorAll('section.grp').forEach(function(g){
       var box = g.querySelector('.rows');
-      if (!box) return;
       var more = g.querySelector('.wh-more');
+      if (!box){
+        g.classList.toggle('is-quiet', filtering);
+        return;
+      }
       var hits = 0;
       box.querySelectorAll('.row').forEach(function(row){
         var hay = (row.getAttribute('data-find') || '').toLowerCase();
@@ -1248,16 +1266,25 @@ a.tk:hover{color:var(--ink-link, var(--link))}
         row.classList.toggle('is-miss', filtering && !match);
         if (match) hits += 1;
       });
+      totalHits += hits;
       if (filtering){
-        setOpen(box, more, true);
+        setOpen(box, more, hits > 0);
         g.classList.toggle('is-quiet', hits === 0);
-        if (more) more.hidden = true;
+        if (more) more.hidden = hits > 0;
       } else {
         g.classList.remove('is-quiet');
         setOpen(box, more, false);
         if (more) more.hidden = false;
       }
     });
+    if (nul){
+      var empty = filtering && totalHits === 0;
+      nul.hidden = !empty;
+      if (empty){
+        var shown = (q.value || '').trim();
+        nul.querySelectorAll('[data-find-q]').forEach(function(n){ n.textContent = shown; });
+      }
+    }
   }
   q.addEventListener('input', applyFind);
   document.querySelectorAll('.wh-more').forEach(function(btn){

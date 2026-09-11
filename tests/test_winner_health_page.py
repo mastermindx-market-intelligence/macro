@@ -598,6 +598,19 @@ def test_b1_unobserved_tail_keeps_fill_honest(tmp_path):
     assert "repeating-linear-gradient" in src
 
 
+def _degrade_copy(tot, tmat):
+    """Members-absent copy: presence count and aging count in every branch."""
+    pres = "1 name on this board" if tot == 1 else f"{tot} names on this board"
+    if tmat == 0:
+        return (f"{pres} — none are aging.",
+                f"本板上有 {tot} 只——没有在老化的。")
+    if tmat == tot:
+        return (f"{pres} — all {tot} are aging.",
+                f"本板上有 {tot} 只——{tot} 只都在老化。")
+    return (f"{pres} — {tmat} of {tot} are aging.",
+            f"本板上有 {tot} 只——其中 {tmat} 只在老化。")
+
+
 def test_m1_members_absent_is_barless_and_names_only_board_presence(tmp_path):
     """Today's committed artifact has no members key — do not invent a population."""
     rows = []
@@ -614,12 +627,44 @@ def test_m1_members_absent_is_barless_and_names_only_board_presence(tmp_path):
     assert "条形的宽度代表主题的大小" not in sec
     assert " of its " not in sec
     assert "该主题 " not in sec
-    # 5 on board, all aging (Cybersecurity)
-    assert "5 names on this board are aging" in sec
-    assert "本板上有 5 只在老化" in sec
-    # 2 on board, none aging (AI Infrastructure)
-    assert "2 names on this board — none are aging" in sec
-    assert "本板上有 2 只，没有在老化的" in sec
+    # one-integer collide ("N names on this board are aging") is closed.
+    assert "names on this board are aging" not in sec
+    assert "本板上有 5 只在老化。" not in sec
+    assert "本板上有 2 只，没有在老化的" not in sec
+    for _name, _m, extended, watch, thinning, breaking, _bid in _THEME_ROWS:
+        tmat = watch + thinning + breaking
+        en, zh = _degrade_copy(extended, tmat)
+        assert en in sec, en
+        assert zh in sec, zh
+    # the three branches, both lanes, pinned on named rows
+    assert "5 names on this board — all 5 are aging." in sec
+    assert "本板上有 5 只——5 只都在老化。" in sec
+    assert "2 names on this board — none are aging." in sec
+    assert "本板上有 2 只——没有在老化的。" in sec
+    assert "3 names on this board — 1 of 3 are aging." in sec
+    assert "本板上有 3 只——其中 1 只在老化。" in sec
+
+
+def test_m1_degrade_three_branches_cover_singleton_too(tmp_path):
+    """tot=1 still names both populations — never '1 name on this board is aging.'"""
+    rows = [
+        {"basket": "All", "basket_zh": "全", "basket_id": "a",
+         "extended": 1, "watch": 1, "thinning": 0, "breaking": 0},
+        {"basket": "None", "basket_zh": "无", "basket_id": "n",
+         "extended": 1, "watch": 0, "thinning": 0, "breaking": 0},
+        {"basket": "Some", "basket_zh": "部", "basket_id": "s",
+         "extended": 4, "watch": 2, "thinning": 0, "breaking": 0},
+    ]
+    html = _render(tmp_path, _ctx({"extended_watch": [_row()]}, theme_counts=rows))
+    sec = html.split('aria-label="Themes by state"', 1)[1].split("</section>", 1)[0]
+    assert "1 name on this board — all 1 are aging." in sec
+    assert "本板上有 1 只——1 只都在老化。" in sec
+    assert "1 name on this board — none are aging." in sec
+    assert "本板上有 1 只——没有在老化的。" in sec
+    assert "4 names on this board — 2 of 4 are aging." in sec
+    assert "本板上有 4 只——其中 2 只在老化。" in sec
+    assert "1 name on this board is aging." not in sec
+    assert "本板上有 1 只在老化。" not in sec
 
 
 def test_m2_nearly_all_and_half_up_both_lanes(tmp_path):
@@ -715,7 +760,7 @@ def test_p1_6_cap_boundary_count_true_and_find(tmp_path):
     assert "See all 9" in g9
     assert "查看全部 9 只" in g9
     assert "Show top 8 ↑" in g9
-    assert "只看前 8 只" in g9
+    assert "只看前 8 只 ↑" in g9
     assert 'data-find="N08 Name 08 名称08"' in g9
     # find input lives above the groups, both lanes
     assert 'id="wh-find-q"' in html9
@@ -732,6 +777,46 @@ def test_p1_6_cap_boundary_count_true_and_find(tmp_path):
     # 390w: find goes full width; the 9th name is still in the DOM
     assert "@media(max-width:620px)" in html9
     assert ".wh-find{max-width:none}" in html9
+
+
+def test_p1_6_find_chrome_is_lane_true_and_rebinds_on_langchange(tmp_path):
+    """Placeholder + aria-label ship EN as the bake-time lane; setLang rebinds both."""
+    html = _render(tmp_path, _ctx({"extended_watch": [_row()]}))
+    assert 'id="wh-find-q"' in html
+    assert 'placeholder="Ticker or name"' in html
+    assert 'aria-label="Find a ticker"' in html
+    assert 'data-ph-en="Ticker or name"' in html
+    assert 'data-ph-zh="代码或名称"' in html
+    assert 'data-aria-en="Find a ticker"' in html
+    assert 'data-aria-zh="查找代码"' in html
+    # static aria-label stays EN (CJK-in-attribute law); ZH lives on data-aria-zh
+    src = html.split('id="wh-find-q"', 1)[1].split(">", 1)[0]
+    assert "查找代码" not in src.replace('data-aria-zh="查找代码"', "")
+    assert "bindFindChrome" in html
+    assert "addEventListener('langchange', bindFindChrome)" in html
+    assert "data-aria-zh" in html
+    assert "q.setAttribute('aria-label', aria)" in html
+
+
+def test_p1_6_zero_hit_is_an_honest_null_both_lanes(tmp_path):
+    """A miss must not blank the page: null sentence both lanes, See-all stays, clear restores."""
+    nine = [_row(ticker=f"N{i:02d}") for i in range(9)]
+    html = _render(tmp_path, _ctx({"extended_watch": nine}))
+    assert 'id="wh-find-null"' in html
+    assert 'No name matching "' in html
+    assert "is on this board — it isn't tracked here." in html
+    assert "没有匹配「" in html
+    assert "」的标的在本板上——该标的不在跟踪范围内。" in html
+    assert 'data-find-q' in html
+    # groups still hide on a miss; the counted See-all node is not stripped
+    assert ".grp.is-quiet{display:none}" in html
+    assert "See all 9" in html
+    assert "查看全部 9 只" in html
+    assert "more.hidden = hits > 0" in html
+    # clear restores groups + hides the null
+    assert "g.classList.remove('is-quiet')" in html
+    assert "nul.hidden = !empty" in html
+    assert "totalHits === 0" in html
 
 
 def test_p1_6_rollup_stays_a_summary(tmp_path):

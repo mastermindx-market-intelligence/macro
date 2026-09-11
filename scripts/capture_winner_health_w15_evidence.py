@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
-"""S1-rig evidence matrix for winner_health W15 r3.
+"""S1-rig evidence matrix for winner_health W15 r4.
 
 Two data shapes, never blended in one cell:
 
 * production — ``git show origin/main:data/top_maturation/latest.json`` verbatim
   (no ``members`` key; M1 barless degrade is the honest current state).
+* production-pinned — production plus a named proof pin (rate39 / libnull).
 * members-present — that artifact plus ``members`` / ``basket_id`` from the
-  packet's 9-row table (membership.json truths the audit measured).
+  packet's 9-row table (membership.json truths the audit measured). Members-
+  fixture copy is fixture-only and is not tonight's shippable state.
 
 Playwright, one fresh page per cell, ``window.__skyDeck``, overlay hide,
 reduced-motion, content-addressed PNGs, overlay-clean column, at-rest text
 via computed styles. Refuses a dirty tree and stamps ``git rev-parse HEAD``.
+SETTLE is raf×2 + fonts.ready before every shot.
 
 Scratch-only render (SEAT RULING 3): never writes ``site/`` or ``data/``.
 
@@ -50,6 +53,11 @@ LOCALES = ("en", "zh")
 THEMES = ("dark", "light")
 
 OVERLAY_SELECTORS = (".mx5-aurora", ".sky-fx", "#mmb-root", "#mmb-boot", ".ift-aurora")
+FIND_CROP_HIDES = (
+    "#t-six-month .ladder",
+    '.sec[aria-label="Themes by state"]',
+)
+SETTLE_NOTE = "raf2+fonts.ready"
 
 # Packet 9-row table (P0-1). Live origin/main membership.json now reports
 # Cybersecurity=12 and Non-AI Tech=14; the fixture keeps the audited sizes so
@@ -78,6 +86,7 @@ ASSETS = (
 
 _LIBNULL_TICKERS = ("CXM", "PFGC", "RUSHA")
 _FIND_TICKER = "SLS"  # 9th name in primary extended_watch (past the cap)
+_FIND_MISS = "ZZZQ"   # no name on the board — the zero-hit null
 _RATE39_TICKER = "TPC"
 _RATE8_TICKER = "DELL"
 
@@ -321,6 +330,60 @@ _CLIP_UNION = """
 """
 
 
+def _settle(page) -> None:
+    """Canvas settle: two animation frames + webfonts, then a short paint wait."""
+    page.evaluate(
+        """() => Promise.all([
+          (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve(),
+          new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))
+        ])"""
+    )
+    page.wait_for_timeout(80)
+
+
+def _hide_find_extras(page) -> list[str]:
+    """Find-crop-only: hide the ladder and theme panel so input + subject share a frame.
+
+    Live page keeps both. Returned list is the per-cell ``hides`` disclosure.
+    """
+    page.evaluate(
+        """(sels) => {
+          sels.forEach((s) => {
+            document.querySelectorAll(s).forEach((n) => { n.style.display = 'none'; });
+          });
+        }""",
+        list(FIND_CROP_HIDES),
+    )
+    return list(FIND_CROP_HIDES)
+
+
+def _offset_b0_tip(page, theme_name: str) -> None:
+    """Sit the open b0 tip BELOW the hatch so it does not cover the count."""
+    page.evaluate(
+        """(name) => {
+          const pop = document.querySelector('.lens-pop.open');
+          const thm = [...document.querySelectorAll('.thm')]
+            .find(el => (el.textContent || '').indexOf(name) !== -1);
+          if (!pop || !thm) return false;
+          const hatch = thm.querySelector('i.b0');
+          const r = (hatch || thm).getBoundingClientRect();
+          const pw = pop.offsetWidth, ph = pop.offsetHeight;
+          const x = Math.round(Math.max(12, Math.min(
+            r.left + r.width / 2 - pw / 2,
+            window.innerWidth - pw - 12
+          )));
+          const y = Math.round(Math.min(
+            window.innerHeight - ph - 8,
+            r.bottom + 10
+          ));
+          pop.style.left = x + 'px';
+          pop.style.top = y + 'px';
+          return true;
+        }""",
+        theme_name,
+    )
+
+
 def _apply(page, theme: str, locale: str) -> dict:
     page.evaluate(
         """(state) => {
@@ -426,6 +489,9 @@ def _do_action(page, job: dict) -> dict:
         thm = _thm(page, job["theme_name"])
         thm.scroll_into_view_if_needed()
         receipt["opened"] = _open_tip(page, thm.locator("i.b0"), dedicated=False)
+        if job.get("subject") == "p0-1-pair" and receipt["opened"]:
+            _offset_b0_tip(page, job["theme_name"])
+            receipt["tip_offset"] = "below-hatch"
     elif action == "open-wfe":
         el = page.locator('.tname[data-tip-en]')
         receipt["opened"] = _open_tip(page, el, dedicated=False)
@@ -453,16 +519,7 @@ def _do_action(page, job: dict) -> dict:
         q = page.locator("#wh-find-q")
         q.fill(job["query"])
         page.wait_for_timeout(80)
-        # Ladder + theme panel sit between the input and the groups. Hide them
-        # for this crop only so the input and the matched row share a frame.
-        page.evaluate(
-            """() => {
-              const ladder = document.querySelector('#t-six-month .ladder');
-              if (ladder) ladder.style.display = 'none';
-              const th = document.querySelector('.sec[aria-label="Themes by state"]');
-              if (th) th.style.display = 'none';
-            }"""
-        )
+        receipt["hides"] = _hide_find_extras(page)
         page.locator("#wh-find").first.evaluate(
             "el => el.scrollIntoView({block: 'start'})"
         )
@@ -475,6 +532,36 @@ def _do_action(page, job: dict) -> dict:
         )
         receipt["opened"] = bool(visible)
         receipt["found"] = job["query"]
+    elif action == "find-miss":
+        q = page.locator("#wh-find-q")
+        q.fill(job["query"])
+        page.wait_for_timeout(80)
+        receipt["hides"] = _hide_find_extras(page)
+        page.locator("#wh-find").first.evaluate(
+            "el => el.scrollIntoView({block: 'start'})"
+        )
+        nul = page.locator("#wh-find-null")
+        shown = nul.count() > 0 and nul.evaluate(
+            """el => {
+              const cs = getComputedStyle(el);
+              return cs.display !== 'none' && !el.hidden;
+            }"""
+        )
+        more_present = page.locator(".wh-more").count() > 0
+        receipt["opened"] = bool(shown)
+        receipt["found"] = job["query"]
+        receipt["null_visible"] = bool(shown)
+        receipt["see_all_present"] = more_present
+    elif action == "find-placeholder":
+        receipt["hides"] = _hide_find_extras(page)
+        page.locator("#wh-find").first.evaluate(
+            "el => el.scrollIntoView({block: 'start'})"
+        )
+        ph = page.locator("#wh-find-q").get_attribute("placeholder") or ""
+        aria = page.locator("#wh-find-q").get_attribute("aria-label") or ""
+        receipt["opened"] = True
+        receipt["placeholder"] = ph
+        receipt["aria_label"] = aria
     page.wait_for_timeout(120)
     return receipt
 
@@ -508,8 +595,8 @@ def _jobs(*, smoke: bool) -> list[dict]:
          action="open-b0", theme_name="Cybersecurity",
          clip=[".thm", ".lens-pop.open"])  # refined in action via Cyber row
 
-    # P0-2: 39/40 nearly-all (production + analog pin); 8-in-10 verbatim.
-    four("p0-2-nearly-all", html="rate39", shape="production",
+    # P0-2: 39/40 nearly-all (production-pinned rate39); 8-in-10 verbatim production.
+    four("p0-2-nearly-all", html="rate39", shape="production-pinned", pin="rate39",
          action="open-analog", ticker=_RATE39_TICKER,
          clip=[".row", ".lens-pop.open"])
     four("p0-2-8in10", html="prod", shape="production",
@@ -517,7 +604,7 @@ def _jobs(*, smoke: bool) -> list[dict]:
          clip=[".row", ".lens-pop.open"])
 
     # P1-1: n=1 survivor suppression on the 39/40 pin; n>=5 on DELL.
-    four("p1-1-n1", html="rate39", shape="production",
+    four("p1-1-n1", html="rate39", shape="production-pinned", pin="rate39",
          action="open-analog", ticker=_RATE39_TICKER,
          clip=[".row", ".lens-pop.open"])
     four("p1-1-nge5", html="prod", shape="production",
@@ -525,7 +612,7 @@ def _jobs(*, smoke: bool) -> list[dict]:
          clip=[".row", ".lens-pop.open"])
 
     # P1-2 three lib-null rows, tip on CXM.
-    four("p1-2-libnull", html="libnull", shape="production",
+    four("p1-2-libnull", html="libnull", shape="production-pinned", pin="libnull",
          action="open-libnull", ticker="CXM",
          clip=["#above-trend-changed .row", ".lens-pop.open"])
 
@@ -551,10 +638,33 @@ def _jobs(*, smoke: bool) -> list[dict]:
          clip=["#g-wear"])
     four("p1-6-find", html="prod", shape="production",
          action="find", query=_FIND_TICKER,
-         clip=["#wh-find", "#g-wear"])
+         clip=["#wh-find", "#g-wear"], hides=list(FIND_CROP_HIDES))
     four("p1-6-find", html="prod", shape="production",
          viewport="mobile", action="find", query=_FIND_TICKER,
-         clip=["#wh-find", "#g-wear"])
+         clip=["#wh-find", "#g-wear"], hides=list(FIND_CROP_HIDES))
+
+    # MAJOR-1 zero-hit null: 4 desktop theme×lane + one 390.
+    four("find-zerohit", html="prod", shape="production",
+         action="find-miss", query=_FIND_MISS,
+         clip=["#wh-find", "#wh-find-null"], hides=list(FIND_CROP_HIDES))
+    jobs.append({
+        "id": "find-zerohit-dark-en-390",
+        "subject": "find-zerohit", "html": "prod", "shape": "production",
+        "viewport": "mobile", "locale": "en", "theme": "dark",
+        "width": 390, "height": 844, "action": "find-miss",
+        "query": _FIND_MISS, "clip": ["#wh-find", "#wh-find-null"],
+        "full_page": False, "hides": list(FIND_CROP_HIDES),
+    })
+
+    # MINOR-2: empty ZH find input showing the ZH placeholder (the missing pixel).
+    jobs.append({
+        "id": "find-placeholder-dark-zh-1440",
+        "subject": "find-placeholder", "html": "prod", "shape": "production",
+        "viewport": "desktop", "locale": "zh", "theme": "dark",
+        "width": 1440, "height": 900, "action": "find-placeholder",
+        "clip": ["#wh-find"], "full_page": False,
+        "hides": list(FIND_CROP_HIDES),
+    })
 
     # M1 degrade — production theme panel, barless.
     four("m1-degrade", html="prod", shape="production",
@@ -717,6 +827,8 @@ def _screenshot(page, job: dict) -> bytes:
                 loc.scroll_into_view_if_needed(timeout=5000)
             except Exception:
                 pass
+    if job.get("subject") == "p0-1-pair" and job.get("theme_name"):
+        _offset_b0_tip(page, job["theme_name"])
     page.wait_for_timeout(80)
     box = _clip_box(page, job, width, height)
     if box and box.get("width", 0) >= 4 and box.get("height", 0) >= 4:
@@ -817,6 +929,7 @@ def capture(*, smoke: bool = False) -> dict:
                     "id": job["id"],
                     "subject": job["subject"],
                     "shape": job["shape"],
+                    "pin": job.get("pin") or "",
                     "html": job["html"],
                     "viewport": job["viewport"],
                     "locale": locale,
@@ -824,6 +937,8 @@ def capture(*, smoke: bool = False) -> dict:
                     "viewport_width": width,
                     "viewport_height": height,
                     "action": job.get("action"),
+                    "hides": list(job.get("hides") or []),
+                    "settle": SETTLE_NOTE,
                 }
                 context = browser.new_context(
                     viewport={"width": width, "height": height},
@@ -860,6 +975,9 @@ def capture(*, smoke: bool = False) -> dict:
                         "open-libnull", "open-footer",
                     }:
                         action_receipt = _do_action(page, job)
+                    hides = list(job.get("hides") or action_receipt.get("hides") or [])
+                    entry["hides"] = hides
+                    _settle(page)
                     png = _screenshot(page, job)
                     name, digest, pw, ph = content_address_png(png, CELLS_DIR)
                     alias = f"{job['id']}.png"
@@ -892,6 +1010,10 @@ def capture(*, smoke: bool = False) -> dict:
                             or "too few to call a typical drop" in visible
                         ),
                         "visible_has_across": "across those" in visible or "基于这" in visible,
+                        "visible_has_zerohit": (
+                            "isn't tracked here" in visible
+                            or "不在跟踪范围内" in visible
+                        ),
                         "visible_text_head": visible[:240],
                     })
                     flag = "ok" if overlay_clean else "OVERLAY"
@@ -917,6 +1039,14 @@ def capture(*, smoke: bool = False) -> dict:
     captured_n = sum(1 for c in cells if c.get("captured"))
     overlay_n = sum(1 for c in cells if c.get("overlay_clean"))
     outcome = "captured" if captured_n == attempted and attempted else "partial"
+    by_sha: dict[str, list[str]] = {}
+    for c in cells:
+        digest = c.get("sha256") or ""
+        if digest and c.get("captured"):
+            by_sha.setdefault(digest, []).append(c["id"])
+    for c in cells:
+        siblings = [i for i in by_sha.get(c.get("sha256") or "", []) if i != c["id"]]
+        c["reused_image"] = siblings[0] if siblings else ""
     hscroll_390 = [
         {"id": c["id"], "locale": c["locale"], "overflow": (c.get("h_scroll") or {}).get("overflow")}
         for c in cells if c.get("viewport") == "mobile" and c.get("captured")
@@ -927,13 +1057,14 @@ def capture(*, smoke: bool = False) -> dict:
         "generated_at": generated_at,
         "tool": {
             "module_ref": "scripts/capture_winner_health_w15_evidence.py",
-            "version": "w15-r3-s1",
+            "version": "w15-r4-s1",
             "capture_method": (
                 "playwright, one fresh page per cell, fixture HTML in a scratch "
                 "dir (never site/ or data/). data-theme/data-lang via setTheme/"
                 "setLang with refuse-on-mismatch. window.__skyDeck skips "
                 "skyToggleFx. overlays removed. sha256 from screenshot bytes. "
-                "at-rest text via computed styles."
+                "at-rest text via computed styles. SETTLE is raf×2 + fonts.ready "
+                "before every shot."
             ),
         },
         "target": {
@@ -948,13 +1079,19 @@ def capture(*, smoke: bool = False) -> dict:
                 "key; theme bars absent by design until the nightly emits members "
                 "(M1 degrade)"
             ),
+            "production-pinned": (
+                "production shape plus a named proof pin (see per-cell pin). "
+                "rate39 = TPC analog 39/40; libnull = CXM/PFGC/RUSHA moved to "
+                "the front of atrz breaking. Members still absent."
+            ),
             "members-present": (
                 "production artifact + members/basket_id injected from the packet "
                 "9-row table (membership.json truths the audit measured: "
                 "Cybersecurity=10, AI Infrastructure=24, …). Live origin/main "
                 "membership.json now reports Cybersecurity=12 / Non-AI Tech=14; "
                 "the fixture keeps the packet table so the inverted pair and the "
-                "5-of-10 hatch are the ones the packet named."
+                "5-of-10 hatch are the ones the packet named. Cells on this shape "
+                "carry fixture-only copy and are not tonight's shippable state."
             ),
             "production_pins": {
                 "rate39": (
@@ -987,7 +1124,10 @@ def capture(*, smoke: bool = False) -> dict:
         "gates": gates,
         "h_scroll_390": hscroll_390,
         "find_ticker": _FIND_TICKER,
+        "find_miss": _FIND_MISS,
         "overlays_hidden": list(OVERLAY_SELECTORS),
+        "find_crop_hides": list(FIND_CROP_HIDES),
+        "settle": SETTLE_NOTE,
         "cells": cells,
         "honesty": {
             "page": (
@@ -995,10 +1135,12 @@ def capture(*, smoke: bool = False) -> dict:
                 "scripts.build_winner_health_page.render against scratch JSON. "
                 "write_page is not used (it would touch site/data_base.js). "
                 "Live body has no page-* class; the fixture matches that. "
-                "Overlays .mx5-aurora/.sky-fx/#mmb-root/#mmb-boot are removed. "
-                "Find crops hide #t-six-month .ladder and the theme panel so the "
-                "input and the matched row share a frame. "
-                "Inter webfonts are not copied; system UI fonts render."
+                "Overlays .mx5-aurora/.sky-fx/#mmb-root/#mmb-boot/.ift-aurora "
+                "are removed. Find crops hide #t-six-month .ladder and the "
+                "theme panel so the input and the matched/null row share a "
+                "frame (per-cell hides). Inter webfonts are not copied; system "
+                "UI fonts render. Members-present cells carry fixture-only "
+                "copy (packet 9-row table) and are not tonight's shippable state."
             ),
         },
     }
@@ -1009,18 +1151,22 @@ def _write_readme(manifest: dict) -> str:
     head = manifest["target"]["resolved_sha_or_none"]
     porcelain = manifest["target"]["porcelain_at_capture"]
     porcelain_s = "(empty)" if porcelain == "" else porcelain
+    overlay_sels = manifest.get("overlays_hidden") or list(OVERLAY_SELECTORS)
+    find_hides = manifest.get("find_crop_hides") or list(FIND_CROP_HIDES)
     lines = [
-        "# Winner Health W15 r3 — evidence matrix",
+        "# Winner Health W15 r4 — evidence matrix",
         "",
         "S1 rig: Playwright against scratch-rendered `winner_health.html.j2` on the "
         "real page skeleton (`_site_nav` included; live `<body>` has no `page-*` "
         "class, and the fixture matches that). `data-theme` / `data-lang` applied "
         "via `setTheme` / `setLang` (mismatch refuses). Overlays "
-        "`.mx5-aurora`, `.sky-fx`, `#mmb-root`, `#mmb-boot` are removed before "
-        "each shot. `window.__skyDeck = true`. `prefers-reduced-motion: reduce`. "
-        "At-rest text is read from computed styles (display/visibility/opacity + "
-        "inactive `.l-en`/`.l-zh` spans skipped), never from HTML source. PNGs "
-        "are content-addressed `sha256[:16].png` plus an alias twin.",
+        "`.mx5-aurora`, `.sky-fx`, `#mmb-root`, `#mmb-boot`, `.ift-aurora` are "
+        "removed before each shot. `window.__skyDeck = true`. "
+        "`prefers-reduced-motion: reduce`. At-rest text is read from computed "
+        "styles (display/visibility/opacity + inactive `.l-en`/`.l-zh` spans "
+        "skipped), never from HTML source. PNGs are content-addressed "
+        "`sha256[:16].png` plus an alias twin. SETTLE is two animation frames "
+        "+ `document.fonts.ready` before every shot.",
         "",
         f"Recapture: `python3 -m scripts.capture_winner_health_w15_evidence`",
         "",
@@ -1040,6 +1186,13 @@ def _write_readme(manifest: dict) -> str:
         "`members` (M1 degrade). The 8 full-page baselines and every "
         "`shape=production` cell run on this.",
         "",
+        "**Production-pinned** (12 cells): production shape plus a named proof "
+        "pin, disclosed per-cell in the Pin column. `rate39` = TPC analog "
+        "pinned to 39/40 (p0-2-nearly-all, p1-1-n1). `libnull` = CXM/PFGC/RUSHA "
+        "moved to the front of atrz breaking (p1-2-libnull). Members still absent. "
+        "p0-2-8in10 and p1-1-nge5 stay `production` — DELL is 8-in-10 / n≥5 in "
+        "the verbatim artifact.",
+        "",
         "**Members-present fixture** (production artifact + `members` injected "
         "from `data/baskets/membership.json` truths — the packet's own 9-row "
         "table): Cybersecurity 10, US Energy Complex 22, AI Software & Platforms "
@@ -1048,11 +1201,11 @@ def _write_readme(manifest: dict) -> str:
         "Robotics & Automation 12, plus `basket_id` so the WFE tip keys. Live "
         "`origin/main` membership.json now reports Cybersecurity=12 and Non-AI "
         "Tech=14; the fixture keeps the packet table so the inverted pair and "
-        "the 5-of-10 hatch are the ones the packet named. P0-1 and P1-3 run on this.",
-        "",
-        "Production-shape proof pins (still no `members` key): TPC analog 39/40 "
-        "for the named nearly-all / n=1-survivor card; CXM/PFGC/RUSHA moved to "
-        "the front of atrz breaking so the three lib-null rows share a frame.",
+        "the 5-of-10 hatch are the ones the packet named. **These cells carry "
+        "fixture-only copy and are not tonight's shippable state** — once the "
+        "nightly emits `members`, Cybersecurity will read 12 and Non-AI Tech 14, "
+        "not 10 and 13. The geometry claim (bar width = members) is invariant "
+        "to that drift. P0-1 and P1-3 run on this.",
         "",
         "## DARK TREATMENT",
         "",
@@ -1093,17 +1246,22 @@ def _write_readme(manifest: dict) -> str:
         "",
         "## Cells",
         "",
-        "| ID | Subject | Shape | Theme | Lang | Viewport | Overlay | Captured |",
-        "|---|---|---|---|---|---|---|---|",
+        "| ID | Subject | Shape | Pin | Theme | Lang | Viewport | Overlay | SETTLE | hides | reused-image | Captured |",
+        "|---|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     for c in manifest["cells"]:
         overlay = "yes" if c.get("overlay_clean") else (
             "NO: " + json.dumps(c.get("overlay") or c.get("reason"))
         )
+        hides = c.get("hides") or []
+        hides_s = ", ".join(f"`{s}`" for s in hides) if hides else "—"
+        reused = c.get("reused_image") or "—"
         lines.append(
             f"| `{c.get('id','')}` | {c.get('subject')} | {c.get('shape')} | "
-            f"{c.get('theme')} | {c.get('locale')} | {c.get('viewport')} | "
-            f"{overlay} | {'yes' if c.get('captured') else c.get('reason','no')} |"
+            f"{c.get('pin') or '—'} | {c.get('theme')} | {c.get('locale')} | "
+            f"{c.get('viewport')} | {overlay} | {c.get('settle') or SETTLE_NOTE} | "
+            f"{hides_s} | {reused} | "
+            f"{'yes' if c.get('captured') else c.get('reason','no')} |"
         )
     h390 = manifest.get("h_scroll_390") or []
     h390_ok = all(not row.get("overflow") for row in h390) if h390 else False
@@ -1114,6 +1272,10 @@ def _write_readme(manifest: dict) -> str:
         f"Find query `{manifest.get('find_ticker')}` (9th name in primary "
         "`extended_watch`, past the cap of 8). Cells `p1-6-find-*-390` type "
         "that needle; the group uncaps and the row is not `.is-miss`.",
+        "",
+        f"Zero-hit query `{manifest.get('find_miss')}`: cells `find-zerohit-*` "
+        "type a miss; groups stay `.is-quiet`, the null sentence is visible "
+        "both lanes, and the counted See-all node remains in the DOM.",
         "",
         "## No page h-scroll at 390",
         "",
@@ -1161,9 +1323,22 @@ def _write_readme(manifest: dict) -> str:
         "and removes leftover `.sky-fx` / `#mmb-boot` / `.mx5-aurora` after apply. "
         "Live toggles still play the flourish. Per-crop overlay column is above.",
         "",
-        "Find crops additionally hide the primary ladder and the theme panel "
-        "(they sit between `#wh-find` and the groups) so the input and the "
-        "matched row share a frame. Live page keeps both.",
+        "Find / zero-hit / placeholder crops additionally hide the primary "
+        "ladder and the theme panel (they sit between `#wh-find` and the groups) "
+        "so the input and the matched row or the null sentence share a frame. "
+        "Live page keeps both. Those extra hides are named per-cell in the "
+        "`hides` column; every other cell is empty there.",
+        "",
+        "Full hide-selector list used by the rig (verbatim):",
+        "",
+        f"- overlays removed on every cell: `{', '.join(overlay_sels)}`",
+        f"- find-crop extras (find / find-zerohit / find-placeholder only): "
+        f"`{', '.join(find_hides)}`",
+        "",
+        "Content-addressed twins: 8 cells in r3 were byte-identical pairs "
+        "(p1-1-n1 ≡ p0-2-nearly-all; p1-1-nge5 ≡ p0-2-8in10). The `reused-image` "
+        "column names the sibling cell that shares the same `sha256[:16].png`. "
+        "Coverage is still counted per cell.",
         "",
         "SEAT RULING 3: production JSON is copied via `git show origin/main:…` "
         "into a scratch dir; the builder's `render()` writes HTML there. This "
@@ -1181,7 +1356,7 @@ def main(argv: list[str] | None = None) -> int:
                     help="capture a handful of dark/EN cells and stop")
     args = ap.parse_args(argv)
 
-    print("winner_health W15 r3 capture", flush=True)
+    print("winner_health W15 r4 capture", flush=True)
     payloads = capture(smoke=args.smoke)
     manifest = payloads["manifest"]
     OUT_DIR.mkdir(parents=True, exist_ok=True)
