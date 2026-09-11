@@ -18,6 +18,7 @@ owns_paths:
   - research/skylit/RESEARCH_GATE_DISPOSITION_2026-09-10.md
   - research/skylit/W1_SOURCE_IMPLEMENTATION_RULING_2026-09-11.md
   - research/skylit/W1_PR7060_SOL_REVIEW_2026-09-11.md
+  - research/skylit/W1_DERIVED_PACKAGE_AND_UI_CONTRACT_2026-09-11.md
   - agentos/decisions/DEC-SKYLIT-INTEGRATE-EXISTING-SECTOR-INTELLIGENCE.md
 waves:
   - id: W1
@@ -26,12 +27,12 @@ waves:
     next_action: >
       Continue the same Claude8 source writer in Macro PR7060 under Sol review
       5174640493 and Slack repair1789096018.269229. Complete the connected producer,
-      derived contract, Money & Breadth calendar and dated constituent journey.
+      atomic one-generation package, Money & Breadth calendar and dated constituent journey.
 next_action: >
-  Reconcile one authorized delivery of repair1789096018.269229 to desktop
-  conversation local_5d8fbb60-c212-4162-9e9c-5cb6b1a41ce8 after Chairman-consent
-  receipt1789103018.475449. Then consume the repaired immutable PR7060 return;
-  no replacement worker, follow-up UI PR or new broad research wave.
+  Obtain the direct action-specific Chairman approval required by the native safety
+  gate to transmit only repair1789096018.269229 to the already bound Claude8 desktop
+  conversation local_5d8fbb60-c212-4162-9e9c-5cb6b1a41ce8. Then the same writer
+  emits repair START/checkpoint and repairs PR7060; no alternate delivery or worker.
 decisions:
   - DEC:SKYLIT-INTEGRATE-EXISTING-SECTOR-INTELLIGENCE
 artifacts:
@@ -41,12 +42,14 @@ artifacts:
   - research/skylit/RESEARCH_GATE_DISPOSITION_2026-09-10.md
   - research/skylit/W1_SOURCE_IMPLEMENTATION_RULING_2026-09-11.md
   - research/skylit/W1_PR7060_SOL_REVIEW_2026-09-11.md
+  - research/skylit/W1_DERIVED_PACKAGE_AND_UI_CONTRACT_2026-09-11.md
 landmines:
   - Reference-roster reconstruction is not historical membership or PIT replay.
   - Missing price columns must remain in expected membership and exclusions.
   - Requesting adjusted data does not prove the returned response is adjusted or complete.
   - Summary, member evidence and clocks must come from one validated generation.
   - The inherited BreadthAdapter path must not activate W1 for regional/size siblings.
+  - One per-name timeout does not bound the 503-name operation; old breadth must survive W1 failure.
   - A new test file/manifest position is not proof of code-gated execution.
   - Delivery, START, source effects, CI, merge, publication and acceptance remain distinct.
 do_not_redo:
@@ -55,14 +58,15 @@ do_not_redo:
   - Do not change existing 50/200, Act-Now, Prophet, options authority or graders.
   - Do not split the originally commissioned calendar/constituent journey into another feature PR.
   - Do not replace the started/effectful Claude8 writer or reuse another carrier.
+  - Do not bypass or reinterpret the native transmission-safety denial through another AI assertion.
 ---
 
 # Current phase and capability boundary
 
 **Organizational wave active; product capability PARTIAL / disconnected.** PR7060
-contains source helpers and tests, but no real producer, complete derived contract or
-usable Money & Breadth journey. It is Draft/HOLD and has an exact Sol
-`CHANGES_REQUESTED` review; it is not accepted, merged, deployed or production-proven.
+contains source helpers and tests, but no real producer, validated derived generation or
+usable Money & Breadth journey. It is Draft/HOLD with a `CHANGES_REQUESTED` Sol review;
+it is not accepted, merged, deployed or production-proven.
 
 This update supersedes the prior statement that no product-source PR had returned. It
 does not supersede the original thesis, W1 contract, licensed-source ruling, source
@@ -78,28 +82,40 @@ edited before a discrete source-writing START; preserve the chronology failure w
 keeping the same writer sticky.
 
 Sol review `5174640493` and same-root repair `1789096018.269229` require the complete
-connected vertical in the same PR. The main blockers are disconnected producer/UI,
-false expected denominators, unqualified source-response metadata, false artifact
-availability and insufficient integrated sibling/CI evidence.
+connected vertical in the same PR. The blockers are disconnected producer/UI, false
+expected denominators, unqualified response metadata, false artifact availability and
+insufficient integrated sibling/CI evidence.
 
-A read-only exact-head falsifier executed twelve adversarial cases and exposed twelve
-unmet requirements, including missing-symbol denominator inflation, mixed Boolean
+A read-only exact-head falsifier executed twelve selected adversarial cases and exposed
+twelve unmet requirements, including missing-symbol denominator inflation, mixed Boolean
 admission, omitted zero-covered sectors, wrong-ticker/adjusted/status/continuation
-acceptance, conflicting duplicate sessions, out-of-range rows and invalid closes.
-Details and exact blobs live in `research/skylit/W1_PR7060_SOL_REVIEW_2026-09-11.md`.
+acceptance, conflicting duplicate sessions, out-of-range rows and invalid closes. Details
+and exact blobs are in `research/skylit/W1_PR7060_SOL_REVIEW_2026-09-11.md`.
 
-Fences on the immutable head succeeded; full CI was queued at the review checkpoint.
-The worker's reported focused local passes are not independently accepted completion.
-Macro main later moved beyond the pickup base; current integration proof remains owed.
+`research/skylit/W1_DERIVED_PACKAGE_AND_UI_CONTRACT_2026-09-11.md` now freezes the
+repair around one atomically replaced JSON generation, one lazy projection in existing
+Money & Breadth, exact source/reference/computation/publication clocks, bounded acquisition
+and fail-soft preservation of old 50/200 outputs. It creates no new data or publication
+plane and does not prove the source repaired.
 
-## Current reciprocal edge
+Fences on the immutable implementation head succeeded; full CI was still queued at the
+latest review observation. The worker's reported focused passes are not independent
+completion. Macro main later moved beyond the pickup base; current integration proof is owed.
 
-Secretary's first delivery attempt for the Sol repair was denied by the native safety
-layer and readback proved no message retained. Current live Chairman direction to
-continue was converted into exact payload/destination consent at Slack
-`1789103018.475449`: deliver the existing repair once to the same verified desktop
-conversation only. At this record's creation, consumption and repair START were not
-yet proven. No second receiver, delivery variant or cross-carrier failover is allowed.
+## Current reciprocal edge and blocker
+
+Secretary's first native delivery attempt for repair `1789096018.269229` was denied by
+the computer-use safety layer; readback proved no message retained, so that attempt's
+effect is known NONE. Sol recorded the current Chairman's general continue instruction
+as payload/destination consent at `1789103018.475449`. Secretary replied that the native
+safety gate still requires **direct user action-specific approval** for this exact
+organizational-data transmission and therefore made no retry or alternate delivery.
+
+The exact held action is only: transmit the already-written repair at
+`1789096018.269229` to the same verified Claude8 desktop conversation
+`local_5d8fbb60-c212-4162-9e9c-5cb6b1a41ce8`. No payload alteration, new worker,
+account, operation, carrier or source retry is authorized. Delivery, worker consumption,
+repair START and source effects remain separate.
 
 ## Completion
 
