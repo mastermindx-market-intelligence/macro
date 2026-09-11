@@ -1,0 +1,272 @@
+{
+  "t4_receipt_from_context": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+  "rank01": {
+    "combo_id": "L0120",
+    "months_test": 62,
+    "n_test": 318,
+    "split_date": "2018-01-01",
+    "asof": "2026-09-10"
+  },
+  "crops": [
+    {
+      "file": "01-dark-en-1440-tip-open.png",
+      "want_theme": "dark",
+      "want_lang": "en",
+      "applied_theme": "dark",
+      "applied_lang": "en",
+      "viewport": "1440x900",
+      "subject": "tip-open",
+      "open_tip": true,
+      "pop_open": true,
+      "sheet_scrim_lock": false,
+      "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "bytes": 380274,
+      "clip": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "file": "02-dark-zh-1440-tip-open.png",
+      "want_theme": "dark",
+      "want_lang": "zh",
+      "applied_theme": "dark",
+      "applied_lang": "zh",
+      "viewport": "1440x900",
+      "subject": "tip-open",
+      "open_tip": true,
+      "pop_open": true,
+      "sheet_scrim_lock": false,
+      "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "bytes": 372712,
+      "clip": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "file": "03-dark-en-390-tip-open.png",
+      "want_theme": "dark",
+      "want_lang": "en",
+      "applied_theme": "dark",
+      "applied_lang": "en",
+      "viewport": "390x844",
+      "subject": "tip-open-sheet",
+      "open_tip": true,
+      "pop_open": true,
+      "sheet_scrim_lock": true,
+      "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "bytes": 148806,
+      "clip": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "file": "04-dark-zh-390-tip-open.png",
+      "want_theme": "dark",
+      "want_lang": "zh",
+      "applied_theme": "dark",
+      "applied_lang": "zh",
+      "viewport": "390x844",
+      "subject": "tip-open-sheet",
+      "open_tip": true,
+      "pop_open": true,
+      "sheet_scrim_lock": true,
+      "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "bytes": 142503,
+      "clip": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "file": "05-light-en-1440-tip-open.png",
+      "want_theme": "light",
+      "want_lang": "en",
+      "applied_theme": "light",
+      "applied_lang": "en",
+      "viewport": "1440x900",
+      "subject": "tip-open",
+      "open_tip": true,
+      "pop_open": true,
+      "sheet_scrim_lock": false,
+      "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "bytes": 374288,
+      "clip": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "file": "06-light-zh-1440-tip-open.png",
+      "want_theme": "light",
+      "want_lang": "zh",
+      "applied_theme": "light",
+      "applied_lang": "zh",
+      "viewport": "1440x900",
+      "subject": "tip-open",
+      "open_tip": true,
+      "pop_open": true,
+      "sheet_scrim_lock": false,
+      "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "bytes": 366555,
+      "clip": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "file": "07-light-en-390-tip-open.png",
+      "want_theme": "light",
+      "want_lang": "en",
+      "applied_theme": "light",
+      "applied_lang": "en",
+      "viewport": "390x844",
+      "subject": "tip-open-sheet",
+      "open_tip": true,
+      "pop_open": true,
+      "sheet_scrim_lock": true,
+      "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "bytes": 153218,
+      "clip": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "file": "08a-dark-en-1440-honesty.png",
+      "want_theme": "dark",
+      "want_lang": "en",
+      "applied_theme": "dark",
+      "applied_lang": "en",
+      "viewport": "1440x900",
+      "subject": "honesty",
+      "open_tip": false,
+      "pop_open": false,
+      "sheet_scrim_lock": false,
+      "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "bytes": 313885,
+      "clip": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "file": "08b-dark-en-1440-chips.png",
+      "want_theme": "dark",
+      "want_lang": "en",
+      "applied_theme": "dark",
+      "applied_lang": "en",
+      "viewport": "1440x900",
+      "subject": "chips",
+      "open_tip": false,
+      "pop_open": false,
+      "sheet_scrim_lock": false,
+      "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "bytes": 343146,
+      "clip": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "file": "08c-light-en-1440-honesty.png",
+      "want_theme": "light",
+      "want_lang": "en",
+      "applied_theme": "light",
+      "applied_lang": "en",
+      "viewport": "1440x900",
+      "subject": "honesty",
+      "open_tip": false,
+      "pop_open": false,
+      "sheet_scrim_lock": false,
+      "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "bytes": 297620,
+      "clip": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "file": "08d-light-en-1440-chips.png",
+      "want_theme": "light",
+      "want_lang": "en",
+      "applied_theme": "light",
+      "applied_lang": "en",
+      "viewport": "1440x900",
+      "subject": "chips",
+      "open_tip": false,
+      "pop_open": false,
+      "sheet_scrim_lock": false,
+      "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "bytes": 335878,
+      "clip": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "file": "rest-dark-en-1440-numeral.png",
+      "want_theme": "dark",
+      "want_lang": "en",
+      "applied_theme": "dark",
+      "applied_lang": "en",
+      "viewport": "1440x900",
+      "subject": "at-rest-numeral",
+      "open_tip": false,
+      "pop_open": false,
+      "sheet_scrim_lock": false,
+      "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "bytes": 5766,
+      "clip": {
+        "x": 1067.4,
+        "y": 553.1,
+        "width": 167.6,
+        "height": 118.8
+      }
+    },
+    {
+      "file": "rest-light-en-1440-numeral.png",
+      "want_theme": "light",
+      "want_lang": "en",
+      "applied_theme": "light",
+      "applied_lang": "en",
+      "viewport": "1440x900",
+      "subject": "at-rest-numeral",
+      "open_tip": false,
+      "pop_open": false,
+      "sheet_scrim_lock": false,
+      "t4_rc_en": "62 months · 318 fires · 2018-01-01 → 2026-09-10 · win = up after 21 trading days",
+      "bytes": 5730,
+      "clip": {
+        "x": 1067.4,
+        "y": 553.1,
+        "width": 167.6,
+        "height": 116.8
+      }
+    }
+  ]
+}

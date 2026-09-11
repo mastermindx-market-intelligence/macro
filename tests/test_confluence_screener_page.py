@@ -340,3 +340,181 @@ def test_shipped_shell_and_protected_payload_are_paired():
     for combo in payload["combos"]:
         assert combo["active_count"] == len(combo["active_tickers"])
         assert f'data-confluence-combo="{combo["combo_id"]}"' in html
+
+
+# ── LENS Tier-2 inventory + line-590 honesty (H3 frozen spec) ───────────────
+
+# Exact frozen strings. Interpolated receipts are asserted separately against
+# the synthetic context so a fixture change cannot silently green a paraphrase.
+_TIPS = {
+    "T1": (
+        "How many proven signal line-ups are firing across the large-cap list today. A line-up only appears here if it cleared the history gates below.",
+        "今日在大盘股名单中触发的、且已通过历史门槛的信号组合数量。未达门槛的组合不会出现在这里。",
+    ),
+    "T2": (
+        "Ranked by the cautious end of its recent win rate — a line-up with fewer months behind it is pushed down, not up.",
+        "按近年胜率的保守下限排序——历史月份越少的组合排名越靠后，而非靠前。",
+    ),
+    "T3": (
+        "Every time all of this line-up's signals were true for a stock on the same day counts as one sighting. The yearly figure is those sightings spread over the span between the first and the last.",
+        "该组合的全部信号在同一天对同一只股票同时成立，即计为一次出现。「每年约 N 次」是把这些次数摊到首末两次之间的年数上。",
+    ),
+    "T4": (
+        "Out of the recent months where this line-up fired, the share that ended higher 21 trading days later — about a calendar month. Each month counts once, so a busy month can't inflate it.",
+        "在近年触发过的月份中，21 个交易日（约一个自然月）后收高的月份占比。每个月只计一次，密集触发不会虚增。",
+    ),
+    "T5": (
+        "The same reading on the years before the split — the out-of-sample check. A line-up that only works after the split is the one to distrust.",
+        "同一读数应用于分割日之前的年份——即样本外检验。只在分割日之后才有效的组合最值得怀疑。",
+    ),
+    "T6a": (
+        "Read on daily bars — this signal has to be true on the day.",
+        "按日线读取——该信号须在当日成立。",
+    ),
+    "T6b": (
+        "Read on weekly bars — a slower leg that only changes a few times a year.",
+        "按周线读取——变化较慢的一条，一年只切换几次。",
+    ),
+    "T7": (
+        "Ten blocks, one per win in ten. Filled blocks are the recent win rate rounded to the nearest whole win.",
+        "十个方块代表十次中的胜负。填充的方块数是近年胜率四舍五入到整数的结果。",
+    ),
+    "T8": (
+        "Against a baseline of entering the same stocks on random dates over the same period. Points are percentage points of win rate, not return.",
+        "对照基准为：同期在相同股票上随机选日入场。此处的「个百分点」指胜率的百分点，而非收益率。",
+    ),
+    "T9a": (
+        "It beat random entry in the older years as well as the recent ones. Both halves had to clear the bar, not just the recent one.",
+        "在更早年份与近年，它都跑赢了随机入场。两段样本须同时达标，而非只看近年。",
+    ),
+    "T9b": (
+        "It beat random entry recently, but not in the older years — so the recent reading is the only one supporting it.",
+        "它近年跑赢了随机入场，但在更早年份没有——因此只有近年读数在支持它。",
+    ),
+    "T10": (
+        "How many of today's large-cap names this line-up matches right now. The names sit behind the trial; the count does not.",
+        "该组合当前匹配的大盘股数量。具体名称需试用后查看，数量本身不设限。",
+    ),
+}
+
+
+def test_render_html_lens_tips_exact_en_zh():
+    """Every frozen T1–T10 pair is present verbatim on the rendered page."""
+    html = _rendered_html()
+    for key, (en, zh) in _TIPS.items():
+        assert f'data-tip-en="{en}"' in html, f"{key} EN missing or paraphrased"
+        assert f'data-tip-zh="{zh}"' in html, f"{key} ZH missing or paraphrased"
+
+
+def test_render_html_lens_receipts_carry_counts_from_context():
+    """T1/T2/T4/T5/T8 receipt pairs interpolate live context, not placeholders."""
+    raw = _make_raw()
+    ctx = build_context(raw, {})
+    html = render_html(_ROOT, ctx)
+    c0 = ctx["combos"][0]
+    split = ctx["split_date"]
+    asof = ctx["asof"]
+
+    assert (
+        f'data-tip-rc-en="Gates: ≥40 fires pooled · ≥15 fires and ≥12 distinct months since {split} · horizon 21 trading days"'
+        in html
+    )
+    assert (
+        f'data-tip-rc-zh="门槛：合计触发 ≥40 次 · {split} 起触发 ≥15 次且覆盖 ≥12 个不同月份 · 持有期 21 个交易日"'
+        in html
+    )
+    assert (
+        'data-tip-rc-en="Wilson lower bound on the month-collapsed win rate, 21-day horizon, recent half"'
+        in html
+    )
+    assert (
+        'data-tip-rc-zh="按月合并胜率的 Wilson 置信下限 · 21 日持有期 · 近期样本"'
+        in html
+    )
+    assert (
+        f'data-tip-rc-en="{c0["months_test"]} months · {c0["n_test"]} fires · {split} → {asof} · win = up after 21 trading days"'
+        in html
+    )
+    assert (
+        f'data-tip-rc-zh="{c0["months_test"]} 个月 · 触发 {c0["n_test"]} 次 · {split} 至 {asof} · 胜 = 21 个交易日后上涨"'
+        in html
+    )
+    assert (
+        f'data-tip-rc-en="{c0["months_train"]} months · {c0["n_train"]} fires · first fire {c0["first_fire"]} → {split}"'
+        in html
+    )
+    assert (
+        f'data-tip-rc-zh="{c0["months_train"]} 个月 · 触发 {c0["n_train"]} 次 · 首次触发 {c0["first_fire"]} 至 {split}"'
+        in html
+    )
+    assert (
+        f'data-tip-rc-en="Random-entry baseline, month-collapsed win rate, 21-day horizon, {split} → {asof}"'
+        in html
+    )
+    assert (
+        f'data-tip-rc-zh="随机入场基准 · 按月合并胜率 · 21 日持有期 · {split} 至 {asof}"'
+        in html
+    )
+    # BMV-4: rendered combos have a real train sample, so the empty-era
+    # receipt is not the branch this artifact supports.
+    assert "No older-era readings for this line-up" not in html
+    assert "该组合没有更早年份的读数" not in html
+
+
+def test_render_html_honesty_promise_and_hardcoded_2018_gone():
+    """Line-590 four-part ruling: healed promise, no coin-flip, no hardcoded 2018."""
+    html = _rendered_html()
+    assert "The exact counts sit next to every rate." not in html
+    assert "具体次数就标在每个胜率旁边。" not in html
+    assert "Hover or tap any win rate to see how many months it rests on." in html
+    assert "将鼠标移到任一胜率上（手机端点按），即可看到它基于多少个月的读数。" in html
+    assert "coin-flip" not in html
+    assert "points better than entering at random" in html
+    assert "较随机入场高" in html
+    assert "recent read only — thinner older record" not in html
+    assert "仅近年数据 — 更早记录较薄" not in html
+    assert "older years didn't back it up" in html
+    assert "更早年份未能印证" in html
+
+    src = (_ROOT / "templates" / "confluence_screener.html.j2").read_text(encoding="utf-8")
+    assert "wins recently (2018+)" not in src
+    assert "近年胜率 (2018起)" not in src
+    assert "split_date[:4]" in src
+
+
+def test_render_html_split_year_is_derived_not_hardcoded():
+    """A non-2018 split_date must appear in the unit label; 2018 must not."""
+    raw = _make_raw()
+    raw["split_date"] = "2020-06-15"
+    html = render_html(_ROOT, build_context(raw, {}))
+    assert "wins recently (2020+)" in html
+    assert "近年胜率 (2020起)" in html
+    assert "wins recently (2018+)" not in html
+    assert "近年胜率 (2018起)" not in html
+
+
+def test_render_html_lens_hosts_and_no_leg_text_tip():
+    """Tips sit on the specified hosts; leg display names are not invented into tips."""
+    html = _rendered_html()
+    assert 'class="hero-state" tabindex="0"' in html
+    assert "lc-rank cs-tipped" in html
+    assert "lc-wr-big mono cs-tipped" in html
+    assert "lc-wr-old cs-tipped" in html
+    assert 'class="lc-since" tabindex="0"' in html
+    assert "cs-tipped" not in html.split('class="hero-state"', 1)[1].split(">", 1)[0]
+    assert "cs-tipped" not in html.split('class="lc-since"', 1)[1].split(">", 1)[0]
+    assert 'class="leg-tf w" tabindex="0"' in html
+    assert 'class="leg-tf d" tabindex="0"' in html
+    # BMV-3: no tip on the leg text span itself.
+    assert "leg-txt" in html
+    for chunk in html.split('class="leg-txt"')[1:]:
+        assert not chunk.lstrip().startswith("data-tip-")
+        opening = chunk.split(">", 1)[0]
+        assert "data-tip-en" not in opening
+    # Tipped hosts must not carry title= (CI-guarded i18n rule).
+    assert "data-tip-en=" in html
+    assert not any(
+        "title=" in tag and "data-tip-en=" in tag
+        for tag in html.split("<")
+        if "data-tip-en=" in tag
+    )
