@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""S1-rig evidence matrix for intraday_flow W11 r4.
+"""S1-rig evidence matrix for intraday_flow W11 r5.
 
 Fixture feeds + the real page body classes. Playwright, __skyDeck seed,
 overlay hide, reduced-motion, content-addressed PNGs, overlay-clean column,
@@ -824,8 +824,8 @@ def capture() -> int:
             "capture_sha": head,
             "tool": {
                 "module_ref": "mockups/evidence/intraday-flow-w11/capture.py",
-                "version": "w11-r4-s1",
-                "user_agent": "mastermind-iflow-w11-r4",
+                "version": "w11-r5-s1",
+                "user_agent": "mastermind-iflow-w11-r5",
             },
             "target": {"resolved_sha_or_none": head},
             "axes": {

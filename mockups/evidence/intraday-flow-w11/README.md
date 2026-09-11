@@ -38,8 +38,9 @@ from shadow instead of glow (`--glass-sh` becomes a cool drop shadow + white
 inset). See-all is an ink-link (`--ink-link`) with a 2px hover underline — an
 action on white, not a glow. Stamp type is mixed toward `--text` so it does
 not wash out. The LENS `?` is a white chip with a hairline and a 1px rest
-shadow. Tape chips (`大单` / `新建仓`) are the same filled info pills on the
-white sheet and stay readable. Skeleton shimmer is a low-contrast ink wash
+shadow. Tape chips ghost/hairline in light — recessive by design (`大单` /
+`新建仓` are transparent ground, hairline border, muted ink — not filled
+pills). Skeleton shimmer is a low-contrast ink wash
 on white, no glow. The rebuilt stamp + LENS tip is a white card with
 `0 10px 28px` cool shadow.
 

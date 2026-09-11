@@ -223,6 +223,8 @@
   .chip-row { display:flex; flex-wrap:wrap; gap:3px; margin-top:3px; }
   .badge { display:inline-block; font-size:9.5px; font-weight:600; padding:2px 6px; border-radius:5px; border:1px solid; white-space:nowrap; }
   .badge-blue { color:var(--ink-info, var(--info,#5b9bf0)); border-color:color-mix(in srgb,var(--info) 45%,transparent); background:color-mix(in srgb,var(--info) 10%,transparent); }
+  /* Degraded row: auxiliary cells recede so the No-read stance leads. Copy unchanged. */
+  body.page-intraday-flow td.ift-aux-muted { opacity:.58; color:var(--muted); }
 
   .dealer-cell { min-width:150px; font-size:11.5px; }
   .dealer-line { line-height:1.42; }
@@ -271,6 +273,11 @@
   .ift-skel-row td { padding:11px; vertical-align:middle; }
   .ift-skel-row .ift-skel-cell { height:12px; width:72%; }
   .ift-skel-row .ift-skel-cell.narrow { width:44%; }
+  .ift-skel-host { position:relative; }
+  body.page-intraday-flow .sr-only {
+    position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+    overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+  }
 
   /* ══ entrance / kinetic animations (reduced-motion gated) ══════ */
   @keyframes iftPulse { 0%,100%{ opacity:1; transform:scale(1);} 50%{ opacity:.4; transform:scale(.82);} }
@@ -339,6 +346,13 @@ html[data-theme="light"] body.page-intraday-flow .spot-skel {
 html[data-theme="light"] body.page-intraday-flow .ift-skel-row td {
   border-bottom-color:var(--line);
 }
+/* Tape chips ghost/hairline in light — recessive by design. Dark stays filled. */
+html[data-theme="light"] body.page-intraday-flow .badge-blue {
+  background:transparent;
+  color:color-mix(in srgb, var(--text) 52%, var(--muted));
+  border-color:color-mix(in srgb, var(--text) 20%, transparent);
+  font-weight:500;
+}
 /* Lens card is body-appended; this page needs an opaque instrument surface so
    the feed-status tip does not wash through the desk (theme.js owns open/close). */
 body.page-intraday-flow .lens-pop {
@@ -372,8 +386,11 @@ body.page-intraday-flow .lens-pop .ift-feed-row + .ift-feed-row { margin-top:0.4
         'A fixed watchlist of institutional leaders — Mag 7, AI infrastructure/software/semis, semicap, reshoring, defense and power grid. It looks for one thing: a leader that sold off, absorbed the selling, and is being bought back on real volume. Every read is a deterministic rule — no score, no black box. Options-tape direction is approximate (~soft): it leans, it does not confirm. Nothing here is trade advice.',
         '一份固定的机构领涨股观察名单——Mag 7、AI基础设施/软件/半导体、半导体设备、回流制造、国防与电网。它只找一件事：某只领涨股下跌、消化卖压、如今正被放量重新买入。每个判断均为确定性规则——无评分、无黑箱。期权带方向为近似（~软性）：只作倾向，不作确认。所有内容均不构成交易建议。') }}
     </div>
-    <h1 class="hero-thesis thesis-slate" id="hero-thesis"><span class="skel ift-skel-thesis" aria-hidden="true"></span></h1>
-    <p class="hero-sub" id="hero-sub"><span class="skel ift-skel-sub" aria-hidden="true"></span></p>
+    <div class="ift-skel-host" id="ift-hero-copy" aria-busy="true">
+      <span class="sr-only">{{ t('Loading','加载中') }}</span>
+      <h1 class="hero-thesis thesis-slate" id="hero-thesis"><span class="skel ift-skel-thesis" aria-hidden="true"></span></h1>
+      <p class="hero-sub" id="hero-sub"><span class="skel ift-skel-sub" aria-hidden="true"></span></p>
+    </div>
 
     <div class="hero-grid">
       <div class="hero-score">
@@ -393,7 +410,7 @@ body.page-intraday-flow .lens-pop .ift-feed-row + .ift-feed-row { margin-top:0.4
         {% if ift.as_of_display and ift.as_of_display.en %}
         <div class="ctx-stamp" id="ift-stamp">{{ t('Board built ' ~ ift.as_of_display.en, '看板构建于' ~ ift.as_of_display.zh) }}<span class="skel ift-skel-inline" aria-hidden="true"></span></div>
         {% else %}
-        <div class="ctx-stamp" id="ift-stamp">{{ t("Board can't load right now — the plain-word calls below are from the last build", "看板暂时无法加载——下方结论来自上一次构建") }}</div>
+        <div class="ctx-stamp" id="ift-stamp"><span class="skel ift-skel-inline" aria-hidden="true"></span></div>
         {% endif %}
       </div>
     </div>
@@ -446,7 +463,8 @@ body.page-intraday-flow .lens-pop .ift-feed-row + .ift-feed-row { margin-top:0.4
   <h2 class="sect-h">{{ t('Look here first', '优先关注') }}
     <span class="sect-note" id="spot-note">{{ t('the strongest setups on the tape right now','当前资金带上最强的布局') }}</span>
   </h2>
-  <div class="spot-grid" id="spot-grid">
+  <div class="spot-grid ift-skel-host" id="spot-grid" aria-busy="true">
+    <span class="sr-only">{{ t('Loading','加载中') }}</span>
     <article class="spot-card spot-skel lane-aside" aria-hidden="true"><div class="skel ift-skel-spot-hd"></div><div class="skel ift-skel-spot-reason"></div><div class="skel ift-skel-spot-reason short"></div><div class="spot-metrics"><div class="skel ift-skel-spot-metric"></div><div class="skel ift-skel-spot-metric"></div></div></article>
     <article class="spot-card spot-skel lane-aside" aria-hidden="true"><div class="skel ift-skel-spot-hd"></div><div class="skel ift-skel-spot-reason"></div><div class="skel ift-skel-spot-reason short"></div><div class="spot-metrics"><div class="skel ift-skel-spot-metric"></div><div class="skel ift-skel-spot-metric"></div></div></article>
     <article class="spot-card spot-skel lane-aside" aria-hidden="true"><div class="skel ift-skel-spot-hd"></div><div class="skel ift-skel-spot-reason"></div><div class="skel ift-skel-spot-reason short"></div><div class="spot-metrics"><div class="skel ift-skel-spot-metric"></div><div class="skel ift-skel-spot-metric"></div></div></article>
@@ -475,7 +493,8 @@ body.page-intraday-flow .lens-pop .ift-feed-row + .ift-feed-row { margin-top:0.4
       </div>
     </div>
   </h2>
-  <div class="leaders-wrap">
+  <div class="leaders-wrap ift-skel-host" id="ift-board-skel" aria-busy="true">
+    <span class="sr-only">{{ t('Loading','加载中') }}</span>
     <table class="leaders" id="leaders-table">
       <thead>
         <tr>
@@ -1160,6 +1179,7 @@ function buildHero(rows, counts) {
   var thEl = document.getElementById('hero-thesis');
   if (thEl) { thEl.className = 'hero-thesis '+tint; thEl.innerHTML = thesis; }
   var subEl = document.getElementById('hero-sub'); if (subEl) subEl.innerHTML = sub;
+  if (typeof iftSkelDone === 'function') iftSkelDone(document.getElementById('ift-hero-copy'));
   // toggle only the tape-* tint class — never clobber classes theme.js owns on <body>
   document.body.classList.remove('tape-green','tape-blue','tape-amber','tape-quiet');
   document.body.classList.add(tape);
@@ -1208,6 +1228,12 @@ function buildHero(rows, counts) {
   }
 }
 function laneSuffix(k){ return { act:'act',get_ready:'ready',in_favour:'fav',take_profits:'profit',watch:'watch',stand_aside:'aside' }[k]||'aside'; }
+function iftSkelDone(el) {
+  if (!el) return;
+  el.setAttribute('aria-busy', 'false');
+  var sr = el.querySelectorAll ? el.querySelectorAll(':scope > .sr-only') : [];
+  for (var i = 0; i < sr.length; i++) sr[i].parentNode.removeChild(sr[i]);
+}
 
 // ══ SPOTLIGHT — Look here first ════════════════════════════════════════════
 // The grid is rebuilt from a string on every render, so the DOM node for a card is a new
@@ -1218,6 +1244,7 @@ var _spotHtml = '', _spotSeen = {};
 function buildSpotlight(rows, counts) {
   var grid = document.getElementById('spot-grid'), note = document.getElementById('spot-note');
   if (!grid) return;
+  if (typeof iftSkelDone === 'function') iftSkelDone(grid);
   var live = sessionPhase() === 'live';
   var pick = [];
   // priority: act (rvol desc) → get_ready (K desc) → live: take_profits (protect, 1)
@@ -1297,18 +1324,19 @@ function buildRow(row) {
   var pill = '<span class="stance-pill '+meta.lane+'"><span class="sp-dot"></span>' + lz(meta.en, meta.zh) + '</span>';
   var reason = '<div class="stance-reason '+(stance.muted?'muted':'')+'">'+lz(stance.reason_en, stance.reason_zh)+'</div>';
   var stanceCell = '<td class="stance-cell '+meta.lane+'">'+pill+reason+'</td>';
+  var aux = stance.key === 'degraded' ? ' ift-aux-muted' : '';
 
   var px = quote && quote.price != null ? fmtDollar(quote.price) : '—';
   var chg = quote && quote.changePct != null ? fmtPct(quote.changePct) : '';
   var chgCls = quote && quote.changePct != null ? (quote.changePct>=0?'pos':'neg') : '';
   var rw = rangeWords(rangePos);
-  var priceCell = '<td class="price-cell hide-narrow"><span class="nb-px" data-sym="'+tk+'" data-mkt="us">'+px+'</span>'
+  var priceCell = '<td class="price-cell hide-narrow'+aux+'"><span class="nb-px" data-sym="'+tk+'" data-mkt="us">'+px+'</span>'
     + '<span class="pct-chg '+chgCls+'">'+chg+'</span>'
     + (rw ? '<div class="metric-sub">'+rw+'</div>' : '') + '</td>';
 
   var volDur = pulse ? pulse.vol_durability : null;
   var vw = volumeWords(rvol, volDur);
-  var volCell = '<td>'
+  var volCell = '<td class="vol-cell'+aux+'">'
     + '<div class="gauge-wrap"><div class="gauge-bar"><div class="gauge-fill '+vw.cls+'" style="width:'+vw.pct.toFixed(0)+'%"></div></div>'
     + '<span class="metric-lead">'+lz(vw.en, vw.zh)+'</span></div>'
     + (pulse && pulse.higher_lows != null && pulse.higher_lows > 0 ? '<div class="metric-sub">'+lz('higher lows ×'+pulse.higher_lows, '更高低点 ×'+pulse.higher_lows)+'</div>' : '')
@@ -1330,9 +1358,9 @@ function buildRow(row) {
   }
   var badges = flow && flow.badges ? flow.badges : [];
   var badgeHtml = badges.length ? '<div class="chip-row">'+badges.slice(0,3).map(function(b){ return '<span class="badge badge-blue">'+b+'</span>'; }).join('')+'</div>' : '';
-  var tapeCell = '<td class="hide-narrow"><span class="metric-lead '+vwapCls+'">'+vwapWord+'</span>'+lean+badgeHtml+'</td>';
+  var tapeCell = '<td class="hide-narrow'+aux+'"><span class="metric-lead '+vwapCls+'">'+vwapWord+'</span>'+lean+badgeHtml+'</td>';
 
-  var dealerCell = '<td class="dealer-cell hide-narrow">'+dealerCompact(d, quote)+'</td>';
+  var dealerCell = '<td class="dealer-cell hide-narrow'+aux+'">'+dealerCompact(d, quote)+'</td>';
   var expCell = '<td class="col-expand"><span class="expander" data-exp="'+tk+'">'+(openRows[tk]?'▾':'▸')+'</span></td>';
 
   var tr = '<tr class="lead-row" data-ticker="'+tk+'" data-stance="'+stance.key+'"'
@@ -1591,6 +1619,7 @@ function render() {
     html += buildRow(row);
   });
   tbody.innerHTML = html || '<tr class="loading-row"><td colspan="7">'+lz('No data yet','暂无数据')+'</td></tr>';
+  if (typeof iftSkelDone === 'function') iftSkelDone(document.getElementById('ift-board-skel'));
   applyView();
   if (window.__mmLang) window.__mmLang();
   _rendering = false;
