@@ -5,8 +5,8 @@ session: |
   Meta-CEO B seat since 2026-09-08 21:1xZ; bound on macro#6819 with issuecomment-5592587864 (the
   ACK issuecomment-5557271957 and the Wave 1 comment issuecomment-5577816742 are never repeated).
   The Wave 2 comment on macro#6819 is issuecomment-5626381233 and is never repeated either; this
-  wave gets exactly ONE Wave 3 comment on macro#6819, posted by the seat, and its id belongs in
-  this field once it exists.
+  wave's single Wave 3 comment on macro#6819 is issuecomment-5630979484 (posted by the seat
+  2026-09-11 07:3xZ) and is never repeated.
 model: fable
 ended_because: complete
 mission: >
