@@ -78,10 +78,11 @@ jobs:
           # with early EOF / invalid index-pack before a single fence test ran.
           #
           # A fence needs only a bounded commit graph plus the files its four
-          # guards actually read. Depth 256 covers ordinary PR ancestry; the live
-          # self-mod step below derives the exact synthetic parents and FAILS
-          # CLOSED if their real merge base is outside this window. No mutable
-          # branch ref is fetched to repair an unprovable ancestry.
+          # guards actually read. Depth 256 covers ordinary PR ancestry. The live
+          # self-mod step below probes the exact synthetic parents locally first;
+          # when an older valid PR exceeds that window it performs one finite,
+          # blobless deepening of those immutable parent SHAs. It never resolves a
+          # mutable branch/PR ref or falls back to an unbounded history checkout.
           filter: blob:none
           fetch-depth: 256
           sparse-checkout: |
@@ -138,8 +139,22 @@ jobs:
             exit 1
           fi
           if ! MERGE_BASE=$(git merge-base "$TESTED_BASE_SHA" "$SUBJECT_HEAD_SHA"); then
-            echo "::error::self-mod-fence: could not establish exact PR ancestry inside the bounded checkout — fail-closed." >&2
-            exit 1
+            echo "::notice title=self-mod-fence ancestry::initial bounded checkout did not reach the exact PR merge base; deepening immutable synthetic parents."
+            if ! git fetch \
+              --no-tags \
+              --no-recurse-submodules \
+              --filter=blob:none \
+              --deepen=4096 \
+              origin \
+              "+$TESTED_BASE_SHA:refs/ci-fence/base" \
+              "+$SUBJECT_HEAD_SHA:refs/ci-fence/head"; then
+              echo "::error::self-mod-fence: exact-parent ancestry deepening failed — fail-closed." >&2
+              exit 1
+            fi
+            if ! MERGE_BASE=$(git merge-base "$TESTED_BASE_SHA" "$SUBJECT_HEAD_SHA"); then
+              echo "::error::self-mod-fence: could not establish exact PR ancestry after bounded exact-parent deepening — fail-closed." >&2
+              exit 1
+            fi
           fi
           BRANCH="${{ github.head_ref }}"
           SELF_MOD_INPUT_DIR="$RUNNER_TEMP/self-mod-fence"
