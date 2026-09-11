@@ -637,3 +637,55 @@ def test_live_tile_emdash_is_not_green() -> None:
     assert "mut" in html
     html_up = env.from_string(snippet).render(chg=1.2)
     assert "up" in html_up
+
+
+# --------------------------------------------------------------------------- #
+# W6 r3 — LENS keyboard/tap + ZH catalyst/disclaimer (evidence-round composition)
+# --------------------------------------------------------------------------- #
+def test_early_warning_lens_is_a_button_not_a_row_host() -> None:
+    """Packet (g): dedicated `?` button; data-tip is NOT on a tabindex row."""
+    src = _tpl()
+    start = src.index("Early warnings forming")
+    block = src[start: start + 900]
+    assert 'class="q cmdty-lens"' in block
+    assert "data-cmdty-tip-en=" in block
+    assert "<button type=\"button\"" in block
+    assert 'data-tip-en="Early-warning list' not in block
+    assert "pointerdown" in src
+    assert "cmdty-tip-open" in src
+
+
+def test_receipt_chips_use_cmdty_lens_buttons() -> None:
+    src = _tpl()
+    assert src.count('class="cmdty-lens"') >= 3
+    assert 'data-tip-en="{{ rc.explain_en }}"' not in src
+
+
+def test_catalyst_label_uses_t_not_td() -> None:
+    src = _tpl()
+    start = src.index("Upcoming events")
+    block = src[start: src.index("ALERT TIMELINE", start)]
+    assert "{{ t(c.label, c.label_zh) }}" in block
+    assert "{{ td(c.label) }}" not in block
+
+
+def test_disclaimer_is_the_one_true_sentence() -> None:
+    src = _tpl()
+    assert "Scheduled dates, not forecasts." in src
+    assert "{{ news_disclaimer }}" not in src
+
+
+def test_timeline_asset_uses_zh_twin() -> None:
+    src = _tpl()
+    assert "{{ t(e.asset_label, e.asset_label_zh) }}" in src
+    builder = _BUILDER.read_text()
+    assert '"asset_label_zh"' in builder
+
+
+def test_heat_grid_empty_cycle_is_not_an_emdash() -> None:
+    src = _tpl()
+    start = src.index("SECTION 4 — HEAT GRID")
+    grid = src[start: src.index("SECTION 5", start)]
+    assert "m.cycle_phase_en or '—'" not in grid
+    assert "no cycle" in grid
+    assert "无周期" in grid

@@ -230,8 +230,9 @@ def _group_timeline(events: list[dict]) -> list[dict]:
              "label_zh":  bi[1],
              "filter":    FILTER_OF.get(e["type"], "other"),
              "asset_label": META.get(e.get("asset"), {}).get("label", e.get("asset", "")),
+             "asset_label_zh": META.get(e.get("asset"), {}).get("zh", e.get("asset", "")),
              "time":      ts.strftime("%H:%M UTC") if (ts.hour or ts.minute) else "",
-             "daylabel":  ts.strftime("%a %b %d")}
+             "daylabel":  ts.strftime("%Y-%m-%d")}
         days.setdefault(ts.strftime("%Y-%m-%d"), []).append(e)
     return [{"day": d, "daylabel": evs[0]["daylabel"], "events": evs}
             for d, evs in sorted(days.items(), reverse=True)]
