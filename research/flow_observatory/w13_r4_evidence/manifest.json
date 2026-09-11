@@ -2,11 +2,11 @@
   "page": "flow_velocity.html",
   "round": "W13-r4",
   "target": {
-    "resolved_sha_or_none": "97ac2d1b6e5bf2c51b730d6775e29ae56aab3cd1",
+    "resolved_sha_or_none": "8dad1ca726351820a72390feadd67eddd66af53d",
     "porcelain": "",
     "capture_sha_equals_head": true
   },
-  "generated_at": "2026-09-11T09:56:57Z",
+  "generated_at": "2026-09-11T10:15:44Z",
   "selection": {
     "n": 105,
     "ids": [
@@ -120,7 +120,30 @@
   "totals": {
     "captured": 105,
     "failed": 0,
-    "refused_settle": 0
+    "refused_settle": 0,
+    "recaptured_this_round": [
+      "baseline-dark-en-desktop",
+      "baseline-dark-en-mobile",
+      "baseline-dark-zh-desktop",
+      "baseline-dark-zh-mobile",
+      "baseline-light-en-desktop",
+      "baseline-light-en-mobile",
+      "baseline-light-zh-desktop",
+      "baseline-light-zh-mobile",
+      "changed-dark-en",
+      "changed-dark-zh",
+      "changed-light-en",
+      "changed-light-zh",
+      "hero-dark-en",
+      "hero-dark-zh",
+      "hero-light-en",
+      "hero-light-zh",
+      "quadrant-dark-en",
+      "quadrant-dark-zh",
+      "quadrant-light-en",
+      "quadrant-light-zh"
+    ],
+    "recaptured_n": 20
   },
   "hscroll_390w": {
     "en": {
@@ -229,10 +252,10 @@
     {
       "id": "baseline-dark-en-desktop",
       "family": "baseline",
-      "file": "852aec0e7b010619.png",
+      "file": "6e5c6eacb6ec6adc.png",
       "alias": "baseline-dark-en-desktop.png",
-      "sha256": "852aec0e7b010619bdf8acb7ca1259f167ebde6ca92735661589431e8e9c2efe",
-      "bytes": 509397,
+      "sha256": "6e5c6eacb6ec6adc689127c6021536abf6c5f4966b37873c58bbf092a84ec8bf",
+      "bytes": 508069,
       "width": 1440,
       "height": 2709,
       "theme": "dark",
@@ -243,7 +266,7 @@
       "body_class": "page-flow-velocity",
       "overlay": "clean",
       "overlay_hits": [],
-      "capture_sha": "97ac2d1b6e5bf2c51b730d6775e29ae56aab3cd1",
+      "capture_sha": "8dad1ca726351820a72390feadd67eddd66af53d",
       "mutations": [
         "fv-reveal.is-in force-finish"
       ],
@@ -270,10 +293,10 @@
     {
       "id": "baseline-dark-en-mobile",
       "family": "baseline",
-      "file": "ea163510abbb323b.png",
+      "file": "dffa9d7e899455e2.png",
       "alias": "baseline-dark-en-mobile.png",
-      "sha256": "ea163510abbb323b60941edb678b65e9123cf2934a4fe8303065a44424dfbcd3",
-      "bytes": 429829,
+      "sha256": "dffa9d7e899455e234be17e8f1cbb968466155a519428b2423f7ac83e3ad706e",
+      "bytes": 428803,
       "width": 390,
       "height": 4171,
       "theme": "dark",
@@ -284,7 +307,7 @@
       "body_class": "page-flow-velocity",
       "overlay": "clean",
       "overlay_hits": [],
-      "capture_sha": "97ac2d1b6e5bf2c51b730d6775e29ae56aab3cd1",
+      "capture_sha": "8dad1ca726351820a72390feadd67eddd66af53d",
       "mutations": [
         "fv-reveal.is-in force-finish"
       ],
@@ -318,10 +341,10 @@
     {
       "id": "baseline-dark-zh-desktop",
       "family": "baseline",
-      "file": "01ce1b221c6a718b.png",
+      "file": "454c01ac1d668287.png",
       "alias": "baseline-dark-zh-desktop.png",
-      "sha256": "01ce1b221c6a718b4e7a56f07f24eb81f1c312e7f82fb8c3970b8be3ad8cecd8",
-      "bytes": 492905,
+      "sha256": "454c01ac1d668287e0af3e493b581b079d5556ae7588796a3392e3dfc753a59d",
+      "bytes": 492794,
       "width": 1440,
       "height": 2580,
       "theme": "dark",
@@ -332,7 +355,7 @@
       "body_class": "page-flow-velocity",
       "overlay": "clean",
       "overlay_hits": [],
-      "capture_sha": "97ac2d1b6e5bf2c51b730d6775e29ae56aab3cd1",
+      "capture_sha": "8dad1ca726351820a72390feadd67eddd66af53d",
       "mutations": [
         "fv-reveal.is-in force-finish"
       ],
@@ -359,10 +382,10 @@
     {
       "id": "baseline-dark-zh-mobile",
       "family": "baseline",
-      "file": "de9264e49ea8e0d1.png",
+      "file": "4969cee644f9783d.png",
       "alias": "baseline-dark-zh-mobile.png",
-      "sha256": "de9264e49ea8e0d14b720a72cf7c8b9052283b7f300492b2e004c5a575ed5903",
-      "bytes": 410891,
+      "sha256": "4969cee644f9783d82b66868d0275a66942e828e32ea9221f98cb4ab80d04050",
+      "bytes": 410980,
       "width": 390,
       "height": 3866,
       "theme": "dark",
@@ -373,7 +396,7 @@
       "body_class": "page-flow-velocity",
       "overlay": "clean",
       "overlay_hits": [],
-      "capture_sha": "97ac2d1b6e5bf2c51b730d6775e29ae56aab3cd1",
+      "capture_sha": "8dad1ca726351820a72390feadd67eddd66af53d",
       "mutations": [
         "fv-reveal.is-in force-finish"
       ],
@@ -407,10 +430,10 @@
     {
       "id": "baseline-light-en-desktop",
       "family": "baseline",
-      "file": "d55c304a446b9e11.png",
+      "file": "318eb45ab016292d.png",
       "alias": "baseline-light-en-desktop.png",
-      "sha256": "d55c304a446b9e117b4dabe627026a479bc0e70f4b1f1007efe7ea467f69db75",
-      "bytes": 503968,
+      "sha256": "318eb45ab016292deead5c261a973009e318c0d69deb893725ce8b9ae6aee46d",
+      "bytes": 502642,
       "width": 1440,
       "height": 2709,
       "theme": "light",
@@ -421,7 +444,7 @@
       "body_class": "page-flow-velocity",
       "overlay": "clean",
       "overlay_hits": [],
-      "capture_sha": "97ac2d1b6e5bf2c51b730d6775e29ae56aab3cd1",
+      "capture_sha": "8dad1ca726351820a72390feadd67eddd66af53d",
       "mutations": [
         "fv-reveal.is-in force-finish"
       ],
@@ -448,10 +471,10 @@
     {
       "id": "baseline-light-en-mobile",
       "family": "baseline",
-      "file": "fe7a245309a15e0a.png",
+      "file": "0e3d6c177fd4a625.png",
       "alias": "baseline-light-en-mobile.png",
-      "sha256": "fe7a245309a15e0a075e7fb82d9c3c8cffbd89c3bcc98bb7333b685363f8b606",
-      "bytes": 418197,
+      "sha256": "0e3d6c177fd4a625b81f98cebc9258b1104ae73e681a7e0955024f2ed166ec3f",
+      "bytes": 416955,
       "width": 390,
       "height": 4171,
       "theme": "light",
@@ -462,7 +485,7 @@
       "body_class": "page-flow-velocity",
       "overlay": "clean",
       "overlay_hits": [],
-      "capture_sha": "97ac2d1b6e5bf2c51b730d6775e29ae56aab3cd1",
+      "capture_sha": "8dad1ca726351820a72390feadd67eddd66af53d",
       "mutations": [
         "fv-reveal.is-in force-finish"
       ],
@@ -496,10 +519,10 @@
     {
       "id": "baseline-light-zh-desktop",
       "family": "baseline",
-      "file": "7fb0c277dfba41e7.png",
+      "file": "4251d67cda36fd57.png",
       "alias": "baseline-light-zh-desktop.png",
-      "sha256": "7fb0c277dfba41e7ae6b046ddae6189280919dc9515803fa40e852cc03110982",
-      "bytes": 490290,
+      "sha256": "4251d67cda36fd578c703fe562520310d1ed60fd9f676c4d72ef31c6915856a1",
+      "bytes": 490368,
       "width": 1440,
       "height": 2580,
       "theme": "light",
@@ -510,7 +533,7 @@
       "body_class": "page-flow-velocity",
       "overlay": "clean",
       "overlay_hits": [],
-      "capture_sha": "97ac2d1b6e5bf2c51b730d6775e29ae56aab3cd1",
+      "capture_sha": "8dad1ca726351820a72390feadd67eddd66af53d",
       "mutations": [
         "fv-reveal.is-in force-finish"
       ],
@@ -537,10 +560,10 @@
     {
       "id": "baseline-light-zh-mobile",
       "family": "baseline",
-      "file": "4562d9c2c8d38bc5.png",
+      "file": "79eef8c31e18ff04.png",
       "alias": "baseline-light-zh-mobile.png",
-      "sha256": "4562d9c2c8d38bc52984f4f1cdff85943d66a0918fe575e28f97d05e5f4a48a3",
-      "bytes": 406427,
+      "sha256": "79eef8c31e18ff04f571b9a1fcec034a56c3278e155e029b54bba0c0ad5d0e33",
+      "bytes": 406315,
       "width": 390,
       "height": 3866,
       "theme": "light",
@@ -551,7 +574,7 @@
       "body_class": "page-flow-velocity",
       "overlay": "clean",
       "overlay_hits": [],
-      "capture_sha": "97ac2d1b6e5bf2c51b730d6775e29ae56aab3cd1",
+      "capture_sha": "8dad1ca726351820a72390feadd67eddd66af53d",
       "mutations": [
         "fv-reveal.is-in force-finish"
       ],
@@ -585,10 +608,10 @@
     {
       "id": "hero-dark-en",
       "family": "hero",
-      "file": "7bd38e4a76837ad7.png",
+      "file": "4f6b50f42c176199.png",
       "alias": "hero-dark-en.png",
-      "sha256": "7bd38e4a76837ad759cdf50d9f4bf54181390b54d5d32f9fabed75dc2ee077af",
-      "bytes": 127432,
+      "sha256": "4f6b50f42c17619924e1bcb5e924e6c7bcbdfbed6e8a83a4db85ecb914575d8c",
+      "bytes": 127148,
       "width": 1288,
       "height": 351,
       "theme": "dark",
@@ -599,7 +622,7 @@
       "body_class": "page-flow-velocity",
       "overlay": "clean",
       "overlay_hits": [],
-      "capture_sha": "97ac2d1b6e5bf2c51b730d6775e29ae56aab3cd1",
+      "capture_sha": "8dad1ca726351820a72390feadd67eddd66af53d",
       "mutations": [
         "fv-reveal.is-in force-finish"
       ],
@@ -626,10 +649,10 @@
     {
       "id": "hero-dark-zh",
       "family": "hero",
-      "file": "1052437fd216b0dc.png",
+      "file": "4b8fd4ef877e5a31.png",
       "alias": "hero-dark-zh.png",
-      "sha256": "1052437fd216b0dc5584788d387bcdfc9c9c83f5665a80b4a4fc2edda17b8238",
-      "bytes": 108802,
+      "sha256": "4b8fd4ef877e5a3159afb6502f86c4a93cb37e78f04a8b125c575fb53257a2b9",
+      "bytes": 108924,
       "width": 1288,
       "height": 295,
       "theme": "dark",
@@ -640,7 +663,7 @@
       "body_class": "page-flow-velocity",
       "overlay": "clean",
       "overlay_hits": [],
-      "capture_sha": "97ac2d1b6e5bf2c51b730d6775e29ae56aab3cd1",
+      "capture_sha": "8dad1ca726351820a72390feadd67eddd66af53d",
       "mutations": [
         "fv-reveal.is-in force-finish"
       ],
@@ -667,10 +690,10 @@
     {
       "id": "hero-light-en",
       "family": "hero",
-      "file": "413949aea786d9f8.png",
+      "file": "6da612ccc3af6100.png",
       "alias": "hero-light-en.png",
-      "sha256": "413949aea786d9f8b3436e407d22fbc9298b7b780e7299eaeef8a7ff2598693c",
-      "bytes": 118023,
+      "sha256": "6da612ccc3af61009494958d8dda0eb5487d8f3d9f957d4de820cce0b698fd2c",
+      "bytes": 117772,
       "width": 1288,
       "height": 351,
       "theme": "light",
@@ -681,7 +704,7 @@
       "body_class": "page-flow-velocity",
       "overlay": "clean",
       "overlay_hits": [],
-      "capture_sha": "97ac2d1b6e5bf2c51b730d6775e29ae56aab3cd1",
+      "capture_sha": "8dad1ca726351820a72390feadd67eddd66af53d",
       "mutations": [
         "fv-reveal.is-in force-finish"
       ],
@@ -708,10 +731,10 @@
     {
       "id": "hero-light-zh",
       "family": "hero",
-      "file": "ee152680848e13a5.png",
+      "file": "eb1b9637861f77ff.png",
       "alias": "hero-light-zh.png",
-      "sha256": "ee152680848e13a58b62e87077a6ac691110a06130889381a91f5e3f52b46517",
-      "bytes": 101399,
+      "sha256": "eb1b9637861f77ff8f05b8d42961c9998a37248228e5a5acfd5997785a18c838",
+      "bytes": 101561,
       "width": 1288,
       "height": 295,
       "theme": "light",
@@ -722,7 +745,7 @@
       "body_class": "page-flow-velocity",
       "overlay": "clean",
       "overlay_hits": [],
-      "capture_sha": "97ac2d1b6e5bf2c51b730d6775e29ae56aab3cd1",
+      "capture_sha": "8dad1ca726351820a72390feadd67eddd66af53d",
       "mutations": [
         "fv-reveal.is-in force-finish"
       ],
@@ -1241,10 +1264,10 @@
     {
       "id": "quadrant-dark-en",
       "family": "quadrant",
-      "file": "9bfc1d7acf608aa7.png",
+      "file": "97539ae7f0c68e79.png",
       "alias": "quadrant-dark-en.png",
-      "sha256": "9bfc1d7acf608aa71cc88320fb42156f61bda696b288e9181f18631dcd1578dc",
-      "bytes": 56573,
+      "sha256": "97539ae7f0c68e791b49c6f97a526df2b90e7711f613dd38e6215e90d7415807",
+      "bytes": 55903,
       "width": 1288,
       "height": 407,
       "theme": "dark",
@@ -1255,7 +1278,7 @@
       "body_class": "page-flow-velocity",
       "overlay": "clean",
       "overlay_hits": [],
-      "capture_sha": "97ac2d1b6e5bf2c51b730d6775e29ae56aab3cd1",
+      "capture_sha": "8dad1ca726351820a72390feadd67eddd66af53d",
       "mutations": [
         "fv-reveal.is-in force-finish"
       ],
@@ -1269,7 +1292,7 @@
         "weakest_contrast": 5.54,
         "weakest_color": "rgb(130, 139, 156)",
         "weakest_class": "q-empty",
-        "weakest_text": "none today今日无expected — this proxy rarely shows positive absolute flow, not a da",
+        "weakest_text": "none无expected — this proxy rarely shows positive absolute flow, not a data gap属预",
         "running": 0,
         "fonts": "loaded",
         "mutations": [
@@ -1282,10 +1305,10 @@
     {
       "id": "quadrant-dark-zh",
       "family": "quadrant",
-      "file": "df5e62a541516e63.png",
+      "file": "81b5fe0d3f806274.png",
       "alias": "quadrant-dark-zh.png",
-      "sha256": "df5e62a541516e632836cbc522fb6b34dce624d1fdf9503b0b4df2da85b8d261",
-      "bytes": 61122,
+      "sha256": "81b5fe0d3f806274bbb16b62be434ed61eccc83e3bfa25ccfeb030db94b3597e",
+      "bytes": 60739,
       "width": 1288,
       "height": 407,
       "theme": "dark",
@@ -1296,7 +1319,7 @@
       "body_class": "page-flow-velocity",
       "overlay": "clean",
       "overlay_hits": [],
-      "capture_sha": "97ac2d1b6e5bf2c51b730d6775e29ae56aab3cd1",
+      "capture_sha": "8dad1ca726351820a72390feadd67eddd66af53d",
       "mutations": [
         "fv-reveal.is-in force-finish"
       ],
@@ -1310,7 +1333,7 @@
         "weakest_contrast": 5.54,
         "weakest_color": "rgb(130, 139, 156)",
         "weakest_class": "q-empty",
-        "weakest_text": "none today今日无expected — this proxy rarely shows positive absolute flow, not a da",
+        "weakest_text": "none无expected — this proxy rarely shows positive absolute flow, not a data gap属预",
         "running": 0,
         "fonts": "loaded",
         "mutations": [
@@ -1323,10 +1346,10 @@
     {
       "id": "quadrant-light-en",
       "family": "quadrant",
-      "file": "c42c82baaa9fbb0f.png",
+      "file": "98dc17b553590068.png",
       "alias": "quadrant-light-en.png",
-      "sha256": "c42c82baaa9fbb0f649e8c85e611dd98b786bb745b7b1b84fe74fad893187841",
-      "bytes": 57154,
+      "sha256": "98dc17b5535900682a78626638d2f297c8a9057a3a5041b8abe797e841bc3bf4",
+      "bytes": 56483,
       "width": 1288,
       "height": 407,
       "theme": "light",
@@ -1337,7 +1360,7 @@
       "body_class": "page-flow-velocity",
       "overlay": "clean",
       "overlay_hits": [],
-      "capture_sha": "97ac2d1b6e5bf2c51b730d6775e29ae56aab3cd1",
+      "capture_sha": "8dad1ca726351820a72390feadd67eddd66af53d",
       "mutations": [
         "fv-reveal.is-in force-finish"
       ],
@@ -1351,7 +1374,7 @@
         "weakest_contrast": 4.59,
         "weakest_color": "rgb(95, 106, 122)",
         "weakest_class": "q-empty",
-        "weakest_text": "none today今日无expected — this proxy rarely shows positive absolute flow, not a da",
+        "weakest_text": "none无expected — this proxy rarely shows positive absolute flow, not a data gap属预",
         "running": 0,
         "fonts": "loaded",
         "mutations": [
@@ -1364,10 +1387,10 @@
     {
       "id": "quadrant-light-zh",
       "family": "quadrant",
-      "file": "af79890ab91de911.png",
+      "file": "967d3c202a00383a.png",
       "alias": "quadrant-light-zh.png",
-      "sha256": "af79890ab91de9113f45691dab276aa937d59996fb99022e16bdb555b7a1a034",
-      "bytes": 61892,
+      "sha256": "967d3c202a00383aa2400863c6a516ed66d4bdc3b19b0e0e92d6ad3d7aaea534",
+      "bytes": 61481,
       "width": 1288,
       "height": 407,
       "theme": "light",
@@ -1378,7 +1401,7 @@
       "body_class": "page-flow-velocity",
       "overlay": "clean",
       "overlay_hits": [],
-      "capture_sha": "97ac2d1b6e5bf2c51b730d6775e29ae56aab3cd1",
+      "capture_sha": "8dad1ca726351820a72390feadd67eddd66af53d",
       "mutations": [
         "fv-reveal.is-in force-finish"
       ],
@@ -1392,7 +1415,7 @@
         "weakest_contrast": 4.59,
         "weakest_color": "rgb(95, 106, 122)",
         "weakest_class": "q-empty",
-        "weakest_text": "none today今日无expected — this proxy rarely shows positive absolute flow, not a da",
+        "weakest_text": "none无expected — this proxy rarely shows positive absolute flow, not a data gap属预",
         "running": 0,
         "fonts": "loaded",
         "mutations": [
@@ -1929,10 +1952,10 @@
     {
       "id": "changed-dark-en",
       "family": "changed",
-      "file": "fda6e3b2863421ce.png",
+      "file": "02399629e17b9487.png",
       "alias": "changed-dark-en.png",
-      "sha256": "fda6e3b2863421ce6f4c5a8fd4edc538516a5a4593b4695b86b4fc8a3ca135a2",
-      "bytes": 25665,
+      "sha256": "02399629e17b948723cd4ae6bb7d2d96b4fd5f23c26a1440f2a3f4e17deb5d53",
+      "bytes": 25360,
       "width": 1288,
       "height": 229,
       "theme": "dark",
@@ -1943,7 +1966,7 @@
       "body_class": "page-flow-velocity",
       "overlay": "clean",
       "overlay_hits": [],
-      "capture_sha": "97ac2d1b6e5bf2c51b730d6775e29ae56aab3cd1",
+      "capture_sha": "8dad1ca726351820a72390feadd67eddd66af53d",
       "mutations": [
         "fv-reveal.is-in force-finish"
       ],
@@ -1957,7 +1980,7 @@
         "weakest_contrast": 6.14,
         "weakest_color": "rgb(139, 147, 161)",
         "weakest_class": "l-en",
-        "weakest_text": "What Changed Today",
+        "weakest_text": "What Changed",
         "running": 0,
         "fonts": "loaded",
         "mutations": [
@@ -1970,10 +1993,10 @@
     {
       "id": "changed-dark-zh",
       "family": "changed",
-      "file": "1c8d50e8c941e5c1.png",
+      "file": "c15f5f2f61c0ef87.png",
       "alias": "changed-dark-zh.png",
-      "sha256": "1c8d50e8c941e5c19472507e5febc9e154fe1b0283007d415842d1cb684e0820",
-      "bytes": 24744,
+      "sha256": "c15f5f2f61c0ef87b9ee656c311eb48bbd08bfcb8267c44a0192be6377b7bef7",
+      "bytes": 24916,
       "width": 1288,
       "height": 229,
       "theme": "dark",
@@ -1984,7 +2007,7 @@
       "body_class": "page-flow-velocity",
       "overlay": "clean",
       "overlay_hits": [],
-      "capture_sha": "97ac2d1b6e5bf2c51b730d6775e29ae56aab3cd1",
+      "capture_sha": "8dad1ca726351820a72390feadd67eddd66af53d",
       "mutations": [
         "fv-reveal.is-in force-finish"
       ],
@@ -1998,7 +2021,7 @@
         "weakest_contrast": 6.14,
         "weakest_color": "rgb(139, 147, 161)",
         "weakest_class": "l-zh",
-        "weakest_text": "今日变化",
+        "weakest_text": "本次变化",
         "running": 0,
         "fonts": "loaded",
         "mutations": [
@@ -2011,10 +2034,10 @@
     {
       "id": "changed-light-en",
       "family": "changed",
-      "file": "eeb7a30905cec93c.png",
+      "file": "a9ecaff29341f1e8.png",
       "alias": "changed-light-en.png",
-      "sha256": "eeb7a30905cec93c352db7082efd7161420cfc4c76976c0172191dabfda9a3ea",
-      "bytes": 25813,
+      "sha256": "a9ecaff29341f1e8a49b807e1eaf1e18f7c85d9ffabebe907f3340224cca9638",
+      "bytes": 25503,
       "width": 1288,
       "height": 229,
       "theme": "light",
@@ -2025,7 +2048,7 @@
       "body_class": "page-flow-velocity",
       "overlay": "clean",
       "overlay_hits": [],
-      "capture_sha": "97ac2d1b6e5bf2c51b730d6775e29ae56aab3cd1",
+      "capture_sha": "8dad1ca726351820a72390feadd67eddd66af53d",
       "mutations": [
         "fv-reveal.is-in force-finish"
       ],
@@ -2039,7 +2062,7 @@
         "weakest_contrast": 5.89,
         "weakest_color": "rgb(76, 90, 108)",
         "weakest_class": "l-en",
-        "weakest_text": "What Changed Today",
+        "weakest_text": "What Changed",
         "running": 0,
         "fonts": "loaded",
         "mutations": [
@@ -2052,10 +2075,10 @@
     {
       "id": "changed-light-zh",
       "family": "changed",
-      "file": "64ad63d148b13323.png",
+      "file": "8ae143570f1eb70b.png",
       "alias": "changed-light-zh.png",
-      "sha256": "64ad63d148b13323f2ed65fd61fc5aba444457d1c506baaf82a6efce768b33f7",
-      "bytes": 24781,
+      "sha256": "8ae143570f1eb70b07e92cf912b59cb89fed7778975dd9ec199c0612cc0dec5b",
+      "bytes": 24965,
       "width": 1288,
       "height": 229,
       "theme": "light",
@@ -2066,7 +2089,7 @@
       "body_class": "page-flow-velocity",
       "overlay": "clean",
       "overlay_hits": [],
-      "capture_sha": "97ac2d1b6e5bf2c51b730d6775e29ae56aab3cd1",
+      "capture_sha": "8dad1ca726351820a72390feadd67eddd66af53d",
       "mutations": [
         "fv-reveal.is-in force-finish"
       ],
@@ -2080,7 +2103,7 @@
         "weakest_contrast": 5.89,
         "weakest_color": "rgb(76, 90, 108)",
         "weakest_class": "l-zh",
-        "weakest_text": "今日变化",
+        "weakest_text": "本次变化",
         "running": 0,
         "fonts": "loaded",
         "mutations": [

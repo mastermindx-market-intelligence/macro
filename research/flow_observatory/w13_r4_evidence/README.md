@@ -1,10 +1,10 @@
 # flow_velocity W13 r4 — packet-complete settled evidence matrix
 
-Provenance: committed head `97ac2d1b6e5bf2c51b730d6775e29ae56aab3cd1`. Porcelain captured as the git status string.
+Provenance: committed head `8dad1ca726351820a72390feadd67eddd66af53d`. W13 r5 targeted recapture of baseline/hero/changed/quadrant families at this sha; other cells keep r4 pixels. Porcelain captured as the git status string.
 S1 rig: fixture VM (no live bake), real `body.page-flow-velocity`, Playwright
 localStorage seed + setTheme/setLang, `window.__skyDeck = true`, attribute
 re-read refuse-on-mismatch, overlay column, SETTLE column, mutations column.
-Each cell row carries `capture_sha` equal to this head.
+Recaptured cells carry `capture_sha` equal to this head; unre-captured r4 cells keep their original `capture_sha`.
 
 ## DARK TREATMENT
 
