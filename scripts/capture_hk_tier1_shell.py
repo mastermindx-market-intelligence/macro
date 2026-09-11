@@ -122,6 +122,7 @@ def main() -> int:
                                 locale="zh-CN" if locale == "zh" else "en-US",
                                 color_scheme=theme,
                                 device_scale_factor=1,
+                                reduced_motion="reduce",
                             )
                             context.add_init_script(
                                 f"({_STATE_SEED_SCRIPT.strip()})({json.dumps(state)})"
@@ -144,6 +145,13 @@ def main() -> int:
                                     )
                                 page.wait_for_timeout(250)
                                 applied = page.evaluate(_APPLY_STATE_SCRIPT.strip(), state) or {}
+                                # setTheme fires skyToggleFx (~1100ms sun/moon overlay). It is a
+                                # toggle flourish, not page content; a 150ms wait used to shoot
+                                # the crescent mid-animation on 390-dark (M3). Prefer-reduced-motion
+                                # skips the mount; stripping .sky-fx is the fail-closed remainder.
+                                page.evaluate(
+                                    "() => document.querySelectorAll('.sky-fx').forEach(n => n.remove())"
+                                )
                                 page.wait_for_timeout(150)
                                 loc = page.locator(selector).first
                                 loc.wait_for(state="visible", timeout=8000)
@@ -203,7 +211,9 @@ def main() -> int:
             "capture_method": (
                 "playwright element screenshot on a templates/hk.html.j2 render "
                 "with the tests/test_hk_tier1_shell.py fixture VM + theme.css. "
-                "Sparse tree: no live data/ or site/ bake."
+                "Sparse tree: no live data/ or site/ bake. Context prefers-reduced-motion "
+                "and strips .sky-fx after setTheme so the ~1100ms theme-toggle flourish "
+                "cannot occlude a crop (M3)."
             ),
         },
         "target": {
@@ -235,7 +245,9 @@ def main() -> int:
             "gaps": "uncaptured cells are recorded with a reason",
             "page": (
                 "fixture VM, not a live bake. Numbers (VHSI 18.4, A/H 28.4%, "
-                "Growth-scare) are the packet exemplars, not tonight's tape."
+                "Growth-scare) are the packet exemplars, not tonight's tape. "
+                "Strip tiles use DISTINCT per-kind fixture values (peg negative, "
+                "yuan-quote negative, overnight rate as points-only)."
             ),
         },
         "pages": pages,
@@ -250,6 +262,10 @@ def main() -> int:
         "manifest: mockups/evidence/hk-tier1-shell/manifest.json\n",
         encoding="utf-8",
     )
+    keep = {s["file"] for p in pages for s in p["states"] if s.get("file")}
+    for png in OUT_DIR.glob("*.png"):
+        if png.name not in keep:
+            png.unlink()
     _write_readme(outcome, captured, attempted, crop_list, fixture=True)
     print(f"wrote {captured}/{attempted} cells -> {OUT_DIR}", flush=True)
     return 0 if outcome == "captured" else 1
@@ -278,14 +294,23 @@ def _write_readme(outcome: str, captured: int, attempted: int,
         "",
         "Crops are Playwright element screenshots of a `templates/hk.html.j2` "
         "render with the packet's fixture VM (Growth-scare, VHSI 32nd / "
-        "mid-range, A/H 28.4% about average, inverted peg change printing "
-        "Down). Not a live `site/hk.html` bake — this worktree is sparse "
+        "mid-range, A/H 28.4% about average, DISTINCT per-tile strip values: "
+        "peg negative / yuan-quote negative / overnight rate as points-only). "
+        "Not a live `site/hk.html` bake — this worktree is sparse "
         "(`data/` and `site/` omitted).",
         "",
         "Matrix: dark + light × EN + ZH × desktop 1440 × mobile 390, for "
         "the hero (`#hkx-hero-card`), the cross-market strip "
         "(`.hkx-cas-strip`), and one What To Do signal row "
         "(`.hkx-rack2 .hkx-row`) showing the monoline icons.",
+        "",
+        "Harness note (M3): `window.setTheme()` fires `skyToggleFx()` — a "
+        "~1100ms crescent-moon (dark) / sun (light) overlay at z-index "
+        "2147483600. That flourish is toggle chrome, not page content. The "
+        "r1 390-dark strip crop caught it mid-animation. Capture now sets "
+        "`prefers-reduced-motion: reduce` (the flourish's own skip) and "
+        "strips leftover `.sky-fx` nodes before shooting. Page CSS z-index "
+        "is unchanged.",
         "",
         "## Crops",
         "",

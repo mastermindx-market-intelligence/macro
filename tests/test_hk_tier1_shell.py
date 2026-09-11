@@ -18,6 +18,7 @@ sys.path.insert(0, str(ROOT))
 
 from engine.hk_signal_stack import build_hk_signal_stack
 from engine.hk_tier1 import (
+    CAUTIOUS_LANE,
     CYCLE_LANE,
     TILE_COPY,
     apply_cycle_lane,
@@ -31,7 +32,7 @@ from engine.hk_tier1 import (
     range_reading,
 )
 from engine.i18n import tr
-from scripts.build_hk import _tile_payload
+from scripts.build_hk import MARKET_TILE_SPEC, _tile_move, _tile_payload
 
 
 _GROWTH_SCARE_LATEST = {
@@ -112,8 +113,14 @@ def test_cycle_lane_swaps_buy_zone_and_unconfirmed_turn():
     row = apply_cycle_lane({"ticker": "0700.HK", "label": "BUY ZONE", "label_zh": "买入区"})
     assert row["label"] == "Buy now"
     assert row["label_zh"] == "立即买入"
-    kept = apply_cycle_lane({"label": "UPTREND", "label_zh": "上涨趋势"})
-    assert kept["label"] == "UPTREND"
+    unknown = apply_cycle_lane({"label": "UPTREND", "label_zh": "上涨趋势"})
+    assert unknown["label"] == CAUTIOUS_LANE[0]
+    assert unknown["label_zh"] == CAUTIOUS_LANE[1]
+    assert unknown["label"] == "Stand aside"
+    for slug in ("UPTREND", "RALLY ON", "TURN SIGNALED", "FRESH BUY"):
+        assert cycle_lane(slug) == CAUTIOUS_LANE
+    assert cycle_lane("Buy now") == ("Buy now", "立即买入")
+    assert cycle_lane("Stand aside") == CAUTIOUS_LANE
 
 
 def test_percentile_plain_readings_match_the_live_exemplars():
@@ -123,6 +130,53 @@ def test_percentile_plain_readings_match_the_live_exemplars():
     assert pctile_label(32) == ("32nd percentile", "第32百分位")
     assert pctile_label(51) == ("51st percentile", "第51百分位")
     assert "th percentile" not in pctile_label(32)[0].replace("32nd percentile", "")
+
+
+def test_displayed_sign_rounds_to_zero_is_flat():
+    """Chip word follows the formatted print, not the raw float (m1)."""
+    up_print = _tile_payload(0.04, decimals=1)
+    assert f"{0.04:+.1f}" == "+0.0"
+    assert up_print["chg_sign"] == "flat"
+    assert up_print["chg_word_en"] == "Flat"
+    assert up_print["chg_word_zh"] == "平"
+    assert up_print["tone"] == "muted"
+    dn_print = _tile_payload(-0.04, decimals=1)
+    assert f"{-0.04:+.1f}" == "-0.0"
+    assert dn_print["chg_sign"] == "flat"
+    assert dn_print["chg_word_en"] == "Flat"
+    still_up = _tile_payload(0.06, decimals=1)
+    assert still_up["chg_sign"] == "up"
+    still_down = _tile_payload(-0.06, invert=True, decimals=1)
+    assert still_down["chg_sign"] == "down"
+    assert still_down["chg_word_en"] == "Down"
+
+
+def test_inverted_tiles_disclose_quote_orientation():
+    """Every invert=True spec row must teach what 'higher' means (B1 structural pin)."""
+    inverted = [row for row in MARKET_TILE_SPEC if row[-1] is True]
+    assert inverted, "spec must include at least one invert=True row"
+    for row in inverted:
+        kind = row[5]
+        copy = TILE_COPY[kind]
+        en, zh = copy["meaning_en"], copy["meaning_zh"]
+        assert "higher" in en.lower(), f"{kind} meaning_en must disclose orientation: {en!r}"
+        assert "weaker" in en.lower() or "stronger" in en.lower(), (
+            f"{kind} meaning_en must name the weaker/stronger reading: {en!r}"
+        )
+        assert "数值升高" in zh, f"{kind} meaning_zh must disclose orientation: {zh!r}"
+    yuan = TILE_COPY["USDCNH"]
+    assert "higher = a weaker yuan" in yuan["meaning_en"]
+    assert "人民币走弱" in yuan["meaning_zh"]
+    assert yuan["tag_en"] == "Offshore yuan"
+
+
+def test_rate_tile_keeps_points_unit_and_drops_relative_pct():
+    move = _tile_move(0.10, 200.0, is_rate=True, chg_dec=2)
+    assert move["chg"] == "+0.10 pp"
+    assert "pct" not in move
+    equity = _tile_move(18.4, 0.5, is_rate=False, chg_dec=1)
+    assert equity["chg"] == "+18.4"
+    assert equity["pct"] == "+0.5%"
 
 
 def test_plain_flip_line_is_one_sentence_without_thresholds():
@@ -140,6 +194,22 @@ def test_plain_flip_line_is_one_sentence_without_thresholds():
     assert "/100" not in en
     assert "翻转" in zh
     assert "48" not in zh
+    assert "Volatility (VHSI)" in en
+    assert "volatility (vhsi)" not in en
+
+
+def test_plain_flip_line_preserves_label_casing():
+    snap = {
+        "verdict": "RISK_ON",
+        "components": [
+            {"label_en": "US dollar", "label_zh": "美元", "score": 20},
+            {"label_en": "HKD peg", "label_zh": "港元联汇", "score": 80},
+        ],
+    }
+    en, _zh = plain_flip_line(snap)
+    assert "US dollar" in en
+    assert "us dollar" not in en
+    assert "hkd peg" not in en
 
 
 def test_sector_glossary_covers_the_named_chips():
@@ -154,25 +224,50 @@ def test_sector_glossary_covers_the_named_chips():
 # Template render — glance face vs dialog
 # ---------------------------------------------------------------------------
 
+# Distinct per-kind strip values so B1/M1 cases are adjudicable in crops (M2).
+_TILE_FIXTURE = {
+    "growth": {"level": "3,842", "chg_raw": 18.4, "pct": "+0.5%", "dec": 1},
+    "peg": {"level": "7.8200", "chg_raw": -0.0120, "pct": "-0.2%", "dec": 4},
+    "USDCNH": {"level": "7.185", "chg_raw": -0.024, "pct": "-0.3%", "dec": 3},
+    "DXY": {"level": "104.32", "chg_raw": 0.41, "pct": "+0.4%", "dec": 2},
+    "yield": {"level": "0.15%", "chg_raw": 0.10, "is_rate": True, "dec": 2},
+    "USD/oz": {"level": "2,348", "chg_raw": 12.0, "pct": "+0.5%", "dec": 1},
+}
+_INVERT_KINDS = frozenset(
+    row[5] for row in MARKET_TILE_SPEC if row[-1] is True
+)
+
+
+def _make_tiles() -> list[dict]:
+    tiles = []
+    for kind, copy in TILE_COPY.items():
+        fx = _TILE_FIXTURE[kind]
+        chg_raw = fx["chg_raw"]
+        chg_dec = fx["dec"]
+        is_rate = bool(fx.get("is_rate"))
+        tile = {
+            "kind": kind,
+            "tag_en": copy["tag_en"], "tag_zh": copy["tag_zh"],
+            "meaning_en": copy["meaning_en"], "meaning_zh": copy["meaning_zh"],
+            "level": fx["level"],
+            "is_rate": is_rate,
+            **_tile_move(chg_raw, 0.0 if is_rate else float(fx["pct"].strip("%+")),
+                         is_rate=is_rate, chg_dec=chg_dec),
+            **_tile_payload(chg_raw, invert=(kind in _INVERT_KINDS), decimals=chg_dec),
+            "tag": Markup(f'<span class="l-en">{copy["tag_en"]}</span><span class="l-zh">{copy["tag_zh"]}</span>'),
+            "label": Markup('<span class="l-en">x</span><span class="l-zh">x</span>'),
+        }
+        if not is_rate:
+            tile["pct"] = fx["pct"]
+        tiles.append(tile)
+    return tiles
+
+
 def _make_vm(**overrides) -> dict:
     from tests.test_hk_cbbc_banner_template import _make_actions, _make_setups
 
     ss = build_hk_signal_stack(_GROWTH_SCARE_LATEST)
-    tiles = [
-        {
-            "kind": kind,
-            "tag_en": copy["tag_en"], "tag_zh": copy["tag_zh"],
-            "meaning_en": copy["meaning_en"], "meaning_zh": copy["meaning_zh"],
-            "level": "7.8200" if kind == "peg" else "12.4",
-            "chg": "-0.0120" if kind == "peg" else "+0.40",
-            "chg_raw": -0.012 if kind == "peg" else 0.40,
-            "pct": "-0.2%" if kind == "peg" else "+1.1%",
-            **_tile_payload(-0.012 if kind == "peg" else 0.40, invert=(kind in ("peg", "USDCNH", "DXY"))),
-            "tag": Markup(f'<span class="l-en">{copy["tag_en"]}</span><span class="l-zh">{copy["tag_zh"]}</span>'),
-            "label": Markup('<span class="l-en">x</span><span class="l-zh">x</span>'),
-        }
-        for kind, copy in TILE_COPY.items()
-    ]
+    tiles = _make_tiles()
     vm = {
         "mode": "macro",
         "latest": {
@@ -193,7 +288,7 @@ def _make_vm(**overrides) -> dict:
             "headline_en": "Trade with caution.", "headline_zh": "谨慎操作。",
             "flip_en": "→ Green if risk appetite firms up (now 48/100). → Red if volatility (VHSI) breaks down (now 16/100).",
             "flip_zh": "→ 若风险偏好转强（现 48/100）则转「偏多」；若波动率走坏（现 16/100）则转「避险」。",
-            "flip_plain_en": "The read flips if risk appetite turns clearly for or against.",
+            "flip_plain_en": "The read flips if Risk appetite turns clearly for or against.",
             "flip_plain_zh": "若风险偏好明确转多或转空，读数会翻转。",
             "components": [
                 {"label_en": "Risk appetite", "label_zh": "风险偏好", "score": 48, "tone": "warn"},
@@ -270,7 +365,7 @@ def _render(**overrides) -> str:
     from engine import i18n
 
     env = Environment(loader=FileSystemLoader(str(ROOT / "templates")), autoescape=False)
-    env.globals.update(td=i18n.td, tr=i18n.tr, t=i18n.t)
+    env.globals.update(td=i18n.td, tr=i18n.tr, t=i18n.t, cycle_lane=cycle_lane)
     env.globals["help"] = lambda en, zh="": Markup("")
     return env.get_template("hk.html.j2").render(**_make_vm(**overrides))
 
@@ -317,18 +412,47 @@ def test_render_strip_uses_display_names_and_meanings():
     assert "US dollar" in glance
     assert "HK overnight rate" in glance
     assert "higher = a weaker HK dollar" in glance
+    assert "quoted as yuan per US dollar — higher = a weaker yuan" in glance
     assert "USDCNH" not in glance
     assert "USD/oz" not in glance
     # the old slug tags are gone (display names replaced them)
     assert ">growth<" not in glance.lower()
 
 
+def _tile_chunk(glance: str, tag: str) -> str:
+    start = glance.find(tag)
+    assert start != -1, f"{tag!r} missing from glance"
+    nxt = glance.find('class="hkx-card hkx-cat', start + len(tag))
+    return glance[start:nxt if nxt != -1 else start + 1200]
+
+
 def test_render_peg_tile_prints_down_beside_a_negative_change():
     glance = _glance(_render())
     # peg tile is invert-tone + negative change → word must still be Down
     assert "chg_word" not in glance  # raw key never leaks
-    assert re.search(r'cat-tone bear">\s*<span class="l-en">Down</span>', glance)
-    assert 'class="l-en">Up</span>' not in glance.split("HK dollar peg")[1][:800]
+    peg = _tile_chunk(glance, "HK dollar peg")
+    assert re.search(r'cat-tone bear">\s*<span class="l-en">Down</span>', peg)
+    assert 'class="l-en">Up</span>' not in peg
+    assert "-0.0120" in peg
+
+
+def test_render_yuan_tile_discloses_orientation_and_follows_quote_sign():
+    glance = _glance(_render())
+    yuan = _tile_chunk(glance, "Offshore yuan")
+    assert "quoted as yuan per US dollar — higher = a weaker yuan" in yuan
+    assert "以美元兑人民币报价 — 数值升高 = 人民币走弱" in yuan
+    assert "-0.024" in yuan
+    assert re.search(r'cat-tone bear">\s*<span class="l-en">Down</span>', yuan)
+    assert 'class="l-en">Up</span>' not in yuan
+
+
+def test_render_rate_tile_is_points_only():
+    glance = _glance(_render())
+    rate = _tile_chunk(glance, "HK overnight rate")
+    assert "0.15%" in rate
+    assert "+0.10 pp" in rate
+    assert "+200" not in rate
+    assert not re.search(r'\+0\.10 pp\s+\+', rate)
 
 
 def test_render_flip_line_is_plain_and_thresholds_live_in_the_checks_popover():
@@ -337,7 +461,7 @@ def test_render_flip_line_is_plain_and_thresholds_live_in_the_checks_popover():
     flip = re.search(r'class="hkx-flip[^"]*".*?</div>', glance, re.S)
     assert flip, "hero flip line missing"
     face = flip.group(0)
-    assert "The read flips if risk appetite turns clearly for or against." in face
+    assert "The read flips if Risk appetite turns clearly for or against." in face
     assert "48/100" not in face
     assert "16/100" not in face
     pop = html[html.find('id="hkx-pop-signals"'):html.find('id="hkx-pop-risk"')]
@@ -364,8 +488,10 @@ def test_render_moved_jargon_absent_at_rest_present_in_dialogs():
     html = _render()
     glance = _glance(html)
     for banned in ("Growth axis", "Dual liquidity", "weak-side (outflow)", "HIBOR 1m",
-                   "BUY ZONE", "UNCONFIRMED TURN"):
+                   "HIBOR 1月", "BUY ZONE", "UNCONFIRMED TURN", "UPTREND"):
         assert banned not in glance, f"{banned!r} still on the glance face"
+    assert "🔴" not in glance
+    assert "🟢" not in glance
     assert "Buy now" in glance
     assert "Stand aside" in glance
     playbook = html[html.find('id="hkx-dlg-playbook"'):html.find('id="hkx-dlg-events"')]
@@ -387,3 +513,42 @@ def test_render_what_to_do_rows_use_monoline_icons_not_emoji():
     src = (ROOT / "templates" / "hk.html.j2").read_text()
     # the glance loop itself no longer embeds the emoji
     assert "{{ '🟢' if leg.tone" not in src
+    assert "🔴" not in _glance(html)
+    assert "🟢" not in _glance(html)
+
+
+def test_render_unknown_cycle_slug_is_cautious_lane_not_passthrough():
+    html = _render(top_setups=[
+        {"ticker": "0001.HK", "name": "CKH", "name_zh": "长和",
+         "sector": "Financials", "label": "UPTREND", "label_zh": "上涨趋势"},
+    ])
+    glance = _glance(html)
+    assert "UPTREND" not in glance
+    assert "Stand aside" in glance
+    src = (ROOT / "templates" / "hk.html.j2").read_text()
+    assert "{% set _lane" not in src
+    assert "CYCLE_LANE" not in src
+
+
+def test_popover_keeps_thresholds_when_components_empty():
+    vm = _make_vm()
+    ms = dict(vm["market_state"])
+    ms["components"] = []
+    html = _render(market_state=ms)
+    pop = html[html.find('id="hkx-pop-signals"'):html.find('id="hkx-pop-risk"')]
+    assert "now 48/100" in pop
+    assert "16/100" in pop
+    assert "Building…" not in pop
+
+
+def test_popover_building_state_is_honest_when_thresholds_absent():
+    vm = _make_vm()
+    ms = dict(vm["market_state"])
+    ms["components"] = []
+    ms["flip_en"] = ""
+    ms["flip_zh"] = ""
+    html = _render(market_state=ms)
+    pop = html[html.find('id="hkx-pop-signals"'):html.find('id="hkx-pop-risk"')]
+    assert "Building…" not in pop
+    assert "The checks are still building" in pop
+    assert "检查仍在积累" in pop

@@ -7,12 +7,14 @@ from __future__ import annotations
 
 from engine.i18n import _ordinal_suffix, tr
 
-# Doctrine §3 / #2206 lanes. Only the two named glance leaks are remapped; every
-# other cycle label keeps its existing glossary twin.
+# Doctrine §3 / #2206 lanes. Named glance leaks remap to the ratified words;
+# every unknown/unmapped cycle label routes to the cautious lane (never a raw slug).
+CAUTIOUS_LANE: tuple[str, str] = ("Stand aside", "观望")
 CYCLE_LANE: dict[str, tuple[str, str]] = {
     "BUY ZONE": ("Buy now", "立即买入"),
-    "UNCONFIRMED TURN": ("Stand aside", "观望"),
+    "UNCONFIRMED TURN": CAUTIOUS_LANE,
 }
+_FACE_LANE_BY_EN = {en: (en, zh) for en, zh in CYCLE_LANE.values()}
 
 # Peg-state jargon on the What To Do face → one plain pair. Full machine state
 # stays on the card dialog.
@@ -39,13 +41,13 @@ TILE_COPY: dict[str, dict[str, str]] = {
     },
     "USDCNH": {
         "tag_en": "Offshore yuan", "tag_zh": "离岸人民币",
-        "meaning_en": "yuan traded outside the mainland",
-        "meaning_zh": "在内地以外交易的人民币",
+        "meaning_en": "quoted as yuan per US dollar — higher = a weaker yuan",
+        "meaning_zh": "以美元兑人民币报价 — 数值升高 = 人民币走弱",
     },
     "DXY": {
         "tag_en": "US dollar", "tag_zh": "美元指数",
-        "meaning_en": "the dollar against a basket of currencies",
-        "meaning_zh": "美元相对一篮子货币",
+        "meaning_en": "against a basket of currencies — higher = a stronger dollar",
+        "meaning_zh": "相对一篮子货币 — 数值升高 = 美元走强",
     },
     "yield": {
         "tag_en": "HK overnight rate", "tag_zh": "港元隔夜利率",
@@ -66,11 +68,16 @@ _CHG_WORD = {
 }
 
 
-def chg_sign(chg: float) -> str:
-    """Sign of the displayed change. Never inverted for risk-tone."""
-    if chg > 0:
+def chg_sign(chg: float, *, decimals: int | None = None) -> str:
+    """Sign of the displayed change. Never inverted for risk-tone.
+
+    When `decimals` is set, the sign follows the rounded print (a raw +0.04
+    that formats as +0.0 is Flat, not Up).
+    """
+    shown = float(f"{chg:.{decimals}f}") if decimals is not None else chg
+    if shown > 0:
         return "up"
-    if chg < 0:
+    if shown < 0:
         return "down"
     return "flat"
 
@@ -81,17 +88,22 @@ def chg_word(sign: str) -> tuple[str, str]:
 
 
 def cycle_lane(label: str | None, label_zh: str | None = None) -> tuple[str, str]:
-    """Glance-tier cycle label → doctrine §3 lane. Unknown labels pass through."""
-    if not label:
-        return ("", label_zh or "")
-    hit = CYCLE_LANE.get(label)
+    """Glance-tier cycle label → doctrine §3 lane. Unknown states → cautious lane."""
+    lab = str(label) if label else ""
+    zh = str(label_zh) if label_zh else ""
+    if not lab:
+        return ("", zh)
+    hit = CYCLE_LANE.get(lab)
     if hit:
         return hit
-    return (label, label_zh if label_zh is not None else tr(label))
+    already = _FACE_LANE_BY_EN.get(lab)
+    if already:
+        return already
+    return CAUTIOUS_LANE
 
 
 def apply_cycle_lane(row: dict) -> dict:
-    """Copy a standout/setup row and replace BUY ZONE / UNCONFIRMED TURN on the face."""
+    """Copy a standout/setup row and put a doctrine §3 lane on the face."""
     out = dict(row)
     en, zh = cycle_lane(row.get("label"), row.get("label_zh"))
     out["label"], out["label_zh"] = en, zh
@@ -152,13 +164,13 @@ def plain_flip_line(snap: dict | None) -> tuple[str, str]:
     weakest = min(comps, key=lambda c: c.get("score") if c.get("score") is not None else 50) if comps else None
     strongest = max(comps, key=lambda c: c.get("score") if c.get("score") is not None else 50) if comps else None
     if verdict == "RISK_ON" and weakest:
-        return (f"The read flips if {weakest['label_en'].lower()} loses its lead.",
+        return (f"The read flips if {weakest['label_en']} loses its lead.",
                 f"若{weakest['label_zh']}失去领先，读数会翻转。")
     if verdict == "RISK_OFF" and strongest:
-        return (f"The read flips if {strongest['label_en'].lower()} recovers.",
+        return (f"The read flips if {strongest['label_en']} recovers.",
                 f"若{strongest['label_zh']}回稳，读数会翻转。")
     if weakest:
-        return (f"The read flips if {weakest['label_en'].lower()} turns clearly for or against.",
+        return (f"The read flips if {weakest['label_en']} turns clearly for or against.",
                 f"若{weakest['label_zh']}明确转多或转空，读数会翻转。")
     return ("The read flips if the checks turn.",
             "若各项检查转向，读数会翻转。")

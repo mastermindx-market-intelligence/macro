@@ -1621,7 +1621,7 @@ html[data-lang="zh"][data-theme="light"] body.page-hk .ms-red .hkx-big-score { t
   <div class="hkx-card hkx-hero ms-front ms-{{ ms.color if (ms is defined and ms) else 'yellow' }}{{ ' hkx-hero-solo' if not (ms_history and ms_history|length >= 2) }}" id="hkx-hero-card">
     <div class="hkx-hero-left">
       {# regime pill = the macro QUAD word (mockup: "Stagflation"), bound from the
-         signal-stack macro-regime leg so the zh twin is engine-supplied, never invented. #}
+         signal-stack macro-regime leg; the zh twin is glossary-supplied via td(). #}
       {% set _mrleg = (signal_stack.legs | selectattr('label_en', 'equalto', 'Macro regime') | list | first) if (signal_stack and signal_stack.legs) else none %}
       {% if _mrleg %}
       <span class="hkx-regime-pill ms-{{ ms.color if (ms is defined and ms) else 'yellow' }}"><span class="hkx-rp-dot"></span>{{ td(_mrleg.state_en) }}</span>
@@ -1710,18 +1710,18 @@ html[data-lang="zh"][data-theme="light"] body.page-hk .ms-red .hkx-big-score { t
         {# signals popover #}
         <div class="hkx-pop" id="hkx-pop-signals">
           <div class="hkx-pop-h">{{ t('The checks', '信号详情') }}</div>
-          {% if ms is defined and ms and ms.components is defined %}
+          {% if ms is defined and ms and ms.components %}
           {% for c in ms.components %}
           <div class="hkx-pop-row">
             <div class="hkx-pop-rt"><span>{{ t(c.label_en, c.label_zh) }}</span><b style="color:{{ 'var(--up)' if c.tone == 'bull' else ('var(--down)' if c.tone == 'bear' else 'var(--warn)') }}">{{ c.score }}</b></div>
             <div class="hkx-pop-bar"><i style="width:{{ c.score }}%;background:{{ 'var(--up)' if c.tone == 'bull' else ('var(--down)' if c.tone == 'bear' else 'var(--warn)') }}"></i></div>
           </div>
           {% endfor %}
-          {% if ms.flip_en %}
-          <div class="hkx-pop-sub" style="margin-top:8px">{{ t(ms.flip_en, ms.flip_zh) }}</div>
           {% endif %}
-          {% else %}
-          <p style="font-size:12px;color:var(--muted)">{{ t('Building…','数据积累中…') }}</p>
+          {% if ms is defined and ms and ms.flip_en %}
+          <div class="hkx-pop-sub" style="margin-top:8px">{{ t(ms.flip_en, ms.flip_zh) }}</div>
+          {% elif not (ms is defined and ms and ms.components) %}
+          <p style="font-size:12px;color:var(--muted)">{{ t('The checks are still building — flip thresholds will show here once the read is scored.','检查仍在积累 — 转折阈值会在评分完成后显示。') }}</p>
           {% endif %}
           <span class="hkx-pop-link" onclick="hkxClosePops();hkxOpenDlg('hkx-dlg-read')">{{ t('See the full read ↓','查看完整读数 ↓') }}</span>
         </div>
@@ -1985,9 +1985,9 @@ html[data-lang="zh"][data-theme="light"] body.page-hk .ms-red .hkx-big-score { t
       <div class="cat-tag">{% if tile.tag_en is defined %}{{ t(tile.tag_en, tile.tag_zh) }}{% else %}{{ tile.tag if tile.tag is defined else tile.label }}{% endif %}</div>
       <div class="cat-val">{{ tile.level if tile.level is defined else '—' }}</div>
       {% if tile.chg is not none and tile.chg is defined and tile.chg is number %}
-      <div class="cat-chg {{ 'hkx-tt-up' if (tile.chg >= 0) else 'hkx-tt-dn' }}">{{ ('%+.2f'|format(tile.chg)) }}{% if tile.pct is defined %} {{ tile.pct }}{% endif %}</div>
+      <div class="cat-chg {{ 'hkx-tt-up' if (tile.chg >= 0) else 'hkx-tt-dn' }}">{{ ('%+.2f'|format(tile.chg)) }}{% if tile.pct is defined and tile.pct and not (tile.is_rate is defined and tile.is_rate) %} {{ tile.pct }}{% endif %}</div>
       {% elif tile.chg is defined and tile.chg %}
-      <div class="cat-chg {{ 'hkx-tt-up' if _sign == 'up' else ('hkx-tt-dn' if _sign == 'down' else '') }}">{{ tile.chg }}{% if tile.pct is defined %} {{ tile.pct }}{% endif %}</div>
+      <div class="cat-chg {{ 'hkx-tt-up' if _sign == 'up' else ('hkx-tt-dn' if _sign == 'down' else '') }}">{{ tile.chg }}{% if tile.pct is defined and tile.pct and not (tile.is_rate is defined and tile.is_rate) %} {{ tile.pct }}{% endif %}</div>
       {% endif %}
       {% if tile.meaning_en is defined and tile.meaning_en %}
       <div class="cat-mean">{{ t(tile.meaning_en, tile.meaning_zh or tile.meaning_en) }}</div>
@@ -2092,8 +2092,8 @@ html[data-lang="zh"][data-theme="light"] body.page-hk .ms-red .hkx-big-score { t
       <div class="hkx-stk">
         <a class="hkx-tkr-btn" href="hk_lookup.html#{{ s.ticker }}">{{ t(s.name, s.name_zh) if s.name is defined else s.ticker }}</a>
         <div class="hkx-stk-meta"><b>{{ s.ticker }}</b> · {{ td(s.sector) if s.sector is defined else '' }}</div>
-        {% set _lane = {'BUY ZONE': ('Buy now', '立即买入'), 'UNCONFIRMED TURN': ('Stand aside', '观望')} %}
-        <span class="hkx-stage">{% if s.label in _lane %}{{ t(_lane[s.label][0], _lane[s.label][1]) }}{% else %}{{ t(s.label, s.label_zh) if s.label is defined else '' }}{% endif %}</span>
+        {% set _le, _lz = cycle_lane(s.label if s.label is defined else none, s.label_zh if s.label_zh is defined else none) %}
+        <span class="hkx-stage">{% if _le %}{{ t(_le, _lz) }}{% endif %}</span>
       </div>
       {% endfor %}
       {% elif setups and setups.watch %}
@@ -2101,8 +2101,8 @@ html[data-lang="zh"][data-theme="light"] body.page-hk .ms-red .hkx-big-score { t
       <div class="hkx-stk">
         <a class="hkx-tkr-btn" href="hk_lookup.html#{{ s.ticker }}">{{ t(s.name, s.name_zh) if s.name is defined else s.ticker }}</a>
         <div class="hkx-stk-meta"><b>{{ s.ticker }}</b> · {{ td(s.sector) if s.sector is defined else '' }}</div>
-        {% set _lane = {'BUY ZONE': ('Buy now', '立即买入'), 'UNCONFIRMED TURN': ('Stand aside', '观望')} %}
-        <span class="hkx-stage">{% if s.label in _lane %}{{ t(_lane[s.label][0], _lane[s.label][1]) }}{% else %}{{ t(s.label, s.label_zh) if s.label is defined else '' }}{% endif %}</span>
+        {% set _le, _lz = cycle_lane(s.label if s.label is defined else none, s.label_zh if s.label_zh is defined else none) %}
+        <span class="hkx-stage">{% if _le %}{{ t(_le, _lz) }}{% endif %}</span>
       </div>
       {% endfor %}
       {% else %}
