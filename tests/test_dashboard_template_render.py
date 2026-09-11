@@ -530,10 +530,12 @@ def test_macro_strip_has_six_tape_tiles_in_order():
     # Each price tile exists with the live-patch contract intact.
     positions = []
     for sym in _TAPE_SYMS:
-        needle = f'<div class="mx5-mkt-price nb-px" data-sym="{sym}" data-mkt="us"'
-        idx = html.find(needle)
-        assert idx != -1, f"tape price tile for {sym} missing from the strip"
-        positions.append(idx)
+        m = re.search(
+            rf'<div class="mx5-mkt-price nb-px[^"]*" data-sym="{re.escape(sym)}" data-mkt="us"',
+            html,
+        )
+        assert m, f"tape price tile for {sym} missing from the strip"
+        positions.append(m.start())
     # Strictly increasing => the six render in the specified order.
     assert positions == sorted(positions), f"tape tiles out of order: {positions}"
 
@@ -542,8 +544,8 @@ def test_macro_strip_tnx_display_transform_wired():
     """^TNX price AND delta carry data-fmt="tnx" so live.js divides the yield×10
     quote by 10 (%) and renders the delta in bps. Both nodes must be tagged."""
     html = _render("macro")
-    assert '<div class="mx5-mkt-price nb-px" data-sym="^TNX" data-mkt="us" data-fmt="tnx"' in html
-    assert 'nb-chg" data-sym="^TNX" data-mkt="us" data-fmt="tnx"' in html
+    assert re.search(r'<div class="mx5-mkt-price nb-px[^"]*" data-sym="\^TNX" data-mkt="us" data-fmt="tnx"', html)
+    assert re.search(r'nb-chg[^"]*" data-sym="\^TNX" data-mkt="us" data-fmt="tnx"', html)
 
 
 def test_macro_strip_labels_bilingual():

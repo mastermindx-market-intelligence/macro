@@ -1,0 +1,348 @@
+"""W9 r1 — macro.html plain-language faces, one-integer alerts, stance law, Markets nulls.
+
+Renders templates/dashboard.html.j2 against synthetic VMs (same env as
+test_dashboard_template_render) and pins the packet's frozen strings plus the
+unknown/cautious default on every stance map.
+"""
+from __future__ import annotations
+
+import re
+from pathlib import Path
+
+from tests.test_dashboard_template_render import _base_vm, _env
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def _ms(**over) -> dict:
+    row = {
+        "color": "yellow",
+        "score": 55,
+        "label_en": "Caution",
+        "label_zh": "谨慎",
+        "headline_en": "A mixed tape.",
+        "headline_zh": "盘面混杂。",
+        "asof": "2026-07-04",
+        "overrides": [],
+        "flip_en": "",
+        "flip_zh": "",
+        "components": [
+            {"key": "trend", "score": 50, "label_en": "Trend", "label_zh": "趋势"},
+        ],
+        "radar": {
+            "state": "caution",
+            "label_en": "Caution",
+            "label_zh": "谨慎",
+            "do_en": "Watch.",
+            "do_zh": "观望。",
+            "top_score": 55,
+        },
+    }
+    row.update(over)
+    return row
+
+
+def _alert(rule="gex_flip_cross", tier="watch", **over) -> dict:
+    from engine.alerts import alert_view
+    row = alert_view(rule, over.pop("severity", "warn"),
+                     over.pop("message", "GEX: spot crossed the gamma flip (net -31bn, spot vs flip -0.4%)"),
+                     over.pop("message_zh", "GEX：现价穿越 gamma 翻转点"))
+    row["tier"] = tier
+    row.update(over)
+    return row
+
+
+def _render(**over) -> str:
+    vm = _base_vm()
+    vm.update(over)
+    return _env().get_template("dashboard.html.j2").render(**vm, mode="macro")
+
+
+def _face(html: str, sid: str) -> str:
+    m = re.search(rf'id="{sid}"[\s\S]*?</div>\s*{{# /{sid}', html)
+    if m:
+        return m.group(0)
+    # fallback: slice from id to the next sx-v5 / sx id
+    m = re.search(rf'id="{sid}"[\s\S]{{0,8000}}', html)
+    assert m, f"module {sid} missing"
+    return m.group(0)
+
+
+# --------------------------------------------------------------------------- #
+# 1. Grey Deer — program name demoted; engine noun is capital restrictions
+# --------------------------------------------------------------------------- #
+
+def test_grey_deer_face_names_the_fact_not_the_program():
+    src = (ROOT / "templates" / "_risk_envelope_band.html.j2").read_text()
+    assert "No Grey Deer policy active" not in src
+    assert "未启用任何 Grey Deer 政策" not in src
+    assert "No capital restrictions in force" in src
+    assert "当前无资金限制" in src
+    # chip stays (0 active / 0 项生效)
+    assert 'gde-policy-count' in src
+    assert "项生效" in src
+
+
+# --------------------------------------------------------------------------- #
+# 2. GEX detail on the face; machine message + what_* in dlg-news
+# --------------------------------------------------------------------------- #
+
+def test_alert_face_prints_detail_not_machine_message():
+    html = _render(alerts=[_alert()])
+    face = html[html.find('id="sx-news-v2"'):html.find('id="sx-deep-context"')]
+    assert "Options hedging just flipped from damping moves to amplifying them" in face
+    assert "期权对冲由抑制波动转为放大波动" in face
+    assert "GEX: spot crossed the gamma flip" not in face
+    dlg = html[html.find('id="dlg-news"'):html.find('id="dlg-news"') + 12000]
+    # message stays as receipt; what_* is the orphaned explanation
+    assert "GEX: spot crossed the gamma flip" in dlg
+    assert "Dealer gamma (GEX) measures how options hedging" in dlg
+
+
+# --------------------------------------------------------------------------- #
+# 3. One-integer alert count
+# --------------------------------------------------------------------------- #
+
+def test_alert_count_hero_n_equals_face_of_n():
+    alerts = [
+        _alert("gex_flip_cross", "watch"),
+        _alert("hy_oas_widening", "act",
+               message="HY OAS 1-day widening +0.50pp is 4.2 sigma",
+               message_zh="HY OAS"),
+        _alert("event_risk", "context",
+               message="Event-risk window: CPI tomorrow",
+               message_zh="事件"),
+        _alert("growth_confidence_floor", "context",
+               message="Growth axis confidence dropped below 40%",
+               message_zh="增长"),
+        _alert("sector_rs_cross_high", "context",
+               message="XLI RS vs SPY crossed above 80th pctile",
+               message_zh="板块"),
+        _alert("circuit_breaker_open", "context",
+               message="Source 'fred' marked dead after 3 consecutive failures",
+               message_zh="中断"),
+    ]
+    html = _render(
+        market_state=_ms(),
+        alerts=alerts,
+        macro_news={"headlines": [
+            {"title": "Oracle prints a beat", "title_zh": "甲骨文超预期",
+             "importance": "high", "source_name": "Reuters"},
+        ], "synthesis": {}},
+    )
+    # Hero canonical N
+    hero = re.search(
+        r'class="ms-alerts"[\s\S]{0,400}?<span class="ct[^"]*">(\d+)</span>',
+        html,
+    )
+    assert hero, "hero fired-alerts chip missing"
+    n = int(hero.group(1))
+    assert n == 6, f"hero N expected 6, got {n}"
+    # Face labelled slice uses the same N
+    assert f"need action · of {n}" in html
+    assert f"条需处理 · 共 {n} 条" in html
+    # slice ≤ N (act+watch + promoted event_risk = 3)
+    assert "3 need action · of 6" in html
+    # news row labelled, excluded from both integers
+    assert "Headline" in html
+    assert "头条" in html
+    # footer agrees with the same pair
+    assert html.count("3 need action · of 6") >= 2
+
+
+# --------------------------------------------------------------------------- #
+# 4. Stance maps — packet strings verbatim, unknown → cautious
+# --------------------------------------------------------------------------- #
+
+_CAUTIOUS_EN = "Watch — this read is being updated."
+_CAUTIOUS_ZH = "观望——该读数更新中。"
+
+
+def test_sentiment_stance_panic():
+    html = _render(fear_greed={"dial": 12, "label_en": "Extreme Fear", "label_zh": "极度恐惧"})
+    assert "Watch — don't chase weakness; extremes can snap back." in html
+    assert "观望——不追跌，极端情绪可能快速反转。" in html
+
+
+def test_sentiment_stance_fear_is_panic_lane():
+    html = _render(fear_greed={"dial": 32, "label_en": "Fear", "label_zh": "恐慌"})
+    assert "Watch — don't chase weakness; extremes can snap back." in html
+
+
+def test_sentiment_stance_neutral():
+    html = _render(fear_greed={"dial": 50, "label_en": "Neutral", "label_zh": "中性"})
+    assert "Stand aside — nothing to do from this panel today." in html
+    assert "暂不行动——本面板今日无需操作。" in html
+
+
+def test_sentiment_stance_euphoria():
+    html = _render(fear_greed={"dial": 88, "label_en": "Extreme Greed", "label_zh": "极度贪婪"})
+    assert "Protect gains — stretched optimism cuts both ways." in html
+    assert "保住收益——情绪过热双向都有风险。" in html
+
+
+def test_sentiment_stance_greed_is_euphoria_lane():
+    html = _render(fear_greed={"dial": 70, "label_en": "Greed", "label_zh": "贪婪"})
+    assert "Protect gains — stretched optimism cuts both ways." in html
+
+
+def test_sentiment_stance_unknown():
+    html = _render(fear_greed=None)
+    sent = html[html.find('id="sx-v5-sentiment"'):html.find('id="sx-v5-sector"')]
+    assert _CAUTIOUS_EN in sent
+    assert _CAUTIOUS_ZH in sent
+
+
+def test_sector_stance_heating():
+    html = _render(sector_heat={
+        "heating": [{"name": "Energy", "name_zh": "能源", "rank": 1}],
+        "cooling": [],
+    })
+    assert "Watch the heating list — rotation, not chasing." in html
+    assert "关注升温板块——是轮动，不是追涨。" in html
+
+
+def test_sector_stance_all_quiet():
+    html = _render(sector_heat={"heating": [], "cooling": [{"name": "Utilities", "rank": 11}]})
+    assert "Stand aside — no sector is running hot today." in html
+    assert "暂不行动——今日无板块过热。" in html
+
+
+def test_sector_stance_unknown():
+    html = _render(sector_heat=None)
+    sect = html[html.find('id="sx-v5-sector"'):html.find('id="sx-markets-v2"')]
+    assert _CAUTIOUS_EN in sect
+    assert _CAUTIOUS_ZH in sect
+
+
+def test_aibrief_stance_high_n():
+    html = _render(macro_news={"synthesis": {
+        "high_impact_count": 4, "dominant_channel": "inflation",
+        "top_tickers": [],
+    }, "channel_label": {"inflation": ["inflation", "通胀"]}, "headlines": []})
+    assert "Watch — don't chase headlines; let prices settle first." in html
+    assert "观望——不追新闻，先等价格企稳。" in html
+    assert "Dominant theme:" in html
+    assert "Dominant channel:" not in html[html.find('id="sx-aibrief-v2"'):html.find('id="sx-news-v2"')]
+    assert "主线：" in html
+
+
+def test_aibrief_stance_theme_thread():
+    html = _render(macro_news={"synthesis": {
+        "high_impact_count": 2, "dominant_channel": "inflation",
+        "top_tickers": [],
+    }, "channel_label": {"inflation": ["inflation", "通胀"]}, "headlines": []})
+    assert "Watch the inflation thread — no action needed yet." in html
+    assert "关注通胀主线——暂无需操作。" in html
+
+
+def test_aibrief_stance_zero():
+    html = _render(macro_news={"synthesis": {
+        "high_impact_count": 0, "dominant_channel": "",
+        "top_tickers": [],
+    }, "headlines": []})
+    assert "Ignore — nothing in the news flow demands action." in html
+    assert "可忽略——新闻流中无需行动事项。" in html
+
+
+def test_aibrief_stance_unknown():
+    html = _render(macro_news={"synthesis": {}, "headlines": []})
+    brief = html[html.find('id="sx-aibrief-v2"'):html.find('id="sx-news-v2"')]
+    assert _CAUTIOUS_EN in brief
+    assert _CAUTIOUS_ZH in brief
+
+
+def test_events_stance_n_positive():
+    html = _render(macro_catalysts=[
+        {"impact": "high", "label": "CPI", "label_zh": "CPI", "date": "2026-07-10"},
+        {"impact": "high", "label": "FOMC", "label_zh": "FOMC", "date": "2026-07-11"},
+        {"impact": "med", "label": "Claims", "label_zh": "初请", "date": "2026-07-09"},
+    ])
+    assert "Get ready — 2 big prints ahead; avoid adding risk right before them." in html
+    assert "做好准备——前方有 2 项重磅数据，公布前不宜加仓。" in html
+
+
+def test_events_stance_n_zero():
+    html = _render(macro_catalysts=[])
+    ev = html[html.find('id="sx-events-v2"'):html.find('id="sx-v5-fed"') if 'id="sx-v5-fed"' in html else html.find('id="sx-v5-sentiment"')]
+    assert "Nothing scheduled that should change positioning this week." in ev
+    assert "本周暂无应改变仓位的安排。" in ev
+
+
+def test_markets_is_exempt_from_stance_law():
+    """Seat ruling: Markets is a quote tape, not a signal panel."""
+    html = _render()
+    start = html.find('id="sx-markets-v2"')
+    # Risk module is gated on market_state; the next always-present sibling is policy
+    # (or aibrief). Bound the face, not the rest of the page.
+    end_candidates = [html.find(s, start + 1) for s in
+                      ('id="sx-risk-v2"', 'id="sx-policy-v2"', 'id="sx-aibrief-v2"')]
+    end = min(i for i in end_candidates if i != -1)
+    mkt = html[start:end]
+    assert 'id="sx-markets-v2"' in mkt
+    for banned in (
+        "Watch — don't chase",
+        "Stand aside",
+        "Protect gains",
+        "Get ready",
+        "Ignore —",
+        _CAUTIOUS_EN,
+    ):
+        assert banned not in mkt, f"Markets face leaked stance {banned!r}"
+
+
+# --------------------------------------------------------------------------- #
+# 5. Markets SSR skeleton, never a bare em dash
+# --------------------------------------------------------------------------- #
+
+def test_markets_ssr_is_skeleton_not_dash():
+    html = _render()
+    start = html.find('id="sx-markets-v2"')
+    end_candidates = [html.find(s, start + 1) for s in
+                      ('id="sx-risk-v2"', 'id="sx-policy-v2"', 'id="sx-aibrief-v2"')]
+    end = min(i for i in end_candidates if i != -1)
+    mkt = html[start:end]
+    assert "mx5-mkt-price nb-px skel" in mkt
+    assert 'aria-busy="true"' in mkt
+    # no bare-em-dash price/delta in the strip
+    assert not re.search(r'mx5-mkt-price[^>]*>—</div>', mkt)
+    assert not re.search(r'mx5-mkt-delta[^>]*>—</div>', mkt)
+
+
+# --------------------------------------------------------------------------- #
+# 6. Regime tip null guard + tip↔module reconciliation
+# --------------------------------------------------------------------------- #
+
+def test_regime_tip_omits_weakest_support_when_row_is_absent():
+    html = _render(latest={
+        **_base_vm()["latest"],
+        "quad": "Q3",
+        "raw_quad": "Q4",
+        "confidence": 0.4,
+        "flip_condition": {"label_unsupported": True, "component": None},
+        "quad_vector": {"transition_momentum": {}},
+    }, market_state=_ms())
+    # Today's axes row is on; Weakest support row is not
+    assert "Today’s axes" in html or "Today's axes" in html
+    # The tip must not advertise a Weakest-support row that is not rendered
+    tips = re.findall(r'<span class="tip">[\s\S]*?</span></span>', html)
+    joined = " ".join(tips)
+    assert "Weakest support:" not in joined
+    assert "最弱支撑：" not in joined or "最弱支撑读数暂缺" in joined
+
+
+def test_regime_tip_null_z_uses_missing_sentence():
+    html = _render(latest={
+        **_base_vm()["latest"],
+        "quad": "Q2",
+        "confidence": 0.7,
+        "flip_condition": {
+            "component": "copper_gold", "axis": "growth",
+            "z": None, "threshold": 1.0, "margin": 0.4,
+        },
+        "quad_vector": {"transition_momentum": {}},
+    }, market_state=_ms())
+    assert "One input didn't settle today, so the weakest-support read is off." in html
+    assert "有一项输入今日未结算，最弱支撑读数暂缺。" in html
+    assert "slope z —" not in html
+    assert "斜率 z —" not in html

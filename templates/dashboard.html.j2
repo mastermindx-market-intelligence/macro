@@ -5764,6 +5764,16 @@ body.page-macro.mx4-grid .mx5-mkt-price{
   color:var(--ink-1,rgba(255,255,255,.92));margin-bottom:4px;
   font-variant-numeric:tabular-nums;
 }
+/* Loading skeleton at true price-line geometry (theme.css .skel; never a bare em dash). */
+body.page-macro.mx4-grid .mx5-mkt-price.skel{
+  min-height:1em;min-width:4.5ch;display:block;
+}
+body.page-macro.mx4-grid .mx5-mkt-delta.skel{
+  min-height:1em;min-width:3.2ch;display:block;
+}
+body.page-macro .mx5-card-stance{
+  font-size:var(--fs-sm);line-height:1.45;color:var(--ink-2);margin-top:8px;font-weight:500;
+}
 body.page-macro.mx4-grid .mx5-mkt-delta{font-size:13px;font-weight:600;}
 body.page-macro.mx4-grid .mx5-mkt-delta.up{color:var(--ink-up, var(--up,#22d97a));}
 body.page-macro.mx4-grid .mx5-mkt-delta.dn{color:var(--ink-down, var(--down,#ef4444));}
@@ -7000,6 +7010,10 @@ body.page-macro.mx4-grid .mx5-alert-title{
   font-size:13px;font-weight:600;
   color:var(--ink-1,rgba(255,255,255,.92));line-height:1.4;
 }
+body.page-macro.mx4-grid .mx5-alert-k{
+  font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-3);margin-right:6px;
+}
 body.page-macro.mx4-grid .mx5-alert-title.warn{color:var(--mx5-warn-ink);}
 body.page-macro.mx4-grid .mx5-alert-detail{
   font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));
@@ -7219,10 +7233,13 @@ html[data-theme="light"] :is(
       'Q3': ('Sticky inflation into slowing growth — the dangerous regime; defend capital first.', '通胀粘性叠加增长放缓 — 最危险的周期；优先保住本金。'),
       'Q4': ('A growth scare with cooling inflation — lean defensive, bonds over stocks.', '增长恐慌伴随通胀降温 — 偏防御，债优于股。')
     } %}
+    {# Canonical fired-alert count (one-integer law). Hero prints it once; every
+       other integer on this page that describes the same population is a labelled
+       slice of this number. Includes the dislocation banner when it is active. #}
+    {% set _nalerts = (alerts|length if alerts else 0) + (1 if (latest is defined and latest.dislocation and latest.dislocation.dislocation_active) else 0) %}
     {% if market_state %}
     {% set MS = market_state %}
     {% set _va = {'green':'▲','yellow':'▶','red':'▼'}.get(MS.color, '▶') %}
-    {% set _nalerts = (alerts|length if alerts else 0) + (1 if (latest.dislocation and latest.dislocation.dislocation_active) else 0) %}
     {# Pre-compute _band_weakest for verdict band Zone 2/3 (same logic as _weakest below) #}
     {% set _band_weakest = MS.components | sort(attribute='score') | first if (MS and MS.components is defined and MS.components) else none %}
     {% endif %}
@@ -7254,23 +7271,54 @@ html[data-theme="light"] :is(
       'tips_nominal_momentum':['the TIPS spread','TIPS 利差']
     } %}
     {% set _fs_quad = {'Q1':['Goldilocks','理想增长'],'Q2':['Reflation','再通胀'],'Q3':['Stagflation','滞胀'],'Q4':['Growth-scare/Deflation','增长恐慌／通缩']} %}
+    {# Tip describes ONLY rows this module actually renders (parameterize, never
+       enumerate). Weakest-support numbers are omitted when z/threshold/margin
+       didn't settle — a plain missing sentence, never a bare em dash. #}
+    {% set _fs_raw = raw_quad_of(latest) | trim %}
+    {% set _fs_unsup = (_fc.get('label_unsupported') is sameas true)
+                       or (latest.get('quad') and _fs_raw and _fs_raw != latest.get('quad')) %}
+    {% set _show_unsup = _fs_unsup %}
+    {% set _show_weak = (not _fs_unsup) and _fc.get('component') %}
+    {% set _show_drift = _tm.get('gaining') and _tm.get('window_sessions') %}
+    {% set _show_conf = _conf is not none and _conf is number %}
+    {% set _tip = namespace(en="Drawn only from today's regime-engine readings, shown as-is.",
+                           zh="仅取自今日周期引擎的读数，原样展示。") %}
+    {% if _show_unsup %}
+      {% set _tip.en = _tip.en ~ " Today's axes: the label's own axes no longer support it — treat the name as history." %}
+      {% set _tip.zh = _tip.zh ~ " 今日两轴：该标签自身的两轴已不再支持它——请把名称视为历史。" %}
+    {% endif %}
+    {% if _show_weak %}
+      {% if _fc.get('z') is none or _fc.get('threshold') is none or _fc.get('margin') is none %}
+        {% set _tip.en = _tip.en ~ " One input didn't settle today, so the weakest-support read is off." %}
+        {% set _tip.zh = _tip.zh ~ " 有一项输入今日未结算，最弱支撑读数暂缺。" %}
+      {% else %}
+        {% set _tip.en = _tip.en ~ " Weakest support: the component still supporting the call — slope z " ~ (_fc.get('z') | round(2) | string) ~ " vs its ±" ~ (_fc.get('threshold') | round(2) | string) ~ " cutoff, margin " ~ (_fc.get('margin') | round(2) | string) ~ "." %}
+        {% set _tip.zh = _tip.zh ~ " 最弱支撑：仍支撑当前判断的最弱分量 — 斜率 z " ~ (_fc.get('z') | round(2) | string) ~ "，阈值 ±" ~ (_fc.get('threshold') | round(2) | string) ~ "（边际 " ~ (_fc.get('margin') | round(2) | string) ~ "）。" %}
+      {% endif %}
+    {% endif %}
+    {% if _show_drift %}
+      {% set _tip.en = _tip.en ~ " Drift: how the model's regime probabilities moved over the last " ~ (_tm.window_sessions | string) ~ " sessions." %}
+      {% set _tip.zh = _tip.zh ~ " 漂移方向：模型周期概率近 " ~ (_tm.window_sessions | string) ~ " 个交易日的变化。" %}
+    {% elif _tm.get('gaining') and not _tm.get('window_sessions') %}
+      {% set _tip.en = _tip.en ~ " One input didn't settle today, so the drift window is off." %}
+      {% set _tip.zh = _tip.zh ~ " 有一项输入今日未结算，漂移窗口暂缺。" %}
+    {% endif %}
+    {% if _show_conf %}
+      {% set _tip.en = _tip.en ~ " How firmly held: 0–1 = probability behind the label × how much the inputs agree." %}
+      {% set _tip.zh = _tip.zh ~ " 把握程度：0–1 = 标签背后的概率 × 输入一致度。" %}
+    {% endif %}
+    {% set _tip.en = _tip.en ~ " Conditional context only — nothing here predicts a flip." %}
+    {% set _tip.zh = _tip.zh ~ " 仅为条件性参考 — 并非预测翻转。" %}
     <div class="mxfs">
       <div class="mxfs-hd">
         {{ t('What could change the regime call','什么会改变周期判断') }}
-        {{ help('Drawn only from today\'s regime-engine readings, shown as-is. Weakest support: the component still supporting the call — slope z ' ~ (_fc.get('z') | round(2) if _fc.get('z') is not none else '—') ~ ' vs its ±' ~ (_fc.get('threshold') | round(2) if _fc.get('threshold') is not none else '—') ~ ' cutoff, margin ' ~ (_fc.get('margin') | round(2) if _fc.get('margin') is not none else '—') ~ '. Drift: how the model\'s regime probabilities moved over the last ' ~ (_tm.get('window_sessions') or '—') ~ ' sessions. How firmly held: 0–1 = probability behind the label × how much the inputs agree. Conditional context only — nothing here predicts a flip.',
-                 '仅取自今日周期引擎的读数，原样展示。最弱支撑：仍支撑当前判断的最弱分量 — 斜率 z ' ~ (_fc.get('z') | round(2) if _fc.get('z') is not none else '—') ~ '，阈值 ±' ~ (_fc.get('threshold') | round(2) if _fc.get('threshold') is not none else '—') ~ '（边际 ' ~ (_fc.get('margin') | round(2) if _fc.get('margin') is not none else '—') ~ '）。漂移方向：模型周期概率近 ' ~ (_tm.get('window_sessions') or '—') ~ ' 个交易日的变化。把握程度：0–1 = 标签背后的概率 × 输入一致度。仅为条件性参考 — 并非预测翻转。') }}
+        {{ help(_tip.en, _tip.zh) }}
         <span class="mxfs-badge">{{ t('Context — not a forecast','情景参考 — 非预测') }}</span>
       </div>
       <div class="mxfs-subtitle">{{ t('About the regime label — not the 0-100 risk score.','指上方周期标签——并非 0-100 风险评分。') }}</div>
-      {# When the label's own axes no longer support it there IS no supporting component
-         to name, and naming one presents anti-evidence as support (the defect the engine
-         fixed in flip_condition — it now returns component=None + label_unsupported).
-         An older latest.json still carries a component here, so the same state is
-         detected from the published axes via raw_quad_of(). #}
-      {% set _fs_raw = raw_quad_of(latest) | trim %}
-      {% set _fs_unsup = (_fc.get('label_unsupported') is sameas true)
-                         or (latest.get('quad') and _fs_raw and _fs_raw != latest.get('quad')) %}
-      {% if _fs_unsup %}
+      {# Row flags (_show_unsup / _show_weak / _show_drift / _show_conf) were
+         computed above so the help tip describes only what this module renders. #}
+      {% if _show_unsup %}
       <div class="mxfs-row">
         <span class="mxfs-k">{{ t('Today’s axes','今日两轴') }}</span>
         <span class="mxfs-v">
@@ -7278,7 +7326,7 @@ html[data-theme="light"] :is(
           <span class="l-zh">读数为<b>{{ _fs_quad.get(_fs_raw, [_fs_raw, _fs_raw])[1] }}</b> — 该标签自身的两轴已不再支持它。请把这个名称视为历史，而非今日读数。</span>
         </span>
       </div>
-      {% elif _fc.get('component') %}
+      {% elif _show_weak %}
       {% set _fcl = _fs_short.get(_fc.component, [(_fc.component | replace('_',' ')), (_fc.component | replace('_',' '))]) %}
       {% set _fax_en = 'growth' if _fc.get('axis') == 'growth' else 'inflation' %}
       {% set _fax_zh = '增长' if _fc.get('axis') == 'growth' else '通胀' %}
@@ -7293,7 +7341,7 @@ html[data-theme="light"] :is(
         </span>
       </div>
       {% endif %}
-      {% if _tm.get('gaining') and _tm.get('window_sessions') %}
+      {% if _show_drift %}
       {% set _tg = _fs_quad.get(_tm.gaining, [_tm.gaining, _tm.gaining]) %}
       {% set _tl = _fs_quad.get(_tm.get('losing'), [_tm.get('losing',''), _tm.get('losing','')]) %}
       <div class="mxfs-row">
@@ -7309,7 +7357,7 @@ html[data-theme="light"] :is(
         </span>
       </div>
       {% endif %}
-      {% if _conf is not none and _conf is number %}
+      {% if _show_conf %}
       {% set _c_en = 'low' if _conf < 0.33 else ('moderate' if _conf < 0.66 else 'high') %}
       {% set _c_zh = '较松' if _conf < 0.33 else ('尚可' if _conf < 0.66 else '较稳') %}
       <div class="mxfs-row">
@@ -8687,10 +8735,25 @@ html[data-theme="light"] :is(
   <div class="sx" id="sx-events-v2" style="--isle-color:var(--isle-events)">
     {# v5 face — UPCOMING EVENTS (week rail + impact badges; fed odds removed to Fed card) #}
     {% set _ev_hi_cnt = (macro_catalysts | selectattr('impact','equalto','high') | list | length) if macro_catalysts else 0 %}
+    {# Stance from producer n (high-impact prints ahead). Unknown → cautious lane. #}
+    {% if macro_catalysts is not defined %}
+      {% set _ev_stance_en = "Watch — this read is being updated." %}
+      {% set _ev_stance_zh = "观望——该读数更新中。" %}
+    {% elif _ev_hi_cnt > 0 %}
+      {% set _ev_stance_en = "Get ready — " ~ (_ev_hi_cnt | string) ~ " big prints ahead; avoid adding risk right before them." %}
+      {% set _ev_stance_zh = "做好准备——前方有 " ~ (_ev_hi_cnt | string) ~ " 项重磅数据，公布前不宜加仓。" %}
+    {% else %}
+      {% set _ev_stance_en = "Nothing scheduled that should change positioning this week." %}
+      {% set _ev_stance_zh = "本周暂无应改变仓位的安排。" %}
+    {% endif %}
     <div class="sxg-face mx5-card-face" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-events')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-events');}">
       <div class="mx5-card-title-row">
         <div class="mx5-card-title"><span class="l-en">Upcoming Events</span><span class="l-zh">近期事件</span></div>
         <div class="mx5-card-badge"><span class="l-en">This week</span><span class="l-zh">本周</span></div>
+      </div>
+      <div class="mx5-card-stance">
+        <span class="l-en">{{ _ev_stance_en }}</span>
+        <span class="l-zh">{{ _ev_stance_zh }}</span>
       </div>
       <div class="mx5-events-sub">
         {% if _ev_hi_cnt %}
@@ -11236,6 +11299,29 @@ html[data-theme="light"] :is(
       <span class="l-en">{{ _fgv5_label_en }}</span>
       <span class="l-zh">{{ _fgv5_label_zh }}</span>
     </div>
+    {# Stance from producer composite zone (panic / neutral / euphoria).
+       Missing dial or empty payload → cautious lane. PANIC/Neutral/EUPHORIA
+       dial anchors stay; this is the Law-1 sentence under them. #}
+    {% if fear_greed is defined and fear_greed and fear_greed.get('dial') is not none %}
+      {% set _fg_lab = (_fgv5.get('label_en') or '') | lower %}
+      {% if 'fear' in _fg_lab or _fgv5_dial < 40 %}
+        {% set _fg_stance_en = "Watch — don't chase weakness; extremes can snap back." %}
+        {% set _fg_stance_zh = "观望——不追跌，极端情绪可能快速反转。" %}
+      {% elif 'greed' in _fg_lab or _fgv5_dial > 60 %}
+        {% set _fg_stance_en = "Protect gains — stretched optimism cuts both ways." %}
+        {% set _fg_stance_zh = "保住收益——情绪过热双向都有风险。" %}
+      {% else %}
+        {% set _fg_stance_en = "Stand aside — nothing to do from this panel today." %}
+        {% set _fg_stance_zh = "暂不行动——本面板今日无需操作。" %}
+      {% endif %}
+    {% else %}
+      {% set _fg_stance_en = "Watch — this read is being updated." %}
+      {% set _fg_stance_zh = "观望——该读数更新中。" %}
+    {% endif %}
+    <div class="mx5-card-stance">
+      <span class="l-en">{{ _fg_stance_en }}</span>
+      <span class="l-zh">{{ _fg_stance_zh }}</span>
+    </div>
     <div class="mx5-sentiment-label">
       <span class="l-en">Composite at {{ _fgv5_dial | int }} &middot; {{ _fgv5_label_en | lower }} zone</span>
       <span class="l-zh">综合指数 {{ _fgv5_dial | int }} &middot; {{ _fgv5_label_zh }}区间</span>
@@ -11262,6 +11348,18 @@ html[data-theme="light"] :is(
     {% if sector_heat %}
     {% set _shv5_hot = (sector_heat.get('heating') or [])[:3] %}
     {% set _shv5_cold = (sector_heat.get('cooling') or [])[:3] %}
+    {% set _sh_hot_n = (sector_heat.get('heating') or []) | length %}
+    {% if _sh_hot_n > 0 %}
+      {% set _sh_stance_en = "Watch the heating list — rotation, not chasing." %}
+      {% set _sh_stance_zh = "关注升温板块——是轮动，不是追涨。" %}
+    {% else %}
+      {% set _sh_stance_en = "Stand aside — no sector is running hot today." %}
+      {% set _sh_stance_zh = "暂不行动——今日无板块过热。" %}
+    {% endif %}
+    <div class="mx5-card-stance">
+      <span class="l-en">{{ _sh_stance_en }}</span>
+      <span class="l-zh">{{ _sh_stance_zh }}</span>
+    </div>
     {% if _shv5_hot %}
     <div class="mx5-sector-row">
       <div class="mx5-sector-sub-label"><span class="l-en">Hot</span><span class="l-zh">热门</span></div>
@@ -11318,11 +11416,9 @@ html[data-theme="light"] :is(
     {# Quiet open affordance (unified face anatomy) #}
     <div class="plf-open plf-open-sect"><span class="l-en">Open sector heat</span><span class="l-zh">打开板块热图</span> &rarr;</div>
     {% else %}
-    <div style="flex:1;display:flex;align-items:center;justify-content:center">
-      <span style="font-size:12px;color:var(--ink-3,rgba(255,255,255,.36))">
-        <span class="l-en">Sector data — accruing from nightly log.</span>
-        <span class="l-zh">板块数据 — 每晚积累中。</span>
-      </span>
+    <div class="mx5-card-stance">
+      <span class="l-en">Watch — this read is being updated.</span>
+      <span class="l-zh">观望——该读数更新中。</span>
     </div>
     {% endif %}
   </div>
@@ -11347,26 +11443,26 @@ html[data-theme="light"] :is(
         <div class="mx5-mkt-tile" data-sym="ES=F" data-mkt="us">
           <div class="mx5-mkt-ticker">ES</div>
           <div class="mx5-mkt-sub"><span class="l-en">S&amp;P fut</span><span class="l-zh">标普期货</span></div>
-          <div class="mx5-mkt-price nb-px" data-sym="ES=F" data-mkt="us" data-bare>—</div>
-          <div class="mx5-mkt-delta nb-chg" data-sym="ES=F" data-mkt="us">—</div>
+          <div class="mx5-mkt-price nb-px skel" data-sym="ES=F" data-mkt="us" data-bare aria-busy="true"></div>
+          <div class="mx5-mkt-delta nb-chg skel" data-sym="ES=F" data-mkt="us" aria-busy="true"></div>
         </div>
         <div class="mx5-mkt-tile" data-sym="NQ=F" data-mkt="us">
           <div class="mx5-mkt-ticker">NQ</div>
           <div class="mx5-mkt-sub"><span class="l-en">Nasdaq fut</span><span class="l-zh">纳指期货</span></div>
-          <div class="mx5-mkt-price nb-px" data-sym="NQ=F" data-mkt="us" data-bare>—</div>
-          <div class="mx5-mkt-delta nb-chg" data-sym="NQ=F" data-mkt="us">—</div>
+          <div class="mx5-mkt-price nb-px skel" data-sym="NQ=F" data-mkt="us" data-bare aria-busy="true"></div>
+          <div class="mx5-mkt-delta nb-chg skel" data-sym="NQ=F" data-mkt="us" aria-busy="true"></div>
         </div>
         <div class="mx5-mkt-tile" data-sym="YM=F" data-mkt="us">
           <div class="mx5-mkt-ticker">YM</div>
           <div class="mx5-mkt-sub"><span class="l-en">Dow fut</span><span class="l-zh">道指期货</span></div>
-          <div class="mx5-mkt-price nb-px" data-sym="YM=F" data-mkt="us" data-bare>—</div>
-          <div class="mx5-mkt-delta nb-chg" data-sym="YM=F" data-mkt="us">—</div>
+          <div class="mx5-mkt-price nb-px skel" data-sym="YM=F" data-mkt="us" data-bare aria-busy="true"></div>
+          <div class="mx5-mkt-delta nb-chg skel" data-sym="YM=F" data-mkt="us" aria-busy="true"></div>
         </div>
         <div class="mx5-mkt-tile" data-sym="RTY=F" data-mkt="us">
           <div class="mx5-mkt-ticker">RTY</div>
           <div class="mx5-mkt-sub"><span class="l-en">Russell fut</span><span class="l-zh">罗素期货</span></div>
-          <div class="mx5-mkt-price nb-px" data-sym="RTY=F" data-mkt="us" data-bare>—</div>
-          <div class="mx5-mkt-delta nb-chg" data-sym="RTY=F" data-mkt="us">—</div>
+          <div class="mx5-mkt-price nb-px skel" data-sym="RTY=F" data-mkt="us" data-bare aria-busy="true"></div>
+          <div class="mx5-mkt-delta nb-chg skel" data-sym="RTY=F" data-mkt="us" aria-busy="true"></div>
         </div>
         {# ^TNX — Yahoo streams the 10-year yield as yield×10 (42.5 => 4.25%); the
            data-fmt="tnx" price tile divides by 10 + suffixes "%", and its delta renders
@@ -11375,14 +11471,14 @@ html[data-theme="light"] :is(
         <div class="mx5-mkt-tile" data-sym="^TNX" data-mkt="us">
           <div class="mx5-mkt-ticker">10Y</div>
           <div class="mx5-mkt-sub"><span class="l-en">10Y yield</span><span class="l-zh">十年期收益率</span></div>
-          <div class="mx5-mkt-price nb-px" data-sym="^TNX" data-mkt="us" data-fmt="tnx" data-bare>—</div>
-          <div class="mx5-mkt-delta nb-chg" data-sym="^TNX" data-mkt="us" data-fmt="tnx">—</div>
+          <div class="mx5-mkt-price nb-px skel" data-sym="^TNX" data-mkt="us" data-fmt="tnx" data-bare aria-busy="true"></div>
+          <div class="mx5-mkt-delta nb-chg skel" data-sym="^TNX" data-mkt="us" data-fmt="tnx" aria-busy="true"></div>
         </div>
         <div class="mx5-mkt-tile" data-sym="DX-Y.NYB" data-mkt="us">
           <div class="mx5-mkt-ticker">DXY</div>
           <div class="mx5-mkt-sub"><span class="l-en">Dollar DXY</span><span class="l-zh">美元指数</span></div>
-          <div class="mx5-mkt-price nb-px" data-sym="DX-Y.NYB" data-mkt="us" data-bare>—</div>
-          <div class="mx5-mkt-delta nb-chg" data-sym="DX-Y.NYB" data-mkt="us">—</div>
+          <div class="mx5-mkt-price nb-px skel" data-sym="DX-Y.NYB" data-mkt="us" data-bare aria-busy="true"></div>
+          <div class="mx5-mkt-delta nb-chg skel" data-sym="DX-Y.NYB" data-mkt="us" aria-busy="true"></div>
         </div>
       </div>
     </div>
@@ -11600,18 +11696,38 @@ html[data-theme="light"] :is(
         {% if _abHiCnt is not none %}
         <span class="l-en">
           <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">{{ _abHiCnt }} High-Impact Items</span><br>
-          {% if _abDomCh_clean %}Dominant channel: <span style="color:var(--mx5-accent-ink);font-weight:600">{{ _abDomCh_clean }}</span><br>{% endif %}
+          {% if _abDomCh_clean %}Dominant theme: <span style="color:var(--mx5-accent-ink);font-weight:600">{{ _abDomCh_clean }}</span><br>{% endif %}
           {{ _abHiCnt }} high-impact signals across channels
         </span>
         <span class="l-zh">
           <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">{{ _abHiCnt }} 条高影响信息</span><br>
-          {% if _abDomCh_clean_zh %}主导频道：<span style="color:var(--mx5-accent-ink);font-weight:600">{{ _abDomCh_clean_zh }}</span><br>{% endif %}
+          {% if _abDomCh_clean_zh %}主线：<span style="color:var(--mx5-accent-ink);font-weight:600">{{ _abDomCh_clean_zh }}</span><br>{% endif %}
           {{ _abHiCnt }} 条高影响信号
         </span>
         {% else %}
         <span class="l-en">Cross-asset synthesis</span>
         <span class="l-zh">跨资产综合</span>
         {% endif %}
+      </div>
+      {# Stance from producer high-impact n. {theme} = plain word for dominant channel. #}
+      {% if _abHiCnt is none %}
+        {% set _ab_stance_en = "Watch — this read is being updated." %}
+        {% set _ab_stance_zh = "观望——该读数更新中。" %}
+      {% elif _abHiCnt >= 3 %}
+        {% set _ab_stance_en = "Watch — don't chase headlines; let prices settle first." %}
+        {% set _ab_stance_zh = "观望——不追新闻，先等价格企稳。" %}
+      {% elif _abHiCnt >= 1 %}
+        {% set _ab_theme_en = _abDomCh_clean or "news" %}
+        {% set _ab_theme_zh = _abDomCh_clean_zh or "新闻" %}
+        {% set _ab_stance_en = "Watch the " ~ _ab_theme_en ~ " thread — no action needed yet." %}
+        {% set _ab_stance_zh = "关注" ~ _ab_theme_zh ~ "主线——暂无需操作。" %}
+      {% else %}
+        {% set _ab_stance_en = "Ignore — nothing in the news flow demands action." %}
+        {% set _ab_stance_zh = "可忽略——新闻流中无需行动事项。" %}
+      {% endif %}
+      <div class="mx5-card-stance">
+        <span class="l-en">{{ _ab_stance_en }}</span>
+        <span class="l-zh">{{ _ab_stance_zh }}</span>
       </div>
       {# Required not-a-signal-source note (spec §2.9) #}
       <div class="mx5-ai-note">
@@ -11647,12 +11763,11 @@ html[data-theme="light"] :is(
     <div class="sxg-face mx5-card-face" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-news')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-news');}">
       <div class="mx5-card-title-row">
         <div class="mx5-card-title"><span class="l-en">Alerts Centre</span><span class="l-zh">警报中心</span></div>
-        {% if _alv5_prio | length > 0 %}
+        {% set _al_need = _alv5_prio | length %}
         <div class="mx5-card-badge" style="color:var(--mx5-warn-ink);background:var(--mx5-warn-dim);border:1px solid rgba(245,158,11,.20);">
-          <span class="l-en">{{ _alv5_prio | length }} FIRED</span>
-          <span class="l-zh">{{ _alv5_prio | length }} 条触发</span>
+          <span class="l-en">{{ _al_need }} need action · of {{ _nalerts }}</span>
+          <span class="l-zh">{{ _al_need }} 条需处理 · 共 {{ _nalerts }} 条</span>
         </div>
-        {% endif %}
       </div>
       {% if _alv5_prio or _alv5_hot_news %}
       {# Rows rendered: up to 2 prio, 1 hot news headline, then pad prio to 3 if slots remain.
@@ -11674,8 +11789,8 @@ html[data-theme="light"] :is(
               <span class="l-zh">{{ a.plain_zh or a.plain_en }}</span>
             </div>
             <div class="mx5-alert-detail">
-              <span class="l-en">{{ a.message[:120] }}{% if a.message | length > 120 %}…{% endif %}</span>
-              <span class="l-zh">{{ (a.message_zh or a.message)[:80] }}{% if (a.message_zh or a.message) | length > 80 %}…{% endif %}</span>
+              <span class="l-en">{{ a.detail_en or a.plain_en }}</span>
+              <span class="l-zh">{{ a.detail_zh or a.detail_en or a.plain_zh or a.plain_en }}</span>
             </div>
           </div>
         </div>
@@ -11688,6 +11803,7 @@ html[data-theme="light"] :is(
           <div class="mx5-alert-dot info"></div>
           <div class="mx5-alert-content">
             <div class="mx5-alert-title">
+              <span class="mx5-alert-k"><span class="l-en">Headline</span><span class="l-zh">头条</span></span>
               <span style="font-size:12px;margin-right:3px">📰</span>
               <span class="l-en">{{ (_hn.title or '')[:80] }}{% if (_hn.title or '') | length > 80 %}…{% endif %}</span>
               <span class="l-zh">{{ (_hn.get('title_zh') or _hn.title or '')[:60] }}{% if (_hn.get('title_zh') or _hn.title or '') | length > 60 %}…{% endif %}</span>
@@ -11714,8 +11830,8 @@ html[data-theme="light"] :is(
               <span class="l-zh">{{ a.plain_zh or a.plain_en }}</span>
             </div>
             <div class="mx5-alert-detail">
-              <span class="l-en">{{ a.message[:120] }}{% if a.message | length > 120 %}…{% endif %}</span>
-              <span class="l-zh">{{ (a.message_zh or a.message)[:80] }}{% if (a.message_zh or a.message) | length > 80 %}…{% endif %}</span>
+              <span class="l-en">{{ a.detail_en or a.plain_en }}</span>
+              <span class="l-zh">{{ a.detail_zh or a.detail_en or a.plain_zh or a.plain_en }}</span>
             </div>
           </div>
         </div>
@@ -11736,8 +11852,8 @@ html[data-theme="light"] :is(
       </div>
       <div class="mx5-alert-footer">
         <span>
-          <span class="l-en">Showing {{ [_alv5_alert_rows.count, _alv5_total] | min }} of {{ _alv5_total }} in feed</span>
-          <span class="l-zh">显示 {{ [_alv5_alert_rows.count, _alv5_total] | min }} / {{ _alv5_total }} 条</span>
+          <span class="l-en">{{ _al_need }} need action · of {{ _nalerts }}</span>
+          <span class="l-zh">{{ _al_need }} 条需处理 · 共 {{ _nalerts }} 条</span>
         </span>
         <button type="button" class="gbtn gbtn-sm gbtn-quiet" onclick="event.stopPropagation();mx5OpenDlg('dlg-news')">
           <span class="l-en">View all &#8594;</span>
@@ -13888,6 +14004,9 @@ html[data-theme="light"] :is(
                 {% endif %}
               </div>
               <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));line-height:1.5"><span class="l-en">{{ a.message }}</span><span class="l-zh">{{ a.message_zh or a.message }}</span></div>
+              {% if a.what_en %}
+              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">{{ a.what_en }}</span><span class="l-zh">{{ a.what_zh or a.what_en }}</span></div>
+              {% endif %}
             </div>
           </div>
           {% endfor %}
@@ -13913,6 +14032,9 @@ html[data-theme="light"] :is(
                 <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
               </div>
               <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">{{ a.message }}</span><span class="l-zh">{{ a.message_zh or a.message }}</span></div>
+              {% if a.what_en %}
+              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">{{ a.what_en }}</span><span class="l-zh">{{ a.what_zh or a.what_en }}</span></div>
+              {% endif %}
             </div>
           </div>
           {% endfor %}

@@ -167,6 +167,7 @@
       ".nb-px[data-live='stale']::after{background:#9ca3af;animation:none;box-shadow:none}" +
       ".nb-px[data-live='closed']::after{background:#6b7280;animation:none;box-shadow:none}" +
       ".nb-px[data-live='delayed']::after{background:#d97706;animation:none;box-shadow:none}" +
+      ".nb-px[data-live='behind']::after{background:var(--muted);animation:none;box-shadow:none}" +
       ".nb-dvg{font-size:10px;font-weight:700;margin-left:5px;padding:0 4px;border-radius:4px;" +
       "vertical-align:middle;white-space:nowrap}" +
       ".nb-dvg.alert{background:color-mix(in srgb,var(--act,#dc2626) 15%,transparent);" +
@@ -200,8 +201,48 @@
 
   // ── Shared per-node patch (used by BOTH the poller and the /ws/tape socket) ──
   // reading = { price, src, stale, ageMin, delayFloor, chg, prevClose, basis }.
+  var TAPE_NULL_EN = "Quotes unavailable — the rest of this page is unaffected.";
+  var TAPE_NULL_ZH = "行情暂不可用——本页其余内容不受影响。";
+  function paintTapeNull(el) {
+    el.classList.add("dtp-token", "behind");
+    el.classList.remove("skel");
+    el.removeAttribute("aria-busy");
+    el.setAttribute("data-live", "behind");
+    el.title = "";
+    el.removeAttribute("title");
+    var mount = (el.closest && el.closest("#sx-markets-v2")) || null;
+    var line = mount && mount.querySelector && mount.querySelector(".mx-mkt-null");
+    if (!line) {
+      var html = '<span class="l-en">' + TAPE_NULL_EN + '</span>' +
+                 '<span class="l-zh">' + TAPE_NULL_ZH + '</span>';
+      if (mount && document.createElement) {
+        line = document.createElement("div");
+        line.className = "mx-empty mx-mkt-null";
+        line.setAttribute("role", "status");
+        line.innerHTML = '<p class="mx-empty-line">' + html + '</p>';
+        mount.appendChild(line);
+        el.textContent = "";
+      } else {
+        el.innerHTML = html;
+      }
+    } else {
+      el.textContent = "";
+    }
+  }
+  function clearTapeNullLine(el) {
+    var mount = el.closest && el.closest("#sx-markets-v2");
+    if (!mount || !mount.querySelector) return;
+    var still = mount.querySelector(".mx5-mkt-price[data-live='behind']");
+    var line = mount.querySelector(".mx-mkt-null");
+    if (!still && line && line.parentNode) line.parentNode.removeChild(line);
+  }
   function patchPriceNode(el, r, sessions) {
-    if (r.price == null) return;
+    if (r.price == null) {
+      if (TAPE_SYMS[rawSym(el)]) paintTapeNull(el);
+      return;
+    }
+    el.classList.remove("dtp-token", "behind", "skel");
+    el.removeAttribute("aria-busy");
     var sym = rawSym(el);
     var mkt = el.getAttribute("data-mkt") || "us";
     el.textContent = isTnx(el)
@@ -227,10 +268,13 @@
              : state === "delayed" ? ("≥" + delayFloor + "-min delayed") : "live";
     el.title = word + " · " + (r.src || "?") +
       (r.ageMin != null ? " · " + Number(r.ageMin).toFixed(0) + "m ago" : "");
+    clearTapeNullLine(el);
   }
   function patchChgNode(el, r) {
     var mkt = el.getAttribute("data-mkt") || "us";
     if (r.chg == null && !(isTnx(el) && r.price != null)) return;
+    el.classList.remove("skel");
+    el.removeAttribute("aria-busy");
     paintChg(el, r.chg, isStale(mkt, r.ageMin, r.stale), r);
   }
   function patchSymbol(sym, r, sessions, ovT) {
@@ -286,7 +330,11 @@
       if (!sym || seen[sym]) return;
       seen[sym] = 1;
       var r = pick(sym);
-      if (r.price != null && !_wsFresher(sym, serverNow)) patchSymbol(sym, r, sessions, ovT);
+      if (TAPE_SYMS[sym]) {
+        if (!_wsFresher(sym, serverNow)) patchSymbol(sym, r, sessions, ovT);
+      } else if (r.price != null && !_wsFresher(sym, serverNow)) {
+        patchSymbol(sym, r, sessions, ovT);
+      }
     });
   }
 
@@ -438,8 +486,14 @@
     return found;
   }
   function _applyWsQuote(q) {
-    if (!q || !q.sym || q.price == null) return;
+    if (!q || !q.sym) return;
     if (!TAPE_SYMS[q.sym]) return;
+    if (q.price == null) {
+      patchSymbol(q.sym, { price: null, src: null, stale: true, ageMin: null,
+                           delayFloor: null, chg: null, prevClose: null, basis: q.basis || "quote" },
+                  null, null);
+      return;
+    }
     var basis = q.basis || "quote";
     var prevTs = _wsLast[q.sym + "|ts"] || 0;
     var prevBasis = _wsLast[q.sym + "|basis"];
