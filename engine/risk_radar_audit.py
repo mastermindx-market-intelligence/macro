@@ -58,6 +58,15 @@ _STATE_DISPLAY = {
     "elevated": ("Elevated", "偏高"),
     "risk-off": ("Risk-off", "避险"),
 }
+_SCARE_DISPLAY = {
+    "credit": ("Credit stress", "信用压力"),
+    "rates": ("Rates / inflation shock", "利率/通胀冲击"),
+    "bubble": ("Bubble / blow-off unwind", "泡沫/见顶回吐"),
+    "growth": ("Growth scare / defensive rotation", "增长恐慌/防御轮动"),
+    "vol": ("Volatility event", "波动率事件"),
+    "global": ("Global breadth breakdown", "全球广度破位"),
+    "internals": ("Breadth internals deterioration", "内部广度恶化"),
+}
 _CHANGE_HISTORY_POINTS = 22
 
 
@@ -399,6 +408,14 @@ def _state_label(state, language: str) -> str:
     return key.replace("_", " ").title() if language == "en" else key
 
 
+def _scare_label(scare, language: str) -> str:
+    key = str(scare or "")
+    pair = _SCARE_DISPLAY.get(key)
+    if pair:
+        return pair[0 if language == "en" else 1]
+    return key.replace("_", " ").title() if language == "en" else key
+
+
 def _compact_labels(keys: list[str], language: str, limit: int = 2) -> str:
     labels = [_leg_label(k, language) for k in keys[:limit]]
     if len(keys) > limit:
@@ -439,7 +456,9 @@ def publication_change(snap: dict, root=None) -> dict:
         # rows ever appear.
         by_day: dict[str, tuple[pd.Timestamp, dict]] = {}
         for row in _read(_path(root)):
-            day = str((row or {}).get("asof") or "")
+            if not isinstance(row, dict):
+                continue
+            day = str(row.get("asof") or "")
             if not day or day in by_day:
                 continue
             try:
@@ -530,12 +549,12 @@ def publication_change(snap: dict, root=None) -> dict:
             summary_zh.append(f"{_state_label(prior_state, 'zh')}→{_state_label(current_state, 'zh')}")
         if prior.get("dominant_scare") != snap.get("dominant_scare"):
             summary_en.append(
-                f"Lead {_state_label(prior.get('dominant_scare'), 'en')}→"
-                f"{_state_label(snap.get('dominant_scare'), 'en')}"
+                f"Lead {_scare_label(prior.get('dominant_scare'), 'en')}→"
+                f"{_scare_label(snap.get('dominant_scare'), 'en')}"
             )
             summary_zh.append(
-                f"主导 {_state_label(prior.get('dominant_scare'), 'zh')}→"
-                f"{_state_label(snap.get('dominant_scare'), 'zh')}"
+                f"主导 {_scare_label(prior.get('dominant_scare'), 'zh')}→"
+                f"{_scare_label(snap.get('dominant_scare'), 'zh')}"
             )
         if subject:
             if subject["cleared_legs"]:

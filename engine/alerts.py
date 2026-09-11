@@ -88,15 +88,40 @@ def _flag_value(row: pd.Series, column: str) -> bool:
     return bool(value)
 
 
+def _present_value(value):
+    """Collapse scalar pandas/numpy missing sentinels to typed absence."""
+    try:
+        if pd.isna(value):
+            return None
+    except (TypeError, ValueError):
+        pass
+    return value
+
+
+def _int_or_zero(value) -> int:
+    """Best-effort integer for optional transition metadata."""
+    value = _present_value(value)
+    if value is None:
+        return 0
+    try:
+        return int(value)
+    except (TypeError, ValueError, OverflowError):
+        return 0
+
+
 def _transition_mechanism_detail(prev: pd.Series, cur: pd.Series) -> tuple[str, str]:
     """Explain a headline transition even when the active flag set did not change."""
-    if prev.get("quad") != cur.get("quad"):
-        return (f"confirmed quad {prev.get('quad')}→{cur.get('quad')}",
-                f"确认象限 {prev.get('quad')}→{cur.get('quad')}")
-    pending_days = int(cur.get("pending_days") or 0)
-    prior_pending = int(prev.get("pending_days") or 0)
-    pending_quad = cur.get("pending_quad")
-    if pending_quad and str(pending_quad) not in ("None", "nan") and pending_days != prior_pending:
+    prev_quad = _present_value(prev.get("quad"))
+    cur_quad = _present_value(cur.get("quad"))
+    if prev_quad is not None and cur_quad is not None and prev_quad != cur_quad:
+        return (f"confirmed quad {prev_quad}→{cur_quad}",
+                f"确认象限 {prev_quad}→{cur_quad}")
+    pending_days = _int_or_zero(cur.get("pending_days"))
+    prior_pending = _int_or_zero(prev.get("pending_days"))
+    pending_quad = _present_value(cur.get("pending_quad"))
+    if (pending_quad is not None
+            and str(pending_quad) not in ("None", "nan")
+            and pending_days != prior_pending):
         try:
             needed = int(config.load()["engine"]["quad"]["hysteresis_days"])
         except Exception:  # noqa: BLE001 — copy only; alert still fires
@@ -104,18 +129,21 @@ def _transition_mechanism_detail(prev: pd.Series, cur: pd.Series) -> tuple[str, 
         suffix = f"/{needed}" if needed else ""
         return (f"{pending_quad} confirmation count {pending_days}{suffix}",
                 f"{pending_quad} 确认计数 {pending_days}{suffix}")
-    prev_raw, cur_raw = prev.get("transition_state_raw"), cur.get("transition_state_raw")
+    prev_raw = _present_value(prev.get("transition_state_raw"))
+    cur_raw = _present_value(cur.get("transition_state_raw"))
     if prev_raw is not None and cur_raw is not None and prev_raw != cur_raw:
         return (f"raw threshold {_TS_PLAIN_EN.get(str(prev_raw), str(prev_raw).lower())}→"
                 f"{_TS_PLAIN_EN.get(str(cur_raw), str(cur_raw).lower())}",
                 f"原始阈值 {_TS_PLAIN_ZH.get(str(prev_raw), str(prev_raw))}→"
                 f"{_TS_PLAIN_ZH.get(str(cur_raw), str(cur_raw))}")
-    if bool(cur.get("transition_ratcheted", False)):
-        remain = int(cur.get("transition_dwell_remaining") or 0)
+    cur_ratcheted = _flag_value(cur, "transition_ratcheted")
+    prev_ratcheted = _flag_value(prev, "transition_ratcheted")
+    if cur_ratcheted:
+        remain = _int_or_zero(cur.get("transition_dwell_remaining"))
         return (f"ratchet/floor held the headline above the raw flag count"
                 f" ({remain} clean session{'s' if remain != 1 else ''} remain)",
                 f"棘轮/底线将主状态维持在原始旗标计数之上（尚需 {remain} 个干净交易日）")
-    if bool(prev.get("transition_ratcheted", False)) and not bool(cur.get("transition_ratcheted", False)):
+    if prev_ratcheted and not cur_ratcheted:
         return ("de-escalation dwell completed", "降级观察期完成")
     return ("flag set unchanged; transition hold/hysteresis moved the headline",
             "旗标集合未变；状态保持/滞后确认机制推动主状态变化")
@@ -126,38 +154,41 @@ def transition_state_change(hist: pd.DataFrame, f: pd.DataFrame) -> Alert | None
     if pair is None:
         return None
     prev, cur = pair
-    if cur["transition_state"] != prev["transition_state"]:
-        sev = {"STABLE": "info", "WEAKENING": "warn",
-               "TRANSITIONING": "act", "NEW_REGIME": "act"}.get(cur["transition_state"], "info")
-        known = [column for column in _TRANSITION_FLAG_COPY
-                 if column in prev.index and column in cur.index]
-        added = [column for column in known
-                 if not _flag_value(prev, column) and _flag_value(cur, column)]
-        cleared = [column for column in known
-                   if _flag_value(prev, column) and not _flag_value(cur, column)]
-        detail_en: list[str] = []
-        detail_zh: list[str] = []
-        if added:
-            detail_en.append("added: " + ", ".join(_TRANSITION_FLAG_COPY[c][0] for c in added))
-            detail_zh.append("新增：" + "、".join(_TRANSITION_FLAG_COPY[c][1] for c in added))
-        if cleared:
-            detail_en.append("cleared: " + ", ".join(_TRANSITION_FLAG_COPY[c][0] for c in cleared))
-            detail_zh.append("解除：" + "、".join(_TRANSITION_FLAG_COPY[c][1] for c in cleared))
-        # Old stored histories can lack flag columns. Preserve their exact legacy shape; when the
-        # columns are present but unchanged, identify the state-machine mechanism instead.
-        if known and not detail_en:
-            cause_en, cause_zh = _transition_mechanism_detail(prev, cur)
-            detail_en.append("cause: " + cause_en)
-            detail_zh.append("原因：" + cause_zh)
-        suffix_en = ("; " + "; ".join(detail_en)) if detail_en else ""
-        suffix_zh = ("；" + "；".join(detail_zh)) if detail_zh else ""
-        return Alert("transition_state_change", sev,
-                     f"Transition state {prev['transition_state']} -> {cur['transition_state']} "
-                     f"({int(cur['n_flags'])} flags active){suffix_en}",
-                     message_zh=f"转换状态 {_TS_PLAIN_ZH.get(prev['transition_state'], prev['transition_state'])}"
-                                f" -> {_TS_PLAIN_ZH.get(cur['transition_state'], cur['transition_state'])}"
-                                f"（{int(cur['n_flags'])} 个预警激活）{suffix_zh}")
-    return None
+    prev_state = _present_value(prev.get("transition_state"))
+    cur_state = _present_value(cur.get("transition_state"))
+    if prev_state is None or cur_state is None or cur_state == prev_state:
+        return None
+    prev_key, cur_key = str(prev_state), str(cur_state)
+    sev = {"STABLE": "info", "WEAKENING": "warn",
+           "TRANSITIONING": "act", "NEW_REGIME": "act"}.get(cur_key, "info")
+    known = [column for column in _TRANSITION_FLAG_COPY
+             if column in prev.index and column in cur.index]
+    added = [column for column in known
+             if not _flag_value(prev, column) and _flag_value(cur, column)]
+    cleared = [column for column in known
+               if _flag_value(prev, column) and not _flag_value(cur, column)]
+    detail_en: list[str] = []
+    detail_zh: list[str] = []
+    if added:
+        detail_en.append("added: " + ", ".join(_TRANSITION_FLAG_COPY[c][0] for c in added))
+        detail_zh.append("新增：" + "、".join(_TRANSITION_FLAG_COPY[c][1] for c in added))
+    if cleared:
+        detail_en.append("cleared: " + ", ".join(_TRANSITION_FLAG_COPY[c][0] for c in cleared))
+        detail_zh.append("解除：" + "、".join(_TRANSITION_FLAG_COPY[c][1] for c in cleared))
+    # Old stored histories can lack flag columns. Preserve their exact legacy shape; when the
+    # columns are present but unchanged, identify the state-machine mechanism instead.
+    if known and not detail_en:
+        cause_en, cause_zh = _transition_mechanism_detail(prev, cur)
+        detail_en.append("cause: " + cause_en)
+        detail_zh.append("原因：" + cause_zh)
+    suffix_en = ("; " + "; ".join(detail_en)) if detail_en else ""
+    suffix_zh = ("；" + "；".join(detail_zh)) if detail_zh else ""
+    return Alert("transition_state_change", sev,
+                 f"Transition state {prev_key} -> {cur_key} "
+                 f"({int(cur['n_flags'])} flags active){suffix_en}",
+                 message_zh=f"转换状态 {_TS_PLAIN_ZH.get(prev_key, prev_key)}"
+                            f" -> {_TS_PLAIN_ZH.get(cur_key, cur_key)}"
+                            f"（{int(cur['n_flags'])} 个预警激活）{suffix_zh}")
 
 
 def axis_confidence_floor(hist: pd.DataFrame, f: pd.DataFrame) -> list[Alert]:
