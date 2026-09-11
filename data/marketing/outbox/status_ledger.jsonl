@@ -6003,3 +6003,4 @@
 {"id":"ob-2026-09-11-1851d9bfaf","from":"posting","to":"posted","at":"2026-09-11T09:01:59Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6aa3c38774b1f1d0ccd79571","external_url":null,"at":"2026-09-11T09:01:46Z","booked_at":"2026-09-11T09:01:46Z"}}
 {"id":"ob-2026-09-11-5dee18c378","from":"approved","to":"posting","at":"2026-09-11T09:02:04Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-09-11-5dee18c378","from":"posting","to":"posted","at":"2026-09-11T09:02:05Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6aa3c38d71ba1c02ccf8a5d4","external_url":null,"at":"2026-09-11T09:01:46Z","booked_at":"2026-09-11T09:01:46Z"}}
+{"id":"ob-2026-09-09-b1b1628557","from":"queued","to":"quarantined","at":"2026-09-11T13:28:58Z","actor":"press_wire_reap","note":"expired: superseded by tonight's plan","receipt":null}
