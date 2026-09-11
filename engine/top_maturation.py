@@ -1647,6 +1647,7 @@ def _build_tier(tier: str, *, data_root: Path, panel: Mapping[str, pd.DataFrame]
             if not hits:
                 continue
             theme_counts.append({
+                "basket_id": _bid,
                 "basket": b["name"], "basket_zh": b.get("name_zh"),
                 "members": len(b["members"]),
                 "extended": len(hits),

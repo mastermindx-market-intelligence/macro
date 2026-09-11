@@ -4,7 +4,8 @@
 
    Data: one nightly context dict `wh` (schema winner_health.v1) passed by
    scripts/build_winner_health_page.py. Everything renders server-side; the page
-   ships NO fetch, NO chart library and NO page JS beyond the shared chrome.
+   ships NO fetch and NO chart library. Page JS is the group cap + find-by-ticker
+   filter (P1-6); presentation stays in this stylesheet, never a runtime sheet.
 
    Design contract: research/top_anatomy/W1_SURFACE_DESIGN_SPEC.md (visual LAW)
    + docs/DESIGN_DOCTRINE.md (content law — wins on conflict).
@@ -127,27 +128,36 @@
       {%- if a.track != 'W' %} {{ t('It also draws only on names with long price history, so runs that ended in a delisting are under-represented.',
                                     '而且它只取有长期价格历史的个股，因此以退市收场的行情在样本中偏少。') }}{% endif %}</div>
     {%- else %}
-    {%- set n_fall = a.topped_63td if a.topped_63td is not none else 0 %}
-    {%- set n_surv = a.n - n_fall %}
-    {%- set in10 = ((10 * n_fall / a.n) | round | int) if (a.n and n_fall) else none %}
+    {#- n_fall is tri-state: None means unmeasured (never a silent 0). Rate
+        rounding is half-up (floor(10*x/n + 0.5)), never banker's; the x-in-10
+        form is only for 1–9. A rounded 10 with topped < n is "nearly all". -#}
+    {%- set n_fall = a.topped_63td %}
+    {%- set n_surv = (a.n - n_fall) if (n_fall is not none) else none %}
+    {%- set in10 = (((10 * n_fall / a.n) + 0.5) | int) if (a.n and n_fall) else none %}
     <div class="lensx-rows">
       <div class="lensx-row warn">
         <span class="lensx-k">{{ t('Fell back hard', '大幅回落') }}</span>
-        <span class="lensx-v"><span class="l-en"><b>{{ n_fall }} of {{ a.n }}</b> dropped {{ lib.drawdown_pct | default(20) }}% or more from their high within three months{% if in10 is not none %} — about {{ in10 }} in 10{% endif %}.</span><span class="l-zh"><b>{{ a.n }} 段里有 {{ n_fall }} 段</b>在三个月内从高点回落 {{ lib.drawdown_pct | default(20) }}% 或更多{% if in10 is not none %} —— 大约 10 段里有 {{ in10 }} 段{% endif %}。</span></span>
+        <span class="lensx-v">{%- if n_fall is none -%}
+          <span class="l-en">Not yet measured.</span><span class="l-zh">尚未测量。</span>
+        {%- else -%}
+          <span class="l-en"><b>{{ n_fall }} of {{ a.n }}</b> dropped {{ lib.drawdown_pct | default(20) }}% or more from their high within three months{%- if in10 is not none and in10 >= 10 and n_fall < a.n %} — nearly all of these dropped back{%- elif in10 is not none and in10 >= 10 %} — all of them{%- elif in10 is not none and in10 >= 1 %} — about {{ in10 }} in 10{%- endif %}.</span><span class="l-zh"><b>{{ a.n }} 段里有 {{ n_fall }} 段</b>在三个月内从高点回落 {{ lib.drawdown_pct | default(20) }}% 或更多{%- if in10 is not none and in10 >= 10 and n_fall < a.n %} —— 几乎全部{%- elif in10 is not none and in10 >= 10 %} —— 全部{%- elif in10 is not none and in10 >= 1 %} —— 大约 10 段里有 {{ in10 }} 段{%- endif %}。</span>
+        {%- endif -%}</span>
       </div>
+      {%- if n_surv is not none %}
       <div class="lensx-row up">
         <span class="lensx-k">{{ t('Kept going', '继续上行') }}</span>
         <span class="lensx-v">{%- if n_surv < 5 -%}
-          <span class="l-en">only {{ n_surv }} of them carried on — too few to call typical</span><span class="l-zh">其中只有 {{ n_surv }} 段继续上行 —— 样本太少，不足以称作典型</span>
+          <span class="l-en">Only {{ n_surv }} of them carried on — too few to call typical.</span><span class="l-zh">其中只有 {{ n_surv }} 段继续上行 —— 样本太少，不足以称作典型。</span>
         {%- else -%}
           <span class="l-en">The other <b>{{ n_surv }}</b> carried on{% if a.median_further_gain is not none %} — a typical further gain of <b>{{ pc(a.median_further_gain) }}</b> — across those {{ n_surv }}{% endif %}.</span><span class="l-zh">其余 <b>{{ n_surv }}</b> 段继续上行{% if a.median_further_gain is not none %}，典型的后续涨幅为 <b>{{ pc(a.median_further_gain) }}</b> —— 基于这 {{ n_surv }} 段{% endif %}。</span>
         {%- endif -%}</span>
       </div>
-      {%- if n_fall > 0 and (n_fall < 5 or a.median_drop_from_high is not none) %}
+      {%- endif %}
+      {%- if n_fall is not none and n_fall > 0 and (n_fall < 5 or a.median_drop_from_high is not none) %}
       <div class="lensx-row dn">
         <span class="lensx-k">{{ t('When they fell', '回落时') }}</span>
         <span class="lensx-v">{%- if n_fall < 5 -%}
-          <span class="l-en">only {{ n_fall }} of them fell back — too few to call typical</span><span class="l-zh">其中只有 {{ n_fall }} 段回落 —— 样本太少，不足以称作典型</span>
+          <span class="l-en">Only {{ n_fall }} of them fell back — too few to call a typical drop.</span><span class="l-zh">仅 {{ n_fall }} 段回落——不足以给出典型跌幅。</span>
         {%- elif a.median_drop_from_high is not none -%}
           <span class="l-en">The typical drop from the high was <b>{{ pc(a.median_drop_from_high) }}</b> — across those {{ n_fall }}.</span><span class="l-zh">从高点回落的典型幅度是 <b>{{ pc(a.median_drop_from_high) }}</b> —— 基于这 {{ n_fall }} 段。</span>
         {%- endif -%}</span>
@@ -213,7 +223,7 @@
 
 {# ── one name row ── #}
 {% macro namerow(r, T, M, compact=false) -%}
-<div class="row">
+<div class="row" data-find="{{ r.ticker }} {{ r.name | default('', true) }} {{ r.name_zh | default('', true) }}">
   <div class="c-tk">
     {%- if r.href %}<a class="tk" href="{{ r.href }}">{{ r.ticker }}</a>{% else %}<span class="tk">{{ r.ticker }}</span>{% endif %}
     {#- `default` substitutes only for UNDEFINED, not for None, and the artifact
@@ -362,6 +372,10 @@
    absence is itself the complete reading) and the AGING groups go compact —
    dropping the picture, never the reading. #}
 {% set BIG_GROUP = 55 %}
+{# L1 row cap (§9.10 / P1-6). Aging groups still RENDER every name (truncation
+   forbidden — a holder must find theirs); CSS hides past this count until
+   "See all N" or the find filter opens the group. #}
+{% set ROW_CAP = 8 %}
 
 {% set WH = wh if (wh is defined and wh is not none) else none %}
 {# §8 contract note 1, MANDATORY: a top-level `states` with no `tiers` renders as
@@ -444,6 +458,14 @@ html[data-theme="light"] .nullhero{box-shadow:0 1px 2px rgba(20,32,64,.05),0 10p
 html[data-theme="light"] .sp-uw{opacity:.23}
 html[data-theme="light"] .wear i{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--text) 24%,transparent)}
 html[data-theme="light"] .bar{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--text) 15%,transparent)}
+/* Unobserved tail: not a healthy segment. Dark = muted hatch in the well;
+   light = hairline hatch + inset ring (research-workspace, not a token swap). */
+html[data-theme="light"] .bar .b0{
+  background-color:color-mix(in srgb,var(--text) 4%,var(--panel));
+  background-image:repeating-linear-gradient(-45deg,
+    color-mix(in srgb,var(--text) 14%,transparent) 0 1px,
+    transparent 1px 5px);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--text) 10%,transparent)}
 html[data-theme="light"] .leg{border-bottom-color:color-mix(in srgb,var(--text) 34%,transparent)}
 *,*::before,*::after{box-sizing:border-box}
 html:not([data-lang="zh"]) .l-zh{display:none}
@@ -569,6 +591,12 @@ a{color:var(--ink-link, var(--link));text-decoration:none}
 .bar i{display:block;height:100%}
 .bar .b1{background:var(--m1)} .bar .b2{background:var(--m2)}
 .bar .b3{background:var(--m3)} .bar .b4{background:var(--m4)}
+/* Unobserved names: hatched ground, not the healthy teal. Width already
+   scales off members; this tail is what keeps the fill honest. */
+.bar .b0{background-color:color-mix(in srgb,var(--text) 7%,transparent);
+  background-image:repeating-linear-gradient(-52deg,
+    color-mix(in srgb,var(--text) 16%,transparent) 0 1px,
+    transparent 1px 6px);cursor:help}
 .thm .tmat{font-size:11.5px;font-weight:650;font-variant-numeric:tabular-nums}
 .thm .tmat.on{color:var(--m3)} .thm .tmat.off{color:var(--muted)}
 
@@ -687,7 +715,33 @@ html[data-theme="light"] .tnull{background:var(--panel);
 .grp-sub .stance::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;
   background:currentColor;margin-right:6px;transform:translateY(-1px)}
 
-.rows{margin-top:4px}
+.rows{margin-top:4px;overflow-x:hidden}
+.rows.is-capped:not(.is-open) > .row:nth-child(n+{{ ROW_CAP + 1 }}){display:none}
+.rows.is-open{max-height:min(70vh,42rem);overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain}
+.row.is-miss{display:none!important}
+.grp.is-quiet{display:none}
+.wh-find{margin:22px 0 0;display:flex;flex-direction:column;align-items:stretch;gap:6px;
+  max-width:28rem}
+.wh-find .wh-find-lab{font-size:11.5px;font-weight:650;color:var(--muted-strong)}
+.wh-find input{width:100%;box-sizing:border-box;margin:0;padding:8px 12px;
+  font:inherit;font-size:var(--fs-body);color:var(--text);
+  background:color-mix(in srgb,var(--panel) 82%,transparent);
+  border:1px solid var(--line);border-radius:var(--r-ctl,8px)}
+.wh-find input:focus{outline:2px solid color-mix(in srgb,var(--m1) 55%,transparent);
+  outline-offset:1px}
+html[data-theme="light"] .wh-find input{background:var(--panel);
+  box-shadow:0 1px 2px color-mix(in srgb,var(--text) 10%,transparent)}
+.wh-more{display:inline-flex;align-items:center;gap:6px;margin:10px 0 0;padding:7px 12px;
+  font:inherit;font-size:12.5px;font-weight:650;color:var(--text);cursor:pointer;
+  background:color-mix(in srgb,var(--panel) 70%,transparent);
+  border:1px solid var(--line);border-radius:var(--r-ctl,8px)}
+.wh-more:hover,.wh-more:focus-visible{background:color-mix(in srgb,var(--mc,var(--m2)) 10%,var(--panel))}
+html[data-theme="light"] .wh-more{background:var(--panel);
+  box-shadow:0 1px 2px color-mix(in srgb,var(--text) 8%,transparent)}
+@media(max-width:620px){
+  .wh-find{max-width:none}
+  .wh-more{width:100%;justify-content:center}
+}
 .row{display:grid;grid-template-columns:minmax(150px,1.15fr) 92px 104px minmax(220px,2.1fr) auto;
   gap:16px;align-items:center;padding:11px 6px;border-bottom:1px solid var(--hair)}
 .row:hover{background:color-mix(in srgb,var(--mc) 5%,transparent)}
@@ -915,6 +969,13 @@ a.tk:hover{color:var(--ink-link, var(--link))}
 
   {# ══ THE THREE TIER SECTIONS ══ #}
   {% if MODE == 'board' %}
+  <div class="wh-find" id="wh-find">
+    <label class="wh-find-lab" for="wh-find-q">{{ t('Find a name', '查找代码') }}</label>
+    <input id="wh-find-q" type="search" autocomplete="off" spellcheck="false"
+           aria-label="Find a ticker"
+           data-ph-en="Ticker or name" data-ph-zh="代码或名称"
+           placeholder="Ticker or name">
+  </div>
   {%- for T in TIERS %}
   {%- set M = TIER_META.get(T.key) or TIER_META['primary'] %}
   {%- set st = T.states or {} %}
@@ -1014,30 +1075,66 @@ a.tk:hover{color:var(--ink-link, var(--link))}
     {#- ONE tomography on the page, and it belongs to the primary tier. -#}
     {%- if T.key == 'primary' and T.theme_counts %}
     {%- set _msizes = T.theme_counts | map(attribute='members') | select('number') | list %}
-    {%- set _esizes = T.theme_counts | map(attribute='extended') | select('number') | list %}
-    {%- set tmax = (_msizes | max) if _msizes else ((_esizes | max) if _esizes else 1) %}
+    {%- set tmax = (_msizes | max) if _msizes else none %}
+    {%- set ns_thm = namespace(all_members=true) %}
+    {%- for th in T.theme_counts %}
+      {%- if th.members is not defined or not th.members %}{%- set ns_thm.all_members = false %}{%- endif %}
+    {%- endfor %}
     <section class="sec" aria-label="Themes by state">
       <div class="sec-hd">
         <h2>{{ t('How much of each theme is aging', '各主题老化到什么程度') }}</h2>
         <span class="stance">{{ t("Watch — don't chase", '观望——勿追涨') }}</span>
+        {%- if ns_thm.all_members %}
         <span class="note">{{ t('Counts only — the bar width is the size of the theme, so a small group can never look like a big one.',
                                 '只是计数 —— 条形的宽度代表主题的大小，小主题不会被画得跟大主题一样。') }}</span>
+        {%- endif %}
       </div>
       <div class="themes">
         {%- for th in T.theme_counts %}
         {%- set tot = (th.extended or 0) %}
-        {%- set members = th.members if (th.members is defined and th.members) else tot %}
+        {%- set has_members = th.members is defined and th.members %}
+        {%- set members = th.members if has_members else none %}
         {%- set tmat = (th.watch or 0) + (th.thinning or 0) + (th.breaking or 0) %}
         {%- set clean = tot - tmat if tot > tmat else 0 %}
+        {%- set unobs = (members - tot) if (has_members and members > tot) else 0 %}
         <div class="thm">
-          <span class="tname"{% if th.basket and '(WFE)' in th.basket %} data-tip-en="WFE means wafer-fab equipment — the machines that make chips." data-tip-zh="WFE 指晶圆厂设备，即制造芯片的机器。"{% endif %}><span class="l-en">{{ th.basket }}</span><span class="l-zh">{{ th.basket_zh | default(th.basket, true) }}</span></span>
-          <span class="tcount"><span class="l-en">{{ tot }} of its {{ members }} names are on this board — {% if tmat == 0 %}none are aging{% elif tmat == tot %}all {{ tmat }} {{ 'is' if tmat == 1 else 'are' }} aging{% elif tmat == 1 %}1 is aging{% else %}{{ tmat }} are aging{% endif %}</span><span class="l-zh">该主题 {{ members }} 只中有 {{ tot }} 只在本板上，{% if tmat == 0 %}没有在老化的{% elif tmat == tot %}{{ tmat }} 只都在老化{% else %}其中 {{ tmat }} 只在老化{% endif %}</span></span>
-          <span class="bar" style="width:{{ ((members / tmax * 100) | round(1)) if tmax else 100 }}%" aria-hidden="true">
+          <span class="tname"{% if th.basket_id == 'semicap_equipment' %} data-tip-en="WFE means wafer-fab equipment — the machines that make chips." data-tip-zh="WFE 指晶圆厂设备，即制造芯片的机器。"{% endif %}><span class="l-en">{{ th.basket }}</span><span class="l-zh">{{ th.basket_zh | default(th.basket, true) }}</span></span>
+          <span class="tcount">{%- if has_members -%}
+            {%- if tot == 1 -%}
+            <span class="l-en">1 of its {{ members }} names is on this board — {% if tmat == 1 %}and it is aging.{% else %}it is not aging yet.{% endif %}</span><span class="l-zh">该主题 {{ members }} 只中有 1 只在本板上，{% if tmat == 1 %}该股正在老化。{% else %}尚未老化。{% endif %}</span>
+            {%- elif tmat == 0 -%}
+            <span class="l-en">{{ tot }} of its {{ members }} names are on this board — none are aging.</span><span class="l-zh">该主题 {{ members }} 只中有 {{ tot }} 只在本板上，没有在老化的。</span>
+            {%- elif tmat == tot -%}
+            <span class="l-en">{{ tot }} of its {{ members }} names are on this board — all {{ tmat }} are aging.</span><span class="l-zh">该主题 {{ members }} 只中有 {{ tot }} 只在本板上，{{ tmat }} 只都在老化。</span>
+            {%- elif tmat == 1 -%}
+            <span class="l-en">{{ tot }} of its {{ members }} names are on this board — 1 is aging.</span><span class="l-zh">该主题 {{ members }} 只中有 {{ tot }} 只在本板上，其中 1 只在老化。</span>
+            {%- else -%}
+            <span class="l-en">{{ tot }} of its {{ members }} names are on this board — {{ tmat }} are aging.</span><span class="l-zh">该主题 {{ members }} 只中有 {{ tot }} 只在本板上，其中 {{ tmat }} 只在老化。</span>
+            {%- endif -%}
+          {%- else -%}
+            {%- if tot == 1 and tmat == 1 -%}
+            <span class="l-en">1 name on this board is aging.</span><span class="l-zh">本板上有 1 只在老化。</span>
+            {%- elif tot == 1 -%}
+            <span class="l-en">1 name on this board — it is not aging yet.</span><span class="l-zh">本板上有 1 只，尚未老化。</span>
+            {%- elif tmat == 0 -%}
+            <span class="l-en">{{ tot }} names on this board — none are aging.</span><span class="l-zh">本板上有 {{ tot }} 只，没有在老化的。</span>
+            {%- elif tmat == tot -%}
+            <span class="l-en">{{ tot }} names on this board are aging.</span><span class="l-zh">本板上有 {{ tot }} 只在老化。</span>
+            {%- elif tmat == 1 -%}
+            <span class="l-en">{{ tot }} names on this board — 1 is aging.</span><span class="l-zh">本板上有 {{ tot }} 只，其中 1 只在老化。</span>
+            {%- else -%}
+            <span class="l-en">{{ tot }} names on this board — {{ tmat }} are aging.</span><span class="l-zh">本板上有 {{ tot }} 只，其中 {{ tmat }} 只在老化。</span>
+            {%- endif -%}
+          {%- endif -%}</span>
+          {%- if has_members and tmax %}
+          <span class="bar" style="width:{{ (members / tmax * 100) | round(1) }}%" aria-hidden="true">
             {%- if clean %}<i class="b1" style="flex:{{ clean }}"></i>{% endif %}
             {%- if th.watch %}<i class="b2" style="flex:{{ th.watch }}"></i>{% endif %}
             {%- if th.thinning %}<i class="b3" style="flex:{{ th.thinning }}"></i>{% endif %}
             {%- if th.breaking %}<i class="b4" style="flex:{{ th.breaking }}"></i>{% endif %}
+            {%- if unobs %}<i class="b0" style="flex:{{ unobs }}" data-tip-en="{{ unobs }} names not on this board — not measured" data-tip-zh="{{ unobs }} 只不在本板——未测量"></i>{% endif %}
           </span>
+          {%- endif %}
         </div>
         {%- endfor %}
       </div>
@@ -1070,9 +1167,17 @@ a.tk:hover{color:var(--ink-link, var(--link))}
       <p class="rollup">{{ t('Not listed one by one — nothing has slipped on any of them tonight.',
                              '不逐只列出 —— 今晚它们没有任何环节转弱。') }}</p>
       {%- else %}
-      <div class="rows">
+      {%- set n_rows = rows | length %}
+      {%- set capped = n_rows > ROW_CAP %}
+      <div class="rows{{ ' is-capped' if capped else '' }}" data-row-n="{{ n_rows }}" data-row-cap="{{ ROW_CAP }}">
         {%- for r in rows %}{{ namerow(r, T, M, compact) }}{% endfor %}
       </div>
+      {%- if capped %}
+      <button type="button" class="wh-more" data-n="{{ n_rows }}" aria-expanded="false">
+        <span class="wh-more-open"><span class="l-en">See all {{ n_rows }}</span><span class="l-zh">查看全部 {{ n_rows }} 只</span></span>
+        <span class="wh-more-close" hidden><span class="l-en">Show top {{ ROW_CAP }} ↑</span><span class="l-zh">只看前 {{ ROW_CAP }} 只</span></span>
+      </button>
+      {%- endif %}
       {%- endif %}
     </section>
     {%- endif %}
@@ -1113,5 +1218,57 @@ a.tk:hover{color:var(--ink-link, var(--link))}
   </div>
 
 </div>
+<script>
+(function(){
+  var q = document.getElementById('wh-find-q');
+  if (!q) return;
+  var zh = document.documentElement.getAttribute('data-lang') === 'zh';
+  q.placeholder = q.getAttribute(zh ? 'data-ph-zh' : 'data-ph-en') || q.placeholder;
+  function setOpen(box, btn, open){
+    if (!box) return;
+    box.classList.toggle('is-open', !!open);
+    if (!btn) return;
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    var o = btn.querySelector('.wh-more-open');
+    var c = btn.querySelector('.wh-more-close');
+    if (o) o.hidden = !!open;
+    if (c) c.hidden = !open;
+  }
+  function applyFind(){
+    var needle = (q.value || '').trim().toLowerCase();
+    var filtering = needle.length > 0;
+    document.querySelectorAll('section.grp').forEach(function(g){
+      var box = g.querySelector('.rows');
+      if (!box) return;
+      var more = g.querySelector('.wh-more');
+      var hits = 0;
+      box.querySelectorAll('.row').forEach(function(row){
+        var hay = (row.getAttribute('data-find') || '').toLowerCase();
+        var match = !filtering || hay.indexOf(needle) !== -1;
+        row.classList.toggle('is-miss', filtering && !match);
+        if (match) hits += 1;
+      });
+      if (filtering){
+        setOpen(box, more, true);
+        g.classList.toggle('is-quiet', hits === 0);
+        if (more) more.hidden = true;
+      } else {
+        g.classList.remove('is-quiet');
+        setOpen(box, more, false);
+        if (more) more.hidden = false;
+      }
+    });
+  }
+  q.addEventListener('input', applyFind);
+  document.querySelectorAll('.wh-more').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var g = btn.closest('.grp');
+      var box = g && g.querySelector('.rows');
+      if (!box) return;
+      setOpen(box, btn, !box.classList.contains('is-open'));
+    });
+  });
+})();
+</script>
 </body>
 </html>
