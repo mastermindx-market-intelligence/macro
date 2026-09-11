@@ -5983,3 +5983,4 @@
 {"id":"ob-2026-09-10-009c1adb19","from":"approved","to":"posting","at":"2026-09-11T00:00:23Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-09-10-009c1adb19","from":"posting","to":"posted","at":"2026-09-11T00:00:23Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6aa3449771ba1c02ccede3be","external_url":null,"at":"2026-09-11T00:00:12Z","booked_at":"2026-09-11T00:00:12Z"}}
 {"id":"ob-2026-09-11-a9cbc61e0a","from":"queued","to":"quarantined","at":"2026-09-11T01:25:46Z","actor":"approval-desk","note":"approval-desk: session_language: today_word_off_session:today's","receipt":null}
+{"id":"ob-2026-09-10-afafd09d16","from":"queued","to":"quarantined","at":"2026-09-11T04:23:49Z","actor":"press_wire_reap","note":"expired_session_language: copy's day words are no longer true: stale_session:2026-09-10!=2026-09-11 (kind 'chart' is a tape read; the Friday session has opened)","receipt":null}
