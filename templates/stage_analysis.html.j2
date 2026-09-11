@@ -589,6 +589,10 @@ table.heat{border-collapse:separate;border-spacing:0;font-size:11px;font-variant
 .altcol-head .liveflag{margin-left:auto;font-size:10px;font-weight:700;letter-spacing:.04em;padding:2px 8px;
   border-radius:999px;border:1px solid color-mix(in srgb,var(--up) 34%,var(--line));color:var(--ink-up, var(--up));
   background:color-mix(in srgb,var(--up) 9%,transparent);cursor:help}
+.altcol-head .outageflag{margin-left:auto;font-size:10px;font-weight:700;letter-spacing:.04em;padding:2px 8px;
+  border-radius:999px;border:1px solid var(--line);color:var(--muted);
+  background:color-mix(in srgb,var(--muted) 10%,transparent);cursor:help}
+.empty-why{margin-top:6px;font-size:12px;line-height:1.55;color:var(--muted);font-weight:500}
 .altlist{list-style:none;margin:0;padding:6px;display:flex;flex-direction:column;gap:2px;
   max-height:520px;overflow-y:auto;scrollbar-width:thin}
 .altitem{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:9px 10px;border-radius:11px;
@@ -681,7 +685,7 @@ html[data-theme="light"] .stn .lab{color:color-mix(in srgb,var(--sc,var(--muted)
    Token substitution alone is not this block: surfaces that glowed on dark
    become paper + hairline + a short shadow here. */
 html[data-theme="light"] body{background:#eef1f4}
-html[data-theme="light"] .aura{opacity:.28}
+html[data-theme="light"] .aura{display:none}
 html[data-theme="light"] .hero{
   background:#fff;
   border-color:color-mix(in srgb,var(--text) 12%,transparent);
@@ -740,8 +744,8 @@ html[data-theme="light"] .tip-q{background:#fff}
       <div style="margin-top:3px">{{ t('Weekly stage read', '周线阶段判定') }}</div>
       {% if population and population.current is not none %}
         <div class="popreceipt" style="margin-top:3px">
-          <span class="l-en">{{ '{:,}'.format(population.current) }} current · {{ '{:,}'.format(population.stale) }} stale · {{ '{:,}'.format(population.unknown) }} unknown</span>
-          <span class="l-zh">{{ '{:,}'.format(population.current) }} 当前 · {{ '{:,}'.format(population.stale) }} 过时 · {{ '{:,}'.format(population.unknown) }} 未知</span>
+          <span class="l-en">{{ '{:,}'.format(population.current) }} current · {{ '{:,}'.format(population.stale) }} stale · {{ '{:,}'.format(population.unknown) }} unresolved</span>
+          <span class="l-zh">{{ '{:,}'.format(population.current) }} 当前 · {{ '{:,}'.format(population.stale) }} 过时 · {{ '{:,}'.format(population.unknown) }} 未能判定</span>
         </div>
       {% endif %}
     </div>
@@ -1092,7 +1096,7 @@ html[data-theme="light"] .tip-q{background:#fff}
      the Earnings "Read" column cannot disagree. */
   function ecSent(v){
     if(v==null)return chip(null,'','No earnings call scored yet.','暂无财报电话会评分。');
-    var pct=Math.round(v),b=toneBand(v),tw=toneWord(v);
+    var pct=Math.round(v),b=toneBand(pct),tw=toneWord(pct);
     var cls=b==='up'?'c-up':b==='mid'?'c-info':b==='amb'?'c-amb':'c-dn';
     var tE='How upbeat the last earnings call sounded, 0–100 ('+pct+' = '+tw[0].toLowerCase()+').';
     var tZ='最近一次财报电话会语气有多正面，0–100（'+pct+' = '+tw[1]+'）。';
@@ -1340,9 +1344,9 @@ html[data-theme="light"] .tip-q{background:#fff}
     var ecHtml='';
     if(row.ec_sent!=null){
       var pct=Math.round(row.ec_sent);
-      var tw=toneWord(row.ec_sent),pw=perfWord(row.ec_perf);
+      var tw=toneWord(pct),pw=perfWord(row.ec_perf);
       ecHtml='<div class="ec-block" style="margin-top:12px"><h4>'+TT('Last earnings call','最近财报会')+'</h4>'+
-        '<div class="ec-hi '+(pct>=55?'pos':'neg')+'"><span class="lab">'+TT('Call tone','电话会语气')+'</span>'+
+        '<div class="ec-hi '+ecHiClass(pct)+'"><span class="lab">'+TT('Call tone','电话会语气')+'</span>'+
         TT('Sounded '+tw[0].toLowerCase()+' ('+pct+'/100); '+pw[0]+' ('+ (row.ec_perf==null?'—':row.ec_perf)+'/10).',
               '语气'+tw[1]+'（'+pct+'/100）；'+pw[1]+'（'+(row.ec_perf==null?'—':row.ec_perf)+'/10）。')+
         '</div></div>';
@@ -1831,9 +1835,11 @@ html[data-theme="light"] .tip-q{background:#fff}
      0–10 (same vocabulary as the Screener). Every plain-word meaning lives
      on Tier 1 (data-tip / inline word); receipts on hover.
      ===================================================================== */
-  /* Desk 20/11/4 through publish_ec_tone → 72.2/47.2/27.8, integer 72/47/28. */
+  /* Desk 20/11/4 through publish_ec_tone → 72.2/47.2/27.8, integer 72/47/28.
+     Band the printed integer so the chip word and the number cannot disagree. */
   function toneBand(sent){
     if(sent==null||sent!==sent)return null;
+    sent=Math.round(sent);
     if(sent>=72)return 'up';
     if(sent>=47)return 'mid';
     if(sent>=28)return 'amb';
@@ -1849,6 +1855,12 @@ html[data-theme="light"] .tip-q{background:#fff}
     if(b==='mid')return ['Balanced','中性'];
     if(b==='amb')return ['Guarded','谨慎'];
     return ['Downbeat','偏消极'];
+  }
+  function ecHiClass(sent){
+    var b=toneBand(sent);
+    if(b==='up')return 'pos';
+    if(b==='dn')return 'neg';
+    return '';
   }
   function tonePct(sent){
     if(sent==null)return 0;
@@ -2043,7 +2055,7 @@ html[data-theme="light"] .tip-q{background:#fff}
     return '<div class="empty soon"><div class="ico">⚠️</div><h3>'+TT('Earnings calls aren\'t loading','财报电话会暂时无法加载')+'</h3><p>'+TT('Our earnings feed is down; the Screener, Stage Board and Industries are unaffected. We\'re on it.','财报数据源中断；选股器、阶段异动与行业视图不受影响，我们正在修复。')+'</p></div>';
   }
   function altEmpty(){
-    return '<div class="empty soon"><div class="ico">⚠️</div><h3>'+TT('Alt-data topics aren\'t loading','另类数据话题暂时无法加载')+'</h3><p>'+TT('The trending-topics feed is down; the Screener, Stage Board and Industries are unaffected. We\'re on it.','热门话题数据源中断；选股器、阶段异动与行业视图不受影响，我们正在修复。')+'</p></div>';
+    return '<div class="empty soon"><div class="ico">⚠️</div><h3>'+TT('No trending topics to show right now.','暂无热门话题可显示。')+'</h3><p class="empty-why">'+TT('feeds haven\'t updated','数据源尚未更新')+'</p></div>';
   }
   function resEmpty(){
     return '<div class="empty soon"><div class="ico">🌙</div><h3>'+TT('Company primers are being written','公司简介正在撰写中')+'</h3><p>'+TT('This desk fills in as primers land. The Screener and Stage Board are unaffected.','本栏会随简介完成情况更新。选股器与阶段异动不受影响。')+'</p></div>';
@@ -2167,13 +2179,30 @@ html[data-theme="light"] .tip-q{background:#fff}
     if(a>=100)return (v>0?'+':'')+Math.round(v)+'%';
     return (v>0?'+':'')+(Math.round(v*10)/10)+'%';
   }
+  function altFlag(src, nTopics){
+    var seedflag='<span class="seedflag" data-tip-en="Seed backfill only — no lawful live source yet; treat as historical curiosity." data-tip-zh="仅为种子回填 —— 暂无合规实时来源；仅作历史参考。">'+TT('seed only','仅种子')+'</span>';
+    var liveflag='<span class="liveflag" data-tip-en="Seeded from backfill; our own collector runs forward from here." data-tip-zh="以回填为种子；此后由我们自己的采集器持续更新。">'+TT('live','实时')+'</span>';
+    var outageflag='<span class="outageflag" data-tip-en="No update timestamp on this source — we cannot claim it is current." data-tip-zh="该来源没有更新时间 —— 不能称为正在更新。">'+TT('not updating','未更新')+'</span>';
+    if(!src || (!src.seed_only && (src.asof==null || src.asof===''))) return outageflag;
+    if(src.seed_only) return seedflag;
+    if(nTopics>0) return liveflag;
+    return '';
+  }
+  function altEmptyWhy(){
+    var keys=['google','reddit','wikipedia','tiktok'];
+    var named=[];
+    keys.forEach(function(k){
+      var src=ALT&&ALT.sources&&ALT.sources[k];
+      if(src&&src.asof) named.push(LT(ALT_SRC[k].en,ALT_SRC[k].zh)+' '+esc(String(src.asof)));
+    });
+    if(!named.length) return TT('feeds haven\'t updated','数据源尚未更新');
+    return named.join(' · ');
+  }
   function altColumn(key){
     var src=(ALT&&ALT.sources&&ALT.sources[key])||null;
     var meta=ALT_SRC[key];
     var topics=(src&&src.topics)||[];
-    var flag=src&&src.seed_only
-      ? '<span class="seedflag" data-tip-en="Seed backfill only — no lawful live source yet; treat as historical curiosity." data-tip-zh="仅为种子回填 —— 暂无合规实时来源；仅作历史参考。">'+TT('seed only','仅种子')+'</span>'
-      : '<span class="liveflag" data-tip-en="Seeded from backfill; our own collector runs forward from here." data-tip-zh="以回填为种子；此后由我们自己的采集器持续更新。">'+TT('live','实时')+'</span>';
+    var flag=altFlag(src, topics.length);
     var items=topics.slice(0,60).map(function(t){
       var dn=(t.yoy_pct!=null&&t.yoy_pct<0);
       var expl=t.explanation||t.description||'';
@@ -2198,9 +2227,8 @@ html[data-theme="light"] .tip-q{background:#fff}
     },0);
     var cap=qs('#alt-cap');
     if(cap&&nTopics===0){
-      cap.innerHTML='<b>'+LT('No trending topics yet.','暂无热门话题。')+'</b> '+
-        LT('The feed is wired but nothing is drawing attention right now. The Screener and Stage Board are unaffected.',
-           '数据源已接通，但此刻没有正在升温的话题。选股器与阶段异动不受影响。');
+      cap.innerHTML='<b>'+LT('No trending topics to show right now.','暂无热门话题可显示。')+'</b>'+
+        '<div class="empty-why">'+altEmptyWhy()+'</div>';
     }
     var prov=qs('#alt-prov');
     if(prov)prov.innerHTML=LT('YoY = how much bigger the topic is than a year ago. Google, Reddit and Wikipedia run live forward from a seed backfill; TikTok is seed-only until a lawful live source exists. Matching to a stock is the source model’s guess — sanity-check it.','同比 = 该话题相比一年前扩大的幅度。Google、Reddit、维基百科在种子回填基础上持续实时更新；TikTok 在合规实时来源出现前仅为种子数据。与个股的匹配来自来源模型的推断 —— 请自行核对。');

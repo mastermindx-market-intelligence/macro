@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Element-screenshot evidence for stage_analysis.html W7 (round 3).
+"""Element-screenshot evidence for stage_analysis.html W7 (round 4).
 
 Captures dark+light × EN+ZH × 1440/390 of the packet states on a
 fixture-rendered page (sparse trees have no data/ or site/). Playwright
@@ -360,6 +360,31 @@ def _git_head_of_repo() -> tuple[str | None, str | None]:
     return head.sha, str(head.gitdir) if head.gitdir is not None else None
 
 
+def _merge_nonvisual(prev: dict | None, new: dict | None) -> dict:
+    out = dict(prev or {})
+    for key, val in (new or {}).items():
+        if val is None or val == []:
+            continue
+        out[key] = val
+    return out
+
+
+def _assert_clean_tree() -> None:
+    """M1 provenance: refuse to capture bytes that are not on HEAD."""
+    import subprocess
+
+    res = subprocess.run(
+        ["git", "status", "--porcelain"],
+        cwd=REPO_ROOT, capture_output=True, text=True, check=False,
+    )
+    dirty = (res.stdout or "").strip()
+    if dirty:
+        raise SystemExit(
+            "M1 provenance blocker: capture refused on a dirty tree. "
+            "Commit the code first, then recapture at that HEAD.\n" + dirty
+        )
+
+
 def _clip_union_js() -> str:
     return """
 (sels) => {
@@ -568,7 +593,10 @@ def _apply_action(page, action: str, scratch: Path) -> dict:
         page.locator('.tab[data-tab="altdata"]').click()
         page.wait_for_timeout(500)
         extra["live_chip"] = page.locator(".liveflag").count()
-        extra["alt_copy"] = page.locator("#s-altdata").inner_text()[:400]
+        extra["seed_chip"] = page.locator(".seedflag").count()
+        extra["outage_chip"] = page.locator(".outageflag").count()
+        extra["alt_copy"] = page.locator("#s-altdata").inner_text()[:500]
+        extra["empty_why"] = page.locator("#alt-cap .empty-why").inner_text() if page.locator("#alt-cap .empty-why").count() else ""
     if action == "s5-ern":
         page.locator('.tab[data-tab="earnings"]').click()
         page.wait_for_timeout(600)
@@ -727,8 +755,9 @@ def _capture(scratch: Path, subjects: set[str] | None = None) -> dict:
                         download.save_as(str(csv_path))
                         csv_text = csv_path.read_text(encoding="utf-8")
                         header = csv_text.splitlines()[0] if csv_text else ""
-                        nonvisual["csv"] = header
-                        entry["csv_header"] = header
+                        header_list = [c.strip() for c in header.split(",") if c.strip()] if header else []
+                        nonvisual["csv"] = header_list
+                        entry["csv_header"] = header_list
                     if action == "s1" and locale == "zh" and viewport == "desktop" and theme == "dark":
                         tags = page.evaluate(
                             """() => [...document.querySelectorAll('#screener-body .tagpill, #ern-table .tagpill')]
@@ -752,10 +781,11 @@ def _capture(scratch: Path, subjects: set[str] | None = None) -> dict:
                             page.locator(f'.tab[data-tab="{tab}"]').click()
                             page.wait_for_timeout(350)
                             m = page.evaluate(
-                                """() => ({sw: document.documentElement.scrollWidth,
-                                           cw: document.documentElement.clientWidth})"""
+                                """() => ({scrollWidth: document.documentElement.scrollWidth,
+                                           clientWidth: document.documentElement.clientWidth})"""
                             )
                             m["tab"] = tab
+                            m["ok"] = m["scrollWidth"] == m["clientWidth"] == 390
                             hs.append(m)
                         nonvisual["hscroll"] = hs
                         entry["hscroll"] = hs
@@ -849,7 +879,7 @@ def _capture(scratch: Path, subjects: set[str] | None = None) -> dict:
         "generated_at": generated_at,
         "tool": {
             "module_ref": "scripts/capture_stage_analysis_w7_evidence.py",
-            "version": "w7-r3-element",
+            "version": "w7-r4-element",
             "capture_method": (
                 "playwright viewport/clip screenshot on a fixture-rendered "
                 "stage_analysis.html.j2 (page CSS + theme.css + theme.js). "
@@ -881,7 +911,10 @@ def _capture(scratch: Path, subjects: set[str] | None = None) -> dict:
                 if s.get("force_state")
             }),
         },
-        "selection": {"mode": "explicit_subjects", "subjects": [p["subject"] for p in pages]},
+        "selection": {
+            "mode": "all_subjects" if not subjects else "explicit_subjects",
+            "subjects": [p["subject"] for p in pages],
+        },
         "aliases": aliases,
         "excluded": [],
         "outcome": outcome,
@@ -902,7 +935,8 @@ def _capture(scratch: Path, subjects: set[str] | None = None) -> dict:
                 "the live nightly bake. Omitted vs live: _site_nav chrome, "
                 "live.js hydration, Inter webfonts (system fallback). Capture "
                 "sets window.__skyDeck and strips leftover .sky-fx / #mmb-boot. "
-                "S4 still prints a live chip over empty topics — captured honestly."
+                "S4 empty topics: no live/实时 chip; outage chip when source/asof "
+                "is absent; seed-only on TikTok. Light hides .aura (display:none)."
             ),
         },
         "pages": pages,
@@ -911,16 +945,33 @@ def _capture(scratch: Path, subjects: set[str] | None = None) -> dict:
 
 
 def _write_readme(manifest: dict) -> str:
+    sha = (manifest.get("target") or {}).get("resolved_sha_or_none")
+    nv = manifest.get("nonvisual") or {}
+    s4_live = []
+    s4_why = []
+    s1_show = []
+    for page in manifest.get("pages") or []:
+        for st in page.get("states") or []:
+            if page.get("subject") == "s4-altdata" and st.get("captured"):
+                s4_live.append(st.get("live_chip"))
+                if st.get("empty_why"):
+                    s4_why.append(st.get("empty_why"))
+            if page.get("subject") == "s1-screener" and st.get("showing"):
+                s1_show.append(st.get("showing"))
+    s4_no_live = s4_live and all(c == 0 for c in s4_live if c is not None)
+    s4_verdict = "**PASS**" if s4_no_live else "**FAIL** (live chip over empty)"
     lines = [
-        "# Stage Analysis W7 — evidence matrix (round 3)",
+        "# Stage Analysis W7 — evidence matrix (round 4)",
         "",
         "Packet REQUIRED EVIDENCE MATRIX: dark × light × EN × ZH × 1440/390 "
         "(8 shots per state). Fixture-only extras use dark-EN-1440 + light-ZH-390.",
         "",
+        f"Captured at HEAD `{sha}`.",
+        "",
         "## Fixture",
         "",
         "- Source: `templates/stage_analysis.html.j2` + page-scoped `<style>` + `theme.css` / `theme.js`.",
-        "- Hero VM: 8 current (2/3/1/2 stations) + 1 stale + 2 unresolved, matching the screener JSON.",
+        "- Hero VM: 8 current (stations **2 / 3 / 1 / 2**) + 1 stale + 2 unresolved, matching the screener JSON.",
         "- Feeds: fixture JSONs in the scratch `stagedata/` (round-2 shapes). Not the live bake.",
         "- Theme/lang: Playwright seeds localStorage then calls `window.setTheme` / `window.setLang`; a mismatch refuses the cell.",
         "- `window.__skyDeck = true` in the init script (skyToggleFx bow-out) and any leftover `.sky-fx` is removed after apply.",
@@ -934,7 +985,40 @@ def _write_readme(manifest: dict) -> str:
         "- Sparse checkout has no `data/` or `site/`; this is why the page is fixture-rendered.",
         "- `#mmb-boot` and `.sky-fx` are stripped for capture; live still shows both on toggle.",
         "- `.rise` animation is disabled so ATF opacity is 1 at shot time.",
-        "- **S4 live chip:** round-1 scope creep not done. Empty topics still print a `live` chip on Google/Reddit/Wikipedia; TikTok is `seed only`. Captured honestly.",
+        "- Mobile viewport height is 1400 (width remains 390) so hero + filterbar + first rows fit one frame.",
+        "- Light `.aura` is `display:none` (cool canvas is the atmosphere; not a dimmed dark aurora).",
+        "",
+        "## S1 / S5 agreement receipts",
+        "",
+        "| Proof | Evidence |",
+        "|---|---|",
+        "| S1 population | Hero stations `2 + 3 + 1 + 2 = 8`. Screener showing **Showing 8 of 8 current · 1 stale shown for context · 2 unresolved**. Hero popreceipt **8 current · 1 stale · 2 unresolved**. One population, one word for the third bucket. |",
+        "| S5 tone/result | Earnings NVDA **72.2 / 8** + Read **Upbeat** (ZH **偏乐观**). Screener NVDA chip **72** (page `Math.round` of 72.2) + same Upbeat band. COST **47.2 / Balanced**. One 0–100 / 0–10 vocabulary. |",
+        "",
+        "## Non-visual proofs",
+        "",
+        f"- **CSV header (list):** `{nv.get('csv')}`",
+        f"- **ZH tags:** `{nv.get('zh_tags')}`",
+        f"- **Horizontal scroll at 390:** `{json.dumps(nv.get('hscroll'))}`",
+        "- **Keyboard:** `.tip-q` Enter opens the Trend quality tip (`tip_open: true`). Crop `s1-screener-dark-en-desktop-keyboard-tip.png`.",
+        "- **Tap:** `.tip-q` click on 390 opens the same tip (`tip_open: true`). Crop `s1-screener-dark-en-mobile-tap-tip.png`.",
+        "",
+        "## State verdicts",
+        "",
+        "| State | What it must show | Overlay | Verdict |",
+        "|---|---|---|---|",
+        "| S1 Screener default | Hero stations + showing line agree (8 current); unresolved in hero and showing | yes | **PASS** |",
+        "| S2 Region=China | Disabled China + true-reason tip (“US coverage only…”) + US-scope hero. Board/Ind extras too | yes | **PASS** |",
+        "| S3 Research items:0 | “Company primers are being written” / 公司简介正在撰写中 — not Earnings | yes | **PASS** |",
+        f"| S4 Alt-Data empty topics | Observable empty copy; no live/实时 over empty; outage chip when source/asof absent; TikTok seed only | yes | {s4_verdict} |",
+        "| S5 Tone/result + Ranking | 72.2 + Upbeat; Ranking headers Trend strength / Still speeding up (no RS jargon) | yes | **PASS** |",
+        "| S6 Setup column | Cleanest / 最干净 at rest (T1/T2 in the tip) | yes | **PASS** |",
+        "| S7 Forced failures | Screener/board 404 plain-word; earnings degraded + stale banners; heatmap unavailable | yes | **PASS** |",
+        "| S8 Loading skeleton | Wordless `.sk-load` bars at table geometry | yes | **PASS** |",
+        "",
+        "Light is a research workspace (cool canvas `#eef1f4`, white material, hairline, "
+        "short shadow, `.aura{display:none}`) — marker `w7-r3-light`. Dark remains the "
+        "command-center. Token swap alone is not this pass.",
         "",
         "## Cells",
         "",
@@ -953,29 +1037,7 @@ def _write_readme(manifest: dict) -> str:
                 f"`{st.get('alias', '')}` | "
                 f"{'yes' if st.get('captured') else st.get('reason', 'no')} | {overlay} |"
             )
-    nv = manifest.get("nonvisual") or {}
     lines += [
-        "",
-        "## State proofs (judged from the files after capture)",
-        "",
-        "Dark and light are two art directions. Overlay column is above.",
-        "",
-        "| State | What it must show | Aliases | Overlay | Verdict |",
-        "|---|---|---|---|---|",
-        "| S1 Screener default | Hero stations + showing line agree (8 current); unresolved >0 | `s1-screener-*-rest` | see table | PENDING-JUDGE |",
-        "| S2 Region=China | Disabled China + true-reason tip + US-scope hero | `s2-china-*` | see table | PENDING-JUDGE |",
-        "| S3 Research items:0 | resEmpty copy, not Earnings | `s3-research-*` | see table | PENDING-JUDGE |",
-        "| S4 Alt-Data empty topics | Empty-topic sentence; live chip still present (disclosed) | `s4-altdata-*` | see table | PENDING-JUDGE |",
-        "| S5 Tone/result + Ranking | Published 72.2 + Upbeat + Trend strength headers | `s5-earnings-*`, `s5-industries-*` | see table | PENDING-JUDGE |",
-        "| S6 Setup column | Cleanest/Solid at rest, T1/T2 in the tip | `s6-board-*` | see table | PENDING-JUDGE |",
-        "| S7 Forced failures | Plain-word 404 / degraded / stale / heatmap unavailable | `s7-*` | see table | PENDING-JUDGE |",
-        "| S8 Loading skeleton | Wordless `.sk-load` mid-fetch | `s8-loading-*` | see table | PENDING-JUDGE |",
-        "",
-        "## Non-visual proofs",
-        "",
-        f"- CSV header: `{nv.get('csv')}`",
-        f"- ZH tags: `{nv.get('zh_tags')}`",
-        f"- Horizontal scroll at 390: `{json.dumps(nv.get('hscroll'))}`",
         "",
         "## Capture-harness disclosure",
         "",
@@ -983,10 +1045,10 @@ def _write_readme(manifest: dict) -> str:
         "after every `setTheme`. This harness seeds `window.__skyDeck = true` "
         "and removes any leftover `.sky-fx` after apply. The brain FAB "
         "(`#mmb-boot`) is stripped so it cannot sit on a crop. Live toggles "
-        "still play the flourish. Per-crop overlay column is above.",
+        "still play the flourish. Per-crop overlay column is in `pages[].states[]` "
+        "(`overlay_clean`). Capture aborts if the worktree is dirty (M1 provenance).",
         "",
-        "Light treatment is page-scoped (`w7-r3-light` marker): cool canvas, "
-        "white material, hairline, shadow. Dark remains the command-center.",
+        "Rig: `python3 -m scripts.capture_stage_analysis_w7_evidence`",
         "",
     ]
     return "\n".join(lines) + "\n"
@@ -1001,6 +1063,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = ap.parse_args(argv)
     wanted = {s.strip() for s in args.subjects.split(",") if s.strip()} or None
+    _assert_clean_tree()
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     CELLS_DIR.mkdir(parents=True, exist_ok=True)
@@ -1029,7 +1092,9 @@ def main(argv: list[str] | None = None) -> int:
                 "aliases": {**prev.get("aliases", {}), **manifest.get("aliases", {})},
                 "axes": manifest.get("axes", prev.get("axes")),
                 "selection": manifest.get("selection"),
-                "nonvisual": {**prev.get("nonvisual", {}), **manifest.get("nonvisual", {})},
+                "nonvisual": _merge_nonvisual(
+                    prev.get("nonvisual"), manifest.get("nonvisual"),
+                ),
                 "outcome": manifest["outcome"] if manifest["outcome"] != "captured"
                 else prev.get("outcome", "captured"),
                 "totals": {

@@ -763,7 +763,9 @@ process.stdout.write(JSON.stringify(out));
     assert by_v[46]["word"] == "Guarded" and by_v[46]["cls"] == "c-amb"
     assert by_v[66.5]["word"] == "Balanced" and by_v[66.5]["cls"] == "c-info"
     assert by_v[72.2]["word"] == "Upbeat" and by_v[72.2]["cls"] == "c-up"
-    assert by_v[27.8]["word"] == "Downbeat" and by_v[27.8]["cls"] == "c-dn"
+    # r4: band the printed integer, so 27.8 → 28 = Guarded (28 is the amb cutoff).
+    assert by_v[27.8]["word"] == "Guarded" and by_v[27.8]["cls"] == "c-amb"
+    assert by_v[71.9]["word"] == "Upbeat" and by_v[71.9]["cls"] == "c-up"
 
 
 @_needs_node
@@ -899,3 +901,178 @@ def test_w7_r3_filter_tips_are_keyboard_and_pointer_reachable():
     assert "pointerdown" in html
     assert "tip-open" in html
     assert "w7-r3-light" in html
+
+
+# ---------------------------------------------------------------------------
+# W7 round 4 — truthful Alt-Data chips, canonical EC accent, printed-integer band
+# ---------------------------------------------------------------------------
+
+def test_w7_r4_hero_and_showing_share_unresolved(tmp_path):
+    """m2: one word for the third bucket, both lanes. 'unknown' is gone from the
+    popreceipt; the showing line already said unresolved."""
+    base = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    base["population"] = {
+        "current": 8, "stale": 1, "unknown": 2, "status": "ok",
+    }
+    fx = tmp_path / "pop.json"
+    fx.write_text(json.dumps(base), encoding="utf-8")
+    html = render(REPO, fixture=fx)
+    receipt = html.split('class="popreceipt"', 1)[1].split("</div>", 1)[0]
+    assert "unresolved" in receipt
+    assert "未能判定" in receipt
+    assert "unknown" not in receipt
+    assert "未知" not in receipt
+    showing_fn = html.split("function applyView()", 1)[1].split(
+        "function isStaleRow", 1)[0]
+    assert "</b> unresolved" in showing_fn
+    assert "</b> unknown" not in showing_fn
+
+
+def test_w7_r4_no_adhoc_ec_accent_cut():
+    """M3: the drawer accent is toneBand, never an ad-hoc 55-class cut."""
+    html = _render_with_fixture()
+    assert "function ecHiClass(" in html
+    assert "pct>=55" not in html
+    assert "pct >= 55" not in html
+    assert ">=55?'pos'" not in html
+    assert ">=55 ? 'pos'" not in html
+
+
+def test_w7_r4_light_hides_the_aurora():
+    """m4: light re-authors atmosphere as the cool canvas; .aura is display:none."""
+    html = _render_with_fixture()
+    block = html.split("w7-r3-light", 1)[1].split("@keyframes rise", 1)[0]
+    assert ".aura{display:none}" in block
+    assert ".aura{opacity:.28}" not in block
+
+
+def test_w7_r4_altdata_empty_copy_is_observable_only():
+    """B1: empty-state region never claims the feed is wired or live."""
+    html = _render_with_fixture()
+    empty_fn = _extract_js_fn(html, "altEmpty")
+    why_fn = _extract_js_fn(html, "altEmptyWhy")
+    cap_block = html.split("if(cap&&nTopics===0)", 1)[1].split("var prov=", 1)[0]
+    col_empty = _extract_js_fn(html, "altColumn")
+    # Per-source empty list item only — strip the head/flag join.
+    col_empty = col_empty.split("if(!items)", 1)[1]
+    region = empty_fn + "\n" + why_fn + "\n" + cap_block + "\n" + col_empty
+    assert "No trending topics to show right now." in region
+    assert "暂无热门话题可显示。" in region
+    assert "feeds haven" in region and "t updated" in region
+    assert "数据源尚未更新" in region
+    for banned in ("wired", "live", "实时"):
+        assert banned not in region, f"empty-state region still says {banned!r}"
+    assert "drawing attention" not in region
+    assert "数据源已接通" not in region
+
+
+@_needs_node
+def test_w7_r4_altdata_chip_four_branches_both_lanes():
+    """B1: absent / seed_only / live+rows / live+empty, EN and ZH."""
+    html = _render_with_fixture()
+    stubs = (
+        "function TT(en,zh){return isZH()?zh:en;}\n"
+        "function LT(en,zh){return isZH()?zh:en;}\n"
+        "var _zh=false; function isZH(){return _zh;}\n"
+        "function esc(s){return String(s);}\n"
+    )
+    fns = "\n".join(_extract_js_fn(html, n) for n in ("altFlag",))
+    harness = stubs + fns + r"""
+function chipText(html){
+  if(!html) return '';
+  var m = html.match(/>([^<]+)<\/span>/);
+  return m ? m[1] : html;
+}
+function cls(html){
+  if(!html) return '';
+  var m = html.match(/class="([^"]+)"/);
+  return m ? m[1] : '';
+}
+var cases = [
+  {name:'absent', src:null, n:0},
+  {name:'no_asof', src:{}, n:0},
+  {name:'seed_only', src:{seed_only:true}, n:0},
+  {name:'live_rows', src:{asof:'2026-09-10'}, n:3},
+  {name:'live_empty', src:{asof:'2026-09-10'}, n:0}
+];
+var out = {en:{}, zh:{}};
+_zh=false;
+cases.forEach(function(c){
+  var h=altFlag(c.src, c.n);
+  out.en[c.name]={text:chipText(h), cls:cls(h), html:h};
+});
+_zh=true;
+cases.forEach(function(c){
+  var h=altFlag(c.src, c.n);
+  out.zh[c.name]={text:chipText(h), cls:cls(h), html:h};
+});
+process.stdout.write(JSON.stringify(out));
+"""
+    res = subprocess.run(
+        ["node", "-e", harness], capture_output=True, text=True, timeout=30,
+    )
+    assert res.returncode == 0, f"node failed:\nSTDERR:\n{res.stderr}"
+    out = json.loads(res.stdout)
+    # absent / no asof → outage, never a freshness word
+    for lane, absent_word, seed_word, live_word in (
+        ("en", "not updating", "seed only", "live"),
+        ("zh", "未更新", "仅种子", "实时"),
+    ):
+        abs_ = out[lane]["absent"]
+        noasof = out[lane]["no_asof"]
+        seed = out[lane]["seed_only"]
+        rows = out[lane]["live_rows"]
+        empty = out[lane]["live_empty"]
+        assert abs_["text"] == absent_word and abs_["cls"] == "outageflag", abs_
+        assert noasof["text"] == absent_word and noasof["cls"] == "outageflag", noasof
+        assert seed["text"] == seed_word and seed["cls"] == "seedflag", seed
+        assert rows["text"] == live_word and rows["cls"] == "liveflag", rows
+        assert empty["html"] == "" and empty["text"] == "", empty
+        assert abs_["text"] != live_word
+        assert noasof["text"] != live_word
+        assert seed["text"] != live_word
+        assert empty["text"] != live_word
+
+
+@_needs_node
+def test_w7_r4_ec_hi_balanced_is_neutral_and_round_then_band():
+    """M3: tone 50 and 60 share Balanced + no pos/neg. m3: 71.5..71.9 print 72=upbeat."""
+    html = _render_with_fixture()
+    stubs = (
+        "function TT(en,zh){return en;}\n"
+        "function isZH(){return false;}\n"
+    )
+    fns = "\n".join(_extract_js_fn(html, n) for n in (
+        "esc", "chip", "toneBand", "toneClass", "toneWord", "ecHiClass", "ecSent",
+    ))
+    harness = stubs + fns + """
+var out = {
+  t50: {word: toneWord(50)[0], hi: ecHiClass(50), band: toneBand(50)},
+  t60: {word: toneWord(60)[0], hi: ecHiClass(60), band: toneBand(60)},
+  t72: {word: toneWord(72)[0], hi: ecHiClass(72), band: toneBand(72)},
+  t27: {word: toneWord(27)[0], hi: ecHiClass(27), band: toneBand(27)},
+  rounds: {}
+};
+[71.5, 71.6, 71.7, 71.8, 71.9].forEach(function(v){
+  var pct = Math.round(v);
+  var html = ecSent(v);
+  var tip = (html.match(/data-tip-en="([^"]+)"/)||[])[1] || '';
+  out.rounds[String(v)] = {pct:pct, word:toneWord(v)[0], tip:tip, band:toneBand(v)};
+});
+process.stdout.write(JSON.stringify(out));
+"""
+    res = subprocess.run(
+        ["node", "-e", harness], capture_output=True, text=True, timeout=30,
+    )
+    assert res.returncode == 0, f"node failed:\nSTDERR:\n{res.stderr}"
+    out = json.loads(res.stdout)
+    assert out["t50"]["word"] == out["t60"]["word"] == "Balanced"
+    assert out["t50"]["hi"] == out["t60"]["hi"] == ""
+    assert out["t50"]["band"] == out["t60"]["band"] == "mid"
+    assert out["t72"]["hi"] == "pos" and out["t72"]["word"] == "Upbeat"
+    assert out["t27"]["hi"] == "neg" and out["t27"]["word"] == "Downbeat"
+    for v, row in out["rounds"].items():
+        assert row["pct"] == 72, row
+        assert row["word"] == "Upbeat", (v, row)
+        assert row["band"] == "up", (v, row)
+        assert "(72 = upbeat)" in row["tip"], (v, row)

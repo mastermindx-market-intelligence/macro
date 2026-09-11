@@ -389,6 +389,45 @@ def test_publish_ec_scale_one_vocabulary():
     assert eq.publish_ec_result(None, native="ten") is None
 
 
+def test_prophet_stage_inputs_rejects_out_of_native_ec_sent(tmp_path, caplog):
+    """W7 r4 m1: native desk is ~−10..30; a 0–100 value must not enter the leash."""
+    import logging
+
+    import engine.prophet_stage_inputs as psi
+
+    idx = {
+        "AAA": pd.DataFrame({
+            "ticker": ["AAA"],
+            "call_date": pd.to_datetime(["2026-01-01"]),
+            "earnings_call_sent": [80.0],
+        }),
+    }
+    with caplog.at_level(logging.WARNING, logger="engine.prophet_stage_inputs"):
+        assert psi.ec_sent_at_entry(idx, "AAA", "2026-02-01") is None
+    assert any("outside native" in r.message for r in caplog.records)
+
+    idx["AAA"] = idx["AAA"].assign(earnings_call_sent=24.0)
+    assert psi.ec_sent_at_entry(idx, "AAA", "2026-02-01") == 24.0
+    idx["AAA"] = idx["AAA"].assign(earnings_call_sent=-10.0)
+    assert psi.ec_sent_at_entry(idx, "AAA", "2026-02-01") == -10.0
+    idx["AAA"] = idx["AAA"].assign(earnings_call_sent=30.0)
+    assert psi.ec_sent_at_entry(idx, "AAA", "2026-02-01") == 30.0
+
+    p = tmp_path / "ec.parquet"
+    pd.DataFrame({
+        "document_ticker": ["AAA", "BBB"],
+        "call_date": pd.to_datetime(["2026-01-01", "2026-01-02"]),
+        "earnings_call_sent": [80.0, 12.0],
+    }).to_parquet(p, index=False)
+    caplog.clear()
+    with caplog.at_level(logging.WARNING, logger="engine.prophet_stage_inputs"):
+        table, _src = psi.load_ec_table_with_source(p)
+    sent = table.set_index("ticker")["earnings_call_sent"]
+    assert pd.isna(sent.loc["AAA"])
+    assert float(sent.loc["BBB"]) == 12.0
+    assert any("dropping" in r.message for r in caplog.records)
+
+
 def test_earnings_table_publishes_one_ec_scale(tmp_path):
     """W7 M3: earnings_table.json uses the same 0–100 / 0–10 vocabulary."""
     recs = [_call("NEW", "Newest", "Hardware", "2026-07-17", 30, 12, 42)]
