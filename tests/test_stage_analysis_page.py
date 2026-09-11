@@ -13,6 +13,8 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -300,10 +302,8 @@ def test_no_target_week_renders_unavailable_not_warming_up(tmp_path):
     html = render(REPO, fixture=fx)
 
     assert "Stage read unavailable" in html
-    # Scoped to the HERO. The bare words "Warming up" also live in the client-side
-    # screener-table empty state, which is a DIFFERENT surface and still carries
-    # first-run copy for a mature-lane failure — tracked as PR B scope (spec §8),
-    # not something this assertion should mask.
+    # Scoped to the HERO. Load-failure empty states on the screener/board no
+    # longer say "Warming up" (W7 r2 m1); the hero still owns first-run copy.
     assert "The first stage read runs tonight" not in html, (
         "the hero must not describe a mature-lane failure as a first run")
     assert "The arc fills in once the weekly classification lands" not in html
@@ -569,16 +569,21 @@ def test_w7_screener_showing_uses_current_population_not_raw_length():
     """M1: the current population is the page's one canonical count.
 
     Hero counts exclude stale; the Screener must not use RAW.length as the
-    of-N denominator. Stale rows print as a labelled slice.
+    of-N denominator. Stale rows print as a labelled slice. Unknown rows
+    (stage_current null) are a third labelled slice, shown only when >0.
     """
     html = _render_with_fixture()
     assert "stale shown for context" in html
     assert "只过时数据仅供参考" in html
     assert "function isCurrentRow" in html
     assert "function isStaleRow" in html
-    assert "row.stage_current!==false" in html
-    assert "of <b>'+RAW.length" not in html
+    assert "function isUnknownRow" in html
+    assert "row.stage_current===true" in html
+    assert "row.stage_current===false" in html
     assert "of <b>'+denom.toLocaleString()+'</b> current" in html
+    assert "isCurrentRow(r)&&regionOf(r)===region" in html
+    assert "unresolved" in html
+    assert "阶段周未能判定" in html
 
 
 def test_w7_research_and_altdata_own_empty_states():
@@ -653,3 +658,160 @@ def test_w7_indempty_is_the_file_arm():
     assert "generated tonight" not in ind
     assert "Try another region" not in ind
     assert "今晚生成" not in ind
+
+
+# ---------------------------------------------------------------------------
+# W7 round 2 — one tone vocabulary, region-scoped denom, unknown bucket
+# ---------------------------------------------------------------------------
+
+_needs_node = pytest.mark.skipif(
+    shutil.which("node") is None, reason="node not on PATH",
+)
+
+_WORD_TO_CHIP = {
+    "Upbeat": "c-up",
+    "Balanced": "c-info",
+    "Guarded": "c-amb",
+    "Downbeat": "c-dn",
+}
+
+
+def _extract_js_fn(html: str, name: str) -> str:
+    marker = f"function {name}("
+    start = html.index(marker)
+    nxt = html.find("\n  function ", start + 1)
+    if nxt < 0:
+        raise AssertionError(f"could not bound function {name}")
+    return html[start:nxt].rstrip()
+
+
+def test_w7_r2_retired_desk_gauge_cutoffs_are_gone():
+    """B1: 67/37/13 and the Screener's 66/45 table must not survive."""
+    html = _render_with_fixture()
+    assert "function toneBand(" in html
+    assert "sent>=72" in html
+    assert "sent>=47" in html
+    assert "sent>=28" in html
+    assert "sent>=67" not in html
+    assert "sent>=37" not in html
+    assert "sent>=13" not in html
+    assert "pct>=66" not in html
+    assert "pct>=45" not in html
+    assert "ernSortKey='ec_sent'" in html
+    assert "ernSortKey='ec_combined'" not in html
+
+
+def test_w7_r2_load_failure_empty_states_name_the_surface():
+    """m1: a genuine fetch failure is not a first-run warm-up."""
+    html = _render_with_fixture()
+    assert "Screener isn" in html
+    assert "选股器暂时无法加载" in html
+    assert "The board isn" in html
+    assert "榜单暂时无法加载" in html
+    screener_fn = html.split("function loadScreener()", 1)[1].split(
+        "/* =====================================================================", 1)[0]
+    assert "Warming up" not in screener_fn
+    assert "Stage Board and Industries are unaffected" in screener_fn
+    board_fn = html.split("function renderBoard()", 1)[1].split(
+        "function renderBoardProv()", 1)[0]
+    assert "Warming up" not in board_fn
+    assert "Screener and Industries are unaffected" in board_fn
+
+
+@_needs_node
+def test_w7_r2_earnings_read_and_screener_chip_agree():
+    """B1: one published number → one word / one chip class, including the
+    reviewer's divergent cells (38.9, 46, 66.5)."""
+    from engine.earnings_qual import publish_ec_tone
+
+    html = _render_with_fixture()
+    stubs = (
+        "function TT(en,zh){return en;}\n"
+        "function isZH(){return false;}\n"
+    )
+    fns = "\n".join(_extract_js_fn(html, n) for n in (
+        "esc", "chip", "toneBand", "toneClass", "toneWord", "ecSent",
+    ))
+    published = []
+    for desk in range(-10, 31):
+        p = publish_ec_tone(desk, native="desk30")
+        if p is not None:
+            published.append(p)
+    published.extend([38.9, 46, 66.5, 72.2, 47.2, 27.8, 0, 50, 100, 71.9, 47.0, 28.0, 27.9])
+    published = sorted(set(published))
+    harness = stubs + fns + """
+var cases = """ + json.dumps(published) + """;
+var WORD_TO_CHIP = """ + json.dumps(_WORD_TO_CHIP) + """;
+var out = cases.map(function(v){
+  var word = toneWord(v)[0];
+  var html = ecSent(v);
+  var m = html.match(/class="chip ([^"]+)"/);
+  var cls = m ? m[1] : null;
+  return {v:v, word:word, cls:cls, ok: WORD_TO_CHIP[word]===cls};
+});
+process.stdout.write(JSON.stringify(out));
+"""
+    res = subprocess.run(
+        ["node", "-e", harness], capture_output=True, text=True, timeout=30,
+    )
+    assert res.returncode == 0, f"node failed:\nSTDERR:\n{res.stderr}"
+    rows = json.loads(res.stdout)
+    diverged = [r for r in rows if not r["ok"]]
+    assert not diverged, f"Read word vs chip class diverged: {diverged[:8]!r}"
+    by_v = {r["v"]: r for r in rows}
+    assert by_v[38.9]["word"] == "Guarded" and by_v[38.9]["cls"] == "c-amb"
+    assert by_v[46]["word"] == "Guarded" and by_v[46]["cls"] == "c-amb"
+    assert by_v[66.5]["word"] == "Balanced" and by_v[66.5]["cls"] == "c-info"
+    assert by_v[72.2]["word"] == "Upbeat" and by_v[72.2]["cls"] == "c-up"
+    assert by_v[27.8]["word"] == "Downbeat" and by_v[27.8]["cls"] == "c-dn"
+
+
+@_needs_node
+def test_w7_r2_showing_denominator_is_region_scoped_is_true():
+    """M1/M2/M3: rendered denom is the fixture's region-scoped is-True count,
+    not RAW.length, not unknown, not another region's current rows."""
+    html = _render_with_fixture()
+    start = html.index("var currentPop=") + len("var currentPop=")
+    end = html.index(";});", start) + 3
+    expr = html[start:end]
+    assert "isCurrentRow(r)&&regionOf(r)===region" in expr, expr
+    fns = "\n".join(_extract_js_fn(html, n) for n in (
+        "regionOf", "isCurrentRow", "isStaleRow", "isUnknownRow",
+    ))
+    raw = [
+        {"ticker": "AAPL", "region": "USA", "stage_current": True},
+        {"ticker": "MSFT", "region": "USA", "stage_current": True},
+        {"ticker": "SILA", "region": "USA", "stage_current": False},
+        {"ticker": "UNK", "region": "USA", "stage_current": None},
+        {"ticker": "BBVA.MC", "region": "EUROPE", "stage_current": None,
+         "source": "seed"},
+        {"ticker": "SAP.DE", "region": "EUROPE", "stage_current": True},
+    ]
+    harness = fns + """
+var RAW = """ + json.dumps(raw) + """;
+var region = 'US';
+var currentPop = """ + expr + """;
+var VIEW = RAW.filter(function(r){return regionOf(r)===region;});
+var out = {
+  denom: currentPop.length,
+  rawLength: RAW.length,
+  nCur: VIEW.filter(isCurrentRow).length,
+  nStale: VIEW.filter(isStaleRow).length,
+  nUnknown: VIEW.filter(isUnknownRow).length,
+  tickers: currentPop.map(function(r){return r.ticker;}).sort()
+};
+process.stdout.write(JSON.stringify(out));
+"""
+    res = subprocess.run(
+        ["node", "-e", harness], capture_output=True, text=True, timeout=30,
+    )
+    assert res.returncode == 0, f"node failed:\nSTDERR:\n{res.stderr}\nexpr={expr}"
+    out = json.loads(res.stdout)
+    assert out["rawLength"] == 6
+    assert out["denom"] == 2, (
+        f"US current denom must be 2 (AAPL+MSFT), got {out!r} via {expr}")
+    assert out["tickers"] == ["AAPL", "MSFT"]
+    assert out["nCur"] == 2
+    assert out["nStale"] == 1
+    assert out["nUnknown"] == 1  # UNK only; EU rows are other-region
+    assert out["denom"] != out["rawLength"]

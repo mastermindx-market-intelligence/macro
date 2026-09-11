@@ -1915,11 +1915,12 @@ def _as_float(value: Any) -> float | None:
 def publish_ec_tone(value: Any, *, native: str) -> float | None:
     """Published EC Tone for Stage Analysis JSON feeds: 0–100.
 
-    Native stores stay untouched (parquet / Prophet still read desk 0–30 or
-    signed −1..1). ``native`` names the incoming scale:
+    Native stores stay untouched (parquet / Prophet still read desk ~−10..30
+    or signed −1..1). ``native`` names the incoming scale:
 
     * ``signed1`` — live scores.parquet ``sentiment`` in [−1, 1]
-    * ``desk30`` — EquityDesk / projected ``earnings_call_sent`` in [0, 30]
+    * ``desk30`` — EquityDesk / projected ``earnings_call_sent`` in ~−10..30
+      (12 is the documented neutral midpoint; the calibration clips at ±1)
 
     ``desk30`` inverts the documented calibration
     ``sentiment = clip((sent − 12) / 18, −1, 1)`` so the same call prints the

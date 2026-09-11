@@ -374,6 +374,11 @@ def test_publish_ec_scale_one_vocabulary():
     assert eq.publish_ec_tone(-1.0, native="signed1") == 0.0
     assert eq.publish_ec_tone(30, native="desk30") == 100.0
     assert eq.publish_ec_tone(12, native="desk30") == 50.0
+    # Desk 20/11/4 (retired gauge cutoffs) through the publish transform.
+    assert eq.publish_ec_tone(20, native="desk30") == 72.2
+    assert eq.publish_ec_tone(11, native="desk30") == 47.2
+    assert eq.publish_ec_tone(4, native="desk30") == 27.8
+    assert eq.publish_ec_tone(8, native="desk30") == 38.9
     assert eq.publish_ec_tone(30, native="desk30") == eq.publish_ec_tone(
         1.0, native="signed1")
     assert eq.publish_ec_result(8.4, native="ten") == 8.4
