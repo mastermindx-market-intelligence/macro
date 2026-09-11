@@ -32,6 +32,7 @@ from engine import basket_index, basket_mtf, basket_score, basket_tape, group_fl
 from engine.baskets import _ew_level, _mtd_anchor, _perf
 from engine.equity_factors import _names_sectors
 from lib import config
+from lib.closes_panel import population_observation
 
 log = logging.getLogger(__name__)
 
@@ -1057,14 +1058,26 @@ def compute_theme_intel(region: str = "us") -> dict | None:
     bdict = s["mem"]["baskets"]
     items = bdict.items() if isinstance(bdict, dict) else [(b["id"], b) for b in bdict]
     themes: list[dict] = []
+    observation_refusals: list[dict] = []
     uni_live: set[str] = set()                 # deduped live universe for the aggregate card
     tk_meta: dict[str, dict] = {}              # ticker -> {name, theme, theme_zh, theme_id} for popups
 
     for bid, b in items:
         members = b.get("members", [])
-        present = [m["ticker"] for m in members if m["ticker"] in rets.columns]
-        if len(present) < 3:
+        theme_observation = population_observation(closes, members, idx.max())
+        if not theme_observation["aggregate_eligible"]:
+            observation_refusals.append({"basket_id": bid, "observation": theme_observation})
+            print(
+                "::warning title=theme-observation-coverage::"
+                f"{bid} refused aggregate score at {theme_observation['effective_as_of']}: "
+                f"observed {theme_observation['observed_n']}/"
+                f"{theme_observation['configured_n']} live members; minimum "
+                f"{theme_observation['min_members']} and "
+                f"{int(round(theme_observation['min_coverage'] * 100))}% coverage",
+                flush=True,
+            )
             continue
+        present = [m["ticker"] for m in members if m["ticker"] in rets.columns]
         lvl = _ew_level(rets, members, idx)
         if lvl.dropna().empty:
             continue
@@ -1242,6 +1255,7 @@ def compute_theme_intel(region: str = "us") -> dict | None:
                          "ret": _r((perf.get(k) or {}).get("ret"), 4)} for k in
                      ("1d", "5d", "10d", "20d", "60d", "ytd")},
             "timing": _timing_snapshot(lvl, bench, i, fp),
+            "observation": theme_observation,
             "breadth": breadth_d,
             "impulse": impulse_d,
             "leadership": {"breadth": lead.get("breadth"), "top": (lead.get("top") or [])[:3]},
@@ -1508,6 +1522,11 @@ def compute_theme_intel(region: str = "us") -> dict | None:
             "zh": ("波动率仓位：在更困难的环境中，篮子总仓位缩放至约"
                    f"{int(round((rg_size.get('gross_scalar') or 1.0) * 100))}%。只影响仓位，不影响排名。"),
         },
+        "observation": s.get("observation") or {
+            "effective_as_of": idx.max().strftime("%Y-%m-%d"),
+            "status": "legacy_source_without_receipt",
+        },
+        "observation_refusals": observation_refusals,
         "themes": themes,
         "rotation_5d": {"climbers": climbers, "fallers": fallers},
         "impulse_scorecard": {
