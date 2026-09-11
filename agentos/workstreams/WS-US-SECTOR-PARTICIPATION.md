@@ -5,7 +5,7 @@ objective: >
   Let a researcher inspect sector participation across completed sessions,
   verify the same numerator, denominator, exclusions and reference-universe
   constituents, and follow existing research links from the real Sector Central page.
-status: proposed
+status: active
 program: sector-rotation-intelligence
 repos: [macro]
 owner: ceo-sol
@@ -15,22 +15,23 @@ ambiguity: scoped
 owns_paths:
   - research/skylit/INTEGRATION_RULING_2026-09-10.md
   - research/skylit/US_SECTOR_PARTICIPATION_W1_2026-09-10.md
+  - research/skylit/RESEARCH_GATE_DISPOSITION_2026-09-10.md
+  - research/skylit/W1_SOURCE_IMPLEMENTATION_RULING_2026-09-11.md
   - agentos/decisions/DEC-SKYLIT-INTEGRATE-EXISTING-SECTOR-INTELLIGENCE.md
 waves:
   - id: W1
-    title: Additive 20-session sector participation calendar in the existing product
-    status: todo
+    title: Additive sector participation vertical; preflight consumed, source custody pending
+    status: in_progress
     next_action: >
-      Place one eligible builder through the existing capacity owner; obtain
-      its finite read-only source/input/access preflight and Sol's same-carrier
-      exact-path clearance before product source edits.
+      Continue the already placed Claude8 receiver under Sol ruling1789088118.422639.
+      Qualify exact current source custody and actual code-gated test registration;
+      emit a truthful source-writing START before the approved implementation.
 next_action: >
-  Reconcile actual placement and the first preflight return on Mastermind X
-  C0BSBM78V1N root 1789063697.492969 for
-  us-sector-participation-w1-20260910-sol-001. Chairman has approved W1
-  after the research; use RESEARCH_GATE_DISPOSITION_2026-09-10.md to resolve
-  only the qualified source-basis and exact-custody seam, then implement the
-  existing Money & Breadth journey. No second broad research/design approval.
+  Reconcile consumption of source ruling1789088118.422639 on Mastermind X
+  C0BSBM78V1N root1789063697.492969 by desktop conversation
+  local_5d8fbb60-c212-4162-9e9c-5cb6b1a41ce8. Then close exact pre-write
+  custody and begin the licensed-history participation-to-constituent vertical.
+  Do not request another receiver or repeat broad competitor research.
 decisions:
   - DEC:SKYLIT-INTEGRATE-EXISTING-SECTOR-INTELLIGENCE
 artifacts:
@@ -38,51 +39,84 @@ artifacts:
   - research/skylit/US_SECTOR_PARTICIPATION_W1_2026-09-10.md
   - research/skylit/LOCAL_INPUT_PREFLIGHT_2026-09-10.md
   - research/skylit/RESEARCH_GATE_DISPOSITION_2026-09-10.md
+  - research/skylit/W1_SOURCE_IMPLEMENTATION_RULING_2026-09-11.md
 landmines:
-  - Current/reference roster reconstruction is not historic constituent membership or point-in-time replay.
-  - A builder output-directory override does not isolate the existing grader and event-store writers.
-  - OI-derived flow, gross call-minus-put premium and qualified directional premium are different measurements.
-  - Source-custody and rights/access gates remain required even for additive display work.
+  - Reference-roster reconstruction is not historic constituent membership or point-in-time replay.
+  - A builder output-directory override does not isolate existing grader and event-store writers.
+  - Existing Yahoo usage is not data-use-rights evidence; raw flat-file prices are not split-adjusted.
+  - A test named beside an executed file or placed only in data-health CI is not code-gated execution.
+  - Current source custody is not established by inspecting only PR6990 and this records PR.
 do_not_redo:
-  - Do not reopen XPV2 reference cycles or claim this bounded addition completes the full R3C migration.
-  - Do not create another Discover dashboard, rotation event store, collector, calendar, taxonomy, scoring or publication plane.
-  - Do not change existing 50/200 outputs, Act-Now, Prophet rank/entry/size, option authority or graders.
-  - Preserve the existing China weekly-detail, Canada opportunity-map, ticker-page and options source writers.
+  - Do not reopen completed XPV2 reference cycles or claim W1 completes the full R3C migration.
+  - Do not create another dashboard, collector, price store, calendar, identity, auth, retry or publication owner.
+  - Do not change existing50/200 outputs, Act-Now, Prophet rank/entry/size, option authority or graders.
+  - Preserve existing China, Canada, ticker-page, options and shared-CI source writers.
+  - Do not place another receiver; desktop and scratch identifiers are different namespaces.
 ---
 
-# Scope and truthful state
+# Current phase and capability boundary
 
-Capability: **SPEC_ONLY**, selected for bounded implementation but not built. This organizational record is not a runtime queue or worker lease. No receiver, ACK, START, CI success, production proof or acceptance is asserted here.
+**Organizational wave active; product capability SPEC_ONLY.** Active/in_progress here
+records actual assigned and STARTed preflight work plus continuing CEO adjudication.
+It is not an Executive Job/Attempt/lease, a claim of an active coding process, or proof
+that product-source implementation has started. At this checkpoint no product-writing
+START, source PR or production result has been consumed.
 
-The existing program is verified by WS-INSTITUTIONAL-PRODUCT-EXPERIENCE-V2. That workstream's reference objective is complete; this workstream does not take its ownership or rewrite its decisions. Only this additive participation capability is scoped here. Later leadership, options, positioning, Brain and predictive waves remain within their existing programs and require separate commissions.
+This September11 UTC update supersedes the earlier no-receiver/proposed projection,
+not the original product thesis, research limits or production acceptance rules.
+Macro PR7035 remains the same records carrier; a branch/PR record is not a merged-main
+organizational publication. The existing sector-rotation-intelligence program remains
+the parent. Completed XPV2 reference work is not reopened and full R3C is not admitted.
 
-Record basis: Mastermind protected `dd553d1b0b8eed9511da2d3d5ec02cc9cd8edca1`, Macro implementation archaeology `11e145774d6193bf777ed1d355173a27c6ba693d`. Actual source pickup must refresh the relevant material code and custody.
+## Consumed actual placement and preflight
 
-Completion: real existing inputs through the original producer/consumer/publication path to the usable page, truthful null/stale/reconstructed-history states, preserved entitlement and old-field/grader invariance, independent review, current required CI and actual served-browser proof. A docs PR or green fixture does not satisfy this.
+Placement1789080002.429829 binds one Claude8 desktop conversation,
+`local_5d8fbb60-c212-4162-9e9c-5cb6b1a41ce8`, title "Sector Central W1 preflight analysis",
+on included Sonnet5/Extra capacity (Terra avenue). First ACK/result1789080626.612169
+had no separate START. Secretary reconciliation1789081638.904849 verifies the same
+desktop and registered continuation; scratch id is neither a second desktop nor a
+verified Code UUID. Preserve the initial chronology gap without backdating.
 
-## Latest bounded evidence
+Sol REQUEST_CHANGES1789086875.831989 was delivered once in1789087500.946659. A new
+separate read-only START1789087528.375289 preceded repaired RESULT1789087661.181939.
+Sol's source-direction continuation1789088118.422639 and supporting1789088819.696629
+remain on the same root. Do not infer absent local effects from silence after delivery.
 
-Macro #7035 carries the original four-record head `e204242e6e3bd26a45f272a30aa235278062e347`. The exact W1 capacity request was sent and read back on `C0BSBM78V1N / 1789063697.492969`; no receiver or START had returned at the latest recorded read. Placement is still pending, not execution.
+## Current source ruling
 
-Read-only Mac inspection found 503 reference constituents and 370 price-history rows. That checkout ends September 4, 2026 versus the existing calendar's September 9 expectation. This is useful development input, not evidence that the production store is current or stale. Both input files were byte-identical after inspection. The full dated receipt and remaining preflight boundary are in `research/skylit/LOCAL_INPUT_PREFLIGHT_2026-09-10.md`.
+Add a bounded licensed split-adjusted daily-history read inside the existing breadth
+owner, reusing Adapter/config and the existing collector/publication path. Re-fetch
+complete required windows; do not splice old adjusted cache vintages or persist a new
+raw-price/response store. Keep old50/200 outputs unchanged. Publish only derived
+participation and matching dated constituent states. Money & Breadth consumes it after
+the existing grader boundary, preserving navigation and old premium rows.
 
-## Research gate disposition and current approval
+No new corporate-action engine or feed purchase is required by this architecture.
+The existing workflow already supplies the provider secret references. A sanctioned
+local diagnostic found no key and sent zero requests; this is not a company entitlement
+failure or permission to copy another worker's credentials. Current endpoint/input
+qualification and actual serving proof remain release requirements.
 
-The current live Chairman approved W1 after additional research. The same PR now carries
-`research/skylit/RESEARCH_GATE_DISPOSITION_2026-09-10.md`, first published at91cb3e3c
-and reconciled atb7da54ee. It records28 executed synthetic mathematical checks (not
-product tests), three public specification manifests, the existing Money & Breadth
-view, the existing commercial-data entitlement and the remaining single-basis source
-qualification. No private model, live API parity or trading advantage was recovered.
+Full exact-path/local-writer custody is still required before the first source edit;
+work only in a new owned isolated worktree, not the shared foreign branch. Actual
+code-gated test selection and import closure must be proved. A supplementary Sol host
+gate-query helper was safety-blocked and not rerouted or delegated for reproduction.
 
-The broad research dependency is no longer the blocker. Concrete receiver/ACK/START
-had not returned on the exact carrier at the last read; source custody and a properly
-qualified production price input remain unproven. This is approved bounded engineering,
-not a claim of an active worker, product source implementation or a live release.
-Do not apply the commercial license for one source to the Yahoo-derived cache, relabel
-raw flat-file prices as adjusted, or treat Data OS vocabulary as a conversion engine.
-Keep W1 descriptive context outside the existing grader input and preserve old boards.
+## Evidence and completion
 
-Read-only host process27490 completed with exit0; its successful targeted output reads
-settled the earlier unknown research-process result without retry. A later Not connected
-error does not change that known exit or justify a source-writer/device failover.
+Procedure pin: Mastermind964bd8e7b30c91e5e83caee0ba37513ba7d07e70, compatible1.0.1/bootstrap1.
+Source reconnaissance: Macro14dc3b38111081a0d559d27b9c36ab995c8aa441 and
+Terminal9b7e7a41ad28ab43f74681960c1d5e4758389ffa. Older503-name local-cache and public
+specification evidence retains its original dates; it is not refreshed by this record.
+
+The source-ruling dossier preserves27 additional research-only numerical checks
+(5 intended naive-baseline failures, then27 passes) and the bounded synthetic timing.
+They do not replace the earlier28 research checks or the original26 product tests.
+No current full-store validation, complete CI, independent product review, live-input,
+served-browser or performance-improvement claim is made here.
+
+Completion remains the real source -> derived product -> usable calendar -> matching
+constituents -> existing research path, with truthful zero/missing/stale/history states,
+old-field/grader/entitlement invariance, current code-gated tests, independent review
+and actual published/browser proof. Sol must issue a same-root CONTINUE/repair or STOP
+on a material return; preserve the existing Secretary aggregate and sibling sources.
