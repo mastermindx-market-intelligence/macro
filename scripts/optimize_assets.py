@@ -122,9 +122,10 @@ def _attach_aibrief_freshness(text: str, page_dir: Path, site_root: Path) -> str
     except (OSError, ValueError):
         return text
 
-    close = _BODY_CLOSE_RE.search(text)
-    if close is None:
+    closes = list(_BODY_CLOSE_RE.finditer(text))
+    if not closes:
         return text
+    close = closes[-1]
 
     src = "../" * depth + _AIBRIEF_REFRESH_ASSET
     tag = f'<script src="{src}"></script>\n'
