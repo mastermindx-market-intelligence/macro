@@ -1452,7 +1452,7 @@
   body.page-china .cnx-wrap .mx-stance.st-up{--c:var(--ink-up, var(--up))}
   body.page-china .cnx-wrap .mx-stance.st-down{--c:var(--ink-down, var(--down))}
   body.page-china .cnx-wrap .mx-stance.st-warn{--c:var(--ink-warn, var(--warn))}
-  body.page-china .cnx-wrap .dial{text-align:center}
+  body.page-china .cnx-wrap .dial{text-align:center;height:auto;background:none;border-radius:0}
   body.page-china .cnx-wrap .dial .mx5-sc-gauge-row{justify-content:center}
   body.page-china .cnx-wrap .dial-cap{font-size:var(--fs-sm,12.5px);color:var(--muted);margin:8px 0 0}
   body.page-china .cnx-wrap .drivers{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap-grid,18px)}
@@ -1501,7 +1501,7 @@
       display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;padding-bottom:6px}
     body.page-china .cnx-wrap .drivers > .panel{flex:0 0 86%;scroll-snap-align:start}
     body.page-china .cnx-wrap .mx-vh-word{font-size:32px;letter-spacing:-.02em}
-    body.page-china .cnx-wrap .dial{margin:4px auto 12px;overflow:visible;max-width:220px}
+    body.page-china .cnx-wrap .dial{margin:4px auto 12px;overflow:hidden;max-width:220px;height:auto;min-height:160px;background:none}
     body.page-china .aurora .au-a3{display:none}
     body.page-china .cnx-wrap .mx-vh .cnx-gauge-needle{filter:none}
     body.page-china .sxg-face.mx5-card-face{background:var(--panel)}
@@ -2191,18 +2191,23 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       {% set _ev_all = [] %}
       {% for c in (event_strip or []) %}{% if c.importance == 'high' %}{% set _ = _ev_all.append(c) %}{% endif %}{% endfor %}
       {% set _ev_shown = _ev_all[:4] %}
-      {% if _ev_all %}<div style="font-size:11.5px;color:var(--muted)">{{ _ev_all | length }} <span class="l-en">high-impact prints ahead</span><span class="l-zh">项高影响数据待发</span></div>{% endif %}
+      {% if _ev_all %}
+      <div style="font-size:11.5px;color:var(--muted)">{{ _ev_all | length }} <span class="l-en">high-impact prints ahead</span><span class="l-zh">项高影响数据待发</span></div>
       <div class="cnx-estrip">
         {% for c in _ev_shown %}
         <div class="cnx-ev">
-          <div class="edot {{ 'h' if c.importance == 'high' else 'm' }}"></div>
+          <div class="edot h"></div>
           <div class="en">{{ t((c.name_en or '')|truncate(18, true, '…'), (c.name_zh or '')|truncate(18, true, '…')) }}</div>
           <div class="ed">{{ c.date }}</div>
           {{ imp(c.importance) }}
         </div>
         {% endfor %}
       </div>
-      {% if _ev_all %}<div class="cnx-view-all">{{ _ev_shown | length }} <span class="l-en">of</span><span class="l-zh">/</span> {{ _ev_all | length }} <span class="l-en">shown · full calendar →</span><span class="l-zh">项已显示 · 完整日历 →</span></div>{% endif %}
+      <div class="cnx-view-all">{{ _ev_shown | length }} <span class="l-en">of</span><span class="l-zh">/</span> {{ _ev_all | length }} <span class="l-en">shown · full calendar →</span><span class="l-zh">项已显示 · 完整日历 →</span></div>
+      {% else %}
+      <div class="mx-empty"><span class="l-en">No high-impact prints ahead this session</span><span class="l-zh">本会话暂无高影响数据待发</span>
+        <span class="empty-why"><span class="l-en">the calendar has not emitted a high-importance print for this session</span><span class="l-zh">本会话日历尚未给出高影响数据</span></span></div>
+      {% endif %}
     </div>
   </section>
 
@@ -2388,15 +2393,17 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
         <div class="cnx-sep"></div>
         <div class="cnx-eyebrow">{{ t('Key rates & cross-asset','关键利率与跨资产') }}</div>
         <div class="cnx-ihgrid">
-          {# USD/CNH #}
-          {% set _cnh = none %}
-          {% for tl in (market_tiles or []) %}{% if 'CNH' in (tl.tag | string) or 'yuan' in (tl.label | string) %}{% if not _cnh %}{% set _cnh = tl %}{% endif %}{% endif %}{% endfor %}
+          {# USD/CNH. namespace: a for-loop assignment does not leak in Jinja. #}
+          {% set _cnh_ns = namespace(tile=none) %}
+          {% for tl in (market_tiles or []) %}{% if 'CNH' in (tl.tag | string) or 'yuan' in (tl.label | string) %}{% if not _cnh_ns.tile %}{% set _cnh_ns.tile = tl %}{% endif %}{% endif %}{% endfor %}
+          {% set _cnh = _cnh_ns.tile %}
           {% if _cnh %}
           <div class="cnx-ihcard"><div class="t">USD/CNH</div><div class="p">{{ _cnh.level }}</div><span class="cnx-nchip">{{ t('offshore yuan','离岸人民币') }}</span>{% if _cnh.meaning_en %}<span class="cnx-orient"><span class="l-en">{{ _cnh.meaning_en }}</span><span class="l-zh">{{ _cnh.meaning_zh }}</span></span>{% endif %}</div>
           {% endif %}
           {# 10Y CGB #}
-          {% set _cgb = none %}
-          {% for tl in (market_tiles or []) %}{% if 'CGB' in (tl.tag | string) or 'yield' in (tl.tag | string) %}{% if not _cgb %}{% set _cgb = tl %}{% endif %}{% endif %}{% endfor %}
+          {% set _cgb_ns = namespace(tile=none) %}
+          {% for tl in (market_tiles or []) %}{% if 'CGB' in (tl.tag | string) or 'yield' in (tl.tag | string) %}{% if not _cgb_ns.tile %}{% set _cgb_ns.tile = tl %}{% endif %}{% endif %}{% endfor %}
+          {% set _cgb = _cgb_ns.tile %}
           {% if _cgb %}
           <div class="cnx-ihcard"><div class="t">10Y CGB</div><div class="p">{{ _cgb.level }}</div><span class="cnx-nchip">{{ t('govt bond yield','国债收益率') }}</span></div>
           {% endif %}

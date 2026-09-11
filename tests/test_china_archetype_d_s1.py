@@ -80,6 +80,9 @@ def test_g2_events_slice_label_from_one_source():
     assert 'high-impact prints ahead' in wrap
     assert "shown · full calendar →" in wrap
     assert "项已显示 · 完整日历 →" in wrap
+    assert "No high-impact prints ahead this session" in wrap
+    assert 'class="edot h"' in wrap
+    assert "{{ 'h' if c.importance == 'high' else 'm' }}" not in wrap
 
 
 def test_g2_high_impact_count_is_the_filtered_integer():
@@ -96,9 +99,15 @@ def test_g2_high_impact_count_is_the_filtered_integer():
     ]
     html = render_macro_block(vm)
     watching = html[html.find("What we're watching"): html.find("Go deeper")]
-    assert "3 " in watching and "high-impact prints ahead" in watching
+    assert re.search(
+        r'3\s+<span class="l-en">high-impact prints ahead</span>', watching
+    ), watching[watching.find("high-impact") - 40: watching.find("high-impact") + 80]
     assert "5 high-impact" not in watching
-    assert "3" in watching and "of" in watching
+    assert re.search(
+        r'3\s+<span class="l-en">of</span>.*?</span>\s+3\s+<span class="l-en">shown',
+        watching,
+        flags=re.S,
+    ), watching[watching.find("cnx-view-all"): watching.find("cnx-view-all") + 280]
 
 
 def test_g2_duplicate_45_percent_row_removed():
@@ -273,8 +282,9 @@ def test_inverted_tiles_disclose_quote_orientation():
     assert "以美元兑人民币报价" in yuan["meaning_zh"]
     dlg = _dialogs()
     card = dlg[dlg.find("USD/CNH"): dlg.find("10Y CGB")]
-    assert "{{ _cnh.meaning_en }}" in card
-    assert "{{ _cnh.meaning_zh }}" in card
+    assert "_cnh.meaning_en" in card
+    assert "_cnh.meaning_zh" in card
+    assert "namespace(tile=none)" in card
 
 
 def test_l1_index_strip_has_no_inverted_quote_tile():
@@ -419,22 +429,218 @@ def test_capture_harness_skips_theme_toggle_flourish():
 
 
 def test_cnh_dialog_card_renders_orientation_copy():
-    """M4: surviving CNH surface carries CHINA_TILE_COPY meaning lines."""
+    """M4: surviving CNH surface carries CHINA_TILE_COPY meaning lines (rendered)."""
     from jinja2 import DictLoader, Environment
     from scripts.build_china import CHINA_TILE_COPY
+    from scripts.capture_china_archetype_d_evidence import _extract_macros
 
-    snippet = """
-    {% set _cnh = cnh %}
-    <div class="cnx-ihcard"><div class="t">USD/CNH</div><div class="p">{{ _cnh.level }}</div>
-    <span class="cnx-nchip">offshore yuan</span>
-    {% if _cnh.meaning_en %}<span class="cnx-orient"><span class="l-en">{{ _cnh.meaning_en }}</span><span class="l-zh">{{ _cnh.meaning_zh }}</span></span>{% endif %}</div>
-    """
-    env = Environment(loader=DictLoader({"s": snippet}), autoescape=False)
-    html = env.get_template("s").render(cnh={
+    start = SRC.index("{# USD/CNH")
+    end = SRC.index("{# 10Y CGB #}")
+    env = Environment(
+        loader=DictLoader({"s": _extract_macros(SRC) + "\n" + SRC[start:end]}),
+        autoescape=False,
+    )
+    html = env.get_template("s").render(market_tiles=[{
+        "tag": "USDCNH 美元离岸",
+        "label": "Offshore yuan 离岸人民币",
         "level": "7.123",
         "meaning_en": CHINA_TILE_COPY["USDCNH"]["meaning_en"],
         "meaning_zh": CHINA_TILE_COPY["USDCNH"]["meaning_zh"],
-    })
+    }])
     assert "quoted as yuan per US dollar — higher = a weaker yuan" in html
     assert "以美元兑人民币报价 — 数值升高 = 人民币走弱" in html
     assert "cnx-orient" in html
+    assert "7.123" in html
+
+
+def test_money_mixed_sentence_renders_mixed_face():
+    """B1-a: producer MIXED sentence is not classified as easing."""
+    from engine.china_tier1 import reason_faces
+
+    mixed = (
+        "i",
+        "PBoC monetary conditions mixed (1 easing / 1 tightening / 1 neutral) — no net vote.",
+        "央行货币条件分歧 — 无净投票。",
+    )
+    face = reason_faces([mixed], n=1)[0]
+    assert face["sign"] == "ℹ"
+    assert "mixed" in face["en"].lower()
+    assert "no single vote" in face["en"]
+    assert "easier" not in face["en"]
+    assert "every part of that read agrees" not in face["en"]
+    assert "all point the same way" not in face["tip_en"]
+    assert "方向不一" in face["zh"]
+
+
+def test_money_majority_and_unanimous_wording():
+    """B1-b: 2/3 is majority; 3/3 is unanimity. Never claim unanimity from 2/3."""
+    from engine.china_tier1 import reason_faces
+
+    easy_23 = (
+        "+",
+        "PBoC monetary conditions tilting easing (2/3 legs). ONE monetary-conditions vote.",
+        "央行货币条件趋宽（2/3项指标同意）— 综合M2/剪刀差/社融的单次货币投票。",
+    )
+    tight_23 = (
+        "-",
+        "PBoC monetary conditions tightening (2/3 legs agree). ONE monetary-conditions vote.",
+        "央行货币条件趋紧（2/3项指标同意）— 综合M2/剪刀差/社融的单次货币投票。",
+    )
+    tight_33 = (
+        "-",
+        "PBoC monetary conditions tightening (3/3 legs agree). ONE monetary-conditions vote.",
+        "央行货币条件趋紧（3/3项指标同意）— 综合M2/剪刀差/社融的单次货币投票。",
+    )
+    f_e = reason_faces([easy_23], n=1)[0]
+    f_t = reason_faces([tight_23], n=1)[0]
+    f_u = reason_faces([tight_33], n=1)[0]
+    assert "easier" in f_e["en"]
+    assert "most of that read agrees" in f_e["en"]
+    assert "every part of that read agrees" not in f_e["en"]
+    assert "多数方向一致" in f_e["zh"]
+    assert "tighter" in f_t["en"]
+    assert "most of that read agrees" in f_t["en"]
+    assert "every part of that read agrees" not in f_t["en"]
+    assert "多数方向一致" in f_t["zh"]
+    assert "every part of that read agrees" in f_u["en"]
+    assert "most of that read agrees" not in f_u["en"]
+    assert "各个部分方向一致" in f_u["zh"]
+    assert "all point the same way" in f_u["tip_en"]
+    assert "all point the same way" not in f_t["tip_en"]
+
+
+def test_clamp_does_not_amputate_unless_policy():
+    """M-c: overflow sentence falls back to worded-empty, never 'unless policy.'"""
+    from engine.china_tier1 import EMPTY_REASON, _clamp_en, reason_faces
+
+    overflow = (
+        "Margin leverage is not yet crowded and southbound money has not turned "
+        "seller so the downside from here is limited unless policy disappoints "
+        "again in the fourth quarter."
+    )
+    assert _clamp_en(overflow) == ""
+    face = reason_faces([("+", overflow, overflow)], n=1)[0]
+    assert face["empty"] is True
+    assert face["en"] == EMPTY_REASON["en"]
+    assert not face["en"].endswith("unless policy.")
+    assert "unless policy." not in face["en"]
+    # A clause-bounded overflow keeps the leading clause, not a mid-word cut.
+    bounded = (
+        "Southbound money is still a buyer, and the rest of this sentence is "
+        "long enough that the trailing clause must drop rather than be sawn off."
+    )
+    kept = _clamp_en(bounded)
+    assert kept.endswith("buyer.")
+    assert "sawn" not in kept
+
+
+def test_margin_crowded_band_matches_producer_threshold():
+    """M-e: glance copy tracks china_playbook's pctile >= 85 fire, not 'top tenth'."""
+    from engine.china_tier1 import MARGIN_CROWDED_PCTILE, reason_faces
+
+    assert MARGIN_CROWDED_PCTILE == 85
+    src = (ROOT / "engine" / "china_playbook.py").read_text(encoding="utf-8")
+    assert 'm["pctile"] >= 85' in src
+    face = reason_faces([
+        ("-", "Margin leverage crowded (90th percentile of float) — late-stage froth, tighten risk.",
+         "融资杠杆拥挤（占流通市值 90 分位）— 后期泡沫，收紧风险。"),
+    ], n=1)[0]
+    assert "top 15%" in face["tip_en"]
+    assert "top tenth" not in face["tip_en"]
+    assert "最高 15%" in face["tip_zh"]
+    assert "最高十分之一" not in face["tip_zh"]
+
+
+def test_banned_only_reason_is_worded_empty():
+    """m-f: a reason that strips to nothing is empty, not a delivered not-arrived lie."""
+    from engine.china_tier1 import EMPTY_REASON, reason_faces
+
+    face = reason_faces([("+", "ONE monetary-conditions vote", "ONE monetary-conditions vote")], n=1)[0]
+    assert face["empty"] is True
+    assert face["en"] == EMPTY_REASON["en"]
+
+
+def test_zero_high_events_renders_worded_empty():
+    """m-g: a day with zero high-importance prints is not a blank clickable strip."""
+    from scripts.capture_china_archetype_d_evidence import fixture_vm, render_macro_block
+
+    vm = fixture_vm()
+    vm["event_strip"] = [
+        {"name_en": "PMI", "name_zh": "PMI", "date": "09-30", "importance": "low"},
+    ]
+    html = render_macro_block(vm)
+    watching = html[html.find("What we're watching"): html.find("Go deeper")]
+    assert "No high-impact prints ahead this session" in watching
+    assert "本会话暂无高影响数据待发" in watching
+    assert "high-impact prints ahead" not in watching.replace("No high-impact prints ahead this session", "")
+    assert "cnx-estrip" not in watching
+
+
+def test_hero_clause_zh_does_not_fall_back_to_english():
+    """m-h: missing ZH copy uses the worded-empty clause, never the EN string."""
+    from engine.china_tier1 import EMPTY_CLAUSE, hero_clause
+
+    en, zh = hero_clause({}, {"headline_en": "Risk-off tape, policy still easy.", "headline_zh": ""})
+    assert en == "Risk-off tape, policy still easy."
+    assert zh == EMPTY_CLAUSE[1]
+    assert zh != en
+    assert "Risk-off" not in zh
+
+
+def test_hero_clause_reconciles_disagreement():
+    """m-j: AGGRESSIVE under a red tape names the Act stance in the clause."""
+    from engine.china_tier1 import hero_clause
+
+    pb = {"dial": {"posture": "AGGRESSIVE"}, "progress": {}, "quad_meaning": {}}
+    ms = {
+        "color": "red",
+        "headline_en": "Breadth is breaking — every boat is sinking.",
+        "headline_zh": "广度破裂——所有船都在沉。",
+    }
+    en, zh = hero_clause(pb, ms)
+    assert "Act" in en
+    assert "行动" in zh
+    assert "disagree" in en
+    assert "Breadth is breaking" not in en
+
+
+def test_duplicate_reasons_dedupe():
+    """n-l: three identical producer reasons render one row + two empties."""
+    from engine.china_tier1 import EMPTY_REASON, reason_faces
+
+    item = ("+", "Southbound buying strong — mainland money leaning risk-on.",
+            "南向资金大幅净买入 — 内地资金偏向风险偏好。")
+    faces = reason_faces([item, item, item], n=3)
+    assert faces[0]["en"] == item[1] or "Southbound" in faces[0]["en"] or faces[0]["empty"] is False
+    assert sum(1 for f in faces if not f.get("empty")) == 1
+    assert sum(1 for f in faces if f.get("empty")) == 2
+    assert faces[1]["en"] == EMPTY_REASON["en"]
+
+
+def test_mobile_dial_clips_overflow():
+    """M-d: 390 dial restores overflow:hidden; skyToggleFx is the harness's job."""
+    assert "body.page-china .cnx-wrap .dial{margin:4px auto 12px;overflow:hidden;max-width:220px;height:auto;min-height:160px;background:none}" in SRC
+    assert "overflow:visible;max-width:220px" not in SRC
+    assert "body.page-china .cnx-wrap .dial{text-align:center;height:auto;background:none;border-radius:0}" in SRC
+
+
+def test_docstring_cites_real_stance_precedent():
+    """m-i: Act/Get ready provenance is master_brain / cycles, not a missing hk_tier1."""
+    src = (ROOT / "engine" / "china_tier1.py").read_text(encoding="utf-8")
+    assert "hk_tier1" not in src
+    assert "master_brain" in src
+    assert "cycles.py" in src
+
+
+def test_defect_state_cells_named_in_readme():
+    """Evidence gap: README names the four defect-state cells."""
+    from scripts.capture_china_archetype_d_evidence import DEFECT_CELLS
+
+    readme = (ROOT / "mockups" / "evidence" / "china-archetype-d" / "README.md").read_text(
+        encoding="utf-8"
+    )
+    assert "Defect-state cells" in readme
+    names = {row[0] for row in DEFECT_CELLS}
+    assert names == {"mixed-money", "majority-money", "worded-empty", "unknown-posture"}
+    for name in names:
+        assert name in readme

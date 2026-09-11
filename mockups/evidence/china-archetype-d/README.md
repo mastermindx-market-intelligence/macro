@@ -1,4 +1,4 @@
-# China Archetype-D S1 — evidence matrix (round 3)
+# China Archetype-D S1 — evidence matrix (round 4)
 
 Five L1 subjects × dark/light × EN/ZH × 1440/390.
 Spec G7 names this the 20-crop matrix; the product of those axes is 40 cells.
@@ -91,4 +91,15 @@ Round-2 light bloom and the 390 white disc were **not** the page aurora. They we
 ## CNH inverted-tile ruling
 
 L1 index strip is SSE / CSI 300 / ChiNext / HSI — **no inverted-quote tile renders**. `MARKET_TILE_SPEC` still has `CNH_F` `invert=True`; orientation copy now also renders on the Tier-2 USD/CNH card inside `cnx-dlg-markets` (`quoted as yuan per US dollar — higher = a weaker yuan` / `以美元兑人民币报价 — 数值升高 = 人民币走弱`).
+
+## Defect-state cells
+
+The happy-path fixture pins posture NEUTRAL + three firing reasons, so it never exercises mixed/majority/empty/unknown. These four extra cells (dark+light EN, 1440) close that gap. They are aliases in `cells/`, not extra G7 subjects (the visual-evidence gate still requires eight REST cells on each of the five L1 subjects).
+
+| Cell | Subject | What it exercises | Aliases |
+|---|---|---|---|
+| mixed-money | todo | MIXED PBoC face (`no net vote`) | `defect-mixed-money-dark-en-desktop.png`, `defect-mixed-money-light-en-desktop.png` |
+| majority-money | todo | 2/3 tightening majority wording | `defect-majority-money-dark-en-desktop.png`, `defect-majority-money-light-en-desktop.png` |
+| worded-empty | todo | §9.12 empty stance rows | `defect-worded-empty-dark-en-desktop.png`, `defect-worded-empty-light-en-desktop.png` |
+| unknown-posture | hero | unmapped posture → cautious lane | `defect-unknown-posture-dark-en-desktop.png`, `defect-unknown-posture-light-en-desktop.png` |
 

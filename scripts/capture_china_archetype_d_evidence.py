@@ -12,6 +12,7 @@ Usage::
 """
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import re
@@ -254,6 +255,54 @@ def fixture_vm() -> dict:
     }
 
 
+def _vm_with_dial(vm: dict, **dial_kw) -> dict:
+    out = copy.deepcopy(vm)
+    out["pb"] = dict(out["pb"])
+    out["pb"]["dial"] = dict(out["pb"]["dial"], **dial_kw)
+    return out
+
+
+def defect_mixed_vm(vm: dict | None = None) -> dict:
+    base = copy.deepcopy(vm or fixture_vm())
+    reasons = list(base["pb"]["dial"]["reasons"])
+    reasons[1] = (
+        "i",
+        "PBoC monetary conditions mixed (1 easing / 1 tightening / 1 neutral) — no net vote.",
+        "央行货币条件分歧 — 无净投票。",
+    )
+    return _vm_with_dial(base, reasons=reasons)
+
+
+def defect_majority_vm(vm: dict | None = None) -> dict:
+    base = copy.deepcopy(vm or fixture_vm())
+    reasons = list(base["pb"]["dial"]["reasons"])
+    reasons[1] = (
+        "-",
+        "PBoC monetary conditions tightening (2/3 legs agree). ONE monetary-conditions vote.",
+        "央行货币条件趋紧（2/3项指标同意）— 综合M2/剪刀差/社融的单次货币投票。",
+    )
+    return _vm_with_dial(base, reasons=reasons)
+
+
+def defect_empty_vm(vm: dict | None = None) -> dict:
+    return _vm_with_dial(copy.deepcopy(vm or fixture_vm()), reasons=[])
+
+
+def defect_unknown_posture_vm(vm: dict | None = None) -> dict:
+    return _vm_with_dial(copy.deepcopy(vm or fixture_vm()), posture="FRESH BUY")
+
+
+# Four defect-state cells (dark+light EN, 1440). Named in the README. Not
+# extra manifest pages — the visual-evidence gate requires 8 REST cells on
+# every page, and these close a fixture gap rather than a G7 subject.
+DEFECT_CELLS: tuple[tuple[str, str, str, object], ...] = (
+    ("mixed-money", "todo", '[data-ev="todo"]', defect_mixed_vm),
+    ("majority-money", "todo", '[data-ev="todo"]', defect_majority_vm),
+    ("worded-empty", "todo", '[data-ev="todo"]', defect_empty_vm),
+    ("unknown-posture", "hero", '[data-ev="hero"]', defect_unknown_posture_vm),
+)
+
+
 def _extract_page_css(src: str) -> str:
     m = re.search(r"<style>(.*?)</style>\s*</head>", src, flags=re.S)
     if not m:
@@ -318,6 +367,10 @@ def write_fixture_site(scratch: Path) -> None:
     shutil.copy(TEMPLATES_DIR / "theme.css", scratch / "theme.css")
     shutil.copy(TEMPLATES_DIR / "theme.js", scratch / "theme.js")
     (scratch / "china_s1.html").write_text(render_macro_block(), encoding="utf-8")
+    for name, _subject, _sel, builder in DEFECT_CELLS:
+        (scratch / f"china_s1_defect_{name}.html").write_text(
+            render_macro_block(builder()), encoding="utf-8"
+        )
 
 
 def _git_head_of_repo() -> tuple[str | None, str | None]:
@@ -371,6 +424,7 @@ def _capture(scratch: Path) -> dict:
     written: set[str] = set()
     aliases: dict[str, str] = {}
     g8: dict[str, dict] = {}
+    defect_rows: list[dict] = []
 
     try:
         manager = sync_playwright().start()
@@ -590,6 +644,82 @@ def _capture(scratch: Path) -> dict:
                 finally:
                     context.close()
                 g8[str(width)] = g8_row
+
+            d_width, d_height = VIEWPORTS["desktop"]
+            for name, subject, selector, _builder in DEFECT_CELLS:
+                for theme in THEMES:
+                    locale = "en"
+                    state = {"theme": theme, "locale": locale}
+                    context = browser.new_context(
+                        viewport={"width": d_width, "height": d_height},
+                        locale="en-US",
+                        color_scheme=theme,
+                        device_scale_factor=1,
+                    )
+                    context.add_init_script(
+                        f"({_STATE_SEED_SCRIPT.strip()})({json.dumps(state)})"
+                    )
+                    page = context.new_page()
+                    entry = {
+                        "defect": name,
+                        "subject": subject,
+                        "viewport": "desktop",
+                        "locale": locale,
+                        "theme": theme,
+                        "viewport_width": d_width,
+                        "viewport_height": d_height,
+                    }
+                    try:
+                        url = f"{base}/china_s1_defect_{name}.html"
+                        response = page.goto(url, wait_until="load", timeout=30000)
+                        if response is None or not response.ok:
+                            raise RuntimeError(
+                                f"HTTP {getattr(response, 'status', 'none')}"
+                            )
+                        page.wait_for_timeout(250)
+                        applied = page.evaluate(_APPLY_STATE_SCRIPT.strip(), state) or {}
+                        if applied.get("theme") != theme or applied.get("locale") != locale:
+                            raise RuntimeError(
+                                f"state mismatch: requested theme={theme} locale={locale} "
+                                f"observed {applied!r}"
+                            )
+                        page.wait_for_timeout(150)
+                        loc = page.locator(selector).first
+                        loc.wait_for(state="visible", timeout=5000)
+                        loc.scroll_into_view_if_needed()
+                        page.wait_for_timeout(80)
+                        png = loc.screenshot(type="png")
+                        fname, digest, pw, ph = content_address_png(png, CELLS_DIR)
+                        alias = f"defect-{name}-{theme}-{locale}-desktop.png"
+                        (CELLS_DIR / alias).write_bytes(png)
+                        written.add(fname)
+                        written.add(alias)
+                        aliases[alias] = fname
+                        entry.update(
+                            {
+                                "captured": True,
+                                "file": fname,
+                                "alias": alias,
+                                "sha256": digest,
+                                "bytes": len(png),
+                                "width": pw,
+                                "height": ph,
+                                "applied_theme": applied.get("theme"),
+                                "applied_locale": applied.get("locale"),
+                            }
+                        )
+                    except Exception as exc:
+                        entry.update(
+                            {
+                                "captured": False,
+                                "reason": f"{type(exc).__name__}: {exc}",
+                            }
+                        )
+                    finally:
+                        context.close()
+                    defect_rows.append(entry)
+            captured_d = sum(1 for r in defect_rows if r.get("captured"))
+            print(f"  defect-state: {captured_d}/{len(defect_rows)} cells", flush=True)
         finally:
             browser.close()
             manager.stop()
@@ -661,13 +791,14 @@ def _capture(scratch: Path) -> dict:
         },
         "g8": g8,
         "pages": pages,
+        "defect_cells": defect_rows,
     }
     return {"manifest": manifest, "written": sorted(written), "outcome": outcome, "g8": g8}
 
 
 def _write_readme(manifest: dict) -> str:
     lines = [
-        "# China Archetype-D S1 — evidence matrix (round 3)",
+        "# China Archetype-D S1 — evidence matrix (round 4)",
         "",
         "Five L1 subjects × dark/light × EN/ZH × 1440/390.",
         "Spec G7 names this the 20-crop matrix; the product of those axes is "
@@ -773,6 +904,25 @@ def _write_readme(manifest: dict) -> str:
         "copy now also renders on the Tier-2 USD/CNH card inside `cnx-dlg-markets` "
         "(`quoted as yuan per US dollar — higher = a weaker yuan` / "
         "`以美元兑人民币报价 — 数值升高 = 人民币走弱`).",
+        "",
+        "## Defect-state cells",
+        "",
+        "The happy-path fixture pins posture NEUTRAL + three firing reasons, so it "
+        "never exercises mixed/majority/empty/unknown. These four extra cells "
+        "(dark+light EN, 1440) close that gap. They are aliases in `cells/`, not "
+        "extra G7 subjects (the visual-evidence gate still requires eight REST "
+        "cells on each of the five L1 subjects).",
+        "",
+        "| Cell | Subject | What it exercises | Aliases |",
+        "|---|---|---|---|",
+        "| mixed-money | todo | MIXED PBoC face (`no net vote`) | "
+        "`defect-mixed-money-dark-en-desktop.png`, `defect-mixed-money-light-en-desktop.png` |",
+        "| majority-money | todo | 2/3 tightening majority wording | "
+        "`defect-majority-money-dark-en-desktop.png`, `defect-majority-money-light-en-desktop.png` |",
+        "| worded-empty | todo | §9.12 empty stance rows | "
+        "`defect-worded-empty-dark-en-desktop.png`, `defect-worded-empty-light-en-desktop.png` |",
+        "| unknown-posture | hero | unmapped posture → cautious lane | "
+        "`defect-unknown-posture-dark-en-desktop.png`, `defect-unknown-posture-light-en-desktop.png` |",
         "",
     ]
     return "\n".join(lines) + "\n"
