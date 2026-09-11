@@ -327,12 +327,10 @@ def _flows_section_html() -> str | None:
         f"As of {data['asof']} · net creation/redemption flow (ΔShares × NAV) "
         f"summed over each window · positive = money in. Windows cap at the "
         f"{data['depth']} trading days collected so far (history builds from "
-        f"June 2026), so the wider windows can coincide until more accrues. "
-        f"A heads-up, not a buy signal.",
+        f"June 2026), so the wider windows can coincide until more accrues.",
         f"截至 {data['asof']} · 各时间窗内份额申购／赎回净额（份额变动 × 资产净值）"
         f"求和 · 正值 = 资金流入。各窗口取目前已采集的 {data['depth']} 个交易日"
-        f"（历史自 2026 年 6 月起累积），故在数据充足前较宽的窗口可能重合。"
-        f"仅为提示，非买入信号。")
+        f"（历史自 2026 年 6 月起累积），故在数据充足前较宽的窗口可能重合。")
     return (
         "<div class='scc-section-h' id='sc-flows'>"
         "<h2><span class='l-en'>Where sector-ETF money is flowing</span>"

@@ -57,6 +57,10 @@ def test_cell_matrix_covers_required_families():
     assert any(c["id"].startswith("b1-empty-") for c in cells)
     assert any(c["id"].startswith("tri-baked-") for c in cells)
     assert any(c["id"].startswith("tri-skel-") for c in cells)
+    assert "tri-skel-dark-zh" in ids
+    assert "tri-skel-light-zh" in ids
+    assert "tri-jsreject-baked-dark-en" in ids
+    assert "tri-jsreject-baked-dark-zh" in ids
     assert any(c["id"].startswith("tri-jsempty-") for c in cells)
     assert any(c["id"].startswith("tri-jsreject-") for c in cells)
     assert any(c["id"].startswith("grader-tip-") for c in cells)
@@ -80,7 +84,10 @@ def test_populated_fixture_bakes_narrow_and_wait_lane():
     assert "Narrow" in html and "狭窄" in html
     assert "class=\"skel\"" not in html.split('id="mkt-breadth"')[1][:80]
     assert "WAIT" in html and "等待" in html
-    assert "BUY ZONE" in html
+    assert "unconfirmed — wait" in html or "未确认 — 等待" in html
+    assert "clean entry" not in html
+    assert "入场干净" not in html
+    assert "BOTTOMING" in html
     assert "act-watch-strip" in html
     assert "Theme reasons → Sector Intelligence" not in html
     assert "+5 more" not in html
@@ -147,6 +154,9 @@ def test_readme_art_direction_strings_live_in_rig():
     assert "## LIGHT TREATMENT" in src
     assert "Mechanisms that INTENTIONALLY differ" in src
     assert "SETTLE" in src
+    assert "Producer-faithful populated fixture" in src
+    assert "1 deselected" in src
+    assert "template↔site sync REFUSED" in src
     assert "__skyDeck" in src
     assert "getAnimations" in src
     assert "canvas-context" in src or "viewport-region" in src
@@ -174,5 +184,11 @@ def test_mc_known_three_way():
     assert mc_known("broad")["verdict"] == "broad"
     assert mc_known("mixed")["verdict"] == "mixed"
     board = populated_board()
-    assert board["buy_soon"][0]["label"] == "BUY ZONE"
+    assert board["buy_soon"][0]["label"] == "BOTTOMING"
+    assert board["buy_soon"][0]["stat_en"] == "unconfirmed — wait"
+    assert board["buy_soon"][0]["stat_zh"] == "未确认 — 等待"
+    assert board["buy_soon"][0]["chip_en"] == "WAIT"
     assert board["total"] == 44
+    assert board["buy_now"][0]["kind"] == "theme"
+    assert board["buy_now"][0]["reco"] == "accumulate"
+    assert board["take_profits"][0]["stat_en"] == "risk check: trim"

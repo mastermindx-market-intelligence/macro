@@ -551,7 +551,7 @@
         <span class="ai-bdg">{{ icon('diamond') }}</span>
         <span class="act-row-name"><span class="l-en">{{ dispshort(x.name)|e }}</span><span class="l-zh">{{ (x.name_zh or x.name)|e }}</span></span>
         {%- if x.get('book_wt') %}<span class="ai-book" data-tip-en="This theme has a {{ '%.0f'|format(x.book_wt*100) }}% weight in the model portfolio and has passed its trend-risk check." data-tip-zh="该主题在模型组合中的权重为 {{ '%.0f'|format(x.book_wt*100) }}%，并已通过趋势风险检查。">&#9733;{{ '%.0f'|format(x.book_wt*100) }}%</span>{%- endif %}
-        {%- if x.validated %}<span class="ai-val" data-tip-en="Risk check passed — the trend is intact and has not begun a damaging fade." data-tip-zh="风险检查通过 — 趋势仍然完整，尚未出现明显恶化。">&#10003;</span>{%- else %}<span class="ai-lens" data-tip-en="Leadership only — this shows what is leading, but it has not improved the buy decision." data-tip-zh="仅显示领先方向 — 可看出谁在领涨，但尚未改善买入判断。">&asymp;</span>{%- endif %}
+        {%- if x.validated %}<span class="ai-val" data-tip-en="Risk check passed — the trend is intact and has not begun a damaging fade." data-tip-zh="风险检查通过 — 趋势仍然完整，尚未出现明显恶化。">&#10003;</span>{%- elif not _ab_on_si %}<span class="ai-lens" data-tip-en="Leadership only — this shows what is leading, but it has not improved the buy decision." data-tip-zh="仅显示领先方向 — 可看出谁在领涨，但尚未改善买入判断。">&asymp;</span>{%- endif %}
         {%- if x.get('run_reason_en') %}<span class="ai-lens" data-tip-en="{{ x.run_reason_en }}" data-tip-zh="{{ x.get('run_reason_zh', x.run_reason_en) }}">&#8635;</span>{%- endif %}
         {%- if not _ab_on_si and x.get('score') is not none and x.get('score') is defined %}{%- set _sc = x.score -%}
         <span class="act-row-score{% if _sc >= 60 %} act-score-hi{% elif _sc >= 40 %} act-score-mid{% else %} act-score-lo{% endif %}">{{ '%.0f'|format(_sc) }}</span>
@@ -623,12 +623,12 @@
             <span class="acth-name"><span class="l-en">Buy now</span><span class="l-zh">立即买入</span></span>
             <span class="acth-count">{{ _bn_cnt }}</span>
           </div>
-          <div class="acth-sub"><span class="l-en">Entry confirmed today</span><span class="l-zh">今日已确认入场</span></div>
+          <div class="acth-sub"><span class="l-en">Entry confirmed</span><span class="l-zh">已确认入场</span></div>
         </div>
         <div class="actbody act-fold is-collapsed" id="ab-buy-fold">
           {% for x in _bn_rows %}
             {% if x.kind == 'theme' %}{{ ab_theme_row(x, 'buy_now') }}{% else %}{{ ab_sector_row(x, 'buy_now') }}{% endif %}
-          {% else %}<p class="muted sm" style="padding:8px 12px">{{ t('None today — nothing has fully confirmed a fresh cycle low.', '今日无 — 尚无标的完全确认新的周期低点。') }}</p>{% endfor %}
+          {% else %}<p class="muted sm" style="padding:8px 12px">{{ t('None — nothing has fully confirmed a fresh cycle low.', '无 — 尚无标的完全确认新的周期低点。') }}</p>{% endfor %}
           {% if _ab_gate and (action_board.get('buy_now') or [])|length > (_bn_rows|length) %}{{ ab_more((action_board.get('buy_now') or [])|length - (_bn_rows|length)) }}{% endif %}
           {%- if not _ab_on_si and _more_bn > 0 %}<p class="muted sm" style="padding:4px 12px 8px"><a href="sector_central.html#actnow-section"><span class="l-en">+{{ _more_bn }} more — full list on Sector Intelligence →</span><span class="l-zh">还有 {{ _more_bn }} 个 — 完整列表见行业情报页 →</span></a></p>{%- endif %}
         </div>

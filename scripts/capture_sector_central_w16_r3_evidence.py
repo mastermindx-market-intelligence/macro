@@ -322,6 +322,9 @@ def _empty_board() -> dict:
 
 
 def _theme(reco: str = "accumulate", **over) -> dict:
+    """Theme row shaped like basket_action_items() output (not a stat-chip path)."""
+    from engine.theme_scoring import RECOS
+    en, zh = RECOS.get(reco, (reco.upper() if reco else "HOLD", "持有"))
     row = {
         "kind": "theme",
         "name": "AI Infrastructure",
@@ -329,46 +332,104 @@ def _theme(reco: str = "accumulate", **over) -> dict:
         "slug": "ai_infra",
         "href": "basket/theme_ai_infra.html",
         "reco": reco,
-        "label": reco.upper() if reco else "HOLD",
-        "label_zh": {"enter": "建仓", "accumulate": "加仓", "trim": "减仓",
-                     "avoid": "回避"}.get(reco, "持有"),
+        "label": en,
+        "label_zh": zh,
         "score": 72,
         "perf_20d_rel": 0.01,
-        "validated": False,
+        "validated": reco in ("trim", "avoid"),
+        "clean_entry": False,
     }
     row.update(over)
     return row
 
 
-def _sector(label: str = "BUY ZONE", **over) -> dict:
-    row = {
-        "kind": "sector",
-        "name": "Financials",
-        "ticker": "XLF",
-        "href": "basket/us_sector_financials.html",
+def _sector_timing(ticker: str, *, urgency: str, tag: str = "",
+                   label: str = "", state: str = "", days_hi=None) -> dict:
+    """Minimal sector_timing entry matching scripts.build_site.action_board()."""
+    return {ticker: {
         "label": label,
-        "stat_en": "clean entry",
-        "stat_zh": "入场干净",
+        "state": state,
+        "entry": {"urgency": urgency, "tag": tag, "text": "", "days_hi": days_hi},
+        "age_short": None, "age_short_zh": None,
+        "eq_badge": None, "eq_dir": "flat", "eq_tip": None, "state_style": None,
+    }}
+
+
+def _theme_item(*, reco: str, name: str, name_zh: str, slug: str,
+                score: int, clean_entry: bool = False, **over) -> dict:
+    """Narrative-theme row in the shape basket_action_items() appends to a lane."""
+    from engine.theme_scoring import RECOS
+    en, zh = RECOS[reco]
+    row = {
+        "kind": "theme",
+        "reco": reco,
+        "ticker": slug,
+        "slug": slug,
+        "href": f"basket/{slug}.html",
+        "name": name,
+        "name_zh": name_zh,
+        "label": en,
+        "label_zh": zh,
+        "score": score,
+        "perf_20d_rel": 0.01,
+        "validated": reco in ("trim", "avoid"),
+        "clean_entry": clean_entry,
     }
+    if reco in ("accumulate", "enter") and not clean_entry:
+        row["run_reason_en"] = (
+            "In favour but no clean-entry setup — add on pullback")
+        row["run_reason_zh"] = "顺势但无干净入场机会 — 等回调加仓"
     row.update(over)
     return row
 
 
 def populated_board() -> dict:
-    board = _empty_board()
-    board["buy_now"] = [_theme("enter", label="ENTER", label_zh="建仓", score=73)]
-    board["buy_soon"] = [_sector("BUY ZONE")]
-    board["on_the_run"] = [_theme("accumulate", name="Managed Care",
-                                  name_zh="管理式医疗", slug="managed_care")]
-    board["take_profits"] = [_sector("ROLLING OVER", name="Energy", ticker="XLE",
-                                     href="basket/us_sector_energy.html",
-                                     stat_en="risk check: trim",
-                                     stat_zh="风险检查：减仓")]
-    board["hold"] = [_theme("", name="Gold Miners", name_zh="黄金矿业",
-                            slug="gold_miners", label="HOLD", label_zh="持有")]
-    board["avoid"] = []
+    """Producer-faithful populated fixture.
+
+    Runs scripts.build_site.action_board() over fixture sector_timing +
+    basket_items so every chip/lane/tag combination is one the producer can
+    mint. Combinations the producer cannot emit (e.g. clean entry on
+    buy_soon) never appear here; they belong only on an explicitly-labeled
+    robustness cell.
+    """
+    from engine.cycles import STATE_DISPLAY
+    from scripts.build_site import action_board
+
+    st: dict = {}
+    st.update(_sector_timing(
+        "XLF", urgency="soon",
+        tag="BOTTOMING · UNCONFIRMED — WAIT",
+        label=STATE_DISPLAY["TURN SIGNALED"]["label"],
+        state="TURN SIGNALED",
+    ))
+    st.update(_sector_timing(
+        "XLE", urgency="now",
+        tag="",
+        label=STATE_DISPLAY["ROLLING OVER"]["label"],
+        state="ROLLING OVER",
+    ))
+    bi = {
+        "buy_now": [_theme_item(
+            reco="accumulate", name="AI Infrastructure",
+            name_zh="人工智能基建", slug="ai_infra",
+            score=73, clean_entry=True)],
+        "on_the_run": [_theme_item(
+            reco="accumulate", name="Managed Care",
+            name_zh="管理式医疗", slug="managed_care",
+            score=72, clean_entry=False)],
+        "hold": [_theme_item(
+            reco="hold", name="Gold Miners",
+            name_zh="黄金矿业", slug="gold_miners",
+            score=72)],
+        "sector_overlay": {
+            "XLE": {"reco": "trim", "ew_lane": "take_profits",
+                    "label": "TRIM", "label_zh": "减仓"},
+        },
+        "more": {"buy_now": 5, "buy_soon": 2},
+    }
+    board = action_board(st, [], basket_items=bi)
+    # Frozen count identity (P2.4) — authored 44, not the fixture row count.
     board["total"] = 44
-    board["more"] = {"buy_now": 5, "buy_soon": 2}
     return board
 
 
@@ -636,14 +697,15 @@ def cell_matrix() -> list[dict]:
                 "action": "view", "view": "money",
             })
     for theme in ("dark", "light"):
-        cells.append({
-            "id": f"tri-skel-{theme}-en",
-            "family": "tri-state", "theme": theme, "locale": "en",
-            "w": 1440, "h": 900, "kind": "canvas",
-            "sel": ".rvx-internals", "clip": [".rvx-internals"],
-            "fixture": "no_payload", "js_mode": "hang", "mc": None,
-            "action": "view", "view": "money",
-        })
+        for locale in ("en", "zh"):
+            cells.append({
+                "id": f"tri-skel-{theme}-{locale}",
+                "family": "tri-state", "theme": theme, "locale": locale,
+                "w": 1440, "h": 900, "kind": "canvas",
+                "sel": ".rvx-internals", "clip": [".rvx-internals"],
+                "fixture": "no_payload", "js_mode": "hang", "mc": None,
+                "action": "view", "view": "money",
+            })
     for locale in ("en", "zh"):
         cells.append({
             "id": f"tri-jsempty-dark-{locale}",
@@ -659,6 +721,14 @@ def cell_matrix() -> list[dict]:
             "w": 1440, "h": 900, "kind": "canvas",
             "sel": ".rvx-internals", "clip": [".rvx-internals"],
             "fixture": "no_payload", "js_mode": "reject", "mc": None,
+            "action": "view", "view": "money",
+        })
+        cells.append({
+            "id": f"tri-jsreject-baked-dark-{locale}",
+            "family": "tri-state", "theme": "dark", "locale": locale,
+            "w": 1440, "h": 900, "kind": "canvas",
+            "sel": ".rvx-internals", "clip": [".rvx-internals"],
+            "fixture": "populated", "js_mode": "reject", "mc": "narrow",
             "action": "view", "view": "money",
         })
     # (c) live receipt tips OPEN + (g) leadership about-X-in-10
@@ -920,7 +990,7 @@ def _screenshot(page, spec: dict) -> bytes:
 
 def _write_readme(sha: str, rows: list[dict], hscroll: dict) -> str:
     lines = [
-        "# sector_central W16 r3 — settled evidence matrix",
+        "# sector_central W16 r4 — settled evidence matrix",
         "",
         f"Provenance: committed head `{sha}`. Porcelain empty at capture.",
         "S1 rig: fixture VM (no live bake, no `site/`/`data/` opt-in), real",
@@ -930,6 +1000,37 @@ def _write_readme(sha: str, rows: list[dict], hscroll: dict) -> str:
         "twins + alias. Crops are viewport-region (canvas-context) captures",
         "with margin — a dark cell must look dark. P3.4 stays deferred",
         "(SEAT RULING 2).",
+        "",
+        "## Producer-faithful populated fixture",
+        "",
+        "`populated_board()` runs `scripts.build_site.action_board()` over fixture",
+        "`sector_timing` + `basket_items` so every chip/lane/tag combination is one",
+        "the producer can mint. A combination the producer cannot emit (e.g.",
+        "`clean entry` / 「入场干净」 on a buy_soon row) never appears in a",
+        "populated/baseline cell — only on an explicitly-labeled robustness cell.",
+        "",
+        "Generation path:",
+        "",
+        "1. `sector_timing[XLF]` urgency=`soon`, tag=`BOTTOMING · UNCONFIRMED — WAIT`,",
+        "   label=STATE_DISPLAY[TURN SIGNALED] (`BOTTOMING`) → buy_soon, WAIT chip,",
+        "   stat `unconfirmed — wait` / 「未确认 — 等待」.",
+        "2. `sector_timing[XLE]` urgency=`now`, label=STATE_DISPLAY[ROLLING OVER]",
+        "   (`TOPPING`) + `sector_overlay[XLE].reco=trim` → take_profits with",
+        "   `gate_override`, stat `risk check: trim` / 「风险检查：减仓」.",
+        "3. Theme `accumulate` + `clean_entry=True` (AI Infrastructure) → buy_now.",
+        "4. Theme `accumulate` without clean entry (Managed Care) → on_the_run.",
+        "5. Theme `hold` (Gold Miners) → hold.",
+        "6. `board['total']=44` is the frozen P2.4 count identity, not the fixture",
+        "   row count. `more` rides `basket_items['more']`.",
+        "",
+        "## Sparse-site test disclosure",
+        "",
+        "1 deselected — `scripts/check_template_site_sync.py` REFUSES on a sparse",
+        "worktree rather than reporting sync OK (0 pairs checked). Verbatim:",
+        "`template↔site sync REFUSED: sparse worktree — site not checked out;",
+        "opt into a full checkout with: python3 scripts/worktree_sparse.py full`.",
+        "The W16 r4 suite is scratch-rendered and does not opt into `site/` or",
+        "`data/`.",
         "",
         "## DARK TREATMENT",
         "",
@@ -1130,7 +1231,7 @@ def main() -> int:
     manifest = {
         "schema": "mastermind.p0_evidence.v2",
         "page": "sector_central.html",
-        "round": "W16-r3",
+        "round": "W16-r4",
         "tool": {
             "module_ref": "scripts/capture_sector_central_w16_r3_evidence.py",
             "version": "w16-r3-s1",

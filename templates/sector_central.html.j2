@@ -1224,7 +1224,7 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
          value — the page's worst offenders (a "Trim" stage chip at 1.96:1). Bound
          here to the STATUS tokens (--ok/--warn/--link/--act), which deliberately do
          not flip with language, so the rotation-map legend keeps in zh exactly the
-         hues it has today. (Whether those four SHOULD flip is a doctrine question,
+         hues it has now. (Whether those four SHOULD flip is a doctrine question,
          not a contrast one — deliberately left alone.)
 
      3 · EDGE. --line #d0d4db draws a 1.37:1 hairline on a panel — a card boundary
@@ -1369,7 +1369,7 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
          fill list below, so its --si-chip resolved to nothing. Inert, not needed.
        · .tc-chip.* STAY. Their base rules (top of this file) really are frozen
          rgba and they really are boxed pills — no lane emits one on THIS page
-         today (only `.tc-chip.lever` and the bare `.si-changed` chips render),
+         currently (only `.tc-chip.lever` and the bare `.si-changed` chips render),
          but the recomposition is what keeps them legible the day one does. */
   html[data-theme="light"] .si-stage :is(.tc-chip.up, .tc-chip.aln) { --si-chip: var(--up); }
   html[data-theme="light"] .si-stage :is(.tc-chip.dn, .tc-chip.was1) { --si-chip: var(--down); }
@@ -1926,8 +1926,8 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
         var flipSign=(chg>=0&&b.cum_2d_pct<0)||(chg<0&&b.cum_2d_pct>=0);
         if(flipSign){
           var d2pct=(b.cum_2d_pct>=0?'+':'')+b.cum_2d_pct.toFixed(1)+'%';
-          var d2TipEn=fmtPct(chg)+' today after a '+d2pct+' two-day run — the session move flips the 2-day direction. Descriptive only.';
-          var d2TipZh=fmtPct(chg)+' 今日，近两日累计 '+d2pct+' — 当日走势翻转两日方向。仅供参考。';
+          var d2TipEn=fmtPct(chg)+' this session after a '+d2pct+' two-day run — the session move flips the 2-day direction. Descriptive only.';
+          var d2TipZh=fmtPct(chg)+' 本交易日，近两日累计 '+d2pct+' — 当日走势翻转两日方向。仅供参考。';
           mid+='<span class="dtp-2d" data-tip-en="'+esc(d2TipEn)+'" data-tip-zh="'+esc(d2TipZh)+'">2d '+d2pct+'</span>';
         }
       }
@@ -2224,7 +2224,7 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
      client-rendered 4-lane themes-only board (renderActBoard, removed). #grader is retained:
      its self-grader scorecard JS reads D.grader independently of the board. ══ #}
   <section class="rvx-sec rvx-reveal" id="actnow-section" style="animation-delay:.05s">
-    {% if action_board %}{%- set ab_host = 'sector_central' -%}{% include "_us_act_now_board.html.j2" %}{% else %}<p class="rvx-sec-sub muted">{{ t('Refreshing the action board — check back after tonight’s close.', '正在刷新操作板 — 今晚收盘后再查看。') }}</p>{% endif %}
+    {% if action_board %}{%- set ab_host = 'sector_central' -%}{% include "_us_act_now_board.html.j2" %}{% else %}<p class="rvx-sec-sub muted">{{ t('Refreshing the action board — check back after the next close.', '正在刷新操作板 — 下次收盘后再查看。') }}</p>{% endif %}
     <div class="rvx-sec-sub si-lane-foot">{{ t('Lanes are the only scored calls on this page — everything below is context, measured nightly.', '操作清单是本页唯一的评分判断 — 下方内容均为背景信息，每晚计算。') }}
       {# the funnel it drills into is the #confluence view on this page now, not a page away #}
       <a href="#confluence" style="color:var(--ink-link, var(--link))">{{ t('Drill to stocks →', '下钻到个股 →') }}</a></div>
@@ -2689,8 +2689,8 @@ function grPulseCell(id){
   if(!p) return '<span class="muted">—</span>';
   const chg=((p.episode||{}).state_change)||'quiet', w=GR_CHG[chg]||GR_CHG.quiet;
   const pa=p.participation||{}, n=pa.activity_n, nc=p.n_covered;
-  const tipEn='How the number of members moving unusually changed against the sessions before it, and how many are moving today. A member counts as moving when its move against SPY is large versus its own last 63 sessions, or its volume runs at least 1.5x its own 63-day median. Description of participation only — never a buy or sell read.';
-  const tipZh='与此前几个交易日相比，出现异动的成分股数量如何变化，以及今日有多少只在动。当某只成分股对冲SPY后的涨跌明显大于其自身近63个交易日的常态，或成交量至少达到自身63日中位数的1.5倍时，计为「在动」。仅描述参与度，不构成买卖判断。';
+  const tipEn='How the number of members moving unusually changed against the sessions before it, and how many are moving this session. A member counts as moving when its move against SPY is large versus its own last 63 sessions, or its volume runs at least 1.5x its own 63-day median. Description of participation only — never a buy or sell read.';
+  const tipZh='与此前几个交易日相比，出现异动的成分股数量如何变化，以及本交易日有多少只在动。当某只成分股对冲SPY后的涨跌明显大于其自身近63个交易日的常态，或成交量至少达到自身63日中位数的1.5倍时，计为「在动」。仅描述参与度，不构成买卖判断。';
   const mv=(n!=null&&nc!=null)?` <span class="gpr-mv">${L(`<b>${n}</b> of <b>${nc}</b> moving`,`<b>${nc}</b> 只中 <b>${n}</b> 只在动`)}</span>`:'';
   return `<span class="gpr-cell" data-tip-en="${esc(tipEn)}" data-tip-zh="${esc(tipZh)}"><span class="gpr-chg${chg==='strengthening'||chg==='cooling'?' on':''}"><span class="g">${w[2]}</span>${L(esc(w[0]),esc(w[1]))}</span>${mv}</span>`;
 }
@@ -2698,7 +2698,7 @@ function grPulseCell(id){
 function grCmp(a,b){
   const pa=grPulseOf(a.id), pb=grPulseOf(b.id);
   if(!pa&&!pb) return 0;
-  if(!pa) return 1;                       // no read tonight → end of the list, either way
+  if(!pa) return 1;                       // no read in this session → end of the list, either way
   if(!pb) return -1;
   const ca=GR_CHG_RANK[(pa.episode||{}).state_change]??3, cb=GR_CHG_RANK[(pb.episode||{}).state_change]??3;
   if(ca!==cb) return ca-cb;
@@ -2752,8 +2752,8 @@ function renderBTable(){
   // The ordering rule is printed where it orders — never a hidden weighting.
   const rl=document.getElementById('btbl-gr-rule');
   if(rl) rl.innerHTML=gp?L(
-    'Group pulse: how many members are actually moving, and whether that count is broadening or narrowing. Sorting by it orders on state change, then breadth of movement, then agreement — no composite score. Agreement counts only where at least four members are moving; a basket without one sorts below a basket that has one. Baskets with no read tonight sit at the end. Context only: it never ranks, sizes or gates a position.',
-    '「整体动向」：有多少成分股真正在动，以及这个数量在扩散还是收窄。按它排序的依据为：参与度变化，其次是在动成分股的广度，再次是方向一致度 — 不使用任何综合评分。方向一致度仅在至少四只成分股在动时才计入；没有该读数的篮子排在有读数的之后。今晚没有读数的篮子排在最后。仅为背景：不参与排序权重、仓位或准入。'):'';
+    'Group pulse: how many members are actually moving, and whether that count is broadening or narrowing. Sorting by it orders on state change, then breadth of movement, then agreement — no composite score. Agreement counts only where at least four members are moving; a basket without one sorts below a basket that has one. Baskets with no read sit at the end. Context only: it never ranks, sizes or gates a position.',
+    '「整体动向」：有多少成分股真正在动，以及这个数量在扩散还是收窄。按它排序的依据为：参与度变化，其次是在动成分股的广度，再次是方向一致度 — 不使用任何综合评分。方向一致度仅在至少四只成分股在动时才计入；没有该读数的篮子排在有读数的之后。没有读数的篮子排在最后。仅为背景：不参与排序权重、仓位或准入。'):'';
   tbl.querySelectorAll('th[data-c]').forEach(h=>h.onclick=()=>{ const c=h.dataset.c;
     if(c===btblSort.col) btblSort.dir*=-1; else btblSort={col:c,dir:c==='name'?1:-1};
     localStorage.setItem('fw-btbl-sort',JSON.stringify(btblSort)); renderBTable(); });
@@ -3169,14 +3169,19 @@ function __siFetch(u){ return fetch(u,{cache:'no-store'}).then(function(r){ if(!
 function __siBreadthFail(){
   var zh=document.documentElement.getAttribute('data-lang')==='zh';
   var msg=zh?'该读数更新中。':'This read is being updated.';
-  ['mkt-breadth','mkt-ad','mkt-hilo','mkt-above'].forEach(function(id){
-    var e=document.getElementById(id); if(e) e.textContent=msg;
-  });
-  ['mkt-breadth-sub','mkt-ad-sub','mkt-hilo-sub','mkt-above-sub'].forEach(function(id){
-    var e=document.getElementById(id); if(e) e.textContent='';
+  /* Reject → cautious only where no baked truth exists (skeleton tiles).
+     Tiles that already carry a producer value keep it, with the real #asof. */
+  [['mkt-breadth','mkt-breadth-sub'],['mkt-ad','mkt-ad-sub'],
+   ['mkt-hilo','mkt-hilo-sub'],['mkt-above','mkt-above-sub']].forEach(function(p){
+    var e=document.getElementById(p[0]); if(!e) return;
+    if(!e.querySelector('.skel')) return;
+    e.textContent=msg;
+    var s=document.getElementById(p[1]); if(s) s.textContent='';
   });
   var ao=document.getElementById('asof');
-  if(ao){ ao.textContent=msg; ao.classList.add('asof-unknown'); }
+  if(ao && ao.querySelector('.skel')){
+    ao.textContent=msg; ao.classList.add('asof-unknown');
+  }
 }
 function __siBoot(){
   __siFetch('basketdata/baskets.json').then(function(p){ __siInitPage(p); })
@@ -3266,7 +3271,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
   function _cycSeries(id) {
     if (_cycSeriesCache[id]) return _cycSeriesCache[id];
     var cyc = window.SECTOR_CYCLES; if (!cyc) return null;
-    var today = (cyc.meta && cyc.meta.today) || null;
+    var asofDay = (cyc.meta && cyc.meta.today) || null;
     var lists = [cyc.sectors||[], cyc.baskets||[]];
     for (var li=0; li<lists.length; li++) {
       var list = lists[li];
@@ -3274,7 +3279,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
         var s = list[i];
         if (s.id !== id) continue;
         var raw = s.osc || []; if (!raw.length) return null;
-        var cutoff = (today || raw[raw.length-1].x) - 5;
+        var cutoff = (asofDay || raw[raw.length-1].x) - 5;
         var pts = raw.filter(function(p){ return p.x >= cutoff; });
         if (!pts.length) pts = raw.slice(-2);
         var result = { pts: pts, accent: s.accent || null };
@@ -3442,7 +3447,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
     } else if(rot===null){
       // Rotation artifact absent — first wired nightly hasn't run yet.
       ftRail='<div class="ft-rail ft-await"><span class="ft-rank">'+L('fast lens','快线')+'</span>'
-        +'<span class="ft-state">'+L('awaiting tonight\'s data','等待今晚数据')+'</span></div>';
+        +'<span class="ft-state">'+L('awaiting the latest data','等待最新数据')+'</span></div>';
     }
     if(c.confluence) chips.push('<span class="chip2">'+L('confluence','共振')+' <b>'+c.confluence.agree+'/'+c.confluence.of+'</b></span>');
     if(c.early) chips.push('<span class="chip2 early">'+L('early','偏早')+'</span>');

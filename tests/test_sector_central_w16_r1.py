@@ -18,40 +18,49 @@ BOARD_TPL = TEMPLATES / "_us_act_now_board.html.j2"
 pytest.importorskip("jinja2")
 import jinja2  # noqa: E402
 
+from engine.cycles import LADDER, STATE_DISPLAY  # noqa: E402
+from engine.theme_scoring import RECOS  # noqa: E402
 from scripts.build_sector_central import (  # noqa: E402
     _SECTOR_ZH,
     _flow_cell_html,
     _fmt_money_mn,
 )
+from scripts.build_site import _action_board_stat_chip  # noqa: E402
 
 
-OPEN_VERBS_EN = (
-    "ENTER",
-    "ACCUMULATE",
-    "Add on pullbacks",
-)
-OPEN_VERBS_ZH = (
-    "建仓",
-    "加仓",
-    "回调时加仓",
-    "回调加仓",
-)
+def _producer_open_verbs() -> tuple[tuple[str, ...], tuple[str, ...]]:
+    """Buy-signal phrases the producer actually emits on chip/stat/reco.
+
+    Wait-lane sweep uses this list so a new buy-now phrase cannot silently
+    escape. Cycle-state labels (BUY ZONE / FRESH BUY) stay in OPEN_TAG and
+    are checked against the visible tag, not the demoted body.
+    """
+    en: set[str] = set()
+    zh: set[str] = set()
+    for tag in ("", "HALF SIZE"):
+        item: dict = {"age_short": "", "age_short_zh": ""}
+        _action_board_stat_chip(
+            "buy_now", {"tag": tag, "days_hi": None, "urgency": "now"}, item)
+        for key, bucket in (("stat_en", en), ("chip_en", en),
+                            ("stat_zh", zh), ("chip_zh", zh)):
+            raw = (item.get(key) or "").strip()
+            if not raw:
+                continue
+            bucket.add(raw.split(" · ")[0].strip())
+    en.add(RECOS["enter"][0])
+    en.add(RECOS["accumulate"][0])
+    zh.add(RECOS["enter"][1])
+    zh.add(RECOS["accumulate"][1])
+    en.add("Add on pullbacks")
+    zh.update({"回调时加仓", "回调加仓"})
+    return tuple(sorted(en)), tuple(sorted(zh))
+
+
+OPEN_VERBS_EN, OPEN_VERBS_ZH = _producer_open_verbs()
 WAIT_LANES = ("buy_soon", "on_the_run")
 ALL_LANES = ("buy_now", "buy_soon", "on_the_run", "take_profits", "hold", "avoid")
-THEME_STATES = ("enter", "accumulate", "trim", "avoid", "")
-SECTOR_STATES = (
-    "BOTTOMING",
-    "UPTREND",
-    "ROLLING OVER",
-    "FRESH BUY",
-    "RALLY ON",
-    "WAIT",
-    "BUY ZONE",
-    "TOP WATCH",
-    "DECLINE",
-    "ACCUMULATION",
-    "BASING",
-)
+THEME_STATES = tuple(RECOS.keys())
+SECTOR_STATES = tuple(STATE_DISPLAY[s]["label"] for s in LADDER)
 LANE_TAGS = {
     "buy_soon": ("WAIT", "等待"),
     "on_the_run": ("DON'T CHASE", "勿追"),
@@ -104,16 +113,21 @@ def _theme(reco: str = "accumulate", **over) -> dict:
     return row
 
 
-def _sector(label: str = "BOTTOMING", **over) -> dict:
+def _sector(label: str = "BOTTOMING", lane: str | None = None, **over) -> dict:
     row = {
         "kind": "sector",
         "name": "Financials",
         "ticker": "XLF",
         "href": "basket/us_sector_financials.html",
         "label": label,
-        "stat_en": "clean entry",
-        "stat_zh": "入场干净",
     }
+    e = {
+        "tag": over.pop("tag", ""),
+        "days_hi": over.pop("days", over.pop("days_hi", None)),
+        "urgency": over.pop("urgency", ""),
+    }
+    if lane is not None:
+        _action_board_stat_chip(lane, e, row)
     row.update(over)
     return row
 
@@ -194,15 +208,10 @@ def test_b1_alien_verdict_branches_to_empty_why():
 # ── B2 ──────────────────────────────────────────────────────────────────────
 
 def test_b2_lane_state_sweep_no_open_verb_in_wait_lanes():
-    rows = []
-    for reco in THEME_STATES:
-        rows.append(("theme", reco, _theme(reco)))
-    for label in SECTOR_STATES:
-        rows.append(("sector", label, _sector(label)))
-
     table = []
     for lane in ALL_LANES:
-        for kind, state, row in rows:
+        for reco in THEME_STATES:
+            row = _theme(reco)
             board = _empty_board()
             board[lane] = [row]
             html = _visible_pop(_render_board(board, host="sector_central"))
@@ -211,9 +220,22 @@ def test_b2_lane_state_sweep_no_open_verb_in_wait_lanes():
                 for v in OPEN_VERBS_EN + OPEN_VERBS_ZH:
                     if v in html:
                         hits.append(v)
-            table.append((lane, kind, state, hits))
+            table.append((lane, "theme", reco, hits))
             if lane in WAIT_LANES:
-                assert hits == [], f"{lane} × {kind}/{state} carried open verbs {hits}"
+                assert hits == [], f"{lane} × theme/{reco} carried open verbs {hits}"
+        for label in SECTOR_STATES:
+            row = _sector(label, lane=lane)
+            board = _empty_board()
+            board[lane] = [row]
+            html = _visible_pop(_render_board(board, host="sector_central"))
+            hits = []
+            if lane in WAIT_LANES:
+                for v in OPEN_VERBS_EN + OPEN_VERBS_ZH:
+                    if v in html:
+                        hits.append(v)
+            table.append((lane, "sector", label, hits))
+            if lane in WAIT_LANES:
+                assert hits == [], f"{lane} × sector/{label} carried open verbs {hits}"
     # Stand-aside HOLD rows may keep HOLD (X8) — not in OPEN_VERBS.
     hold_html = _visible_pop(_render_board(
         {**_empty_board(), "hold": [_theme("accumulate", label="HOLD", label_zh="持有")]},
@@ -306,7 +328,9 @@ def test_p1_4_display_only_family_gone_at_four_sites():
     assert "仅作展示" not in build
     assert "a heads-up, not a buy signal" in page
     assert "仅为提示，非买入信号" in page
-    assert "A heads-up, not a buy signal." in build
+    # n1: flows footnote no longer repeats the heatmap's heads-up line.
+    assert "A heads-up, not a buy signal." not in build
+    assert "a heads-up, not a buy signal" in heat
 
 
 def test_p1_3_zh_zscore_matches_plain_en():
@@ -507,6 +531,7 @@ def test_p2_6_as_of_bakes_value_or_skeleton_unknown_only_post_resolve():
     fail = src[src.index("function __siBreadthFail"):src.index("function __siBoot")]
     assert "This read is being updated." in fail
     assert "getElementById('asof')" in fail
+    assert "querySelector('.skel')" in fail
 
 
 def test_p2_7_geometry_true_skeleton_not_empty_loading():
@@ -543,6 +568,8 @@ def test_p3_2_score_demoted_from_rest():
     assert 'class="act-row-score' not in html
     assert "row-pop-score" in html
     assert ">72<" in html or ">72</strong>" in html
+    assert html.count("&asymp;") == 0
+    assert html.count("≈") == 0
 
 
 def test_p3_2_score_kept_on_us_stocks_host():
@@ -550,6 +577,7 @@ def test_p3_2_score_kept_on_us_stocks_host():
         {**_empty_board(), "buy_now": [_theme("accumulate", score=72)]})
     assert 'class="act-row-score' in html
     assert ">72<" in html
+    assert html.count("&asymp;") == 1
 
 
 def test_us_stocks_host_zero_unintended_delta():
@@ -565,6 +593,9 @@ def test_us_stocks_host_zero_unintended_delta():
     assert 'class="pg-more' not in stocks
     assert 'class="act-row-score' in stocks
     assert 'class="act-row-score' not in si
+    assert stocks.count("&asymp;") == 1
+    assert si.count("&asymp;") == 0
+    assert si.count("≈") == 0
     assert 'class="act-watch-strip"' not in stocks
     empty_si = _render_board(_empty_board(), host="sector_central")
     assert 'class="act-watch-strip"' not in empty_si
@@ -595,3 +626,12 @@ def test_d1_xlf_tinted_net_untinted():
     assert _fmt_money_mn(-5100.0) in net
     assert _fmt_money_mn(-4100.0) == "−$4.1B"
     assert _fmt_money_mn(-5100.0) == "−$5.1B"
+
+
+def test_m3_enumeration_equals_producer_universe():
+    assert THEME_STATES == tuple(RECOS.keys())
+    assert SECTOR_STATES == tuple(STATE_DISPLAY[s]["label"] for s in LADDER)
+    assert "clean entry" in OPEN_VERBS_EN
+    assert "入场干净" in OPEN_VERBS_ZH
+    assert "HALF SIZE" in OPEN_VERBS_EN
+    assert "半仓" in OPEN_VERBS_ZH
