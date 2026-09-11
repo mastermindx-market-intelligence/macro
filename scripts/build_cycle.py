@@ -131,6 +131,7 @@ def _measured_record(cid: str, band: dict) -> dict | None:
             from engine.hazard_score import score as _hz_score, _UP_PHASES
             direction = "up" if (now.get("phase") or "") in _UP_PHASES else "down"
             hz = _hz_score(hf, direction, family="flagship")
+            hz = _attach_hazard_agreement(hz, direction, rec.get("proj"))
         except Exception as _hz_exc:  # noqa: BLE001
             log.debug("build_cycle: hazard score failed for %s: %s", cid, _hz_exc)
 
@@ -255,6 +256,35 @@ def _opinion(seed_c: dict, meta: dict) -> dict:
         "hand_tilt": proj.get("tilt"),
         "confidence": now.get("confidence"),
     }
+
+
+def _attach_hazard_agreement(hz: dict | None, direction: str, proj: dict | None) -> dict | None:
+    """Stamp turn_kind + direction_agrees on a scored hazard block.
+
+    turn_kind follows the hazard model's open-leg direction (peak if up else trough).
+    direction_agrees is true only when that kind matches the engine projection's
+    nextTurn — the consumer suppresses the hazard headline when they disagree.
+    """
+    if not hz:
+        return hz
+    turn_kind = hz.get("turn_kind") or ("peak" if direction == "up" else "trough")
+    next_turn = (proj or {}).get("nextTurn")
+    hz["turn_kind"] = turn_kind
+    hz["direction_agrees"] = bool(next_turn) and (turn_kind == next_turn)
+    return hz
+
+
+def _notes_and_tape_as_of(meta: dict, engine: dict) -> tuple[str | None, str | None]:
+    """Split the page as-of: analyst-note date vs the live tape's newest bar."""
+    notes = meta.get("asOf")
+    lasts = [
+        str(b.get("series_last"))
+        for c in engine.values()
+        for b in (c.get("bands") or [])
+        if b.get("series_last")
+    ]
+    tape = max(lasts) if lasts else None
+    return notes, tape
 
 
 def _fmt(v):
@@ -400,10 +430,13 @@ def compute(root: Path) -> dict:
     #   additive + non-fatal: a missing/broken prior yields no banner, never a build failure.
     regime_disagreement = _regime_disagreement(meta, by_id)
 
+    notes_as_of, tape_as_of = _notes_and_tape_as_of(meta, engine)
     payload = {
         "version": 1,
         "wave": "W4.5",
-        "as_of": meta.get("asOf"),
+        "as_of": notes_as_of,          # back-compat alias of notes_as_of (banner/opinion)
+        "notes_as_of": notes_as_of,    # OPINION blocks + merged staleness banner
+        "tape_as_of": tape_as_of,      # #cyc-asof — newest measured series_last
         "xDomain": meta.get("xDomain"),
         "regime": meta.get("regime"),
         "regime_disagreement": regime_disagreement,

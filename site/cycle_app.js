@@ -22,9 +22,20 @@
   var PHASES = window.CYCLE_PHASES || {};
 
   var XDOM = ENGINE.xDomain || [2004, 2031];
-  var AS_OF = ENGINE.as_of || SEED_META.asOf || "";
   var ORDER = (ENGINE.order || []).slice();
   var CY = ENGINE.cycles || {};
+  var NOTES_AS_OF = ENGINE.notes_as_of || ENGINE.as_of || SEED_META.asOf || "";
+  var AS_OF = NOTES_AS_OF;   // banner + OPINION blocks: analyst-note date
+  function maxSeriesLast() {
+    var best = "";
+    Object.keys(CY).forEach(function (id) {
+      ((CY[id] && CY[id].bands) || []).forEach(function (b) {
+        if (b && b.series_last && String(b.series_last) > best) best = String(b.series_last);
+      });
+    });
+    return best;
+  }
+  var TAPE_AS_OF = ENGINE.tape_as_of || maxSeriesLast() || "";
   var REGIME = ENGINE.regime || (SEED_META.regime || {});
   var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -49,7 +60,31 @@
   function turnWord(nt, cap) { return nt === "peak" ? L(cap ? "Peak" : "peak", "见顶") : L(cap ? "Trough" : "trough", "筑底"); }
 
   /* ---- small helpers ----------------------------------------------------- */
-  function yf(t) { if (t == null) return null; var p = String(t).split("-"); return +p[0] + ((+p[1] || 6) - 0.5) / 12; }
+  function yf(t) {
+    if (t == null) return null;
+    var p = String(t).split("-");
+    var y = +p[0], m = +p[1] || 6;
+    if (p.length >= 3 && p[2] !== "") {
+      var d = +p[2];
+      if (isFinite(y) && isFinite(m) && isFinite(d)) {
+        var dt = new Date(y, m - 1, d), a = new Date(y, 0, 1), b = new Date(y + 1, 0, 1);
+        return y + (dt - a) / (b - a);
+      }
+    }
+    return y + ((m || 6) - 0.5) / 12;
+  }
+  function daysSinceAsOf(asOf, now) {
+    if (asOf == null || now == null) return null;
+    var p = String(asOf).split("-");
+    var y = +p[0], mo = +(p[1] || 1), d = +(p[2] || 1);
+    if (!isFinite(y) || !isFinite(mo) || !isFinite(d)) return null;
+    var a = new Date(y, mo - 1, d);
+    var n = (now instanceof Date)
+      ? new Date(now.getFullYear(), now.getMonth(), now.getDate())
+      : null;
+    if (!n || !isFinite(a.getTime()) || !isFinite(n.getTime())) return null;
+    return Math.round((n.getTime() - a.getTime()) / 86400000);
+  }
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function fmtMon(t) {
@@ -798,6 +833,13 @@
   function hazardLine(band) {
     var hz = band.now && band.now.hazard;
     if (!hz) return '';
+    if (hz.unavailable || !hazardCdfMonotone(hz)) {
+      return '<div class="cyc-hazard">' +
+        '<span class="hz-label"><span class="l-en">Turn hazard</span><span class="l-zh">转折风险</span></span>' +
+        '<span class="l-en">Turn hazard unavailable</span>' +
+        '<span class="l-zh">转折风险暂不可用</span>' +
+        '</div>';
+    }
     var epoch = hz.epoch || '';
     var revOpt = hz.revision_optimistic ? ' · revision-optimistic (quad not PIT-vintaged)' : '';
     var dir = hz.direction || '';
@@ -841,59 +883,104 @@
       '</div>';
   }
 
-  /* ── honest-headline helpers (cycle-honest-headline-w0) ─────────────────────
+  /* ── honest-headline helpers (cycle-honest-headline-w0 / W8 r1) ──────────────
      hazardHeadlineHTML : hazard-first headline for card face + focus panel.
-       When band.now.hazard exists, leads with P(turn≤6m) + MODEL/PRIOR badge.
-       Falls back to the classic "Turn ≈ date" when no hazard data.
+       Labels from hazard.turn_kind (never proj.nextTurn). Leads with the
+       highest-confidence cell (never the 6m cell when a shorter PASS exists).
+       Suppresses the hazard headline when direction_agrees is false.
      projRefHTML        : secondary reference line (overdue wording / half-cycle ref).
      provisionalTurnLine: shows the latest provisional turn if newer than last confirmed.
      firedDemotionLabel : muted label shown when any tripwire on the card is FIRED.       */
 
-  function hazardHeadlineHTML(band, pj) {
-    var hz = band.now && band.now.hazard;
-    var nextTurn = pj.nextTurn || "turn";
-    var arrow = nextTurn === "peak" ? "▲" : "▼";
-    if (hz && hz["6m"] && hz["6m"].p != null) {
-      var c6 = hz["6m"];
-      var pct6 = Math.round(c6.p * 100);
-      var isModel = (c6.cell_verdict === "PASS") || (c6.source === "MODEL");
-      var badge = isModel
-        ? '<span class="hz-badge hz-pass"><span class="l-en">PASS</span><span class="l-zh">通过</span></span>'
-        : '<span class="hz-badge hz-prior"><span class="l-en">baseline</span><span class="l-zh">基准</span></span>';
-      var tw = turnWord(nextTurn, true);
-      return '<div class="cc-hz-headline">' +
-        '<span class="cc-arrow">' + arrow + '</span>' +
-        '<span class="l-en">P(' + tw + ' &le;&#x202F;6m): ' + pct6 + '%</span>' +
-        '<span class="l-zh">P(' + tw + '≤6月): ' + pct6 + '%</span>' +
-        badge +
-        '</div>';
-    }
-    // fallback: no hazard data
-    return '<div class="cc-hz-headline">' +
-      '<span class="cc-arrow">' + arrow + '</span>' +
-      '<span>' + turnWord(nextTurn, true) + ' ≈ ' + fmtMon(pj.central) + '</span>' +
-      '</div>';
+  function hazardTurnKind(hz) {
+    if (hz && hz.turn_kind) return hz.turn_kind;
+    if (hz && hz.direction === "up") return "peak";
+    if (hz && hz.direction === "down") return "trough";
+    return null;
   }
-
-  function cardNextInnerHTML(band, pj) {
-    // compact card-face turn line: hazard-first when the calibrated surface exists;
-    // overdue-aware past-tense fallback otherwise (never a bare future-tense past date).
+  function hazardDirectionAgrees(hz, pj) {
+    if (!hz) return false;
+    if (typeof hz.direction_agrees === "boolean") return hz.direction_agrees;
+    var tk = hazardTurnKind(hz);
+    return !!(tk && pj && pj.nextTurn && tk === pj.nextTurn);
+  }
+  function hazardCdfMonotone(hz) {
+    if (!hz || hz.unavailable) return false;
+    var keys = ["1m", "3m", "6m"], prev = null, n = 0;
+    for (var i = 0; i < keys.length; i++) {
+      var c = hz[keys[i]];
+      if (!c || c.p == null) continue;
+      n++;
+      if (prev != null && c.p + 1e-12 < prev) return false;
+      prev = c.p;
+    }
+    return n > 0;
+  }
+  function hazardLeadCell(hz) {
+    if (!hz || hz.unavailable || !hazardCdfMonotone(hz)) return null;
+    var keys = ["1m", "3m", "6m"];
+    var cells = keys.filter(function (k) { return hz[k] && hz[k].p != null; });
+    if (!cells.length) return null;
+    var pass = cells.filter(function (k) {
+      return hz[k].cell_verdict === "PASS" || hz[k].source === "MODEL";
+    });
+    var pool = pass.length ? pass : cells;
+    if (pass.length && pass.some(function (k) { return k !== "6m"; })) {
+      pool = pass.filter(function (k) { return k !== "6m"; });
+    }
+    var best = pool[0];
+    pool.forEach(function (k) {
+      if (hz[k].p > hz[best].p + 1e-12) best = k;
+      else if (Math.abs(hz[k].p - hz[best].p) <= 1e-12 && keys.indexOf(k) < keys.indexOf(best)) best = k;
+    });
+    return best;
+  }
+  var HORIZON_PLAIN = {
+    "1m": { en: "within 1 month", zh: "一个月内" },
+    "3m": { en: "within 3 months", zh: "三个月内" },
+    "6m": { en: "within 6 months", zh: "六个月内" }
+  };
+  function projFallbackInner(pj) {
     var arrow = '<span class="cc-arrow">' + (pj.nextTurn === "peak" ? "▲" : "▼") + '</span>';
     var tw = turnWord(pj.nextTurn, true);
-    var hz = band.now && band.now.hazard;
-    if (hz && hz["6m"] && hz["6m"].p != null) {
-      var c6 = hz["6m"];
-      var pct6 = Math.round(c6.p * 100);
-      var isModel = (c6.cell_verdict === "PASS") || (c6.source === "MODEL");
-      var badge = '<span class="hz-badge ' + (isModel ? "hz-pass" : "hz-prior") + '">' +
-        (isModel ? L("PASS", "通过") : L("baseline", "基准")) + '</span>';
-      return arrow + '<span>' + L("P(" + tw + " ≤ 6m): " + pct6 + "%", "P(" + tw + "≤6月): " + pct6 + "%") + '</span>' + badge;
-    }
     if (pj.overdue) {
       return arrow + '<span>' + L("ref: " + tw + " was proj. " + fmtMon(pj.central) + " — elapsed",
                                   "参考：" + tw + "原预计 " + fmtMon(pj.central) + " — 已过窗") + '</span>';
     }
     return arrow + '<span>' + tw + ' ≈ ' + fmtMon(pj.central) + '</span>';
+  }
+  function hazardLeadInner(hz, leadKey) {
+    var tk = hazardTurnKind(hz);
+    var c = hz[leadKey];
+    var pct = Math.round(c.p * 100);
+    var isModel = (c.cell_verdict === "PASS") || (c.source === "MODEL");
+    var badge = '<span class="hz-badge ' + (isModel ? "hz-pass" : "hz-prior") + '">' +
+      (isModel ? L("PASS", "通过") : L("baseline", "基准")) + '</span>';
+    var tw = turnWord(tk, true);
+    var hzWords = HORIZON_PLAIN[leadKey] || HORIZON_PLAIN["6m"];
+    var arrow = '<span class="cc-arrow">' + (tk === "peak" ? "▲" : "▼") + '</span>';
+    return arrow +
+      '<span class="l-en">P(' + tw + ' ' + hzWords.en + '): ' + pct + '%</span>' +
+      '<span class="l-zh">P(' + tw + hzWords.zh + '): ' + pct + '%</span>' +
+      badge;
+  }
+
+  function hazardHeadlineHTML(band, pj) {
+    var hz = band.now && band.now.hazard;
+    var lead = (hz && hazardDirectionAgrees(hz, pj)) ? hazardLeadCell(hz) : null;
+    if (lead) {
+      return '<div class="cc-hz-headline">' + hazardLeadInner(hz, lead) + '</div>';
+    }
+    return '<div class="cc-hz-headline">' + projFallbackInner(pj) + '</div>';
+  }
+
+  function cardNextInnerHTML(band, pj) {
+    // compact card-face turn line: hazard-first when the calibrated surface exists
+    // AND agrees with the projection's turn kind; overdue-aware fallback otherwise.
+    var hz = band.now && band.now.hazard;
+    var lead = (hz && hazardDirectionAgrees(hz, pj)) ? hazardLeadCell(hz) : null;
+    if (lead) return hazardLeadInner(hz, lead);
+    return projFallbackInner(pj);
   }
 
   function projRefHTML(band, pj, card) {
@@ -1247,8 +1334,8 @@
 
     var host = document.getElementById("cyc-stale-banner");
     if (!host) return;
-    var asOfYear = AS_OF ? yf(AS_OF) : TODAY;
-    var days = Math.round((TODAY - asOfYear) * 365.25);
+    var days = AS_OF ? daysSinceAsOf(AS_OF, new Date()) : 0;
+    if (days == null || !isFinite(days)) days = 0;
     var rd = ENGINE.regime_disagreement || null;
     // show once the notes have aged, or whenever the curated read and the live
     // engine read disagree (that reconciliation used to be its own banner).
@@ -1279,6 +1366,7 @@
   function rerender() {
     var savedFocus = state.focus, savedPhase = {};
     PHASE_FILTER.forEach(function (p) { savedPhase[p.key] = phaseState[p.key]; });
+    stampTapeAsOf();
     mountChips();
     mountCards();
     buildDefaultPanel();
@@ -1301,8 +1389,14 @@
   var _origRenderPanel = renderPanel;
   renderPanel = function (id) { _origRenderPanel(id); setTimeout(mountSecularStrips, 0); };
 
+  function stampTapeAsOf() {
+    var el = document.getElementById("cyc-asof");
+    if (el && TAPE_AS_OF) el.textContent = TAPE_AS_OF;
+  }
+
   /* ---- boot -------------------------------------------------------------- */
   function boot() {
+    stampTapeAsOf();
     mountChips();
     mountHero();
     buildDefaultPanel();
