@@ -705,10 +705,10 @@ def test_quadrant_empty_cells_use_designed_quiet_copy_not_bare_none():
                  generated_at="2026-09-01T12:00:00+00:00", seats_as_of="2026-08-30")
     html = _render(v2)
     # true_accumulation and weakening_but_still_buying are both empty in this fixture
-    assert "none today — rare for this proxy; exceptional when a theme appears here" in html
-    assert "今日无——该口径下罕见，出现即为异常信号" in html
-    assert "none today" in html
-    assert "今日无" in html
+    assert "none — rare for this proxy; exceptional when a theme appears here" in html
+    assert "无——该口径下罕见，出现即为异常信号" in html
+    assert "none today" not in html
+    assert "今日无" not in html
     assert "structurally a net seller" in html, "quadrant h2 must carry a LENS tip explaining emptiness"
 
 
@@ -1295,3 +1295,129 @@ def test_w13_r2_light_art_direction_named_and_page_scoped():
     # W13 r4 m4: light UNAVAILABLE chip figures sit at the muted floor, not the
     # inherited 0.68 opacity of the dark-lane instrument-fault idiom.
     assert 'html[data-theme="light"] .fv-src--unavailable{opacity:1;' in html
+
+
+# ── W13 r5: no baked relative day-words (seat: dated as-of stamp carries WHEN) ────────
+_DAY_WORD_RE = re.compile(r"today|tonight|yesterday|今日|今天|今晚|昨日|昨天", re.I)
+_STALE_EN_ALLOWED = "Treat levels as history, not today's tape."
+_STALE_ZH_ALLOWED = "而非今日盘面"
+
+
+def _strip_scripts_styles(html: str) -> str:
+    html = re.sub(r"<script\b[^>]*>.*?</script>", " ", html, flags=re.I | re.S)
+    html = re.sub(r"<style\b[^>]*>.*?</style>", " ", html, flags=re.I | re.S)
+    return html
+
+
+def _page_own_html(html: str) -> str:
+    """Page body only. Shared `_site_nav` is a separate governed component
+    (same scope as test_at_rest_copy_never_uses_bare_institutions_or_bare_jigou)."""
+    if '<div class="wrap">' in html:
+        html = html.split('<div class="wrap">', 1)[1]
+    return html
+
+
+def _day_word_hits_outside_stale(html: str) -> list[str]:
+    """Banned-set matches in rendered output (tips kept; scripts/styles stripped).
+
+    The seat-lawful stale sentence is the sole allowed match — both the EN
+    'not today's tape' clause and the ZH '而非今日盘面' clause.
+    """
+    body = _strip_scripts_styles(_page_own_html(html))
+    allowed = []
+    for phrase in (_STALE_EN_ALLOWED, _STALE_ZH_ALLOWED):
+        start = 0
+        while True:
+            i = body.find(phrase, start)
+            if i < 0:
+                break
+            allowed.append((i, i + len(phrase)))
+            start = i + len(phrase)
+    hits = []
+    for m in _DAY_WORD_RE.finditer(body):
+        if any(lo <= m.start() < hi for lo, hi in allowed):
+            continue
+        ctx = body[max(0, m.start() - 24): m.end() + 24].replace("\n", " ")
+        hits.append(f"{m.group(0)!r} @ {m.start()} …{ctx}…")
+    return hits
+
+
+def _stale_hero_v2():
+    v2 = _v2()
+    for s in v2.get("sources") or []:
+        if s.get("source_id") == "cn_large_order_proxy":
+            s["status"] = "STALE"
+            s["ui_state"] = "stale"
+            s["effective_date"] = s.get("effective_date") or "2026-08-17"
+            break
+    return v2
+
+
+def _empty_confluence_v2():
+    v2 = _v2()
+    v2["confluence"] = {
+        "n_agree": 0, "n_diverge": 0, "agree": [], "diverge": [],
+    }
+    return v2
+
+
+def test_w13_r5_replacements_pin_the_seat_frozen_copy_both_lanes():
+    html = _render(_v2())
+    assert "What changed" in html and "本次变化" in html
+    assert "What Changed" in html
+    assert "Changed today" not in html
+    assert "What Changed Today" not in html
+    assert "今日变化" not in html
+    assert "Change tracking begins with this build — no prior tracked session." in html
+    assert "变化追踪自本次构建开始——暂无历史对比。" in html
+    assert "Change tracking begins today" not in html
+    assert "变化追踪自今日开始" not in html
+
+    conf = _render(_empty_confluence_v2())
+    assert "No overlap where they agree." in conf
+    assert "无一致交集" in conf
+    assert "No clashes." in conf
+    assert "无背离" in conf
+    assert "agree today" not in conf
+    assert "clashes today" not in conf
+    assert "今日无一致" not in conf
+    assert "今日无背离" not in conf
+
+
+def test_w13_r5_rendered_output_has_no_baked_day_words_except_stale_sentence():
+    """Page-wide negative: both lanes, scripts/styles stripped, tips INCLUDED.
+
+    Run on the r4 rig's fixture shape plus the contract fixtures that actually
+    emit the other seven replacement sites (first-run change tracking, empty
+    confluence, empty quadrants) and a STALE-hero shape so the sole-allowed
+    stale sentence is asserted verbatim.
+    """
+    from scripts.capture_flow_velocity_w13_r3_evidence import _fixture_html
+
+    r4_html = _fixture_html()
+    default_html = _render(_v2())
+    quad_html = _render(build_v2(
+        _snap(ashare_sectors={
+            **_snap()["ashare_sectors"],
+            "rows": [_autos_row(rate_4wk=-0.9, vel=1.9, rate_rel=1.9),
+                     _gold_row(rate_4wk=-1.2, vel=-1.7, rate_rel=-1.7)],
+        }),
+        log_rows=[], market_session="2026-09-01",
+        generated_at="2026-09-01T12:00:00+00:00", seats_as_of="2026-08-30"))
+    conf_html = _render(_empty_confluence_v2())
+    stale_html = _render(_stale_hero_v2())
+
+    for label, html in (("r4", r4_html), ("default", default_html),
+                        ("quadrant-empty", quad_html), ("confluence-empty", conf_html)):
+        hits = _day_word_hits_outside_stale(html)
+        assert hits == [], f"{label} fixture leaked banned day-words: {hits}"
+
+    stale_body = _strip_scripts_styles(_page_own_html(stale_html))
+    assert _STALE_EN_ALLOWED in stale_body, "stale EN sentence missing — allowlist untestable"
+    assert _STALE_ZH_ALLOWED in stale_body, "stale ZH sentence missing — allowlist untestable"
+    stale_hits = _day_word_hits_outside_stale(stale_html)
+    assert stale_hits == [], (
+        "stale fixture must have the verbatim stale sentence as the sole allowed "
+        f"banned-set match; extra hits: {stale_hits}")
+    # Positive control: the instrument still fires on the banned word when present.
+    assert _DAY_WORD_RE.search("Changed today") and _DAY_WORD_RE.search("今日变化")

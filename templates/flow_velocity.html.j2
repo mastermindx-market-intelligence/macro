@@ -1231,7 +1231,7 @@ html[data-theme="light"] .rk.na{color:color-mix(in srgb,var(--ink) 50%,var(--mut
         <span class="vs">{{ t('what\'s current, what\'s behind','各源新鲜度一览') }}</span>
       </button>
       <button class="fv-vital" data-goto-sec="changed">
-        <span class="vk">{{ icon('clock') }} {{ t('Changed today','今日变化') }}</span>
+        <span class="vk">{{ icon('clock') }} {{ t('What changed','本次变化') }}</span>
         <span class="vv">{% if CS and CS.material_change %}<span class="tnum">{{ all_changes|length }}</span> {{ t('moves','项变化') }}{% elif CS and CS.material_change == false %}{{ t('none','无') }}{% else %}—{% endif %}<span class="arrow">→</span></span>
         <span class="vs">{{ t('transitions &amp; rank movers','状态切换与排名变动') }}</span>
       </button>
@@ -1273,12 +1273,12 @@ html[data-theme="light"] .rk.na{color:color-mix(in srgb,var(--ink) 50%,var(--mut
 
   {# ============================ WHAT CHANGED TODAY (spec §2.3) ============================ #}
   <section class="fv-sec fv-reveal" id="changed">
-    <div class="fv-eyebrow">{{ icon('clock') }} {{ t('What Changed Today','今日变化') }}</div>
+    <div class="fv-eyebrow">{{ icon('clock') }} {{ t('What Changed','本次变化') }}</div>
     <h2>{{ t('State transitions since the last valid session','自上一有效交易日以来的状态变化') }}</h2>
     {% set _theme_names = {} %}
     {% for _r in (snap.ashare_sectors.rows if (snap.ashare_sectors and snap.ashare_sectors.rows) else []) %}{% set _ = _theme_names.update({_r.id: _r}) %}{% endfor %}
     {% if not CS or CS.material_change is none %}
-      <p class="fv-stance">{{ t('Change tracking begins today — no prior tracked session.','变化追踪自今日开始——暂无历史对比。') }}</p>
+      <p class="fv-stance">{{ t('Change tracking begins with this build — no prior tracked session.','变化追踪自本次构建开始——暂无历史对比。') }}</p>
     {% elif not CS.material_change %}
       <p class="fv-stance">
         <span class="l-en">No material flow-state transition since the previous valid market session ({{ CS.previous_valid_session }}).</span>
@@ -1337,13 +1337,13 @@ html[data-theme="light"] .rk.na{color:color-mix(in srgb,var(--ink) 50%,var(--mut
          NEGATIVE absolute flow (the common case), so a bare "none" there is unremarkable
          and stays as-is. Pinned strings, exact. #}
       <div class="q-cell q-acc"><h3>{{ t('real inflow, above norm','真实流入·高于常态') }}</h3>
-        {% for r in q_acc %}{% set _qt = sigma_meaning(r.rel.value, 'name') %}<span class="q-chip" data-ev="quadrant_select" data-ev-lens="theme" data-ev-id="{{ r.id }}" data-tip-en="{{ _qt[0] }}" data-tip-zh="{{ _qt[1] }}"><b>{{ t(r.name, r.name_zh) }}</b>{% if r.abs.value is not none %} <span class="tnum">{{ '%+.1f'|format(r.abs.value) }}%</span>{% endif %}</span>{% else %}<span class="q-empty">{{ t('none today — rare for this proxy; exceptional when a theme appears here','今日无——该口径下罕见，出现即为异常信号') }}</span>{% endfor %}
+        {% for r in q_acc %}{% set _qt = sigma_meaning(r.rel.value, 'name') %}<span class="q-chip" data-ev="quadrant_select" data-ev-lens="theme" data-ev-id="{{ r.id }}" data-tip-en="{{ _qt[0] }}" data-tip-zh="{{ _qt[1] }}"><b>{{ t(r.name, r.name_zh) }}</b>{% if r.abs.value is not none %} <span class="tnum">{{ '%+.1f'|format(r.abs.value) }}%</span>{% endif %}</span>{% else %}<span class="q-empty">{{ t('none — rare for this proxy; exceptional when a theme appears here','无——该口径下罕见，出现即为异常信号') }}</span>{% endfor %}
       </div>
       <div class="q-cell q-imp"><h3>{{ t('still selling, pressure easing','仍净流出·压力改善') }}</h3>
         {% for r in q_imp %}{% set _qt = sigma_meaning(r.rel.value, 'name') %}<span class="q-chip" data-ev="quadrant_select" data-ev-lens="theme" data-ev-id="{{ r.id }}" data-tip-en="{{ _qt[0] }}" data-tip-zh="{{ _qt[1] }}"><b>{{ t(r.name, r.name_zh) }}</b>{% if r.abs.value is not none %} <span class="tnum">{{ '%+.1f'|format(r.abs.value) }}%</span>{% endif %}</span>{% else %}<span class="q-empty">{{ t('none','无') }}</span>{% endfor %}
       </div>
       <div class="q-cell q-weak"><h3>{{ t('still buying, pace fading','仍净流入·动能转弱') }}</h3>
-        {% for r in q_weak %}{% set _qt = sigma_meaning(r.rel.value, 'name') %}<span class="q-chip" data-ev="quadrant_select" data-ev-lens="theme" data-ev-id="{{ r.id }}" data-tip-en="{{ _qt[0] }}" data-tip-zh="{{ _qt[1] }}"><b>{{ t(r.name, r.name_zh) }}</b>{% if r.abs.value is not none %} <span class="tnum">{{ '%+.1f'|format(r.abs.value) }}%</span>{% endif %}</span>{% else %}<span class="q-empty">{{ t('none today','今日无') }}<span class="empty-why">{{ t('expected — this proxy rarely shows positive absolute flow, not a data gap','属预期——该口径很少出现绝对流入为正，并非数据缺失') }}</span></span>{% endfor %}
+        {% for r in q_weak %}{% set _qt = sigma_meaning(r.rel.value, 'name') %}<span class="q-chip" data-ev="quadrant_select" data-ev-lens="theme" data-ev-id="{{ r.id }}" data-tip-en="{{ _qt[0] }}" data-tip-zh="{{ _qt[1] }}"><b>{{ t(r.name, r.name_zh) }}</b>{% if r.abs.value is not none %} <span class="tnum">{{ '%+.1f'|format(r.abs.value) }}%</span>{% endif %}</span>{% else %}<span class="q-empty">{{ t('none','无') }}<span class="empty-why">{{ t('expected — this proxy rarely shows positive absolute flow, not a data gap','属预期——该口径很少出现绝对流入为正，并非数据缺失') }}</span></span>{% endfor %}
       </div>
       <div class="q-cell q-dist"><h3>{{ t('real outflow, below norm','真实流出·低于常态') }}</h3>
         {% for r in q_dist %}{% set _qt = sigma_meaning(r.rel.value, 'name') %}<span class="q-chip" data-ev="quadrant_select" data-ev-lens="theme" data-ev-id="{{ r.id }}" data-tip-en="{{ _qt[0] }}" data-tip-zh="{{ _qt[1] }}"><b>{{ t(r.name, r.name_zh) }}</b>{% if r.abs.value is not none %} <span class="tnum">{{ '%+.1f'|format(r.abs.value) }}%</span>{% endif %}</span>{% else %}<span class="q-empty">{{ t('none','无') }}</span>{% endfor %}
@@ -1700,7 +1700,7 @@ html[data-theme="light"] .rk.na{color:color-mix(in srgb,var(--ink) 50%,var(--mut
               <span class="chg {{ 'pos' if r.vel>=0 else 'neg' }}">{{ '%+.1f'|format(r.vel) }}σ</span>
               <span class="seat {{ r.seat_dir }}">⚖ {{ '%+.1f'|format(r.seat_yi) }}亿</span>
             </div>
-            {% else %}<div class="conf-empty">{{ t('No overlap where they agree today.','今日无一致交集。') }}</div>{% endfor %}
+            {% else %}<div class="conf-empty">{{ t('No overlap where they agree.','无一致交集') }}</div>{% endfor %}
           </div>
           <div class="conf-col diverge">
             <div class="conf-col-h" style="display:flex;align-items:baseline;gap:8px"><span class="ct">⚠️ {{ t('They clash','二者背离') }}</span><span class="cn">{{ CF.n_diverge }}</span>
@@ -1711,7 +1711,7 @@ html[data-theme="light"] .rk.na{color:color-mix(in srgb,var(--ink) 50%,var(--mut
               <span class="chg {{ 'pos' if r.vel>=0 else 'neg' }}">{{ '%+.1f'|format(r.vel) }}σ</span>
               <span class="seat {{ r.seat_dir }}">⚖ {{ '%+.1f'|format(r.seat_yi) }}亿</span>
             </div>
-            {% else %}<div class="conf-empty">{{ t('No clashes today.','今日无背离。') }}</div>{% endfor %}
+            {% else %}<div class="conf-empty">{{ t('No clashes.','无背离') }}</div>{% endfor %}
           </div>
         </div>
       </div>
