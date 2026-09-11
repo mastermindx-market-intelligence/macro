@@ -614,8 +614,14 @@ def _vhsi_vm() -> dict | None:
     if s.empty:
         return None
     latest = float(s.iloc[-1])
+    from engine.hk_tier1 import pctile_label, range_reading
+    pctile = int(round((s <= latest).mean() * 100))
+    range_en, range_zh = range_reading(pctile)
+    pct_en, pct_zh = pctile_label(pctile)
     return {"level": round(latest, 2),
-            "pctile": int(round((s <= latest).mean() * 100)),
+            "pctile": pctile,
+            "range_plain_en": range_en, "range_plain_zh": range_zh,
+            "pctile_en": pct_en, "pctile_zh": pct_zh,
             "chg20": round(latest - float(s.iloc[-21]), 2) if len(s) > 21 else None}
 
 
@@ -630,22 +636,39 @@ def _hk_signal_stack(latest: dict) -> dict | None:
         return None
 
 
+def _tile_payload(chg: float, *, invert: bool = False) -> dict:
+    """Tone vs sign split for the cross-asset strip.
+
+    `chg_sign` / `chg_word_*` follow the SIGN of the displayed change — a negative
+    print can never render as "Up". `tone` keeps the (optional) risk-on/off invert
+    for colouring that is NOT the chip word.
+    """
+    from engine.hk_tier1 import chg_sign, chg_word
+    sign = chg_sign(chg)
+    word_en, word_zh = chg_word(sign)
+    tone = "pos" if chg > 0 else "neg" if chg < 0 else "muted"
+    if invert and tone != "muted":      # weaker HKD / yuan / stronger USD = risk-off
+        tone = "neg" if chg > 0 else "pos"
+    return {"chg_sign": sign, "chg_word_en": word_en, "chg_word_zh": word_zh, "tone": tone}
+
+
 def _hk_market_tiles() -> list[dict]:
     """CROSS-ASSET 'market snapshot' tiles — level + 1-day move for the non-index
     instruments that drive HK (the true HS-TECH index, USD/HKD peg, offshore yuan,
     gold, the dollar, overnight HIBOR). Broad-index confluence and HSI technicals
     live in the Market State tape; this strip is the cross-asset complement."""
-    # (store group, name, column, en, zh, tag_en, tag_zh, decimals, is_rate, invert_tone)
+    from engine.hk_tier1 import TILE_COPY
+    # (store group, name, column, en, zh, kind, decimals, is_rate, invert_tone)
     spec = [
-        ("hk", "HSTECH", "close", "HS-TECH", "恒生科技", "growth", "成长", 0, False, False),
-        ("hk", "HKD=X", "close", "USD / HKD", "美元兑港元", "peg", "联汇", 4, False, True),
-        ("china", "CNH_F", "close", "Offshore yuan", "离岸人民币", "USDCNH", "美元离岸", 3, False, True),
-        ("yahoo", "GC_F", "close", "Gold", "黄金", "USD/oz", "美元/盎司", 0, False, False),
-        ("yahoo", "DX-Y.NYB", "close", "US Dollar", "美元指数", "DXY", "美元", 2, False, True),
-        ("hkma", "interbank_liquidity", "hibor_on", "Overnight HIBOR", "隔夜HIBOR", "yield", "利率", 2, True, False),
+        ("hk", "HSTECH", "close", "HS-TECH", "恒生科技", "growth", 0, False, False),
+        ("hk", "HKD=X", "close", "USD / HKD", "美元兑港元", "peg", 4, False, True),
+        ("china", "CNH_F", "close", "Offshore yuan", "离岸人民币", "USDCNH", 3, False, True),
+        ("yahoo", "GC_F", "close", "Gold", "黄金", "USD/oz", 0, False, False),
+        ("yahoo", "DX-Y.NYB", "close", "US Dollar", "美元指数", "DXY", 2, False, True),
+        ("hkma", "interbank_liquidity", "hibor_on", "Overnight HIBOR", "隔夜HIBOR", "yield", 2, True, False),
     ]
     out: list[dict] = []
-    for grp, name, col, en, zh, ten, tzh, dec, is_rate, invert in spec:
+    for grp, name, col, en, zh, kind, dec, is_rate, invert in spec:
         try:
             df = store.read(grp, name)
             if (df is None or df.empty or col not in df.columns) and name == "HSTECH":
@@ -659,15 +682,20 @@ def _hk_market_tiles() -> list[dict]:
             last, prev = float(s.iloc[-1]), float(s.iloc[-2])
             chg = last - prev
             pct = (last / prev - 1) * 100 if prev else 0.0
-            tone = "pos" if chg > 0 else "neg" if chg < 0 else "muted"
-            if invert and tone != "muted":      # weaker HKD / yuan / stronger USD = risk-off
-                tone = "neg" if chg > 0 else "pos"
+            copy = TILE_COPY[kind]
+            payload = _tile_payload(chg, invert=invert)
             chg_dec = max(dec, 1)                # never collapse a sub-unit move to "+0" (e.g. gold)
             out.append({
                 "label": Markup('<span class="l-en">{}</span><span class="l-zh">{}</span>').format(en, zh),
-                "tag": Markup('<span class="l-en">{}</span><span class="l-zh">{}</span>').format(ten, tzh),
+                "tag": Markup('<span class="l-en">{}</span><span class="l-zh">{}</span>').format(
+                    copy["tag_en"], copy["tag_zh"]),
+                "tag_en": copy["tag_en"], "tag_zh": copy["tag_zh"],
+                "meaning_en": copy["meaning_en"], "meaning_zh": copy["meaning_zh"],
+                "kind": kind,
                 "level": (f"{last:.{dec}f}%" if is_rate else f"{last:,.{dec}f}"),
-                "chg": f"{chg:+.{chg_dec}f}", "pct": f"{pct:+.1f}%", "tone": tone,
+                "chg": f"{chg:+.{chg_dec}f}", "pct": f"{pct:+.1f}%",
+                "chg_raw": chg,
+                **payload,
             })
         except Exception:  # noqa: BLE001 — a single bad series never breaks the strip
             continue
@@ -735,9 +763,15 @@ def _hk_ah_official_vm() -> dict | None:
         s = prem["hsahp"].dropna()
         if not s.empty:
             lvl = float(s.iloc[-1])
+            from engine.hk_tier1 import history_reading, pctile_label
+            pctile = int(round((s <= lvl).mean() * 100))
+            hist_en, hist_zh = history_reading(pctile)
+            pct_en, pct_zh = pctile_label(pctile)
             out.update({
                 "premium_pct": round(lvl, 1),
-                "pctile": int(round((s <= lvl).mean() * 100)),
+                "pctile": pctile,
+                "history_plain_en": hist_en, "history_plain_zh": hist_zh,
+                "pctile_en": pct_en, "pctile_zh": pct_zh,
                 "chg_1y": round(lvl - float(s.iloc[-253]), 1) if len(s) > 253 else None,
                 "span": f"{s.index.min():%Y-%m} → {s.index.max():%Y-%m}",
                 "chart_html": _ilx(
@@ -1397,6 +1431,14 @@ def main() -> int:
                 pass
             vm["market_state"] = _ms.market_state_snapshot(
                 latest, _f, latest.get("alerts") or [], profile=HK_PROFILE)
+            try:
+                from engine.hk_tier1 import plain_flip_line
+                _ms_snap = vm.get("market_state")
+                if isinstance(_ms_snap, dict):
+                    _fe, _fz = plain_flip_line(_ms_snap)
+                    _ms_snap["flip_plain_en"], _ms_snap["flip_plain_zh"] = _fe, _fz
+            except Exception:  # noqa: BLE001 — glance copy is additive
+                pass
             # Attach contagion block to the post-transform radar dict so rd.contagion
             # resolves in _risk_radar_card.html.j2 (build_site.py idiom, CGL W1).
             # FIX 2: disclose staleness when the CGL artifact predates the page's as_of.
@@ -1687,8 +1729,9 @@ def main() -> int:
         # top_setups: top 5 standout names for the mx5 "Stocks Worth Watching" card.
         # Runs after vm["setups"] is built so we read the real standout data.
         try:
+            from engine.hk_tier1 import apply_cycle_lane
             _su = vm.get("setups") or {}
-            _buys = (_su.get("buy") or [])[:5]
+            _buys = [apply_cycle_lane(r) for r in (_su.get("buy") or [])[:5]]
             vm["top_setups"] = _buys
             log.info("hk top_setups: %d entries", len(_buys))
         except Exception as _ts_e:  # noqa: BLE001
