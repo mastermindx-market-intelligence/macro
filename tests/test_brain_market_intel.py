@@ -715,6 +715,24 @@ def test_meaningful_single_term_and_chinese_queries_are_searchable(
     assert result["count_scanned"] == 2
 
 
+@pytest.mark.parametrize(
+    "query,title",
+    [
+        ("半导体", "台灣半導體產業展望"),
+        ("半導體", "中国半导体行业展望"),
+    ],
+)
+def test_chinese_search_does_not_silently_equate_script_variants(
+    tmp_path, query, title,
+):
+    """NFKC is width normalization, never Simplified/Traditional translation."""
+    _catalog(tmp_path, [_note("other-script", title)])
+    result = _search(tmp_path, query)
+    assert result["results"] == []
+    assert result["count_scanned"] == 1
+    assert result["note"] != "research vault unavailable"
+
+
 def test_matching_normalizes_full_width_catalog_text_too(tmp_path):
     """Normalization is symmetric: source text and query use the same boundary."""
     _catalog(tmp_path, [
@@ -1413,8 +1431,8 @@ def test_clusters_mode_is_recognised_case_and_whitespace_insensitively(tmp_path)
 
 def test_clusters_mode_ignores_the_query_and_the_short_query_gate(tmp_path):
     """Convergence is a property of the whole window. Filtering it by search terms
-    would answer "who agrees with my premise", and the 2-token gate must not fire
-    on a mode that never reads the query."""
+    would answer "who agrees with my premise", and the search-admission gate must
+    not fire on a mode that never reads the query."""
     _catalog(tmp_path, [
         _note("a", "Tariff One", institution="Citi"),
         _note("b", "Tariff Two", institution="UBS"),
