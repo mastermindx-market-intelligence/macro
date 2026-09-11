@@ -1,20 +1,21 @@
 {
   "schema": "mastermind.p0_evidence.v2",
-  "generated_at": "2026-09-11T09:17:45Z",
+  "generated_at": "2026-09-11T09:51:50Z",
   "tool": {
     "module_ref": "scripts/capture_winner_health_w15_evidence.py",
-    "version": "w15-r3-s1",
-    "capture_method": "playwright, one fresh page per cell, fixture HTML in a scratch dir (never site/ or data/). data-theme/data-lang via setTheme/setLang with refuse-on-mismatch. window.__skyDeck skips skyToggleFx. overlays removed. sha256 from screenshot bytes. at-rest text via computed styles."
+    "version": "w15-r4-s1",
+    "capture_method": "playwright, one fresh page per cell, fixture HTML in a scratch dir (never site/ or data/). data-theme/data-lang via setTheme/setLang with refuse-on-mismatch. window.__skyDeck skips skyToggleFx. overlays removed. sha256 from screenshot bytes. at-rest text via computed styles. SETTLE is raf×2 + fonts.ready before every shot."
   },
   "target": {
     "kind": "scratch_fixture_html",
-    "resolved_sha_or_none": "d8a181e87a4a4ed5ca993366b2c462068f8f4e2e",
+    "resolved_sha_or_none": "d5661ac08d261818785330101e9f112ce564d8da",
     "porcelain_at_capture": "",
     "capture_sha_source": "git rev-parse HEAD after empty git status --porcelain"
   },
   "shapes": {
     "production": "origin/main data/top_maturation/latest.json verbatim; no members key; theme bars absent by design until the nightly emits members (M1 degrade)",
-    "members-present": "production artifact + members/basket_id injected from the packet 9-row table (membership.json truths the audit measured: Cybersecurity=10, AI Infrastructure=24, …). Live origin/main membership.json now reports Cybersecurity=12 / Non-AI Tech=14; the fixture keeps the packet table so the inverted pair and the 5-of-10 hatch are the ones the packet named.",
+    "production-pinned": "production shape plus a named proof pin (see per-cell pin). rate39 = TPC analog 39/40; libnull = CXM/PFGC/RUSHA moved to the front of atrz breaking. Members still absent.",
+    "members-present": "production artifact + members/basket_id injected from the packet 9-row table (membership.json truths the audit measured: Cybersecurity=10, AI Infrastructure=24, …). Live origin/main membership.json now reports Cybersecurity=12 / Non-AI Tech=14; the fixture keeps the packet table so the inverted pair and the 5-of-10 hatch are the ones the packet named. Cells on this shape carry fixture-only copy and are not tonight's shippable state.",
     "production_pins": {
       "rate39": "TPC analog pinned to 39/40 for the packet's named nearly-all / n=1-survivor fixture; members still absent",
       "libnull": "CXM/PFGC/RUSHA moved to the front of atrz breaking so the three lib-null rows share a frame (they sit at indices 12/43/52 past the cap in the verbatim artifact); members still absent"
@@ -44,6 +45,8 @@
     "mode": "explicit_subjects",
     "subjects": [
       "baseline",
+      "find-placeholder",
+      "find-zerohit",
       "m1-degrade",
       "p0-1-pair",
       "p0-1-partial",
@@ -61,18 +64,18 @@
     ]
   },
   "aliases": {
-    "baseline-dark-en-1440.png": "e5d47c22438feeae.png",
-    "baseline-light-en-1440.png": "6e9066e3dbfff07d.png",
-    "baseline-dark-zh-1440.png": "5097bf8fa498140e.png",
-    "baseline-light-zh-1440.png": "e8a80514f1bfd1b4.png",
-    "baseline-dark-en-390.png": "bd04fad11cc6fa12.png",
-    "baseline-light-en-390.png": "efc28aeef043a2e7.png",
-    "baseline-dark-zh-390.png": "0e48d4babcb3cab2.png",
-    "baseline-light-zh-390.png": "491ccdfc3be24b89.png",
-    "p0-1-pair-dark-en-1440.png": "5e6ebf07a0f69f0c.png",
-    "p0-1-pair-light-en-1440.png": "5353c7d92e88496a.png",
-    "p0-1-pair-dark-zh-1440.png": "e0f34ed479787308.png",
-    "p0-1-pair-light-zh-1440.png": "d4668f9c2dcbfc0a.png",
+    "baseline-dark-en-1440.png": "a4e721bc8f14d7c9.png",
+    "baseline-light-en-1440.png": "16b950e52fd50ab3.png",
+    "baseline-dark-zh-1440.png": "189c0d6a61d22745.png",
+    "baseline-light-zh-1440.png": "32976df2c13c33b9.png",
+    "baseline-dark-en-390.png": "19ab0141337b88c2.png",
+    "baseline-light-en-390.png": "a2e2718b11bf3db4.png",
+    "baseline-dark-zh-390.png": "db6857eb8f9d1f05.png",
+    "baseline-light-zh-390.png": "36d10839fe793d87.png",
+    "p0-1-pair-dark-en-1440.png": "e679deddd1e326ec.png",
+    "p0-1-pair-light-en-1440.png": "706d140f647c46a5.png",
+    "p0-1-pair-dark-zh-1440.png": "9b5befd59c356e7d.png",
+    "p0-1-pair-light-zh-1440.png": "0203bde9c4bb4b19.png",
     "p0-1-partial-dark-en-1440.png": "d4c6869bc79171ab.png",
     "p0-1-partial-light-en-1440.png": "2088ae7a12ee4db8.png",
     "p0-1-partial-dark-zh-1440.png": "31c64bfdf553e772.png",
@@ -83,16 +86,16 @@
     "p0-2-nearly-all-light-zh-1440.png": "4505dcc2e1b7eb49.png",
     "p0-2-8in10-dark-en-1440.png": "2484feb472ff21ad.png",
     "p0-2-8in10-light-en-1440.png": "6926424b8449113d.png",
-    "p0-2-8in10-dark-zh-1440.png": "a63550e9339c0974.png",
-    "p0-2-8in10-light-zh-1440.png": "04fd136aca9ec7e6.png",
+    "p0-2-8in10-dark-zh-1440.png": "2157ccb5416393f7.png",
+    "p0-2-8in10-light-zh-1440.png": "d7417bb07ce031d0.png",
     "p1-1-n1-dark-en-1440.png": "338a9f74a87dc593.png",
     "p1-1-n1-light-en-1440.png": "1b3d8ea3e2c373d3.png",
     "p1-1-n1-dark-zh-1440.png": "d229ab07d50ae429.png",
     "p1-1-n1-light-zh-1440.png": "4505dcc2e1b7eb49.png",
     "p1-1-nge5-dark-en-1440.png": "2484feb472ff21ad.png",
     "p1-1-nge5-light-en-1440.png": "6926424b8449113d.png",
-    "p1-1-nge5-dark-zh-1440.png": "a63550e9339c0974.png",
-    "p1-1-nge5-light-zh-1440.png": "04fd136aca9ec7e6.png",
+    "p1-1-nge5-dark-zh-1440.png": "2157ccb5416393f7.png",
+    "p1-1-nge5-light-zh-1440.png": "d7417bb07ce031d0.png",
     "p1-2-libnull-dark-en-1440.png": "5e11c0f6dc386ae5.png",
     "p1-2-libnull-light-en-1440.png": "aca2d7aa079dd125.png",
     "p1-2-libnull-dark-zh-1440.png": "218a2ee7d5679448.png",
@@ -115,26 +118,32 @@
     "p1-6-capped-light-zh-1440.png": "29ec53533787a836.png",
     "p1-6-expanded-dark-en-1440.png": "94206616ad7e9564.png",
     "p1-6-expanded-light-en-1440.png": "743dde3e740682ec.png",
-    "p1-6-expanded-dark-zh-1440.png": "e0d1450095d89a8f.png",
-    "p1-6-expanded-light-zh-1440.png": "110954b6509c5cf5.png",
+    "p1-6-expanded-dark-zh-1440.png": "1726b201b90a5fff.png",
+    "p1-6-expanded-light-zh-1440.png": "ca7d90e18ef39aad.png",
     "p1-6-find-dark-en-1440.png": "61068be45b007f9e.png",
     "p1-6-find-light-en-1440.png": "534c776c2d7ffcfd.png",
-    "p1-6-find-dark-zh-1440.png": "d3135fafcd4a1f01.png",
-    "p1-6-find-light-zh-1440.png": "c7cc373e0a36cb0a.png",
+    "p1-6-find-dark-zh-1440.png": "8f317837804d97f3.png",
+    "p1-6-find-light-zh-1440.png": "bae8ef1fdce798db.png",
     "p1-6-find-dark-en-390.png": "2e236d84fa0a705a.png",
     "p1-6-find-light-en-390.png": "ae94196a03882a1d.png",
-    "p1-6-find-dark-zh-390.png": "02b858df885acc46.png",
-    "p1-6-find-light-zh-390.png": "f0ca922e21ec874a.png",
-    "m1-degrade-dark-en-1440.png": "44b244a443d2fadc.png",
-    "m1-degrade-light-en-1440.png": "eb5a37b0f8146a5d.png",
-    "m1-degrade-dark-zh-1440.png": "d0d69d4bf3bf2277.png",
-    "m1-degrade-light-zh-1440.png": "15c1d576ddcf6dab.png"
+    "p1-6-find-dark-zh-390.png": "d739291cc54cf6ec.png",
+    "p1-6-find-light-zh-390.png": "fd5ae60dc8289476.png",
+    "find-zerohit-dark-en-1440.png": "35deeb6a8d976d5b.png",
+    "find-zerohit-light-en-1440.png": "b0f7322a7adf3ead.png",
+    "find-zerohit-dark-zh-1440.png": "bbbebd2615987c85.png",
+    "find-zerohit-light-zh-1440.png": "5af58983a61f8454.png",
+    "find-zerohit-dark-en-390.png": "5e857941f0d780bf.png",
+    "find-placeholder-dark-zh-1440.png": "fba7a8e430bd080d.png",
+    "m1-degrade-dark-en-1440.png": "41fc46193900f1be.png",
+    "m1-degrade-light-en-1440.png": "0469eb0aef611477.png",
+    "m1-degrade-dark-zh-1440.png": "752aad6494e84988.png",
+    "m1-degrade-light-zh-1440.png": "ed6949f73f593ee9.png"
   },
   "outcome": "captured",
   "totals": {
-    "states_attempted": 68,
-    "states_captured": 68,
-    "overlay_clean": 68
+    "states_attempted": 74,
+    "states_captured": 74,
+    "overlay_clean": 74
   },
   "gates": {
     "prod": {
@@ -210,9 +219,15 @@
       "id": "p1-6-find-light-zh-390",
       "locale": "zh",
       "overflow": false
+    },
+    {
+      "id": "find-zerohit-dark-en-390",
+      "locale": "en",
+      "overflow": false
     }
   ],
   "find_ticker": "SLS",
+  "find_miss": "ZZZQ",
   "overlays_hidden": [
     ".mx5-aurora",
     ".sky-fx",
@@ -220,11 +235,17 @@
     "#mmb-boot",
     ".ift-aurora"
   ],
+  "find_crop_hides": [
+    "#t-six-month .ladder",
+    ".sec[aria-label=\"Themes by state\"]"
+  ],
+  "settle": "raf2+fonts.ready",
   "cells": [
     {
       "id": "baseline-dark-en-1440",
       "subject": "baseline",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "en",
@@ -232,11 +253,13 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": null,
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
-      "file": "e5d47c22438feeae.png",
+      "file": "a4e721bc8f14d7c9.png",
       "alias": "baseline-dark-en-1440.png",
-      "sha256": "e5d47c22438feeaebb6f316a2d03849c0992b6dc1bd7a82d8d67ede2c5e18443",
-      "bytes": 1573551,
+      "sha256": "a4e721bc8f14d7c9fd3006a9bd1ec092301be667de71096cdd2188c6c0db7b84",
+      "bytes": 1575716,
       "width": 1440,
       "height": 9736,
       "applied_theme": "dark",
@@ -257,12 +280,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": ""
     },
     {
       "id": "baseline-light-en-1440",
       "subject": "baseline",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "en",
@@ -270,11 +296,13 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": null,
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
-      "file": "6e9066e3dbfff07d.png",
+      "file": "16b950e52fd50ab3.png",
       "alias": "baseline-light-en-1440.png",
-      "sha256": "6e9066e3dbfff07d1d66e6cc417dd6b3a05b4fe5e1c29feeb65750c747a4a3cf",
-      "bytes": 1564130,
+      "sha256": "16b950e52fd50ab38779364303a2a83287ed9f73bd1ba2501ca48f41d6c6a3b0",
+      "bytes": 1566462,
       "width": 1440,
       "height": 9736,
       "applied_theme": "light",
@@ -295,12 +323,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": ""
     },
     {
       "id": "baseline-dark-zh-1440",
       "subject": "baseline",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "zh",
@@ -308,11 +339,13 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": null,
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
-      "file": "5097bf8fa498140e.png",
+      "file": "189c0d6a61d22745.png",
       "alias": "baseline-dark-zh-1440.png",
-      "sha256": "5097bf8fa498140e37f5d2e3c82a746d690d81301811d26d8495caba41e873d5",
-      "bytes": 1633801,
+      "sha256": "189c0d6a61d22745cf33d0d80c4e20d80ef92a83d81e0054ee3b3d29712f6afc",
+      "bytes": 1634774,
       "width": 1440,
       "height": 9736,
       "applied_theme": "dark",
@@ -333,12 +366,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": ""
     },
     {
       "id": "baseline-light-zh-1440",
       "subject": "baseline",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "zh",
@@ -346,11 +382,13 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": null,
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
-      "file": "e8a80514f1bfd1b4.png",
+      "file": "32976df2c13c33b9.png",
       "alias": "baseline-light-zh-1440.png",
-      "sha256": "e8a80514f1bfd1b4bc3a78403e1819ac75eaa915ada63dba9ef1e853a42927b3",
-      "bytes": 1623376,
+      "sha256": "32976df2c13c33b9ad0cba93feb8a41fb662b06be97525821fee77b8ffc0f4ca",
+      "bytes": 1624113,
       "width": 1440,
       "height": 9736,
       "applied_theme": "light",
@@ -371,12 +409,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": ""
     },
     {
       "id": "baseline-dark-en-390",
       "subject": "baseline",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "mobile",
       "locale": "en",
@@ -384,11 +425,13 @@
       "viewport_width": 390,
       "viewport_height": 844,
       "action": null,
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
-      "file": "bd04fad11cc6fa12.png",
+      "file": "19ab0141337b88c2.png",
       "alias": "baseline-dark-en-390.png",
-      "sha256": "bd04fad11cc6fa127ca5a170ecce9476cf044bfc92015ad4cad8515771095abf",
-      "bytes": 1421247,
+      "sha256": "19ab0141337b88c2b2c8a262c92285342416f9a21c29b12e92e60b31ad81201c",
+      "bytes": 1423104,
       "width": 390,
       "height": 18970,
       "applied_theme": "dark",
@@ -409,12 +452,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08 Re-read every night Three kinds of winner, each read against its own history. A name can be in mor"
+      "visible_has_zerohit": false,
+      "visible_text_head": "NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08 Re-read every night Three kinds of winner, each read against its own history. A name can be in mor",
+      "reused_image": ""
     },
     {
       "id": "baseline-light-en-390",
       "subject": "baseline",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "mobile",
       "locale": "en",
@@ -422,11 +468,13 @@
       "viewport_width": 390,
       "viewport_height": 844,
       "action": null,
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
-      "file": "efc28aeef043a2e7.png",
+      "file": "a2e2718b11bf3db4.png",
       "alias": "baseline-light-en-390.png",
-      "sha256": "efc28aeef043a2e73b7428071e8329640cc3ef10ce0f1209bb1f03c6476f9f13",
-      "bytes": 1426186,
+      "sha256": "a2e2718b11bf3db45ae56cebb8a7eff9eb9608750157b13c4d94e21149298c6a",
+      "bytes": 1428071,
       "width": 390,
       "height": 18970,
       "applied_theme": "light",
@@ -447,12 +495,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08 Re-read every night Three kinds of winner, each read against its own history. A name can be in mor"
+      "visible_has_zerohit": false,
+      "visible_text_head": "NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08 Re-read every night Three kinds of winner, each read against its own history. A name can be in mor",
+      "reused_image": ""
     },
     {
       "id": "baseline-dark-zh-390",
       "subject": "baseline",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "mobile",
       "locale": "zh",
@@ -460,11 +511,13 @@
       "viewport_width": 390,
       "viewport_height": 844,
       "action": null,
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
-      "file": "0e48d4babcb3cab2.png",
+      "file": "db6857eb8f9d1f05.png",
       "alias": "baseline-dark-zh-390.png",
-      "sha256": "0e48d4babcb3cab26ab0430a235d5145f20d2f1cfd1fb3a1b3e3d30708e3e387",
-      "bytes": 1452859,
+      "sha256": "db6857eb8f9d1f050488d48575e9476f92a2389ff0361f026f33ac1aa1d776d9",
+      "bytes": 1455427,
       "width": 390,
       "height": 17717,
       "applied_theme": "dark",
@@ -485,12 +538,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个月急涨 186 只 近三个月上涨 35% 或以上。 其中 154 只在老化 远高于自身均线 313 "
+      "visible_has_zerohit": false,
+      "visible_text_head": "NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个月急涨 186 只 近三个月上涨 35% 或以上。 其中 154 只在老化 远高于自身均线 313 ",
+      "reused_image": ""
     },
     {
       "id": "baseline-light-zh-390",
       "subject": "baseline",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "mobile",
       "locale": "zh",
@@ -498,11 +554,13 @@
       "viewport_width": 390,
       "viewport_height": 844,
       "action": null,
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
-      "file": "491ccdfc3be24b89.png",
+      "file": "36d10839fe793d87.png",
       "alias": "baseline-light-zh-390.png",
-      "sha256": "491ccdfc3be24b89eff7262f43d908b114968960c581f017de7d0b2b59206f5a",
-      "bytes": 1457574,
+      "sha256": "36d10839fe793d87b2c1dbe0b024efd024c621dc1a9cf42e0938448be877dccb",
+      "bytes": 1460248,
       "width": 390,
       "height": 17717,
       "applied_theme": "light",
@@ -523,12 +581,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个月急涨 186 只 近三个月上涨 35% 或以上。 其中 154 只在老化 远高于自身均线 313 "
+      "visible_has_zerohit": false,
+      "visible_text_head": "NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个月急涨 186 只 近三个月上涨 35% 或以上。 其中 154 只在老化 远高于自身均线 313 ",
+      "reused_image": ""
     },
     {
       "id": "p0-1-pair-dark-en-1440",
       "subject": "p0-1-pair",
       "shape": "members-present",
+      "pin": "",
       "html": "members",
       "viewport": "desktop",
       "locale": "en",
@@ -536,11 +597,13 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-b0",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
-      "file": "5e6ebf07a0f69f0c.png",
+      "file": "e679deddd1e326ec.png",
       "alias": "p0-1-pair-dark-en-1440.png",
-      "sha256": "5e6ebf07a0f69f0c2cc284255ccba77969cae76a7c06710a8b41b6ebfd51004e",
-      "bytes": 63497,
+      "sha256": "e679deddd1e326ec1a73bba370c8ead528302dbeee5e2d875ea6b99236957654",
+      "bytes": 63454,
       "width": 1232,
       "height": 329,
       "applied_theme": "dark",
@@ -550,7 +613,8 @@
       "overlay_clean": true,
       "action_receipt": {
         "action": "open-b0",
-        "opened": true
+        "opened": true,
+        "tip_offset": "below-hatch"
       },
       "h_scroll": {
         "scrollWidth": 1440,
@@ -561,12 +625,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": ""
     },
     {
       "id": "p0-1-pair-light-en-1440",
       "subject": "p0-1-pair",
       "shape": "members-present",
+      "pin": "",
       "html": "members",
       "viewport": "desktop",
       "locale": "en",
@@ -574,11 +641,13 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-b0",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
-      "file": "5353c7d92e88496a.png",
+      "file": "706d140f647c46a5.png",
       "alias": "p0-1-pair-light-en-1440.png",
-      "sha256": "5353c7d92e88496ae53bcb891a6ce9544512ad5a23088b941ea8cdf39583cf92",
-      "bytes": 62438,
+      "sha256": "706d140f647c46a56e005eefa7602b48fbc7c1f5fa60d0eb3a36920af588c110",
+      "bytes": 62964,
       "width": 1232,
       "height": 329,
       "applied_theme": "light",
@@ -588,7 +657,8 @@
       "overlay_clean": true,
       "action_receipt": {
         "action": "open-b0",
-        "opened": true
+        "opened": true,
+        "tip_offset": "below-hatch"
       },
       "h_scroll": {
         "scrollWidth": 1440,
@@ -599,12 +669,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": ""
     },
     {
       "id": "p0-1-pair-dark-zh-1440",
       "subject": "p0-1-pair",
       "shape": "members-present",
+      "pin": "",
       "html": "members",
       "viewport": "desktop",
       "locale": "zh",
@@ -612,11 +685,13 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-b0",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
-      "file": "e0f34ed479787308.png",
+      "file": "9b5befd59c356e7d.png",
       "alias": "p0-1-pair-dark-zh-1440.png",
-      "sha256": "e0f34ed4797873083053b12769dda272d2e5dfe8c52c00faf0ea781e2df02c00",
-      "bytes": 68149,
+      "sha256": "9b5befd59c356e7d1d0a83c4d8f0db4e9c7173329bf99f5d6a2da73eadc0d37a",
+      "bytes": 68872,
       "width": 1232,
       "height": 297,
       "applied_theme": "dark",
@@ -626,7 +701,8 @@
       "overlay_clean": true,
       "action_receipt": {
         "action": "open-b0",
-        "opened": true
+        "opened": true,
+        "tip_offset": "below-hatch"
       },
       "h_scroll": {
         "scrollWidth": 1440,
@@ -637,12 +713,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": ""
     },
     {
       "id": "p0-1-pair-light-zh-1440",
       "subject": "p0-1-pair",
       "shape": "members-present",
+      "pin": "",
       "html": "members",
       "viewport": "desktop",
       "locale": "zh",
@@ -650,11 +729,13 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-b0",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
-      "file": "d4668f9c2dcbfc0a.png",
+      "file": "0203bde9c4bb4b19.png",
       "alias": "p0-1-pair-light-zh-1440.png",
-      "sha256": "d4668f9c2dcbfc0a02cae807c9d5a1de8cd11711f333535fd003f28d6fb80626",
-      "bytes": 67829,
+      "sha256": "0203bde9c4bb4b195277f33b5273de8ac287bc1c731d0a83cdb9c65d4b64380f",
+      "bytes": 68592,
       "width": 1232,
       "height": 297,
       "applied_theme": "light",
@@ -664,7 +745,8 @@
       "overlay_clean": true,
       "action_receipt": {
         "action": "open-b0",
-        "opened": true
+        "opened": true,
+        "tip_offset": "below-hatch"
       },
       "h_scroll": {
         "scrollWidth": 1440,
@@ -675,12 +757,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": ""
     },
     {
       "id": "p0-1-partial-dark-en-1440",
       "subject": "p0-1-partial",
       "shape": "members-present",
+      "pin": "",
       "html": "members",
       "viewport": "desktop",
       "locale": "en",
@@ -688,6 +773,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-b0",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "d4c6869bc79171ab.png",
       "alias": "p0-1-partial-dark-en-1440.png",
@@ -713,12 +800,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": ""
     },
     {
       "id": "p0-1-partial-light-en-1440",
       "subject": "p0-1-partial",
       "shape": "members-present",
+      "pin": "",
       "html": "members",
       "viewport": "desktop",
       "locale": "en",
@@ -726,6 +816,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-b0",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "2088ae7a12ee4db8.png",
       "alias": "p0-1-partial-light-en-1440.png",
@@ -751,12 +843,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": ""
     },
     {
       "id": "p0-1-partial-dark-zh-1440",
       "subject": "p0-1-partial",
       "shape": "members-present",
+      "pin": "",
       "html": "members",
       "viewport": "desktop",
       "locale": "zh",
@@ -764,6 +859,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-b0",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "31c64bfdf553e772.png",
       "alias": "p0-1-partial-dark-zh-1440.png",
@@ -789,12 +886,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": ""
     },
     {
       "id": "p0-1-partial-light-zh-1440",
       "subject": "p0-1-partial",
       "shape": "members-present",
+      "pin": "",
       "html": "members",
       "viewport": "desktop",
       "locale": "zh",
@@ -802,6 +902,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-b0",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "ee292c5c774eacc8.png",
       "alias": "p0-1-partial-light-zh-1440.png",
@@ -827,12 +929,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": ""
     },
     {
       "id": "p0-2-nearly-all-dark-en-1440",
       "subject": "p0-2-nearly-all",
-      "shape": "production",
+      "shape": "production-pinned",
+      "pin": "rate39",
       "html": "rate39",
       "viewport": "desktop",
       "locale": "en",
@@ -840,6 +945,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-analog",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "338a9f74a87dc593.png",
       "alias": "p0-2-nearly-all-dark-en-1440.png",
@@ -865,12 +972,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": true,
       "visible_has_across": true,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": "p1-1-n1-dark-en-1440"
     },
     {
       "id": "p0-2-nearly-all-light-en-1440",
       "subject": "p0-2-nearly-all",
-      "shape": "production",
+      "shape": "production-pinned",
+      "pin": "rate39",
       "html": "rate39",
       "viewport": "desktop",
       "locale": "en",
@@ -878,6 +988,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-analog",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "1b3d8ea3e2c373d3.png",
       "alias": "p0-2-nearly-all-light-en-1440.png",
@@ -903,12 +1015,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": true,
       "visible_has_across": true,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": "p1-1-n1-light-en-1440"
     },
     {
       "id": "p0-2-nearly-all-dark-zh-1440",
       "subject": "p0-2-nearly-all",
-      "shape": "production",
+      "shape": "production-pinned",
+      "pin": "rate39",
       "html": "rate39",
       "viewport": "desktop",
       "locale": "zh",
@@ -916,6 +1031,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-analog",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "d229ab07d50ae429.png",
       "alias": "p0-2-nearly-all-dark-zh-1440.png",
@@ -941,12 +1058,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": true,
       "visible_has_across": true,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": "p1-1-n1-dark-zh-1440"
     },
     {
       "id": "p0-2-nearly-all-light-zh-1440",
       "subject": "p0-2-nearly-all",
-      "shape": "production",
+      "shape": "production-pinned",
+      "pin": "rate39",
       "html": "rate39",
       "viewport": "desktop",
       "locale": "zh",
@@ -954,6 +1074,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-analog",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "4505dcc2e1b7eb49.png",
       "alias": "p0-2-nearly-all-light-zh-1440.png",
@@ -979,12 +1101,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": true,
       "visible_has_across": true,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": "p1-1-n1-light-zh-1440"
     },
     {
       "id": "p0-2-8in10-dark-en-1440",
       "subject": "p0-2-8in10",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "en",
@@ -992,6 +1117,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-analog",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "2484feb472ff21ad.png",
       "alias": "p0-2-8in10-dark-en-1440.png",
@@ -1017,12 +1144,15 @@
       "visible_has_8in10": true,
       "visible_has_suppressed": false,
       "visible_has_across": true,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": "p1-1-nge5-dark-en-1440"
     },
     {
       "id": "p0-2-8in10-light-en-1440",
       "subject": "p0-2-8in10",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "en",
@@ -1030,6 +1160,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-analog",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "6926424b8449113d.png",
       "alias": "p0-2-8in10-light-en-1440.png",
@@ -1055,12 +1187,15 @@
       "visible_has_8in10": true,
       "visible_has_suppressed": false,
       "visible_has_across": true,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": "p1-1-nge5-light-en-1440"
     },
     {
       "id": "p0-2-8in10-dark-zh-1440",
       "subject": "p0-2-8in10",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "zh",
@@ -1068,11 +1203,13 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-analog",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
-      "file": "a63550e9339c0974.png",
+      "file": "2157ccb5416393f7.png",
       "alias": "p0-2-8in10-dark-zh-1440.png",
-      "sha256": "a63550e9339c0974e296990ef934ca6fd5b79df6b5c0c48da3c28dc07286a972",
-      "bytes": 166445,
+      "sha256": "2157ccb5416393f75a0c96f4b87a2cf244bbabcaefa1e7e3b4136916a9fe12b1",
+      "bytes": 168144,
       "width": 1336,
       "height": 415,
       "applied_theme": "dark",
@@ -1093,12 +1230,15 @@
       "visible_has_8in10": true,
       "visible_has_suppressed": false,
       "visible_has_across": true,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": "p1-1-nge5-dark-zh-1440"
     },
     {
       "id": "p0-2-8in10-light-zh-1440",
       "subject": "p0-2-8in10",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "zh",
@@ -1106,11 +1246,13 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-analog",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
-      "file": "04fd136aca9ec7e6.png",
+      "file": "d7417bb07ce031d0.png",
       "alias": "p0-2-8in10-light-zh-1440.png",
-      "sha256": "04fd136aca9ec7e6bda84c5ad761800aa6a569d1a23ad23aee94391491b3798c",
-      "bytes": 164218,
+      "sha256": "d7417bb07ce031d0b51f2212eb34635542811aaf4c79e532d6dd6baf9a80d850",
+      "bytes": 166187,
       "width": 1336,
       "height": 415,
       "applied_theme": "light",
@@ -1131,12 +1273,15 @@
       "visible_has_8in10": true,
       "visible_has_suppressed": false,
       "visible_has_across": true,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": "p1-1-nge5-light-zh-1440"
     },
     {
       "id": "p1-1-n1-dark-en-1440",
       "subject": "p1-1-n1",
-      "shape": "production",
+      "shape": "production-pinned",
+      "pin": "rate39",
       "html": "rate39",
       "viewport": "desktop",
       "locale": "en",
@@ -1144,6 +1289,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-analog",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "338a9f74a87dc593.png",
       "alias": "p1-1-n1-dark-en-1440.png",
@@ -1169,12 +1316,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": true,
       "visible_has_across": true,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": "p0-2-nearly-all-dark-en-1440"
     },
     {
       "id": "p1-1-n1-light-en-1440",
       "subject": "p1-1-n1",
-      "shape": "production",
+      "shape": "production-pinned",
+      "pin": "rate39",
       "html": "rate39",
       "viewport": "desktop",
       "locale": "en",
@@ -1182,6 +1332,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-analog",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "1b3d8ea3e2c373d3.png",
       "alias": "p1-1-n1-light-en-1440.png",
@@ -1207,12 +1359,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": true,
       "visible_has_across": true,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": "p0-2-nearly-all-light-en-1440"
     },
     {
       "id": "p1-1-n1-dark-zh-1440",
       "subject": "p1-1-n1",
-      "shape": "production",
+      "shape": "production-pinned",
+      "pin": "rate39",
       "html": "rate39",
       "viewport": "desktop",
       "locale": "zh",
@@ -1220,6 +1375,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-analog",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "d229ab07d50ae429.png",
       "alias": "p1-1-n1-dark-zh-1440.png",
@@ -1245,12 +1402,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": true,
       "visible_has_across": true,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": "p0-2-nearly-all-dark-zh-1440"
     },
     {
       "id": "p1-1-n1-light-zh-1440",
       "subject": "p1-1-n1",
-      "shape": "production",
+      "shape": "production-pinned",
+      "pin": "rate39",
       "html": "rate39",
       "viewport": "desktop",
       "locale": "zh",
@@ -1258,6 +1418,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-analog",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "4505dcc2e1b7eb49.png",
       "alias": "p1-1-n1-light-zh-1440.png",
@@ -1283,12 +1445,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": true,
       "visible_has_across": true,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": "p0-2-nearly-all-light-zh-1440"
     },
     {
       "id": "p1-1-nge5-dark-en-1440",
       "subject": "p1-1-nge5",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "en",
@@ -1296,6 +1461,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-analog",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "2484feb472ff21ad.png",
       "alias": "p1-1-nge5-dark-en-1440.png",
@@ -1321,12 +1488,15 @@
       "visible_has_8in10": true,
       "visible_has_suppressed": false,
       "visible_has_across": true,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": "p0-2-8in10-dark-en-1440"
     },
     {
       "id": "p1-1-nge5-light-en-1440",
       "subject": "p1-1-nge5",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "en",
@@ -1334,6 +1504,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-analog",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "6926424b8449113d.png",
       "alias": "p1-1-nge5-light-en-1440.png",
@@ -1359,12 +1531,15 @@
       "visible_has_8in10": true,
       "visible_has_suppressed": false,
       "visible_has_across": true,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": "p0-2-8in10-light-en-1440"
     },
     {
       "id": "p1-1-nge5-dark-zh-1440",
       "subject": "p1-1-nge5",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "zh",
@@ -1372,11 +1547,13 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-analog",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
-      "file": "a63550e9339c0974.png",
+      "file": "2157ccb5416393f7.png",
       "alias": "p1-1-nge5-dark-zh-1440.png",
-      "sha256": "a63550e9339c0974e296990ef934ca6fd5b79df6b5c0c48da3c28dc07286a972",
-      "bytes": 166445,
+      "sha256": "2157ccb5416393f75a0c96f4b87a2cf244bbabcaefa1e7e3b4136916a9fe12b1",
+      "bytes": 168144,
       "width": 1336,
       "height": 415,
       "applied_theme": "dark",
@@ -1397,12 +1574,15 @@
       "visible_has_8in10": true,
       "visible_has_suppressed": false,
       "visible_has_across": true,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": "p0-2-8in10-dark-zh-1440"
     },
     {
       "id": "p1-1-nge5-light-zh-1440",
       "subject": "p1-1-nge5",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "zh",
@@ -1410,11 +1590,13 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-analog",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
-      "file": "04fd136aca9ec7e6.png",
+      "file": "d7417bb07ce031d0.png",
       "alias": "p1-1-nge5-light-zh-1440.png",
-      "sha256": "04fd136aca9ec7e6bda84c5ad761800aa6a569d1a23ad23aee94391491b3798c",
-      "bytes": 164218,
+      "sha256": "d7417bb07ce031d0b51f2212eb34635542811aaf4c79e532d6dd6baf9a80d850",
+      "bytes": 166187,
       "width": 1336,
       "height": 415,
       "applied_theme": "light",
@@ -1435,12 +1617,15 @@
       "visible_has_8in10": true,
       "visible_has_suppressed": false,
       "visible_has_across": true,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": "p0-2-8in10-light-zh-1440"
     },
     {
       "id": "p1-2-libnull-dark-en-1440",
       "subject": "p1-2-libnull",
-      "shape": "production",
+      "shape": "production-pinned",
+      "pin": "libnull",
       "html": "libnull",
       "viewport": "desktop",
       "locale": "en",
@@ -1448,6 +1633,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-libnull",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "5e11c0f6dc386ae5.png",
       "alias": "p1-2-libnull-dark-en-1440.png",
@@ -1473,12 +1660,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": ""
     },
     {
       "id": "p1-2-libnull-light-en-1440",
       "subject": "p1-2-libnull",
-      "shape": "production",
+      "shape": "production-pinned",
+      "pin": "libnull",
       "html": "libnull",
       "viewport": "desktop",
       "locale": "en",
@@ -1486,6 +1676,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-libnull",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "aca2d7aa079dd125.png",
       "alias": "p1-2-libnull-light-en-1440.png",
@@ -1511,12 +1703,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": ""
     },
     {
       "id": "p1-2-libnull-dark-zh-1440",
       "subject": "p1-2-libnull",
-      "shape": "production",
+      "shape": "production-pinned",
+      "pin": "libnull",
       "html": "libnull",
       "viewport": "desktop",
       "locale": "zh",
@@ -1524,6 +1719,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-libnull",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "218a2ee7d5679448.png",
       "alias": "p1-2-libnull-dark-zh-1440.png",
@@ -1549,12 +1746,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": ""
     },
     {
       "id": "p1-2-libnull-light-zh-1440",
       "subject": "p1-2-libnull",
-      "shape": "production",
+      "shape": "production-pinned",
+      "pin": "libnull",
       "html": "libnull",
       "viewport": "desktop",
       "locale": "zh",
@@ -1562,6 +1762,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-libnull",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "4b6bc1f772e962b2.png",
       "alias": "p1-2-libnull-light-zh-1440.png",
@@ -1587,12 +1789,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": ""
     },
     {
       "id": "p1-3-wfe-dark-en-1440",
       "subject": "p1-3-wfe",
       "shape": "members-present",
+      "pin": "",
       "html": "members",
       "viewport": "desktop",
       "locale": "en",
@@ -1600,6 +1805,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-wfe",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "ef6db86ae55729dd.png",
       "alias": "p1-3-wfe-dark-en-1440.png",
@@ -1625,12 +1832,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": ""
     },
     {
       "id": "p1-3-wfe-light-en-1440",
       "subject": "p1-3-wfe",
       "shape": "members-present",
+      "pin": "",
       "html": "members",
       "viewport": "desktop",
       "locale": "en",
@@ -1638,6 +1848,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-wfe",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "250cc1460abb8310.png",
       "alias": "p1-3-wfe-light-en-1440.png",
@@ -1663,12 +1875,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": ""
     },
     {
       "id": "p1-3-wfe-dark-zh-1440",
       "subject": "p1-3-wfe",
       "shape": "members-present",
+      "pin": "",
       "html": "members",
       "viewport": "desktop",
       "locale": "zh",
@@ -1676,6 +1891,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-wfe",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "59dce453b5ffc9b6.png",
       "alias": "p1-3-wfe-dark-zh-1440.png",
@@ -1701,12 +1918,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": ""
     },
     {
       "id": "p1-3-wfe-light-zh-1440",
       "subject": "p1-3-wfe",
       "shape": "members-present",
+      "pin": "",
       "html": "members",
       "viewport": "desktop",
       "locale": "zh",
@@ -1714,6 +1934,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-wfe",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "38bf79d0c33f306a.png",
       "alias": "p1-3-wfe-light-zh-1440.png",
@@ -1739,12 +1961,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": ""
     },
     {
       "id": "p1-4-footer-dark-en-1440",
       "subject": "p1-4-footer",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "en",
@@ -1752,6 +1977,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-footer",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "30a29fd32c011b0f.png",
       "alias": "p1-4-footer-dark-en-1440.png",
@@ -1777,12 +2004,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": ""
     },
     {
       "id": "p1-4-footer-light-en-1440",
       "subject": "p1-4-footer",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "en",
@@ -1790,6 +2020,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-footer",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "6de697bbcebbe8f7.png",
       "alias": "p1-4-footer-light-en-1440.png",
@@ -1815,12 +2047,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": ""
     },
     {
       "id": "p1-4-footer-dark-zh-1440",
       "subject": "p1-4-footer",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "zh",
@@ -1828,6 +2063,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-footer",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "212338f8660faf4f.png",
       "alias": "p1-4-footer-dark-zh-1440.png",
@@ -1853,12 +2090,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": ""
     },
     {
       "id": "p1-4-footer-light-zh-1440",
       "subject": "p1-4-footer",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "zh",
@@ -1866,6 +2106,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "open-footer",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "6d2cd81961799547.png",
       "alias": "p1-4-footer-light-zh-1440.png",
@@ -1891,12 +2133,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": ""
     },
     {
       "id": "p1-5-209s-dark-en-1440",
       "subject": "p1-5-209s",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "en",
@@ -1904,6 +2149,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": null,
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "c7769e9e27d9f29a.png",
       "alias": "p1-5-209s-dark-en-1440.png",
@@ -1929,12 +2176,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": ""
     },
     {
       "id": "p1-5-209s-light-en-1440",
       "subject": "p1-5-209s",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "en",
@@ -1942,6 +2192,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": null,
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "78ba1ea086c35196.png",
       "alias": "p1-5-209s-light-en-1440.png",
@@ -1967,12 +2219,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": ""
     },
     {
       "id": "p1-5-209s-dark-zh-1440",
       "subject": "p1-5-209s",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "zh",
@@ -1980,6 +2235,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": null,
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "8cfe72901e15f7b8.png",
       "alias": "p1-5-209s-dark-zh-1440.png",
@@ -2005,12 +2262,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": ""
     },
     {
       "id": "p1-5-209s-light-zh-1440",
       "subject": "p1-5-209s",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "zh",
@@ -2018,6 +2278,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": null,
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "0580563bb70f20ee.png",
       "alias": "p1-5-209s-light-zh-1440.png",
@@ -2043,12 +2305,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": ""
     },
     {
       "id": "p1-6-capped-dark-en-1440",
       "subject": "p1-6-capped",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "en",
@@ -2056,6 +2321,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": null,
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "9d2279663f00f697.png",
       "alias": "p1-6-capped-dark-en-1440.png",
@@ -2081,12 +2348,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": ""
     },
     {
       "id": "p1-6-capped-light-en-1440",
       "subject": "p1-6-capped",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "en",
@@ -2094,6 +2364,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": null,
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "bf12a4c8f969fab4.png",
       "alias": "p1-6-capped-light-en-1440.png",
@@ -2119,12 +2391,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": ""
     },
     {
       "id": "p1-6-capped-dark-zh-1440",
       "subject": "p1-6-capped",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "zh",
@@ -2132,6 +2407,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": null,
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "ce20a8fb972eae80.png",
       "alias": "p1-6-capped-dark-zh-1440.png",
@@ -2157,12 +2434,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": ""
     },
     {
       "id": "p1-6-capped-light-zh-1440",
       "subject": "p1-6-capped",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "zh",
@@ -2170,6 +2450,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": null,
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "29ec53533787a836.png",
       "alias": "p1-6-capped-light-zh-1440.png",
@@ -2195,12 +2477,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": ""
     },
     {
       "id": "p1-6-expanded-dark-en-1440",
       "subject": "p1-6-expanded",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "en",
@@ -2208,6 +2493,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "expand",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "94206616ad7e9564.png",
       "alias": "p1-6-expanded-dark-en-1440.png",
@@ -2234,12 +2521,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": ""
     },
     {
       "id": "p1-6-expanded-light-en-1440",
       "subject": "p1-6-expanded",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "en",
@@ -2247,6 +2537,8 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "expand",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "743dde3e740682ec.png",
       "alias": "p1-6-expanded-light-en-1440.png",
@@ -2273,12 +2565,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": ""
     },
     {
       "id": "p1-6-expanded-dark-zh-1440",
       "subject": "p1-6-expanded",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "zh",
@@ -2286,11 +2581,13 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "expand",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
-      "file": "e0d1450095d89a8f.png",
+      "file": "1726b201b90a5fff.png",
       "alias": "p1-6-expanded-dark-zh-1440.png",
-      "sha256": "e0d1450095d89a8f02340e0410f1a493f69b539547eb9d9033b863d14c3001c8",
-      "bytes": 198857,
+      "sha256": "1726b201b90a5fff18438c89c7cb7a2b1e0aba1f1d29bb46358225e0109e6d1b",
+      "bytes": 198816,
       "width": 1232,
       "height": 772,
       "applied_theme": "dark",
@@ -2312,12 +2609,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": ""
     },
     {
       "id": "p1-6-expanded-light-zh-1440",
       "subject": "p1-6-expanded",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "zh",
@@ -2325,11 +2625,13 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "expand",
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
-      "file": "110954b6509c5cf5.png",
+      "file": "ca7d90e18ef39aad.png",
       "alias": "p1-6-expanded-light-zh-1440.png",
-      "sha256": "110954b6509c5cf5ff567d5d59b8a11f2939f6d3bdc96cdaf7da506dc35e1da4",
-      "bytes": 184182,
+      "sha256": "ca7d90e18ef39aad189b6c06763b6c9d4b66382c3541ff591832a12a9cd5e826",
+      "bytes": 184319,
       "width": 1232,
       "height": 772,
       "applied_theme": "light",
@@ -2351,12 +2653,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": ""
     },
     {
       "id": "p1-6-find-dark-en-1440",
       "subject": "p1-6-find",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "en",
@@ -2364,6 +2669,11 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "find",
+      "hides": [
+        "#t-six-month .ladder",
+        ".sec[aria-label=\"Themes by state\"]"
+      ],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "61068be45b007f9e.png",
       "alias": "p1-6-find-dark-en-1440.png",
@@ -2379,6 +2689,10 @@
       "action_receipt": {
         "action": "find",
         "opened": true,
+        "hides": [
+          "#t-six-month .ladder",
+          ".sec[aria-label=\"Themes by state\"]"
+        ],
         "found": "SLS"
       },
       "h_scroll": {
@@ -2390,12 +2704,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": ""
     },
     {
       "id": "p1-6-find-light-en-1440",
       "subject": "p1-6-find",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "en",
@@ -2403,6 +2720,11 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "find",
+      "hides": [
+        "#t-six-month .ladder",
+        ".sec[aria-label=\"Themes by state\"]"
+      ],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "534c776c2d7ffcfd.png",
       "alias": "p1-6-find-light-en-1440.png",
@@ -2418,6 +2740,10 @@
       "action_receipt": {
         "action": "find",
         "opened": true,
+        "hides": [
+          "#t-six-month .ladder",
+          ".sec[aria-label=\"Themes by state\"]"
+        ],
         "found": "SLS"
       },
       "h_scroll": {
@@ -2429,12 +2755,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": ""
     },
     {
       "id": "p1-6-find-dark-zh-1440",
       "subject": "p1-6-find",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "zh",
@@ -2442,11 +2771,16 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "find",
+      "hides": [
+        "#t-six-month .ladder",
+        ".sec[aria-label=\"Themes by state\"]"
+      ],
+      "settle": "raf2+fonts.ready",
       "captured": true,
-      "file": "d3135fafcd4a1f01.png",
+      "file": "8f317837804d97f3.png",
       "alias": "p1-6-find-dark-zh-1440.png",
-      "sha256": "d3135fafcd4a1f013727b07569d5d235d37c70aaedbaac2ef8b3cb8e1289401c",
-      "bytes": 110376,
+      "sha256": "8f317837804d97f30d93e3dc8f41269ea165082a7b11648230861234f07f07b6",
+      "bytes": 110483,
       "width": 1232,
       "height": 437,
       "applied_theme": "dark",
@@ -2457,6 +2791,10 @@
       "action_receipt": {
         "action": "find",
         "opened": true,
+        "hides": [
+          "#t-six-month .ladder",
+          ".sec[aria-label=\"Themes by state\"]"
+        ],
         "found": "SLS"
       },
       "h_scroll": {
@@ -2468,12 +2806,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": ""
     },
     {
       "id": "p1-6-find-light-zh-1440",
       "subject": "p1-6-find",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "zh",
@@ -2481,11 +2822,16 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": "find",
+      "hides": [
+        "#t-six-month .ladder",
+        ".sec[aria-label=\"Themes by state\"]"
+      ],
+      "settle": "raf2+fonts.ready",
       "captured": true,
-      "file": "c7cc373e0a36cb0a.png",
+      "file": "bae8ef1fdce798db.png",
       "alias": "p1-6-find-light-zh-1440.png",
-      "sha256": "c7cc373e0a36cb0a23efd37dbc4fbde5cd10410b678e6cba07e702244f92bfbd",
-      "bytes": 102304,
+      "sha256": "bae8ef1fdce798db90b9bf498942484b37ec9e56d661976fc8b15ceaca7daadc",
+      "bytes": 102410,
       "width": 1232,
       "height": 437,
       "applied_theme": "light",
@@ -2496,6 +2842,10 @@
       "action_receipt": {
         "action": "find",
         "opened": true,
+        "hides": [
+          "#t-six-month .ladder",
+          ".sec[aria-label=\"Themes by state\"]"
+        ],
         "found": "SLS"
       },
       "h_scroll": {
@@ -2507,12 +2857,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": ""
     },
     {
       "id": "p1-6-find-dark-en-390",
       "subject": "p1-6-find",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "mobile",
       "locale": "en",
@@ -2520,6 +2873,11 @@
       "viewport_width": 390,
       "viewport_height": 844,
       "action": "find",
+      "hides": [
+        "#t-six-month .ladder",
+        ".sec[aria-label=\"Themes by state\"]"
+      ],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "2e236d84fa0a705a.png",
       "alias": "p1-6-find-dark-en-390.png",
@@ -2535,6 +2893,10 @@
       "action_receipt": {
         "action": "find",
         "opened": true,
+        "hides": [
+          "#t-six-month .ladder",
+          ".sec[aria-label=\"Themes by state\"]"
+        ],
         "found": "SLS"
       },
       "h_scroll": {
@@ -2546,12 +2908,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08 Re-read every night Three kinds of winner, each read against its own history. A name can be in mor"
+      "visible_has_zerohit": false,
+      "visible_text_head": "NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08 Re-read every night Three kinds of winner, each read against its own history. A name can be in mor",
+      "reused_image": ""
     },
     {
       "id": "p1-6-find-light-en-390",
       "subject": "p1-6-find",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "mobile",
       "locale": "en",
@@ -2559,6 +2924,11 @@
       "viewport_width": 390,
       "viewport_height": 844,
       "action": "find",
+      "hides": [
+        "#t-six-month .ladder",
+        ".sec[aria-label=\"Themes by state\"]"
+      ],
+      "settle": "raf2+fonts.ready",
       "captured": true,
       "file": "ae94196a03882a1d.png",
       "alias": "p1-6-find-light-en-390.png",
@@ -2574,6 +2944,10 @@
       "action_receipt": {
         "action": "find",
         "opened": true,
+        "hides": [
+          "#t-six-month .ladder",
+          ".sec[aria-label=\"Themes by state\"]"
+        ],
         "found": "SLS"
       },
       "h_scroll": {
@@ -2585,12 +2959,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08 Re-read every night Three kinds of winner, each read against its own history. A name can be in mor"
+      "visible_has_zerohit": false,
+      "visible_text_head": "NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08 Re-read every night Three kinds of winner, each read against its own history. A name can be in mor",
+      "reused_image": ""
     },
     {
       "id": "p1-6-find-dark-zh-390",
       "subject": "p1-6-find",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "mobile",
       "locale": "zh",
@@ -2598,11 +2975,16 @@
       "viewport_width": 390,
       "viewport_height": 844,
       "action": "find",
+      "hides": [
+        "#t-six-month .ladder",
+        ".sec[aria-label=\"Themes by state\"]"
+      ],
+      "settle": "raf2+fonts.ready",
       "captured": true,
-      "file": "02b858df885acc46.png",
+      "file": "d739291cc54cf6ec.png",
       "alias": "p1-6-find-dark-zh-390.png",
-      "sha256": "02b858df885acc467b035f3b6d550ecbc5cf4d8a2d167986dfa24a50dc7532b9",
-      "bytes": 87969,
+      "sha256": "d739291cc54cf6ecf8dbc34d91ebc23947ee45f36fe086c5f4aa70970f91bdf6",
+      "bytes": 88071,
       "width": 386,
       "height": 515,
       "applied_theme": "dark",
@@ -2613,6 +2995,10 @@
       "action_receipt": {
         "action": "find",
         "opened": true,
+        "hides": [
+          "#t-six-month .ladder",
+          ".sec[aria-label=\"Themes by state\"]"
+        ],
         "found": "SLS"
       },
       "h_scroll": {
@@ -2624,12 +3010,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个月急涨 186 只 近三个月上涨 35% 或以上。 其中 154 只在老化 远高于自身均线 313 "
+      "visible_has_zerohit": false,
+      "visible_text_head": "NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个月急涨 186 只 近三个月上涨 35% 或以上。 其中 154 只在老化 远高于自身均线 313 ",
+      "reused_image": ""
     },
     {
       "id": "p1-6-find-light-zh-390",
       "subject": "p1-6-find",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "mobile",
       "locale": "zh",
@@ -2637,11 +3026,16 @@
       "viewport_width": 390,
       "viewport_height": 844,
       "action": "find",
+      "hides": [
+        "#t-six-month .ladder",
+        ".sec[aria-label=\"Themes by state\"]"
+      ],
+      "settle": "raf2+fonts.ready",
       "captured": true,
-      "file": "f0ca922e21ec874a.png",
+      "file": "fd5ae60dc8289476.png",
       "alias": "p1-6-find-light-zh-390.png",
-      "sha256": "f0ca922e21ec874a23bd046e0037f946ca45533a5571367a6ff73cd560af2024",
-      "bytes": 81166,
+      "sha256": "fd5ae60dc8289476579646702c1905b392c5402fea66f64c060b54cfac0620ce",
+      "bytes": 81251,
       "width": 386,
       "height": 515,
       "applied_theme": "light",
@@ -2652,6 +3046,10 @@
       "action_receipt": {
         "action": "find",
         "opened": true,
+        "hides": [
+          "#t-six-month .ladder",
+          ".sec[aria-label=\"Themes by state\"]"
+        ],
         "found": "SLS"
       },
       "h_scroll": {
@@ -2663,12 +3061,332 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个月急涨 186 只 近三个月上涨 35% 或以上。 其中 154 只在老化 远高于自身均线 313 "
+      "visible_has_zerohit": false,
+      "visible_text_head": "NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个月急涨 186 只 近三个月上涨 35% 或以上。 其中 154 只在老化 远高于自身均线 313 ",
+      "reused_image": ""
+    },
+    {
+      "id": "find-zerohit-dark-en-1440",
+      "subject": "find-zerohit",
+      "shape": "production",
+      "pin": "",
+      "html": "prod",
+      "viewport": "desktop",
+      "locale": "en",
+      "theme": "dark",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "action": "find-miss",
+      "hides": [
+        "#t-six-month .ladder",
+        ".sec[aria-label=\"Themes by state\"]"
+      ],
+      "settle": "raf2+fonts.ready",
+      "captured": true,
+      "file": "35deeb6a8d976d5b.png",
+      "alias": "find-zerohit-dark-en-1440.png",
+      "sha256": "35deeb6a8d976d5bc6feed89bbd616a31c1fd27c77b2b08abbf7beaac5c7c266",
+      "bytes": 26967,
+      "width": 472,
+      "height": 170,
+      "applied_theme": "dark",
+      "applied_locale": "en",
+      "body_class": "",
+      "overlay": [],
+      "overlay_clean": true,
+      "action_receipt": {
+        "action": "find-miss",
+        "opened": true,
+        "hides": [
+          "#t-six-month .ladder",
+          ".sec[aria-label=\"Themes by state\"]"
+        ],
+        "found": "ZZZQ",
+        "null_visible": true,
+        "see_all_present": true
+      },
+      "h_scroll": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflow": false
+      },
+      "visible_has_nearly_all": false,
+      "visible_has_8in10": false,
+      "visible_has_suppressed": false,
+      "visible_has_across": false,
+      "visible_has_zerohit": true,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": ""
+    },
+    {
+      "id": "find-zerohit-light-en-1440",
+      "subject": "find-zerohit",
+      "shape": "production",
+      "pin": "",
+      "html": "prod",
+      "viewport": "desktop",
+      "locale": "en",
+      "theme": "light",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "action": "find-miss",
+      "hides": [
+        "#t-six-month .ladder",
+        ".sec[aria-label=\"Themes by state\"]"
+      ],
+      "settle": "raf2+fonts.ready",
+      "captured": true,
+      "file": "b0f7322a7adf3ead.png",
+      "alias": "find-zerohit-light-en-1440.png",
+      "sha256": "b0f7322a7adf3ead30563532a4689f75aefde3a8cf88c83090262713cfd2395b",
+      "bytes": 20370,
+      "width": 472,
+      "height": 170,
+      "applied_theme": "light",
+      "applied_locale": "en",
+      "body_class": "",
+      "overlay": [],
+      "overlay_clean": true,
+      "action_receipt": {
+        "action": "find-miss",
+        "opened": true,
+        "hides": [
+          "#t-six-month .ladder",
+          ".sec[aria-label=\"Themes by state\"]"
+        ],
+        "found": "ZZZQ",
+        "null_visible": true,
+        "see_all_present": true
+      },
+      "h_scroll": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflow": false
+      },
+      "visible_has_nearly_all": false,
+      "visible_has_8in10": false,
+      "visible_has_suppressed": false,
+      "visible_has_across": false,
+      "visible_has_zerohit": true,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": ""
+    },
+    {
+      "id": "find-zerohit-dark-zh-1440",
+      "subject": "find-zerohit",
+      "shape": "production",
+      "pin": "",
+      "html": "prod",
+      "viewport": "desktop",
+      "locale": "zh",
+      "theme": "dark",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "action": "find-miss",
+      "hides": [
+        "#t-six-month .ladder",
+        ".sec[aria-label=\"Themes by state\"]"
+      ],
+      "settle": "raf2+fonts.ready",
+      "captured": true,
+      "file": "bbbebd2615987c85.png",
+      "alias": "find-zerohit-dark-zh-1440.png",
+      "sha256": "bbbebd2615987c85ed229d3eb8e030182a9ea456fe62ef163f72991d0649dc10",
+      "bytes": 29166,
+      "width": 472,
+      "height": 170,
+      "applied_theme": "dark",
+      "applied_locale": "zh",
+      "body_class": "",
+      "overlay": [],
+      "overlay_clean": true,
+      "action_receipt": {
+        "action": "find-miss",
+        "opened": true,
+        "hides": [
+          "#t-six-month .ladder",
+          ".sec[aria-label=\"Themes by state\"]"
+        ],
+        "found": "ZZZQ",
+        "null_visible": true,
+        "see_all_present": true
+      },
+      "h_scroll": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflow": false
+      },
+      "visible_has_nearly_all": false,
+      "visible_has_8in10": false,
+      "visible_has_suppressed": false,
+      "visible_has_across": false,
+      "visible_has_zerohit": true,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": ""
+    },
+    {
+      "id": "find-zerohit-light-zh-1440",
+      "subject": "find-zerohit",
+      "shape": "production",
+      "pin": "",
+      "html": "prod",
+      "viewport": "desktop",
+      "locale": "zh",
+      "theme": "light",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "action": "find-miss",
+      "hides": [
+        "#t-six-month .ladder",
+        ".sec[aria-label=\"Themes by state\"]"
+      ],
+      "settle": "raf2+fonts.ready",
+      "captured": true,
+      "file": "5af58983a61f8454.png",
+      "alias": "find-zerohit-light-zh-1440.png",
+      "sha256": "5af58983a61f84544760879a2cb6018c6314eec48c149220ff46d4e699ada7e4",
+      "bytes": 22907,
+      "width": 472,
+      "height": 170,
+      "applied_theme": "light",
+      "applied_locale": "zh",
+      "body_class": "",
+      "overlay": [],
+      "overlay_clean": true,
+      "action_receipt": {
+        "action": "find-miss",
+        "opened": true,
+        "hides": [
+          "#t-six-month .ladder",
+          ".sec[aria-label=\"Themes by state\"]"
+        ],
+        "found": "ZZZQ",
+        "null_visible": true,
+        "see_all_present": true
+      },
+      "h_scroll": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflow": false
+      },
+      "visible_has_nearly_all": false,
+      "visible_has_8in10": false,
+      "visible_has_suppressed": false,
+      "visible_has_across": false,
+      "visible_has_zerohit": true,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": ""
+    },
+    {
+      "id": "find-zerohit-dark-en-390",
+      "subject": "find-zerohit",
+      "shape": "production",
+      "pin": "",
+      "html": "prod",
+      "viewport": "mobile",
+      "locale": "en",
+      "theme": "dark",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "action": "find-miss",
+      "hides": [
+        "#t-six-month .ladder",
+        ".sec[aria-label=\"Themes by state\"]"
+      ],
+      "settle": "raf2+fonts.ready",
+      "captured": true,
+      "file": "5e857941f0d780bf.png",
+      "alias": "find-zerohit-dark-en-390.png",
+      "sha256": "5e857941f0d780bf0dad8c7ad3b9813cf15fd480218f360aced69b578d56ad47",
+      "bytes": 39331,
+      "width": 386,
+      "height": 170,
+      "applied_theme": "dark",
+      "applied_locale": "en",
+      "body_class": "",
+      "overlay": [],
+      "overlay_clean": true,
+      "action_receipt": {
+        "action": "find-miss",
+        "opened": true,
+        "hides": [
+          "#t-six-month .ladder",
+          ".sec[aria-label=\"Themes by state\"]"
+        ],
+        "found": "ZZZQ",
+        "null_visible": true,
+        "see_all_present": true
+      },
+      "h_scroll": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "overflow": false
+      },
+      "visible_has_nearly_all": false,
+      "visible_has_8in10": false,
+      "visible_has_suppressed": false,
+      "visible_has_across": false,
+      "visible_has_zerohit": true,
+      "visible_text_head": "NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08 Re-read every night Three kinds of winner, each read against its own history. A name can be in mor",
+      "reused_image": ""
+    },
+    {
+      "id": "find-placeholder-dark-zh-1440",
+      "subject": "find-placeholder",
+      "shape": "production",
+      "pin": "",
+      "html": "prod",
+      "viewport": "desktop",
+      "locale": "zh",
+      "theme": "dark",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "action": "find-placeholder",
+      "hides": [
+        "#t-six-month .ladder",
+        ".sec[aria-label=\"Themes by state\"]"
+      ],
+      "settle": "raf2+fonts.ready",
+      "captured": true,
+      "file": "fba7a8e430bd080d.png",
+      "alias": "find-placeholder-dark-zh-1440.png",
+      "sha256": "fba7a8e430bd080d56c0f234b8a48367333ce7a7c4cebd57815c951df2fd537a",
+      "bytes": 15801,
+      "width": 472,
+      "height": 87,
+      "applied_theme": "dark",
+      "applied_locale": "zh",
+      "body_class": "",
+      "overlay": [],
+      "overlay_clean": true,
+      "action_receipt": {
+        "action": "find-placeholder",
+        "opened": true,
+        "hides": [
+          "#t-six-month .ladder",
+          ".sec[aria-label=\"Themes by state\"]"
+        ],
+        "placeholder": "代码或名称",
+        "aria_label": "查找代码"
+      },
+      "h_scroll": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "overflow": false
+      },
+      "visible_has_nearly_all": false,
+      "visible_has_8in10": false,
+      "visible_has_suppressed": false,
+      "visible_has_across": false,
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": ""
     },
     {
       "id": "m1-degrade-dark-en-1440",
       "subject": "m1-degrade",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "en",
@@ -2676,11 +3394,13 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": null,
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
-      "file": "44b244a443d2fadc.png",
+      "file": "41fc46193900f1be.png",
       "alias": "m1-degrade-dark-en-1440.png",
-      "sha256": "44b244a443d2fadc2ccf0734d94df4d6aaf6e1f43579fc712d7a7c2660b32c00",
-      "bytes": 37462,
+      "sha256": "41fc46193900f1bee98102af62153039d3a3ba1d1dce688a7b3026bdd861dc89",
+      "bytes": 39555,
       "width": 1232,
       "height": 257,
       "applied_theme": "dark",
@@ -2701,12 +3421,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": ""
     },
     {
       "id": "m1-degrade-light-en-1440",
       "subject": "m1-degrade",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "en",
@@ -2714,11 +3437,13 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": null,
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
-      "file": "eb5a37b0f8146a5d.png",
+      "file": "0469eb0aef611477.png",
       "alias": "m1-degrade-light-en-1440.png",
-      "sha256": "eb5a37b0f8146a5ddf7679b245ad62357ee9b49428b9e0e0894c7a1b8dfd5cf0",
-      "bytes": 37609,
+      "sha256": "0469eb0aef61147781b9ea5d8fe26725aeb9466457219f033315b446e3f60d71",
+      "bytes": 39719,
       "width": 1232,
       "height": 257,
       "applied_theme": "light",
@@ -2739,12 +3464,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX United States ▾ China ▾ Hong Kong ▾ Canada ▾ International ▾ Other Assets ▾ Research ▾ NVDA Terminal Winner Health Has your winner changed character? US names near their highs, grouped by how the move is aging. Priced 2026-09-08",
+      "reused_image": ""
     },
     {
       "id": "m1-degrade-dark-zh-1440",
       "subject": "m1-degrade",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "zh",
@@ -2752,11 +3480,13 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": null,
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
-      "file": "d0d69d4bf3bf2277.png",
+      "file": "752aad6494e84988.png",
       "alias": "m1-degrade-dark-zh-1440.png",
-      "sha256": "d0d69d4bf3bf227706ed45e32e3f3ff50f4f815d729caa8b52b61404a4c59a05",
-      "bytes": 41776,
+      "sha256": "752aad6494e849888365bfde9e49a756e28d767dc1b24482f2d015beffad13ff",
+      "bytes": 42720,
       "width": 1232,
       "height": 257,
       "applied_theme": "dark",
@@ -2777,12 +3507,15 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": ""
     },
     {
       "id": "m1-degrade-light-zh-1440",
       "subject": "m1-degrade",
       "shape": "production",
+      "pin": "",
       "html": "prod",
       "viewport": "desktop",
       "locale": "zh",
@@ -2790,11 +3523,13 @@
       "viewport_width": 1440,
       "viewport_height": 900,
       "action": null,
+      "hides": [],
+      "settle": "raf2+fonts.ready",
       "captured": true,
-      "file": "15c1d576ddcf6dab.png",
+      "file": "ed6949f73f593ee9.png",
       "alias": "m1-degrade-light-zh-1440.png",
-      "sha256": "15c1d576ddcf6dab0b6a782e54583491d45637cefabdfe1ec6d3597b85ed7568",
-      "bytes": 42158,
+      "sha256": "ed6949f73f593ee9173c24886bb24a97a62838e1b402baac45a846c63d1a9752",
+      "bytes": 43069,
       "width": 1232,
       "height": 257,
       "applied_theme": "light",
@@ -2815,10 +3550,12 @@
       "visible_has_8in10": false,
       "visible_has_suppressed": false,
       "visible_has_across": false,
-      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个"
+      "visible_has_zerohit": false,
+      "visible_text_head": "MASTERMINDX 美国 ▾ 中国 ▾ 香港 ▾ 加拿大 ▾ 国际 ▾ 其他资产 ▾ 研究 ▾ NVDA 终端 持仓健康度 你的赢家，性质变了吗？ 处于高位附近的美股，按行情老化的程度分组。 价格截至 2026-09-08 每晚重新判读 三类赢家，各自对照自身历史来判读。 同一只个股可能同时属于多类，因此这些数字不能相加。 这里的每一只个股，收盘价都在过去一年最高收盘价的 10% 以内。 ? 半年大涨 209 只 半年内上涨 50% 或以上。 其中 169 只在老化 三个",
+      "reused_image": ""
     }
   ],
   "honesty": {
-    "page": "templates/winner_health.html.j2 rendered through scripts.build_winner_health_page.render against scratch JSON. write_page is not used (it would touch site/data_base.js). Live body has no page-* class; the fixture matches that. Overlays .mx5-aurora/.sky-fx/#mmb-root/#mmb-boot are removed. Find crops hide #t-six-month .ladder and the theme panel so the input and the matched row share a frame. Inter webfonts are not copied; system UI fonts render."
+    "page": "templates/winner_health.html.j2 rendered through scripts.build_winner_health_page.render against scratch JSON. write_page is not used (it would touch site/data_base.js). Live body has no page-* class; the fixture matches that. Overlays .mx5-aurora/.sky-fx/#mmb-root/#mmb-boot/.ift-aurora are removed. Find crops hide #t-six-month .ladder and the theme panel so the input and the matched/null row share a frame (per-cell hides). Inter webfonts are not copied; system UI fonts render. Members-present cells carry fixture-only copy (packet 9-row table) and are not tonight's shippable state."
   }
 }
