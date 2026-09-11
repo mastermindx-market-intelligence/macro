@@ -49,9 +49,11 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import shutil
 import sys
 import time
+from datetime import date
 from pathlib import Path
 
 import numpy as np
@@ -60,9 +62,15 @@ from jinja2 import Environment, FileSystemLoader
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from engine.hazard_score import _UP_PHASES  # noqa: E402
 from lib import config  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 from scripts._cycle_seed import load_seed  # noqa: E402
+
+# Peak/Downturn are the known down-leg phases. Anything else (missing, typo,
+# a future label) is not a direction the model was told to watch.
+_DOWN_PHASES = frozenset({"Peak", "Downturn"})
+_STRICT_ISO_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 log = logging.getLogger("build_cycle")
 
@@ -124,14 +132,18 @@ def _measured_record(cid: str, band: dict) -> dict | None:
         price_pts = [p for p in price_pts if (p.get("x") or 0) >= x0]
         osc_pts = [p for p in osc_pts if (p.get("x") or 0) >= x0]
     # W4.3: score the hazard (P(turn ≤ 1m/3m/6m)) — additive, never fatal.
+    # Unknown/missing phase must not invent a trough/peak watch (W8 r2).
     hz = None
     hf = now.get("hazard_features")
     if hf:
         try:
-            from engine.hazard_score import score as _hz_score, _UP_PHASES
-            direction = "up" if (now.get("phase") or "") in _UP_PHASES else "down"
-            hz = _hz_score(hf, direction, family="flagship")
-            hz = _attach_hazard_agreement(hz, direction, rec.get("proj"))
+            from engine.hazard_score import score as _hz_score
+            direction = _hazard_direction_for_phase(now.get("phase"))
+            if direction:
+                hz = _hz_score(hf, direction, family="flagship")
+                hz = _attach_hazard_agreement(hz, direction, rec.get("proj"))
+            else:
+                hz = _attach_hazard_agreement({}, "", rec.get("proj"))
         except Exception as _hz_exc:  # noqa: BLE001
             log.debug("build_cycle: hazard score failed for %s: %s", cid, _hz_exc)
 
@@ -258,15 +270,44 @@ def _opinion(seed_c: dict, meta: dict) -> dict:
     }
 
 
+def _hazard_direction_for_phase(phase: object) -> str:
+    """Map a known cycle phase to the hazard model's open-leg direction.
+
+    Unknown or missing phases return '' so the producer cannot stamp a turn
+    the model was never told to watch.
+    """
+    p = phase or ""
+    if p in _UP_PHASES:
+        return "up"
+    if p in _DOWN_PHASES:
+        return "down"
+    return ""
+
+
 def _attach_hazard_agreement(hz: dict | None, direction: str, proj: dict | None) -> dict | None:
     """Stamp turn_kind + direction_agrees on a scored hazard block.
 
     turn_kind follows the hazard model's open-leg direction (peak if up else trough).
     direction_agrees is true only when that kind matches the engine projection's
     nextTurn — the consumer suppresses the hazard headline when they disagree.
+
+    An unknown/empty direction is fail-closed: worded-unavailable, no turn_kind
+    claim, direction_agrees None. The model may not claim a turn it was not
+    told to watch.
     """
-    if not hz:
+    if hz is None:
         return hz
+    if direction not in ("up", "down"):
+        out: dict = {
+            "unavailable": True,
+            "unavailable_reason": "unknown_phase",
+            "direction_agrees": None,
+        }
+        if hz.get("epoch") is not None:
+            out["epoch"] = hz["epoch"]
+        if "revision_optimistic" in hz:
+            out["revision_optimistic"] = hz["revision_optimistic"]
+        return out
     turn_kind = hz.get("turn_kind") or ("peak" if direction == "up" else "trough")
     next_turn = (proj or {}).get("nextTurn")
     hz["turn_kind"] = turn_kind
@@ -274,16 +315,43 @@ def _attach_hazard_agreement(hz: dict | None, direction: str, proj: dict | None)
     return hz
 
 
+def _parse_iso_date(value: object, *, label: str) -> date:
+    """Parse a strict YYYY-MM-DD date or raise. Bake-time fail-closed."""
+    text = "" if value is None else str(value)
+    if not _STRICT_ISO_DATE.fullmatch(text):
+        raise ValueError(f"{label} is not strict YYYY-MM-DD: {value!r}")
+    try:
+        return date.fromisoformat(text)
+    except ValueError as exc:
+        raise ValueError(f"{label} is not strict YYYY-MM-DD: {value!r}") from exc
+
+
+def _assert_strict_iso_date(value: object, label: str) -> str:
+    """Bake-time assertion: AS_OF / series_last must be strict ISO dates."""
+    if value is None or str(value).strip() == "":
+        raise ValueError(f"{label} missing — must be strict YYYY-MM-DD")
+    return _parse_iso_date(value, label=label).isoformat()
+
+
 def _notes_and_tape_as_of(meta: dict, engine: dict) -> tuple[str | None, str | None]:
-    """Split the page as-of: analyst-note date vs the live tape's newest bar."""
+    """Split the page as-of: analyst-note date vs the live tape's newest bar.
+
+    FRAME bands are excluded: `_frame_record` does not emit a measured
+    `series_last`, and a curated/forecast date must never stamp #cyc-asof.
+    `series_last` values are parsed as dates (not lexicographic strings).
+    """
     notes = meta.get("asOf")
-    lasts = [
-        str(b.get("series_last"))
-        for c in engine.values()
-        for b in (c.get("bands") or [])
-        if b.get("series_last")
-    ]
-    tape = max(lasts) if lasts else None
+    dated: list[tuple[date, str]] = []
+    for c in engine.values():
+        for b in (c.get("bands") or []):
+            if (b.get("tier") or "").lower() == "frame":
+                continue
+            sl = b.get("series_last")
+            if not sl:
+                continue
+            parsed = _parse_iso_date(sl, label="series_last")
+            dated.append((parsed, parsed.isoformat()))
+    tape = max(dated, key=lambda row: row[0])[1] if dated else None
     return notes, tape
 
 
@@ -431,6 +499,9 @@ def compute(root: Path) -> dict:
     regime_disagreement = _regime_disagreement(meta, by_id)
 
     notes_as_of, tape_as_of = _notes_and_tape_as_of(meta, engine)
+    # Banner daysSinceAsOf coerces an unparseable AS_OF to 0 (reads fresh).
+    # Make that case unreachable at bake time rather than changing the banner.
+    notes_as_of = _assert_strict_iso_date(notes_as_of, "asOf")
     payload = {
         "version": 1,
         "wave": "W4.5",

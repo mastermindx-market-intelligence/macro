@@ -1,9 +1,10 @@
-"""Cycle Intelligence W8 round-1 P0 truth blockers.
+"""Cycle Intelligence W8 P0 truth blockers (r1 + r2).
 
 B1  hazard.turn_kind vs proj.nextTurn; suppress headline on disagreement
 B2  monotone CDF (or unavailable) over every emitted hazard cell set
 B3  notes_as_of vs tape_as_of
 A6  day-precision staleness arithmetic (14 / 19 / 29 day cases)
+r2  unavailable why, fail-closed unknown phase, evidence-grade lead cell
 
 site/cycle_app.js, site/cycle.css, site/cycle_i18n.js are site-canonical sources
 (no templates/ twins — see tests/test_cycle_forward_framing.py). cycle.html is
@@ -69,31 +70,53 @@ def _turn_kind_from_hz(hz: dict) -> str | None:
 
 
 def _lead_cell(hz: dict) -> str | None:
-    """Python twin of cycle_app.js hazardLeadCell (consumer contract)."""
+    """Python twin of cycle_app.js hazardLeadCell (consumer contract).
+
+    Seat ruling (W8 r2): lead with the shortest MODEL/PASS horizon; if no
+    PASS cell exists, the shortest horizon of the best grade present.
+    Evidence grade, not probability magnitude.
+    """
     if hz.get("unavailable"):
         return None
-    cells = [(h, hz[h]) for h in ("1m", "3m", "6m") if hz.get(h) and hz[h].get("p") is not None]
+    keys = ("1m", "3m", "6m")
+    cells = [h for h in keys if hz.get(h) and hz[h].get("p") is not None]
     if not cells:
         return None
-    vals = [c["p"] for _, c in cells]
+    vals = [hz[h]["p"] for h in cells]
     if any(vals[i] + 1e-12 < vals[i - 1] for i in range(1, len(vals))):
         return None
     pass_keys = [
-        h for h, c in cells
-        if c.get("cell_verdict") == "PASS" or c.get("source") == "MODEL"
+        h for h in cells
+        if hz[h].get("cell_verdict") == "PASS" or hz[h].get("source") == "MODEL"
     ]
-    pool = pass_keys or [h for h, _ in cells]
-    if pass_keys and any(k != "6m" for k in pass_keys):
-        pool = [k for k in pass_keys if k != "6m"]
-    order = ["1m", "3m", "6m"]
-    best = pool[0]
-    for k in pool:
-        pk, pb = hz[k]["p"], hz[best]["p"]
-        if pk > pb + 1e-12:
-            best = k
-        elif abs(pk - pb) <= 1e-12 and order.index(k) < order.index(best):
-            best = k
-    return best
+    return (pass_keys or cells)[0]
+
+
+def _extract_js_function(js: str, name: str) -> str:
+    token = f"function {name}("
+    start = js.find(token)
+    assert start != -1, f"{name} missing from cycle_app.js"
+    i = js.find("{", start)
+    depth = 0
+    for j, ch in enumerate(js[i:], i):
+        if ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                return js[start:j + 1]
+    raise AssertionError(f"unbalanced {name}")
+
+
+UNAVAIL_CDF_EN = (
+    "Unavailable today — the model's short- and long-window reads disagreed, "
+    "so no clean probability can be shown. The projection below still stands."
+)
+UNAVAIL_CDF_ZH = (
+    "今日暂不可用——模型的短窗与长窗读数不一致，无法给出可靠概率。下方的推算仍然有效。"
+)
+UNAVAIL_DEFAULT_EN = "Unavailable today — a required input didn't settle cleanly."
+UNAVAIL_DEFAULT_ZH = "今日暂不可用——所需输入未能完整结算。"
 
 
 # ── B1 ───────────────────────────────────────────────────────────────────────
@@ -125,6 +148,42 @@ def test_attach_hazard_agreement_stamps_turn_kind_and_agrees():
     assert out2["direction_agrees"] is True
 
 
+def test_attach_hazard_agreement_unknown_direction_is_unavailable_no_claim():
+    """Reviewer probe: empty direction must not stamp a confident trough."""
+    out = build_cycle._attach_hazard_agreement({"epoch": "E"}, "", None)
+    assert out["unavailable"] is True
+    assert out["unavailable_reason"] == "unknown_phase"
+    assert out["unavailable_reason"] != "non_monotone_cdf"
+    assert "turn_kind" not in out
+    assert "direction" not in out
+    assert out.get("direction_agrees") is None
+    assert "1m" not in out and "3m" not in out and "6m" not in out
+    assert out["epoch"] == "E"
+    # same with a trough projection — still no claim
+    out_proj = build_cycle._attach_hazard_agreement(
+        {"epoch": "E"}, "", {"nextTurn": "trough"}
+    )
+    assert out_proj["unavailable"] is True
+    assert "turn_kind" not in out_proj
+    assert out_proj.get("direction_agrees") is None
+    # live call site passes {} — must not treat an empty stub as "no hazard"
+    out_empty = build_cycle._attach_hazard_agreement({}, "", None)
+    assert out_empty["unavailable"] is True
+    assert "turn_kind" not in out_empty
+    assert out_empty.get("direction_agrees") is None
+
+
+def test_hazard_direction_for_phase_known_and_unknown():
+    assert build_cycle._hazard_direction_for_phase("Trough") == "up"
+    assert build_cycle._hazard_direction_for_phase("Recovery") == "up"
+    assert build_cycle._hazard_direction_for_phase("Expansion") == "up"
+    assert build_cycle._hazard_direction_for_phase("Peak") == "down"
+    assert build_cycle._hazard_direction_for_phase("Downturn") == "down"
+    assert build_cycle._hazard_direction_for_phase("") == ""
+    assert build_cycle._hazard_direction_for_phase(None) == ""
+    assert build_cycle._hazard_direction_for_phase("mystery") == ""
+
+
 def test_every_emitted_card_turn_kind_agrees_or_headline_suppressed():
     engine = _load_engine()
     rows = []
@@ -136,6 +195,11 @@ def test_every_emitted_card_turn_kind_agrees_or_headline_suppressed():
             agrees = bool(hz["direction_agrees"])
         lead = _lead_cell(hz) if agrees else None
         rows.append((cid, tk, pj.get("nextTurn"), agrees, lead))
+        if hz.get("unavailable") and not hz.get("turn_kind") and not hz.get("direction"):
+            assert tk is None
+            assert lead is None
+            assert hz.get("direction_agrees") is None
+            continue
         assert tk in ("peak", "trough")
         if agrees:
             assert lead is not None or hz.get("unavailable") or not _hazard_cdf_is_monotone(
@@ -218,29 +282,45 @@ def test_monotonicity_sweep_every_emitted_hazard_cell_set(capsys):
     assert n >= 19
 
 
-def test_consumer_never_leads_with_6m_when_shorter_pass_exists_source_pin():
+def test_consumer_leads_shortest_pass_source_pin():
     js = _read_app()
     assert "function hazardLeadCell(" in js
-    assert 'k !== "6m"' in js
+    fn = _extract_js_function(js, "hazardLeadCell")
+    assert 'var keys = ["1m", "3m", "6m"]' in fn
+    assert "pass.length ? pass : cells" in fn
+    assert "hz[k].p >" not in fn  # not argmax p
     assert "within 1 month" in js
     assert "within 3 months" in js
     assert "within 6 months" in js
     assert "一个月内" in js
 
 
-def test_lead_cell_picks_highest_confidence_shorter_pass():
+def test_lead_cell_shortest_pass_then_shortest_best_grade():
+    """Seat ruling: PASS at 1m+3m leads 1m; all-PRIOR leads shortest PRIOR."""
     hz = {
         "1m": {"p": 0.12, "source": "MODEL", "cell_verdict": "PASS"},
         "3m": {"p": 0.40, "source": "MODEL", "cell_verdict": "PASS"},
         "6m": {"p": 0.70, "source": "MODEL", "cell_verdict": "PASS"},
     }
-    assert _lead_cell(hz) == "3m"
+    assert _lead_cell(hz) == "1m"
+    hz_pass_1m_3m = {
+        "1m": {"p": 0.12, "source": "MODEL", "cell_verdict": "PASS"},
+        "3m": {"p": 0.40, "source": "MODEL", "cell_verdict": "PASS"},
+        "6m": {"p": 0.70, "source": "PRIOR", "cell_verdict": "PRIOR"},
+    }
+    assert _lead_cell(hz_pass_1m_3m) == "1m"
     hz2 = {
         "1m": {"p": 0.05, "source": "PRIOR", "cell_verdict": "PRIOR"},
         "3m": {"p": 0.08, "source": "PRIOR", "cell_verdict": "PRIOR"},
         "6m": {"p": 0.70, "source": "MODEL", "cell_verdict": "PASS"},
     }
-    assert _lead_cell(hz2) == "6m"
+    assert _lead_cell(hz2) == "6m"  # only PASS cell
+    hz_prior = {
+        "1m": {"p": 0.05, "source": "PRIOR", "cell_verdict": "PRIOR"},
+        "3m": {"p": 0.20, "source": "PRIOR", "cell_verdict": "PRIOR"},
+        "6m": {"p": 0.70, "source": "PRIOR", "cell_verdict": "PRIOR"},
+    }
+    assert _lead_cell(hz_prior) == "1m"  # shortest PRIOR, not 6m
 
 
 # ── B3 ───────────────────────────────────────────────────────────────────────
@@ -249,8 +329,8 @@ def test_notes_and_tape_as_of_helper():
     notes, tape = build_cycle._notes_and_tape_as_of(
         {"asOf": "2026-06-25"},
         {
-            "vol": {"bands": [{"series_last": "2026-09-08"}]},
-            "business": {"bands": [{"series_last": "2026-07-01"}, {}]},
+            "vol": {"bands": [{"tier": "measured", "series_last": "2026-09-08"}]},
+            "business": {"bands": [{"tier": "measured", "series_last": "2026-07-01"}, {}]},
         },
     )
     assert notes == "2026-06-25"
@@ -388,3 +468,145 @@ def test_python_calendar_days_match_the_packet_cases():
     assert (now - date(2026, 8, 28)).days == 13  # still silent
     # the yf() month-midpoint bug: 29 days inside one month
     assert (date(2026, 9, 30) - date(2026, 9, 1)).days == 29
+
+
+# ── r2 unavailable why + stutter ─────────────────────────────────────────────
+
+def test_yf_is_month_granularity_again():
+    js = _read_app()
+    fn = _extract_js_function(js, "yf")
+    assert "p.length >= 3" not in fn
+    assert "new Date(y, m - 1, d)" not in fn
+
+
+def test_unavailable_why_copy_both_reasons_both_lanes_no_stutter(tmp_path):
+    js = _read_app()
+    assert UNAVAIL_CDF_EN in js
+    assert UNAVAIL_CDF_ZH in js
+    assert UNAVAIL_DEFAULT_EN in js
+    assert UNAVAIL_DEFAULT_ZH in js
+    assert "Turn hazard unavailable" not in js
+    assert "转折风险暂不可用" not in js
+    assert "non_monotone_cdf" not in _extract_js_function(js, "hazardLine")
+
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("node not on PATH — source-pin still asserts frozen copy")
+    harness = tmp_path / "unavail.js"
+    harness.write_text(
+        _extract_js_function(js, "esc") + "\n"
+        + _extract_js_function(js, "hazardUnavailableWhy") + "\n"
+        + _extract_js_function(js, "hazardCdfMonotone") + "\n"
+        + _extract_js_function(js, "hazardLine") + "\n"
+        + r"""
+const cdfEn = "Unavailable today — the model's short- and long-window reads disagreed, so no clean probability can be shown. The projection below still stands.";
+const cdfZh = "今日暂不可用——模型的短窗与长窗读数不一致，无法给出可靠概率。下方的推算仍然有效。";
+const defEn = "Unavailable today — a required input didn't settle cleanly.";
+const defZh = "今日暂不可用——所需输入未能完整结算。";
+function check(html, en, zh, label) {
+  if (html.indexOf('class="l-en">Turn hazard<') < 0) throw new Error(label + " missing EN label");
+  if (html.indexOf('class="l-zh">转折风险<') < 0) throw new Error(label + " missing ZH label");
+  if (html.indexOf(en) < 0) throw new Error(label + " missing EN why");
+  if (html.indexOf(zh) < 0) throw new Error(label + " missing ZH why");
+  if (/Turn hazard unavailable/.test(html)) throw new Error(label + " EN stutter");
+  if (/转折风险暂不可用/.test(html)) throw new Error(label + " ZH stutter");
+  if (html.indexOf("non_monotone_cdf") >= 0) throw new Error(label + " leaked enum");
+  if (html.indexOf("unknown_phase") >= 0) throw new Error(label + " leaked enum");
+  const bodyEn = html.match(/<span class="l-en">([^<]*)<\/span>/g) || [];
+  const enBodies = bodyEn.map(s => s.replace(/<[^>]+>/g, ""));
+  if (!enBodies.some(s => s.indexOf("Unavailable today") === 0)) {
+    throw new Error(label + " EN body does not start at Unavailable today: " + enBodies.join(" | "));
+  }
+}
+const cdf = hazardLine({now:{hazard:{unavailable:true, unavailable_reason:"non_monotone_cdf"}}});
+const other = hazardLine({now:{hazard:{unavailable:true, unavailable_reason:"unknown_phase"}}});
+const missing = hazardLine({now:{hazard:{unavailable:true}}});
+check(cdf, cdfEn, cdfZh, "cdf");
+check(other, defEn, defZh, "other");
+check(missing, defEn, defZh, "missing");
+console.log("OK unavailable why both reasons both lanes");
+""",
+        encoding="utf-8",
+    )
+    proc = subprocess.run([node, str(harness)], capture_output=True, text=True)
+    print(proc.stdout)
+    print(proc.stderr)
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+
+
+def test_unknown_phase_consumer_null_branch_falls_to_projection(tmp_path):
+    js = _read_app()
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("node not on PATH")
+    harness = tmp_path / "null_branch.js"
+    harness.write_text(
+        'var MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];\n'
+        "function curLang(){ return 'en'; }\n"
+        "function L(en, zh){ return curLang() === 'zh' ? zh : en; }\n"
+        + _extract_js_function(js, "turnWord") + "\n"
+        + _extract_js_function(js, "fmtMon") + "\n"
+        + _extract_js_function(js, "hazardTurnKind") + "\n"
+        + _extract_js_function(js, "hazardDirectionAgrees") + "\n"
+        + _extract_js_function(js, "hazardCdfMonotone") + "\n"
+        + _extract_js_function(js, "hazardLeadCell") + "\n"
+        + _extract_js_function(js, "projFallbackInner") + "\n"
+        + _extract_js_function(js, "hazardLeadInner") + "\n"
+        + _extract_js_function(js, "cardNextInnerHTML") + "\n"
+        + r"""
+const hz = {epoch:"E", unavailable:true, unavailable_reason:"unknown_phase", direction_agrees:null};
+if (hazardTurnKind(hz) !== null) throw new Error("hazardTurnKind should be null, got " + hazardTurnKind(hz));
+if (hazardLeadCell(hz) !== null) throw new Error("hazardLeadCell should be null");
+const pj = {nextTurn:"peak", central:"2026-09", overdue:false};
+const html = cardNextInnerHTML({now:{hazard:hz}}, pj);
+if (html.indexOf("Peak ≈") < 0 && html.indexOf("peak") < 0) {
+  throw new Error("expected projection fallback, got " + html);
+}
+if (html.indexOf("P(") >= 0) throw new Error("null branch leaked a P() hazard claim: " + html);
+console.log("OK null branch fallback", html);
+""",
+        encoding="utf-8",
+    )
+    proc = subprocess.run([node, str(harness)], capture_output=True, text=True)
+    print(proc.stdout)
+    print(proc.stderr)
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+
+
+def test_frame_record_emits_no_series_last():
+    from engine import cycle_proxies as cp
+    seed = _cycle_seed.load_seed(SEED_JS)
+    band = cp.REGISTRY["housing"]["bands"][0]
+    assert band["tier"] == "frame"
+    rec = build_cycle._frame_record("housing", band, seed["by_id"]["housing"], today_x=2026.5)
+    assert "series_last" not in rec
+
+
+def test_tape_as_of_ignores_frame_and_uses_parsed_date_max():
+    notes, tape = build_cycle._notes_and_tape_as_of(
+        {"asOf": "2026-06-25"},
+        {
+            "housing": {"bands": [{"tier": "frame", "series_last": "2099-12-31"}]},
+            "vol": {"bands": [{"tier": "measured", "series_last": "2026-09-08"}]},
+            "business": {"bands": [{"tier": "measured", "series_last": "2026-09-10"}]},
+        },
+    )
+    assert notes == "2026-06-25"
+    assert tape == "2026-09-10"
+    with pytest.raises(ValueError, match="YYYY-MM-DD"):
+        build_cycle._notes_and_tape_as_of(
+            {"asOf": "2026-06-25"},
+            {"vol": {"bands": [{"tier": "measured", "series_last": "2026-9-8"}]}},
+        )
+
+
+def test_strict_iso_as_of_assertion_fail_closed():
+    assert build_cycle._assert_strict_iso_date("2026-06-25", "asOf") == "2026-06-25"
+    with pytest.raises(ValueError, match="YYYY-MM-DD"):
+        build_cycle._assert_strict_iso_date("June 2026", "asOf")
+    with pytest.raises(ValueError, match="YYYY-MM-DD"):
+        build_cycle._assert_strict_iso_date("2026-6-25", "asOf")
+    with pytest.raises(ValueError, match="missing"):
+        build_cycle._assert_strict_iso_date("", "asOf")
+    with pytest.raises(ValueError, match="missing"):
+        build_cycle._assert_strict_iso_date(None, "asOf")

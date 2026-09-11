@@ -30,7 +30,9 @@
     var best = "";
     Object.keys(CY).forEach(function (id) {
       ((CY[id] && CY[id].bands) || []).forEach(function (b) {
-        if (b && b.series_last && String(b.series_last) > best) best = String(b.series_last);
+        if (!b || !b.series_last || b.tier === "frame") return;
+        var s = String(b.series_last);
+        if (s > best) best = s;
       });
     });
     return best;
@@ -60,19 +62,7 @@
   function turnWord(nt, cap) { return nt === "peak" ? L(cap ? "Peak" : "peak", "见顶") : L(cap ? "Trough" : "trough", "筑底"); }
 
   /* ---- small helpers ----------------------------------------------------- */
-  function yf(t) {
-    if (t == null) return null;
-    var p = String(t).split("-");
-    var y = +p[0], m = +p[1] || 6;
-    if (p.length >= 3 && p[2] !== "") {
-      var d = +p[2];
-      if (isFinite(y) && isFinite(m) && isFinite(d)) {
-        var dt = new Date(y, m - 1, d), a = new Date(y, 0, 1), b = new Date(y + 1, 0, 1);
-        return y + (dt - a) / (b - a);
-      }
-    }
-    return y + ((m || 6) - 0.5) / 12;
-  }
+  function yf(t) { if (t == null) return null; var p = String(t).split("-"); return +p[0] + ((+p[1] || 6) - 0.5) / 12; }
   function daysSinceAsOf(asOf, now) {
     if (asOf == null || now == null) return null;
     var p = String(asOf).split("-");
@@ -830,14 +820,28 @@
      The hover (title attr) carries: cell verdict wording, epoch, BACKTEST-cohort
      note (ruling A6: backtest-validated OOS; live cohort accruing).
      Renders nothing if hazard data is absent (non-MEASURED or scorer unavailable). */
+  function hazardUnavailableWhy(reason) {
+    // enum → plain words. Never leak unavailable_reason into the DOM.
+    if (reason === "non_monotone_cdf") {
+      return {
+        en: "Unavailable today — the model's short- and long-window reads disagreed, so no clean probability can be shown. The projection below still stands.",
+        zh: "今日暂不可用——模型的短窗与长窗读数不一致，无法给出可靠概率。下方的推算仍然有效。"
+      };
+    }
+    return {
+      en: "Unavailable today — a required input didn't settle cleanly.",
+      zh: "今日暂不可用——所需输入未能完整结算。"
+    };
+  }
   function hazardLine(band) {
     var hz = band.now && band.now.hazard;
     if (!hz) return '';
     if (hz.unavailable || !hazardCdfMonotone(hz)) {
+      var why = hazardUnavailableWhy(hz.unavailable_reason);
       return '<div class="cyc-hazard">' +
         '<span class="hz-label"><span class="l-en">Turn hazard</span><span class="l-zh">转折风险</span></span>' +
-        '<span class="l-en">Turn hazard unavailable</span>' +
-        '<span class="l-zh">转折风险暂不可用</span>' +
+        '<span class="l-en">' + esc(why.en) + '</span>' +
+        '<span class="l-zh">' + esc(why.zh) + '</span>' +
         '</div>';
     }
     var epoch = hz.epoch || '';
@@ -883,10 +887,11 @@
       '</div>';
   }
 
-  /* ── honest-headline helpers (cycle-honest-headline-w0 / W8 r1) ──────────────
+  /* ── honest-headline helpers (cycle-honest-headline-w0 / W8 r2) ──────────────
      hazardHeadlineHTML : hazard-first headline for card face + focus panel.
        Labels from hazard.turn_kind (never proj.nextTurn). Leads with the
-       highest-confidence cell (never the 6m cell when a shorter PASS exists).
+       shortest MODEL/PASS horizon (evidence grade, not p magnitude); if no
+       PASS cell exists, the shortest horizon of the best grade present.
        Suppresses the hazard headline when direction_agrees is false.
      projRefHTML        : secondary reference line (overdue wording / half-cycle ref).
      provisionalTurnLine: shows the latest provisional turn if newer than last confirmed.
@@ -924,16 +929,9 @@
     var pass = cells.filter(function (k) {
       return hz[k].cell_verdict === "PASS" || hz[k].source === "MODEL";
     });
-    var pool = pass.length ? pass : cells;
-    if (pass.length && pass.some(function (k) { return k !== "6m"; })) {
-      pool = pass.filter(function (k) { return k !== "6m"; });
-    }
-    var best = pool[0];
-    pool.forEach(function (k) {
-      if (hz[k].p > hz[best].p + 1e-12) best = k;
-      else if (Math.abs(hz[k].p - hz[best].p) <= 1e-12 && keys.indexOf(k) < keys.indexOf(best)) best = k;
-    });
-    return best;
+    // Evidence grade, not probability magnitude: shortest PASS, else shortest
+    // of the best grade present (keys are already shortest-first).
+    return (pass.length ? pass : cells)[0];
   }
   var HORIZON_PLAIN = {
     "1m": { en: "within 1 month", zh: "一个月内" },
