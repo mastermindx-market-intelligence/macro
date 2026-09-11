@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.health.v1",
-  "produced_at": "2026-09-10T12:02:36.212298+00:00",
+  "produced_at": "2026-09-10T21:50:59.680146+00:00",
   "as_of": "2026-09-09",
   "overall_status": "warn",
   "lobes": [
@@ -3389,40 +3389,96 @@
   ],
   "cortex": {
     "cortex_source": "current_run",
-    "memo_as_of": "2026-09-10T12:02:32+00:00",
+    "memo_as_of": "2026-09-10T21:44:51+00:00",
     "run_status": {
-      "status": "degraded",
-      "degraded": true,
-      "degradation_reason": "model_unavailable",
-      "model_used": "claude-sonnet-4-6",
+      "status": "ok",
+      "degraded": false,
+      "degradation_reason": null,
+      "model_used": "claude-opus-4-8",
       "provider_attempts": [
         {
           "provider": "oauth",
           "model": "claude-opus-4-8",
           "attempted": true,
           "ok": false,
-          "error_type": "auth",
-          "error_message": "Error code: 403 - {'type': 'error', 'error': {'type': 'permission_error', 'message': 'OAuth authentication is currently not allowed for this organization.', 'details': {'error_code': 'oauth_not_allowed_for_organization'}}, 'request_id': 'req_011Ceuizir8tfxdNwhKmzYDs'}"
+          "error_type": "rate_limit",
+          "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CevVQRGG1n91LunmD8xb6'}"
         },
         {
           "provider": "oauth",
           "model": "claude-opus-4-8",
           "attempted": true,
           "ok": false,
-          "error_type": "auth",
-          "error_message": "Error code: 403 - {'type': 'error', 'error': {'type': 'permission_error', 'message': 'OAuth authentication is currently not allowed for this organization.', 'details': {'error_code': 'oauth_not_allowed_for_organization'}}, 'request_id': 'req_011CeuizmZrSni6tLn6iydFb'}"
+          "error_type": "rate_limit",
+          "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CevVRj2dKDHVZjrwGMVf8'}"
         },
         {
           "provider": "oauth",
-          "model": "claude-sonnet-4-6",
+          "model": "claude-opus-4-8",
           "attempted": true,
           "ok": false,
-          "error_type": "auth",
-          "error_message": "Error code: 403 - {'type': 'error', 'error': {'type': 'permission_error', 'message': 'OAuth authentication is currently not allowed for this organization.', 'details': {'error_code': 'oauth_not_allowed_for_organization'}}, 'request_id': 'req_011Ceuizo8cKp8xDhx7kKC1A'}"
+          "error_type": "rate_limit",
+          "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CevVWMKJA5fUy1wLCiPXL'}"
+        },
+        {
+          "provider": "oauth",
+          "model": "claude-opus-4-8",
+          "attempted": true,
+          "ok": false,
+          "error_type": "rate_limit",
+          "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CevVjqdVn2tdwsQhqjQhT'}"
+        },
+        {
+          "provider": "codex",
+          "model": "gpt-5.6-sol",
+          "attempted": true,
+          "ok": true,
+          "error_type": null,
+          "error_message": null
+        },
+        {
+          "provider": "codex",
+          "model": "gpt-5.6-sol",
+          "attempted": true,
+          "ok": true,
+          "error_type": null,
+          "error_message": null
+        },
+        {
+          "provider": "codex",
+          "model": "gpt-5.6-sol",
+          "attempted": true,
+          "ok": true,
+          "error_type": null,
+          "error_message": null
+        },
+        {
+          "provider": "codex",
+          "model": "gpt-5.6-sol",
+          "attempted": true,
+          "ok": true,
+          "error_type": null,
+          "error_message": null
+        },
+        {
+          "provider": "codex",
+          "model": "gpt-5.6-sol",
+          "attempted": true,
+          "ok": true,
+          "error_type": null,
+          "error_message": null
+        },
+        {
+          "provider": "codex",
+          "model": "gpt-5.6-sol",
+          "attempted": true,
+          "ok": true,
+          "error_type": null,
+          "error_message": null
         }
       ],
-      "tool_call_batches": 0,
-      "individual_tool_calls": 0,
+      "tool_call_batches": 5,
+      "individual_tool_calls": 9,
       "expected_min_tool_calls": 1,
       "context_stale": false,
       "context_as_of": "2026-09-10T10:07:50Z"
@@ -3432,7 +3488,7 @@
       "n": 8,
       "min_n": 30
     },
-    "status": "degraded"
+    "status": "fresh"
   },
   "workflow_conformance_misses": [
     {
@@ -3510,7 +3566,7 @@
     "degraded": 1,
     "not_locally_verifiable": 1,
     "unknown": 0,
-    "cortex_status": "degraded"
+    "cortex_status": "fresh"
   },
   "context_accrual": {
     "personality_forward_ledger": {

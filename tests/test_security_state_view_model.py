@@ -770,10 +770,13 @@ def test_identity_receipts_render_their_actual_fields() -> None:
     assert "_read_security_state_identity_rows" not in html
     assert "Master row found" in html
     assert "row_present" not in html
-    assert "true" in html
+    panel_text = _identity_checks_panel(html).get_text()
+    assert "yes" in panel_text
+    assert "true" not in panel_text
     assert "Security status" in html
     assert "security_state</dt>" not in html
-    assert "null" in html
+    assert "—" in panel_text
+    assert "null" not in panel_text
 
 
 def test_provenance_copy_is_two_register_and_bilingual() -> None:
@@ -1211,6 +1214,7 @@ def _iter_leg_house_copy_slots():
     """Walk every user-facing string in the identity-leg house tables."""
     from scripts.build_ticker_pages import (
         _SS_ARTIFACT, _SS_LEG_DESC, _SS_LEG_HOUSE_BY_DESC, _SS_READER,
+        _SS_READ_KEY_VALUE, _SS_READ_VALUE,
     )
     for key, entry in _SS_LEG_DESC.items():
         for slot, text in entry.items():
@@ -1230,6 +1234,12 @@ def _iter_leg_house_copy_slots():
                     f"_SS_LEG_HOUSE_BY_DESC[{key!r}][{field!r}][{slot!r}]",
                     str(text),
                 )
+    for key, entry in _SS_READ_VALUE.items():
+        for slot, text in entry.items():
+            yield f"_SS_READ_VALUE[{key!r}][{slot!r}]", str(text)
+    for key, entry in _SS_READ_KEY_VALUE.items():
+        for slot, text in entry.items():
+            yield f"_SS_READ_KEY_VALUE[{key!r}][{slot!r}]", str(text)
 
 
 def test_ss_gates_and_leg_desc_user_facing_copy_has_no_batch_machine_words() -> None:
@@ -1608,6 +1618,32 @@ def _identity_checks_panel(html: str) -> _HtmlNode:
     raise AssertionError("Identity checks panel not found")
 
 
+def _without_ss_id(node: _HtmlNode) -> _HtmlNode:
+    """Drop ``ss-id`` / ``c ss-id`` subtrees (receipt chips and identifiers).
+
+    `_HtmlNode` has no subtree-exclusion of its own. The receipt code chip is
+    the sanctioned home for a machine code; the ALL_CAPS_SNAKE and ZH Latin-run
+    rules apply to what remains after those spans are removed.
+    """
+    clone = _HtmlNode(node.tag, node.classes)
+    clone.text_parts = list(node.text_parts)
+    for child in node.children:
+        if "ss-id" in child.classes:
+            continue
+        clone.children.append(_without_ss_id(child))
+    return clone
+
+
+def _spaced_text(node: _HtmlNode) -> str:
+    """Visible text with a gap between child elements so labels do not glue to values."""
+    bits = [part for part in node.text_parts if part.strip()]
+    for child in node.children:
+        child_text = _spaced_text(child)
+        if child_text:
+            bits.append(child_text)
+    return " ".join(bits)
+
+
 def _visible_page_text(html: str) -> str:
     """Tag-stripped text with style/script dropped, for field-name leakage."""
     html = re.sub(r"<script\b[^>]*>.*?</script>", " ", html, flags=re.S | re.I)
@@ -1681,6 +1717,10 @@ def test_golden_msft_proven_path_zh_page_has_no_raw_engine_english() -> None:
         )
 
 
+_PANEL_CUSTOMER_TOKENS = frozenset({
+    "ISS", "SEC", "XNAS", "XNYS", "MSFT", "AAPL", "cik", "evt", "results",
+    "CIK", "ISIN", "CUSIP", "NYSE", "NASDAQ",
+})
 _IDENTITY_CHECKS_MACHINE_TOKENS = (
     ".parquet", "::", "scripts/", "engine/", "data/",
     "lib.dataos", "engine.neuralweb", "parse_listing_key",
@@ -1689,49 +1729,350 @@ _IDENTITY_CHECKS_MACHINE_TOKENS = (
     "security_master", "issuer_master", "issuer_migrations",
     "security_migrations",
 )
-_DOTTED_MODULE_RE = re.compile(r"[a-z_]+\.[a-z_]+\.[a-z_]+")
+_CAMEL_RE = re.compile(r"\b[A-Z][a-z]+[A-Z][A-Za-z]+\b")
+_DOTTED_MODULE_RE = re.compile(
+    r"[A-Za-z_]+\.[A-Za-z_]+\.[A-Za-z_]+|[A-Za-z_]+\.[a-z_]+\("
+)
+_CALL_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\(")
+_ALL_CAPS_SNAKE_RE = re.compile(r"\b[A-Z]{3,}(?:_[A-Z0-9]+)*\b")
+_BARE_LITERAL_RE = re.compile(r"\b(?:true|false|null|None)\b")
+_ZH_LATIN_RUN_RE = re.compile(r"[A-Za-z]{3,}")
+# h7 REQUIRED (5): `.py` cannot join the substring tuple (consumed by
+# `if token in text`). Word-boundary regex, never the bare substring "py".
+_PY_RE = re.compile(r"\.py\b")
+
+# h7 REQUIRED (3): discovery extractor over engine/security_state.py.
+# Single-capture r'(\w*(?:state|status))\W{1,4}["\']([A-Za-z_]+)["\']' finds
+# UNAVAILABLE at :681 and DIVERGENT at the :703/:704 comparisons (addendum:
+# :691 is `= "AVAILABLE" if agrees else "DIVERGENT"` and the first literal
+# wins). Identity-row assertion (c) uses a separate assignment/== scan of
+# the four values_read keys so :691's DIVERGENT is still in the reachable set.
+_ENGINE_STATE_STATUS_ASSIGN_RE = re.compile(
+    r"""(\w*(?:state|status))\W{1,4}['"]([A-Za-z_]+)['"]"""
+)
+_QUOTED_TOKEN_RE = re.compile(r"""['"]([A-Za-z_]+)['"]""")
+_IDENTITY_ROW_STATE_STATUS_KEYS = frozenset({
+    "security_state", "issuer_state", "status", "corroboration_state",
+})
+_IDENTITY_ROW_ASSIGN_RE = re.compile(
+    r"\b(?:security_state|issuer_state|corroboration_state|status)\b\s*(?:=|==)\s*(.+)$"
+)
 
 
-def test_golden_msft_identity_checks_panel_has_no_machine_text() -> None:
-    """REQUIRED 1 (i): golden-MSFT Identity-checks panel (EN and ZH) contains
-    no engine paths, file stems, dotted module paths, or 暂不可用 on a
-    passing row. RED at 8ae0df1b on the golden-MSFT pages only; the M1 page
-    is already green via test_m1_shell_artifact_and_reader_are_plain_bilingual_not_machine_paths.
+def _identity_checks_machine_hits(text: str, *, lang: str) -> list[str]:
+    """Collect machine-text hits in Identity-checks visible text (ss-id stripped)."""
+    hits: list[str] = []
+    for token in _IDENTITY_CHECKS_MACHINE_TOKENS:
+        if token in text:
+            hits.append(token)
+    for m in _PY_RE.finditer(text):
+        hits.append(".py")
+    for rx, label in (
+        (_CAMEL_RE, "CamelCase"),
+        (_DOTTED_MODULE_RE, "dotted-path"),
+        (_CALL_RE, "call"),
+        (_BARE_LITERAL_RE, "literal"),
+        (_ALL_CAPS_SNAKE_RE, "ALL_CAPS"),
+    ):
+        for m in rx.finditer(text):
+            tok = m.group(0)
+            if tok in _PANEL_CUSTOMER_TOKENS:
+                continue
+            hits.append(f"{label}:{tok}")
+    if "::" in text and "::" not in hits:
+        hits.append("::")
+    if lang == "zh":
+        for m in _ZH_LATIN_RUN_RE.finditer(text):
+            tok = m.group(0)
+            if tok in _PANEL_CUSTOMER_TOKENS:
+                continue
+            hits.append(f"zh-latin:{tok}")
+    return hits
+
+
+def _extract_engine_state_status_tokens(src: str) -> set[str]:
+    """Discovery (3)(a): group-2 of every *state/*status-then-quoted pair."""
+    return {m.group(2) for m in _ENGINE_STATE_STATUS_ASSIGN_RE.finditer(src)}
+
+
+def _walk_json_state_status_values(obj: object, *, keys: frozenset[str] | None) -> set[str]:
+    """Collect string values of keys ending in state/status, optionally filtered."""
+    found: set[str] = set()
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            if isinstance(k, str) and k.endswith(("state", "status")):
+                if keys is None or k in keys:
+                    if isinstance(v, str) and v:
+                        found.add(v)
+            found |= _walk_json_state_status_values(v, keys=keys)
+    elif isinstance(obj, list):
+        for item in obj:
+            found |= _walk_json_state_status_values(item, keys=keys)
+    return found
+
+
+def _extract_engine_identity_row_tokens(src: str) -> set[str]:
+    """Quoted literals assigned to (or ``==``-compared with) the four identity keys."""
+    out: set[str] = set()
+    for line in src.splitlines():
+        m = _IDENTITY_ROW_ASSIGN_RE.search(line)
+        if not m:
+            continue
+        for qm in _QUOTED_TOKEN_RE.finditer(m.group(1)):
+            tok = qm.group(1)
+            if tok not in _IDENTITY_ROW_STATE_STATUS_KEYS:
+                out.add(tok)
+    return out
+
+
+def _identity_checks_panel_html(html: str) -> str:
+    """The Identity-checks ``<section>`` HTML, ss-id spans included."""
+    for m in re.finditer(r'<section class="dpanel">.*?</section>', html, flags=re.S):
+        blob = m.group(0)
+        if "Identity checks" in blob or "身份核对" in blob:
+            return blob
+    raise AssertionError("Identity checks panel HTML not found")
+
+
+def _inject_identity_read_values(state: dict, updates: dict[str, object]) -> dict:
+    """Copy *state* and overwrite matching ``values_read`` fields. Never writes disk."""
+    clone = json.loads(json.dumps(state))
+    remaining = dict(updates)
+    for leg in clone.get("identity_proof", {}).get("legs") or []:
+        for item in leg.get("values_read") or []:
+            if isinstance(item, dict) and item.get("field") in remaining:
+                item["value"] = remaining.pop(item["field"])
+    assert not remaining, (
+        "golden-MSFT values_read missing fields to inject: "
+        + ", ".join(sorted(str(k) for k in remaining))
+    )
+    return clone
+
+
+def test_identity_checks_panel_has_no_machine_text_on_golden_msft_and_m1() -> None:
+    """Heal-round h6 REQUIRED 2: panel-wide machine-text guard.
+
+    Renders golden-MSFT and M1 Identity-checks in EN and ZH, strips ``ss-id``
+    subtrees (receipt chips and customer identifiers), and fails on CamelCase
+    identifiers, dotted paths, parenthesised calls, ``::``, ``.parquet`` /
+    ``.py``, ``scripts/`` / ``engine/`` / ``data/``, bare ``true`` / ``false``
+    / ``null`` / ``None``, and ALL_CAPS_SNAKE of three or more letters.
+    ZH additionally fails on a Latin run of three or more letters outside
+    `_PANEL_CUSTOMER_TOKENS`. Supersedes
+    ``test_golden_msft_identity_checks_panel_has_no_machine_text``.
+    RED at b53b05b8 on reads values (VendorAliasTable.resolve(store),
+    IssuerMaster.cik_of_issuer, IssuerMaster.issuer_of_security, true, null,
+    RESOLVED, AVAILABLE, active).
     """
-    from scripts.build_ticker_pages import _SS_COVERAGE_FALLBACK
+    from engine.security_state import MSFT_SUBJECT, compile_security_state_failure
+    from jsonschema import Draft202012Validator, FormatChecker
+    from scripts.build_ticker_pages import _SS_ARTIFACT, _SS_COVERAGE_FALLBACK
+
+    pages: list[tuple[str, dict]] = []
+    fixture = REPO / "tests" / "fixtures" / "security_state" / "golden_msft_expected_output.json"
+    golden = json.loads(fixture.read_text(encoding="utf-8"))
+    golden_view = build_security_state({"security_state": golden})
+    assert golden_view is not None
+    pages.append(("golden-msft", golden_view))
+
+    schema_path = REPO / "contracts" / "market_os" / "security_state.v1.schema.json"
+    validator = Draft202012Validator(
+        json.loads(schema_path.read_text(encoding="utf-8")),
+        format_checker=FormatChecker(),
+    )
+    m1 = compile_security_state_failure(
+        subject=MSFT_SUBJECT, validator=validator, now="2026-01-01T00:00:00Z",
+        prior_state=None, owner_read_completed=False,
+    )
+    m1_view = build_security_state({"security_state": m1})
+    assert m1_view is not None
+    pages.append(("m1", m1_view))
+
+    failures: list[str] = []
+    for label, view in pages:
+        for lang in ("en", "zh"):
+            html = _render_section(view, lang=lang)
+            panel = _identity_checks_panel(html)
+            scanned = _spaced_text(_without_ss_id(panel))
+            hits = _identity_checks_machine_hits(scanned, lang=lang)
+            for hit in hits:
+                failures.append(f"{label}/{lang}: {hit}")
+            for chk in panel.find_all_class("ss-chk"):
+                chk_text = chk.get_text()
+                passed = ("passed" in chk_text) if lang == "en" else ("通过" in chk_text)
+                if passed:
+                    assert _SS_COVERAGE_FALLBACK["zh"] not in chk_text, (
+                        f"{label}/{lang} PASS row still has 暂不可用: {chk_text}"
+                    )
+    assert not failures, (
+        "Identity-checks panel still prints machine text: " + "; ".join(failures)
+    )
+
+    m1_en = _identity_checks_panel(_render_section(pages[1][1], lang="en")).get_text()
+    artifact_en = _SS_ARTIFACT[("R8", "IDENTITY_UNRESOLVED")]["en"]
+    assert "(not a live owner record)" in artifact_en
+    assert "(not a live owner record)" in m1_en, (
+        "M1 EN artifact sentence missing from Identity-checks: " + m1_en
+    )
+    # h7 REQUIRED (5): \.py\b must not false-positive on the captured panels.
+    for label, view in pages:
+        for lang in ("en", "zh"):
+            scanned = _spaced_text(_without_ss_id(
+                _identity_checks_panel(_render_section(view, lang=lang))
+            ))
+            assert _PY_RE.search(scanned) is None, (
+                f"{label}/{lang} false-positive on .py: {scanned}"
+            )
+            assert ".py" not in scanned
+
+
+def test_identity_row_state_status_tokens_have_house_pairs() -> None:
+    """h7 REQUIRED (3): every identity-row state/status token has a house pair.
+
+    Discovery walks engine/security_state.py and tests/fixtures/security_state/*.json.
+    The assertion is scoped to values reachable under the four identity
+    values_read keys ending in state/status (addendum 2026-09-10 23:05Z):
+    security_state, issuer_state, status, corroboration_state.
+    RED-first at h6 head 9990a4a9: UNAVAILABLE, DIVERGENT,
+    SUPERSEDED_DUPLICATE_MINT, NO_ISSUER_EVIDENCE missing from _SS_READ_VALUE.
+    ``inactive`` is defensive vocabulary (not in either extractor half) and is
+    guarded only by the injection test.
+    """
+    from scripts.build_ticker_pages import _SS_READ_KEY_VALUE, _SS_READ_VALUE
+
+    engine_src = (REPO / "engine" / "security_state.py").read_text(encoding="utf-8")
+    engine_tokens = _extract_engine_state_status_tokens(engine_src)
+    assert "UNAVAILABLE" in engine_tokens, (
+        "extractor missed UNAVAILABLE (expected at engine/security_state.py:681)"
+    )
+    assert "DIVERGENT" in engine_tokens, (
+        "extractor missed DIVERGENT (expected at engine/security_state.py:703/:704; "
+        "the :691 assignment yields AVAILABLE first under the single-capture regex)"
+    )
+
+    fixture_dir = REPO / "tests" / "fixtures" / "security_state"
+    fixture_tokens: set[str] = set()
+    fixture_identity: set[str] = set()
+    for path in sorted(fixture_dir.glob("*.json")):
+        blob = json.loads(path.read_text(encoding="utf-8"))
+        fixture_tokens |= _walk_json_state_status_values(blob, keys=None)
+        fixture_identity |= _walk_json_state_status_values(
+            blob, keys=_IDENTITY_ROW_STATE_STATUS_KEYS,
+        )
+
+    engine_identity = _extract_engine_identity_row_tokens(engine_src)
+    reachable = engine_identity | fixture_identity
+
+    missing = sorted(
+        tok for tok in reachable
+        if tok not in _SS_READ_VALUE and tok not in _SS_READ_KEY_VALUE
+    )
+    assert not missing, (
+        "identity-row state/status tokens missing a house pair: "
+        + ", ".join(missing)
+        + f" (discovery engine={sorted(engine_tokens)}; "
+        f"fixtures={sorted(fixture_tokens)}; reachable={sorted(reachable)})"
+    )
+
+
+def test_identity_checks_injected_unmapped_state_tokens_render_as_house_copy() -> None:
+    """h7 REQUIRED (4): inject UNAVAILABLE / SUPERSEDED_DUPLICATE_MINT / inactive
+    into golden-MSFT at render time. The whole Identity-checks panel subtree
+    (ss-id included) must show the house phrases and none of the three raw
+    tokens, and the panel-wide machine scan must stay empty.
+    RED-first at h6 head 9990a4a9: all three raw tokens printed inside ss-id.
+    """
+    # Frozen house phrases from REQUIRED (2) / addendum (6). Looked up as
+    # literals so the RED-first run on the h6 mapper fails on the raw tokens
+    # rather than KeyErroring on a table that does not yet contain them.
+    house = {
+        "UNAVAILABLE": {"en": "not available", "zh": "暂不可用"},
+        "SUPERSEDED_DUPLICATE_MINT": {
+            "en": "superseded (duplicate record)",
+            "zh": "已被取代（重复记录）",
+        },
+        "inactive": {"en": "not active", "zh": "无效"},
+    }
 
     fixture = REPO / "tests" / "fixtures" / "security_state" / "golden_msft_expected_output.json"
-    state = json.loads(fixture.read_text(encoding="utf-8"))
-    view = build_security_state({"security_state": state})
+    golden = json.loads(fixture.read_text(encoding="utf-8"))
+    injected = _inject_identity_read_values(golden, {
+        "corroboration_state": "UNAVAILABLE",
+        "security_state": "SUPERSEDED_DUPLICATE_MINT",
+        "status": "inactive",
+    })
+    view = build_security_state({"security_state": injected})
     assert view is not None
-    snake_keys_printed: list[str] = []
-    for lg in view["identity"]["legs"]:
-        for row in lg["reads"]:
-            if not row["label_en"]:
-                snake_keys_printed.append(row["k"])
-    assert not snake_keys_printed, (
-        f"Identity-checks reads row printed a snake_case key with no label: "
-        f"{snake_keys_printed}"
-    )
+
+    raw_tokens = ("UNAVAILABLE", "SUPERSEDED_DUPLICATE_MINT", "inactive")
+
+    failures: list[str] = []
     for lang in ("en", "zh"):
         html = _render_section(view, lang=lang)
         panel = _identity_checks_panel(html)
-        text = panel.get_text()
-        for token in _IDENTITY_CHECKS_MACHINE_TOKENS:
-            assert token not in text, (
-                f"{lang} Identity-checks still has {token!r}: {text}"
-            )
-        dotted = _DOTTED_MODULE_RE.search(text)
-        assert dotted is None, (
-            f"{lang} Identity-checks still has dotted module path {dotted.group()!r}"
-        )
-        for chk in panel.find_all_class("ss-chk"):
-            chk_text = chk.get_text()
-            passed = ("passed" in chk_text) if lang == "en" else ("通过" in chk_text)
-            if passed:
-                assert _SS_COVERAGE_FALLBACK["zh"] not in chk_text, (
-                    f"{lang} PASS row still has 暂不可用: {chk_text}"
-                )
+        panel_html = _identity_checks_panel_html(html)
+        slot = "en" if lang == "en" else "zh"
+        for token in raw_tokens:
+            if token in panel_html or token in panel.get_text():
+                failures.append(f"{lang} still prints raw {token!r}")
+            phrase = house[token][slot]
+            if phrase not in panel_html:
+                failures.append(f"{lang} missing house phrase {phrase!r}")
+        scanned = _spaced_text(_without_ss_id(panel))
+        hits = _identity_checks_machine_hits(scanned, lang=lang)
+        for hit in hits:
+            failures.append(f"{lang} machine-hit {hit}")
+    assert not failures, (
+        "injected identity-row tokens still leak or lack house copy: "
+        + "; ".join(failures)
+    )
+    from scripts.build_ticker_pages import _SS_READ_VALUE
+    for tok, pair in house.items():
+        assert _SS_READ_VALUE[tok] == pair
+
+
+def test_ss_id_is_only_reached_through_id_shapes() -> None:
+    """h7 REQUIRED (1): ss-id only for `_SS_ID_SHAPES` (plus key-gated ticker/CUSIP).
+
+    ALL_CAPS_SNAKE and bare lowercase never receive ss-id. DIVERGENT/AVAILABLE
+    match the ungated CUSIP shape and STALE matches the ungated ticker shape;
+    the key gates must hold or HOLE A returns. A code identifier with no
+    house pair keeps the row as the dash pair.
+    """
+    from scripts.build_ticker_pages import (
+        _SS_READ_ABSENT, _ss_is_id_shape, _ss_map_identity_read_value,
+    )
+
+    assert _ss_is_id_shape("XNAS:MSFT", "") is True
+    assert _ss_is_id_shape("ISS:US-XNAS-MSFT", "") is True
+    assert _ss_is_id_shape("US-XNAS-MSFT", "") is True
+    assert _ss_is_id_shape("2026-09-04", "owner_decision_date") is True
+    assert _ss_is_id_shape("MSFT", "subject_ticker_display") is True
+    assert _ss_is_id_shape("MSFT", "status") is False
+    assert _ss_is_id_shape("DIVERGENT", "corroboration_state") is False
+    assert _ss_is_id_shape("AVAILABLE", "corroboration_state") is False
+    assert _ss_is_id_shape("STALE", "corroboration_state") is False
+    assert _ss_is_id_shape("UNAVAILABLE", "corroboration_state") is False
+    assert _ss_is_id_shape("inactive", "status") is False
+
+    for token, key in (
+        ("UNAVAILABLE", "corroboration_state"),
+        ("DIVERGENT", "corroboration_state"),
+        ("SUPERSEDED_DUPLICATE_MINT", "security_state"),
+        ("inactive", "status"),
+        ("NO_ISSUER_EVIDENCE", "issuer_state"),
+    ):
+        mapped = _ss_map_identity_read_value(key, token, True)
+        assert mapped is not None
+        assert mapped["is_id"] is False, token
+        assert mapped["en"] not in ("", "—") or token == "never", token
+
+    dropped = _ss_map_identity_read_value(
+        "unknown_reader", "VendorAliasTable.resolve(store)", True,
+    )
+    assert dropped is not None
+    assert dropped["is_id"] is False
+    assert dropped["en"] == _SS_READ_ABSENT["en"]
 
 
 def test_identity_leg_house_copy_covers_golden_msft_m1_and_compile_failed_shell() -> None:
