@@ -131,6 +131,10 @@
           }
         },
         "transition_distance": { "type": ["number", "null"] },
+        "movement_state": {
+          "type": ["string", "null"],
+          "enum": ["NO_EARLIER_PUBLICATION", null]
+        },
         "nearest_boundary": {
           "type": "object",
           "additionalProperties": false,
@@ -142,7 +146,7 @@
           }
         },
         "one_month_vector": {
-          "type": "object",
+          "type": ["object", "null"],
           "additionalProperties": false,
           "required": ["dx", "dy", "status", "null_reason", "x_axis_id", "y_axis_id"],
           "properties": {
@@ -213,7 +217,7 @@
       ],
       "properties": {
         "comparability": {
-          "enum": ["COMPARABLE", "NO_PRIOR", "METHOD_CHANGED", "DEFINITION_INCOMPARABLE"]
+          "enum": ["COMPARABLE", "NO_PRIOR", "METHOD_CHANGED", "DEFINITION_INCOMPARABLE", "NO_EARLIER_PUBLICATION"]
         },
         "prior_generation_id": { "type": ["string", "null"] },
         "prior_effective_date": { "type": ["string", "null"] },
@@ -330,6 +334,30 @@
         "instrumentation": { "const": "first_party" },
         "event_names": { "type": "array", "items": { "type": "string" } },
         "privacy_note": { "type": "string" }
+      }
+    },
+    "prior_publication": {
+      "description": "Verbatim snapshot of the last strictly-earlier publication (full headline plus tracked metrics.items). Same-dated rebuilds resolve against this key; never reconstructed from changes.deltas.",
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["headline", "metrics"],
+      "properties": {
+        "headline": { "$ref": "#/properties/headline" },
+        "metrics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["items"],
+          "properties": {
+            "items": { "type": "array", "items": { "$ref": "#/$defs/metric" } }
+          }
+        },
+        "generation": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "generation_id": { "type": ["string", "null"] }
+          }
+        }
       }
     }
   },

@@ -1,95 +1,95 @@
 {
   "schema": "index_leadership.track_record.v1",
-  "as_of": "2026-09-04",
-  "generated_at": "2026-09-06T22:24:46.787609+00:00",
+  "as_of": "2026-09-08",
+  "generated_at": "2026-09-10T08:19:06.423004+00:00",
   "is_context_only": true,
-  "n_snapshots": 618,
-  "n_days": 21,
+  "n_snapshots": 639,
+  "n_days": 22,
   "horizons": {
     "5": {
-      "n_matured": 485,
+      "n_matured": 579,
       "by_stage": {
         "running": {
-          "n": 424,
-          "mean_fwd_rel": -0.0046,
-          "hit_rate": 0.465
+          "n": 513,
+          "mean_fwd_rel": -0.0047,
+          "hit_rate": 0.45
         },
         "coiling": {
-          "n": 31,
-          "mean_fwd_rel": 0.0037,
-          "hit_rate": 0.677
+          "n": 33,
+          "mean_fwd_rel": 0.0041,
+          "hit_rate": 0.576
         },
         "coiling_primed": {
-          "n": 30,
-          "mean_fwd_rel": 0.0162,
-          "hit_rate": 0.733
+          "n": 33,
+          "mean_fwd_rel": 0.0131,
+          "hit_rate": 0.606
         }
       },
-      "running_ic": 0.0461,
-      "running_ic_t_hac": 0.779,
+      "running_ic": -0.0451,
+      "running_ic_t_hac": -0.473,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "10": {
-      "n_matured": 413,
+      "n_matured": 531,
       "by_stage": {
         "running": {
-          "n": 363,
-          "mean_fwd_rel": -0.0037,
-          "hit_rate": 0.474
+          "n": 467,
+          "mean_fwd_rel": -0.0072,
+          "hit_rate": 0.433
         },
         "coiling": {
-          "n": 24,
-          "mean_fwd_rel": -0.008,
-          "hit_rate": 0.375
+          "n": 32,
+          "mean_fwd_rel": -0.0001,
+          "hit_rate": 0.469
         },
         "coiling_primed": {
-          "n": 26,
-          "mean_fwd_rel": 0.0362,
-          "hit_rate": 0.731
+          "n": 32,
+          "mean_fwd_rel": 0.0245,
+          "hit_rate": 0.562
         }
       },
-      "running_ic": 0.0658,
-      "running_ic_t_hac": 2.438,
+      "running_ic": -0.0523,
+      "running_ic_t_hac": -0.741,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "21": {
-      "n_matured": 235,
+      "n_matured": 305,
       "by_stage": {
         "running": {
-          "n": 214,
-          "mean_fwd_rel": -0.0028,
-          "hit_rate": 0.528
+          "n": 269,
+          "mean_fwd_rel": -0.004,
+          "hit_rate": 0.517
         },
         "coiling": {
-          "n": 10,
-          "mean_fwd_rel": -0.012,
-          "hit_rate": 0.7
+          "n": 16,
+          "mean_fwd_rel": -0.0062,
+          "hit_rate": 0.562
         },
         "coiling_primed": {
-          "n": 11,
-          "mean_fwd_rel": 0.0735,
-          "hit_rate": 0.727
+          "n": 20,
+          "mean_fwd_rel": 0.051,
+          "hit_rate": 0.75
         }
       },
-      "running_ic": -0.191,
-      "running_ic_t_hac": -7.355,
+      "running_ic": -0.1205,
+      "running_ic_t_hac": -2.242,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "63": {
-      "n_matured": 24,
+      "n_matured": 33,
       "by_stage": {
         "running": {
-          "n": 18,
-          "mean_fwd_rel": -0.0488,
-          "hit_rate": 0.333
+          "n": 26,
+          "mean_fwd_rel": -0.0467,
+          "hit_rate": 0.385
         },
         "coiling": {
-          "n": 6,
-          "mean_fwd_rel": -0.0794,
-          "hit_rate": 0.167
+          "n": 7,
+          "mean_fwd_rel": -0.0789,
+          "hit_rate": 0.286
         }
       },
       "running_ic": null,
@@ -98,80 +98,80 @@
       "coiling_ic_t_hac": null
     }
   },
-  "lead_time_d": 10,
-  "peak_ic": 0.0658,
+  "lead_time_d": null,
+  "peak_ic": null,
   "proven": {
     "5": false,
-    "10": true,
+    "10": false,
     "21": false,
     "63": false
   },
   "any_matured": true,
-  "verdict": "validated",
-  "note": "Call-score IC is significant at the 10d horizon (measured). Context-only \u2014 informs the read, never sizes.",
+  "verdict": "measuring",
+  "note": "Accruing forward observations; no horizon clears the Newey-West significance bar yet. Early numbers are provisional, context-only.",
   "recent_misses": [
     {
-      "date": "2026-08-13",
-      "id": "russell:aerospace-defense",
-      "name": "Aerospace & Defense",
+      "date": "2026-08-18",
+      "id": "subsectors:engineering-construction",
+      "name": "Engineering & Construction",
       "stage": "running",
-      "fwd_rel": -0.1763,
+      "fwd_rel": -0.0461,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-13",
-      "id": "baskets:ai-infra",
-      "name": "AI Infrastructure",
-      "stage": "running",
-      "fwd_rel": -0.093,
+      "date": "2026-08-18",
+      "id": "subsectors:packaged-foods",
+      "name": "Packaged Foods",
+      "stage": "coiling",
+      "fwd_rel": -0.0297,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-13",
-      "id": "subsectors:electronic-components",
-      "name": "Electronic Components",
+      "date": "2026-08-18",
+      "id": "subsectors:railroads",
+      "name": "Railroads",
       "stage": "running",
-      "fwd_rel": -0.0804,
+      "fwd_rel": -0.0279,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-13",
-      "id": "subsectors:packaging-containers",
-      "name": "Packaging & Containers",
-      "stage": "running",
-      "fwd_rel": -0.0323,
+      "date": "2026-08-18",
+      "id": "baskets:defensives",
+      "name": "Defensives",
+      "stage": "coiling",
+      "fwd_rel": -0.0198,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-13",
-      "id": "subsectors:asset-management",
-      "name": "Asset Management",
-      "stage": "running",
-      "fwd_rel": -0.0218,
+      "date": "2026-08-18",
+      "id": "baskets:us-sector-staples",
+      "name": "Consumer Staples (Equal-Weight)",
+      "stage": "coiling",
+      "fwd_rel": -0.0131,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-13",
-      "id": "russell:medical-devices",
-      "name": "Medical Devices",
+      "date": "2026-08-18",
+      "id": "russell:banks-regional",
+      "name": "Banks - Regional",
       "stage": "running",
-      "fwd_rel": -0.0218,
+      "fwd_rel": -0.0087,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-13",
-      "id": "russell:information-technology-services",
-      "name": "Information Technology Services",
+      "date": "2026-08-18",
+      "id": "subsectors:drug-manufacturers-general",
+      "name": "Drug Manufacturers - General",
       "stage": "running",
-      "fwd_rel": -0.0203,
+      "fwd_rel": -0.0064,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-12",
-      "id": "baskets:space-economy",
-      "name": "Space Economy",
+      "date": "2026-08-18",
+      "id": "russell:restaurants",
+      "name": "Restaurants",
       "stage": "running",
-      "fwd_rel": -0.1888,
+      "fwd_rel": -0.0056,
       "horizon_d": 21
     }
   ],

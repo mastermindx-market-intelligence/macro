@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "PWR-BULL-20260813",
-  "asof": "2026-09-07",
+  "asof": "2026-09-10",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 29.7,
-  "raw_confidence": 28.7,
-  "delta_vs_base": -30.3,
+  "management_confidence": 27.8,
+  "raw_confidence": 26.5,
+  "delta_vs_base": -32.2,
   "recommended_action": "hold",
   "human_state": "Stalling",
   "components": {
-    "validity": 36.1,
+    "validity": 37.5,
     "progress": 0.0,
-    "pace": 16.2,
+    "pace": 8.2,
     "retention": 50.0,
-    "overlay": 67.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.47,
+    "dist_to_stop_r": 0.484,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 46.7,
-    "p1": -0.3535,
-    "p2": -0.1767,
+    "horizon_pct_used": 53.3,
+    "p1": -0.3442,
+    "p2": -0.1721,
     "p3": null,
-    "move_r": -0.53,
+    "move_r": -0.516,
     "mfe_r": 0.0,
     "mae_r": -0.648
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "",
+  "change_reason": "Falling Behind Schedule",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 21,
-  "tau": 0.4667
+  "days_elapsed": 24,
+  "tau": 0.5333
 }

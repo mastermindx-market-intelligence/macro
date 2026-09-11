@@ -166,8 +166,11 @@ COMPARABILITY: dict[str, dict[str, str]] = {
     "COMPARABLE": _pair("Comparable with the last reading",
                         "与上次读数可比"),
     "NO_PRIOR": _pair("No comparable earlier reading", "没有可对比的历史读数"),
-    "METHOD_CHANGED": _pair("The way we measure changed — shown as a method change, not a delta",
-                            "衡量方式已变更 — 按方法变更呈现，而非数值变化"),
+    "NO_EARLIER_PUBLICATION": _pair(
+        "No earlier reading available to compare yet.",
+        "暂无可比较的更早读数。"),
+    "METHOD_CHANGED": _pair("Method version changed — shown as a method change, not a delta",
+                            "方法版本已变更 — 按方法变更呈现，而非数值变化"),
     "DEFINITION_INCOMPARABLE": _pair("Definitions are not comparable — numeric comparison refused",
                                      "定义不可比 — 拒绝进行数值比较"),
 }

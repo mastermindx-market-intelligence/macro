@@ -1,23 +1,23 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-09-07",
-  "scored_total": 169,
-  "open": 47,
-  "unscored_neutral": 222,
+  "as_of": "2026-09-10",
+  "scored_total": 174,
+  "open": 51,
+  "unscored_neutral": 229,
   "overall": {
-    "n": 169,
-    "hits": 112,
-    "misses": 57,
-    "hit_rate": 0.663,
-    "dir_accuracy": 0.426
+    "n": 174,
+    "hits": 113,
+    "misses": 61,
+    "hit_rate": 0.649,
+    "dir_accuracy": 0.42
   },
   "by_lean": {
     "constructive": {
-      "n": 103,
+      "n": 104,
       "hits": 61,
-      "misses": 42,
-      "hit_rate": 0.592,
-      "dir_accuracy": 0.32
+      "misses": 43,
+      "hit_rate": 0.587,
+      "dir_accuracy": 0.317
     },
     "neutral": {
       "n": 0,
@@ -27,11 +27,11 @@
       "dir_accuracy": null
     },
     "cautious": {
-      "n": 65,
-      "hits": 51,
-      "misses": 14,
-      "hit_rate": 0.785,
-      "dir_accuracy": 0.6
+      "n": 69,
+      "hits": 52,
+      "misses": 17,
+      "hit_rate": 0.754,
+      "dir_accuracy": 0.58
     },
     "avoid": {
       "n": 1,
@@ -43,18 +43,18 @@
   },
   "by_conviction": {
     "low": {
-      "n": 141,
-      "hits": 91,
-      "misses": 50,
-      "hit_rate": 0.645,
-      "dir_accuracy": 0.39
+      "n": 144,
+      "hits": 92,
+      "misses": 52,
+      "hit_rate": 0.639,
+      "dir_accuracy": 0.389
     },
     "medium": {
-      "n": 26,
+      "n": 28,
       "hits": 19,
-      "misses": 7,
-      "hit_rate": 0.731,
-      "dir_accuracy": 0.654
+      "misses": 9,
+      "hit_rate": 0.679,
+      "dir_accuracy": 0.607
     },
     "high": {
       "n": 2,
@@ -64,8 +64,53 @@
       "dir_accuracy": 0.0
     }
   },
-  "calibration_note": "169 leans scored, hit-rate 0.663 (directional accuracy 0.426). Chance alone would land a hit-rate near 0.7578 (directional accuracy near 0.5067) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
+  "calibration_note": "174 leans scored, hit-rate 0.649 (directional accuracy 0.42). Chance alone would land a hit-rate near 0.7535 (directional accuracy near 0.5074) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
   "recent": [
+    {
+      "id": "2026-07-28-YETI-3",
+      "ticker": "YETI",
+      "lean": "constructive",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.2485,
+      "check_by": "2026-09-08"
+    },
+    {
+      "id": "2026-07-28-LLY-6",
+      "ticker": "LLY",
+      "lean": "cautious",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.1131,
+      "check_by": "2026-09-08"
+    },
+    {
+      "id": "2026-08-07-ROIV-20260809100621-3",
+      "ticker": "ROIV",
+      "lean": "cautious",
+      "conviction": "medium",
+      "outcome": "miss",
+      "realized": 0.1509,
+      "check_by": "2026-09-07"
+    },
+    {
+      "id": "2026-08-07-WT-20260809100621-6",
+      "ticker": "WT",
+      "lean": "cautious",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": 0.1586,
+      "check_by": "2026-09-07"
+    },
+    {
+      "id": "2026-08-10-WBD-20260811041812-4",
+      "ticker": "WBD",
+      "lean": "cautious",
+      "conviction": "medium",
+      "outcome": "miss",
+      "realized": 0.0557,
+      "check_by": "2026-09-07"
+    },
     {
       "id": "2026-08-07-VSEC-20260810035336-2",
       "ticker": "VSEC",
@@ -128,51 +173,6 @@
       "outcome": "miss",
       "realized": -0.0945,
       "check_by": "2026-08-31"
-    },
-    {
-      "id": "2026-07-31-SHOO-20260806235557-2",
-      "ticker": "SHOO",
-      "lean": "constructive",
-      "conviction": "low",
-      "outcome": "miss",
-      "realized": -0.0897,
-      "check_by": "2026-08-31"
-    },
-    {
-      "id": "2026-07-31-SHOO-2",
-      "ticker": "SHOO",
-      "lean": "constructive",
-      "conviction": "medium",
-      "outcome": "miss",
-      "realized": -0.0698,
-      "check_by": "2026-08-28"
-    },
-    {
-      "id": "2026-07-31-BEN-4",
-      "ticker": "BEN",
-      "lean": "constructive",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": -0.0065,
-      "check_by": "2026-08-28"
-    },
-    {
-      "id": "2026-07-31-KSS-6",
-      "ticker": "KSS",
-      "lean": "cautious",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": -0.1156,
-      "check_by": "2026-08-28"
-    },
-    {
-      "id": "2026-07-31-SHOO-20260804044138-3",
-      "ticker": "SHOO",
-      "lean": "constructive",
-      "conviction": "medium",
-      "outcome": "miss",
-      "realized": -0.0698,
-      "check_by": "2026-08-28"
     }
   ]
 }

@@ -33,8 +33,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>China Tape — Macro Dashboard</title>
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang');if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<link rel="stylesheet" href="theme.css?v=f41f9a21">
-<link rel="stylesheet" href="assets/css/32655cfe.css?v=32655cfe">
+<link rel="stylesheet" href="theme.css?v=63df1679">
+<link rel="stylesheet" href="assets/css/00738b9b.css?v=00738b9b">
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
 <link rel="preload" as="style" href="navigation-refresh.css?v=c299c324">
 
@@ -184,6 +184,7 @@
         </div>
         <a href="intl_stocks.html"><span class="submenu-icon submenu-icon-stocks" aria-hidden="true"></span><span class="l-en">Stock Dashboard</span><span class="l-zh">股票仪表盘</span><span class="d"><span class="l-en">Prophet cross-market · sectors</span><span class="l-zh">Prophet 跨市场 · 板块</span></span></a>
         <a href="baskets_intl.html"><span class="submenu-icon submenu-icon-baskets" aria-hidden="true"></span><span class="l-en">Thematic Baskets</span><span class="l-zh">主题篮子</span><span class="d"><span class="l-en">Cross-country theme baskets · ex-US</span><span class="l-zh">跨国主题篮子 · 除美</span></span></a>
+        <a href="sanctions_map.html"><span class="submenu-icon submenu-icon-policy" aria-hidden="true"></span><span class="l-en">Sanctions Map</span><span class="l-zh">制裁地图</span><span class="d"><span class="l-en">Where US sanctions point · OFAC public list</span><span class="l-zh">美国制裁指向何处 · OFAC 公开名单</span></span></a>
       </div>
     </div>
     <div class="nav-dd">
@@ -313,17 +314,17 @@
       
       
       <p class="cn-lead">
-        <span class="l-en"><b>24</b> stories cleared the macro filter; official policy tone leans cautious. <b>17</b> rated high-impact, led by <b>equity market</b>.</span>
-        <span class="l-zh"><b>24</b> 条通过宏观筛选；官方政策基调偏谨慎。其中 <b>17</b> 条高影响，主导<b>股票市场</b>。</span>
+        <span class="l-en"><b>24</b> stories cleared the macro filter; official policy tone steady. <b>16</b> rated high-impact, led by <b>PBOC & liquidity</b>.</span>
+        <span class="l-zh"><b>24</b> 条通过宏观筛选；官方政策基调平稳。其中 <b>16</b> 条高影响，主导<b>央行与流动性</b>。</span>
       </p>
       <p class="cn-asof"><span class="l-en">As of</span><span class="l-zh">截至</span>  · <span class="l-en">context, not trade calls</span><span class="l-zh">仅供参考，非交易信号</span></p>
       <div class="cn-glance">
         
         
-        <span class="cn-gchip st-cautious"><span class="dot"></span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span> <b><span class="l-en">leans cautious</span><span class="l-zh">偏谨慎</span></b></span>
+        <span class="cn-gchip st-steady"><span class="dot"></span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span> <b><span class="l-en">steady</span><span class="l-zh">平稳</span></b></span>
         
-        <span class="cn-gchip hot"><span class="dot"></span><b>17</b> <span class="l-en">high-impact</span><span class="l-zh">高影响</span></span>
-        <span class="cn-gchip led th-markets"><span class="dot"></span><span class="l-en">Led by</span><span class="l-zh">主导</span> <b><span class="l-en">equity market</span><span class="l-zh">股票市场</span></b></span>
+        <span class="cn-gchip hot"><span class="dot"></span><b>16</b> <span class="l-en">high-impact</span><span class="l-zh">高影响</span></span>
+        <span class="cn-gchip led th-monetary"><span class="dot"></span><span class="l-en">Led by</span><span class="l-zh">主导</span> <b><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></b></span>
         <span class="cn-gchip"><b>24</b> <span class="l-en">on the tape</span><span class="l-zh">条在流</span></span>
         <span class="cn-gchip hidden" id="fresh"><span class="dot" style="background:var(--up)"></span><span id="fresh-t"></span></span>
       </div>
@@ -335,21 +336,21 @@
   <section class="cn-rail3">
 
     <!-- policy tone -->
-    <article class="ov-card ov-tone st-cautious" style="--ac:var(--warn)">
+    <article class="ov-card ov-tone st-steady" style="--ac:var(--muted)">
       <p class="ov-h"><span class="ic">🏛️</span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span></p>
       
       
       <div class="tg-top">
-        <div class="tg-state"><span class="l-en">leans cautious</span><span class="l-zh">偏谨慎</span></div>
-        <div class="tg-z">-1.2</div>
+        <div class="tg-state"><span class="l-en">steady</span><span class="l-zh">平稳</span></div>
+        <div class="tg-z">-0.3</div>
       </div>
       
       
       <div class="tg-track"><span class="mid"></span>
-        <span class="tg-fill" style="right:50%;width:24.2%"></span>
+        <span class="tg-fill" style="right:50%;width:5.2%"></span>
       </div>
       <div class="tg-scale"><span><span class="l-en">cautious</span><span class="l-zh">谨慎</span></span><span><span class="l-en">neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">supportive</span><span class="l-zh">积极</span></span></div>
-      <p class="ov-foot"><span class="l-en">CCTV 新闻联播 tone · against the last</span><span class="l-zh">央视《新闻联播》基调 · 对比过去</span> 87<span class="l-en">d baseline</span><span class="l-zh">天基线</span> · 2026-09-07</p>
+      <p class="ov-foot"><span class="l-en">CCTV 新闻联播 tone · against the last</span><span class="l-zh">央视《新闻联播》基调 · 对比过去</span> 90<span class="l-en">d baseline</span><span class="l-zh">天基线</span> · 2026-09-10</p>
       
     </article>
 
@@ -361,43 +362,43 @@
         
         
         
-        <div class="mx-row th-markets">
-          <span class="mx-name"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-          <span class="mx-bar"><i style="width:100%"></i></span>
-          <span class="mx-n">8</span>
-        </div>
-        
-        
         <div class="mx-row th-monetary">
           <span class="mx-name"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
           <span class="mx-bar"><i style="width:100%"></i></span>
-          <span class="mx-n">8</span>
+          <span class="mx-n">12</span>
         </div>
         
         
-        <div class="mx-row th-policy">
-          <span class="mx-name"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+        <div class="mx-row th-markets">
+          <span class="mx-name"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
           <span class="mx-bar"><i style="width:50%"></i></span>
-          <span class="mx-n">4</span>
+          <span class="mx-n">6</span>
+        </div>
+        
+        
+        <div class="mx-row th-inflation">
+          <span class="mx-name"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+          <span class="mx-bar"><i style="width:17%"></i></span>
+          <span class="mx-n">2</span>
         </div>
         
         
         <div class="mx-row th-credit">
           <span class="mx-name"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
-          <span class="mx-bar"><i style="width:12%"></i></span>
-          <span class="mx-n">1</span>
+          <span class="mx-bar"><i style="width:17%"></i></span>
+          <span class="mx-n">2</span>
         </div>
         
         
-        <div class="mx-row th-growth">
-          <span class="mx-name"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
-          <span class="mx-bar"><i style="width:12%"></i></span>
+        <div class="mx-row th-fiscal">
+          <span class="mx-name"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+          <span class="mx-bar"><i style="width:8%"></i></span>
           <span class="mx-n">1</span>
         </div>
         
       
       
-      <p class="ov-foot"><span class="l-en">Sources</span><span class="l-zh">来源</span>: <span class="l-en">Chinese financial press</span><span class="l-zh">中国财经媒体</span> 23 · <span class="l-en">domestic wire</span><span class="l-zh">国内财经快讯</span> 1</p>
+      <p class="ov-foot"><span class="l-en">Sources</span><span class="l-zh">来源</span>: <span class="l-en">Chinese financial press</span><span class="l-zh">中国财经媒体</span> 18 · <span class="l-en">global wire</span><span class="l-zh">国际通讯社</span> 5 · <span class="l-en">official releases</span><span class="l-zh">官方发布</span> 1</p>
       
     </article>
 
@@ -412,8 +413,8 @@
           
         
       </div>
-      <p class="nx-name"><span class="l-en">Customs trade (exports/imports)</span><span class="l-zh">海关进出口数据</span></p>
-      <p class="nx-date"><span class="l-en">Sep 7</span><span class="l-zh">9月7日</span> · <span style="color:#d0554f;font-weight:700"><span class="l-en">high-impact print</span><span class="l-zh">高影响数据</span></span></p>
+      <p class="nx-name"><span class="l-en">CPI (consumer prices)</span><span class="l-zh">CPI（居民消费价格）</span></p>
+      <p class="nx-date"><span class="l-en">Sep 10</span><span class="l-zh">9月10日</span> · <span style="color:#d0554f;font-weight:700"><span class="l-en">high-impact print</span><span class="l-zh">高影响数据</span></span></p>
       
     </article>
   </section>
@@ -434,256 +435,188 @@
       <div class="tp-feed" id="feed">
         
         
-        <a class="tp-item th-markets lead" href="https://wallstreetcn.com/livenews/3161360" target="_blank" rel="noopener"
-           data-theme="markets" data-importance="high"
-           data-search="吴清会见沙特投资部助理大臣穆巴拉克 wu qing meets with mubarak, assistant minister of investment of saudi arabia 吴清会见沙特投资部助理大臣穆巴拉克 中国证监会主席吴清9月7日在京会见了沙特投资部助理大臣穆巴拉克（ibrahim bin yousef al-mubarak）。双方就加强中沙资本市场合作、促进双向投资等议题交换了意见。 csrc chairman wu qing met with saudi arabia's assistant minister of investment ibrahim bin yousef al-mubarak in beijing on september 7. the two sides exchanged views on strengthening china-saudi capital market cooperation and promoting two-way investment. 中国证监会主席吴清9月7日在京会见了沙特投资部助理大臣穆巴拉克（ibrahim bin yousef al-mubarak）。双方就加强中沙资本市场合作、促进双向投资等议题交换了意见。 华尔街见闻 markets equity market 股票市场 ">
-          <time class="tp-when" data-t="2026-09-07T11:49:42+00:00" datetime="2026-09-07T11:49:42+00:00">09-07<br>11:49</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-07T11:49:42+00:00"></span></div>
+        <a class="tp-item th-monetary lead" href="https://wallstreetcn.com/livenews/3163414" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="报道：德鲁肯米勒称美国借贷成本仍“有点低” report: druckenmiller says us borrowing costs still "a bit low" 报道：德鲁肯米勒称美国借贷成本仍“有点低” 据德鲁肯米勒（stanley druckenmiller）发言记录及多位知情人士消息，德鲁肯米勒向一个华尔街私人听众表示，美国的借贷成本仍然“有点低”。 德鲁肯米勒在纽约由piper sandler主办的一场会议上称：“鉴于当前经济状况、资本支出热潮以及资本争夺战，如果说有什么的话，（债券收益率似乎）有点低了。” 他表示：“收益率的上涨一直是一种缓慢的、由基本面驱动的攀升。但我完全不觉得令人担忧。” 德鲁肯米勒还表示，降息“已不再必要”。 他认为，那些认为货币政策具有紧缩性的央行官员“荒谬可笑”。（英国金融时报） according to a transcript of stanley druckenmiller's remarks and multiple people familiar with the matter, druckenmiller told a private wall street audience that u.s. borrowing costs are still "a little low." speaking at a conference hosted by piper sandler in new york, druckenmiller said: "given the current economic situation, the capex boom and the fight for capital, if anything, (bond yields seem) a little low." he said: "the rise in yields has been a slow, fundamentals-driven grind. but i don't find it worrying at all." druckenmiller also said rate cuts are "no longer necessary." he called central bank officials who believe monetary policy is restrictive "ridiculous." (financial times) 据德鲁肯米勒（stanley druckenmiller）发言记录及多位知情人士消息，德鲁肯米勒向一个华尔街私人听众表示，美国的借贷成本仍然“有点低”。 德鲁肯米勒在纽约由piper sandler主办的一场会议上称：“鉴于当前经济状况、资本支出热潮以及资本争夺战，如果说有什么的话，（债券收益率似乎）有点低了。” 他表示：“收益率的上涨一直是一种缓慢的、由基本面驱动的攀升。但我完全不觉得令人担忧。” 德鲁肯米勒还表示，降息“已不再必要”。 他认为，那些认为货币政策具有紧缩性的央行官员“荒谬可笑”。（英国金融时报） 华尔街见闻 pboc_liquidity pboc & liquidity 央行与流动性 cbon">
+          <time class="tp-when" data-t="2026-09-10T17:25:16+00:00" datetime="2026-09-10T17:25:16+00:00">09-10<br>17:25</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-10T17:25:16+00:00"></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
-              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
               <span class="cn-src">华尔街见闻</span>
               <span class="cn-imp imp-high"><b>82</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">Wu Qing meets with Mubarak, Assistant Minister of Investment of Saudi Arabia</span><span class="l-zh">吴清会见沙特投资部助理大臣穆巴拉克</span></h2>
-            <p class="tp-sum"><span class="l-en">CSRC Chairman Wu Qing met with Saudi Arabia's Assistant Minister of Investment Ibrahim bin Yousef Al-Mubarak in Beijing on September 7. The two sides exchanged views on strengthening China-Saudi capital market cooperation and promoting two-way investment.</span><span class="l-zh">中国证监会主席吴清9月7日在京会见了沙特投资部助理大臣穆巴拉克（Ibrahim bin Yousef Al-Mubarak）。双方就加强中沙资本市场合作、促进双向投资等议题交换了意见。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+            <h2 class="tp-title"><span class="l-en">Report: Druckenmiller Says US Borrowing Costs Still "a Bit Low"</span><span class="l-zh">报道：德鲁肯米勒称美国借贷成本仍“有点低”</span></h2>
+            <p class="tp-sum"><span class="l-en">According to a transcript of Stanley Druckenmiller's remarks and multiple people familiar with the matter, Druckenmiller told a private Wall Street audience that U.S. borrowing costs are still "a little low." Speaking at a conference hosted by Piper Sandler in New York, Druckenmiller said: "Given the current economic situation, the capex boom and the fight for capital, if anything, (bond yields seem) a little low." He said: "The rise in yields has been a slow, fundamentals-driven grind. But I don't find it worrying at all." Druckenmiller also said rate cuts are "no longer necessary." He called central bank officials who believe monetary policy is restrictive "ridiculous." (Financial Times)</span><span class="l-zh">据德鲁肯米勒（Stanley Druckenmiller）发言记录及多位知情人士消息，德鲁肯米勒向一个华尔街私人听众表示，美国的借贷成本仍然“有点低”。 德鲁肯米勒在纽约由Piper Sandler主办的一场会议上称：“鉴于当前经济状况、资本支出热潮以及资本争夺战，如果说有什么的话，（债券收益率似乎）有点低了。” 他表示：“收益率的上涨一直是一种缓慢的、由基本面驱动的攀升。但我完全不觉得令人担忧。” 德鲁肯米勒还表示，降息“已不再必要”。 他认为，那些认为货币政策具有紧缩性的央行官员“荒谬可笑”。（英国金融时报）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-tk">CBON</span></div>
           </div>
         </a>
         
         
-        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3161359" target="_blank" rel="noopener"
-           data-theme="policy" data-importance="high"
-           data-search="吴清会见阿曼金融服务管理局执行总裁萨尔米 wu qing meets with salmi, executive president of oman's financial services authority 吴清会见阿曼金融服务管理局执行总裁萨尔米 9月7日，中国证监会主席吴清在京会见了阿曼金融服务管理局执行总裁萨尔米。双方就加强中阿资本市场合作及中国资本市场改革开放成效等议题交换了意见。（证监会网站） on september 7, csrc chairman wu qing met with sultan al salmi, ceo of oman's financial services authority, in beijing. the two sides exchanged views on strengthening china-oman capital market cooperation and progress in china's capital market reform and opening-up. (csrc website) 9月7日，中国证监会主席吴清在京会见了阿曼金融服务管理局执行总裁萨尔米。双方就加强中阿资本市场合作及中国资本市场改革开放成效等议题交换了意见。（证监会网站） 华尔街见闻 markets equity market 股票市场 ">
-          <time class="tp-when" data-t="2026-09-07T11:45:30+00:00" datetime="2026-09-07T11:45:30+00:00">09-07<br>11:45</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-07T11:45:30+00:00"></span></div>
+        <a class="tp-item th-monetary" href="https://www.stcn.com/article/detail/4180483.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="财政部部长助理常军红出席2026年第二次金砖国家财长和央行行长系列会议 assistant finance minister chang junhong attends the second brics finance ministers and central bank governors meeting series of 2026 财政部部长助理常军红出席2026年第二次金砖国家财长和央行行长系列会议    证券时报 pboc_liquidity fiscal_trade pboc & liquidity 央行与流动性 fiscal & trade 财政与贸易 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
-              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
-              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
+              <span class="cn-src">证券时报</span>
               <span class="cn-imp imp-high"><b>82</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">Wu Qing meets with Salmi, Executive President of Oman's Financial Services Authority</span><span class="l-zh">吴清会见阿曼金融服务管理局执行总裁萨尔米</span></h2>
-            <p class="tp-sum"><span class="l-en">On September 7, CSRC Chairman Wu Qing met with Sultan Al Salmi, CEO of Oman's Financial Services Authority, in Beijing. The two sides exchanged views on strengthening China-Oman capital market cooperation and progress in China's capital market reform and opening-up. (CSRC website)</span><span class="l-zh">9月7日，中国证监会主席吴清在京会见了阿曼金融服务管理局执行总裁萨尔米。双方就加强中阿资本市场合作及中国资本市场改革开放成效等议题交换了意见。（证监会网站）</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+            <h2 class="tp-title"><span class="l-en">Assistant Finance Minister Chang Junhong Attends the Second BRICS Finance Ministers and Central Bank Governors Meeting Series of 2026</span><span class="l-zh">财政部部长助理常军红出席2026年第二次金砖国家财长和央行行长系列会议</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">512880.SS</span></div>
           </div>
         </a>
         
         
-        <a class="tp-item th-markets" href="https://news.futunn.com/flash/20720079/dongxing-securities-a-share-stocks-to-be-continuously-suspended-from" target="_blank" rel="noopener"
+        <a class="tp-item th-markets" href="https://www.stcn.com/article/detail/4179615.html" target="_blank" rel="noopener"
            data-theme="markets" data-importance="high"
-           data-search="东兴证券：a股股票9月15日开市起连续停牌 直至终止上市 dongxing securities: a-share trading suspended from market open on sept 15 until delisting 东兴证券：a股股票9月15日开市起连续停牌 直至终止上市 东兴证券公告，公司收到证监会批复，核准中金公司吸收合并东兴证券及信达证券。为确保a股异议股东现金选择权实施，公司a股股票自2026年9月15日开市起连续停牌，直至终止上市，不再复牌。2026年9月14日为最后一个交易日。 dongxing securities announced that it received csrc approval for cicc to absorb and merge dongxing securities and cinda securities via share exchange. to ensure implementation of the cash option for a-share dissenting shareholders, the company's a-shares will be suspended continuously from market open on september 15, 2026, until delisting, with no resumption. september 14, 2026 will be the last trading day. 东兴证券公告，公司收到证监会批复，核准中金公司吸收合并东兴证券及信达证券。为确保a股异议股东现金选择权实施，公司a股股票自2026年9月15日开市起连续停牌，直至终止上市，不再复牌。2026年9月14日为最后一个交易日。 富途牛牛 markets equity market 股票市场 512880.ss">
-          <time class="tp-when" data-t="2026-09-07T12:41:59+00:00" datetime="2026-09-07T12:41:59+00:00">09-07<br>12:41</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-07T12:41:59+00:00"></span></div>
+           data-search="证监会：全力维护资本市场平稳运行 csrc: full efforts to maintain stable capital market operations 证监会：全力维护资本市场平稳运行    证券时报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
               <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-              <span class="cn-src">富途牛牛</span>
+              <span class="cn-src">证券时报</span>
+              <span class="cn-imp imp-high"><b>82</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">CSRC: Full efforts to maintain stable capital market operations</span><span class="l-zh">证监会：全力维护资本市场平稳运行</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-inflation" href="https://www.cnstock.com/topicDetail/356068" target="_blank" rel="noopener"
+           data-theme="inflation" data-importance="high"
+           data-search="8月cpi、ppi同比均回暖 物价有望保持温和上涨态势 both cpi and ppi rebounded year-on-year in august; prices are expected to maintain a mild upward trend 8月cpi、ppi同比均回暖 物价有望保持温和上涨态势    上海证券报 consumer consumer 消费 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>82</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Both CPI and PPI rebounded year-on-year in August; prices are expected to maintain a mild upward trend</span><span class="l-zh">8月CPI、PPI同比均回暖 物价有望保持温和上涨态势</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-inflation" href="https://www.scmp.com/economy/china-economy/article/3366851/chinas-factory-gate-price-growth-picks-august-iran-war-fuels-energy-volatility?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="inflation" data-importance="high"
+           data-search="china’s factory-gate price growth picks up in august as iran war fuels energy volatility  中国8月工业品出厂价格涨幅回升，伊朗战争加剧能源波动 china’s factory-gate price growth accelerated in august, while consumer inflation picked up again, amid volatile energy and commodity costs linked to the us-israel war on iran.
+the producer price index rose 3.8 per cent year on year last month, up from 3.5 per cent in july, according to data released by the national bureau of statistics (nbs) on wednesday.
+the reading beat a 3.6 per cent projection from economists polled by financial data provider wind.
+meanwhile, the consumer price index (cpi),...  中国8月份工厂出厂价格增速加快，而消费者通胀再次抬头，原因在于与美以对伊朗战争相关的能源和大宗商品成本波动。国家统计局周三发布的数据显示，上月生产者价格指数同比上涨3.8%，高于7月份的3.5%。 scmp - china economy consumer commodities consumer 消费 commodities 大宗商品 ">
+          <time class="tp-when" data-t="2026-09-09T02:28:22+00:00" datetime="2026-09-09T02:28:22+00:00">09-09<br>02:28</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-09T02:28:22+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+              <span class="cn-src">SCMP - China Economy</span>
+              <span class="cn-imp imp-high"><b>84</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">China’s factory-gate price growth picks up in August as Iran war fuels energy volatility</span><span class="l-zh">中国8月工业品出厂价格涨幅回升，伊朗战争加剧能源波动</span></h2>
+            <p class="tp-sum"><span class="l-en">China’s factory-gate price growth accelerated in August, while consumer inflation picked up again, amid volatile energy and commodity costs linked to the US-Israel war on Iran.
+The producer price index rose 3.8 per cent year on year last month, up from 3.5 per cent in July, according to data released by the National Bureau of Statistics (NBS) on Wednesday.
+The reading beat a 3.6 per cent projection from economists polled by financial data provider Wind.
+Meanwhile, the consumer price index (CPI),...</span><span class="l-zh">中国8月份工厂出厂价格增速加快，而消费者通胀再次抬头，原因在于与美以对伊朗战争相关的能源和大宗商品成本波动。国家统计局周三发布的数据显示，上月生产者价格指数同比上涨3.8%，高于7月份的3.5%。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-cchip"><span class="l-en">commodities</span><span class="l-zh">大宗商品</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.scmp.com/business/china-business/article/3366736/hong-kong-stocks-face-double-threat-us-inflation-and-yen-carry-trade-risks?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="hong kong stocks face double threat: us inflation and yen carry-trade risks  香港股市面临双重威胁：美国通胀与日元套息交易风险 hong kong and mainland chinese stocks face a high-stakes week as investors navigate us inflation data, a strengthening japanese yen and looming monetary policy decisions by two of the world’s most influential central banks.
+friday’s consumer price index in the united states will take centre stage, with the report arriving just ahead of the federal reserve’s policy meeting next week. with fed chair kevin warsh already signalling a strong emphasis on curbing inflation, market analysts believe a...  香港及内地股市本周面临高风险，投资者需应对美国通胀数据、日元走强以及全球最具影响力的两大央行即将做出的货币政策决定。周五美国消费者价格指数将成为焦点，该数据发布恰逢美联储 scmp - business consumer fiscal_trade consumer 消费 fiscal & trade 财政与贸易 2800.hk 512800.ss">
+          <time class="tp-when" data-t="2026-09-08T06:19:20+00:00" datetime="2026-09-08T06:19:20+00:00">09-08<br>06:19</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-08T06:19:20+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
+              <span class="cn-src">SCMP - Business</span>
               <span class="cn-imp imp-high"><b>76</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">Dongxing Securities: A-share trading suspended from market open on Sept 15 until delisting</span><span class="l-zh">东兴证券：A股股票9月15日开市起连续停牌 直至终止上市</span></h2>
-            <p class="tp-sum"><span class="l-en">Dongxing Securities announced that it received CSRC approval for CICC to absorb and merge Dongxing Securities and Cinda Securities via share exchange. To ensure implementation of the cash option for A-share dissenting shareholders, the company's A-shares will be suspended continuously from market open on September 15, 2026, until delisting, with no resumption. September 14, 2026 will be the last trading day.</span><span class="l-zh">东兴证券公告，公司收到证监会批复，核准中金公司吸收合并东兴证券及信达证券。为确保A股异议股东现金选择权实施，公司A股股票自2026年9月15日开市起连续停牌，直至终止上市，不再复牌。2026年9月14日为最后一个交易日。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+            <h2 class="tp-title"><span class="l-en">Hong Kong stocks face double threat: US inflation and yen carry-trade risks</span><span class="l-zh">香港股市面临双重威胁：美国通胀与日元套息交易风险</span></h2>
+            <p class="tp-sum"><span class="l-en">Hong Kong and mainland Chinese stocks face a high-stakes week as investors navigate US inflation data, a strengthening Japanese yen and looming monetary policy decisions by two of the world’s most influential central banks.
+Friday’s consumer price index in the United States will take centre stage, with the report arriving just ahead of the Federal Reserve’s policy meeting next week. With Fed Chair Kevin Warsh already signalling a strong emphasis on curbing inflation, market analysts believe a...</span><span class="l-zh">香港及内地股市本周面临高风险，投资者需应对美国通胀数据、日元走强以及全球最具影响力的两大央行即将做出的货币政策决定。周五美国消费者价格指数将成为焦点，该数据发布恰逢美联储</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">2800.HK</span><span class="cn-tk">512800.SS</span></div>
           </div>
         </a>
         
         
-        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3161365" target="_blank" rel="noopener"
+        <a class="tp-item th-monetary" href="https://wallstreetcn.com/livenews/3163410" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="德债收益率创十七年新高，交易员对欧洲央行加息前景的预期升温 german bond yields hit 17-year high as traders raise bets on ecb rate hikes 德债收益率创十七年新高，交易员对欧洲央行加息前景的预期升温 周四（9月10日）欧市尾盘，德国10年期国债收益率涨5.7个基点，报3.501%，最近两个交易日累计上涨13.5个基点，整体持续上扬，交投于3.424%-3.508%区间，欧洲央行宣布加息、行长拉加德在新闻发布会讲话、报道称央行官员考虑10月继续加息之际，北京时间23:14达到3.508%、突破2011年二季度顶部3.505%、逼近2009年二季度盘中最高位3.749%、以及2008年四季度最高位4.148%。 两年期德债收益率涨16.4个基点，报3.236%，最近四天累计上涨28.7个基点，20:15欧洲央行宣布加息之前维持微幅下跌状态、之后持续上涨， in late european trading on thursday (sept. 10), the german 10-year government bond yield rose 5.7 basis points to 3.501%, gaining 13.5 basis points over the past two trading days, extending its overall upward trend and trading in a range of 3.424%-3.508%. as the ecb announced a rate hike, president lagarde spoke at a press conference, and reports said central bank officials were considering another hike in october, the yield reached 3.508% at 23:14 beijing time, breaking above the 3.505% top from the second quarter of 2011, approaching the intraday high of 3.749% from the second quarter of 2009 and the high of 4.148% from the fourth quarter of 2008. the two-year german bond yield rose 16.4 basis points to 3.236%, gaining 28.7 basis points over the past four days. it held slight declines before the ecb announced the rate hike at 20:15 and then continued to rise, 周四（9月10日）欧市尾盘，德国10年期国债收益率涨5.7个基点，报3.501%，最近两个交易日累计上涨13.5个基点，整体持续上扬，交投于3.424%-3.508%区间，欧洲央行宣布加息、行长拉加德在新闻发布会讲话、报道称央行官员考虑10月继续加息之际，北京时间23:14达到3.508%、突破2011年二季度顶部3.505%、逼近2009年二季度盘中最高位3.749%、以及2008年四季度最高位4.148%。 两年期德债收益率涨16.4个基点，报3.236%，最近四天累计上涨28.7个基点，20:15欧洲央行宣布加息之前维持微幅下跌状态、之后持续上涨， 华尔街见闻 pboc_liquidity pboc & liquidity 央行与流动性 cbon">
+          <time class="tp-when" data-t="2026-09-10T17:14:42+00:00" datetime="2026-09-10T17:14:42+00:00">09-10<br>17:14</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-10T17:14:42+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">German Bond Yields Hit 17-Year High as Traders Raise Bets on ECB Rate Hikes</span><span class="l-zh">德债收益率创十七年新高，交易员对欧洲央行加息前景的预期升温</span></h2>
+            <p class="tp-sum"><span class="l-en">In late European trading on Thursday (Sept. 10), the German 10-year government bond yield rose 5.7 basis points to 3.501%, gaining 13.5 basis points over the past two trading days, extending its overall upward trend and trading in a range of 3.424%-3.508%. As the ECB announced a rate hike, President Lagarde spoke at a press conference, and reports said central bank officials were considering another hike in October, the yield reached 3.508% at 23:14 Beijing time, breaking above the 3.505% top from the second quarter of 2011, approaching the intraday high of 3.749% from the second quarter of 2009 and the high of 4.148% from the fourth quarter of 2008. The two-year German bond yield rose 16.4 basis points to 3.236%, gaining 28.7 basis points over the past four days. It held slight declines before the ECB announced the rate hike at 20:15 and then continued to rise,</span><span class="l-zh">周四（9月10日）欧市尾盘，德国10年期国债收益率涨5.7个基点，报3.501%，最近两个交易日累计上涨13.5个基点，整体持续上扬，交投于3.424%-3.508%区间，欧洲央行宣布加息、行长拉加德在新闻发布会讲话、报道称央行官员考虑10月继续加息之际，北京时间23:14达到3.508%、突破2011年二季度顶部3.505%、逼近2009年二季度盘中最高位3.749%、以及2008年四季度最高位4.148%。 两年期德债收益率涨16.4个基点，报3.236%，最近四天累计上涨28.7个基点，20:15欧洲央行宣布加息之前维持微幅下跌状态、之后持续上涨，</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-tk">CBON</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://wallstreetcn.com/livenews/3163449" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="美元指数涨超0.2% us dollar index rises over 0.2% 美元指数涨超0.2% 周四（9月10日）纽约尾盘，ice美元指数涨0.26%，报99.070点，日内交投区间为98.706-99.199点，欧洲股市开盘以来持续上扬、北京时间20:39（欧洲央行宣布加息之后）创9月4日以来新高，脱离周三所创8月21日以来最低位98.599点。 彭博美元指数涨0.30%，报1190.47点，日内交投区间为1185.81-1191.64点，脱离周三所创5月6日（最低1184.67点）以来盘中最低位1184.82点。 in late new york trading on thursday (sept. 10), the ice u.s. dollar index rose 0.26% to 99.070, with an intraday range of 98.706-99.199. it had been rising steadily since the european stock market opened and hit a new high since sept. 4 at 20:39 beijing time (after the ecb announced its rate hike), moving away from the lowest level since aug. 21 of 98.599 set on wednesday. the bloomberg dollar index rose 0.30% to 1190.47, with an intraday range of 1185.81-1191.64, moving away from the intraday low of 1184.82 set on wednesday, the lowest since may 6 (low of 1184.67). 周四（9月10日）纽约尾盘，ice美元指数涨0.26%，报99.070点，日内交投区间为98.706-99.199点，欧洲股市开盘以来持续上扬、北京时间20:39（欧洲央行宣布加息之后）创9月4日以来新高，脱离周三所创8月21日以来最低位98.599点。 彭博美元指数涨0.30%，报1190.47点，日内交投区间为1185.81-1191.64点，脱离周三所创5月6日（最低1184.67点）以来盘中最低位1184.82点。 华尔街见闻 pboc_liquidity pboc & liquidity 央行与流动性 ">
+          <time class="tp-when" data-t="2026-09-10T19:24:36+00:00" datetime="2026-09-10T19:24:36+00:00">09-10<br>19:24</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-10T19:24:36+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">US Dollar Index Rises Over 0.2%</span><span class="l-zh">美元指数涨超0.2%</span></h2>
+            <p class="tp-sum"><span class="l-en">In late New York trading on Thursday (Sept. 10), the ICE U.S. Dollar Index rose 0.26% to 99.070, with an intraday range of 98.706-99.199. It had been rising steadily since the European stock market opened and hit a new high since Sept. 4 at 20:39 Beijing time (after the ECB announced its rate hike), moving away from the lowest level since Aug. 21 of 98.599 set on Wednesday. The Bloomberg Dollar Index rose 0.30% to 1190.47, with an intraday range of 1185.81-1191.64, moving away from the intraday low of 1184.82 set on Wednesday, the lowest since May 6 (low of 1184.67).</span><span class="l-zh">周四（9月10日）纽约尾盘，ICE美元指数涨0.26%，报99.070点，日内交投区间为98.706-99.199点，欧洲股市开盘以来持续上扬、北京时间20:39（欧洲央行宣布加息之后）创9月4日以来新高，脱离周三所创8月21日以来最低位98.599点。 彭博美元指数涨0.30%，报1190.47点，日内交投区间为1185.81-1191.64点，脱离周三所创5月6日（最低1184.67点）以来盘中最低位1184.82点。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.yicai.com/news/103359905.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="金融强国“十五五”规划出台：央行详解货币政策、人民币国际化等改革方向 “十五五”时期我国将推进金融高水平对外开放，推进人民币国际化，拓展人民币在国际贸易和投融资中的作用。 the financial powerhouse plan for the 15th five-year plan is introduced: the pboc explains in detail reform directions including monetary policy and renminbi internationalization. during the 15th five-year plan period, china will advance high-level financial opening-up, promote renminbi internationalization, and expand the role of the renminbi in international trade and investment and financing. 金融强国“十五五”规划出台：央行详解货币政策、人民币国际化等改革方向 “十五五”时期我国将推进金融高水平对外开放，推进人民币国际化，拓展人民币在国际贸易和投融资中的作用。    第一财经 pboc_liquidity yuan pboc & liquidity 央行与流动性 yuan & fx 人民币与汇率 cny">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">The financial powerhouse plan for the 15th Five-Year Plan is introduced: the PBOC explains in detail reform directions including monetary policy and renminbi internationalization. During the 15th Five-Year Plan period, China will advance high-level financial opening-up, promote renminbi internationalization, and expand the role of the renminbi in international trade and investment and financing.</span><span class="l-zh">金融强国“十五五”规划出台：央行详解货币政策、人民币国际化等改革方向 “十五五”时期我国将推进金融高水平对外开放，推进人民币国际化，拓展人民币在国际贸易和投融资中的作用。</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-tk">CNY</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.stcn.com/article/detail/4180007.html" target="_blank" rel="noopener"
            data-theme="markets" data-importance="high"
-           data-search="中金公司：吸收合并获批，a股股票将自9月15日开市起连续停牌 cicc: merger approval received; a-shares to be suspended from market open on sept 15 中金公司：吸收合并获批，a股股票将自9月15日开市起连续停牌 中金公司公告称，公司拟开展换股吸收合并重大资产重组项目的a股异议股东收购请求权有关事宜，已获证监会批复同意吸收合并东兴证券和信达证券。为确保a股异议股东收购请求权实施顺利进行，公司a股股票将自2026年9月15日开市起连续停牌。 cicc announced that it plans to proceed with matters related to the acquisition request rights of a-share dissenting shareholders in its major asset restructuring project involving share-exchange absorption and merger, having received csrc approval for the absorption and merger of dongxing securities and cinda securities. to ensure smooth implementation of the acquisition request rights for a-share dissenting shareholders, the company's a-shares will be suspended continuously from market open on september 15, 2026. 中金公司公告称，公司拟开展换股吸收合并重大资产重组项目的a股异议股东收购请求权有关事宜，已获证监会批复同意吸收合并东兴证券和信达证券。为确保a股异议股东收购请求权实施顺利进行，公司a股股票将自2026年9月15日开市起连续停牌。 华尔街见闻 markets equity market 股票市场 512880.ss">
-          <time class="tp-when" data-t="2026-09-07T12:08:04+00:00" datetime="2026-09-07T12:08:04+00:00">09-07<br>12:08</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-07T12:08:04+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-              <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-high"><b>76</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">CICC: Merger approval received; A-shares to be suspended from market open on Sept 15</span><span class="l-zh">中金公司：吸收合并获批，A股股票将自9月15日开市起连续停牌</span></h2>
-            <p class="tp-sum"><span class="l-en">CICC announced that it plans to proceed with matters related to the acquisition request rights of A-share dissenting shareholders in its major asset restructuring project involving share-exchange absorption and merger, having received CSRC approval for the absorption and merger of Dongxing Securities and Cinda Securities. To ensure smooth implementation of the acquisition request rights for A-share dissenting shareholders, the company's A-shares will be suspended continuously from market open on September 15, 2026.</span><span class="l-zh">中金公司公告称，公司拟开展换股吸收合并重大资产重组项目的A股异议股东收购请求权有关事宜，已获证监会批复同意吸收合并东兴证券和信达证券。为确保A股异议股东收购请求权实施顺利进行，公司A股股票将自2026年9月15日开市起连续停牌。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-monetary" href="https://wallstreetcn.com/livenews/3161408" target="_blank" rel="noopener"
-           data-theme="monetary" data-importance="high"
-           data-search="尽管铜价大涨，智利铜出口量仍跌至一年低点 chile copper exports fall to one-year low despite surging prices 尽管铜价大涨，智利铜出口量仍跌至一年低点 尽管铜价飙升，智利8月铜出口量仍跌至一年多来的最低水平，原因是这个全球最大铜生产国正面临严重冬季风暴和矿山运营挫折的双重困扰。 据周一公布的央行数据显示，上月智利铜出口额为46.2亿美元，较7月下降14%，较去年同期下降3.2%。这是2025年7月以来的最低月度出口额。而与此同时，铜价却在走强——8月铜均价较去年同期上涨超过40%。 despite surging copper prices, chile's copper exports fell to their lowest level in more than a year in august, as the world's largest copper producer grapples with severe winter storms and mining operational setbacks. central bank data released monday showed copper export revenue of $4.62 billion last month, down 14% from july and 3.2% year-on-year—the lowest monthly figure since july 2025. the decline came amid stronger copper prices, with august average prices up more than 40% year-on-year. 尽管铜价飙升，智利8月铜出口量仍跌至一年多来的最低水平，原因是这个全球最大铜生产国正面临严重冬季风暴和矿山运营挫折的双重困扰。 据周一公布的央行数据显示，上月智利铜出口额为46.2亿美元，较7月下降14%，较去年同期下降3.2%。这是2025年7月以来的最低月度出口额。而与此同时，铜价却在走强——8月铜均价较去年同期上涨超过40%。 华尔街见闻 pboc_liquidity fiscal_trade commodities pboc & liquidity 央行与流动性 fiscal & trade 财政与贸易 commodities 大宗商品 ">
-          <time class="tp-when" data-t="2026-09-07T14:19:20+00:00" datetime="2026-09-07T14:19:20+00:00">09-07<br>14:19</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-07T14:19:20+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
-              <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-high"><b>74</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Chile copper exports fall to one-year low despite surging prices</span><span class="l-zh">尽管铜价大涨，智利铜出口量仍跌至一年低点</span></h2>
-            <p class="tp-sum"><span class="l-en">Despite surging copper prices, Chile's copper exports fell to their lowest level in more than a year in August, as the world's largest copper producer grapples with severe winter storms and mining operational setbacks. Central bank data released Monday showed copper export revenue of $4.62 billion last month, down 14% from July and 3.2% year-on-year—the lowest monthly figure since July 2025. The decline came amid stronger copper prices, with August average prices up more than 40% year-on-year.</span><span class="l-zh">尽管铜价飙升，智利8月铜出口量仍跌至一年多来的最低水平，原因是这个全球最大铜生产国正面临严重冬季风暴和矿山运营挫折的双重困扰。 据周一公布的央行数据显示，上月智利铜出口额为46.2亿美元，较7月下降14%，较去年同期下降3.2%。这是2025年7月以来的最低月度出口额。而与此同时，铜价却在走强——8月铜均价较去年同期上涨超过40%。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-cchip"><span class="l-en">commodities</span><span class="l-zh">大宗商品</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-monetary" href="https://www.gelonghui.com/live/2655255" target="_blank" rel="noopener"
-           data-theme="monetary" data-importance="high"
-           data-search="智利铜出口量跌至一年低点，尽管铜价出现反弹 chile copper exports drop to one-year low despite price rebound 智利铜出口量跌至一年低点，尽管铜价出现反弹 尽管铜价大幅上涨，但受强冬季风暴与矿山生产受阻影响，全球最大产铜国智利8月铜出口量跌至一年多以来最低水平。智利央行周一公布的数据显示，上月铜出口额为46.2亿美元，较7月下降14%，同比下降3.2%，为2025年7月以来单月最低值。此次出口下滑发生在铜价走强的背景之下，8月铜均价较去年同期高出40%以上。今年智利采矿业持续遭遇生产故障；7‑8月，暴雨、降雪、强风形成的风暴干扰矿山作业，同时海面风浪过大也间歇性限制港口运转。这个占全球铜矿开采产量四分之一的国家出现生产困境，为铜价提供支撑，本就因其他地区供应中断而紧张的全球供应局面进一步收紧。 despite a sharp rise in copper prices, chile, the world's largest copper producer, saw august copper exports fall to their lowest level in over a year due to severe winter storms and disrupted mining operations. central bank data released monday showed copper export revenue of $4.62 billion in august, down 14% from july and 3.2% year-on-year, the lowest monthly figure since july 2025. the decline occurred against a backdrop of strong copper prices, with august average prices more than 40% higher than the same period last year. chile's mining industry has faced persistent production disruptions this year; from july to august, storms bringing heavy rain, snow and strong winds hampered mining operations, while rough seas intermittently restricted port activity. production difficulties in this country, which accounts for about a quarter of global copper mining output, have underpinned copper prices, further tightening an already strained global supply situation caused by disruptions elsewhere. 尽管铜价大幅上涨，但受强冬季风暴与矿山生产受阻影响，全球最大产铜国智利8月铜出口量跌至一年多以来最低水平。智利央行周一公布的数据显示，上月铜出口额为46.2亿美元，较7月下降14%，同比下降3.2%，为2025年7月以来单月最低值。此次出口下滑发生在铜价走强的背景之下，8月铜均价较去年同期高出40%以上。今年智利采矿业持续遭遇生产故障；7‑8月，暴雨、降雪、强风形成的风暴干扰矿山作业，同时海面风浪过大也间歇性限制港口运转。这个占全球铜矿开采产量四分之一的国家出现生产困境，为铜价提供支撑，本就因其他地区供应中断而紧张的全球供应局面进一步收紧。 格隆汇 pboc_liquidity fiscal_trade commodities pboc & liquidity 央行与流动性 fiscal & trade 财政与贸易 commodities 大宗商品 ">
-          <time class="tp-when" data-t="2026-09-07T14:18:48+00:00" datetime="2026-09-07T14:18:48+00:00">09-07<br>14:18</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-07T14:18:48+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
-              <span class="cn-src">格隆汇</span>
-              <span class="cn-imp imp-high"><b>74</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Chile copper exports drop to one-year low despite price rebound</span><span class="l-zh">智利铜出口量跌至一年低点，尽管铜价出现反弹</span></h2>
-            <p class="tp-sum"><span class="l-en">Despite a sharp rise in copper prices, Chile, the world's largest copper producer, saw August copper exports fall to their lowest level in over a year due to severe winter storms and disrupted mining operations. Central bank data released Monday showed copper export revenue of $4.62 billion in August, down 14% from July and 3.2% year-on-year, the lowest monthly figure since July 2025. The decline occurred against a backdrop of strong copper prices, with August average prices more than 40% higher than the same period last year. Chile's mining industry has faced persistent production disruptions this year; from July to August, storms bringing heavy rain, snow and strong winds hampered mining operations, while rough seas intermittently restricted port activity. Production difficulties in this country, which accounts for about a quarter of global copper mining output, have underpinned copper prices, further tightening an already strained global supply situation caused by disruptions elsewhere.</span><span class="l-zh">尽管铜价大幅上涨，但受强冬季风暴与矿山生产受阻影响，全球最大产铜国智利8月铜出口量跌至一年多以来最低水平。智利央行周一公布的数据显示，上月铜出口额为46.2亿美元，较7月下降14%，同比下降3.2%，为2025年7月以来单月最低值。此次出口下滑发生在铜价走强的背景之下，8月铜均价较去年同期高出40%以上。今年智利采矿业持续遭遇生产故障；7‑8月，暴雨、降雪、强风形成的风暴干扰矿山作业，同时海面风浪过大也间歇性限制港口运转。这个占全球铜矿开采产量四分之一的国家出现生产困境，为铜价提供支撑，本就因其他地区供应中断而紧张的全球供应局面进一步收紧。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-cchip"><span class="l-en">commodities</span><span class="l-zh">大宗商品</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-monetary" href="https://news.futunn.com/flash/20719952/central-bank-of-chile-chile-s-copper-export-revenues-reached" target="_blank" rel="noopener"
-           data-theme="monetary" data-importance="high"
-           data-search="智利央行：智利八月份铜出口收入为46.25亿美元 central bank of chile: august copper export revenue at $4.625 billion 智利央行：智利八月份铜出口收入为46.25亿美元 智利央行：智利八月份铜出口收入为46.25亿美元。 central bank of chile: chile's copper export revenue for august was $4.625 billion. 智利央行：智利八月份铜出口收入为46.25亿美元。 富途牛牛 pboc_liquidity fiscal_trade commodities pboc & liquidity 央行与流动性 fiscal & trade 财政与贸易 commodities 大宗商品 ">
-          <time class="tp-when" data-t="2026-09-07T11:33:12+00:00" datetime="2026-09-07T11:33:12+00:00">09-07<br>11:33</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-07T11:33:12+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
-              <span class="cn-src">富途牛牛</span>
-              <span class="cn-imp imp-high"><b>74</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Central Bank of Chile: August copper export revenue at $4.625 billion</span><span class="l-zh">智利央行：智利八月份铜出口收入为46.25亿美元</span></h2>
-            <p class="tp-sum"><span class="l-en">Central Bank of Chile: Chile's copper export revenue for August was $4.625 billion.</span><span class="l-zh">智利央行：智利八月份铜出口收入为46.25亿美元。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-cchip"><span class="l-en">commodities</span><span class="l-zh">大宗商品</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-monetary" href="https://flash.jin10.com/detail/20260907215145333800" target="_blank" rel="noopener"
-           data-theme="monetary" data-importance="high"
-           data-search="本周美国财政部暂定国债回购安排 us treasury tentative buyback schedule for this week 本周美国财政部暂定国债回购安排 按美国财政部日前公布的2026年8月季度再融资计划中的暂定回购时间表，9月国债回购安排如下。<b>财政部回购操作时间均为美国东部时间13:40–14:00，即北京时间次日01:40—02:00（美国夏令时期间）。</b><br/>需要特别注意：美国财政部8月19日已经宣布，从9月9日起，10年至20年期和20年至30年期名义附息国债的流动性支持回购规模将至少翻倍至每次至少40亿美元，这一调整适用于本轮再融资季度剩余时间。<b>因此，表中的原暂定最高规模20亿美元，后续应以财政部更新后的回购时间表为准。</b>其中，9月10日和9月24日两次长期名义国债回 according to the tentative buyback schedule in the u.s. treasury's august 2026 quarterly refunding announcement released recently, september treasury buyback operations are arranged as follows. <b>treasury buyback operations will run 13:40–14:00 et, i.e., 01:40–02:00 beijing time the next day (during u.s. daylight saving time).</b><br/>note: on august 19, the u.s. treasury announced that starting september 9, liquidity support buyback sizes for 10-to-20-year and 20-to-30-year nominal coupon treasuries will be at least doubled to at least $4 billion per operation, with the adjustment applying for the remainder of the current refunding quarter. <b>therefore, the original tentative maximum of $2 billion in the table should give way to the treasury's updated buyback schedule.</b> among them, two long-term nominal coupon treasury buybacks on september 10 and september 24... 按美国财政部日前公布的2026年8月季度再融资计划中的暂定回购时间表，9月国债回购安排如下。<b>财政部回购操作时间均为美国东部时间13:40–14:00，即北京时间次日01:40—02:00（美国夏令时期间）。</b><br/>需要特别注意：美国财政部8月19日已经宣布，从9月9日起，10年至20年期和20年至30年期名义附息国债的流动性支持回购规模将至少翻倍至每次至少40亿美元，这一调整适用于本轮再融资季度剩余时间。<b>因此，表中的原暂定最高规模20亿美元，后续应以财政部更新后的回购时间表为准。</b>其中，9月10日和9月24日两次长期名义国债回 金十数据 fiscal_trade fiscal & trade 财政与贸易 cbon">
-          <time class="tp-when" data-t="2026-09-07T21:51:45+08:00" datetime="2026-09-07T21:51:45+08:00">09-07<br>21:51</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-07T21:51:45+08:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
-              <span class="cn-src">金十数据</span>
-              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">US Treasury tentative buyback schedule for this week</span><span class="l-zh">本周美国财政部暂定国债回购安排</span></h2>
-            <p class="tp-sum"><span class="l-en">According to the tentative buyback schedule in the U.S. Treasury's August 2026 quarterly refunding announcement released recently, September Treasury buyback operations are arranged as follows. <b>Treasury buyback operations will run 13:40–14:00 ET, i.e., 01:40–02:00 Beijing time the next day (during U.S. daylight saving time).</b><br/>Note: On August 19, the U.S. Treasury announced that starting September 9, liquidity support buyback sizes for 10-to-20-year and 20-to-30-year nominal coupon Treasuries will be at least doubled to at least $4 billion per operation, with the adjustment applying for the remainder of the current refunding quarter. <b>Therefore, the original tentative maximum of $2 billion in the table should give way to the Treasury's updated buyback schedule.</b> Among them, two long-term nominal coupon Treasury buybacks on September 10 and September 24...</span><span class="l-zh">按美国财政部日前公布的2026年8月季度再融资计划中的暂定回购时间表，9月国债回购安排如下。<b>财政部回购操作时间均为美国东部时间13:40–14:00，即北京时间次日01:40—02:00（美国夏令时期间）。</b><br/>需要特别注意：美国财政部8月19日已经宣布，从9月9日起，10年至20年期和20年至30年期名义附息国债的流动性支持回购规模将至少翻倍至每次至少40亿美元，这一调整适用于本轮再融资季度剩余时间。<b>因此，表中的原暂定最高规模20亿美元，后续应以财政部更新后的回购时间表为准。</b>其中，9月10日和9月24日两次长期名义国债回</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">CBON</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-credit" href="https://news.10jqka.com.cn/20260907/c679671647.shtml" target="_blank" rel="noopener"
-           data-theme="credit" data-importance="high"
-           data-search="澳门特别行政区经济财政司举办“三五”规划经济财政范畴专场交流会 macao sar economic and financial affairs secretariat holds special exchange on '35' plan for economic and financial sectors 澳门特别行政区经济财政司举办“三五”规划经济财政范畴专场交流会 澳门特别行政区经济财政司9月7日上午在中国与葡语国家商贸合作服务平台综合体多功能厅举办《澳门特别行政区经济和社会发展第三个五年规划（2026—2030年）》经济财政范畴专场交流会。经济财政司司长吴惠娴率领经财团队各领导代表出席，约50名社团负责人和代表参与，聚焦“三五”规划中与经济适度多元发展相关的议题进行深入交流。金融管理局行政管理委员会主席黄善文表示，金管局将以债券市场、基金业务为主，服务经济适度多元；同时，将重点推进《证券法》、修改《货币发行法律制度》及相关法规，升级中央证券托管系统及快速支付系统等金融基建，并推动中葡金融服务平台建设、绿色金融发展 on the morning of september 7, the macao sar secretariat for economy and finance held a special exchange session on the economic and financial chapter of the third five-year plan for economic and social development of the macao sar (2026–2030) at the multifunctional hall of the china-portuguese-speaking countries commercial and trade cooperation service platform complex. secretary for economy and finance lei wai nong led the economic and financial team's leadership representatives, with around 50 heads and representatives of community associations participating, focusing in-depth exchanges on topics related to moderate economic diversification in the third five-year plan. monetary authority of macao administrative committee chairman chan sin man stated that the authority will focus on the bond market and fund business to serve moderate economic diversification, while prioritizing the advancement of the securities law, amendments to the legal regime of the issuance of currency and related regulations, upgrading financial infrastructure such as the central securities depository system and the faster payment system, and promoting the development of the china-portuguese financial services platform and green finance. 澳门特别行政区经济财政司9月7日上午在中国与葡语国家商贸合作服务平台综合体多功能厅举办《澳门特别行政区经济和社会发展第三个五年规划（2026—2030年）》经济财政范畴专场交流会。经济财政司司长吴惠娴率领经财团队各领导代表出席，约50名社团负责人和代表参与，聚焦“三五”规划中与经济适度多元发展相关的议题进行深入交流。金融管理局行政管理委员会主席黄善文表示，金管局将以债券市场、基金业务为主，服务经济适度多元；同时，将重点推进《证券法》、修改《货币发行法律制度》及相关法规，升级中央证券托管系统及快速支付系统等金融基建，并推动中葡金融服务平台建设、绿色金融发展 同花顺 fiscal_trade fiscal & trade 财政与贸易 512880.ss">
-          <time class="tp-when" data-t="2026-09-07T13:24:07+00:00" datetime="2026-09-07T13:24:07+00:00">09-07<br>13:24</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-07T13:24:07+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
-              <span class="cn-src">同花顺</span>
-              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Macao SAR Economic and Financial Affairs Secretariat holds special exchange on '35' plan for economic and financial sectors</span><span class="l-zh">澳门特别行政区经济财政司举办“三五”规划经济财政范畴专场交流会</span></h2>
-            <p class="tp-sum"><span class="l-en">On the morning of September 7, the Macao SAR Secretariat for Economy and Finance held a special exchange session on the economic and financial chapter of the Third Five-Year Plan for Economic and Social Development of the Macao SAR (2026–2030) at the multifunctional hall of the China-Portuguese-speaking Countries Commercial and Trade Cooperation Service Platform Complex. Secretary for Economy and Finance Lei Wai Nong led the economic and financial team's leadership representatives, with around 50 heads and representatives of community associations participating, focusing in-depth exchanges on topics related to moderate economic diversification in the Third Five-Year Plan. Monetary Authority of Macao Administrative Committee Chairman Chan Sin Man stated that the authority will focus on the bond market and fund business to serve moderate economic diversification, while prioritizing the advancement of the Securities Law, amendments to the Legal Regime of the Issuance of Currency and related regulations, upgrading financial infrastructure such as the Central Securities Depository System and the Faster Payment System, and promoting the development of the China-Portuguese financial services platform and green finance.</span><span class="l-zh">澳门特别行政区经济财政司9月7日上午在中国与葡语国家商贸合作服务平台综合体多功能厅举办《澳门特别行政区经济和社会发展第三个五年规划（2026—2030年）》经济财政范畴专场交流会。经济财政司司长吴惠娴率领经财团队各领导代表出席，约50名社团负责人和代表参与，聚焦“三五”规划中与经济适度多元发展相关的议题进行深入交流。金融管理局行政管理委员会主席黄善文表示，金管局将以债券市场、基金业务为主，服务经济适度多元；同时，将重点推进《证券法》、修改《货币发行法律制度》及相关法规，升级中央证券托管系统及快速支付系统等金融基建，并推动中葡金融服务平台建设、绿色金融发展</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">512880.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-markets" href="https://news.futunn.com/flash/20720021/cinda-securities-cicc-plans-to-absorb-and-merge-with-cinda" target="_blank" rel="noopener"
-           data-theme="markets" data-importance="high"
-           data-search="信达证券：中金公司拟吸收合并信达证券 公司将主动申请终止上市 cinda securities: cicc plans to absorb and merge cinda securities; company to voluntarily apply for delisting 信达证券：中金公司拟吸收合并信达证券 公司将主动申请终止上市 信达证券公告，中金公司拟通过换股方式吸收合并东兴证券、信达证券，本次交易已于2026年6月8日获公司股东会审议通过，并获中国证监会核准（证监许可〔2026〕2377号）。交易完成后，公司将不再具有独立主体资格并被注销，将于现金选择权申报截止日的次一交易日向上交所提交主动终止上市申请。上交所将在收到申请后5个交易日内决定是否受理，受理后15个交易日内决定是否同意终止上市；若获同意，公司将在相关决定公告之日起5个交易日内摘牌，股票不进入退市整理期交易。 cinda securities announced that cicc plans to absorb and merge dongxing securities and cinda securities through a share exchange. the transaction was approved by the company's shareholders' meeting on june 8, 2026, and approved by the csrc (csrc license no. [2026] 2377). upon completion of the transaction, the company will lose independent legal person status and be deregistered, and will submit an application for voluntary delisting to the shanghai stock exchange on the trading day following the deadline for cash option declaration. the exchange will decide within 5 trading days of receipt whether to accept the application, and within 15 trading days of acceptance whether to approve the delisting; if approved, the company will be delisted within 5 trading days of the announcement of the relevant decision, with shares not entering a delisting adjustment period. 信达证券公告，中金公司拟通过换股方式吸收合并东兴证券、信达证券，本次交易已于2026年6月8日获公司股东会审议通过，并获中国证监会核准（证监许可〔2026〕2377号）。交易完成后，公司将不再具有独立主体资格并被注销，将于现金选择权申报截止日的次一交易日向上交所提交主动终止上市申请。上交所将在收到申请后5个交易日内决定是否受理，受理后15个交易日内决定是否同意终止上市；若获同意，公司将在相关决定公告之日起5个交易日内摘牌，股票不进入退市整理期交易。 富途牛牛 markets equity market 股票市场 512880.ss">
-          <time class="tp-when" data-t="2026-09-07T12:09:32+00:00" datetime="2026-09-07T12:09:32+00:00">09-07<br>12:09</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-07T12:09:32+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-              <span class="cn-src">富途牛牛</span>
-              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Cinda Securities: CICC plans to absorb and merge Cinda Securities; company to voluntarily apply for delisting</span><span class="l-zh">信达证券：中金公司拟吸收合并信达证券 公司将主动申请终止上市</span></h2>
-            <p class="tp-sum"><span class="l-en">Cinda Securities announced that CICC plans to absorb and merge Dongxing Securities and Cinda Securities through a share exchange. The transaction was approved by the company's shareholders' meeting on June 8, 2026, and approved by the CSRC (CSRC License No. [2026] 2377). Upon completion of the transaction, the company will lose independent legal person status and be deregistered, and will submit an application for voluntary delisting to the Shanghai Stock Exchange on the trading day following the deadline for cash option declaration. The exchange will decide within 5 trading days of receipt whether to accept the application, and within 15 trading days of acceptance whether to approve the delisting; if approved, the company will be delisted within 5 trading days of the announcement of the relevant decision, with shares not entering a delisting adjustment period.</span><span class="l-zh">信达证券公告，中金公司拟通过换股方式吸收合并东兴证券、信达证券，本次交易已于2026年6月8日获公司股东会审议通过，并获中国证监会核准（证监许可〔2026〕2377号）。交易完成后，公司将不再具有独立主体资格并被注销，将于现金选择权申报截止日的次一交易日向上交所提交主动终止上市申请。上交所将在收到申请后5个交易日内决定是否受理，受理后15个交易日内决定是否同意终止上市；若获同意，公司将在相关决定公告之日起5个交易日内摘牌，股票不进入退市整理期交易。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-monetary" href="https://wallstreetcn.com/livenews/3161301" target="_blank" rel="noopener"
-           data-theme="monetary" data-importance="high"
-           data-search="法国预算谈判料陷激战 大选临近党争恐更趋尖锐 france budget talks expected to be fierce, partisan strife may sharpen as elections near 法国预算谈判料陷激战 大选临近党争恐更趋尖锐 在全球债券收益率上升、国内政治僵局持续的背景下，法国公共财政正受到越来越严格的审视。法国财政部长lescure表示，随着全球经济走弱、利率上升，2027年财政预算案将需要采取大规模节支措施，以控制不断扩大的财政赤字。lescure表示，如果月底将提交的预算案不采取任何措施，赤字可能扩大至相当于国内生产总值约6%的水平，而政府希望将其控制在5%以下。 amid rising global bond yields and prolonged domestic political gridlock, france's public finances are under increasing scrutiny. french finance minister lescure said that with a weakening global economy and higher interest rates, the 2027 budget will require large-scale spending cuts to control the widening fiscal deficit. lescure said that without measures in the budget to be submitted at the end of the month, the deficit could widen to around 6% of gdp, while the government aims to keep it below 5%. 在全球债券收益率上升、国内政治僵局持续的背景下，法国公共财政正受到越来越严格的审视。法国财政部长lescure表示，随着全球经济走弱、利率上升，2027年财政预算案将需要采取大规模节支措施，以控制不断扩大的财政赤字。lescure表示，如果月底将提交的预算案不采取任何措施，赤字可能扩大至相当于国内生产总值约6%的水平，而政府希望将其控制在5%以下。 华尔街见闻 fiscal_trade fiscal & trade 财政与贸易 cbon">
-          <time class="tp-when" data-t="2026-09-07T10:08:01+00:00" datetime="2026-09-07T10:08:01+00:00">09-07<br>10:08</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-07T10:08:01+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
-              <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">France budget talks expected to be fierce, partisan strife may sharpen as elections near</span><span class="l-zh">法国预算谈判料陷激战 大选临近党争恐更趋尖锐</span></h2>
-            <p class="tp-sum"><span class="l-en">Amid rising global bond yields and prolonged domestic political gridlock, France's public finances are under increasing scrutiny. French Finance Minister Lescure said that with a weakening global economy and higher interest rates, the 2027 budget will require large-scale spending cuts to control the widening fiscal deficit. Lescure said that without measures in the budget to be submitted at the end of the month, the deficit could widen to around 6% of GDP, while the government aims to keep it below 5%.</span><span class="l-zh">在全球债券收益率上升、国内政治僵局持续的背景下，法国公共财政正受到越来越严格的审视。法国财政部长Lescure表示，随着全球经济走弱、利率上升，2027年财政预算案将需要采取大规模节支措施，以控制不断扩大的财政赤字。Lescure表示，如果月底将提交的预算案不采取任何措施，赤字可能扩大至相当于国内生产总值约6%的水平，而政府希望将其控制在5%以下。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">CBON</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-growth" href="https://wallstreetcn.com/livenews/3161346" target="_blank" rel="noopener"
-           data-theme="growth" data-importance="high"
-           data-search="欧元区二季度经济增长数据上修 爱尔兰贡献突出 eurozone q2 growth revised upward, ireland a key contributor 欧元区二季度经济增长数据上修 爱尔兰贡献突出 在爱尔兰经济数据被大幅上修后，欧元区第二季度经济增速高于最初估计。欧盟统计局周一表示，欧元区gdp增长0.6%，高于此前公布的0.4%初值。这是逾一年来最快的季度增速，此前这个由21个国家组成的货币联盟在2026年第一季度经济增长停滞。此次修正主要由爱尔兰推动。爱尔兰上周表示，4月至6月经济产出增长10.2%，远高于此前3.9%的估值，主要得益于包括苹果和礼来在内的跨国企业表现强劲。相比之下，法国、奥地利和葡萄牙的经济表现均弱于最初估计。 the eurozone economy grew faster in the second quarter than initially estimated, after irish economic data was sharply revised upward. eurostat said monday that eurozone gdp grew 0.6%, above the preliminary reading of 0.4%—the fastest quarterly pace in over a year, following stagnant growth in the 21-country currency bloc in the first quarter of 2026. the revision was driven mainly by ireland, which said last week that economic output grew 10.2% in april-june, far above the previous estimate of 3.9%, boosted by strong performance from multinational companies including apple and eli lilly. by contrast, france, austria and portugal all performed weaker than initially estimated. 在爱尔兰经济数据被大幅上修后，欧元区第二季度经济增速高于最初估计。欧盟统计局周一表示，欧元区gdp增长0.6%，高于此前公布的0.4%初值。这是逾一年来最快的季度增速，此前这个由21个国家组成的货币联盟在2026年第一季度经济增长停滞。此次修正主要由爱尔兰推动。爱尔兰上周表示，4月至6月经济产出增长10.2%，远高于此前3.9%的估值，主要得益于包括苹果和礼来在内的跨国企业表现强劲。相比之下，法国、奥地利和葡萄牙的经济表现均弱于最初估计。 华尔街见闻 growth growth 增长 ">
-          <time class="tp-when" data-t="2026-09-07T11:17:45+00:00" datetime="2026-09-07T11:17:45+00:00">09-07<br>11:17</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-07T11:17:45+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
-              <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Eurozone Q2 growth revised upward, Ireland a key contributor</span><span class="l-zh">欧元区二季度经济增长数据上修 爱尔兰贡献突出</span></h2>
-            <p class="tp-sum"><span class="l-en">The eurozone economy grew faster in the second quarter than initially estimated, after Irish economic data was sharply revised upward. Eurostat said Monday that eurozone GDP grew 0.6%, above the preliminary reading of 0.4%—the fastest quarterly pace in over a year, following stagnant growth in the 21-country currency bloc in the first quarter of 2026. The revision was driven mainly by Ireland, which said last week that economic output grew 10.2% in April-June, far above the previous estimate of 3.9%, boosted by strong performance from multinational companies including Apple and Eli Lilly. By contrast, France, Austria and Portugal all performed weaker than initially estimated.</span><span class="l-zh">在爱尔兰经济数据被大幅上修后，欧元区第二季度经济增速高于最初估计。欧盟统计局周一表示，欧元区GDP增长0.6%，高于此前公布的0.4%初值。这是逾一年来最快的季度增速，此前这个由21个国家组成的货币联盟在2026年第一季度经济增长停滞。此次修正主要由爱尔兰推动。爱尔兰上周表示，4月至6月经济产出增长10.2%，远高于此前3.9%的估值，主要得益于包括苹果和礼来在内的跨国企业表现强劲。相比之下，法国、奥地利和葡萄牙的经济表现均弱于最初估计。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Growth</span><span class="l-zh">增长</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-policy" href="https://news.futunn.com/flash/20720150/scrapped-vehicles-transformed-into-dozens-of-industrial-raw-materials-retired" target="_blank" rel="noopener"
-           data-theme="policy" data-importance="medium"
-           data-search="报废汽车变身数十种工业原料 今年退役动力电池预计近50万吨 scrapped cars turned into dozens of industrial raw materials; retired power batteries this year estimated near 500,000 tons 报废汽车变身数十种工业原料 今年退役动力电池预计近50万吨 今年以来，以旧换新政策有力带动城市矿产资源回收利用。数据显示，今年上半年汽车以旧换新370.7万辆。经过精细拆解，一辆普通家用小客车可以回收几十种工业原材料。数据显示，每回收1000万辆报废汽车，就能再生钢铁1035万吨、有色金属75万吨、塑料90万吨、橡胶75万吨、玻璃60万吨，相当于节约了大量矿产资源和能源消耗。研究报告显示，预计今年，我国新能源动力电池退役量将接近50万吨。经过规范拆卸的退役动力电池，最终会被送到专业回收企业进行再生利用。（央视财经） this year, the trade-in policy has effectively boosted recycling of urban mineral resources. data show that in the first half of this year, 3.707 million vehicles were traded in under the program. through fine dismantling, an ordinary family car can yield dozens of industrial raw materials. data show that for every 10 million scrapped vehicles recycled, 10.35 million tons of steel, 750,000 tons of nonferrous metals, 900,000 tons of plastic, 750,000 tons of rubber and 600,000 tons of glass can be regenerated, equivalent to conserving substantial mineral resources and energy. research reports indicate that china's retired new-energy vehicle power batteries are expected to approach 500,000 tons this year. retired power batteries removed through standardized procedures will ultimately be sent to specialized recycling enterprises for reuse. (cctv finance) 今年以来，以旧换新政策有力带动城市矿产资源回收利用。数据显示，今年上半年汽车以旧换新370.7万辆。经过精细拆解，一辆普通家用小客车可以回收几十种工业原材料。数据显示，每回收1000万辆报废汽车，就能再生钢铁1035万吨、有色金属75万吨、塑料90万吨、橡胶75万吨、玻璃60万吨，相当于节约了大量矿产资源和能源消耗。研究报告显示，预计今年，我国新能源动力电池退役量将接近50万吨。经过规范拆卸的退役动力电池，最终会被送到专业回收企业进行再生利用。（央视财经） 富途牛牛 industrial commodities industry & manufacturing 工业与制造业 commodities 大宗商品 515030.ss 512400.ss">
-          <time class="tp-when" data-t="2026-09-07T13:33:13+00:00" datetime="2026-09-07T13:33:13+00:00">09-07<br>13:33</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-07T13:33:13+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
-              <span class="cn-src">富途牛牛</span>
-              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Scrapped cars turned into dozens of industrial raw materials; retired power batteries this year estimated near 500,000 tons</span><span class="l-zh">报废汽车变身数十种工业原料 今年退役动力电池预计近50万吨</span></h2>
-            <p class="tp-sum"><span class="l-en">This year, the trade-in policy has effectively boosted recycling of urban mineral resources. Data show that in the first half of this year, 3.707 million vehicles were traded in under the program. Through fine dismantling, an ordinary family car can yield dozens of industrial raw materials. Data show that for every 10 million scrapped vehicles recycled, 10.35 million tons of steel, 750,000 tons of nonferrous metals, 900,000 tons of plastic, 750,000 tons of rubber and 600,000 tons of glass can be regenerated, equivalent to conserving substantial mineral resources and energy. Research reports indicate that China's retired new-energy vehicle power batteries are expected to approach 500,000 tons this year. Retired power batteries removed through standardized procedures will ultimately be sent to specialized recycling enterprises for reuse. (CCTV Finance)</span><span class="l-zh">今年以来，以旧换新政策有力带动城市矿产资源回收利用。数据显示，今年上半年汽车以旧换新370.7万辆。经过精细拆解，一辆普通家用小客车可以回收几十种工业原材料。数据显示，每回收1000万辆报废汽车，就能再生钢铁1035万吨、有色金属75万吨、塑料90万吨、橡胶75万吨、玻璃60万吨，相当于节约了大量矿产资源和能源消耗。研究报告显示，预计今年，我国新能源动力电池退役量将接近50万吨。经过规范拆卸的退役动力电池，最终会被送到专业回收企业进行再生利用。（央视财经）</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span><span class="cn-cchip"><span class="l-en">commodities</span><span class="l-zh">大宗商品</span></span><span class="cn-tk">515030.SS</span><span class="cn-tk">512400.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-markets" href="https://www.stcn.com/article/detail/4175596.html" target="_blank" rel="noopener"
-           data-theme="markets" data-importance="high"
-           data-search="涉嫌内幕交易！暴涨超200%牛股，副总经理被证监会立案 suspected insider trading! deputy general manager of a stock up over 200% placed under csrc investigation 涉嫌内幕交易！暴涨超200%牛股，副总经理被证监会立案    证券时报 markets equity market 股票市场 512880.ss">
+           data-search="证监会：年内中长期资金净买入a股超6000亿元 csrc: net purchases of a-shares by medium- and long-term funds exceeded 600 billion yuan during the year 证监会：年内中长期资金净买入a股超6000亿元    证券时报 markets equity market 股票市场 512880.ss">
           <time class="tp-when" data-t="" >—</time>
           <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
           <div class="tp-body">
@@ -693,35 +626,92 @@
               <span class="cn-src">证券时报</span>
               <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">Suspected insider trading! Deputy general manager of a stock up over 200% placed under CSRC investigation</span><span class="l-zh">涉嫌内幕交易！暴涨超200%牛股，副总经理被证监会立案</span></h2>
+            <h2 class="tp-title"><span class="l-en">CSRC: Net purchases of A-shares by medium- and long-term funds exceeded 600 billion yuan during the year</span><span class="l-zh">证监会：年内中长期资金净买入A股超6000亿元</span></h2>
             
             <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
           </div>
         </a>
         
         
-        <a class="tp-item th-markets" href="https://www.stcn.com/article/detail/4175632.html" target="_blank" rel="noopener"
+        <a class="tp-item th-monetary" href="https://www.stcn.com/article/detail/4179973.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="央行：将完善存款准备金制度 pboc: will improve the deposit reserve system 央行：将完善存款准备金制度    证券时报 pboc_liquidity pboc & liquidity 央行与流动性 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
+              <span class="cn-src">证券时报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">PBOC: Will improve the deposit reserve system</span><span class="l-zh">央行：将完善存款准备金制度</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.stcn.com/article/detail/4180418.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="央行将在9月中旬连续开展隔夜逆回购操作 the pboc will conduct consecutive overnight reverse repo operations in mid-september 央行将在9月中旬连续开展隔夜逆回购操作    证券时报 pboc_liquidity pboc & liquidity 央行与流动性 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
+              <span class="cn-src">证券时报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">The PBOC will conduct consecutive overnight reverse repo operations in mid-September</span><span class="l-zh">央行将在9月中旬连续开展隔夜逆回购操作</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.cnstock.com/commonDetail/788186" target="_blank" rel="noopener"
            data-theme="markets" data-importance="high"
-           data-search="公告精选：中金公司换股吸并东兴证券及信达证券获证监会批复 announcement highlights: cicc's share-swap absorption of dongxing securities and cinda securities gets csrc approval 公告精选：中金公司换股吸并东兴证券及信达证券获证监会批复    证券时报 markets equity market 股票市场 512880.ss">
+           data-search="中国资产“确定性”筑牢资本市场内在稳定性 the "certainty" of chinese assets fortifies the intrinsic stability of the capital market 中国资产“确定性”筑牢资本市场内在稳定性    上海证券报 markets equity market 股票市场 512880.ss">
           <time class="tp-when" data-t="" >—</time>
           <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
               <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-              <span class="cn-src">证券时报</span>
+              <span class="cn-src">上海证券报</span>
               <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">Announcement highlights: CICC's share-swap absorption of Dongxing Securities and Cinda Securities gets CSRC approval</span><span class="l-zh">公告精选：中金公司换股吸并东兴证券及信达证券获证监会批复</span></h2>
+            <h2 class="tp-title"><span class="l-en">The "certainty" of Chinese assets fortifies the intrinsic stability of the capital market</span><span class="l-zh">中国资产“确定性”筑牢资本市场内在稳定性</span></h2>
             
             <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
           </div>
         </a>
         
         
-        <a class="tp-item th-monetary" href="https://www.cnstock.com/commonDetail/786713" target="_blank" rel="noopener"
+        <a class="tp-item th-markets" href="https://www.cnstock.com/commonDetail/788350" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="证监会副主席李超：努力将a股市场打造为境内优质企业上市首选地 csrc vice chairman li chao: striving to make the a-share market the preferred listing destination for high-quality domestic enterprises 证监会副主席李超：努力将a股市场打造为境内优质企业上市首选地    上海证券报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">CSRC Vice Chairman Li Chao: Striving to make the A-share market the preferred listing destination for high-quality domestic enterprises</span><span class="l-zh">证监会副主席李超：努力将A股市场打造为境内优质企业上市首选地</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.cnstock.com/commonDetail/788352" target="_blank" rel="noopener"
            data-theme="monetary" data-importance="high"
-           data-search="我国央行连续22个月增持黄金储备 china's central bank increases gold reserves for 22 consecutive months 我国央行连续22个月增持黄金储备    上海证券报 pboc_liquidity pboc & liquidity 央行与流动性 512880.ss">
+           data-search="中国人民银行副行长陆磊：提高直接融资比重 更好发挥金融市场促进新质生产力发展作用 pboc deputy governor lu lei: increase the proportion of direct financing, better leverage financial markets to promote the development of new quality productive forces 中国人民银行副行长陆磊：提高直接融资比重 更好发挥金融市场促进新质生产力发展作用    上海证券报 pboc_liquidity pboc & liquidity 央行与流动性 512800.ss 512880.ss">
           <time class="tp-when" data-t="" >—</time>
           <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
           <div class="tp-body">
@@ -731,161 +721,192 @@
               <span class="cn-src">上海证券报</span>
               <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">China's central bank increases gold reserves for 22 consecutive months</span><span class="l-zh">我国央行连续22个月增持黄金储备</span></h2>
+            <h2 class="tp-title"><span class="l-en">PBOC Deputy Governor Lu Lei: Increase the proportion of direct financing, better leverage financial markets to promote the development of new quality productive forces</span><span class="l-zh">中国人民银行副行长陆磊：提高直接融资比重 更好发挥金融市场促进新质生产力发展作用</span></h2>
             
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-tk">512880.SS</span></div>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-tk">512800.SS</span><span class="cn-tk">512880.SS</span></div>
           </div>
         </a>
         
         
-        <a class="tp-item th-markets" href="https://news.10jqka.com.cn/20260907/c679671582.shtml" target="_blank" rel="noopener"
-           data-theme="markets" data-importance="medium"
-           data-search="交易提示：美股今日休市一天 trading note: us markets closed today 交易提示：美股今日休市一天 受美国劳动节假期影响，美国股市将于9月7日（周一）休市一日。芝商所（cme）旗下贵金属、美国原油期货合约交易提前于北京时间8日02:30结束，股指期货合约交易提前于北京时间8日01:00结束。洲际交易所（ice）旗下布伦特原油期货合约交易提前于北京时间8日01:30结束。 due to the u.s. labor day holiday, u.s. stock markets will be closed on monday, september 7. cme precious metals and u.s. crude oil futures trading will end early at 02:30 beijing time on september 8, and equity index futures trading will end early at 01:00 beijing time on september 8. ice brent crude oil futures trading will end early at 01:30 beijing time on september 8. 受美国劳动节假期影响，美国股市将于9月7日（周一）休市一日。芝商所（cme）旗下贵金属、美国原油期货合约交易提前于北京时间8日02:30结束，股指期货合约交易提前于北京时间8日01:00结束。洲际交易所（ice）旗下布伦特原油期货合约交易提前于北京时间8日01:30结束。 同花顺 commodities commodities 大宗商品 ">
-          <time class="tp-when" data-t="2026-09-07T13:20:17+00:00" datetime="2026-09-07T13:20:17+00:00">09-07<br>13:20</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-07T13:20:17+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-              <span class="cn-src">同花顺</span>
-              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Trading Note: US Markets Closed Today</span><span class="l-zh">交易提示：美股今日休市一天</span></h2>
-            <p class="tp-sum"><span class="l-en">Due to the U.S. Labor Day holiday, U.S. stock markets will be closed on Monday, September 7. CME precious metals and U.S. crude oil futures trading will end early at 02:30 Beijing time on September 8, and equity index futures trading will end early at 01:00 Beijing time on September 8. ICE Brent crude oil futures trading will end early at 01:30 Beijing time on September 8.</span><span class="l-zh">受美国劳动节假期影响，美国股市将于9月7日（周一）休市一日。芝商所（CME）旗下贵金属、美国原油期货合约交易提前于北京时间8日02:30结束，股指期货合约交易提前于北京时间8日01:00结束。洲际交易所（ICE）旗下布伦特原油期货合约交易提前于北京时间8日01:30结束。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">commodities</span><span class="l-zh">大宗商品</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-fiscal" href="https://news.futunn.com/flash/20720076/china-construction-machinery-association-sales-of-various-excavators-reached-19716" target="_blank" rel="noopener"
+        <a class="tp-item th-fiscal" href="https://news.futunn.com/flash/20732914/china-opposes-attempts-by-certain-countries-to-force-through-un" target="_blank" rel="noopener"
            data-theme="fiscal" data-importance="medium"
-           data-search="中国工程机械工业协会：8月销售各类挖掘机19716台 同比增长19.3% china construction machinery association: 19,716 excavators sold in august, up 19.3% year-on-year 中国工程机械工业协会：8月销售各类挖掘机19716台 同比增长19.3% 据中国工程机械工业协会对挖掘机主要制造企业统计，2026年8月销售各类挖掘机19716台，同比增长19.3%。其中：国内销量7986台（含电动挖掘机184台），同比增长3.92%；出口11730台（含电动挖掘机60台），同比增长32.7%。2026年1-8月，共销售挖掘机191557台，同比增长24.2%。其中：国内销量94619台（含电动挖掘机411台），同比增长17.4%；出口96938台（含电动挖掘机257台），同比增长31.8%。 according to statistics from the china construction machinery association on major excavator manufacturers, sales of various excavators totaled 19,716 units in august 2026, up 19.3% year-on-year. of these, domestic sales were 7,986 units (including 184 electric excavators), up 3.92%; exports were 11,730 units (including 60 electric excavators), up 32.7%. in january-august 2026, total excavator sales reached 191,557 units, up 24.2% year-on-year. of these, domestic sales were 94,619 units (including 411 electric excavators), up 17.4%; exports were 96,938 units (including 257 electric excavators), up 31.8%. 据中国工程机械工业协会对挖掘机主要制造企业统计，2026年8月销售各类挖掘机19716台，同比增长19.3%。其中：国内销量7986台（含电动挖掘机184台），同比增长3.92%；出口11730台（含电动挖掘机60台），同比增长32.7%。2026年1-8月，共销售挖掘机191557台，同比增长24.2%。其中：国内销量94619台（含电动挖掘机411台），同比增长17.4%；出口96938台（含电动挖掘机257台），同比增长31.8%。 富途牛牛 industrial fiscal_trade industry & manufacturing 工业与制造业 fiscal & trade 财政与贸易 ">
-          <time class="tp-when" data-t="2026-09-07T12:41:42+00:00" datetime="2026-09-07T12:41:42+00:00">09-07<br>12:41</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-07T12:41:42+00:00"></span></div>
+           data-search="中方反对个别国强推安理会制裁伊朗 china opposes push by certain country to impose un security council sanctions on iran 中方反对个别国强推安理会制裁伊朗 当地时间9月10日上午，联合国安理会个别成员国不顾安理会在相关问题上仍存在巨大分歧，执意强推安理会恢复对伊朗制裁，推动安理会在已被终止的议题下举行会议。中国常驻联合国副代表孙磊在发言中对此表示严重关切和强烈反对。孙磊指出，目前，美国加大对伊朗单边制裁、对伊朗发动新一轮军事打击，美伊互袭，地区局势再度紧张，各方劝和促谈努力严重受挫。中方对此高度关切、深感担忧，呼吁美国承诺不再动武，同伊朗真诚谈判。当事方应摒弃诉诸武力或以武力相威胁，推动伊朗核问题重回政治外交解决轨道，就实现全面持久停火、达成和平协议、政治外交解决伊朗核问题等寻找兼顾各方合理诉求的最大公约数 on the morning of sept. 10 local time, certain member states of the un security council, disregarding the huge differences that still exist within the council on the relevant issue, insisted on pushing the security council to restore sanctions on iran and pushed the council to hold a meeting under a topic that had already been terminated. sun lei, china's deputy permanent representative to the united nations, expressed serious concern and strong opposition in his remarks. sun lei pointed out that at present, the united states has stepped up unilateral sanctions on iran and launched a new round of military strikes against iran, with the u.s. and iran attacking each other, tensions in the region have risen again, and efforts by all parties to promote peace and talks have been severely setbacks. china is highly concerned and deeply worried about this, and calls on the united states to commit to no longer using force and to negotiate in good faith with iran. the parties concerned should abandon recourse to force or the threat of force, push the iran nuclear issue back onto the track of political and diplomatic settlement, and seek the greatest common denominator that accommodates the reasonable demands of all sides regarding achieving a comprehensive and lasting ceasefire, reaching a peace agreement and a political and diplomatic solution to the iran nuclear issue 当地时间9月10日上午，联合国安理会个别成员国不顾安理会在相关问题上仍存在巨大分歧，执意强推安理会恢复对伊朗制裁，推动安理会在已被终止的议题下举行会议。中国常驻联合国副代表孙磊在发言中对此表示严重关切和强烈反对。孙磊指出，目前，美国加大对伊朗单边制裁、对伊朗发动新一轮军事打击，美伊互袭，地区局势再度紧张，各方劝和促谈努力严重受挫。中方对此高度关切、深感担忧，呼吁美国承诺不再动武，同伊朗真诚谈判。当事方应摒弃诉诸武力或以武力相威胁，推动伊朗核问题重回政治外交解决轨道，就实现全面持久停火、达成和平协议、政治外交解决伊朗核问题等寻找兼顾各方合理诉求的最大公约数 富途牛牛 fiscal fiscal/trade 财政/贸易 ">
+          <time class="tp-when" data-t="2026-09-10T18:45:44+00:00" datetime="2026-09-10T18:45:44+00:00">09-10<br>18:45</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-10T18:45:44+00:00"></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
               <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
               <span class="cn-src">富途牛牛</span>
-              <span class="cn-imp imp-medium"><b>58</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">China Construction Machinery Association: 19,716 Excavators Sold in August, Up 19.3% Year-on-Year</span><span class="l-zh">中国工程机械工业协会：8月销售各类挖掘机19716台 同比增长19.3%</span></h2>
-            <p class="tp-sum"><span class="l-en">According to statistics from the China Construction Machinery Association on major excavator manufacturers, sales of various excavators totaled 19,716 units in August 2026, up 19.3% year-on-year. Of these, domestic sales were 7,986 units (including 184 electric excavators), up 3.92%; exports were 11,730 units (including 60 electric excavators), up 32.7%. In January-August 2026, total excavator sales reached 191,557 units, up 24.2% year-on-year. Of these, domestic sales were 94,619 units (including 411 electric excavators), up 17.4%; exports were 96,938 units (including 257 electric excavators), up 31.8%.</span><span class="l-zh">据中国工程机械工业协会对挖掘机主要制造企业统计，2026年8月销售各类挖掘机19716台，同比增长19.3%。其中：国内销量7986台（含电动挖掘机184台），同比增长3.92%；出口11730台（含电动挖掘机60台），同比增长32.7%。2026年1-8月，共销售挖掘机191557台，同比增长24.2%。其中：国内销量94619台（含电动挖掘机411台），同比增长17.4%；出口96938台（含电动挖掘机257台），同比增长31.8%。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-monetary" href="https://www.yicai.com/news/103355067.html" target="_blank" rel="noopener"
-           data-theme="monetary" data-importance="high"
-           data-search="全球黄金“回家”：美元信任裂痕加速扩大 储备资产大迁徙，各国央行不仅在“搬家”，更在“加仓”。 global gold 'coming home': widening dollar trust rift accelerates reserve asset exodus, central banks not just 'relocating' but 'accumulating'. 全球黄金“回家”：美元信任裂痕加速扩大 储备资产大迁徙，各国央行不仅在“搬家”，更在“加仓”。    第一财经 pboc_liquidity pboc & liquidity 央行与流动性 ">
-          <time class="tp-when" data-t="" >—</time>
-          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
-              <span class="cn-src">第一财经</span>
-              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Global Gold 'Coming Home': Widening Dollar Trust Rift Accelerates Reserve Asset Exodus, Central Banks Not Just 'Relocating' but 'Accumulating'.</span><span class="l-zh">全球黄金“回家”：美元信任裂痕加速扩大 储备资产大迁徙，各国央行不仅在“搬家”，更在“加仓”。</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-monetary" href="https://www.yicai.com/news/103355054.html" target="_blank" rel="noopener"
-           data-theme="monetary" data-importance="high"
-           data-search="连续五个月站稳3.4万亿美元关口，估值效应驱动8月外储抬升 央行连续第22个月增持黄金，单月增持量再创新高。 foreign reserves hold above $3.4 trillion for fifth consecutive month, valuation effects lift august figures; central bank adds gold for 22nd straight month, setting new monthly record. 连续五个月站稳3.4万亿美元关口，估值效应驱动8月外储抬升 央行连续第22个月增持黄金，单月增持量再创新高。    第一财经 pboc_liquidity pboc & liquidity 央行与流动性 ">
-          <time class="tp-when" data-t="" >—</time>
-          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
-              <span class="cn-src">第一财经</span>
-              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Foreign Reserves Hold Above $3.4 Trillion for Fifth Consecutive Month, Valuation Effects Lift August Figures; Central Bank Adds Gold for 22nd Straight Month, Setting New Monthly Record.</span><span class="l-zh">连续五个月站稳3.4万亿美元关口，估值效应驱动8月外储抬升 央行连续第22个月增持黄金，单月增持量再创新高。</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-tech" href="https://wallstreetcn.com/livenews/3161370" target="_blank" rel="noopener"
-           data-theme="tech" data-importance="medium"
-           data-search="长源东谷：拟发行股份收购康豪机电100%股权，作价50.1亿元 changyuan donggu: plans to acquire 100% stake in kanghao electromechanical via share issue, valued at 5.01 billion yuan 长源东谷：拟发行股份收购康豪机电100%股权，作价50.1亿元 长源东谷公告，公司拟通过发行股份方式向湖北芯源动力科技集团有限公司购买襄阳康豪机电工程有限公司100%股权，交易作价50.1亿元，并向不超过35名特定投资者发行股份募集配套资金，金额不超过20亿元。本次交易构成关联交易和重大资产重组，不构成重组上市；发行价格为29.75元/股，拟发行1.68亿股，占发行后总股本34.19%。交易尚需股东会批准、上交所审核通过及中国证监会注册同意等。 changyuan donggu announced that it plans to purchase 100% equity of xiangyang kanghao mechanical and electrical engineering co., ltd. from hubei xinyuan power technology group co., ltd. by issuing shares, with a transaction value of 5.01 billion yuan, and plans to issue shares to no more than 35 specific investors to raise supporting funds of no more than 2 billion yuan. the transaction constitutes a related-party transaction and a major asset restructuring, but does not constitute a restructuring-based listing; the issue price is 29.75 yuan per share, with a planned issuance of 168 million shares, accounting for 34.19% of total post-issuance share capital. the transaction is still subject to approval by the shareholders' meeting, review by the shanghai stock exchange, and registration approval by the csrc, among others. 长源东谷公告，公司拟通过发行股份方式向湖北芯源动力科技集团有限公司购买襄阳康豪机电工程有限公司100%股权，交易作价50.1亿元，并向不超过35名特定投资者发行股份募集配套资金，金额不超过20亿元。本次交易构成关联交易和重大资产重组，不构成重组上市；发行价格为29.75元/股，拟发行1.68亿股，占发行后总股本34.19%。交易尚需股东会批准、上交所审核通过及中国证监会注册同意等。 华尔街见闻 markets equity market 股票市场 ">
-          <time class="tp-when" data-t="2026-09-07T12:17:45+00:00" datetime="2026-09-07T12:17:45+00:00">09-07<br>12:17</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-07T12:17:45+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
-              <span class="cn-src">华尔街见闻</span>
               <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">Changyuan Donggu: Plans to Acquire 100% Stake in Kanghao Electromechanical via Share Issue, Valued at 5.01 Billion Yuan</span><span class="l-zh">长源东谷：拟发行股份收购康豪机电100%股权，作价50.1亿元</span></h2>
-            <p class="tp-sum"><span class="l-en">Changyuan Donggu announced that it plans to purchase 100% equity of Xiangyang Kanghao Mechanical and Electrical Engineering Co., Ltd. from Hubei Xinyuan Power Technology Group Co., Ltd. by issuing shares, with a transaction value of 5.01 billion yuan, and plans to issue shares to no more than 35 specific investors to raise supporting funds of no more than 2 billion yuan. The transaction constitutes a related-party transaction and a major asset restructuring, but does not constitute a restructuring-based listing; the issue price is 29.75 yuan per share, with a planned issuance of 168 million shares, accounting for 34.19% of total post-issuance share capital. The transaction is still subject to approval by the shareholders' meeting, review by the Shanghai Stock Exchange, and registration approval by the CSRC, among others.</span><span class="l-zh">长源东谷公告，公司拟通过发行股份方式向湖北芯源动力科技集团有限公司购买襄阳康豪机电工程有限公司100%股权，交易作价50.1亿元，并向不超过35名特定投资者发行股份募集配套资金，金额不超过20亿元。本次交易构成关联交易和重大资产重组，不构成重组上市；发行价格为29.75元/股，拟发行1.68亿股，占发行后总股本34.19%。交易尚需股东会批准、上交所审核通过及中国证监会注册同意等。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+            <h2 class="tp-title"><span class="l-en">China Opposes Push by Certain Country to Impose UN Security Council Sanctions on Iran</span><span class="l-zh">中方反对个别国强推安理会制裁伊朗</span></h2>
+            <p class="tp-sum"><span class="l-en">On the morning of Sept. 10 local time, certain member states of the UN Security Council, disregarding the huge differences that still exist within the Council on the relevant issue, insisted on pushing the Security Council to restore sanctions on Iran and pushed the Council to hold a meeting under a topic that had already been terminated. Sun Lei, China's deputy permanent representative to the United Nations, expressed serious concern and strong opposition in his remarks. Sun Lei pointed out that at present, the United States has stepped up unilateral sanctions on Iran and launched a new round of military strikes against Iran, with the U.S. and Iran attacking each other, tensions in the region have risen again, and efforts by all parties to promote peace and talks have been severely setbacks. China is highly concerned and deeply worried about this, and calls on the United States to commit to no longer using force and to negotiate in good faith with Iran. The parties concerned should abandon recourse to force or the threat of force, push the Iran nuclear issue back onto the track of political and diplomatic settlement, and seek the greatest common denominator that accommodates the reasonable demands of all sides regarding achieving a comprehensive and lasting ceasefire, reaching a peace agreement and a political and diplomatic solution to the Iran nuclear issue</span><span class="l-zh">当地时间9月10日上午，联合国安理会个别成员国不顾安理会在相关问题上仍存在巨大分歧，执意强推安理会恢复对伊朗制裁，推动安理会在已被终止的议题下举行会议。中国常驻联合国副代表孙磊在发言中对此表示严重关切和强烈反对。孙磊指出，目前，美国加大对伊朗单边制裁、对伊朗发动新一轮军事打击，美伊互袭，地区局势再度紧张，各方劝和促谈努力严重受挫。中方对此高度关切、深感担忧，呼吁美国承诺不再动武，同伊朗真诚谈判。当事方应摒弃诉诸武力或以武力相威胁，推动伊朗核问题重回政治外交解决轨道，就实现全面持久停火、达成和平协议、政治外交解决伊朗核问题等寻找兼顾各方合理诉求的最大公约数</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span></div>
           </div>
         </a>
         
         
-        <a class="tp-item th-policy" href="https://finance.eastmoney.com/a/202609073866845561.html" target="_blank" rel="noopener"
-           data-theme="policy" data-importance="medium"
-           data-search="雅居乐集团：8月预售金额合计约3.8亿元 agile group: august presales total approximately 380 million yuan 雅居乐集团：8月预售金额合计约3.8亿元 【雅居乐集团：8月预售金额合计约3.8亿元】9月7日，雅居乐集团在港交所公告，公司及其附属公司（本集团）连同本集团合营公司及联营公司以及由本集团管理并以「雅居乐」品牌销售的房地产项目于2026年8月的预售金额合计为约人民币3.8亿元而对应建筑面积为约4.6万平方米；平均价为每平方米人民币8,234元。 【agile group: august pre-sales totaled about rmb 380 million】on september 7, agile group announced on the hong kong stock exchange that the pre-sales amount for property projects sold under the "agile" brand by the company and its subsidiaries (the group), together with the group's joint ventures, associates, and managed projects, totaled approximately rmb 380 million in august 2026, with a corresponding floor area of about 46,000 square meters; the average price was rmb 8,234 per square meter. 【雅居乐集团：8月预售金额合计约3.8亿元】9月7日，雅居乐集团在港交所公告，公司及其附属公司（本集团）连同本集团合营公司及联营公司以及由本集团管理并以「雅居乐」品牌销售的房地产项目于2026年8月的预售金额合计为约人民币3.8亿元而对应建筑面积为约4.6万平方米；平均价为每平方米人民币8,234元。 eastmoney property yuan property 房地产 yuan & fx 人民币与汇率 cny 512200.ss">
-          <time class="tp-when" data-t="2026-09-07 19:25:44" datetime="2026-09-07 19:25:44">09-07<br>19:25</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-07 19:25:44"></span></div>
+        <a class="tp-item th-credit" href="https://wallstreetcn.com/livenews/3163417" target="_blank" rel="noopener"
+           data-theme="credit" data-importance="medium"
+           data-search="加拿大与乌克兰签署百年合作伙伴关系 canada and ukraine sign century-long partnership 加拿大与乌克兰签署百年合作伙伴关系 加拿大与乌克兰签署百年合作伙伴关系。 加拿大参照乌克兰模式推出全国无人机交易平台。 加拿大将向乌克兰提供4.3亿加元担保贷款，用于天然气项目。 canada and ukraine signed a century-long partnership. canada launched a national drone trading platform modeled on ukraine's. canada will provide ukraine with a c$430 million guaranteed loan for natural gas projects. 加拿大与乌克兰签署百年合作伙伴关系。 加拿大参照乌克兰模式推出全国无人机交易平台。 加拿大将向乌克兰提供4.3亿加元担保贷款，用于天然气项目。 华尔街见闻 credit_impulse credit & financing 信贷与社融 512800.ss">
+          <time class="tp-when" data-t="2026-09-10T17:32:37+00:00" datetime="2026-09-10T17:32:37+00:00">09-10<br>17:32</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-10T17:32:37+00:00"></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
-              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
-              <span class="cn-src">Eastmoney</span>
-              <span class="cn-imp imp-medium"><b>51</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Agile Group: August Presales Total Approximately 380 Million Yuan</span><span class="l-zh">雅居乐集团：8月预售金额合计约3.8亿元</span></h2>
-            <p class="tp-sum"><span class="l-en">【Agile Group: August pre-sales totaled about RMB 380 million】On September 7, Agile Group announced on the Hong Kong Stock Exchange that the pre-sales amount for property projects sold under the "Agile" brand by the company and its subsidiaries (the Group), together with the Group's joint ventures, associates, and managed projects, totaled approximately RMB 380 million in August 2026, with a corresponding floor area of about 46,000 square meters; the average price was RMB 8,234 per square meter.</span><span class="l-zh">【雅居乐集团：8月预售金额合计约3.8亿元】9月7日，雅居乐集团在港交所公告，公司及其附属公司（本集团）连同本集团合营公司及联营公司以及由本集团管理并以「雅居乐」品牌销售的房地产项目于2026年8月的预售金额合计为约人民币3.8亿元而对应建筑面积为约4.6万平方米；平均价为每平方米人民币8,234元。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-tk">CNY</span><span class="cn-tk">512200.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-policy" href="https://www.gelonghui.com/live/2655258" target="_blank" rel="noopener"
-           data-theme="policy" data-importance="medium"
-           data-search="*st利达：收到江苏证监局行政处罚事先告知书 *st lida: receives administrative penalty notice from jiangsu csrc bureau *st利达：收到江苏证监局行政处罚事先告知书 *st利达公告称，公司及顾益明等相关责任人因涉嫌信息披露违法违规，收到中国证券监督管理委员会江苏监管局下发的《行政处罚事先告知书》。2020年至2022年公司发生关联方非经营性资金占用合计17.03亿元，公司未及时披露且相关定期报告存在重大遗漏、虚假记载。江苏证监局拟对公司责令改正、给予警告，并处以900万元罚款；拟对顾益明给予警告，并处以1620万元罚款，同时采取5年证券市场禁入措施；对孙振华等其余4名责任人分别处以210万元至380万元不等罚款。截至2026年4月22日，关联方已归还全部占用资金及利息。本次事项未触及重大违法强制退市情形，最终处罚结果 *st lida announced that the company and related parties, including gu yiming, received an "advance notice of administrative penalty" from the jiangsu regulatory bureau of the china securities regulatory commission for suspected violations of information disclosure laws. from 2020 to 2022, the company incurred non-operating fund occupation by related parties totaling rmb 1.703 billion, which was not disclosed in a timely manner, and relevant periodic reports contained major omissions and false records. the jiangsu regulatory bureau plans to order the company to rectify, issue a warning, and impose a fine of rmb 9 million; plans to issue a warning to gu yiming and impose a fine of rmb 16.2 million, along with a 5-year market entry ban; and plans to impose fines ranging from rmb 2.1 million to rmb 3.8 million on four other responsible persons, including sun zhenhua. as of april 22, 2026, related parties had returned all occupied funds and interest. this matter does not trigger mandatory delisting for major violations, and the final penalty result... *st利达公告称，公司及顾益明等相关责任人因涉嫌信息披露违法违规，收到中国证券监督管理委员会江苏监管局下发的《行政处罚事先告知书》。2020年至2022年公司发生关联方非经营性资金占用合计17.03亿元，公司未及时披露且相关定期报告存在重大遗漏、虚假记载。江苏证监局拟对公司责令改正、给予警告，并处以900万元罚款；拟对顾益明给予警告，并处以1620万元罚款，同时采取5年证券市场禁入措施；对孙振华等其余4名责任人分别处以210万元至380万元不等罚款。截至2026年4月22日，关联方已归还全部占用资金及利息。本次事项未触及重大违法强制退市情形，最终处罚结果 格隆汇 policy policy 政策 512880.ss">
-          <time class="tp-when" data-t="2026-09-07T14:23:13+00:00" datetime="2026-09-07T14:23:13+00:00">09-07<br>14:23</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-07T14:23:13+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
-              <span class="cn-src">格隆汇</span>
+              <span class="cn-tag"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
+              <span class="cn-src">华尔街见闻</span>
               <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">*ST Lida: Receives Administrative Penalty Notice from Jiangsu CSRC Bureau</span><span class="l-zh">*ST利达：收到江苏证监局行政处罚事先告知书</span></h2>
-            <p class="tp-sum"><span class="l-en">*ST Lida announced that the company and related parties, including Gu Yiming, received an "Advance Notice of Administrative Penalty" from the Jiangsu Regulatory Bureau of the China Securities Regulatory Commission for suspected violations of information disclosure laws. From 2020 to 2022, the company incurred non-operating fund occupation by related parties totaling RMB 1.703 billion, which was not disclosed in a timely manner, and relevant periodic reports contained major omissions and false records. The Jiangsu Regulatory Bureau plans to order the company to rectify, issue a warning, and impose a fine of RMB 9 million; plans to issue a warning to Gu Yiming and impose a fine of RMB 16.2 million, along with a 5-year market entry ban; and plans to impose fines ranging from RMB 2.1 million to RMB 3.8 million on four other responsible persons, including Sun Zhenhua. As of April 22, 2026, related parties had returned all occupied funds and interest. This matter does not trigger mandatory delisting for major violations, and the final penalty result...</span><span class="l-zh">*ST利达公告称，公司及顾益明等相关责任人因涉嫌信息披露违法违规，收到中国证券监督管理委员会江苏监管局下发的《行政处罚事先告知书》。2020年至2022年公司发生关联方非经营性资金占用合计17.03亿元，公司未及时披露且相关定期报告存在重大遗漏、虚假记载。江苏证监局拟对公司责令改正、给予警告，并处以900万元罚款；拟对顾益明给予警告，并处以1620万元罚款，同时采取5年证券市场禁入措施；对孙振华等其余4名责任人分别处以210万元至380万元不等罚款。截至2026年4月22日，关联方已归还全部占用资金及利息。本次事项未触及重大违法强制退市情形，最终处罚结果</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Policy</span><span class="l-zh">政策</span></span><span class="cn-tk">512880.SS</span></div>
+            <h2 class="tp-title"><span class="l-en">Canada and Ukraine Sign Century-Long Partnership</span><span class="l-zh">加拿大与乌克兰签署百年合作伙伴关系</span></h2>
+            <p class="tp-sum"><span class="l-en">Canada and Ukraine signed a century-long partnership. Canada launched a national drone trading platform modeled on Ukraine's. Canada will provide Ukraine with a C$430 million guaranteed loan for natural gas projects.</span><span class="l-zh">加拿大与乌克兰签署百年合作伙伴关系。 加拿大参照乌克兰模式推出全国无人机交易平台。 加拿大将向乌克兰提供4.3亿加元担保贷款，用于天然气项目。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">credit & financing</span><span class="l-zh">信贷与社融</span></span><span class="cn-tk">512800.SS</span></div>
           </div>
         </a>
         
         
-        <a class="tp-item th-markets" href="https://news.futunn.com/flash/20720011/cicc-approval-for-absorption-and-merger-granted-shares-to-be" target="_blank" rel="noopener"
+        <a class="tp-item th-monetary" href="https://www.scmp.com/business/china-business/article/3366885/chinese-stock-recovery-faces-us-fed-and-oil-pressures-september-says-top-fund-manager?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="chinese stock recovery faces us fed and oil pressures in september, says top fund manager  顶级基金经理称，9月中国股市复苏面临美联储与油价压力 chinese stocks are likely to trade sideways through september, as resilient earnings growth is weighed down by concerns over potential monetary policy tightening in the united states, according to a recent strategy report by china asset management, the country’s second-largest mutual fund firm.
+mainland-listed companies posted double-digit profit growth in the first half of the year, providing a cushion that is expected to keep a floor under stock prices. but a hawkish tone from the us federal...  中国资产管理公司（国内第二大共同基金公司）近期的一份策略报告指出，中国股市9月份可能维持横盘走势，因为强劲的盈利增长受到对美国货币政策可能收紧的担忧所拖累。内地上市公司利润实现两位数增长， scmp - business fiscal_trade fiscal & trade 财政与贸易 ">
+          <time class="tp-when" data-t="2026-09-09T06:28:48+00:00" datetime="2026-09-09T06:28:48+00:00">09-09<br>06:28</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-09T06:28:48+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
+              <span class="cn-src">SCMP - Business</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Chinese stock recovery faces US Fed and oil pressures in September, says top fund manager</span><span class="l-zh">顶级基金经理称，9月中国股市复苏面临美联储与油价压力</span></h2>
+            <p class="tp-sum"><span class="l-en">Chinese stocks are likely to trade sideways through September, as resilient earnings growth is weighed down by concerns over potential monetary policy tightening in the United States, according to a recent strategy report by China Asset Management, the country’s second-largest mutual fund firm.
+Mainland-listed companies posted double-digit profit growth in the first half of the year, providing a cushion that is expected to keep a floor under stock prices. But a hawkish tone from the US Federal...</span><span class="l-zh">中国资产管理公司（国内第二大共同基金公司）近期的一份策略报告指出，中国股市9月份可能维持横盘走势，因为强劲的盈利增长受到对美国货币政策可能收紧的担忧所拖累。内地上市公司利润实现两位数增长，</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.cnstock.com/topicDetail/787818" target="_blank" rel="noopener"
            data-theme="markets" data-importance="medium"
-           data-search="中金公司：吸收合并获批 股票明起连续停牌 cicc: merger approval granted; shares to suspend trading from tomorrow 中金公司：吸收合并获批 股票明起连续停牌 中金公司公告，公司已于2026年9月7日收到中国证券监督管理委员会出具的《关于同意中国国际金融股份有限公司吸收合并东兴证券股份有限公司和信达证券股份有限公司注册、核准中国国际金融股份有限公司吸收合并东兴证券股份有限公司和信达证券股份有限公司、中国国际金融股份有限公司变更主要股东、东兴基金管理有限公司变更主要股东、信达澳亚基金管理有限公司变更主要股东、东兴期货有限责任公司、信达期货有限公司变更股权的批复》，公司a股股票将自2026年9月15日（即a股异议股东收购请求权申报首日）开市起连续停牌，并将于刊登a股异议股东收购请求权申报结果公告当日复牌。 cicc announced that on september 7, 2026, it received approval from the china securities regulatory commission regarding the registration and approval of china international capital corporation limited's absorption and merger of dongxing securities co., ltd. and sdic capital co., ltd., including changes in major shareholders of cicc, dongxing fund management co., ltd., and sdic essence fund management co., ltd., as well as equity changes in dongxing futures co., ltd. and sdic futures co., ltd. the company's a-share stocks will be suspended from trading continuously starting from september 15, 2026 (the first day for a-share dissenting shareholders to apply for share purchase rights) and will resume trading on the day the application result announcement is published. 中金公司公告，公司已于2026年9月7日收到中国证券监督管理委员会出具的《关于同意中国国际金融股份有限公司吸收合并东兴证券股份有限公司和信达证券股份有限公司注册、核准中国国际金融股份有限公司吸收合并东兴证券股份有限公司和信达证券股份有限公司、中国国际金融股份有限公司变更主要股东、东兴基金管理有限公司变更主要股东、信达澳亚基金管理有限公司变更主要股东、东兴期货有限责任公司、信达期货有限公司变更股权的批复》，公司a股股票将自2026年9月15日（即a股异议股东收购请求权申报首日）开市起连续停牌，并将于刊登a股异议股东收购请求权申报结果公告当日复牌。 富途牛牛 markets equity market 股票市场 512880.ss">
-          <time class="tp-when" data-t="2026-09-07T12:06:14+00:00" datetime="2026-09-07T12:06:14+00:00">09-07<br>12:06</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-07T12:06:14+00:00"></span></div>
+           data-search="专题 | 投洽会看新动向：中外资本加速双向奔赴 special report | new trends at cifit: chinese and foreign capital accelerate two-way flow 专题 | 投洽会看新动向：中外资本加速双向奔赴    上海证券报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
               <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-              <span class="cn-src">富途牛牛</span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Special Report | New Trends at CIFIT: Chinese and Foreign Capital Accelerate Two-Way Flow</span><span class="l-zh">专题 | 投洽会看新动向：中外资本加速双向奔赴</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://roadshow.cnstock.com/fbh/hablxfreit202602" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="华安百联消费reit2026年中期业绩说明会 预告 09-11 10:00-11:00 hua'an bailian consumer reit 2026 interim results briefing preview sep 11, 10:00-11:00 华安百联消费reit2026年中期业绩说明会 预告 09-11 10:00-11:00    上海证券报 consumer consumer 消费 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Hua'an Bailian Consumer REIT 2026 Interim Results Briefing Preview Sep 11, 10:00-11:00</span><span class="l-zh">华安百联消费REIT2026年中期业绩说明会 预告 09-11 10:00-11:00</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.scmp.com/economy/china-economy/article/3367083/china-says-yuans-global-rise-irreversible-and-has-strategy-back-it?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="medium"
+           data-search="china says yuan’s global rise is ‘irreversible’ – and has a strategy to back it up  中国称人民币国际化趋势“不可逆转”——并已有配套战略 chinese financial authorities have pledged further steps to expand the yuan’s global use amid a broader de-dollarisation trend, while vowing to make listing on mainland stock exchanges the “primary” choice for top-tier domestic companies.
+“the internationalisation of the yuan is a continuous and steady process, and an irreversible trend,” said lu lei, deputy governor of the people’s bank of china (pboc), at a press conference on thursday.
+to meet growing demand from market participants seeking...  中国金融当局承诺采取进一步措施扩大人民币的全球使用，顺应更广泛的去美元化趋势，同时誓言将内地证券交易所上市打造为顶级国内企业的“首选”。
+“人民币国际化是一个持续稳定的过程，也是不可逆转的趋势，”陆磊表示。 scmp - china economy pboc_liquidity yuan pboc & liquidity 央行与流动性 yuan & fx 人民币与汇率 cny">
+          <time class="tp-when" data-t="2026-09-10T12:11:02+00:00" datetime="2026-09-10T12:11:02+00:00">09-10<br>12:11</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-10T12:11:02+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
+              <span class="cn-src">SCMP - China Economy</span>
+              <span class="cn-imp imp-medium"><b>56</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">China says yuan’s global rise is ‘irreversible’ – and has a strategy to back it up</span><span class="l-zh">中国称人民币国际化趋势“不可逆转”——并已有配套战略</span></h2>
+            <p class="tp-sum"><span class="l-en">Chinese financial authorities have pledged further steps to expand the yuan’s global use amid a broader de-dollarisation trend, while vowing to make listing on mainland stock exchanges the “primary” choice for top-tier domestic companies.
+“The internationalisation of the yuan is a continuous and steady process, and an irreversible trend,” said Lu Lei, deputy governor of the People’s Bank of China (PBOC), at a press conference on Thursday.
+To meet growing demand from market participants seeking...</span><span class="l-zh">中国金融当局承诺采取进一步措施扩大人民币的全球使用，顺应更广泛的去美元化趋势，同时誓言将内地证券交易所上市打造为顶级国内企业的“首选”。
+“人民币国际化是一个持续稳定的过程，也是不可逆转的趋势，”陆磊表示。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-tk">CNY</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.pbc.gov.cn/en/3688110/3688172/2026/2026090410024788363/index.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="medium"
+           data-search="pboc officials answer pressâ questions on the opinions on reforming and improving real estate credit management to accelerate the establishment of a new development model for the real estateâ sector  央行官员就《关于改革和完善房地产信贷管理以加快构建房地产发展新模式的意见》回答记者提问    pboc pboc_liquidity credit_impulse property pboc & liquidity 央行与流动性 credit & financing 信贷与社融 property 房地产 512200.ss">
+          <time class="tp-when" data-t="2026-08-28" datetime="2026-08-28">08-28</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-08-28"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
+              <span class="cn-src">PBoC</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">PBOC Officials Answer PressÂ Questions on the Opinions on Reforming and Improving Real Estate Credit Management to Accelerate the Establishment of a New Development Model for the Real EstateÂ Sector</span><span class="l-zh">央行官员就《关于改革和完善房地产信贷管理以加快构建房地产发展新模式的意见》回答记者提问</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">credit & financing</span><span class="l-zh">信贷与社融</span></span><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-tk">512200.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3163408" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="medium"
+           data-search="美国批准向阿根廷出售“黑鹰”直升机 us approves sale of black hawk helicopters to argentina 美国批准向阿根廷出售“黑鹰”直升机 9月10日，美国国务院批准向阿根廷出售uh-60l“黑鹰”直升机及相关设备，预计总金额为1.4亿美元。（央视） on sept. 10, the u.s. state department approved the sale of uh-60l black hawk helicopters and related equipment to argentina, with an estimated total value of $140 million. (cctv) 9月10日，美国国务院批准向阿根廷出售uh-60l“黑鹰”直升机及相关设备，预计总金额为1.4亿美元。（央视） 华尔街见闻 policy policy 政策 ">
+          <time class="tp-when" data-t="2026-09-10T17:11:31+00:00" datetime="2026-09-10T17:11:31+00:00">09-10<br>17:11</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-10T17:11:31+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
               <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">CICC: Merger Approval Granted; Shares to Suspend Trading from Tomorrow</span><span class="l-zh">中金公司：吸收合并获批 股票明起连续停牌</span></h2>
-            <p class="tp-sum"><span class="l-en">CICC announced that on September 7, 2026, it received approval from the China Securities Regulatory Commission regarding the registration and approval of China International Capital Corporation Limited's absorption and merger of Dongxing Securities Co., Ltd. and SDIC Capital Co., Ltd., including changes in major shareholders of CICC, Dongxing Fund Management Co., Ltd., and SDIC Essence Fund Management Co., Ltd., as well as equity changes in Dongxing Futures Co., Ltd. and SDIC Futures Co., Ltd. The company's A-share stocks will be suspended from trading continuously starting from September 15, 2026 (the first day for A-share dissenting shareholders to apply for share purchase rights) and will resume trading on the day the application result announcement is published.</span><span class="l-zh">中金公司公告，公司已于2026年9月7日收到中国证券监督管理委员会出具的《关于同意中国国际金融股份有限公司吸收合并东兴证券股份有限公司和信达证券股份有限公司注册、核准中国国际金融股份有限公司吸收合并东兴证券股份有限公司和信达证券股份有限公司、中国国际金融股份有限公司变更主要股东、东兴基金管理有限公司变更主要股东、信达澳亚基金管理有限公司变更主要股东、东兴期货有限责任公司、信达期货有限公司变更股权的批复》，公司A股股票将自2026年9月15日（即A股异议股东收购请求权申报首日）开市起连续停牌，并将于刊登A股异议股东收购请求权申报结果公告当日复牌。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+            <h2 class="tp-title"><span class="l-en">US Approves Sale of Black Hawk Helicopters to Argentina</span><span class="l-zh">美国批准向阿根廷出售“黑鹰”直升机</span></h2>
+            <p class="tp-sum"><span class="l-en">On Sept. 10, the U.S. State Department approved the sale of UH-60L Black Hawk helicopters and related equipment to Argentina, with an estimated total value of $140 million. (CCTV)</span><span class="l-zh">9月10日，美国国务院批准向阿根廷出售UH-60L“黑鹰”直升机及相关设备，预计总金额为1.4亿美元。（央视）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Policy</span><span class="l-zh">政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-credit" href="https://www.scmp.com/business/banking-finance/article/3367096/record-china-us-gap-bond-yields-unlikely-trigger-capital-flight-marsh-investment?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="credit" data-importance="medium"
+           data-search="record china-us gap in bond yields unlikely to trigger capital flight: marsh investment  中美债券收益率差距创纪录不太可能引发资本外逃：marsh investment the widening yield spread between chinese and american government bonds is unlikely to trigger catastrophic capital flight from china, according to investment executives at marsh investment, who attribute the record spread to the united states’ fiscal pressures and global macro trends rather than a structural retreat for chinese assets.
+the spread between benchmark 10-year us treasury bonds and equivalent chinese sovereign bonds hit a record 3.17 percentage points this week. yields on us...  marsh investment的投资高管表示，中美政府债券收益率利差扩大不太可能引发资本从中国灾难性外流，他们将这一创纪录利差归因于美国的财政压力和全球宏观趋势，而非中国资产的结构性撤退。
+利差在 scmp - business credit credit 信用 cbon">
+          <time class="tp-when" data-t="2026-09-10T13:55:32+00:00" datetime="2026-09-10T13:55:32+00:00">09-10<br>13:55</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-10T13:55:32+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
+              <span class="cn-src">SCMP - Business</span>
+              <span class="cn-imp imp-medium"><b>56</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Record China-US gap in bond yields unlikely to trigger capital flight: Marsh Investment</span><span class="l-zh">中美债券收益率差距创纪录不太可能引发资本外逃：Marsh Investment</span></h2>
+            <p class="tp-sum"><span class="l-en">The widening yield spread between Chinese and American government bonds is unlikely to trigger catastrophic capital flight from China, according to investment executives at Marsh Investment, who attribute the record spread to the United States’ fiscal pressures and global macro trends rather than a structural retreat for Chinese assets.
+The spread between benchmark 10-year US Treasury bonds and equivalent Chinese sovereign bonds hit a record 3.17 percentage points this week. Yields on US...</span><span class="l-zh">Marsh Investment的投资高管表示，中美政府债券收益率利差扩大不太可能引发资本从中国灾难性外流，他们将这一创纪录利差归因于美国的财政压力和全球宏观趋势，而非中国资产的结构性撤退。
+利差在</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Credit</span><span class="l-zh">信用</span></span><span class="cn-tk">CBON</span></div>
           </div>
         </a>
         
@@ -904,7 +925,7 @@
           <div class="cal-when soon">
             <span class="cd">·</span><span class="cu"><span class="l-en">today</span><span class="l-zh">今</span></span>
           </div>
-          <div class="cal-name"><span class="cal-tag hi">TRADE</span><span class="l-en">Customs trade (exports/imports)</span><span class="l-zh">海关进出口数据</span></div>
+          <div class="cal-name"><span class="cal-tag hi">CPI</span><span class="l-en">CPI (consumer prices)</span><span class="l-zh">CPI（居民消费价格）</span></div>
         </div>
         
         
@@ -912,29 +933,13 @@
           <div class="cal-when soon">
             <span class="cd">·</span><span class="cu"><span class="l-en">today</span><span class="l-zh">今</span></span>
           </div>
-          <div class="cal-name"><span class="cal-tag ">FXRES</span><span class="l-en">FX reserves (SAFE)</span><span class="l-zh">外汇储备（外管局）</span></div>
-        </div>
-        
-        
-        <div class="cal-row">
-          <div class="cal-when soon">
-            <span class="cd">3</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
-          </div>
-          <div class="cal-name"><span class="cal-tag hi">CPI</span><span class="l-en">CPI (consumer prices)</span><span class="l-zh">CPI（居民消费价格）</span></div>
-        </div>
-        
-        
-        <div class="cal-row">
-          <div class="cal-when soon">
-            <span class="cd">3</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
-          </div>
           <div class="cal-name"><span class="cal-tag hi">CREDIT</span><span class="l-en">Money supply, RMB loans & TSF</span><span class="l-zh">货币供应、人民币贷款与社融</span></div>
         </div>
         
         
         <div class="cal-row">
           <div class="cal-when soon">
-            <span class="cd">3</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+            <span class="cd">·</span><span class="cu"><span class="l-en">today</span><span class="l-zh">今</span></span>
           </div>
           <div class="cal-name"><span class="cal-tag hi">PPI</span><span class="l-en">PPI (producer prices)</span><span class="l-zh">PPI（工业生产者价格）</span></div>
         </div>
@@ -942,7 +947,7 @@
         
         <div class="cal-row">
           <div class="cal-when ">
-            <span class="cd">8</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+            <span class="cd">5</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
           </div>
           <div class="cal-name"><span class="cal-tag hi">ACTIVITY</span><span class="l-en">IP, FAI & retail sales</span><span class="l-zh">工业增加值、固投与社零</span></div>
         </div>
@@ -950,7 +955,7 @@
         
         <div class="cal-row">
           <div class="cal-when ">
-            <span class="cd">8</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+            <span class="cd">5</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
           </div>
           <div class="cal-name"><span class="cal-tag ">MLF</span><span class="l-en">MLF operation (PBoC)</span><span class="l-zh">MLF 操作（央行中期借贷便利）</span></div>
         </div>
@@ -958,7 +963,7 @@
         
         <div class="cal-row">
           <div class="cal-when ">
-            <span class="cd">14</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+            <span class="cd">11</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
           </div>
           <div class="cal-name"><span class="cal-tag hi">LPR</span><span class="l-en">LPR fix (loan prime rate)</span><span class="l-zh">LPR 报价（贷款市场报价利率）</span></div>
         </div>
@@ -971,19 +976,19 @@
         <div class="exp-pills">
           
           
-          <span class="exp-pill"><span class="tk">512880.SS</span><span class="nm"><span class="l-en">brokers</span><span class="l-zh">券商</span></span><span class="ct">×9</span></span>
+          <span class="exp-pill"><span class="tk">512880.SS</span><span class="nm"><span class="l-en">brokers</span><span class="l-zh">券商</span></span><span class="ct">×11</span></span>
           
           
-          <span class="exp-pill"><span class="tk">CBON</span><span class="nm"><span class="l-en">China bonds</span><span class="l-zh">中国债券</span></span><span class="ct">×2</span></span>
+          <span class="exp-pill"><span class="tk">CBON</span><span class="nm"><span class="l-en">China bonds</span><span class="l-zh">中国债券</span></span><span class="ct">×3</span></span>
           
           
-          <span class="exp-pill"><span class="tk">515030.SS</span><span class="nm"><span class="l-en">EV & battery</span><span class="l-zh">新能源车</span></span></span>
+          <span class="exp-pill"><span class="tk">512800.SS</span><span class="nm"><span class="l-en">banks</span><span class="l-zh">银行</span></span><span class="ct">×3</span></span>
           
           
-          <span class="exp-pill"><span class="tk">512400.SS</span><span class="nm"><span class="l-en">metals</span><span class="l-zh">有色</span></span></span>
+          <span class="exp-pill"><span class="tk">CNY</span><span class="nm"><span class="l-en">yuan</span><span class="l-zh">人民币</span></span><span class="ct">×2</span></span>
           
           
-          <span class="exp-pill"><span class="tk">CNY</span><span class="nm"><span class="l-en">yuan</span><span class="l-zh">人民币</span></span></span>
+          <span class="exp-pill"><span class="tk">2800.HK</span><span class="nm"><span class="l-en">Hang Seng</span><span class="l-zh">恒生</span></span></span>
           
           
           <span class="exp-pill"><span class="tk">512200.SS</span><span class="nm"><span class="l-en">property</span><span class="l-zh">房地产</span></span></span>

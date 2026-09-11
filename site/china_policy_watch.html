@@ -33,7 +33,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PBoC & Policy Watch — Macro Dashboard</title>
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang');if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<link rel="stylesheet" href="theme.css?v=f41f9a21">
+<link rel="stylesheet" href="theme.css?v=63df1679">
 <link rel="stylesheet" href="assets/css/b83c441f.css?v=b83c441f">
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
 <link rel="preload" as="style" href="navigation-refresh.css?v=c299c324">
@@ -184,6 +184,7 @@
         </div>
         <a href="intl_stocks.html"><span class="submenu-icon submenu-icon-stocks" aria-hidden="true"></span><span class="l-en">Stock Dashboard</span><span class="l-zh">股票仪表盘</span><span class="d"><span class="l-en">Prophet cross-market · sectors</span><span class="l-zh">Prophet 跨市场 · 板块</span></span></a>
         <a href="baskets_intl.html"><span class="submenu-icon submenu-icon-baskets" aria-hidden="true"></span><span class="l-en">Thematic Baskets</span><span class="l-zh">主题篮子</span><span class="d"><span class="l-en">Cross-country theme baskets · ex-US</span><span class="l-zh">跨国主题篮子 · 除美</span></span></a>
+        <a href="sanctions_map.html"><span class="submenu-icon submenu-icon-policy" aria-hidden="true"></span><span class="l-en">Sanctions Map</span><span class="l-zh">制裁地图</span><span class="d"><span class="l-en">Where US sanctions point · OFAC public list</span><span class="l-zh">美国制裁指向何处 · OFAC 公开名单</span></span></a>
       </div>
     </div>
     <div class="nav-dd">
@@ -327,13 +328,13 @@
       <span class="sh-regime-pill"><span class="dot"></span><span class="l-en">Off tape — hand withdrawn</span><span class="l-zh">离场 — 政策之手已收</span> · <span class="l-en">state-hand watch</span><span class="l-zh">国家队监测</span></span>
       <div class="sh-gauge-row">
         <svg class="sh-gauge-svg" viewBox="0 -4 140 101" fill="none"
-             role="img" aria-label="Off tape — hand withdrawn — State-Hand pressure 16 of 100">
+             role="img" aria-label="Off tape — hand withdrawn — State-Hand pressure 0 of 100">
           <defs>
             <filter id="shNeedleGlow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
             <filter id="shArcGlow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
           </defs>
           <path d="M 14 75 A 56 56 0 0 1 126 75" stroke="rgba(255,255,255,.08)" stroke-width="10" stroke-linecap="round" fill="none"/>
-          <path class="sh-gauge-fill" d="M 14 75 A 56 56 0 0 1 126 75" stroke-width="10" stroke-linecap="round" fill="none" stroke-dasharray="28.1 147.8" filter="url(#shArcGlow)"/>
+          <path class="sh-gauge-fill" d="M 14 75 A 56 56 0 0 1 126 75" stroke-width="10" stroke-linecap="round" fill="none" stroke-dasharray="0.0 175.9" filter="url(#shArcGlow)"/>
           <g stroke="rgba(255,255,255,.20)" stroke-width="1.2">
             <line x1="70" y1="19" x2="70" y2="26" transform="rotate(-90 70 75)"/>
             <line x1="70" y1="19" x2="70" y2="26" transform="rotate(-45 70 75)"/>
@@ -344,7 +345,7 @@
           <text x="14" y="95" fill="rgba(255,255,255,.26)" font-size="11" text-anchor="middle" font-family="Inter,sans-serif">0</text>
           <text x="70" y="10" fill="rgba(255,255,255,.26)" font-size="11" text-anchor="middle" font-family="Inter,sans-serif">50</text>
           <text x="126" y="95" fill="rgba(255,255,255,.26)" font-size="11" text-anchor="middle" font-family="Inter,sans-serif">100</text>
-          <g class="sh-needle odo-needle odo-needle--compact" style="--odo-accent:var(--sh-accent)" transform="rotate(-61.2 70 75)" filter="url(#shNeedleGlow)">
+          <g class="sh-needle odo-needle odo-needle--compact" style="--odo-accent:var(--sh-accent)" transform="rotate(-90.0 70 75)" filter="url(#shNeedleGlow)">
             <line x1="70" y1="75" x2="70" y2="24" stroke="rgba(255,255,255,.30)" stroke-width="5" stroke-linecap="round"/>
             <polygon points="69,75 71,75 70.5,24 69.5,24" fill="white" opacity=".94"/>
             <circle cx="70" cy="75" r="7" fill="rgba(255,255,255,.10)"/>
@@ -352,13 +353,13 @@
             <circle class="sh-needle-core" cx="70" cy="75" r="2"/>
             <circle class="sh-needle-tip" cx="70" cy="25.5" r="2.5"/>
           </g>
-          <text class="sh-numeral" x="70" y="62" font-size="24" font-weight="800" text-anchor="middle" font-family="Inter,sans-serif">16</text>
+          <text class="sh-numeral" x="70" y="62" font-size="24" font-weight="800" text-anchor="middle" font-family="Inter,sans-serif">0</text>
           <text x="70" y="73" fill="rgba(255,255,255,.32)" font-size="11" text-anchor="middle" font-family="Inter,sans-serif">/ 100</text>
         </svg>
         <div>
-          <div class="sh-score-line"><span class="sh-big">16</span></div>
+          <div class="sh-score-line"><span class="sh-big">0</span></div>
           <div class="sh-verdict"><span class="l-en">Off tape — hand withdrawn</span><span class="l-zh">离场 — 政策之手已收</span></div>
-          <div class="sh-sub"><span class="l-en">State-Hand pressure</span><span class="l-zh">国家队干预压力</span> · 1/8 <span class="l-en">tells firing</span><span class="l-zh">迹象点亮</span></div>
+          <div class="sh-sub"><span class="l-en">State-Hand pressure</span><span class="l-zh">国家队干预压力</span> · 0/8 <span class="l-en">tells firing</span><span class="l-zh">迹象点亮</span></div>
         </div>
       </div>
       <p class="sh-stance"><span class="l-en">The state hand is off the tape. Policy is neutral-to-tightening; no intervention signals.</span><span class="l-zh">政策之手已离场。政策中性偏紧；没有干预信号。</span></p>
@@ -371,26 +372,26 @@
             
             
             
-            <polyline class="ln" points="1.0,12.8 5.7,23.0 10.4,26.3 15.1,26.3 19.9,26.3 24.6,29.0 29.3,22.4 34.0,26.6 38.7,15.2 43.4,16.1 48.1,24.8 52.9,24.2 57.6,24.5 62.3,29.3 67.0,27.8 71.7,27.8 76.4,27.8 81.1,27.8 85.9,29.3 90.6,29.3 95.3,29.3 100.0,29.3 104.7,29.3 109.4,29.3 114.1,27.5 118.9,23.6 123.6,26.0 128.3,29.3 133.0,29.3 137.7,25.1 142.4,24.8 147.1,32.0 151.9,32.0 156.6,30.8 161.3,30.8 166.0,30.8 170.7,30.2 175.4,28.1 180.1,29.0 184.9,24.5 189.6,25.4 194.3,25.4 199.0,27.2"/>
+            <polyline class="ln" points="1.0,12.8 5.4,23.0 9.8,26.3 14.2,26.3 18.6,26.3 23.0,29.0 27.4,22.4 31.8,26.6 36.2,15.2 40.6,16.1 45.0,24.8 49.4,24.2 53.8,24.5 58.2,29.3 62.6,27.8 67.0,27.8 71.4,27.8 75.8,27.8 80.2,29.3 84.6,29.3 89.0,29.3 93.4,29.3 97.8,29.3 102.2,29.3 106.6,27.5 111.0,23.6 115.4,26.0 119.8,29.3 124.2,29.3 128.6,25.1 133.0,24.8 137.4,32.0 141.8,32.0 146.2,30.8 150.6,30.8 155.0,30.8 159.4,30.2 163.8,28.1 168.2,29.0 172.6,24.5 177.0,25.4 181.4,25.4 185.8,27.2 190.2,25.7 194.6,31.1 199.0,32.0"/>
             
-            <circle class="dot" cx="199" cy="27.2" r="2.4"/>
+            <circle class="dot" cx="199" cy="32.0" r="2.4"/>
           </svg>
         </div>
         
 
         <div class="sh-pop" id="sh-pop-receipts" onclick="event.stopPropagation()">
-          <div class="sh-pop-h"><span class="l-en">Detection receipts</span><span class="l-zh">检测依据</span> — 1/8 <span class="l-en">firing</span><span class="l-zh">点亮</span></div>
+          <div class="sh-pop-h"><span class="l-en">Detection receipts</span><span class="l-zh">检测依据</span> — 0/8 <span class="l-en">firing</span><span class="l-zh">点亮</span></div>
           
           <div class="sh-prow">
-            <div class="sh-prow-t"><b><span class="l-en">ETF creation surge</span><span class="l-zh">ETF份额激增</span></b><span class="st on"><span class="l-en">firing</span><span class="l-zh">点亮</span></span></div>
-            <div class="sh-pbar"><i style="width:52%"></i></div>
-            <div class="sh-prow-rc"><span class="l-en">CSI 300 units +2%, STAR 50 +4% (2d) · 2 ETFs co-creating</span><span class="l-zh">沪深300份额+2%，科创50 +4%（2日） · 2只ETF齐创设</span></div>
+            <div class="sh-prow-t"><b><span class="l-en">ETF creation surge</span><span class="l-zh">ETF份额激增</span></b><span class="st "><span class="l-en">quiet</span><span class="l-zh">平静</span></span></div>
+            <div class="sh-pbar"><i style="width:0%"></i></div>
+            <div class="sh-prow-rc"><span class="l-en">CSI 300 units +0%, STAR 50 +1% (2d)</span><span class="l-zh">沪深300份额+0%，科创50 +1%（2日）</span></div>
           </div>
           
           <div class="sh-prow">
             <div class="sh-prow-t"><b><span class="l-en">Index-heavyweight lift</span><span class="l-zh">权重股护指数</span></b><span class="st "><span class="l-en">quiet</span><span class="l-zh">平静</span></span></div>
             <div class="sh-pbar"><i style="width:0%"></i></div>
-            <div class="sh-prow-rc"><span class="l-en">Index heavyweights -0.9% vs small-caps -1.8% (5d)</span><span class="l-zh">权重股-0.9% vs 中小盘-1.8%（5日）</span></div>
+            <div class="sh-prow-rc"><span class="l-en">Index heavyweights -0.3% vs small-caps +0.2% (5d)</span><span class="l-zh">权重股-0.3% vs 中小盘+0.2%（5日）</span></div>
           </div>
           
           <div class="sh-prow">
@@ -414,13 +415,13 @@
           <div class="sh-prow">
             <div class="sh-prow-t"><b><span class="l-en">PBoC easing into stress</span><span class="l-zh">央行逆势宽松</span></b><span class="st "><span class="l-en">quiet</span><span class="l-zh">平静</span></span></div>
             <div class="sh-pbar"><i style="width:0%"></i></div>
-            <div class="sh-prow-rc"><span class="l-en">PBoC easing into tight liquidity (FR007 z -0.44)</span><span class="l-zh">央行逆势宽松，资金面偏紧（FR007 z -0.44）</span></div>
+            <div class="sh-prow-rc"><span class="l-en">PBoC easing into tight liquidity (FR007 z +0.04)</span><span class="l-zh">央行逆势宽松，资金面偏紧（FR007 z +0.04）</span></div>
           </div>
           
           <div class="sh-prow">
             <div class="sh-prow-t"><b><span class="l-en">SOE buyback cascade</span><span class="l-zh">国企回购潮</span></b><span class="st "><span class="l-en">quiet</span><span class="l-zh">平静</span></span></div>
             <div class="sh-pbar"><i style="width:0%"></i></div>
-            <div class="sh-prow-rc"><span class="l-en">SOE buyback proposals accelerating (+-15% w/w)</span><span class="l-zh">国企回购预案加速（环比+-15%）</span></div>
+            <div class="sh-prow-rc"><span class="l-en">SOE buyback proposals accelerating (+-20% w/w)</span><span class="l-zh">国企回购预案加速（环比+-20%）</span></div>
           </div>
           
           <div class="sh-prow">
@@ -448,7 +449,7 @@
         <div class="sh-tell-txt">
           <div class="sh-tell-top">
             <span class="sh-tell-label"><span class="l-en">State-media drumbeat</span><span class="l-zh">官媒稳市喊话</span></span>
-            <span class="sh-tell-val">-0.4z</span>
+            <span class="sh-tell-val">+0.1z</span>
           </div>
           <div class="sh-tell-rc"><span class="l-en">CCTV state-media tone neutral vs history (pro-growth emphasis)</span><span class="l-zh">央视基调较历史中性（稳增长着墨）</span></div>
         </div>
@@ -470,9 +471,9 @@
         <div class="sh-tell-txt">
           <div class="sh-tell-top">
             <span class="sh-tell-label"><span class="l-en">PBoC easing into stress</span><span class="l-zh">央行逆势宽松</span></span>
-            <span class="sh-tell-val">-0.44z</span>
+            <span class="sh-tell-val">+0.04z</span>
           </div>
-          <div class="sh-tell-rc"><span class="l-en">PBoC easing into tight liquidity (FR007 z -0.44)</span><span class="l-zh">央行逆势宽松，资金面偏紧（FR007 z -0.44）</span></div>
+          <div class="sh-tell-rc"><span class="l-en">PBoC easing into tight liquidity (FR007 z +0.04)</span><span class="l-zh">央行逆势宽松，资金面偏紧（FR007 z +0.04）</span></div>
         </div>
       </div>
       
@@ -480,13 +481,13 @@
       <div class="sh-tier"><span class="sh-tier-k"><span class="l-en">Coincident</span><span class="l-zh">同步</span></span><span class="sh-tier-c"><span class="l-en">during — the fingerprint</span><span class="l-zh">买入期间——指纹</span></span></div>
       
       <div class="sh-tell ">
-        <span class="sh-dot sh-dot-firing"></span>
+        <span class="sh-dot sh-dot-quiet"></span>
         <div class="sh-tell-txt">
           <div class="sh-tell-top">
             <span class="sh-tell-label"><span class="l-en">ETF creation surge</span><span class="l-zh">ETF份额激增</span></span>
-            <span class="sh-tell-val">+2% / +4%</span>
+            <span class="sh-tell-val">+0% / +1%</span>
           </div>
-          <div class="sh-tell-rc"><span class="l-en">CSI 300 units +2%, STAR 50 +4% (2d) · 2 ETFs co-creating</span><span class="l-zh">沪深300份额+2%，科创50 +4%（2日） · 2只ETF齐创设</span></div>
+          <div class="sh-tell-rc"><span class="l-en">CSI 300 units +0%, STAR 50 +1% (2d)</span><span class="l-zh">沪深300份额+0%，科创50 +1%（2日）</span></div>
         </div>
       </div>
       
@@ -495,9 +496,9 @@
         <div class="sh-tell-txt">
           <div class="sh-tell-top">
             <span class="sh-tell-label"><span class="l-en">Index-heavyweight lift</span><span class="l-zh">权重股护指数</span></span>
-            <span class="sh-tell-val">+0.9pp</span>
+            <span class="sh-tell-val">-0.5pp</span>
           </div>
-          <div class="sh-tell-rc"><span class="l-en">Index heavyweights -0.9% vs small-caps -1.8% (5d)</span><span class="l-zh">权重股-0.9% vs 中小盘-1.8%（5日）</span></div>
+          <div class="sh-tell-rc"><span class="l-en">Index heavyweights -0.3% vs small-caps +0.2% (5d)</span><span class="l-zh">权重股-0.3% vs 中小盘+0.2%（5日）</span></div>
         </div>
       </div>
       
@@ -520,9 +521,9 @@
         <div class="sh-tell-txt">
           <div class="sh-tell-top">
             <span class="sh-tell-label"><span class="l-en">SOE buyback cascade</span><span class="l-zh">国企回购潮</span></span>
-            <span class="sh-tell-val">+-15%</span>
+            <span class="sh-tell-val">+-20%</span>
           </div>
-          <div class="sh-tell-rc"><span class="l-en">SOE buyback proposals accelerating (+-15% w/w)</span><span class="l-zh">国企回购预案加速（环比+-15%）</span></div>
+          <div class="sh-tell-rc"><span class="l-en">SOE buyback proposals accelerating (+-20% w/w)</span><span class="l-zh">国企回购预案加速（环比+-20%）</span></div>
         </div>
       </div>
       
@@ -531,7 +532,7 @@
         <div class="sh-tell-txt">
           <div class="sh-tell-top">
             <span class="sh-tell-label"><span class="l-en">Margin balance turning</span><span class="l-zh">两融企稳回升</span></span>
-            <span class="sh-tell-val">-183亿</span>
+            <span class="sh-tell-val">-32亿</span>
           </div>
           <div class="sh-tell-rc"><span class="l-en">Margin balance turning up (leverage returning)</span><span class="l-zh">两融余额企稳回升（杠杆资金回流）</span></div>
         </div>
@@ -550,7 +551,7 @@
     
     
     
-    <p style="margin:12px 0 0"><span class="stale-chip old"><span class="l-en">Intel substrate</span><span class="l-zh">情报底稿</span> · 2026-06-20 · 79<span class="l-en">d ago</span><span class="l-zh">日前</span> · <span class="l-en">may be stale</span><span class="l-zh">可能过时</span></span></p>
+    <p style="margin:12px 0 0"><span class="stale-chip old"><span class="l-en">Intel substrate</span><span class="l-zh">情报底稿</span> · 2026-06-20 · 83<span class="l-en">d ago</span><span class="l-zh">日前</span> · <span class="l-en">may be stale</span><span class="l-zh">可能过时</span></span></p>
     
   </div>
   
@@ -561,7 +562,7 @@
     <div class="cnx-ctitle">🪙 <span class="l-en">PBoC stance &amp; rate corridor</span><span class="l-zh">央行立场与利率走廊</span></div>
     <div class="stance-hero">
       <span class="stance-badge st-neutral"><span class="l-en">On hold / neutral</span><span class="l-zh">按兵不动 / 中性</span></span>
-      <span class="why"><span class="l-en">On hold / neutral bias — 1Y LPR +0bp / yr, RRR -1.50pp, FR007 -0.02 vs trend.</span><span class="l-zh">按兵不动 / 中性倾向 — 1年期LPR年内+0基点，准备金率-1.50个百分点，FR007较趋势-0.02。</span></span>
+      <span class="why"><span class="l-en">On hold / neutral bias — 1Y LPR +0bp / yr, RRR -1.50pp, FR007 +0.00 vs trend.</span><span class="l-zh">按兵不动 / 中性倾向 — 1年期LPR年内+0基点，准备金率-1.50个百分点，FR007较趋势+0.00。</span></span>
     </div>
     <div class="mgrid">
       
@@ -571,11 +572,11 @@
       
       <div class="metric"><div class="k"><span class="l-en">RRR (big banks)</span><span class="l-zh">存准率(大行)</span></div><div class="v">9.00%</div></div>
       
-      <div class="metric"><div class="k"><span class="l-en">FR007 (repo)</span><span class="l-zh">FR007回购</span></div><div class="v">1.41%</div></div>
+      <div class="metric"><div class="k"><span class="l-en">FR007 (repo)</span><span class="l-zh">FR007回购</span></div><div class="v">1.43%</div></div>
       
-      <div class="metric"><div class="k"><span class="l-en">SHIBOR O/N</span><span class="l-zh">隔夜SHIBOR</span></div><div class="v">3.05%</div></div>
+      <div class="metric"><div class="k"><span class="l-en">SHIBOR O/N</span><span class="l-zh">隔夜SHIBOR</span></div><div class="v">2.35%</div></div>
       
-      <div class="metric"><div class="k"><span class="l-en">SHIBOR 3M</span><span class="l-zh">3个月SHIBOR</span></div><div class="v">3.06%</div></div>
+      <div class="metric"><div class="k"><span class="l-en">SHIBOR 3M</span><span class="l-zh">3个月SHIBOR</span></div><div class="v">3.05%</div></div>
       
     </div>
     
@@ -604,7 +605,7 @@
     <div class="mgrid">
       <div class="metric"><div class="k"><span class="l-en">FX reserves</span><span class="l-zh">外汇储备</span></div><div class="v">$3.44T</div><div class="s">+195 <span class="l-en">bn MoM</span><span class="l-zh">亿环比</span> · 2026-08-01</div></div>
       <div class="metric"><div class="k"><span class="l-en">Gold reserves</span><span class="l-zh">黄金储备</span></div><div class="v">3501t</div></div>
-      <div class="metric"><div class="k"><span class="l-en">USD / CNY</span><span class="l-zh">美元兑人民币</span></div><div class="v">6.780</div><div class="s">-0.009 <span class="l-en">20d</span><span class="l-zh">20日</span> · 2026-09-07</div></div>
+      <div class="metric"><div class="k"><span class="l-en">USD / CNY</span><span class="l-zh">美元兑人民币</span></div><div class="v">6.777</div><div class="s">-0.012 <span class="l-en">20d</span><span class="l-zh">20日</span> · 2026-09-10</div></div>
     </div>
   </div>
   
@@ -619,9 +620,9 @@
       
       <div class="metric"><div class="k"><span class="l-en">Non-mfg PMI</span><span class="l-zh">非制造业PMI</span></div><div class="v">49.0</div><div class="s">2026-08-01</div></div>
       
-      <div class="metric"><div class="k"><span class="l-en">CPI YoY</span><span class="l-zh">CPI同比</span></div><div class="v">0.5%</div><div class="s">2026-07-01</div></div>
+      <div class="metric"><div class="k"><span class="l-en">CPI YoY</span><span class="l-zh">CPI同比</span></div><div class="v">0.8%</div><div class="s">2026-08-01</div></div>
       
-      <div class="metric"><div class="k"><span class="l-en">PPI YoY</span><span class="l-zh">PPI同比</span></div><div class="v">3.5%</div><div class="s">2026-07-01</div></div>
+      <div class="metric"><div class="k"><span class="l-en">PPI YoY</span><span class="l-zh">PPI同比</span></div><div class="v">3.8%</div><div class="s">2026-08-01</div></div>
       
       <div class="metric"><div class="k"><span class="l-en">M2 YoY</span><span class="l-zh">M2同比</span></div><div class="v">7.7%</div><div class="s">2026-07-01</div></div>
       
@@ -631,7 +632,7 @@
       
       <div class="metric"><div class="k"><span class="l-en">Retail YoY</span><span class="l-zh">社零同比</span></div><div class="v">0.6%</div><div class="s">2026-07-01</div></div>
       
-      <div class="metric"><div class="k"><span class="l-en">Exports YoY</span><span class="l-zh">出口同比</span></div><div class="v">23.9%</div><div class="s">2026-07-01</div></div>
+      <div class="metric"><div class="k"><span class="l-en">Exports YoY</span><span class="l-zh">出口同比</span></div><div class="v">25.0%</div><div class="s">2026-08-01</div></div>
       
       <div class="metric"><div class="k"><span class="l-en">TSF (mo)</span><span class="l-zh">社融(当月)</span></div><div class="v">14017.0¥bn</div><div class="s">2026-07-01</div></div>
       
@@ -759,96 +760,96 @@
       <li>
         <span class="tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
         <div class="tt">
-          <a href="https://wallstreetcn.com/livenews/3161301" target="_blank" rel="noopener">法国预算谈判料陷激战 大选临近党争恐更趋尖锐</a>
-           <span style="font-size:10px;color:#e0973a">📅 FXRES@2026-09-07</span>
+          <a href="https://finance.eastmoney.com/a/202609103870775113.html" target="_blank" rel="noopener">交易员已充分消化美联储10月份加息的预期</a>
+           <span style="font-size:10px;color:#e0973a">📅 CPI@2026-09-10</span>
         </div>
       </li>
       
       <li>
-        <span class="tag"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
+        <span class="tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
         <div class="tt">
-          <a href="https://news.10jqka.com.cn/20260907/c679671647.shtml" target="_blank" rel="noopener">澳门特别行政区经济财政司举办“三五”规划经济财政范畴专场交流会</a>
-          
+          <a href="https://finance.eastmoney.com/a/202609103870757252.html" target="_blank" rel="noopener">美国国债收益率攀升</a>
+           <span style="font-size:10px;color:#e0973a">📅 CPI@2026-09-10</span>
         </div>
       </li>
       
       <li>
-        <span class="tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+        <span class="tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
         <div class="tt">
-          <a href="https://news.futunn.com/flash/20720226/kallas-high-representative-of-the-european-union-for-foreign-affairs" target="_blank" rel="noopener">欧盟外交与安全政策高级代表卡拉斯：俄罗斯并不真正关心和平</a>
-          
+          <a href="https://news.futunn.com/flash/20732008/ecb-president-lagarde-headline-inflation-is-expected-to-return-to" target="_blank" rel="noopener">欧洲央行行长拉加德：预计到2027年底，总体通胀将回归目标水平</a>
+           <span style="font-size:10px;color:#e0973a">📅 CPI@2026-09-10</span>
         </div>
       </li>
       
       <li>
-        <span class="tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+        <span class="tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
         <div class="tt">
-          <a href="https://news.10jqka.com.cn/20260907/c679671891.shtml" target="_blank" rel="noopener">伊朗经济部设立经济战争指挥部</a>
-          
+          <a href="https://news.futunn.com/flash/20732083/ecb-president-lagarde-it-is-impossible-to-predict-what-the" target="_blank" rel="noopener">欧洲央行行长拉加德：无法预测下一步行动将会是什么</a>
+           <span style="font-size:10px;color:#e0973a">📅 CPI@2026-09-10</span>
         </div>
       </li>
       
       <li>
-        <span class="tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+        <span class="tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
         <div class="tt">
-          <a href="https://wallstreetcn.com/livenews/3161312" target="_blank" rel="noopener">国家版权局：加大软件侵权行为打击力度，支持软件企业海外维权</a>
-          
+          <a href="https://news.futunn.com/flash/20732091/ecb-president-lagarde-the-neutral-rate-range-is-highly-conceptual" target="_blank" rel="noopener">欧洲央行行长拉加德：中性区间高度概念化</a>
+           <span style="font-size:10px;color:#e0973a">📅 CPI@2026-09-10</span>
         </div>
       </li>
       
       <li>
-        <span class="tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+        <span class="tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
         <div class="tt">
-          <a href="https://www.gelonghui.com/live/2655267" target="_blank" rel="noopener">象屿股份与辽港股份签署全面战略合作协议</a>
-          
+          <a href="https://news.futunn.com/flash/20732137/head-of-the-german-chambers-of-commerce-and-industry-dihk" target="_blank" rel="noopener">德国工商总会主管：欧洲央行加息将令许多企业承压</a>
+           <span style="font-size:10px;color:#e0973a">📅 CPI@2026-09-10</span>
         </div>
       </li>
       
       <li>
-        <span class="tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+        <span class="tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
         <div class="tt">
-          <a href="https://news.futunn.com/flash/20719974/wu-qing-meets-with-salim-executive-president-of-the-oman" target="_blank" rel="noopener">吴清会见阿曼金融服务管理局执行总裁萨尔米</a>
-          
+          <a href="https://flash.jin10.com/detail/20260910211033894800" target="_blank" rel="noopener">欧洲央行行长拉加德：不确定性几乎可以在一夜之间改变局势</a>
+           <span style="font-size:10px;color:#e0973a">📅 CPI@2026-09-10</span>
         </div>
       </li>
       
       <li>
-        <span class="tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+        <span class="tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
         <div class="tt">
-          <a href="https://news.futunn.com/flash/20720150/scrapped-vehicles-transformed-into-dozens-of-industrial-raw-materials-retired" target="_blank" rel="noopener">报废汽车变身数十种工业原料 今年退役动力电池预计近50万吨</a>
-          
+          <a href="https://wallstreetcn.com/livenews/3163234" target="_blank" rel="noopener">欧洲央行9月利率决议看点前瞻</a>
+           <span style="font-size:10px;color:#e0973a">📅 CPI@2026-09-10</span>
         </div>
       </li>
       
       <li>
-        <span class="tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+        <span class="tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
         <div class="tt">
-          <a href="https://news.futunn.com/flash/20719912/ministry-of-commerce-implementing-multiple-measures-to-accelerate-the-innovative" target="_blank" rel="noopener">商务部：多措并举加快推动数字贸易创新发展</a>
-          
+          <a href="https://flash.jin10.com/detail/20260910211002227800" target="_blank" rel="noopener">欧洲央行行长拉加德：对下次会议的方向不予置评</a>
+           <span style="font-size:10px;color:#e0973a">📅 CPI@2026-09-10</span>
         </div>
       </li>
       
       <li>
-        <span class="tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+        <span class="tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
         <div class="tt">
-          <a href="https://wallstreetcn.com/livenews/3161309" target="_blank" rel="noopener">《版权工作“十五五”规划》印发</a>
-          
+          <a href="https://finance.eastmoney.com/a/202609103870785245.html" target="_blank" rel="noopener">法国30年期国债收益率上升3.5个基点至5.1048%</a>
+           <span style="font-size:10px;color:#e0973a">📅 CPI@2026-09-10</span>
         </div>
       </li>
       
       <li>
-        <span class="tag"><span class="l-en">Industrial policy</span><span class="l-zh">产业政策</span></span>
+        <span class="tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
         <div class="tt">
-          <a href="https://news.10jqka.com.cn/20260907/c679671827.shtml" target="_blank" rel="noopener">土耳其计划在未来三年间将国防开支提高229%</a>
-          
+          <a href="https://news.futunn.com/flash/20732179/ecb-president-lagarde-strongly-hopes-the-digital-euro-legislation-will" target="_blank" rel="noopener">欧洲央行行长拉加德：非常希望数字欧元法案能在年底前通过</a>
+           <span style="font-size:10px;color:#e0973a">📅 CPI@2026-09-10</span>
         </div>
       </li>
       
       <li>
-        <span class="tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+        <span class="tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
         <div class="tt">
-          <a href="https://flash.jin10.com/detail/20260907222812828800" target="_blank" rel="noopener">欧盟外交与安全政策高级代表卡拉斯：俄罗斯并不真正关心和平</a>
-          
+          <a href="https://wallstreetcn.com/livenews/3163311" target="_blank" rel="noopener">交易员认为欧洲央行10月份加息的可能性超过50%</a>
+           <span style="font-size:10px;color:#e0973a">📅 CPI@2026-09-10</span>
         </div>
       </li>
       
