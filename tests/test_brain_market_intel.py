@@ -18,25 +18,16 @@ TWO DELIBERATE ISOLATIONS, both guarding documented house traps:
      repo-relative behaviour only.
 
 Coverage:
-   1-8   live wire: salience/recency ordering, window filter, limit clamp, symbol
-         preference + backfill, ticker-list matching, word boundaries, zh passthrough,
-         unparseable ts skipped
-   9-10  path ladder: MACRO_LIVE_DIR wins; fallback used when the live dir is empty
-  11-14  merge: nightly top-up, cross-source dedupe, notes, `rejected` never served
-  15-16  TI-R5 OUTPUT WHITELIST — the epistemics law, pinned mechanically
-  17-25  research search: scoring, recency decay, top_pick, truncation, short query,
-         corrupt/missing catalog, real-catalog smoke
-  26-27  tool schemas
-  28-35  W2 ranked-wire sidecar: ladder, freshness gate, permutation, unknown ids,
-         nightly pool untouched, output whitelist unchanged, never written
-  36-46  W2 street clusters: convergence admission, one-house exclusion, dead
-         fields ignored, determinism, ambient words, honest empty, real catalog
-  47-62  W4 full-report escalation (mode='report'): the three content layers, the
-         12k exposure cap + its marker, the rights note, the excerpt-only
-         fallback charging NOTHING, one debit per served body, the per-user ip
-         bucket proved against the REAL limiter, every honest error (pro_required
-         / report_not_found / vault_unavailable / view_limit_reached), and the
-         proof that search and clusters still touch neither corpus nor ledger
+  - live wire ordering, freshness, limits, symbol preference, zh passthrough,
+    path ladders, nightly top-up/dedupe, and the TI-R5 output whitelist;
+  - research search scoring, recency, top picks, truncation, meaningful
+    one-term/Han/full-width inputs, exact identifiers, natural hyphenated prose,
+    honest no-atom rejection, corrupt/missing catalogs, and real-catalog smoke;
+  - tool schemas, ranked-wire sidecar behavior, and street clusters;
+  - W4 full-report escalation: content layers, exposure cap, rights language,
+    excerpt-only behavior, per-user quota, honest errors, and proof that ordinary
+    search/clusters touch neither corpus nor quota ledger.
+
 """
 from __future__ import annotations
 
@@ -673,13 +664,106 @@ def test_limit_is_clamped_to_one_through_eight(tmp_path):
     assert len(_search(tmp_path, "momentum crowding", limit=None)["results"]) == 5
 
 
-def test_a_short_query_says_so_rather_than_faking_a_search(tmp_path):
-    """One bare token against hundreds of notes ranks essentially by recency and
-    would read as a search that worked."""
+@pytest.mark.parametrize("query", ["", "   ", "!!!", "a", "中", None])
+def test_a_query_with_no_meaningful_search_atom_says_so(tmp_path, query):
+    """Empty/noise and one-character atoms stay too ambiguous to search.
+
+    This is the honest boundary after one meaningful term becomes a supported
+    query: the gate is lexical meaning, not a demand that users pad a request
+    with an unrelated second word.
+    """
     _catalog(tmp_path, [_note("r", "Momentum Crowding Risk")])
-    for query in ("momentum", "", "   ", "a", None):
-        result = _search(tmp_path, query)
-        assert result["results"] == [] and result["note"] == "query too short", query
+    result = _search(tmp_path, query)
+    assert result["results"] == []
+    assert result["count_scanned"] == 0
+    assert result["note"] == "query too short"
+
+
+@pytest.mark.parametrize(
+    "query,title",
+    [
+        ("semiconductors", "Semiconductors Capital Spending Outlook"),
+        ("AAPL", "AAPL Services Margin Outlook"),
+        ("中国流动性", "中国流动性观察"),
+        ("半导体", "中国半导体行业展望"),
+        ("半導體", "台灣半導體產業展望"),
+        ("ＡＡＰＬ", "AAPL Services Margin Outlook"),
+    ],
+)
+def test_meaningful_single_term_and_chinese_queries_are_searchable(
+    tmp_path, query, title,
+):
+    """One real concept or identifier is sufficient; Han can match a longer span."""
+    _catalog(tmp_path, [
+        _note("hit", title),
+        _note("decoy", "Japanese Government Bond Supply"),
+    ])
+    result = _search(tmp_path, query)
+    assert result["query"] == query, "internal normalization must not rewrite user text"
+    assert [row["id"] for row in result["results"]] == ["hit"]
+    assert result["count_scanned"] == 2
+
+
+def test_matching_normalizes_full_width_catalog_text_too(tmp_path):
+    """Normalization is symmetric: source text and query use the same boundary."""
+    _catalog(tmp_path, [
+        _note("hit", "ＡＡＰＬ Services Margin Outlook"),
+        _note("decoy", "Pineapple Demand Outlook"),
+    ])
+    assert [row["id"] for row in _search(tmp_path, "AAPL")["results"]] == ["hit"]
+
+
+@pytest.mark.parametrize(
+    "query,hit,decoys",
+    [
+        ("AAPL", "AAPL Margin Outlook", [
+            "Pineapple Demand Outlook", "XAAPLZ Supplier Note",
+        ]),
+        ("AI", "AI Infrastructure Outlook", [
+            "Paid Search Outlook", "Mainframe Demand",
+        ]),
+        ("600036.SH", "600036.SH Deposit Repricing", [
+            "600036.SZ Deposit Repricing", "1600036.SH Note", "600036.SH.A Note",
+        ]),
+        ("BRK-B", "BRK-B Capital Allocation", [
+            "BRK-A Capital Allocation", "BRK-BETA Factor Note",
+        ]),
+    ],
+)
+def test_single_terms_and_identifiers_do_not_match_larger_or_sibling_atoms(
+    tmp_path, query, hit, decoys,
+):
+    """Exact words/share classes must not bleed into larger or sibling atoms."""
+    items = [_note("hit", hit)] + [
+        _note(f"d{index}", title) for index, title in enumerate(decoys)
+    ]
+    _catalog(tmp_path, items)
+    assert [row["id"] for row in _search(tmp_path, query)["results"]] == ["hit"]
+
+
+@pytest.mark.parametrize(
+    "query,title",
+    [
+        ("near-term", "Near Term Inflation Outlook"),
+        ("long-term", "Long Term Growth Risks"),
+        ("risk-off", "Risk Off Market Playbook"),
+        ("AI-driven", "AI Driven Capital Spending"),
+        ("10-yr", "10 Yr Treasury Outlook"),
+    ],
+)
+def test_natural_hyphenated_research_terms_keep_word_matching(tmp_path, query, title):
+    """Catalog prose remains searchable even though share-class atoms stay exact."""
+    _catalog(tmp_path, [_note("hit", title), _note("decoy", "Unrelated Note")])
+    assert [row["id"] for row in _search(tmp_path, query)["results"]] == ["hit"]
+
+
+def test_tokenize_normalizes_width_deduplicates_and_preserves_identifier_atoms():
+    assert bmi._tokenize("ＡＡＰＬ AAPL aapl") == ("aapl",)
+    assert bmi._tokenize("中国流动性 中国流动性") == ("中国流动性",)
+    assert bmi._tokenize("600036．ＳＨ outlook") == ("600036.sh", "outlook")
+    assert bmi._tokenize("BRK-B outlook") == ("brk-b", "outlook")
+    assert bmi._tokenize("near-term outlook") == ("near", "term", "outlook")
+    assert bmi._tokenize("10-yr outlook") == ("10", "yr", "outlook")
 
 
 def test_qualified_tickers_survive_tokenisation(tmp_path):
@@ -797,6 +881,10 @@ def test_research_tool_schema_shape_and_attribution_instruction():
     # so the gateway's existing query=… call site keeps working.
     assert set(props) == {"query", "limit", "mode", "report_id"}
     assert props["query"]["type"] == "string" and props["limit"]["type"] == "integer"
+    query_description = props["query"]["description"]
+    assert "One meaningful term is accepted" in query_description
+    assert "中国流动性" in query_description
+    assert "at least 2 words" not in query_description
     assert props["report_id"]["type"] == "string"
     assert schema["input_schema"]["required"] == ["query"]
     assert "1..8" in props["limit"]["description"] and "default 5" in props["limit"]["description"]
