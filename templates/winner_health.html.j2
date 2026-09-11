@@ -199,7 +199,7 @@
 {%- if fg == 'atr_x' -%}
   {%- if r.atr_x is defined and r.atr_x is not none -%}
   <span class="fig neutral">{{ '%.1f' % r.atr_x }}×</span>
-  {%- else -%}<span class="lib-null" data-tip-en="This name has no above-trend distance tonight — a figure here would be a guess, so it is left blank." data-tip-zh="今晚算不出这只个股相对均线的距离 —— 写一个数字会是猜测，因此留空。">{{ t('not measurable', '无法测算') }}</span>{%- endif -%}
+  {%- else -%}<span class="lib-null" data-tip-en="This name has no above-trend distance in this build — a figure here would be a guess, so it is left blank." data-tip-zh="本次构建算不出这只个股相对均线的距离 —— 写一个数字会是猜测，因此留空。">{{ t('not measurable', '无法测算') }}</span>{%- endif -%}
 {%- elif fg == 'r63' -%}
   <span class="fig{{ ' dn' if (r.r63 is defined and r.r63 is not none and r.r63 < 0) else '' }}">{{ pc(r.r63) }}</span>
 {%- else -%}
@@ -312,7 +312,7 @@
       outside the ramp, takes no hue (m0) and carries no wear marks. ── #}
 {% set NOREAD = {'key':'no_read', 'slug':'noread', 'm':0,
   'en':'Not enough to compare', 'zh':'无可比样本',
-  'stance_en':'No read tonight', 'stance_zh':'今晚不作判读',
+  'stance_en':'No read', 'stance_zh':'不作判读',
   'sub_en':'On the board, but with no similar past runs in this group to read them against.',
   'sub_zh':'它们在看板上，但本分组内没有可供对照的相似历史行情。'} %}
 
@@ -854,7 +854,7 @@ a.tk:hover{color:var(--ink-link, var(--link))}
           carries no such key at all, and `Undefined > 5` is a hard render crash. -#}
       {%- set lag = WH.get('tape_lag_sessions') if WH else none %}
       {%- if lag is not none and lag > 5 %}
-      <span class="lag" data-tip-en="The board reads the last complete price tape we have. It is {{ lag }} sessions behind the market, so tonight's read describes that tape, not today's prices." data-tip-zh="看板读取的是我们手上最后一份完整的行情数据，它比市场落后 {{ lag }} 个交易日；今晚的判读描述的是那份数据，而不是今天的价格。"><span class="l-en">Prices are <b>{{ lag }}</b> sessions behind</span><span class="l-zh">价格落后 <b>{{ lag }}</b> 个交易日</span></span>
+      <span class="lag" data-tip-en="The board reads the last complete price tape we have. It is {{ lag }} sessions behind the market, so this build's read describes that tape, not current prices." data-tip-zh="看板读取的是我们手上最后一份完整的行情数据，它比市场落后 {{ lag }} 个交易日；本次构建的判读描述的是那份数据，而不是当前价格。"><span class="l-en">Prices are <b>{{ lag }}</b> sessions behind</span><span class="l-zh">价格落后 <b>{{ lag }}</b> 个交易日</span></span>
       {%- endif %}
     </div>
   </div>
@@ -863,7 +863,7 @@ a.tk:hover{color:var(--ink-link, var(--link))}
   {# ══ HERO — THE SHELF. Three kinds of winner, compared honestly. The overlap
         fact is stated BEFORE any number, because it is the one thing that makes
         three counts on one page readable at all. ══ #}
-  <section class="hero rise d1" aria-label="Tonight's groups">
+  <section class="hero rise d1" aria-label="The groups">
     <div class="hero-lede">
       <span class="l-en"><b>Three kinds of winner, each read against its own history.</b>
         <span class="q">A name can be in more than one, so these counts do not add up to a total.
@@ -884,8 +884,8 @@ a.tk:hover{color:var(--ink-link, var(--link))}
               'v':('A name can clear more than one bar, so it can appear in more than one group. The counts are never added together.',
                    '同一只个股可能同时达到多道门槛，因此可能出现在多个分组里。各组数字从不相加。')},
              {'tone':'warn','k':('Not a call','不是判断'),
-              'v':('A group describes how a move is behaving today. It is not a call, a target, or a reason to do anything on its own.',
-                   '分组描述的是当下走势的状态。它不是判断、不是目标价，本身也不构成采取任何行动的理由。')}],
+              'v':('A group describes how a move is behaving. It is not a call, a target, or a reason to do anything on its own.',
+                   '分组描述的是走势的状态。它不是判断、不是目标价，本身也不构成采取任何行动的理由。')}],
            receipt=('display only · no rank, gate or position size','仅供展示 · 不参与排序、准入或仓位')) }}
     </div>
     <div class="shelf">
@@ -904,9 +904,9 @@ a.tk:hover{color:var(--ink-link, var(--link))}
         <span class="sh-n"><span class="l-en"><b>{{ nt }}</b> names</span><span class="l-zh"><b>{{ nt }}</b> 只</span></span>
         <span class="sh-def">{{ t(M.def_en, M.def_zh) }}</span>
         <span class="sh-sum">
-          {%- if not T.readable -%}{{ t('not read tonight', '今晚未判读') }}
-          {%- elif nt == 0 -%}{{ t('none in this group tonight', '今晚该分组暂无个股') }}
-          {%- elif mat == 0 -%}{{ t('none aging tonight', '今晚没有在老化的') }}
+          {%- if not T.readable -%}{{ t('no read', '未判读') }}
+          {%- elif nt == 0 -%}{{ t('none in this group', '该分组暂无个股') }}
+          {%- elif mat == 0 -%}{{ t('none aging', '没有在老化的') }}
           {%- else -%}<span class="l-en"><b>{{ mat }}</b> of them aging</span><span class="l-zh">其中 <b>{{ mat }}</b> 只在老化</span>
           {%- endif -%}
         </span>
@@ -940,9 +940,9 @@ a.tk:hover{color:var(--ink-link, var(--link))}
   </section>
 
   {% else %}
-  <section class="nullhero rise d1" aria-label="Tonight's read has not landed">
+  <section class="nullhero rise d1" aria-label="The read has not landed">
     <p class="eyebrow">{{ t('Warming up', '正在预热') }}</p>
-    <h2>{{ t('Tonight\'s read has not landed yet', '今晚的判读尚未生成') }}</h2>
+    <h2>{{ t('The read has not landed yet', '判读尚未生成') }}</h2>
     <p>{{ t('This board is rebuilt after every US close. It fills in as soon as the nightly read finishes — nothing is being withheld.',
              '本看板在每个美股收盘后重建。夜间判读完成后即会填充 —— 没有任何内容被隐藏。') }}</p>
   </section>
@@ -1035,15 +1035,15 @@ a.tk:hover{color:var(--ink-link, var(--link))}
     {#- §6 C — this tier's own library did not load. Nothing is shown for it, and
         the other tiers are unaffected. Never a board of "nothing to do". -#}
     <div class="tnull">
-      <h3>{{ t('This group was not read tonight', '今晚未对该分组作判读') }}</h3>
+      <h3>{{ t('This group was not read', '未对该分组作判读') }}</h3>
       <p>{{ t('The history this group is measured against did not load, so nothing is shown for it. Nothing is being withheld, and the other groups are unaffected.',
               '该分组所对照的历史资料本次未能载入，因此这里不显示任何内容。没有任何内容被隐藏，其他分组不受影响。') }}</p>
-      <p class="nullstance"><b>{{ t('Nothing to read here tonight', '今晚此处无可判读') }}</b></p>
+      <p class="nullstance"><b>{{ t('Nothing to read here', '此处无可判读') }}</b></p>
     </div>
     {%- elif nt == 0 %}
     <div class="tnull">
-      <h3>{{ t('No name is in this group tonight', '今晚该分组没有个股') }}</h3>
-      <p><span class="l-en">Out of <b>{{ '{:,}'.format(WH.universe_n) if (WH and WH.universe_n) else '—' }}</b> US names screened, none clears this group's bar tonight.</span><span class="l-zh">在筛查的 <b>{{ '{:,}'.format(WH.universe_n) if (WH and WH.universe_n) else '—' }}</b> 只美股中，今晚没有一只达到该分组的门槛。</span></p>
+      <h3>{{ t('No name is in this group', '该分组没有个股') }}</h3>
+      <p><span class="l-en">Out of <b>{{ '{:,}'.format(WH.universe_n) if (WH and WH.universe_n) else '—' }}</b> US names screened, none clears this group's bar.</span><span class="l-zh">在筛查的 <b>{{ '{:,}'.format(WH.universe_n) if (WH and WH.universe_n) else '—' }}</b> 只美股中，没有一只达到该分组的门槛。</span></p>
       <p class="nullstance"><b>{{ t('Nothing to watch', '暂无可观察对象') }}</b>
         <span class="q">{{ t('— names appear here on their own, the night they qualify.',
                              '—— 一旦有个股符合条件，它当晚就会自己出现在这里。') }}</span></p>
@@ -1054,7 +1054,7 @@ a.tk:hover{color:var(--ink-link, var(--link))}
         the `Still running` group still renders below, so a quiet tier is never
         blank. -#}
     <div class="tnull">
-      <h3>{{ t('Nothing is aging in this group tonight', '今晚该分组没有行情走向老化') }}</h3>
+      <h3>{{ t('Nothing is aging in this group', '该分组没有行情走向老化') }}</h3>
       <p><span class="l-en">All <b>{{ nt }}</b> names here still look the way they did. An empty list is a reading, not a gap.</span><span class="l-zh">这里的 <b>{{ nt }}</b> 只个股仍与此前一样。列表为空本身就是一个判读结果，不是数据缺失。</span></p>
       <p class="nullstance"><b>{{ t('Nothing to do', '无需动作') }}</b>
         <span class="q">{{ t('— a name moves down this list on its own, the night something slips.',
@@ -1171,8 +1171,8 @@ a.tk:hover{color:var(--ink-link, var(--link))}
         <span>{{ t(s.sub_en, s.sub_zh) }}</span>
       </p>
       {%- if rollup %}
-      <p class="rollup">{{ t('Not listed one by one — nothing has slipped on any of them tonight.',
-                             '不逐只列出 —— 今晚它们没有任何环节转弱。') }}</p>
+      <p class="rollup">{{ t('Not listed one by one — nothing has slipped on any of them.',
+                             '不逐只列出 —— 它们没有任何环节转弱。') }}</p>
       {%- else %}
       {%- set n_rows = rows | length %}
       {%- set capped = n_rows > ROW_CAP %}
@@ -1215,12 +1215,12 @@ a.tk:hover{color:var(--ink-link, var(--link))}
            {'tone':'info','k':('Each group','每个分组'),
             'v':('Each group is measured only against its own history, and the counts never add up to a total.',
                  '每个分组只对照自己的历史来衡量，各组数字不能相加。')},
-           {'tone':'info','k':('Tonight\'s screen','今晚的筛查'),
-            'v':(('Tonight: ' ~ '{:,}'.format(WH.universe_n) ~ ' US names screened' ~ ((', read ' ~ WH.asof) if (WH and WH.asof) else '') ~ '.') if (WH and WH.universe_n) else 'The screened count and read date print here the night the read lands.',
-                 (('今晚：筛查 ' ~ '{:,}'.format(WH.universe_n) ~ ' 只美股' ~ (('，判读日期 ' ~ WH.asof) if (WH and WH.asof) else '') ~ '。') if (WH and WH.universe_n) else '筛查只数和判读日期会在夜间判读落地后显示在这里。'))},
+           {'tone':'info','k':('This screen','本次筛查'),
+            'v':(('{:,}'.format(WH.universe_n) ~ ' US names screened' ~ ((', read ' ~ WH.asof) if (WH and WH.asof) else '') ~ '.') if (WH and WH.universe_n) else 'The screened count and read date print here the night the read lands.',
+                 (('筛查 ' ~ '{:,}'.format(WH.universe_n) ~ ' 只美股' ~ (('，判读日期 ' ~ WH.asof) if (WH and WH.asof) else '') ~ '。') if (WH and WH.universe_n) else '筛查只数和判读日期会在夜间判读落地后显示在这里。'))},
            {'tone':'info','k':('Just left a group','刚离开某组'),
             'v':('A name that has just left a group stays listed there only while we read the change; a name you cannot find anywhere on this page did not clear any of the three bars.',
-                 '刚离开某个分组的个股，仅在我们判读这一变化期间保留在该组；在本页任何地方都找不到的个股，说明它今晚没有达到这三道门槛中的任何一道。')}],
+                 '刚离开某个分组的个股，仅在我们判读这一变化期间保留在该组；在本页任何地方都找不到的个股，说明它没有达到这三道门槛中的任何一道。')}],
          receipt=('display only · no rank, gate or position size','仅供展示 · 不参与排序、准入或仓位')) }}
   </div>
 

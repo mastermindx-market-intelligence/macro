@@ -122,8 +122,12 @@ def test_w2b_unreadable_tier_renders_the_null_band_and_no_rows():
     ctx = _three_tier()
     ctx["tiers"][1] = _tier("r63", readable=False)
     html = _template().render(wh=ctx)
-    assert "This group was not read tonight" in html
-    assert "Nothing to read here tonight" in html
+    assert "This group was not read" in html
+    assert "Nothing to read here" in html
+    assert "This group was not read tonight" not in html
+    assert "Nothing to read here tonight" not in html
+    assert "今晚未对该分组作判读" not in html
+    assert "今晚此处无可判读" not in html
     # the OTHER tiers are unaffected — an unread tier is not a dead page
     assert "Big six-month gains" in html and "Far above trend" in html
     body = html.split('id="t-three-month"')[1].split("</section>")[0]
@@ -135,8 +139,10 @@ def test_w2b_empty_tier_renders_the_none_band():
     ctx = _three_tier()
     ctx["tiers"][2] = _tier("atrz")
     html = _template().render(wh=ctx)
-    assert "No name is in this group tonight" in html
+    assert "No name is in this group" in html
     assert "Nothing to watch" in html
+    assert "No name is in this group tonight" not in html
+    assert "今晚该分组没有个股" not in html
 
 
 def test_w2b_unreadable_rows_carry_no_wear_marks():

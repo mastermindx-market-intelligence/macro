@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""S1-rig evidence matrix for winner_health W15 r4.
+"""S1-rig evidence matrix for winner_health W15 r5.
 
 Two data shapes, never blended in one cell:
 
@@ -1057,7 +1057,7 @@ def capture(*, smoke: bool = False) -> dict:
         "generated_at": generated_at,
         "tool": {
             "module_ref": "scripts/capture_winner_health_w15_evidence.py",
-            "version": "w15-r4-s1",
+            "version": "w15-r5-s1",
             "capture_method": (
                 "playwright, one fresh page per cell, fixture HTML in a scratch "
                 "dir (never site/ or data/). data-theme/data-lang via setTheme/"
@@ -1154,7 +1154,7 @@ def _write_readme(manifest: dict) -> str:
     overlay_sels = manifest.get("overlays_hidden") or list(OVERLAY_SELECTORS)
     find_hides = manifest.get("find_crop_hides") or list(FIND_CROP_HIDES)
     lines = [
-        "# Winner Health W15 r4 — evidence matrix",
+        "# Winner Health W15 r5 — evidence matrix",
         "",
         "S1 rig: Playwright against scratch-rendered `winner_health.html.j2` on the "
         "real page skeleton (`_site_nav` included; live `<body>` has no `page-*` "
@@ -1356,7 +1356,7 @@ def main(argv: list[str] | None = None) -> int:
                     help="capture a handful of dark/EN cells and stop")
     args = ap.parse_args(argv)
 
-    print("winner_health W15 r4 capture", flush=True)
+    print("winner_health W15 r5 capture", flush=True)
     payloads = capture(smoke=args.smoke)
     manifest = payloads["manifest"]
     OUT_DIR.mkdir(parents=True, exist_ok=True)

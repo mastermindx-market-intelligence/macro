@@ -137,14 +137,18 @@ def test_clear_mode_renders_the_signature(tmp_path):
     quiet-night picture stays rare and stays memorable.
     """
     html = _render(tmp_path, _ctx({"extended_healthy": [_row("AVGO", 0.54, legs=[])]}))
-    assert "Nothing is aging in this group tonight" in html
+    assert "Nothing is aging in this group" in html
+    assert "Nothing is aging in this group tonight" not in html
+    assert "今晚该分组没有行情走向老化" not in html
     assert "flatline" in html
     assert "Still running" in html          # the group still renders below
 
 
 def test_none_mode_renders(tmp_path):
     html = _render(tmp_path, _ctx())
-    assert "No name is in this group tonight" in html
+    assert "No name is in this group" in html
+    assert "No name is in this group tonight" not in html
+    assert "今晚该分组没有个股" not in html
     assert "1,506" in html                   # universe_n, thousands-separated
 
 
@@ -541,6 +545,12 @@ def test_p1_4_footer_is_one_sentence_at_rest_and_demotes_the_rest(tmp_path):
     assert "A name that has just left a group" in sp
     assert "刚离开某个分组的个股" in sp
     assert "1,506" in sp  # screened count, now in the tip
+    assert "This screen" in sp
+    assert "本次筛查" in sp
+    assert "1,506 US names screened" in sp
+    assert "筛查 1,506 只美股" in sp
+    assert "Tonight's screen" not in sp
+    assert "今晚的筛查" not in sp
 
 
 def test_p1_5_backdrop_209_names_its_population_both_lanes(tmp_path):
@@ -828,3 +838,103 @@ def test_p1_6_rollup_stays_a_summary(tmp_path):
     assert 'class="row"' not in g
     assert "wh-more" not in g
     assert "See all 80" not in g
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# W15 r5 — day-free bakes. Relative day words in build-time copy go stale the
+# day after; the dated stamp carries WHEN. Comments (`{#…#}`) are exempt.
+# ══════════════════════════════════════════════════════════════════════════════
+DAY_WORDS_EN = re.compile(r"\b(today|tonight|yesterday)\b", re.I)
+DAY_WORDS_ZH = re.compile(r"今日|今天|今晚|昨日|昨天")
+
+
+def _page_copy_with_tips(html: str) -> str:
+    """Own wrap; scripts/styles stripped; data-tip-en/zh and aria-labels kept.
+
+    Shared nav is a different surface (it still carries 'tonight'/'today' on
+    other desks) and is sliced off at `.wrap`.
+    """
+    i = html.find('<div class="wrap">')
+    assert i > 0, "page wrap not found"
+    html = html[i:]
+    html = re.sub(r"<style\b.*?</style>", " ", html, flags=re.S | re.I)
+    html = re.sub(r"<script\b.*?</script>", " ", html, flags=re.S | re.I)
+    html = re.sub(r"<!--.*?-->", " ", html, flags=re.S)
+    return html
+
+
+def _assert_no_day_words(html: str, label: str) -> None:
+    blob = _page_copy_with_tips(html)
+    en = DAY_WORDS_EN.findall(blob)
+    zh = DAY_WORDS_ZH.findall(blob)
+    assert not en and not zh, (
+        f"{label}: banned day words in page copy (tips included): "
+        f"en={en!r} zh={zh!r}"
+    )
+
+
+@pytest.mark.parametrize("shape", ("prod", "members"))
+def test_r5_scratch_shapes_have_no_relative_day_words(tmp_path, shape):
+    """Prod-shape and members-shape scratch renders, both lanes, tips included."""
+    from scripts.capture_winner_health_w15_evidence import (  # noqa: PLC0415
+        inject_members, load_production,
+    )
+    prod = load_production()
+    ctx = inject_members(prod) if shape == "members" else prod
+    p = tmp_path / f"{shape}.json"
+    p.write_text(json.dumps(ctx, ensure_ascii=False), encoding="utf-8")
+    _assert_no_day_words(bwh.render(REPO, fixture=p), shape)
+
+
+def test_r5_edited_branches_have_no_relative_day_words(tmp_path):
+    """Warm / unread / empty / quiet / rollup / lag / lib-null / no-read stance."""
+    _assert_no_day_words(_render(tmp_path, None), "warm")
+    unread = {
+        **_ctx(),
+        "tiers": [{
+            "key": "primary", "readable": False, "figure": "r126",
+            "library": _ctx()["library"],
+            "states": {"extended_healthy": [], "extended_watch": [],
+                       "thinning": [], "breaking": [], "no_read": []},
+        }],
+    }
+    _assert_no_day_words(_render(tmp_path, unread), "unread")
+    _assert_no_day_words(_render(tmp_path, _ctx()), "empty")
+    _assert_no_day_words(
+        _render(tmp_path, _ctx({"extended_healthy": [_row("AVGO", 0.54, legs=[])]} )),
+        "quiet")
+    big = [_row(ticker=f"T{i:03d}", legs=[]) for i in range(80)]
+    _assert_no_day_words(_render(tmp_path, _ctx({"extended_healthy": big})), "rollup")
+    _assert_no_day_words(
+        _render(tmp_path, _ctx({"extended_watch": [_row()]}, tape_lag_sessions=26)),
+        "lag")
+    rows = [_row(ticker=tk, analog=None) for tk in ("CXM", "PFGC")]
+    for r in rows:
+        r["atr_x"] = None
+        r["r126"] = 0.4
+    libnull = {
+        **_ctx(),
+        "tiers": [{
+            "key": "atrz", "readable": True, "figure": "atr_x",
+            "library": _ctx()["library"],
+            "states": {"extended_healthy": [], "extended_watch": [],
+                       "thinning": [], "breaking": rows, "no_read": []},
+        }],
+    }
+    _assert_no_day_words(_render(tmp_path, libnull), "libnull")
+    noread = {
+        **_ctx(),
+        "tiers": [{
+            "key": "primary", "readable": True, "figure": "r126",
+            "library": _ctx()["library"],
+            "states": {"extended_healthy": [], "extended_watch": [],
+                       "thinning": [], "breaking": [],
+                       "no_read": [_row(ticker="NRD", analog=None)]},
+        }],
+    }
+    html = _render(tmp_path, noread)
+    _assert_no_day_words(html, "no_read")
+    assert "No read" in html
+    assert "不作判读" in html
+    assert "No read tonight" not in html
+    assert "今晚不作判读" not in html
