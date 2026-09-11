@@ -1,6 +1,6 @@
 # china_intel W12 r3 — canvas-true evidence matrix
 
-Provenance: captured at committed head `090ee9a4c602db82d52cc37b065680468f5c4e8f`.
+Provenance: captured at committed head `e7acfb7ec6f31c5a23d316e473e1ebaabe19ca69`.
 Manifest `sha` == `git rev-parse HEAD` at capture time (porcelain-empty).
 
 S1 rig: real `report_base` page (body `{ background: var(--bg) }`, nav family,

@@ -2,7 +2,7 @@
   "schema": "mastermind.p0_evidence.v2",
   "page": "china_intel",
   "round": "w12-r3",
-  "sha": "090ee9a4c602db82d52cc37b065680468f5c4e8f",
+  "sha": "e7acfb7ec6f31c5a23d316e473e1ebaabe19ca69",
   "rig": "S1 canvas-true (Playwright, real body canvas, overlay hide, reduced-motion, fonts.ready + getAnimations settle, viewport-region crops)",
   "overlays_hidden": [
     ".ift-aurora",
@@ -105,7 +105,8 @@
       "fixture": "baseline",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "full-page"
+      "clip_kind": "full-page",
+      "judged": "full-page baseline \u2014 lead brief above fold, B1 chip + as-of, command 8+expander, stances"
     },
     "fp-dark-en-390": {
       "file": "cells/fp-dark-en-390.png",
@@ -117,7 +118,8 @@
       "fixture": "baseline",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "full-page"
+      "clip_kind": "full-page",
+      "judged": "full-page baseline \u2014 lead brief above fold, B1 chip + as-of, command 8+expander, stances"
     },
     "fp-dark-zh-1440": {
       "file": "cells/fp-dark-zh-1440.png",
@@ -129,7 +131,8 @@
       "fixture": "baseline",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "full-page"
+      "clip_kind": "full-page",
+      "judged": "full-page baseline \u2014 lead brief above fold, B1 chip + as-of, command 8+expander, stances"
     },
     "fp-dark-zh-390": {
       "file": "cells/fp-dark-zh-390.png",
@@ -141,7 +144,8 @@
       "fixture": "baseline",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "full-page"
+      "clip_kind": "full-page",
+      "judged": "full-page baseline \u2014 lead brief above fold, B1 chip + as-of, command 8+expander, stances"
     },
     "fp-light-en-1440": {
       "file": "cells/fp-light-en-1440.png",
@@ -153,7 +157,8 @@
       "fixture": "baseline",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "full-page"
+      "clip_kind": "full-page",
+      "judged": "full-page baseline \u2014 lead brief above fold, B1 chip + as-of, command 8+expander, stances"
     },
     "fp-light-en-390": {
       "file": "cells/fp-light-en-390.png",
@@ -165,7 +170,8 @@
       "fixture": "baseline",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "full-page"
+      "clip_kind": "full-page",
+      "judged": "full-page baseline \u2014 lead brief above fold, B1 chip + as-of, command 8+expander, stances"
     },
     "fp-light-zh-1440": {
       "file": "cells/fp-light-zh-1440.png",
@@ -177,7 +183,8 @@
       "fixture": "baseline",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "full-page"
+      "clip_kind": "full-page",
+      "judged": "full-page baseline \u2014 lead brief above fold, B1 chip + as-of, command 8+expander, stances"
     },
     "fp-light-zh-390": {
       "file": "cells/fp-light-zh-390.png",
@@ -189,7 +196,8 @@
       "fixture": "baseline",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "full-page"
+      "clip_kind": "full-page",
+      "judged": "full-page baseline \u2014 lead brief above fold, B1 chip + as-of, command 8+expander, stances"
     },
     "b1-state1-dark-en": {
       "file": "cells/b1-state1-dark-en.png",
@@ -201,7 +209,8 @@
       "fixture": "b1-fresh",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "state-1 suppressed \u2014 labeled absence: cmdbar without the chip"
     },
     "b1-state1-dark-zh": {
       "file": "cells/b1-state1-dark-zh.png",
@@ -213,7 +222,8 @@
       "fixture": "b1-fresh",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "state-1 suppressed \u2014 labeled absence: cmdbar without the chip"
     },
     "b1-state1-light-en": {
       "file": "cells/b1-state1-light-en.png",
@@ -225,7 +235,8 @@
       "fixture": "b1-fresh",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "state-1 suppressed \u2014 labeled absence: cmdbar without the chip"
     },
     "b1-state1-light-zh": {
       "file": "cells/b1-state1-light-zh.png",
@@ -237,19 +248,21 @@
       "fixture": "b1-fresh",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "state-1 suppressed \u2014 labeled absence: cmdbar without the chip"
     },
     "b1-state2-dark-en": {
       "file": "cells/b1-state2-dark-en.png",
-      "twin": "cells/6198f6180903a800.png",
-      "sha256": "6198f6180903a800794c4a283a037b17172d313dfcd242dbf0a78aaf30780ed5",
+      "twin": "cells/3dd1b6b88dcf0862.png",
+      "sha256": "3dd1b6b88dcf08623dacb0b7d04ccabecf2248cfbfecf2372873d06e80f0fff7",
       "theme": "dark",
       "locale": "en",
       "vp": "desktop",
       "fixture": "b1-mixed",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "state-2 mixed \u2014 names a still-current feed; chip beside as-of stamp"
     },
     "b1-state2-dark-zh": {
       "file": "cells/b1-state2-dark-zh.png",
@@ -261,7 +274,8 @@
       "fixture": "b1-mixed",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "state-2 mixed \u2014 names a still-current feed; chip beside as-of stamp"
     },
     "b1-state2-light-en": {
       "file": "cells/b1-state2-light-en.png",
@@ -273,7 +287,8 @@
       "fixture": "b1-mixed",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "state-2 mixed \u2014 names a still-current feed; chip beside as-of stamp"
     },
     "b1-state2-light-zh": {
       "file": "cells/b1-state2-light-zh.png",
@@ -285,7 +300,8 @@
       "fixture": "b1-mixed",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "state-2 mixed \u2014 names a still-current feed; chip beside as-of stamp"
     },
     "b1-state3-dark-en": {
       "file": "cells/b1-state3-dark-en.png",
@@ -297,7 +313,8 @@
       "fixture": "b1-all_stale",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "state-3 all-stale \u2014 no feed is current"
     },
     "b1-state3-dark-zh": {
       "file": "cells/b1-state3-dark-zh.png",
@@ -309,7 +326,8 @@
       "fixture": "b1-all_stale",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "state-3 all-stale \u2014 no feed is current"
     },
     "b1-state3-light-en": {
       "file": "cells/b1-state3-light-en.png",
@@ -321,7 +339,8 @@
       "fixture": "b1-all_stale",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "state-3 all-stale \u2014 no feed is current"
     },
     "b1-state3-light-zh": {
       "file": "cells/b1-state3-light-zh.png",
@@ -333,19 +352,21 @@
       "fixture": "b1-all_stale",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "state-3 all-stale \u2014 no feed is current"
     },
     "b1-state4-dark-en": {
       "file": "cells/b1-state4-dark-en.png",
-      "twin": "cells/e28c792c5b061196.png",
-      "sha256": "e28c792c5b061196163e46eab9381af00b1f751b969c7acb63b1888b2a94f83e",
+      "twin": "cells/d80bc0a7d35a3017.png",
+      "sha256": "d80bc0a7d35a30179970ba5bb42a83deeb18e0293426306cede853424ffd50b2",
       "theme": "dark",
       "locale": "en",
       "vp": "desktop",
       "fixture": "b1-outage",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "state-4 outage \u2014 timestamps unavailable, never suppressed; chip beside as-of stamp"
     },
     "b1-state4-dark-zh": {
       "file": "cells/b1-state4-dark-zh.png",
@@ -357,7 +378,8 @@
       "fixture": "b1-outage",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "state-4 outage \u2014 timestamps unavailable, never suppressed; chip beside as-of stamp"
     },
     "b1-state4-light-en": {
       "file": "cells/b1-state4-light-en.png",
@@ -369,7 +391,8 @@
       "fixture": "b1-outage",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "state-4 outage \u2014 timestamps unavailable, never suppressed; chip beside as-of stamp"
     },
     "b1-state4-light-zh": {
       "file": "cells/b1-state4-light-zh.png",
@@ -381,55 +404,60 @@
       "fixture": "b1-outage",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "state-4 outage \u2014 timestamps unavailable, never suppressed; chip beside as-of stamp"
     },
     "b1-state5-dark-en": {
       "file": "cells/b1-state5-dark-en.png",
-      "twin": "cells/b77ffd6d513e1674.png",
-      "sha256": "b77ffd6d513e1674e2d7a7152565dce9b888e7feba6f19f15008a680d0143975",
+      "twin": "cells/0ed950dfb301a266.png",
+      "sha256": "0ed950dfb301a26623bcdea46fb4711e1c741ee21e70633abbd2a4887bc749fa",
       "theme": "dark",
       "locale": "en",
       "vp": "desktop",
       "fixture": "b1-undated",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "state-5 undated-among \u2014 dated oldest + undated named; clause-split"
     },
     "b1-state5-dark-zh": {
       "file": "cells/b1-state5-dark-zh.png",
-      "twin": "cells/f5d58d7ec62590a9.png",
-      "sha256": "f5d58d7ec62590a987e63af05f3f3c1c720888de1561f5b954fda5ad2044b341",
+      "twin": "cells/01015212be323125.png",
+      "sha256": "01015212be323125013bc2c71f357b919b23e1c100c79a66c450527306b7527e",
       "theme": "dark",
       "locale": "zh",
       "vp": "desktop",
       "fixture": "b1-undated",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "state-5 undated-among \u2014 dated oldest + undated named; clause-split"
     },
     "b1-state5-light-en": {
       "file": "cells/b1-state5-light-en.png",
-      "twin": "cells/23dfbbe4f7345b91.png",
-      "sha256": "23dfbbe4f7345b915886cf1f815a67091bfe88c9c86b0562255ccaaa148a98b3",
+      "twin": "cells/5a17bc41def07970.png",
+      "sha256": "5a17bc41def0797067f71a1a1ff35152f5dd4707a9a025ec4ec34e6777f73cca",
       "theme": "light",
       "locale": "en",
       "vp": "desktop",
       "fixture": "b1-undated",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "state-5 undated-among \u2014 dated oldest + undated named; clause-split"
     },
     "b1-state5-light-zh": {
       "file": "cells/b1-state5-light-zh.png",
-      "twin": "cells/4a384d0d3e50ee8a.png",
-      "sha256": "4a384d0d3e50ee8a50b7bdc8f7e5e886141aa99bf4f801708790d1bf1cade079",
+      "twin": "cells/02c3a3ca342988dd.png",
+      "sha256": "02c3a3ca342988dd21cd70d6d443045471959753989f111149d21f46b48566fb",
       "theme": "light",
       "locale": "zh",
       "vp": "desktop",
       "fixture": "b1-undated",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "state-5 undated-among \u2014 dated oldest + undated named; clause-split"
     },
     "regime-tilted-dark-en": {
       "file": "cells/regime-tilted-dark-en.png",
@@ -441,7 +469,8 @@
       "fixture": "regime-tilted",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "F3 tilted EN \u2014 word (Risk-on) + signed number + link-tinted ring; hex is computed-style only; visible-ink hex parked per packet D8"
     },
     "regime-tilted-light-en": {
       "file": "cells/regime-tilted-light-en.png",
@@ -453,7 +482,8 @@
       "fixture": "regime-tilted",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "F3 tilted EN \u2014 word (Risk-on) + signed number + link-tinted ring; hex is computed-style only; visible-ink hex parked per packet D8"
     },
     "regime-tilted-dark-zh": {
       "file": "cells/regime-tilted-dark-zh.png",
@@ -465,7 +495,8 @@
       "fixture": "regime-tilted",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "F3 tilted ZH \u2014 word (\u504f\u597d\u98ce\u9669) + signed number + link-tinted ring; lane-symmetric; hex is computed-style only; visible-ink hex parked per packet D8"
     },
     "regime-tilted-light-zh": {
       "file": "cells/regime-tilted-light-zh.png",
@@ -477,7 +508,8 @@
       "fixture": "regime-tilted",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "F3 tilted ZH \u2014 word (\u504f\u597d\u98ce\u9669) + signed number + link-tinted ring; lane-symmetric; hex is computed-style only; visible-ink hex parked per packet D8"
     },
     "regime-neutral-dark-en": {
       "file": "cells/regime-neutral-dark-en.png",
@@ -489,7 +521,8 @@
       "fixture": "regime-neutral",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "Neutral tilt \u2014 untinted is the honest neutral, not a defect"
     },
     "regime-neutral-dark-zh": {
       "file": "cells/regime-neutral-dark-zh.png",
@@ -501,7 +534,8 @@
       "fixture": "regime-neutral",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "Neutral tilt \u2014 untinted is the honest neutral, not a defect"
     },
     "regime-neutral-light-en": {
       "file": "cells/regime-neutral-light-en.png",
@@ -513,7 +547,8 @@
       "fixture": "regime-neutral",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "Neutral tilt \u2014 untinted is the honest neutral, not a defect"
     },
     "regime-neutral-light-zh": {
       "file": "cells/regime-neutral-light-zh.png",
@@ -525,7 +560,8 @@
       "fixture": "regime-neutral",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "Neutral tilt \u2014 untinted is the honest neutral, not a defect"
     },
     "brief-card-dark-en": {
       "file": "cells/brief-card-dark-en.png",
@@ -537,7 +573,8 @@
       "fixture": "baseline",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "Dated brief card with as-of + source chip"
     },
     "brief-card-dark-zh": {
       "file": "cells/brief-card-dark-zh.png",
@@ -549,7 +586,8 @@
       "fixture": "baseline",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "Dated brief card with as-of + source chip"
     },
     "brief-card-light-en": {
       "file": "cells/brief-card-light-en.png",
@@ -561,7 +599,8 @@
       "fixture": "baseline",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "Dated brief card with as-of + source chip"
     },
     "brief-card-light-zh": {
       "file": "cells/brief-card-light-zh.png",
@@ -573,7 +612,8 @@
       "fixture": "baseline",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "Dated brief card with as-of + source chip"
     },
     "foldin-dark-en": {
       "file": "cells/foldin-dark-en.png",
@@ -585,7 +625,8 @@
       "fixture": "foldin",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "No-asof fold-in \u2014 'kept on the lead brief' line"
     },
     "foldin-dark-zh": {
       "file": "cells/foldin-dark-zh.png",
@@ -597,7 +638,8 @@
       "fixture": "foldin",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "No-asof fold-in \u2014 'kept on the lead brief' line"
     },
     "foldin-light-en": {
       "file": "cells/foldin-light-en.png",
@@ -609,7 +651,8 @@
       "fixture": "foldin",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "No-asof fold-in \u2014 'kept on the lead brief' line"
     },
     "foldin-light-zh": {
       "file": "cells/foldin-light-zh.png",
@@ -621,7 +664,8 @@
       "fixture": "foldin",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "No-asof fold-in \u2014 'kept on the lead brief' line"
     },
     "degraded-dark-en": {
       "file": "cells/degraded-dark-en.png",
@@ -633,7 +677,8 @@
       "fixture": "degraded",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "Degraded-AI why \u2014 enum\u2192words, never the enum"
     },
     "degraded-dark-zh": {
       "file": "cells/degraded-dark-zh.png",
@@ -645,7 +690,8 @@
       "fixture": "degraded",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "Degraded-AI why \u2014 enum\u2192words, never the enum"
     },
     "degraded-light-en": {
       "file": "cells/degraded-light-en.png",
@@ -657,7 +703,8 @@
       "fixture": "degraded",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "Degraded-AI why \u2014 enum\u2192words, never the enum"
     },
     "degraded-light-zh": {
       "file": "cells/degraded-light-zh.png",
@@ -669,7 +716,8 @@
       "fixture": "degraded",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "Degraded-AI why \u2014 enum\u2192words, never the enum"
     },
     "f8-tip-dark-en": {
       "file": "cells/f8-tip-dark-en.png",
@@ -681,7 +729,8 @@
       "fixture": "baseline",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "F8 full-name tip OPEN on a truncated name"
     },
     "f8-tip-dark-zh": {
       "file": "cells/f8-tip-dark-zh.png",
@@ -693,7 +742,8 @@
       "fixture": "baseline",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "F8 full-name tip OPEN on a truncated name"
     },
     "f8-tip-light-en": {
       "file": "cells/f8-tip-light-en.png",
@@ -705,7 +755,8 @@
       "fixture": "baseline",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "F8 full-name tip OPEN on a truncated name"
     },
     "f8-tip-light-zh": {
       "file": "cells/f8-tip-light-zh.png",
@@ -717,7 +768,8 @@
       "fixture": "baseline",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "F8 full-name tip OPEN on a truncated name"
     },
     "f11-zh-tip-dark": {
       "file": "cells/f11-zh-tip-dark.png",
@@ -729,7 +781,8 @@
       "fixture": "baseline",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "F11 ZH \u300c\u6682\u65e0\u4e2d\u6587\u6458\u8981\u300d with the EN tip OPEN"
     },
     "f11-zh-tip-light": {
       "file": "cells/f11-zh-tip-light.png",
@@ -741,7 +794,8 @@
       "fixture": "baseline",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "F11 ZH \u300c\u6682\u65e0\u4e2d\u6587\u6458\u8981\u300d with the EN tip OPEN"
     },
     "method-band-dark-en": {
       "file": "cells/method-band-dark-en.png",
@@ -753,7 +807,8 @@
       "fixture": "baseline",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "Method band post-F9 \u2014 no Ignore stance"
     },
     "analogs-dark-en": {
       "file": "cells/analogs-dark-en.png",
@@ -765,7 +820,8 @@
       "fixture": "baseline",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "Analogs L1 stance as shipped (Ignore); sibling L1 panels keep Watch; method-band has none"
     },
     "method-band-dark-zh": {
       "file": "cells/method-band-dark-zh.png",
@@ -777,7 +833,8 @@
       "fixture": "baseline",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "Method band post-F9 \u2014 no Ignore stance"
     },
     "analogs-dark-zh": {
       "file": "cells/analogs-dark-zh.png",
@@ -789,7 +846,8 @@
       "fixture": "baseline",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "Analogs L1 stance as shipped (Ignore); sibling L1 panels keep Watch; method-band has none"
     },
     "method-band-light-en": {
       "file": "cells/method-band-light-en.png",
@@ -801,7 +859,8 @@
       "fixture": "baseline",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "Method band post-F9 \u2014 no Ignore stance"
     },
     "analogs-light-en": {
       "file": "cells/analogs-light-en.png",
@@ -813,7 +872,8 @@
       "fixture": "baseline",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "Analogs L1 stance as shipped (Ignore); sibling L1 panels keep Watch; method-band has none"
     },
     "method-band-light-zh": {
       "file": "cells/method-band-light-zh.png",
@@ -825,7 +885,8 @@
       "fixture": "baseline",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "Method band post-F9 \u2014 no Ignore stance"
     },
     "analogs-light-zh": {
       "file": "cells/analogs-light-zh.png",
@@ -837,7 +898,8 @@
       "fixture": "baseline",
       "overlay": "clean",
       "SETTLE": "settled",
-      "clip_kind": "viewport-region"
+      "clip_kind": "viewport-region",
+      "judged": "Analogs L1 stance as shipped (Ignore); sibling L1 panels keep Watch; method-band has none"
     }
   }
 }
