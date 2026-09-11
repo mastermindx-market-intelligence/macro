@@ -2,6 +2,21 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-09-10",
+      "tickers": [
+        "ADM",
+        "ALV",
+        "BABA",
+        "DYN",
+        "EZPW",
+        "FN",
+        "KMT",
+        "LAUR",
+        "LILA",
+        "SEI"
+      ]
+    },
+    {
       "as_of": "2026-09-09",
       "tickers": [
         "ABM",
@@ -168,35 +183,6 @@
         "VYX",
         "WWW",
         "XRAY"
-      ]
-    },
-    {
-      "as_of": "2026-09-01",
-      "tickers": [
-        "AEO",
-        "ALV",
-        "AM",
-        "CRWV",
-        "CVBF",
-        "EZPW",
-        "GO",
-        "KEX",
-        "KMI",
-        "LIVN",
-        "MPT",
-        "NNN",
-        "ORLY",
-        "PETZ",
-        "PLNT",
-        "PRVA",
-        "RNAQ",
-        "SAH",
-        "SON",
-        "STAG",
-        "UTHR",
-        "VYX",
-        "WH",
-        "WHR"
       ]
     }
   ]

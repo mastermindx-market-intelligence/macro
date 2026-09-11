@@ -1,15 +1,15 @@
 {
   "schema": "thematic_desk.v1",
-  "as_of": "2026-09-09",
-  "scored_total": 189,
-  "open": 89,
-  "unscored_soft": 44,
+  "as_of": "2026-09-10",
+  "scored_total": 191,
+  "open": 92,
+  "unscored_soft": 46,
   "overall": {
-    "n": 189,
-    "hits": 116,
+    "n": 191,
+    "hits": 118,
     "misses": 73,
-    "hit_rate": 0.614,
-    "dir_accuracy": 0.407
+    "hit_rate": 0.618,
+    "dir_accuracy": 0.408
   },
   "by_market": {
     "us": {
@@ -34,20 +34,20 @@
       "dir_accuracy": 0.9
     },
     "canada": {
-      "n": 62,
-      "hits": 37,
+      "n": 64,
+      "hits": 39,
       "misses": 25,
-      "hit_rate": 0.597,
-      "dir_accuracy": 0.306
+      "hit_rate": 0.609,
+      "dir_accuracy": 0.312
     }
   },
   "by_conviction": {
     "low": {
-      "n": 188,
-      "hits": 116,
+      "n": 190,
+      "hits": 118,
       "misses": 72,
-      "hit_rate": 0.617,
-      "dir_accuracy": 0.41
+      "hit_rate": 0.621,
+      "dir_accuracy": 0.411
     },
     "medium": {
       "n": 1,
@@ -64,8 +64,28 @@
       "dir_accuracy": null
     }
   },
-  "calibration_note": "189 scored, hit-rate 0.614 (directional accuracy 0.407). Chance alone would land a hit-rate near 0.8505 (directional accuracy near 0.5103) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
+  "calibration_note": "191 scored, hit-rate 0.618 (directional accuracy 0.408). Chance alone would land a hit-rate near 0.8499 (directional accuracy near 0.5095) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
   "recent": [
+    {
+      "id": "canada-2026-07-29-1",
+      "market": "canada",
+      "subject": "Big Banks",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.0343,
+      "check_by": "2026-09-09"
+    },
+    {
+      "id": "canada-2026-08-12-20260813125933-1",
+      "market": "canada",
+      "subject": "Big Banks",
+      "lean": "avoid",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.0281,
+      "check_by": "2026-09-09"
+    },
     {
       "id": "china-2026-07-28-2",
       "market": "china",
@@ -164,26 +184,6 @@
       "conviction": "low",
       "outcome": "hit",
       "realized": -0.0263,
-      "check_by": "2026-09-04"
-    },
-    {
-      "id": "china-2026-08-07-20260808212841-1",
-      "market": "china",
-      "subject": "Industrial Metals",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": -0.0208,
-      "check_by": "2026-09-04"
-    },
-    {
-      "id": "china-2026-08-07-20260808212841-2",
-      "market": "china",
-      "subject": "AI Compute & Optics",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "miss",
-      "realized": -0.051,
       "check_by": "2026-09-04"
     }
   ]

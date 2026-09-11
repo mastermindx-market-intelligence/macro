@@ -150,6 +150,7 @@ F02 owner-resolution memo (006/034 carry explicit owner-unresolved flags).
 
 ## Program-level items surfaced upward (updated by the same ruling)
 
+- **MO-DELTA-007 contract question — CLOSED** by `MARKET_ONTOLOGY_F13_PERSONAL_ACCURACY_LEDGER_SPEC_2026-09-06.md` (packet B-F13-4): freezes the personal accuracy ledger's data contract, scoring, honest-N rule, and use ceiling. The capability itself stays blocked on the F11 Thesis-object vertical named above (row `next_bounded_child`); row state unchanged at `PROJECTION_ONLY` / `learning_only`.
 - **MO-PAID-020 — RULED**: the row belongs to WS:MARKET-OS/F06; Stock Identity/Data OS
   are owner DEPENDENCIES, not child write authority. A single bounded renderer/CIK-access
   repair may be admitted only after a fresh collision census and remains
@@ -160,6 +161,11 @@ F02 owner-resolution memo (006/034 carry explicit owner-unresolved flags).
   gap-monitor child stays deferred on that sequence actually executing.
 - **MO-PAID-038 is a deliberate HOLD** (DEC:MARKET-INTEL-PRODUCTIZATION-NO-NEW-WORKSTREAM
   names ResearchStudy Workbench HELD) — a release decision, never a schedulable build.
+- **B-F06-2 scope freeze (2026-09-06)** records the disposition this section
+  anticipates for MO-DELTA-002 and MO-PAID-020/MO-PAID-021: see
+  `MARKET_ONTOLOGY_F06_SCREENER_AND_COCKPIT_SCOPE_2026-09-06.md` for the
+  no-ranker research-screener ceiling and the 8-panel display-only B1B cockpit
+  map, both still gated on the `#6920`/`#6905` dependencies named above.
 
 No capability promotion, no rank/size/gate/trade authority, no new stores or planes are
 created by this artifact. Falsifier vocabulary stays off user-facing surfaces (#3821).

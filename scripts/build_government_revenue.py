@@ -115,7 +115,18 @@ SHELL_JSON_BUDGET_BYTES = 100_000
 # bytes (2.8%) of measured headroom; the embedded-data cap is unchanged and
 # the D3 inline comments were simultaneously trimmed to pointer form so the
 # raise covers real markup, not narration.
-RAW_HTML_BUDGET_BYTES = 303_104
+# With the committed evidence of 2026-09-08 the page baked to 303,708 raw
+# bytes against 296 KiB and blocked render.yml on main (runs 34243540667
+# and 34269887088). The template's cosmetic indentation and blank lines
+# were collapsed first (no HTML or Jinja comments remained), which
+# measured 303,317. The shared _navlinks include is mirrored by text in
+# templates/chat.html and pinned by 29 suites and is deliberately
+# untouched. 304 KiB restores 7,979 bytes (2.6%) of measured headroom;
+# the 100 KB embedded-data cap (SHELL_JSON_BUDGET_BYTES) and
+# SHELL_EVENT_LIMIT are unchanged. Ruled by Meta-CEO B under the
+# Chairman override of 2026-09-06 because every macro code merge lacks a
+# render proof while the lane is red.
+RAW_HTML_BUDGET_BYTES = 311_296
 SHELL_COMPANY_METRICS = (
     "ttm_obligations",
     "award_velocity_yoy_pct",

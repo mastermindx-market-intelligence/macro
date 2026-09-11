@@ -683,6 +683,13 @@ pages:
   # ── intelligence_desk · named research desks ──────────────────────────────────
   # A standing desk over one domain: policy, flow, alt-data, smart money, China.
 
+  macro:sanctions_map:
+    priority: "P0"
+    archetype: "intelligence_desk"
+    primary_user_question: "Where do US sanctions point today, and which countries is our coverage silent about?"
+    evidence: [engine/sanctions_map.py, config/sanctions_ofac_programs.yml, templates/sanctions_map.html.j2]
+    note: "base map + OFAC sanctions overlay, display-only leaf (packet A-F02-1)"
+
   macro:advanced:
     archetype: "intelligence_desk"
     why: "renders the Quant Lab surface (page title is 'Quant Lab'), so it takes the desk archetype"
@@ -1125,6 +1132,10 @@ pages:
   macro:support:
     archetype: "utility"
 
+  macro:help:
+    archetype: "utility"
+    why: "public help directory over existing product owners — a utility surface, not a product board"
+
   macro:terms:
     archetype: "utility"
 
@@ -1161,6 +1172,10 @@ pages:
     access_shell: "anonymous"
     payload_tier: "public"
     evidence: [terminal/app/login/page.tsx]
+
+  macro:macro_monetary:
+    archetype: "command_center"
+    why: "Macro & Monetary suite hub — the single entry point to the fourteen workspaces"
 
   macro:macro_liquidity_regime:
     archetype: "regime_dashboard"

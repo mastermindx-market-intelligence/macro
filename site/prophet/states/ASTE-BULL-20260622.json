@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ASTE-BULL-20260622",
-  "asof": "2026-09-09",
+  "asof": "2026-09-10",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 8.0,
@@ -17,14 +17,14 @@
     "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -1.332,
+    "dist_to_stop_r": -1.628,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 42.2,
-    "p1": -0.2211,
-    "p2": -0.1105,
+    "horizon_pct_used": 44.4,
+    "p1": -0.4184,
+    "p2": -0.2092,
     "p3": null,
-    "move_r": -0.332,
+    "move_r": -0.628,
     "mfe_r": 0.342,
     "mae_r": -0.628
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-24",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 19,
-  "tau": 0.4222
+  "days_elapsed": 20,
+  "tau": 0.4444
 }

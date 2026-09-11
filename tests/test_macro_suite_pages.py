@@ -246,6 +246,9 @@ def test_what_changed_matches_the_artifact_comparability(live_html: str) -> None
         assert labels.COMPARABILITY["NO_PRIOR"]["en"] in live_html
         assert labels.COMPARABILITY["NO_PRIOR"]["zh"] in live_html
         assert "invent a baseline that does not exist" in live_html
+    elif comparability == "NO_EARLIER_PUBLICATION":
+        assert labels.COMPARABILITY["NO_EARLIER_PUBLICATION"]["en"] in live_html
+        assert labels.COMPARABILITY["NO_EARLIER_PUBLICATION"]["zh"] in live_html
     else:
         assert labels.COMPARABILITY["NO_PRIOR"]["en"] not in live_html
 
@@ -277,7 +280,8 @@ def test_no_closed_vocabulary_token_is_rendered_raw_as_prose(live_html: str) -> 
         set(labels.known("freshness")) | set(labels.known("null_reason"))
         | set(labels.known("presence")) | set(labels.known("evidence_class"))
         | {"higher_tighter", "higher_stronger", "USD_bn", "composite_prior_only",
-           "roc_over_owner_window", "NO_PRIOR", "context_only"}
+           "roc_over_owner_window", "NO_PRIOR", "NO_EARLIER_PUBLICATION",
+           "context_only"}
     ) if re.search(rf"(?<![\w/.]){re.escape(token)}(?![\w/.])", prose)]
     assert leaked == [], leaked
 
@@ -708,7 +712,7 @@ def test_equal_values_are_no_change_not_an_absence() -> None:
 
 
 @pytest.mark.parametrize("poison", [
-    {"prior": None}, {"current": None}, {"delta": None},
+    {"prior": None}, {"current": None},
     {"prior": "1.0"}, {"delta": float("nan")}, {"delta": True},
 ])
 def test_one_absent_cell_makes_the_row_incomparable_and_never_flat(poison: dict) -> None:

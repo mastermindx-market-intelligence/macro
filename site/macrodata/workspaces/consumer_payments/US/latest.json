@@ -429,31 +429,23 @@
       },
       {
         "current_value": 50.83,
-        "delta": -0.31,
+        "delta": 0.0,
         "metric_id": "credit_stress",
         "note": "same method version; numeric comparison permitted",
-        "prior_value": 51.14
+        "prior_value": 50.83
       }
     ],
     "null_reason": null,
     "prior_effective_date": "2026-07-01",
-    "prior_generation_id": "consumer_payments-US-382cc0f3b5779173",
+    "prior_generation_id": "consumer_payments-US-df862a946b935e56",
     "prior_method_version": "consumer_payments.compose.v1",
     "status": "PRESENT"
   },
   "corrections": {
-    "changed_fingerprints": [
-      "consumer_credit_nonrevolving_level:consumer_credit_nonrevolving_level:20aa285041f25c93",
-      "consumer_credit_nonrevolving_yoy:consumer_credit_nonrevolving_yoy:60a0a30dbf489f19",
-      "consumer_credit_revolving_level:consumer_credit_revolving_level:fdeeeb2ac342b57d",
-      "consumer_credit_revolving_yoy:consumer_credit_revolving_yoy:c80bf46791448227",
-      "consumer_credit_total_level:consumer_credit_total_level:ebf508900376d702",
-      "consumer_credit_total_yoy:consumer_credit_total_yoy:93f6af46f72380a6",
-      "credit_stress:credit_stress:4a29b7a888e5595a"
-    ],
-    "correction_state": "superseded",
-    "note": "Same reference period as the predecessor print, but one or more owner-native metrics changed value: this print supersedes the prior one as a revision.",
-    "predecessor_generation_id": "consumer_payments-US-382cc0f3b5779173"
+    "changed_fingerprints": [],
+    "correction_state": "none",
+    "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
+    "predecessor_generation_id": "consumer_payments-US-df862a946b935e56"
   },
   "drivers": {
     "balance_sheet": [
@@ -546,11 +538,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-09-09T07:31:47Z",
+    "built_at": "2026-09-10T07:27:52Z",
     "calculation_as_of": "2026-07-01",
-    "code_version": "6564d1646bc7fc7d43a0073fd73cef6f0e1bd74a",
-    "content_sha256": "df862a946b935e56d13f27e8b6a99846558891ed76d96bb8f1ade68ab4dfafc1",
-    "generation_id": "consumer_payments-US-df862a946b935e56",
+    "code_version": "2c9a2d35ba0dd38618f59a2fadc80b6815ec5281",
+    "content_sha256": "54c8b824242e3d221c55a5ac6575c2cf9af37ada2f595e775011a9072011b621",
+    "generation_id": "consumer_payments-US-54c8b824242e3d22",
     "producer": "engine.market_os.macro_workspaces.consumer_payments",
     "rendered_at": null
   },
@@ -571,7 +563,7 @@
     "null_reason": null,
     "one_month_vector": {
       "dx": 0.0,
-      "dy": -0.31,
+      "dy": 0.0,
       "null_reason": null,
       "status": "PRESENT"
     },
@@ -596,7 +588,7 @@
       "en": "Cash-flow/spending momentum x consumer credit stress",
       "zh": "现金流/支出动能 × 消费信贷压力"
     },
-    "transition_distance": 0.31
+    "transition_distance": 0.0
   },
   "implications": {
     "items": [

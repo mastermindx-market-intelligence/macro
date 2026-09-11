@@ -7,7 +7,7 @@
     "may_size": false,
     "may_trade": false
   },
-  "asof": "2026-09-09",
+  "asof": "2026-09-10",
   "authority": false,
   "authority_note": "DISPLAY-ONLY context. This artifact may describe released inflation, an upcoming Release Radar forecast, and in-progress proxy pressure. It may not originate, rank, size, gate, escalate, or execute a signal or trade.",
   "current_month_proxy_pressure": {
@@ -16,16 +16,14 @@
       {
         "basis": "cpi_bridge",
         "component": "energy_gasoline",
-        "component_mom_estimate_pct": null,
-        "confidence": 0.0,
-        "contribution_pp": 0.002133,
-        "forecast_asof": "2026-09-09T10:42:27Z",
+        "component_mom_estimate_pct": 2.4396,
+        "confidence": 1.0,
+        "contribution_pp": 0.070627,
+        "forecast_asof": "2026-09-10T10:05:21Z",
         "legs_expected": 1,
-        "legs_used": 0,
-        "missing_legs": [
-          "GASREGW"
-        ],
-        "status": "prior_only",
+        "legs_used": 1,
+        "missing_legs": [],
+        "status": "proxy_available",
         "weight_pct": 2.895
       },
       {
@@ -34,7 +32,7 @@
         "component_mom_estimate_pct": -0.5051,
         "confidence": 0.8,
         "contribution_pp": -0.011995,
-        "forecast_asof": "2026-09-09T10:42:27Z",
+        "forecast_asof": "2026-09-10T10:05:21Z",
         "legs_expected": 1,
         "legs_used": 1,
         "missing_legs": [],
@@ -47,7 +45,7 @@
         "component_mom_estimate_pct": 0.1154,
         "confidence": 0.6,
         "contribution_pp": 0.041103,
-        "forecast_asof": "2026-09-09T10:42:27Z",
+        "forecast_asof": "2026-09-10T10:05:21Z",
         "legs_expected": 2,
         "legs_used": 2,
         "missing_legs": [],
@@ -60,7 +58,7 @@
         "component_mom_estimate_pct": -0.0572,
         "confidence": 0.4,
         "contribution_pp": -0.004765,
-        "forecast_asof": "2026-09-09T10:42:27Z",
+        "forecast_asof": "2026-09-10T10:05:21Z",
         "legs_expected": 2,
         "legs_used": 2,
         "missing_legs": [],
@@ -73,7 +71,7 @@
         "component_mom_estimate_pct": 0.1464,
         "confidence": 0.6,
         "contribution_pp": 0.028083,
-        "forecast_asof": "2026-09-09T10:42:27Z",
+        "forecast_asof": "2026-09-10T10:05:21Z",
         "legs_expected": 2,
         "legs_used": 2,
         "missing_legs": [],
@@ -86,7 +84,7 @@
         "component_mom_estimate_pct": 0.2281,
         "confidence": 0.4,
         "contribution_pp": 0.057286,
-        "forecast_asof": "2026-09-09T10:42:27Z",
+        "forecast_asof": "2026-09-10T10:05:21Z",
         "legs_expected": 1,
         "legs_used": 1,
         "missing_legs": [],
@@ -99,7 +97,7 @@
         "component_mom_estimate_pct": 0.0737,
         "confidence": 0.0,
         "contribution_pp": 0.004778,
-        "forecast_asof": "2026-09-09T10:42:27Z",
+        "forecast_asof": "2026-09-10T10:05:21Z",
         "legs_expected": 0,
         "legs_used": 0,
         "missing_legs": [],
@@ -144,7 +142,7 @@
           "component_mom_estimate_pct": null,
           "confidence": 0.6,
           "contribution_pp": 0.000956,
-          "forecast_asof": "2026-09-09T10:42:27Z",
+          "forecast_asof": "2026-09-10T10:05:21Z",
           "legs_expected": null,
           "legs_used": null,
           "missing_legs": [],
@@ -157,7 +155,7 @@
           "component_mom_estimate_pct": null,
           "confidence": 0.0,
           "contribution_pp": 0.021713,
-          "forecast_asof": "2026-09-09T10:42:27Z",
+          "forecast_asof": "2026-09-10T10:05:21Z",
           "legs_expected": null,
           "legs_used": null,
           "missing_legs": [],
@@ -170,7 +168,7 @@
           "component_mom_estimate_pct": null,
           "confidence": 0.6,
           "contribution_pp": 0.00203,
-          "forecast_asof": "2026-09-09T10:42:27Z",
+          "forecast_asof": "2026-09-10T10:05:21Z",
           "legs_expected": null,
           "legs_used": null,
           "missing_legs": [],
@@ -196,17 +194,17 @@
           "shelter_nowcast"
         ]
       },
-      "days_to_release": 35,
-      "forecast_asof": "2026-09-09T10:42:27Z",
+      "days_to_release": 34,
+      "forecast_asof": "2026-09-10T10:05:21Z",
       "forecast_evolution": {
         "basis": "append_only_release_radar_forward_ledger_champion_path",
-        "cutoff_asof": "2026-09-09",
+        "cutoff_asof": "2026-09-10",
         "cutoff_policy": "exclude_unparseable_or_after_resolved_artifact_asof",
         "excluded_after_cutoff": 0,
         "excluded_unparseable_asof": 0,
         "first_asof": "2026-09-04",
-        "last_asof": "2026-09-09",
-        "n_points": 4,
+        "last_asof": "2026-09-10",
+        "n_points": 5,
         "points": [
           {
             "asof": "2026-09-04",
@@ -279,10 +277,28 @@
             "point": 0.2635,
             "prediction_id": "CPI_CORE:2026-09:first:2026-09-09:v1",
             "target_epoch": "legacy_cross_vintage_initial_levels_v0"
+          },
+          {
+            "asof": "2026-09-10",
+            "code_receipt": "sha256:07ac6017e02c447ef613d67b2ed9d84468378a597078d9d2d012f76c0f40986c",
+            "confidence": 0.0627,
+            "cutoff_label": "early",
+            "input_completeness": 1.0,
+            "input_snapshot_ref": "data/release_forecast/input_snapshots/CPI_CORE_2026-09_first_2026-09-10_v1.json",
+            "inputs_hash": "0e35c69931657f690a504646f5236ae3e57817d7a64e0a396a3e386e9c4eae08",
+            "model_epoch": "champion_legacy_target_v1",
+            "p10": 0.0961,
+            "p25": 0.1829,
+            "p50": null,
+            "p75": 0.3401,
+            "p90": 0.4136,
+            "point": 0.2635,
+            "prediction_id": "CPI_CORE:2026-09:first:2026-09-10:v1",
+            "target_epoch": "legacy_cross_vintage_initial_levels_v0"
           }
         ]
       },
-      "input_snapshot_ref": "data/release_forecast/input_snapshots/CPI_CORE_2026-09_first_2026-09-09_v1.json",
+      "input_snapshot_ref": "data/release_forecast/input_snapshots/CPI_CORE_2026-09_first_2026-09-10_v1.json",
       "inputs_hash": "0e35c69931657f690a504646f5236ae3e57817d7a64e0a396a3e386e9c4eae08",
       "model_epoch": "champion_legacy_target_v1",
       "period": "2026-09",
@@ -302,9 +318,7 @@
       "target_epoch": "legacy_cross_vintage_initial_levels_v0"
     },
     "coverage": {
-      "absent_legs": [
-        "gasoline_mom"
-      ],
+      "absent_legs": [],
       "bridge_known_scope_mismatches": [
         {
           "block": "core_services_ex_shelter",
@@ -313,15 +327,15 @@
           "warning": "includes shelter; not core services ex shelter"
         }
       ],
-      "bridge_modelled_weight_coverage": 0.9062,
-      "bridge_prior_driven_share": 0.09381,
+      "bridge_modelled_weight_coverage": 0.9351,
+      "bridge_prior_driven_share": 0.06486,
       "bridge_weight_basis": "bls_dec_2025_starting_relative_importance_fixed_approximation",
       "bridge_weight_basis_warning": "BLS relative importance evolves monthly as component indexes move; this legacy challenger holds December 2025 values fixed",
-      "input_completeness": 0.8889,
+      "input_completeness": 1.0,
       "model_maturity_n": 0,
       "radar_fresh_proxy_coverage": 0.777778,
       "radar_non_vintaged_share": 0.222222,
-      "radar_weight_coverage": 0.888889,
+      "radar_weight_coverage": 1.0,
       "range_violation_legs": [],
       "revision_optimistic_legs": [
         "shelter_nowcast"
@@ -338,13 +352,13 @@
         "display_only": true,
         "includes_external_benchmark": true,
         "input_hashes": {
-          "champion": "ea6aab0150471781697f461285ae01facd507ddc91c564998da39e02f6ac7e64",
-          "cleveland": "6d20de0f4d786a3311b7631cd7415879107b2ed3abef0df0ce58e6c2d610b4bb",
-          "cpi_bridge": "e631a26be41db6168d3acc37f96ac80897ef6ee737955fa91d229e6cc3ffb442",
-          "mf_energy": "e445b58ac73251f3dabe8383e683e9896a6e42a8ffdd3a2ef2a84495af4ef4a1",
-          "v3_factor": "cb5d3d83080105f3e94208d99b946d587dfbe802f0fb6234f008b1bf238f2bc3"
+          "champion": "12ca998ffabbd4786313f871e0d5e0d0feaa1ba84f7cceb105128e28641c63eb",
+          "cleveland": "bd10a4dd86dbb0ba8f1d84a8174e0797cf125594e33cd1ffcf3b0d3d9b20e7e0",
+          "cpi_bridge": "c2cef2128882cce405e0657571978643bc3bb549e4c6b7f9d6fd558461be12c5",
+          "mf_energy": "9fa7d0b7fdbe568e89dffab7c0657f899e121307aecbb53e638dabd43e84989e",
+          "v3_factor": "e7ef2777cfb024d65f69287c63d9736bc2baecd06d00a12f639f2e7c9fe3d909"
         },
-        "inputs_hash": "6e4d55ebd5e63041e7c180e13eeda6c595a5ad2b7f6db77265070376e63cfe6d",
+        "inputs_hash": "98e3bf62430d5247eb60d7d4b64add7b16f4c42f4015a2f7e3e787c66803f775",
         "inputs_used": [
           "champion",
           "v3_factor",
@@ -354,28 +368,26 @@
         ],
         "model_epoch": "combined_v1_legacy_target_v1",
         "n_scored_basis": 0,
-        "p10": -0.068544,
-        "p25": 0.075818,
-        "p50": 0.236208,
-        "p75": 0.396597,
-        "p90": 0.54096,
-        "point": 0.236208,
+        "p10": 0.000208,
+        "p25": 0.143145,
+        "p50": 0.301952,
+        "p75": 0.460758,
+        "p90": 0.603695,
+        "point": 0.301952,
         "target_epoch": "mixed_legacy_cross_vintage_v0"
       },
       "component_freshness": [
         {
           "basis": "cpi_bridge",
           "component": "energy_gasoline",
-          "component_mom_estimate_pct": null,
-          "confidence": 0.0,
-          "contribution_pp": 0.002133,
-          "forecast_asof": "2026-09-09T10:42:27Z",
+          "component_mom_estimate_pct": 2.4396,
+          "confidence": 1.0,
+          "contribution_pp": 0.070627,
+          "forecast_asof": "2026-09-10T10:05:21Z",
           "legs_expected": 1,
-          "legs_used": 0,
-          "missing_legs": [
-            "GASREGW"
-          ],
-          "status": "prior_only",
+          "legs_used": 1,
+          "missing_legs": [],
+          "status": "proxy_available",
           "weight_pct": 2.895
         },
         {
@@ -384,7 +396,7 @@
           "component_mom_estimate_pct": -0.5051,
           "confidence": 0.8,
           "contribution_pp": -0.011995,
-          "forecast_asof": "2026-09-09T10:42:27Z",
+          "forecast_asof": "2026-09-10T10:05:21Z",
           "legs_expected": 1,
           "legs_used": 1,
           "missing_legs": [],
@@ -397,7 +409,7 @@
           "component_mom_estimate_pct": 0.1154,
           "confidence": 0.6,
           "contribution_pp": 0.041103,
-          "forecast_asof": "2026-09-09T10:42:27Z",
+          "forecast_asof": "2026-09-10T10:05:21Z",
           "legs_expected": 2,
           "legs_used": 2,
           "missing_legs": [],
@@ -410,7 +422,7 @@
           "component_mom_estimate_pct": -0.0572,
           "confidence": 0.4,
           "contribution_pp": -0.004765,
-          "forecast_asof": "2026-09-09T10:42:27Z",
+          "forecast_asof": "2026-09-10T10:05:21Z",
           "legs_expected": 2,
           "legs_used": 2,
           "missing_legs": [],
@@ -423,7 +435,7 @@
           "component_mom_estimate_pct": 0.1464,
           "confidence": 0.6,
           "contribution_pp": 0.028083,
-          "forecast_asof": "2026-09-09T10:42:27Z",
+          "forecast_asof": "2026-09-10T10:05:21Z",
           "legs_expected": 2,
           "legs_used": 2,
           "missing_legs": [],
@@ -436,7 +448,7 @@
           "component_mom_estimate_pct": 0.2281,
           "confidence": 0.4,
           "contribution_pp": 0.057286,
-          "forecast_asof": "2026-09-09T10:42:27Z",
+          "forecast_asof": "2026-09-10T10:05:21Z",
           "legs_expected": 1,
           "legs_used": 1,
           "missing_legs": [],
@@ -449,7 +461,7 @@
           "component_mom_estimate_pct": 0.0737,
           "confidence": 0.0,
           "contribution_pp": 0.004778,
-          "forecast_asof": "2026-09-09T10:42:27Z",
+          "forecast_asof": "2026-09-10T10:05:21Z",
           "legs_expected": 0,
           "legs_used": 0,
           "missing_legs": [],
@@ -459,9 +471,7 @@
       ],
       "context_metrics_basis": "champion_legacy_target_v1",
       "coverage": {
-        "absent_legs": [
-          "gasoline_mom"
-        ],
+        "absent_legs": [],
         "bridge_known_scope_mismatches": [
           {
             "block": "core_services_ex_shelter",
@@ -470,31 +480,31 @@
             "warning": "includes shelter; not core services ex shelter"
           }
         ],
-        "bridge_modelled_weight_coverage": 0.9062,
-        "bridge_prior_driven_share": 0.09381,
+        "bridge_modelled_weight_coverage": 0.9351,
+        "bridge_prior_driven_share": 0.06486,
         "bridge_weight_basis": "bls_dec_2025_starting_relative_importance_fixed_approximation",
         "bridge_weight_basis_warning": "BLS relative importance evolves monthly as component indexes move; this legacy challenger holds December 2025 values fixed",
-        "input_completeness": 0.8889,
+        "input_completeness": 1.0,
         "model_maturity_n": 0,
         "radar_fresh_proxy_coverage": 0.777778,
         "radar_non_vintaged_share": 0.222222,
-        "radar_weight_coverage": 0.888889,
+        "radar_weight_coverage": 1.0,
         "range_violation_legs": [],
         "revision_optimistic_legs": [
           "shelter_nowcast"
         ]
       },
-      "days_to_release": 35,
-      "forecast_asof": "2026-09-09T10:42:27Z",
+      "days_to_release": 34,
+      "forecast_asof": "2026-09-10T10:05:21Z",
       "forecast_evolution": {
         "basis": "append_only_release_radar_forward_ledger_champion_path",
-        "cutoff_asof": "2026-09-09",
+        "cutoff_asof": "2026-09-10",
         "cutoff_policy": "exclude_unparseable_or_after_resolved_artifact_asof",
         "excluded_after_cutoff": 0,
         "excluded_unparseable_asof": 0,
         "first_asof": "2026-09-04",
-        "last_asof": "2026-09-09",
-        "n_points": 4,
+        "last_asof": "2026-09-10",
+        "n_points": 5,
         "points": [
           {
             "asof": "2026-09-04",
@@ -567,23 +577,41 @@
             "point": 0.3576,
             "prediction_id": "CPI:2026-09:first:2026-09-09:v1",
             "target_epoch": "legacy_cross_vintage_initial_levels_v0"
+          },
+          {
+            "asof": "2026-09-10",
+            "code_receipt": "sha256:07ac6017e02c447ef613d67b2ed9d84468378a597078d9d2d012f76c0f40986c",
+            "confidence": 0.3063,
+            "cutoff_label": "early",
+            "input_completeness": 1.0,
+            "input_snapshot_ref": "data/release_forecast/input_snapshots/CPI_2026-09_first_2026-09-10_v1.json",
+            "inputs_hash": "12ca998ffabbd4786313f871e0d5e0d0feaa1ba84f7cceb105128e28641c63eb",
+            "model_epoch": "champion_legacy_target_v1",
+            "p10": 0.1578,
+            "p25": 0.2688,
+            "p50": null,
+            "p75": 0.5087,
+            "p90": 0.616,
+            "point": 0.3805,
+            "prediction_id": "CPI:2026-09:first:2026-09-10:v1",
+            "target_epoch": "legacy_cross_vintage_initial_levels_v0"
           }
         ]
       },
-      "input_snapshot_ref": "data/release_forecast/input_snapshots/CPI_2026-09_first_2026-09-09_v1.json",
-      "inputs_hash": "ea6aab0150471781697f461285ae01facd507ddc91c564998da39e02f6ac7e64",
+      "input_snapshot_ref": "data/release_forecast/input_snapshots/CPI_2026-09_first_2026-09-10_v1.json",
+      "inputs_hash": "12ca998ffabbd4786313f871e0d5e0d0feaa1ba84f7cceb105128e28641c63eb",
       "model_epoch": "champion_legacy_target_v1",
       "period": "2026-09",
       "primary_forecast_basis": "combined_v1_benchmark_augmented",
       "release_date": "2026-10-14",
       "release_radar_projection": {
-        "confidence": 0.269,
-        "p10": 0.1349,
-        "p25": 0.2459,
-        "p50": 0.3562,
-        "p75": 0.4859,
-        "p90": 0.5932,
-        "point": 0.3576
+        "confidence": 0.3063,
+        "p10": 0.1578,
+        "p25": 0.2688,
+        "p50": 0.3791,
+        "p75": 0.5087,
+        "p90": 0.616,
+        "point": 0.3805
       },
       "release_type": "cpi_headline",
       "target": "mom_sa_pct",
@@ -671,7 +699,7 @@
           "component_mom_estimate_pct": null,
           "confidence": 0.6,
           "contribution_pp": 0.001066,
-          "forecast_asof": "2026-09-09T10:42:27Z",
+          "forecast_asof": "2026-09-10T10:05:21Z",
           "legs_expected": null,
           "legs_used": null,
           "missing_legs": [],
@@ -684,7 +712,7 @@
           "component_mom_estimate_pct": null,
           "confidence": 0.0,
           "contribution_pp": 0.021713,
-          "forecast_asof": "2026-09-09T10:42:27Z",
+          "forecast_asof": "2026-09-10T10:05:21Z",
           "legs_expected": null,
           "legs_used": null,
           "missing_legs": [],
@@ -697,7 +725,7 @@
           "component_mom_estimate_pct": null,
           "confidence": 0.6,
           "contribution_pp": 0.00203,
-          "forecast_asof": "2026-09-09T10:42:27Z",
+          "forecast_asof": "2026-09-10T10:05:21Z",
           "legs_expected": null,
           "legs_used": null,
           "missing_legs": [],
@@ -723,17 +751,17 @@
           "shelter_nowcast"
         ]
       },
-      "days_to_release": 2,
-      "forecast_asof": "2026-09-09T10:42:27Z",
+      "days_to_release": 1,
+      "forecast_asof": "2026-09-10T10:05:21Z",
       "forecast_evolution": {
         "basis": "append_only_release_radar_forward_ledger_champion_path",
-        "cutoff_asof": "2026-09-09",
+        "cutoff_asof": "2026-09-10",
         "cutoff_policy": "exclude_unparseable_or_after_resolved_artifact_asof",
         "excluded_after_cutoff": 0,
         "excluded_unparseable_asof": 0,
         "first_asof": "2026-08-02",
-        "last_asof": "2026-09-09",
-        "n_points": 23,
+        "last_asof": "2026-09-10",
+        "n_points": 24,
         "points": [
           {
             "asof": "2026-08-02",
@@ -1148,10 +1176,28 @@
             "point": 0.2636,
             "prediction_id": "CPI_CORE:2026-08:first:2026-09-09:v1",
             "target_epoch": "legacy_cross_vintage_initial_levels_v0"
+          },
+          {
+            "asof": "2026-09-10",
+            "code_receipt": "sha256:07ac6017e02c447ef613d67b2ed9d84468378a597078d9d2d012f76c0f40986c",
+            "confidence": 0.0627,
+            "cutoff_label": "T-1",
+            "input_completeness": 1.0,
+            "input_snapshot_ref": "data/release_forecast/input_snapshots/CPI_CORE_2026-08_first_2026-09-10_v1.json",
+            "inputs_hash": "0e90de7dd15beab277e9e9e3667f12fa67e079d07e51b9b4eeea94d930e3f903",
+            "model_epoch": "champion_legacy_target_v1",
+            "p10": 0.0962,
+            "p25": 0.183,
+            "p50": null,
+            "p75": 0.3402,
+            "p90": 0.4137,
+            "point": 0.2636,
+            "prediction_id": "CPI_CORE:2026-08:first:2026-09-10:v1",
+            "target_epoch": "legacy_cross_vintage_initial_levels_v0"
           }
         ]
       },
-      "input_snapshot_ref": "data/release_forecast/input_snapshots/CPI_CORE_2026-08_first_2026-09-09_v1.json",
+      "input_snapshot_ref": "data/release_forecast/input_snapshots/CPI_CORE_2026-08_first_2026-09-10_v1.json",
       "inputs_hash": "0e90de7dd15beab277e9e9e3667f12fa67e079d07e51b9b4eeea94d930e3f903",
       "model_epoch": "champion_legacy_target_v1",
       "period": "2026-08",
@@ -1182,11 +1228,11 @@
         "input_hashes": {
           "champion": "c3d1b25604f6fa3c168ceb03a95ad44073ab40b68e0c3374af29bfaa5fbc333c",
           "cleveland": "b7c3ec535d73837eda1883eb97a8a4d6323546586e481695fcb6aee79e93c6f0",
-          "cpi_bridge": "20a363adf07eb7bf3b94d27946109afa9b4dc3435afee89eb1f1d132996b0db3",
+          "cpi_bridge": "2419f427d6217a4f9132369179538088bee9d313ad9fd3479c072ffdf821ab98",
           "mf_energy": "9b9a071a80eef75fa53300413deda342b8f465573da0aecb79bb008bf18027b6",
           "v3_factor": "8d7d3ae938db42666580d649ae433fb8140a03d4935b5fa1870014fa60738e5d"
         },
-        "inputs_hash": "1641256508c6946f84285698fdb173c230a9898a62e04250d7ceb24448a66ca8",
+        "inputs_hash": "a6087fcb5a74a23f0af23d93d7283f843c2526ef3040efa5c15ff6ad71aadf6c",
         "inputs_used": [
           "champion",
           "v3_factor",
@@ -1211,7 +1257,7 @@
           "component_mom_estimate_pct": 3.1979,
           "confidence": 1.0,
           "contribution_pp": 0.09258,
-          "forecast_asof": "2026-09-09T10:42:27Z",
+          "forecast_asof": "2026-09-10T10:05:21Z",
           "legs_expected": 1,
           "legs_used": 1,
           "missing_legs": [],
@@ -1224,7 +1270,7 @@
           "component_mom_estimate_pct": -0.5051,
           "confidence": 0.8,
           "contribution_pp": -0.011995,
-          "forecast_asof": "2026-09-09T10:42:27Z",
+          "forecast_asof": "2026-09-10T10:05:21Z",
           "legs_expected": 1,
           "legs_used": 1,
           "missing_legs": [],
@@ -1237,7 +1283,7 @@
           "component_mom_estimate_pct": 0.0908,
           "confidence": 0.6,
           "contribution_pp": 0.032347,
-          "forecast_asof": "2026-09-09T10:42:27Z",
+          "forecast_asof": "2026-09-10T10:05:21Z",
           "legs_expected": 2,
           "legs_used": 2,
           "missing_legs": [],
@@ -1250,7 +1296,7 @@
           "component_mom_estimate_pct": -0.0572,
           "confidence": 0.4,
           "contribution_pp": -0.004765,
-          "forecast_asof": "2026-09-09T10:42:27Z",
+          "forecast_asof": "2026-09-10T10:05:21Z",
           "legs_expected": 2,
           "legs_used": 2,
           "missing_legs": [],
@@ -1263,7 +1309,7 @@
           "component_mom_estimate_pct": 0.1464,
           "confidence": 0.6,
           "contribution_pp": 0.028083,
-          "forecast_asof": "2026-09-09T10:42:27Z",
+          "forecast_asof": "2026-09-10T10:05:21Z",
           "legs_expected": 2,
           "legs_used": 2,
           "missing_legs": [],
@@ -1276,7 +1322,7 @@
           "component_mom_estimate_pct": 0.2281,
           "confidence": 0.4,
           "contribution_pp": 0.057286,
-          "forecast_asof": "2026-09-09T10:42:27Z",
+          "forecast_asof": "2026-09-10T10:05:21Z",
           "legs_expected": 1,
           "legs_used": 1,
           "missing_legs": [],
@@ -1289,7 +1335,7 @@
           "component_mom_estimate_pct": 0.0737,
           "confidence": 0.0,
           "contribution_pp": 0.004778,
-          "forecast_asof": "2026-09-09T10:42:27Z",
+          "forecast_asof": "2026-09-10T10:05:21Z",
           "legs_expected": 0,
           "legs_used": 0,
           "missing_legs": [],
@@ -1322,17 +1368,17 @@
           "shelter_nowcast"
         ]
       },
-      "days_to_release": 2,
-      "forecast_asof": "2026-09-09T10:42:27Z",
+      "days_to_release": 1,
+      "forecast_asof": "2026-09-10T10:05:21Z",
       "forecast_evolution": {
         "basis": "append_only_release_radar_forward_ledger_champion_path",
-        "cutoff_asof": "2026-09-09",
+        "cutoff_asof": "2026-09-10",
         "cutoff_policy": "exclude_unparseable_or_after_resolved_artifact_asof",
         "excluded_after_cutoff": 0,
         "excluded_unparseable_asof": 0,
         "first_asof": "2026-08-02",
-        "last_asof": "2026-09-09",
-        "n_points": 23,
+        "last_asof": "2026-09-10",
+        "n_points": 24,
         "points": [
           {
             "asof": "2026-08-02",
@@ -1747,10 +1793,28 @@
             "point": 0.4044,
             "prediction_id": "CPI:2026-08:first:2026-09-09:v1",
             "target_epoch": "legacy_cross_vintage_initial_levels_v0"
+          },
+          {
+            "asof": "2026-09-10",
+            "code_receipt": "sha256:07ac6017e02c447ef613d67b2ed9d84468378a597078d9d2d012f76c0f40986c",
+            "confidence": 0.3026,
+            "cutoff_label": "T-1",
+            "input_completeness": 1.0,
+            "input_snapshot_ref": "data/release_forecast/input_snapshots/CPI_2026-08_first_2026-09-10_v1.json",
+            "inputs_hash": "c3d1b25604f6fa3c168ceb03a95ad44073ab40b68e0c3374af29bfaa5fbc333c",
+            "model_epoch": "champion_legacy_target_v1",
+            "p10": 0.1817,
+            "p25": 0.2927,
+            "p50": null,
+            "p75": 0.5327,
+            "p90": 0.64,
+            "point": 0.4044,
+            "prediction_id": "CPI:2026-08:first:2026-09-10:v1",
+            "target_epoch": "legacy_cross_vintage_initial_levels_v0"
           }
         ]
       },
-      "input_snapshot_ref": "data/release_forecast/input_snapshots/CPI_2026-08_first_2026-09-09_v1.json",
+      "input_snapshot_ref": "data/release_forecast/input_snapshots/CPI_2026-08_first_2026-09-10_v1.json",
       "inputs_hash": "c3d1b25604f6fa3c168ceb03a95ad44073ab40b68e0c3374af29bfaa5fbc333c",
       "model_epoch": "champion_legacy_target_v1",
       "period": "2026-08",
@@ -1882,10 +1946,10 @@
       "available": true,
       "malformed_rows": 0,
       "path": "data/release_forecast/forward_ledger.jsonl",
-      "rows_read": 1215
+      "rows_read": 1253
     },
     "release_radar_latest": {
-      "asof": "2026-09-09T10:42:27Z",
+      "asof": "2026-09-10T10:05:21Z",
       "available": true,
       "cpi_entries": 4,
       "path": "data/release_forecast/latest.json"

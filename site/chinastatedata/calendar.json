@@ -1,7 +1,7 @@
 {
   "schema": "china_calendar.v1",
-  "asof": "2026-09-08",
-  "generated_at_utc": "2026-09-08T15:15:48.396639+00:00",
+  "asof": "2026-09-10",
+  "generated_at_utc": "2026-09-10T13:58:35.459027+00:00",
   "horizon_days": 45,
   "entries": [
     {
