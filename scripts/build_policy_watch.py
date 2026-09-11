@@ -226,26 +226,32 @@ def decorate_lifecycle_view(lifecycle: dict | None) -> dict | None:
 
 
 def _featured_predictions(preds: list[dict], dates: object, limit: int = 6) -> list[dict]:
-    """Put overdue and open calls ahead of the long technical ledger."""
+    """Lead with overdue calls, then the most recently reviewed outcomes."""
     date_rows = (dates or {}).get("predictions", {}) if isinstance(dates, dict) else {}
 
     def decorated(pred: dict) -> dict:
         date_row = date_rows.get(pred.get("id"), {}) or {}
-        # P44's ceasefire premise broke before its deadline; it is no longer a
-        # clean active forecast and should stay in review until rewritten.
-        needs_review = bool(date_row.get("overdue")) or pred.get("id") == "P44"
-        return {**pred, "needs_review": needs_review}
+        return {**pred, "needs_review": bool(date_row.get("overdue"))}
 
     rows = [decorated(pred) for pred in preds]
 
-    def rank(pred: dict) -> tuple[int, str, str]:
+    def rank(pred: dict) -> tuple[int, int, str, str]:
         if pred["needs_review"]:
             bucket = 0
-        elif pred.get("status") == "open":
+            reviewed_key = 0
+        elif pred.get("reviewed_on"):
             bucket = 1
-        else:
+            try:
+                reviewed_key = -int(str(pred["reviewed_on"]).replace("-", ""))
+            except ValueError:
+                reviewed_key = 0
+        elif pred.get("status") == "open":
             bucket = 2
-        return bucket, str(pred.get("check_by") or "9999-12-31"), str(pred.get("id") or "")
+            reviewed_key = 0
+        else:
+            bucket = 3
+            reviewed_key = 0
+        return bucket, reviewed_key, str(pred.get("check_by") or "9999-12-31"), str(pred.get("id") or "")
 
     return sorted(rows, key=rank)[:limit]
 
@@ -331,6 +337,7 @@ def main() -> int:
         "open": sum(1 for p in preds if p.get("status") == "open"),
         "hit": sum(1 for p in preds if p.get("status") == "hit"),
         "miss": sum(1 for p in preds if p.get("status") == "miss"),
+        "void": sum(1 for p in preds if p.get("status") == "void"),
         "policy_action": sum(1 for p in preds if p.get("tier") == "policy-action"),
         "market_outcome": sum(1 for p in preds if p.get("tier") == "market-outcome"),
     }
