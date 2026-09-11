@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "GPI-BULL-20260715",
-  "asof": "2026-09-10",
+  "asof": "2026-09-11",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 26.5,
-  "raw_confidence": 23.9,
-  "delta_vs_base": -33.5,
+  "management_confidence": 23.6,
+  "raw_confidence": 20.0,
+  "delta_vs_base": -36.4,
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 13.4,
+    "validity": 1.7,
     "progress": 0.0,
-    "pace": 14.0,
+    "pace": 12.7,
     "retention": 0.0,
-    "overlay": 59.0
+    "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.235,
+    "dist_to_stop_r": 0.093,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 126.7,
-    "p1": -0.5101,
-    "p2": -0.2551,
+    "horizon_pct_used": 128.9,
+    "p1": -0.6048,
+    "p2": -0.3024,
     "p3": null,
-    "move_r": -0.765,
+    "move_r": -0.907,
     "mfe_r": 0.932,
     "mae_r": -1.676
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-07-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 57,
-  "tau": 1.2667
+  "days_elapsed": 58,
+  "tau": 1.2889
 }

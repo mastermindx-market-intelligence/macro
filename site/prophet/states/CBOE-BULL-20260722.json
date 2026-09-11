@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CBOE-BULL-20260722",
-  "asof": "2026-09-10",
+  "asof": "2026-09-11",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 41.4,
@@ -11,20 +11,20 @@
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
     "validity": 100.0,
-    "progress": 9.7,
-    "pace": 27.3,
-    "retention": 23.5,
-    "overlay": 53.0
+    "progress": 4.4,
+    "pace": 26.0,
+    "retention": 8.3,
+    "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.112,
-    "dist_to_t1_r": 1.388,
-    "dist_to_t2_r": 2.888,
-    "horizon_pct_used": 104.4,
-    "p1": 0.0746,
-    "p2": 0.0373,
+    "dist_to_stop_r": 1.039,
+    "dist_to_t1_r": 1.461,
+    "dist_to_t2_r": 2.961,
+    "horizon_pct_used": 106.7,
+    "p1": 0.0263,
+    "p2": 0.0132,
     "p3": null,
-    "move_r": 0.112,
+    "move_r": 0.039,
     "mfe_r": 0.477,
     "mae_r": -0.072
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-07-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 47,
-  "tau": 1.0444
+  "days_elapsed": 48,
+  "tau": 1.0667
 }

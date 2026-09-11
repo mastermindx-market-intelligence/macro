@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CAR-BULL-20260817",
-  "asof": "2026-09-10",
+  "asof": "2026-09-11",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.7,
@@ -14,23 +14,23 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.731,
+    "dist_to_stop_r": -1.012,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 53.3,
-    "p1": -1.1539,
-    "p2": -0.577,
+    "horizon_pct_used": 55.6,
+    "p1": -1.3411,
+    "p2": -0.6705,
     "p3": null,
-    "move_r": -1.731,
+    "move_r": -2.012,
     "mfe_r": 1.436,
-    "mae_r": -1.731
+    "mae_r": -2.012
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Stop Level Breached",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 6.190005493164051,
-  "_mae": -7.460003662109386,
+  "_mae": -8.669995117187511,
   "_max_p1": 0.9574641134051161,
   "_first_trigger_ts": "2026-08-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 24,
-  "tau": 0.5333
+  "days_elapsed": 25,
+  "tau": 0.5556
 }
