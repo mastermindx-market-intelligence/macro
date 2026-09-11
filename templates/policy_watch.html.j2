@@ -217,7 +217,7 @@
   'P41':['Three-month average job growth will stay below 100,000 through the July report.','截至7月就业报告，三个月平均新增就业将保持在10万以下。'],
   'P42':['Other tariff laws will keep the U.S. tariff wall on China near its pre-ruling level through year-end.','其他关税法律将在年底前使美国对华关税壁垒接近裁决前水平。'],
   'P43':['Bank regulators will publish a rule easing capital treatment for Treasury trades.','银行监管机构将发布规则，放宽美债交易的资本要求。'],
-  'P44':['Under review after the ceasefire collapsed; this is not an active forecast.','停火破裂后正在复核；这不是一条有效预测。']
+  'P44':['This Iran entry was already being rewritten when it entered the track record.','该伊朗条目进入记录时已在重写。']
 } %}
 
 {% set STAGE_EN = {'proposed':'Proposed','passed':'Passed, not yet in force','in_force':'In force','enforced':'Being enforced','withdrawn':'Withdrawn','struck_down':'Struck down in court','superseded':'Replaced by a newer rule'} %}
@@ -242,6 +242,7 @@
   {% if needs_review %}<span class="pw-badge warn">{{ t('Needs review','需要复核') }}</span>
   {% elif value == 'hit' %}<span class="pw-badge fact">{{ t('Right','正确') }}</span>
   {% elif value == 'miss' %}<span class="pw-badge miss">{{ t('Wrong','错误') }}</span>
+  {% elif value == 'void' %}<span class="pw-badge neutral">{{ t('Not scored','不计分') }}</span>
   {% else %}<span class="pw-badge neutral">{{ t('Open','待定') }}</span>{% endif %}
 {%- endmacro %}
 {% macro section_head(kicker_en, kicker_zh, title_en, title_zh, desc_en='', desc_zh='') -%}
@@ -745,6 +746,7 @@
       <span class="pw-stat"><strong>{{ counts.open }}</strong> {{ t('open','待定') }}</span>
       <span class="pw-stat"><strong>{{ counts.hit }}</strong> {{ t('right','正确') }}</span>
       <span class="pw-stat"><strong>{{ counts.miss }}</strong> {{ t('wrong','错误') }}</span>
+      {% if counts.void %}<span class="pw-stat"><strong>{{ counts.void }}</strong> {{ t('not scored','不计分') }}</span>{% endif %}
       {% if dates and dates.overdue_predictions %}<span class="pw-stat"><strong>{{ dates.overdue_predictions }}</strong> {{ t('need review','需要复核') }}</span>{% endif %}
     </div>
     <div class="pw-ledger">
@@ -752,8 +754,12 @@
       {% set topic = THREAD.get(call.thread, [call.thread,call.thread]) %}
       {% set call_copy = CALL_COPY.get(call.id, [brief(call.text_en,180),brief(call.text_zh,90)]) %}
       <article class="pw-call" data-policy-id="{{ call.id }}">
-        <div><span class="pw-call-topic">{{ bl(topic[0],topic[1]) }}</span> <span class="pw-call-id">{{ call.id }}</span><p class="pw-call-text">{{ bl(call_copy[0],call_copy[1]) }}</p></div>
-        <span class="pw-call-date">{{ t('Review','复核') }} {{ call.check_by }}</span>
+        <div>
+          <span class="pw-call-topic">{{ bl(topic[0],topic[1]) }}</span> <span class="pw-call-id">{{ call.id }}</span>
+          <p class="pw-call-text">{{ bl(call_copy[0],call_copy[1]) }}</p>
+          {% if call.result_en %}<p class="pw-meta">{{ t('Result','结果') }}: {{ bl(call.result_en,call.result_zh) }}{% if call.result_source %} · <a href="{{ call.result_source }}" target="_blank" rel="noopener">{{ t('Source','来源') }}</a>{% endif %}</p>{% endif %}
+        </div>
+        <span class="pw-call-date">{% if call.reviewed_on %}{{ t('Reviewed','已复核') }} {{ call.reviewed_on }}{% else %}{{ t('Review','复核') }} {{ call.check_by }}{% endif %}</span>
         <span class="pw-call-status">{{ status_tag(call.status,call.needs_review) }}</span>
       </article>
       {% endfor %}
@@ -765,7 +771,7 @@
         {% set date_row = dates.predictions[call.id] if dates and dates.predictions and call.id in dates.predictions else none %}
         {% set topic = THREAD.get(call.thread,[call.thread,call.thread]) %}
         {% set call_copy = CALL_COPY.get(call.id, [brief(call.text_en,180),brief(call.text_zh,90)]) %}
-        <article class="pw-call" data-policy-id="full-{{ call.id }}"><div><span class="pw-call-topic">{{ bl(topic[0],topic[1]) }}</span> <span class="pw-call-id">{{ call.id }}</span><p class="pw-call-text">{{ bl(call_copy[0],call_copy[1]) }}</p></div><span class="pw-call-date">{{ call.check_by }}</span><span class="pw-call-status">{{ status_tag(call.status,(date_row.overdue if date_row else false) or call.id == 'P44') }}</span></article>
+        <article class="pw-call" data-policy-id="full-{{ call.id }}"><div><span class="pw-call-topic">{{ bl(topic[0],topic[1]) }}</span> <span class="pw-call-id">{{ call.id }}</span><p class="pw-call-text">{{ bl(call_copy[0],call_copy[1]) }}</p>{% if call.result_en %}<p class="pw-meta">{{ t('Result','结果') }}: {{ bl(call.result_en,call.result_zh) }}{% if call.result_source %} · <a href="{{ call.result_source }}" target="_blank" rel="noopener">{{ t('Source','来源') }}</a>{% endif %}</p>{% endif %}</div><span class="pw-call-date">{% if call.reviewed_on %}{{ t('Reviewed','已复核') }} {{ call.reviewed_on }}{% else %}{{ t('Review','复核') }} {{ call.check_by }}{% endif %}</span><span class="pw-call-status">{{ status_tag(call.status,(date_row.overdue if date_row else false)) }}</span></article>
         {% endfor %}
       </div>
     </details>
