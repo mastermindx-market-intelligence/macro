@@ -150,7 +150,17 @@
       {%- set _rsn_en = row.reasons[:2] | join(' · ') if row.reasons else '' -%}
       {%- set _rsn_zh_parts = [] -%}
       {%- for _r in (row.reasons[:2] if row.reasons else []) -%}{%- set _ = _rsn_zh_parts.append(tr(_r)) -%}{%- endfor -%}
-      {%- set _rsn_zh = _rsn_zh_parts | join(' · ') -%}
+      {#- P3g: reuse the visible-row dual-emit lexicon so ZH never embeds
+          "20d … vs CSI 300". Routing keys / engine reason strings stay. -#}
+      {%- set _rsn_zh = _rsn_zh_parts | join(' · ')
+           | replace('vs CSI 300', '相对沪深300')
+           | replace('20d ', '20日 ')
+           | replace('5d ', '5日 ') -%}
+      {#- P1a display twins — routing key `tag` is untouched (engine/cycles.py). -#}
+      {%- set _TAG_EN = {'WATCH': 'Early sign', 'UNCONFIRMED — HIGH RISK': 'Not yet confirmed — high risk'} -%}
+      {%- set _TAG_ZH = {'WATCH': '初步迹象', 'UNCONFIRMED — HIGH RISK': '尚未确认——高风险'} -%}
+      {%- set _tag_label_en = _TAG_EN.get(row.tag, row.tag) if row.tag else none -%}
+      {%- set _tag_label_zh = _TAG_ZH.get(row.tag, row.tag_zh or tr(row.tag)) if row.tag else none -%}
       {#- The kicker names its own evidence: "Leadership read" only when the row
           carries theme_intel.leadership, otherwise the neutral "Current read". The
           pre-parity board had no leadership data at all — that is what the old
@@ -163,7 +173,7 @@
                    else (('Sector pulse · ' ~ row.id, '板块脉搏 · ' ~ row.id) if row.id else ('Sector pulse','板块脉搏')),
         'name': (row.name, row.name_zh or tr(row.name)),
         'tag': (row.reco_en, row.reco_zh or tr(row.reco_en)) if row.reco_en
-               else ((row.tag, row.tag_zh or tr(row.tag)) if row.tag
+               else ((_tag_label_en, _tag_label_zh) if row.tag
                else ((row.phase, tr(row.phase)) if row.phase else none)),
         'score': row.score if _is_theme else none,
         'kicker': (('Leadership read','领先度判断') if row.get('leadership') else ('Current read','当前判读'))
@@ -214,7 +224,7 @@
         {# reco chip (theme rows) #}
         {% if row.reco_en %}<span class="anv2-chip anv2-chip-reco-{{ row.reco or 'hold' }}">{{ t(row.reco_en, row.reco_zh or tr(row.reco_en)) }}</span>{% endif %}
         {# sector urgency/tag chip #}
-        {% if row.tag and row.kind != 'THEME' %}<span class="anv2-chip anv2-chip-tag">{{ t(row.tag, row.tag_zh or tr(row.tag)) }}</span>{% endif %}
+        {% if row.tag and row.kind != 'THEME' %}<span class="anv2-chip anv2-chip-tag">{{ t(_tag_label_en, _tag_label_zh) }}</span>{% endif %}
         {# dual-read chip on reduce lane #}
         {% if lane == 'reduce' and row.dual_read %}
         <span class="anv2-chip anv2-chip-washout" data-tip-en="Mixed picture: the longer trend still says reduce, but the recent price action shows early signs of a bottom. This name also appears in Bottoming Watch — both reads are shown so you see the disagreement." data-tip-zh="信号矛盾：长期趋势仍建议减仓，但近期价格已初现筑底迹象。该名称同时出现在洗盘观察栏——两种判读并列显示，便于看清分歧。">{{ t(row.dual_chip_en, row.dual_chip_zh) }}</span>
@@ -222,7 +232,7 @@
         {# bottoming lane: trough+slope chip #}
         {% if lane == 'bot' and row.osc_slope is not none %}
         <span class="anv2-chip anv2-chip-trough" data-tip-en="At the low point of its cycle — the most beaten-down phase." data-tip-zh="处于周期低谷——最超跌的阶段。">{{ t('TROUGH','低谷') }}</span>
-        <span class="anv2-chip anv2-chip-turn" data-tip-en="Momentum is turning up from the low — higher number = sharper turn. A first hint, not a buy signal." data-tip-zh="动能正从低位回升——数字越大转向越明显。仅是初步迹象，非买入信号。">↗ {{ '%.1f'|format(row.osc_slope) }}</span>
+        <span class="anv2-chip anv2-chip-turn" data-tip-en="Momentum is turning up from the low ({{ '%.1f'|format(row.osc_slope) }}) — higher number = sharper turn. A first hint, not a buy signal." data-tip-zh="动能正从低位回升（{{ '%.1f'|format(row.osc_slope) }}）——数字越大转向越明显。仅是初步迹象，非买入信号。">↗ {{ t('turning up','转强') }}</span>
         {% endif %}
         {# price-tape chip (W8-R7 rider) — TURNING/CONFIRMED state from basket_turn_cn #}
         {% if row.organ_chip_en %}<span class="anv2-chip anv2-chip-tape">{{ t(row.organ_chip_en, row.organ_chip_zh or tr(row.organ_chip_en)) }}</span>{% endif %}
@@ -230,8 +240,8 @@
       {# stat line: rel20 for themes, rs_63d+pos for bottoming #}
       {% if lane == 'bot' %}
       <div class="anv2-stat">
-        {% if row.rs_63d is not none %}<span class="{% if row.rs_63d < 0 %}anv2-neg{% else %}anv2-pos{% endif %}">{{ '%+.1f'|format(row.rs_63d) }}%</span><span class="muted"> {{ t('63d RS','63日相对强度') }}</span>{% endif %}
-        {% if row.pos is not none %} · <span class="muted">{{ t('pos','位置') }} {{ '%.0f'|format(row.pos) }}%</span>{% endif %}
+        {% if row.rs_63d is not none %}<span class="{% if row.rs_63d < 0 %}anv2-neg{% else %}anv2-pos{% endif %}">{{ '%+.1f'|format(row.rs_63d) }}%</span><span class="muted"> {{ t('63d strength','63日相对强度') }}</span>{% endif %}
+        {% if row.pos is not none %} · <span class="muted">{{ t('position','位置') }} {{ '%.0f'|format(row.pos) }}%</span>{% endif %}
       </div>
       {% elif row.rel20 is not none %}
       {# 20d + 5d side by side: the fast window exposes a rollover the slow 20d

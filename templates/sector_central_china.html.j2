@@ -129,8 +129,20 @@
   .sr-foot { color:var(--muted); font-size:11px; margin:16px 2px 0; line-height:1.6; }
   .si-links { display:flex; gap:9px; flex-wrap:wrap; margin:16px 0 4px; }
   .si-links a { font-size:12.5px; border:1px solid var(--line); border-radius:9px; padding:7px 12px;
-    background:var(--panel2, var(--panel)); }
+    background:var(--panel2, var(--panel)); display:inline-flex; align-items:center; gap:7px; }
   .si-links a:hover { border-color: var(--muted); }
+  .si-links .dash-icon { width:14px; height:14px; flex:none; }
+  .si-links .sc-tag { font-size:10px; font-weight:700; letter-spacing:.04em; padding:1px 6px;
+    border-radius:var(--r-ctl,8px); border:1px solid var(--line); }
+  .si-links-note { font-size:12px; color:var(--muted); align-self:center; max-width:42ch; }
+  .si-sec-h .finder { margin:8px 0 0; }
+  .skel-slot { display:flex; flex-direction:column; gap:8px; padding:12px 0; }
+  .skel-slot .skel { height:14px; width:70%; }
+  .skel-slot .skel:first-child { width:42%; height:18px; }
+  .skel-slot .skel:last-child { width:55%; }
+  .mx-error button { min-height:40px; min-width:40px; margin-top:6px; cursor:pointer;
+    background:var(--panel2); color:var(--text); border:1px solid var(--line); border-radius:var(--r-ctl,8px);
+    padding:4px 12px; font-size:12px; }
 </style>
 <style>
   * { box-sizing: border-box; }
@@ -696,7 +708,7 @@ body { font-family:-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI',
      this page already owns). theme.css / macro-desk.css are untouched by design.
      ══════════════════════════════════════════════════════════════════════════ */
   #si-confluence .sc-head { display:flex; flex-wrap:wrap; align-items:flex-end; gap:6px 22px; margin:8px 2px 6px; }
-  #si-confluence .sc-head h1 { font-size:23px; margin:0; font-weight:800; letter-spacing:-.015em; }
+  #si-confluence .sc-head h2 { font-size:23px; margin:0; font-weight:800; letter-spacing:-.015em; }
   #si-confluence .sc-head .asof { color:var(--muted); font-size:12px; margin-left:auto; }
   #si-confluence .sc-sub { color:var(--muted); font-size:12.5px; margin:2px 2px 14px; max-width:96ch; line-height:1.55; }
   #si-confluence .sec { margin:22px 0 8px; }
@@ -838,7 +850,7 @@ body { font-family:-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI',
     <div class="rvx-eyebrow">
       <h1>{{ t('China Sector Intelligence 🇨🇳', '中国行业情报 🇨🇳') }}</h1>
       <span class="rvx-mut" id="hero-count"></span>
-      <span class="as-of">{{ t('as of', '截至') }} <span id="asof">—</span></span>
+      <span class="as-of">{{ t('as of', '截至') }} <span id="asof"><span class="mx-empty-why"><span class="l-en">date pending</span><span class="l-zh">日期待加载</span></span></span></span>
     </div>
     <div class="rvx-hgrid">
       <div>
@@ -933,7 +945,7 @@ body { font-family:-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI',
   <section id="theme-context-hero" class="rvx-hero rvx-reveal">
     <div class="rvx-eyebrow">
       <h1>{{ t('China Sector Intelligence 🇨🇳', '中国行业情报 🇨🇳') }}{% if lite %} · {{ t('同花顺 themes', '同花顺主题') }}{% endif %}</h1>
-      <span class="as-of">{{ t('as of', '截至') }} <span id="asof">—</span></span>
+      <span class="as-of">{{ t('as of', '截至') }} <span id="asof"><span class="mx-empty-why"><span class="l-en">date pending</span><span class="l-zh">日期待加载</span></span></span></span>
     </div>
     <div class="rvx-vword">{{ t('China sectors', '中国行业') }} <span class="ac">{{ t('and themes', '与主题') }}</span></div>
     {% if lite %}
@@ -1128,8 +1140,9 @@ body { font-family:-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI',
     <p class="rc-sub-cn">{{ t(
       'When one theme tops out as a peer turns up off a low — and the pair confirms it. Context, not a buy list.',
       '一个主题冲顶回落、同类主题自低位转强，且两者比值确认时记录。仅供参考，不是买入清单。') }}</p>
-    <div id="rc-events-cn-content"><p class="rc-quiet-cn">
-      <span class="l-en">Loading…</span><span class="l-zh">加载中…</span></p></div>
+    <div id="rc-events-cn-content" aria-busy="true">
+      <div class="skel-slot" aria-hidden="true"><span class="skel"></span><span class="skel"></span><span class="skel"></span></div>
+    </div>
 <script>
 (function(){
 'use strict';
@@ -1163,13 +1176,15 @@ function renderCn(ev, partJson){
       if(r.blowoff&&r.turn&&r.ratio){
         rec=t('blowoff ','冲顶回落 ')+'−'+(r.blowoff.drawdown_pct*100).toFixed(0)+'%'
           +' · '+t('off low ','低点回升 ')+pc(r.turn.off_low_pct)
-          +' · '+t('ratio ','比值 ')+pc(r.ratio.ratio_chg_10s)+'/10s';
+          +' · '+t('10-session ratio change ','10段比值变化 ')+pc(r.ratio.ratio_chg_10s);
         if(!e.confirmed_tonight){
           rec+=' <span class="rc-stale-cn">'+t('(as of last confirmation)','（截至最近一次确认）')+'</span>';
         }
       }
+      var sevWords={major:[t('Major','重大'),'major'], notable:[t('Notable','显著'),'notable'], standard:[t('Standard','一般'),'standard']};
+      var sevPair=sevWords[sev]||[esc(sev),esc(sev)];
       html+='<div class="rc-card-cn rc-'+esc(sev)+'">'
-        +'<div class="rc-hd-cn"><span class="rc-sev-cn '+esc(sev)+'">'+esc(sev)+'</span>'
+        +'<div class="rc-hd-cn"><span class="rc-sev-cn '+esc(sev)+'">'+sevPair[0]+'</span>'
         +'<span class="rc-title-cn">'+title+'</span>'
         +'<span class="rc-day-cn">'+t('day ','第')+esc(e.day_n)+t('',' 天')+' · '+esc(e.started)+'</span></div>'
         +'<div class="rc-copy-cn">'+esc(isZh()?e.copy_zh:e.copy_en)+'</div>'
@@ -1190,11 +1205,11 @@ function renderCn(ev, partJson){
   var connectHtml = '<div class="rc-connect">';
   if(sbz!=null){
     var sbStr = (sbz>=0?'+':'')+sbz.toFixed(2)+'σ';
-    connectHtml += '<b>'+t('Southbound net z','南向净买入z')+': '+esc(sbStr)+'</b>';
-    var mood = sbz>1?t(' (elevated inflow)',' （流入偏强）'):sbz<-1?t(' (elevated outflow)',' （流出偏强）'):'';
-    connectHtml += esc(mood)+' · ';
+    var flowWord = sbz>1?t('elevated inflow','流入偏强'):sbz<-1?t('elevated outflow','流出偏强'):t('near normal','接近常态');
+    connectHtml += '<b>'+t('Southbound flow','南向资金')+': '+esc(flowWord)+'</b>';
+    connectHtml += ' <span class="lens-q" data-tip-en="How unusual this southbound print is versus its own history" data-tip-zh="南向净买入相对自身历史有多反常" data-tip-rc-en="'+esc(sbStr)+' versus its own history" data-tip-rc-zh="'+esc(sbStr)+' 相对自身历史">?</span> · ';
   }else{
-    connectHtml += t('Southbound flow: —','南向资金：—')+' · ';
+    connectHtml += '<span class="mx-empty-why">'+t('Southbound flow is not in this feed','南向资金不在本数据源')+'</span> · ';
   }
   // Honest northbound disclosure
   /* Operator 2026-08-04: shortened. The fact a reader needs is that northbound
@@ -1213,7 +1228,7 @@ function renderCn(ev, partJson){
   html+='<div class="rc-caveat-cn">'
     +t('Nothing here ranks or sizes a position. Every event is logged and graded over time — the track record is still building. As of ',
        '此处不对任何标的排名或定仓位。每个事件都会记录并持续评分——历史成绩仍在累积。截至 ')
-    +esc((ev&&ev.as_of)||'—')+'</div>';
+    +((ev&&ev.as_of)?esc(ev.as_of):('<span class="mx-empty-why">'+t('date pending','日期待加载')+'</span>'))+'</div>';
   el.innerHTML=html;
 }
 
@@ -1224,7 +1239,15 @@ function loadCn(){
   ]).then(function(res){
     if(!res[0]){
       var el=document.getElementById('rc-events-cn-content');
-      if(el) el.innerHTML='<p class="rc-quiet-cn"><span class="l-en">China rotation-event data unavailable.</span><span class="l-zh">中国轮动事件数据暂不可用。</span></p>';
+      if(el){
+        el.innerHTML='<div class="mx-error" role="alert"><b>!</b><span>'
+          +'<span class="l-en">China rotation-event data did not load. The rest of this page still works.</span>'
+          +'<span class="l-zh">中国轮动事件数据未能加载。本页其余部分仍可用。</span>'
+          +'<button type="button" class="rc-retry">'+t('Retry','重试')+'</button>'
+          +'</span></div>';
+        var btn=el.querySelector('.rc-retry');
+        if(btn) btn.onclick=loadCn;
+      }
       return;
     }
     renderCn(res[0],res[1]);
@@ -1248,27 +1271,15 @@ _rcCnObs.observe(document.documentElement,{attributes:true,attributeFilter:['dat
   <section class="si-sec" id="si-explore">
     <div class="si-sec-h">
       <h2><span class="l-en">Explore — every basket in depth</span><span class="l-zh">深入探索 — 每个篮子的深读</span></h2>
-      <span class="si-sec-sub"><span class="l-en">The performance table, overlay chart, categories, entry radar and forming narratives.</span><span class="l-zh">表现一览、叠加图表、类别分组、入场雷达与成形叙事。</span></span>
+      <span class="si-sec-sub"><span class="l-en">The performance table, overlay chart, and baskets by category.</span><span class="l-zh">表现一览、叠加图表，以及按类别分组的篮子。</span></span>
+      <div class="finder">
+        <input id="basket-search" type="search" autocomplete="off"
+          placeholder="Search THS concept, category, member or ticker..."
+          data-ph-zh="搜索同花顺概念、类别、成分或代码...">
+        <span class="count" id="basket-count"></span>
+      </div>
     </div>
-  {% if not lite %}
-  {% set si_hide_actnow_desk = true %}{# Overview owns the single #actnow-section (V2 act-now board); suppress the desk's duplicate here #}
-  {% include "_baskets_desk.html.j2" %}
-
-  {# Entry Radar — baskets in the washout/basing/turning/confirmed lifecycle ONLY (adjudicated 07-18); clean-entry shows as a chip, never as an admission #}
-  <div id="entry-radar"></div>
-
-  {# 🔥 Forming Narratives — emerging A-share themes our models detect + clean-entry tickers. #}
-  {% set ne_base = "chinabasketdata/" %}
-  {% include "_forming_narratives.html.j2" %}
-  {% endif %}
   <div id="content">
-    <div class="finder">
-      <input id="basket-search" type="search" autocomplete="off"
-        placeholder="Search THS concept, category, member or ticker..."
-        data-ph-zh="搜索同花顺概念、类别、成分或代码...">
-      <span class="count" id="basket-count"></span>
-    </div>
-
     <section id="table-section">
       <h2><span class="idx">01</span>{{ t('Performance table', '表现一览') }}</h2>
       <p class="sub">{{ t(
@@ -1278,6 +1289,13 @@ _rcCnObs.observe(document.documentElement,{attributes:true,attributeFilter:['dat
       <div class="chartbar"><span></span><span class="tabs" id="btbl-mode" role="group"></span></div>
       <div class="panel"><div class="ts"><table id="btable"></table></div></div>
       <div class="see-more-wrap"><button class="see-more" id="table-more" type="button"></button></div>
+      {% if not lite %}
+      {# R1: entry radar demoted, not deleted — JS mount unchanged inside. #}
+      <details class="si-more" id="entry-radar-more">
+        <summary>{{ t('Entry radar', '入场雷达') }}</summary>
+        <div id="entry-radar"></div>
+      </details>
+      {% endif %}
     </section>
 
     <section id="chart-section">
@@ -1304,40 +1322,53 @@ _rcCnObs.observe(document.documentElement,{attributes:true,attributeFilter:['dat
     </div>
     <div id="cards"></div>
     <div id="details"></div>
+    {% if not lite %}
+    {# R1: forming narratives demoted, not deleted — JS mount unchanged inside. #}
+    <details class="si-more" id="forming-narratives-more">
+      <summary>{{ t('Forming narratives', '酝酿中的叙事') }}</summary>
+      {% set ne_base = "chinabasketdata/" %}
+      {% include "_forming_narratives.html.j2" %}
+    </details>
+    {% endif %}
   </div>
 
-  {# W5-B: Reversal Sleeve strategy card — linked product, CONFIRM verdict 2026-07-03 #}
   {% if not lite %}
-  <div class="sleeve-strategy-card" id="reversal-sleeve-card">
-    <div class="sc-head"><span class="sc-tag">{{ t('VALIDATED EDGE','已验证优势') }}</span>{{ t('Reversal Sleeve','反转组合') }}</div>
-    <p class="sc-sub">{{ t(
-      'Monthly contrarian basket. Portfolio-level signal, not stock tips; high variance, small size. Forward results accrue as rebalances mature.',
-      '按月逆向篮子。组合层面的信号，不是个股建议；波动高、仓位宜小。前瞻结果会随再平衡成熟后累积。') }}</p>
-    <div class="sc-stats">
-      {# sleeve_stats carries n_members, sleeve_factor, and (when rederive_stats available) sharpe + n_rebalances #}
-      {% if sleeve_stats %}
-      <span class="sc-stat">{{ t('members','成分') }} <b>{{ sleeve_stats.n_members }}</b></span>
-      <span class="sc-stat">{{ t('sleeve sizing','组合仓位') }} <b>×{{ '%.2f'|format(sleeve_stats.sleeve_factor) }}</b></span>
-      {% if sleeve_stats.sharpe is defined and sleeve_stats.sharpe is not none %}
-      <span class="sc-stat">{{ t('re-derived Sharpe (raw plane)','再推导夏普（原始面板）') }} <b>~{{ '%.2f'|format(sleeve_stats.sharpe) }}</b></span>
-      {% endif %}
-      <span class="sc-stat">{{ t('+0.43%/reb universe-rel. (fill-realistic)','每再平衡+0.43%相对等权宇宙（真实成交）') }}</span>
-      {% if sleeve_stats.n_rebalances is defined and sleeve_stats.n_rebalances is not none %}
-      <span class="sc-stat">{{ t('n','样本数') }} <b>{{ sleeve_stats.n_rebalances }}</b> {{ t('monthly rebalances','月度再平衡') }}</span>
-      {% endif %}
-      {% endif %}
-    </div>
-    <a class="sc-link" href="cn_reversal_sleeve.html">{{ t('→ Open Reversal Sleeve page','→ 打开反转组合页面') }}</a>
-    <p class="sc-note">{{ t(
-      'Historical numbers are an upper-bound estimate; the forward ledger is the real record.',
-      '历史数字是上界估计；前瞻台账才是真实记录。') }}</p>
-  </div>
+  {% set si_hide_actnow_desk = true %}{# Overview owns the single #actnow-section (V2 act-now board); suppress the desk's duplicate here #}
+  {% set si_explore_compact = true %}{# R1 extras (theme desk / concentration / rotation / impulse) land in details #}
+  {% include "_baskets_desk.html.j2" %}
   {% endif %}
+    {% import "_lens.html.j2" as lens %}
+    {{ lens.lens_css() }}
+    {%- set _ss = sleeve_stats if sleeve_stats is defined and sleeve_stats else none -%}
+    {%- set _ex = _ss.excess_per_reb if _ss and _ss.excess_per_reb is defined and _ss.excess_per_reb is not none else none -%}
+    {%- set _ex_en = ('+' ~ '%.2f'|format(_ex) ~ '%/reb') if _ex is not none else '+0.43%/reb' -%}
+    {%- set _ex_zh = ('+' ~ '%.2f'|format(_ex) ~ '%/次') if _ex is not none else '+0.43%/次' -%}
+    {%- set _nreb = (_ss.n_rebalances|string) if _ss and _ss.n_rebalances is defined and _ss.n_rebalances is not none else '349' -%}
+    {# R1: reversal-sleeve-card leaves L1; id kept for LEGACY_ANCHORS. Stats live in the LENS. #}
     <div class="si-links">
-      <a href="baskets_china_ths.html">🧩 <span class="l-en">同花顺 theme browser ↗</span><span class="l-zh">同花顺主题浏览器 ↗</span></a>
-      <a href="china_sector_desk.html">📡 <span class="l-en">Live Sector Board ↗</span><span class="l-zh">实时行业看板 ↗</span></a>
-      <a href="narrative_radar.html">🛰 <span class="l-en">Narrative Basket Radar ↗</span><span class="l-zh">叙事篮子雷达 ↗</span></a>
-      <a href="china_heatmap.html">🌡 <span class="l-en">Market Heatmap ↗</span><span class="l-zh">市场热力图 ↗</span></a>
+      <a href="cn_reversal_sleeve.html" id="reversal-sleeve-card">
+        <span class="sc-tag">{{ t('VALIDATED EDGE','已验证优势') }}</span>
+        <span class="l-en">Reversal Sleeve →</span><span class="l-zh">反转组合 →</span>
+      </a>
+      <span class="si-links-note">{{ t('A monthly contrarian basket: portfolio-level, high variance, small size.','按月逆向篮子：组合层面、波动高、仓位宜小。') }}</span>
+      {{ lens.lens(
+          kind='record', ill=lens.ILL_DIAL,
+          kick=('Reversal Sleeve','反转组合'),
+          title=('What the numbers are','这些数字是什么'),
+          rows=[
+            {'k':('What it is','是什么'), 'v':('A monthly contrarian basket: portfolio-level, high variance, small size.','按月逆向篮子：组合层面、波动高、仓位宜小。')},
+            {'k':('Members','成分'), 'v':((_ss.n_members|string, _ss.n_members|string) if _ss else ('pending','待加载'))},
+            {'k':('Sleeve size','组合仓位'), 'v':(('×' ~ '%.2f'|format(_ss.sleeve_factor), '×' ~ '%.2f'|format(_ss.sleeve_factor)) if _ss else ('pending','待加载'))},
+            {'k':('Sharpe','夏普'), 'v':(('~' ~ '%.2f'|format(_ss.sharpe), '~' ~ '%.2f'|format(_ss.sharpe)) if _ss and _ss.sharpe is defined and _ss.sharpe is not none else ('pending','待加载'))},
+            {'k':('Per rebalance','每次再平衡'), 'v':(_ex_en, _ex_zh)},
+          ],
+          body=('Open the dedicated page for the full sleeve.','打开专页查看完整组合。'),
+          receipt=('in the 2016–2025 backtest · fill-realistic · n=' ~ _nreb ~ ' monthly rebalances',
+                   '2016–2025 回测 · 真实成交 · n=' ~ _nreb ~ ' 次月度再平衡')) }}
+      <a href="baskets_china_ths.html"><span class="dash-icon submenu-icon-baskets" aria-hidden="true"></span><span class="l-en">同花顺 theme browser ↗</span><span class="l-zh">同花顺主题浏览器 ↗</span></a>
+      <a href="china_sector_desk.html"><span class="dash-icon submenu-icon-stage" aria-hidden="true"></span><span class="l-en">Live Sector Board ↗</span><span class="l-zh">实时行业看板 ↗</span></a>
+      <a href="narrative_radar.html"><span class="dash-icon submenu-icon-radar" aria-hidden="true"></span><span class="l-en">Narrative Basket Radar ↗</span><span class="l-zh">叙事篮子雷达 ↗</span></a>
+      <a href="china_heatmap.html"><span class="dash-icon submenu-icon-heatmap" aria-hidden="true"></span><span class="l-en">Market Heatmap ↗</span><span class="l-zh">市场热力图 ↗</span></a>
     </div>
   </section>
   </section>{# /si-view explore #}
@@ -1354,7 +1385,7 @@ _rcCnObs.observe(document.documentElement,{attributes:true,attributeFilter:['dat
      l-en/l-zh spans (this page's t() macro escapes, so <b> tags must be literal template HTML,
      matching the page footer's idiom) — NOT the donor's |safe macro. #}
     <div class="sc-head">
-      <h1>{{ t('Subsector Confluence · China', '子行业汇聚 · 中国') }} <span style="color:var(--muted);font-size:14px;font-weight:600">同花顺概念</span></h1>
+      <h2>{{ t('Subsector Confluence · China', '子行业汇聚 · 中国') }} <span style="color:var(--muted);font-size:14px;font-weight:600">同花顺概念</span></h2>
       <div class="asof" id="sc-asof"></div>
     </div>
     {# Copy rule (operator 2026-08-06): tiers may be NAMED, never explained. No indicator
@@ -1362,16 +1393,13 @@ _rcCnObs.observe(document.documentElement,{attributes:true,attributeFilter:['dat
        to the standalone page's blurb in subsectors_china.html.j2. #}
     <div class="sc-sub"><span class="l-en">Every 同花顺 concept read as one basket, measured against the CSI 300. <b>Entry-now</b> means a buy signal just fired, or is about to. Below that: A-shares that are a buy on their own <i>and</i> sit in a concept that is working. One stock can sit in several concepts, so read this as themes rather than sectors — and confirm before you act.</span><span class="l-zh">把每个同花顺概念当成一个篮子来看，对标沪深300。<b>现可入场</b>指买入信号刚出现、或者马上就要出现。下面是本身就是买点、所在概念也在走强的A股。一只股票可以同时属于好几个概念，所以这里看的是题材，不是行业划分——动手前请自己再确认一遍。</span></div>
 
-    <div id="sc-app"><div class="empty"><span class="l-en">Loading…</span><span class="l-zh">加载中…</span></div></div>
-
-    <div class="sc-foot">{{ t('Built', '生成于') }} {{ generated_utc }}</div>
+    <div id="sc-app" aria-busy="true">
+      <div class="skel-slot" aria-hidden="true"><span class="skel"></span><span class="skel"></span><span class="skel"></span></div>
+    </div>
   </section>{# /si-view confluence #}
 
   <footer>
-    <span class="l-en">Read-only analytics — not investment advice. Conviction is a gated-confluence read: the validated credit/vol/margin regime and the
-      pathway conditional odds lead and gate; momentum, flow and crowding are capped context. Forward odds are conditional probabilities with confidence
-      intervals, not forecasts. The grader measures realized accuracy as it accrues.</span><span class="l-zh">只读分析 — 不构成投资建议。信念读数由信用、波动率和融资环境，以及走势的条件概率共同决定；
-      动量、资金流与拥挤度为受限背景。前瞻概率为带置信区间的条件概率，而非预测。评分器随数据累积衡量已实现准确度。</span>
+    <span class="l-en">The conviction read blends credit, volatility and margin conditions with the pattern's conditional odds.</span><span class="l-zh">信念读数由信用、波动率和融资环境，以及走势的条件概率共同决定。</span>
   </footer>
   {# The page footer rides INSIDE the stage on purpose. The rail is sticky within
      .si-shell, so anything left outside the shell shortens the rail's containing
@@ -1556,7 +1584,11 @@ function __csiInitPage(payload){
 THEME = BASKETS.theme_intel || null;
 window.BASKET_BASE = '{{ basket_base }}';
 
-const TBL_COLS = ['1d','5d','20d','60d','MTD','YTD'];
+const TBL_COLS_ALL = ['1d','5d','20d','60d','MTD','YTD'];
+const TBL_COL_LABEL = { '1d':['1d','1日'], '5d':['5d','5日'], '20d':['20d','20日'], '60d':['60d','60日'],
+  'MTD':['MTD','月至今'], 'YTD':['YTD','年至今'] };
+const tblCols = () => btblMode==='sigma' ? TBL_COLS_ALL.filter(c=>/^\d/.test(c)) : TBL_COLS_ALL;
+const colLabel = c => { const p=TBL_COL_LABEL[c]||[c,c]; return LANG()==='zh'?p[1]:p[0]; };
 const RANGES = [['3M',63],['6M',126],['YTD','ytd'],['1Y',252],['All',0]];
 const HZ_TABS = ['1d','5d','20d','60d','YTD'];
 const PALETTE = ['#5aa7ff','#4ade80','#facc15','#fb923c','#f472b6','#2dd4bf','#a78bfa','#fb7185','#a3e635','#38bdf8','#e879f9','#34d399','#fbbf24','#60a5fa','#c084fc','#22d3ee','#f87171','#bef264','#818cf8','#fcd34d','#5eead4','#fda4af'];
@@ -1601,7 +1633,7 @@ const BENCH = () => LANG()==='zh' ? (BASKETS.benchmark_label_zh||'沪深300') : 
 const CAT_ZH = {}; (BASKETS.categories||[]).forEach((c,i)=>CAT_ZH[c]=(BASKETS.categories_zh||[])[i]||c);
 const catLabel = c => (LANG()==='zh' && CAT_ZH[c]) ? CAT_ZH[c] : c;
 const VS = () => (LANG()==='zh'?'相对 ':'vs ')+BENCH();
-const TABLE_LIMIT = 12;
+const TABLE_LIMIT = 8;
 let query = '';
 let tableExpanded = false;
 let chartScope = localStorage.getItem('cnfw-chart-scope') || 'cats';
@@ -1701,7 +1733,8 @@ function renderBTable(){
   let rows = Object.entries(CHART.baskets).filter(([id])=>allowed.has(id)).map(([id,lv])=>{
     const b=(BASKETS.baskets||[]).find(x=>x.id===id); const rl=ratio(lv);
     const src = btblMode==='raw'?lv:rl;
-    const vals={}; TBL_COLS.forEach(c=>{ vals[c]= btblMode==='sigma' ? (/^\d/.test(c)?winZ(rl,c):null) : winRet(src,c); });
+    const cols=tblCols();
+    const vals={}; cols.forEach(c=>{ vals[c]= btblMode==='sigma' ? winZ(rl,c) : winRet(src,c); });
     return {id,b,name:bn(b),color:colorOf[id]||'#888',spark:sparkTail(src),vals,score:b?b.score:null};
   });
   const sc=btblSort.col, dir=btblSort.dir;
@@ -1713,18 +1746,20 @@ function renderBTable(){
   const totalRows = rows.length;
   const shownRows = tableExpanded ? rows : rows.slice(0,TABLE_LIMIT);
   const fmt = btblMode==='sigma' ? fmtZ : fmtPct;
-  const th = c => `<th class="num ${c===sc?'sel':''}" data-c="${c}">${c}${c===sc?(dir<0?' ▾':' ▴'):''}</th>`;
+  const cols=tblCols();
+  const th = c => `<th class="num ${c===sc?'sel':''}" data-c="${c}">${esc(colLabel(c))}${c===sc?(dir<0?' ▾':' ▴'):''}</th>`;
   const scoreHdrLbl = LANG()==='zh'?'得分':'Score';
   const nameHdr = LANG()==='zh'?'篮子':'Basket';
+  const sparkHdr = LANG()==='zh'?'60日':'60d';
   let html = `<thead><tr><th data-c="name">${nameHdr}${sc==='name'?(dir<0?' ▾':' ▴'):''}</th>
     <th class="num ${sc==='score'?'sel':''}" data-c="score">${scoreHdrLbl}${sc==='score'?(dir<0?' ▾':' ▴'):''}</th>
-    <th class="num">60d</th>${TBL_COLS.map(th).join('')}</tr></thead><tbody>`;
+    <th class="num">${sparkHdr}</th>${cols.map(th).join('')}</tr></thead><tbody>`;
   html += shownRows.map(r=>`<tr><td class="bname" data-id="${r.id}"><span class="dot" style="background:${r.color}"></span>${nameLink(r.b)}</td>
     <td class="num">${r.score!=null?`<span class="score-badge ${scoreBand(r.score)}">${r.score}</span>`:'<span class="muted">—</span>'}</td>
     <td class="num">${sparkSvg(r.spark,{color:r.color})}</td>
-    ${TBL_COLS.map(c=>`<td class="num ${cls(r.vals[c])}">${r.vals[c]==null?'<span class="muted">—</span>':fmt(r.vals[c])}</td>`).join('')}</tr>`).join('');
-  if(btblMode==='raw'){ const bv={}; TBL_COLS.forEach(c=>bv[c]=winRet(CHART.bench,c));
-    html += `<tr><td class="bname" style="font-weight:500"><span class="dot" style="background:${BENCH_COLOR()}"></span>${esc(BENCH())}</td><td></td><td></td>${TBL_COLS.map(c=>`<td class="num ${cls(bv[c])}">${fmtPct(bv[c])}</td>`).join('')}</tr>`; }
+    ${cols.map(c=>`<td class="num ${cls(r.vals[c])}">${r.vals[c]==null?'<span class="muted">—</span>':fmt(r.vals[c])}</td>`).join('')}</tr>`).join('');
+  if(btblMode==='raw'){ const bv={}; cols.forEach(c=>bv[c]=winRet(CHART.bench,c));
+    html += `<tr><td class="bname" style="font-weight:500"><span class="dot" style="background:${BENCH_COLOR()}"></span>${esc(BENCH())}</td><td></td><td></td>${cols.map(c=>`<td class="num ${cls(bv[c])}">${fmtPct(bv[c])}</td>`).join('')}</tr>`; }
   html += '</tbody>';
   const tbl=document.getElementById('btable'); tbl.innerHTML=html;
   tbl.querySelectorAll('th[data-c]').forEach(h=>h.onclick=()=>{ const c=h.dataset.c;
@@ -2053,7 +2088,7 @@ function renderHeroCount(){
 }
 
 function renderModeTabs(){
-  renderTabs(document.getElementById('btbl-mode'), [['raw', LANG()==='zh'?'原始':'Raw'],['rel',VS()],['sigma','σ']], btblMode, v=>{ btblMode=v; localStorage.setItem('cnfw-btbl-mode',v); renderBTable(); });
+  renderTabs(document.getElementById('btbl-mode'), [['raw', LANG()==='zh'?'原始':'Raw'],['rel',VS()],['sigma', LANG()==='zh'?'反常程度':'How unusual']], btblMode, v=>{ btblMode=v; localStorage.setItem('cnfw-btbl-mode',v); renderBTable(); });
   renderTabs(document.getElementById('chart-modes'), [['rel',VS()],['abs', LANG()==='zh'?'绝对':'Absolute']], chartMode, v=>{ chartMode=v; renderChart(); });
   renderTabs(document.getElementById('chart-scope'), [['cats', LANG()==='zh'?'类别':'Categories'],['subs', LANG()==='zh'?'子行业':'Subsectors']], chartScope, v=>{
     chartScope=v; localStorage.setItem('cnfw-chart-scope',v); hidden={}; initChartDefaults(); renderChartCats(); renderChart();
@@ -2077,7 +2112,8 @@ function renderSemisChip(){
 function renderAll(){ renderStory(); renderHeroCount(); renderModeTabs(); renderTblCatFilter(); renderBTable(); renderChartCats(); renderChart(); renderCardSortTabs(); renderCards(); renderDetails(); renderEntryRadar(); updateCount(); }
 
 function boot(){
-  document.getElementById('asof').textContent=BASKETS.as_of||'—';
+  const asofEl=document.getElementById('asof');
+  if(asofEl && BASKETS.as_of) asofEl.textContent=BASKETS.as_of;
   const search=document.getElementById('basket-search');
   if(search){
     const syncPh=()=>{ const zh=LANG()==='zh'; search.placeholder=zh?(search.dataset.phZh||search.placeholder):'Search THS concept, category, member or ticker...'; };
@@ -2124,13 +2160,30 @@ window.ratio = ratio; window.sparkSvg = sparkSvg; window.sparkTail = sparkTail;
 if(document.readyState!=='loading') boot(); else document.addEventListener('DOMContentLoaded',boot);
 }
 (function(){
-  function fail(){ var el=document.getElementById('table-section');
-    if(el) el.insertAdjacentHTML('beforebegin','<p class="muted sm" style="margin:12px 2px">'+
-      '<span class="l-en">Basket data is unavailable right now — the rest of the page still works.</span>'+
-      '<span class="l-zh">篮子数据暂不可用 — 页面其余部分不受影响。</span></p>'); }
-  fetch('chinabasketdata/baskets.json',{cache:'no-cache'})
-    .then(function(r){ if(!r.ok) throw new Error('http '+r.status); return r.json(); })
-    .then(__csiInitPage).catch(function(e){ try{ fail(); }catch(_){} });
+  function loadBaskets(){
+    fetch('chinabasketdata/baskets.json',{cache:'no-cache'})
+      .then(function(r){ if(!r.ok) throw new Error('http '+r.status); return r.json(); })
+      .then(function(p){ var old=document.getElementById('csi-baskets-error'); if(old) old.remove(); __csiInitPage(p); })
+      .catch(function(e){ try{ fail(); }catch(_){} });
+  }
+  function fail(){
+    var old=document.getElementById('csi-baskets-error'); if(old) old.remove();
+    var el=document.getElementById('table-section');
+    if(!el) return;
+    var box=document.createElement('div');
+    box.id='csi-baskets-error';
+    box.className='mx-error';
+    box.setAttribute('role','alert');
+    box.innerHTML='<b>!</b><span>'
+      +'<span class="l-en">Basket data did not load. The rest of this page still works.</span>'
+      +'<span class="l-zh">篮子数据未能加载。本页其余部分仍可用。</span>'
+      +'<button type="button" class="csi-retry"><span class="l-en">Retry</span><span class="l-zh">重试</span></button>'
+      +'</span>';
+    el.parentNode.insertBefore(box, el);
+    var btn=box.querySelector('.csi-retry');
+    if(btn) btn.onclick=loadBaskets;
+  }
+  loadBaskets();
 })();
 </script>
 {# SR_CFG stays eager and inline — it is configuration, and subsector_rotation.js reads it the

@@ -396,11 +396,10 @@
   },
   {
    "match": "validated credit/vol/margin regime",
-   "backing": "the credit/vol/margin regime gate (vol_regime + credit/liquidity overlays) — the validated conditioning regime; gated-confluence read. The CN sector desk uses the SAME conditioning-regime object as a gate; the claim is that the regime read is validated (vol_regime + credit/liquidity overlays), NOT that a CN-specific application was validated — the copy gates with it, never ranks on it.",
+   "backing": "the credit/vol/margin regime gate (vol_regime + credit/liquidity overlays) — the validated conditioning regime; gated-confluence read. The CN sector desk uses the SAME conditioning-regime object as a gate; the claim is that the regime read is validated (vol_regime + credit/liquidity overlays), NOT that a CN-specific application was validated — the copy gates with it, never ranks on it. Dated 2026-09-11 W14: sector_central_china footer no longer emits this phrase (Law-2/Law-4 one-sentence rewrite); stock and us_stocks still do, so the row stays.",
    "surfaces": [
     "stock",
-    "us_stocks",
-    "sector_central_china"
+    "us_stocks"
    ]
   },
   {
@@ -1542,13 +1541,6 @@
    "backing": "ZH counterpart of 'validated absolute-trend drawdown gate'. research/SECTOR_CONFLUENCE.md + allocation panel 04 (multi-decade sector-ETF backtest; the edge is drawdown / shake-out control via the absolute-trend gate). engine.sector_central _trend_gates. Needed separately because `match` is a case-insensitive substring, so the EN entry can never cover its zh twin.",
    "surfaces": [
     "sector_central"
-   ]
-  },
-  {
-   "match": "经验证的信用/波动率/融资体制",
-   "backing": "ZH counterpart of 'validated credit/vol/margin regime' on the CN sector desk: the credit/vol/margin regime gate (vol_regime + credit/liquidity overlays) is the validated conditioning regime that GATES the gated -confluence read. The CN board reuses that same regime object; no CN-specific validation is claimed and the regime never ranks names.",
-   "surfaces": [
-    "sector_central_china"
    ]
   },
   {

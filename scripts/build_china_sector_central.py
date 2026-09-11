@@ -110,6 +110,14 @@ def main() -> int:
                     sleeve_stats["sharpe"] = float(_full["sharpe"])
                 if _full.get("n") is not None:
                     sleeve_stats["n_rebalances"] = int(_full["n"])
+                # Fill-realistic excess per rebalance (same plane as the sleeve card).
+                # Prefer fill_tax.fill_realistic_pct; fall back to primary.full.mean_pct.
+                _fill = (_sd.get("rederive_stats") or {}).get("fill_tax") or {}
+                _ex = _fill.get("fill_realistic_pct")
+                if _ex is None:
+                    _ex = _full.get("mean_pct")
+                if _ex is not None:
+                    sleeve_stats["excess_per_reb"] = float(_ex)
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.debug("china_sector_central: sleeve stats load skipped (%s)", e)
 
@@ -134,6 +142,7 @@ def main() -> int:
         sleeve_stats=sleeve_stats,
         act_now_v2=act_now_v2,
         sectors_by_ticker=sectors_by_ticker,
+        bench_en="CSI 300", bench_zh="沪深300",
         generated_utc=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"))
     write_page(site / "sector_central_china.html", html, encoding="utf-8")
 
