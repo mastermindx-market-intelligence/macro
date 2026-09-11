@@ -175,3 +175,90 @@ def test_plain_gross_wired_for_china_dialog():
     assert "plain_gross=(mkt=='cn')" in dlg
     assert "¾ of normal" in card
     assert "约常规四分之三" in card
+
+
+def _spec_kind_invert(row):
+    _store, _name, _col, _en, _zh, kind, _tzh, _decimals, _is_rate, invert = row
+    return kind, invert
+
+
+def test_inverted_tiles_disclose_quote_orientation():
+    """Every invert spec row must teach what 'higher' means (B1 structural pin).
+
+    Mirrors tests/test_hk_tier1_shell.py::test_inverted_tiles_disclose_quote_orientation
+    against scripts/build_china.MARKET_TILE_SPEC. Guards the spec table itself —
+    S1 folded the glance strip into SSE/CSI 300/ChiNext/HSI, so no invert tile
+    currently renders at L1.
+    """
+    from scripts.build_china import CHINA_TILE_COPY, MARKET_TILE_SPEC
+
+    inverted = [row for row in MARKET_TILE_SPEC if _spec_kind_invert(row)[1]]
+    assert inverted, "spec must include at least one invert row"
+    # Truthy invert (not `is True`) so a 1 would still be pinned.
+    assert _spec_kind_invert(("g", "n", "c", "e", "z", "peg", "z2", 4, False, 1))[1]
+    assert not _spec_kind_invert(("g", "n", "c", "e", "z", "x", "z2", 0, False, 0))[1]
+    assert not _spec_kind_invert(("g", "n", "c", "e", "z", "x", "z2", 0, False, False))[1]
+    for row in inverted:
+        kind, _invert = _spec_kind_invert(row)
+        copy = CHINA_TILE_COPY[kind]
+        en, zh = copy["meaning_en"], copy["meaning_zh"]
+        assert "higher" in en.lower(), f"{kind} meaning_en must disclose orientation: {en!r}"
+        assert "weaker" in en.lower() or "stronger" in en.lower(), (
+            f"{kind} meaning_en must name the weaker/stronger reading: {en!r}"
+        )
+        assert "数值升高" in zh, f"{kind} meaning_zh must disclose orientation: {zh!r}"
+    yuan = CHINA_TILE_COPY["USDCNH"]
+    assert "higher = a weaker yuan" in yuan["meaning_en"]
+    assert "人民币走弱" in yuan["meaning_zh"]
+    assert "quoted as yuan per US dollar" in yuan["meaning_en"]
+    assert "以美元兑人民币报价" in yuan["meaning_zh"]
+
+
+def test_l1_index_strip_has_no_inverted_quote_tile():
+    """S1 folded market tiles into SSE/CSI 300/ChiNext/HSI — none invert."""
+    wrap = _wrap()
+    assert wrap.count("mx5-mkt-tile") == 4
+    assert 'data-sym="CNH_F"' not in wrap
+    assert "Offshore yuan" not in wrap
+    assert "USDCNH" not in wrap
+    assert "quoted as yuan per US dollar" not in wrap
+    assert "以美元兑人民币报价" not in wrap
+
+
+def test_g8_floor_css_pins():
+    """G8: reduced-motion stills the skeleton; chips wrap; focus rings exist."""
+    assert "@media (prefers-reduced-motion:reduce)" in SRC
+    assert "body.page-china .mx-skel{animation:none;background-image:none}" in SRC
+    assert "[data-theme=\"light\"] body.page-china .mx-skel{animation:none;background-image:none}" in SRC
+    assert "body.page-china .cnx-chips{display:flex;flex-wrap:wrap" in SRC
+    assert "body.page-china .cnx-wrap .depth{display:flex;flex-wrap:wrap" in SRC
+    assert "body.page-china .cnx-wrap{overflow-x:clip}" in SRC
+    assert "cnx-row .cnx-lens:focus-visible" in SRC
+    assert "drivers > .panel:focus-visible" in SRC
+    assert 'class="cnx-lens"' in SRC
+
+
+def test_evidence_crop_hooks_present():
+    wrap = _wrap()
+    for hook in ("hero", "todo", "changed", "drivers", "watching-deeper"):
+        assert f'data-ev="{hook}"' in wrap, hook
+
+
+def test_fixture_macro_block_renders_six_l1_without_data_dir():
+    """Sparse-safe: the evidence fixture renders the wrap with no data/ reads."""
+    from scripts.capture_china_archetype_d_evidence import render_macro_block
+
+    html = render_macro_block()
+    assert 'class="mx-vh"' in html
+    assert "What to do" in html
+    assert "What changed" in html
+    assert "Why — four drivers" in html
+    assert "What we're watching" in html
+    assert "Go deeper" in html
+    assert "+¥4.6bn" in html
+    assert "+¥46亿" in html
+    assert "4 " in html and "of</span>" in html
+    assert "GROWTH SCARE" in html
+    assert "增长恐慌" in html
+    assert "CNH_F" not in html
+    assert "quoted as yuan per US dollar" not in html

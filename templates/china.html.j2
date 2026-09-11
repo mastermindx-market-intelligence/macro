@@ -1460,8 +1460,26 @@
   body.page-china .cnx-wrap .depth a small{color:var(--muted);font-weight:400}
   body.page-china .cnx-wrap .depth a:focus-visible,
   body.page-china .cnx-wrap .mx-chg-row:focus-visible,
-  body.page-china .cnx-wrap .cnx-row[data-tip-en]:focus-visible{
+  body.page-china .cnx-wrap .cnx-row .cnx-lens:focus-visible,
+  body.page-china .cnx-wrap .drivers > .panel:focus-visible,
+  body.page-china .cnx-wrap [data-ev="watching"] .panel:focus-visible,
+  body.page-china .cnx-wrap .sxg-face.mx5-card-face:focus-visible{
     outline:2px solid color-mix(in srgb, var(--link) 70%, transparent);outline-offset:2px}
+  body.page-china .cnx-wrap .cnx-row .cnx-lens{
+    flex:none;width:28px;height:28px;margin-left:auto;border-radius:50%;
+    border:1px solid var(--line);background:transparent;color:var(--muted);
+    font-size:13px;font-weight:700;cursor:help;line-height:1;position:relative}
+  body.page-china .cnx-wrap .cnx-row .cnx-lens::after{
+    content:attr(data-tip-en);display:none;position:absolute;right:0;bottom:calc(100% + 6px);
+    z-index:8;max-width:min(42ch,90vw);padding:8px 10px;border-radius:8px;font-size:12px;
+    line-height:1.45;color:var(--text);background:var(--panel);border:1px solid var(--line);
+    box-shadow:var(--card-shadow, 0 8px 24px rgba(0,0,0,.35));white-space:normal;text-align:left}
+  html[data-lang="zh"] body.page-china .cnx-wrap .cnx-row .cnx-lens::after{content:attr(data-tip-zh)}
+  body.page-china .cnx-wrap .cnx-row .cnx-lens.cnx-tip-open::after,
+  body.page-china .cnx-wrap .cnx-row .cnx-lens:focus-visible::after{display:block}
+  body.page-china .cnx-wrap .mx-chg-when{
+    flex:none;font-variant-numeric:tabular-nums;color:var(--muted);font-size:var(--fs-sm,12.5px)}
+  body.page-china .cnx-wrap{overflow-x:clip}
   @media (max-width:860px){
     body.page-china .cnx-wrap .drivers{grid-template-columns:1fr}
     body.page-china .cnx-wrap .mx-vh{grid-template-columns:1fr}
@@ -1470,6 +1488,11 @@
     body.page-china .cnx-wrap .drivers{
       display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;padding-bottom:6px}
     body.page-china .cnx-wrap .drivers > .panel{flex:0 0 86%;scroll-snap-align:start}
+    body.page-china .cnx-wrap .mx-vh-word{font-size:32px;letter-spacing:-.02em}
+    body.page-china .cnx-wrap .dial{margin:4px auto 12px;overflow:hidden;max-width:220px}
+    body.page-china .cnx-estrip{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory}
+    body.page-china .cnx-ev{flex:0 0 72%;scroll-snap-align:start}
+    body.page-china .cnx-wrap .cnx-row .cnx-lens{width:32px;height:32px}
   }
   @media (prefers-reduced-motion:reduce){
     body.page-china .cnx-wrap .depth a, body.page-china .cnx-wrap .depth a:hover{transform:none}
@@ -1527,6 +1550,9 @@
       color-mix(in srgb, var(--text) 7%, transparent) 50%,
       color-mix(in srgb, var(--text) 4%, transparent) 100%);
     background-size:200% 100%}
+  @media (prefers-reduced-motion:reduce){
+    [data-theme="light"] body.page-china .mx-skel{animation:none;background-image:none}
+  }
   [data-theme="light"] body.page-china .mx-vh .mx5-gauge-svg path[stroke="rgba(255,255,255,.08)"]{
     stroke:color-mix(in srgb, var(--text) 12%, transparent)}
   body.page-china .cnx-wrap .mx-vh .cnx-gauge-fill{filter:url(#cnxArcGlow)}
@@ -1554,7 +1580,8 @@
     box-shadow:var(--mx5-hover-shadow);transform:translateY(-1px);
   }
   body.page-china .sxg-face.mx5-card-face:focus-visible{
-    outline:none;box-shadow:var(--mx5-focus-ring),var(--mx5-hover-shadow);
+    outline:2px solid color-mix(in srgb, var(--link) 70%, transparent);outline-offset:2px;
+    box-shadow:var(--mx5-focus-ring),var(--mx5-hover-shadow);
   }
   body.page-china .mx5-mkt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
   @media(max-width:1100px){body.page-china .mx5-mkt-grid{grid-template-columns:repeat(2,1fr);}}
@@ -1578,7 +1605,9 @@
     background:var(--mx5-hover-bg);border-color:var(--mx5-hover-border);
     box-shadow:var(--mx5-hover-shadow);transform:translateY(-1px);
   }
-  body.page-china .mx5-mkt-tile:focus-visible{outline:none;box-shadow:var(--mx5-focus-ring),var(--mx5-hover-shadow);}
+  body.page-china .mx5-mkt-tile:focus-visible{
+    outline:2px solid color-mix(in srgb, var(--link) 70%, transparent);outline-offset:2px;
+    box-shadow:var(--mx5-focus-ring),var(--mx5-hover-shadow);}
   body.page-china .mx5-mkt-ticker{
     font-size:11px;font-weight:700;letter-spacing:.07em;color:var(--ink-3);text-transform:uppercase;margin-bottom:3px;
   }
@@ -1901,6 +1930,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   <div class="cnx-wrap">
 
   <!-- =============== L1-1 · VERDICT HERO (Archetype D) =============== -->
+  <div data-ev="hero">
   {% set _mx5_arc_len = 175.93 %}
   {% set _mx5_filled = (_ms_score / 100 * _mx5_arc_len) | round(1) %}
   {% set _mx5_gap = (_mx5_arc_len - _mx5_filled) | round(1) %}
@@ -2016,21 +2046,25 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       </div>
     </div>
   </div>
+  </div>{# /data-ev=hero #}
 
   <!-- =============== L1-2 · What to do =============== -->
-  <section class="band panel">
+  <section class="band panel" data-ev="todo">
     <h2 class="band-label"><span class="l-en">What to do</span><span class="l-zh">该怎么做</span></h2>
-    <div class="cnx-row" tabindex="0" data-tip-en="About seven in ten past growth-scare episodes on this page's own history resolved higher. Windows, not certainties — re-drawn nightly." data-tip-zh="本页历史记录中，过往增长恐慌阶段约有七成最终走高。是窗口，不是定论——每晚重新校准。"><span class="ic">+</span>
-      <div class="tx"><span class="sub"><span class="l-en">Fear like this has usually been a buying window, not a top — add quality slowly, don't chase.</span><span class="l-zh">这种恐慌通常是买入窗口，而不是顶部——慢慢吸纳优质资产，不要追高。</span></span></div></div>
-    <div class="cnx-row" tabindex="0" data-tip-en="Three inputs — money supply (M2), the short-minus-long growth gap, and total social financing — all point the same way. Counted once, as a single monetary-conditions read." data-tip-zh="三项输入——货币供应（M2）、剪刀差、社会融资规模——方向一致，合并为一次货币条件读数。"><span class="ic">−</span>
-      <div class="tx"><span class="sub"><span class="l-en">Money is getting tighter at the central bank, and every part of that read agrees.</span><span class="l-zh">央行层面的货币条件正在收紧，该判读的各个部分方向一致。</span></span></div></div>
-    <div class="cnx-row" tabindex="0" data-tip-en="Borrowed money invested in A-shares, as a share of tradable market value. Crowded borrowing makes a fall run further. It is currently in the top tenth of its own range." data-tip-zh="两融余额占流通市值的比重。杠杆越拥挤，下跌时的连锁反应越大。目前处于自身区间的最高十分之一。"><span class="ic">−</span>
-      <div class="tx"><span class="sub"><span class="l-en">Borrowed money in A-shares is crowded — a fall would run further from here. Tighten risk.</span><span class="l-zh">A股杠杆资金拥挤——一旦下跌会走得更远。收紧风险。</span></span></div></div>
+    <div class="cnx-row"><span class="ic">+</span>
+      <div class="tx"><span class="sub"><span class="l-en">Fear like this has usually been a buying window, not a top — add quality slowly, don't chase.</span><span class="l-zh">这种恐慌通常是买入窗口，而不是顶部——慢慢吸纳优质资产，不要追高。</span></span></div>
+      <button type="button" class="cnx-lens" aria-label="Why" data-tip-en="About seven in ten past growth-scare episodes on this page's own history resolved higher. Windows, not certainties — re-drawn nightly." data-tip-zh="本页历史记录中，过往增长恐慌阶段约有七成最终走高。是窗口，不是定论——每晚重新校准。">?</button></div>
+    <div class="cnx-row"><span class="ic">−</span>
+      <div class="tx"><span class="sub"><span class="l-en">Money is getting tighter at the central bank, and every part of that read agrees.</span><span class="l-zh">央行层面的货币条件正在收紧，该判读的各个部分方向一致。</span></span></div>
+      <button type="button" class="cnx-lens" aria-label="Why" data-tip-en="Three inputs — money supply (M2), the short-minus-long growth gap, and total social financing — all point the same way. Counted once, as a single monetary-conditions read." data-tip-zh="三项输入——货币供应（M2）、剪刀差、社会融资规模——方向一致，合并为一次货币条件读数。">?</button></div>
+    <div class="cnx-row"><span class="ic">−</span>
+      <div class="tx"><span class="sub"><span class="l-en">Borrowed money in A-shares is crowded — a fall would run further from here. Tighten risk.</span><span class="l-zh">A股杠杆资金拥挤——一旦下跌会走得更远。收紧风险。</span></span></div>
+      <button type="button" class="cnx-lens" aria-label="Why" data-tip-en="Borrowed money invested in A-shares, as a share of tradable market value. Crowded borrowing makes a fall run further. It is currently in the top tenth of its own range." data-tip-zh="两融余额占流通市值的比重。杠杆越拥挤，下跌时的连锁反应越大。目前处于自身区间的最高十分之一。">?</button></div>
     {% if imminent %}<div class="cnx-row"><span class="ic">📅</span><div class="tx"><b><span class="l-en">{{ imminent.en }}</span><span class="l-zh">{{ imminent.zh }}</span></b><span class="sub">{{ t('Highest-impact print soon','近期最重要数据') }}</span></div></div>{% endif %}
   </section>
 
   <!-- =============== L1-3 · What changed =============== -->
-  <section class="band panel">
+  <section class="band panel" data-ev="changed">
     <h2 class="band-label"><span class="l-en">What changed</span><span class="l-zh">最近变化</span></h2>
     {% if CN and CN.news and CN.news.headlines %}
       {% for h in CN.news.headlines[:2] %}
@@ -2055,7 +2089,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   </section>
 
   <!-- =============== L1-4 · Why — four drivers =============== -->
-  <section class="band">
+  <section class="band" data-ev="drivers">
     <h2 class="band-label"><span class="l-en">Why — four drivers</span><span class="l-zh">为什么 — 四大驱动</span></h2>
     <div class="drivers">
 
@@ -2106,7 +2140,8 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
         {% set _to_pct = (I.turnover.pctile | float) if (I.turnover and I.turnover.get('pctile') is not none) else none %}
         {% set _sent_dial = (_fe_score | float) if _fe_score is not none else _to_pct %}
         {% if _sent_dial is not none %}
-        <p class="drv-read"><span class="l-en">Sentiment {{ _fe_label }} · composite {{ _sent_dial | int }} — a heads-up, not a scored signal.</span><span class="l-zh">情绪 {{ _fe_label }} · 综合 {{ _sent_dial | int }} — 仅供参考，不构成评分信号。</span></p>
+        {% set _fe_zh = {'Fear':'恐惧','Euphoria':'亢奋','Neutral':'中性','Greed':'贪婪','Panic':'恐慌'}.get(_fe_label, _fe_label) %}
+        <p class="drv-read"><span class="l-en">Sentiment {{ _fe_label }} · composite {{ _sent_dial | int }} — a heads-up, not a scored signal.</span><span class="l-zh">情绪 {{ _fe_zh }} · 综合 {{ _sent_dial | int }} — 仅供参考，不构成评分信号。</span></p>
         {% endif %}
         <div class="cnx-kv"><span class="k">{{ t('≥5% dip odds','≥5%回撤概率') }}</span><span class="v">{% if _rr_p21 is not none %}{{ (_rr_p21*100)|round|int }}%{% else %}{{ t('—','—') }}{% endif %}</span></div>
         <div class="cnx-foot">{{ t(_rr_do_en or 'High pullback risk — size down, watch alerts.', _rr_do_zh or '回撤风险高 — 缩仓，关注警报。') }}</div>
@@ -2117,7 +2152,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
         <div class="mx-sec"><h2 class="l-en" style="font-size:var(--fs-h2)">Property &amp; growth</h2><h2 class="l-zh" style="font-size:var(--fs-h2)">房地产与增长</h2></div>
         {% if P %}
         {% set R = P.regime %}
-        <p class="drv-read"><b>{{ t(R.label_en, R.label_zh) }}</b> — {{ t('easing at the margin','边际宽松') if R.tone in ('neutral','pos') else t('still contracting','仍在收缩') }}</p>
+        <p class="drv-read"><b>{{ t(R.label_en, R.label_zh) }}</b></p>
         {% if P.breadth %}
         <div class="cnx-kv"><span class="k">{{ t('70-city prices','70城价格') }}</span><span class="v">{{ '%+d'|format(P.breadth.new) }} {{ t('net cities','净城市数') }}</span></div>
         {% endif %}
@@ -2131,8 +2166,9 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     </div>
   </section>
 
+  <div data-ev="watching-deeper">
   <!-- =============== L1-5 · What we're watching =============== -->
-  <section class="band">
+  <section class="band" data-ev="watching">
     <h2 class="band-label"><span class="l-en">What we're watching</span><span class="l-zh">我们在盯什么</span></h2>
     <div class="panel" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-events')"
          onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();cnxOpenDlg('cnx-dlg-events');}">
@@ -2164,6 +2200,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       <a href="china_news.html"><span class="l-en">Full news feed · 24 of 696 kept</span><span class="l-zh">完整新闻流 · 已保留 24/696</span><small>→</small></a>
     </div>
   </section>
+  </div>{# /data-ev=watching-deeper #}
 
   </div>{# /cnx-wrap #}
 
@@ -4390,20 +4427,24 @@ window.__CHART_SWAP__ = {
   } else {
     setTimeout(cnxSkelFallback, 8000);
   }
+  document.addEventListener('pointerdown', function(e){
+    var q = e.target && e.target.closest && e.target.closest('.cnx-lens');
+    if(!q) return;
+    e.preventDefault();
+    e.stopPropagation();
+    var was = q.classList.contains('cnx-tip-open');
+    document.querySelectorAll('.cnx-lens.cnx-tip-open').forEach(function(el){
+      el.classList.remove('cnx-tip-open');
+    });
+    if(!was) q.classList.add('cnx-tip-open');
+  }, true);
   document.addEventListener('keydown', function(e){
     var t = e.target;
-    if(!t || !t.getAttribute || !t.getAttribute('data-tip-en')) return;
+    if(!t || !t.classList || !t.classList.contains('cnx-lens')) return;
     if(e.key === 'Enter' || e.key === ' '){
       e.preventDefault();
       t.classList.toggle('cnx-tip-open');
     }
-  });
-  document.addEventListener('click', function(e){
-    var row = e.target && e.target.closest && e.target.closest('.cnx-row[data-tip-en]');
-    document.querySelectorAll('.cnx-row.cnx-tip-open').forEach(function(el){
-      if(el !== row) el.classList.remove('cnx-tip-open');
-    });
-    if(row) row.classList.toggle('cnx-tip-open');
   });
 })();
 </script>
