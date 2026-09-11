@@ -14,9 +14,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from scripts.optimize_assets import optimize  # noqa: E402
+from scripts.optimize_assets import _attach_aibrief_freshness, optimize  # noqa: E402
 
 
+ROOT = Path(__file__).resolve().parent.parent
 _ASSET = "assets/js/aibrief-freshness.js"
 
 
@@ -95,3 +96,29 @@ def test_optimizer_does_not_attach_refresh_to_unrelated_page(tmp_path: Path) -> 
     optimize(site)
 
     assert "aibrief-freshness.js" not in (site / "about.html").read_text()
+
+
+def test_optimizer_fails_open_when_freshness_asset_is_missing(tmp_path: Path) -> None:
+    site = tmp_path / "site"
+    site.mkdir()
+    page = site / "macro.html"
+    original = '<html><body><div class="aib2" data-lens="macro"></div></body></html>'
+    page.write_text(original)
+
+    optimize(site)
+
+    assert "aibrief-freshness.js" not in page.read_text()
+
+
+def test_every_shipped_shared_brief_surface_is_eligible_for_refresh() -> None:
+    site = ROOT / "site"
+    assert (site / _ASSET).is_file()
+
+    for name in ("macro.html", "china.html", "hk.html", "aibrief.html"):
+        page = site / name
+        text = page.read_text(encoding="utf-8")
+        assert re.search(r'class=["\'][^"\']*\baib2\b', text), name
+
+        out = _attach_aibrief_freshness(text, page.parent, site)
+        assert out.count("aibrief-freshness.js") == 1, name
+        assert out.index("aibrief-freshness.js") < out.lower().rindex("</body>"), name
