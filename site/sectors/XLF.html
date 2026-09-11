@@ -291,8 +291,8 @@
   <div class="panel">
     <div class="topline">
       <h1><span class="l-en">Financials</span><span class="l-zh">金融</span> <span class="muted">(XLF)</span></h1>
-      <span class="state st-DECLINE"><span class="l-en">DOWNTREND</span><span class="l-zh">下跌趋势</span></span>
-      <span class="eqbadge eq-down"><span class="l-en">Entry</span><span class="l-zh">入场</span> ▼ -64 <span class="eqg"><span class="l-en">Strong</span><span class="l-zh">强</span></span></span><span class="help">?<span class="tip"><span class="l-en">How well-timed &amp; low-risk THIS entry is — near the cycle high, a fresh momentum turn, and with-trend. Measured: entries near the pivot drew ~30% smaller drawdowns than chasers far above it — risk control, NOT a return forecast.</span><span class="l-zh">衡量当前入场的时机与风险——贴近周期高点、动量新近转向、且顺势。实测：贴近枢轴的入场，其回撤比远离枢轴的追高者约小 30%——这是风险控制，并非收益预测。</span></span></span>
+      <span class="state st-TURN_SIGNALED"><span class="l-en">BOTTOMING</span><span class="l-zh">筑底中</span></span>
+      <span class="eqbadge eq-up"><span class="l-en">Entry</span><span class="l-zh">入场</span> ▲ +44 <span class="eqg"><span class="l-en">Solid</span><span class="l-zh">Solid</span></span></span><span class="help">?<span class="tip"><span class="l-en">How well-timed &amp; low-risk THIS entry is — near the cycle low, a fresh momentum turn, and with-trend. Measured: entries near the pivot drew ~30% smaller drawdowns than chasers far above it — risk control, NOT a return forecast.</span><span class="l-zh">衡量当前入场的时机与风险——贴近周期低点、动量新近转向、且顺势。实测：贴近枢轴的入场，其回撤比远离枢轴的追高者约小 30%——这是风险控制，并非收益预测。</span></span></span>
       <span style="flex:1"></span>
       <span class="af-wrap">
         <button class="af-toggle" id="af-btn" type="button" aria-label="Toggle alert feed" aria-expanded="false" aria-controls="af-feed">🔔 <span><span class="l-en">Alerts</span><span class="l-zh">警报</span></span><span class="af-badge">50</span> <span class="af-caret">▾</span></button>
@@ -302,10 +302,10 @@
             <button class="af-x" id="af-close" type="button" aria-label="Close">✕</button></div>
           <div class="af-body">
             
-            <div class="af-pin dir-down">
+            <div class="af-pin dir-up">
               <div class="af-pin-h"><span class="af-pin-tag"><span class="l-en">Current signal</span><span class="l-zh">当前信号</span></span>
-                <span class="af-pin-title"><span class="l-en">NEARING A LOW → DOWNTREND</span><span class="l-zh">接近低点 → 下跌趋势</span></span></div>
-              <p class="af-pin-d"><span class="l-en">AVOID. Failed cycle — price broke below the low that started this cycle, which historically means the larger trend is rolling over (~80% of cases)</span><span class="l-zh">回避。失败周期——价格跌破了启动本周期的低点，历史上这通常意味着更大的趋势正在掉头向下（约 80% 的情形）</span></p>
+                <span class="af-pin-title"><span class="l-en">DOWNTREND → BOTTOMING</span><span class="l-zh">下跌趋势 → 筑底中</span></span></div>
+              <p class="af-pin-d"><span class="l-en">BUY SETUP. Buyers rejected the 2026-09-10 low (swing low printed) but price hasn&#39;t reclaimed its 10-day average — first box ticked, not all</span><span class="l-zh">买入预备。买方拒绝了 2026-09-10 的低点（摆动低点已现），但价格尚未收复 10 日均线——第一项条件达成，并非全部</span></p>
             </div>
             
             <div class="af-filters">
@@ -317,6 +317,23 @@
               <button class="aff " type="button" data-f="momentum"><span class="l-en">Momentum</span><span class="l-zh">动量</span></button>
               <button class="aff " type="button" data-f="strength"><span class="l-en">vs Market</span><span class="l-zh">相对强弱</span></button>
               <button class="aff " type="button" data-f="cycle"><span class="l-en">Cycle</span><span class="l-zh">周期</span></button>
+            </div>
+            
+            <div class="af-day">
+              <div class="af-date"><span class="l-en">Sep 10, 2026</span><span class="l-zh">2026年9月10日</span></div>
+              
+              <details class="af-item" data-f="signal">
+                <summary>
+                  <span class="af-node dir-down"></span>
+                  <span class="af-chip f-signal"><span class="l-en">Signal</span><span class="l-zh">信号</span></span>
+                  <span class="af-head"><span class="l-en">NEARING A LOW → DOWNTREND</span><span class="l-zh">接近低点 → 下跌趋势</span></span>
+                </summary>
+                <div class="af-detail"><span class="l-en">AVOID</span><span class="l-zh">回避</span>
+                  <div class="af-edge"><b><span class="l-en">Edge:</span><span class="l-zh">优势：</span></b> <span class="l-en">The cycle ladder&#39;s standing read — built for position structure, not a price target.</span><span class="l-zh">周期阶梯的当前判读 — 用于仓位结构，而非价格目标。</span></div>
+                  <div class="af-fwd"><span class="l-en">Use it for sizing and the invalidation level, not for certainty.</span><span class="l-zh">用于仓位规模与失效价位，而非追求确定性。</span></div>
+                </div>
+              </details>
+              
             </div>
             
             <div class="af-day">
@@ -1085,18 +1102,6 @@
                 </div>
               </details>
               
-              <details class="af-item" data-f="momentum">
-                <summary>
-                  <span class="af-node dir-up"></span>
-                  <span class="af-chip f-momentum"><span class="l-en">Momentum</span><span class="l-zh">动量</span></span>
-                  <span class="af-head"><span class="l-en">XLF daily MACD crossed up</span><span class="l-zh">XLF 日线MACD上穿</span></span>
-                </summary>
-                <div class="af-detail"><span class="l-en">The daily MACD histogram turned positive — fast and noisy, context rather than a standalone trigger. $52.12.</span><span class="l-zh">日线MACD柱状图转正 — 快速且嘈杂，仅作背景。$52.12。</span>
-                  <div class="af-edge"><b><span class="l-en">Edge:</span><span class="l-zh">优势：</span></b> <span class="l-en">Daily MACD — fast and noisy; context, not a standalone trigger.</span><span class="l-zh">日线MACD — 快速且嘈杂；仅作背景，而非独立触发。</span></div>
-                  <div class="af-fwd"><span class="l-en">Frequent by design — filter with the weekly cross and trend.</span><span class="l-zh">本就频繁 — 用周线交叉与趋势加以过滤。</span></div>
-                </div>
-              </details>
-              
             </div>
             
             
@@ -1106,10 +1111,10 @@
     </div>
     
     
-    <div class="verdict urg-avoid">
-      <span class="v-act"><span class="l-en">AVOID</span><span class="l-zh">回避</span></span>
-      <span class="v-tag"><span class="l-en">AVOID</span><span class="l-zh">回避</span></span>
-      <span class="v-text"><span class="l-en">Downtrend — stand aside until a new cycle low forms and confirms.</span><span class="l-zh">下跌趋势——观望，直至新的周期低点形成并确认。</span></span>
+    <div class="verdict urg-caution">
+      <span class="v-act"><span class="l-en">BUY SETUP</span><span class="l-zh">买入预备</span></span>
+      <span class="v-tag"><span class="l-en">BOTTOMING · UNCONFIRMED — WAIT</span><span class="l-zh">BOTTOMING · UNCONFIRMED — WAIT</span></span>
+      <span class="v-text"><span class="l-en">The bottoming setup is not yet confirmed (price still below the 10-day average) and the 3-day/weekly momentum has crossed down — momentum is fading before the setup has completed. Wait for price to reclaim the 10-day average with momentum stabilising before sizing in.</span><span class="l-zh">筑底形态尚未确认（价格仍位于 10 日均线下方），且3 日/周线动量已向下交叉——动量在形态完成前已开始衰竭。等待价格收复 10 日均线且动量趋于稳定后再考虑建仓。</span></span>
     </div>
     
     
@@ -1121,7 +1126,7 @@
       <div class="sigchip up">
         <span class="sc-k"><span class="l-en">Trend</span><span class="l-zh">趋势</span></span>
         <span class="sc-v">▲ 200d</span>
-        <span class="sc-s">+6.7%</span>
+        <span class="sc-s">+7.3%</span>
       </div>
       
       <div class="sigchip down">
@@ -1132,19 +1137,19 @@
       
       <div class="sigchip ctx">
         <span class="sc-k">RSI</span>
-        <span class="sc-v">44</span>
+        <span class="sc-v">48</span>
         <span class="sc-s"><span class="l-en">mid</span><span class="l-zh">中性</span></span>
       </div>
       
       <div class="sigchip ctx">
         <span class="sc-k">Stoch</span>
-        <span class="sc-v">0</span>
+        <span class="sc-v">7</span>
         <span class="sc-s"><span class="l-en">Washout</span><span class="l-zh">超卖</span></span>
       </div>
       
       <div class="sigchip ctx">
         <span class="sc-k"><span class="l-en">Cycle</span><span class="l-zh">周期</span></span>
-        <span class="sc-v"><span class="l-en">Day</span><span class="l-zh">第</span> 14</span>
+        <span class="sc-v"><span class="l-en">Day</span><span class="l-zh">第</span> 15</span>
         <span class="sc-s"><span class="l-en">of</span><span class="l-zh">/</span> 23–44</span>
       </div>
     </div>
@@ -1165,23 +1170,23 @@
     
     
     
-    <p class="agewhen"><span class="l-en">⏱ DOWNTREND signal just triggered today (fresh cross from NEARING A LOW). Signal strength: strong (score -80/100).</span><span class="l-zh">⏱ 下跌趋势信号于今日刚刚触发（全新交叉，自接近低点翻转）。 信号强度：强（评分 -80/100）。</span></p>
-    
-    
+    <p class="agewhen"><span class="l-en">⏱ BOTTOMING signal just triggered today (fresh cross from DOWNTREND). Signal strength: moderate (score +58/100).</span><span class="l-zh">⏱ 筑底中信号于今日刚刚触发（全新交叉，自下跌趋势翻转）。 信号强度：中等（评分 +58/100）。</span></p>
+    <p class="early"><span class="l-en">⚡ Early reversal building (heads-up): MACD histogram turned up off a trough (pre-cross). These anticipate a low BEFORE full confirmation — earlier entry, but a higher false-alarm rate, so treat as a heads-up to watch closely, not a trigger yet.</span><span class="l-zh">⚡ 反转正在提前酝酿（heads-up）：MACD histogram turned up off a trough (pre-cross)。这些信号会在完全确认之前预判低点——入场更早，但误报率更高，因此应视为密切关注的提示，而非触发信号。</span></p>
+    <p class="macro-caution">⚠ <span class="l-en">Macro-risk headwind: aggregate macro risk is elevated and this is a macro-sensitive (cyclical) name — buy setups here have historically taken deeper drawdowns, so demand extra confirmation and smaller size. A risk/sizing caution, not a forecast.</span><span class="l-zh">宏观风险逆风：总体宏观风险偏高，且该标的对宏观较敏感（周期性）——在此环境下买入形态历史上回撤更深，因此应要求更多确认并降低仓位。这是风险/仓位提示，并非预测。</span></p>
     <ul class="points">
-      <li><span class="l-en">Bigger picture is mixed (no clear trend for a daily long)</span><span class="l-zh">大局为混合（对日线多头而言属趋势不明）</span></li><li><span class="l-en">Macro: US net liquidity expanding — supportive backdrop on the odds</span><span class="l-zh">宏观：美国净流动性扩张——对概率属偏支持</span></li><li><span class="l-en">⚠ Failed cycle — price broke below the low that began this cycle</span><span class="l-zh">⚠ 失败周期——价格跌破了启动本周期的低点</span></li><li><span class="l-en">Still below the 10-day average</span><span class="l-zh">仍位于 10 日均线之下</span></li>
+      <li><span class="l-en">Bigger picture is mixed (no clear trend for a daily long)</span><span class="l-zh">大局为混合（对日线多头而言属趋势不明）</span></li><li><span class="l-en">Macro: US net liquidity expanding — a tailwind on the odds</span><span class="l-zh">宏观：美国净流动性扩张——对概率属顺风</span></li><li><span class="l-en">Macro-risk: aggregate macro risk elevated for a macro-sensitive name — caution on the odds</span><span class="l-zh">宏观风险：总体宏观风险偏高且标的对宏观敏感——对概率需谨慎</span></li><li><span class="l-en">Swing low printed (buyers rejected the low)</span><span class="l-zh">摆动低点已现（买方拒绝了该低点）</span></li><li><span class="l-en">Still below the 10-day average</span><span class="l-zh">仍位于 10 日均线之下</span></li>
     </ul>
     
     <div class="cyclebox">
-      <div><b>📅 <span class="l-en">Daily cycle: day 14 of a typical 23–44 trading days</span><span class="l-zh">日线周期：第 14 天，典型周期为 23–44 个交易日</span></b> — <span class="l-en">mid-cycle — trending</span><span class="l-zh">周期中段——趋势运行中</span>
+      <div><b>📅 <span class="l-en">Daily cycle: day 15 of a typical 23–44 trading days</span><span class="l-zh">日线周期：第 15 天，典型周期为 23–44 个交易日</span></b> — <span class="l-en">approaching the window where lows usually form</span><span class="l-zh">接近低点通常形成的时间窗口</span>
         <span class="help">?<span class="tip"><span class="l-en">The DAILY cycle is the short rhythm — equities tend to bottom every ~36-42 trading days. &#39;Day N&#39; counts trading days since the last daily low. Past ~42 (overdue) means a fresh low could come any day.</span><span class="l-zh">日线周期是短节奏 — 股市通常每约 36-42 个交易日筑底一次。“第 N 天”指自上次日线低点以来的交易日数。超过约 42 天（已逾期）意味着新低随时可能出现。</span></span></span></div>
       <div><b>🗓 <span class="l-en">Weekly (investor) cycle: week 24 of a typical 13–25 weeks</span><span class="l-zh">周线（投资者）周期：第 24 周，典型周期为 13–25 周</span></b> — <span class="l-en">late — the bigger cycle is getting old</span><span class="l-zh">晚期——更大的周期已趋于老化</span>
         <span class="help">?<span class="tip"><span class="l-en">The WEEKLY (investor) cycle is the bigger rhythm — ~16-26 weeks, containing several daily cycles. It sets the tide the daily cycles swim in; early weeks = more upside room, late weeks = treat rallies cautiously.</span><span class="l-zh">周线（投资者）周期是更大的节奏 — 约 16-26 周，包含数个日线周期。它决定了日线周期所处的大势；早期周次=上行空间更大，晚期周次=对反弹保持谨慎。</span></span></span></div>
       <div class="muted"><span class="l-en">The last cycle peaked in its SECOND half (&#39;right-translated&#39;) — strong cycles top late, a healthy-uptrend sign.</span><span class="l-zh">上一周期在后半段见顶（“右移”）——强周期见顶偏晚，属于健康上涨趋势的信号。</span></div>
     </div>
-    <p class="neg" style="margin:6px 0 0">⚠ <span class="l-en">Failed cycle: price is below the low that started this cycle — historically the larger trend is rolling over in ~80% of such cases.</span><span class="l-zh">周期失败：价格已跌破启动本周期的低点 — 历史上约 80% 的此类情形中，更大的趋势正在转向。</span></p>
+    
     <details style="margin-top:8px"><summary><span class="l-en">full reasoning</span><span class="l-zh">完整推理</span></summary>
-      <p class="muted" style="margin:6px 0"><span class="l-en">Failed cycle — price broke below the low that started this cycle, which historically means the larger trend is rolling over (~80% of cases).</span><span class="l-zh">失败周期——价格跌破了启动本周期的低点，历史上这通常意味着更大的趋势正在掉头向下（约 80% 的情形）。</span> <span class="l-en">Next:</span><span class="l-zh">下一步：</span> <span class="l-en">Stand aside until a new daily cycle low forms and confirms.</span><span class="l-zh">观望，直至新的日线周期低点形成并确认。</span></p>
+      <p class="muted" style="margin:6px 0"><span class="l-en">Buyers rejected the 2026-09-10 low (swing low printed) but price hasn&#39;t reclaimed its 10-day average — first box ticked, not all.</span><span class="l-zh">买方拒绝了 2026-09-10 的低点（摆动低点已现），但价格尚未收复 10 日均线——第一项条件达成，并非全部。</span> <span class="l-en">Next:</span><span class="l-zh">下一步：</span> <span class="l-en">Confirmation = a close above the 10-day average with the average turning up.</span><span class="l-zh">确认 = 收盘站上 10 日均线且均线开始向上。</span></p>
     </details>
   </div>
 
@@ -1198,8 +1203,8 @@
     <p style="margin:4px 0"><span class="l-en">In trend, nothing fresh — no edge either way.</span><span class="l-zh">处于趋势中，无新信号——两边都无优势。</span></p>
     <p class="muted" style="font-size:12.5px;margin:6px 0 0">
       <span class="l-en">3-day signal</span><span class="l-zh">3 日信号</span>: <span class="l-en">MACD ↓</span><span class="l-zh">MACD 下穿</span> ·
-      RSI 57 · Stoch 7 ·
-      ✓200d ✗50d
+      RSI 59 · Stoch 10 ·
+      ✓200d ✓50d
       · <span class="l-en">measured 63d</span><span class="l-zh">实测 63 日</span>:
         +0.1% <span class="l-en">vs SPY</span><span class="l-zh">对 SPY</span> (50% <span class="l-en">up</span><span class="l-zh">上涨</span>), n=2547
     </p>
@@ -1210,7 +1215,7 @@
     <h2><span class="l-en">Momentum across timeframes</span><span class="l-zh">跨周期动量</span>
       <span class="help">?<span class="tip"><span class="l-en">Daily, 3-day and weekly views of the same ETF. Weekly is the tide, 3-day the wave, daily the ripple — signals are strongest when all three agree. The gauges run from washed-out to overbought; the bars show which way momentum is heading and roughly how many days until it turns.</span><span class="l-zh">同一只 ETF 的日线、3 日和周线视角。周线是潮汐，3 日是波浪，日线是涟漪 — 三者一致时信号最强。表盘从跌透到超买；柱状图显示动量往哪个方向走，以及大概还有几天转向。</span></span></span>
     </h2>
-    <div data-mtf='{&#34;D&#34;: {&#34;macd_pos&#34;: false, &#34;macd_cross_up&#34;: false, &#34;macd_cross_dn&#34;: false, &#34;macd_approaching_up&#34;: false, &#34;macd_approaching_dn&#34;: false, &#34;macd_curl_up&#34;: false, &#34;macd_curl_dn&#34;: false, &#34;macd_bars_to_cross&#34;: null, &#34;stoch_cross_up&#34;: false, &#34;stoch_cross_dn&#34;: false, &#34;rsi14&#34;: 44.0, &#34;rsi5&#34;: 31.0, &#34;stoch&#34;: 0.0, &#34;spark_rsi&#34;: [68.9, 67.2, 58.3, 60.8, 55.8, 49.4, 55.0, 61.4, 62.1, 61.4, 56.4, 58.5, 53.6, 47.9, 52.8, 60.5, 55.5, 48.0, 46.0, 44.5], &#34;spark_stoch&#34;: [54.3, 57.9, 42.2, 26.3, 7.7, 7.7, 9.4, 29.6, 51.3, 62.5, 54.3, 48.2, 34.8, 22.8, 15.6, 38.1, 56.0, 47.9, 18.2, 0.3], &#34;spark_hist&#34;: [-0.025, -0.03, -0.076, -0.092, -0.126, -0.182, -0.18, -0.128, -0.088, -0.067, -0.08, -0.075, -0.097, -0.143, -0.14, -0.077, -0.066, -0.111, -0.152, -0.185]}, &#34;3D&#34;: {&#34;macd_pos&#34;: false, &#34;macd_cross_up&#34;: false, &#34;macd_cross_dn&#34;: true, &#34;macd_approaching_up&#34;: false, &#34;macd_approaching_dn&#34;: false, &#34;macd_curl_up&#34;: false, &#34;macd_curl_dn&#34;: false, &#34;macd_bars_to_cross&#34;: null, &#34;stoch_cross_up&#34;: false, &#34;stoch_cross_dn&#34;: false, &#34;rsi14&#34;: 58.0, &#34;rsi5&#34;: 39.0, &#34;stoch&#34;: 1.0, &#34;spark_rsi&#34;: [61.3, 59.6, 60.3, 69.9, 65.9, 68.0, 68.3, 66.7, 69.7, 70.1, 73.0, 70.7, 71.8, 68.8, 63.4, 69.0, 67.3, 63.7, 60.9, 57.6], &#34;spark_stoch&#34;: [94.2, 85.4, 77.9, 83.7, 86.8, 91.6, 89.2, 90.4, 92.7, 95.1, 99.6, 95.2, 92.1, 81.5, 62.6, 55.1, 45.8, 37.4, 14.6, 1.1], &#34;spark_hist&#34;: [0.34, 0.33, 0.316, 0.449, 0.468, 0.492, 0.481, 0.429, 0.419, 0.39, 0.399, 0.355, 0.319, 0.246, 0.134, 0.132, 0.097, 0.029, -0.051, -0.14]}, &#34;W&#34;: {&#34;macd_pos&#34;: true, &#34;macd_cross_up&#34;: false, &#34;macd_cross_dn&#34;: false, &#34;macd_approaching_up&#34;: false, &#34;macd_approaching_dn&#34;: true, &#34;macd_curl_up&#34;: false, &#34;macd_curl_dn&#34;: false, &#34;macd_bars_to_cross&#34;: 2.8, &#34;stoch_cross_up&#34;: false, &#34;stoch_cross_dn&#34;: true, &#34;rsi14&#34;: 61.0, &#34;rsi5&#34;: 48.0, &#34;stoch&#34;: 66.0, &#34;spark_rsi&#34;: [51.4, 48.9, 48.4, 51.7, 50.2, 53.1, 57.1, 57.9, 58.6, 65.5, 65.8, 67.5, 67.6, 69.6, 71.5, 73.1, 68.2, 70.1, 70.1, 61.4], &#34;spark_stoch&#34;: [80.8, 75.6, 75.7, 78.8, 83.3, 91.7, 94.4, 99.8, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 92.8, 88.5, 83.6, 66.4], &#34;spark_hist&#34;: [0.013, 0.039, 0.048, 0.108, 0.12, 0.171, 0.262, 0.322, 0.356, 0.49, 0.553, 0.597, 0.593, 0.595, 0.601, 0.602, 0.518, 0.469, 0.402, 0.249], &#34;macd_days_to_cross&#34;: 14}, &#34;M&#34;: {&#34;macd_pos&#34;: false, &#34;macd_cross_up&#34;: false, &#34;macd_cross_dn&#34;: false, &#34;macd_approaching_up&#34;: true, &#34;macd_approaching_dn&#34;: false, &#34;macd_curl_up&#34;: false, &#34;macd_curl_dn&#34;: false, &#34;macd_bars_to_cross&#34;: 0.5, &#34;stoch_cross_up&#34;: false, &#34;stoch_cross_dn&#34;: false, &#34;rsi14&#34;: 66.0, &#34;rsi5&#34;: 69.0, &#34;stoch&#34;: 79.0, &#34;spark_rsi&#34;: [72.6, 66.6, 63.8, 66.9, 69.0, 69.0, 71.1, 71.2, 66.3, 67.8, 70.3, 65.8, 59.7, 54.7, 60.2, 58.7, 62.8, 67.9, 69.0, 66.4], &#34;spark_stoch&#34;: [69.4, 60.3, 40.3, 26.9, 31.1, 41.6, 49.3, 53.8, 45.3, 36.6, 34.2, 35.3, 24.7, 7.6, 11.1, 19.0, 35.3, 50.9, 71.8, 79.1], &#34;spark_hist&#34;: [1.024, 0.799, 0.516, 0.416, 0.395, 0.326, 0.33, 0.281, 0.103, 0.008, 0.012, -0.108, -0.344, -0.625, -0.629, -0.669, -0.55, -0.267, -0.057, -0.007], &#34;macd_days_to_cross&#34;: 10}}'></div>
+    <div data-mtf='{&#34;D&#34;: {&#34;macd_pos&#34;: false, &#34;macd_cross_up&#34;: false, &#34;macd_cross_dn&#34;: false, &#34;macd_approaching_up&#34;: false, &#34;macd_approaching_dn&#34;: false, &#34;macd_curl_up&#34;: true, &#34;macd_curl_dn&#34;: false, &#34;macd_bars_to_cross&#34;: null, &#34;stoch_cross_up&#34;: false, &#34;stoch_cross_dn&#34;: false, &#34;rsi14&#34;: 48.0, &#34;rsi5&#34;: 44.0, &#34;stoch&#34;: 7.0, &#34;spark_rsi&#34;: [67.2, 58.3, 60.8, 55.8, 49.4, 55.0, 61.4, 62.1, 61.4, 56.4, 58.5, 53.6, 47.9, 52.8, 60.5, 55.5, 48.0, 46.0, 44.5, 48.3], &#34;spark_stoch&#34;: [57.9, 42.2, 26.3, 7.7, 7.7, 9.4, 29.6, 51.3, 62.5, 54.3, 48.2, 34.8, 22.8, 15.6, 38.1, 56.0, 47.9, 18.2, 0.3, 7.2], &#34;spark_hist&#34;: [-0.03, -0.076, -0.092, -0.126, -0.182, -0.18, -0.128, -0.088, -0.067, -0.08, -0.075, -0.097, -0.143, -0.14, -0.077, -0.066, -0.111, -0.152, -0.185, -0.174]}, &#34;3D&#34;: {&#34;macd_pos&#34;: false, &#34;macd_cross_up&#34;: false, &#34;macd_cross_dn&#34;: true, &#34;macd_approaching_up&#34;: false, &#34;macd_approaching_dn&#34;: false, &#34;macd_curl_up&#34;: false, &#34;macd_curl_dn&#34;: false, &#34;macd_bars_to_cross&#34;: null, &#34;stoch_cross_up&#34;: false, &#34;stoch_cross_dn&#34;: false, &#34;rsi14&#34;: 60.0, &#34;rsi5&#34;: 46.0, &#34;stoch&#34;: 1.0, &#34;spark_rsi&#34;: [61.3, 59.6, 60.3, 69.9, 65.9, 68.0, 68.3, 66.7, 69.7, 70.1, 73.0, 70.7, 71.8, 68.8, 63.4, 69.0, 67.3, 63.7, 60.9, 60.5], &#34;spark_stoch&#34;: [94.2, 85.4, 77.9, 83.7, 86.8, 91.6, 89.2, 90.4, 92.7, 95.1, 99.6, 95.2, 92.1, 81.5, 62.6, 55.1, 45.8, 37.4, 14.6, 1.1], &#34;spark_hist&#34;: [0.34, 0.33, 0.316, 0.449, 0.468, 0.492, 0.481, 0.429, 0.419, 0.39, 0.399, 0.355, 0.319, 0.246, 0.134, 0.132, 0.097, 0.029, -0.051, -0.115]}, &#34;W&#34;: {&#34;macd_pos&#34;: true, &#34;macd_cross_up&#34;: false, &#34;macd_cross_dn&#34;: false, &#34;macd_approaching_up&#34;: false, &#34;macd_approaching_dn&#34;: true, &#34;macd_curl_up&#34;: false, &#34;macd_curl_dn&#34;: false, &#34;macd_bars_to_cross&#34;: 3.3, &#34;stoch_cross_up&#34;: false, &#34;stoch_cross_dn&#34;: true, &#34;rsi14&#34;: 64.0, &#34;rsi5&#34;: 55.0, &#34;stoch&#34;: 72.0, &#34;spark_rsi&#34;: [51.4, 48.9, 48.4, 51.7, 50.2, 53.1, 57.1, 57.9, 58.6, 65.5, 65.8, 67.5, 67.6, 69.6, 71.5, 73.1, 68.2, 70.1, 70.1, 63.8], &#34;spark_stoch&#34;: [80.8, 75.6, 75.7, 78.8, 83.3, 91.7, 94.4, 99.8, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 92.8, 88.5, 83.6, 71.5], &#34;spark_hist&#34;: [0.013, 0.039, 0.048, 0.108, 0.12, 0.171, 0.262, 0.322, 0.356, 0.49, 0.553, 0.597, 0.593, 0.595, 0.601, 0.602, 0.518, 0.469, 0.402, 0.273], &#34;macd_days_to_cross&#34;: 16}, &#34;M&#34;: {&#34;macd_pos&#34;: true, &#34;macd_cross_up&#34;: true, &#34;macd_cross_dn&#34;: false, &#34;macd_approaching_up&#34;: false, &#34;macd_approaching_dn&#34;: false, &#34;macd_curl_up&#34;: false, &#34;macd_curl_dn&#34;: false, &#34;macd_bars_to_cross&#34;: null, &#34;stoch_cross_up&#34;: false, &#34;stoch_cross_dn&#34;: false, &#34;rsi14&#34;: 68.0, &#34;rsi5&#34;: 73.0, &#34;stoch&#34;: 81.0, &#34;spark_rsi&#34;: [72.6, 66.6, 63.8, 66.9, 69.0, 69.0, 71.1, 71.2, 66.3, 67.8, 70.3, 65.8, 59.7, 54.7, 60.2, 58.7, 62.8, 67.9, 69.0, 67.5], &#34;spark_stoch&#34;: [69.4, 60.3, 40.3, 26.9, 31.1, 41.6, 49.3, 53.8, 45.3, 36.6, 34.2, 35.3, 24.7, 7.6, 11.1, 19.0, 35.3, 50.9, 71.8, 81.4], &#34;spark_hist&#34;: [1.024, 0.799, 0.516, 0.416, 0.395, 0.326, 0.33, 0.281, 0.103, 0.008, 0.012, -0.108, -0.344, -0.625, -0.629, -0.669, -0.55, -0.267, -0.057, 0.017]}}'></div>
   </div>
 
   <div class="panel">
