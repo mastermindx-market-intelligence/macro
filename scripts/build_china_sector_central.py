@@ -110,14 +110,18 @@ def main() -> int:
                     sleeve_stats["sharpe"] = float(_full["sharpe"])
                 if _full.get("n") is not None:
                     sleeve_stats["n_rebalances"] = int(_full["n"])
-                # Fill-realistic excess per rebalance (same plane as the sleeve card).
-                # Prefer fill_tax.fill_realistic_pct; fall back to primary.full.mean_pct.
+                # Excess per rebalance: fill-realistic is a measurement; a gross
+                # mean may ship only under a gross label, never fill-realistic.
                 _fill = (_sd.get("rederive_stats") or {}).get("fill_tax") or {}
                 _ex = _fill.get("fill_realistic_pct")
-                if _ex is None:
-                    _ex = _full.get("mean_pct")
                 if _ex is not None:
                     sleeve_stats["excess_per_reb"] = float(_ex)
+                    sleeve_stats["excess_plane"] = "fill_realistic"
+                else:
+                    _ex = _full.get("mean_pct")
+                    if _ex is not None:
+                        sleeve_stats["excess_per_reb"] = float(_ex)
+                        sleeve_stats["excess_plane"] = "gross"
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.debug("china_sector_central: sleeve stats load skipped (%s)", e)
 

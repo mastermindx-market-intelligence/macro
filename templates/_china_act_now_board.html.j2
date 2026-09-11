@@ -39,13 +39,12 @@
     {{ dc.dc_css() }}
     <div class="anv2-hd">
       <h2 style="margin:0">{{ t('What to Act On Now', '现在行动') }}
-        <span class="anv2-v2pill">v2</span>
         {{ lens.lens(
           kind='read', ill=lens.ILL_LANES,
           kick=('How to read this','如何看懂'),
           title=('Four lanes, left to right','四个分栏，从左到右'),
           rows=[
-            {'tone':'up',   'k':('Buy now','立即买入'),        'v':('A clean entry point today.','今天有干净的入场点。')},
+            {'tone':'up',   'k':('Buy now','立即买入'),        'v':('A clean entry point.','有干净的入场点。')},
             {'tone':'info', 'k':('In favour','看好'),          'v':('Still good — but it has run. <b>Wait for a dip.</b>','依然看好 — 但已经涨过。<b>等回调。</b>')},
             {'tone':'warn', 'k':('Bottoming','洗盘观察'),      'v':('Beaten down, first signs of turning up. <b>Watch only — never a buy signal.</b>','超跌后初现回升迹象。<b>仅供观察 — 绝非买入信号。</b>')},
             {'tone':'dn',   'k':('Reduce / avoid','减仓·回避'),'v':('The trend is weakening.','趋势正在转弱。')},
@@ -158,6 +157,9 @@
         'Hang Seng Index': '恒生指数',
         'S&P/TSX': '标普/TSX',
         'S&P/TSX Composite': '标普/TSX',
+        'Intl ex-US': '国际(除美)',
+        'S&P 500': '标普500',
+        'S&P': '标普',
       } -%}
       {%- set _rsn_zh_parts = [] -%}
       {%- for _r in (row.reasons[:2] if row.reasons else []) -%}
@@ -166,12 +168,21 @@
           {%- set _pre = _vs[0] -%}
           {%- set _bench = _vs[1] -%}
           {%- set _bzh = _BENCH_ZH.get(_bench, _bench) -%}
+          {#- ZH connective is always 「相对」; unmapped bench names stay as identifiers. -#}
           {%- if _pre.startswith('20d ') -%}
             {%- set _ = _rsn_zh_parts.append('20日 ' ~ _pre[4:] ~ ' 相对' ~ _bzh) -%}
           {%- elif _pre.startswith('5d ') -%}
             {%- set _ = _rsn_zh_parts.append('5日 ' ~ _pre[3:] ~ ' 相对' ~ _bzh) -%}
+          {%- elif _pre.startswith('60d ') -%}
+            {%- set _ = _rsn_zh_parts.append('60日 ' ~ _pre[4:] ~ ' 相对' ~ _bzh) -%}
+          {%- elif _pre.startswith('63d ') -%}
+            {%- set _ = _rsn_zh_parts.append('63日 ' ~ _pre[4:] ~ ' 相对' ~ _bzh) -%}
+          {%- elif _pre.startswith('1d ') -%}
+            {%- set _ = _rsn_zh_parts.append('1日 ' ~ _pre[3:] ~ ' 相对' ~ _bzh) -%}
+          {%- elif _pre.startswith('10d ') -%}
+            {%- set _ = _rsn_zh_parts.append('10日 ' ~ _pre[4:] ~ ' 相对' ~ _bzh) -%}
           {%- else -%}
-            {%- set _ = _rsn_zh_parts.append(_pre ~ ' 相对' ~ _bzh) -%}
+            {%- set _ = _rsn_zh_parts.append('相对 ' ~ _bzh) -%}
           {%- endif -%}
         {%- else -%}
           {%- set _ = _rsn_zh_parts.append(tr(_r)) -%}
@@ -208,7 +219,7 @@
            else ('Trend intact','趋势完好')))))
           if _is_theme else
           (('Turning up from the low','自低位回升') if lane == 'bot'
-           else (('Entry open today','今日入场窗口开启') if lane == 'buy'
+           else (('Entry open','入场窗口开启') if lane == 'buy'
            else (('Momentum fading','动能转弱') if lane == 'reduce'
            else ('In favour — but it has run','仍看好 — 但已上涨'))))
         ),
@@ -225,7 +236,7 @@
                   else ('In favour. Add on pullbacks, not into strength.','仍然看好。回调时加仓，不要追强势。')) if row.reco in ('accumulate','enter','buy','add')
            else (('Momentum is extended. Protect gains into strength.','动能已过度延伸。逢强保护利润。') if row.reco in ('trim','reduce')
            else (('Breadth is fading. Stand aside until it turns again.','广度转弱。在重新转强之前先观望。') if row.reco in ('avoid','exit')
-           else (('A clean entry is open today.','今日入场窗口干净。') if lane == 'buy'
+           else (('A clean entry is open.','入场窗口干净。') if lane == 'buy'
            else ('Still in favour, but it has run — wait for a dip.','仍然看好，但已上涨 — 等回调。')))))))
         ),
         'foot': ('Click row for holdings and full history','点击查看持仓与完整历史') if _is_theme
@@ -297,7 +308,7 @@
     {%- endmacro -%}
 
     {{ _anlane('buy',  'buy',  'Buy Now',               '立即买入',
-               'Clean entry point today', '今日有干净入场点',
+               'Clean entry point', '有干净入场点',
                _anl.buy_now, 'anv2-buy') }}
     {{ _anlane('pull', 'pull', 'In Favour', '看好',
                'Still in favour — wait for a dip before adding', '仍看好 — 等回调再加仓',

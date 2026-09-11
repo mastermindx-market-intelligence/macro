@@ -834,6 +834,8 @@ body { font-family:-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI',
     #si-confluence .relb { font-size:9px; padding:0 4px; }
   }
 </style>
+{% import "_lens.html.j2" as lens %}
+{{ lens.lens_css() }}
 </head>
 <body class="macro-desk page-sector-central">
 <div class="rvx-aurora" aria-hidden="true"><b class="a1"></b><b class="a2"></b><b class="a3"></b></div>
@@ -1035,7 +1037,7 @@ body { font-family:-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI',
   {%- if _wc_l.days_in_state %}
   {%- set _ = _wc.append((
       'Held for ' ~ _wc_l.days_in_state ~ (' day.' if _wc_l.days_in_state == 1 else ' days.'),
-      '已持续 ' ~ _wc_l.days_in_state ~ ' 天。')) %}
+      '已持续 ' ~ _wc_l.days_in_state ~ ' 天')) %}
   {%- endif %}
   {#- the live handoff pair, as a story chip -#}
   {%- if _wc_l.trailing_leader and _wc_l.trailing_leader.name and _wc_l.strength and _wc_l.strength[0] and _wc_l.strength[0].name %}
@@ -1267,6 +1269,7 @@ function renderCn(ev, partJson){
        '此处不对任何标的排名或定仓位。每个事件都会记录并持续评分——历史成绩仍在累积。截至 ')
     +((ev&&ev.as_of)?esc(ev.as_of):('<span class="mx-empty-why">'+t('date pending','日期待加载')+'</span>'))+'</div>';
   el.innerHTML=html;
+  el.removeAttribute('aria-busy');
 }
 
 function loadCn(){
@@ -1282,6 +1285,7 @@ function loadCn(){
           +'<span class="l-zh">中国轮动事件数据未能加载。本页其余部分仍可用。</span>'
           +'<button type="button" class="rc-retry">'+t('Retry','重试')+'</button>'
           +'</span></div>';
+        el.removeAttribute('aria-busy');
         var btn=el.querySelector('.rc-retry');
         if(btn) btn.onclick=loadCn;
       }
@@ -1374,13 +1378,21 @@ _rcCnObs.observe(document.documentElement,{attributes:true,attributeFilter:['dat
   {% set si_explore_compact = true %}{# R1 extras (theme desk / concentration / rotation / impulse) land in details #}
   {% include "_baskets_desk.html.j2" %}
   {% endif %}
-    {% import "_lens.html.j2" as lens %}
-    {{ lens.lens_css() }}
     {%- set _ss = sleeve_stats if sleeve_stats is defined and sleeve_stats else none -%}
     {%- set _ex = _ss.excess_per_reb if _ss and _ss.excess_per_reb is defined and _ss.excess_per_reb is not none else none -%}
-    {%- set _ex_en = ('+' ~ '%.2f'|format(_ex) ~ '%/reb') if _ex is not none else '+0.43%/reb' -%}
-    {%- set _ex_zh = ('+' ~ '%.2f'|format(_ex) ~ '%/次') if _ex is not none else '+0.43%/次' -%}
-    {%- set _nreb = (_ss.n_rebalances|string) if _ss and _ss.n_rebalances is defined and _ss.n_rebalances is not none else '349' -%}
+    {%- set _nreb_n = _ss.n_rebalances if _ss and _ss.n_rebalances is defined and _ss.n_rebalances is not none else none -%}
+    {%- set _plane = _ss.excess_plane if _ss and _ss.excess_plane is defined and _ss.excess_plane else none -%}
+    {%- set _ex_en = ('+' ~ '%.2f'|format(_ex) ~ '%/reb') if _ex is not none else 'pending' -%}
+    {%- set _ex_zh = ('+' ~ '%.2f'|format(_ex) ~ '%/次') if _ex is not none else '待定' -%}
+    {%- set _measured = (_ex is not none and _nreb_n is not none and _plane) -%}
+    {%- set _rcpt = namespace(en='pending', zh='待定') -%}
+    {%- if _measured and _plane == 'fill_realistic' -%}
+      {%- set _rcpt.en = 'in the 2016–2025 backtest · fill-realistic · n=' ~ (_nreb_n|string) ~ ' monthly rebalances' -%}
+      {%- set _rcpt.zh = '2016–2025 回测 · 真实成交 · n=' ~ (_nreb_n|string) ~ ' 次月度再平衡' -%}
+    {%- elif _measured and _plane == 'gross' -%}
+      {%- set _rcpt.en = 'in the 2016–2025 backtest · gross · n=' ~ (_nreb_n|string) ~ ' monthly rebalances' -%}
+      {%- set _rcpt.zh = '2016–2025 回测 · 毛收益 · n=' ~ (_nreb_n|string) ~ ' 次月度再平衡' -%}
+    {%- endif -%}
     {# R1: reversal-sleeve-card leaves L1; id kept for LEGACY_ANCHORS. Stats live in the LENS. #}
     {# One idiom: tagged links + the LENS `?`. The 42ch prose note is demoted
        into the tip (rows[0] / body) so the band is not four mixed chrome families. #}
@@ -1401,8 +1413,7 @@ _rcCnObs.observe(document.documentElement,{attributes:true,attributeFilter:['dat
             {'k':('Per rebalance','每次再平衡'), 'v':(_ex_en, _ex_zh)},
           ],
           body=('Open the dedicated page for the full sleeve.','打开专页查看完整组合。'),
-          receipt=('in the 2016–2025 backtest · fill-realistic · n=' ~ _nreb ~ ' monthly rebalances',
-                   '2016–2025 回测 · 真实成交 · n=' ~ _nreb ~ ' 次月度再平衡')) }}
+          receipt=(_rcpt.en, _rcpt.zh)) }}
       <a href="baskets_china_ths.html"><span class="dash-icon submenu-icon-baskets" aria-hidden="true"></span><span class="l-en">同花顺 theme browser ↗</span><span class="l-zh">同花顺主题浏览器 ↗</span></a>
       <a href="china_sector_desk.html"><span class="dash-icon submenu-icon-stage" aria-hidden="true"></span><span class="l-en">Live Sector Board ↗</span><span class="l-zh">实时行业看板 ↗</span></a>
       <a href="narrative_radar.html"><span class="dash-icon submenu-icon-radar" aria-hidden="true"></span><span class="l-en">Narrative Basket Radar ↗</span><span class="l-zh">叙事篮子雷达 ↗</span></a>
@@ -1434,6 +1445,57 @@ _rcCnObs.observe(document.documentElement,{attributes:true,attributeFilter:['dat
     <div id="sc-app" aria-busy="true">
       <div class="skel-slot" aria-hidden="true"><span class="skel"></span><span class="skel"></span><span class="skel"></span></div>
     </div>
+    <script>
+    (function(){
+      var el=document.getElementById('sc-app');
+      if(!el) return;
+      var timer=null, done=false, obs=null;
+      var SKEL='<div class="skel-slot" aria-hidden="true"><span class="skel"></span><span class="skel"></span><span class="skel"></span></div>';
+      function clearBusy(){ el.removeAttribute('aria-busy'); }
+      function landError(){
+        if(done) return;
+        if(!el.querySelector('.skel-slot')){ done=true; clearBusy(); return; }
+        done=true;
+        clearBusy();
+        el.innerHTML='<div class="mx-error" role="alert"><b>!</b><span>'
+          +'<span class="l-en">Subsector confluence data did not load. The rest of this page still works.</span>'
+          +'<span class="l-zh">子行业汇聚数据未能加载。本页其余部分仍可用。</span>'
+          +'<button type="button" class="sc-retry"><span class="l-en">Retry</span><span class="l-zh">重试</span></button>'
+          +'</span></div>';
+        var btn=el.querySelector('.sc-retry');
+        if(btn) btn.onclick=retry;
+      }
+      function watch(){
+        if(obs) obs.disconnect();
+        obs=new MutationObserver(function(){
+          if(!el.querySelector('.skel-slot')){
+            done=true;
+            if(timer) clearTimeout(timer);
+            clearBusy();
+            obs.disconnect();
+          }
+        });
+        obs.observe(el,{childList:true,subtree:true});
+      }
+      function retry(){
+        done=false;
+        el.setAttribute('aria-busy','true');
+        el.innerHTML=SKEL;
+        var s=document.createElement('script');
+        s.src='subsectors_china.js?r='+Date.now();
+        s.onerror=landError;
+        document.body.appendChild(s);
+        watch();
+        arm();
+      }
+      function arm(){
+        if(timer) clearTimeout(timer);
+        timer=setTimeout(landError, 8000);
+      }
+      watch();
+      arm();
+    })();
+    </script>
   </section>{# /si-view confluence #}
 
   <footer>
@@ -1775,6 +1837,10 @@ function renderBTable(){
     const vals={}; cols.forEach(c=>{ vals[c]= btblMode==='sigma' ? winZ(rl,c) : winRet(src,c); });
     return {id,b,name:bn(b),color:colorOf[id]||'#888',spark:sparkTail(src),vals,score:b?b.score:null};
   });
+  const live=tblCols();
+  if(btblSort.col!=='name' && btblSort.col!=='score' && live.indexOf(btblSort.col)<0){
+    btblSort={col: live.indexOf('20d')>=0 ? '20d' : (live[0]||'name'), dir:-1};
+  }
   const sc=btblSort.col, dir=btblSort.dir;
   rows.sort((a,b)=>{
     if(sc==='name') return a.name.localeCompare(b.name)*dir;

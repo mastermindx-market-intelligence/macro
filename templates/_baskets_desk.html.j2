@@ -1,7 +1,7 @@
 {# Shared Theme Rotation Desk — CSS + section containers (rendered client-side by baskets_desk.js). #}
 {# Fail closed: a silent US default on a non-US page is a defect generator.
    Every caller must pass bench_en / bench_zh (see build_baskets_hk.py:200). #}
-{% if bench_en is undefined or bench_zh is undefined %}
+{% if not bench_en or not bench_zh %}
 {% include "ERROR: _baskets_desk requires bench_en and bench_zh (silent S&P 500 default is forbidden)" %}
 {% endif %}
 <style>

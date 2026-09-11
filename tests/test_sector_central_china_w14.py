@@ -61,8 +61,9 @@ def _render_page(**kwargs) -> str:
             "n_members": 12,
             "sleeve_factor": 0.9,
             "sharpe": 0.57,
-            "n_rebalances": 349,
-            "excess_per_reb": 0.43,
+            "n_rebalances": 512,
+            "excess_per_reb": 0.87,
+            "excess_plane": "fill_realistic",
         },
     }
     ctx.update(kwargs)
@@ -159,6 +160,17 @@ def test_p0_missing_bench_fails_loudly() -> None:
     env.globals["t"] = lambda en, zh="": en
     with pytest.raises(TemplateNotFound) as ei:
         env.get_template("_baskets_desk.html.j2").render(si_hide_actnow_desk=True)
+    assert "requires bench_en and bench_zh" in str(ei.value)
+
+
+@pytest.mark.parametrize("bench_en,bench_zh", ((None, "恒生指数"), ("Hang Seng", None), ("", "恒生指数"), ("Hang Seng", "")))
+def test_r4_bench_falsy_fails_loudly(bench_en, bench_zh) -> None:
+    env = _env()
+    env.globals["t"] = lambda en, zh="": en
+    with pytest.raises(TemplateNotFound) as ei:
+        env.get_template("_baskets_desk.html.j2").render(
+            si_hide_actnow_desk=True, bench_en=bench_en, bench_zh=bench_zh
+        )
     assert "requires bench_en and bench_zh" in str(ei.value)
 
 
@@ -337,6 +349,8 @@ def test_p3_errors_are_three_part() -> None:
     assert "中国轮动事件数据未能加载。本页其余部分仍可用。" in html
     assert "Basket data did not load. The rest of this page still works." in html
     assert "篮子数据未能加载。本页其余部分仍可用。" in html
+    assert "Subsector confluence data did not load. The rest of this page still works." in html
+    assert "子行业汇聚数据未能加载。本页其余部分仍可用。" in html
     assert "Retry" in html and "重试" in html
 
 
@@ -470,3 +484,172 @@ def test_dnt8_act_now_four_lanes_survive() -> None:
     assert 'id="anv2-pull"' in html
     assert 'id="anv2-bot"' in html
     assert 'id="anv2-red"' in html
+
+
+# ---------------------------------------------------------------------------
+# W14 r4 — day-free bakes, honest receipts, ZH parity
+# ---------------------------------------------------------------------------
+
+_BANNED_DAY = re.compile(
+    r"(?<![A-Za-z_])(today|tonight|yesterday)(?![A-Za-z_])|今日|今天|今晚|昨日|昨天",
+    re.I,
+)
+
+
+def _visible_lanes(html: str) -> tuple[str, str]:
+    stripped = re.sub(r"<script\b[^>]*>.*?</script>", " ", html, flags=re.I | re.S)
+    stripped = re.sub(r"<style\b[^>]*>.*?</style>", " ", stripped, flags=re.I | re.S)
+    stripped = re.sub(r"<!--.*?-->", " ", stripped, flags=re.S)
+    en = " ".join(re.findall(r'class="l-en"[^>]*>(.*?)</span>', stripped, flags=re.S))
+    zh = " ".join(re.findall(r'class="l-zh"[^>]*>(.*?)</span>', stripped, flags=re.S))
+    return html_lib.unescape(en), html_lib.unescape(zh)
+
+
+def test_r4_no_relative_day_words_includers() -> None:
+    an = _render_anv2({"buy_now": [_blank_row(
+        kind="THEME", name="Theme", name_zh="主题", score=50,
+        reco="accumulate", reco_en="Accumulate", reco_zh="积累",
+        rel20=0.042, reasons=["20d +4.2% vs CSI 300"],
+    )]})
+    aen, azh = _visible_lanes(an)
+    assert "Clean entry point" in aen
+    assert "有干净入场点" in azh
+    assert not _BANNED_DAY.search(aen), aen
+    assert not _BANNED_DAY.search(azh), azh
+    html = _render_page(act_now_v2={
+        "as_of": "2026-09-11",
+        "notes": [],
+        "lanes": {
+            "buy_now": [_blank_row(kind="THEME", name="A", name_zh="甲", score=70,
+                                   reco="accumulate", reco_en="Accumulate", reco_zh="积累")],
+            "wait_pullback": [],
+            "bottoming_watch": [],
+            "reduce_avoid": [],
+        },
+    })
+    stage = html[html.index('class="si-shell"'):]
+    en, zh = _visible_lanes(stage)
+    assert not _BANNED_DAY.search(en), en
+    assert not _BANNED_DAY.search(zh), zh
+    for label, bench_en, bench_zh in SIBLING_BENCH + (("sector_central_china", "CSI 300", "沪深300"),):
+        desk = _render_desk(bench_en, bench_zh, compact=(label == "sector_central_china"))
+        den, dzh = _visible_lanes(desk)
+        assert not _BANNED_DAY.search(den), f"{label} EN {den}"
+        assert not _BANNED_DAY.search(dzh), f"{label} ZH {dzh}"
+
+
+def test_r4_sleeve_receipt_measured_not_fallback_constants() -> None:
+    html = _render_page()
+    assert "fill-realistic" in html
+    assert "真实成交" in html
+    assert "n=512" in html
+    assert "+0.87%/reb" in html
+    assert "+0.87%/次" in html
+    assert "349" not in html
+    assert "0.43" not in html
+
+
+def test_r4_sleeve_receipt_outage_is_pending() -> None:
+    html = _render_page(sleeve_stats=None)
+    band = html[html.index('class="si-links"'): html.index('id="si-confluence"')]
+    assert "pending" in band
+    assert "待定" in band
+    assert "349" not in band
+    assert "0.43" not in band
+    assert "512" not in band
+    assert "0.87" not in band
+    assert "fill-realistic" not in band
+    assert "+0.43" not in band
+
+
+def test_r4_gross_plane_does_not_wear_fill_realistic() -> None:
+    html = _render_page(sleeve_stats={
+        "n_members": 12,
+        "sleeve_factor": 0.9,
+        "sharpe": 0.57,
+        "n_rebalances": 512,
+        "excess_per_reb": 0.87,
+        "excess_plane": "gross",
+    })
+    band = html[html.index('class="si-links"'): html.index('id="si-confluence"')]
+    assert "gross" in band
+    assert "毛收益" in band
+    assert "fill-realistic" not in band
+    assert "真实成交" not in band
+    assert "n=512" in band
+
+
+@pytest.mark.parametrize(
+    "reason,zh_expect,zh_forbid",
+    (
+        ("63d +1.2% vs Hang Seng", "63日 +1.2% 相对恒生指数", "63d"),
+        ("20d +4.2% vs Intl ex-US", "20日 +4.2% 相对国际(除美)", "vs Intl"),
+        ("20d +4.2% vs Foo Index", "20日 +4.2% 相对Foo Index", " vs "),
+        ("stretched vs Hang Seng", "相对 恒生指数", "stretched"),
+    ),
+)
+def test_r4_zh_lane_no_en_connective(reason, zh_expect, zh_forbid) -> None:
+    html = _render_anv2({"buy_now": [_blank_row(
+        kind="THEME", name="Theme", name_zh="主题", score=50,
+        reco="accumulate", reco_en="Accumulate", reco_zh="积累",
+        rel20=0.042, reasons=[reason],
+    )]})
+    block = html[html.index('class="row-pop-sub"'): html.index('class="row-pop-sub"') + 360]
+    zh = block.split('class="l-zh">', 1)[1]
+    assert zh_expect in zh
+    assert zh_forbid not in zh
+    assert f'class="l-en">{reason}' in block
+
+
+def test_r4_aria_busy_cleared_both_roots() -> None:
+    html = _render_page()
+    assert html.count('removeAttribute(\'aria-busy\')') + html.count('removeAttribute("aria-busy")') >= 2
+    assert 'id="rc-events-cn-content" aria-busy="true"' in html
+    assert 'id="sc-app" aria-busy="true"' in html
+
+
+def test_r4_sc_app_error_landing_not_infinite_shimmer() -> None:
+    html = _render_page()
+    sc = html[html.index('id="sc-app"'): html.index('id="sc-app"') + 3500]
+    assert "Subsector confluence data did not load" in sc
+    assert "子行业汇聚数据未能加载" in sc
+    assert "sc-retry" in sc
+    assert "setTimeout(landError, 8000)" in sc
+
+
+def test_r4_sigma_sort_resets_to_live_column() -> None:
+    html = _render_page()
+    assert "live.indexOf(btblSort.col)<0" in html
+    assert "btblSort={col: live.indexOf('20d')>=0 ? '20d'" in html
+
+
+def test_r4_no_v2_slug_in_glance() -> None:
+    html = _render_anv2({"buy_now": [_blank_row(
+        kind="THEME", name="Theme", name_zh="主题", score=50,
+        reco="accumulate", reco_en="Accumulate", reco_zh="积累",
+    )]})
+    assert "anv2-v2pill" not in html
+    rest = re.sub(r"<!--.*?-->", "", html, flags=re.S)
+    assert not re.search(r">\s*v2\s*<", rest)
+
+
+def test_r4_lens_css_emitted_once() -> None:
+    html = _render_page()
+    assert html.count('id="lensx-css"') == 1
+
+
+def test_r4_zh_chip_drops_sentence_period() -> None:
+    html = _render_page(theme_context={
+        "leadership": {
+            "trailing_leader": {"name": "Property", "name_zh": "房地产", "id": "cn_property"},
+            "state": "steady",
+            "stance_en": "Hold the leaders",
+            "stance_zh": "守住龙头",
+            "days_in_state": 5,
+            "strength": [{"name": "AI semis", "name_zh": "人工智能半导体", "id": "cn_ai_semis"}],
+        },
+        "leadership_state": {"current": "steady", "prev": "steady"},
+        "trailing_leader": {"current": "Property", "prev": "Property"},
+    })
+    assert "已持续 5 天。" not in html
+    assert "已持续 5 天" in html
