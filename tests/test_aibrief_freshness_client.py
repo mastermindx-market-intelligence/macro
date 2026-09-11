@@ -101,7 +101,7 @@ process.stdout.write(JSON.stringify({ changed, replaced: localNode.replacedWith 
     assert out == {"changed": 0, "replaced": None}
 
 
-def test_controller_fetches_canonical_html_without_cache_and_coalesces_inflight() -> None:
+def test_controller_fetches_current_surface_without_cache_and_coalesces_inflight() -> None:
     out = _node(
         _FAKE_DOM
         + r"""
@@ -118,7 +118,7 @@ const fakeFetch = (url, options) => {
 };
 class Parser { parseFromString() { return remoteDoc; } }
 const win = {
-  location: { href: 'https://www.mastermind-x.com/macro.html' },
+  location: { href: 'https://www.mastermind-x.com/macro.html?theme=dark#dlg-aibrief' },
   listeners: {},
   addEventListener(name, fn) { this.listeners[name] = fn; },
   CustomEvent: class { constructor(name, init) { this.type = name; this.detail = init.detail; } },
@@ -150,8 +150,10 @@ Promise.all([first, second]).then(values => {
     assert out["samePromise"] is True
     assert out["values"] == [1, 1]
     assert out["calls"] == 1
-    assert out["url"].startswith("https://www.mastermind-x.com/aibrief.html?")
+    assert out["url"].startswith("https://www.mastermind-x.com/macro.html?")
     assert "brief_refresh=1789156800000" in out["url"]
+    assert "theme=dark" not in out["url"]
+    assert "#" not in out["url"]
     assert out["cache"] == "no-store"
     assert out["credentials"] == "same-origin"
     assert out["replaced"] == "2026-09-10"
