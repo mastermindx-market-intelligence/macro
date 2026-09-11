@@ -26,15 +26,17 @@ def _node(body: str) -> dict:
 
 _FAKE_DOM = r"""
 class BriefNode {
-  constructor(lens, date) {
+  constructor(lens, date, revision = 'same') {
     this.dataset = { lens };
     this.date = date;
+    this.revision = revision;
+    this.outerHTML = `<div class="aib2" data-lens="${lens}"><span class="aib2-hdr-date">${date}</span><p>${revision}</p></div>`;
     this.replacedWith = null;
   }
   querySelector(selector) {
     return selector === '.aib2-hdr-date' ? { textContent: this.date } : null;
   }
-  cloneNode() { return new BriefNode(this.dataset.lens, this.date); }
+  cloneNode() { return new BriefNode(this.dataset.lens, this.date, this.revision); }
   replaceWith(node) { this.replacedWith = node; }
 }
 function makeDocument(nodes) {
@@ -85,6 +87,22 @@ process.stdout.write(JSON.stringify({
         "china": None,
         "btc": None,
     }
+
+
+def test_client_propagates_a_corrected_brief_on_the_same_state_date() -> None:
+    out = _node(
+        _FAKE_DOM
+        + r"""
+const localNode = new BriefNode('macro', '2026-09-10', 'original');
+const remoteNode = new BriefNode('macro', '2026-09-10', 'corrected');
+const changed = api.applyNewerBriefs(makeDocument([localNode]), makeDocument([remoteNode]));
+process.stdout.write(JSON.stringify({
+  changed,
+  revision: localNode.replacedWith && localNode.replacedWith.revision
+}));
+"""
+    )
+    assert out == {"changed": 1, "revision": "corrected"}
 
 
 def test_controller_fetches_canonical_html_without_cache_and_coalesces_inflight() -> None:
