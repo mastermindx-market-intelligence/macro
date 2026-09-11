@@ -1319,10 +1319,14 @@ def upcoming_catalysts(today: date | None = None, horizon_days: int = 14) -> lis
 
 
 def load_upcoming_catalysts(today: date | None = None, horizon_days: int = 14) -> list[dict] | None:
-    """Dashboard producer: None on fetch failure, list (possibly empty) on success.
+    """Dashboard producer: list (possibly empty) on success; None on builder exception.
 
-    An OUTAGE must never be coerced to []. That path asserts a quiet calendar
-    ("Nothing scheduled…") and violates the tri-state unknown-lane law.
+    There is no network fetch — `upcoming_catalysts` delegates to the
+    deterministic, keyless `_ec.us_macro_events` plus optional config extras.
+    None is reachable only when that builder raises (import/config/calendar
+    exception). An OUTAGE must never be coerced to []. That path asserts a
+    quiet calendar ("Nothing scheduled…") and violates the tri-state
+    unknown-lane law.
     """
     try:
         cats = upcoming_catalysts(today=today, horizon_days=horizon_days)

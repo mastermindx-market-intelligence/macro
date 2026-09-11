@@ -7540,7 +7540,7 @@ html[data-theme="light"] :is(
                 </div>
               </div>
             </div>
-            {% if macro_catalysts and macro_catalysts|length > 0 %}
+            {% if macro_catalysts is not none and macro_catalysts|length > 0 %}
             {% set _nextev = macro_catalysts[0] %}
             {# COPY-04/VIS-08: use CSS ellipsis (never bake a hard-sliced string) so ZH/EN match cleanly.
                _nextev.label_zh if present, else fall back to EN label — CSS will clip both identically. #}
@@ -8638,8 +8638,10 @@ html[data-theme="light"] :is(
         </div>
         {% endif %}
 
-        {# 3. Nearest high-impact event; otherwise show the weakest leg. #}
-        {% if macro_catalysts %}
+        {# 3. Nearest high-impact event; otherwise show the weakest leg.
+           None (unknown) does not fall through as a quiet calendar — skip the
+           event row; weakest may still fill from a different producer. #}
+        {% if macro_catalysts is not none and macro_catalysts %}
         {% set _wtd_ev = macro_catalysts | selectattr('impact','equalto','high') | list | first if (macro_catalysts | selectattr('impact','equalto','high') | list) else macro_catalysts[0] %}
         {% set _wtd_ev_zh = _wtd_ev.get('label_zh') or _wtd_ev.label %}
         <div class="mx5-action-item">
@@ -8717,7 +8719,7 @@ html[data-theme="light"] :is(
             </div>
           </div>
         </div>
-        {% elif macro_catalysts and _weakest and not _wtd_dislo %}
+        {% elif macro_catalysts is not none and macro_catalysts and _weakest and not _wtd_dislo %}
         <div class="mx5-action-item">
           <div class="mx5-action-icon mx5-ai-yellow">
             <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round">
@@ -8741,14 +8743,14 @@ html[data-theme="light"] :is(
   {# 2. EVENTS row + tray (contains Release Radar + week-ahead band) #}
   <div class="sx" id="sx-events-v2" style="--isle-color:var(--isle-events)">
     {# v5 face — UPCOMING EVENTS (week rail + impact badges; fed odds removed to Fed card) #}
-    {% set _ev_hi_cnt = (macro_catalysts | selectattr('impact','equalto','high') | list | length) if macro_catalysts else 0 %}
+    {% set _ev_hi_cnt = (macro_catalysts | selectattr('impact','equalto','high') | list | length) if (macro_catalysts is not none) else none %}
     {# Stance from producer n (high-impact prints ahead). None = fetch failed →
        cautious lane. [] = genuinely empty calendar. `is not defined` can never
        fire: build_site always passes the key (None or list). #}
     {% if macro_catalysts is not defined or macro_catalysts is none %}
       {% set _ev_stance_en = "Watch — this read is being updated." %}
       {% set _ev_stance_zh = "观望——该读数更新中。" %}
-    {% elif _ev_hi_cnt > 0 %}
+    {% elif _ev_hi_cnt and _ev_hi_cnt > 0 %}
       {% set _ev_stance_en = "Get ready — " ~ (_ev_hi_cnt | string) ~ " big prints ahead; avoid adding risk right before them." %}
       {% set _ev_stance_zh = "做好准备——前方有 " ~ (_ev_hi_cnt | string) ~ " 项重磅数据，公布前不宜加仓。" %}
     {% else %}
@@ -8765,7 +8767,9 @@ html[data-theme="light"] :is(
         <span class="l-zh">{{ _ev_stance_zh }}</span>
       </div>
       <div class="mx5-events-sub">
-        {% if _ev_hi_cnt %}
+        {% if macro_catalysts is none %}
+        {# Unknown: no count, no empty-calendar window claim. Stance is the form. #}
+        {% elif _ev_hi_cnt %}
         <span class="l-en">{{ _ev_hi_cnt }} high-impact print{{ 's' if _ev_hi_cnt != 1 }} ahead</span>
         <span class="l-zh">{{ _ev_hi_cnt }} 项高影响数据待发</span>
         {% else %}
@@ -8773,7 +8777,9 @@ html[data-theme="light"] :is(
         <span class="l-zh">未来5个交易日</span>
         {% endif %}
       </div>
-      {% if macro_catalysts %}
+      {% if macro_catalysts is none %}
+      {# Unknown: stance is the cautious form. Do not deny an empty window. #}
+      {% elif macro_catalysts %}
       <div class="mx5-timeline">
         <div class="mx5-timeline-rail"></div>
         <div class="mx5-tl-items">
@@ -11437,9 +11443,11 @@ html[data-theme="light"] :is(
       <span class="l-en">Watch — this read is being updated.</span>
       <span class="l-zh">观望——该读数更新中。</span>
     </div>
-    <div style="font-size:12px;color:var(--ink-3);margin-top:6px">
-      <span class="l-en">Sector data — accruing from nightly log.</span>
-      <span class="l-zh">板块数据 — 每晚积累中。</span>
+    <div class="mx-empty">
+      <div class="mx-empty-line mx-empty-why">
+        <span class="l-en">Sector data — accruing from nightly log.</span>
+        <span class="l-zh">板块数据 — 每晚积累中。</span>
+      </div>
     </div>
     {% endif %}
   </div>
@@ -11779,8 +11787,15 @@ html[data-theme="light"] :is(
           <span class="l-en">No alerts today</span>
           <span class="l-zh">今日无警报</span>
         </div>
-        {% else %}
+        {% elif _al_need > 0 %}
         <div class="mx5-card-badge" style="color:var(--mx5-warn-ink);background:var(--mx5-warn-dim);border:1px solid rgba(245,158,11,.20);">
+          <span class="l-en">{{ _al_need }} need action · of {{ _nalerts }}</span>
+          <span class="l-zh">{{ _al_need }} 条需处理 · 共 {{ _nalerts }} 条</span>
+        </div>
+        {% else %}
+        {# Total > 0 but nothing needs action (e.g. dislocation-only): keep the
+           labelled slice, drop the amber alarm. #}
+        <div class="mx5-card-badge">
           <span class="l-en">{{ _al_need }} need action · of {{ _nalerts }}</span>
           <span class="l-zh">{{ _al_need }} 条需处理 · 共 {{ _nalerts }} 条</span>
         </div>
@@ -11925,7 +11940,7 @@ html[data-theme="light"] :is(
        is absent. Below: a quiet single row of all six original links (nothing lost). #}
     {# ── Slot A: tonight's biggest print (events VM) — deep-links into dlg-events ── #}
     {%- set _wnx_ev = none -%}
-    {%- if macro_catalysts -%}
+    {%- if macro_catalysts is not none and macro_catalysts -%}
       {%- set _wnx_hi = (macro_catalysts | selectattr('impact','equalto','high') | list) -%}
       {%- set _wnx_ev = (_wnx_hi | first) if _wnx_hi else (macro_catalysts | first) -%}
     {%- endif -%}
@@ -11945,7 +11960,17 @@ html[data-theme="light"] :is(
       <div class="wnx-cards">
 
         {# ── Card A — tonight's biggest print ── #}
-        {% if _wnx_ev %}
+        {% if macro_catalysts is none %}
+        <a class="wnx-card" href="#dlg-events" onclick="event.preventDefault();mx5OpenDlg('dlg-events');">
+          <div class="wnx-kicker">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+            <span class="l-en">Week ahead</span><span class="l-zh">本周日历</span>
+          </div>
+          <div class="wnx-state"><span class="l-en">Watch — this read is being updated.</span><span class="l-zh">观望——该读数更新中。</span></div>
+          <div class="wnx-line"><span class="l-en">Calendar feed unavailable — the rest of this page is unaffected.</span><span class="l-zh">日历暂不可用——本页其余内容不受影响。</span></div>
+          <span class="wnx-go"><span class="l-en">See the week</span><span class="l-zh">查看日历</span> &rarr;</span>
+        </a>
+        {% elif _wnx_ev %}
         <a class="wnx-card" style="--wnx-c:var(--isle-events)" href="#dlg-events" onclick="event.preventDefault();mx5OpenDlg('dlg-events');">
           <div class="wnx-kicker">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
@@ -12235,7 +12260,7 @@ html[data-theme="light"] :is(
       <div class="mx5-dlg-body">
 
         {# — Week-ahead calendar cards — #}
-        {% if macro_catalysts %}
+        {% if macro_catalysts is not none and macro_catalysts %}
         <div class="mx5-dlg-eyebrow"><span class="l-en">This Week</span><span class="l-zh">本周</span></div>
         <div class="mx5-dlg-cal-grid">
           {% for c in macro_catalysts[:8] %}
@@ -12290,7 +12315,7 @@ html[data-theme="light"] :is(
         {# — Inline Release Radar panel — sits directly under the calendar so tapping a card
              surfaces its projection right below, before the market-pricing strip (the calendar
              cards above are its selector) — #}
-        {% if macro_catalysts %}
+        {% if macro_catalysts is not none and macro_catalysts %}
         <div class="mx5-dlg-sep"></div>
         <div class="mx5-dlg-eyebrow"><span class="l-en">Release Radar</span><span class="l-zh">数据发布雷达</span></div>
         <div style="margin:-4px 0 14px;font-size:12px;color:var(--ink-2,rgba(255,255,255,.6));line-height:1.5">
@@ -12362,7 +12387,7 @@ html[data-theme="light"] :is(
         {# Outcome enum → ZH display map, shared by this strip and dlg-fed below #}
         {% set _fed_out_zh = {'No change':'按兵不动','Rate cut':'降息','Rate hike':'加息','25bps cut':'降息25bp','50bps cut':'降息50bp','25bps hike':'加息25bp','25 bps increase':'加息25bp','25 bps decrease':'降息25bp','50+ bps increase':'加息50bp以上','50+ bps decrease':'降息50bp以上','0.1%':'0.1%','0.2%':'0.2%','0.3%':'0.3%','0.4%':'0.4%'} %}
         {% if prediction_markets and prediction_markets.events %}
-        {% if macro_catalysts %}<div class="mx5-dlg-sep"></div>{% endif %}
+        {% if macro_catalysts is not none and macro_catalysts %}<div class="mx5-dlg-sep"></div>{% endif %}
         {# Unified benchmark strip (same component as dlg-fed). Plain "X in 10" read kept below. #}
         {% set _ev_bench_rows = [] %}
         {% set _ev_head_top = none %}
@@ -12383,7 +12408,9 @@ html[data-theme="light"] :is(
         {% endif %}
         {% endif %}
 
-        {% if not macro_catalysts and not (prediction_markets and prediction_markets.events) %}
+        {% if macro_catalysts is none %}
+        <p class="muted"><span class="l-en">Watch — this read is being updated.</span><span class="l-zh">观望——该读数更新中。</span></p>
+        {% elif not macro_catalysts and not (prediction_markets and prediction_markets.events) %}
         <p style="font-size:12px;color:var(--ink-2,rgba(255,255,255,.6));margin-top:16px"><span class="l-en">No events data available.</span><span class="l-zh">暂无事件数据。</span></p>
         {% endif %}
 
@@ -13996,16 +14023,36 @@ html[data-theme="light"] :is(
         <button class="mx5-dlg-close" type="button" onclick="mx5CloseDlg()" aria-label="Close">&#xd7;</button>
       </div>
       <div class="mx5-dlg-body">
-        {# All fired alerts — grouped by conviction tier: act+watch (Priority) then context #}
-        {% if alerts %}
-        {% set _dlg_alv5_all = alerts %}
+        {# All fired alerts — grouped by conviction tier: act+watch (Priority) then context.
+           Dislocation is in `_nalerts` so it must be a countable row here (one-population). #}
+        {% set _dlg_dislo = (latest is defined and latest and latest.dislocation and latest.dislocation.dislocation_active) %}
+        {% if alerts or _dlg_dislo %}
+        {% set _dlg_alv5_all = alerts if alerts else [] %}
         {# Same partition as the face: event_risk (engine-tiered context = no edge claim) is
            time-critical calendar fact and sits with Priority; its chip says "Event", honest #}
         {% set _dlg_alv5_prio = (_dlg_alv5_all | selectattr('tier','in',('act','watch')) | list) + (_dlg_alv5_all | selectattr('tier','equalto','context') | selectattr('rule','equalto','event_risk') | list) + (_dlg_alv5_all | rejectattr('tier','defined') | list) %}
         {% set _dlg_alv5_ctx  = _dlg_alv5_all | selectattr('tier','equalto','context') | rejectattr('rule','equalto','event_risk') | list %}
         <div class="isle-head"><div class="isle-head-dot"></div><span class="isle-head-label"><span class="l-en">Priority</span><span class="l-zh">优先</span></span><div class="isle-head-line"></div></div>
-        {% if _dlg_alv5_prio %}
+        {% if _dlg_dislo or _dlg_alv5_prio %}
         <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
+          {% if _dlg_dislo %}
+          {% set _dlg_dl = latest.dislocation %}
+          {% set _dlg_dl_unknown = ((_dlg_dl.put_state is defined and _dlg_dl.put_state == 'unknown')
+                                    or (_dlg_dl.put_state_reliable is defined and not _dlg_dl.put_state_reliable)
+                                    or (_dlg_dl.fed_put is defined and _dlg_dl.fed_put is none)) %}
+          {% set _dlg_dl_dissent = ((_dlg_dl.geo_reversibility and _dlg_dl.geo_reversibility.agreement != 'corroborates')
+                                    or (_dlg_dl.catalyst_narrative and _dlg_dl.catalyst_narrative.agreement != 'corroborates')) %}
+          <div data-al-row class="mx5-alert-item info">
+            <div class="mx5-alert-dot info"></div>
+            <div class="mx5-alert-content">
+              <div class="mx5-alert-title">
+                <span class="mx5-alert-k"><span class="l-en">Tape</span><span class="l-zh">盘面</span></span>
+                <span class="l-en">Selling has turned stressed</span><span class="l-zh">抛售已转为压力状态</span>
+              </div>
+              <div class="mx5-alert-detail">{% if _dlg_dl_unknown %}<span class="l-en">We cannot read whether the Fed would step in today, so no call is made. Watch — don’t chase.</span><span class="l-zh">今日无法判读美联储是否会出手，因此不作判定。观察 — 不要追。</span>{% elif _dlg_dl.verdict == 'buyable_washout' %}<span class="l-en">The Fed’s backstop still reads intact, so damage like this has usually stayed shallower. Wait for the market to steady — don’t try to catch it.</span><span class="l-zh">美联储托底仍在位，此类下跌历史上通常跌幅更浅。等待市场企稳 — 不要接飞刀。</span>{% elif _dlg_dl.verdict == 'stand_aside' %}<span class="l-en">The Fed’s backstop is not there. This is the setup that kept falling through 2008 — stand aside.</span><span class="l-zh">美联储托底缺失。这正是 2008 年一路下跌的情形 — 观望。</span>{% else %}<span class="l-en">Nothing to do until it steadies. Watch — don’t chase.</span><span class="l-zh">企稳前无需行动。观察 — 不要追。</span>{% endif %}{% if _dlg_dl_dissent %} <span class="l-en">Not everything agrees — the reasons are on the signal board.</span><span class="l-zh">并非所有指标一致 — 详见信号看板。</span>{% endif %}</div>
+            </div>
+          </div>
+          {% endif %}
           {% for a in _dlg_alv5_prio %}
           {% set _asev2 = 'warn' if a.severity in ('warn','high','critical') else 'info' %}
           {% set _atier = a.tier if (a.tier is defined and a.tier) else 'watch' %}
@@ -15332,7 +15379,7 @@ html[data-theme="light"] :is(
   {# Week ahead — original lower-fold band; SUPPRESSED in macro mode (moved to upper fold above
      as mx-band id="week-ahead"). Kept here for stocks mode (no catalysts so renders nothing)
      and for reference. Context-only: scheduled dates say WHEN volatility is likely, never which way. #}
-  {% if mode == 'stocks' and (macro_catalysts or (prediction_markets and prediction_markets.events)) %}
+  {% if mode == 'stocks' and ((macro_catalysts is not none and macro_catalysts) or (prediction_markets and prediction_markets.events)) %}
   <style id="cal-css">
   #week-ahead .cal-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
   #week-ahead .cal-ev{flex:1 1 0;min-width:124px;border:1px solid var(--line);
@@ -15353,7 +15400,7 @@ html[data-theme="light"] :is(
     <h2 style="margin-bottom:10px">{{ t('Week ahead — scheduled catalysts', '未来一周 — 日程催化') }}
     <summary>{{ t('Sentiment regime','情绪周期') }}
     </h2>
-    {% if macro_catalysts %}
+    {% if macro_catalysts is not none and macro_catalysts %}
     {% set _mos = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] %}
     <div class="cal-row">
       {% for c in macro_catalysts[:8] %}

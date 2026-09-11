@@ -52,10 +52,10 @@ def _alert(rule="gex_flip_cross", tier="watch", **over) -> dict:
     return row
 
 
-def _render(**over) -> str:
+def _render(mode="macro", **over) -> str:
     vm = _base_vm()
     vm.update(over)
-    return _env().get_template("dashboard.html.j2").render(**vm, mode="macro")
+    return _env().get_template("dashboard.html.j2").render(**vm, mode=mode)
 
 
 def _face(html: str, sid: str) -> str:
@@ -352,6 +352,10 @@ def test_regime_tip_null_z_uses_missing_sentence():
 # W9 r2 — unknown events, N==0 badge, geometry, 21/21 ZH channels, nits
 # --------------------------------------------------------------------------- #
 
+_DENIAL_EN = "No top-tier prints in the window."
+_DENIAL_ZH = "窗口内无一线数据。"
+
+
 def test_events_stance_unknown():
     html = _render(macro_catalysts=None)
     ev = html[html.find('id="sx-events-v2"'):html.find('id="sx-v5-fed"') if 'id="sx-v5-fed"' in html else html.find('id="sx-v5-sentiment"')]
@@ -359,6 +363,8 @@ def test_events_stance_unknown():
     assert _CAUTIOUS_ZH in ev
     assert "Nothing scheduled that should change positioning this week." not in ev
     assert "本周暂无应改变仓位的安排。" not in ev
+    assert _DENIAL_EN not in ev
+    assert _DENIAL_ZH not in ev
 
 
 def test_events_failed_fetch_vs_genuinely_empty():
@@ -371,6 +377,10 @@ def test_events_failed_fetch_vs_genuinely_empty():
     assert "Nothing scheduled that should change positioning this week." in empty_ev
     assert "Nothing scheduled that should change positioning this week." not in failed_ev
     assert _CAUTIOUS_EN not in empty_ev
+    assert _DENIAL_EN not in failed_ev
+    assert _DENIAL_ZH not in failed_ev
+    assert _DENIAL_EN in empty_ev
+    assert _DENIAL_ZH in empty_ev
 
 
 def test_alert_badge_n_zero_is_neutral_not_amber():
@@ -465,3 +475,204 @@ def test_build_site_catalysts_init_is_none_not_empty_list():
     assert "macro_catalysts, macro_news_data, macro_brief_data = None, None, None" in src
     assert "load_upcoming_catalysts" in src
     assert "macro_catalysts, macro_news_data, macro_brief_data = [], None, None" not in src
+
+
+# --------------------------------------------------------------------------- #
+# W9 r3 — full tri-state sweep, one-population counts, warn-on-need
+# --------------------------------------------------------------------------- #
+
+_CPI = {"impact": "high", "label": "CPI", "label_zh": "CPI", "date": "2026-07-10"}
+
+
+def _slice(html: str, start: str, *ends: str) -> str:
+    i = html.find(start)
+    assert i != -1, f"missing {start}"
+    stops = [html.find(e, i + 1) for e in ends]
+    stops = [s for s in stops if s != -1]
+    return html[i:(min(stops) if stops else i + 12000)]
+
+
+def _dislo(**over) -> dict:
+    row = {
+        "dislocation_active": True,
+        "verdict": "stand_aside",
+        "put_state": "known",
+        "put_state_reliable": True,
+        "fed_put": True,
+        "geo_reversibility": {"agreement": "corroborates"},
+        "catalyst_narrative": {"agreement": "corroborates"},
+    }
+    row.update(over)
+    return row
+
+
+def test_hero_next_event_chip_tri_state():
+    """7543: populated chip only; None and [] print no next-event chip."""
+    none_html = _render(market_state=_ms(), macro_catalysts=None)
+    empty_html = _render(market_state=_ms(), macro_catalysts=[])
+    full_html = _render(market_state=_ms(), macro_catalysts=[_CPI])
+    none_hero = _slice(none_html, 'class="mx2-alerts-row"', 'id="sx-evidence"')
+    empty_hero = _slice(empty_html, 'class="mx2-alerts-row"', 'id="sx-evidence"')
+    full_hero = _slice(full_html, 'class="mx2-alerts-row"', 'id="sx-evidence"')
+    assert "CPI" not in none_hero
+    assert "CPI" not in empty_hero
+    assert "CPI" in full_hero
+    assert _DENIAL_EN not in none_hero
+    assert _CAUTIOUS_EN not in none_hero  # chip is omitted, not a cautious claim
+
+
+def test_wtd_event_row_tri_state():
+    """8642: None does not pick an event or claim an empty calendar."""
+    none_wtd = _slice(_render(macro_catalysts=None), 'id="sx-evidence"', 'id="sx-events-v2"')
+    empty_wtd = _slice(_render(macro_catalysts=[]), 'id="sx-evidence"', 'id="sx-events-v2"')
+    full_wtd = _slice(_render(macro_catalysts=[_CPI]), 'id="sx-evidence"', 'id="sx-events-v2"')
+    assert "CPI: expect noise" not in none_wtd
+    assert "CPI: expect noise" not in empty_wtd
+    assert "CPI: expect noise" in full_wtd
+    assert _DENIAL_EN not in none_wtd
+
+
+def _first_wnx_card(html: str) -> str:
+    face = _slice(html, 'id="sx-deep-context"', 'id="dlg-evidence"', 'id="dlg-events"')
+    m = re.search(r'<a class="wnx-card"[\s\S]*?</a>', face)
+    assert m, "wnx-card missing"
+    return m.group(0)
+
+
+def test_where_next_week_ahead_tri_state():
+    """11928: None → cautious card; [] → Macro Weather fallback; list → event."""
+    none_card = _first_wnx_card(_render(macro_catalysts=None))
+    empty_card = _first_wnx_card(_render(macro_catalysts=[]))
+    full_card = _first_wnx_card(_render(macro_catalysts=[_CPI]))
+    assert _CAUTIOUS_EN in none_card
+    assert "Macro Weather" not in none_card
+    assert _DENIAL_EN not in none_card
+    assert "Macro Weather" in empty_card
+    assert _CAUTIOUS_EN not in empty_card
+    assert "CPI" in full_card
+
+
+def test_dlg_events_tri_state():
+    """12238/12293/12365/12386: None is cautious; [] is the empty-data denial."""
+    none_dlg = _slice(_render(macro_catalysts=None), 'id="dlg-events"', 'id="dlg-markets"')
+    empty_dlg = _slice(_render(macro_catalysts=[]), 'id="dlg-events"', 'id="dlg-markets"')
+    full_dlg = _slice(_render(macro_catalysts=[_CPI]), 'id="dlg-events"', 'id="dlg-markets"')
+    assert _CAUTIOUS_EN in none_dlg
+    assert "No events data available." not in none_dlg
+    assert "暂无事件数据。" not in none_dlg
+    assert _DENIAL_EN not in none_dlg
+    assert "No events data available." in empty_dlg
+    assert "暂无事件数据。" in empty_dlg
+    assert _CAUTIOUS_EN not in empty_dlg
+    assert "CPI" in full_dlg
+    assert "This Week" in full_dlg
+
+
+def test_stocks_week_ahead_tri_state():
+    """15335/15356: both the stocks gate and the inner loop tri-state None.
+
+    The lower-fold band sits inside the macro-only regime-radar wrapper, so a
+    stocks-mode full-page render never emits it (pre-existing). Pin the guards
+    on the fragment itself.
+    """
+    src = (ROOT / "templates" / "dashboard.html.j2").read_text()
+    start = src.find("{# Week ahead — original lower-fold band")
+    end = src.find("{# Market heatmap — moved to MARKETS tray", start)
+    assert start != -1 and end != -1
+    frag = src[start:end]
+    assert "mode == 'stocks' and ((macro_catalysts is not none and macro_catalysts)" in frag
+    assert "{% if macro_catalysts is not none and macro_catalysts %}" in frag
+    assert "{% if macro_catalysts %}" not in frag.replace(
+        "{% if macro_catalysts is not none and macro_catalysts %}", ""
+    )
+
+
+def test_news_calendar_tri_state():
+    """news.html.j2:40 — None is cautious; [] is the empty-window denial."""
+    from tests.test_news_page_render import _empty_vm, _env as _news_env
+
+    def _news(**over) -> str:
+        vm = _empty_vm()
+        vm.update(over)
+        return _news_env().get_template("news.html.j2").render(**vm)
+
+    none_html = _news(macro_catalysts=None)
+    empty_html = _news(macro_catalysts=[])
+    full_html = _news(macro_catalysts=[_CPI])
+    assert _CAUTIOUS_EN in none_html
+    assert "No scheduled events in the window." not in none_html
+    assert "窗口内暂无排定事件。" not in none_html
+    assert "No scheduled events in the window." in empty_html
+    assert "窗口内暂无排定事件。" in empty_html
+    assert _CAUTIOUS_EN not in empty_html
+    assert "CPI" in full_html
+    assert "No scheduled events in the window." not in full_html
+
+
+def test_dislocation_one_population_counts():
+    """Hero N == dialog row count == face 'of N' when a dislocation is live."""
+    latest = dict(_base_vm()["latest"])
+    latest["dislocation"] = _dislo()
+    html = _render(market_state=_ms(), alerts=[], latest=latest)
+    hero = re.search(
+        r'class="ms-alerts"[\s\S]{0,400}?<span class="ct[^"]*">(\d+)</span>',
+        html,
+    )
+    assert hero, "hero fired-alerts chip missing"
+    n = int(hero.group(1))
+    assert n == 1, f"hero N expected 1, got {n}"
+    face = _slice(html, 'id="sx-news-v2"', 'id="sx-deep-context"')
+    assert f"of {n}" in face
+    assert f"共 {n} 条" in face
+    assert "0 need action · of 1" in face
+    dlg = _slice(html, 'id="dlg-news"', 'id="dlg-deep-context"')
+    n_dlg = dlg.count("data-al-row") + dlg.count("padding:12px;background:") + dlg.count("padding:10px 12px;background:")
+    assert n_dlg == n
+    assert "Selling has turned stressed" in dlg
+    assert "抛售已转为压力状态" in dlg
+
+    html2 = _render(market_state=_ms(), alerts=[_alert()], latest=latest)
+    hero2 = re.search(
+        r'class="ms-alerts"[\s\S]{0,400}?<span class="ct[^"]*">(\d+)</span>',
+        html2,
+    )
+    n2 = int(hero2.group(1))
+    assert n2 == 2
+    face2 = _slice(html2, 'id="sx-news-v2"', 'id="sx-deep-context"')
+    assert "1 need action · of 2" in face2
+    dlg2 = _slice(html2, 'id="dlg-news"', 'id="dlg-deep-context"')
+    n2_dlg = dlg2.count("data-al-row") + dlg2.count("padding:12px;background:") + dlg2.count("padding:10px 12px;background:")
+    assert n2_dlg == n2
+
+
+def test_alert_badge_need_zero_total_positive_is_neutral():
+    """(need=0, total=1): labelled slice, no warn tokens."""
+    latest = dict(_base_vm()["latest"])
+    latest["dislocation"] = _dislo()
+    html = _render(market_state=_ms(), alerts=[], latest=latest)
+    face = _slice(html, 'id="sx-news-v2"', 'id="sx-deep-context"')
+    assert "0 need action · of 1" in face
+    assert "0 条需处理 · 共 1 条" in face
+    assert "No alerts today" not in face
+    badge = re.search(r'<div class="mx5-card-badge"[^>]*>', face)
+    assert badge, "alerts badge missing"
+    assert "mx5-warn-ink" not in badge.group(0)
+    assert "mx5-warn-dim" not in badge.group(0)
+
+
+def test_load_upcoming_catalysts_docstring_names_builder_exception():
+    src = (ROOT / "engine" / "macro_news.py").read_text()
+    start = src.find("def load_upcoming_catalysts")
+    doc = src[start:start + 900]
+    assert "builder exception" in doc
+    assert "None on fetch failure" not in doc
+    assert "no network fetch" in doc.lower() or "There is no network fetch" in doc
+
+
+def test_sector_null_why_uses_mx_empty_pair():
+    html = _render(sector_heat=None)
+    sect = _slice(html, 'id="sx-v5-sector"', 'id="sx-markets-v2"')
+    assert 'class="mx-empty"' in sect
+    assert "mx-empty-why" in sect
+    assert 'style="font-size:12px;color:var(--ink-3);margin-top:6px"' not in sect
+
