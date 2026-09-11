@@ -67,6 +67,7 @@ from pathlib import Path
 import pandas as pd
 
 from engine import alert_time
+from engine.alert_center_view import build_explorer
 from lib import config
 
 log = logging.getLogger(__name__)
@@ -1294,6 +1295,7 @@ def build_triage(days: int = 30, today: date | None = None,
         "volume": _volume_context(raw, today, days),
         "storylines": _storylines(kept),
         "alerts": kept,
+        "explorer": build_explorer(enriched, raw),
         "weights": {"tier": W_TIER, "severity": W_SEVERITY, "confirm": W_CONFIRM},
     }
 
