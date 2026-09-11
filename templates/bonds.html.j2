@@ -1,6 +1,9 @@
 {% macro t(en, zh='') -%}
 <span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
 {%- endmacro %}
+{% macro lens(en, zh='') -%}
+<button type="button" class="lens-q" aria-label="Why" data-tip-en="{{ en }}" data-tip-zh="{{ zh if zh else en }}">?</button>
+{%- endmacro %}
 {% macro kpi(label, zh, val, unit='', sub='') -%}
 <div class="kpi">{{ t(label, zh) }}<b>{% if val is none %}<span class="faint">—</span>{% else %}{{ val }}{{ unit }}{% endif %}</b>{% if sub %}<span class="ksub">{{ sub }}</span>{% endif %}</div>
 {%- endmacro %}
@@ -397,6 +400,64 @@ html[data-theme="light"] .cc-delayed{background:var(--card);box-shadow:none;bord
   .mx-vh-word{font-size:32px}
 }
 @media(prefers-reduced-motion:reduce){.depth a,.depth a:hover{transform:none}}
+
+/* Floor pass (G8): DecisionRow flex lives in theme.css, but this vector page
+   does not link it — port the row contract here. Dark/light border colour
+   stays on the rules above. */
+.mx-chg-row{display:flex;align-items:center;gap:10px;padding:9px 2px;
+  border-bottom:1px solid var(--line);text-decoration:none;color:inherit}
+.mx-chg-name{font-weight:700;flex:none}
+.mx-chg-what{color:var(--text);flex:1;min-width:0}
+.mx-chg-chev{color:var(--muted);flex:none}
+@media(max-width:640px){
+  .mx-chg-row{flex-wrap:wrap;row-gap:4px}
+  .mx-chg-what{flex-basis:100%;order:3}
+}
+
+/* LIVE / as-of chips — same contract as theme.css .dtp-*, page-scoped because
+   bonds does not load that sheet. */
+.dtp-chip{display:inline-flex;align-items:center;gap:5px;flex:none;font-size:11px;
+  font-weight:700;letter-spacing:.035em;color:var(--muted);padding:4px 8px;
+  border:1px solid var(--line);border-radius:var(--r-sm);
+  background:color-mix(in srgb,var(--panel2) 70%,transparent)}
+.dtp-chip>i{width:6px;height:6px;border-radius:var(--r-sm);flex:none;background:currentColor}
+.dtp-chip--live{color:var(--ink-up,var(--green))}
+.dtp-asof{font-size:11px;color:var(--muted)}
+
+/* Skeleton plates at true geometry. Reduced-motion kills the shimmer, not the box. */
+.mx-skel{display:block;border-radius:var(--r-sm);min-height:58px;width:100%;
+  background:linear-gradient(90deg,var(--panel2) 25%,color-mix(in srgb,var(--text) 7%,var(--panel2)) 45%,var(--panel2) 65%);
+  background-size:200% 100%;animation:mxSkel 1.2s linear infinite}
+@keyframes mxSkel{to{background-position:-200% 0}}
+@media(prefers-reduced-motion:reduce){.mx-skel{animation-name:none}}
+
+/* LENS `?` — dedicated tap target so data-tip is not on a whole row (S1 flash-and-vanish).
+   Size via .wrap .lens-q so it outranks theme.js's injected 17px rule. */
+.wrap .lens-q{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;
+  margin-left:4px;padding:0;vertical-align:middle;flex:none;border-radius:var(--r-lg);
+  border:1px solid var(--line);background:transparent;color:var(--muted);
+  font-size:11px;font-weight:700;cursor:help;line-height:1;position:relative}
+.wrap .band-chip .lens-q{color:inherit;border-color:color-mix(in srgb,currentColor 45%,transparent)}
+.wrap .lens-q::after{content:attr(data-tip-en);display:none;position:absolute;right:0;bottom:calc(100% + 6px);
+  z-index:8;max-width:min(42ch,90vw);padding:8px 10px;border-radius:var(--r-sm);font-size:12px;font-weight:500;
+  line-height:1.45;letter-spacing:0;text-transform:none;color:var(--text);background:var(--panel);
+  border:1px solid var(--line);box-shadow:0 8px 24px color-mix(in srgb,var(--ink) 18%,transparent);
+  white-space:normal;text-align:left}
+html[data-lang="zh"] .wrap .lens-q::after{content:attr(data-tip-zh)}
+.wrap .lens-q.cnx-tip-open::after,.wrap .lens-q:focus-visible::after{display:block}
+@media(max-width:640px){.wrap .lens-q{width:32px;height:32px;font-size:13px}}
+
+/* Focus-visible rings on interactive hosts. */
+.mx-chg-row:focus-visible,.depth a:focus-visible,.jump-nav a:focus-visible,
+.wrap .lens-q:focus-visible,a:focus-visible{
+  outline:2px solid color-mix(in srgb,var(--blue) 70%,transparent);outline-offset:2px}
+
+/* Wide tables scroll inside .sc-wrap, never the page.
+   Chromium does not let a CSS table's min-width expand a block's scrollWidth;
+   the inner .sc-scroll is a block with min-width so the wrap is a real scrollport. */
+.sc-wrap{overflow-x:auto;width:100%;max-width:100%;min-width:0;-webkit-overflow-scrolling:touch}
+.sc-scroll{min-width:640px}
+.sc-tbl{width:100%;min-width:0;max-width:none}
 </style>
 {% include "_state_inks.html.j2" %}
 {% include "_vector_polish.html.j2" %}
@@ -452,10 +513,10 @@ html[data-theme="light"] .cc-delayed{background:var(--card);box-shadow:none;bord
       <div class="mx-vh-meta">
         <span class="mx-stance {{ hero.stance_cls }}"><span class="l-en">{{ hero.stance_en }}</span><span class="l-zh">{{ hero.stance_zh }}</span></span>
         {% if vm.health.recession_risk is not none %}
-        <span class="pill"{% if hero.rec_score is not none %} data-tip-en="Scored {{ hero.rec_score }} out of 100, where 100 is the highest risk this model measures." data-tip-zh="评分 {{ hero.rec_score }}/100，100 为该模型可测的最高风险。"{% endif %}>{% if hero.rec_rail %}{{ t('Recession risk', '衰退风险') }}{% else %}{{ t('Recession risk: ' ~ (hero.rec_band_en or ''), '衰退风险：' ~ (hero.rec_band_zh or '')) }}{% endif %}</span>
+        <span class="pill">{% if hero.rec_rail %}{{ t('Recession risk', '衰退风险') }}{% else %}{{ t('Recession risk: ' ~ (hero.rec_band_en or ''), '衰退风险：' ~ (hero.rec_band_zh or '')) }}{% endif %}{% if hero.rec_score is not none %}{{ lens('Scored ' ~ hero.rec_score ~ ' out of 100, where 100 is the highest risk this model measures.', '评分 ' ~ hero.rec_score ~ '/100，100 为该模型可测的最高风险。') }}{% endif %}</span>
         {% endif %}
         {% if vm.health.drawdown_risk is not none %}
-        <span class="pill"{% if hero.dd_score is not none %} data-tip-en="Scored {{ hero.dd_score }} out of 100, where 100 is the highest risk this model measures." data-tip-zh="评分 {{ hero.dd_score }}/100，100 为该模型可测的最高风险。"{% endif %}>{% if hero.dd_rail %}{{ t('Drawdown risk', '回撤风险') }}{% else %}{{ t('Drawdown risk: ' ~ (hero.dd_band_en or ''), '回撤风险：' ~ (hero.dd_band_zh or '')) }}{% endif %}</span>
+        <span class="pill">{% if hero.dd_rail %}{{ t('Drawdown risk', '回撤风险') }}{% else %}{{ t('Drawdown risk: ' ~ (hero.dd_band_en or ''), '回撤风险：' ~ (hero.dd_band_zh or '')) }}{% endif %}{% if hero.dd_score is not none %}{{ lens('Scored ' ~ hero.dd_score ~ ' out of 100, where 100 is the highest risk this model measures.', '评分 ' ~ hero.dd_score ~ '/100，100 为该模型可测的最高风险。') }}{% endif %}</span>
         {% endif %}
         <span class="dtp-chip dtp-chip--live"><i></i><span class="l-en">LIVE</span><span class="l-zh">实时</span></span>
         <span class="dtp-asof">{{ t('As of', '截至') }} {{ hero.as_of or as_of }}</span>
@@ -464,16 +525,16 @@ html[data-theme="light"] .cc-delayed{background:var(--card);box-shadow:none;bord
         <span class="l-en">{{ hero.caveat_en.split(':', 1)[1] if ':' in (hero.caveat_en or '') else hero.caveat_en }}</span>
         <span class="l-zh">{{ hero.caveat_zh.split('：', 1)[1] if '：' in (hero.caveat_zh or '') else hero.caveat_zh }}</span></div>{% endif %}
       <div class="bh-scorewrap" style="margin-top:14px">{{ gauge(vm.health.score, vm.health.color) }}
-        <div class="chart-frame" style="flex:1;min-width:0">{{ charts.health | safe }}</div>
+        <div class="chart-frame" style="flex:1;min-width:0">{% if charts.health %}{{ charts.health | safe }}{% else %}<div class="mx-skel" style="height:58px" aria-hidden="true"></div>{% endif %}</div>
       </div>
     </div>
     <div>
       <h2>{{ t('The yield curve', '收益率曲线') }} <span class="h2q">{{ t('— today vs 3 months / 1 year ago', '— 当前 vs 3月前 / 1年前') }}</span></h2>
-      {{ charts.curve_now | safe }}
+      {% if charts.curve_now %}{{ charts.curve_now | safe }}{% else %}<div class="mx-skel" style="height:120px" aria-hidden="true"></div>{% endif %}
       {% if vm.curve.tax_en %}<p class="bh-curve-read"><b><span class="l-en">{{ vm.curve.tax_en }}</span><span class="l-zh">{{ vm.curve.tax_zh }}</span></b><span class="l-en"> — {{ vm.curve.tax_note_en }}</span><span class="l-zh"> — {{ vm.curve.tax_note_zh }}</span></p>{% endif %}
       <div style="margin-top:12px">
         {% if vm.curve.nyfed_prob is not none %}<span class="pill">{{ t('NY Fed recession odds', '纽约联储衰退概率') }} {{ vm.curve.nyfed_prob }}%</span>{% endif %}
-        {% if vm.curve.spread_10y3m is not none %}<span class="pill">10y−3m {{ '%+.2f'|format(vm.curve.spread_10y3m) }}pp</span>{% endif %}
+        {% if vm.curve.spread_10y3m is not none %}<span class="pill">{{ t('10y−3m', '10年−3月') }} {{ '%+.2f'|format(vm.curve.spread_10y3m) }}pp</span>{% endif %}
       </div>
     </div>
   </header>
@@ -523,7 +584,7 @@ html[data-theme="light"] .cc-delayed{background:var(--card);box-shadow:none;bord
           {% endif %}
         </div>
         {% if vm.curve.tax_en %}<p class="tax-note" style="margin-top:10px"><span class="l-en">{{ vm.curve.tax_en }}</span><span class="l-zh">{{ vm.curve.tax_zh }}</span></p>{% endif %}
-        <span class="pill" style="margin-top:10px" data-tip-en="Near-term forward spread {{ vm.curve.ntfs }}pp — the front-end version of the slope, cleaner when markets are pricing Fed cuts. 2s10s {{ vm.curve.spread_2s10s }}pp — the 2-year against the 10-year. Term-premium-adjusted slope {{ vm.curve.curve_tp_adj }}pp — the slope with low-term-premium noise removed." data-tip-zh="近端远期利差 {{ vm.curve.ntfs }}pp——斜率的前端版本，在市场为降息定价时更清晰。2年/10年利差 {{ vm.curve.spread_2s10s }}pp——2年期对10年期。期限溢价调整斜率 {{ vm.curve.curve_tp_adj }}pp——剔除低期限溢价噪音后的斜率。">{{ t('Other curve reads', '其他曲线读数') }}</span>
+        <span class="pill" style="margin-top:10px">{{ t('Other curve reads', '其他曲线读数') }}{{ lens('Near-term forward spread ' ~ vm.curve.ntfs ~ 'pp — the front-end version of the slope, cleaner when markets are pricing Fed cuts. 2s10s ' ~ vm.curve.spread_2s10s ~ 'pp — the 2-year against the 10-year. Term-premium-adjusted slope ' ~ vm.curve.curve_tp_adj ~ 'pp — the slope with low-term-premium noise removed.', '近端远期利差 ' ~ vm.curve.ntfs ~ 'pp——斜率的前端版本，在市场为降息定价时更清晰。2年/10年利差 ' ~ vm.curve.spread_2s10s ~ 'pp——2年期对10年期。期限溢价调整斜率 ' ~ vm.curve.curve_tp_adj ~ 'pp——剔除低期限溢价噪音后的斜率。') }}</span>
         <div class="dtp-asof" style="margin-top:10px">{{ t('As of', '截至') }} {{ as_of }}</div>
       </div>
 
@@ -548,8 +609,8 @@ html[data-theme="light"] .cc-delayed{background:var(--card);box-shadow:none;bord
           <div class="mtile"><div class="mtile-lbl">{{ t('10y real (TIPS)', '10年实际利率') }}</div><div class="mtile-val tnum">{% if vm.real.real_10y is not none %}{{ vm.real.real_10y }}%{% else %}—{% endif %}</div></div>
           <div class="mtile"><div class="mtile-lbl">{{ t('10y breakeven', '10年盈亏平衡') }}</div><div class="mtile-val tnum">{% if vm.real.breakeven_10y is not none %}{{ vm.real.breakeven_10y }}%{% else %}—{% endif %}</div></div>
           {% if compass %}
-          <div class="mtile" data-tip-en="Blended duration lean {{ '%+.2f'|format(dur.lean) if dur.lean is not none else '—' }} on a scale from −1 (lean short) to +1 (lean long); {{ (dur.agreement*100)|round|int if dur.agreement is not none else '—' }}% of the five factors point the same way." data-tip-zh="久期倾向综合分 {{ '%+.2f'|format(dur.lean) if dur.lean is not none else '—' }}，量表由 −1（偏空）到 +1（偏多）；五项因子中 {{ (dur.agreement*100)|round|int if dur.agreement is not none else '—' }}% 指向同一方向。">
-            <div class="mtile-lbl">{{ t(bk[1], bk[2]) }}</div>
+          <div class="mtile">
+            <div class="mtile-lbl">{{ t(bk[1], bk[2]) }}{{ lens('Blended duration lean ' ~ ('%+.2f'|format(dur.lean) if dur.lean is not none else '—') ~ ' on a scale from −1 (lean short) to +1 (lean long); ' ~ ((dur.agreement*100)|round|int if dur.agreement is not none else '—') ~ '% of the five factors point the same way.', '久期倾向综合分 ' ~ ('%+.2f'|format(dur.lean) if dur.lean is not none else '—') ~ '，量表由 −1（偏空）到 +1（偏多）；五项因子中 ' ~ ((dur.agreement*100)|round|int if dur.agreement is not none else '—') ~ '% 指向同一方向。') }}</div>
             <div class="mtile-val" style="font-size:13px;font-weight:700">{{ t(agree_en if agree_en is defined else 'factors are split', agree_zh if agree_zh is defined else '各因子存在分歧') }}</div>
           </div>
           {% endif %}
@@ -561,7 +622,7 @@ html[data-theme="light"] .cc-delayed{background:var(--card);box-shadow:none;bord
           {% set v = leg.value %}{% set score100 = ((v + 1) / 2 * 100) if v is not none else none %}
           {% set lab = LEG_LAB.get(leg.key, (leg.label_en, leg.label_zh)) %}
           {% set tip = LEG_TIP.get(leg.key, (leg.note_en, leg.note_zh)) %}
-          <div class="leg"><span class="lname" data-tip-en="{{ tip[0] }}" data-tip-zh="{{ tip[1] }}">{{ t(lab[0], lab[1]) }}</span>
+          <div class="leg"><span class="lname">{{ t(lab[0], lab[1]) }}{{ lens(tip[0], tip[1]) }}</span>
             <span class="lbar"><span class="lfill" style="width:{{ score100|round(1) if score100 is not none else 0 }}%;background:{{ C.green if v > 0.15 else (C.red if v < -0.15 else C.muted) }}"></span></span>
             <span class="lval">{{ score100|round(1) if score100 is not none else '—' }}</span></div>
           {% endfor %}
@@ -585,12 +646,12 @@ html[data-theme="light"] .cc-delayed{background:var(--card);box-shadow:none;bord
           {% for leg in vm.health.stress_legs %}
           <div class="leg"><span class="lname">{{ t(leg.en, leg.zh) }}</span>
             <span class="lbar"><span class="lfill" style="width:{{ leg.val }}%;background:{{ C.green if leg.val < 50 else C.amber if leg.val < 75 else C.red }}"></span></span>
-            <span class="lval">{{ leg.val }}{% if leg.vg[0] %}{% set vgt = VG_TIP.get(leg.vg[1], ('','')) %}<span class="lvg vg-{{ leg.vg[1] }}" data-tip-en="{{ vgt[0] }}" data-tip-zh="{{ vgt[1] }}">{{ leg.vg[0] }}</span>{% endif %}</span></div>
+            <span class="lval">{{ leg.val }}{% if leg.vg[0] %}{% set vgt = VG_TIP.get(leg.vg[1], ('','')) %}<span class="lvg vg-{{ leg.vg[1] }}">{{ leg.vg[0] }}</span>{{ lens(vgt[0], vgt[1]) }}{% endif %}</span></div>
           {% endfor %}
         </div>
         {% endif %}
         {% if vm.health.calib %}
-        <div class="measured-edge"><span class="pill" {% if vm.health.calib.ic_recession is not none and vm.health.calib.span and vm.health.calib.n %}data-tip-en="Recession-IC {{ vm.health.calib.ic_recession }} — rank correlation between this stress reading and recessions {{ vm.health.calib.ic_horizon_en }} ahead. 1.0 = perfect ordering, 0 = none. Window {{ vm.health.calib.span }}, n={{ vm.health.calib.n }}." data-tip-zh="衰退IC {{ vm.health.calib.ic_recession }} — 该压力读数与未来{{ vm.health.calib.ic_horizon_zh }}衰退的秩相关。1.0=完全一致，0=无关。样本区间{{ vm.health.calib.span }}，n={{ vm.health.calib.n }}。"{% else %}data-tip-en="Recession-IC {{ vm.health.calib.ic_recession }} — a rank-correlation score for how well this reading has ordered recession risk. Higher is better; 1.0 is perfect." data-tip-zh="衰退IC {{ vm.health.calib.ic_recession }} — 该读数对衰退风险排序能力的秩相关评分。数值越高越好，1.0 为完全准确。"{% endif %}>{{ t('Measured', '已校准') }}</span>
+        <div class="measured-edge"><span class="pill">{{ t('Measured', '已校准') }}{% if vm.health.calib.ic_recession is not none and vm.health.calib.span and vm.health.calib.n %}{{ lens('Recession-IC ' ~ vm.health.calib.ic_recession ~ ' — rank correlation between this stress reading and recessions ' ~ vm.health.calib.ic_horizon_en ~ ' ahead. 1.0 = perfect ordering, 0 = none. Window ' ~ vm.health.calib.span ~ ', n=' ~ vm.health.calib.n ~ '.', '衰退IC ' ~ vm.health.calib.ic_recession ~ ' — 该压力读数与未来' ~ vm.health.calib.ic_horizon_zh ~ '衰退的秩相关。1.0=完全一致，0=无关。样本区间' ~ vm.health.calib.span ~ '，n=' ~ vm.health.calib.n ~ '。') }}{% else %}{{ lens('Recession-IC ' ~ vm.health.calib.ic_recession ~ ' — a rank-correlation score for how well this reading has ordered recession risk. Higher is better; 1.0 is perfect.', '衰退IC ' ~ vm.health.calib.ic_recession ~ ' — 该读数对衰退风险排序能力的秩相关评分。数值越高越好，1.0 为完全准确。') }}{% endif %}</span>
           {{ t('top-stress readings were followed by a 10%+ S&P drawdown within 63 days', '压力最高档读数之后，63天内出现标普10%+回撤的概率为') }}
           <b>{{ vm.health.calib.hi_dd10 }}%</b> {{ t('of the time vs a', '，而基准为') }} <b>{{ vm.health.calib.base_dd10 }}%</b><span class="l-en"> baseline</span>
           (<b>{% if (vm.health.calib.edge_pp or 0) >= 0 %}+{% endif %}{{ vm.health.calib.edge_pp }}pp</b>).
@@ -622,9 +683,9 @@ html[data-theme="light"] .cc-delayed{background:var(--card);box-shadow:none;bord
     <p class="drv-read"><b><span class="l-en">Global 10-year yields average {{ g.avg_10y }}% and are {{ gd[1] }} — the world is tightening.</span><span class="l-zh">全球10年期收益率均值{{ g.avg_10y }}%且持续上行——全球融资成本在收紧。</span></b></p>
     <div style="margin:6px 0 10px">
       <span class="band-chip" style="background:{{ gd[0] }}">{{ t('Global 10y', '全球10年期') }} {{ g.avg_10y }}% · {{ t(gd[1], gd[2]) }} {{ '%+.0f'|format(g.avg_10y_chg_63d_bp) if g.avg_10y_chg_63d_bp is not none else '' }}bp/3m</span>
-      {% if uw.us_premium_bp is not none %}<span class="band-chip" style="background:{{ C.blue }};margin-left:6px" data-tip-en="The US 10-year sits {{ '%+.0f'|format(uw.us_premium_bp) }}bp above the GDP-weighted rest of the world and the gap is widening — the dollar's rate-differential anchor. Emerging-market hard-currency spread {{ intl.em.em_oas if intl.em and intl.em.em_oas is not none else '—' }}% (stable)." data-tip-zh="美国10年期较GDP加权的世界其余部分高{{ '%+.0f'|format(uw.us_premium_bp) }}基点，且利差持续走阔——这是美元的利差之锚。新兴市场硬通货利差{{ intl.em.em_oas if intl.em and intl.em.em_oas is not none else '—' }}%（平稳）。">{{ t('US vs world', '美国 vs 世界') }} {{ '%+.0f'|format(uw.us_premium_bp) }}bp</span>{% endif %}
+      {% if uw.us_premium_bp is not none %}<span class="band-chip" style="background:{{ C.blue }};margin-left:6px">{{ t('US vs world', '美国 vs 世界') }} {{ '%+.0f'|format(uw.us_premium_bp) }}bp{{ lens('The US 10-year sits ' ~ ('%+.0f'|format(uw.us_premium_bp)) ~ 'bp above the GDP-weighted rest of the world and the gap is widening — the dollar rate-differential anchor. Emerging-market hard-currency spread ' ~ (intl.em.em_oas if intl.em and intl.em.em_oas is not none else '—') ~ '% (stable).', '美国10年期较GDP加权的世界其余部分高' ~ ('%+.0f'|format(uw.us_premium_bp)) ~ '基点，且利差持续走阔——这是美元的利差之锚。新兴市场硬通货利差' ~ (intl.em.em_oas if intl.em and intl.em.em_oas is not none else '—') ~ '%（平稳）。') }}</span>{% endif %}
     </div>
-    <div class="sc-wrap">
+    <div class="sc-wrap"><div class="sc-scroll">
     <table class="sc-tbl">
       <tr>
         <th>{{ t('sovereign', '主权') }}</th>
@@ -632,7 +693,7 @@ html[data-theme="light"] .cc-delayed{background:var(--card);box-shadow:none;bord
         <th>{{ t('real', '实际') }}</th>
         <th>{{ t('slope', '斜率') }}</th>
         <th>{{ t('3m Δ', '3月变化') }}</th>
-        <th data-tip-en="How far today's yield sits from its own past-year average, in standard deviations. +1 = one standard deviation above; 0 = exactly average." data-tip-zh="当前收益率偏离自身过去一年均值的程度，以标准差计。+1 = 高出一个标准差；0 = 正好等于均值。">{{ t('vs 1-yr normal', '对比一年常态') }}</th>
+        <th>{{ t('vs 1-yr normal', '对比一年常态') }}{{ lens("How far today's yield sits from its own past-year average, in standard deviations. +1 = one standard deviation above; 0 = exactly average.", '当前收益率偏离自身过去一年均值的程度，以标准差计。+1 = 高出一个标准差；0 = 正好等于均值。') }}</th>
         <th>{{ t('vs US', '对美') }}</th>
         <th>{{ t('curve', '曲线') }}</th>
       </tr>
@@ -641,7 +702,7 @@ html[data-theme="light"] .cc-delayed{background:var(--card);box-shadow:none;bord
       {% for r in intl.countries %}
       {% set ss = SST.get(r.slope_state, (C.muted, r.slope_state or '—', r.slope_state or '—')) %}
       <tr>
-        <td class="cty"><span class="dot" style="background:{{ {'US':C.blue,'DE':C.amber,'JP':C.red,'GB':C.teal,'CA':C.indigo,'AU':C.gold,'CH':C.muted}.get(r.code, C.muted) }}"></span>{{ t(r.en, r.zh) }}{% if r.stale %}<span class="stale-tag" data-tip-en="OECD monthly series — lags ~1 month" data-tip-zh="OECD月度序列 · 滞后约1个月">{{ t('lag','滞后') }}</span>{% elif r.cadence == 'monthly' %}<span class="faint" style="font-size:10px;margin-left:4px">{{ t('mo','月') }}</span>{% endif %}</td>
+        <td class="cty"><span class="dot" style="background:{{ {'US':C.blue,'DE':C.amber,'JP':C.red,'GB':C.teal,'CA':C.indigo,'AU':C.gold,'CH':C.muted}.get(r.code, C.muted) }}"></span>{{ t(r.en, r.zh) }}{% if r.stale %}<span class="stale-tag">{{ t('lag','滞后') }}{{ lens('OECD monthly series — lags ~1 month', 'OECD月度序列 · 滞后约1个月') }}</span>{% elif r.cadence == 'monthly' %}<span class="faint" style="font-size:10px;margin-left:4px">{{ t('mo','月') }}</span>{% endif %}</td>
         <td><b>{{ '%.2f'|format(r.y10) }}%</b></td>
         <td>{{ ('%.2f'|format(r.real_10y) ~ '%') if r.real_10y is not none else '—' }}</td>
         <td>{{ ('%+.2f'|format(r.slope)) if r.slope is not none else '—' }}</td>
@@ -661,7 +722,7 @@ html[data-theme="light"] .cc-delayed{background:var(--card);box-shadow:none;bord
       </tr>
       {% endif %}
     </table>
-    </div>
+    </div></div>
     <div class="sub faint" style="margin-top:8px">{{ t('Level = 10y yield. Real = 10y minus market-priced inflation. Slope = curve shape. 3m Δ = 63-day move. vs 1-yr normal = standard deviations from its own past-year average. vs US = 10y rate gap. Monthly OECD series are tagged.', '水平=10年收益率；实际=10年减去市场定价通胀；斜率=曲线形态；3月变化=63日变动；对比一年常态=较自身过去一年均值的标准差；对美=10年利差。OECD月度序列已标注。') }}</div>
     <p style="margin-top:8px"><a href="#global-detail">{{ t('All sovereign yields →', '全部主权收益率 →') }}</a></p>
     {% endif %}
@@ -1191,7 +1252,7 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
       {% if uw.us_premium_bp is not none %}<span class="band-chip" style="background:{{ C.blue }};margin-left:6px">{{ t('US vs world', '美国 vs 世界') }} {{ '%+.0f'|format(uw.us_premium_bp) }}bp</span>{% endif %}
     </div>
     <div class="sub" style="margin:4px 0 10px"><b><span class="l-en">{{ intl.verdict_en }}</span><span class="l-zh">{{ intl.verdict_zh }}</span></b></div>
-    <div class="sc-wrap">
+    <div class="sc-wrap"><div class="sc-scroll">
     <table class="sc-tbl">
       <tr>
         <th>{{ t('sovereign', '主权') }}</th>
@@ -1228,7 +1289,7 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
       </tr>
       {% endif %}
     </table>
-    </div>
+    </div></div>
     {% if charts.intl_yields %}<div style="margin-top:14px">{{ charts.intl_yields | safe }}</div>{% endif %}
     <div class="sub faint" style="margin-top:8px">{{ t('Level = 10y yield. Real = 10y minus market-priced inflation. Slope = curve shape. 3m Δ = 63-day move. vs 1-yr normal = standard deviations from its own past-year average. vs US = 10y rate gap. Monthly OECD series are tagged.', '水平=10年收益率；实际=10年减去市场定价通胀；斜率=曲线形态；3月变化=63日变动；对比一年常态=较自身过去一年均值的标准差；对美=10年利差。OECD月度序列已标注。') }}</div>
   </div>
@@ -1399,6 +1460,28 @@ html[data-theme="dark"] .cc-watch-chip.wc-amber{color:#e0a030}
 (function(){var els=document.querySelectorAll('.reveal');if(!('IntersectionObserver' in window)||window.matchMedia('(prefers-reduced-motion:reduce)').matches){els.forEach(function(e){e.classList.add('in');});return;}
 var io=new IntersectionObserver(function(en){en.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12});
 els.forEach(function(e){io.observe(e);});})();
+/* LENS `?` — pointerdown toggle so tap at 390 does not flash-and-vanish (S1). */
+(function(){
+  document.addEventListener('pointerdown', function(e){
+    var q = e.target && e.target.closest && e.target.closest('.wrap .lens-q');
+    if(!q) return;
+    e.preventDefault();
+    e.stopPropagation();
+    var was = q.classList.contains('cnx-tip-open');
+    document.querySelectorAll('.wrap .lens-q.cnx-tip-open').forEach(function(el){
+      el.classList.remove('cnx-tip-open');
+    });
+    if(!was) q.classList.add('cnx-tip-open');
+  }, true);
+  document.addEventListener('keydown', function(e){
+    var t = e.target;
+    if(!t || !t.classList || !t.classList.contains('lens-q')) return;
+    if(e.key === 'Enter' || e.key === ' '){
+      e.preventDefault();
+      t.classList.toggle('cnx-tip-open');
+    }
+  });
+})();
 </script>
 <footer class="site-footer">
   <span>© 2026 Mastermind Inc</span>
