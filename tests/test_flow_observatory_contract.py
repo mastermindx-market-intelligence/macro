@@ -1292,3 +1292,6 @@ def test_w13_r2_light_art_direction_named_and_page_scoped():
     assert 'html[data-theme="light"] .q-empty .empty-why' in html
     assert 'html[data-theme="light"] .foot' in html
     assert 'html[data-theme="light"] .fv-hero-eyebrow h1' in html
+    # W13 r4 m4: light UNAVAILABLE chip figures sit at the muted floor, not the
+    # inherited 0.68 opacity of the dark-lane instrument-fault idiom.
+    assert 'html[data-theme="light"] .fv-src--unavailable{opacity:1;' in html

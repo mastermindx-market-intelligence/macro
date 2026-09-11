@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""flow_velocity W13 r3 — settled evidence matrix (S1 rig + SETTLE column).
+"""flow_velocity W13 r4 — packet-complete settled evidence matrix.
 
 Captures at the committed HEAD with porcelain empty. Fixture-rendered
 (sparse trees have no site/ or data/). A cell that fails settle is REFUSED,
-not captured.
+not captured. Recapture may never shrink the packet crop list.
 
 Usage::
 
@@ -36,10 +36,11 @@ from scripts.build_vector import C
 from scripts.capture_page_evidence import CaptureUnavailable, _git_head_sha, serve_site_dir
 from tests.test_flow_observatory_contract import _member, _theme, _v2
 
-OUT_DIR = _ROOT / "research" / "flow_observatory" / "w13_r3_evidence"
+OUT_DIR = _ROOT / "research" / "flow_observatory" / "w13_r4_evidence"
 CELLS_DIR = OUT_DIR / "cells"
+R3_DIR = _ROOT / "research" / "flow_observatory" / "w13_r3_evidence"
 R2_DIR = _ROOT / "research" / "flow_observatory" / "w13_r2_evidence"
-SCRATCH = Path("/tmp/fv-w13-r3-capture")
+SCRATCH = Path("/tmp/fv-w13-r4-capture")
 
 _STATE_SEED = """
 (state) => {
@@ -129,10 +130,15 @@ async (sel) => {
     still.forEach((a) => { try { a.finish(); } catch (e) { try { a.cancel(); } catch (e2) {} } });
     await sleep(16);
   }
-  document.querySelectorAll('.lens-pop.open').forEach((p) => {
-    p.style.opacity = '1';
-    p.style.transform = 'none';
-  });
+  const mutations = ['fv-reveal.is-in force-finish'];
+  const openPops = document.querySelectorAll('.lens-pop.open');
+  if (openPops.length) {
+    openPops.forEach((p) => {
+      p.style.opacity = '1';
+      p.style.transform = 'none';
+    });
+    mutations.push('lens-pop.open opacity=1 transform=none (opacity gate measured post-force)');
+  }
   const leftover = runningOf(document.documentElement).length;
 
   const effectiveOpacity = (el) => {
@@ -185,6 +191,32 @@ async (sel) => {
       headerColor = getComputedStyle(header).color;
     }
   }
+  const sampleRoots = [root];
+  openPops.forEach((p) => sampleRoots.push(p));
+  const sampleEls = [];
+  const pushEl = (el) => { if (el && sampleEls.indexOf(el) < 0) sampleEls.push(el); };
+  pushEl(header);
+  sampleRoots.forEach((sr) => {
+    sr.querySelectorAll('.s-meta, .s-state, .fv-caption, .empty-why, .q-empty, .vstate, .s-name, p, h1, h2, h3, th, td, span, b, button, label').forEach(pushEl);
+  });
+  let weakest = null;
+  sampleEls.forEach((el) => {
+    const st = getComputedStyle(el);
+    if (st.display === 'none' || st.visibility === 'hidden') return;
+    const t = (el.textContent || '').replace(/\\s+/g, ' ').trim();
+    if (!t) return;
+    const fg = parseColor(st.color);
+    const bg = effectiveBg(el);
+    if (!fg || !bg) return;
+    const cr = contrastRatio(fg, bg);
+    const rec = {
+      contrast: Math.round(cr * 100) / 100,
+      color: st.color,
+      className: (el.className && el.className.toString) ? el.className.toString() : '',
+      text: t.slice(0, 80),
+    };
+    if (!weakest || rec.contrast < weakest.contrast) weakest = rec;
+  });
   const ok = rootOp >= 0.995 && rowOp >= 0.995;
   return {
     ok, reason: ok ? 'settled' : (leftover ? 'running-anims' : 'opacity-not-1'),
@@ -192,8 +224,14 @@ async (sel) => {
     row_opacity: Math.round(rowOp * 1000) / 1000,
     header_contrast: headerContrast,
     header_color: headerColor,
+    weakest_contrast: weakest ? weakest.contrast : null,
+    weakest_color: weakest ? weakest.color : null,
+    weakest_class: weakest ? weakest.className : null,
+    weakest_text: weakest ? weakest.text : null,
     running: leftover,
     fonts: (document.fonts && document.fonts.status) || 'unknown',
+    mutations: mutations,
+    opacity_gate: openPops.length ? 'post-force-lens-pop' : 'live',
   };
 }
 """
@@ -224,8 +262,12 @@ def _png_meta(png: bytes) -> tuple[str, str, int, int]:
     return name, digest, int(w), int(h)
 
 
-def _require_clean_head() -> str:
-    """Refuse capture on a dirty tree. Manifest sha must be the commit that produced the pixels."""
+def _require_clean_head() -> tuple[str, str, bool]:
+    """Refuse capture on a dirty tree. Manifest sha must be the commit that produced the pixels.
+
+    Returns (sha, porcelain_string, capture_sha_equals_head) — receipts are the
+    comparison/accumulator results, never constants.
+    """
     porcelain = subprocess.check_output(
         ["git", "status", "--porcelain"], cwd=_ROOT, text=True)
     if porcelain.strip():
@@ -234,9 +276,10 @@ def _require_clean_head() -> str:
         ["git", "rev-parse", "HEAD"], cwd=_ROOT, text=True).strip()
     hand = _git_head_sha(_ROOT)
     hand_sha = hand.sha if hasattr(hand, "sha") else str(hand)
-    if hand_sha and hand_sha != sha:
+    capture_sha_equals_head = bool(hand_sha) and hand_sha == sha
+    if hand_sha and not capture_sha_equals_head:
         raise SystemExit(f"REFUSED: git HEAD {sha} != hand reader {hand_sha}")
-    return sha
+    return sha, porcelain, capture_sha_equals_head
 
 
 def _paint_degraded_sources(v2: dict) -> None:
@@ -263,8 +306,11 @@ def _paint_degraded_sources(v2: dict) -> None:
 
 def _fixture_html() -> str:
     members = [_member(ticker="600104.SS", name="SAIC Motor")]
+    # Exercise-the-fix σ seeds: {+0.45, +1.5, −1.5, +2.5, −2.5, +3.4, −3.4}.
+    # abs near 0 → quiet (B1); |abs|≥0.1 with signed rel → loud quadrants.
+    # q-weak (pos abs + neg rel) stays empty so the empty-why is in pixels.
     nine = [
-        _theme(0, vel=0.45, rate_4wk=-0.9, rate_rel=0.45, accel=0.01,
+        _theme(0, vel=0.45, rate_4wk=0.02, rate_rel=0.45, accel=0.01,
                name="Close pace", name_zh="接近常态", members=members),
         _theme(1, vel=3.40, rate_4wk=1.4, rate_rel=3.40, accel=0.04,
                name="Rare high", name_zh="罕见高位"),
@@ -273,17 +319,26 @@ def _fixture_html() -> str:
                state="insufficient coverage", state_zh="覆盖不足",
                n_covered=1, n_members=20, coverage_pct=5.0,
                coverage_state="insufficient_coverage"),
+        _theme(3, vel=1.5, rate_4wk=-0.9, rate_rel=1.5, accel=0.02,
+               name="Running above", name_zh="高于常态"),
+        _theme(4, vel=-1.5, rate_4wk=-1.2, rate_rel=-1.5, accel=-0.02,
+               name="Running below", name_zh="低于常态"),
+        _theme(5, vel=2.5, rate_4wk=-0.8, rate_rel=2.5, accel=0.03,
+               name="Well above", name_zh="明显高于"),
+        _theme(6, vel=-2.5, rate_4wk=-1.8, rate_rel=-2.5, accel=-0.03,
+               name="Well below", name_zh="明显低于"),
+        _theme(7, vel=-3.4, rate_4wk=-2.2, rate_rel=-3.4, accel=-0.04,
+               name="Rare low", name_zh="罕见低位"),
+        _theme(8, vel=0.45, rate_4wk=0.05, rate_rel=0.45, accel=0.0,
+               name="Near norm two", name_zh="接近常态二"),
     ]
-    for i in range(3, 9):
-        nine.append(_theme(i, vel=1.0 + (i - 3) * 0.2, rate_4wk=-0.9,
-                           rate_rel=0.4 + i * 0.1))
     aggregate = [
         {"key": "southbound", "label": "Southbound — mainland money into HK",
          "label_zh": "南向 · 内地资金入港", "live": True, "as_of": "2026-09-01",
          "spark": None, "flow_1m_b": 23.6, "pos_days_20": 12,
-         "vel": {"1w": 0.45, "1m": 3.40, "3m": 1.2}, "accel": -0.05,
-         "vel_primary": 3.40, "primary": "1m",
-         "state": "above norm, rising", "state_zh": "高于常态·升温"},
+         "vel": {"1w": 0.45, "1m": 3.40, "3m": -1.5}, "accel": -0.05,
+         "vel_primary": -1.5, "primary": "3m",
+         "state": "buying slowing", "state_zh": "买入放缓"},
         {"key": "northbound", "label": "Northbound — foreign money into A-shares",
          "label_zh": "北向 · 外资入A股", "live": False, "as_of": None,
          "spark": None, "frozen_since": "2024-08-16",
@@ -314,10 +369,27 @@ def _fixture_html() -> str:
         rows[2]["n_covered"] = 1
         rows[2]["n_members"] = 20
         rows[2]["coverage_pct"] = 5.0
+    # B2 proof: a quality transition + a source revision ride the same change list
+    # as a quadrant flip so hero integer == summary integer == li.fv-chg-row.
+    v2["change_summary"] = {
+        "material_change": True,
+        "previous_valid_session": "2026-08-31",
+        "transitions": [{"id": "cn_t03", "from_quadrant": "true_distribution",
+                         "to_quadrant": "improving_but_still_selling"}],
+        "rank_movers": [],
+        "quality_transitions": [{"kind": "quality", "id": "cn_large_order_proxy",
+                                 "from_status": "HEALTHY", "to_status": "STALE"}],
+        "source_revisions": [{"kind": "revision", "id": "southbound",
+                              "entity_kind": "market",
+                              "effective_session": "2026-09-01",
+                              "from": {"quadrant": "weakening_but_still_buying"},
+                              "to": {"quadrant": "weakening_but_still_buying",
+                                     "vel": -1.5}}],
+    }
     env = Environment(loader=FileSystemLoader(str(_ROOT / "templates")), autoescape=True)
     env.globals.update(td=i18n.td, tr=i18n.tr, quadrant_labels=QUADRANT_LABELS,
                        status_word=STATUS_WORD, sigma_meaning=sigma_meaning)
-    return env.get_template("flow_velocity.html.j2").render(C=C, snap=v2, built="w13-r3")
+    return env.get_template("flow_velocity.html.j2").render(C=C, snap=v2, built="w13-r4")
 
 
 def _prepare_scratch(scratch: Path) -> None:
@@ -335,136 +407,104 @@ def _prepare_scratch(scratch: Path) -> None:
         shutil.copytree(fonts_src, scratch / "fonts", dirs_exist_ok=True)
 
 
+def _spec(cell_id: str, family: str, theme: str, locale: str, *,
+          sel: str, kind: str = "element", action: str | None = None,
+          tip_sel: str | None = None, w: int = 1440, h: int = 900,
+          hscroll: bool = False, canvas: bool = False) -> dict:
+    spec: dict = {
+        "id": cell_id, "family": family, "theme": theme, "locale": locale,
+        "w": w, "h": h, "kind": kind, "sel": sel, "action": action,
+        "canvas": canvas,
+    }
+    if tip_sel:
+        spec["tip_sel"] = tip_sel
+    if hscroll:
+        spec["hscroll"] = True
+    return spec
+
+
+def _both(family: str, stem: str, **kwargs) -> list[dict]:
+    return [
+        _spec(f"{stem}-{theme}-{locale}", family, theme, locale, **kwargs)
+        for theme in ("dark", "light")
+        for locale in ("en", "zh")
+    ]
+
+
 def _cell_matrix() -> list[dict]:
     cells: list[dict] = []
+    # Packet: dark × light × EN × ZH × desktop 1440 / mobile 390w.
     for theme in ("dark", "light"):
         for locale in ("en", "zh"):
-            cells.append({
-                "id": f"baseline-{theme}-{locale}-desktop",
-                "family": "baseline", "theme": theme, "locale": locale,
-                "w": 1440, "h": 900, "kind": "fullpage",
-                "sel": ".wrap", "action": None,
-            })
-            cells.append({
-                "id": f"baseline-{theme}-{locale}-mobile",
-                "family": "baseline", "theme": theme, "locale": locale,
-                "w": 390, "h": 844, "kind": "fullpage",
-                "sel": ".wrap", "action": None, "hscroll": True,
-            })
-    # (a) banded σ tips OPEN — |σ|<1 and |σ|≥3, row host + channel host.
-    # Copy difference → EN+ZH; tip chrome is visual → dark+light for the row host.
-    for theme in ("dark", "light"):
-        for locale in ("en", "zh"):
-            cells.append({
-                "id": f"sigma-row-lo-{theme}-{locale}",
-                "family": "sigma-row", "theme": theme, "locale": locale,
-                "w": 1440, "h": 900, "kind": "union-tip",
-                "sel": 'tr.sector-row[data-sector="cn_t00"] .vbar-cell',
-                "tip_sel": 'tr.sector-row[data-sector="cn_t00"] .vbar-cell .lens-q',
-                "action": "tip",
-            })
-            cells.append({
-                "id": f"sigma-row-hi-{theme}-{locale}",
-                "family": "sigma-row", "theme": theme, "locale": locale,
-                "w": 1440, "h": 900, "kind": "union-tip",
-                "sel": 'tr.sector-row[data-sector="cn_t01"] .vbar-cell',
-                "tip_sel": 'tr.sector-row[data-sector="cn_t01"] .vbar-cell .lens-q',
-                "action": "tip",
-            })
-    for locale in ("en", "zh"):
-        cells.append({
-            "id": f"sigma-chan-lo-dark-{locale}",
-            "family": "sigma-chan", "theme": "dark", "locale": locale,
-            "w": 1440, "h": 900, "kind": "union-tip",
-            "sel": "#channels .vchip",
-            "tip_sel": "#channels .vchip:nth-of-type(1) .lens-q",
-            "action": "tip",
-        })
-        cells.append({
-            "id": f"sigma-chan-hi-dark-{locale}",
-            "family": "sigma-chan", "theme": "dark", "locale": locale,
-            "w": 1440, "h": 900, "kind": "union-tip",
-            "sel": "#channels .vchip:nth-of-type(2)",
-            "tip_sel": "#channels .vchip:nth-of-type(2) .lens-q",
-            "action": "tip",
-        })
-    # (b) four-bucket counters + buying-slowing row (copy EN+ZH, visual dark+light)
-    for theme in ("dark", "light"):
-        for locale in ("en", "zh"):
-            cells.append({
-                "id": f"counters-{theme}-{locale}",
-                "family": "counters", "theme": theme, "locale": locale,
-                "w": 1440, "h": 900, "kind": "element",
-                "sel": "#momentum", "action": "open-momentum",
-            })
-    # (c) rank empty states at rest, tip open (copy)
-    for locale in ("en", "zh"):
-        cells.append({
-            "id": f"rank-firstday-dark-{locale}",
-            "family": "rank", "theme": "dark", "locale": locale,
-            "w": 1440, "h": 900, "kind": "union-tip",
-            "sel": 'tr.sector-row[data-sector="cn_t00"] td.tnum:nth-last-child(2)',
-            "tip_sel": 'tr.sector-row[data-sector="cn_t00"] td.tnum .lens-q',
-            "action": "tip",
-        })
-        cells.append({
-            "id": f"rank-notranked-dark-{locale}",
-            "family": "rank", "theme": "dark", "locale": locale,
-            "w": 1440, "h": 900, "kind": "union-tip",
-            "sel": 'tr.mrow[data-sector="cn_t00"] td[colspan] .rk.na',
-            "tip_sel": 'tr.mrow[data-sector="cn_t00"] td[colspan] .lens-q',
-            "action": "open-member-tip",
-        })
-    # (d) h1 22px/800 with eyebrow in frame (visual)
-    for theme in ("dark", "light"):
-        for locale in ("en", "zh"):
-            cells.append({
-                "id": f"h1-{theme}-{locale}",
-                "family": "h1", "theme": theme, "locale": locale,
-                "w": 1440, "h": 900, "kind": "element",
-                "sel": ".fv-hero-eyebrow", "action": None,
-            })
-    # (e) capped board: 8 rows + See all 9, expanded, sort-reset
-    for theme in ("dark", "light"):
-        cells.append({
-            "id": f"board-cap-{theme}-en",
-            "family": "board", "theme": theme, "locale": "en",
-            "w": 1440, "h": 900, "kind": "element",
-            "sel": "#groups .fv-board-block", "action": None,
-        })
-        cells.append({
-            "id": f"board-expanded-{theme}-en",
-            "family": "board", "theme": theme, "locale": "en",
-            "w": 1440, "h": 900, "kind": "element",
-            "sel": "#groups .fv-board-block", "action": "expand",
-        })
-    cells.append({
-        "id": "board-sortreset-dark-en",
-        "family": "board", "theme": "dark", "locale": "en",
-        "w": 1440, "h": 900, "kind": "element",
-        "sel": "#groups .fv-board-block", "action": "sortreset",
-    })
-    # (f) MIN-7 a11y: label-as-button focus ring
-    cells.append({
-        "id": "a11y-focus-dark-en",
-        "family": "a11y", "theme": "dark", "locale": "en",
-        "w": 1440, "h": 900, "kind": "element",
-        "sel": "#groups .fv-see-all", "action": "focus",
-    })
-    # (g) four designed degraded states, both themes
-    for theme in ("dark", "light"):
-        cells.append({
-            "id": f"degraded-trust-{theme}-en",
-            "family": "degraded", "theme": theme, "locale": "en",
-            "w": 1440, "h": 900, "kind": "element",
-            "sel": "#sources .fv-trust-row", "action": None,
-        })
-        cells.append({
-            "id": f"degraded-insuff-{theme}-en",
-            "family": "degraded", "theme": theme, "locale": "en",
-            "w": 1440, "h": 900, "kind": "element",
-            "sel": 'tr.sector-row[data-sector="cn_t02"]', "action": None,
-        })
+            cells.append(_spec(
+                f"baseline-{theme}-{locale}-desktop", "baseline", theme, locale,
+                sel=".wrap", kind="fullpage"))
+            cells.append(_spec(
+                f"baseline-{theme}-{locale}-mobile", "baseline", theme, locale,
+                sel=".wrap", kind="fullpage", w=390, h=844, hscroll=True))
+    # Packet: hero (h1 + stance + the moves count). Keep the tight h1 crop too.
+    cells += _both("hero", "hero", sel=".fv-hero", canvas=True)
+    cells += _both("h1", "h1", sel=".fv-hero-eyebrow", canvas=True)
+    # Packet: Data Sources chip row (labelled figures + freshness state) both lanes.
+    cells += _both("degraded", "degraded-trust", sel="#sources .fv-trust-row", canvas=True)
+    cells += _both("degraded", "degraded-insuff",
+                   sel='tr.sector-row[data-sector="cn_t02"]', canvas=True)
+    # Packet: #quadrant block (empty-why visible; no "insufficient data").
+    cells += _both("quadrant", "quadrant", sel="#quadrant", canvas=True)
+    # Packet: Theme Flow Board head (8 rows + counted See all N + stance) + expanded + sort-reset.
+    cells += _both("board", "board-cap", sel="#groups .fv-board-block")
+    cells += _both("board", "board-expanded", sel="#groups .fv-board-block", action="expand")
+    cells += _both("board", "board-sortreset", sel="#groups .fv-board-block", action="sortreset")
+    # Packet: one expanded theme's change list (quality transition in the same render).
+    cells += _both("changed", "changed", sel="#changed", canvas=True)
+    # Packet: Southbound channel card (σ treatment + disambiguated easing) both art directions.
+    cells += _both("southbound", "southbound", sel="#channels .vcard", canvas=True)
+    # Packet: footer (one sentence per line at rest, receipts in the tip — tip OPEN).
+    cells += _both("footer", "footer-tip", sel=".foot", kind="union-tip",
+                   tip_sel=".foot .qm", action="tip", canvas=True)
+    # Banded σ tips OPEN — band 1/2/3/4 × sign, row host, both lanes.
+    _row_sigma = (
+        ("sigma-row-lo", "cn_t00"),       # +0.45 band 1
+        ("sigma-row-hi", "cn_t01"),       # +3.40 band 4
+        ("sigma-row-b2-pos", "cn_t03"),   # +1.5 band 2 高于
+        ("sigma-row-b2-neg", "cn_t04"),   # −1.5 band 2 低于
+        ("sigma-row-b3-pos", "cn_t05"),   # +2.5 band 3 明显高于
+        ("sigma-row-b3-neg", "cn_t06"),   # −2.5 band 3 明显低于
+        ("sigma-row-hi-neg", "cn_t07"),   # −3.4 band 4
+    )
+    for stem, sid in _row_sigma:
+        cells += _both(
+            "sigma-row", stem,
+            sel=f'tr.sector-row[data-sector="{sid}"] .vbar-cell',
+            tip_sel=f'tr.sector-row[data-sector="{sid}"] .vbar-cell .lens-q',
+            kind="union-tip", action="tip", canvas=True)
+    # Channel host: band 1 / band 4 / band-2-negative (tinted st-out card), both themes.
+    _chan = (
+        ("sigma-chan-lo", "#channels .vrow .vchip:nth-of-type(1)"),
+        ("sigma-chan-hi", "#channels .vrow .vchip:nth-of-type(2)"),
+        ("sigma-chan-b2-neg", "#channels .vrow .vchip:nth-of-type(3)"),
+    )
+    for stem, sel in _chan:
+        cells += _both(
+            "sigma-chan", stem, sel=sel, tip_sel=f"{sel} .lens-q",
+            kind="union-tip", action="tip", canvas=True)
+    # Counters (copy EN+ZH, visual dark+light)
+    cells += _both("counters", "counters", sel="#momentum", action="open-momentum")
+    # Rank empty states, tip open, both themes (MAJOR-2 light cells).
+    cells += _both(
+        "rank", "rank-firstday",
+        sel='tr.sector-row[data-sector="cn_t00"] td.tnum:nth-last-child(2)',
+        tip_sel='tr.sector-row[data-sector="cn_t00"] td.tnum .lens-q',
+        kind="union-tip", action="tip", canvas=True)
+    cells += _both(
+        "rank", "rank-notranked",
+        sel='tr.mrow[data-sector="cn_t00"] td[colspan] .rk.na',
+        tip_sel='tr.mrow[data-sector="cn_t00"] td[colspan] .lens-q',
+        kind="union-tip", action="open-member-tip", canvas=True)
+    # MIN-7 a11y: label-as-button focus ring (kept)
+    cells.append(_spec(
+        "a11y-focus-dark-en", "a11y", "dark", "en",
+        sel="#groups .fv-see-all", action="focus"))
     return cells
 
 
@@ -537,6 +577,16 @@ def _do_action(page, spec: dict) -> dict:
     return extra
 
 
+def _pad_clip(box: dict, vw: int, vh: int, pad: int) -> dict:
+    x = max(0, box["x"] - pad)
+    y = max(0, box["y"] - pad)
+    return {
+        "x": int(x), "y": int(y),
+        "width": max(1, int(min(vw - x, box["width"] + 2 * pad))),
+        "height": max(1, int(min(vh - y, box["height"] + 2 * pad))),
+    }
+
+
 def _screenshot(page, spec: dict) -> bytes:
     kind = spec["kind"]
     if kind == "fullpage":
@@ -544,6 +594,7 @@ def _screenshot(page, spec: dict) -> bytes:
     loc = page.locator(spec["sel"]).first
     loc.wait_for(state="visible", timeout=8000)
     loc.scroll_into_view_if_needed()
+    pad = 24 if spec.get("canvas") else 8
     if kind == "union-tip":
         host = loc.bounding_box()
         pop = page.locator(".lens-pop.open").first
@@ -552,23 +603,24 @@ def _screenshot(page, spec: dict) -> bytes:
         if host is None or box is None:
             return page.screenshot(type="png")
         clip = _union_clip(host, box, spec["w"], spec["h"])
-        pad = 8
-        clip["x"] = max(0, clip["x"] - pad)
-        clip["y"] = max(0, clip["y"] - pad)
-        clip["width"] = min(spec["w"] - clip["x"], clip["width"] + 2 * pad)
-        clip["height"] = min(spec["h"] - clip["y"], clip["height"] + 2 * pad)
+        clip = _pad_clip(clip, spec["w"], spec["h"], pad)
         return page.screenshot(type="png", clip=clip)
+    if spec.get("canvas"):
+        box = loc.bounding_box()
+        if box is not None and box["height"] <= spec["h"] - 8:
+            return page.screenshot(type="png", clip=_pad_clip(box, spec["w"], spec["h"], pad))
     return loc.screenshot(type="png")
 
 
 def _write_readme(sha: str, rows: list[dict], hscroll: dict, r2_deleted: list[str]) -> str:
     lines = [
-        "# flow_velocity W13 r3 — settled evidence matrix",
+        "# flow_velocity W13 r4 — packet-complete settled evidence matrix",
         "",
-        f"Provenance: committed head `{sha}`. Porcelain empty at capture.",
+        f"Provenance: committed head `{sha}`. Porcelain captured as the git status string.",
         "S1 rig: fixture VM (no live bake), real `body.page-flow-velocity`, Playwright",
         "localStorage seed + setTheme/setLang, `window.__skyDeck = true`, attribute",
-        "re-read refuse-on-mismatch, overlay column, SETTLE column.",
+        "re-read refuse-on-mismatch, overlay column, SETTLE column, mutations column.",
+        "Each cell row carries `capture_sha` equal to this head.",
         "",
         "## DARK TREATMENT",
         "",
@@ -606,8 +658,25 @@ def _write_readme(sha: str, rows: list[dict], hscroll: dict, r2_deleted: list[st
         "",
         "`document.fonts.ready`, then `getAnimations({subtree:true})` empty-or-finished",
         "on the content root (force-finish). Effective opacity == 1 on the board/content",
-        "root AND a sampled row. Header-cell contrast recorded. A cell that fails settle",
-        "is REFUSED, not captured. Reduced-motion is not the settle mechanism.",
+        "root AND a sampled row. Header-cell contrast recorded. Weakest-text contrast in",
+        "the clipped region (chip cells include `.s-meta`) is recorded separately.",
+        "A cell that fails settle is REFUSED, not captured. Reduced-motion is not the",
+        "settle mechanism.",
+        "",
+        "## Mutations (lawful force-finish; disclosed per cell)",
+        "",
+        "Two settle mutations run BEFORE effectiveOpacity() is measured:",
+        "",
+        "1. `.fv-reveal` classList.add(`is-in`) — force-finishes the 0.5s entrance fade",
+        "   (the same class the page adds on intersection). Recorded as",
+        "   `fv-reveal.is-in force-finish` on every cell.",
+        "2. `.lens-pop.open` `style.opacity='1'` and `style.transform='none'` — force-",
+        "   finishes the LENS popover entrance. Recorded as",
+        "   `lens-pop.open opacity=1 transform=none (opacity gate measured post-force)`",
+        "   on every cell that has an open pop at settle time (all σ-tip / footer-tip /",
+        "   rank-tip cells). For those cells the opacity gate is measured **post-force**",
+        "   (`settle.opacity_gate = post-force-lens-pop`); the host row's opacity is",
+        "   still a live ancestor-walk. This is a lawful force-finish, not a fake pass.",
         "",
         "## Horizontal page scroll at 390w",
         "",
@@ -619,10 +688,11 @@ def _write_readme(sha: str, rows: list[dict], hscroll: dict, r2_deleted: list[st
         )
     lines += [
         "",
-        "## Deleted r2 PNGs (content-addressed reconciliation)",
+        "## Deleted prior-round evidence (content-addressed reconciliation)",
         "",
-        "Faded r2 cells captured mid-`fvReveal` (~15% effective contrast) are unjudgeable.",
-        "Removed in this evidence commit:",
+        "r2 cells captured mid-`fvReveal` (~15% effective contrast) and the r3 42-cell",
+        "selection (missing footer/quadrant/middle-band σ) are superseded. Removed in",
+        "this evidence commit:",
         "",
     ]
     for name in r2_deleted:
@@ -631,15 +701,17 @@ def _write_readme(sha: str, rows: list[dict], hscroll: dict, r2_deleted: list[st
         "",
         "## Cells",
         "",
-        "| id | family | theme | lang | overlay | settle | root opacity | row opacity | header contrast | alias |",
-        "|---|---|---|---|---|---|---|---|---|---|",
+        "| id | family | theme | lang | overlay | settle | opacity gate | mutations | root opacity | row opacity | header contrast | weakest contrast | alias |",
+        "|---|---|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     for r in rows:
         st = r.get("settle") or {}
+        mut = "; ".join(st.get("mutations") or [])
         lines.append(
             f"| {r['id']} | {r.get('family','')} | {r['theme']} | {r['locale']} | "
-            f"{r.get('overlay')} | {st.get('reason','')} | {st.get('root_opacity')} | "
-            f"{st.get('row_opacity')} | {st.get('header_contrast')} | `{r['alias']}` |"
+            f"{r.get('overlay')} | {st.get('reason','')} | {st.get('opacity_gate','')} | "
+            f"{mut} | {st.get('root_opacity')} | {st.get('row_opacity')} | "
+            f"{st.get('header_contrast')} | {st.get('weakest_contrast')} | `{r['alias']}` |"
         )
     lines.append("")
     return "\n".join(lines) + "\n"
@@ -651,7 +723,7 @@ def main() -> int:
     except ImportError as exc:
         raise SystemExit(f"playwright missing: {exc}") from exc
 
-    sha = _require_clean_head()
+    sha, porcelain, capture_sha_equals_head = _require_clean_head()
     _prepare_scratch(SCRATCH)
     httpd, port = serve_site_dir(SCRATCH)
     base = f"http://127.0.0.1:{port}/flow_velocity.html"
@@ -662,6 +734,8 @@ def main() -> int:
     specs = _cell_matrix()
     rows: list[dict] = []
     hscroll: dict = {}
+    failed = 0
+    refused_settle = 0
     try:
         pw = sync_playwright().start()
         browser = pw.chromium.launch(headless=True)
@@ -676,22 +750,27 @@ def main() -> int:
             page = ctx.new_page()
             resp = page.goto(base, wait_until="load", timeout=30000)
             if resp is None or not resp.ok:
+                failed += 1
                 raise RuntimeError(f"HTTP {getattr(resp, 'status', None)} on {spec['id']}")
             applied = page.evaluate(_APPLY_STATE.strip(), state) or {}
             if applied.get("theme") != spec["theme"] or applied.get("locale") != spec["locale"]:
+                failed += 1
                 raise RuntimeError(f"state mismatch {spec['id']}: {applied}")
             extra = _do_action(page, spec)
             settle = page.evaluate(_SETTLE_JS.strip(), spec["sel"]) or {}
             if not settle.get("ok"):
+                refused_settle += 1
                 raise RuntimeError(f"SETTLE REFUSED {spec['id']}: {settle}")
             overlay = page.evaluate(_OVERLAY_JS.strip(), spec["sel"])
             if not overlay.get("ok"):
+                failed += 1
                 raise RuntimeError(f"overlay over {spec['id']}: {overlay}")
             if spec.get("hscroll"):
                 hs = page.evaluate(_HSCROLL_JS.strip()) or {}
                 hscroll[spec["locale"]] = hs
                 extra["hscroll"] = hs
                 if not hs.get("ok"):
+                    failed += 1
                     raise RuntimeError(f"page h-scroll at 390w {spec['locale']}: {hs}")
             png = _screenshot(page, spec)
             name, digest, pw_, ph = _png_meta(png)
@@ -708,6 +787,8 @@ def main() -> int:
                 "applied_locale": applied.get("locale"),
                 "body_class": applied.get("body"),
                 "overlay": "clean", "overlay_hits": overlay.get("hits") or [],
+                "capture_sha": sha,
+                "mutations": list(settle.get("mutations") or []),
                 "settle": {
                     "ok": True,
                     "reason": settle.get("reason"),
@@ -715,8 +796,14 @@ def main() -> int:
                     "row_opacity": settle.get("row_opacity"),
                     "header_contrast": settle.get("header_contrast"),
                     "header_color": settle.get("header_color"),
+                    "weakest_contrast": settle.get("weakest_contrast"),
+                    "weakest_color": settle.get("weakest_color"),
+                    "weakest_class": settle.get("weakest_class"),
+                    "weakest_text": settle.get("weakest_text"),
                     "running": settle.get("running"),
                     "fonts": settle.get("fonts"),
+                    "mutations": list(settle.get("mutations") or []),
+                    "opacity_gate": settle.get("opacity_gate") or "live",
                 },
                 "receipts": extra,
             })
@@ -726,47 +813,61 @@ def main() -> int:
     finally:
         httpd.shutdown()
 
-    r2_deleted: list[str] = []
-    if R2_DIR.exists():
-        cells = R2_DIR / "cells"
+    def _delete_evidence_dir(path: Path) -> list[str]:
+        gone: list[str] = []
+        if not path.exists():
+            return gone
+        cells = path / "cells"
         if cells.is_dir():
             for p in sorted(cells.iterdir()):
-                r2_deleted.append(str(p.relative_to(_ROOT)))
+                gone.append(str(p.relative_to(_ROOT)))
                 p.unlink()
             cells.rmdir()
         for leftover in ("manifest.json", "README.md"):
-            lp = R2_DIR / leftover
+            lp = path / leftover
             if lp.exists():
-                r2_deleted.append(str(lp.relative_to(_ROOT)))
+                gone.append(str(lp.relative_to(_ROOT)))
                 lp.unlink()
         try:
-            R2_DIR.rmdir()
+            path.rmdir()
         except OSError:
             pass
+        return gone
+
+    r2_deleted = _delete_evidence_dir(R2_DIR)
+    r3_deleted = _delete_evidence_dir(R3_DIR)
 
     manifest = {
         "page": "flow_velocity.html",
-        "round": "W13-r3",
+        "round": "W13-r4",
         "target": {
             "resolved_sha_or_none": sha,
-            "porcelain": "empty",
-            "capture_sha_equals_head": True,
+            "porcelain": porcelain,
+            "capture_sha_equals_head": capture_sha_equals_head,
         },
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "selection": {"n": len(rows), "ids": [r["id"] for r in rows]},
-        "totals": {"captured": len(rows), "failed": 0, "refused_settle": 0},
+        "totals": {
+            "captured": len(rows),
+            "failed": failed,
+            "refused_settle": refused_settle,
+        },
         "hscroll_390w": hscroll,
         "r2_deleted": r2_deleted,
+        "r3_deleted": r3_deleted,
         "cells": rows,
     }
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     (OUT_DIR / "manifest.json").write_text(
         json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     (OUT_DIR / "README.md").write_text(
-        _write_readme(sha, rows, hscroll, r2_deleted), encoding="utf-8")
+        _write_readme(sha, rows, hscroll, r2_deleted + r3_deleted), encoding="utf-8")
     print(json.dumps({
         "sha": sha, "n": len(rows), "out": str(OUT_DIR),
         "hscroll": hscroll, "r2_deleted": len(r2_deleted),
+        "r3_deleted": len(r3_deleted),
+        "failed": failed, "refused_settle": refused_settle,
+        "capture_sha_equals_head": capture_sha_equals_head,
     }, indent=2))
     return 0
 
