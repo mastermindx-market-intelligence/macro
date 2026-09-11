@@ -432,19 +432,26 @@ BANNED = (
 
 
 def test_validated_word_is_confined_to_the_exact_negative_disclaimer():
-    """The approved hedge must not become a blanket licence for positive claims."""
-    expected = "Passed initial screening — no validated entry plan was produced."
-    validated_copy = {
+    """The approved hedge must not become a blanket licence in either language."""
+    expected_en = "Passed initial screening — no validated entry plan was produced."
+    expected_zh = "初筛已通过 — 尚未生成经核验的入场计划。"
+    validated_en = {
         reason: en for reason, (en, _zh) in REFUSAL_COPY.items()
         if "validated" in en.lower()
     }
-    assert validated_copy == {"plan_not_built": expected}
+    validated_zh = {
+        reason: zh for reason, (_en, zh) in REFUSAL_COPY.items()
+        if "经核验" in zh
+    }
+    assert validated_en == {"plan_not_built": expected_en}
+    assert validated_zh == {"plan_not_built": expected_zh}
 
     cx = refusal_receipts(
         _board(_row("CLEAR", score=88)), open_keys=(), originated_tickers=set())
     html = _shelf(cx)
-    assert expected in html
-    assert "validated" not in html.replace(expected, "").lower()
+    assert expected_en in html and expected_zh in html
+    assert "validated" not in html.replace(expected_en, "").lower()
+    assert "经核验" not in html.replace(expected_zh, "")
 
 
 def test_shelf_leaks_no_banned_vocabulary():
