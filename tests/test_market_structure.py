@@ -451,9 +451,10 @@ class TestGammaBlock:
     def test_dist_to_flip_derived_in_block_from_emitted_spot_and_flip(self, tmp_path):
         """P1: dist_to_flip_pct must round-trip from the same spot/flip this block emits.
 
-        Upstream dist_to_flip_pct is (spot-flip)/spot; the page prints spot and
-        flip beside a distance that must be (spot-flip)/flip. 2026-09-09:
-        spot 7636.3599, flip 7663.226367 → 0.3506% → '0.4', not the stale '0.3'.
+        Estate convention for this key is signed (spot-flip)/spot*100
+        (engine/gex_engine.py). Recompute in-block — no upstream passthrough.
+        2026-09-09: spot 7636.3599, flip 7663.226367 → 0.3518% → '0.4',
+        not the stale '0.3'. (The /flip form also formats to '0.4' today.)
         """
         from scripts.build_market_structure import _build_gamma_block
         spot, flip = 7636.3599, 7663.226367
@@ -469,13 +470,53 @@ class TestGammaBlock:
         ])
         block = _build_gamma_block(data_dir)
         assert block["spot"] is not None and block["gamma_flip"] is not None
-        recomputed = (block["spot"] - block["gamma_flip"]) / block["gamma_flip"] * 100
+        recomputed = (block["spot"] - block["gamma_flip"]) / block["spot"] * 100
         shown = f"{abs(block['dist_to_flip_pct']):.1f}"
         assert shown == f"{abs(recomputed):.1f}"
         assert shown == "0.4"
         assert shown != "0.3"
-        # and the template's 1dp string is this same shown value
+        # producer rounds to 6dp; the page contract is the 1dp string
         assert f"{abs(block['dist_to_flip_pct']):.1f}" == shown
+
+
+# ===========================================================================
+# W10 r2 — window honesty + CTA near-flat at the producer
+# ===========================================================================
+
+class TestSystematicWindowAndNearFlat:
+    """flow_window_n is the actual rolling length; cta_near_flat uses _CTA_NEAR_FLAT."""
+
+    def test_cta_near_flat_both_sides_of_the_boundary(self):
+        from scripts.build_market_structure import _CTA_DEADBAND, _CTA_NEAR_FLAT, _cta_near_flat
+        assert _CTA_NEAR_FLAT == 0.2
+        assert abs(_CTA_NEAR_FLAT - 10 * _CTA_DEADBAND) < 1e-12
+        assert _cta_near_flat(0.19) is True
+        assert _cta_near_flat(-0.19) is True
+        assert _cta_near_flat(0.2) is False
+        assert _cta_near_flat(0.25) is False
+        assert _cta_near_flat(-0.25) is False
+        assert _cta_near_flat(None) is False
+
+    def test_short_series_emits_actual_window_n(self):
+        from scripts.build_market_structure import _FLOW_WINDOW, _build_systematic_block
+        closes = _trend_up_series(n=3)
+        block, _hist = _build_systematic_block(closes)
+        assert _FLOW_WINDOW == 5
+        n = block["flow_window_n"]
+        assert n == 3, f"short 3-bar series must emit window 3, got {n}"
+        assert block["vc"]["flow_window_n"] == 3
+        assert block["cta"]["flow_window_n"] == 3
+        assert n < _FLOW_WINDOW
+
+    def test_long_series_emits_full_five_day_window(self):
+        from scripts.build_market_structure import _build_systematic_block
+        closes = _trend_up_series(n=250)
+        block, _hist = _build_systematic_block(closes)
+        assert block["flow_window_n"] == 5
+        assert block["vc"]["flow_window_n"] == 5
+        assert block["cta"]["flow_window_n"] == 5
+        assert "cta_near_flat" in block["cta"]
+        assert isinstance(block["cta"]["cta_near_flat"], bool)
 
 
 # ===========================================================================

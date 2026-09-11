@@ -41,6 +41,13 @@ log = logging.getLogger("build_market_structure")
 _TRADING_YEAR = 252
 _VC_DEADBAND_BN   = 1.0    # |5d VC flow bn| < 1.0 → pausing
 _CTA_DEADBAND     = 0.02   # |5d CTA score change| < 0.02 → pausing
+# Display mute for a grazing add/cut. 10× the pausing deadband: a 5d sum
+# inside this band is still classified adding/cutting by flow_state, but
+# must not carry the same green/red weight as a real move (VC +16.5B).
+# The template consumes the emitted `cta_near_flat` flag — do not rest
+# this threshold in Jinja.
+_CTA_NEAR_FLAT    = 0.2
+_FLOW_WINDOW      = 5      # rolling sessions for VC/CTA state chips
 _COR1M_PCTILE_LO  = 20     # ≤20th pctile → dispersion
 _COR1M_PCTILE_HI  = 80     # ≥80th pctile → elevated
 _HISTORY_ROWS     = 500    # max rows in history sections
@@ -216,10 +223,12 @@ def _build_gamma_block(data_dir: Path) -> dict:
         spot = _safe_float(latest.get("spot"))
         gamma_flip = _safe_float(latest.get("gamma_flip"))
         dist_to_flip_pct = None
-        if spot is not None and gamma_flip not in (None, 0):
-            # Derive in-block from the same spot/flip this block emits so the
-            # hero headline cannot disagree with its own receipt line.
-            dist_to_flip_pct = _safe_float((spot - gamma_flip) / gamma_flip * 100)
+        if spot not in (None, 0) and gamma_flip is not None:
+            # Estate convention for this key: signed (spot − flip) / spot · 100
+            # (engine/gex_engine.py, gex_state.py). Recompute in-block from the
+            # same pair this block emits so the hero cannot disagree with its
+            # receipt — no upstream passthrough of a precomputed distance.
+            dist_to_flip_pct = _safe_float((spot - gamma_flip) / spot * 100)
 
         return {
             "regime": regime,
@@ -359,13 +368,15 @@ def _build_systematic_block(
     null_sys = {
         "vc": {
             "alloc_bn": None, "alloc_frac": None, "flow_1d_bn": None,
-            "flow_5d_bn": None, "state": None,
+            "flow_5d_bn": None, "state": None, "flow_window_n": None,
             "aum_bn": 300.0, "target_vol_pct": 10.0, "series_start": None,
         },
         "cta": {
-            "score": None, "z": None, "flow_1d": None, "flow_5d": None, "state": None,
+            "score": None, "z": None, "flow_1d": None, "flow_5d": None,
+            "state": None, "flow_window_n": None, "cta_near_flat": None,
         },
         "agreement": None,
+        "flow_window_n": None,
         "history": [],
     }
     if closes is None or closes.empty:
@@ -380,9 +391,14 @@ def _build_systematic_block(
         vc_df  = vc_exposure(closes)
         cta_df = cta_positioning(closes)
 
-        # 5-day rolling sums for state classification
-        vc_flow_5d  = vc_df["flow_bn"].rolling(5, min_periods=1).sum()
-        cta_flow_5d = cta_df["cta_flow"].rolling(5, min_periods=1).sum()
+        # Rolling sums for state classification. min_periods=1 means a short
+        # series uses fewer than _FLOW_WINDOW sessions — emit the actual
+        # length so the chip does not claim "5 days" over a 1-day rebuild.
+        vc_flow_5d  = vc_df["flow_bn"].rolling(_FLOW_WINDOW, min_periods=1).sum()
+        cta_flow_5d = cta_df["cta_flow"].rolling(_FLOW_WINDOW, min_periods=1).sum()
+        vc_window_n  = _flow_window_n(vc_df["flow_bn"], _FLOW_WINDOW)
+        cta_window_n = _flow_window_n(cta_df["cta_flow"], _FLOW_WINDOW)
+        flow_window_n = max(vc_window_n, cta_window_n)
 
         # Latest values
         latest_vc  = vc_df.iloc[-1]
@@ -394,6 +410,7 @@ def _build_systematic_block(
         cta_s  = flow_state(latest_cta_flow_5d, _CTA_DEADBAND,  mode="cta")
         agr    = agreement(vc_s, cta_s)
         series_start = str(closes.index.min().date())
+        cta_near_flat = _cta_near_flat(latest_cta_flow_5d)
 
         # History frame (last ≤500 rows)
         hist = pd.DataFrame({
@@ -422,6 +439,7 @@ def _build_systematic_block(
                 "flow_1d_bn":   _safe_float(latest_vc["flow_bn"]),
                 "flow_5d_bn":   latest_vc_flow_5d,
                 "state":        vc_s,
+                "flow_window_n": vc_window_n,
                 "aum_bn":       300.0,
                 "target_vol_pct": 10.0,
                 "series_start": series_start,
@@ -432,8 +450,11 @@ def _build_systematic_block(
                 "flow_1d":  _safe_float(latest_cta["cta_flow"]),
                 "flow_5d":  latest_cta_flow_5d,
                 "state":    cta_s,
+                "flow_window_n": cta_window_n,
+                "cta_near_flat": cta_near_flat,
             },
             "agreement": agr,
+            "flow_window_n": flow_window_n,
             "history":   hist_rows,
         }
 
@@ -725,6 +746,24 @@ def _safe_float(v) -> float | None:
         return None if (np.isnan(f) or np.isinf(f)) else round(f, 6)
     except (TypeError, ValueError):
         return None
+
+
+def _flow_window_n(series: pd.Series, window: int = _FLOW_WINDOW) -> int:
+    """Actual observation count the rolling window used at the last row."""
+    if series is None or len(series) == 0:
+        return 0
+    obs = int(series.tail(window).notna().sum())
+    return obs if obs > 0 else int(min(window, len(series)))
+
+
+def _cta_near_flat(flow_5d: float | None) -> bool:
+    """True when |5d CTA flow| grazes below _CTA_NEAR_FLAT (not the deadband)."""
+    if flow_5d is None:
+        return False
+    try:
+        return abs(float(flow_5d)) < _CTA_NEAR_FLAT
+    except (TypeError, ValueError):
+        return False
 
 
 # ---------------------------------------------------------------------------
