@@ -1,48 +1,55 @@
 {
-  "ts": "2026-09-11T11:41:02+00:00",
-  "main_sha": "51d5cfb4e48c690d4c5c7388f764bff9bcd313de",
+  "ts": "2026-09-11T16:48:39+00:00",
+  "main_sha": "a69f102660eecf67fb8c1e08c282e2b35697f1ad",
   "red_required": [
+    {
+      "name": "rescue",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34623767223/job/103343781214"
+    },
     {
       "name": "publish",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34594131665/job/103245871011"
-    },
-    {
-      "name": "tier-gate",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34593947314/job/103245292443"
-    },
-    {
-      "name": "engine-render-guards",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34593947314/job/103245292390"
-    },
-    {
-      "name": "workflow-yaml",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34593947314/job/103245292307"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34622934423/job/103341031295"
     },
     {
       "name": "free-content-estate",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34593947314/job/103245292214"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34622420728/job/103339351520"
+    },
+    {
+      "name": "engine-render-guards",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34622420728/job/103339351496"
+    },
+    {
+      "name": "workflow-yaml",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34622420728/job/103339351494"
     },
     {
       "name": "template-site-sync",
+      "conclusion": "cancelled",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34622420728/job/103339351422"
+    },
+    {
+      "name": "tier-gate",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34593947314/job/103245292090"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34622420728/job/103339351305"
     }
   ],
   "green": false,
-  "consecutive_failures": 124,
+  "consecutive_failures": 125,
   "sensed_shas": [
-    "51d5cfb4e48c690d4c5c7388f764bff9bcd313de"
+    "a69f102660eecf67fb8c1e08c282e2b35697f1ad",
+    "eb070ae421b716061e4357518cb21856d6494293"
   ],
   "heartbeat_degraded": false
 }
