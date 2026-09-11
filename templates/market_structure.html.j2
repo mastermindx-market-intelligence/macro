@@ -7,6 +7,12 @@
 {% macro t(en, zh='') -%}
 <span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
 {%- endmacro %}
+{# Ordinal suffix — extracted so the hero cannot regress to "1th"/"3th"/"21th". #}
+{% macro ord_n(n) -%}
+{%- set _pc = n|float|round|int -%}
+{%- set _ord = 'th' if (_pc % 100) in [11, 12, 13] else {1: 'st', 2: 'nd', 3: 'rd'}.get(_pc % 10, 'th') -%}
+{{- _pc -}}{{- _ord -}}
+{%- endmacro %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -96,6 +102,13 @@ html[data-lang="zh"] .stance-chip.caution{background:rgba(26,127,67,.14);color:v
 .sc-strip{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 20px}
 .sc-chip{padding:5px 13px;border-radius:999px;font-size:12px;font-weight:600;border:1px solid var(--line);background:var(--panel2);color:var(--tx)}
 .sc-chip.changed{border-color:var(--blue);background:color-mix(in srgb,var(--blue) 12%,transparent)}
+/* .sc-chip.empty — designed hole, never a wordless highlight (MPDS §9.12).
+   DARK: dashed hairline on graphite, no blue wash, no glow.
+   LIGHT: dashed hairline on the canvas, no wash, no shadow-as-emphasis.
+   Shared: sentence + .empty-why; the .changed blue is withheld. */
+.sc-chip.empty{display:flex;flex-direction:column;align-items:flex-start;gap:4px;border-style:dashed;background:transparent;color:var(--mut);font-weight:500;white-space:normal;max-width:42ch;line-height:1.45}
+.sc-chip.empty .empty-why{font-size:11px;color:var(--faint);font-weight:400;margin:0}
+html[data-theme="light"] .sc-chip.empty{background:var(--panel)}
 /* ── regime chips ── */
 .rc{display:inline-block;padding:3px 10px;border-radius:7px;font-size:11.5px;font-weight:700;border:1px solid var(--line)}
 .rc.long{color:var(--ink-up, var(--up));border-color:var(--up);background:color-mix(in srgb,var(--up) 12%,transparent)}
@@ -104,6 +117,12 @@ html[data-lang="zh"] .stance-chip.caution{background:rgba(26,127,67,.14);color:v
 .rc.elevated,.rc.cutting{color:var(--ink-down, var(--dn));border-color:var(--dn);background:color-mix(in srgb,var(--dn) 12%,transparent)}
 .rc.normal,.rc.pausing{color:var(--mut)}
 .rc.stress{color:var(--ink-warn, var(--amb));border-color:var(--amb);background:color-mix(in srgb,var(--amb) 12%,transparent)}
+/* post-stack: consolidate */
+/* CTA 5-day flow grazing the 0.02 deadband must not carry the same green/red
+   weight as a real add/cut (VC +16.5B). Dark and light both drop to a muted
+   wash — tokens already split the two art directions. */
+.rc.adding.near-flat{color:var(--mut);border-color:color-mix(in srgb,var(--up) 28%,var(--line));background:color-mix(in srgb,var(--up) 5%,transparent)}
+.rc.cutting.near-flat{color:var(--mut);border-color:color-mix(in srgb,var(--dn) 28%,var(--line));background:color-mix(in srgb,var(--dn) 5%,transparent)}
 /* ── agreement banner ── */
 .agree{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:12px;border:1px solid var(--line);background:var(--panel2);font-size:13px;font-weight:700;margin:12px 0}
 .agree.aligned_adding{border-color:var(--up);background:color-mix(in srgb,var(--up) 10%,transparent);color:var(--ink-up, var(--up))}
@@ -215,10 +234,24 @@ html[data-theme="light"] :is(
 {% if sc is not none and sc_items is not none and sc_items | length > 0 %}
 <div class="sc-strip">
   {% for item in sc_items[:6] %}
-  <span class="sc-chip{% if item.from is not none and item.to is not none and item.from != item.to %} changed{% endif %}">
-    <span class="l-en">{{ item.label_en if item.label_en is not none else '' }}</span>
-    <span class="l-zh">{{ item.label_zh if item.label_zh is not none else (item.label_en if item.label_en is not none else '') }}</span>
+  {% set _en = item.note_en if item.note_en is not none and item.note_en else (item.label_en if item.label_en is not none and item.label_en else '') %}
+  {% set _zh = item.note_zh if item.note_zh is not none and item.note_zh else (item.label_zh if item.label_zh is not none and item.label_zh else _en) %}
+  {% set _changed = item.from is not none and item.to is not none and item.from != item.to %}
+  {% if _en or _zh %}
+  <span class="sc-chip{% if _changed %} changed{% endif %}">
+    <span class="l-en">{{ _en }}</span>
+    <span class="l-zh">{{ _zh if _zh else _en }}</span>
   </span>
+  {% else %}
+  <span class="sc-chip empty">
+    <span class="l-en">A structure change was recorded without a readable note.</span>
+    <span class="l-zh">记录到结构变化，但缺少可读说明。</span>
+    <span class="empty-why">
+      <span class="l-en">The from/to states arrived without the sentence that names them, so this chip stays quiet instead of flashing blank.</span>
+      <span class="l-zh">已有起止状态，但缺少命名该变化的句子，因此本标签保持安静，避免闪出空白胶囊。</span>
+    </span>
+  </span>
+  {% endif %}
   {% endfor %}
   {% if sc.vs_asof is not none %}<span class="sc-chip" style="color:var(--faint)">{{ t('vs', '对比') }} {{ sc.vs_asof }}</span>{% endif %}
 </div>
@@ -280,38 +313,39 @@ html[data-theme="light"] :is(
     {% endif %}
     {% if gamma.net_gex_bn is not none %}
     <div class="hmeta">
-      <b>{% if gamma.net_gex_bn|float >= 0 %}+{% endif %}{{ '%.1f'|format(gamma.net_gex_bn|float) }}B{% if gamma.net_gex_pctile is not none %} <small>({{ '%.0f'|format(gamma.net_gex_pctile|float) }}th)</small>{% endif %}</b>
+      <b>{% if gamma.net_gex_bn|float >= 0 %}+{% endif %}{{ '%.1f'|format(gamma.net_gex_bn|float) }}B{% if gamma.net_gex_pctile is not none %} <small>({{ ord_n(gamma.net_gex_pctile) }})</small>{% endif %}</b>
       <span class="l-en">net dealer exposure</span><span class="l-zh">做市商净敞口</span>
     </div>
     {% endif %}
   </div>
 
   <span class="help">?<span class="tip">
-    <span class="l-en"><b>How shock absorbers work</b><br>When dealer net GEX is positive (long gamma), they sold options and hedge by buying dips / selling rips — damping moves. When negative (short gamma), hedging requires buying rallies and selling dips — amplifying moves.<br><br>Net GEX today: {{ '%.1f'|format(gamma.net_gex_bn|float if gamma.net_gex_bn is not none else 0) }}B ({{ '%.0f'|format(gamma.net_gex_pctile|float if gamma.net_gex_pctile is not none else 0) }}th pctile since {{ gamma.series_start if gamma.series_start is not none else 'inception' }}).<br><br><em>Model estimate only — actual dealer books are unobservable. Reconstructed from the SPX options chain.</em></span>
-    <span class="l-zh"><b>缓冲机制原理</b><br>当做市商净GEX为正（多伽马）时，他们卖出期权，通过逢低买/逢高卖对冲——抑制波动。当GEX为负（空伽马）时，对冲需要追涨杀跌——放大波动。<br><br>当前净GEX：{{ '%.1f'|format(gamma.net_gex_bn|float if gamma.net_gex_bn is not none else 0) }}B（自{{ gamma.series_start if gamma.series_start is not none else '首日' }}以来{{ '%.0f'|format(gamma.net_gex_pctile|float if gamma.net_gex_pctile is not none else 0) }}百分位）。<br><br><em>仅为模型估算——做市商实际账簿不可观测，由标普500指数期权链重建。</em></span>
+    <span class="l-en"><b>How shock absorbers work</b><br>When dealer net GEX is positive (long gamma), they sold options and hedge by buying dips / selling rips — damping moves. When negative (short gamma), hedging requires buying rallies and selling dips — amplifying moves.<br><br>Net GEX today: {{ '%.1f'|format(gamma.net_gex_bn|float if gamma.net_gex_bn is not none else 0) }}B ({{ ord_n(gamma.net_gex_pctile) if gamma.net_gex_pctile is not none else '0th' }} pctile since {{ gamma.series_start if gamma.series_start is not none else 'inception' }}).<br><br><em>Model estimate only — actual dealer books are unobservable. Reconstructed from the SPX options chain.</em></span>
+    <span class="l-zh"><b>缓冲机制原理</b><br>当做市商净GEX为正（多伽马）时，他们卖出期权，通过逢低买/逢高卖对冲——抑制波动。当GEX为负（空伽马）时，对冲需要追涨杀跌——放大波动。<br><br>当前净GEX：{{ '%.1f'|format(gamma.net_gex_bn|float if gamma.net_gex_bn is not none else 0) }}B（自{{ gamma.series_start if gamma.series_start is not none else '首日' }}以来{{ (gamma.net_gex_pctile|float|round|int) if gamma.net_gex_pctile is not none else 0 }}百分位）。<br><br><em>仅为模型估算——做市商实际账簿不可观测，由标普500指数期权链重建。</em></span>
   </span></span>
 
   {# Missing-session disclosure. The options chain we rebuild this from is a live
      snapshot — a session we did not capture that evening can never be filled in,
      so the honest thing is to name the days the read skips rather than let the
-     line and the day-count quietly close over them. #}
-  {% if gamma.coverage and not gamma.coverage.complete %}
-  {% set _miss = (gamma.coverage.missing_recent or []) + (gamma.coverage.missing_in_regime or []) %}
-  {% set _miss = _miss | unique | list | sort %}
-  {% if _miss %}
-  {% set _shown = _miss[-5:] %}
-  {% set _more = _miss | length - _shown | length %}
+     line and the day-count quietly close over them. Merged with provenance into
+     ONE footnote (Law 4) — null sentence first, verbatim; provenance after a ·. #}
+  {% set _cov = gamma.coverage if (gamma.coverage and not gamma.coverage.complete) else none %}
+  {% set _miss = (((_cov.missing_recent or []) + (_cov.missing_in_regime or [])) | unique | list | sort) if _cov else [] %}
+  {% set _shown = _miss[-5:] if _miss else [] %}
+  {% set _more = (_miss | length - _shown | length) if _miss else 0 %}
+  {% set _has_null = _miss | length > 0 %}
+  {% set _has_prov = gamma.series_start is not none or (msp is defined and msp is not none and msp.asof is not none) %}
+  {% if _has_null or _has_prov %}
   <div class="sec-foot" style="margin-top:14px">
+    {% if _has_null %}
     <span class="l-en"><b>No chain reading for {{ _miss | length }} recent {{ 'session' if _miss|length == 1 else 'sessions' }}</b> ({{ _shown | join(', ') }}{% if _more > 0 %} and {{ _more }} earlier{% endif %}) — the options chain is a live snapshot, so a session we miss cannot be filled in later. Everything above skips those days.</span>
     <span class="l-zh"><b>近期有 {{ _miss | length }} 个交易日无期权链读数</b>（{{ _shown | join('、') }}{% if _more > 0 %} 及更早 {{ _more }} 日{% endif %}）— 期权链为实时快照，当日未采集便无法补录。以上所有读数均跳过这些日期。</span>
-  </div>
-  {% endif %}
-  {% endif %}
-
-  {% if gamma.series_start is not none or (msp is defined and msp is not none and msp.asof is not none) %}
-  <div class="sec-foot" style="margin-top:14px">
+    {% endif %}
+    {% if _has_null and _has_prov %} · {% endif %}
+    {% if _has_prov %}
     {% if gamma.series_start is not none %}{{ t('GEX series from', 'GEX数据自') }} {{ gamma.series_start }}{% endif %}
     {% if msp is defined and msp is not none and msp.asof is not none %} · {{ t('as of', '截至') }} {{ msp.asof }}{% endif %}
+    {% endif %}
   </div>
   {% endif %}
 </div>
@@ -368,10 +402,10 @@ html[data-theme="light"] :is(
 
 {% if sys is not none %}
 <div class="agree {{ agree if agree is not none else '' }}">
-  {% if agree == 'aligned_adding' %}<span class="l-en">Machine money: aligned · both adding</span><span class="l-zh">机器资金：一致 · 两路同步加仓</span>
-  {% elif agree == 'aligned_cutting' %}<span class="l-en">Machine money: aligned · both cutting</span><span class="l-zh">机器资金：一致 · 两路同步减仓</span>
-  {% elif agree == 'split' %}<span class="l-en">Machine money: split — signals disagree</span><span class="l-zh">机器资金：分歧 — 信号不一致</span>
-  {% elif agree == 'paused' %}<span class="l-en">Machine money: paused</span><span class="l-zh">机器资金：暂停</span>
+  {% if agree == 'aligned_adding' %}<span class="l-en">Machine money: aligned · both adding over 5 days</span><span class="l-zh">机器资金：一致 · 两路5日同步加仓</span>
+  {% elif agree == 'aligned_cutting' %}<span class="l-en">Machine money: aligned · both cutting over 5 days</span><span class="l-zh">机器资金：一致 · 两路5日同步减仓</span>
+  {% elif agree == 'split' %}<span class="l-en">Machine money: split — signals disagree over 5 days</span><span class="l-zh">机器资金：分歧 — 5日信号不一致</span>
+  {% elif agree == 'paused' %}<span class="l-en">Machine money: paused over 5 days</span><span class="l-zh">机器资金：5日暂停</span>
   {% else %}<span class="l-en">Agreement: {{ agree if agree is not none else 'unknown' }}</span><span class="l-zh">共识：{{ agree if agree is not none else '未知' }}</span>
   {% endif %}
 </div>
@@ -383,7 +417,7 @@ html[data-theme="light"] :is(
     {% if vc is not none %}
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap">
       {% if vc.alloc_bn is not none %}<div style="font-size:17px;font-weight:800;color:var(--ink)">${{ '%.0f'|format(vc.alloc_bn|float) }}B</div>{% endif %}
-      {% if vc.state is not none %}<span class="rc {{ vc.state }}">{% if vc.state=='adding' %}<span class="l-en">Adding</span><span class="l-zh">加仓中</span>{% elif vc.state=='cutting' %}<span class="l-en">Cutting</span><span class="l-zh">减仓中</span>{% else %}<span class="l-en">Pausing</span><span class="l-zh">暂停</span>{% endif %}</span>{% endif %}
+      {% if vc.state is not none %}<span class="rc {{ vc.state }}">{% if vc.state=='adding' %}<span class="l-en">Adding over 5 days</span><span class="l-zh">5日加仓中</span>{% elif vc.state=='cutting' %}<span class="l-en">Cutting over 5 days</span><span class="l-zh">5日减仓中</span>{% else %}<span class="l-en">Pausing over 5 days</span><span class="l-zh">5日暂停</span>{% endif %}</span>{% endif %}
     </div>
     <div class="badge-stack">
       {% if vc.flow_1d_bn is not none %}<span class="badge {{ 'up' if vc.flow_1d_bn|float >= 0 else 'dn' }}">{% if vc.flow_1d_bn|float >= 0 %}▲{% else %}▼{% endif %} ${{ '%.1f'|format(vc.flow_1d_bn|float|abs) }}B {{ t('today', '今日') }}</span>{% endif %}
@@ -400,7 +434,8 @@ html[data-theme="light"] :is(
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap">
       {% if cta.score is not none %}<div style="font-size:17px;font-weight:800;color:var(--ink)">{% if cta.score|float >= 0 %}+{% endif %}{{ '%.2f'|format(cta.score|float) }} <small style="font-size:12px;font-weight:500;color:var(--faint)">{{ t('trend score', '趋势分数') }}</small></div>{% endif %}
       {% if cta.score is not none %}{% set _cs = cta.score|float %}<span class="rc {{ 'adding' if _cs > 0.15 else ('cutting' if _cs < -0.15 else 'pausing') }}">{% if _cs > 0.15 %}<span class="l-en">Positioned long</span><span class="l-zh">持多仓</span>{% elif _cs < -0.15 %}<span class="l-en">Positioned short</span><span class="l-zh">持空仓</span>{% else %}<span class="l-en">Near flat</span><span class="l-zh">接近空仓</span>{% endif %}</span>{% endif %}
-      {% if cta.state is not none %}<span class="rc {{ cta.state }}">{% if cta.state=='adding' %}<span class="l-en">adding exposure</span><span class="l-zh">加仓中</span>{% elif cta.state=='cutting' %}<span class="l-en">trimming exposure</span><span class="l-zh">减仓中</span>{% else %}<span class="l-en">holding steady</span><span class="l-zh">持稳</span>{% endif %}</span>{% endif %}
+      {% if cta.state is not none %}{% set _cta_near = cta.flow_5d is not none and (cta.flow_5d|float)|abs < 0.2 %}
+      <span class="rc {{ cta.state }}{% if _cta_near %} near-flat{% endif %}">{% if cta.state=='adding' %}<span class="l-en">adding exposure over 5 days</span><span class="l-zh">5日加仓中</span>{% elif cta.state=='cutting' %}<span class="l-en">trimming exposure over 5 days</span><span class="l-zh">5日减仓中</span>{% else %}<span class="l-en">holding steady over 5 days</span><span class="l-zh">5日持稳</span>{% endif %}</span>{% endif %}
     </div>
     {% if cta.z is not none %}{% set _cz = cta.z|float %}<div style="font-size:12px;color:var(--mut);margin-bottom:6px">{% if _cz <= -0.3 %}<span class="l-en">Lighter than their 1-year norm ({{ '%.1f'|format(_cz) }})</span><span class="l-zh">仓位低于近一年常态（{{ '%.1f'|format(_cz) }}）</span>{% elif _cz >= 0.3 %}<span class="l-en">Heavier than their 1-year norm (+{{ '%.1f'|format(_cz) }})</span><span class="l-zh">仓位高于近一年常态（+{{ '%.1f'|format(_cz) }}）</span>{% else %}<span class="l-en">Near their 1-year norm</span><span class="l-zh">接近近一年常态</span>{% endif %}</div>{% endif %}
     <div class="badge-stack">
@@ -461,9 +496,7 @@ html[data-theme="light"] :is(
     {% if disp.cor1m_1y_delta is not none %}<div class="kpi"><b class="{{ 'up' if disp.cor1m_1y_delta|float < 0 else 'dn' }}">{% if disp.cor1m_1y_delta|float >= 0 %}+{% endif %}{{ '%.2f'|format(disp.cor1m_1y_delta|float) }}</b>{{ t('vs 1 year ago', '较一年前') }}</div>{% endif %}
     {# Ordinal suffix, not a hardcoded "th" — the 3rd percentile was rendering "3th". #}
     {% if disp.cor1m_pctile_2y is not none %}
-    {% set _pc = disp.cor1m_pctile_2y|float|round|int %}
-    {% set _ord = 'th' if (_pc % 100) in [11, 12, 13] else {1: 'st', 2: 'nd', 3: 'rd'}.get(_pc % 10, 'th') %}
-    <div class="kpi"><b>{{ _pc }}{{ _ord }}</b>{{ t('percentile (2-year)', '百分位（2年）') }}</div>
+    <div class="kpi"><b>{{ ord_n(disp.cor1m_pctile_2y) }}</b>{{ t('percentile (2-year)', '百分位（2年）') }}</div>
     {% endif %}
     {% if disp.cor3m is not none %}<div class="kpi"><b>{{ '%.2f'|format(disp.cor3m|float) }}</b>{{ t('3-month corr', '3个月相关性') }}</div>{% endif %}
     {% if disp.dspx is not none %}<div class="kpi"><b>{{ '%.1f'|format(disp.dspx|float) }}</b>{{ t('CBOE dispersion', 'CBOE离散度') }}</div>{% endif %}

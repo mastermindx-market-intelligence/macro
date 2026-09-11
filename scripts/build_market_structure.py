@@ -213,13 +213,21 @@ def _build_gamma_block(data_dir: Path) -> dict:
                 "spot": _safe_float(row.get("spot")),
             })
 
+        spot = _safe_float(latest.get("spot"))
+        gamma_flip = _safe_float(latest.get("gamma_flip"))
+        dist_to_flip_pct = None
+        if spot is not None and gamma_flip not in (None, 0):
+            # Derive in-block from the same spot/flip this block emits so the
+            # hero headline cannot disagree with its own receipt line.
+            dist_to_flip_pct = _safe_float((spot - gamma_flip) / gamma_flip * 100)
+
         return {
             "regime": regime,
             "net_gex_bn": _safe_float(latest.get("net_gex_bn")),
             "net_gex_pctile": round(pctile, 1) if pctile is not None else None,
-            "gamma_flip": _safe_float(latest.get("gamma_flip")),
-            "spot": _safe_float(latest.get("spot")),
-            "dist_to_flip_pct": _safe_float(latest.get("dist_to_flip_pct")),
+            "gamma_flip": gamma_flip,
+            "spot": spot,
+            "dist_to_flip_pct": dist_to_flip_pct,
             "days_in_regime": days_in_regime,
             "days_in_regime_observed": days_in_regime_observed,
             "series_start": series_start,

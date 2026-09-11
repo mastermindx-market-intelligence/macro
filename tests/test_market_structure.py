@@ -448,6 +448,35 @@ class TestGammaBlock:
         assert block["net_gex_bn"] == pytest.approx(2.0)
         assert block["regime"] == "long"
 
+    def test_dist_to_flip_derived_in_block_from_emitted_spot_and_flip(self, tmp_path):
+        """P1: dist_to_flip_pct must round-trip from the same spot/flip this block emits.
+
+        Upstream dist_to_flip_pct is (spot-flip)/spot; the page prints spot and
+        flip beside a distance that must be (spot-flip)/flip. 2026-09-09:
+        spot 7636.3599, flip 7663.226367 → 0.3506% → '0.4', not the stale '0.3'.
+        """
+        from scripts.build_market_structure import _build_gamma_block
+        spot, flip = 7636.3599, 7663.226367
+        data_dir = self._store(tmp_path, [
+            {
+                "date": "2026-09-09",  # Wednesday — a real session
+                "net_gex_bn": -20.7,
+                "gamma_regime": "short",
+                "gamma_flip": flip,
+                "spot": spot,
+                "dist_to_flip_pct": 0.3,  # stale upstream passthrough
+            },
+        ])
+        block = _build_gamma_block(data_dir)
+        assert block["spot"] is not None and block["gamma_flip"] is not None
+        recomputed = (block["spot"] - block["gamma_flip"]) / block["gamma_flip"] * 100
+        shown = f"{abs(block['dist_to_flip_pct']):.1f}"
+        assert shown == f"{abs(recomputed):.1f}"
+        assert shown == "0.4"
+        assert shown != "0.3"
+        # and the template's 1dp string is this same shown value
+        assert f"{abs(block['dist_to_flip_pct']):.1f}" == shown
+
 
 # ===========================================================================
 # 6. change-feed same-day idempotency
