@@ -366,10 +366,18 @@ _IMPULSE_EDGE = (
     "(impulse radar). Holdout-validated, leak-free; act early — the "
     "edge decays in ~2-4 days. " + _BLIND_CAVEAT
 )
-_IMPULSE_EDGE_ZH = (
+_IMPULSE_EDGE_ZH_LIVE = (
     "来自经验证的领先前兆突破的前瞻减仓窗口（脉冲雷达）。"
     "已通过留出样本、无前视；应尽早行动 — 优势在约 2-4 天内衰减。"
     + _BLIND_CAVEAT_ZH
+)
+# Render fixture is a superstring of the live producer so a ZH-only 200/120
+# cap on the page reds (live ZH is CJK-dense and sits under both caps).
+_IMPULSE_EDGE_ZH = (
+    _IMPULSE_EDGE_ZH_LIVE
+    + "该窗口用于仓位调整而非择时抄底；单独使用不得当作崩溃预测。"
+    "领先交叉后的 2-4 天是有效期，逾期优势迅速衰减，须在窗口内完成减仓。"
+    "对低波动、期权隐含波动未跳升的阴跌路径保持盲区，与 2026-06-24 同型。"
 )
 _EMERGING_DETAIL = (
     "Utilities (Equal-Weight) entered the emerging phase — accelerating "
@@ -380,6 +388,11 @@ _EMERGING_DETAIL = (
 _EMERGING_DETAIL_ZH = (
     "公用事业（等权） 进入「新兴」阶段 — 相对强度加速且尚未过度延展（评分 38），"
     "已连续 2 个交易日确认（进取方向需连续确认，风险方向即时）。"
+    "该读数是描述性轮动而非择时信号：进取标签须第二次确认后才升格，"
+    "风险标签则在首次触发时立即生效，避免把一日噪声当成趋势翻转。"
+    "评分 38 仍在加速区、尚未进入过度延展，因此仓位反应是观察而非追涨；"
+    "若下一交易日相对强度回落，标签退回待确认，不保留一日行情的记忆，"
+    "须等下一交易日印证。"
 )
 
 
@@ -432,12 +445,15 @@ def test_impulse_radar_edge_carries_the_blind_caveat_past_the_old_cap():
     assert _BLIND_CAVEAT_ZH in edge_zh
     assert len(edge) > 120
     assert edge[:120] != edge          # the old cap would have amputated it
-    assert edge_zh == _IMPULSE_EDGE_ZH
+    assert edge_zh == _IMPULSE_EDGE_ZH_LIVE
+    assert _IMPULSE_EDGE_ZH.startswith(edge_zh)
 
 
 def test_page_keeps_long_bodies_and_the_blind_caveat():
     assert len(_EMERGING_DETAIL) > 200
     assert len(_IMPULSE_EDGE) > 120
+    assert len(_EMERGING_DETAIL_ZH) > 200
+    assert len(_IMPULSE_EDGE_ZH) > 200
     p = _payload()
     p["alerts"] = [_synthetic_card(
         detail=_EMERGING_DETAIL, note=_IMPULSE_EDGE,
@@ -463,6 +479,8 @@ def test_page_keeps_long_bodies_and_the_blind_caveat():
     assert "wait for a second session" in matching_detail[0]
     assert matching_edge_zh and matching_edge_zh[0] == _IMPULSE_EDGE_ZH
     assert matching_detail_zh and matching_detail_zh[0] == _EMERGING_DETAIL_ZH
+    assert len(matching_edge_zh[0]) > 200
+    assert len(matching_detail_zh[0]) > 200
 
 
 def test_story_strip_ellipsizes_long_headlines_word_safe():
