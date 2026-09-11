@@ -113,7 +113,17 @@
     </div>
     {% if rd.gross is defined and rd.gross is not none and rd.gross < 1 %}
     {% if plain_gross %}
-    <div class="rrx-gross" data-tip-en="Suggested gross exposure multiplier, ×{{ '%.2f'|format(rd.gross) }} of your normal size." data-tip-zh="建议总仓位系数，为常规规模的 {{ '%.2f'|format(rd.gross) }} 倍。"><span class="gv"><span class="l-en">¾ of normal</span><span class="l-zh">约常规四分之三</span></span><span class="gn"><span class="l-en">suggested size</span><span class="l-zh">建议仓位</span></span></div>
+    {%- set _g = rd.gross -%}
+    {%- set _gv = namespace(en='', zh='') -%}
+    {%- if _g >= 0.70 and _g <= 0.85 -%}
+      {%- set _gv.en = '¾ of normal' -%}{%- set _gv.zh = '约常规四分之三' -%}
+    {%- elif _g >= 0.45 and _g < 0.70 -%}
+      {%- set _gv.en = 'half of normal' -%}{%- set _gv.zh = '约常规一半' -%}
+    {%- else -%}
+      {%- set _gv.en = '×' ~ ('%.2f'|format(_g)) ~ ' of normal' -%}
+      {%- set _gv.zh = '常规的 ' ~ ('%.2f'|format(_g)) ~ ' 倍' -%}
+    {%- endif -%}
+    <div class="rrx-gross" data-tip-en="Suggested gross exposure multiplier, ×{{ '%.2f'|format(rd.gross) }} of your normal size." data-tip-zh="建议总仓位系数，为常规规模的 {{ '%.2f'|format(rd.gross) }} 倍。"><span class="gv"><span class="l-en">{{ _gv.en }}</span><span class="l-zh">{{ _gv.zh }}</span></span><span class="gn"><span class="l-en">suggested size</span><span class="l-zh">建议仓位</span></span></div>
     {% else %}
     <div class="rrx-gross"><span class="gv">×{{ '%.2f'|format(rd.gross) }}</span><span class="gn">{{ t('gross','建议仓位') }}</span></div>
     {% endif %}

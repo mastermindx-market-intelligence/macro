@@ -1,4 +1,4 @@
-# China Archetype-D S1 — evidence matrix (round 2)
+# China Archetype-D S1 — evidence matrix (round 3)
 
 Five L1 subjects × dark/light × EN/ZH × 1440/390.
 Spec G7 names this the 20-crop matrix; the product of those axes is 40 cells.
@@ -68,7 +68,7 @@ See `g8.json`. Checks at 390 / 768 / 1440: page horizontal scroll, focus-visible
 
 | Width | Page h-scroll | Focus ring | LENS tap | Reduced-motion skeleton | Chip wrap |
 |---|---|---|---|---|---|
-| 390 | none (`scrollWidth=clientWidth=390`) | visible | open (`::after` receipt) | `animation-name: none`, plate ~58px | wrap |
+| 390 | none (`scrollWidth=clientWidth=390`) | visible | open | `animation-name: none`, plate ~58.296875px | wrap |
 | 768 | none | visible | n/a (390 only) | n/a | wrap |
 | 1440 | none | visible | n/a | n/a | wrap |
 
@@ -78,13 +78,17 @@ Spec G7's "20 crops" is `{dark,light}×{EN,ZH}×{1440,390}` × 5 subjects = **40
 
 | Subject | Cells | G7 verdict | Notes |
 |---|---|---|---|
-| hero | 8 | **PASS** | One regime word (`GROWTH SCARE` / `增长恐慌`); one clause; exactly one date `2026-09-10`; index strip SSE/CSI/ChiNext/HSI; dark = luminance field + dial bloom; light = white card on deeper canvas, no full-bleed field, dial unbloomed; ZH has no Latin state enum; 390 stacks with no page h-scroll. CSI/ChiNext skeletons at true geometry. Aurora moon showing through glass tiles is the dark luminance field, not a second date. |
-| todo | 8 | **PASS** | Three stance sentences within word budgets; LENS `?` on each row; next-print date is the only digits-with-units at rest; ZH has no `3/3` / `90` / `70%`. |
+| hero | 8 | **PASS** | One regime word (`GROWTH SCARE` / `增长恐慌`) from `_ms_label`; one producer clause; exactly one date `2026-09-10`; index strip SSE/CSI/ChiNext/HSI; dark = luminance field + dial arc; light = white card on deeper canvas, no full-bleed field, no bloom; ZH has no Latin state enum; 390 stacks with no page h-scroll. CSI/ChiNext skeletons at true geometry. Dial is a thin arc at 390 (no white disc). |
+| todo | 8 | **PASS** | Three producer-bound stance sentences within word budgets; LENS `?` on each row; next-print date is the only digits-with-units at rest; ZH has no `3/3` / `90` / `70%`. |
 | changed | 8 | **PASS** (mapped from G7 Macro News) | Two headlines + two alerts; EN crop is not blank (Chinese source text in both slots — spec §4.1 frozen fallback); ZH matches; no EN/ZH mix inside a crop. |
-| drivers | 8 | **PASS** (mapped from G7 Connect Flows + four-driver band) | EN `+¥4.6bn` + Latin names; ZH `+¥46亿` + 中文 names; no mix; dark accent-tinted value; light uses light-rung ink (zh red-up). Four panels, 2-col desktop / swipe at 390. |
-| watching-deeper | 8 | **PASS** (mapped from G7 Upcoming Events + Go deeper) | Slice label `4 of 5 shown · full calendar →` (ZH `4/5 项已显示 · 完整日历 →`) in the same crop as the strip; population `5` once; 390 strip scrolls inside `.cnx-estrip`; Go-deeper links wrap; light hover is ring-not-glow (CSS). |
+| drivers | 8 | **PASS** (mapped from G7 Connect Flows + four-driver band) | EN `+¥4.6bn` + Latin names; ZH `+¥46亿` + 中文 names; no mix; dark accent-tinted value; light uses light-rung ink. Four panels, 2-col desktop / swipe at 390. |
+| watching-deeper | 8 | **PASS** (mapped from G7 Upcoming Events + Go deeper) | Slice label `4 of 5 shown · full calendar →` (ZH `4/5 项已显示 · 完整日历 →`) in the same crop as the strip; population `5` once; 390 strip scrolls inside `.cnx-estrip`; Go-deeper links wrap and include the playbook landing; light hover is ring-not-glow. |
+
+## Capture-harness disclosure (B2)
+
+Round-2 light bloom and the 390 white disc were **not** the page aurora. They were `theme.js` `skyToggleFx`: a 1.05s sun (light) / crescent-moon (dark) flourish at `z-index: 2147483600` that `setTheme()` appends for 1100ms (`templates/theme.css` `.sky-fx` / `.sky-fx .disc`; `theme.js` `skyToggleFx`, timeout 1100). The r2 harness called `window.setTheme` then screenshotted at ~150ms, so every cell photographed the in-flight disc. Receipt: computed style on the orange blob was `span.disc` inside `.sky-fx.sun` (`radial-gradient(circle at 50% 46%, #fffdf7 … #ffc35a …)`); the dark 390 disc was `.sky-fx.moon .disc` with the crescent mask. This round sets `window.__skyDeck = true` in the init script (the same bow-out the landing hub uses) and removes any leftover `.sky-fx` after apply. Live theme toggles still play the flourish; it is not a page-china CSS hide. Light page-aurora remains CSS-gated `display:none` (spec §5.5).
 
 ## CNH inverted-tile ruling
 
-L1 index strip is SSE / CSI 300 / ChiNext / HSI — **no inverted-quote tile renders**. `MARKET_TILE_SPEC` still has `CNH_F` `invert=True`; orientation copy is pinned on the spec table (`quoted as yuan per US dollar — higher = a weaker yuan` / `以美元兑人民币报价 — 数值升高 = 人民币走弱`). USD/CNH still appears as a level-only card inside `cnx-dlg-markets` (Tier-2), not as an invert-tone glance tile.
+L1 index strip is SSE / CSI 300 / ChiNext / HSI — **no inverted-quote tile renders**. `MARKET_TILE_SPEC` still has `CNH_F` `invert=True`; orientation copy now also renders on the Tier-2 USD/CNH card inside `cnx-dlg-markets` (`quoted as yuan per US dollar — higher = a weaker yuan` / `以美元兑人民币报价 — 数值升高 = 人民币走弱`).
 

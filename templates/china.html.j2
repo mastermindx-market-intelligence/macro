@@ -836,7 +836,7 @@
   }
 {%- if mode != 'stocks' %}
   /* ===== MX5 CHINA GLANCE REDESIGN (body.page-china scope) ===== */
-  body.page-china .aurora{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+  body.page-china .aurora{position:fixed;inset:0;pointer-events:none;z-index:-1;overflow:hidden}
   /* Base aurora: green blobs (risk-on default) */
   body.page-china .aurora::before{content:"";position:absolute;top:-220px;left:12%;width:820px;height:560px;border-radius:50%;filter:blur(90px);background:radial-gradient(ellipse,rgba(34,217,122,.12) 0%,transparent 70%)}
   body.page-china .aurora::after{content:"";position:absolute;bottom:-100px;right:-100px;width:700px;height:600px;border-radius:50%;filter:blur(90px);background:radial-gradient(ellipse,rgba(99,102,241,.10) 0%,transparent 70%)}
@@ -848,15 +848,21 @@
   /* State tint: red (Risk-off) */
   body.page-china .aurora.au-red::before{background:radial-gradient(ellipse,rgba(239,68,68,.10) 0%,transparent 70%)}
   body.page-china .aurora.au-red .au-a3{background:radial-gradient(ellipse,rgba(239,68,68,.06) 0%,transparent 70%)}
-  /* LIGHT: no aurora. "Much fainter" was the wrong fix — an additive bloom that
-     reads as light on a black field reads as INK on paper, and a 90px-blurred
-     colour wash over a pale canvas is a stain, not atmosphere. It was most
-     obvious as the soft concentric wash sitting in the empty canvas below the
-     fold (the layer is position:fixed, so it spans the whole scroll). The state
-     it tints is already said out loud by the score, the verdict word and the
-     regime pill, so nothing is lost. Depth in light comes from the panel/canvas
-     value step and the shadow recipe. Dark keeps the aurora untouched. */
-  [data-theme="light"] body.page-china .aurora{display:none}
+  /* LIGHT: no aurora. Gate the layer off — do not dim it. An additive bloom
+     that reads as light on a black field reads as INK on paper, and a
+     90px-blurred colour wash over a pale canvas is a stain, not atmosphere.
+     html[data-theme] (theme.js) and [data-theme] on body are both named so a
+     capture harness cannot miss the gate. Dark keeps the aurora, behind the
+     wrap (z-index:-1) so it cannot moon through glass tiles. */
+  html[data-theme="light"] body.page-china .aurora,
+  html[data-theme="light"] body.page-china .aurora::before,
+  html[data-theme="light"] body.page-china .aurora::after,
+  html[data-theme="light"] body.page-china .aurora .au-a3,
+  [data-theme="light"] body.page-china .aurora,
+  body.page-china[data-theme="light"] .aurora{
+    display:none !important;background:none !important;filter:none !important;opacity:0 !important}
+  html[data-theme="light"] body.page-china::before{
+    background:none !important}
   /* Reduced-motion: no animations */
   @media(prefers-reduced-motion:reduce){body.page-china .aurora,body.page-china .aurora::before,body.page-china .aurora::after,body.page-china .aurora .au-a3{animation:none}}
   /* zh direction-convention mirrors (operator ruling 2026-07-21): the aurora state wash
@@ -1412,7 +1418,7 @@
     body.page-china .mx5-path-tip{transition:none;}
   }
 
-  /* post-stack: consolidate to theme.css */
+  /* post-stack: consolidate */
   /* Archetype-D L1 (S1) — page-scoped until the Macro Command stack lands these tokens.
      Reuses macro_reference class names; does not invent a parallel family. */
   body.page-china .cnx-wrap .band{margin-top:var(--sp-6,24px)}
@@ -1426,12 +1432,14 @@
   html[data-lang="zh"] body.page-china .cnx-wrap h2.band-label{letter-spacing:0;text-transform:none}
   body.page-china .cnx-wrap .mx-sec{display:flex;align-items:baseline;gap:8px;margin:0 0 10px}
   body.page-china .cnx-wrap .mx-sec h2{font-size:var(--fs-h2,17px);font-weight:700;letter-spacing:-.01em;margin:0}
+  body.page-china .cnx-wrap{position:relative;z-index:1}
   body.page-china .cnx-wrap .mx-vh{
-    display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:var(--sp-6,24px);align-items:center;
+    display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:var(--sp-6,24px);align-items:start;
     padding:var(--sp-6,24px) 0 var(--sp-4,16px)}
   body.page-china .cnx-wrap .mx-vh-word{
     font-size:var(--fs-display,46px);font-weight:800;letter-spacing:-.03em;line-height:.95;
     margin:4px 0 8px;color:var(--text)}
+  body.page-china .cnx-wrap .mx-vh-word .l-en{text-transform:uppercase}
   body.page-china .cnx-wrap .mx-vh-clause{font-size:var(--fs-md,15px);max-width:56ch;margin:0 0 8px}
   body.page-china .cnx-wrap .mx-vh-meta{
     display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-3,12px);margin-top:12px}
@@ -1441,6 +1449,9 @@
     border:1px solid color-mix(in srgb, var(--c,var(--muted)) 34%, transparent);
     background:color-mix(in srgb, var(--c,var(--muted)) 12%, var(--panel));
     color:var(--c,var(--muted))}
+  body.page-china .cnx-wrap .mx-stance.st-up{--c:var(--ink-up, var(--up))}
+  body.page-china .cnx-wrap .mx-stance.st-down{--c:var(--ink-down, var(--down))}
+  body.page-china .cnx-wrap .mx-stance.st-warn{--c:var(--ink-warn, var(--warn))}
   body.page-china .cnx-wrap .dial{text-align:center}
   body.page-china .cnx-wrap .dial .mx5-sc-gauge-row{justify-content:center}
   body.page-china .cnx-wrap .dial-cap{font-size:var(--fs-sm,12.5px);color:var(--muted);margin:8px 0 0}
@@ -1458,6 +1469,7 @@
     background:color-mix(in srgb, var(--link) 18%, transparent);
     border-color:color-mix(in srgb, var(--link) 45%, var(--line))}
   body.page-china .cnx-wrap .depth a small{color:var(--muted);font-weight:400}
+  body.page-china .cnx-orient{display:block;margin-top:6px;font-size:11px;color:var(--muted);line-height:1.4;font-weight:400}
   body.page-china .cnx-wrap .depth a:focus-visible,
   body.page-china .cnx-wrap .mx-chg-row:focus-visible,
   body.page-china .cnx-wrap .cnx-row .cnx-lens:focus-visible,
@@ -1489,7 +1501,10 @@
       display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;padding-bottom:6px}
     body.page-china .cnx-wrap .drivers > .panel{flex:0 0 86%;scroll-snap-align:start}
     body.page-china .cnx-wrap .mx-vh-word{font-size:32px;letter-spacing:-.02em}
-    body.page-china .cnx-wrap .dial{margin:4px auto 12px;overflow:hidden;max-width:220px}
+    body.page-china .cnx-wrap .dial{margin:4px auto 12px;overflow:visible;max-width:220px}
+    body.page-china .aurora .au-a3{display:none}
+    body.page-china .cnx-wrap .mx-vh .cnx-gauge-needle{filter:none}
+    body.page-china .sxg-face.mx5-card-face{background:var(--panel)}
     body.page-china .cnx-estrip{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory}
     body.page-china .cnx-ev{flex:0 0 72%;scroll-snap-align:start}
     body.page-china .cnx-wrap .cnx-row .cnx-lens{width:32px;height:32px}
@@ -1926,6 +1941,11 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   {% set P = property %}
   {% set pb_obj = pb %}
   {% set CN = china_news %}
+  {% set _pd = pb_obj.dial if pb_obj else none %}
+  {% set _stance = posture_lane(_pd.posture if _pd else none) %}
+  {% set _stance_tone = posture_tone(_pd.posture if _pd else none) %}
+  {% set _clause = hero_clause(pb_obj, ms) %}
+  {% set _todo_faces = reason_faces(_pd.reasons if _pd else none) %}
 
   <div class="cnx-wrap">
 
@@ -1940,9 +1960,9 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     <div>
       <span class="eyebrow l-en">China A-shares · Regime read</span>
       <span class="eyebrow l-zh">中国A股 · 状态判读</span>
-      <h1 class="mx-vh-word"><span class="l-en">GROWTH SCARE</span><span class="l-zh">增长恐慌</span></h1>
-      <p class="mx-vh-clause"><span class="l-en">Mid-scare: the market is falling broadly while policy stays easy — the fear is the setup, not yet the signal.</span><span class="l-zh">恐慌中段：市场普跌，政策仍宽松——恐慌是机会的前置条件，还不是入场信号。</span></p>
-      <span class="mx-stance" style="--c:var(--ink-warn)"><span class="l-en">Neutral — add slowly, don't chase</span><span class="l-zh">中性——慢慢加仓，勿追高</span></span>
+      <h1 class="mx-vh-word"><span class="l-en">{{ _ms_label }}</span><span class="l-zh">{{ _ms_label_zh }}</span></h1>
+      <p class="mx-vh-clause"><span class="l-en">{{ _clause[0] }}</span><span class="l-zh">{{ _clause[1] }}</span></p>
+      <span class="mx-stance st-{{ _stance_tone }}"><span class="l-en">{{ _stance[0] }}</span><span class="l-zh">{{ _stance[1] }}</span></span>
       <div class="mx-vh-meta">
         <span class="dtp-chip dtp-chip--live"><span class="l-en">LIVE</span><span class="l-zh">实时</span></span>
         <span class="dtp-asof tnum">{{ latest.date }}</span>
@@ -2051,15 +2071,11 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   <!-- =============== L1-2 · What to do =============== -->
   <section class="band panel" data-ev="todo">
     <h2 class="band-label"><span class="l-en">What to do</span><span class="l-zh">该怎么做</span></h2>
-    <div class="cnx-row"><span class="ic">+</span>
-      <div class="tx"><span class="sub"><span class="l-en">Fear like this has usually been a buying window, not a top — add quality slowly, don't chase.</span><span class="l-zh">这种恐慌通常是买入窗口，而不是顶部——慢慢吸纳优质资产，不要追高。</span></span></div>
-      <button type="button" class="cnx-lens" aria-label="Why" data-tip-en="About seven in ten past growth-scare episodes on this page's own history resolved higher. Windows, not certainties — re-drawn nightly." data-tip-zh="本页历史记录中，过往增长恐慌阶段约有七成最终走高。是窗口，不是定论——每晚重新校准。">?</button></div>
-    <div class="cnx-row"><span class="ic">−</span>
-      <div class="tx"><span class="sub"><span class="l-en">Money is getting tighter at the central bank, and every part of that read agrees.</span><span class="l-zh">央行层面的货币条件正在收紧，该判读的各个部分方向一致。</span></span></div>
-      <button type="button" class="cnx-lens" aria-label="Why" data-tip-en="Three inputs — money supply (M2), the short-minus-long growth gap, and total social financing — all point the same way. Counted once, as a single monetary-conditions read." data-tip-zh="三项输入——货币供应（M2）、剪刀差、社会融资规模——方向一致，合并为一次货币条件读数。">?</button></div>
-    <div class="cnx-row"><span class="ic">−</span>
-      <div class="tx"><span class="sub"><span class="l-en">Borrowed money in A-shares is crowded — a fall would run further from here. Tighten risk.</span><span class="l-zh">A股杠杆资金拥挤——一旦下跌会走得更远。收紧风险。</span></span></div>
-      <button type="button" class="cnx-lens" aria-label="Why" data-tip-en="Borrowed money invested in A-shares, as a share of tradable market value. Crowded borrowing makes a fall run further. It is currently in the top tenth of its own range." data-tip-zh="两融余额占流通市值的比重。杠杆越拥挤，下跌时的连锁反应越大。目前处于自身区间的最高十分之一。">?</button></div>
+    {% for face in _todo_faces %}
+    <div class="cnx-row{% if face.empty %} mx-empty{% endif %}"><span class="ic">{{ face.sign }}</span>
+      <div class="tx"><span class="sub"><span class="l-en">{{ face.en }}</span><span class="l-zh">{{ face.zh }}</span></span>{% if face.empty %}<span class="empty-why"><span class="l-en">the playbook has not emitted this reason for this session</span><span class="l-zh">本会话策略尚未给出这条理由</span></span>{% endif %}</div>
+      <button type="button" class="cnx-lens" aria-label="Why" data-tip-en="{{ face.tip_en }}" data-tip-zh="{{ face.tip_zh }}">?</button></div>
+    {% endfor %}
     {% if imminent %}<div class="cnx-row"><span class="ic">📅</span><div class="tx"><b><span class="l-en">{{ imminent.en }}</span><span class="l-zh">{{ imminent.zh }}</span></b><span class="sub">{{ t('Highest-impact print soon','近期最重要数据') }}</span></div></div>{% endif %}
   </section>
 
@@ -2172,7 +2188,8 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     <h2 class="band-label"><span class="l-en">What we're watching</span><span class="l-zh">我们在盯什么</span></h2>
     <div class="panel" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-events')"
          onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();cnxOpenDlg('cnx-dlg-events');}">
-      {% set _ev_all = event_strip or [] %}
+      {% set _ev_all = [] %}
+      {% for c in (event_strip or []) %}{% if c.importance == 'high' %}{% set _ = _ev_all.append(c) %}{% endif %}{% endfor %}
       {% set _ev_shown = _ev_all[:4] %}
       {% if _ev_all %}<div style="font-size:11.5px;color:var(--muted)">{{ _ev_all | length }} <span class="l-en">high-impact prints ahead</span><span class="l-zh">项高影响数据待发</span></div>{% endif %}
       <div class="cnx-estrip">
@@ -2198,6 +2215,8 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       <a href="china_intel.html"><span class="l-en">Sectors, sentiment &amp; today's full read</span><span class="l-zh">板块、情绪与今日完整解读</span><small>→</small></a>
       <a href="alerts.html"><span class="l-en">Alerts &amp; watchlist</span><span class="l-zh">警报与关注列表</span><small>→</small></a>
       <a href="china_news.html"><span class="l-en">Full news feed · 24 of 696 kept</span><span class="l-zh">完整新闻流 · 已保留 24/696</span><small>→</small></a>
+      <a href="#cnx-dlg-playbook" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-playbook');return false;"
+         onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();cnxOpenDlg('cnx-dlg-playbook');}"><span class="l-en">Regime playbook</span><span class="l-zh">周期策略</span><small>→</small></a>
     </div>
   </section>
   </div>{# /data-ev=watching-deeper #}
@@ -2373,7 +2392,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
           {% set _cnh = none %}
           {% for tl in (market_tiles or []) %}{% if 'CNH' in (tl.tag | string) or 'yuan' in (tl.label | string) %}{% if not _cnh %}{% set _cnh = tl %}{% endif %}{% endif %}{% endfor %}
           {% if _cnh %}
-          <div class="cnx-ihcard"><div class="t">USD/CNH</div><div class="p">{{ _cnh.level }}</div><span class="cnx-nchip">{{ t('offshore yuan','离岸人民币') }}</span></div>
+          <div class="cnx-ihcard"><div class="t">USD/CNH</div><div class="p">{{ _cnh.level }}</div><span class="cnx-nchip">{{ t('offshore yuan','离岸人民币') }}</span>{% if _cnh.meaning_en %}<span class="cnx-orient"><span class="l-en">{{ _cnh.meaning_en }}</span><span class="l-zh">{{ _cnh.meaning_zh }}</span></span>{% endif %}</div>
           {% endif %}
           {# 10Y CGB #}
           {% set _cgb = none %}

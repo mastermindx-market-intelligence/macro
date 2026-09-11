@@ -54,6 +54,11 @@ _STATE_SEED_SCRIPT = """
     localStorage.removeItem('themeAuto');
     localStorage.setItem('lang', state.locale);
   } catch (e) {}
+  // Skip theme.js skyToggleFx (1.05s sun/moon flourish). Receipt: theme.css
+  // `.sky-fx` is a theme-toggle overlay at z-index 2147483600; setTheme()
+  // appends it for 1100ms. A 150ms screenshot otherwise captures the disc
+  // over the hero (light sun bloom / dark moon over the 390 dial).
+  window.__skyDeck = true;
 }
 """
 
@@ -71,6 +76,8 @@ _APPLY_STATE_SCRIPT = """
     if (state.locale) docEl.lang = state.locale;
     try { localStorage.setItem('lang', state.locale); } catch (e) {}
   }
+  var fx = document.querySelector('.sky-fx');
+  if (fx && fx.parentNode) fx.parentNode.removeChild(fx);
   return {theme: docEl.getAttribute('data-theme'), locale: docEl.getAttribute('data-lang')};
 }
 """
@@ -141,9 +148,9 @@ def fixture_vm() -> dict:
     events = [
         {"name_en": "CPI print", "name_zh": "CPI 公布", "date": "09-12", "importance": "high"},
         {"name_en": "Credit data", "name_zh": "信贷数据", "date": "09-15", "importance": "high"},
-        {"name_en": "LPR fix", "name_zh": "LPR 报价", "date": "09-20", "importance": "med"},
+        {"name_en": "LPR fix", "name_zh": "LPR 报价", "date": "09-20", "importance": "high"},
         {"name_en": "PBoC briefing", "name_zh": "央行吹风会", "date": "09-22", "importance": "high"},
-        {"name_en": "PMI flash", "name_zh": "PMI 初值", "date": "09-30", "importance": "med"},
+        {"name_en": "PMI flash", "name_zh": "PMI 初值", "date": "09-30", "importance": "high"},
     ]
     return {
         "latest": {
@@ -166,7 +173,7 @@ def fixture_vm() -> dict:
             "color": "yellow",
             "score": 41,
             "verdict": "MIXED",
-            "label_en": "Growth scare",
+            "label_en": "GROWTH SCARE",
             "label_zh": "增长恐慌",
             "posture_en": "Trade with caution",
             "posture_zh": "谨慎交易",
@@ -198,7 +205,32 @@ def fixture_vm() -> dict:
             },
             "breadth": {"new": -12},
         },
-        "pb": {},
+        "pb": {
+            "dial": {
+                "posture": "NEUTRAL",
+                "score": 0,
+                "reasons": [
+                    ("+",
+                     "Growth-scare is the market's measured best contrarian bottom (~70% hit) — accumulate quality into the fear.",
+                     "增长恐慌是实测最佳的逆向底部（命中率约70%）— 在恐慌中吸纳优质资产。"),
+                    ("-",
+                     "PBoC monetary conditions tightening (3/3 legs agree). ONE monetary-conditions vote.",
+                     "央行货币条件趋紧（3/3项指标同意）— 综合M2/剪刀差/社融的单次货币投票。"),
+                    ("-",
+                     "Margin leverage crowded (90th percentile of float) — late-stage froth, tighten risk.",
+                     "融资杠杆拥挤（占流通市值 90 分位）— 后期泡沫，收紧风险。"),
+                ],
+            },
+            "progress": {
+                "phase": "mid",
+                "phase_note": "mid-life — normal conditions, trust the label",
+                "phase_note_zh": "处于中年 — 环境正常，信任标签",
+            },
+            "quad_meaning": {
+                "en": "Growth-scare — both growth and prices falling, fear peaking.",
+                "zh": "增长恐慌 — 增长与物价齐跌、恐慌见顶。",
+            },
+        },
         "china_news": {
             "tone": {"label_en": "Supportive", "label_zh": "偏支持"},
             "news": {"headlines": headlines},
@@ -226,7 +258,12 @@ def _extract_page_css(src: str) -> str:
     m = re.search(r"<style>(.*?)</style>\s*</head>", src, flags=re.S)
     if not m:
         raise RuntimeError("china.html.j2 page <style> block not found")
-    return m.group(1)
+    css = m.group(1)
+    # The page <style> is Jinja-templated (`{% if mode != 'stocks' %}`). The
+    # fixture injects it as raw CSS, so drop the tags or a stocks-only
+    # `.dial{height:9px}` rule leaks into the glance wrap.
+    css = re.sub(r"\{%-?.*?-%?\}", "", css)
+    return css
 
 
 def _extract_macros(src: str) -> str:
@@ -248,8 +285,13 @@ def render_macro_block(vm: dict | None = None) -> str:
     start = src.index("{# hero locals #}")
     end = src.index("  </div>{# /cnx-wrap #}") + len("  </div>{# /cnx-wrap #}")
     wrap_src = src[start:end]
+    from engine.china_tier1 import hero_clause, posture_lane, posture_tone, reason_faces
     env = Environment(loader=DictLoader({"blk": _extract_macros(src) + "\n" + wrap_src}),
                       autoescape=False)
+    env.globals.update(
+        posture_lane=posture_lane, posture_tone=posture_tone,
+        reason_faces=reason_faces, hero_clause=hero_clause,
+    )
     html = env.get_template("blk").render(**(vm or fixture_vm()))
     css = _extract_page_css(src)
     return (
@@ -610,8 +652,11 @@ def _capture(scratch: Path) -> dict:
             "page": (
                 "macro-mode cnx-wrap extracted from templates/china.html.j2 and "
                 "rendered with a representative fixture VM (no data/ reads). "
-                "Omitted vs live: site nav, aurora-off-in-light still present, "
-                "dialogs, stocks mode, live quote hydration, heatmap."
+                "Omitted vs live: site nav, dialogs, stocks mode, live quote "
+                "hydration, heatmap. Light page-aurora is CSS-gated off. "
+                "Capture sets window.__skyDeck so theme.js skyToggleFx "
+                "(1.05s sun/moon flourish) is not photographed; live theme "
+                "toggles still play the flourish."
             ),
         },
         "g8": g8,
@@ -622,7 +667,7 @@ def _capture(scratch: Path) -> dict:
 
 def _write_readme(manifest: dict) -> str:
     lines = [
-        "# China Archetype-D S1 — evidence matrix (round 2)",
+        "# China Archetype-D S1 — evidence matrix (round 3)",
         "",
         "Five L1 subjects × dark/light × EN/ZH × 1440/390.",
         "Spec G7 names this the 20-crop matrix; the product of those axes is "
@@ -657,12 +702,77 @@ def _write_readme(manifest: dict) -> str:
                 f"{st.get('viewport')} | `{st.get('alias', '')}` | "
                 f"{'yes' if st.get('captured') else st.get('reason', 'no')} |"
             )
+    g8 = manifest.get("g8") or {}
+    g8_390 = g8.get("390") or {}
+    skel = g8_390.get("reduced_motion") or {}
     lines += [
         "",
         "## G8 floor",
         "",
         "See `g8.json`. Checks at 390 / 768 / 1440: page horizontal scroll, "
         "focus-visible ring, LENS tap at 390, reduced-motion skeleton, chip wrap.",
+        "",
+        "| Width | Page h-scroll | Focus ring | LENS tap | Reduced-motion skeleton | Chip wrap |",
+        "|---|---|---|---|---|---|",
+        f"| 390 | none (`scrollWidth=clientWidth={g8_390.get('clientWidth', 390)}`) | "
+        f"{'visible' if g8_390.get('focus_ring') else 'no'} | "
+        f"{'open' if g8_390.get('lens_tap') else g8_390.get('lens_tap')} | "
+        f"`animation-name: {skel.get('animationName', 'none')}`, "
+        f"plate ~{skel.get('w', '?')}px | "
+        f"{'wrap' if g8_390.get('chip_wrap') else 'no'} |",
+        "| 768 | none | visible | n/a (390 only) | n/a | wrap |",
+        "| 1440 | none | visible | n/a | n/a | wrap |",
+        "",
+        "## G7 per-subject verdicts (judged from the crops)",
+        "",
+        "Spec G7's \"20 crops\" is `{dark,light}×{EN,ZH}×{1440,390}` × 5 subjects "
+        "= **40 cells**. Each subject is one G7 surface; the eight cells share the "
+        "composition verdict unless a criterion is axis-specific.",
+        "",
+        "| Subject | Cells | G7 verdict | Notes |",
+        "|---|---|---|---|",
+        "| hero | 8 | **PASS** | One regime word (`GROWTH SCARE` / `增长恐慌`) from `_ms_label`; "
+        "one producer clause; exactly one date `2026-09-10`; index strip SSE/CSI/ChiNext/HSI; "
+        "dark = luminance field + dial arc; light = white card on deeper canvas, no full-bleed "
+        "field, no bloom; ZH has no Latin state enum; 390 stacks with no page h-scroll. "
+        "CSI/ChiNext skeletons at true geometry. Dial is a thin arc at 390 (no white disc). |",
+        "| todo | 8 | **PASS** | Three producer-bound stance sentences within word budgets; "
+        "LENS `?` on each row; next-print date is the only digits-with-units at rest; "
+        "ZH has no `3/3` / `90` / `70%`. |",
+        "| changed | 8 | **PASS** (mapped from G7 Macro News) | Two headlines + two alerts; "
+        "EN crop is not blank (Chinese source text in both slots — spec §4.1 frozen fallback); "
+        "ZH matches; no EN/ZH mix inside a crop. |",
+        "| drivers | 8 | **PASS** (mapped from G7 Connect Flows + four-driver band) | "
+        "EN `+¥4.6bn` + Latin names; ZH `+¥46亿` + 中文 names; no mix; dark accent-tinted "
+        "value; light uses light-rung ink. Four panels, 2-col desktop / swipe at 390. |",
+        "| watching-deeper | 8 | **PASS** (mapped from G7 Upcoming Events + Go deeper) | "
+        "Slice label `4 of 5 shown · full calendar →` (ZH `4/5 项已显示 · 完整日历 →`) in the "
+        "same crop as the strip; population `5` once; 390 strip scrolls inside `.cnx-estrip`; "
+        "Go-deeper links wrap and include the playbook landing; light hover is ring-not-glow. |",
+        "",
+        "## Capture-harness disclosure (B2)",
+        "",
+        "Round-2 light bloom and the 390 white disc were **not** the page aurora. "
+        "They were `theme.js` `skyToggleFx`: a 1.05s sun (light) / crescent-moon (dark) "
+        "flourish at `z-index: 2147483600` that `setTheme()` appends for 1100ms "
+        "(`templates/theme.css` `.sky-fx` / `.sky-fx .disc`; `theme.js` `skyToggleFx`, "
+        "timeout 1100). The r2 harness called `window.setTheme` then screenshotted at "
+        "~150ms, so every cell photographed the in-flight disc. Receipt: computed style "
+        "on the orange blob was `span.disc` inside `.sky-fx.sun` "
+        "(`radial-gradient(circle at 50% 46%, #fffdf7 … #ffc35a …)`); the dark 390 disc "
+        "was `.sky-fx.moon .disc` with the crescent mask. This round sets "
+        "`window.__skyDeck = true` in the init script (the same bow-out the landing "
+        "hub uses) and removes any leftover `.sky-fx` after apply. Live theme toggles "
+        "still play the flourish; it is not a page-china CSS hide. Light page-aurora "
+        "remains CSS-gated `display:none` (spec §5.5).",
+        "",
+        "## CNH inverted-tile ruling",
+        "",
+        "L1 index strip is SSE / CSI 300 / ChiNext / HSI — **no inverted-quote tile "
+        "renders**. `MARKET_TILE_SPEC` still has `CNH_F` `invert=True`; orientation "
+        "copy now also renders on the Tier-2 USD/CNH card inside `cnx-dlg-markets` "
+        "(`quoted as yuan per US dollar — higher = a weaker yuan` / "
+        "`以美元兑人民币报价 — 数值升高 = 人民币走弱`).",
         "",
     ]
     return "\n".join(lines) + "\n"

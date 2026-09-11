@@ -175,7 +175,12 @@ def _render(staleness: dict | None, mode: str = "macro") -> str:
                       autoescape=False, undefined=ChainableUndefined)
     from engine import i18n
 
-    env.globals.update(td=i18n.td, tr=i18n.tr, t=i18n.t)
+    from engine.china_tier1 import hero_clause, posture_lane, posture_tone, reason_faces
+    env.globals.update(
+        td=i18n.td, tr=i18n.tr, t=i18n.t,
+        posture_lane=posture_lane, posture_tone=posture_tone,
+        reason_faces=reason_faces, hero_clause=hero_clause,
+    )
     return env.get_template("china.html.j2").render(
         mode=mode,
         board_staleness=staleness,
