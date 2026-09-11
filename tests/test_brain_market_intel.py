@@ -18,16 +18,27 @@ TWO DELIBERATE ISOLATIONS, both guarding documented house traps:
      repo-relative behaviour only.
 
 Coverage:
-  - live wire ordering, freshness, limits, symbol preference, zh passthrough,
-    path ladders, nightly top-up/dedupe, and the TI-R5 output whitelist;
-  - research search scoring, recency, top picks, truncation, meaningful
-    one-term/Han/full-width inputs, exact identifiers, natural hyphenated prose,
-    honest no-atom rejection, corrupt/missing catalogs, and real-catalog smoke;
-  - tool schemas, ranked-wire sidecar behavior, and street clusters;
-  - W4 full-report escalation: content layers, exposure cap, rights language,
-    excerpt-only behavior, per-user quota, honest errors, and proof that ordinary
-    search/clusters touch neither corpus nor quota ledger.
-
+   1-8   live wire: salience/recency ordering, window filter, limit clamp, symbol
+         preference + backfill, ticker-list matching, word boundaries, zh passthrough,
+         unparseable ts skipped
+   9-10  path ladder: MACRO_LIVE_DIR wins; fallback used when the live dir is empty
+  11-14  merge: nightly top-up, cross-source dedupe, notes, `rejected` never served
+  15-16  TI-R5 OUTPUT WHITELIST — the epistemics law, pinned mechanically
+  17-25  research search: scoring, recency decay, top_pick, truncation, meaningful
+         one-term/Han/full-width and casefold-expansion inputs, exact identifiers,
+         natural hyphenated prose, honest no-atom rejection, corrupt/missing catalog,
+         real-catalog smoke
+  26-27  tool schemas
+  28-35  W2 ranked-wire sidecar: ladder, freshness gate, permutation, unknown ids,
+         nightly pool untouched, output whitelist unchanged, never written
+  36-46  W2 street clusters: convergence admission, one-house exclusion, dead
+         fields ignored, determinism, ambient words, honest empty, real catalog
+  47-62  W4 full-report escalation (mode='report'): the three content layers, the
+         12k exposure cap + its marker, the rights note, the excerpt-only
+         fallback charging NOTHING, one debit per served body, the per-user ip
+         bucket proved against the REAL limiter, every honest error (pro_required
+         / report_not_found / vault_unavailable / view_limit_reached), and the
+         proof that search and clusters still touch neither corpus nor ledger
 """
 from __future__ import annotations
 
@@ -711,6 +722,12 @@ def test_matching_normalizes_full_width_catalog_text_too(tmp_path):
         _note("decoy", "Pineapple Demand Outlook"),
     ])
     assert [row["id"] for row in _search(tmp_path, "AAPL")["results"]] == ["hit"]
+
+
+def test_search_normalizes_casefold_expansion_before_atom_extraction(tmp_path):
+    """Query and catalog text share the full NFKC/casefold normalization path."""
+    _catalog(tmp_path, [_note("hit", "Straße Index")])
+    assert [row["id"] for row in _search(tmp_path, "Straße")["results"]] == ["hit"]
 
 
 @pytest.mark.parametrize(

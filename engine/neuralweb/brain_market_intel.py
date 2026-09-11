@@ -741,13 +741,12 @@ def _tokenize(query: str) -> tuple[str, ...]:
     equate Simplified and Traditional Chinese. Repeated atoms never buy extra
     weight because scoring counts distinct hits per field.
     """
-    text = unicodedata.normalize("NFKC", str(query or ""))
+    text = _search_normalize(query)
     tokens: list[str] = []
 
     def add(token: str) -> None:
-        normalized = token.casefold()
-        if len(normalized) >= 2 and normalized not in tokens:
-            tokens.append(normalized)
+        if len(token) >= 2 and token not in tokens:
+            tokens.append(token)
 
     for raw in _RAW_SEARCH_ATOM_RE.findall(text):
         if _HAN_RE.fullmatch(raw):
@@ -755,7 +754,7 @@ def _tokenize(query: str) -> tuple[str, ...]:
         elif _is_qualified_identifier(raw):
             add(raw)
         else:
-            for word in _WORD_RE.findall(raw.casefold()):
+            for word in _WORD_RE.findall(raw):
                 add(word)
     return tuple(tokens)
 
@@ -776,11 +775,7 @@ def _hits(tokens: tuple[str, ...], haystack: str) -> int:
     )
     needs_atoms = any("." in token or "-" in token for token in tokens)
     words = set(_WORD_RE.findall(text)) if needs_words else set()
-    atoms = (
-        {raw.casefold() for raw in _RAW_SEARCH_ATOM_RE.findall(text)}
-        if needs_atoms
-        else set()
-    )
+    atoms = set(_RAW_SEARCH_ATOM_RE.findall(text)) if needs_atoms else set()
     count = 0
     for token in tokens:
         if _HAN_RE.fullmatch(token):
@@ -1532,9 +1527,9 @@ def search_research(
         points = [str(p) for p in points if isinstance(p, str)] if isinstance(points, list) else []
         institution = str(item.get("institution") or "")
 
-        title_hits = _hits(tokens, title.lower())
-        summary_hits = _hits(tokens, " ".join(points).lower())
-        institution_hits = _hits(tokens, institution.lower())
+        title_hits = _hits(tokens, title)
+        summary_hits = _hits(tokens, " ".join(points))
+        institution_hits = _hits(tokens, institution)
         if not (title_hits or summary_hits or institution_hits):
             continue  # no textual relevance — top_pick alone never admits an item
 
