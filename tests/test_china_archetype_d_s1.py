@@ -614,18 +614,35 @@ def test_clamp_does_not_amputate_unless_policy():
 
 
 def test_clamp_contrastive_remainder_is_worded_empty():
-    """MAJOR-3: dropping a 'but/yet/…' tail inverts meaning — whole face empty."""
-    from engine.china_tier1 import EMPTY_REASON, _clamp_en, _clamp_zh, reason_faces
+    """MAJOR-A: dropping a contrastive tail inverts meaning — both lanes empty.
+
+    Every probe states its measured length and must exceed the budget
+    (vacuous-at-budget probes are not a test).
+    """
+    from engine.china_tier1 import (
+        EMPTY_REASON,
+        _EN_WORD_BUDGET,
+        _ZH_CHAR_BUDGET,
+        _clamp_en,
+        _clamp_zh,
+        _en_words,
+        _zh_chars,
+        reason_faces,
+    )
 
     probe = (
         "The rebound looks broad across every single mainland exchange and every "
         "major sector board today, but it is not at all confirmed by southbound money."
     )
+    assert len(_en_words(probe)) == 25
+    assert len(_en_words(probe)) > _EN_WORD_BUDGET
     assert _clamp_en(probe) == ""
     zh_probe = (
         "反弹看起来覆盖每一家内地交易所和每一个主要板块，"
         "但并未得到南向资金的任何确认。"
     )
+    assert _zh_chars(zh_probe) == 37
+    assert _zh_chars(zh_probe) > _ZH_CHAR_BUDGET
     assert _clamp_zh(zh_probe) == ""
     face = reason_faces([("+", probe, zh_probe)], n=1)[0]
     assert face["empty"] is True
@@ -636,7 +653,63 @@ def test_clamp_contrastive_remainder_is_worded_empty():
         "index exposure, yet policy support has not been confirmed by the tape "
         "this session."
     )
+    assert len(_en_words(yet)) == 24
+    assert len(_en_words(yet)) > _EN_WORD_BUDGET
     assert _clamp_en(yet) == ""
+
+    # Reviewer's six failing ZH remainders (head 33 chars, full 50–51; budget 34).
+    zh_head = "南向资金今天在整个内地市场大举买入并且内地交易台在尾盘增加指数敞口，"
+    zh_tail = "政策支持得到确认因此需要谨慎对待。"
+    assert _zh_chars(zh_head) == 33
+    zh_cues = ("除非", "不过", "虽然", "只是", "没有", "无法")
+    for cue in zh_cues:
+        s = zh_head + cue + zh_tail
+        n = _zh_chars(s)
+        assert n > _ZH_CHAR_BUDGET, (cue, n)
+        assert n in (50, 51), (cue, n)
+        assert _clamp_zh(s) == "", (cue, n, _clamp_zh(s))
+
+    # EN twins of those six, each measured over the 22-word budget.
+    en_head = (
+        "The rebound looks broad across every single mainland exchange and "
+        "every major sector board today"
+    )
+    en_tails = (
+        (", unless southbound money has confirmed the move at all today.", 25),
+        ("; however southbound money has not confirmed it at all.", 24),
+        (", though southbound money has quietly gone the other way today.", 25),
+        (", although southbound money has quietly gone the other way today.", 25),
+        (", yet southbound money has not confirmed the rebound at all today.", 26),
+        (", not confirmed at all by southbound money across the whole complex.", 26),
+    )
+    for tail, expect in en_tails:
+        s = en_head + tail
+        n = len(_en_words(s))
+        assert n == expect, (tail, n)
+        assert n > _EN_WORD_BUDGET, (tail, n)
+        assert _clamp_en(s) == "", (tail, n, _clamp_en(s))
+
+    # Connective inside the KEPT portion must not void — normal truncation.
+    zh_kept = (
+        "南向资金今天在整个内地市场大举买入但并未撤退，"
+        "同时成交量明显放大并且各个主要板块都有跟进。"
+    )
+    assert _zh_chars(zh_kept) == 43
+    assert _zh_chars(zh_kept) > _ZH_CHAR_BUDGET
+    zh_out = _clamp_zh(zh_kept)
+    assert zh_out == "南向资金今天在整个内地市场大举买入但并未撤退。"
+    assert "跟进" not in zh_out
+    en_kept = (
+        "Breadth is broad but thin across every mainland exchange today, "
+        "and volume expanded sharply into the closing auction across every "
+        "single major sector board today."
+    )
+    assert len(_en_words(en_kept)) == 25
+    assert len(_en_words(en_kept)) > _EN_WORD_BUDGET
+    en_out = _clamp_en(en_kept)
+    assert en_out.startswith("Breadth is broad but thin")
+    assert "volume expanded" not in en_out
+    assert en_out != ""
 
 
 def test_margin_crowded_band_matches_producer_threshold():
@@ -711,6 +784,10 @@ def test_hero_clause_reconciles_disagreement():
     assert "disagree" in en
     assert "广度破裂" in zh
     assert en.index("Breadth is breaking") < en.index("Act")
+    assert "tape line" in en
+    assert "headline" not in en.lower()
+    assert "行情线" in zh
+    assert "标题" not in zh
 
 
 def test_hero_clause_reconcile_requires_headline():
@@ -728,12 +805,151 @@ def test_hero_clause_reconcile_requires_headline():
     ms = {"color": "red", "headline_en": "", "headline_zh": ""}
     en, zh = hero_clause(pb, ms)
     assert en == _MID_SCARE_CLAUSE[0]
+    assert zh == _MID_SCARE_CLAUSE[1]
     assert "headline" not in en.lower()
     assert "disagree" not in en
+    assert "标题" not in zh
     empty_pb = {"dial": {"posture": "AGGRESSIVE"}, "progress": {}, "quad_meaning": {}}
     en2, zh2 = hero_clause(empty_pb, ms)
     assert (en2, zh2) == EMPTY_CLAUSE
     assert "headline" not in en2.lower()
+    assert "标题" not in zh2
+
+
+def test_hero_clause_reconcile_gated_per_lane():
+    """MAJOR-B: EN rec only with head_en; ZH rec only with head_zh."""
+    from engine.china_tier1 import EMPTY_CLAUSE, hero_clause
+
+    pb = {"dial": {"posture": "AGGRESSIVE"}, "progress": {}, "quad_meaning": {}}
+    rec_en = (
+        "The tape and the playbook disagree — stance is Act. "
+        "Honour both reads; the tape line is context — act on the posture, not the wording."
+    )
+    rec_zh = "盘面与策略姿态不一致——姿态是行动。两边都要看，行情线是背景——按姿态操作，而非按措辞。"
+
+    # C3: disagree, head_en set, headline_zh "".
+    en, zh = hero_clause(pb, {
+        "color": "red", "headline_en": "Breadth is breaking.", "headline_zh": "",
+    })
+    assert en == f"Breadth is breaking. {rec_en}"
+    assert zh == EMPTY_CLAUSE[1]
+    assert rec_zh not in zh
+    assert "标题" not in zh
+    assert "行情线" not in zh
+    assert "disagree" not in zh
+
+    # Symmetric: head_zh set, head_en "".
+    en, zh = hero_clause(pb, {
+        "color": "red", "headline_en": "", "headline_zh": "广度破裂。",
+    })
+    assert en == EMPTY_CLAUSE[0]
+    assert rec_en not in en
+    assert "headline" not in en.lower()
+    assert "disagree" not in en
+    assert zh == f"广度破裂。{rec_zh}"
+    assert "标题" not in zh
+
+    # Both empty — already the C2 empty-pb path.
+    en, zh = hero_clause(pb, {"color": "red", "headline_en": "", "headline_zh": ""})
+    assert (en, zh) == EMPTY_CLAUSE
+    assert rec_en not in en
+    assert rec_zh not in zh
+
+
+def test_agree_level_rejects_n_gt_m():
+    """NIT-D: n>m is majority in the old guardless code; contract says none."""
+    from engine.china_tier1 import _agree_level
+
+    assert _agree_level(4, 3) == "none"
+    assert _agree_level(5, 2) == "none"
+    assert _agree_level(2, 3) == "majority"
+    assert _agree_level(3, 3) == "unanimous"
+    assert _agree_level(1, 3) == "none"
+
+
+def test_leg_count_paren_contract_both_lanes():
+    """MINOR-C: parenthetical 'agree'/同意 only at majority/unanimity, both lanes."""
+    from engine.china_playbook import _dial
+    from engine.china_tier1 import _leg_count_paren, _leg_counts
+
+    assert _leg_count_paren(2, 3) == ("(2/3 legs agree)", "（2/3项指标同意）")
+    assert _leg_count_paren(3, 3) == ("(3/3 legs agree)", "（3/3项指标同意）")
+    assert _leg_count_paren(1, 3) == ("(1 of 3 legs)", "（3项中1项）")
+    assert _leg_count_paren(1, 1) == ("(1 of 1 legs)", "（1项中1项）")
+
+    n, m = _leg_counts("tightening (1 of 3 legs).", "央行货币条件趋紧（3项中1项）。")
+    assert (n, m) == (1, 3)
+    n, m = _leg_counts("tightening (2/3 legs agree).", "央行货币条件趋紧（2/3项指标同意）。")
+    assert (n, m) == (2, 3)
+
+    def money_reason(latest, internals):
+        reasons = _dial(latest, internals)["reasons"]
+        return next(r for r in reasons if "PBoC monetary" in r[1] or "央行货币条件" in r[2])
+
+    # Easing 3/3 unanimous, 2/3 majority, 1/3 plurality.
+    r = money_reason(
+        {"quad": "Q2", "liquidity_overlay": "expanding"},
+        {"credit": {
+            "scissors": 3.0, "credit_impulse": 0.5, "credit_impulse_6mo": 0.3,
+        }},
+    )
+    assert r[0] == "+"
+    assert "(3/3 legs agree)" in r[1]
+    assert "（3/3项指标同意）" in r[2]
+    assert "of 3 legs" not in r[1]
+    assert "项中" not in r[2]
+
+    r = money_reason(
+        {"quad": "Q2", "liquidity_overlay": "expanding"},
+        {"credit": {
+            "scissors": 3.0, "credit_impulse": 0.1, "credit_impulse_6mo": 0.2,
+        }},
+    )
+    assert "(2/3 legs agree)" in r[1]
+    assert "（2/3项指标同意）" in r[2]
+    assert "of 3 legs" not in r[1]
+
+    r = money_reason(
+        {"quad": "Q2", "liquidity_overlay": "expanding"},
+        {"credit": {
+            "scissors": 0.0, "credit_impulse": 0.1, "credit_impulse_6mo": 0.2,
+        }},
+    )
+    assert "(1 of 3 legs)" in r[1]
+    assert "（3项中1项）" in r[2]
+    assert "legs agree" not in r[1]
+    assert "项指标同意" not in r[2]
+
+    # Tightening 3/3, 2/3, 1/3.
+    r = money_reason(
+        {"quad": "Q2", "liquidity_overlay": "contracting"},
+        {"credit": {
+            "scissors": -3.0, "credit_impulse": -0.5, "credit_impulse_6mo": -0.3,
+        }},
+    )
+    assert r[0] == "-"
+    assert "(3/3 legs agree)" in r[1]
+    assert "（3/3项指标同意）" in r[2]
+
+    r = money_reason(
+        {"quad": "Q2", "liquidity_overlay": "contracting"},
+        {"credit": {
+            "scissors": -3.0, "credit_impulse": 0.1, "credit_impulse_6mo": 0.2,
+        }},
+    )
+    assert "(2/3 legs agree)" in r[1]
+    assert "（2/3项指标同意）" in r[2]
+
+    r = money_reason(
+        {"quad": "Q2", "liquidity_overlay": "contracting"},
+        {"credit": {
+            "scissors": 0.0, "credit_impulse": 0.1, "credit_impulse_6mo": 0.2,
+        }},
+    )
+    assert "(1 of 3 legs)" in r[1]
+    assert "（3项中1项）" in r[2]
+    assert "legs agree" not in r[1]
+    assert "项指标同意" not in r[2]
 
 
 def test_duplicate_reasons_dedupe():
@@ -831,3 +1047,5 @@ def test_defect_state_cells_named_in_readme():
         assert name in readme
     assert "defect-hero-reconcile-dark-en-desktop.png" in readme
     assert "defect-hero-reconcile-light-en-desktop.png" in readme
+    assert "defect-hero-reconcile-dark-zh-desktop.png" in readme
+    assert "defect-hero-reconcile-light-zh-desktop.png" in readme

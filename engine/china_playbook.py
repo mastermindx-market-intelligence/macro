@@ -119,31 +119,35 @@ def _dial(latest: dict, internals: dict) -> dict:
             _monetary_legs.append(0)
 
     # Majority-rules vote (ties → 0), capped at ONE score point.
+    # Parenthetical 'agree'/同意 only at majority/unanimity (`_agree_level`).
+    from engine.china_tier1 import _leg_count_paren
     _positive = sum(1 for v in _monetary_legs if v > 0)
     _negative = sum(1 for v in _monetary_legs if v < 0)
     _n_avail = len(_monetary_legs)
     if _n_avail > 0 and _positive > _negative:
         score += 1
         _all_agree = _positive == _n_avail
+        paren_en, paren_zh = _leg_count_paren(_positive, _n_avail)
         _en_str = (
             "PBoC monetary conditions easing — M2 accelerating, scissors positive, credit impulse rising "
-            f"({_positive}/{_n_avail} legs agree). ONE monetary-conditions vote "
+            f"{paren_en}. ONE monetary-conditions vote "
             "(§W6-CN: collapsed from three co-moving legs to prevent triple-count)."
             if _all_agree else
-            f"PBoC monetary conditions tilting easing ({_positive}/{_n_avail} legs). "
+            f"PBoC monetary conditions tilting easing {paren_en}. "
             "ONE monetary-conditions vote (§W6-CN: triple-count collapse)."
         )
         reasons.append(("+", _strip_internal_ids(_en_str), (
-            f"央行货币条件趋宽（{_positive}/{_n_avail}项指标同意）— 综合M2/剪刀差/社融的单次货币投票。"
+            f"央行货币条件趋宽{paren_zh}— 综合M2/剪刀差/社融的单次货币投票。"
         )))
     elif _n_avail > 0 and _negative > _positive:
         score -= 1
+        paren_en, paren_zh = _leg_count_paren(_negative, _n_avail)
         _en_str = (
-            f"PBoC monetary conditions tightening ({_negative}/{_n_avail} legs agree). "
+            f"PBoC monetary conditions tightening {paren_en}. "
             "ONE monetary-conditions vote (§W6-CN: triple-count collapse)."
         )
         reasons.append(("-", _strip_internal_ids(_en_str), (
-            f"央行货币条件趋紧（{_negative}/{_n_avail}项指标同意）— 综合M2/剪刀差/社融的单次货币投票。"
+            f"央行货币条件趋紧{paren_zh}— 综合M2/剪刀差/社融的单次货币投票。"
         )))
     else:
         if _n_avail > 0:

@@ -130,7 +130,9 @@ _EN_WORD_BUDGET = 22
 _ZH_CHAR_BUDGET = 34
 
 _LEGS_EN = re.compile(r"(\d+)\s*/\s*(\d+)\s*legs", re.I)
+_LEGS_EN_OF = re.compile(r"(\d+)\s+of\s+(\d+)\s+legs", re.I)
 _LEGS_ZH = re.compile(r"(\d+)\s*/\s*(\d+)\s*项")
+_LEGS_ZH_OF = re.compile(r"(\d+)项中(\d+)项")
 _MIXED_COUNTS_EN = re.compile(
     r"(\d+)\s+easing\s*/\s*(\d+)\s+tightening\s*/\s*(\d+)\s+neutral",
     re.I,
@@ -142,7 +144,12 @@ _CONTRAST_EN = re.compile(
     r"^(?:but|yet|though|although|however|unless|while|not)\b",
     re.I,
 )
-_CONTRAST_ZH = re.compile(r"^(?:但|然而|并未|尚未|却)")
+# ZH mirrors EN: unless→除非; however→不过/但是/可是; though/although→虽然/尽管;
+# yet/but→但/然而/却/反而; not/cannot/has not→没有/不/并非/无法/未能/并未/尚未;
+# 只是 is the ZH twin of a contrastive "just/only" remainder.
+_CONTRAST_ZH = re.compile(
+    r"^(?:不过|但是|可是|虽然|尽管|然而|除非|并非|没有|无法|未能|并未|尚未|只是|反而|但|却|不)"
+)
 _LEAD_PUNCT = re.compile(r"^[,;:，。、；：—–\s]+")
 
 
@@ -230,8 +237,10 @@ def _clamp_en(s: str, budget: int = _EN_WORD_BUDGET) -> str:
 def _clamp_zh(s: str, budget: int = _ZH_CHAR_BUDGET) -> str:
     """Keep whole ZH clauses that fit; never amputate mid-clause.
 
-    A dropped remainder that opens with 但/然而/并未/尚未/却 inverts the
-    surviving clause — return "" (worded-empty) instead.
+    A dropped remainder that opens with a contrastive/negating connective
+    (the ZH mirror of `_CONTRAST_EN`) inverts the surviving clause —
+    return "" (worded-empty) instead. A connective inside the kept
+    portion does not void.
     """
     compact = (s or "").strip()
     if not compact:
@@ -267,10 +276,21 @@ def _strip_banned(s: str) -> str:
 
 
 def _leg_counts(r_en: str, r_zh: str) -> tuple[int | None, int | None]:
-    m = _LEGS_EN.search(r_en) or _LEGS_ZH.search(r_zh)
-    if not m:
-        return None, None
-    return int(m.group(1)), int(m.group(2))
+    """Parse n, m from a producer parenthetical. Slash form or count-only form."""
+    hit = _LEGS_EN.search(r_en or "")
+    if hit:
+        return int(hit.group(1)), int(hit.group(2))
+    hit = _LEGS_EN_OF.search(r_en or "")
+    if hit:
+        return int(hit.group(1)), int(hit.group(2))
+    hit = _LEGS_ZH.search(r_zh or "")
+    if hit:
+        return int(hit.group(1)), int(hit.group(2))
+    hit = _LEGS_ZH_OF.search(r_zh or "")
+    if hit:
+        # 「（m项中n项）」 — first number is the denominator.
+        return int(hit.group(2)), int(hit.group(1))
+    return None, None
 
 
 def _available_m(r_en: str, r_zh: str) -> int | None:
@@ -288,15 +308,22 @@ def _agree_level(n: int | None, m: int | None) -> str:
     """Parsed-count agreement contract.
 
     n==m with m>=2 → unanimous; n*2 > m and n < m (m>=2) → majority;
-    plurality that is not a majority, 1/1, and parse-fail → none.
+    plurality that is not a majority, 1/1, n>m, and parse-fail → none.
     """
     if n is None or m is None or m < 2:
         return "none"
     if n == m:
         return "unanimous"
-    if n * 2 > m:
+    if n * 2 > m and n < m:
         return "majority"
     return "none"
+
+
+def _leg_count_paren(n: int, m: int) -> tuple[str, str]:
+    """User-facing n/m parenthetical. 'agree'/同意 only at majority/unanimity."""
+    if _agree_level(n, m) in ("majority", "unanimous"):
+        return (f"({n}/{m} legs agree)", f"（{n}/{m}项指标同意）")
+    return (f"({n} of {m} legs)", f"（{m}项中{n}项）")
 
 
 def _money_tips(m: int | None, level: str) -> tuple[str, str]:
@@ -424,8 +451,8 @@ def _reconcile_clause(posture: str) -> tuple[str, str]:
     lane_en, lane_zh = posture_lane(posture)
     return (
         f"The tape and the playbook disagree — stance is {lane_en}. "
-        "Honour both reads; don't treat the headline as the action.",
-        f"盘面与策略姿态不一致——姿态是{lane_zh}。两边都要看，不要把标题当成操作。",
+        "Honour both reads; the tape line is context — act on the posture, not the wording.",
+        f"盘面与策略姿态不一致——姿态是{lane_zh}。两边都要看，行情线是背景——按姿态操作，而非按措辞。",
     )
 
 
@@ -491,27 +518,8 @@ def reason_faces(reasons=None, n: int = 3) -> list[dict]:
     return out
 
 
-def hero_clause(pb: dict | None, ms: dict | None = None) -> tuple[str, str]:
-    """Plain clause under the h1. Producer headline, else playbook phase+quad.
-
-    When the tape and the playbook disagree, render the headline AND the
-    reconciliation together so the clause refers to a headline the user can
-    see. No headline → no reconciliation (no dangling 'headline' referent).
-    """
-    ms = ms or {}
-    pb = pb or {}
-    posture = ""
-    dial = pb.get("dial") or {}
-    if isinstance(dial, dict):
-        posture = str(dial.get("posture") or "").strip()
-    head_en = (ms.get("headline_en") or "").strip()
-    head_zh = (ms.get("headline_zh") or "").strip()
-    if _axes_disagree(posture, ms) and head_en:
-        rec_en, rec_zh = _reconcile_clause(posture)
-        zh = head_zh or EMPTY_CLAUSE[1]
-        return (f"{head_en} {rec_en}", f"{zh}{rec_zh}")
-    if head_en:
-        return (head_en, head_zh or EMPTY_CLAUSE[1])
+def _hero_fallback(pb: dict) -> tuple[str, str]:
+    """C2 path: the clause a lane uses when it has no headline of its own."""
     progress = pb.get("progress") or {}
     qm = pb.get("quad_meaning") or {}
     meaning_en = qm.get("en") or ""
@@ -532,6 +540,37 @@ def hero_clause(pb: dict | None, ms: dict | None = None) -> tuple[str, str]:
             return (en, zh or EMPTY_CLAUSE[1])
         return EMPTY_CLAUSE
     return EMPTY_CLAUSE
+
+
+def hero_clause(pb: dict | None, ms: dict | None = None) -> tuple[str, str]:
+    """Plain clause under the h1. Producer headline, else playbook phase+quad.
+
+    When the tape and the playbook disagree, render the headline AND the
+    reconciliation together so the clause refers to a headline the user can
+    see. Gated per lane: EN reconciliation only with a non-empty head_en;
+    ZH reconciliation only with a non-empty head_zh. A lane without a
+    headline falls through to that lane's mid-scare/empty clause.
+    """
+    ms = ms or {}
+    pb = pb or {}
+    posture = ""
+    dial = pb.get("dial") or {}
+    if isinstance(dial, dict):
+        posture = str(dial.get("posture") or "").strip()
+    head_en = (ms.get("headline_en") or "").strip()
+    head_zh = (ms.get("headline_zh") or "").strip()
+    disagree = _axes_disagree(posture, ms)
+    rec_en, rec_zh = _reconcile_clause(posture) if disagree else ("", "")
+    fb_en, fb_zh = _hero_fallback(pb)
+    if head_en:
+        en = f"{head_en} {rec_en}" if rec_en else head_en
+    else:
+        en = fb_en
+    if head_zh:
+        zh = f"{head_zh}{rec_zh}" if rec_zh else head_zh
+    else:
+        zh = fb_zh
+    return (en, zh)
 
 
 def plain_gross_band(gross: float | None) -> tuple[str, str]:

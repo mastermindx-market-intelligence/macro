@@ -1,4 +1,4 @@
-# China Archetype-D S1 — evidence matrix (round 5)
+# China Archetype-D S1 — evidence matrix (round 6)
 
 Five L1 subjects × dark/light × EN/ZH × 1440/390.
 Spec G7 names this the 20-crop matrix; the product of those axes is 40 cells.
@@ -94,7 +94,7 @@ L1 index strip is SSE / CSI 300 / ChiNext / HSI — **no inverted-quote tile ren
 
 ## Defect-state cells
 
-The happy-path fixture pins posture NEUTRAL + three firing reasons, so it never exercises mixed/majority/empty/unknown/reconcile. These five extra cells (dark+light EN, 1440) close that gap. They are aliases in `cells/`, not extra G7 subjects (the visual-evidence gate still requires eight REST cells on each of the five L1 subjects).
+The happy-path fixture pins posture NEUTRAL + three firing reasons, so it never exercises mixed/majority/empty/unknown/reconcile. These five extra cells (dark+light EN, 1440; hero-reconcile also dark+light ZH overlay) close that gap. They are aliases in `cells/`, not extra G7 subjects (the visual-evidence gate still requires eight REST cells on each of the five L1 subjects).
 
 | Cell | Subject | What it exercises | Aliases |
 |---|---|---|---|
@@ -102,5 +102,5 @@ The happy-path fixture pins posture NEUTRAL + three firing reasons, so it never 
 | majority-money | todo | 2/3 tightening majority wording | `defect-majority-money-dark-en-desktop.png`, `defect-majority-money-light-en-desktop.png` |
 | worded-empty | todo | §9.12 empty stance rows | `defect-worded-empty-dark-en-desktop.png`, `defect-worded-empty-light-en-desktop.png` |
 | unknown-posture | hero | unmapped posture → cautious lane | `defect-unknown-posture-dark-en-desktop.png`, `defect-unknown-posture-light-en-desktop.png` |
-| hero-reconcile | hero | AGGRESSIVE + risk-off tape; headline visible with the reconciliation beneath | `defect-hero-reconcile-dark-en-desktop.png`, `defect-hero-reconcile-light-en-desktop.png` |
+| hero-reconcile | hero | AGGRESSIVE + risk-off tape; headline visible with the reconciliation beneath | `defect-hero-reconcile-dark-en-desktop.png`, `defect-hero-reconcile-light-en-desktop.png`, `defect-hero-reconcile-dark-zh-desktop.png`, `defect-hero-reconcile-light-zh-desktop.png` |
 

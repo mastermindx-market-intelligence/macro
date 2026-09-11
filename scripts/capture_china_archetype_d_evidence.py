@@ -304,9 +304,10 @@ def defect_hero_reconcile_vm(vm: dict | None = None) -> dict:
     return base
 
 
-# Defect-state cells (dark+light EN, 1440). Named in the README. Not extra
-# manifest pages — the visual-evidence gate requires 8 REST cells on every
-# page, and these close a fixture gap rather than a G7 subject.
+# Defect-state cells (dark+light EN, 1440; hero-reconcile also ZH). Named in
+# the README. Not extra manifest pages — the visual-evidence gate requires
+# 8 REST cells on every page, and these close a fixture gap rather than a
+# G7 subject.
 DEFECT_CELLS: tuple[tuple[str, str, str, object], ...] = (
     ("mixed-money", "todo", '[data-ev="todo"]', defect_mixed_vm),
     ("majority-money", "todo", '[data-ev="todo"]', defect_majority_vm),
@@ -660,77 +661,85 @@ def _capture(scratch: Path) -> dict:
 
             d_width, d_height = VIEWPORTS["desktop"]
             for name, subject, selector, _builder in DEFECT_CELLS:
+                locales = LOCALES if name == "hero-reconcile" else ("en",)
                 for theme in THEMES:
-                    locale = "en"
-                    state = {"theme": theme, "locale": locale}
-                    context = browser.new_context(
-                        viewport={"width": d_width, "height": d_height},
-                        locale="en-US",
-                        color_scheme=theme,
-                        device_scale_factor=1,
-                    )
-                    context.add_init_script(
-                        f"({_STATE_SEED_SCRIPT.strip()})({json.dumps(state)})"
-                    )
-                    page = context.new_page()
-                    entry = {
-                        "defect": name,
-                        "subject": subject,
-                        "viewport": "desktop",
-                        "locale": locale,
-                        "theme": theme,
-                        "viewport_width": d_width,
-                        "viewport_height": d_height,
-                    }
-                    try:
-                        url = f"{base}/china_s1_defect_{name}.html"
-                        response = page.goto(url, wait_until="load", timeout=30000)
-                        if response is None or not response.ok:
-                            raise RuntimeError(
-                                f"HTTP {getattr(response, 'status', 'none')}"
-                            )
-                        page.wait_for_timeout(250)
-                        applied = page.evaluate(_APPLY_STATE_SCRIPT.strip(), state) or {}
-                        if applied.get("theme") != theme or applied.get("locale") != locale:
-                            raise RuntimeError(
-                                f"state mismatch: requested theme={theme} locale={locale} "
-                                f"observed {applied!r}"
-                            )
-                        page.wait_for_timeout(150)
-                        loc = page.locator(selector).first
-                        loc.wait_for(state="visible", timeout=5000)
-                        loc.scroll_into_view_if_needed()
-                        page.wait_for_timeout(80)
-                        png = loc.screenshot(type="png")
-                        fname, digest, pw, ph = content_address_png(png, CELLS_DIR)
-                        alias = f"defect-{name}-{theme}-{locale}-desktop.png"
-                        (CELLS_DIR / alias).write_bytes(png)
-                        written.add(fname)
-                        written.add(alias)
-                        aliases[alias] = fname
-                        entry.update(
-                            {
-                                "captured": True,
-                                "file": fname,
-                                "alias": alias,
-                                "sha256": digest,
-                                "bytes": len(png),
-                                "width": pw,
-                                "height": ph,
-                                "applied_theme": applied.get("theme"),
-                                "applied_locale": applied.get("locale"),
-                            }
+                    for locale in locales:
+                        state = {"theme": theme, "locale": locale}
+                        context = browser.new_context(
+                            viewport={"width": d_width, "height": d_height},
+                            locale="zh-CN" if locale == "zh" else "en-US",
+                            color_scheme=theme,
+                            device_scale_factor=1,
                         )
-                    except Exception as exc:
-                        entry.update(
-                            {
-                                "captured": False,
-                                "reason": f"{type(exc).__name__}: {exc}",
-                            }
+                        context.add_init_script(
+                            f"({_STATE_SEED_SCRIPT.strip()})({json.dumps(state)})"
                         )
-                    finally:
-                        context.close()
-                    defect_rows.append(entry)
+                        page = context.new_page()
+                        entry = {
+                            "defect": name,
+                            "subject": subject,
+                            "viewport": "desktop",
+                            "locale": locale,
+                            "theme": theme,
+                            "viewport_width": d_width,
+                            "viewport_height": d_height,
+                        }
+                        try:
+                            url = f"{base}/china_s1_defect_{name}.html"
+                            response = page.goto(url, wait_until="load", timeout=30000)
+                            if response is None or not response.ok:
+                                raise RuntimeError(
+                                    f"HTTP {getattr(response, 'status', 'none')}"
+                                )
+                            page.wait_for_timeout(250)
+                            applied = page.evaluate(
+                                _APPLY_STATE_SCRIPT.strip(), state
+                            ) or {}
+                            if (
+                                applied.get("theme") != theme
+                                or applied.get("locale") != locale
+                            ):
+                                raise RuntimeError(
+                                    f"state mismatch: requested theme={theme} "
+                                    f"locale={locale} observed {applied!r}"
+                                )
+                            page.wait_for_timeout(150)
+                            loc = page.locator(selector).first
+                            loc.wait_for(state="visible", timeout=5000)
+                            loc.scroll_into_view_if_needed()
+                            page.wait_for_timeout(80)
+                            png = loc.screenshot(type="png")
+                            fname, digest, pw, ph = content_address_png(
+                                png, CELLS_DIR
+                            )
+                            alias = f"defect-{name}-{theme}-{locale}-desktop.png"
+                            (CELLS_DIR / alias).write_bytes(png)
+                            written.add(fname)
+                            written.add(alias)
+                            aliases[alias] = fname
+                            entry.update(
+                                {
+                                    "captured": True,
+                                    "file": fname,
+                                    "alias": alias,
+                                    "sha256": digest,
+                                    "bytes": len(png),
+                                    "width": pw,
+                                    "height": ph,
+                                    "applied_theme": applied.get("theme"),
+                                    "applied_locale": applied.get("locale"),
+                                }
+                            )
+                        except Exception as exc:
+                            entry.update(
+                                {
+                                    "captured": False,
+                                    "reason": f"{type(exc).__name__}: {exc}",
+                                }
+                            )
+                        finally:
+                            context.close()
+                        defect_rows.append(entry)
             captured_d = sum(1 for r in defect_rows if r.get("captured"))
             print(f"  defect-state: {captured_d}/{len(defect_rows)} cells", flush=True)
         finally:
@@ -811,7 +820,7 @@ def _capture(scratch: Path) -> dict:
 
 def _write_readme(manifest: dict) -> str:
     lines = [
-        "# China Archetype-D S1 — evidence matrix (round 5)",
+        "# China Archetype-D S1 — evidence matrix (round 6)",
         "",
         "Five L1 subjects × dark/light × EN/ZH × 1440/390.",
         "Spec G7 names this the 20-crop matrix; the product of those axes is "
@@ -926,7 +935,8 @@ def _write_readme(manifest: dict) -> str:
         "",
         "The happy-path fixture pins posture NEUTRAL + three firing reasons, so it "
         "never exercises mixed/majority/empty/unknown/reconcile. These five extra "
-        "cells (dark+light EN, 1440) close that gap. They are aliases in `cells/`, "
+        "cells (dark+light EN, 1440; hero-reconcile also dark+light ZH overlay) "
+        "close that gap. They are aliases in `cells/`, "
         "not extra G7 subjects (the visual-evidence gate still requires eight REST "
         "cells on each of the five L1 subjects).",
         "",
@@ -942,7 +952,8 @@ def _write_readme(manifest: dict) -> str:
         "`defect-unknown-posture-dark-en-desktop.png`, `defect-unknown-posture-light-en-desktop.png` |",
         "| hero-reconcile | hero | AGGRESSIVE + risk-off tape; headline visible "
         "with the reconciliation beneath | "
-        "`defect-hero-reconcile-dark-en-desktop.png`, `defect-hero-reconcile-light-en-desktop.png` |",
+        "`defect-hero-reconcile-dark-en-desktop.png`, `defect-hero-reconcile-light-en-desktop.png`, "
+        "`defect-hero-reconcile-dark-zh-desktop.png`, `defect-hero-reconcile-light-zh-desktop.png` |",
         "",
     ]
     return "\n".join(lines) + "\n"
