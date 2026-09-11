@@ -4,156 +4,144 @@ session: "Sol web / prophet-absolute-downside-research-20260910-sol-001"
 model: sol
 ended_because: complete
 mission: >
-  Qualify an existing Prophet population/receipt boundary, construct a finite
-  shared-downside scoring falsifier, and resolve material owner/review replies.
-  This research continuation is complete; no live repair or trading improvement
-  is accepted and the product program remains open.
+  Qualify existing Prophet population and grading boundaries, verify a synthetic
+  shared-downside scoring discriminator, and consume actual review/owner returns.
+  This research turn is complete; the live repair and product program are not.
 state_before: >
-  The historical closed-read repair was published but unapplied; independent
-  pilot review had no eligible receiver. A next decision study required actual
-  opportunity identities and as-known execution clocks, not another model fit.
+  Failed archive pilot retained; closed-read capsule unapplied; independent review
+  unplaced; actual board-to-episode and decision-to-fill composition unqualified.
 changed:
   - path: research/grey_deer/ROUND5_POPULATION_AND_SCORING_QUALIFICATION.md
-    what: B1 versus board population boundary, partial receipt proof, count-score proof and finite owner/access actions.
+    what: Population boundary, partial receipt proof and exact shared-loss scoring proof.
   - path: research/grey_deer/qualification_evidence/
-    what: Offline metadata and exact synthetic arithmetic evidence; no production reader, model or grader.
+    what: Two derived JSON receipts; not a canonical reader, grader or model.
+  - path: research/grey_deer/ROUND5_GRADER_AND_PLACEMENT_ADDENDUM.md
+    what: Actual existing grader contract and one bounded review-interaction amendment.
   - path: agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-09-10-prophet-research.md
-    what: This current recovery frontier; older reports and scientific verdicts remain unchanged.
+    what: This exact current recovery frontier; prior reports remain unchanged.
 verified:
-  - claim: Protected procedure was read from one compatible immutable revision.
-    command: GitHub protected branch, INDEX and same-commit relevant skills/companions; master ref reread.
+  - claim: Current compatible protected procedure was read and rechecked.
+    command: GitHub protected master, INDEX and same-commit required skills/companions.
     result: Mastermind068dcc1533776672844b36ffcde30fad68a4317f; Skillpack1.0.1/bootstrap1.
-  - claim: The B1 opening population and clocks are not the ranked board's entry universe.
-    command: Read accepted B1 binding decision and natural-acceptance probe at Macro4b1f8fddcc4eb6f36133fca4d42018678b74d30b.
+  - claim: The B1 population and clocks are not the complete ranked-board entry population.
+    command: Read accepted B1 binding decision and natural-acceptance probe at Macro4b1f8fdd.
     result: >
-      Only qualified anchored TURN WATCH opens natural episodes. Other observations
-      attach or suppress. opened_at/opened_session do not supply decision_at or
-      tradable_at. This is a contract boundary, not a measured biased research join.
-  - claim: Three published metadata objects agree under bounded arithmetic checks.
-    command: Run standalone check_receipt_chain.py on copied, blob-bound HEAD/manifest/receipt only.
+      Qualified anchored TURN WATCH opens episodes; others attach/suppress.
+      opened_at/opened_session are not decision_at/tradable_at. No measured join
+      bias, full population census or actual entry replay is claimed.
+  - claim: Three published metadata objects are internally consistent under bounded checks.
+    command: Standalone25-check arithmetic on blob-bound HEAD/manifest/receipt copies.
     result: >
-      25PASS/0FAIL, including exact Git blobs, self/content hashes, generation
-      address, declared projection/source hash links and count arithmetic.
-      Receipt2026-09-06T11:16:58Z; input6666/mapped990/suppressed5676 are
-      observation counts, not unique stocks or trade outcomes. Entry Radar receipt
-      is degraded/MISSING_SOURCE_FILE. Full generation/loader/serving proof not run.
-  - claim: A shared-loss diagnostic distinguishes identical marginals with different count distributions.
-    command: Synthetic Fraction arithmetic, 12 unit tests, 35-distribution ordered-pair grid and three deliberate bad variants.
+      25PASS/0FAIL. Receipt2026-09-06T11:16:58Z;6666input/990mapped/5676suppressed
+      are observations, not unique stocks or trades. Entry Radar receipt degraded.
+      Unread members/upstream files, semantic replay and canonical loader unvalidated.
+  - claim: Shared-downside scoring can distinguish identical marginals with different count distributions.
+    command: Exact Fraction demonstration,12unit tests,35-distribution grid and3bad variants.
     result: >
-      12/12PASS;1225 exact expected-score identities checked; three mutants rejected
-      by assertion failures. No market data/model fit. Count score is proper for the
-      count distribution, not sufficient to identify a complete joint stock/path model.
-  - claim: Wrong-kind horizon matches were delivered as a concrete owner-evidence correction.
-    command: Fresh-read6817/comment5629639705 and post bounded peer-review correction5629917898.
+      12PASS;1225ordered-pair identities checked;3mutants assertion-rejected.
+      Synthetic only, no market data or model fit. Count score does not identify
+      the full joint stock/path distribution, execution, severity or trading utility.
+  - claim: The existing board grader has a narrower explicit entry/path contract.
+    command: Static grade_us_board.py first430lines and grading.py first200lines at Macro4b1f8fdd.
     result: >
-      Step10D is not ten days; display presets and schema labels are not Prophet
-      prediction horizons. No arbitrary horizon selected, no P0C authority taken,
-      and no owner acceptance of the correction or closed-read repair inferred.
-  - claim: Review source-access blocker was consumed and narrowed once using new public-resource evidence.
-    command: Full same-root read, GitHub repository metadata and official public-contents documentation; explicit Sol continuation.
+      Native board grain;5/10/21/63session grades; popup10. Next-session-close
+      fill and close-path excess MAE are not intraday absolute-risk measurement.
+      Existing admitted-name recovery and stamped raw fallback remain owners.
+      No grader or outcome read/execution occurred.
+  - claim: Wrong-kind horizon evidence was delivered to the current owner.
+    command: Read6817/comment5629639705; post peer-review correction5629917898.
     result: >
-      BLOCKED_SOURCE_ACCESS1789103356.131679 consumed. Both repos report public;
-      a disconnected integration alone does not prove public-read inability.
-      SolCONTINUE1789104117.935769 asks one existing-authorized capability check
-      or BLOCKED_PUBLIC_READ_CAPABILITY. Receiver/delivery/ACK/START remain NONE.
+      Step10D, display presets and schema labels do not prove competing Prophet
+      horizons. No arbitrary ruler selected or P0C/source authority taken.
+  - claim: Two finite access returns were consumed with explicit same-root rulings.
+    command: Full exact Slack reads and SolCONTINUE1789104117.935769 then1789105520.784709.
+    result: >
+      Source-access blocker1789103356.131679 then public-read blocker1789104967.772179
+      consumed. Latest ruling permits one dedicated included non-author Chat/Web
+      review interaction through the existing approved owner, source qualification
+      during bounded pickup. No creation/delivery/ACK/START is inferred.
 unverified:
-  - Full canonical B1 generation/loader validation, unread projection/upstream files and current served generation.
-  - Full ranked-board relation coverage or a September10 decision-to-fill replay.
-  - Live selector/copy adoption, source custody release, production publication or entitled browser proof.
-  - An actual eligible non-author reviewer, review ACK/START/result or receiver watch registration.
-  - Full Agent OS validation, current integration/CI acceptance, independent review or merge readiness of the research branch.
-  - Any new market-data study, point-in-time forecast improvement, trading return or policy promotion.
+  - Full B1 generation, upstream files, current served generation or September10 decision-to-fill replay.
+  - Closed-read source/copy adoption, legitimate source release and production/browser proof.
+  - Actual eligible reviewer, provider conversation/delivery receipt, ACK/START/result or child watcher registration.
+  - Whole-store Agent OS validation, independent review, current integration/CI acceptance and merge readiness.
+  - New empirical study, predictive improvement, trading result or policy promotion.
 unresolved:
+  - Existing6817/6805 owner must consume closed-read request5628945643 and horizon correction5629917898.
+  - Same review root awaits one legitimate dedicated interaction or the exact provisioning/delivery blocker.
   - >
-    Existing6817/6805 owners must consume the closed-read adoption request5628945643
-    and distinguish the horizon evidence correction5629917898 from their actual
-    target-owner binding. Neither delivery has a consumed adoption proof.
-  - >
-    Independent review remains on the same root and immutable50a subject. The
-    existing placement owner must return a real source-capable eligibility edge
-    or the finite public-read capability blocker; no route-search loop.
-  - >
-    The new B1 import-time/package preflight was safety-refused and stopped.
-    No modules imported or data staged. It and the older current-live-source
-    diagnostic are not retried, fragmented or delegated. Owned REPL exited0.
+    Current-live-source diagnostic and later B1 import-time/package preflight were
+    safety-refused; neither was retried, fragmented or delegated. No B1 imports
+    or generation staging occurred. Owned process3944 exited0; no other worker touched.
 next_actions:
   - >
-    Consume the existing Cockpit/EntryTruth owner's finite correction/adoption
-    disposition; admit no competing source writer or B4 shortcut. The observation
-    quality repair is not a new prediction-horizon policy.
+    Consume the existing owner's finite repair/adoption disposition. No competing
+    writer, #6832 widening or B4 shortcut; preserve actual source/proof gates.
   - >
-    Consume the next material reply on C0BSBM78V1N/root1789095597.875539 and issue
-    explicit CONTINUE or terminal STOP under current law; preserve aggregate/siblings.
+    Consume the next material reply on C0BSBM78V1N/root1789095597.875539; distinguish
+    creation/delivery/ACK/source qualification/START and issue explicit CONTINUE or STOP.
   - >
-    Research owner qualifies the complete original board opportunity set plus
-    lawful episode links and decision/execution clocks before a new preregistered
-    path/shared-downside experiment. Three-object hashes cannot substitute for it.
+    Research owner qualifies the full original board opportunity set, lawful
+    episode links and decision/execution clocks before a new path/shared-risk study.
 do_not_redo:
-  - Do not grade all board recommendations by retaining only B1-linked episodes or invent substitute episode IDs.
-  - Do not treat structural suppression counts as unique stocks, missing quotes or losing trades.
-  - Do not treat opened_at, generation recorded_at or build time as executable decision time.
-  - Do not call the one-shot metadata arithmetic the canonical loader or a new live reader.
-  - Do not retry either refused diagnostic through another surface, account or worker.
-  - Do not retune the consumed archive pilot, read gated W3 comparative outcomes or promote GD-1C.
-  - Do not widen the frozen50a independent review to later parent-head files without a separate explicit ruling.
-  - Do not recreate queues, quotes, identities, outcomes, entry policies or source ownership.
+  - Do not narrow the board to B1-linked episodes or mint substitute episode IDs.
+  - Do not turn structural suppressions into stock/trade counts or missing-input failure rates.
+  - Do not treat event-open, generation or build timestamps as executable decision clocks.
+  - Do not call the25metadata checks full canonical validation or a new operational reader.
+  - Do not retry either refused diagnostic through another surface or worker.
+  - Do not retune the consumed archive holdout, inspect gated W3 outcomes or promote GD-1C.
+  - Do not widen the frozen50a review subject to the moving parent research head.
+  - Do not duplicate queues, quotes, identity, grading, candidate or policy owners.
 danger_areas:
-  - Partial metadata consistency and old production acceptance do not establish a current served or tradable generation.
-  - A count-distribution score detects this dependence error but not individual identity, severity, fills or utility.
-  - Public repository visibility does not prove a specific reviewer has an authorized working read tool.
-  - Misclassified text is not conflicting accepted law; reject wrong-kind matches before inventing a dependency hold.
+  - A next-close scorecard cannot certify a morning entry's intraday path.
+  - Adjusted-first can include a stamped unadjusted fallback; read actual per-row basis.
+  - Public visibility does not establish a particular receiver's permitted read capability.
+  - Wrong-kind source matches are not competing accepted horizons.
 ---
 
-# Fifth research continuation — exact return point
+# Exact recovery point — fifth research continuation
 
-Parent stays `prophet-absolute-downside-research-20260910-sol-001`, Macro PR7043,
-branch `sol/prophet-absolute-downside-research-20260910`. Source before this
-continuation: `f71534abdec31da23c9803d1d9d197e682174819`.
+Parent: `prophet-absolute-downside-research-20260910-sol-001`.
+Repository/PR: macro7043, original branch
+`sol/prophet-absolute-downside-research-20260910`.
+Round5 initial publication:d405acf2f4b0dd206ce7fa9da1e7cbf6409aa2b5,
+tree1f2743a35be12ebcfcbede1d2c20fced13f1fc37.
+The companion ROUND5 report and grader/placement addendum carry all source pins.
+No empirical model was run in this continuation. Sole pilot result remains
+NO_INCREMENTAL_SUPPORT, hash2cde9ca7aa7166b952028e394ded55fed5ca9a7df690c4cd2e3453b0b464ebb9.
+Its preregistration4d4b1011 and corrected-versus-executed code remain unchanged.
 
-The companion ROUND5 report gives the precise source pins, metadata objects,
-mathematical proof, synthetic results and negative qualifications. No new empirical
-market experiment was run. The original report,4d4b1011 preregistration, sole
-01:40:01.915505Z pilot result and corrected-versus-executed code distinction stay
-intact. Original result SHA256:
-`2cde9ca7aa7166b952028e394ded55fed5ca9a7df690c4cd2e3453b0b464ebb9`.
+## Same review child, bounded placement amendment
 
-## Exact review dialogue
+Child `prophet-downside-pilot-independent-review-20260911-sol-001`.
+Workspace Mastermind X, channelC0BSBM78V1N, root1789095597.875539.
+Capsule7043/comment5628785855; corrected link1789096771.371969.
+Frozen review50a5bc1881aa29a51b2971cd241c0443f65e4d6c, original six files only.
+Latest returned effects1789104967.772179: provider_turns0, receiver/delivery/ACK/START NONE.
+Latest Sol ruling1789105520.784709: one dedicated included non-author Chat/Web interaction
+through the existing approved placement/provisioning mechanism; source qualification
+occurs in bounded pickup. It supersedes ONLY the earlier no-new-interaction ceiling.
 
-Child: `prophet-downside-pilot-independent-review-20260911-sol-001`.
-Workspace: Mastermind X; channelC0BSBM78V1N; root1789095597.875539.
-Review capsule:7043/comment5628785855. Corrected link1789096771.371969.
-Frozen subject:50a5bc1881aa29a51b2971cd241c0443f65e4d6c, original six files only.
+Reconcile the placement owner's own prepared/queued/unknown effects before creation.
+No second candidate, unrelated Code-task input, new connection, paid fallback,
+credential, proxy, source investigation or refusal bypass. If the approved mechanism
+is unavailable, return the exact blocker. The ruling itself proves no creation or
+execution. Keep the same root and existing aggregate/siblings; terminal STOP removes
+only this child source. No new lifecycle, queue, receiver guess or successor child.
 
-Prior placement result1789097192.067579 and continuation1789097693.973299 were
-superseded at the transport frontier by actual BLOCKED_SOURCE_ACCESS return
-1789103356.131679 and SolCONTINUE1789104117.935769. This latest ruling permits
-one finite check using an already-authorized public read capability; it does not
-connect accounts, create a downloader/proxy, send to an unrelated conversation,
-change provider permissions, or retry a safety refusal. No receiver is established.
-If that capability is absent, retain/park the same placement with the exact blocker.
-Do not poll indefinitely or treat a public repository as a proven native reader.
+## Existing product and research owners remain intact
 
-## Exact owner dialogue
+Closed-read adoption request6817/5628945643 and horizon correction5629917898 have
+no inferred owner acceptance. The later horizon comment5629639705 was not an adoption
+return. Existing6832release/proof,6805EntryTruth,6840same-return repair,7005input
+recovery and7035participation remain separate. No stopped source operation was revived.
 
-Original closed-read request:6817/comment5628945643, published capsule381dea6000f56bbc76446b27f4cd74b76319dcf4.
-New P0C horizon evidence comment:5629639705. Peer-review correction:5629917898.
-No consumption or source-adoption receipt has been inferred. Correction of wrong-kind
-horizon evidence does not select a ruler, release source custody or complete P0C.
+B1 metadata generationpeg:5a1d60fdd7f6d525a205560891ff68a556b9aabb81ff4e3f2cbf81929c6e1737
+is observed at source4b1f8fddcc4eb6f36133fca4d42018678b74d30b, with September6receipt.
+It is not a currently served or executable generation proof. The full loader stopped
+at its refused preflight, and the original owned host process is closed.
 
-The existing #6832 release/proof, #6805 EntryTruth, #6840 same-return repair,
-#7005 input recovery and #7035 participation owners retain their scopes. No existing
-terminal child is restarted, no replacement worker is created, and no old declined
-source operation is routed through this research work.
-
-## Qualification and actual host boundary
-
-Source read pin:4b1f8fddcc4eb6f36133fca4d42018678b74d30b.
-B1 HEAD points to generationpeg:5a1d60fdd7f6d525a205560891ff68a556b9aabb81ff4e3f2cbf81929c6e1737.
-Receipt recorded_at2026-09-06T11:16:58Z. Only HEAD, manifest and receipt were checked.
-The canonical-loader source/import dependency preflight stopped at a safety refusal;
-no module import, generation materialization, source change or full validation occurred.
-Owned process3944 exited0. No other worker process or worktree was touched.
-
-Protected procedure:068dcc1533776672844b36ffcde30fad68a4317f.
-Scientific and production acceptance remain separate. The correct product state is
-still unapplied repair and incomplete recommendation-policy intelligence, not done.
+The source grader's actual conventions and native population must be reused rather
+than silently changed. A tactical path study needs its explicitly qualified owner
+extension. Popup10 does not resolve an unrelated target's horizon. Draft/HOLD and
+all real source, review and production-proof requirements remain intact.
