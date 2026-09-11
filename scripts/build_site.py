@@ -2642,55 +2642,31 @@ def _policy_lever_view() -> dict | None:
         return None
 
 
-def _sector_residual_universe_n() -> int | None:
-    """Count residual movers across sector SPDRs BEFORE the panel slice.
-
-    Cheap half of ``top_sector_residuals``: weight_decomposition only, no
-    cycle/ladder lookup. None means the count is not cheaply knowable — the
-    template must then drop the number rather than print the sliced length.
-    """
-    try:
-        from engine.holdings_signals import weight_decomposition
-        funds = config.load()["sponsors"]["sector_funds"]
-        n = 0
-        for fund in funds:
-            try:
-                dec = weight_decomposition(fund)
-            except Exception:  # noqa: BLE001 — one fund must not kill the count
-                continue
-            if dec is None or getattr(dec, "empty", True):
-                continue
-            for _tk, row in dec.iterrows():
-                ac = row.get("active_change")
-                try:
-                    if ac is None or float(ac) == 0.0:
-                        continue
-                    if ac != ac:  # NaN
-                        continue
-                except (TypeError, ValueError):
-                    continue
-                n += 1
-        return n
-    except Exception:  # noqa: BLE001 — additive label, never fatal
-        return None
-
-
 def holdings_panel() -> tuple[list[dict], int | None]:
-    """Sliced teaser rows + true accumulation-universe N (before panel_top_n).
+    """Sliced teaser rows + destination-true accumulate N for the etfs.html link.
 
-    Universe is every positive-conviction fund decision after split events are
-    dropped — the same set the whales page ranks, not the 12-row teaser.
+    N is the number of accumulate rows the destination actually renders
+    (``drop_cash(all_etf_signals())`` → ``split_by_conviction`` accumulate side
+    → ``page_top_n``). If that chain fails, N is None and the template drops
+    the count rather than print a number the board will not show.
     """
-    from engine.holdings_signals import all_etf_signals, drop_split_events
+    from engine.holdings_signals import (
+        all_etf_signals, drop_split_events, etf_page_accumulation,
+    )
     n = config.load()["holdings_signals"].get("panel_top_n", 12)
     try:
-        raw = drop_split_events(all_etf_signals())
-        acc_all = [r for r in raw if (r.get("conviction_pp") or 0) > 0]
-        universe_n = len(acc_all)
+        raw = all_etf_signals()
+        acc_all = [r for r in drop_split_events(raw)
+                   if (r.get("conviction_pp") or 0) > 0]
         acc = sorted(acc_all, key=lambda r: -r["conviction_pp"])[:n]
     except Exception as e:  # noqa: BLE001 — panel is additive, never fatal
         log.error("fund moves panel failed: %s", e)
         return [], None
+    try:
+        universe_n = len(etf_page_accumulation(raw))
+    except Exception as e:  # noqa: BLE001 — a bad count is worse than none
+        log.warning("etfs.html accumulate count failed (%s) — dropping N", e)
+        universe_n = None
     rows = [{
         "fund": s["etf"], "fund_name": s.get("etf_name", s["etf"]),
         "ticker": s["ticker"], "name": s["name"], "sector": s.get("sector", ""),
@@ -2712,13 +2688,14 @@ def holdings_rows() -> list[dict]:
 
 
 def accumulation_panel() -> tuple[list[dict], int | None]:
-    """Sliced accumulation-watch rows + true residual-universe N (before slice)."""
-    from engine.holdings_signals import top_sector_residuals
+    """Sliced accumulation-watch rows + residual-universe N from the same pass."""
+    from engine.holdings_signals import sector_residual_panel
     from engine.playbook import SECTOR_NAMES
     n = config.load()["holdings_signals"].get("panel_top_n", 12)
     rows = []
     try:
-        for s in top_sector_residuals(n):
+        raw, universe_n = sector_residual_panel(n)
+        for s in raw:
             rows.append({
                 "fund": s["fund"], "sector": SECTOR_NAMES.get(s["fund"], s["fund"]),
                 "ticker": s["ticker"], "name": s["name"],
@@ -2731,7 +2708,7 @@ def accumulation_panel() -> tuple[list[dict], int | None]:
     except Exception as e:  # noqa: BLE001 — panel is additive, never fatal
         log.error("accumulation panel failed: %s", e)
         return [], None
-    return rows, _sector_residual_universe_n()
+    return rows, universe_n
 
 
 def accumulation_rows() -> list[dict]:
@@ -2739,7 +2716,7 @@ def accumulation_rows() -> list[dict]:
     holding's weight change split into a price part and a residual ('active'), with
     the stock's cycle state attached. See engine/holdings_signals.py.
 
-    Uses ``top_sector_residuals`` (the strongest residual movers, no alert gate) so
+    Uses ``sector_residual_panel`` (the strongest residual movers, no alert gate) so
     the panel is always populated — on passive SPDRs the residual is tiny by
     construction and the thresholded list is almost always empty."""
     rows, _uni = accumulation_panel()

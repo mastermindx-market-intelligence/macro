@@ -976,7 +976,162 @@ def _write_readme(manifest: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
-def main() -> int:
+HOLDINGS_LINK_CELLS = (
+    ("dark", "zh", "mobile"),
+    ("light", "en", "desktop"),
+)
+
+
+def recapture_holdings_link_cells() -> int:
+    """Replace only the two holdings cells whose counted-link wording changed.
+
+    Does not wipe sibling subjects. Patches manifest aliases + the two state
+    rows, and the README holdings verdict line.
+    """
+    from scripts.capture_page_evidence import CaptureUnavailable, serve_site_dir
+
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError as exc:
+        raise CaptureUnavailable(f"playwright is not importable: {exc}") from exc
+
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    CELLS_DIR.mkdir(parents=True, exist_ok=True)
+    scratch = Path(tempfile.mkdtemp(prefix="us_stocks_s2_holdings_link_"))
+    try:
+        print("rendering dashboard.html.j2 stocks mode (fixture VM)", flush=True)
+        write_fixture_site(scratch)
+        httpd, port = serve_site_dir(scratch)
+        base = f"http://127.0.0.1:{port}"
+        manager = sync_playwright().start()
+        try:
+            browser = manager.chromium.launch(headless=True)
+        except Exception as exc:
+            manager.stop()
+            raise CaptureUnavailable(f"no chromium binary is installed: {exc}") from exc
+        written: dict[str, dict] = {}
+        try:
+            for theme, locale, viewport in HOLDINGS_LINK_CELLS:
+                width, height = VIEWPORTS[viewport]
+                state = {"theme": theme, "locale": locale}
+                context = browser.new_context(
+                    viewport={"width": width, "height": height},
+                    locale="zh-CN" if locale == "zh" else "en-US",
+                    color_scheme=theme,
+                    device_scale_factor=1,
+                )
+                context.add_init_script(
+                    f"({_STATE_SEED_SCRIPT.strip()})({json.dumps(state)})"
+                )
+                page = context.new_page()
+                try:
+                    url = f"{base}/us_stocks_s2.html"
+                    response = page.goto(url, wait_until="load", timeout=45000)
+                    if response is None or not response.ok:
+                        raise RuntimeError(
+                            f"HTTP {getattr(response, 'status', 'none')}"
+                        )
+                    page.wait_for_timeout(250)
+                    applied = page.evaluate(_APPLY_STATE_SCRIPT.strip(), state) or {}
+                    if applied.get("theme") != theme or applied.get("locale") != locale:
+                        raise RuntimeError(
+                            f"state mismatch: requested theme={theme} locale={locale} "
+                            f"observed {applied!r}"
+                        )
+                    overlay_clean = bool(page.evaluate(_HIDE_OVERLAYS_SCRIPT.strip()))
+                    png = _capture_one(page, "#holdings")
+                    name, digest, pw, ph = content_address_png(png, OUT_DIR)
+                    alias = f"holdings-{theme}-{locale}-{viewport}.png"
+                    old_hash = None
+                    manifest_path = OUT_DIR / "manifest.json"
+                    if manifest_path.exists():
+                        prev = json.loads(manifest_path.read_text(encoding="utf-8"))
+                        old_hash = (prev.get("aliases") or {}).get(alias)
+                    (CELLS_DIR / alias).write_bytes(png)
+                    (CELLS_DIR / name).write_bytes(png)
+                    if old_hash and old_hash != name:
+                        for folder in (CELLS_DIR, OUT_DIR):
+                            stale = folder / old_hash
+                            if stale.exists() and stale.name != alias:
+                                stale.unlink()
+                    written[alias] = {
+                        "file": name,
+                        "sha256": digest,
+                        "bytes": len(png),
+                        "width": pw,
+                        "height": ph,
+                        "overlay_dom_clean": overlay_clean,
+                        "applied_theme": applied.get("theme"),
+                        "applied_locale": applied.get("locale"),
+                        "viewport": viewport,
+                        "locale": locale,
+                        "theme": theme,
+                    }
+                    print(f"  recaptured {alias} -> {name}", flush=True)
+                finally:
+                    context.close()
+        finally:
+            browser.close()
+            manager.stop()
+            httpd.shutdown()
+    finally:
+        shutil.rmtree(scratch, ignore_errors=True)
+
+    man_path = OUT_DIR / "manifest.json"
+    man = json.loads(man_path.read_text(encoding="utf-8"))
+    aliases = man.setdefault("aliases", {})
+    for alias, rec in written.items():
+        aliases[alias] = rec["file"]
+        for page in man.get("pages") or []:
+            if page.get("subject") != "holdings":
+                continue
+            for st in page.get("states") or []:
+                if st.get("alias") == alias:
+                    st.update({
+                        "captured": True,
+                        "file": rec["file"],
+                        "sha256": rec["sha256"],
+                        "bytes": rec["bytes"],
+                        "width": rec["width"],
+                        "height": rec["height"],
+                        "overlay_dom_clean": rec["overlay_dom_clean"],
+                        "applied_theme": rec["applied_theme"],
+                        "applied_locale": rec["applied_locale"],
+                    })
+    man_path.write_text(json.dumps(man, indent=2) + "\n", encoding="utf-8")
+
+    readme = (OUT_DIR / "README.md").read_text(encoding="utf-8")
+    readme = readme.replace(
+        "`See all 24 →` (universe, not the sliced 12)",
+        "`See all 24 accumulating →` / `查看全部 24 项增持 →` (destination accumulate N, not the sliced 12)",
+    )
+    readme = readme.replace(
+        "Holdings label uses `holdings_universe_n=24`.",
+        "Holdings label uses `holdings_universe_n=24` (destination-true count in the fixture; noun is 'accumulating' / '项增持').",
+    )
+    (OUT_DIR / "README.md").write_text(readme, encoding="utf-8")
+    missing = [
+        f"holdings-{t}-{l}-{v}.png"
+        for t, l, v in HOLDINGS_LINK_CELLS
+        if f"holdings-{t}-{l}-{v}.png" not in written
+    ]
+    if missing:
+        print(f"missing recaptures: {missing}", flush=True)
+        return 1
+    return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--holdings-link-only", action="store_true",
+        help="Recapture only holdings dark-zh-mobile + light-en-desktop.",
+    )
+    args = parser.parse_args(argv)
+    if args.holdings_link_only:
+        return recapture_holdings_link_cells()
+
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     CELLS_DIR.mkdir(parents=True, exist_ok=True)
     for stale in CELLS_DIR.glob("*.png"):

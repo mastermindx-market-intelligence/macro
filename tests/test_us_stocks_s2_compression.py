@@ -137,19 +137,23 @@ def test_sector_central_landing_anchors_exist_and_l1_count_unchanged():
 
 
 def test_holdings_capped_at_eight_with_counted_see_all():
-    """S2 §3.1 / §0.2. Label is the unsliced universe, not panel_top_n."""
+    """S2 §3.1 / §0.2. Label is the destination accumulate count, named."""
     rows = [_hold_row(i) for i in range(12)]
     html = _stocks(holdings_changes=rows, holdings_universe_n=24)
     hold = html[html.index('id="holdings"'):]
     hold = hold[:hold.index("</div>", hold.index("<table>"))]
     assert hold.count("<tr>") == 9  # header + 8 data
-    assert "See all 24 →" in hold
-    assert "查看全部 24 项 →" in hold
+    assert "See all 24 accumulating →" in hold
+    assert "查看全部 24 项增持 →" in hold
     assert "See all 12 →" not in hold
+    assert "See all 24 →" not in hold  # noun required
     assert "no signal yet" in hold
     assert "暂无信号" in hold
     assert 'href="sector_central.html#accumulation-section"' in hold
     assert "Accumulation watch → Sector Intelligence" in hold
+    # h2 tooltip still names the full destination board (trims & every fund)
+    h2 = hold[hold.index("<h2>"):hold.index("</h2>")]
+    assert "incl. trims &amp; every fund" in h2 or "incl. trims & every fund" in h2
 
 
 def test_holdings_drops_count_when_universe_unknown():
@@ -157,6 +161,21 @@ def test_holdings_drops_count_when_universe_unknown():
     html = _stocks(holdings_changes=[_hold_row(i) for i in range(12)])
     hold = html[html.index('id="holdings"'):]
     assert "Full board →" in hold
+    assert "完整看板 →" in hold
+    assert "See all 12 →" not in hold
+    assert "accumulating" not in hold.split('id="holdings"')[1][:800]
+
+
+def test_holdings_link_uses_destination_cap_not_producer_universe():
+    """Producer universe 60, destination page_top_n 40 → link says 40, not 60."""
+    rows = [_hold_row(i) for i in range(12)]
+    html = _stocks(holdings_changes=rows, holdings_universe_n=40)
+    hold = html[html.index('id="holdings"'):]
+    hold = hold[:hold.index("</div>", hold.index("<table>"))]
+    assert "See all 40 accumulating →" in hold
+    assert "查看全部 40 项增持 →" in hold
+    assert "See all 60" not in hold
+    assert "60 accumulating" not in hold
     assert "See all 12 →" not in hold
 
 
@@ -255,7 +274,12 @@ def _acc_row(i: int) -> dict:
 
 
 def test_accumulation_cap_label_present_when_n_gt_8():
-    """Label is the unsliced universe, not the sliced panel length."""
+    """Label is the unsliced universe, not the sliced panel length.
+
+    This panel has no destination link — 'N tracked' is the residual pool
+    itself (same pass as the rows), so there is no analogous cap-truth
+    mismatch with a second page.
+    """
     html = _env().get_template("_accumulation_watch.html.j2").render(
         accumulation=[_acc_row(i) for i in range(12)],
         accumulation_universe_n=110)
@@ -319,8 +343,9 @@ def test_evidence_fixture_render_carries_subjects_and_control_has_no_tape():
         assert f'id="{pid}"' in html, pid
     assert 'class="acb-tape"' in html
     assert "Theme heat &amp; reasons → Sector Intelligence" in html
-    assert "See all 24 →" in html
+    assert "See all 24 accumulating →" in html
     assert "See all 12 →" not in html
+    assert "See all 24 →" not in html
     assert "新型 GPU 云服务商 / AI 数据中心" in html
     assert "no signal yet" in html
     assert 'class="mtf-skel"' in html
@@ -398,3 +423,106 @@ def test_sector_central_real_path_renders_landings_and_does_not_leak_tape():
     assert "Mega-cap tape" not in with_board
     assert 'id="accumulation"' in with_board
     assert 'id="theme-tape"' in with_board
+
+
+def test_three_day_signal_canary_and_else_branch_band_words():
+    """m-3: MACD ↑ canary + StochRSI band words + unknown → fresh cross."""
+    flags_off = {"macd_up_3d": False, "macd_dn_3d": False,
+                 "stoch_up_3d": False, "stoch_dn_3d": False}
+    rows = [
+        _sector_row(ticker="MACDUP", signal_txt="MACD ↑", stoch_3d=50,
+                    flags={**flags_off, "macd_up_3d": True}),
+        _sector_row(ticker="MACDDN", signal_txt="MACD ↓", stoch_3d=50,
+                    flags={**flags_off, "macd_dn_3d": True}),
+        _sector_row(ticker="STUP", signal_txt="StochRSI ↑20", stoch_3d=50,
+                    flags={**flags_off, "stoch_up_3d": True}),
+        _sector_row(ticker="STDN", signal_txt="StochRSI ↓80", stoch_3d=50,
+                    flags={**flags_off, "stoch_dn_3d": True}),
+        _sector_row(ticker="CURL", signal_txt="MACD curling up", stoch_3d=50,
+                    flags={**flags_off, "setup_up_3d": True}),
+        _sector_row(ticker="ROLL", signal_txt="MACD rolling down", stoch_3d=50,
+                    flags={**flags_off, "setup_dn_3d": True}),
+        _sector_row(ticker="DROLL", signal_txt="daily momentum rolling down",
+                    stoch_3d=50, flags={**flags_off, "stoch_roll_d": True}),
+        _sector_row(ticker="DTURN", signal_txt="daily turning up", stoch_3d=50,
+                    flags={**flags_off, "macd_up_d": True}),
+        _sector_row(ticker="ETA", signal_txt="~5d to cross", stoch_3d=50,
+                    flags=flags_off),
+        _sector_row(ticker="UNK", signal_txt="XYZ oscillator burst", stoch_3d=50,
+                    flags=flags_off),
+        _sector_row(ticker="NONE", signal_txt="no fresh cross", stoch_3d=50,
+                    flags=flags_off),
+    ]
+    html = _stocks(sector_setups={"sectors": rows, "n_buy": len(rows),
+                                 "n_avoid": 0, "n_tactical": 0})
+    sec = html[html.index('id="sectors"'):html.index('id="dash-mtf-section"')]
+
+    def signal_td(ticker: str) -> str:
+        i = sec.index(f"<b>{ticker}</b>")
+        tr = sec.rfind("<tr>", 0, i)
+        row = sec[tr:sec.index("</tr>", i)]
+        cells = re.findall(r"<td\b.*?</td>", row, flags=re.S)
+        return cells[2]
+
+    def visible(td: str) -> str:
+        return re.sub(r"\s*data-tip-(?:en|zh)=\"[^\"]*\"", "", td)
+
+    up = signal_td("MACDUP")
+    assert "turning up" in up and "正在转强" in up
+    assert "MACD ↑" not in visible(up)
+    assert "MACD ↑" in up  # raw carried in the tip
+    dn = signal_td("MACDDN")
+    assert "rolling over" in dn and "正在回落" in dn
+    assert "MACD ↓" not in visible(dn)
+    stup = signal_td("STUP")
+    assert "washed out" in stup and "超卖" in stup
+    assert "StochRSI" not in visible(stup)
+    assert "StochRSI ↑20" in stup
+    stdn = signal_td("STDN")
+    assert "stretched" in stdn and "拉伸" in stdn
+    assert "StochRSI" not in visible(stdn)
+    assert "StochRSI ↓80" in stdn
+    for ticker, raw in (
+        ("CURL", "MACD curling up"),
+        ("ROLL", "MACD rolling down"),
+        ("DROLL", "daily momentum rolling down"),
+        ("DTURN", "daily turning up"),
+        ("ETA", "~5d to cross"),
+        ("UNK", "XYZ oscillator burst"),
+    ):
+        td = signal_td(ticker)
+        vis_td = visible(td)
+        assert "fresh cross" in vis_td, ticker
+        assert "新交叉" in vis_td, ticker
+        assert raw not in vis_td, ticker
+        assert raw in td, ticker
+    none = signal_td("NONE")
+    assert "no fresh cross" in none
+    assert "fresh cross" not in visible(none).replace("no fresh cross", "")
+
+
+def test_etf_page_accumulation_caps_at_page_top_n_and_drops_cash():
+    """Destination N = drop_cash → split_by_conviction accumulate, capped at 40."""
+    from engine.holdings_signals import etf_page_accumulation
+
+    def row(i, *, ticker=None, name="Name", conviction=1.0, split=False):
+        return {
+            "etf": "ARKK", "ticker": ticker or f"T{i:03d}", "name": name,
+            "conviction_pp": conviction, "split_adjusted": split,
+        }
+
+    producer = [row(i, conviction=1.0 + i * 0.01) for i in range(60)]
+    producer.append(row(90, ticker="FXXXX", name="First American Government Obligations",
+                        conviction=9.0))
+    producer.append(row(91, name="Money Market Fund", conviction=8.0, ticker="CASH1"))
+    producer.append(row(92, conviction=7.0, split=True, ticker="SPLT"))
+    dest = etf_page_accumulation(producer)
+    assert len(dest) == 40
+    tickers = {r["ticker"] for r in dest}
+    assert "FXXXX" not in tickers
+    assert "CASH1" not in tickers
+    assert "SPLT" not in tickers
+    assert "T000" not in tickers  # lowest of the 60, sliced off by page_top_n
+    # highest conviction of the 60 is T059 (1.59); the 40th is T020 (1.20)
+    assert dest[0]["ticker"] == "T059"
+    assert dest[-1]["ticker"] == "T020"

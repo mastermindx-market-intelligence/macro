@@ -10,7 +10,7 @@ REST cells captured: 48/48.
 
 - Stocks: `templates/dashboard.html.j2` (`mode="stocks"`, `body.page-stocks`) + page-scoped `<style>`.
 - Landings + control: `templates/sector_central.html.j2` via the builder context shape (`body.macro-desk.page-baskets`, no `mode`). Landing views are forced `.on` (`moving` for `#accumulation`, `explore` for `#theme-tape`).
-- VM: `scripts/capture_us_stocks_compression_evidence.fixture_vm` (same shape the page tests use). Holdings label uses `holdings_universe_n=24`.
+- VM: `scripts/capture_us_stocks_compression_evidence.fixture_vm` (same shape the page tests use). Holdings label uses `holdings_universe_n=24` (destination-true count in the fixture; noun is 'accumulating' / '项增持').
 - Theme/lang: Playwright seeds localStorage then calls `window.setTheme` / `window.setLang`; a mismatch refuses the cell.
 
 ## Overlays hidden for capture (disclosed)
@@ -102,7 +102,7 @@ Spec §0.3's 16-crop floor is `{dark,light}×{EN,ZH}` at 1440 plus the same four
 |---|---|---|---|
 | action-board (C1 + C4 theme link) | 8 | **PASS** | Header + megacap strip read as one block; one as-of stamp; figure is the only saturated ink; light crop shows the `--panel2` inset band; 390 wraps; no aurora/sky-fx/FAB over the IN-FAVOUR lane. |
 | sectors (C2) | 8 | **PASS** | Band words (`washed out`/`超卖`, `mid-range`/`中位`, `stretched`/`拉伸`, `even odds`/`胜率接近五五`, `more often up`/`多数时候上涨`, `rolling over`/`正在回落`, `turning up`/`正在转强`); no `usually up`; seasonality is magnitude only; table scrolls inside `.tbl-scroll` at 390. |
-| holdings (C3 + C4 accumulation link + nulls) | 8 | **PASS** | Exactly 8 data rows; `See all 24 →` (universe, not the sliced 12); technical `no signal yet` / `暂无信号`; ZH 390 nowraps inside `.tbl-scroll` (min-width 640px) instead of crushing columns. No moon glyph / FAB over rows. |
+| holdings (C3 + C4 accumulation link + nulls) | 8 | **PASS** | Exactly 8 data rows; `See all 24 accumulating →` / `查看全部 24 项增持 →` (destination accumulate N, not the sliced 12); technical `no signal yet` / `暂无信号`; ZH 390 nowraps inside `.tbl-scroll` (min-width 640px) instead of crushing columns. No moon glyph / FAB over rows. |
 | dash-mtf (C5) | 8 | **PASS** | Skeleton at true geometry (30px header + 38px rows), no words; dark shimmer = lift; light shimmer = grey wash. |
 | accumulation-landing | 8 | **PASS** | `#accumulation` inside `#si-movement` on the real sector_central path; help/tip + tbl-scroll self-styled; `Top 8 · 24 tracked`. |
 | theme-tape-landing | 8 | **PASS** | `#theme-tape` inside `#explore-section` on the real sector_central path; CSS retargeted off `body.page-stocks` onto `#theme-tape`. |
