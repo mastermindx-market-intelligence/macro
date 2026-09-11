@@ -1,10 +1,10 @@
-# Winner Health W15 r4 — evidence matrix
+# Winner Health W15 r5 — evidence matrix
 
 S1 rig: Playwright against scratch-rendered `winner_health.html.j2` on the real page skeleton (`_site_nav` included; live `<body>` has no `page-*` class, and the fixture matches that). `data-theme` / `data-lang` applied via `setTheme` / `setLang` (mismatch refuses). Overlays `.mx5-aurora`, `.sky-fx`, `#mmb-root`, `#mmb-boot`, `.ift-aurora` are removed before each shot. `window.__skyDeck = true`. `prefers-reduced-motion: reduce`. At-rest text is read from computed styles (display/visibility/opacity + inactive `.l-en`/`.l-zh` spans skipped), never from HTML source. PNGs are content-addressed `sha256[:16].png` plus an alias twin. SETTLE is two animation frames + `document.fonts.ready` before every shot.
 
 Recapture: `python3 -m scripts.capture_winner_health_w15_evidence`
 
-Captured 2026-09-11T09:51:50Z at committed head `d5661ac08d261818785330101e9f112ce564d8da` with empty `git status --porcelain` (rig-enforced). Porcelain receipt: `(empty)`. 74/74 cells captured, 74 overlay-clean.
+Captured 2026-09-11T10:12:54Z at committed head `d01a14171001961f1c73e2633ecf4ad3f90e9286` with empty `git status --porcelain` (rig-enforced). Porcelain receipt: `(empty)`. 74/74 cells captured, 74 overlay-clean.
 
 ## TWO DATA SHAPES (never blended in one cell)
 
