@@ -98,6 +98,245 @@ def _r(v, n=2):
     return round(float(v), n) if v is not None and pd.notna(v) else None
 
 
+def _parse_iso_date(value):
+    """Parse an ISO date (or datetime-like). None if missing/unparseable. Never raises."""
+    if value is None or value == "":
+        return None
+    try:
+        ts = pd.Timestamp(value)
+        if pd.isna(ts):
+            return None
+        return ts.normalize()
+    except Exception:  # noqa: BLE001 — fail-closed
+        return None
+
+
+def _fmt_card_date(ts) -> str | None:
+    """Card dates always come from a parsed variable — never a string literal in the template."""
+    if ts is None:
+        return None
+    return ts.strftime("%d %b %Y")
+
+
+def divergence_card_state(ready, ready_date, last_obs, as_of) -> dict:
+    """Stocks-vs-bonds card state. Fail-closed: only BUILDING may print a future date.
+
+    READY — divergence_ready is true (placeholder yields; the scored read is out of scope).
+    BUILDING — not ready AND ready_date parses AND ready_date > as_of (strict).
+    DELAYED — every other case (missing/None/unparseable/<= as_of). No past date can render
+    because the only branch that prints a date is BUILDING, which has already proved it is future.
+    """
+    if ready:
+        return {"state": "ready", "ready_date": None, "last_obs": None}
+    rd = _parse_iso_date(ready_date)
+    ao = _parse_iso_date(as_of)
+    if rd is not None and ao is not None and rd > ao:
+        return {"state": "building", "ready_date": _fmt_card_date(rd), "last_obs": None}
+    lo = _parse_iso_date(last_obs)
+    return {"state": "delayed", "ready_date": None, "last_obs": _fmt_card_date(lo)}
+
+
+def _risk_band(score) -> tuple[tuple[str, str] | None, bool]:
+    """Plain band word + rail flag. Rail = published score exactly 0 or 100."""
+    if score is None:
+        return None, False
+    try:
+        v = float(score)
+    except (TypeError, ValueError):
+        return None, False
+    rail = v == 0.0 or v == 100.0
+    if v <= 24:
+        band = ("low", "低")
+    elif v <= 49:
+        band = ("moderate", "中等")
+    elif v <= 74:
+        band = ("elevated", "偏高")
+    else:
+        band = ("high", "高")
+    return band, rail
+
+
+_CURVE_CLAUSE = {
+    "inverted": ("inverted", "倒挂"),
+    "steep": ("steep", "陡峭"),
+    "flat": ("flat", "平坦"),
+    "normal": ("normal", "正常"),
+}
+_CREDIT_CLAUSE = {
+    "tight": ("calm", "平静"),
+    "normal": ("calm", "平静"),
+    "elevated": ("watchful", "需警惕"),
+    "distress": ("stressed", "承压"),
+    "crisis": ("stressed", "承压"),
+}
+_VOL_CLAUSE = {
+    "calm": ("quiet", "温和"),
+    "normal": ("steady", "平稳"),
+    "elevated": ("jumpy", "加剧"),
+    "crisis": ("stressed", "承压"),
+}
+_PHASE_SHORT = {
+    "late": ("late", "晚段"),
+    "early": ("early", "早段"),
+    "mid": ("mid", "中段"),
+    "recession": ("recession", "衰退"),
+}
+_PHASE_WORD = {
+    "late": ("LATE-CYCLE", "周期晚段"),
+    "early": ("EARLY-CYCLE", "周期早段"),
+    "mid": ("MID-CYCLE", "周期中段"),
+    "recession": ("RECESSION", "衰退"),
+}
+_CHG_HREF = {
+    "curve_regime": "#curve", "uninversion": "#curve",
+    "credit_band": "#credit", "rates_vol": "#stress",
+    "repo_stress": "#stress", "corr_regime": "#stress",
+    "recession_risk": "#curve",
+}
+
+
+def _hero_pack(vm: dict, as_of_disp: str, phase_key: str | None) -> dict:
+    """VerdictHero fields — stance, clause words, rail caveat, risk pills. Frozen §1.3."""
+    h = vm.get("health") or {}
+    cu = vm.get("curve") or {}
+    cr = vm.get("credit") or {}
+    st = vm.get("stress") or {}
+    health = h.get("score")
+    alarms = vm.get("alarms") or []
+
+    # Stance — top-down, first match wins (§1.3).
+    if alarms:
+        stance_en, stance_zh, stance_cls = "Protect gains", "保护收益", "mx-stance-down"
+    elif health is not None and health < 40:
+        stance_en, stance_zh, stance_cls = "Stand aside", "观望回避", "mx-stance-down"
+    elif (health is not None and 40 <= health <= 69) or (
+            phase_key == "late" and health is not None and health >= 70):
+        stance_en, stance_zh, stance_cls = "Watch — don't chase", "观察，勿追", "mx-stance-warn"
+    elif health is not None and health >= 70 and phase_key != "late":
+        stance_en, stance_zh, stance_cls = "In favour — stay invested", "顺风环境——保持持仓", "mx-stance-up"
+    else:
+        stance_en, stance_zh, stance_cls = "Watch — don't chase", "观察，勿追", "mx-stance-warn"
+
+    if cu.get("tp_adj_inverted") or cu.get("inverted"):
+        curve_key = "inverted"
+    elif (cu.get("spread_2s10s") or 0) >= 1.0:
+        curve_key = "steep"
+    elif (cu.get("spread_2s10s") or 0) <= 0.15:
+        curve_key = "flat"
+    else:
+        curve_key = "normal"
+    credit_key = (cr.get("band_en") or "normal").lower()
+    vol_key = (st.get("band_en") or "normal").lower()
+    curve_w = _CURVE_CLAUSE.get(curve_key, _CURVE_CLAUSE["normal"])
+    credit_w = _CREDIT_CLAUSE.get(credit_key, _CREDIT_CLAUSE["normal"])
+    vol_w = _VOL_CLAUSE.get(vol_key, _VOL_CLAUSE["normal"])
+    phase_s = _PHASE_SHORT.get(phase_key or "", ("—", "—"))
+    phase_w = _PHASE_WORD.get(phase_key or "", ((h.get("phase_en") or "—").upper(), h.get("phase_zh") or "—"))
+    band_en = (h.get("label") or "—").upper()
+    band_zh = h.get("label_zh") or band_en
+    band_clause = (h.get("label") or "—").lower()
+
+    rec_band, rec_rail = _risk_band(h.get("recession_risk"))
+    dd_band, dd_rail = _risk_band(h.get("drawdown_risk"))
+
+    caveat_en = caveat_zh = None
+    if rec_rail:
+        caveat_en = ("Read the score with care: the recession-risk input is at the bottom of "
+                     "its scale (0.0/100) — a rail, not a fine-grained measurement.")
+        caveat_zh = "读数注意：衰退风险分项已触及量表下限（0.0/100）——这是量表边界，并非精细测量。"
+    elif dd_rail:
+        caveat_en = ("Read the score with care: the drawdown-risk input is at the bottom of "
+                     "its scale (0.0/100) — a rail, not a fine-grained measurement.")
+        caveat_zh = "读数注意：回撤风险分项已触及量表下限（0.0/100）——这是量表边界，并非精细测量。"
+
+    return {
+        "word_en": f"{band_en}, {phase_w[0]}",
+        "word_zh": f"{band_zh} · {phase_w[1]}",
+        "clause_en": (f"Bonds are {band_clause} and the cycle is {phase_s[0]}: "
+                      f"the curve is {curve_w[0]}, credit is {credit_w[0]}, "
+                      f"rate swings are {vol_w[0]}."),
+        "clause_zh": (f"债市{band_zh}、周期处于{phase_s[1]}：曲线{curve_w[1]}，"
+                      f"信用{credit_w[1]}，利率波动{vol_w[1]}。"),
+        "stance_en": stance_en, "stance_zh": stance_zh, "stance_cls": stance_cls,
+        "as_of": as_of_disp,
+        "caveat_en": caveat_en, "caveat_zh": caveat_zh,
+        "rec_band_en": None if rec_rail else (rec_band[0] if rec_band else None),
+        "rec_band_zh": None if rec_rail else (rec_band[1] if rec_band else None),
+        "rec_rail": rec_rail,
+        "dd_band_en": None if dd_rail else (dd_band[0] if dd_band else None),
+        "dd_band_zh": None if dd_rail else (dd_band[1] if dd_band else None),
+        "dd_rail": dd_rail,
+        "rec_score": h.get("recession_risk"),
+        "dd_score": h.get("drawdown_risk"),
+    }
+
+
+def _changed_rows(timeline: list[dict]) -> list[dict]:
+    """Newest ≤4 timeline events as What-changed rows. Empty list → empty-state copy in the template."""
+    rows: list[dict] = []
+    for day in timeline or []:
+        for e in day.get("events") or []:
+            ts = e.get("ts") or day.get("day")
+            try:
+                when = pd.Timestamp(ts).strftime("%m-%d")
+            except Exception:  # noqa: BLE001
+                when = ""
+            rows.append({
+                "when": when,
+                "name_en": e.get("label") or e.get("type") or "",
+                "name_zh": e.get("label_zh") or e.get("type") or "",
+                "what_en": e.get("headline") or "",
+                "what_zh": e.get("headline_zh") or "",
+                "href": _CHG_HREF.get(e.get("type"), "#"),
+                "stance_en": "Ignore — already reflected",
+                "stance_zh": "可忽略——已在判读中",
+            })
+            if len(rows) >= 4:
+                return rows
+    return rows
+
+
+def _watching(_vm: dict) -> list[dict]:
+    """2–4 watch conditions: condition → what it would change. Never falsifier language."""
+    return [
+        {"cond_en": "The curve un-inverts while short rates fall",
+         "cond_zh": "曲线在短端利率下行时解除倒挂",
+         "then_en": "…would mark the late-cycle handoff and move the stance toward Protect gains.",
+         "then_zh": "…将标志周期晚段交接，立场转向「保护收益」。"},
+        {"cond_en": "High-yield spreads move from calm into elevated",
+         "cond_zh": "高收益利差从平静升至偏高",
+         "then_en": "…would flip the credit driver and cap the health read.",
+         "then_zh": "…将翻转信用驱动并压制健康度读数。"},
+        {"cond_en": "Stock-bond correlation turns positive and stays there",
+         "cond_zh": "股债相关性转正并维持",
+         "then_en": "…would mean the Treasury hedge has stopped working.",
+         "then_zh": "…意味着国债对冲已失效。"},
+    ]
+
+
+def _agree_band(agreement) -> tuple[str, str]:
+    """Plain agreement band for the duration-lean pill (§2.11a)."""
+    if agreement is None:
+        return "factors are split", "各因子存在分歧"
+    a = float(agreement)
+    if a >= 0.80:
+        return "factors strongly agree", "各因子高度一致"
+    if a >= 0.55:
+        return "factors mostly agree", "各因子多数一致"
+    return "factors are split", "各因子存在分歧"
+
+
+def _tailwind_counts(xasset_vm: dict | None) -> tuple[int, int]:
+    n_t = n_h = 0
+    for a in (xasset_vm or {}).get("assets") or []:
+        v = (a.get("verdict") or "").lower()
+        if v == "tailwind":
+            n_t += 1
+        elif v == "headwind":
+            n_h += 1
+    return n_t, n_h
+
+
 def _tail_years(df: pd.DataFrame, years: float) -> pd.DataFrame:
     if df is None or df.empty:
         return df
@@ -596,8 +835,15 @@ def build_corp_credit_vm(data_root: Path | None = None) -> dict:
     maturity_wall = _build_maturity_wall(cm_path)
 
     # Divergence: all accruing = show placeholder card
+    # V7: divergence_accruing is a QUADRANT test (every row's quadrant == "accruing"),
+    # not a readiness test — it must not be repurposed as one (§3.1).
     divergence = cm.get("divergence") or []
     divergence_accruing = all(d.get("quadrant") == "accruing" for d in divergence) if divergence else True
+    # No scored divergence read ships in this packet (engine-lane). Fail-closed: no
+    # ready_date / last_obs the producer cannot name — DELAYED's last_obs-missing copy.
+    divergence_ready = False
+    divergence_ready_date = None
+    divergence_last_obs = None
 
     return {
         "accruing": accruing_flag,
@@ -610,6 +856,9 @@ def build_corp_credit_vm(data_root: Path | None = None) -> dict:
         "finra": finra,
         "maturity_wall": maturity_wall,
         "divergence_accruing": divergence_accruing,
+        "divergence_ready": divergence_ready,
+        "divergence_ready_date": divergence_ready_date,
+        "divergence_last_obs": divergence_last_obs,
         "footer_as_of": as_of,
     }
 
@@ -1164,6 +1413,9 @@ def _vm(snap: dict, fr: pd.DataFrame, calib: dict | None = None) -> dict:
         "edge_pp": comp_cond.get("high_edge_pp"),
         "ic_recession": comp.get("ic_recession"),
         "span": comp.get("span"),
+        "n": comp.get("n"),
+        "ic_horizon_en": "12 months",
+        "ic_horizon_zh": "12个月",
         "vs_best": (calib.get("composite_vs_best_leg") or {}).get("verdict"),
     })
     p = snap["pillars"]
@@ -1189,7 +1441,7 @@ def _vm(snap: dict, fr: pd.DataFrame, calib: dict | None = None) -> dict:
             "score": snap.get("health_score"), "label": hl,
             "label_zh": {"healthy": "健康", "mixed": "中性", "stressed": "承压"}.get(hl, hl),
             "color": HEALTH_COLOR.get(hl, C["muted"]),
-            "phase_en": ph[0], "phase_zh": ph[1], "phase_color": ph[2],
+            "phase_key": phase, "phase_en": ph[0], "phase_zh": ph[1], "phase_color": ph[2],
             "verdict_en": snap.get("verdict_en"), "verdict_zh": snap.get("verdict_zh"),
             "recession_risk": _r(snap.get("recession_risk"), 0),
             "drawdown_risk": _r(snap.get("drawdown_risk"), 0),
@@ -1544,12 +1796,24 @@ def main() -> int:
     from engine.i18n import tr, td
     env = Environment(loader=FileSystemLoader(str(config.ROOT / "templates")), autoescape=True)
     env.globals.update(tr=tr, td=td)
+    xasset_vm = _xasset_vm(xasset)
+    n_tail, n_head = _tailwind_counts(xasset_vm)
+    dur = (compass or {}).get("duration") or {}
+    agree_en, agree_zh = _agree_band(dur.get("agreement"))
     html = env.get_template("bonds.html.j2").render(
-        C=C, as_of=as_of_disp, built=built, span=span, vm=vm, charts=charts, credit_cycle=credit_cycle,
+        C=C, as_of=as_of_disp, as_of_iso=as_of, built=built, span=span, vm=vm, charts=charts,
+        credit_cycle=credit_cycle,
         fed_path=fed_path, treasury_supply=treasury_supply, usd_link=usd_link,
-        intl=intl, compass=compass, xasset=xasset, xasset_vm=_xasset_vm(xasset),
+        intl=intl, compass=compass, xasset=xasset, xasset_vm=xasset_vm,
         timeline=timeline, timeline_days=acfg["timeline_days"], n_alerts=len(recent),
-        cc_vm=cc_vm, glance=_glance(vm), key_levels=_key_levels(f, vm))
+        cc_vm=cc_vm, glance=_glance(vm), key_levels=_key_levels(f, vm),
+        hero=_hero_pack(vm, as_of_disp, (vm.get("health") or {}).get("phase_key")),
+        changed=_changed_rows(timeline), watching=_watching(vm),
+        div_card=divergence_card_state(
+            cc_vm.get("divergence_ready"), cc_vm.get("divergence_ready_date"),
+            cc_vm.get("divergence_last_obs"), as_of),
+        n_tailwind=n_tail, n_headwind=n_head,
+        agree_en=agree_en, agree_zh=agree_zh)
     site = config.ROOT / config.load()["storage"]["site_dir"]
     write_page(site / "bonds.html", html)
     log.info("wrote %s/bonds.html (%d KB)", site, len(html) // 1024)
