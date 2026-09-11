@@ -245,3 +245,35 @@ def test_classify_temporal_shape_preserves_measured_side_when_other_side_is_thin
     assert result["long_median"] is None
     assert result["n_short"] == 4
     assert result["n_long"] == 1
+
+
+def test_temporal_shape_estimability_catches_impossible_recent_window() -> None:
+    from scripts.research.rotation_persistence.metrics import temporal_shape_estimability
+
+    result = temporal_shape_estimability(
+        recent_sessions=20,
+        min_pairs=8,
+        horizons=(1, 2, 3, 5, 7, 10, 15, 20),
+    )
+
+    assert result["state"] == "STRUCTURALLY_UNESTIMABLE"
+    assert result["max_pairs_by_horizon"]["10"] == 10
+    assert result["max_pairs_by_horizon"]["15"] == 5
+    assert result["max_pairs_by_horizon"]["20"] == 0
+    assert result["measurable_long_horizons"] == [10]
+    assert result["minimum_recent_sessions_for_shape"] == 23
+    assert result["reason"] == "RECENT_WINDOW_CANNOT_MATURE_REQUIRED_LONG_CELLS"
+
+
+def test_temporal_shape_estimability_passes_when_two_long_cells_can_mature() -> None:
+    from scripts.research.rotation_persistence.metrics import temporal_shape_estimability
+
+    result = temporal_shape_estimability(
+        recent_sessions=30,
+        min_pairs=8,
+        horizons=(1, 2, 3, 5, 7, 10, 15, 20),
+    )
+
+    assert result["state"] == "STRUCTURALLY_ESTIMABLE"
+    assert result["measurable_long_horizons"] == [10, 15, 20]
+    assert result["reason"] is None

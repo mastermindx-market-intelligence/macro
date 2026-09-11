@@ -12,7 +12,12 @@ import pandas as pd
 
 from lib.nyse_calendar import sessions_between
 from .contracts import AUTHORITY, ArchiveReceipt, ContractError
-from .metrics import build_surface, classify_temporal_shape, derive_half_life
+from .metrics import (
+    build_surface,
+    classify_temporal_shape,
+    derive_half_life,
+    temporal_shape_estimability,
+)
 from .survival import build_leader_episodes, kaplan_meier, quartile_transition_matrix
 
 SCHEMA = "research.rotation_persistence_rph0.v1"
@@ -106,6 +111,11 @@ def build_result(
     shape["curve"] = {
         str(horizon): value for horizon, value in sorted(recent_score_curve.items())
     }
+    shape["estimability"] = temporal_shape_estimability(
+        recent_sessions=recent_sessions,
+        min_pairs=min_pairs,
+        horizons=horizons,
+    )
 
     return {
         "schema_version": SCHEMA,
@@ -158,6 +168,13 @@ def render_markdown(result: dict) -> str:
     source = result["source"]
     quality = result["quality"]
     shape = result["temporal_shape"]
+    estimability = shape["estimability"]
+    arrow = chr(0x2192)
+    long_caps = ", ".join(
+        f"{h}{arrow}{estimability['max_pairs_by_horizon'][str(h)]}"
+        for h in (10, 15, 20)
+        if str(h) in estimability["max_pairs_by_horizon"]
+    )
     lines = [
         "# Leadership Persistence RPH-0",
         "",
@@ -168,6 +185,11 @@ def render_markdown(result: dict) -> str:
         "## Result",
         "",
         f"**Published-output temporal shape:** `{shape['label']}`",
+        "",
+        f"**Structural estimability:** `{estimability['state']}` "
+        f"(minimum recent window: {estimability['minimum_recent_sessions_for_shape']} sessions).",
+        "",
+        f"Long-horizon maximum matured anchors: {long_caps}.",
         "",
         f"Short-horizon published-score continuation median: **{_fmt(shape.get('short_median'))}**.  ",
         f"Long-horizon published-score continuation median: **{_fmt(shape.get('long_median'))}**.",

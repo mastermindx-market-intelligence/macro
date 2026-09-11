@@ -397,3 +397,62 @@ def classify_temporal_shape(curve: Mapping[int, float | None]) -> dict:
         "n_short": len(short_values),
         "n_long": len(long_values),
     }
+
+
+def temporal_shape_estimability(
+    *,
+    recent_sessions: int,
+    min_pairs: int,
+    horizons: Sequence[int],
+) -> dict:
+    """Prove whether the frozen recent-window classifier can mature by construction.
+
+    In a recent window of ``R`` sessions ending at the archive endpoint, a forward
+    horizon ``h`` can have at most ``max(0, R-h)`` fully matured anchors even under
+    perfect archive coverage.  This gate distinguishes a data shortage from an
+    impossible parameter geometry before any market values are inspected.
+    """
+    if recent_sessions <= 0 or min_pairs <= 0:
+        raise ValueError("recent_sessions and min_pairs must be positive")
+    normalized = sorted({int(horizon) for horizon in horizons if int(horizon) > 0})
+    max_pairs = {
+        str(horizon): max(0, int(recent_sessions) - horizon)
+        for horizon in normalized
+    }
+    short_candidates = [h for h in (1, 2, 3, 5) if h in normalized]
+    long_candidates = [h for h in (10, 15, 20) if h in normalized]
+    measurable_short = [h for h in short_candidates if max_pairs[str(h)] >= min_pairs]
+    measurable_long = [h for h in long_candidates if max_pairs[str(h)] >= min_pairs]
+
+    if len(measurable_short) >= 2 and len(measurable_long) >= 2:
+        state = "STRUCTURALLY_ESTIMABLE"
+        reason = None
+    elif len(measurable_short) < 2 and len(measurable_long) < 2:
+        state = "STRUCTURALLY_UNESTIMABLE"
+        reason = "RECENT_WINDOW_CANNOT_MATURE_REQUIRED_SHORT_AND_LONG_CELLS"
+    elif len(measurable_short) < 2:
+        state = "STRUCTURALLY_UNESTIMABLE"
+        reason = "RECENT_WINDOW_CANNOT_MATURE_REQUIRED_SHORT_CELLS"
+    else:
+        state = "STRUCTURALLY_UNESTIMABLE"
+        reason = "RECENT_WINDOW_CANNOT_MATURE_REQUIRED_LONG_CELLS"
+
+    minimum_recent_sessions: int | None = None
+    upper = max(normalized, default=0) + min_pairs + 100
+    for candidate in range(1, upper + 1):
+        short_count = sum(candidate - h >= min_pairs for h in short_candidates)
+        long_count = sum(candidate - h >= min_pairs for h in long_candidates)
+        if short_count >= 2 and long_count >= 2:
+            minimum_recent_sessions = candidate
+            break
+
+    return {
+        "state": state,
+        "reason": reason,
+        "recent_sessions": int(recent_sessions),
+        "minimum_pairs_per_cell": int(min_pairs),
+        "max_pairs_by_horizon": max_pairs,
+        "measurable_short_horizons": measurable_short,
+        "measurable_long_horizons": measurable_long,
+        "minimum_recent_sessions_for_shape": minimum_recent_sessions,
+    }

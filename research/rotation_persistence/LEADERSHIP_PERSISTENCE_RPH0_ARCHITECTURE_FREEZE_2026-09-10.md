@@ -278,3 +278,38 @@ It may not conclude:
   regime authority.
 - Any Prophet use remains context-only until Entry Truth independently admits a strategy-specific
   consumer.
+
+## 13. Post-run estimability amendment — frozen result remains non-adjudicative
+
+**Continuation procedure pin:** `mastermindx-market-intelligence/Mastermind@797cfd0b1001d9dfe6fe9030af80ecdab0e1220d`, Skillpack `1.0.1`, bootstrap major `1`.
+
+The first real RPH-0 run exposed a parameter-geometry defect in the preregistered temporal-shape
+classifier before any shape verdict was promoted. With `recent_sessions=20` and
+`minimum_pair_count=8`, a forward horizon `h` can have at most `20-h` matured anchors even under
+perfect archive coverage. The frozen long-horizon cells therefore have these hard ceilings:
+
+| Horizon | Maximum matured recent anchors | Can meet the eight-pair floor? |
+|---:|---:|---|
+| 10 | 10 | yes |
+| 15 | 5 | no |
+| 20 | 0 | no |
+
+The classifier requires two measured long cells, so its long side is structurally impossible under
+the frozen RPH-0 parameters. This is not ordinary data underpower and cannot be repaired by waiting
+for more archive rows while retaining a rolling 20-session anchor window. For temporal shape only,
+this amendment supersedes Section 12's generic accrual guidance: more history cannot cure a fixed-
+window geometry that excludes the required long cells.
+
+The bounded correction adds deterministic `temporal_shape.estimability` metadata and report copy.
+It does **not** alter the pair surface, half-life rules, transition matrix, residency estimator,
+thresholds, horizon set, source archive or authority. RPH-0 keeps the observed shape label
+`INSUFFICIENT_HISTORY` and now states the stronger reason
+`RECENT_WINDOW_CANNOT_MATURE_REQUIRED_LONG_CELLS`. The minimum recent window that can mature two
+long cells at the eight-pair floor is 23 sessions, because horizons 10 and 15 can then contribute 13
+and 8 anchors respectively.
+
+Changing the window to 23 or 30 after observing the RPH-0 outputs would be a new exploratory or
+preregistered follow-up, not a repaired confirmatory RPH-0 verdict. No such alternative-window result
+may be relabelled as the original experiment. The measured persistence surface, transition evidence,
+leader-residency evidence and honest-null recent half-life remain valid within their original
+contracts.

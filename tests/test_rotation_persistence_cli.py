@@ -93,7 +93,17 @@ def test_cli_writes_strict_result_and_markdown(tmp_path: Path) -> None:
     assert payload["schema_version"] == "research.rotation_persistence_rph0.v1"
     assert payload["operation_key"] == "leadership-persistence-rph0-20260910-sol-001"
     assert payload["produced_at"] == "2026-09-10T21:00:00Z"
-    assert payload["authority"] == AUTHORITY
+    expected_authority = {
+        "is_context_only": True,
+        "may_rank": False,
+        "may_gate": False,
+        "may_size": False,
+        "may_trade": False,
+        "may_modify_prophet": False,
+        "may_modify_oracle": False,
+    }
+    assert AUTHORITY == expected_authority
+    assert payload["authority"] == expected_authority
     assert payload["source"]["rows_valid"] == 30
     assert payload["surface"]
     assert payload["transition_matrix"]["pairs_eligible"] == 29
@@ -105,9 +115,17 @@ def test_cli_writes_strict_result_and_markdown(tmp_path: Path) -> None:
         "TRANSITIONAL",
         "INSUFFICIENT_HISTORY",
     }
+    estimability = payload["temporal_shape"]["estimability"]
+    assert estimability["state"] == "STRUCTURALLY_UNESTIMABLE"
+    assert estimability["reason"] == "RECENT_WINDOW_CANNOT_MATURE_REQUIRED_LONG_CELLS"
+    assert estimability["measurable_long_horizons"] == [10]
+    assert estimability["minimum_recent_sessions_for_shape"] == 23
     report = (out_dir / "report.md").read_text(encoding="utf-8")
     assert "Leadership Persistence RPH-0" in report
     assert payload["temporal_shape"]["label"] in report
+    assert "STRUCTURALLY_UNESTIMABLE" in report
+    assert "minimum recent window: 23 sessions" in report
+    assert "Long-horizon maximum matured anchors: 10→10, 15→5, 20→0" in report
 
 
 def test_cli_is_byte_deterministic_with_injected_clock(tmp_path: Path) -> None:
