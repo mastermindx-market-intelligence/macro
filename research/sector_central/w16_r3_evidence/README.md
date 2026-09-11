@@ -1,6 +1,6 @@
-# sector_central W16 r3 — settled evidence matrix
+# sector_central W16 r4 — settled evidence matrix
 
-Provenance: committed head `f0e16b366def6499861cfe15f0521db3c67d543a`. Porcelain empty at capture.
+Provenance: committed head `617af7c13179bfe2be9acf7841c7e13341db88b0`. Porcelain empty at capture.
 S1 rig: fixture VM (no live bake, no `site/`/`data/` opt-in), real
 `body.macro-desk.page-baskets`, Playwright localStorage seed +
 `setTheme`/`setLang`, `window.__skyDeck = true`, attribute re-read
@@ -8,6 +8,37 @@ refuse-on-mismatch, overlay column, SETTLE column, content-addressed
 twins + alias. Crops are viewport-region (canvas-context) captures
 with margin — a dark cell must look dark. P3.4 stays deferred
 (SEAT RULING 2).
+
+## Producer-faithful populated fixture
+
+`populated_board()` runs `scripts.build_site.action_board()` over fixture
+`sector_timing` + `basket_items` so every chip/lane/tag combination is one
+the producer can mint. A combination the producer cannot emit (e.g.
+`clean entry` / 「入场干净」 on a buy_soon row) never appears in a
+populated/baseline cell — only on an explicitly-labeled robustness cell.
+
+Generation path:
+
+1. `sector_timing[XLF]` urgency=`soon`, tag=`BOTTOMING · UNCONFIRMED — WAIT`,
+   label=STATE_DISPLAY[TURN SIGNALED] (`BOTTOMING`) → buy_soon, WAIT chip,
+   stat `unconfirmed — wait` / 「未确认 — 等待」.
+2. `sector_timing[XLE]` urgency=`now`, label=STATE_DISPLAY[ROLLING OVER]
+   (`TOPPING`) + `sector_overlay[XLE].reco=trim` → take_profits with
+   `gate_override`, stat `risk check: trim` / 「风险检查：减仓」.
+3. Theme `accumulate` + `clean_entry=True` (AI Infrastructure) → buy_now.
+4. Theme `accumulate` without clean entry (Managed Care) → on_the_run.
+5. Theme `hold` (Gold Miners) → hold.
+6. `board['total']=44` is the frozen P2.4 count identity, not the fixture
+   row count. `more` rides `basket_items['more']`.
+
+## Sparse-site test disclosure
+
+1 deselected — `scripts/check_template_site_sync.py` REFUSES on a sparse
+worktree rather than reporting sync OK (0 pairs checked). Verbatim:
+`template↔site sync REFUSED: sparse worktree — site not checked out;
+opt into a full checkout with: python3 scripts/worktree_sparse.py full`.
+The W16 r4 suite is scratch-rendered and does not opt into `site/` or
+`data/`.
 
 ## DARK TREATMENT
 
@@ -111,11 +142,15 @@ Reduced-motion is an aid, not the settle mechanism.
 | tri-baked-light-en | tri-state | light | en | populated | clean | settled | 1 | 1 | 5.89 | `tri-baked-light-en.png` |
 | tri-baked-light-zh | tri-state | light | zh | populated | clean | settled | 1 | 1 | 5.89 | `tri-baked-light-zh.png` |
 | tri-skel-dark-en | tri-state | dark | en | no_payload | clean | settled | 1 | 1 | 6.14 | `tri-skel-dark-en.png` |
+| tri-skel-dark-zh | tri-state | dark | zh | no_payload | clean | settled | 1 | 1 | 6.14 | `tri-skel-dark-zh.png` |
 | tri-skel-light-en | tri-state | light | en | no_payload | clean | settled | 1 | 1 | 5.89 | `tri-skel-light-en.png` |
+| tri-skel-light-zh | tri-state | light | zh | no_payload | clean | settled | 1 | 1 | 5.89 | `tri-skel-light-zh.png` |
 | tri-jsempty-dark-en | tri-state | dark | en | no_payload | clean | settled | 1 | 1 | 6.14 | `tri-jsempty-dark-en.png` |
 | tri-jsreject-dark-en | tri-state | dark | en | no_payload | clean | settled | 1 | 1 | 6.14 | `tri-jsreject-dark-en.png` |
+| tri-jsreject-baked-dark-en | tri-state | dark | en | populated | clean | settled | 1 | 1 | 6.14 | `tri-jsreject-baked-dark-en.png` |
 | tri-jsempty-dark-zh | tri-state | dark | zh | no_payload | clean | settled | 1 | 1 | 6.14 | `tri-jsempty-dark-zh.png` |
 | tri-jsreject-dark-zh | tri-state | dark | zh | no_payload | clean | settled | 1 | 1 | 6.14 | `tri-jsreject-dark-zh.png` |
+| tri-jsreject-baked-dark-zh | tri-state | dark | zh | populated | clean | settled | 1 | 1 | 6.14 | `tri-jsreject-baked-dark-zh.png` |
 | grader-tip-dark-en | tips | dark | en | populated | clean | settled | 1 | 1 | 10.61 | `grader-tip-dark-en.png` |
 | lead-tip-dark-en | tips | dark | en | populated | clean | settled | 1 | 1 | 11.42 | `lead-tip-dark-en.png` |
 | grader-tip-dark-zh | tips | dark | zh | populated | clean | settled | 1 | 1 | 10.61 | `grader-tip-dark-zh.png` |
