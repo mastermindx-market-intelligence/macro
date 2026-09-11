@@ -187,7 +187,8 @@
   .basket-scroll { display:flex; gap:6px; flex-wrap:wrap; }
 
   .leaders-wrap { overflow-x:auto; }
-  .ift-see-all { appearance:none; -webkit-appearance:none; background:none; border:0; padding:0; margin:0; font:inherit; color:inherit; cursor:pointer; text-decoration:underline; letter-spacing:inherit; }
+  .ift-see-all { appearance:none; -webkit-appearance:none; background:none; border:0; padding:0; margin:0; font:inherit; color:inherit; cursor:pointer; text-decoration:underline; text-underline-offset:2px; letter-spacing:inherit; }
+  .ift-see-all:hover, .ift-see-all:focus-visible { color:var(--text); }
   table.leaders { width:100%; border-collapse:collapse; font-size:13px; }
   table.leaders th { padding:9px 11px; text-align:left; font-size:var(--fs-micro); font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); border-bottom:1px solid var(--hair-strong); cursor:pointer; white-space:nowrap; user-select:none; }
   table.leaders th:hover { color:var(--text); }
@@ -258,6 +259,18 @@
   .foot-note { font-size:var(--fs-micro); color:var(--muted); margin-top:12px; line-height:1.55; }
 
   .loading-row td { color:var(--muted); font-style:italic; text-align:center; padding:26px; }
+  /* loading skeletons — true geometry, wordless; .skel is the design-system shimmer */
+  .ift-skel-thesis { height:1.15em; width:min(28ch, 92%); margin:13px 0 0; }
+  .ift-skel-sub { height:0.9em; width:min(48ch, 86%); margin:10px 0 0; }
+  .ift-skel-inline { display:inline-block; height:0.85em; width:12ch; vertical-align:middle; margin-left:8px; }
+  .spot-skel { pointer-events:none; }
+  .spot-skel .ift-skel-spot-hd { height:22px; width:42%; }
+  .spot-skel .ift-skel-spot-reason { height:0.9em; width:88%; margin-top:12px; }
+  .spot-skel .ift-skel-spot-reason.short { width:64%; margin-top:7px; }
+  .spot-skel .ift-skel-spot-metric { height:28px; width:100%; margin-top:8px; }
+  .ift-skel-row td { padding:11px; vertical-align:middle; }
+  .ift-skel-row .ift-skel-cell { height:12px; width:72%; }
+  .ift-skel-row .ift-skel-cell.narrow { width:44%; }
 
   /* ══ entrance / kinetic animations (reduced-motion gated) ══════ */
   @keyframes iftPulse { 0%,100%{ opacity:1; transform:scale(1);} 50%{ opacity:.4; transform:scale(.82);} }
@@ -293,6 +306,51 @@
 html[data-theme="light"] :is(
   .hs-num
 ) { text-shadow:none; }
+
+/* post-stack: consolidate */
+/* Light is a research workspace: hairline, ink, shadow — not the command-center glow. */
+html[data-theme="light"] body.page-intraday-flow .ift-see-all {
+  color:var(--ink-link, var(--link));
+  text-decoration-color:color-mix(in srgb, var(--ink-link, var(--link)) 40%, transparent);
+}
+html[data-theme="light"] body.page-intraday-flow .ift-see-all:hover,
+html[data-theme="light"] body.page-intraday-flow .ift-see-all:focus-visible {
+  color:var(--text);
+  text-decoration-thickness:2px;
+}
+html[data-theme="light"] body.page-intraday-flow .ctx-stamp {
+  color:color-mix(in srgb, var(--text) 62%, var(--muted));
+}
+html[data-theme="light"] body.page-intraday-flow .ctx-stamp .lens-q {
+  background:var(--panel);
+  border-color:color-mix(in srgb, var(--text) 18%, transparent);
+  box-shadow:0 1px 0 color-mix(in srgb, var(--text) 6%, transparent);
+}
+html[data-theme="light"] body.page-intraday-flow .skel {
+  background:linear-gradient(90deg, color-mix(in srgb, var(--text) 6%, var(--panel)) 25%, color-mix(in srgb, var(--text) 11%, var(--panel)) 45%, color-mix(in srgb, var(--text) 6%, var(--panel)) 65%);
+  background-size:200% 100%;
+  box-shadow:none;
+}
+html[data-theme="light"] body.page-intraday-flow .spot-skel {
+  background:var(--panel);
+  box-shadow:0 1px 0 color-mix(in srgb, var(--text) 8%, transparent);
+  border-color:var(--line);
+}
+html[data-theme="light"] body.page-intraday-flow .ift-skel-row td {
+  border-bottom-color:var(--line);
+}
+/* Lens card is body-appended; this page needs an opaque instrument surface so
+   the feed-status tip does not wash through the desk (theme.js owns open/close). */
+body.page-intraday-flow .lens-pop {
+  background:var(--panel);
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+  box-shadow:var(--popover-shadow);
+}
+html[data-theme="light"] body.page-intraday-flow .lens-pop {
+  border-color:var(--line);
+  box-shadow:0 10px 28px -12px color-mix(in srgb, var(--text) 22%, transparent);
+}
 </style>
 </head>
 <body class="page-intraday-flow tape-quiet">
@@ -310,8 +368,8 @@ html[data-theme="light"] :is(
         'A fixed watchlist of institutional leaders — Mag 7, AI infrastructure/software/semis, semicap, reshoring, defense and power grid. It looks for one thing: a leader that sold off, absorbed the selling, and is being bought back on real volume. Every read is a deterministic rule — no score, no black box. Options-tape direction is approximate (~soft): it leans, it does not confirm. Nothing here is trade advice.',
         '一份固定的机构领涨股观察名单——Mag 7、AI基础设施/软件/半导体、半导体设备、回流制造、国防与电网。它只找一件事：某只领涨股下跌、消化卖压、如今正被放量重新买入。每个判断均为确定性规则——无评分、无黑箱。期权带方向为近似（~软性）：只作倾向，不作确认。所有内容均不构成交易建议。') }}
     </div>
-    <h1 class="hero-thesis thesis-slate" id="hero-thesis"><span class="l-en">Reading the tape…</span><span class="l-zh">正在读取资金带…</span></h1>
-    <p class="hero-sub" id="hero-sub"><span class="l-en">Sorting {{ ift.n_leaders if ift.n_leaders else 0 }} leaders into plain-word calls…</span><span class="l-zh">正在将 {{ ift.n_leaders if ift.n_leaders else 0 }} 只领涨股归类为通俗结论……</span></p>
+    <h1 class="hero-thesis thesis-slate" id="hero-thesis"><span class="skel ift-skel-thesis" aria-hidden="true"></span></h1>
+    <p class="hero-sub" id="hero-sub"><span class="skel ift-skel-sub" aria-hidden="true"></span></p>
 
     <div class="hero-grid">
       <div class="hero-score">
@@ -329,7 +387,7 @@ html[data-theme="light"] :is(
         <div class="ctx-row"><span class="ctx-ic">⚡</span><span id="ctx-strong">{{ t('Waiting for the tape…','等待资金带……') }}</span></div>
         <div class="ctx-row muted"><span class="ctx-ic">🧭</span><span id="ctx-watch">{{ t('The board below carries every name and the reasoning behind each call.','下方看板列出每只标的及其结论依据。') }}</span></div>
         {% if ift.as_of_display and ift.as_of_display.en %}
-        <div class="ctx-stamp" id="ift-stamp">{{ t('Board built ' ~ ift.as_of_display.en ~ ' · still connecting', '看板构建于' ~ ift.as_of_display.zh ~ ' · 连接中') }}{{ help('quotes still connecting · tape still connecting · options still connecting', '行情 连接中 · 资金带 连接中 · 期权流 连接中') }}</div>
+        <div class="ctx-stamp" id="ift-stamp">{{ t('Board built ' ~ ift.as_of_display.en, '看板构建于' ~ ift.as_of_display.zh) }}<span class="skel ift-skel-inline" aria-hidden="true"></span></div>
         {% else %}
         <div class="ctx-stamp" id="ift-stamp">{{ t("Board can't load right now — the plain-word calls below are from the last build", "看板暂时无法加载——下方结论来自上一次构建") }}</div>
         {% endif %}
@@ -342,8 +400,8 @@ html[data-theme="light"] :is(
 <section class="panel glass reveal reveal-1">
   <h2 class="sect-h">{{ t("What's set up now", '当前布局一览') }}
     <span class="sect-note">{{ t('click a lane to filter the board','点击类别以筛选看板') }}</span>
-    {{ help('Each leader is sorted into one plain-word call from deterministic rules — no score, no black box. Click a card to show only those names on the board. Counts update live as the tape moves.',
-            '每只领涨股按确定性规则归入一个通俗结论——无评分、无黑箱。点击卡片仅在看板显示该类标的。计数随资金带实时更新。') }}
+    {{ help('Each leader is sorted into one plain-word call from deterministic rules — no score, no black box. Click a card to show only those names on the board. Counts update as the tape refreshes.',
+            '每只领涨股按确定性规则归入一个通俗结论——无评分、无黑箱。点击卡片仅在看板显示该类标的。计数随资金带刷新而更新。') }}
   </h2>
   <div class="stance-strip" id="stance-strip">
     <div class="stance-card lane-act" data-stance="act">
@@ -385,7 +443,9 @@ html[data-theme="light"] :is(
     <span class="sect-note" id="spot-note">{{ t('the strongest setups on the tape right now','当前资金带上最强的布局') }}</span>
   </h2>
   <div class="spot-grid" id="spot-grid">
-    <div class="spot-empty">{{ t('Reading the tape…','正在读取资金带……') }}</div>
+    <article class="spot-card spot-skel lane-aside" aria-hidden="true"><div class="skel ift-skel-spot-hd"></div><div class="skel ift-skel-spot-reason"></div><div class="skel ift-skel-spot-reason short"></div><div class="spot-metrics"><div class="skel ift-skel-spot-metric"></div><div class="skel ift-skel-spot-metric"></div></div></article>
+    <article class="spot-card spot-skel lane-aside" aria-hidden="true"><div class="skel ift-skel-spot-hd"></div><div class="skel ift-skel-spot-reason"></div><div class="skel ift-skel-spot-reason short"></div><div class="spot-metrics"><div class="skel ift-skel-spot-metric"></div><div class="skel ift-skel-spot-metric"></div></div></article>
+    <article class="spot-card spot-skel lane-aside" aria-hidden="true"><div class="skel ift-skel-spot-hd"></div><div class="skel ift-skel-spot-reason"></div><div class="skel ift-skel-spot-reason short"></div><div class="spot-metrics"><div class="skel ift-skel-spot-metric"></div><div class="skel ift-skel-spot-metric"></div></div></article>
   </div>
 </section>
 
@@ -425,7 +485,14 @@ html[data-theme="light"] :is(
         </tr>
       </thead>
       <tbody id="leaders-body">
-        <tr class="loading-row"><td colspan="7"><span class="l-en">Loading leaders…</span><span class="l-zh">加载中…</span></td></tr>
+        <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td></td></tr>
+        <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td></td></tr>
+        <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td></td></tr>
+        <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td></td></tr>
+        <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td></td></tr>
+        <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td></td></tr>
+        <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td></td></tr>
+        <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td></td></tr>
       </tbody>
     </table>
   </div>
@@ -542,7 +609,8 @@ var STANCE_META = {
   in_favour:   { dot:'🏃', lane:'lane-fav',    en:'In favour',          zh:'走势占优', order:2 },
   take_profits:{ dot:'🟠', lane:'lane-profit', en:'Take profits',       zh:'获利了结', order:3 },
   watch:       { dot:'👀', lane:'lane-watch',  en:"Watch — don't chase",zh:'观望——勿追', order:4 },
-  stand_aside: { dot:'⚪', lane:'lane-aside',  en:'Stand aside',        zh:'暂时观望', order:5 }
+  stand_aside: { dot:'⚪', lane:'lane-aside',  en:'Stand aside',        zh:'暂时观望', order:5 },
+  degraded:    { dot:'⚪', lane:'lane-aside',  en:'No read',            zh:'暂无判断', order:6 }
 };
 
 // ── URL helpers ────────────────────────────────────────────────────────────
@@ -673,13 +741,39 @@ function boardPulseCoverage() {
   }
   return resolved / leaders.length;
 }
-function feedWord(status, zh, lane) {
+function feedWord(status, lane) {
+  // Bare status phrase, lane-aware, never containing the lane noun.
+  if (status === 'connecting') return { en:'still connecting', zh:'连接中' };
   if (status === 'live') {
-    if (lane === 'options') return zh ? '流数据已送达' : 'carrying flow';
-    return zh ? '行情已送达' : 'carrying prices';
+    if (lane === 'tape') return { en:'carrying the tape', zh:'已送达' };
+    if (lane === 'options') return { en:'carrying flow', zh:'已送达' };
+    return { en:'carrying prices', zh:'已送达' };
   }
-  if (status === 'unavailable') return zh ? '行情未送达' : 'prices not coming through';
-  return zh ? '连接中' : 'still connecting';
+  if (lane === 'tape') return { en:'tape data not coming through', zh:'未送达' };
+  if (lane === 'options') return { en:'flow not coming through', zh:'未送达' };
+  return { en:'prices not coming through', zh:'未送达' };
+}
+function feedTipRow(status, lane) {
+  var lab = { quotes:['quotes','行情'], tape:['tape','资金带'], options:['options','期权流'] }[lane] || ['quotes','行情'];
+  var w = feedWord(status, lane);
+  return { en: lab[0]+' · '+w.en, zh: lab[1]+' · '+w.zh };
+}
+function feedHeadline(q, t, o) {
+  var rank = { live:0, connecting:1, unavailable:2 };
+  var lanes = [{id:'quotes', s:q},{id:'tape', s:t},{id:'options', s:o}];
+  if (q==='live' && t==='live' && o==='live') return { en:'all feeds carrying', zh:'各路数据已送达' };
+  var worst = Math.max(rank[q]||0, rank[t]||0, rank[o]||0);
+  var at = lanes.filter(function(l){ return (rank[l.s]||0)===worst; });
+  if (at.length >= 2) return { en:'some feeds not coming through', zh:'部分数据未送达' };
+  var lane = at[0].id, st = at[0].s;
+  if (st === 'connecting') {
+    if (lane==='quotes') return { en:'quotes still connecting', zh:'行情连接中' };
+    if (lane==='tape') return { en:'tape still connecting', zh:'资金带连接中' };
+    return { en:'options still connecting', zh:'期权流连接中' };
+  }
+  if (lane==='quotes') return { en:'prices not coming through', zh:'行情数据未送达' };
+  if (lane==='tape') return { en:'tape data not coming through', zh:'资金带数据未送达' };
+  return { en:'options flow not coming through', zh:'期权流数据未送达' };
 }
 
 // ── Stance (mirror engine/intraday_flow.stance — deterministic precedence) ─
@@ -690,9 +784,13 @@ function computeStance(leader, quote, pulse, flow, conf) {
   var d = dealerOf(leader);
   var livePresent = isMarketHours() || !!(pulse && pulse.bars_today > 0);
 
+  if (isMarketHours() && quotesStatus !== 'connecting' && quotePx(quote) == null) {
+    return { key:'degraded', reason_en:"Prices aren't coming through — no read on this name right now", reason_zh:'行情未送达——该标的暂无判断', muted:true };
+  }
+
   if (!livePresent) {
     if (L1 === true && (L6 === true || squeeze)) return { key:'get_ready', reason_en:'Base in place — waiting for the open.', reason_zh:'底部已成——等待开盘。', muted:true };
-    return { key:'stand_aside', reason_en:'Waiting for the open — live tape not flowing yet.', reason_zh:'等待开盘——实时资金带尚未流动。', muted:true };
+    return { key:'stand_aside', reason_en:'Waiting for the open — tape not flowing yet.', reason_zh:'等待开盘——资金带尚未流动。', muted:true };
   }
 
   var vwapDelta = computeVwapDelta(quote, pulse);
@@ -959,12 +1057,14 @@ function updateFlowStamp(asof, meta) {
     );
     return;
   }
-  var tipEn = 'quotes '+feedWord(quotesStatus,false)+' · tape '+feedWord(pulseStatus,false)+' · options '+feedWord(flowStatus,false,'options');
-  var tipZh = '行情 '+feedWord(quotesStatus,true)+' · 资金带 '+feedWord(pulseStatus,true)+' · 期权流 '+feedWord(flowStatus,true,'options');
-  var covEn = quotesStatus === 'live' ? 'tape '+feedWord(quotesStatus,false) : feedWord(quotesStatus,false);
-  var covZh = feedWord(quotesStatus,true);
-  stamp.innerHTML = lz('Board built '+asOfEn+' · '+covEn, '看板构建于'+asOfZh+' · '+covZh)
-    + '<span class="help">?<span class="tip">'+lz(tipEn, tipZh)+'</span></span>';
+  var tipQ = feedTipRow(quotesStatus,'quotes');
+  var tipT = feedTipRow(pulseStatus,'tape');
+  var tipO = feedTipRow(flowStatus,'options');
+  var head = feedHeadline(quotesStatus, pulseStatus, flowStatus);
+  var tipEn = tipQ.en+' · '+tipT.en+' · '+tipO.en;
+  var tipZh = tipQ.zh+' · '+tipT.zh+' · '+tipO.zh;
+  stamp.innerHTML = lz('Board built '+asOfEn+' · '+head.en, '看板构建于'+asOfZh+' · '+head.zh)
+    + '<button type="button" class="lens-q" aria-label="Feed status" data-tip-en="'+esc(tipEn)+'" data-tip-zh="'+esc(tipZh)+'">?</button>';
 }
 
 // ══ compute-once pipeline (shared by hero, spotlight, board) ═══════════════
@@ -1156,7 +1256,7 @@ function spotCard(r, i) {
   var vwapDelta = r.vwapDelta;
   var vwapV = vwapDelta!=null ? '<span class="'+(vwapDelta>=0?'pos':'neg')+'">'+fmtPct(vwapDelta)+'</span>' : '<span class="muted">—</span>';
   var leanV;
-  if (f && f.ncp != null) leanV = lz((f.ncp>0?'~call buying':'~call selling'), (f.ncp>0?'~买入看涨':'~卖出看涨'))+'<span class="soft-tag">~soft</span>';
+  if (f && f.ncp != null) leanV = lz((f.ncp>0?'~call buying':'~call selling'), (f.ncp>0?'~买入看涨':'~卖出看涨'));
   else if (f && f.net_all != null) leanV = '<span class="muted">'+lz('side unknown','方向未知')+'</span>';
   else leanV = '<span class="muted">'+lz('quiet','平静')+'</span>';
   var entry = l.entry_signal || {};
@@ -1213,7 +1313,7 @@ function buildRow(row) {
   var lean = '';
   if (flow && flow.ncp != null) {
     var lp = flow.ncp > 0;
-    lean = '<div class="metric-sub">'+lz((lp?'~call buying':'~call selling'), (lp?'~买入看涨':'~卖出看涨'))+'<span class="soft-tag">~soft</span></div>';
+    lean = '<div class="metric-sub">'+lz((lp?'~call buying':'~call selling'), (lp?'~买入看涨':'~卖出看涨'))+'</div>';
   } else if (flow && flow.net_all != null) {
     // Premium moved, but only the net total is in — no side to state yet.
     lean = '<div class="metric-sub muted">'+lz('side unknown','方向未知')+'</div>';
@@ -1263,7 +1363,8 @@ var TAPE_CHIPS = {
   REPEAT_HITTER: ['repeat buyer', '重复买入']
 };
 function tapeChip(kind, n) {
-  var pair = TAPE_CHIPS[kind] || [kind, kind];
+  var pair = TAPE_CHIPS[kind];
+  if (!pair) { var s = esc(kind); pair = [s, s]; }
   return lz(pair[0]+'×'+n, pair[1]+'×'+n);
 }
 
@@ -1434,8 +1535,14 @@ function applyView() {
         + '<button type="button" class="ift-see-all" id="ift-see-all">'
         + lz('See all '+total, '查看全部 '+total+' 只')
         + '</button>';
+    } else if (total > BOARD_CAP && boardExpanded) {
+      lbl.innerHTML = lz('Showing '+total+' of '+total+' leaders · ', '显示 '+total+' / '+total+' 只 · ')
+        + '<button type="button" class="ift-see-all" id="ift-see-all" data-ift-collapse="1">'
+        + lz('Show top '+BOARD_CAP+' ↑', '只看前 '+BOARD_CAP+' 只')
+        + '</button>';
     } else {
-      lbl.innerHTML = '';
+      var enCount = total === 1 ? '1 leader' : (total+' leaders');
+      lbl.innerHTML = lz(enCount, '共 '+total+' 只');
     }
   }
   var ths = document.querySelectorAll('table.leaders th[data-col]');
@@ -1493,6 +1600,7 @@ document.querySelectorAll('table.leaders th[data-col]').forEach(function(th){
     if (col === 'expand' || col === 'tape' || col === 'dealer') return;
     if (groupByStance) { groupByStance = false; setGroupToggle(false); }
     if (col === sortCol) sortDir = -sortDir; else { sortCol = col; sortDir = -1; }
+    boardExpanded = false;
     applyView();
     var sl = document.getElementById('sort-label'); if (sl) sl.textContent = '';
   });
@@ -1500,7 +1608,7 @@ document.querySelectorAll('table.leaders th[data-col]').forEach(function(th){
 document.querySelectorAll('.chip[data-basket]').forEach(function(chip){
   chip.addEventListener('click', function(){
     document.querySelectorAll('.chip[data-basket]').forEach(function(c){ c.classList.remove('active'); });
-    chip.classList.add('active'); activeBasket = chip.getAttribute('data-basket'); applyView();
+    chip.classList.add('active'); activeBasket = chip.getAttribute('data-basket'); boardExpanded = false; applyView();
   });
 });
 document.querySelectorAll('.stance-card[data-stance]').forEach(function(card){
@@ -1510,12 +1618,13 @@ document.querySelectorAll('.stance-card[data-stance]').forEach(function(card){
     else { document.querySelectorAll('.stance-card').forEach(function(c){ c.classList.remove('active'); }); activeStance = s; card.classList.add('active'); }
     // scroll the board into view when a lane is picked
     if (activeStance !== 'all') { var bd = document.getElementById('leaders-table'); if (bd && bd.scrollIntoView) bd.scrollIntoView({behavior: REDUCED_MOTION?'auto':'smooth', block:'start'}); }
+    boardExpanded = false;
     applyView();
   });
 });
 var groupToggle = document.getElementById('group-toggle');
 function setGroupToggle(on){ groupByStance = on; if (groupToggle) groupToggle.classList.toggle('active', on); }
-if (groupToggle) groupToggle.addEventListener('click', function(){ setGroupToggle(!groupByStance); applyView(); });
+if (groupToggle) groupToggle.addEventListener('click', function(){ setGroupToggle(!groupByStance); boardExpanded = false; applyView(); });
 var _lb = document.getElementById('leaders-body');
 if (_lb) _lb.addEventListener('click', function(e){
   var exp = e.target.closest ? e.target.closest('.expander') : null;
@@ -1530,12 +1639,12 @@ var countLabel = document.getElementById('count-label');
 if (countLabel) countLabel.addEventListener('click', function(e){
   var btn = e.target && e.target.closest ? e.target.closest('.ift-see-all') : null;
   if (!btn) return;
-  boardExpanded = true;
+  boardExpanded = btn.getAttribute('data-ift-collapse') !== '1';
   applyView();
 });
 var searchEl = document.getElementById('ift-search');
 if (searchEl) {
-  searchEl.addEventListener('input', function(){ searchQ = searchEl.value.trim(); applyView(); });
+  searchEl.addEventListener('input', function(){ searchQ = searchEl.value.trim(); boardExpanded = false; applyView(); });
   (function(){ var en=searchEl.placeholder, zh=searchEl.getAttribute('data-ph-zh')||en;
     function setPh(){ searchEl.placeholder = document.documentElement.getAttribute('data-lang')==='zh'?zh:en; }
     setPh(); document.addEventListener('langchange', setPh); })();

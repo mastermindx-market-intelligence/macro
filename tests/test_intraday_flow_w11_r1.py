@@ -72,14 +72,15 @@ def test_feedword_source_is_coverage_vocab_both_lanes():
     assert "carrying prices" in fn
     assert "prices not coming through" in fn
     assert "still connecting" in fn
-    assert "行情已送达" in fn
-    assert "行情未送达" in fn
+    assert "已送达" in fn
+    assert "未送达" in fn
     assert "连接中" in fn
     assert "carrying flow" in fn
-    assert "流数据已送达" in fn
+    assert "carrying the tape" in fn
     assert "'live'" not in fn or "status === 'live'" in fn
     assert "已接入" not in fn
     assert "不可用" not in fn
+    assert "行情已送达" not in fn  # ZH noun lives on the tip label, not in the phrase
 
 
 @needs_node
@@ -92,7 +93,8 @@ def test_stamp_at_full_quotes_coverage_prints_no_live_or_realtime():
     ))
     script = f"""
     function lz(en, zh){{ return '<span class="l-en">'+en+'</span><span class="l-zh">'+(zh||en)+'</span>'; }}
-    var BASE_DATA = {{as_of_display: {{en: 'today 11:34pm UTC', zh: '今天 23:34 UTC'}}}};
+    function esc(s){{ return String(s==null?'':s).replace(/[&<>"]/g,function(c){{return {{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}}[c];}}); }}
+    var BASE_DATA = {{as_of_display: {{en: '10 Sep 11:34pm UTC', zh: '9月10日 23:34 UTC'}}}};
     var leaders = [{{ticker: 'NVDA'}}];
     var quotesStatus = 'live', pulseStatus = 'live', flowStatus = 'live';
     var stamp = {{ innerHTML: '' }};
@@ -113,12 +115,16 @@ def test_stamp_at_full_quotes_coverage_prints_no_live_or_realtime():
     assert "实时" not in html
     assert "实时" not in zh
     assert "BASE" not in html
-    assert "Board built today 11:34pm UTC · tape carrying prices" in en
-    assert "看板构建于今天 23:34 UTC · 行情已送达" in zh
-    assert "carrying flow" in en  # options lane, in the tip
-    assert "流数据已送达" in zh
-    assert "quotes carrying prices" in en
+    assert "Board built 10 Sep 11:34pm UTC · all feeds carrying" in en
+    assert "看板构建于9月10日 23:34 UTC · 各路数据已送达" in zh
+    assert "carrying flow" in html  # options lane, in the tip
+    assert "quotes · carrying prices" in html
+    assert "tape · carrying the tape" in html
+    assert "options · carrying flow" in html
+    assert "行情 · 已送达" in html
+    assert "行情 行情" not in html
     assert "?" in html
+    assert "lens-q" in html
 
 
 @needs_node
@@ -130,6 +136,7 @@ def test_stamp_absent_payload_is_the_packet_error_form_both_lanes():
     ))
     script = f"""
     function lz(en, zh){{ return '<span class="l-en">'+en+'</span><span class="l-zh">'+(zh||en)+'</span>'; }}
+    function esc(s){{ return String(s==null?'':s); }}
     var BASE_DATA = {{}};
     var leaders = [];
     var quotesStatus = 'live', pulseStatus = 'live', flowStatus = 'live';
@@ -150,15 +157,19 @@ def test_stamp_absent_payload_is_the_packet_error_form_both_lanes():
 def test_builder_humanizes_as_of_at_the_builder():
     from scripts.build_intraday_flow import _as_of_display
 
-    now = datetime(2026, 9, 10, 23, 40, tzinfo=timezone.utc)
+    now = datetime(2026, 9, 11, 14, 0, tzinfo=timezone.utc)
     got = _as_of_display("2026-09-10T23:34:28.190939+00:00", now=now)
-    assert got == {"en": "today 11:34pm UTC", "zh": "今天 23:34 UTC"}
+    assert got == {"en": "10 Sep 11:34pm UTC", "zh": "9月10日 23:34 UTC"}
     yest = _as_of_display("2026-09-09T23:34:00+00:00", now=now)
-    assert yest == {"en": "yesterday 11:34pm UTC", "zh": "昨天 23:34 UTC"}
+    assert yest == {"en": "9 Sep 11:34pm UTC", "zh": "9月9日 23:34 UTC"}
     am = _as_of_display("2026-09-10T00:05:00Z", now=now)
-    assert am == {"en": "today 12:05am UTC", "zh": "今天 00:05 UTC"}
+    assert am == {"en": "10 Sep 12:05am UTC", "zh": "9月10日 00:05 UTC"}
     assert _as_of_display(None) == {}
     assert _as_of_display("not-a-date") == {}
+    for blob in (got, yest, am):
+        for word in ("today", "yesterday", "tomorrow", "今天", "昨天", "明天"):
+            assert word not in blob["en"]
+            assert word not in blob["zh"]
     assert "T23:" not in got["en"]
     assert "+00:00" not in got["en"]
     assert "190939" not in got["en"]
@@ -372,7 +383,9 @@ def test_board_defaults_to_8_and_see_all_n_equals_rendered_rows():
     assert out["expandedVisible"] == 12
     assert out["zhSee"] == "12"
     assert out["zhShow"] == ["8", "12"]
-    assert out["labelAfterExpand"] == ""
+    assert "Show top 8" in out["labelAfterExpand"]
+    assert "只看前 8 只" in out["labelAfterExpand"]
+    assert "See all" not in out["labelAfterExpand"]
     # Top 8 by current sort (rvol desc): T00..T07
     assert out["defaultTickers"] == [f"T0{i}" for i in range(8)]
 
@@ -411,7 +424,8 @@ def test_filter_narrowing_below_8_shows_the_set_with_no_control():
     """
     out = _run_node(script)
     assert out["visible"] == ["T11"]
-    assert out["label"] == ""
+    assert "1 leader" in out["label"]
+    assert "共 1 只" in out["label"]
     assert "See all" not in out["label"]
     assert "查看全部" not in out["label"]
 

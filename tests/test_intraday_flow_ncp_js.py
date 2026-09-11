@@ -470,7 +470,7 @@ def test_flow_copy_makes_no_fixed_cadence_or_unstamped_live_claim(path):
     assert "Board built " in src
     assert "看板构建于" in src
     assert "carrying prices" in src
-    assert "行情已送达" in src
+    assert "已送达" in src
 
 
 @PAGES

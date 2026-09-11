@@ -79,12 +79,14 @@ _MONTH_ABBR = (
 def _as_of_display(
     as_of: str | datetime | None,
     *,
-    now: datetime | None = None,
+    now: datetime | None = None,  # noqa: ARG001 — kept so callers/tests can pass it
 ) -> dict[str, str]:
-    """Humanize a UTC timestamp for the board stamp. Never returns ISO.
+    """Absolute humanized UTC stamp for the board. Never returns ISO.
 
-    EN: ``today 11:34pm UTC``; ZH: ``今天 23:34 UTC``. Empty dict when the
-    stamp cannot be formed (absent / unparseable payload).
+    EN: ``10 Sep 11:34pm UTC``; ZH: ``9月10日 23:34 UTC``. Calendar date, never
+    a relative day word — a nightly board is read for ~23.5h after bake, so a
+    frozen relative day is false almost all day. Empty dict when the stamp
+    cannot be formed (absent / unparseable payload).
     """
     if as_of is None or as_of == "":
         return {}
@@ -102,28 +104,14 @@ def _as_of_display(
         dt = dt.replace(tzinfo=timezone.utc)
     else:
         dt = dt.astimezone(timezone.utc)
-    now_utc = now or datetime.now(timezone.utc)
-    if now_utc.tzinfo is None:
-        now_utc = now_utc.replace(tzinfo=timezone.utc)
-    else:
-        now_utc = now_utc.astimezone(timezone.utc)
 
     hour = dt.hour
     h12 = hour % 12 or 12
     ampm = "am" if hour < 12 else "pm"
     time_en = f"{h12}:{dt.minute:02d}{ampm}"
     time_zh = f"{hour:02d}:{dt.minute:02d}"
-
-    delta_days = (now_utc.date() - dt.date()).days
-    if delta_days == 0:
-        day_en, day_zh = "today", "今天"
-    elif delta_days == 1:
-        day_en, day_zh = "yesterday", "昨天"
-    elif delta_days == -1:
-        day_en, day_zh = "tomorrow", "明天"
-    else:
-        day_en = f"{dt.day} {_MONTH_ABBR[dt.month - 1]}"
-        day_zh = f"{dt.month}月{dt.day}日"
+    day_en = f"{dt.day} {_MONTH_ABBR[dt.month - 1]}"
+    day_zh = f"{dt.month}月{dt.day}日"
 
     return {
         "en": f"{day_en} {time_en} UTC",
