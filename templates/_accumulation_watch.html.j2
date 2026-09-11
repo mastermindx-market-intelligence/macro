@@ -1,0 +1,52 @@
+{#- Accumulation watch panel — moved whole from dashboard.html.j2 (S2 §1.4a).
+    Nested inside sector_central.html.j2 #si-movement; must not mint a new L1.
+    Self-contained t()/help() so both hosts (and a direct render) work. td() is
+    an env global on both builders. -#}
+{% macro t(en, zh='') -%}
+<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
+{%- endmacro %}
+{% macro help(en, zh='') -%}
+<span class="help">?<span class="tip"><span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span></span></span>
+{%- endmacro %}
+{%- set _acc = accumulation if (accumulation is defined and accumulation) else [] -%}
+{%- set _acc_n = _acc | length -%}
+{%- set _acc_rows = _acc[:8] -%}
+{%- set _acc_asof = none -%}
+{%- if _acc_n and _acc[0].get('window') -%}
+{%- set _acc_asof = _acc[0].window.split('..')[1] -%}
+{%- endif -%}
+<div class="panel span12" id="accumulation">
+  <h2>{{ t('Accumulation watch — sector ETFs', '增持监测 — 板块 ETF') }}
+    {{ help("Each sector SPDR's top-10 holdings. Beyond price = the weight a stock gained above what its own price move explains — a sign real money flowed in, not just drift. Est. $ flow applies that to the fund's assets (approximate). ✅ = accumulation plus a forming buy setup. Caveat: these are passive index funds, so this is index-rebalancing flow, not a manager's conviction. Thresholds are still settling as daily snapshots build up.", "每只板块 SPDR 的前十大持仓。剔除价格后 = 个股权重增长中超出其自身价格涨幅所能解释的部分 — 代表确有真实资金流入，而非随行就市。估算资金流 = 该残差乘以基金资产（近似值）。✅ = 增持且出现正在形成的买入形态。提示：这些是被动指数基金，故此为指数再平衡资金流，而非主动经理的信念。随着每日快照积累，阈值仍在校准中。") }}
+    {%- if _acc_asof -%}
+    <span class="dtp-asof"><span class="l-en">as of {{ _acc_asof }}</span><span class="l-zh">截至 {{ _acc_asof }}</span></span>
+    {%- endif -%}
+  </h2>
+  <p style="font-size:12.5px;color:color-mix(in srgb,var(--text) 72%,transparent);margin:2px 0 12px;line-height:1.5;max-width:78ch"><span class="l-en">Holdings gaining ETF weight faster than price alone explains — a heads-up on quiet accumulation, not a buy list.</span><span class="l-zh">板块 ETF 中权重增长快于价格本身的持仓 — 悄然增持的提示信号，而非买入清单。</span></p>
+  {% if _acc_n %}
+    <table>
+      <tr>
+        <th class="l">{{ t('sector', '板块') }}</th>
+        <th class="l">{{ t('stock', '个股') }}</th>
+        <th data-tip-en="The holding's change in index weight over the window (percentage points)" data-tip-zh="持仓在窗口期内指数权重的变化（百分点）">{{ t('weight change', '权重变化') }}</th>
+        <th style="color:var(--text);font-weight:700" data-tip-en="The accumulation signal: weight gained beyond what the stock's own price move explains — real buying flowed in" data-tip-zh="增持信号：超出个股自身价格涨幅所能解释的权重增长 — 有真实买盘流入">{{ t('beyond price', '剔除价格后') }}</th>
+        <th data-tip-en="Beyond-price weight applied to the fund's assets — approximate" data-tip-zh="将剔除价格后的权重乘以基金资产得出 — 近似值">{{ t('est. $ flow', '估算资金流') }}</th>
+        <th class="l" data-tip-en="The stock's own cycle state; ✅ = accumulation with a forming buy setup" data-tip-zh="个股自身的周期状态；✅ = 增持同时出现正在形成的买入形态">{{ t('setup', '形态') }}</th>
+      </tr>
+      {% for a in _acc_rows %}
+      <tr>
+        <td class="l muted">{{ a.fund }} · {{ td(a.sector) }}</td>
+        <td class="l"><a href="stock.html#{{ a.ticker }}"><b>{{ a.ticker }}</b></a> <span class="muted">{{ a.name }}</span></td>
+        <td class="{{ 'pos' if a.raw_change >= 0 else 'neg' }}">{{ "%+.2f" | format(a.raw_change) }}pp</td>
+        <td class="{{ 'pos' if a.active_change >= 0 else 'neg' }}"><b>{{ "%+.2f" | format(a.active_change) }}pp</b></td>
+        <td class="muted"{% if a.get('flow_mn') is not none %} data-sort="{{ a.flow_mn }}"{% endif %}>{{ a.flow_str }}</td>
+        <td class="l">
+          {% if a.ladder %}<span class="pill st-{{ a.ladder.state | replace(' ', '_') }}">{{ td(a.ladder.label) }}</span>{% if a.confirmed %} ✅{% endif %}{% else %}<span class="muted"><span class="l-en">no signal yet</span><span class="l-zh">暂无信号</span></span>{% endif %}{% if a.vol and a.vol.surging %} <span title="volume {{ a.vol.ratio }}× its recent average">📊</span>{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  {% else %}
+    <p class="muted">{{ t('Building — needs at least two daily holdings snapshots per fund (collection began 2026-06-11). Decomposed accumulation signals appear once a second snapshot lands.', '构建中 — 每只基金至少需要两个每日持仓快照（采集自 2026-06-11 开始）。第二个快照落地后将显示拆解后的增持信号。') }}</p>
+  {% endif %}
+</div>

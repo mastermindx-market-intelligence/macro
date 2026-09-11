@@ -2309,6 +2309,9 @@ def sector_setup_view(latest: dict, timing: dict | None = None) -> dict | None:
                 r["rate_pos"] = br["exc63"] >= 0
             else:
                 r["rate_str"], r["rate_pos"] = T("—", "—"), None
+            r["rate_hit"] = br.get("hit") if br else None
+            r["rate_n"] = br.get("n") if br else None
+            r["rate_exc"] = br.get("exc63") if br else None
             r["season_str"], _ = _compact_season(st.get("season_this"))
             r["season_tip"] = _season_tooltip(st.get("season_all"), st.get("season_month") or month)
             # TS-R6 two-reads reconciliation chip: when this ETF's setup-side verdict

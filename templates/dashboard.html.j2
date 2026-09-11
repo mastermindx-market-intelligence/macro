@@ -2239,8 +2239,25 @@
   body.page-stocks #equity-scoreboard,
   body.page-stocks #sectors,
   body.page-stocks #dash-mtf-section,
-  body.page-stocks #accumulation,
   body.page-stocks #holdings{display:none!important}
+  /* post-stack: consolidate */
+  .dtp-token.loading{color:var(--muted);border-color:var(--line)}
+  .dtp-token.loading .dtp-dot{background:var(--muted);animation:none}
+  html[data-theme="light"] .dtp-token.loading,
+  html:not([data-theme="dark"]) .dtp-token.loading{border-color:color-mix(in srgb,var(--text) 14%,transparent)}
+  .mtf-skel{display:block}
+  .mtf-skel-hd,.mtf-skel-row{
+    background:linear-gradient(90deg,
+      color-mix(in srgb,var(--text) 4%,transparent) 25%,
+      color-mix(in srgb,var(--text) 8%,transparent) 37%,
+      color-mix(in srgb,var(--text) 4%,transparent) 63%);
+    background-size:400% 100%;
+    animation:mtf-sk 1.4s ease-in-out infinite;
+  }
+  .mtf-skel-hd{height:30px;border-bottom:1px solid var(--line);margin-bottom:2px}
+  .mtf-skel-row{height:38px;border-bottom:1px solid color-mix(in srgb,var(--line) 55%,transparent)}
+  @keyframes mtf-sk{0%{background-position:100% 0}100%{background-position:0 0}}
+  @media (prefers-reduced-motion:reduce){.mtf-skel-hd,.mtf-skel-row{animation:none}}
 /* ══════════════════════════════════════════════════════════════════════════
      LIGHT MODE — designed, not inherited (2026-08-03)
      This board was drawn dark-first and light arrived as a token swap: panel and
@@ -2459,11 +2476,8 @@
       <a href="alerts.html"><span class="l-en">Alerts</span><span class="l-zh">提醒</span> →</a>
     </div>
   </div>
-  {#- MEGA-CAP TAPE — the lawful form of what the ruling below left standing: "Mag-7 as
-      plain data display" / "a display-tier watch item" (DO_NOT_REBUILD §2). Event-gated
-      inside the partial — on a day with no rare mega-cap week it emits nothing at all,
-      not an empty box. Charter: POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE §6 F2. -#}
-  {% include "_mag7_tape_strip.html.j2" %}
+  {# MEGA-CAP TAPE folded into #action-board header (S2 §1.3). Include lives in
+     templates/_us_act_now_board.html.j2, mode-gated so sector_central does not leak it. #}
   {# Ignition Radar strip + "Big Seven" leadership board REMOVED 2026-07-23 (operator ruling — forced Mag-7 call failed; see research/DO_NOT_REBUILD.md §2/§4 and research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md). Engine lanes (mag7_regime, ignition_radar) keep accruing in the background. #}
   {% endif %}
 
@@ -14954,7 +14968,7 @@ html[data-theme="light"] :is(
       'dials':'regime-radar', 'sectors':'dlg-sector',
       'positioning':'macro_context.html#board',
       'holdings':'us_stocks.html#holdings',
-      'accumulation':'us_stocks.html#accumulation'
+      'accumulation':'sector_central.html#accumulation-section'
     };
     function _resolveAlertHash(){
       var h = (location.hash || '').slice(1);
@@ -17152,7 +17166,7 @@ html[data-theme="light"] :is(
     {% if mode == 'stocks' %}
     <div id="dash-tape-band" class="panel span12" aria-label="Live basket tape">
       <div class="dtp-row" id="dtp-row">
-        <span class="dtp-token closed" id="dtp-token"><span class="dtp-dot"></span><span id="dtp-token-lbl">—</span></span>
+        <span class="dtp-token loading" id="dtp-token"><span class="dtp-dot"></span><span id="dtp-token-lbl"><span class="l-en">checking market status</span><span class="l-zh">正在确认市场状态</span></span></span>
         <span class="dtp-asof" id="dtp-asof"></span>
       </div>
       <div class="dtp-body" id="dtp-body"></div>
@@ -17468,10 +17482,10 @@ html[data-theme="light"] :is(
         <th class="l">{{ t('verdict', '判断') }} {{ help("BUY/SETUP = an entry above the 200-day; EXTENDED/TOPPING/SELL = late or distributing; BELOW TREND = a knife. Dots = how many of the timeframes we check agree.", "买入/预备＝200 日线上方的入场；过热/见顶/卖出＝偏晚或正在派发；趋势下方＝接飞刀。圆点＝我们查看的几个周期里有多少个一致。") }}</th>
         <th class="l">{{ t('3-day signal', '3 日信号') }} {{ help("What actually happened on the 3-day chart: a fresh signal, one turning up and about to fire (with how many sessions away), or one rolling over.", "3 日图上实际发生了什么：新信号触发、正在拐头、马上要触发（附还差几个交易日），或者已经开始回落。") }}</th>
         <th>{{ t('trend', '趋势') }} {{ help("Price vs its 200-day (long-term) and 50-day (medium-term) average — the gate that separates a buyable pullback from a falling knife.", "价格相对 200 日（长期）与 50 日（中期）均线——把可买回调与接飞刀分开的闸门。") }}</th>
-        <th>{{ t('Momentum (3D)', '动量（3 日）') }} {{ help("Two momentum readings on the 3-day chart. High means the move is stretched and late; turning up from the low end is the bottoming tell, falling out of the high end is the topping tell.", "3 日图上的两个动量读数。数值高说明这波已经拉得很开、偏晚；从低位转上来是见底的迹象，从高位掉下来是见顶的迹象。") }}</th>
+        <th>{{ t('Momentum (3D)', '动量（3 日）') }} {{ help("Two momentum readings on the 3-day chart. High means the move is stretched and late; turning up from the low end is the bottoming tell, falling out of the high end is the topping tell. The readings themselves (RSI · stochastic) are on each cell.", "3 日图上的两个动量读数。数值高说明这波已经拉得很开、偏晚；从低位转上来是见底的迹象，从高位掉下来是见顶的迹象。具体读数（RSI · 随机指标）见各单元格悬停。") }}</th>
         <th>{{ t('3mo vs mkt', '3 月对比市场') }} {{ help("Relative strength vs the S&P 500 over the past ~60 trading days.", "过去约 60 个交易日相对标普 500 的强弱。") }}</th>
         <th>{{ t('seasonality', '季节性') }} {{ help("This sector's average return in the current calendar month. Hover for the full 12-month picture. Weak evidence — context only, never a signal on its own.", "该板块在当前日历月的平均回报。悬停查看完整 12 个月全貌。弱证据——仅供参考，绝不单独作为信号。") }}</th>
-        <th>{{ t('base rate', '基础概率') }} {{ help("The MEASURED forward 63-day excess vs SPY for this state across the 11 sector ETFs 1998-2026 — the signal's honest track record, not a promise.", "该状态实测的未来 63 日对 SPY 超额，跨 11 个板块 ETF、1998–2026——信号的真实历史记录，并非承诺。") }}</th>
+        <th>{{ t('base rate', '基础概率') }} {{ help("The MEASURED forward 63-day excess vs SPY for this state across the 11 sector ETFs 1998-2026 — the signal's honest track record, not a promise. Hit-rates run ~50–56% across states — the edge is in size and in avoidance, not in win-rate. Each row's own sample count and up-rate are on that cell.", "该状态实测的未来 63 日对 SPY 超额，跨 11 个板块 ETF、1998–2026——信号的真实历史记录，并非承诺。各状态胜率约 50–56% — 优势在于幅度与「回避」，而非胜率。每一行自己的样本数与收涨比例见该单元格悬停。") }}</th>
       </tr>
       {% for r in sector_setups.sectors %}
       <tr>
@@ -17498,22 +17512,22 @@ html[data-theme="light"] :is(
           </div>
           {% endif %}
         </td>
-        <td class="l" style="font-size:12px">{{ r.signal_txt }}</td>
+        <td class="l" style="font-size:12px"{% if r.get('flags') and r.flags.get('macd_dn_3d') %} data-tip-en="3-day MACD has crossed down. This is the rolling-over case the column describes — the signal that fired is a down-cross, not an entry." data-tip-zh="3 日 MACD 已下穿。即本列所说的「回落」情形 — 触发的是下穿信号，不是入场。"{% endif %}>{% if r.get('flags') and r.flags.get('macd_dn_3d') %}<span class="l-en">rolling over</span><span class="l-zh">正在回落</span>{% else %}{{ r.signal_txt }}{% endif %}</td>
         <td class="{{ 'pos' if r.tech_ok else '' }}" style="font-size:12px">{{ r.tech_str }}</td>
-        <td style="font-size:12px">{{ r.osc_str }}</td>
+        <td style="font-size:12px"{% if r.get('stoch_3d') is number %} data-tip-en="RSI {{ r.rsi_3d|round|int if r.get('rsi_3d') is number else '—' }} · Stochastic {{ r.stoch_3d|round|int }} on the 3-day chart. Under 20 on the stochastic is the washed-out end; over 80 is the stretched end. Momentum readings only — never a signal on their own." data-tip-zh="3 日图上 RSI {{ r.rsi_3d|round|int if r.get('rsi_3d') is number else '—' }} · 随机指标 {{ r.stoch_3d|round|int }}。随机指标低于 20 为超卖端，高于 80 为拉伸端。仅为动量读数，绝不单独作为信号。"{% endif %}>{% if r.get('stoch_3d') is number %}{% if r.stoch_3d <= 20 %}<span class="l-en">washed out</span><span class="l-zh">超卖</span>{% elif r.stoch_3d >= 80 %}<span class="l-en">stretched</span><span class="l-zh">拉伸</span>{% else %}<span class="l-en">mid-range</span><span class="l-zh">中位</span>{% endif %}{% else %}{{ r.osc_str }}{% endif %}</td>
         <td class="{% if r.rs_60d and r.rs_60d > 0 %}pos{% elif r.rs_60d and r.rs_60d < 0 %}neg{% endif %}" data-sort="{{ r.rs_60d or 0 }}">{{ r.rs_str }}</td>
         <td>
           <span class="help" style="width:auto;height:auto;border:none;margin:0">
-            <span style="cursor:help">{{ r.season_str }}</span>
+            <span style="cursor:help">{{ (r.season_str.split(' (')[0] if r.season_str and ' (' in r.season_str else r.season_str) }}</span>
             <span class="tip tip-seas">{{ r.season_tip }}</span>
           </span>
         </td>
-        <td class="{% if r.rate_pos %}pos{% elif r.rate_pos is none %}muted{% else %}neg{% endif %}" style="font-size:11.5px">{{ r.rate_str }}</td>
+        <td class="{% if r.rate_pos %}pos{% elif r.rate_pos is none %}muted{% else %}neg{% endif %}" style="font-size:11.5px"{% if r.get('rate_hit') is number and r.get('rate_n') is number and r.get('rate_exc') is number %} data-tip-en="{{ r.rate_hit }}% of {{ '{:,}'.format(r.rate_n|int) }} measured 63-day windows closed up. Measured across the 11 sector ETFs, 1998–2026. Windows overlap — this ranks the state, it is not an independent sample." data-tip-zh="{{ '{:,}'.format(r.rate_n|int) }} 个实测 63 日窗口中有 {{ r.rate_hit }}% 收涨。跨 11 个板块 ETF、1998–2026 实测。窗口互相重叠，因此这是对该状态的排序，并非独立样本。"{% endif %}>{% if r.get('rate_hit') is number and r.get('rate_exc') is number %}<span class="l-en">{{ '%+.1f'|format(r.rate_exc) }}% vs SPY · {% if r.rate_hit < 55 %}even odds{% elif r.rate_hit < 65 %}more often up{% else %}usually up{% endif %}</span><span class="l-zh">对SPY {{ '%+.1f'|format(r.rate_exc) }}% · {% if r.rate_hit < 55 %}胜率接近五五{% elif r.rate_hit < 65 %}多数时候上涨{% else %}通常上涨{% endif %}</span>{% else %}{{ r.rate_str }}{% endif %}</td>
       </tr>
       {% endfor %}
     </table></div>{# /tbl-scroll #}
             <button class="lst-more act-more" type="button" aria-expanded="false"><span class="lm-show">{{ t('Show more','显示更多') }} ▾</span><span class="lm-hide">{{ t('Show less','收起') }} ▴</span></button>
-    <p class="muted" style="font-size:12px">{{ t('Click any sector for its full drill-down: cycle position, multi-timeframe momentum, the confluence signal, and each top-10 holding analyzed individually.', '点击任意板块查看完整下钻：周期位置、多时间尺度动量、共振信号，以及逐一分析的每个前十大持仓。') }}</p>
+    <p class="muted" style="font-size:12px">{{ t('Click any sector for its full drill-down: where it sits in its cycle, whether the daily, 3-day and weekly charts agree, and every top-10 holding read one by one.', '点击任意板块查看完整下钻：它位于自身周期的哪个位置、日线／3 日线／周线是否一致，以及逐一解读的每个前十大持仓。') }}</p>
   </div>
   {% endif %}{# /sector_setups #}
 
@@ -17545,8 +17559,17 @@ html[data-theme="light"] :is(
       </span></span>
     </h2>
     <div id="dash-mtf-body">
-      <p class="dash-mtf-absent l-en">Loading turn setup data…</p>
-      <p class="dash-mtf-absent l-zh">加载拐点形态数据…</p>
+      <div class="mtf-skel" aria-hidden="true">
+        <div class="mtf-skel-hd"></div>
+        <div class="mtf-skel-row"></div>
+        <div class="mtf-skel-row"></div>
+        <div class="mtf-skel-row"></div>
+        <div class="mtf-skel-row"></div>
+        <div class="mtf-skel-row"></div>
+        <div class="mtf-skel-row"></div>
+      </div>
+      <p class="dash-mtf-absent mx-empty l-en" hidden>No stock is showing early bottoming signs tonight. <span class="empty-why">The checklist needs at least two timeframes to agree, and none cleared that bar in the latest run.</span></p>
+      <p class="dash-mtf-absent mx-empty l-zh" hidden>今晚没有个股出现早期筑底迹象。<span class="empty-why">该检查表要求至少两个时间框架同向，最近一次运行中没有标的达到这一门槛。</span></p>
     </div>
   </div>
   {% endif %}
@@ -17555,56 +17578,29 @@ html[data-theme="light"] :is(
 
 
   {% if mode != 'macro' %}
-  <!-- ======================= ACCUMULATION WATCH ======================= -->
-  <div class="panel span12" id="accumulation">
-    <h2>{{ t('Accumulation watch — sector ETFs', '增持监测 — 板块 ETF') }}
-      {{ help("Each sector SPDR's top-10 holdings. Beyond price = the weight a stock gained above what its own price move explains — a sign real money flowed in, not just drift. Est. $ flow applies that to the fund's assets (approximate). ✅ = accumulation plus a forming buy setup. Caveat: these are passive index funds, so this is index-rebalancing flow, not a manager's conviction. Thresholds are still settling as daily snapshots build up.", "每只板块 SPDR 的前十大持仓。剔除价格后 = 个股权重增长中超出其自身价格涨幅所能解释的部分 — 代表确有真实资金流入，而非随行就市。估算资金流 = 该残差乘以基金资产（近似值）。✅ = 增持且出现正在形成的买入形态。提示：这些是被动指数基金，故此为指数再平衡资金流，而非主动经理的信念。随着每日快照积累，阈值仍在校准中。") }}
-    </h2>
-    <p style="font-size:12.5px;color:color-mix(in srgb,var(--text) 72%,transparent);margin:2px 0 12px;line-height:1.5;max-width:78ch"><span class="l-en">Holdings gaining ETF weight faster than price alone explains — a heads-up on quiet accumulation, not a buy list.</span><span class="l-zh">板块 ETF 中权重增长快于价格本身的持仓 — 悄然增持的提示信号，而非买入清单。</span></p>
-    {% if accumulation %}
-      <table>
-        <tr>
-          <th class="l">{{ t('sector', '板块') }}</th>
-          <th class="l">{{ t('stock', '个股') }}</th>
-          <th data-tip-en="The holding's change in index weight over the window (percentage points)" data-tip-zh="持仓在窗口期内指数权重的变化（百分点）">{{ t('weight change', '权重变化') }}</th>
-          <th style="color:var(--text);font-weight:700" data-tip-en="The accumulation signal: weight gained beyond what the stock's own price move explains — real buying flowed in" data-tip-zh="增持信号：超出个股自身价格涨幅所能解释的权重增长 — 有真实买盘流入">{{ t('beyond price', '剔除价格后') }}</th>
-          <th data-tip-en="Beyond-price weight applied to the fund's assets — approximate" data-tip-zh="将剔除价格后的权重乘以基金资产得出 — 近似值">{{ t('est. $ flow', '估算资金流') }}</th>
-          <th class="l" data-tip-en="The stock's own cycle state; ✅ = accumulation with a forming buy setup" data-tip-zh="个股自身的周期状态；✅ = 增持同时出现正在形成的买入形态">{{ t('setup', '形态') }}</th>
-        </tr>
-        {% for a in accumulation %}
-        <tr>
-          <td class="l muted">{{ a.fund }} · {{ td(a.sector) }}</td>
-          <td class="l"><a href="stock.html#{{ a.ticker }}"><b>{{ a.ticker }}</b></a> <span class="muted">{{ a.name }}</span></td>
-          <td class="{{ 'pos' if a.raw_change >= 0 else 'neg' }}">{{ "%+.2f" | format(a.raw_change) }}pp</td>
-          <td class="{{ 'pos' if a.active_change >= 0 else 'neg' }}"><b>{{ "%+.2f" | format(a.active_change) }}pp</b></td>
-          <td class="muted"{% if a.get('flow_mn') is not none %} data-sort="{{ a.flow_mn }}"{% endif %}>{{ a.flow_str }}</td>
-          <td class="l">
-            {% if a.ladder %}<span class="pill st-{{ a.ladder.state | replace(' ', '_') }}">{{ td(a.ladder.label) }}</span>{% if a.confirmed %} ✅{% endif %}{% else %}<span class="muted">—</span>{% endif %}{% if a.vol and a.vol.surging %} <span title="volume {{ a.vol.ratio }}× its recent average">📊</span>{% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </table>
-    {% else %}
-      <p class="muted">{{ t('Building — needs at least two daily holdings snapshots per fund (collection began 2026-06-11). Decomposed accumulation signals appear once a second snapshot lands.', '构建中 — 每只基金至少需要两个每日持仓快照（采集自 2026-06-11 开始）。第二个快照落地后将显示拆解后的增持信号。') }}</p>
-    {% endif %}
-  </div>
+  {#- #accumulation demoted to sector_central.html #si-movement (S2 §1.4a).
+      macro.html never rendered it (this block is mode != 'macro'; dashboard
+      stocks is the only consumer). -#}
 
   <!-- ======================= HOLDINGS / FLOWS ======================= -->
+  {%- set _hold_n = (holdings_changes | length) if holdings_changes else 0 -%}
+  {%- set _hold_rows = holdings_changes[:8] if holdings_changes else [] -%}
   <div class="panel span12" id="holdings">
     <h2>{{ t("Real fund moves — strongest conviction", '基金真实动作 — 信念最强') }}
       {{ help("The top conviction-ranked ACCUMULATION decisions across curated thematic/industry funds (SPDR sector, Global X) and actively managed funds (ARK), with mechanical flow AND price moves stripped out. Conviction = percentage POINTS of fund weight the manager actually committed — so a real add to a meaningful position outranks a tiny position doubling. The full board (incl. trims & every fund) is the 🐳 Real fund moves page.", "在精选的主题／行业基金（SPDR 板块、Global X）与主动管理基金（ARK）中，按信念排序的最强增持决策，已剔除机械性资金流与价格变动。信念 = 经理人实际投入的基金权重百分点——因此对有意义仓位的真实增持会胜过微小仓位的翻倍。完整看板（含减持与全部基金）见 🐳 基金真实动作 页面。") }}
-      <a href="etfs.html" class="muted" style="font-size:12px;font-weight:400;float:right">{{ t('see all →', '查看全部 →') }}</a>
+      <a href="sector_central.html#accumulation-section" class="muted" style="font-size:12px;font-weight:400;float:right;margin-right:12px"><span class="l-en">Accumulation watch → Sector Intelligence</span><span class="l-zh">增持监测 → 行业情报页</span></a>
+      <a href="etfs.html" class="muted" style="font-size:12px;font-weight:400;float:right">{% if _hold_n > 8 %}{{ t('See all ' ~ _hold_n ~ ' →', '查看全部 ' ~ _hold_n ~ ' 项 →') }}{% else %}{{ t('Full board →', '完整看板 →') }}{% endif %}</a>
     </h2>
-    {% if holdings_changes %}
+    {% if _hold_rows %}
       <table>
         <tr><th class="l">{{ t('fund', '基金') }}</th><th class="l">{{ t('stock', '个股') }}</th><th class="l">{{ t('sector', '板块') }}</th><th class="r">{{ t('weight', '权重') }}</th><th class="r">{{ t('conviction Δwt', '信念权重Δ') }}</th><th class="l">{{ t('technical', '技术面') }}</th></tr>
-        {% for h in holdings_changes %}
+        {% for h in _hold_rows %}
         <tr><td class="l"><b>{{ h.fund }}</b></td>
             <td class="l"><a href="stock.html#{{ h.ticker }}"><b>{{ h.ticker }}</b></a> <span class="muted">{{ h.name }}</span></td>
             <td class="l muted">{{ td(h.sector) if h.sector else "—" }}</td>
             <td class="r muted">{% if h.get('weight_pct') is not none %}{{ "%.2f" | format(h.weight_pct) }}%{% else %}—{% endif %}</td>
             <td class="r {{ ('pos' if h.conviction_pp >= 0 else 'neg') if h.get('conviction_pp') is not none else 'muted' }}"><b>{% if h.get('conviction_pp') is not none %}{{ "%+.2f" | format(h.conviction_pp) }}pp{% else %}—{% endif %}</b></td>
-            <td class="l">{% if h.ladder %}<span class="pill st-{{ h.ladder.state | replace(' ', '_') }}">{{ td(h.ladder.label) }}</span>{% if h.confirmed %} ✅{% endif %}{% else %}<span class="muted">—</span>{% endif %}</td></tr>
+            <td class="l">{% if h.ladder %}<span class="pill st-{{ h.ladder.state | replace(' ', '_') }}">{{ td(h.ladder.label) }}</span>{% if h.confirmed %} ✅{% endif %}{% else %}<span class="muted"><span class="l-en">no signal yet</span><span class="l-zh">暂无信号</span></span>{% endif %}</td></tr>
         {% endfor %}
       </table>
     {% else %}
@@ -17613,24 +17609,11 @@ html[data-theme="light"] :is(
     {% if holdings_changes %}<p class="muted" style="font-size:11px;margin:6px 0 0">{{ t('Data window ending','数据窗口截至') }} {{ holdings_changes[0].window.split('..')[1] if holdings_changes[0].get('window') else '' }}</p>{% endif %}
   </div>
 
-  {% endif %}{# /mode != macro — accumulation + holdings/flows #}
+  {% endif %}{# /mode != macro — holdings/flows #}
 
-  {#- THEME TAPE (W2) — THE LAST PANEL ON THE STOCKS PAGE (operator, 2026-08-06:
-      "make it way smaller in height then move it down to bottom of the page").
-      Third complaint about this panel's footprint. It shipped above the board;
-      #4553 moved it below the board and cut it 692px → 498px; #4605 merged one
-      minute later, added the washout-turn group and a second shelf group, and it
-      measured 680px desktop / 1004px phone against the real artifacts. Trimming
-      it in place is what failed twice, so it is out of the reading order entirely
-      — after #holdings, the last panel this page renders (the data-health strip
-      below is `mode != 'stocks'` and never appears here). It also ships CLOSED,
-      one gist line; templates/_theme_tape.html.j2 carries why that is not the
-      silence the panel exists to fix.
-      Placed OUTSIDE the `mode != 'macro'` block above rather than at the end of
-      it, so it cannot drift back up the page when that block is next re-nested —
-      the failure mode that put it above the board for the first three months.
-      Its own `mode == 'stocks'` guard; renders nothing at all on a dead tape. -#}
-  {% if mode == 'stocks' %}{% include "_theme_tape.html.j2" %}{% endif %}
+  {#- THEME TAPE demoted to sector_central.html #explore-section (S2 §1.4b).
+      The action-board header link retargets to #theme-heat-section. Do not
+      re-include _theme_tape.html.j2 on this page. -#}
 
   {% if mode != 'stocks' %}
   {# Link-out strip deleted per audit INT-07dt — the sx-deep-context tray carries these links. #}
@@ -18229,10 +18212,7 @@ function renderMtfTable(mtfUpturn){
   if(!bodyEl) return;
 
   if(!mtfUpturn||!mtfUpturn.tickers){
-    bodyEl.innerHTML='<p class="dash-mtf-absent">'
-      +L('Turn setup data lands after tonight\'s nightly (~02:00 UTC). Stocks with early bottoming signs will appear here.',
-         '拐点形态数据将在今晚收盘后更新（约UTC 02:00）。出现早期筑底迹象的个股将在此显示。')
-      +'</p>';
+    /* Artifact not in yet — leave the true-geometry skeleton in place. */
     return;
   }
 
@@ -18253,7 +18233,9 @@ function renderMtfTable(mtfUpturn){
   var rows=confirmed.concat(watch).slice(0,40);
 
   if(!rows.length){
-    bodyEl.innerHTML='<p class="dash-mtf-absent">'+L('No turn setup data yet.','暂无拐点形态数据。')+'</p>';
+    var skel=bodyEl.querySelector('.mtf-skel');
+    if(skel) skel.remove();
+    bodyEl.querySelectorAll('.dash-mtf-absent').forEach(function(p){p.hidden=false;});
     return;
   }
 
@@ -18325,7 +18307,7 @@ function renderMtfTable(mtfUpturn){
     var legs=t.legs||{};
     var trend=t.trend||{};
     var stateCls=t.state==='UPTURN_CONFIRMED'?'confirmed':t.state==='UPTURN_WATCH'?'watch':'none';
-    var stateLbl=t.state==='UPTURN_CONFIRMED'?L('TURNING UP','转强确认'):t.state==='UPTURN_WATCH'?L('EARLY SIGN','初步迹象'):L('—','—');
+    var stateLbl=t.state==='UPTURN_CONFIRMED'?L('TURNING UP','转强确认'):t.state==='UPTURN_WATCH'?L('EARLY SIGN','初步迹象'):L('no signal yet','暂无信号');
     var _bids=(t.basket_ids||[]).slice(0,3);
     var _bMore=(t.basket_ids&&t.basket_ids.length>3)?'…':'';
     var basketEn=_bids.map(_dtpNameEn).join(', ')+_bMore;

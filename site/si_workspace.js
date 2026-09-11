@@ -48,6 +48,7 @@ var LEGACY_ANCHORS={
   'si-movement':['moving','si-movement'],
   'rc-events-mount':['moving','rc-events-mount'],
   'rotation-app':['moving','rotation-app'],
+  'accumulation-section':['moving','accumulation-section'],
   'si-money':['money','si-money'],
   'internals-section':['money','internals-section'],
   'scc-leadership':['money','scc-leadership'],
@@ -56,6 +57,7 @@ var LEGACY_ANCHORS={
   'chart-section':['explore','chart-section'],
   'forming-narratives':['explore','forming-narratives'],
   'tm-mount':['explore','tm-mount'],
+  'theme-heat-section':['explore','theme-heat-section'],
   /* the standalone subsectors page's own ids, so its redirect stub and every chat / detail
      back-link that cited them still lands on the right rail view rather than overview. */
   'confluence':['confluence','si-confluence'],

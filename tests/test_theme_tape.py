@@ -624,45 +624,34 @@ def test_mobile_break_matches_the_board_and_hides_the_header_row():
 
 
 def test_the_page_includes_the_partial_last_of_all():
-    """Operator order 2026-08-06: "move it down to bottom of the page."
+    """S2 §1.4b: theme tape is demoted off us_stocks onto sector_central.
 
-    Third complaint about this panel's footprint. It shipped ABOVE the board;
-    #4553 moved it below the board and cut it 692px → 498px; #4605 merged one
-    minute later, added the washout-turn group and a second shelf group, and it
-    measured 680px desktop / 1004px phone against the real artifacts — bigger than
-    the state that drew the first complaint. Trimming it in place failed twice, so
-    it leaves the reading order: after every board panel, and folded shut.
-
-    Pinned against `id="holdings"` — the last panel us_stocks renders (the data
-    health strip after it is `mode != 'stocks'`) — not merely against the board,
-    which is what the previous version of this guard checked and which the panel
-    satisfied while still sitting six panels above the bottom.
+    The dashboard must no longer include the partial. The landing host nests it
+    inside #explore-section behind <span id="theme-heat-section"></span>, using
+    that page's own span-anchor idiom (spec §1.4).
     """
     dash = (TMPL / "dashboard.html.j2").read_text()
-    assert '{% include "_theme_tape.html.j2" %}' in dash
-    inc = dash.index("_theme_tape.html.j2")
-    for anchor in ('id="us-standouts"', 'id="equity-scoreboard"', 'id="sectors"',
-                   'id="accumulation"', 'id="holdings"'):
-        assert inc > dash.index(anchor), f"the tape must render after {anchor}"
+    assert '{% include "_theme_tape.html.j2" %}' not in dash
+    sc = (TMPL / "sector_central.html.j2").read_text()
+    assert '{% include "_theme_tape.html.j2" %}' in sc
+    assert 'id="theme-heat-section"' in sc
+    host = sc.index('id="explore-section"')
+    anchor = sc.index('id="theme-heat-section"')
+    inc = sc.index('{% include "_theme_tape.html.j2" %}')
+    close = sc.index("</section>", host)
+    assert host < anchor < inc < close, "tape must nest inside #explore-section"
 
 
 def test_full_page_renders_the_panel_on_stocks_and_never_on_macro():
-    """Integration: the real dashboard template, both modes, one shared view-model.
+    """S2 §1.4c: us_stocks no longer renders #theme-tape in either mode.
 
-    A partial can parse perfectly and still never reach the page — this is the
-    assertion that the include actually fires, in the right mode, and renders
-    after every other panel. Source order is what the template guard above pins;
-    this one pins the RENDERED order, which is what a reader scrolls.
+    The demotion is stocks-scoped; macro.html never included the tape.
     """
     from tests.test_dashboard_template_render import _base_vm, _env
     vm = dict(_base_vm(), theme_tape=_build())
 
     stocks = _env().get_template("dashboard.html.j2").render(**vm, mode="stocks")
-    assert 'id="theme-tape"' in stocks
-    at = stocks.index('id="theme-tape"')
-    for anchor in ('id="us-standouts"', 'id="holdings"'):
-        assert at > stocks.index(anchor), f"rendered tape must follow {anchor}"
-    assert STANCES["act"][0] in stocks
+    assert 'id="theme-tape"' not in stocks
 
     macro = _env().get_template("dashboard.html.j2").render(**vm, mode="macro")
     assert 'id="theme-tape"' not in macro

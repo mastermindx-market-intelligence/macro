@@ -2381,6 +2381,8 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
     <div id="rc-events-mount"></div>
     <div id="rotation-app" class="sr-scope"></div>
     <div id="desk-watch-mount"></div>
+    <span id="accumulation-section"></span>
+    {% include "_accumulation_watch.html.j2" %}
   </section>
 
   </section>{# /si-view moving #}
@@ -2426,6 +2428,8 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
   {# ══ EXPLORE ALL — full sortable table + rebased chart (kept, restyled) ══ #}
   <section class="rvx-sec rvx-reveal" id="explore-section" style="animation-delay:.2s">
     <div class="rvx-sec-h"><h2>{{ t('Explore all', '浏览全部') }}</h2><span class="q">{{ t('— every basket, sortable, with a rebased chart', '— 全部篮子，可排序，附归一走势图') }}</span></div>
+    <span id="theme-heat-section"></span>
+    {% include "_theme_tape.html.j2" %}
   </section>
 
   <div id="content">

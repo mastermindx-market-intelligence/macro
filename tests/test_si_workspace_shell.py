@@ -156,11 +156,12 @@ VIEW_ORGANS = {
     "overview": ('id="ftr-tape-strip"', 'id="regime"', 'id="actnow-section"', 'id="grader"'),
     "map": ('id="rotmap-section"', 'id="si-map"', 'id="sc-cyclemap"', 'id="board"'),
     "moving": ('id="si-movement"', 'id="rc-events-mount"', 'id="rotation-app"',
-               'id="desk-watch-mount"'),
+               'id="desk-watch-mount"', 'id="accumulation-section"'),
     "money": ('id="si-money"', 'id="internals-section"', 'id="heatmap-scorecard"',
               'id="scc-leadership"'),
     "explore": ('id="explore-section"', 'id="table-section"', 'id="chart-section"',
-                'id="tm-mount"', "_forming_narratives.html.j2"),
+                'id="tm-mount"', "_forming_narratives.html.j2",
+                'id="theme-heat-section"'),
 }
 
 
@@ -198,6 +199,7 @@ LEGACY_ANCHORS = {
     "si-movement": "moving",
     "rc-events-mount": "moving",
     "rotation-app": "moving",
+    "accumulation-section": "moving",
     "si-money": "money",
     "internals-section": "money",
     "scc-leadership": "money",
@@ -206,6 +208,7 @@ LEGACY_ANCHORS = {
     "chart-section": "explore",
     "forming-narratives": "explore",
     "tm-mount": "explore",
+    "theme-heat-section": "explore",
 }
 
 

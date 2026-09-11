@@ -1,7 +1,8 @@
 """tests/test_mag7_tape_strip.py — Mega-cap tape strip (F2) render tests.
 
-The strip is `templates/_mag7_tape_strip.html.j2`, included by dashboard.html.j2 in
-`mode == 'stocks'` at the anchor where the 2026-07-23-removed leadership board sat.
+The strip is `templates/_mag7_tape_strip.html.j2`, folded into the action-board
+header (S2 §1.3) via `_us_act_now_board.html.j2`, mode-gated so sector_central
+does not leak it.
 Charter: research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md §6 F2.
 Fences:  research/DO_NOT_REBUILD.md §2 Mag-7 row — plain data display + a watch stance,
          never a directional call, a ranking, or a leadership read.
@@ -123,6 +124,9 @@ def test_renders_full_fixture():
     html = _render(latest=LATEST, us_standouts=STANDOUTS)
     # panel shell + eyebrow, both languages
     assert 'id="megacap-tape"' in html
+    assert 'class="acb-tape"' in html
+    assert 'class="panel span12"' not in html
+    assert "<h2" not in html
     assert "Mega-cap tape" in html
     assert "超大盘行情" in html
     # one as-of stamp, exactly one (doctrine Law 4)
@@ -177,7 +181,7 @@ def test_tier_order_and_cap():
          "last_larger_date": None, "source": "deep"},
     ]
     html = _render(latest={"mag7_regime": {"events": extra}}, us_standouts=None)
-    syms = re.findall(r'<span class="m7t-sym">([A-Z]+)</span>', html)
+    syms = re.findall(r'<span class="acb-tape-sym">([A-Z]+)</span>', html)
     assert len(syms) == 3, f"cap is three lines, got {syms}"
     # META (99.95 historic) outranks MSFT (99.90 historic); both precede any extreme
     assert syms == ["META", "MSFT", "GOOGL"], syms
@@ -316,7 +320,7 @@ def test_no_animation_declared():
 
 def test_no_directional_color_on_words():
     """Colour lives on the numeric figure only. State words use --text/--muted; the
-    rail is neutral. --up/--down may only be reached through --ink-* on .m7t-fig.
+    rail is neutral. --up/--down may only be reached through --ink-* on .acb-tape-fig.
 
     Scanned over DECLARATIONS — CSS comments are stripped first, because the block's
     prose deliberately names the tokens it is explaining (and a comment paints
@@ -327,9 +331,13 @@ def test_no_directional_color_on_words():
     assert "--ink-up" in decls, "the figure ink must still be declared"
     for line in decls.splitlines():
         if "--up" in line or "--down" in line:
-            assert ".m7t-fig" in line, f"directional token outside the figure: {line.strip()}"
-    # and no tinted container: the panel takes the house surface, unmodified
-    assert "background" not in decls, "no container wash — the featured-glow law"
+            assert ".acb-tape-fig" in line, f"directional token outside the figure: {line.strip()}"
+    # S2 §1.3 LIGHT TREATMENT: the inset band is required on white; dark stays
+    # hairline+air. The only background declaration is that band.
+    assert "background:var(--panel2)" in decls.replace(" ", "")
+    for line in decls.splitlines():
+        if "background" in line:
+            assert "var(--panel2)" in line, f"background outside the light strip band: {line.strip()}"
 
 
 def test_no_font_below_nine_px():
@@ -343,23 +351,26 @@ def test_no_font_below_nine_px():
 # ── wiring: the page actually includes it, at the right anchor ────────────────
 
 def test_dashboard_includes_the_strip_at_the_board_anchor():
-    src = (TEMPLATE_DIR / "dashboard.html.j2").read_text(encoding="utf-8")
-    assert '{% include "_mag7_tape_strip.html.j2" %}' in src
-    inc = src.index('{% include "_mag7_tape_strip.html.j2" %}')
-    hdr = src.index('id="stocks-header"')
-    ruling = src.index("Ignition Radar strip + \"Big Seven\" leadership board REMOVED")
-    assert hdr < inc < ruling, "include belongs between #stocks-header and the 07-23 ruling note"
-    # the ruling comment survives — it is the record of what may not come back
-    assert "research/DO_NOT_REBUILD.md" in src[ruling:ruling + 400]
+    """S2 §1.3: the include leaves dashboard.html.j2 and folds into the
+    action-board header, immediately after </h2>, mode-gated."""
+    dash = (TEMPLATE_DIR / "dashboard.html.j2").read_text(encoding="utf-8")
+    assert '{% include "_mag7_tape_strip.html.j2" %}' not in dash
+    ruling = dash.index("Ignition Radar strip + \"Big Seven\" leadership board REMOVED")
+    assert "research/DO_NOT_REBUILD.md" in dash[ruling:ruling + 400]
+    src = (TEMPLATE_DIR / "_us_act_now_board.html.j2").read_text(encoding="utf-8")
+    needle = "{% if mode is defined and mode == 'stocks' %}{% include \"_mag7_tape_strip.html.j2\" %}{% endif %}"
+    assert needle in src
+    h2 = src.index("</h2>")
+    inc = src.index(needle)
+    assert inc > h2, "include belongs immediately after the action-board </h2>"
 
 
 def test_strip_is_absent_from_macro_mode():
-    """The include sits inside the `mode == 'stocks'` block; macro pages never see it."""
-    src = (TEMPLATE_DIR / "dashboard.html.j2").read_text(encoding="utf-8")
-    stocks_open = src.index("{% if mode == 'stocks' %}")
-    inc = src.index('{% include "_mag7_tape_strip.html.j2" %}')
-    stocks_close = src.index("{% endif %}", inc)
-    assert stocks_open < inc < stocks_close
+    """S2 §1.3: mode gate on the shared act-now include. sector_central and
+    macro never pass mode='stocks', so the strip cannot leak."""
+    src = (TEMPLATE_DIR / "_us_act_now_board.html.j2").read_text(encoding="utf-8")
+    assert "mode is defined and mode == 'stocks'" in src
+    assert '{% include "_mag7_tape_strip.html.j2" %}' in src
 
 
 def _dashboard_vm(**over) -> dict:

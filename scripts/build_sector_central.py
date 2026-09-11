@@ -88,6 +88,80 @@ def _gate_cfg() -> dict:
         return {"gated": False, "preview_rows": 3}
 
 
+def _fmt_money_mn(v) -> str:
+    """$ millions -> human string. Local copy so this fail-soft builder never
+    imports scripts.build_site (plotly at module scope)."""
+    try:
+        v = float(v)
+    except (TypeError, ValueError):
+        return "—"
+    sign = "+" if v >= 0 else "−"
+    a = abs(v)
+    if a >= 1000:
+        return f"{sign}${a / 1000:.1f}B"
+    return f"{sign}${a:.0f}M"
+
+
+def _accumulation_rows() -> list[dict]:
+    """Same shape as scripts.build_site.accumulation_rows, inlined so this
+    builder stays import-light. Fail-open to []."""
+    try:
+        from engine.holdings_signals import top_sector_residuals
+        from engine.playbook import SECTOR_NAMES
+        n = 12
+        try:
+            n = int((config.load().get("holdings_signals") or {}).get("panel_top_n", 12))
+        except Exception:  # noqa: BLE001
+            n = 12
+        rows = []
+        for s in top_sector_residuals(n):
+            rows.append({
+                "fund": s["fund"], "sector": SECTOR_NAMES.get(s["fund"], s["fund"]),
+                "ticker": s["ticker"], "name": s["name"],
+                "raw_change": s["raw_change"], "active_change": s["active_change"],
+                "active_pct": s["active_pct"],
+                "flow_str": _fmt_money_mn(s["est_flow_mn"]) if s.get("est_flow_mn") is not None else "—",
+                "flow_mn": s["est_flow_mn"] if s.get("est_flow_mn") is not None else None,
+                "direction": s["direction"], "confirmed": s["confirmed"],
+                "ladder": s["ladder"], "window": f"{s['t0']}..{s['t1']}",
+                "vol": s.get("vol"),
+            })
+        return rows
+    except Exception as e:  # noqa: BLE001 — panel is additive
+        log.warning("sector_central: accumulation rows failed (%s)", e)
+        return []
+
+
+def _theme_tape_view(site: Path):
+    """Fail-open theme-tape join for the demoted #theme-tape landing. None →
+    the partial emits nothing (honest-null)."""
+    try:
+        rot_p = site / "marketdata" / "subsector_rotation.json"
+        us_p = site / "factordata" / "us_standouts.json"
+        if not rot_p.exists():
+            return None
+        from engine.theme_tape import build_theme_tape
+        standouts = None
+        if us_p.exists():
+            try:
+                standouts = json.loads(us_p.read_text(encoding="utf-8"))
+            except Exception as e:  # noqa: BLE001
+                log.warning("sector_central: us_standouts.json unreadable (%s)", e)
+        fsight = None
+        fs_p = site / "basketdata" / "foresight_cascade.json"
+        if fs_p.exists():
+            try:
+                fsight = json.loads(fs_p.read_text(encoding="utf-8"))
+            except Exception as e:  # noqa: BLE001
+                log.warning("sector_central: foresight_cascade.json unreadable (%s)", e)
+        return build_theme_tape(
+            json.loads(rot_p.read_text(encoding="utf-8")),
+            standouts, foresight=fsight)
+    except Exception as e:  # noqa: BLE001
+        log.warning("sector_central: theme tape unavailable (%s)", e)
+        return None
+
+
 def split_actnow(action_board: dict | None, preview: int, *, gated: bool = True):
     """Tier-preview split for the Act-Now board. Returns (pgate, locked).
 
@@ -450,6 +524,8 @@ def main() -> int:
             flow=ctx.get("flow"),
             basket_member_syms=ctx.get("basket_member_syms") or [],
             action_board=_action_board,
+            accumulation=_accumulation_rows(),
+            theme_tape=_theme_tape_view(site),
             generated_utc=ctx.get("generated_utc") or data.get("as_of") or "")
         write_page(site / "sector_central.html", html, encoding="utf-8")
     except Exception as e:  # noqa: BLE001 — a template error must NOT abort the daily engine job
