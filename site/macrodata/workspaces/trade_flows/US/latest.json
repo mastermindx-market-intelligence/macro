@@ -162,48 +162,19 @@
     "items": []
   },
   "changes": {
-    "comparability": "COMPARABLE",
-    "deltas": [
-      {
-        "current_value": -88576.0,
-        "delta": 0.0,
-        "metric_id": "trade_balance_level",
-        "note": "same method version; numeric comparison permitted",
-        "prior_value": -88576.0
-      },
-      {
-        "current_value": 310723.0,
-        "delta": 0.0,
-        "metric_id": "exports_level",
-        "note": "same method version; numeric comparison permitted",
-        "prior_value": 310723.0
-      },
-      {
-        "current_value": 399299.0,
-        "delta": 0.0,
-        "metric_id": "imports_level",
-        "note": "same method version; numeric comparison permitted",
-        "prior_value": 399299.0
-      },
-      {
-        "current_value": 0.7782,
-        "delta": 0.0,
-        "metric_id": "export_import_coverage_ratio",
-        "note": "same method version; numeric comparison permitted",
-        "prior_value": 0.7782
-      }
-    ],
-    "null_reason": null,
-    "prior_effective_date": "2026-07-01",
-    "prior_generation_id": "trade_flows-US-57f35483086b894e",
-    "prior_method_version": "trade_flows.compose.v1",
-    "status": "PRESENT"
+    "comparability": "NO_EARLIER_PUBLICATION",
+    "deltas": [],
+    "null_reason": "INSUFFICIENT_HISTORY",
+    "prior_effective_date": null,
+    "prior_generation_id": null,
+    "prior_method_version": null,
+    "status": "ABSENT"
   },
   "corrections": {
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "trade_flows-US-57f35483086b894e"
+    "predecessor_generation_id": "trade_flows-US-ca9ec5be80a6179d"
   },
   "drivers": {
     "balance_sheet": [
@@ -338,11 +309,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-09-10T07:27:52Z",
+    "built_at": "2026-09-11T07:45:15Z",
     "calculation_as_of": "2026-07-01",
-    "code_version": "2c9a2d35ba0dd38618f59a2fadc80b6815ec5281",
-    "content_sha256": "ca9ec5be80a6179de4c1987c2d7b5f4d921bd7b0b3f51550b9204e0048bc2537",
-    "generation_id": "trade_flows-US-ca9ec5be80a6179d",
+    "code_version": "37bb7c3b6be49a2dfe254926b83e066b74a96138",
+    "content_sha256": "491a26cf2287558365fd27f1fdaec20fd8e0a2fa61241abae8ad0650cbb18512",
+    "generation_id": "trade_flows-US-491a26cf22875583",
     "producer": "engine.market_os.macro_workspaces.trade_flows",
     "rendered_at": null
   },
@@ -355,21 +326,17 @@
       "note": "Trade Flows is a Chairman-authorized expansion added after the frozen Market Ontology architecture document's own twelve-workspace freeze, so no section of that document defines a headline model for it at all -- not even a note that none exists, the way monetary_policy/liquidity_central_banks each carry their own such note. There is accordingly no named axis pair here to attempt, and no dual-axis quadrant is asserted. A future architecture revision may ratify a genuine two-axis blueprint for this workspace, at which point this null becomes a real state the moment that blueprint is adopted. Until then, the real trade content -- balance, exports, imports, price indexes, the terms-of-trade proxy, and the balance-identity read -- lives in metrics, drivers, and implications instead. See the headline_unavailable implication for the reader-facing version."
     },
     "method_version": "trade_flows.compose.v1",
+    "movement_state": "NO_EARLIER_PUBLICATION",
     "nearest_boundary": {
       "axis": null,
       "distance": null,
       "null_reason": "NOT_APPLICABLE"
     },
     "null_reason": "NOT_APPLICABLE",
-    "one_month_vector": {
-      "dx": null,
-      "dy": null,
-      "null_reason": "NOT_APPLICABLE",
-      "status": "ABSENT"
-    },
+    "one_month_vector": null,
     "prior_state": {
-      "effective_date": "2026-07-01",
-      "method_version": "trade_flows.compose.v1",
+      "effective_date": null,
+      "method_version": null,
       "state_id": null
     },
     "quadrant": {
@@ -1409,6 +1376,7 @@
       }
     ]
   },
+  "prior_publication": null,
   "region": {
     "code": "US",
     "display_name": "United States",

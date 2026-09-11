@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "WMB-BULL-20260826",
-  "asof": "2026-09-10",
+  "asof": "2026-09-11",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 58.5,
-  "raw_confidence": 57.7,
-  "delta_vs_base": -1.5,
+  "management_confidence": 52.0,
+  "raw_confidence": 44.1,
+  "delta_vs_base": -8.0,
   "recommended_action": "hold",
   "human_state": "Stalling",
   "components": {
-    "validity": 100.0,
-    "progress": 11.6,
-    "pace": 61.4,
+    "validity": 73.6,
+    "progress": 0.0,
+    "pace": 46.9,
     "retention": 50.0,
-    "overlay": 53.0
+    "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.142,
-    "dist_to_t1_r": 1.358,
-    "dist_to_t2_r": 2.858,
-    "horizon_pct_used": 31.1,
-    "p1": 0.0948,
-    "p2": 0.0474,
+    "dist_to_stop_r": 0.797,
+    "dist_to_t1_r": 1.5,
+    "dist_to_t2_r": 3.0,
+    "horizon_pct_used": 33.3,
+    "p1": -0.1353,
+    "p2": -0.0677,
     "p3": null,
-    "move_r": 0.142,
+    "move_r": -0.203,
     "mfe_r": 0.243,
-    "mae_r": -0.068
+    "mae_r": -0.203
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Moving Away from Stop",
+  "change_reason": "Weakening",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.6400018310546898,
-  "_mae": -0.459996643066404,
+  "_mae": -1.370000305175779,
   "_max_p1": 0.16197548948688295,
   "_first_trigger_ts": "2026-08-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 14,
-  "tau": 0.3111
+  "days_elapsed": 15,
+  "tau": 0.3333
 }

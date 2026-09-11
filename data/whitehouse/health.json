@@ -1,15 +1,15 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-09-10T19:42:35.214706+00:00",
-  "posts_seen": 17,
-  "seen_total": 181,
+  "as_of": "2026-09-11T16:28:18.385849+00:00",
+  "posts_seen": 18,
+  "seen_total": 183,
   "evaluated": 1,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
   "gate_scores": [
     {
-      "id": "wh-2026-09-10-trump-dividend-america-is-winning-and-americans-should-win-with-it",
-      "importance": 35,
+      "id": "wh-2026-09-11-presidential-message-on-rosh-hashanah-982e",
+      "importance": 0,
       "activated": false,
       "degraded_reason": "served_by:deepseek"
     }

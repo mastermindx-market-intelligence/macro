@@ -1,30 +1,31 @@
 {
-  "date": "2026-09-10",
+  "date": "2026-09-11",
   "regime": "mixed / no clear trend",
-  "breadth": 0.15,
+  "breadth": 0.31,
   "favored": [
     "equity_us",
+    "equity_sm",
     "credit_hy",
     "copper",
     "equity_intl"
   ],
-  "correlation": "diversified",
-  "asof": "2026-09-10",
+  "correlation": "converging",
+  "asof": "2026-09-11",
   "flows": {
     "schema": "crossasset_flows.v2",
     "display_only": true,
     "regime": "mixed / no clear trend",
     "correlation": {
-      "verdict": "diversified",
-      "absorption_pctile": 0.36,
+      "verdict": "converging",
+      "absorption_pctile": 0.42,
       "n_markets": 6,
-      "absorption_ratio": 0.35,
-      "mean_abs_corr": 0.22,
+      "absorption_ratio": 0.357,
+      "mean_abs_corr": 0.228,
       "dominant_cluster": [
         "Commodities",
-        "Crypto",
+        "Dollar",
         "US",
-        "Dollar"
+        "Crypto"
       ],
       "spark_w": [
         0.331,
@@ -130,14 +131,19 @@
         0.369,
         0.37,
         0.392,
-        0.35
+        0.357
       ],
       "spark_asof": "2026-09-11"
     },
-    "breadth": 0.15,
+    "breadth": 0.31,
     "trend_top": [
       {
         "asset": "equity_us",
+        "trend": "up",
+        "z": 1.0
+      },
+      {
+        "asset": "equity_sm",
         "trend": "up",
         "z": 1.0
       },
@@ -157,11 +163,6 @@
         "z": 1.0
       },
       {
-        "asset": "equity_sm",
-        "trend": "mixed",
-        "z": 0.33
-      },
-      {
         "asset": "gold",
         "trend": "mixed",
         "z": 0.33
@@ -169,33 +170,33 @@
     ],
     "trend_summary": {
       "n": 13,
-      "n_up": 4,
-      "n_down": 2
+      "n_up": 5,
+      "n_down": 1
     },
     "intermarket": [
       {
         "pair": "copper_gold",
-        "ratio": 0.002,
+        "ratio": 0.001,
         "trend": "mid",
-        "pctile": 70.0
+        "pctile": 60.0
       },
       {
         "pair": "gold_silver",
-        "ratio": 65.573,
+        "ratio": 68.116,
         "trend": "mid",
-        "pctile": 25.0
+        "pctile": 33.0
       },
       {
         "pair": "oil_gold",
-        "ratio": 0.021,
+        "ratio": 0.023,
         "trend": "mid",
-        "pctile": 68.0
+        "pctile": 76.0
       },
       {
         "pair": "stocks_gold",
-        "ratio": 0.173,
+        "ratio": 0.174,
         "trend": "mid",
-        "pctile": 42.0
+        "pctile": 43.0
       }
     ],
     "carry": {
@@ -204,7 +205,7 @@
           "key": "rates_term",
           "label_en": "Rates term-spread (10y-3m)",
           "label_zh": "\u5229\u7387\u671f\u9650\u5229\u5dee (10\u5e74-3\u6708)",
-          "value": 1.0,
+          "value": 1.02,
           "unit": "%",
           "state": "positive carry"
         },
@@ -234,8 +235,16 @@
           "leader": "Dollar",
           "follower": "HK",
           "lag": 1,
-          "r": 0.279,
-          "t": 4.539,
+          "r": 0.278,
+          "t": 4.518,
+          "q": 0.0
+        },
+        {
+          "leader": "US",
+          "follower": "HK",
+          "lag": 1,
+          "r": 0.317,
+          "t": 4.201,
           "q": 0.0
         },
         {
@@ -243,15 +252,7 @@
           "follower": "HK",
           "lag": 1,
           "r": 0.275,
-          "t": 4.169,
-          "q": 0.0
-        },
-        {
-          "leader": "US",
-          "follower": "HK",
-          "lag": 1,
-          "r": 0.315,
-          "t": 4.168,
+          "t": 4.178,
           "q": 0.0
         },
         {
@@ -259,7 +260,7 @@
           "follower": "China",
           "lag": 1,
           "r": 0.247,
-          "t": 3.56,
+          "t": 3.557,
           "q": 0.015
         }
       ],
@@ -279,14 +280,14 @@
       "impulse_13w": null
     },
     "funding_stress": {
-      "asof": "2026-09-08",
+      "asof": "2026-09-09",
       "state": "calm",
-      "score": 51.0,
+      "score": 39.0,
       "spread_bp": 1.0
     },
     "confirm": {
       "verdict": "diverge",
-      "agree_pct": 100,
+      "agree_pct": 50,
       "n_blind_flags": 1,
       "flags_top": [
         {
@@ -299,7 +300,7 @@
           "equity_blind": true
         }
       ],
-      "asof": "2026-09-08"
+      "asof": "2026-09-09"
     },
     "dollar": {
       "usd_dir": "weakening",
@@ -322,12 +323,12 @@
       "unstable_n": 0,
       "fx_stress": {
         "dominant": null,
-        "top_key": "carry_unwind",
-        "top_val": 14.5
+        "top_key": "reflation_risk_on",
+        "top_val": 10.7
       }
     },
     "shadow": {
-      "pressure_pctile": 0.36,
+      "pressure_pctile": 0.42,
       "incumbent_state": "watch",
       "shadow_state": "watch",
       "escalated": false

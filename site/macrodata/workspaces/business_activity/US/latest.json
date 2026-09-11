@@ -91,10 +91,10 @@
           "en": "Leading tier",
           "zh": "领先层"
         },
-        "null_reason": "COMPUTATION_REFUSED",
+        "null_reason": null,
         "required": true,
         "source_asof": "2026-09-30",
-        "status": "PARTIAL"
+        "status": "PRESENT"
       },
       {
         "component_id": "coincident_tier",
@@ -128,59 +128,34 @@
     "items": []
   },
   "changes": {
-    "comparability": "COMPARABLE",
-    "deltas": [
-      {
-        "current_value": null,
-        "delta": null,
-        "metric_id": "leading_tier_momentum_6m",
-        "note": "same method version; numeric comparison permitted when both values are present",
-        "prior_value": null
-      },
-      {
-        "current_value": -0.21603351448561625,
-        "delta": 0.0,
-        "metric_id": "coincident_tier_momentum_6m",
-        "note": "same method version; numeric comparison permitted when both values are present",
-        "prior_value": -0.21603351448561625
-      },
-      {
-        "current_value": null,
-        "delta": null,
-        "metric_id": "lagging_tier_momentum_6m",
-        "note": "same method version; numeric comparison permitted when both values are present",
-        "prior_value": null
-      },
-      {
-        "current_value": -0.5721511625563167,
-        "delta": 0.0,
-        "metric_id": "coincident_lagging_ratio_momentum_6m",
-        "note": "same method version; numeric comparison permitted when both values are present",
-        "prior_value": -0.5721511625563167
-      }
-    ],
-    "null_reason": null,
-    "prior_effective_date": "2026-09-30",
-    "prior_generation_id": "business_activity-US-7d5795d1dd0e3580",
-    "prior_method_version": "business_activity.compose.v1",
-    "status": "PRESENT"
+    "comparability": "NO_EARLIER_PUBLICATION",
+    "deltas": [],
+    "null_reason": "INSUFFICIENT_HISTORY",
+    "prior_effective_date": null,
+    "prior_generation_id": null,
+    "prior_method_version": null,
+    "status": "ABSENT"
   },
   "corrections": {
-    "changed_fingerprints": [],
-    "correction_state": "none",
-    "note": "Same reference period as the predecessor print; no tracked tier field changed value (no-change republication).",
-    "predecessor_generation_id": "business_activity-US-7d5795d1dd0e3580"
+    "changed_fingerprints": [
+      "business_cycle:leading_tier_diffusion:aebcda2fda09d4cd",
+      "business_cycle:leading_tier_index:6b514f55c10cf0f9",
+      "business_cycle:leading_tier_momentum_6m:c295b7f9b79d3f43"
+    ],
+    "correction_state": "superseded",
+    "note": "Same reference period as the predecessor print, but one or more owner-native tier fields changed value: this print supersedes the prior one as a revision.",
+    "predecessor_generation_id": "business_activity-US-28822c6ae884922d"
   },
   "drivers": {
     "balance_sheet": [],
     "rate_side": []
   },
   "generation": {
-    "built_at": "2026-09-10T07:27:52Z",
+    "built_at": "2026-09-11T07:45:15Z",
     "calculation_as_of": "2026-09-30",
-    "code_version": "2c9a2d35ba0dd38618f59a2fadc80b6815ec5281",
-    "content_sha256": "28822c6ae884922d31fb0943ad3ab9edeb68106ce9aeeff74ebd9770714caf13",
-    "generation_id": "business_activity-US-28822c6ae884922d",
+    "code_version": "37bb7c3b6be49a2dfe254926b83e066b74a96138",
+    "content_sha256": "323c0763d3b9fb264c00f9a41abb5b9de3184de784fa1b80c6860b93b3131966",
+    "generation_id": "business_activity-US-323c0763d3b9fb26",
     "producer": "engine.market_os.macro_workspaces.business_activity",
     "rendered_at": null
   },
@@ -193,21 +168,17 @@
       "note": "no dual-axis quadrant is computed for business_activity: the blueprinted new-demand/orders x production/utilization decomposition is not separable from the currently published engine.business_cycle tier composites (legs are blended within leading/coincident/lagging, never individually published); see metrics[*_tier_*] for the real available composite reads and implications[headline_unavailable] for the full disclosure"
     },
     "method_version": "business_activity.compose.v1",
+    "movement_state": "NO_EARLIER_PUBLICATION",
     "nearest_boundary": {
       "axis": null,
       "distance": null,
       "null_reason": "COMPUTATION_REFUSED"
     },
     "null_reason": "COMPUTATION_REFUSED",
-    "one_month_vector": {
-      "dx": null,
-      "dy": null,
-      "null_reason": "COMPUTATION_REFUSED",
-      "status": "ABSENT"
-    },
+    "one_month_vector": null,
     "prior_state": {
-      "effective_date": "2026-09-30",
-      "method_version": "business_activity.compose.v1",
+      "effective_date": null,
+      "method_version": null,
       "state_id": null
     },
     "quadrant": {
@@ -273,8 +244,8 @@
         "horizon": "current",
         "implication_id": "leading_tier_read",
         "text": {
-          "en": "Leading tier: 6-month momentum 0.6786759316541833, direction rising, breadth 100.0 (share of legs rising over the diffusion window, 0-100).",
-          "zh": "领先层：6个月动量 0.6786759316541833，方向 rising，广度 100.0（扩散窗口内上升分项占比，0-100）。"
+          "en": "Leading tier: 6-month momentum 0.6744335133783039, direction rising, breadth 100.0 (share of legs rising over the diffusion window, 0-100).",
+          "zh": "领先层：6个月动量 0.6744335133783039，方向 rising，广度 100.0（扩散窗口内上升分项占比，0-100）。"
         },
         "trace_ref": "data/regime/latest.json#business_cycle.tiers.leading"
       },
@@ -417,7 +388,7 @@
         "basis": "rebased_100_composite",
         "calculation_as_of": "2026-09-30",
         "collected_at": null,
-        "coverage": 0.375,
+        "coverage": 0.5,
         "definition_id": "business_cycle.tiers.leading.index",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_stronger",
@@ -425,7 +396,7 @@
         "market_session": null,
         "metric_id": "leading_tier_index",
         "model_version": "business_activity.compose.v1",
-        "null_reason": "COMPUTATION_REFUSED",
+        "null_reason": null,
         "observed_at": "2026-09-30",
         "owner_ref": "engine.business_cycle",
         "reference_id": "mastermind.market_reference/v1#leading_tier_index",
@@ -437,14 +408,14 @@
         "source_refs": [
           "engine.business_cycle"
         ],
-        "status": "ABSENT",
+        "status": "PRESENT",
         "transformation": "leading tier: standardized-leg cumulative composite, rebased to 100 at first valid month (Conference-Board method)",
         "uncertainty": {
           "kind": null,
           "value": null
         },
         "unit": "index_pt",
-        "value": null,
+        "value": 95.17626923884467,
         "value_type": "index"
       },
       {
@@ -453,7 +424,7 @@
         "basis": "6m_change",
         "calculation_as_of": "2026-09-30",
         "collected_at": null,
-        "coverage": 0.375,
+        "coverage": 0.5,
         "definition_id": "business_cycle.tiers.leading.mom6",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_accelerating",
@@ -461,7 +432,7 @@
         "market_session": null,
         "metric_id": "leading_tier_momentum_6m",
         "model_version": "business_activity.compose.v1",
-        "null_reason": "COMPUTATION_REFUSED",
+        "null_reason": null,
         "observed_at": "2026-09-30",
         "owner_ref": "engine.business_cycle",
         "reference_id": "mastermind.market_reference/v1#leading_tier_momentum_6m",
@@ -473,14 +444,14 @@
         "source_refs": [
           "engine.business_cycle"
         ],
-        "status": "ABSENT",
+        "status": "PRESENT",
         "transformation": "tier index level minus its value 6 months prior (CB '6-month change', red line)",
         "uncertainty": {
           "kind": null,
           "value": null
         },
         "unit": "index_pt",
-        "value": null,
+        "value": 0.6744335133783039,
         "value_type": "number"
       },
       {
@@ -489,7 +460,7 @@
         "basis": "ema_of_6m_change",
         "calculation_as_of": "2026-09-30",
         "collected_at": null,
-        "coverage": 0.375,
+        "coverage": 0.5,
         "definition_id": "business_cycle.tiers.leading.trend",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_accelerating",
@@ -497,7 +468,7 @@
         "market_session": null,
         "metric_id": "leading_tier_trend",
         "model_version": "business_activity.compose.v1",
-        "null_reason": "COMPUTATION_REFUSED",
+        "null_reason": null,
         "observed_at": "2026-09-30",
         "owner_ref": "engine.business_cycle",
         "reference_id": "mastermind.market_reference/v1#leading_tier_trend",
@@ -509,14 +480,14 @@
         "source_refs": [
           "engine.business_cycle"
         ],
-        "status": "ABSENT",
+        "status": "PRESENT",
         "transformation": "EMA smoothing of the 6-month momentum series (blue line)",
         "uncertainty": {
           "kind": null,
           "value": null
         },
         "unit": "index_pt",
-        "value": null,
+        "value": 0.7075950032884972,
         "value_type": "number"
       },
       {
@@ -525,7 +496,7 @@
         "basis": "share_of_legs_rising_6m",
         "calculation_as_of": "2026-09-30",
         "collected_at": null,
-        "coverage": 0.375,
+        "coverage": 0.5,
         "definition_id": "business_cycle.tiers.leading.diffusion",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_broader",
@@ -533,7 +504,7 @@
         "market_session": null,
         "metric_id": "leading_tier_diffusion",
         "model_version": "business_activity.compose.v1",
-        "null_reason": "COMPUTATION_REFUSED",
+        "null_reason": null,
         "observed_at": "2026-09-30",
         "owner_ref": "engine.business_cycle",
         "reference_id": "mastermind.market_reference/v1#leading_tier_diffusion",
@@ -545,14 +516,14 @@
         "source_refs": [
           "engine.business_cycle"
         ],
-        "status": "ABSENT",
+        "status": "PRESENT",
         "transformation": "share of the tier's sign-adjusted legs that rose over the diffusion window (CB breadth, 0-100)",
         "uncertainty": {
           "kind": null,
           "value": null
         },
         "unit": "pct",
-        "value": null,
+        "value": 100.0,
         "value_type": "score_0_100"
       },
       {
@@ -561,7 +532,7 @@
         "basis": "sign_of_6m_momentum",
         "calculation_as_of": "2026-09-30",
         "collected_at": null,
-        "coverage": 0.375,
+        "coverage": 0.5,
         "definition_id": "business_cycle.tiers.leading.direction",
         "definition_version": "1.0.0",
         "direction_semantics": "n/a",
@@ -569,7 +540,7 @@
         "market_session": null,
         "metric_id": "leading_tier_direction",
         "model_version": "business_activity.compose.v1",
-        "null_reason": "COMPUTATION_REFUSED",
+        "null_reason": null,
         "observed_at": "2026-09-30",
         "owner_ref": "engine.business_cycle",
         "reference_id": "mastermind.market_reference/v1#leading_tier_direction",
@@ -581,14 +552,14 @@
         "source_refs": [
           "engine.business_cycle"
         ],
-        "status": "ABSENT",
+        "status": "PRESENT",
         "transformation": "'rising' if 6-month momentum > 0 else 'falling'",
         "uncertainty": {
           "kind": null,
           "value": null
         },
         "unit": null,
-        "value": null,
+        "value": "rising",
         "value_type": "categorical"
       },
       {
@@ -597,7 +568,7 @@
         "basis": "count_of_available_legs",
         "calculation_as_of": "2026-09-30",
         "collected_at": null,
-        "coverage": 0.375,
+        "coverage": 0.5,
         "definition_id": "business_cycle.tiers.leading.n_legs",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_broader_input_coverage",
@@ -624,7 +595,7 @@
           "value": null
         },
         "unit": "legs",
-        "value": 3,
+        "value": 4,
         "value_type": "count"
       },
       {
@@ -1529,6 +1500,7 @@
       }
     ]
   },
+  "prior_publication": null,
   "region": {
     "code": "US",
     "display_name": "United States",
