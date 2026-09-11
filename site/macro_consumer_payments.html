@@ -411,7 +411,7 @@
       <div><dt><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></dt>
            <dd><time>2026-07-01</time></dd></div>
       <div class="mq-nonclock"><dt><span class="l-en">Page built</span><span class="l-zh">页面生成</span></dt>
-           <dd><time>2026-09-11T05:53:13Z</time></dd></div>
+           <dd><time>2026-09-11T08:43:05Z</time></dd></div>
     </dl>
     <p class="mq-context-caveat"><span class="l-en">Page build time is not an economic clock and never makes a source fresh. This page is a static publication — it does not poll for live data.</span><span class="l-zh">页面生成时间并非经济时钟，不会使数据源变新。本页为静态发布 — 不会实时轮询数据。</span></p>
   </div>
@@ -562,7 +562,7 @@
            <dd><time>2026-07-01</time></dd></div>
       <div><dt><span class="l-en">Method version</span><span class="l-zh">方法版本</span></dt><dd><code>consumer_payments.compose.v1</code></dd></div>
       <div><dt><span class="l-en">Prior accepted print</span><span class="l-zh">上一已接受读数</span></dt>
-           <dd><strong>B</strong> <time>2026-07-01</time></dd></div>
+           <dd><span class="mq-absent mq-absent-inline"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">No earlier reading available to compare yet.</span><span class="l-zh">暂无可比较的更早读数。</span></span></span></dd></div>
     </dl>
   </div>
 
@@ -582,8 +582,8 @@
 
     <div class="mq-axis-cell mq-axis-cell-vector">
       <span class="mq-axis-name"><span class="l-en">1-month vector</span><span class="l-zh">一个月位移向量</span></span>
-      <strong class="mq-axis-value">Δx 0 · Δy 0</strong>
-      <span class="mq-axis-direction"><span class="l-en">Movement since the prior accepted print</span><span class="l-zh">相对上一已接受读数的位移</span></span>
+      <strong class="mq-axis-value"><span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">No earlier reading available to compare yet.</span><span class="l-zh">暂无可比较的更早读数。</span></span></span></strong>
+      <span class="mq-axis-direction"><span class="l-en">No vector is drawn: there is no method-comparable prior print to move from.</span><span class="l-zh">不绘制向量：不存在方法可比的历史读数作为起点。</span></span>
     </div>
 
     <div class="mq-axis-cell">
@@ -676,8 +676,9 @@
     <div><span><span class="l-en">Consumer credit stress</span><span class="l-zh">消费信贷压力</span></span><strong>50.83</strong><em><span class="l-en">Higher = more stress</span><span class="l-zh">数值越高＝压力越大</span></em></div>
     <div><span><span class="l-en">Boundary</span><span class="l-zh">分界</span></span><strong>50.00 / 50.00</strong><em><span class="l-en">Fixed, disclosed threshold on each axis</span><span class="l-zh">每条坐标轴上固定且已披露的阈值</span></em></div>
     <div><span><span class="l-en">Hysteresis band</span><span class="l-zh">滞回带</span></span><strong>±5.00</strong>
-         <em><span class="l-en">Applied against the prior print</span><span class="l-zh">已对照上一读数应用</span></em></div>
+         <em><span class="l-en">Not applied: no comparable prior print</span><span class="l-zh">未应用：不存在可比的历史读数</span></em></div>
   </div>
+  <p class="mq-map-note"><span class="l-en">No movement arrow is drawn.</span><span class="l-zh">未绘制位移箭头。</span> <span class="mq-absent mq-absent-inline"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">No earlier reading available to compare yet.</span><span class="l-zh">暂无可比较的更早读数。</span></span></span></p>
 </figure>
       <section class="mq-diagnostics" aria-labelledby="mq-diagnostics-title">
   <div class="mq-section-head">
@@ -692,6 +693,10 @@
     <li class="mq-diag mq-tone-warn">
       <strong><span class="l-en">Optional legs degraded</span><span class="l-zh">可选分项已降级</span></strong>
       <span><span class="l-en">Shown separately, and excluded from the page state: consumer_sentiment.</span><span class="l-zh">单独呈现，且不计入本页状态：consumer_sentiment。</span></span>
+    </li>
+    <li class="mq-diag mq-tone-neutral">
+      <strong><span class="l-en">No method-comparable prior print</span><span class="l-zh">无方法可比的历史读数</span></strong>
+      <span><span class="l-en">No earlier reading available to compare yet.</span><span class="l-zh">暂无可比较的更早读数。</span></span>
     </li>
     <li class="mq-diag mq-tone-neutral">
       <strong><span class="l-en">Component histories not published</span><span class="l-zh">未发布分项历史序列</span></strong>
@@ -712,47 +717,11 @@
     <h3 id="mq-changed-title"><span class="l-en">What changed</span><span class="l-zh">发生了什么变化</span></h3>
     <span class="mq-section-note"><span class="l-en">Current accepted snapshot against the prior accepted snapshot, under the same method version.</span><span class="l-zh">在相同方法版本下，将当前已接受快照与上一已接受快照对比。</span></span>
   </div>
-  <p class="mq-changed-verdict mq-tone-ok"><span class="l-en">Comparable with the prior accepted print</span><span class="l-zh">与上一已接受读数可比</span></p>
-  <table class="mq-table">
-    <thead><tr>
-      <th scope="col"><span class="l-en">Metric</span><span class="l-zh">指标</span></th>
-      <th scope="col"><span class="l-en">Prior</span><span class="l-zh">上期</span></th>
-      <th scope="col"><span class="l-en">Current</span><span class="l-zh">当前</span></th>
-      <th scope="col"><span class="l-en">Change</span><span class="l-zh">变化</span></th>
-    </tr></thead>
-    <tbody>
-      <tr>
-        <th scope="row"><span class="l-en">Retail sales level</span><span class="l-zh">Retail sales level</span></th>
-        <td>763,602.0</td>
-        <td>763,602.0</td><td class="mq-delta mq-delta-flat">0</td>
-      </tr>
-      <tr>
-        <th scope="row"><span class="l-en">Retail sales yoy</span><span class="l-zh">Retail sales yoy</span></th>
-        <td>5.01</td>
-        <td>5.01</td><td class="mq-delta mq-delta-flat">0</td>
-      </tr>
-      <tr>
-        <th scope="row"><span class="l-en">Consumer sentiment level</span><span class="l-zh">Consumer sentiment level</span></th>
-        <td>55.20</td>
-        <td>55.20</td><td class="mq-delta mq-delta-flat">0</td>
-      </tr>
-      <tr>
-        <th scope="row"><span class="l-en">Consumer sentiment yoy</span><span class="l-zh">Consumer sentiment yoy</span></th>
-        <td>-10.53</td>
-        <td>-10.53</td><td class="mq-delta mq-delta-flat">0</td>
-      </tr>
-      <tr>
-        <th scope="row"><span class="l-en">Cash flow momentum</span><span class="l-zh">Cash flow momentum</span></th>
-        <td>67.54</td>
-        <td>67.54</td><td class="mq-delta mq-delta-flat">0</td>
-      </tr>
-      <tr>
-        <th scope="row"><span class="l-en">Credit stress</span><span class="l-zh">Credit stress</span></th>
-        <td>50.83</td>
-        <td>50.83</td><td class="mq-delta mq-delta-flat">0</td>
-      </tr>
-    </tbody>
-  </table>
+  <p class="mq-changed-verdict mq-tone-neutral"><span class="l-en">No earlier reading available to compare yet.</span><span class="l-zh">暂无可比较的更早读数。</span></p>
+  <div class="mq-changed-empty">
+    <span class="mq-absent"><span class="mq-dash" aria-hidden="true">—</span><span class="mq-absent-why"><span class="l-en">No earlier reading available to compare yet.</span><span class="l-zh">暂无可比较的更早读数。</span></span></span>
+    <p><span class="l-en">No numeric comparison is shown. A change table would have to invent a baseline that does not exist, and a method-version change is reported as a method change — never as a delta.</span><span class="l-zh">此处不展示任何数值对比。展示变化表将不得不虚构一个并不存在的基准；方法版本变更只按方法变更呈现，绝不伪装成数值变化。</span></p>
+  </div>
 </section>
       <section class="mq-metrics" aria-labelledby="mq-metrics-title">
   <div class="mq-section-head">
@@ -1990,10 +1959,10 @@
   <dl class="mq-method-grid">
     <div><dt><span class="l-en">Correction state</span><span class="l-zh">更正状态</span></dt><dd><span class="l-en">No correction recorded</span><span class="l-zh">无更正记录</span></dd></div>
     <div><dt><span class="l-en">Predecessor generation</span><span class="l-zh">前一代产物</span></dt>
-         <dd><code>consumer_payments-US-df862a946b935e56</code></dd></div>
+         <dd><code>consumer_payments-US-54c8b824242e3d22</code></dd></div>
     <div><dt><span class="l-en">Changed fingerprints</span><span class="l-zh">已变更指纹</span></dt>
          <dd><span class="mq-dash">—</span></dd></div>
-    <div><dt><span class="l-en">Hysteresis</span><span class="l-zh">滞回</span></dt><dd>raw classification already matches the prior print; no boundary crossing, hysteresis not engaged</dd></div>
+    <div><dt><span class="l-en">Hysteresis</span><span class="l-zh">滞回</span></dt><dd>no comparable prior print; raw threshold classification, hysteresis not applied</dd></div>
   </dl>
   <p class="mq-lineage-note">Same reference period as the predecessor print; no tracked metric changed value (no-change republication).</p>
 </section>
@@ -2580,11 +2549,11 @@
       <dl class="mq-clocks">
         <div class="mq-clock">
           <dt><span class="mq-clock-name"><span class="l-en">Artifact built</span><span class="l-zh">产物生成</span></span><span class="mq-clock-meaning"><span class="l-en">Producer generation time. Not an economic clock.</span><span class="l-zh">生产端生成时间，并非经济时钟。</span></span></dt>
-          <dd><time>2026-09-10T07:27:52Z</time></dd>
+          <dd><time>2026-09-11T07:45:15Z</time></dd>
         </div>
         <div class="mq-clock">
           <dt><span class="mq-clock-name"><span class="l-en">Page built</span><span class="l-zh">页面生成</span></span><span class="mq-clock-meaning"><span class="l-en">Static page render time. Not an economic clock.</span><span class="l-zh">静态页面渲染时间，并非经济时钟。</span></span></dt>
-          <dd><time>2026-09-11T05:53:13Z</time></dd>
+          <dd><time>2026-09-11T08:43:05Z</time></dd>
         </div>
       </dl>
     </section>
@@ -2594,11 +2563,11 @@
       <dl class="mq-method-grid">
         <div><dt><span class="l-en">Artifact path</span><span class="l-zh">产物路径</span></dt><dd><code>macrodata/workspaces/consumer_payments/US/latest.json</code></dd></div>
         <div><dt><span class="l-en">Manifest path</span><span class="l-zh">清单路径</span></dt><dd><code>macrodata/workspaces/manifest.json</code></dd></div>
-        <div><dt><span class="l-en">Content hash</span><span class="l-zh">内容哈希</span></dt><dd><code class="mq-hash">54c8b824242e3d221c55a5ac6575c2cf9af37ada2f595e775011a9072011b621</code></dd></div>
-        <div><dt><span class="l-en">Bytes</span><span class="l-zh">字节数</span></dt><dd>68187</dd></div>
-        <div><dt><span class="l-en">Generation id</span><span class="l-zh">产物代号</span></dt><dd><code>consumer_payments-US-54c8b824242e3d22</code></dd></div>
+        <div><dt><span class="l-en">Content hash</span><span class="l-zh">内容哈希</span></dt><dd><code class="mq-hash">69e198a51f3da3bad352222ac9c808e8035904bd51bb44c1349b1b2962d3175c</code></dd></div>
+        <div><dt><span class="l-en">Bytes</span><span class="l-zh">字节数</span></dt><dd>66795</dd></div>
+        <div><dt><span class="l-en">Generation id</span><span class="l-zh">产物代号</span></dt><dd><code>consumer_payments-US-69e198a51f3da3ba</code></dd></div>
         <div><dt><span class="l-en">Producer</span><span class="l-zh">生产者</span></dt><dd><code>engine.market_os.macro_workspaces.consumer_payments</code></dd></div>
-        <div><dt><span class="l-en">Producer code version</span><span class="l-zh">生产端代码版本</span></dt><dd><code>2c9a2d35ba0dd38618f59a2fadc80b6815ec5281</code></dd></div>
+        <div><dt><span class="l-en">Producer code version</span><span class="l-zh">生产端代码版本</span></dt><dd><code>37bb7c3b6be49a2dfe254926b83e066b74a96138</code></dd></div>
         <div><dt><span class="l-en">Client contract</span><span class="l-zh">客户端契约</span></dt><dd><code>mastermind.macro_workspace_snapshot.v1@1.0.0</code></dd></div>
       </dl>
       <p class="mq-lineage-note"><span class="l-en">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mismatch renders a refusal page instead of a state.</span><span class="l-zh">本页在渲染前已按封闭 schema 校验该产物并重新计算其内容哈希。若不匹配，将呈现拒绝页面而非任何状态读数。</span></p>
@@ -2609,5 +2578,6 @@
 
 <script src="theme.js?v=53939d13" defer></script>
 <script src="macro_suite.js?v=e202c862" defer></script>
+<script defer data-whb data-root="" src="wh_banner.js?v=4a53a176"></script>
 </body>
 </html>

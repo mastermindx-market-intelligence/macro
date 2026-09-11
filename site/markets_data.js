@@ -388,11 +388,11 @@
       }
     ],
     "now": {
-      "level": 60.99,
-      "asOf": "2026-09-09",
+      "level": 60.29,
+      "asOf": "2026-09-10",
       "ath": 62.64,
       "athDate": "2026-08",
-      "pctFromATH": -2.6,
+      "pctFromATH": -3.8,
       "ytd": 9.9,
       "ret1y": 22.5,
       "pos": 82,
@@ -1754,11 +1754,11 @@
       }
     ],
     "now": {
-      "level": 22.69,
-      "asOf": "2026-09-09",
+      "level": 22.47,
+      "asOf": "2026-09-10",
       "ath": 24.16,
       "athDate": "2026-05",
-      "pctFromATH": -6.1,
+      "pctFromATH": -7.0,
       "ytd": -6.9,
       "ret1y": 4,
       "pos": 44,

@@ -2,7 +2,7 @@
   "schema": "reflexivity_overlay.v1",
   "is_context_only": true,
   "as_of": "2026-09-10",
-  "generated_utc": "2026-09-11T04:31:59Z",
+  "generated_utc": "2026-09-11T08:44:38Z",
   "note": "Risk-clustering read: 'is this the same hidden trade?'. NOT an alpha claim. Board-level, held-agnostic (US only, v1). Display-only per R-F / Signal Commons R7.",
   "factor_caveat": "Per-name secondary betas (oil/usd/btc/gold/china) are OOS-unstable and excluded. Similarity uses high-tier factors only (mkt/growth/size/rates, scope=single). Trust the MEMBERSHIP leg more than the factor leg for individual names.",
   "board_concentration": {
@@ -12,7 +12,7 @@
     "note": "Supersedes sector-only HHI effective_bets in build_stock_board_v2 per R-B. N_eff = participation-ratio of similarity-matrix eigenvalues. 3 candidates \u2248 1.83 independent bets."
   },
   "same_thesis_groups": [],
-  "earnings_coverage_frac": 0.667,
+  "earnings_coverage_frac": 1.0,
   "by_ticker": {
     "DOCN": {
       "verdict": "duplicate",
@@ -28,7 +28,7 @@
           "shared_groups": [
             "sector:Information Technology"
           ],
-          "same_earnings_week": null
+          "same_earnings_week": false
         },
         {
           "ticker": "AN",
@@ -37,13 +37,13 @@
           "factor_cosine": 0.0,
           "factor_basis": "high-tier-factors:4of4",
           "shared_groups": [],
-          "same_earnings_week": null
+          "same_earnings_week": false
         }
       ],
       "earnings_leg": {
-        "next_date": null,
+        "next_date": "2026-11-04",
         "same_week_peers": [],
-        "has_data": false
+        "has_data": true
       },
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
       "why_en": "Same bet as MU \u2014 Information Technology (similarity 98%).",
