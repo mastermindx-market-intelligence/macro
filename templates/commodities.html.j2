@@ -65,7 +65,8 @@ a { color: var(--ink-link, var(--blue)); text-decoration: none; }
 .kick { font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase;
         color: var(--faint); margin: 0 0 10px; }
 .mut { color: var(--mut); } .faint { color: var(--faint); } .up { color: var(--ink-up, var(--up)); }
-.dn { color: var(--ink-down, var(--dn)); } .amb { color: var(--ink-warn, var(--amb)); } .gold { color: var(--gold); }
+.dn { color: var(--ink-down, var(--dn)); } .amb { color: var(--ink-warn, var(--amb)); }
+.blue { color: var(--ink-link, var(--blue)); } .gold { color: var(--gold); }
 
 /* ── AURORA (ambient breathing layer) ───────────────────────── */
 body.page-commod .aurora {
@@ -208,7 +209,7 @@ body.page-commod .aurora.au-red .au-a3   { background: radial-gradient(ellipse, 
 .big-stance.t-watch    { color: var(--ink-warn, var(--amb)); text-shadow: 0 0 36px rgba(242,178,77,.35); }
 .big-stance.t-protect  { color: var(--ink-down, var(--dn));  text-shadow: 0 0 36px rgba(255,106,106,.35); }
 .big-stance.t-getready { color: var(--ink-up, var(--up));  text-shadow: 0 0 36px rgba(55,208,127,.35); }
-.big-stance.t-act      { color: var(--ink-up, var(--up));  text-shadow: 0 0 36px rgba(55,208,127,.35); }
+.big-stance.t-act, .big-stance.t-selective { color: var(--ink-up, var(--up));  text-shadow: 0 0 36px rgba(55,208,127,.35); }
 .big-stance.t-standaside { color: var(--mut); text-shadow: none; }
 @media(max-width:560px){ .big-stance { font-size: 36px; } }
 
@@ -358,7 +359,7 @@ body.page-commod .aurora.au-red .au-a3   { background: radial-gradient(ellipse, 
 .cell.c-flat { border-left-color: var(--line2); }
 /* post-stack: consolidate */
 .cell.c-blowoff { border-left-color: var(--amb); }
-.cell.c-washout, .cell.c-wash { border-left-color: var(--blue); }
+.cell.c-washout { border-left-color: var(--blue); }
 .cell .cn { display: flex; justify-content: space-between; align-items: baseline; gap: 4px; }
 .cell .cnm { font-weight: 600; font-size: 13px; }
 .cell .cpc { font-size: 12.5px; font-weight: 600; }
@@ -383,7 +384,7 @@ body.page-commod .aurora.au-red .au-a3   { background: radial-gradient(ellipse, 
 .cell.c-dn .chg-bar, .cell.c-flat.neg .chg-bar { background: var(--dn); }
 /* post-stack: consolidate */
 .cell.c-blowoff .chg-bar { background: var(--amb); }
-.cell.c-washout .chg-bar, .cell.c-wash .chg-bar { background: var(--blue); }
+.cell.c-washout .chg-bar { background: var(--blue); }
 .grp { font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
        color: var(--faint); margin: 16px 0 8px; }
 
@@ -522,7 +523,8 @@ html[data-theme="light"] :is(
   .big-stance.t-watch,
   .big-stance.t-protect,
   .big-stance.t-getready,
-  .big-stance.t-act
+  .big-stance.t-act,
+  .big-stance.t-selective
 ) { text-shadow:none; }
 </style>
 {% include "_state_inks.html.j2" %}
@@ -733,7 +735,7 @@ html[data-theme="light"] :is(
     <div class="lt-px nb-px" data-sym="{{ sym }}" data-mkt="fut">
       {% if _px is not none %}{{ _px }}{% else %}—{% endif %}
     </div>
-    <div class="lt-chg nb-chg {{ 'up' if (_chg or 0) >= 0 else 'dn' }}" data-sym="{{ sym }}" data-mkt="fut">
+    <div class="lt-chg nb-chg {% if _chg is not none %}{{ 'up' if _chg >= 0 else 'dn' }}{% else %}mut{% endif %}" data-sym="{{ sym }}" data-mkt="fut">
       {% if _chg is not none %}{{ '%+.1f'|format(_chg) }}%{% else %}—{% endif %}
     </div>
     <div class="lt-pill" data-live-pill="{{ sym }}">
@@ -858,7 +860,7 @@ html[data-theme="light"] :is(
           {% if row.receipt %}
           <div class="rcpt-list">{{ t('stacking up:','已出现：') }}
             {% for rc in row.receipt[:4] %}
-              <span class="l-en"{% if rc.get('tip_en') %} data-tip-en="{{ rc.label_en }}" data-tip-zh="{{ rc.label_zh }}" data-tip-rc-en="{{ rc.tip_en }}" data-tip-rc-zh="{{ rc.tip_zh }}"{% endif %}>{{ rc.label_en }}</span><span class="l-zh">{{ rc.label_zh }}</span>{% if not loop.last %} · {% endif %}
+              <span class="l-en"{% if rc.get('explain_en') %} data-tip-en="{{ rc.explain_en }}" data-tip-zh="{{ rc.explain_zh or rc.explain_en }}"{% endif %}{% if rc.get('tip_en') %} data-tip-rc-en="{{ rc.tip_en }}" data-tip-rc-zh="{{ rc.tip_zh }}"{% endif %}>{{ rc.label_en }}</span><span class="l-zh">{{ rc.label_zh }}</span>{% if not loop.last %} · {% endif %}
             {% endfor %}
           </div>
           {% endif %}
@@ -898,7 +900,7 @@ html[data-theme="light"] :is(
           {% if row.receipt %}
           <div class="rcpt-list">{{ t('stacking up:','已出现：') }}
             {% for rc in row.receipt[:4] %}
-              <span class="l-en"{% if rc.get('tip_en') %} data-tip-en="{{ rc.label_en }}" data-tip-zh="{{ rc.label_zh }}" data-tip-rc-en="{{ rc.tip_en }}" data-tip-rc-zh="{{ rc.tip_zh }}"{% endif %}>{{ rc.label_en }}</span><span class="l-zh">{{ rc.label_zh }}</span>{% if not loop.last %} · {% endif %}
+              <span class="l-en"{% if rc.get('explain_en') %} data-tip-en="{{ rc.explain_en }}" data-tip-zh="{{ rc.explain_zh or rc.explain_en }}"{% endif %}{% if rc.get('tip_en') %} data-tip-rc-en="{{ rc.tip_en }}" data-tip-rc-zh="{{ rc.tip_zh }}"{% endif %}>{{ rc.label_en }}</span><span class="l-zh">{{ rc.label_zh }}</span>{% if not loop.last %} · {% endif %}
             {% endfor %}
           </div>
           {% endif %}
@@ -931,11 +933,11 @@ html[data-theme="light"] :is(
 <div class="grp"><span class="l-en">{{ grp.group_en }}</span><span class="l-zh">{{ grp.group_zh }}</span></div>
 <div class="hgrid">
   {% for m in grp.members %}
-  <div class="cell {{ m.tone or 'c-flat' }} {{ m.chg_sign or '' }}">
+  <div class="cell {{ m.tone or 'c-flat' }}">
     <div class="cn">
       <span class="cnm"><span class="l-en">{{ m.label_en }}</span><span class="l-zh">{{ m.label_zh }}</span></span>
       {% if m.chg_1m_pct is not none %}
-      <span class="cpc {{ 'up' if (m.chg_1m_pct or 0) >= 0 else 'dn' }}">{{ '%+.1f'|format(m.chg_1m_pct) }}%</span>
+      <span class="cpc {{ m.chg_tone or 'mut' }}">{{ '%+.1f'|format(m.chg_1m_pct) }}%</span>
       {% else %}<span class="cpc mut">—</span>{% endif %}
     </div>
     <div class="cmeta">
@@ -1000,7 +1002,7 @@ html[data-theme="light"] :is(
       <div style="margin-top:8px;font-size:12px;color:var(--mut);line-height:1.6">
         {{ t('stacking up:','已出现：') }}
         {% for rc in show_fired[:6] %}
-          <span class="l-en"{% if rc.get('tip_en') %} data-tip-en="{{ rc.label_en }}" data-tip-zh="{{ rc.label_zh }}" data-tip-rc-en="{{ rc.tip_en }}" data-tip-rc-zh="{{ rc.tip_zh }}"{% endif %}>{{ rc.label_en }}</span><span class="l-zh">{{ rc.label_zh }}</span>{% if not loop.last %} · {% endif %}
+          <span class="l-en"{% if rc.get('explain_en') %} data-tip-en="{{ rc.explain_en }}" data-tip-zh="{{ rc.explain_zh or rc.explain_en }}"{% endif %}{% if rc.get('tip_en') %} data-tip-rc-en="{{ rc.tip_en }}" data-tip-rc-zh="{{ rc.tip_zh }}"{% endif %}>{{ rc.label_en }}</span><span class="l-zh">{{ rc.label_zh }}</span>{% if not loop.last %} · {% endif %}
         {% endfor %}
       </div>
       {% else %}
@@ -1072,16 +1074,18 @@ html[data-theme="light"] :is(
         {% if cv.sub %}<div style="margin-top:5px;font-size:12px;color:var(--faint)">{{ t(cv.sub, cv.sub_zh) }}</div>{% endif %}
       </div>
       {% endif %}
-      {# M6: B3 USD-sensitivity chip — truthiness via d.get (a missing key is not None).
-         Missing data: omit the row (designed empty is the cycle sentence, not "Dollar: ·"). #}
+      {# M6: B3 USD-sensitivity chip — known enum only {up,down}×{headwind,tailwind}.
+         Missing/unknown data: omit the row (never a bare "Dollar:" or "Dollar: ·"). #}
       {% set _usd_dir = d.get('dollar_usd_dir') %}
       {% set _usd_eff = d.get('dollar_effect') %}
-      {% if _usd_dir or (_usd_eff and _usd_eff != 'neutral') %}
+      {% set _usd_dir_ok = _usd_dir in ['up', 'down'] %}
+      {% set _usd_eff_ok = _usd_eff in ['headwind', 'tailwind'] %}
+      {% if _usd_dir_ok or _usd_eff_ok %}
       <div style="margin-top:10px;font-size:12px;color:var(--mut)">
         <span class="faint">{{ t('Dollar', '美元') }}:</span>
-        {% if _usd_dir == 'up' %}{{ t('rising', '走强') }}{% elif _usd_dir == 'down' %}{{ t('falling', '走软') }}{% elif _usd_dir %}{{ t(_usd_dir, _usd_dir) }}{% endif %}
-        {% if _usd_eff and _usd_eff != 'neutral' %}
-          {% if _usd_dir %}<span class="faint">·</span>{% endif %}
+        {% if _usd_dir == 'up' %}{{ t('rising', '走强') }}{% elif _usd_dir == 'down' %}{{ t('falling', '走软') }}{% endif %}
+        {% if _usd_eff_ok %}
+          {% if _usd_dir_ok %}<span class="faint">·</span>{% endif %}
           {% if _usd_eff == 'headwind' %}{{ t('headwind for this commodity', '对该品种形成压制') }}{% elif _usd_eff == 'tailwind' %}{{ t('tailwind for this commodity', '对该品种形成提振') }}{% endif %}
         {% endif %}
       </div>

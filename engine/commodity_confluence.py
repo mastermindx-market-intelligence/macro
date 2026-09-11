@@ -38,10 +38,10 @@ log = logging.getLogger(__name__)
 # --------------------------------------------------------------------------- #
 _LABELS: dict[str, tuple[str, str]] = {
     # BOTTOM capitulation group
-    "shock_bottom":      ("Washout from outside selling", "外部抛压把价格洗出"),
+    "shock_bottom":      ("Washout from a shock outside this market", "外部抛压砸出的洗盘"),
     "oversold_ltf":      ("Oversold short-term", "短周期超卖"),
     "oversold_htf":      ("Oversold longer-term", "中周期超卖"),
-    "cot_short":         ("Big speculators are crowded short", "大投机者拥挤做空"),
+    "cot_short":         ("Big speculators are crowded short", "大型投机者拥挤做空"),
     "stretch_below":     ("Deeply below its 200-day trend", "深跌破200日均线"),
     # BOTTOM turn group
     "curl":              ("Momentum curl up", "动量上钩"),
@@ -51,10 +51,10 @@ _LABELS: dict[str, tuple[str, str]] = {
     # INDEX-only bottom
     "breadth_bottom":    ("Sector breadth washout", "板块广度超卖"),
     # TOP euphoria group
-    "shock_top":         ("Blow-off from outside buying", "外部买盘把价格买到喷发"),
+    "shock_top":         ("Blow-off from a shock outside this market", "外部买盘推动价格喷发"),
     "overbought_ltf":    ("Overbought short-term", "短周期超买"),
     "overbought_htf":    ("Overbought longer-term", "中周期超买"),
-    "cot_long":          ("Big speculators are crowded long", "大投机者拥挤做多"),
+    "cot_long":          ("Big speculators are crowded long", "大型投机者拥挤做多"),
     "stretch":           ("Price stretched above 200-day", "价格大幅偏离200日均线"),
     # TOP rollover group
     "curl_dn":           ("Momentum rolling over", "动量下钩"),
@@ -62,6 +62,48 @@ _LABELS: dict[str, tuple[str, str]] = {
     "cycle_top":         ("Cycle at peak/downturn", "周期处于顶峰/下行"),
     # INDEX-only top
     "breadth_top":       ("Sector breadth euphoric", "板块广度亢奋"),
+}
+
+# One-line Lens body — never byte-identical to the chip label.
+_EXPLAIN: dict[str, tuple[str, str]] = {
+    "shock_bottom":   ("A washout driven by a shock this market did not generate on its own.",
+                       "这是本市场自身驱动解释不了的抛压洗盘。"),
+    "oversold_ltf":   ("Short-term oscillators are deeply oversold on this snapshot.",
+                       "短周期振荡指标在本快照上处于深度超卖。"),
+    "oversold_htf":   ("The slower oscillator is still oversold — the wash has breadth in time.",
+                       "更长周期振荡指标仍超卖——洗盘在时间上有宽度。"),
+    "cot_short":      ("Large speculators are crowded on the short side of the futures book.",
+                       "大型投机资金在期货盘上拥挤做空。"),
+    "stretch_below":  ("Price is sitting far below its 200-day trend — a deep drawdown, not a dip.",
+                       "价格远低于200日均线——是深跌，不是浅回调。"),
+    "curl":           ("Short-term momentum has hooked higher after the wash.",
+                       "洗盘之后，短周期动量已经上钩。"),
+    "armed":          ("The technical-arm detector just triggered on this member.",
+                       "该品种的技术触发器刚刚点亮。"),
+    "bc_conf":        ("The bottom-confidence score is elevated on this snapshot.",
+                       "本快照上的底部信心读数偏高。"),
+    "cycle_bottom":   ("The long cycle is in trough or recovery, not mid-expansion.",
+                       "长周期处于低谷或复苏，而非扩张中段。"),
+    "breadth_bottom": ("A large share of the complex is washing out together.",
+                       "板块里很大一部分品种正在一起洗盘。"),
+    "shock_top":      ("A blow-off driven by a shock this market did not generate on its own.",
+                       "这是本市场自身驱动解释不了的买盘喷发。"),
+    "overbought_ltf": ("Short-term oscillators are stretched into overbought.",
+                       "短周期振荡指标已进入超买。"),
+    "overbought_htf": ("The slower oscillator is also overbought — the stretch has lasted.",
+                       "更长周期振荡指标也超买——拉伸已经持续。"),
+    "cot_long":       ("Large speculators are crowded on the long side of the futures book.",
+                       "大型投机资金在期货盘上拥挤做多。"),
+    "stretch":        ("Price is sitting far above its 200-day trend — late, not early.",
+                       "价格远高于200日均线——偏晚，不是偏早。"),
+    "curl_dn":        ("Short-term momentum has hooked lower after the run.",
+                       "上涨之后，短周期动量已经下钩。"),
+    "divergence":     ("Price made progress that momentum did not confirm.",
+                       "价格续涨但动量没有跟上。"),
+    "cycle_top":      ("The long cycle is at peak or rolling into downturn.",
+                       "长周期处于顶峰或开始下行。"),
+    "breadth_top":    ("A large share of the complex is stretched together.",
+                       "板块里很大一部分品种一起超涨。"),
 }
 
 # Machine terms demoted to data-tip-rc receipts. Face copy above stays plain.
@@ -73,6 +115,10 @@ _TIPS: dict[str, tuple[str, str]] = {
 }
 
 _UNLABELLED = ("Unlabelled condition", "未标注条件")
+_EXPLAIN_FALLBACK = (
+    "This condition fired on the latest snapshot.",
+    "该条件在最新快照上触发。",
+)
 
 
 def _lbl(code: str) -> dict[str, str]:
@@ -80,6 +126,8 @@ def _lbl(code: str) -> dict[str, str]:
     pair = _LABELS.get(code)
     en, zh = pair if pair is not None else _UNLABELLED
     out: dict[str, str] = {"code": code, "label_en": en, "label_zh": zh}
+    expl = _EXPLAIN.get(code)
+    out["explain_en"], out["explain_zh"] = expl if expl is not None else _EXPLAIN_FALLBACK
     tip = _TIPS.get(code)
     if tip:
         out["tip_en"], out["tip_zh"] = tip

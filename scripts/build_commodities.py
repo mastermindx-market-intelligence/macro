@@ -140,6 +140,12 @@ CHG_1M_BARS = 22
 CHG_1D_BARS = 1
 # Dispersion ceiling for "one trend" / "in sync". Same truth for hero and chip.
 SYNC_DIVERSITY_MAX = 0.4
+# Complex-level Protect fires at this share of take-profits rows (pre-r1 gate).
+FRAC_TOP_PROTECT = 0.25
+# Unknown momentum/shock codes never echo the raw slug (same pattern as _lbl).
+_UNLABELLED_STATE = ("Unlabelled state", "未标注状态")
+# Index-level shock states that count as the blow-off gate for Protect.
+_INDEX_BLOWOFF_SHOCKS = frozenset({"blowoff", "exogenous_bid"})
 
 
 def _chg_pct(close, bars: int = CHG_1M_BARS) -> float | None:
@@ -583,17 +589,19 @@ def asset_vm(asset: str, df: pd.DataFrame, calib: dict, drivers: dict | None = N
         _tx = forex_link.transmission()
         _usd_dir_raw = _tx.get("usd_dir") if _tx else None
         if _usd_dir_raw:
-            vm["dollar_usd_dir"] = (
+            mapped = (
                 "up" if "strength" in _usd_dir_raw else
-                ("down" if "weak" in _usd_dir_raw else _usd_dir_raw)
+                ("down" if "weak" in _usd_dir_raw else None)
             )
+            vm["dollar_usd_dir"] = mapped if mapped in ("up", "down") else None
         _stance = forex_link.stance()
         vm["dollar_stance_sentence"] = _stance.get("sentence_en") if _stance else None
         # B3: per-asset effect/stability from transmission.assets
         if _ck:
             _ta = forex_link.transmission_asset(_ck)
             if _ta:
-                vm["dollar_effect"] = _ta.get("effect")
+                _eff = _ta.get("effect")
+                vm["dollar_effect"] = _eff if _eff in ("headwind", "tailwind") else None
                 vm["dollar_stability"] = _ta.get("stability")
         # B3: gold-only real-rate regime (headwind/tailwind context)
         if asset == "gold":
@@ -683,13 +691,13 @@ _GRID_GROUPS: list[tuple[str, str, str, list[str]]] = [
 def _plain_mom_state(s: str | None) -> tuple[str, str]:
     if not s:
         return ("—", "—")
-    return MOMENTUM_STATE_LABELS.get(s, (s, s))
+    return MOMENTUM_STATE_LABELS.get(s, _UNLABELLED_STATE)
 
 
 def _plain_shock(s: str | None) -> tuple[str, str]:
     if not s:
         return ("—", "—")
-    return SHOCK_STATE_LABELS.get(s, (s, s))
+    return SHOCK_STATE_LABELS.get(s, _UNLABELLED_STATE)
 
 
 # Heat-grid legend: each (tone, token, en, zh) is reachable from _heat_cell.
@@ -704,7 +712,8 @@ HEAT_LEGEND: list[tuple[str, str, str, str]] = [
 
 def _heat_cell(shock_st: str | None, mom_state: str | None) -> tuple[str, str, str]:
     """Heat-grid tone + short-state. Shock outranks momentum so a blow-off
-    can never paint as trending-up green."""
+    can never paint as trending-up green. All four shock-enum values route
+    before momentum; unknown momentum falls through to Mixed, never a slug."""
     shock_st = (shock_st or "").strip()
     mom_state = (mom_state or "").strip()
     if shock_st == "blowoff":
@@ -713,14 +722,31 @@ def _heat_cell(shock_st: str | None, mom_state: str | None) -> tuple[str, str, s
     if shock_st == "washout":
         en, zh = _plain_shock("washout")
         return "c-washout", en, zh
+    if shock_st == "exogenous_bid":
+        en, zh = _plain_shock("exogenous_bid")
+        return "c-blowoff", en, zh
+    if shock_st == "exogenous_pressure":
+        en, zh = _plain_shock("exogenous_pressure")
+        return "c-washout", en, zh
     if mom_state == "bull":
         en, zh = _plain_mom_state("bull")
         return "c-up", en, zh
     if mom_state == "bear":
         en, zh = _plain_mom_state("bear")
         return "c-dn", en, zh
-    en, zh = _plain_mom_state(mom_state if mom_state else None)
+    en, zh = _plain_mom_state("neutral")
     return "c-flat", en, zh
+
+
+def _chg_tone(cell_tone: str, chg: float | None) -> str:
+    """Change-digit class: shock rows inherit the shock tone, not the sign."""
+    if cell_tone == "c-blowoff":
+        return "amb"
+    if cell_tone == "c-washout":
+        return "blue"
+    if chg is None:
+        return "mut"
+    return "up" if chg >= 0 else "dn"
 
 
 def _sync_read(diversity) -> dict:
@@ -825,16 +851,29 @@ def _mtf_grade_plain(grade: str | None) -> tuple[str, str]:
 # --------------------------------------------------------------------------- #
 # sector_stance helper
 # --------------------------------------------------------------------------- #
-def sector_stance(conf: dict, breadth: dict, in_sync: bool | None = None) -> dict:
+def sector_stance(
+    conf: dict,
+    breadth: dict,
+    in_sync: bool | None = None,
+    index_shock: str | None = None,
+) -> dict:
     """Return the plain-word sector stance for the hero section.
 
-    tone ∈ {act, getready, watch, protect, standaside}
-    Rules (in priority order):
-      1. ANY take-profits / euphoric member → protect (hero must not outrank the board)
-      2. Many Washout bottom-forming     → getready
-      3. 12-mo broad but short-term thin (n_bull_momentum/n_members < 0.4) → watch
-      4. Broad + strong momentum         → act (says "in sync" only when in_sync is True)
-      else                               → standaside
+    tone ∈ {act, selective, getready, watch, protect, standaside}
+
+    Take-profits three-way (seat ruling, W6 r2) outranks the rest:
+      1. Act — in-sync AND zero take-profits/blow-off board rows (existing
+         breadth gate still required; "in sync" only when in_sync is True).
+      2. Selective — 1 to <FRAC_TOP_PROTECT of members stretched: name the
+         count, never "in sync", never complex-level Protect.
+      3. Protect — ≥FRAC_TOP_PROTECT of members in take-profits/blow-off
+         states OR the index-level shock itself firing.
+
+    Then, with zero stretched rows:
+      Many Washout bottom-forming     → getready
+      12-mo broad but short-term thin → watch
+      Broad + strong momentum         → act
+      else                            → standaside
     """
     _null = {
         "word_en": "Stand aside", "word_zh": "按兵不动",
@@ -844,7 +883,8 @@ def sector_stance(conf: dict, breadth: dict, in_sync: bool | None = None) -> dic
     }
     try:
         members_conf = (conf.get("members") or []) if isinstance(conf, dict) else []
-        n_members = max(1, breadth.get("n_members") or 1)
+        n_breadth = max(1, breadth.get("n_members") or 1)
+        n_board = len(members_conf) if members_conf else n_breadth
         n_bull = breadth.get("n_bull_momentum") or 0
         n_up = breadth.get("n_up_trend") or 0
 
@@ -855,35 +895,65 @@ def sector_stance(conf: dict, breadth: dict, in_sync: bool | None = None) -> dic
         n_top = sum(1 for m in members_conf if (m.get("state") or "") in top_states)
         n_bot = sum(1 for m in members_conf if (m.get("state") or "") in bottom_states)
 
-        frac_bot = n_bot / n_members
-        frac_up  = n_up  / n_members
-        frac_mom = n_bull / n_members
+        frac_top = n_top / max(1, n_board)
+        frac_bot = n_bot / n_breadth
+        frac_up  = n_up  / n_breadth
+        frac_mom = n_bull / n_breadth
         if in_sync is None:
             in_sync = _sync_read(breadth.get("trend_diversity")).get("in_sync")
 
-        # Any take-profits row on the board outranks an "Act / in sync" hero.
-        if n_top >= 1:
+        index_conf = (conf.get("index") or {}) if isinstance(conf, dict) else {}
+        index_top = (index_conf.get("state") or "") in top_states
+        shock_firing = (index_shock or "") in _INDEX_BLOWOFF_SHOCKS
+        index_protect = index_top or shock_firing
+
+        # 3. Protect — proportional board gate or index-level shock.
+        if frac_top >= FRAC_TOP_PROTECT or index_protect:
+            total = int(n_board)
+            if n_top <= 0:
+                sub_en = "The index itself is blowing off — trim, don't add."
+                sub_zh = "指数本身处于喷发——减仓，勿追加。"
+            elif n_top == 1:
+                sub_en = f"1 of {total} commodities is stretched or euphoric — trim, don't add."
+                sub_zh = f"{total}个品种中有1个处于超买或亢奋状态——减仓，勿追加。"
+            else:
+                sub_en = (f"{n_top} of {total} commodities are stretched or euphoric "
+                          "— trim, don't add.")
+                sub_zh = f"{total}个品种中有{n_top}个处于超买或亢奋状态——减仓，勿追加。"
             return {
                 "word_en": "Protect gains",  "word_zh": "保护利润",
-                "sub_en":  f"{n_top} of {int(n_members)} commodities are stretched or euphoric — trim, don't add.",
-                "sub_zh":  f"{int(n_members)}个品种中有{n_top}个处于超买或亢奋状态——减仓，勿追加。",
-                "tone":    "protect",
+                "sub_en":  sub_en, "sub_zh": sub_zh, "tone": "protect",
             }
+
+        # 2. Scoped middle — some stretched, below the complex-level gate.
+        if n_top >= 1:
+            total = int(n_board)
+            if n_top == 1:
+                sub_en = f"1 of {total} stretched; trim that, don't add"
+                sub_zh = f"{total}个品种中有1个超涨——减那个，勿追加。"
+            else:
+                sub_en = f"{n_top} of {total} stretched; trim those, don't add"
+                sub_zh = f"{total}个品种中有{n_top}个超涨——减那些，勿追加。"
+            return {
+                "word_en": "In favour",  "word_zh": "倾向做多",
+                "sub_en":  sub_en, "sub_zh": sub_zh, "tone": "selective",
+            }
+
         if frac_bot >= 0.20:
             return {
                 "word_en": "Get ready",  "word_zh": "准备就绪",
-                "sub_en":  f"{n_bot} of {int(n_members)} commodities are washing out or basing — watch for early turns.",
-                "sub_zh":  f"{int(n_members)}个品种中有{n_bot}个正在洗盘或筑底——关注早期转势信号。",
+                "sub_en":  f"{n_bot} of {int(n_breadth)} commodities are washing out or basing — watch for early turns.",
+                "sub_zh":  f"{int(n_breadth)}个品种中有{n_bot}个正在洗盘或筑底——关注早期转势信号。",
                 "tone":    "getready",
             }
         if frac_up >= 0.6 and frac_mom < 0.4:
             return {
                 "word_en": "Watch — don't chase",  "word_zh": "观望，勿追高",
-                "sub_en":  (f"Long-term trends are broad ({int(n_up)}/{int(n_members)} trending up), "
-                            f"but short-term momentum is thin ({int(n_bull)}/{int(n_members)}). "
+                "sub_en":  (f"Long-term trends are broad ({int(n_up)}/{int(n_breadth)} trending up), "
+                            f"but short-term momentum is thin ({int(n_bull)}/{int(n_breadth)}). "
                             "Not a fresh breakout — late-move divergence."),
-                "sub_zh":  (f"长期趋势广泛（{int(n_members)}个中有{int(n_up)}个向上），"
-                            f"但短期动量偏弱（{int(n_bull)}/{int(n_members)}）。"
+                "sub_zh":  (f"长期趋势广泛（{int(n_breadth)}个中有{int(n_up)}个向上），"
+                            f"但短期动量偏弱（{int(n_bull)}/{int(n_breadth)}）。"
                             "并非新突破——后期走势背离。"),
                 "tone":    "watch",
             }
@@ -899,10 +969,10 @@ def sector_stance(conf: dict, breadth: dict, in_sync: bool | None = None) -> dic
                 sync_zh = "广度较宽。"
             return {
                 "word_en": "Act",  "word_zh": "行动",
-                "sub_en":  (f"Broad trend ({int(n_up)}/{int(n_members)} up) with solid momentum "
-                            f"({int(n_bull)}/{int(n_members)}) — {sync_en}"),
-                "sub_zh":  (f"趋势广泛（{int(n_up)}/{int(n_members)}向上），"
-                            f"动量稳健（{int(n_bull)}/{int(n_members)}）——{sync_zh}"),
+                "sub_en":  (f"Broad trend ({int(n_up)}/{int(n_breadth)} up) with solid momentum "
+                            f"({int(n_bull)}/{int(n_breadth)}) — {sync_en}"),
+                "sub_zh":  (f"趋势广泛（{int(n_up)}/{int(n_breadth)}向上），"
+                            f"动量稳健（{int(n_bull)}/{int(n_breadth)}）——{sync_zh}"),
                 "tone":    "act",
             }
         return _null
@@ -950,7 +1020,11 @@ def _build_sector_vm_inner(
     sync = _sync_read(breadth_snap.get("trend_diversity"))
 
     # --- stance ---------------------------------------------------------------
-    stance = sector_stance(conf, breadth_snap, in_sync=sync.get("in_sync"))
+    stance = sector_stance(
+        conf, breadth_snap,
+        in_sync=sync.get("in_sync"),
+        index_shock=idx_snap.get("shock_state"),
+    )
 
     # --- breadth block --------------------------------------------------------
     n_members = breadth_snap.get("n_members") or 0
@@ -1065,11 +1139,11 @@ def _build_sector_vm_inner(
         _dual     = _dual_read(mom_state, str(last.get("ts_trend", "") or ""), _roc20(cl))
         tone, mom_en, mom_zh = _heat_cell(shock_st, mom_state)
         cyc_en, cyc_zh = _plain_cycle_state(cycle_ph, _basing)
-        chg_sign = "up" if (chg or 0) >= 0 else "dn"
+        chg_tone = _chg_tone(tone, chg)
 
         mem_lookup[name] = {
             "chg_1m_pct": chg,
-            "chg_sign":   chg_sign,
+            "chg_tone":   chg_tone,
             "tone":       tone,
             "state_short_en": mom_en,
             "state_short_zh": mom_zh,
@@ -1095,7 +1169,7 @@ def _build_sector_vm_inner(
                 "label_en":     en,
                 "label_zh":     zh,
                 "chg_1m_pct":   info.get("chg_1m_pct"),
-                "chg_sign":     info.get("chg_sign", "up"),
+                "chg_tone":     info.get("chg_tone", "mut"),
                 "tone":         info.get("tone", "c-flat"),
                 "state_short_en": info.get("state_short_en", "—"),
                 "state_short_zh": info.get("state_short_zh", "—"),
