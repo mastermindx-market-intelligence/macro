@@ -421,9 +421,28 @@
 {% set age = dates.staleness.age_days if dates and dates.staleness else none %}
 {% set stance = fed_stance.stance if fed_stance else 'unknown' %}
 {% set divergence = scorecard.sharpest_divergence if scorecard and scorecard.sharpest_divergence else none %}
-{% set fomc_meetings = current.calendar.meetings if current and current.calendar else [] %}
-{% set calendar_state = current.calendar.state if current and current.calendar else none %}
-{% set calendar_url = current.calendar.calendar_url if current and current.calendar else 'https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm' %}
+{# The current-source composer emits a closed calendar mapping, but this
+   template is the public failure boundary: a partial/corrupt record must not
+   turn a missing key into a Python method or a scalar into an iterable. #}
+{% set current_map = current if current is mapping else {} %}
+{% set raw_calendar = current_map.get('calendar') %}
+{% set calendar = raw_calendar if raw_calendar is mapping else {} %}
+{% set raw_fomc_meetings = calendar.get('meetings', []) %}
+{% set candidate_fomc_meetings = raw_fomc_meetings if raw_fomc_meetings is sequence and raw_fomc_meetings is not string and raw_fomc_meetings is not mapping else [] %}
+{% set ns_fomc = namespace(list=[]) %}
+{% for event in candidate_fomc_meetings %}
+  {% if event is mapping
+        and event.get('date') is string and event.get('date')|length >= 10
+        and event.get('event_en') is string and event.get('event_zh') is string
+        and event.get('days_to') is integer %}
+    {% set ns_fomc.list = ns_fomc.list + [event] %}
+  {% endif %}
+{% endfor %}
+{% set fomc_meetings = ns_fomc.list %}
+{% set raw_calendar_state = calendar.get('state') %}
+{% set calendar_state = raw_calendar_state if raw_calendar_state is string else none %}
+{% set official_calendar_url = 'https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm' %}
+{% set calendar_url = calendar.get('calendar_url') if calendar.get('calendar_url') == official_calendar_url else official_calendar_url %}
 {% set background_unavailable = background_unavailable if background_unavailable is defined else false %}
 {% set has_background = intel and intel.as_of and not background_unavailable %}
 

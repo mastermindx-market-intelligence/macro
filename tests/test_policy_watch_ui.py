@@ -1666,3 +1666,115 @@ def test_r1_unverified_fallback_copy_does_not_claim_success(tmp_path):
 
     assert "earlier successful copy" not in panel.lower()
     assert "earlier saved copy" in panel.lower()
+
+
+# --------------------------------------------------------------------------- #
+# R1 final repair — partial current-source mappings must not collide with
+# Python mapping methods inside Jinja (for example missing `items` -> dict.items).
+# --------------------------------------------------------------------------- #
+
+
+def test_r1_partial_headlines_without_items_do_not_crash_template():
+    current = {
+        "calendar": {"state": "scheduled", "meetings": []},
+        "headlines": {"state": "totally_unrecognized_token"},
+        "statement": {"state": "none"},
+        "comparison": {"state": "unavailable"},
+    }
+
+    html = _r1_render_page(current)
+
+    assert "Official updates unavailable" in html
+    assert "官方动态暂不可用" in html
+    assert "totally_unrecognized_token" not in html
+
+
+def test_r1_partial_last_good_without_items_does_not_crash_template():
+    current = {
+        "calendar": {"state": "scheduled", "meetings": []},
+        "headlines": {
+            "state": "invalid_newest",
+            "last_good": {"saved_date": "2026-09-08"},
+        },
+        "statement": {"state": "none"},
+        "comparison": {"state": "unavailable"},
+    }
+
+    html = _r1_render_page(current)
+
+    assert "Earlier usable record (acquisition time not recorded)" in html
+    assert "2026-09-08" in html
+
+
+def test_r1_partial_non_scalar_current_metadata_does_not_crash_template():
+    current = {
+        "calendar": {"state": "scheduled", "meetings": []},
+        "headlines": {
+            "state": "ok",
+            "items": [{"title": "missing date and URL"}, 7],
+            "feed_status": ["not", "scalar"],
+            "fetched_at": {"not": "scalar"},
+            "saved_date": ["not", "scalar"],
+        },
+        "statement": {"state": "recorded", "facts": []},
+        "comparison": {
+            "state": "available",
+            "prior_vote": [],
+            "highlights": 7,
+        },
+    }
+
+    html = _r1_render_page(current)
+
+    assert "Official updates" in html
+    assert "官方动态" in html
+    assert "Sources checked" not in html
+    assert "missing date and URL" not in html
+
+
+def test_r1_partial_calendar_without_meeting_sequence_does_not_crash_template():
+    current = {
+        "calendar": {
+            "state": False,
+            "meetings": 1,
+            "calendar_url": ["not", "a", "url"],
+        },
+        "headlines": {"state": "missing", "items": []},
+        "statement": {"state": "none"},
+        "comparison": {"state": "unavailable"},
+    }
+
+    html = _r1_render_page(current)
+
+    assert "No upcoming policy dates in this update." in html
+    assert "本次更新没有未来政策日期。" in html
+    assert "not a url" not in html
+
+
+def test_r1_partial_calendar_filters_malformed_meeting_rows():
+    current = {
+        "calendar": {
+            "state": "scheduled",
+            "meetings": [
+                None,
+                {"date": 1, "event_en": "bad date", "event_zh": "错误日期", "days_to": 5},
+                {
+                    "date": "2026-09-16",
+                    "event_en": "FOMC decision",
+                    "event_zh": "FOMC决议",
+                    "days_to": 5,
+                },
+            ],
+            "calendar_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+        },
+        "headlines": {"state": "missing", "items": []},
+        "statement": {"state": "none"},
+        "comparison": {"state": "unavailable"},
+    }
+
+    html = _r1_render_page(current)
+
+    assert "FOMC decision" in html
+    assert "FOMC决议" in html
+    assert "09-16" in html
+    assert "bad date" not in html
