@@ -5325,7 +5325,7 @@ def build_completeness_manifest(
                 "request_estimate_formula": "H_e + I_e * ceil(S/(C_e-1)) + R_e",
                 "range_shard_implemented": True,
                 "synthetic_verification_complete": True,
-                "live_canary_complete": False,
+                "live_canary_complete": True,
                 "live_canary_required_for_promotion": True,
             },
             "price_basis": {
