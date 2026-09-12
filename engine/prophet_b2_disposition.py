@@ -8,7 +8,7 @@ suite's tree-scan test pins that boundary); the deciders it describes never read
 
 The evidence law (macro issue #6805, v4 masterplan B2-0):
 
-* Every record cites BOTH sides of the audit: the audit-pin citation (the readiness
+* Every baked V1 record cites BOTH sides of the audit: the audit-pin citation (the readiness
   review's own line refs, measured against PR #5370 head ``edaf501a``) and the HEAD
   citation (re-verified at ``fdaf4091``).  The audit's line numbers are stale by
   design — the readiness doc says so itself (:212-217) — so neither citation is ever
@@ -18,6 +18,9 @@ The evidence law (macro issue #6805, v4 masterplan B2-0):
 * FUTURE_KNOWLEDGE: replay at ``as_of`` sees only records with ``known_at <= as_of``.
   A record learned later can never leak backward, and the absence of a knowable record
   is answered ``UNKNOWN_EVIDENCE_REQUIRED`` — never silently read as closed.
+  This is source-known reconstruction, not an immutable receipt of what this audit
+  fixture had already recorded; ``recorded_at`` is provenance and does not gate
+  visibility.
 """
 from __future__ import annotations
 
@@ -62,10 +65,10 @@ def _require(condition: bool, code: str, detail: str) -> None:
 def _iso_date(value: object, *, code: str, field: str) -> str:
     _require(isinstance(value, str), code, f"{field} must be an ISO date string")
     try:
-        date.fromisoformat(value)  # type: ignore[arg-type]
+        parsed = date.fromisoformat(value)  # type: ignore[arg-type]
     except ValueError as exc:
         raise DispositionContractError(f"{code}: {field} is not an ISO date: {value!r}") from exc
-    return str(value)
+    return parsed.isoformat()
 
 
 def _freeze_record(record: Mapping[str, object]) -> Mapping[str, object]:
@@ -169,9 +172,10 @@ def supersede(matrix: Sequence[Mapping[str, object]],
 
     The base matrix is re-validated first, so a tampered or gapped base fails closed
     before any append; the new record must extend its finding's chain exactly
-    (seq = head+1, supersedes = head, known_at not backdated).  Replay at any earlier
-    ``as_of`` reproduces the earlier answer after the supersession — see
-    :func:`disposition`.
+    (seq = head+1, supersedes = head, known_at not backdated). A supersession known
+    after a cutoff leaves that cutoff unchanged. An equal-``known_at`` correction may
+    revise the reconstructed answer once appended; ``recorded_at`` does not turn this
+    research fixture into a then-recorded system-availability timeline.
     """
     base = build_matrix(matrix)
     appended = build_matrix(tuple(base) + (new_record,))
@@ -183,10 +187,11 @@ def disposition(finding_id: str, *, as_of: str,
     """The disposition of ``finding_id`` as it was knowable at ``as_of``.
 
     TOTAL over :data:`FINDING_IDS` — an unknown id raises DISPOSITION_UNTOTAL rather
-    than returning anything.  Only records with ``known_at <= as_of`` are visible
-    (FUTURE_KNOWLEDGE exclusion); the chain head among the visible records answers.
-    With no knowable record the answer is ``UNKNOWN_EVIDENCE_REQUIRED`` — never a
-    silent default to closed.
+    than returning anything. Only records with ``known_at <= as_of`` are visible
+    (FUTURE_KNOWLEDGE exclusion); the chain head among those source-known records
+    answers. ``recorded_at`` is retained provenance, not a visibility gate. With no
+    knowable record the answer is ``UNKNOWN_EVIDENCE_REQUIRED`` - never a silent
+    default to closed.
     """
     _require(finding_id in FINDING_IDS, "DISPOSITION_UNTOTAL",
              f"unknown finding id {finding_id!r}; the matrix is total over {FINDING_IDS}")

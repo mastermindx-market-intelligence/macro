@@ -15,13 +15,14 @@ product surface, and a tree-scan test pins that boundary
 Code of record: `engine/prophet_b2_disposition.py` (pure stdlib, no file writes, no
 imports of `prophet_bridge`/`us_early_turn`, mirroring the discipline of
 `engine/us_candidate_episode.py:1-6`). Suite: `tests/test_prophet_b2_disposition.py`
-(16 tests). CI: a new additive step in the `prophet-anticipation-intake` job
+(16 tests in the original return; 26 after the bounded 2026-09-12 repair). CI: a new
+additive step in the `prophet-anticipation-intake` job
 (`.github/ci/legacy-jobs.yml`), beside the union-admission step whose pins the matrix
 cites.
 
-## The two-pin citation law
+## The baked-v1 two-pin citation law
 
-Every matrix row carries **both** citations:
+Every immutable row in the baked `DISPOSITION_MATRIX` carries **both** citations:
 
 * **audit pin `edaf501ae7e4e1547e6124d50dd1b59e3cb17954`** — the readiness review's own
   line refs (PR #5370 head at review time). These line numbers are **stale by design**:
@@ -34,6 +35,11 @@ Every matrix row carries **both** citations:
   a clean tree (transcripts in §Verification below). Code reading alone never grants
   `PROVEN_CLOSED`.
 
+That two-role promise is deliberately scoped to the five frozen V1 rows. Generic
+correction fixtures accepted by `_freeze_record()` still require pinned provenance, but
+they do not inherit the historical audit/re-verification pair and do not become a
+second evidence authority.
+
 ## The rule table
 
 | Rule | Value |
@@ -41,10 +47,28 @@ Every matrix row carries **both** citations:
 | Classes (issue #6805, verbatim) | `PROVEN_CLOSED`, `BUILT_NOT_PROVEN`, `STILL_LIVE`, `SUPERSEDED_BY_ACCEPTED_OWNER`, `REJECTED_BY_DESIGN`, `UNKNOWN_EVIDENCE_REQUIRED` |
 | Rule lineage | `DISPOSITION_RULE_VERSION = "b2-disposition-v1-2026-09-04"` (modeled on `UNION_ADMISSION_ERA` / `DEFAULT_DEFINITION_ERA`); stamped on **every** outcome, including the synthesized pre-evidence one |
 | Totality | `disposition()` is total over `("B-15","B-16","B-17","B-18","B-19")`; any other id ⇒ `DISPOSITION_UNTOTAL` error, never a default |
-| FUTURE_KNOWLEDGE | replay at `as_of` sees only records with `known_at <= as_of`; a record learned later can never leak backward; no knowable record ⇒ `UNKNOWN_EVIDENCE_REQUIRED` (never silently closed) |
-| Append-only | `supersede()` returns a new matrix; prior records are read-only (mappingproxy) and stay retrievable at their own `as_of` after any supersession |
-| Chain law | per finding: seq 1 root, gapless `seq = head+1`, `supersedes = head`, `known_at` never backdated — any violation ⇒ `CORRECTION_CHAIN_BROKEN` |
+| Canonical dates | every accepted `date.fromisoformat` spelling is normalized with `parsed.isoformat()` before clock, lineage or cutoff comparison; equivalent calendar dates cannot sort differently |
+| FUTURE_KNOWLEDGE | source-known replay at `as_of` sees only records with `known_at <= as_of`; a record whose `known_at` is later than the cutoff can never leak backward; no knowable record => `UNKNOWN_EVIDENCE_REQUIRED` (never silently closed) |
+| Clock scope | `known_at` is the source-knowability clock; `recorded_at` is provenance and must not precede `known_at`, but it does not gate visibility or claim what the running system had already recorded |
+| Append-only | `supersede()` returns a new matrix and preserves prior immutable records in the chain. A later-known supersession leaves earlier cutoffs unchanged; an equal-`known_at`, later-recorded correction may revise the reconstructed answer once appended |
+| Chain law | per finding: seq 1 root, gapless `seq = head+1`, `supersedes = head`, `known_at` never backdated - any violation => `CORRECTION_CHAIN_BROKEN` |
 | Fail-closed guards | missing/None owner ⇒ `OWNER_UNKNOWN`; missing `known_at` ⇒ `SOURCE_UNKNOWN`; foreign `rule_version` ⇒ `RULE_VERSION_UNKNOWN`; lineage gap/fork/backdate ⇒ `CORRECTION_CHAIN_BROKEN`; each seeded and proven by a discriminating test |
+
+### Clock contract: source-known reconstruction, not then-recorded availability
+
+This audit fixture answers: given every source fact now present in this matrix, what
+was source-knowable by the cutoff? It does **not** answer: what had this service or
+repository already ingested by the cutoff? Consequently a correction appended on
+September 6 with `known_at=2026-09-04` may revise a September 5 reconstruction. That
+is intentional and is now pinned by
+`test_late_recorded_same_known_date_reconstructs_source_known_history`. The invariant
+is narrower and load-bearing: a record with `known_at` after the cutoff cannot leak
+back.
+
+The operational Entry Truth path must not borrow this convenience. A real correction
+uses the existing B1 owner-issued event `known_at` and one atomic generation; it must
+never backdate the correction's own knowledge to the original event's effective time.
+No second bitemporal store or correction clock is created here.
 
 ## The frozen v1 matrix
 
@@ -92,15 +116,43 @@ weakens a fail-closed guard. All in `tests/test_prophet_b2_disposition.py`:
 3. **Identity supersession** — `test_red_condition_identity_supersession_fails_closed_for_stale_identity_reads`
    (`superseded_by` never leaks before its `known_at`; a ratified — non-provisional —
    identity refuses supersession outright with `EpisodeContractError`).
-4. **Backward leak** — `test_replay_reproduces_the_earlier_answer_after_a_supersession`
-   (after a t2 supersession is appended, `as_of=t1` still reproduces the t1 answer, and
-   `as_of < t1` sees nothing — FUTURE_KNOWLEDGE).
+4. **Backward leak** - `test_replay_reproduces_the_earlier_answer_after_a_supersession`
+   (when the supersession is source-known at t2, `as_of=t1` still reproduces the t1
+   answer, and `as_of < t1` sees nothing - FUTURE_KNOWLEDGE).
 5. **Silent default to closed** — `test_no_record_knowable_at_as_of_is_never_read_as_closed`
    (no knowable record ⇒ `UNKNOWN_EVIDENCE_REQUIRED` with empty evidence, stamped with
    the rule version).
 
 Red-conditions 1-3 run against the B1 core (`engine.us_candidate_episode`, imported
 read-only) on tiny fixed-stamp in-memory fixtures — no clocks, no files.
+
+### Bounded 2026-09-12 temporal and evidence regressions
+
+The repair adds eight date-form cases: three equivalent `as_of` spellings, three
+equivalent record-known spellings, and two recorded-before-known spellings. The exact
+incumbent source produced **6 failed / 18 passed**; canonicalizing the parsed date
+produced **24 passed**. Two further characterization tests make the review boundaries
+executable: equal-`known_at`, later-`recorded_at` corrections revise source-known
+reconstruction, while the dual audit/re-verification pair is mandatory only for the
+immutable baked V1 rows. Final focused result: **26 passed**.
+
+## B2-1 owner seam and the still-unproven correction case
+
+This packet does not prove that a real corporate-action or price-basis correction reaches
+the authenticated Prophet Lab. The existing owner seam is B1, not this matrix:
+`engine.us_candidate_episode.load_candidate_episode_store_snapshot()` validates one
+atomic HEAD-backed generation, and
+`app.prophet_lab.episode_intelligence_v1()` resolves one exact `episode_id` from that
+generation before projecting the private detail response. Today an episode absent from
+the current generation returns `prophet_episode_not_found`/404, so unknown identity and
+known-withdrawn history are not yet distinguished on that read path.
+
+B2-1 must close that vertical using the same immutable B1 generation, its event history
+and the exact episode identity: known retraction/withdrawal must be distinguishable from
+an unknown ID without a new tombstone store, ticker-wide ban, automatic exit order or
+second evidence owner. PR #6801 remains the records/sequencing context that freezes
+`B2 + B3 -> B4 -> B5B`; this executable B2-0 packet neither replaces that carrier nor
+claims B2/B3/B4 implemented.
 
 ## DO_NOT_REBUILD confrontation
 
@@ -175,9 +227,18 @@ tests/test_us_early_turn_union_admission.py::test_the_shipped_deck_is_not_claime
 tests/test_us_early_turn_union_admission.py -q` → `80 passed, 198 warnings in 27.13s`,
 exit 0.
 
-**This packet's own suite** — RED first (module absent):
+**This packet's own original suite** - RED first (module absent):
 `ModuleNotFoundError: No module named 'engine.prophet_b2_disposition'` (exit 2); then
 GREEN: `16 passed, 198 warnings in 2.48s`, exit 0.
+
+**2026-09-12 bounded repair addendum** - isolated exact-head positive control: original
+16 tests pass. Added date regressions on the unchanged implementation:
+`6 failed, 18 passed in 9.02s`. Two-line `parsed.isoformat()` repair:
+`24 passed in 28.39s`. Added source-known/two-pin characterization:
+`26 passed in 11.05s`. The implementation hunk is the reviewed proposal; its LF form
+matched proposed source SHA-256
+`1b532b075036cb612aa856b1e448ee412974cfad04cc340e14297012c4be5afc` before these
+contract-doc clarifications.
 
 ## Spec-divergence note (evidence-true over spec-true)
 

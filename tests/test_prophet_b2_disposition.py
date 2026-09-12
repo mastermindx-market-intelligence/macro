@@ -208,6 +208,87 @@ def test_no_record_knowable_at_as_of_is_never_read_as_closed():
 
 # ──────────────────────────────────────────────── d. append-only law ───────
 
+@pytest.mark.parametrize(
+    "as_of",
+    ["2026-09-03", "20260903", "2026-W36-4"],
+)
+def test_equivalent_as_of_date_encodings_share_one_cutoff(as_of):
+    outcome = disposition("B-15", as_of=as_of)
+    assert outcome["as_of"] == "2026-09-03"
+    assert outcome["disposition"] == "UNKNOWN_EVIDENCE_REQUIRED"
+
+
+@pytest.mark.parametrize(
+    "known_at",
+    ["2026-09-01", "20260901", "2026-W36-2"],
+)
+def test_equivalent_record_date_encodings_share_one_known_at(known_at):
+    matrix = build_matrix([_record("B-16", known_at=known_at)])
+    assert matrix[0]["known_at"] == "2026-09-01"
+    assert matrix[0]["recorded_at"] == "2026-09-01"
+    assert disposition("B-16", as_of="2026-09-01", matrix=matrix)["disposition"] == "BUILT_NOT_PROVEN"
+
+
+@pytest.mark.parametrize(
+    "recorded_at",
+    ["20260903", "2026-W36-4"],
+)
+def test_recorded_before_known_fails_closed_for_equivalent_date_forms(recorded_at):
+    with pytest.raises(DispositionContractError, match="RECORD_CLOCK_INVALID"):
+        build_matrix([_record("B-16", known_at="2026-09-04", recorded_at=recorded_at)])
+
+
+def test_late_recorded_same_known_date_reconstructs_source_known_history():
+    matrix = build_matrix([
+        _record(
+            "B-16",
+            known_at="2026-09-04",
+            recorded_at="2026-09-04",
+            clazz="BUILT_NOT_PROVEN",
+        )
+    ])
+    before_append = disposition("B-16", as_of="2026-09-05", matrix=matrix)
+    assert before_append["disposition"] == "BUILT_NOT_PROVEN"
+
+    corrected = supersede(
+        matrix,
+        _record(
+            "B-16",
+            seq=2,
+            supersedes=1,
+            known_at="2026-09-04",
+            recorded_at="2026-09-06",
+            clazz="PROVEN_CLOSED",
+            reason="late-recorded source-known correction ? test only",
+        ),
+    )
+    after_append = disposition("B-16", as_of="2026-09-05", matrix=corrected)
+    assert after_append["disposition"] == "PROVEN_CLOSED"
+    assert after_append["known_at"] == "2026-09-04"
+    assert after_append["recorded_at"] == "2026-09-06"
+    assert before_append["disposition"] != after_append["disposition"], (
+        "this fixture reconstructs source-known history; it is not an immutable record "
+        "of what this audit matrix had already recorded at the queried cutoff"
+    )
+    assert disposition("B-16", as_of="2026-09-03", matrix=corrected)["disposition"] == (
+        "UNKNOWN_EVIDENCE_REQUIRED"
+    )
+
+
+def test_two_pin_law_is_scoped_to_the_immutable_baked_v1_matrix():
+    audit_pin = "edaf501ae7e4e1547e6124d50dd1b59e3cb17954"
+    reverified_head_pin = "fdaf40910809de8da38e91c4696abfa22d2199e0"
+    for record in DISPOSITION_MATRIX:
+        pins = {entry["pin"] for entry in record["evidence"]}
+        assert {audit_pin, reverified_head_pin} <= pins
+
+    generic_correction_fixture = build_matrix([_record("B-16")])
+    assert len(generic_correction_fixture[0]["evidence"]) == 1, (
+        "generic correction fixtures require provenance but do not inherit the baked "
+        "v1 audit/re-verification pair or become a second evidence authority"
+    )
+
+
 def test_supersede_appends_and_refuses_in_place_mutation():
     superseding = _record("B-16", seq=2, supersedes=1, known_at="2026-09-05",
                           clazz="STILL_LIVE", reason="seeded demotion — test only")
@@ -223,7 +304,7 @@ def test_supersede_appends_and_refuses_in_place_mutation():
     with pytest.raises((TypeError, DispositionContractError)):
         prior["evidence"][0]["cite"] = "rewritten"  # type: ignore[index]
 
-    # the original superseded record is still retrievable at its own as_of
+    # a later-known supersession leaves the predecessor's earlier cutoff unchanged
     original = disposition("B-16", as_of=BAKED_KNOWN_AT, matrix=corrected)
     assert original["disposition"] == "PROVEN_CLOSED"
     assert original["seq"] == 1
