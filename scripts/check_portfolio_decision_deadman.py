@@ -193,10 +193,16 @@ def _decision_failure(
 
     asof_date = _parse_date(decision.get("asof"))
     decision_target = str(decision.get("target_status") or "").strip().lower()
-    if asof_date is None or asof_date.isoformat() != expected_date:
+    settled_date = (
+        _parse_date(decision.get("settled_asof"))
+        if decision_target == "executed"
+        else None
+    )
+    decision_clock = settled_date if decision_target == "executed" else asof_date
+    if decision_clock is None or decision_clock.isoformat() != expected_date:
         return (
             f"{job_id}: decision stale "
-            f"(asof={asof_date.isoformat() if asof_date else 'missing'}, "
+            f"(clock={decision_clock.isoformat() if decision_clock else 'missing'}, "
             f"expected={expected_date})"
         )
     if target in _FORBIDDEN_TARGETS or decision_target in _FORBIDDEN_TARGETS:
@@ -223,9 +229,10 @@ def _decision_failure(
         if decision_target == "executed":
             if decision.get("execution_evidence_status") != "receipt_verified":
                 return f"{job_id}: executed decision lacks a verified execution receipt"
-            settled_date = _parse_date(decision.get("settled_asof"))
             if settled_date is None:
                 return f"{job_id}: executed decision settled_asof is missing or invalid"
+            if asof_date is None:
+                return f"{job_id}: executed decision asof is missing or invalid"
             if settled_date < asof_date:
                 return f"{job_id}: executed decision settled before decision acceptance"
         return None

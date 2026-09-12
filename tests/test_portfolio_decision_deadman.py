@@ -108,10 +108,9 @@ class PortfolioDecisionDeadmanTests(unittest.TestCase):
 
     def test_scheduler_and_decision_targets_must_match(self):
         payload = healthy_snapshot()
-        payload["decisions"]["autonomous"]["target_status"] = "executed"
-        payload["decisions"]["autonomous"][
-            "execution_evidence_status"
-        ] = "receipt_verified"
+        payload["decisions"]["autonomous"].update(
+            target_status="rejected_packet_gate", decision_effective=False,
+        )
         failures = deadman.evaluate(payload, now=NOW)
         self.assertTrue(
             any(
@@ -136,13 +135,47 @@ class PortfolioDecisionDeadmanTests(unittest.TestCase):
     def test_warning_with_non_governed_target_fails(self):
         payload = healthy_snapshot()
         payload["jobs"]["autonomous_daily"].update(
-            last_status="warn", last_severity="ADVISORY_ONLY",
+            last_status="warn", last_severity="FREEZE",
             last_reason="manual_attention", last_target_status="queued",
         )
         failures = deadman.evaluate(payload, now=NOW)
         self.assertTrue(
             any(
                 "autonomous_daily" in failure and "non-governed" in failure
+                for failure in failures
+            ),
+            failures,
+        )
+
+    def test_market_closed_skip_requires_advisory_severity(self):
+        payload = healthy_snapshot()
+        payload["jobs"]["autonomous_daily"].update(
+            last_status="skip", last_severity="FREEZE",
+            last_reason="market_closed", last_target_status=None,
+        )
+        failures = deadman.evaluate(payload, now=NOW)
+        self.assertTrue(
+            any(
+                "autonomous_daily" in failure and "skip severity mismatch" in failure
+                for failure in failures
+            ),
+            failures,
+        )
+
+    def test_governed_warning_requires_freeze_severity(self):
+        payload = healthy_snapshot()
+        payload["jobs"]["autonomous_daily"].update(
+            last_status="warn", last_severity="ADVISORY_ONLY",
+            last_reason="rejected_packet_gate",
+            last_target_status="rejected_packet_gate",
+        )
+        payload["decisions"]["autonomous"].update(
+            target_status="rejected_packet_gate", decision_effective=False,
+        )
+        failures = deadman.evaluate(payload, now=NOW)
+        self.assertTrue(
+            any(
+                "autonomous_daily" in failure and "warn severity mismatch" in failure
                 for failure in failures
             ),
             failures,
@@ -166,7 +199,8 @@ class PortfolioDecisionDeadmanTests(unittest.TestCase):
     def test_market_closed_is_the_only_accepted_skip(self):
         payload = healthy_snapshot()
         payload["jobs"]["autonomous_daily"].update(
-            last_status="skip", last_reason="market_closed", last_target_status=None,
+            last_status="skip", last_severity="ADVISORY_ONLY",
+            last_reason="market_closed", last_target_status=None,
         )
         payload["decisions"]["autonomous"] = {
             "asof": "2026-09-10",
@@ -260,7 +294,6 @@ class PortfolioDecisionDeadmanTests(unittest.TestCase):
 
     def test_executed_settlement_uses_settled_asof_clock(self):
         payload = healthy_snapshot()
-        payload["jobs"]["autonomous_daily"]["last_target_status"] = "executed"
         payload["decisions"]["autonomous"].update(
             asof="2026-09-10", settled_asof="2026-09-11",
             target_status="executed", decision_effective=True,
@@ -273,7 +306,7 @@ class PortfolioDecisionDeadmanTests(unittest.TestCase):
         payload["jobs"]["autonomous_daily"]["last_target_status"] = "executed"
         payload["decisions"]["autonomous"].update(
             target_status="executed", decision_effective=True,
-            execution_evidence_status="none",
+            execution_evidence_status="none", settled_asof="2026-09-11",
         )
         failures = deadman.evaluate(payload, now=NOW)
         self.assertTrue(
@@ -284,9 +317,10 @@ class PortfolioDecisionDeadmanTests(unittest.TestCase):
             failures,
         )
 
-        payload["decisions"]["autonomous"][
-            "execution_evidence_status"
-        ] = "receipt_verified"
+        payload["decisions"]["autonomous"].update(
+            execution_evidence_status="receipt_verified",
+            settled_asof="2026-09-11",
+        )
         self.assertEqual(deadman.evaluate(payload, now=NOW), [])
 
     def test_stale_decision_with_current_run_fails(self):
