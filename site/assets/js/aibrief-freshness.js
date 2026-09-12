@@ -204,7 +204,7 @@
       function isBriefIntent(target) {
         if (!target || typeof target.closest !== "function") return false;
         return Boolean(target.closest(
-          BRIEF_SELECTOR + ', [id*="aibrief"], [onclick*="aibrief"]'
+          BRIEF_SELECTOR + ', .brief-tab-btn[data-lens], [id*="aibrief"], [onclick*="aibrief"]'
         ));
       }
 
