@@ -17,7 +17,24 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  trust-gate:
+    name: refuse-non-main-workflow-definition
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: require the protected-main workflow definition
+        env:
+          TRUSTED_REF: ${{ github.ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$TRUSTED_REF" = refs/heads/main || {
+            echo "::error title=portfolio-deadman-trust::secret-bearing check requires refs/heads/main"
+            exit 1
+          }
+
   check:
+    needs: trust-gate
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
