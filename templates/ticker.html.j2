@@ -1821,7 +1821,7 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
           {% if a.source %}<div class="r6d"><span class="k">{{ t('Source', '原始来源') }}</span><span class="vv">{{ a.source }}</span></div>{% endif %}
           {% if a.generation_id %}<div class="r6d"><span class="k">{{ t('Generation', '生成批次') }}</span><span class="vv ss-id">{{ a.generation_id }}</span></div>{% endif %}
           {% for c in a.clocks %}<div class="r6d"><span class="k">{{ t(c.en, c.zh) }}</span><span class="vv num">{{ c.v }}</span></div>{% endfor %}
-          <div class="r6d"><span class="k">{{ t('Correction state', '更正状态') }}</span><span class="vv">{{ a.correction if a.correction else t('None recorded', '无记录') }}</span></div>
+          <div class="r6d"><span class="k">{{ t('Correction state', '更正状态') }}</span><span class="vv">{{ t(a.correction_en, a.correction_zh) if a.correction_en else t('None recorded', '无记录') }}</span></div>
         </div>
       </section>
 
