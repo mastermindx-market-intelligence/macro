@@ -1,67 +1,67 @@
 {
-  "ts": "2026-09-12T00:34:26+00:00",
-  "main_sha": "9aa99100fae8403a34ddf0ce69fe748601d824a4",
+  "ts": "2026-09-12T07:28:06+00:00",
+  "main_sha": "4d70f6d7eec514ee36b6e915619d26e4ede70d74",
   "red_required": [
     {
-      "name": "sweep",
-      "conclusion": "cancelled",
+      "name": "health",
+      "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34661435028/job/103464578929"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34674560321/job/103501975689"
     },
     {
-      "name": "sweep",
-      "conclusion": "cancelled",
+      "name": "research-vault-source-url",
+      "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34661430090/job/103464565192"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34674560321/job/103501975312"
     },
     {
       "name": "publish",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34661089132/job/103463566460"
-    },
-    {
-      "name": "font-ui-defined",
-      "conclusion": "cancelled",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34647091501/job/103420367429"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34674498157/job/103501803869"
     },
     {
       "name": "tier-gate",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34647091501/job/103420367377"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34673560220/job/103499297442"
     },
     {
       "name": "free-content-estate",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34647091501/job/103420367359"
-    },
-    {
-      "name": "engine-render-guards",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34647091501/job/103420367339"
-    },
-    {
-      "name": "template-site-sync",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34647091501/job/103420367311"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34673560220/job/103499297347"
     },
     {
       "name": "workflow-yaml",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34647091501/job/103420367297"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34673560220/job/103499297333"
+    },
+    {
+      "name": "engine-render-guards",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34673560220/job/103499297327"
+    },
+    {
+      "name": "font-ui-defined",
+      "conclusion": "cancelled",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34673560220/job/103499297313"
+    },
+    {
+      "name": "template-site-sync",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34673560220/job/103499297296"
     }
   ],
   "green": false,
-  "consecutive_failures": 127,
+  "consecutive_failures": 128,
   "sensed_shas": [
-    "9aa99100fae8403a34ddf0ce69fe748601d824a4",
-    "8900fdadaae4cec450eec6c61b94dd2728465d4d"
+    "4d70f6d7eec514ee36b6e915619d26e4ede70d74",
+    "4ac6605286c3d54bb5394f13186fa45821d75c5f"
   ],
   "heartbeat_degraded": false
 }
