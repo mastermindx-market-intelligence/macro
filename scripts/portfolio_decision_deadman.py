@@ -186,6 +186,8 @@ def _evaluate_book(snapshot: Mapping[str, Any], book: str, observed_at: dt.datet
     elif status == "warn" and (
         target.startswith("rejected_") or target.startswith("frozen_")
     ):
+        if decision.get("decision_effective") is not False:
+            return _alert(book, due, "governed_hold_marked_effective", job, decision)
         state = "GOVERNED_HOLD"
     else:
         return _alert(book, due, reason or "invalid_scheduler_outcome", job, decision)
