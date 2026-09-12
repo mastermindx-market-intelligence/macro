@@ -2,62 +2,55 @@
   "schema": "master_brief.v2",
   "lens": "macro",
   "is_context_only": true,
-  "generated_at": "2026-09-09T10:11:56.500152+00:00",
-  "model": "gpt-5.6-sol",
-  "served_by": "codex",
-  "state_asof": "2026-09-08",
+  "generated_at": "2026-09-11T10:11:07.150442+00:00",
+  "model": "deepseek-v4-pro",
+  "served_by": "deepseek",
+  "state_asof": "2026-09-10",
   "tldr": [
-    "Main driver: Chip stocks lead, but the market remains narrow.",
-    "Regime shift: Stagflation is new, with Reflation gaining ground.",
-    "Credit calm: Bonds and credit are not worried about stocks.",
-    "China weak: China and Hong Kong remain in a growth scare.",
-    "What to do: Get ready"
+    "Policy puzzle: Officials want lower long-term borrowing costs, but are staging a tough-on-inflation stance to buy credibility.",
+    "Map is shifting: The growth-scare label is failing its own test and drifting toward a reflation read.",
+    "Oil leads: A clear oil spike is the day's visible driver, lifting energy and inflation expectations.",
+    "Credit stays calm: Junk-debt stress is low and the options market is relaxed \u2014 no panic yet.",
+    "What to do: Watch \u2014 don't chase."
   ],
-  "summary": "Risk appetite remains intact, but narrow chip leadership, restrictive rates, and Asian weakness keep the new regime unsettled.",
-  "regime_read": "The US has just moved into Stagflation on the map, so treat it as a change in odds, not a settled outcome. Reflation is gaining ground as recent growth improves and inflation cools.\n\nChip stocks are today\u2019s main driver. Their leadership is narrow, while broader participation lacks conviction.",
+  "summary": "A hawkish Fed surface hides a structural push for cheaper long-term money, even as oil and inflation drift upward.",
+  "regime_read": "We are still marked as Stagflation on the map, but the label is in transition and the underlying numbers now point toward Reflation. Growth has strengthened over the past week, while inflation has warmed sharply in the past month. Today's dominant driver is an oil shock \u2014 energy leads, inflation expectations are up, and that colors everything else.",
   "conflicts": [
-    "Market breadth: Stock prices show narrow chip leadership, while bonds and credit stay calm \u2014 risk appetite holds, but participation is thin.",
-    "Global split: US risk appetite remains firm, while China and Hong Kong face weak growth and contracting liquidity \u2014 overseas support is missing.",
-    "Liquidity split: US liquidity is expanding, but real yields remain restrictive \u2014 rate-sensitive assets still face pressure."
+    "Bond desk: A soft dollar with rising real yields is leaning against US and emerging-market stocks, yet the stock tape stays risk-on.",
+    "Policy desk: The Fed sounds hawkish on paper, but the administration is quietly engineering lower long-term rates \u2014 watch the structure, not the rhetoric."
   ],
   "rotation_check": null,
   "transmission": [
-    "If restrictive real yields keep rising \u2192 long-duration technology, Bitcoin, and long bonds feel more pressure",
-    "If the soft dollar keeps up \u2192 pressure on US and emerging-market stocks persists"
+    "If the oil spike keeps up \u2192 inflation expectations stay elevated and the Fed's tough talk gets harder to walk back.",
+    "If the dollar keeps softening \u2192 pressure builds on US and emerging-market stocks, even with calm credit."
   ],
   "watch_items": [
-    "Broader stock leadership: raises confidence in the risk-on move",
-    "Chip leadership reverses: today\u2019s main driver is fading",
-    "China liquidity stops contracting: overseas risk appetite may recover",
-    "Growth keeps improving: strengthens the drift toward Reflation"
+    "Oil reversal: A drop back would fade the inflation fingerprint fast.",
+    "Regime confirmation: Two days away from a label flip if growth stays positive.",
+    "Credit spread widening: Junk-debt stress near 2.7 percent \u2014 any jump signals caution.",
+    "Fed decision Friday: The dot plot shows whether the market or the Fed blinks first."
   ],
-  "confidence": "low",
+  "confidence": "medium",
   "theses": [],
-  "raw_text": "{\"tldr\":[\"Main driver: Chip stocks lead, but the market remains narrow.\",\"Regime shift: Stagflation is new, with Reflation gaining ground.\",\"Credit calm: Bonds and credit are not worried about stocks.\",\"China weak: China and Hong Kong remain in a growth scare.\",\"What to do: Get ready\"],\"summary\":\"Risk appetite remains intact, but narrow chip leadership, restrictive rates, and Asian weakness keep the new regime unsettled.\",\"regime_read\":\"The US has just moved into Stagflation on the map, so treat it as a change in odds, not a settled outcome. Reflation is gaining ground as recent growth improves and inflation cools.\\n\\nChip stocks are today\u2019s main driver. Their leadership is narrow, while broader participation lacks conviction.\",\"conflicts\":[\"Market breadth: Stock prices show narrow chip leadership, while bonds and credit stay calm \u2014 risk appetite holds, but participation is thin.\",\"Global split: US risk appetite remains firm, while China and Hong Kong face weak growth and contracting liquidity \u2014 overseas support is missing.\",\"Liquidity split: US liquidity is expanding, but real yields remain restrictive \u2014 rate-sensitive assets still face pressure.\"],\"transmission\":[\"If restrictive real yields keep rising \u2192 long-duration technology, Bitcoin, and long bonds feel more pressure\",\"If the soft dollar keeps up \u2192 pressure on US and emerging-market stocks persists\"],\"watch_items\":[\"Broader stock leadership: raises confidence in the risk-on move\",\"Chip leadership reverses: today\u2019s main driver is fading\",\"China liquidity stops contracting: overseas risk appetite may recover\",\"Growth keeps improving: strengthens the drift toward Reflation\"],\"confidence\":\"low\",\"forward_watch\":[{\"date\":\"2026-09-10\",\"label\":\"PPI (producer prices)\",\"kind\":\"PPI\",\"note\":\"Tests whether inflation pressure is still feeding through production costs.\"},{\"date\":\"2026-09-11\",\"label\":\"CPI (consumer prices)\",\"kind\":\"CPI\",\"note\":\"The key test for sticky inflation and restrictive rates.\"},{\"date\":\"2026-09-16\",\"label\":\"FOMC rate decision (SEP \u00b7 dot-plot)\",\"kind\":\"FOMC\",\"note\":\"Watch whether the Fed maintains its hawkish hold.\"}],\"forward_read\":\"Inflation data arrives before the Fed decision, making price pressure the main test for the Reflation drift.\"}",
+  "raw_text": "{\n  \"tldr\": [\n    \"Policy puzzle: Officials want lower long-term borrowing costs, but are staging a tough-on-inflation stance to buy credibility.\",\n    \"Map is shifting: The growth-scare label is failing its own test and drifting toward a reflation read.\",\n    \"Oil leads: A clear oil spike is the day's visible driver, lifting energy and inflation expectations.\",\n    \"Credit stays calm: Junk-debt stress is low and the options market is relaxed \u2014 no panic yet.\",\n    \"What to do: Watch \u2014 don't chase.\"\n  ],\n  \"summary\": \"A hawkish Fed surface hides a structural push for cheaper long-term money, even as oil and inflation drift upward.\",\n  \"regime_read\": \"We are still marked as Stagflation on the map, but the label is in transition and the underlying numbers now point toward Reflation. Growth has strengthened over the past week, while inflation has warmed sharply in the past month. Today's dominant driver is an oil shock \u2014 energy leads, inflation expectations are up, and that colors everything else.\",\n  \"conflicts\": [\n    \"Bond desk: A soft dollar with rising real yields is leaning against US and emerging-market stocks, yet the stock tape stays risk-on.\",\n    \"Policy desk: The Fed sounds hawkish on paper, but the administration is quietly engineering lower long-term rates \u2014 watch the structure, not the rhetoric.\"\n  ],\n  \"transmission\": [\n    \"If the oil spike keeps up \u2192 inflation expectations stay elevated and the Fed's tough talk gets harder to walk back.\",\n    \"If the dollar keeps softening \u2192 pressure builds on US and emerging-market stocks, even with calm credit.\"\n  ],\n  \"watch_items\": [\n    \"Oil reversal: A drop back would fade the inflation fingerprint fast.\",\n    \"Regime confirmation: Two days away from a label flip if growth stays positive.\",\n    \"Credit spread widening: Junk-debt stress near 2.7 percent \u2014 any jump signals caution.\",\n    \"Fed decision Friday: The dot plot shows whether the market or the Fed blinks first.\"\n  ],\n  \"confidence\": \"medium\",\n  \"forward_watch\": [\n    {\n      \"date\": \"2026-09-11\",\n      \"kind\": \"CPI\",\n      \"label\": \"CPI (consumer prices)\",\n      \"note\": \"Today's inflation print lands after oil led and breakevens rose \u2014 the model sees a hot reading as the most likely outcome.\"\n    },\n    {\n      \"date\": \"2026-09-16\",\n      \"kind\": \"FOMC\",\n      \"label\": \"FOMC rate decision (SEP \\u00b7 dot-plot)\",\n      \"note\": \"The quarter's policy dot plot updates this week \u2014 it will test whether the market or the Fed is more hawkish.\"\n    }\n  ],\n  \"forward_read\": \"The calendar is centered on the inflation print today and the Fed decision on the 16th. A hot inflation reading would deepen the stagflationary split that the policy desk has been tracking, while a cool one would weaken the case for the hawkish setup. The Fed dot plot on the 16th is the next clean read on which side \u2014 the market or the central bank \u2014 is pricing the right path.\"\n}",
   "degraded_reason": null,
   "disclaimer": "Context only \u2014 not a signal. This is an AI-generated SYNTHESIS of the dashboards' own deterministic outputs. It does not feed any score, signal or allocation, and it can be wrong or overconfident. Use it as a research read; verify every claim against the underlying dashboard it cites. Effective sample sizes on macro regimes are small \u2014 treat cross-asset 'reads' as odds, not forecasts.",
   "style_flags": [],
   "forward_watch": [
     {
-      "date": "2026-09-10",
-      "label": "PPI (producer prices)",
-      "kind": "PPI",
-      "note": "Tests whether inflation pressure is still feeding through production costs."
-    },
-    {
       "date": "2026-09-11",
       "label": "CPI (consumer prices)",
       "kind": "CPI",
-      "note": "The key test for sticky inflation and restrictive rates."
+      "note": "Today's inflation print lands after oil led and breakevens rose \u2014 the model sees a hot reading as the most likely outcom"
     },
     {
       "date": "2026-09-16",
       "label": "FOMC rate decision (SEP \u00b7 dot-plot)",
       "kind": "FOMC",
-      "note": "Watch whether the Fed maintains its hawkish hold."
+      "note": "The quarter's policy dot plot updates this week \u2014 it will test whether the market or the Fed is more hawkish."
     }
   ],
-  "forward_read": "Inflation data arrives before the Fed decision, making price pressure the main test for the Reflation drift.",
+  "forward_read": "The calendar is centered on the inflation print today and the Fed decision on the 16th. A hot inflation reading would deepen the stagflationary split that the policy desk has been tracking, while a cool one would weaken the case for the hawkish setup. The Fed dot plot on the 16th is the next clean read on which side \u2014 the market or the central bank \u2014 is pricing the right path.",
   "nw_context_used": true,
   "cortex_status": "absent",
   "refresh_days": 1,
@@ -66,8 +59,8 @@
       "key": "regime",
       "label_en": "Regime",
       "label_zh": "\u5e02\u573a\u683c\u5c40",
-      "value_en": "Stagflation",
-      "value_zh": "\u6ede\u80c0",
+      "value_en": "Stagflation \u00b7 shifting",
+      "value_zh": "\u6ede\u80c0 \u00b7 \u8f6c\u6362\u4e2d",
       "tone": "warn"
     },
     {
@@ -90,52 +83,51 @@
       "key": "bonds",
       "label_en": "Bonds vs stocks",
       "label_zh": "\u503a\u80a1\u5173\u7cfb",
-      "value_en": "Agree",
-      "value_zh": "\u4e00\u81f4",
-      "tone": "good"
+      "value_en": "Disagree \u2014 bonds worried",
+      "value_zh": "\u5206\u6b67 \u2014 \u503a\u5e02\u62c5\u5fe7",
+      "tone": "warn"
     },
     {
       "key": "credit",
       "label_en": "Credit",
       "label_zh": "\u4fe1\u7528",
-      "value_en": "Tight",
-      "value_zh": "\u504f\u7d27",
-      "tone": "good"
+      "value_en": "Tight, but widening",
+      "value_zh": "\u504f\u7d27\u4f46\u5728\u8d70\u5bbd",
+      "tone": "warn"
     },
     {
       "key": "driver",
       "label_en": "What's moving markets",
       "label_zh": "\u5f53\u524d\u4e3b\u5bfc",
-      "value_en": "AI / semis",
-      "value_zh": "AI / semis",
+      "value_en": "Oil shock",
+      "value_zh": "Oil shock",
       "tone": "info"
     }
   ],
   "zh": {
-    "summary": "\u98ce\u9669\u504f\u597d\u4f9d\u7136\u7a33\u56fa\uff0c\u4f46\u82af\u7247\u80a1\u9886\u6da8\u9762\u72ed\u7a84\u3001\u5229\u7387\u5177\u6709\u9650\u5236\u6027\u4ee5\u53ca\u4e9a\u6d32\u5e02\u573a\u75b2\u8f6f\uff0c\u4f7f\u65b0\u683c\u5c40\u4ecd\u4e0d\u7a33\u5b9a\u3002",
-    "regime_read": "\u7f8e\u56fd\u5728\u56fe\u8868\u4e0a\u521a\u521a\u8fdb\u5165\u6ede\u80c0\u533a\u95f4\uff0c\u56e0\u6b64\u5e94\u5c06\u5176\u89c6\u4e3a\u6982\u7387\u53d8\u5316\uff0c\u800c\u975e\u65e2\u5b9a\u7ed3\u679c\u3002\u968f\u7740\u8fd1\u671f\u589e\u957f\u6539\u5584\u3001\u901a\u80c0\u964d\u6e29\uff0c\u518d\u901a\u80c0\u60c5\u666f\u7684\u53ef\u80fd\u6027\u6b63\u5728\u4e0a\u5347\u3002\n\n\u82af\u7247\u80a1\u662f\u4eca\u65e5\u5e02\u573a\u7684\u4e3b\u8981\u9a71\u52a8\u529b\u3002\u5176\u9886\u6da8\u8303\u56f4\u8f83\u7a84\uff0c\u800c\u66f4\u5e7f\u6cdb\u7684\u5e02\u573a\u53c2\u4e0e\u7f3a\u4e4f\u4fe1\u5fc3\u3002",
+    "summary": "\u9e70\u6d3e\u7f8e\u8054\u50a8\u7684\u8868\u8c61\u4e4b\u4e0b\uff0c\u662f\u4e00\u573a\u538b\u4f4e\u957f\u671f\u8d44\u91d1\u6210\u672c\u7684\u7ed3\u6784\u6027\u63a8\u52a8\uff0c\u5373\u4fbf\u6cb9\u4ef7\u4e0e\u901a\u80c0\u6b63\u6084\u7136\u4e0a\u884c\u3002",
+    "regime_read": "\u5730\u56fe\u4e0a\u6211\u4eec\u4ecd\u88ab\u6807\u8bb0\u4e3a\u6ede\u80c0\uff0c\u4f46\u8fd9\u4e00\u6807\u7b7e\u6b63\u5728\u8f6c\u53d8\uff0c\u5e95\u5c42\u6570\u636e\u5982\u4eca\u5df2\u6307\u5411\u518d\u901a\u80c0\u3002\u8fc7\u53bb\u4e00\u5468\u589e\u957f\u6709\u6240\u8d70\u5f3a\uff0c\u800c\u901a\u80c0\u5728\u8fc7\u53bb\u4e00\u4e2a\u6708\u6025\u5267\u5347\u6e29\u3002\u5f53\u524d\u7684\u4e3b\u5bfc\u9a71\u52a8\u662f\u77f3\u6cb9\u51b2\u51fb\u2014\u2014\u80fd\u6e90\u9886\u6da8\uff0c\u901a\u80c0\u9884\u671f\u4e0a\u884c\uff0c\u8fd9\u7ed9\u5176\u4ed6\u4e00\u5207\u8499\u4e0a\u9634\u5f71\u3002",
     "rotation_check": null,
     "tldr": [
-      "\u4e3b\u8981\u9a71\u52a8\u529b\uff1a\u82af\u7247\u80a1\u9886\u6da8\uff0c\u4f46\u5e02\u573a\u6da8\u52bf\u4ecd\u8f83\u96c6\u4e2d\u3002",
-      "\u683c\u5c40\u8f6c\u53d8\uff1a\u6ede\u80c0\u6210\u4e3a\u65b0\u4e3b\u5bfc\uff0c\u518d\u901a\u80c0\u52bf\u5934\u589e\u5f3a\u3002",
-      "\u4fe1\u8d37\u5e73\u7a33\uff1a\u503a\u5238\u548c\u4fe1\u8d37\u5e02\u573a\u5e76\u4e0d\u62c5\u5fe7\u80a1\u5e02\u3002",
-      "\u4e2d\u56fd\u75b2\u5f31\uff1a\u4e2d\u56fd\u5185\u5730\u548c\u9999\u6e2f\u4ecd\u5904\u4e8e\u589e\u957f\u6050\u614c\u4e4b\u4e2d\u3002",
-      "\u5e94\u5bf9\u7b56\u7565\uff1a\u505a\u597d\u51c6\u5907"
+      "\u653f\u7b56\u96be\u9898\uff1a\u5b98\u5458\u4eec\u5e0c\u671b\u964d\u4f4e\u957f\u671f\u501f\u8d37\u6210\u672c\uff0c\u5374\u5728\u5851\u9020\u6297\u901a\u80c0\u7684\u5f3a\u786c\u59ff\u6001\u4ee5\u83b7\u53d6\u4fe1\u8a89\u3002",
+      "\u683c\u5c40\u6b63\u5728\u8f6c\u53d8\uff1a\u589e\u957f\u6050\u614c\u7684\u6807\u7b7e\u6b63\u65e0\u6cd5\u81ea\u5706\u5176\u8bf4\uff0c\u9010\u6e10\u8f6c\u5411\u518d\u901a\u80c0\u7684\u89e3\u8bfb\u3002",
+      "\u77f3\u6cb9\u9886\u6da8\uff1a\u6cb9\u4ef7\u7684\u660e\u663e\u98d9\u5347\u662f\u4eca\u65e5\u53ef\u89c1\u7684\u9a71\u52a8\u56e0\u7d20\uff0c\u63a8\u9ad8\u4e86\u80fd\u6e90\u548c\u901a\u80c0\u9884\u671f\u3002",
+      "\u4fe1\u8d37\u4fdd\u6301\u5e73\u9759\uff1a\u5783\u573e\u503a\u538b\u529b\u8f83\u5c0f\uff0c\u671f\u6743\u5e02\u573a\u4e5f\u8f83\u4e3a\u5bbd\u677e\u2014\u2014\u5c1a\u65e0\u6050\u614c\u8ff9\u8c61\u3002",
+      "\u5e94\u5bf9\u7b56\u7565\uff1a\u89c2\u671b\u2014\u2014\u4e0d\u8981\u8ffd\u6da8\u3002"
     ],
     "conflicts": [
-      "\u5e02\u573a\u5e7f\u5ea6\uff1a\u80a1\u4ef7\u5448\u73b0\u82af\u7247\u80a1\u9886\u6da8\u9762\u72ed\u7a84\u7684\u5c40\u9762\uff0c\u800c\u503a\u5238\u548c\u4fe1\u8d37\u5e02\u573a\u4fdd\u6301\u5e73\u7a33\u2014\u2014\u98ce\u9669\u504f\u597d\u4ecd\u5728\uff0c\u4f46\u53c2\u4e0e\u5ea6\u8f83\u4f4e\u3002",
-      "\u5168\u7403\u5206\u5316\uff1a\u7f8e\u56fd\u98ce\u9669\u504f\u597d\u4f9d\u7136\u7a33\u56fa\uff0c\u800c\u4e2d\u56fd\u5185\u5730\u548c\u9999\u6e2f\u9762\u4e34\u589e\u957f\u75b2\u8f6f\u53ca\u6d41\u52a8\u6027\u6536\u7f29\u2014\u2014\u7f3a\u4e4f\u6d77\u5916\u652f\u6491\u3002",
-      "\u6d41\u52a8\u6027\u5206\u5316\uff1a\u7f8e\u56fd\u6d41\u52a8\u6027\u6b63\u5728\u6269\u5f20\uff0c\u4f46\u5b9e\u9645\u6536\u76ca\u7387\u4ecd\u5177\u6709\u9650\u5236\u6027\u2014\u2014\u5229\u7387\u654f\u611f\u578b\u8d44\u4ea7\u4f9d\u7136\u627f\u538b\u3002"
+      "\u503a\u5238\u90e8\u95e8\uff1a\u7f8e\u5143\u8d70\u8f6f\u53e0\u52a0\u5b9e\u9645\u6536\u76ca\u7387\u4e0a\u5347\uff0c\u6b63\u5728\u538b\u5236\u7f8e\u80a1\u4e0e\u65b0\u5174\u5e02\u573a\u80a1\u7968\uff0c\u4f46\u80a1\u5e02\u76d8\u9762\u4ecd\u4fdd\u6301\u98ce\u9669\u504f\u597d\u3002",
+      "\u653f\u7b56\u90e8\u95e8\uff1a\u7f8e\u8054\u50a8\u5728\u7eb8\u9762\u4e0a\u6001\u5ea6\u9e70\u6d3e\uff0c\u4f46\u653f\u5e9c\u6b63\u6084\u7136\u63a8\u52a8\u66f4\u4f4e\u7684\u957f\u671f\u5229\u7387\u2014\u2014\u770b\u7ed3\u6784\uff0c\u800c\u975e\u8a00\u8f9e\u3002"
     ],
     "transmission": [
-      "\u5982\u679c\u5177\u6709\u9650\u5236\u6027\u7684\u5b9e\u9645\u6536\u76ca\u7387\u7ee7\u7eed\u4e0a\u5347 \u2192 \u957f\u4e45\u671f\u79d1\u6280\u80a1\u3001Bitcoin\u548c\u957f\u671f\u503a\u5238\u5c06\u9762\u4e34\u66f4\u5927\u538b\u529b",
-      "\u82e5\u7f8e\u5143\u6301\u7eed\u8d70\u8f6f \u2192 \u7f8e\u80a1\u548c\u65b0\u5174\u5e02\u573a\u80a1\u7968\u7684\u538b\u529b\u5c06\u5ef6\u7eed"
+      "\u82e5\u6cb9\u4ef7\u6da8\u52bf\u6301\u7eed\u2192\u901a\u80c0\u9884\u671f\u5c06\u7ef4\u6301\u9ad8\u4f4d\uff0c\u7f8e\u8054\u50a8\u7684\u5f3a\u786c\u8868\u6001\u5c06\u66f4\u96be\u6536\u56de\u3002",
+      "\u82e5\u7f8e\u5143\u7ee7\u7eed\u8d70\u8f6f\u2192\u7f8e\u80a1\u4e0e\u65b0\u5174\u5e02\u573a\u80a1\u7968\u7684\u538b\u529b\u5c06\u7d2f\u79ef\uff0c\u5373\u4fbf\u4fe1\u7528\u5e02\u573a\u4f9d\u7136\u5e73\u9759\u3002"
     ],
     "watch_items": [
-      "\u80a1\u7968\u9886\u6da8\u8303\u56f4\u6269\u5927\uff1a\u589e\u5f3a\u5bf9\u98ce\u9669\u504f\u597d\u884c\u60c5\u7684\u4fe1\u5fc3",
-      "\u82af\u7247\u80a1\u9886\u6da8\u6001\u52bf\u9006\u8f6c\uff1a\u4eca\u65e5\u4e3b\u8981\u9a71\u52a8\u529b\u6b63\u5728\u51cf\u5f31",
-      "\u4e2d\u56fd\u6d41\u52a8\u6027\u505c\u6b62\u6536\u7f29\uff1a\u6d77\u5916\u98ce\u9669\u504f\u597d\u6216\u5c06\u56de\u5347",
-      "\u589e\u957f\u6301\u7eed\u6539\u5584\uff1a\u5f3a\u5316\u5411\u518d\u901a\u80c0\u65b9\u5411\u6f14\u53d8\u7684\u8d8b\u52bf"
+      "\u6cb9\u4ef7\u53cd\u8f6c\uff1a\u4e00\u56de\u8dcc\u5c31\u4f1a\u8fc5\u901f\u62b9\u53bb\u901a\u80c0\u75d5\u8ff9\u3002",
+      "\u4f53\u5236\u786e\u8ba4\uff1a\u82e5\u589e\u957f\u4fdd\u6301\u6b63\u503c\uff0c\u8ddd\u6807\u7b7e\u8f6c\u53d8\u4ec5\u5269\u4e24\u5929\u3002",
+      "\u4fe1\u7528\u5229\u5dee\u6269\u5927\uff1a\u5783\u573e\u503a\u538b\u529b\u63a5\u8fd12.7%\u2014\u2014\u4efb\u4f55\u8df3\u5347\u90fd\u9884\u793a\u8c28\u614e\u3002",
+      "\u7f8e\u8054\u50a8\u5468\u4e94\u51b3\u8bae\uff1a\u70b9\u9635\u56fe\u5c06\u63ed\u793a\u662f\u5e02\u573a\u8fd8\u662f\u7f8e\u8054\u50a8\u5148\u8ba9\u6b65\u3002"
     ]
   }
 }

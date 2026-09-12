@@ -1,6 +1,6 @@
 {
 "schema":"edgar.geo_revenue.v1",
-"updated":"2026-09-10T02:37:31.288276+00:00",
+"updated":"2026-09-12T02:40:12.478490+00:00",
 "by_ticker":{
 "AAPL":{
 "foreign_pct":63.5,
