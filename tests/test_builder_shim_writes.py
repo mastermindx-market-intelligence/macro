@@ -23,6 +23,8 @@ from __future__ import annotations
 
 import importlib
 import json
+import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -32,6 +34,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from lib import config  # noqa: E402
 from lib.pages import DBASE_MARKER  # noqa: E402
+from scripts.optimize_assets import _attach_aibrief_freshness, optimize  # noqa: E402
 
 ROOT = config.ROOT
 
@@ -231,3 +234,41 @@ def test_free_content_renders_every_family_with_shim(tmp_path):
 
     missing = [str(p.relative_to(site)) for p in pages if DBASE_MARKER not in p.read_text(errors="ignore")]
     assert not missing, f"{len(missing)} free-estate page(s) written without the shim: {missing[:10]}"
+
+
+# --------------------------------------------------------------------
+# AI Brief freshness — the same page-write/post-render asset family
+# --------------------------------------------------------------------
+
+_AIBRIEF_ASSET = "assets/js/aibrief-freshness.js"
+_AIBRIEF_CLIENT = ROOT / "site" / _AIBRIEF_ASSET
+
+
+def _write_aibrief_asset(site: Path) -> None:
+    asset = site / _AIBRIEF_ASSET
+    asset.parent.mkdir(parents=True, exist_ok=True)
+    asset.write_text("window.__aibriefFreshness = true;\n")
+
+
+def test_optimizer_attaches_one_versioned_freshness_client_and_is_idempotent(tmp_path: Path) -> None:
+    site = tmp_path / "site"
+    site.mkdir()
+    _write_aibrief_asset(site)
+    page = site / "macro.html"
+    page.write_text(
+        '<html><head></head><body><div class="aib2" data-lens="macro">'
+        '<span class="aib2-hdr-date">2026-09-09</span></div></body></html>'
+    )
+
+    assert optimize(site) == 1
+    out = page.read_text()
+    refs = re.findall(
+        r'<script src="assets/js/aibrief-freshness\.js\?v=[0-9a-f]{8}" defer></script>', out
+    )
+    assert len(refs) == 1
+    assert out.index(refs[0]) < out.lower().rindex("</body>")
+    assert optimize(site) == 0
+    assert page.read_text().count("aibrief-freshness.js") == 1
+
+
+def test_optimizer_refresh_client_is_depth
