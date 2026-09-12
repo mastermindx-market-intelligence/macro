@@ -1,0 +1,65 @@
+name: Materialize Prophet B2-0 repair
+
+on:
+  push:
+    branches:
+      - 'sol/prophet-b2-0-materialize-20260912'
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout transfer branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build exact reviewed repair commit
+        shell: bash
+        env:
+          TARGET_BRANCH: claude/prophet-entry-truth-b2-0-20260903
+          RESULT_BRANCH: sol/prophet-b2-0-materialized-b663ba4
+          EXPECTED_BASE: 0f09647fafbc27692abd483cec466cab87f5e13e
+          EXPECTED_TREE: b2ef4c556da6e5417f28f9131094b8329a40f484
+          EXPECTED_COMMIT: b663ba4e3f0184c8bd0bfa3601f5eeec9cb09e7f
+          PATCH_GZIP_SHA256: ae5d1d7105c01e3369de8afdf37dd70744836d03afba9671e2f50a42695fb37f
+          PATCH_SHA256: 10259f5f0b2991ff3efaa860e4396f7ec0a580c967750a0d2c1ec03047deb580
+        run: |
+          set -euo pipefail
+
+          cp _publish/repair.patch.gz /tmp/repair.patch.gz
+          test "$(sha256sum /tmp/repair.patch.gz | cut -d' ' -f1)" = "$PATCH_GZIP_SHA256"
+          gzip -dc /tmp/repair.patch.gz > /tmp/repair.patch
+          test "$(sha256sum /tmp/repair.patch | cut -d' ' -f1)" = "$PATCH_SHA256"
+
+          git fetch --no-tags origin "$TARGET_BRANCH"
+          test "$(git rev-parse FETCH_HEAD)" = "$EXPECTED_BASE"
+          git checkout --detach "$EXPECTED_BASE"
+          git apply --index --whitespace=error-all /tmp/repair.patch
+
+          tree="$(git write-tree)"
+          test "$tree" = "$EXPECTED_TREE"
+
+          export GIT_AUTHOR_NAME='chriswong6031-creator'
+          export GIT_AUTHOR_EMAIL='292968551+chriswong6031-creator@users.noreply.github.com'
+          export GIT_AUTHOR_DATE='1789245794 +0800'
+          export GIT_COMMITTER_NAME='chriswong6031-creator'
+          export GIT_COMMITTER_EMAIL='292968551+chriswong6031-creator@users.noreply.github.com'
+          export GIT_COMMITTER_DATE='1789245794 +0800'
+
+          cat > /tmp/commit-message <<'EOF'
+          fix(prophet): normalize B2-0 replay dates
+
+          Canonicalize all accepted ISO date spellings before temporal comparison, pin source-known reconstruction and baked-v1 evidence boundaries with regressions, and record the existing B1/Lab seam owed by B2-1.
+
+          Operation: prophet-entry-truth-b2-0-date-normalization-repair-20260912-sol-001
+          EOF
+          sed -i 's/^          //' /tmp/commit-message
+
+          commit="$(git commit-tree "$tree" -p "$EXPECTED_BASE" < /tmp/commit-message)"
+          test "$commit" = "$EXPECTED_COMMIT"
+          git push origin "$commit:refs/heads/$RESULT_BRANCH"
