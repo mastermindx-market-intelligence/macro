@@ -95,7 +95,7 @@
 {%- set _chg_payload = rd.change if (rd.change is defined and rd.change) else none -%}
 {%- set _chg = _chg_payload if (_chg_payload and _chg_payload.available is defined and _chg_payload.available) else none -%}
 {%- set _display_score_row = _chg_payload.score if (_chg_payload and _chg_payload.score is defined and _chg_payload.score) else none -%}
-{%- set _display_score = _display_score_row.current if (_display_score_row and _display_score_row.current is defined and _display_score_row.current is not none) else (rd.top_score if rd.top_score is defined else none) -%}
+{%- set _display_score = (rd.top_score_display if (rd.top_score_display is defined and rd.top_score_display is not none) else (_display_score_row.current if (_display_score_row and _display_score_row.current is defined and _display_score_row.current is not none) else (rd.top_score if rd.top_score is defined else none))) -%}
 {%- set _chg_score = _chg.score if (_chg and _chg.score is defined and _chg.score) else none -%}
 {%- set _chg_delta = _chg_score.delta if (_chg_score and _chg_score.delta is defined and _chg_score.delta is not none) else none -%}
 {%- set _chg_direction = _chg_score.direction if (_chg_score and _chg_score.direction is defined and _chg_score.direction) else ('rising' if _chg_delta is not none and _chg_delta > 0 else ('easing' if _chg_delta is not none and _chg_delta < 0 else 'flat')) -%}

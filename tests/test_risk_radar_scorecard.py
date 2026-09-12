@@ -636,6 +636,7 @@ def test_radar_card_preserves_decimal_and_renders_compact_velocity(monkeypatch) 
     }
     rd = _radar_to_rd(rr)
     assert rd["top_score"] == 66
+    assert rd["top_score_display"] == 65.7
     assert rd["change"] == change
 
     from engine.market_state_audit import _entry_from_snapshot as _market_state_entry
@@ -1099,6 +1100,15 @@ def test_publication_change_leg_vocabulary_matches_shared_card(key, expected) ->
     assert rra._LEG_DISPLAY[key] == expected
 
 
+def test_calm_radar_emits_typed_none_top_score_display() -> None:
+    """Additive display projection is typed absence on the calm/no-radar payload."""
+    from engine.market_state import _calm_radar
+
+    rd = _calm_radar()
+    assert rd["top_score"] is None
+    assert rd["top_score_display"] is None
+
+
 def test_radar_card_no_prior_still_renders_exact_current_score(monkeypatch, tmp_path) -> None:
     """First-publication display stays decimal-exact while the audit field stays legacy-rounded."""
     monkeypatch.setattr("engine.market_state._rr_scorecard_track", lambda market: None)
@@ -1116,6 +1126,7 @@ def test_radar_card_no_prior_still_renders_exact_current_score(monkeypatch, tmp_
     }
     rd = _radar_to_rd(rr)
     assert rd["top_score"] == 66
+    assert rd["top_score_display"] == 65.7
     env = Environment(loader=FileSystemLoader(str(ROOT / "templates")),
                       autoescape=True, undefined=StrictUndefined)
     tpl = env.from_string(

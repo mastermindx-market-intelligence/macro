@@ -597,9 +597,11 @@ def _radar_to_rd(rr: dict) -> dict:
     elif (rr.get("asof")
           and str(_change.get("current_asof") or "") != str(rr["asof"])):
         _change = None
-    # Keep the established integer audit field stable. The shared card reads the exact
-    # display decimal from the publication-change read model without changing ledger output.
+    # Keep the established integer audit field stable. Additive top_score_display is the
+    # exact one-decimal projection for the shared card (including first publication); ledger
+    # and market_state_audit.radar_top remain on the legacy rounded top_score.
     _top_audit = round(top) if top is not None else None
+    _top_display = round(float(top), 1) if top is not None else None
     # Explicit authority is emitted by current radar producers. For older artifacts, only an
     # actual loud alert may bind; a legacy caution payload is advisory by construction.
     _can_force = (bool(rr.get("can_force")) if "can_force" in rr else
@@ -619,6 +621,7 @@ def _radar_to_rd(rr: dict) -> dict:
         "state": state,
         "market": _mkt,
         "top_score": _top_audit,
+        "top_score_display": _top_display,
         "label_en": rr.get("dominant_label_en") or "calm",
         "label_zh": rr.get("dominant_label_zh") or "平静",
         "state_zh": _RADAR_ZH.get(state, state or ""),
@@ -876,7 +879,8 @@ def _radar_override(latest: dict, overrides: list) -> dict:
 def _calm_radar() -> dict:
     """The neutral radar payload for a market with no Risk-Radar source — the board
     simply omits the banner ({% if MS.radar.state %})."""
-    return {"state": None, "top_score": None, "label_en": "calm", "label_zh": "平静",
+    return {"state": None, "top_score": None, "top_score_display": None,
+            "label_en": "calm", "label_zh": "平静",
             "state_zh": "", "do_en": "", "do_zh": "", "gross": None,
             "dd5": None, "dd10": None, "dd21": None, "dd_lift": None,
             "dd_base": {"h5": None, "h10": None, "h21": None},
