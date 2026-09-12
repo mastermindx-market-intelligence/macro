@@ -21,6 +21,7 @@ import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
 from engine import btc_impulse_radar as R  # noqa: E402
+from engine import signal_evidence as E  # noqa: E402
 
 
 # --------------------------------------------------------------------------- #
@@ -64,6 +65,27 @@ def _neutral_sopr(n):
     return 1.0 + 0.004 * np.sin(np.arange(n) * 0.7)
 
 
+def _leading_gate(asof: str):
+    specs = {
+        "d2": ("down", 1.5, "Vol-of-vol jolt (DVOL range)"),
+        "d3": ("down", 1.3, "SOPR profit-take spike"),
+        "u1": ("up", 1.3, "SOPR capitulation (wash-out)"),
+    }
+    return {
+        "ok": True, "asof": asof, "all_pass": True,
+        "holdout_start": "2024-01-01", "label": "fwd(3d) +-5%",
+        "legs": {
+            key: {
+                "status": "leading", "pass": True, "dir": direction,
+                "label": label, "floor": floor, "min_holdout_n": 30,
+                "lift_holdout": 2.0, "perm_p": 0.01,
+                "n_fires_holdout": 40,
+            }
+            for key, (direction, floor, label) in specs.items()
+        },
+    }
+
+
 class _Store:
     """Stub for R.store.read — serves injected frames, else empty."""
     def __init__(self, frames):  # frames: {(ns,name): df}
@@ -73,7 +95,7 @@ class _Store:
         return self.frames.get((ns, name))
 
 
-def _run(sig, dvol=None, sopr=None, hourly=None):
+def _run(sig, dvol=None, sopr=None, hourly=None, gate=None):
     frames = {("vector", "signals"): sig}
     if dvol is not None:
         frames[("deribit", "dvol")] = dvol
@@ -87,16 +109,11 @@ def _run(sig, dvol=None, sopr=None, hourly=None):
     # verdict: these tests assert compute behaviour, not gate policy (that is
     # covered in test_btc_impulse_falsifier). Force an all-'leading' gate so a
     # real-world demotion (act points zeroed on disk) can't spuriously fail them.
-    import engine.btc_impulse_radar_backtest as bt
-    orig_gate = bt.load_gate
-    bt.load_gate = lambda: {"legs": {"d2": {"status": "leading"},
-                                     "d3": {"status": "leading"},
-                                     "u1": {"status": "leading"}}}
+    frozen_gate = gate if gate is not None else _leading_gate(str(sig.index[-1].date()))
     try:
-        return R.compute(sig)
+        return R.compute(sig, gate=frozen_gate, board_date=sig.index[-1].date())
     finally:
         R.store = orig
-        bt.load_gate = orig_gate
 
 
 # --------------------------------------------------------------------------- #
@@ -243,3 +260,32 @@ if __name__ == "__main__":
     for fn in fns:
         fn(); print(f"  ok  {fn.__name__}")
     print(f"\n{len(fns)} tests passed")
+
+
+def test_missing_gate_cannot_leave_act_points_live():
+    sig = _base_sig(drift=0.004)
+    idx = sig.index
+    ranges = _calm_ranges(len(idx)); ranges[-1] = 0.30
+    out = _run(
+        sig, dvol=_dvol(idx, ranges), sopr=_sopr(idx, _neutral_sopr(len(idx))),
+        gate={},
+    )
+    d2 = next(l for l in out["down"]["legs"] if l["key"] == "d2_dvol")
+    assert d2["points"] == 0.0
+    assert d2["demoted"] is True
+    assert d2["evidence"]["claim_eligible"] is False
+    assert d2["evidence"]["reason"] == "gate_unavailable"
+    assert out["down"]["act_live"] is False
+
+
+def test_radar_exposes_current_leg_passports_and_no_unconditional_validation():
+    sig = _base_sig()
+    idx = sig.index
+    gate = _leading_gate(str(idx[-1].date()))
+    gate["legs"]["u1"].update({"status": "insufficient_n", "pass": False})
+    out = _run(sig, dvol=_dvol(idx, _calm_ranges(len(idx))),
+               sopr=_sopr(idx, _neutral_sopr(len(idx))), gate=gate)
+    assert set(out["evidence"]) == {"d2", "d3", "u1"}
+    assert out["evidence"]["u1"]["status"] == "insufficient_n"
+    assert out["up"]["validated"] is False
+    assert "each leg = a verified" not in out["note"].lower()

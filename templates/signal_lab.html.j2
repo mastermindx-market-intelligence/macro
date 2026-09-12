@@ -239,6 +239,75 @@
   </div>
 </div>
 
+{%- set at = alert_trust if alert_trust is defined else {'present': False, 'rows': []} %}
+{% if at.present %}
+<div class="panel" id="signal-lab-btc-impulse">
+  <div class="tierhead">
+    <span class="dot d-display" style="align-self:center"></span>
+    <h2>{{ t('Current alert evidence', '当前警报证据') }}</h2>
+    <span class="bl">{{ t(
+      'A historical fire remains a fact. Current timing or action permission is a separate, expiring receipt.',
+      '历史触发仍是事实；当前择时或行动权限是另一张会过期的凭证。') }}</span>
+  </div>
+  <p class="ovl-note">{{ t(
+    'BTC impulse rows use the validator’s existing three-bar target. Each exact leg is judged independently; the all-pass summary never vetoes a separately eligible leg.',
+    'BTC 脉冲记录沿用验证器现有的三日目标。每个精确组成项独立判断；总汇总状态不会否决单独合格的组成项。') }}</p>
+  <div class="scroll"><table class="sl-table alert-trust-table">
+    <thead><tr>
+      <th>{{ t('Observation','观察项') }}</th>
+      <th>{{ t('Current status','当前状态') }}</th>
+      <th>{{ t('Declared target','既定目标') }}</th>
+      <th>{{ t('Current use','当前用途') }}</th>
+      <th>{{ t('Evidence receipt','证据凭证') }}</th>
+    </tr></thead>
+    <tbody>
+    {%- for r in at.rows %}
+      {%- set status_class = 'v-scored' if r.current_permitted else ('v-killed' if r.status == 'demoted' else ('v-pending' if r.status == 'insufficient_n' else 'v-display')) %}
+      <tr id="{{ r.anchor }}">
+        <td>
+          <div class="sig">{{ t(r.name, r.name_zh) }}<a class="anchor-link" href="#{{ r.anchor }}">#</a></div>
+          <div class="mkt">{{ t('Direction: ' ~ (r.direction or 'unknown'), '方向：' ~ ('下行' if r.direction == 'down' else ('上行' if r.direction == 'up' else '未知'))) }}</div>
+          <div class="extra">{{ t(r.purpose, r.purpose_zh) }}</div>
+        </td>
+        <td><span class="pill {{ status_class }}">{{ t(r.status_text, r.status_zh) }}</span></td>
+        <td>
+          <div class="sig">{{ t('BTC ±5% within ' ~ (r.target.bars or 3) ~ ' daily bars',
+                                  'BTC 在未来 ' ~ (r.target.bars or 3) ~ ' 个日线内波动 ±5%') }}</div>
+          <div class="src">{{ r.target.window or '(t,t+3d]' }}</div>
+        </td>
+        <td>
+          <strong>{{ t('May support a fresh matching event' if r.current_permitted else 'Observation only',
+                       r.permitted_use_zh) }}</strong>
+          <div class="extra">{{ t(r.limits, r.limits_zh) }}</div>
+        </td>
+        <td>
+          <details class="method">
+            <summary>{{ t('Open receipt','展开凭证') }}</summary>
+            <dl>
+              <dt>{{ t('Validation date','验证日期') }}</dt><dd>{{ r.validation_asof or t('Unavailable','不可用') }}</dd>
+              <dt>{{ t('Model version','模型版本') }}</dt>
+              <dd>{% if r.model_version %}{{ r.model_version }}{% else %}{{ t('Model version not declared','模型版本未声明') }}{% endif %}</dd>
+              <dt>{{ t('Observed rows','观测记录') }}</dt>
+              <dd>
+              {%- if r.stats %}
+                {%- for st in r.stats %}
+                  {{ st.leg }} · n={{ st.n_fires_holdout if st.n_fires_holdout is not none else '—' }} ·
+                  lift={{ st.lift_holdout if st.lift_holdout is not none else '—' }} ·
+                  p={{ st.perm_p if st.perm_p is not none else '—' }}{% if not loop.last %}<br>{% endif %}
+                {%- endfor %}
+              {%- else %}{{ t('No usable current row','无可用当前记录') }}{%- endif %}
+              </dd>
+              <dt>{{ t('Source','来源') }}</dt><dd>{{ at.source }}</dd>
+            </dl>
+          </details>
+        </td>
+      </tr>
+    {%- endfor %}
+    </tbody>
+  </table></div>
+</div>
+{% endif %}
+
 {% if frontier_rows %}
 <div class="panel">
   <div class="tierhead">
