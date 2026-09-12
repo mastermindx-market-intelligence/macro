@@ -1,4 +1,4 @@
-name: portfolio-recovery-governed-hold-red-once
+name: portfolio-recovery-final-deadman-green-once
 
 on:
   push:
@@ -11,26 +11,88 @@ permissions:
   contents: read
 
 concurrency:
-  group: portfolio-recovery-governed-hold-red-20260912
+  group: portfolio-recovery-final-deadman-green-20260912
   cancel-in-progress: false
 
 jobs:
-  governed-hold-regression-red:
+  exact-green-and-us-live-canary:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out the exact final monitor
+        uses: actions/checkout@v4
         with:
-          ref: b3c04dd789878db88c873586a0dbbd870d8d50c0
+          ref: c4679532fa0f1b0abcbbc7fa8d5521e5b3119c9b
           filter: blob:none
           persist-credentials: false
           sparse-checkout: |
             scripts/portfolio_decision_deadman.py
             tests/test_portfolio_decision_deadman.py
+            tests/test_portfolio_decision_deadman_cli.py
+            tests/test_portfolio_decision_deadman_contract.py
+            tests/test_portfolio_decision_deadman_execution.py
             tests/test_portfolio_decision_deadman_governed.py
+            tests/test_portfolio_decision_deadman_release.py
+            .github/workflows/portfolio-decision-deadman.yml
           sparse-checkout-cone-mode: false
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: python -m pip install --disable-pip-version-check pytest
-      - run: python -m pytest -q tests/test_portfolio_decision_deadman_governed.py
+
+      - name: Prove the complete focused monitor suite green
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check pytest
+          python -m pytest -q \
+            tests/test_portfolio_decision_deadman.py \
+            tests/test_portfolio_decision_deadman_cli.py \
+            tests/test_portfolio_decision_deadman_contract.py \
+            tests/test_portfolio_decision_deadman_execution.py \
+            tests/test_portfolio_decision_deadman_governed.py \
+            tests/test_portfolio_decision_deadman_release.py
+          python -m py_compile scripts/portfolio_decision_deadman.py
+
+      - name: Collect the sanitized production snapshot
+        env:
+          SSH_KEY: ${{ secrets.VPS_DEPLOY_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [ -n "${SSH_KEY:-}" ] || { echo '::error::VPS_DEPLOY_KEY unavailable'; exit 20; }
+          umask 077
+          keyfile="$RUNNER_TEMP/vps_key"
+          snapshot="$RUNNER_TEMP/portfolio-decision-snapshot.json"
+          printf '%s\n' "$SSH_KEY" > "$keyfile"
+          chmod 600 "$keyfile"
+          trap 'rm -f "$keyfile"' EXIT
+          ssh -F /dev/null -i "$keyfile" \
+            -o BatchMode=yes \
+            -o IdentitiesOnly=yes \
+            -o IdentityAgent=none \
+            -o ConnectTimeout=20 \
+            -o StrictHostKeyChecking=accept-new \
+            root@146.190.142.17 \
+            '/opt/mastermind/.venv/bin/python - collect' \
+            < scripts/portfolio_decision_deadman.py > "$snapshot"
+          python3 -m json.tool "$snapshot" >/dev/null
+
+      - name: Evaluate the latest lawful US cycle
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/portfolio_decision_deadman.py evaluate \
+            --scope us \
+            --input "$RUNNER_TEMP/portfolio-decision-snapshot.json" \
+            --output "$RUNNER_TEMP/portfolio-decision-deadman.json"
+          cat "$RUNNER_TEMP/portfolio-decision-deadman.json"
+
+      - name: Upload the exact sanitized receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: portfolio-recovery-final-deadman-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/portfolio-decision-deadman.json
+          if-no-files-found: error
+          retention-days: 30
