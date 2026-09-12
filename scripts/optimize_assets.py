@@ -61,6 +61,7 @@ from lib.pages import css_imports, optimize_assets_text, preload_css_text, write
 log = logging.getLogger("optimize_assets")
 
 _AIBRIEF_REFRESH_ASSET = "assets/js/aibrief-freshness.js"
+_AIBRIEF_REFRESH_SOURCE = "_aibrief_freshness.js.j2"
 _AIBRIEF_CLASS_RE = re.compile(
     r"class\s*=\s*[\"'][^\"']*(?<![\w-])aib2(?![\w-])[^\"']*[\"']",
     re.IGNORECASE,
@@ -73,6 +74,29 @@ def _hash_bytes(p: Path) -> Optional[str]:
         return hashlib.sha256(p.read_bytes()).hexdigest()[:8]
     except Exception:  # noqa: BLE001
         return None
+
+
+def _sync_aibrief_freshness_asset(site_dir: Path) -> None:
+    """Materialize the render-owned freshness source into the public site tree.
+
+    The canonical source lives under templates/** so an edit enters the existing
+    render lane. Sync before hashing so every injected immutable ?v= reference
+    names the exact bytes that the same render will publish. Missing source fails
+    open for standalone/fixture site trees that provide their own asset.
+    """
+    source = site_dir.parent / "templates" / _AIBRIEF_REFRESH_SOURCE
+    target = site_dir / _AIBRIEF_REFRESH_ASSET
+    if not source.is_file():
+        return
+    try:
+        payload = source.read_bytes()
+        if target.is_file() and target.read_bytes() == payload:
+            return
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(payload)
+        log.info("synced %s from render-owned source", _AIBRIEF_REFRESH_ASSET)
+    except Exception as e:  # noqa: BLE001
+        log.warning("AI brief freshness asset sync failed (%s)", e)
 
 
 def paired_html_pages(site_dir: Path):
@@ -197,6 +221,7 @@ def optimize(site_dir: Path) -> int:
     if not site_dir.is_dir():
         return 0
     root = site_dir.resolve()
+    _sync_aibrief_freshness_asset(site_dir)
     optimized = make_optimizer(root)
 
     n = 0
