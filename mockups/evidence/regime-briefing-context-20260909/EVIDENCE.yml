@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/_aibrief_body.html.j2
+manifest: mockups/evidence/regime-briefing-context-20260909/manifest.json

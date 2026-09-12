@@ -184,6 +184,21 @@
   </div>
   {%- endif -%}
 
+  {#-- Optional W1 macro receipt. It is deterministic engine copy, not model prose;
+       the existing material/text class preserves both theme art directions. --#}
+  {%- set _re_raw = b.get('regime_evidence') if lens == 'macro' else none -%}
+  {%- set _re = _re_raw if _re_raw is mapping else none -%}
+  {%- if _re %}
+  <div class="aib2-sec"><span class="aib2-sec-label"><span class="l-en">Regime evidence</span><span class="l-zh">状态证据</span></span></div>
+  <div class="aib2-regime">
+    <span class="l-en">{{ (_re.get('en') or '') | e }}</span>
+    <span class="l-zh">{{ (_re.get('zh') or _re.get('en') or '') | e }}</span>
+    {%- if _re.get('detail_en') or _re.get('detail_zh') %}
+    <span class="aib2-conf-asof" tabindex="0" data-tip-en="{{ (_re.get('detail_en') or '') | e }}" data-tip-zh="{{ (_re.get('detail_zh') or _re.get('detail_en') or '') | e }}"><span class="l-en">Details</span><span class="l-zh">详情</span></span>
+    {%- endif %}
+  </div>
+  {%- endif -%}
+
   {#-- 6 · TWO-UP GRID — Where signals disagree (amber) · Chain reactions (blue).
        Auto-fit so a lone card spans full width (no half-width orphan). --#}
   {%- set _conf_items = b.get('conflicts') or [] -%}

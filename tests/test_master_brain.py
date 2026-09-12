@@ -10,6 +10,8 @@ import pathlib
 import sys
 import tempfile
 
+import jinja2
+
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 
 from engine import master_brain as mb  # noqa: E402
@@ -562,6 +564,133 @@ def test_zh_lists_includes_tldr():
     assert "tldr" in mb._ZH_LISTS
 
 
+def test_run_overwrites_model_regime_evidence_and_intercepts_the_ledger(tmp_path, monkeypatch):
+    """The saved macro brief gets deterministic evidence after synthesis; even
+    persist=False retains the historical ledger side effect, so the test must
+    intercept it instead of pretending this is a read-only probe."""
+    latest = dict(MACRO, date="2026-07-29", asof="2026-07-29")
+    latest["quad_vector"] = {
+        "asof": "2026-07-29",
+        "p": {"Q1": 0.6123, "Q2": 0.1377, "Q3": 0.15, "Q4": 0.1},
+        "hard_label": "Q1", "hard_label_agrees": False, "degraded": False,
+    }
+    p = tmp_path / "data" / "regime" / "latest.json"
+    p.parent.mkdir(parents=True)
+    p.write_text(json.dumps(latest))
+    monkeypatch.setattr(mb, "_cfg", lambda: {"enabled": True, "translate_zh": False})
+    monkeypatch.setattr(
+        mb, "_call_model",
+        lambda *_a, **_k: (json.dumps({"summary": "x", "confidence": "low",
+                                       "regime_evidence": {"en": "model claim"}}), None),
+    )
+    def model_translation_overwrite(brief, *_args):
+        brief["regime_evidence"] = {"en": "translated model claim"}
+
+    monkeypatch.setattr(mb, "_translate_brief", model_translation_overwrite)
+    ledger_calls = []
+    monkeypatch.setattr(mb, "_append_ledger", lambda brief, root: ledger_calls.append((brief, root)))
+    brief = mb.run(persist=False, root=tmp_path, force=True, lens="macro")
+    assert brief and ledger_calls, "persist=False must have its ledger effect isolated"
+    evidence = brief["regime_evidence"]
+    assert evidence["en"] != "model claim"
+    assert "not a forecast" in evidence["en"].lower()
+    assert "预测" in evidence["zh"]
+    assert not (tmp_path / "data" / "regime" / "master_brief.json").exists()
+
+
+def test_regime_evidence_names_the_supported_state_and_label_disagreement():
+    q1 = mb._regime_evidence({"probability_context": {
+        "availability": "current", "source_asof": "2026-07-29",
+        "p": {"Q1": 0.7, "Q2": 0.1, "Q3": 0.1, "Q4": 0.1},
+        "hard_label": "Q1", "hard_label_agrees": True,
+    }})
+    q3 = mb._regime_evidence({"probability_context": {
+        "availability": "current", "source_asof": "2026-07-29",
+        "p": {"Q1": 0.1, "Q2": 0.1, "Q3": 0.7, "Q4": 0.1},
+        "hard_label": "Q1", "hard_label_agrees": False,
+    }})
+    assert q1["en"] != q3["en"] and q1["zh"] != q3["zh"]
+    assert "Goldilocks" in q1["en"] and "agrees" in q1["en"]
+    assert "Stagflation" in q3["en"] and "disagrees" in q3["en"]
+    assert "理想增长" in q1["zh"] and "滞胀" in q3["zh"]
+    assert "预测" in q3["zh"] and "not a forecast" in q3["en"].lower()
+
+
+def test_regime_evidence_keeps_tied_maxima_as_a_tie_and_places_exact_values_in_tooltip_copy():
+    evidence = mb._regime_evidence({"probability_context": {
+        "availability": "current", "source_asof": "2026-07-29",
+        "p": {"Q1": 0.4, "Q2": 0.1, "Q3": 0.4, "Q4": 0.1},
+        "hard_label": "Q1", "hard_label_agrees": False,
+        "model_fit_asof": None, "confidence_basis": "heuristic",
+    }})
+    assert "tie" in evidence["en"].lower()
+    assert "Goldilocks" in evidence["en"] and "Stagflation" in evidence["en"]
+    assert "并列" in evidence["zh"]
+    assert "disagrees" not in evidence["en"], "A tie must not invent a unique disagreeing state"
+    assert "confirmed Goldilocks" in evidence["en"]
+    assert "Goldilocks 40.00%" in evidence["detail_en"]
+    assert "Stagflation 40.00%" in evidence["detail_en"]
+    assert "heuristic" in evidence["detail_en"]
+    assert "缺失" in evidence["detail_zh"]
+
+
+def test_regime_sla_uses_the_canonical_synapse_registry_loader(monkeypatch):
+    from engine.neuralweb import synapse
+
+    calls = []
+
+    def fake_load_registry():
+        calls.append(True)
+        return {"artifacts": {"regime-latest": {"freshness_sla_hours": 17}}}
+
+    monkeypatch.setattr(synapse, "load_registry", fake_load_registry)
+    assert mb._regime_synapse_sla_hours() == 17.0
+    assert calls == [True]
+
+
+def test_real_aibrief_template_renders_optional_escaped_regime_evidence():
+    """The existing server-side shared body renders a bilingual macro note and
+    safely escapes text; a pre-W1 brief remains unaffected when the key is absent."""
+    root = pathlib.Path(__file__).resolve().parent.parent
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(root / "templates"))
+    template = env.get_template("aibrief.html.j2")
+    panels = {
+        "ctx_strip": {"absent": True},
+        "fwd_panel": {"absent": True, "events": [], "rebal_note_en": None, "rebal_note_zh": None},
+        "record_panel": {"absent": True},
+    }
+    html = template.render(
+        as_of="2026-07-30 00:00 UTC", **panels,
+        master_brief={"summary": "x", "regime_evidence": {"en": "<script>not a forecast</script>",
+                                                         "zh": "当前估计并非预测",
+                                                         "detail_en": "Goldilocks 70.00% <script>",
+                                                         "detail_zh": "理想增长 70.00%"}},
+        china_brief=None, btc_brief=None,
+    )
+    assert "&lt;script&gt;not a forecast&lt;/script&gt;" in html
+    assert "当前估计并非预测" in html
+    assert "Goldilocks 70.00% &lt;script&gt;" in html
+    assert "理想增长 70.00%" in html
+    from html.parser import HTMLParser
+    triggers = []
+    class ReceiptParser(HTMLParser):
+        def handle_starttag(self, tag, attrs):
+            values = dict(attrs)
+            if values.get("data-tip-en", "").startswith("Goldilocks 70.00%"):
+                triggers.append((tag, values))
+    ReceiptParser().feed(html)
+    assert len(triggers) == 1
+    tag, attrs = triggers[0]
+    assert tag == "button" or attrs.get("tabindex") == "0", "Details must be keyboard-focusable"
+    old = template.render(as_of="2026-07-30 00:00 UTC", **panels,
+                          master_brief={"summary": "x"}, china_brief=None, btc_brief=None)
+    assert "Regime evidence" not in old and "状态证据" not in old
+    malformed = template.render(as_of="2026-07-30 00:00 UTC", **panels,
+                                master_brief={"summary": "x", "regime_evidence": ["not a mapping"]},
+                                china_brief=None, btc_brief=None)
+    assert "Regime evidence" not in malformed and "状态证据" not in malformed
+
+
 # --------------------------------------------------------------------------- #
 # empty_reply retry — a degraded/rate-limited endpoint can return a 200 with no
 # text (the China lens went blank this way on 2026-07-20 while macro succeeded
@@ -705,6 +834,32 @@ def test_call_model_no_retry_on_truncation():
     finally:
         mb._client, llm_auth.make_call = orig_client, orig_make
         llm_auth.build_providers = orig_build
+
+
+def test_regime_evidence_translates_canonical_basis_and_discloses_present_fit_cutoff():
+    evidence = mb._regime_evidence({"probability_context": {
+        "availability": "current", "source_asof": "2026-09-09",
+        "model_fit_asof": "2026-09-08", "confidence_basis": "heuristic_not_calibrated_probability",
+        "p": {"Q1": .1, "Q2": .1, "Q3": .7, "Q4": .1},
+        "hard_label": "Q3", "hard_label_agrees": True,
+    }})
+    assert "heuristic_not_calibrated_probability" not in evidence["detail_en"]
+    assert "heuristic_not_calibrated_probability" not in evidence["detail_zh"]
+    assert "not calibrated" in evidence["detail_en"]
+    assert "未校准" in evidence["detail_zh"]
+    assert "2026-09-08" in evidence["detail_en"]
+    assert "2026-09-08" in evidence["detail_zh"]
+
+
+def test_regime_briefing_regressions_have_one_premerge_code_owner():
+    from pathlib import Path
+    from scripts.run_ci_pack import load_legacy_jobs
+    manifest = Path(__file__).resolve().parents[1] / ".github/ci/legacy-jobs.yml"
+    jobs = load_legacy_jobs(manifest, gate="code")
+    for suite in ("tests/test_master_brain.py", "tests/test_regime_label_honesty.py"):
+        owners = [job.job_id for job in jobs if any(
+            suite in step.get("run", "").split() for step in job.definition["steps"])]
+        assert len(owners) == 1, (suite, owners)
 
 
 if __name__ == "__main__":

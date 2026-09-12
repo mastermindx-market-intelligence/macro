@@ -173,7 +173,17 @@ def test_regime_path_carries_transition_momentum():
     assert tm["gaining"] == "Q3" and tm["losing"] == "Q1"
     assert tm["gaining_rate"] == 0.012 and tm["window_sessions"] == 5
     assert tm["degraded"] is False
-    assert "TRANSITION DIRECTION MUST COME FROM HERE" in tm["_instruction"]
+    assert tm["basis"] == "unknown"
+    assert tm["source_asof"] is None
+    assert "not a future-state estimate" in tm["_instruction"]
+
+
+def test_regime_path_preserves_the_actual_transition_momentum_basis():
+    qv = dict(_MACRO["quad_vector"], source="legacy_owner")
+    qv["transition_momentum"] = dict(qv["transition_momentum"],
+                                      basis="reconstructed_with_current_fit")
+    tm = mb._build_regime_path(dict(_MACRO, quad_vector=qv), root=None)["transition_momentum"]
+    assert tm["basis"] == "reconstructed_with_current_fit"
 
 
 def test_regime_path_omits_momentum_when_absent_or_empty():
@@ -187,15 +197,143 @@ def test_regime_path_marks_a_degraded_direction_read():
     m = dict(_MACRO, quad_vector=dict(_MACRO["quad_vector"], degraded=True))
     tm = mb._build_regime_path(m, root=None)["transition_momentum"]
     assert tm["degraded"] is True
-    assert "degraded" in tm["_instruction"]
+    assert tm["missingness"] == "unknown"
+    assert "not a forecast" in tm["_instruction"]
 
 
-def test_system_prompt_binds_transition_direction_to_the_deterministic_row():
+def test_system_prompt_forbids_turning_diagnostic_momentum_into_a_forecast():
     law = mb._REGIME_MAP_LAW
+    assert "current-state estimate" in law
+    assert "not a future-regime" in law
     assert "transition_momentum" in law
-    assert "gaining" in law
+    assert "gaining probability mass" not in law
     for tmpl in (mb.MASTER_SYSTEM_TMPL, mb.CHINA_SYSTEM_TMPL, mb.BTC_SYSTEM_TMPL):
         assert "transition_momentum" in tmpl
+
+
+def _qv(**overrides):
+    qv = {
+        "asof": "2026-07-29",
+        "p": {"Q1": 0.6123, "Q2": 0.1377, "Q3": 0.1500, "Q4": 0.1000},
+        "hard_label": "Q1",
+        "hard_label_agrees": False,
+        "degraded": False,
+    }
+    qv.update(overrides)
+    return qv
+
+
+def test_probability_context_keeps_a_valid_current_p_without_forcing_label_consensus():
+    m = dict(_MACRO, quad_vector=_qv())
+    rp = mb._build_regime_path(m, root=None, reference_time="2026-07-30T00:00:00Z")
+    pc = rp["probability_context"]
+    assert pc["availability"] == "current"
+    assert pc["p"] == m["quad_vector"]["p"], "valid producer probabilities must not be renormalized"
+    assert pc["source_asof"] == "2026-07-29"
+    assert pc["hard_label"] == "Q1" and pc["hard_label_agrees"] is False
+    assert pc["model_fit_asof"] is None and pc["confidence_basis"] is None
+    assert pc["historical_replay_eligible"] is False
+    assert pc["is_forecast"] is False
+
+
+def test_probability_context_rejects_corrupt_or_degraded_distributions_without_uniformizing():
+    bad_ps = (
+        None,
+        {"Q1": True, "Q2": 0.2, "Q3": 0.3, "Q4": 0.2},
+        {"Q1": float("nan"), "Q2": 0.2, "Q3": 0.3, "Q4": 0.2},
+        {"Q1": 0.8, "Q2": 0.2, "Q3": 0.3, "Q4": 0.2},
+        {"Q1": 0.25, "Q2": 0.25, "Q3": 0.25, "Q4": 0.25, "other": 0.0},
+    )
+    for p in bad_ps:
+        pc = mb._build_regime_path(
+            dict(_MACRO, quad_vector=_qv(p=p)), root=None,
+            reference_time="2026-07-30T00:00:00Z",
+        )["probability_context"]
+        assert pc["availability"] == "unavailable"
+        assert "p" not in pc
+    degraded = mb._build_regime_path(
+        dict(_MACRO, quad_vector=_qv(degraded=True, p={q: 0.25 for q in ("Q1", "Q2", "Q3", "Q4")})),
+        root=None, reference_time="2026-07-30T00:00:00Z",
+    )["probability_context"]
+    assert degraded["availability"] == "unavailable" and "p" not in degraded
+
+
+def test_probability_context_rejects_overflowing_integer_probabilities_without_silence():
+    for oversized in (10 ** 400, -(10 ** 400)):
+        pc = mb._build_regime_path(
+            dict(_MACRO, quad_vector=_qv(p={"Q1": oversized, "Q2": 0.2, "Q3": 0.3, "Q4": 0.3})),
+            root=None, reference_time="2026-07-30T00:00:00Z",
+        )["probability_context"]
+        assert pc["availability"] == "unavailable"
+        assert pc["reason"] == "probability_distribution_invalid"
+
+
+def test_probability_context_honors_the_simplex_rounding_boundary_without_normalizing():
+    within = {"Q1": 0.2502, "Q2": 0.25, "Q3": 0.25, "Q4": 0.25}
+    current = mb._build_regime_path(
+        dict(_MACRO, quad_vector=_qv(p=within)), root=None,
+        reference_time="2026-07-30T00:00:00Z",
+    )["probability_context"]
+    assert current["availability"] == "current" and current["p"] == within
+    outside = {"Q1": 0.25022, "Q2": 0.25, "Q3": 0.25, "Q4": 0.25}
+    unavailable = mb._build_regime_path(
+        dict(_MACRO, quad_vector=_qv(p=outside)), root=None,
+        reference_time="2026-07-30T00:00:00Z",
+    )["probability_context"]
+    assert unavailable["availability"] == "unavailable"
+
+
+def test_probability_context_never_calls_missing_sla_or_clock_evidence_fresh(monkeypatch):
+    monkeypatch.setattr(mb, "_regime_synapse_sla_hours", lambda: None)
+    no_sla = mb._build_regime_path(
+        dict(_MACRO, quad_vector=_qv()), root=None, reference_time="2026-07-30T00:00:00Z",
+    )["probability_context"]
+    assert no_sla["availability"] == "unavailable"
+    assert no_sla["reason"] == "freshness_sla_unknown"
+    no_clock = mb._build_regime_path(
+        dict(_MACRO, quad_vector=_qv()), root=None, reference_time=object(),
+    )["probability_context"]
+    assert no_clock["availability"] == "unavailable"
+    assert no_clock["reason"] == "freshness_clock_unknown"
+
+
+def test_probability_context_dates_gate_currentness_but_keep_a_dated_stale_distribution_historical():
+    base = dict(_MACRO)
+    for asof in (None, "not-a-date", "2026-08-01"):
+        pc = mb._build_regime_path(
+            dict(base, quad_vector=_qv(asof=asof)), root=None,
+            reference_time="2026-07-30T00:00:00Z",
+        )["probability_context"]
+        assert pc["availability"] == "unavailable" and "p" not in pc
+    pc = mb._build_regime_path(
+        dict(base, quad_vector=_qv(asof="2026-07-01")), root=None,
+        reference_time="2026-07-30T12:00:00Z",
+    )["probability_context"]
+    assert pc["availability"] == "historical"
+    assert pc["p"] == _qv()["p"]
+    assert pc["source_asof"] == "2026-07-01"
+    assert pc["is_current"] is False and pc["historical_replay_eligible"] is False
+
+
+def test_regime_date_reader_rejects_week_dates_but_preserves_canonical_dates_and_aware_timestamps():
+    assert mb._strict_regime_datetime("2026-W36-2") is None
+    assert mb._strict_regime_datetime("2026-W36-2T08:30:00+00:00") is None
+    assert mb._strict_regime_datetime("2026-09-01").isoformat() == "2026-09-01T00:00:00+00:00"
+    assert mb._strict_regime_datetime("2026-09-01T08:30:00-07:00").isoformat() == "2026-09-01T15:30:00+00:00"
+
+
+def test_probability_context_rejects_an_impossible_present_model_fit_cutoff_but_keeps_missing_unknown():
+    impossible = mb._build_regime_path(
+        dict(_MACRO, quad_vector=_qv(model_fit_asof="2099-01-01")), root=None,
+        reference_time="2026-07-30T00:00:00Z",
+    )["probability_context"]
+    assert impossible["availability"] == "unavailable"
+    assert impossible["reason"] == "model_fit_asof_invalid_or_inconsistent"
+    missing = mb._build_regime_path(
+        dict(_MACRO, quad_vector=_qv()), root=None, reference_time="2026-07-30T00:00:00Z",
+    )["probability_context"]
+    assert missing["availability"] == "current"
+    assert missing["model_fit_asof"] is None
 
 
 def test_drift_is_stamped_with_the_parquet_vintage(tmp_path):

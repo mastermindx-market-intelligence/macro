@@ -28,6 +28,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import math
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -100,19 +101,17 @@ _VOICE_LAW = (
 )
 
 _REGIME_MAP_LAW = (
-    "REGIME = POSITION, NOT A BOX: a regime label is a position on a map, and the "
-    "state tells you where inside the regime we sit and which border we are drifting "
-    "toward (regime_path, transition/pending fields, score drifts, cycle clocks). "
-    "Never present the label as a settled fact. Say both things: 'still Goldilocks "
-    "on the map, but growth has cooled to the edge — one more soft month tips it "
-    "into Reflation.' When the state says the regime is transitioning or a flip is "
-    "pending, that drift IS the story — lead with it.\n"
-    "TRANSITION DIRECTION comes ONLY from regime_path.transition_momentum (`gaining` "
-    "is the quad gaining probability mass). Never infer which regime we could tip into "
-    "from the label, the axis signs, or a historical next-quad table — naming a "
-    "different quad than `gaining` contradicts the deterministic transition row on the "
-    "same page. When that block is absent or degraded, say the direction is unclear "
-    "rather than picking a quad.\n"
+    "A regime context is a current-state estimate, not a forecast: describe a dated "
+    "probability estimate only as the current fit of the available source. Preserve "
+    "the confirmed hard label even when it disagrees with the estimate; do not force "
+    "a consensus. A stale distribution is historical context only, and unavailable "
+    "or undated context must stay unavailable. A probability estimate is not a "
+    "future-regime or profit probability.\n"
+    "regime_path.transition_momentum is diagnostic reconstructed movement retained for "
+    "compatibility. It is not a future-state estimate, transition direction, or "
+    "forecast. Do not name a destination regime from it. When its basis, date, or "
+    "missingness is unknown or degraded, state that limitation rather than filling it "
+    "with a narrative.\n"
 )
 
 _STANCE_LAW = (
@@ -633,7 +632,144 @@ def _regime_path_drift(history_path) -> dict:
         return {}
 
 
-def _build_regime_path(m: dict, root=None) -> dict:
+def _strict_regime_datetime(value) -> datetime | None:
+    """Parse a producer date without silently re-dating malformed input."""
+    if not isinstance(value, str) or not value.strip():
+        return None
+    raw = value.strip()
+    try:
+        if "T" not in raw:
+            if len(raw) != 10 or raw[4:5] != "-" or raw[7:8] != "-":
+                return None
+            parsed = datetime.strptime(raw, "%Y-%m-%d")
+            return parsed.replace(tzinfo=timezone.utc)
+        if len(raw) < 11 or raw[4:5] != "-" or raw[7:8] != "-" or raw[10:11] != "T":
+            return None
+        datetime.strptime(raw[:10], "%Y-%m-%d")
+        if raw.endswith("Z"):
+            raw = raw[:-1] + "+00:00"
+        parsed = datetime.fromisoformat(raw)
+        if parsed.tzinfo is None:
+            return None
+        return parsed.astimezone(timezone.utc)
+    except (TypeError, ValueError):
+        return None
+
+
+def _regime_synapse_sla_hours() -> float | None:
+    """Read the existing regime-latest SLA; missing registry evidence is unknown."""
+    try:
+        from engine.neuralweb.synapse import load_registry
+        payload = load_registry()
+        row = payload.get("artifacts", {}).get("regime-latest")
+        if not isinstance(row, dict):
+            return None
+        sla = row.get("freshness_sla_hours")
+        if isinstance(sla, bool):
+            return None
+        sla = float(sla)
+        return sla if math.isfinite(sla) and sla > 0 else None
+    except Exception:  # noqa: BLE001 — no registry proof is an unknown freshness state
+        return None
+
+
+def _valid_quad_probability_simplex(value) -> bool:
+    """Accept only the producer's exact finite Q1..Q4 probability simplex."""
+    if not isinstance(value, dict) or set(value) != {"Q1", "Q2", "Q3", "Q4"}:
+        return False
+    try:
+        vals = []
+        for quad in ("Q1", "Q2", "Q3", "Q4"):
+            item = value[quad]
+            if isinstance(item, bool) or not isinstance(item, (int, float)):
+                return False
+            number = float(item)
+            if not math.isfinite(number) or not 0.0 <= number <= 1.0:
+                return False
+            vals.append(number)
+        return abs(sum(vals) - 1.0) <= 0.00021
+    except (OverflowError, TypeError, ValueError):
+        return False
+
+
+def _regime_probability_context(qv, reference_time=None) -> dict:
+    """Return a dated, descriptive-only current-regime context.
+
+    This reader deliberately does not repair a producer distribution.  A corrupt or
+    degraded posterior is unavailable, never a convenient uniform belief.
+    """
+    out = {
+        "availability": "unavailable",
+        "is_current": False,
+        "is_forecast": False,
+        "historical_replay_eligible": False,
+        "source_asof": None,
+        "model_fit_asof": None,
+        "confidence_basis": None,
+    }
+    if not isinstance(qv, dict):
+        out["reason"] = "quad_vector_missing"
+        return out
+    source_asof = qv.get("asof")
+    out["source_asof"] = source_asof if isinstance(source_asof, str) else None
+    model_fit_asof = qv.get("model_fit_asof")
+    model_fit_time = _strict_regime_datetime(model_fit_asof)
+    out["model_fit_asof"] = model_fit_asof if model_fit_time else None
+    confidence_basis = qv.get("confidence_basis")
+    out["confidence_basis"] = confidence_basis if isinstance(confidence_basis, str) else None
+    if isinstance(qv.get("hard_label"), str):
+        out["hard_label"] = qv["hard_label"]
+    if isinstance(qv.get("hard_label_agrees"), bool):
+        out["hard_label_agrees"] = qv["hard_label_agrees"]
+    if qv.get("degraded"):
+        out["reason"] = "quad_vector_degraded"
+        return out
+    p = qv.get("p")
+    if not _valid_quad_probability_simplex(p):
+        out["reason"] = "probability_distribution_invalid"
+        return out
+    source_time = _strict_regime_datetime(source_asof)
+    if source_time is None:
+        out["reason"] = "source_asof_invalid_or_missing"
+        return out
+    if reference_time is None:
+        now = datetime.now(timezone.utc)
+    elif isinstance(reference_time, datetime):
+        now = reference_time.astimezone(timezone.utc) if reference_time.tzinfo else None
+    else:
+        now = _strict_regime_datetime(reference_time)
+    if now is None:
+        out["reason"] = "freshness_clock_unknown"
+        return out
+    if source_time > now:
+        out["reason"] = "source_asof_in_future"
+        return out
+    if model_fit_asof is not None:
+        if model_fit_time is None or model_fit_time > source_time or model_fit_time > now:
+            out["reason"] = "model_fit_asof_invalid_or_inconsistent"
+            return out
+    sla_hours = _regime_synapse_sla_hours()
+    if sla_hours is None:
+        out["reason"] = "freshness_sla_unknown"
+        return out
+    try:
+        from lib.dataos.quality import check_freshness
+        stale = bool(check_freshness(source_time, sla_hours, now, dataset_id="regime-latest"))
+    except Exception:  # noqa: BLE001 — missing quality evidence never becomes fresh
+        out["reason"] = "freshness_unknown"
+        return out
+    out["p"] = dict(p)  # valid values pass through exactly; never normalize them
+    out["freshness_sla_hours"] = sla_hours
+    if stale:
+        out["availability"] = "historical"
+        out["reason"] = "source_stale"
+        return out
+    out["availability"] = "current"
+    out["is_current"] = True
+    return out
+
+
+def _build_regime_path(m: dict, root=None, reference_time=None) -> dict:
     """Compose the regime_path sub-dict from raw regime latest dict + history parquet (spec §5a).
 
     Never raises — entirely fail-open; missing keys or missing file → fields omitted.
@@ -663,15 +799,11 @@ def _build_regime_path(m: dict, root=None) -> dict:
             if active:
                 out["transition_flags"] = active
 
-        # TRANSITION DIRECTION (added 2026-07-29). The brief context used to carry
-        # quad/axes/flip_condition but NOT quad_vector, so the LLM had no read on WHICH
-        # quad is gaining probability mass and invented one from the label: it wrote
-        # "could tip into Reflation" on a day the deterministic transition row had the
-        # odds drifting toward Stagflation. quad_vector.transition_momentum is the only
-        # producer of that direction (d(p)/dt over the causal filtered posterior), so it
-        # goes into the context with an explicit instruction to source direction ONLY
-        # from here. Hard labels, not prose — the LLM never recomputes it.
+        # Diagnostic reconstructed movement (added 2026-07-29). Preserve the producer's
+        # compatibility fields, but never promote their current-fit movement into a future
+        # regime destination. The dated probability context above is the descriptive reader.
         qv = m.get("quad_vector")
+        out["probability_context"] = _regime_probability_context(qv, reference_time)
         if isinstance(qv, dict):
             tm = qv.get("transition_momentum")
             if isinstance(tm, dict) and tm.get("gaining"):
@@ -682,14 +814,15 @@ def _build_regime_path(m: dict, root=None) -> dict:
                     "losing_rate": tm.get("losing_rate"),
                     "window_sessions": tm.get("window_sessions"),
                     "degraded": bool(qv.get("degraded")),
+                    "basis": tm.get("basis") if isinstance(tm.get("basis"), str) else "unknown",
+                    "source_asof": qv.get("asof") if isinstance(qv.get("asof"), str) else None,
+                    "missingness": (qv.get("degrade_reason")
+                                    if isinstance(qv.get("degrade_reason"), str) else "unknown"),
                     "_instruction": (
-                        "TRANSITION DIRECTION MUST COME FROM HERE. `gaining` is the quad "
-                        "gaining probability mass and `losing` the one shedding it, per "
-                        "session over the stated window. Any sentence about which regime "
-                        "this could tip into must name `gaining` — never infer a "
-                        "direction from the current label, the historical next-quad "
-                        "table, or the axis signs. If `degraded` is true, say the "
-                        "direction read is degraded rather than naming a quad."),
+                        "Diagnostic reconstructed movement retained for compatibility only; "
+                        "not a future-state estimate and not a forecast. Do not name a destination "
+                        "regime from it. State unknown basis, source date, or missingness as "
+                        "unknown rather than inventing a transition narrative."),
                 }
 
         # Drift block from history parquet — fail-open on any exception
@@ -2533,6 +2666,85 @@ def _key_facts_for(lens: str, state: dict) -> list[dict]:
         return []
 
 
+def _regime_evidence(regime_path) -> dict:
+    """Build the macro brief's deterministic, bilingual probability limitation."""
+    context = (regime_path or {}).get("probability_context") if isinstance(regime_path, dict) else {}
+    context = context if isinstance(context, dict) else {}
+    state = context.get("availability")
+    source_asof = context.get("source_asof")
+    p = context.get("p")
+    if state == "current" and isinstance(source_asof, str) and _valid_quad_probability_simplex(p):
+        from engine.i18n import LEX
+        from engine.regime import QUAD_NAMES
+
+        maximum = max(p.values())
+        leaders = [quad for quad in ("Q1", "Q2", "Q3", "Q4") if p[quad] == maximum]
+        leader_en = [QUAD_NAMES[quad] for quad in leaders]
+        leader_zh = [LEX[entry] for entry in leader_en]
+        joined_en = " and ".join(leader_en)
+        joined_zh = "和".join(leader_zh)
+        tie = len(leaders) > 1
+        confirmed = context.get("hard_label")
+        confirmed_en = QUAD_NAMES.get(confirmed) if isinstance(confirmed, str) else None
+        confirmed_zh = LEX.get(confirmed_en) if confirmed_en else None
+        agrees = context.get("hard_label_agrees")
+        if tie and confirmed_en and confirmed_zh:
+            agreement_en = f"the confirmed {confirmed_en} label is preserved"
+            agreement_zh = f"保留已确认的{confirmed_zh}标签"
+        elif agrees is True:
+            agreement_en = "the confirmed label agrees"
+            agreement_zh = "与已确认标签一致"
+        elif agrees is False and confirmed_en and confirmed_zh:
+            agreement_en = f"it disagrees with the confirmed {confirmed_en} label"
+            agreement_zh = f"与已确认的{confirmed_zh}标签不一致"
+        else:
+            agreement_en = "confirmed-label agreement is unknown"
+            agreement_zh = "与已确认标签的一致性未知"
+        lead_en = f"tied most-supported states are {joined_en}" if tie else f"most-supported state is {joined_en}"
+        lead_zh = f"最受支持的状态并列为{joined_zh}" if tie else f"最受支持的状态为{joined_zh}"
+        detail_en = "State probabilities: " + "; ".join(
+            f"{QUAD_NAMES[quad]} {p[quad]:.2%}" for quad in ("Q1", "Q2", "Q3", "Q4")
+        )
+        detail_zh = "状态概率：" + "；".join(
+            f"{LEX[QUAD_NAMES[quad]]} {p[quad]:.2%}" for quad in ("Q1", "Q2", "Q3", "Q4")
+        )
+        if context.get("model_fit_asof") is None:
+            detail_en += "; model-fit cutoff unavailable"
+            detail_zh += "；模型拟合截止日期缺失"
+        else:
+            detail_en += f"; model-fit cutoff: {context['model_fit_asof']}"
+            detail_zh += f"；模型拟合截止日期：{context['model_fit_asof']}"
+        basis = context.get("confidence_basis")
+        if basis in ("heuristic", "heuristic_not_calibrated_probability"):
+            detail_en += "; confidence basis: heuristic, not calibrated"
+            detail_zh += "；置信度依据：启发式，未校准"
+        elif isinstance(basis, str):
+            detail_en += f"; confidence basis: {basis}"
+            detail_zh += f"；置信度依据：{basis}"
+        else:
+            detail_en += "; confidence basis unknown"
+            detail_zh += "；置信度依据未知"
+        return {
+            "en": (f"Regime evidence: current estimate dated {source_asof}; {lead_en}; "
+                   f"{agreement_en}. It is not a forecast."),
+            "zh": (f"状态证据：当前估计的数据截至 {source_asof}；{lead_zh}；"
+                   f"{agreement_zh}。并非预测。"),
+            "detail_en": detail_en,
+            "detail_zh": detail_zh,
+        }
+    if state == "historical" and isinstance(source_asof, str):
+        return {
+            "en": (f"Regime evidence: the stored estimate is dated {source_asof} and is "
+                   "historical context only, not a current estimate. It is not a forecast."),
+            "zh": (f"状态证据：已存估计的数据截至 {source_asof}，仅作历史背景，"
+                   "不是当前估计，也并非预测。"),
+        }
+    return {
+        "en": "Regime evidence is unavailable; diagnostic movement is not a forecast.",
+        "zh": "状态证据不可用；诊断性变化并非预测。",
+    }
+
+
 def render_markdown(brief: dict) -> str:
     """Human-readable rendering of a brief (for the CLI / a future panel)."""
     if not brief:
@@ -2759,6 +2971,12 @@ def run(persist: bool = True, root: Path | None = None, force: bool = False,
         except Exception:  # noqa: BLE001 — additive, never fatal
             brief["key_facts"] = []
         _translate_brief(brief, cfg, lens)    # attach brief['zh'] for the 中文 toggle
+        if lens == "macro":
+            # Saved after model synthesis and translation so no model-authored key
+            # can replace this deterministic, selected-reader limitation.
+            brief["regime_evidence"] = _regime_evidence(
+                (state.get("macro") or {}).get("regime_path") if isinstance(state, dict) else None
+            )
         if persist:
             try:
                 payload = json.dumps(brief, indent=2, default=str)

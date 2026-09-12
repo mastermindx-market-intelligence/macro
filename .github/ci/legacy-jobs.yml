@@ -3776,6 +3776,9 @@ jobs:
     runs-on: ubuntu-latest
     scope: exclusive
     paths:
+      # W1 briefing reader reuses existing DataOS freshness/temporal owners.
+      - "lib/dataos/quality.py"
+      - "lib/dataos/temporal.py"
       - "engine/**"
       - "scripts/**"
       - "collectors/**"
@@ -10233,7 +10236,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: master brain / AI desk / alt-data / risk brains behind the shipped desk verdicts
-        run: python -m pytest tests/test_admin_brief_gate.py tests/test_ai_desk_panel.py tests/test_altdata_intel.py tests/test_altdata_price_truth.py tests/test_china_intel_hub.py tests/test_master_brain.py tests/test_master_brain_ladder.py tests/test_master_brain_zh_ladder.py tests/test_master_brain_policy.py tests/test_master_brain_producer.py tests/test_master_brain_scorer.py tests/test_risk_brain.py tests/test_risk_radar_review.py tests/test_shock_deescalation.py tests/test_w7_llm_determinism.py -q
+        run: python -m pytest tests/test_admin_brief_gate.py tests/test_ai_desk_panel.py tests/test_altdata_intel.py tests/test_altdata_price_truth.py tests/test_china_intel_hub.py tests/test_master_brain.py tests/test_regime_label_honesty.py tests/test_master_brain_ladder.py tests/test_master_brain_zh_ladder.py tests/test_master_brain_policy.py tests/test_master_brain_producer.py tests/test_master_brain_scorer.py tests/test_risk_brain.py tests/test_risk_radar_review.py tests/test_shock_deescalation.py tests/test_w7_llm_determinism.py -q
       # China Alpha Intelligence P1 (#6050): the china_intel_hub dossier's
       # descriptive-only visits block — joins the china_intel_hub owner lane.
       # test_china_intel_visits_render.py is the SOL-repair template render
@@ -10270,7 +10273,7 @@ jobs:
       - name: falsifier-register bans + chat plain-word projection
         run: python -m pytest tests/test_front_facing_register.py tests/test_policy_watch_register.py tests/test_policy_watch_ui.py tests/test_policy_lifecycle.py tests/test_chat_plain_words.py -q
       - name: regime-label honesty + sizing-pill null parity + forward cycle framing
-        run: python -m pytest tests/test_regime_label_honesty.py tests/test_regime_sizing_disclosure_parity.py tests/test_cycle_forward_framing.py tests/test_quad_dark_day_disclosure.py -q
+        run: python -m pytest tests/test_regime_sizing_disclosure_parity.py tests/test_cycle_forward_framing.py tests/test_quad_dark_day_disclosure.py -q
 
   unrun-neuralweb-cortex:
     # neural-web cortex world-state consumers + the factor-contradiction plane.
@@ -10536,6 +10539,9 @@ jobs:
     runs-on: ubuntu-latest
     scope: exclusive
     paths:
+      # W1 briefing reader reuses existing DataOS freshness/temporal owners.
+      - "lib/dataos/quality.py"
+      - "lib/dataos/temporal.py"
       - "engine/**"
       - "collectors/**"
       - "config/**"
@@ -10660,6 +10666,9 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      # W1 briefing reader reuses existing DataOS freshness/temporal owners.
+      - "lib/dataos/quality.py"
+      - "lib/dataos/temporal.py"
       # F01 R1B closure widening 2026-09-04 (contract-delta): build_site.py's
       # guarded macro-suite hook imports the page builder, which carries the
       # workspace contract/registry pair. Checker-named files only; the
