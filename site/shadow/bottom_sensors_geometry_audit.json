@@ -1,53 +1,53 @@
 {
   "schema": "bottom_sensors_geometry_audit.v1",
-  "n_booked": 85112,
+  "n_booked": 90976,
   "booked_dates": [
     "2026-07-06",
-    "2026-09-08"
+    "2026-09-10"
   ],
-  "asof": "2026-09-08",
-  "n_matured": 8419,
+  "asof": "2026-09-10",
+  "n_matured": 8914,
   "by_horizon": {
     "h21": {
-      "n_obs": 8419,
+      "n_obs": 8914,
       "decline_geometry": {
         "buckets": {
           "flush": {
-            "mean_fwd_ret": 0.0181423211319051,
-            "n": 1265
+            "mean_fwd_ret": 0.015595058773742195,
+            "n": 1344
           },
           "grind": {
-            "mean_fwd_ret": 0.027152785337409883,
-            "n": 1292
+            "mean_fwd_ret": 0.025909825244205095,
+            "n": 1371
           },
           "mixed": {
-            "mean_fwd_ret": 0.020330864203656734,
-            "n": 1285
+            "mean_fwd_ret": 0.019208013829006297,
+            "n": 1363
           }
         },
-        "flush_minus_grind": -0.009010464205504783
+        "flush_minus_grind": -0.010314766470462899
       },
       "underwater_state": {
         "buckets": {
           "long": {
-            "mean_fwd_ret": 0.042511976656861385,
-            "n": 1262
+            "mean_fwd_ret": 0.038810162922370106,
+            "n": 1342
           },
           "mid": {
-            "mean_fwd_ret": 0.01854013555785345,
-            "n": 1276
+            "mean_fwd_ret": 0.01820123662118058,
+            "n": 1353
           },
           "short": {
-            "mean_fwd_ret": 0.005252506040423593,
-            "n": 1304
+            "mean_fwd_ret": 0.004304512263465129,
+            "n": 1383
           }
         },
-        "long_minus_short": 0.03725947061643779
+        "long_minus_short": 0.03450565065890498
       }
     }
   },
   "interpretation": "Realized forward-return gaps of the FROZEN structural descriptors per horizon: decline_geometry flush\u2212grind (family E, DISPLAY-CANDIDATE) and underwater_state long\u2212short (family F, ADVERSE-CONTEXT). Descriptive only; empty/thin until horizons elapse.",
   "authority": "DISPLAY-ONLY \u2014 no ranking/gating/allocation surface is touched; a positive gap does NOT promote either descriptor. CHIP promotion is blocked until the true eq_band cache lands (RUL-28).",
   "survivorship": "OPTIMISTIC bound \u2014 free prices serve currently-listed names only.",
-  "generated_utc": "2026-09-09T10:45:25+00:00"
+  "generated_utc": "2026-09-11T10:44:11+00:00"
 }
