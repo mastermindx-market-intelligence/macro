@@ -17,9 +17,9 @@ concurrency:
 jobs:
   browser-proof:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
-      - name: Open production UI through a bounded VPS tunnel
+      - name: Render exact production UI through read-only SSH fetches
         env:
           SSH_KEY: ${{ secrets.VPS_DEPLOY_KEY }}
         shell: bash
@@ -28,29 +28,19 @@ jobs:
           [ -n "${SSH_KEY:-}" ] || { echo '{"state":"HOLD","reason":"vps_deploy_key_unavailable"}'; exit 20; }
           umask 077
           keyfile="$RUNNER_TEMP/vps_key"
+          control="$RUNNER_TEMP/mm-ssh-%r@%h:%p"
           printf '%s\n' "$SSH_KEY" > "$keyfile"
           chmod 600 "$keyfile"
 
           ssh -i "$keyfile" \
             -o BatchMode=yes \
             -o ConnectTimeout=20 \
-            -o ExitOnForwardFailure=yes \
             -o StrictHostKeyChecking=accept-new \
-            -N -L 18001:127.0.0.1:8001 root@146.190.142.17 &
-          tunnel_pid=$!
-          trap 'kill "$tunnel_pid" 2>/dev/null || true; rm -f "$keyfile" "$RUNNER_TEMP/portfolio-ui.png"' EXIT
-
-          for _ in $(seq 1 30); do
-            curl -fsS --max-time 2 http://127.0.0.1:18001/health >/tmp/mm-health.json && break
-            sleep 1
-          done
-          python3 - <<'PY'
-          import json
-          from pathlib import Path
-          health=json.loads(Path('/tmp/mm-health.json').read_text())
-          assert health.get('commit') == 'e61f2951136bdc03a7ec2f5f12f960af26656a4c'
-          assert health.get('status') == 'ok'
-          PY
+            -o ControlMaster=yes \
+            -o ControlPersist=300 \
+            -o ControlPath="$control" \
+            -MNf root@146.190.142.17
+          trap 'ssh -i "$keyfile" -o ControlPath="$control" -O exit root@146.190.142.17 >/dev/null 2>&1 || true; rm -f "$keyfile" "$RUNNER_TEMP/portfolio-ui.png"' EXIT
 
           work="$RUNNER_TEMP/mm-browser-proof"
           mkdir -p "$work"
@@ -62,7 +52,71 @@ jobs:
           cat > proof.cjs <<'JS'
           const fs = require('fs');
           const crypto = require('crypto');
+          const child = require('child_process');
           const { chromium } = require('playwright');
+
+          const KEYFILE = process.env.MM_KEYFILE;
+          const CONTROL = process.env.MM_CONTROL;
+          const EXPECTED = 'e61f2951136bdc03a7ec2f5f12f960af26656a4c';
+          const REMOTE_CODE = String.raw`
+          import base64, json, sys, urllib.error, urllib.request
+          raw = sys.argv[1]
+          raw += '=' * (-len(raw) % 4)
+          path = base64.urlsafe_b64decode(raw.encode('ascii')).decode('utf-8')
+          method = sys.argv[2]
+          request = urllib.request.Request('http://127.0.0.1:8001' + path, method=method,
+              headers={'User-Agent': 'Mastermind-Portfolio-Recovery-Browser-Proof/1.0'})
+          try:
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  status = int(response.status)
+                  headers = dict(response.headers.items())
+                  body = response.read()
+          except urllib.error.HTTPError as exc:
+              status = int(exc.code)
+              headers = dict(exc.headers.items())
+              body = exc.read()
+          except Exception as exc:
+              print(json.dumps({'error_class': type(exc).__name__}, separators=(',', ':')))
+              raise SystemExit(31)
+          allowed = {'content-type', 'cache-control', 'content-language', 'etag', 'last-modified', 'location'}
+          safe_headers = {str(k).lower(): str(v) for k, v in headers.items() if str(k).lower() in allowed}
+          print(json.dumps({
+              'status': status,
+              'headers': safe_headers,
+              'body_b64': base64.b64encode(body).decode('ascii'),
+          }, separators=(',', ':')))
+          `;
+          const REMOTE_CODE_B64 = Buffer.from(REMOTE_CODE, 'utf8').toString('base64');
+
+          function shQuote(value) {
+            return "'" + String(value).replace(/'/g, "'\\''") + "'";
+          }
+
+          function remoteFetch(path, method = 'GET') {
+            const pathB64 = Buffer.from(path, 'utf8').toString('base64url');
+            const remote = [
+              '/opt/mastermind/.venv/bin/python',
+              '-c',
+              `import base64;exec(base64.b64decode(${shQuote(REMOTE_CODE_B64)}))`,
+              pathB64,
+              method,
+            ].map(shQuote).join(' ');
+            const stdout = child.execFileSync('ssh', [
+              '-i', KEYFILE,
+              '-o', 'BatchMode=yes',
+              '-o', 'ConnectTimeout=20',
+              '-o', `ControlPath=${CONTROL}`,
+              'root@146.190.142.17',
+              remote,
+            ], {encoding: 'utf8', timeout: 45000, maxBuffer: 16 * 1024 * 1024});
+            const envelope = JSON.parse(stdout.trim());
+            if (envelope.error_class) throw new Error(envelope.error_class);
+            return {
+              status: envelope.status,
+              headers: envelope.headers || {},
+              body: Buffer.from(envelope.body_b64 || '', 'base64'),
+            };
+          }
 
           (async () => {
             const result = {
@@ -70,12 +124,53 @@ jobs:
               operation: 'portfolio-bot-decision-recovery-20260909-sol-001',
               state: 'HOLD',
               observed_at: new Date().toISOString(),
-              commit: 'e61f2951136bdc03a7ec2f5f12f960af26656a4c',
+              commit: EXPECTED,
+              transport: 'read_only_ssh_fetch_route',
             };
+
+            const health = remoteFetch('/health');
+            const healthBody = JSON.parse(health.body.toString('utf8'));
+            result.health_http = health.status;
+            result.health_status = healthBody.status || null;
+            result.health_commit = healthBody.commit || null;
+            if (health.status !== 200 || healthBody.status !== 'ok' || healthBody.commit !== EXPECTED) {
+              result.reason = 'release_health_mismatch';
+              console.log(JSON.stringify(result));
+              process.exit(20);
+            }
+
             const browser = await chromium.launch({headless: true});
             const page = await browser.newPage({viewport: {width: 1440, height: 1200}, deviceScaleFactor: 1});
             const apiSeen = {decisions: false, scheduler: false, portfolio: false};
             let consoleErrors = 0;
+            let blockedExternalRequests = 0;
+
+            await page.route('**/*', async route => {
+              const request = route.request();
+              const url = new URL(request.url());
+              if (url.hostname !== 'bot.mastermind-x.com') {
+                blockedExternalRequests += 1;
+                await route.abort('blockedbyclient');
+                return;
+              }
+              const method = request.method();
+              if (!['GET', 'HEAD'].includes(method)) {
+                blockedExternalRequests += 1;
+                await route.abort('blockedbyclient');
+                return;
+              }
+              try {
+                const fetched = remoteFetch(url.pathname + url.search, method);
+                await route.fulfill({
+                  status: fetched.status,
+                  headers: fetched.headers,
+                  body: method === 'HEAD' ? Buffer.alloc(0) : fetched.body,
+                });
+              } catch (_error) {
+                await route.abort('failed');
+              }
+            });
+
             page.on('response', response => {
               const u = response.url();
               if (u.includes('/api/decisions')) apiSeen.decisions = response.status() === 200;
@@ -85,12 +180,13 @@ jobs:
             page.on('console', message => { if (message.type() === 'error') consoleErrors += 1; });
             page.on('pageerror', () => { consoleErrors += 1; });
 
-            const response = await page.goto('http://127.0.0.1:18001/?portfolio=autonomous', {
-              waitUntil: 'domcontentloaded', timeout: 60000
+            const response = await page.goto('https://bot.mastermind-x.com/?portfolio=autonomous', {
+              waitUntil: 'domcontentloaded', timeout: 90000
             });
             result.document_http = response ? response.status() : null;
-            await page.waitForFunction(() => document.body && document.body.innerText.length > 1000, null, {timeout: 30000});
-            await page.waitForTimeout(6000);
+            await page.waitForFunction(() => document.body && document.body.innerText.length > 1000, null, {timeout: 45000});
+            await page.waitForFunction(() => document.querySelectorAll('.mm-dec-status').length > 0, null, {timeout: 60000});
+            await page.waitForTimeout(3000);
 
             const safe = await page.evaluate(async () => {
               const [decisionsResponse, schedulerResponse] = await Promise.all([
@@ -102,6 +198,7 @@ jobs:
               const decision = Array.isArray(decisions.decisions) && decisions.decisions[0] || {};
               const job = Array.isArray(scheduler.jobs)
                 ? (scheduler.jobs.find(row => row && row.id === 'autonomous_daily') || {}) : {};
+              const queuedNodes = Array.from(document.querySelectorAll('.mm-dec-status.queued'));
               return {
                 decision_http: decisionsResponse.status,
                 scheduler_http: schedulerResponse.status,
@@ -118,7 +215,9 @@ jobs:
                   last_reason: job.last_reason || null,
                   last_target_status: job.last_target_status || null,
                 },
-                queued_dom_count: document.querySelectorAll('.mm-dec-status.queued').length,
+                decision_status_dom_count: document.querySelectorAll('.mm-dec-status').length,
+                queued_dom_count: queuedNodes.length,
+                queued_dom_texts: queuedNodes.slice(0, 3).map(node => (node.textContent || '').trim()).filter(Boolean),
                 missing_dom_count: document.querySelectorAll('.mm-dec-status.missing').length,
                 page_has_daily_decision_log: /Daily Decision Log/i.test(document.body.innerText),
                 page_has_recovery_label_contract: document.documentElement.innerHTML.includes('DECISION MISSING — RECOVERY REQUIRED'),
@@ -127,6 +226,7 @@ jobs:
             Object.assign(result, safe);
             result.api_seen = apiSeen;
             result.console_error_count = consoleErrors;
+            result.blocked_external_request_count = blockedExternalRequests;
 
             const screenshotPath = process.env.RUNNER_TEMP + '/portfolio-ui.png';
             await page.screenshot({path: screenshotPath, fullPage: false});
@@ -164,4 +264,4 @@ jobs:
           });
           JS
 
-          RUNNER_TEMP="$RUNNER_TEMP" node proof.cjs
+          MM_KEYFILE="$keyfile" MM_CONTROL="$control" RUNNER_TEMP="$RUNNER_TEMP" node proof.cjs
