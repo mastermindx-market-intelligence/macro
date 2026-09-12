@@ -51,9 +51,150 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="theme.css?v=63df1679">
-<link rel="stylesheet" href="assets/css/1e6fe012.css?v=1e6fe012">
-<link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
+<link rel="stylesheet" href="theme.css">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;padding-top:24px;background:var(--bg);color:var(--text);font-family:var(--font-ui);font-size:14px;line-height:1.5}
+  a{text-decoration:none;color:inherit}
+  .tr-wrap{max-width:1200px;margin:0 auto;padding:0 20px 80px}
+
+  /* ── page header ── */
+  .tr-hd{padding:18px 0 14px}
+  .tr-back{font-size:12px;color:var(--ink-link, var(--link));display:inline-flex;align-items:center;gap:4px;margin-bottom:10px}
+  .tr-back:hover{opacity:.8}
+  .tr-eyebrow{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+  .tr-title{font-size:clamp(22px,3vw,30px);font-weight:800;letter-spacing:-.02em;margin:0 0 6px}
+  .tr-sub{color:var(--muted);font-size:13px;max-width:80ch;margin:0 0 4px}
+  .tr-asof{color:var(--muted);font-size:12px}
+
+  /* ── glance hero card ── */
+  .tr-hero{display:flex;flex-wrap:wrap;gap:16px;margin:20px 0 28px;
+    padding:18px 20px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+  .tr-hero-stat{display:flex;flex-direction:column;gap:2px;min-width:120px}
+  .tr-hero-stat .val{font-size:28px;font-weight:800;letter-spacing:-.02em}
+  .tr-hero-stat .lbl{font-size:12px;color:var(--muted);font-weight:600}
+  .tr-hero-stat.up .val{color:var(--ink-up, var(--up))}
+  .tr-hero-stat.dn .val{color:var(--ink-down, var(--down))}
+  .tr-hero-divider{width:1px;background:var(--line);align-self:stretch}
+  .tr-hero-stance{flex:1;min-width:220px}
+  .tr-hero-stance .stance-main{font-size:14.5px;font-weight:700;line-height:1.5}
+  .tr-hero-stance .stance-sub{font-size:12.5px;color:var(--muted);margin-top:4px}
+  /* ── measurement-change comparison (era break, 2026-08-07) ──────────────────
+     Two readings of the SAME trades, so the visual job is the opposite of the
+     hero's: invite comparison, refuse a verdict. Three rules follow from that —
+       1. the "before" column is muted with a hairline rail, NOT struck through.
+          A strikethrough reads as retracted, and these numbers were never wrong;
+          they were measured on a grid that moved. The visual must not contradict
+          the sentence above it;
+       2. neither column takes .val's 28px or the up/down inks — the hero above
+          still owns the headline, and colouring a comparison turns a measurement
+          note into a performance claim;
+       3. one plain sentence carries the reason, and a second says how much of the
+          move is simply more trades finishing. Without it a reader reads the whole
+          drop as the measurement change, which is false. */
+  /* background is var(--panel) FLAT, not a muted wash over it. The wash reads fine on
+     dark (panel #181b21 lifts off canvas #0f1115) but in light it lands on
+     rgb(247,248,250) — the page canvas itself — so the whole block dissolved into the
+     page while the hero above it stayed white. That is the panel≈bg flatness bug the
+     doctrine names (§5.8). The block still reads quieter than the hero, but through
+     type and the rail, not through a background that only works in one theme. */
+  .tr-basis{margin:-8px 0 26px;padding:16px 18px;border:1px solid var(--line);
+    border-left:3px solid color-mix(in srgb,var(--muted) 45%,transparent);
+    border-radius:12px;background:var(--panel)}
+  .tr-basis-hd{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px;margin-bottom:8px}
+  .tr-basis-tag{font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--muted)}
+  .tr-basis-dt{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .tr-basis-line{margin:0 0 14px;font-size:12.5px;line-height:1.55;color:var(--text);max-width:80ch}
+  .tr-basis-cmp{display:flex;flex-wrap:wrap;gap:10px 28px;align-items:flex-start}
+  .tr-basis-col{min-width:170px;padding-left:11px;
+    border-left:1px solid color-mix(in srgb,var(--muted) 30%,transparent)}
+  .tr-basis-col-k{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:5px}
+  .tr-basis-row{display:flex;justify-content:space-between;gap:14px;font-size:13px;line-height:1.75}
+  .tr-basis-row .n{font-weight:700;font-variant-numeric:tabular-nums}
+  .tr-basis-row .w{color:var(--muted);font-size:12px}
+  .tr-basis-then{color:var(--muted)}
+  .tr-basis-ft{margin:12px 0 0;font-size:11.5px;line-height:1.5;color:var(--muted);max-width:80ch}
+  @media (max-width:560px){ .tr-basis-cmp{gap:14px} .tr-basis-col{min-width:0;flex:1 1 140px} }
+
+  .accruing-chip{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;
+    border:1px solid color-mix(in srgb,var(--warn) 50%,var(--line));
+    color:var(--ink-warn, var(--warn));background:color-mix(in srgb,var(--warn) 10%,transparent);
+    margin-left:6px;vertical-align:middle}
+
+  /* ── section headers ── */
+  .tr-section{margin-top:32px;padding-top:24px;border-top:1px solid var(--line)}
+  .tr-section:first-of-type{border-top:none;margin-top:0;padding-top:0}
+  .tr-section-hd{font-size:15px;font-weight:750;margin:0 0 4px}
+  .tr-section-sub{font-size:12.5px;color:var(--muted);margin:0 0 14px;max-width:72ch}
+
+  /* ── chart canvas ── */
+  .tr-chart-wrap{position:relative;width:100%;height:160px;margin:0 0 8px;
+    border:1px solid var(--line);border-radius:10px;background:var(--panel);overflow:hidden}
+  .tr-chart-wrap svg{position:absolute;inset:0;width:100%;height:100%}
+  .tr-chart-legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:16px;font-size:11.5px;color:var(--muted)}
+  .tr-chart-legend span{display:flex;align-items:center;gap:5px}
+  .tr-chart-legend .dot{width:10px;height:10px;border-radius:50%}
+  .chart-accruing{display:flex;align-items:center;justify-content:center;
+    height:160px;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+    color:var(--muted);font-size:13px;font-style:italic;margin-bottom:8px}
+
+  /* ── horizon ladder table ── */
+  .tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table.tr-tbl{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
+  table.tr-tbl th{text-align:right;padding:7px 10px;border-bottom:1.5px solid var(--line);
+    color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+  table.tr-tbl th:first-child{text-align:left}
+  table.tr-tbl td{text-align:right;padding:7px 10px;border-bottom:1px solid var(--line)}
+  table.tr-tbl td:first-child{text-align:left;font-weight:700}
+  table.tr-tbl tr:last-child td{border-bottom:none}
+  .pos{color:var(--ink-up, var(--up))} .neg{color:var(--ink-down, var(--down))} .neu{color:var(--muted)}
+  .ci-range{font-size:10.5px;color:var(--muted)}
+  .n-col{font-size:11px;color:var(--muted)}
+
+  /* ── outcomes table ── */
+  table.tr-out-tbl{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
+  table.tr-out-tbl th{text-align:right;padding:6px 9px;border-bottom:1.5px solid var(--line);
+    color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+  table.tr-out-tbl th:first-child{text-align:left}
+  table.tr-out-tbl td{text-align:right;padding:6px 9px;border-bottom:1px solid var(--line)}
+  table.tr-out-tbl td:first-child{text-align:left}
+  table.tr-out-tbl td.tk-cell{font-weight:700}
+  table.tr-out-tbl tr:last-child td{border-bottom:none}
+  .oc-dot{display:inline-block;width:8px;height:8px;border-radius:50%;vertical-align:middle}
+  .oc-dot.running{background:var(--up)}
+  .oc-dot.stopped{background:var(--down)}
+  .oc-dot.flat{background:var(--muted)}
+  .autopsy-col{color:var(--muted);font-size:11px}
+
+  /* ── coverage / loss ledger cards ── */
+  .tr-row-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:0 0 14px}
+  @media(max-width:620px){.tr-row-grid{grid-template-columns:1fr}}
+  .tr-card{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--panel)}
+  .tr-card-title{font-size:12.5px;font-weight:700;margin:0 0 8px}
+  .tr-card-val{font-size:22px;font-weight:800;letter-spacing:-.02em}
+  .tr-card-sub{font-size:11.5px;color:var(--muted);margin-top:3px}
+  .tr-gap-note{font-size:12px;color:var(--muted);font-style:italic;padding:10px 0 0}
+
+  /* ── accrual clock banner ── */
+  .tr-clock{display:flex;align-items:flex-start;gap:10px;padding:12px 15px;
+    border:1.5px solid color-mix(in srgb,var(--warn) 40%,var(--line));
+    border-radius:10px;background:color-mix(in srgb,var(--warn) 6%,var(--panel));
+    margin-bottom:16px;font-size:12.5px}
+  .tr-clock-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+  .tr-clock-body{color:var(--muted)}
+  .tr-clock-body b{color:var(--text)}
+
+  /* ── disclosure footnote ── */
+  .tr-footnote{font-size:11.5px;color:var(--muted);border-top:1px solid var(--line);
+    padding-top:14px;margin-top:28px;max-width:90ch;line-height:1.65}
+  .tr-footnote b{color:var(--text)}
+
+  /* ── data-gap placeholder ── */
+  .tr-gap-block{padding:18px;border:1px dashed var(--line);border-radius:10px;
+    background:color-mix(in srgb,var(--muted) 4%,var(--panel));color:var(--muted);
+    font-size:12.5px;font-style:italic;text-align:center}
+</style>
 </head>
 <body>
 <div class="tr-wrap">
@@ -64,27 +205,27 @@
     <div class="tr-eyebrow"><span class="l-en">US Buy Board</span><span class="l-zh">美股买入榜</span></div>
     <h1 class="tr-title"><span class="l-en">Track Record</span><span class="l-zh">往绩记录</span></h1>
     <p class="tr-sub"><span class="l-en">How names that left the buy board have performed since they were first surfaced — updated each night.</span><span class="l-zh">离开买入榜的标的自首次上榜以来的表现——每晚更新。</span></p>
-    <div class="tr-asof"><span class="l-en">as of</span><span class="l-zh">截至</span> 2026-09-10</div>
+    <div class="tr-asof"><span class="l-en">as of</span><span class="l-zh">截至</span> 2026-09-11</div>
   </div>
 
   <!-- ── Section 1: Glance hero ── -->
   <div class="tr-hero">
     
     <div class="tr-hero-stat up">
-      <span class="val">52%</span>
+      <span class="val">51%</span>
       <span class="lbl"><span class="l-en">of finished trades made money</span><span class="l-zh">已完成交易中盈利占比</span></span>
     </div>
     <div class="tr-hero-divider"></div>
     
     <div class="tr-hero-stat up">
-      <span class="val">+0.3%</span>
+      <span class="val">+0.1%</span>
       <span class="lbl"><span class="l-en">average trade</span><span class="l-zh">每笔平均</span></span>
     </div>
     <div class="tr-hero-divider"></div>
     
     
     <div class="tr-hero-stat">
-      <span class="val">797</span>
+      <span class="val">839</span>
       <span class="lbl"><span class="l-en">finished trades</span><span class="l-zh">已完成交易</span></span>
     </div>
     <div class="tr-hero-divider"></div>
@@ -99,7 +240,7 @@
     
   </div>
   
-  <p style="font-size:11.5px;color:var(--muted);margin:-12px 0 20px"><span class="l-en">Each pick is bought at the next session&#39;s close and sold 10 sessions later, or sooner if it runs hot or breaks its base. The win rate is likely between 45.7% and 58.5% — 797 trades, but only 28 separate board days behind them. 242 picks are still running and are not counted.</span><span class="l-zh">每个标的以次日收盘价买入，持有 10 个交易日后卖出；若提前冲高或跌破底部则提早离场。胜率大致介于 45.7% 与 58.5% 之间——共 797 笔交易，但仅来自 28 个不同上榜日。 另有 242 个标的仍在进行中，不计入。</span></p>
+  <p style="font-size:11.5px;color:var(--muted);margin:-12px 0 20px"><span class="l-en">Each pick is bought at the next session&#39;s close and sold 10 sessions later, or sooner if it runs hot or breaks its base. The win rate is likely between 45.1% and 57.4% — 839 trades, but only 29 separate board days behind them. 215 picks are still running and are not counted.</span><span class="l-zh">每个标的以次日收盘价买入，持有 10 个交易日后卖出；若提前冲高或跌破底部则提早离场。胜率大致介于 45.1% 与 57.4% 之间——共 839 笔交易，但仅来自 29 个不同上榜日。 另有 215 个标的仍在进行中，不计入。</span></p>
   
   <div class="tr-basis">
     <div class="tr-basis-hd">
@@ -116,13 +257,13 @@
       </div>
       <div class="tr-basis-col">
         <div class="tr-basis-col-k"><span class="l-en">Now</span><span class="l-zh">现在</span></div>
-        <div class="tr-basis-row"><span class="w"><span class="l-en">made money</span><span class="l-zh">盈利占比</span></span><span class="n">52%</span></div>
-        <div class="tr-basis-row"><span class="w"><span class="l-en">average trade</span><span class="l-zh">每笔平均</span></span><span class="n">+0.3%</span></div>
-        <div class="tr-basis-row"><span class="w"><span class="l-en">finished trades</span><span class="l-zh">已完成交易</span></span><span class="n">797</span></div>
+        <div class="tr-basis-row"><span class="w"><span class="l-en">made money</span><span class="l-zh">盈利占比</span></span><span class="n">51%</span></div>
+        <div class="tr-basis-row"><span class="w"><span class="l-en">average trade</span><span class="l-zh">每笔平均</span></span><span class="n">+0.1%</span></div>
+        <div class="tr-basis-row"><span class="w"><span class="l-en">finished trades</span><span class="l-zh">已完成交易</span></span><span class="n">839</span></div>
       </div>
     </div>
 
-    <p class="tr-basis-ft"><span class="l-en">More than the measurement separates these two columns: 797 trades have finished now against 173 on 2026-07-31, so part of the move is simply more results, not a different ruler.</span><span class="l-zh">两列之间的差异不止来自计量方式：现已走完 797 笔交易，而 2026-07-31 时为 173 笔，因此部分变化只是结果变多，并非换了尺子。</span></p>
+    <p class="tr-basis-ft"><span class="l-en">More than the measurement separates these two columns: 839 trades have finished now against 173 on 2026-07-31, so part of the move is simply more results, not a different ruler.</span><span class="l-zh">两列之间的差异不止来自计量方式：现已走完 839 笔交易，而 2026-07-31 时为 173 笔，因此部分变化只是结果变多，并非换了尺子。</span></p>
 
   </div>
 
@@ -183,7 +324,7 @@
           <td class="neu">—</td>
           <td class="neu">—</td>
           <td class="neu">—</td>
-          <td class="n-col"><span class="l-en">n=</span><span class="l-zh">n=</span>1545</td>
+          <td class="n-col"><span class="l-en">n=</span><span class="l-zh">n=</span>1564</td>
           <td><span class="accruing-chip"><span class="l-en">ACCRUING</span><span class="l-zh">积累中</span></span></td>
           
         </tr>
@@ -194,7 +335,7 @@
           <td class="neu">—</td>
           <td class="neu">—</td>
           <td class="neu">—</td>
-          <td class="n-col"><span class="l-en">n=</span><span class="l-zh">n=</span>964</td>
+          <td class="n-col"><span class="l-en">n=</span><span class="l-zh">n=</span>1108</td>
           <td><span class="accruing-chip"><span class="l-en">ACCRUING</span><span class="l-zh">积累中</span></span></td>
           
         </tr>
@@ -250,123 +391,6 @@
       <tbody>
       
       <tr>
-        <td class="tk-cell"><a href="stock.html#CRSR" data-tip-en="Open CRSR stock page" data-tip-zh="打开CRSR个股页面">CRSR</a></td>
-        <td class="neu" style="font-size:11px"><span class="l-en">Information Technology</span><span class="l-zh">Information Technology</span></td>
-        <td class="neu" style="font-size:11.5px">2026-07-31</td>
-        <td data-sort="32.9">
-          <span class="pos">
-            +32.9%
-          </span>
-        </td>
-        <td><span class="oc-dot running"></span></td>
-        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
-      </tr>
-      
-      <tr>
-        <td class="tk-cell"><a href="stock.html#U" data-tip-en="Open U stock page" data-tip-zh="打开U个股页面">U</a></td>
-        <td class="neu" style="font-size:11px"><span class="l-en">Information Technology</span><span class="l-zh">Information Technology</span></td>
-        <td class="neu" style="font-size:11.5px">2026-07-31</td>
-        <td data-sort="28.8">
-          <span class="pos">
-            +28.8%
-          </span>
-        </td>
-        <td><span class="oc-dot running"></span></td>
-        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
-      </tr>
-      
-      <tr>
-        <td class="tk-cell"><a href="stock.html#HP" data-tip-en="Open HP stock page" data-tip-zh="打开HP个股页面">HP</a></td>
-        <td class="neu" style="font-size:11px"><span class="l-en">Energy</span><span class="l-zh">Energy</span></td>
-        <td class="neu" style="font-size:11.5px">2026-07-31</td>
-        <td data-sort="25.8">
-          <span class="pos">
-            +25.8%
-          </span>
-        </td>
-        <td><span class="oc-dot running"></span></td>
-        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
-      </tr>
-      
-      <tr>
-        <td class="tk-cell"><a href="stock.html#CCOI" data-tip-en="Open CCOI stock page" data-tip-zh="打开CCOI个股页面">CCOI</a></td>
-        <td class="neu" style="font-size:11px"><span class="l-en">Communication Services</span><span class="l-zh">Communication Services</span></td>
-        <td class="neu" style="font-size:11.5px">2026-07-31</td>
-        <td data-sort="-25.0">
-          <span class="neg">
-            -25.0%
-          </span>
-        </td>
-        <td><span class="oc-dot stopped"></span></td>
-        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
-      </tr>
-      
-      <tr>
-        <td class="tk-cell"><a href="stock.html#ABNB" data-tip-en="Open ABNB stock page" data-tip-zh="打开ABNB个股页面">ABNB</a></td>
-        <td class="neu" style="font-size:11px"><span class="l-en">Consumer Discretionary</span><span class="l-zh">Consumer Discretionary</span></td>
-        <td class="neu" style="font-size:11.5px">2026-07-31</td>
-        <td data-sort="18.2">
-          <span class="pos">
-            +18.2%
-          </span>
-        </td>
-        <td><span class="oc-dot running"></span></td>
-        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
-      </tr>
-      
-      <tr>
-        <td class="tk-cell"><a href="stock.html#PATH" data-tip-en="Open PATH stock page" data-tip-zh="打开PATH个股页面">PATH</a></td>
-        <td class="neu" style="font-size:11px"><span class="l-en">Information Technology</span><span class="l-zh">Information Technology</span></td>
-        <td class="neu" style="font-size:11.5px">2026-07-31</td>
-        <td data-sort="15.3">
-          <span class="pos">
-            +15.3%
-          </span>
-        </td>
-        <td><span class="oc-dot running"></span></td>
-        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
-      </tr>
-      
-      <tr>
-        <td class="tk-cell"><a href="stock.html#ELAN" data-tip-en="Open ELAN stock page" data-tip-zh="打开ELAN个股页面">ELAN</a></td>
-        <td class="neu" style="font-size:11px"><span class="l-en">Health Care</span><span class="l-zh">Health Care</span></td>
-        <td class="neu" style="font-size:11.5px">2026-07-31</td>
-        <td data-sort="-14.0">
-          <span class="neg">
-            -14.0%
-          </span>
-        </td>
-        <td><span class="oc-dot stopped"></span></td>
-        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
-      </tr>
-      
-      <tr>
-        <td class="tk-cell"><a href="stock.html#PI" data-tip-en="Open PI stock page" data-tip-zh="打开PI个股页面">PI</a></td>
-        <td class="neu" style="font-size:11px"><span class="l-en">Information Technology</span><span class="l-zh">Information Technology</span></td>
-        <td class="neu" style="font-size:11.5px">2026-07-31</td>
-        <td data-sort="13.6">
-          <span class="pos">
-            +13.6%
-          </span>
-        </td>
-        <td><span class="oc-dot running"></span></td>
-        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
-      </tr>
-      
-      <tr>
-        <td class="tk-cell"><a href="stock.html#ASTS" data-tip-en="Open ASTS stock page" data-tip-zh="打开ASTS个股页面">ASTS</a></td>
-        <td class="neu" style="font-size:11px"><span class="l-en">Communication Services</span><span class="l-zh">Communication Services</span></td>
-        <td class="neu" style="font-size:11.5px">2026-07-31</td>
-        <td data-sort="13.3">
-          <span class="pos">
-            +13.3%
-          </span>
-        </td>
-        <td><span class="oc-dot running"></span></td>
-        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
-      </tr>
-      
-      <tr>
         <td class="tk-cell"><a href="stock.html#EZPW" data-tip-en="Open EZPW stock page" data-tip-zh="打开EZPW个股页面">EZPW</a></td>
         <td class="neu" style="font-size:11px"><span class="l-en">Financials</span><span class="l-zh">Financials</span></td>
         <td class="neu" style="font-size:11.5px">2026-08-18</td>
@@ -406,32 +430,6 @@
       </tr>
       
       <tr>
-        <td class="tk-cell"><a href="stock.html#VAL" data-tip-en="Open VAL stock page" data-tip-zh="打开VAL个股页面">VAL</a></td>
-        <td class="neu" style="font-size:11px"><span class="l-en">Energy</span><span class="l-zh">Energy</span></td>
-        <td class="neu" style="font-size:11.5px">2026-07-31</td>
-        <td data-sort="10.8">
-          <span class="pos">
-            +10.8%
-          </span>
-        </td>
-        <td><span class="oc-dot running"></span></td>
-        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
-      </tr>
-      
-      <tr>
-        <td class="tk-cell"><a href="stock.html#ORA" data-tip-en="Open ORA stock page" data-tip-zh="打开ORA个股页面">ORA</a></td>
-        <td class="neu" style="font-size:11px"><span class="l-en">Utilities</span><span class="l-zh">Utilities</span></td>
-        <td class="neu" style="font-size:11.5px">2026-07-31</td>
-        <td data-sort="10.3">
-          <span class="pos">
-            +10.3%
-          </span>
-        </td>
-        <td><span class="oc-dot running"></span></td>
-        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
-      </tr>
-      
-      <tr>
         <td class="tk-cell"><a href="stock.html#ANET" data-tip-en="Open ANET stock page" data-tip-zh="打开ANET个股页面">ANET</a></td>
         <td class="neu" style="font-size:11px"><span class="l-en">Information Technology</span><span class="l-zh">Information Technology</span></td>
         <td class="neu" style="font-size:11.5px">2026-08-07</td>
@@ -445,12 +443,12 @@
       </tr>
       
       <tr>
-        <td class="tk-cell"><a href="stock.html#CLF" data-tip-en="Open CLF stock page" data-tip-zh="打开CLF个股页面">CLF</a></td>
-        <td class="neu" style="font-size:11px"><span class="l-en">Materials</span><span class="l-zh">Materials</span></td>
-        <td class="neu" style="font-size:11.5px">2026-07-31</td>
-        <td data-sort="9.3">
+        <td class="tk-cell"><a href="stock.html#CRSR" data-tip-en="Open CRSR stock page" data-tip-zh="打开CRSR个股页面">CRSR</a></td>
+        <td class="neu" style="font-size:11px"><span class="l-en">Information Technology</span><span class="l-zh">Information Technology</span></td>
+        <td class="neu" style="font-size:11.5px">2026-08-31</td>
+        <td data-sort="9.9">
           <span class="pos">
-            +9.3%
+            +9.9%
           </span>
         </td>
         <td><span class="oc-dot running"></span></td>
@@ -471,12 +469,12 @@
       </tr>
       
       <tr>
-        <td class="tk-cell"><a href="stock.html#NXE" data-tip-en="Open NXE stock page" data-tip-zh="打开NXE个股页面">NXE</a></td>
-        <td class="neu" style="font-size:11px"><span class="l-en">Energy</span><span class="l-zh">Energy</span></td>
-        <td class="neu" style="font-size:11.5px">2026-07-31</td>
-        <td data-sort="9.0">
+        <td class="tk-cell"><a href="stock.html#AMR" data-tip-en="Open AMR stock page" data-tip-zh="打开AMR个股页面">AMR</a></td>
+        <td class="neu" style="font-size:11px"><span class="l-en">Materials</span><span class="l-zh">Materials</span></td>
+        <td class="neu" style="font-size:11.5px">2026-08-12</td>
+        <td data-sort="8.9">
           <span class="pos">
-            +9.0%
+            +8.9%
           </span>
         </td>
         <td><span class="oc-dot running"></span></td>
@@ -484,12 +482,12 @@
       </tr>
       
       <tr>
-        <td class="tk-cell"><a href="stock.html#AMR" data-tip-en="Open AMR stock page" data-tip-zh="打开AMR个股页面">AMR</a></td>
-        <td class="neu" style="font-size:11px"><span class="l-en">Materials</span><span class="l-zh">Materials</span></td>
-        <td class="neu" style="font-size:11.5px">2026-08-12</td>
-        <td data-sort="8.9">
+        <td class="tk-cell"><a href="stock.html#CELH" data-tip-en="Open CELH stock page" data-tip-zh="打开CELH个股页面">CELH</a></td>
+        <td class="neu" style="font-size:11px"><span class="l-en">Consumer Staples</span><span class="l-zh">Consumer Staples</span></td>
+        <td class="neu" style="font-size:11.5px">2026-08-17</td>
+        <td data-sort="8.8">
           <span class="pos">
-            +8.9%
+            +8.8%
           </span>
         </td>
         <td><span class="oc-dot running"></span></td>
@@ -536,19 +534,6 @@
       </tr>
       
       <tr>
-        <td class="tk-cell"><a href="stock.html#M" data-tip-en="Open M stock page" data-tip-zh="打开M个股页面">M</a></td>
-        <td class="neu" style="font-size:11px"><span class="l-en">Consumer Discretionary</span><span class="l-zh">Consumer Discretionary</span></td>
-        <td class="neu" style="font-size:11.5px">2026-07-31</td>
-        <td data-sort="-8.3">
-          <span class="neg">
-            -8.3%
-          </span>
-        </td>
-        <td><span class="oc-dot stopped"></span></td>
-        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
-      </tr>
-      
-      <tr>
         <td class="tk-cell"><a href="stock.html#BKSY" data-tip-en="Open BKSY stock page" data-tip-zh="打开BKSY个股页面">BKSY</a></td>
         <td class="neu" style="font-size:11px"><span class="l-en">Industrials</span><span class="l-zh">Industrials</span></td>
         <td class="neu" style="font-size:11.5px">2026-08-07</td>
@@ -568,19 +553,6 @@
         <td data-sort="8.3">
           <span class="pos">
             +8.3%
-          </span>
-        </td>
-        <td><span class="oc-dot running"></span></td>
-        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
-      </tr>
-      
-      <tr>
-        <td class="tk-cell"><a href="stock.html#BDC" data-tip-en="Open BDC stock page" data-tip-zh="打开BDC个股页面">BDC</a></td>
-        <td class="neu" style="font-size:11px"><span class="l-en">Information Technology</span><span class="l-zh">Information Technology</span></td>
-        <td class="neu" style="font-size:11.5px">2026-07-31</td>
-        <td data-sort="8.2">
-          <span class="pos">
-            +8.2%
           </span>
         </td>
         <td><span class="oc-dot running"></span></td>
@@ -653,38 +625,12 @@
       </tr>
       
       <tr>
-        <td class="tk-cell"><a href="stock.html#BIDU" data-tip-en="Open BIDU stock page" data-tip-zh="打开BIDU个股页面">BIDU</a></td>
-        <td class="neu" style="font-size:11px"><span class="l-en">Communication Services</span><span class="l-zh">Communication Services</span></td>
-        <td class="neu" style="font-size:11.5px">2026-07-31</td>
-        <td data-sort="-7.3">
-          <span class="neg">
-            -7.3%
-          </span>
-        </td>
-        <td><span class="oc-dot stopped"></span></td>
-        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
-      </tr>
-      
-      <tr>
         <td class="tk-cell"><a href="stock.html#AEIS" data-tip-en="Open AEIS stock page" data-tip-zh="打开AEIS个股页面">AEIS</a></td>
         <td class="neu" style="font-size:11px"><span class="l-en">Information Technology</span><span class="l-zh">Information Technology</span></td>
         <td class="neu" style="font-size:11.5px">2026-08-07</td>
         <td data-sort="7.3">
           <span class="pos">
             +7.3%
-          </span>
-        </td>
-        <td><span class="oc-dot running"></span></td>
-        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
-      </tr>
-      
-      <tr>
-        <td class="tk-cell"><a href="stock.html#LECO" data-tip-en="Open LECO stock page" data-tip-zh="打开LECO个股页面">LECO</a></td>
-        <td class="neu" style="font-size:11px"><span class="l-en">Industrials</span><span class="l-zh">Industrials</span></td>
-        <td class="neu" style="font-size:11.5px">2026-07-31</td>
-        <td data-sort="7.2">
-          <span class="pos">
-            +7.2%
           </span>
         </td>
         <td><span class="oc-dot running"></span></td>
@@ -701,19 +647,6 @@
           </span>
         </td>
         <td><span class="oc-dot stopped"></span></td>
-        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
-      </tr>
-      
-      <tr>
-        <td class="tk-cell"><a href="stock.html#APO" data-tip-en="Open APO stock page" data-tip-zh="打开APO个股页面">APO</a></td>
-        <td class="neu" style="font-size:11px"><span class="l-en">Financials</span><span class="l-zh">Financials</span></td>
-        <td class="neu" style="font-size:11.5px">2026-07-31</td>
-        <td data-sort="7.1">
-          <span class="pos">
-            +7.1%
-          </span>
-        </td>
-        <td><span class="oc-dot running"></span></td>
         <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
       </tr>
       
@@ -796,19 +729,6 @@
       </tr>
       
       <tr>
-        <td class="tk-cell"><a href="stock.html#NET" data-tip-en="Open NET stock page" data-tip-zh="打开NET个股页面">NET</a></td>
-        <td class="neu" style="font-size:11px"><span class="l-en">Information Technology</span><span class="l-zh">Information Technology</span></td>
-        <td class="neu" style="font-size:11.5px">2026-07-31</td>
-        <td data-sort="6.2">
-          <span class="pos">
-            +6.2%
-          </span>
-        </td>
-        <td><span class="oc-dot running"></span></td>
-        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
-      </tr>
-      
-      <tr>
         <td class="tk-cell"><a href="stock.html#IREN" data-tip-en="Open IREN stock page" data-tip-zh="打开IREN个股页面">IREN</a></td>
         <td class="neu" style="font-size:11px"><span class="l-en">Information Technology</span><span class="l-zh">Information Technology</span></td>
         <td class="neu" style="font-size:11.5px">2026-08-12</td>
@@ -857,32 +777,6 @@
           </span>
         </td>
         <td><span class="oc-dot stopped"></span></td>
-        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
-      </tr>
-      
-      <tr>
-        <td class="tk-cell"><a href="stock.html#AMZN" data-tip-en="Open AMZN stock page" data-tip-zh="打开AMZN个股页面">AMZN</a></td>
-        <td class="neu" style="font-size:11px"><span class="l-en">Consumer Discretionary</span><span class="l-zh">Consumer Discretionary</span></td>
-        <td class="neu" style="font-size:11.5px">2026-07-31</td>
-        <td data-sort="-5.9">
-          <span class="neg">
-            -5.9%
-          </span>
-        </td>
-        <td><span class="oc-dot stopped"></span></td>
-        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
-      </tr>
-      
-      <tr>
-        <td class="tk-cell"><a href="stock.html#SWK" data-tip-en="Open SWK stock page" data-tip-zh="打开SWK个股页面">SWK</a></td>
-        <td class="neu" style="font-size:11px"><span class="l-en">Industrials</span><span class="l-zh">Industrials</span></td>
-        <td class="neu" style="font-size:11.5px">2026-07-31</td>
-        <td data-sort="5.9">
-          <span class="pos">
-            +5.9%
-          </span>
-        </td>
-        <td><span class="oc-dot running"></span></td>
         <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
       </tr>
       
@@ -991,19 +885,6 @@
       </tr>
       
       <tr>
-        <td class="tk-cell"><a href="stock.html#AXTA" data-tip-en="Open AXTA stock page" data-tip-zh="打开AXTA个股页面">AXTA</a></td>
-        <td class="neu" style="font-size:11px"><span class="l-en">Materials</span><span class="l-zh">Materials</span></td>
-        <td class="neu" style="font-size:11.5px">2026-07-31</td>
-        <td data-sort="5.3">
-          <span class="pos">
-            +5.3%
-          </span>
-        </td>
-        <td><span class="oc-dot running"></span></td>
-        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
-      </tr>
-      
-      <tr>
         <td class="tk-cell"><a href="stock.html#GNL" data-tip-en="Open GNL stock page" data-tip-zh="打开GNL个股页面">GNL</a></td>
         <td class="neu" style="font-size:11px"><span class="l-en">Real Estate</span><span class="l-zh">Real Estate</span></td>
         <td class="neu" style="font-size:11.5px">2026-08-07</td>
@@ -1026,6 +907,266 @@
           </span>
         </td>
         <td><span class="oc-dot running"></span></td>
+        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
+      </tr>
+      
+      <tr>
+        <td class="tk-cell"><a href="stock.html#LUNR" data-tip-en="Open LUNR stock page" data-tip-zh="打开LUNR个股页面">LUNR</a></td>
+        <td class="neu" style="font-size:11px"><span class="l-en">Industrials</span><span class="l-zh">Industrials</span></td>
+        <td class="neu" style="font-size:11.5px">2026-08-14</td>
+        <td data-sort="-5.3">
+          <span class="neg">
+            -5.3%
+          </span>
+        </td>
+        <td><span class="oc-dot stopped"></span></td>
+        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
+      </tr>
+      
+      <tr>
+        <td class="tk-cell"><a href="stock.html#CDW" data-tip-en="Open CDW stock page" data-tip-zh="打开CDW个股页面">CDW</a></td>
+        <td class="neu" style="font-size:11px"><span class="l-en">Information Technology</span><span class="l-zh">Information Technology</span></td>
+        <td class="neu" style="font-size:11.5px">2026-08-31</td>
+        <td data-sort="-5.3">
+          <span class="neg">
+            -5.3%
+          </span>
+        </td>
+        <td><span class="oc-dot stopped"></span></td>
+        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
+      </tr>
+      
+      <tr>
+        <td class="tk-cell"><a href="stock.html#SM" data-tip-en="Open SM stock page" data-tip-zh="打开SM个股页面">SM</a></td>
+        <td class="neu" style="font-size:11px"><span class="l-en">Energy</span><span class="l-zh">Energy</span></td>
+        <td class="neu" style="font-size:11.5px">2026-08-13</td>
+        <td data-sort="5.2">
+          <span class="pos">
+            +5.2%
+          </span>
+        </td>
+        <td><span class="oc-dot running"></span></td>
+        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
+      </tr>
+      
+      <tr>
+        <td class="tk-cell"><a href="stock.html#MDB" data-tip-en="Open MDB stock page" data-tip-zh="打开MDB个股页面">MDB</a></td>
+        <td class="neu" style="font-size:11px"><span class="l-en">Information Technology</span><span class="l-zh">Information Technology</span></td>
+        <td class="neu" style="font-size:11.5px">2026-08-07</td>
+        <td data-sort="5.1">
+          <span class="pos">
+            +5.1%
+          </span>
+        </td>
+        <td><span class="oc-dot running"></span></td>
+        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
+      </tr>
+      
+      <tr>
+        <td class="tk-cell"><a href="stock.html#APO" data-tip-en="Open APO stock page" data-tip-zh="打开APO个股页面">APO</a></td>
+        <td class="neu" style="font-size:11px"><span class="l-en">Financials</span><span class="l-zh">Financials</span></td>
+        <td class="neu" style="font-size:11.5px">2026-08-07</td>
+        <td data-sort="5.0">
+          <span class="pos">
+            +5.0%
+          </span>
+        </td>
+        <td><span class="oc-dot running"></span></td>
+        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
+      </tr>
+      
+      <tr>
+        <td class="tk-cell"><a href="stock.html#ACM" data-tip-en="Open ACM stock page" data-tip-zh="打开ACM个股页面">ACM</a></td>
+        <td class="neu" style="font-size:11px"><span class="l-en">Industrials</span><span class="l-zh">Industrials</span></td>
+        <td class="neu" style="font-size:11.5px">2026-08-31</td>
+        <td data-sort="-5.0">
+          <span class="neg">
+            -5.0%
+          </span>
+        </td>
+        <td><span class="oc-dot stopped"></span></td>
+        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
+      </tr>
+      
+      <tr>
+        <td class="tk-cell"><a href="stock.html#LIF" data-tip-en="Open LIF stock page" data-tip-zh="打开LIF个股页面">LIF</a></td>
+        <td class="neu" style="font-size:11px"><span class="l-en">Information Technology</span><span class="l-zh">Information Technology</span></td>
+        <td class="neu" style="font-size:11.5px">2026-09-03</td>
+        <td data-sort="-4.7">
+          <span class="neg">
+            -4.7%
+          </span>
+        </td>
+        <td><span class="oc-dot stopped"></span></td>
+        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
+      </tr>
+      
+      <tr>
+        <td class="tk-cell"><a href="stock.html#IONQ" data-tip-en="Open IONQ stock page" data-tip-zh="打开IONQ个股页面">IONQ</a></td>
+        <td class="neu" style="font-size:11px"><span class="l-en">Information Technology</span><span class="l-zh">Information Technology</span></td>
+        <td class="neu" style="font-size:11.5px">2026-08-13</td>
+        <td data-sort="-4.6">
+          <span class="neg">
+            -4.6%
+          </span>
+        </td>
+        <td><span class="oc-dot stopped"></span></td>
+        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
+      </tr>
+      
+      <tr>
+        <td class="tk-cell"><a href="stock.html#ALM" data-tip-en="Open ALM stock page" data-tip-zh="打开ALM个股页面">ALM</a></td>
+        <td class="neu" style="font-size:11px"><span class="l-en">Materials</span><span class="l-zh">Materials</span></td>
+        <td class="neu" style="font-size:11.5px">2026-08-14</td>
+        <td data-sort="-4.6">
+          <span class="neg">
+            -4.6%
+          </span>
+        </td>
+        <td><span class="oc-dot stopped"></span></td>
+        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
+      </tr>
+      
+      <tr>
+        <td class="tk-cell"><a href="stock.html#FLR" data-tip-en="Open FLR stock page" data-tip-zh="打开FLR个股页面">FLR</a></td>
+        <td class="neu" style="font-size:11px"><span class="l-en">Industrials</span><span class="l-zh">Industrials</span></td>
+        <td class="neu" style="font-size:11.5px">2026-09-03</td>
+        <td data-sort="-4.6">
+          <span class="neg">
+            -4.6%
+          </span>
+        </td>
+        <td><span class="oc-dot stopped"></span></td>
+        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
+      </tr>
+      
+      <tr>
+        <td class="tk-cell"><a href="stock.html#SMR" data-tip-en="Open SMR stock page" data-tip-zh="打开SMR个股页面">SMR</a></td>
+        <td class="neu" style="font-size:11px"><span class="l-en">Utilities</span><span class="l-zh">Utilities</span></td>
+        <td class="neu" style="font-size:11.5px">2026-08-07</td>
+        <td data-sort="4.5">
+          <span class="pos">
+            +4.5%
+          </span>
+        </td>
+        <td><span class="oc-dot running"></span></td>
+        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
+      </tr>
+      
+      <tr>
+        <td class="tk-cell"><a href="stock.html#M" data-tip-en="Open M stock page" data-tip-zh="打开M个股页面">M</a></td>
+        <td class="neu" style="font-size:11px"><span class="l-en">Consumer Discretionary</span><span class="l-zh">Consumer Discretionary</span></td>
+        <td class="neu" style="font-size:11.5px">2026-08-07</td>
+        <td data-sort="-4.5">
+          <span class="neg">
+            -4.5%
+          </span>
+        </td>
+        <td><span class="oc-dot stopped"></span></td>
+        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
+      </tr>
+      
+      <tr>
+        <td class="tk-cell"><a href="stock.html#DRI" data-tip-en="Open DRI stock page" data-tip-zh="打开DRI个股页面">DRI</a></td>
+        <td class="neu" style="font-size:11px"><span class="l-en">Consumer Discretionary</span><span class="l-zh">Consumer Discretionary</span></td>
+        <td class="neu" style="font-size:11.5px">2026-08-07</td>
+        <td data-sort="4.5">
+          <span class="pos">
+            +4.5%
+          </span>
+        </td>
+        <td><span class="oc-dot running"></span></td>
+        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
+      </tr>
+      
+      <tr>
+        <td class="tk-cell"><a href="stock.html#VSEC" data-tip-en="Open VSEC stock page" data-tip-zh="打开VSEC个股页面">VSEC</a></td>
+        <td class="neu" style="font-size:11px"><span class="l-en">Industrials</span><span class="l-zh">Industrials</span></td>
+        <td class="neu" style="font-size:11.5px">2026-08-07</td>
+        <td data-sort="4.4">
+          <span class="pos">
+            +4.4%
+          </span>
+        </td>
+        <td><span class="oc-dot running"></span></td>
+        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
+      </tr>
+      
+      <tr>
+        <td class="tk-cell"><a href="stock.html#BIDU" data-tip-en="Open BIDU stock page" data-tip-zh="打开BIDU个股页面">BIDU</a></td>
+        <td class="neu" style="font-size:11px"><span class="l-en">Communication Services</span><span class="l-zh">Communication Services</span></td>
+        <td class="neu" style="font-size:11.5px">2026-08-07</td>
+        <td data-sort="-4.3">
+          <span class="neg">
+            -4.3%
+          </span>
+        </td>
+        <td><span class="oc-dot stopped"></span></td>
+        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
+      </tr>
+      
+      <tr>
+        <td class="tk-cell"><a href="stock.html#SMPL" data-tip-en="Open SMPL stock page" data-tip-zh="打开SMPL个股页面">SMPL</a></td>
+        <td class="neu" style="font-size:11px"><span class="l-en">Consumer Staples</span><span class="l-zh">Consumer Staples</span></td>
+        <td class="neu" style="font-size:11.5px">2026-08-13</td>
+        <td data-sort="-4.2">
+          <span class="neg">
+            -4.2%
+          </span>
+        </td>
+        <td><span class="oc-dot stopped"></span></td>
+        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
+      </tr>
+      
+      <tr>
+        <td class="tk-cell"><a href="stock.html#FBRT" data-tip-en="Open FBRT stock page" data-tip-zh="打开FBRT个股页面">FBRT</a></td>
+        <td class="neu" style="font-size:11px"><span class="l-en">Real Estate</span><span class="l-zh">Real Estate</span></td>
+        <td class="neu" style="font-size:11.5px">2026-08-07</td>
+        <td data-sort="4.1">
+          <span class="pos">
+            +4.1%
+          </span>
+        </td>
+        <td><span class="oc-dot running"></span></td>
+        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
+      </tr>
+      
+      <tr>
+        <td class="tk-cell"><a href="stock.html#DAR" data-tip-en="Open DAR stock page" data-tip-zh="打开DAR个股页面">DAR</a></td>
+        <td class="neu" style="font-size:11px"><span class="l-en">Consumer Staples</span><span class="l-zh">Consumer Staples</span></td>
+        <td class="neu" style="font-size:11.5px">2026-08-12</td>
+        <td data-sort="4.0">
+          <span class="pos">
+            +4.0%
+          </span>
+        </td>
+        <td><span class="oc-dot running"></span></td>
+        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
+      </tr>
+      
+      <tr>
+        <td class="tk-cell"><a href="stock.html#SPOT" data-tip-en="Open SPOT stock page" data-tip-zh="打开SPOT个股页面">SPOT</a></td>
+        <td class="neu" style="font-size:11px"><span class="l-en">Communication Services</span><span class="l-zh">Communication Services</span></td>
+        <td class="neu" style="font-size:11.5px">2026-08-13</td>
+        <td data-sort="-4.0">
+          <span class="neg">
+            -4.0%
+          </span>
+        </td>
+        <td><span class="oc-dot stopped"></span></td>
+        <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
+      </tr>
+      
+      <tr>
+        <td class="tk-cell"><a href="stock.html#AMZN" data-tip-en="Open AMZN stock page" data-tip-zh="打开AMZN个股页面">AMZN</a></td>
+        <td class="neu" style="font-size:11px"><span class="l-en">Consumer Discretionary</span><span class="l-zh">Consumer Discretionary</span></td>
+        <td class="neu" style="font-size:11.5px">2026-08-07</td>
+        <td data-sort="-3.9">
+          <span class="neg">
+            -3.9%
+          </span>
+        </td>
+        <td><span class="oc-dot stopped"></span></td>
         <td class="autopsy-col">—</td><!-- W2: pick_autopsies join -->
       </tr>
       
@@ -1156,8 +1297,8 @@
 // Inline sparkline charts from embedded JSON — no chart libraries.
 // Draws win-rate line + 50% reference on a small SVG canvas.
 (function(){
-  var seriesH5 = [{"week": "2026-06-15/2026-06-21", "raw_n": 305, "effective_n": 1, "win_rate": 0.7246, "avg_excess": 0.0317, "med_excess": 0.0353}, {"week": "2026-06-22/2026-06-28", "raw_n": 453, "effective_n": 1, "win_rate": 0.5386, "avg_excess": 0.0054, "med_excess": 0.0051}, {"week": "2026-06-29/2026-07-05", "raw_n": 145, "effective_n": 1, "win_rate": 0.4, "avg_excess": -0.0104, "med_excess": -0.0105}, {"week": "2026-07-06/2026-07-12", "raw_n": 173, "effective_n": 1, "win_rate": 0.5491, "avg_excess": 0.0044, "med_excess": 0.0055}, {"week": "2026-07-13/2026-07-19", "raw_n": 197, "effective_n": 1, "win_rate": 0.5584, "avg_excess": 0.0063, "med_excess": 0.0052}, {"week": "2026-07-20/2026-07-26", "raw_n": 240, "effective_n": 1, "win_rate": 0.6417, "avg_excess": 0.0127, "med_excess": 0.0181}, {"week": "2026-07-27/2026-08-02", "raw_n": 613, "effective_n": 1, "win_rate": 0.3295, "avg_excess": -0.0168, "med_excess": -0.0215}, {"week": "2026-08-03/2026-08-09", "raw_n": 145, "effective_n": 1, "win_rate": 0.4207, "avg_excess": -0.0163, "med_excess": -0.0142}, {"week": "2026-08-10/2026-08-16", "raw_n": 480, "effective_n": 1, "win_rate": 0.4854, "avg_excess": 0.0032, "med_excess": -0.0015}, {"week": "2026-08-17/2026-08-23", "raw_n": 729, "effective_n": 1, "win_rate": 0.4431, "avg_excess": -0.002, "med_excess": -0.0068}, {"week": "2026-08-24/2026-08-30", "raw_n": 725, "effective_n": 1, "win_rate": 0.3434, "avg_excess": -0.0132, "med_excess": -0.0153}, {"week": "2026-08-31/2026-09-06", "raw_n": 247, "effective_n": 1, "win_rate": 0.4251, "avg_excess": -0.005, "med_excess": -0.0081}];
-  var seriesH10 = [{"week": "2026-06-15/2026-06-21", "raw_n": 192, "effective_n": 1, "win_rate": 0.5781, "avg_excess": 0.011, "med_excess": 0.0174}, {"week": "2026-06-29/2026-07-05", "raw_n": 145, "effective_n": 1, "win_rate": 0.6759, "avg_excess": 0.0151, "med_excess": 0.0228}, {"week": "2026-07-06/2026-07-12", "raw_n": 173, "effective_n": 1, "win_rate": 0.6127, "avg_excess": 0.0127, "med_excess": 0.0212}, {"week": "2026-07-13/2026-07-19", "raw_n": 197, "effective_n": 1, "win_rate": 0.7208, "avg_excess": 0.0337, "med_excess": 0.028}, {"week": "2026-07-20/2026-07-26", "raw_n": 240, "effective_n": 1, "win_rate": 0.35, "avg_excess": -0.0176, "med_excess": -0.0225}, {"week": "2026-07-27/2026-08-02", "raw_n": 613, "effective_n": 1, "win_rate": 0.3719, "avg_excess": -0.011, "med_excess": -0.0261}, {"week": "2026-08-03/2026-08-09", "raw_n": 145, "effective_n": 1, "win_rate": 0.469, "avg_excess": -0.0071, "med_excess": -0.007}, {"week": "2026-08-10/2026-08-16", "raw_n": 476, "effective_n": 1, "win_rate": 0.4307, "avg_excess": -0.0012, "med_excess": -0.0076}, {"week": "2026-08-17/2026-08-23", "raw_n": 725, "effective_n": 1, "win_rate": 0.3655, "avg_excess": -0.0175, "med_excess": -0.0183}, {"week": "2026-08-24/2026-08-30", "raw_n": 394, "effective_n": 1, "win_rate": 0.3071, "avg_excess": -0.0274, "med_excess": -0.0281}];
+  var seriesH5 = [{"week": "2026-06-15/2026-06-21", "raw_n": 305, "effective_n": 1, "win_rate": 0.7246, "avg_excess": 0.0317, "med_excess": 0.0353}, {"week": "2026-06-22/2026-06-28", "raw_n": 453, "effective_n": 1, "win_rate": 0.5386, "avg_excess": 0.0054, "med_excess": 0.0051}, {"week": "2026-06-29/2026-07-05", "raw_n": 145, "effective_n": 1, "win_rate": 0.4, "avg_excess": -0.0104, "med_excess": -0.0105}, {"week": "2026-07-06/2026-07-12", "raw_n": 173, "effective_n": 1, "win_rate": 0.5491, "avg_excess": 0.0044, "med_excess": 0.0055}, {"week": "2026-07-13/2026-07-19", "raw_n": 197, "effective_n": 1, "win_rate": 0.5584, "avg_excess": 0.0063, "med_excess": 0.0052}, {"week": "2026-07-20/2026-07-26", "raw_n": 240, "effective_n": 1, "win_rate": 0.6417, "avg_excess": 0.0127, "med_excess": 0.0181}, {"week": "2026-07-27/2026-08-02", "raw_n": 613, "effective_n": 1, "win_rate": 0.3295, "avg_excess": -0.0168, "med_excess": -0.0215}, {"week": "2026-08-03/2026-08-09", "raw_n": 145, "effective_n": 1, "win_rate": 0.4207, "avg_excess": -0.0163, "med_excess": -0.0142}, {"week": "2026-08-10/2026-08-16", "raw_n": 480, "effective_n": 1, "win_rate": 0.4854, "avg_excess": 0.0032, "med_excess": -0.0015}, {"week": "2026-08-17/2026-08-23", "raw_n": 732, "effective_n": 1, "win_rate": 0.4413, "avg_excess": -0.0022, "med_excess": -0.0068}, {"week": "2026-08-24/2026-08-30", "raw_n": 732, "effective_n": 1, "win_rate": 0.3415, "avg_excess": -0.0133, "med_excess": -0.0149}, {"week": "2026-08-31/2026-09-06", "raw_n": 256, "effective_n": 1, "win_rate": 0.4219, "avg_excess": -0.005, "med_excess": -0.0077}];
+  var seriesH10 = [{"week": "2026-06-15/2026-06-21", "raw_n": 192, "effective_n": 1, "win_rate": 0.5781, "avg_excess": 0.011, "med_excess": 0.0174}, {"week": "2026-06-29/2026-07-05", "raw_n": 145, "effective_n": 1, "win_rate": 0.6759, "avg_excess": 0.0151, "med_excess": 0.0228}, {"week": "2026-07-06/2026-07-12", "raw_n": 173, "effective_n": 1, "win_rate": 0.6127, "avg_excess": 0.0127, "med_excess": 0.0212}, {"week": "2026-07-13/2026-07-19", "raw_n": 197, "effective_n": 1, "win_rate": 0.7208, "avg_excess": 0.0337, "med_excess": 0.028}, {"week": "2026-07-20/2026-07-26", "raw_n": 240, "effective_n": 1, "win_rate": 0.35, "avg_excess": -0.0176, "med_excess": -0.0225}, {"week": "2026-07-27/2026-08-02", "raw_n": 613, "effective_n": 1, "win_rate": 0.3719, "avg_excess": -0.011, "med_excess": -0.0261}, {"week": "2026-08-03/2026-08-09", "raw_n": 145, "effective_n": 1, "win_rate": 0.469, "avg_excess": -0.0071, "med_excess": -0.007}, {"week": "2026-08-10/2026-08-16", "raw_n": 479, "effective_n": 1, "win_rate": 0.428, "avg_excess": -0.0016, "med_excess": -0.0081}, {"week": "2026-08-17/2026-08-23", "raw_n": 732, "effective_n": 1, "win_rate": 0.3648, "avg_excess": -0.0177, "med_excess": -0.0187}, {"week": "2026-08-24/2026-08-30", "raw_n": 532, "effective_n": 1, "win_rate": 0.2989, "avg_excess": -0.0296, "med_excess": -0.029}];
 
   function drawChart(svgId, series, color) {
     var svg = document.getElementById(svgId);
@@ -1210,6 +1351,5 @@
   drawChart('chart-h10', seriesH10, lnkColor);
 })();
 </script>
-<script defer data-whb data-root="" src="wh_banner.js?v=4a53a176"></script>
 </body>
 </html>
