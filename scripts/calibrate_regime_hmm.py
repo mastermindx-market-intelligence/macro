@@ -14,6 +14,9 @@ Run:  python -m scripts.calibrate_regime_hmm
 from __future__ import annotations
 
 import json
+import hashlib
+from datetime import datetime, timezone
+from io import BytesIO
 import sys
 from pathlib import Path
 
@@ -31,11 +34,37 @@ def main() -> int:
     if not hist.exists():
         print(f"error: {hist} not found (run engine.run first)", file=sys.stderr)
         return 1
-    df = pd.read_parquet(hist)
+    # Read once: legacy HMM and additive research bind the SAME history bytes.
+    history_bytes = hist.read_bytes()
+    df = pd.read_parquet(BytesIO(history_bytes))
     out = fit_regime_hmm(df)
     if out is None:
         print("error: HMM fit returned None (insufficient history?)", file=sys.stderr)
         return 1
+    # Additive, bounded research remains in this existing calibration lane.
+    # No page/render fit, second writer, forecast ledger or allocation effect.
+    try:
+        from engine.regime_research import build_research
+        out["transition_research"] = build_research(
+            config.data_dir(), analysis_cutoff=datetime.now(timezone.utc),
+            history_snapshot=(df, {"path": "data/regime/regime_history.parquet",
+                                  "sha256": hashlib.sha256(history_bytes).hexdigest(),
+                                  "status": "present", "availability_basis": "latest_revised_store_not_vintage_attested"}))
+    except Exception as exc:
+        # Preserve the legacy owner's output; do not publish a fake new forecast.
+        # No re-import from the failed optional dependency: even an import error
+        # must leave the legacy calibration publishable. This deliberately unsealed
+        # diagnostic is rejected as a forecast by the consumer.
+        out["transition_research"] = {
+            "schema": "regime_one.integrated_research.v1", "status": "UNAVAILABLE",
+            "source_basis": "LATEST_REVISED_EXPLORATORY", "reason": "calibration_research_failed",
+            "error_type": type(exc).__name__, "analysis_cutoff": datetime.now(timezone.utc).isoformat(),
+            "forecast": None, "historical_comparisons": None, "evaluation": None,
+            "authority": {"can_rank": False, "can_size": False, "can_gate": False,
+                          "can_trade": False, "can_originate_signal": False, "can_execute": False},
+            "forward_ledger_advanced": False,
+            "historical_live_issuance_claimed": False, "empirically_calibrated": False}
+        print("::warning title=regime-transition-research::Additive research unavailable; legacy HMM retained", flush=True)
     dst = p / "hmm_latest.json"
     dst.write_text(json.dumps(out, indent=2, default=str))
     rp = out["regime_probs"]
