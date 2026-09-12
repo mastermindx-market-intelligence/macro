@@ -1,4 +1,4 @@
-name: portfolio-recovery-exact-deadman-once
+name: portfolio-recovery-cli-red-once
 
 on:
   push:
@@ -11,62 +11,25 @@ permissions:
   contents: read
 
 concurrency:
-  group: portfolio-recovery-exact-deadman-20260912
+  group: portfolio-recovery-cli-red-20260912
   cancel-in-progress: false
 
 jobs:
-  us-live-canary:
+  cli-regression-red:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Check out the exact proposed monitor
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-          ref: 2aad06988ab8cdc71dc77a1e959f0e5644893b62
+          ref: 346440b5b914deec46a59f69f4b88e786b7d725a
           filter: blob:none
           persist-credentials: false
-          sparse-checkout: scripts/portfolio_decision_deadman.py
+          sparse-checkout: |
+            scripts/portfolio_decision_deadman.py
+            tests/test_portfolio_decision_deadman_cli.py
           sparse-checkout-cone-mode: false
-
-      - name: Collect the sanitized production snapshot
-        env:
-          SSH_KEY: ${{ secrets.VPS_DEPLOY_KEY }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          [ -n "${SSH_KEY:-}" ] || { echo '::error::VPS_DEPLOY_KEY unavailable'; exit 20; }
-          umask 077
-          keyfile="$RUNNER_TEMP/vps_key"
-          snapshot="$RUNNER_TEMP/portfolio-decision-snapshot.json"
-          printf '%s\n' "$SSH_KEY" > "$keyfile"
-          chmod 600 "$keyfile"
-          trap 'rm -f "$keyfile"' EXIT
-          ssh -F /dev/null -i "$keyfile" \
-            -o BatchMode=yes \
-            -o IdentitiesOnly=yes \
-            -o IdentityAgent=none \
-            -o ConnectTimeout=20 \
-            -o StrictHostKeyChecking=accept-new \
-            root@146.190.142.17 \
-            '/opt/mastermind/.venv/bin/python - collect' \
-            < scripts/portfolio_decision_deadman.py > "$snapshot"
-          python3 -m json.tool "$snapshot" >/dev/null
-
-      - name: Evaluate the latest lawful US cycle
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 scripts/portfolio_decision_deadman.py evaluate \
-            --scope us \
-            --input "$RUNNER_TEMP/portfolio-decision-snapshot.json" \
-            --output "$RUNNER_TEMP/portfolio-decision-deadman.json"
-          cat "$RUNNER_TEMP/portfolio-decision-deadman.json"
-
-      - name: Upload the exact sanitized receipt
-        if: always()
-        uses: actions/upload-artifact@v4
+      - uses: actions/setup-python@v5
         with:
-          name: portfolio-recovery-exact-deadman-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/portfolio-decision-deadman.json
-          if-no-files-found: error
-          retention-days: 30
+          python-version: "3.12"
+      - run: python -m pip install --disable-pip-version-check pytest
+      - run: python -m pytest -q tests/test_portfolio_decision_deadman_cli.py
