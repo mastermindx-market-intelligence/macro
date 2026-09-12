@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 import urllib.request
 from datetime import datetime, timedelta, timezone
@@ -44,6 +45,11 @@ _DECISION_FIELDS = (
     "execution_evidence_status",
 )
 _FORBIDDEN_TARGETS = {"", "rejected_no_submission", "rejected_execution_error"}
+_FULL_GIT_SHA = re.compile(r"[0-9a-f]{40}")
+_COLLECTION_ERROR = re.compile(
+    r"(?:scheduler_duplicate:(?:autonomous_daily|china_daily|hk_daily)"
+    r"|decision_(?:identity|scope|payload|rows):(?:autonomous|china|hk))"
+)
 
 
 def _aware_utc(value: datetime | None = None) -> datetime:
@@ -74,10 +80,11 @@ def _previous_weekday_schedule(next_run: datetime) -> datetime:
 
 
 def _parse_date(value: Any):
-    raw = str(value or "")[:10]
+    if not isinstance(value, str) or len(value) != 10:
+        return None
     try:
-        return datetime.strptime(raw, "%Y-%m-%d").date()
-    except (TypeError, ValueError):
+        return datetime.strptime(value, "%Y-%m-%d").date()
+    except ValueError:
         return None
 
 
@@ -90,6 +97,7 @@ def build_snapshot(
 ) -> dict[str, Any]:
     """Return the strict, private-safe snapshot consumed by the off-host check."""
     safe_health = {key: health.get(key) for key in _HEALTH_FIELDS}
+    collection_errors: list[str] = []
 
     safe_jobs: dict[str, dict[str, Any]] = {}
     rows = scheduler.get("jobs") if isinstance(scheduler, dict) else None
@@ -98,14 +106,25 @@ def build_snapshot(
             if not isinstance(row, dict):
                 continue
             job_id = str(row.get("id") or "")
-            if job_id in _JOB_SPECS:
-                safe_jobs[job_id] = {key: row.get(key) for key in _JOB_FIELDS}
+            if job_id not in _JOB_SPECS:
+                continue
+            if job_id in safe_jobs:
+                collection_errors.append(f"scheduler_duplicate:{job_id}")
+                continue
+            safe_jobs[job_id] = {key: row.get(key) for key in _JOB_FIELDS}
 
     safe_decisions: dict[str, dict[str, Any]] = {}
     for spec in _JOB_SPECS.values():
         book = str(spec["book"])
         payload = decisions.get(book) if isinstance(decisions, dict) else None
-        decision_rows = payload.get("decisions") if isinstance(payload, dict) else None
+        if not isinstance(payload, dict):
+            collection_errors.append(f"decision_payload:{book}")
+            payload = {}
+        if payload.get("portfolio") != book:
+            collection_errors.append(f"decision_identity:{book}")
+        if payload.get("scope") != "mastermind_portfolio":
+            collection_errors.append(f"decision_scope:{book}")
+        decision_rows = payload.get("decisions")
         latest = (
             decision_rows[0]
             if isinstance(decision_rows, list)
@@ -113,6 +132,8 @@ def build_snapshot(
             and isinstance(decision_rows[0], dict)
             else {}
         )
+        if not latest:
+            collection_errors.append(f"decision_rows:{book}")
         safe_decisions[book] = {key: latest.get(key) for key in _DECISION_FIELDS}
 
     return {
@@ -121,6 +142,7 @@ def build_snapshot(
         "health": safe_health,
         "jobs": safe_jobs,
         "decisions": safe_decisions,
+        "collection_errors": sorted(set(collection_errors)),
     }
 
 
@@ -199,11 +221,12 @@ def _decision_failure(
         else None
     )
     decision_clock = settled_date if decision_target == "executed" else asof_date
-    if decision_clock is None or decision_clock.isoformat() != expected_date:
+    if decision_clock is None:
+        return f"{job_id}: decision date is missing or invalid"
+    if decision_clock.isoformat() != expected_date:
         return (
             f"{job_id}: decision stale "
-            f"(clock={decision_clock.isoformat() if decision_clock else 'missing'}, "
-            f"expected={expected_date})"
+            f"(clock={decision_clock.isoformat()}, expected={expected_date})"
         )
     if target in _FORBIDDEN_TARGETS or decision_target in _FORBIDDEN_TARGETS:
         return (
@@ -287,13 +310,26 @@ def evaluate(payload: dict[str, Any], *, now: datetime | None = None) -> list[st
         elif age < -timedelta(minutes=5):
             failures.append("snapshot: observed_at is implausibly in the future")
 
+    raw_collection_errors = payload.get("collection_errors", [])
+    if not isinstance(raw_collection_errors, list):
+        failures.append("collection: error list is invalid")
+    else:
+        for code in raw_collection_errors:
+            if isinstance(code, str) and _COLLECTION_ERROR.fullmatch(code):
+                failures.append(f"collection: {code}")
+            else:
+                failures.append("collection: invalid_error_code")
+
     health = payload.get("health")
     if not isinstance(health, dict):
-        return ["health: missing"]
+        return failures + ["health: missing"]
     if health.get("status") != "ok":
         failures.append("health: status is not ok")
-    if not isinstance(health.get("commit"), str) or not health.get("commit"):
+    commit = health.get("commit")
+    if not isinstance(commit, str) or not commit:
         failures.append("health: release commit is missing")
+    elif _FULL_GIT_SHA.fullmatch(commit) is None:
+        failures.append("health: release commit is invalid")
     if health.get("paper_only") is not True:
         failures.append("health: paper_only safety is not true")
     for field in (
@@ -334,6 +370,12 @@ def evaluate(payload: dict[str, Any], *, now: datetime | None = None) -> list[st
                 f"({next_run.isoformat()})"
             )
             continue
+        if next_run.weekday() >= 5:
+            failures.append(
+                f"{job_id}: next_run_time falls on a weekend "
+                f"({next_run.isoformat()})"
+            )
+            continue
         due = _previous_weekday_schedule(next_run)
         expected_date = due.date().isoformat()
         if started is None:
@@ -341,6 +383,14 @@ def evaluate(payload: dict[str, Any], *, now: datetime | None = None) -> list[st
             continue
         if finished is None:
             failures.append(f"{job_id}: last_finished missing or invalid")
+            continue
+        evidence_clock = observed if observed is not None else current
+        future_limit = evidence_clock + timedelta(minutes=5)
+        if started > future_limit or finished > future_limit:
+            failures.append(
+                f"{job_id}: run timestamp is in the future "
+                f"(started={started.isoformat()}, finished={finished.isoformat()})"
+            )
             continue
         if started < due - timedelta(minutes=5):
             failures.append(
