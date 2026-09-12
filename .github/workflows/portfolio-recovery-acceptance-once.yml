@@ -47,6 +47,7 @@ jobs:
           set -euo pipefail
           python - <<'PY'
           from pathlib import Path
+          import re
 
           path = Path('.github/ci/legacy-jobs.yml')
           text = path.read_text(encoding='utf-8')
@@ -79,10 +80,11 @@ jobs:
                   tests/test_portfolio_decision_deadman_release.py
 
           '''
-          anchor = 'jobs:\n'
-          if text.count(anchor) != 1:
-              raise SystemExit('legacy job manifest anchor is not unique')
-          path.write_text(text.replace(anchor, anchor + snippet, 1), encoding='utf-8')
+          matches = list(re.finditer(r'(?m)^jobs:\n', text))
+          if len(matches) != 1:
+              raise SystemExit(f'top-level legacy job manifest anchor count: {len(matches)}')
+          end = matches[0].end()
+          path.write_text(text[:end] + snippet + text[end:], encoding='utf-8')
           PY
           git diff --check
 
