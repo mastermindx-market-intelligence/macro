@@ -1,4 +1,5 @@
 {
+  "ADBE": "ahead_of_consensus",
   "ATI": "consensus_at_risk",
   "AVAV": "ahead_of_consensus",
   "BA": "ahead_of_consensus",
@@ -7,6 +8,7 @@
   "CMC": "consensus_at_risk",
   "CRWD": "ahead_of_consensus",
   "CTVA": "ahead_of_consensus",
+  "DHR": "ahead_of_consensus",
   "DUK": "ahead_of_consensus",
   "LDOS": "ahead_of_consensus",
   "LEU": "ahead_of_consensus",

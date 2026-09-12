@@ -210,6 +210,16 @@ lanes:
           scoped decimal strings and exact cell spans, and fails on missing/mismatched bytes. It does not aggregate
           rows or create instruments, remaining capacity, risk, probability, ranking,
           sizing, entry, or Prophet authority.
+      - id: compile_capital_structure_covenant_terms
+        module: scripts.compile_capital_structure_covenant_terms
+        note: >
+          Capital Structure Intelligence B-F09-5 filing-text covenant extraction
+          producer (source-first slice). Reads source-manifest-addressed credit-
+          agreement exhibits, emits closed-enum covenant-term observations with
+          exact source identity, and never derives capacity or headroom. A producer
+          fault writes a typed covenant_extraction health marker and must not fail
+          the fail-closed health gate. Context-only; no rank, size, gate, trade, or
+          Prophet authority.
       - id: check_capital_structure_health
         module: scripts.check_capital_structure_health
         note: >

@@ -1,5 +1,5 @@
 {
-  "date": "2026-09-09",
+  "date": "2026-09-12",
   "regime": "mixed / no clear trend",
   "breadth": 0.23,
   "favored": [
@@ -9,23 +9,23 @@
     "copper",
     "equity_intl"
   ],
-  "correlation": "diversified",
-  "asof": "2026-09-09",
+  "correlation": "converging",
+  "asof": "2026-09-12",
   "flows": {
     "schema": "crossasset_flows.v2",
     "display_only": true,
     "regime": "mixed / no clear trend",
     "correlation": {
-      "verdict": "diversified",
-      "absorption_pctile": 0.35,
+      "verdict": "converging",
+      "absorption_pctile": 0.46,
       "n_markets": 6,
-      "absorption_ratio": 0.35,
-      "mean_abs_corr": 0.221,
+      "absorption_ratio": 0.361,
+      "mean_abs_corr": 0.229,
       "dominant_cluster": [
         "Crypto",
         "Commodities",
-        "US",
-        "Dollar"
+        "Dollar",
+        "US"
       ],
       "spark_w": [
         0.331,
@@ -131,7 +131,7 @@
         0.369,
         0.37,
         0.392,
-        0.35
+        0.361
       ],
       "spark_asof": "2026-09-11"
     },
@@ -176,27 +176,27 @@
     "intermarket": [
       {
         "pair": "copper_gold",
-        "ratio": 0.002,
+        "ratio": 0.001,
         "trend": "mid",
-        "pctile": 66.0
+        "pctile": 56.0
       },
       {
         "pair": "gold_silver",
-        "ratio": 66.033,
+        "ratio": 67.636,
         "trend": "mid",
-        "pctile": 26.0
+        "pctile": 31.0
       },
       {
         "pair": "oil_gold",
-        "ratio": 0.021,
+        "ratio": 0.023,
         "trend": "mid",
-        "pctile": 67.0
+        "pctile": 76.0
       },
       {
         "pair": "stocks_gold",
-        "ratio": 0.174,
+        "ratio": 0.175,
         "trend": "mid",
-        "pctile": 44.0
+        "pctile": 46.0
       }
     ],
     "carry": {
@@ -205,23 +205,15 @@
           "key": "rates_term",
           "label_en": "Rates term-spread (10y-3m)",
           "label_zh": "\u5229\u7387\u671f\u9650\u5229\u5dee (10\u5e74-3\u6708)",
-          "value": 1.01,
+          "value": 1.09,
           "unit": "%",
           "state": "positive carry"
-        },
-        {
-          "key": "roll_gold",
-          "label_en": "Gold roll yield",
-          "label_zh": "gold \u5c55\u671f\u6536\u76ca",
-          "value": -0.1,
-          "unit": "%/yr",
-          "state": "contango (negative)"
         },
         {
           "key": "roll_oil",
           "label_en": "Oil roll yield",
           "label_zh": "oil \u5c55\u671f\u6536\u76ca",
-          "value": 0.4,
+          "value": 0.5,
           "unit": "%/yr",
           "state": "backwardation (positive)"
         }
@@ -236,32 +228,32 @@
           "follower": "HK",
           "lag": 1,
           "r": 0.281,
-          "t": 4.575,
+          "t": 4.543,
           "q": 0.0
         },
         {
           "leader": "US",
           "follower": "HK",
           "lag": 1,
-          "r": 0.315,
-          "t": 4.166,
+          "r": 0.318,
+          "t": 4.218,
           "q": 0.0
         },
         {
           "leader": "Crypto",
           "follower": "HK",
           "lag": 1,
-          "r": 0.272,
-          "t": 4.107,
+          "r": 0.276,
+          "t": 4.204,
           "q": 0.0
         },
         {
           "leader": "US",
           "follower": "China",
           "lag": 1,
-          "r": 0.248,
-          "t": 3.573,
-          "q": 0.015
+          "r": 0.25,
+          "t": 3.612,
+          "q": 0.0112
         }
       ],
       "stable": false,
@@ -280,17 +272,36 @@
       "impulse_13w": null
     },
     "funding_stress": {
-      "asof": "2026-09-04",
+      "asof": "2026-09-10",
       "state": "calm",
-      "score": 44.0,
-      "spread_bp": 2.0
+      "score": 26.0,
+      "spread_bp": -1.0
     },
     "confirm": {
-      "verdict": "confirm",
+      "verdict": "diverge",
       "agree_pct": 100,
-      "n_blind_flags": 0,
-      "flags_top": [],
-      "asof": "2026-09-04"
+      "n_blind_flags": 2,
+      "flags_top": [
+        {
+          "key": "credit",
+          "en": "High-yield credit widening from tight \u2014 credit risk-appetite turning (partly-leading via the EBP family, but often coincident with equity stress).",
+          "zh": "\u9ad8\u6536\u76ca\u4fe1\u7528\u4ece\u504f\u7d27\u8d70\u9614 \u2014 \u4fe1\u7528\u98ce\u9669\u504f\u597d\u8f6c\u5411\uff08\u7ecfEBP\u5177\u90e8\u5206\u9886\u5148\u6027\uff0c\u4f46\u5e38\u4e0e\u80a1\u7968\u538b\u529b\u540c\u6b65\uff09\u3002",
+          "severity": "medium",
+          "owner": "bonds",
+          "lead": "leading",
+          "equity_blind": true
+        },
+        {
+          "key": "usd_triple_red",
+          "en": "Triple-red \u2014 USD, equities & Treasuries falling together: the dollar is NOT acting as a safe haven (a US-idiosyncratic 'sell-America' configuration).",
+          "zh": "\u4e09\u7ea2 \u2014 \u7f8e\u5143\u3001\u80a1\u7968\u4e0e\u56fd\u503a\u540c\u6b65\u4e0b\u8dcc\uff1a\u7f8e\u5143\u672a\u53d1\u6325\u907f\u9669\u4f5c\u7528\uff08\u7f8e\u56fd\u7279\u6709\u7684\u2018\u629b\u552e\u7f8e\u56fd\u2019\u914d\u7f6e\uff09\u3002",
+          "severity": "high",
+          "owner": "fx",
+          "lead": "coincident",
+          "equity_blind": true
+        }
+      ],
+      "asof": "2026-09-10"
     },
     "dollar": {
       "usd_dir": "weakening",
@@ -313,12 +324,12 @@
       "unstable_n": 0,
       "fx_stress": {
         "dominant": null,
-        "top_key": "carry_unwind",
-        "top_val": 16.9
+        "top_key": "intervention_risk",
+        "top_val": 11.1
       }
     },
     "shadow": {
-      "pressure_pctile": 0.35,
+      "pressure_pctile": 0.46,
       "incumbent_state": "caution",
       "shadow_state": "caution",
       "escalated": false

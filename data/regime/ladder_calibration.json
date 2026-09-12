@@ -1,112 +1,112 @@
 {
  "DECLINE": {
-  "n": 14747,
+  "n": 13022,
   "hit_pct": 60.5,
-  "avg_fwd_pct": 2.37,
-  "dd_med_pct": -3.24,
-  "dd_p10_pct": -13.22,
-  "dd_bad_pct": 15.9,
+  "avg_fwd_pct": 2.27,
+  "dd_med_pct": -3.23,
+  "dd_p10_pct": -13.47,
+  "dd_bad_pct": 16.5,
   "anchor_era": "cyc-abs-session-2026-08-06",
   "survivorship_biased": true,
-  "universe_n": 66
+  "universe_n": 64
  },
  "BOTTOM WATCH": {
-  "n": 7954,
-  "hit_pct": 58.4,
-  "avg_fwd_pct": 1.5,
-  "dd_med_pct": -3.0,
-  "dd_p10_pct": -11.6,
-  "dd_bad_pct": 13.5,
+  "n": 7262,
+  "hit_pct": 58.1,
+  "avg_fwd_pct": 1.69,
+  "dd_med_pct": -2.97,
+  "dd_p10_pct": -11.3,
+  "dd_bad_pct": 12.7,
   "anchor_era": "cyc-abs-session-2026-08-06",
   "survivorship_biased": true,
-  "universe_n": 66
+  "universe_n": 64
  },
  "TURN SIGNALED": {
-  "n": 32324,
+  "n": 29044,
   "hit_pct": 57.9,
-  "avg_fwd_pct": 1.43,
+  "avg_fwd_pct": 1.4,
   "dd_med_pct": -2.86,
-  "dd_p10_pct": -10.62,
+  "dd_p10_pct": -10.65,
+  "dd_bad_pct": 11.5,
+  "anchor_era": "cyc-abs-session-2026-08-06",
+  "survivorship_biased": true,
+  "universe_n": 64
+ },
+ "FRESH BUY": {
+  "n": 6996,
+  "hit_pct": 56.7,
+  "avg_fwd_pct": 0.85,
+  "dd_med_pct": -2.78,
+  "dd_p10_pct": -10.44,
+  "dd_bad_pct": 10.8,
+  "anchor_era": "cyc-abs-session-2026-08-06",
+  "survivorship_biased": true,
+  "universe_n": 64
+ },
+ "RALLY ON": {
+  "n": 6937,
+  "hit_pct": 58.1,
+  "avg_fwd_pct": 1.12,
+  "dd_med_pct": -2.56,
+  "dd_p10_pct": -10.71,
   "dd_bad_pct": 11.3,
   "anchor_era": "cyc-abs-session-2026-08-06",
   "survivorship_biased": true,
-  "universe_n": 66
- },
- "FRESH BUY": {
-  "n": 7896,
-  "hit_pct": 58.1,
-  "avg_fwd_pct": 1.01,
-  "dd_med_pct": -2.74,
-  "dd_p10_pct": -10.54,
-  "dd_bad_pct": 11.4,
-  "anchor_era": "cyc-abs-session-2026-08-06",
-  "survivorship_biased": true,
-  "universe_n": 66
- },
- "RALLY ON": {
-  "n": 7805,
-  "hit_pct": 58.8,
-  "avg_fwd_pct": 1.28,
-  "dd_med_pct": -2.59,
-  "dd_p10_pct": -9.96,
-  "dd_bad_pct": 9.9,
-  "anchor_era": "cyc-abs-session-2026-08-06",
-  "survivorship_biased": true,
-  "universe_n": 66
+  "universe_n": 64
  },
  "TOP WATCH": {
-  "n": 22135,
-  "hit_pct": 55.6,
-  "avg_fwd_pct": 0.92,
-  "dd_med_pct": -2.9,
-  "dd_p10_pct": -10.09,
+  "n": 19690,
+  "hit_pct": 56.4,
+  "avg_fwd_pct": 1.04,
+  "dd_med_pct": -2.8,
+  "dd_p10_pct": -10.08,
   "dd_bad_pct": 10.2,
   "anchor_era": "cyc-abs-session-2026-08-06",
   "survivorship_biased": true,
-  "universe_n": 66
+  "universe_n": 64
  },
  "ROLLING OVER": {
-  "n": 610,
-  "hit_pct": 61.0,
-  "avg_fwd_pct": 1.41,
-  "dd_med_pct": -3.19,
-  "dd_p10_pct": -11.11,
+  "n": 518,
+  "hit_pct": 60.8,
+  "avg_fwd_pct": 1.79,
+  "dd_med_pct": -2.6,
+  "dd_p10_pct": -11.38,
+  "dd_bad_pct": 12.4,
+  "anchor_era": "cyc-abs-session-2026-08-06",
+  "survivorship_biased": true,
+  "universe_n": 64
+ },
+ "COUNTERTREND BOUNCE": {
+  "n": 25851,
+  "hit_pct": 58.5,
+  "avg_fwd_pct": 1.44,
+  "dd_med_pct": -2.98,
+  "dd_p10_pct": -11.48,
   "dd_bad_pct": 13.0,
   "anchor_era": "cyc-abs-session-2026-08-06",
   "survivorship_biased": true,
-  "universe_n": 66
+  "universe_n": 64
  },
- "COUNTERTREND BOUNCE": {
-  "n": 29110,
-  "hit_pct": 58.4,
-  "avg_fwd_pct": 1.44,
-  "dd_med_pct": -2.97,
-  "dd_p10_pct": -11.43,
+ "BOTTOM WATCH +early-bull": {
+  "n": 259,
+  "hit_pct": 56.4,
+  "avg_fwd_pct": 1.37,
+  "dd_med_pct": -3.17,
+  "dd_p10_pct": -11.32,
   "dd_bad_pct": 13.1,
   "anchor_era": "cyc-abs-session-2026-08-06",
   "survivorship_biased": true,
-  "universe_n": 66
- },
- "BOTTOM WATCH +early-bull": {
-  "n": 276,
-  "hit_pct": 55.8,
-  "avg_fwd_pct": 0.7,
-  "dd_med_pct": -3.18,
-  "dd_p10_pct": -12.98,
-  "dd_bad_pct": 14.1,
-  "anchor_era": "cyc-abs-session-2026-08-06",
-  "survivorship_biased": true,
-  "universe_n": 66
+  "universe_n": 64
  },
  "BOTTOM WATCH no-early": {
-  "n": 7678,
-  "hit_pct": 58.5,
-  "avg_fwd_pct": 1.53,
-  "dd_med_pct": -2.99,
-  "dd_p10_pct": -11.56,
-  "dd_bad_pct": 13.4,
+  "n": 7003,
+  "hit_pct": 58.2,
+  "avg_fwd_pct": 1.7,
+  "dd_med_pct": -2.97,
+  "dd_p10_pct": -11.3,
+  "dd_bad_pct": 12.7,
   "anchor_era": "cyc-abs-session-2026-08-06",
   "survivorship_biased": true,
-  "universe_n": 66
+  "universe_n": 64
  }
 }

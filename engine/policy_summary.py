@@ -25,6 +25,7 @@ def summarize(counts: dict | None, rot: dict | None, fed_hist: dict | None,
         "total": counts.get("total") or 0,
         "open": counts.get("open") or 0,
         "resolved": resolved,
+        "not_scored": counts.get("void") or 0,
         "hit_rate": counts.get("hit_rate"),
         "overdue": (dates or {}).get("overdue_predictions") or 0,
     }

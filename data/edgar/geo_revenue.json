@@ -1,6 +1,6 @@
 {
 "schema":"edgar.geo_revenue.v1",
-"updated":"2026-09-09T02:55:37.896525+00:00",
+"updated":"2026-09-12T02:40:12.478490+00:00",
 "by_ticker":{
 "AAPL":{
 "foreign_pct":63.5,
@@ -22192,44 +22192,44 @@
 ]
 },
 "AOSL":{
-"foreign_pct":99.4,
-"asof":"2025-06-30",
-"source":"10-K 2025-06-30",
-"fy":2025,
-"accession":"0001628280-25-041297",
+"foreign_pct":98.9,
+"asof":"2026-06-30",
+"source":"10-K 2026-06-30",
+"fy":2026,
+"accession":"0001628280-26-059261",
 "method":"us_member",
 "concept":"RevenueFromContractWithCustomerExcludingAssessedTax",
-"em_pct":8.6,
+"em_pct":2.7,
 "by_region":[
 {
 "key":"HK",
 "label":"HK",
 "cls":"dm",
-"pct":88.7
+"pct":95.6
 },
 {
 "key":"CN",
 "label":"CN",
 "cls":"em",
-"pct":8.4
-},
-{
-"key":"OtherCountries",
-"label":"Other Countries",
-"cls":"mixed",
-"pct":2.1
+"pct":2.4
 },
 {
 "key":"US",
 "label":"US",
 "cls":"us",
+"pct":1.1
+},
+{
+"key":"OtherCountries",
+"label":"Other Countries",
+"cls":"mixed",
 "pct":0.6
 },
 {
 "key":"KR",
 "label":"KR",
 "cls":"em",
-"pct":0.2
+"pct":0.3
 }
 ]
 },
