@@ -1,5 +1,5 @@
 {
-  "last_run": "2026-09-12T12:32:58.925111+00:00",
+  "last_run": "2026-09-12T16:44:43.426917+00:00",
   "sources": {
     "cot": {
       "source": "cot",
@@ -12,8 +12,8 @@
         "frozen tail: cot_heating_oil last=2013-11-05 age=4694d"
       ],
       "probed_at": null,
-      "elapsed_sec": 19.1,
-      "checked_at": "2026-09-12T02:50:42.657503+00:00"
+      "elapsed_sec": 14.8,
+      "checked_at": "2026-09-12T16:44:43.426967+00:00"
     },
     "fred": {
       "source": "fred",
@@ -202,14 +202,14 @@
     },
     "sentiment_naaim": {
       "source": "sentiment_naaim",
-      "status": "failed",
+      "status": "dead",
       "rows": 0,
       "last_date": null,
-      "error": "ValueError: NAAIM since-inception workbook link not found on page",
+      "error": "circuit open (33 consecutive failures)",
       "notes": [],
-      "probed_at": "2026-09-12T00:41:45.782761+00:00",
-      "elapsed_sec": 0.5,
-      "checked_at": "2026-09-12T02:50:42.656558+00:00"
+      "probed_at": null,
+      "elapsed_sec": 0.0,
+      "checked_at": "2026-09-12T16:44:43.426942+00:00"
     },
     "sentiment_aaii": {
       "source": "sentiment_aaii",
@@ -220,7 +220,7 @@
       "notes": [],
       "probed_at": null,
       "elapsed_sec": 3.6,
-      "checked_at": "2026-09-12T02:50:42.656567+00:00"
+      "checked_at": "2026-09-12T16:44:43.426954+00:00"
     },
     "sector_flows": {
       "source": "sector_flows",
@@ -247,13 +247,13 @@
     "fundamentals": {
       "source": "fundamentals",
       "status": "ok",
-      "rows": 5819,
-      "last_date": "2026-09-11",
+      "rows": 5820,
+      "last_date": "2026-09-12",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 7.4,
-      "checked_at": "2026-09-12T02:50:42.656736+00:00"
+      "elapsed_sec": 7.6,
+      "checked_at": "2026-09-12T16:44:43.426959+00:00"
     },
     "coinmetrics": {
       "source": "coinmetrics",
@@ -461,12 +461,12 @@
       "source": "stock_fundamentals",
       "status": "ok",
       "rows": 1,
-      "last_date": "2026-09-11",
+      "last_date": "2026-09-12",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 174.8,
-      "checked_at": "2026-09-12T02:50:42.656747+00:00"
+      "elapsed_sec": 173.5,
+      "checked_at": "2026-09-12T16:44:43.426963+00:00"
     },
     "china_universe": {
       "source": "china_universe",
@@ -3378,7 +3378,7 @@
       "last_obs": "2022-02-01",
       "cadence_days": 12,
       "age_days": 1684,
-      "detected_at": "2026-09-12T01:23:02.733794+00:00"
+      "detected_at": "2026-09-12T16:44:43.423350+00:00"
     },
     {
       "group": "cot",
@@ -3386,7 +3386,7 @@
       "last_obs": "2013-11-05",
       "cadence_days": 12,
       "age_days": 4694,
-      "detected_at": "2026-09-12T01:23:02.733800+00:00"
+      "detected_at": "2026-09-12T16:44:43.423357+00:00"
     },
     {
       "group": "fred",
@@ -3772,6 +3772,6 @@
         "state": "fresh"
       }
     },
-    "asof": "2026-09-12 12:51:19.128046+00:00"
+    "asof": "2026-09-12 19:01:12.623972+00:00"
   }
 }
