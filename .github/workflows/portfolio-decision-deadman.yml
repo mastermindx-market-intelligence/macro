@@ -1,6 +1,13 @@
 name: portfolio-decision-deadman
 
 on:
+  # Temporary exact-head transport proof. This branch-only trigger is removed
+  # immediately after its terminal receipt; protected main remains schedule/dispatch only.
+  push:
+    branches:
+      - sol/portfolio-decision-deadman-20260912
+    paths:
+      - .github/workflows/portfolio-decision-deadman.yml
   schedule:
     # US Brain fires after the US close. The evaluator derives the exact due
     # clock from APScheduler's live next_run_time rather than duplicating env config.
