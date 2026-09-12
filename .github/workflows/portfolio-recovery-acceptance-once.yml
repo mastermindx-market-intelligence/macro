@@ -1,4 +1,4 @@
-name: portfolio-recovery-acceptance-once
+name: portfolio-recovery-browser-proof-once
 
 on:
   push:
@@ -15,11 +15,11 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  acceptance:
+  browser-proof:
     runs-on: ubuntu-latest
-    timeout-minutes: 50
+    timeout-minutes: 20
     steps:
-      - name: Execute bounded acceptance on authoritative VPS
+      - name: Open production UI through a bounded VPS tunnel
         env:
           SSH_KEY: ${{ secrets.VPS_DEPLOY_KEY }}
         shell: bash
@@ -30,305 +30,138 @@ jobs:
           keyfile="$RUNNER_TEMP/vps_key"
           printf '%s\n' "$SSH_KEY" > "$keyfile"
           chmod 600 "$keyfile"
-          trap 'rm -f "$keyfile"' EXIT
 
-          set +e
           ssh -i "$keyfile" \
             -o BatchMode=yes \
             -o ConnectTimeout=20 \
+            -o ExitOnForwardFailure=yes \
             -o StrictHostKeyChecking=accept-new \
-            root@146.190.142.17 \
-            '/opt/mastermind/.venv/bin/python -' > "$RUNNER_TEMP/acceptance.json" <<'PY'
-          from __future__ import annotations
+            -N -L 18001:127.0.0.1:8001 root@146.190.142.17 &
+          tunnel_pid=$!
+          trap 'kill "$tunnel_pid" 2>/dev/null || true; rm -f "$keyfile" "$RUNNER_TEMP/portfolio-ui.png"' EXIT
 
-          import asyncio
-          import datetime as dt
+          for _ in $(seq 1 30); do
+            curl -fsS --max-time 2 http://127.0.0.1:18001/health >/tmp/mm-health.json && break
+            sleep 1
+          done
+          python3 - <<'PY'
           import json
-          import os
-          import sys
-          import tempfile
-          import time
-          import urllib.error
-          import urllib.request
           from pathlib import Path
-
-          EXPECTED_SHA = "e61f2951136bdc03a7ec2f5f12f960af26656a4c"
-          ROOT = Path("/opt/mastermind")
-          ENV_FILE = Path("/etc/macro-api.env")
-          LOCAL = "http://127.0.0.1:8001"
-          result: dict = {
-              "schema": "mastermind.portfolio_recovery_acceptance.v1",
-              "operation": "portfolio-bot-decision-recovery-20260909-sol-001",
-              "observed_at": dt.datetime.now(dt.timezone.utc).isoformat(),
-              "expected_commit": EXPECTED_SHA,
-              "state": "HOLD",
-              "manual_run_attempted": False,
-              "manual_run_effect": "NONE",
-          }
-
-          def emit(code: int = 0) -> None:
-              print(json.dumps(result, sort_keys=True, separators=(",", ":")))
-              raise SystemExit(code)
-
-          def load_env_file() -> None:
-              try:
-                  for raw in ENV_FILE.read_text(encoding="utf-8").splitlines():
-                      line = raw.strip()
-                      if not line or line.startswith("#") or "=" not in line:
-                          continue
-                      key, value = line.split("=", 1)
-                      value = value.strip()
-                      if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
-                          value = value[1:-1]
-                      os.environ[key.strip()] = value
-              except Exception as exc:
-                  result["env_load_error_class"] = type(exc).__name__
-                  emit(20)
-              os.environ.update({
-                  "BOT_LLM_BACKEND": "waterfall",
-                  "CODEX_HOME": "/var/lib/macro-codex",
-                  "CODEX_PROVIDER_ENABLED": "1",
-                  "MASTERMIND_CODEX_PYTHON": "/opt/mastermind/.venv/bin/python",
-                  "MASTERMIND_CODEX_TIMEOUT_SEC": "1800",
-                  "MASTERMIND_CODEX_WEB_SEARCH": "0",
-                  "MASTERMIND_SHARED_LLM_POOL": "1",
-                  "MASTERMIND_SERVE_ONLY": "0",
-                  "MASTERMIND_VPS_AUTHORITATIVE": "1",
-                  "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
-              })
-
-          def http_json(path: str, *, method: str = "GET", headers: dict | None = None,
-                        timeout: int = 30) -> tuple[dict | None, int | None, str | None]:
-              req = urllib.request.Request(LOCAL + path, method=method, headers=headers or {})
-              try:
-                  with urllib.request.urlopen(req, timeout=timeout) as response:
-                      payload = json.loads(response.read())
-                      return (payload if isinstance(payload, dict) else None,
-                              int(response.status), None)
-              except urllib.error.HTTPError as exc:
-                  return None, int(exc.code), "HTTPError"
-              except Exception as exc:
-                  return None, None, type(exc).__name__
-
-          def select_job(payload: dict | None) -> dict:
-              jobs = payload.get("jobs") if isinstance(payload, dict) else None
-              if not isinstance(jobs, list):
-                  return {}
-              for row in jobs:
-                  if isinstance(row, dict) and row.get("id") == "autonomous_daily":
-                      return row
-              return {}
-
-          def safe_job(row: dict) -> dict:
-              return {key: row.get(key) for key in (
-                  "id", "next_run_time", "last_started", "last_finished", "last_skipped",
-                  "last_status", "last_severity", "last_reason", "last_target_status",
-              )}
-
-          def latest_decision(payload: dict | None) -> dict:
-              rows = payload.get("decisions") if isinstance(payload, dict) else None
-              if not isinstance(rows, list) or not rows:
-                  return {}
-              row = rows[0] if isinstance(rows[0], dict) else {}
-              return {key: row.get(key) for key in (
-                  "asof", "settled_asof", "target_status", "decision_effective", "decided",
-                  "inaugural", "trading_day", "execution_evidence_status", "today",
-              )}
-
-          def parse_ts(value: object) -> dt.datetime | None:
-              if not value:
-                  return None
-              try:
-                  parsed = dt.datetime.fromisoformat(str(value).replace("Z", "+00:00"))
-                  return parsed if parsed.tzinfo else parsed.replace(tzinfo=dt.timezone.utc)
-              except Exception:
-                  return None
-
-          # Exact release and runtime health.
-          try:
-              marker = (ROOT / ".deployed_git_sha").read_text(encoding="utf-8").strip()
-          except Exception as exc:
-              result["marker_error_class"] = type(exc).__name__
-              emit(20)
-          health, health_http, health_error = http_json("/health")
-          result["commit"] = marker
-          result["health_http"] = health_http
-          result["health_error_class"] = health_error
-          result["health_status"] = health.get("status") if health else None
-          result["reasoning_policy_ok"] = bool(health and health.get("reasoning_policy_ok"))
-          result["scheduler_running"] = bool(health and health.get("scheduler_running"))
-          result["scheduled_runtime_ok"] = bool(health and health.get("scheduled_runtime_ok"))
-          result["reasoning_primary"] = health.get("reasoning_primary") if health else None
-          if marker != EXPECTED_SHA or not health or health.get("commit") != EXPECTED_SHA:
-              result["reason"] = "release_identity_mismatch"
-              emit(20)
-          if health.get("status") != "ok" or not health.get("reasoning_policy_ok") or not health.get("scheduled_runtime_ok"):
-              result["reason"] = "runtime_not_ready"
-              emit(20)
-
-          # Deployed prompt-only canary: no tools, no account, no portfolio context, no run log.
-          load_env_file()
-          os.chdir(ROOT)
-          sys.path.insert(0, str(ROOT))
-          try:
-              from brain import provider_waterfall
-              with tempfile.TemporaryDirectory(prefix="mm-canary-") as workdir:
-                  canary = asyncio.run(provider_waterfall.reason(
-                      "Reply with exactly OK.",
-                      role="analyst",
-                      system="This is a prompt-only availability check. Use no tools.",
-                      allowed_tools=[],
-                      add_dirs=[],
-                      max_turns=1,
-                      cwd=workdir,
-                      arm=False,
-                      mcp_servers={},
-                      log_run=False,
-                      book="acceptance_canary",
-                  ))
-              result["canary_ok"] = bool(canary.get("ok") and str(canary.get("text") or "").strip())
-              result["canary_provider"] = canary.get("provider")
-              result["canary_backend"] = canary.get("backend")
-              result["canary_error_class"] = None if result["canary_ok"] else "provider_turn_failed"
-          except Exception as exc:
-              result["canary_ok"] = False
-              result["canary_provider"] = None
-              result["canary_backend"] = None
-              result["canary_error_class"] = type(exc).__name__
-          if not result["canary_ok"]:
-              result["reason"] = "deployed_provider_canary_failed"
-              emit(20)
-
-          # Reconcile the normal scheduled run before considering a manual run.
-          sched, sched_http, sched_error = http_json("/api/scheduler")
-          decisions, decisions_http, decisions_error = http_json("/api/decisions?portfolio=autonomous&limit=5")
-          job = select_job(sched)
-          decision = latest_decision(decisions)
-          result["scheduler_http"] = sched_http
-          result["scheduler_error_class"] = sched_error
-          result["decision_http"] = decisions_http
-          result["decision_error_class"] = decisions_error
-          result["scheduler"] = safe_job(job)
-          result["decision"] = decision
-          if not job:
-              result["reason"] = "scheduler_readback_unavailable"
-              emit(20)
-
-          now = dt.datetime.now(dt.timezone.utc)
-          last_started = parse_ts(job.get("last_started"))
-          last_finished = parse_ts(job.get("last_finished"))
-          active = bool(last_started and (not last_finished or last_started > last_finished))
-          if active:
-              # The normal run owns the carrier. Wait boundedly for its own completion; never overlap it.
-              deadline = time.monotonic() + 900
-              while time.monotonic() < deadline:
-                  time.sleep(30)
-                  sched, _, _ = http_json("/api/scheduler")
-                  job = select_job(sched)
-                  last_started = parse_ts(job.get("last_started"))
-                  last_finished = parse_ts(job.get("last_finished"))
-                  active = bool(last_started and (not last_finished or last_started > last_finished))
-                  if not active:
-                      break
-              result["scheduler"] = safe_job(job)
-              if active:
-                  result["reason"] = "scheduled_run_still_active"
-                  emit(20)
-              decisions, _, _ = http_json("/api/decisions?portfolio=autonomous&limit=5")
-              decision = latest_decision(decisions)
-              result["decision"] = decision
-
-          def accepted_current(j: dict, d: dict) -> bool:
-              status = str(j.get("last_status") or "")
-              reason = str(j.get("last_reason") or "")
-              target = str(j.get("last_target_status") or d.get("target_status") or "")
-              if status not in {"ok", "warn"}:
-                  return False
-              if reason in {"missing_submission", "rejected_execution_error", "invalid_result",
-                            "projection_failed", "inconsistent_result", "runner_failed"}:
-                  return False
-              if target in {"rejected_no_submission", "rejected_execution_error", ""}:
-                  return False
-              return str(d.get("asof") or "")[:10] >= "2026-09-11"
-
-          if not accepted_current(job, decision):
-              status = str(job.get("last_status") or "")
-              reason = str(job.get("last_reason") or "")
-              target = str(job.get("last_target_status") or decision.get("target_status") or "")
-              started = parse_ts(job.get("last_started"))
-              # A completed failed/ambiguous run is never replayed. Manual is allowed only when the
-              # Friday normal window conclusively produced no run at all.
-              if status in {"error", "warn", "skip"} or reason or target:
-                  result["reason"] = "normal_run_completed_without_acceptable_decision"
-                  emit(20)
-              cutoff = dt.datetime(2026, 9, 11, 23, 10, tzinfo=dt.timezone.utc)
-              if now < cutoff or (started and started >= cutoff):
-                  result["reason"] = "normal_run_state_ambiguous"
-                  emit(20)
-
-              token = os.environ.get("MASTERMIND_AUTH_TOKEN", "")
-              if not token:
-                  result["reason"] = "operator_token_unavailable"
-                  emit(20)
-              result["manual_run_attempted"] = True
-              result["manual_run_effect"] = "REQUEST_SENT"
-              manual, manual_http, manual_error = http_json(
-                  "/api/autonomous/run?force=false&wait=true",
-                  method="POST",
-                  headers={"Authorization": "Bearer " + token},
-                  timeout=2400,
-              )
-              result["manual_http"] = manual_http
-              result["manual_error_class"] = manual_error
-              if manual is None:
-                  # A timeout/transport failure after request dispatch leaves effect unknown.
-                  result["manual_run_effect"] = "EFFECT_UNKNOWN"
-                  result["reason"] = "manual_run_effect_unknown"
-                  emit(30)
-              result["manual_run_effect"] = "RECEIPT_RECEIVED"
-              result["manual_receipt"] = {key: manual.get(key) for key in (
-                  "run_status", "run_reason", "target_status", "decision_effective",
-                  "asof", "decided", "trading_day",
-              )}
-              time.sleep(3)
-              sched, _, _ = http_json("/api/scheduler")
-              decisions, _, _ = http_json("/api/decisions?portfolio=autonomous&limit=5")
-              job = select_job(sched)
-              decision = latest_decision(decisions)
-              result["scheduler"] = safe_job(job)
-              result["decision"] = decision
-
-          # Served UI contract and final durable readback.
-          try:
-              with urllib.request.urlopen(LOCAL + "/", timeout=30) as response:
-                  html = response.read().decode("utf-8", "replace")
-              result["ui_http"] = int(response.status)
-              result["ui_missing_label_contract"] = "DECISION MISSING — RECOVERY REQUIRED" in html
-              result["ui_scheduler_reason_contract"] = "last_reason" in html
-          except Exception as exc:
-              result["ui_http"] = None
-              result["ui_error_class"] = type(exc).__name__
-              result["ui_missing_label_contract"] = False
-              result["ui_scheduler_reason_contract"] = False
-
-          if not accepted_current(job, decision):
-              result["reason"] = "final_decision_not_acceptable"
-              emit(20)
-          if not result.get("ui_missing_label_contract") or not result.get("ui_scheduler_reason_contract"):
-              result["reason"] = "served_ui_contract_unproven"
-              emit(20)
-
-          result["state"] = "PROVEN_LIVE"
-          result["reason"] = "production_acceptance_complete"
-          emit(0)
+          health=json.loads(Path('/tmp/mm-health.json').read_text())
+          assert health.get('commit') == 'e61f2951136bdc03a7ec2f5f12f960af26656a4c'
+          assert health.get('status') == 'ok'
           PY
-          rc=$?
-          set -e
 
-          if [ -s "$RUNNER_TEMP/acceptance.json" ]; then
-            cat "$RUNNER_TEMP/acceptance.json"
-          else
-            echo '{"state":"HOLD","reason":"acceptance_receipt_missing"}'
-            rc=20
-          fi
-          exit "$rc"
+          work="$RUNNER_TEMP/mm-browser-proof"
+          mkdir -p "$work"
+          cd "$work"
+          npm init -y >/dev/null 2>&1
+          npm install --no-audit --no-fund playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+
+          cat > proof.cjs <<'JS'
+          const fs = require('fs');
+          const crypto = require('crypto');
+          const { chromium } = require('playwright');
+
+          (async () => {
+            const result = {
+              schema: 'mastermind.portfolio_recovery_browser_proof.v1',
+              operation: 'portfolio-bot-decision-recovery-20260909-sol-001',
+              state: 'HOLD',
+              observed_at: new Date().toISOString(),
+              commit: 'e61f2951136bdc03a7ec2f5f12f960af26656a4c',
+            };
+            const browser = await chromium.launch({headless: true});
+            const page = await browser.newPage({viewport: {width: 1440, height: 1200}, deviceScaleFactor: 1});
+            const apiSeen = {decisions: false, scheduler: false, portfolio: false};
+            let consoleErrors = 0;
+            page.on('response', response => {
+              const u = response.url();
+              if (u.includes('/api/decisions')) apiSeen.decisions = response.status() === 200;
+              if (u.includes('/api/scheduler')) apiSeen.scheduler = response.status() === 200;
+              if (u.includes('/api/portfolio')) apiSeen.portfolio = response.status() === 200;
+            });
+            page.on('console', message => { if (message.type() === 'error') consoleErrors += 1; });
+            page.on('pageerror', () => { consoleErrors += 1; });
+
+            const response = await page.goto('http://127.0.0.1:18001/?portfolio=autonomous', {
+              waitUntil: 'domcontentloaded', timeout: 60000
+            });
+            result.document_http = response ? response.status() : null;
+            await page.waitForFunction(() => document.body && document.body.innerText.length > 1000, null, {timeout: 30000});
+            await page.waitForTimeout(6000);
+
+            const safe = await page.evaluate(async () => {
+              const [decisionsResponse, schedulerResponse] = await Promise.all([
+                fetch('/api/decisions?portfolio=autonomous&limit=5'),
+                fetch('/api/scheduler'),
+              ]);
+              const decisions = await decisionsResponse.json();
+              const scheduler = await schedulerResponse.json();
+              const decision = Array.isArray(decisions.decisions) && decisions.decisions[0] || {};
+              const job = Array.isArray(scheduler.jobs)
+                ? (scheduler.jobs.find(row => row && row.id === 'autonomous_daily') || {}) : {};
+              return {
+                decision_http: decisionsResponse.status,
+                scheduler_http: schedulerResponse.status,
+                decision: {
+                  asof: decision.asof || null,
+                  target_status: decision.target_status || null,
+                  decision_effective: decision.decision_effective === true,
+                  execution_evidence_status: decision.execution_evidence_status || null,
+                },
+                scheduler: {
+                  last_started: job.last_started || null,
+                  last_finished: job.last_finished || null,
+                  last_status: job.last_status || null,
+                  last_reason: job.last_reason || null,
+                  last_target_status: job.last_target_status || null,
+                },
+                queued_dom_count: document.querySelectorAll('.mm-dec-status.queued').length,
+                missing_dom_count: document.querySelectorAll('.mm-dec-status.missing').length,
+                page_has_daily_decision_log: /Daily Decision Log/i.test(document.body.innerText),
+                page_has_recovery_label_contract: document.documentElement.innerHTML.includes('DECISION MISSING — RECOVERY REQUIRED'),
+              };
+            });
+            Object.assign(result, safe);
+            result.api_seen = apiSeen;
+            result.console_error_count = consoleErrors;
+
+            const screenshotPath = process.env.RUNNER_TEMP + '/portfolio-ui.png';
+            await page.screenshot({path: screenshotPath, fullPage: false});
+            const screenshot = fs.readFileSync(screenshotPath);
+            result.screenshot_sha256 = crypto.createHash('sha256').update(screenshot).digest('hex');
+            result.screenshot_bytes = screenshot.length;
+            await browser.close();
+
+            const accepted =
+              result.document_http === 200 &&
+              result.decision_http === 200 &&
+              result.scheduler_http === 200 &&
+              result.decision.asof === '2026-09-11' &&
+              result.decision.target_status === 'queued' &&
+              result.decision.decision_effective === true &&
+              result.scheduler.last_status === 'ok' &&
+              result.scheduler.last_target_status === 'queued' &&
+              result.scheduler.last_reason === null &&
+              result.queued_dom_count >= 1 &&
+              result.page_has_daily_decision_log === true &&
+              result.page_has_recovery_label_contract === true;
+            result.state = accepted ? 'PROVEN_LIVE' : 'HOLD';
+            result.reason = accepted ? 'browser_visible_proof_complete' : 'browser_visible_proof_incomplete';
+            console.log(JSON.stringify(result));
+            process.exit(accepted ? 0 : 20);
+          })().catch(error => {
+            console.log(JSON.stringify({
+              schema: 'mastermind.portfolio_recovery_browser_proof.v1',
+              operation: 'portfolio-bot-decision-recovery-20260909-sol-001',
+              state: 'HOLD',
+              reason: 'browser_probe_failed',
+              error_class: error && error.constructor ? error.constructor.name : 'Error'
+            }));
+            process.exit(20);
+          });
+          JS
+
+          RUNNER_TEMP="$RUNNER_TEMP" node proof.cjs
