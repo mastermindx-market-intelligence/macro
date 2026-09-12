@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import unittest
+from pathlib import Path
 
 from scripts import check_portfolio_decision_deadman as deadman
 from tests.test_portfolio_decision_deadman import NOW, healthy_snapshot
@@ -126,6 +127,24 @@ class PortfolioDecisionDeadmanIntegrityBoundaryTests(unittest.TestCase):
             "collection: scheduler_duplicate:autonomous_daily",
             failures,
         )
+
+
+class PortfolioDecisionDeadmanWorkflowTrustTests(unittest.TestCase):
+    def test_secret_bearing_check_requires_main_ref_trust_gate(self):
+        workflow = Path(
+            ".github/workflows/portfolio-decision-deadman.yml"
+        ).read_text(encoding="utf-8")
+        trust_job = workflow.find("  trust-gate:")
+        check_job = workflow.find("  check:")
+        secret_use = workflow.find("SSH_KEY: ${{ secrets.VPS_DEPLOY_KEY }}")
+
+        self.assertGreaterEqual(trust_job, 0)
+        self.assertGreaterEqual(check_job, 0)
+        self.assertGreater(secret_use, check_job)
+        self.assertLess(trust_job, check_job)
+        self.assertIn("TRUSTED_REF: ${{ github.ref }}", workflow)
+        self.assertIn('test "$TRUSTED_REF" = refs/heads/main', workflow)
+        self.assertIn("needs: trust-gate", workflow[check_job:secret_use])
 
 
 if __name__ == "__main__":
