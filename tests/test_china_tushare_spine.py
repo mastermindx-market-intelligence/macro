@@ -1951,7 +1951,7 @@ def test_populated_range_campaign_summary_matches_manifest_schema(monkeypatch, t
     assert "rows" not in summary["cap_probe_receipt"]
     cap_fallback = manifest["contracts"]["cap_fallback"]
     assert cap_fallback["split_rule"] == summary["split_rule"]
-    assert cap_fallback["live_canary_complete"] is False
+    assert cap_fallback["live_canary_complete"] is True
     assert cap_fallback["live_canary_required_for_promotion"] is True
 
 
