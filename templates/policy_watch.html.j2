@@ -33,6 +33,19 @@
     'risk_zh':'衰退担忧和信用利差扩大可能盖过这些利好。'
   }
 } %}
+{% set UK_STANCE = {
+  'supportive':['Reads as supportive','读作偏支持','green'],
+  'restrictive':['Reads as restrictive','读作偏收紧','amber'],
+  'mixed':['Reads as mixed','读作方向不一','blue'],
+  'routine':['Routine business','例行事务','neutral']
+} %}
+{% set UK_STATE = {
+  'gate_off':['This desk is off right now.','此栏目目前未开启。','It turns on with the UK policy desk. Nothing is missing from the rest of the page.','开启英国政策台后即可显示，本页其余内容不受影响。'],
+  'no_new':['No new UK announcement today.','今天没有新的英国公告。','The most recent one we have is below.','以下是我们已有的最近一条。'],
+  'source_outage':['GOV.UK did not answer this time.','本次未能连接 GOV.UK。','Showing the most recent announcement we already have.','以下显示我们已有的最近一条公告。'],
+  'stale':['This desk has not refreshed recently.','此栏目最近未更新。','Check GOV.UK for anything newer before acting.','采取行动前，请先到 GOV.UK 查看是否有更新。'],
+  'model_unavailable':['The plain-word read is not ready.','平实解读尚未完成。','The headline below is the official title. No stance has been assigned.','下方标题为官方原文。尚未给出立场判断。']
+} %}
 {% set TF_COPY = {
   'tf_comms': {
     'en':'Possible changes to forecasts, press conferences and meeting transcripts.',
@@ -204,7 +217,7 @@
   'P41':['Three-month average job growth will stay below 100,000 through the July report.','截至7月就业报告，三个月平均新增就业将保持在10万以下。'],
   'P42':['Other tariff laws will keep the U.S. tariff wall on China near its pre-ruling level through year-end.','其他关税法律将在年底前使美国对华关税壁垒接近裁决前水平。'],
   'P43':['Bank regulators will publish a rule easing capital treatment for Treasury trades.','银行监管机构将发布规则，放宽美债交易的资本要求。'],
-  'P44':['Under review after the ceasefire collapsed; this is not an active forecast.','停火破裂后正在复核；这不是一条有效预测。']
+  'P44':['This Iran entry was already being rewritten when it entered the track record.','该伊朗条目进入记录时已在重写。']
 } %}
 
 {% set STAGE_EN = {'proposed':'Proposed','passed':'Passed, not yet in force','in_force':'In force','enforced':'Being enforced','withdrawn':'Withdrawn','struck_down':'Struck down in court','superseded':'Replaced by a newer rule'} %}
@@ -229,6 +242,7 @@
   {% if needs_review %}<span class="pw-badge warn">{{ t('Needs review','需要复核') }}</span>
   {% elif value == 'hit' %}<span class="pw-badge fact">{{ t('Right','正确') }}</span>
   {% elif value == 'miss' %}<span class="pw-badge miss">{{ t('Wrong','错误') }}</span>
+  {% elif value == 'void' %}<span class="pw-badge neutral">{{ t('Not scored','不计分') }}</span>
   {% else %}<span class="pw-badge neutral">{{ t('Open','待定') }}</span>{% endif %}
 {%- endmacro %}
 {% macro section_head(kicker_en, kicker_zh, title_en, title_zh, desc_en='', desc_zh='') -%}
@@ -311,6 +325,45 @@
   .pw-card{position:relative;padding:17px 18px;overflow:hidden;overflow-wrap:anywhere}.pw-card::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--card-accent,var(--pw-purple))}.pw-card.green{--card-accent:var(--pw-green)}.pw-card.blue{--card-accent:var(--pw-blue)}.pw-card.amber{--card-accent:var(--pw-amber)}.pw-card.teal{--card-accent:var(--pw-teal)}
   .pw-card-title{margin:0;font-size:15px;font-weight:600;line-height:1.35;letter-spacing:-.01em}.pw-card p{margin:8px 0 0;color:var(--pw-ink-2);font-size:13px;line-height:1.5}.pw-card p.pw-primary{color:var(--text);font-size:13.5px}.pw-card .pw-meta-row{margin-top:10px}.pw-card-label{display:block;margin-bottom:3px;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
   .pw-stance{display:inline-flex;margin-top:12px;padding:5px 10px;border-radius:8px;color:var(--pw-amber);border:1px solid color-mix(in srgb,var(--pw-amber) 38%,var(--line));background:color-mix(in srgb,var(--pw-amber) 9%,var(--panel));font-size:11.5px;font-weight:700}
+  .uk-desk{position:relative;padding:20px 22px;overflow:hidden;box-shadow:var(--card-shadow),inset 0 0 0 1px color-mix(in srgb,var(--line) 55%,transparent)}
+  .uk-desk::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--muted)}
+  .uk-desk.uk-supportive::before{background:var(--ink-ok)}
+  .uk-desk.uk-restrictive::before{background:var(--warn)}
+  .uk-desk.uk-mixed::before{background:var(--act)}
+  .uk-desk.uk-routine::before{background:var(--muted)}
+  .uk-masthead{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 11px}
+  .uk-body-name{color:color-mix(in srgb,var(--text) 68%,transparent);font-size:11.5px;font-weight:600}
+  .uk-src{margin-left:auto;color:var(--muted);font-family:var(--font-data);font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+  html[data-lang="zh"] .uk-src{letter-spacing:0}
+  .uk-null{margin:0 0 12px;padding:9px 12px;border:1px solid var(--line);border-radius:var(--r-btn,10px);background:var(--panel2);color:var(--muted);font-size:12.5px;line-height:1.45}
+  .uk-null strong{color:var(--text)}
+  .uk-desk[data-uk-state="source_outage"] .uk-null,
+  .uk-desk[data-uk-state="stale"] .uk-null,
+  .uk-desk[data-uk-state="model_unavailable"] .uk-null{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 42%,var(--line));background:color-mix(in srgb,var(--warn) 10%,var(--panel))}
+  .uk-headline{margin:0;color:var(--text);font-family:var(--font-display);font-size:20px;font-weight:700;line-height:1.25;letter-spacing:-.015em;overflow-wrap:anywhere}
+  html[data-lang="zh"] .uk-headline{letter-spacing:0}
+  .uk-rail{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;margin:11px 0 0;padding:8px 0 0;border-top:1px solid color-mix(in srgb,var(--line) 58%,transparent)}
+  .uk-when{color:color-mix(in srgb,var(--text) 68%,transparent);font-family:var(--font-data);font-size:11.5px;font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+  .uk-stance{margin-left:auto;padding:3px 9px;border-radius:var(--r-btn,10px);border:1px solid var(--line);font-size:11px;font-weight:700;line-height:1.25;white-space:nowrap}
+  .uk-stance-green{color:var(--ink-ok);border-color:color-mix(in srgb,var(--ok) 38%,var(--line));background:color-mix(in srgb,var(--ok) 9%,var(--panel))}
+  .uk-stance-amber{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 38%,var(--line));background:color-mix(in srgb,var(--warn) 9%,var(--panel))}
+  .uk-stance-blue{color:var(--act);border-color:color-mix(in srgb,var(--act) 38%,var(--line));background:color-mix(in srgb,var(--act) 9%,var(--panel))}
+  .uk-stance-neutral{color:var(--muted);background:var(--panel2)}
+  .uk-summary{margin:12px 0 0;color:var(--text);font-size:13.5px;line-height:1.5}
+  .uk-watch{margin:12px 0 0;color:color-mix(in srgb,var(--text) 68%,transparent);font-size:12.5px;line-height:1.5}
+  .uk-watch .pw-card-label{margin-bottom:2px}
+  .uk-desk .pw-build-note{margin-top:14px}
+  html[data-theme="light"] .uk-desk{background:var(--panel);border-color:var(--line);box-shadow:var(--card-shadow),0 8px 24px color-mix(in srgb,var(--text) 6%,transparent)}
+  html[data-theme="light"] .uk-desk:hover{box-shadow:var(--popover-shadow)}
+  html[data-theme="light"] .uk-desk::before,
+  html[data-theme="light"] .uk-desk.uk-supportive::before,
+  html[data-theme="light"] .uk-desk.uk-restrictive::before,
+  html[data-theme="light"] .uk-desk.uk-mixed::before,
+  html[data-theme="light"] .uk-desk.uk-routine::before{width:1px;background:var(--line)}
+  html[data-theme="light"] .uk-desk[data-uk-state="source_outage"] .uk-null,
+  html[data-theme="light"] .uk-desk[data-uk-state="stale"] .uk-null,
+  html[data-theme="light"] .uk-desk[data-uk-state="model_unavailable"] .uk-null{color:var(--muted);border-color:var(--line);background:var(--panel2)}
+  @media(max-width:680px){.uk-desk{padding:17px 16px}.uk-headline{font-size:17px}.uk-rail{gap:4px 12px}.uk-stance{margin-left:0}.uk-src{margin-left:0;flex-basis:100%}}
   details.pw-details{margin-top:12px}.pw-details>summary{list-style:none}.pw-details>summary::-webkit-details-marker{display:none}.pw-details[open]>summary{margin-bottom:9px}.pw-detail-body{padding:11px 13px;border:1px solid var(--pw-hair);border-radius:10px;background:var(--pw-tile);color:var(--pw-ink-2);font-size:12px;line-height:1.55;overflow-wrap:anywhere}.pw-detail-body p{margin:0 0 8px;font-size:12px}.pw-detail-body p:last-child{margin-bottom:0}
   .pw-statbar{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}.pw-stat{padding:7px 10px;border:1px solid var(--pw-hair);border-radius:9px;background:var(--pw-tile);color:var(--pw-ink-2);font-size:11.5px}.pw-stat strong{color:var(--text);font-size:13px}
   .pw-market-card .pw-examples{color:var(--text);font-family:var(--font-data);font-size:11.5px;font-weight:600;letter-spacing:.01em}.pw-performance{font-size:11.5px}
@@ -420,6 +473,7 @@
 
   <nav class="pw-toc" aria-label="Jump to section">
     <a class="gbtn gbtn-sm gbtn-pill" href="#overview">{{ t('Quick take','快速了解') }}</a>
+    <a class="gbtn gbtn-sm gbtn-pill" href="#uk">{{ t('UK desk','英国政策台') }}</a>
     {% if desk %}<a class="gbtn gbtn-sm gbtn-pill" href="#views">{{ t('Market views','市场观点') }}</a>{% endif %}
     <a class="gbtn gbtn-sm gbtn-pill" href="#fed">{{ t('The Fed','美联储') }}</a>
     <a class="gbtn gbtn-sm gbtn-pill" href="#policy">{{ t('Policy stages','政策进程') }}</a>
@@ -441,6 +495,44 @@
       </article>
     </div>
     <p class="pw-build-note">{{ t('The Fed and Treasury appear aligned on lower borrowing costs, but there is no proof of a coordinated plan.','美联储与财政部似乎都希望降低融资成本，但没有证据表明双方存在协同计划。') }}</p>
+  </section>
+
+  <section class="pw-section" id="uk">
+    {{ section_head('UK policy desk','英国政策台',
+                    'United Kingdom · HM Treasury','英国 · 英国财政部',
+                    'The latest UK government announcement, in plain words.','最新的英国政府公告，用平实语言说明。') }}
+    <article class="uk-desk pw-surface{% if uk_desk.stance %} uk-{{ uk_desk.stance }}{% endif %}" data-uk-state="{{ uk_desk.state }}" data-jurisdiction="GB">
+      <div class="uk-masthead">
+        <span class="pw-badge neutral">{{ bl(uk_desk.jurisdiction_en, uk_desk.jurisdiction_zh) }}</span>
+        <span class="uk-body-name">{{ bl(uk_desk.body_en, uk_desk.body_zh) }}</span>
+        <span class="uk-src">{{ uk_desk.source_label }}</span>
+      </div>
+      {% set st = UK_STATE.get(uk_desk.state) %}
+      {% if st %}<p class="uk-null" role="status"><strong>{{ t(st[0], st[1]) }}</strong> {{ t(st[2], st[3]) }}</p>{% endif %}
+      {% if uk_desk.headline %}
+      <h3 class="uk-headline">{{ uk_desk.headline }}</h3>
+      {% set sc = UK_STANCE.get(uk_desk.stance) %}
+      <div class="uk-rail">
+        {% if uk_desk.published_label_en %}<span class="uk-when">{{ t('Published','发布') }} <span class="l-en">{{ uk_desk.published_label_en }}</span><span class="l-zh">{{ uk_desk.published_label_zh }}</span></span>{% endif %}
+        {% if uk_desk.known_at_label_en %}<span class="uk-when">{{ t('Known here','我们获知') }} <span class="l-en">{{ uk_desk.known_at_label_en }}</span><span class="l-zh">{{ uk_desk.known_at_label_zh }}</span></span>{% endif %}
+        {% if sc %}<span class="uk-stance uk-stance-{{ sc[2] }}">{{ bl(sc[0], sc[1]) }}</span>{% endif %}
+      </div>
+      {% if uk_desk.summary_en %}<p class="uk-summary">{{ bl(uk_desk.summary_en, uk_desk.summary_zh) }}</p>{% endif %}
+      <p class="uk-watch"><span class="pw-card-label">{{ t('Context','背景说明') }}</span>{% if uk_desk.watch_en and not uk_desk.model_unavailable %}{{ bl(uk_desk.watch_en, uk_desk.watch_zh) }}{% else %}{{ t("Watch \u2014 don't chase. This is context, not a trade.",'观察，不追涨。这是背景信息，不是交易建议。') }}{% endif %}</p>
+      <details class="pw-details">
+        <summary class="gbtn gbtn-sm gbtn-quiet">{{ t('Source and wording','来源与原文') }}</summary>
+        <div class="pw-detail-body">
+          {% if uk_desk.doc_type_en %}<p><strong>{{ t('Type','类型') }}:</strong> {{ bl(uk_desk.doc_type_en, uk_desk.doc_type_zh) }}</p>{% endif %}
+          <p><strong>{{ t('Document update','文件更新') }}:</strong> {% if uk_desk.doc_version_en %}{{ bl(uk_desk.doc_version_en, uk_desk.doc_version_zh) }}{% else %}{{ t('Not listed on this document.','该文件未列出版本。') }}{% endif %}</p>
+          {% if uk_desk.excerpt %}<p>{{ uk_desk.excerpt }}</p>{% endif %}
+          {% if uk_desk.source_url %}<p><a href="{{ uk_desk.source_url }}" rel="nofollow noopener" target="_blank">{{ t('Read the official announcement','阅读官方公告') }}</a></p>{% else %}<p>{{ t('Source link not listed.','未列出原文链接。') }}</p>{% endif %}
+          {% if uk_desk.provider_label %}<p>{{ t('An assistant restated the official text. It did not add new facts.','助手重述了官方原文，没有添加新事实。') }}</p>{% endif %}
+          <p>{{ t('Crown copyright, reused under the Open Government Licence v3.0.','英国王室版权，依据开放政府许可 v3.0 使用。') }}</p>
+        </div>
+      </details>
+      {% endif %}
+      <p class="pw-build-note">{{ t('Context only\u2014not investment advice.','仅供参考，不构成投资建议。') }}</p>
+    </article>
   </section>
 
   {% if desk %}
@@ -654,6 +746,7 @@
       <span class="pw-stat"><strong>{{ counts.open }}</strong> {{ t('open','待定') }}</span>
       <span class="pw-stat"><strong>{{ counts.hit }}</strong> {{ t('right','正确') }}</span>
       <span class="pw-stat"><strong>{{ counts.miss }}</strong> {{ t('wrong','错误') }}</span>
+      {% if counts.void %}<span class="pw-stat"><strong>{{ counts.void }}</strong> {{ t('not scored','不计分') }}</span>{% endif %}
       {% if dates and dates.overdue_predictions %}<span class="pw-stat"><strong>{{ dates.overdue_predictions }}</strong> {{ t('need review','需要复核') }}</span>{% endif %}
     </div>
     <div class="pw-ledger">
@@ -661,8 +754,12 @@
       {% set topic = THREAD.get(call.thread, [call.thread,call.thread]) %}
       {% set call_copy = CALL_COPY.get(call.id, [brief(call.text_en,180),brief(call.text_zh,90)]) %}
       <article class="pw-call" data-policy-id="{{ call.id }}">
-        <div><span class="pw-call-topic">{{ bl(topic[0],topic[1]) }}</span> <span class="pw-call-id">{{ call.id }}</span><p class="pw-call-text">{{ bl(call_copy[0],call_copy[1]) }}</p></div>
-        <span class="pw-call-date">{{ t('Review','复核') }} {{ call.check_by }}</span>
+        <div>
+          <span class="pw-call-topic">{{ bl(topic[0],topic[1]) }}</span> <span class="pw-call-id">{{ call.id }}</span>
+          <p class="pw-call-text">{{ bl(call_copy[0],call_copy[1]) }}</p>
+          {% if call.result_en %}<p class="pw-meta">{{ t('Result','结果') }}: {{ bl(call.result_en,call.result_zh) }}{% if call.result_source %} · <a href="{{ call.result_source }}" target="_blank" rel="noopener">{{ t('Source','来源') }}</a>{% endif %}</p>{% endif %}
+        </div>
+        <span class="pw-call-date">{% if call.reviewed_on %}{{ t('Reviewed','已复核') }} {{ call.reviewed_on }}{% else %}{{ t('Review','复核') }} {{ call.check_by }}{% endif %}</span>
         <span class="pw-call-status">{{ status_tag(call.status,call.needs_review) }}</span>
       </article>
       {% endfor %}
@@ -674,7 +771,7 @@
         {% set date_row = dates.predictions[call.id] if dates and dates.predictions and call.id in dates.predictions else none %}
         {% set topic = THREAD.get(call.thread,[call.thread,call.thread]) %}
         {% set call_copy = CALL_COPY.get(call.id, [brief(call.text_en,180),brief(call.text_zh,90)]) %}
-        <article class="pw-call" data-policy-id="full-{{ call.id }}"><div><span class="pw-call-topic">{{ bl(topic[0],topic[1]) }}</span> <span class="pw-call-id">{{ call.id }}</span><p class="pw-call-text">{{ bl(call_copy[0],call_copy[1]) }}</p></div><span class="pw-call-date">{{ call.check_by }}</span><span class="pw-call-status">{{ status_tag(call.status,(date_row.overdue if date_row else false) or call.id == 'P44') }}</span></article>
+        <article class="pw-call" data-policy-id="full-{{ call.id }}"><div><span class="pw-call-topic">{{ bl(topic[0],topic[1]) }}</span> <span class="pw-call-id">{{ call.id }}</span><p class="pw-call-text">{{ bl(call_copy[0],call_copy[1]) }}</p>{% if call.result_en %}<p class="pw-meta">{{ t('Result','结果') }}: {{ bl(call.result_en,call.result_zh) }}{% if call.result_source %} · <a href="{{ call.result_source }}" target="_blank" rel="noopener">{{ t('Source','来源') }}</a>{% endif %}</p>{% endif %}</div><span class="pw-call-date">{% if call.reviewed_on %}{{ t('Reviewed','已复核') }} {{ call.reviewed_on }}{% else %}{{ t('Review','复核') }} {{ call.check_by }}{% endif %}</span><span class="pw-call-status">{{ status_tag(call.status,(date_row.overdue if date_row else false)) }}</span></article>
         {% endfor %}
       </div>
     </details>

@@ -1,17 +1,10 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-09-08T18:40:21.868003+00:00",
-  "posts_seen": 7,
-  "seen_total": 167,
-  "evaluated": 1,
+  "as_of": "2026-09-12T14:06:41.063578+00:00",
+  "posts_seen": 19,
+  "seen_total": 184,
+  "evaluated": 0,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": [
-    {
-      "id": "wh-2026-09-08-president-trump-honors-9-11-heroes-and-renews-americas-vow-to-never-forget",
-      "importance": 0,
-      "activated": false,
-      "degraded_reason": "served_by:codex"
-    }
-  ]
+  "gate_scores": []
 }

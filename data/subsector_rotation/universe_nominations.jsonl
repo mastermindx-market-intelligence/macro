@@ -57,3 +57,14 @@
 {"date":"2026-09-04","theme":"Energy Renewable","donor":"energycleanmaterials","receiver":"energycleanbatteries","confidence":0.331,"both_confirmed":false}
 {"date":"2026-09-04","theme":"Internet of Things","donor":"iotsecurity","receiver":"iothardware","confidence":0.319,"both_confirmed":false}
 {"date":"2026-09-04","theme":"Artificial Intelligence","donor":"aisecurity","receiver":"aiedge","confidence":0.301,"both_confirmed":false}
+{"date":"2026-09-08","theme":"Artificial Intelligence","donor":"aisecurity","receiver":"aienergy","confidence":0.387,"both_confirmed":false}
+{"date":"2026-09-08","theme":"Internet of Things","donor":"iotsecurity","receiver":"iotedgedevices","confidence":0.351,"both_confirmed":false}
+{"date":"2026-09-08","theme":"Crypto & Blockchain","donor":"blockchaintokenization","receiver":"blockchainmining","confidence":0.343,"both_confirmed":false}
+{"date":"2026-09-08","theme":"Nanotechnology","donor":"nanotechmedicine","receiver":"nanotechelectronics","confidence":0.339,"both_confirmed":false}
+{"date":"2026-09-09","theme":"Nanotechnology","donor":"nanotechmedicine","receiver":"nanotechelectronics","confidence":0.389,"both_confirmed":false}
+{"date":"2026-09-09","theme":"Artificial Intelligence","donor":"aienterprise","receiver":"aiedge","confidence":0.346,"both_confirmed":false}
+{"date":"2026-09-10","theme":"Energy Renewable","donor":"energycleanmaterials","receiver":"energycleanbatteries","confidence":0.432,"both_confirmed":false}
+{"date":"2026-09-10","theme":"Nanotechnology","donor":"nanotechmedicine","receiver":"nanotechelectronics","confidence":0.377,"both_confirmed":false}
+{"date":"2026-09-10","theme":"Artificial Intelligence","donor":"aienterprise","receiver":"aiedge","confidence":0.323,"both_confirmed":false}
+{"date":"2026-09-11","theme":"Nanotechnology","donor":"nanotechmedicine","receiver":"nanotechelectronics","confidence":0.52,"both_confirmed":false}
+{"date":"2026-09-11","theme":"Artificial Intelligence","donor":"aienterprise","receiver":"aiedge","confidence":0.412,"both_confirmed":false}
