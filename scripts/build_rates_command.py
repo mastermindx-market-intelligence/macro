@@ -50,7 +50,7 @@ def _atomic_write(path: Path, content: str) -> None:
 def _append_forward_log(outdir: Path, artifact: dict) -> None:
     """Append divergence-flag stamp to forward_log.jsonl under nightly lane gate.
 
-    keep-FIRST per asof_night: skip if a row with the same asof_night already exists.
+    keep-FIRST per asof_night: skip if a row with the same asof_night exists.
     """
     lane = os.environ.get("COLLECT_LANE", "") or os.environ.get("US_LANE", "")
     if lane != _LANE_GATE:
@@ -157,6 +157,15 @@ def main() -> int:
     # Mark build timestamp
     artifact["built"] = datetime.now(timezone.utc).isoformat()
 
+    # Additive research from complete owner stores; no fit or ledger advance here.
+    try:
+        from engine.rates_regime_outlook import build_outlook
+        artifact["regime_outlook"] = build_outlook(
+            data_dir, analysis_cutoff=datetime.now(timezone.utc))
+    except Exception:
+        artifact["regime_outlook"] = None
+        print("::warning title=regime-outlook::Research unavailable; legacy Rates Command retained", flush=True)
+
     # Write atomically
     content = json.dumps(artifact, indent=2, default=str, ensure_ascii=False)
     try:
@@ -168,6 +177,17 @@ def main() -> int:
 
     # Forward log (nightly-gated)
     _append_forward_log(outdir, artifact)
+
+    # The existing transmission builder is the real post-RIC consumer. Calling
+    # its render-only path here makes ordering explicit without another workflow.
+    # It may write the existing page, never canonical market data or a ledger.
+    try:
+        from scripts.build_transmission import render_prepared
+        render_receipt = render_prepared(data_dir=data_dir)
+        if not render_receipt.get("research_visible"):
+            print("::warning title=regime-outlook-render::Page has no matching research generation", flush=True)
+    except Exception:
+        print("::warning title=regime-outlook-render::Post-RIC page render failed; no production proof", flush=True)
 
     log.info(
         "rates_command done: asof=%s net_state=%s hawk=%.0f ease=%.0f stance_en=%s",
