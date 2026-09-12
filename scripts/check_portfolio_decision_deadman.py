@@ -15,7 +15,7 @@ import argparse
 import json
 import sys
 import urllib.request
-from datetime import datetime, time, timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable
 
@@ -25,9 +25,9 @@ RESULT_SCHEMA = "mastermind.portfolio_decision_deadman.result.v1"
 DEFAULT_BASE_URL = "http://127.0.0.1:8001"
 
 _JOB_SPECS: dict[str, dict[str, Any]] = {
-    "autonomous_daily": {"book": "autonomous", "hour": 23, "minute": 10, "grace_min": 90},
-    "china_daily": {"book": "china", "hour": 8, "minute": 0, "grace_min": 90},
-    "hk_daily": {"book": "hk", "hour": 9, "minute": 0, "grace_min": 90},
+    "autonomous_daily": {"book": "autonomous"},
+    "china_daily": {"book": "china"},
+    "hk_daily": {"book": "hk"},
 }
 _HEALTH_FIELDS = (
     "status", "commit", "version", "paper_only", "reasoning_policy_ok",
@@ -65,21 +65,12 @@ def _parse_ts(value: Any) -> datetime | None:
     return parsed.astimezone(UTC)
 
 
-def _latest_due(now: datetime, spec: dict[str, Any]) -> datetime:
-    """Latest Mon-Fri schedule whose completion grace has elapsed."""
-    current = _aware_utc(now)
-    grace = timedelta(minutes=int(spec["grace_min"]))
-    for days_back in range(8):
-        day = (current - timedelta(days=days_back)).date()
-        if day.weekday() >= 5:
-            continue
-        scheduled = datetime.combine(
-            day,
-            time(hour=int(spec["hour"]), minute=int(spec["minute"]), tzinfo=UTC),
-        )
-        if scheduled + grace <= current:
-            return scheduled
-    raise ValueError("no due weekday schedule found")
+def _previous_weekday_schedule(next_run: datetime) -> datetime:
+    """Previous Mon-Fri occurrence using the live scheduler's own UTC clock."""
+    candidate = _aware_utc(next_run) - timedelta(days=1)
+    while candidate.weekday() >= 5:
+        candidate -= timedelta(days=1)
+    return candidate
 
 
 def build_snapshot(
@@ -263,8 +254,6 @@ def evaluate(payload: dict[str, Any], *, now: datetime | None = None) -> list[st
         decisions = {}
 
     for job_id, spec in _JOB_SPECS.items():
-        due = _latest_due(current, spec)
-        expected_date = due.date().isoformat()
         book = str(spec["book"])
         job = jobs.get(job_id)
         if not isinstance(job, dict):
@@ -276,8 +265,12 @@ def evaluate(payload: dict[str, Any], *, now: datetime | None = None) -> list[st
         finished = _parse_ts(job.get("last_finished"))
         if next_run is None:
             failures.append(f"{job_id}: next_run_time missing or invalid")
-        elif next_run <= current:
+            continue
+        if next_run <= current:
             failures.append(f"{job_id}: next_run_time is not in the future ({next_run.isoformat()})")
+            continue
+        due = _previous_weekday_schedule(next_run)
+        expected_date = due.date().isoformat()
         if started is None:
             failures.append(f"{job_id}: last_started missing or invalid")
             continue
