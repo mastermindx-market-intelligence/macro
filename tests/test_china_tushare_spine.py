@@ -20,9 +20,10 @@ GENERATION = "ref-test-generation-0001"
 
 @pytest.fixture(autouse=True)
 def _enable_synthetic_technical_readiness(monkeypatch):
-    """Synthetic collectors exercise mechanics; production stays fail-closed."""
-    # Synthetic request functions exercise collector mechanics without network.
-    # Production remains fail-closed until a scalable range-shard plan is reviewed.
+    """Synthetic collectors exercise mechanics independent of shipped gate state."""
+    # Pin readiness explicitly so synthetic tests do not depend on whether the
+    # production gate is pre- or post-promotion. No network authority comes from
+    # this fixture.
     monkeypatch.setattr(spine, "BULK_HISTORICAL_BACKFILL_READY", True)
 
 
@@ -2590,18 +2591,20 @@ def test_manifest_publishes_only_the_settled_compliance_status(tmp_path):
         assert token not in blob, f"manifest leaked license-gate field: {token}"
 
 
-def test_bulk_readiness_gate_is_documented_as_technical_only():
-    """`BULK_HISTORICAL_BACKFILL_READY` must never be re-titled a licensing gate."""
+def test_bulk_readiness_gate_promotion_is_documented_as_technical_only():
+    """Promotion must stay bound to technical evidence, never licensing prose."""
     source = Path(spine.__file__).read_text(encoding="utf-8")
-    marker = "BULK_HISTORICAL_BACKFILL_READY = False"
+    marker = "BULK_HISTORICAL_BACKFILL_READY = True"
     assert marker in source
     preamble = source.split(marker)[0].rsplit("\n\n", 1)[-1].lower()
     assert "technical readiness gate" in preamble
     assert "not a licensing gate" in preamble
-    # The shipped default must stay False.  Read it from source, not from the
-    # module attribute: the autouse fixture flips the runtime value so synthetic
-    # collectors can exercise mechanics.
-    assert "BULK_HISTORICAL_BACKFILL_READY = True" not in source
+    # Bind the shipped promotion to the two receipts Sol authorized: the exact-head
+    # live canary and the unchanged adversarial range-shard implementation.
+    assert "33043190487" in preamble
+    assert "#5523" in preamble
+    assert "stage=complete" in preamble
+    assert "not a claim" in preamble
 
 
 # --- Mainland session-clock epoch --------------------------------------------
