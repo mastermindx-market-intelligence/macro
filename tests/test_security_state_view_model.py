@@ -401,7 +401,7 @@ def test_compiled_golden_object_reaches_the_view_model() -> None:
             rdr_house = _SS_READER.get((out["check"], code))
         else:
             triple = _SS_LEG_HOUSE_BY_DESC.get((out["check"], desc_raw)) or {}
-            desc_house = triple.get("desc")
+            desc_house = _SS_LEG_DESC.get((out["check"], "")) or triple.get("desc")
             art_house = triple.get("artifact")
             rdr_house = triple.get("reader")
         if desc_house:
@@ -745,14 +745,14 @@ def test_coverage_counts_separate_available_from_nonblocking() -> None:
 
 def test_not_applicable_leg_is_not_displayed_as_available() -> None:
     view = build_security_state({"security_state": _contract()})
-    personal = _axis(view, "personal_impact")
+    personal = view["personal_impact"]
     assert personal["cov"] == "NOT_APPLICABLE"
     assert personal["ok"] is False
     assert personal["tone"] == "off"
 
 
 def test_identity_receipts_render_their_actual_fields() -> None:
-    from scripts.build_ticker_pages import _SS_LEG_HOUSE_BY_DESC
+    from scripts.build_ticker_pages import _SS_LEG_DESC, _SS_LEG_HOUSE_BY_DESC
 
     view = build_security_state({"security_state": _contract()})
     html = _render_section(view)
@@ -761,7 +761,8 @@ def test_identity_receipts_render_their_actual_fields() -> None:
         "R1", "security_master row exists, security_state/superseded_by both null",
     ))
     assert house, "R1 code-less leg must have a house triple"
-    assert house["desc"]["en"] in html
+    packet_desc = _SS_LEG_DESC[("R1", "")]
+    assert packet_desc["en"] in html
     assert house["artifact"]["en"] in html
     assert house["reader"]["en"] in html
     assert "security_master row exists" not in html
@@ -1674,7 +1675,7 @@ def test_golden_msft_proven_path_zh_page_has_no_raw_engine_english() -> None:
             rdr_house = _SS_READER.get((lg["check"], code))
         else:
             triple = _SS_LEG_HOUSE_BY_DESC.get((lg["check"], desc_raw)) or {}
-            desc_house = triple.get("desc")
+            desc_house = _SS_LEG_DESC.get((lg["check"], "")) or triple.get("desc")
             art_house = triple.get("artifact")
             rdr_house = triple.get("reader")
         if not (desc_house and desc_house.get("en") and desc_house.get("zh")):
@@ -2091,7 +2092,9 @@ def test_identity_leg_house_copy_covers_golden_msft_m1_and_compile_failed_shell(
         if code:
             return _SS_LEG_DESC.get((check, code))
         entry = _SS_LEG_HOUSE_BY_DESC.get((check, description or ""))
-        return (entry or {}).get("desc")
+        if not entry:
+            return None
+        return _SS_LEG_DESC.get((check, "")) or entry.get("desc")
 
     missing: list[tuple[str, str, str]] = []
 
@@ -2352,3 +2355,887 @@ def test_m1_failed_gate_is_owner_identity_not_compiler_failure() -> None:
     assert "Read could not be built" not in risk_panel.get_text()
 
 
+# ---------------------------------------------------------------------------
+# B-F06-3 · second-issuer cockpit — eight B1B panels, personal_impact refolded
+# ---------------------------------------------------------------------------
+
+# Freeze §3 panel names in the freeze's own order. Overview and Owner & model
+# receipts use the packet copy table; Evidence is the freeze panel name;
+# the five remaining axis cards keep the titles #6920 shipped and map 1:1
+# onto freeze panels 4, 3, 5, 6, 7. Visible document order is Overview, then
+# those five axis cards in `_SS_AXES` order, then Evidence, then Owner &
+# model receipts — the packet spec pins Overview before `.ss-grid`.
+_B1B_HEADINGS_EN = (
+    "Overview",
+    "Where it stands",
+    "What changed",
+    "Opportunity context",
+    "What could go wrong",
+    "What to watch next",
+    "Evidence",
+    "Owner & model receipts",
+)
+_FREEZE_NOT_APPLICABLE_EN = "This does not apply to you right now."
+_FREEZE_NOT_APPLICABLE_ZH = "这暂不适用于你。"
+
+
+def _heading_label(node: _HtmlNode) -> str:
+    """The panel name, never the coverage chip sitting in the same heading."""
+    for child in node.children:
+        if "ss-chip" in child.classes:
+            continue
+        text = " ".join(child.get_text().split())
+        if text:
+            return text
+    return " ".join(node.get_text().split())
+
+
+def _visible_b1b_headings(html: str) -> list[str]:
+    """Named B1B panel headings inside `#security-state`, never dialog chrome."""
+    section = _card_region(html)
+    wrapped = "<section " + section[section.find("id="):]
+    tree = _parse_class_tree(wrapped)
+    return [_heading_label(node) for node in tree.find_all_class("ss-b1b-h") if _heading_label(node)]
+
+
+def test_personal_impact_is_no_longer_rendered_as_a_sixth_axis_card() -> None:
+    view = build_security_state({"security_state": _contract()})
+    assert view is not None
+    assert len(view["axes"]) == 5
+    assert [a["key"] for a in view["axes"]] == [
+        "state", "change", "opportunity_context", "risk", "catalyst",
+    ]
+    assert all(a["key"] != "personal_impact" for a in view["axes"])
+
+
+def test_overview_carries_only_state_summary() -> None:
+    """Overview keeps only `state_summary`. The template reads coverage,
+    degradation, and the personal-impact row from the top-level view.
+    """
+    view = build_security_state({"security_state": _contract()})
+    assert view is not None
+    assert set(view["overview"]) == {"state_summary"}
+    assert view["personal_impact"]["key"] == "personal_impact"
+
+
+def test_personal_impact_not_applicable_prints_the_freeze_registered_sentence() -> None:
+    contract = _contract()
+    assert contract["legs"]["personal_impact"]["coverage_state"] == "NOT_APPLICABLE"
+    view = build_security_state({"security_state": contract})
+    assert view is not None
+    row = view["personal_impact"]
+    assert row["headline"]["en"] == _FREEZE_NOT_APPLICABLE_EN
+    assert row["headline"]["zh"] == _FREEZE_NOT_APPLICABLE_ZH
+    assert "NOT_APPLICABLE" not in row["headline"]["en"]
+    assert "NOT_APPLICABLE" not in row["headline"]["zh"]
+
+    en_card = _card_region(_render_section(view, lang="en"))
+    zh_card = _card_region(_render_section(view, lang="zh"))
+    assert _FREEZE_NOT_APPLICABLE_EN in en_card
+    assert _FREEZE_NOT_APPLICABLE_ZH in zh_card
+    assert "NOT_APPLICABLE" not in en_card
+    assert "NOT_APPLICABLE" not in zh_card
+
+
+def test_owner_model_receipts_surfaces_identity_legs_asof_and_content_sha256() -> None:
+    view = build_security_state({"security_state": _contract()})
+    assert view is not None
+    receipts = view["owner_receipts"]
+    assert receipts["legs"] is view["identity"]["legs"]
+    assert receipts["generated_at"] == view["generated_at"]
+    assert receipts["compiled_at"] == view["compiled_at"]
+    assert receipts["content_sha256"] == view["content_sha256"]
+    assert receipts["content_sha256"]
+    assert receipts["generated_at"]
+    assert receipts["compiled_at"]
+
+
+def test_owner_receipts_glance_uses_bilingual_house_copy_not_engine_prose() -> None:
+    """B-F06-3 round-2 review MAJOR-1.
+
+    The always-visible Owner & model receipts panel printed English engine
+    prose (`security_master row exists…`) and machine identifiers (python
+    paths, parquet paths, field slugs) at glance, including on the ZH page.
+    Spec MAJOR: EN==ZH on a sentence that should differ. Glance copy must be
+    a registered bilingual sentence; artifact/reader/reads stay in the
+    evidence dialog.
+    """
+    from scripts.build_ticker_pages import _SS_LEG_DESC, _SS_LEG_HOUSE_BY_DESC
+
+    fixture = REPO / "tests" / "fixtures" / "security_state" / "golden_msft_expected_output.json"
+    state = json.loads(fixture.read_text(encoding="utf-8"))
+    view = build_security_state({"security_state": state})
+    assert view is not None
+    legs = view["identity"]["legs"]
+    assert [lg["check"] for lg in legs] == [f"R{i}" for i in range(1, 10)]
+    fixture_legs = state["identity_proof"]["legs"]
+    assert len(fixture_legs) == len(legs)
+    for src, lg in zip(fixture_legs, legs):
+        house = _SS_LEG_DESC[(lg["check"], lg["code"] or "")]
+        raw = src["description"]
+        assert lg["desc_en"] == house["en"]
+        assert lg["desc_zh"] == house["zh"]
+        assert lg["desc_en"] != lg["desc_zh"]
+        assert lg["desc_en"] != raw
+        assert lg["desc_zh"] != raw
+        assert re.search(r"[一-鿿]", lg["desc_zh"]), lg["desc_zh"]
+
+    zh_card = _card_region(_render_section(view, lang="zh"))
+    en_card = _card_region(_render_section(view, lang="en"))
+    # The reader value the receipt carries, and the bare module path inside it.
+    # Spelled through the reference form on purpose: a bare repo-path literal is
+    # recorded as a CI trigger-closure read (scripts/ci_scope_dependencies.py:588
+    # -600), and this suite never imports that module — the path is a STRING
+    # RENDERED INTO THE PAGE that these assertions search for, not a dependency.
+    reader_ref = "scripts/build_stock_library.py::_read_security_state_identity_rows"
+    reader_module = reader_ref.split("::", 1)[0]
+    engine_leaks = (
+        "security_master row exists",
+        "security_state/superseded_by",
+        reader_module,
+        "data/reference/security_master.parquet",
+        "VendorAliasTable.resolve",
+        "row_present",
+        "lib.dataos.identity.parse_listing_key",
+        "issuer_migrations.parquet",
+        "event_workspace.v1",
+        "owner-composed",
+    )
+    for leak in engine_leaks:
+        assert leak not in zh_card, leak
+        assert leak not in en_card, leak
+    for lg in legs:
+        assert lg["desc_zh"] in zh_card
+        assert lg["desc_en"] in en_card
+        assert lg["desc_en"] not in zh_card
+    assert "The panels below" in en_card
+    assert "以下面板" in zh_card
+    assert "八个面板" not in zh_card
+    assert "eight panels" not in en_card
+    assert "Eight reads on this listing" not in en_card
+    assert "Eight separate reads" not in en_card
+    assert "八项读数" not in zh_card
+
+    # Artifact/reader rows are house sentences, never the engine paths.
+    # Field values stay in the receipt dialog. After #6920 h7, the owner-alias
+    # reader value is projected through `_SS_READ_KEY_VALUE` as house copy
+    # ("the vendor alias table" / "供应商别名表"), not the raw token.
+    full_en = _render_section(view, lang="en")
+    full_zh = _render_section(view, lang="zh")
+    assert "data/reference/security_master.parquet" not in full_en
+    assert reader_module not in full_en
+    assert "the vendor alias table" in full_en
+    assert "供应商别名表" in full_zh
+    r1 = _SS_LEG_HOUSE_BY_DESC[(
+        "R1", "security_master row exists, security_state/superseded_by both null",
+    )]
+    assert r1["artifact"]["en"] in full_en
+    assert r1["reader"]["en"] in full_en
+
+
+def test_ticker_page_renders_all_eight_b1b_panel_headings_for_msft() -> None:
+    fixture = REPO / "tests" / "fixtures" / "security_state" / "golden_msft_expected_output.json"
+    state = json.loads(fixture.read_text(encoding="utf-8"))
+    view = build_security_state({"security_state": state})
+    assert view is not None
+    html = _render_section(view)
+    headings = _visible_b1b_headings(html)
+    assert headings == list(_B1B_HEADINGS_EN), headings
+
+
+def test_aapl_page_still_renders_five_axis_cards_after_the_personal_impact_extraction() -> None:
+    fixture = REPO / "tests" / "fixtures" / "security_state" / "golden_aapl_expected_output.json"
+    state = json.loads(fixture.read_text(encoding="utf-8"))
+    view = build_security_state({"security_state": state})
+    assert view is not None
+    html = _render_section(view)
+    tree = _parse_class_tree(html)
+    grid = tree.find_class("ss-grid")
+    assert grid is not None
+    # `.ss-cell` descendants of the grid — the grid itself is not an ss-cell.
+    cards = grid.find_all_class("ss-cell")
+    assert len(cards) == 5, [c.find_class("ss-axis").get_text() if c.find_class("ss-axis") else "?" for c in cards]
+    texts = [c.get_text() for c in cards]
+    assert all("Your position" not in t and "你的持仓" not in t for t in texts)
+
+
+def test_subhead_does_not_assert_a_count_the_page_contradicts() -> None:
+    """Lead copy must not name a read-count the same screen contradicts
+    (5 axis cards, 8 freeze panels, 7 coverage legs). The section hint
+    names the panel count the page actually renders — see
+    test_section_hint_counts_the_panels_the_page_renders — as
+    ``f"{n} panels"`` / ``f"{n} 个面板"``. Numeral "reads" forms stay banned.
+    """
+    fixture = REPO / "tests" / "fixtures" / "security_state" / "golden_msft_expected_output.json"
+    state = json.loads(fixture.read_text(encoding="utf-8"))
+    view = build_security_state({"security_state": state})
+    assert view is not None
+    en_card = _card_region(_render_section(view, lang="en"))
+    zh_card = _card_region(_render_section(view, lang="zh"))
+    for banned in (
+        "Eight separate reads",
+        "Eight reads on this listing",
+        "eight panels",
+        "Eight panels",
+        "8 reads",
+    ):
+        assert banned not in en_card, banned
+    for banned in ("八项独立读数", "八项读数", "八个面板", "8 项读数"):
+        assert banned not in zh_card, banned
+    assert "The panels below" in en_card
+    assert "以下面板" in zh_card
+
+
+def test_state_sentence_prints_once_on_the_surface() -> None:
+    """Overview always carries the state headline; the grid's state card drops
+    it whenever the card has its own explanatory clause to print, so the
+    sentence appears once on the surface (design system §9.5, printed once).
+
+    The one case where the card does reprint it is a stance that yields no
+    clause, where the alternative is a card of heading and chip with no prose
+    at all — see test_state_card_prints_its_headline_when_it_has_no_clause.
+    """
+    view = build_security_state({"security_state": _contract()})
+    assert view is not None
+    en_card = _card_region(_render_section(view, lang="en"))
+    zh_card = _card_region(_render_section(view, lang="zh"))
+    assert en_card.count("Worth monitoring") == 1
+    assert zh_card.count("值得关注") == 1
+    wrapped = "<section " + en_card[en_card.find("id="):]
+    tree = _parse_class_tree(wrapped)
+    grid = tree.find_class("ss-grid")
+    assert grid is not None
+    state_card = grid.find_all_class("ss-cell")[0]
+    assert "Worth monitoring" not in state_card.get_text()
+
+
+def test_personal_impact_failed_gates_reach_the_tally_and_receipt_dialog() -> None:
+    """The Overview refold must not drop personal_impact gates from the
+    aggregated tally or retire its receipt dialog.
+    """
+    contract = _contract()
+    contract["legs"]["personal_impact"]["failed_gates"] = [{"code": "RIGHTS_WITHHELD"}]
+    view = build_security_state({"security_state": contract})
+    assert view is not None
+    assert any(g["code"] == "RIGHTS_WITHHELD" for g in view["gates"])
+    html = _render_section(view)
+    assert 'id="dlg-ss-personal-impact"' in html
+    glance = _card_region(html)
+    assert "dsrOpenDlg('dlg-ss-personal-impact')" in glance
+    assert len(view["axes"]) == 5
+    assert all(a["key"] != "personal_impact" for a in view["axes"])
+
+
+def test_no_new_panel_reads_a_rank_score_size_or_gate_field() -> None:
+    """New cockpit code may only read the frozen object. It must not assign
+    any `can_*` authority key to true, and it must not mint a rank, score,
+    size or gate value of its own (DNR:KILL-CAUSAL-DAG-ALPHA).
+    """
+    py_src = (REPO / "scripts" / "build_ticker_pages.py").read_text(encoding="utf-8")
+    j2_src = (REPO / "templates" / "ticker.html.j2").read_text(encoding="utf-8")
+    # Restrict the Python scan to the security-state projection — the rest of
+    # the dossier builder already talks about scores on other surfaces.
+    start = py_src.index("# Security State (security_state.v1)")
+    end = py_src.index("# Main context builder", start)
+    ss_py = py_src[start:end]
+    for key in (
+        "can_rank", "can_gate", "can_size",
+        "can_originate_signal", "can_execute",
+    ):
+        for label, src in (("build_ticker_pages.py", ss_py), ("ticker.html.j2", j2_src)):
+            assert f"{key}=True" not in src.replace(" ", ""), (
+                f"{label} assigns {key} to true"
+            )
+            assert f"{key} = True" not in src, f"{label} assigns {key} to true"
+            assert f'"{key}": True' not in src and f"'{key}': True" not in src, (
+                f"{label} sets {key} true in a literal"
+            )
+    for banned in ("rank_score", "size_score", "gate_score", "llm_confidence"):
+        assert banned not in ss_py, f"new authority field {banned!r} in the projection"
+        assert banned not in j2_src, f"new authority field {banned!r} in the template"
+
+
+
+# ---------------------------------------------------------------------------
+# B-F06-3 round 3 — an empty leg code is not a synonym for "this check proved
+# out". These three pin the guard that keeps the affirmative empty-code copy
+# off the legs the engine passed vacuously or carried through a failure shell.
+# ---------------------------------------------------------------------------
+
+_SCREAMING_SNAKE = re.compile(r"\b[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+\b")
+
+_CARRIED_OVER_EN = "Carried over from the owner read; not re-verified in this read."
+_CARRIED_OVER_ZH = "沿用所有者读数中的识别码，本次读数未重新核对。"
+_R9_UNAVAILABLE_EN = "No workspace listing was available to compare this cycle."
+_R9_UNAVAILABLE_ZH = "本周期没有可比对的工作区上市记录。"
+
+
+def _owner_receipts_article(html: str) -> _HtmlNode:
+    """The always-visible `Owner & model receipts` panel, never the dialog."""
+    section = _card_region(html)
+    tree = _parse_class_tree("<section " + section[section.find("id="):])
+    for node in tree.find_all_class("ss-cell"):
+        head = node.find_class("ss-axis")
+        if head is not None and _heading_label(head) in (
+            "Owner & model receipts", "所有者与模型凭证",
+        ):
+            return node
+    raise AssertionError("the Owner & model receipts panel did not render")
+
+
+def _compiler_failure_shell(*, owner_read_completed: bool = True) -> dict:
+    """The producer's own containment shell, compiled by the real engine."""
+    from jsonschema import Draft202012Validator
+
+    from engine import security_state as ss_engine
+
+    schema = json.loads(
+        (REPO / "contracts" / "market_os" / "security_state.v1.schema.json")
+        .read_text(encoding="utf-8")
+    )
+    Draft202012Validator.check_schema(schema)
+    subject = ss_engine.SecurityStateSubject(
+        security_id="SEC:US-XNAS-MSFT", issuer_id="ISS:US-XNAS-MSFT",
+        listing_key="US-XNAS-MSFT", ticker_display="MSFT", issuer_cik="0000789019",
+        owner_evidence=(
+            ("decision_date", "2026-09-04"),
+            ("alias_reader", "VendorAliasTable.resolve(store)"),
+            ("issuer_reader", "IssuerMaster.issuer_of_security"),
+            ("cik_reader", "IssuerMaster.cik_of_issuer"),
+        ),
+    )
+    return ss_engine.compile_security_state_failure(
+        subject=subject, validator=Draft202012Validator(schema),
+        now="2026-08-23T12:00:00Z", prior_state=None,
+        owner_read_completed=owner_read_completed,
+    )
+
+
+def test_compiler_failure_shell_r8_never_claims_a_check_this_read_did_not_run() -> None:
+    """The default failure path emits one R8 leg with result "pass" and a null
+    code, and says in its own words that it does NOT claim a full identity
+    chain. The affirmative empty-code house sentence must never print there —
+    it would be a bilingual verification claim on the page whose own banner
+    says the read could not be built.
+    """
+    from scripts.build_ticker_pages import _SS_LEG_DESC
+
+    state = _compiler_failure_shell(owner_read_completed=True)
+    assert state["identity_proof"]["state"] == "BLOCKED_IDENTITY_BRIDGE"
+    raw_legs = state["identity_proof"]["legs"]
+    assert [lg["check"] for lg in raw_legs] == ["R8"]
+    assert raw_legs[0]["result"] == "pass" and raw_legs[0]["code"] is None
+
+    view = build_security_state({"security_state": state})
+    assert view is not None
+    leg = view["identity"]["legs"][0]
+    affirmative = _SS_LEG_DESC[("R8", "")]
+    assert leg["desc_en"] != affirmative["en"]
+    assert leg["desc_zh"] != affirmative["zh"]
+    assert leg["desc_en"] == _CARRIED_OVER_EN
+    assert leg["desc_zh"] == _CARRIED_OVER_ZH
+    assert leg["result_en"] not in ("passed",) and leg["result_zh"] not in ("通过",)
+    assert leg["result_en"] == "carried over" and leg["result_zh"] == "沿用"
+    assert leg["ok"] is False
+    # The engine's own verdict is reported, never edited.
+    assert leg["result"] == "pass"
+
+    en_html = _render_section(view, lang="en")
+    zh_html = _render_section(view, lang="zh")
+    assert 'data-ss-result="pass"' in en_html
+    en_glance = " ".join(_owner_receipts_article(en_html).get_text().split())
+    zh_glance = " ".join(_owner_receipts_article(zh_html).get_text().split())
+    assert affirmative["en"] not in en_glance
+    assert affirmative["zh"] not in zh_glance
+    assert _CARRIED_OVER_EN in en_glance
+    assert _CARRIED_OVER_ZH in zh_glance
+    assert "passed" not in en_glance
+    assert "通过" not in zh_glance
+    # The engine's hedged machine sentence never reaches the glance surface.
+    assert "without claiming" not in en_glance
+
+
+def test_blocked_identity_bridge_hedges_every_empty_code_leg() -> None:
+    """The guard is on the receipt's identity-proof state, not on one check id."""
+    from scripts.build_ticker_pages import _SS_LEG_DESC
+
+    contract = _contract(identity_proof={
+        "state": "BLOCKED_IDENTITY_BRIDGE", "method": "owner_backed_chain.v1",
+        "legs": [
+            {"check": check, "description": "engine machine sentence",
+             "artifact": "a", "reader": "b",
+             "values_read": [{"field": "row_present", "value": True}],
+             "result": "pass", "code": None}
+            for check in ("R1", "R5", "R8")
+        ],
+        "equalities": [], "refusals": ["COMPILER_FAILURE"], "disclosures": [],
+    })
+    view = build_security_state({"security_state": contract})
+    assert view is not None
+    for leg in view["identity"]["legs"]:
+        assert leg["desc_en"] == _CARRIED_OVER_EN, leg["check"]
+        assert leg["desc_zh"] == _CARRIED_OVER_ZH, leg["check"]
+        assert leg["desc_en"] != _SS_LEG_DESC[(leg["check"], "")]["en"]
+        assert leg["result_en"] == "carried over" and leg["result_zh"] == "沿用"
+
+
+def test_r9_vacuous_pass_reports_that_no_workspace_listing_was_compared() -> None:
+    """`corroboration_state: UNAVAILABLE` is a pass with nothing compared. The
+    panel says so instead of asserting an agreement that was never checked.
+    """
+    from scripts.build_ticker_pages import _SS_LEG_DESC
+
+    def _r9(corroboration: str | None) -> dict:
+        values_read = ([] if corroboration is None
+                       else [{"field": "corroboration_state", "value": corroboration}])
+        return _contract(identity_proof={
+            "state": "PROVEN", "method": "owner_backed_chain.v1",
+            "legs": [{
+                "check": "R9",
+                "description": "corroboration: workspace primary alias agrees with the "
+                               "owner subject's current alias and listing venue",
+                "artifact": "event_workspace.v1 issuer.listings[]",
+                "reader": "engine.neuralweb.company_intelligence_reader."
+                          "load_workspace_with_disposition",
+                "values_read": values_read, "result": "pass", "code": None,
+            }],
+            "equalities": [], "refusals": [], "disclosures": [],
+        })
+
+    affirmative = _SS_LEG_DESC[("R9", "")]
+
+    view = build_security_state({"security_state": _r9("UNAVAILABLE")})
+    assert view is not None
+    leg = view["identity"]["legs"][0]
+    assert leg["desc_en"] == _R9_UNAVAILABLE_EN
+    assert leg["desc_zh"] == _R9_UNAVAILABLE_ZH
+    assert leg["desc_en"] != affirmative["en"]
+    assert leg["result_en"] == "not checked" and leg["result_zh"] == "未核对"
+    assert leg["result_en"] != "passed" and leg["result_zh"] != "通过"
+    assert leg["result"] == "pass"
+    en_glance = " ".join(_owner_receipts_article(_render_section(view, "en")).get_text().split())
+    zh_glance = " ".join(_owner_receipts_article(_render_section(view, "zh")).get_text().split())
+    assert _R9_UNAVAILABLE_EN in en_glance and affirmative["en"] not in en_glance
+    assert _R9_UNAVAILABLE_ZH in zh_glance and affirmative["zh"] not in zh_glance
+    assert "passed" not in en_glance and "通过" not in zh_glance
+
+    # A receipt that records no corroboration state at all cannot tell a real
+    # comparison from a vacuous one, so the sentence is presence-hedged.
+    silent = build_security_state({"security_state": _r9(None)})
+    assert silent is not None
+    silent_leg = silent["identity"]["legs"][0]
+    assert silent_leg["desc_en"].startswith("The workspace primary listing, when present,")
+    assert silent_leg["desc_zh"].startswith("若有工作区上市记录")
+    assert silent_leg["desc_en"] != silent_leg["desc_zh"]
+
+    # A real comparison still earns the affirmative sentence and the real label.
+    available = build_security_state({"security_state": _r9("AVAILABLE")})
+    assert available is not None
+    available_leg = available["identity"]["legs"][0]
+    assert available_leg["desc_en"] == affirmative["en"]
+    assert available_leg["desc_zh"] == affirmative["zh"]
+    assert available_leg["result_en"] == "passed"
+
+
+def test_no_screaming_snake_token_reaches_the_owner_receipts_glance_panel() -> None:
+    """No SCREAMING_SNAKE machine token — refusal code, field slug, store or
+    reader name — reaches the always-visible glance tier; the raw refusal code
+    chip stays inside `dlg-ss-evidence`.
+
+    That is the whole of it, and the name says so. It does NOT establish that
+    the glance tier carries no machine-looking string at all: each row's short
+    label is the leg's own check id (R1…R9), which is the frozen spec's leg
+    numbering, identical in EN and ZH, already shown in the base's drilldown,
+    and deliberately kept — and no underscore-requiring regex could catch it.
+    A later round must not lean on this test for more than its assertion.
+    """
+    codes = ("IDENTITY_UNRESOLVED", "IDENTITY_BRIDGE_DISAGREEMENT",
+             "LISTING_KEY_INCOHERENT", "SUBJECT_NATIVE_PARITY_FAILED")
+    contract = _contract(identity_proof={
+        "state": "BLOCKED_IDENTITY_BRIDGE", "method": "owner_backed_chain.v1",
+        "legs": [{
+            "check": f"R{i}", "description": "engine machine sentence",
+            "artifact": "data/reference/security_master.parquet",
+            "reader": "scripts/build_stock_library.py::_read_security_state_identity_rows",
+            "values_read": [], "result": "fail", "code": code,
+        } for i, code in enumerate(codes, start=5)],
+        "equalities": [], "refusals": list(codes), "disclosures": [],
+    })
+    view = build_security_state({"security_state": contract})
+    assert view is not None
+    for lang in ("en", "zh"):
+        html = _render_section(view, lang=lang)
+        glance = " ".join(_owner_receipts_article(html).get_text().split())
+        assert not _SCREAMING_SNAKE.findall(glance), (lang, glance)
+        for code in codes:
+            assert code not in glance, (lang, code)
+            # …and it is still on the page, in the receipt dialog.
+            assert code in html, (lang, code)
+
+
+# ---------------------------------------------------------------------------
+# B-F06-3 round 5 — the always-visible receipts panel must say something true,
+# in both languages, on every path the engine can actually produce; and the
+# section's own copy must count what the page really renders.
+# ---------------------------------------------------------------------------
+
+_R8_PROVEN_EN = ("The master company identifier matches the owner read; "
+                 "if a workspace is present, it agrees too.")
+_R8_PROVEN_ZH = "主数据中的公司识别码与所有者读数一致；若有工作区，工作区亦一致。"
+
+# Every (check, code) pair the identity chain can emit, read off the engine's
+# own leg receipts (engine/security_state.py R1…R9 plus the containment
+# shell's R8). ISSUER_GROUP_AMBIGUOUS is carried by two different checks and
+# each gets its own sentence, because "not exactly one issuer row" and "the
+# issuer holds more than this security" are different facts.
+_ENGINE_LEG_FAILURE_CODES = (
+    ("R1", "SECURITY_SUPERSEDED"),
+    ("R2", "IDENTITY_UNRESOLVED"),
+    ("R3", "ISSUER_GROUP_AMBIGUOUS"),
+    ("R4", "ISSUER_GROUP_AMBIGUOUS"),
+    ("R5", "LISTING_KEY_INCOHERENT"),
+    ("R6", "IDENTITY_CORRECTED"),
+    ("R7", "SUBJECT_NATIVE_PARITY_FAILED"),
+    ("R8", "IDENTITY_BRIDGE_DISAGREEMENT"),
+    ("R8", "IDENTITY_UNRESOLVED"),
+    ("R8", "OWNER_IDENTITY_UNREAD"),
+    ("R9", "CORROBORATION_DIVERGENT"),
+)
+
+_ELSE_FAIL_CODE = re.compile(r'else\s+"([A-Z][A-Z0-9_]+)"')
+_BARE_FAIL_CODE = re.compile(r'"fail",\s+"([A-Z][A-Z0-9_]+)"')
+
+
+def _balanced_call_body(src: str, open_at: int) -> str:
+    """Return the text inside the ``(… )`` that opens at ``open_at``."""
+    depth = 0
+    for i in range(open_at, len(src)):
+        ch = src[i]
+        if ch == "(":
+            depth += 1
+        elif ch == ")":
+            depth -= 1
+            if depth == 0:
+                return src[open_at + 1:i]
+    return src[open_at + 1:]
+
+
+def _engine_leg_failure_codes_emitted_in_src(src: str) -> set[str]:
+    """Failure codes the engine actually puts on a leg receipt.
+
+    Matches the engine's emission forms: every ``else "<SCREAMING_SNAKE>"``
+    argument inside a ``legs.append(_leg_receipt(`` call, plus the bare
+    ``"fail", "<CODE>"`` shell form. Codes added outside those two forms
+    are not visible to this scan.
+    """
+    found: set[str] = set()
+    needle = "legs.append(_leg_receipt("
+    start = 0
+    while True:
+        idx = src.find(needle, start)
+        if idx < 0:
+            break
+        open_at = idx + len("legs.append")
+        body = _balanced_call_body(src, open_at)
+        found.update(_ELSE_FAIL_CODE.findall(body))
+        start = idx + len(needle)
+    found.update(_BARE_FAIL_CODE.findall(src))
+    return found
+
+
+def _msft_golden_view() -> dict:
+    fixture = REPO / "tests" / "fixtures" / "security_state" / "golden_msft_expected_output.json"
+    state = json.loads(fixture.read_text(encoding="utf-8"))
+    view = build_security_state({"security_state": state})
+    assert view is not None
+    return view
+
+
+def test_r8_proven_copy_hedges_the_workspace_clause_the_way_r7_does() -> None:
+    """Round-4 MAJOR. `r8_pass` is `master_cik == subject.issuer_cik and (not
+    workspace_available or filing_cik_ok)` — the workspace conjunct is vacuous
+    whenever no workspace was loaded this cycle, and on that same panel the R9
+    row says no workspace listing was available to compare. So the R8 sentence
+    may not assert that an existing workspace agreed. R7 already carries the
+    conditional; R8 now carries the same one, in both languages.
+    """
+    from scripts.build_ticker_pages import _SS_LEG_DESC
+
+    pair = _SS_LEG_DESC[("R8", "")]
+    assert pair["en"] == _R8_PROVEN_EN
+    assert pair["zh"] == _R8_PROVEN_ZH
+    assert "现有" not in pair["zh"], pair["zh"]
+    assert "也一致" not in pair["zh"], pair["zh"]
+    assert "若有工作区" in pair["zh"], pair["zh"]
+
+    view = _msft_golden_view()
+    assert view["identity"]["legs"][7]["check"] == "R8"
+    en = " ".join(_owner_receipts_article(_render_section(view, "en")).get_text().split())
+    zh = " ".join(_owner_receipts_article(_render_section(view, "zh")).get_text().split())
+    assert _R8_PROVEN_EN in en
+    assert _R8_PROVEN_ZH in zh
+
+
+def test_every_engine_failure_code_a_leg_can_carry_prints_a_house_sentence() -> None:
+    """A named failure code with no house copy renders a sentence-less row —
+    an id and a status word — on the always-visible panel, which is exactly
+    where the reader most needs the explanation. Every code the engine can put
+    on a leg now carries a plain bilingual sentence, and none of them leaks a
+    machine token onto the glance tier.
+    """
+    from scripts.build_ticker_pages import _SS_LEG_DESC
+
+    engine_src = (REPO / "engine" / "security_state.py").read_text(encoding="utf-8")
+    for check, code in _ENGINE_LEG_FAILURE_CODES:
+        assert f'"{code}"' in engine_src, (check, code)
+
+    scanned = _engine_leg_failure_codes_emitted_in_src(engine_src)
+    known = {code for _check, code in _ENGINE_LEG_FAILURE_CODES}
+    missing = scanned - known
+    assert not missing, (
+        "engine emits a failure code this tuple does not name: " + ", ".join(sorted(missing))
+    )
+
+    contract = _contract(identity_proof={
+        "state": "BLOCKED_IDENTITY_BRIDGE", "method": "owner_backed_chain.v1",
+        "legs": [{
+            "check": check,
+            "description": "engine machine sentence",
+            "artifact": "data/reference/security_master.parquet",
+            "reader": "scripts/build_stock_library.py::_read_security_state_identity_rows",
+            "values_read": [], "result": "fail", "code": code,
+        } for check, code in _ENGINE_LEG_FAILURE_CODES],
+        "equalities": [],
+        "refusals": sorted({code for _check, code in _ENGINE_LEG_FAILURE_CODES}),
+        "disclosures": [],
+    })
+    view = build_security_state({"security_state": contract})
+    assert view is not None
+    en = " ".join(_owner_receipts_article(_render_section(view, "en")).get_text().split())
+    zh = " ".join(_owner_receipts_article(_render_section(view, "zh")).get_text().split())
+
+    for check, code in _ENGINE_LEG_FAILURE_CODES:
+        pair = _SS_LEG_DESC.get((check, code))
+        assert pair, f"no house sentence for {(check, code)}"
+        assert pair["en"] and pair["zh"] and pair["en"] != pair["zh"], (check, code)
+        assert not _SCREAMING_SNAKE.findall(pair["en"]), (check, code)
+        assert not _SCREAMING_SNAKE.findall(pair["zh"]), (check, code)
+        assert pair["en"] in en, (check, code)
+        assert pair["zh"] in zh, (check, code)
+        assert code not in en and code not in zh, (check, code)
+
+    assert not _SCREAMING_SNAKE.findall(en), en
+    assert not _SCREAMING_SNAKE.findall(zh), zh
+    # No row collapses to an id plus a status word in either language.
+    for leg in view["identity"]["legs"]:
+        assert leg["desc_en"] and leg["desc_zh"], leg["check"]
+        assert leg["desc_en"] != leg["desc_zh"], leg["check"]
+        assert leg["desc_en"] != "engine machine sentence", leg["check"]
+
+
+def test_corroboration_state_recorded_with_no_value_is_treated_as_not_recorded() -> None:
+    """`_ss_read_value` returns "" for a receipt that NAMES `corroboration_state`
+    without echoing its value. "Recorded as empty" is still nothing the page
+    can compare, so it takes the presence-hedged sentence "not recorded" takes
+    — never the affirmative agreement copy.
+    """
+    from scripts.build_ticker_pages import _SS_LEG_DESC, _ss_read_value
+
+    assert _ss_read_value([{"field": "corroboration_state"}], "corroboration_state") == ""
+
+    contract = _contract(identity_proof={
+        "state": "PROVEN", "method": "owner_backed_chain.v1",
+        "legs": [{
+            "check": "R9",
+            "description": "corroboration: workspace primary alias agrees with the "
+                           "owner subject's current alias and listing venue",
+            "artifact": "event_workspace.v1 issuer.listings[]",
+            "reader": "engine.neuralweb.company_intelligence_reader."
+                      "load_workspace_with_disposition",
+            "values_read": [{"field": "corroboration_state"}],
+            "result": "pass", "code": None,
+        }],
+        "equalities": [], "refusals": [], "disclosures": [],
+    })
+    view = build_security_state({"security_state": contract})
+    assert view is not None
+    leg = view["identity"]["legs"][0]
+    affirmative = _SS_LEG_DESC[("R9", "")]
+    assert leg["desc_en"] != affirmative["en"]
+    assert leg["desc_zh"] != affirmative["zh"]
+    assert leg["desc_en"].startswith("The workspace primary listing, when present,")
+    assert leg["desc_zh"].startswith("若有工作区上市记录")
+    en = " ".join(_owner_receipts_article(_render_section(view, "en")).get_text().split())
+    zh = " ".join(_owner_receipts_article(_render_section(view, "zh")).get_text().split())
+    assert affirmative["en"] not in en
+    assert affirmative["zh"] not in zh
+
+
+def test_section_hint_counts_the_panels_the_page_renders() -> None:
+    """The eyebrow names the panel count the page renders, as
+    ``f"{n} panels"`` / ``f"{n} 个面板"`` (ratified at n = 8). It is not a
+    "reads" count — that word is reserved for the coverage row.
+    """
+    view = _msft_golden_view()
+    for lang, form in (("en", "{n} panels"), ("zh", "{n} 个面板")):
+        html = _render_section(view, lang=lang)
+        panels = len(_visible_b1b_headings(html))
+        assert panels == 8, panels
+        assert view["panel_count"] == panels
+        section = _card_region(html)
+        tree = _parse_class_tree("<section " + section[section.find("id="):])
+        hint = tree.find_class("hint")
+        assert hint is not None, lang
+        assert " ".join(hint.get_text().split()) == form.format(n=panels), lang
+        assert "The panels below." not in " ".join(hint.get_text().split())
+        assert "以下面板。" not in " ".join(hint.get_text().split())
+
+
+def test_overview_coverage_row_reads_as_two_parallel_sentences() -> None:
+    """Round-4 minor. The row printed comma-joined label-ese in EN ("2 / 2
+    required, current") against a full ZH noun phrase. Both languages now
+    print the same two sentences, from the same counts.
+    """
+    view = _msft_golden_view()
+    cov = view["coverage"]
+    assert (cov["req_avail"], cov["req_total"]) == (2, 2)
+    assert (cov["opt_avail"], cov["opt_total"]) == (2, 5)
+    en = " ".join(_card_region(_render_section(view, "en")).split())
+    zh = " ".join(_card_region(_render_section(view, "zh")).split())
+    assert "2 of 2 required reads are current." in en
+    assert "2 of 5 optional reads are current." in en
+    assert "2 项必需读数中，2 项为当前数据。" in zh
+    assert "5 项可选读数中，2 项为当前数据。" in zh
+    for gone in ("required, current", "optional, current"):
+        assert gone not in en, gone
+    for gone in ("项必需读数（当前）", "项可选读数（当前）"):
+        assert gone not in zh, gone
+
+
+def test_state_card_prints_its_headline_when_it_has_no_clause() -> None:
+    """A stance whose house sentence has no explanation half ("mixed") leaves
+    the card with no clause, and the state card suppresses its headline so the
+    sentence prints once. Without a clause that leaves heading + chip and no
+    prose at all — so the exclusion applies only when a clause exists.
+    """
+    contract = _contract()
+    contract["legs"]["state"]["ladder_state"] = "mixed"
+    contract["legs"]["state"]["summary"] = {"en": "Ladder state: mixed.",
+                                            "zh": "阶梯状态：mixed。"}
+    view = build_security_state({"security_state": contract})
+    assert view is not None
+    state = _axis(view, "state")
+    assert state["clause"] is None
+    assert state["headline"]["en"] == "Signals point in different directions right now"
+    assert state["headline"]["zh"] == "当前信号方向不一"
+
+    for lang, sentence in (("en", "Signals point in different directions right now"),
+                           ("zh", "当前信号方向不一")):
+        tree = _parse_class_tree(_render_section(view, lang=lang))
+        grid = tree.find_class("ss-grid")
+        assert grid is not None
+        card = grid.find_all_class("ss-cell")[0]
+        text = " ".join(card.get_text().split())
+        assert _heading_label(card.find_class("ss-axis")) in ("Where it stands", "当前位置")
+        assert sentence in text, (lang, text)
+
+
+def test_owner_receipts_panel_renders_from_the_owner_receipts_view_key() -> None:
+    """The spec names `owner_receipts` as the panel's path. It was a dead key —
+    the template read `identity.legs` and the top-level clocks instead. The
+    panel now renders from `owner_receipts`, and the identity between the two
+    reads stays pinned by
+    test_owner_model_receipts_surfaces_identity_legs_asof_and_content_sha256.
+    """
+    j2_src = (REPO / "templates" / "ticker.html.j2").read_text(encoding="utf-8")
+    assert "ss.owner_receipts.legs" in j2_src
+    assert "ss.owner_receipts.generated_at" in j2_src
+    assert "ss.owner_receipts.compiled_at" in j2_src
+    assert "ss.owner_receipts.content_sha256" in j2_src
+
+    view = _msft_golden_view()
+    en = " ".join(_owner_receipts_article(_render_section(view, "en")).get_text().split())
+    assert view["owner_receipts"]["content_sha256"] in en
+    assert view["owner_receipts"]["generated_at"] in en
+    assert len(view["owner_receipts"]["legs"]) == 9
+
+
+def test_id_legs_carry_artifact_and_reader_keys_and_m1_failure_renders_them() -> None:
+    """Heal-round h6 REQUIRED 1. Every identity leg the projection emits
+    carries ``artifact_en`` / ``artifact_zh`` / ``reader_en`` / ``reader_zh``
+    so the template's ``{% if lg.artifact_en %}`` / ``{% if lg.reader_en %}``
+    rows can fire. On the M1 failure path those four slots hold the house
+    sentences, and both languages of the rendered ticker page print them.
+    """
+    keys = ("artifact_en", "artifact_zh", "reader_en", "reader_zh")
+    view = build_security_state({"security_state": _contract()})
+    assert view is not None
+    for leg in view["identity"]["legs"]:
+        for key in keys:
+            assert key in leg, (leg.get("check"), sorted(leg))
+
+    from scripts.build_ticker_pages import _SS_ARTIFACT, _SS_READER
+
+    m1_code = (
+        "OWNER_IDENTITY_UNREAD"
+        if ("R8", "OWNER_IDENTITY_UNREAD") in _SS_ARTIFACT
+        else "IDENTITY_UNRESOLVED"
+    )
+    art = _SS_ARTIFACT[("R8", m1_code)]
+    rdr = _SS_READER[("R8", m1_code)]
+    contract = _contract(identity_proof={
+        "state": "BLOCKED_IDENTITY_BRIDGE", "method": "owner_backed_chain.v1",
+        "legs": [{
+            "check": "R8",
+            "description": "owner-identity batch was unavailable this cycle; subject is the frozen "
+                           "pinned allowlist mapping for this ticker, never a live owner read",
+            "artifact": "SecurityStateSubject (frozen pinned allowlist config, not a producer owner receipt)",
+            "reader": "scripts/build_stock_library.py::_read_security_state_identity_rows",
+            "values_read": [{"field": "subject_ticker_display", "value": "AAPL"}],
+            "result": "fail", "code": m1_code,
+        }],
+        "equalities": [], "refusals": [m1_code], "disclosures": [],
+    })
+    m1 = build_security_state({"security_state": contract})
+    assert m1 is not None
+    leg = m1["identity"]["legs"][0]
+    for key in keys:
+        assert key in leg, (key, sorted(leg))
+    assert leg["artifact_en"] == art["en"]
+    assert leg["artifact_zh"] == art["zh"]
+    assert leg["reader_en"] == rdr["en"]
+    assert leg["reader_zh"] == rdr["zh"]
+    assert art["en"] and art["zh"] and art["en"] != art["zh"]
+    assert rdr["en"] and rdr["zh"] and rdr["en"] != rdr["zh"]
+
+    en = _render_section(m1, "en")
+    zh = _render_section(m1, "zh")
+    assert art["en"] in en
+    assert art["zh"] in zh
+    assert rdr["en"] in en
+    assert rdr["zh"] in zh
+
+
+def test_overview_coverage_row_is_absent_when_both_sentences_are_none() -> None:
+    """The coverage row (label and values) is gated on at least one sentence,
+    matching the clocks' rule on the receipts panel. Both sentences None
+    means the row is not rendered at all.
+    """
+    contract = _contract()
+    contract["coverage"] = {
+        "overall_state": "PARTIAL",
+        "required_legs_total": None, "required_legs_available": None,
+        "required_legs_nonblocking": None,
+        "optional_legs_total": None, "optional_legs_available": None,
+        "optional_legs_nonblocking": None,
+        "missing_legs": [], "stale_legs": [],
+        "rights_blocked_legs": [], "conflicted_legs": [],
+    }
+    view = build_security_state({"security_state": contract})
+    assert view is not None
+    assert view["coverage"]["req_sentence"] is None
+    assert view["coverage"]["opt_sentence"] is None
+    en = _card_region(_render_section(view, "en"))
+    zh = _card_region(_render_section(view, "zh"))
+    assert "Reads available" not in en
+    assert "可用读数" not in zh
