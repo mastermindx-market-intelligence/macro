@@ -1,0 +1,334 @@
+name: portfolio-recovery-acceptance-once
+
+on:
+  push:
+    branches:
+      - ops/portfolio-recovery-acceptance-20260912
+    paths:
+      - .github/workflows/portfolio-recovery-acceptance-once.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: portfolio-recovery-acceptance-20260912
+  cancel-in-progress: false
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - name: Execute bounded acceptance on authoritative VPS
+        env:
+          SSH_KEY: ${{ secrets.VPS_DEPLOY_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [ -n "${SSH_KEY:-}" ] || { echo '{"state":"HOLD","reason":"vps_deploy_key_unavailable"}'; exit 20; }
+          umask 077
+          keyfile="$RUNNER_TEMP/vps_key"
+          printf '%s\n' "$SSH_KEY" > "$keyfile"
+          chmod 600 "$keyfile"
+          trap 'rm -f "$keyfile"' EXIT
+
+          set +e
+          ssh -i "$keyfile" \
+            -o BatchMode=yes \
+            -o ConnectTimeout=20 \
+            -o StrictHostKeyChecking=accept-new \
+            root@146.190.142.17 \
+            '/opt/mastermind/.venv/bin/python -' > "$RUNNER_TEMP/acceptance.json" <<'PY'
+          from __future__ import annotations
+
+          import asyncio
+          import datetime as dt
+          import json
+          import os
+          import sys
+          import tempfile
+          import time
+          import urllib.error
+          import urllib.request
+          from pathlib import Path
+
+          EXPECTED_SHA = "e61f2951136bdc03a7ec2f5f12f960af26656a4c"
+          ROOT = Path("/opt/mastermind")
+          ENV_FILE = Path("/etc/macro-api.env")
+          LOCAL = "http://127.0.0.1:8001"
+          result: dict = {
+              "schema": "mastermind.portfolio_recovery_acceptance.v1",
+              "operation": "portfolio-bot-decision-recovery-20260909-sol-001",
+              "observed_at": dt.datetime.now(dt.timezone.utc).isoformat(),
+              "expected_commit": EXPECTED_SHA,
+              "state": "HOLD",
+              "manual_run_attempted": False,
+              "manual_run_effect": "NONE",
+          }
+
+          def emit(code: int = 0) -> None:
+              print(json.dumps(result, sort_keys=True, separators=(",", ":")))
+              raise SystemExit(code)
+
+          def load_env_file() -> None:
+              try:
+                  for raw in ENV_FILE.read_text(encoding="utf-8").splitlines():
+                      line = raw.strip()
+                      if not line or line.startswith("#") or "=" not in line:
+                          continue
+                      key, value = line.split("=", 1)
+                      value = value.strip()
+                      if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
+                          value = value[1:-1]
+                      os.environ[key.strip()] = value
+              except Exception as exc:
+                  result["env_load_error_class"] = type(exc).__name__
+                  emit(20)
+              os.environ.update({
+                  "BOT_LLM_BACKEND": "waterfall",
+                  "CODEX_HOME": "/var/lib/macro-codex",
+                  "CODEX_PROVIDER_ENABLED": "1",
+                  "MASTERMIND_CODEX_PYTHON": "/opt/mastermind/.venv/bin/python",
+                  "MASTERMIND_CODEX_TIMEOUT_SEC": "1800",
+                  "MASTERMIND_CODEX_WEB_SEARCH": "0",
+                  "MASTERMIND_SHARED_LLM_POOL": "1",
+                  "MASTERMIND_SERVE_ONLY": "0",
+                  "MASTERMIND_VPS_AUTHORITATIVE": "1",
+                  "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+              })
+
+          def http_json(path: str, *, method: str = "GET", headers: dict | None = None,
+                        timeout: int = 30) -> tuple[dict | None, int | None, str | None]:
+              req = urllib.request.Request(LOCAL + path, method=method, headers=headers or {})
+              try:
+                  with urllib.request.urlopen(req, timeout=timeout) as response:
+                      payload = json.loads(response.read())
+                      return (payload if isinstance(payload, dict) else None,
+                              int(response.status), None)
+              except urllib.error.HTTPError as exc:
+                  return None, int(exc.code), "HTTPError"
+              except Exception as exc:
+                  return None, None, type(exc).__name__
+
+          def select_job(payload: dict | None) -> dict:
+              jobs = payload.get("jobs") if isinstance(payload, dict) else None
+              if not isinstance(jobs, list):
+                  return {}
+              for row in jobs:
+                  if isinstance(row, dict) and row.get("id") == "autonomous_daily":
+                      return row
+              return {}
+
+          def safe_job(row: dict) -> dict:
+              return {key: row.get(key) for key in (
+                  "id", "next_run_time", "last_started", "last_finished", "last_skipped",
+                  "last_status", "last_severity", "last_reason", "last_target_status",
+              )}
+
+          def latest_decision(payload: dict | None) -> dict:
+              rows = payload.get("decisions") if isinstance(payload, dict) else None
+              if not isinstance(rows, list) or not rows:
+                  return {}
+              row = rows[0] if isinstance(rows[0], dict) else {}
+              return {key: row.get(key) for key in (
+                  "asof", "settled_asof", "target_status", "decision_effective", "decided",
+                  "inaugural", "trading_day", "execution_evidence_status", "today",
+              )}
+
+          def parse_ts(value: object) -> dt.datetime | None:
+              if not value:
+                  return None
+              try:
+                  parsed = dt.datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+                  return parsed if parsed.tzinfo else parsed.replace(tzinfo=dt.timezone.utc)
+              except Exception:
+                  return None
+
+          # Exact release and runtime health.
+          try:
+              marker = (ROOT / ".deployed_git_sha").read_text(encoding="utf-8").strip()
+          except Exception as exc:
+              result["marker_error_class"] = type(exc).__name__
+              emit(20)
+          health, health_http, health_error = http_json("/health")
+          result["commit"] = marker
+          result["health_http"] = health_http
+          result["health_error_class"] = health_error
+          result["health_status"] = health.get("status") if health else None
+          result["reasoning_policy_ok"] = bool(health and health.get("reasoning_policy_ok"))
+          result["scheduler_running"] = bool(health and health.get("scheduler_running"))
+          result["scheduled_runtime_ok"] = bool(health and health.get("scheduled_runtime_ok"))
+          result["reasoning_primary"] = health.get("reasoning_primary") if health else None
+          if marker != EXPECTED_SHA or not health or health.get("commit") != EXPECTED_SHA:
+              result["reason"] = "release_identity_mismatch"
+              emit(20)
+          if health.get("status") != "ok" or not health.get("reasoning_policy_ok") or not health.get("scheduled_runtime_ok"):
+              result["reason"] = "runtime_not_ready"
+              emit(20)
+
+          # Deployed prompt-only canary: no tools, no account, no portfolio context, no run log.
+          load_env_file()
+          os.chdir(ROOT)
+          sys.path.insert(0, str(ROOT))
+          try:
+              from brain import provider_waterfall
+              with tempfile.TemporaryDirectory(prefix="mm-canary-") as workdir:
+                  canary = asyncio.run(provider_waterfall.reason(
+                      "Reply with exactly OK.",
+                      role="analyst",
+                      system="This is a prompt-only availability check. Use no tools.",
+                      allowed_tools=[],
+                      add_dirs=[],
+                      max_turns=1,
+                      cwd=workdir,
+                      arm=False,
+                      mcp_servers={},
+                      log_run=False,
+                      book="acceptance_canary",
+                  ))
+              result["canary_ok"] = bool(canary.get("ok") and str(canary.get("text") or "").strip())
+              result["canary_provider"] = canary.get("provider")
+              result["canary_backend"] = canary.get("backend")
+              result["canary_error_class"] = None if result["canary_ok"] else "provider_turn_failed"
+          except Exception as exc:
+              result["canary_ok"] = False
+              result["canary_provider"] = None
+              result["canary_backend"] = None
+              result["canary_error_class"] = type(exc).__name__
+          if not result["canary_ok"]:
+              result["reason"] = "deployed_provider_canary_failed"
+              emit(20)
+
+          # Reconcile the normal scheduled run before considering a manual run.
+          sched, sched_http, sched_error = http_json("/api/scheduler")
+          decisions, decisions_http, decisions_error = http_json("/api/decisions?portfolio=autonomous&limit=5")
+          job = select_job(sched)
+          decision = latest_decision(decisions)
+          result["scheduler_http"] = sched_http
+          result["scheduler_error_class"] = sched_error
+          result["decision_http"] = decisions_http
+          result["decision_error_class"] = decisions_error
+          result["scheduler"] = safe_job(job)
+          result["decision"] = decision
+          if not job:
+              result["reason"] = "scheduler_readback_unavailable"
+              emit(20)
+
+          now = dt.datetime.now(dt.timezone.utc)
+          last_started = parse_ts(job.get("last_started"))
+          last_finished = parse_ts(job.get("last_finished"))
+          active = bool(last_started and (not last_finished or last_started > last_finished))
+          if active:
+              # The normal run owns the carrier. Wait boundedly for its own completion; never overlap it.
+              deadline = time.monotonic() + 900
+              while time.monotonic() < deadline:
+                  time.sleep(30)
+                  sched, _, _ = http_json("/api/scheduler")
+                  job = select_job(sched)
+                  last_started = parse_ts(job.get("last_started"))
+                  last_finished = parse_ts(job.get("last_finished"))
+                  active = bool(last_started and (not last_finished or last_started > last_finished))
+                  if not active:
+                      break
+              result["scheduler"] = safe_job(job)
+              if active:
+                  result["reason"] = "scheduled_run_still_active"
+                  emit(20)
+              decisions, _, _ = http_json("/api/decisions?portfolio=autonomous&limit=5")
+              decision = latest_decision(decisions)
+              result["decision"] = decision
+
+          def accepted_current(j: dict, d: dict) -> bool:
+              status = str(j.get("last_status") or "")
+              reason = str(j.get("last_reason") or "")
+              target = str(j.get("last_target_status") or d.get("target_status") or "")
+              if status not in {"ok", "warn"}:
+                  return False
+              if reason in {"missing_submission", "rejected_execution_error", "invalid_result",
+                            "projection_failed", "inconsistent_result", "runner_failed"}:
+                  return False
+              if target in {"rejected_no_submission", "rejected_execution_error", ""}:
+                  return False
+              return str(d.get("asof") or "")[:10] >= "2026-09-11"
+
+          if not accepted_current(job, decision):
+              status = str(job.get("last_status") or "")
+              reason = str(job.get("last_reason") or "")
+              target = str(job.get("last_target_status") or decision.get("target_status") or "")
+              started = parse_ts(job.get("last_started"))
+              # A completed failed/ambiguous run is never replayed. Manual is allowed only when the
+              # Friday normal window conclusively produced no run at all.
+              if status in {"error", "warn", "skip"} or reason or target:
+                  result["reason"] = "normal_run_completed_without_acceptable_decision"
+                  emit(20)
+              cutoff = dt.datetime(2026, 9, 11, 23, 10, tzinfo=dt.timezone.utc)
+              if now < cutoff or (started and started >= cutoff):
+                  result["reason"] = "normal_run_state_ambiguous"
+                  emit(20)
+
+              token = os.environ.get("MASTERMIND_AUTH_TOKEN", "")
+              if not token:
+                  result["reason"] = "operator_token_unavailable"
+                  emit(20)
+              result["manual_run_attempted"] = True
+              result["manual_run_effect"] = "REQUEST_SENT"
+              manual, manual_http, manual_error = http_json(
+                  "/api/autonomous/run?force=false&wait=true",
+                  method="POST",
+                  headers={"Authorization": "Bearer " + token},
+                  timeout=2400,
+              )
+              result["manual_http"] = manual_http
+              result["manual_error_class"] = manual_error
+              if manual is None:
+                  # A timeout/transport failure after request dispatch leaves effect unknown.
+                  result["manual_run_effect"] = "EFFECT_UNKNOWN"
+                  result["reason"] = "manual_run_effect_unknown"
+                  emit(30)
+              result["manual_run_effect"] = "RECEIPT_RECEIVED"
+              result["manual_receipt"] = {key: manual.get(key) for key in (
+                  "run_status", "run_reason", "target_status", "decision_effective",
+                  "asof", "decided", "trading_day",
+              )}
+              time.sleep(3)
+              sched, _, _ = http_json("/api/scheduler")
+              decisions, _, _ = http_json("/api/decisions?portfolio=autonomous&limit=5")
+              job = select_job(sched)
+              decision = latest_decision(decisions)
+              result["scheduler"] = safe_job(job)
+              result["decision"] = decision
+
+          # Served UI contract and final durable readback.
+          try:
+              with urllib.request.urlopen(LOCAL + "/", timeout=30) as response:
+                  html = response.read().decode("utf-8", "replace")
+              result["ui_http"] = int(response.status)
+              result["ui_missing_label_contract"] = "DECISION MISSING — RECOVERY REQUIRED" in html
+              result["ui_scheduler_reason_contract"] = "last_reason" in html
+          except Exception as exc:
+              result["ui_http"] = None
+              result["ui_error_class"] = type(exc).__name__
+              result["ui_missing_label_contract"] = False
+              result["ui_scheduler_reason_contract"] = False
+
+          if not accepted_current(job, decision):
+              result["reason"] = "final_decision_not_acceptable"
+              emit(20)
+          if not result.get("ui_missing_label_contract") or not result.get("ui_scheduler_reason_contract"):
+              result["reason"] = "served_ui_contract_unproven"
+              emit(20)
+
+          result["state"] = "PROVEN_LIVE"
+          result["reason"] = "production_acceptance_complete"
+          emit(0)
+          PY
+          rc=$?
+          set -e
+
+          if [ -s "$RUNNER_TEMP/acceptance.json" ]; then
+            cat "$RUNNER_TEMP/acceptance.json"
+          else
+            echo '{"state":"HOLD","reason":"acceptance_receipt_missing"}'
+            rc=20
+          fi
+          exit "$rc"
