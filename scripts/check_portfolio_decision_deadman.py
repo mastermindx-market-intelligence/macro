@@ -73,6 +73,14 @@ def _previous_weekday_schedule(next_run: datetime) -> datetime:
     return candidate
 
 
+def _parse_date(value: Any):
+    raw = str(value or "")[:10]
+    try:
+        return datetime.strptime(raw, "%Y-%m-%d").date()
+    except (TypeError, ValueError):
+        return None
+
+
 def build_snapshot(
     health: dict[str, Any],
     scheduler: dict[str, Any],
@@ -165,9 +173,12 @@ def _decision_failure(
     status = str(job.get("last_status") or "").strip().lower()
     reason = str(job.get("last_reason") or "").strip().lower()
     target = str(job.get("last_target_status") or "").strip().lower()
+    severity = str(job.get("last_severity") or "").strip().upper()
 
     if status == "skip":
         if reason == "market_closed" and not target:
+            if severity != "ADVISORY_ONLY":
+                return f"{job_id}: skip severity mismatch ({severity or 'missing'})"
             return None
         return (
             f"{job_id}: unacceptable skip reason={reason or 'missing'} "
@@ -180,45 +191,53 @@ def _decision_failure(
             f"target={target or 'missing'}"
         )
 
-    asof = str(decision.get("asof") or "")[:10]
-    settled_asof = str(decision.get("settled_asof") or "")[:10]
+    asof_date = _parse_date(decision.get("asof"))
     decision_target = str(decision.get("target_status") or "").strip().lower()
-    decision_clock = (
-        settled_asof
-        if decision_target == "executed" and settled_asof
-        else asof
-    )
-    if decision_clock != expected_date:
+    if asof_date is None or asof_date.isoformat() != expected_date:
         return (
             f"{job_id}: decision stale "
-            f"(clock={decision_clock or 'missing'}, expected={expected_date})"
+            f"(asof={asof_date.isoformat() if asof_date else 'missing'}, "
+            f"expected={expected_date})"
         )
     if target in _FORBIDDEN_TARGETS or decision_target in _FORBIDDEN_TARGETS:
         return (
             f"{job_id}: missing/failed decision target="
             f"{target or decision_target or 'missing'} reason={reason or 'missing'}"
         )
-    if target != decision_target:
-        return (
-            f"{job_id}: scheduler/decision target mismatch "
-            f"({target} != {decision_target})"
-        )
 
     if status == "ok":
+        if severity:
+            return f"{job_id}: ok run carried unexpected severity={severity}"
         if reason:
             return f"{job_id}: ok run carried unexpected reason={reason}"
         if target not in {"queued", "executed"}:
             return f"{job_id}: ok run has invalid target={target}"
+        settled_transition = target == "queued" and decision_target == "executed"
+        if target != decision_target and not settled_transition:
+            return (
+                f"{job_id}: scheduler/decision target mismatch "
+                f"({target} != {decision_target})"
+            )
         if decision.get("decision_effective") is not True:
-            return f"{job_id}: {target} decision is not effective"
-        if (
-            target == "executed"
-            and decision.get("execution_evidence_status") != "receipt_verified"
-        ):
-            return f"{job_id}: executed decision lacks a verified execution receipt"
+            return f"{job_id}: {decision_target} decision is not effective"
+        if decision_target == "executed":
+            if decision.get("execution_evidence_status") != "receipt_verified":
+                return f"{job_id}: executed decision lacks a verified execution receipt"
+            settled_date = _parse_date(decision.get("settled_asof"))
+            if settled_date is None:
+                return f"{job_id}: executed decision settled_asof is missing or invalid"
+            if settled_date < asof_date:
+                return f"{job_id}: executed decision settled before decision acceptance"
         return None
 
     if status == "warn":
+        if severity != "FREEZE":
+            return f"{job_id}: warn severity mismatch ({severity or 'missing'})"
+        if target != decision_target:
+            return (
+                f"{job_id}: scheduler/decision target mismatch "
+                f"({target} != {decision_target})"
+            )
         explicit_hold = (
             target.startswith("rejected_") or target.startswith("frozen_")
         )
