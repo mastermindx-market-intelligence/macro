@@ -1,16 +1,16 @@
 {
   "schema": "risk_radar_scorecard.v1",
-  "generated_at": "2026-09-11T19:26:29+00:00",
+  "generated_at": "2026-09-12T18:56:25+00:00",
   "markets": {
     "us": {
-      "asof_last_row": "2026-09-10",
+      "asof_last_row": "2026-09-11",
       "monitoring": {
         "log_fresh": true,
         "last_logged_days_ago": 2,
         "ungraded_backlog": 0,
         "awaiting_maturity": 18,
         "backlog_cutoff_bd": 28,
-        "graded_n": 29
+        "graded_n": 30
       },
       "windows": {
         "full": {
@@ -21,9 +21,9 @@
             "hit_rate": null
           },
           "watch_caution": {
-            "n": 29,
+            "n": 30,
             "tp": 0,
-            "tn": 29,
+            "tn": 30,
             "precursor_rate": 0.0
           },
           "calm": {
@@ -43,9 +43,9 @@
             "hit_rate": null
           },
           "watch_caution": {
-            "n": 29,
+            "n": 30,
             "tp": 0,
-            "tn": 29,
+            "tn": 30,
             "precursor_rate": 0.0
           },
           "calm": {
@@ -63,7 +63,7 @@
       "asof_last_row": "2026-09-11",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 1,
+        "last_logged_days_ago": 2,
         "ungraded_backlog": 0,
         "awaiting_maturity": 15,
         "backlog_cutoff_bd": 28,
@@ -134,7 +134,7 @@
       "asof_last_row": "2026-09-11",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 1,
+        "last_logged_days_ago": 2,
         "ungraded_backlog": 0,
         "awaiting_maturity": 16,
         "backlog_cutoff_bd": 28,
@@ -202,14 +202,14 @@
       }
     },
     "ca": {
-      "asof_last_row": "2026-09-10",
+      "asof_last_row": "2026-09-11",
       "monitoring": {
         "log_fresh": true,
         "last_logged_days_ago": 2,
         "ungraded_backlog": 0,
         "awaiting_maturity": 18,
         "backlog_cutoff_bd": 28,
-        "graded_n": 20
+        "graded_n": 21
       },
       "windows": {
         "full": {
@@ -226,9 +226,9 @@
             "precursor_rate": 0.0
           },
           "calm": {
-            "n": 1,
+            "n": 2,
             "dd_missed": 0,
-            "quiet": 1,
+            "quiet": 2,
             "quiet_rate": null
           },
           "by_scare": {},
@@ -248,9 +248,9 @@
             "precursor_rate": 0.0
           },
           "calm": {
-            "n": 1,
+            "n": 2,
             "dd_missed": 0,
-            "quiet": 1,
+            "quiet": 2,
             "quiet_rate": null
           },
           "by_scare": {},
@@ -262,7 +262,7 @@
       "asof_last_row": "2026-09-11",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 1,
+        "last_logged_days_ago": 2,
         "ungraded_backlog": 0,
         "awaiting_maturity": 17,
         "backlog_cutoff_bd": 28,
@@ -319,7 +319,7 @@
       "asof_last_row": "2026-09-11",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 1,
+        "last_logged_days_ago": 2,
         "ungraded_backlog": 0,
         "awaiting_maturity": 16,
         "backlog_cutoff_bd": 28,
@@ -390,7 +390,7 @@
       "asof_last_row": "2026-09-11",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 1,
+        "last_logged_days_ago": 2,
         "ungraded_backlog": 0,
         "awaiting_maturity": 15,
         "backlog_cutoff_bd": 28,
@@ -482,12 +482,12 @@
       }
     },
     "in": {
-      "asof_last_row": "2026-09-09",
+      "asof_last_row": "2026-09-10",
       "monitoring": {
         "log_fresh": true,
         "last_logged_days_ago": 3,
         "ungraded_backlog": 0,
-        "awaiting_maturity": 13,
+        "awaiting_maturity": 14,
         "backlog_cutoff_bd": 28,
         "graded_n": 11
       },
@@ -556,7 +556,7 @@
       "asof_last_row": "2026-09-11",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 1,
+        "last_logged_days_ago": 2,
         "ungraded_backlog": 0,
         "awaiting_maturity": 16,
         "backlog_cutoff_bd": 28,
@@ -610,12 +610,12 @@
       }
     },
     "gb": {
-      "asof_last_row": "2026-09-09",
+      "asof_last_row": "2026-09-10",
       "monitoring": {
         "log_fresh": true,
         "last_logged_days_ago": 3,
         "ungraded_backlog": 0,
-        "awaiting_maturity": 14,
+        "awaiting_maturity": 15,
         "backlog_cutoff_bd": 28,
         "graded_n": 12
       },
@@ -667,12 +667,12 @@
       }
     },
     "ez": {
-      "asof_last_row": "2026-09-09",
+      "asof_last_row": "2026-09-10",
       "monitoring": {
         "log_fresh": true,
         "last_logged_days_ago": 3,
         "ungraded_backlog": 0,
-        "awaiting_maturity": 14,
+        "awaiting_maturity": 15,
         "backlog_cutoff_bd": 28,
         "graded_n": 12
       },

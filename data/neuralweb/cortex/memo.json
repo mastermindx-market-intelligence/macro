@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.cortex_memo.v1",
-  "as_of": "2026-09-11T11:00:08+00:00",
+  "as_of": "2026-09-12T11:30:09+00:00",
   "summary": "Budget exhausted after 0 tool-call batches (0 individual calls). Partial deliberation only.",
   "what_fired": [],
   "contradictions_review": "Incomplete \u2014 budget exhausted before contradictions review.",
@@ -8,7 +8,7 @@
   "deserves_operator": [],
   "probation": {
     "schema": "neuralweb.cortex_probation.v1",
-    "as_of": "2026-09-10",
+    "as_of": "2026-09-11",
     "granted": false,
     "tier": "A0/A1 shadow",
     "reason": "insufficient-n: n=8 < min_n=25",
@@ -39,7 +39,7 @@
         "attempted": true,
         "ok": false,
         "error_type": "transient",
-        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a09020-013a-7182-a2fa-6a1e8cfab5ba\"} {\"type\":\"turn.started\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Skill descriptions were shortened to fit the skills context budget. Codex can still see every sk"
+        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a09561-d7f6-7683-8c8b-0e9293ed8191\"} {\"type\":\"turn.started\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Skill descriptions were shortened to fit the skills context budget. Codex can still see every sk"
       },
       {
         "provider": "codex",
@@ -47,15 +47,39 @@
         "attempted": true,
         "ok": false,
         "error_type": "transient",
-        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a09020-10a4-7922-9027-37ceaee3bb6d\"} {\"type\":\"turn.started\"} {\"type\":\"error\",\"message\":\"Your workspace is out of credits. Ask your workspace owner to refill in order to continue.\"} {\"type\":\"turn.failed\",\"error\":{\"message\":\"Your wo"
+        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a09561-e9a8-7bb0-bd0b-ac8f2338bd7d\"} {\"type\":\"turn.started\"} {\"type\":\"error\",\"message\":\"Your workspace is out of credits. Ask your workspace owner to refill in order to continue.\"} {\"type\":\"turn.failed\",\"error\":{\"message\":\"Your wo"
       },
       {
         "provider": "oauth",
         "model": "claude-opus-4-8",
         "attempted": true,
         "ok": false,
-        "error_type": "auth",
-        "error_message": "Error code: 403 - {'type': 'error', 'error': {'type': 'permission_error', 'message': 'OAuth authentication is currently not allowed for this organization.', 'details': {'error_code': 'oauth_not_allowed_for_organization'}}, 'request_id': 'req_011CewY4YabAYqC8EGDZ8Q2N'}"
+        "error_type": "rate_limit",
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CeyUAHddfgEn5UToMvhKm'}"
+      },
+      {
+        "provider": "oauth",
+        "model": "claude-opus-4-8",
+        "attempted": true,
+        "ok": false,
+        "error_type": "rate_limit",
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CeyUBarzkvA9aTbKTFo7q'}"
+      },
+      {
+        "provider": "oauth",
+        "model": "claude-opus-4-8",
+        "attempted": true,
+        "ok": false,
+        "error_type": "rate_limit",
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CeyUGCs4Fqii2PsXxxHru'}"
+      },
+      {
+        "provider": "oauth",
+        "model": "claude-opus-4-8",
+        "attempted": true,
+        "ok": false,
+        "error_type": "rate_limit",
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CeyUVg1p2e4h6oYMzjHZg'}"
       },
       {
         "provider": "codex",
@@ -63,7 +87,7 @@
         "attempted": true,
         "ok": false,
         "error_type": "transient",
-        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a09020-2c57-7f73-86f4-3e268ebfa28e\"} {\"type\":\"turn.started\"} {\"type\":\"error\",\"message\":\"Your workspace is out of credits. Ask your workspace owner to refill in order to continue.\"} {\"type\":\"turn.failed\",\"error\":{\"message\":\"Your wo"
+        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a09566-0a28-7e02-a197-4c2094f68c8a\"} {\"type\":\"turn.started\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Skill descriptions were shortened to fit the skills context budget. Codex can still see every sk"
       },
       {
         "provider": "codex",
@@ -71,13 +95,13 @@
         "attempted": true,
         "ok": false,
         "error_type": "transient",
-        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a09020-423f-71e3-88a5-ef6c3c437e84\"} {\"type\":\"turn.started\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Skill descriptions were shortened to fit the skills context budget. Codex can still see every sk"
+        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a09566-25a4-7163-a514-4f55f38c39fa\"} {\"type\":\"turn.started\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Skill descriptions were shortened to fit the skills context budget. Codex can still see every sk"
       }
     ],
     "tool_call_batches": 0,
     "individual_tool_calls": 0,
     "expected_min_tool_calls": 1,
     "context_stale": false,
-    "context_as_of": "2026-09-11T10:44:04Z"
+    "context_as_of": "2026-09-12T10:43:30Z"
   }
 }

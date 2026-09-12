@@ -1,6 +1,6 @@
 {
  "schema": "prophet_miss_audit/v1",
- "price_through": "2026-09-10",
+ "price_through": "2026-09-11",
  "tier": "ops_telemetry",
  "authority": "none — measurement only; no rank/gate/size consumer",
  "bases": {
@@ -13,17 +13,17 @@
  },
  "summary": {
   "universe_n": 1496,
-  "eligible_today_n": 26,
+  "eligible_today_n": 12,
   "top63_n": 4,
   "top63_eligible_today_n": 0,
   "top63_never_eligible_n": 1,
   "top63_never_eligible_pct": 0.25,
   "top63_eligible_days": {
    "n": 4,
-   "mean": 7.5,
-   "p25": 4.5,
-   "median": 7.5,
-   "p75": 10.5,
+   "mean": 7.0,
+   "p25": 3.75,
+   "median": 6.5,
+   "p75": 9.75,
    "min": 0.0,
    "max": 15.0
   },
@@ -56,15 +56,14 @@
   "Information Technology": 1
  },
  "eligible_today_sector_hist": {
-  "Consumer Discretionary": 6,
-  "Information Technology": 6,
-  "Industrials": 3,
-  "Real Estate": 3,
   "Communication Services": 2,
-  "Consumer Staples": 2,
-  "Utilities": 2,
+  "Consumer Discretionary": 2,
+  "Industrials": 2,
+  "Information Technology": 2,
+  "Consumer Staples": 1,
   "Financials": 1,
-  "Materials": 1
+  "Real Estate": 1,
+  "Utilities": 1
  },
  "conversion": {
   "sighted_n": 3,
@@ -82,36 +81,15 @@
  "themes": {
   "basis": "subsector_rotation.emerging_score",
   "days_since_top5_entry_basis": null,
-  "rotation_asof": "2026-09-10",
-  "standouts_asof": "2026-09-10",
+  "rotation_asof": "2026-09-11",
+  "standouts_asof": "2026-09-11",
   "available": true,
   "themes": [
    {
     "rank": 1,
     "theme": "Semiconductors",
-    "emerging_score": 2.912,
+    "emerging_score": 3.386,
     "n_members": 42,
-    "present_counts": {
-     "buy": 2,
-     "ran": 0,
-     "leaders": 0
-    },
-    "present": {
-     "buy": [
-      "INTC",
-      "KEYS"
-     ],
-     "ran": [],
-     "leaders": []
-    },
-    "represented_n": 2,
-    "days_since_top5_entry": null
-   },
-   {
-    "rank": 2,
-    "theme": "Electric Vehicles",
-    "emerging_score": 1.672,
-    "n_members": 46,
     "present_counts": {
      "buy": 0,
      "ran": 0,
@@ -126,10 +104,70 @@
     "days_since_top5_entry": null
    },
    {
+    "rank": 2,
+    "theme": "Telecommunications",
+    "emerging_score": 1.441,
+    "n_members": 36,
+    "present_counts": {
+     "buy": 0,
+     "ran": 0,
+     "leaders": 1
+    },
+    "present": {
+     "buy": [],
+     "ran": [],
+     "leaders": [
+      "RNG"
+     ]
+    },
+    "represented_n": 1,
+    "days_since_top5_entry": null
+   },
+   {
     "rank": 3,
+    "theme": "Hardware",
+    "emerging_score": 1.405,
+    "n_members": 55,
+    "present_counts": {
+     "buy": 1,
+     "ran": 0,
+     "leaders": 0
+    },
+    "present": {
+     "buy": [
+      "TEL"
+     ],
+     "ran": [],
+     "leaders": []
+    },
+    "represented_n": 1,
+    "days_since_top5_entry": null
+   },
+   {
+    "rank": 4,
+    "theme": "Commodities Agriculture",
+    "emerging_score": 1.277,
+    "n_members": 24,
+    "present_counts": {
+     "buy": 1,
+     "ran": 0,
+     "leaders": 0
+    },
+    "present": {
+     "buy": [
+      "ANDE"
+     ],
+     "ran": [],
+     "leaders": []
+    },
+    "represented_n": 1,
+    "days_since_top5_entry": null
+   },
+   {
+    "rank": 5,
     "theme": "Energy Renewable",
-    "emerging_score": 1.528,
-    "n_members": 61,
+    "emerging_score": 1.127,
+    "n_members": 59,
     "present_counts": {
      "buy": 2,
      "ran": 0,
@@ -145,45 +183,6 @@
     },
     "represented_n": 2,
     "days_since_top5_entry": null
-   },
-   {
-    "rank": 4,
-    "theme": "Crypto & Blockchain",
-    "emerging_score": 1.214,
-    "n_members": 26,
-    "present_counts": {
-     "buy": 2,
-     "ran": 0,
-     "leaders": 0
-    },
-    "present": {
-     "buy": [
-      "CLSK",
-      "MARA"
-     ],
-     "ran": [],
-     "leaders": []
-    },
-    "represented_n": 2,
-    "days_since_top5_entry": null
-   },
-   {
-    "rank": 5,
-    "theme": "Mega-Cap",
-    "emerging_score": 1.167,
-    "n_members": 7,
-    "present_counts": {
-     "buy": 0,
-     "ran": 0,
-     "leaders": 0
-    },
-    "present": {
-     "buy": [],
-     "ran": [],
-     "leaders": []
-    },
-    "represented_n": 0,
-    "days_since_top5_entry": null
    }
   ]
  },
@@ -191,8 +190,8 @@
   "tier": "ops_telemetry",
   "authority": "none — measurement only; no rank/gate/size/membership consumer",
   "available": true,
-  "as_of": "2026-09-10",
-  "standouts_asof": "2026-09-10",
+  "as_of": "2026-09-11",
+  "standouts_asof": "2026-09-11",
   "basis": "equal-weight member returns over data/baskets/ohlcv with point-in-time dated membership (engine.baskets._ew_level construction); the 10d return ranked inside the basket's OWN trailing 252-session history of the same measure. Overlapping windows — the percentile is a description, not a test.",
   "miss_rule": "pctile >= 0.9 AND zero live members on any of ['buy', 'watch', 'leaders', 'ran'] (featured is a flag inside buy)",
   "lanes": [
@@ -205,41 +204,41 @@
   "n_scored": 49,
   "n_misses": 0,
   "n_top_decile": 0,
-  "n_unrepresented": 17,
+  "n_unrepresented": 20,
   "misses": [],
   "baskets": [
+   {
+    "basket_id": "non_ai_tech",
+    "name": "Non-AI Tech & Hardware",
+    "category": "Semiconductors & Hardware",
+    "as_of": "2026-09-11",
+    "n_members": 14,
+    "n_members_live": 13,
+    "n_members_read": 14,
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "TEL"
+    ],
+    "present_counts": {
+     "buy": 1,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.7718,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": 0.061917,
+    "ew_10d": 0.062808
+   },
    {
     "basket_id": "mag7",
     "name": "Magnificent Seven",
     "category": "AI & Technology",
-    "as_of": "2026-09-10",
+    "as_of": "2026-09-11",
     "n_members": 7,
     "n_members_live": 7,
     "n_members_read": 7,
-    "n_members_on_board": 1,
-    "members_on_board": [
-     "NVDA"
-    ],
-    "present_counts": {
-     "buy": 0,
-     "watch": 1,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.7242,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": 0.007673,
-    "ew_10d": 0.028082
-   },
-   {
-    "basket_id": "cybersecurity",
-    "name": "Cybersecurity",
-    "category": "Software",
-    "as_of": "2026-09-10",
-    "n_members": 12,
-    "n_members_live": 10,
-    "n_members_read": 12,
     "n_members_on_board": 0,
     "members_on_board": [],
     "present_counts": {
@@ -248,63 +247,39 @@
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.5972,
+    "pctile": 0.6845,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": 0.012623,
-    "ew_10d": 0.01823
-   },
-   {
-    "basket_id": "ai_software",
-    "name": "AI Software & Platforms",
-    "category": "AI & Technology",
-    "as_of": "2026-09-10",
-    "n_members": 17,
-    "n_members_live": 17,
-    "n_members_read": 17,
-    "n_members_on_board": 0,
-    "members_on_board": [],
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.5933,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": 0.003105,
-    "ew_10d": 0.021051
+    "ew_5d": -0.006204,
+    "ew_10d": 0.023055
    },
    {
     "basket_id": "energy_complex",
     "name": "US Energy Complex",
     "category": "Energy & Power",
-    "as_of": "2026-09-10",
+    "as_of": "2026-09-11",
     "n_members": 22,
     "n_members_live": 22,
     "n_members_read": 22,
-    "n_members_on_board": 1,
-    "members_on_board": [
-     "DINO"
-    ],
+    "n_members_on_board": 0,
+    "members_on_board": [],
     "present_counts": {
      "buy": 0,
      "watch": 0,
-     "leaders": 1,
+     "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.5933,
+    "pctile": 0.621,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": -0.008167,
-    "ew_10d": 0.032979
+    "ew_5d": 0.000466,
+    "ew_10d": 0.034574
    },
    {
     "basket_id": "us_sector_energy",
     "name": "Energy (Equal-Weight)",
     "category": "US Sectors (EW)",
-    "as_of": "2026-09-10",
+    "as_of": "2026-09-11",
     "n_members": 21,
     "n_members_live": 21,
     "n_members_read": 21,
@@ -316,335 +291,68 @@
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.5853,
+    "pctile": 0.5575,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": -0.007622,
-    "ew_10d": 0.031684
-   },
-   {
-    "basket_id": "nuclear_power",
-    "name": "Nuclear & SMR Power",
-    "category": "Energy & Power",
-    "as_of": "2026-09-10",
-    "n_members": 9,
-    "n_members_live": 9,
-    "n_members_read": 9,
-    "n_members_on_board": 3,
-    "members_on_board": [
-     "BWXT",
-     "NRG",
-     "VST"
-    ],
-    "present_counts": {
-     "buy": 3,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.5774,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": 0.011624,
-    "ew_10d": 0.003209
+    "ew_5d": -0.000462,
+    "ew_10d": 0.030098
    },
    {
     "basket_id": "ai_neoclouds",
     "name": "AI Neoclouds & HPC Hosting",
     "category": "Artificial Intelligence",
-    "as_of": "2026-09-10",
+    "as_of": "2026-09-11",
     "n_members": 13,
     "n_members_live": 10,
     "n_members_read": 13,
-    "n_members_on_board": 0,
-    "members_on_board": [],
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "WULF"
+    ],
     "present_counts": {
-     "buy": 0,
+     "buy": 1,
      "watch": 0,
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.5298,
+    "pctile": 0.5456,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": 0.086009,
-    "ew_10d": 0.03259
-   },
-   {
-    "basket_id": "non_ai_software",
-    "name": "Non-AI Software",
-    "category": "Software",
-    "as_of": "2026-09-10",
-    "n_members": 14,
-    "n_members_live": 14,
-    "n_members_read": 14,
-    "n_members_on_board": 2,
-    "members_on_board": [
-     "GTLB",
-     "TEAM"
-    ],
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 2,
-     "ran": 0
-    },
-    "pctile": 0.498,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": -0.048465,
-    "ew_10d": 0.000419
-   },
-   {
-    "basket_id": "crypto",
-    "name": "Crypto & Digital Assets",
-    "category": "Crypto & Digital Assets",
-    "as_of": "2026-09-10",
-    "n_members": 12,
-    "n_members_live": 7,
-    "n_members_read": 12,
-    "n_members_on_board": 2,
-    "members_on_board": [
-     "CLSK",
-     "MARA"
-    ],
-    "present_counts": {
-     "buy": 2,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.4742,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": 0.04387,
-    "ew_10d": 0.008604
-   },
-   {
-    "basket_id": "non_ai_tech",
-    "name": "Non-AI Tech & Hardware",
-    "category": "Semiconductors & Hardware",
-    "as_of": "2026-09-10",
-    "n_members": 14,
-    "n_members_live": 13,
-    "n_members_read": 14,
-    "n_members_on_board": 2,
-    "members_on_board": [
-     "GLW",
-     "TEL"
-    ],
-    "present_counts": {
-     "buy": 2,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.4663,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": 0.018577,
-    "ew_10d": 0.011258
-   },
-   {
-    "basket_id": "pgm_miners",
-    "name": "PGM Miners",
-    "category": "Materials & Mining",
-    "as_of": "2026-09-10",
-    "n_members": 4,
-    "n_members_live": 4,
-    "n_members_read": 4,
-    "n_members_on_board": 2,
-    "members_on_board": [
-     "ANGPY",
-     "SBSW"
-    ],
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 2
-    },
-    "pctile": 0.4623,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": 0.009326,
-    "ew_10d": 0.013167
+    "ew_5d": 0.033895,
+    "ew_10d": 0.037227
    },
    {
     "basket_id": "managed_care",
     "name": "Managed Care & Insurers",
     "category": "Healthcare",
-    "as_of": "2026-09-10",
+    "as_of": "2026-09-11",
     "n_members": 9,
     "n_members_live": 9,
     "n_members_read": 9,
-    "n_members_on_board": 0,
-    "members_on_board": [],
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.4187,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": -0.005201,
-    "ew_10d": -3.9e-05
-   },
-   {
-    "basket_id": "ai_agents",
-    "name": "AI Agents & Applications",
-    "category": "Artificial Intelligence",
-    "as_of": "2026-09-10",
-    "n_members": 8,
-    "n_members_live": 8,
-    "n_members_read": 8,
-    "n_members_on_board": 0,
-    "members_on_board": [],
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.4147,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": -0.070343,
-    "ew_10d": -0.025793
-   },
-   {
-    "basket_id": "crypto_rails",
-    "name": "Crypto & Digital Rails",
-    "category": "Crypto & Digital Assets",
-    "as_of": "2026-09-10",
-    "n_members": 7,
-    "n_members_live": 7,
-    "n_members_read": 7,
-    "n_members_on_board": 0,
-    "members_on_board": [],
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.4067,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": 0.010405,
-    "ew_10d": -0.015555
-   },
-   {
-    "basket_id": "quantum_computing",
-    "name": "Quantum Computing",
-    "category": "AI & Technology",
-    "as_of": "2026-09-10",
-    "n_members": 11,
-    "n_members_live": 11,
-    "n_members_read": 11,
     "n_members_on_board": 1,
     "members_on_board": [
-     "NVDA"
+     "ELV"
     ],
     "present_counts": {
-     "buy": 0,
-     "watch": 1,
+     "buy": 1,
+     "watch": 0,
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.3869,
+    "pctile": 0.5258,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": -0.000381,
-    "ew_10d": -0.037565
+    "ew_5d": -0.015627,
+    "ew_10d": 0.017423
    },
    {
-    "basket_id": "memory_storage",
-    "name": "Memory, HBM & Storage",
-    "category": "Semiconductors",
-    "as_of": "2026-09-10",
-    "n_members": 5,
+    "basket_id": "pgm_miners",
+    "name": "PGM Miners",
+    "category": "Materials & Mining",
+    "as_of": "2026-09-11",
+    "n_members": 4,
     "n_members_live": 4,
-    "n_members_read": 5,
-    "n_members_on_board": 2,
-    "members_on_board": [
-     "SNDK",
-     "WDC"
-    ],
-    "present_counts": {
-     "buy": 0,
-     "watch": 2,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.379,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": 0.052011,
-    "ew_10d": 0.04339
-   },
-   {
-    "basket_id": "ai_infra",
-    "name": "AI Infrastructure",
-    "category": "AI & Technology",
-    "as_of": "2026-09-10",
-    "n_members": 24,
-    "n_members_live": 24,
-    "n_members_read": 24,
-    "n_members_on_board": 5,
-    "members_on_board": [
-     "AMAT",
-     "CIEN",
-     "GLW",
-     "NVDA",
-     "TER"
-    ],
-    "present_counts": {
-     "buy": 1,
-     "watch": 4,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.2996,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": 0.042037,
-    "ew_10d": -0.000772
-   },
-   {
-    "basket_id": "ai_semiconductors",
-    "name": "AI Semiconductors",
-    "category": "Semiconductors",
-    "as_of": "2026-09-10",
-    "n_members": 12,
-    "n_members_live": 12,
-    "n_members_read": 12,
-    "n_members_on_board": 1,
-    "members_on_board": [
-     "NVDA"
-    ],
-    "present_counts": {
-     "buy": 0,
-     "watch": 1,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.2996,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": 0.028233,
-    "ew_10d": -0.024453
-   },
-   {
-    "basket_id": "space_economy",
-    "name": "Space Economy",
-    "category": "Industrials & Defense",
-    "as_of": "2026-09-10",
-    "n_members": 15,
-    "n_members_live": 15,
-    "n_members_read": 15,
+    "n_members_read": 4,
     "n_members_on_board": 0,
     "members_on_board": [],
     "present_counts": {
@@ -653,312 +361,17 @@
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.2996,
+    "pctile": 0.4425,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": -0.018614,
-    "ew_10d": -0.07379
-   },
-   {
-    "basket_id": "regional_banks",
-    "name": "Regional Banks",
-    "category": "Financials",
-    "as_of": "2026-09-10",
-    "n_members": 20,
-    "n_members_live": 20,
-    "n_members_read": 20,
-    "n_members_on_board": 0,
-    "members_on_board": [],
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.2758,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": -0.00317,
-    "ew_10d": -0.009241
-   },
-   {
-    "basket_id": "semicap_equipment",
-    "name": "Semiconductor Equipment (WFE)",
-    "category": "Semiconductors",
-    "as_of": "2026-09-10",
-    "n_members": 16,
-    "n_members_live": 16,
-    "n_members_read": 16,
-    "n_members_on_board": 3,
-    "members_on_board": [
-     "AMAT",
-     "FORM",
-     "KLIC"
-    ],
-    "present_counts": {
-     "buy": 0,
-     "watch": 3,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.2718,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": 0.061664,
-    "ew_10d": -0.024316
-   },
-   {
-    "basket_id": "silver_miners",
-    "name": "Silver Miners",
-    "category": "Materials & Mining",
-    "as_of": "2026-09-10",
-    "n_members": 10,
-    "n_members_live": 8,
-    "n_members_read": 8,
-    "n_members_on_board": 1,
-    "members_on_board": [
-     "FSM"
-    ],
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 1,
-     "ran": 0
-    },
-    "pctile": 0.2718,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": -0.039609,
-    "ew_10d": -0.042989
-   },
-   {
-    "basket_id": "power_grid",
-    "name": "Power & Grid Buildout",
-    "category": "Energy & Power",
-    "as_of": "2026-09-10",
-    "n_members": 24,
-    "n_members_live": 24,
-    "n_members_read": 24,
-    "n_members_on_board": 4,
-    "members_on_board": [
-     "BWXT",
-     "NRG",
-     "PWR",
-     "VST"
-    ],
-    "present_counts": {
-     "buy": 3,
-     "watch": 1,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.2599,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": 0.009659,
-    "ew_10d": -0.028703
-   },
-   {
-    "basket_id": "us_sector_tech",
-    "name": "Technology (Equal-Weight)",
-    "category": "US Sectors (EW)",
-    "as_of": "2026-09-10",
-    "n_members": 74,
-    "n_members_live": 74,
-    "n_members_read": 74,
-    "n_members_on_board": 10,
-    "members_on_board": [
-     "AMAT",
-     "CIEN",
-     "GLW",
-     "INTC",
-     "KEYS",
-     "NVDA",
-     "SNDK",
-     "TEL",
-     "TER",
-     "WDC"
-    ],
-    "present_counts": {
-     "buy": 4,
-     "watch": 6,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.252,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": 0.00146,
-    "ew_10d": -0.00909
-   },
-   {
-    "basket_id": "data_center_power",
-    "name": "Data-Center Power & Cooling",
-    "category": "Energy & Power",
-    "as_of": "2026-09-10",
-    "n_members": 8,
-    "n_members_live": 8,
-    "n_members_read": 8,
-    "n_members_on_board": 0,
-    "members_on_board": [],
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.2163,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": 0.014313,
-    "ew_10d": -0.04067
-   },
-   {
-    "basket_id": "critical_minerals",
-    "name": "Critical Minerals & Rare Earths",
-    "category": "Materials & Mining",
-    "as_of": "2026-09-10",
-    "n_members": 11,
-    "n_members_live": 11,
-    "n_members_read": 11,
-    "n_members_on_board": 0,
-    "members_on_board": [],
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.1885,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": -0.077314,
-    "ew_10d": -0.108642
-   },
-   {
-    "basket_id": "gold_miners",
-    "name": "Gold Miners",
-    "category": "Materials & Mining",
-    "as_of": "2026-09-10",
-    "n_members": 12,
-    "n_members_live": 12,
-    "n_members_read": 12,
-    "n_members_on_board": 1,
-    "members_on_board": [
-     "EGO"
-    ],
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 1,
-     "ran": 0
-    },
-    "pctile": 0.1687,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": -0.007996,
-    "ew_10d": -0.077333
-   },
-   {
-    "basket_id": "uranium_miners",
-    "name": "Uranium & Nuclear Fuel",
-    "category": "Materials & Mining",
-    "as_of": "2026-09-10",
-    "n_members": 10,
-    "n_members_live": 10,
-    "n_members_read": 10,
-    "n_members_on_board": 1,
-    "members_on_board": [
-     "UROY"
-    ],
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 1,
-     "ran": 0
-    },
-    "pctile": 0.1687,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": -0.021931,
-    "ew_10d": -0.099433
-   },
-   {
-    "basket_id": "us_sector_comm",
-    "name": "Communication Services (Equal-Weight)",
-    "category": "US Sectors (EW)",
-    "as_of": "2026-09-10",
-    "n_members": 23,
-    "n_members_live": 23,
-    "n_members_read": 23,
-    "n_members_on_board": 2,
-    "members_on_board": [
-     "TKO",
-     "TTD"
-    ],
-    "present_counts": {
-     "buy": 2,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.1647,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": -0.025469,
-    "ew_10d": -0.026715
-   },
-   {
-    "basket_id": "payments_fintech",
-    "name": "Payments & Fintech",
-    "category": "Financials",
-    "as_of": "2026-09-10",
-    "n_members": 22,
-    "n_members_live": 21,
-    "n_members_read": 22,
-    "n_members_on_board": 0,
-    "members_on_board": [],
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.1448,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": -0.039372,
-    "ew_10d": -0.059746
-   },
-   {
-    "basket_id": "defense",
-    "name": "Defense & Aerospace",
-    "category": "Industrials & Defense",
-    "as_of": "2026-09-10",
-    "n_members": 22,
-    "n_members_live": 21,
-    "n_members_read": 22,
-    "n_members_on_board": 1,
-    "members_on_board": [
-     "BA"
-    ],
-    "present_counts": {
-     "buy": 1,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.1329,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": -0.021887,
-    "ew_10d": -0.064555
+    "ew_5d": -0.029515,
+    "ew_10d": 0.003711
    },
    {
     "basket_id": "retail",
     "name": "Retail",
     "category": "Consumer Cyclical",
-    "as_of": "2026-09-10",
+    "as_of": "2026-09-11",
     "n_members": 21,
     "n_members_live": 21,
     "n_members_read": 21,
@@ -974,23 +387,96 @@
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.121,
+    "pctile": 0.4187,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": -0.01875,
-    "ew_10d": -0.036061
+    "ew_5d": -0.01339,
+    "ew_10d": -0.006273
    },
    {
-    "basket_id": "us_sector_utilities",
-    "name": "Utilities (Equal-Weight)",
+    "basket_id": "us_sector_comm",
+    "name": "Communication Services (Equal-Weight)",
     "category": "US Sectors (EW)",
-    "as_of": "2026-09-10",
-    "n_members": 31,
-    "n_members_live": 31,
-    "n_members_read": 31,
+    "as_of": "2026-09-11",
+    "n_members": 23,
+    "n_members_live": 23,
+    "n_members_read": 23,
     "n_members_on_board": 2,
     "members_on_board": [
-     "NRG",
+     "TKO",
+     "TTD"
+    ],
+    "present_counts": {
+     "buy": 2,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.4107,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.021381,
+    "ew_10d": -0.007258
+   },
+   {
+    "basket_id": "regional_banks",
+    "name": "Regional Banks",
+    "category": "Financials",
+    "as_of": "2026-09-11",
+    "n_members": 20,
+    "n_members_live": 20,
+    "n_members_read": 20,
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "PNC"
+    ],
+    "present_counts": {
+     "buy": 1,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.3869,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.012336,
+    "ew_10d": -0.000556
+   },
+   {
+    "basket_id": "crypto",
+    "name": "Crypto & Digital Assets",
+    "category": "Crypto & Digital Assets",
+    "as_of": "2026-09-11",
+    "n_members": 12,
+    "n_members_live": 7,
+    "n_members_read": 12,
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "MARA"
+    ],
+    "present_counts": {
+     "buy": 1,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.3829,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.038442,
+    "ew_10d": -0.015102
+   },
+   {
+    "basket_id": "nuclear_power",
+    "name": "Nuclear & SMR Power",
+    "category": "Energy & Power",
+    "as_of": "2026-09-11",
+    "n_members": 9,
+    "n_members_live": 9,
+    "n_members_read": 9,
+    "n_members_on_board": 2,
+    "members_on_board": [
+     "BWXT",
      "VST"
     ],
     "present_counts": {
@@ -999,41 +485,329 @@
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.1131,
+    "pctile": 0.3591,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": -0.000719,
-    "ew_10d": -0.025962
+    "ew_5d": -0.026953,
+    "ew_10d": -0.038317
    },
    {
-    "basket_id": "insurance",
-    "name": "Insurance & Brokers",
-    "category": "Financials",
-    "as_of": "2026-09-10",
-    "n_members": 19,
-    "n_members_live": 19,
-    "n_members_read": 19,
-    "n_members_on_board": 1,
+    "basket_id": "ai_infra",
+    "name": "AI Infrastructure",
+    "category": "AI & Technology",
+    "as_of": "2026-09-11",
+    "n_members": 24,
+    "n_members_live": 24,
+    "n_members_read": 24,
+    "n_members_on_board": 3,
     "members_on_board": [
-     "CB"
+     "AMAT",
+     "CIEN",
+     "TER"
     ],
     "present_counts": {
-     "buy": 1,
+     "buy": 0,
+     "watch": 3,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.3552,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": 0.061875,
+    "ew_10d": 0.013815
+   },
+   {
+    "basket_id": "crypto_rails",
+    "name": "Crypto & Digital Rails",
+    "category": "Crypto & Digital Assets",
+    "as_of": "2026-09-11",
+    "n_members": 7,
+    "n_members_live": 7,
+    "n_members_read": 7,
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "HOOD"
+    ],
+    "present_counts": {
+     "buy": 0,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 1
+    },
+    "pctile": 0.3194,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.056166,
+    "ew_10d": -0.033555
+   },
+   {
+    "basket_id": "memory_storage",
+    "name": "Memory, HBM & Storage",
+    "category": "Semiconductors",
+    "as_of": "2026-09-11",
+    "n_members": 5,
+    "n_members_live": 4,
+    "n_members_read": 5,
+    "n_members_on_board": 2,
+    "members_on_board": [
+     "SNDK",
+     "WDC"
+    ],
+    "present_counts": {
+     "buy": 0,
+     "watch": 2,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.3194,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": 0.031124,
+    "ew_10d": 0.022958
+   },
+   {
+    "basket_id": "data_center_power",
+    "name": "Data-Center Power & Cooling",
+    "category": "Energy & Power",
+    "as_of": "2026-09-11",
+    "n_members": 8,
+    "n_members_live": 8,
+    "n_members_read": 8,
+    "n_members_on_board": 0,
+    "members_on_board": [],
+    "present_counts": {
+     "buy": 0,
      "watch": 0,
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.1052,
+    "pctile": 0.3155,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": -0.02658,
-    "ew_10d": -0.03952
+    "ew_5d": 0.024288,
+    "ew_10d": -0.014513
+   },
+   {
+    "basket_id": "ai_semiconductors",
+    "name": "AI Semiconductors",
+    "category": "Semiconductors",
+    "as_of": "2026-09-11",
+    "n_members": 12,
+    "n_members_live": 12,
+    "n_members_read": 12,
+    "n_members_on_board": 0,
+    "members_on_board": [],
+    "present_counts": {
+     "buy": 0,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.3115,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": 0.046554,
+    "ew_10d": -0.019819
+   },
+   {
+    "basket_id": "quantum_computing",
+    "name": "Quantum Computing",
+    "category": "AI & Technology",
+    "as_of": "2026-09-11",
+    "n_members": 11,
+    "n_members_live": 11,
+    "n_members_read": 11,
+    "n_members_on_board": 0,
+    "members_on_board": [],
+    "present_counts": {
+     "buy": 0,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.3036,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.006664,
+    "ew_10d": -0.058013
+   },
+   {
+    "basket_id": "semicap_equipment",
+    "name": "Semiconductor Equipment (WFE)",
+    "category": "Semiconductors",
+    "as_of": "2026-09-11",
+    "n_members": 16,
+    "n_members_live": 16,
+    "n_members_read": 16,
+    "n_members_on_board": 3,
+    "members_on_board": [
+     "AMAT",
+     "FORM",
+     "KLIC"
+    ],
+    "present_counts": {
+     "buy": 0,
+     "watch": 3,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.2996,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": 0.082962,
+    "ew_10d": -0.011636
+   },
+   {
+    "basket_id": "space_economy",
+    "name": "Space Economy",
+    "category": "Industrials & Defense",
+    "as_of": "2026-09-11",
+    "n_members": 15,
+    "n_members_live": 15,
+    "n_members_read": 15,
+    "n_members_on_board": 0,
+    "members_on_board": [],
+    "present_counts": {
+     "buy": 0,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.2956,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.012347,
+    "ew_10d": -0.079027
+   },
+   {
+    "basket_id": "ai_software",
+    "name": "AI Software & Platforms",
+    "category": "AI & Technology",
+    "as_of": "2026-09-11",
+    "n_members": 17,
+    "n_members_live": 17,
+    "n_members_read": 17,
+    "n_members_on_board": 0,
+    "members_on_board": [],
+    "present_counts": {
+     "buy": 0,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.2877,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.027683,
+    "ew_10d": -0.032332
+   },
+   {
+    "basket_id": "power_grid",
+    "name": "Power & Grid Buildout",
+    "category": "Energy & Power",
+    "as_of": "2026-09-11",
+    "n_members": 24,
+    "n_members_live": 24,
+    "n_members_read": 24,
+    "n_members_on_board": 2,
+    "members_on_board": [
+     "BWXT",
+     "VST"
+    ],
+    "present_counts": {
+     "buy": 2,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.248,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.005271,
+    "ew_10d": -0.03139
+   },
+   {
+    "basket_id": "us_sector_tech",
+    "name": "Technology (Equal-Weight)",
+    "category": "US Sectors (EW)",
+    "as_of": "2026-09-11",
+    "n_members": 74,
+    "n_members_live": 74,
+    "n_members_read": 74,
+    "n_members_on_board": 7,
+    "members_on_board": [
+     "AMAT",
+     "CIEN",
+     "KEYS",
+     "SNDK",
+     "TEL",
+     "TER",
+     "WDC"
+    ],
+    "present_counts": {
+     "buy": 1,
+     "watch": 6,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.2321,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": 0.015214,
+    "ew_10d": -0.010942
+   },
+   {
+    "basket_id": "gold_miners",
+    "name": "Gold Miners",
+    "category": "Materials & Mining",
+    "as_of": "2026-09-11",
+    "n_members": 12,
+    "n_members_live": 12,
+    "n_members_read": 12,
+    "n_members_on_board": 0,
+    "members_on_board": [],
+    "present_counts": {
+     "buy": 0,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.2044,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.040232,
+    "ew_10d": -0.067423
+   },
+   {
+    "basket_id": "payments_fintech",
+    "name": "Payments & Fintech",
+    "category": "Financials",
+    "as_of": "2026-09-11",
+    "n_members": 22,
+    "n_members_live": 21,
+    "n_members_read": 22,
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "HOOD"
+    ],
+    "present_counts": {
+     "buy": 0,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 1
+    },
+    "pctile": 0.2044,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.049472,
+    "ew_10d": -0.046334
    },
    {
     "basket_id": "robotics_automation",
     "name": "Robotics & Automation",
     "category": "Industrials",
-    "as_of": "2026-09-10",
+    "as_of": "2026-09-11",
     "n_members": 12,
     "n_members_live": 12,
     "n_members_read": 12,
@@ -1047,17 +821,301 @@
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.1052,
+    "pctile": 0.2044,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": -0.012133,
-    "ew_10d": -0.041653
+    "ew_5d": -0.001683,
+    "ew_10d": -0.028359
+   },
+   {
+    "basket_id": "ai_agents",
+    "name": "AI Agents & Applications",
+    "category": "Artificial Intelligence",
+    "as_of": "2026-09-11",
+    "n_members": 8,
+    "n_members_live": 8,
+    "n_members_read": 8,
+    "n_members_on_board": 0,
+    "members_on_board": [],
+    "present_counts": {
+     "buy": 0,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.1885,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.088488,
+    "ew_10d": -0.083573
+   },
+   {
+    "basket_id": "non_ai_software",
+    "name": "Non-AI Software",
+    "category": "Software",
+    "as_of": "2026-09-11",
+    "n_members": 14,
+    "n_members_live": 14,
+    "n_members_read": 14,
+    "n_members_on_board": 2,
+    "members_on_board": [
+     "GTLB",
+     "TEAM"
+    ],
+    "present_counts": {
+     "buy": 0,
+     "watch": 0,
+     "leaders": 2,
+     "ran": 0
+    },
+    "pctile": 0.1885,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.077329,
+    "ew_10d": -0.068699
+   },
+   {
+    "basket_id": "insurance",
+    "name": "Insurance & Brokers",
+    "category": "Financials",
+    "as_of": "2026-09-11",
+    "n_members": 19,
+    "n_members_live": 19,
+    "n_members_read": 19,
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "CB"
+    ],
+    "present_counts": {
+     "buy": 1,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.1845,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.040101,
+    "ew_10d": -0.028192
+   },
+   {
+    "basket_id": "reshoring",
+    "name": "Reshoring & Industrial Capex",
+    "category": "Industrials & Defense",
+    "as_of": "2026-09-11",
+    "n_members": 16,
+    "n_members_live": 16,
+    "n_members_read": 16,
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "AME"
+    ],
+    "present_counts": {
+     "buy": 0,
+     "watch": 1,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.1845,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": 0.004864,
+    "ew_10d": -0.025381
+   },
+   {
+    "basket_id": "us_sector_utilities",
+    "name": "Utilities (Equal-Weight)",
+    "category": "US Sectors (EW)",
+    "as_of": "2026-09-11",
+    "n_members": 31,
+    "n_members_live": 31,
+    "n_members_read": 31,
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "VST"
+    ],
+    "present_counts": {
+     "buy": 1,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.1806,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.014097,
+    "ew_10d": -0.021204
+   },
+   {
+    "basket_id": "silver_miners",
+    "name": "Silver Miners",
+    "category": "Materials & Mining",
+    "as_of": "2026-09-11",
+    "n_members": 10,
+    "n_members_live": 8,
+    "n_members_read": 8,
+    "n_members_on_board": 0,
+    "members_on_board": [],
+    "present_counts": {
+     "buy": 0,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.1766,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.07131,
+    "ew_10d": -0.08499
+   },
+   {
+    "basket_id": "defense",
+    "name": "Defense & Aerospace",
+    "category": "Industrials & Defense",
+    "as_of": "2026-09-11",
+    "n_members": 22,
+    "n_members_live": 21,
+    "n_members_read": 22,
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "BA"
+    ],
+    "present_counts": {
+     "buy": 1,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.1567,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.026191,
+    "ew_10d": -0.060963
+   },
+   {
+    "basket_id": "industrial_distribution",
+    "name": "Industrial Distribution & Capital Goods",
+    "category": "Industrials",
+    "as_of": "2026-09-11",
+    "n_members": 12,
+    "n_members_live": 12,
+    "n_members_read": 12,
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "MSM"
+    ],
+    "present_counts": {
+     "buy": 0,
+     "watch": 1,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.1448,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.00279,
+    "ew_10d": -0.030462
+   },
+   {
+    "basket_id": "us_sector_realestate",
+    "name": "Real Estate (Equal-Weight)",
+    "category": "US Sectors (EW)",
+    "as_of": "2026-09-11",
+    "n_members": 31,
+    "n_members_live": 31,
+    "n_members_read": 31,
+    "n_members_on_board": 0,
+    "members_on_board": [],
+    "present_counts": {
+     "buy": 0,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.121,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.022255,
+    "ew_10d": -0.02922
+   },
+   {
+    "basket_id": "housing",
+    "name": "Housing Chain",
+    "category": "Consumer Cyclical",
+    "as_of": "2026-09-11",
+    "n_members": 19,
+    "n_members_live": 18,
+    "n_members_read": 19,
+    "n_members_on_board": 0,
+    "members_on_board": [],
+    "present_counts": {
+     "buy": 0,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.1171,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.046378,
+    "ew_10d": -0.069219
+   },
+   {
+    "basket_id": "critical_minerals",
+    "name": "Critical Minerals & Rare Earths",
+    "category": "Materials & Mining",
+    "as_of": "2026-09-11",
+    "n_members": 11,
+    "n_members_live": 11,
+    "n_members_read": 11,
+    "n_members_on_board": 0,
+    "members_on_board": [],
+    "present_counts": {
+     "buy": 0,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.1131,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.099889,
+    "ew_10d": -0.146999
+   },
+   {
+    "basket_id": "us_sector_financials",
+    "name": "Financials (Equal-Weight)",
+    "category": "US Sectors (EW)",
+    "as_of": "2026-09-11",
+    "n_members": 76,
+    "n_members_live": 76,
+    "n_members_read": 76,
+    "n_members_on_board": 6,
+    "members_on_board": [
+     "C",
+     "CB",
+     "HOOD",
+     "L",
+     "PNC",
+     "WFC"
+    ],
+    "present_counts": {
+     "buy": 5,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 1
+    },
+    "pctile": 0.1131,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.034281,
+    "ew_10d": -0.025602
    },
    {
     "basket_id": "big_pharma",
     "name": "Big Pharma",
     "category": "Healthcare",
-    "as_of": "2026-09-10",
+    "as_of": "2026-09-11",
     "n_members": 10,
     "n_members_live": 9,
     "n_members_read": 10,
@@ -1069,69 +1127,44 @@
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.0655,
+    "pctile": 0.1091,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": -0.046412,
-    "ew_10d": -0.034398
+    "ew_5d": -0.049863,
+    "ew_10d": -0.027332
    },
    {
-    "basket_id": "us_sector_financials",
-    "name": "Financials (Equal-Weight)",
+    "basket_id": "us_sector_discretionary",
+    "name": "Consumer Discretionary (Equal-Weight)",
     "category": "US Sectors (EW)",
-    "as_of": "2026-09-10",
-    "n_members": 76,
-    "n_members_live": 76,
-    "n_members_read": 76,
+    "as_of": "2026-09-11",
+    "n_members": 47,
+    "n_members_live": 47,
+    "n_members_read": 47,
     "n_members_on_board": 4,
     "members_on_board": [
-     "C",
-     "CB",
-     "L",
-     "WFC"
-    ],
-    "present_counts": {
-     "buy": 4,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.0655,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": -0.019489,
-    "ew_10d": -0.034107
-   },
-   {
-    "basket_id": "reshoring",
-    "name": "Reshoring & Industrial Capex",
-    "category": "Industrials & Defense",
-    "as_of": "2026-09-10",
-    "n_members": 16,
-    "n_members_live": 16,
-    "n_members_read": 16,
-    "n_members_on_board": 2,
-    "members_on_board": [
-     "AME",
-     "PWR"
+     "HAS",
+     "RL",
+     "ROST",
+     "TPR"
     ],
     "present_counts": {
      "buy": 0,
-     "watch": 2,
+     "watch": 4,
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.0575,
+    "pctile": 0.0972,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": -0.002086,
-    "ew_10d": -0.0523
+    "ew_5d": -0.037222,
+    "ew_10d": -0.04304
    },
    {
     "basket_id": "defensives",
     "name": "Defensives",
     "category": "Consumer Defensive",
-    "as_of": "2026-09-10",
+    "as_of": "2026-09-11",
     "n_members": 18,
     "n_members_live": 18,
     "n_members_read": 18,
@@ -1145,157 +1178,160 @@
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.0536,
+    "pctile": 0.0933,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": -0.03521,
-    "ew_10d": -0.048651
+    "ew_5d": -0.030071,
+    "ew_10d": -0.037233
    },
    {
-    "basket_id": "industrial_distribution",
-    "name": "Industrial Distribution & Capital Goods",
-    "category": "Industrials",
-    "as_of": "2026-09-10",
-    "n_members": 12,
-    "n_members_live": 12,
-    "n_members_read": 12,
-    "n_members_on_board": 2,
+    "basket_id": "travel",
+    "name": "Travel & Experiences",
+    "category": "Consumer Cyclical",
+    "as_of": "2026-09-11",
+    "n_members": 24,
+    "n_members_live": 24,
+    "n_members_read": 24,
+    "n_members_on_board": 1,
     "members_on_board": [
-     "GWW",
-     "MSM"
+     "LUV"
+    ],
+    "present_counts": {
+     "buy": 1,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.0893,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.021201,
+    "ew_10d": -0.055229
+   },
+   {
+    "basket_id": "us_sector_staples",
+    "name": "Consumer Staples (Equal-Weight)",
+    "category": "US Sectors (EW)",
+    "as_of": "2026-09-11",
+    "n_members": 35,
+    "n_members_live": 35,
+    "n_members_read": 35,
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "CL"
     ],
     "present_counts": {
      "buy": 0,
+     "watch": 1,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.0853,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.033497,
+    "ew_10d": -0.038002
+   },
+   {
+    "basket_id": "us_sector_materials",
+    "name": "Materials (Equal-Weight)",
+    "category": "US Sectors (EW)",
+    "as_of": "2026-09-11",
+    "n_members": 26,
+    "n_members_live": 26,
+    "n_members_read": 26,
+    "n_members_on_board": 0,
+    "members_on_board": [],
+    "present_counts": {
+     "buy": 0,
+     "watch": 0,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.0615,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.033041,
+    "ew_10d": -0.042676
+   },
+   {
+    "basket_id": "us_sector_industrials",
+    "name": "Industrials (Equal-Weight)",
+    "category": "US Sectors (EW)",
+    "as_of": "2026-09-11",
+    "n_members": 80,
+    "n_members_live": 80,
+    "n_members_read": 80,
+    "n_members_on_board": 4,
+    "members_on_board": [
+     "AME",
+     "BA",
+     "JBHT",
+     "LUV"
+    ],
+    "present_counts": {
+     "buy": 2,
      "watch": 2,
+     "leaders": 0,
+     "ran": 0
+    },
+    "pctile": 0.0575,
+    "pctile_n": 252,
+    "miss": false,
+    "ew_5d": -0.018177,
+    "ew_10d": -0.043199
+   },
+   {
+    "basket_id": "us_sector_health",
+    "name": "Health Care (Equal-Weight)",
+    "category": "US Sectors (EW)",
+    "as_of": "2026-09-11",
+    "n_members": 59,
+    "n_members_live": 59,
+    "n_members_read": 59,
+    "n_members_on_board": 1,
+    "members_on_board": [
+     "ELV"
+    ],
+    "present_counts": {
+     "buy": 1,
+     "watch": 0,
      "leaders": 0,
      "ran": 0
     },
     "pctile": 0.0496,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": -0.000889,
-    "ew_10d": -0.045449
+    "ew_5d": -0.046254,
+    "ew_10d": -0.040103
    },
    {
-    "basket_id": "us_sector_materials",
-    "name": "Materials (Equal-Weight)",
-    "category": "US Sectors (EW)",
-    "as_of": "2026-09-10",
-    "n_members": 26,
-    "n_members_live": 26,
-    "n_members_read": 26,
-    "n_members_on_board": 1,
-    "members_on_board": [
-     "NUE"
-    ],
+    "basket_id": "uranium_miners",
+    "name": "Uranium & Nuclear Fuel",
+    "category": "Materials & Mining",
+    "as_of": "2026-09-11",
+    "n_members": 10,
+    "n_members_live": 10,
+    "n_members_read": 10,
+    "n_members_on_board": 0,
+    "members_on_board": [],
     "present_counts": {
      "buy": 0,
-     "watch": 1,
+     "watch": 0,
      "leaders": 0,
      "ran": 0
     },
     "pctile": 0.0456,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": -0.042654,
-    "ew_10d": -0.050715
-   },
-   {
-    "basket_id": "us_sector_staples",
-    "name": "Consumer Staples (Equal-Weight)",
-    "category": "US Sectors (EW)",
-    "as_of": "2026-09-10",
-    "n_members": 35,
-    "n_members_live": 35,
-    "n_members_read": 35,
-    "n_members_on_board": 2,
-    "members_on_board": [
-     "ADM",
-     "CL"
-    ],
-    "present_counts": {
-     "buy": 1,
-     "watch": 1,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.0456,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": -0.04252,
-    "ew_10d": -0.05221
-   },
-   {
-    "basket_id": "housing",
-    "name": "Housing Chain",
-    "category": "Consumer Cyclical",
-    "as_of": "2026-09-10",
-    "n_members": 19,
-    "n_members_live": 18,
-    "n_members_read": 19,
-    "n_members_on_board": 0,
-    "members_on_board": [],
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.0377,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": -0.053561,
-    "ew_10d": -0.100161
-   },
-   {
-    "basket_id": "us_sector_health",
-    "name": "Health Care (Equal-Weight)",
-    "category": "US Sectors (EW)",
-    "as_of": "2026-09-10",
-    "n_members": 59,
-    "n_members_live": 59,
-    "n_members_read": 59,
-    "n_members_on_board": 0,
-    "members_on_board": [],
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.0298,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": -0.047704,
-    "ew_10d": -0.048425
-   },
-   {
-    "basket_id": "us_sector_realestate",
-    "name": "Real Estate (Equal-Weight)",
-    "category": "US Sectors (EW)",
-    "as_of": "2026-09-10",
-    "n_members": 31,
-    "n_members_live": 31,
-    "n_members_read": 31,
-    "n_members_on_board": 0,
-    "members_on_board": [],
-    "present_counts": {
-     "buy": 0,
-     "watch": 0,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.0218,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": -0.022738,
-    "ew_10d": -0.048551
+    "ew_5d": -0.089607,
+    "ew_10d": -0.156088
    },
    {
     "basket_id": "obesity_glp1",
     "name": "GLP-1 & Obesity",
     "category": "Healthcare",
-    "as_of": "2026-09-10",
+    "as_of": "2026-09-11",
     "n_members": 14,
     "n_members_live": 14,
     "n_members_read": 14,
@@ -1307,95 +1343,33 @@
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.0179,
+    "pctile": 0.0099,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": -0.042866,
-    "ew_10d": -0.057368
+    "ew_5d": -0.050671,
+    "ew_10d": -0.061818
    },
    {
-    "basket_id": "us_sector_discretionary",
-    "name": "Consumer Discretionary (Equal-Weight)",
-    "category": "US Sectors (EW)",
-    "as_of": "2026-09-10",
-    "n_members": 47,
-    "n_members_live": 47,
-    "n_members_read": 47,
-    "n_members_on_board": 5,
-    "members_on_board": [
-     "ABNB",
-     "HAS",
-     "RL",
-     "ROST",
-     "TPR"
-    ],
+    "basket_id": "cybersecurity",
+    "name": "Cybersecurity",
+    "category": "Software",
+    "as_of": "2026-09-11",
+    "n_members": 12,
+    "n_members_live": 10,
+    "n_members_read": 12,
+    "n_members_on_board": 0,
+    "members_on_board": [],
     "present_counts": {
      "buy": 0,
-     "watch": 5,
+     "watch": 0,
      "leaders": 0,
      "ran": 0
     },
-    "pctile": 0.0179,
+    "pctile": 0.006,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": -0.040017,
-    "ew_10d": -0.067847
-   },
-   {
-    "basket_id": "us_sector_industrials",
-    "name": "Industrials (Equal-Weight)",
-    "category": "US Sectors (EW)",
-    "as_of": "2026-09-10",
-    "n_members": 80,
-    "n_members_live": 80,
-    "n_members_read": 80,
-    "n_members_on_board": 7,
-    "members_on_board": [
-     "AME",
-     "BA",
-     "DAL",
-     "GWW",
-     "JBHT",
-     "LUV",
-     "PWR"
-    ],
-    "present_counts": {
-     "buy": 3,
-     "watch": 4,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.0179,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": -0.017682,
-    "ew_10d": -0.059034
-   },
-   {
-    "basket_id": "travel",
-    "name": "Travel & Experiences",
-    "category": "Consumer Cyclical",
-    "as_of": "2026-09-10",
-    "n_members": 24,
-    "n_members_live": 24,
-    "n_members_read": 24,
-    "n_members_on_board": 3,
-    "members_on_board": [
-     "ABNB",
-     "DAL",
-     "LUV"
-    ],
-    "present_counts": {
-     "buy": 2,
-     "watch": 1,
-     "leaders": 0,
-     "ran": 0
-    },
-    "pctile": 0.0139,
-    "pctile_n": 252,
-    "miss": false,
-    "ew_5d": -0.032795,
-    "ew_10d": -0.084889
+    "ew_5d": -0.039696,
+    "ew_10d": -0.12123
    }
   ]
  },
@@ -1407,16 +1381,16 @@
   "graded_by": "engine.grading.grade_next_bar_return (next-bar fill, survivorship-aware) via engine.name_score_grader's own forward-store ladder",
   "scored_field": "score — name_score.potential_score, the number the US board displays as conviction.score (scripts/build_stock_library.py overwrites c['score'] with the potential score for backward compatibility)",
   "available": true,
-  "n_calls": 134441,
-  "n_frozen_echoes_excluded": 230,
-  "n_stamp_dates": 57,
+  "n_calls": 137352,
+  "n_frozen_echoes_excluded": 231,
+  "n_stamp_dates": 58,
   "stamp_dates": {
    "first": "2026-06-29",
-   "last": "2026-09-10"
+   "last": "2026-09-11"
   },
   "forward_store": {
    "group": "stocks",
-   "n_names_stamped": 3013,
+   "n_names_stamped": 3014,
    "n_names_resolved": 366,
    "coverage_pct": 12.1,
    "note": "the forward join resolves only names with a per-name close store; a stamped name with no store is absent from every horizon, not scored zero"
@@ -1424,42 +1398,42 @@
   "by_horizon": {
    "21d": {
     "horizon_d": 21,
-    "n_graded": 9049,
-    "rank_ic": -0.0395,
-    "n_ic_dates": 38,
+    "n_graded": 9291,
+    "rank_ic": -0.0404,
+    "n_ic_dates": 39,
     "ic_cross_section": {
      "min": 236,
      "median": 238,
      "max": 242
     },
-    "buy_tier_hit_rate": 0.547,
-    "buy_tier_n": 1286,
+    "buy_tier_hit_rate": 0.54,
+    "buy_tier_n": 1331,
     "by_tier": {
      "no_setup": {
-      "n": 5276,
-      "mean_fwd": 0.0194,
-      "pos_rate": 0.549
+      "n": 5416,
+      "mean_fwd": 0.0184,
+      "pos_rate": 0.544
      },
      "primed": {
-      "n": 148,
-      "mean_fwd": 0.0525,
-      "pos_rate": 0.615
+      "n": 149,
+      "mean_fwd": 0.0513,
+      "pos_rate": 0.611
      },
      "setting_up": {
-      "n": 1138,
-      "mean_fwd": 0.0156,
-      "pos_rate": 0.539
+      "n": 1182,
+      "mean_fwd": 0.014,
+      "pos_rate": 0.531
      },
      "watch": {
-      "n": 2487,
-      "mean_fwd": 0.0123,
-      "pos_rate": 0.516
+      "n": 2544,
+      "mean_fwd": 0.0113,
+      "pos_rate": 0.513
      }
     },
     "precision_at_k": {
      "definition": "hit = forward return > that stamp date's median graded forward return; dates with a graded cross-section < 20 are excluded from P@k (the exclusion is stated and counted below, not silent)",
      "min_cross_section": 20,
-     "n_dates_eligible": 38,
+     "n_dates_eligible": 39,
      "n_dates_excluded_thin": 0,
      "cross_section": {
       "min": 236,
@@ -1468,28 +1442,28 @@
      },
      "by_k": {
       "p_at_1": {
-       "value": 0.684,
-       "lift_vs_base": 0.185,
-       "n_dates": 38,
-       "n_picks": 38
+       "value": 0.667,
+       "lift_vs_base": 0.167,
+       "n_dates": 39,
+       "n_picks": 39
       },
       "p_at_3": {
-       "value": 0.614,
-       "lift_vs_base": 0.115,
-       "n_dates": 38,
-       "n_picks": 114
+       "value": 0.607,
+       "lift_vs_base": 0.108,
+       "n_dates": 39,
+       "n_picks": 117
       },
       "p_at_5": {
-       "value": 0.611,
-       "lift_vs_base": 0.111,
-       "n_dates": 38,
-       "n_picks": 190
+       "value": 0.605,
+       "lift_vs_base": 0.106,
+       "n_dates": 39,
+       "n_picks": 195
       },
       "p_at_10": {
-       "value": 0.571,
-       "lift_vs_base": 0.072,
-       "n_dates": 38,
-       "n_picks": 380
+       "value": 0.564,
+       "lift_vs_base": 0.065,
+       "n_dates": 39,
+       "n_picks": 390
       }
      },
      "base_rate": 0.499
@@ -1512,18 +1486,18 @@
  },
  "scan_tier": {
   "available": true,
-  "asof": "2026-09-09",
+  "asof": "2026-09-10",
   "null_reason": null,
   "floor_rule": "still trading (last bar = store's last bar) AND >= 159 bars AND close >= $3 AND median(close x volume) over the last 20 bars >= $5M",
-  "store_n": 20976,
-  "scan_n": 1505,
+  "store_n": 20995,
+  "scan_n": 1513,
   "runners_n": 150,
-  "runners_eligible_today_n": 2,
-  "runners_never_eligible_n": 20,
+  "runners_eligible_today_n": 3,
+  "runners_never_eligible_n": 21,
   "excluder_family_hist": {
-   "not_topped_veto": 141,
-   "freshness_expired": 5,
-   "ELIGIBLE": 2,
+   "not_topped_veto": 135,
+   "freshness_expired": 10,
+   "ELIGIBLE": 3,
    "no_cross": 1,
    "rsi_cap_on_fresh_cross": 1
   }
@@ -1538,12 +1512,12 @@
   "population": "EVERY stamped candidate row is graded, not only the ~12 that become plans (operator order 2026-08-05). Two populations are carried separately and never pooled: CURATED (board-admissible) and SCAN (seen and stamped, never admitted). Within each, basing and momentum picks are reported separately at every horizon in the ladder",
   "store": {
    "available": true,
-   "n_rows": 14477,
-   "n_stamp_dates": 9,
+   "n_rows": 15925,
+   "n_stamp_dates": 10,
    "by_horizon": {
     "10d": {
-     "n_rows": 11585,
-     "n_stamp_dates": 9,
+     "n_rows": 13033,
+     "n_stamp_dates": 10,
      "n_excess_null": 0
     },
     "21d": {
@@ -1554,7 +1528,7 @@
    },
    "by_cohort": {},
    "by_signal_class": {
-    "other": 14477
+    "other": 15925
    },
    "horizon_ladder": [
     10,
@@ -1578,10 +1552,10 @@
    },
    "stamp_dates": {
     "first": "2026-07-31",
-    "last": "2026-08-25"
+    "last": "2026-08-26"
    },
-   "n_cohort_null": 14477,
-   "cohort_null_note": "14477 row(s) carry no curated/scan cohort — they were graded before the scan-tier discriminator landed in the candidates store. They are reported as one unsplit population, never folded into 'curated'"
+   "n_cohort_null": 15925,
+   "cohort_null_note": "15925 row(s) carry no curated/scan cohort — they were graded before the scan-tier discriminator landed in the candidates store. They are reported as one unsplit population, never folded into 'curated'"
   },
   "horizon_ladder": [
    10,
@@ -1605,8 +1579,8 @@
   },
   "chartered_horizon_note": "PRE-REGISTERED before any H=42/63 data matured (operator ruling 2026-08-05). Every class is graded and reported at EVERY horizon below, so nothing is hidden; this map only fixes which horizon is each class's HEADLINE read, so that 'grade each class at the horizon that flatters it, chosen after seeing the results' is impossible. PROPOSED pending commissioner adjudication",
   "score_coverage": {
-   "n_rows": 14477,
-   "n_scored": 543,
+   "n_rows": 15925,
+   "n_scored": 597,
    "coverage_pct": 3.75,
    "note": "the US builder runs us_board_rank.score_rows on the BUY LANE only, so a row off the board carries no priority score. That is a MEASURED coverage fact, never a zero score — the ranking legs below are computed on the scored subset and the population leg on everything"
   },
@@ -1614,68 +1588,68 @@
    "available": false,
    "column": "universe_tier",
    "n_by_cohort": {},
-   "n_unsplit": 14477,
+   "n_unsplit": 15925,
    "note": "the scan-tier discriminator has not landed in the candidates store yet, so every graded row is one UNSPLIT population. It is labelled 'unsplit' rather than 'curated' because calling it curated would assert a split that has not been measured"
   },
   "by_cohort": {
    "unsplit": {
     "10d": {
      "horizon_d": 10,
-     "n_graded": 11585,
-     "n_scored": 429,
-     "n_dates": 9,
+     "n_graded": 13033,
+     "n_scored": 483,
+     "n_dates": 10,
      "population": {
-      "n": 11585,
-      "n_excess": 11585,
-      "n_dates": 9,
-      "mean_excess": -0.01283,
-      "median_excess": -0.01374,
-      "pos_rate": 0.3763,
+      "n": 13033,
+      "n_excess": 13033,
+      "n_dates": 10,
+      "mean_excess": -0.01438,
+      "median_excess": -0.01491,
+      "pos_rate": 0.3675,
       "by_lane": {
        "buy": {
-        "n": 427,
-        "mean_excess": -0.01189,
-        "median_excess": -0.01347,
-        "pos_rate": 0.3841
+        "n": 480,
+        "mean_excess": -0.01371,
+        "median_excess": -0.01522,
+        "pos_rate": 0.3688
        },
        "laggards": {
-        "n": 89,
-        "mean_excess": -0.00871,
-        "median_excess": -0.02411,
-        "pos_rate": 0.382
+        "n": 99,
+        "mean_excess": -0.0135,
+        "median_excess": -0.02414,
+        "pos_rate": 0.3737
        },
        "leaders": {
-        "n": 105,
-        "mean_excess": -0.02711,
-        "median_excess": -0.03537,
-        "pos_rate": 0.3238
+        "n": 118,
+        "mean_excess": -0.03059,
+        "median_excess": -0.04169,
+        "pos_rate": 0.3136
        },
        "not_on_board": {
-        "n": 10587,
-        "mean_excess": -0.01233,
-        "median_excess": -0.01337,
-        "pos_rate": 0.3777
+        "n": 11911,
+        "mean_excess": -0.01385,
+        "median_excess": -0.01451,
+        "pos_rate": 0.3696
        },
        "watch": {
-        "n": 377,
-        "mean_excess": -0.02475,
-        "median_excess": -0.02282,
-        "pos_rate": 0.3395
+        "n": 425,
+        "mean_excess": -0.02587,
+        "median_excess": -0.02594,
+        "pos_rate": 0.32
        }
       }
      },
      "by_signal_class": {
       "other": {
-       "n": 11585,
-       "n_excess": 11585,
-       "mean_excess": -0.01283,
-       "median_excess": -0.01374,
-       "pos_rate": 0.3763,
-       "loser_rate": 0.6237
+       "n": 13033,
+       "n_excess": 13033,
+       "mean_excess": -0.01438,
+       "median_excess": -0.01491,
+       "pos_rate": 0.3675,
+       "loser_rate": 0.6325
       }
      },
-     "rank_ic": 0.0569,
-     "n_ic_dates": 8,
+     "rank_ic": 0.0523,
+     "n_ic_dates": 9,
      "n_ic_dates_degenerate": 0,
      "ic_cross_section": {
       "min": 39,
@@ -1685,119 +1659,119 @@
      "precision_at_k": {
       "definition": "hit = excess vs SPY above that stamp date's FULL-population median excess WITHIN THIS COHORT (every graded name in it, not just the ranked ones); dates whose scored cross-section is < 20 are excluded and counted",
       "min_cross_section": 20,
-      "n_dates_eligible": 8,
+      "n_dates_eligible": 9,
       "n_dates_excluded_thin": 1,
       "cross_section": {
        "min": 39,
        "median": 55,
        "max": 64
       },
-      "base_rate": 0.506,
+      "base_rate": 0.507,
       "by_k": {
        "p_at_1": {
-        "value": 0.625,
-        "lift_vs_base": 0.119,
-        "n_dates": 8,
-        "n_picks": 8
+        "value": 0.667,
+        "lift_vs_base": 0.16,
+        "n_dates": 9,
+        "n_picks": 9
        },
        "p_at_5": {
-        "value": 0.65,
-        "lift_vs_base": 0.144,
-        "n_dates": 8,
-        "n_picks": 40
+        "value": 0.622,
+        "lift_vs_base": 0.115,
+        "n_dates": 9,
+        "n_picks": 45
        },
        "p_at_10": {
-        "value": 0.625,
-        "lift_vs_base": 0.119,
-        "n_dates": 8,
-        "n_picks": 80
+        "value": 0.622,
+        "lift_vs_base": 0.115,
+        "n_dates": 9,
+        "n_picks": 90
        },
        "p_at_25": {
-        "value": 0.52,
-        "lift_vs_base": 0.014,
-        "n_dates": 8,
-        "n_picks": 200
+        "value": 0.529,
+        "lift_vs_base": 0.022,
+        "n_dates": 9,
+        "n_picks": 225
        }
       }
      },
      "deciles": {
       "definition": "deciles cut within each stamp date (10 = highest priority score); hit = excess vs SPY above that date's median excess across the FULL graded population (every stamped name); loser = excess < 0; dates with fewer than 20 scored names are excluded and counted",
       "min_cross_section": 20,
-      "n_dates_eligible": 8,
+      "n_dates_eligible": 9,
       "n_dates_excluded_thin": 1,
       "by_decile": {
        "d1": {
-        "n": 46,
-        "mean_excess": -0.00899,
-        "median_excess": -0.00924,
-        "hit_rate": 0.5435,
-        "loser_rate": 0.6087
+        "n": 52,
+        "mean_excess": -0.00889,
+        "median_excess": -0.00971,
+        "hit_rate": 0.5385,
+        "loser_rate": 0.6154
        },
        "d2": {
-        "n": 43,
-        "mean_excess": -0.0367,
-        "median_excess": -0.025,
-        "hit_rate": 0.3488,
-        "loser_rate": 0.7442
+        "n": 48,
+        "mean_excess": -0.03963,
+        "median_excess": -0.02865,
+        "hit_rate": 0.3333,
+        "loser_rate": 0.75
        },
        "d3": {
-        "n": 42,
-        "mean_excess": -0.00096,
-        "median_excess": -0.00699,
-        "hit_rate": 0.5,
-        "loser_rate": 0.5476
+        "n": 47,
+        "mean_excess": -0.00275,
+        "median_excess": -0.00789,
+        "hit_rate": 0.5106,
+        "loser_rate": 0.5532
        },
        "d4": {
-        "n": 43,
-        "mean_excess": 0.02213,
-        "median_excess": -0.01179,
-        "hit_rate": 0.5581,
-        "loser_rate": 0.5814
+        "n": 49,
+        "mean_excess": 0.02044,
+        "median_excess": -0.00491,
+        "hit_rate": 0.5918,
+        "loser_rate": 0.5918
        },
        "d5": {
-        "n": 42,
-        "mean_excess": -0.03031,
-        "median_excess": -0.02296,
-        "hit_rate": 0.4048,
-        "loser_rate": 0.6905
+        "n": 47,
+        "mean_excess": -0.02984,
+        "median_excess": -0.02624,
+        "hit_rate": 0.383,
+        "loser_rate": 0.7021
        },
        "d6": {
-        "n": 42,
-        "mean_excess": -0.00049,
-        "median_excess": 0.00059,
-        "hit_rate": 0.5714,
-        "loser_rate": 0.5
+        "n": 47,
+        "mean_excess": -0.00608,
+        "median_excess": -0.00421,
+        "hit_rate": 0.5532,
+        "loser_rate": 0.5319
        },
        "d7": {
-        "n": 41,
-        "mean_excess": -0.02169,
-        "median_excess": -0.02544,
-        "hit_rate": 0.439,
-        "loser_rate": 0.7073
+        "n": 47,
+        "mean_excess": -0.01993,
+        "median_excess": -0.02498,
+        "hit_rate": 0.4681,
+        "loser_rate": 0.7021
        },
        "d8": {
-        "n": 44,
-        "mean_excess": -0.01907,
-        "median_excess": -0.0243,
-        "hit_rate": 0.3864,
-        "loser_rate": 0.7273
+        "n": 49,
+        "mean_excess": -0.01987,
+        "median_excess": -0.02461,
+        "hit_rate": 0.3878,
+        "loser_rate": 0.7347
        },
        "d9": {
-        "n": 41,
-        "mean_excess": -0.00364,
-        "median_excess": -0.00488,
-        "hit_rate": 0.6585,
-        "loser_rate": 0.5366
+        "n": 46,
+        "mean_excess": -0.00522,
+        "median_excess": -0.00585,
+        "hit_rate": 0.6739,
+        "loser_rate": 0.5652
        },
        "d10": {
-        "n": 45,
-        "mean_excess": -0.01309,
-        "median_excess": 0.00624,
-        "hit_rate": 0.6222,
-        "loser_rate": 0.4889
+        "n": 51,
+        "mean_excess": -0.01788,
+        "median_excess": -0.00698,
+        "hit_rate": 0.6078,
+        "loser_rate": 0.5294
        }
       },
-      "top_minus_bottom_excess": -0.0041
+      "top_minus_bottom_excess": -0.00899
      },
      "thin": false
     },
@@ -2027,35 +2001,35 @@
   "thin_min_n": 20,
   "available": true,
   "coverage": {
-   "n_episodes": 9409,
-   "n_with_status": 8567,
-   "status_coverage_pct": 91.05,
-   "n_excess": 9409,
+   "n_episodes": 9582,
+   "n_with_status": 8729,
+   "status_coverage_pct": 91.1,
+   "n_excess": 9582,
    "n_dates": 39,
    "as_of": {
     "first": "2026-06-15",
     "last": "2026-08-31"
    },
    "n_by_status": {
-    "bounce_wait": 2082,
-    "extended": 1399,
-    "await_confluence": 866,
-    "hold": 848,
-    "partial": 734,
-    "buy_soon": 718,
-    "blocked": 607,
-    "buy_now": 424,
-    "wait_pullback": 389,
-    "topping": 274,
-    "watch": 197,
-    "exit": 29
+    "bounce_wait": 2121,
+    "extended": 1416,
+    "await_confluence": 881,
+    "hold": 854,
+    "partial": 745,
+    "buy_soon": 731,
+    "blocked": 643,
+    "buy_now": 434,
+    "wait_pullback": 395,
+    "topping": 280,
+    "watch": 198,
+    "exit": 31
    },
    "price_basis_era": {
     "column": "price_basis",
     "n_by_basis": {
-     "adjusted": 6645,
+     "adjusted": 6816,
      "unverified_pre_20260806": 1342,
-     "unadjusted": 472
+     "unadjusted": 474
     },
     "n_pre_era": 1342,
     "n_unstamped": 950,
@@ -2067,11 +2041,11 @@
   "cohort_split": {
    "column": "lane",
    "n_by_cohort": {
-    "buy": 4684,
-    "watch": 2836,
-    "laggards": 992,
-    "leaders": 576,
-    "ran": 321
+    "buy": 4748,
+    "watch": 2909,
+    "laggards": 1003,
+    "leaders": 590,
+    "ran": 332
    },
    "n_unlaned": 0,
    "note": "board lanes are DIFFERENT POPULATIONS and are never pooled: every statistic below is computed inside one lane. A row with no lane is reported under 'unlaned', never folded into 'buy'"
@@ -2085,9 +2059,9 @@
    "buy": {
     "5d": {
      "horizon_d": 5,
-     "n_episodes": 2262,
-     "n_excess": 2262,
-     "n_with_status": 1997,
+     "n_episodes": 2269,
+     "n_excess": 2269,
+     "n_with_status": 2004,
      "n_dates": 39,
      "n_dates_marked": 39,
      "as_of_marked_first": "2026-06-15",
@@ -2124,18 +2098,18 @@
        "thin": false
       },
       "bounce_wait": {
-       "n": 521,
-       "n_excess": 521,
+       "n": 523,
+       "n_excess": 523,
        "as_of_first": "2026-07-17",
        "as_of_last": "2026-08-31",
-       "loser_rate": 0.5585,
-       "loser_rate_wilson_lo": 0.5156,
-       "loser_rate_wilson_hi": 0.6006,
-       "win_rate": 0.4415,
-       "win_rate_wilson_lo": 0.3994,
-       "win_rate_wilson_hi": 0.4844,
-       "median_excess": -0.00596,
-       "mean_excess": -0.00317,
+       "loser_rate": 0.5564,
+       "loser_rate_wilson_lo": 0.5136,
+       "loser_rate_wilson_hi": 0.5984,
+       "win_rate": 0.4436,
+       "win_rate_wilson_lo": 0.4016,
+       "win_rate_wilson_hi": 0.4864,
+       "median_excess": -0.00579,
+       "mean_excess": -0.00308,
        "thin": false
       },
       "buy_now": {
@@ -2154,17 +2128,17 @@
        "thin": false
       },
       "buy_soon": {
-       "n": 166,
-       "n_excess": 166,
+       "n": 169,
+       "n_excess": 169,
        "as_of_first": "2026-06-18",
        "as_of_last": "2026-08-31",
-       "loser_rate": 0.5181,
-       "loser_rate_wilson_lo": 0.4425,
-       "loser_rate_wilson_hi": 0.5928,
-       "win_rate": 0.4819,
-       "win_rate_wilson_lo": 0.4072,
-       "win_rate_wilson_hi": 0.5575,
-       "median_excess": -0.00157,
+       "loser_rate": 0.5207,
+       "loser_rate_wilson_lo": 0.4458,
+       "loser_rate_wilson_hi": 0.5947,
+       "win_rate": 0.4793,
+       "win_rate_wilson_lo": 0.4053,
+       "win_rate_wilson_hi": 0.5542,
+       "median_excess": -0.00072,
        "mean_excess": 0.00398,
        "thin": false
       },
@@ -2200,32 +2174,32 @@
        "thin": false
       },
       "hold": {
-       "n": 344,
-       "n_excess": 344,
+       "n": 345,
+       "n_excess": 345,
        "as_of_first": "2026-06-18",
        "as_of_last": "2026-08-31",
-       "loser_rate": 0.5465,
-       "loser_rate_wilson_lo": 0.4937,
-       "loser_rate_wilson_hi": 0.5983,
-       "win_rate": 0.4535,
-       "win_rate_wilson_lo": 0.4017,
-       "win_rate_wilson_hi": 0.5063,
-       "median_excess": -0.0039,
-       "mean_excess": -0.00268,
+       "loser_rate": 0.5478,
+       "loser_rate_wilson_lo": 0.4951,
+       "loser_rate_wilson_hi": 0.5995,
+       "win_rate": 0.4522,
+       "win_rate_wilson_lo": 0.4005,
+       "win_rate_wilson_hi": 0.5049,
+       "median_excess": -0.00412,
+       "mean_excess": -0.00277,
        "thin": false
       },
       "partial": {
-       "n": 315,
-       "n_excess": 315,
+       "n": 316,
+       "n_excess": 316,
        "as_of_first": "2026-06-18",
        "as_of_last": "2026-08-31",
-       "loser_rate": 0.5873,
-       "loser_rate_wilson_lo": 0.5322,
-       "loser_rate_wilson_hi": 0.6403,
-       "win_rate": 0.4127,
-       "win_rate_wilson_lo": 0.3597,
-       "win_rate_wilson_hi": 0.4678,
-       "median_excess": -0.00981,
+       "loser_rate": 0.5886,
+       "loser_rate_wilson_lo": 0.5336,
+       "loser_rate_wilson_hi": 0.6415,
+       "win_rate": 0.4114,
+       "win_rate_wilson_lo": 0.3585,
+       "win_rate_wilson_hi": 0.4664,
+       "median_excess": -0.00918,
        "mean_excess": -0.00649,
        "thin": false
       },
@@ -2287,87 +2261,87 @@
     },
     "10d": {
      "horizon_d": 10,
-     "n_episodes": 1603,
-     "n_excess": 1603,
-     "n_with_status": 1426,
-     "n_dates": 30,
-     "n_dates_marked": 30,
+     "n_episodes": 1659,
+     "n_excess": 1659,
+     "n_with_status": 1482,
+     "n_dates": 31,
+     "n_dates_marked": 31,
      "as_of_marked_first": "2026-06-15",
-     "as_of_marked_last": "2026-08-25",
+     "as_of_marked_last": "2026-08-26",
      "by_entry_status": {
       "await_confluence": {
-       "n": 134,
-       "n_excess": 134,
+       "n": 139,
+       "n_excess": 139,
        "as_of_first": "2026-06-30",
-       "as_of_last": "2026-08-25",
-       "loser_rate": 0.4851,
-       "loser_rate_wilson_lo": 0.4021,
-       "loser_rate_wilson_hi": 0.5689,
-       "win_rate": 0.5149,
-       "win_rate_wilson_lo": 0.4311,
-       "win_rate_wilson_hi": 0.5979,
-       "median_excess": 0.00374,
-       "mean_excess": -0.00131,
+       "as_of_last": "2026-08-26",
+       "loser_rate": 0.4964,
+       "loser_rate_wilson_lo": 0.4145,
+       "loser_rate_wilson_hi": 0.5785,
+       "win_rate": 0.5036,
+       "win_rate_wilson_lo": 0.4215,
+       "win_rate_wilson_hi": 0.5855,
+       "median_excess": 5e-05,
+       "mean_excess": -0.00375,
        "thin": false
       },
       "blocked": {
-       "n": 26,
-       "n_excess": 26,
+       "n": 29,
+       "n_excess": 29,
        "as_of_first": "2026-07-17",
-       "as_of_last": "2026-08-24",
-       "loser_rate": 0.7308,
-       "loser_rate_wilson_lo": 0.5392,
-       "loser_rate_wilson_hi": 0.863,
-       "win_rate": 0.2692,
-       "win_rate_wilson_lo": 0.137,
-       "win_rate_wilson_hi": 0.4608,
-       "median_excess": -0.01705,
-       "mean_excess": -0.01241,
+       "as_of_last": "2026-08-26",
+       "loser_rate": 0.7586,
+       "loser_rate_wilson_lo": 0.5789,
+       "loser_rate_wilson_hi": 0.8778,
+       "win_rate": 0.2414,
+       "win_rate_wilson_lo": 0.1222,
+       "win_rate_wilson_hi": 0.4211,
+       "median_excess": -0.0187,
+       "mean_excess": -0.01727,
        "thin": false
       },
       "bounce_wait": {
-       "n": 446,
-       "n_excess": 446,
+       "n": 464,
+       "n_excess": 464,
        "as_of_first": "2026-07-17",
-       "as_of_last": "2026-08-25",
-       "loser_rate": 0.5426,
-       "loser_rate_wilson_lo": 0.4962,
-       "loser_rate_wilson_hi": 0.5883,
-       "win_rate": 0.4574,
-       "win_rate_wilson_lo": 0.4117,
-       "win_rate_wilson_hi": 0.5038,
-       "median_excess": -0.00918,
-       "mean_excess": -0.00206,
+       "as_of_last": "2026-08-26",
+       "loser_rate": 0.5496,
+       "loser_rate_wilson_lo": 0.5041,
+       "loser_rate_wilson_hi": 0.5942,
+       "win_rate": 0.4504,
+       "win_rate_wilson_lo": 0.4058,
+       "win_rate_wilson_hi": 0.4959,
+       "median_excess": -0.00995,
+       "mean_excess": -0.00299,
        "thin": false
       },
       "buy_now": {
-       "n": 127,
-       "n_excess": 127,
+       "n": 137,
+       "n_excess": 137,
        "as_of_first": "2026-06-30",
-       "as_of_last": "2026-08-25",
-       "loser_rate": 0.6457,
-       "loser_rate_wilson_lo": 0.5593,
-       "loser_rate_wilson_hi": 0.7235,
-       "win_rate": 0.3543,
-       "win_rate_wilson_lo": 0.2765,
-       "win_rate_wilson_hi": 0.4407,
-       "median_excess": -0.02569,
-       "mean_excess": -0.01214,
+       "as_of_last": "2026-08-26",
+       "loser_rate": 0.6496,
+       "loser_rate_wilson_lo": 0.5667,
+       "loser_rate_wilson_hi": 0.7245,
+       "win_rate": 0.3504,
+       "win_rate_wilson_lo": 0.2755,
+       "win_rate_wilson_hi": 0.4333,
+       "median_excess": -0.02528,
+       "mean_excess": -0.01236,
        "thin": false
       },
       "buy_soon": {
-       "n": 98,
-       "n_excess": 98,
+       "n": 103,
+       "n_excess": 103,
        "as_of_first": "2026-06-30",
-       "as_of_last": "2026-08-25",
-       "loser_rate": 0.5306,
-       "loser_rate_wilson_lo": 0.4325,
-       "loser_rate_wilson_hi": 0.6264,
-       "win_rate": 0.4694,
-       "win_rate_wilson_lo": 0.3736,
-       "win_rate_wilson_hi": 0.5675,
-       "median_excess": -0.00787,
-       "mean_excess": -0.00012,
+       "as_of_last": "2026-08-26",
+       "loser_rate": 0.5534,
+       "loser_rate_wilson_lo": 0.4572,
+       "loser_rate_wilson_hi": 0.6458,
+       "win_rate": 0.4466,
+       "win_rate_wilson_lo": 0.3542,
+       "win_rate_wilson_hi": 0.5428,
+       "median_excess": -0.00977,
+       "mean_excess": -0.00257,
        "thin": false
       },
       "exit": {
@@ -2387,48 +2361,48 @@
        "thin_reason": "1 graded mark(s) — below the 20-mark disclosure floor; DIRECTIONAL ONLY, not a measurement. Read the Wilson bounds beside each rate before ranking this cell"
       },
       "extended": {
-       "n": 96,
-       "n_excess": 96,
+       "n": 98,
+       "n_excess": 98,
        "as_of_first": "2026-07-06",
-       "as_of_last": "2026-08-25",
-       "loser_rate": 0.5625,
-       "loser_rate_wilson_lo": 0.4628,
-       "loser_rate_wilson_hi": 0.6574,
-       "win_rate": 0.4375,
-       "win_rate_wilson_lo": 0.3426,
-       "win_rate_wilson_hi": 0.5372,
+       "as_of_last": "2026-08-26",
+       "loser_rate": 0.5612,
+       "loser_rate_wilson_lo": 0.4625,
+       "loser_rate_wilson_hi": 0.6553,
+       "win_rate": 0.4388,
+       "win_rate_wilson_lo": 0.3447,
+       "win_rate_wilson_hi": 0.5375,
        "median_excess": -0.00745,
-       "mean_excess": 0.00208,
+       "mean_excess": 0.0018,
        "thin": false
       },
       "hold": {
-       "n": 169,
-       "n_excess": 169,
+       "n": 171,
+       "n_excess": 171,
        "as_of_first": "2026-06-30",
-       "as_of_last": "2026-08-25",
-       "loser_rate": 0.568,
-       "loser_rate_wilson_lo": 0.4927,
-       "loser_rate_wilson_hi": 0.6404,
-       "win_rate": 0.432,
-       "win_rate_wilson_lo": 0.3596,
-       "win_rate_wilson_hi": 0.5073,
-       "median_excess": -0.01067,
-       "mean_excess": -0.01413,
+       "as_of_last": "2026-08-26",
+       "loser_rate": 0.5731,
+       "loser_rate_wilson_lo": 0.4982,
+       "loser_rate_wilson_hi": 0.6448,
+       "win_rate": 0.4269,
+       "win_rate_wilson_lo": 0.3552,
+       "win_rate_wilson_hi": 0.5018,
+       "median_excess": -0.01105,
+       "mean_excess": -0.01455,
        "thin": false
       },
       "partial": {
-       "n": 253,
-       "n_excess": 253,
+       "n": 262,
+       "n_excess": 262,
        "as_of_first": "2026-07-02",
-       "as_of_last": "2026-08-25",
-       "loser_rate": 0.6403,
-       "loser_rate_wilson_lo": 0.5795,
-       "loser_rate_wilson_hi": 0.6969,
-       "win_rate": 0.3597,
-       "win_rate_wilson_lo": 0.3031,
-       "win_rate_wilson_hi": 0.4205,
-       "median_excess": -0.02338,
-       "mean_excess": -0.00706,
+       "as_of_last": "2026-08-26",
+       "loser_rate": 0.645,
+       "loser_rate_wilson_lo": 0.5854,
+       "loser_rate_wilson_hi": 0.7005,
+       "win_rate": 0.355,
+       "win_rate_wilson_lo": 0.2995,
+       "win_rate_wilson_hi": 0.4146,
+       "median_excess": -0.02351,
+       "mean_excess": -0.00807,
        "thin": false
       },
       "topping": {
@@ -2448,18 +2422,18 @@
        "thin_reason": "13 graded mark(s) — below the 20-mark disclosure floor; DIRECTIONAL ONLY, not a measurement. Read the Wilson bounds beside each rate before ranking this cell"
       },
       "wait_pullback": {
-       "n": 57,
-       "n_excess": 57,
+       "n": 59,
+       "n_excess": 59,
        "as_of_first": "2026-06-30",
        "as_of_last": "2026-08-25",
-       "loser_rate": 0.5088,
-       "loser_rate_wilson_lo": 0.3826,
-       "loser_rate_wilson_hi": 0.6338,
-       "win_rate": 0.4912,
-       "win_rate_wilson_lo": 0.3662,
-       "win_rate_wilson_hi": 0.6174,
-       "median_excess": -0.00079,
-       "mean_excess": 0.0009,
+       "loser_rate": 0.4915,
+       "loser_rate_wilson_lo": 0.3684,
+       "loser_rate_wilson_hi": 0.6157,
+       "win_rate": 0.5085,
+       "win_rate_wilson_lo": 0.3843,
+       "win_rate_wilson_hi": 0.6316,
+       "median_excess": 0.00317,
+       "mean_excess": 0.0022,
        "thin": false
       },
       "watch": {
@@ -2489,9 +2463,9 @@
     },
     "21d": {
      "horizon_d": 21,
-     "n_episodes": 819,
-     "n_excess": 819,
-     "n_with_status": 819,
+     "n_episodes": 820,
+     "n_excess": 820,
+     "n_with_status": 820,
      "n_dates": 18,
      "n_dates_marked": 18,
      "as_of_marked_first": "2026-06-30",
@@ -2604,18 +2578,18 @@
        "thin": false
       },
       "partial": {
-       "n": 142,
-       "n_excess": 142,
+       "n": 143,
+       "n_excess": 143,
        "as_of_first": "2026-07-02",
        "as_of_last": "2026-08-07",
-       "loser_rate": 0.5986,
-       "loser_rate_wilson_lo": 0.5164,
-       "loser_rate_wilson_hi": 0.6756,
-       "win_rate": 0.4014,
-       "win_rate_wilson_lo": 0.3244,
-       "win_rate_wilson_hi": 0.4836,
-       "median_excess": -0.02716,
-       "mean_excess": 0.00083,
+       "loser_rate": 0.6014,
+       "loser_rate_wilson_lo": 0.5195,
+       "loser_rate_wilson_hi": 0.678,
+       "win_rate": 0.3986,
+       "win_rate_wilson_lo": 0.322,
+       "win_rate_wilson_hi": 0.4805,
+       "median_excess": -0.02748,
+       "mean_excess": -0.00085,
        "thin": false
       },
       "topping": {
@@ -2863,57 +2837,57 @@
     },
     "10d": {
      "horizon_d": 10,
-     "n_episodes": 343,
-     "n_excess": 343,
-     "n_with_status": 328,
-     "n_dates": 30,
-     "n_dates_marked": 30,
+     "n_episodes": 354,
+     "n_excess": 354,
+     "n_with_status": 339,
+     "n_dates": 31,
+     "n_dates_marked": 31,
      "as_of_marked_first": "2026-06-15",
-     "as_of_marked_last": "2026-08-25",
+     "as_of_marked_last": "2026-08-26",
      "by_entry_status": {
       "await_confluence": {
-       "n": 26,
-       "n_excess": 26,
+       "n": 27,
+       "n_excess": 27,
        "as_of_first": "2026-06-30",
-       "as_of_last": "2026-08-25",
-       "loser_rate": 0.6923,
-       "loser_rate_wilson_lo": 0.5001,
-       "loser_rate_wilson_hi": 0.835,
-       "win_rate": 0.3077,
-       "win_rate_wilson_lo": 0.165,
-       "win_rate_wilson_hi": 0.4999,
-       "median_excess": -0.04548,
-       "mean_excess": -0.04058,
+       "as_of_last": "2026-08-26",
+       "loser_rate": 0.7037,
+       "loser_rate_wilson_lo": 0.5152,
+       "loser_rate_wilson_hi": 0.8415,
+       "win_rate": 0.2963,
+       "win_rate_wilson_lo": 0.1585,
+       "win_rate_wilson_hi": 0.4848,
+       "median_excess": -0.03638,
+       "mean_excess": -0.03934,
        "thin": false
       },
       "blocked": {
-       "n": 38,
-       "n_excess": 38,
+       "n": 42,
+       "n_excess": 42,
        "as_of_first": "2026-06-30",
-       "as_of_last": "2026-08-25",
-       "loser_rate": 0.3421,
-       "loser_rate_wilson_lo": 0.2121,
-       "loser_rate_wilson_hi": 0.5011,
-       "win_rate": 0.6579,
-       "win_rate_wilson_lo": 0.4989,
-       "win_rate_wilson_hi": 0.7879,
-       "median_excess": 0.02602,
-       "mean_excess": 0.01974,
+       "as_of_last": "2026-08-26",
+       "loser_rate": 0.381,
+       "loser_rate_wilson_lo": 0.25,
+       "loser_rate_wilson_hi": 0.5319,
+       "win_rate": 0.619,
+       "win_rate_wilson_lo": 0.4681,
+       "win_rate_wilson_hi": 0.75,
+       "median_excess": 0.02273,
+       "mean_excess": 0.012,
        "thin": false
       },
       "bounce_wait": {
-       "n": 44,
-       "n_excess": 44,
+       "n": 46,
+       "n_excess": 46,
        "as_of_first": "2026-07-14",
-       "as_of_last": "2026-08-25",
-       "loser_rate": 0.5682,
-       "loser_rate_wilson_lo": 0.4222,
-       "loser_rate_wilson_hi": 0.7032,
-       "win_rate": 0.4318,
-       "win_rate_wilson_lo": 0.2968,
-       "win_rate_wilson_hi": 0.5778,
-       "median_excess": -0.01922,
-       "mean_excess": -0.0054,
+       "as_of_last": "2026-08-26",
+       "loser_rate": 0.5435,
+       "loser_rate_wilson_lo": 0.4018,
+       "loser_rate_wilson_hi": 0.6785,
+       "win_rate": 0.4565,
+       "win_rate_wilson_lo": 0.3215,
+       "win_rate_wilson_hi": 0.5982,
+       "median_excess": -0.0153,
+       "mean_excess": -0.00206,
        "thin": false
       },
       "buy_now": {
@@ -2933,33 +2907,33 @@
        "thin_reason": "3 graded mark(s) — below the 20-mark disclosure floor; DIRECTIONAL ONLY, not a measurement. Read the Wilson bounds beside each rate before ranking this cell"
       },
       "buy_soon": {
-       "n": 20,
-       "n_excess": 20,
+       "n": 21,
+       "n_excess": 21,
        "as_of_first": "2026-06-30",
-       "as_of_last": "2026-08-24",
-       "loser_rate": 0.8,
-       "loser_rate_wilson_lo": 0.584,
-       "loser_rate_wilson_hi": 0.9193,
-       "win_rate": 0.2,
-       "win_rate_wilson_lo": 0.0807,
-       "win_rate_wilson_hi": 0.416,
-       "median_excess": -0.07628,
-       "mean_excess": -0.07067,
+       "as_of_last": "2026-08-26",
+       "loser_rate": 0.8095,
+       "loser_rate_wilson_lo": 0.6,
+       "loser_rate_wilson_hi": 0.9233,
+       "win_rate": 0.1905,
+       "win_rate_wilson_lo": 0.0767,
+       "win_rate_wilson_hi": 0.4,
+       "median_excess": -0.09314,
+       "mean_excess": -0.07321,
        "thin": false
       },
       "extended": {
-       "n": 136,
-       "n_excess": 136,
+       "n": 139,
+       "n_excess": 139,
        "as_of_first": "2026-06-30",
-       "as_of_last": "2026-08-25",
-       "loser_rate": 0.5221,
-       "loser_rate_wilson_lo": 0.4387,
-       "loser_rate_wilson_hi": 0.6042,
-       "win_rate": 0.4779,
-       "win_rate_wilson_lo": 0.3958,
-       "win_rate_wilson_hi": 0.5613,
-       "median_excess": -0.00431,
-       "mean_excess": 0.00958,
+       "as_of_last": "2026-08-26",
+       "loser_rate": 0.5324,
+       "loser_rate_wilson_lo": 0.4497,
+       "loser_rate_wilson_hi": 0.6133,
+       "win_rate": 0.4676,
+       "win_rate_wilson_lo": 0.3867,
+       "win_rate_wilson_hi": 0.5503,
+       "median_excess": -0.00454,
+       "mean_excess": 0.00766,
        "thin": false
       },
       "hold": {
@@ -3329,13 +3303,13 @@
     },
     "10d": {
      "horizon_d": 10,
-     "n_episodes": 220,
-     "n_excess": 220,
-     "n_with_status": 220,
-     "n_dates": 15,
-     "n_dates_marked": 15,
+     "n_episodes": 234,
+     "n_excess": 234,
+     "n_with_status": 234,
+     "n_dates": 16,
+     "n_dates_marked": 16,
      "as_of_marked_first": "2026-07-28",
-     "as_of_marked_last": "2026-08-25",
+     "as_of_marked_last": "2026-08-26",
      "by_entry_status": {
       "await_confluence": {
        "n": 11,
@@ -3370,34 +3344,34 @@
        "thin_reason": "8 graded mark(s) — below the 20-mark disclosure floor; DIRECTIONAL ONLY, not a measurement. Read the Wilson bounds beside each rate before ranking this cell"
       },
       "buy_soon": {
-       "n": 17,
-       "n_excess": 17,
+       "n": 19,
+       "n_excess": 19,
        "as_of_first": "2026-07-28",
-       "as_of_last": "2026-08-25",
-       "loser_rate": 0.7059,
-       "loser_rate_wilson_lo": 0.4687,
-       "loser_rate_wilson_hi": 0.8672,
-       "win_rate": 0.2941,
-       "win_rate_wilson_lo": 0.1328,
-       "win_rate_wilson_hi": 0.5313,
+       "as_of_last": "2026-08-26",
+       "loser_rate": 0.6842,
+       "loser_rate_wilson_lo": 0.4601,
+       "loser_rate_wilson_hi": 0.8464,
+       "win_rate": 0.3158,
+       "win_rate_wilson_lo": 0.1536,
+       "win_rate_wilson_hi": 0.5399,
        "median_excess": -0.06007,
-       "mean_excess": -0.052,
+       "mean_excess": -0.0563,
        "thin": true,
-       "thin_reason": "17 graded mark(s) — below the 20-mark disclosure floor; DIRECTIONAL ONLY, not a measurement. Read the Wilson bounds beside each rate before ranking this cell"
+       "thin_reason": "19 graded mark(s) — below the 20-mark disclosure floor; DIRECTIONAL ONLY, not a measurement. Read the Wilson bounds beside each rate before ranking this cell"
       },
       "extended": {
-       "n": 123,
-       "n_excess": 123,
+       "n": 129,
+       "n_excess": 129,
        "as_of_first": "2026-07-28",
-       "as_of_last": "2026-08-25",
-       "loser_rate": 0.6016,
-       "loser_rate_wilson_lo": 0.5133,
-       "loser_rate_wilson_hi": 0.6838,
-       "win_rate": 0.3984,
-       "win_rate_wilson_lo": 0.3162,
-       "win_rate_wilson_hi": 0.4867,
-       "median_excess": -0.01347,
-       "mean_excess": -0.01117,
+       "as_of_last": "2026-08-26",
+       "loser_rate": 0.6124,
+       "loser_rate_wilson_lo": 0.5262,
+       "loser_rate_wilson_hi": 0.6921,
+       "win_rate": 0.3876,
+       "win_rate_wilson_lo": 0.3079,
+       "win_rate_wilson_hi": 0.4738,
+       "median_excess": -0.0186,
+       "mean_excess": -0.01343,
        "thin": false
       },
       "hold": {
@@ -3417,18 +3391,18 @@
        "thin_reason": "13 graded mark(s) — below the 20-mark disclosure floor; DIRECTIONAL ONLY, not a measurement. Read the Wilson bounds beside each rate before ranking this cell"
       },
       "topping": {
-       "n": 48,
-       "n_excess": 48,
+       "n": 54,
+       "n_excess": 54,
        "as_of_first": "2026-07-28",
-       "as_of_last": "2026-08-25",
-       "loser_rate": 0.7083,
-       "loser_rate_wilson_lo": 0.5682,
-       "loser_rate_wilson_hi": 0.8176,
-       "win_rate": 0.2917,
-       "win_rate_wilson_lo": 0.1824,
-       "win_rate_wilson_hi": 0.4318,
-       "median_excess": -0.02906,
-       "mean_excess": -0.04657,
+       "as_of_last": "2026-08-26",
+       "loser_rate": 0.7037,
+       "loser_rate_wilson_lo": 0.5717,
+       "loser_rate_wilson_hi": 0.8086,
+       "win_rate": 0.2963,
+       "win_rate_wilson_lo": 0.1914,
+       "win_rate_wilson_hi": 0.4283,
+       "median_excess": -0.03107,
+       "mean_excess": -0.0499,
        "thin": false
       }
      },
@@ -3570,13 +3544,13 @@
     },
     "10d": {
      "horizon_d": 10,
-     "n_episodes": 131,
-     "n_excess": 131,
+     "n_episodes": 142,
+     "n_excess": 142,
      "n_with_status": 0,
-     "n_dates": 11,
-     "n_dates_marked": 11,
+     "n_dates": 12,
+     "n_dates_marked": 12,
      "as_of_marked_first": "2026-08-07",
-     "as_of_marked_last": "2026-08-25",
+     "as_of_marked_last": "2026-08-26",
      "by_entry_status": {},
      "thin_statuses": [],
      "null_reason": "no episode at this horizon carries an entry_status — the status/outcome join is empty here, which is not a flat table"
@@ -3598,56 +3572,56 @@
    "watch": {
     "5d": {
      "horizon_d": 5,
-     "n_episodes": 1289,
-     "n_excess": 1289,
-     "n_with_status": 1265,
+     "n_episodes": 1301,
+     "n_excess": 1301,
+     "n_with_status": 1277,
      "n_dates": 37,
      "n_dates_marked": 37,
      "as_of_marked_first": "2026-06-17",
      "as_of_marked_last": "2026-08-31",
      "by_entry_status": {
       "await_confluence": {
-       "n": 156,
-       "n_excess": 156,
+       "n": 158,
+       "n_excess": 158,
        "as_of_first": "2026-06-30",
        "as_of_last": "2026-08-31",
-       "loser_rate": 0.5513,
-       "loser_rate_wilson_lo": 0.4729,
-       "loser_rate_wilson_hi": 0.6272,
-       "win_rate": 0.4487,
-       "win_rate_wilson_lo": 0.3728,
-       "win_rate_wilson_hi": 0.5271,
-       "median_excess": -0.00726,
-       "mean_excess": -0.00712,
+       "loser_rate": 0.557,
+       "loser_rate_wilson_lo": 0.4791,
+       "loser_rate_wilson_hi": 0.6322,
+       "win_rate": 0.443,
+       "win_rate_wilson_lo": 0.3678,
+       "win_rate_wilson_hi": 0.5209,
+       "median_excess": -0.00788,
+       "mean_excess": -0.00725,
        "thin": false
       },
       "blocked": {
-       "n": 204,
-       "n_excess": 204,
+       "n": 213,
+       "n_excess": 213,
        "as_of_first": "2026-06-18",
        "as_of_last": "2026-08-31",
-       "loser_rate": 0.6324,
-       "loser_rate_wilson_lo": 0.5643,
-       "loser_rate_wilson_hi": 0.6955,
-       "win_rate": 0.3676,
-       "win_rate_wilson_lo": 0.3045,
-       "win_rate_wilson_hi": 0.4357,
-       "median_excess": -0.0132,
-       "mean_excess": -0.00879,
+       "loser_rate": 0.6432,
+       "loser_rate_wilson_lo": 0.5768,
+       "loser_rate_wilson_hi": 0.7045,
+       "win_rate": 0.3568,
+       "win_rate_wilson_lo": 0.2955,
+       "win_rate_wilson_hi": 0.4232,
+       "median_excess": -0.01326,
+       "mean_excess": -0.00961,
        "thin": false
       },
       "bounce_wait": {
-       "n": 372,
-       "n_excess": 372,
+       "n": 373,
+       "n_excess": 373,
        "as_of_first": "2026-07-14",
        "as_of_last": "2026-08-31",
-       "loser_rate": 0.5511,
-       "loser_rate_wilson_lo": 0.5003,
-       "loser_rate_wilson_hi": 0.6008,
-       "win_rate": 0.4489,
-       "win_rate_wilson_lo": 0.3992,
-       "win_rate_wilson_hi": 0.4997,
-       "median_excess": -0.00776,
+       "loser_rate": 0.5523,
+       "loser_rate_wilson_lo": 0.5015,
+       "loser_rate_wilson_hi": 0.602,
+       "win_rate": 0.4477,
+       "win_rate_wilson_lo": 0.398,
+       "win_rate_wilson_hi": 0.4985,
+       "median_excess": -0.00765,
        "mean_excess": -0.00802,
        "thin": false
       },
@@ -3802,57 +3776,57 @@
     },
     "10d": {
      "horizon_d": 10,
-     "n_episodes": 1003,
-     "n_excess": 1003,
-     "n_with_status": 995,
-     "n_dates": 28,
-     "n_dates_marked": 28,
+     "n_episodes": 1059,
+     "n_excess": 1059,
+     "n_with_status": 1051,
+     "n_dates": 29,
+     "n_dates_marked": 29,
      "as_of_marked_first": "2026-06-30",
-     "as_of_marked_last": "2026-08-25",
+     "as_of_marked_last": "2026-08-26",
      "by_entry_status": {
       "await_confluence": {
-       "n": 141,
-       "n_excess": 141,
+       "n": 146,
+       "n_excess": 146,
        "as_of_first": "2026-06-30",
-       "as_of_last": "2026-08-25",
-       "loser_rate": 0.4823,
-       "loser_rate_wilson_lo": 0.4014,
-       "loser_rate_wilson_hi": 0.5641,
-       "win_rate": 0.5177,
-       "win_rate_wilson_lo": 0.4359,
-       "win_rate_wilson_hi": 0.5986,
-       "median_excess": 0.00409,
-       "mean_excess": -0.00063,
+       "as_of_last": "2026-08-26",
+       "loser_rate": 0.5,
+       "loser_rate_wilson_lo": 0.4199,
+       "loser_rate_wilson_hi": 0.5801,
+       "win_rate": 0.5,
+       "win_rate_wilson_lo": 0.4199,
+       "win_rate_wilson_hi": 0.5801,
+       "median_excess": -6e-05,
+       "mean_excess": -0.00218,
        "thin": false
       },
       "blocked": {
-       "n": 142,
-       "n_excess": 142,
+       "n": 162,
+       "n_excess": 162,
        "as_of_first": "2026-06-30",
-       "as_of_last": "2026-08-25",
-       "loser_rate": 0.5704,
-       "loser_rate_wilson_lo": 0.4882,
-       "loser_rate_wilson_hi": 0.6489,
-       "win_rate": 0.4296,
-       "win_rate_wilson_lo": 0.3511,
-       "win_rate_wilson_hi": 0.5118,
-       "median_excess": -0.01742,
-       "mean_excess": -0.00177,
+       "as_of_last": "2026-08-26",
+       "loser_rate": 0.6173,
+       "loser_rate_wilson_lo": 0.5405,
+       "loser_rate_wilson_hi": 0.6886,
+       "win_rate": 0.3827,
+       "win_rate_wilson_lo": 0.3114,
+       "win_rate_wilson_hi": 0.4595,
+       "median_excess": -0.02582,
+       "mean_excess": -0.00732,
        "thin": false
       },
       "bounce_wait": {
-       "n": 295,
-       "n_excess": 295,
+       "n": 310,
+       "n_excess": 310,
        "as_of_first": "2026-07-14",
-       "as_of_last": "2026-08-25",
-       "loser_rate": 0.6339,
-       "loser_rate_wilson_lo": 0.5775,
-       "loser_rate_wilson_hi": 0.6868,
-       "win_rate": 0.3661,
-       "win_rate_wilson_lo": 0.3132,
-       "win_rate_wilson_hi": 0.4225,
-       "median_excess": -0.01953,
-       "mean_excess": -0.01622,
+       "as_of_last": "2026-08-26",
+       "loser_rate": 0.6161,
+       "loser_rate_wilson_lo": 0.5609,
+       "loser_rate_wilson_hi": 0.6685,
+       "win_rate": 0.3839,
+       "win_rate_wilson_lo": 0.3315,
+       "win_rate_wilson_hi": 0.4391,
+       "median_excess": -0.01651,
+       "mean_excess": -0.01495,
        "thin": false
       },
       "buy_now": {
@@ -3872,64 +3846,64 @@
        "thin_reason": "6 graded mark(s) — below the 20-mark disclosure floor; DIRECTIONAL ONLY, not a measurement. Read the Wilson bounds beside each rate before ranking this cell"
       },
       "buy_soon": {
-       "n": 88,
-       "n_excess": 88,
+       "n": 90,
+       "n_excess": 90,
        "as_of_first": "2026-06-30",
-       "as_of_last": "2026-08-25",
-       "loser_rate": 0.5227,
-       "loser_rate_wilson_lo": 0.4196,
-       "loser_rate_wilson_hi": 0.6239,
-       "win_rate": 0.4773,
-       "win_rate_wilson_lo": 0.3761,
-       "win_rate_wilson_hi": 0.5804,
-       "median_excess": -0.01136,
-       "mean_excess": -0.00965,
+       "as_of_last": "2026-08-26",
+       "loser_rate": 0.5333,
+       "loser_rate_wilson_lo": 0.431,
+       "loser_rate_wilson_hi": 0.6329,
+       "win_rate": 0.4667,
+       "win_rate_wilson_lo": 0.3671,
+       "win_rate_wilson_hi": 0.569,
+       "median_excess": -0.01454,
+       "mean_excess": -0.01114,
        "thin": false
       },
       "exit": {
-       "n": 7,
-       "n_excess": 7,
+       "n": 8,
+       "n_excess": 8,
        "as_of_first": "2026-07-09",
-       "as_of_last": "2026-08-21",
-       "loser_rate": 0.5714,
-       "loser_rate_wilson_lo": 0.2505,
-       "loser_rate_wilson_hi": 0.8418,
-       "win_rate": 0.4286,
-       "win_rate_wilson_lo": 0.1582,
-       "win_rate_wilson_hi": 0.7495,
-       "median_excess": -0.03523,
-       "mean_excess": -0.03346,
+       "as_of_last": "2026-08-26",
+       "loser_rate": 0.625,
+       "loser_rate_wilson_lo": 0.3057,
+       "loser_rate_wilson_hi": 0.8632,
+       "win_rate": 0.375,
+       "win_rate_wilson_lo": 0.1368,
+       "win_rate_wilson_hi": 0.6943,
+       "median_excess": -0.02908,
+       "mean_excess": -0.03215,
        "thin": true,
-       "thin_reason": "7 graded mark(s) — below the 20-mark disclosure floor; DIRECTIONAL ONLY, not a measurement. Read the Wilson bounds beside each rate before ranking this cell"
+       "thin_reason": "8 graded mark(s) — below the 20-mark disclosure floor; DIRECTIONAL ONLY, not a measurement. Read the Wilson bounds beside each rate before ranking this cell"
       },
       "extended": {
-       "n": 142,
-       "n_excess": 142,
+       "n": 148,
+       "n_excess": 148,
        "as_of_first": "2026-06-30",
-       "as_of_last": "2026-08-25",
-       "loser_rate": 0.5634,
-       "loser_rate_wilson_lo": 0.4812,
-       "loser_rate_wilson_hi": 0.6422,
-       "win_rate": 0.4366,
-       "win_rate_wilson_lo": 0.3578,
-       "win_rate_wilson_hi": 0.5188,
+       "as_of_last": "2026-08-26",
+       "loser_rate": 0.5608,
+       "loser_rate_wilson_lo": 0.4803,
+       "loser_rate_wilson_hi": 0.6382,
+       "win_rate": 0.4392,
+       "win_rate_wilson_lo": 0.3618,
+       "win_rate_wilson_hi": 0.5197,
        "median_excess": -0.00877,
-       "mean_excess": -0.01472,
+       "mean_excess": -0.01484,
        "thin": false
       },
       "hold": {
-       "n": 45,
-       "n_excess": 45,
+       "n": 48,
+       "n_excess": 48,
        "as_of_first": "2026-06-30",
-       "as_of_last": "2026-08-21",
-       "loser_rate": 0.4667,
-       "loser_rate_wilson_lo": 0.3293,
-       "loser_rate_wilson_hi": 0.6092,
-       "win_rate": 0.5333,
-       "win_rate_wilson_lo": 0.3908,
-       "win_rate_wilson_hi": 0.6707,
-       "median_excess": 0.00951,
-       "mean_excess": -0.00108,
+       "as_of_last": "2026-08-26",
+       "loser_rate": 0.4792,
+       "loser_rate_wilson_lo": 0.3447,
+       "loser_rate_wilson_hi": 0.6167,
+       "win_rate": 0.5208,
+       "win_rate_wilson_lo": 0.3833,
+       "win_rate_wilson_hi": 0.6553,
+       "median_excess": 0.00701,
+       "mean_excess": -0.00073,
        "thin": false
       },
       "partial": {
@@ -3965,33 +3939,33 @@
        "thin_reason": "14 graded mark(s) — below the 20-mark disclosure floor; DIRECTIONAL ONLY, not a measurement. Read the Wilson bounds beside each rate before ranking this cell"
       },
       "wait_pullback": {
-       "n": 53,
-       "n_excess": 53,
+       "n": 56,
+       "n_excess": 56,
        "as_of_first": "2026-06-30",
-       "as_of_last": "2026-08-25",
-       "loser_rate": 0.7358,
-       "loser_rate_wilson_lo": 0.6042,
-       "loser_rate_wilson_hi": 0.8356,
-       "win_rate": 0.2642,
-       "win_rate_wilson_lo": 0.1644,
-       "win_rate_wilson_hi": 0.3958,
-       "median_excess": -0.0282,
-       "mean_excess": -0.03529,
+       "as_of_last": "2026-08-26",
+       "loser_rate": 0.75,
+       "loser_rate_wilson_lo": 0.6231,
+       "loser_rate_wilson_hi": 0.8448,
+       "win_rate": 0.25,
+       "win_rate_wilson_lo": 0.1552,
+       "win_rate_wilson_hi": 0.3769,
+       "median_excess": -0.03264,
+       "mean_excess": -0.03789,
        "thin": false
       },
       "watch": {
-       "n": 54,
-       "n_excess": 54,
+       "n": 55,
+       "n_excess": 55,
        "as_of_first": "2026-06-30",
-       "as_of_last": "2026-08-25",
-       "loser_rate": 0.2963,
-       "loser_rate_wilson_lo": 0.1914,
-       "loser_rate_wilson_hi": 0.4283,
-       "win_rate": 0.7037,
-       "win_rate_wilson_lo": 0.5717,
-       "win_rate_wilson_hi": 0.8086,
-       "median_excess": 0.01935,
-       "mean_excess": 0.03001,
+       "as_of_last": "2026-08-26",
+       "loser_rate": 0.3091,
+       "loser_rate_wilson_lo": 0.2028,
+       "loser_rate_wilson_hi": 0.4403,
+       "win_rate": 0.6909,
+       "win_rate_wilson_lo": 0.5597,
+       "win_rate_wilson_hi": 0.7972,
+       "median_excess": 0.01651,
+       "mean_excess": 0.02704,
        "thin": false
       }
      },
@@ -4006,27 +3980,27 @@
     },
     "21d": {
      "horizon_d": 21,
-     "n_episodes": 544,
-     "n_excess": 544,
-     "n_with_status": 536,
+     "n_episodes": 549,
+     "n_excess": 549,
+     "n_with_status": 541,
      "n_dates": 18,
      "n_dates_marked": 18,
      "as_of_marked_first": "2026-06-30",
      "as_of_marked_last": "2026-08-07",
      "by_entry_status": {
       "await_confluence": {
-       "n": 90,
-       "n_excess": 90,
+       "n": 92,
+       "n_excess": 92,
        "as_of_first": "2026-06-30",
        "as_of_last": "2026-08-07",
-       "loser_rate": 0.5778,
-       "loser_rate_wilson_lo": 0.4746,
-       "loser_rate_wilson_hi": 0.6746,
-       "win_rate": 0.4222,
-       "win_rate_wilson_lo": 0.3254,
-       "win_rate_wilson_hi": 0.5254,
-       "median_excess": -0.04016,
-       "mean_excess": -0.00938,
+       "loser_rate": 0.587,
+       "loser_rate_wilson_lo": 0.4848,
+       "loser_rate_wilson_hi": 0.6821,
+       "win_rate": 0.413,
+       "win_rate_wilson_lo": 0.3179,
+       "win_rate_wilson_hi": 0.5152,
+       "median_excess": -0.04163,
+       "mean_excess": -0.01371,
        "thin": false
       },
       "blocked": {
@@ -4045,18 +4019,18 @@
        "thin": false
       },
       "bounce_wait": {
-       "n": 104,
-       "n_excess": 104,
+       "n": 105,
+       "n_excess": 105,
        "as_of_first": "2026-07-14",
        "as_of_last": "2026-08-07",
-       "loser_rate": 0.6442,
-       "loser_rate_wilson_lo": 0.5486,
-       "loser_rate_wilson_hi": 0.7296,
-       "win_rate": 0.3558,
-       "win_rate_wilson_lo": 0.2704,
-       "win_rate_wilson_hi": 0.4514,
-       "median_excess": -0.03759,
-       "mean_excess": -0.02665,
+       "loser_rate": 0.6476,
+       "loser_rate_wilson_lo": 0.5525,
+       "loser_rate_wilson_hi": 0.7323,
+       "win_rate": 0.3524,
+       "win_rate_wilson_lo": 0.2677,
+       "win_rate_wilson_hi": 0.4475,
+       "median_excess": -0.03724,
+       "mean_excess": -0.02658,
        "thin": false
       },
       "buy_now": {
@@ -4091,20 +4065,20 @@
        "thin": false
       },
       "exit": {
-       "n": 1,
-       "n_excess": 1,
+       "n": 2,
+       "n_excess": 2,
        "as_of_first": "2026-07-09",
-       "as_of_last": "2026-07-09",
+       "as_of_last": "2026-07-31",
        "loser_rate": 1.0,
-       "loser_rate_wilson_lo": 0.2065,
+       "loser_rate_wilson_lo": 0.3424,
        "loser_rate_wilson_hi": 1.0,
        "win_rate": 0.0,
        "win_rate_wilson_lo": 0.0,
-       "win_rate_wilson_hi": 0.7935,
-       "median_excess": -0.00879,
-       "mean_excess": -0.00879,
+       "win_rate_wilson_hi": 0.6576,
+       "median_excess": -0.1116,
+       "mean_excess": -0.1116,
        "thin": true,
-       "thin_reason": "1 graded mark(s) — below the 20-mark disclosure floor; DIRECTIONAL ONLY, not a measurement. Read the Wilson bounds beside each rate before ranking this cell"
+       "thin_reason": "2 graded mark(s) — below the 20-mark disclosure floor; DIRECTIONAL ONLY, not a measurement. Read the Wilson bounds beside each rate before ranking this cell"
       },
       "extended": {
        "n": 90,
@@ -4169,20 +4143,20 @@
        "thin_reason": "11 graded mark(s) — below the 20-mark disclosure floor; DIRECTIONAL ONLY, not a measurement. Read the Wilson bounds beside each rate before ranking this cell"
       },
       "wait_pullback": {
-       "n": 15,
-       "n_excess": 15,
+       "n": 16,
+       "n_excess": 16,
        "as_of_first": "2026-06-30",
-       "as_of_last": "2026-07-29",
-       "loser_rate": 0.6667,
-       "loser_rate_wilson_lo": 0.4171,
-       "loser_rate_wilson_hi": 0.8482,
-       "win_rate": 0.3333,
-       "win_rate_wilson_lo": 0.1518,
-       "win_rate_wilson_hi": 0.5829,
-       "median_excess": -0.03804,
-       "mean_excess": -0.02885,
+       "as_of_last": "2026-07-30",
+       "loser_rate": 0.6875,
+       "loser_rate_wilson_lo": 0.444,
+       "loser_rate_wilson_hi": 0.8584,
+       "win_rate": 0.3125,
+       "win_rate_wilson_lo": 0.1416,
+       "win_rate_wilson_hi": 0.556,
+       "median_excess": -0.03941,
+       "mean_excess": -0.0388,
        "thin": true,
-       "thin_reason": "15 graded mark(s) — below the 20-mark disclosure floor; DIRECTIONAL ONLY, not a measurement. Read the Wilson bounds beside each rate before ranking this cell"
+       "thin_reason": "16 graded mark(s) — below the 20-mark disclosure floor; DIRECTIONAL ONLY, not a measurement. Read the Wilson bounds beside each rate before ranking this cell"
       },
       "watch": {
        "n": 36,
@@ -4216,13 +4190,13 @@
  "top63_runners": [
   {
    "ticker": "WLY",
-   "r63_pct": 7.1,
+   "r63_pct": 6.1,
    "sector": "Communication Services",
    "eligible_today": false,
    "tier_today": NaN,
-   "days_eligible": 6,
-   "first_eligible": "2026-06-11",
-   "fwd_ret_from_first_pct": 6.53,
+   "days_eligible": 5,
+   "first_eligible": "2026-06-12",
+   "fwd_ret_from_first_pct": 7.2,
    "tiers_seen": [
     "T1"
    ],
@@ -4232,7 +4206,7 @@
    "rsi_block": false,
    "k3": 0.0,
    "d3": 9.0,
-   "rsi3d": 47.6,
+   "rsi3d": 47.1,
    "t1_ticks": 21,
    "t2_ticks": 70,
    "t2raw_ticks": 24,
@@ -4249,13 +4223,13 @@
   },
   {
    "ticker": "HUBB",
-   "r63_pct": -3.2,
+   "r63_pct": -1.9,
    "sector": "Industrials",
    "eligible_today": false,
    "tier_today": NaN,
    "days_eligible": 15,
    "first_eligible": "2026-06-22",
-   "fwd_ret_from_first_pct": -16.13,
+   "fwd_ret_from_first_pct": -14.64,
    "tiers_seen": [
     "T1"
    ],
@@ -4263,9 +4237,9 @@
    "stoch_bear": false,
    "macd_bear": true,
    "rsi_block": false,
-   "k3": 14.4,
-   "d3": 8.3,
-   "rsi3d": 41.3,
+   "k3": 18.5,
+   "d3": 9.7,
+   "rsi3d": 43.1,
    "t1_ticks": 9,
    "t2_ticks": 31,
    "t2raw_ticks": 13,
@@ -4281,13 +4255,13 @@
   },
   {
    "ticker": "UA",
-   "r63_pct": -12.5,
+   "r63_pct": -14.4,
    "sector": "Consumer Discretionary",
    "eligible_today": false,
    "tier_today": NaN,
-   "days_eligible": 9,
-   "first_eligible": "2026-06-11",
-   "fwd_ret_from_first_pct": -16.98,
+   "days_eligible": 8,
+   "first_eligible": "2026-06-12",
+   "fwd_ret_from_first_pct": -15.14,
    "tiers_seen": [
     "T1"
    ],
@@ -4295,9 +4269,9 @@
    "stoch_bear": false,
    "macd_bear": true,
    "rsi_block": false,
-   "k3": 2.6,
-   "d3": 2.3,
-   "rsi3d": 36.3,
+   "k3": 4.2,
+   "d3": 2.8,
+   "rsi3d": 38.4,
    "t1_ticks": 21,
    "t2_ticks": 36,
    "t2raw_ticks": 36,
@@ -4313,7 +4287,7 @@
   },
   {
    "ticker": "ADEA",
-   "r63_pct": -14.7,
+   "r63_pct": -18.1,
    "sector": "Information Technology",
    "eligible_today": false,
    "tier_today": NaN,
@@ -4325,9 +4299,9 @@
    "stoch_bear": false,
    "macd_bear": true,
    "rsi_block": false,
-   "k3": 22.6,
-   "d3": 17.3,
-   "rsi3d": 47.4,
+   "k3": 24.9,
+   "d3": 18.1,
+   "rsi3d": 48.2,
    "t1_ticks": 46,
    "t2_ticks": 1,
    "t2raw_ticks": 1,
@@ -4344,14 +4318,70 @@
  ],
  "top21_runners": [
   {
+   "ticker": "UA",
+   "r21_pct": -2.5,
+   "sector": "Consumer Discretionary",
+   "eligible_today": false,
+   "tier_today": NaN,
+   "days_eligible": 8,
+   "first_eligible": "2026-06-12",
+   "fwd_ret_from_first_pct": -15.14,
+   "tiers_seen": [
+    "T1"
+   ],
+   "stoch_ob": false,
+   "stoch_bear": false,
+   "macd_bear": true,
+   "rsi_block": false,
+   "k3": 4.2,
+   "d3": 2.8,
+   "rsi3d": 38.4,
+   "t1_ticks": 21,
+   "t2_ticks": 36,
+   "t2raw_ticks": 36,
+   "recent3": true,
+   "veto_legs": [
+    "macd_bear"
+   ],
+   "excluder": "not_topped_veto(macd_bear)",
+   "excluder_family": "not_topped_veto"
+  },
+  {
+   "ticker": "ADEA",
+   "r21_pct": -4.8,
+   "sector": "Information Technology",
+   "eligible_today": false,
+   "tier_today": NaN,
+   "days_eligible": 0,
+   "first_eligible": null,
+   "fwd_ret_from_first_pct": null,
+   "tiers_seen": [],
+   "stoch_ob": false,
+   "stoch_bear": false,
+   "macd_bear": true,
+   "rsi_block": false,
+   "k3": 24.9,
+   "d3": 18.1,
+   "rsi3d": 48.2,
+   "t1_ticks": 46,
+   "t2_ticks": 1,
+   "t2raw_ticks": 1,
+   "recent3": true,
+   "veto_legs": [
+    "macd_bear"
+   ],
+   "excluder": "not_topped_veto(macd_bear)",
+   "excluder_family": "not_topped_veto"
+  },
+  {
    "ticker": "WLY",
-   "r21_pct": -4.7,
+   "r21_pct": -5.8,
    "sector": "Communication Services",
    "eligible_today": false,
    "tier_today": NaN,
-   "days_eligible": 6,
-   "first_eligible": "2026-06-11",
-   "fwd_ret_from_first_pct": 6.53,
+   "days_eligible": 5,
+   "first_eligible": "2026-06-12",
+   "fwd_ret_from_first_pct": 7.2,
    "tiers_seen": [
     "T1"
    ],
@@ -4361,7 +4391,7 @@
    "rsi_block": false,
    "k3": 0.0,
    "d3": 9.0,
-   "rsi3d": 47.6,
+   "rsi3d": 47.1,
    "t1_ticks": 21,
    "t2_ticks": 70,
    "t2raw_ticks": 24,
@@ -4374,70 +4404,14 @@
    "excluder_family": "not_topped_veto"
   },
   {
-   "ticker": "ADEA",
-   "r21_pct": -4.9,
-   "sector": "Information Technology",
-   "eligible_today": false,
-   "tier_today": NaN,
-   "days_eligible": 0,
-   "first_eligible": null,
-   "fwd_ret_from_first_pct": null,
-   "tiers_seen": [],
-   "stoch_ob": false,
-   "stoch_bear": false,
-   "macd_bear": true,
-   "rsi_block": false,
-   "k3": 22.6,
-   "d3": 17.3,
-   "rsi3d": 47.4,
-   "t1_ticks": 46,
-   "t2_ticks": 1,
-   "t2raw_ticks": 1,
-   "recent3": true,
-   "veto_legs": [
-    "macd_bear"
-   ],
-   "excluder": "not_topped_veto(macd_bear)",
-   "excluder_family": "not_topped_veto"
-  },
-  {
-   "ticker": "UA",
-   "r21_pct": -6.9,
-   "sector": "Consumer Discretionary",
-   "eligible_today": false,
-   "tier_today": NaN,
-   "days_eligible": 9,
-   "first_eligible": "2026-06-11",
-   "fwd_ret_from_first_pct": -16.98,
-   "tiers_seen": [
-    "T1"
-   ],
-   "stoch_ob": false,
-   "stoch_bear": false,
-   "macd_bear": true,
-   "rsi_block": false,
-   "k3": 2.6,
-   "d3": 2.3,
-   "rsi3d": 36.3,
-   "t1_ticks": 21,
-   "t2_ticks": 36,
-   "t2raw_ticks": 36,
-   "recent3": true,
-   "veto_legs": [
-    "macd_bear"
-   ],
-   "excluder": "not_topped_veto(macd_bear)",
-   "excluder_family": "not_topped_veto"
-  },
-  {
    "ticker": "HUBB",
-   "r21_pct": -12.7,
+   "r21_pct": -10.0,
    "sector": "Industrials",
    "eligible_today": false,
    "tier_today": NaN,
    "days_eligible": 15,
    "first_eligible": "2026-06-22",
-   "fwd_ret_from_first_pct": -16.13,
+   "fwd_ret_from_first_pct": -14.64,
    "tiers_seen": [
     "T1"
    ],
@@ -4445,9 +4419,9 @@
    "stoch_bear": false,
    "macd_bear": true,
    "rsi_block": false,
-   "k3": 14.4,
-   "d3": 8.3,
-   "rsi3d": 41.3,
+   "k3": 18.5,
+   "d3": 9.7,
+   "rsi3d": 43.1,
    "t1_ticks": 9,
    "t2_ticks": 31,
    "t2raw_ticks": 13,
@@ -4471,22 +4445,12 @@
    "sector": "Information Technology"
   },
   {
-   "ticker": "KEYS",
-   "tier": "T2",
-   "sector": "Information Technology"
-  },
-  {
-   "ticker": "NRG",
-   "tier": "T2",
-   "sector": "Utilities"
-  },
-  {
    "ticker": "Q",
-   "tier": "T4",
+   "tier": "T2",
    "sector": "Information Technology"
   },
   {
-   "ticker": "TTD",
+   "ticker": "TKO",
    "tier": "T2",
    "sector": "Communication Services"
   },
@@ -4496,32 +4460,12 @@
    "sector": "Utilities"
   },
   {
-   "ticker": "BWXT",
-   "tier": "T2",
+   "ticker": "CLH",
+   "tier": "T4",
    "sector": "Industrials"
   },
   {
-   "ticker": "DOCN",
-   "tier": "T2",
-   "sector": "Information Technology"
-  },
-  {
-   "ticker": "GME",
-   "tier": "T2",
-   "sector": "Consumer Discretionary"
-  },
-  {
    "ticker": "BRBR",
-   "tier": "T2",
-   "sector": "Consumer Staples"
-  },
-  {
-   "ticker": "AEO",
-   "tier": "T2",
-   "sector": "Consumer Discretionary"
-  },
-  {
-   "ticker": "ANDE",
    "tier": "T2",
    "sector": "Consumer Staples"
   },
@@ -4531,52 +4475,12 @@
    "sector": "Consumer Discretionary"
   },
   {
-   "ticker": "CLSK",
-   "tier": "T2",
-   "sector": "Information Technology"
-  },
-  {
-   "ticker": "CSR",
-   "tier": "T2",
-   "sector": "Real Estate"
-  },
-  {
-   "ticker": "GPI",
-   "tier": "T2",
-   "sector": "Consumer Discretionary"
-  },
-  {
-   "ticker": "HWKN",
-   "tier": "T2",
-   "sector": "Materials"
-  },
-  {
-   "ticker": "LTC",
-   "tier": "T2",
-   "sector": "Real Estate"
-  },
-  {
    "ticker": "NX",
    "tier": "T2",
    "sector": "Industrials"
   },
   {
-   "ticker": "PLAB",
-   "tier": "T3",
-   "sector": "Information Technology"
-  },
-  {
-   "ticker": "PRIM",
-   "tier": "T2",
-   "sector": "Industrials"
-  },
-  {
    "ticker": "SIG",
-   "tier": "T2",
-   "sector": "Consumer Discretionary"
-  },
-  {
-   "ticker": "SMP",
    "tier": "T2",
    "sector": "Consumer Discretionary"
   },

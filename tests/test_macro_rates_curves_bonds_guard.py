@@ -135,23 +135,20 @@ def _overlay_committed_chrome(produced: str, committed: str) -> str:
     banner = _BANNER_RE.search(committed)
     assert nav is not None, "committed site/bonds.html has no <nav> span"
     assert footer is not None, "committed site/bonds.html has no <footer> span"
+    assert banner is not None, "committed site/bonds.html has no banner span"
+    assert len(_BANNER_RE.findall(committed)) == 1, (
+        "committed site/bonds.html carries more than one banner span"
+    )
     html = produced
     html, n = _NAV_RE.subn(nav.group(0), html, count=1)
     assert n == 1, "rebuild is missing a <nav> to overlay"
     html, n = _FOOTER_RE.subn(footer.group(0), html, count=1)
     assert n == 1, "rebuild is missing a <footer> to overlay"
-    if banner is not None:
-        html, n = _BANNER_RE.subn(banner.group(0), html, count=1)
-        assert n == 1, "rebuild is missing a banner to overlay"
-    else:
-        # origin/main's post-merge bonds page has no White House banner
-        # span. The rebuild still injects one; drop it so chrome matches.
-        html, n = re.subn(
-            r'<script defer data-whb[^>]*>\s*</script>\n?',
-            "",
-            html,
-            count=1,
-        )
+    html, n = _BANNER_RE.subn(banner.group(0), html, count=1)
+    assert n == 1, "rebuild is missing a banner to overlay"
+    assert len(_BANNER_RE.findall(html)) == 1, (
+        "the comparable page carries more than one banner span"
+    )
     return html
 
 

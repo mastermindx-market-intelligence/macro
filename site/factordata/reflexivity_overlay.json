@@ -1,173 +1,20 @@
 {
   "schema": "reflexivity_overlay.v1",
   "is_context_only": true,
-  "as_of": "2026-09-10",
-  "generated_utc": "2026-09-11T18:59:42Z",
-  "note": "Risk-clustering read: 'is this the same hidden trade?'. NOT an alpha claim. Board-level, held-agnostic (US only, v1). Display-only per R-F / Signal Commons R7.",
-  "factor_caveat": "Per-name secondary betas (oil/usd/btc/gold/china) are OOS-unstable and excluded. Similarity uses high-tier factors only (mkt/growth/size/rates, scope=single). Trust the MEMBERSHIP leg more than the factor leg for individual names.",
+  "as_of": "2026-09-12",
+  "generated_utc": "2026-09-12T08:49:12Z",
+  "note": "Empty overlay: no candidates in us_standouts_v2",
+  "factor_caveat": "Per-name secondary betas (oil/usd/btc/gold/china) are OOS-unstable and excluded.",
   "board_concentration": {
-    "n": 3,
-    "n_eff": 1.83,
-    "basis": "membership-jaccard+high-tier-factor-cosine",
-    "note": "Supersedes sector-only HHI effective_bets in build_stock_board_v2 per R-B. N_eff = participation-ratio of similarity-matrix eigenvalues. 3 candidates \u2248 1.83 independent bets."
-  },
-  "same_thesis_groups": [],
-  "earnings_coverage_frac": 1.0,
-  "by_ticker": {
-    "DOCN": {
-      "verdict": "duplicate",
-      "max_similarity": 0.9812,
-      "basis": "membership+high-tier-factor",
-      "nearest": [
-        {
-          "ticker": "MU",
-          "combined": 0.9812,
-          "membership_jaccard": 0.25,
-          "factor_cosine": 0.9812,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [
-            "sector:Information Technology"
-          ],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "AN",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": 0.0,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [],
-          "same_earnings_week": false
-        }
-      ],
-      "earnings_leg": {
-        "next_date": "2026-11-04",
-        "same_week_peers": [],
-        "has_data": true
-      },
-      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Same bet as MU \u2014 Information Technology (similarity 98%).",
-      "why_zh": "\u4e0e MU \u62bc\u6ce8\u76f8\u540c \u2014 Information Technology\uff08\u76f8\u4f3c\u5ea6 98%\uff09\u3002"
-    },
-    "MU": {
-      "verdict": "duplicate",
-      "max_similarity": 0.9812,
-      "basis": "membership+high-tier-factor",
-      "nearest": [
-        {
-          "ticker": "DOCN",
-          "combined": 0.9812,
-          "membership_jaccard": 0.25,
-          "factor_cosine": 0.9812,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [
-            "sector:Information Technology"
-          ],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "AN",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": 0.0,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [],
-          "same_earnings_week": false
-        }
-      ],
-      "earnings_leg": {
-        "next_date": "2026-09-30",
-        "same_week_peers": [],
-        "has_data": true
-      },
-      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Same bet as DOCN \u2014 Information Technology (similarity 98%).",
-      "why_zh": "\u4e0e DOCN \u62bc\u6ce8\u76f8\u540c \u2014 Information Technology\uff08\u76f8\u4f3c\u5ea6 98%\uff09\u3002"
-    },
-    "AN": {
-      "verdict": "new",
-      "max_similarity": 0.0,
-      "basis": "membership+high-tier-factor",
-      "nearest": [
-        {
-          "ticker": "DOCN",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": 0.0,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "MU",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": 0.0,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [],
-          "same_earnings_week": false
-        }
-      ],
-      "earnings_leg": {
-        "next_date": "2026-10-22",
-        "same_week_peers": [],
-        "has_data": true
-      },
-      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Distinct bet \u2014 nearest peer DOCN at 0% similarity.",
-      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 DOCN\uff0c\u76f8\u4f3c\u5ea6 0%\u3002"
-    }
-  },
-  "pair_basis": {
-    "DOCN__MU": {
-      "membership_jaccard": 0.25,
-      "factor_cosine": 0.9812,
-      "combined": 0.9812,
-      "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": [
-        "sector:Information Technology"
-      ]
-    },
-    "DOCN__AN": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": 0.0,
-      "combined": 0.0,
-      "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": []
-    },
-    "MU__AN": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": 0.0,
-      "combined": 0.0,
-      "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": []
-    }
-  },
-  "verdicts": {
-    "duplicate_thresh": 0.65,
-    "partial_thresh": 0.35,
-    "duplicate_note": "similarity >= 0.65 \u2192 same hidden trade",
-    "partial_note": "similarity >= 0.35 \u2192 partial overlap",
-    "new_note": "similarity < 0.35 \u2192 distinct bet"
+    "n": 0,
+    "n_eff": 0.0,
+    "basis": "none"
   },
   "n_eff_by_lane": {
-    "entry_open": 1.8,
+    "entry_open": null,
     "setting_up": null
   },
-  "source_passport": {
-    "factor_betas": {
-      "path": "site/factor_betas.json",
-      "found": true,
-      "as_of": "2026-09-04"
-    },
-    "us_standouts_v2": {
-      "path": "site/factordata/us_standouts_v2.json",
-      "found": true,
-      "as_of": "2026-09-10"
-    },
-    "membership": {
-      "path": "data/baskets/membership.json",
-      "found": true
-    }
-  }
+  "by_ticker": {},
+  "pair_basis": {},
+  "verdicts": {}
 }

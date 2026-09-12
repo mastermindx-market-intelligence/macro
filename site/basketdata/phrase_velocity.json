@@ -1,8 +1,8 @@
 {
   "schema": "edgar_phrase_velocity.v1",
   "vocab_version": 1,
-  "as_of": "2026-09-10",
-  "generated_at": "2026-09-11T03:41:56.313796+00:00",
+  "as_of": "2026-09-11",
+  "generated_at": "2026-09-12T04:05:17.509149+00:00",
   "authority": {
     "may_rank": false,
     "may_gate": false,
@@ -16,12 +16,12 @@
   },
   "honesty_header": "This is a WATCHLIST / candidate feed. Detection is noisy — ~half of phrase-velocity accelerations correspond to real supply-stress shifts. Early-entry return edge ≈ 0. Not a buy signal. Not a scored factor. Carries the same honesty stance as theme_discovery.py.",
   "coverage_stats": {
-    "bottleneck_rows": 83,
-    "emergence_rows": 1304,
-    "combined_rows": 1246,
+    "bottleneck_rows": 84,
+    "emergence_rows": 1313,
+    "combined_rows": 1255,
     "date_range_min": "2025-05-28",
-    "date_range_max": "2026-09-03",
-    "unique_tickers": 552,
+    "date_range_max": "2026-09-10",
+    "unique_tickers": 556,
     "unique_phrases": 14
   },
   "expand_note": "Vocabulary expansion disabled in v1: FTS endpoint returns metadata only (no snippet/text). Co-occurrence expansion requires raw filing text (not available from efts.sec.gov). Expansion cap = 0.",
@@ -33,10 +33,10 @@
         {
           "phrase": "on allocation",
           "recent_count": 2,
-          "prior_count": 0,
+          "prior_count": 1,
           "recent_filers": 2,
-          "prior_filers": 0,
-          "velocity_z": 2.0,
+          "prior_filers": 1,
+          "velocity_z": 1.0,
           "is_affinity_phrase": true
         }
       ],

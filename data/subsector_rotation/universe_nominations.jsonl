@@ -66,3 +66,5 @@
 {"date":"2026-09-10","theme":"Energy Renewable","donor":"energycleanmaterials","receiver":"energycleanbatteries","confidence":0.432,"both_confirmed":false}
 {"date":"2026-09-10","theme":"Nanotechnology","donor":"nanotechmedicine","receiver":"nanotechelectronics","confidence":0.377,"both_confirmed":false}
 {"date":"2026-09-10","theme":"Artificial Intelligence","donor":"aienterprise","receiver":"aiedge","confidence":0.323,"both_confirmed":false}
+{"date":"2026-09-11","theme":"Nanotechnology","donor":"nanotechmedicine","receiver":"nanotechelectronics","confidence":0.52,"both_confirmed":false}
+{"date":"2026-09-11","theme":"Artificial Intelligence","donor":"aienterprise","receiver":"aiedge","confidence":0.412,"both_confirmed":false}

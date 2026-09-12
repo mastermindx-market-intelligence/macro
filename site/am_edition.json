@@ -2,14 +2,14 @@
   "schema": "am_edition.v1",
   "display_only": true,
   "authority": "display_only",
-  "generated_at": "2026-09-11T10:38:11.313558+00:00",
-  "session_date": "2026-09-11",
+  "generated_at": "2026-09-12T18:51:25.546202+00:00",
+  "session_date": "2026-09-12",
   "session_state": "NOT_YET_OPEN",
-  "prior_close_date": "2026-09-10",
+  "prior_close_date": "2026-09-11",
   "morning_source_feasibility": "DEGRADED",
   "morning_source_feasibility_cause_en": "The newest committed tape reading is older than yesterday's close — showing the last known values.",
   "morning_source_feasibility_cause_zh": "最新已提交的行情读数早于昨日收盘——展示的是最新已知数值。",
-  "null_count": 1,
+  "null_count": 2,
   "blocks": [
     {
       "key": "session_clock",
@@ -23,8 +23,8 @@
       "age_minutes": null,
       "max_age_minutes": null,
       "classification": "deterministic_calendar",
-      "state_reason_en": "US markets have not opened yet today.",
-      "state_reason_zh": "美股今日尚未开盘。"
+      "state_reason_en": "Markets are closed for the weekend.",
+      "state_reason_zh": "周末休市。"
     },
     {
       "key": "tape_since_prior_close",
@@ -35,7 +35,7 @@
       "source_owner": "intraday-fastpath",
       "source_as_of": "2026-07-27T22:32:09.883727+00:00",
       "source_as_of_precision": "second",
-      "age_minutes": 65526,
+      "age_minutes": 67459,
       "max_age_minutes": 240,
       "classification": "deterministic_derived_comparison",
       "state_reason_en": "Compared with the close of 24 Jul — no newer close has been captured. Last updated 6 weeks ago — showing the last known reading, not a fresh one.",
@@ -77,9 +77,9 @@
       "state": "STALE_WITH_LAST_KNOWN",
       "source_ref": "data/market_state/latest.json",
       "source_owner": "nightly",
-      "source_as_of": "2026-09-10T00:00:00+00:00",
+      "source_as_of": "2026-09-11T00:00:00+00:00",
       "source_as_of_precision": "day",
-      "age_minutes": 2078,
+      "age_minutes": 2571,
       "max_age_minutes": 1440,
       "classification": "owner_fact",
       "state_reason_en": "Last updated 1 day ago — showing the last known reading, not a fresh one.",
@@ -102,9 +102,9 @@
       "state": "STALE_WITH_LAST_KNOWN",
       "source_ref": "data/regime/latest.json",
       "source_owner": "nightly",
-      "source_as_of": "2026-09-10T00:00:00+00:00",
+      "source_as_of": "2026-09-11T00:00:00+00:00",
       "source_as_of_precision": "day",
-      "age_minutes": 2078,
+      "age_minutes": 2571,
       "max_age_minutes": 1440,
       "classification": "owner_fact",
       "state_reason_en": "Last updated 1 day ago — showing the last known reading, not a fresh one.",
@@ -120,22 +120,22 @@
       "key": "cross_asset_plane",
       "title_en": "Cross-asset plane",
       "title_zh": "跨资产全景",
-      "state": "STALE_WITH_LAST_KNOWN",
+      "state": "CURRENT",
       "source_ref": "data/neuralweb/market_plane.json",
       "source_owner": "nightly",
-      "source_as_of": "2026-09-10T00:00:00+00:00",
+      "source_as_of": "2026-09-12T00:00:00+00:00",
       "source_as_of_precision": "day",
-      "age_minutes": 2078,
+      "age_minutes": 1131,
       "max_age_minutes": 1440,
       "classification": "owner_fact",
-      "state_reason_en": "Last updated 1 day ago — showing the last known reading, not a fresh one.",
-      "state_reason_zh": "最近更新于1天前——展示的是最新已知读数，而非最新数据。",
+      "state_reason_en": null,
+      "state_reason_zh": null,
       "rows": [
         {
           "verdict": {
-            "verdict": "MIXED",
-            "label_en": "Mixed",
-            "label_zh": "混合"
+            "verdict": "RISK_ON",
+            "label_en": "Risk-on",
+            "label_zh": "风险偏好"
           },
           "contradictions_en": "2 disagreements across the plane.",
           "contradictions_zh": "各资产读数有2处分歧。",
@@ -148,28 +148,17 @@
       "key": "todays_calendar",
       "title_en": "Today's calendar",
       "title_zh": "今日日程",
-      "state": "STALE_WITH_LAST_KNOWN",
+      "state": "CURRENT",
       "source_ref": "data/release_forecast/latest.json",
       "source_owner": "nightly",
-      "source_as_of": "2026-09-10T10:05:21+00:00",
+      "source_as_of": "2026-09-12T10:41:23+00:00",
       "source_as_of_precision": "second",
-      "age_minutes": 1472,
+      "age_minutes": 490,
       "max_age_minutes": 1440,
       "classification": "deterministic_calendar",
-      "state_reason_en": "Last updated 1 day ago — showing the last known reading, not a fresh one.",
-      "state_reason_zh": "最近更新于1天前——展示的是最新已知读数，而非最新数据。",
-      "rows": [
-        {
-          "release_date": "2026-09-11",
-          "title_en": "Headline CPI (consumer prices)",
-          "title_zh": "CPI 总体（消费者物价）"
-        },
-        {
-          "release_date": "2026-09-11",
-          "title_en": "Core CPI (consumer prices)",
-          "title_zh": "CPI 核心（消费者物价）"
-        }
-      ]
+      "state_reason_en": "No scheduled US releases today.",
+      "state_reason_zh": "今日无美国经济数据发布。",
+      "rows": []
     },
     {
       "key": "prior_close_brief_ref",
@@ -178,16 +167,16 @@
       "state": "CURRENT",
       "source_ref": "site/master_brief.json",
       "source_owner": "master_brain",
-      "source_as_of": "2026-09-11T10:11:07.150442+00:00",
+      "source_as_of": "2026-09-12T10:10:33.933810+00:00",
       "source_as_of_precision": "second",
-      "age_minutes": 27,
+      "age_minutes": 520,
       "max_age_minutes": 1440,
       "classification": "existing_model_generated_prior_close_brief",
       "state_reason_en": null,
       "state_reason_zh": null,
       "rows": [
         {
-          "generated_at": "2026-09-11T10:11:07.150442+00:00",
+          "generated_at": "2026-09-12T10:10:33.933810+00:00",
           "link": "/aibrief.html"
         }
       ]

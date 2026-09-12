@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CASY-BULL-20260727",
-  "asof": "2026-09-11",
+  "asof": "2026-09-12",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 12.5,
@@ -14,19 +14,19 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 58.0
+    "overlay": 55.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.051,
+    "dist_to_stop_r": -0.103,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 93.3,
-    "p1": -0.7005,
-    "p2": -0.3503,
+    "horizon_pct_used": 95.6,
+    "p1": -0.7355,
+    "p2": -0.3678,
     "p3": null,
-    "move_r": -1.051,
+    "move_r": -1.103,
     "mfe_r": 0.0,
-    "mae_r": -1.051
+    "mae_r": -1.103
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.0,
-  "_mae": -243.3599853515625,
+  "_mae": -255.530029296875,
   "_max_p1": 0.0,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 42,
-  "tau": 0.9333
+  "days_elapsed": 43,
+  "tau": 0.9556
 }

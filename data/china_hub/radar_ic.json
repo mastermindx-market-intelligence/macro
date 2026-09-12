@@ -1,7 +1,7 @@
 {
   "schema": "china_radar_ic.v1",
-  "as_of": "2026-09-11",
-  "generated_at": "2026-09-11T12:39:53.601664+00:00",
+  "as_of": "2026-09-12",
+  "generated_at": "2026-09-12T13:17:56.404591+00:00",
   "n_events": 41,
   "n_matured": 34,
   "ic_all": -0.0866,

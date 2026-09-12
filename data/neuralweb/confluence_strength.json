@@ -2556,6 +2556,19 @@
       "regime_bucket": "Q3"
     },
     {
+      "subject": "ORLY",
+      "as_of": "2026-07-07",
+      "direction": 1,
+      "horizon": "63.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "altdata",
+        "radar"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
       "subject": "SBUX",
       "as_of": "2026-07-07",
       "direction": 1,
@@ -13889,6 +13902,19 @@
       "regime_bucket": "Q3"
     },
     {
+      "subject": "TKO",
+      "as_of": "2026-08-03",
+      "direction": 1,
+      "horizon": "21.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
       "subject": "TTWO",
       "as_of": "2026-08-03",
       "direction": 1,
@@ -14465,6 +14491,19 @@
       "as_of": "2026-08-05",
       "direction": 1,
       "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "TKO",
+      "as_of": "2026-08-05",
+      "direction": 1,
+      "horizon": "21.0",
       "n_confirming_raw": 2,
       "n_independent_confirming": 2.0,
       "engines": [
@@ -16225,6 +16264,19 @@
       "engines": [
         "radar",
         "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "TGT",
+      "as_of": "2026-08-17",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "altdata",
+        "radar"
       ],
       "regime_bucket": "Q3"
     },
@@ -18723,6 +18775,19 @@
       "regime_bucket": "Q3"
     },
     {
+      "subject": "TKO",
+      "as_of": "2026-08-28",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
       "subject": "TTWO",
       "as_of": "2026-08-28",
       "direction": 1,
@@ -18817,12 +18882,13 @@
       "subject": "CTVA",
       "as_of": "2026-08-31",
       "direction": 1,
-      "horizon": "21.0",
-      "n_confirming_raw": 2,
-      "n_independent_confirming": 2.0,
+      "horizon": "5.0",
+      "n_confirming_raw": 3,
+      "n_independent_confirming": 3.0,
       "engines": [
         "altdata",
-        "track_record"
+        "track_record",
+        "us_board"
       ],
       "regime_bucket": "Q3"
     },
@@ -18961,37 +19027,25 @@
       "as_of": "2026-08-31",
       "direction": 1,
       "horizon": "5.0",
-      "n_confirming_raw": 2,
-      "n_independent_confirming": 2.0,
+      "n_confirming_raw": 3,
+      "n_independent_confirming": 3.0,
       "engines": [
         "intel_hub",
-        "track_record"
-      ],
-      "regime_bucket": "Q3"
-    },
-    {
-      "subject": "TKO",
-      "as_of": "2026-08-31",
-      "direction": 1,
-      "horizon": "21.0",
-      "n_confirming_raw": 2,
-      "n_independent_confirming": 2.0,
-      "engines": [
-        "intel_hub",
-        "track_record"
-      ],
-      "regime_bucket": "Q3"
-    },
-    {
-      "subject": "TKO",
-      "as_of": "2026-08-31",
-      "direction": 1,
-      "horizon": "63.0",
-      "n_confirming_raw": 2,
-      "n_independent_confirming": 2.0,
-      "engines": [
         "radar",
         "track_record"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "URBN",
+      "as_of": "2026-08-31",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "stock_desk",
+        "us_board"
       ],
       "regime_bucket": "Q3"
     },
@@ -19068,7 +19122,7 @@
       "n_confirming_raw": 2,
       "n_independent_confirming": 2.0,
       "engines": [
-        "altdata_conv",
+        "altdata",
         "intel_hub"
       ],
       "regime_bucket": "Q3"
@@ -20205,19 +20259,6 @@
       "regime_bucket": "Q3"
     },
     {
-      "subject": "CTVA",
-      "as_of": "2026-08-31",
-      "direction": 1,
-      "horizon": "5.0",
-      "n_confirming_raw": 2,
-      "n_independent_confirming": 2.0,
-      "engines": [
-        "track_record",
-        "us_board"
-      ],
-      "regime_bucket": "Q3"
-    },
-    {
       "subject": "KMI",
       "as_of": "2026-08-31",
       "direction": 1,
@@ -20240,6 +20281,6 @@
     "confluence_strength: no clusters in lobes block — no discount"
   ],
   "produced_by": "engine/neuralweb/confluence_strength.py",
-  "produced_at": "2026-09-11T10:26:44Z",
+  "produced_at": "2026-09-12T10:28:09Z",
   "authority_check": []
 }
