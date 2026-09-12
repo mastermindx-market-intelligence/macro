@@ -1,6 +1,6 @@
 {
-  "ts": "2026-09-12T15:49:38+00:00",
-  "main_sha": "732e5582b54e37f554fa2f8f5ddccc7d3081470a",
+  "ts": "2026-09-12T18:45:50+00:00",
+  "main_sha": "24ec6a460dff080cd9c3024fb48234a04971e805",
   "red_required": [
     {
       "name": "publish",
@@ -46,8 +46,9 @@
     }
   ],
   "green": false,
-  "consecutive_failures": 130,
+  "consecutive_failures": 131,
   "sensed_shas": [
+    "24ec6a460dff080cd9c3024fb48234a04971e805",
     "732e5582b54e37f554fa2f8f5ddccc7d3081470a"
   ],
   "heartbeat_degraded": false
