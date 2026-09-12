@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "FLS-BULL-20260730",
-  "asof": "2026-09-11",
+  "asof": "2026-09-12",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 40.6,
-  "raw_confidence": 38.3,
-  "delta_vs_base": -19.4,
+  "management_confidence": 37.1,
+  "raw_confidence": 32.9,
+  "delta_vs_base": -22.9,
   "recommended_action": "hold",
   "human_state": "Stalling",
   "components": {
-    "validity": 92.1,
+    "validity": 69.8,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 50.0,
     "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.941,
+    "dist_to_stop_r": 0.766,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 93.3,
-    "p1": -0.0394,
-    "p2": -0.0197,
+    "horizon_pct_used": 95.6,
+    "p1": -0.1557,
+    "p2": -0.0779,
     "p3": null,
-    "move_r": -0.059,
+    "move_r": -0.234,
     "mfe_r": 0.503,
-    "mae_r": -0.059
+    "mae_r": -0.234
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Moving Away from Stop",
+  "change_reason": "Falling Behind Schedule",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 6.810003051757818,
-  "_mae": -0.7999975585937449,
+  "_mae": -3.1599981689453074,
   "_max_p1": 0.33555077860348936,
   "_first_trigger_ts": "2026-08-08",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 42,
-  "tau": 0.9333
+  "days_elapsed": 43,
+  "tau": 0.9556
 }

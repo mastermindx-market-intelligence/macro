@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CAR-BULL-20260817",
-  "asof": "2026-09-11",
+  "asof": "2026-09-12",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.7,
@@ -17,16 +17,16 @@
     "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": -1.012,
+    "dist_to_stop_r": -2.378,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 55.6,
-    "p1": -1.3411,
-    "p2": -0.6705,
+    "horizon_pct_used": 57.8,
+    "p1": -2.2521,
+    "p2": -1.1261,
     "p3": null,
-    "move_r": -2.012,
+    "move_r": -3.378,
     "mfe_r": 1.436,
-    "mae_r": -2.012
+    "mae_r": -3.378
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 6.190005493164051,
-  "_mae": -8.669995117187511,
+  "_mae": -14.56000213623048,
   "_max_p1": 0.9574641134051161,
   "_first_trigger_ts": "2026-08-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 25,
-  "tau": 0.5556
+  "days_elapsed": 26,
+  "tau": 0.5778
 }

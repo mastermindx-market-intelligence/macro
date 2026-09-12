@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CAVA-BULL-20260813",
-  "asof": "2026-09-11",
+  "asof": "2026-09-12",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 11.3,
@@ -17,20 +17,20 @@
     "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.188,
+    "dist_to_stop_r": -0.378,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 64.4,
-    "p1": -0.792,
-    "p2": -0.396,
+    "horizon_pct_used": 66.7,
+    "p1": -0.9189,
+    "p2": -0.4594,
     "p3": null,
-    "move_r": -1.188,
+    "move_r": -1.378,
     "mfe_r": 0.11,
-    "mae_r": -1.188
+    "mae_r": -1.378
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Stop Level Breached",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.449997253417962,
-  "_mae": -15.670001678466804,
+  "_mae": -18.180000000000007,
   "_max_p1": 0.0732877055050777,
   "_first_trigger_ts": "2026-08-13",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 29,
-  "tau": 0.6444
+  "days_elapsed": 30,
+  "tau": 0.6667
 }
