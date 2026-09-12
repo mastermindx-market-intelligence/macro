@@ -1,17 +1,11 @@
 name: portfolio-decision-deadman
 
 on:
-  # PR-only transport proof. Remove this branch trigger after its receipt; the
-  # permanent monitor is schedule/dispatch only on protected main.
-  push:
-    branches:
-      - sol/portfolio-decision-deadman-20260912
-    paths:
-      - .github/workflows/portfolio-decision-deadman.yml
   schedule:
-    # US Brain fires 23:10 UTC Mon-Fri. Check after its 90-minute completion budget.
+    # US Brain fires after the US close. The evaluator derives the exact due
+    # clock from APScheduler's live next_run_time rather than duplicating env config.
     - cron: "55 0 * * 2-6"
-    # China/HK Brains fire 08:00/09:00 UTC Mon-Fri. Check after both budgets.
+    # China/HK Brains fire after their venue closes; check after both completion budgets.
     - cron: "45 10 * * 1-5"
   workflow_dispatch:
 
