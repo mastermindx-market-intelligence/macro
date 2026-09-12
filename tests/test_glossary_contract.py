@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import re
+import shutil
+from pathlib import Path
 
 import yaml
 from jinja2 import Environment, FileSystemLoader
@@ -77,14 +79,97 @@ def test_rendered_glance_text_passes_the_banned_vocabulary_grep():
             assert token not in BANNED_GLANCE_TOKENS, token
 
 
+_LOCAL_ASSET_REF_RE = re.compile(r'\b(?:src|href)="([^"?#]+\.(?:css|js))(?:[?#][^"]*)?"')
+_SCHEME_RE = re.compile(r"[a-zA-Z][\w+.-]*:")
+
+
+def _copy_named_local_assets(page: Path, site: Path, out: Path) -> list[str]:
+    """Copy every same-origin ``.css``/``.js`` the raw page names from the real
+    ``site/`` into the tmp site root, so ``optimize_assets`` hashes the same
+    bytes the render lane hashed. Read-only on ``site/``; a ref with no file
+    behind it is skipped (the sweep then leaves that ref unstamped, exactly as
+    the lane would)."""
+    copied: list[str] = []
+    for rel in sorted(set(_LOCAL_ASSET_REF_RE.findall(page.read_text(encoding="utf-8")))):
+        if rel.startswith("//") or _SCHEME_RE.match(rel):
+            continue
+        src = site / rel
+        if src.is_file():
+            dst = out / rel
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(src, dst)
+            copied.append(rel)
+    return copied
+
+
+def _finalize_like_render_lane(out: Path) -> None:
+    """Apply the render lane's post-render sweeps to the tmp site root.
+
+    Mirrors ``render_public`` in scripts/ci/public_render.sh, in its order:
+    ``build_public_pages`` (already run) → ``inject_data_base`` →
+    ``externalize_css`` → ``optimize_assets``. Each script's entry point takes a
+    site dir, so the REAL functions run against ``out``; every write (the
+    ``assets/css/<hash>.css`` files, the rewritten pages, the orphan prune)
+    lands under ``out`` and nothing touches the real ``site/``. The lane's last
+    step, ``check_template_site_sync --fix``, is not mirrored: it only re-copies
+    plain-copy ``templates/<name>`` pairs (a non-``.j2`` direct child of
+    templates/ that also ships as site/<name>), and glossary.html is a Jinja
+    render, not a pair. Precedent: ``_finalize_like_render_lane`` in
+    tests/test_macro_rates_curves_bonds_guard.py (T10), which replays the same
+    CSS-externalize and asset-stamp sweeps at the text level for site/bonds.html.
+    """
+    from scripts import externalize_css, inject_data_base, optimize_assets
+    inject_data_base.inject(out)
+    externalize_css.externalize(out)
+    optimize_assets.optimize(out)
+
+
 def test_site_pair_matches_a_fresh_render_of_the_template(tmp_path):
+    """The committed site/glossary.html is NOT a raw render of the template.
+
+    The public-render lane (scripts/ci/public_render.sh) commits what its
+    post-render sweeps leave behind: dashboard-bot commit d8c4cca1
+    "render-public: public pages + asset stamps" (2026-09-12 17:10Z, four
+    minutes after #6909 squashed this test in) lifted the page's inline
+    ``<style>`` into ``assets/css/<hash>.css`` links and stamped theme.css /
+    theme.js ``?v=<hash>``, and every later render does the same. Comparing a
+    raw ``build_public_pages.build`` render against that page was red on main
+    from d8c4cca1 on (first hit: #6958 trusted-executor-pack-3). So the fresh
+    render is put through the lane's own sweeps (see
+    ``_finalize_like_render_lane``) and the page's named local assets are copied
+    beside it first, so the ``?v=`` stamps hash the bytes the lane hashed. The
+    committed page stays exactly as the lane writes it — re-committing a raw
+    render would flip back at the bot's next run. HTML comments are still
+    stripped on both sides, as before, so a future generated-at comment cannot
+    trip the pair.
+
+    The ``?v=<8 hex>`` stamps are the lane's cache-busters, and each one is
+    derived from the CURRENT bytes of the asset it names — site/theme.css,
+    site/theme.js and site/product-nav-icons.css. Those files are not this
+    page's contract: the committed page carries the stamps of the lane's LAST
+    run, and the dashboard-bot restamps them on its next render-public run, so
+    any theme.css change that lands in between would turn this test red for the
+    whole fleet (theme.css changed five times on 2026-09-06..09 alone). The
+    ``?v=`` query is therefore normalised away on BOTH sides before the compare
+    (seat ruling on review F1). The ``assets/css/<hash>.css`` link NAME is kept
+    as-is: that hash is of this page's own inline CSS, so a change there is a
+    genuine drift signal (the same regex also drops the duplicate ``?v=`` query
+    that link carries, but the hash lives in the filename and is still
+    asserted).
+    """
     from scripts import build_public_pages
-    build_public_pages.build(tmp_path)
-    fresh = (tmp_path / "glossary.html").read_text(encoding="utf-8")
+    out = tmp_path / "site"
+    build_public_pages.build(out)
+    page = out / "glossary.html"
+    _copy_named_local_assets(page, config.site_dir(), out)
+    _finalize_like_render_lane(out)
+    fresh = page.read_text(encoding="utf-8")
     site_path = config.site_dir() / "glossary.html"
     on_disk = site_path.read_text(encoding="utf-8")
     fresh_body = re.sub(r"<!--.*?-->", "", fresh, flags=re.S)
     on_disk_body = re.sub(r"<!--.*?-->", "", on_disk, flags=re.S)
+    fresh_body = re.sub(r"\?v=[0-9a-f]{8}", "", fresh_body)
+    on_disk_body = re.sub(r"\?v=[0-9a-f]{8}", "", on_disk_body)
     assert fresh_body == on_disk_body
 
 
