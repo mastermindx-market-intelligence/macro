@@ -8,6 +8,7 @@ on:
       - tests/test_portfolio_decision_deadman.py
       - tests/test_portfolio_decision_deadman_release.py
       - tests/test_portfolio_decision_deadman_contract.py
+      - tests/test_portfolio_decision_deadman_execution.py
       - scripts/portfolio_decision_deadman.py
       - .github/workflows/portfolio-decision-deadman.yml
       - .github/workflows/portfolio-decision-deadman-tdd.yml
@@ -32,6 +33,7 @@ jobs:
             tests/test_portfolio_decision_deadman.py
             tests/test_portfolio_decision_deadman_release.py
             tests/test_portfolio_decision_deadman_contract.py
+            tests/test_portfolio_decision_deadman_execution.py
             scripts/portfolio_decision_deadman.py
             .github/workflows/portfolio-decision-deadman.yml
           sparse-checkout-cone-mode: false
@@ -44,3 +46,4 @@ jobs:
           tests/test_portfolio_decision_deadman.py
           tests/test_portfolio_decision_deadman_release.py
           tests/test_portfolio_decision_deadman_contract.py
+          tests/test_portfolio_decision_deadman_execution.py
