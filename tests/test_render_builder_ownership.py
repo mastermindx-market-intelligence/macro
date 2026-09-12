@@ -109,6 +109,14 @@ def test_render_uses_positive_builder_ownership_not_the_repo_wide_wildcard():
     assert _owned_modules(), "the explicit builder ownership list vanished"
 
 
+def test_aibrief_freshness_asset_change_restarts_render_for_hash_restamp():
+    assert '- "site/assets/js/aibrief-freshness.js"' in RENDER, (
+        "the AI Brief freshness client is content-hashed into rendered pages; "
+        "an asset-only edit must start render.yml so immutable ?v= references "
+        "are re-stamped instead of leaving returning browsers pinned to old bytes"
+    )
+
+
 def test_the_macro_suite_hook_reaches_the_page_builder():
     """The macro-suite pages (F01 R1B) enter the render lane through
     build_site's guarded hook — render.yml owns
