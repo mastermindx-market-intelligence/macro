@@ -1,6 +1,6 @@
 {
-  "generated_utc": "2026-09-11T23:30:03.389608+00:00",
-  "as_of": "2026-09-11",
+  "generated_utc": "2026-09-12T01:51:50.444497+00:00",
+  "as_of": "2026-09-12",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
   "note": "Deterministic alt-data signals + normalized event feed for the reasoning brain. Display/context-only \u2014 not a scored axis.",
@@ -6225,7 +6225,7 @@
         "total_usd": 74544433.0,
         "contracts": 7,
         "agencies": 4,
-        "accel_x": 39.81,
+        "accel_x": 39.83,
         "top_agency": "Department of Transportation"
       },
       {
@@ -6281,7 +6281,7 @@
         "total_usd": 20271018.0,
         "contracts": 400,
         "agencies": 1,
-        "accel_x": 1.25,
+        "accel_x": 1.3,
         "top_agency": "General Services Administration"
       },
       {
@@ -6460,7 +6460,7 @@
     "material_8k": [
       {
         "ticker": "NWS",
-        "count": 20,
+        "count": 19,
         "items": "8.01"
       },
       {
@@ -6499,11 +6499,6 @@
         "items": "1.01, 2.03, 5.02, 7.01"
       },
       {
-        "ticker": "TSN",
-        "count": 4,
-        "items": "1.01, 2.03, 7.01, 8.01"
-      },
-      {
         "ticker": "WMB",
         "count": 4,
         "items": "1.01, 5.02, 7.01, 8.01"
@@ -6524,16 +6519,6 @@
         "items": "2.03, 8.01"
       },
       {
-        "ticker": "MQ",
-        "count": 3,
-        "items": "5.02"
-      },
-      {
-        "ticker": "PH",
-        "count": 3,
-        "items": "2.01, 2.03, 8.01"
-      },
-      {
         "ticker": "PM",
         "count": 3,
         "items": "7.01"
@@ -6544,14 +6529,9 @@
         "items": "1.01, 5.02, 7.01, 8.01"
       },
       {
-        "ticker": "UHS",
+        "ticker": "TSN",
         "count": 3,
-        "items": "1.01, 2.03, 8.01"
-      },
-      {
-        "ticker": "XYL",
-        "count": 3,
-        "items": "1.01, 2.03, 5.02, 7.01"
+        "items": "1.01, 2.03, 7.01, 8.01"
       },
       {
         "ticker": "ABBV",
@@ -6579,9 +6559,29 @@
         "items": "1.01, 5.02, 7.01"
       },
       {
-        "ticker": "APO",
+        "ticker": "ARE",
         "count": 2,
-        "items": "7.01"
+        "items": "1.01, 2.03, 8.01"
+      },
+      {
+        "ticker": "AWK",
+        "count": 2,
+        "items": "7.01, 8.01"
+      },
+      {
+        "ticker": "BA",
+        "count": 2,
+        "items": "1.01, 2.03, 5.02"
+      },
+      {
+        "ticker": "BAX",
+        "count": 2,
+        "items": "1.01, 5.02, 7.01, 8.01"
+      },
+      {
+        "ticker": "BG",
+        "count": 2,
+        "items": "5.02, 8.01"
       }
     ],
     "special_situations": [
@@ -17466,14 +17466,6 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "QVCAQ",
-        "category": "Delistings",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Delistings"
-      },
-      {
         "ticker": "OBAI",
         "category": "Delistings",
         "confidence": "high",
@@ -18226,7 +18218,7 @@
         "detail": "Divestitures"
       },
       {
-        "ticker": "ISLUF",
+        "ticker": "ISLWF",
         "category": "Deal Terminations",
         "confidence": "high",
         "activist": false,
@@ -18648,6 +18640,14 @@
         "activist": false,
         "filer": null,
         "detail": "Delistings"
+      },
+      {
+        "ticker": "KRSA",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
       },
       {
         "ticker": "NIKI",
@@ -19746,7 +19746,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "EFC-PC",
+        "ticker": "EFC-PD",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -21410,7 +21410,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "LGNYZ",
+        "ticker": "LGNZZ",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -21690,7 +21690,7 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "STNDF",
+        "ticker": "SNTUF",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -23138,7 +23138,7 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "PORT-UN",
+        "ticker": "ANGX",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -23938,7 +23938,7 @@
         "detail": "Delistings"
       },
       {
-        "ticker": "CAPA",
+        "ticker": "QSI",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -24778,7 +24778,7 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "DRDBW",
+        "ticker": "DRDBU",
         "category": "Delistings",
         "confidence": "high",
         "activist": false,
@@ -24906,7 +24906,7 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "AGQPF",
+        "ticker": "AQNB",
         "category": "Divestitures",
         "confidence": "high",
         "activist": false,
@@ -26360,13 +26360,6 @@
     ],
     "lobbying": [
       {
-        "ticker": "FISN",
-        "spend_usd": 0.0,
-        "filings": 1,
-        "spike_x": null,
-        "top_issue": null
-      },
-      {
         "ticker": "TAL",
         "spend_usd": 271000.0,
         "filings": 2,
@@ -26381,20 +26374,6 @@
         "top_issue": "Health Issues"
       },
       {
-        "ticker": "NRG",
-        "spend_usd": 90000.0,
-        "filings": 1,
-        "spike_x": 0.47,
-        "top_issue": "Energy/Nuclear"
-      },
-      {
-        "ticker": "VST",
-        "spend_usd": 50000.0,
-        "filings": 1,
-        "spike_x": 0.26,
-        "top_issue": "Taxation/Internal Revenue Code"
-      },
-      {
         "ticker": "MCK",
         "spend_usd": 40000.0,
         "filings": 1,
@@ -26407,13 +26386,6 @@
         "filings": 1,
         "spike_x": 0.0,
         "top_issue": "Defense"
-      },
-      {
-        "ticker": "PBI",
-        "spend_usd": 0.0,
-        "filings": 1,
-        "spike_x": 0.0,
-        "top_issue": "Postal"
       },
       {
         "ticker": "ROK",
@@ -27843,14 +27815,14 @@
         "sentiment": 0.107
       },
       {
-        "ticker": "QQQ",
-        "mentions": 25,
-        "sentiment": 0.074
-      },
-      {
         "ticker": "MSFT",
         "mentions": 25,
         "sentiment": 0.015
+      },
+      {
+        "ticker": "QQQ",
+        "mentions": 25,
+        "sentiment": 0.074
       },
       {
         "ticker": "OKLO",
@@ -29514,70 +29486,70 @@
       {
         "ticker": "LEN",
         "next_date": "2026-09-16",
-        "days_to": 5,
+        "days_to": 4,
         "eps_forecast": 1.3,
         "last_surprise_pct": 6.5
       },
       {
         "ticker": "AZO",
         "next_date": "2026-09-22",
-        "days_to": 11,
+        "days_to": 10,
         "eps_forecast": 54.97,
         "last_surprise_pct": 5.2
       },
       {
         "ticker": "CTAS",
         "next_date": "2026-09-23",
-        "days_to": 12,
+        "days_to": 11,
         "eps_forecast": 1.35,
         "last_surprise_pct": 4.0
       },
       {
         "ticker": "GIS",
         "next_date": "2026-09-23",
-        "days_to": 12,
+        "days_to": 11,
         "eps_forecast": 0.71,
         "last_surprise_pct": 15.8
       },
       {
         "ticker": "PAYX",
         "next_date": "2026-09-23",
-        "days_to": 12,
+        "days_to": 11,
         "eps_forecast": 1.33,
         "last_surprise_pct": 0.8
       },
       {
         "ticker": "COST",
         "next_date": "2026-09-24",
-        "days_to": 13,
+        "days_to": 12,
         "eps_forecast": 6.48,
         "last_surprise_pct": null
       },
       {
         "ticker": "FDS",
         "next_date": "2026-09-30",
-        "days_to": 19,
+        "days_to": 18,
         "eps_forecast": 4.3,
         "last_surprise_pct": 2.0
       },
       {
         "ticker": "MU",
         "next_date": "2026-09-30",
-        "days_to": 19,
+        "days_to": 18,
         "eps_forecast": 31.17,
         "last_surprise_pct": 18.6
       },
       {
         "ticker": "ACN",
         "next_date": "2026-10-01",
-        "days_to": 20,
+        "days_to": 19,
         "eps_forecast": 3.19,
         "last_surprise_pct": 2.7
       },
       {
         "ticker": "NKE",
         "next_date": "2026-10-01",
-        "days_to": 20,
+        "days_to": 19,
         "eps_forecast": 0.45,
         "last_surprise_pct": 81.8
       }
@@ -29711,6 +29683,18 @@
           "stocktwits_bull"
         ],
         "why": "congress_cluster: 3 members net +6 \u00b7 insider_mspr: MSPR 100.0 \u00b7 patent_cluster: 400 grants, 29 IPC classes \u00b7 stocktwits_bull: 100% bull \u00b7 213,009 watching"
+      },
+      {
+        "ticker": "BA",
+        "score": 4,
+        "weighted_score": 1.6,
+        "channel_list": [
+          "gov_grant",
+          "material_8k",
+          "patent_cluster",
+          "stocktwits_bull"
+        ],
+        "why": "gov_grant: $7,820,571 federal grant/loan \u00b7 material_8k: 2 material 8-Ks (items 1.01, 2.03, 5.02) \u00b7 patent_cluster: 203 grants, 82 IPC classes \u00b7 stocktwits_bull: 92% bull \u00b7 197,257 watching"
       },
       {
         "ticker": "MRK",
@@ -29900,17 +29884,6 @@
           "special_situation"
         ],
         "why": "gov_contract_accel: $49,832,815, 3.4x accel \u00b7 special_situation: Acquisitions"
-      },
-      {
-        "ticker": "BA",
-        "score": 3,
-        "weighted_score": 1.05,
-        "channel_list": [
-          "gov_grant",
-          "patent_cluster",
-          "stocktwits_bull"
-        ],
-        "why": "gov_grant: $7,820,571 federal grant/loan \u00b7 patent_cluster: 203 grants, 82 IPC classes \u00b7 stocktwits_bull: 92% bull \u00b7 197,257 watching"
       },
       {
         "ticker": "ALB",
