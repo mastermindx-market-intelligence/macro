@@ -1,0 +1,6 @@
+operation=portfolio-bot-decision-recovery-20260909-sol-001
+canonical_carrier=mastermindx-market-intelligence/Mastermind#562
+transport_only=true
+workflow=.github/workflows/portfolio-recovery-acceptance-once.yml
+workflow_commit=2705c8877606fa820887d86e26259fa6672d873f
+base=5729e14c06d6c88a4aee3dc2545f234d98ceb220
