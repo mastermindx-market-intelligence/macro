@@ -55,31 +55,33 @@ jobs:
           if marker in text:
               raise SystemExit('portfolio-decision-deadman job already exists')
           expression = '$' + '{{ false }}'
-          snippet = f'''  portfolio-decision-deadman:
-            if: {expression}
-            gate: code
-            paths:
-              - ".github/workflows/portfolio-decision-deadman.yml"
-              - "scripts/portfolio_decision_deadman.py"
-              - "tests/test_portfolio_decision_deadman*.py"
-            runs-on: ubuntu-latest
-            steps:
-              - uses: actions/checkout@v4
-              - uses: actions/setup-python@v5
-                with: {{ python-version: "3.12" }}
-              - name: install focused test deps
-                run: pip install pytest
-              - name: portfolio decision dead-man contract
-                run: >-
-                  python -m pytest -q
-                  tests/test_portfolio_decision_deadman.py
-                  tests/test_portfolio_decision_deadman_cli.py
-                  tests/test_portfolio_decision_deadman_contract.py
-                  tests/test_portfolio_decision_deadman_execution.py
-                  tests/test_portfolio_decision_deadman_governed.py
-                  tests/test_portfolio_decision_deadman_release.py
-
-          '''
+          lines = [
+              '  portfolio-decision-deadman:',
+              f'    if: {expression}',
+              '    gate: code',
+              '    paths:',
+              '      - ".github/workflows/portfolio-decision-deadman.yml"',
+              '      - "scripts/portfolio_decision_deadman.py"',
+              '      - "tests/test_portfolio_decision_deadman*.py"',
+              '    runs-on: ubuntu-latest',
+              '    steps:',
+              '      - uses: actions/checkout@v4',
+              '      - uses: actions/setup-python@v5',
+              '        with: { python-version: "3.12" }',
+              '      - name: install focused test deps',
+              '        run: pip install pytest',
+              '      - name: portfolio decision dead-man contract',
+              '        run: >-',
+              '          python -m pytest -q',
+              '          tests/test_portfolio_decision_deadman.py',
+              '          tests/test_portfolio_decision_deadman_cli.py',
+              '          tests/test_portfolio_decision_deadman_contract.py',
+              '          tests/test_portfolio_decision_deadman_execution.py',
+              '          tests/test_portfolio_decision_deadman_governed.py',
+              '          tests/test_portfolio_decision_deadman_release.py',
+              '',
+          ]
+          snippet = '\n'.join(lines) + '\n'
           matches = list(re.finditer(r'(?m)^jobs:\n', text))
           if len(matches) != 1:
               raise SystemExit(f'top-level legacy job manifest anchor count: {len(matches)}')
