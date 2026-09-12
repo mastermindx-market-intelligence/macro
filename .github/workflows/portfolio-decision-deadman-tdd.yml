@@ -6,6 +6,7 @@ on:
       - claude/portfolio-decision-deadman-20260912
     paths:
       - tests/test_portfolio_decision_deadman.py
+      - tests/test_portfolio_decision_deadman_release.py
       - scripts/portfolio_decision_deadman.py
       - .github/workflows/portfolio-decision-deadman.yml
       - .github/workflows/portfolio-decision-deadman-tdd.yml
@@ -15,7 +16,7 @@ permissions:
 
 concurrency:
   group: portfolio-decision-deadman-tdd
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   focused-test:
@@ -24,9 +25,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          filter: blob:none
           persist-credentials: false
+          sparse-checkout: |
+            tests/test_portfolio_decision_deadman.py
+            tests/test_portfolio_decision_deadman_release.py
+            scripts/portfolio_decision_deadman.py
+            .github/workflows/portfolio-decision-deadman.yml
+          sparse-checkout-cone-mode: false
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - run: python -m pip install --disable-pip-version-check pytest
-      - run: python -m pytest -q tests/test_portfolio_decision_deadman.py
+      - run: >-
+          python -m pytest -q
+          tests/test_portfolio_decision_deadman.py
+          tests/test_portfolio_decision_deadman_release.py
