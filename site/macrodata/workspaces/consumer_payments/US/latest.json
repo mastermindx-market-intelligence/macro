@@ -390,62 +390,19 @@
     ]
   },
   "changes": {
-    "comparability": "COMPARABLE",
-    "deltas": [
-      {
-        "current_value": 763602.0,
-        "delta": 0.0,
-        "metric_id": "retail_sales_level",
-        "note": "same method version; numeric comparison permitted",
-        "prior_value": 763602.0
-      },
-      {
-        "current_value": 5.0092,
-        "delta": 0.0,
-        "metric_id": "retail_sales_yoy",
-        "note": "same method version; numeric comparison permitted",
-        "prior_value": 5.0092
-      },
-      {
-        "current_value": 55.2,
-        "delta": 0.0,
-        "metric_id": "consumer_sentiment_level",
-        "note": "same method version; numeric comparison permitted",
-        "prior_value": 55.2
-      },
-      {
-        "current_value": -10.5348,
-        "delta": 0.0,
-        "metric_id": "consumer_sentiment_yoy",
-        "note": "same method version; numeric comparison permitted",
-        "prior_value": -10.5348
-      },
-      {
-        "current_value": 67.54,
-        "delta": 0.0,
-        "metric_id": "cash_flow_momentum",
-        "note": "same method version; numeric comparison permitted",
-        "prior_value": 67.54
-      },
-      {
-        "current_value": 50.83,
-        "delta": 0.0,
-        "metric_id": "credit_stress",
-        "note": "same method version; numeric comparison permitted",
-        "prior_value": 50.83
-      }
-    ],
-    "null_reason": null,
-    "prior_effective_date": "2026-07-01",
-    "prior_generation_id": "consumer_payments-US-df862a946b935e56",
-    "prior_method_version": "consumer_payments.compose.v1",
-    "status": "PRESENT"
+    "comparability": "NO_EARLIER_PUBLICATION",
+    "deltas": [],
+    "null_reason": "INSUFFICIENT_HISTORY",
+    "prior_effective_date": null,
+    "prior_generation_id": null,
+    "prior_method_version": null,
+    "status": "ABSENT"
   },
   "corrections": {
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "consumer_payments-US-df862a946b935e56"
+    "predecessor_generation_id": "consumer_payments-US-54c8b824242e3d22"
   },
   "drivers": {
     "balance_sheet": [
@@ -538,39 +495,35 @@
     ]
   },
   "generation": {
-    "built_at": "2026-09-10T07:27:52Z",
+    "built_at": "2026-09-11T07:45:15Z",
     "calculation_as_of": "2026-07-01",
-    "code_version": "2c9a2d35ba0dd38618f59a2fadc80b6815ec5281",
-    "content_sha256": "54c8b824242e3d221c55a5ac6575c2cf9af37ada2f595e775011a9072011b621",
-    "generation_id": "consumer_payments-US-54c8b824242e3d22",
+    "code_version": "37bb7c3b6be49a2dfe254926b83e066b74a96138",
+    "content_sha256": "69e198a51f3da3bad352222ac9c808e8035904bd51bb44c1349b1b2962d3175c",
+    "generation_id": "consumer_payments-US-69e198a51f3da3ba",
     "producer": "engine.market_os.macro_workspaces.consumer_payments",
     "rendered_at": null
   },
   "headline": {
     "effective_date": "2026-07-01",
     "hysteresis": {
-      "applied": true,
+      "applied": false,
       "band": 5.0,
       "held_prior": false,
-      "note": "raw classification already matches the prior print; no boundary crossing, hysteresis not engaged"
+      "note": "no comparable prior print; raw threshold classification, hysteresis not applied"
     },
     "method_version": "consumer_payments.compose.v1",
+    "movement_state": "NO_EARLIER_PUBLICATION",
     "nearest_boundary": {
       "axis": "credit_stress",
       "distance": 0.83,
       "null_reason": null
     },
     "null_reason": null,
-    "one_month_vector": {
-      "dx": 0.0,
-      "dy": 0.0,
-      "null_reason": null,
-      "status": "PRESENT"
-    },
+    "one_month_vector": null,
     "prior_state": {
-      "effective_date": "2026-07-01",
-      "method_version": "consumer_payments.compose.v1",
-      "state_id": "B"
+      "effective_date": null,
+      "method_version": null,
+      "state_id": null
     },
     "quadrant": {
       "x": 67.54,
@@ -588,7 +541,7 @@
       "en": "Cash-flow/spending momentum x consumer credit stress",
       "zh": "现金流/支出动能 × 消费信贷压力"
     },
-    "transition_distance": 0.0
+    "transition_distance": null
   },
   "implications": {
     "items": [
@@ -1524,6 +1477,7 @@
       }
     ]
   },
+  "prior_publication": null,
   "region": {
     "code": "US",
     "display_name": "United States",
