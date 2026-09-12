@@ -4598,8 +4598,6 @@ def _ss_identity_read_rows(seq: Any) -> list[dict[str, Any]]:
         else:
             continue
         mapped = _ss_map_identity_read_value(k, raw, has_v)
-        if mapped is None:
-            continue
         house = _SS_READ_FIELD.get(k)
         rows.append({
             "k": k,
@@ -4645,6 +4643,118 @@ def _ss_pair(node: Any, key: str = "") -> dict[str, str] | None:
     return None
 
 
+# Closed vocabulary of workspace lifecycle states the CHANGE card can print.
+# The engine composes that card's sentence itself and interpolates the owner's
+# raw lifecycle token into BOTH language slots
+# (`engine/security_state.py:1219-1223`), so the Chinese page reads
+# `Q4 2026 财报工作区状态为 complete：…` — an engine token inside customer copy
+# (Chairman plain-language law 2026-09-06). The vocabulary is closed by the
+# docket: `EVENT_STATES` (`engine/company_intelligence/events.py:43`, §4.3),
+# enforced on every producer by `CompanyEvent.__post_init__`
+# (`engine/company_intelligence/events.py:239`), reaching the reader through
+# `_lifecycle_payload` (`engine/company_intelligence/event_workspace.py:269`);
+# plus the reader's own `"unknown"` sentinel when the owner states no state at
+# all (`engine/security_state.py:1198`). This table is the projection layer, the
+# same shape as `_SS_READ_VALUE`: the compiled golden stays engine truth and is
+# never edited, and the template never receives the token.
+_SS_CHANGE_STATE: dict[str, dict[str, str]] = {
+    "discovered": {"en": "first seen", "zh": "已发现"},
+    "scheduled": {"en": "scheduled", "zh": "已排期"},
+    "rescheduled": {"en": "rescheduled", "zh": "已改期"},
+    "started": {"en": "under way", "zh": "进行中"},
+    "completed_partial": {"en": "partly complete", "zh": "部分完成"},
+    "complete": {"en": "complete", "zh": "已完成"},
+    "corrected": {"en": "corrected", "zh": "已更正"},
+    "superseded": {"en": "superseded", "zh": "已被取代"},
+    "derived_ready": {"en": "ready to read", "zh": "可供查阅"},
+    "distributed": {"en": "distributed", "zh": "已分发"},
+    "cancelled": {"en": "cancelled", "zh": "已取消"},
+    "unknown": {"en": "not stated", "zh": "未说明"},
+}
+
+# The reader does not re-validate `lifecycle.state` against `EVENT_STATES` — only
+# the producer does — and the workspace arrives over the wire, so ANY value is
+# reachable here: a wrong case (`Complete`), a different separator
+# (`in-progress`), a value from a newer contract (`v2_ready`), or a non-string
+# the engine's f-string stringified. None of them may print. They take house
+# words that say exactly what happened — the owner stated something this reader
+# does not recognise, which is NOT the same fact as "the owner stated nothing"
+# (`unknown`) — and are RECORDED for the operator, mirroring
+# `_SS_UNMAPPED_WARNED` / `_ss_warn_unmapped_identity`.
+_SS_CHANGE_STATE_UNREADABLE: dict[str, str] = {"en": "not recognised", "zh": "无法识别"}
+_SS_CHANGE_STATE_UNMAPPED: set[str] = set()
+
+# Already-projected house words, so a second application of the projection is a
+# no-op instead of re-reading its own output as an unrecognised token (which
+# would both rewrite the sentence and emit a false operator line for a value the
+# engine never sent).
+_SS_CHANGE_STATE_PROJECTED: dict[str, frozenset[str]] = {
+    slot: frozenset(
+        [entry[slot] for entry in _SS_CHANGE_STATE.values()]
+        + [_SS_CHANGE_STATE_UNREADABLE[slot]]
+    )
+    for slot in ("en", "zh")
+}
+
+# The engine's own two sentence frames. The match is anchored on the FRAME and
+# captures whatever the owner put between it and the terminator — never gated on
+# the token's shape, or the values that most need catching would walk straight
+# past the table. The Chinese frame swallows the engine's ASCII space so the
+# house words sit flush against the CJK, never `状态为 已完成`.
+_SS_CHANGE_STATE_EN_RE = re.compile(r"(?<=results workspace is )(.+?)(?=:)")
+_SS_CHANGE_STATE_ZH_RE = re.compile(r"(?<=财报工作区状态为)\s*(.+?)(?=：)")
+
+# `engine/security_state.py:1218` labels a workspace with no fiscal quarter (an
+# annual period) `"the latest period"` and interpolates that English into the
+# CHINESE frame too. Frozen here for the same reason the states are: a Latin run
+# in Chinese copy is machine text whether or not it is a token.
+_SS_CHANGE_PERIOD_ZH: dict[str, str] = {"the latest period": "最近一期"}
+_SS_CHANGE_PERIOD_ZH_RE = re.compile(
+    r"^(" + "|".join(re.escape(k) for k in _SS_CHANGE_PERIOD_ZH) + r")\s*(?=财报工作区状态为)"
+)
+
+
+def _ss_warn_unmapped_change_state(token: str) -> None:
+    """One stderr line per distinct out-of-contract value per process."""
+    if token in _SS_CHANGE_STATE_UNMAPPED:
+        return
+    _SS_CHANGE_STATE_UNMAPPED.add(token)
+    print(f"change card lifecycle state unmapped: {token}", file=sys.stderr)
+
+
+def _ss_project_change_state(pair: dict[str, str] | None) -> dict[str, str] | None:
+    """Rewrite the engine's raw lifecycle value as house words in both slots.
+
+    Falsy input is returned unchanged. A projected slot is a fixpoint: applying
+    this to its own output changes nothing and records nothing.
+    """
+    if not pair:
+        return pair
+    out = dict(pair)
+    for slot, rx in (("en", _SS_CHANGE_STATE_EN_RE), ("zh", _SS_CHANGE_STATE_ZH_RE)):
+        text = out.get(slot) or ""
+        if not text:
+            continue
+
+        def _house(m: "re.Match[str]", _slot: str = slot) -> str:
+            raw = m.group(1).strip()
+            if raw in _SS_CHANGE_STATE_PROJECTED[_slot]:
+                return raw
+            entry = _SS_CHANGE_STATE.get(raw)
+            if entry is None:
+                _ss_warn_unmapped_change_state(raw)
+                return _SS_CHANGE_STATE_UNREADABLE[_slot]
+            return entry[_slot]
+
+        out[slot] = rx.sub(_house, text)
+    zh = out.get("zh") or ""
+    if zh:
+        out["zh"] = _SS_CHANGE_PERIOD_ZH_RE.sub(
+            lambda m: _SS_CHANGE_PERIOD_ZH[m.group(1)], zh,
+        )
+    return out
+
+
 def _ss_leg(key: str, title_en: str, title_zh: str, leg: Any) -> dict[str, Any]:
     """Project one axis leg into everything its card and dialog print."""
     leg = leg if isinstance(leg, dict) else {}
@@ -4652,6 +4762,12 @@ def _ss_leg(key: str, title_en: str, title_zh: str, leg: Any) -> dict[str, Any]:
     cov = _SS_COVERAGE.get(cov_code, _SS_COVERAGE_FALLBACK)
 
     reason = _ss_pair(leg, "reason")
+    if key == "change":
+        # Every engine-composed sentence on this axis, not only the one today's
+        # engine fills: `reason` / `clause` / `actionable` render into the same
+        # card and dialog, so a lifecycle value arriving in any of them must
+        # meet the table too.
+        reason = _ss_project_change_state(reason)
     why = reason or (
         {"en": cov["why_en"], "zh": cov["why_zh"]} if cov["why_en"] else None
     )
@@ -4661,8 +4777,18 @@ def _ss_leg(key: str, title_en: str, title_zh: str, leg: Any) -> dict[str, Any]:
     # say. A card whose bold line repeats its own chip has spent its best line
     # on a word the reader already read.
     summary = _ss_pair(leg, "summary")
-    headline = _ss_pair(leg, "headline") or summary or {"en": cov["en"], "zh": cov["zh"]}
-    clause = _ss_pair(leg, "clause") or (summary if summary is not headline else None)
+    explicit_headline = _ss_pair(leg, "headline")
+    if key == "change":
+        # `summary` is projected BEFORE `headline` derives from it, so the two
+        # stay the same object: `clause` below keys off that identity, and a
+        # broken identity makes the card print its sentence twice.
+        summary = _ss_project_change_state(summary)
+        explicit_headline = _ss_project_change_state(explicit_headline)
+    headline = explicit_headline or summary or {"en": cov["en"], "zh": cov["zh"]}
+    explicit_clause = _ss_pair(leg, "clause")
+    if key == "change":
+        explicit_clause = _ss_project_change_state(explicit_clause)
+    clause = explicit_clause or (summary if summary is not headline else None)
 
     # Clocks, in the order the reference composition names them. A clock that is
     # absent is dropped rather than printed as "—": an empty clock row would
@@ -4748,7 +4874,10 @@ def _ss_leg(key: str, title_en: str, title_zh: str, leg: Any) -> dict[str, Any]:
         "headline": headline,
         "clause": clause,
         "why": why,
-        "actionable": _ss_pair(leg, "actionable") or _SS_ACTIONABLE[cov["tone"]],
+        "actionable": (
+            _ss_project_change_state(_ss_pair(leg, "actionable")) if key == "change"
+            else _ss_pair(leg, "actionable")
+        ) or _SS_ACTIONABLE[cov["tone"]],
         "owner": _clean_str(leg.get("owner") or ""),
         "owner_object": _clean_str(leg.get("owner_object") or leg.get("owner_object_id") or ""),
         "source": _clean_str(leg.get("source") or ""),

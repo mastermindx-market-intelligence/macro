@@ -3239,3 +3239,302 @@ def test_overview_coverage_row_is_absent_when_both_sentences_are_none() -> None:
     zh = _card_region(_render_section(view, "zh"))
     assert "Reads available" not in en
     assert "可用读数" not in zh
+
+
+
+# ---------------------------------------------------------------------------
+# F06-ZH-CARD-1 · the change card's workspace lifecycle state
+#
+# `engine/security_state.py:1219-1223` composes the change card's sentence and
+# interpolates the owner's raw lifecycle value into BOTH language slots, so the
+# Chinese page reads `Q4 2026 财报工作区状态为 complete：…` — an engine token
+# inside customer Chinese (Chairman plain-language law 2026-09-06). The engine
+# and the compiled goldens are truth and are never edited; the projection layer
+# in `scripts/build_ticker_pages.py` translates.
+
+_F06_CARD_TITLE = {"en": "What changed", "zh": "有何变化"}
+#: Any Latin run of three or more. Every `EVENT_STATES` member
+#: (`engine/company_intelligence/events.py:43`) is one, and so is every other
+#: shape an out-of-contract owner could send.
+_F06_LATIN_RUN_RE = re.compile(r"[A-Za-z_]{3,}")
+_F06_GOLDENS = ("golden_msft_expected_output.json", "golden_aapl_expected_output.json")
+
+
+def _f06_golden(name: str) -> dict:
+    path = REPO / "tests" / "fixtures" / "security_state" / name
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _f06_axis_card(html: str, *, lang: str) -> _HtmlNode:
+    """The one `ss-cell` article whose axis heading is the change card's."""
+    want = _F06_CARD_TITLE[lang]
+    for card in _parse_class_tree(_card_region(html)).find_all_class("ss-cell"):
+        heading = card.find_class("ss-axis")
+        if heading is not None and want in heading.get_text():
+            return card
+    raise AssertionError(f"the {want!r} card did not render in {lang!r}")
+
+
+def _f06_card_sentence(view: dict, *, lang: str) -> str:
+    head = _f06_axis_card(_render_section(view, lang=lang), lang=lang).find_class("ss-head")
+    assert head is not None, f"the change card printed no sentence in {lang!r}"
+    return head.get_text()
+
+
+def _f06_with_state(golden: dict, state: str, *, quarter: object = 4) -> dict:
+    """Golden with its change-card sentence recomposed for *state*.
+
+    Rebuilt with the engine's own two frames (`engine/security_state.py:1219-1223`)
+    so the test exercises a real engine sentence, not a shape of its own
+    invention. The golden on disk is never written.
+    """
+    import copy
+
+    out = copy.deepcopy(golden)
+    label = f"Q{quarter} 2026" if quarter else "the latest period"
+    out["legs"]["change"]["summary"] = {
+        "en": f"{label} results workspace is {state}: "
+              "2 fact(s), 1 delta(s), 1 guidance item(s).",
+        "zh": f"{label} 财报工作区状态为 {state}："
+              "2 项事实、1 项变动、1 项指引。",
+    }
+    return out
+
+
+@pytest.mark.parametrize("golden_name", _F06_GOLDENS)
+def test_change_card_sentence_carries_no_engine_state_token(golden_name: str) -> None:
+    """F06-ZH-CARD-1 scope (3): render a golden and read the change card.
+
+    RED-first at main 961a9c3d, both goldens: the Chinese sentence printed
+    `… 财报工作区状态为 complete：…` — the lifecycle token verbatim inside
+    Chinese copy.
+    """
+    view = build_security_state({"security_state": _f06_golden(golden_name)})
+    assert view is not None
+
+    zh_sentence = _f06_card_sentence(view, lang="zh")
+    assert "财报工作区" in zh_sentence, (
+        f"the change card sentence is not the workspace sentence: {zh_sentence!r}"
+    )
+    hits = _F06_LATIN_RUN_RE.findall(zh_sentence)
+    assert not hits, (
+        "engine state token(s) reached the Chinese change card sentence: "
+        f"{hits} in {zh_sentence!r}"
+    )
+    # No ASCII space may sit against a CJK character where the value was.
+    assert "状态为 " not in zh_sentence, (
+        f"the projection left the engine's ASCII space against CJK: {zh_sentence!r}"
+    )
+
+
+@pytest.mark.parametrize(
+    ("state", "en_words", "zh_words"),
+    [
+        ("completed_partial", "partly complete", "部分完成"),
+        ("derived_ready", "ready to read", "可供查阅"),
+        ("discovered", "first seen", "已发现"),
+    ],
+)
+def test_change_card_projects_both_languages_end_to_end(
+    state: str, en_words: str, zh_words: str,
+) -> None:
+    """The EN slot is projected too, and `complete` is the one value that hides
+    it: the token happens to be an English word, so an EN assertion on the MSFT
+    golden alone passes byte-identically without any projection at all. These
+    three tokens have house words that DIFFER from the token, so the English
+    half of the table is exercised on the real render path.
+    """
+    view = build_security_state(
+        {"security_state": _f06_with_state(_f06_golden(_F06_GOLDENS[0]), state)},
+    )
+    assert view is not None
+
+    en_sentence = _f06_card_sentence(view, lang="en")
+    assert f"results workspace is {en_words}:" in en_sentence, en_sentence
+    assert state not in en_sentence, f"raw {state!r} survived in English: {en_sentence!r}"
+
+    zh_sentence = _f06_card_sentence(view, lang="zh")
+    assert f"状态为{zh_words}：" in zh_sentence, zh_sentence
+    assert not _F06_LATIN_RUN_RE.findall(zh_sentence), zh_sentence
+
+
+def test_change_card_annual_period_label_is_not_english_in_chinese() -> None:
+    """`engine/security_state.py:1218` labels a workspace with no fiscal quarter
+    `"the latest period"` and puts that English into the CHINESE frame as well.
+    Projecting the state and leaving this would swap one Latin run out of the
+    sentence and leave another in.
+    """
+    view = build_security_state({
+        "security_state": _f06_with_state(
+            _f06_golden(_F06_GOLDENS[0]), "complete", quarter=None,
+        ),
+    })
+    assert view is not None
+
+    zh_sentence = _f06_card_sentence(view, lang="zh")
+    assert "the latest period" not in zh_sentence, zh_sentence
+    assert "最近一期" in zh_sentence, zh_sentence
+    assert not _F06_LATIN_RUN_RE.findall(zh_sentence), zh_sentence
+    # English keeps the engine's own label — it is house English there.
+    assert "the latest period" in _f06_card_sentence(view, lang="en")
+
+
+def test_change_card_state_table_covers_the_whole_engine_vocabulary() -> None:
+    """F06-ZH-CARD-1 scope (3), extending macro#6920 h7's completeness rule.
+
+    Discovery walks `EVENT_STATES` in the engine source, so a vocabulary that
+    GROWS reds here instead of silently reaching the page as a raw token.
+    """
+    from scripts.build_ticker_pages import _SS_CHANGE_STATE, _SS_CHANGE_STATE_UNREADABLE
+
+    events_src = (
+        REPO / "engine" / "company_intelligence" / "events.py"
+    ).read_text(encoding="utf-8")
+    block = re.search(
+        r"EVENT_STATES:\s*frozenset\[str\]\s*=\s*frozenset\(\{(.*?)\}\)",
+        events_src, re.S,
+    )
+    assert block is not None, "EVENT_STATES no longer parses at its declaration site"
+    engine_states = set(re.findall(r'"([a-z_]+)"', block.group(1)))
+    assert "complete" in engine_states and "completed_partial" in engine_states, (
+        f"the EVENT_STATES extractor is not reading the docket set: {sorted(engine_states)}"
+    )
+    # The reader's own sentinel when the owner states no lifecycle state
+    # (`engine/security_state.py:1198`: `... or "unknown"`).
+    engine_src = (REPO / "engine" / "security_state.py").read_text(encoding="utf-8")
+    assert 'lifecycle.get("state")) or "unknown"' in engine_src, (
+        "the reader's lifecycle-state fallback moved; re-derive the sentinel"
+    )
+    reachable = engine_states | {"unknown"}
+
+    missing = sorted(tok for tok in reachable if tok not in _SS_CHANGE_STATE)
+    assert not missing, f"_SS_CHANGE_STATE missing engine lifecycle states: {missing}"
+
+    failures: list[str] = []
+    for token, pair in _SS_CHANGE_STATE.items():
+        for slot in ("en", "zh"):
+            text = str(pair.get(slot) or "")
+            if not text:
+                failures.append(f"{token}[{slot}] is empty")
+            if text == _SS_CHANGE_STATE_UNREADABLE[slot]:
+                failures.append(f"{token}[{slot}] is the unreadable-value fallback")
+        # An EN pair may legitimately BE the token when the token is already an
+        # ordinary English word (`complete`, `cancelled`) — `_SS_READ_VALUE`
+        # does the same for `AVAILABLE`. What it may never be is a machine
+        # word: an underscore is the shape that gives a snake_case token away.
+        en = str(pair.get("en") or "")
+        if "_" in en:
+            failures.append(f"{token}['en'] is still a machine word: {en!r}")
+        zh = str(pair.get("zh") or "")
+        if " " in zh:
+            failures.append(f"{token}['zh'] carries an ASCII space: {zh!r}")
+        if _F06_LATIN_RUN_RE.search(zh):
+            failures.append(f"{token}['zh'] carries a Latin run: {zh!r}")
+    assert not failures, "; ".join(failures)
+
+
+def test_change_card_projection_is_a_fixpoint_for_every_token() -> None:
+    """Projecting an already-projected sentence must change nothing and record
+    nothing. Without this, a house word that is itself a bare lowercase word
+    (`discovered` → `found`) is re-read as an unrecognised value on any second
+    pass: the sentence degrades AND a false operator line names a value the
+    engine never sent.
+    """
+    from scripts.build_ticker_pages import (
+        _SS_CHANGE_STATE, _SS_CHANGE_STATE_UNMAPPED, _ss_project_change_state,
+    )
+
+    before = set(_SS_CHANGE_STATE_UNMAPPED)
+    failures: list[str] = []
+    for token in _SS_CHANGE_STATE:
+        once = _ss_project_change_state({
+            "en": f"Q4 2026 results workspace is {token}: 2 fact(s).",
+            "zh": f"Q4 2026 财报工作区状态为 {token}：2 项事实。",
+        })
+        assert once is not None
+        twice = _ss_project_change_state(dict(once))
+        if twice != once:
+            failures.append(f"{token}: {once!r} -> {twice!r}")
+    assert not failures, "; ".join(failures)
+    assert set(_SS_CHANGE_STATE_UNMAPPED) == before, (
+        "a contract token was recorded as unmapped: "
+        f"{sorted(set(_SS_CHANGE_STATE_UNMAPPED) - before)}"
+    )
+
+
+@pytest.mark.parametrize(
+    "raw",
+    ["Complete", "COMPLETE", "in-progress", "ok", "v2_ready", "complete2",
+     "future_owner_state", "5"],
+)
+def test_change_card_out_of_contract_state_is_recorded_not_printed(
+    raw: str, capsys: pytest.CaptureFixture[str],
+) -> None:
+    """F06-ZH-CARD-1 scope (2): a value outside the docket vocabulary takes a
+    readable house pair AND is recorded for the operator.
+
+    The reader does not re-validate `lifecycle.state` against `EVENT_STATES`
+    (only the producer does, `engine/company_intelligence/events.py:239`) and
+    the workspace arrives over the wire, so EVERY shape is reachable — not only
+    the snake_case one that happens to look like a contract token. A matcher
+    gated on the token's shape lets exactly the values that most need catching
+    walk past; this parametrisation is the guard against that.
+    """
+    from scripts.build_ticker_pages import (
+        _SS_CHANGE_STATE_UNMAPPED, _SS_CHANGE_STATE_UNREADABLE,
+        _ss_project_change_state,
+    )
+
+    _SS_CHANGE_STATE_UNMAPPED.discard(raw)
+    try:
+        projected = _ss_project_change_state({
+            "en": f"Q4 2026 results workspace is {raw}: 2 fact(s).",
+            "zh": f"Q4 2026 财报工作区状态为 {raw}：2 项事实。",
+        })
+        assert projected is not None
+        assert raw not in projected["en"], projected["en"]
+        assert raw not in projected["zh"], projected["zh"]
+        assert _SS_CHANGE_STATE_UNREADABLE["en"] in projected["en"]
+        assert _SS_CHANGE_STATE_UNREADABLE["zh"] in projected["zh"]
+        assert "状态为 " not in projected["zh"], projected["zh"]
+        assert raw in _SS_CHANGE_STATE_UNMAPPED, "the value was not recorded"
+        assert f"change card lifecycle state unmapped: {raw}" in capsys.readouterr().err, (
+            "the operator never heard about it"
+        )
+    finally:
+        _SS_CHANGE_STATE_UNMAPPED.discard(raw)
+
+
+def test_change_card_out_of_contract_state_never_reaches_the_page() -> None:
+    """The same guarantee on the real render path, not just the projector."""
+    from scripts.build_ticker_pages import _SS_CHANGE_STATE_UNMAPPED
+
+    _SS_CHANGE_STATE_UNMAPPED.discard("Complete")
+    try:
+        view = build_security_state({
+            "security_state": _f06_with_state(_f06_golden(_F06_GOLDENS[0]), "Complete"),
+        })
+        assert view is not None
+        zh_sentence = _f06_card_sentence(view, lang="zh")
+        assert "Complete" not in zh_sentence, zh_sentence
+        assert not _F06_LATIN_RUN_RE.findall(zh_sentence), zh_sentence
+        assert "Complete" not in _card_region(_render_section(view, lang="zh"))
+    finally:
+        _SS_CHANGE_STATE_UNMAPPED.discard("Complete")
+
+
+def test_change_card_prints_its_sentence_once() -> None:
+    """The projection returns a NEW dict, so `headline is summary` — which
+    decides whether the card prints a second paragraph — has to be established
+    after it, not before. If that identity breaks the card prints the same
+    sentence twice.
+    """
+    view = build_security_state({"security_state": _f06_golden(_F06_GOLDENS[0])})
+    assert view is not None
+    change = _axis(view, "change")
+    assert change["clause"] is None, (
+        f"the change card grew a second paragraph: {change['clause']!r}"
+    )
+    card = _f06_axis_card(_render_section(view, lang="zh"), lang="zh")
+    sentences = [p for p in card.find_all_class("ss-head") + card.find_all_class("ss-body")]
+    assert len(sentences) == 1, [s.get_text() for s in sentences]
