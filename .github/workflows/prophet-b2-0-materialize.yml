@@ -16,7 +16,7 @@ jobs:
       - name: Checkout transfer branch
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Build exact reviewed repair commit
         shell: bash
@@ -36,7 +36,7 @@ jobs:
           gzip -dc /tmp/repair.patch.gz > /tmp/repair.patch
           test "$(sha256sum /tmp/repair.patch | cut -d' ' -f1)" = "$PATCH_SHA256"
 
-          git fetch --no-tags origin "$TARGET_BRANCH"
+          git fetch --no-tags --depth=1 origin "$TARGET_BRANCH"
           test "$(git rev-parse FETCH_HEAD)" = "$EXPECTED_BASE"
           git checkout --detach "$EXPECTED_BASE"
           git apply --index --whitespace=error-all /tmp/repair.patch
