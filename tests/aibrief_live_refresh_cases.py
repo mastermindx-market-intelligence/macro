@@ -59,7 +59,8 @@ def test_optimizer_syncs_render_owned_freshness_source_before_hashing(tmp_path: 
     templates = tmp_path / "templates"
     templates.mkdir()
     source_body = "window.__aibriefFreshness = 'render-owned-source';\n"
-    (templates / _SOURCE).write_text(source_body)
+    source = templates / _SOURCE
+    source.write_text(source_body)
     _write_asset(site, "window.__aibriefFreshness = 'stale-generated-output';\n")
     page = site / "macro.html"
     page.write_text(
@@ -69,8 +70,8 @@ def test_optimizer_syncs_render_owned_freshness_source_before_hashing(tmp_path: 
 
     assert optimize(site) == 1
 
-    assert (site / _ASSET).read_text() == source_body
-    stamp = hashlib.sha256(source_body.encode()).hexdigest()[:8]
+    assert (site / _ASSET).read_bytes() == source.read_bytes()
+    stamp = hashlib.sha256(source.read_bytes()).hexdigest()[:8]
     assert f'aibrief-freshness.js?v={stamp}' in page.read_text()
 
 
