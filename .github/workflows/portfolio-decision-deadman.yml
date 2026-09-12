@@ -1,6 +1,13 @@
 name: portfolio-decision-deadman
 
 on:
+  # PR-only transport proof. Remove this branch trigger after its receipt; the
+  # permanent monitor is schedule/dispatch only on protected main.
+  push:
+    branches:
+      - sol/portfolio-decision-deadman-20260912
+    paths:
+      - .github/workflows/portfolio-decision-deadman.yml
   schedule:
     # US Brain fires 23:10 UTC Mon-Fri. Check after its 90-minute completion budget.
     - cron: "55 0 * * 2-6"
