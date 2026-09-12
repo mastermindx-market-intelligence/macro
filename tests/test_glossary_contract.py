@@ -143,11 +143,19 @@ def test_site_pair_matches_a_fresh_render_of_the_template(tmp_path):
     stripped on both sides, as before, so a future generated-at comment cannot
     trip the pair.
 
-    Known coupling, shared with T10: the ``?v=`` stamps are hashed from the
-    CURRENT bytes of the copied assets (today theme.css and theme.js), while
-    the committed page carries the stamp from the lane's last run. A PR that
-    edits one of those assets without a re-render therefore fails here until
-    the public-render lane re-stamps the page on main.
+    The ``?v=<8 hex>`` stamps are the lane's cache-busters, and each one is
+    derived from the CURRENT bytes of the asset it names — site/theme.css,
+    site/theme.js and site/product-nav-icons.css. Those files are not this
+    page's contract: the committed page carries the stamps of the lane's LAST
+    run, and the dashboard-bot restamps them on its next render-public run, so
+    any theme.css change that lands in between would turn this test red for the
+    whole fleet (theme.css changed five times on 2026-09-06..09 alone). The
+    ``?v=`` query is therefore normalised away on BOTH sides before the compare
+    (seat ruling on review F1). The ``assets/css/<hash>.css`` link NAME is kept
+    as-is: that hash is of this page's own inline CSS, so a change there is a
+    genuine drift signal (the same regex also drops the duplicate ``?v=`` query
+    that link carries, but the hash lives in the filename and is still
+    asserted).
     """
     from scripts import build_public_pages
     out = tmp_path / "site"
@@ -160,6 +168,8 @@ def test_site_pair_matches_a_fresh_render_of_the_template(tmp_path):
     on_disk = site_path.read_text(encoding="utf-8")
     fresh_body = re.sub(r"<!--.*?-->", "", fresh, flags=re.S)
     on_disk_body = re.sub(r"<!--.*?-->", "", on_disk, flags=re.S)
+    fresh_body = re.sub(r"\?v=[0-9a-f]{8}", "", fresh_body)
+    on_disk_body = re.sub(r"\?v=[0-9a-f]{8}", "", on_disk_body)
     assert fresh_body == on_disk_body
 
 
