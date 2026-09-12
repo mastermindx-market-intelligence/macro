@@ -1,73 +1,67 @@
 {
-  "ts": "2026-09-09T16:56:50+00:00",
-  "main_sha": "8918fba56c23df4167ed135f4df5b3096427ba5e",
+  "ts": "2026-09-12T07:28:06+00:00",
+  "main_sha": "4d70f6d7eec514ee36b6e915619d26e4ede70d74",
   "red_required": [
     {
-      "name": "render",
+      "name": "health",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34379022996/job/102558966726"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34674560321/job/103501975689"
     },
     {
-      "name": "refresh",
+      "name": "research-vault-source-url",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34379022871/job/102558962653"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34674560321/job/103501975312"
     },
     {
       "name": "publish",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34378774811/job/102558133220"
-    },
-    {
-      "name": "chronicle-suite",
-      "conclusion": "cancelled",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34378216172/job/102556279444"
-    },
-    {
-      "name": "template-site-sync",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34378216172/job/102556279386"
-    },
-    {
-      "name": "workflow-yaml",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34378216172/job/102556279319"
-    },
-    {
-      "name": "engine-render-guards",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34378216172/job/102556279306"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34674498157/job/103501803869"
     },
     {
       "name": "tier-gate",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34378216172/job/102556279277"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34673560220/job/103499297442"
     },
     {
       "name": "free-content-estate",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34378216172/job/102556279251"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34673560220/job/103499297347"
+    },
+    {
+      "name": "workflow-yaml",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34673560220/job/103499297333"
+    },
+    {
+      "name": "engine-render-guards",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34673560220/job/103499297327"
     },
     {
       "name": "font-ui-defined",
       "conclusion": "cancelled",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34378216172/job/102556279182"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34673560220/job/103499297313"
+    },
+    {
+      "name": "template-site-sync",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34673560220/job/103499297296"
     }
   ],
   "green": false,
-  "consecutive_failures": 116,
+  "consecutive_failures": 128,
   "sensed_shas": [
-    "8918fba56c23df4167ed135f4df5b3096427ba5e",
-    "b2b4f6c71e4629e27f53d235099ab14875a7be22"
+    "4d70f6d7eec514ee36b6e915619d26e4ede70d74",
+    "4ac6605286c3d54bb5394f13186fa45821d75c5f"
   ],
   "heartbeat_degraded": false
 }

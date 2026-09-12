@@ -5,8 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 {% include "_interfonts.html.j2" %}
-<script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||''];for(var i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh'}catch(e){}return''})();if(l)document.documentElement.setAttribute('data-lang',l)}catch(e){}</script>
-<link rel="stylesheet" href="theme.css">
+<script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||''];for(var i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh'}catch(e){}return''})();if(l)document.documentElement.setAttribute('data-lang',l)}catch(e){}</script><link rel="stylesheet" href="theme.css">
 <link rel="stylesheet" href="government-revenue-parity.css">
 <title>Government Revenue Foresight — Mastermind</title>
 {% set seo_title = "Government Revenue Foresight — Mastermind" %}
@@ -56,108 +55,96 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 .truth.conflict{color:var(--gr-bad)}.truth.historic{color:var(--gr-muted)}
 .truth.late{color:var(--gr-warn)}.truth.correction{color:var(--gr-blue)}
 #companyBridge>.inspect-label{margin-top:12px}#companyBridge>.inspect-label:first-child{margin-top:0}
-</style>
-</head>
+</style></head>
 <body>
 <a class="skip-link" href="#gov-workspace">{{ t('Skip to procurement intelligence','跳至政府采购情报') }}</a>
 <div class="gr-wrap">
 {% include "_site_nav.html.j2" %}
 <header class="gr-header">
-  <div class="gr-kicker">{{ t('Vertical intelligence · procurement','垂直情报 · 政府采购') }}</div>
-  <div class="gr-title-row">
-    <div class="gr-title"><h1>{{ t('Government Revenue','政府收入') }} <span style="color:var(--gr-accent)">{{ t('Foresight','前瞻') }}</span></h1><p>{{ t('See the contract change, then trace the public-company exposure. Watch the evidence—do not trade the headline alone.','先看合同变化，再追踪上市公司暴露。观察证据，不要只凭标题交易。') }}</p></div>
-    <div class="gr-cut"><strong>{{ t('Evidence cut','证据截点') }} · {{ as_of or '—' }}</strong>{{ t('Last assembled','最后汇总') }} <time id="knownAt" data-iso="{{ known_at or '' }}">{{ known_at or '—' }}</time></div>
-  </div>
-  <div class="gr-pulse" aria-label="Procurement pulse summary">
-    <div class="pulse-lead"><span class="pulse-orbit" aria-hidden="true"></span><div><strong id="pulseStance">{{ t('Watch the procurement tape','观察采购脉搏') }}</strong><span id="pulseStatus">{{ t('Reading official receipts','正在读取官方凭证') }}</span></div></div>
-    <div class="pulse-stat"><b id="statChanges">—</b><span>{{ t('governed changes','受治理变化') }}</span></div>
-    <div class="pulse-stat"><b id="statOpps">—</b><span>{{ t('active opportunities','活跃机会') }}</span></div>
-    <div class="pulse-stat"><b id="statDeadlines">—</b><span>{{ t('closing in 30 days','30 天内截止') }}</span></div>
-    <div class="pulse-stat"><b id="statExposure">—</b><span>{{ t('mapped exposure','已映射暴露') }}</span></div>
-    <div class="pulse-spacer"></div>
-    <div class="pulse-policy">{{ t('Official procurement facts may enrich research. Derived links cannot rank, size or trigger a trade.','官方采购事实可丰富研究。推导关联不得排序、调整仓位或触发交易。') }}</div>
-  </div>
+<div class="gr-kicker">{{ t('Vertical intelligence · procurement','垂直情报 · 政府采购') }}</div>
+<div class="gr-title-row">
+<div class="gr-title"><h1>{{ t('Government Revenue','政府收入') }} <span style="color:var(--gr-accent)">{{ t('Foresight','前瞻') }}</span></h1><p>{{ t('See the contract change, then trace the public-company exposure. Watch the evidence—do not trade the headline alone.','先看合同变化，再追踪上市公司暴露。观察证据，不要只凭标题交易。') }}</p></div>
+<div class="gr-cut"><strong>{{ t('Evidence cut','证据截点') }} · {{ as_of or '—' }}</strong>{{ t('Last assembled','最后汇总') }} <time id="knownAt" data-iso="{{ known_at or '' }}">{{ known_at or '—' }}</time></div>
+</div>
+<div class="gr-pulse" aria-label="Procurement pulse summary">
+<div class="pulse-lead"><span class="pulse-orbit" aria-hidden="true"></span><div><strong id="pulseStance">{{ t('Watch the procurement tape','观察采购脉搏') }}</strong><span id="pulseStatus">{{ t('Reading official receipts','正在读取官方凭证') }}</span></div></div>
+<div class="pulse-stat"><b id="statChanges">—</b><span>{{ t('governed changes','受治理变化') }}</span></div>
+<div class="pulse-stat"><b id="statOpps">—</b><span>{{ t('active opportunities','活跃机会') }}</span></div>
+<div class="pulse-stat"><b id="statDeadlines">—</b><span>{{ t('closing in 30 days','30 天内截止') }}</span></div>
+<div class="pulse-stat"><b id="statExposure">—</b><span>{{ t('mapped exposure','已映射暴露') }}</span></div>
+<div class="pulse-spacer"></div>
+<div class="pulse-policy">{{ t('Official procurement facts may enrich research. Derived links cannot rank, size or trigger a trade.','官方采购事实可丰富研究。推导关联不得排序、调整仓位或触发交易。') }}</div>
+</div>
 </header>
-
 <section class="company-filmstrip" aria-labelledby="companyFilmstripTitle">
-  <div class="company-filmstrip-copy">
-    <span class="company-filmstrip-kicker">{{ t('Company coverage','公司覆盖') }}</span>
-    <strong class="company-filmstrip-title" id="companyFilmstripTitle">{{ t('Follow the issuer file','追踪公司档案') }}</strong>
-    <span class="company-filmstrip-caption">{{ t('Linked records open Candidate Radar; every other name opens its company file.','已关联记录打开候选雷达；其他公司打开其公司档案。') }}</span>
-    <div class="company-filmstrip-legend"><span class="company-filmstrip-key linked"><i aria-hidden="true"></i>{{ t('Evidence linked','证据已关联') }}</span><span class="company-filmstrip-key pending"><i aria-hidden="true"></i>{{ t('Link pending','关联待核') }}</span><span class="company-filmstrip-key"><i aria-hidden="true"></i>{{ t('Company file','公司档案') }}</span></div>
-  </div>
-  <div class="company-filmstrip-track" id="companyFilmstrip" role="list"></div>
+<div class="company-filmstrip-copy">
+<span class="company-filmstrip-kicker">{{ t('Company coverage','公司覆盖') }}</span>
+<strong class="company-filmstrip-title" id="companyFilmstripTitle">{{ t('Follow the issuer file','追踪公司档案') }}</strong>
+<span class="company-filmstrip-caption">{{ t('Linked records open Candidate Radar; every other name opens its company file.','已关联记录打开候选雷达；其他公司打开其公司档案。') }}</span>
+<div class="company-filmstrip-legend"><span class="company-filmstrip-key linked"><i aria-hidden="true"></i>{{ t('Evidence linked','证据已关联') }}</span><span class="company-filmstrip-key pending"><i aria-hidden="true"></i>{{ t('Link pending','关联待核') }}</span><span class="company-filmstrip-key"><i aria-hidden="true"></i>{{ t('Company file','公司档案') }}</span></div>
+</div>
+<div class="company-filmstrip-track" id="companyFilmstrip" role="list"></div>
 </section>
-
 <main class="gr-shell" id="gov-workspace">
-  <div class="shell-top">
-    <div class="mode-tabs" role="tablist" aria-label="Procurement workspace mode">
-      <button class="mode-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-mode="candidates">{{ t('Candidate Radar','候选雷达') }}<span class="mode-count" id="countCandidates">—</span></button>
-      <button class="mode-tab" type="button" role="tab" aria-selected="true" tabindex="0" data-mode="changes">{{ t('Changes','变化') }}<span class="mode-count" id="countChanges">—</span></button>
-      <button class="mode-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-mode="awards">{{ t('Award tape','授标脉搏') }}<span class="mode-count" id="countAwards">—</span></button>
-      <button class="mode-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-mode="opportunities">{{ t('Opportunities','机会') }}<span class="mode-count" id="countOpps">—</span></button>
-      <button class="mode-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-mode="recompetes">{{ t('Recompete watch','再竞争观察') }}<span class="mode-count" id="countRecompetes">—</span></button>
-      <button class="mode-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-mode="budget">{{ t('Budget & programs','预算与项目') }}<span class="mode-count" id="countBudget">—</span></button>
-      <button class="mode-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-mode="programs">{{ t('Program Dossier','项目档案') }}<span class="mode-count" id="countPrograms">—</span></button>
-      <button class="mode-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-mode="companies">{{ t('Companies','公司') }}<span class="mode-count" id="countCompanies">—</span></button>
+<div class="shell-top">
+<div class="mode-tabs" role="tablist" aria-label="Procurement workspace mode">
+<button class="mode-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-mode="candidates">{{ t('Candidate Radar','候选雷达') }}<span class="mode-count" id="countCandidates">—</span></button>
+<button class="mode-tab" type="button" role="tab" aria-selected="true" tabindex="0" data-mode="changes">{{ t('Changes','变化') }}<span class="mode-count" id="countChanges">—</span></button>
+<button class="mode-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-mode="awards">{{ t('Award tape','授标脉搏') }}<span class="mode-count" id="countAwards">—</span></button>
+<button class="mode-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-mode="opportunities">{{ t('Opportunities','机会') }}<span class="mode-count" id="countOpps">—</span></button>
+<button class="mode-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-mode="recompetes">{{ t('Recompete watch','再竞争观察') }}<span class="mode-count" id="countRecompetes">—</span></button>
+<button class="mode-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-mode="budget">{{ t('Budget & programs','预算与项目') }}<span class="mode-count" id="countBudget">—</span></button>
+<button class="mode-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-mode="programs">{{ t('Program Dossier','项目档案') }}<span class="mode-count" id="countPrograms">—</span></button>
+<button class="mode-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-mode="companies">{{ t('Companies','公司') }}<span class="mode-count" id="countCompanies">—</span></button>
       <button class="mode-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-mode="fms">{{ t('FMS Congressional Notifications','FMS 国会通知') }}<span class="mode-count" id="countFms">—</span></button>
-    </div>
-    <div class="shell-tools">
-      <div class="health" id="sourceHealth"><i aria-hidden="true"></i><span id="healthCopy">{{ t('Checking sources','检查数据源') }}</span></div>
-      <button id="companyMode" type="button" hidden aria-hidden="true" tabindex="-1">{{ t('Companies','公司') }}</button>
-      <button class="tool-btn mobile-only" type="button" id="filterOpen" aria-controls="filterPane" aria-expanded="false">{{ t('Filters','筛选') }}</button>
-    </div>
-  </div>
-  <div class="workspace-degraded" id="workspaceDegraded" role="status" aria-live="polite" hidden>
-    <div class="workspace-degraded-copy"><i aria-hidden="true"></i><span id="workspaceDegradedCopy">{{ t('Showing the compact evidence cut while the complete workspace loads.','完整工作区加载期间显示精简证据截点。') }}</span></div>
-    <a class="tool-btn" id="workspaceUnlock" href="plans.html" hidden>{{ t('View membership plans','查看会员方案') }}</a>
-    <button class="tool-btn" type="button" id="workspaceRetry" hidden>{{ t('Retry full workspace','重试完整工作区') }}</button>
-  </div>
-  <div class="shell-body">
-    <aside class="filter-pane" id="filterPane" aria-label="Procurement filters">
-      <div class="pane-head"><strong>{{ t('Narrow the tape','缩小脉搏范围') }}</strong><span>{{ t('Every filter updates this evidence cut','所有筛选均基于当前证据截点') }}</span></div>
-      <div class="filter-body">
-        <div class="filter-group"><div class="filter-label"><span>{{ t('Search','搜索') }}</span><kbd>/</kbd></div><input class="field" id="deskSearch" type="search" autocomplete="off" placeholder="Notice, agency or ticker" aria-label="Search notice, agency or ticker"></div>
-        <div class="filter-group"><div class="filter-label">{{ t('Truth layer','证据层') }}</div><div class="filter-stack" id="truthFilters"><button class="filter-choice on" type="button" data-filter="all">{{ t('All evidence','全部证据') }}<b id="filterAllCount">—</b></button><button class="filter-choice" type="button" data-filter="official">{{ t('Official facts','官方事实') }}</button><button class="filter-choice" type="button" data-filter="linked">{{ t('Issuer-linked','已关联公司') }}</button><button class="filter-choice" type="button" data-filter="defense">{{ t('Defense only','仅国防') }}</button></div></div>
-        <div class="filter-group"><label class="filter-label" for="agencyFilter">{{ t('Agency','机构') }}</label><select class="field" id="agencyFilter"><option value="">All agencies</option></select></div>
-        <div class="filter-group"><label class="filter-label" for="tickerFilter">{{ t('Public company','上市公司') }}</label><select class="field" id="tickerFilter"><option value="">All companies</option></select></div>
-        <div class="filter-group briefcase" id="researchBriefcase">
-          <div class="filter-label"><span>{{ t('Research briefcase','研究公文包') }}</span><span>{{ t('this device','本设备') }}</span></div>
-          <select class="field" id="savedViewSelect" aria-label="Saved research views"><option value="">{{ t('Current unsaved view','当前未保存视图') }}</option></select>
-          <div class="briefcase-row"><input class="field" id="savedViewName" maxlength="60" autocomplete="off" placeholder="Name this view" aria-label="Name this saved view"><button class="tool-btn" type="button" id="saveView">{{ t('Save','保存') }}</button></div>
-          <div class="briefcase-actions"><button class="tool-btn" type="button" id="deleteView" disabled>{{ t('Delete','删除') }}</button><button class="tool-btn" type="button" id="localInbox">{{ t('Inbox','收件箱') }}<span class="briefcase-count" id="localInboxCount">0</span></button></div>
-          <select class="field" id="alertType" aria-label="Local alert type"><option value="opportunity">{{ t('Opportunity change','机会变化') }}</option><option value="award_change">{{ t('Award / action change','授标 / 行动变化') }}</option><option value="recompete">{{ t('Derived expiry watch','推导到期观察') }}</option></select>
-          <button class="tool-btn" type="button" id="toggleLocalAlert" disabled>{{ t('Enable local alert','启用本地提醒') }}</button>
-          <div class="briefcase-actions"><button class="tool-btn" type="button" id="exportViewJson">{{ t('Export JSON','导出 JSON') }}</button><button class="tool-btn" type="button" id="exportViewCsv">{{ t('Export CSV','导出 CSV') }}</button></div>
-          <div class="briefcase-status" id="briefcaseStatus" role="status" aria-live="polite">{{ t('Saved views and alerts stay in this browser. Alerts are checked only when you open or refresh this page.','保存的视图和提醒仅保留在此浏览器中。提醒仅在打开或刷新此页面时检查。') }}</div>
-        </div>
-        <div class="filter-group"><div class="filter-label">{{ t('Source health','数据源状态') }}</div><div id="healthDetail" class="filter-note"></div></div>
-      </div>
-    </aside>
-
-    <section class="queue-pane" aria-labelledby="queueHeading">
-      <div class="queue-head"><div class="queue-title"><strong id="queueHeading">{{ t('Decision queue','决策队列') }}</strong><span id="queueSummary">{{ t('Latest material changes first','最新重要变化优先') }}</span></div><span class="queue-sort" id="queueSort">{{ t('newest first','最新优先') }}</span></div>
-      <div class="queue-list" id="queueList" role="listbox" aria-label="Procurement evidence queue" tabindex="0" aria-live="polite"></div>
-    </section>
-
-    <aside class="inspector-pane" id="inspectorPane" aria-label="Investor inspector">
-      <div id="inspector" class="inspector-empty"><div><span class="empty-mark" aria-hidden="true">⌁</span><strong>{{ t('Select a change','选择一项变化') }}</strong><p>{{ t('Open a row to trace what changed, why it may matter and the official receipt.','打开一行，追踪变化、潜在影响及官方凭证。') }}</p></div></div>
-    </aside>
-  </div>
+</div>
+<div class="shell-tools">
+<div class="health" id="sourceHealth"><i aria-hidden="true"></i><span id="healthCopy">{{ t('Checking sources','检查数据源') }}</span></div>
+<button id="companyMode" type="button" hidden aria-hidden="true" tabindex="-1">{{ t('Companies','公司') }}</button>
+<button class="tool-btn mobile-only" type="button" id="filterOpen" aria-controls="filterPane" aria-expanded="false">{{ t('Filters','筛选') }}</button>
+</div>
+</div>
+<div class="workspace-degraded" id="workspaceDegraded" role="status" aria-live="polite" hidden>
+<div class="workspace-degraded-copy"><i aria-hidden="true"></i><span id="workspaceDegradedCopy">{{ t('Showing the compact evidence cut while the complete workspace loads.','完整工作区加载期间显示精简证据截点。') }}</span></div>
+<a class="tool-btn" id="workspaceUnlock" href="plans.html" hidden>{{ t('View membership plans','查看会员方案') }}</a>
+<button class="tool-btn" type="button" id="workspaceRetry" hidden>{{ t('Retry full workspace','重试完整工作区') }}</button>
+</div>
+<div class="shell-body">
+<aside class="filter-pane" id="filterPane" aria-label="Procurement filters">
+<div class="pane-head"><strong>{{ t('Narrow the tape','缩小脉搏范围') }}</strong><span>{{ t('Every filter updates this evidence cut','所有筛选均基于当前证据截点') }}</span></div>
+<div class="filter-body">
+<div class="filter-group"><div class="filter-label"><span>{{ t('Search','搜索') }}</span><kbd>/</kbd></div><input class="field" id="deskSearch" type="search" autocomplete="off" placeholder="Notice, agency or ticker" aria-label="Search notice, agency or ticker"></div>
+<div class="filter-group"><div class="filter-label">{{ t('Truth layer','证据层') }}</div><div class="filter-stack" id="truthFilters"><button class="filter-choice on" type="button" data-filter="all">{{ t('All evidence','全部证据') }}<b id="filterAllCount">—</b></button><button class="filter-choice" type="button" data-filter="official">{{ t('Official facts','官方事实') }}</button><button class="filter-choice" type="button" data-filter="linked">{{ t('Issuer-linked','已关联公司') }}</button><button class="filter-choice" type="button" data-filter="defense">{{ t('Defense only','仅国防') }}</button></div></div>
+<div class="filter-group"><label class="filter-label" for="agencyFilter">{{ t('Agency','机构') }}</label><select class="field" id="agencyFilter"><option value="">All agencies</option></select></div>
+<div class="filter-group"><label class="filter-label" for="tickerFilter">{{ t('Public company','上市公司') }}</label><select class="field" id="tickerFilter"><option value="">All companies</option></select></div>
+<div class="filter-group briefcase" id="researchBriefcase">
+<div class="filter-label"><span>{{ t('Research briefcase','研究公文包') }}</span><span>{{ t('this device','本设备') }}</span></div>
+<select class="field" id="savedViewSelect" aria-label="Saved research views"><option value="">{{ t('Current unsaved view','当前未保存视图') }}</option></select>
+<div class="briefcase-row"><input class="field" id="savedViewName" maxlength="60" autocomplete="off" placeholder="Name this view" aria-label="Name this saved view"><button class="tool-btn" type="button" id="saveView">{{ t('Save','保存') }}</button></div>
+<div class="briefcase-actions"><button class="tool-btn" type="button" id="deleteView" disabled>{{ t('Delete','删除') }}</button><button class="tool-btn" type="button" id="localInbox">{{ t('Inbox','收件箱') }}<span class="briefcase-count" id="localInboxCount">0</span></button></div>
+<select class="field" id="alertType" aria-label="Local alert type"><option value="opportunity">{{ t('Opportunity change','机会变化') }}</option><option value="award_change">{{ t('Award / action change','授标 / 行动变化') }}</option><option value="recompete">{{ t('Derived expiry watch','推导到期观察') }}</option></select>
+<button class="tool-btn" type="button" id="toggleLocalAlert" disabled>{{ t('Enable local alert','启用本地提醒') }}</button>
+<div class="briefcase-actions"><button class="tool-btn" type="button" id="exportViewJson">{{ t('Export JSON','导出 JSON') }}</button><button class="tool-btn" type="button" id="exportViewCsv">{{ t('Export CSV','导出 CSV') }}</button></div>
+<div class="briefcase-status" id="briefcaseStatus" role="status" aria-live="polite">{{ t('Saved views and alerts stay in this browser. Alerts are checked only when you open or refresh this page.','保存的视图和提醒仅保留在此浏览器中。提醒仅在打开或刷新此页面时检查。') }}</div>
+</div>
+<div class="filter-group"><div class="filter-label">{{ t('Source health','数据源状态') }}</div><div id="healthDetail" class="filter-note"></div></div>
+</div>
+</aside>
+<section class="queue-pane" aria-labelledby="queueHeading">
+<div class="queue-head"><div class="queue-title"><strong id="queueHeading">{{ t('Decision queue','决策队列') }}</strong><span id="queueSummary">{{ t('Latest material changes first','最新重要变化优先') }}</span></div><span class="queue-sort" id="queueSort">{{ t('newest first','最新优先') }}</span></div>
+<div class="queue-list" id="queueList" role="listbox" aria-label="Procurement evidence queue" tabindex="0" aria-live="polite"></div>
+</section>
+<aside class="inspector-pane" id="inspectorPane" aria-label="Investor inspector">
+<div id="inspector" class="inspector-empty"><div><span class="empty-mark" aria-hidden="true">⌁</span><strong>{{ t('Select a change','选择一项变化') }}</strong><p>{{ t('Open a row to trace what changed, why it may matter and the official receipt.','打开一行，追踪变化、潜在影响及官方凭证。') }}</p></div></div>
+</aside>
+</div>
 </main>
 <footer class="gr-footer"><div>{{ t('Official sources','官方来源') }} · <a href="https://sam.gov/content/opportunities" target="_blank" rel="noopener">SAM.gov</a> · <a href="https://www.usaspending.gov/" target="_blank" rel="noopener">USAspending.gov</a></div><div class="scope">{{ t('Research context only · not company guidance, GAAP backlog or a trade signal','仅作研究情境 · 非公司指引、GAAP 积压或交易信号') }}</div></footer>
 </div>
-
 <div class="mobile-summary" id="mobileSummary" hidden><div class="mobile-summary-copy"><b id="mobileTitle">{{ t('Select a change','选择一项变化') }}</b><span id="mobileMeta">{{ t('Official evidence and investor context','官方证据与投资者情境') }}</span></div><button class="tool-btn" type="button" id="inspectorOpen" aria-controls="inspectorPane" aria-expanded="false">{{ t('Inspect','查看') }}</button></div>
 <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
 <aside class="evidence-drawer" id="evidenceDrawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" hidden><div class="drawer-head"><strong id="drawerTitle">{{ t('Evidence receipts','证据凭证') }}</strong><button class="tool-btn" type="button" id="drawerClose">{{ t('Close','关闭') }} · Esc</button></div><div class="drawer-body" id="drawerBody"></div></aside>
-
-<script id="gov-data" type="application/json">{{ payload_json|replace('</', '<\/')|safe }}</script>
-<script data-sync src="government-revenue-dossiers.js"></script>
-<script data-sync src="government-revenue-candidate-radar.js"></script>
-<script data-sync src="government-revenue-briefcase.js"></script>
-<script data-sync src="government-revenue-briefcase-ui.js"></script>
-<script>
+<script id="gov-data" type="application/json">{{ payload_json|replace('</', '<\/')|safe }}</script><script data-sync src="government-revenue-dossiers.js"></script><script data-sync src="government-revenue-candidate-radar.js"></script><script data-sync src="government-revenue-briefcase.js"></script><script data-sync src="government-revenue-briefcase-ui.js"></script><script>
 (function(){
   'use strict';
   var DATA={};
@@ -435,7 +422,5 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   boot(true);
   hydrateWorkspace(false);
 })();
-</script>
-<script src="theme.js"></script>
-</body>
+</script><script src="theme.js"></script></body>
 </html>

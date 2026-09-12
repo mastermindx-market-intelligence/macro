@@ -1,53 +1,53 @@
 {
   "schema": "thematic_desk.v1",
-  "as_of": "2026-09-09",
-  "scored_total": 189,
-  "open": 89,
-  "unscored_soft": 44,
+  "as_of": "2026-09-11",
+  "scored_total": 194,
+  "open": 93,
+  "unscored_soft": 49,
   "overall": {
-    "n": 189,
-    "hits": 116,
+    "n": 194,
+    "hits": 121,
     "misses": 73,
-    "hit_rate": 0.614,
-    "dir_accuracy": 0.407
+    "hit_rate": 0.624,
+    "dir_accuracy": 0.412
   },
   "by_market": {
     "us": {
-      "n": 53,
-      "hits": 35,
+      "n": 54,
+      "hits": 36,
       "misses": 18,
-      "hit_rate": 0.66,
-      "dir_accuracy": 0.472
+      "hit_rate": 0.667,
+      "dir_accuracy": 0.481
     },
     "china": {
-      "n": 64,
-      "hits": 34,
+      "n": 65,
+      "hits": 35,
       "misses": 30,
-      "hit_rate": 0.531,
-      "dir_accuracy": 0.375
+      "hit_rate": 0.538,
+      "dir_accuracy": 0.369
     },
     "hk": {
-      "n": 10,
-      "hits": 10,
+      "n": 11,
+      "hits": 11,
       "misses": 0,
       "hit_rate": 1.0,
-      "dir_accuracy": 0.9
+      "dir_accuracy": 0.909
     },
     "canada": {
-      "n": 62,
-      "hits": 37,
+      "n": 64,
+      "hits": 39,
       "misses": 25,
-      "hit_rate": 0.597,
-      "dir_accuracy": 0.306
+      "hit_rate": 0.609,
+      "dir_accuracy": 0.312
     }
   },
   "by_conviction": {
     "low": {
-      "n": 188,
-      "hits": 116,
+      "n": 193,
+      "hits": 121,
       "misses": 72,
-      "hit_rate": 0.617,
-      "dir_accuracy": 0.41
+      "hit_rate": 0.627,
+      "dir_accuracy": 0.415
     },
     "medium": {
       "n": 1,
@@ -64,8 +64,58 @@
       "dir_accuracy": null
     }
   },
-  "calibration_note": "189 scored, hit-rate 0.614 (directional accuracy 0.407). Chance alone would land a hit-rate near 0.8505 (directional accuracy near 0.5103) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
+  "calibration_note": "194 scored, hit-rate 0.624 (directional accuracy 0.412). Chance alone would land a hit-rate near 0.851 (directional accuracy near 0.5094) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
   "recent": [
+    {
+      "id": "china-2026-08-13-20260813125211-1",
+      "market": "china",
+      "subject": "AI Compute & Optics",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.0355,
+      "check_by": "2026-09-10"
+    },
+    {
+      "id": "us-2026-08-13-20260814043608-1",
+      "market": "us",
+      "subject": "Memory, HBM & Storage",
+      "lean": "avoid",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.0232,
+      "check_by": "2026-09-10"
+    },
+    {
+      "id": "hk-2026-08-13-20260814044552-1",
+      "market": "hk",
+      "subject": "China Tech & Internet",
+      "lean": "underweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.0791,
+      "check_by": "2026-09-10"
+    },
+    {
+      "id": "canada-2026-07-29-1",
+      "market": "canada",
+      "subject": "Big Banks",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.0343,
+      "check_by": "2026-09-09"
+    },
+    {
+      "id": "canada-2026-08-12-20260813125933-1",
+      "market": "canada",
+      "subject": "Big Banks",
+      "lean": "avoid",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.0281,
+      "check_by": "2026-09-09"
+    },
     {
       "id": "china-2026-07-28-2",
       "market": "china",
@@ -134,56 +184,6 @@
       "conviction": "low",
       "outcome": "hit",
       "realized": -0.0208,
-      "check_by": "2026-09-04"
-    },
-    {
-      "id": "canada-2026-08-07-20260808154136-1",
-      "market": "canada",
-      "subject": "Base Metals & Copper",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": -0.0019,
-      "check_by": "2026-09-04"
-    },
-    {
-      "id": "canada-2026-08-07-20260808154136-3",
-      "market": "canada",
-      "subject": "REITs",
-      "lean": "underweight",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": -0.0475,
-      "check_by": "2026-09-04"
-    },
-    {
-      "id": "us-2026-08-07-20260808212654-1",
-      "market": "us",
-      "subject": "Memory, HBM & Storage",
-      "lean": "underweight",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": -0.0263,
-      "check_by": "2026-09-04"
-    },
-    {
-      "id": "china-2026-08-07-20260808212841-1",
-      "market": "china",
-      "subject": "Industrial Metals",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": -0.0208,
-      "check_by": "2026-09-04"
-    },
-    {
-      "id": "china-2026-08-07-20260808212841-2",
-      "market": "china",
-      "subject": "AI Compute & Optics",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "miss",
-      "realized": -0.051,
       "check_by": "2026-09-04"
     }
   ]

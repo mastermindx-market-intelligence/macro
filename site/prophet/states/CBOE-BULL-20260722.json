@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CBOE-BULL-20260722",
-  "asof": "2026-09-09",
+  "asof": "2026-09-12",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 41.4,
@@ -10,27 +10,27 @@
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 100.0,
-    "progress": 11.2,
-    "pace": 28.7,
-    "retention": 28.5,
-    "overlay": 53.0
+    "validity": 91.1,
+    "progress": 0.0,
+    "pace": 24.7,
+    "retention": 0.0,
+    "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.136,
-    "dist_to_t1_r": 1.364,
-    "dist_to_t2_r": 2.864,
-    "horizon_pct_used": 102.2,
-    "p1": 0.0906,
-    "p2": 0.0453,
+    "dist_to_stop_r": 0.933,
+    "dist_to_t1_r": 1.5,
+    "dist_to_t2_r": 3.0,
+    "horizon_pct_used": 108.9,
+    "p1": -0.0447,
+    "p2": -0.0224,
     "p3": null,
-    "move_r": 0.136,
+    "move_r": -0.067,
     "mfe_r": 0.477,
     "mae_r": -0.072
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Window Elapsed \u2014 Awaiting Close",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-07-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 46,
-  "tau": 1.0222
+  "days_elapsed": 49,
+  "tau": 1.0889
 }
