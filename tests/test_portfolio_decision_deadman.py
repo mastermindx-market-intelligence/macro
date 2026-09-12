@@ -79,6 +79,19 @@ class PortfolioDecisionDeadmanTests(unittest.TestCase):
         failures = deadman.evaluate(payload, now=NOW)
         self.assertTrue(any("autonomous_daily" in f and "missing_submission" in f for f in failures), failures)
 
+    def test_missing_submission_never_counts_as_a_governed_rejection(self):
+        payload = healthy_snapshot()
+        payload["jobs"]["autonomous_daily"].update(
+            last_status="warn", last_severity="FREEZE",
+            last_reason="rejected_no_submission",
+            last_target_status="rejected_no_submission",
+        )
+        payload["decisions"]["autonomous"].update(
+            target_status="rejected_no_submission", decision_effective=False,
+        )
+        failures = deadman.evaluate(payload, now=NOW)
+        self.assertTrue(any("autonomous_daily" in f and "rejected_no_submission" in f for f in failures), failures)
+
     def test_stale_prior_day_run_does_not_pass(self):
         payload = healthy_snapshot()
         payload["jobs"]["autonomous_daily"].update(
