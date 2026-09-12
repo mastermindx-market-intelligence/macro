@@ -284,11 +284,11 @@ html.has-js .rv.in{opacity:1;transform:none;transition:opacity .55s ease,transfo
   background:linear-gradient(135deg,var(--link),var(--info));color:#0f1115;font-size:10px;font-weight:900;}
 
 /* ══ SECURITY STATE — the Decision Spine ═══════════════════════════════════
-   Six separate reads on one listing, each carrying its own coverage state.
+   Eight panels on one listing, each carrying its own coverage state.
    The composition decisions, written down because they are choices:
 
-   · ONE panel holding six cells, not six floating panels. The job is "one
-     coherent answer you can audit"; six independent cards read as six
+   · ONE grid holding five axis cells, not five floating panels. The job is "one
+     coherent answer you can audit"; five independent cards read as five
      independent widgets. The cell is the .ci-lens idiom (panel2 tint, hairline,
      left rail) widened to a three-column grid — house idiom extended, not a
      second card system. Nesting depth stays 2.
@@ -312,6 +312,8 @@ html.has-js .rv.in{opacity:1;transform:none;transition:opacity .55s ease,transfo
 
 .ss-mod{margin-top:20px;}
 .ss-sub{margin:-4px 0 15px;max-width:76ch;font-size:12.5px;line-height:1.55;color:var(--muted);}
+.ss-mod > .ss-cell{margin-bottom:12px;}
+.ss-mod > .ss-cell:last-child{margin-top:16px;margin-bottom:0;}
 .ss-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
 .ss-cell{position:relative;display:flex;flex-direction:column;min-width:0;
   padding:14px 15px 12px 17px;border:1px solid var(--hair);border-radius:13px;
