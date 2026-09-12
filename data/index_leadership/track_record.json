@@ -1,10 +1,10 @@
 {
   "schema": "index_leadership.track_record.v1",
-  "as_of": "2026-09-09",
-  "generated_at": "2026-09-11T08:43:43.659162+00:00",
+  "as_of": "2026-09-10",
+  "generated_at": "2026-09-12T08:48:17.264513+00:00",
   "is_context_only": true,
-  "n_snapshots": 662,
-  "n_days": 23,
+  "n_snapshots": 688,
+  "n_days": 24,
   "horizons": {
     "5": {
       "n_matured": 616,
@@ -12,69 +12,69 @@
         "running": {
           "n": 544,
           "mean_fwd_rel": -0.0046,
-          "hit_rate": 0.456
+          "hit_rate": 0.454
         },
         "coiling": {
           "n": 35,
-          "mean_fwd_rel": 0.0023,
-          "hit_rate": 0.543
+          "mean_fwd_rel": 0.0013,
+          "hit_rate": 0.514
         },
         "coiling_primed": {
           "n": 37,
-          "mean_fwd_rel": 0.0131,
-          "hit_rate": 0.622
+          "mean_fwd_rel": 0.0122,
+          "hit_rate": 0.595
         }
       },
-      "running_ic": -0.0542,
-      "running_ic_t_hac": -0.569,
+      "running_ic": -0.0557,
+      "running_ic_t_hac": -0.581,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "10": {
-      "n_matured": 533,
+      "n_matured": 549,
       "by_stage": {
         "running": {
-          "n": 469,
-          "mean_fwd_rel": -0.0078,
-          "hit_rate": 0.424
+          "n": 484,
+          "mean_fwd_rel": -0.0077,
+          "hit_rate": 0.428
         },
         "coiling": {
-          "n": 32,
-          "mean_fwd_rel": -0.0014,
-          "hit_rate": 0.469
+          "n": 33,
+          "mean_fwd_rel": -0.0012,
+          "hit_rate": 0.485
         },
         "coiling_primed": {
           "n": 32,
-          "mean_fwd_rel": 0.0237,
+          "mean_fwd_rel": 0.0232,
           "hit_rate": 0.562
         }
       },
-      "running_ic": -0.0567,
-      "running_ic_t_hac": -0.847,
+      "running_ic": -0.0928,
+      "running_ic_t_hac": -1.014,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "21": {
-      "n_matured": 343,
+      "n_matured": 376,
       "by_stage": {
         "running": {
-          "n": 303,
-          "mean_fwd_rel": -0.0051,
-          "hit_rate": 0.492
+          "n": 333,
+          "mean_fwd_rel": -0.0061,
+          "hit_rate": 0.471
         },
         "coiling": {
-          "n": 18,
-          "mean_fwd_rel": -0.0101,
+          "n": 20,
+          "mean_fwd_rel": -0.0071,
           "hit_rate": 0.5
         },
         "coiling_primed": {
-          "n": 22,
-          "mean_fwd_rel": 0.0455,
-          "hit_rate": 0.727
+          "n": 23,
+          "mean_fwd_rel": 0.0435,
+          "hit_rate": 0.739
         }
       },
-      "running_ic": -0.0469,
-      "running_ic_t_hac": -0.557,
+      "running_ic": -0.0028,
+      "running_ic_t_hac": -0.028,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -83,12 +83,12 @@
       "by_stage": {
         "running": {
           "n": 26,
-          "mean_fwd_rel": -0.0457,
+          "mean_fwd_rel": -0.0468,
           "hit_rate": 0.346
         },
         "coiling": {
           "n": 7,
-          "mean_fwd_rel": -0.0805,
+          "mean_fwd_rel": -0.0826,
           "hit_rate": 0.286
         }
       },
@@ -111,67 +111,67 @@
   "note": "Accruing forward observations; no horizon clears the Newey-West significance bar yet. Early numbers are provisional, context-only.",
   "recent_misses": [
     {
-      "date": "2026-08-19",
+      "date": "2026-08-20",
       "id": "subsectors:aerospace-defense",
       "name": "Aerospace & Defense",
       "stage": "running",
-      "fwd_rel": -0.1029,
+      "fwd_rel": -0.0797,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-19",
-      "id": "russell:real-estate-services",
-      "name": "Real Estate Services",
+      "date": "2026-08-20",
+      "id": "nasdaq:software-application",
+      "name": "Software - Application",
       "stage": "running",
-      "fwd_rel": -0.0959,
+      "fwd_rel": -0.058,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-19",
-      "id": "baskets:housing",
-      "name": "Housing Chain",
-      "stage": "running",
-      "fwd_rel": -0.076,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-19",
-      "id": "subsectors:medical-devices",
-      "name": "Medical Devices",
-      "stage": "running",
-      "fwd_rel": -0.0724,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-19",
-      "id": "subsectors:biotechnology",
-      "name": "Biotechnology",
-      "stage": "running",
-      "fwd_rel": -0.0674,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-19",
+      "date": "2026-08-20",
       "id": "subsectors:packaged-foods",
       "name": "Packaged Foods",
       "stage": "running",
-      "fwd_rel": -0.055,
+      "fwd_rel": -0.056,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-19",
+      "date": "2026-08-20",
       "id": "subsectors:software-application",
       "name": "Software - Application",
       "stage": "running",
-      "fwd_rel": -0.0541,
+      "fwd_rel": -0.0553,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-19",
-      "id": "subsectors:drug-manufacturers-general",
-      "name": "Drug Manufacturers - General",
+      "date": "2026-08-20",
+      "id": "baskets:us-sector-discretionary",
+      "name": "Consumer Discretionary (Equal-Weight)",
       "stage": "running",
-      "fwd_rel": -0.0429,
+      "fwd_rel": -0.0422,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-08-20",
+      "id": "russell:restaurants",
+      "name": "Restaurants",
+      "stage": "running",
+      "fwd_rel": -0.0396,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-08-20",
+      "id": "nasdaq:specialty-business-services",
+      "name": "Specialty Business Services",
+      "stage": "running",
+      "fwd_rel": -0.0367,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-08-20",
+      "id": "russell:asset-management",
+      "name": "Asset Management",
+      "stage": "running",
+      "fwd_rel": -0.0343,
       "horizon_d": 21
     }
   ],

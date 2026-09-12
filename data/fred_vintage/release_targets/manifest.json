@@ -1,6 +1,6 @@
 {
-  "collected_at": "2026-09-11T10:39:55+00:00",
-  "completed_at": "2026-09-11T10:40:58+00:00",
+  "collected_at": "2026-09-12T10:40:10+00:00",
+  "completed_at": "2026-09-12T10:41:16+00:00",
   "dry_run": false,
   "integrity_profile": "release_target_artifact_sha256_bytes.v1",
   "publication_status": "complete",
@@ -8,25 +8,25 @@
   "schema": "release_target_vintage_collection.v1",
   "series": {
     "CPIAUCSL": {
-      "artifact_bytes": 327740,
-      "artifact_sha256": "a99ab339db1d3d62d27a96f9d718aa180d73abf6adcebe741a87bdbaa3dbb56a",
+      "artifact_bytes": 134327,
+      "artifact_sha256": "f7b2111e4aca8f248447fd7f1dcdebbfa61011f68bfad7155f9c4ac6eb4c07b6",
       "path": "data/fred_vintage/release_targets/CPIAUCSL_all_vintages.parquet",
-      "period_max": "2026-07-01",
+      "period_max": "2026-08-01",
       "period_min": "1947-01-01",
-      "periods": 954,
-      "release_dates": 375,
-      "rows": 291598,
+      "periods": 955,
+      "release_dates": 376,
+      "rows": 292553,
       "status": "written"
     },
     "CPILFESL": {
-      "artifact_bytes": 273004,
-      "artifact_sha256": "da00940c647bae5651046d513ace71ed287a330ab15c06a3dcc78991a260a3cd",
+      "artifact_bytes": 119283,
+      "artifact_sha256": "3cf62d4ce24fa92affa61dbf50b25f12bc0f959c72ffcf0085434eb0390ddecd",
       "path": "data/fred_vintage/release_targets/CPILFESL_all_vintages.parquet",
-      "period_max": "2026-07-01",
+      "period_max": "2026-08-01",
       "period_min": "1957-01-01",
-      "periods": 834,
-      "release_dates": 375,
-      "rows": 246598,
+      "periods": 835,
+      "release_dates": 376,
+      "rows": 247433,
       "status": "written"
     },
     "PAYEMS": {

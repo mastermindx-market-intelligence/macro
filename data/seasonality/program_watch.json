@@ -1,5 +1,5 @@
 {
-  "asof": "2026-09-10",
+  "asof": "2026-09-11",
   "counts": {
     "fired": 2,
     "unavailable": 1,
@@ -34,26 +34,26 @@
     {
       "evidence": {
         "by_row_type": {
-          "grade": 5,
+          "grade": 6,
           "register": 119
         },
         "closed_out_ungradable": 0,
-        "earliest_pending_occurrence_end": "2026-09-10",
+        "earliest_pending_occurrence_end": "2026-09-24",
         "grade_status_counts": {
-          "graded": 5
+          "graded": 6
         },
-        "graded": 5,
-        "graded_total": 5,
+        "graded": 6,
+        "graded_total": 6,
         "graded_unregistered": 0,
         "keyless_rows": 0,
         "malformed": 0,
         "path": "data/seasonality/nw_forward_ledger.jsonl",
-        "pending": 114,
+        "pending": 113,
         "pending_without_readable_end": 0,
         "registered": 119
       },
       "handoff_doc": "research/BIOPHARMA_SEASONALITY_INTELLIGENCE_CONTINUATION_HANDOFF_2026-08-07.md",
-      "headline": "5 of 119 registered seasonality windows now carry a grade.",
+      "headline": "6 of 119 registered seasonality windows now carry a grade.",
       "key": "first_matured_grade",
       "operator_prompt": "The seasonality forward ledger has its first graded window. Read research/BIOPHARMA_SEASONALITY_INTELLIGENCE_CONTINUATION_HANDOFF_2026-08-07.md, then run the calibration read: grade counts by symbol, realized vs registered p, and whether the sample is anywhere near the pre-registered gate. Report it as accrual, not as a verdict — one grade is not a result — and update the Calibration Lab forward-record line.",
       "state": "fired",
