@@ -1,4 +1,4 @@
-name: portfolio-recovery-regional-readback-once
+name: portfolio-recovery-exact-deadman-once
 
 on:
   push:
@@ -11,177 +11,62 @@ permissions:
   contents: read
 
 concurrency:
-  group: portfolio-recovery-acceptance-20260912
+  group: portfolio-recovery-exact-deadman-20260912
   cancel-in-progress: false
 
 jobs:
-  regional-readback:
+  us-live-canary:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Read sanitized US/CN/HK production lifecycle state
+      - name: Check out the exact proposed monitor
+        uses: actions/checkout@v4
+        with:
+          ref: 2aad06988ab8cdc71dc77a1e959f0e5644893b62
+          filter: blob:none
+          persist-credentials: false
+          sparse-checkout: scripts/portfolio_decision_deadman.py
+          sparse-checkout-cone-mode: false
+
+      - name: Collect the sanitized production snapshot
         env:
           SSH_KEY: ${{ secrets.VPS_DEPLOY_KEY }}
         shell: bash
         run: |
           set -euo pipefail
-          [ -n "${SSH_KEY:-}" ] || { echo '{"state":"HOLD","reason":"vps_deploy_key_unavailable"}'; exit 20; }
+          [ -n "${SSH_KEY:-}" ] || { echo '::error::VPS_DEPLOY_KEY unavailable'; exit 20; }
           umask 077
           keyfile="$RUNNER_TEMP/vps_key"
+          snapshot="$RUNNER_TEMP/portfolio-decision-snapshot.json"
           printf '%s\n' "$SSH_KEY" > "$keyfile"
           chmod 600 "$keyfile"
           trap 'rm -f "$keyfile"' EXIT
-
-          ssh -i "$keyfile" \
+          ssh -F /dev/null -i "$keyfile" \
             -o BatchMode=yes \
+            -o IdentitiesOnly=yes \
+            -o IdentityAgent=none \
             -o ConnectTimeout=20 \
             -o StrictHostKeyChecking=accept-new \
             root@146.190.142.17 \
-            '/opt/mastermind/.venv/bin/python -' <<'PY'
-          from __future__ import annotations
+            '/opt/mastermind/.venv/bin/python - collect' \
+            < scripts/portfolio_decision_deadman.py > "$snapshot"
+          python3 -m json.tool "$snapshot" >/dev/null
 
-          import datetime as dt
-          import json
-          import subprocess
-          import urllib.error
-          import urllib.request
-          from pathlib import Path
+      - name: Evaluate the latest lawful US cycle
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/portfolio_decision_deadman.py evaluate \
+            --scope us \
+            --input "$RUNNER_TEMP/portfolio-decision-snapshot.json" \
+            --output "$RUNNER_TEMP/portfolio-decision-deadman.json"
+          cat "$RUNNER_TEMP/portfolio-decision-deadman.json"
 
-          LOCAL = "http://127.0.0.1:8001"
-          FIX_SHA = "e61f2951136bdc03a7ec2f5f12f960af26656a4c"
-          DEPLOY_NOT_BEFORE = dt.datetime(2026, 9, 11, 11, 29, tzinfo=dt.timezone.utc)
-          BOOKS = {
-              "autonomous": "autonomous_daily",
-              "china": "china_daily",
-              "hk": "hk_daily",
-          }
-          SAFE_DECISION_KEYS = (
-              "asof", "settled_asof", "target_status", "decision_effective",
-              "execution_evidence_status", "today", "trading_day",
-          )
-          SAFE_JOB_KEYS = (
-              "id", "next_run_time", "last_started", "last_finished", "last_skipped",
-              "last_status", "last_severity", "last_reason", "last_target_status",
-          )
-          FAILURE_REASONS = {
-              "missing_submission", "rejected_execution_error", "invalid_result",
-              "projection_failed", "inconsistent_result", "runner_failed",
-          }
-
-          def get_json(path: str) -> tuple[dict | None, int | None, str | None]:
-              request = urllib.request.Request(
-                  LOCAL + path,
-                  method="GET",
-                  headers={"User-Agent": "Mastermind-Portfolio-Regional-Readback/1.0"},
-              )
-              try:
-                  with urllib.request.urlopen(request, timeout=30) as response:
-                      value = json.loads(response.read())
-                      return (value if isinstance(value, dict) else None, int(response.status), None)
-              except urllib.error.HTTPError as exc:
-                  return None, int(exc.code), "HTTPError"
-              except Exception as exc:
-                  return None, None, type(exc).__name__
-
-          def parse_ts(value: object) -> dt.datetime | None:
-              if not value:
-                  return None
-              try:
-                  parsed = dt.datetime.fromisoformat(str(value).replace("Z", "+00:00"))
-                  return parsed if parsed.tzinfo else parsed.replace(tzinfo=dt.timezone.utc)
-              except Exception:
-                  return None
-
-          def safe(row: object, keys: tuple[str, ...]) -> dict:
-              return {key: row.get(key) for key in keys} if isinstance(row, dict) else {}
-
-          health, health_http, health_error = get_json("/health")
-          scheduler, scheduler_http, scheduler_error = get_json("/api/scheduler")
-          marker = None
-          try:
-              marker = Path("/opt/mastermind/.deployed_git_sha").read_text(encoding="utf-8").strip()
-          except Exception:
-              pass
-          descendant = False
-          if marker:
-              descendant = subprocess.run(
-                  ["git", "-C", "/opt/mastermind", "merge-base", "--is-ancestor", FIX_SHA, marker],
-                  stdout=subprocess.DEVNULL,
-                  stderr=subprocess.DEVNULL,
-                  check=False,
-              ).returncode == 0
-
-          jobs = scheduler.get("jobs") if isinstance(scheduler, dict) else []
-          job_by_id = {
-              str(row.get("id")): row for row in jobs if isinstance(row, dict) and row.get("id")
-          }
-          result = {
-              "schema": "mastermind.portfolio_regional_readback.v1",
-              "operation": "portfolio-bot-decision-recovery-20260909-sol-001",
-              "observed_at": dt.datetime.now(dt.timezone.utc).isoformat(),
-              "transport": "read_only_ssh_get",
-              "fix_commit": FIX_SHA,
-              "deployed_commit": marker,
-              "release_contains_fix": descendant,
-              "health_http": health_http,
-              "health_error_class": health_error,
-              "health_status": health.get("status") if health else None,
-              "health_commit": health.get("commit") if health else None,
-              "scheduler_http": scheduler_http,
-              "scheduler_error_class": scheduler_error,
-              "books": {},
-          }
-
-          release_ok = bool(
-              marker and descendant and health_http == 200 and health
-              and health.get("status") == "ok" and health.get("commit") == marker
-              and scheduler_http == 200 and isinstance(scheduler, dict)
-          )
-          any_hold = not release_ok
-          all_proven = release_ok
-
-          for book, job_id in BOOKS.items():
-              decisions, decision_http, decision_error = get_json(
-                  f"/api/decisions?portfolio={book}&limit=5"
-              )
-              rows = decisions.get("decisions") if isinstance(decisions, dict) else []
-              decision = rows[0] if isinstance(rows, list) and rows and isinstance(rows[0], dict) else {}
-              job = job_by_id.get(job_id, {})
-              started = parse_ts(job.get("last_started"))
-              finished = parse_ts(job.get("last_finished"))
-              status = str(job.get("last_status") or "")
-              reason = str(job.get("last_reason") or "")
-              target = str(job.get("last_target_status") or decision.get("target_status") or "")
-              fresh_post_deploy = bool(started and started >= DEPLOY_NOT_BEFORE)
-              completed = bool(started and finished and finished >= started)
-              semantic_ok = bool(
-                  status in {"ok", "warn", "skip"}
-                  and reason not in FAILURE_REASONS
-                  and target not in {"", "rejected_no_submission", "rejected_execution_error"}
-              )
-              if not fresh_post_deploy:
-                  state = "WAITING_LAWFUL_POST_DEPLOY_CYCLE"
-                  all_proven = False
-              elif decision_http != 200 or not decision or not completed or not semantic_ok:
-                  state = "HOLD"
-                  any_hold = True
-                  all_proven = False
-              else:
-                  state = "PROVEN_LIVE"
-              result["books"][book] = {
-                  "state": state,
-                  "decision_http": decision_http,
-                  "decision_error_class": decision_error,
-                  "job": safe(job, SAFE_JOB_KEYS),
-                  "decision": safe(decision, SAFE_DECISION_KEYS),
-              }
-
-          result["state"] = "HOLD" if any_hold else ("PROVEN_LIVE" if all_proven else "WAITING")
-          result["reason"] = (
-              "release_or_readback_invalid" if any_hold
-              else "all_regional_cycles_proven" if all_proven
-              else "regional_post_deploy_cycles_not_due"
-          )
-          print(json.dumps(result, sort_keys=True, separators=(",", ":")))
-          raise SystemExit(20 if any_hold else 0)
-          PY
+      - name: Upload the exact sanitized receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: portfolio-recovery-exact-deadman-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/portfolio-decision-deadman.json
+          if-no-files-found: error
+          retention-days: 30
