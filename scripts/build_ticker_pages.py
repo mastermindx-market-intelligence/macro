@@ -1569,6 +1569,7 @@ def _build_deep(blob: dict | None, per: dict, agg: dict, ticker: str,
     dialogs = [d for d in (
         _soft(_deep_stats, blob, performance, stats),
         _soft(_deep_financials, blob),
+        _soft(_deep_valuation_scenario, blob),
         _soft(_deep_technicals, blob, ts_row),
         _soft(_deep_earnings, blob),
         _soft(_deep_options, blob, per.get("gex_v1")),
@@ -2447,6 +2448,103 @@ def _build_financials(blob: dict | None) -> dict | None:
         "roe": fin.get("roe"),
         "roa": fin.get("roa"),
     }
+
+
+def _valuation_scenario_view(blob: dict | None) -> dict | None:
+    """Passthrough read of the pre-computed valuation_scenario.v1 blob written
+    by scripts/build_stock_library.py (numbers-only contract; no transform
+    happens here -- the producer already emits the exact view shape)."""
+    if not blob:
+        return None
+    return (blob.get("valuation_scenario") or {}).get("v1")
+
+
+_VS_SCENARIO_TITLES_ZH = {"cautious": "保守", "base": "基准", "upbeat": "乐观"}
+
+
+def _vs_scenario_null_text(s: dict) -> tuple[str, str]:
+    """Plain-word reason a non-computable scenario shows in the Full-detail
+    dialog. Mirrors the vs_null_en/vs_null_zh Jinja macros in
+    templates/_valuation_scenario.html.j2 exactly -- same scenario-named
+    margin_too_thin sentence, same "first missing reason wins" priority (a
+    scenario carrying a more fundamental reason, e.g. "consistent period",
+    ahead of margin_too_thin in s["missing"] must not be described as merely
+    too-thin-margin) -- so the two render sites never disagree (review round
+    4 MINOR-1: this dialog printed a bare "Not computable"/"无法计算" with no
+    reason at all for a margin_too_thin scenario)."""
+    missing = s.get("missing") or []
+    key = s.get("key", "")
+    if missing and missing[0] == "margin_too_thin":
+        return (
+            f"Not computable — margins are too thin to run the {key} case",
+            f"无法计算——利润率过低，无法计算{_VS_SCENARIO_TITLES_ZH.get(key, key)}情景",
+        )
+    missing_plain = s.get("missing_plain") or []
+    reason_en = missing_plain[0]["en"] if missing_plain else "a reported input"
+    reason_zh = missing_plain[0]["zh"] if missing_plain else "一项披露数据"
+    return (f"Not computable — no {reason_en}", f"无法计算——缺少{reason_zh}")
+
+
+def _deep_valuation_scenario(blob: dict | None) -> dict | None:
+    vscn = (blob or {}).get("valuation_scenario", {}).get("v1") if blob else None
+    if not vscn:
+        return None
+    panels: list = []
+    rows = [
+        {"k_en": "Fiscal year", "k_zh": "财年", "v": str(vscn.get("fy")), "v_en": "", "v_zh": ""},
+        {"k_en": "Period end", "k_zh": "期末日期", "v": str(vscn.get("period_end")), "v_en": "", "v_zh": ""},
+        {"k_en": "Source", "k_zh": "来源", "v": "", "v_en": "SEC filings", "v_zh": "SEC披露文件"},
+        {"k_en": "Tier", "k_zh": "层级", "v": "", "v_en": "Research display only, not advice",
+         "v_zh": "仅供研究展示，非投资建议"},
+        # Review B-F07-1 MAJOR-2: was "diluted share count" -- the loader has no
+        # diluted share count column (only "eps_diluted", a per-share ratio, not
+        # a share count; see engine/valuation_scenario.py's module docstring), so
+        # the module deliberately divides by shares OUTSTANDING and labels that
+        # honestly (base kv row's "identity" field). This formula description
+        # must match what the panel actually does, not what a future producer
+        # change might someday supply.
+        # MINOR-4 (review round 3): "adj." was an abbreviation in user-facing
+        # dialog copy (same class as round-2 MINOR-3, which forced N/A -> No
+        # data); spelled out.
+        {"k_en": "Formula", "k_zh": "计算公式",
+         "v": "", "v_en": "adjusted net income x earnings multiple / share count (as reported)",
+         "v_zh": "调整后净利润 x 市盈率倍数 / 披露股数"},
+        {"k_en": "Net debt / cash", "k_zh": "净负债／净现金",
+         "v": "", "v_en": "Shown as a reported fact only — not applied to the per-share math "
+                          "(a P/E multiple already yields equity value)",
+         "v_zh": "仅作为披露事实展示，不参与每股计算（市盈率倍数本身已是股权价值）"},
+    ]
+    panels.append({"kind": "kv", "title_en": "Basis", "title_zh": "计算依据", "rows": rows})
+    for s in vscn.get("scenarios", []):
+        a = s.get("assumptions", {})
+        key = s.get("key", "")
+        # Review round 4 MINOR-1: this dialog is a fourth render site for
+        # per_share and used to gate on s.get("computable") alone, so the
+        # belt-and-braces defence in the Jinja partial (every render site
+        # requires computable AND per_share is not none AND per_share > 0)
+        # was one file short. Apply the same three-part check here.
+        _vs_ps = s.get("per_share")
+        _vs_ok = bool(s.get("computable")) and _vs_ps is not None and _vs_ps > 0
+        if _vs_ok:
+            _vs_v, _vs_v_en, _vs_v_zh = f"${_vs_ps:.2f}", "", ""
+        else:
+            _vs_v_en, _vs_v_zh = _vs_scenario_null_text(s)
+            _vs_v = ""
+        srows = [
+            {"k_en": "Sales growth", "k_zh": "销售增长", "v": f"{a.get('sales_growth_pct')}%", "v_en": "", "v_zh": ""},
+            {"k_en": "Margin change", "k_zh": "利润率变化", "v": f"{a.get('margin_delta_pp')}pp", "v_en": "", "v_zh": ""},
+            {"k_en": "Earnings multiple", "k_zh": "市盈率倍数", "v": f"{a.get('earnings_multiple')}x", "v_en": "", "v_zh": ""},
+            {"k_en": "Per-share (computed)", "k_zh": "每股价值（计算值）",
+             "v": _vs_v, "v_en": _vs_v_en, "v_zh": _vs_v_zh},
+        ]
+        panels.append({
+            "kind": "kv",
+            "title_en": key.title(),
+            "title_zh": _VS_SCENARIO_TITLES_ZH.get(key, ""),
+            "rows": srows,
+        })
+    return _mk_dialog(
+        "valuation_scenario", "How this was worked out", "计算方式说明", panels)
 
 
 def _build_valuation(blob: dict | None) -> list | None:
@@ -4598,8 +4696,6 @@ def _ss_identity_read_rows(seq: Any) -> list[dict[str, Any]]:
         else:
             continue
         mapped = _ss_map_identity_read_value(k, raw, has_v)
-        if mapped is None:
-            continue
         house = _SS_READ_FIELD.get(k)
         rows.append({
             "k": k,
@@ -4645,6 +4741,165 @@ def _ss_pair(node: Any, key: str = "") -> dict[str, str] | None:
     return None
 
 
+# Closed vocabulary of workspace lifecycle states the CHANGE card can print.
+# The engine composes that card's sentence itself and interpolates the owner's
+# raw lifecycle token into BOTH language slots
+# (`engine/security_state.py:1219-1223`), so the Chinese page reads
+# `Q4 2026 财报工作区状态为 complete：…` — an engine token inside customer copy
+# (Chairman plain-language law 2026-09-06). The vocabulary is closed by the
+# docket: `EVENT_STATES` (`engine/company_intelligence/events.py:43`, §4.3),
+# enforced on every producer by `CompanyEvent.__post_init__`
+# (`engine/company_intelligence/events.py:239`), reaching the reader through
+# `_lifecycle_payload` (`engine/company_intelligence/event_workspace.py:269`);
+# plus the reader's own `"unknown"` sentinel when the owner states no state at
+# all (`engine/security_state.py:1198`). This table is the projection layer, the
+# same shape as `_SS_READ_VALUE`: the compiled golden stays engine truth and is
+# never edited, and the template never receives the token.
+_SS_CHANGE_STATE: dict[str, dict[str, str]] = {
+    "discovered": {"en": "first seen", "zh": "已发现"},
+    "scheduled": {"en": "scheduled", "zh": "已排期"},
+    "rescheduled": {"en": "rescheduled", "zh": "已改期"},
+    "started": {"en": "under way", "zh": "进行中"},
+    "completed_partial": {"en": "partly complete", "zh": "部分完成"},
+    "complete": {"en": "complete", "zh": "已完成"},
+    "corrected": {"en": "corrected", "zh": "已更正"},
+    "superseded": {"en": "superseded", "zh": "已被取代"},
+    "derived_ready": {"en": "ready to read", "zh": "可供查阅"},
+    "distributed": {"en": "distributed", "zh": "已分发"},
+    "cancelled": {"en": "cancelled", "zh": "已取消"},
+    "unknown": {"en": "not stated", "zh": "未说明"},
+}
+
+# The reader does not re-validate `lifecycle.state` against `EVENT_STATES` — only
+# the producer does — and the workspace arrives over the wire, so ANY value is
+# reachable here: a wrong case (`Complete`), a different separator
+# (`in-progress`), a value from a newer contract (`v2_ready`), or a non-string
+# the engine's f-string stringified. None of them may print. They take house
+# words that say exactly what happened — the owner stated something this reader
+# does not recognise, which is NOT the same fact as "the owner stated nothing"
+# (`unknown`) — and are RECORDED for the operator, mirroring
+# `_SS_UNMAPPED_WARNED` / `_ss_warn_unmapped_identity`.
+_SS_CHANGE_STATE_UNREADABLE: dict[str, str] = {"en": "not recognised", "zh": "无法识别"}
+_SS_CHANGE_STATE_UNMAPPED: set[str] = set()
+
+# Already-projected house words, so a second application of the projection is a
+# no-op instead of re-reading its own output as an unrecognised token (which
+# would both rewrite the sentence and emit a false operator line for a value the
+# engine never sent).
+_SS_CHANGE_STATE_PROJECTED: dict[str, frozenset[str]] = {
+    slot: frozenset(
+        [entry[slot] for entry in _SS_CHANGE_STATE.values()]
+        + [_SS_CHANGE_STATE_UNREADABLE[slot]]
+    )
+    for slot in ("en", "zh")
+}
+
+# The engine's own two sentence frames. The match is anchored on the FRAME and
+# captures whatever the owner put between it and the terminator — never gated on
+# the token's shape, or the values that most need catching would walk straight
+# past the table. The Chinese frame swallows the engine's ASCII space so the
+# house words sit flush against the CJK, never `状态为 已完成`.
+_SS_CHANGE_STATE_EN_RE = re.compile(r"(?<=results workspace is )(.+?)(?=:)")
+_SS_CHANGE_STATE_ZH_RE = re.compile(r"(?<=财报工作区状态为)\s*(.+?)(?=：)")
+
+# `engine/security_state.py:1218` labels a workspace with no fiscal quarter (an
+# annual period) `"the latest period"` and interpolates that English into the
+# CHINESE frame too. Frozen here for the same reason the states are: a Latin run
+# in Chinese copy is machine text whether or not it is a token.
+_SS_CHANGE_PERIOD_ZH: dict[str, str] = {"the latest period": "最近一期"}
+_SS_CHANGE_PERIOD_ZH_RE = re.compile(
+    r"^(" + "|".join(re.escape(k) for k in _SS_CHANGE_PERIOD_ZH) + r")\s*(?=财报工作区状态为)"
+)
+
+
+def _ss_warn_unmapped_change_state(token: str, field: str = "lifecycle state") -> None:
+    """One stderr line per distinct out-of-contract value per process.
+
+    `field` names the contract field the value arrived in, because the card's
+    sentence and the drilldown's correction row read the same vocabulary out of
+    two different fields and an operator chasing one should not be sent to the
+    other. The dedupe stays keyed on the VALUE: one line per distinct value per
+    process is the contract, whichever field first carried it.
+    """
+    if token in _SS_CHANGE_STATE_UNMAPPED:
+        return
+    _SS_CHANGE_STATE_UNMAPPED.add(token)
+    print(f"change card {field} unmapped: {token}", file=sys.stderr)
+
+
+def _ss_project_change_state(pair: dict[str, str] | None) -> dict[str, str] | None:
+    """Rewrite the engine's raw lifecycle value as house words in both slots.
+
+    Falsy input is returned unchanged. A projected slot is a fixpoint: applying
+    this to its own output changes nothing and records nothing.
+    """
+    if not pair:
+        return pair
+    out = dict(pair)
+    for slot, rx in (("en", _SS_CHANGE_STATE_EN_RE), ("zh", _SS_CHANGE_STATE_ZH_RE)):
+        text = out.get(slot) or ""
+        if not text:
+            continue
+
+        def _house(m: "re.Match[str]", _slot: str = slot) -> str:
+            raw = m.group(1).strip()
+            if raw in _SS_CHANGE_STATE_PROJECTED[_slot]:
+                return raw
+            entry = _SS_CHANGE_STATE.get(raw)
+            if entry is None:
+                _ss_warn_unmapped_change_state(raw)
+                return _SS_CHANGE_STATE_UNREADABLE[_slot]
+            return entry[_slot]
+
+        out[slot] = rx.sub(_house, text)
+    zh = out.get("zh") or ""
+    if zh:
+        out["zh"] = _SS_CHANGE_PERIOD_ZH_RE.sub(
+            lambda m: _SS_CHANGE_PERIOD_ZH[m.group(1)], zh,
+        )
+    return out
+
+
+# `correction_state` is the SAME closed lifecycle vocabulary as the card's
+# sentence — the reader DERIVES it from `lifecycle.state`
+# (`engine/security_state.py:1199-1201`) — and the drilldown printed it raw into
+# both language slots (`templates/ticker.html.j2:1822`), so the Chinese page read
+# `更正状态 superseded`. It arrives as a bare token rather than inside a sentence
+# frame, so it meets `_SS_CHANGE_STATE` directly instead of through the frame
+# regexes; the row then receives an EN string and a ZH string, never the token.
+#
+# `"none"` is that derivation's own "nothing to report" default (the `.get(…,
+# "none")` fallback), not a lifecycle state, so it is absence rather than an
+# unrecognised value: it keeps the row's existing house copy ("None recorded" /
+# "无记录") by projecting to nothing. Reading it as unrecognised would misread
+# the commonest real value on the surface AND file an operator line on every
+# ordinary page.
+#
+# These are `_clean_str`'s own placeholder literals (`:276`). `_clean_str`
+# empties them only when they are the WHOLE value, so a padded `" None "`
+# survives it; matching here after `.strip()` and case-insensitively is what
+# closes that gap rather than letting whitespace decide whether absence is
+# readable.
+_SS_CORRECTION_ABSENT: frozenset[str] = frozenset({"none", "nan", "nat", "null"})
+
+
+def _ss_project_correction_state(raw: Any) -> dict[str, str] | None:
+    """House EN/ZH for one `correction_state` token; None means nothing recorded.
+
+    Same contract as `_ss_project_change_state` for values the table does not
+    know: readable house words in both slots AND one operator line, because the
+    reader does not re-validate this field either and it arrives over the wire.
+    """
+    token = _clean_str(raw).strip()
+    if not token or token.casefold() in _SS_CORRECTION_ABSENT:
+        return None
+    entry = _SS_CHANGE_STATE.get(token)
+    if entry is None:
+        _ss_warn_unmapped_change_state(token, field="correction state")
+        return dict(_SS_CHANGE_STATE_UNREADABLE)
+    return dict(entry)
+
+
 def _ss_leg(key: str, title_en: str, title_zh: str, leg: Any) -> dict[str, Any]:
     """Project one axis leg into everything its card and dialog print."""
     leg = leg if isinstance(leg, dict) else {}
@@ -4652,6 +4907,12 @@ def _ss_leg(key: str, title_en: str, title_zh: str, leg: Any) -> dict[str, Any]:
     cov = _SS_COVERAGE.get(cov_code, _SS_COVERAGE_FALLBACK)
 
     reason = _ss_pair(leg, "reason")
+    if key == "change":
+        # Every engine-composed sentence on this axis, not only the one today's
+        # engine fills: `reason` / `clause` / `actionable` render into the same
+        # card and dialog, so a lifecycle value arriving in any of them must
+        # meet the table too.
+        reason = _ss_project_change_state(reason)
     why = reason or (
         {"en": cov["why_en"], "zh": cov["why_zh"]} if cov["why_en"] else None
     )
@@ -4661,8 +4922,18 @@ def _ss_leg(key: str, title_en: str, title_zh: str, leg: Any) -> dict[str, Any]:
     # say. A card whose bold line repeats its own chip has spent its best line
     # on a word the reader already read.
     summary = _ss_pair(leg, "summary")
-    headline = _ss_pair(leg, "headline") or summary or {"en": cov["en"], "zh": cov["zh"]}
-    clause = _ss_pair(leg, "clause") or (summary if summary is not headline else None)
+    explicit_headline = _ss_pair(leg, "headline")
+    if key == "change":
+        # `summary` is projected BEFORE `headline` derives from it, so the two
+        # stay the same object: `clause` below keys off that identity, and a
+        # broken identity makes the card print its sentence twice.
+        summary = _ss_project_change_state(summary)
+        explicit_headline = _ss_project_change_state(explicit_headline)
+    headline = explicit_headline or summary or {"en": cov["en"], "zh": cov["zh"]}
+    explicit_clause = _ss_pair(leg, "clause")
+    if key == "change":
+        explicit_clause = _ss_project_change_state(explicit_clause)
+    clause = explicit_clause or (summary if summary is not headline else None)
 
     # Clocks, in the order the reference composition names them. A clock that is
     # absent is dropped rather than printed as "—": an empty clock row would
@@ -4737,6 +5008,11 @@ def _ss_leg(key: str, title_en: str, title_zh: str, leg: Any) -> dict[str, Any]:
             unresolved["code"] = _clean_str(suf.get("code") or "")
             unresolved["from"] = _clean_str(suf.get("leg") or "")
 
+    # `or ""` is the collapse the replaced line carried: a falsy non-string
+    # (`0`, `False`, `[]`) is nothing recorded, not a value to read back at the
+    # operator.
+    correction = _ss_project_correction_state(leg.get("correction_state") or "")
+
     out = {
         "key": key,
         "dlg": f"ss-{key.replace('_', '-')}",
@@ -4748,11 +5024,15 @@ def _ss_leg(key: str, title_en: str, title_zh: str, leg: Any) -> dict[str, Any]:
         "headline": headline,
         "clause": clause,
         "why": why,
-        "actionable": _ss_pair(leg, "actionable") or _SS_ACTIONABLE[cov["tone"]],
+        "actionable": (
+            _ss_project_change_state(_ss_pair(leg, "actionable")) if key == "change"
+            else _ss_pair(leg, "actionable")
+        ) or _SS_ACTIONABLE[cov["tone"]],
         "owner": _clean_str(leg.get("owner") or ""),
         "owner_object": _clean_str(leg.get("owner_object") or leg.get("owner_object_id") or ""),
         "source": _clean_str(leg.get("source") or ""),
-        "correction": _clean_str(leg.get("correction_state") or ""),
+        "correction_en": (correction or {}).get("en", ""),
+        "correction_zh": (correction or {}).get("zh", ""),
         "generation_id": _clean_str(leg.get("generation_id") or ""),
         "clocks": clock_rows,
         "asof": clock_rows[-1]["v"] if clock_rows else "",
@@ -5422,6 +5702,7 @@ def build_page_context(
     performance = _build_performance(ticker, trailing_returns)
     financials = _build_financials(blob)
     valuation = _build_valuation(blob)
+    valuation_scenario = _valuation_scenario_view(blob)
     earnings = _build_earnings(blob)
     technicals = _build_technicals(ticker, blob, tech_screener)
     options = _build_options(blob, gex_v1, flow)
@@ -5501,6 +5782,7 @@ def build_page_context(
         "financials": financials,
         "debt_maturity": (blob or {}).get("debt_maturity"),
         "valuation": valuation,
+        "valuation_scenario": valuation_scenario,
         "earnings": earnings,
         "technicals": technicals,
         "options": options,
