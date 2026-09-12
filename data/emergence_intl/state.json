@@ -7,16 +7,16 @@
   "18a12e16e5db": {
     "name_en": "Cross-sector cluster \u00b7 Health Care + Financials",
     "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Health Care + Financials",
-    "score": 59.4
+    "score": 58.9
   },
   "24a59f17a681": {
     "name_en": "Cross-sector cluster \u00b7 Industrials + Utilities",
     "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Utilities",
-    "score": 49.7
+    "score": 49.8
   },
-  "6aa0c288b5f7": {
-    "name_en": "Emerging Consumer Discretionary cluster",
-    "name_zh": "\u65b0\u5174 Consumer Discretionary \u96c6\u7fa4",
-    "score": 43.6
+  "3aa097ab8ba5": {
+    "name_en": "Cross-sector cluster \u00b7 Information Technology + Industrials",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Information Technology + Industrials",
+    "score": 57.0
   }
 }

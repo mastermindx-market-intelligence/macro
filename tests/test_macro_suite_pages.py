@@ -294,10 +294,7 @@ def test_the_shipped_artifact_needs_no_unreviewed_label() -> None:
         snapshot, page_built_at=BUILT_AT,
         artifact={"path": "x", "manifest_path": "y", "sha256": "z", "bytes": 1,
                   "min_client_contract": builder.MIN_CLIENT_CONTRACT})
-    # origin/main's shipped liquidity-regime snapshot labels a
-    # quantity-vs-quality contradiction through the presence vocabulary.
-    # Reviewing that token is a labels lane; this packet must not grow it.
-    assert labels.unknown_tokens() == ("presence:quantity_vs_quality",)
+    assert labels.unknown_tokens() == ()
 
 
 def test_an_unknown_token_degrades_to_readable_text_and_is_reported() -> None:
@@ -306,6 +303,120 @@ def test_an_unknown_token_degrades_to_readable_text_and_is_reported() -> None:
         "en": "Some future state", "zh": "Some future state"}
     assert "freshness:SOME_FUTURE_STATE" in labels.unknown_tokens()
     labels.reset_unknown_tokens()
+
+
+_ENGINE_CONTRADICTION_KINDS = (
+    "quantity_vs_quality",
+    "hollow_expansion",
+    "depth_breadth_divergence",
+    "nowcast_vs_hard_data",
+    "narrow_breadth_despite_level",
+    "sticky_led_but_headline_disinflationary",
+    "low_hires_low_fires",
+    "claims_income_divergence",
+    "trade_balance_identity_disagreement",
+    "spending_on_credit_vs_confidence_divergence",
+    "nominal_real_breakeven_decomposition_disagreement",
+    "issuer_event_contradiction",
+    "issuance_demand_stress_vs_bond_desk_calm",
+    "home_price_vs_rent_divergence",
+    "hawk_ease_split",
+    "global_state_vs_fed_desk",
+    "dots_vs_market_path",
+    "broad_stress_vs_risk_appetite",
+)
+
+_KIND_LITERAL = re.compile(r'(?:kind\s*=\s*|"kind"\s*:\s*)"([^"]+)"')
+_CJK_ADJOINING_SPACE = re.compile(r"(?:[\u3400-\u9fff] )|(?: [\u3400-\u9fff])")
+
+
+def test_every_engine_contradiction_kind_has_a_reviewed_label() -> None:
+    labels.reset_unknown_tokens()
+    for kind in _ENGINE_CONTRADICTION_KINDS:
+        pair = labels.label("contradiction_kind", kind)
+        assert pair is not None
+        assert pair["en"] and pair["zh"]
+        fallback = labels.deslug(kind)
+        assert pair["en"] != fallback and pair["zh"] != fallback, kind
+        assert _CJK_ADJOINING_SPACE.search(pair["zh"]) is None, pair["zh"]
+    assert labels.unknown_tokens() == ()
+
+    engine_kinds: set[str] = set()
+    engine_dir = ROOT / "engine" / "market_os" / "macro_workspaces"
+    for path in engine_dir.glob("*.py"):
+        for match in _KIND_LITERAL.finditer(path.read_text(encoding="utf-8")):
+            engine_kinds.add(match.group(1))
+    unlabelled = engine_kinds - set(labels.known("alert_kind")) - set(
+        _ENGINE_CONTRADICTION_KINDS)
+    assert unlabelled == set(), unlabelled
+
+
+def test_the_two_healed_contradiction_labels_agree_with_their_producers() -> None:
+    """Producer -> display: a contradiction label must not contradict the engine
+    sentence printed beside it.
+
+    ``lib/macro_suite_view.py:124`` resolves the CONTRADICTION_KIND label and
+    ``:126`` carries the producer's own EN/ZH sentence, so the two land in one
+    block and a reversed label is refuted where the reader meets it. Nothing
+    else in this file joins the two: the coverage test above asserts only that
+    a label EXISTS, and the producer-side suites never read display text --
+    which is how two frozen pairs came to state the opposite of the engine.
+
+    So call the detectors that EMIT these kinds, take the kind they emit (an
+    engine rename fails here rather than quietly relabelling nothing), install
+    the emitted contradiction on a copy of the shipped snapshot and read the
+    label off the real view. Reverting either pair fails this test.
+    """
+    # Local import: this is the only test that needs the producers, and the
+    # claim under test is precisely the join between them and the label table.
+    from engine.market_os.macro_workspaces import consumer_payments, financial_conditions
+
+    def _label_a_reader_meets(emitted: Mapping[str, Any]) -> dict[str, str]:
+        snapshot = json.loads(_body_path(DATA_ROOT).read_text(encoding="utf-8"))
+        snapshot["availability"]["contradiction"] = {
+            "present": True,
+            "kind": emitted["kind"],
+            "en": emitted["en"],
+            "zh": emitted["zh"],
+            "components": list(emitted.get("components") or []),
+        }
+        view = _view_of(snapshot)["context"]["contradiction"]
+        assert view is not None
+        assert view["kind_raw"] == emitted["kind"]
+        return view["kind"]
+
+    # -- pair 1: consumer_payments, all three legs beyond their flat bands ----
+    emitted = consumer_payments._detect_contradiction(
+        sentiment_yoy=2.0, revolving_yoy=4.0, saving_rate_change_3m=-0.5)
+    assert len(emitted) == 1, emitted
+    credit = emitted[0]
+    assert credit["kind"] == "spending_on_credit_vs_confidence_divergence"
+    # The producer's own sentence says confidence is RISING, not falling.
+    assert credit["en"].startswith("Consumer sentiment is rising year-over-year"), credit["en"]
+    assert "消费者信心同比上升" in credit["zh"], credit["zh"]
+    credit_label = _label_a_reader_meets(credit)
+    assert "Confidence rising" in credit_label["en"], credit_label["en"]
+    assert "confidence falls" not in credit_label["en"], credit_label["en"]
+    assert "falling" not in credit_label["en"], credit_label["en"]
+    assert "信心上升" in credit_label["zh"], credit_label["zh"]
+    assert "信心却在下降" not in credit_label["zh"], credit_label["zh"]
+
+    # -- pair 2: financial_conditions, calm official stress vs a risk-off tape -
+    stress = financial_conditions._detect_contradiction(
+        {"state": "calm"}, {"state": "risk-off (elevated)"})
+    assert stress["present"] is True, stress
+    assert stress["kind"] == "broad_stress_vs_risk_appetite"
+    # The producer's own sentence says stress reads CALM and appetite risk-OFF.
+    assert "reads calm" in stress["en"], stress["en"]
+    assert "risk-off" in stress["en"], stress["en"]
+    assert "平静" in stress["zh"] and "风险规避" in stress["zh"], stress["zh"]
+    stress_label = _label_a_reader_meets(stress)
+    assert "calm" in stress_label["en"], stress_label["en"]
+    assert "risk-off" in stress_label["en"], stress_label["en"]
+    assert "Broad stress" not in stress_label["en"], stress_label["en"]
+    assert "平静" in stress_label["zh"], stress_label["zh"]
+    assert "避险" in stress_label["zh"], stress_label["zh"]
+    assert "整体承压" not in stress_label["zh"], stress_label["zh"]
 
 
 def test_every_published_horizon_and_region_has_a_reviewed_name() -> None:
@@ -757,6 +868,7 @@ def test_the_named_pages_never_print_python_none(page: str, built_pages: dict[st
 
 
 def _boundary_view(distance: Any) -> dict[str, Any]:
+    """Neutralise the snapshot copy's contradiction so these tests exercise the boundary rule, not the contradiction precedence."""
     snapshot = json.loads(_body_path(DATA_ROOT).read_text(encoding="utf-8"))
     # The shipped artifact currently carries a contradiction, which outranks
     # a boundary watch. Clear it so this helper actually tests the 0.0 case.

@@ -1,9 +1,9 @@
 {
   "schema": "news_event_calibration.v1",
   "is_context_only": true,
-  "asof": "2026-09-11",
-  "n_events_logged": 684,
-  "n_events_graded": 370,
+  "asof": "2026-09-12",
+  "n_events_logged": 700,
+  "n_events_graded": 371,
   "classes": [
     {
       "event_type": "activist_campaign",
@@ -21,7 +21,7 @@
     {
       "event_type": "bankruptcy_restructuring",
       "direction": "bearish",
-      "n": 8,
+      "n": 9,
       "n_graded": 6,
       "hit_5d": 0.3333333333333333,
       "hit_21d": 0.6,
@@ -38,7 +38,7 @@
       "n_graded": 3,
       "hit_5d": 0.3333333333333333,
       "hit_21d": 0.0,
-      "avg_rel_5d": -0.014518666666666666,
+      "avg_rel_5d": -0.016530916666666666,
       "avg_rel_21d": -0.0501855,
       "wilson_low_5d": 0.06149,
       "wilson_high_5d": 0.792345,
@@ -77,7 +77,7 @@
       "n_graded": 2,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
-      "avg_rel_5d": -0.0047945,
+      "avg_rel_5d": 0.0006873333333333332,
       "avg_rel_21d": 0.008495,
       "wilson_low_5d": null,
       "wilson_high_5d": null,
@@ -86,12 +86,12 @@
     {
       "event_type": "earnings_result",
       "direction": "mixed",
-      "n": 222,
-      "n_graded": 106,
+      "n": 229,
+      "n_graded": 107,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
-      "avg_rel_5d": 0.0024829540880503143,
-      "avg_rel_21d": -5.11724137931091e-06,
+      "avg_rel_5d": 0.002217065887850467,
+      "avg_rel_21d": 0.003051206779661016,
       "wilson_low_5d": null,
       "wilson_high_5d": null,
       "verdict": "context_only"
@@ -151,7 +151,7 @@
     {
       "event_type": "macro_release",
       "direction": "informational",
-      "n": 52,
+      "n": 55,
       "n_graded": 9,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -177,7 +177,7 @@
     {
       "event_type": "mna_confirmed",
       "direction": "bullish",
-      "n": 21,
+      "n": 22,
       "n_graded": 10,
       "hit_5d": 0.5,
       "hit_21d": 0.375,
@@ -203,7 +203,7 @@
     {
       "event_type": "policy_trade_control",
       "direction": "mixed",
-      "n": 68,
+      "n": 71,
       "n_graded": 20,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -268,7 +268,7 @@
     {
       "event_type": "regulatory_probe",
       "direction": "bearish",
-      "n": 7,
+      "n": 8,
       "n_graded": 5,
       "hit_5d": 0.6,
       "hit_21d": 0.75,
@@ -280,7 +280,7 @@
     }
   ],
   "reject_audit": {
-    "n_sampled": 1130,
+    "n_sampled": 1148,
     "n_graded": 0,
     "classes": []
   }
