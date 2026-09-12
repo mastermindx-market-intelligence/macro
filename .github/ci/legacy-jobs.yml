@@ -6312,6 +6312,16 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly
       - name: CCW-W4 credit desk vm tests
         run: python -m pytest tests/test_bonds_corp_credit_vm.py -v
+    # T10 moved to unrun-macro-panels (gate: data). That job already installs
+    # pandas/numpy/pyarrow/jinja2/plotly; T10's verdict can flip on a nightly
+    # data commit, so it must not live on this gate: code job.
+    paths:
+      - "tests/test_bonds_corp_credit_vm.py"
+      - "scripts/build_bonds.py"
+      - "templates/bonds.html.j2"
+      - "lib/macro_suite_view.py"
+      - "templates/_curve_panel.html.j2"
+      - "templates/_macro_suite_shell.html.j2"
 
   ccw-w6-study-s1:
     if: ${{ false }}
@@ -9808,9 +9818,13 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
-      - name: factor hypothesis registry + intelligence state + measurement evidence gap
-        run: python -m pytest tests/test_register_factor_hypotheses.py tests/test_factor_intelligence_state.py tests/test_build_measurement_evidence_gap.py -q
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn pillow
+      # F10-X1 implication-card contract and rendered Measurement projection
+      # stay in the existing factor/measurement owner lane. Register both new
+      # suites on arrival so their artifact-identity, zero-authority, bilingual,
+      # generated-page and hostile-null pins never sit outside CI.
+      - name: factor registry + measurement evidence and research implications
+        run: python -m pytest tests/test_register_factor_hypotheses.py tests/test_factor_intelligence_state.py tests/test_build_measurement_evidence_gap.py tests/test_research_implication_card.py tests/test_measurement_research_implications.py -q
       - name: look-ahead tripwire over engine/ + collectors/ (feature-leak guard)
         run: python -m pytest tests/test_no_lookahead.py -q
       - name: study + trial lanes (OOS, divergence, drift, fingerprints, gauntlets)
@@ -11772,6 +11786,40 @@ jobs:
       # pandas/numpy/pyarrow/pyyaml, all already on the install line above.
       - name: commodities / forex / rates / news / policy panels and their calibration guards
         run: python -m pytest tests/test_factor_universe_hold.py tests/test_build_dispersion_regime.py tests/test_build_factor_panel.py tests/test_commodity_mtf_verdict_honesty.py tests/test_congress_score.py tests/test_context_risk.py tests/test_cross_asset_context.py tests/test_crossasset_flows.py tests/test_financial_news.py tests/test_forex.py tests/test_forex_context_bus.py tests/test_news_event_ledger.py tests/test_phase_buildout.py tests/test_policy_lever.py tests/test_rates_command.py tests/test_yield_momentum.py tests/test_inputs_yield_curve.py tests/test_reflexivity_overlay.py tests/test_scorecard_incremental.py tests/test_us_sector_rotation_wiring.py tests/test_validation.py tests/test_whitehouse_build.py tests/test_commodities_ignition_copy.py -q
+      - name: A-F01-W4-1 bonds hub byte-preservation guard (T10)
+        run: python -m pytest tests/test_macro_rates_curves_bonds_guard.py -q
+    # T10 lives here (gate: data), not on ccw-w4-credit-desk (gate: code).
+    # Install already covers pandas/numpy/pyarrow/jinja2/plotly. Declared
+    # paths must cover every pytest file the commands name (pack validator);
+    # no exclusive scope, so inference still unions the rest of the closure.
+    paths:
+      - "tests/test_factor_universe_hold.py"
+      - "tests/test_build_dispersion_regime.py"
+      - "tests/test_build_factor_panel.py"
+      - "tests/test_commodity_mtf_verdict_honesty.py"
+      - "tests/test_congress_score.py"
+      - "tests/test_context_risk.py"
+      - "tests/test_cross_asset_context.py"
+      - "tests/test_crossasset_flows.py"
+      - "tests/test_financial_news.py"
+      - "tests/test_forex.py"
+      - "tests/test_forex_context_bus.py"
+      - "tests/test_news_event_ledger.py"
+      - "tests/test_phase_buildout.py"
+      - "tests/test_policy_lever.py"
+      - "tests/test_rates_command.py"
+      - "tests/test_yield_momentum.py"
+      - "tests/test_inputs_yield_curve.py"
+      - "tests/test_reflexivity_overlay.py"
+      - "tests/test_scorecard_incremental.py"
+      - "tests/test_us_sector_rotation_wiring.py"
+      - "tests/test_validation.py"
+      - "tests/test_whitehouse_build.py"
+      - "tests/test_commodities_ignition_copy.py"
+      - "tests/test_macro_rates_curves_bonds_guard.py"
+      - "scripts/build_bonds.py"
+      - "site/bonds.html"
+      - "templates/bonds.html.j2"
 
   unrun-market-plumbing:
     # live quotes / tape / GEX / options-flow / theme + tech-lab feeds behind the intraday lanes.
@@ -14099,6 +14147,28 @@ jobs:
       - "templates/macro_monetary.html.j2"
       - "templates/_macro_suite_nav.html.j2"
       - "tests/test_macro_monetary_hub.py"
+      # A-F01-W4-1: ceiling-scoped Treasury curve-shape hero on rates_curves.
+      - "templates/_curve_panel.html.j2"
+      - "tests/test_macro_rates_curves_route.py"
+      # T11 reads these fourteen committed pages (thirteen siblings + the hub).
+      # Listed literally: they are computed from SUITE_PAGES at runtime and
+      # would otherwise be invisible to the trigger-closure checker. T10 no
+      # longer runs in this pandas-free job; site/bonds.html lives on
+      # ccw-w4-credit-desk.
+      - "site/macro_liquidity_regime.html"
+      - "site/macro_growth_real_economy.html"
+      - "site/macro_business_activity.html"
+      - "site/macro_labor_markets.html"
+      - "site/macro_inflation_system.html"
+      - "site/macro_monetary_policy.html"
+      - "site/macro_financial_conditions.html"
+      - "site/macro_liquidity_central_banks.html"
+      - "site/macro_capital_structure.html"
+      - "site/macro_housing_real_estate.html"
+      - "site/macro_consumer_payments.html"
+      - "site/macro_national_debt_liabilities.html"
+      - "site/macro_trade_flows.html"
+      - "site/macro_monetary.html"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -14108,6 +14178,8 @@ jobs:
           python-version: "3.12"
       - name: install suite-page test dependencies
         run: pip install pytest jinja2 pyyaml jsonschema==4.26.0
+      - name: Market OS rates & curves — curve-shape hero, ceiling, byte preservation
+        run: python -m pytest tests/test_macro_rates_curves_route.py -q
       - name: Market OS macro suite pages — shell, labels, view model, builder
         run: python -m pytest tests/test_macro_suite_pages.py tests/test_macro_workspace_prior_publication.py -q
       - name: Market OS macro suite hub — discoverability, ordering, honest absence

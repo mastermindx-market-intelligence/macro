@@ -1,21 +1,21 @@
 {
-  "appended": 3,
-  "asof": "2026-09-09",
+  "appended": 5,
+  "asof": "2026-09-10",
   "candidates": {
-    "R": 3,
-    "T": 2,
+    "R": 0,
+    "T": 7,
     "W": 4
   },
   "deduped": {
-    "R": 1,
-    "T": 1,
+    "R": 0,
+    "T": 2,
     "W": 4
   },
   "dry_run": false,
   "feature_source": {
     "enabled": true,
     "foresight": {
-      "asof": "2026-09-10",
+      "asof": "2026-09-11",
       "consulted": true,
       "n_keys": 27,
       "n_themes": 18,
@@ -27,21 +27,31 @@
       "coil_min_sessions": 293,
       "consulted": true,
       "null_reasons": {
-        "ohlcv_absent": 7
+        "ohlcv_absent": 24
       },
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
       "themes_read": {
+        "Crypto & Blockchain": {
+          "theme_thrust_frac": 0.0,
+          "theme_thrust_reason": null,
+          "theme_thrust_state": "quiet"
+        },
+        "Energy Renewable": {
+          "theme_thrust_frac": 0.0222,
+          "theme_thrust_reason": null,
+          "theme_thrust_state": "quiet"
+        },
         "Semiconductors": {
-          "theme_thrust_frac": 0.0571,
+          "theme_thrust_frac": 0.0294,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         }
       },
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 37,
-      "tickers_read": 44
+      "tickers_ok": 105,
+      "tickers_read": 129
     },
     "keys": [
       "relay_count_3d",
@@ -61,14 +71,14 @@
     "relay": {
       "consulted": true,
       "high_lookback": 63,
-      "members_indexed": 195,
-      "n_covered": 0,
+      "members_indexed": 164,
+      "n_covered": 1,
       "reason": null,
       "window_sessions": 21
     },
     "turnover": {
       "consulted": true,
-      "last_session": "2026-09-09",
+      "last_session": "2026-09-10",
       "n_tickers": 1544,
       "ok": true,
       "reason": null,
@@ -101,12 +111,13 @@
     ]
   },
   "flag_tickers": {
-    "R": [
-      "DCH",
-      "SMP"
-    ],
+    "R": [],
     "T": [
-      "QCOM"
+      "INTC",
+      "MU",
+      "SEDG",
+      "CLSK",
+      "MARA"
     ],
     "W": []
   },
@@ -116,41 +127,41 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-09-10 12:11:50",
-  "runtime_s": 107.3,
+  "run_utc": "2026-09-11 14:42:50",
+  "runtime_s": 110.3,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": 0,
-    "asof": "2026-09-09",
-    "n_members": 195,
+    "asof": "2026-09-10",
+    "n_members": 164,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 3.469,
+        "emerging_score": 2.912,
         "rank": 1,
         "theme": "Semiconductors"
       },
       {
-        "emerging_score": 2.13,
+        "emerging_score": 1.672,
         "rank": 2,
-        "theme": "Energy Renewable"
-      },
-      {
-        "emerging_score": 1.928,
-        "rank": 3,
         "theme": "Electric Vehicles"
       },
       {
-        "emerging_score": 1.903,
+        "emerging_score": 1.528,
+        "rank": 3,
+        "theme": "Energy Renewable"
+      },
+      {
+        "emerging_score": 1.214,
         "rank": 4,
         "theme": "Crypto & Blockchain"
       },
       {
-        "emerging_score": 1.747,
+        "emerging_score": 1.167,
         "rank": 5,
-        "theme": "Commodities Metals"
+        "theme": "Mega-Cap"
       }
     ]
   },
@@ -160,15 +171,15 @@
       "3B"
     ],
     "aligned": 4,
-    "asof_max": "2026-09-09",
+    "asof_max": "2026-09-10",
     "asof_mismatch": 0,
-    "asof_run": "2026-09-09",
+    "asof_run": "2026-09-10",
     "evaluated": 713,
     "fresh": 4,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 19.8,
+    "runtime_s": 19.9,
     "skipped": 4,
     "source": "baskets/membership.json",
     "state_turn": 89,
