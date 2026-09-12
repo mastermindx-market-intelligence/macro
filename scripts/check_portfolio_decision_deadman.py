@@ -169,22 +169,40 @@ def _decision_failure(
     if status == "skip":
         if reason == "market_closed" and not target:
             return None
-        return f"{job_id}: unacceptable skip reason={reason or 'missing'} target={target or 'missing'}"
+        return (
+            f"{job_id}: unacceptable skip reason={reason or 'missing'} "
+            f"target={target or 'missing'}"
+        )
 
     if status == "error":
-        return f"{job_id}: last run failed reason={reason or 'missing'} target={target or 'missing'}"
+        return (
+            f"{job_id}: last run failed reason={reason or 'missing'} "
+            f"target={target or 'missing'}"
+        )
 
     asof = str(decision.get("asof") or "")[:10]
+    settled_asof = str(decision.get("settled_asof") or "")[:10]
     decision_target = str(decision.get("target_status") or "").strip().lower()
-    if asof != expected_date:
-        return f"{job_id}: decision stale (asof={asof or 'missing'}, expected={expected_date})"
+    decision_clock = (
+        settled_asof
+        if decision_target == "executed" and settled_asof
+        else asof
+    )
+    if decision_clock != expected_date:
+        return (
+            f"{job_id}: decision stale "
+            f"(clock={decision_clock or 'missing'}, expected={expected_date})"
+        )
     if target in _FORBIDDEN_TARGETS or decision_target in _FORBIDDEN_TARGETS:
         return (
             f"{job_id}: missing/failed decision target="
             f"{target or decision_target or 'missing'} reason={reason or 'missing'}"
         )
     if target != decision_target:
-        return f"{job_id}: scheduler/decision target mismatch ({target} != {decision_target})"
+        return (
+            f"{job_id}: scheduler/decision target mismatch "
+            f"({target} != {decision_target})"
+        )
 
     if status == "ok":
         if reason:
@@ -193,16 +211,24 @@ def _decision_failure(
             return f"{job_id}: ok run has invalid target={target}"
         if decision.get("decision_effective") is not True:
             return f"{job_id}: {target} decision is not effective"
-        if target == "executed" and decision.get("execution_evidence_status") != "receipt_verified":
+        if (
+            target == "executed"
+            and decision.get("execution_evidence_status") != "receipt_verified"
+        ):
             return f"{job_id}: executed decision lacks a verified execution receipt"
         return None
 
     if status == "warn":
-        explicit_hold = target.startswith("rejected_") or target.startswith("frozen_")
+        explicit_hold = (
+            target.startswith("rejected_") or target.startswith("frozen_")
+        )
         if not explicit_hold:
             return f"{job_id}: warn run has non-governed target={target}"
         if reason != target:
-            return f"{job_id}: governed target/reason mismatch ({target} != {reason or 'missing'})"
+            return (
+                f"{job_id}: governed target/reason mismatch "
+                f"({target} != {reason or 'missing'})"
+            )
         return None
 
     return f"{job_id}: unsupported last_status={status or 'missing'}"
@@ -267,7 +293,10 @@ def evaluate(payload: dict[str, Any], *, now: datetime | None = None) -> list[st
             failures.append(f"{job_id}: next_run_time missing or invalid")
             continue
         if next_run <= current:
-            failures.append(f"{job_id}: next_run_time is not in the future ({next_run.isoformat()})")
+            failures.append(
+                f"{job_id}: next_run_time is not in the future "
+                f"({next_run.isoformat()})"
+            )
             continue
         due = _previous_weekday_schedule(next_run)
         expected_date = due.date().isoformat()
@@ -279,12 +308,14 @@ def evaluate(payload: dict[str, Any], *, now: datetime | None = None) -> list[st
             continue
         if started < due - timedelta(minutes=5):
             failures.append(
-                f"{job_id}: stale run (started={started.isoformat()}, expected>={due.isoformat()})"
+                f"{job_id}: stale run "
+                f"(started={started.isoformat()}, expected>={due.isoformat()})"
             )
             continue
         if finished < due or finished < started:
             failures.append(
-                f"{job_id}: run incomplete/stale (started={started.isoformat()}, finished={finished.isoformat()})"
+                f"{job_id}: run incomplete/stale "
+                f"(started={started.isoformat()}, finished={finished.isoformat()})"
             )
             continue
 
