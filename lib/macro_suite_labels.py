@@ -74,6 +74,7 @@ NULL_REASON: dict[str, dict[str, str]] = {
     "COMPUTATION_REFUSED": _pair("Computation refused", "拒绝计算"),
     "OUT_OF_REGION": _pair("Outside this region", "超出该地区范围"),
     "NOT_COVERED": _pair("Not covered", "未覆盖"),
+    "VECTOR_INCOMPLETE": _pair("Vector incomplete", "位移向量不完整"),
 }
 
 PRESENCE: dict[str, dict[str, str]] = {
@@ -185,6 +186,9 @@ COMPARABILITY: dict[str, dict[str, str]] = {
     "COMPARABLE": _pair("Comparable with the prior accepted print",
                         "与上一已接受读数可比"),
     "NO_PRIOR": _pair("No comparable prior print", "没有可比的历史读数"),
+    "NO_EARLIER_PUBLICATION": _pair(
+        "No earlier reading available to compare yet.",
+        "暂无可比较的更早读数。"),
     "METHOD_CHANGED": _pair("Method version changed — shown as a method change, not a delta",
                             "方法版本已变更 — 按方法变更呈现，而非数值变化"),
     "DEFINITION_INCOMPARABLE": _pair("Definitions are not comparable — numeric comparison refused",
@@ -267,6 +271,10 @@ BASIS: dict[str, dict[str, str]] = {
     "level": _pair("Level", "水平值"),
     "composite_prior_only": _pair("Composite, prior-only inputs", "复合指标（仅使用先验输入）"),
     "roc_over_owner_window": _pair("Rate of change over the owner window", "所有者窗口内的变化率"),
+    "constant_maturity_investment_basis": _pair(
+        "Constant-maturity investment basis",
+        "固定期限投资基准",
+    ),
 }
 
 # --- owner categorical readings ---------------------------------------------
