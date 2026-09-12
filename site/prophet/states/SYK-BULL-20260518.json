@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SYK-BULL-20260518",
-  "asof": "2026-09-09",
+  "asof": "2026-09-12",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 24.3,
-  "raw_confidence": 23.5,
-  "delta_vs_base": -35.7,
+  "management_confidence": 21.2,
+  "raw_confidence": 23.2,
+  "delta_vs_base": -38.8,
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 0.3,
+    "validity": 0.1,
     "progress": 0.0,
-    "pace": 28.7,
+    "pace": 24.7,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 67.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.042,
+    "dist_to_stop_r": 0.026,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 102.2,
-    "p1": -0.639,
-    "p2": -0.3195,
+    "horizon_pct_used": 108.9,
+    "p1": -0.6493,
+    "p2": -0.3247,
     "p3": null,
-    "move_r": -0.958,
+    "move_r": -0.974,
     "mfe_r": 0.393,
-    "mae_r": -0.958
+    "mae_r": -1.073
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Window Elapsed \u2014 Awaiting Close",
+  "change_reason": "Phase: invalidated \u2192 overtime",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 22.05000000000001,
-  "_mae": -53.77000732421874,
+  "_mae": -60.18999023437499,
   "_max_p1": 0.2620320855614974,
   "_first_trigger_ts": "2026-07-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 46,
-  "tau": 1.0222
+  "days_elapsed": 49,
+  "tau": 1.0889
 }

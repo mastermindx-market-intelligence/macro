@@ -1,80 +1,80 @@
 {
   "schema": "index_leadership.track_record.v1",
-  "as_of": "2026-09-04",
-  "generated_at": "2026-09-09T08:24:14.650241+00:00",
+  "as_of": "2026-09-09",
+  "generated_at": "2026-09-11T08:43:43.659162+00:00",
   "is_context_only": true,
-  "n_snapshots": 618,
-  "n_days": 21,
+  "n_snapshots": 662,
+  "n_days": 23,
   "horizons": {
     "5": {
-      "n_matured": 531,
+      "n_matured": 616,
       "by_stage": {
         "running": {
-          "n": 467,
-          "mean_fwd_rel": -0.005,
-          "hit_rate": 0.452
+          "n": 544,
+          "mean_fwd_rel": -0.0046,
+          "hit_rate": 0.456
         },
         "coiling": {
-          "n": 32,
-          "mean_fwd_rel": 0.0036,
-          "hit_rate": 0.594
+          "n": 35,
+          "mean_fwd_rel": 0.0023,
+          "hit_rate": 0.543
         },
         "coiling_primed": {
-          "n": 32,
-          "mean_fwd_rel": 0.0139,
-          "hit_rate": 0.625
+          "n": 37,
+          "mean_fwd_rel": 0.0131,
+          "hit_rate": 0.622
         }
       },
-      "running_ic": -0.0191,
-      "running_ic_t_hac": -0.213,
+      "running_ic": -0.0542,
+      "running_ic_t_hac": -0.569,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "10": {
-      "n_matured": 468,
+      "n_matured": 533,
       "by_stage": {
         "running": {
-          "n": 413,
-          "mean_fwd_rel": -0.0058,
-          "hit_rate": 0.446
+          "n": 469,
+          "mean_fwd_rel": -0.0078,
+          "hit_rate": 0.424
         },
         "coiling": {
-          "n": 26,
-          "mean_fwd_rel": -0.0055,
-          "hit_rate": 0.423
+          "n": 32,
+          "mean_fwd_rel": -0.0014,
+          "hit_rate": 0.469
         },
         "coiling_primed": {
-          "n": 29,
-          "mean_fwd_rel": 0.0289,
-          "hit_rate": 0.621
+          "n": 32,
+          "mean_fwd_rel": 0.0237,
+          "hit_rate": 0.562
         }
       },
-      "running_ic": 0.029,
-      "running_ic_t_hac": 0.959,
+      "running_ic": -0.0567,
+      "running_ic_t_hac": -0.847,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "21": {
-      "n_matured": 265,
+      "n_matured": 343,
       "by_stage": {
         "running": {
-          "n": 237,
-          "mean_fwd_rel": -0.0012,
-          "hit_rate": 0.532
+          "n": 303,
+          "mean_fwd_rel": -0.0051,
+          "hit_rate": 0.492
         },
         "coiling": {
-          "n": 13,
-          "mean_fwd_rel": -0.004,
-          "hit_rate": 0.692
+          "n": 18,
+          "mean_fwd_rel": -0.0101,
+          "hit_rate": 0.5
         },
         "coiling_primed": {
-          "n": 15,
-          "mean_fwd_rel": 0.0604,
-          "hit_rate": 0.733
+          "n": 22,
+          "mean_fwd_rel": 0.0455,
+          "hit_rate": 0.727
         }
       },
-      "running_ic": -0.1483,
-      "running_ic_t_hac": -3.738,
+      "running_ic": -0.0469,
+      "running_ic_t_hac": -0.557,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -83,12 +83,12 @@
       "by_stage": {
         "running": {
           "n": 26,
-          "mean_fwd_rel": -0.0497,
-          "hit_rate": 0.385
+          "mean_fwd_rel": -0.0457,
+          "hit_rate": 0.346
         },
         "coiling": {
           "n": 7,
-          "mean_fwd_rel": -0.0742,
+          "mean_fwd_rel": -0.0805,
           "hit_rate": 0.286
         }
       },
@@ -111,67 +111,67 @@
   "note": "Accruing forward observations; no horizon clears the Newey-West significance bar yet. Early numbers are provisional, context-only.",
   "recent_misses": [
     {
-      "date": "2026-08-13",
-      "id": "russell:aerospace-defense",
+      "date": "2026-08-19",
+      "id": "subsectors:aerospace-defense",
       "name": "Aerospace & Defense",
       "stage": "running",
-      "fwd_rel": -0.1749,
+      "fwd_rel": -0.1029,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-13",
-      "id": "subsectors:travel-services",
-      "name": "Travel Services",
+      "date": "2026-08-19",
+      "id": "russell:real-estate-services",
+      "name": "Real Estate Services",
       "stage": "running",
-      "fwd_rel": -0.1012,
+      "fwd_rel": -0.0959,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-13",
-      "id": "subsectors:electronic-components",
-      "name": "Electronic Components",
+      "date": "2026-08-19",
+      "id": "baskets:housing",
+      "name": "Housing Chain",
       "stage": "running",
-      "fwd_rel": -0.0949,
+      "fwd_rel": -0.076,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-13",
-      "id": "baskets:ai-infra",
-      "name": "AI Infrastructure",
+      "date": "2026-08-19",
+      "id": "subsectors:medical-devices",
+      "name": "Medical Devices",
       "stage": "running",
-      "fwd_rel": -0.093,
+      "fwd_rel": -0.0724,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-13",
-      "id": "russell:broadcasting",
-      "name": "Broadcasting",
+      "date": "2026-08-19",
+      "id": "subsectors:biotechnology",
+      "name": "Biotechnology",
       "stage": "running",
-      "fwd_rel": -0.0916,
+      "fwd_rel": -0.0674,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-13",
-      "id": "russell:asset-management",
-      "name": "Asset Management",
+      "date": "2026-08-19",
+      "id": "subsectors:packaged-foods",
+      "name": "Packaged Foods",
       "stage": "running",
-      "fwd_rel": -0.0734,
+      "fwd_rel": -0.055,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-13",
-      "id": "subsectors:packaging-containers",
-      "name": "Packaging & Containers",
+      "date": "2026-08-19",
+      "id": "subsectors:software-application",
+      "name": "Software - Application",
       "stage": "running",
-      "fwd_rel": -0.0323,
+      "fwd_rel": -0.0541,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-13",
-      "id": "russell:restaurants",
-      "name": "Restaurants",
+      "date": "2026-08-19",
+      "id": "subsectors:drug-manufacturers-general",
+      "name": "Drug Manufacturers - General",
       "stage": "running",
-      "fwd_rel": -0.0305,
+      "fwd_rel": -0.0429,
       "horizon_d": 21
     }
   ],

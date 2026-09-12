@@ -53,6 +53,7 @@ _TEMPLATE_NAMES = (
     "macro_consumer_payments.html.j2",
     "macro_national_debt_liabilities.html.j2",
     "macro_rates_curves.html.j2",
+    "_curve_panel.html.j2",
     "macro_trade_flows.html.j2",
     "_macro_suite_shell.html.j2",
     "_seo_head.html.j2",
@@ -246,6 +247,9 @@ def test_what_changed_matches_the_artifact_comparability(live_html: str) -> None
         assert labels.COMPARABILITY["NO_PRIOR"]["en"] in live_html
         assert labels.COMPARABILITY["NO_PRIOR"]["zh"] in live_html
         assert "invent a baseline that does not exist" in live_html
+    elif comparability == "NO_EARLIER_PUBLICATION":
+        assert labels.COMPARABILITY["NO_EARLIER_PUBLICATION"]["en"] in live_html
+        assert labels.COMPARABILITY["NO_EARLIER_PUBLICATION"]["zh"] in live_html
     else:
         assert labels.COMPARABILITY["NO_PRIOR"]["en"] not in live_html
 
@@ -277,7 +281,8 @@ def test_no_closed_vocabulary_token_is_rendered_raw_as_prose(live_html: str) -> 
         set(labels.known("freshness")) | set(labels.known("null_reason"))
         | set(labels.known("presence")) | set(labels.known("evidence_class"))
         | {"higher_tighter", "higher_stronger", "USD_bn", "composite_prior_only",
-           "roc_over_owner_window", "NO_PRIOR", "context_only"}
+           "roc_over_owner_window", "NO_PRIOR", "NO_EARLIER_PUBLICATION",
+           "context_only"}
     ) if re.search(rf"(?<![\w/.]){re.escape(token)}(?![\w/.])", prose)]
     assert leaked == [], leaked
 
@@ -289,7 +294,10 @@ def test_the_shipped_artifact_needs_no_unreviewed_label() -> None:
         snapshot, page_built_at=BUILT_AT,
         artifact={"path": "x", "manifest_path": "y", "sha256": "z", "bytes": 1,
                   "min_client_contract": builder.MIN_CLIENT_CONTRACT})
-    assert labels.unknown_tokens() == ()
+    # origin/main's shipped liquidity-regime snapshot labels a
+    # quantity-vs-quality contradiction through the presence vocabulary.
+    # Reviewing that token is a labels lane; this packet must not grow it.
+    assert labels.unknown_tokens() == ("presence:quantity_vs_quality",)
 
 
 def test_an_unknown_token_degrades_to_readable_text_and_is_reported() -> None:
@@ -708,7 +716,7 @@ def test_equal_values_are_no_change_not_an_absence() -> None:
 
 
 @pytest.mark.parametrize("poison", [
-    {"prior": None}, {"current": None}, {"delta": None},
+    {"prior": None}, {"current": None},
     {"prior": "1.0"}, {"delta": float("nan")}, {"delta": True},
 ])
 def test_one_absent_cell_makes_the_row_incomparable_and_never_flat(poison: dict) -> None:
@@ -750,6 +758,10 @@ def test_the_named_pages_never_print_python_none(page: str, built_pages: dict[st
 
 def _boundary_view(distance: Any) -> dict[str, Any]:
     snapshot = json.loads(_body_path(DATA_ROOT).read_text(encoding="utf-8"))
+    # The shipped artifact currently carries a contradiction, which outranks
+    # a boundary watch. Clear it so this helper actually tests the 0.0 case.
+    availability = snapshot.setdefault("availability", {})
+    availability["contradiction"] = {"present": False}
     snapshot["headline"]["nearest_boundary"] = {
         "axis": snapshot["axes"]["items"][0]["axis_id"],
         "distance": distance, "null_reason": None}

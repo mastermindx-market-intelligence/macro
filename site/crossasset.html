@@ -49,7 +49,7 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<link rel="stylesheet" href="theme.css?v=f41f9a21">
+<link rel="stylesheet" href="theme.css?v=63df1679">
 <link rel="stylesheet" href="assets/css/b8368b55.css?v=b8368b55">
 
 
@@ -185,6 +185,7 @@
         </div>
         <a href="intl_stocks.html"><span class="submenu-icon submenu-icon-stocks" aria-hidden="true"></span><span class="l-en">Stock Dashboard</span><span class="l-zh">股票仪表盘</span><span class="d"><span class="l-en">Prophet cross-market · sectors</span><span class="l-zh">Prophet 跨市场 · 板块</span></span></a>
         <a href="baskets_intl.html"><span class="submenu-icon submenu-icon-baskets" aria-hidden="true"></span><span class="l-en">Thematic Baskets</span><span class="l-zh">主题篮子</span><span class="d"><span class="l-en">Cross-country theme baskets · ex-US</span><span class="l-zh">跨国主题篮子 · 除美</span></span></a>
+        <a href="sanctions_map.html"><span class="submenu-icon submenu-icon-policy" aria-hidden="true"></span><span class="l-en">Sanctions Map</span><span class="l-zh">制裁地图</span><span class="d"><span class="l-en">Where US sanctions point · OFAC public list</span><span class="l-zh">美国制裁指向何处 · OFAC 公开名单</span></span></a>
       </div>
     </div>
     <div class="nav-dd">
@@ -326,30 +327,30 @@
 
 <div class="card" style="--hero-col:var(--warn,#e0a030)">
   <div class="ca-sub" style="margin-bottom:12px">
-    <span class="l-en">Cross-Asset</span><span class="l-zh">跨资产</span> · <span class="l-en">as of</span><span class="l-zh">截至</span> 2026-09-09
+    <span class="l-en">Cross-Asset</span><span class="l-zh">跨资产</span> · <span class="l-en">as of</span><span class="l-zh">截至</span> 2026-09-11
   </div>
   <div class="hero-inner">
     <div>
       
       <div class="ca-hero-hl" style="color:var(--warn,#e0a030);text-shadow:0 0 36px color-mix(in srgb,var(--warn,#e0a030) 30%,transparent)">
         
-          <span class="l-en">No clear trend — markets are going their own ways</span><span class="l-zh">没有明确趋势——各市场各走各路</span>
+          <span class="l-en">No clear trend, but markets are syncing up</span><span class="l-zh">趋势不明，但市场正在同步</span>
         
       </div>
       
       <div class="ca-sub" style="max-width:42ch">
         
-          <span class="l-en">Trends are split across assets, with little shared direction.</span><span class="l-zh">各资产趋势分化，缺乏共同方向。</span>
+          <span class="l-en">Trends are split, yet assets increasingly move together.</span><span class="l-zh">趋势分化，但资产联动在增强。</span>
         
       </div>
       
       
       <span class="stance-pill stance-warn">
-        <span class="l-en">Nothing to chase — pick your spots market by market.</span><span class="l-zh">无需追逐——逐个市场把握机会。</span>
+        <span class="l-en">Watch — don&#39;t chase; a single driver is taking over.</span><span class="l-zh">观望勿追——单一驱动力正在接管。</span>
       </span>
       
       
-      <div class="muted sm" style="margin-top:10px"><span class="l-en">Updated</span><span class="l-zh">更新于</span> 2026-09-09</div>
+      <div class="muted sm" style="margin-top:10px"><span class="l-en">Updated</span><span class="l-zh">更新于</span> 2026-09-11</div>
     </div>
 
     
@@ -367,7 +368,7 @@
           
           <circle cx="55" cy="55" r="44" fill="none"
             stroke="var(--warn,#e0a030)" stroke-width="9" stroke-linecap="round"
-            stroke-dasharray="64.51 211.95"/>
+            stroke-dasharray="77.41 199.05"/>
           
         </g>
         
@@ -378,7 +379,7 @@
         <text x="102" y="94" font-size="8" fill="var(--down,#e06464)" text-anchor="end"   font-weight="600" class="l-en">One bet</text>
         <text x="102" y="94" font-size="8" fill="var(--down,#e06464)" text-anchor="end"   font-weight="600" class="l-zh">同一押注</text>
         
-        <text x="55" y="55" font-size="18" font-weight="800" fill="var(--warn,#e0a030)" text-anchor="middle" dominant-baseline="middle" font-variant-numeric="tabular-nums">35%</text>
+        <text x="55" y="55" font-size="18" font-weight="800" fill="var(--warn,#e0a030)" text-anchor="middle" dominant-baseline="middle" font-variant-numeric="tabular-nums">42%</text>
         <text x="55" y="68" font-size="8.5" fill="var(--muted)" text-anchor="middle" class="l-en">vs 5y</text>
         <text x="55" y="68" font-size="8.5" fill="var(--muted)" text-anchor="middle" class="l-zh">5年分位</text>
       </svg>
@@ -414,7 +415,7 @@
   
   <div style="margin-bottom:12px">
     <span class="stance-pill stance-up">5 <span class="l-en">rising</span><span class="l-zh">上行</span></span>
-    <span class="stance-pill stance-down" style="margin-left:4px">2 <span class="l-en">falling</span><span class="l-zh">下行</span></span>
+    <span class="stance-pill stance-down" style="margin-left:4px">1 <span class="l-en">falling</span><span class="l-zh">下行</span></span>
     <span class="muted sm" style="margin-left:6px"><span class="l-en">of</span><span class="l-zh">/共</span> 13</span>
   </div>
   <table class="ca">
@@ -445,11 +446,11 @@
         </span>
       </td>
       
-      <td class="r pos">+4%</td>
+      <td class="r pos">+5%</td>
       
-      <td class="r pos">+13%</td>
+      <td class="r pos">+12%</td>
       
-      <td class="r pos">+19%</td>
+      <td class="r pos">+18%</td>
       
       
       <td style="display:none" class="rp-src">
@@ -464,15 +465,15 @@
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">3m return</span><span class="l-zh">3月收益</span></span>
-            <span class="row-pop-val pos">+3.9%</span>
+            <span class="row-pop-val pos">+4.7%</span>
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">6m return</span><span class="l-zh">6月收益</span></span>
-            <span class="row-pop-val pos">+13.2%</span>
+            <span class="row-pop-val pos">+12.4%</span>
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">12m return</span><span class="l-zh">12月收益</span></span>
-            <span class="row-pop-val pos">+19.3%</span>
+            <span class="row-pop-val pos">+17.5%</span>
           </div>
           <div class="row-pop-cell wide">
             <span class="row-pop-lbl"><span class="l-en">Method</span><span class="l-zh">方法</span></span>
@@ -500,11 +501,11 @@
         </span>
       </td>
       
-      <td class="r pos">+4%</td>
+      <td class="r pos">+2%</td>
       
-      <td class="r pos">+17%</td>
+      <td class="r pos">+14%</td>
       
-      <td class="r pos">+25%</td>
+      <td class="r pos">+23%</td>
       
       
       <td style="display:none" class="rp-src">
@@ -519,15 +520,15 @@
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">3m return</span><span class="l-zh">3月收益</span></span>
-            <span class="row-pop-val pos">+4.0%</span>
+            <span class="row-pop-val pos">+2.2%</span>
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">6m return</span><span class="l-zh">6月收益</span></span>
-            <span class="row-pop-val pos">+16.7%</span>
+            <span class="row-pop-val pos">+14.3%</span>
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">12m return</span><span class="l-zh">12月收益</span></span>
-            <span class="row-pop-val pos">+25.2%</span>
+            <span class="row-pop-val pos">+22.7%</span>
           </div>
           <div class="row-pop-cell wide">
             <span class="row-pop-lbl"><span class="l-en">Method</span><span class="l-zh">方法</span></span>
@@ -555,11 +556,11 @@
         </span>
       </td>
       
-      <td class="r pos">+1%</td>
+      <td class="r pos">+0%</td>
       
       <td class="r pos">+2%</td>
       
-      <td class="r pos">+4%</td>
+      <td class="r pos">+3%</td>
       
       
       <td style="display:none" class="rp-src">
@@ -574,15 +575,15 @@
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">3m return</span><span class="l-zh">3月收益</span></span>
-            <span class="row-pop-val pos">+1.0%</span>
+            <span class="row-pop-val pos">+0.4%</span>
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">6m return</span><span class="l-zh">6月收益</span></span>
-            <span class="row-pop-val pos">+1.7%</span>
+            <span class="row-pop-val pos">+1.5%</span>
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">12m return</span><span class="l-zh">12月收益</span></span>
-            <span class="row-pop-val pos">+3.8%</span>
+            <span class="row-pop-val pos">+3.3%</span>
           </div>
           <div class="row-pop-cell wide">
             <span class="row-pop-lbl"><span class="l-en">Method</span><span class="l-zh">方法</span></span>
@@ -610,11 +611,11 @@
         </span>
       </td>
       
-      <td class="r pos">+7%</td>
+      <td class="r pos">+11%</td>
       
-      <td class="r pos">+23%</td>
+      <td class="r pos">+20%</td>
       
-      <td class="r pos">+48%</td>
+      <td class="r pos">+40%</td>
       
       
       <td style="display:none" class="rp-src">
@@ -629,15 +630,15 @@
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">3m return</span><span class="l-zh">3月收益</span></span>
-            <span class="row-pop-val pos">+6.7%</span>
+            <span class="row-pop-val pos">+10.7%</span>
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">6m return</span><span class="l-zh">6月收益</span></span>
-            <span class="row-pop-val pos">+22.7%</span>
+            <span class="row-pop-val pos">+20.3%</span>
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">12m return</span><span class="l-zh">12月收益</span></span>
-            <span class="row-pop-val pos">+48.0%</span>
+            <span class="row-pop-val pos">+39.9%</span>
           </div>
           <div class="row-pop-cell wide">
             <span class="row-pop-lbl"><span class="l-en">Method</span><span class="l-zh">方法</span></span>
@@ -667,9 +668,9 @@
       
       <td class="r pos">+6%</td>
       
-      <td class="r pos">+11%</td>
+      <td class="r pos">+8%</td>
       
-      <td class="r pos">+21%</td>
+      <td class="r pos">+18%</td>
       
       
       <td style="display:none" class="rp-src">
@@ -684,15 +685,15 @@
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">3m return</span><span class="l-zh">3月收益</span></span>
-            <span class="row-pop-val pos">+6.4%</span>
+            <span class="row-pop-val pos">+5.7%</span>
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">6m return</span><span class="l-zh">6月收益</span></span>
-            <span class="row-pop-val pos">+10.6%</span>
+            <span class="row-pop-val pos">+8.4%</span>
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">12m return</span><span class="l-zh">12月收益</span></span>
-            <span class="row-pop-val pos">+21.4%</span>
+            <span class="row-pop-val pos">+18.3%</span>
           </div>
           <div class="row-pop-cell wide">
             <span class="row-pop-lbl"><span class="l-en">Method</span><span class="l-zh">方法</span></span>
@@ -720,7 +721,7 @@
         </span>
       </td>
       
-      <td class="r pos">+6%</td>
+      <td class="r pos">+10%</td>
       
       <td class="r neg">-2%</td>
       
@@ -739,15 +740,70 @@
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">3m return</span><span class="l-zh">3月收益</span></span>
-            <span class="row-pop-val pos">+6.3%</span>
+            <span class="row-pop-val pos">+10.1%</span>
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">6m return</span><span class="l-zh">6月收益</span></span>
-            <span class="row-pop-val neg">-2.3%</span>
+            <span class="row-pop-val neg">-2.2%</span>
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">12m return</span><span class="l-zh">12月收益</span></span>
             <span class="row-pop-val pos">+17.6%</span>
+          </div>
+          <div class="row-pop-cell wide">
+            <span class="row-pop-lbl"><span class="l-en">Method</span><span class="l-zh">方法</span></span>
+            <span class="row-pop-val mut"><span class="l-en">Sign of average 3/6/12m return. Most-recent week skipped.</span><span class="l-zh">3/6/12月收益符号均值。跳过最近一周。</span></span>
+          </div>
+        </div>
+      </td>
+    </tr>
+    
+    
+    
+    
+    
+    
+    
+    
+    <tr data-rpop>
+      <td><b><span class="l-en">Silver</span><span class="l-zh">白银</span></b>
+          <div class="muted sm"><span class="l-en">Commodity</span><span class="l-zh">商品</span></div>
+      </td>
+      <td class="trend-flat">◦ <span class="l-en">Flat</span><span class="l-zh">走平</span></td>
+      <td>
+        <span class="dots">
+          <span class="dot on-up"></span><span class="dot on-up"></span><span class="dot "></span><span class="dot "></span><span class="dot "></span>
+        </span>
+      </td>
+      
+      <td class="r pos">+11%</td>
+      
+      <td class="r neg">-7%</td>
+      
+      <td class="r pos">+44%</td>
+      
+      
+      <td style="display:none" class="rp-src">
+        <div class="row-pop-hd">
+          <span class="row-pop-name"><span class="l-en">Silver</span><span class="l-zh">白银</span></span>
+          <span class="row-pop-kind"><span class="l-en">Commodity</span><span class="l-zh">商品</span></span>
+        </div>
+        <div class="row-pop-grid">
+          <div class="row-pop-cell">
+            <span class="row-pop-lbl"><span class="l-en">Score</span><span class="l-zh">动量得分</span></span>
+            <span class="row-pop-val">+0.330</span>
+          </div>
+          <div class="row-pop-cell">
+            <span class="row-pop-lbl"><span class="l-en">3m return</span><span class="l-zh">3月收益</span></span>
+            <span class="row-pop-val pos">+11.1%</span>
+          </div>
+          <div class="row-pop-cell">
+            <span class="row-pop-lbl"><span class="l-en">6m return</span><span class="l-zh">6月收益</span></span>
+            <span class="row-pop-val neg">-7.3%</span>
+          </div>
+          <div class="row-pop-cell">
+            <span class="row-pop-lbl"><span class="l-en">12m return</span><span class="l-zh">12月收益</span></span>
+            <span class="row-pop-val pos">+44.3%</span>
           </div>
           <div class="row-pop-cell wide">
             <span class="row-pop-lbl"><span class="l-en">Method</span><span class="l-zh">方法</span></span>
@@ -775,11 +831,11 @@
         </span>
       </td>
       
-      <td class="r pos">+26%</td>
+      <td class="r pos">+43%</td>
       
-      <td class="r pos">+4%</td>
+      <td class="r pos">+1%</td>
       
-      <td class="r pos">+49%</td>
+      <td class="r pos">+55%</td>
       
       
       <td style="display:none" class="rp-src">
@@ -794,15 +850,15 @@
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">3m return</span><span class="l-zh">3月收益</span></span>
-            <span class="row-pop-val pos">+26.0%</span>
+            <span class="row-pop-val pos">+43.1%</span>
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">6m return</span><span class="l-zh">6月收益</span></span>
-            <span class="row-pop-val pos">+4.4%</span>
+            <span class="row-pop-val pos">+1.0%</span>
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">12m return</span><span class="l-zh">12月收益</span></span>
-            <span class="row-pop-val pos">+48.7%</span>
+            <span class="row-pop-val pos">+54.9%</span>
           </div>
           <div class="row-pop-cell wide">
             <span class="row-pop-lbl"><span class="l-en">Method</span><span class="l-zh">方法</span></span>
@@ -830,11 +886,11 @@
         </span>
       </td>
       
-      <td class="r pos">+27%</td>
+      <td class="r pos">+21%</td>
       
-      <td class="r neg">-3%</td>
+      <td class="r neg">-4%</td>
       
-      <td class="r neg">-10%</td>
+      <td class="r neg">-14%</td>
       
       
       <td style="display:none" class="rp-src">
@@ -849,15 +905,15 @@
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">3m return</span><span class="l-zh">3月收益</span></span>
-            <span class="row-pop-val pos">+27.3%</span>
+            <span class="row-pop-val pos">+20.7%</span>
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">6m return</span><span class="l-zh">6月收益</span></span>
-            <span class="row-pop-val neg">-2.7%</span>
+            <span class="row-pop-val neg">-3.5%</span>
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">12m return</span><span class="l-zh">12月收益</span></span>
-            <span class="row-pop-val neg">-9.5%</span>
+            <span class="row-pop-val neg">-14.0%</span>
           </div>
           <div class="row-pop-cell wide">
             <span class="row-pop-lbl"><span class="l-en">Method</span><span class="l-zh">方法</span></span>
@@ -885,11 +941,11 @@
         </span>
       </td>
       
-      <td class="r pos">+5%</td>
+      <td class="r pos">+4%</td>
       
-      <td class="r pos">+18%</td>
+      <td class="r pos">+14%</td>
       
-      <td class="r pos">+39%</td>
+      <td class="r pos">+33%</td>
       
       
       <td style="display:none" class="rp-src">
@@ -904,70 +960,15 @@
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">3m return</span><span class="l-zh">3月收益</span></span>
-            <span class="row-pop-val pos">+5.2%</span>
+            <span class="row-pop-val pos">+4.2%</span>
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">6m return</span><span class="l-zh">6月收益</span></span>
-            <span class="row-pop-val pos">+18.4%</span>
+            <span class="row-pop-val pos">+14.5%</span>
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">12m return</span><span class="l-zh">12月收益</span></span>
-            <span class="row-pop-val pos">+39.1%</span>
-          </div>
-          <div class="row-pop-cell wide">
-            <span class="row-pop-lbl"><span class="l-en">Method</span><span class="l-zh">方法</span></span>
-            <span class="row-pop-val mut"><span class="l-en">Sign of average 3/6/12m return. Most-recent week skipped.</span><span class="l-zh">3/6/12月收益符号均值。跳过最近一周。</span></span>
-          </div>
-        </div>
-      </td>
-    </tr>
-    
-    
-    
-    
-    
-    
-    
-    
-    <tr data-rpop>
-      <td><b><span class="l-en">Silver</span><span class="l-zh">白银</span></b>
-          <div class="muted sm"><span class="l-en">Commodity</span><span class="l-zh">商品</span></div>
-      </td>
-      <td class="trend-flat">◦ <span class="l-en">Flat</span><span class="l-zh">走平</span></td>
-      <td>
-        <span class="dots">
-          <span class="dot on-dn"></span><span class="dot on-dn"></span><span class="dot "></span><span class="dot "></span><span class="dot "></span>
-        </span>
-      </td>
-      
-      <td class="r pos">+3%</td>
-      
-      <td class="r neg">-7%</td>
-      
-      <td class="r pos">+52%</td>
-      
-      
-      <td style="display:none" class="rp-src">
-        <div class="row-pop-hd">
-          <span class="row-pop-name"><span class="l-en">Silver</span><span class="l-zh">白银</span></span>
-          <span class="row-pop-kind"><span class="l-en">Commodity</span><span class="l-zh">商品</span></span>
-        </div>
-        <div class="row-pop-grid">
-          <div class="row-pop-cell">
-            <span class="row-pop-lbl"><span class="l-en">Score</span><span class="l-zh">动量得分</span></span>
-            <span class="row-pop-val">-0.330</span>
-          </div>
-          <div class="row-pop-cell">
-            <span class="row-pop-lbl"><span class="l-en">3m return</span><span class="l-zh">3月收益</span></span>
-            <span class="row-pop-val pos">+2.8%</span>
-          </div>
-          <div class="row-pop-cell">
-            <span class="row-pop-lbl"><span class="l-en">6m return</span><span class="l-zh">6月收益</span></span>
-            <span class="row-pop-val neg">-6.9%</span>
-          </div>
-          <div class="row-pop-cell">
-            <span class="row-pop-lbl"><span class="l-en">12m return</span><span class="l-zh">12月收益</span></span>
-            <span class="row-pop-val pos">+52.4%</span>
+            <span class="row-pop-val pos">+33.4%</span>
           </div>
           <div class="row-pop-cell wide">
             <span class="row-pop-lbl"><span class="l-en">Method</span><span class="l-zh">方法</span></span>
@@ -1014,7 +1015,7 @@
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">3m return</span><span class="l-zh">3月收益</span></span>
-            <span class="row-pop-val neg">-2.1%</span>
+            <span class="row-pop-val neg">-2.3%</span>
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">6m return</span><span class="l-zh">6月收益</span></span>
@@ -1022,7 +1023,62 @@
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">12m return</span><span class="l-zh">12月收益</span></span>
-            <span class="row-pop-val pos">+1.4%</span>
+            <span class="row-pop-val pos">+1.2%</span>
+          </div>
+          <div class="row-pop-cell wide">
+            <span class="row-pop-lbl"><span class="l-en">Method</span><span class="l-zh">方法</span></span>
+            <span class="row-pop-val mut"><span class="l-en">Sign of average 3/6/12m return. Most-recent week skipped.</span><span class="l-zh">3/6/12月收益符号均值。跳过最近一周。</span></span>
+          </div>
+        </div>
+      </td>
+    </tr>
+    
+    
+    
+    
+    
+    
+    
+    
+    <tr data-rpop>
+      <td><b><span class="l-en">Long Treasuries</span><span class="l-zh">长期美债</span></b>
+          <div class="muted sm"><span class="l-en">Rates</span><span class="l-zh">利率</span></div>
+      </td>
+      <td class="trend-flat">◦ <span class="l-en">Flat</span><span class="l-zh">走平</span></td>
+      <td>
+        <span class="dots">
+          <span class="dot on-dn"></span><span class="dot on-dn"></span><span class="dot "></span><span class="dot "></span><span class="dot "></span>
+        </span>
+      </td>
+      
+      <td class="r neg">-4%</td>
+      
+      <td class="r neg">-5%</td>
+      
+      <td class="r neg">-5%</td>
+      
+      
+      <td style="display:none" class="rp-src">
+        <div class="row-pop-hd">
+          <span class="row-pop-name"><span class="l-en">Long Treasuries</span><span class="l-zh">长期美债</span></span>
+          <span class="row-pop-kind"><span class="l-en">Rates</span><span class="l-zh">利率</span></span>
+        </div>
+        <div class="row-pop-grid">
+          <div class="row-pop-cell">
+            <span class="row-pop-lbl"><span class="l-en">Score</span><span class="l-zh">动量得分</span></span>
+            <span class="row-pop-val">-0.330</span>
+          </div>
+          <div class="row-pop-cell">
+            <span class="row-pop-lbl"><span class="l-en">3m return</span><span class="l-zh">3月收益</span></span>
+            <span class="row-pop-val neg">-3.7%</span>
+          </div>
+          <div class="row-pop-cell">
+            <span class="row-pop-lbl"><span class="l-en">6m return</span><span class="l-zh">6月收益</span></span>
+            <span class="row-pop-val neg">-5.1%</span>
+          </div>
+          <div class="row-pop-cell">
+            <span class="row-pop-lbl"><span class="l-en">12m return</span><span class="l-zh">12月收益</span></span>
+            <span class="row-pop-val neg">-5.3%</span>
           </div>
           <div class="row-pop-cell wide">
             <span class="row-pop-lbl"><span class="l-en">Method</span><span class="l-zh">方法</span></span>
@@ -1052,9 +1108,9 @@
       
       <td class="r neg">-2%</td>
       
-      <td class="r neg">-5%</td>
-      
       <td class="r neg">-4%</td>
+      
+      <td class="r neg">-5%</td>
       
       
       <td style="display:none" class="rp-src">
@@ -1069,70 +1125,15 @@
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">3m return</span><span class="l-zh">3月收益</span></span>
-            <span class="row-pop-val neg">-1.6%</span>
+            <span class="row-pop-val neg">-2.1%</span>
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">6m return</span><span class="l-zh">6月收益</span></span>
-            <span class="row-pop-val neg">-4.6%</span>
+            <span class="row-pop-val neg">-4.3%</span>
           </div>
           <div class="row-pop-cell">
             <span class="row-pop-lbl"><span class="l-en">12m return</span><span class="l-zh">12月收益</span></span>
-            <span class="row-pop-val neg">-3.9%</span>
-          </div>
-          <div class="row-pop-cell wide">
-            <span class="row-pop-lbl"><span class="l-en">Method</span><span class="l-zh">方法</span></span>
-            <span class="row-pop-val mut"><span class="l-en">Sign of average 3/6/12m return. Most-recent week skipped.</span><span class="l-zh">3/6/12月收益符号均值。跳过最近一周。</span></span>
-          </div>
-        </div>
-      </td>
-    </tr>
-    
-    
-    
-    
-    
-    
-    
-    
-    <tr data-rpop>
-      <td><b><span class="l-en">Long Treasuries</span><span class="l-zh">长期美债</span></b>
-          <div class="muted sm"><span class="l-en">Rates</span><span class="l-zh">利率</span></div>
-      </td>
-      <td class="trend-down">▼ <span class="l-en">Falling</span><span class="l-zh">下行</span></td>
-      <td>
-        <span class="dots">
-          <span class="dot on-dn"></span><span class="dot on-dn"></span><span class="dot on-dn"></span><span class="dot on-dn"></span><span class="dot on-dn"></span>
-        </span>
-      </td>
-      
-      <td class="r neg">-2%</td>
-      
-      <td class="r neg">-6%</td>
-      
-      <td class="r neg">-3%</td>
-      
-      
-      <td style="display:none" class="rp-src">
-        <div class="row-pop-hd">
-          <span class="row-pop-name"><span class="l-en">Long Treasuries</span><span class="l-zh">长期美债</span></span>
-          <span class="row-pop-kind"><span class="l-en">Rates</span><span class="l-zh">利率</span></span>
-        </div>
-        <div class="row-pop-grid">
-          <div class="row-pop-cell">
-            <span class="row-pop-lbl"><span class="l-en">Score</span><span class="l-zh">动量得分</span></span>
-            <span class="row-pop-val">-1.000</span>
-          </div>
-          <div class="row-pop-cell">
-            <span class="row-pop-lbl"><span class="l-en">3m return</span><span class="l-zh">3月收益</span></span>
-            <span class="row-pop-val neg">-1.7%</span>
-          </div>
-          <div class="row-pop-cell">
-            <span class="row-pop-lbl"><span class="l-en">6m return</span><span class="l-zh">6月收益</span></span>
-            <span class="row-pop-val neg">-5.7%</span>
-          </div>
-          <div class="row-pop-cell">
-            <span class="row-pop-lbl"><span class="l-en">12m return</span><span class="l-zh">12月收益</span></span>
-            <span class="row-pop-val neg">-2.9%</span>
+            <span class="row-pop-val neg">-5.1%</span>
           </div>
           <div class="row-pop-cell wide">
             <span class="row-pop-lbl"><span class="l-en">Method</span><span class="l-zh">方法</span></span>
@@ -1160,7 +1161,7 @@
     
     
     <p style="font-size:14px;color:var(--text);margin:0 0 10px;font-weight:500">
-      <span class="l-en">Markets are behaving independently. Diversification is working.</span><span class="l-zh">市场各自独立运行，分散化效果良好。</span>
+      <span class="l-en">Markets are converging — correlation is rising.</span><span class="l-zh">市场相关性上升，逐渐趋同。</span>
     </p>
 
     
@@ -1172,7 +1173,7 @@
           data-tip-zh="相关性吸收率（Kritzman-Page）——周度收益第一主成分解释的方差比例。高值意味着市场如同一笔交易同步运动。">?</span>
       </span>
       <svg class="spark-svg" width="200" height="36" viewBox="0 0 200 36" aria-hidden="true">
-        <polyline points="3.0,27.4 4.7,25.0 6.4,19.5 8.1,23.9 9.8,28.0 11.4,25.0 13.1,23.2 14.8,21.7 16.5,25.2 18.2,22.8 19.9,20.9 21.6,19.5 23.3,19.1 25.0,18.7 26.7,19.1 28.3,18.7 30.0,20.9 31.7,22.8 33.4,11.3 35.1,14.3 36.8,15.0 38.5,14.8 40.2,17.8 41.9,30.2 43.5,31.9 45.2,28.7 46.9,31.7 48.6,29.8 50.3,28.5 52.0,29.5 53.7,19.8 55.4,19.6 57.1,20.0 58.7,20.6 60.4,21.1 62.1,22.4 63.8,23.0 65.5,21.1 67.2,21.3 68.9,22.2 70.6,22.8 72.3,22.2 74.0,22.8 75.6,23.7 77.3,35.0 79.0,34.1 80.7,27.4 82.4,27.4 84.1,25.2 85.8,20.4 87.5,22.1 89.2,23.2 90.8,22.4 92.5,24.6 94.2,27.8 95.9,25.4 97.6,18.7 99.3,19.5 101.0,17.8 102.7,17.2 104.4,18.5 106.0,12.8 107.7,13.4 109.4,13.4 111.1,18.2 112.8,19.3 114.5,19.8 116.2,19.6 117.9,18.2 119.6,14.7 121.3,22.8 122.9,21.5 124.6,21.5 126.3,24.6 128.0,24.3 129.7,24.8 131.4,24.6 133.1,22.8 134.8,22.1 136.5,24.5 138.1,22.4 139.8,16.3 141.5,16.3 143.2,18.2 144.9,16.9 146.6,14.8 148.3,12.4 150.0,9.7 151.7,10.8 153.3,7.4 155.0,6.1 156.7,7.6 158.4,6.1 160.1,3.0 161.8,6.3 163.5,10.6 165.2,12.4 166.9,13.5 168.6,16.1 170.2,15.4 171.9,20.4 173.6,20.2 175.3,16.1 177.0,23.9" fill="none" stroke="var(--up,#45b873)" stroke-width="1.6" stroke-linejoin="round"/>
+        <polyline points="3.0,27.4 4.7,25.0 6.4,19.5 8.1,23.9 9.8,28.0 11.4,25.0 13.1,23.2 14.8,21.7 16.5,25.2 18.2,22.8 19.9,20.9 21.6,19.5 23.3,19.1 25.0,18.7 26.7,19.1 28.3,18.7 30.0,20.9 31.7,22.8 33.4,11.3 35.1,14.3 36.8,15.0 38.5,14.8 40.2,17.8 41.9,30.2 43.5,31.9 45.2,28.7 46.9,31.7 48.6,29.8 50.3,28.5 52.0,29.5 53.7,19.8 55.4,19.6 57.1,20.0 58.7,20.6 60.4,21.1 62.1,22.4 63.8,23.0 65.5,21.1 67.2,21.3 68.9,22.2 70.6,22.8 72.3,22.2 74.0,22.8 75.6,23.7 77.3,35.0 79.0,34.1 80.7,27.4 82.4,27.4 84.1,25.2 85.8,20.4 87.5,22.1 89.2,23.2 90.8,22.4 92.5,24.6 94.2,27.8 95.9,25.4 97.6,18.7 99.3,19.5 101.0,17.8 102.7,17.2 104.4,18.5 106.0,12.8 107.7,13.4 109.4,13.4 111.1,18.2 112.8,19.3 114.5,19.8 116.2,19.6 117.9,18.2 119.6,14.7 121.3,22.8 122.9,21.5 124.6,21.5 126.3,24.6 128.0,24.3 129.7,24.8 131.4,24.6 133.1,22.8 134.8,22.1 136.5,24.5 138.1,22.4 139.8,16.3 141.5,16.3 143.2,18.2 144.9,16.9 146.6,14.8 148.3,12.4 150.0,9.7 151.7,10.8 153.3,7.4 155.0,6.1 156.7,7.6 158.4,6.1 160.1,3.0 161.8,6.3 163.5,10.6 165.2,12.4 166.9,13.5 168.6,16.1 170.2,15.4 171.9,20.4 173.6,20.2 175.3,16.1 177.0,22.6" fill="none" stroke="var(--warn,#e0a030)" stroke-width="1.6" stroke-linejoin="round"/>
       </svg>
     </div>
     
@@ -1184,13 +1185,13 @@
     <div class="cluster-strip">
       <span class="cluster-lbl"><span class="l-en">Moving together now:</span><span class="l-zh">当前同步：</span></span>
       
-      <span class="cluster-chip"><span class="l-en">Bitcoin</span><span class="l-zh">比特币</span></span>
-      
       <span class="cluster-chip"><span class="l-en">Copper</span><span class="l-zh">铜</span></span>
+      
+      <span class="cluster-chip"><span class="l-en">Dollar</span><span class="l-zh">美元</span></span>
       
       <span class="cluster-chip"><span class="l-en">US stocks</span><span class="l-zh">美股</span></span>
       
-      <span class="cluster-chip"><span class="l-en">Dollar</span><span class="l-zh">美元</span></span>
+      <span class="cluster-chip"><span class="l-en">Bitcoin</span><span class="l-zh">比特币</span></span>
       
     </div>
     
@@ -1216,16 +1217,16 @@
             <td style="background:color-mix(in srgb,var(--down,#dc2626) 12%,transparent)">0.26</td>
             
             
-            <td style="background:color-mix(in srgb,var(--down,#dc2626) 12%,transparent)">0.27</td>
+            <td style="background:color-mix(in srgb,var(--down,#dc2626) 13%,transparent)">0.29</td>
             
             
-            <td style="background:color-mix(in srgb,var(--down,#dc2626) 4%,transparent)">0.08</td>
+            <td style="background:color-mix(in srgb,var(--down,#dc2626) 4%,transparent)">0.09</td>
             
             
-            <td style="background:color-mix(in srgb,var(--down,#dc2626) 18%,transparent)">0.41</td>
+            <td style="background:color-mix(in srgb,var(--down,#dc2626) 18%,transparent)">0.40</td>
             
             
-            <td style="background:color-mix(in srgb,var(--down,#dc2626) 11%,transparent)">0.24</td>
+            <td style="background:color-mix(in srgb,var(--down,#dc2626) 12%,transparent)">0.26</td>
             
           </tr>
           
@@ -1238,101 +1239,101 @@
             <td style="background:color-mix(in srgb,var(--down,#dc2626) 45%,transparent)">1.00</td>
             
             
-            <td style="background:color-mix(in srgb,var(--up,#16a34a) 0%,transparent)">-0.00</td>
+            <td style="background:color-mix(in srgb,var(--down,#dc2626) 1%,transparent)">0.02</td>
             
             
-            <td style="background:color-mix(in srgb,var(--down,#dc2626) 6%,transparent)">0.14</td>
+            <td style="background:color-mix(in srgb,var(--down,#dc2626) 6%,transparent)">0.13</td>
             
             
-            <td style="background:color-mix(in srgb,var(--down,#dc2626) 14%,transparent)">0.32</td>
+            <td style="background:color-mix(in srgb,var(--down,#dc2626) 13%,transparent)">0.29</td>
             
             
-            <td style="background:color-mix(in srgb,var(--down,#dc2626) 22%,transparent)">0.49</td>
+            <td style="background:color-mix(in srgb,var(--down,#dc2626) 22%,transparent)">0.50</td>
             
           </tr>
           
           <tr><th>China</th>
             
             
-            <td style="background:color-mix(in srgb,var(--down,#dc2626) 12%,transparent)">0.27</td>
+            <td style="background:color-mix(in srgb,var(--down,#dc2626) 13%,transparent)">0.29</td>
             
             
-            <td style="background:color-mix(in srgb,var(--up,#16a34a) 0%,transparent)">-0.00</td>
+            <td style="background:color-mix(in srgb,var(--down,#dc2626) 1%,transparent)">0.02</td>
             
             
             <td style="background:color-mix(in srgb,var(--down,#dc2626) 45%,transparent)">1.00</td>
             
             
-            <td style="background:color-mix(in srgb,var(--down,#dc2626) 11%,transparent)">0.24</td>
+            <td style="background:color-mix(in srgb,var(--down,#dc2626) 10%,transparent)">0.23</td>
             
             
-            <td style="background:color-mix(in srgb,var(--down,#dc2626) 11%,transparent)">0.24</td>
+            <td style="background:color-mix(in srgb,var(--down,#dc2626) 12%,transparent)">0.26</td>
             
             
-            <td style="background:color-mix(in srgb,var(--up,#16a34a) 4%,transparent)">-0.09</td>
+            <td style="background:color-mix(in srgb,var(--up,#16a34a) 4%,transparent)">-0.10</td>
             
           </tr>
           
           <tr><th>HK</th>
             
             
-            <td style="background:color-mix(in srgb,var(--down,#dc2626) 4%,transparent)">0.08</td>
+            <td style="background:color-mix(in srgb,var(--down,#dc2626) 4%,transparent)">0.09</td>
             
             
-            <td style="background:color-mix(in srgb,var(--down,#dc2626) 6%,transparent)">0.14</td>
+            <td style="background:color-mix(in srgb,var(--down,#dc2626) 6%,transparent)">0.13</td>
             
             
-            <td style="background:color-mix(in srgb,var(--down,#dc2626) 11%,transparent)">0.24</td>
+            <td style="background:color-mix(in srgb,var(--down,#dc2626) 10%,transparent)">0.23</td>
             
             
             <td style="background:color-mix(in srgb,var(--down,#dc2626) 45%,transparent)">1.00</td>
             
             
-            <td style="background:color-mix(in srgb,var(--up,#16a34a) 2%,transparent)">-0.04</td>
+            <td style="background:color-mix(in srgb,var(--down,#dc2626) 1%,transparent)">0.03</td>
             
             
-            <td style="background:color-mix(in srgb,var(--down,#dc2626) 9%,transparent)">0.19</td>
+            <td style="background:color-mix(in srgb,var(--down,#dc2626) 9%,transparent)">0.21</td>
             
           </tr>
           
           <tr><th>Commodities</th>
             
             
-            <td style="background:color-mix(in srgb,var(--down,#dc2626) 18%,transparent)">0.41</td>
+            <td style="background:color-mix(in srgb,var(--down,#dc2626) 18%,transparent)">0.40</td>
             
             
-            <td style="background:color-mix(in srgb,var(--down,#dc2626) 14%,transparent)">0.32</td>
+            <td style="background:color-mix(in srgb,var(--down,#dc2626) 13%,transparent)">0.29</td>
             
             
-            <td style="background:color-mix(in srgb,var(--down,#dc2626) 11%,transparent)">0.24</td>
+            <td style="background:color-mix(in srgb,var(--down,#dc2626) 12%,transparent)">0.26</td>
             
             
-            <td style="background:color-mix(in srgb,var(--up,#16a34a) 2%,transparent)">-0.04</td>
+            <td style="background:color-mix(in srgb,var(--down,#dc2626) 1%,transparent)">0.03</td>
             
             
             <td style="background:color-mix(in srgb,var(--down,#dc2626) 45%,transparent)">1.00</td>
             
             
-            <td style="background:color-mix(in srgb,var(--down,#dc2626) 13%,transparent)">0.29</td>
+            <td style="background:color-mix(in srgb,var(--down,#dc2626) 15%,transparent)">0.33</td>
             
           </tr>
           
           <tr><th>Dollar</th>
             
             
-            <td style="background:color-mix(in srgb,var(--down,#dc2626) 11%,transparent)">0.24</td>
+            <td style="background:color-mix(in srgb,var(--down,#dc2626) 12%,transparent)">0.26</td>
             
             
-            <td style="background:color-mix(in srgb,var(--down,#dc2626) 22%,transparent)">0.49</td>
+            <td style="background:color-mix(in srgb,var(--down,#dc2626) 22%,transparent)">0.50</td>
             
             
-            <td style="background:color-mix(in srgb,var(--up,#16a34a) 4%,transparent)">-0.09</td>
+            <td style="background:color-mix(in srgb,var(--up,#16a34a) 4%,transparent)">-0.10</td>
             
             
-            <td style="background:color-mix(in srgb,var(--down,#dc2626) 9%,transparent)">0.19</td>
+            <td style="background:color-mix(in srgb,var(--down,#dc2626) 9%,transparent)">0.21</td>
             
             
-            <td style="background:color-mix(in srgb,var(--down,#dc2626) 13%,transparent)">0.29</td>
+            <td style="background:color-mix(in srgb,var(--down,#dc2626) 15%,transparent)">0.33</td>
             
             
             <td style="background:color-mix(in srgb,var(--down,#dc2626) 45%,transparent)">1.00</td>
@@ -1427,7 +1428,7 @@
           <tr>
             <td><b><span class="l-en">Bitcoin</span><span class="l-zh">比特币</span></b> → <span class="l-en">Hong Kong</span><span class="l-zh">港股</span></td>
             <td class="r">1d</td>
-            <td class="r pos">+0.27</td>
+            <td class="r pos">+0.28</td>
           </tr>
           
           <tr>
@@ -1456,7 +1457,7 @@
 <div class="card">
   
   
-  <span class="verdict-chip vc-agree"><span class="l-en">They agree</span><span class="l-zh">一致</span></span>
+  <span class="verdict-chip vc-diverge"><span class="l-en">They disagree</span><span class="l-zh">出现分歧</span></span>
 
   
   <div style="font-size:12px;color:var(--muted);margin-bottom:4px">
@@ -1467,6 +1468,28 @@
   </div>
   
 
+  
+  <div style="margin-top:10px">
+    
+    
+    
+    
+    <div style="display:flex;align-items:flex-start;gap:6px;padding:4px 0;font-size:13px"
+         data-tip-en="High-yield credit widening from tight — credit risk-appetite turning (partly-leading via the EBP family, but often coincident with equity stress)." data-tip-zh="高收益信用从偏紧走阔 — 信用风险偏好转向（经EBP具部分领先性，但常与股票压力同步）。">
+      <span class="sev sev-medium" style="margin-top:4px"></span>
+      <span><span class="l-en">High-yield credit widening from tight — credit risk-appetite turning</span><span class="l-zh">高收益信用从偏紧走阔 — 信用风险偏好转向</span></span>
+    </div>
+    
+    
+    
+    
+    <div style="display:flex;align-items:flex-start;gap:6px;padding:4px 0;font-size:13px"
+         data-tip-en="Triple-red — USD, equities &amp; Treasuries falling together: the dollar is NOT acting as a safe haven (a US-idiosyncratic &#39;sell-America&#39; configuration)." data-tip-zh="三红 — 美元、股票与国债同步下跌：美元未发挥避险作用（美国特有的‘抛售美国’配置）。">
+      <span class="sev sev-high" style="margin-top:4px"></span>
+      <span><span class="l-en">Triple-red — USD, equities &amp; Treasuries falling together: the dollar is NOT acting as a safe haven</span><span class="l-zh">三红 — 美元、股票与国债同步下跌：美元未发挥避险作用</span></span>
+    </div>
+    
+  </div>
   
 
   <p class="ca-note">
@@ -1631,11 +1654,11 @@
         <span class="l-en">Short-term funding markets look calm.</span><span class="l-zh">短期资金市场平静。</span>
       
     </div>
-    <svg class="plumb-spark" width="160" height="32" viewBox="0 0 160 32" aria-hidden="true"><polyline points="3.0,23.0 3.7,21.7 4.4,21.0 5.1,22.3 5.8,22.3 6.5,23.0 7.2,21.7 7.9,21.0 8.5,15.0 9.2,23.0 9.9,23.7 10.6,23.0 11.3,23.0 12.0,23.7 12.7,25.0 13.4,24.3 14.1,21.0 14.8,22.3 15.5,24.3 16.2,17.0 16.9,19.7 17.6,19.7 18.3,21.0 18.9,23.0 19.6,23.7 20.3,25.7 21.0,25.0 21.7,23.7 22.4,21.0 23.1,14.3 23.8,14.3 24.5,22.3 25.2,23.7 25.9,19.0 26.6,20.3 27.3,18.3 28.0,18.3 28.6,17.0 29.3,14.3 30.0,17.0 30.7,15.7 31.4,3.0 32.1,9.7 32.8,18.3 33.5,24.3 34.2,23.7 34.9,23.0 35.6,21.7 36.3,19.7 37.0,19.0 37.7,22.3 38.4,19.0 39.0,23.0 39.7,25.0 40.4,25.0 41.1,23.7 41.8,21.7 42.5,18.3 43.2,15.7 43.9,11.7 44.6,11.7 45.3,19.0 46.0,23.0 46.7,25.0 47.4,24.3 48.1,23.0 48.8,24.3 49.4,26.3 50.1,25.7 50.8,25.0 51.5,19.7 52.2,23.7 52.9,23.7 53.6,25.7 54.3,25.7 55.0,24.3 55.7,25.7 56.4,25.7 57.1,19.0 57.8,18.3 58.5,22.3 59.2,11.7 59.8,19.7 60.5,23.0 61.2,25.7 61.9,26.3 62.6,27.0 63.3,27.0 64.0,27.0 64.7,26.3 65.4,27.0 66.1,25.7 66.8,26.3 67.5,27.0 68.2,27.7 68.9,27.0 69.5,26.3 70.2,25.7 70.9,25.7 71.6,27.0 72.3,26.3 73.0,24.3 73.7,23.7 74.4,23.7 75.1,26.3 75.8,26.3 76.5,27.0 77.2,27.7 77.9,26.3 78.6,26.3 79.3,26.3 79.9,25.7 80.6,22.3 81.3,21.0 82.0,25.0 82.7,25.7 83.4,25.7 84.1,25.0 84.8,25.0 85.5,25.0 86.2,24.3 86.9,22.3 87.6,23.0 88.3,25.0 89.0,25.7 89.7,26.3 90.3,26.3 91.0,27.0 91.7,27.0 92.4,26.3 93.1,26.3 93.8,23.0 94.5,26.3 95.2,28.3 95.9,28.3 96.6,28.3 97.3,28.3 98.0,27.7 98.7,27.0 99.4,26.3 100.1,27.7 100.7,27.7 101.4,24.3 102.1,26.3 102.8,25.7 103.5,26.3 104.2,28.3 104.9,30.3 105.6,31.7 106.3,29.0 107.0,27.7 107.7,25.7 108.4,21.7 109.1,25.0 109.8,26.3 110.5,27.7 111.1,27.7 111.8,27.0 112.5,26.3 113.2,25.7 113.9,25.7 114.6,27.0 115.3,27.7 116.0,25.7 116.7,27.0 117.4,27.7 118.1,28.3 118.8,29.0 119.5,29.0 120.2,29.0 120.8,29.0 121.5,29.0 122.2,29.7 122.9,31.7 123.6,32.3 124.3,33.7 125.0,34.3 125.7,35.0 126.4,34.3 127.1,31.7 127.8,26.3 128.5,26.3 129.2,27.0 129.9,26.3 130.6,25.0 131.2,26.3 131.9,27.7 132.6,27.0 133.3,26.3 134.0,26.3 134.7,28.3 135.4,29.0 136.1,28.3 136.8,25.0 137.5,23.0 138.2,27.0 138.9,27.0 139.6,27.7 140.3,28.3 141.0,27.7 141.6,27.7 142.3,26.3 143.0,27.7 143.7,27.7 144.4,23.7 145.1,25.0 145.8,26.3 146.5,27.0 147.2,27.7 147.9,29.7 148.6,33.0 149.3,31.7 150.0,28.3 150.7,27.0 151.4,26.3 152.0,27.7 152.7,29.7 153.4,31.0 154.1,28.3 154.8,27.7 155.5,26.3 156.2,26.3 156.9,26.3 157.6,25.7 158.3,25.7 159.0,25.7 159.7,25.0 160.4,25.7 161.1,25.0 161.7,26.3 162.4,25.7 163.1,27.7 163.8,27.0 164.5,26.3 165.2,27.7 165.9,27.7 166.6,27.7 167.3,25.0 168.0,25.7 168.7,27.7 169.4,27.0 170.1,25.7 170.8,25.7 171.5,25.0 172.1,26.3 172.8,26.3 173.5,25.7 174.2,23.7 174.9,25.0 175.6,25.7 176.3,25.0 177.0,25.7" fill="none" stroke="var(--up,#45b873)" stroke-width="1.5"/></svg>
+    <svg class="plumb-spark" width="160" height="32" viewBox="0 0 160 32" aria-hidden="true"><polyline points="3.0,21.0 3.7,22.3 4.4,22.3 5.1,23.0 5.8,21.7 6.5,21.0 7.2,15.0 7.9,23.0 8.5,23.7 9.2,23.0 9.9,23.0 10.6,23.7 11.3,25.0 12.0,24.3 12.7,21.0 13.4,22.3 14.1,24.3 14.8,17.0 15.5,19.7 16.2,19.7 16.9,21.0 17.6,23.0 18.3,23.7 18.9,25.7 19.6,25.0 20.3,23.7 21.0,21.0 21.7,14.3 22.4,14.3 23.1,22.3 23.8,23.7 24.5,19.0 25.2,20.3 25.9,18.3 26.6,18.3 27.3,17.0 28.0,14.3 28.6,17.0 29.3,15.7 30.0,3.0 30.7,9.7 31.4,18.3 32.1,24.3 32.8,23.7 33.5,23.0 34.2,21.7 34.9,19.7 35.6,19.0 36.3,22.3 37.0,19.0 37.7,23.0 38.4,25.0 39.0,25.0 39.7,23.7 40.4,21.7 41.1,18.3 41.8,15.7 42.5,11.7 43.2,11.7 43.9,19.0 44.6,23.0 45.3,25.0 46.0,24.3 46.7,23.0 47.4,24.3 48.1,26.3 48.8,25.7 49.4,25.0 50.1,19.7 50.8,23.7 51.5,23.7 52.2,25.7 52.9,25.7 53.6,24.3 54.3,25.7 55.0,25.7 55.7,19.0 56.4,18.3 57.1,22.3 57.8,11.7 58.5,19.7 59.2,23.0 59.8,25.7 60.5,26.3 61.2,27.0 61.9,27.0 62.6,27.0 63.3,26.3 64.0,27.0 64.7,25.7 65.4,26.3 66.1,27.0 66.8,27.7 67.5,27.0 68.2,26.3 68.9,25.7 69.5,25.7 70.2,27.0 70.9,26.3 71.6,24.3 72.3,23.7 73.0,23.7 73.7,26.3 74.4,26.3 75.1,27.0 75.8,27.7 76.5,26.3 77.2,26.3 77.9,26.3 78.6,25.7 79.3,22.3 79.9,21.0 80.6,25.0 81.3,25.7 82.0,25.7 82.7,25.0 83.4,25.0 84.1,25.0 84.8,24.3 85.5,22.3 86.2,23.0 86.9,25.0 87.6,25.7 88.3,26.3 89.0,26.3 89.7,27.0 90.3,27.0 91.0,26.3 91.7,26.3 92.4,23.0 93.1,26.3 93.8,28.3 94.5,28.3 95.2,28.3 95.9,28.3 96.6,27.7 97.3,27.0 98.0,26.3 98.7,27.7 99.4,27.7 100.1,24.3 100.7,26.3 101.4,25.7 102.1,26.3 102.8,28.3 103.5,30.3 104.2,31.7 104.9,29.0 105.6,27.7 106.3,25.7 107.0,21.7 107.7,25.0 108.4,26.3 109.1,27.7 109.8,27.7 110.5,27.0 111.1,26.3 111.8,25.7 112.5,25.7 113.2,27.0 113.9,27.7 114.6,25.7 115.3,27.0 116.0,27.7 116.7,28.3 117.4,29.0 118.1,29.0 118.8,29.0 119.5,29.0 120.2,29.0 120.8,29.7 121.5,31.7 122.2,32.3 122.9,33.7 123.6,34.3 124.3,35.0 125.0,34.3 125.7,31.7 126.4,26.3 127.1,26.3 127.8,27.0 128.5,26.3 129.2,25.0 129.9,26.3 130.6,27.7 131.2,27.0 131.9,26.3 132.6,26.3 133.3,28.3 134.0,29.0 134.7,28.3 135.4,25.0 136.1,23.0 136.8,27.0 137.5,27.0 138.2,27.7 138.9,28.3 139.6,27.7 140.3,27.7 141.0,26.3 141.6,27.7 142.3,27.7 143.0,23.7 143.7,25.0 144.4,26.3 145.1,27.0 145.8,27.7 146.5,29.7 147.2,33.0 147.9,31.7 148.6,28.3 149.3,27.0 150.0,26.3 150.7,27.7 151.4,29.7 152.0,31.0 152.7,28.3 153.4,27.7 154.1,26.3 154.8,26.3 155.5,26.3 156.2,25.7 156.9,25.7 157.6,25.7 158.3,25.0 159.0,25.7 159.7,25.0 160.4,26.3 161.1,25.7 161.7,27.7 162.4,27.0 163.1,26.3 163.8,27.7 164.5,27.7 165.2,27.7 165.9,25.0 166.6,25.7 167.3,27.7 168.0,27.0 168.7,25.7 169.4,25.7 170.1,25.0 170.8,26.3 171.5,26.3 172.1,25.7 172.8,23.7 173.5,25.0 174.2,25.7 174.9,25.0 175.6,25.7 176.3,26.3 177.0,26.3" fill="none" stroke="var(--up,#45b873)" stroke-width="1.5"/></svg>
     <div class="muted sm" style="margin-top:8px">
       <span class="qm" tabindex="0"
-        data-tip-en="SOFR−EFFR spread: +2bp. Funding/repo plumbing from the OFR FRBNY reference rates (keyless). SOFR above EFFR and a widening SOFR distribution flag reserve scarcity / repo stress (the Sep-2019 tell). Each scored vs its trailing ~2y range. Context, not a signal — never wired into any score."
-        data-tip-zh="SOFR−联邦基金利差：+2bp。SOFR高于EFFR且分布走阔预示准备金稀缺（2019年9月前兆信号）。">?</span>
+        data-tip-en="SOFR−EFFR spread: +1bp. Funding/repo plumbing from the OFR FRBNY reference rates (keyless). SOFR above EFFR and a widening SOFR distribution flag reserve scarcity / repo stress (the Sep-2019 tell). Each scored vs its trailing ~2y range. Context, not a signal — never wired into any score."
+        data-tip-zh="SOFR−联邦基金利差：+1bp。SOFR高于EFFR且分布走阔预示准备金稀缺（2019年9月前兆信号）。">?</span>
     </div>
   </div>
   
@@ -1666,10 +1689,10 @@
   <div class="mini-card"
     >
     <div class="mini-card-q"><span class="l-en">Copper / Gold</span><span class="l-zh">铜/金</span></div>
-    <div class="mini-card-val">0.002</div>
+    <div class="mini-card-val">0.001</div>
     <div class="mini-card-pos muted sm"><span class="l-en">Mid of 2y range</span><span class="l-zh">处于近两年区间</span></div>
-    <div class="mini-card-arrow pos">
-      ▲
+    <div class="mini-card-arrow neg">
+      ▼
     </div>
   </div>
   
@@ -1680,7 +1703,7 @@
   <div class="mini-card"
     >
     <div class="mini-card-q"><span class="l-en">Gold / Silver</span><span class="l-zh">金/银</span></div>
-    <div class="mini-card-val">66.033</div>
+    <div class="mini-card-val">68.116</div>
     <div class="mini-card-pos muted sm"><span class="l-en">Mid of 2y range</span><span class="l-zh">处于近两年区间</span></div>
     <div class="mini-card-arrow neg">
       ▼
@@ -1694,7 +1717,7 @@
   <div class="mini-card"
     >
     <div class="mini-card-q"><span class="l-en">Oil / Gold</span><span class="l-zh">油/金</span></div>
-    <div class="mini-card-val">0.021</div>
+    <div class="mini-card-val">0.023</div>
     <div class="mini-card-pos muted sm"><span class="l-en">Mid of 2y range</span><span class="l-zh">处于近两年区间</span></div>
     <div class="mini-card-arrow pos">
       ▲
@@ -1710,8 +1733,8 @@
     <div class="mini-card-q"><span class="l-en">Stocks / Gold</span><span class="l-zh">股/金</span></div>
     <div class="mini-card-val">0.174</div>
     <div class="mini-card-pos muted sm"><span class="l-en">Mid of 2y range</span><span class="l-zh">处于近两年区间</span></div>
-    <div class="mini-card-arrow pos">
-      ▲
+    <div class="mini-card-arrow neg">
+      ▼
     </div>
   </div>
   
@@ -1742,21 +1765,21 @@
     <div class="carry-row">
       <span style="font-size:13px"><span class="l-en">Rates term-spread (10y-3m)</span><span class="l-zh">利率期限利差 (10年-3月)</span></span>
       <span class="pos" style="font-weight:700;font-variant-numeric:tabular-nums">
-        1.01%
+        1.02%
       </span>
     </div>
     
     <div class="carry-row">
       <span style="font-size:13px"><span class="l-en">Gold roll yield</span><span class="l-zh">gold 展期收益</span></span>
-      <span class="neg" style="font-weight:700;font-variant-numeric:tabular-nums">
-        -0.1%/yr
+      <span class="pos" style="font-weight:700;font-variant-numeric:tabular-nums">
+        0.1%/yr
       </span>
     </div>
     
     <div class="carry-row">
       <span style="font-size:13px"><span class="l-en">Oil roll yield</span><span class="l-zh">oil 展期收益</span></span>
       <span class="pos" style="font-weight:700;font-variant-numeric:tabular-nums">
-        0.4%/yr
+        0.5%/yr
       </span>
     </div>
     
@@ -1777,12 +1800,11 @@
 <div class="card" style="margin-top:8px">
   <p class="muted sm" style="margin:0;line-height:1.6">
     <span class="l-en">Source: cross-asset trend engine + keyless price stores + funding/liquidity feeds. Technical receipts live behind the ? marks.</span><span class="l-zh">来源：跨资产趋势引擎 + 无密钥价格库 + 资金/流动性数据源。技术细节见 ? 提示。</span>
-    <span class="l-en">Generated</span><span class="l-zh">生成于</span> 2026-09-09 08:55 UTC.
+    <span class="l-en">Generated</span><span class="l-zh">生成于</span> 2026-09-12 02:39 UTC.
   </p>
 </div>
 
 </div><!-- .ca-wrap -->
 <script src="theme.js?v=53939d13" defer></script>
-<script defer data-whb data-root="" src="wh_banner.js?v=4a53a176"></script>
 </body>
 </html>
