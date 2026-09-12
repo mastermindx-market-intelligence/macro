@@ -18,9 +18,10 @@ claim: >
   wrapper may carry caller-specific receipt/footer markup on Macro, China or Hong
   Kong. Equal dates must not be swapped for the same reason.
 falsifier: >
-  Moving all brief surfaces back to a client-rendered canonical payload with one
-  reviewed renderer, or proving that every mounted page is force-reloaded whenever
-  its deployed HTML changes, would remove the need for this same-surface freshness
+  `rg -n "fetch|render" templates/aibrief.js templates/_aibrief_body.html.j2`,
+  followed by browser proof that all brief surfaces now use one reviewed
+  client-rendered canonical payload or that every mounted page force-reloads whenever
+  its deployed HTML changes, would falsify the need for this same-surface freshness
   client. A future immutable revision identifier inside the shared body could safely
   supersede the strict state-date comparison, but only if it is common to every
   surface and excludes caller-specific markup.
@@ -33,7 +34,7 @@ so_what: >
   cadence (including Bitcoin's intentional three-day cadence). Any lane that emits
   these pages must continue running `scripts.optimize_assets`; daily, render,
   engine-render, closing-bell and asia-close already do.
-kind: design-constraint
+kind: constraint
 verified_at: 2026-09-11
 verified_by: >
   Repository history for site/master_brief.json and site/macro.html; direct inspection
