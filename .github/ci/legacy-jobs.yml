@@ -1271,6 +1271,9 @@ jobs:
       - "tests/test_stock_score.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "collectors/edgar_facts.py"
+      # B-F07-2 retarget 2026-09-12: the F07 suites reach debt_maturity via collectors/edgar_facts.py:179 (main #6921) — contract-delta
+      - "engine/debt_maturity.py"
+      - "scripts/build_debt_maturity.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "engine/valuation_scenario.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
