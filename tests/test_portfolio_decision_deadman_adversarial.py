@@ -193,6 +193,42 @@ class PortfolioDecisionDeadmanAdversarialTests(unittest.TestCase):
                 opener=lambda *_args, **_kwargs: Response(),
             )
 
+class PortfolioDecisionDeadmanLifecycleTruthTests(unittest.TestCase):
+    def test_governed_warning_must_not_be_effective(self):
+        payload = healthy_snapshot()
+        payload["jobs"]["autonomous_daily"].update(
+            last_status="warn",
+            last_severity="FREEZE",
+            last_reason="rejected_packet_gate",
+            last_target_status="rejected_packet_gate",
+        )
+        payload["decisions"]["autonomous"].update(
+            target_status="rejected_packet_gate",
+            decision_effective=True,
+        )
+        failures = deadman.evaluate(payload, now=NOW)
+        self.assertTrue(
+            any("must not be effective" in failure for failure in failures),
+            failures,
+        )
+
+    def test_queued_decision_cannot_claim_execution_receipt(self):
+        payload = healthy_snapshot()
+        payload["decisions"]["autonomous"]["execution_evidence_status"] = "receipt_verified"
+        failures = deadman.evaluate(payload, now=NOW)
+        self.assertTrue(
+            any("queued execution evidence" in failure for failure in failures),
+            failures,
+        )
+
+    def test_queued_decision_cannot_claim_settlement_date(self):
+        payload = healthy_snapshot()
+        payload["decisions"]["autonomous"]["settled_asof"] = "2026-09-11"
+        failures = deadman.evaluate(payload, now=NOW)
+        self.assertTrue(
+            any("queued settlement date" in failure for failure in failures),
+            failures,
+        )
 
 if __name__ == "__main__":
     unittest.main()

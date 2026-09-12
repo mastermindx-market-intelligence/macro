@@ -226,6 +226,14 @@ def _decision_failure(
             )
         if decision.get("decision_effective") is not True:
             return f"{job_id}: {decision_target} decision is not effective"
+        if decision_target == "queued":
+            evidence = str(
+                decision.get("execution_evidence_status") or ""
+            ).strip().lower()
+            if evidence not in {"", "none"}:
+                return f"{job_id}: queued execution evidence is invalid ({evidence})"
+            if str(decision.get("settled_asof") or "").strip():
+                return f"{job_id}: queued settlement date must be absent"
         if decision_target == "executed":
             if decision.get("execution_evidence_status") != "receipt_verified":
                 return f"{job_id}: executed decision lacks a verified execution receipt"
@@ -255,6 +263,8 @@ def _decision_failure(
                 f"{job_id}: governed target/reason mismatch "
                 f"({target} != {reason or 'missing'})"
             )
+        if decision.get("decision_effective") is not False:
+            return f"{job_id}: governed hold must not be effective"
         return None
 
     return f"{job_id}: unsupported last_status={status or 'missing'}"
@@ -363,7 +373,7 @@ def _load_payload(path: str | None) -> dict[str, Any]:
     return payload
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(argv: list[str, Any] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--collect", action="store_true")
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL)
