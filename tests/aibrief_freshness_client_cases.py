@@ -207,3 +207,40 @@ controller.checkNow(true).then(changed => {
 """
     )
     assert out == {"changed": 0, "replaced": None}
+
+
+def test_consolidated_lens_tab_click_is_brief_intent() -> None:
+    out = _node(
+        _FAKE_DOM
+        + r"""
+const doc = makeDocument([new BriefNode('macro', '2026-09-09')]);
+const calls = [];
+const win = {
+  location: { href: 'https://www.mastermind-x.com/aibrief.html' },
+  listeners: {},
+  addEventListener(name, fn) { this.listeners[name] = fn; },
+  dispatchEvent() {}
+};
+const controller = api.createController({
+  document: doc,
+  window: win,
+  fetch: (url) => {
+    calls.push(url);
+    return Promise.resolve({ ok: false, text: () => Promise.resolve('') });
+  },
+  DOMParser: class {},
+  now: () => 3
+});
+controller.bind();
+const tab = {
+  closest(selector) {
+    return selector.includes('.brief-tab-btn[data-lens]') ? this : null;
+  }
+};
+doc.listeners.click({ target: tab });
+Promise.resolve().then(() => {
+  process.stdout.write(JSON.stringify({ calls: calls.length }));
+});
+"""
+    )
+    assert out == {"calls": 1}
