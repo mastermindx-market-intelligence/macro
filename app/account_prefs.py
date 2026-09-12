@@ -56,17 +56,17 @@ def _supabase() -> tuple[str, str]:
     return billing.SUPABASE_URL, billing.SUPABASE_SERVICE_ROLE_KEY
 
 
-def _write_user_metadata(user_id: str, patch: dict, base: dict) -> bool:
+def _write_user_metadata(user_id: str, patch: dict) -> bool:
     """Merge ``patch`` into the user's auth ``user_metadata``. False on any failure.
 
-    Thin delegate to ``lib.user_prefs.write_user_prefs``. The merge base is passed in from
-    the record the token verification already returned, so this path still makes exactly ONE
-    network call (a PUT) — the lib's own admin GET is for callers that hold only a user id.
+    Thin delegate to ``lib.user_prefs.write_user_prefs``. The cached identity
+    record is never the merge base — the lib takes a fresh uncached admin GET
+    immediately before the PUT and overlays only this writer's validated keys.
     ``app.billing``'s constants are injected so this process has one credential source.
     """
     if not user_id:
         return False
-    return user_prefs.write_user_prefs(str(user_id), patch, base=base, supabase=_supabase())
+    return user_prefs.write_user_prefs(str(user_id), patch, supabase=_supabase())
 
 
 def _mirror_email_lang(user_id: str, lang: str) -> bool:
@@ -120,8 +120,11 @@ def save_prefs(body: PrefsRequest, user: dict = Depends(_current_user)) -> dict:
     if not patch:
         raise HTTPException(400, "nothing to save (send lang, theme and/or brain_depth)")
 
-    stored = _write_user_metadata(str(user_id), patch,
-                                  dict(user.get("user_metadata") or {}))
+    # No tz-default wiring here: PrefsRequest on this branch carries no alert fields, so
+    # the freeze §8 gate could never fire. `lib.user_prefs.apply_tz_default` is the helper
+    # that rule will use; #6907 owns wiring it, on the FRESH read, when it lands the alert
+    # fields on this route.
+    stored = _write_user_metadata(str(user_id), patch)
 
     mirrored = False
     if "lang" in patch:

@@ -1,45 +1,9 @@
 {
   "schema": "china_calendar.v1",
-  "asof": "2026-09-09",
-  "generated_at_utc": "2026-09-09T12:49:53.303255+00:00",
+  "asof": "2026-09-11",
+  "generated_at_utc": "2026-09-11T12:39:54.498445+00:00",
   "horizon_days": 45,
   "entries": [
-    {
-      "date": "2026-09-10",
-      "window_end": null,
-      "etype": "CPI",
-      "label_en": "CPI (consumer prices)",
-      "label_zh": "CPI（居民消费价格）",
-      "region": "cn",
-      "impact": "high",
-      "source_class": "static",
-      "source": "engine.china_event_calendar",
-      "approx": false
-    },
-    {
-      "date": "2026-09-10",
-      "window_end": null,
-      "etype": "CREDIT",
-      "label_en": "Money supply, RMB loans & TSF",
-      "label_zh": "货币供应、人民币贷款与社融",
-      "region": "cn",
-      "impact": "high",
-      "source_class": "rule",
-      "source": "engine.china_event_calendar",
-      "approx": true
-    },
-    {
-      "date": "2026-09-10",
-      "window_end": null,
-      "etype": "PPI",
-      "label_en": "PPI (producer prices)",
-      "label_zh": "PPI（工业生产者价格）",
-      "region": "cn",
-      "impact": "high",
-      "source_class": "static",
-      "source": "engine.china_event_calendar",
-      "approx": false
-    },
     {
       "date": "2026-09-11",
       "window_end": null,
