@@ -42,9 +42,13 @@ unknown rows, name orphans, absent/tampered request or classification receipts, 
 an uncovered ticker-range campaign block completeness.  Capped whole-market
 responses are discarded as non-authoritative probes before deterministic
 ticker-by-date-range recovery.  Range leaves split below the endpoint cap,
-transpose back to exact-day partitions, and keep each attempt immutable.  The
-operational gate nevertheless remains false pending live canary, throughput, and
-correctness evidence.
+transpose back to exact-day partitions, and keep each attempt immutable.  The operational gate was promoted only after exact-head canary run 33043190487
+(post-#6513, 2018-01-02) completed on the real self-hosted store with 6 requests,
+zero failures and ``stage=complete``, while the unchanged range-shard adversarial
+suite from #5523 remained CI-wired.  Promotion authorizes the bounded resumable
+range campaign; it does not make DEP-EXACT complete.  The first post-promotion
+bounded range execution is production proof, and DEP-EXACT remains open until the
+full range campaign and sanitized completeness manifest close.
 
 ``daily`` is unadjusted nominal price authority and retains zero-volume rows with
 ``positive_volume = volume_lots > 0``.  A traded/listing-session claim must filter
@@ -61,18 +65,20 @@ Usage (no implicit full-history collection)::
 
 The default request cap is intentionally small.  Re-running resumes incomplete
 units.  ``--allow-bulk`` is required above the safety ceiling or for unlimited
-collection.  ``BULK_HISTORICAL_BACKFILL_READY`` is deliberately false until a
-separately reviewed wave proves the range implementation against live data with
-canary, throughput, and correctness evidence.  It is a technical readiness gate
-and must never be read, restored, or re-titled as a licensing gate.
+collection.  ``BULK_HISTORICAL_BACKFILL_READY`` is a separately reviewed technical gate.
+It was promoted only after exact-head live canary receipt 33043190487 and the
+unchanged #5523 range-shard adversarial suite established the evidence required
+by DEC:CNLI-NAMECHANGE-IS-ITS-OWN-SOURCE-AUTHORITY.  It must never be read,
+restored, or re-titled as a licensing gate.  Promotion opens only the range
+campaign; it does not itself prove campaign completeness.
 
-Because that gate waits on canary evidence, the canary itself must be runnable
-first: ``--canary`` performs real bounded collection while the gate is still
-false, capped at ``CANARY_MAX_REQUESTS`` requests over ``CANARY_MAX_RANGE_DAYS``
-calendar days, never with ``--allow-bulk``, and refusing rather than starting the
-unproven ticker-range campaign if a documented row cap fires.  The three modes
-are therefore ``--dry-run`` (network-free plan), ``--canary`` (real, hard-bounded)
-and the default bulk/backfill path (still gated).
+Before promotion, the canary had to be runnable while the gate was still false
+or the evidence sequence would have been circular.  ``--canary`` therefore stays
+a real hard-bounded diagnostic path: at most ``CANARY_MAX_REQUESTS`` requests over
+``CANARY_MAX_RANGE_DAYS`` calendar days and never with ``--allow-bulk``.  While
+the readiness gate is false it also refuses rather than starting the scalable
+ticker-range campaign; once the reviewed gate is true, that range path is no
+longer unproven but the canary request/window ceilings still apply.
 """
 from __future__ import annotations
 
@@ -103,24 +109,24 @@ log = logging.getLogger(__name__)
 
 MANIFEST_SCHEMA_VERSION = "cn_tushare_a_share_spine_manifest.v1"
 STATE_SCHEMA_VERSION = "cn_tushare_a_share_spine_state.v2"
-# TECHNICAL READINESS GATE -- NOT a licensing gate.  Scalable range shards are
-# implemented and synthetic-tested, but no live parity/throughput canary has run,
-# so bulk historical collection stays fail-closed on engineering evidence alone:
-# canary parity, sustained throughput, and range/completeness correctness.  Flip
-# it only in a separate reviewed change that cites those measurements.  Licensing
-# and compliance are settled outside this repository and are never re-litigated
-# here (see the module docstring).
-BULK_HISTORICAL_BACKFILL_READY = False
-# The canary is the evidence that gate wants, so it must be runnable BEFORE the
-# gate opens -- otherwise the sequence is circular and the gate can never be
-# retired on measurement.  ``collect(..., canary=True)`` therefore performs real
-# bounded collection while ``BULK_HISTORICAL_BACKFILL_READY`` is still False,
-# under hard ceilings enforced below and with every technical control unchanged
-# (exact request/schema binding, PIT, source-row accounting, receipts, locking).
-# What the canary may NOT do is exercise the unproven scalable path: a documented
-# row cap refuses instead of starting a ticker-range campaign, and bulk/unlimited
-# budgets stay forbidden.  Opening the bulk gate remains a separate reviewed
-# change that cites canary receipts.
+# TECHNICAL READINESS GATE -- NOT a licensing gate.  Promoted by the separate
+# reviewed readiness wave after exact-head live canary run 33043190487 completed
+# 2018-01-02 with 6 requests, zero failures and stage=complete on the real
+# self-hosted store.  The range-shard implementation + adversarial suite are
+# unchanged since accepted PR #5523 and remain wired into the full-A collector CI
+# step.  This permits the bounded resumable range campaign; it is NOT a claim that
+# DEP-EXACT or the historical campaign is complete.  First post-promotion bounded
+# range execution is production proof, followed by the full campaign + sanitized
+# completeness manifest.  Licensing/compliance remain settled outside this repo.
+BULK_HISTORICAL_BACKFILL_READY = True
+# PRE-PROMOTION LAW: the canary had to be runnable BEFORE the gate opened or the
+# evidence sequence would be circular. ``collect(..., canary=True)`` therefore
+# remains hard-bounded under every technical control (request/schema binding, PIT,
+# source-row accounting, receipts, locking). When readiness is False, a documented
+# row cap still refuses instead of starting the scalable ticker-range campaign.
+# When readiness is True, that reviewed range path is allowed, but canary request
+# and calendar ceilings plus the no-allow_bulk rule still apply. The gate was
+# promoted only on the exact-head canary + unchanged adversarial range-shard proof.
 CANARY_MAX_REQUESTS = 12
 CANARY_MAX_RANGE_DAYS = 5
 AUTHORITY = "context_only"
@@ -5420,13 +5426,14 @@ def collect(
     ``BULK_HISTORICAL_BACKFILL_READY``.  ``require_token=False`` is a test seam
     for injected responses, not a bypass of those gates.
 
-    ``canary=True`` is the one execution path permitted while the bulk gate is
-    still False, because the canary is the evidence that gate is waiting for.  It
-    is hard-bounded before any store or network use -- at most
+    When the bulk readiness gate is False, ``canary=True`` is the one execution
+    path permitted because it is the evidence-gathering path that feeds that gate.
+    It is always hard-bounded before any store or network use -- at most
     ``CANARY_MAX_REQUESTS`` requests over at most ``CANARY_MAX_RANGE_DAYS``
-    calendar days, never with ``allow_bulk``, and a documented row cap refuses
-    rather than starting the unproven ticker-range campaign.  It is not a bulk
-    backfill and does not promote anything.
+    calendar days and never with ``allow_bulk``.  A row cap refuses the range path
+    only while readiness is False; after reviewed promotion the same canary may use
+    the now-authorized range implementation under its unchanged hard ceilings.
+    Canary execution never promotes the gate itself.
     """
     start_date = _parse_date(start)
     end_date = _parse_date(end)
@@ -5481,9 +5488,9 @@ def collect(
         }
     if not BULK_HISTORICAL_BACKFILL_READY and not canary:
         raise SpineError(
-            "full-A collector is foundation-only: scalable ticker-range cap fallback "
-            "has not been code-reviewed, so collection is disabled before store/network "
-            "use outside a bounded canary window (--canary / canary=True)"
+            "full-A collector is foundation-only: the technical readiness gate is closed, "
+            "so collection is disabled before store/network use outside a bounded canary "
+            "window (--canary / canary=True)"
         )
 
     store_path = _validate_private_store_path(Path(store))
