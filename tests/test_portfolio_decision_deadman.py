@@ -142,6 +142,15 @@ class PortfolioDecisionDeadmanTests(unittest.TestCase):
         payload["decisions"]["hk"]["asof"] = "2026-09-14"
         self.assertEqual(deadman.evaluate(payload, now=now), [])
 
+    def test_schedule_time_is_derived_from_live_next_run_not_hardcoded(self):
+        payload = healthy_snapshot()
+        payload["jobs"]["autonomous_daily"].update(
+            next_run_time="2026-09-14T22:10:00+00:00",
+            last_started="2026-09-11T22:10:00+00:00",
+            last_finished="2026-09-11T22:20:00+00:00",
+        )
+        self.assertEqual(deadman.evaluate(payload, now=NOW), [])
+
     def test_stale_snapshot_and_past_next_run_fail_closed(self):
         payload = healthy_snapshot()
         payload["observed_at"] = "2026-09-11T22:00:00+00:00"
