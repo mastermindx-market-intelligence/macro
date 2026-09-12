@@ -68,6 +68,8 @@ _SCARE_DISPLAY = {
     "internals": ("Breadth internals deterioration", "内部广度恶化"),
 }
 
+_CHANGE_HISTORY_POINTS = 22
+
 
 def ledger_lane_armed() -> bool:
     """True only on a ledger-advancing collect lane (COLLECT_LANE=nightly, legacy
@@ -354,24 +356,127 @@ def scorecard(root=None) -> dict:
 
 
 def _change_num(value) -> float | None:
-    """Finite one-decimal score for display/comparison; typed absence otherwise."""
-    if isinstance(value, (bool, np.bool_)):
+    """Finite one-decimal score for display/comparison; typed absence otherwise.
+
+    Rejects bools, mappings, sequences, pandas Series/DataFrame, and any ndarray
+    shape — including 0-d / single-element — so a container cannot fabricate a score.
+    """
+    if value is None or isinstance(value, (bool, np.bool_)):
+        return None
+    if isinstance(value, (dict, list, tuple, set, memoryview)):
+        return None
+    if isinstance(value, (pd.Series, pd.DataFrame)):
+        return None
+    if isinstance(value, np.ndarray):
+        return None
+    # Numpy size>1 generics / matrix-like objects without ndarray subclassing.
+    size = getattr(value, "size", None)
+    if size is not None and size != 1 and not isinstance(value, (np.floating, np.integer)):
         return None
     try:
         out = float(value)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, OverflowError):
         return None
     return round(out, 1) if np.isfinite(out) else None
 
 
+def _ascii_slug_like(value) -> bool:
+    """True when value looks like a structured machine key / ASCII slug, not human ZH."""
+    if not isinstance(value, str):
+        return False
+    text = value.strip()
+    if not text:
+        return False
+    if any("一" <= ch <= "鿿" for ch in text):
+        return False
+    # Latin/digit/underscore/hyphen/slash/space only — machine provenance, not glance Chinese.
+    return all(ord(ch) < 128 for ch in text) and any(ch.isalpha() for ch in text)
+
+
+def _machine_key_set() -> set[str]:
+    return set(_LEG_DISPLAY) | set(_STATE_DISPLAY) | set(_SCARE_DISPLAY)
+
+
+def _zh_human_or_fallback(candidate, fallback: str) -> str:
+    """Glance-tier Chinese must never echo a machine key or ASCII slug."""
+    if not isinstance(candidate, str):
+        return fallback
+    text = candidate.strip()
+    if not text:
+        return fallback
+    if text in _machine_key_set() or _ascii_slug_like(text):
+        return fallback
+    return text
+
+
+def _direction_from_delta(delta) -> str | None:
+    if delta is None:
+        return None
+    try:
+        d = float(delta)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    if not np.isfinite(d):
+        return None
+    return "rising" if d > 0 else "easing" if d < 0 else "flat"
+
+
+def _normalize_score_direction(score: dict | None) -> dict | None:
+    """Ensure direction matches normalized finite delta; conflict/absence => typed None."""
+    if not isinstance(score, dict):
+        return score
+    out = dict(score)
+    current = _change_num(out.get("current"))
+    prior = _change_num(out.get("prior"))
+    if current is not None and prior is not None:
+        delta = round(current - prior, 1)
+    else:
+        delta = _change_num(out.get("delta"))
+    implied = _direction_from_delta(delta)
+    supplied = out.get("direction")
+    if implied is None:
+        direction = None
+    elif supplied in (None, implied):
+        direction = implied
+    else:
+        direction = None  # conflict => typed unavailable
+    out["current"] = current
+    out["prior"] = prior
+    out["delta"] = delta
+    out["direction"] = direction
+    return out
+
+
+def _history_point(payload: dict) -> dict:
+    return {
+        "asof": str((payload or {}).get("asof") or ""),
+        "state": (payload or {}).get("state"),
+        "dominant_scare": (payload or {}).get("dominant_scare"),
+        "top_score": _change_num((payload or {}).get("top_score")),
+    }
+
+
 def _scare_map(payload: dict) -> dict[str, dict]:
-    """Normalize live list-shaped scares and ledger dict-shaped scares."""
-    raw = (payload or {}).get("scares") or {}
+    """Normalize live list-shaped scares and ledger dict-shaped scares.
+
+    Malformed containers (Series, ndarray, scalars) fail soft to an empty map —
+    never raise into COMPARISON_ERROR.
+    """
+    if not isinstance(payload, dict):
+        return {}
+    raw = payload.get("scares")
+    if raw is None:
+        return {}
     if isinstance(raw, dict):
-        return {str(k): (v if isinstance(v, dict) else {}) for k, v in raw.items()}
+        return {str(k): (v if isinstance(v, dict) else {}) for k, v in raw.items()
+                if not isinstance(k, (list, dict, tuple, set, pd.Series, np.ndarray))}
+    if isinstance(raw, (pd.Series, pd.DataFrame, np.ndarray)):
+        return {}
     out: dict[str, dict] = {}
-    for row in raw if isinstance(raw, list) else []:
-        if isinstance(row, dict) and row.get("scare"):
+    if not isinstance(raw, list):
+        return {}
+    for row in raw:
+        if isinstance(row, dict) and row.get("scare") is not None:
             out[str(row["scare"])] = row
     return out
 
@@ -412,12 +517,14 @@ def _publication_day(value) -> pd.Timestamp | None:
     return pd.Timestamp(day)
 
 
-def _state_label(state, language: str) -> str:
+def _state_label(state, language: str) -> str | None:
     key = str(state or "")
     pair = _STATE_DISPLAY.get(key)
     if pair:
         return pair[0 if language == "en" else 1]
-    return key.replace("_", " ").title() if language == "en" else key
+    if language == "en" and key:
+        return key.replace("_", " ").title()
+    return None
 
 
 def _scare_label(scare, language: str) -> str | None:
@@ -459,6 +566,7 @@ def publication_change(snap: dict, root=None) -> dict:
         "state": None,
         "scares": [],
         "week": {"available": False, "null_reason": "NO_WEEK_REFERENCE"},
+        "history": [_history_point(snap)] if current_asof else [],
         "summary_en": "",
         "summary_zh": "",
     }
@@ -486,6 +594,10 @@ def publication_change(snap: dict, root=None) -> dict:
             by_day[day_key] = (ts, row)
         ordered = sorted(by_day.values(), key=lambda item: item[0])
         earlier = [(ts, row) for ts, row in ordered if ts < current_ts]
+        history_rows = earlier[-(_CHANGE_HISTORY_POINTS - 1):]
+        base["history"] = [_history_point(row) for _, row in history_rows] + [
+            _history_point(snap)
+        ]
         if not earlier:
             return {**base, "null_reason": "NO_EARLIER_PUBLICATION"}
 
@@ -493,8 +605,7 @@ def publication_change(snap: dict, root=None) -> dict:
         prior_score = _change_num(prior.get("top_score"))
         delta = (round(current_score - prior_score, 1)
                  if current_score is not None and prior_score is not None else None)
-        direction = (None if delta is None else
-                     "rising" if delta > 0 else "easing" if delta < 0 else "flat")
+        direction = _direction_from_delta(delta)
 
         current_state, prior_state = snap.get("state"), prior.get("state")
         current_scares, prior_scares = _scare_map(snap), _scare_map(prior)
@@ -511,8 +622,19 @@ def publication_change(snap: dict, root=None) -> dict:
             cleared = [leg for leg in old_legs if leg not in cur_set]
             label_en = (cur.get("label_en") or old.get("label_en") or
                         _scare_label(key, "en") or "Unclassified risk")
-            label_zh = (cur.get("label_zh") or old.get("label_zh") or
-                        _scare_label(key, "zh") or "未分类风险")
+            if _ascii_slug_like(label_en) and label_en not in {
+                    pair[0] for pair in _SCARE_DISPLAY.values()}:
+                # Keep known English display phrases; reject raw machine slugs in EN glance copy.
+                mapped = _scare_label(key, "en")
+                label_en = mapped or "Unclassified risk"
+            raw_zh = cur.get("label_zh") if isinstance(cur.get("label_zh"), str) else None
+            if raw_zh is None and isinstance(old.get("label_zh"), str):
+                raw_zh = old.get("label_zh")
+            mapped_zh = _scare_label(key, "zh")
+            if raw_zh and _zh_human_or_fallback(raw_zh, "") == raw_zh:
+                label_zh = raw_zh
+            else:
+                label_zh = mapped_zh or "未分类风险"
             scare_changes.append({
                 "scare": key,
                 "label_en": label_en,
@@ -568,17 +690,26 @@ def publication_change(snap: dict, root=None) -> dict:
                              current_state in _STATE_DISPLAY and
                              prior_state != current_state)
         if state_changed:
-            summary_en.append(f"{_state_label(prior_state, 'en')}→{_state_label(current_state, 'en')}")
-            summary_zh.append(f"{_state_label(prior_state, 'zh')}→{_state_label(current_state, 'zh')}")
+            prior_st_en, cur_st_en = _state_label(prior_state, "en"), _state_label(current_state, "en")
+            prior_st_zh, cur_st_zh = _state_label(prior_state, "zh"), _state_label(current_state, "zh")
+            if prior_st_en and cur_st_en:
+                summary_en.append(f"{prior_st_en}→{cur_st_en}")
+            if prior_st_zh and cur_st_zh:
+                summary_zh.append(f"{prior_st_zh}→{cur_st_zh}")
         prior_dominant = prior.get("dominant_scare")
         current_dominant = snap.get("dominant_scare")
         if prior_dominant and current_dominant and prior_dominant != current_dominant:
             prior_label_en = prior.get("dominant_label_en") or _scare_label(prior_dominant, "en")
-            prior_label_zh = prior.get("dominant_label_zh") or _scare_label(prior_dominant, "zh")
+            prior_label_zh = _zh_human_or_fallback(
+                prior.get("dominant_label_zh") or _scare_label(prior_dominant, "zh"),
+                "",
+            )
             current_label_en = (snap.get("dominant_label_en") or
                                 _scare_label(current_dominant, "en"))
-            current_label_zh = (snap.get("dominant_label_zh") or
-                                _scare_label(current_dominant, "zh"))
+            current_label_zh = _zh_human_or_fallback(
+                snap.get("dominant_label_zh") or _scare_label(current_dominant, "zh"),
+                "",
+            )
             if all((prior_label_en, prior_label_zh, current_label_en, current_label_zh)):
                 summary_en.append(f"Lead {prior_label_en}→{current_label_en}")
                 summary_zh.append(f"主导 {prior_label_zh}→{current_label_zh}")
@@ -595,8 +726,10 @@ def publication_change(snap: dict, root=None) -> dict:
             "available": True,
             "null_reason": None,
             "prior_asof": str(prior.get("asof")),
-            "score": {"current": current_score, "prior": prior_score,
-                      "delta": delta, "direction": direction},
+            "score": _normalize_score_direction({
+                "current": current_score, "prior": prior_score,
+                "delta": delta, "direction": direction,
+            }),
             "state": {"current": current_state, "prior": prior_state,
                       "changed": state_changed},
             "scares": scare_changes,

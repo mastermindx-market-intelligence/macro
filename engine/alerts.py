@@ -44,7 +44,7 @@ _TS_PLAIN_EN = {"STABLE": "steady", "WEAKENING": "weakening",
 _TS_PLAIN_ZH = {"STABLE": "稳定", "WEAKENING": "走弱",
                 "TRANSITIONING": "转换中", "NEW_REGIME": "新周期"}
 _TRANSITION_FLAG_COPY = {
-    "flag_breadth_price": ("breadth/price divergence", "宽度/价格背离"),
+    "flag_breadth_price": ("breadth/price divergence", "市场广度/价格背离"),
     "flag_credit_equity": ("credit/equity divergence", "信用/股票背离"),
     "flag_ratio_inflection": ("cyclical/defensive inflection", "周期/防御比率拐点"),
     "flag_inflation_basket": ("inflation-basket inflection", "通胀篮子拐点"),
@@ -107,6 +107,43 @@ def _int_or_none(value) -> int | None:
         return int(value)
     except (TypeError, ValueError, OverflowError):
         return None
+
+
+def _nonneg_int_or_none(value) -> int | None:
+    """Optional counts (n_flags): omit unless an exact nonnegative integral value.
+
+    Bool is excluded even though ``isinstance(True, int)`` — a flag must not become
+    a fabricated ``(1 flags active)`` badge. Numpy integers are accepted; non-integral
+    floats, negatives, and non-numeric spellings omit.
+    """
+    value = _present_value(value)
+    if value is None or isinstance(value, bool):
+        return None
+    if isinstance(value, int) and not isinstance(value, bool):
+        return value if value >= 0 else None
+    # numpy integer / pandas Int64 scalar (not bool)
+    try:
+        import numbers
+        if isinstance(value, numbers.Integral) and not isinstance(value, bool):
+            ivalue = int(value)
+            return ivalue if ivalue >= 0 else None
+    except Exception:
+        pass
+    if isinstance(value, float):
+        if value != value or value < 0 or value != int(value):  # NaN / neg / non-integral
+            return None
+        return int(value)
+    # numpy floating
+    try:
+        import numbers
+        if isinstance(value, numbers.Real) and not isinstance(value, numbers.Integral):
+            fvalue = float(value)
+            if fvalue != fvalue or fvalue < 0 or fvalue != int(fvalue):
+                return None
+            return int(fvalue)
+    except Exception:
+        pass
+    return None
 
 
 def _transition_mechanism_detail(prev: pd.Series, cur: pd.Series) -> tuple[str, str]:
@@ -186,7 +223,7 @@ def transition_state_change(hist: pd.DataFrame, f: pd.DataFrame) -> Alert | None
         detail_zh.append("原因：" + cause_zh)
     suffix_en = ("; " + "; ".join(detail_en)) if detail_en else ""
     suffix_zh = ("；" + "；".join(detail_zh)) if detail_zh else ""
-    n_flags = _int_or_none(cur.get("n_flags"))
+    n_flags = _nonneg_int_or_none(cur.get("n_flags"))
     count_en = f" ({n_flags} flags active)" if n_flags is not None else ""
     count_zh = f"（{n_flags} 个预警激活）" if n_flags is not None else ""
     return Alert("transition_state_change", sev,

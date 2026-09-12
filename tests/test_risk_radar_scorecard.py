@@ -16,6 +16,7 @@ import json
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pytest
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
@@ -599,7 +600,8 @@ def test_publication_change_has_typed_absence_not_fake_zero(tmp_path) -> None:
         "current": 65.7, "prior": None, "delta": None, "direction": None
     }
     assert ch["week"]["available"] is False
-    assert "history" not in ch
+    assert ch["history"] == [{"asof": "2026-09-09", "state": "watch",
+                              "dominant_scare": "growth", "top_score": 65.7}]
 
 
 def test_snapshot_and_grade_attaches_change_without_advancing_second_ledger(monkeypatch) -> None:
@@ -683,7 +685,7 @@ def test_transition_alert_names_added_and_cleared_flags() -> None:
     assert "added: breadth/price divergence, dealer-gamma fragility" in alert.message
     assert "cleared: credit/equity divergence" in alert.message
     assert "flag_breadth_price" not in alert.message
-    assert "新增：宽度/价格背离、做市商 Gamma 脆弱" in alert.message_zh
+    assert "新增：市场广度/价格背离、做市商 Gamma 脆弱" in alert.message_zh
     assert "解除：信用/股票背离" in alert.message_zh
 
     view = alert_view(alert.rule, alert.severity, alert.message, alert.message_zh)
@@ -691,7 +693,7 @@ def test_transition_alert_names_added_and_cleared_flags() -> None:
         "The regime's footing went from steady to weakening (2 warning flags active)"
     )
     assert "added: breadth/price divergence" in view["message"]
-    assert "新增：宽度/价格背离" in view["message_zh"]
+    assert "新增：市场广度/价格背离" in view["message_zh"]
 
 
 def test_publication_change_skips_non_object_json_rows(tmp_path) -> None:
@@ -723,7 +725,9 @@ def test_publication_change_skips_non_object_json_rows(tmp_path) -> None:
     assert change["prior_asof"] == "2026-09-08"
     assert change["null_reason"] is None
     assert change["week"] == {"available": False, "null_reason": "NO_WEEK_REFERENCE"}
-    assert "history" not in change
+    assert isinstance(change["history"], list)
+    assert change["history"][-1]["asof"] == "2026-09-09"
+    assert change["history"][-1]["top_score"] == 65.7
 
 
 @pytest.mark.parametrize(
@@ -992,6 +996,69 @@ def test_transition_alert_nullable_flag_count_is_typed_absence() -> None:
     assert "warning flags active" not in view["message"]
     assert view["message_zh"].startswith("周期状态由「稳定」转为「走弱」")
     assert "预警激活" not in view["message_zh"]
+
+
+def test_transition_alert_n_flags_omitted_unless_nonnegative_integral() -> None:
+    """Optional n_flags count is omitted unless it is a nonnegative integral value.
+
+    Bool/float/negative/non-integral values must not fabricate a count badge; EN/ZH
+    reason suffixes — including full-width parentheses — still survive.
+    """
+    idx = pd.bdate_range("2026-09-08", periods=2)
+
+    def _hist(n_flags):
+        return pd.DataFrame({
+            "quad": ["Q1", "Q1"],
+            "transition_state": ["STABLE", "WEAKENING"],
+            "n_flags": [0, n_flags],
+            "growth_confidence": [0.6, 0.6],
+            "inflation_confidence": [0.6, 0.6],
+            "flag_breadth_price": [False, True],
+            "flag_credit_equity": [False, False],
+            "flag_ratio_inflection": [False, False],
+            "flag_inflation_basket": [False, False],
+            "flag_confidence_decay": [False, False],
+            "flag_gex": [False, False],
+            "flag_rotation_persistence": [False, False],
+        }, index=idx)
+
+    for bad in (-1, 1.5, True, False, "2", 2.5, float("nan")):
+        alert = transition_state_change(_hist(bad), pd.DataFrame())
+        assert alert is not None, bad
+        assert "flags active" not in alert.message, bad
+        assert "预警激活" not in alert.message_zh, bad
+        assert "新增：市场广度/价格背离" in alert.message_zh, bad
+        assert "added: breadth/price divergence" in alert.message, bad
+
+    for good in (0, 2, 3):
+        alert = transition_state_change(_hist(good), pd.DataFrame())
+        assert alert is not None, good
+        assert f"({good} flags active)" in alert.message, good
+        assert f"（{good} 个预警激活）" in alert.message_zh, good
+        assert "新增：市场广度/价格背离" in alert.message_zh, good
+
+    # Full-width parentheses in mechanism cause survive when count omitted and flags unchanged.
+    hist = pd.DataFrame({
+        "quad": ["Q1", "Q2"],
+        "transition_state": ["STABLE", "WEAKENING"],
+        "n_flags": [1, -1],
+        "growth_confidence": [0.6, 0.6],
+        "inflation_confidence": [0.6, 0.6],
+        "flag_breadth_price": [True, True],
+        "flag_credit_equity": [False, False],
+        "flag_ratio_inflection": [False, False],
+        "flag_inflation_basket": [False, False],
+        "flag_confidence_decay": [False, False],
+        "flag_gex": [False, False],
+        "flag_rotation_persistence": [False, False],
+    }, index=idx)
+    alert = transition_state_change(hist, pd.DataFrame())
+    assert alert is not None
+    assert "flags active" not in alert.message
+    assert "预警激活" not in alert.message_zh
+    assert "原因：" in alert.message_zh
+    # mechanism text may include full-width parens; suffix must remain intact
+    assert alert.message_zh.startswith("转换状态")
 
 
 def test_publication_change_partial_prior_does_not_invent_transitions(tmp_path) -> None:
@@ -1289,3 +1356,160 @@ def test_transition_alert_missing_state_is_typed_absence() -> None:
     }, index=idx)
 
     assert transition_state_change(hist, pd.DataFrame()) is None
+
+
+def test_publication_change_history_dedup_sorted_current_last_cap22(tmp_path) -> None:
+    """Parent contract: canonical-day-deduped, sorted, current-last, capped-at-22 history."""
+    rows = []
+    # 30 earlier days + same-day duplicate + future day must not inflate/break history.
+    for i in range(30):
+        day = (date(2026, 7, 1) + timedelta(days=i)).isoformat()
+        rows.append(_ledger_row(day, "calm", 40.0 + i, 40.0 + i, "calm", []))
+    # Duplicate spelling for an already-seen day (first writer wins).
+    rows.append(_ledger_row("2026-07-01T15:00:00+00:00", "risk-off", 99.0, 99.0, "credit", []))
+    rows.append(_ledger_row("2026-09-20", "elevated", 90.0, 90.0, "vol", []))  # future vs current
+    _write_ledger(tmp_path, rows)
+
+    ch = rra.publication_change(_current_snapshot(), root=tmp_path)  # asof 2026-09-09
+
+    hist = ch["history"]
+    assert isinstance(hist, list)
+    assert 1 <= len(hist) <= 22
+    days = [h["asof"][:10] for h in hist]
+    assert days == sorted(days)
+    assert len(set(days)) == len(days)
+    assert days[-1] == "2026-09-09"
+    assert hist[-1]["top_score"] == 65.7
+    assert hist[-1]["state"] == "watch"
+    assert "2026-09-20" not in days
+    # First-writer score for 2026-07-01 remains 40.0, not the duplicate 99.0.
+    early = [h for h in hist if h["asof"][:10] == "2026-07-01"]
+    if early:
+        assert early[0]["top_score"] == 40.0
+
+
+def test_publication_change_rejects_non_scalar_score_containers(tmp_path) -> None:
+    """Bools/mappings/lists/Series/ndarrays must not fabricate current/prior/week/delta."""
+    prior = _ledger_row("2026-09-08", "caution", 75.1, 75.1, "caution", [])
+    week = _ledger_row("2026-09-01", "caution", 70.0, 70.0, "caution", [])
+    _write_ledger(tmp_path, [week, prior])
+
+    for bad in (True, False, {"v": 65.7}, [65.7], (65.7,),
+                pd.Series([65.7]), np.array(65.7), np.array([65.7]), np.array([65.7, 1.0])):
+        snap = _current_snapshot()
+        snap["top_score"] = bad
+        ch = rra.publication_change(snap, root=tmp_path)
+        assert ch["null_reason"] != "COMPARISON_ERROR", bad
+        score = ch["score"]
+        assert score["current"] is None, bad
+        assert score["delta"] is None, bad
+        assert score["direction"] is None, bad
+
+
+def test_publication_change_malformed_scare_containers_fail_soft(tmp_path) -> None:
+    """Malformed scare / firing-leg containers -> typed empty structure, never COMPARISON_ERROR."""
+    prior = _ledger_row("2026-09-08", "caution", 75.1, 75.1, "caution",
+                        [_leg("growth_cyc_def", 0.7)])
+    _write_ledger(tmp_path, [prior])
+
+    for scares in (pd.Series([1, 2]), np.array([{"scare": "growth"}]), "growth",
+                   17, {"growth": "not-a-dict"},
+                   [{"scare": "growth", "score": 65.7, "firing_legs": pd.Series([1])}],
+                   [{"scare": "growth", "score": 65.7, "firing_legs": {"leg": "x"}}],
+                   [{"scare": "growth", "score": 65.7, "firing_legs": np.array([1, 2])}]):
+        snap = _current_snapshot()
+        snap["scares"] = scares
+        ch = rra.publication_change(snap, root=tmp_path)
+        assert ch["null_reason"] != "COMPARISON_ERROR", type(scares)
+        assert isinstance(ch["scares"], list)
+
+
+def test_publication_change_zh_rejects_machine_keys_and_ascii_slugs(tmp_path) -> None:
+    """Chinese glance labels reject any structured machine key / ASCII slug-like fallback."""
+    prior = {
+        **_ledger_row("2026-09-08", "caution", 40.0, 40.0, "credit", []),
+        "scares": {
+            "credit": {"score": 40.0, "band": "watch", "label_zh": "信用压力",
+                       "firing_legs": []},
+            "totally_unknown_scare": {"score": 11.0, "band": "watch",
+                                      "label_zh": "totally_unknown_scare",
+                                      "firing_legs": []},
+        },
+    }
+    _write_ledger(tmp_path, [prior])
+    snap = _current_snapshot()
+    snap["scares"] = [
+        {"scare": "growth", "label_en": "Growth scare", "label_zh": "credit",  # machine key leak
+         "score": 50.0, "band": "caution",
+         "firing_legs": [_leg("future_slug_leg", 0.9)]},
+        {"scare": "another_unknown", "label_en": "Another", "label_zh": "another_unknown",
+         "score": 12.0, "band": "watch", "firing_legs": []},
+    ]
+    ch = rra.publication_change(snap, root=tmp_path)
+    assert ch["available"] is True
+    by = {row["scare"]: row for row in ch["scares"]}
+    # label_zh='credit' is a machine key — must not survive; fall back to growth vocabulary.
+    assert by["growth"]["label_zh"] == "增长恐慌/防御轮动"
+    assert by["another_unknown"]["label_zh"] == "未分类风险"
+    assert "another_unknown" not in ch["summary_zh"]
+    assert "totally_unknown_scare" not in ch["summary_zh"]
+    assert "future_slug_leg" not in ch["summary_zh"]
+    growth = by["growth"]
+    assert growth["added_labels_zh"] == ["未分类信号"]
+
+
+def test_publication_change_and_card_direction_matches_delta_or_unavailable(tmp_path, monkeypatch) -> None:
+    """Direction equals implied finite delta; conflict / missing delta => typed unavailable."""
+    prior = _ledger_row("2026-09-08", "caution", 75.1, 75.1, "caution", [])
+    _write_ledger(tmp_path, [prior])
+    ch = rra.publication_change(_current_snapshot(), root=tmp_path)
+    assert ch["score"]["delta"] == -9.4
+    assert ch["score"]["direction"] == "easing"
+
+    monkeypatch.setattr("engine.market_state._rr_scorecard_track", lambda market: None)
+    # Conflicting supplied direction on an attached payload must clear, not invent.
+    bad = {
+        "available": True,
+        "current_asof": "2026-09-09",
+        "prior_asof": "2026-09-08",
+        "score": {"current": 65.7, "prior": 75.1, "delta": -9.4, "direction": "rising"},
+        "week": {"available": True, "asof": "2026-09-02", "score": np.array([70.0]), "delta": -4.3},
+        "summary_en": "x", "summary_zh": "y",
+    }
+    rr = {
+        **_current_snapshot(),
+        "market": "us",
+        "alert": False,
+        "gross_factor": 1.0,
+        "drawdown_prob": {},
+        "forward_log": {"n_graded": 0, "publication_change": bad},
+        "top_score": np.array([65.7]),  # must not fabricate card display score
+    }
+    rd = _radar_to_rd(rr)
+    assert rd["top_score"] is None
+    assert rd["top_score_display"] is None
+    assert rd["change"]["score"]["direction"] is None
+    assert rd["change"]["week"]["score"] is None
+
+
+def test_transition_alert_flag_breadth_price_uses_frozen_zh_vocab() -> None:
+    """Disc 10: flag_breadth_price exposes frozen Chinese 市场广度/价格背离."""
+    idx = pd.bdate_range("2026-09-08", periods=2)
+    hist = pd.DataFrame({
+        "quad": ["Q1", "Q1"],
+        "transition_state": ["STABLE", "WEAKENING"],
+        "n_flags": [1, 2],
+        "growth_confidence": [0.6, 0.6],
+        "inflation_confidence": [0.6, 0.6],
+        "flag_breadth_price": [False, True],
+        "flag_credit_equity": [False, False],
+        "flag_ratio_inflection": [False, False],
+        "flag_inflation_basket": [False, False],
+        "flag_confidence_decay": [False, False],
+        "flag_gex": [False, False],
+        "flag_rotation_persistence": [False, False],
+    }, index=idx)
+    alert = transition_state_change(hist, pd.DataFrame())
+    assert alert is not None
+    assert "市场广度/价格背离" in alert.message_zh
+    assert "宽度/价格背离" not in alert.message_zh

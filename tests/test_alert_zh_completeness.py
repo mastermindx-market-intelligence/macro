@@ -288,7 +288,7 @@ def test_transition_rebuild_is_content_aware() -> None:
     leaked = "转换状态 WEAKENING -> TRANSITIONING（3 个预警激活）"
     rich = (
         "转换状态 走弱 -> 转换中（3 个预警激活）；"
-        "新增：宽度/价格背离；解除：信用/股票背离"
+        "新增：市场广度/价格背离；解除：信用/股票背离"
     )
 
     assert _zh_needs_rebuild("transition_state_change", leaked)
@@ -315,7 +315,7 @@ def test_hub_feed_preserves_rich_transition_chinese(
 
     rich = (
         "转换状态 走弱 -> 转换中（3 个预警激活）；"
-        "新增：宽度/价格背离；解除：信用/股票背离"
+        "新增：市场广度/价格背离；解除：信用/股票背离"
     )
     rows = pd.DataFrame([{
         "date": "2026-09-10", "rule": "transition_state_change", "severity": "act",
@@ -329,7 +329,7 @@ def test_hub_feed_preserves_rich_transition_chinese(
 
     assert len(feed) == 1
     assert feed[0]["detail_zh"] == rich
-    assert "新增：宽度/价格背离" in feed[0]["detail_zh"]
+    assert "新增：市场广度/价格背离" in feed[0]["detail_zh"]
     assert "解除：信用/股票背离" in feed[0]["detail_zh"]
 
 
@@ -342,7 +342,7 @@ def test_alerts_centre_preserves_rich_transition_chinese(monkeypatch, tmp_path):
     log_path.parent.mkdir(parents=True)
     rich_zh = (
         "转换状态 走弱 -> 转换中（3 个预警激活）；"
-        "新增：宽度/价格背离；解除：信用/股票背离"
+        "新增：市场广度/价格背离；解除：信用/股票背离"
     )
     today = pd.Timestamp("2026-09-10").date()
     pd.DataFrame([{
@@ -362,7 +362,7 @@ def test_alerts_centre_preserves_rich_transition_chinese(monkeypatch, tmp_path):
     assert result["state"] == at.READ_OK
     assert len(result["events"]) == 1
     event = result["events"][0]
-    assert "新增：宽度/价格背离" in event["detail_zh"]
+    assert "新增：市场广度/价格背离" in event["detail_zh"]
     assert "解除：信用/股票背离" in event["detail_zh"]
     assert "WEAKENING" not in event["detail_zh"]
 

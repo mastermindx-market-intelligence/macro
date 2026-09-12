@@ -86,10 +86,22 @@ def _clamp(x: float, lo: float = 0.0, hi: float = 1.0) -> float:
 
 
 def _num(v):
+    """Finite float projection; reject bools/containers/Series/ndarrays (any shape)."""
+    if v is None or isinstance(v, (bool, np.bool_)):
+        return None
+    if isinstance(v, (dict, list, tuple, set, memoryview)):
+        return None
+    if isinstance(v, (pd.Series, pd.DataFrame)):
+        return None
+    if isinstance(v, np.ndarray):
+        return None
+    size = getattr(v, "size", None)
+    if size is not None and size != 1 and not isinstance(v, (np.floating, np.integer)):
+        return None
     try:
         f = float(v)
         return f if np.isfinite(f) else None
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, OverflowError):
         return None
 
 
@@ -597,6 +609,22 @@ def _radar_to_rd(rr: dict) -> dict:
     elif (rr.get("asof")
           and str(_change.get("current_asof") or "") != str(rr["asof"])):
         _change = None
+    elif isinstance(_change, dict):
+        # Card path: re-project score numerics + direction so a conflicting/malformed
+        # payload cannot fabricate delta/direction for display.
+        from engine.risk_radar_audit import _normalize_score_direction, _change_num
+        _change = dict(_change)
+        if isinstance(_change.get("score"), dict):
+            _change["score"] = _normalize_score_direction(_change.get("score"))
+        week = _change.get("week")
+        if isinstance(week, dict) and "score" in week:
+            week = dict(week)
+            week["score"] = _change_num(week.get("score"))
+            week["delta"] = _change_num(week.get("delta"))
+            if week.get("score") is None and week.get("available"):
+                week["available"] = False
+                week.setdefault("null_reason", "WEEK_SCORE_MISSING")
+            _change["week"] = week
     # Keep the established integer audit field stable. Additive top_score_display is the
     # exact one-decimal projection for the shared card (including first publication); ledger
     # and market_state_audit.radar_top remain on the legacy rounded top_score.
@@ -624,7 +652,7 @@ def _radar_to_rd(rr: dict) -> dict:
         "top_score_display": _top_display,
         "label_en": rr.get("dominant_label_en") or "calm",
         "label_zh": rr.get("dominant_label_zh") or "平静",
-        "state_zh": _RADAR_ZH.get(state, state or ""),
+        "state_zh": _RADAR_ZH.get(state, ""),
         "do_en": _RADAR_DO.get(state, ("", ""))[0],
         "do_zh": _RADAR_DO.get(state, ("", ""))[1],
         "gross": _num(rr.get("gross_factor")),
