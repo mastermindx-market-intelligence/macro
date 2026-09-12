@@ -4714,12 +4714,19 @@ _SS_CHANGE_PERIOD_ZH_RE = re.compile(
 )
 
 
-def _ss_warn_unmapped_change_state(token: str) -> None:
-    """One stderr line per distinct out-of-contract value per process."""
+def _ss_warn_unmapped_change_state(token: str, field: str = "lifecycle state") -> None:
+    """One stderr line per distinct out-of-contract value per process.
+
+    `field` names the contract field the value arrived in, because the card's
+    sentence and the drilldown's correction row read the same vocabulary out of
+    two different fields and an operator chasing one should not be sent to the
+    other. The dedupe stays keyed on the VALUE: one line per distinct value per
+    process is the contract, whichever field first carried it.
+    """
     if token in _SS_CHANGE_STATE_UNMAPPED:
         return
     _SS_CHANGE_STATE_UNMAPPED.add(token)
-    print(f"change card lifecycle state unmapped: {token}", file=sys.stderr)
+    print(f"change card {field} unmapped: {token}", file=sys.stderr)
 
 
 def _ss_project_change_state(pair: dict[str, str] | None) -> dict[str, str] | None:
@@ -4753,6 +4760,46 @@ def _ss_project_change_state(pair: dict[str, str] | None) -> dict[str, str] | No
             lambda m: _SS_CHANGE_PERIOD_ZH[m.group(1)], zh,
         )
     return out
+
+
+# `correction_state` is the SAME closed lifecycle vocabulary as the card's
+# sentence — the reader DERIVES it from `lifecycle.state`
+# (`engine/security_state.py:1199-1201`) — and the drilldown printed it raw into
+# both language slots (`templates/ticker.html.j2:1822`), so the Chinese page read
+# `更正状态 superseded`. It arrives as a bare token rather than inside a sentence
+# frame, so it meets `_SS_CHANGE_STATE` directly instead of through the frame
+# regexes; the row then receives an EN string and a ZH string, never the token.
+#
+# `"none"` is that derivation's own "nothing to report" default (the `.get(…,
+# "none")` fallback), not a lifecycle state, so it is absence rather than an
+# unrecognised value: it keeps the row's existing house copy ("None recorded" /
+# "无记录") by projecting to nothing. Reading it as unrecognised would misread
+# the commonest real value on the surface AND file an operator line on every
+# ordinary page.
+#
+# These are `_clean_str`'s own placeholder literals (`:276`). `_clean_str`
+# empties them only when they are the WHOLE value, so a padded `" None "`
+# survives it; matching here after `.strip()` and case-insensitively is what
+# closes that gap rather than letting whitespace decide whether absence is
+# readable.
+_SS_CORRECTION_ABSENT: frozenset[str] = frozenset({"none", "nan", "nat", "null"})
+
+
+def _ss_project_correction_state(raw: Any) -> dict[str, str] | None:
+    """House EN/ZH for one `correction_state` token; None means nothing recorded.
+
+    Same contract as `_ss_project_change_state` for values the table does not
+    know: readable house words in both slots AND one operator line, because the
+    reader does not re-validate this field either and it arrives over the wire.
+    """
+    token = _clean_str(raw).strip()
+    if not token or token.casefold() in _SS_CORRECTION_ABSENT:
+        return None
+    entry = _SS_CHANGE_STATE.get(token)
+    if entry is None:
+        _ss_warn_unmapped_change_state(token, field="correction state")
+        return dict(_SS_CHANGE_STATE_UNREADABLE)
+    return dict(entry)
 
 
 def _ss_leg(key: str, title_en: str, title_zh: str, leg: Any) -> dict[str, Any]:
@@ -4863,6 +4910,11 @@ def _ss_leg(key: str, title_en: str, title_zh: str, leg: Any) -> dict[str, Any]:
             unresolved["code"] = _clean_str(suf.get("code") or "")
             unresolved["from"] = _clean_str(suf.get("leg") or "")
 
+    # `or ""` is the collapse the replaced line carried: a falsy non-string
+    # (`0`, `False`, `[]`) is nothing recorded, not a value to read back at the
+    # operator.
+    correction = _ss_project_correction_state(leg.get("correction_state") or "")
+
     out = {
         "key": key,
         "dlg": f"ss-{key.replace('_', '-')}",
@@ -4881,7 +4933,8 @@ def _ss_leg(key: str, title_en: str, title_zh: str, leg: Any) -> dict[str, Any]:
         "owner": _clean_str(leg.get("owner") or ""),
         "owner_object": _clean_str(leg.get("owner_object") or leg.get("owner_object_id") or ""),
         "source": _clean_str(leg.get("source") or ""),
-        "correction": _clean_str(leg.get("correction_state") or ""),
+        "correction_en": (correction or {}).get("en", ""),
+        "correction_zh": (correction or {}).get("zh", ""),
         "generation_id": _clean_str(leg.get("generation_id") or ""),
         "clocks": clock_rows,
         "asof": clock_rows[-1]["v"] if clock_rows else "",

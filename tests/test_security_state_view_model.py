@@ -3432,6 +3432,65 @@ def test_change_card_state_table_covers_the_whole_engine_vocabulary() -> None:
             failures.append(f"{token}['zh'] carries a Latin run: {zh!r}")
     assert not failures, "; ".join(failures)
 
+    # The drilldown's `correction_state` row reads the SAME vocabulary, so the
+    # completeness rule covers that path too: the reader DERIVES that field from
+    # the lifecycle state through one literal map
+    # (`engine/security_state.py:1199-1201`), and every value the map can
+    # produce — its own default included — must reach house words or be the
+    # recognised "nothing recorded" sentinel. A vocabulary that grows reds here
+    # instead of printing a token into the row.
+    from scripts.build_ticker_pages import (
+        _SS_CHANGE_STATE_UNMAPPED, _SS_CORRECTION_ABSENT,
+        _ss_project_correction_state,
+    )
+
+    derivation = re.search(
+        r'correction_state = \{(?P<body>[^}]*)\}\.get\(\s*'
+        r'str\(lifecycle_state\),\s*"(?P<default>[a-z_]+)"',
+        engine_src, re.S,
+    )
+    assert derivation is not None, (
+        "the change leg's correction_state derivation no longer parses at its "
+        "declaration site; re-derive the reachable vocabulary"
+    )
+    reachable_corrections = set(
+        re.findall(r'"[a-z_]+"\s*:\s*"([a-z_]+)"', derivation.group("body"))
+    ) | {derivation.group("default")}
+    assert {"corrected", "superseded"} <= reachable_corrections, (
+        f"the correction extractor is not reading the map: {sorted(reachable_corrections)}"
+    )
+
+    recorded_before = set(_SS_CHANGE_STATE_UNMAPPED)
+    corr_failures: list[str] = []
+    for token in sorted(reachable_corrections):
+        projected = _ss_project_correction_state(token)
+        if token in _SS_CORRECTION_ABSENT:
+            if projected is not None:
+                corr_failures.append(
+                    f"{token} is the absence sentinel but projected {projected!r}"
+                )
+            continue
+        if token not in _SS_CHANGE_STATE:
+            corr_failures.append(f"_SS_CHANGE_STATE missing correction state: {token}")
+            continue
+        assert projected is not None
+        for slot in ("en", "zh"):
+            text = str(projected.get(slot) or "")
+            if not text:
+                corr_failures.append(f"{token}[{slot}] is empty")
+            if text == _SS_CHANGE_STATE_UNREADABLE[slot]:
+                corr_failures.append(f"{token}[{slot}] is the unreadable-value fallback")
+        projected_zh = str(projected.get("zh") or "")
+        if " " in projected_zh:
+            corr_failures.append(f"{token}['zh'] carries an ASCII space: {projected_zh!r}")
+        if _F06_LATIN_RUN_RE.search(projected_zh):
+            corr_failures.append(f"{token}['zh'] carries a Latin run: {projected_zh!r}")
+    assert not corr_failures, "; ".join(corr_failures)
+    assert set(_SS_CHANGE_STATE_UNMAPPED) == recorded_before, (
+        "a contract correction state was recorded as unmapped: "
+        f"{sorted(set(_SS_CHANGE_STATE_UNMAPPED) - recorded_before)}"
+    )
+
 
 def test_change_card_projection_is_a_fixpoint_for_every_token() -> None:
     """Projecting an already-projected sentence must change nothing and record
@@ -3538,3 +3597,209 @@ def test_change_card_prints_its_sentence_once() -> None:
     card = _f06_axis_card(_render_section(view, lang="zh"), lang="zh")
     sentences = [p for p in card.find_all_class("ss-head") + card.find_all_class("ss-body")]
     assert len(sentences) == 1, [s.get_text() for s in sentences]
+
+
+#: The drilldown row the change card's dialog prints the lifecycle-derived
+#: correction value in (`templates/ticker.html.j2:1822`).
+_F06_CORRECTION_LABEL = {"en": "Correction state", "zh": "更正状态"}
+_F06_NOT_RECORDED = {"en": "None recorded", "zh": "无记录"}
+#: `engine/security_state.py:1199-1201`: the change leg's `correction_state` is
+#: DERIVED from the lifecycle state through exactly this map, so a fixture that
+#: names a lifecycle state receives the correction value the engine would have
+#: sent. A state the map does not name is carried through unchanged — the reader
+#: re-validates this field no more than it re-validates the lifecycle one, and
+#: the workspace arrives over the wire, so any value is reachable.
+_F06_ENGINE_CORRECTION = {
+    "complete": "none", "corrected": "corrected", "superseded": "superseded",
+}
+
+
+def _f06_with_correction(golden: dict, state: str) -> dict:
+    out = _f06_with_state(golden, state)
+    out["legs"]["change"]["correction_state"] = _F06_ENGINE_CORRECTION.get(state, state)
+    return out
+
+
+def _f06_correction_row(view: dict, *, lang: str) -> str:
+    """What the change card's drilldown prints for `Correction state` in *lang*."""
+    want_title = _F06_CARD_TITLE[lang]
+    want_label = _F06_CORRECTION_LABEL[lang]
+    for dlg in _parse_class_tree(_render_section(view, lang=lang)).find_all_class("dsr-dlg"):
+        title = dlg.find_class("dsr-dlg-title")
+        if title is None or want_title not in title.get_text():
+            continue
+        for row in dlg.find_all_class("r6d"):
+            key = row.find_class("k")
+            val = row.find_class("vv")
+            if key is not None and val is not None and want_label in key.get_text():
+                return val.get_text().strip()
+        raise AssertionError(f"the change drilldown has no {want_label!r} row in {lang!r}")
+    raise AssertionError(f"the change drilldown did not render in {lang!r}")
+
+
+@pytest.mark.parametrize("golden_name", _F06_GOLDENS)
+@pytest.mark.parametrize(
+    ("state", "en_words", "zh_words"),
+    [("corrected", "corrected", "已更正"), ("superseded", "superseded", "已被取代")],
+)
+def test_change_drilldown_correction_state_carries_no_engine_token(
+    golden_name: str, state: str, en_words: str, zh_words: str,
+) -> None:
+    """Same defect class on the same card: the drilldown's correction row.
+
+    RED-first at e65cc264 (the card's sentence already projected, this row not),
+    both goldens: the row printed the lifecycle token verbatim into BOTH
+    language slots, so the Chinese page read `更正状态 superseded`.
+
+    What is load-bearing here is the CHINESE half plus the Latin-run and
+    ASCII-space rules. `corrected` and `superseded` are the only two values the
+    engine's derivation can emit besides the absence sentinel, and both are
+    ordinary English words whose house EN is the token itself — so the English
+    equality below is byte-identical with and without the projection and proves
+    nothing on its own. `test_change_drilldown_correction_state_projects_the_
+    english_half` is where the English half is actually exercised, on values
+    that are reachable over the wire rather than from today's derivation.
+    """
+    view = build_security_state(
+        {"security_state": _f06_with_correction(_f06_golden(golden_name), state)},
+    )
+    assert view is not None
+
+    zh_value = _f06_correction_row(view, lang="zh")
+    assert zh_value == zh_words, f"the Chinese row reads {zh_value!r}"
+    assert state not in zh_value, f"raw {state!r} survived in Chinese: {zh_value!r}"
+    assert not _F06_LATIN_RUN_RE.findall(zh_value), (
+        f"an engine state token reached the Chinese correction row: {zh_value!r}"
+    )
+    # The row prints a bare value, so the CJK-adjoining-space rule is the whole
+    # string: no ASCII space may sit anywhere in it.
+    assert " " not in zh_value, f"the row left an ASCII space against CJK: {zh_value!r}"
+    assert _f06_correction_row(view, lang="en") == en_words
+
+
+@pytest.mark.parametrize(
+    ("state", "en_words", "zh_words"),
+    [
+        ("completed_partial", "partly complete", "部分完成"),
+        ("derived_ready", "ready to read", "可供查阅"),
+        ("discovered", "first seen", "已发现"),
+    ],
+)
+def test_change_drilldown_correction_state_projects_the_english_half(
+    state: str, en_words: str, zh_words: str,
+) -> None:
+    """`corrected` and `superseded` are ordinary English words, so an English
+    assertion on them passes byte-identically with no projection at all. These
+    three have house words that DIFFER from the token, so the English half of
+    the row is exercised on the real render path.
+    """
+    view = build_security_state(
+        {"security_state": _f06_with_correction(_f06_golden(_F06_GOLDENS[0]), state)},
+    )
+    assert view is not None
+
+    en_value = _f06_correction_row(view, lang="en")
+    assert en_value == en_words, f"the English row reads {en_value!r}"
+    assert state not in en_value, f"raw {state!r} survived in English: {en_value!r}"
+
+    zh_value = _f06_correction_row(view, lang="zh")
+    assert zh_value == zh_words, f"the Chinese row reads {zh_value!r}"
+    assert not _F06_LATIN_RUN_RE.findall(zh_value), zh_value
+
+
+@pytest.mark.parametrize("golden_name", _F06_GOLDENS)
+def test_change_drilldown_none_correction_keeps_the_not_recorded_copy(
+    golden_name: str, capsys: pytest.CaptureFixture[str],
+) -> None:
+    """`"none"` is the derivation's own default, not a lifecycle state.
+
+    Both goldens ship it. It means absence, so the row keeps the house copy it
+    already had — never the unreadable-value words — and no operator line is
+    filed for the commonest real value on the surface.
+    """
+    from scripts.build_ticker_pages import (
+        _SS_CHANGE_STATE_UNMAPPED, _SS_CHANGE_STATE_UNREADABLE,
+    )
+
+    golden = _f06_golden(golden_name)
+    assert golden["legs"]["change"]["correction_state"] == "none", (
+        "the golden no longer ships the absence sentinel; re-derive this guard"
+    )
+    recorded_before = set(_SS_CHANGE_STATE_UNMAPPED)
+    view = build_security_state({"security_state": golden})
+    assert view is not None
+
+    for lang in ("en", "zh"):
+        value = _f06_correction_row(view, lang=lang)
+        assert value == _F06_NOT_RECORDED[lang], f"{lang}: {value!r}"
+        assert value != _SS_CHANGE_STATE_UNREADABLE[lang]
+    assert set(_SS_CHANGE_STATE_UNMAPPED) == recorded_before
+    assert "unmapped: none" not in capsys.readouterr().err, (
+        "the absence sentinel was filed as an out-of-contract value"
+    )
+
+
+def test_change_drilldown_out_of_contract_correction_never_reaches_the_page(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A wrong-case value is the shape a token-shaped matcher lets past. It
+    takes readable house words in both slots AND is recorded for the operator.
+
+    The value is planted in the correction field ALONE, with the card's own
+    sentence left on a contract state: the operator line is deduped on the
+    VALUE, so a token carried by both fields would be reported once under
+    whichever field reached it first and this row's label would never show.
+    """
+    from scripts.build_ticker_pages import (
+        _SS_CHANGE_STATE_UNMAPPED, _SS_CHANGE_STATE_UNREADABLE,
+    )
+
+    _SS_CHANGE_STATE_UNMAPPED.discard("Superseded")
+    try:
+        planted = _f06_with_state(_f06_golden(_F06_GOLDENS[0]), "complete")
+        planted["legs"]["change"]["correction_state"] = "Superseded"
+        view = build_security_state({"security_state": planted})
+        assert view is not None
+        for lang in ("en", "zh"):
+            value = _f06_correction_row(view, lang=lang)
+            assert value == _SS_CHANGE_STATE_UNREADABLE[lang], f"{lang}: {value!r}"
+            assert "Superseded" not in value, value
+        assert not _F06_LATIN_RUN_RE.findall(_f06_correction_row(view, lang="zh"))
+        assert "Superseded" in _SS_CHANGE_STATE_UNMAPPED, "the value was not recorded"
+        # The operator line names the field the value arrived in, not the
+        # sentence's field: the two read the same vocabulary out of two
+        # different contract fields.
+        assert "change card correction state unmapped: Superseded" in capsys.readouterr().err
+    finally:
+        _SS_CHANGE_STATE_UNMAPPED.discard("Superseded")
+
+
+@pytest.mark.parametrize("raw", [" none ", " None ", "NONE", " null ", "nat", 0, False, []])
+def test_change_drilldown_padded_or_falsy_correction_is_absence_not_unreadable(
+    raw: object, capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Absence written badly is still absence.
+
+    `_clean_str` empties its placeholder literals only when one IS the whole
+    value, so `" None "` survives it; and the line this amendment replaced
+    collapsed falsy non-strings with `or ""`. Either gap would print
+    `not recognised` on a page that has nothing to report AND file an operator
+    line for a value no owner ever stated.
+    """
+    from scripts.build_ticker_pages import (
+        _SS_CHANGE_STATE_UNMAPPED, _ss_project_correction_state,
+    )
+
+    recorded_before = set(_SS_CHANGE_STATE_UNMAPPED)
+    golden = _f06_golden(_F06_GOLDENS[0])
+    golden["legs"]["change"]["correction_state"] = raw
+    view = build_security_state({"security_state": golden})
+    assert view is not None
+
+    assert _ss_project_correction_state(raw or "") is None
+    for lang in ("en", "zh"):
+        assert _f06_correction_row(view, lang=lang) == _F06_NOT_RECORDED[lang]
+    assert set(_SS_CHANGE_STATE_UNMAPPED) == recorded_before, (
+        f"{raw!r} was filed as an out-of-contract value"
+    )
+    assert "correction state unmapped" not in capsys.readouterr().err
