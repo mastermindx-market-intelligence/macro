@@ -432,15 +432,22 @@ def preview(resources, options, task, policy, *, as_of: str):
 
 
 def preview_document(document: Mapping[str, Any]):
-    if not isinstance(document, Mapping) or set(document) != {"schema", "as_of", "resources", "options", "task", "policy"}:
+    if not isinstance(document, Mapping):
         raise QuotaEconomicsError("INVALID_INPUT_DOCUMENT")
-    if document["schema"] != INPUT_SCHEMA:
+    schema = document.get("schema")
+    if schema != INPUT_SCHEMA:
+        from engine.provider_quota_economics_costs import MEASURED_INPUT_SCHEMA, measured_preview  # noqa: PLC0415
+
+        if schema == MEASURED_INPUT_SCHEMA:
+            return measured_preview(document)
         raise QuotaEconomicsError("INVALID_INPUT_SCHEMA")
+    if set(document) != {"schema", "as_of", "resources", "options", "task", "policy"}:
+        raise QuotaEconomicsError("INVALID_INPUT_DOCUMENT")
     try:
         return preview(tuple(Resource(**row) for row in document["resources"]),
                        tuple(Option(**row) for row in document["options"]),
                        Task(**document["task"]), Policy(**document["policy"]), as_of=document["as_of"])
-    except (TypeError, KeyError, AttributeError) as exc:
+    except (TypeError, KeyError, AttributeError):
         raise QuotaEconomicsError("INVALID_INPUT_SHAPE") from None
 
 
