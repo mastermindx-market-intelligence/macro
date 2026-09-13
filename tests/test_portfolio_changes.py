@@ -42,6 +42,7 @@ from engine.portfolio_changes import (  # noqa: E402
     snapshot_state,
 )
 from engine.portfolio_digest import compose_digest, idem_key  # noqa: E402
+from engine import portfolio_digest as digest_mod  # noqa: E402
 from engine.portfolio_vocab import CLASS_WORD  # noqa: E402
 from tests.test_portfolio_brief import BOOKS, TODAY, _ctx  # noqa: E402
 
@@ -434,6 +435,105 @@ def test_digest_carries_no_money_fields():
     blob = json.dumps(d, ensure_ascii=False)
     for money in ("shares", "entry_price", "cost_basis", "market_value", "pnl"):
         assert money not in blob
+
+
+# ── the send path says, in plain words and with a date, that it is still off ──
+#
+# MO-PAID-085 residual (packet W9B_F08_12). The delivery drain ships DORMANT:
+# scripts/drain_alert_outbox.py passes send_fn=None unless ALERT_DRAIN_ENABLE=1, and
+# app/deploy/README.md says enabling live sends needs a separate privacy/risk review
+# that has not happened. So the seat fork (W9 RATIFICATION row w9b_f08_12) resolves to
+# the honesty line, not the wire. These tests pin that the module SAYS so — dated, in
+# both languages, with the missing transport named once for the seat.
+
+def test_send_path_reports_itself_off_as_of_a_real_date():
+    """An undated 'not wired' claim cannot be aged by a reader, which is exactly why
+    LEDGER_MOVES #10 kept re-filing it. The statement now carries the date it was
+    checked against origin/main, so the next reader knows how stale it may be."""
+    from datetime import date  # noqa: PLC0415
+
+    st = digest_mod.send_path_status()
+    assert st["state"] == "off", "the drain has no configured transport, so this is off"
+    assert st["asof"] == digest_mod.SEND_PATH_ASOF
+    asof = date.fromisoformat(digest_mod.SEND_PATH_ASOF)
+    assert asof <= date.today(), "the honesty line may not be dated in the future"
+    # the date is IN the sentence a human reads, not only in a sibling field
+    assert digest_mod.SEND_PATH_ASOF in st["en"]
+    assert digest_mod.SEND_PATH_ASOF in st["zh"]
+
+
+def test_send_path_honesty_is_plain_bilingual_copy():
+    """Plain-language law + ZH parity, applied to the one sentence this lane ships."""
+    import re  # noqa: PLC0415
+
+    st = digest_mod.send_path_status()
+    en, zh = st["en"], st["zh"]
+    assert en.strip() and zh.strip()
+    assert en != zh, "ZH must be a real translation, not the EN string reused"
+    assert re.search(r"[\u4e00-\u9fff]", zh), "ZH twin must be real Chinese"
+    assert "。" in zh and "，" in zh, "ZH twin must use CJK punctuation"
+    for word in ("falsifier", "refuted", "validated", "证伪"):
+        assert word not in en.lower() and word not in zh.lower()
+    # no machine text in a line a person could be shown: no env slugs, no snake_case,
+    # no shouted enum, and no untranslated stat
+    for slug in ("MAIL_SMTP", "ALERT_DRAIN_ENABLE", "skipped_no_smtp", "send_fn",
+                 "NOT WIRED", "NEEDS_SEAT", "psi_digest"):
+        assert slug not in en and slug not in zh, f"machine text in user copy: {slug}"
+    assert "_" not in en and "_" not in zh
+    assert en.rstrip().endswith(".") and zh.rstrip().endswith("。")
+
+
+def test_the_undated_not_wired_claim_is_replaced_not_left_beside_the_new_one():
+    """Drop or wire. The honesty fork drops the undated sentence and keeps one dated
+    one — two competing claims about the same path is how the ledger kept reopening."""
+    src = (ROOT / "engine" / "portfolio_digest.py").read_text(encoding="utf-8")
+    assert "THE SEND PATH IS NOT WIRED, DELIBERATELY" not in src
+    assert digest_mod.SEND_PATH_ASOF in src
+
+
+def test_exactly_one_needs_seat_line_names_the_missing_transport():
+    """The seat ruling asks for ONE NEEDS_SEAT line, and it must name the transport
+    concretely — 'a transport' sends the next reader back to the same investigation."""
+    src = (ROOT / "engine" / "portfolio_digest.py").read_text(encoding="utf-8")
+    assigned = [t.id for node in ast.parse(src).body if isinstance(node, ast.Assign)
+                for t in node.targets if isinstance(t, ast.Name) and t.id == "NEEDS_SEAT"]
+    assert assigned == ["NEEDS_SEAT"], f"expected one NEEDS_SEAT line, got {assigned}"
+    line = digest_mod.NEEDS_SEAT
+    assert line.startswith("NEEDS_SEAT:")
+    assert "MAIL_SMTP" in line and "ALERT_DRAIN_ENABLE" in line
+    # the named transport is the one the drain actually consults, not an invented one
+    assert line.count("NEEDS_SEAT") == 1
+
+
+def test_the_dated_honesty_claim_is_checkable_on_this_tree():
+    """A dated claim nobody can re-check ages into the same stale sentence it replaced.
+    This reads the three facts the claim rests on, so a lane that configures the
+    transport trips it and SEND_PATH_ASOF has to be re-verified deliberately."""
+    drain_script = (ROOT / "scripts" / "drain_alert_outbox.py").read_text(encoding="utf-8")
+    assert "ALERT_DRAIN_ENABLE" in drain_script, "the drain's enable flag moved"
+    assert "send_fn = None" in drain_script, \
+        "the drain no longer forces send_fn=None while dormant — re-check the honesty line"
+    mailer_src = (ROOT / "app" / "mailer.py").read_text(encoding="utf-8")
+    assert "def is_configured()" in mailer_src, "the mailer's transport predicate moved"
+    assert "MAIL_SMTP_HOST" in mailer_src and "MAIL_SMTP_* unset" in mailer_src
+    deploy_doc = (ROOT / "app" / "deploy" / "README.md").read_text(encoding="utf-8")
+    assert "DORMANT" in deploy_doc and "ALERT_DRAIN_ENABLE=1" in deploy_doc
+
+
+def test_the_honesty_line_never_reaches_a_reader_and_changes_no_send_contract():
+    """The path is off, so the composed email must not carry an engineering status
+    line; and shipping the honesty must not have touched the composer's contract."""
+    st = digest_mod.send_path_status()
+    d = compose_digest(_snap(), _snap(_moved_ctx()), user_id="u1", asof="2026-07-23",
+                       population="positions")
+    blob = json.dumps(d, ensure_ascii=False)
+    assert st["en"] not in blob and st["zh"] not in blob
+    assert "NEEDS_SEAT" not in blob
+    assert set(d) == {"template", "cls", "idem_key", "subject", "title_en", "title_zh",
+                      "preheader", "eyebrow", "why_en", "why_zh", "blocks",
+                      "change_count"}, "the send-argument contract moved"
+    # reading the status must not be able to deliver anything, and must not raise
+    assert digest_mod.send_path_status() == st
 
 
 # ── ADVERSARIAL: the same copy bar as the brief ──────────────────────────────
