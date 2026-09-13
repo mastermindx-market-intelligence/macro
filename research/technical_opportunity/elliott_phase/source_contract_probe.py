@@ -22,10 +22,36 @@ COMMIT = '4b1f8fddcc4eb6f36133fca4d42018678b74d30b'
 SOURCE_PATH = 'engine/cycle_ontology.py'
 BLOB = '9e726868f6c218a84cd50a9f976c77c3a347ac6c'
 ASTS = {
-    'TurnParams': 'c762a300057b5233fd15f35cabbdb840959feb19f65b0fed680845555a41a8b9',
-    '_yf': 'e3537cb8d826f0fca5962f4b8b08e8d81d24b13d87169f906bb286236f88e105',
-    'detect_turns': 'cb4d7b49ca3e2a2ef4c693bbe2c17e5e43f1539927eca3815520013d18f0147b',
+    'TurnParams': '6c7cb9d09408ef8016a58afb398b59b40295439ac8380b55f8ac8bc386793602',
+    '_yf': '80644e16f89d94b5c617b7d962d884b0f98f0126ebd61eb143295d902263cb88',
+    'detect_turns': '3e0035c8b159e0a8e9e08e7d229ea23098e30da15626b19ea07678617464fc8e',
 }
+
+
+def _stable_ast_value(value):
+    if isinstance(value, ast.AST):
+        fields = []
+        for name, child in ast.iter_fields(value):
+            # Python 3.12 added an empty type_params field to ordinary
+            # function/class nodes. Omit only the empty compatibility field;
+            # non-empty generic parameters remain part of the fingerprint.
+            if name == 'type_params' and not child:
+                continue
+            fields.append([name, _stable_ast_value(child)])
+        return [type(value).__name__, fields]
+    if isinstance(value, list):
+        return [_stable_ast_value(child) for child in value]
+    return value
+
+
+def _stable_ast_payload(node: ast.AST) -> str:
+    return json.dumps(
+        _stable_ast_value(node), ensure_ascii=False, separators=(',', ':')
+    )
+
+
+def _stable_ast_digest(node: ast.AST) -> str:
+    return hashlib.sha256(_stable_ast_payload(node).encode('utf-8')).hexdigest()
 
 
 def main() -> None:
@@ -47,7 +73,7 @@ def main() -> None:
     if {n.name for n in selected} != set(ASTS):
         raise ValueError('Required source definitions missing')
     for node in selected:
-        digest=hashlib.sha256(ast.dump(node,include_attributes=False).encode()).hexdigest()
+        digest=_stable_ast_digest(node)
         if digest != ASTS[node.name]:
             raise ValueError(f'AST mismatch for {node.name}: {digest}')
     module = types.ModuleType('_elliott_pinned_source_probe')
