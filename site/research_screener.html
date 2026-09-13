@@ -57,6 +57,7 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="research_screener.css">
 </head>
 <body class="page-research-screener">
 
@@ -308,13 +309,13 @@
     <p class="rs-kicker"><span class="l-en">Discovery</span><span class="l-zh">发现</span></p>
     <h1 class="rs-title"><span class="l-en">Research list</span><span class="l-zh">研究名单</span></h1>
     <p class="rs-lead"><span class="l-en">Which names deserve a look first, and why.</span><span class="l-zh">哪些公司值得先看，以及原因。</span></p>
-    <p class="rs-note"><span class="l-en">This is a reading list. It orders names alphabetically, or by the next dated event. Every line names a checkable fact and the record that produced it.</span><span class="l-zh">这是一份阅读名单。按名称排列，或按下一项有日期的事项排列。每一行都写明一项可核对的事实，以及产生该事实的记录。</span></p>
+    <p class="rs-note"><span class="l-en">This is a reading list. It orders names alphabetically, or by the next estimated window. The catalyst lens keeps names whose next earnings window opens in about 30 trading days. Every line names a checkable fact and the record that produced it.</span><span class="l-zh">这是一份阅读名单。按名称排列，或按下一项估计窗口排列。催化事项视角只保留下一份财报窗口大约 30 个交易日内开启的公司。每一行都写明一项可核对的事实，以及产生该事实的记录。</span></p>
     <p class="rs-count"><span class="l-en">2 names in this list.</span><span class="l-zh">本名单共 2 家公司。</span> <span class="rs-asof"><span class="l-en">Data as of 2026-09-04.</span><span class="l-zh">数据截至 2026-09-04。</span></span></p>
   </header>
 
   <div class="rs-toolbar">
     <div class="rs-chips" role="group" aria-label="Lenses">
-      <button type="button" class="rs-chip is-disabled" disabled aria-disabled="true" data-lens="theme" title="Theme lens isn't available yet"><span class="l-en">Theme</span><span class="l-zh">主题</span></button>
+      <button type="button" class="rs-chip is-disabled" disabled aria-disabled="true" data-lens="theme" aria-describedby="rs-theme-hint"><span class="l-en">Theme</span><span class="l-zh">主题</span></button>
       <button type="button" class="rs-chip" data-lens="catalyst" aria-pressed="false"><span class="l-en">Catalyst</span><span class="l-zh">催化事项</span></button>
       <button type="button" class="rs-chip" data-lens="exposure" aria-pressed="false"><span class="l-en">Exposure</span><span class="l-zh">持仓</span></button>
       <button type="button" class="rs-chip" data-lens="valuation" aria-pressed="false"><span class="l-en">Valuation posture</span><span class="l-zh">估值姿态</span></button>
@@ -322,11 +323,11 @@
     <div class="rs-order" role="group" aria-label="Order">
       <span class="rs-order-label"><span class="l-en">Order by</span><span class="l-zh">排列方式</span></span>
       <button type="button" class="rs-order-btn is-on" data-order="name" aria-pressed="true"><span class="l-en">Name</span><span class="l-zh">名称</span></button>
-      <button type="button" class="rs-order-btn" data-order="next_catalyst_date" aria-pressed="false"><span class="l-en">Next dated event</span><span class="l-zh">下一项有日期的事项</span></button>
+      <button type="button" class="rs-order-btn" data-order="next_catalyst_date" aria-pressed="false"><span class="l-en">Next estimated window</span><span class="l-zh">下一项估计窗口</span></button>
     </div>
   </div>
 
-  <p class="rs-theme-null" data-rs-theme-null><span class="l-en">Theme lens isn&#39;t available yet</span><span class="l-zh">主题视角尚未提供。</span></p>
+  <p class="rs-theme-null" id="rs-theme-hint" data-rs-theme-null><span class="l-en">Theme lens isn&#39;t available yet</span><span class="l-zh">主题视角尚未提供。</span></p>
   <p class="rs-exposure-null" data-rs-exposure-null hidden><span class="l-en">Sign in to see which of these you hold</span><span class="l-zh">登录后即可看到你持有其中哪些。</span></p>
   <p class="rs-empty" data-rs-empty hidden><span class="l-en">No names match these lenses right now.</span><span class="l-zh">目前没有公司符合这些视角。</span></p>
 
@@ -343,20 +344,24 @@
       <div class="rs-glance">
         <a class="rs-name" href="stocks/AAPL.html">Apple <span class="rs-ticker">AAPL</span></a>
         <p class="rs-why">
-          <span class="l-en">Next earnings window on 2026-09-12, from this company&#39;s security state catalyst record. Looks inexpensive against reported earnings. Sales up 3 percent, margins unchanged, valued at 18 times reported earnings. From Valuation under different assumptions.</span>
-          <span class="l-zh">下一份财报窗口在 2026-09-12，来源：该公司证券状态中的催化事项记录。对照已披露盈利显得便宜。销售收入增长 3%，利润率不变，按已披露盈利的 18 倍估值。来源：不同假设下的估值面板。</span>
+          <span class="rs-why-text">
+            <span class="l-en">Next earnings window opens around September 12 — windows, not certainties. From this company&#39;s security state catalyst record. Looks inexpensive against reported earnings. Sales up 3 percent, margins unchanged, valued at 18 times reported earnings. From Valuation under different assumptions.</span>
+            <span class="l-zh">下一份财报窗口大约在 9 月 12 日 开启 — 窗口，不是定论。来源：该公司证券状态中的催化事项记录。对照已披露盈利显得便宜。销售收入增长 3%，利润率不变，按已披露盈利的 18 倍估值。来源：不同假设下的估值面板。</span>
+          </span>
+          <span class="help" tabindex="0" role="note">?<span class="tip"><span class="l-en">Next earnings window opens around September 12 — windows, not certainties. From this company&#39;s security state catalyst record. Looks inexpensive against reported earnings. Sales up 3 percent, margins unchanged, valued at 18 times reported earnings. From Valuation under different assumptions.</span><span class="l-zh">下一份财报窗口大约在 9 月 12 日 开启 — 窗口，不是定论。来源：该公司证券状态中的催化事项记录。对照已披露盈利显得便宜。销售收入增长 3%，利润率不变，按已披露盈利的 18 倍估值。来源：不同假设下的估值面板。</span></span></span>
         </p>
       </div>
       <details class="rs-receipt">
         <summary><span class="l-en">Receipt</span><span class="l-zh">凭证</span></summary>
         <ul>
           
-          <li><span class="l-en">Dated event</span><span class="l-zh">有日期的事项</span> — 2026-09-12 · <span class="l-en">this company&#39;s security state catalyst record</span><span class="l-zh">该公司证券状态中的催化事项记录</span></li>
+          <li><span class="l-en">Estimated window</span><span class="l-zh">估计窗口</span> — <span class="l-en">Next earnings window opens around September 12 — windows, not certainties</span><span class="l-zh">下一份财报窗口大约在 9 月 12 日 开启 — 窗口，不是定论。</span> · <span class="l-en">this company&#39;s security state catalyst record</span><span class="l-zh">该公司证券状态中的催化事项记录</span></li>
           
           
           <li><span class="l-en">Looks inexpensive against reported earnings.</span><span class="l-zh">对照已披露盈利显得便宜。</span> · <span class="l-en">Sales up 3 percent, margins unchanged, valued at 18 times reported earnings.</span><span class="l-zh">销售收入增长 3%，利润率不变，按已披露盈利的 18 倍估值。</span> · <span class="l-en">Valuation under different assumptions</span><span class="l-zh">不同假设下的估值面板</span></li>
           
           <li><span class="l-en">Theme lens isn&#39;t available yet</span><span class="l-zh">主题视角尚未提供。</span></li>
+          <li><span class="l-en">Full why</span><span class="l-zh">完整原因</span> — <span class="l-en">Next earnings window opens around September 12 — windows, not certainties. From this company&#39;s security state catalyst record. Looks inexpensive against reported earnings. Sales up 3 percent, margins unchanged, valued at 18 times reported earnings. From Valuation under different assumptions.</span><span class="l-zh">下一份财报窗口大约在 9 月 12 日 开启 — 窗口，不是定论。来源：该公司证券状态中的催化事项记录。对照已披露盈利显得便宜。销售收入增长 3%，利润率不变，按已披露盈利的 18 倍估值。来源：不同假设下的估值面板。</span></li>
           <li class="rs-hold-line" data-rs-hold hidden><span class="l-en">You hold this name.</span><span class="l-zh">你持有这家公司。</span></li>
         </ul>
         <p class="rs-more"><a href="stocks/AAPL.html"><span class="l-en">Open the company page for the full technical read.</span><span class="l-zh">打开公司页面查看完整技术细节。</span></a></p>
@@ -374,18 +379,22 @@
       <div class="rs-glance">
         <a class="rs-name" href="stocks/MSFT.html">Microsoft <span class="rs-ticker">MSFT</span></a>
         <p class="rs-why">
-          <span class="l-en">Next earnings window on 2026-09-15, from this company&#39;s security state catalyst record.</span>
-          <span class="l-zh">下一份财报窗口在 2026-09-15，来源：该公司证券状态中的催化事项记录。</span>
+          <span class="rs-why-text">
+            <span class="l-en">Next earnings window opens around September 15 — windows, not certainties. From this company&#39;s security state catalyst record.</span>
+            <span class="l-zh">下一份财报窗口大约在 9 月 15 日 开启 — 窗口，不是定论。来源：该公司证券状态中的催化事项记录。</span>
+          </span>
+          <span class="help" tabindex="0" role="note">?<span class="tip"><span class="l-en">Next earnings window opens around September 15 — windows, not certainties. From this company&#39;s security state catalyst record.</span><span class="l-zh">下一份财报窗口大约在 9 月 15 日 开启 — 窗口，不是定论。来源：该公司证券状态中的催化事项记录。</span></span></span>
         </p>
       </div>
       <details class="rs-receipt">
         <summary><span class="l-en">Receipt</span><span class="l-zh">凭证</span></summary>
         <ul>
           
-          <li><span class="l-en">Dated event</span><span class="l-zh">有日期的事项</span> — 2026-09-15 · <span class="l-en">this company&#39;s security state catalyst record</span><span class="l-zh">该公司证券状态中的催化事项记录</span></li>
+          <li><span class="l-en">Estimated window</span><span class="l-zh">估计窗口</span> — <span class="l-en">Next earnings window opens around September 15 — windows, not certainties</span><span class="l-zh">下一份财报窗口大约在 9 月 15 日 开启 — 窗口，不是定论。</span> · <span class="l-en">this company&#39;s security state catalyst record</span><span class="l-zh">该公司证券状态中的催化事项记录</span></li>
           
           
           <li><span class="l-en">Theme lens isn&#39;t available yet</span><span class="l-zh">主题视角尚未提供。</span></li>
+          <li><span class="l-en">Full why</span><span class="l-zh">完整原因</span> — <span class="l-en">Next earnings window opens around September 15 — windows, not certainties. From this company&#39;s security state catalyst record.</span><span class="l-zh">下一份财报窗口大约在 9 月 15 日 开启 — 窗口，不是定论。来源：该公司证券状态中的催化事项记录。</span></li>
           <li class="rs-hold-line" data-rs-hold hidden><span class="l-en">You hold this name.</span><span class="l-zh">你持有这家公司。</span></li>
         </ul>
         <p class="rs-more"><a href="stocks/MSFT.html"><span class="l-en">Open the company page for the full technical read.</span><span class="l-zh">打开公司页面查看完整技术细节。</span></a></p>
@@ -394,7 +403,6 @@
     
   </ol>
 </main>
-<script type="application/json" id="rs-payload">{"as_of": "2026-09-04", "nulls": [{"en": "Theme lens isn\u0027t available yet", "lens": "theme", "zh": "\u4e3b\u9898\u89c6\u89d2\u5c1a\u672a\u63d0\u4f9b\u3002"}, {"en": "Sign in to see which of these you hold", "lens": "exposure", "zh": "\u767b\u5f55\u540e\u5373\u53ef\u770b\u5230\u4f60\u6301\u6709\u5176\u4e2d\u54ea\u4e9b\u3002"}], "order": "name", "orderings": ["name", "next_catalyst_date"], "rows": [{"catalyst": {"date": "2026-09-12", "next_event_name": {"en": "Next earnings window", "zh": "\u4e0b\u4e00\u4efd\u8d22\u62a5\u7a97\u53e3"}, "owner": {"en": "this company\u0027s security state catalyst record", "zh": "\u8be5\u516c\u53f8\u8bc1\u5238\u72b6\u6001\u4e2d\u7684\u50ac\u5316\u4e8b\u9879\u8bb0\u5f55"}}, "exposure": null, "listing_key": "US-XNAS-AAPL", "name": "Apple", "theme": null, "ticker": "AAPL", "valuation_posture": {"assumptions_text": {"en": "Sales up 3 percent, margins unchanged, valued at 18 times reported earnings.", "zh": "\u9500\u552e\u6536\u5165\u589e\u957f 3%\uff0c\u5229\u6da6\u7387\u4e0d\u53d8\uff0c\u6309\u5df2\u62ab\u9732\u76c8\u5229\u7684 18 \u500d\u4f30\u503c\u3002"}, "label": {"en": "Looks inexpensive against reported earnings.", "zh": "\u5bf9\u7167\u5df2\u62ab\u9732\u76c8\u5229\u663e\u5f97\u4fbf\u5b9c\u3002"}, "owner": {"en": "Valuation under different assumptions", "zh": "\u4e0d\u540c\u5047\u8bbe\u4e0b\u7684\u4f30\u503c\u9762\u677f"}}, "why": {"en": "Next earnings window on 2026-09-12, from this company\u0027s security state catalyst record. Looks inexpensive against reported earnings. Sales up 3 percent, margins unchanged, valued at 18 times reported earnings. From Valuation under different assumptions.", "zh": "\u4e0b\u4e00\u4efd\u8d22\u62a5\u7a97\u53e3\u5728 2026-09-12\uff0c\u6765\u6e90\uff1a\u8be5\u516c\u53f8\u8bc1\u5238\u72b6\u6001\u4e2d\u7684\u50ac\u5316\u4e8b\u9879\u8bb0\u5f55\u3002\u5bf9\u7167\u5df2\u62ab\u9732\u76c8\u5229\u663e\u5f97\u4fbf\u5b9c\u3002\u9500\u552e\u6536\u5165\u589e\u957f 3%\uff0c\u5229\u6da6\u7387\u4e0d\u53d8\uff0c\u6309\u5df2\u62ab\u9732\u76c8\u5229\u7684 18 \u500d\u4f30\u503c\u3002\u6765\u6e90\uff1a\u4e0d\u540c\u5047\u8bbe\u4e0b\u7684\u4f30\u503c\u9762\u677f\u3002"}}, {"catalyst": {"date": "2026-09-15", "next_event_name": {"en": "Next earnings window", "zh": "\u4e0b\u4e00\u4efd\u8d22\u62a5\u7a97\u53e3"}, "owner": {"en": "this company\u0027s security state catalyst record", "zh": "\u8be5\u516c\u53f8\u8bc1\u5238\u72b6\u6001\u4e2d\u7684\u50ac\u5316\u4e8b\u9879\u8bb0\u5f55"}}, "exposure": null, "listing_key": "US-XNAS-MSFT", "name": "Microsoft", "theme": null, "ticker": "MSFT", "valuation_posture": null, "why": {"en": "Next earnings window on 2026-09-15, from this company\u0027s security state catalyst record.", "zh": "\u4e0b\u4e00\u4efd\u8d22\u62a5\u7a97\u53e3\u5728 2026-09-15\uff0c\u6765\u6e90\uff1a\u8be5\u516c\u53f8\u8bc1\u5238\u72b6\u6001\u4e2d\u7684\u50ac\u5316\u4e8b\u9879\u8bb0\u5f55\u3002"}}], "schema": "research_screener.v1", "tier": "research_priority_only"}</script>
 <script>
 (function () {
   var list = document.querySelector("[data-rs-list]");
@@ -512,7 +520,6 @@
   else document.addEventListener("DOMContentLoaded", function () { setTimeout(boot, 0); });
 })();
 </script>
-<script>window.__skyDeck = true;</script>
 <script src="theme.js"></script>
 <script src="watchstore.js"></script>
 </body>

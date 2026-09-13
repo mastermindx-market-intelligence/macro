@@ -150,18 +150,6 @@
   --gbtn-brd:       color-mix(in srgb, var(--text) 12%, transparent);
   --gbtn-brd-hover: color-mix(in srgb, var(--text) 24%, transparent);
   --gbtn-sheen:     rgba(255,255,255,.09);
-  /* Research screener (B-F06-4) — dark = command center: luminance depth,
-     restrained glow. Light overrides swap glow for hairline+shadow. */
-  --rs-canvas: var(--bg);
-  --rs-surface: color-mix(in srgb, var(--panel) 88%, var(--bg));
-  --rs-ink: var(--text);
-  --rs-mute: var(--muted);
-  --rs-rule: var(--line);
-  --rs-accent: var(--info);
-  --rs-surface-shadow: 0 0 28px color-mix(in srgb, var(--info) 14%, transparent);
-  --rs-chip-on: color-mix(in srgb, var(--info) 18%, var(--panel));
-  --rs-chip-off: color-mix(in srgb, var(--panel2) 70%, transparent);
-  --rs-disabled: color-mix(in srgb, var(--muted) 55%, transparent);
 }
 html[data-theme="light"] {
   /* light glass buttons: white reads thin when too transparent, so lift the fill
@@ -220,18 +208,6 @@ html[data-theme="light"] {
   --glass-brd: color-mix(in srgb, #1c2430 9%, transparent);
   --glass-shadow: 0 20px 54px -24px rgba(20,32,64,.34), 0 10px 24px -14px rgba(20,32,64,.20),
     inset 0 1px 0 rgba(255,255,255,.85);
-  /* Research screener — light = research workspace: cool canvas, white
-     material, hairline discipline, shadow not glow. */
-  --rs-canvas: var(--bg);
-  --rs-surface: var(--panel);
-  --rs-ink: var(--text);
-  --rs-mute: var(--muted);
-  --rs-rule: var(--line);
-  --rs-accent: var(--info);
-  --rs-surface-shadow: var(--card-shadow);
-  --rs-chip-on: color-mix(in srgb, var(--info) 10%, var(--panel));
-  --rs-chip-off: var(--panel2);
-  --rs-disabled: color-mix(in srgb, var(--muted) 40%, transparent);
 }
 /* ---- Chinese mode: Asia colour convention -----------------------------------
    In Asia red = up/bullish, green = down/bearish — the inverse of the West. So
@@ -2390,78 +2366,3 @@ html.has-js .rv.in .dmr-bar{transform:none;transition:transform .5s cubic-bezier
   .dmr-lb{grid-area:lb;} .dmr-val{grid-area:val;} .dmr-tr{grid-area:tr;height:22px;}
 }
 /* end debt maturity ladder */
-
-/* ── research screener (B-F06-4, discovery_board) ───────────────────────────
-   Dark: command-center luminance step + restrained glow on the list surface.
-   Light: white material, hairline rules, drop shadow instead of glow. */
-body.page-research-screener { background: var(--rs-canvas); color: var(--rs-ink);
-  font-family: var(--font-ui); margin: 0; }
-body.page-research-screener .rs { max-width: 920px; margin: 0 auto;
-  padding: var(--sp-6, 24px) var(--sp-4, 16px) 72px; }
-body.page-research-screener .rs-hero { margin: 18px 0 22px; }
-body.page-research-screener .rs-kicker { margin: 0 0 6px; font-size: var(--fs-label);
-  letter-spacing: .08em; text-transform: uppercase; color: var(--rs-mute); font-weight: 700; }
-body.page-research-screener .rs-title { margin: 0; font-size: var(--fs-h1); font-weight: 800;
-  letter-spacing: -.02em; line-height: 1.15; }
-body.page-research-screener .rs-lead { margin: 8px 0 0; font-size: var(--fs-md);
-  color: var(--rs-ink); max-width: 46ch; line-height: 1.45; }
-body.page-research-screener .rs-note, body.page-research-screener .rs-count {
-  margin: 10px 0 0; font-size: var(--fs-sm); color: var(--rs-mute); max-width: 62ch;
-  line-height: 1.55; }
-body.page-research-screener .rs-toolbar { display: flex; flex-wrap: wrap;
-  gap: 14px 22px; align-items: center; justify-content: space-between;
-  margin: 8px 0 16px; }
-body.page-research-screener .rs-chips, body.page-research-screener .rs-order {
-  display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-body.page-research-screener .rs-order-label { font-size: var(--fs-label);
-  color: var(--rs-mute); font-weight: 700; letter-spacing: .04em; }
-body.page-research-screener .rs-chip, body.page-research-screener .rs-order-btn {
-  font-family: var(--font-ui); font-size: var(--fs-sm); font-weight: 600;
-  color: var(--rs-ink); background: var(--rs-chip-off);
-  border: 1px solid var(--rs-rule); border-radius: var(--r-ctl, 8px);
-  padding: 6px 12px; cursor: pointer; }
-body.page-research-screener .rs-chip.is-on, body.page-research-screener .rs-order-btn.is-on {
-  background: var(--rs-chip-on); border-color: color-mix(in srgb, var(--rs-accent) 45%, var(--rs-rule));
-  box-shadow: var(--rs-surface-shadow); }
-body.page-research-screener .rs-chip.is-disabled, body.page-research-screener .rs-chip:disabled {
-  color: var(--rs-disabled); cursor: not-allowed; opacity: .7;
-  box-shadow: none; }
-body.page-research-screener .rs-theme-null, body.page-research-screener .rs-exposure-null,
-body.page-research-screener .rs-empty { margin: 0 0 14px; font-size: var(--fs-sm);
-  color: var(--rs-mute); }
-body.page-research-screener .rs-list { list-style: none; margin: 0; padding: 0;
-  background: var(--rs-surface); border: 1px solid var(--rs-rule);
-  border-radius: var(--r-card, 12px); box-shadow: var(--rs-surface-shadow);
-  overflow: hidden; }
-body.page-research-screener .rs-row { padding: 14px 16px;
-  border-bottom: 1px solid var(--rs-rule); }
-body.page-research-screener .rs-row:last-child { border-bottom: 0; }
-body.page-research-screener .rs-glance { display: grid; gap: 4px; }
-body.page-research-screener .rs-name { color: var(--rs-ink); font-weight: 700;
-  font-size: var(--fs-md); text-decoration: none; }
-body.page-research-screener .rs-ticker { font-family: var(--font-mono);
-  font-size: var(--fs-sm); color: var(--rs-mute); font-weight: 500; margin-left: 8px; }
-body.page-research-screener .rs-why { margin: 0; font-size: var(--fs-sm);
-  color: var(--rs-mute); line-height: 1.45; white-space: nowrap; overflow: hidden;
-  text-overflow: ellipsis; }
-body.page-research-screener .rs-receipt { margin-top: 8px; font-size: var(--fs-sm);
-  color: var(--rs-mute); }
-body.page-research-screener .rs-receipt summary { cursor: pointer; font-weight: 600;
-  color: var(--rs-ink); }
-body.page-research-screener .rs-receipt ul { margin: 8px 0 0; padding-left: 18px; }
-body.page-research-screener .rs-more { margin: 8px 0 0; }
-body.page-research-screener .rs-more a { color: var(--link); }
-html[data-theme="light"] body.page-research-screener .rs-list {
-  border-color: var(--rs-rule); box-shadow: var(--rs-surface-shadow); }
-html[data-theme="light"] body.page-research-screener .rs-chip.is-on,
-html[data-theme="light"] body.page-research-screener .rs-order-btn.is-on {
-  box-shadow: var(--rs-surface-shadow); }
-html[data-lang="zh"] body.page-research-screener .rs-kicker,
-html[data-lang="zh"] body.page-research-screener .rs-order-label {
-  text-transform: none; letter-spacing: .02em; }
-@media (max-width: 760px) {
-  body.page-research-screener .rs { padding: 16px 14px 56px; }
-  body.page-research-screener .rs-why { white-space: normal; }
-  body.page-research-screener .rs-toolbar { flex-direction: column; align-items: flex-start; }
-}
-/* end research screener */

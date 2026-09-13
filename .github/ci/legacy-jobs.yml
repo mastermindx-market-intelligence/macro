@@ -4962,6 +4962,7 @@ jobs:
       - engine/research_screener.py
       - scripts/build_research_screener.py
       - templates/research_screener.html.j2
+      - templates/research_screener.css
       - tests/test_research_screener.py
     runs-on: ubuntu-latest
     steps:

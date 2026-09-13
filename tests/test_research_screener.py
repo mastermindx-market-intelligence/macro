@@ -14,6 +14,7 @@ from engine.research_screener import (
     EXPOSURE_NULL_ZH,
     THEME_NULL_EN,
     THEME_NULL_ZH,
+    _assert_no_forbidden_keys,
     compile_research_screener,
     sort_rows,
     trading_days_between,
@@ -23,6 +24,8 @@ REPO = Path(__file__).resolve().parents[1]
 ENGINE_PATH = REPO / "engine" / "research_screener.py"
 BUILDER_PATH = REPO / "scripts" / "build_research_screener.py"
 TEMPLATE_PATH = REPO / "templates" / "research_screener.html.j2"
+CSS_PATH = REPO / "templates" / "research_screener.css"
+THEME_CSS_PATH = REPO / "templates" / "theme.css"
 NAVLINKS_PATH = REPO / "templates" / "_navlinks.html.j2"
 SITE_NAV_PATH = REPO / "templates" / "_site_nav.html.j2"
 
@@ -48,8 +51,15 @@ _FORBIDDEN = (
     "证伪",
 )
 
-_FORBIDDEN_KEY = re.compile(r"(score|rank|top|best|conviction)", re.I)
-_WORD = re.compile(r"\b(score|rank|top|best|conviction)\b", re.I)
+_FORBIDDEN_KEY = re.compile(
+    r"\b(scor(e|es|ed|ing)|rank(s|ed|ing)?|top|best|conviction(s)?)\b",
+    re.I,
+)
+_WORD = re.compile(
+    r"\b(scor(e|es|ed|ing)|rank(s|ed|ing)?|top|best|conviction(s)?)\b",
+    re.I,
+)
+_ON_DATE = re.compile(r"\bon\s+\d{4}-\d{2}-\d{2}\b")
 _CJK_END = re.compile(r"[。！？]")
 
 
@@ -182,7 +192,10 @@ def test_catalyst_window_keeps_30_trading_days_and_drops_the_rest():
     payload = compile_research_screener([inside, far, past], as_of=as_of)
     by_name = {row["name"]: row for row in payload["rows"]}
     assert by_name["Apple"]["catalyst"] is not None
-    assert by_name["Apple"]["catalyst"]["date"] == "2026-09-12"
+    assert by_name["Apple"]["catalyst"]["window_start"] == "2026-09-12"
+    assert by_name["Apple"]["catalyst"]["window_end"] == "2026-09-12"
+    assert by_name["Apple"]["catalyst"]["kind"] == "estimated_window"
+    assert "date" not in by_name["Apple"]["catalyst"]
     assert by_name["Apple"]["catalyst"]["owner"]["en"]
     assert by_name["Microsoft"]["catalyst"] is None
     assert by_name["Tesla"]["catalyst"] is None
@@ -380,7 +393,7 @@ def test_template_renders_via_shared_nav(tmp_path: Path):
     assert 'class="site-nav"' in html
     assert "Apple" in html
     assert "Microsoft" in html
-    assert THEME_NULL_EN in html
+    assert THEME_NULL_EN in html or "Theme lens isn&#39;t available yet" in html
     navlinks = NAVLINKS_PATH.read_text(encoding="utf-8")
     # Shared nav family: the rendered page carries the shared chrome, and this
     # packet must not rewrite the 29-suite pin.
@@ -422,3 +435,86 @@ def test_builder_renders_json_and_html(tmp_path: Path):
     assert payload["rows"][0]["listing_key"] == "US-XNAS-AAPL"
     assert "Apple" in html
     assert 'class="site-nav"' in html
+
+
+def test_window_only_catalyst_never_emits_a_date_or_on_date_copy():
+    """H1: an estimated window is a window, never an announced date."""
+    payload = compile_research_screener(
+        [_state("US-XNAS-AAPL", "AAPL", name="Apple", window_start="2026-09-12")],
+        as_of=date(2026, 9, 1),
+    )
+    catalyst = payload["rows"][0]["catalyst"]
+    assert catalyst is not None
+    assert "date" not in catalyst
+    keys: list[str] = []
+    _walk_keys(catalyst, keys)
+    assert "date" not in keys
+    assert catalyst["kind"] == "estimated_window"
+    assert catalyst["window_start"] == "2026-09-12"
+    assert catalyst["window_end"] == "2026-09-12"
+    why_en = payload["rows"][0]["why"]["en"]
+    assert not _ON_DATE.search(why_en), why_en
+    assert "on 2026-09-12" not in why_en
+    assert "opens around September 12" in why_en
+    assert "windows, not certainties" in why_en
+    assert "窗口，不是定论" in payload["rows"][0]["why"]["zh"]
+
+
+def test_forbidden_key_guard_covers_inflections():
+    """H4.1: score/rank inflections and hyphen-split tokens are forbidden."""
+    for key in (
+        "score",
+        "scores",
+        "scored",
+        "scoring",
+        "rank",
+        "ranks",
+        "ranked",
+        "ranking",
+        "top",
+        "best",
+        "conviction",
+        "convictions",
+        "foo-scoring",
+        "ranked_value",
+    ):
+        with pytest.raises(ValueError, match="forbids key"):
+            _assert_no_forbidden_keys({key: 1})
+    source = ENGINE_PATH.read_text(encoding="utf-8")
+    assert r"scor(e|es|ed|ing)" in source
+    assert r"rank(s|ed|ing)?" in source
+    test_source = Path(__file__).read_text(encoding="utf-8")
+    assert r"scor(e|es|ed|ing)" in test_source
+
+
+def test_template_has_no_skydeck_payload_or_en_only_title():
+    source = TEMPLATE_PATH.read_text(encoding="utf-8")
+    assert "window.__skyDeck" not in source
+    assert "id=\"rs-payload\"" not in source
+    assert "application/json" not in source
+    assert "title=" not in source
+    assert "Estimated window" in source
+    assert "估计窗口" in source
+    assert "about 30 trading days" in source
+    assert "大约 30 个交易日" in source
+    assert "research_screener.css" in source
+
+
+def test_why_cell_wraps_instead_of_clipping():
+    css = CSS_PATH.read_text(encoding="utf-8")
+    assert "text-overflow: ellipsis" not in css
+    assert "white-space: nowrap" not in css
+    assert "-webkit-line-clamp: 2" in css
+    assert "-webkit-box-orient: vertical" in css
+    theme = THEME_CSS_PATH.read_text(encoding="utf-8")
+    assert "page-research-screener" not in theme
+    assert ".rs-" not in theme
+    assert "--rs-" not in theme
+
+
+def test_help_popover_carries_full_why_not_title():
+    source = TEMPLATE_PATH.read_text(encoding="utf-8")
+    assert 'class="help"' in source
+    assert 'class="tip"' in source
+    assert "row.why.en" in source
+    assert "title=" not in source

@@ -25,6 +25,7 @@
 {% set seo_path = 'research_screener.html' %}
 {% include "_seo_head.html.j2" %}
 <link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="research_screener.css">
 </head>
 <body class="page-research-screener">
 {% include "_site_nav.html.j2" %}
@@ -33,13 +34,13 @@
     <p class="rs-kicker">{{ t('Discovery', '发现') }}</p>
     <h1 class="rs-title">{{ t('Research list', '研究名单') }}</h1>
     <p class="rs-lead">{{ t("Which names deserve a look first, and why.", "哪些公司值得先看，以及原因。") }}</p>
-    <p class="rs-note">{{ t('This is a reading list. It orders names alphabetically, or by the next dated event. Every line names a checkable fact and the record that produced it.', '这是一份阅读名单。按名称排列，或按下一项有日期的事项排列。每一行都写明一项可核对的事实，以及产生该事实的记录。') }}</p>
+    <p class="rs-note">{{ t('This is a reading list. It orders names alphabetically, or by the next estimated window. The catalyst lens keeps names whose next earnings window opens in about 30 trading days. Every line names a checkable fact and the record that produced it.', '这是一份阅读名单。按名称排列，或按下一项估计窗口排列。催化事项视角只保留下一份财报窗口大约 30 个交易日内开启的公司。每一行都写明一项可核对的事实，以及产生该事实的记录。') }}</p>
     <p class="rs-count">{% if n_names == 1 %}{{ t('1 name in this list.', '本名单共 1 家公司。') }}{% else %}{{ t('%s names in this list.'|format(n_names), '本名单共 %s 家公司。'|format(n_names)) }}{% endif %}{% if as_of %} <span class="rs-asof">{{ t('Data as of %s.'|format(as_of), '数据截至 %s。'|format(as_of)) }}</span>{% endif %}</p>
   </header>
 
   <div class="rs-toolbar">
     <div class="rs-chips" role="group" aria-label="Lenses">
-      <button type="button" class="rs-chip is-disabled" disabled aria-disabled="true" data-lens="theme" title="Theme lens isn't available yet">{{ t('Theme', '主题') }}</button>
+      <button type="button" class="rs-chip is-disabled" disabled aria-disabled="true" data-lens="theme" aria-describedby="rs-theme-hint">{{ t('Theme', '主题') }}</button>
       <button type="button" class="rs-chip" data-lens="catalyst" aria-pressed="false">{{ t('Catalyst', '催化事项') }}</button>
       <button type="button" class="rs-chip" data-lens="exposure" aria-pressed="false">{{ t('Exposure', '持仓') }}</button>
       <button type="button" class="rs-chip" data-lens="valuation" aria-pressed="false">{{ t('Valuation posture', '估值姿态') }}</button>
@@ -47,11 +48,11 @@
     <div class="rs-order" role="group" aria-label="Order">
       <span class="rs-order-label">{{ t('Order by', '排列方式') }}</span>
       <button type="button" class="rs-order-btn is-on" data-order="name" aria-pressed="true">{{ t('Name', '名称') }}</button>
-      <button type="button" class="rs-order-btn" data-order="next_catalyst_date" aria-pressed="false">{{ t('Next dated event', '下一项有日期的事项') }}</button>
+      <button type="button" class="rs-order-btn" data-order="next_catalyst_date" aria-pressed="false">{{ t('Next estimated window', '下一项估计窗口') }}</button>
     </div>
   </div>
 
-  <p class="rs-theme-null" data-rs-theme-null>{{ t("Theme lens isn't available yet", "主题视角尚未提供。") }}</p>
+  <p class="rs-theme-null" id="rs-theme-hint" data-rs-theme-null>{{ t("Theme lens isn't available yet", "主题视角尚未提供。") }}</p>
   <p class="rs-exposure-null" data-rs-exposure-null hidden>{{ t('Sign in to see which of these you hold', '登录后即可看到你持有其中哪些。') }}</p>
   <p class="rs-empty" data-rs-empty hidden>{{ t('No names match these lenses right now.', '目前没有公司符合这些视角。') }}</p>
 
@@ -61,27 +62,31 @@
         data-listing-key="{{ row.listing_key }}"
         data-ticker="{{ row.ticker }}"
         data-name="{{ row.name }}"
-        data-catalyst-date="{{ row.catalyst.date if row.catalyst else '' }}"
+        data-catalyst-date="{{ row.catalyst.window_start if row.catalyst else '' }}"
         data-has-catalyst="{{ '1' if row.catalyst else '0' }}"
         data-has-valuation="{{ '1' if row.valuation_posture else '0' }}"
         data-has-exposure="0">
       <div class="rs-glance">
         <a class="rs-name" href="stocks/{{ row.ticker }}.html">{{ row.name }} <span class="rs-ticker">{{ row.ticker }}</span></a>
         <p class="rs-why">
-          <span class="l-en">{{ row.why.en }}</span>
-          <span class="l-zh">{{ row.why.zh }}</span>
+          <span class="rs-why-text">
+            <span class="l-en">{{ row.why.en }}</span>
+            <span class="l-zh">{{ row.why.zh }}</span>
+          </span>
+          <span class="help" tabindex="0" role="note">?<span class="tip"><span class="l-en">{{ row.why.en }}</span><span class="l-zh">{{ row.why.zh }}</span></span></span>
         </p>
       </div>
       <details class="rs-receipt">
         <summary>{{ t('Receipt', '凭证') }}</summary>
         <ul>
           {% if row.catalyst %}
-          <li>{{ t('Dated event', '有日期的事项') }} — {{ row.catalyst.date }} · <span class="l-en">{{ row.catalyst.owner.en }}</span><span class="l-zh">{{ row.catalyst.owner.zh }}</span></li>
+          <li>{{ t('Estimated window', '估计窗口') }} — <span class="l-en">{{ row.catalyst.window_label.en }}</span><span class="l-zh">{{ row.catalyst.window_label.zh }}</span> · <span class="l-en">{{ row.catalyst.owner.en }}</span><span class="l-zh">{{ row.catalyst.owner.zh }}</span></li>
           {% endif %}
           {% if row.valuation_posture %}
           <li><span class="l-en">{{ row.valuation_posture.label.en }}</span><span class="l-zh">{{ row.valuation_posture.label.zh }}</span> · <span class="l-en">{{ row.valuation_posture.assumptions_text.en }}</span><span class="l-zh">{{ row.valuation_posture.assumptions_text.zh }}</span> · <span class="l-en">{{ row.valuation_posture.owner.en }}</span><span class="l-zh">{{ row.valuation_posture.owner.zh }}</span></li>
           {% endif %}
           <li>{{ t("Theme lens isn't available yet", "主题视角尚未提供。") }}</li>
+          <li>{{ t('Full why', '完整原因') }} — <span class="l-en">{{ row.why.en }}</span><span class="l-zh">{{ row.why.zh }}</span></li>
           <li class="rs-hold-line" data-rs-hold hidden>{{ t('You hold this name.', '你持有这家公司。') }}</li>
         </ul>
         <p class="rs-more"><a href="stocks/{{ row.ticker }}.html">{{ t('Open the company page for the full technical read.', '打开公司页面查看完整技术细节。') }}</a></p>
@@ -90,7 +95,6 @@
     {% endfor %}
   </ol>
 </main>
-<script type="application/json" id="rs-payload">{{ payload | tojson }}</script>
 <script>
 (function () {
   var list = document.querySelector("[data-rs-list]");
@@ -208,7 +212,6 @@
   else document.addEventListener("DOMContentLoaded", function () { setTimeout(boot, 0); });
 })();
 </script>
-<script>window.__skyDeck = true;</script>
 <script src="theme.js"></script>
 <script src="watchstore.js"></script>
 </body>

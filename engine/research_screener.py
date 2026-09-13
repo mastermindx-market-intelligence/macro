@@ -12,6 +12,7 @@ the existing WatchStore.portfolio.list mechanism, not this module.
 """
 from __future__ import annotations
 
+import re
 from datetime import date, timedelta
 from typing import Any, Mapping
 
@@ -21,7 +22,16 @@ CATALYST_WINDOW_TRADING_DAYS = 30
 DEFAULT_ORDER = "name"
 ALLOWED_ORDERS = ("name", "next_catalyst_date")
 
-_FORBIDDEN_KEY_FRAGMENTS = ("score", "rank", "top", "best", "conviction")
+# Inflection-aware: score/scores/scored/scoring, rank/ranks/ranked/ranking,
+# top, best, conviction/convictions. Tokens are split on non-alphanumerics.
+_FORBIDDEN_WORD_RE = re.compile(
+    r"\b(scor(e|es|ed|ing)|rank(s|ed|ing)?|top|best|conviction(s)?)\b"
+)
+_NON_ALNUM = re.compile(r"[^a-z0-9]+")
+_MONTHS_EN = (
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December",
+)
 
 THEME_NULL_EN = "Theme lens isn't available yet"
 THEME_NULL_ZH = "主题视角尚未提供。"
@@ -62,11 +72,19 @@ def _iso_date(value: Any) -> date | None:
         return None
 
 
+def _window_day_en(value: date) -> str:
+    return f"{_MONTHS_EN[value.month - 1]} {value.day}"
+
+
+def _window_day_zh(value: date) -> str:
+    return f"{value.month} 月 {value.day} 日"
+
+
 def trading_days_between(start: date, end: date) -> int:
     """Weekday count from ``start`` to ``end``, excluding ``start``, including ``end``.
 
-    Holidays are not a calendar this compiler owns. A weekday count is the
-    checkable stand-in for "trading days" with zero IO.
+    This compiler does not own a holiday calendar. The weekday count is the
+    zero-IO stand-in for the user-facing phrase "about 30 trading days".
     """
     if end <= start:
         return 0
@@ -105,12 +123,12 @@ def _zh_sentence(text: str) -> str:
 def _assert_no_forbidden_keys(obj: Any, path: str = "") -> None:
     if isinstance(obj, Mapping):
         for key, value in obj.items():
-            lowered = str(key).lower()
-            for fragment in _FORBIDDEN_KEY_FRAGMENTS:
-                if fragment == lowered or fragment in lowered.split("_"):
-                    raise ValueError(
-                        f"research_screener view-model forbids key {key!r} at {path or '/'}"
-                    )
+            tokens = [tok for tok in _NON_ALNUM.split(str(key).lower()) if tok]
+            blob = " ".join(tokens)
+            if _FORBIDDEN_WORD_RE.search(blob):
+                raise ValueError(
+                    f"research_screener view-model forbids key {key!r} at {path or '/'}"
+                )
             _assert_no_forbidden_keys(value, f"{path}/{key}")
     elif isinstance(obj, (list, tuple)):
         for i, item in enumerate(obj):
@@ -147,16 +165,25 @@ def _catalyst_for(state: Mapping[str, Any], as_of: date | None) -> dict[str, Any
     if not dated:
         return None
     dated.sort(key=lambda pair: pair[0])
-    event_date, _item = dated[0]
+    event_date, item = dated[0]
     if as_of is None:
         return None
     if event_date < as_of:
         return None
     if trading_days_between(as_of, event_date) > CATALYST_WINDOW_TRADING_DAYS:
         return None
+    window_end = _iso_date(item.get("window_end")) or event_date
+    # Upstream security_state.v1 observables carry an estimated window, not an
+    # announced date field. Emit only the window — never a `date` key.
     return {
         "next_event_name": _bilingual(CATALYST_EVENT_EN, CATALYST_EVENT_ZH),
-        "date": event_date.isoformat(),
+        "window_start": event_date.isoformat(),
+        "window_end": window_end.isoformat(),
+        "kind": "estimated_window",
+        "window_label": _bilingual(
+            f"Next earnings window opens around {_window_day_en(event_date)} — windows, not certainties",
+            f"下一份财报窗口大约在 {_window_day_zh(event_date)} 开启 — 窗口，不是定论。",
+        ),
         "owner": _bilingual(CATALYST_OWNER_EN, CATALYST_OWNER_ZH),
     }
 
@@ -257,14 +284,22 @@ def _why(
     parts_en: list[str] = []
     parts_zh: list[str] = []
     if catalyst:
-        event = catalyst["next_event_name"]
         owner = catalyst["owner"]
+        start = _iso_date(catalyst.get("window_start"))
+        day_en = _window_day_en(start) if start else ""
+        day_zh = _window_day_zh(start) if start else ""
         parts_en.append(
-            _en_sentence(f"{event['en']} on {catalyst['date']}, from {owner['en']}")
+            _en_sentence(
+                f"Next earnings window opens around {day_en} — windows, not certainties"
+            )
         )
+        parts_en.append(_en_sentence(f"From {owner['en']}"))
         parts_zh.append(
-            _zh_sentence(f"{event['zh']}在 {catalyst['date']}，来源：{owner['zh']}")
+            _zh_sentence(
+                f"下一份财报窗口大约在 {day_zh} 开启 — 窗口，不是定论"
+            )
         )
+        parts_zh.append(_zh_sentence(f"来源：{owner['zh']}"))
     if valuation:
         label = valuation["label"]
         assumptions = valuation["assumptions_text"]
@@ -320,8 +355,8 @@ def sort_rows(rows: list[dict[str, Any]], order: str = DEFAULT_ORDER) -> list[di
     if order == "next_catalyst_date":
         def key(row: Mapping[str, Any]) -> tuple:
             catalyst = row.get("catalyst") if isinstance(row.get("catalyst"), Mapping) else None
-            date_s = catalyst.get("date") if catalyst else None
-            # Rows with no dated catalyst sort after dated ones, then by name.
+            date_s = catalyst.get("window_start") if catalyst else None
+            # Rows with no estimated window sort after windowed ones, then by name.
             return (date_s is None, date_s or "", (row.get("name") or "").casefold(), row.get("listing_key") or "")
         return sorted(rows, key=key)
     return sorted(
@@ -348,8 +383,9 @@ def compile_research_screener(
         Already-computed ``valuation_scenario.v1`` blobs, either a list or a
         mapping keyed by ticker / listing_key.
     as_of:
-        Anchor date for the 30-trading-day catalyst window. Required for a
-        dated catalyst; omitted means every catalyst is null.
+        Anchor date for the about-30-trading-day catalyst window (weekday
+        stand-in; see ``trading_days_between``). Required for an estimated
+        window; omitted means every catalyst is null.
     names:
         Optional listing_key-or-ticker → display name map.
     """

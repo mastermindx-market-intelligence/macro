@@ -656,7 +656,7 @@ PUBLIC_EXACT = frozenset({
     # reader it exists for.
     "/about.html",
     "/", "/index.html", "/plans.html", "/macro.html", "/start.html",
-    "/us_stocks.html", "/confluence_screener.html", "/research_screener.html", "/research_vault.html",
+    "/us_stocks.html", "/confluence_screener.html", "/research_screener.html", "/research_screener.css", "/research_vault.html",
     "/research_vault_app.js",
     # The two Special Situations tier-preview SHELLS (docs/TIER_PREVIEW_PATTERN.md),
     # promoted from free_registered to anonymous-public by SEO_SUPERCHARGE_MASTERPLAN
