@@ -1163,7 +1163,11 @@
   body.page-hk .hkx-row:last-child{border-bottom:none}
   body.page-hk .hkx-row .ic{flex:0 0 20px;text-align:center;font-size:12px;padding-top:1px}
   body.page-hk .hkx-row .sub{display:block;font-size:10.5px;color:var(--muted);margin-top:1px}
-  /* §5.8 monoline icons — replace 🔴/🟢 emoji on the What To Do glance rows */
+  /* §5.8 monoline icons — replace emoji tone marks on the What To Do glance rows;
+     pages reuse the design system's tone-up / tone-down / tone-flat class idiom
+     (canonical CSS classes mapping to --up / --down / --muted), and these
+     glance-row icons inherit their color via the page-local .ic-up / .ic-dn
+     classes that point at the same --up / --down tokens — no new CSS literal. */
   body.page-hk .hkx-ic{flex:0 0 20px;display:flex;align-items:center;justify-content:center;padding-top:1px;color:var(--muted)}
   body.page-hk .hkx-ic .ic-svg,body.page-hk .hkx-row .ic-svg{width:16px;height:16px;display:block;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
   body.page-hk .hkx-ic.ic-up,body.page-hk .ic-up{color:var(--ink-up, var(--up))}
