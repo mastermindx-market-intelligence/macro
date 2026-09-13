@@ -522,3 +522,24 @@ def test_help_popover_carries_full_why_not_title():
     assert 'class="tip"' in source
     assert "row.why.en" in source
     assert "title=" not in source
+
+
+_STAMP_RE = re.compile(r'(theme|research_screener)\.css\?v=[0-9a-f]{8}')
+
+
+def test_committed_page_uses_stamped_stylesheet_helper():
+    """H2: page CSS is linked through the lib/pages content stamp, not a bare href."""
+    html = (REPO / "site" / "research_screener.html").read_text(encoding="utf-8")
+    assert re.search(r'research_screener\.css\?v=[0-9a-f]{8}', html), html[html.find("research_screener.css") - 20:html.find("research_screener.css") + 60] if "research_screener.css" in html else "missing css link"
+    assert re.search(r'theme\.css\?v=[0-9a-f]{8}', html)
+
+
+def test_fresh_bake_matches_committed_site_html():
+    """H4.7: baking the committed payload reproduces site/research_screener.html."""
+    from scripts.build_research_screener import bake_html
+
+    payload = json.loads((REPO / "site" / "research_screener.json").read_text(encoding="utf-8"))
+    baked = bake_html(REPO, payload)
+    committed = (REPO / "site" / "research_screener.html").read_text(encoding="utf-8")
+    assert baked == committed
+    assert _STAMP_RE.search(baked)

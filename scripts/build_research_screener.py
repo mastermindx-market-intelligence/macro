@@ -92,10 +92,33 @@ def render_html(root: Path, payload: dict[str, Any]) -> str:
     return tpl.render(payload=payload, as_of=payload.get("as_of"))
 
 
+def stamp_page_html(site: Path, html: str) -> str:
+    """Apply the same lib/pages content stamp other page stylesheets use."""
+    try:
+        from scripts.optimize_assets import make_optimizer
+        return make_optimizer(site)(html, site)
+    except Exception as exc:  # noqa: BLE001 — next site-wide sweep heals
+        msg = " ".join(str(exc).split()) or type(exc).__name__
+        print(
+            f"::warning title=research_screener::rendered UN-stamped ({msg}) "
+            "— the next optimize_assets sweep heals it",
+            flush=True,
+        )
+        return html
+
+
+def bake_html(root: Path, payload: dict[str, Any]) -> str:
+    """Render + stamp + data-base shim. Matches the committed site HTML."""
+    from lib.pages import dbase_prefix, inject_text
+
+    site = root / "site"
+    html = stamp_page_html(site, render_html(root, payload))
+    return inject_text(html, dbase_prefix(site / HTML_NAME))
+
+
 def render(root: Path) -> dict[str, Any]:
     t0 = time.perf_counter()
     payload = build_payload(root)
-    html = render_html(root, payload)
     site = root / "site"
     site.mkdir(parents=True, exist_ok=True)
     json_path = site / JSON_NAME
@@ -105,7 +128,7 @@ def render(root: Path) -> dict[str, Any]:
     )
     from lib.pages import write_page
 
-    write_page(site / HTML_NAME, html)
+    write_page(site / HTML_NAME, bake_html(root, payload))
     elapsed = time.perf_counter() - t0
     n = len(payload.get("rows") or [])
     print(f"research_screener::rows={n} elapsed_s={elapsed:.3f}", flush=True)
