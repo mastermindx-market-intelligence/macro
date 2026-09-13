@@ -1,81 +1,54 @@
 {
-  "disclaimer": "Heuristics identify review targets; they do not determine that a page is bad.",
-  "generated_at": "2026-09-13T17:03:09Z",
-  "metric_notes": {
-    "asof_present": "approximate contract probe (selector OR case-insensitive text pattern); absence is a prompt to look, not a verdict",
-    "console_error_count": "distinct console 'error' texts across every state of the page the driver attempted, captured or not — a state that failed to load is often the one carrying the evidence",
-    "duplicate_heading_texts": "case-folded visible heading text seen more than once; a repeated section label across tabs is a legitimate duplicate",
-    "panel_count": "class-name heuristic over the configured selector list; both over- and under-counts are expected",
-    "payload_bytes_total": "sum of response body sizes reported by the driver for the reference state; excludes bodies the driver could not size",
-    "raw_slug_hits": "visible text matching 3+ segment snake_case; legitimate identifiers (file names, API keys quoted on purpose) match too",
-    "screenshot_completion": "captured states / attempted states for this page; states the registry excludes are not attempted and are recorded as gaps",
-    "section_count": "direct <section> children of <body> plus direct element children of <main>; an approximation of 'how many blocks is this page'",
-    "source_present": "approximate contract probe (selector OR case-insensitive text pattern); absence is a prompt to look, not a verdict",
-    "visible_word_count": "whitespace-split innerText of <body>; Chinese text is not word-segmented, so a zh capture undercounts relative to en"
-  },
-  "pages": [
+  "schema": "mastermind.evidence_smells.v1",
+  "generated_at": "2026-09-13T17:54:52+00:00",
+  "smells": [
     {
-      "metrics": {
-        "asof_present": false,
-        "by_viewport": {
-          "desktop": {
-            "document_height_px": 900,
-            "elements_wider_than_viewport": 0,
-            "horizontal_overflow": false
-          },
-          "mobile": {
-            "document_height_px": 844,
-            "elements_wider_than_viewport": 0,
-            "horizontal_overflow": false
-          }
-        },
-        "console_error_count": 0,
-        "document_height_px": 900,
-        "duplicate_heading_texts": [],
-        "elements_wider_than_viewport": 0,
-        "heading_counts": {
-          "h1": 1,
-          "h2": 0,
-          "h3": 0,
-          "h4": 0,
-          "h5": 0,
-          "h6": 0
-        },
-        "horizontal_overflow": false,
-        "long_paragraph_count": 0,
-        "measured_in": {
-          "access": "anonymous",
-          "locale": "en",
-          "theme": "light",
-          "viewport": "desktop"
-        },
-        "panel_count": 0,
-        "payload_bytes_total": 532019,
-        "raw_slug_hit_count": 0,
-        "raw_slug_hits": [],
-        "request_count": 16,
-        "screenshot_completion": 1.0,
-        "section_count": 6,
-        "source_present": false,
-        "todo_placeholder_hit_count": 0,
-        "todo_placeholder_hits": [],
-        "visible_word_count": 108
-      },
-      "page_id": "research_screener.html",
-      "route": "/research_screener.html"
+      "crop": "1ed815b7fcabbdde",
+      "phrase": "MASTERMINDX\nUnited States\n▾\nChina\n▾\nHong Kong\n▾\nCanada\n▾\nInternational\n▾\nOther Assets\n▾\nResearch\n▾\nNVDA\nTerminal\n\nDISCOVERY\n\nResearch list\n\nWhich names deserve a look first, and why.\n\nThis is a reading list. It orders names alphabetically, ",
+      "kind": "informational",
+      "sha256": "9ee45f52d273028f"
+    },
+    {
+      "crop": "228ec3c32b00b355",
+      "phrase": "MASTERMINDX\n美国\n▾\n中国\n▾\n香港\n▾\n加拿大\n▾\n国际\n▾\n其他资产\n▾\n研究\n▾\nNVDA\n终端\n\n发现\n\n研究名单\n\n哪些公司值得先看，以及原因。\n\n这是一份阅读名单。按名称排列，或按下一项估计窗口排列。催化事项视角只保留下一份财报窗口大约 30 个交易日内开启的公司。每一行都写明一项可核对的事实，以及产生该事实的记录。\n\n本名单共 2 家公司。 数据截至 2026-09-04。\n\nLenses\n视角\n\">\n主题\n催化事项\n持仓\n估值姿态\nOrder\n排列",
+      "kind": "informational",
+      "sha256": "4b86e1f3332b26a7"
+    },
+    {
+      "crop": "421473034d98dd70",
+      "phrase": "MASTERMINDX\nUnited States\n▾\nChina\n▾\nHong Kong\n▾\nCanada\n▾\nInternational\n▾\nOther Assets\n▾\nResearch\n▾\nNVDA\nTerminal\n\nDISCOVERY\n\nResearch list\n\nWhich names deserve a look first, and why.\n\nThis is a reading list. It orders names alphabetically, ",
+      "kind": "informational",
+      "sha256": "9ee45f52d273028f"
+    },
+    {
+      "crop": "60ada0a61478a38e",
+      "phrase": "MASTERMINDX\n美国\n▾\n中国\n▾\n香港\n▾\n加拿大\n▾\n国际\n▾\n其他资产\n▾\n研究\n▾\nNVDA\n终端\n\n发现\n\n研究名单\n\n哪些公司值得先看，以及原因。\n\n这是一份阅读名单。按名称排列，或按下一项估计窗口排列。催化事项视角只保留下一份财报窗口大约 30 个交易日内开启的公司。每一行都写明一项可核对的事实，以及产生该事实的记录。\n\n本名单共 2 家公司。 数据截至 2026-09-04。\n\nLenses\n视角\n\">\n主题\n催化事项\n持仓\n估值姿态\nOrder\n排列",
+      "kind": "informational",
+      "sha256": "4b86e1f3332b26a7"
+    },
+    {
+      "crop": "65f43ab31fb50ab3",
+      "phrase": "60\nTerminal\n\nDISCOVERY\n\nResearch list\n\nWhich names deserve a look first, and why.\n\nThis is a reading list. It orders names alphabetically, or by the next estimated window. The catalyst lens keeps names whose next earnings window opens in ab",
+      "kind": "informational",
+      "sha256": "91e20a7babf55045"
+    },
+    {
+      "crop": "b7b62d65aae13efb",
+      "phrase": "NVDA\n终端\n\n发现\n\n研究名单\n\n哪些公司值得先看，以及原因。\n\n这是一份阅读名单。按名称排列，或按下一项估计窗口排列。催化事项视角只保留下一份财报窗口大约 30 个交易日内开启的公司。每一行都写明一项可核对的事实，以及产生该事实的记录。\n\n本名单共 2 家公司。 数据截至 2026-09-04。\n\nLenses\n视角\n\">\n主题\n催化事项\n持仓\n估值姿态\nOrder\n排列方式\n\">\n排列方式\n名称\n下一项估计窗口\n\n主题视角尚未提供。\n\nApple AAPL\n\n预计窗口",
+      "kind": "informational",
+      "sha256": "394e25b8fdd8b6f5"
+    },
+    {
+      "crop": "c99dc52c2ef6ccb7",
+      "phrase": "NVDA\nTerminal\n\nDISCOVERY\n\nResearch list\n\nWhich names deserve a look first, and why.\n\nThis is a reading list. It orders names alphabetically, or by the next estimated window. The catalyst lens keeps names whose next earnings window opens in ",
+      "kind": "informational",
+      "sha256": "c75e7132ac86764b"
+    },
+    {
+      "crop": "c1cd98da763c4cdd",
+      "phrase": "NVDA\n终端\n\n发现\n\n研究名单\n\n哪些公司值得先看，以及原因。\n\n这是一份阅读名单。按名称排列，或按下一项估计窗口排列。催化事项视角只保留下一份财报窗口大约 30 个交易日内开启的公司。每一行都写明一项可核对的事实，以及产生该事实的记录。\n\n本名单共 2 家公司。 数据截至 2026-09-04。\n\nLenses\n视角\n\">\n主题\n催化事项\n持仓\n估值姿态\nOrder\n排列方式\n\">\n排列方式\n名称\n下一项估计窗口\n\n主题视角尚未提供。\n\nApple AAPL\n\n预计窗口",
+      "kind": "informational",
+      "sha256": "394e25b8fdd8b6f5"
     }
-  ],
-  "schema": "mastermind.ux_smell_report.v1",
-  "target": {
-    "base_url": null,
-    "kind": "site_dir",
-    "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-ext-fix-7102-144b2a33f895a072",
-    "resolved_sha_or_none": "33d2db46496a02e38453bdfeaf59c5764c2e41db",
-    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-ext-fix-7102-144b2a33f895a072 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
-    "site_dir": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mo-ext-fix-7102-144b2a33f895a072/site"
-  },
-  "tool": {
-    "module_ref": "scripts/capture_page_evidence.py",
-    "version": "1.2.0"
-  }
+  ]
 }
