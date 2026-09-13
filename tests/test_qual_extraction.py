@@ -479,6 +479,12 @@ def test_extract_envelope_fields():
     assert "extracted_at" in result
 
 
+def test_shared_quote_span_verifier():
+    assert qe.quote_span_verified(BODY, "acquire all outstanding shares")
+    assert not qe.quote_span_verified(BODY, "this phrase is fabricated")
+    assert qe.citation_normalize("2.1%") == "2 1"
+
+
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     failed = 0
