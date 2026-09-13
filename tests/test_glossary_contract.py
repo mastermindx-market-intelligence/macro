@@ -58,6 +58,34 @@ def test_rendered_letter_rail_marks_empty_letters_disabled():
             assert frag_re.search(html), letter["id"]
 
 
+def test_rendered_glossary_shows_a_why_paragraph_for_every_term():
+    """B-F13-1 audit heal (m#6909) H1: every row must show its 'so what'
+    paragraph, not only the 15 that were already paired — the page's
+    "what you do about it" promise is row-level, not optional."""
+    html = _render()
+    vm = glossary_view_model(ROOT)
+    term_count = vm["term_count"]
+    paragraphs = re.findall(r'<p class="gl-why">.*?</p>', html, re.S)
+    assert len(paragraphs) == term_count, (
+        f"rendered page carries {len(paragraphs)} .gl-why paragraphs but "
+        f"the view model exposes {term_count} terms; every row must carry a why"
+    )
+
+
+def test_rendered_rail_note_makes_no_permanent_claim_about_a_transient_state():
+    """B-F13-1 audit heal (m#6909) H3: the rail note must read the same way
+    whether the view is the full set or has been filtered — 'yet' or '暂无'
+    assert a permanent state ('no terms exist') that is not true the moment
+    a user types in the search or hits a filter that hides rows. Both EN and
+    ZH must avoid that claim."""
+    html = _render()
+    m = re.search(r'<p class="gl-rail-note">(.*?)</p>', html, re.S)
+    assert m, "rendered page missing .gl-rail-note paragraph"
+    note = re.sub(r"<[^>]+>", "", m.group(1))
+    assert "yet" not in note.lower(), note
+    assert "暂无" not in note, note
+
+
 def test_rendered_letter_rail_anchors_are_unique_ids():
     """Each gl-letter-X anchor id must appear at most once across the whole
     page: it is a jump target for the A-Z rail, and a duplicate id both makes

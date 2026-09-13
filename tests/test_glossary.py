@@ -62,6 +62,29 @@ def test_glance_answers_respect_the_word_and_character_budgets():
             assert len(term.why_zh) <= 40, term.id
 
 
+def test_every_term_carries_a_why_pair():
+    """B-F13-1 audit heal (m#6909): every glossary term must carry a non-empty
+    ``why_en`` and ``why_zh`` pair so the page's "what you do about it"
+    promise is honoured on every row, not just 15 of 54. The both-or-neither
+    invariant at lib/glossary.py:401 is the schema half; this is the count
+    half — any term without a pair must fail here so the build is closed."""
+    for term in GLOSSARY_TERMS:
+        assert term.why_en is not None and term.why_en.strip(), term.id
+        assert term.why_zh is not None and term.why_zh.strip(), term.id
+
+
+def test_sue_row_carries_the_demotion_with_no_digit_in_either_why_field():
+    """B-F13-1 audit heal (m#6909) H2: the SUE row's own bound source records
+    the cross-sectional IC collapsing to near zero, so the why pair must
+    restate the measured position without inventing a number, weight, or
+    IC value in user copy."""
+    sue = next(t for t in GLOSSARY_TERMS if t.id == "sue-earnings-chip")
+    assert sue.why_en and sue.why_en.strip()
+    assert sue.why_zh and sue.why_zh.strip()
+    assert not any(c.isdigit() for c in sue.why_en), sue.why_en
+    assert not any(c.isdigit() for c in sue.why_zh), sue.why_zh
+
+
 def test_glance_text_carries_no_banned_vocabulary():
     for term in GLOSSARY_TERMS:
         for text in (
