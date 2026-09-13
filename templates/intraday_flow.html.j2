@@ -633,7 +633,7 @@ var STANCE_META = {
   take_profits:{ dot:'🟠', lane:'lane-profit', en:'Take profits',       zh:'获利了结', order:3 },
   watch:       { dot:'👀', lane:'lane-watch',  en:"Watch — don't chase",zh:'观望——勿追', order:4 },
   stand_aside: { dot:'⚪', lane:'lane-aside',  en:'Stand aside',        zh:'暂时观望', order:5 },
-  degraded:    { dot:'⚪', lane:'lane-aside',  en:'No read',            zh:'暂无判断', order:6 }
+  degraded:    { dot:'·',  lane:'lane-aside',  en:'No read',            zh:'暂无判断', order:6 }
 };
 
 // ── URL helpers ────────────────────────────────────────────────────────────
@@ -1572,7 +1572,7 @@ function applyView() {
     } else if (total > BOARD_CAP && boardExpanded) {
       lbl.innerHTML = lz('Showing '+total+' of '+total+' leaders · ', '显示 '+total+' / '+total+' 只 · ')
         + '<button type="button" class="ift-see-all" id="ift-see-all" data-ift-collapse="1">'
-        + lz('Show top '+BOARD_CAP+' ↑', '只看前 '+BOARD_CAP+' 只')
+        + lz('Show top '+BOARD_CAP, '只看前 '+BOARD_CAP+' 只')
         + '</button>';
     } else {
       var enCount = total === 1 ? '1 leader' : (total+' leaders');

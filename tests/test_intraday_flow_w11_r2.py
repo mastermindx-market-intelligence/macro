@@ -398,7 +398,7 @@ def test_view_changing_inputs_reset_board_expanded():
     assert "boardExpanded = false" in events
     assert events.count("boardExpanded = false") >= 4  # sort, basket, stance, search (group too)
     assert "data-ift-collapse" in src
-    assert "Show top '+BOARD_CAP+' ↑" in src
+    assert "Show top '+BOARD_CAP" in src
     assert "只看前 '+BOARD_CAP+' 只" in src
 
 
