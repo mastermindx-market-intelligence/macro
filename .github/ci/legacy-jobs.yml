@@ -2495,6 +2495,15 @@ jobs:
           tests/test_t0_indicator.py
           tests/test_intraday_flow.py
           tests/test_intraday_flow_stance.py
+          # W11 intraday_flow coverage-true feed words / bilingual tape chips /
+          # 8-of-N counted board (PR #7070 round 1): same subject as the two
+          # neighbouring suites, stdlib-only plus the pandas/pyarrow/jinja2
+          # install this step already owns. No new job.
+          tests/test_intraday_flow_w11_r1.py
+          tests/test_intraday_flow_w11_r2.py
+          tests/test_intraday_flow_w11_r3.py
+          tests/test_intraday_flow_w11_r4.py
+          tests/test_intraday_flow_w11_r5.py
           tests/test_standout_audit.py
           tests/test_track_record_page.py
           tests/test_altdata_hygiene.py
