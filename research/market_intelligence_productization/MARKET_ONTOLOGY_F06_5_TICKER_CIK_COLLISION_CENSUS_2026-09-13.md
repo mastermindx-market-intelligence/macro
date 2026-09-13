@@ -6,7 +6,8 @@
 **Author:** W7B F06-5 sub-agent (Chairman override regime; Fable 5.1 seat ruling)
 **Ledger row:** `research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv` row **MO-PAID-020**
 **Packet:** `[MO-B F06-5]` — ticker/CIK collision census + at most ONE bounded renderer/CIK-access repair
-**Outcome:** **census only — zero collisions, no admissible repair** (per R3)
+**Outcome (initial census, 6b3a916):** **census only — zero collisions, no admissible repair** (per R3)
+**Outcome (heal-round, d75a9eae):** **C1 still all-zero on strict collisions; one admissible defect found and repaired under R3.** The C5 probe on the original census assertion ("no raw-token leak in any user-facing string") was proven false by qwen_r1 review: `templates/ticker.html.j2:1975-1976` rendered `{{ ss.security_id }}` / `{{ ss.issuer_id }}` as visible text inside the `role="dialog"` "Evidence & receipts / 证据与凭证" panel under the `Security` / `证券标识` and `Issuer` / `发行人标识` labels — a raw `SEC:...` / `ISS:...` token leak in F06-owned code. The heal-round landed H1 — the ONE bounded repair R3 admits — replacing those two raw-token rows with plain-word EN/ZH copy ("Recorded on the security-state record / 记录于证券状态档案") and the `_ss_identity_read_rows` / `_ss_equality_display` withholding from the visible rows. The PR title and body were corrected to drop the "census only" suffix, which is only lawful when no admissible defect exists.
 
 ## Plain-language summary
 
@@ -131,14 +132,31 @@ the fix lies entirely inside the F06-owned path
 | 3 | C3 incomplete-CIK rows (CTRA, FI, GOLD, TPH) — `owner identity is incomplete` already routes the user through the typed `OWNER_IDENTITY_INCOMPLETE` path with EN/ZH plain-word copy | 4 tickers | low | not admissible — would require writing CIK into `issuer_master.parquet` (owner boundary, R4) |
 | 4 | C2 expired_store_alias (EQR) — store now carries VMRK; the row's `valid_to` is correctly closed; nothing the renderer can do here | 0 users (renamed) | none | not applicable |
 
-**No admissible defect exists.** Per R3:
+**One admissible defect found and repaired (heal-round d75a9eae).** The C5
+probe on the original census assertion ("no raw-token leak in any user-facing
+string") was falsified by qwen_r1 review: `templates/ticker.html.j2:1975-1976`
+rendered `{{ ss.security_id }}` / `{{ ss.issuer_id }}` as visible text inside
+the `role="dialog"` "Evidence & receipts / 证据与凭证" panel under the
+`Security` / `证券标识` and `Issuer` / `发行人标识` labels — a raw `SEC:...` /
+`ISS:...` token leak in F06-owned code. H1 (the ONE bounded repair R3 admits)
+replaced those two raw-token rows with plain-word EN/ZH copy and adjusted
+`_ss_identity_read_rows` / `_ss_equality_display` to withhold raw identifier
+tokens from visible rows while preserving them on `raw_token` / `left_raw` /
+`right_raw` audit fields. The PR title and body were updated to drop the
+"census only: zero collisions, no admissible repair" suffix, which is only
+lawful when no admissible defect exists.
+
+Per R3:
 
 > If C1 is all-zero and no admissible defect exists: ship the census + test
 > ONLY, append " — census only: zero collisions, no admissible repair" to
 > the PR title, and say so in the body.
 
-This packet complies: the title carries the suffix; the body says so; the
-PR ships no renderer repair.
+This packet **does not** carry that suffix because an admissible defect WAS
+found and repaired (H1, `templates/ticker.html.j2:1975-1976` + `scripts/build_ticker_pages.py`
+`_ss_*` / `build_security_state`); the original "Census only" paragraph at
+the top of the body's "What was repaired" section has been replaced by a
+description of what the heal-round actually changed.
 
 ## Owner-boundary rows
 
