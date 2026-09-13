@@ -48,6 +48,17 @@
       "retrieved_at": "2026-09-13"
     },
     {
+      "source_ref": "SRC-STRAT-PUBLIC",
+      "title": "The Strat scenarios and 2-1-2 / 3-1-2 pattern definitions",
+      "publisher_or_author": "Strat.Trading public methodology site",
+      "source_type": "public_practitioner_methodology",
+      "url": "https://strat.trading/the-scenarios/three-scenarios-in-the-strat-patterns/",
+      "rights_class": "public_formula",
+      "rights_ref": "public rule definitions only; no proprietary indicator code or paid assets copied",
+      "covers": ["inside_bar", "outside_bar", "2-1-2", "3-1-2"],
+      "retrieved_at": "2026-09-13"
+    },
+    {
       "source_ref": "SRC-LO-MAMAYSKY-WANG-2000",
       "title": "Foundations of Technical Analysis: Computational Algorithms, Statistical Inference, and Empirical Implementation",
       "publisher_or_author": "Andrew W. Lo, Harry Mamaysky, Jiang Wang / NBER",
