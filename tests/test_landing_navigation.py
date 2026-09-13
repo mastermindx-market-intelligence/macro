@@ -134,3 +134,18 @@ def test_mobile_navigation_css_is_an_in_flow_accordion():
     assert ".nav-links.open{display:flex}" in css
     assert ".nav-panel,.nav-panel-research,.nav-panel-resources{position:static" in css
     assert "max-height:calc(100dvh - 76px)" in css
+
+
+@pytest.mark.parametrize("path", CSS_PATHS)
+def test_narrow_layout_reflows_footer_and_situation_labels(path: Path):
+    """Guard the two reproduced intrinsic-width causes, not an overflow mask."""
+    css = path.read_text(encoding="utf-8")
+    mobile = css.split("@media (max-width:680px){", 1)[1].split(
+        "@media (max-width:430px){", 1
+    )[0]
+    assert re.search(r"\.f-cols\s*\{[^}]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)", mobile)
+    assert re.search(r"\.f-col\s*\{[^}]*min-width:\s*0", mobile)
+    assert re.search(r"\.sit\s+\.meter\s*\{[^}]*flex-wrap:\s*wrap", mobile)
+    assert re.search(r"\.sit\s+\.early\s*\{[^}]*white-space:\s*normal", mobile)
+    # Reflow fixes must not conceal content by newly masking the whole document.
+    assert not re.search(r"(?:^|\})\s*(?:html|body)[^{]*\{[^}]*overflow-x:\s*hidden", mobile)

@@ -1,0 +1,50 @@
+{
+  "observed_at": "2026-09-10T00:45:10.175806+00:00",
+  "baseline_ref": "a4d33f32dad140acdfa081b21f55ad6d8dcb94d4",
+  "passed": true,
+  "scope": "Local browser CSS substitution only; no source or production mutation.",
+  "checks": {
+    "baseline_reproduces_390_overflow": true,
+    "footer_only_fixes_390": true,
+    "footer_only_still_fails_320": true,
+    "complete_fix_fits_both": true
+  },
+  "cases": [
+    {
+      "viewport": 390,
+      "document": 406,
+      "case": "baseline",
+      "css_sha256": "a44e4256ea9195c0b7055f69c488d3909733ae890c2fc94c3a3243cb5be91d6a"
+    },
+    {
+      "viewport": 320,
+      "document": 406,
+      "case": "baseline",
+      "css_sha256": "a44e4256ea9195c0b7055f69c488d3909733ae890c2fc94c3a3243cb5be91d6a"
+    },
+    {
+      "viewport": 390,
+      "document": 390,
+      "case": "footer-only",
+      "css_sha256": "447d29db0d7c70c61f69c181ca708791f8045fb9bb605b7f3ba6f3e829051fdf"
+    },
+    {
+      "viewport": 320,
+      "document": 354,
+      "case": "footer-only",
+      "css_sha256": "447d29db0d7c70c61f69c181ca708791f8045fb9bb605b7f3ba6f3e829051fdf"
+    },
+    {
+      "viewport": 390,
+      "document": 390,
+      "case": "complete-fix",
+      "css_sha256": "dea45992eb94ef4f5eb8e33a109f9d0deedd44c7f2b50d9e6b30945cc0c92602"
+    },
+    {
+      "viewport": 320,
+      "document": 320,
+      "case": "complete-fix",
+      "css_sha256": "dea45992eb94ef4f5eb8e33a109f9d0deedd44c7f2b50d9e6b30945cc0c92602"
+    }
+  ]
+}
