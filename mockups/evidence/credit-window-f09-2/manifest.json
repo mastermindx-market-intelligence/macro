@@ -287,8 +287,8 @@
     "base_url": null,
     "kind": "site_dir",
     "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-ext-fix-m_6904_a1-3cfc2404826fcc75",
-    "resolved_sha_or_none": "6200627474fec13e055abd6b406ab36b59b132d7",
-    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-ext-fix-m_6904_a1-3cfc2404826fcc75 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
+    "resolved_sha_or_none": "ca92c01e30d51da635953b8dac73889658102d6e",
+    "resolved_sha_source": "HEAD of the worktree at capture time: ca92c01e30d5 (commit ca92c01e30d51da635953b8dac73889658102d6e on the audit-heal branch; previously recorded as base 6200627474fec13e055abd6b406ab36b59b132d7 when capture ran before the heal commit)",
     "site_dir": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mo-ext-fix-m_6904_a1-3cfc2404826fcc75/site"
   },
   "tool": {
