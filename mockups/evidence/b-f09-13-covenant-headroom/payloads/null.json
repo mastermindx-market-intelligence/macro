@@ -1,5 +1,5 @@
 {
-  "schema": "capital_structure.covenant.headroom.v1",
+  "schema": "capital_structure.covenant_headroom.v1",
   "parser_version": "capital-structure-covenant-headroom/1.0.0",
   "authority_ceiling": "human_research_only",
   "scored": false,

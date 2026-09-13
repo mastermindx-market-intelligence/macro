@@ -31,13 +31,13 @@ states:
   - id: null
     html: rendered-html/null.html
     payload: payloads/null.json
-    schema: capital_structure.covenant.headroom.v1
+    schema: capital_structure.covenant_headroom.v1
     state_field: refused
     refusal: no_terms_extracted
   - id: computed
     html: rendered-html/computed.html
     payload: payloads/computed.json
-    schema: capital_structure.covenant.headroom.v1
+    schema: capital_structure.covenant_headroom.v1
     state_field: computed
     fixture: >
       engine/covenant_headroom.compute_headroom over
@@ -79,7 +79,7 @@ spec_compliance:
   B10: "full grid: Limit / Reported / Room + Next step + Filing type + Accession + Filing date"
   B11: "EDGAR link to accession 0001564590-22-038930 in the computed state"
   B12: "spec-verbatim 'Not covered here' footer (visible in null.html)"
-  schema: "capital_structure.covenant.headroom.v1"
+  schema: "capital_structure.covenant_headroom.v1"
   parser_version: "capital-structure-covenant-headroom/1.0.0"
 
 # Spec R9 — manifest sha MUST equal the FINAL committed head.

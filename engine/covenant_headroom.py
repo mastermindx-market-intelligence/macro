@@ -41,7 +41,7 @@ from typing import Any, Mapping, Sequence
 # Closed enums / single source of truth
 # ────────────────────────────────────────────────────────────────────────────
 
-SCHEMA = "capital_structure.covenant.headroom.v1"
+SCHEMA = "capital_structure.covenant_headroom.v1"
 PARSER_VERSION = "capital-structure-covenant-headroom/1.0.0"
 AUTHORITY_CEILING = "human_research_only"
 SCORED = False

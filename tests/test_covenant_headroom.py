@@ -134,12 +134,11 @@ def _direct_obs(
 # ────────────────────────────────────────────────────────────────────────────
 
 def test_schema_is_closed():
-    """Spec R1 mandates ``capital_structure.covenant.headroom.v1`` —
-    underscore becomes a dot. The schema rename from
-    ``capital_structure.covenant_headroom.v1`` (round 1) to
-    ``capital_structure.covenant.headroom.v1`` (round 2) is the basis of
-    reviewer M5."""
-    assert headroom.SCHEMA == "capital_structure.covenant.headroom.v1"
+    """Spec R1 freezes ``capital_structure.covenant_headroom.v1`` (two-segment,
+    underscore between covenant and headroom). Round 2's dotted variant is
+    FIX_REQUIRED: ruler H5 re-pins the underscore form across engine + payloads
+    + tests."""
+    assert headroom.SCHEMA == "capital_structure.covenant_headroom.v1"
 
 
 # ────────────────────────────────────────────────────────────────────────────

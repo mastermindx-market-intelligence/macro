@@ -19,7 +19,7 @@
       "label": "Page as it will render on main before the producer covers anything",
       "html": "rendered-html/null.html",
       "payload": "payloads/null.json",
-      "schema": "capital_structure.covenant.headroom.v1",
+      "schema": "capital_structure.covenant_headroom.v1",
       "state_field": "refused",
       "refusal": "no_terms_extracted"
     },
@@ -28,7 +28,7 @@
       "label": "Computed state rendered from the (a) fixture through the SAME template + builder",
       "html": "rendered-html/computed.html",
       "payload": "payloads/computed.json",
-      "schema": "capital_structure.covenant.headroom.v1",
+      "schema": "capital_structure.covenant_headroom.v1",
       "state_field": "computed",
       "fixture": "engine/covenant_headroom.compute_headroom over tests/fixtures/capital_structure/covenant_credit_agreement_submission.txt + synthetic CRSR FY row 2022-12-31 (debt_lt 250M, debt_cur 10M, cash 80M, op_income 60M, depreciation 20M, interest_exp 15M)"
     }
