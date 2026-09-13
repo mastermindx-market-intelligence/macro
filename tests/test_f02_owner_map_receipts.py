@@ -108,24 +108,41 @@ def test_major2_committed_records_do_not_name_parent_as_head() -> None:
 
 
 def test_minor3_nav_coordinate_matches_template() -> None:
-    """MINOR 3: memo's baskets_intl line is 194; that template line is the row."""
+    """MINOR 3: the memo names the baskets_intl nav row by content, not by line.
+
+    The receipt used to pin `_navlinks.html.j2:194` as the row and 195 as its
+    closing `</div>`; a later nav edit on main moved those rows and the pin went
+    stale. The durable receipt is the content: the memo pins no line number of
+    its own against this tree, and the live template carries exactly one
+    `baskets_intl.html` row whose nav group closes with a `</div>`.
+    """
     memo = MEMO.read_text(encoding="utf-8")
     assert "195 is an unrelated existing nav row, `baskets_intl.html`" not in memo
-    match = re.search(
-        r"`templates/_navlinks\.html\.j2:(\d+)` is `baskets_intl\.html` "
-        r"and (\d+) is a closing `</div>`",
-        memo,
-    )
-    assert match is not None, "memo §2.5 must name 194 as baskets_intl and 195 as </div>"
-    baskets_line = int(match.group(1))
-    closing_line = int(match.group(2))
-    assert baskets_line == 194
-    assert closing_line == 195
+    assert (
+        re.search(r"`templates/_navlinks\.html\.j2:\d+`", memo) is None
+    ), "memo must not pin a _navlinks.html.j2 line number against this tree"
+    assert (
+        "`templates/_navlinks.html.j2` carries exactly one `baskets_intl.html` row"
+        in memo
+    ), "memo §2.5 must name the baskets_intl row by content"
+    assert "the receipt is by content, not by line number" in memo
 
     lines = NAV.read_text(encoding="utf-8").splitlines()
-    assert len(lines) >= closing_line
-    assert "baskets_intl.html" in lines[baskets_line - 1]
-    assert lines[closing_line - 1].strip() == "</div>"
+    rows = [i for i, line in enumerate(lines) if "baskets_intl.html" in line]
+    assert len(rows) == 1, f"expected exactly one baskets_intl.html row, got {rows}"
+    assert lines[rows[0]].lstrip().startswith("<a href="), lines[rows[0]].strip()
+
+    for line in lines[rows[0] + 1 :]:
+        stripped = line.strip()
+        if not stripped or stripped.startswith("<a "):
+            continue
+        assert stripped == "</div>", (
+            f"the baskets_intl.html row's nav group must close with </div>, "
+            f"got: {stripped!r}"
+        )
+        break
+    else:  # pragma: no cover - the template always closes its groups
+        pytest.fail("no closing </div> after the baskets_intl.html row")
 
 
 def test_minor4_ledger_cited_by_stable_id_not_row_number() -> None:

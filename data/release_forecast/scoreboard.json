@@ -1,18 +1,18 @@
 {
   "schema": "release_forecast_scoreboard.v2",
-  "asof": "2026-09-09T10:44:19Z",
+  "asof": "2026-09-12T10:42:31Z",
   "forward_accrual_began": "2026-07-07",
   "note": "Forward-only: no backtest rows enter this scoreboard (MRI-R8). Primary metrics use evaluation-eligible rows only; all_forward preserves the immutable raw record.",
   "evaluation_basis": "clean_structured_defect_epochs_v1",
   "evaluation_registry_status": "available",
   "by_release": {
     "claims": {
-      "n": 9,
+      "n": 10,
       "model": null,
       "mae_ours": null,
-      "mae_naive_prior": 4.75,
-      "mae_trailing_4w": 7.2188,
-      "mae_ar_model": 12.8825,
+      "mae_naive_prior": 4.2222,
+      "mae_trailing_4w": 6.4167,
+      "mae_ar_model": 11.8178,
       "mae_cleveland": null,
       "mae_vs_actual_latest": null,
       "p10_p90_coverage": null,
@@ -34,7 +34,7 @@
       "block_note": "MRI-R9: weekly claims residuals have strong autocorrelation. Reported MAE and coverage are computed on individual weekly prints; effective sample size is smaller than n due to serial correlation. Era-split results in research/release_forecast/CLAIMS_BACKTEST.md are the authoritative reference.",
       "by_cutoff": {
         "T-1": {
-          "n": 8,
+          "n": 9,
           "mae_ours": null,
           "pinball_loss_5q": null
         }
@@ -43,18 +43,18 @@
   },
   "by_shadow": {
     "cpi_headline:coherent_ridge_v1": {
-      "n": 1,
+      "n": 2,
       "model": "coherent_ridge_v1",
-      "mae_ours": 0.2,
+      "mae_ours": 0.1,
       "mae_naive_prior": null,
       "mae_trailing_3m": null,
       "mae_ar_model": null,
       "mae_cleveland": null,
-      "mae_vs_actual_latest": 0.1737,
+      "mae_vs_actual_latest": 0.0889,
       "p10_p90_coverage": 1.0,
-      "p10_p90_coverage_n": 1,
+      "p10_p90_coverage_n": 2,
       "interval_50_coverage": 1.0,
-      "interval_50_coverage_n": 1,
+      "interval_50_coverage_n": 2,
       "interval_50_coverage_note": "p25-p75 band; approximates Codex 60% interval (MRI-R13)",
       "skew_hit_rate": null,
       "skew_hit_rate_n": 0,
@@ -64,30 +64,30 @@
       "expectation_read_hit_rate": null,
       "expectation_read_hit_rate_n": 0,
       "expectation_read_hit_rate_note": "Fraction of prints where actual fell in the same band as frozen expectation_read tag (above_expectations / below_expectations / aligned, \u00b10.35\u00b7\u03c3_scale). Display-only (MRI-R22). Null until data accrues.",
-      "pinball_loss_5q": 0.25,
-      "pinball_loss_5q_n": 1,
+      "pinball_loss_5q": 0.205,
+      "pinball_loss_5q_n": 2,
       "pinball_loss_5q_note": "MRI-R31: 5-quantile pinball loss sum (p10+p25+p50+p75+p90 mean losses). Reported-only; lower is better. Skew display marked descriptive_until_n24.",
       "by_cutoff": {
         "T-1": {
-          "n": 1,
-          "mae_ours": 0.2,
-          "pinball_loss_5q": 0.25
+          "n": 2,
+          "mae_ours": 0.1,
+          "pinball_loss_5q": 0.205
         }
       }
     },
     "cpi_core:coherent_ridge_v1": {
-      "n": 1,
+      "n": 2,
       "model": "coherent_ridge_v1",
-      "mae_ours": 0.2,
+      "mae_ours": 0.15,
       "mae_naive_prior": null,
       "mae_trailing_3m": null,
       "mae_ar_model": null,
       "mae_cleveland": null,
-      "mae_vs_actual_latest": 0.2154,
+      "mae_vs_actual_latest": 0.1526,
       "p10_p90_coverage": 1.0,
-      "p10_p90_coverage_n": 1,
+      "p10_p90_coverage_n": 2,
       "interval_50_coverage": 1.0,
-      "interval_50_coverage_n": 1,
+      "interval_50_coverage_n": 2,
       "interval_50_coverage_note": "p25-p75 band; approximates Codex 60% interval (MRI-R13)",
       "skew_hit_rate": null,
       "skew_hit_rate_n": 0,
@@ -97,32 +97,32 @@
       "expectation_read_hit_rate": null,
       "expectation_read_hit_rate_n": 0,
       "expectation_read_hit_rate_note": "Fraction of prints where actual fell in the same band as frozen expectation_read tag (above_expectations / below_expectations / aligned, \u00b10.35\u00b7\u03c3_scale). Display-only (MRI-R22). Null until data accrues.",
-      "pinball_loss_5q": 0.215,
-      "pinball_loss_5q_n": 1,
+      "pinball_loss_5q": 0.17,
+      "pinball_loss_5q_n": 2,
       "pinball_loss_5q_note": "MRI-R31: 5-quantile pinball loss sum (p10+p25+p50+p75+p90 mean losses). Reported-only; lower is better. Skew display marked descriptive_until_n24.",
       "by_cutoff": {
         "T-1": {
-          "n": 1,
-          "mae_ours": 0.2,
-          "pinball_loss_5q": 0.215
+          "n": 2,
+          "mae_ours": 0.15,
+          "pinball_loss_5q": 0.17
         }
       }
     }
   },
   "by_shadow_epoch": {
     "cpi_headline:coherent_ridge_v1:coherent_ridge_v1:alfred_same_release_vintage_proxy_v1": {
-      "n": 1,
+      "n": 2,
       "model": "coherent_ridge_v1",
-      "mae_ours": 0.2,
+      "mae_ours": 0.1,
       "mae_naive_prior": null,
       "mae_trailing_3m": null,
       "mae_ar_model": null,
       "mae_cleveland": null,
-      "mae_vs_actual_latest": 0.1737,
+      "mae_vs_actual_latest": 0.0889,
       "p10_p90_coverage": 1.0,
-      "p10_p90_coverage_n": 1,
+      "p10_p90_coverage_n": 2,
       "interval_50_coverage": 1.0,
-      "interval_50_coverage_n": 1,
+      "interval_50_coverage_n": 2,
       "interval_50_coverage_note": "p25-p75 band; approximates Codex 60% interval (MRI-R13)",
       "skew_hit_rate": null,
       "skew_hit_rate_n": 0,
@@ -132,14 +132,14 @@
       "expectation_read_hit_rate": null,
       "expectation_read_hit_rate_n": 0,
       "expectation_read_hit_rate_note": "Fraction of prints where actual fell in the same band as frozen expectation_read tag (above_expectations / below_expectations / aligned, \u00b10.35\u00b7\u03c3_scale). Display-only (MRI-R22). Null until data accrues.",
-      "pinball_loss_5q": 0.25,
-      "pinball_loss_5q_n": 1,
+      "pinball_loss_5q": 0.205,
+      "pinball_loss_5q_n": 2,
       "pinball_loss_5q_note": "MRI-R31: 5-quantile pinball loss sum (p10+p25+p50+p75+p90 mean losses). Reported-only; lower is better. Skew display marked descriptive_until_n24.",
       "by_cutoff": {
         "T-1": {
-          "n": 1,
-          "mae_ours": 0.2,
-          "pinball_loss_5q": 0.25
+          "n": 2,
+          "mae_ours": 0.1,
+          "pinball_loss_5q": 0.205
         }
       },
       "model_epoch": "coherent_ridge_v1",
@@ -147,18 +147,18 @@
       "evidence_scope": "like_for_like_forward_epoch"
     },
     "cpi_core:coherent_ridge_v1:coherent_ridge_v1:alfred_same_release_vintage_proxy_v1": {
-      "n": 1,
+      "n": 2,
       "model": "coherent_ridge_v1",
-      "mae_ours": 0.2,
+      "mae_ours": 0.15,
       "mae_naive_prior": null,
       "mae_trailing_3m": null,
       "mae_ar_model": null,
       "mae_cleveland": null,
-      "mae_vs_actual_latest": 0.2154,
+      "mae_vs_actual_latest": 0.1526,
       "p10_p90_coverage": 1.0,
-      "p10_p90_coverage_n": 1,
+      "p10_p90_coverage_n": 2,
       "interval_50_coverage": 1.0,
-      "interval_50_coverage_n": 1,
+      "interval_50_coverage_n": 2,
       "interval_50_coverage_note": "p25-p75 band; approximates Codex 60% interval (MRI-R13)",
       "skew_hit_rate": null,
       "skew_hit_rate_n": 0,
@@ -168,14 +168,14 @@
       "expectation_read_hit_rate": null,
       "expectation_read_hit_rate_n": 0,
       "expectation_read_hit_rate_note": "Fraction of prints where actual fell in the same band as frozen expectation_read tag (above_expectations / below_expectations / aligned, \u00b10.35\u00b7\u03c3_scale). Display-only (MRI-R22). Null until data accrues.",
-      "pinball_loss_5q": 0.215,
-      "pinball_loss_5q_n": 1,
+      "pinball_loss_5q": 0.17,
+      "pinball_loss_5q_n": 2,
       "pinball_loss_5q_note": "MRI-R31: 5-quantile pinball loss sum (p10+p25+p50+p75+p90 mean losses). Reported-only; lower is better. Skew display marked descriptive_until_n24.",
       "by_cutoff": {
         "T-1": {
-          "n": 1,
-          "mae_ours": 0.2,
-          "pinball_loss_5q": 0.215
+          "n": 2,
+          "mae_ours": 0.15,
+          "pinball_loss_5q": 0.17
         }
       },
       "model_epoch": "coherent_ridge_v1",
@@ -187,59 +187,59 @@
   "promotion_review": [],
   "all_forward": {
     "claims:champion": {
-      "n": 9,
+      "n": 10,
       "excluded_n": 0,
       "mae_ours": null
     },
     "cpi_core:champion": {
-      "n": 2,
-      "excluded_n": 2,
-      "mae_ours": 0.2136
+      "n": 3,
+      "excluded_n": 3,
+      "mae_ours": 0.1545
     },
     "cpi_core:coherent_ridge_v1": {
-      "n": 1,
+      "n": 2,
       "excluded_n": 0,
-      "mae_ours": 0.2
+      "mae_ours": 0.15
     },
     "cpi_core:combined_v1": {
-      "n": 1,
-      "excluded_n": 1,
-      "mae_ours": 0.1102
+      "n": 2,
+      "excluded_n": 2,
+      "mae_ours": 0.0926
     },
     "cpi_core:v3_factor": {
-      "n": 2,
-      "excluded_n": 2,
-      "mae_ours": 0.1663
+      "n": 3,
+      "excluded_n": 3,
+      "mae_ours": 0.1414
     },
     "cpi_headline:champion": {
-      "n": 2,
-      "excluded_n": 2,
-      "mae_ours": 0.3135
+      "n": 3,
+      "excluded_n": 3,
+      "mae_ours": 0.2104
     },
     "cpi_headline:coherent_ridge_v1": {
-      "n": 1,
+      "n": 2,
       "excluded_n": 0,
-      "mae_ours": 0.2
+      "mae_ours": 0.1
     },
     "cpi_headline:combined_v1": {
-      "n": 1,
-      "excluded_n": 1,
-      "mae_ours": 0.1201
+      "n": 2,
+      "excluded_n": 2,
+      "mae_ours": 0.1087
     },
     "cpi_headline:cpi_bridge": {
-      "n": 2,
-      "excluded_n": 2,
-      "mae_ours": 0.3203
+      "n": 3,
+      "excluded_n": 3,
+      "mae_ours": 0.2807
     },
     "cpi_headline:mf_energy": {
-      "n": 2,
-      "excluded_n": 2,
-      "mae_ours": 0.1101
+      "n": 3,
+      "excluded_n": 3,
+      "mae_ours": 0.0755
     },
     "cpi_headline:v3_factor": {
-      "n": 2,
-      "excluded_n": 2,
-      "mae_ours": 0.3729
+      "n": 3,
+      "excluded_n": 3,
+      "mae_ours": 0.3294
     },
     "nfp:champion": {
       "n": 2,
@@ -262,23 +262,23 @@
       "mae_ours": 0.1419
     },
     "ppi_finaldemand:champion": {
-      "n": 2,
-      "excluded_n": 2,
-      "mae_ours": 0.5376
+      "n": 3,
+      "excluded_n": 3,
+      "mae_ours": 0.4245
     }
   },
   "evaluation_exclusions": {
-    "n": 24,
+    "n": 33,
     "by_defect": {
       "DN-001": 4,
       "DN-002": 1,
-      "DN-004": 24
+      "DN-004": 33
     }
   },
   "score_receipts": {
-    "raw_n": 214,
-    "canonical_n": 35,
-    "superseded_n": 179,
+    "raw_n": 254,
+    "canonical_n": 47,
+    "superseded_n": 207,
     "note": "Official actual receipts supersede same-vintage proxies and legacy calculations for evaluation; every receipt remains in the ledger."
   },
   "defect_notices": [

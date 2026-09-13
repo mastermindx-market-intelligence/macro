@@ -33,8 +33,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Fed & Policy Watch — Macro Dashboard</title>
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang');if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<link rel="stylesheet" href="theme.css?v=f41f9a21">
-<link rel="stylesheet" href="assets/css/2f6cb606.css?v=2f6cb606">
+<link rel="stylesheet" href="theme.css?v=63df1679">
+<link rel="stylesheet" href="assets/css/c6bc5856.css?v=c6bc5856">
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
 <link rel="preload" as="style" href="navigation-refresh.css?v=c299c324">
 
@@ -185,6 +185,7 @@
         </div>
         <a href="intl_stocks.html"><span class="submenu-icon submenu-icon-stocks" aria-hidden="true"></span><span class="l-en">Stock Dashboard</span><span class="l-zh">股票仪表盘</span><span class="d"><span class="l-en">Prophet cross-market · sectors</span><span class="l-zh">Prophet 跨市场 · 板块</span></span></a>
         <a href="baskets_intl.html"><span class="submenu-icon submenu-icon-baskets" aria-hidden="true"></span><span class="l-en">Thematic Baskets</span><span class="l-zh">主题篮子</span><span class="d"><span class="l-en">Cross-country theme baskets · ex-US</span><span class="l-zh">跨国主题篮子 · 除美</span></span></a>
+        <a href="sanctions_map.html"><span class="submenu-icon submenu-icon-policy" aria-hidden="true"></span><span class="l-en">Sanctions Map</span><span class="l-zh">制裁地图</span><span class="d"><span class="l-en">Where US sanctions point · OFAC public list</span><span class="l-zh">美国制裁指向何处 · OFAC 公开名单</span></span></a>
       </div>
     </div>
     <div class="nav-dd">
@@ -310,14 +311,46 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <main class="pw-shell">
   <section class="pw-hero pw-surface" aria-labelledby="pw-title">
     <div>
       <p class="pw-eyebrow"><span class="l-en">Market policy</span><span class="l-zh">市场政策</span></p>
       <h1 id="pw-title"><span class="l-en">Fed & Policy Watch</span><span class="l-zh">美联储与政策观察</span></h1>
-      <p class="pw-subtitle"><span class="l-en">The policy moves that matter for markets. Last verified</span><span class="l-zh">影响市场的政策变化。最近核实于</span> <span class="l-en">Jul 13, 2026</span><span class="l-zh">2026年7月13日</span>.</p>
+      <p class="pw-subtitle"><span class="l-en">Dated policy changes and the next decision.</span><span class="l-zh">政策变化与下一次决议</span></p>
+      <p class="pw-mini-copy" data-hero-tagline="1"><span class="l-en">The policy moves that matter for markets.</span><span class="l-zh">市场关注的政策变化。</span></p>
       <div class="pw-chips">
-        <span class="pw-chip stale"><span class="l-en">Needs refresh</span><span class="l-zh">需要更新</span></span>
         <span class="pw-chip"><span class="l-en">Facts and analysis kept separate</span><span class="l-zh">事实与分析分开呈现</span></span>
       </div>
       <span class="pw-stance"><span class="l-en">Watch — don’t chase</span><span class="l-zh">观察，不追涨</span></span>
@@ -330,9 +363,30 @@
         <p class="pw-mini-copy"><span class="l-en">Unchanged since</span><span class="l-zh">自此日期以来未变</span> 2026-07-13</p>
       </div>
       <div>
-        <p class="pw-mini-title"><span class="l-en">Key dates</span><span class="l-zh">关键日期</span></p>
+        <p class="pw-mini-title"><span class="l-en">Next Fed decisions</span><span class="l-zh">下一次美联储决议</span></p>
 
-        <p class="pw-mini-copy"><span class="l-en">No upcoming policy dates in this update.</span><span class="l-zh">本次更新没有未来政策日期。</span></p>
+        <div class="pw-event-list">
+
+          <div class="pw-event">
+            <span class="pw-date">09-16</span>
+            <span class="pw-event-name"><span class="l-en">FOMC decision</span><span class="l-zh">FOMC决议</span></span>
+            <span class="pw-badge neutral">4<span class="l-en">d</span><span class="l-zh">天</span></span>
+          </div>
+
+          <div class="pw-event">
+            <span class="pw-date">10-28</span>
+            <span class="pw-event-name"><span class="l-en">FOMC decision</span><span class="l-zh">FOMC决议</span></span>
+            <span class="pw-badge neutral">46<span class="l-en">d</span><span class="l-zh">天</span></span>
+          </div>
+
+          <div class="pw-event">
+            <span class="pw-date">12-09</span>
+            <span class="pw-event-name"><span class="l-en">FOMC decision</span><span class="l-zh">FOMC决议</span></span>
+            <span class="pw-badge neutral">88<span class="l-en">d</span><span class="l-zh">天</span></span>
+          </div>
+
+        </div>
+        <p class="pw-mini-copy"><a class="gbtn gbtn-sm" href="https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm" target="_blank" rel="noopener"><span class="l-en">Official calendar</span><span class="l-zh">官方日程</span></a></p>
 
 
         <details class="pw-details">
@@ -350,25 +404,25 @@
           </div>
         </details>
 
+
       </div>
     </div>
   </section>
 
 
-  <div class="pw-alert" role="note">
-    <span><strong><span class="l-en">Needs refresh.</span><span class="l-zh">需要更新。</span></strong> <span class="l-en">Check the latest news before acting.</span><span class="l-zh">采取行动前请先核对最新消息。</span></span>
-
-  </div>
 
 
   <nav class="pw-toc" aria-label="Jump to section">
     <a class="gbtn gbtn-sm gbtn-pill" href="#overview"><span class="l-en">Quick take</span><span class="l-zh">快速了解</span></a>
+    <a class="gbtn gbtn-sm gbtn-pill" href="#background"><span class="l-en">Background research</span><span class="l-zh">历史研究</span></a>
     <a class="gbtn gbtn-sm gbtn-pill" href="#uk"><span class="l-en">UK desk</span><span class="l-zh">英国政策台</span></a>
     <a class="gbtn gbtn-sm gbtn-pill" href="#views"><span class="l-en">Market views</span><span class="l-zh">市场观点</span></a>
+
     <a class="gbtn gbtn-sm gbtn-pill" href="#fed"><span class="l-en">The Fed</span><span class="l-zh">美联储</span></a>
     <a class="gbtn gbtn-sm gbtn-pill" href="#policy"><span class="l-en">Policy stages</span><span class="l-zh">政策进程</span></a>
     <a class="gbtn gbtn-sm gbtn-pill" href="#impact"><span class="l-en">Market impact</span><span class="l-zh">市场影响</span></a>
     <a class="gbtn gbtn-sm gbtn-pill" href="#ledger"><span class="l-en">Calls & results</span><span class="l-zh">判断与结果</span></a>
+
     <a class="gbtn gbtn-sm gbtn-pill" href="#sources"><span class="l-en">Sources</span><span class="l-zh">来源</span></a>
   </nav>
 
@@ -378,18 +432,263 @@
   <h2><span class="l-en">What matters now</span><span class="l-zh">当前重点</span></h2>
   <p><span class="l-en">The short version.</span><span class="l-zh">先看最重要的。</span></p>
 </div>
-    <div class="pw-glance-grid">
-      <article class="pw-card green">
-        <h3 class="pw-card-title"><span class="l-en">Bottom line</span><span class="l-zh">核心结论</span></h3>
-        <p class="pw-primary"><span class="l-en">The Fed is staying tough on inflation while Treasury tries to lower borrowing costs and fund domestic industry.</span><span class="l-zh">美联储仍严控通胀，财政部则试图降低融资成本并支持国内产业。</span></p>
-      </article>
-      <article class="pw-card amber">
-        <h3 class="pw-card-title"><span class="l-en">What to watch</span><span class="l-zh">需要关注</span></h3>
-        <p class="pw-primary"><span class="l-en">Jobs, inflation and Treasury funding matter more than speeches. Weak growth could reopen cuts; sticky inflation could delay them.</span><span class="l-zh">就业、通胀和国债融资比讲话更重要。增长转弱可能重启降息，通胀黏性则会推迟行动。</span></p>
-      </article>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="pw-current" data-pw-current="1">
+  <div class="pw-glance-grid">
+    <article class="pw-card" id="pw-last-decision">
+      <h3 class="pw-card-title"><span class="l-en">Last recorded decision</span><span class="l-zh">最近一次已收录决议</span></h3>
+
+      <p class="pw-primary">
+        <span class="l-en">The Committee maintained the federal funds target range at</span><span class="l-zh">委员会将联邦基金目标区间维持在</span>
+
+        <strong> 3-1/2 to 3-3/4 percent</strong>.
+      </p>
+      <div class="pw-meta-row">
+        <span class="pw-chip" data-statement-date="2026-07-29"><span class="l-en">Statement date</span><span class="l-zh">声明日期</span> 2026-07-29</span>
+
+        <span class="pw-chip" data-vote-for="9" data-vote-against="3">
+          <span class="l-en">Vote</span><span class="l-zh">表决</span> 9–3
+           (<span class="l-en">prior</span><span class="l-zh">上一次</span> 12–0)
+        </span>
+
+      </div>
+
+    </article>
+    <article class="pw-card blue" id="pw-official-updates">
+      <h3 class="pw-card-title"><span class="l-en">Official updates</span><span class="l-zh">官方动态</span></h3>
+
+
+
+
+      <div class="pw-event-list">
+
+        <div class="pw-event">
+          <span class="pw-date">2026-09-03</span>
+          <span class="pw-event-name">
+            <span class="pw-source-original"><span class="l-en">Original source text</span><span class="l-zh">原文</span></span>
+            Waller, The Economic Outlook and Some Comments on My Policy Communication
+          </span>
+          <a class="gbtn gbtn-sm" href="https://www.federalreserve.gov/newsevents/speech/waller20260903a.htm" target="_blank" rel="noopener"><span class="l-en">Open</span><span class="l-zh">打开</span></a>
+        </div>
+
+        <div class="pw-event">
+          <span class="pw-date">2026-09-01</span>
+          <span class="pw-event-name">
+            <span class="pw-source-original"><span class="l-en">Original source text</span><span class="l-zh">原文</span></span>
+            Barr, Unlocking Opportunities for Workers and Entrepreneurs with a Criminal Record
+          </span>
+          <a class="gbtn gbtn-sm" href="https://www.federalreserve.gov/newsevents/speech/barr20260901a.htm" target="_blank" rel="noopener"><span class="l-en">Open</span><span class="l-zh">打开</span></a>
+        </div>
+
+        <div class="pw-event">
+          <span class="pw-date">2026-08-28</span>
+          <span class="pw-event-name">
+            <span class="pw-source-original"><span class="l-en">Original source text</span><span class="l-zh">原文</span></span>
+            Warsh, In Our Time
+          </span>
+          <a class="gbtn gbtn-sm" href="https://www.federalreserve.gov/newsevents/speech/warsh20260828a.htm" target="_blank" rel="noopener"><span class="l-en">Open</span><span class="l-zh">打开</span></a>
+        </div>
+
+        <div class="pw-event">
+          <span class="pw-date">2026-08-25</span>
+          <span class="pw-event-name">
+            <span class="pw-source-original"><span class="l-en">Original source text</span><span class="l-zh">原文</span></span>
+            Minutes of the Board&#39;s discount rate meetings on July 20 and July 29, 2026
+          </span>
+          <a class="gbtn gbtn-sm" href="https://www.federalreserve.gov/newsevents/pressreleases/monetary20260825a.htm" target="_blank" rel="noopener"><span class="l-en">Open</span><span class="l-zh">打开</span></a>
+        </div>
+
+      </div>
+
+
+      <p class="pw-mini-copy" data-fetched-at="2026-09-13T00:15:45.004210Z"><span class="l-en">Last checked</span><span class="l-zh">最近获取</span> 2026-09-13 00:15 UTC</p>
+
+    </article>
+  </div>
+
+  <details class="pw-details" id="pw-sources-changes">
+    <summary class="gbtn gbtn-sm"><span class="l-en">Sources & changes</span><span class="l-zh">来源与变化</span></summary>
+    <div class="pw-detail-body">
+
+      <p class="pw-mini-copy"><span class="l-en">Official headlines method</span><span class="l-zh">官方头条方法</span>:
+        <span class="l-en">Last checked</span><span class="l-zh">最近获取</span> <span data-fetched-at="2026-09-13T00:15:45.004210Z">2026-09-13T00:15:45.004210Z</span>
+
+         · <span class="l-en">Feed status</span><span class="l-zh">源状态</span> <span class="l-en">Some sources did not answer</span><span class="l-zh">部分来源未响应</span>
+
+         · <span class="l-en">State</span><span class="l-zh">状态</span> <span class="l-en">Sources checked</span><span class="l-zh">来源已获取</span>.
+      </p>
+
+
+      <p class="pw-mini-copy"><span class="l-en">Statement collection time</span><span class="l-zh">声明收录时间</span> 2026-08-08T00:00:00Z (<span class="l-en">historical seed record</span><span class="l-zh">历史种子记录</span>).</p>
+
+
+      <p><span class="l-en">Compared with the preceding recorded statement. Phrases are quoted from the source, not a model claim.</span><span class="l-zh">与上一份已收录声明比较。短语引自原文，不是模型判断。</span></p>
+      <p class="pw-mini-copy"><span class="l-en">Prior statement</span><span class="l-zh">上一份声明</span> 2026-06-17</p>
+
+
+      <p>
+        <span class="pw-source-original">− 12 – 0</span>
+        <span class="pw-source-original">+ 9 – 3</span>
+      </p>
+
+
+
+      <p>
+
+        <span class="pw-source-original">+ Voting against the monetary policy action were Beth M. Hammack, Neel Kashkari, and Lorie K. Logan, who preferred to raise the target range for the federal funds rate by 1/4 percentage point at this meeting.</span>
+      </p>
+
+
+
+      <p>
+        <span class="pw-source-original">− reaffirmed</span>
+        <span class="pw-source-original">+ is continuing</span>
+      </p>
+
+
+
+
+      <p><a class="gbtn gbtn-sm" href="https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm" target="_blank" rel="noopener"><span class="l-en">Open official statement</span><span class="l-zh">阅读官方声明</span></a></p>
+
     </div>
-    <p class="pw-build-note"><span class="l-en">The Fed and Treasury appear aligned on lower borrowing costs, but there is no proof of a coordinated plan.</span><span class="l-zh">美联储与财政部似乎都希望降低融资成本，但没有证据表明双方存在协同计划。</span></p>
+  </details>
+</div>
+    <p class="pw-build-note"><span class="l-en">Compare the next decision with the last statement. This is what to monitor, not a claim about today’s motives.</span><span class="l-zh">把下一次决议与上一份声明对照。这是监测方法，不是对今日动机的判断。</span></p>
   </section>
+
+  <div class="pw-research-banner" id="background">
+    <h2><span class="l-en">Background research</span><span class="l-zh">历史研究</span></h2>
+
+    <p class="pw-mini-copy"><span class="l-en">Last verified</span><span class="l-zh">最近核实</span> <span class="l-en">Jul 13, 2026</span><span class="l-zh">2026年7月13日</span>.</p>
+    <p class="pw-mini-copy"><span class="pw-chip stale"><span class="l-en">Background needs review</span><span class="l-zh">历史研究待复核</span></span> <span class="l-en">Official dated records are separate.</span><span class="l-zh">官方注明日期的记录单独列示。</span></p>
+
+
+    <details class="pw-details pw-research-fed" id="fed">
+      <summary class="gbtn gbtn-sm"><span class="l-en">Fed changes to watch</span><span class="l-zh">值得关注的美联储变化</span></summary>
+      <div class="pw-detail-body">
+        <p class="pw-eyebrow"><span class="l-en">The Fed</span><span class="l-zh">美联储</span></p>
+        <p class="pw-primary"><span class="l-en">Rates may stay high until inflation cools.</span><span class="l-zh">在通胀降温前，利率可能维持高位。</span></p>
+        <div class="pw-glance-grid">
+          <article class="pw-card amber"><h3 class="pw-card-title"><span class="l-en">Current direction</span><span class="l-zh">当前方向</span></h3><p class="pw-primary"><span class="l-en">Warsh is pushing a stricter 2% target, less bond buying and less forward guidance.</span><span class="l-zh">沃什正推动更严格的2%目标、减少购债并减少前瞻指引。</span></p></article>
+          <article class="pw-card blue"><h3 class="pw-card-title"><span class="l-en">What could change</span><span class="l-zh">可能的变化</span></h3><p class="pw-primary"><span class="l-en">Rule changes could make a later pivot easier, but there is no clear rate-cut signal yet.</span><span class="l-zh">规则调整可能让未来转向更容易，但目前没有明确的降息信号。</span></p></article>
+        </div>
+        <div class="pw-card-grid" style="margin-top:12px">
+
+
+          <article class="pw-card" data-policy-id="tf_comms">
+            <h3 class="pw-card-title"><span class="l-en">Communications</span><span class="l-zh">沟通</span></h3>
+            <p class="pw-primary"><span class="l-en">Possible changes to forecasts, press conferences and meeting transcripts.</span><span class="l-zh">可能调整经济预测、发布会和会议记录。</span></p>
+            <div class="pw-meta-row"><span class="pw-chip"><span class="l-en">Expected by</span><span class="l-zh">预计完成</span> 2026-12-31</span>
+  <span class="pw-badge fact"><span class="l-en">Confirmed</span><span class="l-zh">已确认</span></span>
+  <span class="pw-badge read"><span class="l-en">Our read</span><span class="l-zh">我们的解读</span></span>
+  </div>
+            <details class="pw-details"><summary class="gbtn gbtn-sm"><span class="l-en">Why it matters</span><span class="l-zh">为何重要</span></summary><div class="pw-detail-body"><span class="l-en">Could give the chair more flexibility and markets less guidance.</span><span class="l-zh">主席可能拥有更大灵活性，市场得到的指引会减少。</span></div></details>
+          </article>
+
+
+          <article class="pw-card" data-policy-id="tf_balance">
+            <h3 class="pw-card-title"><span class="l-en">Balance-sheet policy</span><span class="l-zh">资产负债表政策</span></h3>
+            <p class="pw-primary"><span class="l-en">Review of how the Fed manages its bond holdings.</span><span class="l-zh">审查美联储如何管理其债券持仓。</span></p>
+            <div class="pw-meta-row"><span class="pw-chip"><span class="l-en">Expected by</span><span class="l-zh">预计完成</span> 2026-12-31</span>
+  <span class="pw-badge fact"><span class="l-en">Confirmed</span><span class="l-zh">已确认</span></span>
+  <span class="pw-badge read"><span class="l-en">Our read</span><span class="l-zh">我们的解读</span></span>
+  </div>
+            <details class="pw-details"><summary class="gbtn gbtn-sm"><span class="l-en">Why it matters</span><span class="l-zh">为何重要</span></summary><div class="pw-detail-body"><span class="l-en">A smaller balance sheet could also support Treasury’s bill-heavy funding.</span><span class="l-zh">更小的资产负债表也可能配合财政部偏短债的融资方式。</span></div></details>
+          </article>
+
+
+          <article class="pw-card" data-policy-id="tf_data">
+            <h3 class="pw-card-title"><span class="l-en">Data sources</span><span class="l-zh">数据来源</span></h3>
+            <p class="pw-primary"><span class="l-en">Review of which economic data the Fed trusts.</span><span class="l-zh">审查美联储更信任哪些经济数据。</span></p>
+            <div class="pw-meta-row"><span class="pw-chip"><span class="l-en">Expected by</span><span class="l-zh">预计完成</span> 2026-12-31</span>
+  <span class="pw-badge fact"><span class="l-en">Confirmed</span><span class="l-zh">已确认</span></span>
+  <span class="pw-badge read"><span class="l-en">Our read</span><span class="l-zh">我们的解读</span></span>
+  </div>
+            <details class="pw-details"><summary class="gbtn gbtn-sm"><span class="l-en">Why it matters</span><span class="l-zh">为何重要</span></summary><div class="pw-detail-body"><span class="l-en">Could change how the Fed weighs weak or delayed data.</span><span class="l-zh">可能改变美联储如何看待疲弱或滞后的数据。</span></div></details>
+          </article>
+
+
+          <article class="pw-card" data-policy-id="tf_productivity">
+            <h3 class="pw-card-title"><span class="l-en">Productivity, jobs &amp; AI</span><span class="l-zh">生产率、就业与AI</span></h3>
+            <p class="pw-primary"><span class="l-en">Study of how AI may affect growth and employment.</span><span class="l-zh">研究人工智能对增长和就业的影响。</span></p>
+            <div class="pw-meta-row"><span class="pw-chip"><span class="l-en">Expected by</span><span class="l-zh">预计完成</span> 2026-12-31</span>
+  <span class="pw-badge fact"><span class="l-en">Confirmed</span><span class="l-zh">已确认</span></span>
+  <span class="pw-badge read"><span class="l-en">Our read</span><span class="l-zh">我们的解读</span></span>
+  </div>
+            <details class="pw-details"><summary class="gbtn gbtn-sm"><span class="l-en">Why it matters</span><span class="l-zh">为何重要</span></summary><div class="pw-detail-body"><span class="l-en">Stronger productivity could let the Fed tolerate faster growth.</span><span class="l-zh">更高的生产率可能让美联储容忍更快的增长。</span></div></details>
+          </article>
+
+
+          <article class="pw-card" data-policy-id="tf_inflation">
+            <h3 class="pw-card-title"><span class="l-en">Inflation frameworks</span><span class="l-zh">通胀框架</span></h3>
+            <p class="pw-primary"><span class="l-en">Review of the Fed’s inflation rules.</span><span class="l-zh">审查美联储的通胀规则。</span></p>
+            <div class="pw-meta-row"><span class="pw-chip"><span class="l-en">Expected by</span><span class="l-zh">预计完成</span> 2026-12-31</span>
+  <span class="pw-badge fact"><span class="l-en">Confirmed</span><span class="l-zh">已确认</span></span>
+  <span class="pw-badge read"><span class="l-en">Our read</span><span class="l-zh">我们的解读</span></span>
+  </div>
+            <details class="pw-details"><summary class="gbtn gbtn-sm"><span class="l-en">Why it matters</span><span class="l-zh">为何重要</span></summary><div class="pw-detail-body"><span class="l-en">Could replace the flexible average target with a stricter 2% goal.</span><span class="l-zh">可能以更严格的2%目标取代灵活平均通胀目标。</span></div></details>
+          </article>
+
+        </div>
+        <p class="pw-build-note"><span class="l-en">No outside experts have been named yet.</span><span class="l-zh">目前尚未公布外部专家名单。</span></p>
+      </div>
+    </details>
+
+  </div>
 
   <section class="pw-section" id="uk">
     <div class="pw-section-head">
@@ -411,6 +710,7 @@
   </section>
 
 
+
   <section class="pw-section" id="views">
     <div class="pw-section-head">
   <p class="pw-eyebrow"><span class="l-en">Market views</span><span class="l-zh">市场观点</span></p>
@@ -424,80 +724,57 @@
     <div class="pw-card-grid">
 
 
-
       <article class="pw-card blue" data-policy-id="view-1">
-        <span class="pw-card-label"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
-        <h3 class="pw-card-title">XLE ·
-  <span class="pw-badge fact"><span class="l-en">Favoured</span><span class="l-zh">相对受益</span></span></h3>
-        <p class="pw-primary"><span class="l-en">Energy may stay supported while Iran risk keeps oil prices elevated.</span><span class="l-zh">伊朗局势让油价风险偏上，能源股可能继续获得支撑。</span></p>
-        <div class="pw-meta-row"><span class="pw-chip"><span class="l-en">Review by</span><span class="l-zh">复核日期</span> 2026-11-03</span>
+        <span class="pw-card-label"><span class="l-en">Rates</span><span class="l-zh">利率</span></span>
+        <h3 class="pw-card-title">TLT ·
+  <span class="pw-badge warn"><span class="l-en">Under pressure</span><span class="l-zh">相对承压</span></span></h3>
+        <p class="pw-primary"><span class="l-en">Warsh&#39;s inflation-first posture and reduced reliance on forward guidance leave long-duration Treasuries exposed to a higher-for-longer repricing…</span><span class="l-zh">Warsh 以通胀为先的立场以及对前瞻指引依赖的降低，使长期美国国债容易受到“更高利率维持更久”的重新定价冲击，同时伊朗局势引发的油价冲击强化了…</span></p>
+        <div class="pw-meta-row"><span class="pw-chip"><span class="l-en">Review by</span><span class="l-zh">复核日期</span> 2026-10-23</span>
   <span class="pw-meta"><span class="l-en">Low confidence</span><span class="l-zh">较低把握</span></span></div>
 
         <details class="pw-details">
           <summary class="gbtn gbtn-sm"><span class="l-en">Risks & review</span><span class="l-zh">风险与复核条件</span></summary>
           <div class="pw-detail-body">
-            <p><strong><span class="l-en">Main risk:</span><span class="l-zh">主要风险：</span></strong> <span class="l-en">A durable ceasefire and oil below $70 would weaken this view.</span><span class="l-zh">如果停火持久、油价跌破70美元，这一判断会转弱。</span></p>
-            <p><strong><span class="l-en">What would change this:</span><span class="l-zh">什么会改变判断：</span></strong> <span class="l-en">XLE lags SPY over the next 42 trading days while Hormuz transit remains uninterrupted and strike activity subsides.</span><span class="l-zh">未来42个交易日内，在霍尔木兹海峡运输保持畅通且打击活动减弱的同时，XLE跑输SPY。</span></p>
+            <p><strong><span class="l-en">Main risk:</span><span class="l-zh">主要风险：</span></strong> <span class="l-en">Weak payrolls could reopen a data-driven easing path, while bill-heavy issuance, buybacks and dealer-intermediation reform could pull yields lower across the…</span><span class="l-zh">疲弱的非农就业可能重新打开数据驱动的宽松路径，而偏重短期国债的发行、回购以及交易商中介机制改革可能推动整条收益率曲线下行。</span></p>
+            <p><strong><span class="l-en">What would change this:</span><span class="l-zh">什么会改变判断：</span></strong> <span class="l-en">TLT outperforms SPY over the next 30 trading days as labor weakness produces a clear Fed easing signal.</span><span class="l-zh">未来30个交易日内，劳动力市场疲弱促使美联储发出明确宽松信号，且 TLT 跑赢 SPY。</span></p>
           </div>
         </details>
 
       </article>
-
 
 
       <article class="pw-card blue" data-policy-id="view-2">
         <span class="pw-card-label"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
-        <h3 class="pw-card-title">KBE ·
+        <h3 class="pw-card-title">XLE ·
   <span class="pw-badge fact"><span class="l-en">Favoured</span><span class="l-zh">相对受益</span></span></h3>
-        <p class="pw-primary"><span class="l-en">Bill-heavy issuance, Treasury buybacks, central-clearing expansion and eSLR reform align the Administration&#39;s funding interest with stronger dealer…</span><span class="l-zh">偏重短期国库券的发行、财政部回购、国债中央清算扩展及eSLR改革，使政府的融资利益与增强交易商中介能力相一致。</span></p>
-        <div class="pw-meta-row"><span class="pw-chip"><span class="l-en">Review by</span><span class="l-zh">复核日期</span> 2026-12-02</span>
+        <p class="pw-primary"><span class="l-en">The administration&#39;s renewed military campaign against Iran sustains an upside-skewed oil risk premium, while observed sector inflows show that…</span><span class="l-zh">政府重新对伊朗展开军事行动，使油价风险溢价保持向上偏斜；与此同时，已观察到的行业资金流入表明资本已经开始转向能源。</span></p>
+        <div class="pw-meta-row"><span class="pw-chip"><span class="l-en">Review by</span><span class="l-zh">复核日期</span> 2026-10-23</span>
   <span class="pw-meta"><span class="l-en">Low confidence</span><span class="l-zh">较低把握</span></span></div>
 
         <details class="pw-details">
           <summary class="gbtn gbtn-sm"><span class="l-en">Risks & review</span><span class="l-zh">风险与复核条件</span></summary>
           <div class="pw-detail-body">
-            <p><strong><span class="l-en">Main risk:</span><span class="l-zh">主要风险：</span></strong> <span class="l-en">A stagflationary downturn could raise credit losses and flatten profitable bank activity faster than regulatory relief improves intermediation economics.</span><span class="l-zh">滞胀型下行可能推高信贷损失并压缩银行的盈利活动，其速度或快于监管放松改善中介业务经济性的速度。</span></p>
-            <p><strong><span class="l-en">What would change this:</span><span class="l-zh">什么会改变判断：</span></strong> <span class="l-en">No proposed or final eSLR rule and no Treasury central-clearing milestone occur within 63 trading days.</span><span class="l-zh">未来63个交易日内，既没有提出或最终敲定eSLR规则，也没有出现国债中央清算里程碑。</span></p>
+            <p><strong><span class="l-en">Main risk:</span><span class="l-zh">主要风险：</span></strong> <span class="l-en">A durable ceasefire, uninterrupted Hormuz transit and weakening global demand could rapidly remove the geopolitical premium from oil.</span><span class="l-zh">持久停火、霍尔木兹海峡运输保持畅通以及全球需求走弱，可能迅速消除油价中的地缘政治溢价。</span></p>
+            <p><strong><span class="l-en">What would change this:</span><span class="l-zh">什么会改变判断：</span></strong> <span class="l-en">XLE trails SPY over the next 30 trading days while the ceasefire holds and Hormuz transit remains uninterrupted.</span><span class="l-zh">未来30个交易日内，停火得以维持且霍尔木兹海峡运输保持畅通，同时 XLE 跑输 SPY。</span></p>
           </div>
         </details>
 
       </article>
-
 
 
       <article class="pw-card blue" data-policy-id="view-3">
-        <span class="pw-card-label"><span class="l-en">Rates</span><span class="l-zh">利率</span></span>
-        <h3 class="pw-card-title">TLT ·
-  <span class="pw-badge miss"><span class="l-en">Avoid</span><span class="l-zh">回避</span></span></h3>
-        <p class="pw-primary"><span class="l-en">Warsh&#39;s revealed preference remains inflation-mandate first: strict-2% framing, reduced forward guidance and refusal to pre-commit preserve hiking…</span><span class="l-zh">Warsh显露出的偏好仍是通胀使命优先：严格的2%目标框架、减少前瞻指引以及拒绝预先承诺，都保留了加息选择权，而当前通胀仍然偏热。</span></p>
-        <div class="pw-meta-row"><span class="pw-chip"><span class="l-en">Review by</span><span class="l-zh">复核日期</span> 2026-11-03</span>
-  <span class="pw-meta"><span class="l-en">Low confidence</span><span class="l-zh">较低把握</span></span></div>
-
-        <details class="pw-details">
-          <summary class="gbtn gbtn-sm"><span class="l-en">Risks & review</span><span class="l-zh">风险与复核条件</span></summary>
-          <div class="pw-detail-body">
-            <p><strong><span class="l-en">Main risk:</span><span class="l-zh">主要风险：</span></strong> <span class="l-en">The payroll deterioration and revisions could broaden into a labor-market break, forcing data-driven easing and a duration rally despite elevated inflation.</span><span class="l-zh">就业增长恶化及向下修正可能扩大为劳动力市场断裂，迫使美联储进行数据驱动的宽松，并在通胀仍高的情况下推动久期资产上涨。</span></p>
-            <p><strong><span class="l-en">What would change this:</span><span class="l-zh">什么会改变判断：</span></strong> <span class="l-en">The Fed cuts rates within 42 trading days after further material labor-market deterioration.</span><span class="l-zh">未来42个交易日内，劳动力市场进一步明显恶化后，美联储实施降息。</span></p>
-          </div>
-        </details>
-
-      </article>
-
-
-
-      <article class="pw-card blue" data-policy-id="view-4">
         <span class="pw-card-label"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
-        <h3 class="pw-card-title">OKLO ·
+        <h3 class="pw-card-title">XLI ·
   <span class="pw-badge fact"><span class="l-en">Favoured</span><span class="l-zh">相对受益</span></span></h3>
-        <p class="pw-primary"><span class="l-en">Nuclear-for-AI policy serves two Administration interests simultaneously: expanding strategic domestic power capacity and relieving the electricity…</span><span class="l-zh">核能支持AI政策同时服务于政府的两项利益：扩大具有战略意义的国内电力产能，并缓解AI基础设施面临的电力约束。</span></p>
-        <div class="pw-meta-row"><span class="pw-chip"><span class="l-en">Review by</span><span class="l-zh">复核日期</span> 2026-12-31</span>
+        <p class="pw-primary"><span class="l-en">Defense commitments, strategic re-industrialization and power-infrastructure spending direct capital toward domestic industrial capacity.</span><span class="l-zh">国防承诺、战略性再工业化以及电力基础设施支出正在把资本引向美国国内工业产能。</span></p>
+        <div class="pw-meta-row"><span class="pw-chip"><span class="l-en">Review by</span><span class="l-zh">复核日期</span> 2026-12-09</span>
   <span class="pw-meta"><span class="l-en">Low confidence</span><span class="l-zh">较低把握</span></span></div>
 
         <details class="pw-details">
           <summary class="gbtn gbtn-sm"><span class="l-en">Risks & review</span><span class="l-zh">风险与复核条件</span></summary>
           <div class="pw-detail-body">
-            <p><strong><span class="l-en">Main risk:</span><span class="l-zh">主要风险：</span></strong> <span class="l-en">HALEU availability, licensing and project execution can delay commercialization long enough for valuation compression to overwhelm the policy tailwind.</span><span class="l-zh">HALEU供应、许可审批和项目执行都可能使商业化长期延后，从而令估值压缩盖过政策顺风。</span></p>
-            <p><strong><span class="l-en">What would change this:</span><span class="l-zh">什么会改变判断：</span></strong> <span class="l-en">DOE does not announce a HALEU fuel-bank release for private or AI projects within 84 trading days.</span><span class="l-zh">未来84个交易日内，DOE未宣布面向私人或AI项目的HALEU燃料库投放。</span></p>
+            <p><strong><span class="l-en">Main risk:</span><span class="l-zh">主要风险：</span></strong> <span class="l-en">Stagflation, high real yields and a failed Section 301 tariff handoff could overwhelm policy support and compress industrial demand and valuations.</span><span class="l-zh">滞胀、高实际收益率以及 Section 301 关税承接失败，可能压过政策支持，并削弱工业需求与估值。</span></p>
+            <p><strong><span class="l-en">What would change this:</span><span class="l-zh">什么会改变判断：</span></strong> <span class="l-en">XLI trails SPY over the next 63 trading days as defense or infrastructure commitments are delayed and the Section 301 handoff fails to preserve onshoring incentives.</span><span class="l-zh">未来63个交易日内，国防或基础设施承诺被推迟，且 Section 301 承接未能维持制造业回流激励，同时 XLI 跑输 SPY。</span></p>
           </div>
         </details>
 
@@ -509,76 +786,6 @@
   </section>
 
 
-  <section class="pw-section" id="fed">
-    <div class="pw-section-head">
-  <p class="pw-eyebrow"><span class="l-en">The Fed</span><span class="l-zh">美联储</span></p>
-  <h2><span class="l-en">Fed changes to watch</span><span class="l-zh">值得关注的美联储变化</span></h2>
-  <p><span class="l-en">Rates may stay high until inflation cools.</span><span class="l-zh">在通胀降温前，利率可能维持高位。</span></p>
-</div>
-    <div class="pw-glance-grid">
-      <article class="pw-card amber"><h3 class="pw-card-title"><span class="l-en">Current direction</span><span class="l-zh">当前方向</span></h3><p class="pw-primary"><span class="l-en">Warsh is pushing a stricter 2% target, less bond buying and less forward guidance.</span><span class="l-zh">沃什正推动更严格的2%目标、减少购债并减少前瞻指引。</span></p></article>
-      <article class="pw-card blue"><h3 class="pw-card-title"><span class="l-en">What could change</span><span class="l-zh">可能的变化</span></h3><p class="pw-primary"><span class="l-en">Rule changes could make a later pivot easier, but there is no clear rate-cut signal yet.</span><span class="l-zh">规则调整可能让未来转向更容易，但目前没有明确的降息信号。</span></p></article>
-    </div>
-    <div class="pw-card-grid" style="margin-top:12px">
-
-
-      <article class="pw-card" data-policy-id="tf_comms">
-        <h3 class="pw-card-title"><span class="l-en">Communications</span><span class="l-zh">沟通</span></h3>
-        <p class="pw-primary"><span class="l-en">Possible changes to forecasts, press conferences and meeting transcripts.</span><span class="l-zh">可能调整经济预测、发布会和会议记录。</span></p>
-        <div class="pw-meta-row"><span class="pw-chip"><span class="l-en">Expected by</span><span class="l-zh">预计完成</span> 2026-12-31</span>
-  <span class="pw-badge fact"><span class="l-en">Confirmed</span><span class="l-zh">已确认</span></span>
-  <span class="pw-badge read"><span class="l-en">Our read</span><span class="l-zh">我们的解读</span></span>
-  </div>
-        <details class="pw-details"><summary class="gbtn gbtn-sm"><span class="l-en">Why it matters</span><span class="l-zh">为何重要</span></summary><div class="pw-detail-body"><span class="l-en">Could give the chair more flexibility and markets less guidance.</span><span class="l-zh">主席可能拥有更大灵活性，市场得到的指引会减少。</span></div></details>
-      </article>
-
-
-      <article class="pw-card" data-policy-id="tf_balance">
-        <h3 class="pw-card-title"><span class="l-en">Balance-sheet policy</span><span class="l-zh">资产负债表政策</span></h3>
-        <p class="pw-primary"><span class="l-en">Review of how the Fed manages its bond holdings.</span><span class="l-zh">审查美联储如何管理其债券持仓。</span></p>
-        <div class="pw-meta-row"><span class="pw-chip"><span class="l-en">Expected by</span><span class="l-zh">预计完成</span> 2026-12-31</span>
-  <span class="pw-badge fact"><span class="l-en">Confirmed</span><span class="l-zh">已确认</span></span>
-  <span class="pw-badge read"><span class="l-en">Our read</span><span class="l-zh">我们的解读</span></span>
-  </div>
-        <details class="pw-details"><summary class="gbtn gbtn-sm"><span class="l-en">Why it matters</span><span class="l-zh">为何重要</span></summary><div class="pw-detail-body"><span class="l-en">A smaller balance sheet could also support Treasury’s bill-heavy funding.</span><span class="l-zh">更小的资产负债表也可能配合财政部偏短债的融资方式。</span></div></details>
-      </article>
-
-
-      <article class="pw-card" data-policy-id="tf_data">
-        <h3 class="pw-card-title"><span class="l-en">Data sources</span><span class="l-zh">数据来源</span></h3>
-        <p class="pw-primary"><span class="l-en">Review of which economic data the Fed trusts.</span><span class="l-zh">审查美联储更信任哪些经济数据。</span></p>
-        <div class="pw-meta-row"><span class="pw-chip"><span class="l-en">Expected by</span><span class="l-zh">预计完成</span> 2026-12-31</span>
-  <span class="pw-badge fact"><span class="l-en">Confirmed</span><span class="l-zh">已确认</span></span>
-  <span class="pw-badge read"><span class="l-en">Our read</span><span class="l-zh">我们的解读</span></span>
-  </div>
-        <details class="pw-details"><summary class="gbtn gbtn-sm"><span class="l-en">Why it matters</span><span class="l-zh">为何重要</span></summary><div class="pw-detail-body"><span class="l-en">Could change how the Fed weighs weak or delayed data.</span><span class="l-zh">可能改变美联储如何看待疲弱或滞后的数据。</span></div></details>
-      </article>
-
-
-      <article class="pw-card" data-policy-id="tf_productivity">
-        <h3 class="pw-card-title"><span class="l-en">Productivity, jobs &amp; AI</span><span class="l-zh">生产率、就业与AI</span></h3>
-        <p class="pw-primary"><span class="l-en">Study of how AI may affect growth and employment.</span><span class="l-zh">研究人工智能对增长和就业的影响。</span></p>
-        <div class="pw-meta-row"><span class="pw-chip"><span class="l-en">Expected by</span><span class="l-zh">预计完成</span> 2026-12-31</span>
-  <span class="pw-badge fact"><span class="l-en">Confirmed</span><span class="l-zh">已确认</span></span>
-  <span class="pw-badge read"><span class="l-en">Our read</span><span class="l-zh">我们的解读</span></span>
-  </div>
-        <details class="pw-details"><summary class="gbtn gbtn-sm"><span class="l-en">Why it matters</span><span class="l-zh">为何重要</span></summary><div class="pw-detail-body"><span class="l-en">Stronger productivity could let the Fed tolerate faster growth.</span><span class="l-zh">更高的生产率可能让美联储容忍更快的增长。</span></div></details>
-      </article>
-
-
-      <article class="pw-card" data-policy-id="tf_inflation">
-        <h3 class="pw-card-title"><span class="l-en">Inflation frameworks</span><span class="l-zh">通胀框架</span></h3>
-        <p class="pw-primary"><span class="l-en">Review of the Fed’s inflation rules.</span><span class="l-zh">审查美联储的通胀规则。</span></p>
-        <div class="pw-meta-row"><span class="pw-chip"><span class="l-en">Expected by</span><span class="l-zh">预计完成</span> 2026-12-31</span>
-  <span class="pw-badge fact"><span class="l-en">Confirmed</span><span class="l-zh">已确认</span></span>
-  <span class="pw-badge read"><span class="l-en">Our read</span><span class="l-zh">我们的解读</span></span>
-  </div>
-        <details class="pw-details"><summary class="gbtn gbtn-sm"><span class="l-en">Why it matters</span><span class="l-zh">为何重要</span></summary><div class="pw-detail-body"><span class="l-en">Could replace the flexible average target with a stricter 2% goal.</span><span class="l-zh">可能以更严格的2%目标取代灵活平均通胀目标。</span></div></details>
-      </article>
-
-    </div>
-    <p class="pw-build-note"><span class="l-en">No outside experts have been named yet.</span><span class="l-zh">目前尚未公布外部专家名单。</span></p>
-  </section>
 
   <section class="pw-section" id="policy">
 
@@ -1015,7 +1222,7 @@
         <p class="pw-primary"><span class="l-en">Government targets and completed pilot reactors support the nuclear buildout.</span><span class="l-zh">政府目标和已完成的试点节点支持核能建设。</span></p>
         <p class="pw-examples">URA · URNM · NLR · SMR · OKLO · CCJ · LEU</p>
         <div class="pw-meta-row"><span class="pw-badge miss"><span class="l-en">Behind</span><span class="l-zh">落后</span></span></div>
-        <details class="pw-details"><summary class="gbtn gbtn-sm"><span class="l-en">Performance</span><span class="l-zh">表现</span></summary><div class="pw-detail-body pw-performance"><span class="l-en">Last 3 months vs S&P 500:</span><span class="l-zh">近3个月相对标普500：</span> -6.3%. <span class="l-en">A check, not a forecast.</span><span class="l-zh">这只是核对结果，不是预测。</span></div></details>
+        <details class="pw-details"><summary class="gbtn gbtn-sm"><span class="l-en">Performance</span><span class="l-zh">表现</span></summary><div class="pw-detail-body pw-performance"><span class="l-en">Last 3 months vs S&P 500:</span><span class="l-zh">近3个月相对标普500：</span> -14.6%. <span class="l-en">A check, not a forecast.</span><span class="l-zh">这只是核对结果，不是预测。</span></div></details>
       </article>
 
 
@@ -1025,7 +1232,7 @@
         <p class="pw-primary"><span class="l-en">AI data centers need more power and grid equipment.</span><span class="l-zh">人工智能数据中心需要更多电力和电网设备。</span></p>
         <p class="pw-examples">GEV · VST · CEG · ETN · PWR · GRID</p>
         <div class="pw-meta-row"><span class="pw-badge neutral"><span class="l-en">Mixed</span><span class="l-zh">分化</span></span></div>
-        <details class="pw-details"><summary class="gbtn gbtn-sm"><span class="l-en">Performance</span><span class="l-zh">表现</span></summary><div class="pw-detail-body pw-performance"><span class="l-en">Last 3 months vs S&P 500:</span><span class="l-zh">近3个月相对标普500：</span> -0.6%. <span class="l-en">A check, not a forecast.</span><span class="l-zh">这只是核对结果，不是预测。</span></div></details>
+        <details class="pw-details"><summary class="gbtn gbtn-sm"><span class="l-en">Performance</span><span class="l-zh">表现</span></summary><div class="pw-detail-body pw-performance"><span class="l-en">Last 3 months vs S&P 500:</span><span class="l-zh">近3个月相对标普500：</span> -0.2%. <span class="l-en">A check, not a forecast.</span><span class="l-zh">这只是核对结果，不是预测。</span></div></details>
       </article>
 
 
@@ -1035,7 +1242,7 @@
         <p class="pw-primary"><span class="l-en">Tariffs protect domestic chip production but raise import costs.</span><span class="l-zh">关税保护国内芯片生产，但也提高进口成本。</span></p>
         <p class="pw-examples">SMH · SOXX</p>
         <div class="pw-meta-row"><span class="pw-badge miss"><span class="l-en">Behind</span><span class="l-zh">落后</span></span></div>
-        <details class="pw-details"><summary class="gbtn gbtn-sm"><span class="l-en">Performance</span><span class="l-zh">表现</span></summary><div class="pw-detail-body pw-performance"><span class="l-en">Last 3 months vs S&P 500:</span><span class="l-zh">近3个月相对标普500：</span> -9.7%. <span class="l-en">A check, not a forecast.</span><span class="l-zh">这只是核对结果，不是预测。</span></div></details>
+        <details class="pw-details"><summary class="gbtn gbtn-sm"><span class="l-en">Performance</span><span class="l-zh">表现</span></summary><div class="pw-detail-body pw-performance"><span class="l-en">Last 3 months vs S&P 500:</span><span class="l-zh">近3个月相对标普500：</span> -12.3%. <span class="l-en">A check, not a forecast.</span><span class="l-zh">这只是核对结果，不是预测。</span></div></details>
       </article>
 
 
@@ -1045,7 +1252,7 @@
         <p class="pw-primary"><span class="l-en">Proposed market-rule changes could free bank balance sheets.</span><span class="l-zh">拟议的市场规则调整可能释放银行资产负债表空间。</span></p>
         <p class="pw-examples">XLF · KBE</p>
         <div class="pw-meta-row"><span class="pw-badge fact"><span class="l-en">Ahead</span><span class="l-zh">领先</span></span></div>
-        <details class="pw-details"><summary class="gbtn gbtn-sm"><span class="l-en">Performance</span><span class="l-zh">表现</span></summary><div class="pw-detail-body pw-performance"><span class="l-en">Last 3 months vs S&P 500:</span><span class="l-zh">近3个月相对标普500：</span> +5.0%. <span class="l-en">A check, not a forecast.</span><span class="l-zh">这只是核对结果，不是预测。</span></div></details>
+        <details class="pw-details"><summary class="gbtn gbtn-sm"><span class="l-en">Performance</span><span class="l-zh">表现</span></summary><div class="pw-detail-body pw-performance"><span class="l-en">Last 3 months vs S&P 500:</span><span class="l-zh">近3个月相对标普500：</span> +2.6%. <span class="l-en">A check, not a forecast.</span><span class="l-zh">这只是核对结果，不是预测。</span></div></details>
       </article>
 
 
@@ -1065,7 +1272,7 @@
         <p class="pw-primary"><span class="l-en">NATO and U.S. budgets point to years of higher spending.</span><span class="l-zh">北约和美国预算显示国防开支可能多年上升。</span></p>
         <p class="pw-examples">ITA · XAR · PPA · SHLD</p>
         <div class="pw-meta-row"><span class="pw-badge miss"><span class="l-en">Behind</span><span class="l-zh">落后</span></span></div>
-        <details class="pw-details"><summary class="gbtn gbtn-sm"><span class="l-en">Performance</span><span class="l-zh">表现</span></summary><div class="pw-detail-body pw-performance"><span class="l-en">Last 3 months vs S&P 500:</span><span class="l-zh">近3个月相对标普500：</span> -4.7%. <span class="l-en">A check, not a forecast.</span><span class="l-zh">这只是核对结果，不是预测。</span></div></details>
+        <details class="pw-details"><summary class="gbtn gbtn-sm"><span class="l-en">Performance</span><span class="l-zh">表现</span></summary><div class="pw-detail-body pw-performance"><span class="l-en">Last 3 months vs S&P 500:</span><span class="l-zh">近3个月相对标普500：</span> -10.9%. <span class="l-en">A check, not a forecast.</span><span class="l-zh">这只是核对结果，不是预测。</span></div></details>
       </article>
 
 
@@ -1075,7 +1282,7 @@
         <p class="pw-primary"><span class="l-en">Renewed Iran conflict raises oil-supply risk. This can reverse quickly.</span><span class="l-zh">伊朗冲突再起推高石油供应风险，但也可能迅速反转。</span></p>
         <p class="pw-examples">XLE · XOP</p>
         <div class="pw-meta-row"><span class="pw-badge fact"><span class="l-en">Ahead</span><span class="l-zh">领先</span></span></div>
-        <details class="pw-details"><summary class="gbtn gbtn-sm"><span class="l-en">Performance</span><span class="l-zh">表现</span></summary><div class="pw-detail-body pw-performance"><span class="l-en">Last 3 months vs S&P 500:</span><span class="l-zh">近3个月相对标普500：</span> +9.9%. <span class="l-en">A check, not a forecast.</span><span class="l-zh">这只是核对结果，不是预测。</span></div></details>
+        <details class="pw-details"><summary class="gbtn gbtn-sm"><span class="l-en">Performance</span><span class="l-zh">表现</span></summary><div class="pw-detail-body pw-performance"><span class="l-en">Last 3 months vs S&P 500:</span><span class="l-zh">近3个月相对标普500：</span> +13.8%. <span class="l-en">A check, not a forecast.</span><span class="l-zh">这只是核对结果，不是预测。</span></div></details>
       </article>
 
 
@@ -1085,7 +1292,7 @@
         <p class="pw-primary"><span class="l-en">Onshoring supports domestic supply while the China truce eases shortages.</span><span class="l-zh">产业回流支持国内供应，而对华休战缓解短缺。</span></p>
         <p class="pw-examples">REMX · MP</p>
         <div class="pw-meta-row"><span class="pw-badge miss"><span class="l-en">Behind</span><span class="l-zh">落后</span></span></div>
-        <details class="pw-details"><summary class="gbtn gbtn-sm"><span class="l-en">Performance</span><span class="l-zh">表现</span></summary><div class="pw-detail-body pw-performance"><span class="l-en">Last 3 months vs S&P 500:</span><span class="l-zh">近3个月相对标普500：</span> -13.6%. <span class="l-en">A check, not a forecast.</span><span class="l-zh">这只是核对结果，不是预测。</span></div></details>
+        <details class="pw-details"><summary class="gbtn gbtn-sm"><span class="l-en">Performance</span><span class="l-zh">表现</span></summary><div class="pw-detail-body pw-performance"><span class="l-en">Last 3 months vs S&P 500:</span><span class="l-zh">近3个月相对标普500：</span> -16.3%. <span class="l-en">A check, not a forecast.</span><span class="l-zh">这只是核对结果，不是预测。</span></div></details>
       </article>
 
     </div>
@@ -1116,64 +1323,89 @@
 </div>
     <div class="pw-statbar">
       <span class="pw-stat"><strong>44</strong> <span class="l-en">tracked</span><span class="l-zh">已跟踪</span></span>
-      <span class="pw-stat"><strong>43</strong> <span class="l-en">open</span><span class="l-zh">待定</span></span>
-      <span class="pw-stat"><strong>1</strong> <span class="l-en">right</span><span class="l-zh">正确</span></span>
+      <span class="pw-stat"><strong>37</strong> <span class="l-en">open</span><span class="l-zh">待定</span></span>
+      <span class="pw-stat"><strong>5</strong> <span class="l-en">right</span><span class="l-zh">正确</span></span>
       <span class="pw-stat"><strong>0</strong> <span class="l-en">wrong</span><span class="l-zh">错误</span></span>
-      <span class="pw-stat"><strong>6</strong> <span class="l-en">need review</span><span class="l-zh">需要复核</span></span>
+      <span class="pw-stat"><strong>2</strong> <span class="l-en">not scored</span><span class="l-zh">不计分</span></span>
+
     </div>
     <div class="pw-ledger">
 
 
 
       <article class="pw-call" data-policy-id="P40">
-        <div><span class="pw-call-topic"><span class="l-en">Rates</span><span class="l-zh">利率</span></span> <span class="pw-call-id">P40</span><p class="pw-call-text"><span class="l-en">The Fed will hold rates steady at its July 28–29 meeting.</span><span class="l-zh">美联储将在7月28日至29日会议上维持利率不变。</span></p></div>
-        <span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-07-31</span>
-        <span class="pw-call-status"><span class="pw-badge warn"><span class="l-en">Needs review</span><span class="l-zh">需要复核</span></span>
+        <div>
+          <span class="pw-call-topic"><span class="l-en">Rates</span><span class="l-zh">利率</span></span> <span class="pw-call-id">P40</span>
+          <p class="pw-call-text"><span class="l-en">The Fed will hold rates steady at its July 28–29 meeting.</span><span class="l-zh">美联储将在7月28日至29日会议上维持利率不变。</span></p>
+          <p class="pw-meta"><span class="l-en">Result</span><span class="l-zh">结果</span>: <span class="l-en">The FOMC held the federal-funds target range at 3.50%–3.75% on July 29.</span><span class="l-zh">FOMC于7月29日将联邦基金目标区间维持在3.50%–3.75%不变。</span> · <a href="https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm" target="_blank" rel="noopener"><span class="l-en">Source</span><span class="l-zh">来源</span></a></p>
+        </div>
+        <span class="pw-call-date"><span class="l-en">Reviewed</span><span class="l-zh">已复核</span> 2026-09-08</span>
+        <span class="pw-call-status"><span class="pw-badge fact"><span class="l-en">Right</span><span class="l-zh">正确</span></span>
   </span>
       </article>
 
 
 
       <article class="pw-call" data-policy-id="P43">
-        <div><span class="pw-call-topic"><span class="l-en">Treasury</span><span class="l-zh">财政部</span></span> <span class="pw-call-id">P43</span><p class="pw-call-text"><span class="l-en">Bank regulators will publish a rule easing capital treatment for Treasury trades.</span><span class="l-zh">银行监管机构将发布规则，放宽美债交易的资本要求。</span></p></div>
-        <span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-07-31</span>
-        <span class="pw-call-status"><span class="pw-badge warn"><span class="l-en">Needs review</span><span class="l-zh">需要复核</span></span>
+        <div>
+          <span class="pw-call-topic"><span class="l-en">Treasury</span><span class="l-zh">财政部</span></span> <span class="pw-call-id">P43</span>
+          <p class="pw-call-text"><span class="l-en">Bank regulators will publish a rule easing capital treatment for Treasury trades.</span><span class="l-zh">银行监管机构将发布规则，放宽美债交易的资本要求。</span></p>
+          <p class="pw-meta"><span class="l-en">Result</span><span class="l-zh">结果</span>: <span class="l-en">Not scored: the agencies had already finalized the relevant eSLR reform in November 2025, before this call entered the ledger.</span><span class="l-zh">不计分：相关机构已于2025年11月最终敲定eSLR改革，早于该判断进入记录的时间。</span> · <a href="https://www.occ.gov/news-issuances/bulletins/2025/bulletin-2025-41.html" target="_blank" rel="noopener"><span class="l-en">Source</span><span class="l-zh">来源</span></a></p>
+        </div>
+        <span class="pw-call-date"><span class="l-en">Reviewed</span><span class="l-zh">已复核</span> 2026-09-08</span>
+        <span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Not scored</span><span class="l-zh">不计分</span></span>
   </span>
       </article>
 
 
 
       <article class="pw-call" data-policy-id="P41">
-        <div><span class="pw-call-topic"><span class="l-en">Rates</span><span class="l-zh">利率</span></span> <span class="pw-call-id">P41</span><p class="pw-call-text"><span class="l-en">Three-month average job growth will stay below 100,000 through the July report.</span><span class="l-zh">截至7月就业报告，三个月平均新增就业将保持在10万以下。</span></p></div>
-        <span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-08-07</span>
-        <span class="pw-call-status"><span class="pw-badge warn"><span class="l-en">Needs review</span><span class="l-zh">需要复核</span></span>
+        <div>
+          <span class="pw-call-topic"><span class="l-en">Rates</span><span class="l-zh">利率</span></span> <span class="pw-call-id">P41</span>
+          <p class="pw-call-text"><span class="l-en">Three-month average job growth will stay below 100,000 through the July report.</span><span class="l-zh">截至7月就业报告，三个月平均新增就业将保持在10万以下。</span></p>
+          <p class="pw-meta"><span class="l-en">Result</span><span class="l-zh">结果</span>: <span class="l-en">BLS reported a 20,000 three-month average payroll gain through July, well below 100,000.</span><span class="l-zh">美国劳工统计局公布，截至7月的非农三个月平均新增就业为2万人，明显低于10万人。</span> · <a href="https://www.bls.gov/news.release/archives/empsit_08072026.htm" target="_blank" rel="noopener"><span class="l-en">Source</span><span class="l-zh">来源</span></a></p>
+        </div>
+        <span class="pw-call-date"><span class="l-en">Reviewed</span><span class="l-zh">已复核</span> 2026-09-08</span>
+        <span class="pw-call-status"><span class="pw-badge fact"><span class="l-en">Right</span><span class="l-zh">正确</span></span>
   </span>
       </article>
 
 
 
       <article class="pw-call" data-policy-id="P16">
-        <div><span class="pw-call-topic"><span class="l-en">Markets</span><span class="l-zh">市场</span></span> <span class="pw-call-id">P16</span><p class="pw-call-text"><span class="l-en">Demand for Treasury bills will remain strong through August.</span><span class="l-zh">短期国库券需求将在8月保持强劲。</span></p></div>
-        <span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-08-31</span>
-        <span class="pw-call-status"><span class="pw-badge warn"><span class="l-en">Needs review</span><span class="l-zh">需要复核</span></span>
+        <div>
+          <span class="pw-call-topic"><span class="l-en">Markets</span><span class="l-zh">市场</span></span> <span class="pw-call-id">P16</span>
+          <p class="pw-call-text"><span class="l-en">Demand for Treasury bills will remain strong through August.</span><span class="l-zh">短期国库券需求将在8月保持强劲。</span></p>
+          <p class="pw-meta"><span class="l-en">Result</span><span class="l-zh">结果</span>: <span class="l-en">Late-August bill auctions remained well covered: the Aug. 27 28-day bill drew $272.9B of tenders for $100.0B accepted (2.73x bid-to-cover). P6 separately confirms there was no August coupon-size increase.</span><span class="l-zh">8月下旬国库券拍卖认购仍充足：8月27日28天期国库券投标2729亿美元、接受1000亿美元，投标倍数为2.73倍。P6另行确认8月没有上调票息债券拍卖规模。</span> · <a href="https://www.treasurydirect.gov/instit/annceresult/press/preanre/2026/R_20260827_1.pdf" target="_blank" rel="noopener"><span class="l-en">Source</span><span class="l-zh">来源</span></a></p>
+        </div>
+        <span class="pw-call-date"><span class="l-en">Reviewed</span><span class="l-zh">已复核</span> 2026-09-08</span>
+        <span class="pw-call-status"><span class="pw-badge fact"><span class="l-en">Right</span><span class="l-zh">正确</span></span>
   </span>
       </article>
 
 
 
       <article class="pw-call" data-policy-id="P44">
-        <div><span class="pw-call-topic"><span class="l-en">Iran</span><span class="l-zh">伊朗</span></span> <span class="pw-call-id">P44</span><p class="pw-call-text"><span class="l-en">Under review after the ceasefire collapsed; this is not an active forecast.</span><span class="l-zh">停火破裂后正在复核；这不是一条有效预测。</span></p></div>
-        <span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-08-31</span>
-        <span class="pw-call-status"><span class="pw-badge warn"><span class="l-en">Needs review</span><span class="l-zh">需要复核</span></span>
+        <div>
+          <span class="pw-call-topic"><span class="l-en">Iran</span><span class="l-zh">伊朗</span></span> <span class="pw-call-id">P44</span>
+          <p class="pw-call-text"><span class="l-en">This Iran entry was already being rewritten when it entered the track record.</span><span class="l-zh">该伊朗条目进入记录时已在重写。</span></p>
+          <p class="pw-meta"><span class="l-en">Result</span><span class="l-zh">结果</span>: <span class="l-en">Not scored: this entry was already being rewritten after its ceasefire premise broke, so it never entered the ledger as a clean active forecast.</span><span class="l-zh">不计分：该条目进入记录时，停火前提已破裂且内容已在重写，因此从未作为一条完整的有效预测进入记录。</span></p>
+        </div>
+        <span class="pw-call-date"><span class="l-en">Reviewed</span><span class="l-zh">已复核</span> 2026-09-08</span>
+        <span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Not scored</span><span class="l-zh">不计分</span></span>
   </span>
       </article>
 
 
 
       <article class="pw-call" data-policy-id="P6">
-        <div><span class="pw-call-topic"><span class="l-en">Treasury</span><span class="l-zh">财政部</span></span> <span class="pw-call-id">P6</span><p class="pw-call-text"><span class="l-en">Treasury will leave longer-term auction sizes unchanged at the August refunding.</span><span class="l-zh">财政部将在8月再融资中维持中长期国债拍卖规模不变。</span></p></div>
-        <span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-08-31</span>
-        <span class="pw-call-status"><span class="pw-badge warn"><span class="l-en">Needs review</span><span class="l-zh">需要复核</span></span>
+        <div>
+          <span class="pw-call-topic"><span class="l-en">Treasury</span><span class="l-zh">财政部</span></span> <span class="pw-call-id">P6</span>
+          <p class="pw-call-text"><span class="l-en">Treasury will leave longer-term auction sizes unchanged at the August refunding.</span><span class="l-zh">财政部将在8月再融资中维持中长期国债拍卖规模不变。</span></p>
+          <p class="pw-meta"><span class="l-en">Result</span><span class="l-zh">结果</span>: <span class="l-en">Treasury kept nominal coupon auction sizes unchanged for the August refunding and said current sizes should hold for at least the next several quarters.</span><span class="l-zh">财政部在8月再融资中维持名义票息债券拍卖规模不变，并表示现有规模预计至少未来数个季度保持不变。</span> · <a href="https://home.treasury.gov/news/press-releases/sb0590" target="_blank" rel="noopener"><span class="l-en">Source</span><span class="l-zh">来源</span></a></p>
+        </div>
+        <span class="pw-call-date"><span class="l-en">Reviewed</span><span class="l-zh">已复核</span> 2026-09-08</span>
+        <span class="pw-call-status"><span class="pw-badge fact"><span class="l-en">Right</span><span class="l-zh">正确</span></span>
   </span>
       </article>
 
@@ -1185,233 +1417,234 @@
 
 
 
-        <article class="pw-call" data-policy-id="full-P1"><div><span class="pw-call-topic"><span class="l-en">Rates</span><span class="l-zh">利率</span></span> <span class="pw-call-id">P1</span><p class="pw-call-text"><span class="l-en">The Fed will change how it publishes forecasts or explains decisions by year-end.</span><span class="l-zh">美联储将在年底前调整预测发布或决策说明方式。</span></p></div><span class="pw-call-date">2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P1"><div><span class="pw-call-topic"><span class="l-en">Rates</span><span class="l-zh">利率</span></span> <span class="pw-call-id">P1</span><p class="pw-call-text"><span class="l-en">The Fed will change how it publishes forecasts or explains decisions by year-end.</span><span class="l-zh">美联储将在年底前调整预测发布或决策说明方式。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P2"><div><span class="pw-call-topic"><span class="l-en">Rates</span><span class="l-zh">利率</span></span> <span class="pw-call-id">P2</span><p class="pw-call-text"><span class="l-en">The Fed will recommend replacing flexible average inflation targeting with a strict 2% goal by year-end.</span><span class="l-zh">美联储将在年底前建议用严格的2%目标取代灵活平均通胀目标。</span></p></div><span class="pw-call-date">2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P2"><div><span class="pw-call-topic"><span class="l-en">Rates</span><span class="l-zh">利率</span></span> <span class="pw-call-id">P2</span><p class="pw-call-text"><span class="l-en">The Fed will recommend replacing flexible average inflation targeting with a strict 2% goal by year-end.</span><span class="l-zh">美联储将在年底前建议用严格的2%目标取代灵活平均通胀目标。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P3"><div><span class="pw-call-topic"><span class="l-en">Rates</span><span class="l-zh">利率</span></span> <span class="pw-call-id">P3</span><p class="pw-call-text"><span class="l-en">Warsh will keep his rate forecast private, or the dot plot will pause, through September.</span><span class="l-zh">沃什将至少到9月继续不公开利率预测，或暂停点阵图。</span></p></div><span class="pw-call-date">2026-09-30</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P3"><div><span class="pw-call-topic"><span class="l-en">Rates</span><span class="l-zh">利率</span></span> <span class="pw-call-id">P3</span><p class="pw-call-text"><span class="l-en">Warsh will keep his rate forecast private, or the dot plot will pause, through September.</span><span class="l-zh">沃什将至少到9月继续不公开利率预测，或暂停点阵图。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-09-30</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P4"><div><span class="pw-call-topic"><span class="l-en">Rates</span><span class="l-zh">利率</span></span> <span class="pw-call-id">P4</span><p class="pw-call-text"><span class="l-en">The Fed will name at least one outside task-force expert by September.</span><span class="l-zh">美联储将在9月前公布至少一名外部工作组专家。</span></p></div><span class="pw-call-date">2026-09-30</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P4"><div><span class="pw-call-topic"><span class="l-en">Rates</span><span class="l-zh">利率</span></span> <span class="pw-call-id">P4</span><p class="pw-call-text"><span class="l-en">The Fed will name at least one outside task-force expert by September.</span><span class="l-zh">美联储将在9月前公布至少一名外部工作组专家。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-09-30</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P5"><div><span class="pw-call-topic"><span class="l-en">Rates</span><span class="l-zh">利率</span></span> <span class="pw-call-id">P5</span><p class="pw-call-text"><span class="l-en">The Fed will not cut rates at its July or September meetings.</span><span class="l-zh">美联储不会在7月或9月会议上降息。</span></p></div><span class="pw-call-date">2026-09-30</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P5"><div><span class="pw-call-topic"><span class="l-en">Rates</span><span class="l-zh">利率</span></span> <span class="pw-call-id">P5</span><p class="pw-call-text"><span class="l-en">The Fed will not cut rates at its July or September meetings.</span><span class="l-zh">美联储不会在7月或9月会议上降息。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-09-30</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P6"><div><span class="pw-call-topic"><span class="l-en">Treasury</span><span class="l-zh">财政部</span></span> <span class="pw-call-id">P6</span><p class="pw-call-text"><span class="l-en">Treasury will leave longer-term auction sizes unchanged at the August refunding.</span><span class="l-zh">财政部将在8月再融资中维持中长期国债拍卖规模不变。</span></p></div><span class="pw-call-date">2026-08-31</span><span class="pw-call-status"><span class="pw-badge warn"><span class="l-en">Needs review</span><span class="l-zh">需要复核</span></span>
+        <article class="pw-call" data-policy-id="full-P6"><div><span class="pw-call-topic"><span class="l-en">Treasury</span><span class="l-zh">财政部</span></span> <span class="pw-call-id">P6</span><p class="pw-call-text"><span class="l-en">Treasury will leave longer-term auction sizes unchanged at the August refunding.</span><span class="l-zh">财政部将在8月再融资中维持中长期国债拍卖规模不变。</span></p><p class="pw-meta"><span class="l-en">Result</span><span class="l-zh">结果</span>: <span class="l-en">Treasury kept nominal coupon auction sizes unchanged for the August refunding and said current sizes should hold for at least the next several quarters.</span><span class="l-zh">财政部在8月再融资中维持名义票息债券拍卖规模不变，并表示现有规模预计至少未来数个季度保持不变。</span> · <a href="https://home.treasury.gov/news/press-releases/sb0590" target="_blank" rel="noopener"><span class="l-en">Source</span><span class="l-zh">来源</span></a></p></div><span class="pw-call-date"><span class="l-en">Reviewed</span><span class="l-zh">已复核</span> 2026-09-08</span><span class="pw-call-status"><span class="pw-badge fact"><span class="l-en">Right</span><span class="l-zh">正确</span></span>
   </span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P7"><div><span class="pw-call-topic"><span class="l-en">Treasury</span><span class="l-zh">财政部</span></span> <span class="pw-call-id">P7</span><p class="pw-call-text"><span class="l-en">Treasury will keep saying its goal is lower borrowing costs.</span><span class="l-zh">财政部将继续强调降低融资成本。</span></p></div><span class="pw-call-date">2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P7"><div><span class="pw-call-topic"><span class="l-en">Treasury</span><span class="l-zh">财政部</span></span> <span class="pw-call-id">P7</span><p class="pw-call-text"><span class="l-en">Treasury will keep saying its goal is lower borrowing costs.</span><span class="l-zh">财政部将继续强调降低融资成本。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P8"><div><span class="pw-call-topic"><span class="l-en">Treasury</span><span class="l-zh">财政部</span></span> <span class="pw-call-id">P8</span><p class="pw-call-text"><span class="l-en">Bank regulators will formally advance rules that make Treasury trading easier for banks.</span><span class="l-zh">银行监管机构将正式推进规则，为银行交易美债释放空间。</span></p></div><span class="pw-call-date">2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P8"><div><span class="pw-call-topic"><span class="l-en">Treasury</span><span class="l-zh">财政部</span></span> <span class="pw-call-id">P8</span><p class="pw-call-text"><span class="l-en">Bank regulators will formally advance rules that make Treasury trading easier for banks.</span><span class="l-zh">银行监管机构将正式推进规则，为银行交易美债释放空间。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P9"><div><span class="pw-call-topic"><span class="l-en">Treasury</span><span class="l-zh">财政部</span></span> <span class="pw-call-id">P9</span><p class="pw-call-text"><span class="l-en">The SEC will advance central clearing for Treasury trades.</span><span class="l-zh">美国证监会将推进美债交易的中央清算。</span></p></div><span class="pw-call-date">2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P9"><div><span class="pw-call-topic"><span class="l-en">Treasury</span><span class="l-zh">财政部</span></span> <span class="pw-call-id">P9</span><p class="pw-call-text"><span class="l-en">The SEC will advance central clearing for Treasury trades.</span><span class="l-zh">美国证监会将推进美债交易的中央清算。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P10"><div><span class="pw-call-topic"><span class="l-en">Rates</span><span class="l-zh">利率</span></span> <span class="pw-call-id">P10</span><p class="pw-call-text"><span class="l-en">The Fed will keep reinvesting mortgage-bond runoff into Treasury bills through 2026.</span><span class="l-zh">美联储将在2026年继续把抵押债券到期资金再投资于短期国库券。</span></p></div><span class="pw-call-date">2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P10"><div><span class="pw-call-topic"><span class="l-en">Rates</span><span class="l-zh">利率</span></span> <span class="pw-call-id">P10</span><p class="pw-call-text"><span class="l-en">The Fed will keep reinvesting mortgage-bond runoff into Treasury bills through 2026.</span><span class="l-zh">美联储将在2026年继续把抵押债券到期资金再投资于短期国库券。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P11"><div><span class="pw-call-topic"><span class="l-en">Policy</span><span class="l-zh">政策</span></span> <span class="pw-call-id">P11</span><p class="pw-call-text"><span class="l-en">The 25% tariff on advanced chips will remain or expand through year-end.</span><span class="l-zh">25%的先进芯片关税将在年底前维持或扩大。</span></p></div><span class="pw-call-date">2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P11"><div><span class="pw-call-topic"><span class="l-en">Policy</span><span class="l-zh">政策</span></span> <span class="pw-call-id">P11</span><p class="pw-call-text"><span class="l-en">The 25% tariff on advanced chips will remain or expand through year-end.</span><span class="l-zh">25%的先进芯片关税将在年底前维持或扩大。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P12"><div><span class="pw-call-topic"><span class="l-en">Policy</span><span class="l-zh">政策</span></span> <span class="pw-call-id">P12</span><p class="pw-call-text"><span class="l-en">At least one pilot reactor would reach criticality by July 4. Result: all three did.</span><span class="l-zh">至少一座试点反应堆将在7月4日前达到临界；结果是三座全部完成。</span></p></div><span class="pw-call-date">2026-07-04</span><span class="pw-call-status"><span class="pw-badge fact"><span class="l-en">Right</span><span class="l-zh">正确</span></span>
+        <article class="pw-call" data-policy-id="full-P12"><div><span class="pw-call-topic"><span class="l-en">Policy</span><span class="l-zh">政策</span></span> <span class="pw-call-id">P12</span><p class="pw-call-text"><span class="l-en">At least one pilot reactor would reach criticality by July 4. Result: all three did.</span><span class="l-zh">至少一座试点反应堆将在7月4日前达到临界；结果是三座全部完成。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-07-04</span><span class="pw-call-status"><span class="pw-badge fact"><span class="l-en">Right</span><span class="l-zh">正确</span></span>
   </span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P13"><div><span class="pw-call-topic"><span class="l-en">Policy</span><span class="l-zh">政策</span></span> <span class="pw-call-id">P13</span><p class="pw-call-text"><span class="l-en">The Energy Department will release at least 20 metric tons of advanced nuclear fuel by year-end.</span><span class="l-zh">能源部将在年底前释放至少20吨先进核燃料。</span></p></div><span class="pw-call-date">2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P13"><div><span class="pw-call-topic"><span class="l-en">Policy</span><span class="l-zh">政策</span></span> <span class="pw-call-id">P13</span><p class="pw-call-text"><span class="l-en">The Energy Department will release at least 20 metric tons of advanced nuclear fuel by year-end.</span><span class="l-zh">能源部将在年底前释放至少20吨先进核燃料。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P14"><div><span class="pw-call-topic"><span class="l-en">Policy</span><span class="l-zh">政策</span></span> <span class="pw-call-id">P14</span><p class="pw-call-text"><span class="l-en">The AI reactor program will announce a contracted or selected site by October 2027.</span><span class="l-zh">人工智能反应堆项目将在2027年10月前公布签约或入选场址。</span></p></div><span class="pw-call-date">2027-10-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P14"><div><span class="pw-call-topic"><span class="l-en">Policy</span><span class="l-zh">政策</span></span> <span class="pw-call-id">P14</span><p class="pw-call-text"><span class="l-en">The AI reactor program will announce a contracted or selected site by October 2027.</span><span class="l-zh">人工智能反应堆项目将在2027年10月前公布签约或入选场址。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2027-10-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P15"><div><span class="pw-call-topic"><span class="l-en">Markets</span><span class="l-zh">市场</span></span> <span class="pw-call-id">P15</span><p class="pw-call-text"><span class="l-en">Nuclear and uranium funds will beat the S&amp;P 500 over the next two quarters.</span><span class="l-zh">核能和铀基金将在未来两个季度跑赢标普500。</span></p></div><span class="pw-call-date">2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P15"><div><span class="pw-call-topic"><span class="l-en">Markets</span><span class="l-zh">市场</span></span> <span class="pw-call-id">P15</span><p class="pw-call-text"><span class="l-en">Nuclear and uranium funds will beat the S&amp;P 500 over the next two quarters.</span><span class="l-zh">核能和铀基金将在未来两个季度跑赢标普500。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P16"><div><span class="pw-call-topic"><span class="l-en">Markets</span><span class="l-zh">市场</span></span> <span class="pw-call-id">P16</span><p class="pw-call-text"><span class="l-en">Demand for Treasury bills will remain strong through August.</span><span class="l-zh">短期国库券需求将在8月保持强劲。</span></p></div><span class="pw-call-date">2026-08-31</span><span class="pw-call-status"><span class="pw-badge warn"><span class="l-en">Needs review</span><span class="l-zh">需要复核</span></span>
+        <article class="pw-call" data-policy-id="full-P16"><div><span class="pw-call-topic"><span class="l-en">Markets</span><span class="l-zh">市场</span></span> <span class="pw-call-id">P16</span><p class="pw-call-text"><span class="l-en">Demand for Treasury bills will remain strong through August.</span><span class="l-zh">短期国库券需求将在8月保持强劲。</span></p><p class="pw-meta"><span class="l-en">Result</span><span class="l-zh">结果</span>: <span class="l-en">Late-August bill auctions remained well covered: the Aug. 27 28-day bill drew $272.9B of tenders for $100.0B accepted (2.73x bid-to-cover). P6 separately confirms there was no August coupon-size increase.</span><span class="l-zh">8月下旬国库券拍卖认购仍充足：8月27日28天期国库券投标2729亿美元、接受1000亿美元，投标倍数为2.73倍。P6另行确认8月没有上调票息债券拍卖规模。</span> · <a href="https://www.treasurydirect.gov/instit/annceresult/press/preanre/2026/R_20260827_1.pdf" target="_blank" rel="noopener"><span class="l-en">Source</span><span class="l-zh">来源</span></a></p></div><span class="pw-call-date"><span class="l-en">Reviewed</span><span class="l-zh">已复核</span> 2026-09-08</span><span class="pw-call-status"><span class="pw-badge fact"><span class="l-en">Right</span><span class="l-zh">正确</span></span>
   </span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P17"><div><span class="pw-call-topic"><span class="l-en">Markets</span><span class="l-zh">市场</span></span> <span class="pw-call-id">P17</span><p class="pw-call-text"><span class="l-en">Bank stocks will benefit when bank-capital rule changes advance.</span><span class="l-zh">银行资本规则调整取得进展时，银行股将受益。</span></p></div><span class="pw-call-date">2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P17"><div><span class="pw-call-topic"><span class="l-en">Markets</span><span class="l-zh">市场</span></span> <span class="pw-call-id">P17</span><p class="pw-call-text"><span class="l-en">Bank stocks will benefit when bank-capital rule changes advance.</span><span class="l-zh">银行资本规则调整取得进展时，银行股将受益。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P18"><div><span class="pw-call-topic"><span class="l-en">Markets</span><span class="l-zh">市场</span></span> <span class="pw-call-id">P18</span><p class="pw-call-text"><span class="l-en">Long-term Treasuries will avoid a disorderly selloff in the second half of 2026.</span><span class="l-zh">长期美债将在2026年下半年避免失序抛售。</span></p></div><span class="pw-call-date">2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P18"><div><span class="pw-call-topic"><span class="l-en">Markets</span><span class="l-zh">市场</span></span> <span class="pw-call-id">P18</span><p class="pw-call-text"><span class="l-en">Long-term Treasuries will avoid a disorderly selloff in the second half of 2026.</span><span class="l-zh">长期美债将在2026年下半年避免失序抛售。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P19"><div><span class="pw-call-topic"><span class="l-en">China</span><span class="l-zh">中国</span></span> <span class="pw-call-id">P19</span><p class="pw-call-text"><span class="l-en">The U.S. tariff rate on China will stay near 10% while one legal authority replaces another.</span><span class="l-zh">在关税法律授权切换期间，美国对华关税将维持在约10%。</span></p></div><span class="pw-call-date">2026-09-30</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P19"><div><span class="pw-call-topic"><span class="l-en">China</span><span class="l-zh">中国</span></span> <span class="pw-call-id">P19</span><p class="pw-call-text"><span class="l-en">The U.S. tariff rate on China will stay near 10% while one legal authority replaces another.</span><span class="l-zh">在关税法律授权切换期间，美国对华关税将维持在约10%。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-09-30</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P20"><div><span class="pw-call-topic"><span class="l-en">China</span><span class="l-zh">中国</span></span> <span class="pw-call-id">P20</span><p class="pw-call-text"><span class="l-en">The administration will replace the struck-down tariff authority with similar protection under other laws.</span><span class="l-zh">政府将用其他法律延续被法院否定的关税保护。</span></p></div><span class="pw-call-date">2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P20"><div><span class="pw-call-topic"><span class="l-en">China</span><span class="l-zh">中国</span></span> <span class="pw-call-id">P20</span><p class="pw-call-text"><span class="l-en">The administration will replace the struck-down tariff authority with similar protection under other laws.</span><span class="l-zh">政府将用其他法律延续被法院否定的关税保护。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P21"><div><span class="pw-call-topic"><span class="l-en">China</span><span class="l-zh">中国</span></span> <span class="pw-call-id">P21</span><p class="pw-call-text"><span class="l-en">A separate U.S. semiconductor tariff will take effect around June 2027.</span><span class="l-zh">美国将于2027年6月前后实施单独的半导体关税。</span></p></div><span class="pw-call-date">2027-06-30</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P21"><div><span class="pw-call-topic"><span class="l-en">China</span><span class="l-zh">中国</span></span> <span class="pw-call-id">P21</span><p class="pw-call-text"><span class="l-en">A separate U.S. semiconductor tariff will take effect around June 2027.</span><span class="l-zh">美国将于2027年6月前后实施单独的半导体关税。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2027-06-30</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P22"><div><span class="pw-call-topic"><span class="l-en">Iran</span><span class="l-zh">伊朗</span></span> <span class="pw-call-id">P22</span><p class="pw-call-text"><span class="l-en">Hormuz will avoid a full closure through September. This is under pressure after traffic nearly stopped.</span><span class="l-zh">霍尔木兹海峡将在9月前避免完全关闭；航运近乎停摆后，这一判断已承压。</span></p></div><span class="pw-call-date">2026-09-30</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P22"><div><span class="pw-call-topic"><span class="l-en">Iran</span><span class="l-zh">伊朗</span></span> <span class="pw-call-id">P22</span><p class="pw-call-text"><span class="l-en">Hormuz will avoid a full closure through September. This is under pressure after traffic nearly stopped.</span><span class="l-zh">霍尔木兹海峡将在9月前避免完全关闭；航运近乎停摆后，这一判断已承压。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-09-30</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P23"><div><span class="pw-call-topic"><span class="l-en">Iran</span><span class="l-zh">伊朗</span></span> <span class="pw-call-id">P23</span><p class="pw-call-text"><span class="l-en">The U.S. and Iran will not sign a comprehensive nuclear deal by September.</span><span class="l-zh">美国与伊朗不会在9月前签署全面核协议。</span></p></div><span class="pw-call-date">2026-09-30</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P23"><div><span class="pw-call-topic"><span class="l-en">Iran</span><span class="l-zh">伊朗</span></span> <span class="pw-call-id">P23</span><p class="pw-call-text"><span class="l-en">The U.S. and Iran will not sign a comprehensive nuclear deal by September.</span><span class="l-zh">美国与伊朗不会在9月前签署全面核协议。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-09-30</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P24"><div><span class="pw-call-topic"><span class="l-en">Defense</span><span class="l-zh">国防</span></span> <span class="pw-call-id">P24</span><p class="pw-call-text"><span class="l-en">The 2027 U.S. defense budget will rise after inflation from 2026.</span><span class="l-zh">扣除通胀后，美国2027财年国防预算将高于2026财年。</span></p></div><span class="pw-call-date">2027-03-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P24"><div><span class="pw-call-topic"><span class="l-en">Defense</span><span class="l-zh">国防</span></span> <span class="pw-call-id">P24</span><p class="pw-call-text"><span class="l-en">The 2027 U.S. defense budget will rise after inflation from 2026.</span><span class="l-zh">扣除通胀后，美国2027财年国防预算将高于2026财年。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2027-03-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P25"><div><span class="pw-call-topic"><span class="l-en">Defense</span><span class="l-zh">国防</span></span> <span class="pw-call-id">P25</span><p class="pw-call-text"><span class="l-en">NATO allies will keep the 5%-by-2035 pledge and continue raising defense budgets.</span><span class="l-zh">北约盟国将维持2035年前达到5%的承诺，并继续提高国防预算。</span></p></div><span class="pw-call-date">2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P25"><div><span class="pw-call-topic"><span class="l-en">Defense</span><span class="l-zh">国防</span></span> <span class="pw-call-id">P25</span><p class="pw-call-text"><span class="l-en">NATO allies will keep the 5%-by-2035 pledge and continue raising defense budgets.</span><span class="l-zh">北约盟国将维持2035年前达到5%的承诺，并继续提高国防预算。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P26"><div><span class="pw-call-topic"><span class="l-en">Markets</span><span class="l-zh">市场</span></span> <span class="pw-call-id">P26</span><p class="pw-call-text"><span class="l-en">Defense funds will beat the S&amp;P 500 over the next two quarters.</span><span class="l-zh">国防基金将在未来两个季度跑赢标普500。</span></p></div><span class="pw-call-date">2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P26"><div><span class="pw-call-topic"><span class="l-en">Markets</span><span class="l-zh">市场</span></span> <span class="pw-call-id">P26</span><p class="pw-call-text"><span class="l-en">Defense funds will beat the S&amp;P 500 over the next two quarters.</span><span class="l-zh">国防基金将在未来两个季度跑赢标普500。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P27"><div><span class="pw-call-topic"><span class="l-en">Dollar</span><span class="l-zh">美元</span></span> <span class="pw-call-id">P27</span><p class="pw-call-text"><span class="l-en">Stablecoin issuers will increase their Treasury holdings materially in 2026.</span><span class="l-zh">稳定币发行商将在2026年显著增加美债持仓。</span></p></div><span class="pw-call-date">2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P27"><div><span class="pw-call-topic"><span class="l-en">Dollar</span><span class="l-zh">美元</span></span> <span class="pw-call-id">P27</span><p class="pw-call-text"><span class="l-en">Stablecoin issuers will increase their Treasury holdings materially in 2026.</span><span class="l-zh">稳定币发行商将在2026年显著增加美债持仓。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P28"><div><span class="pw-call-topic"><span class="l-en">Dollar</span><span class="l-zh">美元</span></span> <span class="pw-call-id">P28</span><p class="pw-call-text"><span class="l-en">No coordinated dollar-devaluation policy will be enacted by year-end.</span><span class="l-zh">年底前不会出台协同推动美元贬值的政策。</span></p></div><span class="pw-call-date">2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P28"><div><span class="pw-call-topic"><span class="l-en">Dollar</span><span class="l-zh">美元</span></span> <span class="pw-call-id">P28</span><p class="pw-call-text"><span class="l-en">No coordinated dollar-devaluation policy will be enacted by year-end.</span><span class="l-zh">年底前不会出台协同推动美元贬值的政策。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P29"><div><span class="pw-call-topic"><span class="l-en">Iran</span><span class="l-zh">伊朗</span></span> <span class="pw-call-id">P29</span><p class="pw-call-text"><span class="l-en">Oil will stay below $100 unless Hormuz closes again. This is under pressure as traffic slows.</span><span class="l-zh">除非霍尔木兹海峡再次关闭，否则油价将低于100美元；航运放缓已令这一判断承压。</span></p></div><span class="pw-call-date">2026-09-30</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P29"><div><span class="pw-call-topic"><span class="l-en">Iran</span><span class="l-zh">伊朗</span></span> <span class="pw-call-id">P29</span><p class="pw-call-text"><span class="l-en">Oil will stay below $100 unless Hormuz closes again. This is under pressure as traffic slows.</span><span class="l-zh">除非霍尔木兹海峡再次关闭，否则油价将低于100美元；航运放缓已令这一判断承压。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-09-30</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P30"><div><span class="pw-call-topic"><span class="l-en">Dollar</span><span class="l-zh">美元</span></span> <span class="pw-call-id">P30</span><p class="pw-call-text"><span class="l-en">Treasury will support a strong dollar without direct currency intervention through year-end.</span><span class="l-zh">财政部将在年底前支持强美元，但不会直接干预汇率。</span></p></div><span class="pw-call-date">2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P30"><div><span class="pw-call-topic"><span class="l-en">Dollar</span><span class="l-zh">美元</span></span> <span class="pw-call-id">P30</span><p class="pw-call-text"><span class="l-en">Treasury will support a strong dollar without direct currency intervention through year-end.</span><span class="l-zh">财政部将在年底前支持强美元，但不会直接干预汇率。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P31"><div><span class="pw-call-topic"><span class="l-en">Dollar</span><span class="l-zh">美元</span></span> <span class="pw-call-id">P31</span><p class="pw-call-text"><span class="l-en">The dollar will hold up better than rate differences alone suggest as markets price easier policy.</span><span class="l-zh">当市场计入宽松政策时，美元表现将强于利差单独暗示的水平。</span></p></div><span class="pw-call-date">2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P31"><div><span class="pw-call-topic"><span class="l-en">Dollar</span><span class="l-zh">美元</span></span> <span class="pw-call-id">P31</span><p class="pw-call-text"><span class="l-en">The dollar will hold up better than rate differences alone suggest as markets price easier policy.</span><span class="l-zh">当市场计入宽松政策时，美元表现将强于利差单独暗示的水平。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P32"><div><span class="pw-call-topic"><span class="l-en">Rates</span><span class="l-zh">利率</span></span> <span class="pw-call-id">P32</span><p class="pw-call-text"><span class="l-en">Before the next cut, a Fed task force will create room to look through supply inflation or assume stronger productivity.</span><span class="l-zh">下次降息前，美联储工作组将为淡化供应型通胀或采用更高生产率假设留出空间。</span></p></div><span class="pw-call-date">2027-03-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P32"><div><span class="pw-call-topic"><span class="l-en">Rates</span><span class="l-zh">利率</span></span> <span class="pw-call-id">P32</span><p class="pw-call-text"><span class="l-en">Before the next cut, a Fed task force will create room to look through supply inflation or assume stronger productivity.</span><span class="l-zh">下次降息前，美联储工作组将为淡化供应型通胀或采用更高生产率假设留出空间。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2027-03-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P33"><div><span class="pw-call-topic"><span class="l-en">Rates</span><span class="l-zh">利率</span></span> <span class="pw-call-id">P33</span><p class="pw-call-text"><span class="l-en">If the Fed cuts soon after the midterms with inflation above 3%, the political backlash will be milder than in 2019 or 2024.</span><span class="l-zh">若中期选举后不久在通胀高于3%时降息，政治反弹将弱于2019年或2024年。</span></p></div><span class="pw-call-date">2027-06-30</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P33"><div><span class="pw-call-topic"><span class="l-en">Rates</span><span class="l-zh">利率</span></span> <span class="pw-call-id">P33</span><p class="pw-call-text"><span class="l-en">If the Fed cuts soon after the midterms with inflation above 3%, the political backlash will be milder than in 2019 or 2024.</span><span class="l-zh">若中期选举后不久在通胀高于3%时降息，政治反弹将弱于2019年或2024年。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2027-06-30</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P34"><div><span class="pw-call-topic"><span class="l-en">Hard assets</span><span class="l-zh">硬资产</span></span> <span class="pw-call-id">P34</span><p class="pw-call-text"><span class="l-en">Gold will bottom when the dollar, two-year yield, real yields and hike odds peak together—before the first rate cut.</span><span class="l-zh">黄金将在美元、两年期收益率、实际收益率和加息概率同步见顶时触底，并早于首次降息。</span></p></div><span class="pw-call-date">2027-03-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P34"><div><span class="pw-call-topic"><span class="l-en">Hard assets</span><span class="l-zh">硬资产</span></span> <span class="pw-call-id">P34</span><p class="pw-call-text"><span class="l-en">Gold will bottom when the dollar, two-year yield, real yields and hike odds peak together—before the first rate cut.</span><span class="l-zh">黄金将在美元、两年期收益率、实际收益率和加息概率同步见顶时触底，并早于首次降息。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2027-03-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P35"><div><span class="pw-call-topic"><span class="l-en">Hard assets</span><span class="l-zh">硬资产</span></span> <span class="pw-call-id">P35</span><p class="pw-call-text"><span class="l-en">Gold will not make a new record while the Fed is easing between late 2026 and mid-2027.</span><span class="l-zh">在2026年底至2027年中美联储宽松期间，黄金不会创下新高。</span></p></div><span class="pw-call-date">2027-06-30</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P35"><div><span class="pw-call-topic"><span class="l-en">Hard assets</span><span class="l-zh">硬资产</span></span> <span class="pw-call-id">P35</span><p class="pw-call-text"><span class="l-en">Gold will not make a new record while the Fed is easing between late 2026 and mid-2027.</span><span class="l-zh">在2026年底至2027年中美联储宽松期间，黄金不会创下新高。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2027-06-30</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P36"><div><span class="pw-call-topic"><span class="l-en">Rates</span><span class="l-zh">利率</span></span> <span class="pw-call-id">P36</span><p class="pw-call-text"><span class="l-en">The 10-year real yield will peak near 2.2%–2.5% in 2026 and stay below that level in 2027.</span><span class="l-zh">10年期实际收益率将在2026年于2.2%至2.5%附近见顶，并在2027年保持低于该区间。</span></p></div><span class="pw-call-date">2027-06-30</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P36"><div><span class="pw-call-topic"><span class="l-en">Rates</span><span class="l-zh">利率</span></span> <span class="pw-call-id">P36</span><p class="pw-call-text"><span class="l-en">The 10-year real yield will peak near 2.2%–2.5% in 2026 and stay below that level in 2027.</span><span class="l-zh">10年期实际收益率将在2026年于2.2%至2.5%附近见顶，并在2027年保持低于该区间。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2027-06-30</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P37"><div><span class="pw-call-topic"><span class="l-en">Rates</span><span class="l-zh">利率</span></span> <span class="pw-call-id">P37</span><p class="pw-call-text"><span class="l-en">The Fed will not cut rates at its first meeting after the November midterms.</span><span class="l-zh">美联储不会在11月中期选举后的首次会议上降息。</span></p></div><span class="pw-call-date">2027-01-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P37"><div><span class="pw-call-topic"><span class="l-en">Rates</span><span class="l-zh">利率</span></span> <span class="pw-call-id">P37</span><p class="pw-call-text"><span class="l-en">The Fed will not cut rates at its first meeting after the November midterms.</span><span class="l-zh">美联储不会在11月中期选举后的首次会议上降息。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2027-01-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P38"><div><span class="pw-call-topic"><span class="l-en">Dollar</span><span class="l-zh">美元</span></span> <span class="pw-call-id">P38</span><p class="pw-call-text"><span class="l-en">Stablecoin Treasury holdings will approach $300B, but Fed expectations will still drive bill yields.</span><span class="l-zh">稳定币发行商的美债持仓将接近3000亿美元，但短债收益率仍主要受美联储预期影响。</span></p></div><span class="pw-call-date">2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P38"><div><span class="pw-call-topic"><span class="l-en">Dollar</span><span class="l-zh">美元</span></span> <span class="pw-call-id">P38</span><p class="pw-call-text"><span class="l-en">Stablecoin Treasury holdings will approach $300B, but Fed expectations will still drive bill yields.</span><span class="l-zh">稳定币发行商的美债持仓将接近3000亿美元，但短债收益率仍主要受美联储预期影响。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P39"><div><span class="pw-call-topic"><span class="l-en">Hard assets</span><span class="l-zh">硬资产</span></span> <span class="pw-call-id">P39</span><p class="pw-call-text"><span class="l-en">During a hard-asset rebound, silver and bitcoin will rise more than gold.</span><span class="l-zh">在硬资产反弹期间，白银和比特币的涨幅将超过黄金。</span></p></div><span class="pw-call-date">2027-06-30</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P39"><div><span class="pw-call-topic"><span class="l-en">Hard assets</span><span class="l-zh">硬资产</span></span> <span class="pw-call-id">P39</span><p class="pw-call-text"><span class="l-en">During a hard-asset rebound, silver and bitcoin will rise more than gold.</span><span class="l-zh">在硬资产反弹期间，白银和比特币的涨幅将超过黄金。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2027-06-30</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P40"><div><span class="pw-call-topic"><span class="l-en">Rates</span><span class="l-zh">利率</span></span> <span class="pw-call-id">P40</span><p class="pw-call-text"><span class="l-en">The Fed will hold rates steady at its July 28–29 meeting.</span><span class="l-zh">美联储将在7月28日至29日会议上维持利率不变。</span></p></div><span class="pw-call-date">2026-07-31</span><span class="pw-call-status"><span class="pw-badge warn"><span class="l-en">Needs review</span><span class="l-zh">需要复核</span></span>
+        <article class="pw-call" data-policy-id="full-P40"><div><span class="pw-call-topic"><span class="l-en">Rates</span><span class="l-zh">利率</span></span> <span class="pw-call-id">P40</span><p class="pw-call-text"><span class="l-en">The Fed will hold rates steady at its July 28–29 meeting.</span><span class="l-zh">美联储将在7月28日至29日会议上维持利率不变。</span></p><p class="pw-meta"><span class="l-en">Result</span><span class="l-zh">结果</span>: <span class="l-en">The FOMC held the federal-funds target range at 3.50%–3.75% on July 29.</span><span class="l-zh">FOMC于7月29日将联邦基金目标区间维持在3.50%–3.75%不变。</span> · <a href="https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm" target="_blank" rel="noopener"><span class="l-en">Source</span><span class="l-zh">来源</span></a></p></div><span class="pw-call-date"><span class="l-en">Reviewed</span><span class="l-zh">已复核</span> 2026-09-08</span><span class="pw-call-status"><span class="pw-badge fact"><span class="l-en">Right</span><span class="l-zh">正确</span></span>
   </span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P41"><div><span class="pw-call-topic"><span class="l-en">Rates</span><span class="l-zh">利率</span></span> <span class="pw-call-id">P41</span><p class="pw-call-text"><span class="l-en">Three-month average job growth will stay below 100,000 through the July report.</span><span class="l-zh">截至7月就业报告，三个月平均新增就业将保持在10万以下。</span></p></div><span class="pw-call-date">2026-08-07</span><span class="pw-call-status"><span class="pw-badge warn"><span class="l-en">Needs review</span><span class="l-zh">需要复核</span></span>
+        <article class="pw-call" data-policy-id="full-P41"><div><span class="pw-call-topic"><span class="l-en">Rates</span><span class="l-zh">利率</span></span> <span class="pw-call-id">P41</span><p class="pw-call-text"><span class="l-en">Three-month average job growth will stay below 100,000 through the July report.</span><span class="l-zh">截至7月就业报告，三个月平均新增就业将保持在10万以下。</span></p><p class="pw-meta"><span class="l-en">Result</span><span class="l-zh">结果</span>: <span class="l-en">BLS reported a 20,000 three-month average payroll gain through July, well below 100,000.</span><span class="l-zh">美国劳工统计局公布，截至7月的非农三个月平均新增就业为2万人，明显低于10万人。</span> · <a href="https://www.bls.gov/news.release/archives/empsit_08072026.htm" target="_blank" rel="noopener"><span class="l-en">Source</span><span class="l-zh">来源</span></a></p></div><span class="pw-call-date"><span class="l-en">Reviewed</span><span class="l-zh">已复核</span> 2026-09-08</span><span class="pw-call-status"><span class="pw-badge fact"><span class="l-en">Right</span><span class="l-zh">正确</span></span>
   </span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P42"><div><span class="pw-call-topic"><span class="l-en">China</span><span class="l-zh">中国</span></span> <span class="pw-call-id">P42</span><p class="pw-call-text"><span class="l-en">Other tariff laws will keep the U.S. tariff wall on China near its pre-ruling level through year-end.</span><span class="l-zh">其他关税法律将在年底前使美国对华关税壁垒接近裁决前水平。</span></p></div><span class="pw-call-date">2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
+        <article class="pw-call" data-policy-id="full-P42"><div><span class="pw-call-topic"><span class="l-en">China</span><span class="l-zh">中国</span></span> <span class="pw-call-id">P42</span><p class="pw-call-text"><span class="l-en">Other tariff laws will keep the U.S. tariff wall on China near its pre-ruling level through year-end.</span><span class="l-zh">其他关税法律将在年底前使美国对华关税壁垒接近裁决前水平。</span></p></div><span class="pw-call-date"><span class="l-en">Review</span><span class="l-zh">复核</span> 2026-12-31</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Open</span><span class="l-zh">待定</span></span></span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P43"><div><span class="pw-call-topic"><span class="l-en">Treasury</span><span class="l-zh">财政部</span></span> <span class="pw-call-id">P43</span><p class="pw-call-text"><span class="l-en">Bank regulators will publish a rule easing capital treatment for Treasury trades.</span><span class="l-zh">银行监管机构将发布规则，放宽美债交易的资本要求。</span></p></div><span class="pw-call-date">2026-07-31</span><span class="pw-call-status"><span class="pw-badge warn"><span class="l-en">Needs review</span><span class="l-zh">需要复核</span></span>
+        <article class="pw-call" data-policy-id="full-P43"><div><span class="pw-call-topic"><span class="l-en">Treasury</span><span class="l-zh">财政部</span></span> <span class="pw-call-id">P43</span><p class="pw-call-text"><span class="l-en">Bank regulators will publish a rule easing capital treatment for Treasury trades.</span><span class="l-zh">银行监管机构将发布规则，放宽美债交易的资本要求。</span></p><p class="pw-meta"><span class="l-en">Result</span><span class="l-zh">结果</span>: <span class="l-en">Not scored: the agencies had already finalized the relevant eSLR reform in November 2025, before this call entered the ledger.</span><span class="l-zh">不计分：相关机构已于2025年11月最终敲定eSLR改革，早于该判断进入记录的时间。</span> · <a href="https://www.occ.gov/news-issuances/bulletins/2025/bulletin-2025-41.html" target="_blank" rel="noopener"><span class="l-en">Source</span><span class="l-zh">来源</span></a></p></div><span class="pw-call-date"><span class="l-en">Reviewed</span><span class="l-zh">已复核</span> 2026-09-08</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Not scored</span><span class="l-zh">不计分</span></span>
   </span></article>
 
 
 
 
-        <article class="pw-call" data-policy-id="full-P44"><div><span class="pw-call-topic"><span class="l-en">Iran</span><span class="l-zh">伊朗</span></span> <span class="pw-call-id">P44</span><p class="pw-call-text"><span class="l-en">Under review after the ceasefire collapsed; this is not an active forecast.</span><span class="l-zh">停火破裂后正在复核；这不是一条有效预测。</span></p></div><span class="pw-call-date">2026-08-31</span><span class="pw-call-status"><span class="pw-badge warn"><span class="l-en">Needs review</span><span class="l-zh">需要复核</span></span>
+        <article class="pw-call" data-policy-id="full-P44"><div><span class="pw-call-topic"><span class="l-en">Iran</span><span class="l-zh">伊朗</span></span> <span class="pw-call-id">P44</span><p class="pw-call-text"><span class="l-en">This Iran entry was already being rewritten when it entered the track record.</span><span class="l-zh">该伊朗条目进入记录时已在重写。</span></p><p class="pw-meta"><span class="l-en">Result</span><span class="l-zh">结果</span>: <span class="l-en">Not scored: this entry was already being rewritten after its ceasefire premise broke, so it never entered the ledger as a clean active forecast.</span><span class="l-zh">不计分：该条目进入记录时，停火前提已破裂且内容已在重写，因此从未作为一条完整的有效预测进入记录。</span></p></div><span class="pw-call-date"><span class="l-en">Reviewed</span><span class="l-zh">已复核</span> 2026-09-08</span><span class="pw-call-status"><span class="pw-badge neutral"><span class="l-en">Not scored</span><span class="l-zh">不计分</span></span>
   </span></article>
 
       </div>
     </details>
   </section>
+
 
   <section class="pw-section" id="sources">
     <div class="pw-section-head">
@@ -1434,7 +1667,7 @@
         </div>
       </div>
     </details>
-    <p class="pw-build-note"><span class="l-en">Last verified</span><span class="l-zh">最近核实</span> <span class="l-en">Jul 13, 2026</span><span class="l-zh">2026年7月13日</span> · <span class="l-en">Built</span><span class="l-zh">构建于</span> 2026-09-09 08:57 UTC · <span class="l-en">For information only—not investment advice.</span><span class="l-zh">仅供参考，不构成投资建议。</span></p>
+    <p class="pw-build-note"><span class="l-en">Last verified</span><span class="l-zh">最近核实</span> <span class="l-en">Jul 13, 2026</span><span class="l-zh">2026年7月13日</span> · <span class="l-en">Built</span><span class="l-zh">构建于</span> 2026-09-13 00:47 UTC · <span class="l-en">For information only—not investment advice.</span><span class="l-zh">仅供参考，不构成投资建议。</span></p>
   </section>
 </main>
 
@@ -1463,6 +1696,5 @@
 </script>
 
 <script src="theme.js?v=53939d13" defer></script>
-<script defer data-whb data-root="" src="wh_banner.js?v=4a53a176"></script>
 </body>
 </html>

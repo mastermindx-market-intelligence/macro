@@ -458,6 +458,9 @@ def build_page(root: Path, page: SuitePage, *, data_root: Path, out_dir: Path,
     }
     try:
         snapshot, artifact = read_workspace(data_root, page)
+        # Null prior/delta/sign are typed in the view ("No earlier reading
+        # available to compare yet." / "暂无可比较的更早读数。"); this
+        # builder never interpolates those fields.
         view = macro_suite_view.build_view(snapshot, page_built_at=page_built_at,
                                            artifact=artifact, layout=_layout_for(page.workspace_id))
         ok = True
