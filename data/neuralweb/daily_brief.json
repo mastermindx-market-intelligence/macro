@@ -1,17 +1,24 @@
 {
   "schema": "neuralweb.daily_brief.v1",
-  "produced_at": "2026-09-13T10:25:39.764186+00:00",
+  "produced_at": "2026-09-13T10:33:54.422965+00:00",
   "as_of": "2026-09-11",
   "status": "warn",
-  "phase": "engine",
+  "phase": "final",
   "did_the_brain_run": {
-    "cortex_status": "fresh",
-    "tool_call_batches": 3,
-    "individual_tool_calls": 9,
+    "cortex_status": "degraded",
+    "tool_call_batches": 0,
+    "individual_tool_calls": 0,
     "context_stale": false,
-    "summary": "cortex ran (9 tool calls); memo as_of 2026-09-12T21:32:49+00:00"
+    "summary": "cortex degraded — model_unavailable"
   },
   "what_changed": [
+    {
+      "kind": "cortex_status_changed",
+      "id": "cortex",
+      "summary": "cortex status changed: fresh → degraded",
+      "severity": "warn",
+      "evidence_path": "data/neuralweb/health.json"
+    },
     {
       "kind": "lobe_row_count_changed",
       "id": "risk-radar-review-log",
@@ -278,6 +285,12 @@
   },
   "operator_attention": [
     {
+      "priority": 1,
+      "area": "cortex",
+      "summary": "cortex degraded — inspect data/neuralweb/cortex/memo.json and run_status",
+      "action_type": "ops_fix"
+    },
+    {
       "priority": 2,
       "area": "government-revenue-latest",
       "summary": "lobe government-revenue-latest is warn — age 298.43h vs SLA 36h",
@@ -496,7 +509,7 @@
     {
       "priority": 3,
       "area": "evidence_clock",
-      "summary": "21 evidence-clock items overdue — see admin Observatory",
+      "summary": "22 evidence-clock items overdue — see admin Observatory",
       "action_type": "follow_up"
     }
   ],
@@ -505,10 +518,10 @@
   },
   "evidence_clock": {
     "available": true,
-    "as_of": "2026-09-12",
+    "as_of": "2026-09-13",
     "counts": {
-      "overdue": 21,
-      "due": 12,
+      "overdue": 22,
+      "due": 11,
       "human_review": 0,
       "missing": 1,
       "stale": 1,
@@ -522,7 +535,7 @@
       "clock_id": "qledger:placebo",
       "due_at": "2026-06-22"
     },
-    "morning_line": "21 overdue, 12 due, 1 missing, 1 stale, 2 blocked, 278 accruing. Top due: qledger:placebo."
+    "morning_line": "22 overdue, 11 due, 1 missing, 1 stale, 2 blocked, 278 accruing. Top due: qledger:placebo."
   },
   "china_market_state": {
     "available": true,
