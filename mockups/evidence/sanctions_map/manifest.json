@@ -1019,7 +1019,10 @@
   },
   "tool": {
     "module_ref": "scripts/capture_page_evidence.py",
-    "module_sha256": "97b4435815440fde008cd35b73c551cf704ba01ea71f18f04a2b23ebc7a0a6b7",
+    "module_sha256": [
+      "97b4435815440fde008cd35b73c551cf704ba01ea71f18f04a2b23ebc7a0a6b7",
+      "3301a5f9f5a21b2bd6fada86b3c685af1f3f9baf9fa52cbd712ab5591e980b05"
+    ],
     "user_agent": "mastermind-page-census/1.0 (internal product observability)",
     "version": "1.2.0"
   },
