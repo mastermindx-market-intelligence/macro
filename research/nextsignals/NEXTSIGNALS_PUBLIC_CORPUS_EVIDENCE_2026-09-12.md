@@ -17,7 +17,7 @@ Two public accounts were selected because they form the creator/upstream evidenc
 
 The historical-search surface yielded 3,050 unique retrievable TailThatWagsDog posts and 1,332 unique retrievable Signal_Sigma posts. A separate timeline pass was used as a completeness cross-check rather than treated as a second corpus. Profile status counters are higher; the difference is preserved as deleted, unavailable, non-indexed or otherwise unrecovered historical content, not silently claimed as scraped.
 
-Strict media manifests contain 2,836 TailThatWagsDog photographs and 1,155 Signal_Sigma photographs. The local private acquisition audit verifies all 3,991 photographs are present. Non-photo media metadata is retained separately; full video acquisition is not a prerequisite for the SCE version ruling below.
+Strict media manifests contain 2,836 TailThatWagsDog photographs and 1,155 Signal_Sigma photographs. The local private acquisition audit verifies all 3,991 photographs are present. All 59 non-photo media thumbnails (7 TailThatWagsDog; 52 Signal_Sigma) are also archived locally. Full video payload acquisition is not a prerequisite for the SCE version ruling below and remains deferred to the 4 TB-backed host.
 
 The account corpus exposed 236 unique linked-report targets in the first pass. 225 were successfully archived; 11 historical Signal Sigma URLs returned 404. A fresh crawl of the current nextSignals Macro page added 13 live Netlify research reports on September 12. These counts are evidence-corpus state, not redistribution authorization.
 
