@@ -119,6 +119,7 @@
   --chart-bg: transparent;
   --card-shadow: 0 1px 0 rgba(255,255,255,.02);
   --popover-shadow: 0 6px 18px rgba(0,0,0,.5);
+  --tooltip-shadow: 0 8px 24px rgba(0,0,0,.35);
   /* ── custom scrollbars ───────────────────────────────────────────────────────
      Thumb tint derived from --muted so it adapts to dark / light / zh with no
      per-theme override (--info gives the drag-state a branded accent). Consumed
@@ -201,6 +202,7 @@ html[data-theme="light"] {
   /* soft, light popover shadow — the dark theme's heavy 50%-black drop shadow
      reads as a murky grey halo on the white light-mode tooltips */
   --popover-shadow: 0 4px 10px rgba(20,30,50,.06), 0 12px 28px rgba(20,30,50,.14);
+  --tooltip-shadow: 0 1px 3px rgba(20,30,50,.07);
   /* light glass: brighter fill (white reads thin when too transparent) + an airy
      soft shadow with a crisp white top-edge sheen instead of the dark theme's
      heavy drop. */

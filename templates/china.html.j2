@@ -1478,14 +1478,14 @@
   body.page-china .cnx-wrap .sxg-face.mx5-card-face:focus-visible{
     outline:2px solid color-mix(in srgb, var(--link) 70%, transparent);outline-offset:2px}
   body.page-china .cnx-wrap .cnx-row .cnx-lens{
-    flex:none;width:28px;height:28px;margin-left:auto;border-radius:50%;
+    flex:none;width:28px;height:28px;margin-left:auto;border-radius:var(--r-pill,50%);
     border:1px solid var(--line);background:transparent;color:var(--muted);
     font-size:13px;font-weight:700;cursor:help;line-height:1;position:relative}
   body.page-china .cnx-wrap .cnx-row .cnx-lens::after{
     content:attr(data-tip-en);display:none;position:absolute;right:0;bottom:calc(100% + 6px);
-    z-index:8;max-width:min(42ch,90vw);padding:8px 10px;border-radius:8px;font-size:12px;
+    z-index:8;max-width:min(42ch,90vw);padding:8px 10px;border-radius:var(--r-ctl,8px);font-size:12px;
     line-height:1.45;color:var(--text);background:var(--panel);border:1px solid var(--line);
-    box-shadow:var(--card-shadow, 0 8px 24px rgba(0,0,0,.35));white-space:normal;text-align:left}
+    box-shadow:var(--tooltip-shadow);white-space:normal;text-align:left}
   html[data-lang="zh"] body.page-china .cnx-wrap .cnx-row .cnx-lens::after{content:attr(data-tip-zh)}
   body.page-china .cnx-wrap .cnx-row .cnx-lens.cnx-tip-open::after,
   body.page-china .cnx-wrap .cnx-row .cnx-lens:focus-visible::after{display:block}
@@ -1515,22 +1515,22 @@
   /* LENS: data-tip rows — visible ? affordance; hover/focus/tap open the receipt */
   body.page-china .cnx-wrap .cnx-row[data-tip-en]{position:relative;cursor:help;padding-right:28px}
   body.page-china .cnx-wrap .cnx-row[data-tip-en]::before{
-    content:"?";position:absolute;right:0;top:6px;width:18px;height:18px;border-radius:50%;
+    content:"?";position:absolute;right:0;top:6px;width:18px;height:18px;border-radius:var(--r-pill,50%);
     border:1px solid var(--line);color:var(--muted);font-size:11px;font-weight:700;
     display:flex;align-items:center;justify-content:center;line-height:1}
   body.page-china .cnx-wrap .cnx-row[data-tip-en]::after{
     content:attr(data-tip-en);display:none;position:absolute;left:0;bottom:calc(100% + 6px);
-    z-index:8;max-width:min(42ch,90vw);padding:8px 10px;border-radius:8px;font-size:12px;
+    z-index:8;max-width:min(42ch,90vw);padding:8px 10px;border-radius:var(--r-ctl,8px);font-size:12px;
     line-height:1.45;color:var(--text);background:var(--panel);border:1px solid var(--line);
-    box-shadow:var(--card-shadow, 0 8px 24px rgba(0,0,0,.35));white-space:normal}
+    box-shadow:var(--tooltip-shadow);white-space:normal}
   html[data-lang="zh"] body.page-china .cnx-wrap .cnx-row[data-tip-en]::after{content:attr(data-tip-zh)}
   body.page-china .cnx-wrap .cnx-row[data-tip-en]:hover::after,
   body.page-china .cnx-wrap .cnx-row[data-tip-en]:focus-visible::after,
   body.page-china .cnx-wrap .cnx-row[data-tip-en].cnx-tip-open::after{display:block}
   /* Skeleton — true geometry. Dark: luminance pulse, no border. Light: hairline plate. */
   body.page-china .mx-skel{
-    display:inline-block;border-radius:3px;vertical-align:middle;
-    background:var(--panel2, #1a1d24);
+    display:inline-block;border-radius:var(--r-ctl,3px);vertical-align:middle;
+    background:var(--panel2);
     background-image:linear-gradient(90deg,
       color-mix(in srgb, var(--text) 6%, transparent) 0%,
       color-mix(in srgb, var(--text) 10%, transparent) 50%,
@@ -1546,20 +1546,20 @@
   body.page-china .mx-empty .empty-why{display:block;font-size:var(--fs-micro,10px);opacity:.85;margin-top:2px}
   /* LIGHT TREATMENT — research workspace: white card, hairline, ring-not-glow */
   [data-theme="light"] body.page-china .cnx-wrap .mx-vh{
-    background:#fff;border:1px solid color-mix(in srgb, var(--text) 16%, transparent);
+    background:var(--panel);border:1px solid color-mix(in srgb, var(--text) 16%, transparent);
     box-shadow:var(--card-shadow);border-radius:var(--r-panel,14px);
     padding:var(--sp-6,24px) var(--sp-5,20px)}
   [data-theme="light"] body.page-china .cnx-wrap .band.panel,
   [data-theme="light"] body.page-china .cnx-wrap .drivers > .panel{
-    background:#fff;box-shadow:var(--card-shadow);
+    background:var(--panel);box-shadow:var(--card-shadow);
     border-color:color-mix(in srgb, var(--text) 12%, transparent)}
   [data-theme="light"] body.page-china .cnx-wrap .depth a:hover{
-    background:#fff;transform:none;
+    background:var(--panel);transform:none;
     border-color:color-mix(in srgb, var(--link) 55%, var(--line));
     box-shadow:0 1px 0 color-mix(in srgb, var(--link) 22%, transparent),
                0 4px 10px -6px color-mix(in srgb, var(--link) 35%, transparent)}
   [data-theme="light"] body.page-china .mx-skel{
-    background:#fff;border:1px solid color-mix(in srgb, var(--text) 16%, transparent);
+    background:var(--panel);border:1px solid color-mix(in srgb, var(--text) 16%, transparent);
     background-image:linear-gradient(90deg,
       color-mix(in srgb, var(--text) 4%, transparent) 0%,
       color-mix(in srgb, var(--text) 7%, transparent) 50%,
@@ -1568,7 +1568,7 @@
   @media (prefers-reduced-motion:reduce){
     [data-theme="light"] body.page-china .mx-skel{animation:none;background-image:none}
   }
-  [data-theme="light"] body.page-china .mx-vh .mx5-gauge-svg path[stroke="rgba(255,255,255,.08)"]{
+  [data-theme="light"] body.page-china .mx-vh .mx5-gauge-svg path.cnx-arc-bg{
     stroke:color-mix(in srgb, var(--text) 12%, transparent)}
   body.page-china .cnx-wrap .mx-vh .cnx-gauge-fill{filter:url(#cnxArcGlow)}
   [data-theme="light"] body.page-china .cnx-wrap .mx-vh .cnx-gauge-fill{filter:none}
@@ -1983,7 +1983,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
               <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
             </filter>
           </defs>
-          <path d="M 14 75 A 56 56 0 0 1 126 75" stroke="rgba(255,255,255,.08)" stroke-width="10" stroke-linecap="round" fill="none"/>
+          <path class="cnx-arc-bg" d="M 14 75 A 56 56 0 0 1 126 75" stroke="rgba(255,255,255,.08)" stroke-width="10" stroke-linecap="round" fill="none"/>
           <path id="mx5-gauge-arc-fill" class="cnx-gauge-fill"
                 d="M 14 75 A 56 56 0 0 1 126 75" stroke-width="10" stroke-linecap="round" fill="none"
                 stroke-dasharray="{{ _mx5_filled }} {{ _mx5_gap }}" filter="url(#cnxArcGlow)"/>
@@ -2074,7 +2074,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       <div class="tx"><span class="sub"><span class="l-en">{{ face.en }}</span><span class="l-zh">{{ face.zh }}</span></span>{% if face.empty %}<span class="empty-why"><span class="l-en">the playbook has not emitted this reason for this session</span><span class="l-zh">本会话策略尚未给出这条理由</span></span>{% endif %}</div>
       <button type="button" class="cnx-lens" aria-label="Why" data-tip-en="{{ face.tip_en }}" data-tip-zh="{{ face.tip_zh }}">?</button></div>
     {% endfor %}
-    {% if imminent %}<div class="cnx-row"><span class="ic">📅</span><div class="tx"><b><span class="l-en">{{ imminent.en }}</span><span class="l-zh">{{ imminent.zh }}</span></b><span class="sub">{{ t('Highest-impact print soon','近期最重要数据') }}</span></div></div>{% endif %}
+    {% if imminent %}<div class="cnx-row"><span class="ic" aria-hidden="true"></span><div class="tx"><b><span class="l-en">{{ imminent.en }}</span><span class="l-zh">{{ imminent.zh }}</span></b><span class="sub">{{ t('Highest-impact print soon','近期最重要数据') }}</span></div></div>{% endif %}
   </section>
 
   <!-- =============== L1-3 · What changed =============== -->
@@ -2096,7 +2096,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       <span class="mx-chg-when tnum">{{ latest.date[5:10] if latest.date else '' }}</span>
       <span class="mx-chg-name"><span class="l-en">Alert</span><span class="l-zh">警报</span></span>
       <span class="mx-chg-what"><span class="l-en">{{ a.plain_en }}</span><span class="l-zh">{{ a.plain_zh or a.plain_en }}</span></span>
-      <span class="mx-stance" style="--c:var(--ink-warn)"><span class="l-en">Fired</span><span class="l-zh">已触发</span></span>
+      <span class="mx-stance" style="--c:var(--ink-warn);"><span class="l-en">Fired</span><span class="l-zh">已触发</span></span>
       <span class="mx-chg-chev">›</span>
     </a>
     {% endfor %}
