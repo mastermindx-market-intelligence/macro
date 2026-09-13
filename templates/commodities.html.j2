@@ -182,7 +182,7 @@ body.page-commod .aurora.au-red .au-a3   { background: radial-gradient(ellipse, 
 .sechd { display: flex; align-items: center; gap: 9px; margin: 22px 0 2px; }
 .sechd h2 { font-size: 15px; font-weight: 600; margin: 0; letter-spacing: .01em; }
 .sechd .q, .stance-sub .q {
-  width: 16px; height: 16px; border-radius: 50%; border: 1px solid var(--line2);
+  width: 16px; height: 16px; border-radius: var(--r-pill, 999px); border: 1px solid var(--line2);
   color: var(--faint); font-size: 10px; display: inline-flex; align-items: center;
   justify-content: center; cursor: help; flex-shrink: 0;
   background: transparent; padding: 0; font: inherit; font-size: 10px; font-weight: 700;
@@ -222,7 +222,7 @@ body.page-commod .aurora.au-red .au-a3   { background: radial-gradient(ellipse, 
 .big-stance.t-watch    { color: var(--ink-warn, var(--amb)); text-shadow: 0 0 36px rgba(242,178,77,.35); }
 .big-stance.t-protect  { color: var(--ink-down, var(--dn));  text-shadow: 0 0 36px rgba(255,106,106,.35); }
 .big-stance.t-getready { color: var(--ink-up, var(--up));  text-shadow: 0 0 36px rgba(55,208,127,.35); }
-.big-stance.t-act, .big-stance.t-selective { color: var(--ink-up, var(--up));  text-shadow: 0 0 36px rgba(55,208,127,.35); }
+.big-stance.t-act, .big-stance.t-selective { color: var(--ink-up, var(--up));  text-shadow: 0 0 36px color-mix(in srgb, var(--up) 35%, transparent); }
 .big-stance.t-standaside { color: var(--mut); text-shadow: none; }
 @media(max-width:560px){ .big-stance { font-size: 36px; } }
 
