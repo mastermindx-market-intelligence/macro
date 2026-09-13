@@ -309,6 +309,22 @@ jobs:
       - name: AM Edition producer contract (per-source clocks, six states, no laundering)
         run: python -m pytest tests/test_am_edition_producer.py -q
 
+  country-dossier:
+    if: ${{ false }}
+    gate: code
+    # Country political/policy-stance dossier (A-F02-W2-2): leaf producer schema,
+    # typed nulls, fail-closed validate_view gate, and the international macro
+    # dashboard suite that must still pass at the same head.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: install test deps
+        run: pip install pytest pyyaml pandas jinja2 requests
+      - name: country policy dossier — schema, typed nulls and fail-closed contract
+        run: python -m pytest tests/test_country_dossier.py tests/test_international_macro_dashboards.py -q
+
   all-exports-resolve:
     if: ${{ false }}
     gate: code
@@ -10803,6 +10819,9 @@ jobs:
       - "engine/hk_global.py"
       - "engine/hk_global_beta.py"
       - "engine/international_macro_dashboard.py"
+      # A-F02-W2-2 closure widening 2026-09-07 (contract-delta): the intl
+      # dashboard producer now imports the country-dossier leaf.
+      - "engine/country_dossier.py"
       - "engine/intl_bonds.py"
       - "engine/intl_compare.py"
       - "engine/intl_equity_risk.py"
