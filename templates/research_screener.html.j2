@@ -21,7 +21,7 @@
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <title>Research list{% if as_of %} — {{ as_of }}{% endif %} | MastermindX</title>
 {% set seo_title = 'Research list — which names deserve a look first, and why' %}
-{% set seo_desc = 'A research list of companies with a security-state record. Ordered by name. Each line says why, and which record produced that fact.' %}
+{% set seo_desc = 'A research list of companies with a security state record. Ordered by name. Each line says why, and which record produced that fact.' %}
 {% set seo_path = 'research_screener.html' %}
 {% include "_seo_head.html.j2" %}
 <link rel="stylesheet" href="theme.css">
@@ -34,7 +34,7 @@
     <h1 class="rs-title">{{ t('Research list', '研究名单') }}</h1>
     <p class="rs-lead">{{ t("Which names deserve a look first, and why.", "哪些公司值得先看，以及原因。") }}</p>
     <p class="rs-note">{{ t('This is a reading list. It orders names alphabetically, or by the next dated event. Every line names a checkable fact and the record that produced it.', '这是一份阅读名单。按名称排列，或按下一项有日期的事项排列。每一行都写明一项可核对的事实，以及产生该事实的记录。') }}</p>
-    <p class="rs-count">{% if n_names == 1 %}{{ t('1 name in this list.', '本名单共 1 家公司。') }}{% else %}{{ t('%s names in this list.'|format(n_names), '本名单共 %s 家公司。'|format(n_names)) }}{% endif %}{% if as_of %} <span class="rs-asof">{{ t('Data as of', '数据截至') }} {{ as_of }}.</span>{% endif %}</p>
+    <p class="rs-count">{% if n_names == 1 %}{{ t('1 name in this list.', '本名单共 1 家公司。') }}{% else %}{{ t('%s names in this list.'|format(n_names), '本名单共 %s 家公司。'|format(n_names)) }}{% endif %}{% if as_of %} <span class="rs-asof">{{ t('Data as of %s.'|format(as_of), '数据截至 %s。'|format(as_of)) }}</span>{% endif %}</p>
   </header>
 
   <div class="rs-toolbar">
@@ -81,7 +81,7 @@
           {% if row.valuation_posture %}
           <li><span class="l-en">{{ row.valuation_posture.label.en }}</span><span class="l-zh">{{ row.valuation_posture.label.zh }}</span> · <span class="l-en">{{ row.valuation_posture.assumptions_text.en }}</span><span class="l-zh">{{ row.valuation_posture.assumptions_text.zh }}</span> · <span class="l-en">{{ row.valuation_posture.owner.en }}</span><span class="l-zh">{{ row.valuation_posture.owner.zh }}</span></li>
           {% endif %}
-          <li>{{ t('Theme is not available yet.', '主题视角尚未提供。') }}</li>
+          <li>{{ t("Theme lens isn't available yet", "主题视角尚未提供。") }}</li>
           <li class="rs-hold-line" data-rs-hold hidden>{{ t('You hold this name.', '你持有这家公司。') }}</li>
         </ul>
         <p class="rs-more"><a href="stocks/{{ row.ticker }}.html">{{ t('Open the company page for the full technical read.', '打开公司页面查看完整技术细节。') }}</a></p>

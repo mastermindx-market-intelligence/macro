@@ -238,6 +238,75 @@ def test_en_zh_copy_uses_cjk_punctuation():
         assert _CJK_END.search(text) or "，" in text, text
 
 
+def test_glance_why_en_is_plain_sentences():
+    """MAJOR-1: glance-tier EN why is sentences, not jammed clauses."""
+    payload = compile_research_screener(
+        [_state("US-XNAS-AAPL", "AAPL", name="Apple", window_start="2026-09-12")],
+        [_valuation("AAPL", price=180, per_share=220)],
+        as_of=date(2026, 9, 1),
+    )
+    row = payload["rows"][0]
+    label_en = row["valuation_posture"]["label"]["en"]
+    assumptions_en = row["valuation_posture"]["assumptions_text"]["en"]
+    why_en = row["why"]["en"]
+    assert label_en.endswith((".", "!", "?")), label_en
+    assert assumptions_en.endswith((".", "!", "?")), assumptions_en
+    assert "earnings Sales" not in why_en, why_en
+    assert f"{label_en} {assumptions_en}" in why_en, why_en
+    assert re.search(r"[.!?]\s+[A-Z]", why_en), why_en
+
+
+def test_template_zh_as_of_uses_cjk_terminator():
+    """MAJOR-2: rendered ZH as-of copy terminates with CJK punctuation."""
+    pytest.importorskip("jinja2")
+    from jinja2 import Environment, FileSystemLoader
+
+    templates = TEMPLATE_PATH.parent
+    env = Environment(loader=FileSystemLoader(str(templates)), autoescape=True)
+    payload = compile_research_screener(
+        [_state("US-XNAS-AAPL", "AAPL", name="Apple")],
+        as_of=date(2026, 9, 1),
+    )
+    html = env.get_template(TEMPLATE_PATH.name).render(
+        payload=payload,
+        as_of=payload["as_of"],
+    )
+    zh_spans = re.findall(r'<span class="l-zh">(.*?)</span>', html)
+    asof_zh = [span for span in zh_spans if "数据截至" in span]
+    assert asof_zh, html
+    for text in asof_zh:
+        assert "数据截至" in text
+        assert text.rstrip().endswith("。"), text
+        assert not re.search(r"数据截至[^。]*\.", text), text
+    source = TEMPLATE_PATH.read_text(encoding="utf-8")
+    assert "数据截至" in source
+    # A shared ASCII period after {{ as_of }} would terminate ZH with '.'.
+    assert not re.search(r"\{\{\s*as_of\s*\}\}\.", source)
+
+
+def test_receipt_theme_copy_matches_chip_null():
+    source = TEMPLATE_PATH.read_text(encoding="utf-8")
+    assert source.count(THEME_NULL_EN) >= 2
+    assert "Theme is not available yet." not in source
+
+
+def test_owner_en_uses_house_panel_names_not_slug_case():
+    payload = compile_research_screener(
+        [_state("US-XNAS-AAPL", "AAPL", name="Apple", window_start="2026-09-12")],
+        [_valuation("AAPL", price=180, per_share=220)],
+        as_of=date(2026, 9, 1),
+    )
+    blob = json.dumps(payload, ensure_ascii=False)
+    assert "security-state" not in blob
+    assert "valuation-under-assumptions" not in blob
+    owner_en = payload["rows"][0]["valuation_posture"]["owner"]["en"]
+    assert owner_en == "Valuation under different assumptions"
+    assert "Valuation under different assumptions" in payload["rows"][0]["why"]["en"]
+    source = TEMPLATE_PATH.read_text(encoding="utf-8")
+    assert "security-state" not in source
+    assert "valuation-under-assumptions" not in source
+
+
 def test_why_names_the_owner():
     payload = compile_research_screener(
         [_state("US-XNAS-AAPL", "AAPL", name="Apple", window_start="2026-09-12")],
@@ -245,8 +314,8 @@ def test_why_names_the_owner():
         as_of=date(2026, 9, 1),
     )
     why = payload["rows"][0]["why"]
-    assert "security-state catalyst record" in why["en"]
-    assert "valuation-under-assumptions" in why["en"]
+    assert "security state catalyst record" in why["en"]
+    assert "Valuation under different assumptions" in why["en"]
     assert "催化事项" in why["zh"]
     assert "估值" in why["zh"]
 

@@ -30,20 +30,22 @@ EXPOSURE_NULL_ZH = "登录后即可看到你持有其中哪些。"
 
 CATALYST_EVENT_EN = "Next earnings window"
 CATALYST_EVENT_ZH = "下一份财报窗口"
-CATALYST_OWNER_EN = "this company's security-state catalyst record"
+CATALYST_OWNER_EN = "this company's security state catalyst record"
 CATALYST_OWNER_ZH = "该公司证券状态中的催化事项记录"
 
-VAL_OWNER_EN = "the valuation-under-assumptions panel"
+VAL_OWNER_EN = "Valuation under different assumptions"
 VAL_OWNER_ZH = "不同假设下的估值面板"
-VAL_INEXPENSIVE_EN = "Looks inexpensive against reported earnings"
+VAL_INEXPENSIVE_EN = "Looks inexpensive against reported earnings."
 VAL_INEXPENSIVE_ZH = "对照已披露盈利显得便宜。"
-VAL_EXPENSIVE_EN = "Looks expensive against reported earnings"
+VAL_EXPENSIVE_EN = "Looks expensive against reported earnings."
 VAL_EXPENSIVE_ZH = "对照已披露盈利显得偏贵。"
-VAL_INLINE_EN = "Looks in line with reported earnings"
+VAL_INLINE_EN = "Looks in line with reported earnings."
 VAL_INLINE_ZH = "对照已披露盈利大致相当。"
 
-WHY_IDENTITY_EN = "This name is on the research list because it has a security-state record."
+WHY_IDENTITY_EN = "This name is on the research list because it has a security state record."
 WHY_IDENTITY_ZH = "该公司出现在研究名单上，是因为它有证券状态记录。"
+_EN_SENTENCE_END = ".!?"
+_ZH_SENTENCE_END = "。！？"
 
 
 def _iso_date(value: Any) -> date | None:
@@ -80,6 +82,24 @@ def trading_days_between(start: date, end: date) -> int:
 
 def _bilingual(en: str, zh: str) -> dict[str, str]:
     return {"en": en, "zh": zh}
+
+
+def _en_sentence(text: str) -> str:
+    text = (text or "").strip()
+    if not text:
+        return text
+    if text[-1] not in _EN_SENTENCE_END:
+        return text + "."
+    return text
+
+
+def _zh_sentence(text: str) -> str:
+    text = (text or "").strip()
+    if not text:
+        return text
+    if text[-1] not in _ZH_SENTENCE_END:
+        return text + "。"
+    return text
 
 
 def _assert_no_forbidden_keys(obj: Any, path: str = "") -> None:
@@ -240,20 +260,32 @@ def _why(
         event = catalyst["next_event_name"]
         owner = catalyst["owner"]
         parts_en.append(
-            f"{event['en']} on {catalyst['date']}, from {owner['en']}."
+            _en_sentence(f"{event['en']} on {catalyst['date']}, from {owner['en']}")
         )
         parts_zh.append(
-            f"{event['zh']}在 {catalyst['date']}，来源：{owner['zh']}。"
+            _zh_sentence(f"{event['zh']}在 {catalyst['date']}，来源：{owner['zh']}")
         )
     if valuation:
         label = valuation["label"]
         assumptions = valuation["assumptions_text"]
         owner = valuation["owner"]
         parts_en.append(
-            f"{label['en']} {assumptions['en']} From {owner['en']}."
+            " ".join(
+                [
+                    _en_sentence(label["en"]),
+                    _en_sentence(assumptions["en"]),
+                    _en_sentence(f"From {owner['en']}"),
+                ]
+            )
         )
         parts_zh.append(
-            f"{label['zh']}{assumptions['zh']}来源：{owner['zh']}。"
+            "".join(
+                [
+                    _zh_sentence(label["zh"]),
+                    _zh_sentence(assumptions["zh"]),
+                    _zh_sentence(f"来源：{owner['zh']}"),
+                ]
+            )
         )
     if not parts_en:
         return _bilingual(WHY_IDENTITY_EN, WHY_IDENTITY_ZH)
