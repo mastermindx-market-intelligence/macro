@@ -11305,6 +11305,10 @@ jobs:
       - "engine/research_vault/**"
       - "engine/signal_foundry/**"
       - "lib/*"
+      # us_stocks S2 compression (W7-A 7056 heal): tests/test_us_stocks_s2_compression.py
+      # imports research/DO_NOT_REBUILD.md (transitive via the test_dashboard_template_render
+      # helpers) so the import-closure widening adds it to this job's paths.
+      - "research/DO_NOT_REBUILD.md"
       - "research/PROPHET_ARENA_REGISTRATION.md"
       - "research/REGIME_RELIABILITY_FACTOR_CROWDING_ADJUDICATION.md"
       - "research/SIGNAL_EPISODE_ATLAS_MASTERPLAN_BY_FABLE.md"
@@ -11371,6 +11375,11 @@ jobs:
       - "scripts/build_risk_envelope.py"
       - "scripts/build_rr_banner.py"
       - "scripts/build_site.py"
+      # us_stocks S2 compression (W7-A 7056 heal): tests/test_us_stocks_s2_compression.py
+      # imports the capture scripts that produced the evidence crops, so the import
+      # closure is satisfied via this widening — no job count change.
+      - "scripts/capture_page_evidence.py"
+      - "scripts/capture_us_stocks_compression_evidence.py"
       - "scripts/build_sp500_heatmap.py"
       - "scripts/build_spvector.py"
       - "scripts/build_stage_analysis.py"
@@ -11452,6 +11461,10 @@ jobs:
       - "site/qledger/track_record.json"
       - "site/sectordata/**"
       - "site/stocktable.js"
+      # us_stocks S2 compression (W7-A 7056 heal): tests/test_us_stocks_s2_compression.py
+      # imports site/tier_preview.js (organ/tape body the dashboard.html.j2 mode=stocks
+      # render consumes), so the import closure needs this path listed.
+      - "site/tier_preview.js"
       # F13-X1 help source-validation closure reached through build_site.
       - "templates/_navlinks.html.j2"
       - "templates/_prophet_card.html.j2"
@@ -11488,6 +11501,15 @@ jobs:
       - "tests/test_cn_track_ledger_eras.py"
       - "tests/test_confluence_veto_leg_telemetry.py"
       - "tests/test_dashboard_template_render.py"
+      # us_stocks S2 compression (W7-A 7056 heal): tests/test_us_stocks_s2_compression.py
+      # renders the same dashboard.html.j2 template (mode=stocks) and imports engine.i18n,
+      # which the job's `engine/i18n.py` and `engine/holdings_signals.py` paths already
+      # cover; widened here so contract-delta sees the suite in the job's import closure.
+      - "tests/test_us_stocks_s2_compression.py"
+      # Import closure of the new suite reaches these helpers — added to satisfy
+      # contract-delta's import-closure widening rule (path-scoping-only, no new job).
+      - "tests/test_mag7_tape_strip.py"
+      - "tests/test_theme_tape.py"
       - "tests/test_grade_us_board.py"
       - "tests/test_heal_stage_forward_ledger.py"
       - "tests/test_macro_risk_dialog.py"
@@ -11634,7 +11656,7 @@ jobs:
       # No dependency widened: it renders Jinja templates only — jinja2 is already on
       # the install line above.  Measured 54s against this job's 245s body and 12m cap.
       - name: dashboard.html.j2 rendered-HTML contract (unrun backfill 2026-08-27)
-        run: python -m pytest tests/test_dashboard_template_render.py tests/test_macro_risk_dialog.py -q
+        run: python -m pytest tests/test_dashboard_template_render.py tests/test_macro_risk_dialog.py tests/test_us_stocks_s2_compression.py -q
   prophet-us-context-and-grades:
     # PROPHET US §W7 — the full-population candidate record: the PIT context store that
     # REMEMBERS each night's score, the forward grader that says what those names then did,
