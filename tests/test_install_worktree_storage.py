@@ -230,14 +230,16 @@ def test_command_leaf_refusal_precedes_every_install_write(session_install, clie
     assert snapshot() == before  # Includes backup/receipt directories and all installed files.
 
 
-@pytest.mark.parametrize('client,options', [
+@pytest.mark.parametrize('client,options,covers_startup', [
     ('codex', {'timeout': 300, 'async': True, 'statusMessage': '',
-               'commandWindows': 'py startup.py', 'additionalContextLimit': 0}),
-    ('codex', {'timeout': 0, 'async': False, 'additionalContextLimit': 5000}),
+               'commandWindows': 'py startup.py', 'additionalContextLimit': 0}, False),
+    ('codex', {'timeout': 0, 'async': False, 'additionalContextLimit': 5000}, True),
     ('claude', {'timeout': 0.5, 'async': True, 'asyncRewake': False,
-                'once': True, 'statusMessage': 'Preparing workspace', 'shell': 'bash'}),
+                'once': True, 'statusMessage': 'Preparing workspace', 'shell': 'bash'}, False),
+    ('claude', {'timeout': 300, 'async': False, 'asyncRewake': False,
+                'once': False, 'shell': 'bash'}, True),
 ])
-def test_valid_command_execution_fields_survive_idempotent_install(session_install, client, options):
+def test_valid_command_execution_fields_survive_idempotent_install(session_install, client, options, covers_startup):
     case = session_install
     path = case['paths'][client]
     config = json.loads(path.read_text())
@@ -251,9 +253,50 @@ def test_valid_command_execution_fields_survive_idempotent_install(session_insta
     path.write_text(json.dumps(config))
     case['run']()
     first = path.read_bytes()
-    assert json.loads(first)['hooks'] == config['hooks']
+    groups = json.loads(first)['hooks']['SessionStart']
+    original_groups = config['hooks']['SessionStart']
+    assert groups[:len(original_groups)] == original_groups
+    if covers_startup:
+        assert groups == original_groups
+    else:
+        canonical = {'type': 'command', 'command': case['command'], 'timeout': 300}
+        if client == 'codex':
+            canonical['statusMessage'] = 'Checking external worktree storage'
+        assert groups[len(original_groups):] == [{'hooks': [canonical]}]
     case['run']()
     assert path.read_bytes() == first
+
+
+@pytest.mark.parametrize('client,options', [
+    ('codex', {'async': True}),
+    ('claude', {'async': True}),
+    ('claude', {'once': True}),
+    ('claude', {'asyncRewake': True}),
+    ('claude', {'async': False, 'asyncRewake': True}),
+    ('claude', {'async': True, 'once': True}),
+    ('claude', {'async': True, 'asyncRewake': True}),
+    ('claude', {'once': True, 'asyncRewake': True}),
+    ('claude', {'async': True, 'once': True, 'asyncRewake': True}),
+])
+def test_execution_variant_cannot_mask_persistent_startup(session_install, client, options):
+    case = session_install
+    path = case['paths'][client]
+    config = json.loads(path.read_text())
+    variant = {'hooks': [{'type': 'command', 'command': case['command'], **options,
+                          'futureMetadata': {'preserve': ['opaque']}}]}
+    config['hooks']['SessionStart'].append(variant)
+    path.write_text(json.dumps(config))
+    case['run']()
+    after = json.loads(path.read_text())
+    assert after['unrelated'] is True
+    canonical = {'type': 'command', 'command': case['command'], 'timeout': 300}
+    if client == 'codex':
+        canonical['statusMessage'] = 'Checking external worktree storage'
+    assert after['hooks']['SessionStart'] == [case['unrelated'], variant,
+                                              {'hooks': [canonical]}]
+    first = {key: value.read_bytes() for key, value in case['paths'].items()}
+    case['run']()
+    assert {key: value.read_bytes() for key, value in case['paths'].items()} == first
 
 
 @pytest.mark.parametrize('options', [{'args': []}, {'if': 'Bash(git status)'}])

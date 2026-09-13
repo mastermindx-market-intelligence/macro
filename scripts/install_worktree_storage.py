@@ -112,8 +112,13 @@ def reconcile_session_start(original, command, *, codex=False):
             # Claude's args form treats command as an executable, not this
             # shell string. Its tool-only `if` condition never fires on SessionStart.
             shell_startup = codex or ('args' not in hook and 'if' not in hook)
+            # Startup protection must finish before work begins on every session.
+            # Claude's once removes the hook; asyncRewake implies background execution.
+            persistent_sync = (not hook.get('async', False)
+                               and (codex or not (hook.get('once', False)
+                                                  or hook.get('asyncRewake', False))))
             if (group.get('matcher', '') == '' and hook['type'] == 'command'
-                    and hook.get('command') == command and shell_startup):
+                    and hook.get('command') == command and shell_startup and persistent_sync):
                 covered = True
     if not covered:
         hook = dict(type='command', command=command, timeout=300)
