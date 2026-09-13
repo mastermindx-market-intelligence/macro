@@ -73,6 +73,9 @@ import sys
 import time
 from pathlib import Path
 
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
+
 ROOT = Path(__file__).resolve().parent.parent
 CONFIG_PATH = ROOT / "config" / "sparse_worktree.json"
 
@@ -793,6 +796,15 @@ def path_under_session_root(root: Path) -> bool:
         parts = Path(root).resolve().parts
     except OSError:
         parts = Path(root).parts
+    try:
+        from scripts import worktree_storage
+    except ModuleNotFoundError:
+        import worktree_storage
+    policy = worktree_storage.load_policy()
+    if policy is not None:
+        if worktree_storage.is_managed_worktree_path(policy, Path(root)):
+            worktree_storage.check_storage(policy, Path(root), check_space=False)
+            return True
     for marker in SESSION_WORKTREE_MARKERS:
         length = len(marker)
         for index in range(len(parts) - length + 1):
@@ -1062,6 +1074,18 @@ def auto_profile(root: Path = ROOT, config_path: Path | None = None) -> int:
         print("worktree-sparse: auto skipped — only session worktrees are changed")
         return 0
 
+    # Codex's setup and SessionStart both use this entry point. Protect its
+    # removable-volume registration even when sparsity is disabled or already set.
+    try:
+        from scripts import worktree_storage
+    except ModuleNotFoundError:
+        import worktree_storage
+    policy = worktree_storage.load_policy()
+    managed_external = (policy is not None and
+                        worktree_storage.is_managed_worktree_path(policy, Path(root)))
+    if managed_external:
+        worktree_storage.protect_worktree(policy, root, sparsify=False)
+
     profile_path = config_path or root / "config" / "sparse_worktree.json"
     profile = load_profile(profile_path)
     if not profile["enabled"]:
@@ -1072,6 +1096,30 @@ def auto_profile(root: Path = ROOT, config_path: Path | None = None) -> int:
         print("worktree-sparse: auto skipped — linked worktree is already sparse; "
               "preserving its current selection")
         return 0
+
+    if managed_external:
+        # Only positively clean, ordinary index entries may enter the mutating
+        # profile/lock-healing path. Hidden flags can conceal unfinished work.
+        read_only = ("--no-optional-locks", "-c", "core.fsmonitor=false")
+        flags = _git_bytes(root, *read_only, "ls-files", "-v", "-z")
+        if flags is None:
+            print("worktree-sparse: auto refused — could not read the managed "
+                  "worktree index", file=sys.stderr)
+            return 1
+        if any(row and not row.startswith(b"H ") for row in flags.split(b"\0")):
+            print("worktree-sparse: auto skipped — preserving managed worktree "
+                  "index flags or conflicts")
+            return 0
+        dirty = _git_bytes(root, *read_only, "status", "--porcelain=v1", "-z",
+                           "--untracked-files=all", "--ignore-submodules=none")
+        if dirty is None:
+            print("worktree-sparse: auto refused — could not read managed "
+                  "worktree status", file=sys.stderr)
+            return 1
+        if dirty:
+            print("worktree-sparse: auto skipped — preserving unfinished work "
+                  "in the managed worktree")
+            return 0
 
     return apply_profile(root, exclude_dirs=list(profile["exclude_dirs"]))
 

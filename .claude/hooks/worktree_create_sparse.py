@@ -640,6 +640,20 @@ def main() -> int:
     if not SAFE_NAME.match(name):
         return fail(f"unsafe worktree name: {name}")
 
+    # A configured host owns physical placement; keep the portable fallback below.
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    from scripts import worktree_storage
+    try:
+        policy = worktree_storage.load_policy()
+        if policy is not None:
+            import uuid
+            dest = worktree_storage.create_worktree(
+                policy, Path(cwd), name, payload.get("session_id") or str(uuid.uuid4()))
+            print(dest)
+            return 0
+    except (worktree_storage.StorageError, OSError, ValueError) as exc:
+        return fail(str(exc))
+
     try:
         common = Path(git(Path(cwd), "rev-parse", "--path-format=absolute", "--git-common-dir"))
         toplevel = Path(git(Path(cwd), "rev-parse", "--path-format=absolute", "--show-toplevel"))
