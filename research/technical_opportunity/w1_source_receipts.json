@@ -103,6 +103,17 @@
       "retrieved_at": "2026-09-13"
     },
     {
+      "source_ref": "SRC-METATRADER-FRACTALS",
+      "title": "Fractals — Bill Williams' Indicators",
+      "publisher_or_author": "MetaQuotes / Bill Williams attribution",
+      "source_type": "official_platform_formula_documentation",
+      "url": "https://www.metatrader5.com/en/terminal/help/indicators/bw_indicators/fractals",
+      "rights_class": "public_formula",
+      "rights_ref": "public formula documentation; independent implementation only",
+      "covers": ["williams_fractal", "five_bar_confirmed_swing_extrema"],
+      "retrieved_at": "2026-09-13"
+    },
+    {
       "source_ref": "SRC-LO-MAMAYSKY-WANG-2000",
       "title": "Foundations of Technical Analysis: Computational Algorithms, Statistical Inference, and Empirical Implementation",
       "publisher_or_author": "Andrew W. Lo, Harry Mamaysky, Jiang Wang / NBER",
