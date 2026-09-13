@@ -3357,7 +3357,7 @@ jobs:
       - name: same instrument agrees across pages (or declares its basis)
         run: python3 scripts/check_cycle_consistency.py site
       - name: consistency + phase-coherence regression tests
-        run: python -m pytest tests/test_cycle_consistency.py tests/test_cycle_ontology.py -q
+        run: python -m pytest tests/test_cycle_consistency.py tests/test_cycle_ontology.py tests/test_cycle_w8_truth.py -q
 
   synapse-read-gate:
     if: ${{ false }}
