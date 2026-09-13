@@ -1,6 +1,6 @@
 {
   "disclaimer": "Heuristics identify review targets; they do not determine that a page is bad.",
-  "generated_at": "2026-09-13T05:52:55Z",
+  "generated_at": "2026-09-13T15:12:06Z",
   "metric_notes": {
     "asof_present": "approximate contract probe (selector OR case-insensitive text pattern); absence is a prompt to look, not a verdict",
     "console_error_count": "distinct console 'error' texts across every state of the page the driver attempted, captured or not — a state that failed to load is often the one carrying the evidence",
@@ -20,11 +20,11 @@
         "by_viewport": {
           "desktop": {
             "document_height_px": 900,
-            "elements_wider_than_viewport": 1,
+            "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           },
           "mobile": {
-            "document_height_px": 868,
+            "document_height_px": 844,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           }
@@ -32,7 +32,7 @@
         "console_error_count": 0,
         "document_height_px": 900,
         "duplicate_heading_texts": [],
-        "elements_wider_than_viewport": 1,
+        "elements_wider_than_viewport": 0,
         "heading_counts": {
           "h1": 1,
           "h2": 0,
@@ -50,16 +50,16 @@
           "viewport": "desktop"
         },
         "panel_count": 0,
-        "payload_bytes_total": 867374,
+        "payload_bytes_total": 646404,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
-        "request_count": 15,
+        "request_count": 16,
         "screenshot_completion": 1.0,
         "section_count": 6,
         "source_present": false,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 142
+        "visible_word_count": 135
       },
       "page_id": "research_screener.html",
       "route": "/research_screener.html"
@@ -69,10 +69,10 @@
   "target": {
     "base_url": null,
     "kind": "site_dir",
-    "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-ext-fix-m_f06_4-06dde026558aae54",
-    "resolved_sha_or_none": "8526f970e83509af91b8cf3ae245258c31b45808",
-    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-ext-fix-m_f06_4-06dde026558aae54 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
-    "site_dir": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mo-ext-fix-m_f06_4-06dde026558aae54/site"
+    "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-ext-fix-7102-144b2a33f895a072",
+    "resolved_sha_or_none": "31bab73e41b1eb88cd3c2c1f40e345933f4dd79d",
+    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-ext-fix-7102-144b2a33f895a072 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
+    "site_dir": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mo-ext-fix-7102-144b2a33f895a072/site"
   },
   "tool": {
     "module_ref": "scripts/capture_page_evidence.py",
