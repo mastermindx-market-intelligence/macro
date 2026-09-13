@@ -32,7 +32,7 @@
 :root{
   --num: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
   --rv:#4f8ff7; --rv-2:#38bdf8; --rv-ink:#9cc2ff; --rv-dim:rgba(79,143,247,.13); --rv-glow:rgba(79,143,247,.34);
-  --gold: var(--gold-rv);
+  --gold: var(--g-hot);
   --rr-glass-bg:rgba(16,22,30,.55); --rr-glass-border:rgba(255,255,255,.12);
   --rr-shadow:0 8px 32px rgba(0,0,0,.55), 0 1.5px 0 rgba(255,255,255,.07) inset;
 }
@@ -72,12 +72,12 @@ html[data-theme="light"] .rr-crumb a{ color:var(--rv); }
    Intentionally differing mechanisms: NONE. Dual class names cover the
    JS-vs-bake skew window (.stamp.buy/.sell plus .stamp.buy-side/.sell-side). */
 .stamp{ display:inline-flex; align-items:center; gap:5px; font-family:var(--num); font-size:10px; font-weight:600;
-  letter-spacing:.02em; padding:3px 9px; border-radius:var(--r-ctl,6px); color:var(--muted);
+  letter-spacing:.02em; padding:3px 9px; border-radius:var(--r-ctl,8px); color:var(--muted);
   border:1px solid var(--line); background:transparent; box-shadow:none; }
 .stamp.buy, .stamp.sell, .stamp.indep,
 .stamp.buy-side, .stamp.sell-side{ color:var(--muted); border-color:var(--line);
   background:transparent; box-shadow:none; }
-.stamp .dt{ width:5px; height:5px; border-radius:var(--r-pill,50%); background:currentColor; opacity:.7; }
+.stamp .dt{ width:5px; height:5px; border-radius:var(--r-pill,999px); background:currentColor; opacity:.7; }
 
 .rr h1{ font-weight:800; font-size:clamp(23px,3.3vw,32px); line-height:1.16; letter-spacing:-.02em; color:var(--text); margin:0 0 14px; }
 .rr-meta{ display:flex; align-items:center; gap:8px 14px; flex-wrap:wrap; font-family:var(--num); font-size:12px;
