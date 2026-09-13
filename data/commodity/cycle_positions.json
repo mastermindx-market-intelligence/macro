@@ -1,122 +1,122 @@
 {
   "gold": {
     "cycle_ref": "gold",
-    "pos": 23.2,
+    "pos": 22.5,
     "phase": "Recovery",
     "phase_v2": "Expansion",
     "overdue": false,
-    "overdue_frac": 0.414,
+    "overdue_frac": 0.421,
     "hazard_1m": 0.4878,
     "hazard_3m": 0.0474,
     "hazard_6m": 0.0894,
-    "asof": "2026-09-10"
+    "asof": "2026-09-11"
   },
   "silver": {
     "cycle_ref": "silver",
-    "pos": 11.7,
+    "pos": 11.4,
     "phase": "Recovery",
     "phase_v2": "Expansion",
     "overdue": false,
-    "overdue_frac": 0.409,
-    "hazard_1m": 0.4878,
-    "hazard_3m": 0.0474,
-    "hazard_6m": 0.0894,
-    "asof": "2026-09-10"
-  },
-  "copper": {
-    "cycle_ref": "copper",
-    "pos": 67.2,
-    "phase": "Expansion",
-    "phase_v2": "Peak",
-    "overdue": true,
-    "overdue_frac": 2.873,
-    "hazard_1m": 0.3858,
-    "hazard_3m": 0.0474,
-    "hazard_6m": 0.0894,
-    "asof": "2026-09-10"
-  },
-  "oil": {
-    "cycle_ref": "oil",
-    "pos": 30.4,
-    "phase": "Recovery",
-    "phase_v2": "Expansion",
-    "overdue": false,
-    "overdue_frac": 0.368,
-    "hazard_1m": 0.3908,
-    "hazard_3m": 0.0474,
-    "hazard_6m": 0.0894,
-    "asof": "2026-09-01"
-  },
-  "natgas": {
-    "cycle_ref": "natural-gas",
-    "pos": 4.1,
-    "phase": "Recovery",
-    "phase_v2": "Expansion",
-    "overdue": false,
-    "overdue_frac": 0.932,
+    "overdue_frac": 0.417,
     "hazard_1m": 0.5288,
     "hazard_3m": 0.0474,
     "hazard_6m": 0.0894,
-    "asof": "2026-09-01"
+    "asof": "2026-09-11"
+  },
+  "copper": {
+    "cycle_ref": "copper",
+    "pos": 65.3,
+    "phase": "Downturn",
+    "phase_v2": "Downturn",
+    "overdue": true,
+    "overdue_frac": 2.88,
+    "hazard_1m": 0.6538,
+    "hazard_3m": 0.5595,
+    "hazard_6m": 0.5882,
+    "asof": "2026-09-11"
+  },
+  "oil": {
+    "cycle_ref": "oil",
+    "pos": 35.2,
+    "phase": "Expansion",
+    "phase_v2": "Expansion",
+    "overdue": false,
+    "overdue_frac": 0.38,
+    "hazard_1m": 0.3858,
+    "hazard_3m": 0.0474,
+    "hazard_6m": 0.0894,
+    "asof": "2026-09-09"
+  },
+  "natgas": {
+    "cycle_ref": "natural-gas",
+    "pos": 4.7,
+    "phase": "Recovery",
+    "phase_v2": "Expansion",
+    "overdue": false,
+    "overdue_frac": 0.968,
+    "hazard_1m": 0.5288,
+    "hazard_3m": 0.0474,
+    "hazard_6m": 0.0894,
+    "asof": "2026-09-09"
   },
   "platinum": {
     "cycle_ref": "pgms",
-    "pos": 15.7,
+    "pos": 15.5,
     "phase": "Recovery",
     "phase_v2": "Expansion",
     "overdue": false,
-    "overdue_frac": 0.346,
+    "overdue_frac": 0.351,
     "hazard_1m": 0.4878,
     "hazard_3m": 0.0474,
     "hazard_6m": 0.0894,
-    "asof": "2026-09-10"
+    "asof": "2026-09-11"
   },
   "palladium": {
     "cycle_ref": "pgms",
-    "pos": 15.7,
+    "pos": 15.5,
     "phase": "Recovery",
     "phase_v2": "Expansion",
     "overdue": false,
-    "overdue_frac": 0.346,
+    "overdue_frac": 0.351,
     "hazard_1m": 0.4878,
     "hazard_3m": 0.0474,
     "hazard_6m": 0.0894,
-    "asof": "2026-09-10"
+    "asof": "2026-09-11"
   },
   "corn": {
     "cycle_ref": "agriculture",
-    "pos": 94.2,
+    "pos": 95.9,
     "phase": "Expansion",
     "phase_v2": "Expansion",
     "overdue": true,
-    "overdue_frac": 11.189,
+    "overdue_frac": 11.203,
     "hazard_1m": 0.2416,
     "hazard_3m": 0.0474,
     "hazard_6m": 0.0894,
-    "asof": "2026-09-09"
+    "asof": "2026-09-11"
   },
   "wheat": {
     "cycle_ref": "agriculture",
-    "pos": 94.2,
+    "pos": 95.9,
     "phase": "Expansion",
     "phase_v2": "Expansion",
     "overdue": true,
-    "overdue_frac": 11.189,
+    "overdue_frac": 11.203,
     "hazard_1m": 0.2416,
     "hazard_3m": 0.0474,
     "hazard_6m": 0.0894,
-    "asof": "2026-09-09"
+    "asof": "2026-09-11"
   },
   "soybeans": {
     "cycle_ref": "agriculture",
-    "pos": 94.2,
+    "pos": 95.9,
     "phase": "Expansion",
     "phase_v2": "Expansion",
     "overdue": true,
-    "overdue_frac": 11.189,
+    "overdue_frac": 11.203,
     "hazard_1m": 0.2416,
     "hazard_3m": 0.0474,
     "hazard_6m": 0.0894,
-    "asof": "2026-09-09"
+    "asof": "2026-09-11"
   }
 }

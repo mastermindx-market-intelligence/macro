@@ -33,6 +33,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from lib import config  # noqa: E402
 from lib.pages import write_page  # noqa: E402
+from engine.policy_watch_current import build_current  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_policy_watch")
@@ -255,6 +256,34 @@ def _featured_predictions(preds: list[dict], dates: object, limit: int = 6) -> l
     return sorted(rows, key=rank)[:limit]
 
 
+def _empty_intel() -> dict:
+    return {
+        "as_of": "",
+        "predictions": [],
+        "fed": {"task_forces": []},
+        "administration": {"verified_levers": [], "theaters": []},
+        "rotation": {"targeted": [], "starved": []},
+        "sources": [],
+    }
+
+
+def _current_usable(current: dict | None) -> bool:
+    if not isinstance(current, dict):
+        return False
+    if current.get("problem"):
+        return True
+    cal = current.get("calendar") or {}
+    if cal.get("meetings") or cal.get("state") in {"schedule_needs_updating", "error"}:
+        return True
+    news = current.get("headlines") or {}
+    if news.get("items") or news.get("state") in {
+        "invalid_newest", "missing", "last_good", "source_outage", "stale", "no_new", "empty", "error",
+    }:
+        return True
+    stmt = current.get("statement") or {}
+    return stmt.get("state") in {"recorded", "awaiting_statement", "unavailable"}
+
+
 def main() -> int:
     site = config.ROOT / "site"
     site.mkdir(exist_ok=True)
@@ -263,11 +292,44 @@ def main() -> int:
         # fall back to a repo-tracked copy if the data dir isn't seeded
         alt = config.ROOT / "data" / "policy" / "intel.json"
         intel_path = alt if alt.exists() else intel_path
+    background_unavailable = False
+    try:
+        current = build_current(config.ROOT)
+    except Exception as e:  # noqa: BLE001
+        log.warning("policy_watch_current failed: %s", e)
+        current = {
+            "schema": "policy_watch_current.v1",
+            "calendar": {"state": "error", "meetings": [], "calendar_url":
+                         "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"},
+            "headlines": {"state": "error", "items": []},
+            "statement": {"state": "none"},
+            "comparison": {"state": "unavailable"},
+            "build_time_is_not_evidence": True,
+            "problem": (
+                "Official calendar/statement composer failed; older HTML was not skipped. "
+                f"({type(e).__name__})"
+            ),
+        }
     if not intel_path.exists():
-        log.warning("policy intel.json missing (%s) — skipping (additive)", intel_path)
-        return 0
-
-    intel = json.loads(intel_path.read_text())
+        if not _current_usable(current):
+            log.warning("policy intel.json missing (%s) — skipping (additive)", intel_path)
+            return 0
+        log.info("policy intel.json missing — rendering current-source page without background research")
+        intel = _empty_intel()
+    else:
+        try:
+            raw = intel_path.read_text(encoding="utf-8")
+            loaded = json.loads(raw)
+            if not isinstance(loaded, dict):
+                raise ValueError("intel root must be an object")
+            intel = loaded
+        except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as e:
+            log.warning("policy intel.json unreadable (%s): %s", intel_path, e)
+            if not _current_usable(current):
+                log.warning("policy intel.json bad and current unusable — skipping")
+                return 0
+            background_unavailable = True
+            intel = _empty_intel()
 
     preds = intel.get("predictions", [])
     counts = {
@@ -389,7 +451,8 @@ def main() -> int:
         source_links=source_links, featured_predictions=featured_predictions, brief=brief,
         uk_desk=uk_desk,
         active_section="research", active_page="policy_watch",
-        lifecycle=lifecycle,
+        lifecycle=lifecycle, current=current,
+        background_unavailable=background_unavailable,
     )
     # Jinja's language branches leave indentation on otherwise-empty lines.
     # Normalize it here so the committed artifact stays diff-clean after every build.
