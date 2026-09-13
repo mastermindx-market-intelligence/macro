@@ -6363,6 +6363,7 @@ jobs:
     # data commit, so it must not live on this gate: code job.
     paths:
       - "tests/test_bonds_corp_credit_vm.py"
+      - "tests/test_bonds_divergence_gate.py"
       - "scripts/build_bonds.py"
       - "templates/bonds.html.j2"
       - "lib/macro_suite_view.py"
