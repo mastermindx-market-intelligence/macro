@@ -1286,6 +1286,11 @@ jobs:
       - "tests/test_valuation_scenario.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "tests/test_valuation_assumptions.py"
+      # W7B F06-5 (MO-PAID-020): ticker<->CIK collision census + at most ONE bounded renderer/CIK-access repair (census only this PR; the seat decides whether to admit any repair). The pure classifiers live in engine/market_ontology/ticker_cik_census.py (no pandas import at module top); the CLI lives in scripts/ticker_cik_collision_census.py (parquet I/O here, never in the engine); the suite is RED-first with synthetic fixtures per class plus a live-data invariant test that pins only invariants (C1 (a)-(e) == 0; every current store symbol either resolves or fails with a closed-enum class) and prints dated receipt lines.
+      - "engine/market_ontology/ticker_cik_census.py"
+      - "scripts/ticker_cik_collision_census.py"
+      - "tests/test_ticker_cik_collision_census.py"
+      - "research/market_intelligence_productization/MARKET_ONTOLOGY_F06_5_TICKER_CIK_COLLISION_CENSUS_2026-09-13.md"
     # Wired 2026-08-02: neither suite was named by ANY run step, so #4297's caution
     # rewrite ran 4 stock_score pins red for a day with no CI signal, and the dossier's
     # prose-matched risk_veto died silently. test_stock_score pins the honesty
@@ -1381,6 +1386,18 @@ jobs:
           python -m pytest
           tests/test_valuation_scenario.py
           tests/test_valuation_assumptions.py -q
+      # W7B F06-5 (MO-PAID-020) ticker<->CIK collision census (MO-B). The
+      # classifier is a pure function over list-of-dict records (no pandas at
+      # module top per R5); the live-data test pins invariants only and prints
+      # dated receipt lines; the C5 renderer-robustness test projects the two
+      # committed security_state goldens through build_security_state and
+      # asserts no unmapped-identity warnings + no raw-token leakage. Hermetic:
+      # tmp_path fixtures + the committed data/reference/*.parquet when
+      # present; the live-data test skips with a named reason otherwise. Own
+      # step per this job's precedent — a step is the masking unit (run_ci_pack
+      # returns on the first non-zero step).
+      - name: ticker<->CIK collision census + C5 renderer robustness (W7B F06-5)
+        run: python -m pytest tests/test_ticker_cik_collision_census.py -q
 
   chronicle-suite:
     if: ${{ false }}
