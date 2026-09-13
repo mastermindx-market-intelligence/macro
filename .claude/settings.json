@@ -33,7 +33,7 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "Agent|Task|Workflow",
+        "matcher": "Agent|Task|Workflow|TeamCreate|SendMessage|Skill",
         "hooks": [
           {
             "type": "command",
