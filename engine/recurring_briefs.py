@@ -210,15 +210,24 @@ def classify(
         slot = compute_slot(cadence, None, run_date)
     if slot is None:
         return ("degraded", CONTRACT_MISS_EN)
-    # H6 (MAJOR 2): a thesis with no ticker coverage cannot compose a
+    # H6 (MAJOR 2): a target with no ticker coverage cannot compose a
     # ticker-filtered brief. Returning ready would publish only the global
-    # backdrop as if it were a real brief for the target. Degrade with the
-    # typed honest-miss line that the contract binds to ``degraded_reason``.
+    # backdrop as if it were a real brief for the target. The two measured
+    # production shapes:
+    #   * a theme thesis whose ``_thesis_tickers`` returns ``[]``;
+    #   * a thesis / watchlist whose tickers miss every item in the
+    #     artifact's priority_queue / divergences / watch_items.
+    # Both must degrade with the typed honest-miss line bound to
+    # ``degraded_reason``.
     if isinstance(target, dict):
         kind = target.get("kind")
         tickers = target.get("tickers") or []
-        if kind == "thesis" and not tickers:
-            return ("degraded", NO_COVERAGE_REASON)
+        if kind in ("thesis", "watchlist"):
+            wanted = _ticker_set(tickers)
+            if not wanted:
+                return ("degraded", NO_COVERAGE_REASON)
+            if not _target_has_artifact_coverage(target, wanted, artifact):
+                return ("degraded", NO_COVERAGE_REASON)
     return ("ready", None)
 
 
@@ -262,6 +271,33 @@ def _matches_target(item: dict, tickers: set[str]) -> bool:
     if not tickers:
         return False
     return bool(_item_tickers(item) & tickers)
+
+
+def _target_has_artifact_coverage(
+    target: dict, tickers: set[str], artifact: dict | None
+) -> bool:
+    """True if any item in the artifact's covered sections names one of the
+    target's tickers. The H6 fix — pre-compute whether the target's ticker
+    set intersects priority_queue / divergences / watch_items. A thesis
+    whose tickers exist but yield zero rows in the published artifact must
+    NOT classify ready while emitting only the global backdrop.
+    """
+    if not tickers or not isinstance(artifact, dict):
+        return False
+    for item in artifact.get("priority_queue") or []:
+        if isinstance(item, dict) and _matches_target(item, tickers):
+            return True
+    for item in artifact.get("divergences") or []:
+        if isinstance(item, dict) and _matches_target(item, tickers):
+            return True
+    for item in artifact.get("watch_items") or []:
+        if not isinstance(item, dict):
+            continue
+        if not _item_tickers(item):
+            continue
+        if _matches_target(item, tickers):
+            return True
+    return False
 
 
 def extract_market_read(artifact: dict | None, tickers: set[str]) -> list[dict]:

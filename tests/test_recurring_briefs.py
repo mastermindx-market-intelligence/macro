@@ -603,6 +603,61 @@ def test_no_coverage_thesis_degrades_with_typed_line():
     assert body["market_read"][0]["sentence_zh"] == rb.NO_COVERAGE_ZH
 
 
+def test_no_coverage_tickers_thesis_degrades_on_production_daily_artifact():
+    """H6 / MAJOR 2 (anti-mask): a thesis whose tickers exist but yield zero
+    rows in the published artifact must NOT classify 'ready' while emitting
+    only the global backdrop. The previous test only covered the empty-list
+    branch; the H6 fix now also catches non-empty-but-uncovered tickers.
+    Reproduced at the live ``site/intelligence/briefing.json``:
+    ``['ZZZZ']`` classified 'ready' and ``compose_body`` emitted exactly the
+    macro backdrop row.
+    """
+    import json
+
+    prod_path = ROOT / "site/intelligence/briefing.json"
+    if not prod_path.exists():
+        pytest.skip("site/intelligence/briefing.json not materialised in this checkout")
+    prod = json.loads(prod_path.read_text(encoding="utf-8"))
+    sub = _sub()
+    target = {
+        "kind": "thesis",
+        "id": THESIS_ID,
+        "name": "Synthetic no-coverage thesis",
+        "version_or_asof": "1",
+        "tickers": ["ZZZZ"],
+        "unavailable": False,
+    }
+    state, reason = rb.classify(sub, prod, target)
+    assert state == "degraded"
+    assert reason == rb.NO_COVERAGE_REASON
+    body = rb.compose_body(target, prod, monitors=[], degraded_reason=reason)
+    assert body["market_read"][0]["sentence_en"] == rb.NO_COVERAGE_EN
+    assert body["market_read"][0]["sentence_zh"] == rb.NO_COVERAGE_ZH
+    # And no silent backdrop row was published: the only market_read row is
+    # the typed honest-miss line, not the global macro_context posture.
+    assert len(body["market_read"]) == 1
+    assert body["market_read"][0]["section"] == "status"
+
+
+def test_no_coverage_watchlist_degrades_when_members_miss_artifact():
+    """H6 / MAJOR 2 (watchlist branch): a watchlist whose members do not
+    appear in any priority_queue / divergences / watch_items row of the
+    artifact must degrade, not silently emit only the backdrop.
+    """
+    sub = _sub(kind="watchlist")
+    target = {
+        "kind": "watchlist",
+        "id": WATCH_ID,
+        "name": "Names we don't follow",
+        "version_or_asof": None,
+        "tickers": ["XXXX"],
+        "unavailable": False,
+    }
+    state, reason = rb.classify(sub, _briefing(), target)
+    assert state == "degraded"
+    assert reason == rb.NO_COVERAGE_REASON
+
+
 def test_no_target_user_id_returns_target_unavailable(monkeypatch):
     """H5 / MAJOR 1: read_target must owner-scope on the subscription's
     ``user_id``. A subscription whose target is owned by another user must
