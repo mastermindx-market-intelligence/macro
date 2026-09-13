@@ -1572,3 +1572,51 @@ def test_heal_empty_reason_is_the_frozen_sentence(monkeypatch):
     assert rates["reason_en"] == "No dated step is pending right now."
     assert rates["reason_zh"] == "目前没有待办的既定日期节点。"
 
+
+def test_publication_lanes_execute_capital_structure_page_builder():
+    """The F09 page builder must execute, not merely appear in trigger paths."""
+    daily = (ROOT / "scripts" / "ci" / "daily_engine_regime_dashboard.sh").read_text(
+        encoding="utf-8"
+    )
+    assert "scripts.build_capital_structure_page" in daily
+    assert daily.index("scripts.build_capital_structure_page") > daily.index("scripts.build_site")
+
+    import yaml
+
+    render = yaml.safe_load(
+        (ROOT / ".github" / "workflows" / "render.yml").read_text(encoding="utf-8")
+    )
+    run_bodies = "\n".join(
+        str(step.get("run") or "")
+        for job in (render.get("jobs") or {}).values()
+        for step in (job.get("steps") or [])
+        if isinstance(step, dict)
+    )
+    assert "scripts.build_capital_structure_page" in run_bodies
+    assert run_bodies.index("scripts.build_capital_structure_page") > run_bodies.index("scripts.build_site")
+
+
+def test_publication_dag_declares_capital_structure_page_builder():
+    """DAG truth must match the two executable publication lanes."""
+    import yaml
+
+    dag = yaml.safe_load((ROOT / "config" / "dag.yml").read_text(encoding="utf-8"))
+
+    def serial_modules(workflow: str, job: str) -> list[str]:
+        lane = next(
+            lane
+            for lane in dag["lanes"]
+            if lane.get("workflow") == workflow and lane.get("job") == job
+        )
+        return [
+            step["module"]
+            for step in lane.get("steps") or []
+            if isinstance(step, dict) and isinstance(step.get("module"), str)
+        ]
+
+    daily_modules = serial_modules(".github/workflows/daily.yml", "engine")
+    render_modules = serial_modules(".github/workflows/render.yml", "render")
+    target = "scripts.build_capital_structure_page"
+    for modules in (daily_modules, render_modules):
+        assert target in modules
+        assert modules.index(target) > modules.index("scripts.build_site")

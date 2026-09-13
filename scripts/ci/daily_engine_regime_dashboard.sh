@@ -102,6 +102,9 @@ run_py "filing forensics workbench (build_fundamental_forensics)" scripts.build_
 # instead of killing the nightly.
 run_py "F01 macro workspace snapshots (build_macro_workspaces)" scripts.build_macro_workspaces
 run_py "macro dashboard + US stocks (build_site)" scripts.build_site
+# MO-PAID-067 publication closure: the producer + template already exist; this
+# page-only builder makes the six-window capital-policy projection visible.
+run_py "capital structure desk (build_capital_structure_page)" scripts.build_capital_structure_page
 # Ticker dossier pages (v2) — engine-internal, reads fresh site/stockdata/*.json
 # written by build_site above; rides the engine "commit engine outputs" git add.
 # Non-fatal: ::warning on failure, never aborts the render.
