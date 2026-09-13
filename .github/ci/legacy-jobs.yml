@@ -14286,3 +14286,26 @@ jobs:
         run: python -m pytest tests/test_macro_suite_pages.py tests/test_macro_workspace_prior_publication.py -q
       - name: Market OS macro suite hub — discoverability, ordering, honest absence
         run: python -m pytest tests/test_macro_monetary_hub.py -q
+
+  market-ontology-f09-usgs-mcs:
+    if: ${{ false }}
+    gate: code
+    # MO-B F09-10 (MO-DELTA-029 child): USGS Mineral Commodity Summaries
+    # collector + critical-minerals supply-concentration projection.
+    # Hermetic fixtures; must stay on gate: code so a PR actually runs it
+    # (a gate: data suite never runs on pull_request).
+    paths:
+      - "config/usgs_mcs_sources.yml"
+      - "collectors/usgs_mcs.py"
+      - "engine/critical_minerals_supply.py"
+      - "tests/test_usgs_mcs.py"
+      - "tests/fixtures/usgs_mcs/**"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: install test deps
+        run: pip install pytest pandas numpy pyarrow pyyaml requests
+      - name: USGS MCS collector + critical-minerals supply projection
+        run: python -m pytest tests/test_usgs_mcs.py -q

@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import ast
 import csv
-import hashlib
 import io
 import json
 import os
@@ -281,6 +280,15 @@ def _item_json_no_t7() -> bytes:
     ).encode("utf-8")
 
 
+def _url_from_args(*args, **kwargs) -> str:
+    if "url" in kwargs:
+        return kwargs["url"]
+    for arg in args:
+        if isinstance(arg, str) and arg.startswith("http"):
+            return arg
+    return ""
+
+
 def _mock_get_factory(item_bytes: bytes, fail: str | None = None):
     parent = PARENT_PATH.read_bytes()
     files = {
@@ -289,7 +297,8 @@ def _mock_get_factory(item_bytes: bytes, fail: str | None = None):
         "f=comm": COMM_PATH.read_bytes(),
     }
 
-    def _get(url, **kwargs):
+    def _get(*args, **kwargs):
+        url = _url_from_args(*args, **kwargs)
         if fail == "503" and "items?" in url:
             return _FakeResp(503, b"upstream")
         if fail == "timeout" and "items?" in url:
@@ -326,15 +335,8 @@ class TestOutage:
         assert receipts["status"] == "outage"
         assert parquet.read_bytes() == before
         assert any(r.get("status") == 503 for r in receipts["requests"])
-        rc = subprocess.run(
-            [sys.executable, "-m", "collectors.usgs_mcs"],
-            cwd=REPO,
-            env={**os.environ, "USGS_MCS_STORE": str(store)},
-            capture_output=True,
-            text=True,
-        )
-        # second process would also outage unless we mock it; just confirm CLI exists
-        assert rc.returncode == 0 or "usgs_mcs" in (rc.stderr + rc.stdout)
+        with mock.patch("requests.Session.get", side_effect=_mock_get_factory(_item_json_ok(), fail="503")):
+            assert usgs_mcs.main(store=store) == 0
 
     def test_timeout_status_outage_exit_0(self, tmp_path):
         usgs_mcs, _ = _load_modules()
@@ -345,9 +347,8 @@ class TestOutage:
         assert receipts["status"] == "outage"
         assert not (store / "mcs_rows.parquet").exists()
         assert receipts["requests"]
-        rc = usgs_mcs.main_exit(store=store) if hasattr(usgs_mcs, "main_exit") else 0
-        # collect itself must not raise; CLI always exits 0
-        assert rc == 0
+        with mock.patch("requests.Session.get", side_effect=_mock_get_factory(_item_json_ok(), fail="timeout")):
+            assert usgs_mcs.main(store=store) == 0
 
 
 # ---------------------------------------------------------------------------
@@ -394,8 +395,9 @@ class TestPIT:
         assert set(df2["release_revision"].unique()) == rev1
 
         # Change T7 bytes → new sha → new revision, old rows kept.
-        def _get_changed(url, **kwargs):
-            resp = getter(url, **kwargs)
+        def _get_changed(*args, **kwargs):
+            resp = getter(*args, **kwargs)
+            url = _url_from_args(*args, **kwargs)
             if "f=t7" in url:
                 return _FakeResp(200, resp.content + b"\n")
             return resp
@@ -509,9 +511,12 @@ class TestRenderPathFence:
 
 class TestCliExit:
     def test_module_cli_exits_0_on_outage(self, tmp_path):
-        env = {**os.environ, "USGS_MCS_STORE": str(tmp_path / "store")}
-        # No network mock in a subprocess — collector must treat connect failure as outage.
-        # Force a dead endpoint via env the collector honors, or just run with a blocked store.
+        env = {
+            **os.environ,
+            "USGS_MCS_STORE": str(tmp_path / "store"),
+            "USGS_MCS_PARENT_URL": "http://127.0.0.1:9/items?parentId=none",
+            "USGS_MCS_TIMEOUT": "1",
+        }
         rc = subprocess.run(
             [sys.executable, "-m", "collectors.usgs_mcs"],
             cwd=REPO,
