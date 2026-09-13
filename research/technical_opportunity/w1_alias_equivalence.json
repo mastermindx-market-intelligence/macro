@@ -1,7 +1,7 @@
 {
   "schema_version": "toi.alias_equivalence.v1",
   "as_of": "2026-09-13",
-  "scope_state": "P0_P1_CORE_NORMALIZED_W1_FULL_CENSUS_PARTIAL",
+  "scope_state": "P0_P1_P2_CORE_PLUS_ARCHIVE_NORMALIZED_W1_FULL_CENSUS_PARTIAL",
   "classes": [
     {"class_id":"eq.bollinger_bandwidth","canonical_method_id":"toi.bb_bandwidth","members":[{"method_id":"toi.bb_bandwidth","relationship":"first_class"}]},
     {"class_id":"eq.bb_kc_squeeze","canonical_method_id":"toi.bb_kc_squeeze","members":[{"method_id":"toi.bb_kc_squeeze","relationship":"first_class"}]},
@@ -22,7 +22,16 @@
     {"class_id":"eq.on_balance_volume","canonical_method_id":"toi.obv","members":[{"method_id":"toi.obv","relationship":"first_class"}]},
     {"class_id":"eq.inside_outside_bar_grammar","canonical_method_id":"toi.inside_bar","members":[{"method_id":"toi.inside_bar","relationship":"first_class"}]},
     {"class_id":"eq.ulcer_path_risk","canonical_method_id":"toi.ulcer","members":[{"method_id":"toi.ulcer","relationship":"first_class"}]},
-    {"class_id":"eq.short_horizon_reversal","canonical_method_id":"toi.short_reversal","members":[{"method_id":"toi.short_reversal","relationship":"first_class"}]}
+    {"class_id":"eq.short_horizon_reversal","canonical_method_id":"toi.short_reversal","members":[{"method_id":"toi.short_reversal","relationship":"first_class"}]},
+    {"class_id":"eq.moving_average_trend","canonical_method_id":"toi.ma_trend","members":[{"method_id":"toi.ma_trend","relationship":"first_class"}]},
+    {"class_id":"eq.rsi_oscillator","canonical_method_id":"toi.rsi_oscillator","members":[{"method_id":"toi.rsi_oscillator","relationship":"first_class"}]},
+    {"class_id":"eq.incumbent_oscillator_confluence","canonical_method_id":"toi.macd_stoch_incumbent","members":[{"method_id":"toi.macd_stoch_incumbent","relationship":"first_class"}]},
+    {"class_id":"eq.kama_er","canonical_method_id":"toi.kama_er","members":[{"method_id":"toi.kama_er","relationship":"first_class"}]},
+    {"class_id":"eq.supertrend","canonical_method_id":"toi.supertrend","members":[{"method_id":"toi.supertrend","relationship":"first_class"}]},
+    {"class_id":"eq.connors_rsi","canonical_method_id":"toi.connors_rsi","members":[{"method_id":"toi.connors_rsi","relationship":"first_class"}]},
+    {"class_id":"eq.geometric_double_pattern","canonical_method_id":"toi.geometric_double_pattern","members":[{"method_id":"toi.geometric_double_pattern","relationship":"first_class"}]},
+    {"class_id":"eq.fibonacci_retracement","canonical_method_id":"toi.fibonacci_retracement","members":[{"method_id":"toi.fibonacci_retracement","relationship":"first_class"}]},
+    {"class_id":"eq.ordered_path_elliott","canonical_method_id":"toi.ordered_path_elliott","members":[{"method_id":"toi.ordered_path_elliott","relationship":"first_class"}]}
   ],
   "alias_index": {
     "BB Width":"toi.bb_bandwidth",
@@ -65,7 +74,31 @@
     "psychological levels":"toi.round_levels",
     "round-number levels":"toi.round_levels",
     "short-term reversal":"toi.short_reversal",
-    "liquidity reversal":"toi.short_reversal"
+    "liquidity reversal":"toi.short_reversal",
+    "MA cross":"toi.ma_trend",
+    "Golden Cross":"toi.ma_trend",
+    "Death Cross":"toi.ma_trend",
+    "EMA ribbon":"toi.ma_trend",
+    "RSI oversold":"toi.rsi_oscillator",
+    "RSI overbought":"toi.rsi_oscillator",
+    "RSI 50 cross":"toi.rsi_oscillator",
+    "MACD cross":"toi.macd_stoch_incumbent",
+    "StochRSI cross":"toi.macd_stoch_incumbent",
+    "T1-T4 oscillator cascade":"toi.macd_stoch_incumbent",
+    "KAMA":"toi.kama_er",
+    "Efficiency Ratio":"toi.kama_er",
+    "ER":"toi.kama_er",
+    "SuperTrend":"toi.supertrend",
+    "ST":"toi.supertrend",
+    "Connors RSI":"toi.connors_rsi",
+    "CRSI":"toi.connors_rsi",
+    "double bottom":"toi.geometric_double_pattern",
+    "double top":"toi.geometric_double_pattern",
+    "Fib retracement":"toi.fibonacci_retracement",
+    "Fibonacci levels":"toi.fibonacci_retracement",
+    "Elliott Wave":"toi.ordered_path_elliott",
+    "ordered leg grammar":"toi.ordered_path_elliott",
+    "impulse-correction path":"toi.ordered_path_elliott"
   },
   "dependency_clusters": {
     "volatility_channel":["toi.bb_bandwidth"],
@@ -73,7 +106,7 @@
     "volatility_regime":["toi.natr_percentile","toi.hvr"],
     "volatility_range":["toi.nr7","toi.range_expansion"],
     "breakout_channel":["toi.donchian_breakout","toi.donchian_fakeout"],
-    "pattern_structure":["toi.fractal_swing_structure","toi.support_resistance","toi.round_levels","toi.inside_bar"],
+    "pattern_structure":["toi.fractal_swing_structure","toi.support_resistance","toi.round_levels","toi.inside_bar","toi.geometric_double_pattern"],
     "benchmark_relative_strength":["toi.benchmark_rs"],
     "volume_money_flow":["toi.cmf","toi.obv"],
     "volume_participation":["toi.rvol"],
@@ -81,7 +114,14 @@
     "trend_efficiency":["toi.choppiness"],
     "multi_horizon_momentum":["toi.momentum_12_1","toi.momentum_acceleration","toi.high52"],
     "downside_path_risk":["toi.ulcer"],
-    "short_horizon_reversal":["toi.short_reversal"]
+    "short_horizon_reversal":["toi.short_reversal"],
+    "moving_average_trend":["toi.ma_trend"],
+    "rsi_mean_reversion":["toi.rsi_oscillator","toi.connors_rsi"],
+    "incumbent_oscillator_confluence":["toi.macd_stoch_incumbent"],
+    "adaptive_trend":["toi.kama_er"],
+    "atr_adaptive_trend":["toi.supertrend"],
+    "fibonacci_geometry":["toi.fibonacci_retracement"],
+    "ordered_path_geometry":["toi.ordered_path_elliott"]
   },
   "unresolved": []
 }
