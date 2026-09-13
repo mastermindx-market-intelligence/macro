@@ -813,6 +813,7 @@ jobs:
             run_py "13F smart-money tracker (build_smart_money)"   scripts.build_smart_money
             run_py "policy-lever card (build_policy_lever)"        scripts.build_policy_lever
             run_py "macro dashboard + US stocks (build_site)"      scripts.build_site
+            run_py "capital structure desk (build_capital_structure_page)" scripts.build_capital_structure_page
             run_py "congressional trades desk (build_congress)"    scripts.build_congress
           }
 

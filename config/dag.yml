@@ -649,6 +649,12 @@ lanes:
           so the declaration lands here.
       - id: build_site
         module: scripts.build_site
+      - id: build_capital_structure_page
+        module: scripts.build_capital_structure_page
+        note: >
+          MO-PAID-067 publication consumer. Page-only render after build_site;
+          publishes the existing capital_policy_projection.v1 into the Capital
+          Structure desk without creating a second policy engine or store.
       - id: build_ticker_pages
         module: scripts.build_ticker_pages
         note: >
@@ -2735,6 +2741,11 @@ lanes:
         note: Policy-Shock W2-F — ARMED/QUIET lever card; non-fatal; site artifact only (PS-R7)
       - id: build_site
         module: scripts.build_site
+      - id: build_capital_structure_page
+        module: scripts.build_capital_structure_page
+        note: >
+          MO-PAID-067 publication consumer. Page-only render of the existing
+          six-window capital-policy projection; no data-plane advancement.
       - id: build_congress
         module: scripts.build_congress
       # parallel band (scope=all)
