@@ -398,8 +398,59 @@ def test_view_changing_inputs_reset_board_expanded():
     assert "boardExpanded = false" in events
     assert events.count("boardExpanded = false") >= 4  # sort, basket, stance, search (group too)
     assert "data-ift-collapse" in src
-    assert "Show top '+BOARD_CAP" in src
-    assert "只看前 '+BOARD_CAP+' 只" in src
+    # R-NEVER removed the ' +’ ↑' suffix from the count-label constructor (the shipped
+    # form is 'Show top '+BOARD_CAP, '只看前 '+BOARD_CAP+' 只'). Pin the exact shipped
+    # form on the line that carries 'Show top' — a global '↑' not in src would be
+    # unstable, but the suffix is a removable token only this constructor carried.
+    # This FAILS on de288cf6706f's pre-heal template ('Show top '+BOARD_CAP+' ↑').
+    show_top_lines = [
+        ln for ln in src.splitlines()
+        if "'Show top '+BOARD_CAP" in ln
+    ]
+    assert show_top_lines, "count-label constructor ('Show top '+BOARD_CAP) is missing"
+    shipped = "lz('Show top '+BOARD_CAP, '只看前 '+BOARD_CAP+' 只')"
+    pre_heal_suffix_en = "+' ↑'"
+    pre_heal_suffix_zh = "只')+' ↑'"  # the pre-heal also added the suffix on ZH
+    for ln in show_top_lines:
+        assert pre_heal_suffix_en not in ln, (
+            "pre-heal ' +’ ↑' suffix is back at the count-label constructor — "
+            f"the R-NEVER glyph fix has regressed (line: {ln.strip()})"
+        )
+        assert " ↑'" not in ln, (
+            "pre-heal ' ↑' suffix is back at the count-label constructor — "
+            f"the R-NEVER glyph fix has regressed (line: {ln.strip()})"
+        )
+    # And pin the exact shipped constructor — guards against any other drift.
+    assert any(shipped in ln for ln in show_top_lines), (
+        "count-label constructor must be the shipped form "
+        "('Show top '+BOARD_CAP, '只看前 '+BOARD_CAP+' 只'); the suffix from "
+        "de288cf6706f must be gone"
+    )
+
+
+def test_stance_meta_degraded_dot_is_middle_dot_not_white_circle():
+    """RED-first pin for R-NEVER glyph fix at templates/intraday_flow.html.j2 :636.
+
+    Pre-heal `de288cf6706f` shipped `degraded: { dot:'⚪', ... }` (U+26AA white circle);
+    shipped head is `degraded: { dot:'·', ... }` (U+00B7 middle dot). FAILS on the
+    pre-heal template and PASSES on the shipped one. `stand_aside` still legitimately
+    ships U+26AA — this pin targets `degraded` specifically.
+    """
+    src = _src()
+    # Extract the STANCE_META literal.
+    start = src.index("var STANCE_META =")
+    end = src.index("};", start) + 2
+    meta = src[start:end]
+    # shipped: dot:'·' (U+00B7)
+    assert re.search(r"degraded:\s*\{\s*dot:'\s*·\s*'", meta), (
+        "STANCE_META.degraded.dot must be U+00B7 (·) — the R-NEVER glyph swap has "
+        "regressed to U+26AA (⚪)"
+    )
+    # pre-heal: dot:'⚪' (U+26AA) on degraded must be gone
+    assert not re.search(r"degraded:\s*\{\s*dot:'\s*⚪\s*'", meta), (
+        "STANCE_META.degraded.dot is back to U+26AA (⚪) — the R-NEVER glyph swap "
+        "has regressed"
+    )
 
 
 # ── m2 tapeChip esc, m3 LENS, n1, copy nits ─────────────────────────────────
