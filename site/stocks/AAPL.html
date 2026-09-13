@@ -64,6 +64,7 @@
 <link rel="preload" as="style" href="../product-nav-icons.css?v=093ad1ea">
 <link rel="preload" as="style" href="../navigation-refresh.css?v=c299c324">
 <link rel="preload" as="style" href="../assets/css/b2c89e32.css?v=b2c89e32">
+<link rel="preload" as="style" href="../assets/css/9496fa41.css?v=9496fa41">
 </head>
 <body class="st-neu">
 <div class="aurora" aria-hidden="true"></div>
@@ -768,10 +769,10 @@
     </div>
     
     
-    <div class="ss-note"><b><span class="l-en">Generated</span><span class="l-zh">生成时间</span></b><span class="v">2026-09-13 08:12Z</span></div>
+    <div class="ss-note"><b><span class="l-en">Generated</span><span class="l-zh">生成时间</span></b><span class="v">2026-09-13 12:04Z</span></div>
     
     
-    <div class="ss-note"><b><span class="l-en">Compiled</span><span class="l-zh">编排时间</span></b><span class="v">2026-09-13 08:12Z</span></div>
+    <div class="ss-note"><b><span class="l-en">Compiled</span><span class="l-zh">编排时间</span></b><span class="v">2026-09-13 12:04Z</span></div>
     
     
     <div class="ss-note"><b><span class="l-en">Content fingerprint</span><span class="l-zh">内容指纹</span></b><span class="v ss-id">d8351a79705ad6e4b4f163072f0aa4834495dfe356596bf0c09c1fec6d010945</span></div>
@@ -1106,6 +1107,228 @@
   <div class="mod-ft"><span class="l-en">Research display only — not advice.</span><span class="l-zh">仅供研究展示，非投资建议。</span></div>
 </section>
 
+  
+
+
+<link rel="stylesheet" href="../assets/css/9496fa41.css?v=9496fa41">
+
+<section class="mod rv" id="valuation-assumptions" data-valuation-assumptions="v1">
+  <div class="mod-hd">
+    <h2><span class="l-en">Try your own assumptions</span><span class="l-zh">试试你自己的假设</span></h2>
+    <span class="hint"><span class="l-en">same reported figures · FY2025</span><span class="l-zh">同一批披露数据 · 2025财年</span></span>
+  </div>
+  <p class="va-lede" id="va-lede-nojs"><span class="l-en">Interactive controls need JavaScript. The three cases above are computed on the server and always shown.</span><span class="l-zh">交互控件需要启用 JavaScript。上方三个情景由服务器计算，始终显示。</span></p>
+  <p class="va-lede" id="va-lede-js" hidden><span class="l-en">Move the three inputs below. The per-share number updates as you move them. Nothing you set here is saved or sent anywhere.</span><span class="l-zh">调整下面三项输入，每股数值会随之更新。你在这里设置的内容不会被保存，也不会被发送到任何地方。</span></p>
+  <script type="application/json" id="vs-assumption-inputs">{"controls": [{"default": 3, "key": "sales_growth_pct", "max": 20, "min": -10, "step": 0.5}, {"default": 0, "key": "margin_delta_pp", "max": 3.0, "min": -3.0, "step": 0.1}, {"default": 18, "key": "earnings_multiple", "max": 35, "min": 8, "step": 1}], "fy": 2025, "inputs": {"net_income": 112010000000.0, "net_margin_base": 0.2691506412181824, "revenue": 416161000000.0, "shares": 14773260000.0}, "margin_base_floor": 0.01, "period_end": "2025-09-27", "presets": {"base": {"earnings_multiple": 18, "margin_delta_pp": 0, "sales_growth_pct": 3}, "cautious": {"earnings_multiple": 14, "margin_delta_pp": -1.5, "sales_growth_pct": -2}, "upbeat": {"earnings_multiple": 22, "margin_delta_pp": 1.5, "sales_growth_pct": 7}}, "schema": "valuation_scenario_controls.v1", "server_default": {"earnings_multiple": 18, "margin_delta_pp": 0, "per_share": 140.57, "sales_growth_pct": 3}, "source": "SEC filings", "ticker": "AAPL", "tier": "research_display_only"}</script>
+  <div class="va-ctls">
+    
+      
+    <div class="va-ctl">
+      <label for="va-ctl-sales_growth_pct"><span class="l-en">Sales growth next year</span><span class="l-zh">下一年销售增长</span></label>
+      <span class="va-readout" id="va-read-sales_growth_pct">+3.0%</span>
+      <input type="range" id="va-ctl-sales_growth_pct" min="-10" max="20" step="0.5" value="3" autocomplete="off" disabled>
+    </div>
+      
+    
+      
+    <div class="va-ctl">
+      <label for="va-ctl-margin_delta_pp"><span class="l-en">Margin change</span><span class="l-zh">利润率变化</span></label>
+      <span>
+        <span class="va-readout" id="va-read-margin_delta_pp">0.0</span>
+        <span class="va-unit"><span class="l-en">percentage points</span><span class="l-zh">个百分点</span></span>
+      </span>
+      <input type="range" id="va-ctl-margin_delta_pp" min="-3.0" max="3.0" step="0.1" value="0" autocomplete="off" disabled>
+    </div>
+      
+    
+      
+    <div class="va-ctl">
+      <label for="va-ctl-earnings_multiple"><span class="l-en">Earnings multiple</span><span class="l-zh">市盈率倍数</span></label>
+      <span class="va-readout" id="va-read-earnings_multiple">18×</span>
+      <input type="range" id="va-ctl-earnings_multiple" min="8" max="35" step="1" value="18" autocomplete="off" disabled>
+    </div>
+      
+    
+  </div><div class="va-out">
+    <div class="va-out-k" id="va-out-k"><span class="l-en">Per share, on your assumptions</span><span class="l-zh">按你的假设计算的每股价值</span></div>
+    <div id="va-out" role="status" aria-live="polite" aria-labelledby="va-out-k">
+      <div class="va-out-num num" id="va-out-num">$140.57</div>
+      <div class="va-out-null" id="va-out-null" hidden><span class="l-en">Margins are too thin at this setting to produce a number.</span><span class="l-zh">在该设置下利润率过低，无法算出数值。</span></div>
+      <p class="va-bridge" id="va-bridge"><span class="l-en" lang="en">Base case is $140.57. Your assumptions give $140.57 (0.0%).</span><span class="l-zh" lang="zh-CN">基准情景为 $140.57，你的假设得出 $140.57（0.0%）。</span></p>
+    </div>
+  </div>
+  <div class="va-presets" id="va-presets">
+    <button type="button" class="gbtn gbtn-sm va-preset" data-va-preset="cautious" disabled><span class="l-en">Cautious</span><span class="l-zh">保守</span></button>
+    <button type="button" class="gbtn gbtn-sm va-preset va-preset-on" data-va-preset="base" disabled><span class="l-en">Base</span><span class="l-zh">基准</span></button>
+    <button type="button" class="gbtn gbtn-sm va-preset" data-va-preset="upbeat" disabled><span class="l-en">Upbeat</span><span class="l-zh">乐观</span></button>
+    <button type="button" class="gbtn gbtn-sm" id="va-reset" disabled><span class="l-en">Reset to base</span><span class="l-zh">恢复基准</span></button>
+  </div>
+  <p class="va-note"><span class="l-en">Applied to FY2025 as disclosed to the SEC — revenue, net income and share count come straight from the disclosure, and are not editable here.</span><span class="l-zh">套用在按 SEC 披露的2025财年数据上——营业收入、净利润与股数均直接取自披露文件，此处不可修改。</span></p><p class="va-note"><span class="l-en">Sales growth -10% to +20%; margin change -3.0 to +3.0 percentage points; earnings multiple 8× to 35×.</span><span class="l-zh">销售增长 -10% 至 +20%；利润率变化 -3.0 至 +3.0 个百分点；市盈率倍数 8 倍至 35 倍。</span></p>
+  <script>
+(function (root) {
+  function round2(v) {
+    if (!(v > 0) || v !== v || v === Infinity) return null;
+    return Math.floor(v * 100 + 0.5) / 100;
+  }
+  function perShareAt(ni, revenue, shares, g, mPp, mult) {
+    ni = Number(ni); revenue = Number(revenue); shares = Number(shares);
+    g = Number(g); mPp = Number(mPp); mult = Number(mult);
+    if (![ni, revenue, shares, g, mPp, mult].every(function (x) {
+      return typeof x === "number" && x === x && x !== Infinity && x !== -Infinity;
+    })) return null;
+    if (!(ni > 0) || revenue === 0 || shares === 0) return null;
+    var nmb = ni / revenue;
+    if (Math.abs(nmb) < 0.01) return null;
+    if (nmb + mPp / 100 <= 0) return null;
+    var raw = ni * (1 + g / 100) * (1 + (mPp / 100) / nmb) * mult / shares;
+    var out = round2(raw);
+    // round2 collapses a positive sub-half-cent raw to 0; 0 is not a paintable
+    // per-share value, so it is null here exactly as it is in Python.
+    return (out == null || !(out > 0)) ? null : out;
+  }
+  function format2(v) {
+    var r = round2(v);
+    return r == null ? null : r.toFixed(2);
+  }
+  // One sign convention for every signed figure the panel prints. A value that
+  // rounds to zero is neither a rise nor a fall, so it carries no sign at all:
+  // "-0.0%" beside two equal dollar figures is a formatting artifact, not
+  // plain language. The server render prints the same three strings.
+  function signedPct(v, digits) {
+    var n = Number(v);
+    var body = Math.abs(n).toFixed(digits);
+    if (Number(body) === 0) return body;
+    return (n < 0 ? "-" : "+") + body;
+  }
+  root.vsAssumptionMath = {
+    round2: round2,
+    perShareAt: perShareAt,
+    format2: format2,
+    signedPct: signedPct
+  };
+  if (typeof module !== "undefined" && module.exports) {
+    module.exports = root.vsAssumptionMath;
+  }
+  if (typeof document === "undefined") return;
+
+  var island = document.getElementById("vs-assumption-inputs");
+  if (!island) return;
+  var data;
+  try { data = JSON.parse(island.textContent); } catch (e) { return; }
+  var inp = data.inputs || {};
+  var sd = data.server_default || {};
+  var presets = data.presets || {};
+  var elG = document.getElementById("va-ctl-sales_growth_pct");
+  var elM = document.getElementById("va-ctl-margin_delta_pp");
+  var elX = document.getElementById("va-ctl-earnings_multiple");
+  var outWrap = document.getElementById("va-out");
+  var outNum = document.getElementById("va-out-num");
+  var outNull = document.getElementById("va-out-null");
+  var bridge = document.getElementById("va-bridge");
+  var readG = document.getElementById("va-read-sales_growth_pct");
+  var readM = document.getElementById("va-read-margin_delta_pp");
+  var readX = document.getElementById("va-read-earnings_multiple");
+  if (!elG || !elM || !elX || !outNum) return;
+  elG.removeAttribute("disabled");
+  elM.removeAttribute("disabled");
+  elX.removeAttribute("disabled");
+  var bootBtns = document.querySelectorAll("#va-presets button");
+  for (var bi = 0; bi < bootBtns.length; bi++) bootBtns[bi].removeAttribute("disabled");
+  var ledeNojs = document.getElementById("va-lede-nojs");
+  var ledeJs = document.getElementById("va-lede-js");
+  if (ledeNojs) ledeNojs.hidden = true;
+  if (ledeJs) ledeJs.hidden = false;
+
+  var basePs = Number(sd.per_share);
+
+  function paintReadouts(g, m, x) {
+    if (readG) readG.textContent = signedPct(g, 1) + "%";
+    if (readM) readM.textContent = signedPct(m, 1);
+    if (readX) readX.textContent = String(Math.round(Number(x))) + "\u00d7";
+  }
+  function markPreset(name) {
+    var btns = document.querySelectorAll("[data-va-preset]");
+    for (var i = 0; i < btns.length; i++) {
+      if (btns[i].getAttribute("data-va-preset") === name) btns[i].classList.add("va-preset-on");
+      else btns[i].classList.remove("va-preset-on");
+    }
+  }
+  function matchingPreset(g, m, x) {
+    for (var key in presets) {
+      if (!Object.prototype.hasOwnProperty.call(presets, key)) continue;
+      var p = presets[key];
+      if (Number(p.sales_growth_pct) === Number(g) &&
+          Number(p.margin_delta_pp) === Number(m) &&
+          Number(p.earnings_multiple) === Number(x)) return key;
+    }
+    return "";
+  }
+  function paint() {
+    var g = Number(elG.value);
+    var m = Number(elM.value);
+    var x = Number(elX.value);
+    paintReadouts(g, m, x);
+    markPreset(matchingPreset(g, m, x));
+    var y = perShareAt(inp.net_income, inp.revenue, inp.shares, g, m, x);
+    var thin = !(y > 0);
+    if (outWrap) {
+      // Each twin declares its own language in the markup (lang="en" /
+      // lang="zh-CN"); nothing stamps one language on the node holding both.
+      if (thin) outWrap.classList.add("va-is-null");
+      else outWrap.classList.remove("va-is-null");
+    }
+    if (outNull) outNull.hidden = !thin;
+    if (outNum) outNum.hidden = thin;
+    if (bridge) bridge.hidden = thin;
+    if (thin) return;
+    var yStr = format2(y);
+    outNum.textContent = "$" + yStr;
+    if (bridge && basePs > 0) {
+      var pct = ((y - basePs) / basePs) * 100;
+      var pctStr = signedPct(pct, 1);
+      var bStr = Number(basePs).toFixed(2);
+      var enEl = bridge.querySelector(".l-en");
+      var zhEl = bridge.querySelector(".l-zh");
+      if (enEl) {
+        enEl.textContent = "Base case is $" + bStr + ". Your assumptions give $" + yStr + " (" + pctStr + "%).";
+      }
+      if (zhEl) {
+        zhEl.textContent = "基准情景为 $" + bStr + "，你的假设得出 $" + yStr + "（" + pctStr + "%）。";
+      }
+    }
+  }
+  function applyTriple(g, m, x) {
+    elG.value = String(g);
+    elM.value = String(m);
+    elX.value = String(x);
+    paint();
+  }
+  elG.addEventListener("input", paint);
+  elM.addEventListener("input", paint);
+  elX.addEventListener("input", paint);
+  var presetBtns = document.querySelectorAll("[data-va-preset]");
+  for (var i = 0; i < presetBtns.length; i++) {
+    presetBtns[i].addEventListener("click", function (ev) {
+      var key = ev.currentTarget.getAttribute("data-va-preset");
+      var p = presets[key];
+      if (!p) return;
+      applyTriple(p.sales_growth_pct, p.margin_delta_pp, p.earnings_multiple);
+    });
+  }
+  var reset = document.getElementById("va-reset");
+  if (reset) {
+    reset.addEventListener("click", function () {
+      applyTriple(sd.sales_growth_pct, sd.margin_delta_pp, sd.earnings_multiple);
+    });
+  }
+  document.addEventListener("langchange", paint);
+  paint();
+})(typeof globalThis !== "undefined" ? globalThis : this);
+  </script>
+  <div class="mod-ft"><span class="l-en">Research display only — not advice.</span><span class="l-zh">仅供研究展示，非投资建议。</span></div>
+</section>
+
+
 
   
   <section class="mod rv" id="financials">
@@ -1228,6 +1451,12 @@
       <div class="wd"></div>
       <span class="wc"><span class="l-en">News</span><span class="l-zh">新闻</span></span>
       <span class="wl"><span class="l-en">4 recent stories — mixed</span><span class="l-zh">4 篇最新报道，多空参半</span></span>
+    </div>
+    
+    <div class="wr wr-on">
+      <div class="wd"></div>
+      <span class="wc"><span class="l-en">Sector / Theme</span><span class="l-zh">行业/主题</span></span>
+      <span class="wl"><span class="l-en">Magnificent Seven theme — #3 of 49 themes</span><span class="l-zh">「七巨头」主题 — 49 个主题中第 3 位</span></span>
     </div>
     
     <div class="wr wr-on">
@@ -1698,6 +1927,8 @@
     <p class="sm mut" style="margin:10px 0 0;"><span class="l-en">Primary basket:</span><span class="l-zh">主要篮子：</span> <span class="l-en">Magnificent Seven</span><span class="l-zh">七巨头</span> — <span class="l-en">dominant</span><span class="l-zh">七巨头</span></p>
     
     
+    <p class="sm mut" style="margin:6px 0 0;"><span class="l-en">Sector theme:</span><span class="l-zh">行业主题：</span> <span class="l-en">Magnificent Seven</span><span class="l-zh">七巨头</span> <span class="okx y" style="font-size:10px;">heating</span></p>
+    
   </section>
   
 
@@ -1768,7 +1999,7 @@
 
 <footer class="site-footer6">
   <p><span class="l-en">Research context only — not investment advice. Past patterns do not guarantee future results.</span><span class="l-zh">仅供研究参考，不构成投资建议。历史规律不代表未来表现。</span></p>
-  <p><span class="l-en">Data through</span><span class="l-zh">数据截至</span> 2026-09-13 · <span class="l-en">regenerated nightly</span><span class="l-zh">每晚更新</span> · <span class="l-en">Generated</span><span class="l-zh">生成于</span> 2026-09-13 08:27 UTC · <a href="index.html"><span class="l-en">All coverage</span><span class="l-zh">所有股票</span></a> · <a href="../stock.html"><span class="l-en">Analyzer</span><span class="l-zh">分析器</span></a></p>
+  <p><span class="l-en">Data through</span><span class="l-zh">数据截至</span> 2026-09-13 · <span class="l-en">regenerated nightly</span><span class="l-zh">每晚更新</span> · <span class="l-en">Generated</span><span class="l-zh">生成于</span> 2026-09-13 12:50 UTC · <a href="index.html"><span class="l-en">All coverage</span><span class="l-zh">所有股票</span></a> · <a href="../stock.html"><span class="l-en">Analyzer</span><span class="l-zh">分析器</span></a></p>
 </footer>
 
 </div><!-- /page-wrap -->
@@ -2215,7 +2446,7 @@
           <div class="r6d"><span class="k"><span class="l-en">Content fingerprint</span><span class="l-zh">内容指纹</span></span><span class="vv ss-id">d8351a79705ad6e4b4f163072f0aa4834495dfe356596bf0c09c1fec6d010945</span></div>
           <div class="r6d"><span class="k"><span class="l-en">Market data through</span><span class="l-zh">行情数据截至</span></span><span class="vv num">2026-09-11</span></div>
           <div class="r6d"><span class="k"><span class="l-en">Sources through</span><span class="l-zh">来源截至</span></span><span class="vv num">2026-07-30 20:30Z</span></div>
-          <div class="r6d"><span class="k"><span class="l-en">Compiled</span><span class="l-zh">编排时间</span></span><span class="vv num">2026-09-13 08:12Z</span></div>
+          <div class="r6d"><span class="k"><span class="l-en">Compiled</span><span class="l-zh">编排时间</span></span><span class="vv num">2026-09-13 12:04Z</span></div>
         </div>
         
         <p class="ss-receipt"><span class="l-en">Identity confirmed</span><span class="l-zh">身份已确认</span> · 9 <span class="l-en">source checks</span><span class="l-zh">项来源核对</span> · 9 <span class="l-en">matches</span><span class="l-zh">项一致</span></p>
@@ -3649,6 +3880,5 @@
 })();
 </script>
 
-<script defer data-whb data-root="../" src="../wh_banner.js?v=4a53a176"></script>
 </body>
 </html>
