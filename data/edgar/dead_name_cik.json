@@ -4056,8 +4056,8 @@
 "method": "unresolved"
 },
 "VGR": {
-"cik": null,
-"method": "unresolved"
+"cik": 59440,
+"method": "edgar_fts"
 },
 "VIAB": {
 "cik": null,
@@ -4072,16 +4072,16 @@
 "method": "unresolved"
 },
 "VNDA": {
-"cik": null,
-"method": "unresolved"
+"cik": 1347178,
+"method": "edgar_fts"
 },
 "VO": {
 "cik": null,
 "method": "unresolved"
 },
 "VRA": {
-"cik": null,
-"method": "unresolved"
+"cik": 1495320,
+"method": "edgar_fts"
 },
 "VRE": {
 "cik": null,
@@ -4092,12 +4092,12 @@
 "method": "unresolved"
 },
 "VRTU": {
-"cik": null,
-"method": "unresolved"
+"cik": 1207074,
+"method": "edgar_fts"
 },
 "VRTV": {
-"cik": null,
-"method": "unresolved"
+"cik": 1599489,
+"method": "edgar_fts"
 },
 "VSCO": {
 "cik": null,
@@ -4120,8 +4120,8 @@
 "method": "unresolved"
 },
 "VTLE": {
-"cik": null,
-"method": "unresolved"
+"cik": 1528129,
+"method": "edgar_fts"
 },
 "VTSS": {
 "cik": null,
@@ -4144,36 +4144,36 @@
 "method": "unresolved"
 },
 "WBA": {
-"cik": null,
-"method": "unresolved"
+"cik": 1618921,
+"method": "edgar_fts"
 },
 "WBMD": {
 "cik": null,
 "method": "unresolved"
 },
 "WCG": {
-"cik": null,
-"method": "unresolved"
+"cik": 1279363,
+"method": "edgar_fts"
 },
 "WCOEQ": {
 "cik": null,
 "method": "unresolved"
 },
 "WDR": {
-"cik": null,
-"method": "unresolved"
+"cik": 1052100,
+"method": "edgar_fts"
 },
 "WETF": {
 "cik": null,
 "method": "unresolved"
 },
 "WFM": {
-"cik": null,
-"method": "unresolved"
+"cik": 865436,
+"method": "edgar_fts"
 },
 "WFT": {
-"cik": null,
-"method": "unresolved"
+"cik": 1170565,
+"method": "edgar_fts"
 },
 "WGL": {
 "cik": null,
@@ -4220,8 +4220,8 @@
 "method": "unresolved"
 },
 "WNR": {
-"cik": null,
-"method": "unresolved"
+"cik": 1339048,
+"method": "edgar_fts"
 },
 "WOLF": {
 "cik": null,
@@ -4236,28 +4236,28 @@
 "method": "unresolved"
 },
 "WPX": {
-"cik": null,
-"method": "unresolved"
+"cik": 1518832,
+"method": "edgar_fts"
 },
 "WR": {
 "cik": null,
 "method": "unresolved"
 },
 "WRI": {
-"cik": null,
-"method": "unresolved"
+"cik": 828916,
+"method": "edgar_fts"
 },
 "WRK": {
-"cik": null,
-"method": "unresolved"
+"cik": 1732845,
+"method": "edgar_fts"
 },
 "WW": {
 "cik": null,
 "method": "unresolved"
 },
 "WWAV": {
-"cik": null,
-"method": "unresolved"
+"cik": 1555365,
+"method": "edgar_fts"
 },
 "WWY": {
 "cik": null,
@@ -4276,8 +4276,8 @@
 "method": "unresolved"
 },
 "XEC": {
-"cik": null,
-"method": "unresolved"
+"cik": 1168054,
+"method": "edgar_fts"
 },
 "XL": {
 "cik": null,
@@ -4292,16 +4292,16 @@
 "method": "unresolved"
 },
 "XPER": {
-"cik": null,
-"method": "unresolved"
+"cik": 1788999,
+"method": "edgar_fts"
 },
 "XRX": {
 "cik": null,
 "method": "unresolved"
 },
 "XTO": {
-"cik": null,
-"method": "unresolved"
+"cik": 868809,
+"method": "edgar_fts"
 },
 "Y": {
 "cik": null,
@@ -4320,12 +4320,12 @@
 "method": "unresolved"
 },
 "ZIMV": {
-"cik": null,
-"method": "unresolved"
+"cik": 1876588,
+"method": "edgar_fts"
 },
 "ZUMZ": {
-"cik": null,
-"method": "unresolved"
+"cik": 1318008,
+"method": "edgar_fts"
 },
 "ZYXI": {
 "cik": null,

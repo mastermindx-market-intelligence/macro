@@ -14,14 +14,23 @@ WRITES a preference too — "answer shorter from now on" is a thing people say m
 ``set_chat_preference`` is a tool — and a second hand-rolled GoTrue merge-write is exactly
 how one of the two paths ends up clobbering a key the other stores.
 
-**The merge happens on OUR side, never GoTrue's.** GoTrue versions have differed on whether
-a partial ``user_metadata`` PUT merges or REPLACES the object, and losing an unrelated key a
-future feature stored would be silent data loss. So:
+**Every write takes a fresh uncached admin GET, then overlays only this writer's
+validated keys, then PUTs the merged object.** A cached identity snapshot
+(``require_user`` / the paywall auth cache, TTL up to 60 s) is never the merge
+base — writing it back is how a Terminal ``lang`` / ``market_focus`` / never-seen
+key gets silently reverted. Keys this module did not validate stay whatever the
+fresh read returned.
 
-* a caller holding the user record passes it as ``base`` (``app/account_prefs.py`` has the
-  verified token's record in hand — that path makes exactly one network call, a PUT);
-* a caller holding only a user id (the chat tool) pays one admin GET first, and a FAILED
-  read REFUSES the write rather than PUTting a partial object.
+The ``base`` keyword is accepted so existing call sites keep running and is
+**ignored**. A read we could not complete OR could not make sense of still refuses
+the write: the PUT body is the whole object we just saw, and we will not send an
+object we never saw. That is a real cost — a transient read blip now fails a save
+that used to go through on one PUT — and it is the trade this module chooses, because
+the failure it replaces silently destroyed keys another product stored.
+
+This closes the auth-cache clobber. It does not close last-write-wins on a key
+two writers both change, and a sibling write that lands between our GET and our
+PUT can still be lost (one round trip). That residual window is a known limit.
 
 Enum validation is the other half of the point: an illegal value is dropped on read and
 refuses the write, so nothing downstream has to defend against ``sepia`` or ``klingon``.
@@ -180,6 +189,27 @@ def normalize_value(key: str, value: Any) -> Any | None:
     return None
 
 
+def apply_tz_default(patch: dict, fresh_meta: dict | None) -> None:
+    """Freeze §8 tz default, decided from a FRESH metadata read. Mutates ``patch``.
+
+    Fires only when alerts are being turned on, the request did not send ``tz``,
+    and the fresh read shows no stored ``tz``. ``fresh_meta is None`` means we
+    do not know what is stored — the rule does **not** fire (better to leave
+    ``tz`` unset than to write a default over a zone we could not see). A ``tz``
+    already in ``patch`` wins over both a stored zone and ``None``.
+    """
+    if patch.get("alert_email_optin") is not True:
+        return
+    if "tz" in patch:
+        return
+    if not isinstance(fresh_meta, dict):
+        return
+    if fresh_meta.get("tz"):
+        return
+    lang = patch.get("lang") or fresh_meta.get("lang")
+    patch["tz"] = default_tz_for_lang(lang)
+
+
 def validate_prefs(patch: dict | None) -> tuple[dict, list[str]]:
     """Split ``patch`` into (legal prefs, rejected keys). Never raises.
 
@@ -258,6 +288,12 @@ def fetch_user_metadata(user_id: str, *, supabase: tuple[str, str] | None = None
     None is NOT ``{}``: it means "we do not know what is stored", and that distinction is
     load-bearing — :func:`write_user_prefs` refuses to write on a None rather than sending a
     PUT that could replace an object it never saw.
+
+    A 200 we cannot make sense of is *also* None, not ``{}``: a body that is not a JSON
+    object, or one whose ``user_metadata`` is absent or not an object, tells us nothing
+    about what is stored. Collapsing that to ``{}`` would let the SAFE writer PUT its own
+    three keys as the WHOLE object and erase everything else the account holds. ``{}`` is
+    reserved for the one case we actually observed it: ``user_metadata`` present and empty.
     """
     base_url, key = _supabase(supabase)
     if not user_id or not base_url or not key:
@@ -270,17 +306,30 @@ def fetch_user_metadata(user_id: str, *, supabase: tuple[str, str] | None = None
     except Exception as exc:  # noqa: BLE001
         log.warning("user_prefs: metadata read failed for %s (%s)", user_id, type(exc).__name__)
         return None
-    meta = body.get("user_metadata") if isinstance(body, dict) else None
-    return meta if isinstance(meta, dict) else {}
+    if not isinstance(body, dict):
+        log.warning("user_prefs: metadata read for %s returned a non-object body", user_id)
+        return None
+    meta = body.get("user_metadata")
+    if not isinstance(meta, dict):
+        # Absent or non-dict user_metadata on a 200: unreadable, not empty. Returning {}
+        # here would make the writer replace the stored object with its own keys.
+        log.warning("user_prefs: metadata read for %s had no readable user_metadata", user_id)
+        return None
+    return meta
 
 
 def write_user_prefs(user_id: str, patch: dict, *, base: dict | None = None,
                      supabase: tuple[str, str] | None = None) -> bool:
-    """Merge validated prefs into the user's ``user_metadata``. False on ANY failure.
+    """Merge validated prefs into a FRESH read of ``user_metadata``. False on ANY failure.
 
-    ``base`` is the current metadata when the caller already holds it (the account route
-    does — it comes from the verified token's own record), which keeps the write to a single
-    PUT. Without a base we read it first, and a failed read returns False instead of writing.
+    ``base`` is accepted for call-site compatibility and **ignored**. It is typically
+    the identity-cache snapshot (up to a minute old) and writing it back clobbers
+    keys another product stored in that window. Every write takes an uncached
+    admin GET (:func:`fetch_user_metadata`), overlays only this writer's validated
+    keys, and PUTs the merged object.
+
+    A failed read returns False instead of writing: the PUT body is the whole
+    object we just saw, and we will not send an object we never saw.
 
     Fail-soft by contract: a display preference is never worth a 500. A rejected enum value
     makes the WHOLE call False and writes nothing — validate first (:func:`validate_prefs`)
@@ -292,16 +341,17 @@ def write_user_prefs(user_id: str, patch: dict, *, base: dict | None = None,
     base_url, key = _supabase(supabase)
     if not user_id or not base_url or not key:
         return False
-    if base is None:
-        base = fetch_user_metadata(user_id, supabase=(base_url, key))
-    if not isinstance(base, dict):
+    # `base` is deliberately unused — a cached snapshot must never reach the PUT.
+    _ = base
+    fresh = fetch_user_metadata(user_id, supabase=(base_url, key))
+    if not isinstance(fresh, dict):
         # Same refusal as a failed read: we do not know what is stored, so a PUT could
         # replace an object we never saw.
         return False
-    merged = dict(base)
+    merged = dict(fresh)
     merged.update(clean)
     try:
-        # Encoding lives INSIDE the try with the request: `base` is somebody else's dict,
+        # Encoding lives INSIDE the try with the request: `fresh` is somebody else's dict,
         # and a non-serialisable value in it must be a False, not a raise out of a
         # fire-and-forget preference write.
         req = urllib.request.Request(

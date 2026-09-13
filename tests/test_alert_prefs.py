@@ -39,13 +39,29 @@ class _Resp:
 
 
 class _Auth:
-    def __init__(self):
+    """Records every admin-API call. GET returns ``metadata`` so the writer
+    (and the freeze-§8 tz default) take a fresh read; PUT is recorded, not applied.
+    Matches tests/test_account_prefs.py after main's auth-cache-clobber close.
+    """
+
+    def __init__(self, fail=False, metadata=None):
         self.calls: list[tuple[str, str, dict]] = []
+        self.fail = fail
+        self.metadata = dict(USER["user_metadata"] if metadata is None else metadata)
 
     def urlopen(self, req, timeout=None):
+        method = req.get_method()
         payload = json.loads(req.data.decode()) if req.data else {}
-        self.calls.append((req.get_method(), req.full_url, payload))
+        self.calls.append((method, req.full_url, payload))
+        if self.fail:
+            raise OSError("supabase unreachable")
+        if method == "GET":
+            return _Resp(json.dumps(
+                {"id": USER["id"], "user_metadata": dict(self.metadata)}).encode())
         return _Resp()
+
+    def put(self) -> tuple[str, str, dict]:
+        return next(c for c in self.calls if c[0] == "PUT")
 
 
 @pytest.fixture
@@ -68,7 +84,7 @@ def store(monkeypatch):
 def test_new_keys_are_top_level_not_nested(auth, store):
     account_prefs.save_prefs(
         account_prefs.PrefsRequest(tz="Asia/Hong_Kong", alert_email_optin=True), user=USER)
-    _, _, payload = auth.calls[0]
+    _, _, payload = auth.put()
     meta = payload["user_metadata"]
     assert meta["tz"] == "Asia/Hong_Kong"
     assert meta["alert_email_optin"] is True
@@ -78,12 +94,14 @@ def test_new_keys_are_top_level_not_nested(auth, store):
 
 def test_merge_proof_quiet_hours_onto_existing_base(auth, store):
     """Writing quiet_hours onto a base already holding alert_categories + theme drops neither."""
-    base_user = dict(USER, user_metadata=dict(
-        USER["user_metadata"], alert_categories=["thesis_window"], theme="dark"))
+    stored = dict(
+        USER["user_metadata"], alert_categories=["thesis_window"], theme="dark")
+    auth.metadata = dict(stored)
+    base_user = dict(USER, user_metadata=dict(stored))
     account_prefs.save_prefs(
         account_prefs.PrefsRequest(quiet_hours={"start": "22:00", "end": "07:00"}),
         user=base_user)
-    _, _, payload = auth.calls[0]
+    _, _, payload = auth.put()
     meta = payload["user_metadata"]
     assert meta["alert_categories"] == ["thesis_window"]
     assert meta["theme"] == "dark"
@@ -316,7 +334,7 @@ def test_quiet_hours_off_sentinel_reaches_the_put_as_none(auth, store):
     "off" test asserted only the route's response out["prefs"], never the actual PUT
     body sent to GoTrue. Assert the real network payload instead."""
     account_prefs.save_prefs(account_prefs.PrefsRequest(quiet_hours="off"), user=USER)
-    _, _, payload = auth.calls[0]
+    _, _, payload = auth.put()
     meta = payload["user_metadata"]
     assert meta["quiet_hours"] is None
     assert meta["quiet_hours"] != "off"
@@ -335,7 +353,7 @@ def test_alerts_on_with_no_tz_defaults_and_round_trips_on_get(auth, store):
         account_prefs.PrefsRequest(alert_email_optin=True), user=base_user)
     assert out["prefs"]["tz"] == user_prefs.default_tz_for_lang("en") == "UTC"
 
-    _, _, payload = auth.calls[0]
+    _, _, payload = auth.put()
     meta = payload["user_metadata"]
     assert meta["tz"] == "UTC"
     assert meta["alert_email_optin"] is True
@@ -352,10 +370,12 @@ def test_alerts_on_with_no_tz_defaults_and_round_trips_on_get(auth, store):
 def test_alerts_on_never_overwrites_an_existing_tz(auth, store):
     """The default only fills a genuinely unset tz -- it must never clobber a zone the
     account already has, including when the same call turns alerts on."""
-    base_user = dict(USER, user_metadata=dict(USER["user_metadata"], tz="Asia/Hong_Kong"))
+    stored = dict(USER["user_metadata"], tz="Asia/Hong_Kong")
+    auth.metadata = dict(stored)
+    base_user = dict(USER, user_metadata=dict(stored))
     account_prefs.save_prefs(
         account_prefs.PrefsRequest(alert_email_optin=True), user=base_user)
-    _, _, payload = auth.calls[0]
+    _, _, payload = auth.put()
     assert payload["user_metadata"]["tz"] == "Asia/Hong_Kong"
 
 
@@ -474,12 +494,14 @@ def test_unknown_category_is_400_with_plain_word_detail(auth, store):
 
 def test_alerts_on_with_zh_lang_defaults_to_asia_shanghai(auth, store):
     """§8 explicit default = account locale or UTC. zh → Asia/Shanghai."""
-    base_user = dict(USER, user_metadata=dict(USER["user_metadata"], lang="zh"))
+    stored = dict(USER["user_metadata"], lang="zh")
+    auth.metadata = dict(stored)
+    base_user = dict(USER, user_metadata=dict(stored))
     assert "tz" not in base_user["user_metadata"]
     out = account_prefs.save_prefs(
         account_prefs.PrefsRequest(alert_email_optin=True), user=base_user)
     assert out["prefs"]["tz"] == user_prefs.default_tz_for_lang("zh") == "Asia/Shanghai"
-    _, _, payload = auth.calls[0]
+    _, _, payload = auth.put()
     assert payload["user_metadata"]["tz"] == "Asia/Shanghai"
 
 

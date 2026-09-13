@@ -1049,6 +1049,60 @@
       "at": "2026-09-09T00:16:40.920955+00:00",
       "activated": false,
       "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=49920": {
+      "id": "wh-2026-09-09-fact-sheet-president-donald-j-trump-responds-to-canadas-retaliation",
+      "at": "2026-09-09T05:59:31.367360+00:00",
+      "activated": true,
+      "importance": 72
+    },
+    "https://www.whitehouse.gov/?p=49946": {
+      "id": "wh-2026-09-09-president-trump-delivers-historic-results-for-the-american-people-in-under-two-y",
+      "at": "2026-09-09T22:35:19.661634+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=49961": {
+      "id": "wh-2026-09-09-patriot-day-2026-the-25th-anniversary-of-the-september-11-terrorist-attacks",
+      "at": "2026-09-10T01:04:05.382619+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=49952": {
+      "id": "wh-2026-09-09-first-lady-melania-trumps-personal-vision-to-preserve-americas-story-through",
+      "at": "2026-09-10T01:04:14.975224+00:00",
+      "activated": false,
+      "importance": 2
+    },
+    "https://www.whitehouse.gov/?p=49972": {
+      "id": "wh-2026-09-10-fact-sheet-president-donald-j-trump-announces-the-working-families-obamacare-ref",
+      "at": "2026-09-10T16:24:14.738221+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=50021": {
+      "id": "wh-2026-09-10-trump-dividend-america-is-winning-and-americans-should-win-with-it",
+      "at": "2026-09-10T19:42:35.210484+00:00",
+      "activated": false,
+      "importance": 35
+    },
+    "https://www.whitehouse.gov/?p=50025": {
+      "id": "wh-2026-09-10-s-858-signed-into-law",
+      "at": "2026-09-10T22:35:45.550019+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=50059": {
+      "id": "wh-2026-09-11-presidential-message-on-rosh-hashanah-982e",
+      "at": "2026-09-11T16:28:18.384405+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=50061": {
+      "id": "wh-2026-09-11-congressional-bills-h-r-1276-h-r-2069-h-r-2196-and-h-r-5366-signed-into-law",
+      "at": "2026-09-11T19:42:49.089663+00:00",
+      "activated": false,
+      "importance": 10
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."

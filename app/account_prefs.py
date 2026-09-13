@@ -56,17 +56,17 @@ def _supabase() -> tuple[str, str]:
     return billing.SUPABASE_URL, billing.SUPABASE_SERVICE_ROLE_KEY
 
 
-def _write_user_metadata(user_id: str, patch: dict, base: dict) -> bool:
+def _write_user_metadata(user_id: str, patch: dict) -> bool:
     """Merge ``patch`` into the user's auth ``user_metadata``. False on any failure.
 
-    Thin delegate to ``lib.user_prefs.write_user_prefs``. The merge base is passed in from
-    the record the token verification already returned, so this path still makes exactly ONE
-    network call (a PUT) — the lib's own admin GET is for callers that hold only a user id.
+    Thin delegate to ``lib.user_prefs.write_user_prefs``. The cached identity
+    record is never the merge base — the lib takes a fresh uncached admin GET
+    immediately before the PUT and overlays only this writer's validated keys.
     ``app.billing``'s constants are injected so this process has one credential source.
     """
     if not user_id:
         return False
-    return user_prefs.write_user_prefs(str(user_id), patch, base=base, supabase=_supabase())
+    return user_prefs.write_user_prefs(str(user_id), patch, supabase=_supabase())
 
 
 def _mirror_email_lang(user_id: str, lang: str) -> bool:
@@ -179,20 +179,19 @@ def save_prefs(body: PrefsRequest, user: dict = Depends(_current_user)) -> dict:
         en, zh = _EMPTY_BODY_ERR
         raise HTTPException(400, detail={"en": en, "zh": zh})
 
-    existing_meta = dict(user.get("user_metadata") or {})
-
     # B-F08-1a freeze §8: alerts turned on with no IANA zone known -- neither sent on
-    # this call nor already stored -- get an explicit default rather than shipping with
-    # an unset zone (quiet hours and any future delivery-window math need a real tz to
-    # mean anything). Never overwrites a tz the caller/account already has.
-    if patch.get("alert_email_optin") is True and "tz" not in patch \
-            and not existing_meta.get("tz"):
-        lang = patch.get("lang") or existing_meta.get("lang")
-        default_tz = user_prefs.default_tz_for_lang(lang)
-        patch["tz"] = default_tz
-        response_prefs["tz"] = default_tz
+    # this call nor already stored on a FRESH read -- get an explicit default. Main's
+    # writer ignores the cached identity as merge base; #6907 wires apply_tz_default
+    # onto that same fresh admin GET so a default cannot land over a zone we could not
+    # see. The extra GET runs only when the gate could fire; a brain_depth-only save
+    # still pays exactly one GET inside the writer (main seat R2).
+    if patch.get("alert_email_optin") is True and "tz" not in patch:
+        fresh_meta = user_prefs.fetch_user_metadata(str(user_id), supabase=_supabase())
+        user_prefs.apply_tz_default(patch, fresh_meta)
+        if "tz" in patch:
+            response_prefs["tz"] = patch["tz"]
 
-    stored = _write_user_metadata(str(user_id), patch, existing_meta)
+    stored = _write_user_metadata(str(user_id), patch)
 
     mirrored = False
     if "lang" in patch:
