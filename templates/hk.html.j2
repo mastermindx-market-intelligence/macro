@@ -1163,6 +1163,17 @@
   body.page-hk .hkx-row:last-child{border-bottom:none}
   body.page-hk .hkx-row .ic{flex:0 0 20px;text-align:center;font-size:12px;padding-top:1px}
   body.page-hk .hkx-row .sub{display:block;font-size:10.5px;color:var(--muted);margin-top:1px}
+  /* §5.8 monoline icons — replace emoji tone marks on the What To Do glance rows;
+     pages reuse the design system's tone-up / tone-down / tone-flat class idiom
+     (canonical CSS classes mapping to --up / --down / --muted), and these
+     glance-row icons inherit their color via the page-local .ic-up / .ic-dn
+     classes that point at the same --up / --down tokens — no new CSS literal. */
+  body.page-hk .hkx-ic{flex:0 0 20px;display:flex;align-items:center;justify-content:center;padding-top:1px;color:var(--muted)}
+  body.page-hk .hkx-ic .ic-svg,body.page-hk .hkx-row .ic-svg{width:16px;height:16px;display:block;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
+  body.page-hk .hkx-ic.ic-up,body.page-hk .ic-up{color:var(--ink-up, var(--up))}
+  body.page-hk .hkx-ic.ic-dn,body.page-hk .ic-dn{color:var(--ink-down, var(--down))}
+  body.page-hk .hkx-ic.ic-warn,body.page-hk .ic-warn{color:var(--ink-warn, var(--warn))}
+  body.page-hk .hkx-tx{flex:1;min-width:0}
   body.page-hk .hkx-kv{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--line);font-size:12.5px}
   body.page-hk .hkx-kv:last-of-type{border-bottom:none}
   body.page-hk .hkx-kv .k{color:var(--muted)}
@@ -1288,9 +1299,10 @@
   @media(max-width:1100px){body.page-hk .hkx-cas-strip{grid-template-columns:repeat(3,1fr)}}
   @media(max-width:560px){body.page-hk .hkx-cas-strip{grid-template-columns:repeat(2,1fr)}}
   body.page-hk .hkx-cat{padding:10px 12px;border-radius:12px}
-  body.page-hk .hkx-cat .cat-tag{font-size:9.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+  body.page-hk .hkx-cat .cat-tag{font-size:9.5px;font-weight:700;letter-spacing:.4px;color:var(--muted);margin-bottom:4px}
   body.page-hk .hkx-cat .cat-val{font-size:14px;font-weight:700;line-height:1.1}
   body.page-hk .hkx-cat .cat-chg{font-size:10.5px;font-weight:650;margin-top:2px}
+  body.page-hk .hkx-cat .cat-mean{font-size:10px;color:var(--muted);margin-top:3px;line-height:1.3}
   body.page-hk .hkx-cat .cat-tone{font-size:9.5px;font-weight:700;letter-spacing:.5px;border-radius:4px;padding:1px 7px;margin-top:3px;display:inline-block}
   body.page-hk .hkx-cat .cat-tone.bull{background:color-mix(in srgb,var(--up) 14%,transparent);color:var(--ink-up, var(--up))}
   body.page-hk .hkx-cat .cat-tone.bear{background:color-mix(in srgb,var(--down) 14%,transparent);color:var(--ink-down, var(--down))}
@@ -1613,10 +1625,10 @@ html[data-lang="zh"][data-theme="light"] body.page-hk .ms-red .hkx-big-score { t
   <div class="hkx-card hkx-hero ms-front ms-{{ ms.color if (ms is defined and ms) else 'yellow' }}{{ ' hkx-hero-solo' if not (ms_history and ms_history|length >= 2) }}" id="hkx-hero-card">
     <div class="hkx-hero-left">
       {# regime pill = the macro QUAD word (mockup: "Stagflation"), bound from the
-         signal-stack macro-regime leg so the zh twin is engine-supplied, never invented. #}
+         signal-stack macro-regime leg; the zh twin is glossary-supplied via td(). #}
       {% set _mrleg = (signal_stack.legs | selectattr('label_en', 'equalto', 'Macro regime') | list | first) if (signal_stack and signal_stack.legs) else none %}
       {% if _mrleg %}
-      <span class="hkx-regime-pill ms-{{ ms.color if (ms is defined and ms) else 'yellow' }}"><span class="hkx-rp-dot"></span>{{ t(_mrleg.state_en, _mrleg.state_zh) }}</span>
+      <span class="hkx-regime-pill ms-{{ ms.color if (ms is defined and ms) else 'yellow' }}"><span class="hkx-rp-dot"></span>{{ td(_mrleg.state_en) }}</span>
       {% elif ms is defined and ms %}
       <span class="hkx-regime-pill ms-{{ ms.color }}"><span class="hkx-rp-dot"></span>{{ t(ms.label_en, ms.label_zh) }}</span>
       {% else %}
@@ -1690,7 +1702,7 @@ html[data-lang="zh"][data-theme="light"] body.page-hk .ms-red .hkx-big-score { t
       </div>
       {% if ms is defined and ms %}
       <p class="hkx-thesis v-thesis">{{ t(ms.headline_en, ms.headline_zh or ms.headline_en) }}</p>
-      <div class="hkx-flip v-flip">→ {{ t(ms.flip_en, ms.flip_zh) }}</div>
+      <div class="hkx-flip v-flip">{% if ms.flip_plain_en %}{{ t(ms.flip_plain_en, ms.flip_plain_zh or ms.flip_plain_en) }}{% else %}{{ t(ms.flip_en, ms.flip_zh) }}{% endif %}</div>
       {% endif %}
       <div class="hkx-hero-btns" style="position:relative">
         {% if signal_stack %}
@@ -1702,15 +1714,18 @@ html[data-lang="zh"][data-theme="light"] body.page-hk .ms-red .hkx-big-score { t
         {# signals popover #}
         <div class="hkx-pop" id="hkx-pop-signals">
           <div class="hkx-pop-h">{{ t('The checks', '信号详情') }}</div>
-          {% if ms is defined and ms and ms.components is defined %}
+          {% if ms is defined and ms and ms.components %}
           {% for c in ms.components %}
           <div class="hkx-pop-row">
             <div class="hkx-pop-rt"><span>{{ t(c.label_en, c.label_zh) }}</span><b style="color:{{ 'var(--up)' if c.tone == 'bull' else ('var(--down)' if c.tone == 'bear' else 'var(--warn)') }}">{{ c.score }}</b></div>
             <div class="hkx-pop-bar"><i style="width:{{ c.score }}%;background:{{ 'var(--up)' if c.tone == 'bull' else ('var(--down)' if c.tone == 'bear' else 'var(--warn)') }}"></i></div>
           </div>
           {% endfor %}
-          {% else %}
-          <p style="font-size:12px;color:var(--muted)">{{ t('Building…','数据积累中…') }}</p>
+          {% endif %}
+          {% if ms is defined and ms and ms.flip_en %}
+          <div class="hkx-pop-sub" style="margin-top:8px">{{ t(ms.flip_en, ms.flip_zh) }}</div>
+          {% elif not (ms is defined and ms and ms.components) %}
+          <p style="font-size:12px;color:var(--muted)">{{ t('The checks are still building — flip thresholds will show here once the read is scored.','检查仍在积累 — 转折阈值会在评分完成后显示。') }}</p>
           {% endif %}
           <span class="hkx-pop-link" onclick="hkxClosePops();hkxOpenDlg('hkx-dlg-read')">{{ t('See the full read ↓','查看完整读数 ↓') }}</span>
         </div>
@@ -1967,22 +1982,22 @@ html[data-lang="zh"][data-theme="light"] body.page-hk .ms-red .hkx-big-score { t
   <div class="hkx-cas-strip">
     {% if market_tiles %}
     {% for tile in market_tiles %}
-    {# USD/HKD tile gets peg-warn accent when near weak edge — matched by tag=='peg', not index #}
-    {% set _peg_warn = (tile.tag is defined and tile.tag == 'peg' and gv and gv.peg and gv.peg.level is defined and gv.peg.level > 7.83) %}
+    {# USD/HKD tile gets peg-warn accent when near weak edge — matched by kind=='peg' #}
+    {% set _peg_warn = (tile.kind is defined and tile.kind == 'peg' and gv and gv.peg and gv.peg.level is defined and gv.peg.level > 7.83) %}
+    {% set _sign = tile.chg_sign if (tile.chg_sign is defined and tile.chg_sign) else 'flat' %}
     <div class="hkx-card hkx-cat{{ ' peg-warn warn' if _peg_warn else '' }}" role="button" tabindex="0" onclick="hkxOpenDlg('hkx-dlg-policy')">
-      <div class="cat-tag">{{ tile.tag if tile.tag is defined else tile.label }}</div>
-      {# tone is pos/neg/neu from market_tiles builder #}
-      {% set _tone_cls = 'hkx-tt-up' if tile.tone in ('pos','bull') else ('hkx-tt-dn' if tile.tone in ('neg','bear') else '') %}
-      <div class="cat-val {{ _tone_cls }}">{{ tile.level if tile.level is defined else '—' }}</div>
+      <div class="cat-tag">{% if tile.tag_en is defined %}{{ t(tile.tag_en, tile.tag_zh) }}{% else %}{{ tile.tag if tile.tag is defined else tile.label }}{% endif %}</div>
+      <div class="cat-val">{{ tile.level if tile.level is defined else '—' }}</div>
       {% if tile.chg is not none and tile.chg is defined and tile.chg is number %}
-      <div class="cat-chg {{ 'hkx-tt-up' if (tile.chg >= 0) else 'hkx-tt-dn' }}">{{ ('%+.2f'|format(tile.chg)) }}</div>
+      <div class="cat-chg {{ 'hkx-tt-up' if (tile.chg >= 0) else 'hkx-tt-dn' }}">{{ ('%+.2f'|format(tile.chg)) }}{% if tile.chg_unit_en is defined and tile.chg_unit_en %} {{ t(tile.chg_unit_en, tile.chg_unit_zh) }}{% endif %}{% if tile.pct is defined and tile.pct and not (tile.is_rate is defined and tile.is_rate) %} {{ tile.pct }}{% endif %}</div>
       {% elif tile.chg is defined and tile.chg %}
-      <div class="cat-chg {{ _tone_cls }}">{{ tile.chg }}</div>
+      <div class="cat-chg {{ 'hkx-tt-up' if _sign == 'up' else ('hkx-tt-dn' if _sign == 'down' else '') }}">{{ tile.chg }}{% if tile.chg_unit_en is defined and tile.chg_unit_en %} {{ t(tile.chg_unit_en, tile.chg_unit_zh) }}{% endif %}{% if tile.pct is defined and tile.pct and not (tile.is_rate is defined and tile.is_rate) %} {{ tile.pct }}{% endif %}</div>
       {% endif %}
-      {% if tile.tone is defined and tile.tone %}
-      {# tone pill shows stance word, not instrument name; matched to tone enum #}
-      <span class="cat-tone {{ 'bull' if tile.tone in ('pos','bull') else ('bear' if tile.tone in ('neg','bear') else 'neu') }}">{{ t('Up','涨') if tile.tone in ('pos','bull') else (t('Down','跌') if tile.tone in ('neg','bear') else t('Flat','平')) }}</span>
+      {% if tile.meaning_en is defined and tile.meaning_en %}
+      <div class="cat-mean">{{ t(tile.meaning_en, tile.meaning_zh or tile.meaning_en) }}</div>
       {% endif %}
+      {# chip word and colour follow the SIGN of the displayed change #}
+      <span class="cat-tone {{ 'bull' if _sign == 'up' else ('bear' if _sign == 'down' else 'neu') }}">{% if tile.chg_word_en is defined %}{{ t(tile.chg_word_en, tile.chg_word_zh) }}{% else %}{{ t('Up','涨') if _sign == 'up' else (t('Down','跌') if _sign == 'down' else t('Flat','平')) }}{% endif %}</span>
       {% if _peg_warn %}<div style="font-size:9px;color:var(--ink-warn, var(--warn));margin-top:2px">{{ t('near weak edge','接近弱方') }}</div>{% endif %}
     </div>
     {% endfor %}
@@ -2017,16 +2032,22 @@ html[data-lang="zh"][data-theme="light"] body.page-hk .ms-red .hkx-big-score { t
       <div style="font-size:12.5px;font-weight:650;color:var(--text);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--line)">{{ t(ms.headline_en, ms.headline_zh or ms.headline_en) }}</div>
       {% endif %}
       {% if signal_stack and signal_stack.legs %}
-      {% for leg in signal_stack.legs[:5] %}
+      {% set _glance_legs = [] %}
+      {% for leg in signal_stack.legs %}
+        {% if (leg.glance is not defined) or leg.glance %}
+          {% if _glance_legs.append(leg) %}{% endif %}
+        {% endif %}
+      {% endfor %}
+      {% for leg in _glance_legs[:5] %}
       <div class="hkx-row">
-        <span class="hkx-ic">{{ '🟢' if leg.tone == 'up' else ('🔴' if leg.tone == 'down' else '🟡') }}</span>
-        <div class="hkx-tx"><b>{{ t(leg.label_en, leg.label_zh) }}</b><span class="hkx-sub">{{ t(leg.state_en, leg.state_zh) }}</span></div>
+        <span class="hkx-ic {{ 'ic-up' if leg.tone == 'up' else ('ic-dn' if leg.tone == 'down' else 'ic-warn') }}">{% if leg.tone == 'up' %}{{ icon('arrow_up', 'ic-up') }}{% elif leg.tone == 'down' %}{{ icon('avoid', 'ic-dn') }}{% else %}{{ icon('hold', 'ic-warn') }}{% endif %}</span>
+        <div class="hkx-tx"><b>{{ t(leg.label_en, leg.label_zh) }}</b><span class="hkx-sub">{{ t(leg.state_face_en if leg.state_face_en is defined else leg.state_en, leg.state_face_zh if leg.state_face_zh is defined else leg.state_zh) }}</span></div>
       </div>
       {% endfor %}
       {% elif ms is defined and ms %}
-      <div class="hkx-row"><span class="hkx-ic">🛡</span><div class="hkx-tx"><b>{{ t(ms.headline_en, ms.headline_zh or ms.headline_en) }}</b></div></div>
+      <div class="hkx-row"><span class="hkx-ic ic-warn">{{ icon('shield', 'ic-warn') }}</span><div class="hkx-tx"><b>{{ t(ms.headline_en, ms.headline_zh or ms.headline_en) }}</b></div></div>
       {% else %}
-      <div class="hkx-row"><span class="hkx-ic">⌁</span><div class="hkx-tx"><b>{{ t('Signals building…','信号积累中…') }}</b></div></div>
+      <div class="hkx-row"><span class="hkx-ic">{{ icon('signals') }}</span><div class="hkx-tx"><b>{{ t('Signals building…','信号积累中…') }}</b></div></div>
       {% endif %}
     </div>
     <div class="hkx-card" role="button" tabindex="0" onclick="hkxOpenDlg('hkx-dlg-events')">
@@ -2074,16 +2095,18 @@ html[data-lang="zh"][data-theme="light"] body.page-hk .ms-red .hkx-big-score { t
       {% for s in top_setups[:5] %}
       <div class="hkx-stk">
         <a class="hkx-tkr-btn" href="hk_lookup.html#{{ s.ticker }}">{{ t(s.name, s.name_zh) if s.name is defined else s.ticker }}</a>
-        <div class="hkx-stk-meta"><b>{{ s.ticker }}</b> · {{ t(s.sector, s.sector_zh if s.sector_zh is defined else s.sector) if s.sector is defined else '' }}</div>
-        <span class="hkx-stage">{{ t(s.label, s.label_zh) if s.label is defined else '' }}</span>
+        <div class="hkx-stk-meta"><b>{{ s.ticker }}</b> · {{ td(s.sector) if s.sector is defined else '' }}</div>
+        {% set _le, _lz = cycle_lane(s.label if s.label is defined else none, s.label_zh if s.label_zh is defined else none) %}
+        <span class="hkx-stage">{% if _le %}{{ t(_le, _lz) }}{% endif %}</span>
       </div>
       {% endfor %}
       {% elif setups and setups.watch %}
       {% for s in setups.watch[:5] %}
       <div class="hkx-stk">
         <a class="hkx-tkr-btn" href="hk_lookup.html#{{ s.ticker }}">{{ t(s.name, s.name_zh) if s.name is defined else s.ticker }}</a>
-        <div class="hkx-stk-meta"><b>{{ s.ticker }}</b> · {{ t(s.sector, s.sector_zh if s.sector_zh is defined else s.sector) if s.sector is defined else '' }}</div>
-        <span class="hkx-stage">{{ t(s.label, s.label_zh) if s.label is defined else '' }}</span>
+        <div class="hkx-stk-meta"><b>{{ s.ticker }}</b> · {{ td(s.sector) if s.sector is defined else '' }}</div>
+        {% set _le, _lz = cycle_lane(s.label if s.label is defined else none, s.label_zh if s.label_zh is defined else none) %}
+        <span class="hkx-stage">{% if _le %}{{ t(_le, _lz) }}{% endif %}</span>
       </div>
       {% endfor %}
       {% else %}
@@ -2142,8 +2165,8 @@ html[data-lang="zh"][data-theme="light"] body.page-hk .ms-red .hkx-big-score { t
       </div>
       <div class="mx5-sentiment-zone-text"><span class="l-en">{{ _hk_zone_en }}</span><span class="l-zh">{{ _hk_zone_zh }}</span></div>
       <div class="mx5-sentiment-label">
-        <span class="l-en">HK fear gauge {{ vhsi.level }} &middot; {{ _hk_pct | int }}th of its range</span>
-        <span class="l-zh">港股恐慌指数 {{ vhsi.level }} &middot; 历史第 {{ _hk_pct | int }} 分位</span>
+        <span class="l-en">HK fear gauge {{ vhsi.level }}{% if vhsi.range_plain_en %} &middot; {{ vhsi.range_plain_en }}{% elif _hk_pct is not none %} &middot; {{ 'mid-range' if (25 <= _hk_pct|int <= 74) else ('near the low of its range' if _hk_pct|int <= 24 else 'near the high of its range') }}{% endif %}</span>
+        <span class="l-zh">港股恐慌指数 {{ vhsi.level }}{% if vhsi.range_plain_zh %} &middot; {{ vhsi.range_plain_zh }}{% elif _hk_pct is not none %} &middot; {{ '区间中部' if (25 <= _hk_pct|int <= 74) else ('接近区间低位' if _hk_pct|int <= 24 else '接近区间高位') }}{% endif %}</span>
       </div>
       {% if flow_charts and flow_charts.vhsi %}
       {# the gauge shows today; this shows how today compares with the last two years,
@@ -2172,11 +2195,11 @@ html[data-lang="zh"][data-theme="light"] body.page-hk .ms-red .hkx-big-score { t
       {% set _turn_secs = sectors|selectattr('dir','eq','up')|list %}
       {% if _hot_secs %}
       <div class="hkx-lbl">{{ t('Hot — already run, don’t chase','热门 — 已涨，勿追') }}</div>
-      <div class="hkx-chips">{% for s in _hot_secs[:3] %}<span class="hkx-chip hot">{{ t(s.name.en if s.name is mapping else s.name, s.name.zh if s.name is mapping else s.name) }}</span>{% endfor %}</div>
+      <div class="hkx-chips">{% for s in _hot_secs[:3] %}<span class="hkx-chip hot">{{ td(s.name.en if s.name is mapping else s.name) }}</span>{% endfor %}</div>
       {% endif %}
       {% if _turn_secs %}
       <div class="hkx-lbl">{{ t('Turning up — cheap and getting bought','转强 — 便宜且被资金买入') }}</div>
-      <div class="hkx-chips">{% for s in _turn_secs[:3] %}<span class="hkx-chip turn">{{ t(s.name.en if s.name is mapping else s.name, s.name.zh if s.name is mapping else s.name) }}</span>{% endfor %}</div>
+      <div class="hkx-chips">{% for s in _turn_secs[:3] %}<span class="hkx-chip turn">{{ td(s.name.en if s.name is mapping else s.name) }}</span>{% endfor %}</div>
       {% endif %}
       <div class="hkx-lbl">{{ t('Sector heat · green = leading · red = lagging','板块温度 · 绿=领涨 · 红=滞涨') }}</div>
       <div class="hkx-heat">
@@ -2184,9 +2207,10 @@ html[data-lang="zh"][data-theme="light"] body.page-hk .ms-red .hkx-big-score { t
            with no way to tell which sector any cell was. #}
         {% for s in sectors[:12] %}
         {% set _m = s.mom20 %}
+        {% set _sname = s.name.en if s.name is mapping else s.name %}
         <i class="{{ 'c' if (_m is not none and _m < -1) else ('c2' if (_m is not none and _m < 0) else ('n' if (_m is none) else ('h3' if _m < 1 else ('h2' if _m < 3 else 'h')))) }}"
-           data-tip-en="{{ (s.name.en if s.name is mapping else s.name) }}{{ ': %+.1f%% over 20 days'|format(_m) if _m is not none else ': no 20-day reading' }}"
-           data-tip-zh="{{ (s.name.zh if s.name is mapping else s.name) }}{{ '：20日 %+.1f%%'|format(_m) if _m is not none else '：暂无20日数据' }}"></i>
+           data-tip-en="{{ _sname }}{{ ': %+.1f%% over 20 days'|format(_m) if _m is not none else ': no 20-day reading' }}"
+           data-tip-zh="{{ tr(_sname) }}{{ '：20日 %+.1f%%'|format(_m) if _m is not none else '：暂无20日数据' }}"></i>
         {% endfor %}
       </div>
       <div class="hkx-heat-legend"><span class="heat-up">{{ t('▲ Heating','▲ 升温') }}</span><span class="heat-dn">{{ t('Cooling ▼','降温 ▼') }}</span></div>
@@ -2219,9 +2243,6 @@ html[data-lang="zh"][data-theme="light"] body.page-hk .ms-red .hkx-big-score { t
       {# peg band bar #}
       <div class="hkx-pegband"><div class="hkx-mark" style="left:{{ ((gv.peg.level - 7.75) / 0.10 * 100)|int }}%"></div><div class="hkx-ends"><span>{{ t('strong 7.75','强 7.75') }}</span><span>{{ t('weak 7.85','弱 7.85') }}</span></div></div>
       {% endif %}
-      {% if funding %}
-      <div class="hkx-kv" style="margin-top:12px"><span class="hkx-k">{{ t('HK interest rate','香港利率') }}</span><span class="hkx-v"><span class="hkx-stword warn">{{ funding.hibor_1m }}%</span> {{ t('HIBOR 1m','HIBOR 1月') }}</span></div>
-      {% endif %}
       <div class="hkx-kv"><span class="hkx-k">{{ t("China's central bank",'中国央行') }}</span><span class="hkx-v"><span class="hkx-stword ok">{{ t('Supportive','支持') }}</span></span></div>
       <div class="hkx-foot">{{ t("HK's borrowing costs follow US rates; HK company profits follow China's economy.",'香港借贷成本随美联储；港股盈利随中国经济。') }}</div>
     </div>
@@ -2244,7 +2265,7 @@ html[data-lang="zh"][data-theme="light"] body.page-hk .ms-red .hkx-big-score { t
       <div class="hkx-bignum">—</div>
       {% endif %}
       {% if ah_official and ah_official.premium_pct is not none %}
-      <div class="hkx-kv"><span class="hkx-k">{{ t('A bargain too','估值优势') }}</span><span class="hkx-v">{{ t('A/H premium','A/H溢价') }} {{ '%.1f'|format(ah_official.premium_pct) }}% ({{ ah_official.pctile }}{{ t('th pctile','百分位') }})</span></div>
+      <div class="hkx-kv"><span class="hkx-k">{{ t('A bargain too','估值优势') }}</span><span class="hkx-v">{{ t('A/H premium','A/H溢价') }} {{ '%.1f'|format(ah_official.premium_pct) }}%{% if ah_official.history_plain_en %} · {{ t(ah_official.history_plain_en, ah_official.history_plain_zh) }}{% elif ah_official.pctile is not none %} · {{ t('about average','大致平均') if (25 <= ah_official.pctile <= 74) else (t('low vs history','低于历史') if ah_official.pctile <= 24 else t('high vs history','高于历史')) }}{% endif %}</span></div>
       {% endif %}
       <div class="hkx-foot">{{ t('Mainland money is HK\'s steady buyer — and HK is the cheaper of the two markets.','内地资金是港股最稳定的买家，港股估值更便宜。') }}</div>
     </div>
@@ -2531,7 +2552,7 @@ html[data-lang="zh"][data-theme="light"] body.page-hk .ms-red .hkx-big-score { t
             <div class="hkx-eyebrow">{{ t('Why HK is a bargain','港股为何更便宜') }}</div>
             {% if ah_official and ah_official.premium_pct is not none %}
             <div class="hkx-kv"><span class="hkx-k">{{ t('A/H premium','A/H溢价') }}</span><span class="hkx-v">{{ '%.1f'|format(ah_official.premium_pct) }}%</span></div>
-            <div class="hkx-kv"><span class="hkx-k">{{ t('Percentile','历史分位') }}</span><span class="hkx-v">{{ ah_official.pctile }}{{ t('th','百分位') }}</span></div>
+            <div class="hkx-kv"><span class="hkx-k">{{ t('Percentile','历史分位') }}</span><span class="hkx-v">{% if ah_official.pctile_en %}{{ t(ah_official.pctile_en, ah_official.pctile_zh) }}{% else %}{{ t(ah_official.pctile|string ~ 'th percentile', '第' ~ ah_official.pctile ~ '百分位') }}{% endif %}</span></div>
             {% if ah_official.chart_html %}
             <div style="max-width:100%;overflow:hidden;margin-top:8px">{{ ah_official.chart_html | safe }}</div>
             {% endif %}
@@ -2767,7 +2788,7 @@ html[data-lang="zh"][data-theme="light"] body.page-hk .ms-red .hkx-big-score { t
         {% if vhsi %}
         <div class="hkx-eyebrow">{{ t('HK Fear gauge (VHSI)','港股恐慌指数（VHSI）') }}</div>
         <div class="hkx-kv"><span class="hkx-k">{{ t('Level','水平') }}</span><span class="hkx-v">{{ vhsi.level }}</span></div>
-        <div class="hkx-kv"><span class="hkx-k">{{ t('Percentile vs history','历史分位') }}</span><span class="hkx-v">{{ vhsi.pctile }}{{ t('th','百分位') }}</span></div>
+        <div class="hkx-kv"><span class="hkx-k">{{ t('Percentile vs history','历史分位') }}</span><span class="hkx-v">{% if vhsi.pctile_en %}{{ t(vhsi.pctile_en, vhsi.pctile_zh) }}{% else %}{{ t(vhsi.pctile|string ~ 'th percentile', '第' ~ vhsi.pctile ~ '百分位') }}{% endif %}</span></div>
         {% if vhsi.chg20 is defined and vhsi.chg20 is not none %}
         <div class="hkx-kv"><span class="hkx-k">{{ t('20-day change in fear','20日恐慌变化') }}</span><span class="hkx-v {{ 'hkx-dn' if vhsi.chg20 > 0 else 'hkx-up' }}">{{ ('%+.1f'|format(vhsi.chg20)) }}</span></div>
         {% endif %}
@@ -2912,6 +2933,13 @@ html[data-lang="zh"][data-theme="light"] body.page-hk .ms-red .hkx-big-score { t
         <div class="hkx-sep"></div>
         <div class="hkx-eyebrow">{{ t('Verdict','结论') }}</div>
         <div class="hkx-kv"><span class="hkx-k">{{ t('Overall','综合') }}</span><span class="hkx-v">{{ t(command_panel.verdict.label_en, command_panel.verdict.label_zh or command_panel.verdict.label_en) if command_panel.verdict.label_en is defined else '—' }}</span></div>
+        {% endif %}
+        {% if signal_stack and signal_stack.legs %}
+        <div class="hkx-sep"></div>
+        <div class="hkx-eyebrow">{{ t('The checks behind this read','读数背后的检查') }}</div>
+        {% for leg in signal_stack.legs %}
+        <div class="hkx-kv"><span class="hkx-k">{{ t(leg.label_en, leg.label_zh) }}</span><span class="hkx-v">{{ t(leg.state_en, leg.state_zh) }}</span></div>
+        {% endfor %}
         {% endif %}
         {% if pb %}
         <div class="hkx-sep"></div>

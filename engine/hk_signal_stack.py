@@ -18,13 +18,19 @@ I/O, deterministic, unit-testable.
 """
 from __future__ import annotations
 
+from engine.hk_tier1 import peg_face
+
 BULL, FLAT, BEAR = 1, 0, -1
 _TONE = {BULL: "up", FLAT: "flat", BEAR: "down"}
 _WORD_EN = {BULL: "constructive", FLAT: "neutral", BEAR: "cautious"}
 _WORD_ZH = {BULL: "积极", FLAT: "中性", BEAR: "谨慎"}
 
 _QUAD_ZH = {"Goldilocks": "理想增长", "Reflation": "再通胀", "Stagflation": "滞胀",
-            "Growth scare": "增长恐慌", "Growth Scare": "增长恐慌"}
+            "Growth scare": "增长恐慌", "Growth Scare": "增长恐慌",
+            "Growth-scare": "增长恐慌", "Growth-scare/Deflation": "增长恐慌／通缩"}
+# Growth axis / Dual liquidity are scored legs but their names are jargon — they
+# live on the What To Do dialog, not the glance face (H2 Tier-1 shell pass).
+_GLANCE_OFF = frozenset({"growth", "liquidity"})
 _LIQ = {"expanding": ("easing", "宽松"), "neutral": ("neutral", "中性"),
         "contracting": ("tightening", "收紧"),
         "easy": ("easing", "宽松"), "tight": ("tightening", "收紧")}
@@ -52,10 +58,14 @@ def _sign(x) -> int:
     return BULL if x > 0 else (BEAR if x < 0 else FLAT)
 
 
-def _leg(key, label_en, label_zh, state_en, state_zh, direction, tier):
+def _leg(key, label_en, label_zh, state_en, state_zh, direction, tier,
+         *, glance=True, state_face_en=None, state_face_zh=None):
     return {"key": key, "label_en": label_en, "label_zh": label_zh,
             "state_en": state_en, "state_zh": state_zh, "dir": direction,
-            "tone": _TONE[direction], "tier": tier}
+            "tone": _TONE[direction], "tier": tier,
+            "glance": glance if key not in _GLANCE_OFF else False,
+            "state_face_en": state_face_en if state_face_en is not None else state_en,
+            "state_face_zh": state_face_zh if state_face_zh is not None else state_zh}
 
 
 def build_hk_signal_stack(latest: dict) -> dict | None:
@@ -109,7 +119,9 @@ def build_hk_signal_stack(latest: dict) -> dict | None:
         d = BULL if "strong" in peg else (BEAR if "weak" in peg else FLAT)
         zh = ("强方（流入）" if "strong" in peg else
               ("弱方（流出）" if "weak" in peg else ("区间中" if "mid" in peg else peg)))
-        legs.append(_leg("peg", "HKD peg", "港元联汇", peg, zh, d, "context"))
+        face_en, face_zh = peg_face(peg)
+        legs.append(_leg("peg", "HKD peg", "港元联汇", peg, zh, d, "context",
+                         state_face_en=face_en, state_face_zh=face_zh))
 
     # 6. RORO cross-asset composite (CONTEXT) — risk-on/off.
     rs = roro.get("roro_state")
