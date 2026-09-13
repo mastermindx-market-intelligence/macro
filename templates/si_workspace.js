@@ -70,7 +70,7 @@ var LEGACY_ANCHORS={
    below preserves the hash-router intent. */
 var LEGACY_ANCHORS_S2={
   'accumulation-section':['moving','accumulation-section'],
-  'theme-heat-section':['explore','theme-heat-section']
+  'si-heat-section':['explore','theme-heat-section']
 };
 for(var _k in LEGACY_ANCHORS_S2){LEGACY_ANCHORS[_k]=LEGACY_ANCHORS_S2[_k];}
 

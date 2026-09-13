@@ -90,7 +90,7 @@ def test_action_board_header_carries_folded_strip_when_mode_stocks():
     assert 'class="panel span12" id="megacap-tape"' not in html
     assert "Theme heat &amp; reasons → Sector Intelligence" in ab
     assert "主题热度与详情 → 行业情报页" in ab
-    assert 'href="sector_central.html#theme-heat-section"' in ab
+    assert 'href="sector_central.html#si-heat-section"' in ab
     assert "Theme reasons → Sector Intelligence" not in ab
 
 
