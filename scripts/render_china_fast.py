@@ -41,7 +41,12 @@ def main() -> int:
     env = Environment(loader=FileSystemLoader(
         str(Path(__file__).resolve().parent.parent / "templates")), autoescape=False)
     from engine import i18n
-    env.globals.update(td=i18n.td, tr=i18n.tr, t=i18n.t, t_pctile=i18n.t_pctile)
+    from engine.china_tier1 import hero_clause, posture_lane, posture_tone, reason_faces
+    env.globals.update(
+        td=i18n.td, tr=i18n.tr, t=i18n.t, t_pctile=i18n.t_pctile,
+        posture_lane=posture_lane, posture_tone=posture_tone,
+        reason_faces=reason_faces, hero_clause=hero_clause,
+    )
     tmpl = env.get_template("china.html.j2")
 
     for mode, name in (("macro", "china.html"), ("stocks", "china_stocks.html")):

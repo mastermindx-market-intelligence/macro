@@ -1479,7 +1479,7 @@ jobs:
         # closed over the real production import graph.
         run: pip install pytest pyyaml jinja2 fastapi httpx requests numpy pandas
       - name: tier-preview split contract (no paid row in the free shell)
-        run: python -m pytest tests/test_special_situations_gate.py tests/test_china_special_situations_gate.py tests/test_etfs_gate.py tests/test_us_board_gate.py -q
+        run: python -m pytest tests/test_special_situations_gate.py tests/test_china_special_situations_gate.py tests/test_china_archetype_d_s1.py tests/test_etfs_gate.py tests/test_us_board_gate.py -q
       # The split's OTHER half: how the page puts the two sides back together.
       # test_us_board_gate above proves the shell withholds the paid rows; this
       # proves hydration re-joins them into ONE board — a stage headed on both
