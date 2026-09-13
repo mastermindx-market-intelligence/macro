@@ -1,0 +1,96 @@
+{
+  "schema": "capital_structure.covenant.headroom.v1",
+  "parser_version": "capital-structure-covenant-headroom/1.0.0",
+  "authority_ceiling": "human_research_only",
+  "scored": false,
+  "state": "computed",
+  "refusal": null,
+  "null_en": null,
+  "null_zh": null,
+  "refusal_label_en": null,
+  "refusal_label_zh": null,
+  "disclaimer_en": "For your own research only — this is a reading of public filings, not advice or a trade call.",
+  "disclaimer_zh": "仅供自行研究 — 这是对公开披露文件的解读，不是建议，也不是交易指令。",
+  "issuer": {
+    "cik": "0001743759",
+    "ticker": "CRSR",
+    "name": null
+  },
+  "basis_en": "Measured with the numbers the company reported, not the agreement's own definitions — those usually allow adjustments we do not add back, so the true room can differ.",
+  "basis_zh": "按公司披露的数字计算，而非协议自身的定义 — 协议定义通常允许我们未加回的调整项，因此实际空间可能不同。",
+  "basis_period_end": "2022-12-31",
+  "terms": [
+    {
+      "term_name": "minimum_interest_coverage_ratio",
+      "limit_kind": "minimum",
+      "limit_raw": 3.0,
+      "reported": {
+        "metric_key": "headroom_to_interest_coverage_floor",
+        "value": 5.333333333333333,
+        "period_end": "2022-12-31",
+        "basis": "reported_not_agreement_defined"
+      },
+      "room_turns": 2.333333333333333,
+      "inside_limit": true,
+      "in_force_step": {
+        "start_date": "2022-09-30",
+        "end_date": null,
+        "limit_raw": 3.0
+      },
+      "next_step": null,
+      "refusal": null,
+      "refusal_label_en": null,
+      "refusal_label_zh": null,
+      "state": "computed",
+      "receipt": {
+        "accession": "0001564590-22-038930",
+        "form": "EX-10.1",
+        "filing_date": "2022-12-02",
+        "source_manifest_id": "sm-covenant-crsr-ex101-20221202",
+        "observation_id": "cov-headroom-fixture:crsr:minimum_interest_coverage_ratio:v1",
+        "excerpt": "3.00 to 1.00 · Section: Section 7.11 Financial Covenants",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1743759/000156459022038930/ex10-1.htm"
+      }
+    },
+    {
+      "term_name": "maximum_total_net_leverage_ratio",
+      "limit_kind": "maximum",
+      "limit_raw": 3.5,
+      "reported": {
+        "metric_key": "headroom_to_net_leverage_limit",
+        "value": 2.25,
+        "period_end": "2022-12-31",
+        "basis": "reported_not_agreement_defined"
+      },
+      "room_turns": 1.25,
+      "inside_limit": true,
+      "in_force_step": {
+        "start_date": "2022-09-30",
+        "end_date": null,
+        "limit_raw": 3.5
+      },
+      "next_step": null,
+      "refusal": null,
+      "refusal_label_en": null,
+      "refusal_label_zh": null,
+      "state": "computed",
+      "receipt": {
+        "accession": "0001564590-22-038930",
+        "form": "EX-10.1",
+        "filing_date": "2022-12-02",
+        "source_manifest_id": "sm-covenant-crsr-ex101-20221202",
+        "observation_id": "cov-headroom-fixture:crsr:maximum_total_net_leverage_ratio:v1",
+        "excerpt": "3.50 to 1.00 · Section: Section 7.11 Financial Covenants",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1743759/000156459022038930/ex10-1.htm"
+      }
+    }
+  ],
+  "coverage": {
+    "issuers_extracted": 1,
+    "eligible_exhibits": 2450,
+    "covered_manifests": 1,
+    "state": "covered"
+  },
+  "computed_at": "2026-09-13T21:30:17Z",
+  "generated_at": "2026-09-13T00:00:00Z"
+}
