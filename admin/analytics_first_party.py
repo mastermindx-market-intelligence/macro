@@ -309,7 +309,7 @@ def _excluded_cte() -> str:
     )
 
 
-def _bot_cte() -> str:
+def _bot_cte(window_minutes: int | None = None) -> str:
     """CTE bodies (bot_ips, fp_farm, bots) — the visitor_ids that look like crawlers/automation.
     Signals: config bot IPs, a bot user-agent, a datacenter-but-not-VPN IP, a known crawler
     network org, a known crawler network ASN, or a farm fingerprint. Patterns come from the
@@ -327,8 +327,21 @@ def _bot_cte() -> str:
         fanout = int(bots_cfg.get("fp_fanout", _FP_FANOUT))
     except (TypeError, ValueError):
         fanout = _FP_FANOUT
+    focus = ""
+    focus_prefix = ""
+    if window_minutes:
+        minutes = int(window_minutes)
+        focus_prefix = (
+            "focus_visitors as (select distinct visitor_id from public.analytics_events "
+            f"where visitor_id is not null and created_at > now() - interval '{minutes} minutes'), "
+            "focus_fp as (select distinct e.fp from public.analytics_events e "
+            "where e.visitor_id in (select visitor_id from focus_visitors) and e.fp is not null), ")
+        focus = " and visitor_id in (select visitor_id from focus_visitors)"
+    farm_where = "where fp is not null"
+    if window_minutes:
+        farm_where += " and fp in (select fp from focus_fp)"
     farm_body = (
-        "select fp from public.analytics_events where fp is not null group by fp "
+        f"select fp from public.analytics_events {farm_where} group by fp "
         f"having count(distinct visitor_id) >= {fanout} and count(distinct ip) >= {fanout}"
         if fanout >= 2 else "select null::text as fp where false")
     # A prefix the operator manually relabelled (geo_overrides) is a curated REAL user —
@@ -338,6 +351,7 @@ def _bot_cte() -> str:
     keep_clause = (" and not (" + " or ".join(f"e.ip like {_sql_str(p + '%')}" for p in keep) + ")"
                    if keep else "")
     return (
+        focus_prefix +
         f"bot_ips as ({ips_body}), "
         f"fp_farm as ({farm_body}), "
         # Every signal below is a function of (visitor_id, ua, ip, fp) plus the ip_geo
@@ -351,7 +365,7 @@ def _bot_cte() -> str:
         # keeps the cost tied to how many distinct devices exist rather than to how
         # much they browsed.
         "bot_sig as (select distinct visitor_id, ua, ip, fp from public.analytics_events "
-        "  where visitor_id is not null), "
+        f"  where visitor_id is not null{focus}), "
         "bots as (select distinct e.visitor_id from bot_sig e "
         "  left join public.ip_geo g on g.ip = e.ip "
         "  where e.visitor_id is not null and ("
@@ -418,7 +432,7 @@ def _candidate_cte(window_minutes: int | None = None) -> str:
 
 
 def _cte(include_ident: bool = False, include_candidate: bool = False,
-         candidate_window: int | None = None) -> str:
+         candidate_window: int | None = None, bot_window: int | None = None) -> str:
     """Full `with …` prefix: the excluded-visitor + bot chains, optionally preceded by `ident`
     and followed by the soft candidate-identity chain (which requires `ident`). `candidate_window`
     (minutes) bounds the candidate scans to the surface's window."""
@@ -426,7 +440,7 @@ def _cte(include_ident: bool = False, include_candidate: bool = False,
     if include_ident or include_candidate:
         parts.append(_IDENT_CTE)
     parts.append(_excluded_cte())
-    parts.append(_bot_cte())
+    parts.append(_bot_cte(bot_window))
     if include_candidate:
         parts.append(_candidate_cte(candidate_window))
     return "with " + ", ".join(parts) + " "
@@ -785,7 +799,8 @@ def sessions(limit=100, q="", include_bots=False, minutes=None, days=None, gap=N
         conds.append("s.is_bot = 0")          # crawlers hidden unless explicitly revealed
     where = ("where " + " and ".join(conds) + " ") if conds else ""
     def run():
-        rows = _query(_cte(include_ident=True, include_candidate=True, candidate_window=m) +
+        rows = _query(_cte(include_ident=True, include_candidate=True, candidate_window=m,
+                           bot_window=m) +
             # ev: in-window, non-hidden events tagged with their canonical person, so a
             # signed-in visitor's separate macro/terminal cookies stitch into one visit.
             ", ev as (select e.id, e.session_id, e.visitor_id, e.site, e.ip, e.type, e.created_at, "
