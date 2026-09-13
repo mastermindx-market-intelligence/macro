@@ -195,6 +195,54 @@ body.cs-page.cs-modal-open { overflow: hidden; }
 .cs-policy-active strong { display: block; margin-bottom: 1px; color: var(--cs-ink); font-size: 11px; }
 .cs-policy-active span { font-size: 11px; }
 
+/* Policy calendar rows (B-F09-6b): list geometry only; colour/type from the
+   existing .cs-policy / .cs-kicker material. Tokens, no hex, no font stack. */
+.cs-policy-windows {
+  display: grid;
+  margin: 10px 0 0;
+  gap: 10px;
+}
+.cs-policy-window {
+  padding: 8px 0 0;
+  border-top: 1px solid var(--cs-line);
+}
+.cs-prl {
+  display: grid;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  gap: 8px;
+}
+.cs-pr {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px 12px;
+  align-items: start;
+}
+.cs-pr a {
+  color: var(--cs-cyan);
+  text-decoration: none;
+}
+.cs-pr time {
+  display: block;
+  color: var(--cs-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+#cs-policy-projection {
+  scroll-margin-top: 12px;
+  scroll-margin-bottom: 120px;
+}
+#cs-policy-projection > div {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+@media (max-width: 640px) {
+  #cs-policy-projection {
+    padding-bottom: 120px;
+  }
+}
+
 .cs-workspace { display: grid; min-width: 0; grid-template-columns: minmax(272px, 320px) minmax(0, 1fr); align-items: start; gap: 16px; }
 .cs-rail { position: sticky; top: 16px; min-width: 0; overflow: hidden; border-radius: var(--cs-radius); }
 .cs-rail-head { display: flex; align-items: start; justify-content: space-between; padding: 17px 17px 12px; gap: 10px; }
