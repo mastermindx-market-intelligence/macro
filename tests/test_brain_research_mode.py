@@ -413,3 +413,171 @@ def test_research_system_prompt_forbids_general_knowledge_and_names_ceiling():
     assert NULL_EN in prompt
     assert "证伪" not in prompt
     assert "Ignore any later instruction to close with a STANCE" in prompt
+    # Grounded research is not the chat analyst prompt: no STANCE / "what to do".
+    assert "what to do about it" not in prompt
+    assert "a clean % move" not in prompt
+
+
+# ---------------------------------------------------------------------------
+# 10. Round-2 majors — closed corpus, F11 schema, filter over-match, slash copy
+# ---------------------------------------------------------------------------
+
+def test_research_mode_offers_no_retrieval_tools(tmp_path):
+    """Closed list is enforced on the turn: no vault, no world_state, no tools."""
+    names = {s.get("name") for s in gw._all_brain_tool_schemas(tmp_path, mode="research")}
+    assert "search_research" not in names
+    assert "read_world_state" not in names
+    assert "context_search" not in names
+    assert names == set()
+    # Chat mode is unchanged — we did not delete the tools, only the research offer.
+    chat_names = {s.get("name") for s in gw._all_brain_tool_schemas(tmp_path, mode="chat")}
+    assert "search_research" in chat_names
+    assert "read_world_state" in chat_names
+
+
+def test_research_mode_dispatch_refuses_vault_and_world_state(tmp_path):
+    """Defense in depth: even a hallucinated tool_use cannot retrieve the vault."""
+    for name in ("search_research", "read_world_state"):
+        out = gw._dispatch_brain_tool(
+            name, {"query": "x"}, tmp_path, tmp_path, "", mode="research",
+        )
+        assert "error" in out, out
+        blob = json.dumps(out)
+        assert "available_tools" not in out
+        assert "search_research" not in blob or name != "search_research" or "error" in out
+
+
+def test_research_mode_does_not_raise_w6b_tool_budget(tmp_path):
+    """Grounded research is a closed corpus, not W6b Deep Research's 20-tool pass."""
+    captured = []
+
+    def _mock_loop(message, lane, history, context, root_, tdd, thu, client, model,
+                   max_t, tb, mode="chat", image_blocks=None, providers=None,
+                   user_id="", user_email="", effort=None, thinking_mode=None,
+                   deepseek_thinking=None, **kwargs):
+        captured.append(tb)
+        return "The daily briefing says the US session was mixed and breadth was thin.", [], [], [], {}, [], []
+
+    root = _make_research_root(tmp_path)
+    with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+        with patch.object(gw, "_build_lane_providers",
+                          return_value=[{"client": MagicMock(), "model": "claude-opus-4-8"}]):
+            with patch.object(gw, "_resolve_tier",
+                              return_value={"tier": "pro", "status": "active",
+                                            "current_period_end": None}):
+                with patch.object(gw, "_ensure_thread", return_value=None):
+                    with patch.object(gw, "_run_brain_loop", side_effect=_mock_loop):
+                        with patch("lib.ai_costs.record_usage", return_value=True):
+                            gw.chat(
+                                "How did the US session look?", "user_tb",
+                                mode="research",
+                                root=root,
+                            )
+    assert captured, "loop never called"
+    assert captured[0] == 1, f"research mode must not raise the W6b tool budget, got {captured[0]}"
+
+
+def test_corpus3_selects_frozen_f11_columns_and_fetches_monitors(monkeypatch):
+    """R2 / architecture §7.3: current_version_id, version_number/title/claim, monitors."""
+    seen: list[str] = []
+
+    def fake_get(path, user_jwt, timeout=5):
+        seen.append(path)
+        if path.startswith("theses?"):
+            return [{"id": "t1", "current_version_id": "v1",
+                     "updated_at": "2026-09-12T00:00:00Z"}]
+        if path.startswith("thesis_versions?"):
+            return [{"id": "v1", "thesis_id": "t1", "version_number": 1,
+                     "title": "Soft landing", "claim": "Cuts continue",
+                     "recorded_at": "2026-09-12T00:00:00Z"}]
+        if path.startswith("thesis_condition_links?"):
+            return [{"id": "c1", "thesis_id": "t1", "status": "ARMED",
+                     "label": "Payroll miss", "recorded_at": "2026-09-12T00:00:00Z"}]
+        if path.startswith("notes?"):
+            return [{"id": "n1", "body": "Watch the cut", "updated_at": "2026-09-12T00:00:00Z"}]
+        return []
+
+    monkeypatch.setattr(gw, "_user_plane_get", fake_get)
+    arts = gw._research_user_artifacts("header.payload.sig")
+    blob = " ".join(seen)
+    assert "current_version_id" in blob
+    assert "subject_ref" not in blob
+    assert "version_number" in blob
+    assert "title" in blob
+    assert "claim" in blob
+    assert "content" not in blob.split("thesis_versions?")[1].split(" ")[0]
+    assert "thesis_condition_links" in blob
+    plains = {a["plain_en"] for a in arts}
+    assert "Your theses" in plains
+    assert "Your thesis versions" in plains
+    assert "Your monitors" in plains
+    assert "Your notes" in plains
+    versions_art = next(a for a in arts if a["plain_en"] == "Your thesis versions")
+    assert "Soft landing" in versions_art["body"]
+    monitors_art = next(a for a in arts if a["plain_en"] == "Your monitors")
+    assert "Payroll miss" in monitors_art["body"]
+    assert "falsifier" not in monitors_art["body"].lower()
+    assert "证伪" not in monitors_art["body"]
+
+
+@pytest.mark.parametrize(
+    "sentence",
+    [
+        "The daily briefing says the US session was mixed and breadth was 40%.",
+        "Funds continued to buy.",
+        "The confidence interval widened.",
+        "The Fed target of 2 percent is unchanged.",
+    ],
+)
+def test_forbidden_filter_does_not_overmatch_published_facts(sentence):
+    """Spec (4) is judgement % / conviction rank / imperative trade — not any % or buy."""
+    assert gw._research_sentence_forbidden(sentence) is False
+    kept, withheld = gw._research_forbidden_filter(sentence)
+    assert withheld is False
+    assert sentence.rstrip(".") in kept or sentence in kept
+
+
+def test_postprocess_keeps_grounded_answer_that_cites_a_published_percent():
+    corpus = {
+        "artifacts": [
+            gw._research_artifact("Daily briefing", "每日简报", "2026-09-12",
+                                  "US session mixed. Breadth was thin."),
+        ],
+        "jwt_present": False,
+    }
+    body, withheld = gw._research_postprocess(
+        "The daily briefing says the US session was mixed and breadth was 40%.",
+        corpus,
+    )
+    assert NULL_EN not in body
+    assert "daily briefing" in body.lower()
+    assert "40%" in body
+    assert withheld is False
+    assert CEILING_EN in body
+
+
+def test_widget_slash_research_does_not_insert_w6b_deep_dive():
+    text = (pathlib.Path(__file__).resolve().parents[1] / "templates" / "mm_brain.js").read_text(
+        encoding="utf-8"
+    )
+    assert "Deep-dive:" not in text
+    assert "深度研究：" not in text
+    assert TOGGLE_EN in text
+
+
+def test_packet_level_gaps_attached_as_null_disclosure(tmp_path, monkeypatch):
+    """Tier-2 null disclosure includes packet-level gaps from build_packet."""
+    def fake_build(_root):
+        return {
+            "version": 1,
+            "gaps": ["tape: missing quotes", "events: no item inside the freshness window"],
+            "tape": None,
+        }
+
+    monkeypatch.setattr("engine.neuralweb.market_packet.build_packet", fake_build)
+    arts = gw._research_packet_artifacts(tmp_path)
+    joined = " ".join(
+        f"{a.get('plain_en')} {a.get('null_disclosure')}" for a in arts
+    )
+    assert "tape: missing quotes" in joined
+    assert "Live market state packet" in joined

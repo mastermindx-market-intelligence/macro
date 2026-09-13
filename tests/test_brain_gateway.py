@@ -2012,7 +2012,7 @@ def test_research_mode_forces_pro_lane(tmp_path):
 
 
 def test_research_mode_raises_tool_budget(tmp_path):
-    """mode='research' raises tool_budget to config research.tool_budget (20)."""
+    """MO-PAID-031: grounded research does not raise W6b's 20-tool budget."""
     root = _make_temp_root()
     captured_tb: list = []
 
@@ -2036,8 +2036,7 @@ def test_research_mode_raises_tool_budget(tmp_path):
                             )
 
     assert captured_tb, "Loop never called"
-    # Default pro tool_budget is 10; research raises to 20
-    assert captured_tb[0] >= 20, f"Expected tool_budget >= 20 for research mode, got {captured_tb[0]}"
+    assert captured_tb[0] == 1, f"Expected tool_budget 1 for grounded research, got {captured_tb[0]}"
 
 
 def test_research_mode_blocked_for_non_pro_tier(tmp_path):
@@ -2142,16 +2141,17 @@ def test_research_mode_recommendation_is_withheld(tmp_path):
 
 
 def test_research_system_prompt_contains_directive():
-    """_build_system_prompt('research') prepends the grounded-research directive."""
+    """_build_system_prompt('research') is the grounded-research directive alone."""
     prompt = gw._build_system_prompt("research")
     assert "RESEARCH MODE" in prompt
     assert "general knowledge" in prompt.lower()
     assert "We don't publish anything that answers this yet." in prompt
     assert "This is a reading of what we already published." in prompt
-    # Contradiction block still rides (disagreeing published readings).
     assert "disagree" in prompt.lower()
-    # Base prompt governance content is also present (never-invent guardrail).
     assert "never invent" in prompt.lower()
+    # Chat analyst STANCE / "what to do" must not ride this mode.
+    assert "what to do about it" not in prompt
+    assert "ALWAYS end with a STANCE" not in prompt
     # The chat-lane STANCE close is cancelled for research.
     assert "Ignore any later instruction to close with a STANCE" in prompt
 
@@ -3892,7 +3892,8 @@ def test_run_brain_loop_accepts_user_id_kwarg(tmp_path):
     client = _MockClient([tool_resp, text_resp])
     seen = {}
 
-    def _spy_dispatch(name, params, root_, tdd, thu, user_id="", internals_ok=False, chart_client=""):
+    def _spy_dispatch(name, params, root_, tdd, thu, user_id="", internals_ok=False,
+                      chart_client="", mode="chat"):
         seen["user_id"] = user_id
         return {"available": False, "note": "stub"}
 
@@ -5796,13 +5797,20 @@ def test_thinking_segments_never_raises_on_junk():
 # ── Contradiction doctrine (system prompt pin) ───────────────────────────────
 
 def test_system_prompt_carries_contradiction_doctrine_in_every_mode():
-    """Disagreeing readings are the case the answer most often gets wrong, so the block
-    rides in chat AND research, on every page."""
+    """Disagreeing readings are the case the answer most often gets wrong.
+
+    Chat keeps the CONTRADICTORY SIGNALS block (and its calibrated tools).
+    Research mode is a closed corpus, so it names disagreement in plain words
+    without offering read_contradictions.
+    """
     for prompt in (gw._build_system_prompt("chat"),
-                   gw._build_system_prompt("research"),
                    gw._build_system_prompt("chat", page="terminal"),
                    gw._build_system_prompt("chat", internals_allowed=True)):
         assert "CONTRADICTORY SIGNALS" in prompt
+    research = gw._build_system_prompt("research")
+    assert "CONTRADICTORY SIGNALS" not in research
+    assert "disagree" in research.lower()
+    assert "read_contradictions" not in research
 
 
 def test_contradiction_doctrine_de_escalates_and_never_overrules_the_desk():

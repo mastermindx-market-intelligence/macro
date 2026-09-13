@@ -1187,7 +1187,7 @@ class BrainChatRequest(BaseModel):
     history: list[dict] | None = Field(None, description="Client-sent fallback history (max 12 turns; used only when thread store is absent)")
     context: dict | None = Field(None, description="Optional page/symbol context hint")
     company_source_span: dict | None = Field(None, description="Optional closed exact-source reference; source bytes are never accepted from the client")
-    mode: str = Field("chat", description="'chat' (default) or 'research' (W6b Deep Research — forces pro lane, raises tool budget, structured multi-section cited report; requires pro quota)")
+    mode: str = Field("chat", description="'chat' (default) or 'research' (answers only from what we already publish; requires Pro)")
     images: list[str] | None = Field(None, max_length=4, description="Optional image attachments (W6c vision) — base64 data URIs or https URLs; served by a vision model (Haiku on Fast, Opus on Pro). Invalid/oversized dropped. Max 4.")
 
     @field_validator("images")

@@ -3492,7 +3492,7 @@
       { key: 'chart', icon: '<path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/>', name: LB('/chart', '/图表'), hint: LB('Map structure, levels & what to watch', '结构、关键位与关注点'),
         run: function () { insertText(L('Map the structure on ' + sym + ' — trend, key levels, and what to watch.', '梳理 ' + sym + ' 的结构 — 趋势、关键价位与需关注之处。')); } },
       { key: 'research', icon: '<path d="M12 3v3M12 18v3M3 12h3M18 12h3M6 6l2 2M16 16l2 2M18 6l-2 2M8 16l-2 2"/>', name: LB('/research', '/研究'), hint: LB('Research mode — answers only from what we publish', '研究模式——只根据我们已发布的内容作答。'),
-        run: function () { if (proEligible) { if (!researchMode) setResearch(true); insertText(L('Deep-dive: ', '深度研究：')); } else { closeSlash(); showUpgrade(guestMode ? { feature: 'pro' } : {}); } } },
+        run: function () { if (proEligible) { if (!researchMode) setResearch(true); closeSlash(); ta.focus(); } else { closeSlash(); showUpgrade(guestMode ? { feature: 'pro' } : {}); } } },
       { key: 'explain', icon: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3 2.4c-.6.2-1 .8-1 1.6M12 17h.01"/>', name: LB('/explain', '/解释'), hint: LB('Read this page right now', '解读当前页面'),
         run: function () { insertText(L('Explain this page — what is it telling me right now?', '解读这个页面 — 它现在告诉我什么？')); } }
     ];

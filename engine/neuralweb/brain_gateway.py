@@ -628,8 +628,9 @@ _RESEARCH_SYSTEM_DIRECTIVE = """
 RESEARCH MODE — GROUNDED READ:
 Answer ONLY from the grounded research corpus attached to this turn: the live market
 state we already published, the briefing and receipts beside it, and — when the caller
-is signed in — their own theses and notes. Do not use general knowledge. Do not use
-training memory. Do not name file paths, field names, tool names, or internal slugs.
+is signed in — their own theses, notes and monitors. Do not use general knowledge. Do not
+use training memory. Do not name file paths, field names, tool names, or internal slugs.
+Never invent a reading the corpus does not contain.
 
 If that corpus does not cover the question, answer exactly:
 "We don't publish anything that answers this yet."
@@ -645,8 +646,9 @@ as-of dates — never file paths.
 Never originate a signal, score, rank, size, gate, or trade instruction.
 Never emit a percentage, a 0-1 score, a star rating, or high/medium/low conviction as a
 judgement. Never write the house-banned jargon for a disproved claim, in English or Chinese.
-Ignore any later instruction to close with a STANCE or a buy/sell/hold call. Close with the
-ceiling sentence.
+If two published readings disagree, name the disagreement plainly. Do not pick a winner.
+Ignore any later instruction to close with a STANCE or a buy/sell/hold call. Do not close
+with Act, Get ready, or Watch. Close with the ceiling sentence.
 """
 
 # Plain names for Live Market State Packet sections. Never a file path.
@@ -671,11 +673,18 @@ _RESEARCH_PACKET_PLAIN: dict[str, tuple[str, str]] = {
 }
 
 _RESEARCH_SENTENCE_SPLIT = re.compile(r"(?<=[.!?。！？])\s+")
-_RESEARCH_PERCENT = re.compile(r"\b\d{1,3}(?:\.\d+)?\s*%")
+# Spec (4): a percentage / 0-1 / star / high|medium|low conviction rendered as a
+# judgement — not a published fact such as "breadth was 40%".
+_RESEARCH_PERCENT = re.compile(
+    r"\b\d{1,3}(?:\.\d+)?\s*%\s*(?:confidence|conviction|sure|certain|probability|odds|chance)\b"
+    r"|(?:confidence|conviction|probability|odds)\s+(?:of\s+|is\s+|at\s+)?"
+    r"\d{1,3}(?:\.\d+)?\s*%",
+    re.I,
+)
 _RESEARCH_STAR = re.compile(r"\b(?:[1-5]|five|four|three|two|one)[-\s]?stars?\b|[★☆]{1,5}", re.I)
 _RESEARCH_CONVICTION = re.compile(
-    r"\b(?:high|medium|low)\s+conviction\b|\bconviction\s+is\s+(?:high|medium|low)\b"
-    r"|\b(?:confidence|conviction)\b",
+    r"\b(?:high|medium|low)\s+conviction\b"
+    r"|\bconviction\s+is\s+(?:high|medium|low)\b",
     re.I,
 )
 _RESEARCH_SCORE_01 = re.compile(
@@ -683,10 +692,16 @@ _RESEARCH_SCORE_01 = re.compile(
     re.I,
 )
 _RESEARCH_FALSIFIER = re.compile(r"\bfalsifier\b|\brefuted\b|证伪", re.I)
+# Spec (4): *imperative* buy/sell/size/target — not "funds continued to buy"
+# or "Fed target of 2 percent".
 _RESEARCH_TRADE = re.compile(
-    r"\b(?:you\s+should\s+|please\s+)?(?:buy|sell)\b"
-    r"|\bsize\s+(?:it|the|your|a)\b"
-    r"|\b(?:set\s+a\s+)?target\s+of\b",
+    r"(?:^|(?<=[.!?。！？]\s))(?:buy|sell)\b"
+    r"|\b(?:you\s+should|please)\s+(?:buy|sell)\b"
+    r"|\b(?:buy|sell)\s+(?:now|immediately|today)\b"
+    r"|\bsize\s+(?:it|the\s+position|your\s+(?:position|size|book))\b"
+    r"|\b(?:set|place)\s+a\s+(?:price\s+)?target\b"
+    r"|\bprice\s+target\b"
+    r"|\btarget\s+price\b",
     re.I,
 )
 _RESEARCH_TOOL_RE: re.Pattern[str] | None = None
@@ -761,31 +776,57 @@ def _user_plane_get(path: str, user_jwt: str, timeout: int = 5) -> list | None:
         return None
 
 
+# Architecture §7.7 user-facing condition words. Never "falsifier".
+_RESEARCH_MONITOR_STATE_PLAIN = {
+    "ARMED": "change condition",
+    "FIRED": "at risk",
+    "RECOVERED": "recovered",
+    "DEGRADED": "data unavailable",
+}
+
+
 def _research_user_artifacts(user_jwt: str) -> list[dict]:
-    """Corpus 3: the caller's own F11 objects, owner-only RLS via their JWT."""
+    """Corpus 3: the caller's own F11 objects, owner-only RLS via their JWT.
+
+    Column names are the frozen architecture
+    (MARKET_ONTOLOGY_POST_TIMEOUT_COMPLETION_ARCHITECTURE_2026-09-02.md §7.3):
+    theses.current_version_id; thesis_versions.version_number / title / claim;
+    thesis_condition_links as monitors. Never subject_ref, never a content JSON.
+    """
     out: list[dict] = []
     theses = _user_plane_get(
-        "theses?select=id,current_version,subject_ref,updated_at"
+        "theses?select=id,current_version_id,updated_at"
         "&order=updated_at.desc&limit=20",
         user_jwt,
-    )
+    ) or []
     versions = _user_plane_get(
-        "thesis_versions?select=thesis_id,version,content,recorded_at"
+        "thesis_versions?select=id,thesis_id,version_number,title,claim,recorded_at"
         "&order=recorded_at.desc&limit=20",
         user_jwt,
-    )
+    ) or []
     notes = _user_plane_get(
         "notes?select=id,body,updated_at&order=updated_at.desc&limit=20",
         user_jwt,
-    )
+    ) or []
+    monitors = _user_plane_get(
+        "thesis_condition_links?select=id,thesis_id,status,label,recorded_at"
+        "&order=recorded_at.desc&limit=20",
+        user_jwt,
+    ) or []
+    versions_by_id = {
+        str(row.get("id")): row
+        for row in versions
+        if isinstance(row, dict) and row.get("id")
+    }
     if theses:
         asof = _research_asof((theses[0] or {}).get("updated_at") if isinstance(theses[0], dict) else "")
         titles = []
         for row in theses[:12]:
             if not isinstance(row, dict):
                 continue
-            subj = row.get("subject_ref") or row.get("id") or ""
-            titles.append(str(subj)[:80])
+            ver = versions_by_id.get(str(row.get("current_version_id") or "")) or {}
+            title = ver.get("title") or ver.get("claim") or ""
+            titles.append(str(title or row.get("id") or "")[:80])
         out.append(_research_artifact(
             "Your theses", "您的论点", asof,
             body="; ".join(t for t in titles if t) or "signed in; none listed yet",
@@ -798,8 +839,7 @@ def _research_user_artifacts(user_jwt: str) -> list[dict]:
         for row in versions[:12]:
             if not isinstance(row, dict):
                 continue
-            content = row.get("content") if isinstance(row.get("content"), dict) else {}
-            title = content.get("title") or content.get("claim") or ""
+            title = row.get("title") or row.get("claim") or ""
             if title:
                 bits.append(str(title)[:120])
         out.append(_research_artifact(
@@ -817,6 +857,24 @@ def _research_user_artifacts(user_jwt: str) -> list[dict]:
                 bits.append(str(body)[:160])
         out.append(_research_artifact(
             "Your notes", "您的笔记", asof,
+            body="; ".join(bits) or "signed in; none listed yet",
+        ))
+    if monitors:
+        asof = _research_asof(
+            (monitors[0] or {}).get("recorded_at") if isinstance(monitors[0], dict) else ""
+        )
+        bits = []
+        for row in monitors[:12]:
+            if not isinstance(row, dict):
+                continue
+            label = str(row.get("label") or "").strip()
+            status = str(row.get("status") or "").strip()
+            plain = _RESEARCH_MONITOR_STATE_PLAIN.get(status.upper(), status)
+            bit = f"{label} ({plain})" if label and plain else (label or plain)
+            if bit:
+                bits.append(bit[:120])
+        out.append(_research_artifact(
+            "Your monitors", "您的监测", asof,
             body="; ".join(bits) or "signed in; none listed yet",
         ))
     return out
@@ -863,6 +921,14 @@ def _research_packet_artifacts(root: Path) -> list[dict]:
         else:
             continue
         out.append(_research_artifact(en, zh, asof, body, coverage, correction, null_disc))
+    # Packet-level gaps are the live packet's Tier-2 null disclosure (spec 1).
+    packet_gaps = packet.get("gaps") if isinstance(packet.get("gaps"), list) else []
+    if packet_gaps:
+        packet_asof = _research_asof(packet.get("asof") or packet.get("generated_at") or "")
+        out.insert(0, _research_artifact(
+            "Live market state packet", "实时市场状态数据包", packet_asof, "",
+            null_disclosure="; ".join(str(g) for g in packet_gaps[:8]),
+        ))
     # Published briefing the contract names (may live beside the packet, not inside it).
     briefing_path = root / "site" / "intelligence" / "briefing.json"
     try:
@@ -3946,6 +4012,7 @@ def _dispatch_brain_tool(
     user_id: str = "",
     internals_ok: bool = False,
     chart_client: str = "",
+    mode: str = "chat",
 ) -> dict:
     """Dispatch a brain gateway tool call.
 
@@ -3957,7 +4024,14 @@ def _dispatch_brain_tool(
     schema-omission alone is insufficient — the execution boundary must also gate).
     chart_client (CMX W2): the caller's chart client ('terminal' on the Terminal page),
     used by read_chart_state to fetch the right ChartSession.
+    mode='research' (MO-PAID-031): refuse every tool. Grounding is the closed corpus
+    already attached to the turn — the Research Vault and world_state stay off this path.
     """
+    if (mode or "chat").strip().lower() == "research":
+        return {"error": (
+            "research mode does not retrieve. Answer only from the grounded corpus "
+            "attached to this turn."
+        )}
     if tool_name not in _BRAIN_TOOLS:
         log.warning("brain_gateway: REFUSED tool %r (not in allowlist)", tool_name)
         # Name the valid tools so the model self-corrects in ONE step instead of
@@ -4193,6 +4267,7 @@ def _all_brain_tool_schemas(
     page: str = "",
     internals_allowed: bool = False,
     user_id: str = "",
+    mode: str = "chat",
 ) -> list[dict]:
     """Return the full tool schema list (ask_brain read tools + brain-only tools).
 
@@ -4202,7 +4277,11 @@ def _all_brain_tool_schemas(
     Unlimited account whose status is active/trialing.  The default is therefore the
     guest-safe schema, not the internal superset.
     Non-allowlisted sessions never see context_search / context_open in the schema list.
+    mode='research' (MO-PAID-031): offer nothing. The closed corpora 1–3 are injected
+    as grounding context; search_research / read_world_state stay off this turn.
     """
+    if (mode or "chat").strip().lower() == "research":
+        return []
     from engine.neuralweb.ask_brain import _read_tool_schemas  # noqa: PLC0415
     schemas = _read_tool_schemas() + _brain_tool_schemas()
     if not _earnings_evidence_allowed(user_id, root):
@@ -4355,9 +4434,9 @@ def _build_system_prompt(mode: str = "chat", page: str = "",
         prompt = prompt.replace(_PROPRIETARY_REFUSAL_LINE, _OPERATOR_INTERNALS_CLAUSE)
     prompt = prompt + _CONTRADICTION_DIRECTIVE
     if mode == "research":
-        # Grounded research (MO-PAID-031) is a closed corpus. Chart/lane-shape
-        # addenda would invite the model off the published artifacts.
-        return _RESEARCH_SYSTEM_DIRECTIVE + prompt
+        # Grounded research is its own prompt. The chat analyst prompt asks for a
+        # STANCE / "what to do" / a clean % move and would fight the closed corpus.
+        return _RESEARCH_SYSTEM_DIRECTIVE
     shape = {"fast": _ANSWER_SHAPE_FAST, "pro": _ANSWER_SHAPE_PRO}.get(
         (lane or "").strip().lower(), "")
     prompt = prompt + shape
@@ -6373,6 +6452,7 @@ def _run_brain_loop(
         page=safe_page,
         internals_allowed=internals_ok,
         user_id=user_id,
+        mode=mode,
     )
     system_prompt = _build_system_prompt(mode, safe_page, internals_allowed=internals_ok, lane=lane)
     if mode != "research":
@@ -6524,6 +6604,7 @@ def _run_brain_loop(
                     name, params, root, terminal_data_dir, terminal_hub_url,
                     user_id=user_id, internals_ok=internals_ok,
                     chart_client=("terminal" if safe_page == "terminal" else ""),
+                    mode=mode,
                 ),
             )
             _tools_ms_by_id[str(getattr(b, "id", ""))] = {
@@ -7239,6 +7320,7 @@ def _run_brain_loop_stream(
         page=safe_page,
         internals_allowed=internals_ok,
         user_id=user_id,
+        mode=mode,
     )
     system_prompt = _build_system_prompt(mode, safe_page, internals_allowed=internals_ok, lane=lane)
     if mode != "research":
@@ -7534,6 +7616,7 @@ def _run_brain_loop_stream(
                     name, params, root, terminal_data_dir, terminal_hub_url,
                     user_id=user_id, internals_ok=internals_ok,
                     chart_client=("terminal" if safe_page == "terminal" else ""),
+                    mode=mode,
                 ),
             )
             _tools_ms_by_id[str(getattr(b, "id", ""))] = {
@@ -8944,7 +9027,8 @@ def chat(
     cfg = _load_brain_config(root)
     lanes_cfg = cfg.get("lanes") or {}
 
-    # Research mode (W6b): force pro lane + raise tool budget
+    # Research mode (MO-PAID-031): force Pro lane for quota. Tool budget is
+    # pinned to 1 below — this is not W6b Deep Research's 20-tool pass.
     if mode == "research":
         lane = "pro"
 
@@ -8959,13 +9043,11 @@ def chat(
     # degraded DeepSeek rung deliberately does not, so research mode inherits thinking ON).
     deepseek_thinking = lane_cfg.get("deepseek_thinking")
 
-    # Research mode: override tool budget + intensity from config
+    # Grounded research (MO-PAID-031) keeps the Pro lane for quota, but does
+    # not run W6b's 20-tool Deep Research pass. The closed corpus is already
+    # in source_prompt; one synthesis turn is enough.
     if mode == "research":
-        research_cfg = cfg.get("research") or {}
-        tool_budget = int(research_cfg.get("tool_budget") or 20)
-        max_tokens = int(research_cfg.get("max_tokens") or 8000)
-        effort = research_cfg.get("effort") or effort
-        thinking_mode = research_cfg.get("thinking") or thinking_mode
+        tool_budget = 1
 
     terminal_data_dir = Path(os.environ.get("TERMINAL_DATA_DIR", str(_TERMINAL_DATA_DIR)))
     terminal_hub_url = os.environ.get("TERMINAL_HUB_URL", _TERMINAL_HUB_URL)
@@ -9466,7 +9548,8 @@ def chat_stream(
     cfg = _load_brain_config(root)
     lanes_cfg = cfg.get("lanes") or {}
 
-    # Research mode (W6b): force pro lane + raise tool budget
+    # Research mode (MO-PAID-031): force Pro lane for quota. Tool budget is
+    # pinned to 1 below — this is not W6b Deep Research's 20-tool pass.
     if mode == "research":
         lane = "pro"
 
@@ -9482,14 +9565,11 @@ def chat_stream(
     # degraded DeepSeek rung deliberately does not, so research mode inherits thinking ON).
     deepseek_thinking = lane_cfg.get("deepseek_thinking")
 
-    # Research mode: force pro-lane intensity even if invoked with a different lane_cfg
-    # and raise the budget (Deep Research thinks harder + longer than plain chat).
+    # Grounded research (MO-PAID-031) keeps the Pro lane for quota, but does
+    # not run W6b's 20-tool Deep Research pass. The closed corpus is already
+    # in source_prompt; one synthesis turn is enough.
     if mode == "research":
-        research_cfg = cfg.get("research") or {}
-        tool_budget = int(research_cfg.get("tool_budget") or 20)
-        max_tokens = int(research_cfg.get("max_tokens") or 8000)
-        effort = research_cfg.get("effort") or effort
-        thinking_mode = research_cfg.get("thinking") or thinking_mode
+        tool_budget = 1
 
     terminal_data_dir = Path(os.environ.get("TERMINAL_DATA_DIR", str(_TERMINAL_DATA_DIR)))
     terminal_hub_url = os.environ.get("TERMINAL_HUB_URL", _TERMINAL_HUB_URL)
