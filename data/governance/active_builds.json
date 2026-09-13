@@ -1,29 +1,745 @@
 {
   "schema": "active_builds.v1",
-  "generated_at": "2026-09-11T06:59:29.831594+00:00",
+  "generated_at": "2026-09-12T07:22:43.959729+00:00",
   "base": {
-    "sha": "a113247b06096bc60663fe9e927268ea9eb82f8f"
+    "sha": "d5eff2174665140374c6610efc30e6e72a0d2291"
   },
   "merged_days": 14,
   "merged_truncated": false,
   "open_prs_truncated": true,
   "open_prs": [
     {
-      "number": 7070,
-      "title": "[MO-A W11] intraday_flow: coverage-true feed words, bilingual tape chips, 8-of-N counted board (round 1)",
-      "head_ref": "claude/ssd-mo-heal-iflow-w11-b8d7309856c4b434",
-      "updated_at": "2026-09-11T05:57:19Z",
+      "number": 7081,
+      "title": "feat(portfolio): add off-host daily-decision dead-man",
+      "head_ref": "sol/portfolio-decision-deadman-20260912",
+      "updated_at": "2026-09-12T04:38:00Z",
+      "is_draft": true,
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
+      "files_count": 3,
+      "files_truncated": false,
+      "files_error": false,
+      "files": [
+        ".github/workflows/portfolio-decision-deadman.yml",
+        "scripts/check_portfolio_decision_deadman.py",
+        "tests/test_portfolio_decision_deadman.py"
+      ],
+      "protected_paths_touched": [
+        ".github/workflows/portfolio-decision-deadman.yml",
+        "scripts/check_portfolio_decision_deadman.py"
+      ]
+    },
+    {
+      "number": 7080,
+      "title": "Fix stale AI brief in long-lived dashboard tabs",
+      "head_ref": "sol/ai-brief-live-freshness-20260911",
+      "updated_at": "2026-09-12T00:51:19Z",
       "is_draft": false,
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
+      "files_count": 8,
+      "files_truncated": false,
+      "files_error": false,
+      "files": [
+        "agentos/discoveries/DSC-AIBRIEF-SERVER-RENDERED-TABS-NEED-SAME-SURFACE-FRESHNESS.md",
+        "scripts/optimize_assets.py",
+        "site/assets/js/aibrief-freshness.js",
+        "tests/aibrief_freshness_client_cases.py",
+        "tests/aibrief_live_refresh_cases.py",
+        "tests/aibrief_refresh_injection_position_cases.py",
+        "tests/builder_shim_writes_cases.py",
+        "tests/test_builder_shim_writes.py"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 7079,
+      "title": "[DRAFT][HOLD] Brain: bilingual exact lexical research retrieval",
+      "head_ref": "claude/mastermind-ai-r1-bilingual-search-20260911",
+      "updated_at": "2026-09-12T00:35:56Z",
+      "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
       "files_count": 4,
       "files_truncated": false,
       "files_error": false,
       "files": [
+        "docs/superpowers/plans/2026-09-10-mastermind-ai-bilingual-research-r1.md",
+        "engine/neuralweb/brain_market_intel.py",
+        "research/MASTERMIND_AI_BILINGUAL_RESEARCH_R1_DESIGN_2026-09-10.md",
+        "tests/test_brain_market_intel.py"
+      ],
+      "protected_paths_touched": [
+        "engine/neuralweb/brain_market_intel.py"
+      ]
+    },
+    {
+      "number": 7076,
+      "title": "[MO-W16] sector_central: honest null verdicts, lane-true actions, plain vocabulary, count truth",
+      "head_ref": "claude/ssd-mo-heal-seccen-w16-70f2f7ba1b32090c",
+      "updated_at": "2026-09-11T10:22:28Z",
+      "is_draft": false,
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
+      "files_count": 100,
+      "files_truncated": true,
+      "files_error": false,
+      "files": [
+        "research/sector_central/w16_r3_evidence/README.md",
+        "research/sector_central/w16_r3_evidence/cells/0453ae464e080ab3.png",
+        "research/sector_central/w16_r3_evidence/cells/05ff8bfae6abd35d.png",
+        "research/sector_central/w16_r3_evidence/cells/12af3f95318966b6.png",
+        "research/sector_central/w16_r3_evidence/cells/143f98f51da6a09e.png",
+        "research/sector_central/w16_r3_evidence/cells/169d355c9f6ad9f5.png",
+        "research/sector_central/w16_r3_evidence/cells/1d3b74884dc90343.png",
+        "research/sector_central/w16_r3_evidence/cells/1e85420c5ce3a1f5.png",
+        "research/sector_central/w16_r3_evidence/cells/21ecc9765c106634.png",
+        "research/sector_central/w16_r3_evidence/cells/2407be82a34ef2ee.png",
+        "research/sector_central/w16_r3_evidence/cells/261fd3031a92d844.png",
+        "research/sector_central/w16_r3_evidence/cells/27917afbb8b21f64.png",
+        "research/sector_central/w16_r3_evidence/cells/286fead5c94538d9.png",
+        "research/sector_central/w16_r3_evidence/cells/2f20de3b97949dc0.png",
+        "research/sector_central/w16_r3_evidence/cells/322b6b649772877c.png",
+        "research/sector_central/w16_r3_evidence/cells/3937c100eac8e5b1.png",
+        "research/sector_central/w16_r3_evidence/cells/395ddee89dda978e.png",
+        "research/sector_central/w16_r3_evidence/cells/42fa570f4fa568ce.png",
+        "research/sector_central/w16_r3_evidence/cells/43629161a20fc10c.png",
+        "research/sector_central/w16_r3_evidence/cells/444fca414a711a32.png",
+        "research/sector_central/w16_r3_evidence/cells/46b20aede578ec8e.png",
+        "research/sector_central/w16_r3_evidence/cells/4a4bb750eef1116b.png",
+        "research/sector_central/w16_r3_evidence/cells/4bcd1b02057ff5e0.png",
+        "research/sector_central/w16_r3_evidence/cells/4e0038a3f569dd43.png",
+        "research/sector_central/w16_r3_evidence/cells/519eb625d5c87cbb.png",
+        "research/sector_central/w16_r3_evidence/cells/52f0ef34f0c699f3.png",
+        "research/sector_central/w16_r3_evidence/cells/65935d6cd48dcfbc.png",
+        "research/sector_central/w16_r3_evidence/cells/68f23956fb7801ef.png",
+        "research/sector_central/w16_r3_evidence/cells/6ba684925de8cd05.png",
+        "research/sector_central/w16_r3_evidence/cells/6c0cd63d1a26b97c.png",
+        "research/sector_central/w16_r3_evidence/cells/6e4c1ef39590a668.png",
+        "research/sector_central/w16_r3_evidence/cells/75e1e0680a0b0547.png",
+        "research/sector_central/w16_r3_evidence/cells/78bdce423149441e.png",
+        "research/sector_central/w16_r3_evidence/cells/7bcf9f9b446e2278.png",
+        "research/sector_central/w16_r3_evidence/cells/7cc185bb992c450e.png",
+        "research/sector_central/w16_r3_evidence/cells/7fbd5d005454405b.png",
+        "research/sector_central/w16_r3_evidence/cells/8397553e3e012edd.png",
+        "research/sector_central/w16_r3_evidence/cells/848d0a43873569aa.png",
+        "research/sector_central/w16_r3_evidence/cells/8923c9290439920c.png",
+        "research/sector_central/w16_r3_evidence/cells/8de9b31ef08c60e6.png",
+        "research/sector_central/w16_r3_evidence/cells/9d97a75f93b02b33.png",
+        "research/sector_central/w16_r3_evidence/cells/a081f138bc0217cf.png",
+        "research/sector_central/w16_r3_evidence/cells/a2c6cfdcd435351c.png",
+        "research/sector_central/w16_r3_evidence/cells/a5f299adf3384038.png",
+        "research/sector_central/w16_r3_evidence/cells/a976369303d5c8a3.png",
+        "research/sector_central/w16_r3_evidence/cells/aa3f973b23e1090b.png",
+        "research/sector_central/w16_r3_evidence/cells/abb7da79a2740ca7.png",
+        "research/sector_central/w16_r3_evidence/cells/ac8d8ce5b730a454.png",
+        "research/sector_central/w16_r3_evidence/cells/ad0b751d5d1db1ad.png",
+        "research/sector_central/w16_r3_evidence/cells/adf958dddd107992.png",
+        "research/sector_central/w16_r3_evidence/cells/b0575e976a417331.png",
+        "research/sector_central/w16_r3_evidence/cells/b05bcd3586af4061.png",
+        "research/sector_central/w16_r3_evidence/cells/b1-empty-dark-en.png",
+        "research/sector_central/w16_r3_evidence/cells/b1-empty-dark-zh.png",
+        "research/sector_central/w16_r3_evidence/cells/b1-empty-light-en.png",
+        "research/sector_central/w16_r3_evidence/cells/b1-empty-light-zh.png",
+        "research/sector_central/w16_r3_evidence/cells/b1-mixed-dark-en.png",
+        "research/sector_central/w16_r3_evidence/cells/b1-mixed-dark-zh.png",
+        "research/sector_central/w16_r3_evidence/cells/b1-narrow-dark-en.png",
+        "research/sector_central/w16_r3_evidence/cells/b1-narrow-light-en.png",
+        "research/sector_central/w16_r3_evidence/cells/b21430f40a4cc3c4.png",
+        "research/sector_central/w16_r3_evidence/cells/b2ddd352f6d544ad.png",
+        "research/sector_central/w16_r3_evidence/cells/b57eeb6efd818881.png",
+        "research/sector_central/w16_r3_evidence/cells/baseline-dark-en-desktop.png",
+        "research/sector_central/w16_r3_evidence/cells/baseline-dark-en-mobile.png",
+        "research/sector_central/w16_r3_evidence/cells/baseline-dark-zh-desktop.png",
+        "research/sector_central/w16_r3_evidence/cells/baseline-dark-zh-mobile.png",
+        "research/sector_central/w16_r3_evidence/cells/baseline-light-en-desktop.png",
+        "research/sector_central/w16_r3_evidence/cells/baseline-light-en-mobile.png",
+        "research/sector_central/w16_r3_evidence/cells/baseline-light-zh-desktop.png",
+        "research/sector_central/w16_r3_evidence/cells/baseline-light-zh-mobile.png",
+        "research/sector_central/w16_r3_evidence/cells/bf0a9f200fc9d01d.png",
+        "research/sector_central/w16_r3_evidence/cells/board-header-dark-en.png",
+        "research/sector_central/w16_r3_evidence/cells/c2d481e4271ed2be.png",
+        "research/sector_central/w16_r3_evidence/cells/c85a979c5474617f.png",
+        "research/sector_central/w16_r3_evidence/cells/cee79a9ede16999b.png",
+        "research/sector_central/w16_r3_evidence/cells/cfda4f9156f9aad5.png",
+        "research/sector_central/w16_r3_evidence/cells/confluence-sp500-dark-en.png",
+        "research/sector_central/w16_r3_evidence/cells/confluence-sp500-dark-zh.png",
+        "research/sector_central/w16_r3_evidence/cells/d3ae4c2cbe26496e.png",
+        "research/sector_central/w16_r3_evidence/cells/d42b46afa3275b47.png",
+        "research/sector_central/w16_r3_evidence/cells/d67b067552c1fd1a.png",
+        "research/sector_central/w16_r3_evidence/cells/dee56c530b5d93af.png",
+        "research/sector_central/w16_r3_evidence/cells/e088b5bd21d9de22.png",
+        "research/sector_central/w16_r3_evidence/cells/e6c38e571c8c7381.png",
+        "research/sector_central/w16_r3_evidence/cells/e792699b7095b7c4.png",
+        "research/sector_central/w16_r3_evidence/cells/eb9ac8d7c7d3747d.png",
+        "research/sector_central/w16_r3_evidence/cells/f5babb7045d41096.png",
+        "research/sector_central/w16_r3_evidence/cells/f698a162cb71bce5.png",
+        "research/sector_central/w16_r3_evidence/cells/flow-table-dark-zh.png",
+        "research/sector_central/w16_r3_evidence/cells/grader-atrest-dark-en.png",
+        "research/sector_central/w16_r3_evidence/cells/grader-atrest-dark-zh.png",
+        "research/sector_central/w16_r3_evidence/cells/grader-tip-dark-en.png",
+        "research/sector_central/w16_r3_evidence/cells/grader-tip-dark-zh.png",
+        "research/sector_central/w16_r3_evidence/cells/grader-tip-light-en.png",
+        "research/sector_central/w16_r3_evidence/cells/grader-tip-light-zh.png",
+        "research/sector_central/w16_r3_evidence/cells/hscroll-confluence-dark-en-mobile.png",
+        "research/sector_central/w16_r3_evidence/cells/hscroll-confluence-dark-zh-mobile.png",
+        "research/sector_central/w16_r3_evidence/cells/hscroll-explore-dark-en-mobile.png",
+        "research/sector_central/w16_r3_evidence/cells/hscroll-explore-dark-zh-mobile.png"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 7075,
+      "title": "[MO-W12] china_intel: truthful staleness, honest bars, Archetype-E composition, plain-language copy",
+      "head_ref": "claude/ssd-mo-heal-chintel-w12-bddfddba5da20ec2",
+      "updated_at": "2026-09-11T09:53:46Z",
+      "is_draft": false,
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
+      "files_count": 100,
+      "files_truncated": true,
+      "files_error": false,
+      "files": [
+        "engine/china_intel_bus.py",
+        "engine/china_intel_hub.py",
+        "mockups/evidence/china-intel-w12-r2/README.md",
+        "mockups/evidence/china-intel-w12-r2/capture.py",
+        "mockups/evidence/china-intel-w12-r2/cells.json",
+        "mockups/evidence/china-intel-w12-r2/cells/b1-state3-dark-en.png",
+        "mockups/evidence/china-intel-w12-r2/cells/b1-state4-dark-en.png",
+        "mockups/evidence/china-intel-w12-r2/cells/brief-card-dark-en.png",
+        "mockups/evidence/china-intel-w12-r2/cells/brief-card-light-en.png",
+        "mockups/evidence/china-intel-w12-r2/cells/regime-en.png",
+        "mockups/evidence/china-intel-w12-r2/cells/regime-zh.png",
+        "mockups/evidence/china-intel-w12-r2/manifest.json",
+        "mockups/evidence/china-intel-w12-r3/README.md",
+        "mockups/evidence/china-intel-w12-r3/capture.py",
+        "mockups/evidence/china-intel-w12-r3/cells.json",
+        "mockups/evidence/china-intel-w12-r3/cells/01015212be323125.png",
+        "mockups/evidence/china-intel-w12-r3/cells/02c3a3ca342988dd.png",
+        "mockups/evidence/china-intel-w12-r3/cells/0d20f7220c5c4265.png",
+        "mockups/evidence/china-intel-w12-r3/cells/0ed950dfb301a266.png",
+        "mockups/evidence/china-intel-w12-r3/cells/0f49cbea4e8393e8.png",
+        "mockups/evidence/china-intel-w12-r3/cells/101ba86310eb0ef9.png",
+        "mockups/evidence/china-intel-w12-r3/cells/106e0c9292cd6928.png",
+        "mockups/evidence/china-intel-w12-r3/cells/1077c1135a55e5f9.png",
+        "mockups/evidence/china-intel-w12-r3/cells/17b978c246507d94.png",
+        "mockups/evidence/china-intel-w12-r3/cells/1fca2691cbe9208a.png",
+        "mockups/evidence/china-intel-w12-r3/cells/22189a0f48473a98.png",
+        "mockups/evidence/china-intel-w12-r3/cells/232689cdf304a8ed.png",
+        "mockups/evidence/china-intel-w12-r3/cells/240ab19653922e76.png",
+        "mockups/evidence/china-intel-w12-r3/cells/2712ff83dfad7b68.png",
+        "mockups/evidence/china-intel-w12-r3/cells/291288f42559cfde.png",
+        "mockups/evidence/china-intel-w12-r3/cells/2abe319ddc025684.png",
+        "mockups/evidence/china-intel-w12-r3/cells/2af9a1cad4692fbd.png",
+        "mockups/evidence/china-intel-w12-r3/cells/39cb2206fe5bb54f.png",
+        "mockups/evidence/china-intel-w12-r3/cells/3c3d0283204ff02e.png",
+        "mockups/evidence/china-intel-w12-r3/cells/3dd1b6b88dcf0862.png",
+        "mockups/evidence/china-intel-w12-r3/cells/40196ff2bd1193e5.png",
+        "mockups/evidence/china-intel-w12-r3/cells/44cf7f3c552593ed.png",
+        "mockups/evidence/china-intel-w12-r3/cells/4564427da9350671.png",
+        "mockups/evidence/china-intel-w12-r3/cells/481fa11b07aca832.png",
+        "mockups/evidence/china-intel-w12-r3/cells/4bb8772869fa0e17.png",
+        "mockups/evidence/china-intel-w12-r3/cells/5016289aefaad984.png",
+        "mockups/evidence/china-intel-w12-r3/cells/566b1a53cc2e287f.png",
+        "mockups/evidence/china-intel-w12-r3/cells/5a17bc41def07970.png",
+        "mockups/evidence/china-intel-w12-r3/cells/5c58cc51b27acd44.png",
+        "mockups/evidence/china-intel-w12-r3/cells/6881478886b5af18.png",
+        "mockups/evidence/china-intel-w12-r3/cells/71cea9a073d08de9.png",
+        "mockups/evidence/china-intel-w12-r3/cells/75c22ebba2e1cefa.png",
+        "mockups/evidence/china-intel-w12-r3/cells/87fa0687d08b9629.png",
+        "mockups/evidence/china-intel-w12-r3/cells/8c1ee507d67cf5c1.png",
+        "mockups/evidence/china-intel-w12-r3/cells/91cb59c2028815e8.png",
+        "mockups/evidence/china-intel-w12-r3/cells/94ccb720a6cff42e.png",
+        "mockups/evidence/china-intel-w12-r3/cells/95b96424bf3c0062.png",
+        "mockups/evidence/china-intel-w12-r3/cells/9800ddf4cbebdd4b.png",
+        "mockups/evidence/china-intel-w12-r3/cells/9a18f36ce7ba3049.png",
+        "mockups/evidence/china-intel-w12-r3/cells/a15d0d2ac3d970d8.png",
+        "mockups/evidence/china-intel-w12-r3/cells/a63531b84ba27d85.png",
+        "mockups/evidence/china-intel-w12-r3/cells/a6db979247e6455e.png",
+        "mockups/evidence/china-intel-w12-r3/cells/aa7823074d1a2aa7.png",
+        "mockups/evidence/china-intel-w12-r3/cells/analogs-dark-en.png",
+        "mockups/evidence/china-intel-w12-r3/cells/analogs-dark-zh.png",
+        "mockups/evidence/china-intel-w12-r3/cells/analogs-light-en.png",
+        "mockups/evidence/china-intel-w12-r3/cells/analogs-light-zh.png",
+        "mockups/evidence/china-intel-w12-r3/cells/b1-state1-dark-en.png",
+        "mockups/evidence/china-intel-w12-r3/cells/b1-state1-dark-zh.png",
+        "mockups/evidence/china-intel-w12-r3/cells/b1-state1-light-en.png",
+        "mockups/evidence/china-intel-w12-r3/cells/b1-state1-light-zh.png",
+        "mockups/evidence/china-intel-w12-r3/cells/b1-state2-dark-en.png",
+        "mockups/evidence/china-intel-w12-r3/cells/b1-state2-dark-zh.png",
+        "mockups/evidence/china-intel-w12-r3/cells/b1-state2-light-en.png",
+        "mockups/evidence/china-intel-w12-r3/cells/b1-state2-light-zh.png",
+        "mockups/evidence/china-intel-w12-r3/cells/b1-state3-dark-en.png",
+        "mockups/evidence/china-intel-w12-r3/cells/b1-state3-dark-zh.png",
+        "mockups/evidence/china-intel-w12-r3/cells/b1-state3-light-en.png",
+        "mockups/evidence/china-intel-w12-r3/cells/b1-state3-light-zh.png",
+        "mockups/evidence/china-intel-w12-r3/cells/b1-state4-dark-en.png",
+        "mockups/evidence/china-intel-w12-r3/cells/b1-state4-dark-zh.png",
+        "mockups/evidence/china-intel-w12-r3/cells/b1-state4-light-en.png",
+        "mockups/evidence/china-intel-w12-r3/cells/b1-state4-light-zh.png",
+        "mockups/evidence/china-intel-w12-r3/cells/b1-state5-dark-en.png",
+        "mockups/evidence/china-intel-w12-r3/cells/b1-state5-dark-zh.png",
+        "mockups/evidence/china-intel-w12-r3/cells/b1-state5-light-en.png",
+        "mockups/evidence/china-intel-w12-r3/cells/b1-state5-light-zh.png",
+        "mockups/evidence/china-intel-w12-r3/cells/b5bd81ba32e5a57f.png",
+        "mockups/evidence/china-intel-w12-r3/cells/b87bdc43d7efd01c.png",
+        "mockups/evidence/china-intel-w12-r3/cells/bcb9eedef6abc8c6.png",
+        "mockups/evidence/china-intel-w12-r3/cells/brief-card-dark-en.png",
+        "mockups/evidence/china-intel-w12-r3/cells/brief-card-dark-zh.png",
+        "mockups/evidence/china-intel-w12-r3/cells/brief-card-light-en.png",
+        "mockups/evidence/china-intel-w12-r3/cells/brief-card-light-zh.png",
+        "mockups/evidence/china-intel-w12-r3/cells/c9331580a963e56a.png",
+        "mockups/evidence/china-intel-w12-r3/cells/ce83e8b3e82e2d17.png",
+        "mockups/evidence/china-intel-w12-r3/cells/d0ea785f2f6f8b7c.png",
+        "mockups/evidence/china-intel-w12-r3/cells/d1b5f2956132d5b5.png",
+        "mockups/evidence/china-intel-w12-r3/cells/d37ed6021976480e.png",
+        "mockups/evidence/china-intel-w12-r3/cells/d72ab974a2f0b625.png",
+        "mockups/evidence/china-intel-w12-r3/cells/d80bc0a7d35a3017.png",
+        "mockups/evidence/china-intel-w12-r3/cells/d9d5018a59bf894b.png",
+        "mockups/evidence/china-intel-w12-r3/cells/da5fd504e51461d2.png",
+        "mockups/evidence/china-intel-w12-r3/cells/dc79bdc3a5dc37e1.png",
+        "mockups/evidence/china-intel-w12-r3/cells/dec98ffd2d8281f2.png"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 7074,
+      "title": "[MO-W14] sector_central_china: CSI 300 truth, plain-word chips, Explore demotion, designed states",
+      "head_ref": "claude/ssd-mo-heal-scchina-w14-92d30e329dffd79b",
+      "updated_at": "2026-09-11T09:58:11Z",
+      "is_draft": false,
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
+      "files_count": 100,
+      "files_truncated": true,
+      "files_error": false,
+      "files": [
+        "data/regime/validated_claims_allowlist.json",
+        "mockups/evidence/sector-central-china-w14-r2/035bcd140a1f09ec.png",
+        "mockups/evidence/sector-central-china-w14-r2/4341b686af527d45.png",
+        "mockups/evidence/sector-central-china-w14-r2/73aaf0575421b7e6.png",
+        "mockups/evidence/sector-central-china-w14-r2/7431fc8347511fe5.png",
+        "mockups/evidence/sector-central-china-w14-r2/9e586d23c7dfcf37.png",
+        "mockups/evidence/sector-central-china-w14-r2/EVIDENCE.yml",
+        "mockups/evidence/sector-central-china-w14-r2/NOTE.md",
+        "mockups/evidence/sector-central-china-w14-r2/aef810cbf40c9fd2.png",
+        "mockups/evidence/sector-central-china-w14-r2/capture.py",
+        "mockups/evidence/sector-central-china-w14-r2/manifest.json",
+        "mockups/evidence/sector-central-china-w14-r3/04f2d7056b6393e7.png",
+        "mockups/evidence/sector-central-china-w14-r3/088ad35c8607372f.png",
+        "mockups/evidence/sector-central-china-w14-r3/103bb9a227bbe17c.png",
+        "mockups/evidence/sector-central-china-w14-r3/153e17c7e7f1282c.png",
+        "mockups/evidence/sector-central-china-w14-r3/16edc5e644c7f51a.png",
+        "mockups/evidence/sector-central-china-w14-r3/297a6ea96daf00c6.png",
+        "mockups/evidence/sector-central-china-w14-r3/346e133c12309e08.png",
+        "mockups/evidence/sector-central-china-w14-r3/354b4f77379b5bca.png",
+        "mockups/evidence/sector-central-china-w14-r3/3f6612ceb6f5d639.png",
+        "mockups/evidence/sector-central-china-w14-r3/53de4088907800b5.png",
+        "mockups/evidence/sector-central-china-w14-r3/57e5d528da5be77a.png",
+        "mockups/evidence/sector-central-china-w14-r3/58bd8ba522393fca.png",
+        "mockups/evidence/sector-central-china-w14-r3/6d6b3dda26b70743.png",
+        "mockups/evidence/sector-central-china-w14-r3/71b81b0f5258bc87.png",
+        "mockups/evidence/sector-central-china-w14-r3/7431fc8347511fe5.png",
+        "mockups/evidence/sector-central-china-w14-r3/7ada6e0ad4149a96.png",
+        "mockups/evidence/sector-central-china-w14-r3/7d03545de6231565.png",
+        "mockups/evidence/sector-central-china-w14-r3/7f782195ca498c49.png",
+        "mockups/evidence/sector-central-china-w14-r3/80b78a0d4a5dd16f.png",
+        "mockups/evidence/sector-central-china-w14-r3/8290b6df88140dc7.png",
+        "mockups/evidence/sector-central-china-w14-r3/874f8c79d40971dd.png",
+        "mockups/evidence/sector-central-china-w14-r3/91deac53b6c25ef8.png",
+        "mockups/evidence/sector-central-china-w14-r3/9309e076f3250d55.png",
+        "mockups/evidence/sector-central-china-w14-r3/935eb5e97e688d93.png",
+        "mockups/evidence/sector-central-china-w14-r3/9fc508a47ad53cdd.png",
+        "mockups/evidence/sector-central-china-w14-r3/EVIDENCE.yml",
+        "mockups/evidence/sector-central-china-w14-r3/README.md",
+        "mockups/evidence/sector-central-china-w14-r3/ad7151294119cad0.png",
+        "mockups/evidence/sector-central-china-w14-r3/b03f9f9c8244fbec.png",
+        "mockups/evidence/sector-central-china-w14-r3/b05337e11e6eba71.png",
+        "mockups/evidence/sector-central-china-w14-r3/b3b346c032856218.png",
+        "mockups/evidence/sector-central-china-w14-r3/b854b052d03261bf.png",
+        "mockups/evidence/sector-central-china-w14-r3/bd336e99a8736cf8.png",
+        "mockups/evidence/sector-central-china-w14-r3/bf622397c9d6050b.png",
+        "mockups/evidence/sector-central-china-w14-r3/c18b6ef705532bfe.png",
+        "mockups/evidence/sector-central-china-w14-r3/capture.py",
+        "mockups/evidence/sector-central-china-w14-r3/cc915f81ab4b20d5.png",
+        "mockups/evidence/sector-central-china-w14-r3/e27d0d1f12364564.png",
+        "mockups/evidence/sector-central-china-w14-r3/e8e3e95885b0a74b.png",
+        "mockups/evidence/sector-central-china-w14-r3/ee1915db7ab82daa.png",
+        "mockups/evidence/sector-central-china-w14-r3/ee3b02231cf70ff6.png",
+        "mockups/evidence/sector-central-china-w14-r3/f3457b5da0527a75.png",
+        "mockups/evidence/sector-central-china-w14-r3/f558c80653beb005.png",
+        "mockups/evidence/sector-central-china-w14-r3/f61e3b4e073e47d7.png",
+        "mockups/evidence/sector-central-china-w14-r3/fd1281bc73c42741.png",
+        "mockups/evidence/sector-central-china-w14-r3/manifest.json",
+        "mockups/evidence/sector-central-china-w14-r4/080819371f6ab33c.png",
+        "mockups/evidence/sector-central-china-w14-r4/088ad35c8607372f.png",
+        "mockups/evidence/sector-central-china-w14-r4/0b1df3f1d986602e.png",
+        "mockups/evidence/sector-central-china-w14-r4/0c9152eec055dc18.png",
+        "mockups/evidence/sector-central-china-w14-r4/103bb9a227bbe17c.png",
+        "mockups/evidence/sector-central-china-w14-r4/153b05fe064b07b1.png",
+        "mockups/evidence/sector-central-china-w14-r4/16edc5e644c7f51a.png",
+        "mockups/evidence/sector-central-china-w14-r4/2098d6b8964610e0.png",
+        "mockups/evidence/sector-central-china-w14-r4/297a6ea96daf00c6.png",
+        "mockups/evidence/sector-central-china-w14-r4/346e133c12309e08.png",
+        "mockups/evidence/sector-central-china-w14-r4/354b4f77379b5bca.png",
+        "mockups/evidence/sector-central-china-w14-r4/38cd222443f0ffab.png",
+        "mockups/evidence/sector-central-china-w14-r4/3f6612ceb6f5d639.png",
+        "mockups/evidence/sector-central-china-w14-r4/43c5b319643907e7.png",
+        "mockups/evidence/sector-central-china-w14-r4/43db0059b2934680.png",
+        "mockups/evidence/sector-central-china-w14-r4/4ad4c0627ebda606.png",
+        "mockups/evidence/sector-central-china-w14-r4/53de4088907800b5.png",
+        "mockups/evidence/sector-central-china-w14-r4/58bd8ba522393fca.png",
+        "mockups/evidence/sector-central-china-w14-r4/59ed197fe60f78a4.png",
+        "mockups/evidence/sector-central-china-w14-r4/6d6b3dda26b70743.png",
+        "mockups/evidence/sector-central-china-w14-r4/74307b625d3d415f.png",
+        "mockups/evidence/sector-central-china-w14-r4/7431fc8347511fe5.png",
+        "mockups/evidence/sector-central-china-w14-r4/7520ae04ecf88eec.png",
+        "mockups/evidence/sector-central-china-w14-r4/7ada6e0ad4149a96.png",
+        "mockups/evidence/sector-central-china-w14-r4/7d03545de6231565.png",
+        "mockups/evidence/sector-central-china-w14-r4/80b78a0d4a5dd16f.png",
+        "mockups/evidence/sector-central-china-w14-r4/8290b6df88140dc7.png",
+        "mockups/evidence/sector-central-china-w14-r4/874f8c79d40971dd.png",
+        "mockups/evidence/sector-central-china-w14-r4/88351e69d8d1a696.png",
+        "mockups/evidence/sector-central-china-w14-r4/92f925b4e88a0a5f.png",
+        "mockups/evidence/sector-central-china-w14-r4/EVIDENCE.yml",
+        "mockups/evidence/sector-central-china-w14-r4/README.md",
+        "mockups/evidence/sector-central-china-w14-r4/a051815ab62d7db8.png",
+        "mockups/evidence/sector-central-china-w14-r4/a0615ab9bc0769cb.png",
+        "mockups/evidence/sector-central-china-w14-r4/ac6084b102876749.png",
+        "mockups/evidence/sector-central-china-w14-r4/ace73153efc3311a.png",
+        "mockups/evidence/sector-central-china-w14-r4/ad7151294119cad0.png",
+        "mockups/evidence/sector-central-china-w14-r4/b05337e11e6eba71.png",
+        "mockups/evidence/sector-central-china-w14-r4/b0e2878741112851.png",
+        "mockups/evidence/sector-central-china-w14-r4/b59410e6fa10e2fb.png",
+        "mockups/evidence/sector-central-china-w14-r4/b854b052d03261bf.png",
+        "mockups/evidence/sector-central-china-w14-r4/bbdd4036515971ed.png",
+        "mockups/evidence/sector-central-china-w14-r4/bc8978d6724ab138.png"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 7073,
+      "title": "[MO-W15] winner_health: honest theme bars, x-in-10 rates, subset honest-N, one-sentence footer",
+      "head_ref": "claude/ssd-mo-heal-winhealth-w15-b09010d389456a69",
+      "updated_at": "2026-09-11T10:20:03Z",
+      "is_draft": false,
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
+      "files_count": 100,
+      "files_truncated": true,
+      "files_error": false,
+      "files": [
+        "config/product_experience/page_registry_overrides.yml",
+        "engine/top_maturation.py",
+        "mockups/evidence/winner-health-w15/README.md",
+        "mockups/evidence/winner-health-w15/cells/0203bde9c4bb4b19.png",
+        "mockups/evidence/winner-health-w15/cells/0469eb0aef611477.png",
+        "mockups/evidence/winner-health-w15/cells/0580563bb70f20ee.png",
+        "mockups/evidence/winner-health-w15/cells/0ff3a09a4cc6f309.png",
+        "mockups/evidence/winner-health-w15/cells/128f9c03a07dccfc.png",
+        "mockups/evidence/winner-health-w15/cells/1726b201b90a5fff.png",
+        "mockups/evidence/winner-health-w15/cells/1b3d8ea3e2c373d3.png",
+        "mockups/evidence/winner-health-w15/cells/2088ae7a12ee4db8.png",
+        "mockups/evidence/winner-health-w15/cells/2157ccb5416393f7.png",
+        "mockups/evidence/winner-health-w15/cells/2484feb472ff21ad.png",
+        "mockups/evidence/winner-health-w15/cells/250cc1460abb8310.png",
+        "mockups/evidence/winner-health-w15/cells/29ec53533787a836.png",
+        "mockups/evidence/winner-health-w15/cells/2e236d84fa0a705a.png",
+        "mockups/evidence/winner-health-w15/cells/3192b6961c8f0f36.png",
+        "mockups/evidence/winner-health-w15/cells/31c64bfdf553e772.png",
+        "mockups/evidence/winner-health-w15/cells/338a9f74a87dc593.png",
+        "mockups/evidence/winner-health-w15/cells/35deeb6a8d976d5b.png",
+        "mockups/evidence/winner-health-w15/cells/382734cfe2d8aea4.png",
+        "mockups/evidence/winner-health-w15/cells/38bf79d0c33f306a.png",
+        "mockups/evidence/winner-health-w15/cells/41fc46193900f1be.png",
+        "mockups/evidence/winner-health-w15/cells/4354ebc090248ba4.png",
+        "mockups/evidence/winner-health-w15/cells/4505dcc2e1b7eb49.png",
+        "mockups/evidence/winner-health-w15/cells/534c776c2d7ffcfd.png",
+        "mockups/evidence/winner-health-w15/cells/59dce453b5ffc9b6.png",
+        "mockups/evidence/winner-health-w15/cells/5af58983a61f8454.png",
+        "mockups/evidence/winner-health-w15/cells/5e857941f0d780bf.png",
+        "mockups/evidence/winner-health-w15/cells/604407d019e11297.png",
+        "mockups/evidence/winner-health-w15/cells/61068be45b007f9e.png",
+        "mockups/evidence/winner-health-w15/cells/6926424b8449113d.png",
+        "mockups/evidence/winner-health-w15/cells/706d140f647c46a5.png",
+        "mockups/evidence/winner-health-w15/cells/7110112b91f8dcff.png",
+        "mockups/evidence/winner-health-w15/cells/73616b8a60f9966a.png",
+        "mockups/evidence/winner-health-w15/cells/743dde3e740682ec.png",
+        "mockups/evidence/winner-health-w15/cells/752aad6494e84988.png",
+        "mockups/evidence/winner-health-w15/cells/78ba1ea086c35196.png",
+        "mockups/evidence/winner-health-w15/cells/7fe7b0d2d6d3d6cc.png",
+        "mockups/evidence/winner-health-w15/cells/847b7fdd3bdaffb3.png",
+        "mockups/evidence/winner-health-w15/cells/8cfe72901e15f7b8.png",
+        "mockups/evidence/winner-health-w15/cells/8da87525d8ac2c5b.png",
+        "mockups/evidence/winner-health-w15/cells/8f317837804d97f3.png",
+        "mockups/evidence/winner-health-w15/cells/9277d5defc9101eb.png",
+        "mockups/evidence/winner-health-w15/cells/94206616ad7e9564.png",
+        "mockups/evidence/winner-health-w15/cells/9b5befd59c356e7d.png",
+        "mockups/evidence/winner-health-w15/cells/9d2279663f00f697.png",
+        "mockups/evidence/winner-health-w15/cells/a335be41e75187e7.png",
+        "mockups/evidence/winner-health-w15/cells/ae94196a03882a1d.png",
+        "mockups/evidence/winner-health-w15/cells/b0f7322a7adf3ead.png",
+        "mockups/evidence/winner-health-w15/cells/b11c2765d155b58c.png",
+        "mockups/evidence/winner-health-w15/cells/b9de9124bebc83e5.png",
+        "mockups/evidence/winner-health-w15/cells/bae8ef1fdce798db.png",
+        "mockups/evidence/winner-health-w15/cells/baseline-dark-en-1440.png",
+        "mockups/evidence/winner-health-w15/cells/baseline-dark-en-390.png",
+        "mockups/evidence/winner-health-w15/cells/baseline-dark-zh-1440.png",
+        "mockups/evidence/winner-health-w15/cells/baseline-dark-zh-390.png",
+        "mockups/evidence/winner-health-w15/cells/baseline-light-en-1440.png",
+        "mockups/evidence/winner-health-w15/cells/baseline-light-en-390.png",
+        "mockups/evidence/winner-health-w15/cells/baseline-light-zh-1440.png",
+        "mockups/evidence/winner-health-w15/cells/baseline-light-zh-390.png",
+        "mockups/evidence/winner-health-w15/cells/bbbebd2615987c85.png",
+        "mockups/evidence/winner-health-w15/cells/bf12a4c8f969fab4.png",
+        "mockups/evidence/winner-health-w15/cells/c7769e9e27d9f29a.png",
+        "mockups/evidence/winner-health-w15/cells/ca7d90e18ef39aad.png",
+        "mockups/evidence/winner-health-w15/cells/ce20a8fb972eae80.png",
+        "mockups/evidence/winner-health-w15/cells/d229ab07d50ae429.png",
+        "mockups/evidence/winner-health-w15/cells/d4788b968e813295.png",
+        "mockups/evidence/winner-health-w15/cells/d4c6869bc79171ab.png",
+        "mockups/evidence/winner-health-w15/cells/d739291cc54cf6ec.png",
+        "mockups/evidence/winner-health-w15/cells/d7417bb07ce031d0.png",
+        "mockups/evidence/winner-health-w15/cells/e679deddd1e326ec.png",
+        "mockups/evidence/winner-health-w15/cells/ed6949f73f593ee9.png",
+        "mockups/evidence/winner-health-w15/cells/ee292c5c774eacc8.png",
+        "mockups/evidence/winner-health-w15/cells/ef6db86ae55729dd.png",
+        "mockups/evidence/winner-health-w15/cells/fba7a8e430bd080d.png",
+        "mockups/evidence/winner-health-w15/cells/fd5ae60dc8289476.png",
+        "mockups/evidence/winner-health-w15/cells/find-placeholder-dark-zh-1440.png",
+        "mockups/evidence/winner-health-w15/cells/find-zerohit-dark-en-1440.png",
+        "mockups/evidence/winner-health-w15/cells/find-zerohit-dark-en-390.png",
+        "mockups/evidence/winner-health-w15/cells/find-zerohit-dark-zh-1440.png",
+        "mockups/evidence/winner-health-w15/cells/find-zerohit-light-en-1440.png",
+        "mockups/evidence/winner-health-w15/cells/find-zerohit-light-zh-1440.png",
+        "mockups/evidence/winner-health-w15/cells/m1-degrade-dark-en-1440.png",
+        "mockups/evidence/winner-health-w15/cells/m1-degrade-dark-zh-1440.png",
+        "mockups/evidence/winner-health-w15/cells/m1-degrade-light-en-1440.png",
+        "mockups/evidence/winner-health-w15/cells/m1-degrade-light-zh-1440.png",
+        "mockups/evidence/winner-health-w15/cells/p0-1-pair-dark-en-1440.png",
+        "mockups/evidence/winner-health-w15/cells/p0-1-pair-dark-zh-1440.png",
+        "mockups/evidence/winner-health-w15/cells/p0-1-pair-light-en-1440.png",
+        "mockups/evidence/winner-health-w15/cells/p0-1-pair-light-zh-1440.png",
+        "mockups/evidence/winner-health-w15/cells/p0-1-partial-dark-en-1440.png",
+        "mockups/evidence/winner-health-w15/cells/p0-1-partial-dark-zh-1440.png",
+        "mockups/evidence/winner-health-w15/cells/p0-1-partial-light-en-1440.png",
+        "mockups/evidence/winner-health-w15/cells/p0-1-partial-light-zh-1440.png",
+        "mockups/evidence/winner-health-w15/cells/p0-2-8in10-dark-en-1440.png",
+        "mockups/evidence/winner-health-w15/cells/p0-2-8in10-dark-zh-1440.png",
+        "mockups/evidence/winner-health-w15/cells/p0-2-8in10-light-en-1440.png",
+        "mockups/evidence/winner-health-w15/cells/p0-2-8in10-light-zh-1440.png",
+        "mockups/evidence/winner-health-w15/cells/p0-2-nearly-all-dark-en-1440.png"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 7072,
+      "title": "[MO-W13] flow_velocity: honest quadrant vocabulary, one change count, tiered receipts, capped boards",
+      "head_ref": "claude/ssd-mo-heal-flowvel-w13-2d8924cfbcc6e5f8",
+      "updated_at": "2026-09-11T10:21:10Z",
+      "is_draft": false,
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
+      "files_count": 100,
+      "files_truncated": true,
+      "files_error": false,
+      "files": [
+        "engine/flow_observatory/contract.py",
+        "engine/flow_velocity.py",
+        "engine/i18n.py",
+        "research/FLOW_OBSERVATORY_V2_MASTERPLAN_BY_FABLE.md",
+        "research/flow_observatory/W1_SPEC.md",
+        "research/flow_observatory/w13_r4_evidence/README.md",
+        "research/flow_observatory/w13_r4_evidence/cells/01b6ec88eedc8995.png",
+        "research/flow_observatory/w13_r4_evidence/cells/01fd07addfdaea84.png",
+        "research/flow_observatory/w13_r4_evidence/cells/022d19348da7964e.png",
+        "research/flow_observatory/w13_r4_evidence/cells/02399629e17b9487.png",
+        "research/flow_observatory/w13_r4_evidence/cells/02fef0859c2d829e.png",
+        "research/flow_observatory/w13_r4_evidence/cells/03beab70ca08aefc.png",
+        "research/flow_observatory/w13_r4_evidence/cells/051338e1827fcbe0.png",
+        "research/flow_observatory/w13_r4_evidence/cells/076c8b77c4377ebd.png",
+        "research/flow_observatory/w13_r4_evidence/cells/082d845c151e6290.png",
+        "research/flow_observatory/w13_r4_evidence/cells/08d03fb4d43291d6.png",
+        "research/flow_observatory/w13_r4_evidence/cells/0c2c0bc0abb1b326.png",
+        "research/flow_observatory/w13_r4_evidence/cells/0d5e30fe84540c44.png",
+        "research/flow_observatory/w13_r4_evidence/cells/0dcaca178fcd68b0.png",
+        "research/flow_observatory/w13_r4_evidence/cells/0e3d6c177fd4a625.png",
+        "research/flow_observatory/w13_r4_evidence/cells/19094e93b6033473.png",
+        "research/flow_observatory/w13_r4_evidence/cells/19905e983845af33.png",
+        "research/flow_observatory/w13_r4_evidence/cells/19aedd3b6b0f1d01.png",
+        "research/flow_observatory/w13_r4_evidence/cells/1bac18237f66b8f6.png",
+        "research/flow_observatory/w13_r4_evidence/cells/1ee9c530c10235fd.png",
+        "research/flow_observatory/w13_r4_evidence/cells/1f8f5813ea661124.png",
+        "research/flow_observatory/w13_r4_evidence/cells/2af7cd365cd47511.png",
+        "research/flow_observatory/w13_r4_evidence/cells/2cf2a69131f76f86.png",
+        "research/flow_observatory/w13_r4_evidence/cells/318eb45ab016292d.png",
+        "research/flow_observatory/w13_r4_evidence/cells/319ff985d57c3dc8.png",
+        "research/flow_observatory/w13_r4_evidence/cells/31fde83d7d881519.png",
+        "research/flow_observatory/w13_r4_evidence/cells/32081972ca2e1afd.png",
+        "research/flow_observatory/w13_r4_evidence/cells/33a9ffef86f408e6.png",
+        "research/flow_observatory/w13_r4_evidence/cells/38dfdf5ff323ec90.png",
+        "research/flow_observatory/w13_r4_evidence/cells/3a518f8a27ddb6d1.png",
+        "research/flow_observatory/w13_r4_evidence/cells/3b38770e3f865666.png",
+        "research/flow_observatory/w13_r4_evidence/cells/3d3a112f30ebf263.png",
+        "research/flow_observatory/w13_r4_evidence/cells/3dc0fc648bdb4788.png",
+        "research/flow_observatory/w13_r4_evidence/cells/4251d67cda36fd57.png",
+        "research/flow_observatory/w13_r4_evidence/cells/454c01ac1d668287.png",
+        "research/flow_observatory/w13_r4_evidence/cells/4969cee644f9783d.png",
+        "research/flow_observatory/w13_r4_evidence/cells/4b8fd4ef877e5a31.png",
+        "research/flow_observatory/w13_r4_evidence/cells/4bca4e86d6bb7c64.png",
+        "research/flow_observatory/w13_r4_evidence/cells/4f6b50f42c176199.png",
+        "research/flow_observatory/w13_r4_evidence/cells/601ad15c53f2e7e1.png",
+        "research/flow_observatory/w13_r4_evidence/cells/64042ed566a012d1.png",
+        "research/flow_observatory/w13_r4_evidence/cells/64e32db4be4461ce.png",
+        "research/flow_observatory/w13_r4_evidence/cells/651d0d36f7124ae7.png",
+        "research/flow_observatory/w13_r4_evidence/cells/666a8c736e4c5518.png",
+        "research/flow_observatory/w13_r4_evidence/cells/692149a26828e39f.png",
+        "research/flow_observatory/w13_r4_evidence/cells/6c53794122739e9e.png",
+        "research/flow_observatory/w13_r4_evidence/cells/6da612ccc3af6100.png",
+        "research/flow_observatory/w13_r4_evidence/cells/6e5c6eacb6ec6adc.png",
+        "research/flow_observatory/w13_r4_evidence/cells/6ee9e425d059f30d.png",
+        "research/flow_observatory/w13_r4_evidence/cells/7120d4cca0215831.png",
+        "research/flow_observatory/w13_r4_evidence/cells/77650179542709bb.png",
+        "research/flow_observatory/w13_r4_evidence/cells/7822f276eb523bad.png",
+        "research/flow_observatory/w13_r4_evidence/cells/78789486ca38b8ba.png",
+        "research/flow_observatory/w13_r4_evidence/cells/79eef8c31e18ff04.png",
+        "research/flow_observatory/w13_r4_evidence/cells/7be561f3c09bd470.png",
+        "research/flow_observatory/w13_r4_evidence/cells/81b5fe0d3f806274.png",
+        "research/flow_observatory/w13_r4_evidence/cells/82acb01c5447fb2d.png",
+        "research/flow_observatory/w13_r4_evidence/cells/8364ef404e2fc59c.png",
+        "research/flow_observatory/w13_r4_evidence/cells/85b6a1b02311f192.png",
+        "research/flow_observatory/w13_r4_evidence/cells/860c3ef267578e33.png",
+        "research/flow_observatory/w13_r4_evidence/cells/871e074d9297aec9.png",
+        "research/flow_observatory/w13_r4_evidence/cells/87adbe62d818e84b.png",
+        "research/flow_observatory/w13_r4_evidence/cells/88af7ee581c9badb.png",
+        "research/flow_observatory/w13_r4_evidence/cells/8ae143570f1eb70b.png",
+        "research/flow_observatory/w13_r4_evidence/cells/8afe978aa3a6b909.png",
+        "research/flow_observatory/w13_r4_evidence/cells/9019b517248fa05b.png",
+        "research/flow_observatory/w13_r4_evidence/cells/9038f4423ea60fab.png",
+        "research/flow_observatory/w13_r4_evidence/cells/967d3c202a00383a.png",
+        "research/flow_observatory/w13_r4_evidence/cells/9743ed3eba457217.png",
+        "research/flow_observatory/w13_r4_evidence/cells/97539ae7f0c68e79.png",
+        "research/flow_observatory/w13_r4_evidence/cells/98dc17b553590068.png",
+        "research/flow_observatory/w13_r4_evidence/cells/9c8da91de7e28d2c.png",
+        "research/flow_observatory/w13_r4_evidence/cells/9fd14988a69b4fed.png",
+        "research/flow_observatory/w13_r4_evidence/cells/a11y-focus-dark-en.png",
+        "research/flow_observatory/w13_r4_evidence/cells/a2bc386db9ed7d19.png",
+        "research/flow_observatory/w13_r4_evidence/cells/a35d7b2d86fa82b6.png",
+        "research/flow_observatory/w13_r4_evidence/cells/a9b1493dfe9821b5.png",
+        "research/flow_observatory/w13_r4_evidence/cells/a9ecaff29341f1e8.png",
+        "research/flow_observatory/w13_r4_evidence/cells/b192873e474009d0.png",
+        "research/flow_observatory/w13_r4_evidence/cells/b1e32feb5b885d65.png",
+        "research/flow_observatory/w13_r4_evidence/cells/b4b0928fb0e5eeb9.png",
+        "research/flow_observatory/w13_r4_evidence/cells/baseline-dark-en-desktop.png",
+        "research/flow_observatory/w13_r4_evidence/cells/baseline-dark-en-mobile.png",
+        "research/flow_observatory/w13_r4_evidence/cells/baseline-dark-zh-desktop.png",
+        "research/flow_observatory/w13_r4_evidence/cells/baseline-dark-zh-mobile.png",
+        "research/flow_observatory/w13_r4_evidence/cells/baseline-light-en-desktop.png",
+        "research/flow_observatory/w13_r4_evidence/cells/baseline-light-en-mobile.png",
+        "research/flow_observatory/w13_r4_evidence/cells/baseline-light-zh-desktop.png",
+        "research/flow_observatory/w13_r4_evidence/cells/baseline-light-zh-mobile.png",
+        "research/flow_observatory/w13_r4_evidence/cells/be0161fe2c03f49a.png",
+        "research/flow_observatory/w13_r4_evidence/cells/board-cap-dark-en.png",
+        "research/flow_observatory/w13_r4_evidence/cells/board-cap-dark-zh.png",
+        "research/flow_observatory/w13_r4_evidence/cells/board-cap-light-en.png",
+        "research/flow_observatory/w13_r4_evidence/cells/board-cap-light-zh.png",
+        "research/flow_observatory/w13_r4_evidence/cells/board-expanded-dark-en.png"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 7070,
+      "title": "[MO-A W11] intraday_flow: coverage-true feed words, bilingual tape chips, 8-of-N counted board (round 1)",
+      "head_ref": "claude/ssd-mo-heal-iflow-w11-b8d7309856c4b434",
+      "updated_at": "2026-09-12T07:13:55Z",
+      "is_draft": false,
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
+      "files_count": 80,
+      "files_truncated": false,
+      "files_error": false,
+      "files": [
+        "mockups/evidence/intraday-flow-w11-r2/README.md",
+        "mockups/evidence/intraday-flow-w11-r2/capture.py",
+        "mockups/evidence/intraday-flow-w11-r2/cells.json",
+        "mockups/evidence/intraday-flow-w11-r2/cells/control-dark-en.png",
+        "mockups/evidence/intraday-flow-w11-r2/cells/control-light-en.png",
+        "mockups/evidence/intraday-flow-w11-r2/cells/outage-stance-en.png",
+        "mockups/evidence/intraday-flow-w11-r2/cells/stamp-tip-dark-en.png",
+        "mockups/evidence/intraday-flow-w11-r2/cells/stamp-tip-light-en.png",
+        "mockups/evidence/intraday-flow-w11-r2/cells/tip-row-zh.png",
+        "mockups/evidence/intraday-flow-w11/03676edbedcf6910.png",
+        "mockups/evidence/intraday-flow-w11/05f94dc83f5f7338.png",
+        "mockups/evidence/intraday-flow-w11/0f71d73205a225f2.png",
+        "mockups/evidence/intraday-flow-w11/102fcbe6509e222d.png",
+        "mockups/evidence/intraday-flow-w11/17206c8aa2369c0b.png",
+        "mockups/evidence/intraday-flow-w11/18115eea479f6c02.png",
+        "mockups/evidence/intraday-flow-w11/18711a2da60bb9eb.png",
+        "mockups/evidence/intraday-flow-w11/18e1098829cede0f.png",
+        "mockups/evidence/intraday-flow-w11/22a3919cdbacd14f.png",
+        "mockups/evidence/intraday-flow-w11/256fee67c9d75738.png",
+        "mockups/evidence/intraday-flow-w11/2dcbb2d5d3334ec5.png",
+        "mockups/evidence/intraday-flow-w11/31fc1d667a5458e9.png",
+        "mockups/evidence/intraday-flow-w11/320568a6a9cdfb49.png",
+        "mockups/evidence/intraday-flow-w11/430480fb4e25aac6.png",
+        "mockups/evidence/intraday-flow-w11/45aedbad83eb099d.png",
+        "mockups/evidence/intraday-flow-w11/507b40ee6275f62d.png",
+        "mockups/evidence/intraday-flow-w11/56ddcc3c6a26fcc4.png",
+        "mockups/evidence/intraday-flow-w11/5d392984e1da80c7.png",
+        "mockups/evidence/intraday-flow-w11/5df46f334e09b9e1.png",
+        "mockups/evidence/intraday-flow-w11/5e945d499aea22f4.png",
+        "mockups/evidence/intraday-flow-w11/5f5d871604700fe5.png",
+        "mockups/evidence/intraday-flow-w11/6002e275ecccf0f9.png",
+        "mockups/evidence/intraday-flow-w11/602eab7c2d3a61c7.png",
+        "mockups/evidence/intraday-flow-w11/61d258221b3b048a.png",
+        "mockups/evidence/intraday-flow-w11/67de3388dcc92198.png",
+        "mockups/evidence/intraday-flow-w11/6a92df518b6b2b80.png",
+        "mockups/evidence/intraday-flow-w11/6e2401121cfbe28a.png",
+        "mockups/evidence/intraday-flow-w11/70d7771c96904994.png",
+        "mockups/evidence/intraday-flow-w11/72e6a468536b5fac.png",
+        "mockups/evidence/intraday-flow-w11/74018c2e988ce961.png",
+        "mockups/evidence/intraday-flow-w11/7593a0766968ed43.png",
+        "mockups/evidence/intraday-flow-w11/765d1ff460cb6b28.png",
+        "mockups/evidence/intraday-flow-w11/7af3c1d5bd492275.png",
+        "mockups/evidence/intraday-flow-w11/7b05d30871661763.png",
+        "mockups/evidence/intraday-flow-w11/898709752a20809e.png",
+        "mockups/evidence/intraday-flow-w11/97c963878678bff6.png",
+        "mockups/evidence/intraday-flow-w11/99fc63238969b22b.png",
+        "mockups/evidence/intraday-flow-w11/9ca1c3debeb74308.png",
+        "mockups/evidence/intraday-flow-w11/EVIDENCE.yml",
+        "mockups/evidence/intraday-flow-w11/README.md",
+        "mockups/evidence/intraday-flow-w11/a4cb854e123fbb67.png",
+        "mockups/evidence/intraday-flow-w11/a695694bac61affd.png",
+        "mockups/evidence/intraday-flow-w11/b30ca33299780236.png",
+        "mockups/evidence/intraday-flow-w11/b941a6100b03426f.png",
+        "mockups/evidence/intraday-flow-w11/b98e6bb4f6984bdc.png",
+        "mockups/evidence/intraday-flow-w11/be758c594d7e3eda.png",
+        "mockups/evidence/intraday-flow-w11/bf1b80452752cb84.png",
+        "mockups/evidence/intraday-flow-w11/bf7528abbd47b992.png",
+        "mockups/evidence/intraday-flow-w11/cab030ee5cc2a3d3.png",
+        "mockups/evidence/intraday-flow-w11/capture.py",
+        "mockups/evidence/intraday-flow-w11/cells.json",
+        "mockups/evidence/intraday-flow-w11/cf39b960f55897a0.png",
+        "mockups/evidence/intraday-flow-w11/d391a2dff1d15ad3.png",
+        "mockups/evidence/intraday-flow-w11/d4841cbb1d6b5b20.png",
+        "mockups/evidence/intraday-flow-w11/d938a938ccc18e10.png",
+        "mockups/evidence/intraday-flow-w11/de3e6c9eda307eb2.png",
+        "mockups/evidence/intraday-flow-w11/de6c3994eb187e92.png",
+        "mockups/evidence/intraday-flow-w11/f14624804ab3102a.png",
+        "mockups/evidence/intraday-flow-w11/f70518d44e83c2fc.png",
+        "mockups/evidence/intraday-flow-w11/fb0978990af9a9e8.png",
+        "mockups/evidence/intraday-flow-w11/fc5f150c16021fb3.png",
+        "mockups/evidence/intraday-flow-w11/fd0c9cb78d9083ed.png",
+        "mockups/evidence/intraday-flow-w11/manifest.json",
         "scripts/build_intraday_flow.py",
         "templates/intraday_flow.html.j2",
         "tests/test_intraday_flow_ncp_js.py",
-        "tests/test_intraday_flow_w11_r1.py"
+        "tests/test_intraday_flow_w11_r1.py",
+        "tests/test_intraday_flow_w11_r2.py",
+        "tests/test_intraday_flow_w11_r3.py",
+        "tests/test_intraday_flow_w11_r4.py",
+        "tests/test_intraday_flow_w11_r5.py"
       ],
       "protected_paths_touched": []
     },
@@ -31,7 +747,7 @@
       "number": 7069,
       "title": "[HOLD-FOR-SOL] Elliott phase research contract and pinned turn-resolution evidence",
       "head_ref": "sol/research-elliott-phase-contract-20260911",
-      "updated_at": "2026-09-11T05:39:17Z",
+      "updated_at": "2026-09-11T20:00:10Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -50,12 +766,12 @@
       "number": 7067,
       "title": "[MO-A W10] market_structure: revive the change strip, receipt-true hero distance, window labels (round 1)",
       "head_ref": "claude/ssd-mo-heal-mstruct-w10-ccb2b65c8bc26e50",
-      "updated_at": "2026-09-11T06:34:05Z",
+      "updated_at": "2026-09-12T06:45:18Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
-      "files_count": 19,
-      "files_truncated": false,
+      "files_count": 100,
+      "files_truncated": true,
       "files_error": false,
       "files": [
         "mockups/evidence/market-structure-w10-r2/README.md",
@@ -72,11 +788,92 @@
         "mockups/evidence/market-structure-w10-r2/cells/crop-near-flat-light-en.png",
         "mockups/evidence/market-structure-w10-r2/cells/d10ed403a267efed.png",
         "mockups/evidence/market-structure-w10-r2/manifest.json",
-        "scripts/build_market_structure.py",
-        "scripts/capture_market_structure_w10_r2.py",
-        "templates/market_structure.html.j2",
-        "tests/test_build_market_structure_page.py",
-        "tests/test_market_structure.py"
+        "mockups/evidence/market-structure-w10-r3/EVIDENCE.yml",
+        "mockups/evidence/market-structure-w10-r3/README.md",
+        "mockups/evidence/market-structure-w10-r3/cells/0610d6f4b9f628ef.png",
+        "mockups/evidence/market-structure-w10-r3/cells/07df412de28a4280.png",
+        "mockups/evidence/market-structure-w10-r3/cells/08b0cb12c7f06864.png",
+        "mockups/evidence/market-structure-w10-r3/cells/0dd4b73d24f0dfd0.png",
+        "mockups/evidence/market-structure-w10-r3/cells/103a2950dcf1cebe.png",
+        "mockups/evidence/market-structure-w10-r3/cells/16748e8317fbe191.png",
+        "mockups/evidence/market-structure-w10-r3/cells/1b06bc6d3329417b.png",
+        "mockups/evidence/market-structure-w10-r3/cells/2673a29387a510c2.png",
+        "mockups/evidence/market-structure-w10-r3/cells/267681c128759d23.png",
+        "mockups/evidence/market-structure-w10-r3/cells/3056dc1457bd594a.png",
+        "mockups/evidence/market-structure-w10-r3/cells/312eabc0f686981a.png",
+        "mockups/evidence/market-structure-w10-r3/cells/3325210820e69ff5.png",
+        "mockups/evidence/market-structure-w10-r3/cells/34307bf53b6980bd.png",
+        "mockups/evidence/market-structure-w10-r3/cells/3983f1325edff7fe.png",
+        "mockups/evidence/market-structure-w10-r3/cells/3d3fccb762391c9f.png",
+        "mockups/evidence/market-structure-w10-r3/cells/3ea71962a5721515.png",
+        "mockups/evidence/market-structure-w10-r3/cells/532cf90907598f88.png",
+        "mockups/evidence/market-structure-w10-r3/cells/53db2e06e2210026.png",
+        "mockups/evidence/market-structure-w10-r3/cells/54e7aa4a58b2f020.png",
+        "mockups/evidence/market-structure-w10-r3/cells/57ac2d4be28b69a6.png",
+        "mockups/evidence/market-structure-w10-r3/cells/58c842a746a61fbb.png",
+        "mockups/evidence/market-structure-w10-r3/cells/5f5e584fe6a4cbda.png",
+        "mockups/evidence/market-structure-w10-r3/cells/631d99972f36a946.png",
+        "mockups/evidence/market-structure-w10-r3/cells/70dd16cd57eb6b86.png",
+        "mockups/evidence/market-structure-w10-r3/cells/7560a86a06b85deb.png",
+        "mockups/evidence/market-structure-w10-r3/cells/7823fd4cba9e331b.png",
+        "mockups/evidence/market-structure-w10-r3/cells/7b62efeb9b777511.png",
+        "mockups/evidence/market-structure-w10-r3/cells/7b84149510628c1c.png",
+        "mockups/evidence/market-structure-w10-r3/cells/7dd704855dd05e25.png",
+        "mockups/evidence/market-structure-w10-r3/cells/82e74fefe03e7dc9.png",
+        "mockups/evidence/market-structure-w10-r3/cells/8741714e39d62f50.png",
+        "mockups/evidence/market-structure-w10-r3/cells/8b229a7a790ac530.png",
+        "mockups/evidence/market-structure-w10-r3/cells/8be057339ba39f1f.png",
+        "mockups/evidence/market-structure-w10-r3/cells/8c6c2d22a342f139.png",
+        "mockups/evidence/market-structure-w10-r3/cells/8ea8c0bf69446d54.png",
+        "mockups/evidence/market-structure-w10-r3/cells/9424ec1ec82946d1.png",
+        "mockups/evidence/market-structure-w10-r3/cells/95f56038727d15a5.png",
+        "mockups/evidence/market-structure-w10-r3/cells/99e300493d3ba8d0.png",
+        "mockups/evidence/market-structure-w10-r3/cells/9c5684e2e52c99cf.png",
+        "mockups/evidence/market-structure-w10-r3/cells/9c7dc3c81cbd9602.png",
+        "mockups/evidence/market-structure-w10-r3/cells/9d722ac31ea70bfa.png",
+        "mockups/evidence/market-structure-w10-r3/cells/A-desktop-dark-en.png",
+        "mockups/evidence/market-structure-w10-r3/cells/A-desktop-dark-zh.png",
+        "mockups/evidence/market-structure-w10-r3/cells/A-desktop-light-en.png",
+        "mockups/evidence/market-structure-w10-r3/cells/A-desktop-light-zh.png",
+        "mockups/evidence/market-structure-w10-r3/cells/A-mobile-dark-en.png",
+        "mockups/evidence/market-structure-w10-r3/cells/A-mobile-dark-zh.png",
+        "mockups/evidence/market-structure-w10-r3/cells/A-mobile-light-en.png",
+        "mockups/evidence/market-structure-w10-r3/cells/A-mobile-light-zh.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-changed-dark-en.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-changed-dark-zh.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-changed-light-en.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-changed-light-zh.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-footnote-dark-en.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-footnote-dark-zh.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-footnote-light-en.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-footnote-light-zh.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-hero-meta-dark-en.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-hero-meta-dark-zh.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-hero-meta-light-en.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-hero-meta-light-zh.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-stance-disp-dark-en.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-stance-disp-dark-zh.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-stance-disp-light-en.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-stance-disp-light-zh.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-stance-flows-dark-en.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-stance-flows-dark-zh.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-stance-flows-light-en.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-stance-flows-light-zh.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-stance-hero-dark-en.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-stance-hero-dark-zh.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-stance-hero-light-en.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-stance-hero-light-zh.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-stance-vol-dark-en.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-stance-vol-dark-zh.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-stance-vol-light-en.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-stance-vol-light-zh.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-stance-week-dark-en.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-stance-week-dark-zh.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-stance-week-light-en.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-stance-week-light-zh.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-swipe-390-dark-en.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-swipe-390-dark-zh.png",
+        "mockups/evidence/market-structure-w10-r3/cells/B-swipe-390-light-en.png"
       ],
       "protected_paths_touched": []
     },
@@ -84,7 +881,7 @@
       "number": 7066,
       "title": "HOLD: run Prophet receipt copy contract in PR code gate",
       "head_ref": "claude/prophet-intake-code-gate-registration-20260910-sol-001",
-      "updated_at": "2026-09-11T05:18:29Z",
+      "updated_at": "2026-09-12T01:05:30Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -100,7 +897,7 @@
       "number": 7065,
       "title": "fix(themes): enforce coherent observation populations",
       "head_ref": "claude/theme-observation-integrity-w0-20260910-sol-001",
-      "updated_at": "2026-09-11T04:52:59Z",
+      "updated_at": "2026-09-11T11:07:52Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -123,7 +920,7 @@
       "number": 7064,
       "title": "HOLD: measure published theme leadership persistence without authority",
       "head_ref": "sol/rotation-persistence-rph0-20260910",
-      "updated_at": "2026-09-11T04:58:55Z",
+      "updated_at": "2026-09-11T20:14:24Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -161,7 +958,7 @@
       "number": 7063,
       "title": "HOLD: homepage recovery lessons retained; replacement cover rejected",
       "head_ref": "sol/homepage-thesis-recovery-records-20260911",
-      "updated_at": "2026-09-11T05:04:55Z",
+      "updated_at": "2026-09-11T11:13:56Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -184,27 +981,114 @@
       "number": 7062,
       "title": "[MO-A W9] macro: plain-language faces, one-integer alerts, stance law, Markets null design (round 1)",
       "head_ref": "claude/ssd-mo-heal-macro-w9-457d24e16b6d52ac",
-      "updated_at": "2026-09-11T04:02:10Z",
+      "updated_at": "2026-09-11T21:07:09Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
-      "files_count": 13,
-      "files_truncated": false,
+      "files_count": 100,
+      "files_truncated": true,
       "files_error": false,
       "files": [
         "engine/alerts.py",
         "engine/macro_news.py",
-        "scripts/build_site.py",
-        "site/live.js",
-        "templates/_risk_envelope_band.html.j2",
-        "templates/dashboard.html.j2",
-        "templates/live.js",
-        "tests/live_tape.test.mjs",
-        "tests/live_tape_null.test.mjs",
-        "tests/test_alerts.py",
-        "tests/test_dashboard_template_render.py",
-        "tests/test_macro_news.py",
-        "tests/test_macro_w9_r1.py"
+        "mockups/evidence/macro-w9/EVIDENCE.yml",
+        "mockups/evidence/macro-w9/README.md",
+        "mockups/evidence/macro-w9/cells/0654560d0b161b2e.png",
+        "mockups/evidence/macro-w9/cells/17e1b9dab2ebeecb.png",
+        "mockups/evidence/macro-w9/cells/18a229a5d9e3ea23.png",
+        "mockups/evidence/macro-w9/cells/1b1e1967a21be596.png",
+        "mockups/evidence/macro-w9/cells/1bfbc3dab0c1db12.png",
+        "mockups/evidence/macro-w9/cells/1d10340e31899868.png",
+        "mockups/evidence/macro-w9/cells/216a37f4d14322fd.png",
+        "mockups/evidence/macro-w9/cells/22ab507ad46a9a48.png",
+        "mockups/evidence/macro-w9/cells/2b1213578322dc20.png",
+        "mockups/evidence/macro-w9/cells/32b548d663d490d8.png",
+        "mockups/evidence/macro-w9/cells/32dacdfa3207e6ee.png",
+        "mockups/evidence/macro-w9/cells/358c9b24a3985cf1.png",
+        "mockups/evidence/macro-w9/cells/3d28bad36a1602ae.png",
+        "mockups/evidence/macro-w9/cells/3e6284074d1ebc8d.png",
+        "mockups/evidence/macro-w9/cells/40fa30d57d7ea017.png",
+        "mockups/evidence/macro-w9/cells/4137e2a892c9ed74.png",
+        "mockups/evidence/macro-w9/cells/41dd1f9ad6bdca4b.png",
+        "mockups/evidence/macro-w9/cells/4250369d7ae1777b.png",
+        "mockups/evidence/macro-w9/cells/442e7165ef1b1014.png",
+        "mockups/evidence/macro-w9/cells/465b6ab4a8e4ec50.png",
+        "mockups/evidence/macro-w9/cells/4677505a16762ccf.png",
+        "mockups/evidence/macro-w9/cells/46f2c383fde74147.png",
+        "mockups/evidence/macro-w9/cells/47103f8b8f37e58c.png",
+        "mockups/evidence/macro-w9/cells/4727900b2318702e.png",
+        "mockups/evidence/macro-w9/cells/47a244da6f64d85e.png",
+        "mockups/evidence/macro-w9/cells/489e6cdb2539083d.png",
+        "mockups/evidence/macro-w9/cells/4a6dcddceab1c183.png",
+        "mockups/evidence/macro-w9/cells/4fcb3bf3bb23e45f.png",
+        "mockups/evidence/macro-w9/cells/5031cb439849a31b.png",
+        "mockups/evidence/macro-w9/cells/54257afa9aa07441.png",
+        "mockups/evidence/macro-w9/cells/547a1f07aedeac09.png",
+        "mockups/evidence/macro-w9/cells/5743148118c12c6d.png",
+        "mockups/evidence/macro-w9/cells/5918dc008ab7f7a7.png",
+        "mockups/evidence/macro-w9/cells/5d10a03a969accea.png",
+        "mockups/evidence/macro-w9/cells/61ee1f34195b09a1.png",
+        "mockups/evidence/macro-w9/cells/62851b07883cd575.png",
+        "mockups/evidence/macro-w9/cells/67a2e98e94c08f02.png",
+        "mockups/evidence/macro-w9/cells/6809a5e79ea63a5e.png",
+        "mockups/evidence/macro-w9/cells/70b4434aae11c1b1.png",
+        "mockups/evidence/macro-w9/cells/86e1aade3a885f8e.png",
+        "mockups/evidence/macro-w9/cells/87a0cd0aaf5957fd.png",
+        "mockups/evidence/macro-w9/cells/8b78f7e69ff9a04c.png",
+        "mockups/evidence/macro-w9/cells/8e03c997f364f247.png",
+        "mockups/evidence/macro-w9/cells/8fe15785d9f59eb0.png",
+        "mockups/evidence/macro-w9/cells/911da593488875c2.png",
+        "mockups/evidence/macro-w9/cells/919b62a4c406cf29.png",
+        "mockups/evidence/macro-w9/cells/93deb7984ac5a458.png",
+        "mockups/evidence/macro-w9/cells/9447766c137685a3.png",
+        "mockups/evidence/macro-w9/cells/94c48d13d73986e9.png",
+        "mockups/evidence/macro-w9/cells/98f3bb743fea2ccd.png",
+        "mockups/evidence/macro-w9/cells/a719946db1491127.png",
+        "mockups/evidence/macro-w9/cells/aa6247e4f2430f72.png",
+        "mockups/evidence/macro-w9/cells/ac3007b3f94de8d6.png",
+        "mockups/evidence/macro-w9/cells/ae8daf9321943818.png",
+        "mockups/evidence/macro-w9/cells/alerts-face-dark-en-desktop.png",
+        "mockups/evidence/macro-w9/cells/alerts-face-dark-zh-desktop.png",
+        "mockups/evidence/macro-w9/cells/alerts-face-light-en-desktop.png",
+        "mockups/evidence/macro-w9/cells/alerts-zero-dark-en-desktop.png",
+        "mockups/evidence/macro-w9/cells/alerts-zero-dark-en-mobile.png",
+        "mockups/evidence/macro-w9/cells/alerts-zero-dark-zh-desktop.png",
+        "mockups/evidence/macro-w9/cells/alerts-zero-light-en-desktop.png",
+        "mockups/evidence/macro-w9/cells/alerts-zero-light-zh-desktop.png",
+        "mockups/evidence/macro-w9/cells/b1dc5a3d6410ad7b.png",
+        "mockups/evidence/macro-w9/cells/b454d482935e9daa.png",
+        "mockups/evidence/macro-w9/cells/be9a780daa107cba.png",
+        "mockups/evidence/macro-w9/cells/c1b73a5899324dba.png",
+        "mockups/evidence/macro-w9/cells/c277e8bfe27332e0.png",
+        "mockups/evidence/macro-w9/cells/ca383aa82b2cd1a4.png",
+        "mockups/evidence/macro-w9/cells/cb8b0d9eec5db9a0.png",
+        "mockups/evidence/macro-w9/cells/ce68f102f673fd49.png",
+        "mockups/evidence/macro-w9/cells/count-dislocation-dlg-dark-en-desktop.png",
+        "mockups/evidence/macro-w9/cells/count-dislocation-dlg-dark-zh-desktop.png",
+        "mockups/evidence/macro-w9/cells/count-dislocation-dlg-light-en-desktop.png",
+        "mockups/evidence/macro-w9/cells/count-hero-badge-dark-en-desktop.png",
+        "mockups/evidence/macro-w9/cells/count-hero-badge-dark-zh-desktop.png",
+        "mockups/evidence/macro-w9/cells/count-hero-badge-light-en-desktop.png",
+        "mockups/evidence/macro-w9/cells/d232da358f4003f6.png",
+        "mockups/evidence/macro-w9/cells/d48b49a604bd4076.png",
+        "mockups/evidence/macro-w9/cells/d8082df0f64c9a81.png",
+        "mockups/evidence/macro-w9/cells/da20087ba2b1cbbe.png",
+        "mockups/evidence/macro-w9/cells/df3f29ac1c0639cd.png",
+        "mockups/evidence/macro-w9/cells/e1851eeaddf8b75b.png",
+        "mockups/evidence/macro-w9/cells/e203a9e9db0dbae0.png",
+        "mockups/evidence/macro-w9/cells/efe8d2ae19095d57.png",
+        "mockups/evidence/macro-w9/cells/events-empty-dark-en-desktop.png",
+        "mockups/evidence/macro-w9/cells/events-empty-dark-en-mobile.png",
+        "mockups/evidence/macro-w9/cells/events-empty-dark-zh-desktop.png",
+        "mockups/evidence/macro-w9/cells/events-empty-light-en-desktop.png",
+        "mockups/evidence/macro-w9/cells/events-empty-light-zh-desktop.png",
+        "mockups/evidence/macro-w9/cells/events-none-dark-en-desktop.png",
+        "mockups/evidence/macro-w9/cells/events-none-dark-en-mobile.png",
+        "mockups/evidence/macro-w9/cells/events-none-dark-zh-desktop.png",
+        "mockups/evidence/macro-w9/cells/events-none-light-en-desktop.png",
+        "mockups/evidence/macro-w9/cells/events-none-light-zh-desktop.png",
+        "mockups/evidence/macro-w9/cells/f06b455caf3867a4.png",
+        "mockups/evidence/macro-w9/cells/f3852f2acb13bb58.png"
       ],
       "protected_paths_touched": []
     },
@@ -212,7 +1096,7 @@
       "number": 7061,
       "title": "[MO-A W8] cycle: P0 truth blockers + staleness arithmetic (round 1)",
       "head_ref": "claude/ssd-mo-heal-cycle-w8-ce71091b41294f0f",
-      "updated_at": "2026-09-11T03:40:39Z",
+      "updated_at": "2026-09-12T02:14:49Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -241,17 +1125,18 @@
       "number": 7060,
       "title": "W1: sector participation licensed-history adapter + 20-session calc (source impl, Draft/HOLD)",
       "head_ref": "claude/ssd-sector-central-w1-source-impl-1c350aeb6815a110",
-      "updated_at": "2026-09-11T05:51:05Z",
+      "updated_at": "2026-09-11T11:46:22Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
-      "files_count": 4,
+      "files_count": 5,
       "files_truncated": false,
       "files_error": false,
       "files": [
         ".github/ci/legacy-jobs.yml",
         "collectors/breadth.py",
         "scripts/build_sector_central.py",
+        "templates/sector_central.html.j2",
         "tests/test_sector_central_participation.py"
       ],
       "protected_paths_touched": []
@@ -278,20 +1163,114 @@
       "number": 7058,
       "title": "[MO-A W7] stage_analysis: P0 truth blockers + pipeline strings (round 1)",
       "head_ref": "claude/ssd-mo-heal-stage-w7-d52c1d79149bd331",
-      "updated_at": "2026-09-11T02:49:37Z",
-      "is_draft": true,
+      "updated_at": "2026-09-12T06:22:37Z",
+      "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
-      "files_count": 6,
-      "files_truncated": false,
+      "files_count": 100,
+      "files_truncated": true,
       "files_error": false,
       "files": [
         "engine/earnings_qual.py",
+        "engine/prophet_stage_inputs.py",
         "engine/stage_analysis.py",
-        "templates/stage_analysis.html.j2",
-        "tests/test_earnings_seasons.py",
-        "tests/test_stage_analysis.py",
-        "tests/test_stage_analysis_page.py"
+        "mockups/evidence/stage-analysis-w7/EVIDENCE.yml",
+        "mockups/evidence/stage-analysis-w7/README.md",
+        "mockups/evidence/stage-analysis-w7/cells/03e5d330535f8aba.png",
+        "mockups/evidence/stage-analysis-w7/cells/094fd092e0419ca3.png",
+        "mockups/evidence/stage-analysis-w7/cells/0976d3c40b26b11a.png",
+        "mockups/evidence/stage-analysis-w7/cells/0c7e207edcb8ec72.png",
+        "mockups/evidence/stage-analysis-w7/cells/0d3849bb93dbe69b.png",
+        "mockups/evidence/stage-analysis-w7/cells/1a4a64ed62600653.png",
+        "mockups/evidence/stage-analysis-w7/cells/1bf09b86aa6e7070.png",
+        "mockups/evidence/stage-analysis-w7/cells/1f28ec4743339ee6.png",
+        "mockups/evidence/stage-analysis-w7/cells/1f3ee2284cf7e73a.png",
+        "mockups/evidence/stage-analysis-w7/cells/2316d56eec10f247.png",
+        "mockups/evidence/stage-analysis-w7/cells/2994af9b721b0162.png",
+        "mockups/evidence/stage-analysis-w7/cells/2c950b3404b4066f.png",
+        "mockups/evidence/stage-analysis-w7/cells/2e862f78825f0c90.png",
+        "mockups/evidence/stage-analysis-w7/cells/2fa8222f8195461e.png",
+        "mockups/evidence/stage-analysis-w7/cells/30e8136dd235c08a.png",
+        "mockups/evidence/stage-analysis-w7/cells/380addb30f37c432.png",
+        "mockups/evidence/stage-analysis-w7/cells/39251c510aad585e.png",
+        "mockups/evidence/stage-analysis-w7/cells/3a1b04261b9fa8ac.png",
+        "mockups/evidence/stage-analysis-w7/cells/3a3dbd2952ec164b.png",
+        "mockups/evidence/stage-analysis-w7/cells/44aa5793d649b5d0.png",
+        "mockups/evidence/stage-analysis-w7/cells/45092b070218cd90.png",
+        "mockups/evidence/stage-analysis-w7/cells/488ed7305e716fa3.png",
+        "mockups/evidence/stage-analysis-w7/cells/48cd34c3b3451be6.png",
+        "mockups/evidence/stage-analysis-w7/cells/4e4d11afe410f652.png",
+        "mockups/evidence/stage-analysis-w7/cells/4eebeb51e1975d10.png",
+        "mockups/evidence/stage-analysis-w7/cells/4f0292c9ffe08614.png",
+        "mockups/evidence/stage-analysis-w7/cells/4f0666ac317de4fd.png",
+        "mockups/evidence/stage-analysis-w7/cells/50606a8ad817c7be.png",
+        "mockups/evidence/stage-analysis-w7/cells/5285aaf6795b7c4b.png",
+        "mockups/evidence/stage-analysis-w7/cells/582141acec70d071.png",
+        "mockups/evidence/stage-analysis-w7/cells/58f3b4d3afa8171c.png",
+        "mockups/evidence/stage-analysis-w7/cells/5bd61645e2a14ccd.png",
+        "mockups/evidence/stage-analysis-w7/cells/5cb941edc7a87328.png",
+        "mockups/evidence/stage-analysis-w7/cells/620f27f2cc6f364c.png",
+        "mockups/evidence/stage-analysis-w7/cells/6546be0c142deec0.png",
+        "mockups/evidence/stage-analysis-w7/cells/65981f101ae4cbcd.png",
+        "mockups/evidence/stage-analysis-w7/cells/663f7a5f6da7d952.png",
+        "mockups/evidence/stage-analysis-w7/cells/66e952b740972f71.png",
+        "mockups/evidence/stage-analysis-w7/cells/69428b7474bda798.png",
+        "mockups/evidence/stage-analysis-w7/cells/697fc070be65bb6c.png",
+        "mockups/evidence/stage-analysis-w7/cells/6a1fbfb3b011ef21.png",
+        "mockups/evidence/stage-analysis-w7/cells/6cf79c8cf4dacec5.png",
+        "mockups/evidence/stage-analysis-w7/cells/6e53abb4aa57ef06.png",
+        "mockups/evidence/stage-analysis-w7/cells/6e9bfed6bba15bba.png",
+        "mockups/evidence/stage-analysis-w7/cells/6fabce5205851073.png",
+        "mockups/evidence/stage-analysis-w7/cells/78a5cefdfa6b23a0.png",
+        "mockups/evidence/stage-analysis-w7/cells/7c583d4fe8875e2b.png",
+        "mockups/evidence/stage-analysis-w7/cells/7cbe9a7b9a751027.png",
+        "mockups/evidence/stage-analysis-w7/cells/7f8bb319fb007e39.png",
+        "mockups/evidence/stage-analysis-w7/cells/82eeb81a533d3189.png",
+        "mockups/evidence/stage-analysis-w7/cells/83559befeaa3fc9b.png",
+        "mockups/evidence/stage-analysis-w7/cells/85d04ce9be68c169.png",
+        "mockups/evidence/stage-analysis-w7/cells/8d9668916c7102b1.png",
+        "mockups/evidence/stage-analysis-w7/cells/96539aa3c901f007.png",
+        "mockups/evidence/stage-analysis-w7/cells/96f7dc3d6e485095.png",
+        "mockups/evidence/stage-analysis-w7/cells/986903e6d2b0870b.png",
+        "mockups/evidence/stage-analysis-w7/cells/99632e06bd4b00a1.png",
+        "mockups/evidence/stage-analysis-w7/cells/9d2c9773b909a688.png",
+        "mockups/evidence/stage-analysis-w7/cells/9d67a2fa35c23c98.png",
+        "mockups/evidence/stage-analysis-w7/cells/a06b79e28bc7a5b7.png",
+        "mockups/evidence/stage-analysis-w7/cells/a0f2135b41e4fb3c.png",
+        "mockups/evidence/stage-analysis-w7/cells/a3661dcfb417ff4c.png",
+        "mockups/evidence/stage-analysis-w7/cells/b676c1faf343c0ea.png",
+        "mockups/evidence/stage-analysis-w7/cells/b96891920da2bd0e.png",
+        "mockups/evidence/stage-analysis-w7/cells/bc1e1090860c2211.png",
+        "mockups/evidence/stage-analysis-w7/cells/c1ad3de90df2e25a.png",
+        "mockups/evidence/stage-analysis-w7/cells/c81f6bf99abcd71e.png",
+        "mockups/evidence/stage-analysis-w7/cells/c8f0498033202bc2.png",
+        "mockups/evidence/stage-analysis-w7/cells/cbd9556588111f53.png",
+        "mockups/evidence/stage-analysis-w7/cells/d3416c4faf92c7de.png",
+        "mockups/evidence/stage-analysis-w7/cells/d8f9b26bf0b5d8e1.png",
+        "mockups/evidence/stage-analysis-w7/cells/d9f564f11d3927b3.png",
+        "mockups/evidence/stage-analysis-w7/cells/dad8d1ba4c1e3221.png",
+        "mockups/evidence/stage-analysis-w7/cells/dbd3da3ccff3b278.png",
+        "mockups/evidence/stage-analysis-w7/cells/dc3f626397c9eacc.png",
+        "mockups/evidence/stage-analysis-w7/cells/dd5821c0338aba4e.png",
+        "mockups/evidence/stage-analysis-w7/cells/e3af71afa191aca2.png",
+        "mockups/evidence/stage-analysis-w7/cells/e4ba93071e4b20de.png",
+        "mockups/evidence/stage-analysis-w7/cells/e6cdc27f684aa6b8.png",
+        "mockups/evidence/stage-analysis-w7/cells/e7f976a336a33e3d.png",
+        "mockups/evidence/stage-analysis-w7/cells/ed8a38a327b45be6.png",
+        "mockups/evidence/stage-analysis-w7/cells/efd1572544b91f96.png",
+        "mockups/evidence/stage-analysis-w7/cells/f533cb8a81c24cd5.png",
+        "mockups/evidence/stage-analysis-w7/cells/f7861d44e2d926da.png",
+        "mockups/evidence/stage-analysis-w7/cells/f8295d4203165c25.png",
+        "mockups/evidence/stage-analysis-w7/cells/fcad8e45a2b6757b.png",
+        "mockups/evidence/stage-analysis-w7/cells/s1-screener-dark-en-desktop-keyboard-tip.png",
+        "mockups/evidence/stage-analysis-w7/cells/s1-screener-dark-en-desktop-rest.png",
+        "mockups/evidence/stage-analysis-w7/cells/s1-screener-dark-en-mobile-rest.png",
+        "mockups/evidence/stage-analysis-w7/cells/s1-screener-dark-en-mobile-tap-tip.png",
+        "mockups/evidence/stage-analysis-w7/cells/s1-screener-dark-zh-desktop-rest.png",
+        "mockups/evidence/stage-analysis-w7/cells/s1-screener-dark-zh-mobile-rest.png",
+        "mockups/evidence/stage-analysis-w7/cells/s1-screener-light-en-desktop-rest.png",
+        "mockups/evidence/stage-analysis-w7/cells/s1-screener-light-en-mobile-rest.png",
+        "mockups/evidence/stage-analysis-w7/cells/s1-screener-light-zh-desktop-rest.png"
       ],
       "protected_paths_touched": []
     },
@@ -299,7 +1278,7 @@
       "number": 7057,
       "title": "[MO-A S3] bonds.html \u2192 Archetype-D regime_dashboard migration",
       "head_ref": "claude/ssd-mo-build-bonds-s3-cd5364030dddd86b",
-      "updated_at": "2026-09-11T03:13:13Z",
+      "updated_at": "2026-09-12T01:08:37Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -414,7 +1393,7 @@
       "number": 7056,
       "title": "[MO-A S2] us_stocks: discovery-board compression + Tier-1 hygiene",
       "head_ref": "claude/ssd-mo-build-usstocks-s2-68177a22e60d09c3",
-      "updated_at": "2026-09-11T03:32:14Z",
+      "updated_at": "2026-09-12T01:38:13Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -529,7 +1508,7 @@
       "number": 7055,
       "title": "[MO-A W6] commodities: P0 truth blockers + lexicon slug guard (round 1)",
       "head_ref": "claude/ssd-mo-heal-cmdty-w6-7c04aacc50e69b57",
-      "updated_at": "2026-09-11T03:31:43Z",
+      "updated_at": "2026-09-12T01:10:50Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -644,7 +1623,7 @@
       "number": 7054,
       "title": "[MO-A S1] china.html \u2192 Archetype-D regime_dashboard migration",
       "head_ref": "claude/ssd-mo-build-china-s1-62b97c5d996668b0",
-      "updated_at": "2026-09-11T05:22:50Z",
+      "updated_at": "2026-09-12T01:48:18Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -759,7 +1738,7 @@
       "number": 7053,
       "title": "[MO-A W5] china_policy_watch: P0 truth blockers + LENS enabler (round 1)",
       "head_ref": "claude/ssd-mo-heal-cpw-w5-94a35f709bc4dfc9",
-      "updated_at": "2026-09-11T02:47:49Z",
+      "updated_at": "2026-09-12T00:36:27Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -931,7 +1910,7 @@
       "number": 7050,
       "title": "[MO-A] copy: hk.html Tier-1 shell plain-language pass \u2014 ZH parity, strip names, tone-sign fix, icons (H2)",
       "head_ref": "claude/ssd-mo-copy-hk-h2-4081dab504fad3fb",
-      "updated_at": "2026-09-11T00:54:11Z",
+      "updated_at": "2026-09-11T20:55:55Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -998,7 +1977,7 @@
       "number": 7048,
       "title": "[MO-A] copy: start.html Tier-1 plain-language pass \u2014 enums, stat chips, tickers, IPO line (H1)",
       "head_ref": "claude/ssd-mo-copy-start-h1-6e3267fb73e3c884",
-      "updated_at": "2026-09-11T00:19:17Z",
+      "updated_at": "2026-09-11T21:07:28Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -1042,43 +2021,10 @@
       "protected_paths_touched": []
     },
     {
-      "number": 7046,
-      "title": "[MO-A] fix: alerts EN truncation amputated sentences + deleted risk caveat (heal W3)",
-      "head_ref": "claude/ssd-mo-heal-alerts-trunc-da6df41569ea0e4f",
-      "updated_at": "2026-09-11T00:05:05Z",
-      "is_draft": false,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 18,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        "engine/alert_triage.py",
-        "engine/altdata_alerts.py",
-        "engine/altdata_signals.py",
-        "engine/btc_alerts.py",
-        "engine/theme_alerts.py",
-        "mockups/evidence/alerts-uncapped-bodies/README.md",
-        "mockups/evidence/alerts-uncapped-bodies/alerts-feed-dark-en-1440.png",
-        "mockups/evidence/alerts-uncapped-bodies/alerts-feed-dark-en-390.png",
-        "mockups/evidence/alerts-uncapped-bodies/alerts-feed-dark-zh-1440.png",
-        "mockups/evidence/alerts-uncapped-bodies/alerts-feed-dark-zh-390.png",
-        "mockups/evidence/alerts-uncapped-bodies/alerts-feed-light-en-1440.png",
-        "mockups/evidence/alerts-uncapped-bodies/alerts-feed-light-en-390.png",
-        "mockups/evidence/alerts-uncapped-bodies/alerts-feed-light-zh-1440.png",
-        "mockups/evidence/alerts-uncapped-bodies/alerts-feed-light-zh-390.png",
-        "templates/alerts.html.j2",
-        "tests/test_alert_triage.py",
-        "tests/test_altdata.py",
-        "tests/test_theme_alerts.py"
-      ],
-      "protected_paths_touched": []
-    },
-    {
       "number": 7045,
       "title": "[MO-A] fix: research_vault side is desk type, not a rating; summary + facet hygiene (heal W2)",
       "head_ref": "claude/ssd-mo-heal-vault-side-786450b12f4a2793",
-      "updated_at": "2026-09-11T00:16:39Z",
+      "updated_at": "2026-09-11T19:02:27Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -1119,20 +2065,30 @@
       "number": 7043,
       "title": "docs(prophet): align downside research with absolute loss, entry paths and existing owners",
       "head_ref": "sol/prophet-absolute-downside-research-20260910",
-      "updated_at": "2026-09-11T06:04:16Z",
+      "updated_at": "2026-09-12T00:48:34Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
-      "files_count": 16,
+      "files_count": 26,
       "files_truncated": false,
       "files_error": false,
       "files": [
+        ".github/r6/board_coherence_audit.py.gz.b64.part1",
+        ".github/r6/board_coherence_audit.py.gz.b64.part2",
+        ".github/r6/run_mutations.py.gz.b64",
+        ".github/r6/test_board_coherence_audit.py.gz.b64",
+        ".github/r6/test_board_coherence_audit.py.gz.b64.part1",
+        ".github/r6/test_board_coherence_audit.py.gz.b64.part2",
+        ".github/workflows/prophet-r6-audit-once.yml",
         "agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-09-10-prophet-research.md",
         "research/grey_deer/NEXT_DECISION_STUDY_QUALIFICATION_2026-09-11.md",
         "research/grey_deer/PROPHET_ABSOLUTE_DOWNSIDE_RESEARCH_RULING_2026-09-10.md",
         "research/grey_deer/PROPHET_DOWNSIDE_PILOT_PREREG_2026-09-10.md",
         "research/grey_deer/ROUND5_GRADER_AND_PLACEMENT_ADDENDUM.md",
         "research/grey_deer/ROUND5_POPULATION_AND_SCORING_QUALIFICATION.md",
+        "research/grey_deer/ROUND6_BOARD_COHERENCE_AUDIT_CLARIFICATION_2026-09-11.md",
+        "research/grey_deer/ROUND6_BOARD_COHERENCE_AUDIT_CLARIFICATION_2_2026-09-11.md",
+        "research/grey_deer/ROUND6_BOARD_COHERENCE_AUDIT_PREREG_2026-09-11.md",
         "research/grey_deer/absolute_downside_pilot/ROUND3_RESULTS.md",
         "research/grey_deer/absolute_downside_pilot/archive_pilot.py",
         "research/grey_deer/absolute_downside_pilot/test_archive_pilot.py",
@@ -1144,13 +2100,15 @@
         "research/grey_deer/qualification_evidence/joint_score_counterexample.json",
         "research/grey_deer/qualification_evidence/receipt_chain_checks.json"
       ],
-      "protected_paths_touched": []
+      "protected_paths_touched": [
+        ".github/workflows/prophet-r6-audit-once.yml"
+      ]
     },
     {
       "number": 7042,
       "title": "[MO-A] fix: forex hero stance follows dollar_dir (was inverted) + horizon labels",
       "head_ref": "claude/ssd-mo-heal-forex-stance-3225c1a35e3d8137",
-      "updated_at": "2026-09-11T04:05:19Z",
+      "updated_at": "2026-09-12T03:02:23Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -1168,7 +2126,7 @@
       "number": 7040,
       "title": "Fix Risk Radar score velocity and explain regime changes",
       "head_ref": "claude/risk-radar-score-velocity-20260910",
-      "updated_at": "2026-09-11T06:40:10Z",
+      "updated_at": "2026-09-11T21:14:27Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -1189,7 +2147,7 @@
       "number": 7039,
       "title": "[WS:CHAIRMAN-CONTROL-ROOM] Surgical Web CEO autonomy closure handoff",
       "head_ref": "claude/autonomy-surgical-web-ceo-closure-20260910",
-      "updated_at": "2026-09-11T05:45:47Z",
+      "updated_at": "2026-09-12T00:23:42Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -1223,7 +2181,7 @@
       "number": 7036,
       "title": "Release Radar A1: diagnostic truth for CPI/PPI cards (#6868) \u2014 HOLD-FOR-SOL",
       "head_ref": "claude/ssd-release-radar-a1-diagnostic-truth-d788ca4849d8a935",
-      "updated_at": "2026-09-10T18:52:02Z",
+      "updated_at": "2026-09-11T09:27:45Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -1385,39 +2343,20 @@
       "protected_paths_touched": []
     },
     {
-      "number": 7033,
-      "title": "[MO-A] Macro Command cleanup: force_state evidence validation + manifest tool-hash truth (follow-ups)",
-      "head_ref": "claude/mo-a-cleanup-followups-20260910",
-      "updated_at": "2026-09-10T16:32:03Z",
-      "is_draft": false,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 3,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        "mockups/evidence/sanctions_map/manifest.json",
-        "scripts/check_ui_visual_evidence.py",
-        "tests/test_check_ui_visual_evidence.py"
-      ],
-      "protected_paths_touched": [
-        "scripts/check_ui_visual_evidence.py"
-      ]
-    },
-    {
       "number": 7032,
       "title": "[MO-B HEAL] Macro suite pages: a reviewed label for every typed contradiction kind; boundary test isolated from the contradiction precedence",
       "head_ref": "claude/mo-b-heal-suite-labels-1",
-      "updated_at": "2026-09-11T04:19:56Z",
+      "updated_at": "2026-09-11T11:51:00Z",
       "is_draft": false,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 3,
+      "merge_state": "DIRTY",
+      "merge_state_raw": "DIRTY",
+      "files_count": 4,
       "files_truncated": false,
       "files_error": false,
       "files": [
         "lib/macro_suite_labels.py",
         "lib/macro_suite_view.py",
+        "tests/test_macro_monetary_hub.py",
         "tests/test_macro_suite_pages.py"
       ],
       "protected_paths_touched": []
@@ -1461,25 +2400,29 @@
     },
     {
       "number": 7027,
-      "title": "docs(options): Nightglass recovery, source truth and delivered-opportunity evaluation",
+      "title": "docs(options): Nightglass mechanics, population attribution and Flow semantics",
       "head_ref": "codex/nightglass-public-research-20260910-sol",
-      "updated_at": "2026-09-11T05:36:35Z",
+      "updated_at": "2026-09-11T19:59:11Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
-      "files_count": 13,
+      "files_count": 17,
       "files_truncated": false,
       "files_error": false,
       "files": [
         "agentos/discoveries/DSC-OPTIONS-ACTUAL-CENSUS-MISSING-MEASUREMENTS-AND-RECOVERABLE-PROVENANCE.md",
+        "agentos/discoveries/DSC-OPTIONS-FLOW-ENRICH-CONFLATES-SWEEP-PACKAGE-AND-CREDITS-UNKNOWN.md",
         "agentos/discoveries/DSC-OPTIONS-MEASUREMENT-LABELS-BARRIER-NULL-AND-STRUCTURE-CLOCKS.md",
         "agentos/discoveries/DSC-OPTIONS-NIGHTGLASS-SEPARATE-METHODS-AND-PRICE-ANCHORS.md",
+        "agentos/discoveries/DSC-OPTIONS-PERFORMANCE-POPULATIONS-ATTRIBUTION-AND-GRADING-NONCOMPARABLE.md",
         "agentos/discoveries/DSC-OPTIONS-REFERENCE-QUOTES-ARE-NOT-DELIVERED-OPPORTUNITIES.md",
         "agentos/discoveries/DSC-OPTIONS-RUNTIME-DEPLOYMENT-AND-OUTCOME-PUBLICATION-BLOCKERS.md",
         "agentos/discoveries/DSC-OPTIONS-SOURCE-HOST-AND-SHADOW-CONSUMER-DIVERGENCE.md",
         "research/options_estate/NIGHTGLASS_HARDENING_AND_MODEL_RESEARCH_2026-09-10.md",
         "research/options_estate/NIGHTGLASS_PUBLIC_MECHANICS_2026-09-10.md",
+        "research/options_estate/NIGHTGLASS_PUBLIC_POPULATIONS_ATTRIBUTION_AND_GRADING_2026-09-11.md",
         "research/options_estate/OPTIONS_ACTUAL_CENSUS_AND_RECOVERY_2026-09-10.md",
+        "research/options_estate/OPTIONS_FLOW_SEMANTICS_AND_PACKAGE_GAP_2026-09-11.md",
         "research/options_estate/OPTIONS_HOST_TOPOLOGY_AND_CONSUMER_RECOVERY_2026-09-11.md",
         "research/options_estate/OPTIONS_MEASUREMENT_PANEL_PREREG_DRAFT_2026-09-10.md",
         "research/options_estate/OPTIONS_REFERENCE_DELIVERY_AND_MODEL_ACCEPTANCE_2026-09-11.md",
@@ -1491,7 +2434,7 @@
       "number": 7026,
       "title": "HOLD-FOR-SOL: fix landing mobile footer and situation-card overflow",
       "head_ref": "claude/sol-homepage-mobile-20260909",
-      "updated_at": "2026-09-10T04:15:25Z",
+      "updated_at": "2026-09-11T20:02:47Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -1616,7 +2559,7 @@
       "number": 7024,
       "title": "[HOLD-FOR-SOL] Dated regime intelligence in the existing AI briefing",
       "head_ref": "claude/hmm-briefing-context-20260909",
-      "updated_at": "2026-09-11T05:41:02Z",
+      "updated_at": "2026-09-11T20:29:08Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -1694,8 +2637,8 @@
       "head_ref": "claude/alert-center-v2-astra-20260908",
       "updated_at": "2026-09-10T15:46:08Z",
       "is_draft": true,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
+      "merge_state": "DIRTY",
+      "merge_state_raw": "DIRTY",
       "files_count": 48,
       "files_truncated": false,
       "files_error": false,
@@ -1830,7 +2773,7 @@
       "number": 7017,
       "title": "Policy Watch R1: official updates and calendar recovery (release verification)",
       "head_ref": "claude/policy-watch-recovery-20260908",
-      "updated_at": "2026-09-11T04:25:51Z",
+      "updated_at": "2026-09-11T11:30:20Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -1868,7 +2811,7 @@
       "number": 7015,
       "title": "[HOLD-FOR-SOL] Regime history honesty: recorded predictions, not hindsight reconstruction",
       "head_ref": "claude/hmm-regime-research-20260909",
-      "updated_at": "2026-09-11T05:42:06Z",
+      "updated_at": "2026-09-11T17:20:57Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -2053,54 +2996,11 @@
       "protected_paths_touched": []
     },
     {
-      "number": 7008,
-      "title": "[MO-A-W4] A-F01-W4-1: Treasury curve-shape hero on the rates_curves route \u2014 today vs prior close vs prior month, context only (MO-DELTA-012)",
-      "head_ref": "claude/mo-b-a-f01-w4-1-treasury-curve-hero",
-      "updated_at": "2026-09-11T04:25:23Z",
-      "is_draft": false,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 28,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        ".github/ci/legacy-jobs.yml",
-        "engine/market_os/macro_workspaces/rates_curves.py",
-        "lib/macro_suite_labels.py",
-        "lib/macro_suite_view.py",
-        "mockups/evidence/a-f01-w4-1/005b062f549fd1e8.png",
-        "mockups/evidence/a-f01-w4-1/3d8f6aef5a16cc07.png",
-        "mockups/evidence/a-f01-w4-1/46ed0053e31df54a.png",
-        "mockups/evidence/a-f01-w4-1/4c0a6a89f5365520.png",
-        "mockups/evidence/a-f01-w4-1/5109879e918bc4b9.png",
-        "mockups/evidence/a-f01-w4-1/5b5b436d805285ea.png",
-        "mockups/evidence/a-f01-w4-1/615743eb4aa80ad1.png",
-        "mockups/evidence/a-f01-w4-1/929cf51934f5c4dc.png",
-        "mockups/evidence/a-f01-w4-1/EVIDENCE.yml",
-        "mockups/evidence/a-f01-w4-1/a31697b7dbd91481.png",
-        "mockups/evidence/a-f01-w4-1/a4f3e1ca795bcb38.png",
-        "mockups/evidence/a-f01-w4-1/c653bd267bfdf672.png",
-        "mockups/evidence/a-f01-w4-1/c6637782671dfb14.png",
-        "mockups/evidence/a-f01-w4-1/c9d149e3112251d9.png",
-        "mockups/evidence/a-f01-w4-1/e0026329fefcad13.png",
-        "mockups/evidence/a-f01-w4-1/e13afe061bb1a956.png",
-        "mockups/evidence/a-f01-w4-1/eed1ea9c3156db36.png",
-        "mockups/evidence/a-f01-w4-1/manifest.json",
-        "templates/_curve_panel.html.j2",
-        "templates/_macro_suite_shell.html.j2",
-        "tests/test_macro_monetary_hub.py",
-        "tests/test_macro_rates_curves_bonds_guard.py",
-        "tests/test_macro_rates_curves_route.py",
-        "tests/test_macro_suite_pages.py"
-      ],
-      "protected_paths_touched": []
-    },
-    {
       "number": 7007,
       "title": "[MO-BB2b] B-F06-3: Second-issuer cockpit per the F06 scope freeze \u2014 eight panels over the shipped security-state view model, personal-impact card refolded (stacked on #6920)",
       "head_ref": "claude/mo-b-f06-3-second-issuer-cockpit",
-      "updated_at": "2026-09-11T01:03:51Z",
-      "is_draft": true,
+      "updated_at": "2026-09-11T18:27:54Z",
+      "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
       "files_count": 13,
@@ -2127,7 +3027,7 @@
       "number": 7006,
       "title": "[MO-BB3c] B-F09-6b: Capital-markets policy calendar section \u2014 dated policy events projected onto six frozen capital-markets windows, context only, beside the merged Policy watch chip",
       "head_ref": "claude/mo-b-f09-6b-policy-projection-section",
-      "updated_at": "2026-09-10T20:09:44Z",
+      "updated_at": "2026-09-11T08:47:48Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -2537,7 +3437,7 @@
       "number": 6985,
       "title": "Macro Command P5: copy-law sweep, analyst polish, evidence",
       "head_ref": "claude/marketontology-macro-command-p5-20260908",
-      "updated_at": "2026-09-11T02:22:32Z",
+      "updated_at": "2026-09-11T23:50:07Z",
       "is_draft": false,
       "merge_state": "DIRTY",
       "merge_state_raw": "DIRTY",
@@ -3357,7 +4257,7 @@
       "number": 6946,
       "title": "[RECORDS ONLY][DRAFT] WS:CHAIRMAN-CONTROL-ROOM connected-office delivery and source-boundary checkpoint",
       "head_ref": "codex/connected-office-handoff-20260906-websol",
-      "updated_at": "2026-09-11T05:36:56Z",
+      "updated_at": "2026-09-12T00:47:18Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -3432,179 +4332,6 @@
         "agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-09-06-web-sol-census-c1.md"
       ],
       "protected_paths_touched": []
-    },
-    {
-      "number": 6939,
-      "title": "Require verified external SSD storage for configured agent worktrees",
-      "head_ref": "claude/ssd-worktree-policy-20260906",
-      "updated_at": "2026-09-10T22:48:34Z",
-      "is_draft": true,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 15,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        ".claude/hooks/worktree_create_sparse.py",
-        ".github/ci/legacy-jobs.yml",
-        "AGENTS.md",
-        "CLAUDE.md",
-        "docs/superpowers/plans/2026-09-06-external-worktree-storage.md",
-        "research/EXTERNAL_WORKTREE_STORAGE_ROLLOUT_2026_09_06.md",
-        "scripts/install_worktree_storage.py",
-        "scripts/worktree_gc.py",
-        "scripts/worktree_gc_launchd.py",
-        "scripts/worktree_sparse.py",
-        "scripts/worktree_storage.py",
-        "tests/test_install_worktree_storage.py",
-        "tests/test_worktree_gc_launchd.py",
-        "tests/test_worktree_placement.py",
-        "tests/test_worktree_storage.py"
-      ],
-      "protected_paths_touched": []
-    },
-    {
-      "number": 6938,
-      "title": "[MAS-6][AGENT OS][DRAFT] Fail closed on nullable PR file lists",
-      "head_ref": "sol/mas-6-active-build-map-null-files-repair-20260906",
-      "updated_at": "2026-09-06T15:53:43Z",
-      "is_draft": true,
-      "merge_state": "CLEAN",
-      "merge_state_raw": "CLEAN",
-      "files_count": 2,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        "scripts/build_active_build_map.py",
-        "tests/test_build_active_build_map.py"
-      ],
-      "protected_paths_touched": []
-    },
-    {
-      "number": 6937,
-      "title": "Macro Command P2: The Read + state strip",
-      "head_ref": "claude/marketontology-macro-command-p2-20260906",
-      "updated_at": "2026-09-08T14:24:01Z",
-      "is_draft": false,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 22,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        ".github/ci/legacy-jobs.yml",
-        "lib/macro_suite_labels.py",
-        "lib/macro_suite_view.py",
-        "mockups/evidence/macro-command-p2/EVIDENCE.yml",
-        "mockups/evidence/macro-command-p2/manifest.json",
-        "mockups/evidence/macro-command-p2/mc-p2-dark-en-1440.png",
-        "mockups/evidence/macro-command-p2/mc-p2-dark-en-390.png",
-        "mockups/evidence/macro-command-p2/mc-p2-dark-zh-1440.png",
-        "mockups/evidence/macro-command-p2/mc-p2-dark-zh-390.png",
-        "mockups/evidence/macro-command-p2/mc-p2-light-en-1440.png",
-        "mockups/evidence/macro-command-p2/mc-p2-light-en-390.png",
-        "mockups/evidence/macro-command-p2/mc-p2-light-zh-1440.png",
-        "mockups/evidence/macro-command-p2/mc-p2-light-zh-390.png",
-        "scripts/build_macro_suite_pages.py",
-        "site/macro_command.css",
-        "site/macro_monetary.html",
-        "templates/_macro_command_macros.html.j2",
-        "templates/macro_command.css",
-        "templates/macro_monetary.html.j2",
-        "tests/test_macro_command_read_strip.py",
-        "tests/test_macro_command_shell.py",
-        "tests/test_macro_monetary_hub.py"
-      ],
-      "protected_paths_touched": []
-    },
-    {
-      "number": 6933,
-      "title": "A-F02-W2-2: Country political/policy-stance dossier on the Japan country dashboard",
-      "head_ref": "claude/mo-a-2-a-f02-w2-2",
-      "updated_at": "2026-09-10T10:57:08Z",
-      "is_draft": false,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 20,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        ".github/ci/legacy-jobs.yml",
-        "engine/country_dossier.py",
-        "engine/international_macro_dashboard.py",
-        "knowledge/policy_geo/country_dossier/jp.yaml",
-        "mockups/evidence/mo-f02-w2-2/EVIDENCE.yml",
-        "mockups/evidence/mo-f02-w2-2/capture_dossier_matrix.py",
-        "mockups/evidence/mo-f02-w2-2/dossier-no_coverage-dark-en-1440.png",
-        "mockups/evidence/mo-f02-w2-2/dossier-no_coverage-light-en-1440.png",
-        "mockups/evidence/mo-f02-w2-2/dossier-ok-dark-en-1440.png",
-        "mockups/evidence/mo-f02-w2-2/dossier-ok-dark-en-390.png",
-        "mockups/evidence/mo-f02-w2-2/dossier-ok-dark-zh-1440.png",
-        "mockups/evidence/mo-f02-w2-2/dossier-ok-dark-zh-390.png",
-        "mockups/evidence/mo-f02-w2-2/dossier-ok-light-en-1440.png",
-        "mockups/evidence/mo-f02-w2-2/dossier-ok-light-en-390.png",
-        "mockups/evidence/mo-f02-w2-2/dossier-ok-light-zh-1440.png",
-        "mockups/evidence/mo-f02-w2-2/dossier-ok-light-zh-390.png",
-        "mockups/evidence/mo-f02-w2-2/manifest.json",
-        "templates/international_macro.html.j2",
-        "tests/test_country_dossier.py",
-        "tests/test_international_macro_dashboards.py"
-      ],
-      "protected_paths_touched": []
-    },
-    {
-      "number": 6930,
-      "title": "Macro Command P1: shell, left rail, hash routing, tokens, copy guard",
-      "head_ref": "claude/marketontology-macro-command-p1-20260906",
-      "updated_at": "2026-09-09T02:07:57Z",
-      "is_draft": false,
-      "merge_state": "DIRTY",
-      "merge_state_raw": "DIRTY",
-      "files_count": 37,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        ".github/ci/legacy-jobs.yml",
-        "agentos/handoffs/MARKET-ONTOLOGY-META-CEO-A-2026-09-07.md",
-        "mockups/evidence/macro-command-p1/01-dark-en-1440.png",
-        "mockups/evidence/macro-command-p1/02-dark-zh-1440.png",
-        "mockups/evidence/macro-command-p1/03-light-en-1440.png",
-        "mockups/evidence/macro-command-p1/04-light-zh-1440.png",
-        "mockups/evidence/macro-command-p1/05-dark-en-390-fold.png",
-        "mockups/evidence/macro-command-p1/05-dark-en-390.png",
-        "mockups/evidence/macro-command-p1/06-light-zh-390-fold.png",
-        "mockups/evidence/macro-command-p1/06-light-zh-390.png",
-        "mockups/evidence/macro-command-p1/07-dark-en-subtabs-credit-funding.png",
-        "mockups/evidence/macro-command-p1/08-light-en-390-fold.png",
-        "mockups/evidence/macro-command-p1/08-light-en-390.png",
-        "mockups/evidence/macro-command-p1/09-dark-zh-390-fold.png",
-        "mockups/evidence/macro-command-p1/09-dark-zh-390.png",
-        "mockups/evidence/macro-command-p1/10-dark-en-768.png",
-        "mockups/evidence/macro-command-p1/11-light-en-768.png",
-        "mockups/evidence/macro-command-p1/12-dark-en-1440-details-open.png",
-        "mockups/evidence/macro-command-p1/13-dark-en-1440-activation.png",
-        "mockups/evidence/macro-command-p1/14-light-en-1440-activation.png",
-        "mockups/evidence/macro-command-p1/15-dark-en-1440-dest-hover.png",
-        "mockups/evidence/macro-command-p1/16-light-en-1440-dest-hover.png",
-        "mockups/evidence/macro-command-p1/EVIDENCE.yml",
-        "mockups/evidence/macro-command-p1/manifest.json",
-        "scripts/build_macro_suite_pages.py",
-        "scripts/check_macro_command_copy.py",
-        "site/macro_command.css",
-        "site/macro_command.js",
-        "site/macro_monetary.html",
-        "templates/_macro_command_macros.html.j2",
-        "templates/macro_command.css",
-        "templates/macro_command.js",
-        "templates/macro_monetary.html.j2",
-        "tests/test_macro_command_copy_law.py",
-        "tests/test_macro_command_shell.py",
-        "tests/test_macro_monetary_hub.py",
-        "tests/test_macro_suite_pages.py"
-      ],
-      "protected_paths_touched": [
-        "scripts/check_macro_command_copy.py"
-      ]
     }
   ],
   "collisions": [
@@ -3733,59 +4460,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 6985,
-      "pr_b": 6930,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml",
-        "agentos/handoffs/MARKET-ONTOLOGY-META-CEO-A-2026-09-07.md",
-        "mockups/evidence/macro-command-p1/01-dark-en-1440.png",
-        "mockups/evidence/macro-command-p1/02-dark-zh-1440.png",
-        "mockups/evidence/macro-command-p1/03-light-en-1440.png",
-        "mockups/evidence/macro-command-p1/04-light-zh-1440.png",
-        "mockups/evidence/macro-command-p1/05-dark-en-390-fold.png",
-        "mockups/evidence/macro-command-p1/05-dark-en-390.png",
-        "mockups/evidence/macro-command-p1/06-light-zh-390-fold.png",
-        "mockups/evidence/macro-command-p1/06-light-zh-390.png",
-        "mockups/evidence/macro-command-p1/07-dark-en-subtabs-credit-funding.png",
-        "mockups/evidence/macro-command-p1/08-light-en-390-fold.png",
-        "mockups/evidence/macro-command-p1/08-light-en-390.png",
-        "mockups/evidence/macro-command-p1/09-dark-zh-390-fold.png",
-        "mockups/evidence/macro-command-p1/09-dark-zh-390.png",
-        "mockups/evidence/macro-command-p1/10-dark-en-768.png",
-        "mockups/evidence/macro-command-p1/11-light-en-768.png",
-        "mockups/evidence/macro-command-p1/12-dark-en-1440-details-open.png",
-        "mockups/evidence/macro-command-p1/13-dark-en-1440-activation.png",
-        "mockups/evidence/macro-command-p1/14-light-en-1440-activation.png",
-        "mockups/evidence/macro-command-p1/15-dark-en-1440-dest-hover.png",
-        "mockups/evidence/macro-command-p1/16-light-en-1440-dest-hover.png",
-        "mockups/evidence/macro-command-p1/EVIDENCE.yml",
-        "mockups/evidence/macro-command-p1/manifest.json"
-      ],
-      "shared_count": 24,
-      "any_protected": false
-    },
-    {
-      "pr_a": 6985,
-      "pr_b": 6937,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml",
-        "lib/macro_suite_labels.py",
-        "lib/macro_suite_view.py",
-        "mockups/evidence/macro-command-p2/EVIDENCE.yml",
-        "mockups/evidence/macro-command-p2/manifest.json",
-        "mockups/evidence/macro-command-p2/mc-p2-dark-en-1440.png",
-        "mockups/evidence/macro-command-p2/mc-p2-dark-en-390.png",
-        "mockups/evidence/macro-command-p2/mc-p2-dark-zh-1440.png",
-        "mockups/evidence/macro-command-p2/mc-p2-dark-zh-390.png",
-        "mockups/evidence/macro-command-p2/mc-p2-light-en-1440.png",
-        "mockups/evidence/macro-command-p2/mc-p2-light-en-390.png",
-        "mockups/evidence/macro-command-p2/mc-p2-light-zh-1440.png",
-        "mockups/evidence/macro-command-p2/mc-p2-light-zh-390.png"
-      ],
-      "shared_count": 13,
-      "any_protected": false
-    },
-    {
       "pr_a": 7003,
       "pr_b": 6981,
       "shared_files": [
@@ -3801,23 +4475,6 @@
         "tests/test_b_rec2_wave_boundary_records.py"
       ],
       "shared_count": 10,
-      "any_protected": false
-    },
-    {
-      "pr_a": 6937,
-      "pr_b": 6930,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml",
-        "scripts/build_macro_suite_pages.py",
-        "site/macro_command.css",
-        "site/macro_monetary.html",
-        "templates/_macro_command_macros.html.j2",
-        "templates/macro_command.css",
-        "templates/macro_monetary.html.j2",
-        "tests/test_macro_command_shell.py",
-        "tests/test_macro_monetary_hub.py"
-      ],
-      "shared_count": 9,
       "any_protected": false
     },
     {
@@ -3856,106 +4513,6 @@
         "templates/landing.css"
       ],
       "shared_count": 4,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7008,
-      "pr_b": 6985,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml",
-        "engine/market_os/macro_workspaces/rates_curves.py",
-        "lib/macro_suite_labels.py",
-        "lib/macro_suite_view.py"
-      ],
-      "shared_count": 4,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7008,
-      "pr_b": 6937,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml",
-        "lib/macro_suite_labels.py",
-        "lib/macro_suite_view.py",
-        "tests/test_macro_monetary_hub.py"
-      ],
-      "shared_count": 4,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7062,
-      "pr_b": 6974,
-      "shared_files": [
-        "scripts/build_site.py",
-        "templates/dashboard.html.j2",
-        "tests/test_dashboard_template_render.py"
-      ],
-      "shared_count": 3,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7046,
-      "pr_b": 7022,
-      "shared_files": [
-        "engine/alert_triage.py",
-        "templates/alerts.html.j2",
-        "tests/test_alert_triage.py"
-      ],
-      "shared_count": 3,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7032,
-      "pr_b": 7008,
-      "shared_files": [
-        "lib/macro_suite_labels.py",
-        "lib/macro_suite_view.py",
-        "tests/test_macro_suite_pages.py"
-      ],
-      "shared_count": 3,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7008,
-      "pr_b": 6982,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml",
-        "lib/macro_suite_labels.py",
-        "lib/macro_suite_view.py"
-      ],
-      "shared_count": 3,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7008,
-      "pr_b": 6930,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml",
-        "tests/test_macro_monetary_hub.py",
-        "tests/test_macro_suite_pages.py"
-      ],
-      "shared_count": 3,
-      "any_protected": false
-    },
-    {
-      "pr_a": 6982,
-      "pr_b": 6937,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml",
-        "lib/macro_suite_labels.py",
-        "lib/macro_suite_view.py"
-      ],
-      "shared_count": 3,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7062,
-      "pr_b": 7017,
-      "shared_files": [
-        "engine/macro_news.py",
-        "tests/test_macro_news.py"
-      ],
-      "shared_count": 2,
       "any_protected": false
     },
     {
@@ -4029,16 +4586,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7032,
-      "pr_b": 6937,
-      "shared_files": [
-        "lib/macro_suite_labels.py",
-        "lib/macro_suite_view.py"
-      ],
-      "shared_count": 2,
-      "any_protected": false
-    },
-    {
       "pr_a": 7014,
       "pr_b": 7011,
       "shared_files": [
@@ -4089,16 +4636,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7008,
-      "pr_b": 6983,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml",
-        "lib/macro_suite_labels.py"
-      ],
-      "shared_count": 2,
-      "any_protected": false
-    },
-    {
       "pr_a": 7007,
       "pr_b": 7004,
       "shared_files": [
@@ -4129,13 +4666,39 @@
       "any_protected": false
     },
     {
-      "pr_a": 6983,
-      "pr_b": 6937,
+      "pr_a": 7073,
+      "pr_b": 7057,
       "shared_files": [
-        ".github/ci/legacy-jobs.yml",
-        "lib/macro_suite_labels.py"
+        "config/product_experience/page_registry_overrides.yml"
       ],
-      "shared_count": 2,
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7072,
+      "pr_b": 7056,
+      "shared_files": [
+        "engine/i18n.py"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7072,
+      "pr_b": 7050,
+      "shared_files": [
+        "engine/i18n.py"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7072,
+      "pr_b": 7037,
+      "shared_files": [
+        "engine/i18n.py"
+      ],
+      "shared_count": 1,
       "any_protected": false
     },
     {
@@ -4266,15 +4829,6 @@
     },
     {
       "pr_a": 7066,
-      "pr_b": 7008,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7066,
       "pr_b": 7006,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -4348,42 +4902,6 @@
     {
       "pr_a": 7066,
       "pr_b": 6958,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7066,
-      "pr_b": 6939,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7066,
-      "pr_b": 6937,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7066,
-      "pr_b": 6933,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7066,
-      "pr_b": 6930,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -4509,15 +5027,6 @@
     },
     {
       "pr_a": 7064,
-      "pr_b": 7008,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7064,
       "pr_b": 7006,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -4598,42 +5107,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7064,
-      "pr_b": 6939,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7064,
-      "pr_b": 6937,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7064,
-      "pr_b": 6933,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7064,
-      "pr_b": 6930,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7062,
       "pr_b": 7040,
       "shared_files": [
@@ -4644,18 +5117,9 @@
     },
     {
       "pr_a": 7062,
-      "pr_b": 7036,
+      "pr_b": 7017,
       "shared_files": [
-        "templates/dashboard.html.j2"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7062,
-      "pr_b": 6999,
-      "shared_files": [
-        "templates/dashboard.html.j2"
+        "engine/macro_news.py"
       ],
       "shared_count": 1,
       "any_protected": false
@@ -4770,15 +5234,6 @@
     },
     {
       "pr_a": 7060,
-      "pr_b": 7008,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7060,
       "pr_b": 7006,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -4852,42 +5307,6 @@
     {
       "pr_a": 7060,
       "pr_b": 6958,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7060,
-      "pr_b": 6939,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7060,
-      "pr_b": 6937,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7060,
-      "pr_b": 6933,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7060,
-      "pr_b": 6930,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -5031,15 +5450,6 @@
     },
     {
       "pr_a": 7036,
-      "pr_b": 7008,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7036,
       "pr_b": 7006,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -5120,42 +5530,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7036,
-      "pr_b": 6939,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7036,
-      "pr_b": 6937,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7036,
-      "pr_b": 6933,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7036,
-      "pr_b": 6930,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7034,
       "pr_b": 7024,
       "shared_files": [
@@ -5238,15 +5612,6 @@
     },
     {
       "pr_a": 7034,
-      "pr_b": 7008,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7034,
       "pr_b": 7006,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -5320,42 +5685,6 @@
     {
       "pr_a": 7034,
       "pr_b": 6958,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7034,
-      "pr_b": 6939,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7034,
-      "pr_b": 6937,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7034,
-      "pr_b": 6933,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7034,
-      "pr_b": 6930,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -5372,15 +5701,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7032,
-      "pr_b": 6930,
-      "shared_files": [
-        "tests/test_macro_suite_pages.py"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7026,
       "pr_b": 7024,
       "shared_files": [
@@ -5463,15 +5783,6 @@
     },
     {
       "pr_a": 7026,
-      "pr_b": 7008,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7026,
       "pr_b": 7006,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -5545,42 +5856,6 @@
     {
       "pr_a": 7026,
       "pr_b": 6958,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7026,
-      "pr_b": 6939,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7026,
-      "pr_b": 6937,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7026,
-      "pr_b": 6933,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7026,
-      "pr_b": 6930,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -5661,15 +5936,6 @@
     },
     {
       "pr_a": 7024,
-      "pr_b": 7008,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7024,
       "pr_b": 7006,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -5743,42 +6009,6 @@
     {
       "pr_a": 7024,
       "pr_b": 6958,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7024,
-      "pr_b": 6939,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7024,
-      "pr_b": 6937,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7024,
-      "pr_b": 6933,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7024,
-      "pr_b": 6930,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -5850,15 +6080,6 @@
     },
     {
       "pr_a": 7023,
-      "pr_b": 7008,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7023,
       "pr_b": 7006,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -5932,42 +6153,6 @@
     {
       "pr_a": 7023,
       "pr_b": 6958,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7023,
-      "pr_b": 6939,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7023,
-      "pr_b": 6937,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7023,
-      "pr_b": 6933,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7023,
-      "pr_b": 6930,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -6030,15 +6215,6 @@
     },
     {
       "pr_a": 7022,
-      "pr_b": 7008,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7022,
       "pr_b": 7006,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -6112,42 +6288,6 @@
     {
       "pr_a": 7022,
       "pr_b": 6958,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7022,
-      "pr_b": 6939,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7022,
-      "pr_b": 6937,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7022,
-      "pr_b": 6933,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7022,
-      "pr_b": 6930,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -6201,15 +6341,6 @@
     },
     {
       "pr_a": 7021,
-      "pr_b": 7008,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7021,
       "pr_b": 7006,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -6283,42 +6414,6 @@
     {
       "pr_a": 7021,
       "pr_b": 6958,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7021,
-      "pr_b": 6939,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7021,
-      "pr_b": 6937,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7021,
-      "pr_b": 6933,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7021,
-      "pr_b": 6930,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -6363,15 +6458,6 @@
     },
     {
       "pr_a": 7015,
-      "pr_b": 7008,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7015,
       "pr_b": 7006,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -6445,42 +6531,6 @@
     {
       "pr_a": 7015,
       "pr_b": 6958,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7015,
-      "pr_b": 6939,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7015,
-      "pr_b": 6937,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7015,
-      "pr_b": 6933,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7015,
-      "pr_b": 6930,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -6507,15 +6557,6 @@
     },
     {
       "pr_a": 7014,
-      "pr_b": 7008,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7014,
       "pr_b": 7006,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -6582,42 +6623,6 @@
       "pr_b": 6957,
       "shared_files": [
         "research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7014,
-      "pr_b": 6939,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7014,
-      "pr_b": 6937,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7014,
-      "pr_b": 6933,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7014,
-      "pr_b": 6930,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
       ],
       "shared_count": 1,
       "any_protected": false
@@ -6642,15 +6647,6 @@
     },
     {
       "pr_a": 7012,
-      "pr_b": 7008,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7012,
       "pr_b": 7006,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -6731,53 +6727,8 @@
       "any_protected": false
     },
     {
-      "pr_a": 7012,
-      "pr_b": 6939,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7012,
-      "pr_b": 6937,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7012,
-      "pr_b": 6933,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7012,
-      "pr_b": 6930,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7011,
       "pr_b": 7010,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7011,
-      "pr_b": 7008,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -6857,51 +6808,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7011,
-      "pr_b": 6939,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7011,
-      "pr_b": 6937,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7011,
-      "pr_b": 6933,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7011,
-      "pr_b": 6930,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7010,
-      "pr_b": 7008,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7010,
       "pr_b": 7006,
       "shared_files": [
@@ -6983,114 +6889,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7010,
-      "pr_b": 6939,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7010,
-      "pr_b": 6937,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7010,
-      "pr_b": 6933,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7010,
-      "pr_b": 6930,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7008,
-      "pr_b": 7006,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7008,
-      "pr_b": 7004,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7008,
-      "pr_b": 7003,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7008,
-      "pr_b": 6981,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7008,
-      "pr_b": 6974,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7008,
-      "pr_b": 6958,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7008,
-      "pr_b": 6939,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7008,
-      "pr_b": 6933,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7006,
       "pr_b": 7004,
       "shared_files": [
@@ -7156,42 +6954,6 @@
     {
       "pr_a": 7006,
       "pr_b": 6958,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7006,
-      "pr_b": 6939,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7006,
-      "pr_b": 6937,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7006,
-      "pr_b": 6933,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7006,
-      "pr_b": 6930,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -7271,42 +7033,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7004,
-      "pr_b": 6939,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7004,
-      "pr_b": 6937,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7004,
-      "pr_b": 6933,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7004,
-      "pr_b": 6930,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7003,
       "pr_b": 6985,
       "shared_files": [
@@ -7356,42 +7082,6 @@
       "pr_b": 6957,
       "shared_files": [
         "research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7003,
-      "pr_b": 6939,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7003,
-      "pr_b": 6937,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7003,
-      "pr_b": 6933,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7003,
-      "pr_b": 6930,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
       ],
       "shared_count": 1,
       "any_protected": false
@@ -7451,24 +7141,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 6985,
-      "pr_b": 6939,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 6985,
-      "pr_b": 6933,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 6983,
       "pr_b": 6981,
       "shared_files": [
@@ -7496,33 +7168,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 6983,
-      "pr_b": 6939,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 6983,
-      "pr_b": 6933,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 6983,
-      "pr_b": 6930,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 6982,
       "pr_b": 6981,
       "shared_files": [
@@ -7543,33 +7188,6 @@
     {
       "pr_a": 6982,
       "pr_b": 6958,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 6982,
-      "pr_b": 6939,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 6982,
-      "pr_b": 6933,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 6982,
-      "pr_b": 6930,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -7604,161 +7222,8 @@
       "any_protected": false
     },
     {
-      "pr_a": 6981,
-      "pr_b": 6939,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 6981,
-      "pr_b": 6937,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 6981,
-      "pr_b": 6933,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 6981,
-      "pr_b": 6930,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 6974,
       "pr_b": 6958,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 6974,
-      "pr_b": 6939,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 6974,
-      "pr_b": 6937,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 6974,
-      "pr_b": 6933,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 6974,
-      "pr_b": 6930,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 6958,
-      "pr_b": 6939,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 6958,
-      "pr_b": 6937,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 6958,
-      "pr_b": 6933,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 6958,
-      "pr_b": 6930,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 6939,
-      "pr_b": 6937,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 6939,
-      "pr_b": 6933,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 6939,
-      "pr_b": 6930,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 6937,
-      "pr_b": 6933,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 6933,
-      "pr_b": 6930,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -7768,14 +7233,34 @@
   ],
   "recent_merged": [
     {
+      "number": 7078,
+      "title": "[MO-B] Wave 4 record \u2014 Meta-CEO B 2026-09-11T12",
+      "merged_at": "2026-09-11T17:47:29Z"
+    },
+    {
+      "number": 7071,
+      "title": "[MO-B] Wave 3 record \u2014 Meta-CEO B 2026-09-11",
+      "merged_at": "2026-09-11T12:19:10Z"
+    },
+    {
       "number": 7068,
       "title": "HOTFIX: remove misleading China Risk Radar recovery panel",
       "merged_at": "2026-09-11T05:16:25Z"
     },
     {
+      "number": 7046,
+      "title": "[MO-A] fix: alerts EN truncation amputated sentences + deleted risk caveat (heal W3)",
+      "merged_at": "2026-09-11T21:23:55Z"
+    },
+    {
       "number": 7041,
       "title": "[MO-B] Meta-CEO B Wave 2 checkpoint record (2026-09-10)",
       "merged_at": "2026-09-11T01:12:54Z"
+    },
+    {
+      "number": 7033,
+      "title": "[MO-A] Macro Command cleanup: force_state evidence validation + manifest tool-hash truth (follow-ups)",
+      "merged_at": "2026-09-11T08:13:32Z"
     },
     {
       "number": 7019,
@@ -7791,6 +7276,11 @@
       "number": 7013,
       "title": "[MO-BB1] B-F08-7a: Account preferences writer no longer clobbers the Terminal's keys \u2014 fresh read before write, key-scoped merge, tz default from fresh state (macro side)",
       "merged_at": "2026-09-10T13:55:19Z"
+    },
+    {
+      "number": 7008,
+      "title": "[MO-A-W4] A-F01-W4-1: Treasury curve-shape hero on the rates_curves route \u2014 today vs prior close vs prior month, context only (MO-DELTA-012)",
+      "merged_at": "2026-09-11T18:01:55Z"
     },
     {
       "number": 7002,
@@ -7951,6 +7441,11 @@
       "number": 6921,
       "title": "[MO-BB2] B-F09-3: Issuer debt-maturity ladder from SEC XBRL companyfacts (bounded producer + plain-language panel)",
       "merged_at": "2026-09-09T20:24:18Z"
+    },
+    {
+      "number": 6920,
+      "title": "[MO-BB2b] B-F06-1: Second issuer end to end: owner-routed ListingAlias->ListingKey resolution + issuer_cik reader exposure, MSFT security_state.v1 + page",
+      "merged_at": "2026-09-11T18:11:14Z"
     },
     {
       "number": 6919,
@@ -8653,21 +8148,6 @@
       "merged_at": "2026-09-01T21:19:08Z"
     },
     {
-      "number": 6635,
-      "title": "fix(control-room): route auth through admin session handler",
-      "merged_at": "2026-08-29T04:20:38Z"
-    },
-    {
-      "number": 6634,
-      "title": "feat(agentos): deterministic zero-network Linear portfolio plan compiler (MAS-65) [release carrier]",
-      "merged_at": "2026-08-29T03:06:22Z"
-    },
-    {
-      "number": 6633,
-      "title": "heal(agentos): schema-normalize four 08-28 records redding the contract fleet-wide",
-      "merged_at": "2026-08-29T03:27:44Z"
-    },
-    {
       "number": 6632,
       "title": "records(alpha): reconcile K2-C/K3-D blockers and repair path",
       "merged_at": "2026-08-30T21:00:00Z"
@@ -8678,69 +8158,9 @@
       "merged_at": "2026-08-30T20:58:52Z"
     },
     {
-      "number": 6630,
-      "title": "records(eval-os): open A1 evidence-view workstream and handoff",
-      "merged_at": "2026-08-29T02:40:01Z"
-    },
-    {
       "number": 6626,
       "title": "fix(ship-loop): a lawful claude/* HOLD-FOR-SOL waits instead of being told to merge",
       "merged_at": "2026-08-29T08:59:48Z"
-    },
-    {
-      "number": 6623,
-      "title": "stocks: exit-ledger fetch exclusion + AVB successor-splice heal",
-      "merged_at": "2026-08-29T02:46:36Z"
-    },
-    {
-      "number": 6622,
-      "title": "prophet: record B1 natural production acceptance",
-      "merged_at": "2026-08-29T00:40:28Z"
-    },
-    {
-      "number": 6621,
-      "title": "fix(ci): re-base probe ceilings for the three deliberate always-on gates (TP-1 repair edge)",
-      "merged_at": "2026-08-28T22:08:24Z"
-    },
-    {
-      "number": 6619,
-      "title": "records(dossier-live-quote): realtime enabled and proven; anchor-roll defect",
-      "merged_at": "2026-08-28T16:21:21Z"
-    },
-    {
-      "number": 6618,
-      "title": "feat(control-room): add operator-auth remote access boundary",
-      "merged_at": "2026-08-28T20:09:02Z"
-    },
-    {
-      "number": 6617,
-      "title": "fix(dossier): stop rendering a rolled anchor as a zero move",
-      "merged_at": "2026-08-28T15:38:52Z"
-    },
-    {
-      "number": 6616,
-      "title": "docs(law): hold notes do not end the Stop loop \u2014 ladder out once, then stay quiet",
-      "merged_at": "2026-08-28T16:16:38Z"
-    },
-    {
-      "number": 6614,
-      "title": "biocatalyst: P1-AVAIL-1 entitled re-acceptance PASS \u2014 records closeout (MAS-172)",
-      "merged_at": "2026-08-28T12:47:37Z"
-    },
-    {
-      "number": 6612,
-      "title": "HOLD-FOR-SOL: design(canada): TP-1 theme-parity \u2014 governed stock-dashboard CSS pair + dual art directions",
-      "merged_at": "2026-08-28T17:35:28Z"
-    },
-    {
-      "number": 6611,
-      "title": "records(market-os): ratify granular full parity + beyond-parity ratchet",
-      "merged_at": "2026-08-28T12:02:02Z"
-    },
-    {
-      "number": 6610,
-      "title": "research(market-os): preserve final Market Ontology audit",
-      "merged_at": "2026-08-28T15:15:22Z"
     },
     {
       "number": 6609,
@@ -8748,44 +8168,9 @@
       "merged_at": "2026-08-30T20:56:08Z"
     },
     {
-      "number": 6607,
-      "title": "daily: commit data/qledger from the stock_briefs job (Eval OS E1)",
-      "merged_at": "2026-08-28T16:35:35Z"
-    },
-    {
-      "number": 6605,
-      "title": "heal(agentos): schema-normalize the breathing completion-commission handoff",
-      "merged_at": "2026-08-28T09:24:43Z"
-    },
-    {
-      "number": 6603,
-      "title": "records: name the overnight-503 regression and why the tests missed it",
-      "merged_at": "2026-08-28T10:21:07Z"
-    },
-    {
-      "number": 6601,
-      "title": "records(breathing): freeze completion architecture + COO C0 handoff",
-      "merged_at": "2026-08-28T06:58:26Z"
-    },
-    {
       "number": 6600,
       "title": "ACCEPTED-FOR-MERGE: CXI C0 Recovery \u2014 Benchmark Truth Recovery",
       "merged_at": "2026-08-30T05:44:15Z"
-    },
-    {
-      "number": 6599,
-      "title": "[ARCHITECTURE][SOL-ACCEPTED] Live Entry Radar end-to-end completion program",
-      "merged_at": "2026-08-28T08:38:03Z"
-    },
-    {
-      "number": 6598,
-      "title": "qledger: anchor stock_desk/thematic_desk claims at registration (Eval OS E1)",
-      "merged_at": "2026-08-28T09:13:13Z"
-    },
-    {
-      "number": 6597,
-      "title": "records(topa): freeze OOT completion architecture + R0 COO handoff",
-      "merged_at": "2026-08-28T22:18:41Z"
     },
     {
       "number": 6596,
@@ -8793,54 +8178,14 @@
       "merged_at": "2026-08-30T01:28:26Z"
     },
     {
-      "number": 6592,
-      "title": "dossier: fix the overnight 503 \u2014 regularSession is a session STATE, not a print provenance",
-      "merged_at": "2026-08-28T07:04:29Z"
-    },
-    {
       "number": 6589,
       "title": "HOLD-FOR-SOL: records(market-memory) MM-G0 R1 repair \u2014 separate terminal gate classification from causal diagnosis",
       "merged_at": "2026-08-30T01:07:31Z"
     },
     {
-      "number": 6587,
-      "title": "fix(china): heal stale A-share OHLC tails with guarded Tencent fallback",
-      "merged_at": "2026-08-28T18:14:23Z"
-    },
-    {
       "number": 6585,
       "title": "feat(oa1t): measured ThetaData trade+NBBO microstructure",
       "merged_at": "2026-08-30T00:58:45Z"
-    },
-    {
-      "number": 6584,
-      "title": "records(agentos): reconcile C1 native production gate",
-      "merged_at": "2026-08-28T18:14:31Z"
-    },
-    {
-      "number": 6582,
-      "title": "records(eval-os): freeze recovered Evaluation OS architecture and current truth",
-      "merged_at": "2026-08-28T22:18:33Z"
-    },
-    {
-      "number": 6579,
-      "title": "design(tp-0): theme-parity governance \u2014 forward-only ratchet, runtime-style fence, dual-theme evidence",
-      "merged_at": "2026-08-28T07:43:53Z"
-    },
-    {
-      "number": 6576,
-      "title": "plan(oa1t): measured ThetaData trade+NBBO microstructure",
-      "merged_at": "2026-08-28T18:14:51Z"
-    },
-    {
-      "number": 6575,
-      "title": "records(prophet-live): tighten D12 natural proof after fresh-empty production failure",
-      "merged_at": "2026-08-28T18:14:41Z"
-    },
-    {
-      "number": 6574,
-      "title": "feat(ops): add bounded M1 consumer census (#6432)",
-      "merged_at": "2026-08-28T16:16:24Z"
     },
     {
       "number": 6570,
@@ -8853,44 +8198,9 @@
       "merged_at": "2026-09-05T10:05:30Z"
     },
     {
-      "number": 6564,
-      "title": "[COMMISSION][HOLD-FOR-SOL] Project Recovery R8-B2 semantic program registry source",
-      "merged_at": "2026-08-29T03:46:03Z"
-    },
-    {
-      "number": 6546,
-      "title": "[COMMISSION][HOLD-FOR-SOL] Project Recovery R8-B Agent OS typed waits",
-      "merged_at": "2026-08-28T21:21:50Z"
-    },
-    {
-      "number": 6529,
-      "title": "records(stock-identity): freeze W3-to-final program and Fable commission",
-      "merged_at": "2026-08-28T12:49:26Z"
-    },
-    {
-      "number": 6522,
-      "title": "records(gmi): finish-and-fold Theme Graph into autonomous F04 completion",
-      "merged_at": "2026-08-28T14:44:18Z"
-    },
-    {
-      "number": 6391,
-      "title": "FF-1 acceptance-time representational equivalence",
-      "merged_at": "2026-08-28T20:24:22Z"
-    },
-    {
-      "number": 6390,
-      "title": "fix(live): make China Prophet A-share quotes genuinely live",
-      "merged_at": "2026-08-29T01:32:36Z"
-    },
-    {
       "number": 6296,
       "title": "[HOLD-FOR-SOL] W-LIQ.1 causal global liquidity state producer",
       "merged_at": "2026-09-04T11:13:23Z"
-    },
-    {
-      "number": 5737,
-      "title": "radar(w8): Live Entry Radar reference UX + RIG (Prophet sister language)",
-      "merged_at": "2026-08-28T23:53:33Z"
     }
   ]
 }

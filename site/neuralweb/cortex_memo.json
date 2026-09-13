@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.cortex_memo.v1",
-  "as_of": "2026-09-11T11:00:08+00:00",
+  "as_of": "2026-09-13T10:33:50+00:00",
   "summary": "Budget exhausted after 0 tool-call batches (0 individual calls). Partial deliberation only.",
   "what_fired": [],
   "contradictions_review": "Incomplete \u2014 budget exhausted before contradictions review.",
@@ -8,7 +8,7 @@
   "deserves_operator": [],
   "probation": {
     "schema": "neuralweb.cortex_probation.v1",
-    "as_of": "2026-09-10",
+    "as_of": "2026-09-12",
     "granted": false,
     "tier": "A0/A1 shadow",
     "reason": "insufficient-n: n=8 < min_n=25",
@@ -20,8 +20,8 @@
       "n": 8,
       "hits": 0,
       "base_rate": 0.5,
-      "ungradeable": 66,
-      "total_rows": 74
+      "ungradeable": 68,
+      "total_rows": 76
     },
     "is_context_only": true
   },
@@ -34,20 +34,12 @@
     "model_used": "claude-sonnet-4-6",
     "provider_attempts": [
       {
-        "provider": "codex",
-        "model": "gpt-5.6-sol",
+        "provider": "oauth",
+        "model": "claude-opus-4-8",
         "attempted": true,
         "ok": false,
-        "error_type": "transient",
-        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a09020-013a-7182-a2fa-6a1e8cfab5ba\"} {\"type\":\"turn.started\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Skill descriptions were shortened to fit the skills context budget. Codex can still see every sk"
-      },
-      {
-        "provider": "codex",
-        "model": "gpt-5.6-sol",
-        "attempted": true,
-        "ok": false,
-        "error_type": "transient",
-        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a09020-10a4-7922-9027-37ceaee3bb6d\"} {\"type\":\"turn.started\"} {\"type\":\"error\",\"message\":\"Your workspace is out of credits. Ask your workspace owner to refill in order to continue.\"} {\"type\":\"turn.failed\",\"error\":{\"message\":\"Your wo"
+        "error_type": "auth",
+        "error_message": "Error code: 403 - {'type': 'error', 'error': {'type': 'permission_error', 'message': 'OAuth authentication is currently not allowed for this organization.', 'details': {'error_code': 'oauth_not_allowed_for_organization'}}, 'request_id': 'req_011Cf1HfBNNyqiETFamA52ow'}"
       },
       {
         "provider": "oauth",
@@ -55,29 +47,21 @@
         "attempted": true,
         "ok": false,
         "error_type": "auth",
-        "error_message": "Error code: 403 - {'type': 'error', 'error': {'type': 'permission_error', 'message': 'OAuth authentication is currently not allowed for this organization.', 'details': {'error_code': 'oauth_not_allowed_for_organization'}}, 'request_id': 'req_011CewY4YabAYqC8EGDZ8Q2N'}"
+        "error_message": "Error code: 403 - {'type': 'error', 'error': {'type': 'permission_error', 'message': 'OAuth authentication is currently not allowed for this organization.', 'details': {'error_code': 'oauth_not_allowed_for_organization'}}, 'request_id': 'req_011Cf1HfErEfReP7AQzEoJwN'}"
       },
       {
-        "provider": "codex",
+        "provider": "oauth",
         "model": "claude-sonnet-4-6",
         "attempted": true,
         "ok": false,
-        "error_type": "transient",
-        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a09020-2c57-7f73-86f4-3e268ebfa28e\"} {\"type\":\"turn.started\"} {\"type\":\"error\",\"message\":\"Your workspace is out of credits. Ask your workspace owner to refill in order to continue.\"} {\"type\":\"turn.failed\",\"error\":{\"message\":\"Your wo"
-      },
-      {
-        "provider": "codex",
-        "model": "claude-sonnet-4-6",
-        "attempted": true,
-        "ok": false,
-        "error_type": "transient",
-        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a09020-423f-71e3-88a5-ef6c3c437e84\"} {\"type\":\"turn.started\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Skill descriptions were shortened to fit the skills context budget. Codex can still see every sk"
+        "error_type": "auth",
+        "error_message": "Error code: 403 - {'type': 'error', 'error': {'type': 'permission_error', 'message': 'OAuth authentication is currently not allowed for this organization.', 'details': {'error_code': 'oauth_not_allowed_for_organization'}}, 'request_id': 'req_011Cf1HfGB726trzXEeJRfFJ'}"
       }
     ],
     "tool_call_batches": 0,
     "individual_tool_calls": 0,
     "expected_min_tool_calls": 1,
     "context_stale": false,
-    "context_as_of": "2026-09-11T10:44:04Z"
+    "context_as_of": "2026-09-13T10:22:38Z"
   }
 }

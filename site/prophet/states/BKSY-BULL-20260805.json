@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "BKSY-BULL-20260805",
-  "asof": "2026-09-11",
+  "asof": "2026-09-13",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
   "management_confidence": 26.1,
@@ -10,21 +10,21 @@
   "recommended_action": "hold",
   "human_state": "Stalling",
   "components": {
-    "validity": 0.8,
+    "validity": 0.5,
     "progress": 0.0,
-    "pace": 3.7,
+    "pace": 2.5,
     "retention": 50.0,
     "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.064,
+    "dist_to_stop_r": 0.052,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 66.7,
-    "p1": -0.624,
-    "p2": -0.312,
+    "horizon_pct_used": 71.1,
+    "p1": -0.6319,
+    "p2": -0.3159,
     "p3": null,
-    "move_r": -0.936,
+    "move_r": -0.948,
     "mfe_r": 0.0,
     "mae_r": -0.962
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-12",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 30,
-  "tau": 0.6667
+  "days_elapsed": 32,
+  "tau": 0.7111
 }

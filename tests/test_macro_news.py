@@ -763,3 +763,129 @@ def test_regulatory_plumbing_noise_sec_still_fires():
         "SEC announces administrative proceeding", "SEC - Press Releases", "sec.gov")
     assert not mn._regulatory_plumbing_noise(
         "Federal Reserve cuts rates by 25bp", "", "federalreserve.gov")
+
+
+def test_official_cache_success_records_fetched_at_not_publication_time(monkeypatch, tmp_path):
+    import json
+    from datetime import datetime, timezone
+
+    rss = (
+        '<?xml version="1.0"?><rss version="2.0"><channel>'
+        "<item><title>Federal Reserve issues FOMC statement</title>"
+        "<link>https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm</link>"
+        "<pubDate>Wed, 29 Jul 2026 18:00:00 GMT</pubDate></item>"
+        "</channel></rss>"
+    )
+
+    class _Resp:
+        status_code = 200
+        encoding = "utf-8"
+        apparent_encoding = "utf-8"
+        headers = {"Content-Type": "application/rss+xml; charset=utf-8"}
+        text = rss
+
+    monkeypatch.setattr("requests.get", lambda *a, **k: _Resp())
+    before = datetime.now(timezone.utc)
+    cfg = {
+        "official_feeds": [{"name": "Federal Reserve - Monetary Policy",
+                            "url": "https://www.federalreserve.gov/feeds/press_monetary.xml",
+                            "theme": "monetary", "tier": "official"}],
+        "official_cache_dir": str(tmp_path),
+        "use_official_pages": False,
+        "official_window_days": 3650,
+    }
+    articles, reason = mn._fetch_official_feeds(cfg, today=date(2026, 9, 8))
+    after = datetime.now(timezone.utc)
+    assert reason is None
+    assert articles and articles[0]["seendate"].startswith("2026-07-29")
+    cache = tmp_path / "official_v3_2026-09-08.json"
+    blob = json.loads(cache.read_text(encoding="utf-8"))
+    fetched = datetime.fromisoformat(blob["fetched_at"].replace("Z", "+00:00"))
+    if fetched.tzinfo is None:
+        fetched = fetched.replace(tzinfo=timezone.utc)
+    assert before <= fetched <= after
+    assert blob["feed_status"] == "ok"
+    assert blob["feeds"][0]["status"] == "ok"
+    assert blob["feed_status"] != "live"
+
+
+def test_official_cache_failed_feed_is_not_success(monkeypatch, tmp_path):
+    import json
+
+    rss = (
+        '<?xml version="1.0"?><rss version="2.0"><channel>'
+        "<item><title>Warsh speech</title>"
+        "<link>https://www.federalreserve.gov/newsevents/speech/warsh20260828a.htm</link>"
+        "<pubDate>Fri, 28 Aug 2026 14:00:00 GMT</pubDate></item>"
+        "</channel></rss>"
+    )
+
+    class _Ok:
+        status_code = 200
+        encoding = "utf-8"
+        apparent_encoding = "utf-8"
+        headers = {"Content-Type": "application/rss+xml; charset=utf-8"}
+        text = rss
+
+    class _Fail:
+        status_code = 503
+        encoding = "utf-8"
+        apparent_encoding = "utf-8"
+        headers = {}
+        text = ""
+
+    def _get(url, **_k):
+        if "speeches" in url:
+            return _Fail()
+        return _Ok()
+
+    monkeypatch.setattr("requests.get", _get)
+    cfg = {
+        "official_feeds": [
+            {"name": "Federal Reserve - Monetary Policy",
+             "url": "https://www.federalreserve.gov/feeds/press_monetary.xml",
+             "theme": "monetary", "tier": "official"},
+            {"name": "Federal Reserve - Speeches",
+             "url": "https://www.federalreserve.gov/feeds/speeches.xml",
+             "theme": "monetary", "tier": "official"},
+        ],
+        "official_cache_dir": str(tmp_path),
+        "use_official_pages": False,
+        "official_window_days": 3650,
+    }
+    articles, reason = mn._fetch_official_feeds(cfg, today=date(2026, 9, 8))
+    blob = json.loads((tmp_path / "official_v3_2026-09-08.json").read_text(encoding="utf-8"))
+    assert blob["feed_status"] == "mixed"
+    assert blob["feed_status"] != "live"
+    statuses = {row["name"]: row["status"] for row in blob["feeds"]}
+    assert statuses["Federal Reserve - Monetary Policy"] == "ok"
+    assert statuses["Federal Reserve - Speeches"] == "fail"
+    assert articles
+    assert articles[0]["seendate"].startswith("2026-08-28")
+
+
+def test_official_legacy_cache_without_fetched_at_still_reads(monkeypatch, tmp_path):
+    import json
+
+    cache = tmp_path / "official_v3_2026-09-08.json"
+    cache.write_text(json.dumps({
+        "articles": [{"title": "legacy", "url": "https://www.federalreserve.gov/x",
+                      "seendate": "2026-07-29T18:00:00+00:00"}],
+        "degraded_reason": None,
+    }), encoding="utf-8")
+    cfg = {
+        "official_feeds": [{"name": "x", "url": "https://example.test/feed",
+                            "theme": "monetary", "tier": "official"}],
+        "official_cache_dir": str(tmp_path),
+        "use_official_pages": False,
+        "official_cache_ttl_hours": 24,
+    }
+
+    def boom(*_a, **_k):
+        raise AssertionError("legacy cache must not refetch")
+
+    monkeypatch.setattr("requests.get", boom)
+    articles, reason = mn._fetch_official_feeds(cfg, today=date(2026, 9, 8))
+    assert reason is None
+    assert articles[0]["title"] == "legacy"
+    assert articles[0]["seendate"].startswith("2026-07-29")
