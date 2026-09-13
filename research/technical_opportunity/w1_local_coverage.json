@@ -1,19 +1,24 @@
 {
   "schema_version": "toi.local_coverage.v1",
   "as_of": "2026-09-13",
-  "macro_base": "e2cddf8f0068f03f1d94816cfa950ba47a1db3c2",
+  "macro_base": "aa6750b68ccefeb17043e590b61e8a00565d1837",
   "terminal_base": "45a0e78e01377502399761626899458f9d08ffd9",
-  "scope_state": "P0_P1_CORE_NORMALIZED_W1_FULL_CENSUS_PARTIAL",
+  "scope_state": "P0_P1_P2_CORE_PLUS_ARCHIVE_NORMALIZED_W1_FULL_CENSUS_PARTIAL",
   "summary": {
-    "passport_count": 23,
+    "passport_count": 32,
     "p0_passports": 12,
     "p1_passports": 11,
-    "exact_local": 20,
-    "missing_local": 3,
+    "p2_passports": 7,
+    "archive_passports": 2,
+    "exact_local": 27,
+    "missing_local": 5,
     "p0_exact_local": 12,
     "p1_exact_local": 8,
     "p1_missing_local": 3,
-    "missing_method_ids": ["toi.support_resistance", "toi.round_levels", "toi.short_reversal"],
+    "p2_exact_local": 7,
+    "archive_exact_local": 0,
+    "archive_missing_local": 2,
+    "missing_method_ids": ["toi.support_resistance", "toi.round_levels", "toi.short_reversal", "toi.fibonacci_retracement", "toi.ordered_path_elliott"],
     "first_vertical_roles_covered": ["setup","trigger","participation","context","risk"],
     "first_vertical_horizons": ["W","D","candidate_4H"],
     "outcomes_read": false,
@@ -28,12 +33,21 @@
     {"path":"engine/momentum_context_signals.py","methods":["toi.benchmark_rs","toi.momentum_12_1","toi.momentum_acceleration","toi.high52"],"state":"exact_local","external_input":"bench_close only for benchmark-RS methods"},
     {"path":"engine/volume_flow_signals.py","methods":["toi.cmf","toi.rvol","toi.obv"],"state":"exact_local"},
     {"path":"engine/trend_strength_signals.py","methods":["toi.adx_dmi"],"state":"exact_local"},
-    {"path":"engine/bar_structure_signals.py","methods":["toi.inside_bar"],"state":"exact_local"}
+    {"path":"engine/bar_structure_signals.py","methods":["toi.inside_bar"],"state":"exact_local"},
+    {"path":"engine/ma_crosses.py","methods":["toi.ma_trend"],"state":"exact_local"},
+    {"path":"engine/trend_ribbon_signals.py","methods":["toi.ma_trend"],"state":"exact_local"},
+    {"path":"engine/rsi_signals.py","methods":["toi.rsi_oscillator"],"state":"exact_local"},
+    {"path":"engine/momentum_events.py","methods":["toi.rsi_oscillator","toi.macd_stoch_incumbent"],"state":"exact_local"},
+    {"path":"engine/adaptive_trend_signals.py","methods":["toi.kama_er","toi.supertrend"],"state":"exact_local","authority_boundary":"entry_stack_blocked families remain display/context only"},
+    {"path":"engine/rank_momentum_signals.py","methods":["toi.connors_rsi"],"state":"exact_local","authority_boundary":"RSI-family entry stacking remains blocked"},
+    {"path":"engine/formations.py","methods":["toi.geometric_double_pattern"],"state":"exact_local","known_at":"event emitted only after second pivot confirmation"}
   ],
   "missing_local_methods": [
     {"method_id":"toi.support_resistance","reason":"no frozen causal level constructor yet; W1 records method/source only"},
     {"method_id":"toi.round_levels","reason":"microstructure control is source-backed but no TOI local implementation exists"},
-    {"method_id":"toi.short_reversal","reason":"research concept is source-backed; W1 forbids per-name tuned timer implementation"}
+    {"method_id":"toi.short_reversal","reason":"research concept is source-backed; W1 forbids per-name tuned timer implementation"},
+    {"method_id":"toi.fibonacci_retracement","reason":"retained as a matched-control/archive family; empirical specificity evidence is weak and no TOI implementation is warranted in W1"},
+    {"method_id":"toi.ordered_path_elliott","reason":"strategic later-context research representation; implementation waits for an explicit preregistered generic-geometry ablation after the first Compression Release vertical"}
   ],
   "terminal_crosswalk": {
     "owner": "mastermind-terminal display/visual implementation; not TOI occurrence authority",
@@ -60,9 +74,9 @@
     "disposition": "reuse deterministic proposal screen and declarative candidate pattern in later W3; no parallel harness"
   },
   "gaps_for_full_w1": [
-    "complete P2/archive/blocked passport population across remaining method families",
-    "upgrade any P1 source that is only a broad formula catalog when a stronger original-method source exists",
-    "map every relevant DNR kill to the surviving measurement or blocked construction",
+    "normalize remaining gaps/imbalance, standalone cycle-transform, breadth/peer, regime-conditioned and sequence-representation families into P2/archive/blocked dispositions",
+    "upgrade any source that is only a broad formula catalog when a stronger original-method source exists",
+    "map every relevant DNR kill or RUL-33 block to the surviving measurement or blocked construction without inventing stable DNR keys",
     "classify Terminal-only visual modules and Radar-only tactical modules without duplicating ownership",
     "perform independent >=20-passport source/formula/local-path reproduction review"
   ]
