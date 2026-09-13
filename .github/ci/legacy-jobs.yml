@@ -8882,6 +8882,7 @@ jobs:
       - "site/options.html"
       - "site/options_intel_brief.json"
       - "site/prophet/index.json"
+      - "templates/market_structure.html.j2"
       - "templates/options.html.j2"
       - "tests/test_build_flow_leaders.py"
       - "tests/test_build_market_structure_page.py"
