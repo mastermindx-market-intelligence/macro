@@ -4,7 +4,7 @@
  "index": "Russell-2000",
  "benchmark": "IWM",
  "benchmark_label": "Russell-2000 (IWM)",
- "as_of": "2026-09-12",
+ "as_of": "2026-09-13",
  "source": "finviz idx_rut (1889 names); sub-industry subsectors + sector amalgamations",
  "subsectors": {
   "advertising-agencies": {
@@ -296,12 +296,12 @@
      "name": "Lands' End Inc"
     },
     {
-     "ticker": "ZUMZ",
-     "name": "Zumiez Inc"
-    },
-    {
      "ticker": "CURV",
      "name": "Torrid Holdings Inc"
+    },
+    {
+     "ticker": "ZUMZ",
+     "name": "Zumiez Inc"
     },
     {
      "ticker": "RENT",
@@ -4480,6 +4480,10 @@
      "name": "Costamare Inc"
     },
     {
+     "ticker": "HOS",
+     "name": "Hornbeck Offshore Services Inc"
+    },
+    {
      "ticker": "GNK",
      "name": "Genco Shipping & Trading Limited"
     },
@@ -5214,10 +5218,6 @@
     {
      "ticker": "AESI",
      "name": "Atlas Energy Solutions Inc"
-    },
-    {
-     "ticker": "HOS",
-     "name": "Hornbeck Offshore Services Inc"
     },
     {
      "ticker": "RES",
@@ -8970,6 +8970,10 @@
      "name": "El Pollo Loco Holdings Inc"
     },
     {
+     "ticker": "CAL",
+     "name": "Caleres Inc"
+    },
+    {
      "ticker": "HVT",
      "name": "Haverty Furniture Cos. Inc"
     },
@@ -8990,10 +8994,6 @@
      "name": "Black Rock Coffee Bar Inc"
     },
     {
-     "ticker": "CAL",
-     "name": "Caleres Inc"
-    },
-    {
      "ticker": "HBB",
      "name": "Hamilton Beach Brands Holding Co"
     },
@@ -9010,12 +9010,12 @@
      "name": "Stitch Fix Inc"
     },
     {
-     "ticker": "GCO",
-     "name": "Genesco Inc"
-    },
-    {
      "ticker": "BNED",
      "name": "Barnes & Noble Education Inc"
+    },
+    {
+     "ticker": "GCO",
+     "name": "Genesco Inc"
     },
     {
      "ticker": "DIN",
@@ -9034,10 +9034,6 @@
      "name": "Envela Corp"
     },
     {
-     "ticker": "BBW",
-     "name": "Build A Bear Workshop Inc"
-    },
-    {
      "ticker": "SHOE",
      "name": "Shoe Station Group Inc"
     },
@@ -9048,6 +9044,10 @@
     {
      "ticker": "NXH",
      "name": "Neighborhood Intelligence Inc"
+    },
+    {
+     "ticker": "BBW",
+     "name": "Build A Bear Workshop Inc"
     },
     {
      "ticker": "PACK",
@@ -9102,10 +9102,6 @@
      "name": "Escalade Inc"
     },
     {
-     "ticker": "ZUMZ",
-     "name": "Zumiez Inc"
-    },
-    {
      "ticker": "CHPT",
      "name": "ChargePoint Holdings Inc"
     },
@@ -9120,6 +9116,10 @@
     {
      "ticker": "CURV",
      "name": "Torrid Holdings Inc"
+    },
+    {
+     "ticker": "ZUMZ",
+     "name": "Zumiez Inc"
     },
     {
      "ticker": "RICK",
@@ -9138,12 +9138,12 @@
      "name": "Motorcar Parts of America Inc"
     },
     {
-     "ticker": "LOVE",
-     "name": "Lovesac Company"
-    },
-    {
      "ticker": "XPOF",
      "name": "Xponential Fitness Inc"
+    },
+    {
+     "ticker": "LOVE",
+     "name": "Lovesac Company"
     },
     {
      "ticker": "SGC",
@@ -9668,10 +9668,6 @@
     {
      "ticker": "FLNG",
      "name": "Flex Lng Ltd"
-    },
-    {
-     "ticker": "HOS",
-     "name": "Hornbeck Offshore Services Inc"
     },
     {
      "ticker": "NAT",
@@ -10780,12 +10776,12 @@
      "name": "Northrim Bancorp Inc"
     },
     {
-     "ticker": "GEMI",
-     "name": "Gemini Space Station Inc"
-    },
-    {
      "ticker": "CRD-A",
      "name": "Crawford & Co"
+    },
+    {
+     "ticker": "GEMI",
+     "name": "Gemini Space Station Inc"
     },
     {
      "ticker": "BTBT",
@@ -13112,12 +13108,12 @@
      "name": "Exponent Inc"
     },
     {
-     "ticker": "ATRO",
-     "name": "Astronics Corp"
-    },
-    {
      "ticker": "ATKR",
      "name": "Atkore Inc"
+    },
+    {
+     "ticker": "ATRO",
+     "name": "Astronics Corp"
     },
     {
      "ticker": "KAI",
@@ -13278,6 +13274,10 @@
     {
      "ticker": "VSTS",
      "name": "Vestis Corp"
+    },
+    {
+     "ticker": "HOS",
+     "name": "Hornbeck Offshore Services Inc"
     },
     {
      "ticker": "JBLU",

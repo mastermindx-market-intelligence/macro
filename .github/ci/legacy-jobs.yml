@@ -1271,6 +1271,23 @@ jobs:
       - "tests/test_dossier_numeric_contract.py"
       - "tests/test_stock_dossier.py"
       - "tests/test_stock_score.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "collectors/edgar_facts.py"
+      # B-F07-2 retarget 2026-09-12: the F07 suites reach debt_maturity via collectors/edgar_facts.py:179 (main #6921) — contract-delta
+      - "engine/debt_maturity.py"
+      - "scripts/build_debt_maturity.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "engine/valuation_scenario.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "engine/valuation_assumptions.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "templates/_valuation_scenario.html.j2"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "templates/_valuation_assumptions.html.j2"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "tests/test_valuation_scenario.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "tests/test_valuation_assumptions.py"
       - "scripts/__init__.py"
       - "scripts/worktree_storage.py"
     # Wired 2026-08-02: neither suite was named by ANY run step, so #4297's caution
@@ -1363,6 +1380,11 @@ jobs:
       # fixture dicts only. Own step per this job's precedent (step = masking unit).
       - name: security_state.v1 view-model projection (B1A)
         run: python -m pytest tests/test_security_state_view_model.py -q
+      - name: valuation scenario V1 + user-adjustable assumptions (B-F07-1 / B-F07-2)
+        run: >
+          python -m pytest
+          tests/test_valuation_scenario.py
+          tests/test_valuation_assumptions.py -q
 
   chronicle-suite:
     if: ${{ false }}
@@ -1654,6 +1676,8 @@ jobs:
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "engine/valuation_assumptions.py"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/__init__.py"
       - "engine/security_state.py"
@@ -3018,6 +3042,7 @@ jobs:
           tests/test_capital_structure_page.py
           tests/test_special_situations_premium.py
           tests/test_capital_structure_policy_projection.py
+          tests/test_capital_policy_projection.py
           tests/test_capital_structure_api.py
           tests/test_capital_structure_source_identity.py
           tests/test_capital_structure_source_manifest.py
@@ -3600,6 +3625,11 @@ jobs:
       - "research/US_BOARD_MEASUREMENT.md"
       - "scripts/__init__.py"
       - "scripts/build_biocatalyst.py"
+      # B-F09-6b (MO-PAID-067) trigger closure: the capital-markets policy
+      # projection leaf. The page builder is the producer. Exclusive scope
+      # replaces inference; a module-only edit must still select this job,
+      # which names the suite.
+      - "engine/capital_policy_projection.py"
       - "scripts/build_capital_structure_page.py"
       - "scripts/build_chart_data.py"
       - "scripts/build_debt_maturity.py"
@@ -6868,6 +6898,8 @@ jobs:
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "engine/valuation_assumptions.py"
       # F01 R1B closure widening 2026-09-04 (contract-delta): build_site.py's
       # guarded macro-suite hook imports the page builder, which carries the
       # workspace contract/registry pair. Enumerated, not globbed — the checker
@@ -7269,6 +7301,11 @@ jobs:
       - "scripts/__init__.py"
       - "scripts/biocatalyst_worker.py"
       - "scripts/build_biocatalyst.py"
+      # B-F09-6b (MO-PAID-067) trigger closure: the capital-markets policy
+      # projection leaf. The page builder is the producer. Exclusive scope
+      # replaces inference; a module-only edit must still select this job,
+      # which names the suite.
+      - "engine/capital_policy_projection.py"
       - "scripts/build_capital_structure_page.py"
       - "scripts/build_chart_data.py"
       - "scripts/build_debt_maturity.py"
@@ -7471,6 +7508,8 @@ jobs:
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "engine/valuation_assumptions.py"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/__init__.py"
       - "engine/security_state.py"
@@ -10760,6 +10799,8 @@ jobs:
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "engine/valuation_assumptions.py"
       # F01 R1B closure widening 2026-09-04 (contract-delta): build_site.py's
       # guarded macro-suite hook imports the page builder, which carries the
       # workspace contract/registry pair. Checker-named files only; the
@@ -11307,6 +11348,11 @@ jobs:
       - "scripts/build_btc_strategy.py"
       - "scripts/build_canada.py"
       - "scripts/build_canada_library.py"
+      # B-F09-6b (MO-PAID-067) trigger closure: the capital-markets policy
+      # projection leaf. The page builder is the producer. Exclusive scope
+      # replaces inference; a module-only edit must still select this job,
+      # which names the suite.
+      - "engine/capital_policy_projection.py"
       - "scripts/build_capital_structure_page.py"
       - "scripts/build_chart_data.py"
       - "scripts/build_china.py"
@@ -12770,6 +12816,8 @@ jobs:
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "engine/valuation_assumptions.py"
       # B1A closure widening 2026-08-24 (contract-delta): build_stock_library's security_state stage extends this job's walked closure.
       - "engine/security_state.py"
       - "engine/theme_graph/__init__.py"

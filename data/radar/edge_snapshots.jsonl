@@ -14249,3 +14249,9 @@
 {"date":"2026-09-11","kind":"ticker","subject":"HD","ticker":"HD","edge_score":0,"state":"NEGATIVE_DIVERGENCE","era":2,"source":"basket_attributed"}
 {"date":"2026-09-11","kind":"ticker","subject":"DHI","ticker":"DHI","edge_score":0,"state":"NEGATIVE_DIVERGENCE","era":2,"source":"basket_attributed"}
 {"date":"2026-09-11","kind":"ticker","subject":"MAS","ticker":"MAS","edge_score":0,"state":"NEGATIVE_DIVERGENCE","era":2,"source":"basket_attributed"}
+{"date":"2026-09-11","kind":"ticker","subject":"PR","ticker":"PR","edge_score":29,"state":"NEGATIVE_DIVERGENCE","era":2,"source":"basket_attributed"}
+{"date":"2026-09-11","kind":"ticker","subject":"VECO","ticker":"VECO","edge_score":8,"state":"BROKEN_LAGGARD","era":2,"source":"basket_attributed"}
+{"date":"2026-09-11","kind":"ticker","subject":"LEU","ticker":"LEU","edge_score":2,"state":"BROKEN_LAGGARD","era":2,"source":"basket_attributed"}
+{"date":"2026-09-11","kind":"ticker","subject":"QLYS","ticker":"QLYS","edge_score":2,"state":"BROKEN_LAGGARD","era":2,"source":"basket_attributed"}
+{"date":"2026-09-11","kind":"ticker","subject":"UAMY","ticker":"UAMY","edge_score":1,"state":"NEGATIVE_DIVERGENCE","era":2,"source":"basket_attributed"}
+{"date":"2026-09-11","kind":"ticker","subject":"MU","ticker":"MU","edge_score":0,"state":"CONFIRMED_DOWN","era":2,"source":"signal"}
