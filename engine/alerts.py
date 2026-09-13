@@ -43,6 +43,15 @@ _TS_PLAIN_EN = {"STABLE": "steady", "WEAKENING": "weakening",
                 "TRANSITIONING": "shifting", "NEW_REGIME": "a new regime"}
 _TS_PLAIN_ZH = {"STABLE": "稳定", "WEAKENING": "走弱",
                 "TRANSITIONING": "转换中", "NEW_REGIME": "新周期"}
+_TRANSITION_FLAG_COPY = {
+    "flag_breadth_price": ("breadth/price divergence", "市场广度/价格背离"),
+    "flag_credit_equity": ("credit/equity divergence", "信用/股票背离"),
+    "flag_ratio_inflection": ("cyclical/defensive inflection", "周期/防御比率拐点"),
+    "flag_inflation_basket": ("inflation-basket inflection", "通胀篮子拐点"),
+    "flag_confidence_decay": ("confidence decay", "一致度衰减"),
+    "flag_gex": ("dealer-gamma fragility", "做市商 Gamma 脆弱"),
+    "flag_rotation_persistence": ("persistent cyclical/defensive rotation", "周期/防御轮动持续"),
+}
 _GEX_WHAT_ZH = {"spot crossed the gamma flip": "现价穿越 gamma 翻转点",
                 "net GEX changed sign": "净 GEX 转变方向"}
 _HOLDINGS_VERB_ZH = {"added": "加仓", "cut": "减仓"}
@@ -68,21 +77,160 @@ def _last_two(df: pd.DataFrame) -> tuple[pd.Series, pd.Series] | None:
 
 # --- individual rules ----------------------------------------------------------
 
+def _flag_value(row: pd.Series, column: str) -> bool:
+    """A NaN flag is unavailable, never truthy."""
+    value = row.get(column, False)
+    try:
+        if pd.isna(value):
+            return False
+    except (TypeError, ValueError):
+        pass
+    return bool(value)
+
+
+def _present_value(value):
+    """Collapse scalar pandas/numpy missing sentinels to typed absence."""
+    try:
+        if pd.isna(value):
+            return None
+    except (TypeError, ValueError):
+        pass
+    return value
+
+
+def _int_or_none(value) -> int | None:
+    """Best-effort integer that preserves unavailable transition metadata."""
+    value = _present_value(value)
+    if value is None:
+        return None
+    try:
+        return int(value)
+    except (TypeError, ValueError, OverflowError):
+        return None
+
+
+def _nonneg_int_or_none(value) -> int | None:
+    """Optional counts (n_flags): omit unless an exact nonnegative integral value.
+
+    Bool is excluded even though ``isinstance(True, int)`` — a flag must not become
+    a fabricated ``(1 flags active)`` badge. Numpy integers are accepted; non-integral
+    floats, negatives, and non-numeric spellings omit.
+    """
+    value = _present_value(value)
+    if value is None or isinstance(value, bool):
+        return None
+    if isinstance(value, int) and not isinstance(value, bool):
+        return value if value >= 0 else None
+    # numpy integer / pandas Int64 scalar (not bool)
+    try:
+        import numbers
+        if isinstance(value, numbers.Integral) and not isinstance(value, bool):
+            ivalue = int(value)
+            return ivalue if ivalue >= 0 else None
+    except Exception:
+        pass
+    if isinstance(value, float):
+        if value != value or value < 0 or value != int(value):  # NaN / neg / non-integral
+            return None
+        return int(value)
+    # numpy floating
+    try:
+        import numbers
+        if isinstance(value, numbers.Real) and not isinstance(value, numbers.Integral):
+            fvalue = float(value)
+            if fvalue != fvalue or fvalue < 0 or fvalue != int(fvalue):
+                return None
+            return int(fvalue)
+    except Exception:
+        pass
+    return None
+
+
+def _transition_mechanism_detail(prev: pd.Series, cur: pd.Series) -> tuple[str, str]:
+    """Explain a headline transition even when the active flag set did not change."""
+    prev_quad = _present_value(prev.get("quad"))
+    cur_quad = _present_value(cur.get("quad"))
+    if prev_quad is not None and cur_quad is not None and prev_quad != cur_quad:
+        return (f"confirmed quad {prev_quad}→{cur_quad}",
+                f"确认象限 {prev_quad}→{cur_quad}")
+    pending_days = _int_or_none(cur.get("pending_days"))
+    prior_pending = _int_or_none(prev.get("pending_days"))
+    pending_quad = _present_value(cur.get("pending_quad"))
+    if (pending_quad is not None
+            and str(pending_quad) not in ("None", "nan")
+            and pending_days is not None
+            and pending_days != prior_pending):
+        try:
+            needed = int(config.load()["engine"]["quad"]["hysteresis_days"])
+        except Exception:  # noqa: BLE001 — copy only; alert still fires
+            needed = 0
+        suffix = f"/{needed}" if needed else ""
+        return (f"{pending_quad} confirmation count {pending_days}{suffix}",
+                f"{pending_quad} 确认计数 {pending_days}{suffix}")
+    prev_raw = _present_value(prev.get("transition_state_raw"))
+    cur_raw = _present_value(cur.get("transition_state_raw"))
+    if prev_raw is not None and cur_raw is not None and prev_raw != cur_raw:
+        return (f"raw threshold {_TS_PLAIN_EN.get(str(prev_raw), str(prev_raw).lower())}→"
+                f"{_TS_PLAIN_EN.get(str(cur_raw), str(cur_raw).lower())}",
+                f"原始阈值 {_TS_PLAIN_ZH.get(str(prev_raw), str(prev_raw))}→"
+                f"{_TS_PLAIN_ZH.get(str(cur_raw), str(cur_raw))}")
+    cur_ratcheted = _flag_value(cur, "transition_ratcheted")
+    prev_ratcheted = _flag_value(prev, "transition_ratcheted")
+    if cur_ratcheted:
+        remain = _int_or_none(cur.get("transition_dwell_remaining"))
+        remain_en = (f" ({remain} clean session{'s' if remain != 1 else ''} remain)"
+                     if remain is not None else "")
+        remain_zh = f"（尚需 {remain} 个干净交易日）" if remain is not None else ""
+        return (f"ratchet/floor held the headline above the raw flag count{remain_en}",
+                f"棘轮/底线将主状态维持在原始旗标计数之上{remain_zh}")
+    if prev_ratcheted and not cur_ratcheted:
+        return ("de-escalation dwell completed", "降级观察期完成")
+    return ("flag set unchanged; transition hold/hysteresis moved the headline",
+            "旗标集合未变；状态保持/滞后确认机制推动主状态变化")
+
+
 def transition_state_change(hist: pd.DataFrame, f: pd.DataFrame) -> Alert | None:
     pair = _last_two(hist)
     if pair is None:
         return None
     prev, cur = pair
-    if cur["transition_state"] != prev["transition_state"]:
-        sev = {"STABLE": "info", "WEAKENING": "warn",
-               "TRANSITIONING": "act", "NEW_REGIME": "act"}.get(cur["transition_state"], "info")
-        return Alert("transition_state_change", sev,
-                     f"Transition state {prev['transition_state']} -> {cur['transition_state']} "
-                     f"({int(cur['n_flags'])} flags active)",
-                     message_zh=f"转换状态 {_TS_PLAIN_ZH.get(prev['transition_state'], prev['transition_state'])}"
-                                f" -> {_TS_PLAIN_ZH.get(cur['transition_state'], cur['transition_state'])}"
-                                f"（{int(cur['n_flags'])} 个预警激活）")
-    return None
+    prev_state = _present_value(prev.get("transition_state"))
+    cur_state = _present_value(cur.get("transition_state"))
+    if prev_state is None or cur_state is None or cur_state == prev_state:
+        return None
+    prev_key, cur_key = str(prev_state), str(cur_state)
+    sev = {"STABLE": "info", "WEAKENING": "warn",
+           "TRANSITIONING": "act", "NEW_REGIME": "act"}.get(cur_key, "info")
+    known = [column for column in _TRANSITION_FLAG_COPY
+             if column in prev.index and column in cur.index]
+    added = [column for column in known
+             if not _flag_value(prev, column) and _flag_value(cur, column)]
+    cleared = [column for column in known
+               if _flag_value(prev, column) and not _flag_value(cur, column)]
+    detail_en: list[str] = []
+    detail_zh: list[str] = []
+    if added:
+        detail_en.append("added: " + ", ".join(_TRANSITION_FLAG_COPY[c][0] for c in added))
+        detail_zh.append("新增：" + "、".join(_TRANSITION_FLAG_COPY[c][1] for c in added))
+    if cleared:
+        detail_en.append("cleared: " + ", ".join(_TRANSITION_FLAG_COPY[c][0] for c in cleared))
+        detail_zh.append("解除：" + "、".join(_TRANSITION_FLAG_COPY[c][1] for c in cleared))
+    # Old stored histories can lack flag columns. Preserve their exact legacy shape; when the
+    # columns are present but unchanged, identify the state-machine mechanism instead.
+    if known and not detail_en:
+        cause_en, cause_zh = _transition_mechanism_detail(prev, cur)
+        detail_en.append("cause: " + cause_en)
+        detail_zh.append("原因：" + cause_zh)
+    suffix_en = ("; " + "; ".join(detail_en)) if detail_en else ""
+    suffix_zh = ("；" + "；".join(detail_zh)) if detail_zh else ""
+    n_flags = _nonneg_int_or_none(cur.get("n_flags"))
+    count_en = f" ({n_flags} flags active)" if n_flags is not None else ""
+    count_zh = f"（{n_flags} 个预警激活）" if n_flags is not None else ""
+    return Alert("transition_state_change", sev,
+                 f"Transition state {prev_key} -> {cur_key}{count_en}{suffix_en}",
+                 message_zh=f"转换状态 {_TS_PLAIN_ZH.get(prev_key, prev_key)}"
+                            f" -> {_TS_PLAIN_ZH.get(cur_key, cur_key)}"
+                            f"{count_zh}{suffix_zh}")
 
 
 def axis_confidence_floor(hist: pd.DataFrame, f: pd.DataFrame) -> list[Alert]:
@@ -1062,20 +1210,32 @@ ALERT_CONVICTION: dict[str, dict] = {
 # it renders at rest on the macro Alerts Centre face. The stored alert row keeps
 # the raw string (build_vector's translator matches it there); only the rendered
 # view changes. Unknown state tokens fall through lowercased, never dropped.
-_TS_MSG_RE = re.compile(r"Transition state (\w+) -> (\w+) \((\d+) flags active\)")
+_TS_MSG_RE = re.compile(
+    r"^Transition state (\w+) -> (\w+)(?: \((\d+) flags active\))?(.*)$"
+)
 
 
-def _plain_transition_msg(message: str) -> tuple[str, str] | None:
+def _plain_transition_msg(message: str, message_zh: str = "") -> tuple[str, str] | None:
     m = _TS_MSG_RE.match(message)
     if not m:
         return None
-    prev, cur, n = m.group(1), m.group(2), int(m.group(3))
+    prev, cur, raw_n, detail_en = m.group(1), m.group(2), m.group(3), m.group(4)
+    n = int(raw_n) if raw_n is not None else None
+    count_en = (f" ({n} warning flag{'s' if n != 1 else ''} active)"
+                if n is not None else "")
     en = (f"The regime's footing went from "
           f"{_TS_PLAIN_EN.get(prev, prev.replace('_', ' ').lower())} to "
-          f"{_TS_PLAIN_EN.get(cur, cur.replace('_', ' ').lower())} "
-          f"({n} warning flag{'s' if n != 1 else ''} active)")
+          f"{_TS_PLAIN_EN.get(cur, cur.replace('_', ' ').lower())}"
+          f"{count_en}{detail_en}")
+    if message_zh and "）" in message_zh:
+        detail_zh = message_zh.split("）", 1)[1]
+    elif message_zh and "；" in message_zh:
+        detail_zh = "；" + message_zh.split("；", 1)[1]
+    else:
+        detail_zh = ""
+    count_zh = f"（{n} 个预警激活）" if n is not None else ""
     zh = (f"周期状态由「{_TS_PLAIN_ZH.get(prev, prev)}」转为"
-          f"「{_TS_PLAIN_ZH.get(cur, cur)}」（{n} 个预警激活）")
+          f"「{_TS_PLAIN_ZH.get(cur, cur)}」{count_zh}{detail_zh}")
     return en, zh
 
 
@@ -1085,7 +1245,7 @@ def alert_view(rule: str, severity: str, message: str, message_zh: str = "") -> 
     grounded edge note. Unknown rules fall back to generic defaults so a new rule
     still renders sensibly."""
     if rule == "transition_state_change":
-        plain = _plain_transition_msg(message)
+        plain = _plain_transition_msg(message, message_zh)
         if plain:
             message, message_zh = plain
     return {"rule": rule, "severity": severity, "message": message,

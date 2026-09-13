@@ -92,6 +92,17 @@
    partial has to sniff `r.dd21 is defined` before it dares embed this card at all. -#}
 {%- set base = rd.dd_base if (rd.dd_base and rd.dd_base.h21 is defined and rd.dd_base.h21 is not none) else {'h5':0.036,'h10':0.086,'h21':0.178} -%}
 {%- set hmax = (rd.dd21 / 0.82) if (rd.dd21 is defined and rd.dd21 is not none and rd.dd21 > 0) else 0.25 -%}
+{%- set _chg_payload = rd.change if (rd.change is defined and rd.change) else none -%}
+{%- set _chg = _chg_payload if (_chg_payload and _chg_payload.available is defined and _chg_payload.available) else none -%}
+{%- set _display_score_row = _chg_payload.score if (_chg_payload and _chg_payload.score is defined and _chg_payload.score) else none -%}
+{%- set _display_score = (rd.top_score_display if (rd.top_score_display is defined and rd.top_score_display is not none) else (_display_score_row.current if (_display_score_row and _display_score_row.current is defined and _display_score_row.current is not none) else (rd.top_score if rd.top_score is defined else none))) -%}
+{%- set _chg_score = _chg.score if (_chg and _chg.score is defined and _chg.score) else none -%}
+{%- set _chg_delta = _chg_score.delta if (_chg_score and _chg_score.delta is defined and _chg_score.delta is not none) else none -%}
+{%- set _chg_direction = _chg_score.direction if (_chg_score and _chg_score.direction is defined and _chg_score.direction) else ('rising' if _chg_delta is not none and _chg_delta > 0 else ('easing' if _chg_delta is not none and _chg_delta < 0 else 'flat')) -%}
+{%- set _chg_prior = _chg_score.prior if (_chg_score and _chg_score.prior is defined and _chg_score.prior is not none) else none -%}
+{%- set _chg_week = _chg.week if (_chg and _chg.week is defined and _chg.week and _chg.week.available is defined and _chg.week.available and _chg.week.score is defined and _chg.week.score is not none) else none -%}
+{%- set _chg_summary_en = _chg.summary_en if (_chg and _chg.summary_en is defined and _chg.summary_en) else '' -%}
+{%- set _chg_summary_zh = _chg.summary_zh if (_chg and _chg.summary_zh is defined and _chg.summary_zh) else _chg_summary_en -%}
 <div class="rrx rrx-{{ rd.state }}{{ ' rrx-loud' if rd.is_loud }}" style="--rc:{{ rc }}">
   {# .rrx-main / .rrx-side are display:contents by default (no layout change on the China/HK/
      Canada/stocks cards); only the macro front-page promotes them to a 2-column banner. #}
@@ -100,10 +111,22 @@
     <span class="rrx-ic">{{ ic }}</span>
     <div class="rrx-id">
       <div class="rrx-ttl">{{ t('Risk Radar','风险雷达') }}
-        <span class="rrx-badge">{{ t(rd.state|upper, rd.state_zh) }}{% if rd.top_score is defined and rd.top_score is not none %} · {{ rd.top_score }}/100{% endif %}</span>
+        <span class="rrx-badge">{{ t(rd.state|upper, rd.state_zh) }}{% if _display_score is not none %} · {{ _display_score }}/100{% endif %}</span>
+        {% if _chg_delta is not none %}{% set _chg_abs = (0 - _chg_delta) if _chg_delta < 0 else _chg_delta %}<span class="rrx-delta is-{{ _chg_direction }}">{{ '▲' if _chg_delta > 0 else ('▼' if _chg_delta < 0 else '•') }}{{ '%.1f'|format(_chg_abs) }}<span class="rrx-delta-hz">{{ t('VS PREV','较前值') }}</span></span>{% endif %}
         {{ help('Pullback-risk gauge. Use high readings to trim risk, not to pick stocks.', '回撤风险仪表。高读数用于降风险，不用于选股。') }}
       </div>
       {% if rd.label_en %}<div class="rrx-dom">{{ t(rd.label_en, rd.label_zh) }}</div>{% endif %}
+      {% if _chg and (_chg_prior is not none or _chg_week or _chg_summary_en or _chg_summary_zh) %}
+      <div class="rrx-change">
+        {% if _chg_prior is not none or _chg_week %}
+        <span class="rrx-change-levels l-en">{% if _chg_prior is not none %}Prev {{ '%.1f'|format(_chg_prior) }}{% endif %}{% if _chg_week %}{{ ' · ' if _chg_prior is not none else '' }}1W {{ '%.1f'|format(_chg_week.score) }}{% endif %}</span>
+        <span class="rrx-change-levels l-zh">{% if _chg_prior is not none %}前值 {{ '%.1f'|format(_chg_prior) }}{% endif %}{% if _chg_week %}{{ ' · ' if _chg_prior is not none else '' }}1周 {{ '%.1f'|format(_chg_week.score) }}{% endif %}</span>
+        {% endif %}
+        {% if _chg_summary_en or _chg_summary_zh %}
+        <span class="rrx-change-why">{{ ' · ' if (_chg_prior is not none or _chg_week) else '' }}{{ t(_chg_summary_en, _chg_summary_zh) }}</span>
+        {% endif %}
+      </div>
+      {% endif %}
       {% if rd.authority and rd.state in ['watch','caution','elevated','risk-off'] %}
       <div class="rrx-authority{{ ' is-binding' if rd.binding else ' is-advisory' }}">
         {{ t(rd.authority.note_en, rd.authority.note_zh) }}
@@ -543,7 +566,7 @@
     {#- this market's OWN graded log (intl radars). "not yet moving the verdict" replaces
         the old "display-only" chip — that phrase is banned glance-tier vocabulary
         (DESIGN_DOCTRINE Law 2, "display-tier / display context only"). -#}
-    <span>{{ _fl_n }} {{ t('graded','已评分') }}{% if _fl.force_lift is defined and _fl.force_lift is not none %} · <b>{{ _fl.force_lift }}×</b> {{ t('vs base rate','对比基准') }}{% endif %} · {% if _fl.can_force %}{{ t('moving the verdict','参与定调') }} ✓{% else %}{{ t('not yet moving the verdict','尚未参与定调') }}{% endif %}</span>
+    <span>{{ _fl_n }} {{ t('graded','已评分') }}{% if _fl.force_lift is defined and _fl.force_lift is not none %} · <b>{{ _fl.force_lift }}×</b> {{ t('vs base rate','对比基准') }}{% endif %} · {% if _fl.can_force is defined and _fl.can_force %}{{ t('moving the verdict','参与定调') }} ✓{% else %}{{ t('not yet moving the verdict','尚未参与定调') }}{% endif %}</span>
     {%- elif hit_rate is not none %}
     {# Glance tier: "on N of M elevated days a ≥5% drop followed within a month (past year)" #}
     <span class="l-en">on {{ al_tp }} of {{ al_n }} elevated days in the past year, a ≥5% drop followed within a month</span><span class="l-zh">过去一年 {{ al_n }} 个警报日中有 {{ al_tp }} 天在一个月内出现 ≥5% 下跌</span>
