@@ -349,7 +349,7 @@ html[data-lang="zh"] [data-tip-en]::after{content:attr(data-tip-zh)}
   [data-tip-en].tip-open::after{display:block}
 }
 .tip-q{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;
-  margin-left:4px;padding:0;border-radius:50%;border:1px solid var(--line);background:var(--panel);
+  margin-left:4px;padding:0;border-radius:var(--r-pill,999px);border:1px solid var(--line);background:var(--panel);
   color:var(--muted);font-size:10px;font-weight:700;line-height:1;cursor:help;vertical-align:middle}
 .tip-q:focus-visible{outline:2px solid color-mix(in srgb,var(--info) 70%,transparent);outline-offset:1px}
 #region-seg button:disabled{opacity:.4;cursor:not-allowed}
@@ -369,7 +369,7 @@ html[data-lang="zh"] [data-tip-en]::after{content:attr(data-tip-zh)}
 @keyframes spin{to{transform:rotate(360deg)}}
 /* C14 — wordless skeleton at table geometry (loading ≠ empty). */
 .sk-load{padding:18px 16px;display:flex;flex-direction:column;gap:10px}
-.sk-row{height:14px;border-radius:7px;background:linear-gradient(90deg,
+.sk-row{height:14px;border-radius:var(--r-ctl,8px);background:linear-gradient(90deg,
   color-mix(in srgb,var(--text) 6%,var(--panel2)) 0%,
   color-mix(in srgb,var(--text) 12%,var(--panel2)) 45%,
   color-mix(in srgb,var(--text) 6%,var(--panel2)) 100%);
@@ -590,7 +590,7 @@ table.heat{border-collapse:separate;border-spacing:0;font-size:11px;font-variant
   border-radius:999px;border:1px solid color-mix(in srgb,var(--up) 34%,var(--line));color:var(--ink-up, var(--up));
   background:color-mix(in srgb,var(--up) 9%,transparent);cursor:help}
 .altcol-head .outageflag{margin-left:auto;font-size:10px;font-weight:700;letter-spacing:.04em;padding:2px 8px;
-  border-radius:999px;border:1px solid var(--line);color:var(--muted);
+  border-radius:var(--r-pill,999px);border:1px solid var(--line);color:var(--muted);
   background:color-mix(in srgb,var(--muted) 10%,transparent);cursor:help}
 .empty-why{margin-top:6px;font-size:12px;line-height:1.55;color:var(--muted);font-weight:500}
 .altlist{list-style:none;margin:0;padding:6px;display:flex;flex-direction:column;gap:2px;
@@ -684,25 +684,25 @@ html[data-theme="light"] .stn .lab{color:color-mix(in srgb,var(--sc,var(--muted)
    hairline, shadow). Dark remains the command-center. Marker: w7-r3-light.
    Token substitution alone is not this block: surfaces that glowed on dark
    become paper + hairline + a short shadow here. */
-html[data-theme="light"] body{background:#eef1f4}
+html[data-theme="light"] body{background:var(--panel2)}
 html[data-theme="light"] .aura{display:none}
 html[data-theme="light"] .hero{
-  background:#fff;
+  background:var(--panel);
   border-color:color-mix(in srgb,var(--text) 12%,transparent);
-  box-shadow:0 1px 0 color-mix(in srgb,var(--text) 5%,transparent),0 12px 28px -22px rgba(20,32,48,.28);
+  box-shadow:0 1px 0 color-mix(in srgb,var(--text) 5%,transparent),0 12px 28px -22px color-mix(in srgb,var(--text) 28%,transparent);
 }
-html[data-theme="light"] .stn{background:#fff;box-shadow:0 1px 0 color-mix(in srgb,var(--text) 6%,transparent)}
+html[data-theme="light"] .stn{background:var(--panel);box-shadow:0 1px 0 color-mix(in srgb,var(--text) 6%,transparent)}
 html[data-theme="light"] .tabbar,
 html[data-theme="light"] .filterbar,
 html[data-theme="light"] .tbl-scroll,
 html[data-theme="light"] .empty{
-  background:#fff;
+  background:var(--panel);
   border-color:color-mix(in srgb,var(--text) 12%,transparent);
-  box-shadow:0 8px 22px -20px rgba(20,32,48,.3);
+  box-shadow:0 8px 22px -20px color-mix(in srgb,var(--text) 30%,transparent);
 }
-html[data-theme="light"] .screener thead th{background:#f7f8fa}
-html[data-theme="light"] .screener tbody td.sticky-l{background:#fff}
-html[data-theme="light"] .tip-q{background:#fff}
+html[data-theme="light"] .screener thead th{background:var(--bg)}
+html[data-theme="light"] .screener tbody td.sticky-l{background:var(--panel)}
+html[data-theme="light"] .tip-q{background:var(--panel)}
 
 /* page-load stagger + reduced motion */
 @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
@@ -1491,7 +1491,7 @@ html[data-theme="light"] .tip-q{background:#fff}
     var rows=boardRows();
     var showing=qs('#board-showing');
     if(showing)showing.innerHTML=TT('<b>'+rows.length.toLocaleString()+'</b> fresh advances','<b>'+rows.length.toLocaleString()+'</b> 只新转强');
-    if(!rows.length){body.innerHTML='<tr><td colspan="'+BCOLS.length+'"><div class="empty" style="border:none;background:none;padding:34px 0"><div class="ico">🍃</div><h3>'+TT('No fresh advances here','此处暂无新转强')+'</h3><p>'+TT('No names turned fresh Stage-2 in this region.','该地区暂无刚转入上升的股票。')+'</p></div></td></tr>';return;}
+    if(!rows.length){body.innerHTML='<tr><td colspan="'+BCOLS.length+'"><div class="empty" style="border:none;background:none;padding:34px 0"><div class="ico"></div><h3>'+TT('No fresh advances here','此处暂无新转强')+'</h3><p>'+TT('No names turned fresh Stage-2 in this region.','该地区暂无刚转入上升的股票。')+'</p></div></td></tr>';return;}
     body.innerHTML=rows.slice(0,400).map(function(r){
       var pv=priceVs30w(r),st=boardStance(r);
       var rs=r.mansfield_rs;
@@ -1648,7 +1648,7 @@ html[data-theme="light"] .tip-q{background:#fff}
     var h=IND.heat&&IND.heat.history;
     if(!h)return null;
     if(h.status==='unavailable'){
-      return '<div class="empty soon"><div class="ico">📈</div><h3>'+TT('Rank history unavailable','排名历史暂不可用')+'</h3><p>'+TT('No weekly rank history has accrued yet. Check back after the next completed Stage week.','尚未累积任何每周排名历史。请在下一个已完成的阶段周后再来查看。')+'</p></div>';
+      return '<div class="empty soon"><div class="ico"></div><h3>'+TT('Rank history unavailable','排名历史暂不可用')+'</h3><p>'+TT('No weekly rank history has accrued yet. Check back after the next completed Stage week.','尚未累积任何每周排名历史。请在下一个已完成的阶段周后再来查看。')+'</p></div>';
     }
     if(h.status==='accruing'){
       var n=h.weeks_available||0,tgt=h.weeks_target||26,fw=esc(h.first_week||'—');
@@ -1799,7 +1799,7 @@ html[data-theme="light"] .tip-q{background:#fff}
   }
 
   function indEmpty(){
-    return '<div class="empty soon"><div class="ico">🌙</div><h3>'+TT('Industry rankings aren\'t available','行业排名暂不可用')+'</h3><p>'+TT('The file for this view didn\'t load. The Screener and Stage Board still work.','该视图的数据文件未能加载。选股器与阶段异动仍可用。')+'</p></div>';
+    return '<div class="empty soon"><div class="ico"></div><h3>'+TT('Industry rankings aren\'t available','行业排名暂不可用')+'</h3><p>'+TT('The file for this view didn\'t load. The Screener and Stage Board still work.','该视图的数据文件未能加载。选股器与阶段异动仍可用。')+'</p></div>';
   }
   function renderIndustries(){
     var host=qs('#ind-body');if(!host)return;
@@ -2058,7 +2058,7 @@ html[data-theme="light"] .tip-q{background:#fff}
     return '<div class="empty soon"><div class="ico">⚠️</div><h3>'+TT('No trending topics to show right now.','暂无热门话题可显示。')+'</h3><p class="empty-why">'+TT('feeds haven\'t updated','数据源尚未更新')+'</p></div>';
   }
   function resEmpty(){
-    return '<div class="empty soon"><div class="ico">🌙</div><h3>'+TT('Company primers are being written','公司简介正在撰写中')+'</h3><p>'+TT('This desk fills in as primers land. The Screener and Stage Board are unaffected.','本栏会随简介完成情况更新。选股器与阶段异动不受影响。')+'</p></div>';
+    return '<div class="empty soon"><div class="ico"></div><h3>'+TT('Company primers are being written','公司简介正在撰写中')+'</h3><p>'+TT('This desk fills in as primers land. The Screener and Stage Board are unaffected.','本栏会随简介完成情况更新。选股器与阶段异动不受影响。')+'</p></div>';
   }
   function renderErn(){
     var host=qs('#ern-body');if(!host)return;
