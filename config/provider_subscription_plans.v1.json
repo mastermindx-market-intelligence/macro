@@ -1,0 +1,91 @@
+{
+  "schema": "mastermind.provider_subscription_plans/v1",
+  "verified_at": "2026-09-13T06:05:00Z",
+  "unknown_selection_policy": "NO_CAPACITY_INFERENCE",
+  "providers": {
+    "glm": {
+      "products": {
+        "coding_plan": {
+          "edition": "individual",
+          "supported_tool_only": true,
+          "telemetry": {"kind": "claude_code_plugin", "locator": "glm-plan-usage:usage-query"},
+          "tiers": {
+            "lite": {"limits": [{"horizon": "five_hour", "window_type": "rolling", "metric": "prompts", "limit": 80, "approximate": true}, {"horizon": "weekly", "window_type": "fixed", "metric": "prompts", "limit": 400, "approximate": true}, {"horizon": "monthly", "window_type": "fixed", "metric": "mcp_web_calls", "limit": 100, "scope": "web_search_and_reader"}]},
+            "pro": {"limits": [{"horizon": "five_hour", "window_type": "rolling", "metric": "prompts", "limit": 400, "approximate": true}, {"horizon": "weekly", "window_type": "fixed", "metric": "prompts", "limit": 2000, "approximate": true}, {"horizon": "monthly", "window_type": "fixed", "metric": "mcp_web_calls", "limit": 1000, "scope": "web_search_and_reader"}]},
+            "max": {"limits": [{"horizon": "five_hour", "window_type": "rolling", "metric": "prompts", "limit": 1600, "approximate": true}, {"horizon": "weekly", "window_type": "fixed", "metric": "prompts", "limit": 8000, "approximate": true}, {"horizon": "monthly", "window_type": "fixed", "metric": "mcp_web_calls", "limit": 4000, "scope": "web_search_and_reader"}]}
+          },
+          "notes": ["Prompt limits are provider estimates and vary with task/model complexity.", "Weekly cycle starts at order time; grandfathered subscriptions may have unlimited weekly usage.", "Monthly values are MCP web-search/web-reader limits, not model-compute prompt quotas."]
+        }
+      }
+    },
+    "alibaba": {
+      "products": {
+        "token_plan_personal": {
+          "edition": "personal",
+          "supported_tool_only": false,
+          "protocols": ["openai", "anthropic"],
+          "telemetry": {"kind": "console_usage", "locator": "token_plan_subscription"},
+          "tiers": {
+            "lite": {"limits": [{"horizon": "five_hour", "window_type": "rolling", "metric": "credits", "limit": 700, "enforced": false, "temporary_policy": true}, {"horizon": "weekly", "window_type": "fixed", "metric": "credits", "limit": 2500, "window_days": 7}]},
+            "standard": {"limits": [{"horizon": "five_hour", "window_type": "rolling", "metric": "credits", "limit": 3000, "enforced": false, "temporary_policy": true}, {"horizon": "weekly", "window_type": "fixed", "metric": "credits", "limit": 10000, "window_days": 7}]},
+            "pro": {"limits": [{"horizon": "five_hour", "window_type": "rolling", "metric": "credits", "limit": 12000, "enforced": false, "temporary_policy": true}, {"horizon": "weekly", "window_type": "fixed", "metric": "credits", "limit": 40000, "window_days": 7}]}
+          },
+          "notes": ["The 5-hour Personal limit is temporarily lifted; retain the nominal limit for policy-change readiness.", "The 7-day window starts with the first invocation and is not a Monday/calendar-week reset."]
+        },
+        "token_plan_team": {
+          "edition": "team",
+          "protocols": ["openai", "anthropic"],
+          "telemetry": {"kind": "console_usage", "locator": "token_plan_team_management"},
+          "tiers": {
+            "standard": {"aliases": [], "limits": [{"horizon": "billing_cycle", "window_type": "billing_cycle", "metric": "credits", "limit": 25000, "cycle": "subscription_month"}]},
+            "advanced": {"aliases": ["pro"], "limits": [{"horizon": "billing_cycle", "window_type": "billing_cycle", "metric": "credits", "limit": 100000, "cycle": "subscription_month"}]},
+            "premium": {"aliases": ["max"], "limits": [{"horizon": "billing_cycle", "window_type": "billing_cycle", "metric": "credits", "limit": 250000, "cycle": "subscription_month"}]}
+          },
+          "notes": ["Dedicated Team documentation currently calls the 100k/250k seats Advanced/Premium; overview pages also use Pro/Max. Aliases preserve both provider labels.", "Team has no 7-day quota; quota resets by subscription month."]
+        }
+      }
+    },
+    "minimax": {
+      "products": {
+        "token_plan_standard_legacy_m2_7": {
+          "edition": "individual",
+          "telemetry": {"kind": "http_json", "method": "GET", "locator": "https://www.minimax.io/v1/token_plan/remains"},
+          "tiers": {
+            "starter": {"limits": [{"horizon": "five_hour", "window_type": "rolling", "metric": "requests", "limit": 1500}, {"horizon": "weekly", "window_type": "fixed", "metric": "requests", "limit": 15000, "conditional_since": "2026-03-23T00:00:00Z"}]},
+            "plus": {"limits": [{"horizon": "five_hour", "window_type": "rolling", "metric": "requests", "limit": 4500}, {"horizon": "weekly", "window_type": "fixed", "metric": "requests", "limit": 45000, "conditional_since": "2026-03-23T00:00:00Z"}]},
+            "max": {"limits": [{"horizon": "five_hour", "window_type": "rolling", "metric": "requests", "limit": 15000}, {"horizon": "weekly", "window_type": "fixed", "metric": "requests", "limit": 150000, "conditional_since": "2026-03-23T00:00:00Z"}]}
+          },
+          "notes": ["Historical M2.7 quota generation retained because existing subscribers may still be bound to it.", "Weekly cap is 10x the 5-hour cap for purchases from 2026-03-23; earlier purchases were grandfathered."]
+        },
+        "token_plan_highspeed_legacy_m2_7": {
+          "edition": "individual",
+          "telemetry": {"kind": "http_json", "method": "GET", "locator": "https://www.minimax.io/v1/token_plan/remains"},
+          "tiers": {
+            "plus_highspeed": {"limits": [{"horizon": "five_hour", "window_type": "rolling", "metric": "requests", "limit": 4500}, {"horizon": "weekly", "window_type": "fixed", "metric": "requests", "limit": 45000, "conditional_since": "2026-03-23T00:00:00Z"}]},
+            "max_highspeed": {"limits": [{"horizon": "five_hour", "window_type": "rolling", "metric": "requests", "limit": 15000}, {"horizon": "weekly", "window_type": "fixed", "metric": "requests", "limit": 150000, "conditional_since": "2026-03-23T00:00:00Z"}]},
+            "ultra_highspeed": {"limits": [{"horizon": "five_hour", "window_type": "rolling", "metric": "requests", "limit": 30000}, {"horizon": "weekly", "window_type": "fixed", "metric": "requests", "limit": 300000, "conditional_since": "2026-03-23T00:00:00Z"}]}
+          }
+        },
+        "token_plan_current_m3": {
+          "edition": "individual",
+          "telemetry": {"kind": "http_json", "method": "GET", "locator": "https://www.minimax.io/v1/token_plan/remains"},
+          "tiers": {
+            "plus": {"limits": [{"horizon": "monthly", "window_type": "billing_cycle", "metric": "tokens", "limit": 1700000000, "approximate": true}], "reference_limits": [{"horizon": "five_hour", "metric": "m2_7_requests", "limit": 4500}, {"horizon": "five_hour", "metric": "m2_7_highspeed_requests", "limit": 2250}]},
+            "max": {"limits": [], "reference_limits": [{"horizon": "five_hour", "metric": "m2_7_requests", "limit": 15000}, {"horizon": "five_hour", "metric": "m2_7_highspeed_requests", "limit": 7500}]},
+            "ultra": {"limits": [], "reference_limits": [{"horizon": "five_hour", "metric": "m2_7_requests", "limit": 29077}, {"horizon": "five_hour", "metric": "m2_7_highspeed_requests", "limit": 14538}]}
+          },
+          "notes": ["Current public pricing has moved to M3-era Plus/Max/Ultra packaging. Where the provider does not publish an exact authoritative numeric quota in the same unit, limits remain absent rather than inferred from marketing estimates.", "Reference M2.7 call counts are not promoted to authoritative M3 quota limits."]
+        }
+      }
+    }
+  },
+  "sources": [
+    "https://docs.z.ai/devpack/faq",
+    "https://docs.z.ai/devpack/extension/usage-query-plugin",
+    "https://www.alibabacloud.com/help/en/model-studio/token-plan-overview",
+    "https://docs.modelstudio.console.alibabacloud.com/en/model-studio/token-plan-personal-faq",
+    "https://docs.modelstudio.console.alibabacloud.com/en/model-studio/token-plan-team-overview",
+    "https://platform.minimax.io/docs/token-plan/faq",
+    "https://platform.minimax.io/subscribe/token-plan"
+  ]
+}
