@@ -13,6 +13,104 @@ Usage: python -m scripts.build_stock_library
 """
 from __future__ import annotations
 
+try:
+    # Round-2 review MINOR-1: this was a bare, unguarded module-level import
+    # while every actual *use* below is wrapped in `except Exception` -- so an
+    # import-time failure in the debt-maturity module (or one of ITS imports)
+    # killed the entire stockdata build before a single ticker was processed,
+    # the exact opposite of the "additive; must not break the stockdata
+    # build" contract this file's own comments state. `_dm_load` is checked
+    # for None at the one call site below.
+    from scripts.build_debt_maturity import load_debt_maturity_facts as _dm_load
+except Exception:  # noqa: BLE001 -- additive panel; an import failure must never break the whole build
+    _dm_load = None
+
+
+def _resolve_debt_maturity(ticker: str, sector: str, dm_asof) -> dict:
+    """Resolve the ``debt_maturity.v1`` block for one ticker (packet
+    B-F09-3). Extracted to a standalone, directly-callable function (round-3
+    review MAJOR-2) so its taxonomy decisions — the ETF/crypto structural
+    short-circuit, and the producer-fault degrade path — can be pinned by a
+    test that calls the REAL production code, not a hand-copied mirror of it
+    that silently stops tracking the source.
+
+    FOUR distinct statuses, never conflated (META-CEO ruling round 2,
+    MAJOR-1) -- an identity GAP is not fetch LAG:
+      * "not_applicable" -- this listing has no SEC filer identity by
+        CONSTRUCTION (crypto, or an ETF/commodity/FX/factor/credit macro
+        proxy carried under the "ETF / macro" sector sentinel `universe()`
+        itself stamps for every non-named curated_extras ticker -- see
+        `universe()`'s "an ETF / macro proxy" branch). No chip, no section:
+        a promise this listing could NEVER keep must never be made, so it
+        is decided here, before any CIK lookup at all.
+      * "unresolved" -- a CIK lookup was attempted (this IS a candidate
+        common-stock/ADR identity) and found nothing. An identity gap in
+        OUR ledger, not evidence the filer doesn't exist -- but also not a
+        "come back soon" promise, since there is no fetch pending to
+        resolve it. Its own terminal branch in the template.
+      * "not_loaded" -- a CIK exists but this producer has never completed
+        a fetch cycle for it (cache file absent), OR the lookup/extract
+        path faulted transiently (round-3 review MAJOR-3: a real filer's
+        transient producer fault must degrade here, never to
+        `not_applicable`, which would silently swallow its null
+        disclosure). The status whose own copy earns the "still catching
+        up, check back soon" promise.
+      * everything else (engine.debt_maturity.extract_maturity_ladder's own
+        "reported" / "no_maturity_facts" / "no_filings" /
+        "identity_mismatch") -- unchanged, a completed fetch cycle.
+    """
+    if ticker.endswith("-USD") or sector == "ETF / macro":
+        # Structural non-filer: crypto and every ETF/macro proxy this
+        # universe carries. Never attempts a CIK lookup for these -- there
+        # is no filer identity to look up. Pure string checks -- nothing
+        # here can raise, so `not_applicable` is never reached through the
+        # except below.
+        return {"schema": "debt_maturity.v1", "status": "not_applicable"}
+    try:
+        if _dm_load is None:
+            raise RuntimeError("scripts.build_debt_maturity import failed at module load")
+        _dm_cik, _dm_facts, _dm_state = _dm_load(ticker)
+        from engine.debt_maturity import extract_maturity_ladder as _dm_extract  # noqa: PLC0415
+        if _dm_state == "unresolved":
+            return {
+                "schema": "debt_maturity.v1", "status": "unresolved", "cik": None,
+                "buckets": [], "total_reported_usd": None, "total_display": None,
+                "near_share_pct": None, "buckets_reported": 0, "buckets_total": 6,
+                "as_of": dm_asof.isoformat(),
+            }
+        if _dm_state == "not_loaded":
+            return {
+                "schema": "debt_maturity.v1", "status": "not_loaded", "cik": _dm_cik,
+                "buckets": [], "total_reported_usd": None, "total_display": None,
+                "near_share_pct": None, "buckets_reported": 0, "buckets_total": 6,
+                "as_of": dm_asof.isoformat(),
+            }
+        if _dm_state == "confirmed_no_filings":
+            return _dm_extract(None, cik=_dm_cik, as_of=dm_asof)
+        return _dm_extract(_dm_facts, cik=_dm_cik, as_of=dm_asof)
+    except Exception as _dm_exc:  # noqa: BLE001 -- additive; must not break the stockdata build
+        # Round-3 review MAJOR-3: this listing IS a candidate SEC filer (it
+        # reached the else branch), so a transient fault here (import
+        # error, lookup crash, malformed cache) must degrade to
+        # `not_loaded` -- the status whose own copy already says "still
+        # catching up" -- never to `not_applicable`, which renders no chip
+        # and no section and would silently swallow a real filer's null
+        # disclosure. Loud (line-start ::warning, repo CI-annotation law)
+        # so a systemic fault is visible instead of invisible.
+        print(
+            f"::warning title=stock-library debt-maturity producer fault::{ticker} "
+            f"debt-maturity lookup raised {type(_dm_exc).__name__}: {_dm_exc} -- "
+            f"degrading to not_loaded, never not_applicable",
+            flush=True,
+        )
+        return {
+            "schema": "debt_maturity.v1", "status": "not_loaded", "cik": None,
+            "buckets": [], "total_reported_usd": None, "total_display": None,
+            "near_share_pct": None, "buckets_reported": 0, "buckets_total": 6,
+            "as_of": dm_asof.isoformat(),
+        }
+
+
 import json
 import math
 import logging
@@ -28,6 +126,8 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from engine import ticker_alerts  # noqa: E402
+from engine import valuation_scenario as _valuation_scenario  # noqa: E402 — FROZEN SPEC B-F07-1
+from engine.stock_fundamentals import _load_statements as _vs_load_statements  # noqa: E402
 from engine import signal_gate  # noqa: E402 — owner's confluence T1->T4 cascade (layered ON main's gate)
 from engine.conditions import sector_macro_beta  # noqa: E402
 from engine.cycles import analyze, market_vix_context  # noqa: E402
@@ -2809,6 +2909,17 @@ def main() -> int:
             geo_rev_map = (json.loads(_geo_p.read_text()) or {}).get("by_ticker", {})
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("geo_revenue.json unreadable (%s)", e)
+    # valuation_scenario.v1 -- FROZEN SPEC B-F07-1. V1 = one pinned issuer only
+    # (AAPL); pure function over already-collected SEC companyfacts statements
+    # (engine.stock_fundamentals._load_statements(), read once here). No new
+    # collector, no network, no licensed data -- ~one extra parquet read plus
+    # ~20 float ops for one ticker, well under the render budget.
+    _VS_TICKERS = ("AAPL",)
+    _vs_statements: dict = {}
+    try:
+        _vs_statements = _vs_load_statements()
+    except Exception as e:  # noqa: BLE001 — additive, never fatal
+        log.warning("valuation_scenario: statements unreadable (%s)", e)
     # per-stock dealer-gamma (DISPLAY-ONLY, gated from the score by validate_gex). PRIMARY =
     # the pre-built site/gex board payloads (rich: walls + vol_hole + consistent units), which
     # already cover the curated optionable universe. The live compute_gex path is only used as a
@@ -3507,6 +3618,18 @@ def main() -> int:
         # revenue-by-geography block (collectors/edgar_geo_revenue.py; TXI W2 #3431)
         if geo_rev_map.get(ticker):
             rec["geo_revenue"] = geo_rev_map[ticker]
+        # valuation_scenario.v1 -- pinned V1 issuer only (FROZEN SPEC B-F07-1)
+        if ticker in _VS_TICKERS:
+            try:
+                _vs_price = (rec.get("tech") or {}).get("price")
+                _vs_blob = _valuation_scenario.compute(
+                    _vs_statements.get(ticker) or [],
+                    price=_vs_price, asof=rec.get("asof"), ticker=ticker,
+                )
+                if _vs_blob:
+                    rec["valuation_scenario"] = {"v1": _vs_blob}
+            except Exception as e:  # noqa: BLE001 — additive, never fatal
+                log.warning("valuation_scenario failed for %s: %s", ticker, e)
         # ---- richer OHLCV technical snapshot + single-stock volatility black hole ------
         # Supersede the thin close-only snapshot with the research-vetted read (ATR/ADX/
         # squeeze/volume where full OHLCV exists; momentum / 52w-proximity / realized-vol
@@ -3951,6 +4074,14 @@ def main() -> int:
                 rec["sector_pulse"] = _sp_row
         except Exception as _spe2:  # noqa: BLE001 — additive; must not break the stockdata build
             pass
+        # ---- debt maturity ladder (packet B-F09-3, bounded pure producer) ----------
+        # Top-level block in each stockdata JSON: engine.debt_maturity.v1.
+        # Identity is CIK-only via scripts/build_debt_maturity.py's committed
+        # ticker->CIK ledger + issuer_master fallback (GATE 0, fixed 2026-09-06).
+        # Taxonomy + fault-handling now live in `_resolve_debt_maturity()`
+        # (module-level, round-3 review MAJOR-2) so they are directly
+        # unit-testable against the real production code.
+        rec["debt_maturity"] = _resolve_debt_maturity(ticker, sector, _dt.date.today())
         # ---- confluence block (frozen Terminal contract, 2026-07-06) ---------------
         # Top-level block in each stockdata JSON consumed by the charting-app Terminal.
         # Shape: {tier, weight, sub, ticks, bars_to_cross, provisional, not_topped,
@@ -4516,10 +4647,13 @@ def main() -> int:
                     "security_state.v1 identity unavailable for %s: %s",
                     _ss_ticker, _ss_reason,
                 )
-                _ss_pinned_subject = (
-                    _security_state.AAPL_SUBJECT
-                    if _ss_ticker == _security_state.PINNED_TICKER
-                    else _security_state_producer._fallback_subject_for_ticker(_ss_ticker)
+                # The owner-identity BATCH read itself failed (M1) for every
+                # allowlisted ticker at once, so no live owner read exists for
+                # any of them here -- the failure shell must say so, never
+                # borrow a live-read subject's language. `_fallback_subject_for_ticker`
+                # is a frozen-allowlist lookup, not a per-ticker branch.
+                _ss_pinned_subject = _security_state_producer._fallback_subject_for_ticker(
+                    _ss_ticker
                 )
                 _ss_prior = _security_state_producer._read_prior_security_state(
                     outdir, _ss_ticker
@@ -4530,6 +4664,7 @@ def main() -> int:
                         diagnostic=RuntimeError(_ss_reason),
                         prior_state=_ss_prior,
                         validator=_ss_validator,
+                        owner_read_completed=False,
                     )
                 )
                 _ss_rec["security_state"] = _ss_state

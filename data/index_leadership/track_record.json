@@ -1,95 +1,95 @@
 {
   "schema": "index_leadership.track_record.v1",
-  "as_of": "2026-09-04",
-  "generated_at": "2026-09-06T22:24:46.787609+00:00",
+  "as_of": "2026-09-10",
+  "generated_at": "2026-09-12T08:48:17.264513+00:00",
   "is_context_only": true,
-  "n_snapshots": 618,
-  "n_days": 21,
+  "n_snapshots": 688,
+  "n_days": 24,
   "horizons": {
     "5": {
-      "n_matured": 485,
+      "n_matured": 616,
       "by_stage": {
         "running": {
-          "n": 424,
+          "n": 544,
           "mean_fwd_rel": -0.0046,
-          "hit_rate": 0.465
+          "hit_rate": 0.454
         },
         "coiling": {
-          "n": 31,
-          "mean_fwd_rel": 0.0037,
-          "hit_rate": 0.677
+          "n": 35,
+          "mean_fwd_rel": 0.0013,
+          "hit_rate": 0.514
         },
         "coiling_primed": {
-          "n": 30,
-          "mean_fwd_rel": 0.0162,
-          "hit_rate": 0.733
+          "n": 37,
+          "mean_fwd_rel": 0.0122,
+          "hit_rate": 0.595
         }
       },
-      "running_ic": 0.0461,
-      "running_ic_t_hac": 0.779,
+      "running_ic": -0.0557,
+      "running_ic_t_hac": -0.581,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "10": {
-      "n_matured": 413,
+      "n_matured": 549,
       "by_stage": {
         "running": {
-          "n": 363,
-          "mean_fwd_rel": -0.0037,
-          "hit_rate": 0.474
+          "n": 484,
+          "mean_fwd_rel": -0.0077,
+          "hit_rate": 0.428
         },
         "coiling": {
-          "n": 24,
-          "mean_fwd_rel": -0.008,
-          "hit_rate": 0.375
+          "n": 33,
+          "mean_fwd_rel": -0.0012,
+          "hit_rate": 0.485
         },
         "coiling_primed": {
-          "n": 26,
-          "mean_fwd_rel": 0.0362,
-          "hit_rate": 0.731
+          "n": 32,
+          "mean_fwd_rel": 0.0232,
+          "hit_rate": 0.562
         }
       },
-      "running_ic": 0.0658,
-      "running_ic_t_hac": 2.438,
+      "running_ic": -0.0928,
+      "running_ic_t_hac": -1.014,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "21": {
-      "n_matured": 235,
+      "n_matured": 376,
       "by_stage": {
         "running": {
-          "n": 214,
-          "mean_fwd_rel": -0.0028,
-          "hit_rate": 0.528
+          "n": 333,
+          "mean_fwd_rel": -0.0061,
+          "hit_rate": 0.471
         },
         "coiling": {
-          "n": 10,
-          "mean_fwd_rel": -0.012,
-          "hit_rate": 0.7
+          "n": 20,
+          "mean_fwd_rel": -0.0071,
+          "hit_rate": 0.5
         },
         "coiling_primed": {
-          "n": 11,
-          "mean_fwd_rel": 0.0735,
-          "hit_rate": 0.727
+          "n": 23,
+          "mean_fwd_rel": 0.0435,
+          "hit_rate": 0.739
         }
       },
-      "running_ic": -0.191,
-      "running_ic_t_hac": -7.355,
+      "running_ic": -0.0028,
+      "running_ic_t_hac": -0.028,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "63": {
-      "n_matured": 24,
+      "n_matured": 33,
       "by_stage": {
         "running": {
-          "n": 18,
-          "mean_fwd_rel": -0.0488,
-          "hit_rate": 0.333
+          "n": 26,
+          "mean_fwd_rel": -0.0468,
+          "hit_rate": 0.346
         },
         "coiling": {
-          "n": 6,
-          "mean_fwd_rel": -0.0794,
-          "hit_rate": 0.167
+          "n": 7,
+          "mean_fwd_rel": -0.0826,
+          "hit_rate": 0.286
         }
       },
       "running_ic": null,
@@ -98,80 +98,80 @@
       "coiling_ic_t_hac": null
     }
   },
-  "lead_time_d": 10,
-  "peak_ic": 0.0658,
+  "lead_time_d": null,
+  "peak_ic": null,
   "proven": {
     "5": false,
-    "10": true,
+    "10": false,
     "21": false,
     "63": false
   },
   "any_matured": true,
-  "verdict": "validated",
-  "note": "Call-score IC is significant at the 10d horizon (measured). Context-only \u2014 informs the read, never sizes.",
+  "verdict": "measuring",
+  "note": "Accruing forward observations; no horizon clears the Newey-West significance bar yet. Early numbers are provisional, context-only.",
   "recent_misses": [
     {
-      "date": "2026-08-13",
-      "id": "russell:aerospace-defense",
+      "date": "2026-08-20",
+      "id": "subsectors:aerospace-defense",
       "name": "Aerospace & Defense",
       "stage": "running",
-      "fwd_rel": -0.1763,
+      "fwd_rel": -0.0797,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-13",
-      "id": "baskets:ai-infra",
-      "name": "AI Infrastructure",
+      "date": "2026-08-20",
+      "id": "nasdaq:software-application",
+      "name": "Software - Application",
       "stage": "running",
-      "fwd_rel": -0.093,
+      "fwd_rel": -0.058,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-13",
-      "id": "subsectors:electronic-components",
-      "name": "Electronic Components",
+      "date": "2026-08-20",
+      "id": "subsectors:packaged-foods",
+      "name": "Packaged Foods",
       "stage": "running",
-      "fwd_rel": -0.0804,
+      "fwd_rel": -0.056,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-13",
-      "id": "subsectors:packaging-containers",
-      "name": "Packaging & Containers",
+      "date": "2026-08-20",
+      "id": "subsectors:software-application",
+      "name": "Software - Application",
       "stage": "running",
-      "fwd_rel": -0.0323,
+      "fwd_rel": -0.0553,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-13",
-      "id": "subsectors:asset-management",
+      "date": "2026-08-20",
+      "id": "baskets:us-sector-discretionary",
+      "name": "Consumer Discretionary (Equal-Weight)",
+      "stage": "running",
+      "fwd_rel": -0.0422,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-08-20",
+      "id": "russell:restaurants",
+      "name": "Restaurants",
+      "stage": "running",
+      "fwd_rel": -0.0396,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-08-20",
+      "id": "nasdaq:specialty-business-services",
+      "name": "Specialty Business Services",
+      "stage": "running",
+      "fwd_rel": -0.0367,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-08-20",
+      "id": "russell:asset-management",
       "name": "Asset Management",
       "stage": "running",
-      "fwd_rel": -0.0218,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-13",
-      "id": "russell:medical-devices",
-      "name": "Medical Devices",
-      "stage": "running",
-      "fwd_rel": -0.0218,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-13",
-      "id": "russell:information-technology-services",
-      "name": "Information Technology Services",
-      "stage": "running",
-      "fwd_rel": -0.0203,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-12",
-      "id": "baskets:space-economy",
-      "name": "Space Economy",
-      "stage": "running",
-      "fwd_rel": -0.1888,
+      "fwd_rel": -0.0343,
       "horizon_d": 21
     }
   ],

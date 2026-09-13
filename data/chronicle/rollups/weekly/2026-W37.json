@@ -1,9 +1,9 @@
 {
-  "as_of": "2026-09-07",
+  "as_of": "2026-09-12",
   "coverage": {
-    "end": "2026-09-07",
-    "note": "weekly rollup spans up to 13 ISO weeks ending 2026-W37; 14 week(s) have events so far; chronicle event store begins 2013-05-21; trimmed lowest-salience events to fit the display budget",
-    "start": "2026-06-08"
+    "end": "2026-09-12",
+    "note": "weekly rollup spans up to 13 ISO weeks ending 2026-W37; 13 week(s) have events so far; chronicle event store begins 2013-05-21; trimmed lowest-salience events to fit the display budget",
+    "start": "2026-06-13"
   },
   "iso_week": "2026-W37",
   "schema": "chronicle.rollup.weekly/v1",
@@ -11,9 +11,39 @@
     {
       "clusters": [
         {
-          "n_events": 1,
+          "n_events": 161,
           "source": "research_vault",
           "theme": null,
+          "top_events": []
+        },
+        {
+          "n_events": 21,
+          "source": "prophet_ledger",
+          "theme": null,
+          "top_events": []
+        },
+        {
+          "n_events": 3,
+          "source": "risk_band",
+          "theme": "risk",
+          "top_events": []
+        },
+        {
+          "n_events": 1,
+          "source": "macro_release",
+          "theme": "ppi_finaldemand",
+          "top_events": []
+        },
+        {
+          "n_events": 1,
+          "source": "macro_release",
+          "theme": "claims",
+          "top_events": []
+        },
+        {
+          "n_events": 1,
+          "source": "regime_flip",
+          "theme": "regime",
           "top_events": []
         }
       ],
@@ -22,7 +52,7 @@
     {
       "clusters": [
         {
-          "n_events": 58,
+          "n_events": 79,
           "source": "research_vault",
           "theme": null,
           "top_events": []
@@ -43,6 +73,12 @@
           "n_events": 2,
           "source": "research_vault",
           "theme": "Fear and Greed",
+          "top_events": []
+        },
+        {
+          "n_events": 1,
+          "source": "earnings",
+          "theme": "earnings",
           "top_events": []
         },
         {
@@ -84,6 +120,12 @@
           "n_events": 21,
           "source": "prophet_ledger",
           "theme": null,
+          "top_events": []
+        },
+        {
+          "n_events": 1,
+          "source": "earnings",
+          "theme": "earnings",
           "top_events": []
         },
         {
@@ -134,7 +176,7 @@
           "top_events": []
         },
         {
-          "n_events": 3,
+          "n_events": 4,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -187,15 +229,15 @@
           "top_events": []
         },
         {
-          "n_events": 9,
-          "source": "prophet_ledger",
-          "theme": null,
+          "n_events": 24,
+          "source": "earnings",
+          "theme": "earnings",
           "top_events": []
         },
         {
-          "n_events": 6,
-          "source": "earnings",
-          "theme": "earnings",
+          "n_events": 9,
+          "source": "prophet_ledger",
+          "theme": null,
           "top_events": []
         },
         {
@@ -246,26 +288,15 @@
           "top_events": []
         },
         {
+          "n_events": 333,
+          "source": "earnings",
+          "theme": "earnings",
+          "top_events": []
+        },
+        {
           "n_events": 285,
           "source": "research_vault",
           "theme": null,
-          "top_events": [
-            {
-              "date": "2026-08-09",
-              "id": "cev-research_vault-cd5880e886d4",
-              "kind": "report",
-              "source": "research_vault",
-              "source_ref": "marketdesk-rijqwshec0p-9a8050",
-              "tickers": [],
-              "title": "Other: Investment Traffic Lights EN",
-              "weight_hint": 3
-            }
-          ]
-        },
-        {
-          "n_events": 86,
-          "source": "earnings",
-          "theme": "earnings",
           "top_events": []
         },
         {
@@ -303,6 +334,12 @@
     },
     {
       "clusters": [
+        {
+          "n_events": 512,
+          "source": "earnings",
+          "theme": "earnings",
+          "top_events": []
+        },
         {
           "n_events": 487,
           "source": "research_vault",
@@ -359,12 +396,6 @@
               "weight_hint": 3
             }
           ]
-        },
-        {
-          "n_events": 325,
-          "source": "earnings",
-          "theme": "earnings",
-          "top_events": []
         },
         {
           "n_events": 115,
@@ -435,7 +466,7 @@
     {
       "clusters": [
         {
-          "n_events": 225,
+          "n_events": 243,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -622,23 +653,6 @@
         }
       ],
       "iso_week": "2026-W25"
-    },
-    {
-      "clusters": [
-        {
-          "n_events": 19,
-          "source": "earnings",
-          "theme": "earnings",
-          "top_events": []
-        },
-        {
-          "n_events": 1,
-          "source": "earnings_call",
-          "theme": "earnings",
-          "top_events": []
-        }
-      ],
-      "iso_week": "2026-W24"
     }
   ]
 }

@@ -1292,6 +1292,21 @@ _STATE_SEED_SCRIPT = """
 }
 """
 
+
+def state_seed_source(state: dict[str, Any]) -> str:
+    """The init-script source that seeds ``state`` before any page script runs.
+
+    ``add_init_script`` takes source, not ``(fn, arg)``, so the seed is wrapped as
+    an IIFE with the state literal baked in. The statement is TERMINATED with a
+    semicolon on purpose: an init script is plain text that callers concatenate
+    onto (a wrapper appending its own IIFE after a newline is the documented
+    shape), and an unterminated ``(fn)(arg)`` followed by ``(function(){...})()``
+    parses as ONE call-of-a-call — ``(intermediate value)(...) is not a
+    function`` — thrown before the page's first script, surfacing in the manifest
+    as a page ``console_error`` with no source URL (sanctions_map, 2026-09-08).
+    """
+    return f"({_STATE_SEED_SCRIPT.strip()})({json.dumps(state)});"
+
 # Applied AFTER load through the page's own toggle when it exposes one, so the
 # capture goes through the same code path a user's click does (theme.js sets
 # data-theme / data-lang on <html>, syncs documentElement.lang, and fires the
@@ -1486,9 +1501,8 @@ class _PlaywrightDriver:  # pragma: no cover - needs a browser
             color_scheme=cell.theme,
             device_scale_factor=1,
         )
-        # add_init_script takes source, not (fn, arg) — so the seed is wrapped as an
-        # IIFE with the state literal baked in.
-        context.add_init_script(f"({_STATE_SEED_SCRIPT.strip()})({json.dumps(state)})")
+        # Terminated IIFE source (see state_seed_source): safe to concatenate onto.
+        context.add_init_script(state_seed_source(state))
         page = context.new_page()
         console_errors: list[dict[str, Any]] = []
         failed_responses: list[dict[str, Any]] = []
