@@ -1,6 +1,6 @@
 # Core & Dislocation — research-to-product placement and acceptance
 
-Status: architectural recommendation, not implemented, deployed or admitted as a portfolio. SCE reconstruction remains PARTIAL. The current Chairman instruction is to continue the investigation, plan the best fit into Mastermind and the Macro Dashboard, and integrate when research is complete. This record neither activates a strategy nor changes an existing source, program or runtime owner.
+Status: architectural recommendation, not implemented, deployed or admitted as a portfolio. The tested August auction-profile exit family is `NO_EXIT_RULE_VALIDATED`; the current September replica is closed at `LIMITED_IDENTIFICATION_CURRENT_VERSION`. Product integration remains PARTIAL. This record neither activates a strategy nor changes an existing source, program or runtime owner.
 
 Procedure: Mastermind `dd553d1b0b8eed9511da2d3d5ec02cc9cd8edca1`, compatible Skillpack 1.0.1. Macro source inspection: `2db16a02cb301eced6c74cbf5db4321294490206`. Terminal inspection: `b25123ba46ec024dba8c0654d5d164d395b3bf1c`. Records remain operation `sce-data-proof-records-20260909-sol-001`, branch `sol/sce-data-proof-records-20260909`, PR #7009. Source inspection does not prove current runtime liveness.
 
@@ -24,9 +24,9 @@ Preserve V8's favorable result: the restricted funded image-fitting family did n
 
 A new finite partition of the unchanged retained V8 inventory family clarifies the next missing fact. Confirming SPY inventory leaves all 44 combinations. An exact XLE quantity leaves at most four; an exact GLD quantity leaves at most thirteen. Both option counts leave one inventory row, but not its exact cash or the actual contracts/rules. These are cardinalities of one restricted hypothesis set, not probabilities or independent investment trials. An external answer outside the set rejects the restricted model, not the publisher. The private analysis uses a pure CSV partition and does not rerun portfolio P&L.
 
-The next source request is one version-matched episode statement: exact instruments and quantities, cost basis, open-position marks, cash flows, decisions and execution clocks, plus a complete armed/entry/exit description. A second independent numerical core threshold and initialization/reset convention are a separate discriminator.
+V11 closes the tested August auction-profile exit family at `NO_EXIT_RULE_VALIDATED` while preserving that null at its lawful scope. New September 10–12 primary-source material reveals a newer ETF/Treasury, two-engine architecture, so the current method must be identified independently rather than treated as the same version.
 
-Do not wait indefinitely for private source code. Research can close in one of two ways: sufficiently specified external-method replay, or an explicit limited-identification adjudication after a bounded source effort. A subsequent fully original candidate is a separately registered hypothesis; it does not inherit the external system's name or performance. This is not a conclusion that a durable edge exists.
+Do not keep tuning August proxy exits or splice June/July rules into September. The bounded current-version source effort did not recover Section 3 or an equivalent behavioral discriminator, so the replica is closed as `LIMITED_IDENTIFICATION_CURRENT_VERSION`. Any fully original candidate is separate research and inherits none of the publisher's performance claims.
 
 ## 2. Selected placement and rejected alternatives
 
@@ -103,6 +103,37 @@ Use existing product analytics to measure whether users can identify the state-c
 
 Sol owns the product thesis, cross-repo architecture, hypothesis freeze, adversarial review and final acceptance. Existing source, validation, portfolio and product owners retain their boundaries. No worker, watcher, Executive job or new program parent is created here. Future bounded tasks use current least-scarce capable routing and real receiver/admission checks, not Chairman-managed routine account allocation.
 
-Primary next action: obtain/adjudicate the version-matched episode disclosure and independent core threshold/transition, then test the sufficiently specified rule through the existing funded path. If decisive external facts remain unavailable after the bounded evidence effort, issue a limited-identification conclusion and register any original candidate as separate research. Source-owner host/volume/parity reconciliation proceeds independently; no new recovery was observed here.
+Primary next action: release this same PR #7009 carrier with the V11 limited-identification ruling, then implement one Quant Lab METHODS artifact-to-visible-result slice that renders the version timeline, claim ledger, failed reconstruction families and unresolved current rules. A future genuinely new Section 3 disclosure may reopen identification; source-owner host/volume/parity reconciliation remains independent.
 
 This memo records a placement recommendation. Its merge would establish durable planning, not product implementation, source recovery, proven alpha or final portfolio acceptance.
+
+## V11 amendment — current September method boundary (2026-09-12)
+
+The September 10–12 primary-source packet in
+`SCE_V11_CURRENT_WHITEPAPER_AND_VERSIONED_ENGINE_RULING_2026-09-12.md` narrows this
+placement plan. Current disclosed SCE is an ETF/Treasury method: SPY, XLE, GLD and SHY,
+with a Trend Base plus Dislocation Overlay architecture. Options positioning is displayed
+and scored beside ETF state; current public evidence does not establish option contracts as
+portfolio holdings.
+
+Therefore the earlier derivative-lifecycle paragraph remains a **conditional compatibility
+gate**, not a prerequisite for the current research-to-product slice. A future mandate that
+actually trades options still owes contract identity, multiplier, expiry, exercise/assignment,
+fees, adjustments and funding. An ETF/Treasury mandate does not acquire those requirements merely
+because Signal Sigma options context is displayed beside it.
+
+The selected product architecture is unchanged: Quant Lab `METHODS` is the detailed research
+home; a distinct book is admitted only if a frozen current-version rule earns that role; Macro
+and Terminal remain projections/inspection surfaces. No US Brain mandate, archived book,
+Prophet rank, Market State or Risk Radar authority changes.
+
+The current research gate is now version identification rather than option-inventory recovery.
+Do not splice the June Donald Jones exit, July dual-KAMA/QQQ/BIL construction or August
+option-inventory hypotheses into the September method. First freeze the current Trend Base and
+Dislocation Overlay independently from a current Section 3 disclosure or equivalent behavioral
+discriminator. If that bounded evidence remains unavailable, close the replica as
+`LIMITED_IDENTIFICATION_CURRENT_VERSION` and register any Mastermind-original candidate separately.
+
+This amendment supersedes only the assumption that an options-bearing account is on the current
+critical path. All existing source-clock, rights, missingness, account-truth, promotion, visual-proof
+and no-duplicate-system gates remain controlling.
