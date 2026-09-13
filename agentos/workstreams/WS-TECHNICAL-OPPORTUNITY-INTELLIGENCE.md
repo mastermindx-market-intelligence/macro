@@ -53,16 +53,26 @@ waves:
       continuation. Evidence census remains separate from Temporal Grain W1.
   - id: W2-0
     title: Daily/Weekly/4H data, clock, correction, coverage, rights, and Terminal-parity archaeology
-    status: todo
+    status: awaiting_ci
+    pr: 7094
     depends_on: [W0]
     next_action: >
-      Undispatched. Create one disjoint child carrier under operation key
-      TOI-W2-0-DATA-CLOCK-V1. This wave remains the broad U.S.-equity
-      Weekly/Daily/4H data, clock, coverage, rights and Terminal-parity owner.
+      PR #7094 is the exact W2-0 carrier. Candidate verdict is `PARTIAL / HOLD`: current
+      Massive daily depth and rights are real, but production Terminal early-close 4H
+      parity failed 5/5 measured cases; whole-universe 4H can fall back to provider-built
+      1h bars; a same-basis historical Daily+4H known-at/correction contract and broad
+      historical denominator remain unproven. Sol must review exact head and current-base
+      integration proof. On acceptance, merge the records-only W2-0 carrier; only then may
+      bounded W2 existing-owner repair/qualification start. W3 remains held.
   - id: W2
     title: Bounded existing-owner data substrate extension, only if W2-0 authorizes it
     status: todo
     depends_on: [W2-0]
+    next_action: >
+      HELD pending W2-0 acceptance. If PR #7094 is accepted, first make actual exchange
+      close load-bearing in Terminal/research 4H semantics and re-prove at least 20
+      production parity cases including early closes. Then qualify one same-basis Daily+4H
+      source family and broad historical eligible-universe denominator. Do not read outcomes.
   - id: W3
     title: Compression Release upside/downside preregistration and phase-zero family tournament
     status: todo
@@ -110,15 +120,20 @@ artifacts:
   - research/TECHNICAL_OPPORTUNITY_INTELLIGENCE_W0_PROCEDURE_AND_CONTINUATION_AMENDMENT_2026-08-27.md
   - research/TECHNICAL_OPPORTUNITY_INTELLIGENCE_W1_EVIDENCE_CENSUS_HANDOFF_2026-08-27.md
   - research/TECHNICAL_OPPORTUNITY_INTELLIGENCE_W2_DATA_CLOCK_HANDOFF_2026-08-27.md
+  - research/technical_opportunity/W2_DATA_PLANE_CENSUS.md
+  - research/technical_opportunity/W2_DATA_CLOCK_ARCHITECTURE_FREEZE.md
+  - research/technical_opportunity/W2_REPORT.md
   - agentos/handoffs/TECHNICAL-OPPORTUNITY-INTELLIGENCE-2026-08-27.md
   - agentos/handoffs/TECHNICAL-OPPORTUNITY-INTELLIGENCE-2026-08-27-w0-current-procedure.md
   - agentos/handoffs/TECHNICAL-OPPORTUNITY-INTELLIGENCE-2026-08-28-w0-finalization.md
+  - agentos/handoffs/TECHNICAL-OPPORTUNITY-INTELLIGENCE-W2-0-2026-09-12.md
 next_action: >
-  W0 is merged. W1 Evidence Census and W2-0 Data/Clock Archaeology may now be
-  independently placed on separate disjoint carriers under operation keys
-  TOI-W1-EVIDENCE-CENSUS-V1 and TOI-W2-0-DATA-CLOCK-V1 after current collision checks.
-  Both must return and be accepted before W3 preregistration or outcome testing. Neither
-  operation has a Slack delivery, pickup, START or runtime effect in this reconciliation.
+  W1 remains independently todo. W2-0 is on draft PR #7094 awaiting exact-head CI and
+  Sol acceptance with a `PARTIAL / HOLD` data-plane verdict. W3 and all outcome testing
+  remain blocked. If W2-0 is accepted and merged, execute one bounded W2 existing-owner
+  repair/qualification wave: actual-close Terminal/research 4H parity first, then one
+  same-basis Daily+4H source family plus the broad historical denominator. Neither the
+  W2-0 carrier nor this projection creates runtime, signal, product or trading authority.
 ---
 
 ## Boundary note
