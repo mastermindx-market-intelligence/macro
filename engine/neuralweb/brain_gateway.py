@@ -672,11 +672,29 @@ _RESEARCH_PACKET_PLAIN: dict[str, tuple[str, str]] = {
     "session": ("Session state", "交易时段状态"),
 }
 
-_RESEARCH_SENTENCE_SPLIT = re.compile(r"(?<=[.!?。！？])\s+")
+# Spec (4): split on sentence-ending punctuation, including CJK 。！？ without
+# requiring trailing whitespace (so "每日简报...分化。请买入 NVDA。" is two
+# sentences). The split anchors on the END of the punctuation (lookbehind),
+# not on bare whitespace — otherwise mid-sentence spaces would over-split
+# "Funds continued to buy." into "Funds" / "continued" / "to" / "buy." and
+# the lone "buy" piece would then match the trade filter.
+#
+# ASCII . / ! / ? are NOT treated as sentence-end when followed by a digit
+# (e.g. "0.9", "v2.3") — that path would otherwise split a 0-1 score apart
+# from its leading "score" / "confidence" anchor.
+_RESEARCH_SENTENCE_SPLIT = re.compile(
+    r"(?<=[!?。！？])\s+"
+    r"|(?<=[!?。！？])(?=\S)"
+    r"|(?<=[.!?])\s+(?=\D)"
+    r"|(?<=[.!?])(?=[^\d\s])"
+)
 # Spec (4): a percentage / 0-1 / star / high|medium|low conviction rendered as a
-# judgement — not a published fact such as "breadth was 40%".
+# judgement — not a published fact such as "breadth was 40%". Match the
+# adjectival form 'confident' as well as the noun 'confidence', so
+# "I'm 80% confident" is read as a judgement, not a published fact.
 _RESEARCH_PERCENT = re.compile(
-    r"\b\d{1,3}(?:\.\d+)?\s*%\s*(?:confidence|conviction|sure|certain|probability|odds|chance)\b"
+    r"\b\d{1,3}(?:\.\d+)?\s*%\s*"
+    r"(?:confidence|confident|conviction|sure|certain|probability|odds|chance)\b"
     r"|(?:confidence|conviction|probability|odds)\s+(?:of\s+|is\s+|at\s+)?"
     r"\d{1,3}(?:\.\d+)?\s*%",
     re.I,
@@ -693,15 +711,19 @@ _RESEARCH_SCORE_01 = re.compile(
 )
 _RESEARCH_FALSIFIER = re.compile(r"\bfalsifier\b|\brefuted\b|证伪", re.I)
 # Spec (4): *imperative* buy/sell/size/target — not "funds continued to buy"
-# or "Fed target of 2 percent".
+# or "Fed target of 2 percent". `price target` / `target price` are matched
+# ONLY when preceded by an imperative verb (set/place/hit/cut/raise/lower/
+# peg/establish/give/target), so a citing sentence that *reports* a
+# published price target ("The daily briefing listed a published price
+# target of 240.") is kept.
 _RESEARCH_TRADE = re.compile(
     r"(?:^|(?<=[.!?。！？]\s))(?:buy|sell)\b"
     r"|\b(?:you\s+should|please)\s+(?:buy|sell)\b"
     r"|\b(?:buy|sell)\s+(?:now|immediately|today)\b"
     r"|\bsize\s+(?:it|the\s+position|your\s+(?:position|size|book))\b"
-    r"|\b(?:set|place)\s+a\s+(?:price\s+)?target\b"
-    r"|\bprice\s+target\b"
-    r"|\btarget\s+price\b",
+    r"|\b(?:set|place|hit|cut|raise|lower|peg|establish|give|target)\s+"
+    r"(?:a\s+)?(?:price\s+target|target\s+price|target)\b"
+    r"|请买入|买入|卖出",
     re.I,
 )
 _RESEARCH_TOOL_RE: re.Pattern[str] | None = None
@@ -997,9 +1019,11 @@ def _format_used_list(corpus: dict) -> str:
         lines.append("- 每日简报 — 尚未发布")
     else:
         for art in arts:
-            asof = art.get("asof") or "unknown date"
-            lines.append(f"- {art['plain_en']} (as of {asof})")
-            lines.append(f"- {art['plain_zh']}（截至 {asof}）")
+            asof = art.get("asof") or ""
+            en_fallback = asof or "unknown date"
+            zh_fallback = asof or "日期不明"
+            lines.append(f"- {art['plain_en']} (as of {en_fallback})")
+            lines.append(f"- {art['plain_zh']}（截至 {zh_fallback}）")
     return "\n".join(lines)
 
 
@@ -1080,10 +1104,12 @@ def _research_postprocess(answer: str, corpus: dict) -> tuple[str, bool]:
             body = f"{_RESEARCH_NULL_EN}\n{_RESEARCH_NULL_ZH}"
         else:
             body = filtered
-            if not _research_cites_artifact(body, corpus):
-                # Filter ate the citing sentence — fall back to the null form.
-                body = f"{_RESEARCH_NULL_EN}\n{_RESEARCH_NULL_ZH}"
-                already_null = True
+            # If the forbidden-output filter ate the only citing sentence,
+            # do NOT fall back to the null form: the read still came from a
+            # used artifact (the original body cited it), and the WITHHELD
+            # disclosure below names the drop. Falling back here would
+            # silently null a grounded answer whenever one of its sentences
+            # matched the over-broad filter.
     if _RESEARCH_USED_EN not in body:
         body = body.rstrip() + "\n\n" + _format_used_list(corpus)
     if _RESEARCH_CEILING_EN not in body:

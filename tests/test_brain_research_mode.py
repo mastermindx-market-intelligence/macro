@@ -565,6 +565,145 @@ def test_widget_slash_research_does_not_insert_w6b_deep_dive():
     assert TOGGLE_EN in text
 
 
+def test_published_price_target_is_kept_and_does_not_null():
+    """H1: a citing sentence that reports a published price target must be kept;
+    the postprocess must not treat a drop as 'no artifact cited' and must not
+    replace the reply with the null form.
+    """
+    corpus = {
+        "artifacts": [
+            gw._research_artifact("Daily briefing", "每日简报", "2026-09-12",
+                                  "US session mixed. A published price target of 240."),
+        ],
+        "jwt_present": False,
+    }
+    body, withheld = gw._research_postprocess(
+        "The daily briefing listed a published price target of 240.",
+        corpus,
+    )
+    assert withheld is False, body
+    assert not body.startswith(NULL_EN), body
+    assert "price target" in body.lower()
+    assert CEILING_EN in body
+
+
+def test_published_price_target_is_not_forbidden_in_filter():
+    """H1: filter over-match — published/reported price targets are NOT imperative."""
+    raw = "The daily briefing listed a published price target of 240."
+    kept, withheld = gw._research_forbidden_filter(raw)
+    assert withheld is False
+    assert "price target" in kept.lower()
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        # H1: published/reported price targets stay kept.
+        "The daily briefing listed a published price target of 240.",
+        "Analysts reported a target price of 280.",
+        "The note mentioned a published target price of 200.",
+    ],
+)
+def test_published_price_target_variants_keep_through_filter(raw):
+    kept, withheld = gw._research_forbidden_filter(raw)
+    assert withheld is False
+    # Sentence (modulo terminal punctuation) survives the filter.
+    assert raw.rstrip(".") in kept or raw in kept
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        # H1: imperative trade targets stay filtered.
+        "Set a price target of 240 on the name.",
+        "Place a target price at 280 now.",
+    ],
+)
+def test_imperative_price_target_still_filtered(raw):
+    kept, withheld = gw._research_forbidden_filter(raw)
+    assert withheld is True
+    assert raw.strip().rstrip(".") not in kept
+
+
+# ---------------------------------------------------------------------------
+# H2: judgement % attached to 'confident', ZH sentence split, ZH trade verbs
+# ---------------------------------------------------------------------------
+
+def test_research_percent_matches_confident():
+    """H2: judgement % attached to 'confident' must be filtered as a judgement %."""
+    kept, withheld = gw._research_forbidden_filter("I'm 80% confident this setup works.")
+    assert withheld is True, kept
+    assert "80%" not in kept
+    assert "confident" not in kept
+
+
+def test_research_sentence_split_on_cjk_period_without_whitespace():
+    """H2: a ZH clause after a CJK period is its own sentence (split, not joined)."""
+    parts = gw._RESEARCH_SENTENCE_SPLIT.split("每日简报说美国交易时段表现分化。请买入 NVDA。")
+    # The ZH clause after 。 must be its own sentence, not appended to the prior one.
+    assert any(p == "请买入 NVDA。" for p in parts), parts
+    for p in parts:
+        if "请买入" in p:
+            assert "每日简报说" not in p, p
+            assert "分化" not in p, p
+
+
+def test_research_trade_matches_zh_instruction_verbs():
+    """H2: ZH imperative buy/sell instructions are filtered."""
+    for sentence in (
+        "请买入 NVDA。",
+        "买入 NVDA。",
+        "卖出 AAPL。",
+    ):
+        kept, withheld = gw._research_forbidden_filter(sentence)
+        assert withheld is True, (sentence, kept)
+        assert sentence not in kept, (sentence, kept)
+
+
+def test_zh_postprocess_drops_zh_instruction_verb():
+    """H2 RED: the measured ZH string drops the buy instruction and is withheld."""
+    corpus = {
+        "artifacts": [
+            gw._research_artifact("Daily briefing", "每日简报", "2026-09-12",
+                                  "US session mixed."),
+        ],
+        "jwt_present": False,
+    }
+    body, withheld = gw._research_postprocess(
+        "每日简报说美国交易时段表现分化。请买入 NVDA。",
+        corpus,
+    )
+    assert withheld is True, body
+    assert "请买入 NVDA" not in body
+    assert "daily briefing" in body.lower()
+    assert WITHHELD_EN in body
+    assert WITHHELD_ZH in body
+
+
+# ---------------------------------------------------------------------------
+# H3: ZH used-list fallback writes '日期不明' (no ASCII letters on the ZH line)
+# ---------------------------------------------------------------------------
+
+def test_format_used_list_zh_fallback_uses_chinese():
+    """H3: the ZH used-list fallback must use '日期不明', not ASCII 'unknown date'."""
+    corpus = {
+        "artifacts": [
+            gw._research_artifact("Daily briefing", "每日简报", asof=""),
+        ],
+        "jwt_present": False,
+    }
+    out = gw._format_used_list(corpus)
+    # The ZH artifact line carries the asof in CJK parentheses — when asof is
+    # empty, the fallback inside the CJK parentheses must be '日期不明', never
+    # ASCII 'unknown date'.
+    zh_lines = [ln for ln in out.splitlines() if ln.startswith("- 每日简报")]
+    assert zh_lines, out
+    zh_line = zh_lines[0]
+    assert "（截至 日期不明）" in zh_line, zh_line
+    # No ASCII letters on the ZH used-list line.
+    assert not any(c.isascii() and c.isalpha() for c in zh_line), zh_line
+
+
 def test_packet_level_gaps_attached_as_null_disclosure(tmp_path, monkeypatch):
     """Tier-2 null disclosure includes packet-level gaps from build_packet."""
     def fake_build(_root):
