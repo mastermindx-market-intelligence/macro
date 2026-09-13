@@ -6357,7 +6357,7 @@ jobs:
         # plotly: test file imports scripts.build_bonds, which imports plotly.graph_objects
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly
       - name: CCW-W4 credit desk vm tests
-        run: python -m pytest tests/test_bonds_corp_credit_vm.py -v
+        run: python -m pytest tests/test_bonds_corp_credit_vm.py tests/test_bonds_divergence_gate.py -v
     # T10 moved to unrun-macro-panels (gate: data). That job already installs
     # pandas/numpy/pyarrow/jinja2/plotly; T10's verdict can flip on a nightly
     # data commit, so it must not live on this gate: code job.
