@@ -239,6 +239,11 @@ pages:
     evidence: [config/site_access.yml]
     note: "free signal-stack lead magnet: rank 1 exposed, paid rows omitted server-side"
 
+  macro:research_screener:
+    archetype: "discovery_board"
+    primary_user_question: "Which names deserve a look first, and why?"
+    note: "research_priority_only; four plain-word lenses; never a ranker"
+
   macro:discovery:
     archetype: "discovery_board"
 
