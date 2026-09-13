@@ -1288,6 +1288,13 @@ jobs:
       - "tests/test_valuation_assumptions.py"
       # W7B F06-5 (MO-PAID-020): ticker<->CIK collision census + at most ONE bounded renderer/CIK-access repair (census only this PR; the seat decides whether to admit any repair). The pure classifiers live in engine/market_ontology/ticker_cik_census.py (no pandas import at module top); the CLI lives in scripts/ticker_cik_collision_census.py (parquet I/O here, never in the engine); the suite is RED-first with synthetic fixtures per class plus a live-data invariant test that pins only invariants (C1 (a)-(e) == 0; every current store symbol either resolves or fails with a closed-enum class) and prints dated receipt lines.
       - "engine/market_ontology/ticker_cik_census.py"
+      - "engine/market_ontology/__init__.py"
+      - "engine/market_ontology/exposure_map.py"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/store.py"
+      - "engine/transmission_chains.py"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
       - "scripts/ticker_cik_collision_census.py"
       - "tests/test_ticker_cik_collision_census.py"
       - "research/market_intelligence_productization/MARKET_ONTOLOGY_F06_5_TICKER_CIK_COLLISION_CENSUS_2026-09-13.md"
