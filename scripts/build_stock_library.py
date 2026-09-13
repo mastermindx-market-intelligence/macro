@@ -126,6 +126,8 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from engine import ticker_alerts  # noqa: E402
+from engine import valuation_scenario as _valuation_scenario  # noqa: E402 — FROZEN SPEC B-F07-1
+from engine.stock_fundamentals import _load_statements as _vs_load_statements  # noqa: E402
 from engine import signal_gate  # noqa: E402 — owner's confluence T1->T4 cascade (layered ON main's gate)
 from engine.conditions import sector_macro_beta  # noqa: E402
 from engine.cycles import analyze, market_vix_context  # noqa: E402
@@ -2907,6 +2909,17 @@ def main() -> int:
             geo_rev_map = (json.loads(_geo_p.read_text()) or {}).get("by_ticker", {})
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("geo_revenue.json unreadable (%s)", e)
+    # valuation_scenario.v1 -- FROZEN SPEC B-F07-1. V1 = one pinned issuer only
+    # (AAPL); pure function over already-collected SEC companyfacts statements
+    # (engine.stock_fundamentals._load_statements(), read once here). No new
+    # collector, no network, no licensed data -- ~one extra parquet read plus
+    # ~20 float ops for one ticker, well under the render budget.
+    _VS_TICKERS = ("AAPL",)
+    _vs_statements: dict = {}
+    try:
+        _vs_statements = _vs_load_statements()
+    except Exception as e:  # noqa: BLE001 — additive, never fatal
+        log.warning("valuation_scenario: statements unreadable (%s)", e)
     # per-stock dealer-gamma (DISPLAY-ONLY, gated from the score by validate_gex). PRIMARY =
     # the pre-built site/gex board payloads (rich: walls + vol_hole + consistent units), which
     # already cover the curated optionable universe. The live compute_gex path is only used as a
@@ -3605,6 +3618,18 @@ def main() -> int:
         # revenue-by-geography block (collectors/edgar_geo_revenue.py; TXI W2 #3431)
         if geo_rev_map.get(ticker):
             rec["geo_revenue"] = geo_rev_map[ticker]
+        # valuation_scenario.v1 -- pinned V1 issuer only (FROZEN SPEC B-F07-1)
+        if ticker in _VS_TICKERS:
+            try:
+                _vs_price = (rec.get("tech") or {}).get("price")
+                _vs_blob = _valuation_scenario.compute(
+                    _vs_statements.get(ticker) or [],
+                    price=_vs_price, asof=rec.get("asof"), ticker=ticker,
+                )
+                if _vs_blob:
+                    rec["valuation_scenario"] = {"v1": _vs_blob}
+            except Exception as e:  # noqa: BLE001 — additive, never fatal
+                log.warning("valuation_scenario failed for %s: %s", ticker, e)
         # ---- richer OHLCV technical snapshot + single-stock volatility black hole ------
         # Supersede the thin close-only snapshot with the research-vetted read (ATR/ADX/
         # squeeze/volume where full OHLCV exists; momentum / 52w-proximity / realized-vol
@@ -4622,10 +4647,13 @@ def main() -> int:
                     "security_state.v1 identity unavailable for %s: %s",
                     _ss_ticker, _ss_reason,
                 )
-                _ss_pinned_subject = (
-                    _security_state.AAPL_SUBJECT
-                    if _ss_ticker == _security_state.PINNED_TICKER
-                    else _security_state_producer._fallback_subject_for_ticker(_ss_ticker)
+                # The owner-identity BATCH read itself failed (M1) for every
+                # allowlisted ticker at once, so no live owner read exists for
+                # any of them here -- the failure shell must say so, never
+                # borrow a live-read subject's language. `_fallback_subject_for_ticker`
+                # is a frozen-allowlist lookup, not a per-ticker branch.
+                _ss_pinned_subject = _security_state_producer._fallback_subject_for_ticker(
+                    _ss_ticker
                 )
                 _ss_prior = _security_state_producer._read_prior_security_state(
                     outdir, _ss_ticker
@@ -4636,6 +4664,7 @@ def main() -> int:
                         diagnostic=RuntimeError(_ss_reason),
                         prior_state=_ss_prior,
                         validator=_ss_validator,
+                        owner_read_completed=False,
                     )
                 )
                 _ss_rec["security_state"] = _ss_state

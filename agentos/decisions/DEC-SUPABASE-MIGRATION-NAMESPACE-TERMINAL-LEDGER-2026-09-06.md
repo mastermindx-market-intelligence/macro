@@ -22,6 +22,25 @@ answer: >
   is idempotent, carries a "-- down:" block and a "-- readback:" catalog query; application
   stays an out-of-band operator/Meta-CEO act whose pre/post catalog readback is posted on the
   PR before the README application table is updated.
+
+  Application mechanism (Meta-CEO B, 2026-09-06/07): migrations are applied by the
+  owning Meta-CEO after the carrying PR merges, in ledger-number order (0014 after
+  terminal#514, 0015 after #526, 0016 after #527; a later number is never applied
+  before an earlier one is on master AND applied), through the Supabase Management
+  API POST /v1/projects/{ref}/database/query (the CLI db push path is not used: no
+  history table, see DSC:TERMINAL-HAS-NO-MIGRATION-LEDGER), with a pre/post catalog
+  readback (to_regclass, pg_class.relrowsecurity, pg_indexes, pg_policy, pg_proc)
+  captured as a receipt JSON and posted as a PR comment before the README
+  application table row is edited. The request must carry a browser/curl User-Agent:
+  the python-urllib default UA is rejected by the Cloudflare edge with HTTP 403
+  "error code: 1010" (already recorded for scripts/geo_enrich.py and
+  scripts/ad_ingest_run.py in DSC:SUPABASE-MANAGEMENT-PAT-EXPIRES-AT-30-DAYS).
+  Measured carrier (review r2, 2026-09-08): the parenthetical above is the original
+  allocation. terminal#514's files include both 0014_tenancy_foundation.sql and
+  0015_team_roles_invitations.sql; terminal#526 is already MERGED (2026-09-07) as
+  B-F12-3 app code over the 0014 foundation, not the 0015 SQL carrier. A successor
+  applies 0014 then 0015 after #514 merges (ledger-number order; one receipt each,
+  comments on #514), then 0016 after #527. Do not wait on #526 to apply 0015.
 rationale: >
   There is no migration runner and no supabase_migrations schema (DSC:TERMINAL-HAS-NO-MIGRATION-LEDGER),
   so a file name is the only ledger the estate has; a second "0011" makes "what has been
@@ -46,6 +65,13 @@ evidence:
   - "GraphQL census of 16 open mastermind-terminal PRs: only #502 (0011_thesis_objects.sql) and #507 (0011_analytics_eid.sql) add migration files"
   - "supabase/migrations/README.md on origin/master: no remote migration history; 0009 applied before 0008"
   - "Charter research/MARKET_ONTOLOGY_META_CEO_CHARTER_2026_09_06.md §5 and §10.4 assign the settlement to Meta-CEO B"
+  - "research/market_intelligence_productization/receipts/supabase_receipt_0012_thesis_objects_2026-09-06.json (0012 thesis_objects applied 2026-09-06; project_ref redacted to {ref})"
+  - "research/market_intelligence_productization/receipts/supabase_receipt_0013_alert_runs_outbox_2026-09-06.json (0013 alert_runs_outbox applied 2026-09-07)"
+  - "terminal#513 issuecomment-5563321750 is the 0013 receipt (html_url .../pull/513#issuecomment-5563321750; body is 'Supabase DDL readback receipt for 0013_alert_runs_outbox.sql'; gh api .../issues/513/comments --jq length = 1). Not on #514."
+  - "0014_tenancy_foundation applied 2026-09-08T22:24:14Z after terminal#514 merged as cff58ee8; the SQL was fetched from Terminal master at that sha (sha256 prefix 88781e40). Receipt research/market_intelligence_productization/receipts/supabase_receipt_0014_tenancy_foundation_2026-09-08.json; terminal#514 comment ids 5592694274 (readback) and 5592731536 (receipts summary)."
+  - "0015_team_roles_invitations applied 2026-09-08T22:24:42Z, strictly after 0014 and in ledger-number order. The SQL was authored on the stacked pull request terminal#526 (B-F12-3, squash 83424c63 onto #514's branch) and reached master inside cff58ee8, which is the source ref the receipt records (sha256 prefix bff0f8bf). Receipt research/market_intelligence_productization/receipts/supabase_receipt_0015_team_roles_invitations_2026-09-08.json; terminal#514 comment id 5592697055."
+  - "0016_account_lifecycle_requests applied 2026-09-09T01:11:07Z after terminal#527 merged as 68bbe8ea (sha256 prefix 3375618a). Receipt research/market_intelligence_productization/receipts/supabase_receipt_0016_account_lifecycle_requests_2026-09-09.json; the receipt comment on terminal#527 is recorded in the seat kit as RECEIPT-0016-COMMENT."
+  - "The predecessor seat 7cd4fae1 applied 0014 and 0015 a second time inside the 22:2xZ seat-transfer overlap. Both files are written IF NOT EXISTS / CREATE OR REPLACE, so the duplicate application was idempotent; the receipts of record are the successor's, and terminal#514 issuecomment-5592751149 records the supersession. See DSC:SEAT-TRANSFER-OVERLAP-DUPLICATES-IRREVERSIBLE-ACTS."
 affects:
   - "WS:MARKET-OS"
   - "charting-app supabase/migrations/**"
