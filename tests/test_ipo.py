@@ -973,3 +973,103 @@ def test_light_cw_band_tint_is_raised_into_legible_range():
     assert 16 <= pct <= 20
     # the hairline boundary edge must survive the tint raise, not be removed.
     assert "border-right:1px solid" in light_rule.group(0)
+
+
+# --------------------------------------------------------------------------- #
+# H1 heal (m#6904 audit) — Tier-1 spread read fractions must match the
+# engine's own thresholds. The pre-heal copy claimed "four in five days" at
+# RANGE_OPEN_PCT/RANGE_SHUT_PCT = 33.0/66.0 (engine/credit_window.py:49), which
+# is wrong for pct_rank in (20,33] and (66,80] — the panel overstates how many
+# past-year days today's value beats. Pin every percentile entry's fraction to
+# the engine constant it derives from, so a future threshold change without a
+# matching copy update fails the build.
+#
+#   OPEN: "X in Y" where X/Y = (100 - pct) / 100
+#     (today is tighter/lower than X/Y of days — the bottom (100-pct)% of days)
+#   SHUT: "X in Y" where X/Y = pct / 100
+#     (today is wider/higher than X/Y of days — the top pct% of days)
+# --------------------------------------------------------------------------- #
+def test_cw_read_fraction_wording_derives_from_engine_thresholds():
+    from fractions import Fraction
+    import engine.credit_window as cw
+
+    # Tiny number-word tables — Fraction() always yields a small
+    # numerator/denominator (limit_denominator(10) caps them at 10), so this
+    # covers every value the engine's threshold constants can plausibly
+    # reduce to without bloating the test fixture. ZH uses the Chinese
+    # number characters the page renders (二/三/四/五, not "2/3/4/5").
+    _EN = {1: "one", 2: "two", 3: "three", 4: "four", 5: "five",
+           6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten"}
+    _ZH = {1: "一", 2: "二", 3: "三", 4: "四", 5: "五",
+           6: "六", 7: "七", 8: "八", 9: "九", 10: "十"}
+
+    def _fraction(pct):
+        # reduce pct/100 to its cleanest small-denominator form so the test
+        # passes for any future threshold value, not just the four we ship with.
+        return Fraction(pct / 100.0).limit_denominator(10)
+
+    def _words(f):
+        # EN "X in Y" (number-words, matching the file's style); ZH "Y分之X"
+        # (denominator-then-numerator, Chinese characters, as in the file).
+        return (f"{_EN[f.numerator]} in {_EN[f.denominator]}",
+                f"{_ZH[f.denominator]}分之{_ZH[f.numerator]}")
+
+    cases = [
+        # (lexicon key, state, pct, EN prefix, ZH prefix, ZH suffix).
+        # spread_range carries a 比…更{窄|宽} frame; rates_vol carries a {低于|高于}… frame.
+        ("spread_range", "open", cw.RANGE_OPEN_PCT, "tighter than", "比",   "更窄"),
+        ("spread_range", "shut", cw.RANGE_SHUT_PCT, "wider than",   "比",   "更宽"),
+        ("rates_vol",    "open", cw.MOVE_OPEN_PCT,  "lower than",   "低于", ""),
+        ("rates_vol",    "shut", cw.MOVE_SHUT_PCT,  "higher than",  "高于", ""),
+    ]
+    for key, state, pct, en_pre, zh_pre, zh_suf in cases:
+        frac = _fraction(100.0 - pct) if state == "open" else _fraction(pct)
+        en_words, zh_words = _words(frac)
+        en_expected = f"{en_pre} {en_words} days of the past year"
+        zh_expected = f"{zh_pre}近一年{zh_words}的交易日{zh_suf}"
+        actual_en, actual_zh = bi.CW_READ[(key, state)]
+        assert actual_en == en_expected, (
+            f"CW_READ[({key!r}, {state!r})] EN drifted: "
+            f"expected {en_expected!r}, got {actual_en!r}"
+        )
+        assert actual_zh == zh_expected, (
+            f"CW_READ[({key!r}, {state!r})] ZH drifted: "
+            f"expected {zh_expected!r}, got {actual_zh!r}"
+        )
+
+
+# --------------------------------------------------------------------------- #
+# H2 heal (m#6904 audit) — Tier-1 state label for the engine key
+# "not_evaluable" must NOT be the title-cased engine token. The pre-heal
+# ("Not evaluable", "无法评估") printed the engine's internal state key
+# straight to the largest glance-tier element on the panel; the repo's plain
+# display name is "No read" / "暂无读数" (same convention as
+# templates/transmission.html.j2, templates/foresight.html.j2 and
+# templates/_risk_envelope_band.html.j2).
+# --------------------------------------------------------------------------- #
+def test_cw_state_and_clause_never_use_title_cased_engine_token():
+    # Only the multi-word engine keys can be title-cased into a token leak:
+    # "open"/"neutral"/"shut" already round-trip to a one-word plain display
+    # label ("Open"/"Neutral"/"Shut"). The defect the heal closed was the
+    # multi-word key "not_evaluable" → "Not evaluable" — pin THAT pair across
+    # both the title-cased form and the exact pre-heal spelling.
+    for src_label, src in (("CW_STATE", bi.CW_STATE), ("CW_CLAUSE", bi.CW_CLAUSE)):
+        for banned in ("Not evaluable", "Not Evaluable"):
+            assert src["not_evaluable"][0] != banned, (
+                f"{src_label}['not_evaluable'] EN leaks the engine token: "
+                f"{src['not_evaluable'][0]!r}"
+            )
+
+
+def test_ipo_template_does_not_leak_not_evaluable_token():
+    """H2 heal: the null-rail scale label must not print the engine's
+    'not evaluable' token anywhere — the user-facing copy uses the repo-wide
+    plain display name 'range can't be read yet' / '区间暂无读数'."""
+    tpl_path = pathlib.Path(bi.__file__).resolve().parents[1] / "templates" / "ipo.html.j2"
+    src = tpl_path.read_text()
+    assert "not evaluable" not in src.lower(), (
+        "templates/ipo.html.j2 still contains the engine token 'not evaluable'"
+    )
+    assert "无法评估" not in src, (
+        "templates/ipo.html.j2 still contains the engine token '无法评估'"
+    )

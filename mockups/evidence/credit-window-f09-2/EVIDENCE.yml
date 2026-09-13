@@ -1,4 +1,6 @@
 schema: mastermind.page_evidence_receipt.v1
 changed_paths:
+  - scripts/build_ipo.py
   - templates/ipo.html.j2
+  - tests/test_ipo.py
 manifest: mockups/evidence/credit-window-f09-2/manifest.json
