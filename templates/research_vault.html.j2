@@ -365,12 +365,12 @@ a.rep-ticker:hover{ border-color:var(--rv); }
    state color. Shared quiet-chip idiom: hairline --line, muted foreground,
    transparent fill, no glow/shadow. Intentionally differing mechanisms: NONE. */
 .stamp{ display:inline-flex; align-items:center; gap:5px; font-family:var(--num); font-size:10px;
-  font-weight:600; letter-spacing:.02em; padding:3px 9px; border-radius:var(--r-ctl,6px);
+  font-weight:600; letter-spacing:.02em; padding:3px 9px; border-radius:var(--r-ctl,8px);
   color:var(--muted); border:1px solid var(--line); background:transparent; box-shadow:none; }
 .stamp.buy, .stamp.sell, .stamp.indep,
 .stamp.buy-side, .stamp.sell-side{ color:var(--muted); border-color:var(--line);
   background:transparent; box-shadow:none; }
-.stamp .dt{ width:5px; height:5px; border-radius:var(--r-pill,50%); background:currentColor; opacity:.7; }
+.stamp .dt{ width:5px; height:5px; border-radius:var(--r-pill,999px); background:currentColor; opacity:.7; }
 .rep .backfill{ font-size:11px; color:var(--muted); font-style:italic; }
 
 .rv-empty{ padding:40px 24px; text-align:center; }
