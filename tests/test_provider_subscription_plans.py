@@ -23,12 +23,24 @@ def test_unknown_tiers_never_imply_capacity():
         assert selected.reason == "UNKNOWN_TIER"
 
 
-def test_glm_compute_windows_and_mcp_monthly_are_not_conflated():
-    max_plan = resolve_plan("glm", "coding_plan", "max")
-    assert _by_horizon(max_plan, "five_hour", "prompts")["limit"] == 1600
-    assert _by_horizon(max_plan, "weekly", "prompts")["limit"] == 8000
-    assert _by_horizon(max_plan, "monthly", "mcp_web_calls")["limit"] == 4000
-    assert not any(row["horizon"] == "monthly" and row["metric"] == "prompts" for row in max_plan.limits)
+def test_glm_current_credits_and_legacy_prompt_generations_are_distinct():
+    current = resolve_plan("glm", "coding_plan", "max")
+    assert _by_horizon(current, "five_hour", "credits")["limit"] == 28000
+    assert _by_horizon(current, "weekly", "credits")["limit"] == 140000
+    assert not any(row["metric"] == "prompts" for row in current.limits)
+    assert current.usage_policy["supported_tool_required"] is True
+    assert current.usage_policy["background_automation_allowed"] is False
+
+    legacy = resolve_plan("glm", "coding_plan_legacy_v2", "max")
+    assert _by_horizon(legacy, "five_hour", "prompts")["limit"] == 1600
+    assert _by_horizon(legacy, "weekly", "prompts")["limit"] == 8000
+    assert _by_horizon(legacy, "monthly", "mcp_web_calls")["limit"] == 4000
+
+
+def test_glm_current_team_credits_are_separate_from_individual():
+    team = resolve_plan("glm", "coding_plan_team", "premium")
+    assert _by_horizon(team, "five_hour", "credits")["limit"] == 35000
+    assert _by_horizon(team, "weekly", "credits")["limit"] == 155000
 
 
 def test_alibaba_personal_and_team_use_native_windows():
@@ -43,6 +55,8 @@ def test_alibaba_personal_and_team_use_native_windows():
     assert team.limits[0]["horizon"] == "billing_cycle"
     assert team.limits[0]["limit"] == 250000
     assert resolve_plan("alibaba", "token_plan_team", "max").tier == "premium"
+    assert personal.usage_policy["interactive_only"] is True
+    assert personal.usage_policy["background_automation_allowed"] is False
 
 
 def test_minimax_legacy_weekly_is_explicitly_conditional_and_ten_x():
@@ -63,6 +77,7 @@ def test_current_minimax_marketing_reference_counts_do_not_become_hard_limits():
     resolved = resolve_plan("minimax", "token_plan_current_m3", "max", catalog=catalog)
     assert resolved.known is True
     assert resolved.limits == ()
+    assert resolved.usage_policy["payg_recommended_for_production"] is True
 
 
 def test_catalog_rejects_unknown_as_unlimited_policy():

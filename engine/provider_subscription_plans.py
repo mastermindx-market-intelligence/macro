@@ -31,6 +31,7 @@ class PlanSelection:
     limits: tuple[Mapping[str, Any], ...]
     telemetry: Mapping[str, Any] | None
     reason: str | None = None
+    usage_policy: Mapping[str, Any] | None = None
 
 
 def _require_id(value: Any, label: str) -> str:
@@ -78,6 +79,17 @@ def validate_catalog(document: Any) -> Mapping[str, Any]:
             telemetry = product.get("telemetry")
             if telemetry is not None and (not isinstance(telemetry, Mapping) or not telemetry.get("kind")):
                 raise SubscriptionPlanError(f"product {product_name!r} has invalid telemetry")
+            usage_policy = product.get("usage_policy")
+            if usage_policy is not None:
+                if not isinstance(usage_policy, Mapping) or not usage_policy:
+                    raise SubscriptionPlanError(f"product {product_name!r} has invalid usage policy")
+                allowed_policy = {
+                    "interactive_only", "interactive_tool_use", "supported_tool_required",
+                    "background_automation_allowed", "production_backend_allowed",
+                    "single_user_only", "payg_recommended_for_production",
+                }
+                if set(usage_policy) - allowed_policy or any(type(value) is not bool for value in usage_policy.values()):
+                    raise SubscriptionPlanError(f"product {product_name!r} has invalid usage policy")
             aliases: dict[str, str] = {}
             for tier_name, tier in product["tiers"].items():
                 _require_id(tier_name, "tier id")
@@ -112,8 +124,11 @@ def resolve_plan(provider: str, product: str, tier: str | None, *, catalog: Mapp
     if not isinstance(product_row, Mapping):
         return PlanSelection(provider_key, product_key, tier, False, (), None, "UNKNOWN_PRODUCT")
     telemetry = product_row.get("telemetry")
+    usage_policy = product_row.get("usage_policy")
     if tier is None or not str(tier).strip():
-        return PlanSelection(provider_key, product_key, None, False, (), telemetry, "UNKNOWN_TIER")
+        return PlanSelection(
+            provider_key, product_key, None, False, (), telemetry, "UNKNOWN_TIER", usage_policy
+        )
     tier_key = _require_id(str(tier).strip().lower(), "tier id")
     tiers = product_row["tiers"]
     selected = tiers.get(tier_key)
@@ -124,8 +139,13 @@ def resolve_plan(provider: str, product: str, tier: str | None, *, catalog: Mapp
                 canonical, selected = candidate, candidate_row
                 break
     if not isinstance(selected, Mapping):
-        return PlanSelection(provider_key, product_key, tier_key, False, (), telemetry, "UNKNOWN_TIER")
-    return PlanSelection(provider_key, product_key, canonical, True, tuple(selected["limits"]), telemetry, None)
+        return PlanSelection(
+            provider_key, product_key, tier_key, False, (), telemetry, "UNKNOWN_TIER", usage_policy
+        )
+    return PlanSelection(
+        provider_key, product_key, canonical, True, tuple(selected["limits"]),
+        telemetry, None, usage_policy
+    )
 
 
 __all__ = ["DEFAULT_CATALOG", "PlanSelection", "SCHEMA", "SubscriptionPlanError", "load_catalog", "resolve_plan", "validate_catalog"]
