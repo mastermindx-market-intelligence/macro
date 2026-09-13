@@ -321,11 +321,15 @@ second truth store).
 | `improving_but_still_selling` | still selling, pressure easing | 仍净流出·压力改善 |
 | `weakening_but_still_buying` | still buying, pace fading | 仍净流入·动能转弱 |
 | `true_distribution` | real outflow, below norm | 真实流出·低于常态 |
-| `neutral_or_unknown` | quiet / insufficient data | 平静 / 数据不足 |
+| `neutral_or_unknown` | quiet — near its norm | 平静·接近常态 |
+| `unknown` | no data | 无数据 |
 
-Near-threshold, below coverage floor, stale, or missing → `neutral_or_unknown` (honest
-neutral band; thresholds from W5, provisional ±0.5σ / |abs| below a calibrated de-minimis
-until then).
+Near-threshold (either axis inside the honest-neutral band) → `neutral_or_unknown`
+(reuses relative-axis `balanced` / "near its norm"). Genuinely missing/unknown axes
+or `sufficient=False` → `unknown` (reuses relative-axis `n/a` / "no data"). Below the
+coverage floor still renders the separate `insufficient coverage` chip — never either
+of these labels. Thresholds from W5, provisional ±0.5σ / |abs| below a calibrated
+de-minimis until then.
 
 **Relative-axis vocabulary v2** (replaces the current `state` strings, which use absolute
 words for a relative measure; consumer update in the same W1 PR — §4):
@@ -335,7 +339,9 @@ words for a relative measure; consumer update in the same W1 PR — §4):
 | accelerating in | above norm, rising | 高于常态·升温 |
 | inflow cooling | above norm, cooling | 高于常态·降温 |
 | accelerating out | below norm, worsening | 低于常态·加剧 |
-| outflow easing | below norm, easing | 低于常态·趋缓 |
+| outflow easing | selling easing | 卖出趋缓 |
+| buying slowing | buying slowing | 买入放缓 |
+| pace easing | pace easing | 步伐放缓 |
 | balanced | near its norm | 接近常态 |
 | n/a | no data | 无数据 |
 

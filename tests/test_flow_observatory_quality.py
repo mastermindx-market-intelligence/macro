@@ -29,6 +29,7 @@ from engine.flow_observatory.contract import (
     ContractError,
     build_sources,
     build_v2,
+    sigma_meaning,
     validate,
 )
 from scripts.build_vector import C
@@ -40,7 +41,7 @@ TMPL = ROOT / "templates"
 def _render(v2, built="test"):
     env = Environment(loader=FileSystemLoader(str(TMPL)), autoescape=True)
     env.globals.update(td=i18n.td, tr=i18n.tr, quadrant_labels=QUADRANT_LABELS,
-                       status_word=STATUS_WORD)
+                       status_word=STATUS_WORD, sigma_meaning=sigma_meaning)
     return env.get_template("flow_velocity.html.j2").render(C=C, snap=v2, built=built)
 
 

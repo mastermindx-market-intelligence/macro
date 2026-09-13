@@ -26,6 +26,7 @@ from jinja2 import Environment, FileSystemLoader
 from engine import i18n
 from engine.flow_observatory import groups as fo_groups
 from engine.flow_observatory.contract import (
+    sigma_meaning,
     QUADRANT_LABELS,
     STATUS_WORD,
     assign_ranks,
@@ -40,7 +41,7 @@ TMPL_DIR = TMPL
 def _render(v2, built="test"):
     env = Environment(loader=FileSystemLoader(str(TMPL_DIR)), autoescape=True)
     env.globals.update(td=i18n.td, tr=i18n.tr, quadrant_labels=QUADRANT_LABELS,
-                       status_word=STATUS_WORD)
+                       status_word=STATUS_WORD, sigma_meaning=sigma_meaning)
     return env.get_template("flow_velocity.html.j2").render(C=C, snap=v2, built=built)
 
 
@@ -169,7 +170,7 @@ def test_official_lens_row_carries_a_real_zh_name_not_the_english_name_twice():
 def test_coverage_below_floor_renders_insufficient_never_partial():
     """A group with real membership but almost nothing scored must NEVER drop silently
     (spec §0.2 "never a survivor-biased read") and must NEVER show a partial statistic
-    (spec §3): vel/rate fields null, quadrant forced neutral_or_unknown, rank null."""
+    (spec §3): vel/rate fields null, quadrant forced unknown ("no data"), rank null."""
     kmap = {"600000.SS": _kmap_member("600000.SS", "SPDB", 1.0, 1.0)}
     wide = _wide_from_kmap(kmap)
     # 10 members total, only 1 scored -> 10% coverage, well below the 60% floor
@@ -186,7 +187,7 @@ def test_coverage_below_floor_renders_insufficient_never_partial():
     # run the SAME abs/rel/quadrant/rank enrichment build_flow_velocity.py applies
     row.update(enrich_group(row.get("rate_4wk"), row.get("vel")))
     assign_ranks(res["rows"])
-    assert row["quadrant"] == "neutral_or_unknown"
+    assert row["quadrant"] == "unknown"
     assert row["rank"] is None
 
 
