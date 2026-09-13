@@ -20,15 +20,17 @@ The corpus records a current tracker that labels a “debasement-regime detector
 Relevant private-corpus evidence IDs are `2097298079288369551`, `2098378157912928630`, and `2098760589312921828`. Raw posts/media remain outside Git; this memo stores only the testable disclosed mechanics and independent findings.
 ## 3. Frozen inputs and provenance
 
+**Pre-outcome provenance correction:** the first prereg commit accidentally hashed the separate mutable main checkout instead of the branch-base worktree. No candidate forward outcome had been computed at discovery. The analysis is frozen to the exact files tracked in Macro base `be6d1122e16da5e81fb26dd4205157f8e3ee4de6`; corrected fingerprints follow. Thresholds, horizons, splits, statistics, and acceptance law are unchanged.
+
 Primary candidate inputs:
 
-- Gold: `data/yahoo/GC_F.parquet`, daily `close`, 2000-08-30 → 2026-09-08, SHA-256 `d6d1ea4abeccaca6194bacd1e73b743a40c10e3574a3ad2945fab7b6a8f7bf87`.
-- US 2Y yield: `data/fred/DGS2.parquet`, daily `us2y`, 1976-06-01 → 2026-09-04, SHA-256 `9e4c50032f664317734c78759b3e4fb400dd8358d63062ceb30b30ae69175e0b`.
+- Gold: `data/yahoo/GC_F.parquet`, daily `close`, 2000-08-30 → 2026-09-11, SHA-256 `63d0f4727bbca61076ecb26c677910ecdfa84e7f8f862275a7958d695f2a0eb9`.
+- US 2Y yield: `data/fred/DGS2.parquet`, daily `us2y`, 1976-06-01 → 2026-09-10, SHA-256 `c25dab2b52f7ce8d06684b5a982c4e986ce873d8a9764f4cdcbf3ca6ad56a52f`.
 
 Existing-Mastermind incrementality controls:
 
-- DXY: `data/yahoo/DX-Y.NYB.parquet`, SHA-256 `c0fea173785d9e9fe5969039e1dacfff9597bdd4ac1adbec5411dc3e90db7223`.
-- 10Y real yield: `data/fred/DFII10.parquet`, 2003-01-02 → 2026-09-04, SHA-256 `be55d7c4218c6c80ea933a86f2f22271b364b65b0b74274bf7e7086ba01d8f4d`.
+- DXY: `data/yahoo/DX-Y.NYB.parquet`, through 2026-09-11, SHA-256 `2db98e28390ac240cfecc20ce0335dc8ce2a799303570d66c242da0a5d8960fc`.
+- 10Y real yield: `data/fred/DFII10.parquet`, 2003-01-02 → 2026-09-10, SHA-256 `b4ef75c5a0c6a7f67b762ccd2ef19d34b628a3932be2665b03a03ad5883712fc`.
 - Current Commodity Vector implementation: `engine/commodity_signals.py`; gold residual drivers are real yield + DXY, with causal expanding-fit residuals and a separate driver axis.
 
 No future/revised value is back-filled into an earlier decision date. A candidate correlation updates only on dates on which both a gold close and a DGS2 observation exist. Its decision timestamp is after those dated observations; every forward outcome starts on the **next** gold session. FRED vintage timestamps are not stored, so the study cannot claim exact intraday/as-published replay and will state that limitation explicitly.
