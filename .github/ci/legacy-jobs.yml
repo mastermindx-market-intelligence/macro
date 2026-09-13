@@ -2391,6 +2391,10 @@ jobs:
       # ok/empty/unavailable contract — the same dependency set this step already
       # installs. Theme Tracker's owning job unrun-subsector-themes is gate: data, so
       # the suite is named here on the census step instead. No new job.
+      # W11 intraday_flow coverage-true feed words / bilingual tape chips /
+      # 8-of-N counted board (PR #7070 round 1): same subject as the two
+      # neighbouring suites, stdlib-only plus the pandas/pyarrow/jinja2
+      # install this step already owns. No new job.
       - name: render-guard + engine-contract tests (rot sweep 2026-07-02)
         run: >
           python -m pytest
@@ -2495,10 +2499,6 @@ jobs:
           tests/test_t0_indicator.py
           tests/test_intraday_flow.py
           tests/test_intraday_flow_stance.py
-          # W11 intraday_flow coverage-true feed words / bilingual tape chips /
-          # 8-of-N counted board (PR #7070 round 1): same subject as the two
-          # neighbouring suites, stdlib-only plus the pandas/pyarrow/jinja2
-          # install this step already owns. No new job.
           tests/test_intraday_flow_w11_r1.py
           tests/test_intraday_flow_w11_r2.py
           tests/test_intraday_flow_w11_r3.py
