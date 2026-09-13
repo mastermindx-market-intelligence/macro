@@ -81,10 +81,13 @@ unresolved:
   - Terminal actual-close semantics and the non-5m 1h fallback require W2 repair/versioning.
   - W1 remains independently required before W3.
 next_actions:
-  - Run W2 as a bounded existing-owner repair: make actual exchange close load-bearing in the
+  - >
+    Run W2 as a bounded existing-owner repair: make actual exchange close load-bearing in the
     Terminal/research 4H contract and re-prove at least 20 production parity cases including early closes.
-  - Then qualify one same-basis Daily+4H source family and broad historical denominator.
-  - Return to Sol before any Compression Release or Elliott/cycle market-outcome read.
+  - >
+    Then qualify one same-basis Daily+4H source family and broad historical denominator.
+  - >
+    Return to Sol before any Compression Release or Elliott/cycle market-outcome read.
 do_not_redo:
   - Do not create a second minute store, WebSocket plane, session calendar, identity plane or tactical evaluator.
   - Do not use the Radar minute reader as a bulk whole-universe research crawler.
