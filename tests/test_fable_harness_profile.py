@@ -110,7 +110,11 @@ def test_profile_producer_to_real_hook_consumer(project, mode):
     assert bundle["launch_authorized"] is False
     assert bundle["observed_claude_version"] is None
     assert bundle["limits"]["account_quota"] == "UNKNOWN"
-    assert "hooks" not in settings  # Reuse, never duplicate the installed guard.
+    assert set(settings["hooks"]) == {"PreToolUse", "SessionStart"}
+    guard = settings["hooks"]["PreToolUse"][0]["hooks"][0]
+    assert guard == {"type": "command", "command": profile.GUARD_COMMAND + " || exit 2", "timeout": 10}
+    assert "ship_loop_guard.py" not in json.dumps(settings["hooks"])
+    assert set(bundle["required_workspace_sources"]) == {profile.GUARD, profile.CONTEXT, profile.REGISTRY} | ({profile.SCOUT} if mode == "native_leaf" else set())
     mode_from_real_fragment = settings["env"][ENV_KEY]
     assert refusal(call_hook(project, mode_from_real_fragment, fable_payload()))
     allowed = call_hook(project, mode_from_real_fragment, census_payload())
@@ -366,3 +370,21 @@ def test_compiler_rejects_boolean_schema_version(project):
                                              "NATIVE_PROFILE_SCHEMA_VERSION = True"))
     with pytest.raises(profile.ProfileError):
         profile.compile_profile(project, "router_only", "2.1.219")
+
+
+@pytest.mark.parametrize("mode", profile.MODES)
+def test_compiled_guard_missing_source_is_blocking_exit_two(project, mode):
+    bundle = profile.compile_profile(project, mode, "2.1.239")
+    command = bundle["settings_fragment"]["hooks"]["PreToolUse"][0]["hooks"][0]["command"]
+    (project / profile.GUARD).unlink()
+    result = subprocess.run(["/bin/sh", "-c", command], input="{}", text=True,
+                            capture_output=True, env={"PATH": os.defpath,
+                            "CLAUDE_PROJECT_DIR": str(project)})
+    assert result.returncode == 2
+
+
+def test_native_fixture_uses_compiled_argv_without_hook_injection():
+    source = (ROOT / "tests/fable_native_cli_conformance.py").read_text()
+    assert '*profile["cli_arguments"]' in source
+    assert 'json.dumps(settings)' not in source
+    assert 'source_settings' not in source

@@ -187,6 +187,20 @@ def compile_profile(project_root: Path, mode: str, declared_version: str) -> dic
             "CLAUDE_CODE_FORK_SUBAGENT": "0",
         },
         "permissions": {"deny": denied},
+        # Deliver the already-validated canonical guard with the profile. A
+        # dedicated workspace may intentionally disable ambient setting sources.
+        # Do not pull unrelated ship/worktree hooks into that workspace. Convert
+        # a missing interpreter or command failure to Claude's blocking exit 2.
+        "hooks": {
+            "PreToolUse": [{
+                "matcher": "Agent|Task|Workflow|TeamCreate|SendMessage|Skill",
+                "hooks": [{"type": "command", "command": GUARD_COMMAND + " || exit 2", "timeout": 10}],
+            }],
+            "SessionStart": [{
+                "matcher": "startup|resume|clear|compact",
+                "hooks": [{"type": "command", "command": CONTEXT_COMMAND, "timeout": 10}],
+            }],
+        },
     }
     if mode == "native_leaf":
         fragment["env"].update({"CLAUDE_CODE_SUBAGENT_MODEL": "sonnet",
@@ -205,6 +219,9 @@ def compile_profile(project_root: Path, mode: str, declared_version: str) -> dic
         "agent_overrides": agents,
         "cli_arguments": argv,
         "source_sha256": hashes,
+        "required_workspace_sources": {
+            path: hashes[path] for path in (GUARD, CONTEXT, REGISTRY) + ((SCOUT,) if agents else ())
+        },
         "limits": {
             "native_fable_children": 0,
             "native_subagent_layers": 0 if mode == "router_only" else 1,
@@ -228,6 +245,8 @@ def compile_profile(project_root: Path, mode: str, declared_version: str) -> dic
             "Model-invoked Skill and native SendMessage are denied; native skill fidelity is not yet complete.",
             "No provider, account, credential, skill, MCP or permission grant is created.",
             "Apply both CLI argument pairs for native_leaf; settings alone do not scope scout tools.",
+            "The existing workspace owner must stage required_workspace_sources under CLAUDE_PROJECT_DIR and attest their exact bytes before launch.",
+            "Inline settings carry only canonical routing/context hooks; they do not import unrelated project hooks or create managed-policy authority.",
             "Native-leaf is a bounded-canary candidate, not fleet or lifetime spend enforcement.",
             "Ultracode bypasses the vendor concurrency limit; workflows/resumes have other limits.",
             "Read/Edit/Bash/main-session resume remain governed by existing permissions; shell launches are not sandboxed by this compiler.",

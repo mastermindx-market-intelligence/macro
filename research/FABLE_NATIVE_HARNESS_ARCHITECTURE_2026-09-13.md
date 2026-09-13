@@ -4,11 +4,15 @@ Date: 2026-09-13. Owner: Sol. Workstream: `WS:EXECUTIVE-CAPACITY-FABRIC`.
 Operation: `fable-native-harness-20260913-sol-001`.
 Source carrier: `claude/fable-native-harness-20260913-sol` in Macro.
 
-**Disposition: source candidate; not runtime release.** The native-profile compiler and
-hook changes are BUILT_NOT_PROVEN. The cross-provider hierarchical admission and full
-native skill qualification below remain SPEC_ONLY for this operation. Existing unrelated
-fabric implementations are not relabelled as absent. No provider session, Executive Job,
-credential, daemon, fleet setting or production launch was created by this work.
+**Disposition: BUILT_NOT_PROVEN for production; native fixture-qualified source candidate.**
+The compiler now carries the existing routing hooks into isolated CLI configuration.
+Six cases passed on the installed Claude Code 2.1.239 binary with a scripted loopback
+provider. This includes actual native helper execution, Read-tool consumption and an
+exact-parent result, but not real Fable cognition, provider-model attestation or Executive
+admission. Cross-provider hierarchical budgets and full native skill qualification remain
+SPEC_ONLY in this operation. No real-provider inference, Executive Job, credential change,
+daemon, fleet setting or production launch was created. Owned disposable CLI processes
+and local evidence files were created; existing sessions and worktrees were untouched.
 
 ## 1. Outcome and the architecture decision
 
@@ -42,8 +46,9 @@ Chris remains Chairman; Sol retains thesis, architecture and final acceptance.
 Canonical procedure was loaded from protected Mastermind
 `9ed16bf0fcc5b47e870350ff2413ff5c8c73b447`: Sol Skillpack v1.0.1, bootstrap major 1,
 INDEX/COLD_START/RECONCILE_STATE/CLOSEOUT and relevant routing/hierarchy source laws.
-Macro source was read at `aa6750b68ccefeb17043e590b61e8a00565d1837`. Both branch heads
-were rechecked before source publication; those pins remained unchanged.
+The original Macro source base was `aa6750b68ccefeb17043e590b61e8a00565d1837`.
+Continuation recovered PR #7114 at `0c95fa51c4bd0b79be28e30bf7a8fa263b2ae622`.
+The original evidence JSON remains a historical receipt, not current installed state.
 
 | Surface | Verified fact | Consequence |
 |---|---|---|
@@ -53,7 +58,10 @@ were rechecked before source publication; those pins remained unchanged.
 | Mastermind `control_plane/executive_coo_policy.py` | Closed policy: depth 1, direct fan-out 8, total reserved children 16, repair/review reservations | A three-level tree is an architecture change, not a config toggle |
 | Mastermind worker and operator harness boundaries | Existing `WorkerExecutionAdapter`, `OperatorHarnessAdapter` and orchestrator seams | Provider-private mechanics stay behind the existing adapter/broker |
 | Executive connector | State read returned a gateway 404 in this session | No current runtime/admission readiness inferred |
-| Authorized Mac relay | Ping worked, but the last process request reported its Desktop Commander MCP backend missing | Installed CLI version and actual settings adoption remain UNKNOWN |
+| Authorized Mac Studio relay | Original backend failure; continuation ping has no live command connection | No Studio launch or job migration |
+| Authorized MacBook Pro | Commands work; installed CLI 2.1.239, binary digest in native receipt | Six disposable native cases proved; not a production realm |
+| Authorized Mini | Relay ping returns ENOSPC while writing its status file | No cleanup of another worker or host configuration |
+| Mastermind #581 at `e6aca940eaa2ee5e9971b4526d700dec62351e4a` | Sealed subscription leaf adapter disables hooks and native agents | Not a rich Fable principal; preserve its closed grant |
 
 A source-only reproduction of the original guard admitted ten separate Fable-shaped
 requests and a ten-agent Fable Workflow carrying an acceptable explanation. It did not
@@ -65,8 +73,7 @@ Recent source work observed includes Macro #7103 (provider subscription catalog)
 (native/broker proof handoff) and #7108 (ACP continuation). These are integration inputs,
 not evidence that their providers or our profile are production admitted. Historical
 #6973 is not this operation's carrier. The local primary worktree differed from remote
-main and was not reset or edited. Live source-collision coverage is incomplete while
-the host backend is unavailable; the proposed branch is isolated and must remain held
+main and was not reset or edited. Full fleet source-collision coverage remains incomplete; the proposed branch is isolated and must remain held
 for integration review. Do not rewrite the workstream's older gates merely because a
 newer terminal binary is present.
 
@@ -102,6 +109,16 @@ data from the installed source. It does not invoke a provider or execute hook so
 It verifies the existing registry, guard contract, hook wiring and source hashes. It
 requires an exact declared supported CLI version, but explicitly reports the observed
 version as null and `launch_authorized: false`. A declaration is not host attestation.
+
+The emitted `--settings` now includes the existing routing PreToolUse hook and context
+SessionStart hook. The guard command maps an interpreter/command failure to blocking
+exit 2. It does not import the unrelated ship-loop or worktree hooks. The compiler emits
+`required_workspace_sources` with exact input hashes for the existing workspace owner
+to stage and attest under `CLAUDE_PROJECT_DIR`. It creates no source installer or grant.
+This matters when the harness intentionally disables ambient setting sources: env and
+agent definitions alone did not deliver the routing hook. Existing managed settings can
+still constrain or disable customizations; the native receipt qualifies only its exact
+isolated configuration, not arbitrary combined home/project/managed settings.
 
 The default compiled profile, `router_only`, denies native Agent/Task, Workflow,
 TeamCreate, SendMessage and model-invoked Skill. The existing guard independently
@@ -269,12 +286,24 @@ extension, known-launch-surface coverage, before/after reproduction and source t
 No activation is implied. The independently useful capability is compiling an auditable
 native delegation restriction and enforcing it at the existing hook entrypoint.
 
-**Wave N1, next critical vertical:** restore the existing runtime/transport read path,
-recover actual admission/binding/capacity and current source ownership, then wire the
-candidate arguments into the existing native Claude adapter. Observe the installed CLI,
-effective permissions, resolved scout/skill definitions and actual served model. Prove
-one principal -> existing router -> qualified economical child -> exact parent result,
-with real input and a useful artifact. No new launcher service or quota database.
+**Wave N1, next critical vertical:** compose the principal profile through the existing
+rich OperatorHarnessAdapter, capability and workspace owners, after reconciling their
+current source contract and writer. Restore Executive read/admission/binding/capacity
+before a real launch. The native configuration consumer is now fixture-qualified; a
+registered rich Claude capability and real routed result are not. Observe effective
+permissions and actual served model on the intended admitted realm. Prove one principal
+-> existing router -> qualified economical child -> exact parent result, with real input
+and a useful artifact. Do not call a loopback oracle the router or a native parent result
+an Executive Job result. No new launcher service or quota database.
+
+Mastermind #581's `ClaudeSubscriptionWorkerAdapter` is the sealed leaf floor: its
+`_closed_settings` sets `disableAllHooks=true`, denies Agent/Skill/Bash, and its invocation
+uses safe mode. Removing those restrictions to accept this principal profile would
+change that owner's security contract. Preserve the leaf and rich-principal distinction.
+Its interactive-only subscription profiles also cannot be promoted to unattended work
+by this profile, a purchased plan or a successful local fixture. The protected capability
+registry currently names Codex execution surfaces; this source compiler adds no registered
+Claude surface. A healthy Executive connection alone does not close these source gaps.
 
 **Wave N2:** re-enable qualified native skills and expose bounded child requests through
 the existing CLI/tool facade. Prove a familiar native coding journey, including context,
@@ -297,7 +326,54 @@ Source tests for N0 cover strict malformed-input handling, ten Fable requests, W
 SendMessage/Skill/TeamCreate, model and environment pins, nested/resumed agents, route
 contracts, legacy compatibility and compiler-to-hook subprocess checks. They make no
 provider calls. Full repository CI, live settings adoption and production proof remain
-separate gates. See the machine evidence receipt for the exact current source test count.
+separate gates. The current partial-source suite is 123 passing checks (113 profile and
+10 protocol-oracle checks); the original 110-case receipt is retained unchanged. Full
+repository CI, independent non-author review and complete source-writer reconciliation
+remain owed. A candidate compiler digest and native receipt are not release authority.
+
+### Native qualification and the integration repair
+
+`tests/fable_native_cli_conformance.py` is an explicit opt-in test driver, not an Executive
+launcher. It creates fresh temporary HOME/config/workspace roots, uses a dummy credential
+and fixed loopback protocol oracle, and invokes the installed CLI with the actual compiled
+arguments. Ambient setting sources and MCP are disabled. No test-added hooks or source
+settings file can conceal a missing compiler output. Native process completion, tool-use
+IDs, tool catalogs and subagent statistics are checked; model replies are scripted.
+
+| Case | Native observation |
+|---|---|
+| Valid scout | One helper reads fixture.txt through Read, then its exact parent receives the value; only Read/Grep/Glob exposed |
+| Ten Fable requests | Ten NATIVE_LEAF_ONLY refusals; zero helper starts |
+| Router-only | Agent absent from tool catalog; forced call refused; zero helper starts |
+| Premium override | NATIVE_MODEL_PIN_REQUIRED; zero helper starts |
+| Incomplete mission | Existing commission guard names the missing sections; zero helper starts |
+| Per-helper turn ceiling | Fourteen scripted leaf requests, then parent return; no fifteenth leaf request or descendant |
+
+The paired baseline used the same final driver and old compiler with ambient hooks
+absent. An unqualified Opus-shaped request started a Sonnet helper instead of being
+refused. This proves missing guard delivery, not Opus billing. With inline hooks the
+six-case matrix passes. The turn-limit case demonstrates termination, not a useful
+completed research product; the native `completed` statistic is not final acceptance.
+
+Native CLI version: 2.1.239. Binary SHA-256:
+`2b4f7aafdaa65bcc2335f56a4b276317837203f2c5587b1f2a17ca78ad14e36f`.
+Qualified compiler SHA-256:
+`13db4fedf9bb37848f752c8539b1d268d0c71d540190a41d411139f91d33c359`.
+Final native driver SHA-256:
+`99eb93036779022c9d709b63373461edb686b04580b370f2645a884dea8533bf`.
+Public receipt: `research/evidence/fable_native_cli_qualification_2026-09-13.json`,
+SHA-256 `412b77a7f52c5b0f9ff26e828081cad4c56aa9624e9ac97b51c9e6be0689df32`.
+Raw before/after receipts remain in the owned MacBook evidence directory named in the
+continuation handoff; their hashes are in the public receipt. Two earlier fixture failures
+misclassified tool-free native prefetches and are explicitly excluded, not source REDs.
+The final driver separates these calls and binds returns to their exact tool-use IDs.
+
+The requested model appeared as `claude-sonnet-5` on the local wire. It is not proof of a
+served provider model, account, billing or ultracode behavior. CLI usage/cost fields are
+synthetic estimates from the fixture. No real Fable session was run, no current session
+was hot-patched, and no fleet protection, full skill fidelity or shared root budget is
+claimed. Re-run native qualification only when relevant source/binary semantics change,
+not as a substitute for the missing admitted integration.
 
 ## 10. Stop conditions and continuation
 
@@ -306,12 +382,14 @@ source/manifest mismatch, unqualified model substitution, missing required tools
 an attempt to widen the grant. Do not repair those conditions by changing a root ID,
 opening a new account, disabling policy, or asking Chris to allocate a routine worker.
 
-Current blockers are specific: Executive state gateway 404; native relay process backend
-missing; installed CLI/effective configuration unobserved; current runtime grants and
-full collision coverage unavailable. The next action is N1 through the existing owner,
-not another broad census and not an unapproved direct provider launch. If only source
-review is available, review this exact carrier and preserve its hold. No automatic merge,
-credential ceremony or production activation is authorized by this document.
+Current blockers are specific: Executive state gateway 404, complete source-writer
+clearance and independent release review, and the unqualified rich-principal capability /
+workspace / adapter consumer. Studio command access remains unavailable; Mini reports
+ENOSPC. MacBook command access and exact native fixture behavior are now established and
+must not be described as still missing. N1 requires both its source-owner integration and
+healthy runtime gates. It is not solved by another broad census, rerunning the six cases,
+or an unapproved provider launch. Keep this same PR held; no automatic merge, credential
+ceremony or production activation is authorized by this document.
 
 ## Sources
 
@@ -327,3 +405,6 @@ Mastermind runtime admission or actual installed versions.
 - [M2] Mastermind at `9ed16bf0fcc5b47e870350ff2413ff5c8c73b447`: `control_plane/executive_coo_policy.py`, `docs/sol_skills/INDEX.md`, `docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md`, `docs/EXECUTIVE_CHAT_NATIVE_SOL_HIERARCHY_LAW.md`.
 - [M3] Same Mastermind pin: `docs/superpowers/specs/2026-09-06-provider-app-server-adapter-fabric-design.md` (candidate architecture, not runtime release).
 - [M4] Same Macro pin: `agentos/workstreams/WS-EXECUTIVE-CAPACITY-FABRIC.md`, `agentos/README.md`, `agentos/schema/handoff.schema.yml`.
+
+- [M5] Mastermind PR #581 at `e6aca940eaa2ee5e9971b4526d700dec62351e4a`: `control_plane/claude_subscription_worker.py`, read during this continuation; sealed leaf, not rich-principal release.
+- [M6] Same protected Mastermind pin: `control_plane/executive_agent_capabilities.py` execution-surface allowlist; current compiler output does not extend it.
