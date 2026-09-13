@@ -11,7 +11,7 @@
       "url": "https://ta-lib.org/functions/",
       "rights_class": "public_formula",
       "rights_ref": "TA-Lib BSD-licensed project documentation and implementation",
-      "covers": ["adx", "aroon", "atr", "bollinger_bands", "cmf", "coppock", "donchian", "kama", "macd", "mass_index", "mfi", "natr", "obv", "rsi", "stochastic", "supertrend", "tsi", "ultimate_oscillator", "vhf", "vortex", "williams_fractal", "candlestick_patterns"],
+      "covers": ["adx", "aroon", "atr", "bollinger_bands", "kama", "macd", "mfi", "natr", "obv", "rsi", "stochastic", "candlestick_patterns"],
       "retrieved_at": "2026-09-13"
     },
     {
@@ -34,6 +34,50 @@
       "rights_class": "public_formula",
       "rights_ref": "public formula documentation; independent implementation only",
       "covers": ["bbtrend"],
+      "retrieved_at": "2026-09-13"
+    },
+    {
+      "source_ref": "SRC-TRADINGVIEW-DONCHIAN",
+      "title": "Donchian Channels (DC)",
+      "publisher_or_author": "TradingView / Richard Donchian attribution",
+      "source_type": "official_platform_formula_documentation",
+      "url": "https://www.tradingview.com/support/solutions/43000502253-donchian-channels-dc/",
+      "rights_class": "public_formula",
+      "rights_ref": "public formula documentation; independent implementation only",
+      "covers": ["donchian_channel", "donchian_breakout"],
+      "retrieved_at": "2026-09-13"
+    },
+    {
+      "source_ref": "SRC-TRADINGVIEW-CMF",
+      "title": "Chaikin Money Flow (CMF)",
+      "publisher_or_author": "TradingView / Marc Chaikin attribution",
+      "source_type": "official_platform_formula_documentation",
+      "url": "https://www.tradingview.com/support/solutions/43000501974-chaikin-money-flow-cmf/",
+      "rights_class": "public_formula",
+      "rights_ref": "public formula documentation; independent implementation only",
+      "covers": ["chaikin_money_flow", "money_flow_multiplier", "money_flow_volume"],
+      "retrieved_at": "2026-09-13"
+    },
+    {
+      "source_ref": "SRC-TRADINGVIEW-CHOPPINESS",
+      "title": "Choppiness Index (CHOP)",
+      "publisher_or_author": "TradingView / E.W. Dreiss attribution",
+      "source_type": "official_platform_formula_documentation",
+      "url": "https://www.tradingview.com/support/solutions/43000501980-choppiness-index-chop/",
+      "rights_class": "public_formula",
+      "rights_ref": "public formula documentation; independent implementation only",
+      "covers": ["choppiness_index", "trendiness_regime"],
+      "retrieved_at": "2026-09-13"
+    },
+    {
+      "source_ref": "SRC-TRADINGVIEW-RVOL",
+      "title": "How do we calculate Relative Volume and Relative Volume at Time?",
+      "publisher_or_author": "TradingView",
+      "source_type": "official_platform_formula_documentation",
+      "url": "https://www.tradingview.com/support/solutions/43000635874-how-do-we-calculate-relative-volume-and-relative-volume-at-time/",
+      "rights_class": "public_formula",
+      "rights_ref": "public formula documentation; independent implementation only",
+      "covers": ["relative_volume", "volume_over_prior_average"],
       "retrieved_at": "2026-09-13"
     },
     {
