@@ -1,7 +1,7 @@
 """Build the China historical regime analog finder.
 
 Finds the k=12 nearest historical dates (by feature-space distance) to today's
-regime reading.  DISPLAY-ONLY — no signals, no scores, no predictions.
+regime reading.  Context only — no signals, no scores, no predictions.
 Emits site/china_intel/analogs.json with schema china_intel.analogs.v1.
 
 Feature vector (see METHOD_NOTE below):
@@ -63,7 +63,7 @@ METHOD_NOTE = (
 )
 
 DISCLAIMER_EN = (
-    "DISPLAY ONLY. Historical analogs are descriptive summaries of past regime "
+    "Context only. Historical analogs are descriptive summaries of past regime "
     "similarity. They are not signals, forecasts, or recommendations. Past market "
     "paths under similar regimes do not predict future returns."
 )
