@@ -1,6 +1,6 @@
 {
  "schema": "options_entry.gate.v3",
- "generated_at": "2026-09-12 10:26 UTC",
+ "generated_at": "2026-09-13 10:06 UTC",
  "scored": false,
  "status": "building_history",
  "weight": 0.0,
@@ -19,11 +19,11 @@
    "ticker"
   ],
   "declared_lane": "buy",
-  "raw_rows": 9582,
-  "raw_events_all_lanes": 4471,
-  "declared_lane_rows": 4748,
+  "raw_rows": 9597,
+  "raw_events_all_lanes": 4475,
+  "declared_lane_rows": 4751,
   "declared_lane_stamped_rows": 971,
-  "excluded_non_buy_rows": 4834,
+  "excluded_non_buy_rows": 4846,
   "canonical_events": 2269,
   "canonical_dates": 39,
   "horizon_mapping": {
@@ -34,7 +34,7 @@
    "terminal_state_clean8_21": "sole non-null repeated event value"
   }
  },
- "n_ledger_rows": 9582,
+ "n_ledger_rows": 9597,
  "n_canonical_events": 2269,
  "n_stamped_rows": 971,
  "n_stamped_events": 433,
@@ -1125,7 +1125,7 @@
    "n_eligible": 429,
    "n_priced": 429,
    "wall_touches": 230,
-   "fixed_stop_touches": 211,
+   "fixed_stop_touches": 213,
    "wall_before_fixed": 201,
    "price_store_available": true,
    "limitation": "close-path study understates intraday touches; a bar may pierce the wall intraday and close back above it. Full stop-out comparison is W2.3."
@@ -1735,7 +1735,7 @@
   "S-DOI: building history (fires=123/39 dates=16/14 overlap_dates=13; need 30 fires, 30 dates, 30 overlapping dates/bucket)",
   "S-VOI: building history (fires=230/96 dates=32/25 overlap_dates=25; need 30 fires, 30 dates, 30 overlapping dates/bucket)",
   "S-VOI-fast (5d): fires=230/96 dates=32/25 overlap_dates=25 \u2192 descriptive_status=building_history",
-  "S-WALL: 429/429 eligible fires priced (price_store_available=True); wall_touches=230, fixed\u22125%_touches=211, wall_before_fixed=201. LIMITATION: close-path study understates intraday touches; a bar may pierce the wall intraday and close back above it. Full stop-out comparison is W2.3.",
+  "S-WALL: 429/429 eligible fires priced (price_store_available=True); wall_touches=230, fixed\u22125%_touches=213, wall_before_fixed=201. LIMITATION: close-path study understates intraday touches; a bar may pierce the wall intraday and close back above it. Full stop-out comparison is W2.3.",
   "S-IVSPREAD-F: building history (fires=190/174 dates=32/31 overlap_dates=31; need 30 fires, 30 dates, 30 overlapping dates/bucket)",
   "S-SKEW_DECEL: building history (fires=40/323 dates=22/31 overlap_dates=21; need 30 fires, 30 dates, 30 overlapping dates/bucket)",
   "S-TOP_RISK: building history (fires=243/120 dates=31/32 overlap_dates=31; need 30 fires, 30 dates, 30 overlapping dates/bucket) \u2014 CAUTION-ONLY (RO-3): beneficial direction = flagged fires show WORSE outcomes (correctly identifies bad entries). NEVER initiates a negative position.",

@@ -24,7 +24,7 @@
     {
       "ticker": "XEG.TO",
       "name": "Energy",
-      "rs": 0.0008090204815876566,
+      "rs": 0.0008090202160029863,
       "mom_20d_pct": 8.22,
       "mom_60d_pct": 13.96,
       "above_200d_trend": true,
@@ -34,7 +34,7 @@
     {
       "ticker": "XGD.TO",
       "name": "Gold Miners",
-      "rs": 0.0016833117131142806,
+      "rs": 0.0016833111605179044,
       "mom_20d_pct": 13.31,
       "mom_60d_pct": 9.87,
       "above_200d_trend": true,
@@ -44,7 +44,7 @@
     {
       "ticker": "XMA.TO",
       "name": "Materials",
-      "rs": 0.001363401194657975,
+      "rs": 0.0013634007470815972,
       "mom_20d_pct": 10.98,
       "mom_60d_pct": 5.89,
       "above_200d_trend": true,
@@ -54,7 +54,7 @@
     {
       "ticker": "ZEB.TO",
       "name": "Banks",
-      "rs": 0.0020892226714513025,
+      "rs": 0.0020892219856027644,
       "mom_20d_pct": -1.23,
       "mom_60d_pct": 1.73,
       "above_200d_trend": true,
@@ -64,7 +64,7 @@
     {
       "ticker": "XIT.TO",
       "name": "Information Technology",
-      "rs": 0.0020782975501493287,
+      "rs": 0.002078296867887282,
       "mom_20d_pct": -6.75,
       "mom_60d_pct": 0.57,
       "above_200d_trend": false,
@@ -74,7 +74,7 @@
     {
       "ticker": "XCG.TO",
       "name": "Consumer Discretionary",
-      "rs": 0.0019046157345328151,
+      "rs": 0.0019046151092869117,
       "mom_20d_pct": -1.08,
       "mom_60d_pct": 0.34,
       "above_200d_trend": false,
@@ -84,7 +84,7 @@
     {
       "ticker": "XFN.TO",
       "name": "Financials",
-      "rs": 0.002603544588604087,
+      "rs": 0.0026035437339143146,
       "mom_20d_pct": -1.6,
       "mom_60d_pct": 0.07,
       "above_200d_trend": true,
@@ -94,7 +94,7 @@
     {
       "ticker": "XST.TO",
       "name": "Consumer Staples",
-      "rs": 0.0017670711545323841,
+      "rs": 0.0017670705744395178,
       "mom_20d_pct": -2.88,
       "mom_60d_pct": -5.29,
       "above_200d_trend": false,
@@ -104,7 +104,7 @@
     {
       "ticker": "XCD.TO",
       "name": "Communication Services",
-      "rs": 0.001549688853707976,
+      "rs": 0.0015496883449772174,
       "mom_20d_pct": -3.24,
       "mom_60d_pct": -5.46,
       "above_200d_trend": false,
@@ -114,7 +114,7 @@
     {
       "ticker": "XUT.TO",
       "name": "Utilities",
-      "rs": 0.000950767134071331,
+      "rs": 0.00095076682195417,
       "mom_20d_pct": -3.04,
       "mom_60d_pct": -7.51,
       "above_200d_trend": false,
@@ -124,7 +124,7 @@
     {
       "ticker": "XRE.TO",
       "name": "Real Estate",
-      "rs": 0.00043924659857404186,
+      "rs": 0.00043924645437847974,
       "mom_20d_pct": -2.33,
       "mom_60d_pct": -7.84,
       "above_200d_trend": false,
@@ -134,7 +134,7 @@
     {
       "ticker": "XBM.TO",
       "name": "Base Metals",
-      "rs": 0.0010179987977382535,
+      "rs": 0.0010179984635503296,
       "mom_20d_pct": 2.83,
       "mom_60d_pct": -8.6,
       "above_200d_trend": true,
@@ -174,8 +174,8 @@
       "chg_20d_pct": -1.28
     },
     "usdcad": {
-      "level": 1.3869,
-      "chg_20d_pct": -0.42
+      "level": 1.3835,
+      "chg_20d_pct": -0.66
     },
     "copper_gold": {
       "level": 0.0015,
