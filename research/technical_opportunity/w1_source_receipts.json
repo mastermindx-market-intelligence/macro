@@ -125,6 +125,18 @@
       "retrieved_at": "2026-09-13"
     },
     {
+      "source_ref": "SRC-STOCKCHARTS-RVOL",
+      "title": "Relative Volume (RVOL)",
+      "publisher_or_author": "StockCharts ChartSchool",
+      "source_type": "official_platform_formula_documentation",
+      "url": "https://chartschool.stockcharts.com/table-of-contents/technical-indicators-and-overlays/technical-indicators/relative-volume-rvol",
+      "rights_class": "public_formula",
+      "rights_ref": "public platform formula documentation; independent implementation only",
+      "covers": ["relative_volume", "current_volume_over_prior_bar_average", "configurable_lookback"],
+      "retrieved_at": "2026-09-13",
+      "formula_note": "current volume divided by average volume over a specified number of prior bars; current bar is not part of the baseline"
+    },
+    {
       "source_ref": "SRC-TRADINGVIEW-ULCER",
       "title": "Ulcer Index",
       "publisher_or_author": "TradingView / Peter Martin attribution",
@@ -145,6 +157,18 @@
       "rights_ref": "public formula documentation; independent implementation only",
       "covers": ["supertrend"],
       "retrieved_at": "2026-09-13"
+    },
+    {
+      "source_ref": "SRC-STOCKCHARTS-CONNORS-RSI",
+      "title": "ConnorsRSI",
+      "publisher_or_author": "StockCharts ChartSchool / Larry Connors attribution",
+      "source_type": "official_platform_formula_documentation",
+      "url": "https://chartschool.stockcharts.com/table-of-contents/technical-indicators-and-overlays/technical-indicators/connorsrsi",
+      "rights_class": "public_formula",
+      "rights_ref": "public platform formula documentation; independent implementation only",
+      "covers": ["connors_rsi", "rsi_3", "streak_rsi_2", "percent_rank_100"],
+      "retrieved_at": "2026-09-13",
+      "formula_note": "ConnorsRSI(3,2,100) averages 3-period price RSI, 2-period RSI of streak length, and a 100-period price-change percent rank"
     },
     {
       "source_ref": "SRC-STRAT-PUBLIC",

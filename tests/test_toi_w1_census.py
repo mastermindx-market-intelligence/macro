@@ -41,7 +41,7 @@ def test_current_passports_validate():
     result = passports.validate_rows(_rows(), passports._source_ids())
     assert result["status"] == "valid"
     assert result["count"] == 32
-    assert result["exact_local_count"] == 27
+    assert result["exact_local_count"] == 26
     assert result["priority_counts"]["P0"] == 12
     assert result["priority_counts"]["P1"] == 10
     assert result["priority_counts"]["P2"] == 8
@@ -153,7 +153,7 @@ def test_method_specific_official_sources_replace_overbroad_catalog_bindings():
         "toi.fractal_swing_structure": "SRC-METATRADER-FRACTALS",
         "toi.benchmark_rs": "SRC-STOCKCHARTS-PRICE-RELATIVE",
         "toi.cmf": "SRC-TRADINGVIEW-CMF",
-        "toi.rvol": "SRC-TRADINGVIEW-RVOL",
+        "toi.rvol": "SRC-STOCKCHARTS-RVOL",
         "toi.choppiness": "SRC-TRADINGVIEW-CHOPPINESS",
         "toi.ulcer": "SRC-TRADINGVIEW-ULCER",
     }
@@ -164,6 +164,32 @@ def test_method_specific_official_sources_replace_overbroad_catalog_bindings():
     squeeze = rows["toi.bb_kc_squeeze"]
     assert squeeze["source_refs"] == ["SRC-BOLLINGER-OFFICIAL", "SRC-TRADINGVIEW-KELTNER"]
     assert all(source_map[ref]["source_type"] in sources.PRIMARY_OR_OFFICIAL_SOURCE_TYPES for ref in squeeze["source_refs"])
+
+
+def test_connors_rsi_has_method_specific_32100_receipt_and_stays_p2():
+    source_map = _source_map()
+    rows = {row["method_id"]: row for row in _rows()}
+    crsi = rows["toi.connors_rsi"]
+    assert crsi["source_refs"] == ["SRC-STOCKCHARTS-CONNORS-RSI"]
+    assert crsi["rights_ref"] == "SRC-STOCKCHARTS-CONNORS-RSI"
+    assert source_map["SRC-STOCKCHARTS-CONNORS-RSI"]["source_type"] == "official_platform_formula_documentation"
+    assert crsi["formula"]["parameters"] == {"rsi": 3, "streak_rsi": 2, "percent_rank": 100}
+    assert crsi["research_priority"] == "P2"
+    assert crsi["owner_disposition"] == "terminal_display"
+
+
+def test_rvol_source_formula_and_local_mismatch_are_explicit():
+    source_map = _source_map()
+    rows = {row["method_id"]: row for row in _rows()}
+    rvol = rows["toi.rvol"]
+    assert rvol["source_refs"] == ["SRC-STOCKCHARTS-RVOL"]
+    assert rvol["rights_ref"] == "SRC-STOCKCHARTS-RVOL"
+    assert source_map["SRC-STOCKCHARTS-RVOL"]["source_type"] == "official_platform_formula_documentation"
+    assert rvol["formula"]["parameters"]["length"] == 20
+    assert "excluding the current bar" in rvol["formula"]["declarative_steps"][0]
+    assert rvol["local_implementation"]["status"] == "partial"
+    assert "inclusive 20-bar SMA denominator" in rvol["known_failure_modes"][0]
+    assert rvol["research_priority"] == "P0"
 
 
 def test_inside_bar_practitioner_family_is_not_p0_or_p1_authority():

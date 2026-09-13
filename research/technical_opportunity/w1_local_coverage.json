@@ -10,15 +10,18 @@
     "p1_passports": 10,
     "p2_passports": 8,
     "archive_passports": 2,
-    "exact_local": 27,
+    "exact_local": 26,
+    "partial_local": 1,
     "missing_local": 5,
-    "p0_exact_local": 12,
+    "p0_exact_local": 11,
+    "p0_partial_local": 1,
     "p1_exact_local": 7,
     "p1_missing_local": 3,
     "p2_exact_local": 7,
     "p2_missing_local": 1,
     "archive_exact_local": 1,
     "archive_missing_local": 1,
+    "partial_method_ids": ["toi.rvol"],
     "missing_method_ids": ["toi.support_resistance", "toi.round_levels", "toi.short_reversal", "toi.fibonacci_retracement", "toi.ordered_path_elliott"],
     "first_vertical_roles_covered": ["setup","trigger","participation","context","risk"],
     "first_vertical_horizons": ["W","D","candidate_4H"],
@@ -32,7 +35,8 @@
     {"path":"engine/path_risk_signals.py","methods":["toi.natr_percentile","toi.hvr","toi.ulcer"],"state":"exact_local"},
     {"path":"engine/fractal_pivot_signals.py","methods":["toi.fractal_swing_structure"],"state":"exact_local","known_at":"two completed bars after pivot center"},
     {"path":"engine/momentum_context_signals.py","methods":["toi.benchmark_rs","toi.momentum_12_1","toi.momentum_acceleration","toi.high52"],"state":"exact_local","external_input":"bench_close only for benchmark-RS methods"},
-    {"path":"engine/volume_flow_signals.py","methods":["toi.cmf","toi.rvol","toi.obv"],"state":"exact_local"},
+    {"path":"engine/volume_flow_signals.py","methods":["toi.cmf","toi.obv"],"state":"exact_local"},
+    {"path":"engine/volume_flow_signals.py","methods":["toi.rvol"],"state":"partial_local","formula_mismatch":"source-defined RVOL compares current volume with a configurable average of prior completed bars excluding current; current local _rvol uses an inclusive 20-bar rolling mean including current"},
     {"path":"engine/trend_strength_signals.py","methods":["toi.adx_dmi"],"state":"exact_local"},
     {"path":"engine/bar_structure_signals.py","methods":["toi.inside_bar"],"state":"exact_local","authority_boundary":"public-practitioner sequence aliases retained as P2 later context, not P1/W3 authority"},
     {"path":"engine/ma_crosses.py","methods":["toi.ma_trend"],"state":"exact_local"},
@@ -40,8 +44,11 @@
     {"path":"engine/rsi_signals.py","methods":["toi.rsi_oscillator"],"state":"exact_local"},
     {"path":"engine/momentum_events.py","methods":["toi.rsi_oscillator","toi.macd_stoch_incumbent"],"state":"exact_local"},
     {"path":"engine/adaptive_trend_signals.py","methods":["toi.kama_er","toi.supertrend"],"state":"exact_local","authority_boundary":"entry_stack_blocked families remain display/context only"},
-    {"path":"engine/rank_momentum_signals.py","methods":["toi.connors_rsi"],"state":"exact_local","authority_boundary":"RSI-family entry stacking remains blocked"},
+    {"path":"engine/rank_momentum_signals.py","methods":["toi.connors_rsi"],"state":"exact_local","authority_boundary":"method-specific ConnorsRSI(3,2,100) receipt added; RSI-family entry stacking remains blocked"},
     {"path":"engine/formations.py","methods":["toi.geometric_double_pattern"],"state":"exact_local","known_at":"event emitted only after second pivot confirmation"}
+  ],
+  "partial_local_methods": [
+    {"method_id":"toi.rvol","reason":"current local inclusive 20-bar denominator does not exactly reproduce the receipted prior-bar RVOL methodology; later implementation must repair or explicitly version it before W3 use"}
   ],
   "missing_local_methods": [
     {"method_id":"toi.support_resistance","reason":"no frozen causal level constructor yet; W1 records method/source only"},
@@ -75,8 +82,7 @@
     "disposition": "reuse deterministic proposal screen and declarative candidate pattern in later W3; no parallel harness"
   },
   "gaps_for_full_w1": [
-    "independent >=20-passport source/formula/local-path reproduction review remains required",
-    "adjudicate any reviewer-identified source, formula, lag, ownership, or DNR mismatch on the same carrier",
-    "run the exact Agent OS + passport/source/equivalence + W1 pytest + diff-check battery on the immutable return head"
+    "fresh bounded independent verification of the two repaired reviewer findings remains required on the repaired immutable head",
+    "run the exact Agent OS + passport/source/equivalence + W1 pytest + diff-check battery on the immutable repair head"
   ]
 }

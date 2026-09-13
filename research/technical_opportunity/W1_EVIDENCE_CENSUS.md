@@ -1,9 +1,9 @@
 # Technical Opportunity Intelligence — W1 Evidence Census
 
 **Operation:** `TOI-W1-EVIDENCE-CENSUS-V1`  
-**State:** `PARTIAL` — 32 active passports plus 10 residual-family dispositions are normalized; W1 is not yet accepted.  
+**State:** `PARTIAL / REPAIR_APPLIED_AWAITING_REREVIEW`  
 **Macro pickup:** `e2cddf8f0068f03f1d94816cfa950ba47a1db3c2`  
-**Current-main reconciliation anchor used for this expansion:** `aa6750b68ccefeb17043e590b61e8a00565d1837`  
+**Current-main reconciliation anchor used for census expansion:** `aa6750b68ccefeb17043e590b61e8a00565d1837`  
 **Terminal archaeology:** `45a0e78e01377502399761626899458f9d08ffd9`  
 **Date:** 2026-09-13
 
@@ -13,137 +13,122 @@ Give W3 one normalized, source-receipted technical-method universe so Compressio
 
 ## Authority and boundaries
 
-Precedence is the TOI architecture freeze → `research/DO_NOT_REBUILD.md` → Setup Species masterplan → Durable Bottom framework → `engine/tech_catalog.py` → canonical species registry → Signal Foundry / Research Factory → Live Entry Radar ownership → current GitHub state.
-
 One canonical system is preserved:
 
-- Setup Species remains the scientific registry; W1 does not edit it.
-- Signal Foundry / Research Factory remains proposal/test automation; W1 does not create a second harness.
-- Live Entry Radar remains the owner of true tactical 5m/RTH events.
+- Setup Species remains the scientific registry.
+- Signal Foundry / Research Factory remains the proposal/test automation owner.
+- Live Entry Radar remains the true tactical 5m/RTH event owner.
 - Cycle Pattern Intelligence remains the phase/turn/hazard owner.
-- Terminal remains a display/visual primitive implementation; Macro owns canonical occurrence semantics.
-- DNR kills remain kills. A surviving measurement is not permission to resurrect its killed construction.
+- Terminal remains display/parity evidence; Macro owns canonical occurrence semantics.
+- DNR kills remain kills; surviving generic measurements do not resurrect killed constructions.
 
 ## Current normalized census
 
-The active passport file freezes **32 methods** across the first Compression → Release vertical, adjacent controls and strategically relevant later-context families. A separate residual-family disposition file closes ten broader families without creating extra first-vertical hypotheses.
+The active passport file freezes **32 methods**: 12 P0, 10 P1, 8 P2, and 2 archive/comparator families. A separate residual-family disposition file closes ten broader families without adding first-vertical hypotheses.
 
 | Role / job | Current normalized methods |
 |---|---|
-| compression/setup | Bollinger BandWidth; BB/KC squeeze; normalized ATR; NR7; confirmed swing structure; causal support/resistance; inside/outside bar grammar; causal double-top/double-bottom geometry |
+| compression/setup | Bollinger BandWidth; BB/KC squeeze; normalized ATR; NR7; confirmed swing structure; causal support/resistance; inside/outside bar grammar; causal double-pattern geometry |
 | trigger/release | ATR range expansion; prior-channel Donchian breakout; incumbent MACD/StochRSI trigger family |
 | participation | benchmark relative strength; Chaikin Money Flow; relative volume; OBV; momentum acceleration |
 | trend/context | HVR; ADX/DMI; Choppiness; 12-1 momentum; 52-week location; MA/ribbon; RSI; KAMA/ER; SuperTrend; Connors RSI; short reversal |
 | risk/failure | Donchian fakeout; Ulcer/path risk; round-number S/R control |
 | later path geometry | Fibonacci specificity control; ordered-path/Elliott-like representation |
 
-These are **method representations**, not claims of edge. Correlated methods carry dependency-family labels so later experiments can ablate by mechanism rather than count synonyms as confluence.
-
-## Priority and ownership split
-
-- **P0 (12):** first Compression → Release proving core.
-- **P1 (10):** adjacent controls/context with primary/official source support.
-- **P2 (8):** inside/outside-bar/TheSTRAT grammar, moving-average trend, RSI, KAMA/ER, SuperTrend, Connors RSI, causal double-pattern geometry, and ordered-path/Elliott-like representation.
-- **Archive (2):** existing MACD/StochRSI incumbent comparator and Fibonacci specificity control.
-
-The inside/outside-bar passport moved from P1 to P2 because the branded 2-1-2 / 3-1-2 methodology is supported by a lawful public-practitioner source rather than a primary/official source. The deterministic local implementation remains useful later-context evidence; the source-quality bar was not weakened to preserve its prior priority.
-
-`archive` does not mean “false.” It means the method should not consume a fresh W3 hypothesis slot in its current role.
+These are method representations, not claims of predictive edge.
 
 ## Local implementation truth
 
-- **27/32** passports have exact local Macro implementations with named paths and signal IDs.
-- **5/32** are explicitly missing locally: causal support/resistance, round-level controls, short-horizon reversal, Fibonacci retracement, and ordered-path/Elliott representation.
-- Priority/local counts reconcile exactly: P0 12 exact; P1 7 exact + 3 missing; P2 7 exact + 1 missing; archive 1 exact + 1 missing.
-- Williams/fractal swing structure preserves its two-bar confirmation lag instead of backdating the event to the pivot center.
-- Double-pattern geometry fires only when the second pivot becomes causally confirmed.
-- KAMA/ER, SuperTrend and Connors RSI retain existing entry-stack restrictions and are not silently promoted into W3 candidates.
-- Missing local code is not treated as a negative research result and does not authorize W1 to build it.
+- **26/32** passports are exact local implementations.
+- **1/32** is explicit `partial`: `toi.rvol`.
+- **5/32** are `missing`: causal support/resistance, round-level controls, short reversal, Fibonacci retracement, ordered-path/Elliott.
+- P0 reconciles as 11 exact + 1 partial; P1 as 7 exact + 3 missing; P2 as 7 exact + 1 missing; archive as 1 exact + 1 missing.
+
+The RVOL partial state is deliberate. The source-defined method compares current volume with an average of prior completed bars, while the current local helper includes the current bar in its 20-bar denominator. W1 records that mismatch rather than calling it exact or changing live behavior inside a records-only wave.
 
 ## Source and rights truth
 
-The source registry distinguishes creator/official material, primary academic work, official platform/open-source documentation, public practitioner methodology and internal licensed-rights receipts.
+The source registry distinguishes creator/official material, primary academic work, official platform/open-source documentation, public practitioner methodology, and internal licensed-rights receipts.
 
-The current source set now binds method-specific official evidence where the earlier broad catalog was too loose:
+Important method-specific bindings now include:
 
-- TradingView official formula documentation for Donchian Channels, Chaikin Money Flow, Choppiness Index, Relative Volume and SuperTrend;
-- MetaTrader official documentation for the five-bar Williams Fractal definition;
-- creator/official Bollinger definitions;
-- primary momentum, short-reversal and 52-week-high literature;
-- New York Fed support/resistance and round-number order-clustering evidence;
-- public TheSTRAT methodology retained only at P2/later-context strength;
-- Fibonacci empirical evidence retained as negative specificity evidence;
-- Vantuch et al. (2018), Jarusek et al. (2022), and Atsalakis et al. (2011) as Elliott/ordered-path research evidence;
-- the Massive internal entitlement receipt for licensed historical-data work.
+- official Bollinger and Keltner formula documentation;
+- creator-authored NR7 evidence;
+- official Donchian, CMF, Choppiness, SuperTrend, Ulcer and Williams-fractal documentation;
+- StockCharts price-relative evidence for benchmark RS;
+- **StockCharts ConnorsRSI documentation pinning the 3/2/100 composite**;
+- **StockCharts RVOL documentation pinning current volume versus a configurable average of prior bars**;
+- primary momentum/reversal/52-week literature;
+- New York Fed support/resistance and round-number order-clustering research;
+- Fibonacci negative-specificity evidence;
+- three Elliott/ordered-path research studies with hybrid-model limitations preserved;
+- Massive internal entitlement evidence for licensed historical-data research.
 
-The TA-Lib receipt is now limited to functions actually documented by that library instead of being used as a catch-all source for methods it does not document.
+Public-practitioner TheSTRAT material remains P2/later-context rather than satisfying a P0/P1 primary/official evidence gate.
 
-The Elliott receipts deliberately record that two supportive studies are hybrid neural/neuro-fuzzy systems. They motivate testing; they do not establish a universal deterministic wave law.
+## Independent reproduction result
 
-No proprietary implementation, paid indicator code, corpus or chart asset is copied.
+The deterministic 20-passport sample was independently reproduced on exact head `accd7c6a296fd038ae863d071fa44244c4796e0a` under operation `toi-w1-20-passport-independent-review-20260913-sol-001`.
 
-## Equivalence versus dependency
+Result: **18 PASS / 2 FAIL**.
 
-The 32 methods resolve into **29 equivalence classes**. Equivalence and dependency remain distinct:
+The two failures were:
 
-- Donchian breakout → breakout-failure/fakeout subtype;
-- causal support/resistance → round-number control subtype;
-- 12-1 momentum → momentum-acceleration subtype;
+1. `toi.connors_rsi` lacked a method-specific ConnorsRSI provenance receipt despite a specific 3/2/100 local formula.
+2. `toi.rvol` claimed exact local parity even though the local denominator included the current bar while the cited external methodology used prior-bar averages.
+
+Both findings are repaired on the same W1 carrier:
+
+- Connors RSI now binds `SRC-STOCKCHARTS-CONNORS-RSI` and remains P2 / terminal-display / RSI-family blocked from authority stacking.
+- RVOL now binds `SRC-STOCKCHARTS-RVOL`, freezes the source-defined prior-20-bar formula, and records the current local code as `partial` until a later implementation wave repairs or versions it.
+
+The original review child is terminal. A fresh bounded independent repair verification is required before Sol acceptance because the repaired semantic head is new.
+
+## Equivalence and dependency
+
+The 32 methods remain in **29 equivalence classes**. Equivalence and dependency stay separate:
+
+- Donchian breakout/fakeout are one family with subtype relation;
+- support/resistance and round-number control are related but distinct controls;
+- 12-1 momentum and acceleration are related within one momentum family;
 - RSI and Connors RSI share dependency without being aliases;
-- fractal structure, support/resistance, round levels, inside-bar grammar and geometric patterns share broad structure dependence;
-- MACD/StochRSI maps to the existing Setup Species incumbent rather than a new method birth;
-- Fibonacci and ordered-path/Elliott remain later geometry/control families, not excuses to multiply generic swing evidence.
-
-This distinction is load-bearing for W3: synonym removal and correlated-feature ablation are different operations.
+- MACD/StochRSI remains an incumbent Setup Species comparator;
+- Fibonacci and ordered-path/Elliott remain later geometry/control families.
 
 ## Residual-family disposition
 
-`research/technical_opportunity/w1_residual_family_dispositions.json` closes the broad family tail:
+The ten residual families remain outcome-blind and outside the first W3 search family unless separately preregistered:
 
-- generic FVG/imbalance survives only as later-context and is explicitly non-equivalent to `DNR:KILL-PM3-GAP-MAP`;
-- divergence remains later-context pending explicit causal confirmation semantics;
-- broad candlestick-name enumeration is archived;
-- cycle/phase/transition state remains CPI-owned;
-- breadth/peer confirmation reuses the existing breadth/universe owner;
-- regime-conditioned technical behavior consumes the existing regime plane and may not create a fused technical/regime score;
-- learned sequence representation remains not-built/P2 after simpler baselines and leakage controls;
-- exhaustion/extension follows a proven setup→release occurrence rather than widening the first vertical;
-- opaque GoNoGo-style fused vendor constructions remain blocked under `DNR:KILL-FUSED-COMPOSITE` where applicable;
-- undisclosed TW Pivot-style methods remain blocked proprietary rather than guessed.
-
-## Negative and anti-audition law
-
-The census does not use historical performance to choose names, thresholds or per-security parameters. `DNR:KILL-OUTCOME-AUDITION` is attached to short reversal and ordered-path/Elliott: generic measurement survives, but per-name best-of-grid timer/count selection may never become rank, gate, size or recommendation authority.
-
-Construction-scoped kills in the residual census remain binding without erasing explicitly non-equivalent generic measurements. Existing adaptive/oscillator blocks are preserved without inventing DNR identities.
+- generic FVG/imbalance — P2 later context, not the killed PM3 gap-map;
+- divergence — P2 later context pending causal confirmation law;
+- broad candlestick-name enumeration — archive;
+- cycle/phase state — CPI-owned;
+- breadth/peer confirmation — reuse canonical breadth/universe owner;
+- regime conditioning — consume existing regime plane, no fused score;
+- sequence representation — P2/not-built after simpler baselines;
+- exhaustion/extension — after setup→release is proven;
+- opaque fused vendor composites — blocked where applicable;
+- undisclosed pivot methods — blocked proprietary rather than guessed.
 
 ## Cycle/path interpretation
 
-`toi.ordered_path_elliott` is **not** “automated Elliott says buy.” It is a later-context representation with five binding rules:
+`toi.ordered_path_elliott` remains `P2 / toi_later_context / missing` and follows five rules:
 
-1. causal pivots only, with extreme time separate from known-at time;
-2. multiple preregistered candidate parses under ambiguity rather than one authoritative count;
+1. causal pivots only, with extreme time distinct from known-at time;
+2. multiple preregistered candidate parses under ambiguity;
 3. no post-outcome relabeling;
-4. generic causal swing geometry with the same feature budget is the baseline to beat;
-5. Fibonacci specificity is evaluated separately and cannot be smuggled in as assumed evidence.
+4. equal-budget generic causal swing geometry is the baseline to beat;
+5. Fibonacci specificity remains a separate hypothesis/control.
 
-That representation preserves the cycle-forecasting thesis while keeping W3's first vertical bounded to Compression Release.
-
-## Terminal and Radar crosswalk
-
-Terminal suite implementations remain display/parity evidence only. A visual module is not a TOI species and cannot become W3 evidence merely because it exists in Terminal.
-
-Live Entry Radar remains the tactical entry owner with a causal 5m/RTH evaluator. Tactical patterns may be inventoried here, but tactical ownership does not move into TOI.
+This preserves the cycle-forecasting thesis without letting it bypass the simpler Compression Release proving vertical.
 
 ## Remaining W1 gates
 
-Broad census archaeology and the known source-quality defect are closed. W1 still requires:
-
-- the independent >=20-passport reproduction review against the latest immutable W1 head;
-- adjudication of any review-discovered source/formula/local-path/lag/owner/DNR mismatch on this same carrier;
-- the exact Agent OS + passport/source/equivalence + W1 pytest + diff-check battery on the immutable return head;
-- Sol acceptance with current-base compatibility and hosted-check proof.
+- fresh independent verification limited to the two repaired findings on the new immutable head;
+- exact Agent OS + passport/source/equivalence/residual + W1 pytest + diff-check battery;
+- current-base compatibility and hosted checks;
+- Sol acceptance.
 
 ## No authority gained
 
-This census grants **zero** signal, Prophet, rank, gate, size, execution or trading authority. It reads no protected market outcomes and makes no performance claim.
+No protected market outcomes were read. No forecast/model was fit. No W3 species is registered. No Prophet, rank, gate, size, execution or trading authority is created.
