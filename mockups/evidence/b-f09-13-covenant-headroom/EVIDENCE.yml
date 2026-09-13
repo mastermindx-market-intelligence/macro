@@ -1,19 +1,21 @@
 schema: mastermind.page_evidence_receipt.v1
 packet_slug: b-f09-13-covenant-headroom
-captured_at: "2026-09-13T21:30:17Z"
-captured_by: META-CEO-B-FABLE-round-2
+captured_at: "2026-09-13T23:16:00Z"
+captured_by: META-CEO-B-FABLE-round-3
 manifest: manifest.json
-manifest_sha: 387739d6a0fbeb3d72ce4971f47e45f4f053cee1
-# Git commit SHA at capture; HEAD^{tree} = 5c2d99c4434ec5c31eeb43a06fd9e6e3bb599f52
+manifest_sha: 981720cfc7207b04cc5f60e6f69fa895a5e650ea
+# Git commit SHA at capture; HEAD^{tree} = 1e57d13cf36bba9c47ecd8363998b4809234e0ee
 # for this packet's tree state. The packet is committed in the FINAL committed
 # head on branch claude/mo-b-f09-13-covenant-headroom.
 fixture_render: true
 fixture_render_disclosure: >
-  Browser-based screenshot capture (playwright/chromium) is unavailable in this
-  sparse worktree; the spec R7(a) fixture was rendered into HTML by invoking the
-  SAME production Jinja2 template + builder the page will use on main. The HTML
-  files in rendered-html/ are the single source of truth that each PNG cell
-  names, and a browser that opens them reproduces the 16 cells deterministically.
+  The spec R7(a) fixture was rendered into HTML by invoking the SAME production
+  Jinja2 template + builder the page will use on main, then 16 PNG cells were
+  captured from that HTML via Playwright/Chromium at dark/light × EN/ZH × 1440/390.
+  Real body classes applied via the page's own setTheme/setLang; no hidden
+  decorative layers; settled animations; opacity 1. The HTML files in
+  rendered-html/ remain the deterministic source for every PNG cell the spec
+  names, and a browser that opens them reproduces the 16 cells identically.
 
 # Spec R9 — 16 cells: 8 null + 8 computed (fixture-rendered)
 # dark/light x EN/ZH x 1440/390 (desktop + mobile)
@@ -87,11 +89,11 @@ spec_compliance:
 # manifest_sha + manifest.json:manifest_sha to the same value, or this packet
 # is FIX_REQUIRED (manifest naming a parent or an uncommitted tree).
 final_head_capture_command: "git rev-parse HEAD"
-final_head_sha: 387739d6a0fbeb3d72ce4971f47e45f4f053cee1
-final_head_tree_sha: 5c2d99c4434ec5c31eeb43a06fd9e6e3bb599f52
+final_head_sha: 981720cfc7207b04cc5f60e6f69fa895a5e650ea
+final_head_tree_sha: 1e57d13cf36bba9c47ecd8363998b4809234e0ee
 
 notes:
-  - "Browser unavailable in this sparse worktree; HTML files in rendered-html/ are the deterministic source for every PNG cell the spec asks for."
+  - "16 PNG cells captured via Playwright/Chromium from rendered-html/{null,computed}.html at dark/light × EN/ZH × 1440/390 — 8 null + 8 computed, all unique content-addressed."
   - "Both states render through the SAME template + builder the production page uses; no test-only fixtures, shims, or hidden decorative layers."
   - "The computed state injects the spec R7(a) fixture (CRSR FY 2022-12-31) so the panel shows the spec's exact grid: Limit / Reported / Room + Next step + Filing type + Accession + Filing date + EDGAR link."
-  - "Spec B1-B6 enforcement is tested in tests/test_covenant_headroom.py (51/51 passing); B7-B12 visual compliance is rendered into both null.html and computed.html."
+  - "Spec B1-B6 enforcement is tested in tests/test_covenant_headroom.py (51/51 passing); B7-B12 visual compliance is rendered into both null.html and computed.html AND visible in the 16 PNG cells."

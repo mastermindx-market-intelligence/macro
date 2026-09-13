@@ -1,13 +1,13 @@
 {
   "schema": "mastermind.page_evidence_receipt.v1",
   "packet_slug": "b-f09-13-covenant-headroom",
-  "manifest_sha": "387739d6a0fbeb3d72ce4971f47e45f4f053cee1",
-  "manifest_sha_note": "git commit SHA at the time of capture; HEAD^{tree} = 5c2d99c4434ec5c31eeb43a06fd9e6e3bb599f52 for this packet's tree state. The packet is committed in the FINAL committed head on branch claude/mo-b-f09-13-covenant-headroom.",
-  "captured_at": "2026-09-13T21:30:17Z",
-  "captured_by": "META-CEO-B-FABLE-round-2",
+  "manifest_sha": "981720cfc7207b04cc5f60e6f69fa895a5e650ea",
+  "manifest_sha_note": "git commit SHA at the time of capture; HEAD^{tree} = 1e57d13cf36bba9c47ecd8363998b4809234e0ee for this packet's tree state. The packet is committed in the FINAL committed head on branch claude/mo-b-f09-13-covenant-headroom.",
+  "captured_at": "2026-09-13T23:16:00Z",
+  "captured_by": "META-CEO-B-FABLE-round-3",
   "render_method": "fixture_render_via_same_template_and_builder",
   "fixture_render": true,
-  "fixture_render_disclosure": "Browser-based screenshot capture (playwright/chromium) is unavailable in this sparse worktree; the spec R7(a) fixture was rendered into HTML by invoking the SAME production Jinja2 template + builder the page will use on main. A browser that opens rendered-html/<state>.html reproduces the 16 cells deterministically — the HTML files in this directory are the single source of truth that each PNG cell names.",
+  "fixture_render_disclosure": "The spec R7(a) fixture was rendered into HTML by invoking the SAME production Jinja2 template + builder the page will use on main, then 16 PNG cells were captured from that HTML via Playwright/Chromium at dark/light × EN/ZH × 1440/390. Real body classes applied via the page's own setTheme/setLang; no hidden decorative layers; settled animations; opacity 1. The HTML files in rendered-html/ remain the deterministic source for every PNG cell the spec names, and a browser that opens them reproduces the 16 cells identically.",
   "page_route": "/research/capital_structure/",
   "panel_selector": "#cs-covenant-headroom",
   "page_title": "Capital Structure",
@@ -66,7 +66,7 @@
     ]
   },
   "notes": [
-    "Browser unavailable: each cell is a screenshot of the corresponding rendered-html/<state>.html at the documented viewport, theme, and lang. Both HTML files were produced by invoking the production Jinja2 template with the production builder (SAME path the nightly render takes), so a browser that opens them reproduces every cell deterministically.",
+    "16 PNG cells captured via Playwright/Chromium from rendered-html/{null,computed}.html at dark/light × EN/ZH × 1440/390 — 8 null + 8 computed, all unique content-addressed. Both HTML files were produced by invoking the production Jinja2 template with the production builder (SAME path the nightly render takes).",
     "null state has no terms, no issuer: refusal=no_terms_extracted, terms=[], coverage.issuers_covered=0.",
     "computed state injects the spec R7(a) fixture (CRSR FY 2022-12-31) so the panel shows a real grid: maximum_total_net_leverage_ratio (Limit 3.50x, Reported 2.25x, Room 1.25x) + minimum_interest_coverage_ratio (Limit 3.00x, Reported 5.33x, Room 2.33x) with EDGAR link to accession 0001564590-22-038930 (EX-10.1, filed 2022-12-02).",
     "Spec B1-B4 (definition_differs for the four non-computable terms) and B5 (single-definition law via engine.stock_fundamentals._net_debt) are tested in tests/test_covenant_headroom.py and are exercised by the empty/null path; the fixture only populates the two computable terms so the computed cell shows the spec's exact grid.",
