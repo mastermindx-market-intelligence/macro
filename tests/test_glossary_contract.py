@@ -58,6 +58,67 @@ def test_rendered_letter_rail_marks_empty_letters_disabled():
             assert frag_re.search(html), letter["id"]
 
 
+def test_rendered_glossary_shows_a_why_paragraph_for_every_term():
+    """B-F13-1 audit heal (m#6909) H1: every row must show its 'so what'
+    paragraph, not only the 15 that were already paired — the page's
+    "what you do about it" promise is row-level, not optional."""
+    html = _render()
+    vm = glossary_view_model(ROOT)
+    term_count = vm["term_count"]
+    paragraphs = re.findall(r'<p class="gl-why">.*?</p>', html, re.S)
+    assert len(paragraphs) == term_count, (
+        f"rendered page carries {len(paragraphs)} .gl-why paragraphs but "
+        f"the view model exposes {term_count} terms; every row must carry a why"
+    )
+
+
+def test_rendered_rail_note_makes_no_permanent_claim_about_a_transient_state():
+    """B-F13-1 audit heal (m#6909) H3: the rail note must read the same way
+    whether the view is the full set or has been filtered — 'yet' or '暂无'
+    assert a permanent state ('no terms exist') that is not true the moment
+    a user types in the search or hits a filter that hides rows. Both EN and
+    ZH must avoid that claim."""
+    html = _render()
+    m = re.search(r'<p class="gl-rail-note">(.*?)</p>', html, re.S)
+    assert m, "rendered page missing .gl-rail-note paragraph"
+    note = re.sub(r"<[^>]+>", "", m.group(1))
+    assert "yet" not in note.lower(), note
+    assert "暂无" not in note, note
+    # Absence alone would also pass if the ZH half were deleted, so the
+    # replacement sentence is pinned in BOTH languages (review round 2,
+    # MINOR 2): one static `t()` pair, an ASCII sentence and a CJK one.
+    en = re.search(r'<span class="l-en">(.*?)</span>', m.group(1), re.S)
+    zh = re.search(r'<span class="l-zh">(.*?)</span>', m.group(1), re.S)
+    assert en and en.group(1).strip(), m.group(1)
+    assert zh and zh.group(1).strip(), m.group(1)
+    assert "nothing to show in this view" in en.group(1), en.group(1)
+    assert re.search(r"[\u4e00-\u9fff]", zh.group(1)), zh.group(1)
+    assert "当前视图" in zh.group(1), zh.group(1)
+
+
+# daily.yml's `scripts/inject_wh_banner.py` splices this one tag into every
+# generated page; the public-render fast lane never runs that sweep, so a
+# regenerated page must carry the committed tag over byte-for-byte. Same shape
+# as `_WHB_TAG_RE` in scripts/build_free_content.py, whose `_carry_over_wh_banner`
+# exists because "wh_banner is the one sweep we cannot replay".
+_WHB_TAG_RE = re.compile(r"[ \t]*<script[^>]*\bdata-whb\b[^>]*></script>\n?")
+
+
+def test_committed_glossary_page_carries_the_alert_banner_script():
+    """B-F13-1 review round 2, BLOCKER 1: regenerating site/glossary.html
+    dropped the page's `<script defer data-whb …>` tag, so merging would have
+    removed the alert banner from the live public /glossary only — the fleet
+    count went 3747 → 3746 with this page as the single loss. The site-pair
+    test below cannot see it (the fast-path render never injects the tag), so
+    the committed page is pinned directly: exactly one banner tag, before
+    `</body>`, pointing at wh_banner.js."""
+    html = (config.site_dir() / "glossary.html").read_text(encoding="utf-8")
+    tags = re.findall(r'<script[^>]*\bdata-whb\b[^>]*></script>', html)
+    assert len(tags) == 1, f"expected exactly one data-whb banner tag, found {len(tags)}"
+    assert "wh_banner.js" in tags[0], tags[0]
+    assert html.index(tags[0]) < html.rindex("</body>"), "banner tag sits after </body>"
+
+
 def test_rendered_letter_rail_anchors_are_unique_ids():
     """Each gl-letter-X anchor id must appear at most once across the whole
     page: it is a jump target for the A-Z rail, and a duplicate id both makes
@@ -156,6 +217,14 @@ def test_site_pair_matches_a_fresh_render_of_the_template(tmp_path):
     genuine drift signal (the same regex also drops the duplicate ``?v=`` query
     that link carries, but the hash lives in the filename and is still
     asserted).
+
+    The ``data-whb`` banner tag is normalised away on both sides for the same
+    lane-ownership reason the ``?v=`` stamp is: only daily.yml runs
+    ``inject_wh_banner``, so the fresh render never carries it while the
+    committed page must. Its PRESENCE on the committed page is pinned by
+    ``test_committed_glossary_page_carries_the_alert_banner_script`` — without
+    that pair, this test is blind to a regeneration that drops the banner from
+    the live public page (review round 2, BLOCKER 1).
     """
     from scripts import build_public_pages
     out = tmp_path / "site"
@@ -170,6 +239,8 @@ def test_site_pair_matches_a_fresh_render_of_the_template(tmp_path):
     on_disk_body = re.sub(r"<!--.*?-->", "", on_disk, flags=re.S)
     fresh_body = re.sub(r"\?v=[0-9a-f]{8}", "", fresh_body)
     on_disk_body = re.sub(r"\?v=[0-9a-f]{8}", "", on_disk_body)
+    fresh_body = _WHB_TAG_RE.sub("", fresh_body)
+    on_disk_body = _WHB_TAG_RE.sub("", on_disk_body)
     assert fresh_body == on_disk_body
 
 
