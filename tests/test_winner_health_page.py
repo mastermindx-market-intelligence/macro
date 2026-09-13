@@ -10,6 +10,7 @@ Everything runs on tiny in-memory fixtures — no data store, no network.
 """
 from __future__ import annotations
 
+import html as html_lib
 import json
 import re
 import sys
@@ -63,6 +64,8 @@ def _row(ticker="NVDA", r126=0.62, legs=None, analog="full", spark=None,
     elif analog == "thin":
         ag = {"n": 5, "topped_63td": 2, "median_further_gain": None,
               "median_drop_from_high": None, "track": "D"}
+    elif isinstance(analog, dict):
+        ag = analog
     else:
         ag = None
     return {
@@ -87,7 +90,8 @@ def _ctx(states=None, **kw):
         "states": {"extended_healthy": [], "extended_watch": [], "thinning": [],
                    "breaking": []},
         "theme_counts": [{"basket": "AI Semiconductors", "basket_zh": "人工智能半导体",
-                          "extended": 19, "watch": 4, "thinning": 2, "breaking": 1}],
+                          "members": 40, "extended": 19, "watch": 4, "thinning": 2,
+                          "breaking": 1}],
     }
     if states:
         base["states"].update(states)
@@ -133,14 +137,18 @@ def test_clear_mode_renders_the_signature(tmp_path):
     quiet-night picture stays rare and stays memorable.
     """
     html = _render(tmp_path, _ctx({"extended_healthy": [_row("AVGO", 0.54, legs=[])]}))
-    assert "Nothing is aging in this group tonight" in html
+    assert "Nothing is aging in this group" in html
+    assert "Nothing is aging in this group tonight" not in html
+    assert "今晚该分组没有行情走向老化" not in html
     assert "flatline" in html
     assert "Still running" in html          # the group still renders below
 
 
 def test_none_mode_renders(tmp_path):
     html = _render(tmp_path, _ctx())
-    assert "No name is in this group tonight" in html
+    assert "No name is in this group" in html
+    assert "No name is in this group tonight" not in html
+    assert "今晚该分组没有个股" not in html
     assert "1,506" in html                   # universe_n, thousands-separated
 
 
@@ -314,3 +322,619 @@ def test_builder_falls_open_to_the_warm_null_when_the_data_root_is_empty(tmp_pat
     monkeypatch.setattr(bwh, "_data_dir", lambda r: r / "data")
     out = bwh.build(root)
     assert "has not landed yet" in out.read_text()
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# W15 r1 — theme-bar honesty, x-in-10 rates, subset honest-N, footer demotion
+# ══════════════════════════════════════════════════════════════════════════════
+#: The nine-row table the packet measured. `members` is the true basket size;
+#: `extended` is how many of those names sit on this board; aging = watch+thin+break.
+_THEME_ROWS = (
+    # basket, members, extended, watch, thinning, breaking, basket_id
+    ("Cybersecurity", 10, 5, 5, 0, 0, "cybersecurity"),
+    ("US Energy Complex", 22, 4, 0, 0, 0, "us_energy"),
+    ("AI Software & Platforms", 17, 3, 3, 0, 0, "ai_software"),
+    ("Non-AI Tech & Hardware", 13, 3, 1, 0, 0, "non_ai_hw"),
+    ("AI Infrastructure", 24, 2, 0, 0, 0, "ai_infra"),
+    ("Managed Care & Insurers", 9, 2, 1, 0, 0, "managed_care"),
+    ("Non-AI Software", 14, 1, 1, 0, 0, "non_ai_sw"),
+    ("Semiconductor Equipment (WFE)", 16, 1, 1, 0, 0, "semicap_equipment"),
+    ("Robotics & Automation", 12, 1, 1, 0, 0, "robotics"),
+)
+
+
+def _theme_counts():
+    rows = []
+    for name, members, extended, watch, thinning, breaking, bid in _THEME_ROWS:
+        rows.append({
+            "basket": name, "basket_zh": name, "basket_id": bid,
+            "members": members, "extended": extended,
+            "watch": watch, "thinning": thinning, "breaking": breaking,
+        })
+    return rows
+
+
+def _tcount_expected(tot, members, tmat):
+    """Frozen r2 population copy, both lanes."""
+    if tot == 1:
+        if tmat == 1:
+            return (f"1 of its {members} names is on this board — and it is aging.",
+                    f"该主题 {members} 只中有 1 只在本板上，该股正在老化。")
+        return (f"1 of its {members} names is on this board — it is not aging yet.",
+                f"该主题 {members} 只中有 1 只在本板上，尚未老化。")
+    if tmat == 0:
+        return (f"{tot} of its {members} names are on this board — none are aging.",
+                f"该主题 {members} 只中有 {tot} 只在本板上，没有在老化的。")
+    if tmat == tot:
+        return (f"{tot} of its {members} names are on this board — all {tmat} are aging.",
+                f"该主题 {members} 只中有 {tot} 只在本板上，{tmat} 只都在老化。")
+    if tmat == 1:
+        return (f"{tot} of its {members} names are on this board — 1 is aging.",
+                f"该主题 {members} 只中有 {tot} 只在本板上，其中 1 只在老化。")
+    return (f"{tot} of its {members} names are on this board — {tmat} are aging.",
+            f"该主题 {members} 只中有 {tot} 只在本板上，其中 {tmat} 只在老化。")
+
+
+def _bar_segments(html):
+    """[(theme_en, width_pct, [(class, flex), ...], tcount_html), ...] in render order."""
+    out = []
+    for block in re.finditer(r'<div class="thm">(.*?)</div>', html, re.S):
+        body = block.group(1)
+        name_m = re.search(r'<span class="tname"[^>]*>\s*<span class="l-en">([^<]+)</span>', body)
+        if not name_m:
+            continue
+        name = html_lib.unescape(name_m.group(1))
+        tcount_m = re.search(r'<span class="tcount">(.*?)</span>\s*(?:<span class="bar"|$)', body, re.S)
+        tcount = tcount_m.group(1) if tcount_m else ""
+        bar = re.search(r'<span class="bar" style="width:([^"]+)"[^>]*>(.*?)</span>', body, re.S)
+        width = float(bar.group(1).rstrip("%")) if bar else None
+        segs = re.findall(r'class="(b\d)" style="flex:(\d+)"', bar.group(2) if bar else "")
+        out.append((name, width, segs, tcount))
+    return out
+
+
+def _thm_blocks(html):
+    return re.findall(
+        r'<div class="thm">\s*<span class="tname"[^>]*>(.*?)</span>\s*'
+        r'<span class="tcount">(.*?)</span>\s*'
+        r'<span class="bar" style="width:([^"]+)"',
+        html, re.S)
+
+
+def test_p0_1_theme_bars_scale_off_members_and_name_the_population(tmp_path):
+    """Bar width tracks true theme size; the count names both populations.
+
+    Cybersecurity (10 members) used to render wider than AI Infrastructure (24)
+    because `--w` scaled off `extended`. After the fix the 24-member bar is the
+    widest, and no row's count can be read as "every name in the theme".
+    """
+    html = _render(tmp_path, _ctx({"extended_watch": [_row()]},
+                                  theme_counts=_theme_counts()))
+    blocks = _thm_blocks(html)
+    assert len(blocks) == 9
+    by_name = {}
+    for tname, tcount, width in blocks:
+        name = html_lib.unescape(re.search(r'<span class="l-en">([^<]+)</span>', tname).group(1))
+        by_name[name] = (float(width.rstrip("%")), tcount)
+    cyber_w, cyber_body = by_name["Cybersecurity"]
+    infra_w, infra_body = by_name["AI Infrastructure"]
+    assert infra_w > cyber_w, (
+        f"AI Infrastructure(24) bar {infra_w} must be wider than Cybersecurity(10) {cyber_w}")
+    tmax = max(r[1] for r in _THEME_ROWS)
+    for name, members, extended, watch, thinning, breaking, _bid in _THEME_ROWS:
+        w, body = by_name[name]
+        want = round(members / tmax * 100, 1)
+        assert w == want, f"{name}: width={w}, want {want} (members={members})"
+        tmat = watch + thinning + breaking
+        en, zh = _tcount_expected(extended, members, tmat)
+        assert en in body
+        assert zh in body
+        assert "all 1 is aging" not in body
+        assert "names are on this board — and it is aging" not in body
+    note = html.split('aria-label="Themes by state"', 1)[1].split("</section>", 1)[0]
+    assert "the bar width is the size of the theme" in note
+    assert "条形的宽度代表主题的大小" in note
+    # the note's promise is no longer falsified by any row: widths are monotonic
+    # with members (ties allowed).
+    ordered = sorted((by_name[n][0], m) for n, m, *_ in _THEME_ROWS)
+    members_only = [m for _, m in ordered]
+    assert members_only == sorted(members_only)
+
+
+def test_p0_2_x_in_10_form_both_lanes_and_no_one_in_one(tmp_path):
+    """32/40 → about 8 in 10; 27/40 → about 7 in 10; zero '1 in 1' smears."""
+    for topped, en, zh in ((32, "about 8 in 10", "大约 10 段里有 8 段"),
+                           (27, "about 7 in 10", "大约 10 段里有 7 段")):
+        html = _render(tmp_path, _ctx({"extended_watch": [_row(analog={
+            "n": 40, "topped_63td": topped, "median_further_gain": 0.11,
+            "median_drop_from_high": -0.24, "track": "W"})]}))
+        assert en in html
+        assert zh in html
+        assert re.search(r"about 1 in 1[^0-9]", html) is None
+        assert "大约每 1 段有 1 段" not in html
+
+
+def test_p1_1_subset_honest_n_suppresses_n1_and_prints_n8(tmp_path):
+    """Each subset row is gated on its own n, not the library n."""
+    # n_surv = 1: suppress the typical-gain figure.
+    html = _render(tmp_path, _ctx({"extended_watch": [_row(analog={
+        "n": 40, "topped_63td": 39, "median_further_gain": 1.43,
+        "median_drop_from_high": -0.24, "track": "W"})]}))
+    assert "Only 1 of them carried on — too few to call typical." in html
+    assert "其中只有 1 段继续上行 —— 样本太少，不足以称作典型。" in html
+    assert "a typical further gain" not in html
+    assert "典型的后续涨幅" not in html
+    # library-level thin floor is NOT what fired — n=40 is shown as a pattern.
+    assert "too few to read as a pattern" not in html
+
+    # n_surv = 8: print the figure with the subset n inline.
+    html = _render(tmp_path, _ctx({"extended_watch": [_row(analog={
+        "n": 40, "topped_63td": 32, "median_further_gain": 1.43,
+        "median_drop_from_high": -0.24, "track": "W"})]}))
+    assert "a typical further gain of <b>+143%</b> — across those 8" in html
+    assert "典型的后续涨幅为 <b>+143%</b> —— 基于这 8 段" in html
+    assert "too few to call typical" not in html
+
+
+def test_p1_2_bare_em_dashes_become_lib_null_tips(tmp_path):
+    """The three atrz rows with no distance print 'not measurable' + a why, both lanes."""
+    rows = [_row(ticker=tk, analog=None) for tk in ("CXM", "PFGC", "RUSHA")]
+    for r in rows:
+        r["atr_x"] = None
+        r["r126"] = 0.4
+    html = _render(tmp_path, {
+        **_ctx(),
+        "tiers": [{
+            "key": "atrz", "readable": True, "figure": "atr_x",
+            "library": _ctx()["library"],
+            "states": {"extended_healthy": [], "extended_watch": [],
+                       "thinning": [], "breaking": rows, "no_read": []},
+        }],
+    })
+    assert html.count("not measurable") == 3
+    assert html.count("无法测算") == 3
+    assert html.count('class="lib-null"') >= 3
+    assert "a figure here would be a guess" in html
+    assert "写一个数字会是猜测" in html
+    assert ">—<" not in html
+    assert '<span class="fig neutral">—</span>' not in html
+
+
+def test_p1_3_wfe_acronym_gets_a_data_tip_both_lanes(tmp_path):
+    """Rename blast radius is estate-wide; this PR ships the data-tip fallback."""
+    html = _render(tmp_path, _ctx({"extended_watch": [_row()]},
+                                  theme_counts=_theme_counts()))
+    assert "Semiconductor Equipment (WFE)" in html
+    assert 'data-tip-en="WFE means wafer-fab equipment' in html
+    assert 'data-tip-zh="WFE 指晶圆厂设备' in html
+    # n2: the tip keys on basket_id, so a display-name rename keeps it.
+    renamed = _theme_counts()
+    for row in renamed:
+        if row["basket_id"] == "semicap_equipment":
+            row["basket"] = "Chip-Making Equipment"
+    html = _render(tmp_path, _ctx({"extended_watch": [_row()]}, theme_counts=renamed))
+    assert "Chip-Making Equipment" in html
+    assert 'data-tip-en="WFE means wafer-fab equipment' in html
+    # a (WFE) display string on a different id must NOT mint the tip.
+    decoy = [{"basket": "Other Equipment (WFE)", "basket_zh": "其他",
+              "basket_id": "not_wfe", "members": 8, "extended": 1,
+              "watch": 1, "thinning": 0, "breaking": 0}]
+    html = _render(tmp_path, _ctx({"extended_watch": [_row()]}, theme_counts=decoy))
+    assert "Other Equipment (WFE)" in html
+    assert "WFE means wafer-fab equipment" not in html
+
+
+def test_p1_4_footer_is_one_sentence_at_rest_and_demotes_the_rest(tmp_path):
+    html = _render(tmp_path, _ctx({"extended_watch": [_row()]}))
+    sp = html.split('class="smallprint"', 1)[1]
+    # first l-en / l-zh in the footer are the at-rest sentence.
+    en = re.search(r'<span class="l-en">(.*?)</span>', sp, re.S).group(1)
+    zh = re.search(r'<span class="l-zh">(.*?)</span>', sp, re.S).group(1)
+    assert en == ("US names only — these are what similar past runs did, "
+                  "history rather than forecasts, and nothing here ranks, "
+                  "gates or sizes anything.")
+    assert zh == ("仅限美股 —— 这些是历史上相似行情走过的路，属于历史而非预测；"
+                  "本页任何内容都不参与排序、准入或仓位。")
+    assert en.count(".") == 1
+    assert "Each group is measured" not in en
+    assert "Tonight:" not in en
+    assert "just left a group" not in en.lower()
+    # demoted, not deleted — they live in the footer LENS tip.
+    assert "Each group is measured only against its own history" in sp
+    assert "每个分组只对照自己的历史来衡量" in sp
+    assert "A name that has just left a group" in sp
+    assert "刚离开某个分组的个股" in sp
+    assert "1,506" in sp  # screened count, now in the tip
+    assert "This screen" in sp
+    assert "本次筛查" in sp
+    assert "1,506 US names screened" in sp
+    assert "筛查 1,506 只美股" in sp
+    assert "Tonight's screen" not in sp
+    assert "今晚的筛查" not in sp
+
+
+def test_p1_5_backdrop_209_names_its_population_both_lanes(tmp_path):
+    html = _render(tmp_path, _ctx({"extended_watch": [_row()]},
+                                  macro_backdrop={"froth_quadrant": "narrowing_top",
+                                                  "stage3_count": 209}))
+    assert "<b>209</b> US names across the whole market already read as topping" in html
+    assert "全市场已有 <b>209</b> 只美股被判为见顶阶段" in html
+    assert "US names already read as topping" not in html.replace(
+        "US names across the whole market already read as topping", "")
+
+
+def test_p2_2_theme_panel_carries_a_stance_both_lanes(tmp_path):
+    html = _render(tmp_path, _ctx({"extended_watch": [_row()]},
+                                  theme_counts=_theme_counts()))
+    sec = html.split('aria-label="Themes by state"', 1)[1].split("</section>", 1)[0]
+    hd = html_lib.unescape(sec.split('class="sec-hd"', 1)[1].split("</div>", 1)[0])
+    assert "Watch — don't chase" in hd
+    assert "观望——勿追涨" in hd
+    assert 'class="stance"' in hd
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# W15 r2 — honest fill, members-missing degrade, nearly-all rates, cap + find
+# ══════════════════════════════════════════════════════════════════════════════
+def _flex_map(segs):
+    return {cls: int(flex) for cls, flex in segs}
+
+
+def test_b1_unobserved_tail_keeps_fill_honest(tmp_path):
+    """2-of-24 paints 2 colour + 22 neutral; 5-of-10 paints 5 + 5."""
+    html = _render(tmp_path, _ctx({"extended_watch": [_row()]},
+                                  theme_counts=_theme_counts()))
+    by_name = {name: (width, segs) for name, width, segs, _ in _bar_segments(html)}
+    # AI Infrastructure: 24 members, 2 on board, 0 aging → b1=2, b0=22
+    _w, segs = by_name["AI Infrastructure"]
+    flex = _flex_map(segs)
+    assert flex.get("b1") == 2
+    assert flex.get("b0") == 22
+    assert sum(v for k, v in flex.items() if k != "b0") == 2
+    # Cybersecurity: 10 members, 5 on board, 5 aging → b2=5, b0=5
+    _w, segs = by_name["Cybersecurity"]
+    flex = _flex_map(segs)
+    assert flex.get("b2") == 5
+    assert flex.get("b0") == 5
+    assert sum(v for k, v in flex.items() if k != "b0") == 5
+    assert 'data-tip-en="22 names not on this board — not measured"' in html
+    assert 'data-tip-zh="22 只不在本板——未测量"' in html
+    assert 'data-tip-en="5 names not on this board — not measured"' in html
+    assert 'data-tip-zh="5 只不在本板——未测量"' in html
+    # hatch treatment is in both art directions
+    src = (REPO / "templates" / "winner_health.html.j2").read_text()
+    assert ".bar .b0{" in src
+    assert 'html[data-theme="light"] .bar .b0{' in src
+    assert "repeating-linear-gradient" in src
+
+
+def _degrade_copy(tot, tmat):
+    """Members-absent copy: presence count and aging count in every branch."""
+    pres = "1 name on this board" if tot == 1 else f"{tot} names on this board"
+    if tmat == 0:
+        return (f"{pres} — none are aging.",
+                f"本板上有 {tot} 只——没有在老化的。")
+    if tmat == tot:
+        return (f"{pres} — all {tot} are aging.",
+                f"本板上有 {tot} 只——{tot} 只都在老化。")
+    return (f"{pres} — {tmat} of {tot} are aging.",
+            f"本板上有 {tot} 只——其中 {tmat} 只在老化。")
+
+
+def test_m1_members_absent_is_barless_and_names_only_board_presence(tmp_path):
+    """Today's committed artifact has no members key — do not invent a population."""
+    rows = []
+    for name, _m, extended, watch, thinning, breaking, bid in _THEME_ROWS:
+        rows.append({
+            "basket": name, "basket_zh": name, "basket_id": bid,
+            "extended": extended, "watch": watch, "thinning": thinning,
+            "breaking": breaking,
+        })
+    html = _render(tmp_path, _ctx({"extended_watch": [_row()]}, theme_counts=rows))
+    sec = html.split('aria-label="Themes by state"', 1)[1].split("</section>", 1)[0]
+    assert 'class="bar"' not in sec
+    assert "the bar width is the size of the theme" not in sec
+    assert "条形的宽度代表主题的大小" not in sec
+    assert " of its " not in sec
+    assert "该主题 " not in sec
+    # one-integer collide ("N names on this board are aging") is closed.
+    assert "names on this board are aging" not in sec
+    assert "本板上有 5 只在老化。" not in sec
+    assert "本板上有 2 只，没有在老化的" not in sec
+    for _name, _m, extended, watch, thinning, breaking, _bid in _THEME_ROWS:
+        tmat = watch + thinning + breaking
+        en, zh = _degrade_copy(extended, tmat)
+        assert en in sec, en
+        assert zh in sec, zh
+    # the three branches, both lanes, pinned on named rows
+    assert "5 names on this board — all 5 are aging." in sec
+    assert "本板上有 5 只——5 只都在老化。" in sec
+    assert "2 names on this board — none are aging." in sec
+    assert "本板上有 2 只——没有在老化的。" in sec
+    assert "3 names on this board — 1 of 3 are aging." in sec
+    assert "本板上有 3 只——其中 1 只在老化。" in sec
+
+
+def test_m1_degrade_three_branches_cover_singleton_too(tmp_path):
+    """tot=1 still names both populations — never '1 name on this board is aging.'"""
+    rows = [
+        {"basket": "All", "basket_zh": "全", "basket_id": "a",
+         "extended": 1, "watch": 1, "thinning": 0, "breaking": 0},
+        {"basket": "None", "basket_zh": "无", "basket_id": "n",
+         "extended": 1, "watch": 0, "thinning": 0, "breaking": 0},
+        {"basket": "Some", "basket_zh": "部", "basket_id": "s",
+         "extended": 4, "watch": 2, "thinning": 0, "breaking": 0},
+    ]
+    html = _render(tmp_path, _ctx({"extended_watch": [_row()]}, theme_counts=rows))
+    sec = html.split('aria-label="Themes by state"', 1)[1].split("</section>", 1)[0]
+    assert "1 name on this board — all 1 are aging." in sec
+    assert "本板上有 1 只——1 只都在老化。" in sec
+    assert "1 name on this board — none are aging." in sec
+    assert "本板上有 1 只——没有在老化的。" in sec
+    assert "4 names on this board — 2 of 4 are aging." in sec
+    assert "本板上有 4 只——其中 2 只在老化。" in sec
+    assert "1 name on this board is aging." not in sec
+    assert "本板上有 1 只在老化。" not in sec
+
+
+def test_m2_nearly_all_and_half_up_both_lanes(tmp_path):
+    """39/40 nearly-all; 40/40 all; 34/40 → 9; 26/40 → 7. x-in-10 only for 1–9."""
+    cases = (
+        (39, "nearly all of these dropped back", "几乎全部", "about 10 in 10", "大约 10 段里有 10 段"),
+        (40, "all of them", "全部", "about 10 in 10", "大约 10 段里有 10 段"),
+        (34, "about 9 in 10", "大约 10 段里有 9 段", "about 8 in 10", "大约 10 段里有 8 段"),
+        (26, "about 7 in 10", "大约 10 段里有 7 段", "about 6 in 10", "大约 10 段里有 6 段"),
+    )
+    for topped, en, zh, not_en, not_zh in cases:
+        html = _render(tmp_path, _ctx({"extended_watch": [_row(analog={
+            "n": 40, "topped_63td": topped, "median_further_gain": 0.11,
+            "median_drop_from_high": -0.24, "track": "W"})]}))
+        assert en in html, f"topped={topped} missing {en!r}"
+        assert zh in html, f"topped={topped} missing {zh!r}"
+        assert not_en not in html, f"topped={topped} still has {not_en!r}"
+        assert not_zh not in html, f"topped={topped} still has {not_zh!r}"
+        assert "about 10 in 10" not in html
+        assert "大约 10 段里有 10 段" not in html
+
+
+def test_m3_singleton_grammar_boundaries(tmp_path):
+    """tmat==1 / tmat==2 / partial singleton (1 on board, 0 aging)."""
+    rows = [
+        {"basket": "Solo aging", "basket_zh": "单", "basket_id": "s1",
+         "members": 16, "extended": 1, "watch": 1, "thinning": 0, "breaking": 0},
+        {"basket": "Pair aging", "basket_zh": "双", "basket_id": "s2",
+         "members": 10, "extended": 2, "watch": 2, "thinning": 0, "breaking": 0},
+        {"basket": "Solo calm", "basket_zh": "静", "basket_id": "s0",
+         "members": 16, "extended": 1, "watch": 0, "thinning": 0, "breaking": 0},
+    ]
+    html = _render(tmp_path, _ctx({"extended_watch": [_row()]}, theme_counts=rows))
+    assert "1 of its 16 names is on this board — and it is aging." in html
+    assert "该主题 16 只中有 1 只在本板上，该股正在老化。" in html
+    assert "2 of its 10 names are on this board — all 2 are aging." in html
+    assert "该主题 10 只中有 2 只在本板上，2 只都在老化。" in html
+    assert "1 of its 16 names is on this board — it is not aging yet." in html
+    assert "该主题 16 只中有 1 只在本板上，尚未老化。" in html
+    assert "all 1 is aging" not in html
+    assert "1 只都在老化" not in html
+    assert "names are on this board — and it is aging" not in html
+
+
+def test_m2_unmeasured_topped_is_tri_state(tmp_path):
+    html = _render(tmp_path, _ctx({"extended_watch": [_row(analog={
+        "n": 40, "topped_63td": None, "median_further_gain": 0.11,
+        "median_drop_from_high": -0.24, "track": "W"})]}))
+    assert "Not yet measured." in html
+    assert "尚未测量。" in html
+    assert "0 of 40 dropped" not in html
+    assert "40 段里有 0 段" not in html
+
+
+def test_n1_suppressed_drop_names_what_was_withheld(tmp_path):
+    html = _render(tmp_path, _ctx({"extended_watch": [_row(analog={
+        "n": 40, "topped_63td": 4, "median_further_gain": 0.11,
+        "median_drop_from_high": -0.24, "track": "W"})]}))
+    assert "Only 4 of them fell back — too few to call a typical drop." in html
+    assert "仅 4 段回落——不足以给出典型跌幅。" in html
+    assert "too few to call typical" not in html.replace(
+        "too few to call a typical drop", "")
+
+
+def _grp(html, slug):
+    m = re.search(rf'<section class="sec grp [^"]*" id="{slug}"[^>]*>(.*?)</section>',
+                  html, re.S)
+    assert m, f"group {slug} missing"
+    return m.group(1)
+
+
+def test_p1_6_cap_boundary_count_true_and_find(tmp_path):
+    """8 rows → no control; 9 → 8+control, N equals rendered rows; find sees #9."""
+    eight = [_row(ticker=f"E{i:02d}") for i in range(8)]
+    html8 = _render(tmp_path, _ctx({"extended_watch": eight}))
+    g8 = _grp(html8, "g-wear")
+    assert g8.count('class="row"') == 8
+    assert "wh-more" not in g8
+    assert "See all" not in g8
+
+    nine = []
+    for i in range(9):
+        r = _row(ticker=f"N{i:02d}")
+        r["name"] = f"Name {i:02d}"
+        r["name_zh"] = f"名称{i:02d}"
+        nine.append(r)
+    html9 = _render(tmp_path, _ctx({"extended_watch": nine}))
+    g9 = _grp(html9, "g-wear")
+    assert g9.count('class="row"') == 9
+    assert 'class="rows is-capped"' in g9
+    assert 'data-row-n="9"' in g9
+    assert 'data-row-cap="8"' in g9
+    assert "See all 9" in g9
+    assert "查看全部 9 只" in g9
+    assert "Show top 8 ↑" in g9
+    assert "只看前 8 只 ↑" in g9
+    assert 'data-find="N08 Name 08 名称08"' in g9
+    # find input lives above the groups, both lanes
+    assert 'id="wh-find-q"' in html9
+    assert "Find a name" in html9
+    assert "查找代码" in html9
+    # filter matches a name that sits past the cap, both lanes
+    assert "N08" in g9 and "名称08" in g9
+    # cap resets when the query is cleared
+    assert "setOpen(box, more, false)" in html9
+    assert "needle.length > 0" in html9
+    # expanded list scrolls inside the group, not the page
+    assert "overflow-y:auto" in html9
+    assert ".rows.is-open" in html9
+    # 390w: find goes full width; the 9th name is still in the DOM
+    assert "@media(max-width:620px)" in html9
+    assert ".wh-find{max-width:none}" in html9
+
+
+def test_p1_6_find_chrome_is_lane_true_and_rebinds_on_langchange(tmp_path):
+    """Placeholder + aria-label ship EN as the bake-time lane; setLang rebinds both."""
+    html = _render(tmp_path, _ctx({"extended_watch": [_row()]}))
+    assert 'id="wh-find-q"' in html
+    assert 'placeholder="Ticker or name"' in html
+    assert 'aria-label="Find a ticker"' in html
+    assert 'data-ph-en="Ticker or name"' in html
+    assert 'data-ph-zh="代码或名称"' in html
+    assert 'data-aria-en="Find a ticker"' in html
+    assert 'data-aria-zh="查找代码"' in html
+    # static aria-label stays EN (CJK-in-attribute law); ZH lives on data-aria-zh
+    src = html.split('id="wh-find-q"', 1)[1].split(">", 1)[0]
+    assert "查找代码" not in src.replace('data-aria-zh="查找代码"', "")
+    assert "bindFindChrome" in html
+    assert "addEventListener('langchange', bindFindChrome)" in html
+    assert "data-aria-zh" in html
+    assert "q.setAttribute('aria-label', aria)" in html
+
+
+def test_p1_6_zero_hit_is_an_honest_null_both_lanes(tmp_path):
+    """A miss must not blank the page: null sentence both lanes, See-all stays, clear restores."""
+    nine = [_row(ticker=f"N{i:02d}") for i in range(9)]
+    html = _render(tmp_path, _ctx({"extended_watch": nine}))
+    assert 'id="wh-find-null"' in html
+    assert 'No name matching "' in html
+    assert "is on this board — it isn't tracked here." in html
+    assert "没有匹配「" in html
+    assert "」的标的在本板上——该标的不在跟踪范围内。" in html
+    assert 'data-find-q' in html
+    # groups still hide on a miss; the counted See-all node is not stripped
+    assert ".grp.is-quiet{display:none}" in html
+    assert "See all 9" in html
+    assert "查看全部 9 只" in html
+    assert "more.hidden = hits > 0" in html
+    # clear restores groups + hides the null
+    assert "g.classList.remove('is-quiet')" in html
+    assert "nul.hidden = !empty" in html
+    assert "totalHits === 0" in html
+
+
+def test_p1_6_rollup_stays_a_summary(tmp_path):
+    """R7: the calm 80-name rollup is still count-only — the cap does not expand it."""
+    big = [_row(ticker=f"T{i:03d}") for i in range(80)]
+    html = _render(tmp_path, _ctx({"extended_healthy": big}))
+    g = _grp(html, "g-running")
+    assert "Not listed one by one" in g
+    assert 'class="row"' not in g
+    assert "wh-more" not in g
+    assert "See all 80" not in g
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# W15 r5 — day-free bakes. Relative day words in build-time copy go stale the
+# day after; the dated stamp carries WHEN. Comments (`{#…#}`) are exempt.
+# ══════════════════════════════════════════════════════════════════════════════
+DAY_WORDS_EN = re.compile(r"\b(today|tonight|yesterday)\b", re.I)
+DAY_WORDS_ZH = re.compile(r"今日|今天|今晚|昨日|昨天")
+
+
+def _page_copy_with_tips(html: str) -> str:
+    """Own wrap; scripts/styles stripped; data-tip-en/zh and aria-labels kept.
+
+    Shared nav is a different surface (it still carries 'tonight'/'today' on
+    other desks) and is sliced off at `.wrap`.
+    """
+    i = html.find('<div class="wrap">')
+    assert i > 0, "page wrap not found"
+    html = html[i:]
+    html = re.sub(r"<style\b.*?</style>", " ", html, flags=re.S | re.I)
+    html = re.sub(r"<script\b.*?</script>", " ", html, flags=re.S | re.I)
+    html = re.sub(r"<!--.*?-->", " ", html, flags=re.S)
+    return html
+
+
+def _assert_no_day_words(html: str, label: str) -> None:
+    blob = _page_copy_with_tips(html)
+    en = DAY_WORDS_EN.findall(blob)
+    zh = DAY_WORDS_ZH.findall(blob)
+    assert not en and not zh, (
+        f"{label}: banned day words in page copy (tips included): "
+        f"en={en!r} zh={zh!r}"
+    )
+
+
+@pytest.mark.parametrize("shape", ("prod", "members"))
+def test_r5_scratch_shapes_have_no_relative_day_words(tmp_path, shape):
+    """Prod-shape and members-shape scratch renders, both lanes, tips included."""
+    from scripts.capture_winner_health_w15_evidence import (  # noqa: PLC0415
+        inject_members, load_production,
+    )
+    prod = load_production()
+    ctx = inject_members(prod) if shape == "members" else prod
+    p = tmp_path / f"{shape}.json"
+    p.write_text(json.dumps(ctx, ensure_ascii=False), encoding="utf-8")
+    _assert_no_day_words(bwh.render(REPO, fixture=p), shape)
+
+
+def test_r5_edited_branches_have_no_relative_day_words(tmp_path):
+    """Warm / unread / empty / quiet / rollup / lag / lib-null / no-read stance."""
+    _assert_no_day_words(_render(tmp_path, None), "warm")
+    unread = {
+        **_ctx(),
+        "tiers": [{
+            "key": "primary", "readable": False, "figure": "r126",
+            "library": _ctx()["library"],
+            "states": {"extended_healthy": [], "extended_watch": [],
+                       "thinning": [], "breaking": [], "no_read": []},
+        }],
+    }
+    _assert_no_day_words(_render(tmp_path, unread), "unread")
+    _assert_no_day_words(_render(tmp_path, _ctx()), "empty")
+    _assert_no_day_words(
+        _render(tmp_path, _ctx({"extended_healthy": [_row("AVGO", 0.54, legs=[])]} )),
+        "quiet")
+    big = [_row(ticker=f"T{i:03d}", legs=[]) for i in range(80)]
+    _assert_no_day_words(_render(tmp_path, _ctx({"extended_healthy": big})), "rollup")
+    _assert_no_day_words(
+        _render(tmp_path, _ctx({"extended_watch": [_row()]}, tape_lag_sessions=26)),
+        "lag")
+    rows = [_row(ticker=tk, analog=None) for tk in ("CXM", "PFGC")]
+    for r in rows:
+        r["atr_x"] = None
+        r["r126"] = 0.4
+    libnull = {
+        **_ctx(),
+        "tiers": [{
+            "key": "atrz", "readable": True, "figure": "atr_x",
+            "library": _ctx()["library"],
+            "states": {"extended_healthy": [], "extended_watch": [],
+                       "thinning": [], "breaking": rows, "no_read": []},
+        }],
+    }
+    _assert_no_day_words(_render(tmp_path, libnull), "libnull")
+    noread = {
+        **_ctx(),
+        "tiers": [{
+            "key": "primary", "readable": True, "figure": "r126",
+            "library": _ctx()["library"],
+            "states": {"extended_healthy": [], "extended_watch": [],
+                       "thinning": [], "breaking": [],
+                       "no_read": [_row(ticker="NRD", analog=None)]},
+        }],
+    }
+    html = _render(tmp_path, noread)
+    _assert_no_day_words(html, "no_read")
+    assert "No read" in html
+    assert "不作判读" in html
+    assert "No read tonight" not in html
+    assert "今晚不作判读" not in html
