@@ -135,6 +135,22 @@ waves:
       worker-broker lifecycle through one private authenticated remote transport while keeping one
       canonical Executive Runtime on the control host. Prove stable Attempt-bound operation identity,
       effect-unknown reconciliation, local-only provider credentials and zero remote queue/scheduler.
+  - id: M2-SRC0
+    title: Inactive same-store physical-resource accounting source
+    status: done
+    pr: 510
+    next_action: >
+      SOURCE_PROTECTED_DO_NOT_REPEAT. Mastermind PR #510 merged as
+      f9e46a72d6102b0e94c897590fc58bac89eb4ea6 after exact current-base
+      integration, required test run 34055610429, CodeQL, and an unchanged
+      five-blob semantic bridge. This completes only an inactive source component
+      inside the existing RuntimeStore: the normal schema remains version 4,
+      candidate resource DDL stays outside normal migrations, entrypoints remain
+      closed, policy budgets remain null and unarmed, and qualified production
+      peaks remain N=0. It does not install or activate a resource broker, qualify
+      host, SSD, provider or policy capacity, or prove Runtime/autonomy. Existing
+      CF2-H0/P0/I, Macro #6732, Production and runner-fleet gates retain their
+      owners and completion laws; no successor inherits START from this source wave.
 decisions:
   - DEC:EXECUTIVE-CAPACITY-FABRIC-OWNERSHIP-AND-CONTRACT
   - DEC:AUTONOMY-V1-DISPATCH-DIALOGUE-RUNTIME-SEPARATION
@@ -145,6 +161,7 @@ artifacts:
   - agentos/handoffs/AUTONOMY-V1-2026-08-26-sol-operational-reconciliation.md
   - agentos/handoffs/OPERATOR-CONTINUITY-2026-08-28-SOL-CONTINUATION-CHECKPOINT.md
   - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-08-29-CF2-H0-SOURCE-RELEASED.md
+  - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-07-M2-SOURCE-RECONCILIATION.md
   - research/MASTERMIND_EXECUTIVE_CAPACITY_FABRIC_F0_ARCHITECTURE_2026-08-22.md
   - research/MASTERMIND_EXECUTIVE_CAPACITY_FABRIC_F0_PLACEMENT_AMENDMENT_2026-08-22.md
   - research/MASTERMIND_EXECUTIVE_CAPACITY_FABRIC_F0_SEMANTIC_IDENTITY_AMENDMENT_2026-08-22.md
@@ -153,6 +170,7 @@ artifacts:
   - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-08-25-CF1-ACCEPTED.md
   - docs/superpowers/plans/2026-08-25-mas-126-cf1-reconciliation.md
 landmines:
+  - "Mastermind PR #510 is protected source for an inactive same-store resource core, not proof of a live broker, migrated schema, qualified policy, installed runtime, host or provider capacity, or autonomy. Do not promote it through Linear or Slack."
   - "Macro `shared-ai-provider-control` already owns provider availability, auth pools, cooling and quota state; do not create ProviderAccount/QuotaHorizon truth tables in Executive OS."
   - "Current native Claude realm identity and Macro claude_code_oauth_N capability IDs are not equivalent by ordinal/name/config path/plan type. Family A failed closed because no supported rotation-safe secret-free enrollment equality witness currently exists. Do not resurrect ordinal binding."
   - "A protected-master descendant that leaves H0 authenticated material unchanged is not automatically the H0 source-closure repair identity. Current carrier identity and immutable repair provenance are separate concepts; do not falsify one to satisfy the other."
