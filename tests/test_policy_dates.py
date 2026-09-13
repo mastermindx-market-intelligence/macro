@@ -32,6 +32,7 @@ def test_annotate_overdue_logic():
             {"id": "P1", "check_by": "2026-05-01", "status": "open"},        # past + open -> overdue
             {"id": "P2", "check_by": "2026-05-01", "status": "hit"},         # past but resolved -> not
             {"id": "P3", "check_by": "2026-12-31", "status": "open"},        # future -> not
+            {"id": "P4", "check_by": "2026-05-01", "status": "void"},        # unscored -> not overdue
         ],
     }
     a = pd.annotate(intel, today=TODAY)
@@ -39,6 +40,7 @@ def test_annotate_overdue_logic():
     assert a["overdue_task_forces"] == 1
     assert a["predictions"]["P1"]["overdue"] is True
     assert a["predictions"]["P2"]["overdue"] is False and a["predictions"]["P3"]["overdue"] is False
+    assert a["predictions"]["P4"]["overdue"] is False
     assert a["overdue_predictions"] == 1
 
 

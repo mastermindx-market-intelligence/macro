@@ -1,38 +1,38 @@
 {
   "glp1_named_agents": {
-    "last_ingest": "2026-09-10",
-    "api_total": 450
+    "last_ingest": "2026-09-13",
+    "api_total": 451
   },
   "glp1_incretin_mechanism": {
-    "last_ingest": "2026-09-10",
+    "last_ingest": "2026-09-13",
     "api_total": 100
   },
   "liquid_biopsy": {
-    "last_ingest": "2026-09-10",
+    "last_ingest": "2026-09-13",
     "api_total": 90
   },
   "radiopharmaceutical_radioligand": {
-    "last_ingest": "2026-09-10",
-    "api_total": 148
+    "last_ingest": "2026-09-13",
+    "api_total": 149
   },
   "gene_editing_crispr": {
-    "last_ingest": "2026-09-10",
+    "last_ingest": "2026-09-13",
     "api_total": 95
   },
   "adc_antibody_drug_conjugate": {
-    "last_ingest": "2026-09-10",
+    "last_ingest": "2026-09-13",
     "api_total": 435
   },
   "car_t_cell_therapy": {
-    "last_ingest": "2026-09-10",
+    "last_ingest": "2026-09-13",
     "api_total": 733
   },
   "obesity_device": {
-    "last_ingest": "2026-09-10",
+    "last_ingest": "2026-09-13",
     "api_total": 123
   },
   "mrna_therapeutics": {
-    "last_ingest": "2026-09-10",
+    "last_ingest": "2026-09-13",
     "api_total": 371
   }
 }
