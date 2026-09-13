@@ -1,14 +1,32 @@
 {
   "schema": "neuralweb.cortex_memo.v1",
-  "as_of": "2026-09-13T10:33:50+00:00",
-  "summary": "Budget exhausted after 0 tool-call batches (0 individual calls). Partial deliberation only.",
-  "what_fired": [],
-  "contradictions_review": "Incomplete \u2014 budget exhausted before contradictions review.",
-  "decaying_families": [],
-  "deserves_operator": [],
+  "as_of": "2026-09-13T21:33:48+00:00",
+  "summary": "Context-only committee read: the measured US tape remains RISK_ON (66), but the confirmed Q3/Stagflation label is weakly supported (confidence 0.307) and transitioning: current axes indicate Q2/Reflation for 3 of the 7 confirmation sessions. Breadth is narrow (39.1% above 50-day; breadth divergence present), while volatility and credit remain calm. Liquidity is supportive but low quality and transient\u2014principally a $141B TGA drawdown, with Fed assets contracting and the RRP buffer exhausted. The risk radar is CAUTION, yet its measured 21-session pullback rate is 16.0% versus the 17.8% base rate, so it is an early watch condition, not an adverse edge. No signal, position, ranking, sizing instruction, or escalation is originated here.",
+  "what_fired": [
+    "Confirmed US regime label Q3 conflicts with its current Q2-sign axes and with both rates/credit and FX cross-asset readings.",
+    "RISK_ON tape coexists with breadth divergence: only 39.1% of constituents are above their 50-day averages.",
+    "Liquidity support is mechanical/TGA-led, with only 9% Fed contribution and the RRP buffer exhausted; credit and funding stress do not currently confirm deterioration.",
+    "Factor panel history is immature: 9 dates versus the 60-date Pair G threshold; no factor contradictions are available and factor-attention authority remains unearned.",
+    "All 15 returned Master Brain theses remain open despite check-by dates having passed."
+  ],
+  "contradictions_review": "Five display-only contradictions were returned. The material macro tension is the confirmed Q3 label versus rates/credit and FX, reinforced by the label's own unsupported axes and pending Q2 transition. The briefing divergence is a descriptive demand-versus-supply disagreement across 14 names. One options contradiction concerns rising put skew on a buy-lane name, but its prior is explicitly unsupported and therefore is de-escalation context only. Pair G is dormant because the factor panel has only 9 dates. Three shadow attention flags were recorded with pre-committed resolution criteria: regime-label reconciliation, breadth/liquidity reconciliation, and stale-thesis governance cleanup.",
+  "decaying_families": [
+    "Radar signed-excess history is negative at 5, 21, and 63 days and remains unarmed; current CAUTION also has a below-base 21-day pullback rate.",
+    "Altdata is unarmed after losing out of sample; its 21-day and 63-day pooled signed excess is negative.",
+    "Policy claims show negative signed excess across available 5-, 21-, and 63-day horizons and remain unarmed.",
+    "AI, stock, thematic, narrative, and policy-intent desk families show negative 63-day signed excess; none is armed.",
+    "Factor composite is non-tradeable; investment, low-vol, low-beta, and composite scorecard legs have negative IC, while the live panel has not met its history floor."
+  ],
+  "deserves_operator": [
+    "Reconcile the confirmed Q3 label with Q2-sign axes after the 7-session confirmation rule, and verify whether rates/credit and FX stop contradicting it for three consecutive sessions. Attention claim 814e7b115d8caa10.",
+    "Watch breadth independently of the RISK_ON headline: clear only after above-50-day breadth exceeds 50% and breadth_div is false for five sessions; retain concern if breadth stays below 40% while 20-day net-liquidity turns non-positive or HY OAS exceeds 3.0%. Attention claim 2b57785192252285.",
+    "Close the governance gap in the Master Brain ledger: every overdue open thesis should be scored, retired, or explicitly extended within five sessions. Attention claim d008f20dee937cfe.",
+    "Do not infer safety from missing Pair G records: the contradiction ledger is dormant because history is insufficient, not because borrowed-strength contradictions are absent.",
+    "Treat the China market-state surface as unavailable due to its SLA breach and note multiple failed China/HK data sources before relying on regional context."
+  ],
   "probation": {
     "schema": "neuralweb.cortex_probation.v1",
-    "as_of": "2026-09-12",
+    "as_of": "2026-09-13",
     "granted": false,
     "tier": "A0/A1 shadow",
     "reason": "insufficient-n: n=8 < min_n=25",
@@ -20,46 +38,104 @@
       "n": 8,
       "hits": 0,
       "base_rate": 0.5,
-      "ungradeable": 68,
-      "total_rows": 76
+      "ungradeable": 69,
+      "total_rows": 77
     },
     "is_context_only": true
   },
-  "tool_call_census": {},
+  "tool_call_census": {
+    "read_world_state": 1,
+    "read_factor_state": 1,
+    "query_spine": 1,
+    "read_contradictions": 1,
+    "list_factor_contradictions": 1,
+    "read_kernel": 1,
+    "read_master_brain_theses": 1,
+    "flag_attention": 1,
+    "write_memo": 1
+  },
   "is_context_only": true,
   "run_status": {
-    "status": "degraded",
-    "degraded": true,
-    "degradation_reason": "model_unavailable",
-    "model_used": "claude-sonnet-4-6",
+    "status": "ok",
+    "degraded": false,
+    "degradation_reason": null,
+    "model_used": "claude-opus-4-8",
     "provider_attempts": [
       {
         "provider": "oauth",
         "model": "claude-opus-4-8",
         "attempted": true,
         "ok": false,
-        "error_type": "auth",
-        "error_message": "Error code: 403 - {'type': 'error', 'error': {'type': 'permission_error', 'message': 'OAuth authentication is currently not allowed for this organization.', 'details': {'error_code': 'oauth_not_allowed_for_organization'}}, 'request_id': 'req_011Cf1HfBNNyqiETFamA52ow'}"
+        "error_type": "rate_limit",
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cf29zLLz3cZ8mMUQ1ybY9'}"
       },
       {
         "provider": "oauth",
         "model": "claude-opus-4-8",
         "attempted": true,
         "ok": false,
-        "error_type": "auth",
-        "error_message": "Error code: 403 - {'type': 'error', 'error': {'type': 'permission_error', 'message': 'OAuth authentication is currently not allowed for this organization.', 'details': {'error_code': 'oauth_not_allowed_for_organization'}}, 'request_id': 'req_011Cf1HfErEfReP7AQzEoJwN'}"
+        "error_type": "rate_limit",
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cf2A1dUebKtVkJqX8gPR2'}"
       },
       {
         "provider": "oauth",
-        "model": "claude-sonnet-4-6",
+        "model": "claude-opus-4-8",
         "attempted": true,
         "ok": false,
-        "error_type": "auth",
-        "error_message": "Error code: 403 - {'type': 'error', 'error': {'type': 'permission_error', 'message': 'OAuth authentication is currently not allowed for this organization.', 'details': {'error_code': 'oauth_not_allowed_for_organization'}}, 'request_id': 'req_011Cf1HfGB726trzXEeJRfFJ'}"
+        "error_type": "rate_limit",
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cf2A6ELzf3BAz76TTsxSr'}"
+      },
+      {
+        "provider": "oauth",
+        "model": "claude-opus-4-8",
+        "attempted": true,
+        "ok": false,
+        "error_type": "rate_limit",
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cf2AKhDd3vUFoUgDurhFt'}"
+      },
+      {
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
+        "attempted": true,
+        "ok": true,
+        "error_type": null,
+        "error_message": null
+      },
+      {
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
+        "attempted": true,
+        "ok": true,
+        "error_type": null,
+        "error_message": null
+      },
+      {
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
+        "attempted": true,
+        "ok": true,
+        "error_type": null,
+        "error_message": null
+      },
+      {
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
+        "attempted": true,
+        "ok": true,
+        "error_type": null,
+        "error_message": null
+      },
+      {
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
+        "attempted": true,
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       }
     ],
-    "tool_call_batches": 0,
-    "individual_tool_calls": 0,
+    "tool_call_batches": 4,
+    "individual_tool_calls": 9,
     "expected_min_tool_calls": 1,
     "context_stale": false,
     "context_as_of": "2026-09-13T10:22:38Z"
