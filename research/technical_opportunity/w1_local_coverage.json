@@ -1,0 +1,56 @@
+{
+  "schema_version": "toi.local_coverage.v1",
+  "as_of": "2026-09-13",
+  "macro_base": "e2cddf8f0068f03f1d94816cfa950ba47a1db3c2",
+  "terminal_base": "45a0e78e01377502399761626899458f9d08ffd9",
+  "scope_state": "P0_SLICE_COMPLETE_W1_FULL_CENSUS_PARTIAL",
+  "summary": {
+    "p0_passports": 12,
+    "p0_exact_local": 12,
+    "p0_missing_local": 0,
+    "first_vertical_roles_covered": ["setup","trigger","participation","context","risk"],
+    "first_vertical_horizons": ["W","D","candidate_4H"],
+    "outcomes_read": false,
+    "model_fit": false,
+    "trade_authority": false
+  },
+  "macro_implementations": [
+    {"path":"engine/bollinger_event_signals.py","methods":["toi.bb_bandwidth"],"state":"exact_local"},
+    {"path":"engine/compression_signals.py","methods":["toi.bb_kc_squeeze","toi.nr7","toi.range_expansion","toi.donchian_breakout","toi.donchian_fakeout"],"state":"exact_local"},
+    {"path":"engine/path_risk_signals.py","methods":["toi.natr_percentile","toi.hvr"],"state":"exact_local"},
+    {"path":"engine/fractal_pivot_signals.py","methods":["toi.fractal_swing_structure"],"state":"exact_local","known_at":"two completed bars after pivot center"},
+    {"path":"engine/momentum_context_signals.py","methods":["toi.benchmark_rs"],"state":"exact_local","external_input":"bench_close"},
+    {"path":"engine/volume_flow_signals.py","methods":["toi.cmf","toi.rvol"],"state":"exact_local"}
+  ],
+  "terminal_crosswalk": {
+    "owner": "mastermind-terminal display/visual implementation; not TOI occurrence authority",
+    "suite_order": ["structure","trend","pulse","rsix","macdx"],
+    "evidence_paths": [
+      "terminal/lib/suites/compute.ts",
+      "terminal/lib/suites/meta.ts",
+      "terminal/lib/suites/catalog.ts",
+      "terminal/lib/suites/registry.ts"
+    ],
+    "disposition": "read-only W1 archaeology; visual primitives may be reused later, but Macro owns canonical occurrence semantics"
+  },
+  "live_entry_radar_crosswalk": {
+    "owner": "WS:LIVE-ENTRY-RADAR",
+    "scope": "true tactical 5m/RTH events and live evaluator",
+    "disposition": "W1 may crosswalk tactical methods but must not create a second intraday event owner"
+  },
+  "scientific_registry_crosswalk": {
+    "owner": "engine/species_registry.py + data/species/registry.json",
+    "disposition": "Setup Species remains canonical scientific registry; W1 does not edit or duplicate it"
+  },
+  "automation_crosswalk": {
+    "owner": "Signal Foundry / Research Factory",
+    "disposition": "reuse deterministic proposal screen and declarative candidate pattern in later W3; no parallel harness"
+  },
+  "gaps_for_full_w1": [
+    "complete P1/P2/archive/blocked passport population across remaining method families",
+    "finish external-primary source receipts for every P0/P1 method",
+    "map every relevant DNR kill to the surviving measurement or blocked construction",
+    "classify Terminal-only visual modules and Radar-only tactical modules without duplicating ownership",
+    "perform independent >=20-passport source/formula/local-path reproduction review"
+  ]
+}
