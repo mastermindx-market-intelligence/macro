@@ -1,19 +1,19 @@
 {
  "schema": "dead_name_price_coverage.v3",
- "generated_utc": "2026-09-05T17:18:23.976372+00:00",
+ "generated_utc": "2026-09-12T17:00:56.189165+00:00",
  "n_dead_universe": 1081,
- "n_cik_resolved": 261,
+ "n_cik_resolved": 282,
  "n_with_prices": 424,
  "price_coverage_frac": 0.3922,
  "by_source": {
-  "polygon": 341,
-  "yfinance": 85
+  "polygon": 337,
+  "yfinance": 89
  },
  "delisting_reason": {
   "bankruptcy": 19,
-  "acquisition": 167,
-  "unknown": 75,
-  "n_classified": 261
+  "acquisition": 186,
+  "unknown": 77,
+  "n_classified": 282
  },
  "n_imputed_bankruptcies": 5,
  "residual_bias": "Acquisition skew is now PARTLY corrected: 5 bankruptcy delistings (8-K Item 1.03) carry an imputed \u2212100% terminal close (source=imputed_bankruptcy), so the price\u21920 tail is no longer a silent survivorship gap. RESIDUAL: bankruptcy names with no recovered price anchor can't be imputed (no from-price), and the recovered set still skews to ACQUISITIONS for names not yet reason-classified.",
@@ -21,10 +21,10 @@
   "basis": "sp1500_pit_membership.end_date NOT NULL (INDEX EXIT, not death)",
   "measured": true,
   "n_universe": 1081,
-  "n_still_trading": 171,
-  "still_trading_frac": 0.1582,
-  "n_still_trading_with_prices": 133,
-  "caveat": "171 of 1081 names in this 'dead' universe (15.8%) still have a live advancing price store: they were REMOVED FROM THE INDEX, not delisted. Their recovered rows are their own genuine prices (bounded by the fetch window, not by a death), so they must NOT be trimmed to a 'death date' \u2014 but neither do they correct survivorship. Any study calling this panel de-biased should partition index-exit-alive from truly-delisted before claiming a survivorship fix."
+  "n_still_trading": 169,
+  "still_trading_frac": 0.1563,
+  "n_still_trading_with_prices": 131,
+  "caveat": "169 of 1081 names in this 'dead' universe (15.6%) still have a live advancing price store: they were REMOVED FROM THE INDEX, not delisted. Their recovered rows are their own genuine prices (bounded by the fetch window, not by a death), so they must NOT be trimmed to a 'death date' \u2014 but neither do they correct survivorship. Any study calling this panel de-biased should partition index-exit-alive from truly-delisted before claiming a survivorship fix."
  },
  "identity_splice_quarantine": {
   "applied": true,

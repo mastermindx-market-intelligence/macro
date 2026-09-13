@@ -99,13 +99,13 @@
       "glt_usd_funding_impulse"
     ],
     "reasons": [
-      "worst_required_source_freshness=LATE_WITHIN_TOLERANCE",
+      "worst_required_source_freshness=STALE_SOURCE",
       "glt_quality_status=degraded"
     ],
     "required": [
       {
         "component_id": "glt_monetary_impulse",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "STALE_SOURCE",
         "label": {
           "en": "Global monetary impulse",
           "zh": "全球货币脉冲"
@@ -117,7 +117,7 @@
       },
       {
         "component_id": "glt_liquidity_breadth",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "STALE_SOURCE",
         "label": {
           "en": "Global liquidity breadth",
           "zh": "全球流动性广度"
@@ -129,7 +129,7 @@
       },
       {
         "component_id": "glt_usd_funding_impulse",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "STALE_SOURCE",
         "label": {
           "en": "USD funding impulse",
           "zh": "美元融资脉冲"
@@ -148,73 +148,37 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-09-02",
+        "source_asof": "2026-09-09",
         "status": "PRESENT"
       }
     ],
-    "state": "LATE_WITHIN_TOLERANCE",
-    "worst_freshness": "LATE_WITHIN_TOLERANCE"
+    "state": "STALE_SOURCE",
+    "worst_freshness": "STALE_SOURCE"
   },
   "axes": {
     "items": []
   },
   "changes": {
-    "comparability": "COMPARABLE",
-    "deltas": [
-      {
-        "current_value": 0.003956,
-        "delta": 0.0,
-        "metric_id": "glt_monetary_impulse",
-        "note": "same method version; numeric comparison permitted",
-        "prior_value": 0.003956
-      },
-      {
-        "current_value": 0.077032,
-        "delta": 0.0,
-        "metric_id": "glt_monetary_impulse_z",
-        "note": "same method version; numeric comparison permitted",
-        "prior_value": 0.077032
-      },
-      {
-        "current_value": -0.144768,
-        "delta": 0.0,
-        "metric_id": "glt_usd_funding_impulse",
-        "note": "same method version; numeric comparison permitted",
-        "prior_value": -0.144768
-      },
-      {
-        "current_value": 0.333333,
-        "delta": 0.0,
-        "metric_id": "glt_liquidity_breadth",
-        "note": "same method version; numeric comparison permitted",
-        "prior_value": 0.333333
-      },
-      {
-        "current_value": 0.38,
-        "delta": 0.0,
-        "metric_id": "cb_fed_balance_sheet_impulse_13w",
-        "note": "same method version; numeric comparison permitted",
-        "prior_value": 0.38
-      }
-    ],
-    "null_reason": null,
-    "prior_effective_date": "2026-08-28",
-    "prior_generation_id": "liquidity_central_banks-US-563c61e94c81b963",
-    "prior_method_version": "liquidity_central_banks.compose.v1",
-    "status": "PRESENT"
+    "comparability": "NO_EARLIER_PUBLICATION",
+    "deltas": [],
+    "null_reason": "INSUFFICIENT_HISTORY",
+    "prior_effective_date": null,
+    "prior_generation_id": null,
+    "prior_method_version": null,
+    "status": "ABSENT"
   },
   "corrections": {
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "liquidity_central_banks-US-563c61e94c81b963"
+    "predecessor_generation_id": "liquidity_central_banks-US-19f973c9b1cba8ba"
   },
   "drivers": {
     "balance_sheet": [
       {
         "coverage_state": "PRESENT",
         "driver_id": "cb_fed_balance_sheet_impulse_13w",
-        "impact_magnitude": 0.38,
+        "impact_magnitude": 0.23,
         "impact_sign": 1,
         "label": {
           "en": "Fed balance-sheet impulse (13w)",
@@ -223,12 +187,12 @@
         "note": "positive = balance sheet expanding over the trailing 13 weeks; negative = contracting",
         "owner_field": "cb_desk.cbs[FED].bs_impulse.impulse_13w",
         "unit": "percent",
-        "value": 0.38
+        "value": 0.23
       },
       {
         "coverage_state": "PRESENT",
         "driver_id": "cb_ecb_balance_sheet_impulse_13w",
-        "impact_magnitude": 4.0,
+        "impact_magnitude": 3.65,
         "impact_sign": -1,
         "label": {
           "en": "ECB balance-sheet impulse (13w)",
@@ -237,7 +201,7 @@
         "note": "positive = balance sheet expanding over the trailing 13 weeks; negative = contracting",
         "owner_field": "cb_desk.cbs[ECB].bs_impulse.impulse_13w",
         "unit": "percent",
-        "value": -4.0
+        "value": -3.65
       },
       {
         "coverage_state": "PRESENT",
@@ -300,11 +264,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-09-06T21:23:24Z",
+    "built_at": "2026-09-13T07:23:13Z",
     "calculation_as_of": "2026-09-04T11:03:41.497178+00:00",
-    "code_version": "41929a0479ef0e5e4a8ac34086668c738c1e480f",
-    "content_sha256": "96076f98950a316cda8f85a09be5d77d98ecd4173c03e40ef34a18366b55d341",
-    "generation_id": "liquidity_central_banks-US-96076f98950a316c",
+    "code_version": "aa6750b68ccefeb17043e590b61e8a00565d1837",
+    "content_sha256": "65a52f31204787c2f40214243448f5e21f87a1ad548b96144f9bc37e6452d7b4",
+    "generation_id": "liquidity_central_banks-US-65a52f31204787c2",
     "producer": "engine.market_os.macro_workspaces.liquidity_central_banks",
     "rendered_at": null
   },
@@ -317,21 +281,17 @@
       "note": "liquidity_central_banks has no headline model at all in architecture section 10.9 -- unlike liquidity_regime/financial_conditions/growth's explicit x/y quadrant blueprints or monetary_policy's own composition-list headline, section 10.9 has no headline-model subsection, only a required-composition list. headline.state_id stays null and this is not applicable by design, not by missing data; the real content (global monetary/funding impulse, Fed/ECB/BoJ balance-sheet impulses, the global-vs-Fed-desk agreement check) lives in metrics/drivers/implications instead. Region is published as US per every current Macro & Monetary page even though this composer's owner inputs are explicitly global -- see the region_scope_disclosure implication for the reader-facing version of this note."
     },
     "method_version": "liquidity_central_banks.compose.v1",
+    "movement_state": "NO_EARLIER_PUBLICATION",
     "nearest_boundary": {
       "axis": null,
       "distance": null,
       "null_reason": "NOT_APPLICABLE"
     },
     "null_reason": "NOT_APPLICABLE",
-    "one_month_vector": {
-      "dx": null,
-      "dy": null,
-      "null_reason": "NOT_APPLICABLE",
-      "status": "ABSENT"
-    },
+    "one_month_vector": null,
     "prior_state": {
-      "effective_date": "2026-08-28",
-      "method_version": "liquidity_central_banks.compose.v1",
+      "effective_date": null,
+      "method_version": null,
       "state_id": null
     },
     "quadrant": {
@@ -493,7 +453,7 @@
         "definition_id": "state.monetary_impulse",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_expansionary",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "glt_monetary_impulse",
         "model_version": "liquidity_central_banks.compose.v1",
@@ -529,7 +489,7 @@
         "definition_id": "state.monetary_impulse_z",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_expansionary",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "glt_monetary_impulse_z",
         "model_version": "liquidity_central_banks.compose.v1",
@@ -565,7 +525,7 @@
         "definition_id": "state.monetary_stance",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_expansionary",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "glt_monetary_stance",
         "model_version": "liquidity_central_banks.compose.v1",
@@ -601,7 +561,7 @@
         "definition_id": "state.orthogonalised_impulse",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_expansionary",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "glt_orthogonalised_impulse",
         "model_version": "liquidity_central_banks.compose.v1",
@@ -637,7 +597,7 @@
         "definition_id": "state.liquidity_breadth",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_broader_agreement",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "glt_liquidity_breadth",
         "model_version": "liquidity_central_banks.compose.v1",
@@ -673,7 +633,7 @@
         "definition_id": "state.usd_funding_impulse",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_easier_funding",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "glt_usd_funding_impulse",
         "model_version": "liquidity_central_banks.compose.v1",
@@ -709,7 +669,7 @@
         "definition_id": "state.policy_liquidity_impulse",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_expansionary",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "glt_policy_liquidity_impulse",
         "model_version": "liquidity_central_banks.compose.v1",
@@ -781,7 +741,7 @@
         "definition_id": "state.label",
         "definition_version": "1.0.0",
         "direction_semantics": null,
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "glt_state_label",
         "model_version": "liquidity_central_banks.compose.v1",
@@ -817,7 +777,7 @@
         "definition_id": "state.event_reference.quality",
         "definition_version": "1.0.0",
         "direction_semantics": null,
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "glt_state_quality_label",
         "model_version": "liquidity_central_banks.compose.v1",
@@ -853,7 +813,7 @@
         "definition_id": "quality.confidence.value",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_coverage_and_pit_reliability",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "glt_confidence",
         "model_version": "liquidity_central_banks.compose.v1",
@@ -889,7 +849,7 @@
         "definition_id": "freshness.monetary_coverage_ratio",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_coverage",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "glt_monetary_coverage_ratio",
         "model_version": "liquidity_central_banks.compose.v1",
@@ -925,7 +885,7 @@
         "definition_id": "freshness.funding_coverage_ratio",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_coverage",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "glt_funding_coverage_ratio",
         "model_version": "liquidity_central_banks.compose.v1",
@@ -961,7 +921,7 @@
         "definition_id": "freshness.component_snapshot.monetary.fed.current_contribution_z",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_expansionary",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "glt_fed_monetary_contribution_z",
         "model_version": "liquidity_central_banks.compose.v1",
@@ -997,7 +957,7 @@
         "definition_id": "freshness.component_snapshot.monetary.ecb.current_contribution_z",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_expansionary",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "glt_ecb_monetary_contribution_z",
         "model_version": "liquidity_central_banks.compose.v1",
@@ -1033,7 +993,7 @@
         "definition_id": "freshness.component_snapshot.monetary.boj.current_contribution_z",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_expansionary",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "glt_boj_monetary_contribution_z",
         "model_version": "liquidity_central_banks.compose.v1",
@@ -1069,7 +1029,7 @@
         "definition_id": "freshness.component_snapshot.usd_funding.broad_dollar.current_contribution_z",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_easier_funding",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "glt_broad_dollar_contribution_z",
         "model_version": "liquidity_central_banks.compose.v1",
@@ -1105,7 +1065,7 @@
         "definition_id": "freshness.component_snapshot.usd_funding.high_yield_oas.current_contribution_z",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_easier_funding",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "glt_high_yield_oas_contribution_z",
         "model_version": "liquidity_central_banks.compose.v1",
@@ -1141,7 +1101,7 @@
         "definition_id": "freshness.component_snapshot.usd_funding.real_yield_10y.current_contribution_z",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_easier_funding",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "glt_real_yield_10y_contribution_z",
         "model_version": "liquidity_central_banks.compose.v1",
@@ -1171,7 +1131,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-09-02",
+        "calculation_as_of": "2026-09-09",
         "collected_at": null,
         "coverage": null,
         "definition_id": "cb_desk.cbs.bs_impulse.level",
@@ -1182,10 +1142,10 @@
         "metric_id": "cb_fed_balance_sheet_level",
         "model_version": "liquidity_central_banks.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-02",
+        "observed_at": "2026-09-09",
         "owner_ref": "engine.cb_desk[FED]",
         "reference_id": "mastermind.market_reference/v1#cb_fed_balance_sheet_level",
-        "reference_period": "2026-09-02",
+        "reference_period": "2026-09-09",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1200,14 +1160,14 @@
           "value": null
         },
         "unit": "USD billions",
-        "value": 6737.2,
+        "value": 6740.6,
         "value_type": "currency_bn"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "trailing_13w_pct_change",
-        "calculation_as_of": "2026-09-02",
+        "calculation_as_of": "2026-09-09",
         "collected_at": null,
         "coverage": null,
         "definition_id": "cb_desk.cbs.bs_impulse.impulse_13w",
@@ -1218,10 +1178,10 @@
         "metric_id": "cb_fed_balance_sheet_impulse_13w",
         "model_version": "liquidity_central_banks.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-02",
+        "observed_at": "2026-09-09",
         "owner_ref": "engine.cb_desk[FED]",
         "reference_id": "mastermind.market_reference/v1#cb_fed_balance_sheet_impulse_13w",
-        "reference_period": "2026-09-02",
+        "reference_period": "2026-09-09",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1236,14 +1196,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": 0.38,
+        "value": 0.23,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "trailing_52w_pct_change",
-        "calculation_as_of": "2026-09-02",
+        "calculation_as_of": "2026-09-09",
         "collected_at": null,
         "coverage": null,
         "definition_id": "cb_desk.cbs.bs_impulse.impulse_52w",
@@ -1254,10 +1214,10 @@
         "metric_id": "cb_fed_balance_sheet_impulse_52w",
         "model_version": "liquidity_central_banks.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-02",
+        "observed_at": "2026-09-09",
         "owner_ref": "engine.cb_desk[FED]",
         "reference_id": "mastermind.market_reference/v1#cb_fed_balance_sheet_impulse_52w",
-        "reference_period": "2026-09-02",
+        "reference_period": "2026-09-09",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1272,14 +1232,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": 2.05,
+        "value": 2.04,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-08-28",
+        "calculation_as_of": "2026-09-04",
         "collected_at": null,
         "coverage": null,
         "definition_id": "cb_desk.cbs.bs_impulse.level",
@@ -1290,10 +1250,10 @@
         "metric_id": "cb_ecb_balance_sheet_level",
         "model_version": "liquidity_central_banks.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-08-28",
+        "observed_at": "2026-09-04",
         "owner_ref": "engine.cb_desk[ECB]",
         "reference_id": "mastermind.market_reference/v1#cb_ecb_balance_sheet_level",
-        "reference_period": "2026-08-28",
+        "reference_period": "2026-09-04",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1308,14 +1268,14 @@
           "value": null
         },
         "unit": "EUR billions",
-        "value": 5915.3,
+        "value": 5912.2,
         "value_type": "currency_bn"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "trailing_13w_pct_change",
-        "calculation_as_of": "2026-08-28",
+        "calculation_as_of": "2026-09-04",
         "collected_at": null,
         "coverage": null,
         "definition_id": "cb_desk.cbs.bs_impulse.impulse_13w",
@@ -1326,10 +1286,10 @@
         "metric_id": "cb_ecb_balance_sheet_impulse_13w",
         "model_version": "liquidity_central_banks.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-08-28",
+        "observed_at": "2026-09-04",
         "owner_ref": "engine.cb_desk[ECB]",
         "reference_id": "mastermind.market_reference/v1#cb_ecb_balance_sheet_impulse_13w",
-        "reference_period": "2026-08-28",
+        "reference_period": "2026-09-04",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1344,14 +1304,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": -4.0,
+        "value": -3.65,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "trailing_52w_pct_change",
-        "calculation_as_of": "2026-08-28",
+        "calculation_as_of": "2026-09-04",
         "collected_at": null,
         "coverage": null,
         "definition_id": "cb_desk.cbs.bs_impulse.impulse_52w",
@@ -1362,10 +1322,10 @@
         "metric_id": "cb_ecb_balance_sheet_impulse_52w",
         "model_version": "liquidity_central_banks.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-08-28",
+        "observed_at": "2026-09-04",
         "owner_ref": "engine.cb_desk[ECB]",
         "reference_id": "mastermind.market_reference/v1#cb_ecb_balance_sheet_impulse_52w",
-        "reference_period": "2026-08-28",
+        "reference_period": "2026-09-04",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1380,7 +1340,7 @@
           "value": null
         },
         "unit": "percent",
-        "value": -2.86,
+        "value": -2.79,
         "value_type": "percent"
       },
       {
@@ -1493,6 +1453,7 @@
       }
     ]
   },
+  "prior_publication": null,
   "region": {
     "code": "US",
     "display_name": "United States",
@@ -1584,7 +1545,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "STALE_SOURCE",
         "label": {
           "en": "Global Liquidity Transmission state (monetary + funding impulse)",
           "zh": "全球流动性传导状态（货币+融资脉冲）"
@@ -1605,7 +1566,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "STALE_SOURCE",
         "label": {
           "en": "GLT quality & coverage disclosure",
           "zh": "GLT质量与覆盖率披露"
@@ -1626,7 +1587,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "STALE_SOURCE",
         "label": {
           "en": "GLT per-component freshness receipts",
           "zh": "GLT分项新鲜度回执"
@@ -1675,7 +1636,7 @@
         },
         "owner_ref": "engine.cb_desk",
         "provider": "FRED",
-        "reference_period": "2026-09-04",
+        "reference_period": "2026-09-11",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",

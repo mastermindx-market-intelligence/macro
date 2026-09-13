@@ -10,7 +10,6 @@
     "crypto",
     "cybersecurity",
     "data_center_power",
-    "defensives",
     "energy_complex",
     "gold_miners",
     "industrial_distribution",
@@ -38,7 +37,7 @@
     "memory_storage",
     "silver_miners",
     "ai_infra",
-    "big_pharma"
+    "us_sector_energy"
   ],
   "leader": "memory_storage",
   "names": {

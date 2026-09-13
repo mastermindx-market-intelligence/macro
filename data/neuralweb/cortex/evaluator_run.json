@@ -1,17 +1,17 @@
 {
-  "as_of": "2026-09-05",
+  "as_of": "2026-09-11",
   "evaluator_version": "W7b-PR3",
   "dry_run": false,
   "n_due": 1,
   "results": [
     {
-      "id": "cortex-2026-08-08-when-an-equity-q2-regime-is-simultaneous-197757",
+      "id": "cortex-2026-08-14-in-low-volatility-regimes-negative-10-d-5df4be",
       "claim_shape": "conditional_regime",
       "verdict": "uncomputable-metric",
       "n": 0,
       "metric_value": null,
       "detail": {
-        "gate_error": "metric 'q2_persistence_rate_difference' is not computable by this evaluator",
+        "gate_error": "metric 'breadth_deterioration_21d_auc' is not computable by this evaluator",
         "supported_metrics": [
           "excess_mean",
           "excess_mean_difference",
@@ -25,9 +25,9 @@
         "evaluator_version": "W7b-PR3"
       },
       "gate": {
-        "metric": "q2_persistence_rate_difference",
-        "threshold": -0.1,
-        "min_n": 30,
+        "metric": "breadth_deterioration_21d_auc",
+        "threshold": 0.55,
+        "min_n": 35,
         "horizon_d": 21,
         "direction_expected": -1
       },
