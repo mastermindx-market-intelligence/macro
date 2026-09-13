@@ -108,6 +108,105 @@
   </section>
   {# B-F09-4 PREMIUM BLOCK END #}
 
+  {# ── covenant-headroom:start — B-F09-13 (MO-PAID-062 slice 2). Keep contiguous.
+     covenant_headroom is an OPTIONAL kwarg: guarded so any caller that renders
+     this template under StrictUndefined without it (tests/test_capital_structure_page.py)
+     still renders. The pure engine is in engine/covenant_headroom.py; the
+     builder wires the parquet + statements + ledger reads. Spec R6 verbatim:
+     the UI says "room left under the covenant" / "契约限额下还剩多少空间"
+     and never the literal word "headroom". Zero authority: no rank, no
+     score, no trade signal — only a plain reading of public filings vs
+     the agreement's own numbers, with a typed refusal if either side is
+     missing. ── #}
+  {% set covenant_headroom = covenant_headroom if covenant_headroom is defined else none %}
+  {% if covenant_headroom %}
+  <section class="cs-latest-card cs-covenant-headroom" id="cs-covenant-headroom" aria-labelledby="cs-covenant-headroom-title">
+    <div class="cs-section-heading">
+      <div>
+        <p class="cs-kicker">{{ t('One issuer, one covenant', '单一发行人，单一契约') }}</p>
+        <h2 id="cs-covenant-headroom-title">{{ t('How much room is left under the covenant', '契约限额下还剩多少空间') }}</h2>
+      </div>
+      <span class="cs-state-chip">{{ t('Reading only — not a trade call', '仅供查阅 — 不是交易指令') }}</span>
+    </div>
+    {% if covenant_headroom.state == 'computed' %}
+    <p>{{ t('The credit agreement allows up to', '信贷协议允许最高') }}
+       <strong>{% if covenant_headroom.terms and covenant_headroom.terms[0].limit_kind == 'minimum' %}{{ '%.1f'|format(covenant_headroom.terms[0].limit_raw) }}{% else %}{% set max_limit = covenant_headroom.terms | map(attribute='limit_raw') | max %}{{ '%.1f'|format(max_limit) }}{% endif %}</strong>
+       <span class="l-en">{{ t('x', '倍') }}</span><span class="l-zh">{{ '倍' }}</span>
+       {{ t('net debt to earnings; the last annual report shows', '净债务与盈利之比；最近的年报显示为') }}
+       <strong>{% set first_ratio = (covenant_headroom.terms | selectattr('reported.value') | list | first) %}{{ '%.1f'|format(first_ratio.reported.value) }}</strong>
+       <span class="l-en">{{ t('x', '倍') }}</span><span class="l-zh">{{ '倍' }}</span>
+       {{ t('— about', '— 还剩约') }}
+       <strong>{% set first_room = (covenant_headroom.terms | selectattr('room_turns') | list | first) %}{{ '%.1f'|format(first_room.room_turns) }}</strong>
+       <span class="l-en">{{ t('x', '倍') }}</span><span class="l-zh">{{ '倍' }}</span>
+       {{ t('of room.', '的空间。') }}</p>
+    <div class="cs-latest-grid">
+      {% for term in covenant_headroom.terms %}
+      {% if term.state == 'computed' %}
+      <div>
+        <span>{{ t('Limit', '限额') if term.limit_kind == 'maximum' else t('Floor', '下限') }}</span>
+        <strong>{% if term.limit_raw is not none %}{% if term.limit_kind == 'maximum' %}{{ '%.1f'|format(term.limit_raw) }}{% else %}{{ '%.2f'|format(term.limit_raw) }}{% endif %}<span class="l-en">{{ t('x', '倍') }}</span><span class="l-zh">{{ '倍' }}</span>{% else %}—{% endif %}</strong>
+      </div>
+      <div>
+        <span>{{ t('Reported figure', '披露数字') }}</span>
+        <strong>{% if term.reported.value is not none %}{{ '%.1f'|format(term.reported.value) }}<span class="l-en">{{ t('x', '倍') }}</span><span class="l-zh">{{ '倍' }}</span>{% if term.reported.period_end %} {{ t('for the year ended', '截至') }} {{ term.reported.period_end }}{% endif %}{% else %}—{% endif %}</strong>
+      </div>
+      <div>
+        <span>{{ t('Room left under the covenant', '契约下剩余空间') }}</span>
+        <strong>{% if term.room_turns is not none %}{% if term.room_turns >= 0 %}+{% endif %}{{ '%.1f'|format(term.room_turns) }}<span class="l-en">{{ t('x', '倍') }}</span><span class="l-zh">{{ '倍' }}</span>{% else %}—{% endif %}</strong>
+      </div>
+      {% if term.next_step %}
+      <div>
+        <span>{{ t('Next step', '下一阶跃') }}</span>
+        <strong>{{ t('the limit steps to', '限额将调整为') }} {{ '%.2f'|format(term.next_step.limit_raw) }}<span class="l-en">{{ t('x', '倍') }}</span><span class="l-zh">{{ '倍' }}</span> {{ t('from', '自') }} {{ term.next_step.start_date }}</strong>
+      </div>
+      {% endif %}
+      {% if term.receipt.accession %}
+      <div>
+        <span>{{ t('Filing type', '披露类型') }}</span>
+        <strong>{{ term.receipt.form }}</strong>
+      </div>
+      <div>
+        <span>{{ t('Accession', '文件编号') }}</span>
+        <strong>{{ term.receipt.accession }}</strong>
+      </div>
+      <div>
+        <span>{{ t('Filing date', '披露日期') }}</span>
+        <strong>{{ term.receipt.filing_date }}</strong>
+      </div>
+      {% endif %}
+      {% endif %}
+      {% if term.refusal %}
+      <div>
+        <span>{{ t(term.term_name | replace('_', ' '), term.term_name | replace('_', ' ')) }}</span>
+        <strong>{{ t(term.refusal_label_en or 'Not computed', term.refusal_label_zh or '未计算') }}</strong>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+    {% if covenant_headroom.terms and covenant_headroom.terms[0].receipt.source_url %}
+    <p class="cs-section-note"><a href="{{ covenant_headroom.terms[0].receipt.source_url }}" rel="noopener noreferrer" target="_blank">{{ t('Open this filing on SEC EDGAR', '在 SEC EDGAR 打开该文件') }}</a></p>
+    {% endif %}
+    <p class="cs-section-note">{{ t(covenant_headroom.basis_en, covenant_headroom.basis_zh) }}</p>
+    <p class="cs-section-note">{{ t(covenant_headroom.disclaimer_en, covenant_headroom.disclaimer_zh) }}</p>
+    {% else %}
+    <div class="cs-unavailable">
+      <span class="cs-unavailable-mark" aria-hidden="true">↳</span>
+      <div>
+        <strong>{{ t(covenant_headroom.refusal_label_en or 'No room-left reading is ready to show right now.', covenant_headroom.refusal_label_zh or '目前没有可展示的契约下剩余空间。') }}</strong>
+        <span>{{ t(covenant_headroom.null_en or '', covenant_headroom.null_zh or '') }}</span>
+      </div>
+    </div>
+    <p class="cs-section-note">{{ t(covenant_headroom.disclaimer_en, covenant_headroom.disclaimer_zh) }}</p>
+    {% endif %}
+    <div class="cs-unavailable">
+      <span class="cs-unavailable-mark" aria-hidden="true">↳</span>
+      <div><strong>{{ t('Not covered here', '此处不涉及') }}</strong>
+      <span>{{ t('Whether the company is actually in compliance, any waivers or amendments not yet on file, and the agreement\'s own defined terms are not part of this reading.', '公司是否实际合规、尚未披露的豁免或修订，以及协议自身的定义条款，均不在本次解读范围内。') }}</span></div>
+    </div>
+  </section>
+  {% endif %}
+  {# ── covenant-headroom:end ── #}
+
   {# ── policy-watch:start — B-F09-6 (MO-PAID-067). Keep contiguous.
      policy_watch is an OPTIONAL kwarg: guarded so any caller that renders this
      template under StrictUndefined without it (tests/test_capital_structure_page.py)
