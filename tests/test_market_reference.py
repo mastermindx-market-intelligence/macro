@@ -45,9 +45,13 @@ from scripts.build_market_reference import (  # noqa: E402
     validate,
     validate_coverage_exceptions,
 )
+from scripts.check_zh_filing_term import FIX as ZH_FILING_FIX  # noqa: E402
+from scripts.check_zh_filing_term import TERM as ZH_FILING_TERM  # noqa: E402
 
 REGISTRY_PATH = REPO / "config" / "market_reference.yml"
 TEMPLATE_DIR = REPO / "templates"
+SITE_REFERENCE_PATH = REPO / "site" / "reference.html"
+DASHBOARD_TEMPLATE_PATH = REPO / "templates" / "dashboard.html.j2"
 
 
 # ---------------------------------------------------------------------------
@@ -898,3 +902,102 @@ def test_alpha_label_leads_with_plain_words(real_entries, rendered_html):
     assert "Alpha (α) 标签" not in rendered_html
     assert "Excess return vs. market (alpha)" in rendered_html
     assert "相对市场的超额收益（Alpha）" in rendered_html
+
+
+# ---------------------------------------------------------------------------
+# 6 · house-law zh copy guard (i18n.zh_filing_term) + light-theme token pin
+# ---------------------------------------------------------------------------
+
+# The closed registry is user-facing zh copy: every string in it renders
+# verbatim into site/reference.html. scripts/check_zh_filing_term.py cannot see
+# it — TEXT_DIRS is ("templates",), TEXT_SUFFIXES has no ".yml", and site/ is
+# deliberately not scanned as render output — so the law is pinned here, at the
+# registry, the render, and the committed artifact.
+
+def _walk_registry_strings(node, path="market_reference.yml"):
+    """Yield (dotted-path, text) for every string in the registry, so a hit
+    names the exact key that carries it instead of the whole file."""
+    if isinstance(node, dict):
+        for key, value in node.items():
+            yield from _walk_registry_strings(value, f"{path}.{key}")
+    elif isinstance(node, list):
+        for index, value in enumerate(node):
+            yield from _walk_registry_strings(value, f"{path}[{index}]")
+    elif isinstance(node, str):
+        yield path, node
+
+
+def test_registry_zh_copy_never_uses_the_filing_term(real_raw):
+    """A SEC/Form-4 insider trade report is a 披露 — a disclosure published to
+    the market — never a 申报, which is what you file with customs or the tax
+    authority. The insider-buy entry reached for the wrong word on six lines."""
+    hits = [
+        f"{path}: {text.strip()}"
+        for path, text in _walk_registry_strings(real_raw)
+        if ZH_FILING_TERM in text
+    ]
+    assert hits == [], (
+        f"config/market_reference.yml carries {ZH_FILING_TERM} in user-facing zh "
+        f"copy; write {ZH_FILING_FIX} (or plain words) instead:\n" + "\n".join(hits)
+    )
+
+
+def test_rendered_reference_page_never_uses_the_filing_term(rendered_html):
+    """The render is what the reader sees: the term must not survive into it."""
+    assert ZH_FILING_TERM not in rendered_html, (
+        f"{ZH_FILING_TERM} renders into the Market Reference page; "
+        f"the registry copy must say {ZH_FILING_FIX}"
+    )
+
+
+def test_committed_reference_artifact_never_uses_the_filing_term():
+    """The committed site/reference.html is the shipped bytes. The gate does not
+    scan site/ (a hit there is normally a hit in templates/ or a builder), but
+    this page's copy comes from a YAML registry no gate reads, so the artifact
+    is the last place a stale or re-introduced term can hide."""
+    if not SITE_REFERENCE_PATH.exists():
+        pytest.skip("site/reference.html not materialized in this checkout")
+    html = SITE_REFERENCE_PATH.read_text(encoding="utf-8", errors="replace")
+    hits = [line.strip()[:200] for line in html.splitlines() if ZH_FILING_TERM in line]
+    assert hits == [], (
+        f"site/reference.html carries {ZH_FILING_TERM} in {len(hits)} line(s); "
+        f"fix config/market_reference.yml to {ZH_FILING_FIX} and re-render with "
+        "`python3 -m scripts.build_market_reference`:\n" + "\n".join(hits)
+    )
+
+
+# The light-theme chip hash. templates/dashboard.html.j2 defines
+# `--ink-3: var(--muted)` on body.page-macro, so the earlier
+# `color:var(--ink-3,rgba(0,0,0,.42))` and today's `color:var(--muted)` compute
+# to the same colour in both themes (measured on site/macro.html: light
+# rgb(76,90,108), dark rgb(139,147,161)) — the rgba fallback never painted.
+# Both halves are pinned so the equivalence the light evidence rests on cannot
+# drift silently: check_ui_visual_evidence.py verifies receipt existence and
+# state identity only, never a token value.
+_LIGHT_REF_HASH_RE = re.compile(
+    r'\[data-theme="light"\] body\.page-macro\.mx4-grid \.mx5-ref-hash\{([^}]*)\}'
+)
+_PAGE_INK3_ALIAS_RE = re.compile(r"body\.page-macro\s*\{[^}]*?--ink-3:\s*var\(--muted\)", re.DOTALL)
+
+
+def test_light_ref_hash_colours_with_the_muted_token():
+    text = DASHBOARD_TEMPLATE_PATH.read_text(encoding="utf-8")
+    match = _LIGHT_REF_HASH_RE.search(text)
+    assert match, (
+        'no [data-theme="light"] body.page-macro.mx4-grid .mx5-ref-hash rule in '
+        "templates/dashboard.html.j2 — the light art direction for the Look-up "
+        "chip hash is missing"
+    )
+    body = match.group(1)
+    assert "var(--muted)" in body, (
+        f"light .mx5-ref-hash must colour with the semantic var(--muted) token; got: {body}"
+    )
+    assert not re.search(r"#[0-9a-fA-F]{3,8}\b|rgba?\(|hsla?\(", body), (
+        f"light .mx5-ref-hash must not carry a colour literal or a literal "
+        f"fallback: {body}"
+    )
+    assert _PAGE_INK3_ALIAS_RE.search(text), (
+        "body.page-macro must keep defining --ink-3 as var(--muted): that alias is "
+        "why the light evidence captured before the token swap still depicts this "
+        "head (both declarations compute to the same colour)"
+    )

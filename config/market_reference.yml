@@ -1664,28 +1664,28 @@ entries:
     short_definition_en: >
       A chip flagging that a company insider has recently reported buying
       shares in the open market.
-    short_definition_zh: '一个标签，标记公司内部人近期在公开市场申报买入股票的行为。'
+    short_definition_zh: '一个标签，标记公司内部人近期披露在公开市场买入股票。'
     why_it_matters_en: >
       Insider buying can be a data point worth noting alongside everything
       else you already look at, since insiders sometimes have informed views on their own company.
     why_it_matters_zh: '内部人买入行为可以作为一项值得留意的数据点，因为内部人有时对自家公司持有更为了解的判断。'
     unit_or_basis: Presence/absence flag from recent public insider filings
-    unit_or_basis_zh: '来自近期公开内部人申报记录的有无标记'
+    unit_or_basis_zh: '来自近期公开内部人披露记录的有无标记'
     interpretation_up: >
       A recent insider buy has been reported for this name.
-    interpretation_up_zh: '该股票近期出现内部人买入申报。'
+    interpretation_up_zh: '该股票近期有内部人披露买入。'
     interpretation_down: >
       No recent insider buy has been reported for this name.
-    interpretation_down_zh: '该股票近期未出现内部人买入申报。'
+    interpretation_down_zh: '该股票近期没有内部人披露买入。'
     interpretation_neutral: >
       Absence of a reported buy does not itself mean anything negative — most names
       have no insider activity most of the time.
-    interpretation_neutral_zh: '未出现买入申报本身并不代表负面信号——大多数股票在大多数时间都没有内部人交易活动。'
+    interpretation_neutral_zh: '没有内部人披露买入本身并不代表负面信号——大多数股票在大多数时间都没有内部人交易活动。'
     caveats_en:
       - This reflects public regulatory filings only and is not a recommendation
         to buy, sell, or size anything.
     caveats_zh:
-      - 该数据仅反映公开监管申报信息，不构成任何买入、卖出或仓位建议。
+      - 该数据仅反映公开监管披露信息，不构成任何买入、卖出或仓位建议。
     owner_ref: us_stocks.html#action-board
     public_source_refs: []
     related_ids: []
