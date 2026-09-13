@@ -277,40 +277,40 @@
   },
   "alerts": [
     {
-      "rule": "gex_flip_cross",
+      "rule": "circuit_breaker_open",
       "severity": "warn",
-      "message": "GEX: net GEX changed sign (net +21bn, spot vs flip +0.2%)",
-      "message_zh": "GEX\uff1a\u51c0 GEX \u8f6c\u53d8\u65b9\u5411\uff08\u51c0 +21bn\uff0c\u73b0\u4ef7\u76f8\u5bf9\u7ffb\u8f6c\u70b9 +0.2%\uff09"
+      "message": "Source 'china_universe' marked dead after 3 consecutive failures \u2014 collector skipped until it recovers; affected signals degrade",
+      "message_zh": "\u6570\u636e\u6e90 'china_universe' \u8fde\u7eed 3 \u6b21\u5931\u8d25\u540e\u88ab\u6807\u8bb0\u4e3a\u4e2d\u65ad \u2014\u91c7\u96c6\u5668\u6682\u505c\u76f4\u81f3\u6062\u590d\uff1b\u76f8\u5173\u4fe1\u53f7\u7f6e\u4fe1\u5ea6\u4e0b\u964d"
     },
     {
-      "rule": "risk_state_elevated",
+      "rule": "circuit_breaker_open",
       "severity": "warn",
-      "message": "Equity risk-state crossed into ELEVATED (63/100) \u2014 positioning/vol/breadth fragility building; de-gross, favor entries over chasing leaders",
-      "message_zh": "\u80a1\u7968\u98ce\u9669\u72b6\u6001\u8fdb\u5165\u504f\u9ad8\u533a\uff0863/100\uff09\u2014 \u4ed3\u4f4d/\u6ce2\u52a8/\u5bbd\u5ea6\u8106\u5f31\u6027\u4e0a\u5347\uff1b\u964d\u4f4e\u655e\u53e3\u3001\u62e9\u4f18\u5165\u573a\u800c\u975e\u8ffd\u9ad8"
+      "message": "Source 'hk_indices' marked dead after 3 consecutive failures \u2014 collector skipped until it recovers; affected signals degrade",
+      "message_zh": "\u6570\u636e\u6e90 'hk_indices' \u8fde\u7eed 3 \u6b21\u5931\u8d25\u540e\u88ab\u6807\u8bb0\u4e3a\u4e2d\u65ad \u2014\u91c7\u96c6\u5668\u6682\u505c\u76f4\u81f3\u6062\u590d\uff1b\u76f8\u5173\u4fe1\u53f7\u7f6e\u4fe1\u5ea6\u4e0b\u964d"
     },
     {
-      "rule": "sector_rs_cross_low",
-      "severity": "info",
-      "message": "XLU RS vs SPY crossed below 10th pctile of 90d (now 2)",
-      "message_zh": "XLU RS \u76f8\u5bf9 SPY \u4e0b\u7a7f 90 \u5929\u7b2c 10 \u767e\u5206\u4f4d\uff08\u73b0\u4e3a 2\uff09"
+      "rule": "circuit_breaker_open",
+      "severity": "warn",
+      "message": "Source 'hk_valuation' marked dead after 3 consecutive failures \u2014 collector skipped until it recovers; affected signals degrade",
+      "message_zh": "\u6570\u636e\u6e90 'hk_valuation' \u8fde\u7eed 3 \u6b21\u5931\u8d25\u540e\u88ab\u6807\u8bb0\u4e3a\u4e2d\u65ad \u2014\u91c7\u96c6\u5668\u6682\u505c\u76f4\u81f3\u6062\u590d\uff1b\u76f8\u5173\u4fe1\u53f7\u7f6e\u4fe1\u5ea6\u4e0b\u964d"
     },
     {
-      "rule": "holdings_active_change",
-      "severity": "info",
-      "message": "ARKK: manager cut GOOGL by -97% of position (2026-09-03..2026-09-11, flow-normalized)",
-      "message_zh": "ARKK\uff1a\u7ecf\u7406 \u51cf\u4ed3 GOOGL \u4ed3\u4f4d -97%\uff082026-09-03..2026-09-11\uff0c\u5df2\u6309\u8d44\u91d1\u6d41\u6807\u51c6\u5316\uff09"
+      "rule": "circuit_breaker_open",
+      "severity": "warn",
+      "message": "Source 'china_filings' marked dead after 3 consecutive failures \u2014 collector skipped until it recovers; affected signals degrade",
+      "message_zh": "\u6570\u636e\u6e90 'china_filings' \u8fde\u7eed 3 \u6b21\u5931\u8d25\u540e\u88ab\u6807\u8bb0\u4e3a\u4e2d\u65ad \u2014\u91c7\u96c6\u5668\u6682\u505c\u76f4\u81f3\u6062\u590d\uff1b\u76f8\u5173\u4fe1\u53f7\u7f6e\u4fe1\u5ea6\u4e0b\u964d"
     },
     {
-      "rule": "holdings_active_change",
-      "severity": "info",
-      "message": "ARKK: manager added META by +24% of position (2026-09-03..2026-09-11, flow-normalized)",
-      "message_zh": "ARKK\uff1a\u7ecf\u7406 \u52a0\u4ed3 META \u4ed3\u4f4d +24%\uff082026-09-03..2026-09-11\uff0c\u5df2\u6309\u8d44\u91d1\u6d41\u6807\u51c6\u5316\uff09"
+      "rule": "circuit_breaker_open",
+      "severity": "warn",
+      "message": "Source 'china_irm' marked dead after 3 consecutive failures \u2014 collector skipped until it recovers; affected signals degrade",
+      "message_zh": "\u6570\u636e\u6e90 'china_irm' \u8fde\u7eed 3 \u6b21\u5931\u8d25\u540e\u88ab\u6807\u8bb0\u4e3a\u4e2d\u65ad \u2014\u91c7\u96c6\u5668\u6682\u505c\u76f4\u81f3\u6062\u590d\uff1b\u76f8\u5173\u4fe1\u53f7\u7f6e\u4fe1\u5ea6\u4e0b\u964d"
     },
     {
-      "rule": "holdings_active_change",
-      "severity": "info",
-      "message": "ARKW: manager cut GOOGL by -95% of position (2026-09-03..2026-09-11, flow-normalized)",
-      "message_zh": "ARKW\uff1a\u7ecf\u7406 \u51cf\u4ed3 GOOGL \u4ed3\u4f4d -95%\uff082026-09-03..2026-09-11\uff0c\u5df2\u6309\u8d44\u91d1\u6d41\u6807\u51c6\u5316\uff09"
+      "rule": "circuit_breaker_open",
+      "severity": "warn",
+      "message": "Source 'china_trade_detail' marked dead after 3 consecutive failures \u2014 collector skipped until it recovers; affected signals degrade",
+      "message_zh": "\u6570\u636e\u6e90 'china_trade_detail' \u8fde\u7eed 3 \u6b21\u5931\u8d25\u540e\u88ab\u6807\u8bb0\u4e3a\u4e2d\u65ad \u2014\u91c7\u96c6\u5668\u6682\u505c\u76f4\u81f3\u6062\u590d\uff1b\u76f8\u5173\u4fe1\u53f7\u7f6e\u4fe1\u5ea6\u4e0b\u964d"
     }
   ],
   "liquidity_quality": {
@@ -4249,7 +4249,7 @@
       "reason": "version-matched + fresh",
       "calibration_version": "w2.7-loro-v1",
       "calibration_generated_at": "2026-07-02T12:32:51Z",
-      "calibration_age_days": 71
+      "calibration_age_days": 72
     },
     "lag_passport": {
       "basis": "per_leg_schedule",
@@ -9436,7 +9436,7 @@
   },
   "fed_path": {
     "asof": "2026-09-11",
-    "built": "2026-09-12T07:27:01.112525+00:00",
+    "built": "2026-09-12T17:23:40.875832+00:00",
     "policy_rate": 3.63,
     "target_low": 3.5,
     "target_high": 3.75,
@@ -11636,7 +11636,7 @@
     "note": "Display-only meta-read across cross_asset / market_drivers / conditions / dislocation. A conviction guardrail, never scored."
   },
   "theme_revisions": {
-    "asof": "2026-09-11",
+    "asof": "2026-09-12",
     "n_themes": 18,
     "themes": {
       "nuclear_power": {
@@ -11765,7 +11765,7 @@
           }
         ],
         "breadth_cov": -0.0222,
-        "basis_days": 22
+        "basis_days": 23
       },
       "data_center_power": {
         "name": "Data Center Power & Cooling",
@@ -11773,7 +11773,7 @@
         "level_state": "POSITIVE",
         "est_drift_90d": 4.0,
         "net_up_total": 68.0,
-        "breadth_accel": 0.412,
+        "breadth_accel": 0.093,
         "broadening_state": "RISING",
         "coverage": 1.0,
         "n_covered": 7,
@@ -11901,8 +11901,8 @@
         "level_state": "POSITIVE",
         "est_drift_90d": 15.79,
         "net_up_total": 86.0,
-        "breadth_accel": -0.319,
-        "broadening_state": "ROLLING",
+        "breadth_accel": null,
+        "broadening_state": "INSUFFICIENT_HISTORY",
         "coverage": 0.86,
         "n_covered": 6,
         "n_members": 7,
@@ -11919,17 +11919,17 @@
             "ticker": "AVGO",
             "breadth": 0.71,
             "n_analysts": 7,
-            "est_chg_90d": -0.1,
-            "n_covering": 45,
-            "breadth_cov": 0.1111
+            "est_chg_90d": -0.2,
+            "n_covering": 47,
+            "breadth_cov": 0.1064
           },
           {
             "ticker": "AMD",
             "breadth": 0.83,
             "n_analysts": 36,
-            "est_chg_90d": 19.2,
-            "n_covering": 47,
-            "breadth_cov": 0.6383
+            "est_chg_90d": 19.4,
+            "n_covering": 48,
+            "breadth_cov": 0.625
           },
           {
             "ticker": "MPWR",
@@ -11956,8 +11956,11 @@
             "breadth_cov": 0.9286
           }
         ],
-        "breadth_cov": 0.3816,
-        "basis_days": 27
+        "breadth_cov": 0.3766,
+        "broadening_proxy": true,
+        "broadening_proxy_state": "ROLLING",
+        "basis": "drift_30v90",
+        "proxy_drift_diff": -5.15
       },
       "semicap_equipment": {
         "name": "Semiconductor Equipment (WFE)",
@@ -11999,7 +12002,7 @@
             "ticker": "AMAT",
             "breadth": 0.93,
             "n_analysts": 29,
-            "est_chg_90d": 14.2,
+            "est_chg_90d": 14.3,
             "n_covering": 34,
             "breadth_cov": 0.7941
           },
@@ -12037,7 +12040,7 @@
           }
         ],
         "breadth_cov": 0.6712,
-        "basis_days": 21
+        "basis_days": 22
       },
       "cybersecurity": {
         "name": "Cybersecurity",
@@ -12109,7 +12112,7 @@
         "level_state": "POSITIVE",
         "est_drift_90d": 3.0,
         "net_up_total": 62.0,
-        "breadth_accel": 0.122,
+        "breadth_accel": 0.127,
         "broadening_state": "RISING",
         "coverage": 0.8,
         "n_covered": 4,
@@ -12143,7 +12146,7 @@
             "ticker": "AMGN",
             "breadth": 0.87,
             "n_analysts": 30,
-            "est_chg_90d": 4.0,
+            "est_chg_90d": 3.9,
             "n_covering": 33,
             "breadth_cov": 0.7879
           }
@@ -12175,7 +12178,7 @@
             "ticker": "AVAV",
             "breadth": -0.64,
             "n_analysts": 11,
-            "est_chg_90d": -18.4,
+            "est_chg_90d": -17.6,
             "n_covering": 16,
             "breadth_cov": -0.4375
           },
@@ -12191,7 +12194,7 @@
             "ticker": "BA",
             "breadth": -0.38,
             "n_analysts": 16,
-            "est_chg_90d": -0.7,
+            "est_chg_90d": -1.4,
             "n_covering": 22,
             "breadth_cov": -0.2727
           },
@@ -12207,7 +12210,7 @@
             "ticker": "AXON",
             "breadth": 0.41,
             "n_analysts": 17,
-            "est_chg_90d": -0.1,
+            "est_chg_90d": 0.0,
             "n_covering": 20,
             "breadth_cov": 0.35
           },
@@ -12579,7 +12582,7 @@
         "level_state": "POSITIVE",
         "est_drift_90d": 2.13,
         "net_up_total": 112.0,
-        "breadth_accel": 0.226,
+        "breadth_accel": 0.006,
         "broadening_state": "RISING",
         "coverage": 1.0,
         "n_covered": 10,
@@ -12621,9 +12624,9 @@
             "ticker": "A",
             "breadth": 0.79,
             "n_analysts": 19,
-            "est_chg_90d": 2.4,
-            "n_covering": 22,
-            "breadth_cov": 0.6818
+            "est_chg_90d": 2.3,
+            "n_covering": 23,
+            "breadth_cov": 0.6522
           },
           {
             "ticker": "IQV",
@@ -12650,8 +12653,8 @@
             "breadth_cov": 0.8571
           }
         ],
-        "breadth_cov": 0.6021,
-        "basis_days": 22
+        "breadth_cov": 0.5989,
+        "basis_days": 21
       },
       "ag_fertilizer": {
         "name": "Agriculture & Fertilizer",
@@ -12659,7 +12662,7 @@
         "level_state": "NEGATIVE",
         "est_drift_90d": -4.98,
         "net_up_total": -33.0,
-        "breadth_accel": 0.505,
+        "breadth_accel": -0.828,
         "broadening_state": "MIXED",
         "coverage": 1.0,
         "n_covered": 7,
@@ -12685,7 +12688,7 @@
             "ticker": "AGCO",
             "breadth": -0.8,
             "n_analysts": 10,
-            "est_chg_90d": -8.9,
+            "est_chg_90d": -8.6,
             "n_covering": 12,
             "breadth_cov": -0.6667
           },
@@ -12787,8 +12790,8 @@
         "level_state": "POSITIVE",
         "est_drift_90d": 1.15,
         "net_up_total": 37.0,
-        "breadth_accel": 0.337,
-        "broadening_state": "RISING",
+        "breadth_accel": -0.282,
+        "broadening_state": "ROLLING",
         "coverage": 1.0,
         "n_covered": 8,
         "n_members": 8,
@@ -14416,7 +14419,7 @@
     "sign_note": "CONTEXT ONLY \u2014 buyer capex as a bullish confirmer inverts Cooper-Gulen-Schill (high spender capex predicts negative forward returns FOR THE SPENDER). The beneficiary-chain transmission (hyperscaler capex leads chip revenue ~2-4q) is a claim being validated forward by engine/demand_ledger.py \u00b15%-vs-SPY theses \u2014 see chain_track_record for the live score. Until the ledger accumulates graded theses with BY-FDR significance, treat demand_band as directional context, not a confirmed edge.",
     "chain_track_record": {
       "schema": "demand_chain_track_record.v1",
-      "as_of": "2026-09-11",
+      "as_of": "2026-09-12",
       "scored_total": 0,
       "open": 61,
       "unscored_soft": 0,
@@ -14885,7 +14888,7 @@
     "note": "display-only; T3 guidance-gap LANGUAGE leg \u2014 8-K 'raising/lowering guidance' language leads the consensus revision (T4) by days-to-weeks. Coarse directional band, not a numeric beat/miss; >=2 filers to leave NEUTRAL. The numeric gap (vs whisper) is the paid upgrade."
   },
   "altdata_confirmers": {
-    "asof": "2026-09-11",
+    "asof": "2026-09-12",
     "n_themes": 6,
     "themes": {
       "memory_storage": {
@@ -14980,7 +14983,7 @@
     "note": "display-only; leading rerating CONFIRMERS (insider clusters, accelerating federal awards) rolled up from data/altdata/by_ticker.json. Inverse-to-breadth and correlation-penalized in the score \u2014 a confirmer pre-revision is a tell, the same confirmer once revisions are broad is just crowding."
   },
   "foresight_cascade": {
-    "asof": "2026-09-11",
+    "asof": "2026-09-12",
     "n_themes": 18,
     "themes": [
       {
@@ -15422,7 +15425,7 @@
         "capex_yoy": 69.0,
         "revision_breadth": 0.337,
         "revision_level": "POSITIVE",
-        "broadening_state": "RISING",
+        "broadening_state": "ROLLING",
         "est_drift_90d": 1.15,
         "guidance_band": null,
         "guidance_net": null,
@@ -15451,10 +15454,10 @@
         "score": 50.0,
         "score_detail": {
           "score": 50.0,
-          "base": 75.4,
+          "base": 68.5,
           "axes": {
             "magnitude": 1.0,
-            "acceleration": 0.95,
+            "acceleration": 0.68,
             "bottleneck": null,
             "pricing_power": 0.97,
             "underpricing": 0.35,
@@ -16052,7 +16055,7 @@
         "capex_yoy": 69.0,
         "revision_breadth": 0.597,
         "revision_level": "POSITIVE",
-        "broadening_state": "ROLLING",
+        "broadening_state": "INSUFFICIENT_HISTORY",
         "est_drift_90d": 15.79,
         "guidance_band": null,
         "guidance_net": null,
@@ -16081,10 +16084,10 @@
         "score": 45.0,
         "score_detail": {
           "score": 45.0,
-          "base": 45.0,
+          "base": 46.5,
           "axes": {
             "magnitude": 0.56,
-            "acceleration": 0.68,
+            "acceleration": 0.75,
             "bottleneck": 0.35,
             "pricing_power": 0.34,
             "underpricing": 0.06,
@@ -16092,7 +16095,9 @@
             "timing": 0.4
           },
           "n_axes_live": 7,
-          "caps": [],
+          "caps": [
+            "WATCH (late) -> capped at 45"
+          ],
           "verdict": "watch",
           "physical_confirmed": true,
           "earliness": 0.0588
@@ -17236,7 +17241,7 @@
       "trend": "accelerating"
     },
     "late_line_basis": "percentile_cov",
-    "late_line_threshold": 0.6295,
+    "late_line_threshold": 0.6282,
     "late_line_provisional": true,
     "note": "display-only; STAGE = where the leading edge is. T1 bottleneck LEADS, T2 demand confirms, T3 guidance pre-signals the revision, T4 revisions confirm, exit-risk caps the late ones; the 0-100 score ranks edge+quality. ENTRY is deferred to the dislocation overlay.",
     "scored": true,
@@ -17820,7 +17825,7 @@
     "note": "display-only; CANDIDATE emerging bottlenecks \u2014 industries where a majority of un-tracked companies are independently reporting physical scarcity. A candidate is on PROBATION: never a buy, never auto-added; it earns a tracked slot only when a physical correlate fires. The pre-13D discovery layer."
   },
   "subsector_scan": {
-    "asof": "2026-09-11",
+    "asof": "2026-09-12",
     "n_subsectors": 61,
     "n_scarcity_aligned": 5,
     "subsectors": [
@@ -17832,7 +17837,7 @@
         "breadth": 0.213,
         "level_state": "POSITIVE",
         "est_drift_90d": 0.26,
-        "broadening_state": "RISING",
+        "broadening_state": "ROLLING",
         "n_scarcity": 2,
         "scarcity_members": [
           "ALGN",
@@ -17889,7 +17894,7 @@
         "breadth": 0.541,
         "level_state": "POSITIVE",
         "est_drift_90d": 2.24,
-        "broadening_state": "RISING",
+        "broadening_state": "ROLLING",
         "n_scarcity": 3,
         "scarcity_members": [
           "AME",
@@ -17908,7 +17913,7 @@
         "breadth": 0.53,
         "level_state": "POSITIVE",
         "est_drift_90d": 2.04,
-        "broadening_state": "ROLLING",
+        "broadening_state": "RISING",
         "n_scarcity": 3,
         "scarcity_members": [
           "BA",
@@ -17943,8 +17948,8 @@
         "n_covered": 5,
         "breadth": 0.886,
         "level_state": "POSITIVE",
-        "est_drift_90d": 14.21,
-        "broadening_state": "ROLLING",
+        "est_drift_90d": 14.31,
+        "broadening_state": "RISING",
         "n_scarcity": 0,
         "scarcity_members": [],
         "stage": "RE-RATING",
@@ -17976,7 +17981,7 @@
         "breadth": 0.847,
         "level_state": "POSITIVE",
         "est_drift_90d": 3.79,
-        "broadening_state": "RISING",
+        "broadening_state": "ROLLING",
         "n_scarcity": 1,
         "scarcity_members": [
           "COHR"
@@ -18071,8 +18076,8 @@
         "n_covered": 4,
         "breadth": 0.734,
         "level_state": "POSITIVE",
-        "est_drift_90d": 3.99,
-        "broadening_state": "ROLLING",
+        "est_drift_90d": 3.89,
+        "broadening_state": "RISING",
         "n_scarcity": 0,
         "scarcity_members": [],
         "stage": "RE-RATING",
@@ -18102,7 +18107,7 @@
         "breadth": 0.652,
         "level_state": "POSITIVE",
         "est_drift_90d": 2.34,
-        "broadening_state": "RISING",
+        "broadening_state": "ROLLING",
         "n_scarcity": 1,
         "scarcity_members": [
           "CDNS"
@@ -18134,7 +18139,7 @@
         "breadth": 0.567,
         "level_state": "POSITIVE",
         "est_drift_90d": 6.49,
-        "broadening_state": "RISING",
+        "broadening_state": "ROLLING",
         "n_scarcity": 0,
         "scarcity_members": [],
         "stage": "RE-RATING",
@@ -18157,29 +18162,14 @@
         "text_only": true
       },
       {
-        "sector": "Financial",
-        "sub_industry": "Asset Management",
-        "n_members": 14,
-        "n_covered": 13,
-        "breadth": 0.526,
-        "level_state": "POSITIVE",
-        "est_drift_90d": 6.17,
-        "broadening_state": "ROLLING",
-        "n_scarcity": 0,
-        "scarcity_members": [],
-        "stage": "RE-RATING",
-        "rationale": "revisions already broad (bottleneck unknown) \u2014 likely late",
-        "text_only": true
-      },
-      {
         "sector": "Healthcare",
         "sub_industry": "Medical Instruments & Supplies",
         "n_members": 6,
         "n_covered": 5,
-        "breadth": 0.518,
+        "breadth": 0.521,
         "level_state": "POSITIVE",
-        "est_drift_90d": 1.25,
-        "broadening_state": "INSUFFICIENT_HISTORY",
+        "est_drift_90d": 1.22,
+        "broadening_state": "ROLLING",
         "n_scarcity": 0,
         "scarcity_members": [],
         "stage": "RE-RATING",
@@ -18194,7 +18184,7 @@
         "breadth": 0.502,
         "level_state": "POSITIVE",
         "est_drift_90d": 1.86,
-        "broadening_state": "ROLLING",
+        "broadening_state": "RISING",
         "n_scarcity": 0,
         "scarcity_members": [],
         "stage": "RE-RATING",
@@ -18215,13 +18205,28 @@
         "stage": "WATCH",
         "rationale": "revisions present (bottleneck unknown)",
         "text_only": true
+      },
+      {
+        "sector": "Basic Materials",
+        "sub_industry": "Agricultural Inputs",
+        "n_members": 3,
+        "n_covered": 3,
+        "breadth": -0.644,
+        "level_state": "NEGATIVE",
+        "est_drift_90d": -4.98,
+        "broadening_state": "MIXED",
+        "n_scarcity": 0,
+        "scarcity_members": [],
+        "stage": "WATCH",
+        "rationale": "revisions present (bottleneck unknown)",
+        "text_only": true
       }
     ],
     "all_count": 61,
     "note": "display-only; the cascade signature (text scarcity x revision breadth) over all 113 sub-industries. The bottleneck is a TEXT-ONLY proxy (EDGAR scarcity language), not FRED-confirmed \u2014 a screen to investigate, not a confirmed thesis. Complements the curated 18-theme cascade and the small-cap discovery layer."
   },
   "foresight_convergence": {
-    "asof": "2026-09-11",
+    "asof": "2026-09-12",
     "n_items": 18,
     "ranked": [
       {
@@ -18835,22 +18840,23 @@
     "note": "W4a rebuild: HEAT = n_lit_sources / n_available_sources [\u00d7 earliness when measured \u2014 dropped, not filled, when absent].  5 distinct data feeds (physical \u00b7 demand \u00b7 guidance \u00b7 altdata \u00b7 edgar_scarcity \u2014 the old subsector_scarcity + discovery_echo were one EDGAR parquet, now counted once). Dark sources leave the denominator \u2014 no outage penalty.  Earliness from engine/foresight_earliness.py (attention-based, Q3); absent below 2 usable legs \u2192 factor DROPPED (not laundered as neutral 0.5).  Physical numeric bonus \u00d71.15 when genuinely TIGHT/SOLD_OUT.  Threshold 0.40 PROVISIONAL.  Meta-driver cards emit for \u22653 co-heating same-cluster themes.  Cross-theme heats reflect agreement among AVAILABLE surfaces only \u2014 themes with different data coverage are not on a fully comparable scale."
   },
   "foresight_analyst": {
-    "regime_read": "The board is thin on genuinely aligned multi-surface convergence. Only data_center_power shows three independent surfaces simultaneously lit, but its heat is middling and its own rationale flags supply as not yet tight, so even that needs skeptical handling. Several themes show a single lit surface (physical, demand, or edgar_scarcity) and fail the convergence bar.",
-    "regime_read_zh": "\u770b\u677f\u4e2d\u771f\u6b63\u591a\u8868\u9762\u4e00\u81f4\u6536\u655b\u7684\u4e3b\u9898\u5f88\u5c11\u3002\u53ea\u6709 data_center_power \u540c\u65f6\u70b9\u4eae\u4e09\u4e2a\u72ec\u7acb\u8868\u9762\uff0c\u4f46\u5176\u70ed\u5ea6\u4e2d\u7b49\uff0c\u4e14\u81ea\u8eab\u7406\u7531\u6307\u51fa\u4f9b\u7ed9\u5c1a\u672a\u7d27\u5f20\uff0c\u56e0\u6b64\u4ecd\u9700\u8c28\u614e\u5bf9\u5f85\u3002\u591a\u4e2a\u4e3b\u9898\u4ec5\u70b9\u4eae\u5355\u4e00\u8868\u9762\uff08physical\u3001demand \u6216 edgar_scarcity\uff09\uff0c\u672a\u8fbe\u5230\u6536\u655b\u95e8\u69db\u3002",
+    "regime_read": "Only data_center_power shows genuine multi-surface convergence: a tightening physical bottleneck, accelerating customer demand, and raising management guidance align, though broad revisions and the board\u2019s conflicting supply rationale temper conviction. All other themes lack enough independently confirmed surfaces or contain neutral and text-only legs.",
+    "regime_read_zh": "\u76ee\u524d\u53ea\u6709 data_center_power \u5448\u73b0\u771f\u6b63\u7684\u591a\u8868\u9762\u6536\u655b\uff1a\u5b9e\u4f53\u74f6\u9888\u8d8b\u7d27\u3001\u5ba2\u6237\u9700\u6c42\u52a0\u901f\u4e0e\u7ba1\u7406\u5c42\u4e0a\u8c03\u6307\u5f15\u76f8\u4e92\u5370\u8bc1\uff0c\u4f46\u5206\u6790\u5e08\u4fee\u6b63\u5df2\u8f83\u5e7f\uff0c\u4e14\u770b\u677f\u5bf9\u4f9b\u5e94\u72b6\u51b5\u7684\u63cf\u8ff0\u5b58\u5728\u77db\u76fe\uff0c\u56e0\u6b64\u9700\u8981\u964d\u4f4e\u786e\u4fe1\u5ea6\u3002\u5176\u4ed6\u4e3b\u9898\u8981\u4e48\u7f3a\u5c11\u8db3\u591f\u7684\u72ec\u7acb\u786e\u8ba4\u8868\u9762\uff0c\u8981\u4e48\u4f9d\u8d56\u4e2d\u6027\u6216\u4ec5\u6587\u672c\u4fe1\u53f7\u3002",
     "theses": [
       {
         "theme": "data_center_power",
-        "mechanism": "Physical bottleneck is tightening while customer demand accelerates and management guidance is being raised. The mechanism is a capacity-constrained supply chain meeting an accelerating demand pull from power and cooling for data centers: when physical tightness is confirmed alongside guidance raises, it signals that upstream constraints are being passed through to contracted backlog rather than absorbed by inventory.",
-        "non_obvious": "The cross-surface pattern is that all three independent legs (physical, demand, guidance) are moving in the same direction at the same time, but the desk's own rule-set grades the stage as WATCH with only medium heat. This suggests the market may be focusing on the 'still early' aspect of revisions while the physical-demand-guidance alignment is already firmer than headline heat implies.",
+        "mechanism": "Accelerating customer deployment is pressing against a tightening power-and-cooling bottleneck [demand][physical], giving management enough operating visibility to raise guidance [guidance]. The alignment suggests demand is reaching constrained infrastructure rather than remaining only a spending intention.",
+        "non_obvious": "The difficult-to-see pattern is that physical tightening and customer capex acceleration are appearing alongside guidance raises [physical][demand][guidance], while analyst revisions are already broad but earliness remains positive. This may represent operational evidence moving ahead of full estimate incorporation, although the board\u2019s rationale disputes whether supply is actually tight.",
         "kill_criteria": [
-          "bottleneck_band loosens to NEUTRAL or looser",
-          "guidance_band turns to NEUTRAL or cuts (guidance_raisers falls)",
-          "demand_band decelerates to NEUTRAL or decelerating",
-          "revision_breadth rolls over from 0.745 toward 0.5 or below"
+          "The physical bottleneck band moves from TIGHTENING to NEUTRAL or LOOSENING.",
+          "The demand band moves from ACCELERATING to NEUTRAL or DECELERATING.",
+          "The guidance band moves from RAISING to NEUTRAL or CUTTING.",
+          "Revision breadth rolls over while either demand or guidance also weakens.",
+          "The board continues to classify supply as not tight despite the physical band, indicating the apparent bottleneck signal is not internally validated."
         ],
         "evidence": [
           {
-            "text": "[physical] bottleneck_band: TIGHTENING",
+            "text": "[physical] bottleneck_band: TIGHTENING; physical_confirmed: true",
             "ungrounded": true
           },
           {
@@ -18858,243 +18864,54 @@
             "ungrounded": true
           },
           {
-            "text": "[guidance] guidance_band: RAISING, guidance_raisers: 2",
+            "text": "[guidance] guidance_band: RAISING; multiple guidance raisers",
             "ungrounded": true
           },
           {
-            "text": "[revision_breadth] 0.745",
+            "text": "[revisions] revision_breadth is already broad",
+            "ungrounded": true
+          },
+          {
+            "text": "[rationale] the board simultaneously states that supply is not tight, creating an internal inconsistency",
             "ungrounded": true
           }
         ],
         "evidence_display": [],
-        "dissent": "The desk's own rationale says 'supply not tight; nothing actionable yet' despite the physical band being labeled TIGHTENING. If the physical bottleneck is not yet binding in actual lead times or pricing, the alignment may be premature and could fade without a true supply crunch.",
-        "confidence": "low",
+        "dissent": "The strongest contrary case is the board\u2019s own rationale that supply is not tight, combined with already broad revisions; the apparent convergence may therefore reflect a recognized demand cycle rather than an under-modeled scarcity regime.",
+        "confidence": "medium",
         "n_grounded": 0,
-        "n_total_evidence": 4,
+        "n_total_evidence": 5,
         "_forecast_clamped": null
       }
     ],
-    "confidence": "low",
-    "asof": "2026-09-11",
+    "confidence": "medium",
+    "asof": "2026-09-12",
     "n_theses": 1,
     "disclaimer": "An AI reading of the desk's OWN deterministic convergence \u2014 checkable and forward-graded, never a price forecast."
   },
   "thesis_monitor": {
-    "asof": "2026-09-11",
-    "n_open": 11,
-    "n_broken": 9,
+    "asof": "2026-09-12",
+    "n_open": 6,
+    "n_broken": 3,
     "n_weakening": 0,
-    "n_deterministic": 10,
+    "n_deterministic": 2,
     "n_llm": 5,
     "monitored": [
       {
-        "theme": "ag_fertilizer",
-        "source": "deterministic",
-        "status": "BROKEN",
-        "stage_at_open": "PRECIPICE (text)",
-        "opened": "2026-08-08",
-        "kill_criteria": [
-          {
-            "kind": "text_accel_negative",
-            "detail": "language accel < 0 for 2 consecutive builds"
-          },
-          {
-            "kind": "stage_regressed_to_watch",
-            "detail": "cascade stage no longer in PRECIPICE/BROADENING family"
-          }
-        ],
-        "criterion_statuses": [
-          "WEAKENING",
-          "BROKEN"
-        ],
-        "n_criteria": 2
-      },
-      {
-        "theme": "data_center_power",
-        "source": "deterministic",
-        "status": "BROKEN",
-        "stage_at_open": "BROADENING (text)",
-        "opened": "2026-08-02",
-        "kill_criteria": [
-          {
-            "kind": "text_accel_negative",
-            "detail": "language accel < 0 for 2 consecutive builds"
-          },
-          {
-            "kind": "stage_regressed_to_watch",
-            "detail": "cascade stage no longer in PRECIPICE/BROADENING family"
-          }
-        ],
-        "criterion_statuses": [
-          "WEAKENING",
-          "BROKEN"
-        ],
-        "n_criteria": 2,
-        "llm_mechanism": null,
-        "llm_status": "INTACT",
-        "llm_heat_at_open": 0.507,
-        "llm_heat_now": 0.426,
-        "llm_opened_asof": "2026-09-11",
-        "llm_kill_criteria": [
-          "physical bottleneck_band reverses to NEUTRAL or LOOSE",
-          "guidance_band stops RAISING and a guidance raiser turns to a cut",
-          "demand_band decelerates to NEUTRAL or WEAKENING",
-          "revision_breadth expands past a point where the analyst lag is closed and then rolls over"
-        ]
-      },
-      {
-        "theme": "space_satellite",
-        "source": "deterministic",
-        "status": "BROKEN",
-        "stage_at_open": "BROADENING (text)",
-        "opened": "2026-08-01",
-        "kill_criteria": [
-          {
-            "kind": "text_accel_negative",
-            "detail": "language accel < 0 for 2 consecutive builds"
-          },
-          {
-            "kind": "stage_regressed_to_watch",
-            "detail": "cascade stage no longer in PRECIPICE/BROADENING family"
-          }
-        ],
-        "criterion_statuses": [
-          "INTACT",
-          "BROKEN"
-        ],
-        "n_criteria": 2,
-        "llm_mechanism": null,
-        "llm_status": "BROKEN",
-        "llm_heat_at_open": 0.608,
-        "llm_heat_now": 0.314,
-        "llm_opened_asof": "2026-09-06",
-        "llm_kill_criteria": [
-          "altdata gov-award accel goes silent or reverses for 2+ quarters",
-          "edgar_scarcity signal fades in annual/quarterly filing fingerprints",
-          "revision_breadth rolls over and confirms a post re-rating stagnation",
-          "policy pipeline (comment close in 12d) yields no final rule or funding follow-through"
-        ]
-      },
-      {
-        "theme": "rare_earth_critical_min",
-        "source": "deterministic",
-        "status": "BROKEN",
-        "stage_at_open": "PRECIPICE (text)",
-        "opened": "2026-08-08",
-        "kill_criteria": [
-          {
-            "kind": "text_accel_negative",
-            "detail": "language accel < 0 for 2 consecutive builds"
-          },
-          {
-            "kind": "stage_regressed_to_watch",
-            "detail": "cascade stage no longer in PRECIPICE/BROADENING family"
-          }
-        ],
-        "criterion_statuses": [
-          "INTACT",
-          "BROKEN"
-        ],
-        "n_criteria": 2
-      },
-      {
-        "theme": "copper_steel_electrify",
-        "source": "deterministic",
-        "status": "BROKEN",
-        "stage_at_open": "BROADENING (text)",
-        "opened": "2026-07-25",
-        "kill_criteria": [
-          {
-            "kind": "text_accel_negative",
-            "detail": "language accel < 0 for 2 consecutive builds"
-          },
-          {
-            "kind": "stage_regressed_to_watch",
-            "detail": "cascade stage no longer in PRECIPICE/BROADENING family"
-          }
-        ],
-        "criterion_statuses": [
-          "INTACT",
-          "BROKEN"
-        ],
-        "n_criteria": 2
-      },
-      {
         "theme": "defense_aerospace",
-        "source": "deterministic",
+        "source": "llm",
         "status": "BROKEN",
-        "stage_at_open": "BROADENING (text)",
-        "opened": "2026-07-04",
+        "heat_at_open": 0.471,
+        "heat_now": 0.255,
+        "n_surfaces_now": 1,
+        "physical_now": false,
+        "opened_asof": "2026-09-06",
         "kill_criteria": [
-          {
-            "kind": "text_accel_negative",
-            "detail": "language accel < 0 for 2 consecutive builds"
-          },
-          {
-            "kind": "stage_regressed_to_watch",
-            "detail": "cascade stage no longer in PRECIPICE/BROADENING family"
-          }
-        ],
-        "criterion_statuses": [
-          "INTACT",
-          "BROKEN"
-        ],
-        "n_criteria": 2,
-        "llm_mechanism": null,
-        "llm_status": "BROKEN",
-        "llm_heat_at_open": 0.471,
-        "llm_heat_now": 0.255,
-        "llm_opened_asof": "2026-09-06",
-        "llm_kill_criteria": [
           "Government-award acceleration disappears or reverses [altdata].",
           "The patent cluster dissipates without follow-through [altdata].",
           "Subsector scarcity falls out of the lit surfaces [edgar_scarcity].",
           "The physical bottleneck remains NEUTRAL while award acceleration and scarcity weaken [physical] [altdata] [edgar_scarcity]."
         ]
-      },
-      {
-        "theme": "ai_semiconductors",
-        "source": "deterministic",
-        "status": "BROKEN",
-        "stage_at_open": "BROADENING (text)",
-        "opened": "2026-07-06",
-        "kill_criteria": [
-          {
-            "kind": "text_accel_negative",
-            "detail": "language accel < 0 for 2 consecutive builds"
-          },
-          {
-            "kind": "stage_regressed_to_watch",
-            "detail": "cascade stage no longer in PRECIPICE/BROADENING family"
-          }
-        ],
-        "criterion_statuses": [
-          "INTACT",
-          "BROKEN"
-        ],
-        "n_criteria": 2
-      },
-      {
-        "theme": "memory_storage",
-        "source": "deterministic",
-        "status": "BROKEN",
-        "stage_at_open": "BROADENING (text)",
-        "opened": "2026-09-04",
-        "kill_criteria": [
-          {
-            "kind": "text_accel_negative",
-            "detail": "language accel < 0 for 2 consecutive builds"
-          },
-          {
-            "kind": "stage_regressed_to_watch",
-            "detail": "cascade stage no longer in PRECIPICE/BROADENING family"
-          }
-        ],
-        "criterion_statuses": [
-          "INTACT",
-          "BROKEN"
-        ],
-        "n_criteria": 2
       },
       {
         "theme": "medical_devices",
@@ -19110,6 +18927,22 @@
           "revision_breadth remains below a meaningful widening threshold after two more reporting cycles",
           "activist 13D cluster fails to expand beyond a single filer",
           "bottleneck_band shifts from TIGHTENING (fingerprint) to NEUTRAL without a corresponding demand-side acceleration"
+        ]
+      },
+      {
+        "theme": "space_satellite",
+        "source": "llm",
+        "status": "BROKEN",
+        "heat_at_open": 0.608,
+        "heat_now": 0.314,
+        "n_surfaces_now": 1,
+        "physical_now": false,
+        "opened_asof": "2026-09-06",
+        "kill_criteria": [
+          "altdata gov-award accel goes silent or reverses for 2+ quarters",
+          "edgar_scarcity signal fades in annual/quarterly filing fingerprints",
+          "revision_breadth rolls over and confirms a post re-rating stagnation",
+          "policy pipeline (comment close in 12d) yields no final rule or funding follow-through"
         ]
       },
       {
@@ -19169,6 +19002,22 @@
           "revision breadth turns negative and stays there for more than a month",
           "activist 13d filing is exited before any fundamental bottleneck materializes"
         ]
+      },
+      {
+        "theme": "data_center_power",
+        "source": "llm",
+        "status": "INTACT",
+        "heat_at_open": 0.426,
+        "heat_now": 0.426,
+        "n_surfaces_now": 3,
+        "physical_now": true,
+        "opened_asof": "2026-09-12",
+        "kill_criteria": [
+          "Physical bottleneck band returns to NEUTRAL or loosens [physical].",
+          "Demand band falls from ACCELERATING to NEUTRAL or weaker [demand].",
+          "Guidance band ceases RAISING or turns to cuts [guidance].",
+          "Revision breadth rolls over while physical or demand confirmation weakens [physical] [demand]."
+        ]
       }
     ],
     "note": "deterministic+LLM dual-producer: deterministic theses auto-instantiate from PRECIPICE/BROADENING cascade flags and evaluate machine-checkable kill-criteria (consecutive-build tracking, asof-deduped); LLM theses fold onto deterministic rows as enrichment when the theme overlaps. THESIS-BROKEN fires with zero LLM involvement; close event appended on BROKEN, closed theses excluded from n_open."
@@ -19176,7 +19025,7 @@
   "cross_asset_confirm": {
     "verdict": "diverge",
     "verdict_zh": "\u80cc\u79bb",
-    "headline_en": "Bonds/FX diverge from the equity read \u2014 fast-family caution the equity gauges don't yet show (credit, usd_triple_red).",
+    "headline_en": "Bonds/FX diverge from the equity read \u2014 fast-family caution the equity gauges don't yet show (usd_triple_red).",
     "headline_zh": "\u503a\u5238/\u5916\u6c47\u4e0e\u80a1\u7968\u8bfb\u6570\u80cc\u79bb\uff08\u9886\u5148\u677f\u5757\u51fa\u73b0\u80a1\u7968\u8ba1\u91cf\u5c1a\u672a\u663e\u793a\u7684\u8c28\u614e\u4fe1\u53f7\uff09\u3002",
     "confidence": "medium",
     "confidence_en": "medium",
@@ -19208,19 +19057,10 @@
         "detail_en": "bonds & FX confirm the risk-on equity read",
         "detail_zh": "\u503a\u5238\u4e0e\u5916\u6c47\u786e\u8ba4\u4e86\u504f\u591a\u7684\u80a1\u7968\u8bfb\u6570",
         "tier": "context",
-        "caution_votes": 1
+        "caution_votes": 0
       }
     ],
     "caution_flags": [
-      {
-        "key": "credit",
-        "en": "High-yield credit widening from tight \u2014 credit risk-appetite turning (partly-leading via the EBP family, but often coincident with equity stress).",
-        "zh": "\u9ad8\u6536\u76ca\u4fe1\u7528\u4ece\u504f\u7d27\u8d70\u9614 \u2014 \u4fe1\u7528\u98ce\u9669\u504f\u597d\u8f6c\u5411\uff08\u7ecfEBP\u5177\u90e8\u5206\u9886\u5148\u6027\uff0c\u4f46\u5e38\u4e0e\u80a1\u7968\u538b\u529b\u540c\u6b65\uff09\u3002",
-        "severity": "medium",
-        "owner": "bonds",
-        "lead": "leading",
-        "equity_blind": true
-      },
       {
         "key": "usd_triple_red",
         "en": "Triple-red \u2014 USD, equities & Treasuries falling together: the dollar is NOT acting as a safe haven (a US-idiosyncratic 'sell-America' configuration).",
@@ -19245,7 +19085,7 @@
     "n_legs": 2,
     "n_agree": 2,
     "n_diverge": 0,
-    "n_blind_flags": 2,
+    "n_blind_flags": 1,
     "to_brain": {
       "verdict": "diverge",
       "cycle": {
@@ -19253,18 +19093,12 @@
         "bonds": "late",
         "fx_regime": "Global reflation"
       },
-      "leading_caution_votes": 1,
+      "leading_caution_votes": 0,
       "fx_risk": "risk-on",
       "bond_health": 87,
       "bond_health_label": "healthy",
       "stock_bond_hedge": "breakdown",
       "caution_flags": [
-        {
-          "key": "credit",
-          "lead": "leading",
-          "severity": "medium",
-          "equity_blind": true
-        },
         {
           "key": "usd_triple_red",
           "lead": "coincident",
@@ -19275,7 +19109,7 @@
     },
     "note_en": "Bonds & FX cross-check: does the fast-family complex (bonds + FX) agree with the equity/macro regime? DISPLAY-ONLY \u2014 never scored. Most legs are coincident confirmation / fragility gauges; only credit/EBP and the curve have a (noisy) leading horizon. Divergences are attention flags, not forecasts.",
     "note_zh": "\u503a\u5238\u4e0e\u5916\u6c47\u4ea4\u53c9\u9a8c\u8bc1\uff1a\u5feb\u7aef\u677f\u5757\uff08\u503a\u5238+\u5916\u6c47\uff09\u662f\u5426\u4e0e\u80a1\u7968/\u5b8f\u89c2\u5468\u671f\u4e00\u81f4\uff1f\u4ec5\u4f9b\u5c55\u793a \u2014 \u4ece\u4e0d\u8bc4\u5206\u3002\u591a\u6570\u4e3a\u540c\u6b65\u786e\u8ba4/\u8106\u5f31\u6027\u8ba1\u91cf\uff1b\u4ec5\u4fe1\u7528/EBP\u4e0e\u66f2\u7ebf\u5177\uff08\u5608\u6742\u7684\uff09\u9886\u5148\u6027\u3002\u80cc\u79bb\u4e3a\u5173\u6ce8\u4fe1\u53f7\uff0c\u975e\u9884\u6d4b\u3002",
-    "asof": "2026-09-10"
+    "asof": "2026-09-11"
   },
   "macro_risk": {
     "score": 0.0992,
@@ -19290,61 +19124,61 @@
   },
   "vol_regime": {
     "available": true,
-    "asof": "2026-09-10",
+    "asof": "2026-09-11",
     "regime": "normalizing",
-    "risk_score": 0.173,
+    "risk_score": 0.073,
     "scored_score": null,
     "scored_active": false,
-    "vix": 17.84,
-    "ts_slope": 0.904,
+    "vix": 15.84,
+    "ts_slope": 0.852,
     "ts_slope_state": "contango",
-    "ts9": 0.992,
-    "move": 82.1,
-    "move_pctile": 0.491,
-    "move_vix": 4.601,
-    "vrp": 11.94,
-    "vrp_pctile": 0.948,
-    "vrp_chg_21d": 6.59,
-    "vrp_state": "rich (vol overpriced \u2014 constructive)",
-    "skew": 147.0,
-    "skew_cost_pctile": 0.535,
+    "ts9": 0.914,
+    "move": 82.2,
+    "move_pctile": 0.499,
+    "move_vix": 5.19,
+    "vrp": 5.03,
+    "vrp_pctile": 0.338,
+    "vrp_chg_21d": -0.38,
+    "vrp_state": "normal",
+    "skew": 154.5,
+    "skew_cost_pctile": 0.791,
     "insurance_cost": "normal",
-    "downside_vrp": 4.457,
-    "vvix": 102.7,
-    "vvix_vix": 5.754,
-    "vvix_pctile": 0.67,
-    "vvix_vix_pctile": 0.588,
+    "downside_vrp": 5.173,
+    "vvix": 91.3,
+    "vvix_vix": 5.763,
+    "vvix_pctile": 0.201,
+    "vvix_vix_pctile": 0.596,
     "vvix_state": "normal",
-    "vol_target_scalar": 0.67,
+    "vol_target_scalar": 0.76,
     "fragility_confluence": 0,
     "flags": [],
     "legs": {
       "ts_slope": {
-        "z": -0.121,
+        "z": 0.594,
         "scored": false,
         "sign": null,
         "eligible": true
       },
       "move": {
-        "z": 0.194,
+        "z": 0.185,
         "scored": false,
         "sign": null,
         "eligible": true
       },
       "vrp": {
-        "z": 1.227,
+        "z": -0.231,
         "scored": false,
         "sign": null,
         "eligible": true
       },
       "ts9": {
-        "z": -0.784,
+        "z": 0.02,
         "scored": false,
         "sign": null,
         "eligible": false
       },
       "skew_cost": {
-        "z": -0.088,
+        "z": 0.653,
         "scored": false,
         "sign": null,
         "eligible": false
@@ -19356,7 +19190,7 @@
         "eligible": false
       },
       "vvix": {
-        "z": 0.29,
+        "z": 0.303,
         "scored": false,
         "sign": null,
         "eligible": false
@@ -19421,10 +19255,10 @@
       },
       {
         "key": "cross_asset",
-        "intensity": 0.68,
+        "intensity": 0.34,
         "weight": 0.3,
-        "contribution": 0.204,
-        "detail_en": "2 cross-asset caution flag(s): leading, coincident",
+        "contribution": 0.102,
+        "detail_en": "1 cross-asset caution flag(s): coincident",
         "detail_zh": "\u8de8\u8d44\u4ea7\u80cc\u79bb"
       }
     ],
@@ -19490,10 +19324,10 @@
       },
       "cross_asset": {
         "available": true,
-        "intensity": 0.68,
+        "intensity": 0.34,
         "weight": 0.3,
-        "contribution": 0.204,
-        "detail_en": "2 cross-asset caution flag(s): leading, coincident",
+        "contribution": 0.102,
+        "detail_en": "1 cross-asset caution flag(s): coincident",
         "detail_zh": "\u8de8\u8d44\u4ea7\u80cc\u79bb"
       },
       "macro_backdrop": {
@@ -19994,8 +19828,19 @@
         }
       ],
       "price_hits": [],
-      "ihm_depths": [],
-      "ihm_hits": [],
+      "ihm_depths": [
+        {
+          "index": "IWM",
+          "metric": "ihm_macd_hist_depth_pctile",
+          "depth_pctile": 10.0,
+          "reason": "low_depth",
+          "washout_turn": false,
+          "extreme": true
+        }
+      ],
+      "ihm_hits": [
+        "IWM"
+      ],
       "message_en": null,
       "message_zh": null,
       "authority": {
@@ -20411,11 +20256,11 @@
       "streak_sessions": 2
     },
     "radar_xref": {
-      "state": "watch",
+      "state": "caution",
       "phase": null
     },
     "accruing": "accruing \u2014 display-only until >=30 broad-state grades + operator ruling. Forward-graded by engine/ignition_audit.py (US arm).",
-    "_timing_s": 2.24,
+    "_timing_s": 2.44,
     "forward_log": {
       "market": "us",
       "n_graded": 4,
@@ -20449,13 +20294,13 @@
     "weights_basis": "polygon_mktcap",
     "trend_state": "cooling",
     "structure": {
-      "dd_from_252d_high": -0.011671,
+      "dd_from_252d_high": -0.011566,
       "chip": "at_highs"
     },
     "run": {
       "start": "2026-08-27",
       "sessions": 11,
-      "cw_ret": 0.010209,
+      "cw_ret": 0.010338,
       "spy_ret": -0.008832
     },
     "k7": {
@@ -20463,11 +20308,11 @@
       "rs": 6
     },
     "cw": {
-      "r2": 0.011966,
-      "r5": -0.011671,
-      "r10": 0.010209,
-      "r20": 0.016214,
-      "rel20": 0.033685
+      "r2": 0.012143,
+      "r5": -0.011566,
+      "r10": 0.010338,
+      "r20": 0.016284,
+      "rel20": 0.033755
     },
     "ew": {
       "r10": 0.023055,
@@ -20476,7 +20321,7 @@
     "members": [
       {
         "sym": "AAPL",
-        "w": 0.202314,
+        "w": 0.203711,
         "r5": 0.01237,
         "r10": 0.056234,
         "r20": 0.088482,
@@ -20484,11 +20329,11 @@
         "above50": true,
         "above200": true,
         "mtf": null,
-        "contrib10": 0.4985
+        "contrib10": 0.5013
       },
       {
         "sym": "MSFT",
-        "w": 0.155222,
+        "w": 0.154607,
         "r5": -0.028405,
         "r10": -0.018671,
         "r20": -0.000638,
@@ -20500,7 +20345,7 @@
       },
       {
         "sym": "NVDA",
-        "w": 0.223824,
+        "w": 0.221433,
         "r5": -0.043404,
         "r10": -0.041432,
         "r20": -0.03003,
@@ -20512,7 +20357,7 @@
       },
       {
         "sym": "AMZN",
-        "w": 0.115333,
+        "w": 0.116353,
         "r5": -0.008188,
         "r10": 0.002029,
         "r20": -0.031494,
@@ -20524,7 +20369,7 @@
       },
       {
         "sym": "GOOGL",
-        "w": 0.17267,
+        "w": 0.173911,
         "r5": -0.010986,
         "r10": -0.005673,
         "r20": -0.022065,
@@ -20536,7 +20381,7 @@
       },
       {
         "sym": "META",
-        "w": 0.069683,
+        "w": 0.069351,
         "r5": 0.061161,
         "r10": 0.134705,
         "r20": 0.089181,
@@ -20544,11 +20389,11 @@
         "above50": true,
         "above200": true,
         "mtf": null,
-        "contrib10": 0.4113
+        "contrib10": 0.4088
       },
       {
         "sym": "TSLA",
-        "w": 0.060953,
+        "w": 0.060633,
         "r5": -0.029041,
         "r10": 0.02996,
         "r20": 0.07495,
@@ -20556,7 +20401,7 @@
         "above50": true,
         "above200": false,
         "mtf": null,
-        "contrib10": 0.08
+        "contrib10": 0.0795
       }
     ],
     "generals": {
@@ -20568,7 +20413,7 @@
         "AMZN",
         "GOOGL"
       ],
-      "coverage": 0.9098
+      "coverage": 0.9101
     },
     "spread20": {
       "max": 0.089181,
@@ -20629,7 +20474,7 @@
             "AMZN",
             "GOOGL"
           ],
-          "coverage": 0.9098
+          "coverage": 0.9101
         }
       }
     },
@@ -21920,7 +21765,7 @@
           "2B": {
             "macd": -7.169,
             "signal": -7.057,
-            "hist": -0.113,
+            "hist": -0.112,
             "hist_vel3": -0.068,
             "k": 19.361,
             "d": 26.71,
@@ -22227,11 +22072,11 @@
       "fresh_crossers": []
     },
     "n_roster": 13,
-    "_timing_s": 2.02
+    "_timing_s": 2.0
   },
   "vol_shock": {
-    "score": 34.7,
-    "score_int": 35,
+    "score": 30.4,
+    "score_int": 30,
     "band": "low",
     "band_zh": "\u504f\u4f4e",
     "asof": "2026-09-11",
@@ -22295,14 +22140,14 @@
         "key": "vix_term",
         "label": "VIX term structure (inversion)",
         "label_zh": "VIX \u671f\u9650\u7ed3\u6784\uff08\u5012\u6302\uff09",
-        "value": 0.904,
+        "value": 0.852,
         "weight": 0.8,
         "available": true,
-        "sub": 27.0,
+        "sub": 1.0,
         "note": "contango \u2014 calm term structure",
         "note_zh": "Contango\u2014\u2014\u671f\u9650\u7ed3\u6784\u5e73\u9759",
         "color": "#5a9bd4",
-        "points": 4.1
+        "points": 0.2
       },
       {
         "key": "vrp_skew",
@@ -22321,14 +22166,14 @@
         "key": "put_call",
         "label": "Put/call positioning",
         "label_zh": "\u770b\u8dcc/\u770b\u6da8\u6301\u4ed3",
-        "value": 0.93,
+        "value": 0.97,
         "weight": 0.5,
         "available": true,
-        "sub": 6.6,
+        "sub": 3.2,
         "note": "protective put-buying (fearful)",
         "note_zh": "protective put-buying (fearful)",
         "color": "#5a9bd4",
-        "points": 0.6
+        "points": 0.3
       },
       {
         "key": "complacency",
@@ -22773,7 +22618,7 @@
     "asof": "2026-09-11",
     "state": "SLIPPING",
     "n_alert": 1,
-    "n_escalating": 3,
+    "n_escalating": 4,
     "d3_alert": 1,
     "n_mature": 10,
     "alerts": [
@@ -25092,7 +24937,7 @@
   },
   "freshness": {
     "asof": "2026-09-11",
-    "built_at": "2026-09-12T07:28:08Z",
+    "built_at": "2026-09-12T17:24:33Z",
     "age_days": 1,
     "age_sessions": 0,
     "max_age_sessions": 1,
@@ -29338,7 +29183,7 @@
     "favor_entries": true,
     "cap_leadership": false,
     "vol_regime": "normalizing",
-    "vol_ts_slope": 0.904,
+    "vol_ts_slope": 0.852,
     "vol_ts_slope_state": "contango",
     "subsector_rotation_sides": null,
     "donor_unwind_state": null,
@@ -29463,7 +29308,7 @@
         "computed": true,
         "risk_on": 0.8,
         "ms_verdict": "RISK_ON",
-        "radar_state": "watch"
+        "radar_state": "caution"
       },
       "fused_gate_shadow": {
         "basis": "fused_risk",
