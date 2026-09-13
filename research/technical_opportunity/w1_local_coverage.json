@@ -3,11 +3,17 @@
   "as_of": "2026-09-13",
   "macro_base": "e2cddf8f0068f03f1d94816cfa950ba47a1db3c2",
   "terminal_base": "45a0e78e01377502399761626899458f9d08ffd9",
-  "scope_state": "P0_SLICE_COMPLETE_W1_FULL_CENSUS_PARTIAL",
+  "scope_state": "P0_P1_CORE_NORMALIZED_W1_FULL_CENSUS_PARTIAL",
   "summary": {
+    "passport_count": 23,
     "p0_passports": 12,
+    "p1_passports": 11,
+    "exact_local": 20,
+    "missing_local": 3,
     "p0_exact_local": 12,
-    "p0_missing_local": 0,
+    "p1_exact_local": 8,
+    "p1_missing_local": 3,
+    "missing_method_ids": ["toi.support_resistance", "toi.round_levels", "toi.short_reversal"],
     "first_vertical_roles_covered": ["setup","trigger","participation","context","risk"],
     "first_vertical_horizons": ["W","D","candidate_4H"],
     "outcomes_read": false,
@@ -16,11 +22,18 @@
   },
   "macro_implementations": [
     {"path":"engine/bollinger_event_signals.py","methods":["toi.bb_bandwidth"],"state":"exact_local"},
-    {"path":"engine/compression_signals.py","methods":["toi.bb_kc_squeeze","toi.nr7","toi.range_expansion","toi.donchian_breakout","toi.donchian_fakeout"],"state":"exact_local"},
-    {"path":"engine/path_risk_signals.py","methods":["toi.natr_percentile","toi.hvr"],"state":"exact_local"},
+    {"path":"engine/compression_signals.py","methods":["toi.bb_kc_squeeze","toi.nr7","toi.range_expansion","toi.donchian_breakout","toi.donchian_fakeout","toi.choppiness"],"state":"exact_local"},
+    {"path":"engine/path_risk_signals.py","methods":["toi.natr_percentile","toi.hvr","toi.ulcer"],"state":"exact_local"},
     {"path":"engine/fractal_pivot_signals.py","methods":["toi.fractal_swing_structure"],"state":"exact_local","known_at":"two completed bars after pivot center"},
-    {"path":"engine/momentum_context_signals.py","methods":["toi.benchmark_rs"],"state":"exact_local","external_input":"bench_close"},
-    {"path":"engine/volume_flow_signals.py","methods":["toi.cmf","toi.rvol"],"state":"exact_local"}
+    {"path":"engine/momentum_context_signals.py","methods":["toi.benchmark_rs","toi.momentum_12_1","toi.momentum_acceleration","toi.high52"],"state":"exact_local","external_input":"bench_close only for benchmark-RS methods"},
+    {"path":"engine/volume_flow_signals.py","methods":["toi.cmf","toi.rvol","toi.obv"],"state":"exact_local"},
+    {"path":"engine/trend_strength_signals.py","methods":["toi.adx_dmi"],"state":"exact_local"},
+    {"path":"engine/bar_structure_signals.py","methods":["toi.inside_bar"],"state":"exact_local"}
+  ],
+  "missing_local_methods": [
+    {"method_id":"toi.support_resistance","reason":"no frozen causal level constructor yet; W1 records method/source only"},
+    {"method_id":"toi.round_levels","reason":"microstructure control is source-backed but no TOI local implementation exists"},
+    {"method_id":"toi.short_reversal","reason":"research concept is source-backed; W1 forbids per-name tuned timer implementation"}
   ],
   "terminal_crosswalk": {
     "owner": "mastermind-terminal display/visual implementation; not TOI occurrence authority",
@@ -47,8 +60,8 @@
     "disposition": "reuse deterministic proposal screen and declarative candidate pattern in later W3; no parallel harness"
   },
   "gaps_for_full_w1": [
-    "complete P1/P2/archive/blocked passport population across remaining method families",
-    "finish external-primary source receipts for every P0/P1 method",
+    "complete P2/archive/blocked passport population across remaining method families",
+    "upgrade any P1 source that is only a broad formula catalog when a stronger original-method source exists",
     "map every relevant DNR kill to the surviving measurement or blocked construction",
     "classify Terminal-only visual modules and Radar-only tactical modules without duplicating ownership",
     "perform independent >=20-passport source/formula/local-path reproduction review"
