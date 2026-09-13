@@ -1,19 +1,19 @@
 {
   "schema": "desk_weights.shadow.v1",
-  "as_of": "2026-09-12",
+  "as_of": "2026-09-13",
   "armed": false,
   "arming": {
     "armed": false,
-    "n_eff": 391.0,
+    "n_eff": 395.0,
     "need_n": 12.0,
     "pooled_beats_equal": false,
-    "heldout_edge_pooled": -0.05001,
-    "heldout_edge_equal": -0.04955,
-    "margin": -0.000458,
-    "margin_required": 0.00202,
-    "heldout_n": 108.0,
+    "heldout_edge_pooled": -0.04764,
+    "heldout_edge_equal": -0.04735,
+    "margin": -0.000292,
+    "margin_required": 0.001976,
+    "heldout_n": 109.0,
     "need_heldout_n": 8.0,
-    "reason": "held: pooled loses out-of-sample (-0.05001) \u2014 losing less than equal-weight (-0.04955) is not an edge"
+    "reason": "held: pooled loses out-of-sample (-0.04764) \u2014 losing less than equal-weight (-0.04735) is not an edge"
   },
   "equal_weight": {
     "ai_desk": 0.1429,
@@ -25,13 +25,13 @@
     "thematic_desk": 0.1429
   },
   "shadow_weights": {
-    "ai_desk": 0.1475,
-    "policy_intent": 0.1471,
+    "ai_desk": 0.1481,
+    "policy_intent": 0.1472,
     "radar": 0.1422,
-    "stock_desk": 0.1348,
+    "stock_desk": 0.135,
     "demand_chain": 0.1422,
-    "narrative_brain": 0.1511,
-    "thematic_desk": 0.135
+    "narrative_brain": 0.1501,
+    "thematic_desk": 0.1352
   },
   "live_weights": {
     "ai_desk": 0.1429,
@@ -42,15 +42,15 @@
     "narrative_brain": 0.1429,
     "thematic_desk": 0.1429
   },
-  "divergence_l1": 0.0343,
+  "divergence_l1": 0.0336,
   "per_desk": {
     "ai_desk": {
-      "n": 56,
-      "mean_signed": -0.01747,
-      "reliability": 0.875,
-      "pooled_edge": -0.02087,
+      "n": 59,
+      "mean_signed": -0.01618,
+      "reliability": 0.8806,
+      "pooled_edge": -0.02033,
       "equal_w": 0.1429,
-      "shadow_w": 0.1475,
+      "shadow_w": 0.1481,
       "live_w": 0.1429,
       "wrong_sign": true
     },
@@ -58,9 +58,9 @@
       "n": 4,
       "mean_signed": -0.04927,
       "reliability": 0.3333,
-      "pooled_edge": -0.02156,
+      "pooled_edge": -0.02164,
       "equal_w": 0.1429,
-      "shadow_w": 0.1471,
+      "shadow_w": 0.1472,
       "live_w": 0.1429,
       "wrong_sign": true
     },
@@ -68,7 +68,7 @@
       "n": 0,
       "mean_signed": 0.0,
       "reliability": 0.0,
-      "pooled_edge": -0.02925,
+      "pooled_edge": -0.02946,
       "equal_w": 0.1429,
       "shadow_w": 0.1422,
       "live_w": 0.1429,
@@ -78,9 +78,9 @@
       "n": 178,
       "mean_signed": -0.05081,
       "reliability": 0.957,
-      "pooled_edge": -0.04088,
+      "pooled_edge": -0.04096,
       "equal_w": 0.1429,
-      "shadow_w": 0.1348,
+      "shadow_w": 0.135,
       "live_w": 0.1429,
       "wrong_sign": true
     },
@@ -88,19 +88,19 @@
       "n": 0,
       "mean_signed": 0.0,
       "reliability": 0.0,
-      "pooled_edge": -0.02925,
+      "pooled_edge": -0.02946,
       "equal_w": 0.1429,
       "shadow_w": 0.1422,
       "live_w": 0.1429,
       "wrong_sign": false
     },
     "narrative_brain": {
-      "n": 7,
-      "mean_signed": -0.01266,
-      "reliability": 0.4667,
-      "pooled_edge": -0.01525,
+      "n": 8,
+      "mean_signed": -0.01805,
+      "reliability": 0.5,
+      "pooled_edge": -0.0172,
       "equal_w": 0.1429,
-      "shadow_w": 0.1511,
+      "shadow_w": 0.1501,
       "live_w": 0.1429,
       "wrong_sign": true
     },
@@ -108,12 +108,12 @@
       "n": 202,
       "mean_signed": -0.05005,
       "reliability": 0.9619,
-      "pooled_edge": -0.04058,
+      "pooled_edge": -0.04067,
       "equal_w": 0.1429,
-      "shadow_w": 0.135,
+      "shadow_w": 0.1352,
       "live_w": 0.1429,
       "wrong_sign": true
     }
   },
-  "note": "SHADOW \u2014 live weights held at equal-weight (held: pooled loses out-of-sample (-0.05001) \u2014 losing less than equal-weight (-0.04955) is not an edge)."
+  "note": "SHADOW \u2014 live weights held at equal-weight (held: pooled loses out-of-sample (-0.04764) \u2014 losing less than equal-weight (-0.04735) is not an edge)."
 }

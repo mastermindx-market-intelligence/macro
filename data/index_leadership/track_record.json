@@ -1,22 +1,22 @@
 {
   "schema": "index_leadership.track_record.v1",
-  "as_of": "2026-09-10",
-  "generated_at": "2026-09-12T08:48:17.264513+00:00",
+  "as_of": "2026-09-11",
+  "generated_at": "2026-09-13T08:27:42.876021+00:00",
   "is_context_only": true,
-  "n_snapshots": 688,
-  "n_days": 24,
+  "n_snapshots": 714,
+  "n_days": 25,
   "horizons": {
     "5": {
       "n_matured": 616,
       "by_stage": {
         "running": {
           "n": 544,
-          "mean_fwd_rel": -0.0046,
-          "hit_rate": 0.454
+          "mean_fwd_rel": -0.0047,
+          "hit_rate": 0.452
         },
         "coiling": {
           "n": 35,
-          "mean_fwd_rel": 0.0013,
+          "mean_fwd_rel": 0.0002,
           "hit_rate": 0.514
         },
         "coiling_primed": {
@@ -25,8 +25,8 @@
           "hit_rate": 0.595
         }
       },
-      "running_ic": -0.0557,
-      "running_ic_t_hac": -0.581,
+      "running_ic": -0.0545,
+      "running_ic_t_hac": -0.562,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -35,13 +35,13 @@
       "by_stage": {
         "running": {
           "n": 484,
-          "mean_fwd_rel": -0.0077,
+          "mean_fwd_rel": -0.0078,
           "hit_rate": 0.428
         },
         "coiling": {
           "n": 33,
-          "mean_fwd_rel": -0.0012,
-          "hit_rate": 0.485
+          "mean_fwd_rel": -0.002,
+          "hit_rate": 0.455
         },
         "coiling_primed": {
           "n": 32,
@@ -49,32 +49,32 @@
           "hit_rate": 0.562
         }
       },
-      "running_ic": -0.0928,
-      "running_ic_t_hac": -1.014,
+      "running_ic": -0.091,
+      "running_ic_t_hac": -0.975,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "21": {
-      "n_matured": 376,
+      "n_matured": 409,
       "by_stage": {
         "running": {
-          "n": 333,
-          "mean_fwd_rel": -0.0061,
-          "hit_rate": 0.471
+          "n": 363,
+          "mean_fwd_rel": -0.0095,
+          "hit_rate": 0.441
         },
         "coiling": {
           "n": 20,
-          "mean_fwd_rel": -0.0071,
+          "mean_fwd_rel": -0.0076,
           "hit_rate": 0.5
         },
         "coiling_primed": {
-          "n": 23,
-          "mean_fwd_rel": 0.0435,
-          "hit_rate": 0.739
+          "n": 26,
+          "mean_fwd_rel": 0.036,
+          "hit_rate": 0.692
         }
       },
-      "running_ic": -0.0028,
-      "running_ic_t_hac": -0.028,
+      "running_ic": 0.0136,
+      "running_ic_t_hac": 0.139,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -111,67 +111,67 @@
   "note": "Accruing forward observations; no horizon clears the Newey-West significance bar yet. Early numbers are provisional, context-only.",
   "recent_misses": [
     {
-      "date": "2026-08-20",
-      "id": "subsectors:aerospace-defense",
-      "name": "Aerospace & Defense",
-      "stage": "running",
-      "fwd_rel": -0.0797,
+      "date": "2026-08-21",
+      "id": "russell:leisure",
+      "name": "Leisure",
+      "stage": "coiling_primed",
+      "fwd_rel": -0.0923,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-20",
-      "id": "nasdaq:software-application",
-      "name": "Software - Application",
+      "date": "2026-08-21",
+      "id": "russell:other-industrial-metals-mining",
+      "name": "Other Industrial Metals & Mining",
       "stage": "running",
-      "fwd_rel": -0.058,
+      "fwd_rel": -0.0916,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-20",
-      "id": "subsectors:packaged-foods",
-      "name": "Packaged Foods",
+      "date": "2026-08-21",
+      "id": "russell:real-estate-services",
+      "name": "Real Estate Services",
       "stage": "running",
-      "fwd_rel": -0.056,
+      "fwd_rel": -0.0896,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-20",
-      "id": "subsectors:software-application",
-      "name": "Software - Application",
-      "stage": "running",
-      "fwd_rel": -0.0553,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-20",
-      "id": "baskets:us-sector-discretionary",
-      "name": "Consumer Discretionary (Equal-Weight)",
-      "stage": "running",
-      "fwd_rel": -0.0422,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-20",
+      "date": "2026-08-21",
       "id": "russell:restaurants",
       "name": "Restaurants",
       "stage": "running",
-      "fwd_rel": -0.0396,
+      "fwd_rel": -0.0869,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-20",
+      "date": "2026-08-21",
+      "id": "nasdaq:software-application",
+      "name": "Software - Application",
+      "stage": "running",
+      "fwd_rel": -0.0721,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-08-21",
       "id": "nasdaq:specialty-business-services",
       "name": "Specialty Business Services",
       "stage": "running",
-      "fwd_rel": -0.0367,
+      "fwd_rel": -0.0709,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-20",
-      "id": "russell:asset-management",
-      "name": "Asset Management",
+      "date": "2026-08-21",
+      "id": "baskets:gold-miners",
+      "name": "Gold Miners",
       "stage": "running",
-      "fwd_rel": -0.0343,
+      "fwd_rel": -0.0673,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-08-21",
+      "id": "subsectors:packaged-foods",
+      "name": "Packaged Foods",
+      "stage": "running",
+      "fwd_rel": -0.0636,
       "horizon_d": 21
     }
   ],
