@@ -3,7 +3,8 @@
 Mirrors engine/risk_radar_audit.py patterns exactly (read that module first).
 
 File: data/risk_radar/recovery_log.jsonl
-  One idempotent-by-asof line per daily snapshot. Graded when SPY path matures.
+  One idempotent-by-(asof, construction_version) line per daily snapshot.
+  Graded when SPY path matures; scorecards never pool construction versions.
   Every writer self-gates on ledger_lane_armed(), so off-lane renders are read-only.
 
 Ruler: REBOUND CAPTURE (RRX-R2 — the only valid ruler for recovery confirmers):
@@ -27,6 +28,7 @@ import numpy as np
 import pandas as pd
 
 from lib import config, store
+from engine.risk_radar_recovery import RECOVERY_CONSTRUCTION_VERSION
 
 log = logging.getLogger(__name__)
 
@@ -34,6 +36,11 @@ HORIZONS = {"h21": 21, "h63": 63}          # business-day forward windows (rebou
 RECOVERY_PHASES = ("peaking", "receding")   # which phases count as "something to recover FROM"
 
 _N_MIN_SIGNIFICANCE = 30   # minimum per arm before any significance claim (printed, not hidden)
+
+
+def _strict_bool(value):
+    """Preserve bool/unknown instead of coercing missing evidence to False."""
+    return value if type(value) is bool else None
 
 
 def ledger_lane_armed() -> bool:
@@ -97,6 +104,10 @@ def log_snapshot(recovery: dict, radar_snap: dict, root=None) -> bool:
         if not recovery or not isinstance(recovery, dict):
             return False
 
+        construction_version = recovery.get("construction_version")
+        if construction_version != RECOVERY_CONSTRUCTION_VERSION:
+            return False
+
         asof = str((recovery.get("asof") or radar_snap.get("asof") or ""))
         if not asof:
             return False
@@ -118,19 +129,31 @@ def log_snapshot(recovery: dict, radar_snap: dict, root=None) -> bool:
         veto = mkt.get("veto") or {}
         # RRX2 WA-6: record morphology.shape in the audit row
         morphology_shape = (mkt.get("morphology") or {}).get("shape", "grinding")
+        veto_active = _strict_bool(veto.get("active"))
+        veto_evaluated = _strict_bool(veto.get("evaluated"))
+        if veto_active is True:
+            veto_state = "active"
+        elif veto_evaluated is True and veto_active is False:
+            veto_state = "clear"
+        else:
+            veto_state = "unknown"
 
         entry = {
             "asof": asof,
+            "construction_version": construction_version,
             "phase": phase,
             "intensity": traj.get("intensity"),
             "chips": chips_snap,
             "veto": {
-                "active": bool(veto.get("active")),
+                "active": veto_active,
+                "evaluated": veto_evaluated,
+                "state": veto_state,
                 "p_now": veto.get("p_now"),
             },
-            "liquidity_n": int(recovery.get("n_fresh") or 0),
-            "market_confirmed": bool(mkt.get("market_confirmed")),
-            "turn_confirmed_full": bool(recovery.get("turn_confirmed_full")),
+            "liquidity_n": int(recovery.get("n_confirmation_fresh") or 0),
+            "liquidity_context_n": int(recovery.get("n_fresh") or 0),
+            "market_confirmed": _strict_bool(mkt.get("market_confirmed")),
+            "turn_confirmed_full": _strict_bool(recovery.get("turn_confirmed_full")),
             # RRX2 WA-6: morphology shape alongside chip states (same rebound-ruler grading path)
             "morphology_shape": morphology_shape,
             "logged_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
@@ -139,7 +162,11 @@ def log_snapshot(recovery: dict, radar_snap: dict, root=None) -> bool:
 
         p = _path(root)
         rows = _read(p)
-        if any(r.get("asof") == entry["asof"] for r in rows):
+        if any(
+            r.get("asof") == entry["asof"]
+            and r.get("construction_version") == construction_version
+            for r in rows
+        ):
             return False
         rows.append(entry)
         _write(p, rows)
@@ -226,17 +253,33 @@ def grade_log(root=None) -> int:
 
 
 def scorecard(root=None) -> dict:
-    """Per-chip mean forward returns (with/without chip) among graded peaking/receding rows.
-    Counts printed; no significance claim below n>=30 per arm (RRX-R2; first read 2027-01-15).
-    Never raises.
+    """Per-chip mean forward returns for the current construction only.
+
+    Counts printed; no significance claim below n>=30 per arm (RRX-R2;
+    first read 2027-01-15). Legacy or mismatched constructions remain in the
+    immutable ledger but are never pooled into this scorecard. Never raises.
     """
     try:
-        rows = [r for r in _read(_path(root)) if r.get("graded")]
+        all_graded = [r for r in _read(_path(root)) if r.get("graded")]
     except Exception:  # noqa: BLE001
-        rows = []
+        all_graded = []
+
+    rows = [
+        r for r in all_graded
+        if r.get("construction_version") == RECOVERY_CONSTRUCTION_VERSION
+    ]
+    meta = {
+        "construction_version": RECOVERY_CONSTRUCTION_VERSION,
+        "n_graded_total": len(all_graded),
+        "n_excluded_construction": len(all_graded) - len(rows),
+    }
 
     if not rows:
-        return {"n_graded": 0, "note": "no matured entries yet"}
+        return {
+            "n_graded": 0,
+            **meta,
+            "note": "no matured entries for the current construction yet",
+        }
 
     # Restrict to recovery-relevant phases
     eligible = [r for r in rows if r.get("phase") in RECOVERY_PHASES]
@@ -245,6 +288,7 @@ def scorecard(root=None) -> dict:
     if n_eligible == 0:
         return {
             "n_graded": len(rows),
+            **meta,
             "n_eligible_phase": 0,
             "note": f"no graded rows in phases {RECOVERY_PHASES} yet",
         }
@@ -293,12 +337,14 @@ def scorecard(root=None) -> dict:
 
     return {
         "n_graded": len(rows),
+        **meta,
         "n_eligible_phase": n_eligible,
         "per_chip": per_chip,
         "base_rates": base_stats,
         "asof_range": [rows[0]["asof"], rows[-1]["asof"]],
         "note": (
             f"Rebound ruler (RRX-R2): h21 primary, h63 secondary vs peaking/receding base rate. "
+            f"Construction={RECOVERY_CONSTRUCTION_VERSION}; legacy/mismatched rows excluded. "
             f"No significance claim below n>={_N_MIN_SIGNIFICANCE} per arm. "
             f"First permutation read: 2027-01-15."
         ),

@@ -26,6 +26,9 @@ from pathlib import Path
 
 log = logging.getLogger(__name__)
 
+# Semantic identity for recovery snapshots and forward grading.
+RECOVERY_CONSTRUCTION_VERSION = "rrx-recovery-safety-v2"
+
 
 def _load_liquidity_plumbing() -> dict:
     """Load data/neuralweb/liquidity_plumbing.json via lib.config — fail-open to empty dict.
@@ -161,6 +164,38 @@ def _fed_netliq_detail() -> tuple[str, str]:
         return fallback
 
 
+def _fresh_us_netliq_event() -> bool:
+    """Whether the existing US plumbing producer reports a dated supportive event.
+
+    This does not infer Fed easing. It reuses the producer's pre-declared TGA
+    impulse episode, positive net-liquidity quantity, explicit de-escalation
+    authority, and existing freshness clock.
+    """
+    try:
+        payload = _load_liquidity_plumbing()
+        if not isinstance(payload, dict) or not payload:
+            return False
+        authority = payload.get("authority") or {}
+        quantity = payload.get("quantity") or {}
+        treasury = payload.get("treasury") or {}
+        impulse = treasury.get("tga_impulse") or {}
+        netliq = _num(quantity.get("netliq_chg_20d_bn"))
+        magnitude = _num(impulse.get("magnitude_bn"))
+        return bool(
+            authority.get("deescalate") is True
+            and quantity.get("overlay") == "expanding"
+            and netliq is not None and netliq > 0
+            and impulse.get("active") is True
+            and impulse.get("direction") == "drawdown"
+            and magnitude is not None and magnitude > 0
+            and _recent(payload.get("asof"))
+            and _recent(treasury.get("asof"))
+            and _recent(impulse.get("since"))
+        )
+    except (AttributeError, TypeError, ValueError):
+        return False
+
+
 def _liquidity_catalysts(latest: dict, market: str = "us") -> list[dict]:
     """The supportive-liquidity legs that are firing right now, as display chips. All read the
     display-only context already on the page; each degrades to absent. `fresh` = a genuinely
@@ -178,10 +213,12 @@ def _liquidity_catalysts(latest: dict, market: str = "us") -> list[dict]:
     lo = fed_src.get("liquidity_overlay")
     if lo == "expanding":
         # RLT-R5: enrich detail with netliq Δ20d magnitude and TGA impulse when available.
-        # Fail-open: falls back to the generic string when the artifact is absent.
+        # ``fresh`` requires the existing dated US TGA-drawdown event; a bare
+        # expanding category, Fed-pricing label, or foreign event stays context.
         detail_en, detail_zh = _fed_netliq_detail()
+        event_fresh = _fresh_us_netliq_event()
         cats.append({
-            "key": "fed_netliq", "icon": "💵", "region": "US", "fresh": False,
+            "key": "fed_netliq", "icon": "💵", "region": "US", "fresh": event_fresh,
             "label_en": "US net-liquidity proxy rising", "label_zh": "美国净流动性代理指标上升",
             "detail_en": detail_en,
             "detail_zh": detail_zh,
@@ -256,14 +293,40 @@ def _liquidity_catalysts(latest: dict, market: str = "us") -> list[dict]:
             "detail_zh": f"美欧日央行资产负债表 13周 {imp_txt}（{accel}）。",
         })
 
+    # Confirmation scope is explicit and fail-closed. Context from another
+    # central bank can remain visible, but cannot establish same-market repair.
+    confirmation_scopes = {
+        "fed_netliq": ["us"],
+        "pboc": ["cn"],
+    }
+    for cat in cats:
+        cat["confirmation_markets"] = confirmation_scopes.get(cat.get("key"), [])
+
     return cats
+
+
+def _confirmation_fresh(cats: list[dict], market: str) -> list[dict]:
+    """Fresh catalysts explicitly authorized for this market's confirmation leg."""
+    if not isinstance(market, str):
+        return []
+    confirmed: list[dict] = []
+    for cat in cats:
+        if not isinstance(cat, dict) or cat.get("fresh") is not True:
+            continue
+        scopes = cat.get("confirmation_markets")
+        if isinstance(scopes, list) and market in scopes:
+            confirmed.append(cat)
+    return confirmed
 
 
 # --- the assembled recovery read ---------------------------------------------------------------
 def assess(latest: dict) -> dict | None:
-    """The display-only recovery view-model attached to market_state.radar.recovery. Returns
-    {'present': False} when there is nothing to show, the full dict when the risk-off looks to be
-    peaking / receding, or None when there is no trajectory at all. NEVER raises."""
+    """The display-only recovery view-model attached to market_state.radar.recovery.
+
+    Returns a versioned ``{'present': False, ...}`` when there is nothing to
+    show, the full versioned dict when risk-off looks peaking/receding, or None
+    when there is no trajectory at all. NEVER raises.
+    """
     try:
         rr = (latest or {}).get("risk_radar") or {}
         traj = rr.get("trajectory")
@@ -275,6 +338,8 @@ def assess(latest: dict) -> dict | None:
         cats = _liquidity_catalysts(latest, market)
         n_cat = len(cats)
         n_fresh = sum(1 for c in cats if c.get("fresh") is True)
+        confirmation_cats = _confirmation_fresh(cats, market)
+        n_confirmation_fresh = len(confirmation_cats)
 
         # Market-internal confirmation channel (W1, accruing — not yet forward-tested).
         # US-ONLY: the chips read US stores (S&P breadth, SPY, VIX term, HY OAS) — attaching
@@ -288,37 +353,57 @@ def assess(latest: dict) -> dict | None:
         present = (reached and phase in ("peaking", "receding")) or \
                   (reached and phase != "rising" and n_fresh >= 2)
         if not present:
-            return {"present": False}
+            return {
+                "present": False,
+                "construction_version": RECOVERY_CONSTRUCTION_VERSION,
+            }
 
         # Missing/invalid permission is not recovery evidence. Raw trajectory and
         # numerical estimates remain available below, without a green all-clear.
         deesc = rr.get("deescalation")
         eligible = isinstance(deesc, dict) and deesc.get("eligible") is True
-        mkt_confirmed = mkt_veto = None
+        mkt_confirmed = mkt_veto = mkt_veto_evaluated = None
         if market == "us" and isinstance(mkt, dict):
             raw_confirmed = mkt.get("market_confirmed")
             veto = mkt.get("veto")
             raw_veto = veto.get("active") if isinstance(veto, dict) else None
+            raw_veto_evaluated = (
+                veto.get("evaluated") if isinstance(veto, dict) else None
+            )
             mkt_confirmed = raw_confirmed if type(raw_confirmed) is bool else None
             mkt_veto = raw_veto if type(raw_veto) is bool else None
-        local_confirmed = mkt_confirmed is True and mkt_veto is False
+            mkt_veto_evaluated = (
+                raw_veto_evaluated
+                if type(raw_veto_evaluated) is bool else None
+            )
+        local_confirmed = (
+            mkt_confirmed is True
+            and mkt_veto_evaluated is True
+            and mkt_veto is False
+        )
         suppressed = not (eligible and local_confirmed)
         # International internals remain N/A; US inputs are never borrowed as
         # local confirmation. The legacy liquidity-only TURN was unsafe.
         turn_confirmed = bool(phase == "receding" and eligible
-                              and local_confirmed and n_fresh >= 1)
+                              and local_confirmed and n_confirmation_fresh >= 1)
         receding = turn_confirmed  # the shared card uses this flag for green
         peaking = bool(phase == "peaking" and eligible and local_confirmed)
         turn_confirmed_full = turn_confirmed if market == "us" else None
-        channels = {"liquidity": bool(n_fresh >= 1),
-                    "market": mkt_confirmed, "veto": mkt_veto}
+        channels = {
+            "liquidity": bool(n_confirmation_fresh >= 1),
+            "liquidity_context": bool(n_fresh >= 1),
+            "market": mkt_confirmed,
+            "veto": mkt_veto,
+            "veto_evaluated": mkt_veto_evaluated,
+        }
 
         off = traj.get("off_peak") or 0.0
         vel = traj.get("velocity") or 0.0
         # Modest, illustrative 0-100 strength: distance off the peak + how fast it is falling +
         # how broad the liquidity turn is. Capped; never implies precision it doesn't have.
         strength = int(max(0, min(100, round(
-            off * 3.0 + max(0.0, -vel) * 3.5 + n_cat * 11 + n_fresh * 6 + (14 if receding else 0)))))
+            off * 3.0 + max(0.0, -vel) * 3.5 + n_cat * 11
+            + n_confirmation_fresh * 6 + (14 if receding else 0)))))
 
         odds_now = _num(traj.get("odds_now"))
         odds_peak = _num(traj.get("odds_peak"))
@@ -365,6 +450,7 @@ def assess(latest: dict) -> dict | None:
 
         return {
             "present": True,
+            "construction_version": RECOVERY_CONSTRUCTION_VERSION,
             "phase": phase, "receding": receding, "peaking": peaking,
             # radar-derived gate (one risk voice): green suppressed while the
             # dominant scare escalates; mirrored for the template/bot to read
@@ -383,8 +469,10 @@ def assess(latest: dict) -> dict | None:
             "spark": traj.get("spark"), "spark_pts": traj.get("spark_pts"),
             "spark_peak": traj.get("spark_peak"), "spark_last": traj.get("spark_last"),
             "spark_w": traj.get("spark_w"), "spark_h": traj.get("spark_h"),
-            # catalysts
+            # catalysts: all visible context plus the same-market confirmation subset
             "catalysts": cats, "n_catalysts": n_cat, "n_fresh": n_fresh,
+            "confirmation_catalysts": [c.get("key") for c in confirmation_cats],
+            "n_confirmation_fresh": n_confirmation_fresh,
             # RRX2 WA-3: drivers line (which scares faded / still warm); None on old artifacts
             "drivers": drivers,
             # copy
