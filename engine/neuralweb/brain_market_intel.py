@@ -72,6 +72,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import unicodedata
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -689,46 +690,100 @@ def get_market_events(
 # --------------------------------------------------------------------------- #
 _CATALOG_REL = ("data", "research_vault", "catalog.json")
 
-# Alnum word tokens, ≥2 chars. Applied to the lowercased query and to the
-# lowercased haystack so both sides tokenise identically.
+# Plain ASCII word atoms, ≥2 chars. Qualified identifiers and Han spans use
+# their own rules below so exact symbols never fall back to substring matching
+# and Chinese queries are not erased before scoring.
 _WORD_RE = re.compile(r"[a-z0-9]{2,}")
-# A raw whitespace token containing a dot or a digit is kept AS-IS as well:
-# splitting on non-alnum would shred exchange-qualified tickers (600036.SH →
-# "600036" + "sh") and lose the qualified form the catalog may carry verbatim.
-_QUALIFIED_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9.\-]*[A-Za-z0-9]$")
+_HAN_RANGE = r"\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\U00020000-\U0002fa1f"
+_HAN_RE = re.compile("[" + _HAN_RANGE + "]+")
+_RAW_SEARCH_ATOM_RE = re.compile(
+    r"[A-Za-z0-9]+(?:[.\-][A-Za-z0-9]+)*|[" + _HAN_RANGE + "]+"
+)
+
+
+def _search_normalize(text: str) -> str:
+    """NFKC + casefold for matching only; returned query text stays original.
+
+    Most catalog fields are already ASCII. Preserve that hot path without a
+    Unicode normalization pass while still normalizing full-width/mixed-script
+    text whenever it is present.
+    """
+    value = str(text or "")
+    if value.isascii():
+        return value.casefold()
+    return unicodedata.normalize("NFKC", value).casefold()
+
+
+def _is_qualified_identifier(raw: str) -> bool:
+    """Whether a punctuated ASCII atom should stay exact instead of splitting.
+
+    Dotted exchange-qualified symbols are exact. Hyphenated atoms stay exact
+    only for the ordinary one-letter share-class form (BRK-B, BF-A), including
+    lowercase user input. Numeric ranges and research prose such as 10-yr,
+    risk-off and AI-driven retain their previous word-search behaviour.
+    """
+    if "." in raw:
+        return True
+    parts = raw.split("-")
+    return (
+        len(parts) == 2
+        and 1 <= len(parts[0]) <= 5
+        and len(parts[1]) == 1
+        and parts[0].isalnum()
+        and parts[1].isalpha()
+    )
 
 
 def _tokenize(query: str) -> tuple[str, ...]:
-    """Query → ordered, de-duplicated lowercase match tokens.
+    """Query → ordered, de-duplicated meaningful lexical atoms.
 
-    De-duplicated because the score counts DISTINCT token hits per field: a
-    query that repeats a word must not buy that word a double weight.
+    The internal normalization is width/case only: it does not translate or
+    equate Simplified and Traditional Chinese. Repeated atoms never buy extra
+    weight because scoring counts distinct hits per field.
     """
-    text = str(query or "")
+    text = _search_normalize(query)
     tokens: list[str] = []
-    for raw in text.split():
-        stripped = raw.strip().strip(",;:!?\"'()[]")
-        if ("." in stripped or any(ch.isdigit() for ch in stripped)) and _QUALIFIED_RE.match(stripped):
-            lowered = stripped.lower()
-            if len(lowered) >= 2 and lowered not in tokens:
-                tokens.append(lowered)
-    for word in _WORD_RE.findall(text.lower()):
-        if word not in tokens:
-            tokens.append(word)
+
+    def add(token: str) -> None:
+        if len(token) >= 2 and token not in tokens:
+            tokens.append(token)
+
+    for raw in _RAW_SEARCH_ATOM_RE.findall(text):
+        if _HAN_RE.fullmatch(raw):
+            add(raw)
+        elif _is_qualified_identifier(raw):
+            add(raw)
+        else:
+            for word in _WORD_RE.findall(raw):
+                add(word)
     return tuple(tokens)
 
 
 def _hits(tokens: tuple[str, ...], haystack: str) -> int:
-    """Count DISTINCT tokens appearing as words in `haystack` (already lowercased)."""
-    if not haystack:
+    """Count DISTINCT normalized atoms supported by `haystack`.
+
+    Build only the index family the query needs. Plain catalog searches stay on
+    the existing word-set hot path; exact-atom extraction is paid only for an
+    exchange/share-class identifier, and a Han-only query needs neither set.
+    """
+    text = _search_normalize(haystack)
+    if not text:
         return 0
-    words = set(_WORD_RE.findall(haystack))
+    needs_words = any(
+        not _HAN_RE.fullmatch(token) and "." not in token and "-" not in token
+        for token in tokens
+    )
+    needs_atoms = any("." in token or "-" in token for token in tokens)
+    words = set(_WORD_RE.findall(text)) if needs_words else set()
+    atoms = set(_RAW_SEARCH_ATOM_RE.findall(text)) if needs_atoms else set()
     count = 0
     for token in tokens:
-        # A qualified token ("600036.sh") survives tokenisation of the haystack
-        # only as fragments, so fall back to a substring test for those.
-        if token in words or ("." in token and token in haystack):
-            count += 1
+        if _HAN_RE.fullmatch(token):
+            count += int(token in text)
+        elif "." in token or "-" in token:
+            count += int(token in atoms)
+        else:
+            count += int(token in words)
     return count
 
 
@@ -1387,10 +1442,10 @@ def search_research(
     set. `tags`/`tickers` are empty across the committed catalog today, so they
     are deliberately not scored; title, summary_points, and institution are.
 
-    A query of fewer than 2 tokens returns no results ("query too short"): one
-    bare word against 346 institutional notes ranks essentially by recency and
-    would read as a search that worked. A missing or corrupt catalog returns
-    "research vault unavailable". Never raises.
+    A meaningful single atom is searchable, including an English topic, ticker,
+    qualified identifier, or Chinese phrase. Input with no meaningful atom
+    (empty/noise or a one-character atom) returns "query too short". A missing
+    or corrupt catalog returns "research vault unavailable". Never raises.
 
     mode="clusters" answers a different question over the same catalog — which
     themes several houses are all writing about right now — and returns the
@@ -1453,7 +1508,7 @@ def search_research(
                     "note": "street clusters unavailable"}
 
     tokens = _tokenize(query)
-    if len(tokens) < 2:
+    if not tokens:
         return {"query": str(query or ""), "results": [], "count_scanned": 0,
                 "note": "query too short"}
 
@@ -1472,9 +1527,9 @@ def search_research(
         points = [str(p) for p in points if isinstance(p, str)] if isinstance(points, list) else []
         institution = str(item.get("institution") or "")
 
-        title_hits = _hits(tokens, title.lower())
-        summary_hits = _hits(tokens, " ".join(points).lower())
-        institution_hits = _hits(tokens, institution.lower())
+        title_hits = _hits(tokens, title)
+        summary_hits = _hits(tokens, " ".join(points))
+        institution_hits = _hits(tokens, institution)
         if not (title_hits or summary_hits or institution_hits):
             continue  # no textual relevance — top_pick alone never admits an item
 
@@ -1599,9 +1654,11 @@ RESEARCH_TOOL_SCHEMA: dict = {
             "query": {
                 "type": "string",
                 "description": (
-                    "Search terms — theme, ticker, or institution (needs at "
-                    "least 2 words, e.g. 'hedge fund momentum', 'NVDA capex'). "
-                    "Ignored when mode='clusters' or mode='report'; pass '' there."
+                    "Search terms — a theme, ticker, institution, or Chinese "
+                    "phrase. One meaningful term is accepted (e.g. "
+                    "'semiconductors', 'AAPL', '中国流动性'); add focused terms "
+                    "when the first result set is broad. Ignored when "
+                    "mode='clusters' or mode='report'; pass '' there."
                 ),
             },
             "limit": {
