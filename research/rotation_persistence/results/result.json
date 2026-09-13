@@ -1,0 +1,4604 @@
+{
+  "authority": {
+    "is_context_only": true,
+    "may_gate": false,
+    "may_modify_oracle": false,
+    "may_modify_prophet": false,
+    "may_rank": false,
+    "may_size": false,
+    "may_trade": false
+  },
+  "half_life": {
+    "all": {
+      "curve": [
+        {
+          "horizon": 1,
+          "value": 0.8738482046983006
+        },
+        {
+          "horizon": 2,
+          "value": 0.8096635306212301
+        },
+        {
+          "horizon": 3,
+          "value": 0.782798027602261
+        },
+        {
+          "horizon": 5,
+          "value": 0.6766873903057332
+        },
+        {
+          "horizon": 7,
+          "value": 0.6547017593766966
+        },
+        {
+          "horizon": 10,
+          "value": 0.5185582848058069
+        },
+        {
+          "horizon": 15,
+          "value": 0.42013441538418406
+        },
+        {
+          "horizon": 20,
+          "value": 0.2409267016752999
+        }
+      ],
+      "half_life_sessions": 14.147072399021242,
+      "half_target": 0.4369241023491503,
+      "start_rho": 0.8738482046983006,
+      "state": "MEASURED"
+    },
+    "prior": {
+      "curve": [
+        {
+          "horizon": 1,
+          "value": 0.8747090062582934
+        },
+        {
+          "horizon": 2,
+          "value": 0.8144971292696711
+        },
+        {
+          "horizon": 3,
+          "value": 0.7651453435051333
+        },
+        {
+          "horizon": 7,
+          "value": 0.6545463758962503
+        },
+        {
+          "horizon": 10,
+          "value": 0.469562522371099
+        },
+        {
+          "horizon": 15,
+          "value": 0.42520817987671666
+        },
+        {
+          "horizon": 20,
+          "value": 0.2409267016752999
+        }
+      ],
+      "half_life_sessions": 13.630762787886168,
+      "half_target": 0.4373545031291467,
+      "start_rho": 0.8747090062582934,
+      "state": "MEASURED"
+    },
+    "recent": {
+      "curve": [
+        {
+          "horizon": 1,
+          "value": 0.8728644314868804
+        },
+        {
+          "horizon": 2,
+          "value": 0.8048299319727891
+        },
+        {
+          "horizon": 3,
+          "value": 0.801921768707483
+        },
+        {
+          "horizon": 5,
+          "value": 0.6610853432282002
+        },
+        {
+          "horizon": 7,
+          "value": 0.6548571428571428
+        }
+      ],
+      "half_life_sessions": null,
+      "half_target": 0.4364322157434402,
+      "start_rho": 0.8728644314868804,
+      "state": "NO_HALF_CROSSING"
+    }
+  },
+  "notes": [
+    "Measures persistence of published theme ranks, scores and breadth; it is not an economic-return backtest.",
+    "The source archive is keep-first point-in-time model output; RPH-0 does not claim historical raw-membership reconstruction.",
+    "Exact TradingView/MACD timeframe usefulness remains owned by WS:TEMPORAL-GRAIN-INTELLIGENCE and Prophet Entry Truth.",
+    "A null half-life or insufficient cell is an honest successful result, not a pipeline failure."
+  ],
+  "operation_key": "leadership-persistence-rph0-20260910-sol-001",
+  "parameters": {
+    "bootstrap": {
+      "interval": 0.9,
+      "method": "circular_moving_block",
+      "resamples": 2000,
+      "seed": 20260910
+    },
+    "horizons_sessions": [
+      1,
+      2,
+      3,
+      5,
+      7,
+      10,
+      15,
+      20
+    ],
+    "minimum_breadth_fraction": 0.8,
+    "minimum_common_fraction": 0.8,
+    "minimum_common_themes": 10,
+    "minimum_pair_count": 8,
+    "recent_sessions": 20
+  },
+  "produced_at": "2026-09-10T21:00:00Z",
+  "quality": {
+    "duplicate_asof_rows_dropped": [],
+    "missing_sessions": [
+      "2026-07-07",
+      "2026-07-08",
+      "2026-07-13",
+      "2026-07-16",
+      "2026-07-21",
+      "2026-07-22",
+      "2026-07-23",
+      "2026-08-03",
+      "2026-08-04",
+      "2026-08-05",
+      "2026-08-06",
+      "2026-08-10",
+      "2026-08-11",
+      "2026-08-14",
+      "2026-09-01",
+      "2026-09-02"
+    ],
+    "non_session_rows_dropped": [],
+    "session_coverage": 0.7192982456140351,
+    "sessions_expected": 57,
+    "sessions_present": 41,
+    "state": "MEASURED",
+    "theme_count_max": 49,
+    "theme_count_median": 46.0,
+    "theme_count_min": 25
+  },
+  "residency": {
+    "episodes": [
+      {
+        "duration_sessions": 5,
+        "end": "2026-06-25",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-06-26",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-06-18",
+        "theme_id": "ai_infra"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-06-18",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-06-22",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-06-18",
+        "theme_id": "ai_neoclouds"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-06-18",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-06-22",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-06-18",
+        "theme_id": "ai_semiconductors"
+      },
+      {
+        "duration_sessions": 3,
+        "end": "2026-06-23",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-06-24",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-06-18",
+        "theme_id": "memory_storage"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-06-22",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-06-23",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-06-18",
+        "theme_id": "non_ai_tech"
+      },
+      {
+        "duration_sessions": 5,
+        "end": "2026-06-25",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-06-26",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-06-18",
+        "theme_id": "semicap_equipment"
+      },
+      {
+        "duration_sessions": 4,
+        "end": "2026-06-24",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-06-25",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-06-18",
+        "theme_id": "travel"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-06-22",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-06-23",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-06-22",
+        "theme_id": "data_center_power"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-06-22",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-06-23",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-06-22",
+        "theme_id": "industrial_distribution"
+      },
+      {
+        "duration_sessions": 10,
+        "end": "2026-07-06",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-06-22",
+        "theme_id": "regional_banks"
+      },
+      {
+        "duration_sessions": 8,
+        "end": "2026-07-01",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-02",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-06-22",
+        "theme_id": "reshoring"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-06-24",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-06-25",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-06-23",
+        "theme_id": "insurance"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-06-23",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-06-24",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-06-23",
+        "theme_id": "managed_care"
+      },
+      {
+        "duration_sessions": 9,
+        "end": "2026-07-06",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-06-23",
+        "theme_id": "obesity_glp1"
+      },
+      {
+        "duration_sessions": 5,
+        "end": "2026-06-30",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-01",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-06-24",
+        "theme_id": "housing"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-06-25",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-06-26",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-06-24",
+        "theme_id": "industrial_distribution"
+      },
+      {
+        "duration_sessions": 7,
+        "end": "2026-07-06",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-06-25",
+        "theme_id": "managed_care"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-06-25",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-06-26",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-06-25",
+        "theme_id": "memory_storage"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-06-26",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-06-29",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-06-26",
+        "theme_id": "big_pharma"
+      },
+      {
+        "duration_sessions": 6,
+        "end": "2026-07-06",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-06-26",
+        "theme_id": "cybersecurity"
+      },
+      {
+        "duration_sessions": 6,
+        "end": "2026-07-06",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-06-26",
+        "theme_id": "insurance"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-06-29",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-06-30",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-06-26",
+        "theme_id": "travel"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-06-30",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-01",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-06-29",
+        "theme_id": "ai_infra"
+      },
+      {
+        "duration_sessions": 3,
+        "end": "2026-07-01",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-02",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-06-29",
+        "theme_id": "semicap_equipment"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-06-29",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-06-30",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-06-29",
+        "theme_id": "us_sector_health"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-06-29",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-06-30",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-06-29",
+        "theme_id": "us_sector_realestate"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-06-30",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-01",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-06-30",
+        "theme_id": "industrial_distribution"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-06-30",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-01",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-06-30",
+        "theme_id": "memory_storage"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-06-30",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-01",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-06-30",
+        "theme_id": "us_sector_industrials"
+      },
+      {
+        "duration_sessions": 3,
+        "end": "2026-07-06",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-07-01",
+        "theme_id": "payments_fintech"
+      },
+      {
+        "duration_sessions": 3,
+        "end": "2026-07-06",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-07-01",
+        "theme_id": "travel"
+      },
+      {
+        "duration_sessions": 3,
+        "end": "2026-07-06",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-07-01",
+        "theme_id": "us_sector_financials"
+      },
+      {
+        "duration_sessions": 3,
+        "end": "2026-07-06",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-07-01",
+        "theme_id": "us_sector_health"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-02",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-06",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-07-01",
+        "theme_id": "us_sector_realestate"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-06",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-07-02",
+        "theme_id": "big_pharma"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-07-02",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-06",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-07-02",
+        "theme_id": "us_sector_utilities"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-07-06",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-07-06",
+        "theme_id": "reshoring"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-07-06",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-07-06",
+        "theme_id": "us_sector_industrials"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-10",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-09",
+        "theme_id": "ai_infra"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-07-09",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-10",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-07-09",
+        "theme_id": "ai_software"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-10",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-09",
+        "theme_id": "big_pharma"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-10",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-09",
+        "theme_id": "cybersecurity"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-10",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-09",
+        "theme_id": "insurance"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-10",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-09",
+        "theme_id": "memory_storage"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-10",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-09",
+        "theme_id": "obesity_glp1"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-10",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-09",
+        "theme_id": "payments_fintech"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-10",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-09",
+        "theme_id": "regional_banks"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-10",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-09",
+        "theme_id": "us_sector_financials"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-10",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-09",
+        "theme_id": "us_sector_health"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-10",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-09",
+        "theme_id": "us_sector_utilities"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-07-10",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-07-10",
+        "theme_id": "reshoring"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-07-14",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-15",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-07-14",
+        "theme_id": "ai_semiconductors"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-15",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-14",
+        "theme_id": "ai_software"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-15",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-14",
+        "theme_id": "big_pharma"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-15",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-14",
+        "theme_id": "cybersecurity"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-15",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-14",
+        "theme_id": "insurance"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-15",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-14",
+        "theme_id": "mag7"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-07-14",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-15",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-07-14",
+        "theme_id": "managed_care"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-07-14",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-15",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-07-14",
+        "theme_id": "memory_storage"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-07-14",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-15",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-07-14",
+        "theme_id": "non_ai_tech"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-15",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-14",
+        "theme_id": "obesity_glp1"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-15",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-14",
+        "theme_id": "payments_fintech"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-07-14",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-15",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-07-14",
+        "theme_id": "semicap_equipment"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-07-15",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-07-15",
+        "theme_id": "non_ai_software"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-07-15",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-07-15",
+        "theme_id": "regional_banks"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-07-15",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-07-15",
+        "theme_id": "us_sector_financials"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-07-15",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-07-15",
+        "theme_id": "us_sector_health"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-07-15",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-07-15",
+        "theme_id": "us_sector_realestate"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-20",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-17",
+        "theme_id": "ai_software"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-20",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-17",
+        "theme_id": "big_pharma"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-20",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-17",
+        "theme_id": "cybersecurity"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-20",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-17",
+        "theme_id": "energy_complex"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-20",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-17",
+        "theme_id": "insurance"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-20",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-17",
+        "theme_id": "payments_fintech"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-20",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-17",
+        "theme_id": "regional_banks"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-20",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-17",
+        "theme_id": "us_sector_energy"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-20",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-17",
+        "theme_id": "us_sector_financials"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-20",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-17",
+        "theme_id": "us_sector_health"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-20",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-17",
+        "theme_id": "us_sector_realestate"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-07-17",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-20",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-07-17",
+        "theme_id": "us_sector_staples"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-07-20",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-07-20",
+        "theme_id": "non_ai_software"
+      },
+      {
+        "duration_sessions": 6,
+        "end": "2026-07-31",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-24",
+        "theme_id": "big_pharma"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-07-24",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-27",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-07-24",
+        "theme_id": "cybersecurity"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-27",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-28",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-07-24",
+        "theme_id": "energy_complex"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-07-24",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-27",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-07-24",
+        "theme_id": "industrial_distribution"
+      },
+      {
+        "duration_sessions": 6,
+        "end": "2026-07-31",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-24",
+        "theme_id": "insurance"
+      },
+      {
+        "duration_sessions": 3,
+        "end": "2026-07-28",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-29",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-07-24",
+        "theme_id": "regional_banks"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-07-24",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-27",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-07-24",
+        "theme_id": "us_sector_energy"
+      },
+      {
+        "duration_sessions": 5,
+        "end": "2026-07-30",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-31",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-07-24",
+        "theme_id": "us_sector_financials"
+      },
+      {
+        "duration_sessions": 6,
+        "end": "2026-07-31",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-07-24",
+        "theme_id": "us_sector_health"
+      },
+      {
+        "duration_sessions": 3,
+        "end": "2026-07-28",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-29",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-07-24",
+        "theme_id": "us_sector_industrials"
+      },
+      {
+        "duration_sessions": 4,
+        "end": "2026-07-29",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-30",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-07-24",
+        "theme_id": "us_sector_realestate"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-07-24",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-27",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-07-24",
+        "theme_id": "us_sector_utilities"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-07-27",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-28",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-07-27",
+        "theme_id": "ai_software"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-07-27",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-28",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-07-27",
+        "theme_id": "crypto_rails"
+      },
+      {
+        "duration_sessions": 5,
+        "end": "2026-07-31",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-07-27",
+        "theme_id": "non_ai_software"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-28",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-29",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-07-27",
+        "theme_id": "payments_fintech"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-29",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-30",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-07-28",
+        "theme_id": "defensives"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-07-28",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-29",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-07-28",
+        "theme_id": "us_sector_materials"
+      },
+      {
+        "duration_sessions": 3,
+        "end": "2026-07-30",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-31",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-07-28",
+        "theme_id": "us_sector_staples"
+      },
+      {
+        "duration_sessions": 3,
+        "end": "2026-07-31",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-07-29",
+        "theme_id": "ai_software"
+      },
+      {
+        "duration_sessions": 3,
+        "end": "2026-07-31",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-07-29",
+        "theme_id": "energy_complex"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-07-29",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-07-30",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-07-29",
+        "theme_id": "retail"
+      },
+      {
+        "duration_sessions": 3,
+        "end": "2026-07-31",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-07-29",
+        "theme_id": "us_sector_energy"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-31",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-07-30",
+        "theme_id": "cybersecurity"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-31",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-07-30",
+        "theme_id": "regional_banks"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-07-31",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-07-30",
+        "theme_id": "robotics_automation"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-07-31",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-07-31",
+        "theme_id": "reshoring"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-07-31",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-07-31",
+        "theme_id": "us_sector_tech"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-07",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-08-07",
+        "theme_id": "ai_agents"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-07",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-08-07",
+        "theme_id": "ai_software"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-07",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-08-07",
+        "theme_id": "big_pharma"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-07",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-08-07",
+        "theme_id": "cybersecurity"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-07",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-08-07",
+        "theme_id": "gold_miners"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-07",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-08-07",
+        "theme_id": "industrial_distribution"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-07",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-08-07",
+        "theme_id": "non_ai_software"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-07",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-08-07",
+        "theme_id": "regional_banks"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-07",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-08-07",
+        "theme_id": "reshoring"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-07",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-08-07",
+        "theme_id": "retail"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-07",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-08-07",
+        "theme_id": "robotics_automation"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-07",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-08-07",
+        "theme_id": "silver_miners"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-07",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-08-07",
+        "theme_id": "us_sector_tech"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-08-13",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-08-12",
+        "theme_id": "ai_infra"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-08-13",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-08-12",
+        "theme_id": "ai_semiconductors"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-12",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-13",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-08-12",
+        "theme_id": "big_pharma"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-08-13",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-08-12",
+        "theme_id": "energy_complex"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-12",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-13",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-08-12",
+        "theme_id": "gold_miners"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-12",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-13",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-08-12",
+        "theme_id": "pgm_miners"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-08-13",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-08-12",
+        "theme_id": "regional_banks"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-12",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-13",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-08-12",
+        "theme_id": "reshoring"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-08-13",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-08-12",
+        "theme_id": "robotics_automation"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-12",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-13",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-08-12",
+        "theme_id": "silver_miners"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-08-13",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-08-12",
+        "theme_id": "us_sector_energy"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-12",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-13",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-08-12",
+        "theme_id": "us_sector_health"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-08-13",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-08-12",
+        "theme_id": "us_sector_tech"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-13",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-08-13",
+        "theme_id": "ai_agents"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-13",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-08-13",
+        "theme_id": "ai_software"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-13",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-08-13",
+        "theme_id": "cybersecurity"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-13",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-08-13",
+        "theme_id": "memory_storage"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-13",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-08-13",
+        "theme_id": "non_ai_software"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-13",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-08-13",
+        "theme_id": "semicap_equipment"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-17",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-18",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-08-17",
+        "theme_id": "ai_infra"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-17",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-18",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-08-17",
+        "theme_id": "ai_semiconductors"
+      },
+      {
+        "duration_sessions": 11,
+        "end": "2026-08-31",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-08-17",
+        "theme_id": "energy_complex"
+      },
+      {
+        "duration_sessions": 11,
+        "end": "2026-08-31",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-08-17",
+        "theme_id": "gold_miners"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-17",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-18",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-08-17",
+        "theme_id": "memory_storage"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-08-18",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-19",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-08-17",
+        "theme_id": "regional_banks"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-17",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-18",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-08-17",
+        "theme_id": "reshoring"
+      },
+      {
+        "duration_sessions": 3,
+        "end": "2026-08-19",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-20",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-08-17",
+        "theme_id": "robotics_automation"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-17",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-18",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-08-17",
+        "theme_id": "semicap_equipment"
+      },
+      {
+        "duration_sessions": 11,
+        "end": "2026-08-31",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-08-17",
+        "theme_id": "silver_miners"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-17",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-18",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-08-17",
+        "theme_id": "space_economy"
+      },
+      {
+        "duration_sessions": 11,
+        "end": "2026-08-31",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-08-17",
+        "theme_id": "us_sector_energy"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-08-18",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-19",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-08-17",
+        "theme_id": "us_sector_tech"
+      },
+      {
+        "duration_sessions": 10,
+        "end": "2026-08-31",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-08-18",
+        "theme_id": "ai_agents"
+      },
+      {
+        "duration_sessions": 4,
+        "end": "2026-08-21",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-24",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-08-18",
+        "theme_id": "ai_software"
+      },
+      {
+        "duration_sessions": 10,
+        "end": "2026-08-31",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-08-18",
+        "theme_id": "big_pharma"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-18",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-19",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-08-18",
+        "theme_id": "cybersecurity"
+      },
+      {
+        "duration_sessions": 3,
+        "end": "2026-08-20",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-21",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-08-18",
+        "theme_id": "non_ai_software"
+      },
+      {
+        "duration_sessions": 7,
+        "end": "2026-08-26",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-27",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-08-18",
+        "theme_id": "us_sector_health"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-19",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-20",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-08-19",
+        "theme_id": "obesity_glp1"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-19",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-20",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-08-19",
+        "theme_id": "payments_fintech"
+      },
+      {
+        "duration_sessions": 6,
+        "end": "2026-08-26",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-27",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-08-19",
+        "theme_id": "pgm_miners"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-08-21",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-24",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-08-20",
+        "theme_id": "crypto"
+      },
+      {
+        "duration_sessions": 8,
+        "end": "2026-08-31",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-08-20",
+        "theme_id": "crypto_rails"
+      },
+      {
+        "duration_sessions": 3,
+        "end": "2026-08-24",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-25",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-08-20",
+        "theme_id": "us_sector_materials"
+      },
+      {
+        "duration_sessions": 3,
+        "end": "2026-08-25",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-26",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-08-21",
+        "theme_id": "payments_fintech"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-24",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-25",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-08-24",
+        "theme_id": "defensives"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-24",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-25",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-08-24",
+        "theme_id": "us_sector_staples"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-25",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-26",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-08-25",
+        "theme_id": "critical_minerals"
+      },
+      {
+        "duration_sessions": 5,
+        "end": "2026-08-31",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-08-25",
+        "theme_id": "crypto"
+      },
+      {
+        "duration_sessions": 3,
+        "end": "2026-08-27",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-28",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-08-25",
+        "theme_id": "uranium_miners"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-26",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-27",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-08-26",
+        "theme_id": "memory_storage"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-26",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-27",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-08-26",
+        "theme_id": "robotics_automation"
+      },
+      {
+        "duration_sessions": 3,
+        "end": "2026-08-31",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-08-27",
+        "theme_id": "ai_software"
+      },
+      {
+        "duration_sessions": 3,
+        "end": "2026-08-31",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-08-27",
+        "theme_id": "cybersecurity"
+      },
+      {
+        "duration_sessions": 3,
+        "end": "2026-08-31",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-08-27",
+        "theme_id": "non_ai_software"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-27",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-28",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-08-27",
+        "theme_id": "us_sector_tech"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-28",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-31",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-08-28",
+        "theme_id": "payments_fintech"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-28",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-08-31",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-08-28",
+        "theme_id": "us_sector_health"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-31",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-08-31",
+        "theme_id": "mag7"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-08-31",
+        "end_reason": "archive_gap",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-08-31",
+        "theme_id": "pgm_miners"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-09-03",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-09-04",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-09-03",
+        "theme_id": "ai_agents"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-09-03",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-09-04",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-09-03",
+        "theme_id": "ai_software"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-09-04",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-09-08",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-09-03",
+        "theme_id": "big_pharma"
+      },
+      {
+        "duration_sessions": 4,
+        "end": "2026-09-09",
+        "end_reason": "archive_end",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-09-03",
+        "theme_id": "crypto"
+      },
+      {
+        "duration_sessions": 4,
+        "end": "2026-09-09",
+        "end_reason": "archive_end",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-09-03",
+        "theme_id": "crypto_rails"
+      },
+      {
+        "duration_sessions": 4,
+        "end": "2026-09-09",
+        "end_reason": "archive_end",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-09-03",
+        "theme_id": "energy_complex"
+      },
+      {
+        "duration_sessions": 4,
+        "end": "2026-09-09",
+        "end_reason": "archive_end",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-09-03",
+        "theme_id": "gold_miners"
+      },
+      {
+        "duration_sessions": 4,
+        "end": "2026-09-09",
+        "end_reason": "archive_end",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-09-03",
+        "theme_id": "mag7"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-09-03",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-09-04",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-09-03",
+        "theme_id": "non_ai_software"
+      },
+      {
+        "duration_sessions": 4,
+        "end": "2026-09-09",
+        "end_reason": "archive_end",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-09-03",
+        "theme_id": "pgm_miners"
+      },
+      {
+        "duration_sessions": 4,
+        "end": "2026-09-09",
+        "end_reason": "archive_end",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-09-03",
+        "theme_id": "silver_miners"
+      },
+      {
+        "duration_sessions": 4,
+        "end": "2026-09-09",
+        "end_reason": "archive_end",
+        "exit_observed_on": null,
+        "left_censored": true,
+        "right_censored": true,
+        "start": "2026-09-03",
+        "theme_id": "us_sector_energy"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-09-04",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-09-08",
+        "left_censored": true,
+        "right_censored": false,
+        "start": "2026-09-03",
+        "theme_id": "us_sector_health"
+      },
+      {
+        "duration_sessions": 3,
+        "end": "2026-09-09",
+        "end_reason": "archive_end",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-09-04",
+        "theme_id": "ai_infra"
+      },
+      {
+        "duration_sessions": 3,
+        "end": "2026-09-09",
+        "end_reason": "archive_end",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-09-04",
+        "theme_id": "memory_storage"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-09-04",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-09-08",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-09-04",
+        "theme_id": "payments_fintech"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-09-09",
+        "end_reason": "archive_end",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-09-08",
+        "theme_id": "ai_neoclouds"
+      },
+      {
+        "duration_sessions": 2,
+        "end": "2026-09-09",
+        "end_reason": "archive_end",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-09-08",
+        "theme_id": "ai_software"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-09-08",
+        "end_reason": "observed_exit",
+        "exit_observed_on": "2026-09-09",
+        "left_censored": false,
+        "right_censored": false,
+        "start": "2026-09-08",
+        "theme_id": "managed_care"
+      },
+      {
+        "duration_sessions": 1,
+        "end": "2026-09-09",
+        "end_reason": "archive_end",
+        "exit_observed_on": null,
+        "left_censored": false,
+        "right_censored": true,
+        "start": "2026-09-09",
+        "theme_id": "us_sector_tech"
+      }
+    ],
+    "kaplan_meier": {
+      "curve": [
+        {
+          "at_risk": 92,
+          "censored": 20,
+          "duration_sessions": 1,
+          "events": 25,
+          "survival": 0.7282608695652174
+        },
+        {
+          "at_risk": 47,
+          "censored": 6,
+          "duration_sessions": 2,
+          "events": 8,
+          "survival": 0.6043015726179464
+        },
+        {
+          "at_risk": 33,
+          "censored": 12,
+          "duration_sessions": 3,
+          "events": 6,
+          "survival": 0.49442855941468333
+        },
+        {
+          "at_risk": 15,
+          "censored": 0,
+          "duration_sessions": 4,
+          "events": 1,
+          "survival": 0.46146665545370447
+        },
+        {
+          "at_risk": 14,
+          "censored": 2,
+          "duration_sessions": 5,
+          "events": 1,
+          "survival": 0.4285047514927256
+        },
+        {
+          "at_risk": 11,
+          "censored": 2,
+          "duration_sessions": 6,
+          "events": 1,
+          "survival": 0.389549774084296
+        },
+        {
+          "at_risk": 8,
+          "censored": 1,
+          "duration_sessions": 7,
+          "events": 1,
+          "survival": 0.340856052323759
+        },
+        {
+          "at_risk": 6,
+          "censored": 1,
+          "duration_sessions": 8,
+          "events": 1,
+          "survival": 0.28404671026979916
+        },
+        {
+          "at_risk": 4,
+          "censored": 1,
+          "duration_sessions": 9,
+          "events": 0,
+          "survival": 0.28404671026979916
+        },
+        {
+          "at_risk": 3,
+          "censored": 3,
+          "duration_sessions": 10,
+          "events": 0,
+          "survival": 0.28404671026979916
+        }
+      ],
+      "median_survival_sessions": 3,
+      "n_episodes": 92,
+      "n_events": 44,
+      "n_left_censored_excluded": 110,
+      "n_right_censored": 48,
+      "state": "MEASURED"
+    }
+  },
+  "schema_version": "research.rotation_persistence_rph0.v1",
+  "source": {
+    "duplicate_asof_rows": [],
+    "first_asof": "2026-06-18",
+    "last_asof": "2026-09-09",
+    "non_session_rows": [],
+    "rows_read": 41,
+    "rows_valid": 41,
+    "source_path": "data/signal_archive/baskets.parquet",
+    "source_sha256": "b2f45d79e3e506a2a1aec21a117046859d8677acc2da46865579ad52c7fecc21"
+  },
+  "surface": {
+    "1": {
+      "horizon_sessions": 1,
+      "pairs_eligible": 30,
+      "pairs_ineligible": 2,
+      "pairs_target_missing": 9,
+      "recent_window_start": "2026-08-12",
+      "windows": {
+        "all": {
+          "anchor_first": "2026-06-22",
+          "anchor_last": "2026-09-08",
+          "breadth_coverage": {
+            "ci90": [
+              1.0,
+              1.0
+            ],
+            "mean": 1.0,
+            "n": 30,
+            "state": "MEASURED"
+          },
+          "breadth_rank_rho": {
+            "ci90": [
+              0.8643949690769764,
+              0.9285956851030728
+            ],
+            "mean": 0.9000268657208996,
+            "n": 28,
+            "state": "MEASURED"
+          },
+          "chance_overlap": {
+            "ci90": [
+              0.26360989903207666,
+              0.26482413255157133
+            ],
+            "mean": 0.2642244144034426,
+            "n": 30,
+            "state": "MEASURED"
+          },
+          "laggard_to_leader": {
+            "ci90": [
+              0.007755140923299491,
+              0.021778526957555094
+            ],
+            "mean": 0.01470781988684802,
+            "n": 30,
+            "state": "MEASURED"
+          },
+          "leader_breadth_delta": {
+            "ci90": [
+              -0.09285210113960113,
+              0.00572448717948717
+            ],
+            "mean": -0.04214138176638176,
+            "n": 30,
+            "state": "MEASURED"
+          },
+          "leader_to_laggard": {
+            "ci90": [
+              0.014173789173789173,
+              0.04829059829059829
+            ],
+            "mean": 0.03041310541310541,
+            "n": 30,
+            "state": "MEASURED"
+          },
+          "rank_rho": {
+            "ci90": [
+              0.8517569170599868,
+              0.8937548288249788
+            ],
+            "mean": 0.8738482046983006,
+            "n": 30,
+            "state": "MEASURED"
+          },
+          "score_continuation_ic": {
+            "ci90": [
+              -0.31020814684961884,
+              -0.0811307021068466
+            ],
+            "mean": -0.19422557605508337,
+            "n": 30,
+            "state": "MEASURED"
+          },
+          "topq_overlap": {
+            "ci90": [
+              0.7232193732193735,
+              0.7901032763532765
+            ],
+            "mean": 0.7569088319088322,
+            "n": 30,
+            "state": "MEASURED"
+          },
+          "topq_overlap_lift": {
+            "ci90": [
+              2.729665303041371,
+              2.9885238756178922
+            ],
+            "mean": 2.8648309469890663,
+            "n": 30,
+            "state": "MEASURED"
+          }
+        },
+        "prior": {
+          "anchor_first": "2026-06-22",
+          "anchor_last": "2026-07-30",
+          "breadth_coverage": {
+            "ci90": [
+              1.0,
+              1.0
+            ],
+            "mean": 1.0,
+            "n": 16,
+            "state": "MEASURED"
+          },
+          "breadth_rank_rho": {
+            "ci90": [
+              0.8483099087105154,
+              0.9402100616278201
+            ],
+            "mean": 0.9034920695843611,
+            "n": 16,
+            "state": "MEASURED"
+          },
+          "chance_overlap": {
+            "ci90": [
+              0.2623135123614663,
+              0.26435954816709295
+            ],
+            "mean": 0.2632779198635976,
+            "n": 16,
+            "state": "MEASURED"
+          },
+          "laggard_to_leader": {
+            "ci90": [
+              0.002840909090909091,
+              0.021063415484770982
+            ],
+            "mean": 0.011952162287840039,
+            "n": 16,
+            "state": "MEASURED"
+          },
+          "leader_breadth_delta": {
+            "ci90": [
+              -0.09686718750000001,
+              -0.006692708333333343
+            ],
+            "mean": -0.047092013888888895,
+            "n": 16,
+            "state": "MEASURED"
+          },
+          "leader_to_laggard": {
+            "ci90": [
+              0.006944444444444444,
+              0.0625
+            ],
+            "mean": 0.03298611111111111,
+            "n": 16,
+            "state": "MEASURED"
+          },
+          "rank_rho": {
+            "ci90": [
+              0.8514838770530497,
+              0.8979102923126192
+            ],
+            "mean": 0.8747090062582934,
+            "n": 16,
+            "state": "MEASURED"
+          },
+          "score_continuation_ic": {
+            "ci90": [
+              -0.3290000964768961,
+              -0.040641482719163326
+            ],
+            "mean": -0.19071377129237105,
+            "n": 16,
+            "state": "MEASURED"
+          },
+          "topq_overlap": {
+            "ci90": [
+              0.6961805555555556,
+              0.7864583333333333
+            ],
+            "mean": 0.7413194444444444,
+            "n": 16,
+            "state": "MEASURED"
+          },
+          "topq_overlap_lift": {
+            "ci90": [
+              2.648478491512346,
+              2.9819854359567906
+            ],
+            "mean": 2.816454475308642,
+            "n": 16,
+            "state": "MEASURED"
+          }
+        },
+        "recent": {
+          "anchor_first": "2026-08-12",
+          "anchor_last": "2026-09-08",
+          "breadth_coverage": {
+            "ci90": [
+              1.0,
+              1.0
+            ],
+            "mean": 1.0,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "breadth_rank_rho": {
+            "ci90": [
+              0.8513339998650894,
+              0.9308800497999177
+            ],
+            "mean": 0.8954065939029511,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "chance_overlap": {
+            "ci90": [
+              0.2653061224489796,
+              0.2653061224489796
+            ],
+            "mean": 0.2653061224489796,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "laggard_to_leader": {
+            "ci90": [
+              0.005952380952380952,
+              0.029761904761904764
+            ],
+            "mean": 0.017857142857142856,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "leader_breadth_delta": {
+            "ci90": [
+              -0.13077774725274724,
+              0.0641208791208791
+            ],
+            "mean": -0.03648351648351648,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "leader_to_laggard": {
+            "ci90": [
+              0.01098901098901099,
+              0.04945054945054945
+            ],
+            "mean": 0.027472527472527476,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "rank_rho": {
+            "ci90": [
+              0.8368542274052477,
+              0.9057459912536442
+            ],
+            "mean": 0.8728644314868804,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "score_continuation_ic": {
+            "ci90": [
+              -0.37313113990408403,
+              -0.002027510017992316
+            ],
+            "mean": -0.1982390672124688,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "topq_overlap": {
+            "ci90": [
+              0.7197802197802199,
+              0.8186813186813188
+            ],
+            "mean": 0.7747252747252749,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "topq_overlap_lift": {
+            "ci90": [
+              2.7337278106508873,
+              3.106508875739645
+            ],
+            "mean": 2.920118343195267,
+            "n": 14,
+            "state": "MEASURED"
+          }
+        }
+      }
+    },
+    "10": {
+      "horizon_sessions": 10,
+      "pairs_eligible": 19,
+      "pairs_ineligible": 3,
+      "pairs_target_missing": 19,
+      "recent_window_start": "2026-08-12",
+      "windows": {
+        "all": {
+          "anchor_first": "2026-06-29",
+          "anchor_last": "2026-08-25",
+          "breadth_coverage": {
+            "ci90": [
+              1.0,
+              1.0
+            ],
+            "mean": 1.0,
+            "n": 19,
+            "state": "MEASURED"
+          },
+          "breadth_rank_rho": {
+            "ci90": [
+              0.5508011294313546,
+              0.6171067665598876
+            ],
+            "mean": 0.5857931994631982,
+            "n": 19,
+            "state": "MEASURED"
+          },
+          "chance_overlap": {
+            "ci90": [
+              0.26194321206743565,
+              0.2652158346175999
+            ],
+            "mean": 0.26365292112268246,
+            "n": 19,
+            "state": "MEASURED"
+          },
+          "laggard_to_leader": {
+            "ci90": [
+              0.11613922404826296,
+              0.16506136883711256
+            ],
+            "mean": 0.1383399209486166,
+            "n": 19,
+            "state": "MEASURED"
+          },
+          "leader_breadth_delta": {
+            "ci90": [
+              -0.20233115721997302,
+              -0.11445647773279355
+            ],
+            "mean": -0.16255465587044532,
+            "n": 19,
+            "state": "MEASURED"
+          },
+          "leader_to_laggard": {
+            "ci90": [
+              0.15484143049932522,
+              0.2574224021592443
+            ],
+            "mean": 0.203778677462888,
+            "n": 19,
+            "state": "MEASURED"
+          },
+          "rank_rho": {
+            "ci90": [
+              0.4284186603021364,
+              0.6007751345367274
+            ],
+            "mean": 0.5185582848058069,
+            "n": 19,
+            "state": "MEASURED"
+          },
+          "score_continuation_ic": {
+            "ci90": [
+              -0.4641421635988278,
+              -0.2707146354644528
+            ],
+            "mean": -0.36360304866229626,
+            "n": 19,
+            "state": "MEASURED"
+          },
+          "topq_overlap": {
+            "ci90": [
+              0.4814271255060729,
+              0.5705128205128206
+            ],
+            "mean": 0.5239541160593792,
+            "n": 19,
+            "state": "MEASURED"
+          },
+          "topq_overlap_lift": {
+            "ci90": [
+              1.8416420118343197,
+              2.153257249385792
+            ],
+            "mean": 1.986965379424894,
+            "n": 19,
+            "state": "MEASURED"
+          }
+        },
+        "prior": {
+          "anchor_first": "2026-06-29",
+          "anchor_last": "2026-08-07",
+          "breadth_coverage": {
+            "ci90": [
+              1.0,
+              1.0
+            ],
+            "mean": 1.0,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "breadth_rank_rho": {
+            "ci90": [
+              0.5321481888970259,
+              0.6216039539198746
+            ],
+            "mean": 0.5768760714084502,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "chance_overlap": {
+            "ci90": [
+              0.26086956521739124,
+              0.2646209208321009
+            ],
+            "mean": 0.2626885536823425,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "laggard_to_leader": {
+            "ci90": [
+              0.11658432147562581,
+              0.18614130434782608
+            ],
+            "mean": 0.1530659859464207,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "leader_breadth_delta": {
+            "ci90": [
+              -0.2119764957264957,
+              -0.07843100961538463
+            ],
+            "mean": -0.14411538461538462,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "leader_to_laggard": {
+            "ci90": [
+              0.15758547008547005,
+              0.2847222222222222
+            ],
+            "mean": 0.22008547008547005,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "rank_rho": {
+            "ci90": [
+              0.39036069839591697,
+              0.5352400835604053
+            ],
+            "mean": 0.469562522371099,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "score_continuation_ic": {
+            "ci90": [
+              -0.5498352454372575,
+              -0.30039893759566066
+            ],
+            "mean": -0.4251870249668759,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "topq_overlap": {
+            "ci90": [
+              0.452991452991453,
+              0.5208333333333334
+            ],
+            "mean": 0.483440170940171,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "topq_overlap_lift": {
+            "ci90": [
+              1.705593051446417,
+              1.9797453703703702
+            ],
+            "mean": 1.8412947896120972,
+            "n": 12,
+            "state": "MEASURED"
+          }
+        },
+        "recent": {
+          "anchor_first": "2026-08-12",
+          "anchor_last": "2026-08-25",
+          "breadth_coverage": {
+            "ci90": null,
+            "mean": null,
+            "n": 7,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "breadth_rank_rho": {
+            "ci90": null,
+            "mean": null,
+            "n": 7,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "chance_overlap": {
+            "ci90": null,
+            "mean": null,
+            "n": 7,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "laggard_to_leader": {
+            "ci90": null,
+            "mean": null,
+            "n": 7,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "leader_breadth_delta": {
+            "ci90": null,
+            "mean": null,
+            "n": 7,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "leader_to_laggard": {
+            "ci90": null,
+            "mean": null,
+            "n": 7,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "rank_rho": {
+            "ci90": null,
+            "mean": null,
+            "n": 7,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "score_continuation_ic": {
+            "ci90": null,
+            "mean": null,
+            "n": 7,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "topq_overlap": {
+            "ci90": null,
+            "mean": null,
+            "n": 7,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "topq_overlap_lift": {
+            "ci90": null,
+            "mean": null,
+            "n": 7,
+            "state": "INSUFFICIENT_HISTORY"
+          }
+        }
+      }
+    },
+    "15": {
+      "horizon_sessions": 15,
+      "pairs_eligible": 14,
+      "pairs_ineligible": 4,
+      "pairs_target_missing": 23,
+      "recent_window_start": "2026-08-12",
+      "windows": {
+        "all": {
+          "anchor_first": "2026-07-02",
+          "anchor_last": "2026-08-18",
+          "breadth_coverage": {
+            "ci90": [
+              1.0,
+              1.0
+            ],
+            "mean": 1.0,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "breadth_rank_rho": {
+            "ci90": [
+              0.39747003584224383,
+              0.5439466710548422
+            ],
+            "mean": 0.4684198930990546,
+            "n": 13,
+            "state": "MEASURED"
+          },
+          "chance_overlap": {
+            "ci90": [
+              0.2606308811353271,
+              0.26391600118308195
+            ],
+            "mean": 0.26215477336699183,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "laggard_to_leader": {
+            "ci90": [
+              0.1348449557688688,
+              0.17339544513457558
+            ],
+            "mean": 0.15349143610013175,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "leader_breadth_delta": {
+            "ci90": [
+              -0.2741428571428571,
+              -0.14131664377289382
+            ],
+            "mean": -0.2026488095238095,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "leader_to_laggard": {
+            "ci90": [
+              0.20279304029304027,
+              0.36817765567765565
+            ],
+            "mean": 0.28479853479853473,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "rank_rho": {
+            "ci90": [
+              0.3545910973084886,
+              0.4845151732443521
+            ],
+            "mean": 0.42013441538418406,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "score_continuation_ic": {
+            "ci90": [
+              -0.5832543625355074,
+              -0.4258170858555294
+            ],
+            "mean": -0.5029714759399384,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "topq_overlap": {
+            "ci90": [
+              0.4134615384615384,
+              0.5370879120879121
+            ],
+            "mean": 0.47710622710622713,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "topq_overlap_lift": {
+            "ci90": [
+              1.5694438574246266,
+              2.0369722691838077
+            ],
+            "mean": 1.8194620550389782,
+            "n": 14,
+            "state": "MEASURED"
+          }
+        },
+        "prior": {
+          "anchor_first": "2026-07-02",
+          "anchor_last": "2026-08-07",
+          "breadth_coverage": {
+            "ci90": [
+              1.0,
+              1.0
+            ],
+            "mean": 1.0,
+            "n": 11,
+            "state": "MEASURED"
+          },
+          "breadth_rank_rho": {
+            "ci90": [
+              0.45082714508284927,
+              0.5877453866175749
+            ],
+            "mean": 0.5225753083388257,
+            "n": 10,
+            "state": "MEASURED"
+          },
+          "chance_overlap": {
+            "ci90": [
+              0.26026372200549547,
+              0.26262897051849077
+            ],
+            "mean": 0.2612953145264497,
+            "n": 11,
+            "state": "MEASURED"
+          },
+          "laggard_to_leader": {
+            "ci90": [
+              0.1228889687387711,
+              0.17797565576715768
+            ],
+            "mean": 0.15368607018804648,
+            "n": 11,
+            "state": "MEASURED"
+          },
+          "leader_breadth_delta": {
+            "ci90": [
+              -0.2257785547785547,
+              -0.1187594696969697
+            ],
+            "mean": -0.17042715617715617,
+            "n": 11,
+            "state": "MEASURED"
+          },
+          "leader_to_laggard": {
+            "ci90": [
+              0.18994755244755243,
+              0.38636363636363635
+            ],
+            "mean": 0.2855477855477855,
+            "n": 11,
+            "state": "MEASURED"
+          },
+          "rank_rho": {
+            "ci90": [
+              0.33193417330694025,
+              0.5085069374872677
+            ],
+            "mean": 0.42520817987671666,
+            "n": 11,
+            "state": "MEASURED"
+          },
+          "score_continuation_ic": {
+            "ci90": [
+              -0.6188246731321094,
+              -0.46859232175083904
+            ],
+            "mean": -0.5427468996324509,
+            "n": 11,
+            "state": "MEASURED"
+          },
+          "topq_overlap": {
+            "ci90": [
+              0.3974358974358974,
+              0.5681818181818182
+            ],
+            "mean": 0.4883449883449883,
+            "n": 11,
+            "state": "MEASURED"
+          },
+          "topq_overlap_lift": {
+            "ci90": [
+              1.5189143655489807,
+              2.173144163528779
+            ],
+            "mean": 1.8675886079732236,
+            "n": 11,
+            "state": "MEASURED"
+          }
+        },
+        "recent": {
+          "anchor_first": "2026-08-13",
+          "anchor_last": "2026-08-18",
+          "breadth_coverage": {
+            "ci90": null,
+            "mean": null,
+            "n": 3,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "breadth_rank_rho": {
+            "ci90": null,
+            "mean": null,
+            "n": 3,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "chance_overlap": {
+            "ci90": null,
+            "mean": null,
+            "n": 3,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "laggard_to_leader": {
+            "ci90": null,
+            "mean": null,
+            "n": 3,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "leader_breadth_delta": {
+            "ci90": null,
+            "mean": null,
+            "n": 3,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "leader_to_laggard": {
+            "ci90": null,
+            "mean": null,
+            "n": 3,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "rank_rho": {
+            "ci90": null,
+            "mean": null,
+            "n": 3,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "score_continuation_ic": {
+            "ci90": null,
+            "mean": null,
+            "n": 3,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "topq_overlap": {
+            "ci90": null,
+            "mean": null,
+            "n": 3,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "topq_overlap_lift": {
+            "ci90": null,
+            "mean": null,
+            "n": 3,
+            "state": "INSUFFICIENT_HISTORY"
+          }
+        }
+      }
+    },
+    "2": {
+      "horizon_sessions": 2,
+      "pairs_eligible": 24,
+      "pairs_ineligible": 3,
+      "pairs_target_missing": 14,
+      "recent_window_start": "2026-08-12",
+      "windows": {
+        "all": {
+          "anchor_first": "2026-06-22",
+          "anchor_last": "2026-09-04",
+          "breadth_coverage": {
+            "ci90": [
+              1.0,
+              1.0
+            ],
+            "mean": 1.0,
+            "n": 24,
+            "state": "MEASURED"
+          },
+          "breadth_rank_rho": {
+            "ci90": [
+              0.7794045641332505,
+              0.8803736897411014
+            ],
+            "mean": 0.8329580848735713,
+            "n": 23,
+            "state": "MEASURED"
+          },
+          "chance_overlap": {
+            "ci90": [
+              0.2633575169198114,
+              0.2651479432352651
+            ],
+            "mean": 0.26429202115628864,
+            "n": 24,
+            "state": "MEASURED"
+          },
+          "laggard_to_leader": {
+            "ci90": [
+              0.016648663747448913,
+              0.046087069544550364
+            ],
+            "mean": 0.030613035728125237,
+            "n": 24,
+            "state": "MEASURED"
+          },
+          "leader_breadth_delta": {
+            "ci90": [
+              -0.1156702768874644,
+              -0.0373784188034188
+            ],
+            "mean": -0.07448219373219374,
+            "n": 24,
+            "state": "MEASURED"
+          },
+          "leader_to_laggard": {
+            "ci90": [
+              0.03160612535612536,
+              0.11585648148148145
+            ],
+            "mean": 0.06739672364672365,
+            "n": 24,
+            "state": "MEASURED"
+          },
+          "rank_rho": {
+            "ci90": [
+              0.7565102210143722,
+              0.8503464025148364
+            ],
+            "mean": 0.8096635306212301,
+            "n": 24,
+            "state": "MEASURED"
+          },
+          "score_continuation_ic": {
+            "ci90": [
+              -0.3055254390689859,
+              -0.10847570013295071
+            ],
+            "mean": -0.209021977466975,
+            "n": 24,
+            "state": "MEASURED"
+          },
+          "topq_overlap": {
+            "ci90": [
+              0.6477029914529915,
+              0.7170628561253561
+            ],
+            "mean": 0.6833155270655271,
+            "n": 24,
+            "state": "MEASURED"
+          },
+          "topq_overlap_lift": {
+            "ci90": [
+              2.454944549455767,
+              2.712081248325906
+            ],
+            "mean": 2.5844498395913993,
+            "n": 24,
+            "state": "MEASURED"
+          }
+        },
+        "prior": {
+          "anchor_first": "2026-06-22",
+          "anchor_last": "2026-07-29",
+          "breadth_coverage": {
+            "ci90": [
+              1.0,
+              1.0
+            ],
+            "mean": 1.0,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "breadth_rank_rho": {
+            "ci90": [
+              0.8140421125409211,
+              0.905696438085101
+            ],
+            "mean": 0.8625629999523329,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "chance_overlap": {
+            "ci90": [
+              0.26167235009946005,
+              0.26488348962773517
+            ],
+            "mean": 0.26327791986359755,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "laggard_to_leader": {
+            "ci90": [
+              0.007246376811594203,
+              0.03533093079128885
+            ],
+            "mean": 0.019559404789583817,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "leader_breadth_delta": {
+            "ci90": [
+              -0.07345497685185184,
+              -0.022589583333333333
+            ],
+            "mean": -0.04800925925925925,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "leader_to_laggard": {
+            "ci90": [
+              0.03009259259259259,
+              0.08564814814814814
+            ],
+            "mean": 0.05787037037037038,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "rank_rho": {
+            "ci90": [
+              0.7825720660534556,
+              0.8481431635951552
+            ],
+            "mean": 0.8144971292696711,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "score_continuation_ic": {
+            "ci90": [
+              -0.36577286196130326,
+              -0.01254046439614095
+            ],
+            "mean": -0.18235839303054593,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "topq_overlap": {
+            "ci90": [
+              0.625,
+              0.6875
+            ],
+            "mean": 0.6550925925925926,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "topq_overlap_lift": {
+            "ci90": [
+              2.3722993827160495,
+              2.614454732510288
+            ],
+            "mean": 2.486947016460905,
+            "n": 12,
+            "state": "MEASURED"
+          }
+        },
+        "recent": {
+          "anchor_first": "2026-08-13",
+          "anchor_last": "2026-09-04",
+          "breadth_coverage": {
+            "ci90": [
+              1.0,
+              1.0
+            ],
+            "mean": 1.0,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "breadth_rank_rho": {
+            "ci90": [
+              0.7057512515396317,
+              0.8865509676102187
+            ],
+            "mean": 0.8006618138785587,
+            "n": 11,
+            "state": "MEASURED"
+          },
+          "chance_overlap": {
+            "ci90": [
+              0.2653061224489796,
+              0.2653061224489796
+            ],
+            "mean": 0.2653061224489796,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "laggard_to_leader": {
+            "ci90": [
+              0.01736111111111111,
+              0.06944444444444443
+            ],
+            "mean": 0.041666666666666664,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "leader_breadth_delta": {
+            "ci90": [
+              -0.1673221153846154,
+              -0.03631987179487179
+            ],
+            "mean": -0.1009551282051282,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "leader_to_laggard": {
+            "ci90": [
+              0.012820512820512822,
+              0.1730769230769231
+            ],
+            "mean": 0.07692307692307691,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "rank_rho": {
+            "ci90": [
+              0.6959034863945578,
+              0.874203231292517
+            ],
+            "mean": 0.8048299319727891,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "score_continuation_ic": {
+            "ci90": [
+              -0.3368087393553605,
+              -0.12954212672830911
+            ],
+            "mean": -0.23568556190340414,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "topq_overlap": {
+            "ci90": [
+              0.6474358974358976,
+              0.7628205128205128
+            ],
+            "mean": 0.7115384615384616,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "topq_overlap_lift": {
+            "ci90": [
+              2.440335305719921,
+              2.8752465483234713
+            ],
+            "mean": 2.6819526627218937,
+            "n": 12,
+            "state": "MEASURED"
+          }
+        }
+      }
+    },
+    "20": {
+      "horizon_sessions": 20,
+      "pairs_eligible": 14,
+      "pairs_ineligible": 3,
+      "pairs_target_missing": 24,
+      "recent_window_start": "2026-08-12",
+      "windows": {
+        "all": {
+          "anchor_first": "2026-06-29",
+          "anchor_last": "2026-08-07",
+          "breadth_coverage": {
+            "ci90": [
+              1.0,
+              1.0
+            ],
+            "mean": 1.0,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "breadth_rank_rho": {
+            "ci90": [
+              0.29405104753119893,
+              0.4244046996678955
+            ],
+            "mean": 0.3619466065066742,
+            "n": 13,
+            "state": "MEASURED"
+          },
+          "chance_overlap": {
+            "ci90": [
+              0.26072806286516187,
+              0.2645167119312373
+            ],
+            "mean": 0.26244631855649614,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "laggard_to_leader": {
+            "ci90": [
+              0.16247882552230378,
+              0.20588650479954826
+            ],
+            "mean": 0.18457086391869001,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "leader_breadth_delta": {
+            "ci90": [
+              -0.27946188186813187,
+              -0.1483889880952381
+            ],
+            "mean": -0.21187408424908427,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "leader_to_laggard": {
+            "ci90": [
+              0.31318681318681324,
+              0.39056776556776557
+            ],
+            "mean": 0.3548534798534799,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "rank_rho": {
+            "ci90": [
+              0.18821453689240272,
+              0.28905582942657215
+            ],
+            "mean": 0.2409267016752999,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "score_continuation_ic": {
+            "ci90": [
+              -0.6386035437033897,
+              -0.5252895864974036
+            ],
+            "mean": -0.5811471078374577,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "topq_overlap": {
+            "ci90": [
+              0.3095238095238096,
+              0.402014652014652
+            ],
+            "mean": 0.3557692307692308,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "topq_overlap_lift": {
+            "ci90": [
+              1.1871301775147927,
+              1.5410532309570775
+            ],
+            "mean": 1.3587571616417773,
+            "n": 14,
+            "state": "MEASURED"
+          }
+        },
+        "prior": {
+          "anchor_first": "2026-06-29",
+          "anchor_last": "2026-08-07",
+          "breadth_coverage": {
+            "ci90": [
+              1.0,
+              1.0
+            ],
+            "mean": 1.0,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "breadth_rank_rho": {
+            "ci90": [
+              0.29405104753119893,
+              0.4244046996678955
+            ],
+            "mean": 0.3619466065066742,
+            "n": 13,
+            "state": "MEASURED"
+          },
+          "chance_overlap": {
+            "ci90": [
+              0.26072806286516187,
+              0.2645167119312373
+            ],
+            "mean": 0.26244631855649614,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "laggard_to_leader": {
+            "ci90": [
+              0.16247882552230378,
+              0.20588650479954826
+            ],
+            "mean": 0.18457086391869001,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "leader_breadth_delta": {
+            "ci90": [
+              -0.27946188186813187,
+              -0.1483889880952381
+            ],
+            "mean": -0.21187408424908427,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "leader_to_laggard": {
+            "ci90": [
+              0.31318681318681324,
+              0.39056776556776557
+            ],
+            "mean": 0.3548534798534799,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "rank_rho": {
+            "ci90": [
+              0.18821453689240272,
+              0.28905582942657215
+            ],
+            "mean": 0.2409267016752999,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "score_continuation_ic": {
+            "ci90": [
+              -0.6386035437033897,
+              -0.5252895864974036
+            ],
+            "mean": -0.5811471078374577,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "topq_overlap": {
+            "ci90": [
+              0.3095238095238096,
+              0.402014652014652
+            ],
+            "mean": 0.3557692307692308,
+            "n": 14,
+            "state": "MEASURED"
+          },
+          "topq_overlap_lift": {
+            "ci90": [
+              1.1871301775147927,
+              1.5410532309570775
+            ],
+            "mean": 1.3587571616417773,
+            "n": 14,
+            "state": "MEASURED"
+          }
+        },
+        "recent": {
+          "anchor_first": null,
+          "anchor_last": null,
+          "breadth_coverage": {
+            "ci90": null,
+            "mean": null,
+            "n": 0,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "breadth_rank_rho": {
+            "ci90": null,
+            "mean": null,
+            "n": 0,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "chance_overlap": {
+            "ci90": null,
+            "mean": null,
+            "n": 0,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "laggard_to_leader": {
+            "ci90": null,
+            "mean": null,
+            "n": 0,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "leader_breadth_delta": {
+            "ci90": null,
+            "mean": null,
+            "n": 0,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "leader_to_laggard": {
+            "ci90": null,
+            "mean": null,
+            "n": 0,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "rank_rho": {
+            "ci90": null,
+            "mean": null,
+            "n": 0,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "score_continuation_ic": {
+            "ci90": null,
+            "mean": null,
+            "n": 0,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "topq_overlap": {
+            "ci90": null,
+            "mean": null,
+            "n": 0,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "topq_overlap_lift": {
+            "ci90": null,
+            "mean": null,
+            "n": 0,
+            "state": "INSUFFICIENT_HISTORY"
+          }
+        }
+      }
+    },
+    "3": {
+      "horizon_sessions": 3,
+      "pairs_eligible": 25,
+      "pairs_ineligible": 4,
+      "pairs_target_missing": 12,
+      "recent_window_start": "2026-08-12",
+      "windows": {
+        "all": {
+          "anchor_first": "2026-06-22",
+          "anchor_last": "2026-09-03",
+          "breadth_coverage": {
+            "ci90": [
+              1.0,
+              1.0
+            ],
+            "mean": 1.0,
+            "n": 25,
+            "state": "MEASURED"
+          },
+          "breadth_rank_rho": {
+            "ci90": [
+              0.7427268217029772,
+              0.8410039012380178
+            ],
+            "mean": 0.7920708198710944,
+            "n": 24,
+            "state": "MEASURED"
+          },
+          "chance_overlap": {
+            "ci90": [
+              0.2628216503992901,
+              0.2649576004314769
+            ],
+            "mean": 0.26394724846460327,
+            "n": 25,
+            "state": "MEASURED"
+          },
+          "laggard_to_leader": {
+            "ci90": [
+              0.03306916996047431,
+              0.058695652173913045
+            ],
+            "mean": 0.04573122529644268,
+            "n": 25,
+            "state": "MEASURED"
+          },
+          "leader_breadth_delta": {
+            "ci90": [
+              -0.13555634615384615,
+              -0.05298794871794872
+            ],
+            "mean": -0.0936048717948718,
+            "n": 25,
+            "state": "MEASURED"
+          },
+          "leader_to_laggard": {
+            "ci90": [
+              0.05101282051282051,
+              0.11794871794871796
+            ],
+            "mean": 0.08384615384615385,
+            "n": 25,
+            "state": "MEASURED"
+          },
+          "rank_rho": {
+            "ci90": [
+              0.7462354200279051,
+              0.8169675961579651
+            ],
+            "mean": 0.782798027602261,
+            "n": 25,
+            "state": "MEASURED"
+          },
+          "score_continuation_ic": {
+            "ci90": [
+              -0.2844136739929913,
+              -0.1409601338440582
+            ],
+            "mean": -0.21069049200238574,
+            "n": 25,
+            "state": "MEASURED"
+          },
+          "topq_overlap": {
+            "ci90": [
+              0.6061538461538462,
+              0.6892435897435897
+            ],
+            "mean": 0.6474358974358974,
+            "n": 25,
+            "state": "MEASURED"
+          },
+          "topq_overlap_lift": {
+            "ci90": [
+              2.298362261669954,
+              2.604318430856892
+            ],
+            "mean": 2.4522227701073853,
+            "n": 25,
+            "state": "MEASURED"
+          }
+        },
+        "prior": {
+          "anchor_first": "2026-06-22",
+          "anchor_last": "2026-08-07",
+          "breadth_coverage": {
+            "ci90": [
+              1.0,
+              1.0
+            ],
+            "mean": 1.0,
+            "n": 13,
+            "state": "MEASURED"
+          },
+          "breadth_rank_rho": {
+            "ci90": [
+              0.705218370373873,
+              0.862059555386219
+            ],
+            "mean": 0.7878198443460313,
+            "n": 13,
+            "state": "MEASURED"
+          },
+          "chance_overlap": {
+            "ci90": [
+              0.2612108388505904,
+              0.2642211399610011
+            ],
+            "mean": 0.2626929032482558,
+            "n": 13,
+            "state": "MEASURED"
+          },
+          "laggard_to_leader": {
+            "ci90": [
+              0.023132664437012264,
+              0.05239687848383501
+            ],
+            "mean": 0.03666261274956927,
+            "n": 13,
+            "state": "MEASURED"
+          },
+          "leader_breadth_delta": {
+            "ci90": [
+              -0.14364102564102565,
+              -0.0326492603550296
+            ],
+            "mean": -0.08193836291913216,
+            "n": 13,
+            "state": "MEASURED"
+          },
+          "leader_to_laggard": {
+            "ci90": [
+              0.0636094674556213,
+              0.14102564102564102
+            ],
+            "mean": 0.10207100591715976,
+            "n": 13,
+            "state": "MEASURED"
+          },
+          "rank_rho": {
+            "ci90": [
+              0.7382064048198735,
+              0.7918057024146157
+            ],
+            "mean": 0.7651453435051333,
+            "n": 13,
+            "state": "MEASURED"
+          },
+          "score_continuation_ic": {
+            "ci90": [
+              -0.286846112058088,
+              -0.09278154427105308
+            ],
+            "mean": -0.19103376911362654,
+            "n": 13,
+            "state": "MEASURED"
+          },
+          "topq_overlap": {
+            "ci90": [
+              0.5764299802761341,
+              0.6503944773175542
+            ],
+            "mean": 0.6119329388560157,
+            "n": 13,
+            "state": "MEASURED"
+          },
+          "topq_overlap_lift": {
+            "ci90": [
+              2.179904415111516,
+              2.473824786324786
+            ],
+            "mean": 2.3293769702793368,
+            "n": 13,
+            "state": "MEASURED"
+          }
+        },
+        "recent": {
+          "anchor_first": "2026-08-12",
+          "anchor_last": "2026-09-03",
+          "breadth_coverage": {
+            "ci90": [
+              1.0,
+              1.0
+            ],
+            "mean": 1.0,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "breadth_rank_rho": {
+            "ci90": [
+              0.7165586715391109,
+              0.8753362966911122
+            ],
+            "mean": 0.7970947000370777,
+            "n": 11,
+            "state": "MEASURED"
+          },
+          "chance_overlap": {
+            "ci90": [
+              0.2653061224489796,
+              0.2653061224489796
+            ],
+            "mean": 0.2653061224489796,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "laggard_to_leader": {
+            "ci90": [
+              0.03819444444444445,
+              0.07638888888888888
+            ],
+            "mean": 0.05555555555555555,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "leader_breadth_delta": {
+            "ci90": [
+              -0.16886378205128202,
+              -0.040878205128205135
+            ],
+            "mean": -0.10624358974358973,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "leader_to_laggard": {
+            "ci90": [
+              0.019230769230769232,
+              0.11538461538461538
+            ],
+            "mean": 0.06410256410256411,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "rank_rho": {
+            "ci90": [
+              0.7315476190476189,
+              0.86225
+            ],
+            "mean": 0.801921768707483,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "score_continuation_ic": {
+            "ci90": [
+              -0.35413485281811213,
+              -0.14047579373482968
+            ],
+            "mean": -0.23198527513187492,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "topq_overlap": {
+            "ci90": [
+              0.6153846153846153,
+              0.75
+            ],
+            "mean": 0.685897435897436,
+            "n": 12,
+            "state": "MEASURED"
+          },
+          "topq_overlap_lift": {
+            "ci90": [
+              2.3195266272189348,
+              2.851084812623274
+            ],
+            "mean": 2.5853057199211045,
+            "n": 12,
+            "state": "MEASURED"
+          }
+        }
+      }
+    },
+    "5": {
+      "horizon_sessions": 5,
+      "pairs_eligible": 18,
+      "pairs_ineligible": 6,
+      "pairs_target_missing": 17,
+      "recent_window_start": "2026-08-12",
+      "windows": {
+        "all": {
+          "anchor_first": "2026-07-01",
+          "anchor_last": "2026-08-31",
+          "breadth_coverage": {
+            "ci90": [
+              1.0,
+              1.0
+            ],
+            "mean": 1.0,
+            "n": 18,
+            "state": "MEASURED"
+          },
+          "breadth_rank_rho": {
+            "ci90": [
+              0.6988097181745141,
+              0.8148493375025491
+            ],
+            "mean": 0.7608332599451018,
+            "n": 16,
+            "state": "MEASURED"
+          },
+          "chance_overlap": {
+            "ci90": [
+              0.2621898098328652,
+              0.2653619902067107
+            ],
+            "mean": 0.2639165605598802,
+            "n": 18,
+            "state": "MEASURED"
+          },
+          "laggard_to_leader": {
+            "ci90": [
+              0.03132777045820524,
+              0.09194298052993705
+            ],
+            "mean": 0.06142036305079784,
+            "n": 18,
+            "state": "MEASURED"
+          },
+          "leader_breadth_delta": {
+            "ci90": [
+              -0.14868189102564103,
+              -0.050178169515669516
+            ],
+            "mean": -0.10229736467236468,
+            "n": 18,
+            "state": "MEASURED"
+          },
+          "leader_to_laggard": {
+            "ci90": [
+              0.07300569800569802,
+              0.21367521367521367
+            ],
+            "mean": 0.13532763532763536,
+            "n": 18,
+            "state": "MEASURED"
+          },
+          "rank_rho": {
+            "ci90": [
+              0.5622230875082072,
+              0.7755094821756807
+            ],
+            "mean": 0.6766873903057332,
+            "n": 18,
+            "state": "MEASURED"
+          },
+          "score_continuation_ic": {
+            "ci90": [
+              -0.4518305396027454,
+              -0.2785990308979537
+            ],
+            "mean": -0.3703328040567017,
+            "n": 18,
+            "state": "MEASURED"
+          },
+          "topq_overlap": {
+            "ci90": [
+              0.5769052706552706,
+              0.709045584045584
+            ],
+            "mean": 0.6485042735042734,
+            "n": 18,
+            "state": "MEASURED"
+          },
+          "topq_overlap_lift": {
+            "ci90": [
+              2.1761542114106214,
+              2.6790852828913727
+            ],
+            "mean": 2.4581917963328217,
+            "n": 18,
+            "state": "MEASURED"
+          }
+        },
+        "prior": {
+          "anchor_first": "2026-07-01",
+          "anchor_last": "2026-07-31",
+          "breadth_coverage": {
+            "ci90": null,
+            "mean": null,
+            "n": 7,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "breadth_rank_rho": {
+            "ci90": null,
+            "mean": null,
+            "n": 7,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "chance_overlap": {
+            "ci90": null,
+            "mean": null,
+            "n": 7,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "laggard_to_leader": {
+            "ci90": null,
+            "mean": null,
+            "n": 7,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "leader_breadth_delta": {
+            "ci90": null,
+            "mean": null,
+            "n": 7,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "leader_to_laggard": {
+            "ci90": null,
+            "mean": null,
+            "n": 7,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "rank_rho": {
+            "ci90": null,
+            "mean": null,
+            "n": 7,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "score_continuation_ic": {
+            "ci90": null,
+            "mean": null,
+            "n": 7,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "topq_overlap": {
+            "ci90": null,
+            "mean": null,
+            "n": 7,
+            "state": "INSUFFICIENT_HISTORY"
+          },
+          "topq_overlap_lift": {
+            "ci90": null,
+            "mean": null,
+            "n": 7,
+            "state": "INSUFFICIENT_HISTORY"
+          }
+        },
+        "recent": {
+          "anchor_first": "2026-08-12",
+          "anchor_last": "2026-08-31",
+          "breadth_coverage": {
+            "ci90": [
+              1.0,
+              1.0
+            ],
+            "mean": 1.0,
+            "n": 11,
+            "state": "MEASURED"
+          },
+          "breadth_rank_rho": {
+            "ci90": [
+              0.6184202057931673,
+              0.8073414531191365
+            ],
+            "mean": 0.7082029393092859,
+            "n": 9,
+            "state": "MEASURED"
+          },
+          "chance_overlap": {
+            "ci90": [
+              0.2653061224489796,
+              0.2653061224489796
+            ],
+            "mean": 0.2653061224489796,
+            "n": 11,
+            "state": "MEASURED"
+          },
+          "laggard_to_leader": {
+            "ci90": [
+              0.018939393939393936,
+              0.11363636363636366
+            ],
+            "mean": 0.06439393939393939,
+            "n": 11,
+            "state": "MEASURED"
+          },
+          "leader_breadth_delta": {
+            "ci90": [
+              -0.21441363636363642,
+              -0.013452097902097913
+            ],
+            "mean": -0.11897902097902097,
+            "n": 11,
+            "state": "MEASURED"
+          },
+          "leader_to_laggard": {
+            "ci90": [
+              0.06993006993006992,
+              0.2587412587412588
+            ],
+            "mean": 0.16083916083916086,
+            "n": 11,
+            "state": "MEASURED"
+          },
+          "rank_rho": {
+            "ci90": [
+              0.5012551020408162,
+              0.8071488868274582
+            ],
+            "mean": 0.6610853432282002,
+            "n": 11,
+            "state": "MEASURED"
+          },
+          "score_continuation_ic": {
+            "ci90": [
+              -0.38453277309186196,
+              -0.18149343843223584
+            ],
+            "mean": -0.2947809814711737,
+            "n": 11,
+            "state": "MEASURED"
+          },
+          "topq_overlap": {
+            "ci90": [
+              0.5104895104895106,
+              0.7272727272727273
+            ],
+            "mean": 0.6293706293706295,
+            "n": 11,
+            "state": "MEASURED"
+          },
+          "topq_overlap_lift": {
+            "ci90": [
+              1.9768692845615923,
+              2.7412587412587412
+            ],
+            "mean": 2.372243141473911,
+            "n": 11,
+            "state": "MEASURED"
+          }
+        }
+      }
+    },
+    "7": {
+      "horizon_sessions": 7,
+      "pairs_eligible": 20,
+      "pairs_ineligible": 4,
+      "pairs_target_missing": 17,
+      "recent_window_start": "2026-08-12",
+      "windows": {
+        "all": {
+          "anchor_first": "2026-06-29",
+          "anchor_last": "2026-08-28",
+          "breadth_coverage": {
+            "ci90": [
+              1.0,
+              1.0
+            ],
+            "mean": 1.0,
+            "n": 20,
+            "state": "MEASURED"
+          },
+          "breadth_rank_rho": {
+            "ci90": [
+              0.6577500431449506,
+              0.7491316790534325
+            ],
+            "mean": 0.7026018987018117,
+            "n": 18,
+            "state": "MEASURED"
+          },
+          "chance_overlap": {
+            "ci90": [
+              0.2627113280094647,
+              0.26537414965986394
+            ],
+            "mean": 0.26417923691215617,
+            "n": 20,
+            "state": "MEASURED"
+          },
+          "laggard_to_leader": {
+            "ci90": [
+              0.04942152503293808,
+              0.09796607378129116
+            ],
+            "mean": 0.0726943346508564,
+            "n": 20,
+            "state": "MEASURED"
+          },
+          "leader_breadth_delta": {
+            "ci90": [
+              -0.167213782051282,
+              -0.0698046794871795
+            ],
+            "mean": -0.11743269230769234,
+            "n": 20,
+            "state": "MEASURED"
+          },
+          "leader_to_laggard": {
+            "ci90": [
+              0.0929326923076923,
+              0.22052884615384616
+            ],
+            "mean": 0.15096153846153848,
+            "n": 20,
+            "state": "MEASURED"
+          },
+          "rank_rho": {
+            "ci90": [
+              0.5647340034007883,
+              0.7311274796235876
+            ],
+            "mean": 0.6547017593766966,
+            "n": 20,
+            "state": "MEASURED"
+          },
+          "score_continuation_ic": {
+            "ci90": [
+              -0.3453543220650338,
+              -0.1825079319919662
+            ],
+            "mean": -0.26342696234873636,
+            "n": 20,
+            "state": "MEASURED"
+          },
+          "topq_overlap": {
+            "ci90": [
+              0.5628205128205128,
+              0.6702083333333334
+            ],
+            "mean": 0.6125,
+            "n": 20,
+            "state": "MEASURED"
+          },
+          "topq_overlap_lift": {
+            "ci90": [
+              2.1158180267915845,
+              2.535140635272847
+            ],
+            "mean": 2.3188835470085474,
+            "n": 20,
+            "state": "MEASURED"
+          }
+        },
+        "prior": {
+          "anchor_first": "2026-06-29",
+          "anchor_last": "2026-08-07",
+          "breadth_coverage": {
+            "ci90": [
+              1.0,
+              1.0
+            ],
+            "mean": 1.0,
+            "n": 10,
+            "state": "MEASURED"
+          },
+          "breadth_rank_rho": {
+            "ci90": [
+              0.6433229235476612,
+              0.8066378210817268
+            ],
+            "mean": 0.7300442053596237,
+            "n": 10,
+            "state": "MEASURED"
+          },
+          "chance_overlap": {
+            "ci90": [
+              0.2613132209405501,
+              0.26496302868973676
+            ],
+            "mean": 0.2630523513753328,
+            "n": 10,
+            "state": "MEASURED"
+          },
+          "laggard_to_leader": {
+            "ci90": [
+              0.043478260869565216,
+              0.0969038208168643
+            ],
+            "mean": 0.0703886693017128,
+            "n": 10,
+            "state": "MEASURED"
+          },
+          "leader_breadth_delta": {
+            "ci90": [
+              -0.12494679487179487,
+              -0.0761323717948718
+            ],
+            "mean": -0.10118846153846153,
+            "n": 10,
+            "state": "MEASURED"
+          },
+          "leader_to_laggard": {
+            "ci90": [
+              0.07499999999999998,
+              0.22243589743589745
+            ],
+            "mean": 0.14038461538461539,
+            "n": 10,
+            "state": "MEASURED"
+          },
+          "rank_rho": {
+            "ci90": [
+              0.5900852210727029,
+              0.7153532506577603
+            ],
+            "mean": 0.6545463758962503,
+            "n": 10,
+            "state": "MEASURED"
+          },
+          "score_continuation_ic": {
+            "ci90": [
+              -0.4777240235227228,
+              -0.19841563146989055
+            ],
+            "mean": -0.33655975957344003,
+            "n": 10,
+            "state": "MEASURED"
+          },
+          "topq_overlap": {
+            "ci90": [
+              0.5538461538461539,
+              0.6416666666666667
+            ],
+            "mean": 0.6019230769230768,
+            "n": 10,
+            "state": "MEASURED"
+          },
+          "topq_overlap_lift": {
+            "ci90": [
+              2.1210687869822484,
+              2.453881286982248
+            ],
+            "mean": 2.2892463839579227,
+            "n": 10,
+            "state": "MEASURED"
+          }
+        },
+        "recent": {
+          "anchor_first": "2026-08-12",
+          "anchor_last": "2026-08-28",
+          "breadth_coverage": {
+            "ci90": [
+              1.0,
+              1.0
+            ],
+            "mean": 1.0,
+            "n": 10,
+            "state": "MEASURED"
+          },
+          "breadth_rank_rho": {
+            "ci90": [
+              0.5589233339079582,
+              0.7643155032908524
+            ],
+            "mean": 0.6682990153795467,
+            "n": 8,
+            "state": "MEASURED"
+          },
+          "chance_overlap": {
+            "ci90": [
+              0.2653061224489796,
+              0.2653061224489796
+            ],
+            "mean": 0.2653061224489796,
+            "n": 10,
+            "state": "MEASURED"
+          },
+          "laggard_to_leader": {
+            "ci90": [
+              0.029166666666666664,
+              0.12083333333333332
+            ],
+            "mean": 0.07499999999999998,
+            "n": 10,
+            "state": "MEASURED"
+          },
+          "leader_breadth_delta": {
+            "ci90": [
+              -0.2239803846153846,
+              -0.03911538461538462
+            ],
+            "mean": -0.13367692307692308,
+            "n": 10,
+            "state": "MEASURED"
+          },
+          "leader_to_laggard": {
+            "ci90": [
+              0.07692307692307691,
+              0.25384615384615394
+            ],
+            "mean": 0.16153846153846155,
+            "n": 10,
+            "state": "MEASURED"
+          },
+          "rank_rho": {
+            "ci90": [
+              0.5157586734693876,
+              0.7846020408163265
+            ],
+            "mean": 0.6548571428571428,
+            "n": 10,
+            "state": "MEASURED"
+          },
+          "score_continuation_ic": {
+            "ci90": [
+              -0.32021546671875206,
+              -0.053238839462195944
+            ],
+            "mean": -0.19029416512403272,
+            "n": 10,
+            "state": "MEASURED"
+          },
+          "topq_overlap": {
+            "ci90": [
+              0.4999999999999999,
+              0.7461538461538462
+            ],
+            "mean": 0.6230769230769231,
+            "n": 10,
+            "state": "MEASURED"
+          },
+          "topq_overlap_lift": {
+            "ci90": [
+              1.8556213017751482,
+              2.841420118343195
+            ],
+            "mean": 2.348520710059172,
+            "n": 10,
+            "state": "MEASURED"
+          }
+        }
+      }
+    }
+  },
+  "temporal_shape": {
+    "basis": "published_score_continuation_ic",
+    "curve": {
+      "1": -0.1982390672124688,
+      "10": null,
+      "15": null,
+      "2": -0.23568556190340414,
+      "20": null,
+      "3": -0.23198527513187492,
+      "5": -0.2947809814711737,
+      "7": -0.19029416512403272
+    },
+    "estimability": {
+      "max_pairs_by_horizon": {
+        "1": 19,
+        "10": 10,
+        "15": 5,
+        "2": 18,
+        "20": 0,
+        "3": 17,
+        "5": 15,
+        "7": 13
+      },
+      "measurable_long_horizons": [
+        10
+      ],
+      "measurable_short_horizons": [
+        1,
+        2,
+        3,
+        5
+      ],
+      "minimum_pairs_per_cell": 8,
+      "minimum_recent_sessions_for_shape": 23,
+      "reason": "RECENT_WINDOW_CANNOT_MATURE_REQUIRED_LONG_CELLS",
+      "recent_sessions": 20,
+      "state": "STRUCTURALLY_UNESTIMABLE"
+    },
+    "label": "INSUFFICIENT_HISTORY",
+    "long_median": null,
+    "n_long": 0,
+    "n_short": 4,
+    "short_median": -0.23383541851763953
+  },
+  "transition_matrix": {
+    "counts": {
+      "Q1": {
+        "Q1": 275,
+        "Q2": 76,
+        "Q3": 11,
+        "Q4": 0
+      },
+      "Q2": {
+        "Q1": 77,
+        "Q2": 175,
+        "Q3": 75,
+        "Q4": 5
+      },
+      "Q3": {
+        "Q1": 10,
+        "Q2": 77,
+        "Q3": 185,
+        "Q4": 72
+      },
+      "Q4": {
+        "Q1": 0,
+        "Q2": 4,
+        "Q3": 73,
+        "Q4": 255
+      }
+    },
+    "pairs_eligible": 30,
+    "pairs_ineligible": 2,
+    "pairs_target_missing": 9,
+    "probabilities": {
+      "Q1": {
+        "Q1": 0.7596685082872928,
+        "Q2": 0.20994475138121546,
+        "Q3": 0.03038674033149171,
+        "Q4": 0.0
+      },
+      "Q2": {
+        "Q1": 0.2319277108433735,
+        "Q2": 0.5271084337349398,
+        "Q3": 0.22590361445783133,
+        "Q4": 0.015060240963855422
+      },
+      "Q3": {
+        "Q1": 0.029069767441860465,
+        "Q2": 0.2238372093023256,
+        "Q3": 0.5377906976744186,
+        "Q4": 0.20930232558139536
+      },
+      "Q4": {
+        "Q1": 0.0,
+        "Q2": 0.012048192771084338,
+        "Q3": 0.21987951807228914,
+        "Q4": 0.7680722891566265
+      }
+    },
+    "state": "MEASURED"
+  }
+}

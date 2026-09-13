@@ -13187,6 +13187,19 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: frozen price panel — write-once bytes + a reader that never falls back
         run: python -m pytest tests/test_research_price_panel.py -q
+      # RPH-0 is another hermetic parquet-backed research contract. Its fixtures are
+      # all synthetic tmp_path archives, so it reuses this job's already-complete
+      # pandas/numpy/pyarrow environment instead of creating a 213th legacy job.
+      # Keep the four files explicit: contract-delta must prove every new pytest
+      # suite is named by a real run step, and one omitted file silently darkens a
+      # distinct archive, metric, censoring, or zero-authority boundary.
+      - name: published theme leadership persistence — exact sessions, nulls, censoring, authority
+        run: >-
+          python -m pytest
+          tests/test_rotation_persistence_archive.py
+          tests/test_rotation_persistence_metrics.py
+          tests/test_rotation_persistence_survival.py
+          tests/test_rotation_persistence_cli.py -q
 
   zh-filing-term:
     # ui.zh_filing_term PR gate: 申报 must never reach user-facing Chinese copy.
