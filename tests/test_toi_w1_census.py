@@ -145,18 +145,25 @@ def test_practitioner_source_is_registered_but_cannot_satisfy_p0_p1_primary_gate
 def test_method_specific_official_sources_replace_overbroad_catalog_bindings():
     source_map = _source_map()
     rows = {row["method_id"]: row for row in _rows()}
-    expected = {
+    expected_single = {
+        "toi.hvr": "SRC-TRADINGVIEW-HISTVOL",
+        "toi.nr7": "SRC-CRABEL-NR7-CREATOR",
         "toi.donchian_breakout": "SRC-TRADINGVIEW-DONCHIAN",
         "toi.donchian_fakeout": "SRC-TRADINGVIEW-DONCHIAN",
         "toi.fractal_swing_structure": "SRC-METATRADER-FRACTALS",
+        "toi.benchmark_rs": "SRC-STOCKCHARTS-PRICE-RELATIVE",
         "toi.cmf": "SRC-TRADINGVIEW-CMF",
         "toi.rvol": "SRC-TRADINGVIEW-RVOL",
         "toi.choppiness": "SRC-TRADINGVIEW-CHOPPINESS",
+        "toi.ulcer": "SRC-TRADINGVIEW-ULCER",
     }
-    for mid, ref in expected.items():
+    for mid, ref in expected_single.items():
         assert rows[mid]["source_refs"] == [ref]
         assert rows[mid]["rights_ref"] == ref
         assert source_map[ref]["source_type"] in sources.PRIMARY_OR_OFFICIAL_SOURCE_TYPES
+    squeeze = rows["toi.bb_kc_squeeze"]
+    assert squeeze["source_refs"] == ["SRC-BOLLINGER-OFFICIAL", "SRC-TRADINGVIEW-KELTNER"]
+    assert all(source_map[ref]["source_type"] in sources.PRIMARY_OR_OFFICIAL_SOURCE_TYPES for ref in squeeze["source_refs"])
 
 
 def test_inside_bar_practitioner_family_is_not_p0_or_p1_authority():
