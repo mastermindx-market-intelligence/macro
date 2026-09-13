@@ -37,6 +37,39 @@
       "retrieved_at": "2026-09-13"
     },
     {
+      "source_ref": "SRC-TRADINGVIEW-KELTNER",
+      "title": "Keltner Channels (KC)",
+      "publisher_or_author": "TradingView / Chester Keltner and Linda Bradford Raschke attribution",
+      "source_type": "official_platform_formula_documentation",
+      "url": "https://www.tradingview.com/support/solutions/43000502266-keltner-channels-kc/",
+      "rights_class": "public_formula",
+      "rights_ref": "public formula documentation; independent implementation only",
+      "covers": ["keltner_channel", "ema_atr_envelope"],
+      "retrieved_at": "2026-09-13"
+    },
+    {
+      "source_ref": "SRC-TRADINGVIEW-HISTVOL",
+      "title": "Historical Volatility",
+      "publisher_or_author": "TradingView",
+      "source_type": "official_platform_formula_documentation",
+      "url": "https://www.tradingview.com/support/solutions/43000589145-historical-volatility/",
+      "rights_class": "public_formula",
+      "rights_ref": "public formula documentation; independent implementation only",
+      "covers": ["historical_volatility", "realized_volatility_standard_deviation"],
+      "retrieved_at": "2026-09-13"
+    },
+    {
+      "source_ref": "SRC-CRABEL-NR7-CREATOR",
+      "title": "A Short List from The Book of Essential Patterns",
+      "publisher_or_author": "Toby Crabel",
+      "source_type": "creator_official_documentation",
+      "url": "https://tobycrabel.substack.com/p/a-short-list-from-the-book-of-essential",
+      "rights_class": "public_formula",
+      "rights_ref": "public creator-authored methodology; independent implementation only",
+      "covers": ["nr7", "1_7bnr", "narrowest_range_in_seven_bars"],
+      "retrieved_at": "2026-09-13"
+    },
+    {
       "source_ref": "SRC-TRADINGVIEW-DONCHIAN",
       "title": "Donchian Channels (DC)",
       "publisher_or_author": "TradingView / Richard Donchian attribution",
@@ -45,6 +78,17 @@
       "rights_class": "public_formula",
       "rights_ref": "public formula documentation; independent implementation only",
       "covers": ["donchian_channel", "donchian_breakout"],
+      "retrieved_at": "2026-09-13"
+    },
+    {
+      "source_ref": "SRC-STOCKCHARTS-PRICE-RELATIVE",
+      "title": "Price Relative / Relative Strength",
+      "publisher_or_author": "StockCharts ChartSchool",
+      "source_type": "official_platform_formula_documentation",
+      "url": "https://chartschool.stockcharts.com/table-of-contents/technical-indicators-and-overlays/technical-indicators/price-relative-relative-strength",
+      "rights_class": "public_formula",
+      "rights_ref": "public platform formula documentation; independent implementation only",
+      "covers": ["price_relative", "benchmark_relative_strength", "security_to_benchmark_ratio"],
       "retrieved_at": "2026-09-13"
     },
     {
@@ -78,6 +122,17 @@
       "rights_class": "public_formula",
       "rights_ref": "public formula documentation; independent implementation only",
       "covers": ["relative_volume", "volume_over_prior_average"],
+      "retrieved_at": "2026-09-13"
+    },
+    {
+      "source_ref": "SRC-TRADINGVIEW-ULCER",
+      "title": "Ulcer Index",
+      "publisher_or_author": "TradingView / Peter Martin attribution",
+      "source_type": "official_platform_formula_documentation",
+      "url": "https://www.tradingview.com/support/solutions/43000773115-ulcer-index/",
+      "rights_class": "public_formula",
+      "rights_ref": "public formula documentation; independent implementation only",
+      "covers": ["ulcer_index", "root_mean_square_drawdown"],
       "retrieved_at": "2026-09-13"
     },
     {
