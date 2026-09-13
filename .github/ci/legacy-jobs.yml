@@ -11848,6 +11848,21 @@ jobs:
       # yfinance-import-at-collection suite, so it costs nothing new.
       - name: NA-ticker pandas-sentinel guard — 18 parse sites + is_non_equity_holding truth table
         run: python -m pytest tests/test_collectors_na_sentinel.py -q
+      # W1 (research/skylit/W1_SOURCE_IMPLEMENTATION_RULING_2026-09-11.md): the new
+      # 20-session sector participation calendar additions to collectors/breadth.py
+      # (BreadthAdapter.licensed_daily_window / .compute_sector_participation_20) and
+      # scripts/build_sector_central.py (read_sector_participation_20). Belongs HERE,
+      # not on the sector_central lane in unrun-scoring-engine, for the same reason
+      # test_collector_freshness_disclosure and test_yahoo_universe_backfill already
+      # sit in this job: importing collectors.breadth pulls in its module-scope
+      # `import yfinance as yf`, which ERRORs at collection under unrun-scoring-
+      # engine's install line (no yfinance there — verified, PR #5985); this lane
+      # already carries the yfinance wheel and already owns collectors/breadth.py as
+      # a subject. No dependency widened: pandas/numpy/pyarrow/pyyaml/requests/
+      # yfinance are all already on the install line above. All network access in
+      # this suite is faked (no real HTTP call is made).
+      - name: W1 sector participation — licensed-history adapter (faked HTTP) + pure 20-session calc + sibling isolation
+        run: python -m pytest tests/test_sector_central_participation.py -q
 
   unrun-brain-gateway:
     # the Mastermind brain gateway — routing, quota ledger, tool allowlist, SSE order.
