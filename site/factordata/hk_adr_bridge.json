@@ -10,22 +10,22 @@
       "lag_days": 0,
       "state": "fresh"
     },
-    "BIDU": {
-      "asof": "2026-09-11",
-      "lag_days": 0,
-      "state": "fresh"
-    },
-    "TCOM": {
-      "asof": "2026-09-11",
-      "lag_days": 0,
-      "state": "fresh"
-    },
     "BABA": {
       "asof": "2026-09-11",
       "lag_days": 0,
       "state": "fresh"
     },
+    "BIDU": {
+      "asof": "2026-09-11",
+      "lag_days": 0,
+      "state": "fresh"
+    },
     "JD": {
+      "asof": "2026-09-11",
+      "lag_days": 0,
+      "state": "fresh"
+    },
+    "TCOM": {
       "asof": "2026-09-11",
       "lag_days": 0,
       "state": "fresh"

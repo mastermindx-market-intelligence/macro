@@ -1,5 +1,5 @@
 {
- "asof": "2026-09-11",
+ "asof": "2026-09-12",
  "audit": "stocks",
  "config": {
   "price_max_gap_days": 4,
@@ -37,7 +37,7 @@
     {
      "name": "ECHO",
      "kind": "zombie",
-     "detail": "dead-registry name advancing 1753d past its 2021-11-22 registry bar; overlap corr -0.139"
+     "detail": "dead-registry name advancing 1754d past its 2021-11-22 registry bar; overlap corr -0.139"
     }
    ]
   },
@@ -739,7 +739,7 @@
     {
      "name": "XPER",
      "kind": "registry_mismatch",
-     "detail": "same instrument as its dead-registry rows (corr 0.7569) \u2014 the registry, not the store, carries foreign/live tape"
+     "detail": "same instrument as its dead-registry rows (corr 1.0) \u2014 the registry, not the store, carries foreign/live tape"
     },
     {
      "name": "XRX",
@@ -761,7 +761,7 @@
   "ticker_key_migrations": {
    "SATS": "ECHO"
   },
-  "ledger_rows": 60084
+  "ledger_rows": 60086
  },
  "grace_days": 30,
  "stale_calendar_days": 7,
@@ -780,8 +780,8 @@
     {
      "ticker": "ECHO",
      "registry_last": "2021-11-22",
-     "store_tip": "2026-09-10",
-     "days_past_death": 1753,
+     "store_tip": "2026-09-11",
+     "days_past_death": 1754,
      "overlap": {
       "n_overlap": 99,
       "ret_corr_full": -0.0318,
@@ -2468,11 +2468,11 @@
     },
     {
      "ticker": "VNDA",
-     "registry_last": "2023-09-18",
+     "registry_last": "2023-11-16",
      "store_tip": "2026-09-11",
-     "days_past_death": 1089,
+     "days_past_death": 1030,
      "overlap": {
-      "n_overlap": 555,
+      "n_overlap": 1262,
       "ret_corr_full": 1.0,
       "ret_corr_recent": 1.0,
       "min_ret_corr": 1.0
@@ -2507,14 +2507,14 @@
     },
     {
      "ticker": "XPER",
-     "registry_last": "2024-06-24",
+     "registry_last": "2024-08-22",
      "store_tip": "2026-09-11",
-     "days_past_death": 809,
+     "days_past_death": 750,
      "overlap": {
-      "n_overlap": 442,
-      "ret_corr_full": 0.7569,
+      "n_overlap": 484,
+      "ret_corr_full": 1.0,
       "ret_corr_recent": 1.0,
-      "min_ret_corr": 0.7569
+      "min_ret_corr": 1.0
      },
      "listed_now": true
     },
@@ -2533,11 +2533,11 @@
     },
     {
      "ticker": "ZUMZ",
-     "registry_last": "2023-06-16",
+     "registry_last": "2023-08-17",
      "store_tip": "2026-09-11",
-     "days_past_death": 1183,
+     "days_past_death": 1121,
      "overlap": {
-      "n_overlap": 492,
+      "n_overlap": 1198,
       "ret_corr_full": 1.0,
       "ret_corr_recent": 1.0,
       "min_ret_corr": 1.0

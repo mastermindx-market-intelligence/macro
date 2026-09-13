@@ -39,7 +39,8 @@ from engine.baskets import _basket_extras, _ew_level, _membership
 from engine.equity_factors import _closes, _names_sectors
 from engine.indicators import pct_rank_window
 from lib import config, store
-from lib.closes_panel import align_latest_common_observation
+from lib.closes_panel import (align_latest_common_observation, population_observation,
+                              resolve_thematic_close_panel)
 
 log = logging.getLogger(__name__)
 
@@ -272,7 +273,16 @@ def _setup(region: str = "us"):
             closes, bench_df["close"])
         if closes.empty or observation.get("effective_as_of") is None:
             return None
+        primary_closes = closes.copy()
         extras = _basket_extras()
+        bdict = mem["baskets"]
+        items = bdict.values() if isinstance(bdict, dict) else bdict
+        theme_tickers = [m.get("ticker") for b in items for m in b.get("members", []) if m.get("ticker")]
+        theme_closes, theme_price_resolution = resolve_thematic_close_panel(
+            primary_closes, extras, theme_tickers)
+        # Preserve the incumbent broad/sector plane: extras-only names remain additive
+        # here, while overlapping names keep primary breadth values. The thematic
+        # consumer gets its separate whole-column projection above.
         if extras is not None and not extras.empty:
             extras = extras.copy()
             extras.index = pd.to_datetime(extras.index)
@@ -299,14 +309,20 @@ def _setup(region: str = "us"):
             return None
     rets = closes.pct_change(fill_method=None)
     idx = rets.index
+    if region != "us":
+        theme_closes = closes
+        theme_price_resolution = None
+    theme_rets = theme_closes.pct_change(fill_method=None)
     bench_ret = bench_close.reindex(idx).ffill().pct_change(fill_method=None)
     bench = pd.Series(np.nan, index=idx)
     bf = bench_ret.first_valid_index()
     if bf is None:
         return None
     bench.loc[bf:] = (1.0 + bench_ret.loc[bf:].fillna(0.0)).cumprod()
-    return {"mem": mem, "closes": closes, "rets": rets, "idx": idx, "bench": bench,
-            "region": region, "observation": observation}
+    return {"mem": mem, "closes": closes, "rets": rets,
+            "theme_closes": theme_closes, "theme_rets": theme_rets,
+            "theme_price_resolution": theme_price_resolution,
+            "idx": idx, "bench": bench, "region": region, "observation": observation}
 
 
 def _pit_sector_frames(closes: pd.DataFrame, rets: pd.DataFrame,
@@ -547,12 +563,27 @@ def compute_group_flows(cfg: dict | None = None) -> dict | None:
     # excludes departed members.
     bdict = s["mem"]["baskets"]
     items = bdict.items() if isinstance(bdict, dict) else [(b["id"], b) for b in bdict]
+    theme_closes = s.get("theme_closes", s["closes"])
+    theme_rets = s.get("theme_rets", s["rets"])
+    observation_refusals: list[dict] = []
     for bid, b in items:
         members = b.get("members", [])
-        present = [m["ticker"] for m in members if m["ticker"] in s["rets"].columns]
+        theme_observation = population_observation(theme_closes, members, s["idx"].max())
+        if not theme_observation["aggregate_eligible"]:
+            observation_refusals.append({"basket_id": bid, "observation": theme_observation})
+            print(
+                "::warning title=group-flow-observation-coverage::"
+                f"{bid} refused aggregate read at {theme_observation['effective_as_of']}: "
+                f"observed {theme_observation['observed_n']}/{theme_observation['configured_n']} "
+                f"live members; minimum {theme_observation['min_members']} and "
+                f"{int(round(theme_observation['min_coverage'] * 100))}% coverage",
+                flush=True,
+            )
+            continue
+        present = [m["ticker"] for m in members if m["ticker"] in theme_rets.columns]
         if len(present) < 3:
             continue
-        lvl = _ew_level(s["rets"], members, s["idx"])
+        lvl = _ew_level(theme_rets, members, s["idx"])
         if lvl.dropna().empty:
             continue
         mask = pd.DataFrame(False, index=s["idx"], columns=present)
@@ -568,9 +599,10 @@ def compute_group_flows(cfg: dict | None = None) -> dict | None:
         if n_live < 3:
             continue
         fp = _emit(bid, b.get("name", bid), b.get("name_zh", b.get("name", bid)),
-                   b.get("category", "Other"), "basket", s["closes"][present].where(mask),
+                   b.get("category", "Other"), "basket", theme_closes[present].where(mask),
                    lvl, bias_cap, n_live)
         if fp:
+            fp["observation"] = theme_observation
             groups.append(fp)
 
     if not groups:
@@ -599,4 +631,7 @@ def compute_group_flows(cfg: dict | None = None) -> dict | None:
         "cooling": {"sectors": _stage_of(sectors, "cooling"),
                     "baskets": _stage_of(baskets, "cooling")},
         "ai_handoff": _ai_handoff(meta, vix),
+        "observation_refusals": observation_refusals,
+        **({"price_resolution": s["theme_price_resolution"]}
+           if s.get("theme_price_resolution") is not None else {}),
     }
