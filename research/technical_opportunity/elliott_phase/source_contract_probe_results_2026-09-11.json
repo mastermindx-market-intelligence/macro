@@ -1,0 +1,29 @@
+{
+  "status": "synthetic_characterization_not_forecast_or_production_acceptance",
+  "source_commit": "4b1f8fddcc4eb6f36133fca4d42018678b74d30b",
+  "expected_source_blob": "9e726868f6c218a84cd50a9f976c77c3a347ac6c",
+  "input_mode": "explicit_source_or_excerpt",
+  "input_matches_full_blob": false,
+  "three_function_asts_verified": true,
+  "confirmed_rows": 29,
+  "distinct_turn_ids": 2,
+  "hypothetical_id_keyed_rows": 2,
+  "intraday_confirmation_dates": [
+    "2020-01-02"
+  ],
+  "intraday_lags": [
+    1
+  ],
+  "warmup_29_has_output": false,
+  "first_30_bar_output_earliest_confirmation": "2020-01-02",
+  "first_output_fixture_date": "2020-01-30",
+  "open_extreme_is_provisional": true,
+  "missing_slot_lag": 1,
+  "missing_slot_calendar_days": 3,
+  "limits": [
+    "No current production-consumer loss measured",
+    "No full Elliott grammar validated",
+    "Existing detector left unchanged",
+    "No market data or outcomes used"
+  ]
+}
