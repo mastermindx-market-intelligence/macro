@@ -160,6 +160,25 @@ def _norm(s: str) -> str:
     return re.sub(r"[^a-z0-9]+", " ", (s or "").lower()).strip()
 
 
+def citation_normalize(text: str) -> str:
+    """Canonical typography-agnostic citation text used by qualitative extractors."""
+    return _norm(text)
+
+
+def quote_span_verified(body: str, quote_span: str, *, minimum_chars: int = 4) -> bool:
+    """Whether a purported verbatim quote is actually present in ``body``.
+
+    This is the shared anti-hallucination primitive for body-bearing qualitative
+    lanes.  ``minimum_chars`` is explicit so callers verifying short numeric
+    literals can choose a smaller boundary without reimplementing normalization.
+    """
+    if isinstance(minimum_chars, bool) or not isinstance(minimum_chars, int) or minimum_chars < 1:
+        raise ValueError("minimum_chars must be a positive integer")
+    source = _norm(body or "")
+    span = _norm(quote_span or "")
+    return bool(span) and len(span) >= minimum_chars and span in source
+
+
 # --------------------------------------------------------------------------- #
 # reply-cache (sha-keyed, determinism kit — same body → same extraction)
 # --------------------------------------------------------------------------- #
@@ -266,12 +285,10 @@ def _verify_citations(rec: dict, body: str) -> dict:
     present (after typography normalisation) in the body.  Fields without a
     verified quote collapse to their neutral value and are listed in
     `dropped_fields`.  Mutates and returns `rec`."""
-    src = _norm(body or "")
     verified: set[str] = set()
     kept_ev: list[dict] = []
     for e in rec.get("evidence", []):
-        span = _norm(e.get("quote_span", ""))
-        if span and len(span) >= 4 and span in src:
+        if quote_span_verified(body, e.get("quote_span", "")):
             verified.add(e["field"])
             kept_ev.append(e)
     dropped: list[str] = []

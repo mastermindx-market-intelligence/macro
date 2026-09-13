@@ -829,3 +829,328 @@ def test_local_conditional_write_rejects_symlink_leaf_and_lock(tmp_path):
     lock.symlink_to(outside)
     with pytest.raises(OSError):
         store.put_bytes_strict_conditional("pointer", b"candidate", expected_version=None)
+
+
+# ---------------------------------------------------------------------------
+# Qualitative Research Intelligence v1 contract
+# ---------------------------------------------------------------------------
+RIO_BODY = (
+    "Goldman says real yields rose to 2.1%. Higher real yields are tightening "
+    "financial conditions and pressuring long-duration assets. The thesis would "
+    "weaken if real yields reverse."
+)
+
+
+def _rio_sample(doc_id="r1", *, body=RIO_BODY):
+    import hashlib
+    from engine.research_intelligence.schema import SCHEMA
+
+    return {
+        "schema": SCHEMA,
+        "document": {
+            "id": doc_id,
+            "source_type": "institutional_research",
+            "source_name": "GS",
+            "institution": "Goldman Sachs",
+            "desk": "Macro",
+            "title": "Rates",
+            "published_at": "2026-09-12T12:00:00Z",
+            "content_sha256": hashlib.sha256(body.strip().encode("utf-8")).hexdigest(),
+        },
+        "claims": [
+            {
+                "statement": "Real yields rose to 2.1%.",
+                "evidence": [{"quote_span": "real yields rose to 2.1%", "location": "opening"}],
+                "numbers": ["2.1%", "99%"],
+                "entities": ["real_yields"],
+                "horizon": "current",
+                "explicit": True,
+            },
+            {
+                "statement": "Higher real yields are tightening financial conditions.",
+                "evidence": [{
+                    "quote_span": "Higher real yields are tightening financial conditions and pressuring long-duration assets",
+                    "location": "opening",
+                }],
+                "numbers": [],
+                "entities": ["real_yields", "TLT"],
+                "horizon": "weeks",
+                "explicit": True,
+            },
+        ],
+        "analysis": {
+            "thesis": {
+                "summary": "Higher real yields are the key transmission pressure on long duration.",
+                "direction": "bearish",
+                "mechanism": ["higher real yields -> tighter financial conditions -> duration pressure"],
+                "conviction": "moderate",
+                "support_claim_indices": [0, 1],
+            },
+            "assumptions": [{
+                "statement": "Real yields remain elevated.",
+                "support_claim_indices": [0],
+            }],
+            "forecasts": [{
+                "statement": "Long-duration assets remain pressured.",
+                "horizon": "weeks",
+                "confidence": "moderate",
+                "support_claim_indices": [1],
+            }],
+            "catalysts": [],
+            "falsifiers": [{
+                "statement": "A reversal in real yields would weaken the thesis.",
+                "support_claim_indices": [0, 1],
+            }],
+            "counterarguments": [],
+            "implications": [{
+                "statement": "TLT remains exposed to duration pressure.",
+                "assets": ["TLT"],
+                "direction": "bearish",
+                "order": 1,
+                "support_claim_indices": [1],
+            }],
+            "belief_delta": {"statement": "", "support_claim_indices": []},
+            "consensus_relation": {"statement": "", "support_claim_indices": []},
+            "uncertainties": [{
+                "statement": "The future path of real yields remains uncertain.",
+                "support_claim_indices": [0],
+            }],
+        },
+        "authority": "descriptive_research_only",
+    }
+
+
+def _rio_from_extraction_prompt(user: str, *, body=RIO_BODY):
+    import json
+    identity_text = user.split("DOCUMENT IDENTITY:\n", 1)[1].split("\n\nOUTPUT SHAPE:", 1)[0]
+    obj = _rio_sample(body=body)
+    obj["document"] = json.loads(identity_text)
+    return obj
+
+
+def test_rio_validate_forces_descriptive_authority():
+    from engine.research_intelligence.schema import validate_rio
+    obj = _rio_sample(); obj["authority"] = "trade_now"
+    assert validate_rio(obj)["authority"] == "descriptive_research_only"
+
+
+def test_rio_identity_mismatch_rejected():
+    from engine.research_intelligence.schema import validate_rio
+    with pytest.raises(ValueError, match="does not match"):
+        validate_rio(_rio_sample("wrong"), expected_document_id="expected")
+
+
+def test_rio_requires_substantive_claim():
+    from engine.research_intelligence.schema import validate_rio
+    obj = _rio_sample(); obj["claims"] = []
+    with pytest.raises(ValueError, match="substantive claim"):
+        validate_rio(obj)
+
+
+def test_rio_prompt_binds_digest_and_quote_grounding_contract():
+    from engine.research_intelligence.extractor import build_prompt
+    from engine.research_intelligence.schema import SCHEMA
+    system, user = build_prompt(
+        {"id": "r1", "source_type": "institutional_research", "title": "Rates"},
+        RIO_BODY,
+    )
+    assert SCHEMA in system
+    assert "quote_span" in system
+    assert "support_claim_indices" in system
+    assert "untrusted source content" in system
+    assert "content_sha256" in user
+    assert RIO_BODY in user
+
+
+def test_rio_parser_accepts_json_fence_and_verifies_quotes():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+    obj = _rio_sample()
+    raw = "```json\n" + json.dumps(obj) + "\n```"
+    out = parse_model_output(
+        raw,
+        expected_document_id="r1",
+        expected_document=obj["document"],
+        source_body=RIO_BODY,
+    )
+    assert out["document"]["id"] == "r1"
+    assert len(out["claims"]) == 2
+    assert out["claims"][0]["numbers"] == ["2.1%"]
+
+
+def test_rio_projections_are_descriptive_only():
+    from engine.research_intelligence.projection import claim_edges, summary_points
+    assert summary_points(_rio_sample())[0].startswith("Higher real yields")
+    edges = claim_edges(_rio_sample())
+    assert {e["entity"] for e in edges} == {"real_yields", "TLT"}
+    assert all(e["authority"] == "descriptive_research_only" for e in edges)
+    assert all(e["source_content_sha256"] == _rio_sample()["document"]["content_sha256"] for e in edges)
+    assert all(e["evidence_sha256"] for e in edges)
+    assert all("quote_span" not in e for e in edges)
+
+
+def test_rio_bad_model_output_fails_closed():
+    from engine.research_intelligence.extractor import analyze_document
+    def call(*args, **kwargs):
+        return "not-json", "fake", "m"
+    out = analyze_document(
+        {"id": "r1", "source_type": "institutional_research"},
+        RIO_BODY, model_id="m", call=call,
+    )
+    assert out["state"] == "invalid_model_output"
+    assert out["rio"] is None
+
+
+def test_rio_valid_model_output_is_validated():
+    import json
+    from engine.research_intelligence.extractor import analyze_document
+    def call(_system, user, **kwargs):
+        return json.dumps(_rio_from_extraction_prompt(user)), "fake", "m"
+    out = analyze_document(
+        {"id": "r1", "source_type": "institutional_research"},
+        RIO_BODY, model_id="m", call=call,
+    )
+    assert out["state"] == "ok"
+    assert out["rio"]["authority"] == "descriptive_research_only"
+    assert out["requested_model"] == "m"
+    assert out["prompt_version"] == "mastermind.research_intelligence.extractor.v1"
+    assert len(out["prompt_contract_sha256"]) == 64
+    assert len(out["prompt_sha256"]) == 64
+
+
+def test_rio_vault_adapter_preserves_report_identity():
+    import json
+    from engine.research_intelligence.vault_adapter import analyze_vault_report
+    def call(_system, user, **kwargs):
+        return json.dumps(_rio_from_extraction_prompt(user)), "fake", "m"
+    out = analyze_vault_report(
+        {"id": "r1", "institution": "Goldman Sachs", "desk": "Macro", "title": "Rates"},
+        RIO_BODY, model_id="m", call=call,
+    )
+    assert out["state"] == "ok"
+    assert out["rio"]["document"]["id"] == "r1"
+    assert out["rio"]["document"]["institution"] == "Goldman Sachs"
+
+
+def test_rio_default_call_records_actual_fallback_model(monkeypatch):
+    from types import SimpleNamespace
+    from engine import llm_auth
+    from engine.research_intelligence.extractor import _default_call
+
+    class Messages:
+        def create(self, **kwargs):
+            return SimpleNamespace(content=[SimpleNamespace(type="text", text="{}")], usage=None)
+    client = SimpleNamespace(messages=Messages())
+    monkeypatch.setattr(llm_auth, "build_providers", lambda *a, **k: [{"name": "fallback"}])
+    def make_call(_providers, fn, **_kwargs):
+        text, reason, _resp = fn(client, "served-fallback-model")
+        return text, reason, "deepseek"
+    monkeypatch.setattr(llm_auth, "make_call", make_call)
+    raw, provider, model = _default_call(
+        "system", "user", model_id="requested-model", max_tokens=64,
+    )
+    assert raw == "{}"
+    assert provider == "deepseek"
+    assert model == "served-fallback-model"
+
+
+def test_rio_rejects_model_mutation_of_canonical_document_identity():
+    from engine.research_intelligence.schema import validate_rio
+    obj = _rio_sample()
+    expected = dict(obj["document"])
+    obj["document"]["title"] = "Different report"
+    with pytest.raises(ValueError, match="document.title does not match"):
+        validate_rio(obj, expected_document_id="r1", expected_document=expected)
+
+
+def test_rio_non_boolean_explicit_never_becomes_explicit():
+    from engine.research_intelligence.schema import validate_rio
+    obj = _rio_sample()
+    obj["claims"][0]["explicit"] = "false"
+    assert validate_rio(obj)["claims"][0]["explicit"] is False
+
+
+def test_rio_drops_uncited_claim_and_remaps_synthesis_support():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+    obj = _rio_sample()
+    obj["claims"].insert(0, {
+        "statement": "Fabricated unsupported claim.",
+        "evidence": [{"quote_span": "this sentence does not exist", "location": "fake"}],
+        "numbers": [], "entities": ["FAKE"], "horizon": "", "explicit": True,
+    })
+    obj["analysis"]["thesis"]["support_claim_indices"] = [0, 1, 2]
+    obj["analysis"]["forecasts"][0]["support_claim_indices"] = [0, 2]
+    raw = json.dumps(obj)
+    out = parse_model_output(
+        raw,
+        expected_document_id="r1",
+        expected_document=obj["document"],
+        source_body=RIO_BODY,
+    )
+    assert len(out["claims"]) == 2
+    assert all("Fabricated" not in claim["statement"] for claim in out["claims"])
+    assert out["analysis"]["thesis"]["support_claim_indices"] == [0, 1]
+    assert out["analysis"]["forecasts"][0]["support_claim_indices"] == [1]
+
+
+def test_rio_refuses_document_when_no_claim_has_verified_quote():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+    obj = _rio_sample()
+    for claim in obj["claims"]:
+        claim["evidence"] = [{"quote_span": "not in source", "location": "fake"}]
+    with pytest.raises(ValueError, match="no source claim survived"):
+        parse_model_output(
+            json.dumps(obj),
+            expected_document_id="r1",
+            expected_document=obj["document"],
+            source_body=RIO_BODY,
+        )
+
+
+def test_shared_qualitative_quote_verifier_is_reused():
+    from engine.qual_extraction import citation_normalize, quote_span_verified
+    assert quote_span_verified(RIO_BODY, "real yields rose to 2.1%")
+    assert not quote_span_verified(RIO_BODY, "a made up sentence")
+    assert citation_normalize("2.1%") == "2 1"
+
+
+def test_rio_uncertainty_requires_grounded_claim_support():
+    from engine.research_intelligence.schema import validate_rio
+    obj = _rio_sample()
+    obj["analysis"]["uncertainties"] = [
+        {"statement": "Supported uncertainty", "support_claim_indices": [0]},
+        {"statement": "Unsupported uncertainty", "support_claim_indices": [999]},
+    ]
+    out = validate_rio(obj)
+    assert out["analysis"]["uncertainties"] == [
+        {"statement": "Supported uncertainty", "support_claim_indices": [0]}
+    ]
+
+
+def test_rio_provider_exception_is_typed_failure():
+    from engine.research_intelligence.extractor import analyze_document
+    def call(*args, **kwargs):
+        raise RuntimeError("provider down")
+    out = analyze_document(
+        {"id": "r1", "source_type": "institutional_research"},
+        RIO_BODY, model_id="m", call=call,
+    )
+    assert out["state"] == "call_failed"
+    assert out["rio"] is None
+    assert out["requested_model"] == "m"
+    assert "provider down" in out["error"]
+
+
+def test_rio_document_hash_binds_exact_input_bytes():
+    import hashlib, json
+    from engine.research_intelligence.extractor import build_prompt
+    body = "  leading space\n" + RIO_BODY + "\ntrailing space  "
+    _system, user = build_prompt(
+        {"id": "r1", "source_type": "institutional_research"}, body,
+    )
+    identity_text = user.split("DOCUMENT IDENTITY:\n", 1)[1].split("\n\nOUTPUT SHAPE:", 1)[0]
+    identity = json.loads(identity_text)
+    assert identity["content_sha256"] == hashlib.sha256(body.encode("utf-8")).hexdigest()
+    assert user.endswith(body)
