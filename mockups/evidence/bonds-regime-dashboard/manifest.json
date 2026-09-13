@@ -1,6 +1,6 @@
 {
   "schema": "mastermind.p0_evidence.v2",
-  "generated_at": "2026-09-11T01:55:29Z",
+  "generated_at": "2026-09-13T21:54:58Z",
   "tool": {
     "module_ref": "scripts/capture_bonds_regime_dashboard_evidence.py",
     "version": "s3-r2-element",
@@ -9,8 +9,8 @@
   "target": {
     "kind": "fixture_site_dir",
     "base_url": null,
-    "site_dir": "/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/bonds_s3_evidence_jipsev5n",
-    "resolved_sha_or_none": "d88b35841e531bb88a23a7540b99a4d935878057",
+    "site_dir": "mixed-generation: bonds_s3_evidence_jipsev5n (r2), bonds_s3_r4_<uuid> (r4), bonds_s3_hero_<uuid> (W7-A hero recapture); per-cell `capture_tree` + `captured_at` describe each committed cell.",
+    "resolved_sha_or_none": "b5570f2708170e19fd27a40c15b663f56838f952",
     "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-build-bonds-s3-cd5364030dddd86b",
     "resolved_sha_source": "HEAD of the capture checkout; scratch is a throwaway bonds wrap render, not live site/bonds.html"
   },
@@ -69,14 +69,14 @@
     }
   },
   "aliases": {
-    "hero-dark-en-desktop.png": "f1e7244ae3deba7e.png",
-    "hero-light-en-desktop.png": "5020f5d7de130a8c.png",
-    "hero-dark-zh-desktop.png": "14b41b14ca9969ff.png",
-    "hero-light-zh-desktop.png": "c6144f8f2ca2e036.png",
-    "hero-dark-en-mobile.png": "177793bc05eba2a0.png",
-    "hero-light-en-mobile.png": "321828d131a6500e.png",
-    "hero-dark-zh-mobile.png": "7d2123a83d655a6a.png",
-    "hero-light-zh-mobile.png": "182117e2648dea6a.png",
+    "hero-dark-en-desktop.png": "3520e399036ad3c1.png",
+    "hero-light-en-desktop.png": "d2ec2921f3b52f80.png",
+    "hero-dark-zh-desktop.png": "ff84c086dacf9cac.png",
+    "hero-light-zh-desktop.png": "275377d16b17e831.png",
+    "hero-dark-en-mobile.png": "db840faff28d6b16.png",
+    "hero-light-en-mobile.png": "34885752f07b678c.png",
+    "hero-dark-zh-mobile.png": "5cd81fb91f53d317.png",
+    "hero-light-zh-mobile.png": "4a8ed09aced07128.png",
     "changed-dark-en-desktop.png": "736c5adeb82eeeed.png",
     "changed-light-en-desktop.png": "424e9d593a795661.png",
     "changed-dark-zh-desktop.png": "9922335a7bb9c8f6.png",
@@ -210,14 +210,18 @@
           "force_state": null,
           "subject": "hero",
           "captured": true,
-          "file": "cells/f1e7244ae3deba7e.png",
+          "file": "cells/3520e399036ad3c1.png",
           "alias": "hero-dark-en-desktop.png",
-          "sha256": "f1e7244ae3deba7eddbff17cfc56cdaccbced36784b539bc41248f6564dae570",
-          "bytes": 87799,
+          "sha256": "3520e399036ad3c17ec80b5dbbcf2936a365e781628f7af9959622ba07d5894a",
+          "bytes": 89687,
           "width": 1156,
           "height": 419,
           "applied_theme": "dark",
-          "applied_locale": "en"
+          "applied_locale": "en",
+          "overlay": "clean",
+          "r5_hero": true,
+          "capture_tree": "bonds_s3_hero_<uuid>",
+          "captured_at": "2026-09-13T21:54:58Z"
         },
         {
           "viewport": "desktop",
@@ -229,14 +233,18 @@
           "force_state": null,
           "subject": "hero",
           "captured": true,
-          "file": "cells/5020f5d7de130a8c.png",
+          "file": "cells/d2ec2921f3b52f80.png",
           "alias": "hero-light-en-desktop.png",
-          "sha256": "5020f5d7de130a8c0085aa2193233dc6c7a62247bde56bc28ddcaed5327f5d62",
-          "bytes": 71543,
+          "sha256": "d2ec2921f3b52f80681f511eba78477f1d680d030b76f951b16a360434cf12dd",
+          "bytes": 71531,
           "width": 1156,
           "height": 439,
           "applied_theme": "light",
-          "applied_locale": "en"
+          "applied_locale": "en",
+          "overlay": "clean",
+          "r5_hero": true,
+          "capture_tree": "bonds_s3_hero_<uuid>",
+          "captured_at": "2026-09-13T21:54:58Z"
         },
         {
           "viewport": "desktop",
@@ -248,14 +256,18 @@
           "force_state": null,
           "subject": "hero",
           "captured": true,
-          "file": "cells/14b41b14ca9969ff.png",
+          "file": "cells/ff84c086dacf9cac.png",
           "alias": "hero-dark-zh-desktop.png",
-          "sha256": "14b41b14ca9969ff1171972fa74dc371ce1a720f1e43d396947f3727027739c1",
-          "bytes": 90916,
+          "sha256": "ff84c086dacf9cace4763eb6bd6b5ee5cbe955bf6245996adf25fde65f7d1181",
+          "bytes": 91092,
           "width": 1156,
           "height": 370,
           "applied_theme": "dark",
-          "applied_locale": "zh"
+          "applied_locale": "zh",
+          "overlay": "clean",
+          "r5_hero": true,
+          "capture_tree": "bonds_s3_hero_<uuid>",
+          "captured_at": "2026-09-13T21:54:58Z"
         },
         {
           "viewport": "desktop",
@@ -267,14 +279,18 @@
           "force_state": null,
           "subject": "hero",
           "captured": true,
-          "file": "cells/c6144f8f2ca2e036.png",
+          "file": "cells/275377d16b17e831.png",
           "alias": "hero-light-zh-desktop.png",
-          "sha256": "c6144f8f2ca2e036efa2d2f91df3863e6f2d189b759418411b61685fa7eeeaef",
-          "bytes": 74257,
+          "sha256": "275377d16b17e831ac655272bf2a43e7e88efa653586b9d4a0f7502c042366dd",
+          "bytes": 74022,
           "width": 1156,
           "height": 390,
           "applied_theme": "light",
-          "applied_locale": "zh"
+          "applied_locale": "zh",
+          "overlay": "clean",
+          "r5_hero": true,
+          "capture_tree": "bonds_s3_hero_<uuid>",
+          "captured_at": "2026-09-13T21:54:58Z"
         },
         {
           "viewport": "mobile",
@@ -286,14 +302,18 @@
           "force_state": null,
           "subject": "hero",
           "captured": true,
-          "file": "cells/177793bc05eba2a0.png",
+          "file": "cells/db840faff28d6b16.png",
           "alias": "hero-dark-en-mobile.png",
-          "sha256": "177793bc05eba2a0b4f8eb8750ef6a1648a53a920764328d651b44e5e453885a",
-          "bytes": 107161,
+          "sha256": "db840faff28d6b169b04928918c33df3a8afb38d8ffe02a41f1d1987f79235bf",
+          "bytes": 106195,
           "width": 364,
           "height": 771,
           "applied_theme": "dark",
-          "applied_locale": "en"
+          "applied_locale": "en",
+          "overlay": "clean",
+          "r5_hero": true,
+          "capture_tree": "bonds_s3_hero_<uuid>",
+          "captured_at": "2026-09-13T21:54:58Z"
         },
         {
           "viewport": "mobile",
@@ -305,14 +325,18 @@
           "force_state": null,
           "subject": "hero",
           "captured": true,
-          "file": "cells/321828d131a6500e.png",
+          "file": "cells/34885752f07b678c.png",
           "alias": "hero-light-en-mobile.png",
-          "sha256": "321828d131a6500e4298631235aac4f7c4fd27e27a6c81ab910679b7a9fcbe06",
-          "bytes": 63769,
+          "sha256": "34885752f07b678c590337379e2822b8cb9817617106109983961646fe874896",
+          "bytes": 63281,
           "width": 364,
           "height": 962,
           "applied_theme": "light",
-          "applied_locale": "en"
+          "applied_locale": "en",
+          "overlay": "clean",
+          "r5_hero": true,
+          "capture_tree": "bonds_s3_hero_<uuid>",
+          "captured_at": "2026-09-13T21:54:58Z"
         },
         {
           "viewport": "mobile",
@@ -324,14 +348,18 @@
           "force_state": null,
           "subject": "hero",
           "captured": true,
-          "file": "cells/7d2123a83d655a6a.png",
+          "file": "cells/5cd81fb91f53d317.png",
           "alias": "hero-dark-zh-mobile.png",
-          "sha256": "7d2123a83d655a6ad5f00721d8fb971911ad14c79c39560c29fbf33303a56534",
-          "bytes": 96970,
+          "sha256": "5cd81fb91f53d3173cd6246cc2376ccdb8f04ec83c182183d820b062a6b80654",
+          "bytes": 97415,
           "width": 364,
           "height": 732,
           "applied_theme": "dark",
-          "applied_locale": "zh"
+          "applied_locale": "zh",
+          "overlay": "clean",
+          "r5_hero": true,
+          "capture_tree": "bonds_s3_hero_<uuid>",
+          "captured_at": "2026-09-13T21:54:58Z"
         },
         {
           "viewport": "mobile",
@@ -343,14 +371,18 @@
           "force_state": null,
           "subject": "hero",
           "captured": true,
-          "file": "cells/182117e2648dea6a.png",
+          "file": "cells/4a8ed09aced07128.png",
           "alias": "hero-light-zh-mobile.png",
-          "sha256": "182117e2648dea6ab441e7dcb19c53654915a9d9d30fa46c3bdf750e4135c54b",
-          "bytes": 63549,
+          "sha256": "4a8ed09aced0712875f387eefe3b356be4ff92ca8a8ab677ec45c4c1bc4a5316",
+          "bytes": 63622,
           "width": 364,
-          "height": 772,
+          "height": 798,
           "applied_theme": "light",
-          "applied_locale": "zh"
+          "applied_locale": "zh",
+          "overlay": "clean",
+          "r5_hero": true,
+          "capture_tree": "bonds_s3_hero_<uuid>",
+          "captured_at": "2026-09-13T21:54:58Z"
         }
       ],
       "metrics": {},
@@ -383,7 +415,9 @@
           "width": 1156,
           "height": 216,
           "applied_theme": "dark",
-          "applied_locale": "en"
+          "applied_locale": "en",
+          "capture_tree": "bonds_s3_evidence_jipsev5n",
+          "captured_at": "2026-09-11T01:58:37Z"
         },
         {
           "viewport": "desktop",
@@ -402,7 +436,9 @@
           "width": 1156,
           "height": 216,
           "applied_theme": "light",
-          "applied_locale": "en"
+          "applied_locale": "en",
+          "capture_tree": "bonds_s3_evidence_jipsev5n",
+          "captured_at": "2026-09-11T01:58:37Z"
         },
         {
           "viewport": "desktop",
@@ -421,7 +457,9 @@
           "width": 1156,
           "height": 215,
           "applied_theme": "dark",
-          "applied_locale": "zh"
+          "applied_locale": "zh",
+          "capture_tree": "bonds_s3_evidence_jipsev5n",
+          "captured_at": "2026-09-11T01:58:37Z"
         },
         {
           "viewport": "desktop",
@@ -440,7 +478,9 @@
           "width": 1156,
           "height": 215,
           "applied_theme": "light",
-          "applied_locale": "zh"
+          "applied_locale": "zh",
+          "capture_tree": "bonds_s3_evidence_jipsev5n",
+          "captured_at": "2026-09-11T01:58:37Z"
         },
         {
           "viewport": "mobile",
@@ -459,7 +499,9 @@
           "width": 364,
           "height": 348,
           "applied_theme": "dark",
-          "applied_locale": "en"
+          "applied_locale": "en",
+          "capture_tree": "bonds_s3_evidence_jipsev5n",
+          "captured_at": "2026-09-11T01:58:37Z"
         },
         {
           "viewport": "mobile",
@@ -478,7 +520,9 @@
           "width": 364,
           "height": 349,
           "applied_theme": "light",
-          "applied_locale": "en"
+          "applied_locale": "en",
+          "capture_tree": "bonds_s3_evidence_jipsev5n",
+          "captured_at": "2026-09-11T01:58:37Z"
         },
         {
           "viewport": "mobile",
@@ -497,7 +541,9 @@
           "width": 364,
           "height": 296,
           "applied_theme": "dark",
-          "applied_locale": "zh"
+          "applied_locale": "zh",
+          "capture_tree": "bonds_s3_evidence_jipsev5n",
+          "captured_at": "2026-09-11T01:58:37Z"
         },
         {
           "viewport": "mobile",
@@ -516,7 +562,9 @@
           "width": 364,
           "height": 295,
           "applied_theme": "light",
-          "applied_locale": "zh"
+          "applied_locale": "zh",
+          "capture_tree": "bonds_s3_evidence_jipsev5n",
+          "captured_at": "2026-09-11T01:58:37Z"
         }
       ],
       "metrics": {},
@@ -549,7 +597,9 @@
           "width": 1156,
           "height": 824,
           "applied_theme": "dark",
-          "applied_locale": "en"
+          "applied_locale": "en",
+          "capture_tree": "bonds_s3_evidence_jipsev5n",
+          "captured_at": "2026-09-11T01:58:37Z"
         },
         {
           "viewport": "desktop",
@@ -568,7 +618,9 @@
           "width": 1156,
           "height": 824,
           "applied_theme": "light",
-          "applied_locale": "en"
+          "applied_locale": "en",
+          "capture_tree": "bonds_s3_evidence_jipsev5n",
+          "captured_at": "2026-09-11T01:58:37Z"
         },
         {
           "viewport": "desktop",
@@ -587,7 +639,9 @@
           "width": 1156,
           "height": 805,
           "applied_theme": "dark",
-          "applied_locale": "zh"
+          "applied_locale": "zh",
+          "capture_tree": "bonds_s3_evidence_jipsev5n",
+          "captured_at": "2026-09-11T01:58:37Z"
         },
         {
           "viewport": "desktop",
@@ -606,7 +660,9 @@
           "width": 1156,
           "height": 805,
           "applied_theme": "light",
-          "applied_locale": "zh"
+          "applied_locale": "zh",
+          "capture_tree": "bonds_s3_evidence_jipsev5n",
+          "captured_at": "2026-09-11T01:58:37Z"
         },
         {
           "viewport": "mobile",
@@ -627,7 +683,9 @@
           "applied_theme": "dark",
           "applied_locale": "en",
           "overlay": "clean",
-          "r4": true
+          "r4": true,
+          "capture_tree": "bonds_s3_r4_<uuid>",
+          "captured_at": "2026-09-11T02:54:55Z"
         },
         {
           "viewport": "mobile",
@@ -648,7 +706,9 @@
           "applied_theme": "light",
           "applied_locale": "en",
           "overlay": "clean",
-          "r4": true
+          "r4": true,
+          "capture_tree": "bonds_s3_r4_<uuid>",
+          "captured_at": "2026-09-11T02:54:55Z"
         },
         {
           "viewport": "mobile",
@@ -669,7 +729,9 @@
           "applied_theme": "dark",
           "applied_locale": "zh",
           "overlay": "clean",
-          "r4": true
+          "r4": true,
+          "capture_tree": "bonds_s3_r4_<uuid>",
+          "captured_at": "2026-09-11T02:54:55Z"
         },
         {
           "viewport": "mobile",
@@ -690,7 +752,9 @@
           "applied_theme": "light",
           "applied_locale": "zh",
           "overlay": "clean",
-          "r4": true
+          "r4": true,
+          "capture_tree": "bonds_s3_r4_<uuid>",
+          "captured_at": "2026-09-11T02:54:55Z"
         }
       ],
       "metrics": {},
@@ -725,7 +789,9 @@
           "applied_theme": "dark",
           "applied_locale": "en",
           "overlay": "clean",
-          "r4": true
+          "r4": true,
+          "capture_tree": "bonds_s3_r4_<uuid>",
+          "captured_at": "2026-09-11T02:54:55Z"
         },
         {
           "viewport": "desktop",
@@ -746,7 +812,9 @@
           "applied_theme": "light",
           "applied_locale": "en",
           "overlay": "clean",
-          "r4": true
+          "r4": true,
+          "capture_tree": "bonds_s3_r4_<uuid>",
+          "captured_at": "2026-09-11T02:54:55Z"
         },
         {
           "viewport": "desktop",
@@ -767,7 +835,9 @@
           "applied_theme": "dark",
           "applied_locale": "zh",
           "overlay": "clean",
-          "r4": true
+          "r4": true,
+          "capture_tree": "bonds_s3_r4_<uuid>",
+          "captured_at": "2026-09-11T02:54:55Z"
         },
         {
           "viewport": "desktop",
@@ -788,7 +858,9 @@
           "applied_theme": "light",
           "applied_locale": "zh",
           "overlay": "clean",
-          "r4": true
+          "r4": true,
+          "capture_tree": "bonds_s3_r4_<uuid>",
+          "captured_at": "2026-09-11T02:54:55Z"
         },
         {
           "viewport": "mobile",
@@ -809,7 +881,9 @@
           "applied_theme": "dark",
           "applied_locale": "en",
           "overlay": "clean",
-          "r4": true
+          "r4": true,
+          "capture_tree": "bonds_s3_r4_<uuid>",
+          "captured_at": "2026-09-11T02:54:55Z"
         },
         {
           "viewport": "mobile",
@@ -830,7 +904,9 @@
           "applied_theme": "light",
           "applied_locale": "en",
           "overlay": "clean",
-          "r4": true
+          "r4": true,
+          "capture_tree": "bonds_s3_r4_<uuid>",
+          "captured_at": "2026-09-11T02:54:55Z"
         },
         {
           "viewport": "mobile",
@@ -851,7 +927,9 @@
           "applied_theme": "dark",
           "applied_locale": "zh",
           "overlay": "clean",
-          "r4": true
+          "r4": true,
+          "capture_tree": "bonds_s3_r4_<uuid>",
+          "captured_at": "2026-09-11T02:54:55Z"
         },
         {
           "viewport": "mobile",
@@ -872,7 +950,9 @@
           "applied_theme": "light",
           "applied_locale": "zh",
           "overlay": "clean",
-          "r4": true
+          "r4": true,
+          "capture_tree": "bonds_s3_r4_<uuid>",
+          "captured_at": "2026-09-11T02:54:55Z"
         }
       ],
       "metrics": {},
@@ -907,7 +987,9 @@
           "applied_theme": "dark",
           "applied_locale": "en",
           "overlay": "clean",
-          "r4": true
+          "r4": true,
+          "capture_tree": "bonds_s3_r4_<uuid>",
+          "captured_at": "2026-09-11T02:54:55Z"
         },
         {
           "viewport": "desktop",
@@ -928,7 +1010,9 @@
           "applied_theme": "light",
           "applied_locale": "en",
           "overlay": "clean",
-          "r4": true
+          "r4": true,
+          "capture_tree": "bonds_s3_r4_<uuid>",
+          "captured_at": "2026-09-11T02:54:55Z"
         },
         {
           "viewport": "desktop",
@@ -949,7 +1033,9 @@
           "applied_theme": "dark",
           "applied_locale": "zh",
           "overlay": "clean",
-          "r4": true
+          "r4": true,
+          "capture_tree": "bonds_s3_r4_<uuid>",
+          "captured_at": "2026-09-11T02:54:55Z"
         },
         {
           "viewport": "desktop",
@@ -970,7 +1056,9 @@
           "applied_theme": "light",
           "applied_locale": "zh",
           "overlay": "clean",
-          "r4": true
+          "r4": true,
+          "capture_tree": "bonds_s3_r4_<uuid>",
+          "captured_at": "2026-09-11T02:54:55Z"
         },
         {
           "viewport": "mobile",
@@ -991,7 +1079,9 @@
           "applied_theme": "dark",
           "applied_locale": "en",
           "overlay": "clean",
-          "r4": true
+          "r4": true,
+          "capture_tree": "bonds_s3_r4_<uuid>",
+          "captured_at": "2026-09-11T02:54:55Z"
         },
         {
           "viewport": "mobile",
@@ -1012,7 +1102,9 @@
           "applied_theme": "light",
           "applied_locale": "en",
           "overlay": "clean",
-          "r4": true
+          "r4": true,
+          "capture_tree": "bonds_s3_r4_<uuid>",
+          "captured_at": "2026-09-11T02:54:55Z"
         },
         {
           "viewport": "mobile",
@@ -1033,7 +1125,9 @@
           "applied_theme": "dark",
           "applied_locale": "zh",
           "overlay": "clean",
-          "r4": true
+          "r4": true,
+          "capture_tree": "bonds_s3_r4_<uuid>",
+          "captured_at": "2026-09-11T02:54:55Z"
         },
         {
           "viewport": "mobile",
@@ -1054,7 +1148,9 @@
           "applied_theme": "light",
           "applied_locale": "zh",
           "overlay": "clean",
-          "r4": true
+          "r4": true,
+          "capture_tree": "bonds_s3_r4_<uuid>",
+          "captured_at": "2026-09-11T02:54:55Z"
         }
       ],
       "metrics": {},
@@ -1087,7 +1183,9 @@
           "width": 1156,
           "height": 120,
           "applied_theme": "dark",
-          "applied_locale": "en"
+          "applied_locale": "en",
+          "capture_tree": "bonds_s3_evidence_jipsev5n",
+          "captured_at": "2026-09-11T01:58:37Z"
         },
         {
           "viewport": "desktop",
@@ -1106,7 +1204,9 @@
           "width": 1156,
           "height": 120,
           "applied_theme": "light",
-          "applied_locale": "en"
+          "applied_locale": "en",
+          "capture_tree": "bonds_s3_evidence_jipsev5n",
+          "captured_at": "2026-09-11T01:58:37Z"
         },
         {
           "viewport": "desktop",
@@ -1125,7 +1225,9 @@
           "width": 1156,
           "height": 119,
           "applied_theme": "dark",
-          "applied_locale": "zh"
+          "applied_locale": "zh",
+          "capture_tree": "bonds_s3_evidence_jipsev5n",
+          "captured_at": "2026-09-11T01:58:37Z"
         },
         {
           "viewport": "desktop",
@@ -1144,7 +1246,9 @@
           "width": 1156,
           "height": 119,
           "applied_theme": "light",
-          "applied_locale": "zh"
+          "applied_locale": "zh",
+          "capture_tree": "bonds_s3_evidence_jipsev5n",
+          "captured_at": "2026-09-11T01:58:37Z"
         },
         {
           "viewport": "mobile",
@@ -1163,7 +1267,9 @@
           "width": 364,
           "height": 367,
           "applied_theme": "dark",
-          "applied_locale": "en"
+          "applied_locale": "en",
+          "capture_tree": "bonds_s3_evidence_jipsev5n",
+          "captured_at": "2026-09-11T01:58:37Z"
         },
         {
           "viewport": "mobile",
@@ -1182,7 +1288,9 @@
           "width": 364,
           "height": 367,
           "applied_theme": "light",
-          "applied_locale": "en"
+          "applied_locale": "en",
+          "capture_tree": "bonds_s3_evidence_jipsev5n",
+          "captured_at": "2026-09-11T01:58:37Z"
         },
         {
           "viewport": "mobile",
@@ -1201,7 +1309,9 @@
           "width": 364,
           "height": 218,
           "applied_theme": "dark",
-          "applied_locale": "zh"
+          "applied_locale": "zh",
+          "capture_tree": "bonds_s3_evidence_jipsev5n",
+          "captured_at": "2026-09-11T01:58:37Z"
         },
         {
           "viewport": "mobile",
@@ -1220,7 +1330,9 @@
           "width": 364,
           "height": 218,
           "applied_theme": "light",
-          "applied_locale": "zh"
+          "applied_locale": "zh",
+          "capture_tree": "bonds_s3_evidence_jipsev5n",
+          "captured_at": "2026-09-11T01:58:37Z"
         },
         {
           "viewport": "desktop",
@@ -1242,7 +1354,9 @@
           "applied_locale": "en",
           "fixture": "r4 DELAYED cause=stale: last_obs='2026-08-01' < as_of='2026-09-10'",
           "overlay": "clean",
-          "r4": true
+          "r4": true,
+          "capture_tree": "bonds_s3_r4_<uuid>",
+          "captured_at": "2026-09-11T02:54:55Z"
         },
         {
           "viewport": "desktop",
@@ -1264,7 +1378,9 @@
           "applied_locale": "en",
           "fixture": "r4 DELAYED cause=stale: last_obs='2026-08-01' < as_of='2026-09-10'",
           "overlay": "clean",
-          "r4": true
+          "r4": true,
+          "capture_tree": "bonds_s3_r4_<uuid>",
+          "captured_at": "2026-09-11T02:54:55Z"
         },
         {
           "captured": true,
@@ -1286,7 +1402,9 @@
           "access": "anonymous",
           "force_state": "unbuilt-delayed",
           "fixture": "r4 DELAYED cause=unbuilt: last_obs == as_of '2026-09-10' \u2014 series current, engine unbuilt",
-          "r4": true
+          "r4": true,
+          "capture_tree": "bonds_s3_r4_<uuid>",
+          "captured_at": "2026-09-11T02:54:55Z"
         },
         {
           "captured": true,
@@ -1308,7 +1426,9 @@
           "access": "anonymous",
           "force_state": "unbuilt-delayed",
           "fixture": "r4 DELAYED cause=unbuilt: last_obs == as_of '2026-09-10' \u2014 series current, engine unbuilt",
-          "r4": true
+          "r4": true,
+          "capture_tree": "bonds_s3_r4_<uuid>",
+          "captured_at": "2026-09-11T02:54:55Z"
         }
       ],
       "metrics": {},

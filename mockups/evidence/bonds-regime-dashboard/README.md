@@ -18,13 +18,14 @@ Spec G4 names a 4-subject 32-crop matrix; the seat and the round-2 brief expand 
 - Sparse checkout has no `data/`; this is why the wrap is fixture-rendered.
 - The Mastermind boot launcher (`#mmb-boot`) is hidden so it does not overlay the crops.
 
-## Delayed-card fixtures (r4 true-cause)
+## Delayed-card fixtures (r4 + W7-A true-cause)
 
-Three DELAYED causes; only branch 1 and branch 2 are cropped (dark+light EN 1440). Branch 3 is test-pinned, not cropped.
+Four DELAYED causes per `scripts/build_bonds.py:158-205`; only branches 1, 2, and (this round) 4 are cropped. Branch 3 is test-pinned, not cropped this round.
 
 1. **stale** (`last_obs < as_of`): `divergence_card_state(False, '2026-08-14', '2026-08-01', '2026-09-10')` → `Data delayed since 01 Aug 2026` + series-not-updated why. Aliases `stale-gate-*-en-desktop.png` (`force_state: stale-delayed`).
 2. **unbuilt** (`last_obs >= as_of`): `divergence_card_state(False, None, '2026-09-10', '2026-09-10')` → `This read isn't live yet — the comparison engine hasn't produced it`. No date, no feed-delay. Aliases `unbuilt-gate-*-en-desktop.png` (`force_state: unbuilt-delayed`).
-3. **awaiting** (series missing): `Data delayed — awaiting the daily series`. Not cropped this round.
+3. **unknown** (`last_obs` real, `as_of` unparseable): cause-neutral copy, no date — see `scripts/build_bonds.py:196-201`. Not cropped this round (test-pinned only).
+4. **awaiting** (series missing): `Data delayed — awaiting the daily series`. Not cropped this round.
 
 Refusal copy must be visible; no scored verdict painted.
 
@@ -85,6 +86,16 @@ Refusal copy must be visible; no scored verdict painted.
 | unbuilt-gate | dark | en | desktop | `unbuilt-gate-dark-en-desktop.png` | yes |
 | unbuilt-gate | light | en | desktop | `unbuilt-gate-light-en-desktop.png` | yes |
 
+## Capture round (per-cell provenance)
+
+The 52-cell matrix is mixed-generation; per-cell `capture_tree` + `captured_at` in `manifest.json` describe each committed cell. Summary:
+
+- **Round 2 (2026-09-11T01:58:37Z, scratch `bonds_s3_evidence_jipsev5n`)** — 20 cells: changed × 8, drivers×1440 × 4, deeper × 8.
+- **Round 4 (2026-09-11T02:54:55Z, scratch `bonds_s3_r4_<uuid>`)** — 24 cells: world × 8, watching × 8, drivers×390 × 4, stale-gate × 2, unbuilt-gate × 2.
+- **W7-A heal (this commit, scratch `bonds_s3_hero_<uuid>`)** — 8 cells: hero × 8 (recaptured to depict the head's shipped ZH date form `截至 2026年9月10日`).
+
+Manifest's `generated_at` is the time the manifest was last rewritten; per-cell fields are the source of truth.
+
 ## G8 floor
 
 See `g8.json`. Checks at 390 / 768 / 1440: page horizontal scroll, focus-visible ring, LENS tap at 390, reduced-motion skeleton, chip wrap, wide table scrolls inside `.sc-wrap`.
@@ -101,7 +112,7 @@ Spec G4's original 32-crop matrix is 4 subjects; the round-2 brief expands it to
 
 | Subject | Cells | G4 verdict | Notes |
 |---|---|---|---|
-| hero | 8 | **PASS** | r2 pixels (hero copy unchanged this round). One regime word (`HEALTHY, LATE-CYCLE` / `健康 · 周期晚段`) is the largest, highest-contrast element; one clause; stance chip (`Watch — don't chase` / `观察，勿追`); caveat sits under the headline, never behind a hover; exactly one `.dtp-asof`; dark = luminance field, no drop shadow; light = white card on cool canvas, 1px hairline + soft shadow, no glow bleed; ZH has no Latin state enum; 390 stacks with no page h-scroll. Gauge + `.mx-skel` at true geometry. Residual: as-of date stays `Sep 10, 2026` in ZH. |
+| hero | 8 | **PASS** | W7-A recapture (8 hero crops re-shot at this heal's committed tree, `capture_tree: bonds_s3_hero_<uuid>` in the manifest). One regime word (`HEALTHY, LATE-CYCLE` / `健康 · 周期晚段`) is the largest, highest-contrast element; one clause; stance chip (`Watch — don't chase` / `观察，勿追`); caveat sits under the headline, never behind a hover; exactly one `.dtp-asof`; dark = luminance field, no drop shadow; light = white card on cool canvas, 1px hairline + soft shadow, no glow bleed; ZH has no Latin state enum; 390 stacks with no page h-scroll. Gauge + `.mx-skel` at true geometry. ZH hero as-of renders the shipped ZH date form `截至 2026年9月10日` (visually confirmed in `hero-light-zh-desktop.png`, `hero-dark-zh-desktop.png`); EN is `As of Sep 10, 2026`. |
 | changed | 8 | **PASS** | r2 pixels (changed copy unchanged this round). ≤4 DecisionRows; EN/ZH each one language; stance chips; 390 wraps the clause onto a second line (spec DecisionRow stack); dark = luminance panel, light = white card + hairline. |
 | drivers | 8 | **PASS** (390 recaptured; 1440 still r2) | Exactly four panels; each first line is a plain-word read; one as-of per panel; no bare `r` / `Betas` / `2s10s` / `TP-adjusted` / `1y z` / `Recession-IC` at rest (receipts live on `.lens-q`); 1440 is 2-col (r2 pixels — `align-items:start` is a 390 rule, so 1440 composition is unchanged). r4 390: swipe strip, never stacked full-width cards; the second card peeks and top-aligns rather than stretching (m4). Dark = luminance panels, no shadow; light = white cards, hairline, ring-not-glow. ZH uses 曲线与增长/正常/偏紧, not HEALTHY/TIGHT. Overlay=clean. |
 | world | 8 | **PASS** | r4 recapture. Subtitle binds `g.direction` (`the world is tightening` / `全球融资成本在收紧` on the rising fixture). 8-row sovereign table + tailwind/headwind list; `.world-list{max-width:36rem}` is visible at 1440 (list does not span the crop). 390 table scrolls inside `.sc-wrap` (left four columns in the crop). EN 390 dark/light and ZH 390 dark are byte-identical to r2 (`36rem` does not bind at 364px); recaptured anyway, overlay=clean. ZH names 美国/德国/日本…; `EMB` is the fund ticker, not a state enum. Light = white material + hairline; dark = luminance. |
