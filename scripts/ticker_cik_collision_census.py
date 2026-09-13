@@ -21,9 +21,12 @@ USAGE.
         --out /tmp/census.json
 
 The CLI also accepts ``--universe-tickers`` as an optional override; without
-it, the CLI enumerates ``data/stocks/`` + ``data/sector_holdings/`` parquet
-stems (site/stockdata is gitignored and never counted — that fact is asserted
-in the receipt's ``c4_universe_source`` field).
+it, the CLI enumerates ``data/stocks/`` parquet stems (the stock-library
+universe R2 names — see ``_default_universe``; ``site/stockdata`` is
+gitignored and never counted, ``data/sector_holdings/`` is filtered out
+because its ETF sector-proxy + log stems would leak in as fake tickers,
+per PR #2113 issue 4). That fact is asserted in the receipt's
+``c4_universe_source`` field.
 """
 from __future__ import annotations
 
@@ -57,21 +60,25 @@ def _read_parquet_records(path: Path) -> list[dict]:
 
 
 def _default_universe(data_dir: Path) -> tuple[list[str], str]:
-    """Enumerate data/stocks/ + data/sector_holdings/ parquet stems.
+    """Enumerate the C4 universe — the stock-library universe R2 names.
 
-    site/stockdata is gitignored — NEVER read here, and the returned source
-    string asserts that to the receipt reader (R2 / R4).
+    H3 heal-round (PR #7122): the C4 universe is ``data/stocks/`` ONLY. The
+    sector-holdings parquets live under ``data/sector_holdings/`` but those
+    files carry ETF sector proxies (XLB/XLC/...) + log tables
+    (``history.parquet`` PIT archiver, ``holdings_runs.parquet``) whose
+    stems would leak into a receipt as fake tickers. ``build_stock_library``
+    filters ``data/sector_holdings/`` by ``SECTOR_NAMES`` for the same
+    reason (PR #2113 issue 4); we follow the SAME rule and only enumerate
+    ``data/stocks/*.parquet`` — the 245-stock stock-library universe.
+
+    ``site/stockdata/`` is gitignored and is NEVER read here; the returned
+    source string asserts that to the receipt reader (R2 / R4).
     """
-    seen: set[str] = set()
-    sources: list[str] = []
-    for sub in ("stocks", "sector_holdings"):
-        d = data_dir / sub
-        if not d.is_dir():
-            continue
-        for p in sorted(d.glob("*.parquet")):
-            seen.add(p.stem)
-        sources.append(f"data/{sub}")
-    return sorted(seen), "+".join(sources) if sources else "(empty)"
+    d = data_dir / "stocks"
+    if not d.is_dir():
+        return [], "(empty)"
+    stems = sorted({p.stem for p in d.glob("*.parquet")})
+    return stems, "data/stocks"
 
 
 def _allowlist() -> tuple[str, ...]:
@@ -190,13 +197,15 @@ def _git_head_for(working_tree: Path) -> str | None:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--data-dir", type=Path, required=True,
-                        help="Path containing reference/ + stocks/ + sector_holdings/")
+                        help="Path containing reference/ + stocks/ "
+                             "(sector_holdings filtered; site/stockdata NOT counted)")
     parser.add_argument("--decision-date", type=str, default=None,
                         help="ISO 8601 decision date (default: UTC today)")
     parser.add_argument("--out", type=Path, required=True,
                         help="Receipt output path (JSON)")
     parser.add_argument("--universe-tickers", nargs="*", default=None,
-                        help="Override the C4 universe (default: data/stocks + data/sector_holdings)")
+                        help="Override the C4 universe (default: data/stocks/*.parquet stems; "
+                             "245-tick stock-library universe)")
     args = parser.parse_args(argv)
 
     decision_date = (
@@ -208,6 +217,20 @@ def main(argv: list[str] | None = None) -> int:
         decision_date=decision_date,
         universe_tickers=args.universe_tickers,
     )
+
+    # H9 Q-m8 first half: when the data/stocks/ universe dir is absent (e.g.
+    # a sparse worktree that did not materialise data/), the CLI must NOT
+    # silently emit a 0-coverage receipt. Print a loud line-start warning to
+    # stderr instead — the receipt is still written (census REPORTS, never
+    # fails a build) but the operator can see the universe was empty.
+    if receipt["universe_size"] == 0 and not args.universe_tickers:
+        print(
+            "::warning title=ticker-cik-collision-census::C4 universe dir "
+            "data/stocks absent (size=0); sparse worktree? materialise via "
+            "`python3 scripts/worktree_sparse.py add data`",
+            file=sys.stderr,
+            flush=True,
+        )
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(receipt, indent=2, sort_keys=True, default=str),

@@ -51,6 +51,7 @@ __all__ = [
     "c3_cik_leg_access_failures",
     "c4_renderer_coverage",
     "build_receipt",
+    "validate_receipt",
 ]
 
 
@@ -147,15 +148,37 @@ class CensusCounts:
     c3: dict[str, int]
     c4: dict[str, int]
 
-    def to_receipt_lines(self, decision_date: date, data_dir: str) -> list[str]:
-        """Dated summary lines the CLI prints — one per code, never aggregated."""
+    def to_receipt_lines(
+        self,
+        decision_date: date,
+        data_dir: str,
+        c4_records: list[CensusRecord] | None = None,
+    ) -> list[str]:
+        """Dated summary lines the CLI prints — one per code, never aggregated.
+
+        H8 heal-round (PR #7122): C4's printed count is the TICKER count, not
+        the record-code count. The receipt's ``counts`` dict remains the
+        record-code count (one record per code), so ``c4.no_identity_row=1``
+        means one C4 record carrying the EA ticker — the printed summary
+        line shows the ticker count by summing ``len(r.ids)`` across records.
+        """
         out = [
             f"decision_date={decision_date.isoformat()}",
             f"data_dir={data_dir}",
         ]
-        for cls_name, counts in (("C1", self.c1), ("C2", self.c2), ("C3", self.c3), ("C4", self.c4)):
+        c4_ticker_count: dict[str, int] = {}
+        if c4_records is not None:
+            for rec in c4_records:
+                if rec.code in C4_COVERAGE_CODES:
+                    c4_ticker_count[rec.code] = (
+                        c4_ticker_count.get(rec.code, 0) + len(rec.ids)
+                    )
+        for cls_name, counts in (("C1", self.c1), ("C2", self.c2), ("C3", self.c3)):
             for code in sorted(counts):
                 out.append(f"{cls_name}.{code}={counts[code]}")
+        for code in sorted(C4_COVERAGE_CODES):
+            n = c4_ticker_count.get(code, 0)
+            out.append(f"C4.{code}={n}")
         return out
 
 
@@ -364,9 +387,10 @@ def c3_cik_leg_access_failures(
     # module (R5: no pandas at module top). The classifier REPRODUCES the
     # producer's typed refusal path by re-running the same owner steps
     # through the same public APIs (``VendorAliasTable.from_records``,
-    # ``IssuerMaster.from_records``). This is a deliberate separation — the
-    # test layer exercises both the classifier and the producer on the same
-    # fixture and asserts they agree.
+    # ``IssuerMaster.from_records``). The agreement test lives in
+    # ``tests/test_ticker_cik_collision_census.py::test_classifier_and_producer_agree_on_typed_failures``
+    # (H7 heal-round, PR #7122) — it imports ``scripts.security_state_producer``
+    # and asserts the producer's failure set matches the classifier's.
     from lib.dataos.identity import (
         IdentityError,
         IssuerMaster,
@@ -560,7 +584,7 @@ def build_receipt(
         if code != "superseded_duplicate_mint" and c1_counts[code] > 0
     )
 
-    return {
+    receipt = {
         "schema": RECEIPT_SCHEMA["schema"],
         "schema_version": RECEIPT_SCHEMA["version"],
         "decision_date": decision_date.isoformat(),
@@ -581,10 +605,28 @@ def build_receipt(
             for r in c3
         ],
         "c3_ticker_details": c3_details,
-        "c4_records": [r.code for r in c4],
+        # H8 heal-round (PR #7122): C4 carries counts AND the exact ids, in
+        # the same shape as C1/C2/C3 — the receipt reader must always be
+        # able to recover the exact ticker ids without re-reading the
+        # parquet. Drop the "no per-ticker id list to keep the receipt
+        # bounded" excuse; the receipt is already bounded by class.
+        "c4_records": [
+            {"code": r.code, "ids": list(r.ids)} for r in c4
+        ],
         "lines": CensusCounts(c1_counts, c2_counts, c3_counts, c4_counts)
-        .to_receipt_lines(decision_date, data_dir),
+        .to_receipt_lines(decision_date, data_dir, c4_records=c4),
+        # H3 heal-round (PR #7122): every receipt carries the C4 universe
+        # source label AND its size. The CLI overrides these with the live
+        # enumeration; engine callers may leave them as defaults — they
+        # are required by the schema.
+        "c4_universe_source": "(engine-default)",
+        "universe_size": 0,
     }
+    # H6 heal-round (PR #7122): build_receipt validates the receipt it just
+    # built against RECEIPT_SCHEMA. A classifier / CLI bug that drifted the
+    # receipt from the schema MUST surface here, not in a downstream reader.
+    validate_receipt(receipt)
+    return receipt
 
 
 # ── Internal helpers ──────────────────────────────────────────────────────────
@@ -666,24 +708,124 @@ def _s_or_none(value: object) -> str | None:
 
 
 # ── Receipt schema (R5) ───────────────────────────────────────────────────────
+# H6 heal-round (PR #7122): a real JSON Schema dict (type / required /
+# properties) — not prose field descriptions — so build_receipt can
+# STRUCTURALLY validate the receipt and the live-data test can assert
+# "validates" with a check that can actually FAIL. The schema is the same
+# ``draft 2020-12`` shape the live-data test uses for ``security_state.v1``
+# (``contracts/market_os/security_state.v1.schema.json``).
 RECEIPT_SCHEMA: dict = {
     "schema": "ticker_cik_collision_census.v1",
     "version": "1.0.0",
-    "fields": {
-        "schema": "literal ticker_cik_collision_census.v1",
-        "schema_version": "literal 1.0.0",
-        "decision_date": "ISO 8601 date the census was computed at",
-        "data_dir": "string identifying the reference/ root the census read",
-        "counts.C1": "per-C1-code count (closed enum in C1_COLLISION_CODES)",
-        "counts.C2": "per-C2-code count (closed enum in C2_NAMESPACE_CODES)",
-        "counts.C3": "per-CikFailureClass count",
-        "counts.C4": "per-C4-code count (closed enum in C4_COVERAGE_CODES)",
-        "total_collisions": "sum of C1 codes with count > 0 (strict collisions only)",
-        "c1_records": "list of C1 sub-codes observed (ids recoverable via the source parquet)",
-        "c2_records": "list of {code, ids} for C2 (ids = sec_id + per-vendor symbol pairs OR expired-alias triple)",
-        "c3_records": "list of {code, ticker, message} for C3 (closed-enum class + exact ticker + producer message)",
-        "c3_ticker_details": "ticker -> {issuer_state, evidence_source} for every C3 row (master values, not inferred)",
-        "c4_records": "list of C4 sub-codes observed (ids recoverable via c1_records-style detail; no per-ticker id list to keep the receipt bounded)",
-        "lines": "dated summary lines the CLI prints (one per code, never aggregated)",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "required": [
+        "schema",
+        "schema_version",
+        "decision_date",
+        "data_dir",
+        "counts",
+        "total_collisions",
+        "c1_records",
+        "c2_records",
+        "c3_records",
+        "c3_ticker_details",
+        "c4_records",
+        "lines",
+    ],
+    "properties": {
+        "schema": {"type": "string", "const": "ticker_cik_collision_census.v1"},
+        "schema_version": {"type": "string", "const": "1.0.0"},
+        "decision_date": {"type": "string", "format": "date"},
+        "data_dir": {"type": "string", "minLength": 1},
+        "counts": {
+            "type": "object",
+            "required": ["C1", "C2", "C3", "C4"],
+            "properties": {
+                "C1": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+                "C2": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+                "C3": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+                "C4": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+            },
+        },
+        "total_collisions": {"type": "integer", "minimum": 0},
+        "c1_records": {"type": "array", "items": {"type": "string"}},
+        "c2_records": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": ["code", "ids"],
+                "properties": {
+                    "code": {"type": "string"},
+                    "ids": {"type": "array", "items": {"type": "string"}},
+                },
+            },
+        },
+        "c3_records": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": ["code", "ticker", "message"],
+                "properties": {
+                    "code": {"type": "string"},
+                    "ticker": {"type": "string"},
+                    "message": {"type": "string"},
+                },
+            },
+        },
+        "c3_ticker_details": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "object",
+                "properties": {
+                    "issuer_state": {"type": ["string", "null"]},
+                    "evidence_source": {"type": ["string", "null"]},
+                },
+            },
+        },
+        "c4_records": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": ["code", "ids"],
+                "properties": {
+                    "code": {"type": "string"},
+                    "ids": {"type": "array", "items": {"type": "string"}},
+                },
+            },
+        },
+        "lines": {"type": "array", "items": {"type": "string"}},
     },
+    "additionalProperties": True,
 }
+
+
+def validate_receipt(receipt: dict) -> None:
+    """Structural validation against ``RECEIPT_SCHEMA`` (R5 + H6).
+
+    A failure here is a receipt bug — the classifiers and the CLI agreed on
+    the receipt shape, but the receipt itself drifted away from the schema.
+    Raises :class:`ValueError` so ``build_receipt`` can let the violation
+    surface; the live-data test pins ``validation_success=True``.
+    """
+    try:
+        import jsonschema
+    except ImportError as e:
+        # The validator is only import-on-demand. A missing dep is a hard
+        # receipt failure — the schema's draft 2020-12 shape would never
+        # have been checked.
+        raise ValueError(
+            "RECEIPT_SCHEMA validation requires the `jsonschema` package; "
+            "install it to enable structural receipt validation (R5/H6)."
+        ) from e
+
+    validator = jsonschema.Draft202012Validator(RECEIPT_SCHEMA)
+    errors = list(validator.iter_errors(receipt))
+    if errors:
+        # Surface ONE violation (the schema's first one) — the receipt reader
+        # only needs to know the receipt is invalid to fail it.
+        first = errors[0]
+        path = "/".join(str(p) for p in first.absolute_path) or "<root>"
+        raise ValueError(
+            f"RECEIPT_SCHEMA violation at {path}: {first.message}"
+        )
