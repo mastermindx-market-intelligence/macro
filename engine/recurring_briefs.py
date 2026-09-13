@@ -67,23 +67,15 @@ TARGET_UNAVAILABLE_EN = (
 TARGET_UNAVAILABLE_ZH = (
     "这份简报无法写成，因为它所跟踪的论点或观察列表已不可用。"
 )
+NO_COVERAGE_REASON = "no target coverage"
+NO_COVERAGE_EN = (
+    "No tracked names for this thesis yet — we can't write a brief until it "
+    "carries one."
+)
+NO_COVERAGE_ZH = (
+    "此论点暂未关联任何个股名称——在它对应到具体股票之前，我们无法撰写简报。"
+)
 TRANSLATION_PENDING_ZH = "（翻译待补）"
-
-_JUDGEMENT_KEYS = {
-    "score",
-    "rank",
-    "conviction",
-    "confidence",
-    "priority",
-    "strength",
-    "lean",
-    "probability",
-    "n_actionable",
-    "n_priority",
-    "n_divergences",
-    "n_universe",
-    "falsifier",
-}
 
 
 @dataclass(frozen=True)
@@ -94,6 +86,10 @@ class RunResult:
     slot: date | None
     duplicate_n: int = 0
     planned_n: int = 0
+    error_n: int = 0
+    read_missing: int = 0
+    read_unavailable: int = 0
+    planned_rows: tuple = ()
 
 
 # ---------------------------------------------------------------------------
@@ -133,22 +129,66 @@ def artifact_asof_value(artifact: dict | None) -> Any:
     return None
 
 
-def compute_slot(cadence: str, artifact_asof: Any, run_date: date) -> date | None:
+def _artifact_generated_at(artifact: dict | None) -> Any:
+    """The artifact's generation timestamp as a parseable string.
+
+    The slot-clock fix needs this: a weekly artifact built this Saturday run
+    carries Friday market state but was generated on the run_date. The run's
+    own ``generated_at`` is the binding clock; ``state_asof`` is the brief's
+    content. Used ONLY for slot eligibility — not for the row's slot value.
+    """
+    if not isinstance(artifact, dict):
+        return None
+    for key in ("generated_at", "generated_utc", "asof", "as_of"):
+        val = artifact.get(key)
+        if isinstance(val, str) and "T" in val:
+            return val
+    return None
+
+
+def compute_slot(
+    cadence: str,
+    artifact_asof: Any,
+    run_date: date,
+    *,
+    artifact_generated_at: Any = None,
+) -> date | None:
     """Return the slot date if the artifact is usable for this cadence, else None.
 
-    Slot is the published artifact's asof. Returns None when the artifact is
-    missing or older than run_date (the caller then writes a degraded row
-    keyed on run_date). A usable artifact still keys the slot on run_date so
-    this run never back-fills an earlier day and never writes a future slot.
+    Slot eligibility (binding clock): the artifact is fresh for this run
+    when its asof is on or after run_date (state carried into today), OR
+    when it was GENERATED within the 24-hour window around the run — the
+    brief was rebuilt this run with state from the previous session. This
+    covers the two measured production shapes:
+
+      * ``weekly_saturday`` — ``generated_at`` falls on the run_date itself
+        (Saturday 10:10 UTC run with Friday state).
+      * ``daily_after_us_close`` — the nightly crosses UTC midnight, so the
+        briefing captured mid-job has ``generated_utc`` 30 min before UTC
+        midnight and ``run_date`` (captured at the end of the same job) is
+        the next day.
+
+    The 3-arg form preserves the strict pre-fix behaviour for callers that
+    don't have the generated_at clock (e.g. existing tests).
     """
     if cadence not in CADENCES:
         return None
     asof_date = _as_date(artifact_asof)
-    if asof_date is None:
+    if asof_date is not None:
+        if asof_date >= run_date:
+            return run_date
+        if artifact_generated_at is None:
+            return None
+    gen_date = _as_date(artifact_generated_at)
+    if gen_date is None:
         return None
-    if asof_date < run_date:
-        return None
-    return run_date
+    # An artifact rebuilt this run — on the run_date itself OR within the
+    # prior 24h — is fresh. A truly stale artifact (gen_date several days
+    # older than run_date) still degrades with the contract's plain line.
+    delta_days = (run_date - gen_date).days
+    if 0 <= delta_days <= 1:
+        return run_date
+    return None
 
 
 def classify(
@@ -159,9 +199,26 @@ def classify(
         return ("degraded", TARGET_UNAVAILABLE_REASON)
     run_date = _as_date(subscription.get("run_date")) or date.today()
     cadence = subscription.get("cadence") or CADENCE_DAILY
-    slot = compute_slot(cadence, artifact_asof_value(artifact), run_date)
+    if isinstance(artifact, dict):
+        slot = compute_slot(
+            cadence,
+            artifact_asof_value(artifact),
+            run_date,
+            artifact_generated_at=_artifact_generated_at(artifact),
+        )
+    else:
+        slot = compute_slot(cadence, None, run_date)
     if slot is None:
         return ("degraded", CONTRACT_MISS_EN)
+    # H6 (MAJOR 2): a thesis with no ticker coverage cannot compose a
+    # ticker-filtered brief. Returning ready would publish only the global
+    # backdrop as if it were a real brief for the target. Degrade with the
+    # typed honest-miss line that the contract binds to ``degraded_reason``.
+    if isinstance(target, dict):
+        kind = target.get("kind")
+        tickers = target.get("tickers") or []
+        if kind == "thesis" and not tickers:
+            return ("degraded", NO_COVERAGE_REASON)
     return ("ready", None)
 
 
@@ -211,6 +268,10 @@ def extract_market_read(artifact: dict | None, tickers: set[str]) -> list[dict]:
     """Verbatim sentences from the published artifact, ticker-filtered.
 
     Never copies numeric judgement fields (priority/confidence/strength/…).
+    Never copies raw engine ``evidence`` slugs into a user-facing string — the
+    H4 review measured ``radar CONF edge7 · alt92 ACCUMULATE · news neutral n1``
+    on every row of the daily briefing; that prose is for Engine output, not
+    for what a user reads.
     """
     if not isinstance(artifact, dict):
         return []
@@ -241,8 +302,9 @@ def extract_market_read(artifact: dict | None, tickers: set[str]) -> list[dict]:
             continue
         if not tickers:
             continue
+        # Situation is prose; evidence is engine-slug code — H4 forbids copying
+        # raw ``evidence`` into user-facing strings.
         add("tape", item.get("situation"), item.get("situation_zh"))
-        add("tape", item.get("evidence"), item.get("evidence_zh"))
 
     for item in artifact.get("divergences") or []:
         if not isinstance(item, dict):
@@ -253,18 +315,44 @@ def extract_market_read(artifact: dict | None, tickers: set[str]) -> list[dict]:
             continue
         add("tape", item.get("situation"), item.get("situation_zh"))
 
-    for item in artifact.get("tldr") or []:
+    # Weekly artifacts publish a paired ``zh`` block whose strings are real
+    # Chinese; pair ``tldr``/``watch_items`` by index to the ``zh.tldr`` /
+    # ``zh.watch_items`` arrays — the H3 measured triple fed an English
+    # sentence paired with a ``（翻译待补）`` fallback for 11/11 weekly rows.
+    zh_block = artifact.get("zh") if isinstance(artifact.get("zh"), dict) else {}
+    zh_tldr = list(zh_block.get("tldr") or []) if isinstance(zh_block, dict) else []
+    zh_watch = list(zh_block.get("watch_items") or []) if isinstance(zh_block, dict) else []
+
+    tldr_items = artifact.get("tldr") or []
+    for index, item in enumerate(tldr_items):
+        zh_pair = zh_tldr[index] if index < len(zh_tldr) else None
         if isinstance(item, str):
-            add("week", item)
+            add("week", item, zh_pair)
         elif isinstance(item, dict):
-            add("week", item.get("sentence") or item.get("text") or item.get("note"))
+            add(
+                "week",
+                item.get("sentence") or item.get("text") or item.get("note"),
+                zh_pair,
+            )
 
-    add("week", artifact.get("summary"), artifact.get("summary_zh"))
-    add("week", artifact.get("regime_read"), artifact.get("regime_read_zh"))
+    # Top-level ``summary`` / ``regime_read``: paired with the zh block
+    # when one exists; fall back to ``summary_zh`` / ``regime_read_zh`` only
+    # when there is no zh-block on the artifact (older producers).
+    if isinstance(zh_block, dict) and zh_block:
+        add("week", artifact.get("summary"), zh_block.get("summary"))
+        add("week", artifact.get("regime_read"), zh_block.get("regime_read"))
+    else:
+        add("week", artifact.get("summary"), artifact.get("summary_zh"))
+        add(
+            "week",
+            artifact.get("regime_read"),
+            artifact.get("regime_read_zh"),
+        )
 
-    for item in artifact.get("watch_items") or []:
+    for index, item in enumerate(artifact.get("watch_items") or []):
+        zh_pair = zh_watch[index] if index < len(zh_watch) else None
         if isinstance(item, str):
-            add("week", item)
+            add("week", item, zh_pair)
             continue
         if not isinstance(item, dict):
             continue
@@ -273,7 +361,7 @@ def extract_market_read(artifact: dict | None, tickers: set[str]) -> list[dict]:
         add(
             "week",
             item.get("note") or item.get("sentence") or item.get("text"),
-            item.get("note_zh") or item.get("sentence_zh"),
+            zh_pair,
         )
     return rows
 
@@ -316,6 +404,10 @@ def compose_body(
     if degraded_reason == TARGET_UNAVAILABLE_REASON:
         market_read = [
             _sentence_row("status", TARGET_UNAVAILABLE_EN, TARGET_UNAVAILABLE_ZH, asof)
+        ]
+    elif degraded_reason == NO_COVERAGE_REASON:
+        market_read = [
+            _sentence_row("status", NO_COVERAGE_EN, NO_COVERAGE_ZH, asof)
         ]
     elif degraded_reason:
         market_read = [
@@ -444,17 +536,36 @@ def read_target(subscription: dict) -> dict | None:
         return None
     kind = subscription.get("target_kind")
     target_id = subscription.get("target_id")
+    sub_user_id = subscription.get("user_id")
     if not kind or not target_id:
         return None
+    # H5: owner-scope the target read. brief_subscriptions is RLS owner-only
+    # on ``user_id default auth.uid()``; without the equivalent filter on this
+    # read, any authenticated user could subscribe to a target UUID and have
+    # the nightly write that target's title/symbols/monitor state into a
+    # ``brief_deliveries`` row the subscriber may select. Mirror the watchdog
+    # sentinel at scripts/run_watchlist_sentinel.py:101-103.
     try:
         if kind == "thesis":
-            rows = _pg(
-                "GET",
-                f"theses?id=eq.{target_id}&select=id,user_id,current_version,subject_ref,lifecycle_state",
+            path = (
+                f"theses?id=eq.{target_id}"
+                f"&user_id=eq.{sub_user_id}" if sub_user_id else
+                f"theses?id=eq.{target_id}"
             )
+            # H10 minor (b): mirror ``engine/thesis_condition_monitor.py:601``
+            # and only return active theses. Archived/closed theses get the
+            # R4 "target unavailable" verdict upstream.
+            path += "&lifecycle_state=eq.active"
+            path += "&select=id,user_id,current_version,subject_ref,lifecycle_state"
+            rows = _pg("GET", path)
             if not rows:
                 return None
             head = rows[0]
+            # Belt-and-braces: even after the URL filter, ignore rows whose
+            # ``user_id`` does not match the subscription — defence in depth
+            # against any future RLS / PostgREST reorganisation.
+            if sub_user_id and head.get("user_id") != sub_user_id:
+                return None
             version = head.get("current_version")
             content = {}
             if version is not None:
@@ -474,13 +585,18 @@ def read_target(subscription: dict) -> dict | None:
                 "unavailable": False,
             }
         if kind == "watchlist":
-            rows = _pg(
-                "GET",
-                f"watchlists?id=eq.{target_id}&select=id,name,watchlist_symbols(symbol)",
+            wl_path = (
+                f"watchlists?id=eq.{target_id}"
+                f"&user_id=eq.{sub_user_id}" if sub_user_id else
+                f"watchlists?id=eq.{target_id}"
             )
+            wl_path += "&select=id,user_id,name,watchlist_symbols(symbol)"
+            rows = _pg("GET", wl_path)
             if not rows:
                 return None
             row = rows[0]
+            if sub_user_id and row.get("user_id") != sub_user_id:
+                return None
             members = []
             seen: set[str] = set()
             for entry in row.get("watchlist_symbols") or []:
@@ -553,7 +669,7 @@ def load_monitors_for_target(target: dict | None) -> list[dict]:
 def _artifact_asof_timestamptz(artifact: dict | None) -> str | None:
     if not isinstance(artifact, dict):
         return None
-    for key in ("generated_utc", "generated_at", "asof"):
+    for key in ("generated_utc", "generated_at"):
         val = artifact.get(key)
         if isinstance(val, str) and "T" in val:
             return val
@@ -573,13 +689,31 @@ def run(
     if run_date is None:
         run_date = datetime.now(timezone.utc).date()
     artifact = load_published_artifact(cadence, root=root)
-    slot = compute_slot(cadence, artifact_asof_value(artifact), run_date) or run_date
+    if isinstance(artifact, dict):
+        slot = (
+            compute_slot(
+                cadence,
+                artifact_asof_value(artifact),
+                run_date,
+                artifact_generated_at=_artifact_generated_at(artifact),
+            )
+            or run_date
+        )
+    else:
+        slot = (
+            compute_slot(cadence, artifact_asof_value(artifact), run_date)
+            or run_date
+        )
 
     subscriptions = read_subscriptions(cadence)
     ready_n = 0
     degraded_n = 0
     duplicate_n = 0
     planned_n = 0
+    error_n = 0
+    read_missing = 0
+    read_unavailable = 0
+    planned_rows: list[dict] = []
     considered = 0
 
     for sub in subscriptions:
@@ -594,6 +728,10 @@ def run(
         state, reason = classify(work, artifact, target)
         if state == "degraded":
             degraded_n += 1
+            if reason == TARGET_UNAVAILABLE_REASON:
+                read_unavailable += 1
+            elif reason == CONTRACT_MISS_EN:
+                read_missing += 1
             body = compose_body(
                 target
                 or {
@@ -620,9 +758,18 @@ def run(
             "body": body,
         }
         planned_n += 1
-        outcome = write_delivery(row, dry_run=dry_run)
+        if dry_run:
+            planned_rows.append(row)
+            outcome = write_delivery(row, dry_run=True)
+        else:
+            outcome = write_delivery(row, dry_run=False)
         if outcome == "conflict":
             duplicate_n += 1
+        elif outcome == "error":
+            # H8: persistent 500/RLS/network failures must be visible. The
+            # mirrored precedent (scripts/run_thesis_condition_monitor.py:50)
+            # surfaces this with a ::warning line; we keep that shape here.
+            error_n += 1
 
     return RunResult(
         subscription_n=considered,
@@ -631,4 +778,8 @@ def run(
         slot=slot,
         duplicate_n=duplicate_n,
         planned_n=planned_n,
+        error_n=error_n,
+        read_missing=read_missing,
+        read_unavailable=read_unavailable,
+        planned_rows=tuple(planned_rows),
     )

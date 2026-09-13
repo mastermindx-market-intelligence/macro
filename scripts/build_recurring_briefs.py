@@ -8,8 +8,15 @@ RECURRING_BRIEFS_ENABLE=1 is set in the environment; otherwise forces --dry-run.
 Always exits 0: a missing table, missing credentials, or an unmerged
 migration is a known deployment state, not a build failure.
 
-Slot source (R4): daily reads site/intelligence/briefing.json `as_of`;
-weekly reads site/master_brief.json `state_asof`.
+Slot source (R4 + slot-clock fix): the published artifact's asof is the slot.
+A weekly artifact built this Saturday run carries Friday market state but
+was generated on the run_date — the binding clock is the artifact's
+``generated_at``, so ``weekly_saturday`` does not false-degrade every Saturday.
+Same rule lets a daily nightly that crosses UTC midnight pass.
+
+Dry-run still writes nothing (frozen-spec item 2). It DOES print what it
+would write (planned/duplicate counts and one line per row), and surfaces
+write failures the same way the thesis monitor does.
 """
 from __future__ import annotations
 
@@ -29,6 +36,25 @@ def _parse_run_date(raw: str | None) -> date:
     if not raw:
         return datetime.now(timezone.utc).date()
     return date.fromisoformat(raw)
+
+
+def _row_summary(row: dict) -> str:
+    body = row.get("body") or {}
+    sub_id = str(row.get("subscription_id") or "?")[:8]
+    target_name = (
+        ((body.get("target") or {}).get("name") or "?")
+        if isinstance(body.get("target"), dict)
+        else "?"
+    )
+    sentences = body.get("market_read") or []
+    head = sentences[0]["sentence_en"] if sentences and isinstance(sentences[0], dict) else ""
+    head = head.replace("\n", " ")
+    return (
+        f"-- subscription {sub_id}... "
+        f"slot {row.get('slot_asof')} state {row.get('state')} "
+        f"reason={row.get('degraded_reason') or '-'} "
+        f"target={target_name!r} | {head[:90]}"
+    )
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -70,6 +96,29 @@ def main(argv: list[str] | None = None) -> int:
     )
     print(line, flush=True)
     print(f"::notice title=recurring-briefs::{line}", flush=True)
+
+    # H7: dry-run prints what it would write — planned/duplicate counts plus
+    # one summary line per row the producer would write. Writes remain off
+    # (frozen-spec item 2). The R6 summary line and ::notice above stay.
+    if dry_run:
+        print(
+            f"recurring briefs (dry-run): {result.planned_n} planned, "
+            f"{result.duplicate_n} duplicate",
+            flush=True,
+        )
+        for row in result.planned_rows:
+            print(_row_summary(row), flush=True)
+
+    # H8: write failures visible. Persistent 500/RLS/network errors MUST
+    # surface as a ::warning line so the workflow's ``|| echo "::warning::…"``
+    # can fire. Mirrors scripts/run_thesis_condition_monitor.py:50.
+    if result.error_n > 0:
+        print(
+            f"::warning title=recurring-briefs-write-error::"
+            f"{result.error_n} write error(s) — outcome=write_error "
+            f"ready={result.ready_n} degraded={result.degraded_n} run incomplete",
+            flush=True,
+        )
     return 0
 
 

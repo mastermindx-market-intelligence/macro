@@ -38,12 +38,24 @@ BANNED_BODY_KEYS = {
 }
 BANNED_TERMS = ("falsif", "refut", "证伪")
 
+# H9: production-shape fixtures. The previous prose `evidence` fixture masked
+# H4. The previous `state_asof == run_date` fixture masked H1. The previous
+# absence of a ``zh`` block masked H3. These fixtures ARE the production
+# shape that the four blockers regressed against.
+PRODUCTION_SLUG_FRAGMENTS = (
+    "radar CONF",
+    "alt92 ACCUMULATE",
+    "neutral n1",
+    "edge7",
+    "edge78",
+)
+
 
 def _sub(*, cadence="daily_after_us_close", kind="thesis", target_id=THESIS_ID,
-         state="active", run_date="2026-09-13"):
+         state="active", run_date="2026-09-13", user_id=USER_ID):
     return {
         "subscription_id": SUB_ID,
-        "user_id": USER_ID,
+        "user_id": user_id,
         "target_kind": kind,
         "target_id": target_id,
         "cadence": cadence,
@@ -75,39 +87,59 @@ def _watchlist_target(*, name="My names", tickers=("AAPL", "MSFT")):
     }
 
 
-def _briefing(*, as_of="2026-09-13", situation="Apple's tape is quiet after the print."):
+def _briefing(*, as_of="2026-09-13", situation="Apple's tape is quiet after the print.",
+              include_slug_evidence=True, generated_utc=None):
+    """Daily briefing. Default carries production-shape slug `evidence`.
+
+    The test fixtures used to substitute prose for ``evidence``, masking H4.
+    The default here is the production slug — every H4-red test reads it
+    without rewriting. Toggle ``include_slug_evidence=False`` when a test
+    needs a clean fixture. ``generated_utc`` lets a test force a stale
+    timestamp; default is ``{as_of}T20:05:00+00:00`` (same calendar day).
+    """
+    priority_queue = [
+        {
+            "ticker": "AAPL",
+            "situation": situation,
+            "priority": 0.91,
+            "confidence": 0.8,
+            "strength": 0.7,
+            "lean": 1,
+            "falsifier": "breadth rolls over",
+        },
+        {
+            "ticker": "MSFT",
+            "situation": "Microsoft held the week's range.",
+            "priority": 0.4,
+        },
+    ]
+    if include_slug_evidence:
+        priority_queue[0]["evidence"] = "radar CONF edge7 · alt92 ACCUMULATE · news neutral n1"
+        priority_queue[1]["evidence"] = "radar NEGA edge78 · alt32 WATCH · news neutral n6"
     return {
         "schema": "intelligence.briefing.v1",
         "as_of": as_of,
-        "generated_utc": f"{as_of}T20:05:00+00:00",
+        "generated_utc": generated_utc or f"{as_of}T20:05:00+00:00",
         "macro_context": {
             "posture": "Liquidity is expanding — a supportive backdrop.",
         },
-        "priority_queue": [
-            {
-                "ticker": "AAPL",
-                "situation": situation,
-                "evidence": "Volume dried up into the close.",
-                "priority": 0.91,
-                "confidence": 0.8,
-                "strength": 0.7,
-                "lean": 1,
-                "falsifier": "breadth rolls over",
-            },
-            {
-                "ticker": "MSFT",
-                "situation": "Microsoft held the week's range.",
-                "priority": 0.4,
-            },
-        ],
+        "priority_queue": priority_queue,
         "divergences": [],
     }
 
 
-def _weekly_brief(*, state_asof="2026-09-13"):
-    return {
+def _weekly_brief(*, state_asof="2026-09-13", include_zh_block=False):
+    """Weekly master_brief.v2. Optional ``zh`` block on by default.
+
+    Mirrors the production schema when ``include_zh_block=True``:
+    ``state_asof`` is the LAST market session (always Friday for a Saturday
+    run), ``generated_at`` falls on the run date, and the ``zh`` block
+    carries real Chinese paired index-for-index with ``tldr``/``watch_items``.
+    """
+    brief = {
         "schema": "master_brief.v2",
         "state_asof": state_asof,
+        "generated_at": f"{state_asof}T22:00:00+00:00",
         "tldr": ["The week's tape stayed inside last week's range."],
         "summary": "A quiet week for the names we follow.",
         "regime_read": "Liquidity stayed supportive.",
@@ -115,6 +147,64 @@ def _weekly_brief(*, state_asof="2026-09-13"):
         "watch_items": [
             {"ticker": "AAPL", "note": "Apple stayed inside its range all week."},
         ],
+    }
+    if include_zh_block:
+        brief["zh"] = {
+            "summary": "一周内我们关注的个股保持在区间内，节奏平稳。",
+            "regime_read": "流动性仍偏支持。",
+            "tldr": ["本周行情维持在上一周区间内运行。"],
+            "watch_items": ["苹果整周保持在区间内。"],
+        }
+    return brief
+
+
+def _production_weekly(*, run_date_str="2026-09-12"):
+    """Production measurement: weekly_saturday, generated Saturday with Friday state."""
+    return {
+        "schema": "master_brief.v2",
+        "state_asof": "2026-09-11",  # Friday
+        "generated_at": f"{run_date_str}T10:10:33.933810+00:00",  # Saturday
+        "tldr": [
+            "Main driver: Tougher Fed pricing is pushing yields higher.",
+            "Map shift: Stagflation is losing ground to Reflation, but confirmation remains incomplete.",
+        ],
+        "summary": "Higher yields are testing narrow US leadership, while healthy credit keeps the broader stress picture calm.",
+        "regime_read": "The US is still in Stagflation on the map, but it is moving toward Reflation.",
+        "confidence": "medium",
+        "watch_items": [
+            {"ticker": "AAPL", "note": "Apple stayed inside its range all week."},
+        ],
+        "zh": {
+            "summary": "收益率上升正考验美股狭窄的领涨格局，而健康的信贷状况使整体压力保持温和。",
+            "regime_read": "美国在图谱上仍处于滞胀阶段，但正向再通胀迈进。",
+            "tldr": [
+                "主要驱动因素：美联储政策预期趋于强硬，推动收益率上升。",
+                "格局变化：滞胀正在让位于再通胀，但尚未得到充分确认。",
+            ],
+            "watch_items": ["苹果股票整周保持在区间内震荡。"],
+        },
+    }
+
+
+def _production_daily(*, run_date_str="2026-11-16"):
+    """Production measurement: daily_after_us_close, nightly crosses UTC midnight."""
+    return {
+        "schema": "intelligence.briefing.v1",
+        "as_of": "2026-11-15",  # EST view, mid-job local clock
+        "generated_utc": f"2026-11-15T23:30:00+00:00",  # this run
+        "macro_context": {
+            "posture": "Liquidity is expanding — a supportive backdrop.",
+        },
+        "priority_queue": [
+            {
+                "ticker": "MSFT",
+                "situation": "Smart-money / activity building, tape not yet bullish.",
+                "evidence": "radar CONF edge7 · alt92 ACCUMULATE · news neutral n1",
+                "priority": 0.735,
+                "confidence": 0.875,
+            },
+        ],
+        "divergences": [],
     }
 
 
@@ -210,9 +300,16 @@ def test_classify_ready_when_artifact_matches_run_date():
 
 
 def test_classify_stale_artifact_is_degraded_with_contract_line():
+    """A genuinely stale daily briefing — one whose ``generated_utc`` falls
+    more than 24h before the run_date — is degraded with the contract's
+    plain line.
+    """
     state, reason = rb.classify(
-        _sub(run_date="2026-09-13"),
-        _briefing(as_of="2026-09-12"),
+        _sub(run_date="2026-09-15"),
+        _briefing(
+            as_of="2026-09-12",
+            generated_utc="2026-09-12T20:05:00+00:00",  # 3 days stale
+        ),
         _thesis_target(),
     )
     assert state == "degraded"
@@ -236,11 +333,37 @@ def test_classify_unreadable_target_is_target_unavailable():
     assert reason2 == "target unavailable"
 
 
+def test_classify_yesterday_daily_briefing_is_fresh():
+    """A daily briefing generated on the previous calendar day is FRESH —
+    a same-run nightly that crossed UTC midnight stamps ``generated_utc``
+    with yesterday's date even though the briefing IS this run's brief.
+
+    Pre-fix the H2 scenario degraded this case; the slot-clock fix
+    preserves the previous behavior for as_of==run_date while accepting
+    the cross-midnight shape.
+    """
+    state, reason = rb.classify(
+        _sub(run_date="2026-09-13"),
+        _briefing(as_of="2026-09-12"),  # generated_utc auto = 2026-09-12T20:05
+        _thesis_target(),
+    )
+    assert state == "ready"
+    assert reason is None
+
+
 # ---------------------------------------------------------------------------
 # compose_body
 # ---------------------------------------------------------------------------
 
 def test_body_copies_verbatim_artifact_sentences_for_target_tickers():
+    """Prose ``situation`` is copied; raw ``evidence`` slug is NOT.
+
+    The previous version of this test asserted that prose ``evidence`` made it
+    into ``sentence_en``. Production never emits prose in that slot — the
+    measured triple ``radar CONF edge7 · alt92 ACCUMULATE · news neutral n1``
+    is the live artefact (H4). The new contract copies ``situation`` only and
+    skips ``evidence`` regardless of whether it is prose or slug.
+    """
     situation = "Apple's tape is quiet after the print."
     body = rb.compose_body(
         _thesis_target(tickers=("AAPL",)),
@@ -249,7 +372,6 @@ def test_body_copies_verbatim_artifact_sentences_for_target_tickers():
     )
     sentences = [row["sentence_en"] for row in body["market_read"]]
     assert situation in sentences
-    assert "Volume dried up into the close." in sentences
     # A name the thesis does not follow is not copied.
     assert "Microsoft held the week's range." not in sentences
     # Macro backdrop is copied for every target.
@@ -327,14 +449,332 @@ def test_weekly_artifact_sentences_are_verbatim_and_skip_confidence():
 
 
 def test_user_facing_strings_are_plain_sentences():
-    body = rb.compose_body(_thesis_target(), _briefing(), monitors=[])
+    """Pre-fix this test only stopped four enum tokens and a leading
+    underscore — production slugs slipped right past. The post-fix assertion
+    catches the measured triple ``radar CONF edge7 · alt92 ACCUMULATE · news
+    neutral n1`` and every variant on every row.
+    """
+    body = rb.compose_body(_thesis_target(tickers=("MSFT",)), _briefing(), monitors=[])
+    hay_en = " ".join(row["sentence_en"] for row in body["market_read"])
+    hay_zh = " ".join(row["sentence_zh"] or "" for row in body["market_read"])
+    hay = hay_en + " " + hay_zh
+    for fragment in PRODUCTION_SLUG_FRAGMENTS:
+        assert fragment not in hay, (
+            f"engine slug fragment {fragment!r} leaked into user-facing string"
+        )
+    for token in ("·",):
+        assert token not in hay_en, f"raw separator {token!r} leaked into sentence_en"
     for row in body["market_read"]:
         for key in ("sentence_en", "sentence_zh"):
-            text = row[key]
+            text = row[key] or ""
             assert "daily_after_us_close" not in text
             assert "weekly_saturday" not in text
             assert "brief_deliveries" not in text
             assert "_" not in text.split()[0]
+
+
+# ---------------------------------------------------------------------------
+# Production-shape heal proofs (H1, H2, H3, H4, H5, H6, H7, H8, H9)
+# ---------------------------------------------------------------------------
+
+def test_weekly_slot_accepts_run_date_generated_artifact():
+    """H1 / BLOCKER 1: weekly_saturday must not return None when the
+    artifact was generated this run (Saturday with Friday market state).
+
+    Pre-fix: ``compute_slot('weekly_saturday', '2026-09-11', date(2026, 9, 12))``
+    returned ``None`` because ``state_asof < run_date``. The producer then
+    classified 'degraded' and told subscribers the brief did not run on
+    every Saturday night — measured ``master_brief.json`` Sat 2026-09-12 with
+    ``state_asof 2026-09-11``.
+    """
+    slot = rb.compute_slot(
+        "weekly_saturday",
+        "2026-09-11",
+        date(2026, 9, 12),
+        artifact_generated_at="2026-09-12T10:10:33.933810+00:00",
+    )
+    assert slot == date(2026, 9, 12)
+
+
+def test_daily_slot_accepts_run_date_generated_artifact():
+    """H2 / BLOCKER 2: daily_after_us_close must accept a briefing
+    generated this run whose as_of is one day earlier.
+
+    Pre-fix: the nightly 30 23 * * * ran mid-job capturing EST ``as_of``;
+    the producer captured ``datetime.now(timezone.utc).date()`` at the end of
+    the same job — UTC rollovers to ``as_of + 1``. The producer then
+    classified 'degraded' for a briefing this run just built.
+    """
+    slot = rb.compute_slot(
+        "daily_after_us_close",
+        "2026-11-15",
+        date(2026, 11, 16),
+        artifact_generated_at="2026-11-15T23:30:00+00:00",
+    )
+    assert slot == date(2026, 11, 16)
+
+
+def test_weekly_artifact_production_shape_is_ready():
+    """H1 integration: classify() with the production weekly brief must
+    return 'ready', NOT 'degraded' with the contract's "Tonight's brief
+    didn't run" line. The measured triple was
+    ``master_brief.json generated_at=2026-09-12 state_asof=2026-09-11``.
+    """
+    sub = _sub(cadence="weekly_saturday", run_date="2026-09-12")
+    artifact = _production_weekly()
+    state, reason = rb.classify(sub, artifact, _thesis_target())
+    assert state == "ready"
+    assert reason is None
+
+
+def test_daily_artifact_production_shape_is_ready():
+    """H2 integration: classify() with the production daily briefing that
+    crossed UTC midnight must return 'ready'.
+    """
+    sub = _sub(run_date="2026-11-16")
+    artifact = _production_daily()
+    state, reason = rb.classify(sub, artifact, _thesis_target(tickers=("MSFT",)))
+    assert state == "ready"
+    assert reason is None
+
+
+def test_weekly_body_draws_real_zh_from_published_block():
+    """H3 / BLOCKER 3: ``sentence_zh`` must be real Chinese from the weekly
+    ``zh`` block — the production measurement fed an English ``sentence_zh``
+    with a ``（翻译待补）`` marker for 11/11 weekly rows.
+    """
+    body = rb.compose_body(
+        _thesis_target(tickers=("AAPL",)),
+        _production_weekly(),
+        monitors=[],
+    )
+    sentences_zh = [row["sentence_zh"] for row in body["market_read"]]
+    assert sentences_zh, "weekly body must have sentences"
+    joined = " ".join(sentences_zh)
+    assert "（翻译待补）" not in joined, (
+        "weekly sentence_zh must not carry the translation-pending marker "
+        "(the artifact publishes a real zh block)"
+    )
+    assert any("收益率" in z or "美联储" in z or "格局变化" in z for z in sentences_zh), (
+        "weekly sentence_zh must contain real Chinese from the zh block"
+    )
+
+
+def test_daily_body_uses_only_situation_not_evidence():
+    """H4 / BLOCKER 4: priority_queue ``evidence`` is engine slug code and
+    must NEVER appear in ``sentence_en`` / ``sentence_zh``. The measured
+    triple was ``radar CONF edge7 · alt92 ACCUMULATE · news neutral n1``.
+    """
+    body = rb.compose_body(
+        _thesis_target(tickers=("AAPL", "MSFT")),
+        _briefing(),
+        monitors=[],
+    )
+    hay_en = " ".join(row["sentence_en"] for row in body["market_read"])
+    hay_zh = " ".join(row["sentence_zh"] or "" for row in body["market_read"])
+    hay = hay_en + " " + hay_zh
+    for fragment in PRODUCTION_SLUG_FRAGMENTS:
+        assert fragment not in hay, (
+            f"engine slug fragment {fragment!r} copied into user-facing string"
+        )
+    assert "·" not in hay_en
+
+
+def test_no_coverage_thesis_degrades_with_typed_line():
+    """H6 / MAJOR 2: a thesis with no ticker coverage (e.g. a theme thesis
+    whose ``_thesis_tickers`` returns ``[]``) must NOT classify 'ready'
+    while emitting only the global backdrop.
+    """
+    sub = _sub()
+    # Theme-style target: no tickers.
+    target = {
+        "kind": "thesis",
+        "id": THESIS_ID,
+        "name": "Stagflation regime watch",
+        "version_or_asof": "3",
+        "tickers": [],
+        "unavailable": False,
+    }
+    state, reason = rb.classify(sub, _briefing(), target)
+    assert state == "degraded"
+    assert reason == rb.NO_COVERAGE_REASON
+    body = rb.compose_body(target, _briefing(), monitors=[], degraded_reason=reason)
+    assert body["market_read"][0]["sentence_en"] == rb.NO_COVERAGE_EN
+    assert body["market_read"][0]["sentence_zh"] == rb.NO_COVERAGE_ZH
+
+
+def test_no_target_user_id_returns_target_unavailable(monkeypatch):
+    """H5 / MAJOR 1: read_target must owner-scope on the subscription's
+    ``user_id``. A subscription whose target is owned by another user must
+    return ``None`` — no leakage of title / symbols / monitor state — and
+    classify reports 'target unavailable'.
+    """
+    OTHER = "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"
+    sub = _sub(user_id=OTHER)
+    captured = {}
+
+    def fake_pg(method, path, body=None, prefer=None, timeout=6):
+        captured.setdefault("calls", []).append(path)
+        if method == "GET" and path.startswith("theses?"):
+            return []  # owner mismatch — no rows
+        if method == "GET" and path.startswith("watchlists?"):
+            return []
+        return None
+
+    monkeypatch.setattr(rb, "_pg", fake_pg)
+    monkeypatch.setattr(rb, "SUPABASE_SERVICE_ROLE_KEY", "test-key")
+    result = rb.read_target(sub)
+    assert result is None
+    assert captured.get("calls"), "read_target must issue at least one Supabase GET"
+    assert any("user_id=eq." in c for c in captured["calls"]), (
+        f"read_target URL must owner-scope on subscription.user_id, got {captured['calls']}"
+    )
+    assert any(f"user_id=eq.{OTHER}" in c for c in captured["calls"]), (
+        f"read_target must use sub.user_id ({OTHER}) on the filter, got {captured['calls']}"
+    )
+
+
+def test_read_target_calls_include_user_id_filter():
+    """Source-of-truth guard: read_target URL must include ``user_id=eq.{uid}``
+    on both the thesis and the watchlist branches, mirror scripts/run_watchlist_sentinel.py.
+    """
+    import inspect
+
+    src = inspect.getsource(rb.read_target)
+    assert "&user_id=eq." in src, (
+        "read_target must owner-scope both thesis and watchlist reads with "
+        "&user_id=eq.{sub.user_id}; mirrors scripts/run_watchlist_sentinel.py"
+    )
+    assert "theses?id=eq." in src
+    assert "watchlists?id=eq." in src
+    assert "lifecycle_state=eq.active" in src, (
+        "read_target must mirror engine/thesis_condition_monitor.py:601 and "
+        "filter archived/closed theses as 'target unavailable'"
+    )
+
+
+def test_run_surfaces_write_errors_via_result(monkeypatch):
+    """H8 / MAJOR 4: write_delivery returning ``'error'`` surfaces in RunResult."""
+    client = FakeClient()
+
+    def fake_write(row, *, dry_run):
+        return "error"
+
+    _patch_run(
+        monkeypatch,
+        artifact=_briefing(),
+        target=_thesis_target(),
+        client=client,
+    )
+    monkeypatch.setattr(rb, "write_delivery", fake_write)
+    result = rb.run(
+        cadence="daily_after_us_close",
+        dry_run=False,
+        run_date=date(2026, 9, 13),
+    )
+    assert result.error_n == 1
+    assert result.planned_n == 1
+
+
+def test_cli_dry_run_prints_what_it_would_write(monkeypatch, capsys):
+    """H7 / MAJOR 3: ``--dry-run`` prints planned/duplicate counts and one
+    summary line per row. The R6 line and ``::notice`` stay.
+    """
+    client = FakeClient()
+    _patch_run(monkeypatch, artifact=_briefing(), target=_thesis_target(), client=client)
+    monkeypatch.setenv("RECURRING_BRIEFS_ENABLE", "1")
+    rc = entry.main(
+        [
+            "--cadence",
+            "daily_after_us_close",
+            "--dry-run",
+            "--run-date",
+            "2026-09-13",
+        ]
+    )
+    assert rc == 0
+    assert client.deliveries == []
+    out = capsys.readouterr().out
+    assert "1 ready" in out
+    # Frozen-spec item (2): prints what it would write.
+    assert "(dry-run): 1 planned" in out or "1 planned" in out
+    assert "-- subscription" in out
+
+
+def test_cli_surfaces_write_failure_as_warning(monkeypatch, capsys):
+    """H8 / MAJOR 4: CLI emits a ``::warning`` line on write failures."""
+    client = FakeClient()
+    _patch_run(monkeypatch, artifact=_briefing(), target=_thesis_target(), client=client)
+    monkeypatch.setenv("RECURRING_BRIEFS_ENABLE", "1")
+    monkeypatch.setattr(
+        rb, "write_delivery",
+        lambda row, dry_run=False: "error" if not dry_run else "dry",
+    )
+    rc = entry.main(
+        ["--cadence", "daily_after_us_close", "--run-date", "2026-09-13"]
+    )
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert "::warning title=recurring-briefs-write-error::" in out
+    assert "1 write error" in out
+
+
+def test_engine_drops_judgement_keys_constant():
+    """H10 minor (a): the dead ``_JUDGEMENT_KEYS`` constant is gone. The
+    "no score/rank/confidence" guarantee is enforced by the extractor's
+    field selection — no LLM, no raw ``evidence``, no judgement keys.
+    """
+    import inspect
+    src = inspect.getsource(rb)
+    assert "_JUDGEMENT_KEYS" not in src
+
+
+# ---------------------------------------------------------------------------
+# Pin the existing tests as "anti-mask" — the four blockers' regressed fixes
+# must each have a measured test against the production-shaped fixture.
+# ---------------------------------------------------------------------------
+
+
+def test_user_facing_strings_reject_production_daily_slugs():
+    """Anti-mask H4: with the production daily fixture carrying the
+    measured slug ``radar CONF edge7 · alt92 ACCUMULATE · news neutral n1``,
+    compose_body for a target that follows that ticker must not include
+    any slug fragment in ``sentence_en`` or ``sentence_zh``.
+    """
+    body = rb.compose_body(
+        _thesis_target(tickers=("MSFT",)),
+        _briefing(include_slug_evidence=True),
+        monitors=[],
+    )
+    hay = " ".join(
+        row["sentence_en"] or "" for row in body["market_read"]
+    ) + " " + " ".join(
+        row["sentence_zh"] or "" for row in body["market_read"]
+    )
+    for fragment in PRODUCTION_SLUG_FRAGMENTS:
+        assert fragment not in hay, (
+            f"production slug fragment {fragment!r} leaked: {hay!r}"
+        )
+
+
+def test_user_facing_strings_reject_translation_pending_for_weekly():
+    """Anti-mask H3: weekly sentences must NOT carry the
+    ``（翻译待补）`` marker when the artifact publishes a ``zh`` block.
+    """
+    body = rb.compose_body(
+        _thesis_target(tickers=("AAPL",)),
+        _production_weekly(),
+        monitors=[],
+    )
+    sentences_zh = [row["sentence_zh"] or "" for row in body["market_read"]]
+    joined = " ".join(sentences_zh)
+    assert "（翻译待补）" not in joined, (
+        f"weekly sentence_zh must be real Chinese; got {joined!r}"
+    )
+    # And at least one sentence must carry real Chinese from the artifact.
+    assert any("收益率" in z or "美联储" in z or "格局变化" in z for z in sentences_zh), (
+        f"weekly sentence_zh must contain real Chinese from the zh block; got {sentences_zh!r}"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -387,26 +827,29 @@ def test_idempotent_second_run_writes_nothing(monkeypatch):
 
 
 def test_stale_artifact_writes_degraded_row_with_contract_line(monkeypatch):
+    """A briefing whose ``generated_utc`` is several days stale degrades;
+    the body carries the contract's plain line.
+    """
     client = FakeClient()
     _patch_run(
         monkeypatch,
-        artifact=_briefing(as_of="2026-09-12"),
+        artifact=_briefing(as_of="2026-09-12", generated_utc="2026-09-12T20:05:00+00:00"),
         target=_thesis_target(),
         client=client,
     )
     result = rb.run(
         cadence="daily_after_us_close",
         dry_run=False,
-        run_date=date(2026, 9, 13),
+        run_date=date(2026, 9, 15),
     )
     assert result.ready_n == 0
     assert result.degraded_n == 1
-    assert result.slot == date(2026, 9, 13)
+    assert result.slot == date(2026, 9, 15)
     row = client.deliveries[0]
     assert row["state"] == "degraded"
     assert row["degraded_reason"] == CONTRACT_MISS_EN
     assert row["body"]["market_read"][0]["sentence_en"] == CONTRACT_MISS_EN
-    assert row["slot_asof"] == "2026-09-13"
+    assert row["slot_asof"] == "2026-09-15"
 
 
 def test_missing_artifact_writes_degraded_for_todays_slot_not_a_skip(monkeypatch):
