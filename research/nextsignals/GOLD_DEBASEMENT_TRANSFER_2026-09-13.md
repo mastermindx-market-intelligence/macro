@@ -1,7 +1,7 @@
 # nextSignals Gold Debasement Transfer — Frozen Replication
 
 **Date:** 2026-09-13  
-**Status:** PREREG FROZEN BEFORE OUTCOME READ  
+**Status:** PREREG FROZEN BEFORE OUTCOME READ; final direct-portability ruling `REJECTED_BY_DESIGN`
 **Authority:** research only; no signal, portfolio, Prophet, Neural Web, Risk Radar, or execution authority
 
 ## 1. Mission
@@ -80,3 +80,59 @@ A pass still does **not** authorize trading or production scoring. It would just
 ## 7. Held / non-goals
 
 The yen differential, DXY 5-day confirmation, SOFR overlays, war/event labels, and any options positioning are held out. They may be tested only under a new frozen hypothesis after this core gold–2Y question is adjudicated. BTC ETF-flow mechanics are also a separate family; existing Mastermind BTC Farside + Coinbase-Premium work is not modified here, and current `WS-CRYPTO-INTELLIGENCE` authority blocks unscheduled ETH promotion.
+## 8. Results — frozen test executed
+
+The frozen formulation produced 6,443 eligible paired dates from 2000-10-27 through 2026-09-10, including 1,070 `DEBASEMENT` dates and 25 discrete entries. On the latest paired date, `c40 = -0.386` and the state is `NORMAL_INVERSE`. That is close to the publisher’s contemporaneous disclosed reading near -0.36 despite different source contracts; the raw-level 40-observation correlation is only `+0.007`. This supports the preregistered return-vs-yield-change interpretation rather than rescuing the test with a post-hoc formula change.
+
+Primary full-sample contrasts (effect = candidate minus control; positive return is favorable, positive drawdown effect means **less** severe drawdown):
+
+| Contrast | Horizon | n candidate | Effect | 95% block-bootstrap CI | raw p | BH q |
+|---|---:|---:|---:|---:|---:|---:|
+| active state → return | 21d | 1,070 | +1.24 pp | [+0.08, +2.38] pp | 0.0376 | 0.188 |
+| active state → max drawdown | 21d | 1,070 | **-0.65 pp** | [-1.43, +0.10] pp | 0.0892 | 0.288 |
+| active state → return | 63d | 1,070 | +1.55 pp | [-0.55, +3.69] pp | 0.1520 | 0.304 |
+| active state → max drawdown | 63d | 1,070 | **-0.88 pp** | [-2.01, +0.21] pp | 0.1152 | 0.288 |
+| entry → return | 21d | 25 | +0.78 pp | [-1.37, +2.80] pp | 0.4784 | 0.598 |
+| entry → max drawdown | 21d | 25 | -0.21 pp | [-1.55, +0.98] pp | 0.7864 | 0.874 |
+| entry → return | 63d | 25 | +1.29 pp | [-1.62, +4.24] pp | 0.3768 | 0.538 |
+| entry → max drawdown | 63d | 25 | -0.02 pp | [-1.56, +1.46] pp | 0.9876 | 0.988 |
+### Incrementality versus current Commodity Vector controls
+
+The active-state coefficient remains positive after conditioning on current gold `shock_z`, `driver_score`, and `ts_momentum`, but only at the short horizon does it survive the frozen FDR family:
+
+| Horizon | n | active coefficient | HAC s.e. | raw p | BH q |
+|---|---:|---:|---:|---:|---:|
+| 21d | 5,310 | +1.80 pp | 0.70 pp | 0.0099 | **0.099** |
+| 63d | 5,272 | +2.15 pp | 1.68 pp | 0.1995 | 0.332 |
+
+This is a real short-horizon research finding, not a pass. The preregistered direct-transfer law requires both temporal robustness and a surviving unconditioned primary return contrast; neither condition is satisfied.
+
+### Temporal robustness
+
+| Era | 21d active-state effect | 63d active-state effect |
+|---|---:|---:|
+| 2003–2009 | +1.24 pp | +0.46 pp |
+| 2010–2016 | +1.20 pp | +4.35 pp |
+| 2017–2022 | +0.92 pp | +2.86 pp |
+| 2023–latest | +1.70 pp | **-4.96 pp** |
+
+The 21-day sign is stable in all four eras. The 63-day sign flips sharply negative in the current era, violating the predeclared “latest era must agree” condition. The state also carried mildly worse full-sample drawdown paths at both horizons, although those drawdown contrasts did not survive FDR.
+### Relationship to existing Mastermind gold intelligence
+
+Only 29.6% of candidate-active dates are simultaneously marked `decoupled` by Mastermind’s current gold driver-decoupling logic; 17.7% of existing decoupled dates are candidate-active. The public rule is therefore not merely a relabel of the existing decoupling flag. Even so, distinctness is not enough: the frozen rule fails the required robustness and unconditioned-evidence gates.
+
+## 9. Adjudication
+
+**Direct portability: `REJECTED_BY_DESIGN`.** Do not add the +0.10/-0.10 40-observation gold–2Y state machine as a second gold regime engine, and do not retune its bands/window or add the held DXY/yen conditions to rescue this result.
+
+Why:
+
+- no unconditioned primary return contrast survives the frozen BH-FDR family;
+- discrete entries are only 25 and are not independently predictive at either horizon;
+- the current 2023+ era reverses the 63-day return effect to -4.96 pp;
+- full-sample drawdown effects lean the wrong way at both horizons;
+- the only surviving incremental evidence is the 21-day controlled coefficient, while 63-day incrementality fails.
+
+The existing Commodity Vector gold residual/driver-axis architecture remains the canonical system. The 21-day controlled effect is retained as a research discovery, not product authority; any future use would require a **new original frozen hypothesis** rather than threshold-mining this public rule family.
+
+Private reproducibility artifacts: `/Users/chriswong/nextsignals_corpus_staging/analysis/gold_debasement_replication/results.json`, `decision_panel.csv`, and `/Users/chriswong/nextsignals_corpus_staging/analysis/gold_debasement_transfer.py`. Raw corpus/media remain private and are not committed.
