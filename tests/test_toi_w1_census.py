@@ -32,13 +32,15 @@ def _source_map():
     return sources.validate_sources(payload)
 
 
-def test_current_p0_passports_validate():
+def test_current_passports_validate():
     result = passports.validate_rows(_rows(), passports._source_ids())
     assert result["status"] == "valid"
-    assert result["count"] == 23
-    assert result["exact_local_count"] == 20
+    assert result["count"] == 32
+    assert result["exact_local_count"] == 27
     assert result["priority_counts"]["P0"] == 12
     assert result["priority_counts"]["P1"] == 11
+    assert result["priority_counts"]["P2"] == 7
+    assert result["priority_counts"]["archive"] == 2
 
 
 def test_unknown_passport_key_fails_closed():
@@ -96,8 +98,8 @@ def test_current_equivalence_map_validates():
     payload = json.loads(equiv.EQUIV.read_text(encoding="utf-8"))
     result = equiv.validate(payload, ids, alias_map)
     assert result["status"] == "valid"
-    assert result["method_count"] == 23
-    assert result["class_count"] == 20
+    assert result["method_count"] == 32
+    assert result["class_count"] == 29
 
 
 def test_equivalence_duplicate_membership_fails_closed():
@@ -123,6 +125,7 @@ def test_current_source_receipts_validate():
     source_map = _source_map()
     result = sources.validate_passport_bindings(source_map)
     assert result["status"] == "valid"
+    assert result["passport_count"] == 32
     assert result["p0_p1_count"] == 23
 
 
@@ -132,6 +135,27 @@ def test_practitioner_source_is_registered_but_cannot_satisfy_p0_p1_primary_gate
     refs = ["SRC-STRAT-PUBLIC"]
     acceptable = [source_map[ref] for ref in refs if source_map[ref]["source_type"] in sources.PRIMARY_OR_OFFICIAL_SOURCE_TYPES]
     assert acceptable == []
+
+
+def test_elliott_sources_are_evidence_not_authority():
+    source_map = _source_map()
+    assert source_map["SRC-VANTUCH-ELLIOTT-2018"]["source_type"] == "primary_academic"
+    assert "hybrid" in source_map["SRC-JARUSEK-ELLIOTT-2022"]["limitation"].lower()
+    rows = {row["method_id"]: row for row in _rows()}
+    ew = rows["toi.ordered_path_elliott"]
+    assert ew["research_priority"] == "P2"
+    assert ew["owner_disposition"] == "toi_later_context"
+    assert ew["local_implementation"]["status"] == "missing"
+    assert ew["baseline_to_beat"] == "generic causal swing geometry with the same feature budget"
+    assert "DNR:KILL-OUTCOME-AUDITION" in ew["dnd_keys"]
+
+
+def test_incumbent_and_blocked_adaptive_families_do_not_become_w3_candidates():
+    rows = {row["method_id"]: row for row in _rows()}
+    assert rows["toi.macd_stoch_incumbent"]["owner_disposition"] == "existing_species"
+    assert rows["toi.macd_stoch_incumbent"]["research_priority"] == "archive"
+    for mid in ("toi.kama_er", "toi.supertrend", "toi.connors_rsi"):
+        assert rows[mid]["owner_disposition"] != "toi_w3_candidate"
 
 
 def test_duplicate_source_receipt_fails_closed():
