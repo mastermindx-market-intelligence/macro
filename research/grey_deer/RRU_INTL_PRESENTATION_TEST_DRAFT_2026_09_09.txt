@@ -1,0 +1,58 @@
+"""Full-template presentation only; canonical mapping supplied past the blocked adapter.
+
+The original adapter and machine view remain unchanged. These tests cannot close
+those independently failing end-to-end requirements.
+"""
+from __future__ import annotations
+import json
+import unittest
+from bs4 import BeautifulSoup
+import RRU_INTL_JOURNEY_TESTS_2026_09_09 as j
+
+class PresentationTests(unittest.TestCase):
+    pass
+
+def example(cc, case):
+    snap=j.snapshot(j.a.radar.PROFILES[cc.lower()],case)
+    if case=='legacy': snap=dict(state='caution',drawdown_prob=dict(h21=.42))
+    rec=j.record(cc,snap)
+    view,rd,html=j.render(rec,force_direct=True)
+    return rec,view,rd,BeautifulSoup(html,'html.parser')
+
+def presentation_case(cc,case):
+    def test(self):
+        rec,view,rd,page=example(cc,case)
+        card=page.select_one('.imd-radar')
+        detail=page.select_one('#dlg-risk')
+        trigger=page.select_one('[data-dialog="dlg-risk"]')
+        self.assertIsNotNone(card)
+        text=detail.get_text(' ',strip=True)
+        if case=='legacy':
+            self.assertIn('Calibrated risk receipt',text)
+            self.assertIn('42.0%',text)
+            self.assertIn('Calibrated risk monitor',trigger.get_text(' ',strip=True))
+            self.assertNotIn('Forecast not available',text)
+            return
+        self.assertIn('Forecast not available',text)
+        self.assertIn('预测暂不可用',text)
+        self.assertNotIn('Calibrated risk receipt',text)
+        self.assertNotIn('Calibrated risk monitor',trigger.get_text(' ',strip=True))
+        self.assertNotIn('Odds measured on this market',card.get_text(' ',strip=True))
+        self.assertIn('Input coverage',trigger.get_text(' ',strip=True))
+        if case=='unavailable':
+            self.assertIn('Reading unavailable',text)
+            self.assertNotIn('No dominant scare',text)
+            self.assertNotIn('0 / 0',trigger.get_text(' ',strip=True))
+    return test
+
+for cc in j.dashboard.REGIONS:
+    for case in ('complete','partial','unavailable','legacy'):
+        setattr(PresentationTests,'test_'+cc+'_'+case,presentation_case(cc,case))
+
+def old_number_test(self):
+    rec=j.record('JP',j.snapshot(j.a.radar.PROFILES['jp'],'complete'))
+    rec['risk_radar']['drawdown_prob']={'h21':.42,'measure':'old surface fixture'}
+    view,rd,html=j.render(rec,force_direct=True)
+    text=BeautifulSoup(html,'html.parser').select_one('#dlg-risk').get_text(' ',strip=True)
+    self.assertIn('Forecast not available',text)
+    self.assertNotIn('42.0%',text)

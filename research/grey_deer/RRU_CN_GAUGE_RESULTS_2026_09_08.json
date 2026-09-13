@@ -1,0 +1,69 @@
+{
+  "source_pin": "eb9e91961ddc4f3043d0dad358602525e66eccda",
+  "production_mutations": 0,
+  "synthetic_render": true,
+  "template_sha256": "cb6e0685b96a6d897e9562418927c0bb5d5e656d4b31c99e843ec5f213fa7031",
+  "builder_sha256": "1e5d0cbfba24f4e44c0e6c8850a16809bcfab6b4e5acf9cb58b2a2bb99b870e6",
+  "summary_fragment_sha256": "f38e42c487724c04daaaa92c5a7d5408fbee09c74c49d2fd2af391d13ca1ab87",
+  "summary_start_line": 2158,
+  "drawdown_band_map": {
+    "low": [
+      "calm",
+      "平静",
+      "up"
+    ],
+    "elevated": [
+      "building",
+      "升温",
+      "warn"
+    ],
+    "high": [
+      "high",
+      "偏高",
+      "down"
+    ],
+    "extreme": [
+      "extreme",
+      "极高",
+      "down"
+    ]
+  },
+  "cases": [
+    {
+      "case": "screenshot_43_vs_17",
+      "slowdown_score": 43,
+      "drawdown_score": 17,
+      "drawdown_band": "low",
+      "observed_summary": "elevated",
+      "expected_detail_read": "calm",
+      "mismatch": true
+    },
+    {
+      "case": "high_drawdown_hidden_by_low_slowdown",
+      "slowdown_score": 17,
+      "drawdown_score": 84,
+      "drawdown_band": "high",
+      "observed_summary": "calm",
+      "expected_detail_read": "high",
+      "mismatch": true
+    },
+    {
+      "case": "same_scores_but_wrong_thresholds",
+      "slowdown_score": 60,
+      "drawdown_score": 60,
+      "drawdown_band": "elevated",
+      "observed_summary": "high",
+      "expected_detail_read": "building",
+      "mismatch": true
+    },
+    {
+      "case": "missing_is_not_calm",
+      "slowdown_score": null,
+      "drawdown_score": null,
+      "drawdown_band": null,
+      "observed_summary": "calm",
+      "expected_detail_read": "unavailable",
+      "mismatch": true
+    }
+  ]
+}
