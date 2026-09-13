@@ -1850,8 +1850,8 @@ def test_r2_market_views_separate_snapshot_review_and_source_clocks(monkeypatch)
     assert "September 12, 2026" in views and "2026年9月12日" in views
     assert "Review dates are checkpoints, not freshness claims." in views
     assert "复核日期是检查节点，不代表信息新鲜度。" in views
-    assert "Official updates above use source and fetch times." in views
-    assert "上方官方动态使用各自的来源日期与获取时间。" in views
+    assert "Official updates above show source dates and a fetch time only when known." in views
+    assert "上方官方动态显示来源日期，且仅在已知时显示获取时间。" in views
     assert "2026-09-12T09:22:24" not in views
 
 

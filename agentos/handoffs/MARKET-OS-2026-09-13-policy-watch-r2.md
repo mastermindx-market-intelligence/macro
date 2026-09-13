@@ -36,7 +36,7 @@ verified:
     result: RED before implementation (2 expected assertion failures), then 2 passed after the minimal builder/template change.
   - claim: The full bounded policy surface remains green.
     command: /Users/chriswong/agent-evidence/hmm-w0-integration-20260913-sol/venv/bin/python -m pytest -q tests/test_policy_calendar.py tests/test_policy_dates.py tests/test_policy_intent_desk.py tests/test_policy_layer_leaves.py tests/test_policy_lever.py tests/test_policy_lifecycle.py tests/test_policy_summary.py tests/test_policy_watch_register.py tests/test_policy_watch_ui.py tests/test_uk_policy_brain.py tests/test_macro_news.py
-    result: 306 passed.
+    result: 307 passed.
   - claim: Production-shaped output preserves the existing product and new authority boundary.
     command: python -m scripts.build_policy_watch followed by the R2 DOM probe against a local HTTP server.
     result: Eight of eight cells had HTTP 200, one visible analysis clock dated 2026-09-12, correct EN/ZH authority copy, 44 calls, seven L1 sections, current panel and UK desk preserved, no raw generated timestamp, no Needs refresh, no browser errors and no horizontal overflow.
@@ -52,7 +52,7 @@ unresolved:
   - The broader Policy Watch policy-event workflow remains the next F02 capability after this bounded R2 release.
   - This record does not close the wider Policy and Geopolitics workspace or create authority for a new collector, calendar, forecast, ranking, sizing or trade path.
 next_actions:
-  - Push the source-ready branch, open an ordinary PR with merge-on-green, resolve genuine CI failures, merge and prove the canonical public page.
+  - Carry PR7109 through concluded binding checks, merge, normal publication and canonical public browser proof.
   - After R2 is live, advance the existing F02 policy-event workflow rather than reopening R1 or inventing a parallel workstream.
 do_not_redo:
   - Do not rebuild the R1 official-source composer, Fed feed cache, FOMC calendar, statement ledger, UK desk, lifecycle or publication plane.

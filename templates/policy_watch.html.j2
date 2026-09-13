@@ -626,7 +626,7 @@
       <span class="dtp-chip dtp-chip--stale">{{ t('Analysis snapshot date unavailable','分析快照日期不可用') }}</span>
       {% endif %}
     </div>
-    <p class="pw-build-note">{{ t('Review dates are checkpoints, not freshness claims. Official updates above use source and fetch times.','复核日期是检查节点，不代表信息新鲜度。上方官方动态使用各自的来源日期与获取时间。') }}</p>
+    <p class="pw-build-note">{{ t('Review dates are checkpoints, not freshness claims. Official updates above show source dates and a fetch time only when known.','复核日期是检查节点，不代表信息新鲜度。上方官方动态显示来源日期，且仅在已知时显示获取时间。') }}</p>
     {% if desk.track_record and desk.track_record.overall and desk.track_record.overall.n %}
     <div class="pw-statbar"><span class="pw-stat"><strong>{{ desk.track_record.overall.n }}</strong> {{ t('checked','已复核') }}</span>{% if desk.track_record.overall.hit_rate is not none %}<span class="pw-stat"><strong>{{ (desk.track_record.overall.hit_rate*100)|round|int }}%</strong> {{ t('right so far','目前正确') }}</span>{% endif %}</div>
     {% else %}<p class="pw-build-note">{{ t('No results yet. Treat these as early ideas.','暂无结果，请将这些视为早期观点。') }}</p>{% endif %}
