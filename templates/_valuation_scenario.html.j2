@@ -99,6 +99,15 @@
 {% set vs_hi = (vs_marks | max) * 1.1 if vs_marks else 1 %}
 {% set vs_span = (vs_hi - vs_lo) if (vs_hi - vs_lo) > 0 else 1 %}
 {% macro vs_pct(v) %}{{ (((v - vs_lo) / vs_span) * 100) | round(1) }}{% endmacro %}
+{#- Heal h4: build an ordered list of the actually-computable scenarios once,
+    so the plain-word "where does today's price sit" sentence below the ruler
+    can pick a phrase without re-iterating vscn.scenarios. Same gate as the
+    rest of the panel (computable AND per_share is not none AND per_share > 0)
+    -- any scenario the rest of the panel refuses to render a dollar figure
+    for is excluded from the read here too, so the read can never name a value
+    the cards refuse to plot. -#}
+{% set vs_computable = [] %}
+{% for s in vscn.scenarios if s.computable and s.per_share is not none and s.per_share > 0 %}{% set _ = vs_computable.append(s) %}{% endfor %}
 {#- Round-3 gate ruling plain-word null: a scenario gated by margin_too_thin
     gets its own honest sentence naming the scenario, never the generic
     "Can't be computed without <slug>" phrasing (that phrasing fits a missing
@@ -123,13 +132,15 @@
   </div>
   <p class="vs-lede">{{ t("Three sets of assumptions applied to " ~ vscn.ticker ~ "'s last reported year. Change the assumption, change the answer.", '把三组假设套在' ~ vscn.ticker ~ '最近一个披露财年上。假设变，答案就变。') }}</p>
 
-  {#- aria-label is plain English text, never the t() macro: t() emits <span
-      class="l-en">/<span class="l-zh"> markup for element CONTENT, and that
-      markup's own embedded double quotes terminate an HTML attribute value
-      early, leaking the rest of the string as visible page text (every other
-      aria-label in this page family, e.g. the dialog close button, is a
-      static English-only string for the same reason). -#}
-  <div class="vs-ruler" role="img" aria-label="Per-share value scale across three assumption scenarios and today's price">
+  {#- aria-label is a static bilingual "EN · ZH" string (heal h2), never the
+      t() macro: t() emits <span class="l-en">/<span class="l-zh"> markup for
+      element CONTENT, and that markup's own embedded double quotes terminate
+      an HTML attribute value early, leaking the rest of the string as visible
+      page text. The literal middle dot " · " (U+00B7) is the same separator
+      the house uses for static bilingual aria-labels elsewhere in the page
+      family, so screen-reader users hear the EN twin, switch, and hear the ZH
+      twin -- without the markup noise that breaks attribute quoting. -#}
+  <div class="vs-ruler" role="img" aria-label="Per-share value scale across three assumption scenarios and today's price · 按三种假设情景和当前股价显示的每股价值刻度">
     <div class="vs-track"></div>
     {% set gap_positions = {'cautious': 20, 'base': 50, 'upbeat': 80} %}
     {% for s in vscn.scenarios %}
@@ -142,9 +153,19 @@
           fixed, spaced position and a visible label -- stacking every gap
           mark on one dead-centre pixel (and, when nothing is computable, atop
           the price rule too) rendered as one unlabeled blob, not three
-          printed nulls. -#}
-      <div class="vs-mark m-gap" style="left:{{ gap_positions[s.key] }}%" tabindex="0" aria-label="{{ vs_null_en(s) }}"></div>
-      <div class="vs-lbl {{ 'below' if loop.index0 is odd else '' }}" style="left:{{ gap_positions[s.key] }}%">{{ names[s.key] }}<b>{{ t('No data','无数据') }}</b></div>
+          printed nulls.
+
+          Heal h3: a margin_too_thin gate is a truthful "the math ran and
+          stopped", NOT a missing reported input -- the visible label names
+          the situation rather than the generic "No data". The vs_null_*
+          priority rule still governs: the FIRST element of s.missing wins, so
+          a scenario gated only by margin_too_thin gets the thin wording,
+          while one gated by a more fundamental reason (e.g. "consistent
+          period") keeps the existing missing-input phrasing from
+          vs_null_en/vs_null_zh. -#}
+      {% set vs_gap_lbl = t('Too thin to run','利润率过低') if (s.missing and s.missing[0] == 'margin_too_thin') else t('No data','无数据') %}
+      <div class="vs-mark m-gap" style="left:{{ gap_positions[s.key] }}%" tabindex="0" aria-label="{{ vs_null_en(s) ~ ' · ' ~ vs_null_zh(s) }}"></div>
+      <div class="vs-lbl {{ 'below' if loop.index0 is odd else '' }}" style="left:{{ gap_positions[s.key] }}%">{{ names[s.key] }}<b>{{ vs_gap_lbl }}</b></div>
       {% endif %}
     {% endfor %}
     {% if vs_price_val is not none %}
@@ -152,6 +173,77 @@
     <div class="vs-price-lbl" style="left:{{ vs_pct(vs_price_val) }}%">{{ t("Today's price", '当前股价') }}</div>
     {% endif %}
   </div>
+
+  {#- Heal h4: one plain-word read of where today's price sits relative to
+      the computable scenarios. Computed inline (no extra macro) from
+      vs_price_val and the already-gated vs_computable list, then routed
+      through t() so the EN and ZH halves ship together as one markup
+      block. The sentence is OMITTED entirely (no markup at all) when
+      price is null, any_computable is false, or vs_computable is empty
+      -- the read can only name positions the panel can otherwise draw.
+      No score / weight wording, no new CSS class: reuses the existing
+      .vs-lede weight the panel already defines for the lede paragraph
+      at :124. -#}
+  {% if vscn.any_computable and vscn.price and vscn.price.value is not none and vs_computable %}
+    {% set vs_pv = vscn.price.value %}
+    {% set vs_low = vs_computable[0].per_share %}
+    {% set vs_high = vs_computable[-1].per_share %}
+    {% if vs_pv < vs_low %}
+      {% if vs_computable | length == 3 %}
+        {% set vs_read_en_text = "Today's price is below all three cases." %}
+        {% set vs_read_zh_text = "当前股价低于全部三档情景。" %}
+      {% elif vs_computable | length == 2 %}
+        {% set vs_read_en_text = "Today's price is below both computable cases." %}
+        {% set vs_read_zh_text = "当前股价低于两档可计算的情景。" %}
+      {% else %}
+        {% set vs_read_en_text = "Today's price is below the computable case." %}
+        {% set vs_read_zh_text = "当前股价低于唯一可计算的情景。" %}
+      {% endif %}
+    {% elif vs_pv > vs_high %}
+      {% if vs_computable | length == 3 %}
+        {% set vs_read_en_text = "Today's price is above all three cases." %}
+        {% set vs_read_zh_text = "当前股价高于全部三档情景。" %}
+      {% elif vs_computable | length == 2 %}
+        {% set vs_read_en_text = "Today's price is above both computable cases." %}
+        {% set vs_read_zh_text = "当前股价高于两档可计算的情景。" %}
+      {% else %}
+        {% set vs_read_en_text = "Today's price is above the computable case." %}
+        {% set vs_read_zh_text = "当前股价高于唯一可计算的情景。" %}
+      {% endif %}
+    {% elif vs_computable | length == 3 %}
+      {% set vs_mid = vs_computable[1].per_share %}
+      {% if vs_pv < vs_mid %}
+        {% set vs_read_en_text = "Today's price sits between Cautious and Base." %}
+        {% set vs_read_zh_text = "当前股价位于保守与基准之间。" %}
+      {% elif vs_pv > vs_mid %}
+        {% set vs_read_en_text = "Today's price sits between Base and Upbeat." %}
+        {% set vs_read_zh_text = "当前股价位于基准与乐观之间。" %}
+      {% else %}
+        {% set vs_read_en_text = "Today's price sits at Base." %}
+        {% set vs_read_zh_text = "当前股价位于基准情景。" %}
+      {% endif %}
+    {% elif vs_computable | length == 2 %}
+      {% set vs_a = vs_computable[0] %}
+      {% set vs_b = vs_computable[1] %}
+      {% if vs_a.key == 'cautious' and vs_b.key == 'base' %}
+        {% set vs_read_en_text = "Today's price sits between Cautious and Base." %}
+        {% set vs_read_zh_text = "当前股价位于保守与基准之间。" %}
+      {% elif vs_a.key == 'base' and vs_b.key == 'upbeat' %}
+        {% set vs_read_en_text = "Today's price sits between Base and Upbeat." %}
+        {% set vs_read_zh_text = "当前股价位于基准与乐观之间。" %}
+      {% elif vs_a.key == 'cautious' and vs_b.key == 'upbeat' %}
+        {% set vs_read_en_text = "Today's price sits between Cautious and Upbeat." %}
+        {% set vs_read_zh_text = "当前股价位于保守与乐观之间。" %}
+      {% else %}
+        {% set vs_read_en_text = "Today's price sits between " ~ (vs_a.key | title) ~ " and " ~ (vs_b.key | title) ~ "." %}
+        {% set vs_read_zh_text = "当前股价位于" ~ vs_key_zh[vs_a.key] ~ "与" ~ vs_key_zh[vs_b.key] ~ "之间。" %}
+      {% endif %}
+    {% else %}
+      {% set vs_read_en_text = "Today's price sits near the computable case." %}
+      {% set vs_read_zh_text = "当前股价接近唯一可计算的情景。" %}
+    {% endif %}
+    <p class="vs-lede vs-read" data-vs-read="1">{{ t(vs_read_en_text, vs_read_zh_text) }}</p>
+  {% endif %}
 
   <div class="vs-cards">
     {% set card_meta = [
@@ -195,15 +287,17 @@
 
   <div class="vs-base kv6">
     {% set b = vscn.base %}
-    <div class="r6"><span class="k6">{{ t('Revenue','营业收入') }}<small>{{ b.revenue.period }} · {{ t('Source: SEC filings','来源：SEC披露文件') }}</small></span>
+    {% set vs_period_en = 'FY' ~ vscn.fy %}
+    {% set vs_period_zh = vscn.fy ~ '财年' %}
+    <div class="r6"><span class="k6">{{ t('Revenue','营业收入') }}<small>{{ t(vs_period_en, vs_period_zh) }} · {{ t('Source: SEC filings','来源：SEC披露文件') }}</small></span>
       {% if b.revenue.reported %}<span class="v6 num">${{ '%.1f'|format(b.revenue.value / 1e9) }}B</span>{% else %}<span class="v6 v6-null">{{ t('not reported','未披露') }}</span>{% endif %}</div>
-    <div class="r6"><span class="k6">{{ t('Operating income','营业利润') }}<small>{{ b.op_income.period }} · {{ t('Source: SEC filings','来源：SEC披露文件') }}</small></span>
+    <div class="r6"><span class="k6">{{ t('Operating income','营业利润') }}<small>{{ t(vs_period_en, vs_period_zh) }} · {{ t('Source: SEC filings','来源：SEC披露文件') }}</small></span>
       {% if b.op_income.reported %}<span class="v6 num">${{ '%.1f'|format(b.op_income.value / 1e9) }}B</span>{% else %}<span class="v6 v6-null">{{ t('not reported','未披露') }}</span>{% endif %}</div>
-    <div class="r6"><span class="k6">{{ t('Net income','净利润') }}<small>{{ b.net_income.period }} · {{ t('Source: SEC filings','来源：SEC披露文件') }}</small></span>
+    <div class="r6"><span class="k6">{{ t('Net income','净利润') }}<small>{{ t(vs_period_en, vs_period_zh) }} · {{ t('Source: SEC filings','来源：SEC披露文件') }}</small></span>
       {% if b.net_income.reported %}<span class="v6 num">${{ '%.1f'|format(b.net_income.value / 1e9) }}B</span>{% else %}<span class="v6 v6-null">{{ t('not reported','未披露') }}</span>{% endif %}</div>
-    <div class="r6"><span class="k6">{{ t('Share count','股数') }}<small>{{ b.share_count.period }} · {{ t('Source: SEC filings','来源：SEC披露文件') }}</small></span>
+    <div class="r6"><span class="k6">{{ t('Share count','股数') }}<small>{{ t(vs_period_en, vs_period_zh) }} · {{ t('Source: SEC filings','来源：SEC披露文件') }}</small></span>
       {% if b.share_count.reported %}<span class="v6 num">{{ '%.2f'|format(b.share_count.value / 1e9) }}B<em>{% if b.share_count.identity == 'diluted' %}{{ t('Diluted, as reported','披露的摊薄股数') }}{% else %}{{ t('Shares outstanding, as reported','披露的流通股数') }}{% endif %}</em></span>{% else %}<span class="v6 v6-null">{{ t('not reported','未披露') }}</span>{% endif %}</div>
-    <div class="r6"><span class="k6">{{ t('Net cash / debt','净现金／净负债') }}<small>{{ b.net_debt.period }} · {{ t('Source: SEC filings','来源：SEC披露文件') }}</small></span>
+    <div class="r6"><span class="k6">{{ t('Net cash / debt','净现金／净负债') }}<small>{{ t(vs_period_en, vs_period_zh) }} · {{ t('Source: SEC filings','来源：SEC披露文件') }}</small></span>
       {% if b.net_debt.reported %}<span class="v6 num">{% if b.net_debt.sign == 'net_cash' %}{{ t('Net cash','净现金') }} ${{ '%.1f'|format((-b.net_debt.value) / 1e9) }}B{% else %}{{ t('Net debt','净负债') }} ${{ '%.1f'|format(b.net_debt.value / 1e9) }}B{% endif %}</span>{% else %}<span class="v6 v6-null">{{ t('not reported','未披露') }}</span>{% endif %}</div>
   </div>
 

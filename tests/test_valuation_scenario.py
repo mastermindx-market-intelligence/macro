@@ -217,11 +217,175 @@ def test_no_banned_vocabulary():
 def test_bilingual_parity():
     partial = ROOT / "templates" / "_valuation_scenario.html.j2"
     text = partial.read_text()
-    for m in re.finditer(r"t\(\s*'([^']*)'\s*,\s*'([^']*)'\s*\)", text):
-        en, zh = m.group(1), m.group(2)
-        assert zh.strip() != "", f"empty ZH for en={en!r}"
+    # Heal h1: widen the regex to also match double-quoted t("en", 'zh') /
+    # t("en", "zh") pairs (heal h1 uses double quotes around vs_period_en),
+    # not only the original single-quoted form.
+    for pattern in (
+        r"""t\(\s*'([^']*)'\s*,\s*'([^']*)'\s*\)""",
+        r'''t\(\s*"([^"]*)"\s*,\s*'([^']*)'\s*\)''',
+        r'''t\(\s*"([^"]*)"\s*,\s*"([^"]*)"\s*\)''',
+    ):
+        for m in re.finditer(pattern, text):
+            en, zh = m.group(1), m.group(2)
+            assert zh.strip() != "", f"empty ZH for en={en!r}"
     for m in re.finditer(r'title="[^"]*[一-鿿][^"]*"', text):
         raise AssertionError(f"ZH text found in a title= attribute: {m.group(0)!r}")
+    # Heal h1: the five base-row <small> tags used to print b.<field>.period
+    # (engine output "FY2025") raw, which is untranslated in the ZH render
+    # while the panel's own hint already translated "FY" via t(). Render the
+    # partial under a ZH-only t() and assert no bare "FY<digits>" token
+    # surfaces in any of the five rows -- the EN shape must come through
+    # t() so a locale switch actually translates it.
+    import jinja2
+
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(ROOT / "templates")))
+    env.globals["t"] = lambda en, zh: zh
+    tmpl = env.from_string("{% include '_valuation_scenario.html.j2' %}")
+    blob = vs.compute(_rows(), price=319.97, asof="2026-09-05", ticker="AAPL")
+    html = tmpl.render(valuation_scenario=blob, deep_ids=[])
+    assert not re.search(r"FY\d{4}", html), (
+        "bare FY<digits> token leaked into the ZH render -- the panel must "
+        "route the period through t() like its own hint at :120 does"
+    )
+
+
+def test_h2_ruler_and_gap_marks_have_bilingual_aria_labels():
+    """Heal h2: the ruler's role=img aria-label and every m-gap mark's
+    aria-label must carry BOTH an ASCII run and a CJK run -- a screen
+    reader user on the ZH locale was previously hearing only English
+    (the role=img label IS the whole text equivalent). Static "EN · ZH"
+    strings, never t() inside an attribute (the t() macro's <span> markup
+    would break attribute quoting and leak the rest of the string as
+    visible page text -- the original comment on :126-:131)."""
+    import jinja2
+
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(ROOT / "templates")))
+    env.globals["t"] = lambda en, zh: en
+    tmpl = env.from_string("{% include '_valuation_scenario.html.j2' %}")
+
+    # All-computable fixture: ruler has only one role=img aria-label.
+    blob = vs.compute(_rows(), price=319.97, asof="2026-09-05", ticker="AAPL")
+    html = tmpl.render(valuation_scenario=blob, deep_ids=[])
+
+    ruler = re.search(r'<div class="vs-ruler"[^>]*aria-label="([^"]+)"', html)
+    assert ruler, "ruler role=img not found"
+    ruler_lbl = ruler.group(1)
+    assert re.search(r"[A-Za-z]", ruler_lbl), f"ruler aria-label has no ASCII run: {ruler_lbl!r}"
+    assert re.search(r"[一-鿿]", ruler_lbl), f"ruler aria-label has no CJK run: {ruler_lbl!r}"
+
+    # Margin-1.2% fixture: only base and upbeat are computable, so cautious
+    # renders as an m-gap mark with its own aria-label.
+    revenue = 1.0e11
+    ni_1_2_pct = revenue * 0.012
+    blob2 = vs.compute(_rows(ni=ni_1_2_pct, revenue=revenue), ticker="TEST")
+    html2 = tmpl.render(valuation_scenario=blob2, deep_ids=[])
+
+    gap_aria_labels = re.findall(
+        r'<div class="vs-mark m-gap"[^>]*aria-label="([^"]+)"', html2,
+    )
+    assert gap_aria_labels, "no m-gap aria-labels found in the 1.2%-margin render"
+    for lbl in gap_aria_labels:
+        assert re.search(r"[A-Za-z]", lbl), f"m-gap aria-label has no ASCII run: {lbl!r}"
+        assert re.search(r"[一-鿿]", lbl), f"m-gap aria-label has no CJK run: {lbl!r}"
+
+
+def test_h3_ruler_label_for_margin_too_thin_is_honest():
+    """Heal h3: a scenario gated only by margin_too_thin gets a short truthful
+    visible label on the ruler -- EN 'Too thin to run', ZH '利润率过低' --
+    rather than the generic 'No data' / '无数据' that fits an UNREPORTED input
+    but not a reported-but-too-thin margin. The vs_null_* priority rule still
+    governs: the FIRST element of s.missing wins, so a scenario gated only
+    by margin_too_thin gets the thin wording, while one gated by a more
+    fundamental reason (e.g. 'consistent period') keeps the missing-input
+    phrasing -- already covered by test_null_reason_prioritizes_consistent_period_over_margin_too_thin."""
+    import jinja2
+
+    revenue = 1.0e11
+    ni_1_2_pct = revenue * 0.012
+    blob = vs.compute(_rows(ni=ni_1_2_pct, revenue=revenue), ticker="TEST")
+
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(ROOT / "templates")))
+    env.globals["t"] = lambda en, zh: f"{en}|{zh}"
+    tmpl = env.from_string("{% include '_valuation_scenario.html.j2' %}")
+    html = tmpl.render(valuation_scenario=blob, deep_ids=[])
+
+    # Locate the cautious m-gap label (the only gated scenario at 1.2%).
+    # The visible label is in a <div class="vs-lbl ...">...<b>...</b></div>
+    # sitting on the cautious gap position. The "Cautious" word is emitted
+    # by t('Cautious','保守') which the test t() joins as 'Cautious|保守'.
+    # Note: the class attr may end with a single trailing space (the
+    # loop.index0 conditional collapses to "vs-lbl " with no extra class),
+    # so use [^"]* (zero or more) not [^"]+ for the class-value capture.
+    cautious_block = re.search(
+        r'class="vs-lbl [^"]*"[^>]*>(?:Cautious\|保守).*?</div>',
+        html, flags=re.DOTALL,
+    )
+    assert cautious_block, "could not locate the cautious gap-mark <b> block"
+    cautious_lbl = cautious_block.group(0)
+    assert "Too thin to run|利润率过低" in cautious_lbl, (
+        f"cautious ruler label did not switch to the thin wording: {cautious_lbl!r}"
+    )
+    # And it must NOT have been left as the generic 'No data' phrasing --
+    # the gated-but-reported-input distinction is the whole point of h3.
+    assert "No data|无数据" not in cautious_lbl, (
+        f"cautious ruler label still says 'No data' for a reported-but-thin margin: {cautious_lbl!r}"
+    )
+
+
+def test_h4_plain_word_read_renders_for_computable_and_omits_for_null():
+    """Heal h4: one plain-word sentence below the ruler, above .vs-cards,
+    stating where today's price sits relative to the computable scenarios.
+    Renders for the computable fixture (both EN and ZH halves non-empty
+    when t() emits both), and is ABSENT entirely for vs.compute(_rows(),
+    price=None) and for the all-null blob."""
+    import jinja2
+
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(ROOT / "templates")))
+    env.globals["t"] = lambda en, zh: f"{en}|{zh}"
+    tmpl = env.from_string("{% include '_valuation_scenario.html.j2' %}")
+
+    # 1. Computable fixture with price.
+    blob = vs.compute(_rows(), price=319.97, asof="2026-09-05", ticker="AAPL")
+    assert blob["any_computable"] is True
+    html = tmpl.render(valuation_scenario=blob, deep_ids=[])
+    lede_blocks = re.findall(r'<p class="vs-lede vs-read"[^>]*>(.*?)</p>', html, flags=re.DOTALL)
+    assert lede_blocks, "h4 lede sentence missing from the computable fixture render"
+    lede = lede_blocks[0]
+    # t() here joins en and zh with '|' -- assert both halves are non-empty.
+    en_part, _, zh_part = lede.partition("|")
+    assert en_part.strip() != "", f"empty EN half in h4 lede: {lede!r}"
+    assert zh_part.strip() != "", f"empty ZH half in h4 lede: {lede!r}"
+    # Sanity: it names a relative position (one of the four expected EN
+    # shapes for a 3-computable-scenario fixture), never a probability
+    # or ranking.
+    en_clean = re.sub(r"<[^>]+>", "", lede)
+    assert any(
+        phrase in en_clean
+        for phrase in (
+            "below all three cases",
+            "above all three cases",
+            "between Cautious and Base",
+            "between Base and Upbeat",
+            "sits at Base",
+        )
+    ), f"h4 lede did not match any expected 3-scenario phrase: {en_clean!r}"
+
+    # 2. Computable fixture with price=None -- the lede must be omitted
+    #    entirely (no <p class="vs-lede vs-read"> in the render).
+    blob2 = vs.compute(_rows(), price=None, asof="2026-09-05", ticker="AAPL")
+    assert blob2["any_computable"] is True
+    html2 = tmpl.render(valuation_scenario=blob2, deep_ids=[])
+    assert '<p class="vs-lede vs-read"' not in html2, (
+        "h4 lede rendered despite price=None -- it must omit entirely"
+    )
+
+    # 3. All-null blob -- any_computable is False; lede must omit.
+    blob3 = vs.compute(_rows(ni=None), ticker="AAPL")
+    assert blob3["any_computable"] is False
+    html3 = tmpl.render(valuation_scenario=blob3, deep_ids=[])
+    assert '<p class="vs-lede vs-read"' not in html3, (
+        "h4 lede rendered despite any_computable=False -- it must omit entirely"
+    )
 
 
 def test_panel_renders_and_omits():
