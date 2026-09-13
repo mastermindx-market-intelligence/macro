@@ -77,10 +77,6 @@
   --up: #45b873; --down: #e06464; --orange: #e08b45;
   --info: #5b9bf0; --link: #7aa7e0;
   --g-cold: #4d8df0; --g-hot: #e0a23c; --g-mid: #3a4150;
-  /* ── editorial-brass accent (research vault "Top Picks" / highlight) ─────────
-     A stable brand token, NEVER flipped for language. Local templates override
-     this with `var(--gold)` only where they need to paint brass surfaces. */
-  --gold-rv: #d8b26a;
   /* ── prophet-card verb hues (_prophet_card.html.j2) ─────────────────────────
      One hue per card state: buy/near/wait/hold/avoid. English uses the Western
      green-up/red-down convention. Chinese mode rebinds only these Prophet tokens
@@ -190,8 +186,6 @@ html[data-theme="light"] {
   --up: #1f9a55; --down: #cf4040; --orange: #c4781f;
   --info: #285fff; --link: #285fff;
   --g-cold: #285fff; --g-hot: #c2841f; --g-mid: #cdd5e0;
-  /* editorial brass on light canvas — darker so the contrast holds on white */
-  --gold-rv: #a9812e;
   /* prophet-card verb hues — the same stance ramp, re-authored for a WHITE card.
      The mix is 54%, NOT the 62% that would mirror --ink-mix-up: at 62% the stance
      token resolves byte-identically to --ink-up (light --ink-mix-up is also 62%),
