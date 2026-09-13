@@ -1,7 +1,7 @@
 {
   "schema": "transmission_chains.v1",
   "asof": "2026-09-11",
-  "built": "2026-09-12 09:21 UTC",
+  "built": "2026-09-13 09:01 UTC",
   "chains": [
     {
       "chain": "credit_spreads_refinancing",
@@ -348,14 +348,14 @@
           "note": "descriptive forward excess return of the terminal cohort proxy at terminal-node firings — NOT a forecast, NOT a signal (display-only).",
           "horizons": {
             "21d": {
-              "mean_excess_pct": -0.177,
-              "median_excess_pct": -0.561,
-              "n": 3137
+              "mean_excess_pct": -0.175,
+              "median_excess_pct": -0.57,
+              "n": 3141
             },
             "63d": {
-              "mean_excess_pct": -1.151,
-              "median_excess_pct": -1.939,
-              "n": 3095
+              "mean_excess_pct": -1.14,
+              "median_excess_pct": -1.98,
+              "n": 3099
             }
           }
         }
@@ -674,12 +674,12 @@
           "note": "descriptive forward excess return of the terminal cohort proxy at terminal-node firings — NOT a forecast, NOT a signal (display-only).",
           "horizons": {
             "21d": {
-              "mean_excess_pct": -0.023,
-              "median_excess_pct": 0.18,
-              "n": 2690
+              "mean_excess_pct": -0.022,
+              "median_excess_pct": 0.181,
+              "n": 2694
             },
             "63d": {
-              "mean_excess_pct": 0.494,
+              "mean_excess_pct": 0.496,
               "median_excess_pct": 1.248,
               "n": 2682
             }
@@ -692,11 +692,11 @@
             "en": "Long-duration valuation",
             "zh": "长久期估值"
           },
-          "n": 767,
+          "n": 720,
           "cuts": {
             "valuation.forward_pe": 26.4
           },
-          "unevaluable": 2118,
+          "unevaluable": 2151,
           "names": [
             "A",
             "AA",
@@ -752,7 +752,6 @@
             "APD",
             "APLE",
             "APOG",
-            "APP",
             "APTV",
             "ARE",
             "ARI",
@@ -808,13 +807,11 @@
             "BWA",
             "BXP",
             "BYD",
-            "CABO",
             "CAG",
             "CAH",
             "CAKE",
             "CALM",
             "CALY",
-            "CARG",
             "CART",
             "CASY",
             "CAVA",
@@ -825,7 +822,6 @@
             "CCI",
             "CCK",
             "CCL",
-            "CCOI",
             "CCS",
             "CDP",
             "CE",
@@ -841,18 +837,15 @@
             "CHE",
             "CHEF",
             "CHH",
-            "CHTR",
             "CHWY",
             "CI",
             "CL",
             "CLF",
             "CLX",
             "CMC",
-            "CMCSA",
             "CMG",
             "CMS",
             "CNC",
-            "CNK",
             "CNMD",
             "CNP",
             "COCO",
@@ -907,7 +900,6 @@
             "DGX",
             "DHI",
             "DHR",
-            "DIS",
             "DKS",
             "DLR",
             "DLTR",
@@ -921,15 +913,12 @@
             "DTE",
             "DUK",
             "DUOL",
-            "DV",
             "DVA",
             "DXCM",
-            "EA",
             "EAT",
             "EBAY",
             "ECL",
             "ED",
-            "EFC",
             "EFX",
             "EGP",
             "EHC",
@@ -973,8 +962,6 @@
             "FLO",
             "FMC",
             "FND",
-            "FOX",
-            "FOXA",
             "FOXF",
             "FR",
             "FRPT",
@@ -1001,16 +988,12 @@
             "GNL",
             "GNTX",
             "GO",
-            "GOGO",
             "GOLF",
-            "GOOG",
-            "GOOGL",
             "GPC",
             "GPI",
             "GPK",
             "GRBK",
             "GRMN",
-            "GTM",
             "GTY",
             "H",
             "HAE",
@@ -1061,7 +1044,6 @@
             "IP",
             "IPAR",
             "IQV",
-            "IRDM",
             "IRM",
             "IRT",
             "ISRG",
@@ -1119,7 +1101,6 @@
             "LTC",
             "LTH",
             "LULU",
-            "LUMN",
             "LUV",
             "LVS",
             "LW",
@@ -1143,7 +1124,6 @@
             "MDT",
             "MDU",
             "MEDP",
-            "META",
             "MGEE",
             "MGM",
             "MHK",
@@ -1163,8 +1143,6 @@
             "MRP",
             "MRVL",
             "MSEX",
-            "MSGS",
-            "MTCH",
             "MTD",
             "MTH",
             "MTN",
@@ -1181,13 +1159,11 @@
             "NEOG",
             "NEU",
             "NFG",
-            "NFLX",
             "NGVT",
             "NHC",
             "NI",
             "NJR",
             "NKE",
-            "NLY",
             "NNN",
             "NRG",
             "NUE",
@@ -1196,11 +1172,8 @@
             "NWE",
             "NWL",
             "NWN",
-            "NWS",
-            "NWSA",
             "NX",
             "NXRT",
-            "NXST",
             "NYT",
             "O",
             "OC",
@@ -1211,7 +1184,6 @@
             "OI",
             "OLLI",
             "OLN",
-            "OMC",
             "OMCL",
             "OPCH",
             "ORA",
@@ -1240,7 +1212,6 @@
             "PHIN",
             "PHM",
             "PII",
-            "PINS",
             "PK",
             "PKG",
             "PLD",
@@ -1256,14 +1227,12 @@
             "PPC",
             "PPG",
             "PPL",
-            "PPLI",
             "PRDO",
             "PRGO",
             "PRKS",
             "PRSU",
             "PRVA",
             "PSA",
-            "PSKY",
             "PSMT",
             "PSN",
             "PTCT",
@@ -1273,7 +1242,6 @@
             "PWR",
             "PZZA",
             "QDEL",
-            "QNST",
             "RCL",
             "RCUS",
             "RDNT",
@@ -1312,7 +1280,6 @@
             "SGI",
             "SHAK",
             "SHC",
-            "SHEN",
             "SHO",
             "SHOO",
             "SHW",
@@ -1340,11 +1307,9 @@
             "SSD",
             "STAA",
             "STAG",
-            "STC",
             "STE",
             "STLD",
             "STRA",
-            "STWD",
             "STZ",
             "SUPN",
             "SW",
@@ -1353,9 +1318,7 @@
             "SXT",
             "SYK",
             "SYY",
-            "T",
             "TAP",
-            "TDS",
             "TECH",
             "TFX",
             "TGT",
@@ -1369,20 +1332,16 @@
             "TLN",
             "TMDX",
             "TMO",
-            "TMUS",
             "TNDM",
             "TNL",
             "TOL",
             "TPR",
             "TR",
             "TREX",
-            "TRIP",
             "TRNO",
             "TSCO",
             "TSLA",
             "TSN",
-            "TTD",
-            "TTWO",
             "TXNM",
             "TXRH",
             "UA",
@@ -1398,7 +1357,6 @@
             "ULTA",
             "UNFI",
             "UNH",
-            "UNIT",
             "UPBD",
             "URBN",
             "USFD",
@@ -1426,7 +1384,6 @@
             "VTR",
             "VTRS",
             "VVV",
-            "VZ",
             "WAT",
             "WAY",
             "WBD",
@@ -1440,9 +1397,7 @@
             "WINA",
             "WING",
             "WLK",
-            "WLY",
             "WMB",
-            "WMG",
             "WMS",
             "WMT",
             "WPC",
@@ -1459,11 +1414,9 @@
             "XNCR",
             "XPEL",
             "XRAY",
-            "YELP",
             "YETI",
             "YUM",
             "ZBH",
-            "ZD",
             "ZTS"
           ],
           "resolved": true,
@@ -1883,7 +1836,7 @@
           },
           "n": 5,
           "cuts": {},
-          "unevaluable": 1666,
+          "unevaluable": 1667,
           "names": [
             "ACMR",
             "AVAV",
@@ -2290,8 +2243,8 @@
             }
           ],
           "base_rate": {
-            "p_confirm": 0.7333,
-            "n": 105,
+            "p_confirm": 0.7264,
+            "n": 106,
             "regime_split": "available",
             "per_regime": {
               "growth_accelerating": {
@@ -2299,8 +2252,8 @@
                 "n": 44
               },
               "growth_steady_or_slowing": {
-                "p": 0.7869,
-                "n": 61
+                "p": 0.7742,
+                "n": 62
               }
             }
           }
@@ -2327,13 +2280,13 @@
             }
           ],
           "base_rate": {
-            "p_confirm": 0.9704,
-            "n": 169,
+            "p_confirm": 0.9591,
+            "n": 171,
             "regime_split": "available",
             "per_regime": {
               "inflation_down_or_flat": {
-                "p": 0.9744,
-                "n": 156
+                "p": 0.962,
+                "n": 158
               },
               "inflation_up": {
                 "p": 0.9231,
@@ -2474,22 +2427,22 @@
               "from": "series:yahoo",
               "to": "series:fred"
             },
-            "p_confirm": 0.7333,
-            "n": 105,
+            "p_confirm": 0.7264,
+            "n": 106,
             "per_regime": {
               "growth_accelerating": {
                 "p": 0.6591,
                 "n": 44
               },
               "growth_steady_or_slowing": {
-                "p": 0.7869,
-                "n": 61
+                "p": 0.7742,
+                "n": 62
               }
             },
             "regime_split": "available",
             "span": {
               "first": "2000-12-07",
-              "last": "2026-06-11"
+              "last": "2026-07-10"
             },
             "regime_scheme": "growth_accel"
           },
@@ -2504,12 +2457,12 @@
               "from": "series:fred",
               "to": "series:fred"
             },
-            "p_confirm": 0.9704,
-            "n": 169,
+            "p_confirm": 0.9591,
+            "n": 171,
             "per_regime": {
               "inflation_down_or_flat": {
-                "p": 0.9744,
-                "n": 156
+                "p": 0.962,
+                "n": 158
               },
               "inflation_up": {
                 "p": 0.9231,
@@ -2519,7 +2472,7 @@
             "regime_split": "available",
             "span": {
               "first": "2003-03-24",
-              "last": "2026-06-04"
+              "last": "2026-06-11"
             },
             "regime_scheme": "inflation_regime"
           },
@@ -2557,9 +2510,9 @@
               "n": 4142
             },
             "63d": {
-              "mean_excess_pct": 1.187,
-              "median_excess_pct": 0.994,
-              "n": 4108
+              "mean_excess_pct": 1.183,
+              "median_excess_pct": 0.987,
+              "n": 4112
             }
           }
         }
@@ -2637,7 +2590,7 @@
               "series": "BTC-USD",
               "metric": "ret_pct",
               "window": 22,
-              "value": -1.31,
+              "value": 0.223,
               "op": "gt",
               "threshold": 10,
               "passed": false
@@ -2711,7 +2664,7 @@
               "series": "BTC-USD",
               "metric": "ret_pct",
               "window": 22,
-              "value": -1.31,
+              "value": 0.223,
               "op": "gt",
               "threshold": 10,
               "passed": false
@@ -3060,9 +3013,9 @@
           "note": "descriptive forward excess return of the terminal cohort proxy at terminal-node firings — NOT a forecast, NOT a signal (display-only).",
           "horizons": {
             "21d": {
-              "mean_excess_pct": -0.104,
-              "median_excess_pct": -0.677,
-              "n": 1691
+              "mean_excess_pct": -0.1,
+              "median_excess_pct": -0.654,
+              "n": 1695
             },
             "63d": {
               "mean_excess_pct": -0.483,
@@ -3132,7 +3085,7 @@
               "path": "vol_regime.vol_target_scalar",
               "op": "lt",
               "threshold": 0.85,
-              "value": 0.67,
+              "value": 0.76,
               "passed": true
             }
           ],
@@ -3193,7 +3146,7 @@
               "path": "vol_regime.vix",
               "op": "gte",
               "threshold": 25,
-              "value": 17.84,
+              "value": 15.84,
               "passed": false
             }
           ]
@@ -3207,7 +3160,7 @@
               "path": "vol_regime.vol_target_scalar",
               "op": "lt",
               "threshold": 0.85,
-              "value": 0.67,
+              "value": 0.76,
               "passed": true
             }
           ]
@@ -3281,14 +3234,14 @@
           "note": "descriptive forward excess return of the terminal cohort proxy at terminal-node firings — NOT a forecast, NOT a signal (display-only).",
           "horizons": {
             "21d": {
-              "mean_excess_pct": 0.09,
-              "median_excess_pct": -0.082,
-              "n": 1869
+              "mean_excess_pct": 0.093,
+              "median_excess_pct": -0.081,
+              "n": 1871
             },
             "63d": {
-              "mean_excess_pct": 1.03,
-              "median_excess_pct": 0.587,
-              "n": 1842
+              "mean_excess_pct": 1.029,
+              "median_excess_pct": 0.581,
+              "n": 1843
             }
           }
         }
@@ -3316,7 +3269,7 @@
     "universe": 2947,
     "substrate_asof": {
       "min": "2026-05-07",
-      "max": "2026-09-12"
+      "max": "2026-09-13"
     }
   }
 }
