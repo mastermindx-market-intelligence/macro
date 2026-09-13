@@ -14286,3 +14286,28 @@ jobs:
         run: python -m pytest tests/test_macro_suite_pages.py tests/test_macro_workspace_prior_publication.py -q
       - name: Market OS macro suite hub — discoverability, ordering, honest absence
         run: python -m pytest tests/test_macro_monetary_hub.py -q
+
+  recurring-briefs:
+    # F11 packet B-F11-7b (MO-PAID-032): one nightly/weekly step writes each
+    # subscription its brief or an honest miss. Pure functions + CLI; tests
+    # use a fake client (no network). Named by this run: step (no waiver).
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
+    gate: code
+    paths:
+      - .github/ci/legacy-jobs.yml
+      - .github/workflows/daily.yml
+      - .github/workflows/weekly.yml
+      - engine/recurring_briefs.py
+      - scripts/build_recurring_briefs.py
+      - tests/test_recurring_briefs.py
+    timeout-minutes: 8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install recurring-briefs test dependencies
+        run: pip install pytest
+      - name: recurring briefs producer — slot, body, classify, idempotency (F11 B-F11-7b)
+        run: python -m pytest tests/test_recurring_briefs.py -q
