@@ -88,3 +88,45 @@ def test_row_counts_line_up():
     assert len(sheet) == len(landing) == len(set(sheet)), (
         f"row counts drifted — sheet {len(sheet)}, landing {len(landing)}"
     )
+
+
+def _landing_zh_groups() -> dict[str, str]:
+    """EN group heading → ZH (data-zh, or EN itself when the brand is kept)."""
+    src = LANDING.read_text(encoding="utf-8")
+    m = re.search(r'<table class="mx" id="pricing-matrix".*?</table>', src, re.S)
+    assert m, "landing lost its #pricing-matrix table"
+    out: dict[str, str] = {}
+    for attrs, en in re.findall(
+        r'<tr class="grp"><td colspan="4"([^>]*)>(.*?)</td>', m.group(0), re.S
+    ):
+        en = html.unescape(en).strip()
+        zh_m = re.search(r'data-zh="([^"]*)"', attrs)
+        out[en] = html.unescape(zh_m.group(1)).strip() if zh_m else en
+    return out
+
+
+def _sheet_zh_groups() -> dict[str, str]:
+    """EN group heading → ZH slot from COMPARE's `g: [en, zh]` pairs."""
+    src = ONBOARD.read_text(encoding="utf-8")
+    m = re.search(r"var COMPARE = \[(.*?)\n  \];", src, re.S)
+    assert m, "onboard.js lost its COMPARE table"
+    return {
+        en: zh
+        for en, zh in re.findall(r'\{ g: \["([^"]+)", "([^"]+)"\]', m.group(1))
+    }
+
+
+def test_group_zh_headings_match():
+    landing = _landing_zh_groups()
+    sheet = _sheet_zh_groups()
+    assert sheet == landing, (
+        f"compare-panel ZH groups {sheet} != pricing-page ZH groups {landing}"
+    )
+
+
+def test_mastermind_ai_group_carries_category_zh():
+    """Category register (plans.html #7049 r2): MASTERMIND AI → 操盘大脑 AI."""
+    landing = _landing_zh_groups()
+    sheet = _sheet_zh_groups()
+    assert landing.get("MASTERMIND AI") == "操盘大脑 AI", landing
+    assert sheet.get("MASTERMIND AI") == "操盘大脑 AI", sheet
