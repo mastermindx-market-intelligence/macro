@@ -218,9 +218,7 @@
     .mmb-sugg .mmb-sug,.mmb-rpill.on svg .dv{animation:none}
     #mmb-panel{transition:opacity .18s ease!important}
     .mmb-chip,.mmb-chip::after,.mmb-cardp,.mmb-cardp .ci svg,.mmb-seg button,.mmb-rpill,
-    .mmb-rtip,.mmb-send,.mmb-box,.mmb-sug,.mmb-tbtn{transition:none}
-    /* the tip still appears, it just does not travel */
-    .mmb-rtip{transform:none}}
+    .mmb-send,.mmb-box,.mmb-sug,.mmb-tbtn{transition:none}}
   #mmb-launch .ll{font:650 13.5px/1 var(--mmb-font);color:var(--mmb-text);white-space:nowrap}
   #mmb-launch .lk{font:600 11px/1 var(--mmb-font);color:var(--mmb-muted);margin-top:3px;white-space:nowrap}
   #mmb-launch .lt{display:flex;flex-direction:column}
@@ -319,49 +317,62 @@
   @keyframes mmb-dotpulse{0%,100%{opacity:1}50%{opacity:.45}}
   @media(prefers-reduced-motion:reduce){.mmb-head .dot.busy{animation:none}}
   .mmb-head .sp{flex:1}
-  /* Deep Research is the third stop on the depth control, not a separate mode: the
-     gateway forces lane='pro' for mode='research', so arming it lights Pro too. That
-     pair is the point — Pro in the signature blue says which bucket is being spent,
-     Deep in violet says this is a longer pass on top of it. Violet is already this
-     widget's "in flight / going deeper" accent (the caret, the busy dot, the ledger's
-     live arc), so the two lit stops read as one sentence rather than as a contradiction.
-     At REST it stays inert like its neighbours — the standing violet tint that used to
-     read as "already on" with Fast selected is a state setLane/setResearch make
-     impossible, and it is not coming back through the hover either. */
-  .mmb-rpill{position:relative;display:inline-flex;align-items:center;gap:5px;font:600 11.5px/1 var(--mmb-font);cursor:pointer;white-space:nowrap;flex:none;
-    color:var(--mmb-muted);background:transparent;border:none;border-radius:999px;padding:5px 11px 5px 9px;
+  /* Research mode is NOT a fourth stop on the depth axis — the gateway forces
+     lane='pro' for mode='research', so it is a grounding mode that rides on Pro, and
+     arming it still lights the Pro stop in the signature blue (that is the "which
+     bucket is being spent" half of the old pairing, and it is unchanged). It holds
+     its own row on the composer, and the row READS the ceiling sentence every
+     research answer ends on — in both languages, at every width (W9B F11-8).
+     The compact mark it replaces carried that disclosure in a hover tip, and this
+     sheet hides a hover tip below 560px, so on a phone the control said nothing at
+     all. A disclosure only a pointer can reach is not a disclosure: the sentence is
+     the label, the price sits under it, aria-pressed carries on/off, and the
+     accessible name is the same text the eye reads — no short stand-in.
+     Two art directions, one mechanism:
+       DARK  instrument calm. At rest a faint ink field with no edge; armed a violet
+             field under a violet hairline ring plus this widget's restrained glow.
+             Luminance carries the state and the type stays quiet — a solid violet
+             block the size of a sentence would shout, and the row is read, not
+             glanced at.
+       LIGHT paper discipline. At rest a near-opaque white row on the cool box, edged
+             by the hairline this theme draws heavier than dark does; armed the same
+             white material under a violet hairline and a soft LIFT — a shadow, not a
+             glow, because that is how this theme says "raised". No violet field:
+             over white it reads as a bruise rather than as a selection. */
+  .mmb-rrow{padding:0 10px 2px}
+  .mmb-rpill{display:flex;align-items:flex-start;gap:7px;width:100%;text-align:left;
+    font:600 11.5px/1.55 var(--mmb-font);cursor:pointer;white-space:normal;
+    color:var(--mmb-muted);background:color-mix(in srgb,var(--mmb-ink) 4%,transparent);
+    border:none;border-radius:var(--r-card,12px);padding:8px 12px;
     transition:color .16s var(--mmb-ease-tint),background .16s var(--mmb-ease-tint),box-shadow .16s var(--mmb-ease-tint)}
-  .mmb-rpill svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+  .mmb-rpill svg{width:14px;height:14px;margin-top:2px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+  .mmb-rpill .mmb-rtext{display:block;flex:1 1 auto;min-width:0}
+  .mmb-rpill .mmb-rcost{display:block;margin-top:4px;font-weight:500}
   .mmb-rpill:hover{color:color-mix(in srgb,var(--mmb-text) 80%,var(--mmb-muted));background:color-mix(in srgb,var(--mmb-ink) 7%,transparent)}
-  .mmb-rpill.on,.mmb-rpill.on:hover{background:linear-gradient(180deg,color-mix(in srgb,var(--mmb-violet) 88%,#fff),var(--mmb-violet));
-    color:#fff;box-shadow:0 2px 10px -3px color-mix(in srgb,var(--mmb-violet) 70%,transparent)}
+  .mmb-rpill.on,.mmb-rpill.on:hover{color:var(--mmb-text);
+    background:color-mix(in srgb,var(--mmb-violet) 16%,transparent);
+    box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--mmb-violet) 44%,transparent),
+      0 2px 12px -6px color-mix(in srgb,var(--mmb-violet) 70%,transparent)}
+  .mmb-rpill.on .mmb-rcost{color:color-mix(in srgb,var(--mmb-text) 74%,var(--mmb-violet))}
+  .mmb-rpill.on svg{color:color-mix(in srgb,var(--mmb-violet) 78%,var(--mmb-hi))}
   .mmb-rpill:focus-visible{outline:2px solid color-mix(in srgb,var(--mmb-info) 70%,transparent);outline-offset:2px}
-  /* a hairline before the third stop: Fast/Pro are alternatives to each other, Deep is a
-     step past both — the divider says so without a second control */
-  .mmb-rpill::before{content:'';position:absolute;left:-1px;top:5px;bottom:5px;width:1px;
-    background:color-mix(in srgb,var(--mmb-ink) 12%,transparent)}
-  .mmb-rpill.on::before,.mmb-rpill:hover::before{opacity:0}
-  /* phones: the label gives way to the mark alone (aria-label carries the name) */
-  @media(max-width:560px){.mmb-rpill .mmb-l{display:none}.mmb-rpill{padding:5px 8px}}
+  html[data-theme="light"] #mmb-root .mmb-rpill{background:var(--mmb-panel);
+    box-shadow:inset 0 0 0 1px var(--mmb-line)}
+  html[data-theme="light"] #mmb-root .mmb-rpill:hover{background:var(--mmb-panel);
+    box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--mmb-ink) 24%,transparent)}
+  html[data-theme="light"] #mmb-root .mmb-rpill.on,
+  html[data-theme="light"] #mmb-root .mmb-rpill.on:hover{background:var(--mmb-panel);
+    box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--mmb-violet) 40%,transparent),
+      0 1px 2px color-mix(in srgb,var(--mmb-ink) 8%,transparent),
+      0 8px 18px -12px color-mix(in srgb,var(--mmb-ink) 30%,transparent)}
+  /* phones: the sentence stays — it IS the disclosure — the row only tightens */
+  @media(max-width:560px){.mmb-rpill{padding:7px 10px;gap:6px;font:600 11px/1.5 var(--mmb-font)}
+    .mmb-rrow{padding:0 8px 2px}}
   /* Arming it plays the mark's own meaning once: the two chevrons travel down through
      the rule they sit under. One 520ms gesture on a deliberate click, never a loop. */
   .mmb-rpill.on svg .dv{animation:mmb-dive .52s var(--mmb-ease) both}
   @keyframes mmb-dive{0%{transform:translateY(-3px);opacity:.25}100%{transform:none;opacity:1}}
   .mmb-rpill.mmb-off{display:none}
-  /* What the toggle actually changes, in plain words — the doctrine's Tier-2 home for
-     mechanics. It opens UPWARD: the control sits on the composer, so a tip below it would
-     land off the panel; and left-anchored rather than centred, because the third stop is
-     near the panel's left edge in the compact box. */
-  .mmb-rtip{position:absolute;bottom:calc(100% + 10px);left:-6px;transform:translateY(4px);z-index:12;width:min(258px,68vw);white-space:normal;
-    pointer-events:none;opacity:0;visibility:hidden;text-align:left;
-    font:400 11.5px/1.55 var(--mmb-font);color:var(--mmb-text);
-    background:color-mix(in srgb,var(--mmb-panel) 96%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
-    border:1px solid var(--mmb-line);border-radius:12px;padding:10px 12px;box-shadow:var(--mmb-shadow-pop);
-    transition:opacity .18s var(--mmb-ease),transform .18s var(--mmb-ease),visibility 0s linear .18s}
-  .mmb-rpill:hover .mmb-rtip,.mmb-rpill:focus-visible .mmb-rtip{opacity:1;visibility:visible;transform:none;transition-delay:0s,0s,0s}
-  .mmb-rtip b{display:block;font:700 11.5px/1.4 var(--mmb-font);color:color-mix(in srgb,var(--mmb-text) 96%,var(--mmb-hi));margin-bottom:3px}
-  .mmb-rtip .cost{display:block;margin-top:5px;color:var(--mmb-muted)}
-  @media(max-width:560px){.mmb-rtip{display:none}}
   #mmb-panel.max .mmb-menu,#mmb-panel.max .mmb-sidescrim{display:none}
   #mmb-panel:not(.max) .mmb-rail{display:none}
   #mmb-panel:not(.max) .mmb-threads{position:absolute;left:0;top:0;bottom:0;width:236px;z-index:6;display:block;
@@ -810,13 +821,15 @@
      also the moment the user is about to press Enter and expect it to go. */
   .mmb-hint{display:none;font:11px/1 var(--mmb-font);color:var(--mmb-muted);white-space:nowrap;opacity:.85;min-width:0;overflow:hidden;text-overflow:ellipsis}
   .mmb-box.mmb-typing .mmb-hint{display:inline}
-  /* ── depth control (Fast / Pro / Deep) ────────────────────────────────────────
-     The three stops are not "cheap / dear / dearer", they are how deep the desk digs for
-     one question — so the marks are a depth family, drawn in this file rather than borrowed
-     from the emoji table: Fast is a single strike, Pro a cut stone with several faces, Deep
-     descends through the surface line. Fast and Pro take solid fills instead of the outline
-     language the rest of the chrome uses — at 12px a 1.8-stroke mark silts up, and these are
-     identity badges rather than affordances. */
+  /* ── depth control (Fast / Pro) ───────────────────────────────────────────────
+     The two stops are not "cheap / dear", they are how deep the desk digs for one
+     question — so the marks are a depth family, drawn in this file rather than borrowed
+     from the emoji table: Fast is a single strike, Pro a cut stone with several faces.
+     Both take solid fills instead of the outline language the rest of the chrome uses —
+     at 12px a 1.8-stroke mark silts up, and these are identity badges rather than
+     affordances. The family's third mark (a descent through the surface line) still
+     exists, but it now sits on the research row: research is a grounding MODE that
+     rides on Pro, not a third depth, and it reads as a sentence rather than as a stop. */
   .mmb-seg{display:flex;flex:none;gap:2px;padding:2px;border-radius:999px;background:color-mix(in srgb,var(--mmb-ink) 5%,transparent);border:1px solid var(--mmb-line)}
   .mmb-seg button{display:inline-flex;align-items:center;gap:5px;border:none;background:transparent;color:var(--mmb-muted);
     font:600 11.5px/1 var(--mmb-font);padding:5px 11px 5px 9px;border-radius:999px;cursor:pointer;white-space:nowrap;
@@ -919,8 +932,8 @@
   function ic(p) { return '<svg viewBox="0 0 24 24">' + p + '</svg>'; }
 
   /* ── depth marks ─────────────────────────────────────────────────────────────
-     Fast, Pro and Deep Research are not three prices — they are three depths on ONE
-     axis: how far down the desk goes for a single question. So they are drawn as a
+     Fast and Pro are not two prices — they are two depths on ONE axis: how far down
+     the desk goes for a single question. All three marks are drawn as a
      family rather than picked out of the emoji table (⚡ / ◈, which read as two
      unrelated stickers and rendered as somebody else's typeface on every OS):
 
@@ -929,12 +942,21 @@
        Research  a descent — through the surface line and down two levels below it
 
      Fast/Pro are solid: at 12px a 1.8-stroke mark silts up, and these two are identity
-     badges rather than affordances. Research keeps the outline language because it sits
-     in the header among the outline icons. */
+     badges rather than affordances. Research keeps the outline language, and it now
+     rides on its own sentence row on the composer: research is a grounding mode that
+     runs on Pro, not a third depth (W9B F11-8). */
   var MARK_FAST = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.9 2 5 13.6h4.9L8.6 22l8.8-11.9h-4.9z"/></svg>';
   var MARK_PRO = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.3 20.5 9 12 21.7 3.5 9z"/>' +
     '<path class="fc" d="M3.5 9h17M12 2.3 9.1 9 12 21.7 14.9 9z"/></svg>';
   var MARK_RESEARCH = '<path d="M4.8 5.2h14.4"/><g class="dv"><path d="M8 10.1 12 13.9l4-3.8"/><path d="M8 15.3 12 19.1l4-3.8"/></g>';
+  /* The research mode's own sentence (W9B F11-8). Frozen verbatim by the F11 contract
+     (research/market_intelligence_productization/MARKET_ONTOLOGY_F11_POST_VERTICAL_CONTRACT_2026-09-06.md
+     §MO-PAID-031, "Authority ceiling") and identical to the pair the gateway stamps on
+     the end of every research answer — the toggle says up front what the answer will
+     say about itself. Defined once, here, so the visible mark and the accessible name
+     can never disagree with each other or drift from the contract. */
+  var RESEARCH_CEILING_EN = 'This is a reading of what we already published. It is not a signal, not a rating, and not advice — nothing here changes any board, rank, or alert.';
+  var RESEARCH_CEILING_ZH = '这是对我们已经发布内容的解读。这不是信号、不是评级、也不是建议——这里的任何内容都不会改变任何看板、排名或提醒。';
   function laneMark(l) { return l === 'pro' ? MARK_PRO : MARK_FAST; }
 
   /* Ledger glyphs. PHASE_IC keys the pipeline stage the wire reports; FAM keys the KIND
@@ -1102,27 +1124,34 @@
             '<div class="mmb-thumbs" id="mmb-thumbs"></div>' +
             '<textarea class="mmb-ta" id="mmb-ta" rows="1" maxlength="2000" data-ph-en="Ask about any dashboard, signal, or ticker…" data-ph-zh="询问任意看板、信号或标的…" placeholder="' + L('Ask about any dashboard, signal, or ticker…', '询问任意看板、信号或标的…') + '"></textarea>' +
             '<input type="file" id="mmb-file" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden>' +
+            /* ── the research row ──────────────────────────────────────────────────
+               Research mode is not a third depth, so it does not sit in the depth
+               group below: it is a grounding mode that rides on Pro, and its mark
+               READS the ceiling sentence every research answer ends on (W9B F11-8) —
+               the whole sentence, in both languages, at every width. Nothing here
+               collapses to a compact mark on a phone, because the disclosure the
+               compact mark leaned on was a hover tip this sheet hides below 560px.
+               The sentence is also the accessible name — no aria-label stand-in —
+               and aria-pressed carries on/off. The price stays visible under the
+               sentence instead of being discovered afterwards. */
+            '<div class="mmb-rrow">' +
+              '<button class="mmb-rpill mmb-off" data-act="research" aria-pressed="false">' +
+                ic(MARK_RESEARCH) +
+                '<span class="mmb-rtext">' + LB(RESEARCH_CEILING_EN, RESEARCH_CEILING_ZH) +
+                '<span class="mmb-rcost">' + LB('Runs on Pro · uses one Pro message', '走 Pro 通道 · 消耗一条 Pro 消息') + '</span></span>' +
+              '</button></div>' +
             '<div class="mmb-tools">' +
               /* ── one control, one axis ────────────────────────────────────────────
-                 Fast, Pro and Deep Research are three stops on the same question —
-                 how deep should the desk go — so they are one control, not a segmented
-                 pair plus a pill parked in the header. Two things got better by moving
-                 it: the three depth marks now read as the family they are, and the
-                 header stopped truncating its own title ("Mastermin…") to make room. */
+                 Fast and Pro are two stops on the same question — how deep should the
+                 desk go — so they are one control, not two separate buttons. Two things
+                 got better by grouping them: the depth marks read as the family they
+                 are, and the header stopped truncating its own title ("Mastermin…") to
+                 make room. Research used to be the third stop here; it is a mode, not a
+                 depth, and it now reads as a sentence on the row above. */
               '<div class="mmb-seg" id="mmb-lane" role="group" aria-label="' + L('Answer depth', '回答深度') + '">' +
                 '<button data-lane="fast" class="on" aria-pressed="true">' + MARK_FAST + LB('Fast', '快速') + '</button>' +
                 '<button data-lane="pro" aria-pressed="false">' + MARK_PRO + '<span>Pro</span></button>' +
-                '<button class="mmb-rpill mmb-off" data-act="research" aria-pressed="false" aria-label="' + L('Deep Research', '深度研究') + '">' +
-                  ic(MARK_RESEARCH) + LB('Deep', '深度') +
-                  /* Tier-2 home for the mechanics (DESIGN_DOCTRINE §1): what the toggle
-                     actually changes, in plain words, with its price stated rather than
-                     discovered. aria-hidden + the aria-label above keep the accessible
-                     name at "Deep Research" instead of a paragraph. */
-                  '<span class="mmb-rtip" aria-hidden="true"><b>' + LB('A deeper pass on the same desk', '同一批资料，再深挖一遍') + '</b>' +
-                  LB('It can look up around twice as many sources, then writes a structured read that ends on a clear stance.',
-                     '可查阅约两倍的资料，并写成结构化研判，最后给出明确立场。') +
-                  '<span class="cost">' + LB('Runs on Pro · uses one Pro message', '走 Pro 通道 · 消耗一条 Pro 消息') + '</span></span>' +
-                '</button></div>' +
+              '</div>' +
               /* aria-hidden: the send button's own label already says it — one announcement, not two */
               '<span class="mmb-hint" id="mmb-hint" aria-hidden="true">' + LB(SEND_KEYS + ' to send', SEND_KEYS + ' 发送') + '</span>' +
               '<div class="sp"></div>' +
@@ -2280,7 +2309,9 @@
     root.querySelectorAll('[data-ph-en]').forEach(function (el) { el.placeholder = zh() ? el.getAttribute('data-ph-zh') : el.getAttribute('data-ph-en'); });
     paintPlaceholder();   /* an armed research pass keeps its own prompt through the switch */
     if (launch) launch.setAttribute('aria-label', zh() ? '问操盘大脑' : 'Ask Mastermind');  /* orb-only on phones: keep its accessible name in sync */
-    researchBtn.setAttribute('aria-label', L('Deep Research', '深度研究'));   /* label shortens to the mark on phones */
+    /* The research row needs no re-stamp here: its sentence is a dual-language LB()
+       span, so the sweep above already repainted both the visible label and — with no
+       aria-label overriding it — the accessible name. */
     if ($('#mmb-emptystate')) renderEmpty();
     paintThreads();   /* self-routes to the guest sign-in prompt when in guest mode */
     renderQuota();     /* refresh the meter's title in the new language sense */
@@ -3032,15 +3063,16 @@
     }
   }
 
-  /* ── lane + Deep Research ────────────────────────────────────────────────────
-     One state machine, because the two controls describe the SAME choice: Deep
-     Research runs on Pro (the gateway forces lane='pro' for mode='research'), so
-     "Fast" and a lit Deep Research pill can never both be true. Picking Pro is a
-     deliberate act — it costs Pro quota — so it is remembered rather than reset to
-     Fast on the next page load. */
+  /* ── lane + research mode ────────────────────────────────────────────────────
+     One state machine, because the two controls describe the SAME choice: research
+     mode runs on Pro (the gateway forces lane='pro' for mode='research'), so "Fast"
+     and a lit research row can never both be true. Picking Pro is a deliberate act —
+     it costs Pro quota — so it is remembered rather than reset to Fast on the next
+     page load. */
   function paintLane() {
-    /* [data-lane] only — the third stop is Deep Research, and a blanket sweep over
-       #mmb-lane button would strip the class paintResearch() had just put on it. */
+    /* [data-lane] only. The research row is not a depth stop and no longer lives in
+       this group, but the attribute selector is what keeps the sweep on the two stops
+       it owns — so a button parked in the group later cannot be painted by accident. */
     root.querySelectorAll('#mmb-lane button[data-lane]').forEach(function (b) {
       var on = b.dataset.lane === lane;
       b.classList.toggle('on', on);
