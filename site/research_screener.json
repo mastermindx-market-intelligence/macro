@@ -1,7 +1,7 @@
 {
   "schema": "research_screener.v1",
   "tier": "research_priority_only",
-  "as_of": null,
+  "as_of": "2026-09-04",
   "order": "name",
   "orderings": [
     "name",
@@ -19,5 +19,108 @@
       "zh": "登录后即可看到你持有其中哪些。"
     }
   ],
-  "rows": []
+  "rows": [
+    {
+      "listing_key": "US-XNAS-AAPL",
+      "name": "Apple",
+      "ticker": "AAPL",
+      "catalyst": {
+        "event_name": {
+          "en": "Estimated window",
+          "zh": "预计窗口"
+        },
+        "window_start": "2026-09-12",
+        "window_end": "2026-09-19",
+        "kind": "estimated_window",
+        "upstream_kind": "ESTIMATED_WINDOW",
+        "window_label": {
+          "en": "Estimated window September 12 – September 19",
+          "zh": "预计窗口：9 月 12 日 – 9 月 19 日"
+        },
+        "tag": {
+          "en": "Estimated window — not an announced date",
+          "zh": "预计窗口 — 并非官方公布日期"
+        },
+        "owner": {
+          "en": "Catalyst window panel",
+          "zh": "催化窗口面板"
+        }
+      },
+      "valuation_posture": {
+        "label": {
+          "en": "Looks inexpensive against reported earnings.",
+          "zh": "对照已披露盈利显得便宜。"
+        },
+        "assumptions_text": {
+          "en": "Sales up 3 percent, margins unchanged, valued at 18 times reported earnings.",
+          "zh": "销售收入增长 3%，利润率不变，按已披露盈利的 18 倍估值。"
+        },
+        "owner": {
+          "en": "Valuation under different assumptions",
+          "zh": "不同假设下的估值面板"
+        }
+      },
+      "exposure": null,
+      "theme": null,
+      "why": {
+        "en": "Estimated window September 12 – September 19. Estimated window — not an announced date. From Catalyst window panel. Looks inexpensive against reported earnings. Sales up 3 percent, margins unchanged, valued at 18 times reported earnings. From Valuation under different assumptions.",
+        "zh": "预计窗口：9 月 12 日 – 9 月 19 日。预计窗口 — 并非官方公布日期。来源：催化窗口面板。对照已披露盈利显得便宜。销售收入增长 3%，利润率不变，按已披露盈利的 18 倍估值。来源：不同假设下的估值面板。"
+      },
+      "why_glance": {
+        "en": "Estimated window September 12 – September 19. From Catalyst window panel.",
+        "zh": "预计窗口：9 月 12 日 – 9 月 19 日。来源：催化窗口面板。"
+      }
+    },
+    {
+      "listing_key": "US-XNAS-MSFT",
+      "name": "Microsoft",
+      "ticker": "MSFT",
+      "catalyst": {
+        "event_name": {
+          "en": "Estimated window",
+          "zh": "预计窗口"
+        },
+        "window_start": "2026-09-22",
+        "window_end": "2026-09-29",
+        "kind": "estimated_window",
+        "upstream_kind": "ESTIMATED_WINDOW",
+        "window_label": {
+          "en": "Estimated window September 22 – September 29",
+          "zh": "预计窗口：9 月 22 日 – 9 月 29 日"
+        },
+        "tag": {
+          "en": "Estimated window — not an announced date",
+          "zh": "预计窗口 — 并非官方公布日期"
+        },
+        "owner": {
+          "en": "Catalyst window panel",
+          "zh": "催化窗口面板"
+        }
+      },
+      "valuation_posture": {
+        "label": {
+          "en": "Looks expensive against reported earnings.",
+          "zh": "对照已披露盈利显得偏贵。"
+        },
+        "assumptions_text": {
+          "en": "Sales up 5 percent, margins up 1 points, valued at 24 times reported earnings.",
+          "zh": "销售收入增长 5%，利润率上升 1 个百分点，按已披露盈利的 24 倍估值。"
+        },
+        "owner": {
+          "en": "Valuation under different assumptions",
+          "zh": "不同假设下的估值面板"
+        }
+      },
+      "exposure": null,
+      "theme": null,
+      "why": {
+        "en": "Estimated window September 22 – September 29. Estimated window — not an announced date. From Catalyst window panel. Looks expensive against reported earnings. Sales up 5 percent, margins up 1 points, valued at 24 times reported earnings. From Valuation under different assumptions.",
+        "zh": "预计窗口：9 月 22 日 – 9 月 29 日。预计窗口 — 并非官方公布日期。来源：催化窗口面板。对照已披露盈利显得偏贵。销售收入增长 5%，利润率上升 1 个百分点，按已披露盈利的 24 倍估值。来源：不同假设下的估值面板。"
+      },
+      "why_glance": {
+        "en": "Estimated window September 22 – September 29. From Catalyst window panel.",
+        "zh": "预计窗口：9 月 22 日 – 9 月 29 日。来源：催化窗口面板。"
+      }
+    }
+  ]
 }

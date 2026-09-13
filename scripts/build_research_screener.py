@@ -23,14 +23,27 @@ JSON_NAME = "research_screener.json"
 HTML_NAME = "research_screener.html"
 
 
+_FALLBACK_STOCKDATA = "tests/fixtures/research_screener"
+
+
 def _load_stockdata(root: Path) -> tuple[list[dict], list[dict], dict[str, str], str | None]:
+    """Read security_state.v1 records. Prefers ``site/stockdata`` (the real
+    per-ticker store), falls back to ``tests/fixtures/research_screener/``
+    so a fresh checkout without the gitignored site tree still produces the
+    documented rows for evidence re-capture. The fixture ships the same
+    shape as the real store: ``security_state`` + ``valuation_scenario``.
+    """
     stockdir = root / "site" / "stockdata"
+    if not stockdir.is_dir():
+        fallback = root / _FALLBACK_STOCKDATA
+        if fallback.is_dir():
+            stockdir = fallback
+        else:
+            return [], [], {}, None
     states: list[dict] = []
     postures: list[dict] = []
     names: dict[str, str] = {}
     as_of: str | None = None
-    if not stockdir.is_dir():
-        return states, postures, names, as_of
     for path in sorted(stockdir.glob("*.json")):
         try:
             rec = json.loads(path.read_text(encoding="utf-8"))

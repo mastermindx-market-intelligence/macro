@@ -39,13 +39,13 @@
   </header>
 
   <div class="rs-toolbar">
-    <div class="rs-chips" role="group" aria-label="Lenses 视角">
+    <div class="rs-chips" role="group" aria-label="{{ t('Lenses', '视角') }}">
       <button type="button" class="rs-chip is-disabled" disabled aria-disabled="true" data-lens="theme" aria-describedby="rs-theme-hint">{{ t('Theme', '主题') }}</button>
       <button type="button" class="rs-chip" data-lens="catalyst" aria-pressed="false">{{ t('Catalyst', '催化事项') }}</button>
       <button type="button" class="rs-chip" data-lens="exposure" aria-pressed="false">{{ t('Exposure', '持仓') }}</button>
       <button type="button" class="rs-chip" data-lens="valuation" aria-pressed="false">{{ t('Valuation posture', '估值姿态') }}</button>
     </div>
-    <div class="rs-order" role="group" aria-label="Order 排列方式">
+    <div class="rs-order" role="group" aria-label="{{ t('Order', '排列方式') }}">
       <span class="rs-order-label">{{ t('Order by', '排列方式') }}</span>
       <button type="button" class="rs-order-btn is-on" data-order="name" aria-pressed="true">{{ t('Name', '名称') }}</button>
       <button type="button" class="rs-order-btn" data-order="next_catalyst_date" aria-pressed="false">{{ t('Next estimated window', '下一项估计窗口') }}</button>
@@ -80,7 +80,7 @@
         <summary>{{ t('Receipt', '凭证') }}</summary>
         <ul>
           {% if row.catalyst %}
-          <li>{{ t('Estimated window', '估计窗口') }} — <span class="l-en">{{ row.catalyst.window_label.en }}</span><span class="l-zh">{{ row.catalyst.window_label.zh }}</span> · <span class="l-en">{{ row.catalyst.owner.en }}</span><span class="l-zh">{{ row.catalyst.owner.zh }}</span></li>
+          <li><span class="l-en">{{ row.catalyst.event_name.en }} {{ row.catalyst.window_label.en }}</span><span class="l-zh">{{ row.catalyst.event_name.zh }}{{ row.catalyst.window_label.zh }}</span> · <span class="l-en">{{ row.catalyst.tag.en }}</span><span class="l-zh">{{ row.catalyst.tag.zh }}</span> · <span class="l-en">{{ row.catalyst.owner.en }}</span><span class="l-zh">{{ row.catalyst.owner.zh }}</span></li>
           {% endif %}
           {% if row.valuation_posture %}
           <li><span class="l-en">{{ row.valuation_posture.label.en }}</span><span class="l-zh">{{ row.valuation_posture.label.zh }}</span> · <span class="l-en">{{ row.valuation_posture.assumptions_text.en }}</span><span class="l-zh">{{ row.valuation_posture.assumptions_text.zh }}</span> · <span class="l-en">{{ row.valuation_posture.owner.en }}</span><span class="l-zh">{{ row.valuation_posture.owner.zh }}</span></li>

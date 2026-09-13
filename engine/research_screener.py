@@ -38,8 +38,23 @@ THEME_NULL_ZH = "主题视角尚未提供。"
 EXPOSURE_NULL_EN = "Sign in to see which of these you hold"
 EXPOSURE_NULL_ZH = "登录后即可看到你持有其中哪些。"
 
-CATALYST_EVENT_EN = "Next earnings window"
-CATALYST_EVENT_ZH = "下一份财报窗口"
+# Sibling-matching event names (templates/ticker.html.j2:1167,1875 via
+# scripts/build_ticker_pages.py:_ss_observables). An estimated window is
+# never hardcoded as "Next earnings window" — the label is read from the
+# upstream `kind` so a non-earnings window never gets mis-titled.
+_KIND_LABEL: dict[str, tuple[str, str]] = {
+    "ESTIMATED_WINDOW": ("Estimated window", "预计窗口"),
+    "EXPECTED_EARNINGS": ("Next earnings report", "下次财报"),
+    "EARNINGS": ("Next earnings report", "下次财报"),
+    "CONFIRMED_EARNINGS": ("Confirmed results date", "已确认财报日期"),
+    "FILING_DUE": ("Filing due", "披露截止"),
+    "DEADLINE": ("Deadline", "截止时点"),
+}
+_ESTIMATED_WINDOW_LABEL_EN = "Estimated window"
+_ESTIMATED_WINDOW_LABEL_ZH = "预计窗口"
+_ESTIMATED_WINDOW_TAG_EN = "Estimated window — not an announced date"
+_ESTIMATED_WINDOW_TAG_ZH = "预计窗口 — 并非官方公布日期"
+
 CATALYST_OWNER_EN = "Catalyst window panel"
 CATALYST_OWNER_ZH = "催化窗口面板"
 
@@ -52,8 +67,8 @@ VAL_EXPENSIVE_ZH = "对照已披露盈利显得偏贵。"
 VAL_INLINE_EN = "Looks in line with reported earnings."
 VAL_INLINE_ZH = "对照已披露盈利大致相当。"
 
-WHY_IDENTITY_EN = "This name is on the research list because it has a security state record."
-WHY_IDENTITY_ZH = "该公司出现在研究名单上，是因为它有证券状态记录。"
+WHY_IDENTITY_EN = "This name is on the research list because the research list panel flagged it."
+WHY_IDENTITY_ZH = "该公司出现在研究名单上，是因为研究名单面板将其标记。"
 _EN_SENTENCE_END = ".!?"
 _ZH_SENTENCE_END = "。！？"
 
@@ -158,7 +173,9 @@ def _catalyst_for(state: Mapping[str, Any], as_of: date | None) -> dict[str, Any
     for item in observables:
         if not isinstance(item, Mapping):
             continue
-        start = _iso_date(item.get("window_start") or item.get("date"))
+        # Upstream security_state.v1 observables carry an estimated window;
+        # the contract has no announced `date` field. Read window_start only.
+        start = _iso_date(item.get("window_start"))
         if start is None:
             continue
         dated.append((start, item))
@@ -173,17 +190,23 @@ def _catalyst_for(state: Mapping[str, Any], as_of: date | None) -> dict[str, Any
     if trading_days_between(as_of, event_date) > CATALYST_WINDOW_TRADING_DAYS:
         return None
     window_end = _iso_date(item.get("window_end")) or event_date
-    # Upstream security_state.v1 observables carry an estimated window, not an
-    # announced date field. Emit only the window — never a `date` key.
+    raw_kind = str(item.get("kind") or "").strip().upper()
+    label_en, label_zh = _KIND_LABEL.get(
+        raw_kind, (_ESTIMATED_WINDOW_LABEL_EN, _ESTIMATED_WINDOW_LABEL_ZH)
+    )
+    # Always emit an estimated window: the upstream contract never carries an
+    # announced date field, so the kind the engine can prove is estimated.
     return {
-        "next_event_name": _bilingual(CATALYST_EVENT_EN, CATALYST_EVENT_ZH),
+        "event_name": _bilingual(label_en, label_zh),
         "window_start": event_date.isoformat(),
         "window_end": window_end.isoformat(),
         "kind": "estimated_window",
+        "upstream_kind": raw_kind or "ESTIMATED_WINDOW",
         "window_label": _bilingual(
-            f"Next earnings window opens around {_window_day_en(event_date)} — windows, not certainties",
-            f"下一份财报窗口大约在 {_window_day_zh(event_date)} 开启 — 窗口，不是定论。",
+            f"{label_en} {_window_day_en(event_date)} – {_window_day_en(window_end)}",
+            f"{label_zh}：{_window_day_zh(event_date)} – {_window_day_zh(window_end)}",
         ),
+        "tag": _bilingual(_ESTIMATED_WINDOW_TAG_EN, _ESTIMATED_WINDOW_TAG_ZH),
         "owner": _bilingual(CATALYST_OWNER_EN, CATALYST_OWNER_ZH),
     }
 
@@ -285,20 +308,23 @@ def _why(
     parts_zh: list[str] = []
     if catalyst:
         owner = catalyst["owner"]
+        label = catalyst["event_name"]
         start = _iso_date(catalyst.get("window_start"))
-        day_en = _window_day_en(start) if start else ""
-        day_zh = _window_day_zh(start) if start else ""
-        parts_en.append(
-            _en_sentence(
-                f"Next earnings window opens around {day_en} — windows, not certainties"
-            )
-        )
+        end = _iso_date(catalyst.get("window_end")) or start
+        if start and end and start != end:
+            when_en = f"{_window_day_en(start)} – {_window_day_en(end)}"
+            when_zh = f"{_window_day_zh(start)} – {_window_day_zh(end)}"
+        elif start:
+            when_en = _window_day_en(start)
+            when_zh = _window_day_zh(start)
+        else:
+            when_en = ""
+            when_zh = ""
+        parts_en.append(_en_sentence(f"{label['en']} {when_en}"))
+        parts_en.append(_en_sentence(catalyst["tag"]["en"]))
         parts_en.append(_en_sentence(f"From {owner['en']}"))
-        parts_zh.append(
-            _zh_sentence(
-                f"下一份财报窗口大约在 {day_zh} 开启 — 窗口，不是定论"
-            )
-        )
+        parts_zh.append(_zh_sentence(f"{label['zh']}：{when_zh}"))
+        parts_zh.append(_zh_sentence(catalyst["tag"]["zh"]))
         parts_zh.append(_zh_sentence(f"来源：{owner['zh']}"))
     if valuation:
         label = valuation["label"]
@@ -331,19 +357,36 @@ def _why_glance(
     catalyst: Mapping[str, Any] | None,
     valuation: Mapping[str, Any] | None,
 ) -> dict[str, str]:
-    """One complete sentence for the glance cell — never a mid-clause clip."""
+    """Glance-tier sentence — owner-attributed, fits on one line of CSS clamp.
+
+    Two CSS lines at 1440, full sentence always present in the popover. The
+    glance string is itself a complete sentence (period at terminus) so the
+    clamp never lands mid-clause.
+    """
     if catalyst:
+        owner = catalyst["owner"]
+        label = catalyst["event_name"]
         start = _iso_date(catalyst.get("window_start"))
-        day_en = _window_day_en(start) if start else ""
-        day_zh = _window_day_zh(start) if start else ""
+        end = _iso_date(catalyst.get("window_end")) or start
+        if start and end and start != end:
+            when_en = f"{_window_day_en(start)} – {_window_day_en(end)}"
+            when_zh = f"{_window_day_zh(start)} – {_window_day_zh(end)}"
+        elif start:
+            when_en = _window_day_en(start)
+            when_zh = _window_day_zh(start)
+        else:
+            when_en = ""
+            when_zh = ""
         return _bilingual(
-            _en_sentence(
-                f"Next earnings window opens around {day_en} — windows, not certainties"
-            ),
-            _zh_sentence(f"下一份财报窗口大约在 {day_zh} 开启 — 窗口，不是定论"),
+            _en_sentence(f"{label['en']} {when_en}. From {owner['en']}."),
+            _zh_sentence(f"{label['zh']}：{when_zh}。来源：{owner['zh']}。"),
         )
     if valuation:
-        return valuation["label"]
+        owner = valuation["owner"]
+        return _bilingual(
+            _en_sentence(f"{valuation['label']['en']} From {owner['en']}."),
+            _zh_sentence(f"{valuation['label']['zh']}来源：{owner['zh']}。"),
+        )
     return _bilingual(WHY_IDENTITY_EN, WHY_IDENTITY_ZH)
 
 

@@ -452,16 +452,62 @@ def test_window_only_catalyst_never_emits_a_date_or_on_date_copy():
     assert catalyst["kind"] == "estimated_window"
     assert catalyst["window_start"] == "2026-09-12"
     assert catalyst["window_end"] == "2026-09-12"
+    assert catalyst["event_name"]["en"] == "Estimated window"
+    assert catalyst["event_name"]["zh"] == "预计窗口"
+    assert catalyst["tag"]["en"] == "Estimated window — not an announced date"
+    assert catalyst["tag"]["zh"] == "预计窗口 — 并非官方公布日期"
     why_en = payload["rows"][0]["why"]["en"]
     assert not _ON_DATE.search(why_en), why_en
     assert "on 2026-09-12" not in why_en
-    assert "opens around September 12" in why_en
-    assert "windows, not certainties" in why_en
-    assert "窗口，不是定论" in payload["rows"][0]["why"]["zh"]
+    assert "Estimated window September 12" in why_en, why_en
+    assert "Estimated window — not an announced date" in why_en, why_en
+    assert "Catalyst window panel" in why_en, why_en
+    assert "预计窗口 — 并非官方公布日期" in payload["rows"][0]["why"]["zh"]
+    assert "催化窗口面板" in payload["rows"][0]["why"]["zh"]
     glance = payload["rows"][0]["why_glance"]["en"]
-    assert glance.endswith((".", "!", "?"))
-    assert "Sales up" not in glance
-    assert "From Valuation" not in glance
+    assert glance.endswith((".", "!", "?")), glance
+    assert "Sales up" not in glance, glance
+    assert "From Valuation" not in glance, glance
+    assert "Catalyst window panel" in glance, glance
+
+
+def test_catalyst_window_label_carries_the_range():
+    """H1: WHEN renders as a range when window_start != window_end."""
+    payload = compile_research_screener(
+        [_state("US-XNAS-MSFT", "MSFT", name="Microsoft", window_start="2026-09-22", window_end="2026-09-29")],
+        as_of=date(2026, 9, 1),
+    )
+    catalyst = payload["rows"][0]["catalyst"]
+    assert catalyst is not None
+    assert "September 22 – September 29" in catalyst["window_label"]["en"], catalyst
+    assert "9 月 22 日 – 9 月 29 日" in catalyst["window_label"]["zh"], catalyst
+
+
+def test_glance_why_is_owner_attributed():
+    """H3 MAJOR-1: glance tier names the owner of the fact, not just the fact."""
+    catalyst_only = compile_research_screener(
+        [_state("US-XNAS-AAPL", "AAPL", name="Apple", window_start="2026-09-12")],
+        as_of=date(2026, 9, 1),
+    )["rows"][0]
+    assert "Catalyst window panel" in catalyst_only["why_glance"]["en"]
+    assert "催化窗口面板" in catalyst_only["why_glance"]["zh"]
+
+    valuation_only = compile_research_screener(
+        [_state("US-XNAS-MSFT", "MSFT", name="Microsoft")],
+        [_valuation("MSFT", price=410, per_share=360)],
+        as_of=date(2026, 9, 1),
+    )["rows"][0]
+    assert "Valuation under different assumptions" in valuation_only["why_glance"]["en"]
+    assert "不同假设下的估值面板" in valuation_only["why_glance"]["zh"]
+
+
+def test_engine_carries_sibling_matching_estimated_window_copy():
+    """The engine owns the sibling-matching event label and tag copy."""
+    source = ENGINE_PATH.read_text(encoding="utf-8")
+    assert '"Estimated window"' in source
+    assert '"预计窗口"' in source
+    assert '"Estimated window — not an announced date"' in source
+    assert '"预计窗口 — 并非官方公布日期"' in source
 
 
 def test_forbidden_key_guard_covers_inflections():
@@ -497,11 +543,24 @@ def test_template_has_no_skydeck_payload_or_en_only_title():
     assert "id=\"rs-payload\"" not in source
     assert "application/json" not in source
     assert "title=" not in source
-    assert "Estimated window" in source
-    assert "估计窗口" in source
+    # The sibling-matching label lives in engine/research_screener.py, not the
+    # template — the template renders {{ row.catalyst.event_name.* }}.
     assert "about 30 trading days" in source
     assert "大约 30 个交易日" in source
     assert "research_screener.css" in source
+
+
+def test_template_aria_labels_go_through_t_macro():
+    """H4(a): the Lenses / Order group labels are bilingual via the page t() macro."""
+    source = TEMPLATE_PATH.read_text(encoding="utf-8")
+    assert 'aria-label="Lenses 视角"' not in source
+    assert 'aria-label="{{ t(\'Lenses\', \'视角\') }}"' in source, source
+    assert 'aria-label="{{ t(\'Order\', \'排列方式\') }}"' in source, source
+    assert 'aria-describedby="rs-theme-hint"' in source
+    # The Theme chip's visible hint text must be present (bilingual, not just title=).
+    assert 'id="rs-theme-hint"' in source
+    assert "Theme lens isn&#39;t available yet" in source or "Theme lens isn't available yet" in source
+    assert "主题视角尚未提供。" in source
 
 
 def test_why_cell_wraps_instead_of_clipping():
