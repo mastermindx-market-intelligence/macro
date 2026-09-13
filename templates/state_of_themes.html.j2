@@ -1,6 +1,23 @@
 {% macro t(en, zh='') -%}
 <span class="l-en">{{ en|safe }}</span><span class="l-zh">{{ (zh if zh else en)|safe }}</span>
 {%- endmacro %}
+{% macro rp_date_en(iso) -%}
+{%- if iso -%}
+{%- set p = (iso|string)[:10].split('-') -%}
+{%- set months = ['January','February','March','April','May','June','July','August','September','October','November','December'] -%}
+{%- if p|length == 3 and p[1]|int >= 1 and p[1]|int <= 12 -%}
+{{ p[2]|int }} {{ months[p[1]|int - 1] }} {{ p[0] }}
+{%- endif -%}
+{%- endif -%}
+{%- endmacro %}
+{% macro rp_date_zh(iso) -%}
+{%- if iso -%}
+{%- set p = (iso|string)[:10].split('-') -%}
+{%- if p|length == 3 and p[1]|int >= 1 and p[1]|int <= 12 -%}
+{{ p[0] }}年{{ p[1]|int }}月{{ p[2]|int }}日
+{%- endif -%}
+{%- endif -%}
+{%- endmacro %}
 {# The signature: a "line of conviction" — a current running through the theme
    lifecycle. Shape is a gentle rising spine; the pulse travels left→right the
    way belief spreads through a story. Reduced-motion → static. #}
@@ -218,6 +235,38 @@ html[data-theme="dark"]{
 .shelf-note{margin-top:8px}
 .sot-disclosure{font-size:12.5px;color:var(--muted);margin:28px 0 0;padding-top:14px;border-top:1px solid var(--line);line-height:1.6}
 
+/* ── reading order (uncalibrated evidence recency; not a ranking) ── */
+.rp{margin:22px 0 6px;padding:18px 20px 16px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card,12px)}
+html[data-theme="dark"] .rp{box-shadow:var(--card-shadow),inset 0 0 0 1px color-mix(in srgb,var(--line) 55%,transparent)}
+html[data-theme="light"] .rp{background:var(--panel);box-shadow:var(--card-shadow),0 8px 24px color-mix(in srgb,var(--text) 6%,transparent)}
+.rp .sec-head{margin-top:0}
+.rp-rule{font-size:13px;color:var(--text);margin:0 0 12px;max-width:760px;line-height:1.55}
+html[data-theme="dark"] .rp-rule{font-weight:500}
+html[data-theme="light"] .rp-rule{font-weight:600}
+.rp-list{list-style:none;margin:0;padding:0}
+.rp-item{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px;padding:9px 0}
+html[data-theme="dark"] .rp-item{border-bottom:1px solid color-mix(in srgb,var(--line) 70%,transparent)}
+html[data-theme="light"] .rp-item{border-bottom:1px solid var(--line)}
+.rp-item:last-child{border-bottom:none}
+.rp-pos{font-variant-numeric:tabular-nums;font-size:13px;min-width:1.6em}
+html[data-theme="dark"] .rp-pos{color:var(--muted);font-weight:600}
+html[data-theme="light"] .rp-pos{color:var(--text);font-weight:700}
+.rp-name{font-size:14.5px;font-weight:800;color:var(--text);letter-spacing:-.01em}
+.rp-meta{flex:1 0 100%;font-size:12.5px;color:var(--muted);padding-left:calc(1.6em + 10px)}
+.rp-note{font-size:13px;color:var(--muted);margin:10px 0 0;max-width:760px;line-height:1.55}
+.rp-undated{margin-top:14px;padding-top:12px}
+html[data-theme="dark"] .rp-undated{border-top:1px solid color-mix(in srgb,var(--line) 70%,transparent)}
+html[data-theme="light"] .rp-undated{border-top:1px solid var(--line)}
+.rp-undated .rp-head{font-size:13px;font-weight:700;color:var(--text);margin:0 0 4px}
+.rp details{margin-top:12px;background:var(--panel2);border:1px solid var(--line);border-radius:var(--r-card,12px);padding:0}
+.rp details summary{cursor:pointer;list-style:none;padding:10px 14px;font-size:12.5px;font-weight:700;color:var(--text)}
+.rp details summary::-webkit-details-marker{display:none}
+.rp details .rp-body{padding:0 14px 12px;font-size:12.5px;color:var(--muted);line-height:1.6}
+@media(max-width:560px){
+  .rp{padding:14px 14px 12px;border-radius:var(--r-card,12px)}
+  .rp-meta{padding-left:0}
+}
+
 /* ── empty state ── */
 .empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
 .empty-state h2{font-size:18px;margin:0 0 8px;color:var(--text)}
@@ -283,6 +332,83 @@ html[data-theme="dark"] body::before{
     <span class="chg-chip calm"><span class="bdot"></span>{{ t('No stage changes or new break-rules this week.', '本周无阶段变化或新触发的否定条件。') }}</span>
   {% endif %}
 </div>
+
+{% if research_priority %}
+<section class="rp">
+  <div class="sec-head">{{ t('What to look at first', '先看哪些主题') }}</div>
+  {% if research_priority.state == 'empty' %}
+  <p class="sec-sub">{{ t('We have not recorded new evidence for any theme yet. This list fills in after the next update.', '目前还没有记录到任何主题的新证据。下一次更新后，这里会显示内容。') }}</p>
+  {% elif research_priority.state == 'unavailable' %}
+  <p class="sec-sub">{{ t('The evidence record could not be read, so this list is not shown. Nothing else on this page is affected.', '无法读取证据记录，因此这份清单暂不显示。本页其他内容不受影响。') }}</p>
+  {% else %}
+  {% if research_priority.n_dated %}
+  <p class="sec-sub">{{ t('Start at the top. The list runs by the date something was last written down about each theme, newest first; themes written down on the same day run by how many statements were recorded that day. It is not where the best idea is.', '从最上面开始看。这份清单按每个主题最后一次被记录下内容的日期排列，最新的在前；同一天记录的主题，按当天记录的条数排列。排在最上面的并不代表它是最好的想法。') }}</p>
+  <p class="rp-rule">{{ t("When the date and that day's count match, the list runs by name.", '日期和当天条数都相同时，按名称排列。') }}</p>
+  <ol class="rp-list">
+    {% for item in research_priority['items'] %}
+    {% if item.last_recorded_date %}
+    <li class="rp-item">
+      <span class="rp-pos">{{ item.position }}.</span>
+      <span class="rp-name"><span class="l-en" lang="{{ 'en' if (item.name_en and item.name_en|string|trim) else 'zh' }}">{{ item.name_en if (item.name_en and item.name_en|string|trim) else item.name_zh }}</span><span class="l-zh" lang="{{ 'zh' if (item.name_zh and item.name_zh|string|trim) else 'en' }}">{{ item.name_zh if (item.name_zh and item.name_zh|string|trim) else item.name_en }}</span></span>
+      <span class="rp-meta">
+        <span class="l-en">New evidence recorded {{ rp_date_en(item.last_recorded_date) }}</span><span class="l-zh">{{ rp_date_zh(item.last_recorded_date) }}记录到新证据</span>
+        ·
+        {% if item.statements_recorded == 1 %}
+        {{ t('1 statement that day', '当天有 1 条记录') }}
+        {% else %}
+        <span class="l-en">{{ item.statements_recorded }} statements that day</span><span class="l-zh">当天有 {{ item.statements_recorded }} 条记录</span>
+        {% endif %}
+      </span>
+    </li>
+    {% endif %}
+    {% endfor %}
+  </ol>
+  <p class="rp-note">{{ t('This is a reading order, not a score. It does not say a theme is more likely to work, worth more, or already in the price.', '这只是阅读顺序，不是评分。它并不表示某个主题更可能奏效、价值更高，或已被价格消化。') }}</p>
+  {% if research_priority.n_dated > research_priority.max_items %}
+  <p class="rp-note"><span class="l-en">Showing the first {{ research_priority.max_items }} of {{ research_priority.n_dated }} dated themes in this order.</span><span class="l-zh">共 {{ research_priority.n_dated }} 个有日期的主题，按此顺序显示前 {{ research_priority.max_items }} 个。</span></p>
+  {% endif %}
+  {% else %}
+  <p class="sec-sub">{{ t('No tracked theme carries a dated entry yet, so there is no reading order to show.', '目前没有任何主题带有日期记录，因此暂时没有可显示的阅读顺序。') }}</p>
+  <p class="rp-note">{{ t('When an order is shown, it is a reading order, not a score.', '显示顺序时，那只是阅读顺序，不是评分。') }}</p>
+  {% endif %}
+  {% if research_priority.n_undated %}
+  <div class="rp-undated">
+    <p class="rp-head">{{ t('No dated evidence yet', '尚无带日期的证据') }}</p>
+    {% if research_priority.n_dated %}
+    <p class="rp-note">{{ t('These themes are tracked, but nothing we hold about them carries a date, so they cannot take a place in the order above.', '这些主题在追踪范围内，但我们掌握的内容都没有日期，因此无法排入上面的顺序。') }}</p>
+    {% else %}
+    <p class="rp-note">{{ t('These themes are tracked, but nothing we hold about them carries a date.', '这些主题在追踪范围内，但我们掌握的内容都没有日期。') }}</p>
+    {% endif %}
+    {% if research_priority.n_undated == 1 %}
+    <p class="rp-note"><span class="l-en">1 tracked theme has no dated entry yet.</span><span class="l-zh">另有 1 个主题尚无带日期的记录。</span></p>
+    {% else %}
+    <p class="rp-note"><span class="l-en">{{ research_priority.n_undated }} tracked themes have no dated entry yet.</span><span class="l-zh">另有 {{ research_priority.n_undated }} 个主题尚无带日期的记录。</span></p>
+    {% endif %}
+    <ol class="rp-list">
+      {% for item in research_priority['items'] %}
+      {% if not item.last_recorded_date %}
+      <li class="rp-item">
+        <span class="rp-name"><span class="l-en" lang="{{ 'en' if (item.name_en and item.name_en|string|trim) else 'zh' }}">{{ item.name_en if (item.name_en and item.name_en|string|trim) else item.name_zh }}</span><span class="l-zh" lang="{{ 'zh' if (item.name_zh and item.name_zh|string|trim) else 'en' }}">{{ item.name_zh if (item.name_zh and item.name_zh|string|trim) else item.name_en }}</span></span>
+      </li>
+      {% endif %}
+      {% endfor %}
+    </ol>
+  </div>
+  {% endif %}
+  <details>
+    {% if research_priority.n_dated %}
+    <summary>{{ t('How this order is made', '这个顺序是怎么排的') }}</summary>
+    {% else %}
+    <summary>{{ t('How a reading order is made', '阅读顺序是怎么排的') }}</summary>
+    {% endif %}
+    <p class="rp-body">{{ t('Every line here comes from the theme evidence record. We read two things only: the day a statement about the theme was written down, and how many were written down that day. We do not read, and this page does not show, any measure of size, direction, how sure we are, or how much is already in the price — those are not built yet.', '这里的每一行都来自主题证据记录。我们只读两样东西：关于该主题的说法是哪一天记录的，以及当天记录了多少条。我们不读取、本页也不显示任何关于幅度、方向、把握程度或价格已消化程度的度量——这些尚未建成。') }}</p>
+  </details>
+  {% if research_priority.asof %}
+  <p class="rp-note"><span class="l-en">Evidence recorded up to {{ rp_date_en(research_priority.asof) }}</span><span class="l-zh">证据记录截至 {{ rp_date_zh(research_priority.asof) }}</span></p>
+  {% endif %}
+  {% endif %}
+</section>
+{% endif %}
 
 {# ── SIGNATURE: lifecycle ribbon ── #}
 <div class="sec-head"><span class="sh-dot" style="--sh-c:var(--lc-rerate)"></span>{{ t('Where every story sits', '每个主题所处阶段') }}</div>
