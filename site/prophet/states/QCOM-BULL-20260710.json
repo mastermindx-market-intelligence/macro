@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "QCOM-BULL-20260710",
-  "asof": "2026-09-10",
-  "phase": "invalidated",
-  "detection_phase": "invalidated",
-  "management_confidence": 13.5,
-  "raw_confidence": 8.0,
-  "delta_vs_base": -46.5,
-  "recommended_action": "invalidated",
-  "human_state": "Invalidated",
+  "asof": "2026-09-13",
+  "phase": "overtime",
+  "detection_phase": "overtime",
+  "management_confidence": 25.0,
+  "raw_confidence": 25.8,
+  "delta_vs_base": -35.0,
+  "recommended_action": "trim",
+  "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 0.0,
+    "validity": 29.3,
     "progress": 0.0,
-    "pace": 0.0,
-    "retention": 37.2,
-    "overlay": 53.0
+    "pace": 4.7,
+    "retention": 42.8,
+    "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.057,
+    "dist_to_stop_r": 0.403,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 135.6,
-    "p1": -0.7047,
-    "p2": -0.3524,
+    "horizon_pct_used": 142.2,
+    "p1": -0.3981,
+    "p2": -0.199,
     "p3": null,
-    "move_r": -1.057,
+    "move_r": -0.597,
     "mfe_r": 0.0,
     "mae_r": -3.435
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 61,
-  "tau": 1.3556
+  "days_elapsed": 64,
+  "tau": 1.4222
 }
