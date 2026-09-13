@@ -913,6 +913,73 @@ def _patch_manifest_cell(man: dict, *, alias: str, row: dict,
         )
 
 
+def _recapture_hero() -> int:
+    """Recapture the 8 hero cells only. Other 44 cells stay byte-identical."""
+    from scripts.capture_page_evidence import CaptureUnavailable, serve_site_dir
+
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError as exc:
+        raise CaptureUnavailable(f"playwright is not importable: {exc}") from exc
+
+    scratch = Path(tempfile.mkdtemp(prefix="bonds_s3_hero_"))
+    try:
+        write_fixture_site(scratch)
+        httpd, port = serve_site_dir(scratch)
+        base = f"http://127.0.0.1:{port}"
+        manager = sync_playwright().start()
+        browser = None
+        captured: dict[str, dict] = {}
+        try:
+            browser = manager.chromium.launch(headless=True)
+            for viewport, (width, height) in VIEWPORTS.items():
+                for locale in LOCALES:
+                    for theme in THEMES:
+                        alias = f"hero-{theme}-{locale}-{viewport}.png"
+                        captured[alias] = _shot_and_store(
+                            browser, base, width=width, height=height,
+                            locale=locale, theme=theme,
+                            selector='[data-l1="hero"]', alias=alias,
+                            extra={"subject": "hero", "viewport": viewport,
+                                   "locale": locale, "theme": theme,
+                                   "viewport_width": width,
+                                   "viewport_height": height,
+                                   "access": "anonymous",
+                                   "force_state": None, "r5_hero": True,
+                                   "overlay": "clean"},
+                        )
+        finally:
+            if browser is not None:
+                browser.close()
+            manager.stop()
+            httpd.shutdown()
+
+        man_path = OUT_DIR / "manifest.json"
+        man = json.loads(man_path.read_text(encoding="utf-8")) if man_path.exists() else {
+            "schema": "mastermind.p0_evidence.v2", "pages": [], "aliases": {},
+        }
+        for alias, row in captured.items():
+            subject = row.get("subject")
+            theme = row.get("theme")
+            locale = row.get("locale")
+            viewport = row.get("viewport")
+
+            def _match(st, s=subject, t=theme, l=locale, v=viewport, a=alias):
+                if st.get("alias") == a:
+                    return True
+                return (st.get("subject") == s and st.get("theme") == t
+                        and st.get("locale") == l and st.get("viewport") == v
+                        and st.get("force_state") is None)
+
+            _patch_manifest_cell(man, alias=alias, row=row, match=_match)
+
+        man_path.write_text(json.dumps(man, indent=2) + "\n", encoding="utf-8")
+        print(f"hero recapture done: {len(captured)} cells", flush=True)
+        return 0
+    finally:
+        shutil.rmtree(scratch, ignore_errors=True)
+
+
 def _recapture_r4() -> int:
     """Recapture r4-changed cells. Does not wipe hero/changed/deeper/drivers@1440."""
     from scripts.capture_page_evidence import CaptureUnavailable, serve_site_dir
@@ -1081,9 +1148,15 @@ def main(argv: list[str] | None = None) -> int:
         "--r4", action="store_true",
         help="Recapture watching×8, world×8, drivers@390×4, delayed branch 1+2.",
     )
+    parser.add_argument(
+        "--hero-only", action="store_true",
+        help="Recapture the 8 hero cells only; leaves the other 44 cells.",
+    )
     args = parser.parse_args(argv)
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     CELLS_DIR.mkdir(parents=True, exist_ok=True)
+    if args.hero_only:
+        return _recapture_hero()
     if args.r4 or args.stale_only:
         return _recapture_r4()
 
