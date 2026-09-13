@@ -27,8 +27,8 @@ No infrastructure, parser, schema, chart, or synthetic test completes that job. 
 
 This proposal is absorbed into TOI rather than creating a standalone Elliott program.
 
-- TOI W1: public-method and local-estate evidence census. Draft PR #7107 is active and `PARTIAL`. At application-time reconciliation it carried 32 passports (12 P0, 11 P1, 7 P2, 2 archive) plus 10 residual-family dispositions. It encodes `toi.ordered_path_elliott` as `P2 / toi_later_context / missing`, not W3 authority. W1 still owes the visible `toi.inside_bar` source-quality correction, the independent frozen 20-passport reproduction review, evidence-driven repairs, and the exact return-head validation battery before Sol acceptance.
-- TOI W2-0: Daily/Weekly/4H data, clock, corrections, coverage, rights, identity, and Terminal parity. Draft PR #7094 has returned `PARTIAL / HOLD` and awaits Sol acceptance; its live sibling head is a separate reconciliation input.
+- TOI W1: public-method and local-estate evidence census. Draft PR #7107 is active and `PARTIAL`. Current sibling-state reconciliation records 32 passports (12 P0, 10 P1, 8 P2, 2 archive) plus 10 residual-family dispositions. The `toi.inside_bar` source-quality issue is closed by moving the branded scenario to `P2 / toi_later_context`; W1 still owes the independent frozen 20-passport reproduction review, adjudication of its findings, the exact return-head validation battery, and Sol acceptance. It encodes `toi.ordered_path_elliott` as `P2 / toi_later_context / missing`, not W3 authority.
+- TOI W2-0: Daily/Weekly/4H data, clock, corrections, coverage, rights, identity, and Terminal parity. Draft PR #7094 remains `PARTIAL / HOLD`. Its scientific/semantic head has a reusable acceptance ruling, while the release head remains draft and unmerged pending exact-head trusted packs and final release readback; its live sibling head is a separate reconciliation input.
 - TOI W3: Compression Release remains the first admitted proving tournament.
 - TOI W8: later reversal vertical; E0 does not silently become W8.
 - `engine/tech_catalog.py`: deterministic primitive catalog.
@@ -205,8 +205,8 @@ No market-price outcome read; no source refresh; no source-engine repair; no tri
 |---|---|---|
 | Historical source compatibility | `PARTIAL` | W1/W2-0 review the separate finding |
 | Canonical TOI ownership | `PROVEN_LIVE` | Preserve existing owner boundaries |
-| TOI W1 evidence census | `PARTIAL` | PR #7107 has a 32-passport census; resolve inside-bar source quality, complete the frozen 20-passport independent review, validate exact head, and obtain Sol acceptance |
-| TOI W2-0 data/clock archaeology | `PARTIAL` | Sol-review PR #7094; preserve its `HOLD` and measured failures |
+| TOI W1 evidence census | `PARTIAL` | PR #7107 has a 32-passport census and has closed the inside-bar source issue; complete the frozen 20-passport independent review, adjudicate findings, validate exact head, and obtain Sol acceptance |
+| TOI W2-0 data/clock archaeology | `PARTIAL` | Preserve the accepted semantic `HOLD`; settle exact-head packs and release readback on PR #7094 before merge or W2 start |
 | Ordered-path/Elliott method | `SPEC_ONLY` | W1 classifies it `P2 / toi_later_context / missing`; bind causal pivots, small grammar, multiple-parse/abstain-under-ambiguity law, and equal-budget generic geometry before any trial |
 | One anticipation proposal | `SPEC_ONLY` | W1/evaluation owner reconcile, accept, repair, or reject |
 | Point-in-time daily/minute source | `PARTIAL` | After W2-0 acceptance, execute bounded W2 repair/qualification |
@@ -222,4 +222,4 @@ No market-price outcome read; no source refresh; no source-engine repair; no tri
 2. Apply only this records repair: canonical TOI namespace, separate source finding, one anticipation proposal, moved probe/result, and corrected discovery references.
 3. Run the compact source probe, `python3 scripts/agentos.py validate`, `git diff --check`, and the repository's exact targeted checks on the immutable repaired head.
 4. Return the repaired head, current base, changed-file/blob hashes, check settlements, and unresolved-thread state for full Sol rereview.
-5. Do not refresh sources, create labels, register trials, fit models, or read outcomes. In parallel with this records repair, finish W1's inside-bar source correction and independent frozen 20-passport review on PR #7107, and complete Sol release review of W2-0 PR #7094; only accepted predecessor returns may unlock W2 repair or a later E0 method-admission revision. The existing Trial/Evaluation owner remains downstream of those gates.
+5. Do not refresh sources, create labels, register trials, fit models, or read outcomes. In parallel with this records repair, complete W1's independent frozen 20-passport review, adjudication, exact validation, and Sol acceptance on PR #7107, and settle W2-0 PR #7094's exact-head trusted packs and release readback; only accepted and merged predecessor returns may unlock W2 repair or a later E0 method-admission revision. The existing Trial/Evaluation owner remains downstream of those gates.
