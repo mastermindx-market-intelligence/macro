@@ -96,12 +96,21 @@ def _last(s: pd.Series) -> Any:
     return clean.iloc[-1] if len(clean) > 0 else None
 
 
+# Lockstep with scripts.build_commodities.CHG_1M_BARS (22 sessions ≈ 1 month).
+_CHG_1M_BARS = 22
+
+
 def _chg_1m(close: pd.Series) -> float | None:
-    """22-day percent change from the last available close."""
+    """22-day percent change from the last available close.
+
+    Same window as scripts.build_commodities._chg_pct(..., CHG_1M_BARS): dropna,
+    need bars+1 observations, last vs iloc[-(bars+1)], round 1.
+    """
     c = close.dropna()
-    if len(c) < 23:
+    need = _CHG_1M_BARS + 1
+    if len(c) < need:
         return None
-    return _safe_float((c.iloc[-1] / c.iloc[-23] - 1) * 100, 1)
+    return _safe_float((c.iloc[-1] / c.iloc[-need] - 1) * 100, 1)
 
 
 # --------------------------------------------------------------------------- #
