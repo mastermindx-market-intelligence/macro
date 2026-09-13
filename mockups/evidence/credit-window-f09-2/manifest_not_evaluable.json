@@ -26,7 +26,7 @@
     }
   },
   "excluded": [],
-  "generated_at": "2026-09-13T21:06:38Z",
+  "generated_at": "2026-09-13T22:40:34Z",
   "honesty": {
     "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
     "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
@@ -112,7 +112,7 @@
           "viewport": "desktop"
         },
         "panel_count": 7,
-        "payload_bytes_total": 824377,
+        "payload_bytes_total": 598626,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 17,
@@ -133,13 +133,13 @@
           "applied_force_state": "not-evaluable",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 594510,
+          "bytes": 592604,
           "captured": true,
-          "file": "9062e257b921c9d2--not-evaluable.png",
+          "file": "986c8fb0087970db--not-evaluable.png",
           "force_state": "not-evaluable",
           "height": 3317,
           "locale": "en",
-          "sha256": "9062e257b921c9d27678e6ad9f09f9cf03e42dfe8859db9617752ef4cea539e7",
+          "sha256": "986c8fb0087970db670bf0df52db9a0ea1f157faed0237d595f1454eb65fec32",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -154,7 +154,7 @@
     "explicit_routes": [
       "/ipo.html"
     ],
-    "max_pages": 1,
+    "max_pages": 30,
     "mode": "explicit_routes",
     "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
     "priority": null,
@@ -167,7 +167,7 @@
     "base_url": null,
     "kind": "site_dir",
     "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-ext-fix-m_6904_a1-3cfc2404826fcc75",
-    "resolved_sha_or_none": "0ff9e732b25cbeadee9ad3ceddcff71a4a59739f",
+    "resolved_sha_or_none": "6c444f6f35f86555ee5c6af291baf44132fab34d",
     "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/mo-ext-fix-m_6904_a1-3cfc2404826fcc75 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
     "site_dir": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/mo-ext-fix-m_6904_a1-3cfc2404826fcc75/site"
   },

@@ -1028,18 +1028,40 @@ def test_cw_read_percentile_fractions_match_engine_thresholds():
 # rendering ("Open", "Neutral", "Shut") that is also the natural plain-word
 # display label — those are NOT a leak, so this test only pins the multi-word
 # snake_case case the audit actually flagged.
-# Also pin that the on-rail scale label in templates/ipo.html.j2 no longer
-# carries the "not evaluable / 无法评估" phrasing that pre-fix took the engine
-# token straight into the largest glance-tier element.
+# The earlier round compared EN against `key.replace("_"," ").title()` =
+# "Not Evaluable" but the pre-fix value was sentence-cased "Not evaluable"
+# (the title-cased assertion was therefore happy on the old head). Pin the
+# exact fixed values explicitly so a regression to ANY form of the engine
+# token — title-cased, sentence-cased, or any other rendering — fails.
 # --------------------------------------------------------------------------- #
-def test_cw_state_and_clause_keys_do_not_leak_title_cased_engine_token():
-    # iterate every reachable engine key the lexicons expose
+def test_cw_state_and_clause_keys_do_not_leak_engine_token():
+    # 1. the EXACT fixed display values for the audit-flagged key — fails on the
+    #    pre-fix sentence-cased "Not evaluable / 无法评估" (H2's actual leak).
+    expected_state = {
+        "not_evaluable": ("No read", "暂无读数"),
+    }
+    for key, (en_want, zh_want) in expected_state.items():
+        assert key in bi.CW_STATE, (
+            f"CW_STATE must carry the engine key {key!r}; engine state "
+            f"otherwise can't be localised."
+        )
+        en_got, zh_got = bi.CW_STATE[key]
+        assert en_got == en_want, (
+            f"CW_STATE[{key!r}].EN must be {en_want!r} (repo plain-word "
+            f"convention); got {en_got!r} — the engine token must NEVER reach "
+            f"user copy."
+        )
+        assert zh_got == zh_want, (
+            f"CW_STATE[{key!r}].ZH must be {zh_want!r} (repo plain-word "
+            f"convention); got {zh_got!r} — the engine token must NEVER reach "
+            f"user copy."
+        )
+
+    # 2. no title-cased form of any multi-word snake_case engine state key
+    #    anywhere in CW_STATE / CW_CLAUSE (defensive — a future key the audit
+    #    didn't flag must still trip this).
     for lexicon, name in ((bi.CW_STATE, "CW_STATE"), (bi.CW_CLAUSE, "CW_CLAUSE")):
-        for key, (en, zh) in lexicon.items():
-            # the leak shape the audit named is a multi-word snake_case key
-            # rendered in title case — only meaningful when the key actually
-            # has snake_case (a single-word key "open" → title-case "Open" is
-            # the natural display label, never a leak).
+        for key, (en, _zh) in lexicon.items():
             if "_" not in key:
                 continue
             title_form = key.replace("_", " ").title()
@@ -1050,33 +1072,19 @@ def test_cw_state_and_clause_keys_do_not_leak_title_cased_engine_token():
                 f"never reaches user copy."
             )
 
-
-def test_ipo_template_does_not_carry_not_evaluable_string():
+    # 3. the template carries no leak of the engine token in user copy —
+    #    case-insensitive for EN (catches "Not evaluable", "NOT EVALUABLE",
+    #    "not-evaluable") but NOT the snake_case key name itself (a regex
+    #    with `_` matches the snake_case key in source comments), exact for
+    #    ZH (the pre-fix leak was the literal "无法评估").
     tpl_path = pathlib.Path(bi.__file__).resolve().parents[1] / "templates" / "ipo.html.j2"
     src = tpl_path.read_text()
-    # case-insensitive scan — "Not evaluable" / "not evaluable" both must be gone
-    assert re.search(r"not[\s_-]?evaluable", src, re.IGNORECASE) is None, (
+    assert re.search(r"not[ -]evaluable", src, re.IGNORECASE) is None, (
         "templates/ipo.html.j2 must not carry 'not evaluable' / "
-        "'Not evaluable' — the engine token belongs in CW_STATE only, never in "
-        "user copy; use 'No read' / '暂无读数' instead (see repo convention)."
+        "'Not evaluable' / 'not-evaluable' — the engine token belongs in "
+        "CW_STATE only, never in user copy; use 'No read' / '暂无读数' instead "
+        "(see repo convention)."
     )
-    # and the ZH twin too — "无法评估" was the pre-fix leak on the rail
-    assert "无法评估" not in src, (
-        "templates/ipo.html.j2 must not carry '无法评估' — use '暂无读数' "
-        "(see template/convention across transmission / foresight / risk bands)"
-    )
-
-
-def test_ipo_template_does_not_carry_not_evaluable_string():
-    tpl_path = pathlib.Path(bi.__file__).resolve().parents[1] / "templates" / "ipo.html.j2"
-    src = tpl_path.read_text()
-    # case-insensitive scan — "Not evaluable" / "not evaluable" both must be gone
-    assert re.search(r"not[\s_-]?evaluable", src, re.IGNORECASE) is None, (
-        "templates/ipo.html.j2 must not carry 'not evaluable' / "
-        "'Not evaluable' — the engine token belongs in CW_STATE only, never in "
-        "user copy; use 'No read' / '暂无读数' instead (see repo convention)."
-    )
-    # and the ZH twin too — "无法评估" was the pre-fix leak on the rail
     assert "无法评估" not in src, (
         "templates/ipo.html.j2 must not carry '无法评估' — use '暂无读数' "
         "(see template/convention across transmission / foresight / risk bands)"
