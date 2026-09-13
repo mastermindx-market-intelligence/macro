@@ -1084,3 +1084,436 @@ def test_capture_script_uses_real_ticker_page_and_element_screenshot():
     assert "_SHELL" not in src
     assert "body::before {{ display:none" not in src
     assert "render_ticker_page" in src
+
+
+# ---------------------------------------------------------------------------
+# W8B F09-11: debt-maturity persistence heal (R3c — workflow + helper tests)
+# ---------------------------------------------------------------------------
+
+
+import subprocess as _subprocess  # noqa: E402  -- kept local so the rest of
+                                  # the file's import block is untouched
+
+import yaml as _yaml  # noqa: E402  -- only the workflow-lint test needs it
+
+from scripts import debt_maturity_drip_push as _dmp  # noqa: E402
+
+
+WORKFLOW_PATH = Path(".github/workflows/debt-maturity-drip.yml")
+HELPER_PATH = Path("scripts/debt_maturity_drip_push.py")
+
+
+def _init_repo(path: Path) -> None:
+    """Init a fresh ``main`` repo with a CI-bot identity and a baseline
+    commit so the helper has something to push to.
+
+    Mirrors ``tests/test_ci_pack_semantic.py::_small_repository`` so the
+    two test files use the same plumbing for any future port.
+
+    Uses ``exist_ok=True`` so the helper is robust to tmp_path being
+    pre-created by pytest's tmp_path fixture under newer pytest releases
+    where the fixture root is created once and tests share the parent.
+    """
+    path.mkdir(exist_ok=True)
+    # If a prior test left a partial .git, wipe it so init is clean.
+    if (path / ".git").exists():
+        _subprocess.run(["rm", "-rf", str(path / ".git")], check=True, capture_output=True)
+    for args in (
+        ["init", "-q", "-b", "main"],
+        ["config", "user.email", "ci@example.test"],
+        ["config", "user.name", "CI Test"],
+        ["config", "commit.gpgsign", "false"],
+    ):
+        _subprocess.run(["git", *args], cwd=path, check=True, capture_output=True)
+
+
+def _git(path: Path, *args: str, check: bool = False) -> str:
+    return _subprocess.run(
+        ["git", *args],
+        cwd=path,
+        check=check,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+
+
+def _seed_repo(path: Path) -> None:
+    """Seed the two ALLOWED paths with byte-identical baseline files
+    and commit. The helper will only carry forward writes that touch
+    these exact paths.
+    """
+    cache_dir = path / "data" / "debt_maturity" / "cache"
+    cache_dir.mkdir(parents=True)
+    (cache_dir / "0000320193.json").write_text('{"fetched_at":"2026-09-12"}\n')
+    (path / "data" / "edgar").mkdir(parents=True)
+    (path / "data" / "edgar" / "statements.parquet").write_bytes(b"PARQUET_v0")
+    (path / "engine").mkdir()
+    (path / "engine" / "engine_marker.txt").write_text("untouched\n")
+    _git(path, "add", "-A")
+    _git(path, "commit", "-q", "-m", "baseline")
+
+
+def _bare_remote(work: Path) -> Path:
+    """Clone the working repo as a bare remote the helper can push to."""
+    bare = work.parent / (work.name + "_bare.git")
+    _subprocess.run(
+        ["git", "clone", "--bare", str(work), str(bare)],
+        check=True,
+        capture_output=True,
+    )
+    return bare
+
+
+def _add_remote(work: Path, bare: Path) -> None:
+    """Wire the bare remote into the work repo as ``origin``."""
+    _subprocess.run(
+        ["git", "-C", str(work), "remote", "add", "origin", str(bare)],
+        check=True,
+        capture_output=True,
+    )
+
+
+def test_drip_workflow_lints_clean_and_wires_the_persist_step():
+    """R3c/workflow-lint: workflow is well-formed, has exactly one
+    ``permissions:``, no job-level permissions block, and the last step
+    runs the helper under the kill-switch env expression."""
+    text = WORKFLOW_PATH.read_text()
+    wf = _yaml.safe_load(text)
+
+    assert wf["permissions"] == {"contents": "write"}
+    for job_id, job in wf["jobs"].items():
+        assert "permissions" not in job, (
+            f"job {job_id!r} must not declare a job-level permissions block; "
+            "top-level is the only one"
+        )
+    assert text.count("permissions:") == 1, (
+        "workflow must carry exactly one `permissions:` (top-level only)"
+    )
+
+    # The cron + backfill_edgar_flow wiring (from the original workflow,
+    # preserved by R2/R3a) must still be there.
+    assert re.search(r"cron:\s*[\"']", text), "expected a real cron schedule line"
+    assert "backfill_edgar_flow" in text
+
+    # The new persist step is named per R3b and runs the helper under
+    # the kill-switch env expression.
+    steps = wf["jobs"]["drip"]["steps"]
+    last = steps[-1]
+    assert "persist cache + statements to main" in last["name"]
+    env = last.get("env", {})
+    assert env.get("DEBT_MATURITY_DRIP_PUSH") == "${{ github.event.inputs.push || '1' }}"
+    run = last.get("run", "")
+    assert "scripts.debt_maturity_drip_push" in run
+    assert "--base main" in run
+
+    # R3d: the old "nightly ENGINE job's git add data/ will commit them"
+    # echo must be gone (the assumption it encoded is false, per R1).
+    assert "ENGINE job's git add data/" not in text
+    assert "git add data/" not in text
+
+
+def test_drip_push_gate_off_emits_notice_and_no_commit(monkeypatch, tmp_path, capsys):
+    """R3c/(i): with DEBT_MATURITY_DRIP_PUSH != "1", the helper prints the
+    gate-off ::notice at line start and returns 0 without staging or
+    committing anything."""
+    _init_repo(tmp_path)
+    _seed_repo(tmp_path)
+    monkeypatch.delenv("DEBT_MATURITY_DRIP_PUSH", raising=False)
+    monkeypatch.setenv("DEBT_MATURITY_DRIP_PUSH", "0")
+
+    rc = _dmp.main(["--repo", str(tmp_path)])
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert out.startswith("::notice"), f"expected annotation at line start, got: {out!r}"
+    assert "title=debt-maturity-drip" in out
+    assert "push disabled" in out
+    head_sha = _git(tmp_path, "rev-parse", "HEAD")
+    baseline_sha = _git(tmp_path, "log", "--format=%H", "-n", "1", "HEAD~0")
+    assert head_sha == baseline_sha, "no commit must be minted on the gate-off path"
+
+
+def test_drip_push_empty_diff_emits_notice_and_no_commit(monkeypatch, tmp_path, capsys):
+    """R3c/(ii): when nothing under ALLOWED_PATHS changed, the helper
+    emits the no-op ::notice and returns 0 without a commit."""
+    _init_repo(tmp_path)
+    _seed_repo(tmp_path)
+    monkeypatch.setenv("DEBT_MATURITY_DRIP_PUSH", "1")
+
+    rc = _dmp.main(["--repo", str(tmp_path)])
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert out.startswith("::notice")
+    assert "no changes to persist" in out
+    log_count = _git(tmp_path, "rev-list", "--count", "HEAD")
+    assert log_count == "1", f"expected 1 baseline commit, got {log_count}"
+
+
+def test_drip_push_ceiling_exceeded_resets_and_warns(monkeypatch, tmp_path, capsys):
+    """R3c/(iii): a staged cache file larger than the ceiling results in
+    a ``::warning`` refusal, no commit, and a clean index."""
+    _init_repo(tmp_path)
+    _seed_repo(tmp_path)
+
+    # Add a 2 MiB cache entry under the ceiling dir.
+    cache_dir = tmp_path / "data" / "debt_maturity" / "cache"
+    (cache_dir / "huge.json").write_bytes(b"x" * (2 * 1024 * 1024))
+
+    monkeypatch.setenv("DEBT_MATURITY_DRIP_PUSH", "1")
+
+    rc = _dmp.main(["--repo", str(tmp_path), "--max-mb", "1"])
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert out.startswith("::warning"), f"expected ::warning at line start, got: {out!r}"
+    assert "exceeds ceiling" in out
+
+    # No commit landed and the index is clean.
+    log_count = _git(tmp_path, "rev-list", "--count", "HEAD")
+    assert log_count == "1", f"expected 1 baseline commit, got {log_count}"
+    diff = _subprocess.run(
+        ["git", "diff", "--cached", "--quiet"], cwd=tmp_path
+    )
+    assert diff.returncode == 0, "staged diff must be reset after a ceiling refusal"
+
+
+def test_drip_push_does_not_stage_files_outside_allowed(monkeypatch, tmp_path):
+    """R3c/(iv): a write outside ALLOWED_PATHS is left unstaged while
+    the allowed change IS staged, so the resulting commit carries only
+    the two paths."""
+    _init_repo(tmp_path)
+    _seed_repo(tmp_path)
+    bare = _bare_remote(tmp_path)
+    _add_remote(tmp_path, bare)
+
+    # Modify the cache dir (allowed) and a stray engine/ file (not allowed).
+    (tmp_path / "data" / "debt_maturity" / "cache" / "0000320193.json").write_text(
+        '{"fetched_at":"2026-09-13"}\n'
+    )
+    (tmp_path / "engine" / "engine_marker.txt").write_text("forbidden\n")
+
+    monkeypatch.setenv("DEBT_MATURITY_DRIP_PUSH", "1")
+
+    rc = _dmp.main(["--repo", str(tmp_path)])
+    assert rc == 0
+
+    # The engine_marker.txt is in the baseline commit (untouched), so it
+    # is in the tree -- but the tip's BLOB must still hold the original
+    # "untouched" text, never the "forbidden" write.
+    tip_marker = _git(bare, "show", "main:engine/engine_marker.txt")
+    assert tip_marker == "untouched", (
+        "engine/ write must NOT have been committed; "
+        f"tip blob was {tip_marker!r}"
+    )
+
+
+def test_drip_push_happy_path_pushes_to_bare_remote(monkeypatch, tmp_path, capsys):
+    """R3c/(v): the bare remote's <base> tip carries exactly one new
+    commit, authored by dashboard-bot, subject ends [skip ci]."""
+    _init_repo(tmp_path)
+    _seed_repo(tmp_path)
+    bare = _bare_remote(tmp_path)
+    _add_remote(tmp_path, bare)
+
+    (tmp_path / "data" / "debt_maturity" / "cache" / "0000320193.json").write_text(
+        '{"fetched_at":"2026-09-13"}\n'
+    )
+
+    monkeypatch.setenv("DEBT_MATURITY_DRIP_PUSH", "1")
+
+    baseline_count = _git(tmp_path, "rev-list", "--count", "HEAD")
+    rc = _dmp.main(["--repo", str(tmp_path)])
+    assert rc == 0
+
+    out = capsys.readouterr().out
+    assert "::notice title=debt-maturity-drip" in out
+    assert "pushed" in out
+
+    # Bare remote grew by exactly one commit.
+    bare_count = _git(bare, "rev-list", "--count", "main")
+    assert bare_count == str(int(baseline_count) + 1)
+    subject = _git(bare, "log", "-1", "--format=%s", "main")
+    assert subject.endswith("[skip ci]"), subject
+    assert subject.startswith("debt-maturity-drip: persist cache + statements ")
+    author = _git(bare, "log", "-1", "--format=%an", "main")
+    committer = _git(bare, "log", "-1", "--format=%cn", "main")
+    assert author == "dashboard-bot"
+    assert committer == "dashboard-bot"
+
+    # The tree contains both allowed paths and the engine/ baseline file
+    # (which is unchanged on this tip because the helper only staged the
+    # two ALLOWED_PATHS). The allowed cache file at the tip carries the
+    # NEW bytes we wrote, not the seed baseline.
+    tip_cache = _git(bare, "show", "main:data/debt_maturity/cache/0000320193.json")
+    assert tip_cache == '{"fetched_at":"2026-09-13"}'
+    # And the engine marker at the tip is still the untouched seed.
+    tip_marker = _git(bare, "show", "main:engine/engine_marker.txt")
+    assert tip_marker == "untouched"
+
+
+def _foreign_commit_on_bare(tmp_path: Path, bare: Path, file_name: str = "README.md") -> None:
+    """Land a foreign commit on the bare remote so the helper's push
+    will hit a non-fast-forward.
+
+    The foreign repo CLONES the bare so its main is a descendant of
+    bare/main; without that ancestry the push is rejected as unrelated
+    histories and the helper never gets to test its retry path.
+    """
+    foreign = tmp_path / "foreign"
+    if foreign.exists():
+        _subprocess.run(["rm", "-rf", str(foreign)], check=True, capture_output=True)
+    _subprocess.run(
+        ["git", "clone", "-q", str(bare), str(foreign)],
+        check=True,
+        capture_output=True,
+    )
+    _subprocess.run(
+        ["git", "-C", str(foreign), "config", "user.email", "f@f.test"],
+        check=True,
+        capture_output=True,
+    )
+    _subprocess.run(
+        ["git", "-C", str(foreign), "config", "user.name", "Foreign"],
+        check=True,
+        capture_output=True,
+    )
+    (foreign / file_name).write_text("foreign commit\n")
+    _subprocess.run(
+        ["git", "-C", str(foreign), "add", file_name],
+        check=True,
+        capture_output=True,
+    )
+    _subprocess.run(
+        ["git", "-C", str(foreign), "commit", "-q", "-m", "foreign"],
+        check=True,
+        capture_output=True,
+    )
+    _subprocess.run(
+        ["git", "-C", str(foreign), "push", "origin", "main"],
+        check=True,
+        capture_output=True,
+    )
+
+
+def test_drip_push_lands_after_non_fast_forward(monkeypatch, tmp_path, capsys):
+    """R3c/(vi): when origin/<base> moves between clone and push, the
+    helper's rebase-free re-checkout cycle lands the change on the
+    second attempt, and the remote tip contains BOTH the foreign commit
+    and the two paths."""
+    _init_repo(tmp_path)
+    _seed_repo(tmp_path)
+    bare = _bare_remote(tmp_path)
+    _add_remote(tmp_path, bare)
+
+    # Modify the cache file in the WORKING TREE (do NOT commit locally --
+    # the helper does the commit).
+    (tmp_path / "data" / "debt_maturity" / "cache" / "0000320193.json").write_text(
+        '{"fetched_at":"2026-09-13"}'
+    )
+
+    # A foreign commit lands on the bare remote BEFORE the helper's push.
+    _foreign_commit_on_bare(tmp_path, bare)
+
+    monkeypatch.setenv("DEBT_MATURITY_DRIP_PUSH", "1")
+
+    rc = _dmp.main(["--repo", str(tmp_path), "--attempts", "5"])
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert "::notice title=debt-maturity-drip::pushed" in out, (
+        f"expected pushed notice after NFF recovery, got: {out!r}"
+    )
+
+    # Bare remote tip contains both the foreign README AND the
+    # data/debt_maturity/cache/0000320193.json with the new content.
+    tree = _git(bare, "ls-tree", "-r", "--name-only", "main")
+    assert "README.md" in tree, "foreign commit must be present"
+    tip_cache = _git(bare, "show", "main:data/debt_maturity/cache/0000320193.json")
+    assert tip_cache == '{"fetched_at":"2026-09-13"}', (
+        f"helper's change must survive the re-checkout cycle; "
+        f"got {tip_cache!r}"
+    )
+    log = _git(bare, "log", "--format=%s", "main").splitlines()
+    assert any(s.startswith("debt-maturity-drip:") for s in log), log
+    assert any(s == "foreign" for s in log), log
+
+
+def test_drip_push_attempts_exhausted_refuses_with_warning(
+    monkeypatch, tmp_path, capsys
+):
+    """R3c/(vii): with --attempts 0 and an un-pushable state (foreign
+    commit + our pending change), the helper emits a refusal warning
+    and returns 0 -- fail-soft, no commit was lost."""
+    _init_repo(tmp_path)
+    _seed_repo(tmp_path)
+    bare = _bare_remote(tmp_path)
+    _add_remote(tmp_path, bare)
+
+    # Foreign commit first.
+    _foreign_commit_on_bare(tmp_path, bare)
+
+    # Modify the cache file in the WORKING TREE (do NOT commit locally --
+    # the helper does the commit).
+    (tmp_path / "data" / "debt_maturity" / "cache" / "0000320193.json").write_text(
+        '{"fetched_at":"2026-09-13"}'
+    )
+
+    monkeypatch.setenv("DEBT_MATURITY_DRIP_PUSH", "1")
+
+    # attempts=0 forces an immediate refusal after the first push is
+    # rejected; we want to assert the refusal path, not the retry path.
+    rc = _dmp.main(["--repo", str(tmp_path), "--attempts", "0"])
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert out.startswith("::warning"), f"expected refusal warning, got: {out!r}"
+    assert "refused" in out and "moved" in out
+
+    # The bare remote's tip must be the foreign commit (no helper
+    # commit landed). The cache file IS in the tree from the seed
+    # baseline; what must NOT have changed is its content (still the
+    # baseline fetched_at) and the commit count (baseline + foreign
+    # only, no helper push).
+    tip_subjects = _git(bare, "log", "--format=%s", "main").splitlines()
+    assert not any(s.startswith("debt-maturity-drip:") for s in tip_subjects), (
+        f"refusal path must not push; tip subjects: {tip_subjects}"
+    )
+    tip_cache = _git(bare, "show", "main:data/debt_maturity/cache/0000320193.json")
+    assert tip_cache == '{"fetched_at":"2026-09-12"}', (
+        f"cache content must remain the seed baseline on the refusal "
+        f"path; got {tip_cache!r}"
+    )
+    assert "README.md" in _git(bare, "ls-tree", "-r", "--name-only", "main"), (
+        "foreign commit must still be on the bare tip"
+    )
+
+
+def test_drip_push_helper_uses_no_forbidden_git_invocations():
+    """R3c/sanity: the helper must NEVER use a non-selective staging
+    invocation, a force push, a stash, or a history rewrite. The spec
+    pins this as a grep gate that must print nothing.
+    """
+    text = HELPER_PATH.read_text()
+    forbidden = [
+        '"git add -A"',
+        "'git add -A'",
+        '"git add data/"',
+        "'git add data/'",
+        "--force",
+        "git stash",
+        "git rebase",
+    ]
+    for needle in forbidden:
+        assert needle not in text, (
+            f"helper must not contain {needle!r}; see META-CEO FROZEN SPEC R3"
+        )
+
+
+def test_drip_push_annotations_start_the_line():
+    """R3c/sanity: every ::notice / ::warning the helper can emit must
+    come from a bare ``print(..., flush=True)`` so GitHub parses it
+    (see tests/test_gh_annotation_line_start.py)."""
+    text = HELPER_PATH.read_text()
+    # The helper's _emit() must be the only annotation emitter, and it
+    # must use a bare print with flush=True at the START of the line.
+    assert 'print(f"::{kind} title={title}::{message}", flush=True)' in text
+    # No annotation through logging (the test_gh_annotation_line_start
+    # defect).
+    assert 'log.warning("::notice' not in text
+    assert 'log.warning("::warning' not in text
