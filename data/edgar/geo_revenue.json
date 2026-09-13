@@ -1,6 +1,6 @@
 {
 "schema":"edgar.geo_revenue.v1",
-"updated":"2026-09-12T02:40:12.478490+00:00",
+"updated":"2026-09-13T02:25:52.216836+00:00",
 "by_ticker":{
 "AAPL":{
 "foreign_pct":63.5,
@@ -23468,11 +23468,11 @@
 ]
 },
 "NSSC":{
-"foreign_pct":0.9,
-"asof":"2025-06-30",
-"source":"10-K 2025-06-30",
-"fy":2025,
-"accession":"0001558370-25-011750",
+"foreign_pct":1.4,
+"asof":"2026-06-30",
+"source":"10-K 2026-06-30",
+"fy":2026,
+"accession":"0001104659-26-100081",
 "method":"us_member",
 "concept":"Revenues",
 "by_region":[
@@ -23480,13 +23480,13 @@
 "key":"US",
 "label":"US",
 "cls":"us",
-"pct":99.1
+"pct":98.6
 },
 {
 "key":"NonUs",
 "label":"Non Us",
 "cls":"foreign_total",
-"pct":0.9
+"pct":1.4
 }
 ]
 },
@@ -35653,12 +35653,66 @@
 "pct":4.0
 }
 ]
+},
+"HOS":{
+"foreign_pct":61.7,
+"asof":"2025-12-31",
+"source":"10-K 2025-12-31",
+"fy":2025,
+"accession":"0000866829-26-000008",
+"method":"us_member",
+"concept":"RevenueFromContractWithCustomerExcludingAssessedTax",
+"em_pct":34.8,
+"by_region":[
+{
+"key":"US",
+"label":"US",
+"cls":"us",
+"pct":38.3
+},
+{
+"key":"BR",
+"label":"BR",
+"cls":"em",
+"pct":27.4
+},
+{
+"key":"NorthSea",
+"label":"North Sea",
+"cls":"mixed",
+"pct":21.1
+},
+{
+"key":"GB",
+"label":"GB",
+"cls":"dm",
+"pct":15.0
+},
+{
+"key":"Africa",
+"label":"Africa",
+"cls":"em",
+"pct":7.4
+},
+{
+"key":"AsiaPacific",
+"label":"Asia Pacific",
+"cls":"mixed",
+"pct":5.3
+},
+{
+"key":"OtherGeographicLocation",
+"label":"Other Geographic Location",
+"cls":"mixed",
+"pct":0.5
+}
+]
 }
 },
 "meta":{
 "universe":2841,
-"attempted":2845,
-"parsed":999,
+"attempted":2846,
+"parsed":1000,
 "skips":{
 "no_geo_axis":1366,
 "no_denominator":397,
