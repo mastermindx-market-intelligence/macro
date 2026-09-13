@@ -3,6 +3,24 @@
   "note": "Candidates land in `pending` automatically. A numbered `versions` entry is minted ONLY by exemplar_store.promote_pending(), and the writer reads ONLY the version pinned at config/marketing.yml intel.exemplar_store.active_version.",
   "pending": [
     {
+      "added": "2026-09-13T23:47:40Z",
+      "author": "unusual_whales",
+      "created_at": "Sun Sep 13 16:01:00 +0000 2026",
+      "engagement": {
+        "interaction_rate": 0.04000847,
+        "likes": 10813,
+        "replies": 375,
+        "retweets": 1089,
+        "views": 306860
+      },
+      "post_id": "2099166463861063808",
+      "register": "wire",
+      "shape": "one_liner",
+      "text": "BREAKING: Americans’ perceptions of government corruption in the US are at their highest level ever, per Gallup",
+      "text_key": "61ce1eed25bbe82d",
+      "url": "https://x.com/unusual_whales/status/2099166463861063808"
+    },
+    {
       "added": "2026-08-31T00:03:02Z",
       "author": "unusual_whales",
       "created_at": "Fri Aug 28 17:17:00 +0000 2026",
@@ -19,6 +37,42 @@
       "text": "General Mills has announced that it has officially removed artificial colors from all its cereals in the U.S.",
       "text_key": "b91a057f84e9f5ac",
       "url": "https://x.com/unusual_whales/status/2093387383748301193"
+    },
+    {
+      "added": "2026-09-13T23:47:40Z",
+      "author": "unusual_whales",
+      "created_at": "Sun Sep 13 19:01:00 +0000 2026",
+      "engagement": {
+        "interaction_rate": 0.03290718,
+        "likes": 8003,
+        "replies": 130,
+        "retweets": 634,
+        "views": 266416
+      },
+      "post_id": "2099211762331693163",
+      "register": "wire",
+      "shape": "stack",
+      "text": "Warren Buffett said he could end the Federal deficit in five minutes.\n\nHis idea? Ban all sitting members of Congress from reelection whenever the deficit tops 3% of GDP.\n\nThe federal deficit currently sits at 5.8% of GDP.",
+      "text_key": "83042cdab9d31aaa",
+      "url": "https://x.com/unusual_whales/status/2099211762331693163"
+    },
+    {
+      "added": "2026-09-13T23:47:40Z",
+      "author": "unusual_whales",
+      "created_at": "Sun Sep 13 20:18:36 +0000 2026",
+      "engagement": {
+        "interaction_rate": 0.03041034,
+        "likes": 14590,
+        "replies": 552,
+        "retweets": 1389,
+        "views": 543598
+      },
+      "post_id": "2099231290730135794",
+      "register": "wire",
+      "shape": "one_liner",
+      "text": "BREAKING: Bernie Sanders has proposed a 20-year prison sentence for AI developers who move forward with Artificial Superintelligence plans, a penalty comparable to illegally developing rogue nuclear weapons.",
+      "text_key": "eba657232f6e4d1b",
+      "url": "https://x.com/unusual_whales/status/2099231290730135794"
     },
     {
       "added": "2026-08-31T00:03:02Z",
@@ -57,6 +111,24 @@
       "url": "https://x.com/unusual_whales/status/2085742006593311208"
     },
     {
+      "added": "2026-09-13T23:47:40Z",
+      "author": "unusual_whales",
+      "created_at": "Fri Jul 31 20:58:00 +0000 2026",
+      "engagement": {
+        "interaction_rate": 0.02755027,
+        "likes": 10957,
+        "replies": 125,
+        "retweets": 755,
+        "views": 429651
+      },
+      "post_id": "2083296140183892104",
+      "register": "wire",
+      "shape": "one_liner",
+      "text": "\"EA’s CEO got an $8 million raise thanks to how well Battlefield 6 performed, four months after the devs responsible for making the game got laid off,\" per IGN",
+      "text_key": "b340889250d266c9",
+      "url": "https://x.com/unusual_whales/status/2083296140183892104"
+    },
+    {
       "added": "2026-08-31T00:03:02Z",
       "author": "Barchart",
       "created_at": "Mon Aug 24 05:44:08 +0000 2026",
@@ -73,6 +145,24 @@
       "text": "Gold hits $4,700 for the first time in more than 3 months 📈 📈 https://t.co/nhFU46Fzc0",
       "text_key": "ffd6937a7c2871a1",
       "url": "https://x.com/Barchart/status/2091763469175427432"
+    },
+    {
+      "added": "2026-09-13T23:47:40Z",
+      "author": "Barchart",
+      "created_at": "Sat Sep 12 21:01:43 +0000 2026",
+      "engagement": {
+        "interaction_rate": 0.02549859,
+        "likes": 1541,
+        "replies": 52,
+        "retweets": 312,
+        "views": 74710
+      },
+      "post_id": "2098879753461645493",
+      "register": "aggregator",
+      "shape": "one_liner",
+      "text": "Diesel price jumps above $6/gallon for the first time in history 📈 📈 https://t.co/b9jTA1aZe6",
+      "text_key": "e37989b0eef10540",
+      "url": "https://x.com/Barchart/status/2098879753461645493"
     },
     {
       "added": "2026-08-09T22:20:21Z",
@@ -273,6 +363,24 @@
       "url": "https://x.com/RyanDetrick/status/2083248550071132307"
     },
     {
+      "added": "2026-09-13T23:47:40Z",
+      "author": "LizAnnSonders",
+      "created_at": "Fri Sep 11 12:24:49 +0000 2026",
+      "engagement": {
+        "interaction_rate": 0.02166017,
+        "likes": 912,
+        "replies": 35,
+        "retweets": 37,
+        "views": 45429
+      },
+      "post_id": "2098387285083361581",
+      "register": "macro_color",
+      "shape": "two_part",
+      "text": "#NeverForget\n25 years later, and I can still feel the moment. I was on an 8:47am United flight, waiting on the runway to take off to LAX from Newark. Then we saw it … the first plane hitting the tower … then the second. I watched it unfold from my seat on the left side of that aircraft, unable to process what was happening. The terror came later, when we knew what had happened and when I couldn't get a call through to my family. There were several hours of silence while they didn't know if I was on one of those planes. I'll never forget that helplessness. We were subsequently locked down in the airport and watched the towers collapse from a lounge window, watching our country break in real time. My town then, Darien, CT, lost so many that day. Friends and neighbors; people with families and with futures they never got to live. We carry all of it still … the fear, the loss … and for me, the profound gratitude that I was on a runway instead of in the sky.",
+      "text_key": "ff3ee0403969fd22",
+      "url": "https://x.com/LizAnnSonders/status/2098387285083361581"
+    },
+    {
       "added": "2026-07-31T23:47:24Z",
       "author": "unusual_whales",
       "created_at": "Fri Jul 31 17:37:00 +0000 2026",
@@ -361,6 +469,24 @@
       "text": "Jim Cramer dumped all his Bitcoin $BTC a few weeks ago so that we all could enjoy the bull market 🙏 Thank you for your sacrifice Jim 🫡 https://t.co/fXp9pngOfA",
       "text_key": "f9d39409cc795062",
       "url": "https://x.com/Barchart/status/2090668798164549790"
+    },
+    {
+      "added": "2026-09-13T23:47:40Z",
+      "author": "markminervini",
+      "created_at": "Thu Sep 03 14:35:35 +0000 2026",
+      "engagement": {
+        "interaction_rate": 0.02078635,
+        "likes": 2908,
+        "replies": 65,
+        "retweets": 225,
+        "views": 153851
+      },
+      "post_id": "2095521090915180699",
+      "register": "trader",
+      "shape": "list",
+      "text": "I have two major trading rules:\n1. No forced trades. \n2. No big losses.",
+      "text_key": "e40547b0c4d4e51d",
+      "url": "https://x.com/markminervini/status/2095521090915180699"
     },
     {
       "added": "2026-08-31T00:03:02Z",
@@ -579,151 +705,25 @@
       "url": "https://x.com/Barchart/status/2084518997614108987"
     },
     {
-      "added": "2026-08-02T22:45:58Z",
-      "author": "unusual_whales",
-      "created_at": "Sat Aug 01 19:01:00 +0000 2026",
+      "added": "2026-09-13T23:47:40Z",
+      "author": "markminervini",
+      "created_at": "Thu Sep 03 14:00:06 +0000 2026",
       "engagement": {
-        "interaction_rate": 0.01833963,
-        "likes": 4965,
-        "replies": 298,
-        "retweets": 554,
-        "views": 317182
+        "interaction_rate": 0.0184748,
+        "likes": 1809,
+        "replies": null,
+        "retweets": 116,
+        "views": 104196
       },
-      "post_id": "2083629084018721039",
-      "register": "wire",
+      "post_id": "2095512158981296179",
+      "register": "trader",
       "shape": "one_liner",
-      "text": "63% of Americans say they have less than $500 left over each month after bills, per CNBC",
-      "text_key": "97d95afcc144e563",
-      "url": "https://x.com/unusual_whales/status/2083629084018721039"
-    },
-    {
-      "added": "2026-08-09T22:20:21Z",
-      "author": "unusual_whales",
-      "created_at": "Thu Aug 06 18:57:00 +0000 2026",
-      "engagement": {
-        "interaction_rate": 0.01826391,
-        "likes": 9125,
-        "replies": 240,
-        "retweets": 566,
-        "views": 543750
-      },
-      "post_id": "2085440016398872784",
-      "register": "wire",
-      "shape": "one_liner",
-      "text": "BREAKING: Japanese officials have repeatedly requested that the US. government stop its meme posting involving characters and franchises such as Mario, Pokémon and Naruto, per IGN",
-      "text_key": "581046416d823e53",
-      "url": "https://x.com/unusual_whales/status/2085440016398872784"
-    },
-    {
-      "added": "2026-08-09T22:20:21Z",
-      "author": "Barchart",
-      "created_at": "Sat Aug 08 00:10:13 +0000 2026",
-      "engagement": {
-        "interaction_rate": 0.01777193,
-        "likes": 1372,
-        "replies": 60,
-        "retweets": 121,
-        "views": 87385
-      },
-      "post_id": "2085881229815976087",
-      "register": "aggregator",
-      "shape": "caption",
-      "text": "Stock Market hits highest level of Greed since May 📈 🥳 🤑 https://t.co/7Zba0OCJEd",
-      "text_key": "0437e241965a4de0",
-      "url": "https://x.com/Barchart/status/2085881229815976087"
-    },
-    {
-      "added": "2026-08-09T22:20:21Z",
-      "author": "unusual_whales",
-      "created_at": "Sat Aug 08 20:01:00 +0000 2026",
-      "engagement": {
-        "interaction_rate": 0.01722233,
-        "likes": 1695,
-        "replies": 128,
-        "retweets": 312,
-        "views": 123967
-      },
-      "post_id": "2086180898513588292",
-      "register": "wire",
-      "shape": "one_liner",
-      "text": "Prices of \"all food\" categories are up 29%, per CNBC",
-      "text_key": "6a930dcad58c3c45",
-      "url": "https://x.com/unusual_whales/status/2086180898513588292"
-    },
-    {
-      "added": "2026-08-09T22:20:21Z",
-      "author": "Barchart",
-      "created_at": "Fri Aug 07 19:13:09 +0000 2026",
-      "engagement": {
-        "interaction_rate": 0.01674907,
-        "likes": 2446,
-        "replies": 71,
-        "retweets": 332,
-        "views": 170099
-      },
-      "post_id": "2085806471732724068",
-      "register": "aggregator",
-      "shape": "one_liner",
-      "text": "JUST IN 🚨: More than 72% of S&P 500 stocks are now trading above their 200-day moving average, the strongest market breadth since December 2024 📈 🥳 https://t.co/pld9aV0sv0",
-      "text_key": "4dfbaf3e6a52c7b3",
-      "url": "https://x.com/Barchart/status/2085806471732724068"
-    },
-    {
-      "added": "2026-08-02T22:45:58Z",
-      "author": "Barchart",
-      "created_at": "Sat Aug 01 03:12:45 +0000 2026",
-      "engagement": {
-        "interaction_rate": 0.01650688,
-        "likes": 1335,
-        "replies": 48,
-        "retweets": 139,
-        "views": 92204
-      },
-      "post_id": "2083390449448894894",
-      "register": "aggregator",
-      "shape": "one_liner",
-      "text": "Gold has closed below its 200-day moving average for 39 consecutive trading days, the longest stretch since 2022 🚨 https://t.co/ZSUlbvtlN7",
-      "text_key": "872e85c2db01efc7",
-      "url": "https://x.com/Barchart/status/2083390449448894894"
-    },
-    {
-      "added": "2026-08-09T22:20:21Z",
-      "author": "Barchart",
-      "created_at": "Fri Aug 07 21:10:02 +0000 2026",
-      "engagement": {
-        "interaction_rate": 0.01637098,
-        "likes": 2127,
-        "replies": 52,
-        "retweets": 234,
-        "views": 147395
-      },
-      "post_id": "2085835882624405841",
-      "register": "aggregator",
-      "shape": "caption",
-      "text": "Gold getting launched 🚀 🚀 https://t.co/krEZ74Iu2i",
-      "text_key": "815d9b414aa9c4bf",
-      "url": "https://x.com/Barchart/status/2085835882624405841"
-    },
-    {
-      "added": "2026-07-31T23:47:24Z",
-      "author": "RyanDetrick",
-      "created_at": "Fri Jul 31 12:55:20 +0000 2026",
-      "engagement": {
-        "interaction_rate": 0.01582354,
-        "likes": 171,
-        "replies": 21,
-        "retweets": 6,
-        "views": 12513
-      },
-      "post_id": "2083174675295687123",
-      "register": "commentary",
-      "shape": "stack",
-      "text": "KOSPI up 17% today for the greatest single one day return ever.\n\nKOSPI down 2% for the week.\n\nAre you not entertained? https://t.co/HgG0jI8wo0",
-      "text_key": "573fbb72f1192a65",
-      "url": "https://x.com/RyanDetrick/status/2083174675295687123"
+      "text": "When the best setups don't work, you don't go to the worst setups... you go to cash.",
+      "text_key": "241254fad5c5fd29",
+      "url": "https://x.com/markminervini/status/2095512158981296179"
     }
   ],
   "schema": "marketing.x_exemplar_store/v1",
-  "updated_at": "2026-09-06T23:21:44Z",
+  "updated_at": "2026-09-13T23:47:40Z",
   "versions": []
 }
