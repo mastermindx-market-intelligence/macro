@@ -6581,6 +6581,20 @@ jobs:
     #                             empty membership vs unavailable, truncation,
     #                             fail-closed network/non-2xx, hostile no-fallback
     #                             when token or user_id is missing.
+    #   test_account_actions.py — the FOUR account-panel actions (app/account_actions.py):
+    #                             POST /api/account/{password,email,signout-everywhere,delete},
+    #                             which templates/account.js had been calling with no handler
+    #                             anywhere in app/ (and cross-origin at that, so every control
+    #                             on the panel was dead). Guards: the caller's own token is the
+    #                             only credential that acts (never the service-role key, never
+    #                             /auth/v1/admin/*), the deletion route is an INTAKE that files
+    #                             one RLS-scoped row and can never report a receipt the store
+    #                             did not echo, the 409 read-back, the bounded/rate-limited
+    #                             upstream, a plain EN+ZH sentence on every non-2xx, and the
+    #                             no-dead-handler contract — every api('/api/account…') call in
+    #                             the panel resolves to a registered route and every rendered
+    #                             data-act has an onClick case. Driven through the raw ASGI
+    #                             callable, so this job's install line needs no httpx.
     #   test_shared_pref_atomics.py — the SAME user_metadata keys, from the browser side:
     #                             templates/theme.js must write the top-level `theme` /
     #                             `theme_auto` / `lang` atomics and never the nested `prefs`
@@ -6615,6 +6629,8 @@ jobs:
         run: python -m pytest tests/test_account_prefs.py -v
       - name: account team-membership tests (lib/team_membership.py)
         run: python -m pytest tests/test_account_team_fields.py -v
+      - name: account actions (app/account_actions.py)
+        run: python -m pytest tests/test_account_actions.py -v
       - name: shared preference atomics contract (templates/theme.js)
         run: python -m pytest tests/test_shared_pref_atomics.py -v
       - name: billing webhook spine regression (app/billing.py::_handle_event)
