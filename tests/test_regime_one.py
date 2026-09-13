@@ -502,9 +502,8 @@ def test_hmm_issuance_does_not_accept_false_provenance(tmp_path, field, bad):
 def _stub_hmm_accrual(tmp_path, monkeypatch, asof="2026-07-01"):
     root = tmp_path / "regime"
     root.mkdir(exist_ok=True)
-    (root / "regime_history.parquet").touch()
     frame = pd.DataFrame(index=pd.DatetimeIndex([asof]))
-    monkeypatch.setattr(pd, "read_parquet", lambda path: frame)
+    frame.to_parquet(root / "regime_history.parquet")
     row = _saved_hmm_row(asof)
     monkeypatch.setattr(R, "_causal_filtered_pquad", lambda data: {
         "asof": asof, "modal_quad": row["pred_modal_quad"], "model_fit_asof": asof,
@@ -628,3 +627,222 @@ def test_hmm_history_suites_are_in_the_code_gate_not_only_data_health():
         installs = [step.get("run", "") for step in owners[0].definition["steps"]
                     if "pip install" in step.get("run", "")]
         assert len(installs) == 1 and "hmmlearn==0.3.3" in installs[0]
+
+
+# W0 native issuance receipts: no horizon forecasting or retrospective certification.
+def _hmm_input_evidence_row():
+    row = {**_saved_hmm_row(), "issued_at": "2026-07-02T04:00:05+00:00",
+           "model_fit_asof": "2026-07-01", "model_method": "quad_supervised_gaussian_hmm.v1",
+           "source_basis": "regime_history_vintages_unverified",
+           "record_assembled_at": "2026-07-02T04:00:04+00:00"}
+    row["input_evidence"] = {
+        "schema": "regime_hmm_input_evidence.v1",
+        "source_path": "regime/regime_history.parquet", "content_sha256": "a" * 64,
+        "byte_count": 2048, "decoded_row_count": 390,
+        "decoded_first_asof": "2025-01-01", "decoded_last_asof": "2026-07-01",
+        "read_started_at": "2026-07-02T04:00:00+00:00",
+        "read_completed_at": "2026-07-02T04:00:01+00:00",
+        "source_vintages_verified": False,
+    }
+    row["fit"] = {"started_at": "2026-07-02T04:00:02+00:00",
+                  "completed_at": "2026-07-02T04:00:03+00:00",
+                  "model_fit_asof": row["asof"], "model_method": row["model_method"]}
+    return row
+
+
+def test_engine_run_regime_one_data_root_reads_existing_ledgers(tmp_path):
+    """Use the real runtime's argument expression and the real status consumer."""
+    import ast
+    import json
+    from pathlib import Path
+    source = Path(__file__).resolve().parents[1] / "engine" / "run.py"
+    calls = [node for node in ast.walk(ast.parse(source.read_text()))
+             if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
+             and isinstance(node.func.value, ast.Name)
+             and node.func.value.id == "_r1" and node.func.attr == "compute"]
+    assert len(calls) == 1
+    expr = next(k.value for k in calls[0].keywords if k.arg == "data_dir")
+    actual_root = eval(compile(ast.Expression(expr), str(source), "eval"),
+                       {"p": tmp_path / "regime"})
+    _write_hmm_test_ledger(tmp_path, [_saved_hmm_row(), _saved_hmm_row("2026-07-02")])
+    (tmp_path / "regime" / "base_effect_fwd.jsonl").write_text(json.dumps({
+        "asof": "2026-07-01", "realized_growth_2d_at_63d": None,
+        "realized_infl_2d_at_63d": None}) + "\n")
+    out = R._forward_read(pd.DataFrame(columns=["growth_score", "inflation_score"]), None, actual_root)
+    assert out["p_quad"]["graded"]["n"] == 2
+    assert out["p_quad"]["graded"]["n_matured"] == 0
+    assert out["base_effect"]["graded"]["n"] == 1
+    assert not (tmp_path / "regime" / "regime").exists()
+
+
+def test_hmm_same_byte_native_issuance_and_reader(tmp_path, monkeypatch):
+    """Real Parquet + real native HMM; replace the path after the owner's read."""
+    import hashlib
+    import io
+    import json
+    from datetime import datetime, timezone
+    frame = _synthetic_scores(block=140, cycles=1)
+    expected = R._causal_filtered_pquad(frame)
+    assert expected is not None
+    ledger = _write_hmm_test_ledger(tmp_path, [_saved_hmm_row("2004-12-31")])
+    prior = ledger.read_bytes()
+    history = tmp_path / "regime" / "regime_history.parquet"
+    frame.to_parquet(history)
+    original = history.read_bytes()
+    native_decode = pd.read_parquet
+    seen = []
+
+    def replace_then_decode(source, *args, **kwargs):
+        seen.append(source)
+        history.write_bytes(b"changed-after-owner-read")
+        return native_decode(source, *args, **kwargs)
+
+    monkeypatch.setattr(pd, "read_parquet", replace_then_decode)
+    started = datetime.now(timezone.utc)
+    assert R.accrue_hmm_row(tmp_path) is True
+    assert len(seen) == 1 and isinstance(seen[0], io.BytesIO)
+    assert seen[0].getvalue() == original
+    assert ledger.read_bytes().startswith(prior)
+    row = json.loads(ledger.read_text().splitlines()[-1])
+    evidence = row["input_evidence"]
+    assert evidence["schema"] == "regime_hmm_input_evidence.v1"
+    assert evidence["source_path"] == "regime/regime_history.parquet"
+    assert evidence["content_sha256"] == hashlib.sha256(original).hexdigest()
+    assert evidence["byte_count"] == len(original)
+    assert evidence["decoded_row_count"] == len(frame)
+    assert evidence["decoded_first_asof"] == str(frame.index.min().date())
+    assert evidence["decoded_last_asof"] == str(frame.index.max().date()) == row["asof"]
+    assert row["p_quad_filtered"] == expected["regime_probs_filtered"]
+    assert row["pred_modal_quad"] == expected["modal_quad"]
+    assert row["fit"]["model_fit_asof"] == row["model_fit_asof"] == row["asof"]
+    assert row["fit"]["model_method"] == row["model_method"]
+    observations = [evidence["read_started_at"], evidence["read_completed_at"],
+                    row["fit"]["started_at"], row["fit"]["completed_at"],
+                    row["record_assembled_at"], row["issued_at"]]
+    clocks = [datetime.fromisoformat(x) for x in observations]
+    assert started <= clocks[0] and clocks == sorted(clocks)
+    assert clocks[-1] <= datetime.now(timezone.utc)
+    assert all(x.utcoffset().total_seconds() == 0 for x in clocks)
+    assert evidence["source_vintages_verified"] is False
+    assert row["realized_quad_at_21d"] is None and "forecast" not in row
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("the saved-evidence reader must neither refit nor decode parquet")
+
+    monkeypatch.setattr(R, "_causal_filtered_pquad", forbidden)
+    monkeypatch.setattr(pd, "read_parquet", forbidden)
+    saved = ledger.read_bytes()
+    out = R.read_hmm_issuance(row["asof"], tmp_path)
+    assert out["status"] == "recorded"
+    assert out["input_evidence_status"] == "recorded"
+    assert out["input_evidence"] == evidence and out["fit"] == row["fit"]
+    assert out["record_assembled_at"] == row["record_assembled_at"]
+    assert out["recorded_prediction"] == expected["regime_probs_filtered"]
+    assert out["source_vintages_verified"] is False
+    assert out["historical_replay_eligible"] is False
+    assert ledger.read_bytes() == saved
+
+
+@pytest.mark.parametrize("case", ["source-after-fit", "nat-index", "duplicate-index", "empty-frame"])
+def test_hmm_input_evidence_refuses_ambiguous_decoded_cutoff(tmp_path, monkeypatch, case):
+    _stub_hmm_accrual(tmp_path, monkeypatch)
+    path = tmp_path / "regime" / "regime_history.parquet"
+    indices = {
+        "source-after-fit": ["2026-07-01", "2026-07-02"],
+        "nat-index": ["2026-07-01", None],
+        "duplicate-index": ["2026-07-01", "2026-07-01"],
+        "empty-frame": [],
+    }
+    pd.DataFrame(index=pd.DatetimeIndex(indices[case])).to_parquet(path)
+    ledger = _write_hmm_test_ledger(tmp_path, [_saved_hmm_row("2026-06-30")])
+    before = ledger.read_bytes()
+    assert R.accrue_hmm_row(tmp_path) is False
+    assert ledger.read_bytes() == before
+
+
+@pytest.mark.parametrize("position", [1, 2, 3, 4, 5])
+def test_hmm_input_evidence_refuses_clock_regression(tmp_path, monkeypatch, position):
+    from datetime import datetime, timedelta, timezone
+    _stub_hmm_accrual(tmp_path, monkeypatch)
+    origin = datetime(2026, 7, 2, 4, tzinfo=timezone.utc)
+    clocks = [origin + timedelta(seconds=i) for i in range(6)]
+    clocks[position] = clocks[position - 1] - timedelta(microseconds=1)
+    iterator = iter(clocks)
+    monkeypatch.setattr(R, "_hmm_utc_now", lambda: next(iterator), raising=False)
+    ledger = _write_hmm_test_ledger(tmp_path, [_saved_hmm_row("2026-06-30")])
+    before = ledger.read_bytes()
+    assert R.accrue_hmm_row(tmp_path) is False
+    assert ledger.read_bytes() == before
+
+
+@pytest.mark.parametrize("field,value", [
+    ("input_evidence.schema", "unknown"),
+    ("input_evidence.source_path", "other/regime_history.parquet"),
+    ("input_evidence.content_sha256", "not-a-digest"),
+    ("input_evidence.byte_count", 0),
+    ("input_evidence.byte_count", True),
+    ("input_evidence.decoded_row_count", -1),
+    ("input_evidence.decoded_row_count", True),
+    ("input_evidence.decoded_first_asof", "2026-07-03"),
+    ("input_evidence.decoded_last_asof", "2026-07-02"),
+    ("input_evidence.read_started_at", "2026-07-02T04:00:02+00:00"),
+    ("input_evidence.read_completed_at", "2026-07-02T04:00:04+00:00"),
+    ("input_evidence.source_vintages_verified", True),
+    ("fit.started_at", "2026-07-02T04:00:00+00:00"),
+    ("fit.completed_at", "2026-07-02T04:00:01+00:00"),
+    ("fit.model_fit_asof", "2026-07-02"),
+    ("fit.model_method", "unknown"),
+    ("record_assembled_at", "2026-07-02T04:00:02+00:00"),
+    ("issued_at", "2026-07-02T04:00:03+00:00"),
+    ("fit.completed_at", "2026-07-02T04:00:03"),
+    ("fit.completed_at", "2026-07-02T04:00:03+01:00"),
+])
+def test_hmm_input_evidence_reader_refuses_inconsistent_receipts(tmp_path, field, value):
+    row = _hmm_input_evidence_row()
+    keys = field.split(".")
+    target = row if len(keys) == 1 else row[keys[0]]
+    target[keys[-1]] = value
+    ledger = _write_hmm_test_ledger(tmp_path, [row])
+    before = ledger.read_bytes()
+    out = R.read_hmm_issuance(row["asof"], tmp_path)
+    assert out["status"] == "invalid_record"
+    assert out["recorded_prediction"] is None
+    assert out["historical_replay_eligible"] is False
+    assert ledger.read_bytes() == before
+
+
+@pytest.mark.parametrize("missing", ["fit", "input_evidence", "record_assembled_at"])
+def test_hmm_input_evidence_reader_refuses_partial_receipt(tmp_path, missing):
+    row = _hmm_input_evidence_row()
+    del row[missing]
+    _write_hmm_test_ledger(tmp_path, [row])
+    assert R.read_hmm_issuance(row["asof"], tmp_path)["status"] == "invalid_record"
+
+
+def test_hmm_input_evidence_reader_preserves_metadata_light_records(tmp_path):
+    legacy = _saved_hmm_row()
+    metadata_only = {**_saved_hmm_row("2026-07-02"),
+                     "issued_at": "2026-07-03T04:00:00+00:00",
+                     "model_fit_asof": "2026-07-02",
+                     "model_method": "quad_supervised_gaussian_hmm.v1",
+                     "source_basis": "regime_history_vintages_unverified"}
+    ledger = _write_hmm_test_ledger(tmp_path, [legacy, metadata_only])
+    before = ledger.read_bytes()
+    for row, status in [(legacy, "legacy_record"), (metadata_only, "recorded")]:
+        out = R.read_hmm_issuance(row["asof"], tmp_path)
+        assert out["status"] == status
+        assert out["input_evidence_status"] == "not_recorded"
+        assert out["input_evidence"] is None and out["fit"] is None
+        assert out["source_vintages_verified"] is False
+        assert out["historical_replay_eligible"] is False
+    assert ledger.read_bytes() == before
+
+
+def test_hmm_input_evidence_corrupt_existing_receipt_blocks_append(tmp_path, monkeypatch):
+    row = _hmm_input_evidence_row()
+    row["input_evidence"]["decoded_last_asof"] = "2026-07-03"
+    ledger = _write_hmm_test_ledger(tmp_path, [row])
+    before = ledger.read_bytes()
+    _stub_hmm_accrual(tmp_path, monkeypatch, "2026-07-02")
+    assert R.accrue_hmm_row(tmp_path) is False
+    assert ledger.read_bytes() == before
