@@ -327,6 +327,26 @@ def _why(
     return _bilingual(" ".join(parts_en), "".join(parts_zh))
 
 
+def _why_glance(
+    catalyst: Mapping[str, Any] | None,
+    valuation: Mapping[str, Any] | None,
+) -> dict[str, str]:
+    """One complete sentence for the glance cell — never a mid-clause clip."""
+    if catalyst:
+        start = _iso_date(catalyst.get("window_start"))
+        day_en = _window_day_en(start) if start else ""
+        day_zh = _window_day_zh(start) if start else ""
+        return _bilingual(
+            _en_sentence(
+                f"Next earnings window opens around {day_en} — windows, not certainties"
+            ),
+            _zh_sentence(f"下一份财报窗口大约在 {day_zh} 开启 — 窗口，不是定论"),
+        )
+    if valuation:
+        return valuation["label"]
+    return _bilingual(WHY_IDENTITY_EN, WHY_IDENTITY_ZH)
+
+
 def _index_postures(rows: list[Mapping[str, Any]] | Mapping[str, Mapping[str, Any]] | None) -> dict[str, Mapping[str, Any]]:
     out: dict[str, Mapping[str, Any]] = {}
     if rows is None:
@@ -416,6 +436,7 @@ def compile_research_screener(
             "exposure": None,
             "theme": None,
             "why": _why(catalyst, valuation),
+            "why_glance": _why_glance(catalyst, valuation),
         })
     rows = sort_rows(rows, DEFAULT_ORDER)
     payload = {

@@ -458,6 +458,10 @@ def test_window_only_catalyst_never_emits_a_date_or_on_date_copy():
     assert "opens around September 12" in why_en
     assert "windows, not certainties" in why_en
     assert "窗口，不是定论" in payload["rows"][0]["why"]["zh"]
+    glance = payload["rows"][0]["why_glance"]["en"]
+    assert glance.endswith((".", "!", "?"))
+    assert "Sales up" not in glance
+    assert "From Valuation" not in glance
 
 
 def test_forbidden_key_guard_covers_inflections():
