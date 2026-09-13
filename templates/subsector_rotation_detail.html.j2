@@ -53,7 +53,18 @@
   .sd-chip .pc { font-size:11.5px; font-weight:700; font-variant-numeric:tabular-nums; }
   .sd-chip .pc i { font-style:normal; color:var(--muted); font-weight:600; margin-right:3px; }
   .sd-foot { color:var(--muted); font-size:11px; margin:8px 2px 0; line-height:1.6; }
-</style>
+{% if show_member_weekly %}
+  .sd-weekly { grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); }
+  .sd-weekly .sd-chip { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:5px 12px; }
+  .sd-weekly .tk { display:block; min-width:0; overflow-wrap:anywhere; }
+  .sd-weekly .sd-ticker { display:block; color:var(--muted); font-size:10.5px; margin-top:3px; }
+  .sd-weekly .pc { display:flex; flex-direction:column; text-align:right; gap:3px; white-space:nowrap; }
+  .sd-weekly .sd-observed { grid-column:1/-1; color:var(--muted); font-size:10.5px; }
+  .sd-member-meta { display:flex; flex-wrap:wrap; justify-content:space-between; gap:5px 16px;
+                    color:var(--muted); font-size:11px; margin:-5px 0 12px; }
+  .sd-member-note { color:var(--muted); font-size:11px; margin:11px 0 0; }
+  @media(max-width:480px){ .sd-weekly { grid-template-columns:minmax(0,1fr); } }
+{% endif %}</style>
 </head>
 <body>
 {% include "_site_nav.html.j2" %}
@@ -108,14 +119,22 @@
   {% if members %}
   <div class="sd-sec">
     <h2>{{ t('Member stocks', '成分股') }} <span style="color:var(--muted);font-weight:600;font-size:12px">({{ t('by 1-month return', '按1月涨跌') }})</span></h2>
-    <div class="sd-mem">
+{% if show_member_weekly %}    <div class="sd-member-meta">
+      <span>{{ members|length }}{% if member_total is not none %} {{ t('of ' ~ member_total ~ ' shown', '/ ' ~ member_total ~ '只') }}{% else %} {{ t('shown · total unavailable', '只已展示 · 总数未知') }}{% endif %}</span>
+      <span>{{ t('Snapshot', '快照截至') }} {{ snapshot_asof or '—' }}</span>
+    </div>
+{% endif %}    <div class="sd-mem{% if show_member_weekly %} sd-weekly{% endif %}">
       {% for m in members %}
       <a class="sd-chip" href="../{{ stock_base | default('stock.html#') }}{{ m.t|urlencode }}">
-        <span class="tk">{{ m.name | default(m.t, true) }}</span>
+        <span><span class="tk">{{ m.name | default(m.t, true) }}</span>{% if show_member_weekly %}<span class="sd-ticker">{{ m.t }}</span>{% endif %}</span>
         <span class="pc">
-          <span class="{{ 'up' if (m['1M'] or 0) > 0 else ('dn' if (m['1M'] or 0) < 0 else '') }}"><i>1M</i>{{ fmt_pc(m['1M']) }}</span>
+{% if show_member_weekly %}          <span class="{{ 'up' if (m.get('1W') or 0) > 0 else ('dn' if (m.get('1W') or 0) < 0 else '') }}"><i>{{ t('1W', '1周') }}</i>{{ fmt_pc(m.get('1W')) }}</span>
+{% endif %}          <span class="{{ 'up' if (m['1M'] or 0) > 0 else ('dn' if (m['1M'] or 0) < 0 else '') }}"><i>1M</i>{{ fmt_pc(m['1M']) }}</span>
         </span>
-      </a>
+{% if show_member_weekly %}{% if not m.get('price_asof') %}        <span class="sd-observed">{{ t('Date unavailable', '日期缺失') }}</span>
+{% elif m.get('price_asof') != snapshot_asof %}        <span class="sd-observed">{{ t('Price as of', '价格截至') }} {{ m.get('price_asof') }}</span>
+{% elif m.get('1W') is none %}        <span class="sd-observed">{{ t('Weekly coverage incomplete', '周度数据不完整') }}</span>
+{% endif %}{% endif %}      </a>
       {% endfor %}
     </div>
   </div>

@@ -6141,9 +6141,11 @@ jobs:
         with:
           python-version: "3.12"
       - name: install deps
-        run: pip install pytest pandas numpy pyyaml pyarrow
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: RC-R14 China + HK rotation events test suite
         run: python -m pytest tests/test_rotation_events.py tests/test_rotation_events_china.py tests/test_rotation_events_hk.py -v
+      - name: China rotation members — producer-to-detail contract
+        run: python -m pytest tests/test_baskets_region.py tests/test_subsector_rotation.py -q
 
   codex-research-engine:
     if: ${{ false }}
@@ -12655,6 +12657,26 @@ jobs:
     # exact uncovered file — add it here.
     scope: exclusive
     paths:
+      # China weekly-member producer-to-page tests extend this real import closure.
+      - "collectors/edgar.py"
+      - "collectors/edgar_deadname_prices.py"
+      - "collectors/edgar_deadnames.py"
+      - "collectors/edgar_delisting.py"
+      - "collectors/edgar_eps.py"
+      - "collectors/edgar_flow_quality.py"
+      - "collectors/edgar_share_quality.py"
+      - "collectors/edgar_stock_quality.py"
+      - "engine/baskets.py"
+      - "engine/baskets_region.py"
+      - "engine/equity_factors.py"
+      - "engine/grading.py"
+      - "engine/name_score_grader.py"
+      - "engine/subsector_rotation_china.py"
+      - "engine/sue.py"
+      - "engine/universe_history.py"
+      - "scripts/__init__.py"
+      - "scripts/build_subsector_rotation_china_pages.py"
+      - "scripts/build_subsector_rotation_pages.py"
       - "collectors/base.py"
       - "collectors/fda_shortages.py"
       - "config/**"
