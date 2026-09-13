@@ -1674,6 +1674,7 @@ jobs:
       - "engine/valuation_scenario.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "engine/valuation_assumptions.py"
+      - "engine/qual_extraction.py"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/__init__.py"
       - "engine/security_state.py"
@@ -3528,6 +3529,8 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "collectors/special_situations.py"
+      - "collectors/yahoo.py"
       - "contracts/evidence_foundation/vocabulary.v1.json"
       - "contracts/evidence_foundation/reference.v1.schema.json"
       - "contracts/evidence_foundation/recipe.v1.schema.json"
@@ -3612,6 +3615,7 @@ jobs:
       - "lib/pages.py"
       - "lib/seo.py"
       - "lib/site_assets.py"
+      - "lib/stooq.py"
       - "lib/store.py"
       - "lib/ticker_aliases.py"
       - "lib/ticker_popularity.py"
@@ -6896,6 +6900,7 @@ jobs:
       # Added-date closure widening 2026-09-01 (contract-delta): the serving
       # path's builder imports now reach the Prophet board_since resolver.
       - "engine/prophet_board_since.py"
+      - "engine/qual_extraction.py"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/__init__.py"
       - "engine/security_state.py"
@@ -7495,6 +7500,7 @@ jobs:
       - "engine/valuation_scenario.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "engine/valuation_assumptions.py"
+      - "engine/qual_extraction.py"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/__init__.py"
       - "engine/security_state.py"
@@ -10815,6 +10821,7 @@ jobs:
       - "engine/intl_run.py"
       - "engine/intl_stocks.py"
       - "engine/ird_velocity.py"
+      - "engine/qual_extraction.py"
       - "engine/rri_shadow.py"
       - "scripts/build_international_macro.py"
       # B1A closure widening 2026-08-24 (contract-delta): the security_state producer stage in build_stock_library lazily imports the company-intelligence reader chain and Data OS identity.
@@ -12802,6 +12809,7 @@ jobs:
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "engine/valuation_assumptions.py"
       # B1A closure widening 2026-08-24 (contract-delta): build_stock_library's security_state stage extends this job's walked closure.
+      - "engine/qual_extraction.py"
       - "engine/security_state.py"
       - "engine/theme_graph/__init__.py"
       - "engine/theme_graph/identity.py"
