@@ -3,9 +3,9 @@
 Mechanisms guarded here:
   1. Flip attribution & veto — a dead-feed (renormalization) flip is VETOED and the
      label freezes; a genuine data flip passes. (The chaos-test core, #3.)
-  2. Causal filtered P(Quad) — the emitted live probability is FILTERED (each point
-     conditions on data up to that day only), a proper simplex, and flagged
-     smoothed_hindsight=False (#16).
+  2. Forward-filtered P(Quad) — a proper simplex, with reconstructed historical
+     probabilities explicitly distinguished from saved issuance records. The flag
+     smoothed_hindsight=False distinguishes the algorithm, not PIT eligibility.
   3. Fused risk — confidence DEGRADES when tape & macro disagree on the inflation
      axis (the 84.2%/inflection leakage finding encoded as an explicit input, #1/#4).
   4. Freshness ledger — the compact bitmask round-trips per-leg availability + the
@@ -161,8 +161,8 @@ def _overlapping_scores(seed=3):
 
 def test_filtered_differs_from_smoothed_at_a_transition():
     """The filtered posterior must NOT equal the smoothed (full-sample) posterior at a
-    regime transition — that inequality is the whole reason we emit filtered as live
-    history. Smoothing peeks at the future and is sharper across the transition."""
+    regime transition. Both historical series still use the current fitted parameters;
+    neither is thereby an as-issued history. This test distinguishes algorithms."""
     from hmmlearn.hmm import GaussianHMM
     scores = _overlapping_scores()
     feats = ["growth_score", "inflation_score"]
@@ -366,3 +366,265 @@ def test_fred_outage_chaos_freezes_label_not_flips(tmp_path):
     assert fa["renorm_share"] > 0.50
     # fused risk on a degraded read holds gross no looser than caution
     assert cur_out["fused_risk"]["gross_factor"] <= R.RISK_STATE_GROSS["caution"]
+
+
+# W0: forward recursion is not an as-issued historical record.
+def test_hmm_history_discloses_reconstruction_after_future_extension():
+    rng = np.random.default_rng(90210)
+    labels = np.array(["Q1" if (i // 30) % 2 == 0 else "Q2" for i in range(720)])
+    x = rng.normal(0, .35, (720, 2))
+    x[:, 0] += np.where(labels == "Q1", .25, -.25)
+    frame = pd.DataFrame(x, index=pd.bdate_range("2021-01-01", periods=720),
+                         columns=["growth_score", "inflation_score"])
+    frame["quad"] = labels
+    before = R._causal_filtered_pquad(frame.iloc[:600].copy())
+    later = frame.copy()
+    later.iloc[600:, 0] += 1.2
+    after = R._causal_filtered_pquad(later)
+    a = {r["date"]: r for r in before["history_filtered"]}
+    b = {r["date"]: r for r in after["history_filtered"]}
+    assert max(abs(a[d]["Q1"] - b[d]["Q1"]) for d in a.keys() & b.keys()) > .5
+    for out, date in ((before, frame.index[599]), (after, frame.index[-1])):
+        assert out["history_basis"] == "reconstructed_with_current_fit"
+        assert out["history_replay_eligible"] is False
+        assert out["model_fit_asof"] == str(date.date())
+        assert out["smoothed_hindsight"] is False
+
+
+def test_forward_read_carries_historical_basis(tmp_path):
+    out = R._forward_read(_synthetic_scores(), None, tmp_path)["p_quad"]
+    assert out["history_basis"] == "reconstructed_with_current_fit"
+    assert out["history_replay_eligible"] is False
+    assert out["model_fit_asof"] == str(_synthetic_scores().index[-1].date())
+
+
+def _saved_hmm_row(asof="2026-07-01"):
+    return {"asof": asof, "pred_modal_quad": "Q1",
+            "p_quad_filtered": {"Q1": .9913, "Q2": .0006, "Q3": .0001, "Q4": .0081},
+            "realized_quad_at_21d": None}
+
+
+def _write_hmm_test_ledger(tmp_path, rows):
+    import json
+    p = tmp_path / "regime" / "regime_fwd_hmm.jsonl"
+    p.parent.mkdir(exist_ok=True)
+    p.write_text("".join(json.dumps(row) + "\n" for row in rows))
+    return p
+
+
+def test_hmm_issuance_reads_saved_legacy_probability_without_refitting(tmp_path, monkeypatch):
+    row = _saved_hmm_row()
+    p = _write_hmm_test_ledger(tmp_path, [row])
+    before = p.read_bytes()
+    def forbidden(*args, **kwargs):
+        pytest.fail("inspection must not fit or read the historical frame")
+    monkeypatch.setattr(R, "_causal_filtered_pquad", forbidden)
+    monkeypatch.setattr(pd, "read_parquet", forbidden)
+    out = R.read_hmm_issuance(row["asof"], tmp_path)
+    assert out["status"] == "legacy_record"
+    assert out["recorded_prediction"] == row["p_quad_filtered"]
+    assert out["issued_at"] is None and out["historical_replay_eligible"] is False
+    assert "realized_quad_at_21d" not in out
+    assert p.read_bytes() == before
+
+
+@pytest.mark.parametrize("case,status", [("absent", "missing_ledger"),
+    ("missing-date", "missing_record"), ("duplicate", "ambiguous_record"),
+    ("corrupt", "invalid_ledger"), ("bad-date", "invalid_date")])
+def test_hmm_issuance_refuses_missing_or_ambiguous_evidence(tmp_path, case, status):
+    date = "2026-07-01"
+    if case != "absent":
+        rows = [_saved_hmm_row()]
+        if case == "duplicate": rows.append(_saved_hmm_row())
+        p = _write_hmm_test_ledger(tmp_path, rows)
+        if case == "corrupt": p.write_text(p.read_text() + "{broken\n")
+        if case == "missing-date": date = "2026-07-02"
+        if case == "bad-date": date = "2026-7-1"
+    out = R.read_hmm_issuance(date, tmp_path)
+    assert out["status"] == status
+    assert out["recorded_prediction"] is None
+    assert out["historical_replay_eligible"] is False
+    assert out["reason"]
+
+
+@pytest.mark.parametrize("bad", [float("nan"), float("inf"), -.1, 1.1, True, "0.9"])
+def test_hmm_issuance_refuses_invalid_probability(tmp_path, bad):
+    row = _saved_hmm_row()
+    row["p_quad_filtered"]["Q1"] = bad
+    _write_hmm_test_ledger(tmp_path, [row])
+    out = R.read_hmm_issuance(row["asof"], tmp_path)
+    assert out["recorded_prediction"] is None
+    assert out["status"] in {"invalid_ledger", "invalid_record"}
+
+
+@pytest.mark.parametrize("change", ["mass", "missing-key", "extra-key", "wrong-modal"])
+def test_hmm_issuance_refuses_noncanonical_prediction(tmp_path, change):
+    row = _saved_hmm_row()
+    if change == "mass": row["p_quad_filtered"]["Q1"] = .5
+    if change == "missing-key": del row["p_quad_filtered"]["Q4"]
+    if change == "extra-key": row["p_quad_filtered"]["Q5"] = 0
+    if change == "wrong-modal": row["pred_modal_quad"] = "Q4"
+    _write_hmm_test_ledger(tmp_path, [row])
+    assert R.read_hmm_issuance(row["asof"], tmp_path)["recorded_prediction"] is None
+
+
+def test_hmm_issuance_rejects_duplicate_json_members(tmp_path):
+    p = _write_hmm_test_ledger(tmp_path, [])
+    p.write_text('{"asof":"2026-07-01","asof":"2026-07-02"}\n')
+    assert R.read_hmm_issuance("2026-07-02", tmp_path)["status"] == "invalid_ledger"
+
+
+def test_hmm_record_metadata_does_not_certify_source_vintages(tmp_path):
+    row = {**_saved_hmm_row(), "issued_at": "2026-07-02T04:00:00+00:00",
+           "model_fit_asof": "2026-07-01", "model_method": "quad_supervised_gaussian_hmm.v1",
+           "source_basis": "regime_history_vintages_unverified"}
+    _write_hmm_test_ledger(tmp_path, [row])
+    out = R.read_hmm_issuance("2026-07-01", tmp_path)
+    assert out["status"] == "recorded"
+    assert out["issued_at"] == row["issued_at"]
+    assert out["historical_replay_eligible"] is False
+
+
+@pytest.mark.parametrize("field,bad", [("issued_at", "yesterday"),
+    ("issued_at", "2026-07-02T04:00:00"), ("model_fit_asof", "2026-07-03"),
+    ("model_method", "unknown"), ("source_basis", "fully_pit")])
+def test_hmm_issuance_does_not_accept_false_provenance(tmp_path, field, bad):
+    row = {**_saved_hmm_row(), "issued_at": "2026-07-02T04:00:00+00:00",
+           "model_fit_asof": "2026-07-01", "model_method": "quad_supervised_gaussian_hmm.v1",
+           "source_basis": "regime_history_vintages_unverified"}
+    row[field] = bad
+    _write_hmm_test_ledger(tmp_path, [row])
+    out = R.read_hmm_issuance("2026-07-01", tmp_path)
+    assert out["status"] == "invalid_record"
+    assert out["historical_replay_eligible"] is False
+
+
+def _stub_hmm_accrual(tmp_path, monkeypatch, asof="2026-07-01"):
+    root = tmp_path / "regime"
+    root.mkdir(exist_ok=True)
+    (root / "regime_history.parquet").touch()
+    frame = pd.DataFrame(index=pd.DatetimeIndex([asof]))
+    monkeypatch.setattr(pd, "read_parquet", lambda path: frame)
+    row = _saved_hmm_row(asof)
+    monkeypatch.setattr(R, "_causal_filtered_pquad", lambda data: {
+        "asof": asof, "modal_quad": row["pred_modal_quad"], "model_fit_asof": asof,
+        "regime_probs_filtered": row["p_quad_filtered"]})
+
+
+@pytest.mark.parametrize("case", ["old-duplicate", "regressed", "corrupt", "duplicate-ledger"])
+def test_hmm_accrual_does_not_reissue_or_repair_history(tmp_path, monkeypatch, case):
+    rows = [_saved_hmm_row("2026-07-01"), _saved_hmm_row("2026-07-03")]
+    if case == "duplicate-ledger": rows.append(_saved_hmm_row("2026-07-03"))
+    p = _write_hmm_test_ledger(tmp_path, rows)
+    if case == "corrupt": p.write_text(p.read_text() + "{broken\n")
+    date = {"old-duplicate": "2026-07-01", "regressed": "2026-07-02",
+            "corrupt": "2026-07-06", "duplicate-ledger": "2026-07-06"}[case]
+    _stub_hmm_accrual(tmp_path, monkeypatch, date)
+    before = p.read_bytes()
+    assert R.accrue_hmm_row(tmp_path) is False
+    assert p.read_bytes() == before
+
+
+def test_hmm_accrual_adds_metadata_without_rewriting_saved_predictions(tmp_path, monkeypatch):
+    import json
+    from datetime import datetime, timezone
+    p = _write_hmm_test_ledger(tmp_path, [_saved_hmm_row("2026-07-01")])
+    before = p.read_bytes()
+    _stub_hmm_accrual(tmp_path, monkeypatch, "2026-07-02")
+    started = datetime.now(timezone.utc)
+    assert R.accrue_hmm_row(tmp_path) is True
+    assert p.read_bytes().startswith(before)
+    rows = [json.loads(line) for line in p.read_text().splitlines()]
+    issued = datetime.fromisoformat(rows[-1]["issued_at"])
+    assert started <= issued <= datetime.now(timezone.utc)
+    assert rows[-1]["model_fit_asof"] == "2026-07-02"
+    assert rows[-1]["model_method"] == "quad_supervised_gaussian_hmm.v1"
+    assert rows[-1]["source_basis"] == "regime_history_vintages_unverified"
+    assert R.read_hmm_issuance("2026-07-02", tmp_path)["status"] == "recorded"
+    saved = p.read_bytes()
+    assert R.accrue_hmm_row(tmp_path) is False
+    assert p.read_bytes() == saved
+
+
+def test_hmm_accrual_refuses_unterminated_ledger(tmp_path, monkeypatch):
+    p = _write_hmm_test_ledger(tmp_path, [_saved_hmm_row()])
+    p.write_bytes(p.read_bytes().rstrip(b"\n"))
+    before = p.read_bytes()
+    _stub_hmm_accrual(tmp_path, monkeypatch, "2026-07-02")
+    assert R.accrue_hmm_row(tmp_path) is False
+    assert p.read_bytes() == before
+
+
+@pytest.mark.parametrize("case", ["wrong-cutoff", "future-date", "invalid-probability"])
+def test_hmm_accrual_never_appends_a_record_its_reader_would_refuse(tmp_path, monkeypatch, case):
+    from datetime import datetime, timedelta, timezone
+    asof = "2026-07-02"
+    if case == "future-date":
+        asof = (datetime.now(timezone.utc).date() + timedelta(days=1)).isoformat()
+    p = _write_hmm_test_ledger(tmp_path, [_saved_hmm_row("2026-07-01")])
+    _stub_hmm_accrual(tmp_path, monkeypatch, asof)
+    prediction = {"asof": asof, "modal_quad": "Q1", "model_fit_asof": asof,
+                  "regime_probs_filtered": _saved_hmm_row()["p_quad_filtered"]}
+    if case == "wrong-cutoff": prediction["model_fit_asof"] = "2026-07-03"
+    if case == "invalid-probability": prediction["regime_probs_filtered"]["Q1"] = .5
+    monkeypatch.setattr(R, "_causal_filtered_pquad", lambda data: prediction)
+    before = p.read_bytes()
+    assert R.accrue_hmm_row(tmp_path) is False
+    assert p.read_bytes() == before
+
+
+@pytest.mark.parametrize("oversized", [10**400, -(10**400)], ids=["huge-positive", "huge-negative"])
+def test_hmm_oversized_integer_refuses_in_reader_and_append(tmp_path, monkeypatch, oversized):
+    row = _saved_hmm_row()
+    row["p_quad_filtered"]["Q1"] = oversized
+    p = _write_hmm_test_ledger(tmp_path, [row])
+    before = p.read_bytes()
+    out = R.read_hmm_issuance(row["asof"], tmp_path)
+    assert out["status"] == "invalid_record"
+    assert out["recorded_prediction"] is None
+    _stub_hmm_accrual(tmp_path, monkeypatch, "2026-07-02")
+    assert R.accrue_hmm_row(tmp_path) is False
+    assert p.read_bytes() == before
+
+
+@pytest.mark.parametrize("values,valid", [
+    ((.2499, .2499, .25, .25), True),
+    ((.2501, .2501, .25, .25), True),
+    ((.2499, .2499, .2499, .25), False),
+    ((.2501, .2501, .2501, .25), False),
+])
+def test_hmm_reader_preserves_exact_rounding_boundary(tmp_path, values, valid):
+    row = _saved_hmm_row()
+    row["p_quad_filtered"] = dict(zip(("Q1", "Q2", "Q3", "Q4"), values))
+    row["pred_modal_quad"] = max(row["p_quad_filtered"], key=row["p_quad_filtered"].get)
+    p = _write_hmm_test_ledger(tmp_path, [row])
+    before = p.read_bytes()
+    out = R.read_hmm_issuance(row["asof"], tmp_path)
+    assert out["status"] == ("legacy_record" if valid else "invalid_record")
+    assert out["recorded_prediction"] == (row["p_quad_filtered"] if valid else None)
+    assert p.read_bytes() == before
+
+
+def test_hmm_history_suites_are_named_by_real_ci_run_steps():
+    from scripts import audit_unrun_tests as audit
+    blob = audit._workflow_blob()
+    for name in ("test_regime_one.py", "test_regime_hmm.py",
+                 "test_validate_regime_fwd.py", "test_perception_contracts.py"):
+        assert audit._named_by_a_run_step("tests/" + name, blob, frozenset()), name
+
+
+def test_hmm_history_suites_are_in_the_code_gate_not_only_data_health():
+    from pathlib import Path
+    from scripts import audit_unrun_tests as audit
+    from scripts.run_ci_pack import load_legacy_jobs
+    manifest = Path(__file__).resolve().parents[1] / ".github/ci/legacy-jobs.yml"
+    jobs = load_legacy_jobs(manifest, gate="code")
+    for name in ("test_regime_one.py", "test_regime_hmm.py",
+                 "test_validate_regime_fwd.py", "test_perception_contracts.py"):
+        owners = [job for job in jobs if any(
+            audit._named_by_a_run_step("tests/" + name, step.get("run", ""), frozenset())
+            for step in job.definition.get("steps", []))]
+        assert len(owners) == 1, (name, [job.job_id for job in owners])
+        installs = [step.get("run", "") for step in owners[0].definition["steps"]
+                    if "pip install" in step.get("run", "")]
+        assert len(installs) == 1 and "hmmlearn==0.3.3" in installs[0]

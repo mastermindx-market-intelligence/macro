@@ -12290,9 +12290,12 @@ jobs:
       - name: install minimal deps
         # pandas.read_html is exercised by the ETF sponsor-registry parser;
         # pandas alone does not provide an HTML parser on a clean runner.
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn lxml
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn lxml hmmlearn==0.3.3
+      # W0: run the four regime code regressions before merge, not only in
+      # the post-nightly data-health lane. Existing job, command and risk policy
+      # stay intact; the real code-gate loader is covered by the added test.
       - name: spotlight tilt — W9-B US demotion is display-only + the tilt still moves weighted markets
-        run: python -m pytest tests/test_spotlight.py -q
+        run: python -m pytest tests/test_spotlight.py tests/test_regime_one.py tests/test_regime_hmm.py tests/test_validate_regime_fwd.py tests/test_perception_contracts.py -q
       - name: etf_pulse sector leg + analyst delta channel — each pins the data branch it exercises
         run: python -m pytest tests/test_etf_pulse.py tests/test_fix43_analyst_and_whitehouse.py -q
       # test_etf_board ran in ZERO jobs until 2026-08-03 — the etfs.html hero
