@@ -194,9 +194,11 @@ def _conviction(type_: str) -> dict:
                    "仓位交还给引擎经验证的策略输出。")
     elif type_ in ("impulse_warn_down", "impulse_trigger_down"):
         edge = ("Observed BTC impulse precursor fire. Predictive and action use "
-                "requires its current Signal Lab evidence passport.")
+                "requires its current Signal Lab evidence passport. BLIND to "
+                "slow/options-calm flushes (e.g. it did NOT lead the 2026-06-24 cascade).")
         edge_zh = ("已观察到 BTC 脉冲前兆触发。能否用于预测或行动，"
-                   "取决于当前信号实验室证据凭证。")
+                   "取决于当前信号实验室证据凭证。对缓慢/期权平静式下跌无效"
+                   "（例如未能领先 2026-06-24 的下跌）。")
     elif type_ == "impulse_warn_up":
         edge = ("Observed reactive SOPR capitulation fire after a drawdown. "
                 "It is not a pre-emptive bottom call; current use requires its evidence passport.")

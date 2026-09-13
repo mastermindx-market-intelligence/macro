@@ -202,3 +202,16 @@ merge. Until then this file is the authority on these eight rows' dispositions.
 - Evidence in every future slice uses the K1 EvidenceRef / EvidenceBlock / EvidenceRecipe
   vocabulary; corrections are typed states.
 - No proprietary Market Ontology code, text, data, or asset is copied into this repo.
+
+## Whose acceptance the openers denote
+
+Added 2026-09-09 by packet B-REC-B5-1 (absorbing B-REC-3 item 5); the openers above are
+quoted as written and are not edited by this note.
+
+Five of the eight rows open on "Sol acceptance". Read that phrase as naming the seat, not
+the person: since the Chairman override of 2026-09-06, recorded as
+`DEC:CHAIRMAN-OVERRIDE-CLAUDE-META-CEO-REGIME-2026-09-06`, the acceptance authority those
+openers point at is held by the Meta-CEO seat. The override was ratified on macro PR #6961
+(issuecomment-5563643365), which is merged. Nothing else about the openers moves: the same
+gate, the same commission and the same first bounded slice still apply to each row, and no
+row's disposition changes because of this note.

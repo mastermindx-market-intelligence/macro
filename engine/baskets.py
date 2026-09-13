@@ -30,6 +30,7 @@ import pandas as pd
 
 from engine.equity_factors import _closes, _names_sectors
 from lib import config, store
+from lib.closes_panel import align_latest_common_observation, population_observation
 
 log = logging.getLogger(__name__)
 
@@ -159,6 +160,15 @@ def compute_baskets() -> dict | None:
     closes = _closes()
     if closes is None or closes.empty:
         return None
+    spy = store.read("yahoo", "SPY")
+    if spy is None or "close" not in spy.columns:
+        return None
+    # The broad panel and SPY choose the effective session. Extras may widen the
+    # basket population on that fixed calendar; they may not advance the whole desk
+    # to a date where the broad universe itself has no observation.
+    closes, spy_close, observation = align_latest_common_observation(closes, spy["close"])
+    if closes.empty or observation.get("effective_as_of") is None:
+        return None
     # Deep-history store (data/baskets/extras.parquet, from fetch_basket_extras): off-index members
     # AND a deep (~3y) tape for in-cache names the breadth caches only hold shallowly — the large-cap
     # cache is a ~15-month rolling window, so a large-cap-heavy basket would otherwise stub at ~15m and
@@ -181,10 +191,7 @@ def compute_baskets() -> dict | None:
     idx = rets.index
     nm = _names_sectors()
 
-    spy = store.read("yahoo", "SPY")
-    if spy is None or "close" not in spy.columns:
-        return None
-    spy_ret = spy["close"].reindex(idx).ffill().pct_change()
+    spy_ret = spy_close.reindex(idx).ffill().pct_change()
     bench = pd.Series(np.nan, index=idx)
     bf = spy_ret.first_valid_index()
     bench.loc[bf:] = (1.0 + spy_ret.loc[bf:].fillna(0.0)).cumprod()
@@ -195,16 +202,27 @@ def compute_baskets() -> dict | None:
     dates = [d.strftime("%Y-%m-%d") for d in idx]
 
     chart_baskets, out_baskets = {}, []
+    observation_refusals: list[dict] = []
     bdict = mem["baskets"]
     items = bdict.items() if isinstance(bdict, dict) else [(b["id"], b) for b in bdict]
     for bid, b in items:
         members = b.get("members", [])
+        basket_observation = population_observation(closes, members, idx.max())
+        if not basket_observation["aggregate_eligible"]:
+            observation_refusals.append({"basket_id": bid, "observation": basket_observation})
+            print(
+                "::warning title=basket-observation-coverage::"
+                f"{bid} refused aggregate read at {basket_observation['effective_as_of']}: "
+                f"observed {basket_observation['observed_n']}/"
+                f"{basket_observation['configured_n']} live members; minimum "
+                f"{basket_observation['min_members']} and "
+                f"{int(round(basket_observation['min_coverage'] * 100))}% coverage",
+                flush=True,
+            )
+            continue
         tickers = [m["ticker"] for m in members]
         present = [t for t in tickers if t in rets.columns]
         missing = sorted(set(tickers) - set(present))
-        if len(present) < 3:
-            log.warning("basket %s skipped: only %d members in cache", bid, len(present))
-            continue
         lvl = _ew_level(rets, members, idx)
         if lvl.dropna().empty:
             continue
@@ -214,10 +232,12 @@ def compute_baskets() -> dict | None:
 
         # latest active members enriched with fast + slow returns and partial flag
         last_d = idx.max()
+        observed_now = set(basket_observation["observed_members"])
         active, partial = [], []
         for m in members:
             t = m["ticker"]
-            if t not in present or (m.get("removed") and pd.Timestamp(m["removed"]) <= last_d):
+            if (t not in observed_now
+                    or (m.get("removed") and pd.Timestamp(m["removed"]) <= last_d)):
                 continue
             tc = closes[t].dropna()
             if tc.empty:
@@ -267,7 +287,8 @@ def compute_baskets() -> dict | None:
             "id": bid, "name": b["name"], "name_zh": b.get("name_zh", b["name"]),
             "category": b.get("category", "Other"), "thesis": b.get("thesis", ""),
             "weighting": b.get("weighting", "equal"), "created": b.get("created"),
-            "n_members": len(active), "members": active, "changelog": changelog,
+            "n_members": len(active), "members": active,
+            "observation": basket_observation, "changelog": changelog,
             "reference": reference, "missing": missing, "partial": partial,
             "perf": perf,
         })
@@ -291,6 +312,8 @@ def compute_baskets() -> dict | None:
         "history_note": mem.get("history_note",
             "Series before a basket's creation date are a backtest of the membership as of creation; live tracking starts at creation."),
         "note": mem.get("note", ""),
+        "observation": observation,
+        "observation_refusals": observation_refusals,
         "categories": cats, "story": story, "baskets": out_baskets,
         "chart": {"dates": dates,
                   "bench": [None if pd.isna(v) else round(float(v), 5) for v in bench],

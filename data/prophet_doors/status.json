@@ -1,21 +1,21 @@
 {
   "appended": 3,
-  "asof": "2026-09-09",
+  "asof": "2026-09-11",
   "candidates": {
-    "R": 3,
-    "T": 2,
+    "R": 0,
+    "T": 6,
     "W": 4
   },
   "deduped": {
-    "R": 1,
-    "T": 1,
-    "W": 4
+    "R": 0,
+    "T": 4,
+    "W": 3
   },
   "dry_run": false,
   "feature_source": {
     "enabled": true,
     "foresight": {
-      "asof": "2026-09-10",
+      "asof": "2026-09-12",
       "consulted": true,
       "n_keys": 27,
       "n_themes": 18,
@@ -27,21 +27,26 @@
       "coil_min_sessions": 293,
       "consulted": true,
       "null_reasons": {
-        "ohlcv_absent": 7
+        "ohlcv_absent": 16
       },
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
       "themes_read": {
-        "Semiconductors": {
-          "theme_thrust_frac": 0.0571,
+        "Commodities Agriculture": {
+          "theme_thrust_frac": 0.0,
+          "theme_thrust_reason": null,
+          "theme_thrust_state": "quiet"
+        },
+        "Hardware": {
+          "theme_thrust_frac": 0.0889,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         }
       },
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 37,
-      "tickers_read": 44
+      "tickers_ok": 63,
+      "tickers_read": 79
     },
     "keys": [
       "relay_count_3d",
@@ -61,14 +66,14 @@
     "relay": {
       "consulted": true,
       "high_lookback": 63,
-      "members_indexed": 195,
-      "n_covered": 0,
+      "members_indexed": 185,
+      "n_covered": 1,
       "reason": null,
       "window_sessions": 21
     },
     "turnover": {
       "consulted": true,
-      "last_session": "2026-09-09",
+      "last_session": "2026-09-11",
       "n_tickers": 1544,
       "ok": true,
       "reason": null,
@@ -78,9 +83,14 @@
   },
   "feature_source_w": {
     "atlas": {
-      "consulted": false,
-      "n_asked": 0,
-      "n_covered": 0
+      "consulted": true,
+      "direction": "bull",
+      "grid": "W",
+      "horizon": "13w",
+      "n_asked": 1,
+      "n_covered": 1,
+      "reason": null,
+      "source": "engine.event_atlas.receipt"
     },
     "enabled": true,
     "keys": [
@@ -101,14 +111,14 @@
     ]
   },
   "flag_tickers": {
-    "R": [
-      "DCH",
-      "SMP"
-    ],
+    "R": [],
     "T": [
-      "QCOM"
+      "TEL",
+      "ANDE"
     ],
-    "W": []
+    "W": [
+      "LITE"
+    ]
   },
   "n_universe": 1496,
   "overflow": {
@@ -116,41 +126,41 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-09-10 12:11:50",
-  "runtime_s": 107.3,
+  "run_utc": "2026-09-12 14:59:55",
+  "runtime_s": 100.8,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": 0,
-    "asof": "2026-09-09",
-    "n_members": 195,
+    "asof": "2026-09-11",
+    "n_members": 185,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 3.469,
+        "emerging_score": 3.386,
         "rank": 1,
         "theme": "Semiconductors"
       },
       {
-        "emerging_score": 2.13,
+        "emerging_score": 1.441,
         "rank": 2,
-        "theme": "Energy Renewable"
+        "theme": "Telecommunications"
       },
       {
-        "emerging_score": 1.928,
+        "emerging_score": 1.405,
         "rank": 3,
-        "theme": "Electric Vehicles"
+        "theme": "Hardware"
       },
       {
-        "emerging_score": 1.903,
+        "emerging_score": 1.277,
         "rank": 4,
-        "theme": "Crypto & Blockchain"
+        "theme": "Commodities Agriculture"
       },
       {
-        "emerging_score": 1.747,
+        "emerging_score": 1.127,
         "rank": 5,
-        "theme": "Commodities Metals"
+        "theme": "Energy Renewable"
       }
     ]
   },
@@ -160,18 +170,18 @@
       "3B"
     ],
     "aligned": 4,
-    "asof_max": "2026-09-09",
+    "asof_max": "2026-09-11",
     "asof_mismatch": 0,
-    "asof_run": "2026-09-09",
+    "asof_run": "2026-09-11",
     "evaluated": 713,
     "fresh": 4,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 19.8,
+    "runtime_s": 21.6,
     "skipped": 4,
     "source": "baskets/membership.json",
-    "state_turn": 89,
+    "state_turn": 83,
     "universe_n": 717
   }
 }

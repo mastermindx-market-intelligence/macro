@@ -17,7 +17,10 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from engine import baskets as bk  # noqa: E402
 from engine import group_flow as gf  # noqa: E402
+from engine import theme_scoring as ts  # noqa: E402
+from lib.closes_panel import merge_close_caches  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 TEMPLATES = ROOT / "templates"
@@ -218,3 +221,518 @@ def test_money_flow_card_degrades_without_a_cluster(flow):
 def test_baskets_page_renders_with_no_unrendered_jinja(flow):
     html = _render_baskets(flow)
     assert "{{" not in html and "{%" not in html
+
+# ---- W0 common-observation integrity across close-panel, Group Flow, Baskets, and Theme Scoring ----
+def _member(ticker: str, *, removed: str | None = None) -> dict:
+    row = {"ticker": ticker, "added": "2025-01-01", "rationale": ticker}
+    if removed is not None:
+        row["removed"] = removed
+    return row
+
+
+def _basket(name: str, tickers: str) -> dict:
+    return {"name": name, "name_zh": name, "category": "Test", "created": "2025-01-01",
+            "etf_proxy": None, "members": [_member(t) for t in tickers]}
+
+
+def _write_close_cache(tmp_path, group: str, frame: pd.DataFrame) -> None:
+    directory = tmp_path / group
+    directory.mkdir(parents=True, exist_ok=True)
+    frame.to_parquet(directory / "_closes_cache.parquet")
+
+
+def _w0_sessions(n: int) -> pd.DatetimeIndex:
+    return pd.bdate_range("2026-01-05", periods=n)
+
+
+class TestObservationCalendarIntegrity:
+    """A calendar label with no prices is not a market observation."""
+
+    def test_terminal_all_null_row_is_trimmed_but_internal_gap_is_preserved(self, tmp_path):
+        idx = _w0_sessions(5)
+        frame = pd.DataFrame({
+            "AAA": [10.0, np.nan, 11.0, 12.0, np.nan],
+            "BBB": [20.0, np.nan, 21.0, 22.0, np.nan],
+        }, index=idx)
+        _write_close_cache(tmp_path, "breadth", frame)
+
+        panel, meta = merge_close_caches(("breadth",), data_dir=tmp_path)
+
+        assert panel.index.tolist() == idx[:4].tolist()
+        assert panel.loc[idx[1]].isna().all()       # internal outage remains explicit
+        assert meta["raw_tip"] == idx[-1]
+        assert meta["tip"] == idx[-2]
+        assert meta["dropped_all_null_tail_rows"] == [idx[-1]]
+        assert idx[1] in meta["all_null_rows"]
+
+    def test_all_never_populated_columns_keep_schema_with_no_effective_tip(self, tmp_path):
+        idx = _w0_sessions(4)
+        _write_close_cache(tmp_path, "breadth", pd.DataFrame({"DEAD": np.nan}, index=idx))
+
+        panel, meta = merge_close_caches(("breadth",), data_dir=tmp_path)
+
+        assert list(panel.columns) == ["DEAD"]
+        assert panel.empty
+        assert meta["raw_tip"] == idx[-1]
+        assert meta["tip"] is None
+        assert meta["behind"]["DEAD"] == -1
+        assert meta["dropped_all_null_tail_rows"] == list(idx)
+
+    def test_latest_common_observation_requires_an_actual_benchmark_close(self):
+        from lib.closes_panel import align_latest_common_observation
+
+        idx = _w0_sessions(5)
+        panel = pd.DataFrame({"AAA": [10, 11, 12, 13, 14]}, index=idx)
+        benchmark = pd.Series([100, 101, 102, 103, np.nan], index=idx, name="close")
+
+        aligned, bench, meta = align_latest_common_observation(panel, benchmark)
+
+        assert aligned.index.max() == idx[-2]
+        assert bench.index.equals(aligned.index)
+        assert pd.notna(bench.iloc[-1])
+        assert meta["effective_as_of"] == idx[-2].strftime("%Y-%m-%d")
+        assert meta["panel_raw_tip"] == idx[-1].strftime("%Y-%m-%d")
+        assert meta["benchmark_observed_tip"] == idx[-2].strftime("%Y-%m-%d")
+        assert meta["dropped_panel_rows_after_effective"] == [idx[-1].strftime("%Y-%m-%d")]
+
+    def test_complete_common_observation_is_byte_equivalent(self):
+        from lib.closes_panel import align_latest_common_observation
+
+        idx = _w0_sessions(5)
+        panel = pd.DataFrame({"AAA": np.arange(5.0), "BBB": np.arange(5.0) + 10}, index=idx)
+        benchmark = pd.Series(np.arange(5.0) + 100, index=idx)
+
+        aligned, bench, meta = align_latest_common_observation(panel, benchmark)
+
+        pd.testing.assert_frame_equal(aligned, panel)
+        pd.testing.assert_series_equal(bench, benchmark, check_names=False)
+        assert meta["effective_as_of"] == idx[-1].strftime("%Y-%m-%d")
+        assert meta["dropped_panel_rows_after_effective"] == []
+
+
+class TestPopulationObservationReceipt:
+    def _members(self):
+        return [
+            {"ticker": "A", "added": "2025-01-01"},
+            {"ticker": "B", "added": "2025-01-01"},
+            {"ticker": "C", "added": "2025-01-01"},
+            {"ticker": "D", "added": "2025-01-01"},
+            {"ticker": "OLD", "added": "2025-01-01", "removed": "2025-02-01"},
+        ]
+
+    def test_receipt_separates_configured_present_and_observed(self):
+        from lib.closes_panel import population_observation
+
+        idx = pd.bdate_range("2026-01-05", periods=3)
+        panel = pd.DataFrame({
+            "A": [1.0, 1.1, 1.2],
+            "B": [1.0, 1.1, 1.2],
+            "C": [1.0, 1.1, np.nan],
+            "OLD": [1.0, 1.1, 1.2],
+        }, index=idx)
+
+        receipt = population_observation(panel, self._members(), idx[-1])
+
+        assert receipt["configured_members"] == ["A", "B", "C", "D"]
+        assert receipt["configured_n"] == 4
+        assert receipt["in_panel_n"] == 3
+        assert receipt["observed_members"] == ["A", "B"]
+        assert receipt["observed_n"] == 2
+        assert receipt["missing_columns"] == ["D"]
+        assert receipt["missing_at_asof"] == ["C"]
+        assert receipt["coverage"] == 0.5
+        assert receipt["status"] == "insufficient"
+        assert receipt["aggregate_eligible"] is False
+
+    def test_partial_above_the_floor_is_admissible_but_never_called_complete(self):
+        from lib.closes_panel import population_observation
+
+        idx = pd.bdate_range("2026-01-05", periods=3)
+        panel = pd.DataFrame({
+            "A": [1.0, 1.1, 1.2], "B": [1.0, 1.1, 1.2],
+            "C": [1.0, 1.1, 1.2], "D": [1.0, 1.1, np.nan],
+        }, index=idx)
+
+        receipt = population_observation(panel, self._members(), idx[-1])
+
+        assert receipt["observed_n"] == 3
+        assert receipt["coverage"] == 0.75
+        assert receipt["status"] == "partial"
+        assert receipt["aggregate_eligible"] is True
+
+    def test_three_observations_still_refuse_when_coverage_is_below_sixty_percent(self):
+        from lib.closes_panel import population_observation
+
+        idx = pd.bdate_range("2026-01-05", periods=3)
+        members = [
+            {"ticker": ticker, "added": "2025-01-01"}
+            for ticker in ("A", "B", "C", "D", "E", "F")
+        ]
+        panel = pd.DataFrame({
+            "A": [1.0, 1.1, 1.2],
+            "B": [1.0, 1.1, 1.2],
+            "C": [1.0, 1.1, 1.2],
+            "D": [1.0, 1.1, np.nan],
+            "E": [1.0, 1.1, np.nan],
+            "F": [1.0, 1.1, np.nan],
+        }, index=idx)
+
+        receipt = population_observation(panel, members, idx[-1])
+
+        assert receipt["observed_n"] == 3
+        assert receipt["coverage"] == 0.5
+        assert receipt["status"] == "insufficient"
+        assert receipt["aggregate_eligible"] is False
+
+    def test_complete_receipt(self):
+        from lib.closes_panel import population_observation
+
+        idx = pd.bdate_range("2026-01-05", periods=3)
+        panel = pd.DataFrame({t: [1.0, 1.1, 1.2] for t in "ABCD"}, index=idx)
+
+        receipt = population_observation(panel, self._members(), idx[-1])
+
+        assert receipt["status"] == "complete"
+        assert receipt["coverage"] == 1.0
+        assert receipt["aggregate_eligible"] is True
+        assert receipt["effective_as_of"] == idx[-1].strftime("%Y-%m-%d")
+
+
+def test_disclose_merge_reports_all_null_terminal_calendar_once(capsys):
+    from lib import closes_panel as cp
+
+    cp._DISCLOSED.clear()
+    meta = {
+        "rescued": {},
+        "raw_tip": pd.Timestamp("2026-09-09"),
+        "tip": pd.Timestamp("2026-09-08"),
+        "dropped_all_null_tail_rows": [pd.Timestamp("2026-09-09")],
+    }
+    cp.disclose_merge(meta, "equity_factors")
+    cp.disclose_merge(meta, "equity_factors")
+
+    lines = [line for line in capsys.readouterr().out.splitlines() if line]
+    assert len(lines) == 1
+    assert lines[0].startswith("::warning title=equity_factors observation calendar::")
+    assert "2026-09-09" in lines[0]
+    assert "effective 2026-09-08" in lines[0]
+
+def test_group_flow_setup_holds_extras_to_the_base_common_session(monkeypatch):
+    base_idx = pd.bdate_range("2025-01-02", periods=180)
+    extra_idx = base_idx.append(pd.DatetimeIndex([base_idx[-1] + pd.offsets.BDay(1)]))
+    base = pd.DataFrame({t: 100 * (1.001 ** np.arange(len(base_idx))) for t in "ABCDEF"},
+                        index=base_idx)
+    extras = pd.DataFrame({
+        **{t: 50 * (1.002 ** np.arange(len(extra_idx))) for t in "GHI"},
+        # An overlapping supplemental column must not replace Group Flow's primary tape.
+        "A": 900 * (1.01 ** np.arange(len(extra_idx))),
+    }, index=extra_idx)
+    spy = pd.DataFrame({"close": 400 * (1.0008 ** np.arange(len(extra_idx)))}, index=extra_idx)
+    members = {"nuclear_shape": _basket("Nuclear shape", "ABCDEFGHI")}
+
+    monkeypatch.setattr(gf, "_membership", lambda: {"baskets": members})
+    monkeypatch.setattr(gf, "_closes", lambda: base)
+    monkeypatch.setattr(gf, "_basket_extras", lambda: extras)
+    monkeypatch.setattr(gf.store, "read", lambda group, name: spy if (group, name) == ("yahoo", "SPY") else None)
+
+    setup = gf._setup("us")
+
+    assert setup is not None
+    assert setup["idx"].max() == base_idx[-1]
+    assert setup["closes"].iloc[-1].notna().sum() == 9
+    assert setup["closes"].loc[base_idx[-1], "A"] == base.loc[base_idx[-1], "A"]
+    assert setup["observation"]["effective_as_of"] == base_idx[-1].strftime("%Y-%m-%d")
+    assert setup["observation"]["panel_raw_tip"] == base_idx[-1].strftime("%Y-%m-%d")
+
+
+def test_group_flow_and_baskets_share_common_date_when_benchmark_tip_is_missing(monkeypatch):
+    idx = pd.bdate_range("2025-01-02", periods=180)
+    x = np.arange(len(idx))
+    closes = pd.DataFrame({
+        "A": 100 * (1.001 ** x),
+        "B": 100 * (1.0005 ** x),
+        "C": 100 * (0.9998 ** x),
+    }, index=idx)
+    spy = pd.DataFrame({"close": 400 * (1.0008 ** x)}, index=idx)
+    spy.loc[idx[-1], "close"] = np.nan
+    members = {"shared": _basket("Shared clock", "ABC")}
+
+    def read_store(group, name):
+        return spy if (group, name) == ("yahoo", "SPY") else None
+
+    monkeypatch.setattr(gf, "_membership", lambda: {"baskets": members})
+    monkeypatch.setattr(gf, "_closes", lambda: closes)
+    monkeypatch.setattr(gf, "_basket_extras", lambda: None)
+    monkeypatch.setattr(gf.store, "read", read_store)
+    monkeypatch.setattr(bk, "_membership", lambda: {"baskets": members})
+    monkeypatch.setattr(bk, "_closes", lambda: closes)
+    monkeypatch.setattr(bk, "_basket_extras", lambda: None)
+    monkeypatch.setattr(bk, "_names_sectors", lambda: {t: (t, "Test") for t in "ABC"})
+    monkeypatch.setattr(bk.store, "read", read_store)
+
+    setup = gf._setup("us")
+    payload = bk.compute_baskets()
+
+    expected = idx[-2].strftime("%Y-%m-%d")
+    assert setup is not None
+    assert payload is not None
+    assert setup["observation"]["effective_as_of"] == expected
+    assert setup["observation"]["benchmark_observed_tip"] == expected
+    assert payload["observation"]["effective_as_of"] == expected
+    assert payload["as_of"] == expected
+    assert payload["chart"]["dates"][-1] == expected
+
+
+def _basket_compute_fixture(
+    monkeypatch,
+    *,
+    insufficient: str = "ABCD",
+    missing: tuple[str, ...] = ("C", "D"),
+    complete: str = "EFG",
+):
+    idx = pd.bdate_range("2025-01-02", periods=180)
+    x = np.arange(len(idx))
+    tickers = "".join(dict.fromkeys(insufficient + complete))
+    closes = pd.DataFrame({t: 100 * (1.0005 + 0.00005 * k) ** x
+                           for k, t in enumerate(tickers)}, index=idx)
+    closes.loc[idx[-1], list(missing)] = np.nan
+    spy = pd.DataFrame({"close": 400 * (1.0008 ** x)}, index=idx)
+    members = {
+        "insufficient": _basket("Insufficient", insufficient),
+        "complete": _basket("Complete", complete),
+    }
+    monkeypatch.setattr(bk, "_membership", lambda: {"baskets": members})
+    monkeypatch.setattr(bk, "_closes", lambda: closes)
+    monkeypatch.setattr(bk, "_basket_extras", lambda: None)
+    monkeypatch.setattr(bk, "_names_sectors", lambda: {t: (t, "Test") for t in tickers})
+    monkeypatch.setattr(bk.store, "read", lambda group, name: spy if (group, name) == ("yahoo", "SPY") else None)
+    return idx
+
+
+def test_baskets_freezes_date_before_extras_and_preserves_deep_overlap_precedence(monkeypatch):
+    base_idx = pd.bdate_range("2025-01-02", periods=180)
+    extra_idx = base_idx.append(pd.DatetimeIndex([base_idx[-1] + pd.offsets.BDay(1)]))
+    x = np.arange(len(base_idx))
+    base = pd.DataFrame({
+        "A": 100 * (1.001 ** x),
+        "B": 100 * (1.0005 ** x),
+        "C": 100 * (0.9998 ** x),
+    }, index=base_idx)
+    deep_a = 200 * (1.0015 ** np.arange(len(extra_idx)))
+    extras = pd.DataFrame({
+        "A": deep_a,
+        "D": 50 * (1.002 ** np.arange(len(extra_idx))),
+        "E": 75 * (1.001 ** np.arange(len(extra_idx))),
+    }, index=extra_idx)
+    spy = pd.DataFrame({"close": 400 * (1.0008 ** np.arange(len(extra_idx)))}, index=extra_idx)
+    members = {"deep": _basket("Deep history", "ADE")}
+
+    monkeypatch.setattr(bk, "_membership", lambda: {"baskets": members})
+    monkeypatch.setattr(bk, "_closes", lambda: base)
+    monkeypatch.setattr(bk, "_basket_extras", lambda: extras)
+    monkeypatch.setattr(bk, "_names_sectors", lambda: {t: (t, "Test") for t in "ABCDE"})
+    monkeypatch.setattr(
+        bk.store, "read",
+        lambda group, name: spy if (group, name) == ("yahoo", "SPY") else None,
+    )
+
+    out = bk.compute_baskets()
+
+    assert out is not None
+    assert out["as_of"] == base_idx[-1].strftime("%Y-%m-%d")
+    assert len(out["chart"]["dates"]) == len(base_idx)
+    assert out["chart"]["dates"][-1] == base_idx[-1].strftime("%Y-%m-%d")
+    row = out["baskets"][0]
+    assert row["observation"]["configured_n"] == 3
+    assert row["observation"]["observed_n"] == 3
+    by_symbol = {member["symbol"]: member for member in row["members"]}
+    # This is the incumbent Baskets basis rule: deep extras wins on overlap after
+    # the common date is frozen; it is not permission for extras to advance the date.
+    assert by_symbol["A"]["last"] == round(float(deep_a[len(base_idx) - 1]), 2)
+
+
+def test_baskets_refuses_below_population_floor_and_discloses_it(monkeypatch, capsys):
+    idx = _basket_compute_fixture(monkeypatch)
+    level_calls = []
+    real_level = bk._ew_level
+    monkeypatch.setattr(
+        bk,
+        "_ew_level",
+        lambda *args, **kwargs: level_calls.append(args) or real_level(*args, **kwargs),
+    )
+
+    out = bk.compute_baskets()
+
+    assert out is not None
+    assert out["as_of"] == idx[-1].strftime("%Y-%m-%d")
+    assert [row["id"] for row in out["baskets"]] == ["complete"]
+    assert out["baskets"][0]["observation"]["status"] == "complete"
+    assert out["baskets"][0]["observation"]["configured_n"] == 3
+    refusal = out["observation_refusals"][0]
+    assert refusal["basket_id"] == "insufficient"
+    assert refusal["observation"]["observed_n"] == 2
+    assert refusal["observation"]["configured_n"] == 4
+    assert refusal["observation"]["aggregate_eligible"] is False
+    assert len(level_calls) == 1  # complete basket only; refused basket never builds a level
+    assert "::warning title=basket-observation-coverage::" in capsys.readouterr().out
+
+
+def test_baskets_refuses_three_of_six_when_coverage_floor_fails(monkeypatch):
+    idx = _basket_compute_fixture(
+        monkeypatch,
+        insufficient="ABCDEF",
+        missing=("D", "E", "F"),
+        complete="GHI",
+    )
+    level_calls = []
+    real_level = bk._ew_level
+    monkeypatch.setattr(
+        bk,
+        "_ew_level",
+        lambda *args, **kwargs: level_calls.append(args) or real_level(*args, **kwargs),
+    )
+
+    out = bk.compute_baskets()
+
+    assert out is not None
+    assert out["as_of"] == idx[-1].strftime("%Y-%m-%d")
+    assert [row["id"] for row in out["baskets"]] == ["complete"]
+    refusal = out["observation_refusals"][0]
+    assert refusal["basket_id"] == "insufficient"
+    assert refusal["observation"]["observed_n"] == 3
+    assert refusal["observation"]["configured_n"] == 6
+    assert refusal["observation"]["coverage"] == 0.5
+    assert refusal["observation"]["aggregate_eligible"] is False
+    assert len(level_calls) == 1
+
+
+def _theme_compute_fixture(
+    monkeypatch,
+    *,
+    insufficient: str = "ABCD",
+    missing: tuple[str, ...] = ("C", "D"),
+    complete: str = "EFG",
+):
+    idx = pd.bdate_range("2025-01-02", periods=260)
+    x = np.arange(len(idx))
+    tickers = "".join(dict.fromkeys(insufficient + complete))
+    closes = pd.DataFrame({t: 100 * (1.0005 + 0.00003 * k) ** x
+                           for k, t in enumerate(tickers)}, index=idx)
+    closes.loc[idx[-1], list(missing)] = np.nan
+    rets = closes.pct_change(fill_method=None)
+    bench = pd.Series(1.0007 ** x, index=idx)
+    members = {
+        "insufficient": _basket("Insufficient", insufficient),
+        "complete": _basket("Complete", complete),
+    }
+    monkeypatch.setattr(ts.group_flow, "_setup", lambda region="us": {
+        "mem": {"baskets": members}, "closes": closes, "rets": rets,
+        "idx": idx, "bench": bench, "region": region,
+        "observation": {"effective_as_of": idx[-1].strftime("%Y-%m-%d")},
+    })
+    monkeypatch.setattr(ts.group_flow, "_cfg", lambda cfg=None: {})
+    monkeypatch.setattr(ts.group_flow, "prep_group", lambda *args, **kwargs: object())
+    monkeypatch.setattr(ts.group_flow, "fingerprint_at", lambda *args, **kwargs: {
+        "accel_z": 0.0, "rs_pctile": 0.5, "broadening_z": 0.0,
+        "cohesion": 0.5, "cohesion_chg": 0.0, "persistence": 0.5,
+    })
+    monkeypatch.setattr(ts.group_flow, "_leadership", lambda *args, **kwargs: {
+        "breadth": "broad", "top": [], "hhi": 0.2,
+    })
+    monkeypatch.setattr(ts, "_macro_context", lambda region="us": {
+        "state": {}, "sector_rs": {}, "display": {},
+    })
+    monkeypatch.setattr(ts, "_signal_calibration", lambda: {})
+    monkeypatch.setattr(ts, "_perf", lambda *args, **kwargs: {
+        h: {"ret": 0.01, "rel": 0.0} for h in ("1d", "5d", "10d", "20d", "60d", "ytd")
+    })
+    monkeypatch.setattr(ts, "_macro_leg", lambda *args, **kwargs: (0.0, []))
+    monkeypatch.setattr(ts, "_crowding_pen", lambda *args, **kwargs: (0.0, []))
+    monkeypatch.setattr(ts, "_basket_signals", lambda *args, **kwargs: {})
+    monkeypatch.setattr(ts.basket_score, "theme_textures", lambda *args, **kwargs: {
+        "clean_entry": {"flag": False, "quality": 0.0, "reasons": []},
+        "rollover_risk": {"band": "low", "risk": 0.0, "reasons": []},
+        "bull_age": {"in_bull": False},
+    })
+    monkeypatch.setattr(ts.basket_score, "market_concentration", lambda *args, **kwargs: {})
+    monkeypatch.setattr(ts.vol_regime, "published_snapshot", lambda: None)
+    monkeypatch.setattr(ts.vol_regime, "overlay_config", lambda: {})
+    monkeypatch.setattr(ts.vol_regime, "sizing_overlay", lambda *args, **kwargs: {
+        "active": False, "gross_scalar": 1.0,
+    })
+    monkeypatch.setattr(ts.vol_regime, "regime_caution_scored", lambda: False)
+    monkeypatch.setattr(ts, "_apply_sector_conflict_demotion", lambda *args, **kwargs: None)
+    monkeypatch.setattr(ts, "_apply_momentum_cooling_demotion", lambda *args, **kwargs: None)
+    return idx
+
+
+def test_theme_scoring_refuses_below_floor_before_label_or_recommendation(monkeypatch):
+    idx = _theme_compute_fixture(monkeypatch)
+    level_calls = []
+    prep_calls = []
+    fingerprint_calls = []
+    label_calls = []
+    reco_calls = []
+    monkeypatch.setattr(ts, "_ew_level", lambda *args, **kwargs: level_calls.append(args) or pd.Series(1.0, index=idx))
+    monkeypatch.setattr(ts.group_flow, "prep_group", lambda *args, **kwargs: prep_calls.append(args) or object())
+    monkeypatch.setattr(ts.group_flow, "fingerprint_at", lambda *args, **kwargs: fingerprint_calls.append(args) or {
+        "accel_z": 0.0, "rs_pctile": 0.5, "broadening_z": 0.0,
+        "cohesion": 0.5, "cohesion_chg": 0.0, "persistence": 0.5,
+    })
+    monkeypatch.setattr(ts, "_label", lambda *args, **kwargs: label_calls.append(args) or "neutral")
+    monkeypatch.setattr(ts, "_reco", lambda *args, **kwargs: reco_calls.append(args) or "hold")
+
+    out = ts.compute_theme_intel("us")
+
+    assert out is not None
+    assert out["as_of"] == idx[-1].strftime("%Y-%m-%d")
+    assert [row["id"] for row in out["themes"]] == ["complete"]
+    assert len(level_calls) == 1
+    assert len(prep_calls) == 1
+    assert len(fingerprint_calls) == 2  # current + five-session comparison, complete theme only
+    assert len(label_calls) == 1
+    assert len(reco_calls) == 1
+    theme = out["themes"][0]
+    assert theme["observation"]["status"] == "complete"
+    assert theme["n_members"] == 3
+    refusal = out["observation_refusals"][0]
+    assert refusal["basket_id"] == "insufficient"
+    assert refusal["observation"]["coverage"] == 0.5
+    assert refusal["observation"]["aggregate_eligible"] is False
+
+def test_theme_scoring_refuses_three_of_six_before_any_aggregate_effect(monkeypatch):
+    idx = _theme_compute_fixture(
+        monkeypatch,
+        insufficient="ABCDEF",
+        missing=("D", "E", "F"),
+        complete="GHI",
+    )
+    level_calls = []
+    prep_calls = []
+    fingerprint_calls = []
+    label_calls = []
+    reco_calls = []
+    monkeypatch.setattr(ts, "_ew_level", lambda *args, **kwargs: level_calls.append(args) or pd.Series(1.0, index=idx))
+    monkeypatch.setattr(ts.group_flow, "prep_group", lambda *args, **kwargs: prep_calls.append(args) or object())
+    monkeypatch.setattr(ts.group_flow, "fingerprint_at", lambda *args, **kwargs: fingerprint_calls.append(args) or {
+        "accel_z": 0.0, "rs_pctile": 0.5, "broadening_z": 0.0,
+        "cohesion": 0.5, "cohesion_chg": 0.0, "persistence": 0.5,
+    })
+    monkeypatch.setattr(ts, "_label", lambda *args, **kwargs: label_calls.append(args) or "neutral")
+    monkeypatch.setattr(ts, "_reco", lambda *args, **kwargs: reco_calls.append(args) or "hold")
+
+    out = ts.compute_theme_intel("us")
+
+    assert out is not None
+    assert [row["id"] for row in out["themes"]] == ["complete"]
+    refusal = out["observation_refusals"][0]
+    assert refusal["basket_id"] == "insufficient"
+    assert refusal["observation"]["observed_n"] == 3
+    assert refusal["observation"]["configured_n"] == 6
+    assert refusal["observation"]["coverage"] == 0.5
+    assert refusal["observation"]["aggregate_eligible"] is False
+    assert len(level_calls) == 1
+    assert len(prep_calls) == 1
+    assert len(fingerprint_calls) == 2
+    assert len(label_calls) == 1
+    assert len(reco_calls) == 1

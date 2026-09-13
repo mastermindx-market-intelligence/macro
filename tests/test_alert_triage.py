@@ -453,10 +453,13 @@ def test_impulse_radar_edge_carries_the_blind_caveat_past_the_old_cap():
     edge, edge_zh = conv["edge"], conv["edge_zh"]
     assert _BLIND_CAVEAT in edge
     assert _BLIND_CAVEAT_ZH in edge_zh
+    assert "verified leading" not in edge.lower()
+    assert "act early" not in edge.lower()
+    assert "current Signal Lab evidence passport" in edge
+    assert "经验证的领先前兆" not in edge_zh
+    assert "当前信号实验室证据凭证" in edge_zh
     assert len(edge) > 120
     assert edge[:120] != edge          # the old cap would have amputated it
-    assert edge_zh == _IMPULSE_EDGE_ZH_LIVE
-    assert _IMPULSE_EDGE_ZH.startswith(edge_zh)
 
 
 def test_page_keeps_long_bodies_and_the_blind_caveat():
