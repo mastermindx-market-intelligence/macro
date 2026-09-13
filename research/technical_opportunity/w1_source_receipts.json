@@ -1,0 +1,153 @@
+{
+  "schema_version": "toi.source_receipts.v1",
+  "as_of": "2026-09-13",
+  "authority": "source/provenance evidence only; no predictive or trading authority",
+  "receipts": [
+    {
+      "source_ref": "SRC-TA-LIB-FUNCTIONS",
+      "title": "TA-Lib Functions",
+      "publisher_or_author": "TA-Lib project",
+      "source_type": "official_open_source_documentation",
+      "url": "https://ta-lib.org/functions/",
+      "rights_class": "public_formula",
+      "rights_ref": "TA-Lib BSD-licensed project documentation and implementation",
+      "covers": ["adx", "aroon", "atr", "bollinger_bands", "cmf", "coppock", "donchian", "kama", "macd", "mass_index", "mfi", "natr", "obv", "rsi", "stochastic", "supertrend", "tsi", "ultimate_oscillator", "vhf", "vortex", "williams_fractal", "candlestick_patterns"],
+      "retrieved_at": "2026-09-13"
+    },
+    {
+      "source_ref": "SRC-BOLLINGER-OFFICIAL",
+      "title": "Bollinger Band Rules",
+      "publisher_or_author": "John Bollinger",
+      "source_type": "creator_official_documentation",
+      "url": "https://www.bollingerbands.com/bollinger-band-rules",
+      "rights_class": "public_formula",
+      "rights_ref": "public creator-authored methodology page; use formula/definition only, not copied prose",
+      "covers": ["bollinger_bands", "bandwidth", "squeeze_context", "band_walk_context"],
+      "retrieved_at": "2026-09-13"
+    },
+    {
+      "source_ref": "SRC-TRADINGVIEW-BBTREND",
+      "title": "BBTrend",
+      "publisher_or_author": "TradingView / John Bollinger attribution",
+      "source_type": "official_platform_formula_documentation",
+      "url": "https://www.tradingview.com/support/solutions/43000726749-bbtrend/",
+      "rights_class": "public_formula",
+      "rights_ref": "public formula documentation; independent implementation only",
+      "covers": ["bbtrend"],
+      "retrieved_at": "2026-09-13"
+    },
+    {
+      "source_ref": "SRC-TRADINGVIEW-SUPERTREND",
+      "title": "Supertrend",
+      "publisher_or_author": "TradingView / Olivier Seban attribution",
+      "source_type": "official_platform_formula_documentation",
+      "url": "https://www.tradingview.com/support/solutions/43000634738-supertrend/",
+      "rights_class": "public_formula",
+      "rights_ref": "public formula documentation; independent implementation only",
+      "covers": ["supertrend"],
+      "retrieved_at": "2026-09-13"
+    },
+    {
+      "source_ref": "SRC-LO-MAMAYSKY-WANG-2000",
+      "title": "Foundations of Technical Analysis: Computational Algorithms, Statistical Inference, and Empirical Implementation",
+      "publisher_or_author": "Andrew W. Lo, Harry Mamaysky, Jiang Wang / NBER",
+      "source_type": "primary_academic",
+      "url": "https://www.nber.org/papers/w7613",
+      "doi": "10.3386/w7613",
+      "rights_class": "public_formula",
+      "rights_ref": "public abstract and paper metadata; independent pattern implementation only",
+      "covers": ["geometric_patterns", "head_and_shoulders", "double_bottom", "automatic_pattern_recognition"],
+      "retrieved_at": "2026-09-13"
+    },
+    {
+      "source_ref": "SRC-OSLER-2000",
+      "title": "Support for Resistance: Technical Analysis and Intraday Exchange Rates",
+      "publisher_or_author": "Carol L. Osler / Federal Reserve Bank of New York",
+      "source_type": "primary_academic_official",
+      "url": "https://www.newyorkfed.org/research/epr/00v06n2/0007osle.html",
+      "rights_class": "public_formula",
+      "rights_ref": "public central-bank research publication; concepts only",
+      "covers": ["support_resistance", "trend_interruption"],
+      "retrieved_at": "2026-09-13"
+    },
+    {
+      "source_ref": "SRC-OSLER-2001",
+      "title": "Currency Orders and Exchange-Rate Dynamics: Explaining the Success of Technical Analysis",
+      "publisher_or_author": "Carol L. Osler / Federal Reserve Bank of New York",
+      "source_type": "primary_academic_official",
+      "url": "https://www.newyorkfed.org/research/staff_reports/sr125.html",
+      "rights_class": "public_formula",
+      "rights_ref": "public central-bank research publication; concepts only",
+      "covers": ["support_resistance", "round_number_clustering", "stop_loss_take_profit_microstructure"],
+      "retrieved_at": "2026-09-13"
+    },
+    {
+      "source_ref": "SRC-JEGADEESH-TITMAN-1993",
+      "title": "Returns to Buying Winners and Selling Losers: Implications for Stock Market Efficiency",
+      "publisher_or_author": "Narasimhan Jegadeesh, Sheridan Titman / Journal of Finance",
+      "source_type": "primary_academic",
+      "url": "https://www.jstor.org/stable/2328882",
+      "rights_class": "public_formula",
+      "rights_ref": "bibliographic/abstract evidence only; independent return-feature implementation",
+      "covers": ["cross_sectional_momentum"],
+      "retrieved_at": "2026-09-13"
+    },
+    {
+      "source_ref": "SRC-JEGADEESH-1990",
+      "title": "Evidence of Predictable Behavior of Security Returns",
+      "publisher_or_author": "Narasimhan Jegadeesh / Journal of Finance",
+      "source_type": "primary_academic",
+      "url": "https://doi.org/10.1111/j.1540-6261.1990.tb05110.x",
+      "rights_class": "public_formula",
+      "rights_ref": "bibliographic/abstract evidence only; independent feature implementation",
+      "covers": ["short_horizon_reversal", "return_serial_dependence"],
+      "retrieved_at": "2026-09-13"
+    },
+    {
+      "source_ref": "SRC-LEHMANN-1990",
+      "title": "Fads, Martingales, and Market Efficiency",
+      "publisher_or_author": "Bruce N. Lehmann / NBER and Quarterly Journal of Economics",
+      "source_type": "primary_academic",
+      "url": "https://www.nber.org/papers/w2533",
+      "doi": "10.3386/w2533",
+      "rights_class": "public_formula",
+      "rights_ref": "public working-paper metadata/abstract; independent feature implementation",
+      "covers": ["short_horizon_reversal", "liquidity_reversal"],
+      "retrieved_at": "2026-09-13"
+    },
+    {
+      "source_ref": "SRC-GEORGE-HWANG-2004",
+      "title": "The 52-Week High and Momentum Investing",
+      "publisher_or_author": "Thomas J. George, Chuan-Yang Hwang / Journal of Finance",
+      "source_type": "primary_academic",
+      "url": "https://doi.org/10.1111/j.1540-6261.2004.00695.x",
+      "rights_class": "public_formula",
+      "rights_ref": "bibliographic/abstract evidence only; independent 52-week-high feature implementation",
+      "covers": ["52_week_high_proximity", "momentum_context"],
+      "retrieved_at": "2026-09-13"
+    },
+    {
+      "source_ref": "SRC-TSINASLANIDIS-FIB-2022",
+      "title": "Automatic identification and evaluation of Fibonacci retracements: Empirical evidence from three equity markets",
+      "publisher_or_author": "Prodromos Tsinaslanidis, Francisco Guijarro, Nikolaos Voukelatos / Expert Systems with Applications",
+      "source_type": "primary_academic",
+      "url": "https://doi.org/10.1016/j.eswa.2021.115893",
+      "rights_class": "public_formula",
+      "rights_ref": "bibliographic/abstract/highlight evidence only; no copied implementation",
+      "covers": ["fibonacci_retracement"],
+      "retrieved_at": "2026-09-13",
+      "negative_evidence": "reported Fibonacci and non-Fibonacci zone behavior did not differ statistically"
+    },
+    {
+      "source_ref": "SRC-MASSIVE-LICENSE",
+      "title": "Massive entitlement record",
+      "publisher_or_author": "Mastermind operator record",
+      "source_type": "internal_rights_record",
+      "url": "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md",
+      "rights_class": "licensed",
+      "rights_ref": "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md",
+      "covers": ["licensed_market_data_research", "derived_features", "historical_archives"],
+      "retrieved_at": "2026-09-13"
+    }
+  ]
+}
