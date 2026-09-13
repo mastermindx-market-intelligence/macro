@@ -13,7 +13,13 @@ RIGHTS = {"public_formula", "open_source_parity_only", "licensed", "opaque", "bl
 SOURCE_TYPES = {
     "official_open_source_documentation", "creator_official_documentation",
     "official_platform_formula_documentation", "primary_academic",
-    "primary_academic_official", "internal_rights_record",
+    "primary_academic_official", "public_practitioner_methodology",
+    "internal_rights_record",
+}
+PRIMARY_OR_OFFICIAL_SOURCE_TYPES = {
+    "official_open_source_documentation", "creator_official_documentation",
+    "official_platform_formula_documentation", "primary_academic",
+    "primary_academic_official",
 }
 
 
@@ -61,10 +67,7 @@ def validate_passport_bindings(sources: dict[str, dict[str, Any]]) -> dict[str, 
             p0p1 += 1
             if not refs:
                 raise ValueError(f"{mid}: P0/P1 requires a source")
-            acceptable = [sources[ref] for ref in refs if sources[ref]["source_type"] in {
-                "official_open_source_documentation", "creator_official_documentation",
-                "official_platform_formula_documentation", "primary_academic", "primary_academic_official",
-            }]
+            acceptable = [sources[ref] for ref in refs if sources[ref]["source_type"] in PRIMARY_OR_OFFICIAL_SOURCE_TYPES]
             if not acceptable:
                 raise ValueError(f"{mid}: P0/P1 lacks primary/official source")
         rights_class = row.get("rights_class")
