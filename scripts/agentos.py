@@ -3723,10 +3723,24 @@ def compile_bundle(
         emit("discoveries", row["item"])
 
     # ---- handoff: the LATEST only ------------------------------------------
-    mine: list[str] = [
-        stem for stem in sorted(hnd_all)
+    handoff_paths = {stem: store.paths[f"HND/{stem}"] for stem in sorted(hnd_all)}
+    mine = {
+        stem: path for stem, path in handoff_paths.items()
         if key in _refs(hnd_all[stem].get("workstream"), "WS")
-    ]
+    }
+    # The loader retains parsed records even when their association is invalid,
+    # and reports unparseable paths separately. Both are selection evidence.
+    for problem in store.problems:
+        if problem.rule == "unparseable" and problem.path.parent == store.root / "handoffs":
+            handoff_paths.setdefault(problem.path.stem, problem.path)
+    unassociated: set[str] = set()
+    for stem, path in handoff_paths.items():
+        date_match = HANDOFF_DATE_RE.search(stem)
+        if date_match and stem[:date_match.start()] == key and stem not in mine:
+            # Exact canonical filenames provide negative evidence only. They
+            # never rewrite a valid authored association to another workstream.
+            mine[stem] = path
+            unassociated.add(stem)
 
     def handoff_rank(stem: str) -> tuple[str, str]:
         match = HANDOFF_DATE_RE.search(stem)
@@ -3734,10 +3748,17 @@ def compile_bundle(
 
     if mine:
         latest = max(mine, key=handoff_rank)
-        for stem in mine:
-            hnd_path = source(f"HND/{stem}")
+        for stem, hnd_path in sorted(mine.items()):
+            # Bind malformed bytes too: they affect selection despite yielding
+            # no parsed record or emitted handoff.
+            sources.setdefault(str(hnd_path.resolve()), hnd_path)
             if stem != latest:
                 drop("handoff", stem, hnd_path, f"older_handoff (latest: {latest})")
+                continue
+            if stem in unassociated:
+                drop("handoff", stem, hnd_path,
+                     "malformed or inconsistent latest handoff association — no stale fallback")
+                degraded.add(f"record excluded (malformed association): {_rel(hnd_path)} — {stem}")
                 continue
             if malformed("handoff", stem, hnd_path):
                 continue
