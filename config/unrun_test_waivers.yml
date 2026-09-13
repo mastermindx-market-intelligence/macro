@@ -55,9 +55,9 @@ tests/test_pr_linkage_cli.py: >-
   an enforcement or workflow runner for this analyzer. Delete when a separately
   authorized lawful nonblocking runner names this suite, or the suite is deleted.
 tests/test_pr_linkage_mutations.py: >-
-  MAS-28 report-only W1 mutation suite. Owner WS:AGENT-OS / MAS-28. W0 forbids
-  adding an enforcement or workflow runner for this analyzer. Delete when a
-  separately authorized lawful nonblocking runner names this suite, or the suite is deleted.
+  MAS-28 report-only W1 mutation suite. Owner WS:AGENT-OS / MAS-28. W0 forbids adding
+  an enforcement or workflow runner for this analyzer. Delete when a separately
+  authorized lawful nonblocking runner names this suite, or the suite is deleted.
 tests/test_pr_linkage_contract_matrix.py: >-
   MAS-28 report-only W1 contract-matrix suite. Owner WS:AGENT-OS / MAS-28. W0
   forbids adding an enforcement or workflow runner for this analyzer. Delete when a
