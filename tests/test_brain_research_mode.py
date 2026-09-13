@@ -720,3 +720,149 @@ def test_packet_level_gaps_attached_as_null_disclosure(tmp_path, monkeypatch):
     )
     assert "tape: missing quotes" in joined
     assert "Live market state packet" in joined
+
+
+# ---------------------------------------------------------------------------
+# Heal-round 3 — ZH reportative keep, ZH ceiling rejoin, empty-body floor,
+# EN abbreviation preservation, multiple-adverb percent.
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        # MAJOR 1: reportative flow facts must stay kept, even though they
+        # contain 买入/卖出. The ZH trade branch is now imperative-anchored
+        # (clause-initial + object), so a reportative verb in the middle of
+        # a clause is not matched by the filter.
+        "每日简报说资金持续买入。",
+        "每日简报说南向资金继续买入港股。",
+        "每日简报说外资净买入债券。",
+    ],
+)
+def test_zh_reportative_flow_verbs_are_kept_through_filter(raw):
+    """MAJOR 1 RED-on-previous-head: 持续/继续/净 + 买入 are reportative,
+    not imperative; the filter must not drop them and the postprocess must
+    not treat the drop as a coverage null.
+    """
+    corpus = {
+        "artifacts": [
+            gw._research_artifact("Daily briefing", "每日简报", "2026-09-12",
+                                  "US session mixed. Funds continued to buy."),
+        ],
+        "jwt_present": False,
+    }
+    body, withheld = gw._research_postprocess(raw, corpus)
+    assert withheld is False, body
+    assert not body.startswith(NULL_EN), body
+    # The reportative clause must still be present somewhere in the reply.
+    # Use substring checks that tolerate the used-list and ceiling that the
+    # postprocess appends.
+    if "买入" in raw or "卖出" in raw:
+        # The verb must still be present (it was kept by the filter).
+        assert "买入" in body or "卖出" in body, body
+    # The used-list carries the artifact plain name and the ceiling sentence
+    # is appended as required by spec (2).
+    assert USED_EN in body
+    assert USED_ZH in body
+    assert CEILING_EN in body
+
+
+def test_zh_ceiling_rejoin_injects_no_ascii_space():
+    """MAJOR 2 RED-on-previous-head: a model-emitted ZH ceiling stays
+    byte-identical. `_RESEARCH_SENTENCE_SPLIT` split on `。` without trailing
+    whitespace, and `_research_forbidden_filter` rejoined the kept pieces
+    with `" ".join`, which injected an ASCII space between the two ZH
+    sentences of the ceiling. Now the rejoin walks the original text so the
+    boundary character (`。`) is followed directly by the next clause.
+    """
+    raw = "每日简报说市场分化。这是我们已发布内容的解读。这不是信号、不是评级、也不是建议。"
+    kept, withheld = gw._research_forbidden_filter(raw)
+    assert withheld is False
+    # The two ZH sentences of the ceiling are joined with NO ASCII space.
+    assert "解读。这不是信号" in kept, kept
+    # And the kept body is byte-identical (modulo strip) to the source.
+    assert kept == raw.strip(), kept
+
+
+def test_zh_ceiling_present_verbatim_end_to_end(tmp_path):
+    """MAJOR 2: a model-emitted ZH ceiling reaches the user verbatim."""
+    result = _research_chat(
+        tmp_path,
+        "每日简报说市场分化。这是我们已发布内容的解读。这不是信号、不是评级、也不是建议。",
+        message="How did the US session look?",
+    )
+    reply = result["reply"]
+    assert "解读。这不是信号" in reply, reply
+    # The full ZH ceiling sentence is present.
+    assert CEILING_ZH in reply, reply
+
+
+def test_en_sentence_split_preserves_u_s_and_e_g():
+    """MINOR 1 RED-on-previous-head: mid-sentence abbreviations like U.S. /
+    e.g. / Inc. / Waiting... must not be split apart. The ASCII branch only
+    splits on `[.!?] + whitespace + uppercase letter`.
+    """
+    for raw, expected in (
+        ("The daily briefing says the U.S. session was mixed.", "U.S. session was mixed."),
+        ("The note flagged e.g. a recovery in flows.", "e.g. a recovery in flows."),
+        ("Yesterday Acme, Inc. announced earnings.", "Acme, Inc. announced earnings."),
+        ("Waiting... the daily briefing says flows were flat.", "Waiting... the daily briefing says flows were flat."),
+    ):
+        kept, withheld = gw._research_forbidden_filter(raw)
+        assert withheld is False
+        assert expected in kept, (raw, kept)
+
+
+def test_postprocess_empty_body_fallback_fires_when_filter_ate_everything():
+    """MAJOR 3 RED-on-previous-head: when the forbidden-output filter ate
+    every citing sentence, the reply must NOT be blank. A plain EN+ZH
+    sentence (distinct from the spec 3 coverage null) takes its place so
+    the user sees a real sentence, then the used-list and ceiling, then the
+    withholding disclosure.
+    """
+    corpus = {
+        "artifacts": [
+            gw._research_artifact("Daily briefing", "每日简报", "2026-09-12",
+                                  "US session mixed."),
+        ],
+        "jwt_present": False,
+    }
+    # The input cites the artifact (carries "Daily briefing") but EVERY
+    # sentence is filterable:
+    #   - "Buy-side Daily briefing." — sentence-initial Buy matches the
+    #     trade filter.
+    #   - "Score this a 0.9." — the 0-1 score filter.
+    # The original body cited the artifact (so `_research_cites_artifact`
+    # returns True), but after filtering every sentence is dropped and the
+    # kept body is empty.
+    raw = "Buy-side Daily briefing. Score this a 0.9."
+    body, withheld = gw._research_postprocess(raw, corpus)
+    assert withheld is True, body
+    # The plain-language floor must be present — NOT the spec 3 coverage null.
+    assert not body.startswith(NULL_EN), body
+    assert "relevant sentences from the published reading were filtered" in body.lower(), body
+    assert "已发布读数中相关的句子因读起来像信号而被隐去" in body, body
+    # The used-list, ceiling, and WITHHELD disclosure still ride along.
+    assert USED_EN in body
+    assert USED_ZH in body
+    assert CEILING_EN in body
+    assert WITHHELD_EN in body
+    assert WITHHELD_ZH in body
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        # MINOR 3: a percentage attached to a judgement with multiple leading
+        # adverbs. The previous regex `(?:of\s+|is\s+|at\s+)?` consumed only
+        # one of `is` / `at`, leaving the second ad-hoc. Now the noun-form
+        # alternative permits any number of `of|is|at|about|...` adverbs.
+        "Confidence is at 70%.",
+        "Confidence of about 70% is the read.",
+        "Conviction is at around 70%.",
+    ],
+)
+def test_research_percent_matches_multiple_adverbs(raw):
+    """MINOR 3: judgement % after multiple adverbs must be filtered."""
+    kept, withheld = gw._research_forbidden_filter(raw)
+    assert withheld is True, (raw, kept)

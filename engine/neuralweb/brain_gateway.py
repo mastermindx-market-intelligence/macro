@@ -623,6 +623,18 @@ _RESEARCH_WITHHELD_EN = (
 _RESEARCH_WITHHELD_ZH = "本次回答有一部分被隐去，因为它读起来像信号。"
 _RESEARCH_USED_EN = "What this read used"
 _RESEARCH_USED_ZH = "本次阅读用到的内容"
+# Spec (3) coverage null lives separately. This one fires when the answer DID
+# cite a used artifact, but the forbidden-output filter dropped the only
+# sentence(s) that cited it — a plain-language floor so the reply is never
+# a blank line followed by the ceiling and the used-list. Distinct from
+# "no corpus covered this" (the spec 3 null above).
+_RESEARCH_FILTER_EMPTY_EN = (
+    "The relevant sentences from the published reading were filtered because "
+    "they read like a signal."
+)
+_RESEARCH_FILTER_EMPTY_ZH = (
+    "已发布读数中相关的句子因读起来像信号而被隐去。"
+)
 
 _RESEARCH_SYSTEM_DIRECTIVE = """
 RESEARCH MODE — GROUNDED READ:
@@ -672,30 +684,44 @@ _RESEARCH_PACKET_PLAIN: dict[str, tuple[str, str]] = {
     "session": ("Session state", "交易时段状态"),
 }
 
-# Spec (4): split on sentence-ending punctuation, including CJK 。！？ without
-# requiring trailing whitespace (so "每日简报...分化。请买入 NVDA。" is two
-# sentences). The split anchors on the END of the punctuation (lookbehind),
-# not on bare whitespace — otherwise mid-sentence spaces would over-split
-# "Funds continued to buy." into "Funds" / "continued" / "to" / "buy." and
-# the lone "buy" piece would then match the trade filter.
+# Spec (4): split on sentence-ending punctuation, anchored so the filter
+# rejoin preserves the ORIGINAL whitespace between sentences (rather than
+# injecting an ASCII space, which mangles a model-emitted ZH ceiling like
+# "...解读。这不是信号..." or splits "U.S." mid-word).
 #
-# ASCII . / ! / ? are NOT treated as sentence-end when followed by a digit
-# (e.g. "0.9", "v2.3") — that path would otherwise split a 0-1 score apart
-# from its leading "score" / "confidence" anchor.
+#   CJK branch — `(?<=[。！？])\s*`:
+#       Always a boundary. Consumes zero-or-more trailing whitespace so the
+#       gap moves WITH the previous sentence in the rejoin (no extra space
+#       appears before the next clause). Two ZH clauses after a CJK period
+#       with no intervening space ("每日简报...分化。请买入 NVDA。") are
+#       still two pieces.
+#
+#   ASCII branch — `(?<=[.!?])\s+(?=[A-Z])`:
+#       ONLY when the period is followed by whitespace + uppercase. This
+#       keeps "U.S.", "e.g.", "Inc.", "0.9", "v2.3", and "Waiting..." whole
+#       (lowercase / digit / period after a period is mid-sentence, not a
+#       boundary). It also keeps a normal "mixed. The daily briefing..."
+#       split. The lookahead consumes the trailing whitespace so the gap
+#       moves WITH the previous sentence.
+#
+# No capture groups. `_research_forbidden_filter` uses `re.search` for each
+# boundary and slices the ORIGINAL text so the rejoin is byte-identical to
+# the source.
 _RESEARCH_SENTENCE_SPLIT = re.compile(
-    r"(?<=[!?。！？])\s+"
-    r"|(?<=[!?。！？])(?=\S)"
-    r"|(?<=[.!?])\s+(?=\D)"
-    r"|(?<=[.!?])(?=[^\d\s])"
+    r"(?<=[。！？])\s*"
+    r"|(?<=[.!?])\s+(?=[A-Z])"
 )
 # Spec (4): a percentage / 0-1 / star / high|medium|low conviction rendered as a
 # judgement — not a published fact such as "breadth was 40%". Match the
 # adjectival form 'confident' as well as the noun 'confidence', so
-# "I'm 80% confident" is read as a judgement, not a published fact.
+# "I'm 80% confident" is read as a judgement, not a published fact. The
+# noun-form alternative allows any number of leading adverbs ("Confidence
+# is at 70%", "Confidence is at about 70%") rather than only one.
 _RESEARCH_PERCENT = re.compile(
     r"\b\d{1,3}(?:\.\d+)?\s*%\s*"
     r"(?:confidence|confident|conviction|sure|certain|probability|odds|chance)\b"
-    r"|(?:confidence|conviction|probability|odds)\s+(?:of\s+|is\s+|at\s+)?"
+    r"|(?:confidence|conviction|probability|odds)\s+"
+    r"(?:\s*(?:of|is|at|about|around|near|roughly|approximately)\s+)*"
     r"\d{1,3}(?:\.\d+)?\s*%",
     re.I,
 )
@@ -711,11 +737,26 @@ _RESEARCH_SCORE_01 = re.compile(
 )
 _RESEARCH_FALSIFIER = re.compile(r"\bfalsifier\b|\brefuted\b|证伪", re.I)
 # Spec (4): *imperative* buy/sell/size/target — not "funds continued to buy"
-# or "Fed target of 2 percent". `price target` / `target price` are matched
-# ONLY when preceded by an imperative verb (set/place/hit/cut/raise/lower/
-# peg/establish/give/target), so a citing sentence that *reports* a
-# published price target ("The daily briefing listed a published price
-# target of 240.") is kept.
+# or "Fed target of 2 percent".
+#
+# EN price-target / target-price branch requires an imperative verb
+# (set/place/hit/cut/raise/lower/peg/establish/give/target) immediately
+# before "price target" / "target price" / "target", so a citing sentence
+# that *reports* a published price target ("The daily briefing listed a
+# published price target of 240.") is kept.
+#
+# ZH buy/sell branch is imperative-anchored: 买入 / 卖出 must be the LEADING
+# verb of its clause (start-of-string or right after a sentence-end
+# punctuation, optionally preceded by `请`), and must be followed by an
+# object token. This keeps reportative flow facts:
+#   - "资金持续买入。"         (持续 precedes the verb)
+#   - "南向资金继续买入港股。" (继续 precedes the verb)
+#   - "外资净买入债券。"       (净 precedes the verb)
+# while still dropping the imperative:
+#   - "买入 NVDA。"
+#   - "请买入 NVDA。"
+#   - "卖出 AAPL。"
+#   - "分化。买入 NVDA。"      (买 right after 。)
 _RESEARCH_TRADE = re.compile(
     r"(?:^|(?<=[.!?。！？]\s))(?:buy|sell)\b"
     r"|\b(?:you\s+should|please)\s+(?:buy|sell)\b"
@@ -723,7 +764,7 @@ _RESEARCH_TRADE = re.compile(
     r"|\bsize\s+(?:it|the\s+position|your\s+(?:position|size|book))\b"
     r"|\b(?:set|place|hit|cut|raise|lower|peg|establish|give|target)\s+"
     r"(?:a\s+)?(?:price\s+target|target\s+price|target)\b"
-    r"|请买入|买入|卖出",
+    r"|(?:^|(?<=[.!?。！？]))\s*(?:请)?(?:买入|卖出)\s+\S",
     re.I,
 )
 _RESEARCH_TOOL_RE: re.Pattern[str] | None = None
@@ -1071,22 +1112,41 @@ def _research_sentence_forbidden(sentence: str) -> bool:
 
 
 def _research_forbidden_filter(text: str) -> tuple[str, bool]:
-    """Drop forbidden sentences. Disclosure is appended by the post-check."""
+    """Drop forbidden sentences. Disclosure is appended by the post-check.
+
+    Walks the ORIGINAL text using `_RESEARCH_SENTENCE_SPLIT.search` so the
+    rejoin preserves every byte of the source — no ASCII space is injected
+    between CJK sentences (which would mangle a model-emitted ZH ceiling
+    like "...解读。这不是信号..."), and a normal EN split
+    ("...mixed. The briefing...") keeps its single ASCII space.
+    """
     raw = (text or "").strip()
     if not raw:
         return "", False
-    parts = _RESEARCH_SENTENCE_SPLIT.split(raw)
+    # Build the list of sentence pieces as (start, end) spans in `raw`.
+    # Each span INCLUDES the trailing whitespace of the sentence so the
+    # rejoin is byte-identical to the source at every kept boundary.
+    # `finditer` advances past zero-width matches automatically (a manual
+    # `re.search` loop would re-find the same zero-width boundary and hang).
+    pieces: list[tuple[int, int]] = []
+    cursor = 0
+    for m in _RESEARCH_SENTENCE_SPLIT.finditer(raw):
+        pieces.append((cursor, m.end()))
+        cursor = m.end()
+    if cursor < len(raw) or not pieces:
+        pieces.append((cursor, len(raw)))
     kept: list[str] = []
     withheld = False
-    for part in parts:
-        piece = part.strip()
-        if not piece:
+    for start, end in pieces:
+        piece = raw[start:end]
+        stripped = piece.strip()
+        if not stripped:
             continue
-        if _research_sentence_forbidden(piece):
+        if _research_sentence_forbidden(stripped):
             withheld = True
             continue
         kept.append(piece)
-    return (" ".join(kept)).strip(), withheld
+    return "".join(kept).strip(), withheld
 
 
 def _research_postprocess(answer: str, corpus: dict) -> tuple[str, bool]:
@@ -1105,11 +1165,15 @@ def _research_postprocess(answer: str, corpus: dict) -> tuple[str, bool]:
         else:
             body = filtered
             # If the forbidden-output filter ate the only citing sentence,
-            # do NOT fall back to the null form: the read still came from a
-            # used artifact (the original body cited it), and the WITHHELD
-            # disclosure below names the drop. Falling back here would
-            # silently null a grounded answer whenever one of its sentences
-            # matched the over-broad filter.
+            # do NOT fall back to the spec (3) coverage null — the read
+            # still came from a used artifact (the original body cited it),
+            # and the WITHHELD disclosure below names the drop. But the
+            # reply must still carry a plain EN+ZH sentence (distinct from
+            # the spec 3 coverage null); an empty body followed by the
+            # used-list + ceiling + withheld disclosure reads as blank
+            # space to the user.
+            if withheld and not body.strip():
+                body = f"{_RESEARCH_FILTER_EMPTY_EN}\n{_RESEARCH_FILTER_EMPTY_ZH}"
     if _RESEARCH_USED_EN not in body:
         body = body.rstrip() + "\n\n" + _format_used_list(corpus)
     if _RESEARCH_CEILING_EN not in body:
