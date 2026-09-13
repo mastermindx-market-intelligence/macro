@@ -1,0 +1,693 @@
+{
+  "local_only": true,
+  "results": [
+    {
+      "language": "en",
+      "preference": "light",
+      "requested_width": 320,
+      "document_width": 320,
+      "wider_elements": [
+        {
+          "tag": "DIV",
+          "id": "ph-track",
+          "cls": "ph-track",
+          "width": 5784,
+          "clipping": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "ph-clip tx-edgefade",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "SECTION",
+              "id": "f-prophet",
+              "cls": "psec",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "BODY",
+              "id": "",
+              "cls": "",
+              "overflowX": "clip"
+            }
+          ]
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "ph-set",
+          "width": 2882,
+          "clipping": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "ph-clip tx-edgefade",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "SECTION",
+              "id": "f-prophet",
+              "cls": "psec",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "BODY",
+              "id": "",
+              "cls": "",
+              "overflowX": "clip"
+            }
+          ]
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "ph-set",
+          "width": 2882,
+          "clipping": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "ph-clip tx-edgefade",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "SECTION",
+              "id": "f-prophet",
+              "cls": "psec",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "BODY",
+              "id": "",
+              "cls": "",
+              "overflowX": "clip"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "language": "en",
+      "preference": "light",
+      "requested_width": 390,
+      "document_width": 390,
+      "wider_elements": [
+        {
+          "tag": "DIV",
+          "id": "ph-track",
+          "cls": "ph-track",
+          "width": 5784,
+          "clipping": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "ph-clip tx-edgefade",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "SECTION",
+              "id": "f-prophet",
+              "cls": "psec",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "BODY",
+              "id": "",
+              "cls": "",
+              "overflowX": "clip"
+            }
+          ]
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "ph-set",
+          "width": 2882,
+          "clipping": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "ph-clip tx-edgefade",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "SECTION",
+              "id": "f-prophet",
+              "cls": "psec",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "BODY",
+              "id": "",
+              "cls": "",
+              "overflowX": "clip"
+            }
+          ]
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "ph-set",
+          "width": 2882,
+          "clipping": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "ph-clip tx-edgefade",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "SECTION",
+              "id": "f-prophet",
+              "cls": "psec",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "BODY",
+              "id": "",
+              "cls": "",
+              "overflowX": "clip"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "language": "en",
+      "preference": "dark",
+      "requested_width": 320,
+      "document_width": 320,
+      "wider_elements": [
+        {
+          "tag": "DIV",
+          "id": "ph-track",
+          "cls": "ph-track",
+          "width": 5784,
+          "clipping": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "ph-clip tx-edgefade",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "SECTION",
+              "id": "f-prophet",
+              "cls": "psec",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "BODY",
+              "id": "",
+              "cls": "",
+              "overflowX": "clip"
+            }
+          ]
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "ph-set",
+          "width": 2882,
+          "clipping": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "ph-clip tx-edgefade",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "SECTION",
+              "id": "f-prophet",
+              "cls": "psec",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "BODY",
+              "id": "",
+              "cls": "",
+              "overflowX": "clip"
+            }
+          ]
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "ph-set",
+          "width": 2882,
+          "clipping": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "ph-clip tx-edgefade",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "SECTION",
+              "id": "f-prophet",
+              "cls": "psec",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "BODY",
+              "id": "",
+              "cls": "",
+              "overflowX": "clip"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "language": "en",
+      "preference": "dark",
+      "requested_width": 390,
+      "document_width": 390,
+      "wider_elements": [
+        {
+          "tag": "DIV",
+          "id": "ph-track",
+          "cls": "ph-track",
+          "width": 5784,
+          "clipping": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "ph-clip tx-edgefade",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "SECTION",
+              "id": "f-prophet",
+              "cls": "psec",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "BODY",
+              "id": "",
+              "cls": "",
+              "overflowX": "clip"
+            }
+          ]
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "ph-set",
+          "width": 2882,
+          "clipping": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "ph-clip tx-edgefade",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "SECTION",
+              "id": "f-prophet",
+              "cls": "psec",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "BODY",
+              "id": "",
+              "cls": "",
+              "overflowX": "clip"
+            }
+          ]
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "ph-set",
+          "width": 2882,
+          "clipping": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "ph-clip tx-edgefade",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "SECTION",
+              "id": "f-prophet",
+              "cls": "psec",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "BODY",
+              "id": "",
+              "cls": "",
+              "overflowX": "clip"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "language": "zh",
+      "preference": "light",
+      "requested_width": 320,
+      "document_width": 320,
+      "wider_elements": [
+        {
+          "tag": "DIV",
+          "id": "ph-track",
+          "cls": "ph-track",
+          "width": 5784,
+          "clipping": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "ph-clip tx-edgefade",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "SECTION",
+              "id": "f-prophet",
+              "cls": "psec",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "BODY",
+              "id": "",
+              "cls": "",
+              "overflowX": "clip"
+            }
+          ]
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "ph-set",
+          "width": 2882,
+          "clipping": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "ph-clip tx-edgefade",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "SECTION",
+              "id": "f-prophet",
+              "cls": "psec",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "BODY",
+              "id": "",
+              "cls": "",
+              "overflowX": "clip"
+            }
+          ]
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "ph-set",
+          "width": 2882,
+          "clipping": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "ph-clip tx-edgefade",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "SECTION",
+              "id": "f-prophet",
+              "cls": "psec",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "BODY",
+              "id": "",
+              "cls": "",
+              "overflowX": "clip"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "language": "zh",
+      "preference": "light",
+      "requested_width": 390,
+      "document_width": 390,
+      "wider_elements": [
+        {
+          "tag": "DIV",
+          "id": "ph-track",
+          "cls": "ph-track",
+          "width": 5784,
+          "clipping": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "ph-clip tx-edgefade",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "SECTION",
+              "id": "f-prophet",
+              "cls": "psec",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "BODY",
+              "id": "",
+              "cls": "",
+              "overflowX": "clip"
+            }
+          ]
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "ph-set",
+          "width": 2882,
+          "clipping": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "ph-clip tx-edgefade",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "SECTION",
+              "id": "f-prophet",
+              "cls": "psec",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "BODY",
+              "id": "",
+              "cls": "",
+              "overflowX": "clip"
+            }
+          ]
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "ph-set",
+          "width": 2882,
+          "clipping": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "ph-clip tx-edgefade",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "SECTION",
+              "id": "f-prophet",
+              "cls": "psec",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "BODY",
+              "id": "",
+              "cls": "",
+              "overflowX": "clip"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "language": "zh",
+      "preference": "dark",
+      "requested_width": 320,
+      "document_width": 320,
+      "wider_elements": [
+        {
+          "tag": "DIV",
+          "id": "ph-track",
+          "cls": "ph-track",
+          "width": 5784,
+          "clipping": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "ph-clip tx-edgefade",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "SECTION",
+              "id": "f-prophet",
+              "cls": "psec",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "BODY",
+              "id": "",
+              "cls": "",
+              "overflowX": "clip"
+            }
+          ]
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "ph-set",
+          "width": 2882,
+          "clipping": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "ph-clip tx-edgefade",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "SECTION",
+              "id": "f-prophet",
+              "cls": "psec",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "BODY",
+              "id": "",
+              "cls": "",
+              "overflowX": "clip"
+            }
+          ]
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "ph-set",
+          "width": 2882,
+          "clipping": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "ph-clip tx-edgefade",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "SECTION",
+              "id": "f-prophet",
+              "cls": "psec",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "BODY",
+              "id": "",
+              "cls": "",
+              "overflowX": "clip"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "language": "zh",
+      "preference": "dark",
+      "requested_width": 390,
+      "document_width": 390,
+      "wider_elements": [
+        {
+          "tag": "DIV",
+          "id": "ph-track",
+          "cls": "ph-track",
+          "width": 5784,
+          "clipping": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "ph-clip tx-edgefade",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "SECTION",
+              "id": "f-prophet",
+              "cls": "psec",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "BODY",
+              "id": "",
+              "cls": "",
+              "overflowX": "clip"
+            }
+          ]
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "ph-set",
+          "width": 2882,
+          "clipping": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "ph-clip tx-edgefade",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "SECTION",
+              "id": "f-prophet",
+              "cls": "psec",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "BODY",
+              "id": "",
+              "cls": "",
+              "overflowX": "clip"
+            }
+          ]
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "ph-set",
+          "width": 2882,
+          "clipping": [
+            {
+              "tag": "DIV",
+              "id": "",
+              "cls": "ph-clip tx-edgefade",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "SECTION",
+              "id": "f-prophet",
+              "cls": "psec",
+              "overflowX": "hidden"
+            },
+            {
+              "tag": "BODY",
+              "id": "",
+              "cls": "",
+              "overflowX": "clip"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
