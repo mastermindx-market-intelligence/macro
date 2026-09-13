@@ -973,3 +973,111 @@ def test_light_cw_band_tint_is_raised_into_legible_range():
     assert 16 <= pct <= 20
     # the hairline boundary edge must survive the tint raise, not be removed.
     assert "border-right:1px solid" in light_rule.group(0)
+
+
+# --------------------------------------------------------------------------- #
+# H1 (B-F09-2 audit) — Tier-1 spread fractions in bi.CW_READ["spread_range"]
+# must mirror engine.credit_window.RANGE_OPEN_PCT (33) and RANGE_SHUT_PCT (66),
+# and rates_vol fractions must mirror MOVE_OPEN_PCT (40) and MOVE_SHUT_PCT (75).
+# The pre-fix wording said "four in five days" against thresholds of 33/66, which
+# is factually inverted for the open/shut cells; this pins both the constants
+# to their canonical fractions and the copy to those fractions so the two cannot
+# silently drift apart again.
+# --------------------------------------------------------------------------- #
+def test_cw_read_percentile_fractions_match_engine_thresholds():
+    import engine.credit_window as cw
+
+    # canonical mapping from the engine's thresholds to their "N in M" fractions:
+    #   RANGE 33/66  -> "two in three"   (~67% / ~66% of trailing days)
+    #   MOVE  40     -> "three in five"  (60% = 3/5)
+    #   MOVE  75     -> "three in four"  (75% = 3/4)
+    # ZH fraction form is "<denominator>分之<numerator>": 三分之二 / 五分之三 / 四分之三.
+    expected = {
+        ("spread_range", "open"):  ("two",   "three", "三", "二"),
+        ("spread_range", "shut"):  ("two",   "three", "三", "二"),
+        ("rates_vol",    "open"):  ("three", "five",  "五", "三"),
+        ("rates_vol",    "shut"):  ("three", "four",  "四", "三"),
+    }
+
+    # the four canonical fractions must still hold against the current constants —
+    # a constant drift (e.g. RANGE_OPEN_PCT moving to 45) must NOT pass silently.
+    assert abs((100.0 - cw.RANGE_OPEN_PCT) - (2 / 3) * 100) < 5  # ~67
+    assert abs(cw.RANGE_SHUT_PCT - (2 / 3) * 100) < 5            # ~66
+    assert abs((100.0 - cw.MOVE_OPEN_PCT) - (3 / 5) * 100) < 5   # 60
+    assert abs(cw.MOVE_SHUT_PCT - (3 / 4) * 100) < 5             # 75
+
+    for (key, state), (n_en, m_en, zh_den, zh_num) in expected.items():
+        en, zh = bi.CW_READ[(key, state)]
+        assert f"{n_en} in {m_en} days" in en, (
+            f"CW_READ[({key!r}, {state!r})] EN must contain {n_en!r} in {m_en!r} "
+            f"days of the past year (per {key} thresholds); got {en!r}"
+        )
+        assert f"{zh_den}分之{zh_num}" in zh, (
+            f"CW_READ[({key!r}, {state!r})] ZH must contain {zh_den!r}分之"
+            f"{zh_num!r} (per {key} thresholds); got {zh!r}"
+        )
+
+
+# --------------------------------------------------------------------------- #
+# H2 (B-F09-2 audit) — the engine's `not_evaluable` state key (and any other
+# multi-word snake_case state key) must never reach user copy in its
+# title-cased form. Repo convention is the plain display name "No read" /
+# "暂无读数" (templates/transmission.html.j2:522, templates/foresight.html.j2:25,
+# templates/_risk_envelope_band.html.j2:171).
+# Single-word state keys ("open", "neutral", "shut") have a title-cased
+# rendering ("Open", "Neutral", "Shut") that is also the natural plain-word
+# display label — those are NOT a leak, so this test only pins the multi-word
+# snake_case case the audit actually flagged.
+# Also pin that the on-rail scale label in templates/ipo.html.j2 no longer
+# carries the "not evaluable / 无法评估" phrasing that pre-fix took the engine
+# token straight into the largest glance-tier element.
+# --------------------------------------------------------------------------- #
+def test_cw_state_and_clause_keys_do_not_leak_title_cased_engine_token():
+    # iterate every reachable engine key the lexicons expose
+    for lexicon, name in ((bi.CW_STATE, "CW_STATE"), (bi.CW_CLAUSE, "CW_CLAUSE")):
+        for key, (en, zh) in lexicon.items():
+            # the leak shape the audit named is a multi-word snake_case key
+            # rendered in title case — only meaningful when the key actually
+            # has snake_case (a single-word key "open" → title-case "Open" is
+            # the natural display label, never a leak).
+            if "_" not in key:
+                continue
+            title_form = key.replace("_", " ").title()
+            assert en != title_form, (
+                f"{name}[{key!r}] EN is the title-cased engine key: {en!r} — "
+                f"must not equal {title_form!r}; use a plain display name "
+                f"('No read' for `not_evaluable`, etc.) so the engine token "
+                f"never reaches user copy."
+            )
+
+
+def test_ipo_template_does_not_carry_not_evaluable_string():
+    tpl_path = pathlib.Path(bi.__file__).resolve().parents[1] / "templates" / "ipo.html.j2"
+    src = tpl_path.read_text()
+    # case-insensitive scan — "Not evaluable" / "not evaluable" both must be gone
+    assert re.search(r"not[\s_-]?evaluable", src, re.IGNORECASE) is None, (
+        "templates/ipo.html.j2 must not carry 'not evaluable' / "
+        "'Not evaluable' — the engine token belongs in CW_STATE only, never in "
+        "user copy; use 'No read' / '暂无读数' instead (see repo convention)."
+    )
+    # and the ZH twin too — "无法评估" was the pre-fix leak on the rail
+    assert "无法评估" not in src, (
+        "templates/ipo.html.j2 must not carry '无法评估' — use '暂无读数' "
+        "(see template/convention across transmission / foresight / risk bands)"
+    )
+
+
+def test_ipo_template_does_not_carry_not_evaluable_string():
+    tpl_path = pathlib.Path(bi.__file__).resolve().parents[1] / "templates" / "ipo.html.j2"
+    src = tpl_path.read_text()
+    # case-insensitive scan — "Not evaluable" / "not evaluable" both must be gone
+    assert re.search(r"not[\s_-]?evaluable", src, re.IGNORECASE) is None, (
+        "templates/ipo.html.j2 must not carry 'not evaluable' / "
+        "'Not evaluable' — the engine token belongs in CW_STATE only, never in "
+        "user copy; use 'No read' / '暂无读数' instead (see repo convention)."
+    )
+    # and the ZH twin too — "无法评估" was the pre-fix leak on the rail
+    assert "无法评估" not in src, (
+        "templates/ipo.html.j2 must not carry '无法评估' — use '暂无读数' "
+        "(see template/convention across transmission / foresight / risk bands)"
+    )
