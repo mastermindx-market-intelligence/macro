@@ -321,8 +321,9 @@
      lane='pro' for mode='research', so it is a grounding mode that rides on Pro, and
      arming it still lights the Pro stop in the signature blue (that is the "which
      bucket is being spent" half of the old pairing, and it is unchanged). It holds
-     its own row on the composer, and the row READS the ceiling sentence every
-     research answer ends on — in both languages, at every width (W9B F11-8).
+     its own row on the composer, and the row READS the ceiling sentence that
+     PR 7100 puts on the end of every research answer — in both languages,
+     at every width (W9B F11-8).
      The compact mark it replaces carried that disclosure in a hover tip, and this
      sheet hides a hover tip below 560px, so on a phone the control said nothing at
      all. A disclosure only a pointer can reach is not a disclosure: the sentence is
@@ -373,6 +374,15 @@
   .mmb-rpill.on svg .dv{animation:mmb-dive .52s var(--mmb-ease) both}
   @keyframes mmb-dive{0%{transform:translateY(-3px);opacity:.25}100%{transform:none;opacity:1}}
   .mmb-rpill.mmb-off{display:none}
+  /* The row goes with it. .mmb-rrow owns the composer inset (10px, 8px on
+     phones) and the 2px gap under the toggle, so with the button display:none
+     that padding alone still painted an empty band between the textarea and the
+     depth control — on the widget's first paint before quotas land, and on every
+     settled session that is not Pro-eligible. :has() is this estate's own idiom
+     for showing a wrapper only when the thing inside it is there (theme.css gates
+     .lst-more the same way); where it is unsupported the rule simply drops and
+     the row degrades to that 2px band, never to a visible pill. */
+  .mmb-rrow:has(> .mmb-rpill.mmb-off){display:none}
   #mmb-panel.max .mmb-menu,#mmb-panel.max .mmb-sidescrim{display:none}
   #mmb-panel:not(.max) .mmb-rail{display:none}
   #mmb-panel:not(.max) .mmb-threads{position:absolute;left:0;top:0;bottom:0;width:236px;z-index:6;display:block;
@@ -951,9 +961,11 @@
   var MARK_RESEARCH = '<path d="M4.8 5.2h14.4"/><g class="dv"><path d="M8 10.1 12 13.9l4-3.8"/><path d="M8 15.3 12 19.1l4-3.8"/></g>';
   /* The research mode's own sentence (W9B F11-8). Frozen verbatim by the F11 contract
      (research/market_intelligence_productization/MARKET_ONTOLOGY_F11_POST_VERTICAL_CONTRACT_2026-09-06.md
-     §MO-PAID-031, "Authority ceiling") and identical to the pair the gateway stamps on
-     the end of every research answer — the toggle says up front what the answer will
-     say about itself. Defined once, here, so the visible mark and the accessible name
+     §MO-PAID-031, "Authority ceiling") and byte-identical to the pair the gateway
+     stamps on the end of every research answer once PR 7100 lands — at this head the
+     gateway stamps nothing yet, so the pair lives in the contract, here, and in
+     tests/test_mm_brain_asset.py. The toggle says up front what the answer will say
+     about itself. Defined once, here, so the visible mark and the accessible name
      can never disagree with each other or drift from the contract. */
   var RESEARCH_CEILING_EN = 'This is a reading of what we already published. It is not a signal, not a rating, and not advice — nothing here changes any board, rank, or alert.';
   var RESEARCH_CEILING_ZH = '这是对我们已经发布内容的解读。这不是信号、不是评级、也不是建议——这里的任何内容都不会改变任何看板、排名或提醒。';
@@ -1127,10 +1139,11 @@
             /* ── the research row ──────────────────────────────────────────────────
                Research mode is not a third depth, so it does not sit in the depth
                group below: it is a grounding mode that rides on Pro, and its mark
-               READS the ceiling sentence every research answer ends on (W9B F11-8) —
-               the whole sentence, in both languages, at every width. Nothing here
-               collapses to a compact mark on a phone, because the disclosure the
-               compact mark leaned on was a hover tip this sheet hides below 560px.
+               READS the ceiling sentence PR 7100 puts on the end of every
+               answer (W9B F11-8) — the whole sentence, in both languages, at every
+               width. Nothing here collapses to a compact mark on a phone, because
+               the disclosure the compact mark leaned on was a hover tip this sheet
+               hides below 560px.
                The sentence is also the accessible name — no aria-label stand-in —
                and aria-pressed carries on/off. The price stays visible under the
                sentence instead of being discovered afterwards. */

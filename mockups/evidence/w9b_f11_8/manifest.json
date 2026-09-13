@@ -24,7 +24,7 @@
     }
   },
   "excluded": [],
-  "generated_at": "2026-09-13T20:15:11Z",
+  "generated_at": "2026-09-13T21:15:09Z",
   "honesty": {
     "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
     "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
@@ -114,7 +114,7 @@
           "viewport": "desktop"
         },
         "panel_count": 5,
-        "payload_bytes_total": 267979,
+        "payload_bytes_total": 268873,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 3,
@@ -126,6 +126,7 @@
         "visible_word_count": 103
       },
       "page_id": "index.html",
+      "page_tree_sha": "27e5886faf9208efd4e54aac48ec256318cfdd7e",
       "registry_route": "/index.html",
       "route": "/index.html",
       "route_kind": "explicit_override",
@@ -350,7 +351,7 @@
           "viewport": "desktop"
         },
         "panel_count": 5,
-        "payload_bytes_total": 267979,
+        "payload_bytes_total": 268873,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 3,
@@ -362,6 +363,7 @@
         "visible_word_count": 103
       },
       "page_id": "index.html?armed=1",
+      "page_tree_sha": "27e5886faf9208efd4e54aac48ec256318cfdd7e",
       "registry_route": "/index.html?armed=1",
       "route": "/index.html?armed=1",
       "route_kind": "explicit_override",
@@ -489,13 +491,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 66768,
+          "bytes": 66764,
           "captured": true,
-          "file": "1d3cd1daf5853891.png",
+          "file": "b86480987b2c3522.png",
           "force_state": null,
           "height": 844,
           "locale": "zh",
-          "sha256": "1d3cd1daf58538910083417db321543dd00847a02fc764c74f2fa1a8e220636a",
+          "sha256": "b86480987b2c3522cb3170c8a285f1d0fe2e20f7a50186760eece667d14277a6",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,

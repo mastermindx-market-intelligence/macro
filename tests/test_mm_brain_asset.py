@@ -68,8 +68,10 @@ def test_css_template_literal_has_no_interior_backtick(path: pathlib.Path) -> No
 #
 # The sentence is not this test's invention. It is frozen verbatim by
 # ``research/market_intelligence_productization/MARKET_ONTOLOGY_F11_POST_VERTICAL_CONTRACT_2026-09-06.md``
-# §MO-PAID-031 ("Authority ceiling"), and it is the same pair the gateway stamps
-# on the end of every research answer — the toggle says ahead of time what the
+# §MO-PAID-031 ("Authority ceiling"), and it is byte-identical to the pair the
+# gateway stamps on the end of every research answer AFTER #7100 lands — at this
+# head the gateway stamps nothing yet, so the pair exists only in the contract,
+# this widget and this test. Either way the toggle says ahead of time what the
 # answer will say about itself.
 CEILING_EN = (
     "This is a reading of what we already published. It is not a signal, "
@@ -108,6 +110,23 @@ def _rpill_base_rule(text: str) -> str:
     """The ``.mmb-rpill{...}`` base rule, not one of its states or pseudos."""
     start = text.index(".mmb-rpill{")
     return text[start : text.index("}", start)]
+
+
+_ROW_RULE_RE = re.compile(r"([^{}]*\.mmb-rrow[^{}]*)\{([^{}]*)\}")
+
+
+def _row_hidden_rule(text: str) -> str | None:
+    """A sheet rule that hides ``.mmb-rrow`` while its toggle is entitlement-hidden.
+
+    Deliberately selector-shape agnostic: the row may be hidden with ``:has()``
+    on the pill's own ``mmb-off`` state or with a class the widget puts on the
+    row. What the guard owns is the OUTCOME — no rule may leave an empty row
+    box on the composer.
+    """
+    for selector, body in _ROW_RULE_RE.findall(text):
+        if "mmb-off" in selector and "display:none" in body.replace(" ", ""):
+            return f"{selector}{{{body}}}"
+    return None
 
 
 def test_frozen_ceiling_copy_is_bilingual_and_plain() -> None:
@@ -203,4 +222,27 @@ def test_research_toggle_is_its_own_row_not_a_fourth_depth_stop(
     assert 'class="mmb-rrow"' in text, (
         "the toggle needs its own full-width row on the composer for the sentence "
         "to wrap inside"
+    )
+
+
+@pytest.mark.parametrize("path", COPIES, ids=lambda p: str(p.relative_to(ROOT)))
+def test_entitlement_hidden_toggle_takes_its_row_with_it(path: pathlib.Path) -> None:
+    """A hidden toggle must leave nothing behind on the composer.
+
+    ``.mmb-rrow`` carries its own padding (``0 10px 2px``, ``0 8px 2px`` on
+    phones), so while ``.mmb-rpill.mmb-off`` hides the button — the widget's
+    first paint before quotas load, and the settled state of every session that
+    is not Pro-eligible — the empty row still rendered a 2px band between the
+    textarea and the depth control. The row has to disappear on the same
+    condition as the toggle inside it.
+    """
+    text = _read(path)
+    assert ".mmb-rpill.mmb-off{display:none}" in text, (
+        "the toggle's entitlement-hidden state is no longer expressed as "
+        ".mmb-rpill.mmb-off — retarget this guard at the new hidden state"
+    )
+    assert _row_hidden_rule(text) is not None, (
+        "the research row keeps its padding when the toggle inside it is "
+        "entitlement-hidden, so an empty 2px band renders on the composer for "
+        "every non-Pro session; hide the row on the same condition"
     )
