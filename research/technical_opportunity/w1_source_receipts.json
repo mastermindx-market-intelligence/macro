@@ -150,6 +150,44 @@
       "negative_evidence": "reported Fibonacci and non-Fibonacci zone behavior did not differ statistically"
     },
     {
+      "source_ref": "SRC-VANTUCH-ELLIOTT-2018",
+      "title": "An algorithm for Elliott Waves pattern detection",
+      "publisher_or_author": "Tomas Vantuch, Ivan Zelinka, Pandian Vasant / Intelligent Decision Technologies",
+      "source_type": "primary_academic",
+      "url": "https://doi.org/10.3233/IDT-170319",
+      "doi": "10.3233/IDT-170319",
+      "rights_class": "public_formula",
+      "rights_ref": "bibliographic/abstract evidence only; independent ordered-path implementation only",
+      "covers": ["elliott_wave_detection", "incomplete_ordered_wave_pattern"],
+      "retrieved_at": "2026-09-13"
+    },
+    {
+      "source_ref": "SRC-JARUSEK-ELLIOTT-2022",
+      "title": "FOREX rate prediction improved by Elliott waves patterns based on neural networks",
+      "publisher_or_author": "Robert Jarusek, Eva Volna, Martin Kotyrba / Neural Networks",
+      "source_type": "primary_academic",
+      "url": "https://doi.org/10.1016/j.neunet.2021.10.024",
+      "doi": "10.1016/j.neunet.2021.10.024",
+      "rights_class": "public_formula",
+      "rights_ref": "bibliographic/abstract evidence only; hybrid model is evidence, not copied implementation",
+      "covers": ["elliott_wave_hybrid_prediction", "ordered_path_representation"],
+      "retrieved_at": "2026-09-13",
+      "limitation": "hybrid FFT/neural-network/cross-currency system; does not isolate Elliott-specific incremental information"
+    },
+    {
+      "source_ref": "SRC-ATSALAKIS-ELLIOTT-2011",
+      "title": "Elliott Wave Theory and neuro-fuzzy systems, in stock market prediction: The WASP system",
+      "publisher_or_author": "George S. Atsalakis, Emmanouil M. Dimitrakakis, Constantinos D. Zopounidis / Expert Systems with Applications",
+      "source_type": "primary_academic",
+      "url": "https://doi.org/10.1016/j.eswa.2011.01.068",
+      "doi": "10.1016/j.eswa.2011.01.068",
+      "rights_class": "public_formula",
+      "rights_ref": "bibliographic/abstract evidence only; independent implementation only",
+      "covers": ["elliott_wave_hybrid_prediction"],
+      "retrieved_at": "2026-09-13",
+      "limitation": "hybrid neuro-fuzzy system; supportive result does not prove a universal deterministic wave law"
+    },
+    {
       "source_ref": "SRC-MASSIVE-LICENSE",
       "title": "Massive entitlement record",
       "publisher_or_author": "Mastermind operator record",
