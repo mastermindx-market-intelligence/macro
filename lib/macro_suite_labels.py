@@ -128,7 +128,8 @@ CONTRADICTION_KIND: dict[str, dict[str, str]] = {
     "home_price_vs_rent_divergence": _pair(
         "Home prices and rents disagree", "房价与租金相悖"),
     "hawk_ease_split": _pair(
-        "Hawkish talk, easier conditions", "言辞偏鹰，条件却在放松"),
+        "Hawkish and easing pressures both active, roughly balanced",
+        "鹰派与宽松压力并存，大体制衡"),
     "global_state_vs_fed_desk": _pair(
         "Global state and the Fed desk disagree", "全球状态与美联储交易台相悖"),
     "dots_vs_market_path": _pair(
