@@ -1,8 +1,17 @@
 # Elliott phase: information content, measurement compatibility, and a bounded research contract
 
 **Date:** 2026-09-11 UTC  
-**Status:** Research preparation; experimental contract PROPOSED / NOT ADMITTED. No market-outcome test, signal authority, production integration, or portfolio action.  
+**Status:** Historical source-review packet; its continuation-first experiment and next-action language are SUPERSEDED / NOT ADMITTED. No market-outcome test, signal authority, production integration, or portfolio action.
 **Canonical source pins:** Skillpack `Mastermind@068dcc1533776672844b36ffcde30fad68a4317f`; implementation/research `macro@4b1f8fddcc4eb6f36133fca4d42018678b74d30b`.
+
+> **TOI absorption ruling (2026-09-13):** this file is retained as historical
+> provenance for the source investigation. It is not the current experiment
+> contract and does not define a standalone Elliott program. The durable source
+> finding and sole current anticipation proposal are respectively:
+> `research/technical_opportunity/elliott_phase/ELLIOTT_SOURCE_COMPATIBILITY_FINDING_2026-09-11.md`
+> and
+> `research/technical_opportunity/elliott_phase/ELLIOTT_E0_ADMISSION_PROPOSAL_2026-09-11.md`.
+> TOI W1/W2-0 and existing Trial/Evaluation owners retain every admission gate.
 
 ## 1. The useful hypothesis is sequence information, not a magic number
 
@@ -73,7 +82,11 @@ There is also relevant positive/negative differentiation in the existing Anticip
 
 This is why the wave question must be separated into anticipatory risk, post-confirmation continuation and entry decision value. Success at one does not establish success at the others.
 
-## 7. Proposed experiment: a precise contract, not admission
+## 7. Superseded proposal history — not current admission law
+
+The continuation-first material below is preserved to show the design history. It is
+not an alternate live proposal and cannot be selected after outcomes. The sole current
+E0 proposal is anticipation-first at the canonical TOI path named above.
 
 ### 7.1 Two forecast origins, never mixed
 
@@ -126,7 +139,7 @@ Deterministic work should establish timestamps, source lineage, bar order when o
 
 Useful completion is not 'a parser exists'. It is a demonstrated improvement on the declared question, with understandable user/machine delivery and an explicit decision boundary. Before evidence, a faithful reconstruction can improve explanation, but must retain 'unvalidated forecast' rather than borrowing Prophet or Risk Radar authority.
 
-## 9. Disposition and exact next action
+## 9. Superseded disposition and next action — historical only
 
 **Disposition:** preparation advanced; narrow input-contract questions characterized; experiment specified enough for an owner review but NOT admitted, built or proven. No external worker was started, no watcher armed, no queue changed and no market outcome read.
 
@@ -139,7 +152,7 @@ This continuation must not become another loop of redrawing the two original GDX
 Run the compact characterization probe from an existing authorized Macro checkout that already contains the pinned object:
 
 ```sh
-PYTHONDONTWRITEBYTECODE=1 python research/elliott_phase/source_contract_probe.py
+PYTHONDONTWRITEBYTECODE=1 python research/technical_opportunity/elliott_phase/source_contract_probe.py
 ```
 
 This reads the exact pinned `engine/cycle_ontology.py` with `git show`, verifies its Git blob and the selected definition ASTs, and executes only those definitions on synthetic arrays. It is not a predictive study. In a partial clone, ensure the pinned object is present under the existing owner's normal access policy; do not use this probe to bootstrap authentication or modify another worker's checkout.
@@ -152,7 +165,7 @@ Source-only review publication does not ratify the experimental contract, amend 
 
 All internal sources are pinned to the Macro commit printed above unless otherwise stated. External method sources define methods, not verified market accuracy.
 
-- **I1:** `engine/cycle_ontology.py`, especially `TurnParams`, `turn_epoch`, `detect_turns`, `classify_phase`, and `project_next`. Compact repository reproduction: `research/elliott_phase/source_contract_probe.py` and `research/elliott_phase/source_contract_probe_results_2026-09-11.json`. Full 19-test source fixture and analytical examples are in the accompanying conversation archive (`analysis/test_contract.py`, `analysis/results.json`, `source/pinned_turn_excerpt.py`).
+- **I1:** `engine/cycle_ontology.py`, especially `TurnParams`, `turn_epoch`, `detect_turns`, `classify_phase`, and `project_next`. Compact repository reproduction: `research/technical_opportunity/elliott_phase/source_contract_probe.py` and `research/technical_opportunity/elliott_phase/source_contract_probe_results_2026-09-11.json`. Full 19-test source fixture and analytical examples are in the accompanying conversation archive (`analysis/test_contract.py`, `analysis/results.json`, `source/pinned_turn_excerpt.py`).
 - **I2:** `research/ENTRY_STACK_EXPANSION_MASTERPLAN_BY_FABLE.md`, section 2: explicit generic Fibonacci/Elliott triage; sections 1, 7, 8 and 10: existing graders/trial process.
 - **I3:** `research/ANTICIPATION_PHASE0.md`, forward-drawdown and direction sections.
 - **I4:** `engine/lab.py`, `engine/trial_ledger.py`, and existing Live Entry Radar replay owner. This packet does not invoke them.
