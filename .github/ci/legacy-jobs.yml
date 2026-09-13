@@ -4952,6 +4952,28 @@ jobs:
       - name: append-only law mutation + negative controls
         run: python -m pytest tests/test_append_only_assertions.py -q
 
+  research-screener:
+    if: ${{ false }}
+    gate: code
+    # B-F06-4 research-priority screener. Pure compiler + Jinja producer +
+    # template. No data/ or nightly artifact required. Paths cover the three
+    # packet owners so a change to any of them selects this job; no waiver.
+    paths:
+      - engine/research_screener.py
+      - scripts/build_research_screener.py
+      - templates/research_screener.html.j2
+      - tests/test_research_screener.py
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest jinja2 markupsafe
+      - name: research screener unit tests
+        run: python -m pytest tests/test_research_screener.py -q
+
   leader-radar-unit:
     if: ${{ false }}
     gate: code

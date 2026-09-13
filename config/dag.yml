@@ -649,6 +649,13 @@ lanes:
           so the declaration lands here.
       - id: build_site
         module: scripts.build_site
+      - id: build_research_screener
+        module: scripts.build_research_screener
+        note: >
+          B-F06-4 research-priority screener. AFTER build_site (stock library
+          writes site/stockdata/*.json). Reads security_state.v1 +
+          valuation_scenario.v1, writes site/research_screener.json +
+          site/research_screener.html. Display-tier; research_priority_only.
       - id: build_ticker_pages
         module: scripts.build_ticker_pages
         note: >
@@ -2735,6 +2742,11 @@ lanes:
         note: Policy-Shock W2-F — ARMED/QUIET lever card; non-fatal; site artifact only (PS-R7)
       - id: build_site
         module: scripts.build_site
+      - id: build_research_screener
+        module: scripts.build_research_screener
+        note: >
+          B-F06-4 research-priority screener. AFTER build_site (stock library
+          writes site/stockdata/*.json). Display-tier; research_priority_only.
       - id: build_congress
         module: scripts.build_congress
       # parallel band (scope=all)

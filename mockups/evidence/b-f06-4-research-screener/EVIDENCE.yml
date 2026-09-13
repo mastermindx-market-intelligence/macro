@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/theme.css
+manifest: mockups/evidence/b-f06-4-research-screener/manifest.json
