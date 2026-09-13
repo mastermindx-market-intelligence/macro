@@ -391,8 +391,8 @@
         "label": "Peg / HIBOR funding stress",
         "label_zh": "\u8054\u6c47/HIBOR\u8d44\u91d1\u538b\u529b",
         "family": "funding",
-        "projection": 0.05,
-        "strength": 0.05,
+        "projection": 0.04,
+        "strength": 0.04,
         "direction": "funding tightening \u2014 HKD toward 7.85 weak-side, HIBOR up, Aggregate Balance drained"
       },
       {
@@ -400,8 +400,8 @@
         "label": "US-rate repricing (via the peg)",
         "label_zh": "\u7f8e\u606f\u91cd\u5b9a\u4ef7\uff08\u7ecf\u8054\u6c47\uff09",
         "family": "rates",
-        "projection": 0.04,
-        "strength": 0.04,
+        "projection": 0.03,
+        "strength": 0.03,
         "direction": "US rates repricing higher \u2014 dollar & HIBOR up, the peg imports tightening"
       }
     ],
@@ -409,8 +409,8 @@
   },
   "conditions": {
     "roro": {
-      "roro": 0.105,
-      "roro_raw": 0.105,
+      "roro": 0.106,
+      "roro_raw": 0.107,
       "roro_state": "neutral",
       "hk_roro_copper_gold": 1.16,
       "hk_roro_spy": -0.901,
@@ -423,7 +423,7 @@
       "hk_roro_breadth": -0.7,
       "hk_roro_peg": -1.014,
       "hk_roro_ah_premium": 0.453,
-      "hk_roro_hibor": -0.132,
+      "hk_roro_hibor": -0.112,
       "legs": [
         {
           "key": "copper_gold",
@@ -506,7 +506,7 @@
           "key": "hibor",
           "name_en": "HIBOR funding (20d \u0394)",
           "name_zh": "HIBOR \u8d44\u91d1\uff0820\u65e5\u53d8\u52a8\uff09",
-          "value": -0.132,
+          "value": -0.112,
           "lean": "risk-off"
         }
       ]
@@ -588,7 +588,7 @@
       "note_zh": "\u672a\u6821\u51c6\u7684\u5c55\u793a\u6027\u4eea\u8868 \u2014\u2014 \u9999\u6e2f\u5386\u53f2\u77ed\u4e14\u4e0e\u5168\u7403\u9ad8\u5ea6\u8026\u5408\uff0c\u4e0d\u58f0\u79f0\u4efb\u4f55\u524d\u77bb\u56de\u64a4\u4f18\u52bf\uff1b\u533a\u95f4\u4e3a\u8be5\u4eea\u8868\u81ea\u8eab\u7684\u5386\u53f2\u5206\u4f4d\u951a\u5b9a\u3002\u4ece\u4e0d\u8ba1\u5165\u8bc4\u5206\u3002"
     },
     "drawdown_risk": {
-      "score": 68.8,
+      "score": 68.7,
       "band": "elevated",
       "calibrated": false,
       "note": "history-anchored rank-percentile of HK stress legs \u2014 uncalibrated, display-only context, never scored",
@@ -2172,7 +2172,7 @@
           0.381,
           0.276,
           0.058,
-          0.105
+          0.106
         ]
       },
       "recession": {
@@ -5332,7 +5332,7 @@
           60.9,
           61.1,
           66.2,
-          68.8
+          68.7
         ]
       },
       "fear_euphoria": {
@@ -6912,7 +6912,7 @@
           81.6,
           72.0,
           53.5,
-          57.1
+          57.2
         ]
       }
     },
@@ -6923,7 +6923,7 @@
     "fe_score": 57,
     "band": "Neutral",
     "band_zh": "\u4e2d\u6027",
-    "roro": 0.105,
+    "roro": 0.106,
     "roro_state": "neutral",
     "legs": [
       {
@@ -7018,8 +7018,8 @@
         "key": "hibor",
         "name_en": "HIBOR funding (20d \u0394)",
         "name_zh": "HIBOR \u8d44\u91d1\uff0820\u65e5\u53d8\u52a8\uff09",
-        "value": -0.132,
-        "pct": 46,
+        "value": -0.112,
+        "pct": 47,
         "lean": "risk-off"
       }
     ],
