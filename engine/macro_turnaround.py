@@ -20,6 +20,7 @@ from hashlib import sha256
 import json
 from math import exp, isfinite, log, sqrt
 from statistics import mean, median, pstdev
+from types import MappingProxyType
 from typing import Mapping, Sequence
 
 
@@ -282,6 +283,9 @@ class DataQuality:
     excluded: Mapping[str, str]
     flags: tuple[str, ...]
 
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "excluded", MappingProxyType(dict(self.excluded)))
+
     def to_dict(self) -> dict[str, object]:
         return {
             "coverage": self.coverage,
@@ -343,7 +347,12 @@ class TurnaroundAssessment:
 
 class MacroTurnaroundEngine:
     def __init__(self, config: TurnaroundConfig | None = None) -> None:
-        self.config = config or TurnaroundConfig()
+        if config is None:
+            self.config = TurnaroundConfig()
+        elif isinstance(config, TurnaroundConfig):
+            self.config = config
+        else:
+            raise TypeError("config must be a TurnaroundConfig or None")
 
     def assess(
         self,

@@ -11,6 +11,7 @@ import pytest
 
 from engine.macro_turnaround import (
     AuthorityBoundary,
+    DataQuality,
     IndicatorSpec,
     MacroTurnaroundEngine,
     Observation,
@@ -780,3 +781,26 @@ def test_turnaround_suites_have_one_code_gated_ci_owner() -> None:
     )
     for dependency in ("pytest", "pandas", "pyarrow", "pyyaml"):
         assert dependency in install
+
+
+@pytest.mark.parametrize("config", [False, 0, {}, "default"])
+def test_engine_rejects_non_config_constructor_values(config: object) -> None:
+    with pytest.raises(TypeError, match="TurnaroundConfig"):
+        MacroTurnaroundEngine(config)  # type: ignore[arg-type]
+
+
+def test_data_quality_defensively_freezes_exclusion_mapping() -> None:
+    excluded = {"stale": "too_old"}
+    quality = DataQuality(
+        coverage=0.5,
+        recency=0.5,
+        agreement=0.5,
+        history=0.5,
+        excluded=excluded,
+        flags=(),
+    )
+    excluded["stale"] = "mutated"
+    excluded["future"] = "added_later"
+    assert quality.excluded == {"stale": "too_old"}
+    with pytest.raises(TypeError):
+        quality.excluded["new"] = "mutation"  # type: ignore[index]
