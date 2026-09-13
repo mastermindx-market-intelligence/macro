@@ -286,7 +286,9 @@ def test_all_four_alert_fields_in_one_call(auth, store):
         "alert_email_optin": True, "alert_categories": ["thesis_window"],
         "tz": "Asia/Hong_Kong", "quiet_hours": {"start": "22:00", "end": "07:00"},
     }
-    assert [c[0] for c in auth.calls] == ["PUT"]
+    # Main's writer always pays a fresh GET before the PUT (auth-cache clobber close).
+    # This request sends tz, so the freeze-§8 extra GET on the route does not fire.
+    assert [c[0] for c in auth.calls] == ["GET", "PUT"]
 
 
 def test_get_prefs_readback(auth, store):
