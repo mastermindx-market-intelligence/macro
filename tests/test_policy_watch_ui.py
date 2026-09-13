@@ -7,6 +7,7 @@ import shutil
 from pathlib import Path
 
 from scripts.build_policy_watch import (
+    _analysis_snapshot_labels,
     _featured_predictions,
     brief,
     decorate_lifecycle_view,
@@ -1778,3 +1779,89 @@ def test_r1_partial_calendar_filters_malformed_meeting_rows():
     assert "FOMC决议" in html
     assert "09-16" in html
     assert "bad date" not in html
+
+
+# --------------------------------------------------------------------------- #
+# R2 current-analysis date authority — snapshot, review, and source freshness
+# are three different clocks and must never be presented as one.
+# --------------------------------------------------------------------------- #
+
+
+def _render_policy_watch_with_desk(desk_fixture, monkeypatch):
+    import scripts.build_policy_watch as bpw
+    from engine import fed_stance as _fs
+    from engine import policy_intent_desk as _pid
+    from engine import policy_rotation_check as _rotc
+
+    desk_path = ROOT / "site" / "policy_intent.json"
+    real_read_text = Path.read_text
+
+    def _read_text(path, *args, **kwargs):
+        if path == desk_path:
+            return json.dumps(desk_fixture)
+        return real_read_text(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "read_text", _read_text)
+    monkeypatch.setattr(_fs, "append_history", lambda *args, **kwargs: False)
+    monkeypatch.setattr(_rotc, "append_history", lambda *args, **kwargs: False)
+    monkeypatch.setattr(_pid, "ingest_lifecycle", lambda *args, **kwargs: 0)
+    monkeypatch.setattr(_pid, "lifecycle_view", lambda *args, **kwargs: None)
+
+    captured = {}
+    monkeypatch.setattr(bpw, "write_page", lambda path, html: captured.setdefault("html", html))
+    assert bpw.main() == 0
+    return captured["html"]
+
+
+def _r2_desk(state_asof):
+    return {
+        "schema": "policy_intent_desk.v1",
+        "is_context_only": True,
+        "state_asof": state_asof,
+        "generated_at": "2026-09-12T09:22:24.520233+00:00",
+        "track_record": {"overall": {"n": 1, "hit_rate": 1.0}},
+        "theses": [{
+            "actor": "fed", "subject": "TLT", "lean": "underweight",
+            "conviction": "low", "check_by": "2026-10-23",
+            "thesis": "A dated analysis view.", "thesis_zh": "带日期的分析观点。",
+            "dissent": "The contrary case.", "dissent_zh": "相反情形。",
+            "falsifier": {"text": "Conditions change.", "text_zh": "条件发生变化。"},
+        }],
+    }
+
+
+def test_r2_analysis_snapshot_accepts_only_exact_calendar_dates():
+    assert _analysis_snapshot_labels("2026-09-12") == (
+        "2026-09-12", "September 12, 2026", "2026年9月12日",
+    )
+    for invalid in (
+        None, 20260912, "", " 2026-09-12", "2026-09-12 ",
+        "2026-9-12", "2026-02-30", "2026-09-12T00:00:00Z",
+    ):
+        assert _analysis_snapshot_labels(invalid) == (None, "", "")
+
+
+def test_r2_market_views_separate_snapshot_review_and_source_clocks(monkeypatch):
+    html = _render_policy_watch_with_desk(_r2_desk("2026-09-12"), monkeypatch)
+
+    views = html.split('id="views">', 1)[1].split("</section>", 1)[0]
+    assert views.count('data-analysis-as-of="2026-09-12"') == 1
+    assert "Analysis snapshot" in views and "分析快照" in views
+    assert "September 12, 2026" in views and "2026年9月12日" in views
+    assert "Review dates are checkpoints, not freshness claims." in views
+    assert "复核日期是检查节点，不代表信息新鲜度。" in views
+    assert "Official updates above use source and fetch times." in views
+    assert "上方官方动态使用各自的来源日期与获取时间。" in views
+    assert "2026-09-12T09:22:24" not in views
+
+
+def test_r2_market_views_fail_closed_when_snapshot_date_is_invalid(monkeypatch):
+    html = _render_policy_watch_with_desk(
+        _r2_desk("2026-09-12T09:22:24.520233+00:00"), monkeypatch
+    )
+
+    views = html.split('id="views">', 1)[1].split("</section>", 1)[0]
+    assert "data-analysis-as-of" not in views
+    assert "Analysis snapshot date unavailable" in views
+    assert "分析快照日期不可用" in views
+    assert "2026-09-12T09:22:24" not in views

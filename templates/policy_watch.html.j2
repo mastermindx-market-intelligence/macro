@@ -617,7 +617,16 @@
   {% if has_background %}
   {% if desk %}
   <section class="pw-section" id="views">
-    {{ section_head('Market views','市场观点','Ideas we’re tracking','我们正在跟踪的观点','Early views with a clear review date.','早期观点，均设有复核日期。') }}
+    {{ section_head('Market views','市场观点','Ideas we’re tracking','我们正在跟踪的观点','A dated snapshot with future review checkpoints.','带日期的分析快照，并设未来复核节点。') }}
+    <div class="dtp-row pw-analysis-clock" role="note">
+      <span class="dtp-chip dtp-chip--pre"><i aria-hidden="true"></i>{{ t('Context analysis','背景分析') }}</span>
+      {% if analysis_asof_iso %}
+      <span class="dtp-asof" data-analysis-as-of="{{ analysis_asof_iso }}">{{ t('Analysis snapshot','分析快照') }} <span class="l-en">{{ analysis_asof_en }}</span><span class="l-zh">{{ analysis_asof_zh }}</span></span>
+      {% else %}
+      <span class="dtp-chip dtp-chip--stale">{{ t('Analysis snapshot date unavailable','分析快照日期不可用') }}</span>
+      {% endif %}
+    </div>
+    <p class="pw-build-note">{{ t('Review dates are checkpoints, not freshness claims. Official updates above use source and fetch times.','复核日期是检查节点，不代表信息新鲜度。上方官方动态使用各自的来源日期与获取时间。') }}</p>
     {% if desk.track_record and desk.track_record.overall and desk.track_record.overall.n %}
     <div class="pw-statbar"><span class="pw-stat"><strong>{{ desk.track_record.overall.n }}</strong> {{ t('checked','已复核') }}</span>{% if desk.track_record.overall.hit_rate is not none %}<span class="pw-stat"><strong>{{ (desk.track_record.overall.hit_rate*100)|round|int }}%</strong> {{ t('right so far','目前正确') }}</span>{% endif %}</div>
     {% else %}<p class="pw-build-note">{{ t('No results yet. Treat these as early ideas.','暂无结果，请将这些视为早期观点。') }}</p>{% endif %}
