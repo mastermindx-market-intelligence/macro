@@ -1,0 +1,6 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/sector_central_china.html.j2
+  - templates/_baskets_desk.html.j2
+  - templates/_china_act_now_board.html.j2
+manifest: mockups/evidence/sector-central-china-w14-r3/manifest.json

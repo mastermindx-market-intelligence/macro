@@ -1,4 +1,9 @@
 {# Shared Theme Rotation Desk — CSS + section containers (rendered client-side by baskets_desk.js). #}
+{# Fail closed: a silent US default on a non-US page is a defect generator.
+   Every caller must pass bench_en / bench_zh (see build_baskets_hk.py:200). #}
+{% if not bench_en or not bench_zh %}
+{% include "ERROR: _baskets_desk requires bench_en and bench_zh (silent S&P 500 default is forbidden)" %}
+{% endif %}
 <style>
   /* ---- Theme Rotation Desk ---- */
   .mctx { display:flex; flex-wrap:wrap; gap:8px 16px; align-items:center; font-size:12.5px;
@@ -248,9 +253,21 @@
   .dual-chip .dc-trend { color:var(--ink-down, var(--down)); }
   .dual-chip .dc-sep   { color:var(--muted); font-weight:400; }
   .dual-chip .dc-tape  { color:var(--ink-up, var(--up)); }
+  {# Compact Explore chrome is host-flagged (si_explore_compact) AND page-class
+     scoped so hk/canada/intl/factorwatch do not receive unused details CSS. #}
+  {% if si_explore_compact|default(false) %}
+  body.page-sector-central .si-more { margin:12px 0; border:1px solid var(--line); border-radius:var(--r-card,12px);
+    padding:8px 12px; background:var(--panel); }
+  body.page-sector-central .si-more > summary { cursor:pointer; font-weight:650; font-size:13px;
+    list-style:none; display:flex; align-items:center; gap:6px; }
+  body.page-sector-central .si-more > summary::-webkit-details-marker { display:none; }
+  body.page-sector-central .si-more > summary::before { content:'▸'; color:var(--muted); }
+  body.page-sector-central .si-more[open] > summary::before { content:'▾'; }
+  {% endif %}
 </style>
-  {# validated sleeve-size chip (rendered client-side; empty for markets without one) #}
-  <div id="sleeve-chip"></div>
+  {# validated sleeve-size chip (rendered client-side; empty for markets without one).
+     China SI Explore demotes this host off L1 (R1); JS mount stays. #}
+  <div id="sleeve-chip"{% if si_explore_compact|default(false) %} hidden{% endif %}></div>
 {% if ignition_json is defined -%}
 {# W5 sector-ignition + provenance/freshness + risk-radar strip (HK / Canada ONLY). GUARDED on ignition_json: china / us / intl builders never pass it, so their rendered pages stay byte-identical. Additive-conditional per the shared-partial pact. #}
   <style>
@@ -366,9 +383,15 @@
     <div id="actnow"></div>
   </section>{% endif %}
 
+{% if si_explore_compact|default(false) %}
+<details class="si-more" id="si-theme-desk-more">
+<summary>{{ t('Theme Rotation Desk', '主题轮动台') }}</summary>
+{% endif %}
   <section id="theme-desk-section" style="margin-top:6px">
+    {% if not si_explore_compact|default(false) %}
     <h2>{{ t('Theme Rotation Desk', '主题轮动台') }}
       <span class="sect-tag">{{ t('scored · labeled · actionable', '评分 · 标注 · 可执行') }}</span></h2>
+    {% endif %}
     <p class="sub">{{ t(
       'Each theme gets a 0–100 score, a trend label and an action read based on trend, breadth, impulse, macro support and crowding.',
       '每个主题按趋势、广度、脉冲、宏观支持与拥挤度给出 0–100 分、趋势标签和操作结论。') }}</p>
@@ -380,30 +403,68 @@
     {# capped at 3 rows (theme.js initShowMore row-mode); reveals 3 more rows per click. #}
     <div class="desk" id="theme-desk" data-showmore-rows="3"></div>
   </section>
+{% if si_explore_compact|default(false) %}
+</details>
+<script>
+(function(){
+  var d=document.getElementById('si-theme-desk-more');
+  if(!d) return;
+  d.addEventListener('toggle', function(){
+    var grid=document.getElementById('theme-desk');
+    if(!grid) return;
+    delete grid.dataset.smInit;
+    var bar=grid.nextElementSibling;
+    if(bar && bar.classList.contains('sm-bar')) bar.remove();
+    if(typeof window.initShowMore==='function') window.initShowMore();
+  });
+})();
+</script>
+<details class="si-more" id="si-concentration-more">
+<summary>{{ t('Market concentration', '市场集中度') }}</summary>
+{% endif %}
 
   <section id="concentration-section">
+    {% if not si_explore_compact|default(false) %}
     <h2>{{ t('Market concentration & theme leadership', '市场集中度与主题领导力') }}
       <span class="sect-tag">{{ t('who owns the advance vs the decline', '谁主导上涨 vs 谁在下跌') }}</span></h2>
+    {% endif %}
     <p class="sub">{{ t(
       'Shows whether leadership is broad or narrow, and which themes own the advance or the decline.',
       '显示上涨是广泛还是集中，以及哪些主题主导上涨或下跌。') }}</p>
     <div id="concentration"></div>
   </section>
+{% if si_explore_compact|default(false) %}
+</details>
+<details class="si-more" id="si-rotation-more">
+<summary>{{ t('5-Day Theme Rotation', '5日主题轮动') }}</summary>
+{% endif %}
 
   <section id="rotation-section">
+    {% if not si_explore_compact|default(false) %}
     <h2>{{ t('5-Day Theme Rotation', '5日主题轮动') }}
       <span class="sect-tag">{{ t('weekly climbers & fallers', '本周上升与下降') }}</span></h2>
+    {% endif %}
     <p class="sub">{{ t(
-      'Weekly movers ranked by 5-day return versus ' ~ (bench_en|default('S&P 500')) ~ ', plus the change in 20-day relative-strength rank.',
-      '按相对' ~ (bench_zh|default('标普 500')) ~ '的 5 日回报排序，并显示 20 日相对强度排名变化。') }}</p>
+      'Weekly movers ranked by 5-day return versus ' ~ bench_en ~ ', plus the change in 20-day relative-strength rank.',
+      '按相对' ~ bench_zh ~ '的 5 日回报排序，并显示 20 日相对强度排名变化。') }}</p>
     <div class="rotwrap" id="rotation"></div>
   </section>
+{% if si_explore_compact|default(false) %}
+</details>
+<details class="si-more" id="si-impulse-more">
+<summary>{{ t('Impulse & Extremes', '脉冲与极值') }}</summary>
+{% endif %}
 
   <section id="impulse-section">
+    {% if not si_explore_compact|default(false) %}
     <h2>{{ t('Impulse & Extremes', '脉冲与极值') }}
       <span class="sect-tag">{{ t('across the thematic universe', '覆盖全部主题成分') }}</span></h2>
+    {% endif %}
     <p class="sub">{{ t(
       'Daily breadth across basket members: big movers and new 52-week highs or lows.',
       '篮子成分的日度广度：大涨大跌个股，以及 52 周新高/新低。') }}</p>
     <div class="scards" id="scorecards"></div>
   </section>
+{% if si_explore_compact|default(false) %}
+</details>
+{% endif %}

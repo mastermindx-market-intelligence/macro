@@ -39,13 +39,12 @@
     {{ dc.dc_css() }}
     <div class="anv2-hd">
       <h2 style="margin:0">{{ t('What to Act On Now', '现在行动') }}
-        <span class="anv2-v2pill">v2</span>
         {{ lens.lens(
           kind='read', ill=lens.ILL_LANES,
           kick=('How to read this','如何看懂'),
           title=('Four lanes, left to right','四个分栏，从左到右'),
           rows=[
-            {'tone':'up',   'k':('Buy now','立即买入'),        'v':('A clean entry point today.','今天有干净的入场点。')},
+            {'tone':'up',   'k':('Buy now','立即买入'),        'v':('A clean entry point.','有干净的入场点。')},
             {'tone':'info', 'k':('In favour','看好'),          'v':('Still good — but it has run. <b>Wait for a dip.</b>','依然看好 — 但已经涨过。<b>等回调。</b>')},
             {'tone':'warn', 'k':('Bottoming','洗盘观察'),      'v':('Beaten down, first signs of turning up. <b>Watch only — never a buy signal.</b>','超跌后初现回升迹象。<b>仅供观察 — 绝非买入信号。</b>')},
             {'tone':'dn',   'k':('Reduce / avoid','减仓·回避'),'v':('The trend is weakening.','趋势正在转弱。')},
@@ -148,9 +147,53 @@
           the stats grid does not carry, and sub is where the US sector card already
           puts its own state line. tr() is a global, not a filter — hence the loop. -#}
       {%- set _rsn_en = row.reasons[:2] | join(' · ') if row.reasons else '' -%}
+      {#- P3g: dual-emit the window + bench tokens the way the visible row does
+          (t('20d','20日') / t('vs CSI 300','相对沪深300')). Split on " vs " so
+          hk/canada ZH copy gets THEIR bench names; do not substring-replace a
+          joined English string. Routing keys / engine reason strings stay. -#}
+      {%- set _BENCH_ZH = {
+        'CSI 300': '沪深300',
+        'Hang Seng': '恒生指数',
+        'Hang Seng Index': '恒生指数',
+        'S&P/TSX': '标普/TSX',
+        'S&P/TSX Composite': '标普/TSX',
+        'Intl ex-US': '国际(除美)',
+        'S&P 500': '标普500',
+        'S&P': '标普',
+      } -%}
       {%- set _rsn_zh_parts = [] -%}
-      {%- for _r in (row.reasons[:2] if row.reasons else []) -%}{%- set _ = _rsn_zh_parts.append(tr(_r)) -%}{%- endfor -%}
+      {%- for _r in (row.reasons[:2] if row.reasons else []) -%}
+        {%- set _vs = _r.rsplit(' vs ', 1) -%}
+        {%- if _vs|length == 2 -%}
+          {%- set _pre = _vs[0] -%}
+          {%- set _bench = _vs[1] -%}
+          {%- set _bzh = _BENCH_ZH.get(_bench, _bench) -%}
+          {#- ZH connective is always 「相对」; unmapped bench names stay as identifiers. -#}
+          {%- if _pre.startswith('20d ') -%}
+            {%- set _ = _rsn_zh_parts.append('20日 ' ~ _pre[4:] ~ ' 相对' ~ _bzh) -%}
+          {%- elif _pre.startswith('5d ') -%}
+            {%- set _ = _rsn_zh_parts.append('5日 ' ~ _pre[3:] ~ ' 相对' ~ _bzh) -%}
+          {%- elif _pre.startswith('60d ') -%}
+            {%- set _ = _rsn_zh_parts.append('60日 ' ~ _pre[4:] ~ ' 相对' ~ _bzh) -%}
+          {%- elif _pre.startswith('63d ') -%}
+            {%- set _ = _rsn_zh_parts.append('63日 ' ~ _pre[4:] ~ ' 相对' ~ _bzh) -%}
+          {%- elif _pre.startswith('1d ') -%}
+            {%- set _ = _rsn_zh_parts.append('1日 ' ~ _pre[3:] ~ ' 相对' ~ _bzh) -%}
+          {%- elif _pre.startswith('10d ') -%}
+            {%- set _ = _rsn_zh_parts.append('10日 ' ~ _pre[4:] ~ ' 相对' ~ _bzh) -%}
+          {%- else -%}
+            {%- set _ = _rsn_zh_parts.append('相对 ' ~ _bzh) -%}
+          {%- endif -%}
+        {%- else -%}
+          {%- set _ = _rsn_zh_parts.append(tr(_r)) -%}
+        {%- endif -%}
+      {%- endfor -%}
       {%- set _rsn_zh = _rsn_zh_parts | join(' · ') -%}
+      {#- P1a display twins — routing key `tag` is untouched (engine/cycles.py). -#}
+      {%- set _TAG_EN = {'WATCH': 'Early sign', 'UNCONFIRMED — HIGH RISK': 'Not yet confirmed — high risk'} -%}
+      {%- set _TAG_ZH = {'WATCH': '初步迹象', 'UNCONFIRMED — HIGH RISK': '尚未确认——高风险'} -%}
+      {%- set _tag_label_en = _TAG_EN.get(row.tag, row.tag) if row.tag else none -%}
+      {%- set _tag_label_zh = _TAG_ZH.get(row.tag, row.tag_zh or tr(row.tag)) if row.tag else none -%}
       {#- The kicker names its own evidence: "Leadership read" only when the row
           carries theme_intel.leadership, otherwise the neutral "Current read". The
           pre-parity board had no leadership data at all — that is what the old
@@ -163,7 +206,7 @@
                    else (('Sector pulse · ' ~ row.id, '板块脉搏 · ' ~ row.id) if row.id else ('Sector pulse','板块脉搏')),
         'name': (row.name, row.name_zh or tr(row.name)),
         'tag': (row.reco_en, row.reco_zh or tr(row.reco_en)) if row.reco_en
-               else ((row.tag, row.tag_zh or tr(row.tag)) if row.tag
+               else ((_tag_label_en, _tag_label_zh) if row.tag
                else ((row.phase, tr(row.phase)) if row.phase else none)),
         'score': row.score if _is_theme else none,
         'kicker': (('Leadership read','领先度判断') if row.get('leadership') else ('Current read','当前判读'))
@@ -176,7 +219,7 @@
            else ('Trend intact','趋势完好')))))
           if _is_theme else
           (('Turning up from the low','自低位回升') if lane == 'bot'
-           else (('Entry open today','今日入场窗口开启') if lane == 'buy'
+           else (('Entry open','入场窗口开启') if lane == 'buy'
            else (('Momentum fading','动能转弱') if lane == 'reduce'
            else ('In favour — but it has run','仍看好 — 但已上涨'))))
         ),
@@ -193,7 +236,7 @@
                   else ('In favour. Add on pullbacks, not into strength.','仍然看好。回调时加仓，不要追强势。')) if row.reco in ('accumulate','enter','buy','add')
            else (('Momentum is extended. Protect gains into strength.','动能已过度延伸。逢强保护利润。') if row.reco in ('trim','reduce')
            else (('Breadth is fading. Stand aside until it turns again.','广度转弱。在重新转强之前先观望。') if row.reco in ('avoid','exit')
-           else (('A clean entry is open today.','今日入场窗口干净。') if lane == 'buy'
+           else (('A clean entry is open.','入场窗口干净。') if lane == 'buy'
            else ('Still in favour, but it has run — wait for a dip.','仍然看好，但已上涨 — 等回调。')))))))
         ),
         'foot': ('Click row for holdings and full history','点击查看持仓与完整历史') if _is_theme
@@ -214,7 +257,7 @@
         {# reco chip (theme rows) #}
         {% if row.reco_en %}<span class="anv2-chip anv2-chip-reco-{{ row.reco or 'hold' }}">{{ t(row.reco_en, row.reco_zh or tr(row.reco_en)) }}</span>{% endif %}
         {# sector urgency/tag chip #}
-        {% if row.tag and row.kind != 'THEME' %}<span class="anv2-chip anv2-chip-tag">{{ t(row.tag, row.tag_zh or tr(row.tag)) }}</span>{% endif %}
+        {% if row.tag and row.kind != 'THEME' %}<span class="anv2-chip anv2-chip-tag">{{ t(_tag_label_en, _tag_label_zh) }}</span>{% endif %}
         {# dual-read chip on reduce lane #}
         {% if lane == 'reduce' and row.dual_read %}
         <span class="anv2-chip anv2-chip-washout" data-tip-en="Mixed picture: the longer trend still says reduce, but the recent price action shows early signs of a bottom. This name also appears in Bottoming Watch — both reads are shown so you see the disagreement." data-tip-zh="信号矛盾：长期趋势仍建议减仓，但近期价格已初现筑底迹象。该名称同时出现在洗盘观察栏——两种判读并列显示，便于看清分歧。">{{ t(row.dual_chip_en, row.dual_chip_zh) }}</span>
@@ -222,7 +265,7 @@
         {# bottoming lane: trough+slope chip #}
         {% if lane == 'bot' and row.osc_slope is not none %}
         <span class="anv2-chip anv2-chip-trough" data-tip-en="At the low point of its cycle — the most beaten-down phase." data-tip-zh="处于周期低谷——最超跌的阶段。">{{ t('TROUGH','低谷') }}</span>
-        <span class="anv2-chip anv2-chip-turn" data-tip-en="Momentum is turning up from the low — higher number = sharper turn. A first hint, not a buy signal." data-tip-zh="动能正从低位回升——数字越大转向越明显。仅是初步迹象，非买入信号。">↗ {{ '%.1f'|format(row.osc_slope) }}</span>
+        <span class="anv2-chip anv2-chip-turn" data-tip-en="Momentum is turning up from the low ({{ '%.1f'|format(row.osc_slope) }}) — higher number = sharper turn. A first hint, not a buy signal." data-tip-zh="动能正从低位回升（{{ '%.1f'|format(row.osc_slope) }}）——数字越大转向越明显。仅是初步迹象，非买入信号。">↗ {{ t('turning up','转强') }}</span>
         {% endif %}
         {# price-tape chip (W8-R7 rider) — TURNING/CONFIRMED state from basket_turn_cn #}
         {% if row.organ_chip_en %}<span class="anv2-chip anv2-chip-tape">{{ t(row.organ_chip_en, row.organ_chip_zh or tr(row.organ_chip_en)) }}</span>{% endif %}
@@ -230,8 +273,8 @@
       {# stat line: rel20 for themes, rs_63d+pos for bottoming #}
       {% if lane == 'bot' %}
       <div class="anv2-stat">
-        {% if row.rs_63d is not none %}<span class="{% if row.rs_63d < 0 %}anv2-neg{% else %}anv2-pos{% endif %}">{{ '%+.1f'|format(row.rs_63d) }}%</span><span class="muted"> {{ t('63d RS','63日相对强度') }}</span>{% endif %}
-        {% if row.pos is not none %} · <span class="muted">{{ t('pos','位置') }} {{ '%.0f'|format(row.pos) }}%</span>{% endif %}
+        {% if row.rs_63d is not none %}<span class="{% if row.rs_63d < 0 %}anv2-neg{% else %}anv2-pos{% endif %}">{{ '%+.1f'|format(row.rs_63d) }}%</span><span class="muted"> {{ t('63d strength','63日相对强度') }}</span>{% endif %}
+        {% if row.pos is not none %} · <span class="muted">{{ t('position','位置') }} {{ '%.0f'|format(row.pos) }}%</span>{% endif %}
       </div>
       {% elif row.rel20 is not none %}
       {# 20d + 5d side by side: the fast window exposes a rollover the slow 20d
@@ -265,7 +308,7 @@
     {%- endmacro -%}
 
     {{ _anlane('buy',  'buy',  'Buy Now',               '立即买入',
-               'Clean entry point today', '今日有干净入场点',
+               'Clean entry point', '有干净入场点',
                _anl.buy_now, 'anv2-buy') }}
     {{ _anlane('pull', 'pull', 'In Favour', '看好',
                'Still in favour — wait for a dip before adding', '仍看好 — 等回调再加仓',
