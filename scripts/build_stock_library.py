@@ -3652,6 +3652,20 @@ def main() -> int:
                 rec["vol_squeeze"] = sq
         except Exception as e:  # noqa: BLE001 — additive; the thin snapshot is already on rec
             log.warning("tech/squeeze enrich for %s failed (%s)", ticker, e)
+        # valuation_scenario_controls.v1 -- FROZEN SPEC B-F07-2. Reads back the
+        # v1 blob #6905 wrote earlier in this loop and hangs the sandbox control
+        # artifact next to it. Anchored here, twenty lines clear of #6905's own
+        # added block, so a heal round on the parent never merges into this hunk.
+        # Lazy import; never fatal.
+        _vs_v1 = (rec.get("valuation_scenario") or {}).get("v1")
+        if _vs_v1 is not None:
+            try:
+                from engine import valuation_assumptions as _valuation_assumptions
+                rec.setdefault("valuation_scenario", {})["controls"] = (
+                    _valuation_assumptions.controls_blob(_vs_v1)
+                )
+            except Exception as e:  # noqa: BLE001 — additive, never fatal
+                log.warning("valuation_assumptions failed for %s: %s", ticker, e)
         # ---- W5b liquidity chip (DISPLAY-ONLY, zero rank/gate power) ---------------
         # engine.liquidity_chip: 20-session MEDIAN dollar volume (close x volume),
         # liquidity tier (deep/ok/thin/illiquid), and days-to-build at $100k and $1M

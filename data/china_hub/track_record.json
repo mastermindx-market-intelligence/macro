@@ -1,9 +1,9 @@
 {
   "schema": "intel_hub.track_record.v1",
-  "as_of": "2026-09-12",
-  "generated_at": "2026-09-12T13:17:56.155514+00:00",
+  "as_of": "2026-09-13",
+  "generated_at": "2026-09-13T16:32:46.660450+00:00",
   "is_context_only": true,
-  "n_snapshots": 5702,
+  "n_snapshots": 5797,
   "horizons": {
     "5": {
       "n_matured": 854,
@@ -57,9 +57,9 @@
       "by_source": {},
       "by_regime": {},
       "coverage": {
-        "n_eligible": 5238,
+        "n_eligible": 5322,
         "n_matured": 854,
-        "coverage_pct": 16.3,
+        "coverage_pct": 16.05,
         "below_floor": true
       }
     },
@@ -115,9 +115,9 @@
       "by_source": {},
       "by_regime": {},
       "coverage": {
-        "n_eligible": 4780,
+        "n_eligible": 4872,
         "n_matured": 788,
-        "coverage_pct": 16.49,
+        "coverage_pct": 16.17,
         "below_floor": true
       }
     },
@@ -173,9 +173,9 @@
       "by_source": {},
       "by_regime": {},
       "coverage": {
-        "n_eligible": 3817,
+        "n_eligible": 3913,
         "n_matured": 572,
-        "coverage_pct": 14.99,
+        "coverage_pct": 14.62,
         "below_floor": true
       }
     },
@@ -217,9 +217,9 @@
       "by_source": {},
       "by_regime": {},
       "coverage": {
-        "n_eligible": 368,
+        "n_eligible": 463,
         "n_matured": 24,
-        "coverage_pct": 6.52,
+        "coverage_pct": 5.18,
         "below_floor": true
       }
     }
@@ -238,8 +238,8 @@
   "accrual_gaps": {
     "approximate": true,
     "window_days": 30,
-    "n_expected": 22,
-    "n_present": 20,
+    "n_expected": 21,
+    "n_present": 19,
     "missing_dates": [
       "2026-08-17",
       "2026-09-02"
@@ -247,31 +247,31 @@
     "n_missing": 2,
     "note": "Expected dates are pandas business days \u2014 NYSE market holidays inside the window are counted as gaps, so this over-reports rather than under-reports.",
     "first_snapshot": "2026-07-07",
-    "last_snapshot": "2026-09-12"
+    "last_snapshot": "2026-09-13"
   },
   "coverage_pct": {
     "5": {
-      "n_eligible": 5238,
+      "n_eligible": 5322,
       "n_matured": 854,
-      "coverage_pct": 16.3,
+      "coverage_pct": 16.05,
       "below_floor": true
     },
     "10": {
-      "n_eligible": 4780,
+      "n_eligible": 4872,
       "n_matured": 788,
-      "coverage_pct": 16.49,
+      "coverage_pct": 16.17,
       "below_floor": true
     },
     "21": {
-      "n_eligible": 3817,
+      "n_eligible": 3913,
       "n_matured": 572,
-      "coverage_pct": 14.99,
+      "coverage_pct": 14.62,
       "below_floor": true
     },
     "63": {
-      "n_eligible": 368,
+      "n_eligible": 463,
       "n_matured": 24,
-      "coverage_pct": 6.52,
+      "coverage_pct": 5.18,
       "below_floor": true
     }
   },

@@ -2,20 +2,20 @@
   "display_only": true,
   "organ": "hk_narrative",
   "as_of": "2026-09-13",
-  "generated_utc": "2026-09-13T00:44:37+00:00",
-  "freshness": "stale",
+  "generated_utc": "2026-09-13T16:23:20+00:00",
+  "freshness": "degraded",
   "entities": [
     {
       "slug": "alibaba",
       "ticker": "9988.HK",
       "name_en": "Alibaba",
       "name_zh": "\u963f\u91cc\u5df4\u5df4",
-      "attention_shock_z": 1.011,
+      "attention_shock_z": -1.065,
       "tone_pctile": null,
       "narrative_state": "quiet",
       "young": false,
       "n_obs": 86,
-      "as_of_date": "2026-09-11",
+      "as_of_date": "2026-09-13",
       "no_data_reason": null,
       "state_en": "quiet",
       "state_zh": "\u5e73\u9759"
@@ -55,15 +55,15 @@
       "ticker": "1810.HK",
       "name_en": "Xiaomi",
       "name_zh": "\u5c0f\u7c73",
-      "attention_shock_z": null,
+      "attention_shock_z": -1.065,
       "tone_pctile": null,
-      "narrative_state": null,
-      "young": true,
-      "n_obs": 0,
-      "as_of_date": null,
-      "no_data_reason": "young series: 0 < 20 obs",
-      "state_en": null,
-      "state_zh": null
+      "narrative_state": "quiet",
+      "young": false,
+      "n_obs": 86,
+      "as_of_date": "2026-09-13",
+      "no_data_reason": null,
+      "state_en": "quiet",
+      "state_zh": "\u5e73\u9759"
     },
     {
       "slug": "baidu",
@@ -135,12 +135,12 @@
       "ticker": "9988.HK",
       "name_en": "Alibaba",
       "name_zh": "\u963f\u91cc\u5df4\u5df4",
-      "attention_shock_z": 1.011,
+      "attention_shock_z": -1.065,
       "tone_pctile": null,
       "narrative_state": "quiet",
       "young": false,
       "n_obs": 86,
-      "as_of_date": "2026-09-11",
+      "as_of_date": "2026-09-13",
       "no_data_reason": null,
       "state_en": "quiet",
       "state_zh": "\u5e73\u9759"
@@ -176,6 +176,21 @@
       "state_zh": "\u8206\u60c5\u8f6c\u5f31"
     },
     {
+      "slug": "xiaomi",
+      "ticker": "1810.HK",
+      "name_en": "Xiaomi",
+      "name_zh": "\u5c0f\u7c73",
+      "attention_shock_z": -1.065,
+      "tone_pctile": null,
+      "narrative_state": "quiet",
+      "young": false,
+      "n_obs": 86,
+      "as_of_date": "2026-09-13",
+      "no_data_reason": null,
+      "state_en": "quiet",
+      "state_zh": "\u5e73\u9759"
+    },
+    {
       "slug": "kuaishou",
       "ticker": "1024.HK",
       "name_en": "Kuaishou",
@@ -207,7 +222,7 @@
     }
   ],
   "n_watched": 8,
-  "n_live": 5,
+  "n_live": 6,
   "warming_up": false,
   "is_stale": true
 }

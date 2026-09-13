@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "AMPH-BULL-20260604",
-  "asof": "2026-09-12",
+  "asof": "2026-09-13",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 50.6,
@@ -12,7 +12,7 @@
   "components": {
     "validity": 100.0,
     "progress": 48.6,
-    "pace": 28.7,
+    "pace": 27.3,
     "retention": 100.0,
     "overlay": 67.0
   },
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 1.958,
     "dist_to_t1_r": 0.542,
     "dist_to_t2_r": 2.042,
-    "horizon_pct_used": 102.2,
+    "horizon_pct_used": 104.4,
     "p1": 0.6385,
     "p2": 0.3193,
     "p3": null,
@@ -30,7 +30,7 @@
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Window Elapsed \u2014 Awaiting Close",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-07-29",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 46,
-  "tau": 1.0222
+  "days_elapsed": 47,
+  "tau": 1.0444
 }
