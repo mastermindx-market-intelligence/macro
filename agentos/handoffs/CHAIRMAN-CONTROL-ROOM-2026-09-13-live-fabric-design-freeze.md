@@ -4,74 +4,92 @@ session: sol/live-fabric-architecture-20260913
 model: sol
 ended_because: ci_handoff
 mission: >
-  Turn the Chairman-approved Live Fabric architecture into a written, hardened
-  product and delivery packet for the existing Chairman Control Room, including
-  exact-session interaction, closed-GUI autonomy and unavailable-owner recovery.
+  Deliver the Chairman-approved dynamic Live Fabric program inside the existing
+  Control Room, with actual session dialogue, spawning, routing, waiting and
+  recovery, a model-independent CEO office, and hosted web plus Mac access.
 state_before: >
-  The direction existed in chat but no Live Fabric written carrier existed.
-  Existing Control Room, plural-runtime, browser-census, operator-environment
-  and continuity programs had separate source and production ceilings.
+  The original checkpoint created five architecture records at Mastermind
+  14ed47611a07b53298a0b5a2cb6da6a15b2f71e4 and a sixteen-screen Figma design.
+  The expanded dialogue, router, remote-access and CEO requirements still needed
+  a current-source implementation architecture and a connected moving scenario.
 changed:
-  - path: mastermind:docs/superpowers/specs/2026-09-13-mastermind-live-fabric-design.md
-    what: Published the written architecture candidate in Mastermind PR 595.
-  - path: mastermind:research/live_fabric/
-    what: Added delivery program, evidence and OSS intake, 72-case failure matrix and author design review.
+  - path: mastermind:docs/superpowers/specs/2026-09-13-live-fabric-dynamic-orchestration-addendum.md
+    what: Added the source-grounded dynamic architecture and corrected the proposed duplicate Node/event backend.
+  - path: mastermind:docs/superpowers/plans/2026-09-13-live-fabric-dynamic-masterplan.md
+    what: Added ten capability work packages, proposed first-slice interfaces, implementation order and acceptance requirements.
+  - path: mastermind:research/live_fabric/2026-09-13-live-fabric-dynamic-prototype-storyboard.md
+    what: Added a consistent twelve-state scenario and the staged visual implementation rubric.
+  - path: figma:GfH3jNfel8F2cv7ZdTtiXt
+    what: Created page 24:881 with five manual states, five autoplay counterparts and a readme; original pages preserved.
 verified:
-  - claim: Mastermind PR 595 contains only five added records files.
-    command: GitHub.compare_commits 8441b505ff79de21138c6533ab98334b10fca095..14ed47611a07b53298a0b5a2cb6da6a15b2f71e4; GitHub.create_pull_request readback.
-    result: Five added Markdown files; zero modified or deleted existing paths; open Draft, not merged.
-  - claim: The publication Skillpack is compatible and loaded from one protected revision.
-    command: GitHub.fetch_file INDEX/COLD_START/RECONCILE_STATE/CLOSEOUT at Mastermind 8441b505ff79de21138c6533ab98334b10fca095.
+  - claim: The dynamic extension adds three records without changing the original five.
+    command: GitHub.compare_commits 14ed47611a07b53298a0b5a2cb6da6a15b2f71e4..0e4aecab276e128194c00bff50abb625879cb05a.
+    result: Three added Markdown files; zero modifications/deletions; PR 595 remains open Draft with eight total records.
+  - claim: The dynamic source and procedure were read at one compatible revision.
+    command: GitHub.fetch_file INDEX/COLD_START/RECONCILE_STATE/CLOSEOUT at Mastermind f087f9cf90a8fc7a81273c2576eefa6d06b54d9e.
     result: mastermind.sol_skillpack.v1, version 1.0.1, bootstrap major 1.
-  - claim: The prior H1A dependency must not be revived.
-    command: GitHub.get_pr_info Mastermind 521.
-    result: Merged as 185dc742dac94d39bcbca81d20d89963ed36f744; records terminal supersession of closed-unmerged 424.
-  - claim: Request-key-only deduplication is insufficient in the bounded two-client design model.
-    command: python /mnt/data/live_fabric_packet/abstract_race_check.py
-    result: Exit 0; 252 interleavings; key-only double effects in 252, guarded double effects in zero. Abstract assumptions, not runtime proof.
+  - claim: Local copies of all three new records match published full-file Git blobs.
+    command: Compute git blob hashes locally and compare with GitHub.fetch_file readback at 0e4aecab276e128194c00bff50abb625879cb05a.
+    result: d80e5584571869ffdcf00f4e6e720ad0724fa62a; 80c74c3ed53ab35a61df809862216ba4d9700d9c; 63874aa8dd4c0860e853dc5a587f0de3bc775710 all match.
+  - claim: The extracted TypeScript examples are internally type-compatible.
+    command: tsc --noEmit --strict --target ES2020 --moduleResolution node against extracted examples and declared interfaces.
+    result: Exit 0; TYPECHECK ONLY, not behavioral tests or application implementation.
+  - claim: The new Figma scenario changes topology and dialogue across five states.
+    command: Figma.use_figma readback of page 24:881; Figma.get_screenshot for 25:780 and 33:1282.
+    result: Ten manual/autoplay state frames, 34 state connections, five 6000ms timers, valid targets and zero visible text-bound overflow in those ten frames; readme 36:850 adds three entry links.
 unverified:
-  - claim: Live Fabric implementation or installed product exists.
-    what_would_verify: Accepted source implementation plus authentic producer-to-UI journey at the intended installed generation.
-  - claim: The 72 acceptance cases pass.
-    what_would_verify: Actual unit/integration/browser/production evidence per case; all cases currently remain required and not executed.
-  - claim: Safe operator interaction and unavailable-owner recovery work in production.
-    what_would_verify: Real admitted action, lost-reply reconciliation, physical stale-writer fence, exact successor consumption and closed-GUI continuation.
-  - claim: This packet has independent architecture approval or green repository CI.
-    what_would_verify: Exact-head nonauthor review and fresh current-integration check receipts.
+  - claim: The dynamic mission room is connected to real agents or deployed.
+    what_would_verify: Accepted source implementation and authentic managed-provider dialogue through the authorized installed producer-to-UI path.
+  - claim: All planned dynamic Figma surfaces are implemented.
+    what_would_verify: CEO/research, router comparison/control, recovery and remote topology flows built and inspected in the same file.
+  - claim: The original 72 acceptance cases pass.
+    what_would_verify: Actual unit/integration/browser/production evidence; all remain required and not executed.
+  - claim: Runtime spawning, remote interaction and owner recovery are production-safe.
+    what_would_verify: Real admitted child loop, exact command, uncertain-effect reconciliation, physical stale-writer fencing and successor consumption.
+  - claim: Independent review and current-integration release checks have passed.
+    what_would_verify: Exact-head nonauthor adjudication and fresh terminal-green required checks; CI 34784364361 was still in progress at last read.
 unresolved:
-  - Written packet review and independent exact-head adjudication precede detailed implementation planning and source protection.
-  - Existing plural runtime and C3 producer/install capabilities must be consumed at their real release ceiling, not rebuilt.
-  - Current intended-Mac ping timed out; no current host/browser/runtime proof was obtained.
+  - Current-source topology/obligation DTO adapters and the actual installed authority origin still need the existing owner's finite D1 qualification.
+  - The full CEO/research, router and remote/recovery prototype remains staged visual work, not completed by the first five states.
+  - No current host, provider, authenticated remote deployment or production capability was exercised in this design pass.
 next_actions:
-  - Sol completes review of Mastermind PR 595 at exact head 14ed47611a07b53298a0b5a2cb6da6a15b2f71e4, obtains independent adjudication through current placement rules, and reconciles required checks before records protection.
-  - After written-spec acceptance and current source/path reconciliation, Sol produces the LF-V1 implementation plan for one authentic mission, using the existing Runtime/Steward producer and graph/list/inspector/evidence consumer.
-  - Keep source creation, installed producer proof, action authorization, Mac qualification and complete autonomy as separate gates; continue disjoint useful work where permitted.
+  - Continue the same Figma scenario from manual 25:780 or autoplay 34:815; add CEO intake/research and result consumption/review, then actual-route versus policy-simulation states and recovery/remote topology.
+  - Lock the source-qualified D1 executable producer/consumer plan against that design and resolve its existing Runtime/Steward/provider/auth owner gates without duplicate services.
+  - Obtain independent exact-head adjudication and current-integration proof before guarded records protection and source implementation; retain Draft and separate installation/action gates.
 do_not_redo:
-  - Do not create WS:LIVE-FABRIC or another lifecycle, scheduler, event, session, memory, retry, auth or source-gather plane.
-  - Do not revive terminal Mastermind 424/H1A or demand its old writer acknowledge release again; 521 is the protected supersession.
-  - Do not weaken the singular Steward query to obtain a fleet inventory; use the existing plural observation owner.
-  - Do not treat a CSRF nonce as authenticated action authority or Chrome validity as WKWebView qualification.
-  - Do not count a reducer, fixture gallery or code merge as a shipped autonomous capability.
+  - Keep Mastermind PR 595 and Macro PR 7120; do not create another Live Fabric workstream, carrier or control plane.
+  - The dynamic addendum supersedes the conversational proposal for a new Node router/transcript backend or new canonical event log.
+  - Preserve terminal 424/H1A supersession and the singular Steward runtime refusal; do not revive obsolete owner debt.
+  - Hosted web assets do not move or duplicate the Executive database; one authenticated gateway reaches the current canonical owner.
+  - Do not count a detected native session as an adopted managed session, or a native helper as an independently admitted Job.
+  - The Master CEO is the existing durable office; no final model, metered default or runtime policy change is selected by this design.
 danger_areas:
-  - Stale provider writers can retain real effect access after a logical lease expires.
-  - Two different client operation keys can race for the same single-consumption obligation.
-  - Inventory coverage and probe/activity coverage are independent.
-  - Shared Control Room CSS/server/collector paths have existing owners; this records wave takes none of them.
-  - Public records must not include private host IDs, provider sessions, credentials, raw argv or transcripts.
+  - Old processes may retain effect access after lease expiry; actual source/provider fencing is required.
+  - Different client request keys can race for one semantic obligation.
+  - Provider message blocks, stream deltas and completed items have different reconciliation rules.
+  - Untrusted transcript/tool content needs scoped safe projection before remote serialization.
+  - Figma motion and sample receipts are illustrative, never proof that actual sessions run or exchange messages.
 ---
 
-# Live Fabric written architecture checkpoint
+# Current Live Fabric dynamic checkpoint
 
 Mastermind source carrier: https://github.com/mastermindx-market-intelligence/Mastermind/pull/595
 
-Exact records head: `14ed47611a07b53298a0b5a2cb6da6a15b2f71e4`.
+Current records head: `0e4aecab276e128194c00bff50abb625879cb05a`.
+Original five-record checkpoint: `14ed47611a07b53298a0b5a2cb6da6a15b2f71e4`, retained unchanged.
 
-The Chairman approved the conceptual experience, architecture and delivery direction. The resulting written packet is a review candidate, not a protected or installed product. Its capability state is **SPEC_ONLY / RECORDS_ONLY / IMPLEMENTATION_PRE_START / PRODUCTION_INERT**. This handoff changes no workstream completion, runtime, source custody, provider assignment, watcher, service or permission.
+The Chairman approved the expanded requirements and continuing across multiple productive turns. This update records actual source and design work, not an implementation START, running worker or production result. The source capability remains **SPEC_ONLY / RECORDS_ONLY / IMPLEMENTATION_PRE_START / PRODUCTION_INERT**. The Figma artifact is a real editable prototype using synthetic data.
 
-The first useful release must let Chris inspect one authentic mission and its recorded parallel work through a graph, equivalent list, inspector and exact evidence. The broader product retains safe interaction, multiple providers/hosts, signed Mac and sanitized remote-web clients, team/routine/skill editing and autonomous continuation. A separate milestone proves that work advances and recovers while the GUI is closed.
+The first completed dynamic visual slice is accepted brief -> child admission -> concurrent visible responses with a scoped helper -> concrete integration wait -> returned result with parent consumption still pending. Five state frames have separate manual/autoplay counterparts. The state graph and dialogue change together; no hidden reasoning is invented.
 
-The new hardening removes concrete integration errors: bare EventSource cannot carry the current custom header; the local server is not ASGI merely because dependencies include SSE support; the current singular runtime query is not a fleet list; Tauri has a different origin and WebView qualification; old H1A debt is superseded; and expiring a lease is not enough to stop a stale process writing files.
+Manual entry: https://www.figma.com/design/GfH3jNfel8F2cv7ZdTtiXt?node-id=25-780
+Autoplay entry: https://www.figma.com/design/GfH3jNfel8F2cv7ZdTtiXt?node-id=34-815
+Readme: https://www.figma.com/design/GfH3jNfel8F2cv7ZdTtiXt?node-id=36-850
 
-Sol remains accountable for this program's next action. No source worker, reviewer or continuation watcher was launched in this records wave. An unplaced review remains actual placement debt, not a fictional active owner or a request for Chris to allocate an account. Existing #508/#546 and adjacent operators retain their own carriers.
+The chosen implementation direction is React/TypeScript/Vite, React Flow, TanStack Query/Virtual and a small presentation store, integrated into the existing Python/Starlette/Business/Executive owners. The hosted gateway connects privately to one authoritative runtime; the later Mac client connects to the same hosted API. Moving a controller or enabling remote writes remains an independently qualified operation.
 
-This new Agent OS file is organizational continuity only. Until its own records PR is merged, it is a pending source contribution, not main-branch Agent OS truth. No generated Agent OS views are edited.
+Sol retains program accountability. No reviewer, source worker or runtime watcher was launched in this pass. Existing #508/#546/provider/continuity writers retain their source carriers. The next visual and D1 source-contract actions are named in the frontmatter; no fictional owner or redundant conceptual approval is required to continue design work.
+
+Historical proof remains historical: the original 252-interleaving experiment was abstract research, not runtime validation, and was not rerun by this extension. The original intended-Mac timeout does not establish current machine liveness. The current source CI was read as in progress, not success.
+
+This remains the one-file pending Agent OS contribution under Macro #7120. It becomes main-branch organizational continuity only after its appropriate source review and merge. No generated Agent OS views, workstream status, provider role, service, permission or source custody are modified here.
