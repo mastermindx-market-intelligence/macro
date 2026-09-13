@@ -38,8 +38,8 @@ def test_current_passports_validate():
     assert result["count"] == 32
     assert result["exact_local_count"] == 27
     assert result["priority_counts"]["P0"] == 12
-    assert result["priority_counts"]["P1"] == 11
-    assert result["priority_counts"]["P2"] == 7
+    assert result["priority_counts"]["P1"] == 10
+    assert result["priority_counts"]["P2"] == 8
     assert result["priority_counts"]["archive"] == 2
 
 
@@ -126,7 +126,7 @@ def test_current_source_receipts_validate():
     result = sources.validate_passport_bindings(source_map)
     assert result["status"] == "valid"
     assert result["passport_count"] == 32
-    assert result["p0_p1_count"] == 23
+    assert result["p0_p1_count"] == 22
 
 
 def test_practitioner_source_is_registered_but_cannot_satisfy_p0_p1_primary_gate():
@@ -135,6 +135,32 @@ def test_practitioner_source_is_registered_but_cannot_satisfy_p0_p1_primary_gate
     refs = ["SRC-STRAT-PUBLIC"]
     acceptable = [source_map[ref] for ref in refs if source_map[ref]["source_type"] in sources.PRIMARY_OR_OFFICIAL_SOURCE_TYPES]
     assert acceptable == []
+
+
+def test_method_specific_official_sources_replace_overbroad_catalog_bindings():
+    source_map = _source_map()
+    rows = {row["method_id"]: row for row in _rows()}
+    expected = {
+        "toi.donchian_breakout": "SRC-TRADINGVIEW-DONCHIAN",
+        "toi.donchian_fakeout": "SRC-TRADINGVIEW-DONCHIAN",
+        "toi.fractal_swing_structure": "SRC-METATRADER-FRACTALS",
+        "toi.cmf": "SRC-TRADINGVIEW-CMF",
+        "toi.rvol": "SRC-TRADINGVIEW-RVOL",
+        "toi.choppiness": "SRC-TRADINGVIEW-CHOPPINESS",
+    }
+    for mid, ref in expected.items():
+        assert rows[mid]["source_refs"] == [ref]
+        assert rows[mid]["rights_ref"] == ref
+        assert source_map[ref]["source_type"] in sources.PRIMARY_OR_OFFICIAL_SOURCE_TYPES
+
+
+def test_inside_bar_practitioner_family_is_not_p0_or_p1_authority():
+    rows = {row["method_id"]: row for row in _rows()}
+    inside = rows["toi.inside_bar"]
+    assert inside["source_refs"] == ["SRC-STRAT-PUBLIC"]
+    assert inside["research_priority"] == "P2"
+    assert inside["owner_disposition"] == "toi_later_context"
+    assert "primary-or-official" in inside["known_failure_modes"][0]
 
 
 def test_elliott_sources_are_evidence_not_authority():
