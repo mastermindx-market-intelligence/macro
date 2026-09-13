@@ -45,24 +45,30 @@ waves:
       production authority.
   - id: W1
     title: Public-method and local-estate Technical Evidence Census
-    status: todo
+    status: in_progress
+    pr: 7107
     depends_on: [W0]
     next_action: >
-      Undispatched. Create one disjoint child carrier under operation key
-      TOI-W1-EVIDENCE-CENSUS-V1 with current collision checks and reciprocal
-      continuation. Evidence census remains separate from Temporal Grain W1.
+      PR #7107 is the one active W1 carrier under operation key
+      TOI-W1-EVIDENCE-CENSUS-V1. Its method census remains `PARTIAL`; the prior
+      `toi.inside_bar` source-quality item is closed, while the independent frozen
+      20-passport reproduction review, any evidence-driven repairs, exact return-head
+      validation/current-base proof, and Sol acceptance remain open. Live placement,
+      pickup, and execution state must be read from their canonical carriers rather
+      than inferred from this organizational projection.
   - id: W2-0
     title: Daily/Weekly/4H data, clock, correction, coverage, rights, and Terminal-parity archaeology
     status: awaiting_ci
     pr: 7094
     depends_on: [W0]
     next_action: >
-      PR #7094 is the exact W2-0 carrier. Candidate verdict is `PARTIAL / HOLD`: current
-      Massive daily depth and rights are real, but production Terminal early-close 4H
-      parity failed 5/5 measured cases; whole-universe 4H can fall back to provider-built
-      1h bars; a same-basis historical Daily+4H known-at/correction contract and broad
-      historical denominator remain unproven. Sol must review exact head and current-base
-      integration proof. On acceptance, merge the records-only W2-0 carrier; only then may
+      PR #7094 is the exact W2-0 carrier. Its scientific verdict remains
+      `PARTIAL / HOLD`: current Massive daily depth and rights are real, but production
+      Terminal early-close 4H parity failed 5/5 measured cases; whole-universe 4H can
+      fall back to provider-built 1h bars; a same-basis historical Daily+4H
+      known-at/correction contract and broad historical denominator remain unproven.
+      The records release head must preserve the current W1 projection, settle exact-head
+      checks, and pass current-base Sol review. Only after acceptance and merge may the
       bounded W2 existing-owner repair/qualification start. W3 remains held.
   - id: W2
     title: Bounded existing-owner data substrate extension, only if W2-0 authorizes it
@@ -128,12 +134,14 @@ artifacts:
   - agentos/handoffs/TECHNICAL-OPPORTUNITY-INTELLIGENCE-2026-08-28-w0-finalization.md
   - agentos/handoffs/TECHNICAL-OPPORTUNITY-INTELLIGENCE-W2-0-2026-09-12.md
 next_action: >
-  W1 remains independently todo. W2-0 is on draft PR #7094 awaiting exact-head CI and
-  Sol acceptance with a `PARTIAL / HOLD` data-plane verdict. W3 and all outcome testing
-  remain blocked. If W2-0 is accepted and merged, execute one bounded W2 existing-owner
+  W1 is active and `PARTIAL` on draft PR #7107; its independent review, exact validation,
+  current-base proof, and Sol acceptance remain open. W2-0 is on draft PR #7094 with a
+  `PARTIAL / HOLD` data-plane verdict and must settle this current-state correction,
+  exact-head CI, and current-base Sol release review. W3 and all outcome testing remain
+  blocked. If W2-0 is accepted and merged, execute one bounded W2 existing-owner
   repair/qualification wave: actual-close Terminal/research 4H parity first, then one
-  same-basis Daily+4H source family plus the broad historical denominator. Neither the
-  W2-0 carrier nor this projection creates runtime, signal, product or trading authority.
+  same-basis Daily+4H source family plus the broad historical denominator. Neither
+  carrier nor this projection creates runtime, signal, product, or trading authority.
 ---
 
 ## Boundary note
