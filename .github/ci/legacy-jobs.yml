@@ -2525,7 +2525,8 @@ jobs:
           tests/test_opex_risk.py
           tests/test_seo_meta_rollout.py
           tests/test_cycles_anchor_invariance.py
-          tests/test_research_priority_ordering.py -q
+          tests/test_research_priority_ordering.py
+          tests/test_china_archetype_d_s1.py -q
       # house-law registry census (post-#2297 fix): run the statement-tape schema
       # guard itself against the committed registry, not just its pytest coverage.
       # It stays in THIS job — `config/house_law_checks.yml` names this job as its
