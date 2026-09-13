@@ -327,9 +327,9 @@ def test_why_names_the_owner():
         as_of=date(2026, 9, 1),
     )
     why = payload["rows"][0]["why"]
-    assert "security state catalyst record" in why["en"]
+    assert "Catalyst window panel" in why["en"]
     assert "Valuation under different assumptions" in why["en"]
-    assert "催化事项" in why["zh"]
+    assert "催化窗口面板" in why["zh"]
     assert "估值" in why["zh"]
 
 

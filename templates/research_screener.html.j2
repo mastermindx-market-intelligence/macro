@@ -21,7 +21,7 @@
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <title>Research list{% if as_of %} — {{ as_of }}{% endif %} | MastermindX</title>
 {% set seo_title = 'Research list — which names deserve a look first, and why' %}
-{% set seo_desc = 'A research list of companies with a security state record. Ordered by name. Each line says why, and which record produced that fact.' %}
+{% set seo_desc = 'A research list of companies, ordered by name. Each line says why, and which panel produced that fact.' %}
 {% set seo_path = 'research_screener.html' %}
 {% include "_seo_head.html.j2" %}
 <link rel="stylesheet" href="theme.css">
@@ -39,13 +39,13 @@
   </header>
 
   <div class="rs-toolbar">
-    <div class="rs-chips" role="group" aria-label="Lenses">
+    <div class="rs-chips" role="group" aria-label="Lenses 视角">
       <button type="button" class="rs-chip is-disabled" disabled aria-disabled="true" data-lens="theme" aria-describedby="rs-theme-hint">{{ t('Theme', '主题') }}</button>
       <button type="button" class="rs-chip" data-lens="catalyst" aria-pressed="false">{{ t('Catalyst', '催化事项') }}</button>
       <button type="button" class="rs-chip" data-lens="exposure" aria-pressed="false">{{ t('Exposure', '持仓') }}</button>
       <button type="button" class="rs-chip" data-lens="valuation" aria-pressed="false">{{ t('Valuation posture', '估值姿态') }}</button>
     </div>
-    <div class="rs-order" role="group" aria-label="Order">
+    <div class="rs-order" role="group" aria-label="Order 排列方式">
       <span class="rs-order-label">{{ t('Order by', '排列方式') }}</span>
       <button type="button" class="rs-order-btn is-on" data-order="name" aria-pressed="true">{{ t('Name', '名称') }}</button>
       <button type="button" class="rs-order-btn" data-order="next_catalyst_date" aria-pressed="false">{{ t('Next estimated window', '下一项估计窗口') }}</button>

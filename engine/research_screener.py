@@ -40,8 +40,8 @@ EXPOSURE_NULL_ZH = "登录后即可看到你持有其中哪些。"
 
 CATALYST_EVENT_EN = "Next earnings window"
 CATALYST_EVENT_ZH = "下一份财报窗口"
-CATALYST_OWNER_EN = "this company's security state catalyst record"
-CATALYST_OWNER_ZH = "该公司证券状态中的催化事项记录"
+CATALYST_OWNER_EN = "Catalyst window panel"
+CATALYST_OWNER_ZH = "催化窗口面板"
 
 VAL_OWNER_EN = "Valuation under different assumptions"
 VAL_OWNER_ZH = "不同假设下的估值面板"
