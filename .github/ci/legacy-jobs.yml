@@ -3592,6 +3592,8 @@ jobs:
       - "lib/ticker_aliases.py"
       - "lib/ticker_popularity.py"
       - "research/REGIME_RELIABILITY_FACTOR_CROWDING_ADJUDICATION.md"
+      # SCE V11 Quant Lab dossier closure widening 2026-09-13 (contract-delta).
+      - "research/nextsignals/SCE_V11_CURRENT_WHITEPAPER_AND_VERSIONED_ENGINE_RULING_2026-09-12.md"
       - "research/SIGNAL_EPISODE_ATLAS_MASTERPLAN_BY_FABLE.md"
       - "research/STOCK_PERSONALITY_MASTERPLAN_BY_FABLE.md"
       - "research/US_BOARD_MEASUREMENT.md"
@@ -7254,6 +7256,8 @@ jobs:
       - "lib/dataos/identity.py"
       - "research/DO_NOT_REBUILD.md"
       - "research/REGIME_RELIABILITY_FACTOR_CROWDING_ADJUDICATION.md"
+      # SCE V11 Quant Lab dossier closure widening 2026-09-13 (contract-delta).
+      - "research/nextsignals/SCE_V11_CURRENT_WHITEPAPER_AND_VERSIONED_ENGINE_RULING_2026-09-12.md"
       - "research/SIGNAL_EPISODE_ATLAS_MASTERPLAN_BY_FABLE.md"
       - "research/STOCK_PERSONALITY_MASTERPLAN_BY_FABLE.md"
       - "research/US_BOARD_MEASUREMENT.md"
@@ -11277,6 +11281,8 @@ jobs:
       - "lib/*"
       - "research/PROPHET_ARENA_REGISTRATION.md"
       - "research/REGIME_RELIABILITY_FACTOR_CROWDING_ADJUDICATION.md"
+      # SCE V11 Quant Lab dossier closure widening 2026-09-13 (contract-delta).
+      - "research/nextsignals/SCE_V11_CURRENT_WHITEPAPER_AND_VERSIONED_ENGINE_RULING_2026-09-12.md"
       - "research/SIGNAL_EPISODE_ATLAS_MASTERPLAN_BY_FABLE.md"
       - "research/STOCK_PERSONALITY_MASTERPLAN_BY_FABLE.md"
       - "research/US_BOARD_MEASUREMENT.md"
