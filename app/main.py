@@ -1359,6 +1359,12 @@ def _brain_user_or_guest(request: Request,
         user["_is_guest"] = False
         user["_guest_aid"] = ""
         user["_guest_ip"] = ""
+        # Caller JWT for owner-only User-Plane reads (MO-PAID-031 corpus 3).
+        # Never logged; never copied into a response.
+        token = ""
+        if authorization and authorization.startswith("Bearer "):
+            token = authorization.split(" ", 1)[1]
+        user["_access_token"] = token
         return user
     except HTTPException as exc:
         # Only a bad/absent token (401) may degrade to guest; a 502 (upstream auth down) or any
@@ -1367,7 +1373,8 @@ def _brain_user_or_guest(request: Request,
             raise
     guest_id, aid_hash, ip_hash = _brain_guest_identity(request)
     return {"id": guest_id, "email": "", "_is_guest": True,
-            "_guest_aid": aid_hash, "_guest_ip": ip_hash}
+            "_guest_aid": aid_hash, "_guest_ip": ip_hash,
+            "_access_token": ""}
 
 
 def _brain_track_event(aid: str, ip: str, user_id: str) -> None:
@@ -1450,6 +1457,7 @@ def brain_chat(body: BrainChatRequest, request: Request, background: BackgroundT
         # already returned — ZERO extra network calls. Server-derived like user_email, so
         # the body can never set it; a guest record carries none and reads as {}.
         account_prefs=user_prefs.read_user_prefs(user),
+        user_jwt="" if is_guest else (user.get("_access_token") or ""),
     )
 
     if result.get("quota_exhausted"):
@@ -1519,6 +1527,7 @@ def brain_stream(body: BrainChatRequest, request: Request, background: Backgroun
             guest_aid=guest_aid,
             guest_ip=guest_ip,
             account_prefs=account_prefs,
+            user_jwt="" if is_guest else (user.get("_access_token") or ""),
         )
 
     # The turn is registered as a server-side RUN before a single byte goes out.

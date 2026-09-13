@@ -2016,7 +2016,7 @@ def test_research_mode_raises_tool_budget(tmp_path):
     root = _make_temp_root()
     captured_tb: list = []
 
-    def _mock_loop(message, lane, history, context, root_, tdd, thu, client, model, max_t, tb, mode="chat", image_blocks=None, providers=None, user_id="", user_email="", effort=None, thinking_mode=None, deepseek_thinking=None):
+    def _mock_loop(message, lane, history, context, root_, tdd, thu, client, model, max_t, tb, mode="chat", image_blocks=None, providers=None, user_id="", user_email="", effort=None, thinking_mode=None, deepseek_thinking=None, **kwargs):
         captured_tb.append(tb)
         return "Research done.", [], [], [], {}, [], []
 
@@ -2108,9 +2108,12 @@ def test_research_mode_consumes_pro_quota(tmp_path):
     assert data.get("count") == 1, f"Expected count=1, got {data}"
 
 
-def test_research_mode_recommendation_passes_through(tmp_path):
-    """Research mode gives direct recommendations too (operator directive 2026-07-26):
-    the advice post-filter is a no-op, so the call survives untouched."""
+def test_research_mode_recommendation_is_withheld(tmp_path):
+    """MO-PAID-031: research mode drops imperative trade instructions.
+
+    The global advice post-filter remains a no-op; the research-mode filter is
+    a separate deterministic pass.
+    """
     root = _make_temp_root()
     advice_text = "You should buy NVDA immediately. is_context_only: true — all signals are display-tier pending FDR."
     text_response = _MockResponse([_MockBlock("text", advice_text)], "end_turn")
@@ -2127,20 +2130,30 @@ def test_research_mode_recommendation_passes_through(tmp_path):
                             root=root,
                         )
 
-    assert result.get("filtered") is False
-    assert "you should buy nvda" in result["reply"].lower()
+    reply = result.get("reply") or ""
+    assert "you should buy nvda" not in reply.lower()
+    # Uncited general/trade text is replaced by the null form; a cited answer
+    # with a trade sentence is withheld. Either path must not ship the order.
+    assert (
+        "We don't publish anything that answers this yet." in reply
+        or "Part of this answer was withheld because it read like a signal." in reply
+    )
     assert result.get("is_context_only") is True
 
 
 def test_research_system_prompt_contains_directive():
-    """_build_system_prompt('research') prepends the research directive to the base prompt."""
+    """_build_system_prompt('research') prepends the grounded-research directive."""
     prompt = gw._build_system_prompt("research")
     assert "RESEARCH MODE" in prompt
-    assert "regime" in prompt.lower()
-    assert "disagree" in prompt.lower() or "Tensions" in prompt   # the divergences thread
-    assert "STANCE" in prompt
+    assert "general knowledge" in prompt.lower()
+    assert "We don't publish anything that answers this yet." in prompt
+    assert "This is a reading of what we already published." in prompt
+    # Contradiction block still rides (disagreeing published readings).
+    assert "disagree" in prompt.lower()
     # Base prompt governance content is also present (never-invent guardrail).
     assert "never invent" in prompt.lower()
+    # The chat-lane STANCE close is cancelled for research.
+    assert "Ignore any later instruction to close with a STANCE" in prompt
 
 
 def test_chat_mode_system_prompt_unchanged():

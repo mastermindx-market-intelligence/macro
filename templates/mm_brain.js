@@ -1112,15 +1112,14 @@
               '<div class="mmb-seg" id="mmb-lane" role="group" aria-label="' + L('Answer depth', '回答深度') + '">' +
                 '<button data-lane="fast" class="on" aria-pressed="true">' + MARK_FAST + LB('Fast', '快速') + '</button>' +
                 '<button data-lane="pro" aria-pressed="false">' + MARK_PRO + '<span>Pro</span></button>' +
-                '<button class="mmb-rpill mmb-off" data-act="research" aria-pressed="false" aria-label="' + L('Deep Research', '深度研究') + '">' +
-                  ic(MARK_RESEARCH) + LB('Deep', '深度') +
-                  /* Tier-2 home for the mechanics (DESIGN_DOCTRINE §1): what the toggle
-                     actually changes, in plain words, with its price stated rather than
-                     discovered. aria-hidden + the aria-label above keep the accessible
-                     name at "Deep Research" instead of a paragraph. */
-                  '<span class="mmb-rtip" aria-hidden="true"><b>' + LB('A deeper pass on the same desk', '同一批资料，再深挖一遍') + '</b>' +
-                  LB('It can look up around twice as many sources, then writes a structured read that ends on a clear stance.',
-                     '可查阅约两倍的资料，并写成结构化研判，最后给出明确立场。') +
+                '<button class="mmb-rpill mmb-off" data-act="research" aria-pressed="false" aria-label="' + L('Research mode — answers only from what we publish', '研究模式——只根据我们已发布的内容作答。') + '">' +
+                  ic(MARK_RESEARCH) + LB('Research', '研究') +
+                  /* Tier-2 home for the mechanics (DESIGN_DOCTRINE §1): the compact mark
+                     stays on the existing nowrap pill; the accessible name and tooltip
+                     carry the full plain sentence. */
+                  '<span class="mmb-rtip" aria-hidden="true"><b>' + LB('Research mode — answers only from what we publish', '研究模式——只根据我们已发布的内容作答。') + '</b>' +
+                  LB('It only uses the live market state, the briefing we already published, and — when you are signed in — your own theses and notes.',
+                     '只用我们已经发布的实时市场状态和简报；您登录后，也会纳入您自己的论点和笔记。') +
                   '<span class="cost">' + LB('Runs on Pro · uses one Pro message', '走 Pro 通道 · 消耗一条 Pro 消息') + '</span></span>' +
                 '</button></div>' +
               /* aria-hidden: the send button's own label already says it — one announcement, not two */
@@ -2280,7 +2279,7 @@
     root.querySelectorAll('[data-ph-en]').forEach(function (el) { el.placeholder = zh() ? el.getAttribute('data-ph-zh') : el.getAttribute('data-ph-en'); });
     paintPlaceholder();   /* an armed research pass keeps its own prompt through the switch */
     if (launch) launch.setAttribute('aria-label', zh() ? '问操盘大脑' : 'Ask Mastermind');  /* orb-only on phones: keep its accessible name in sync */
-    researchBtn.setAttribute('aria-label', L('Deep Research', '深度研究'));   /* label shortens to the mark on phones */
+    researchBtn.setAttribute('aria-label', L('Research mode — answers only from what we publish', '研究模式——只根据我们已发布的内容作答。'));   /* label shortens to the mark on phones */
     if ($('#mmb-emptystate')) renderEmpty();
     paintThreads();   /* self-routes to the guest sign-in prompt when in guest mode */
     renderQuota();     /* refresh the meter's title in the new language sense */
@@ -2403,11 +2402,11 @@
     var tl = { node: el('div', 'mmb-think'), t0: Date.now(), key: '', label: '', detail: '', dcls: 'rd',
                ico: PHASE_IC.start, shown: [], record: [], checks: 0, timer: 0, dead: false };
     tl.rows = el('div', 'mmb-tk-rows'); tl.node.appendChild(tl.rows);
-    /* Deep Research states itself once, as a standing first line (never rotated out). */
+    /* Research mode states itself once, as a standing first line (never rotated out). */
     if (mode === 'research') {
-      var seed = thinkRow({ t: L('Deep research — a fuller pass', '深度研究 — 更完整的一遍'), i: MARK_RESEARCH });
+      var seed = thinkRow({ t: L('Research mode — answers only from what we publish', '研究模式——只根据我们已发布的内容作答。'), i: MARK_RESEARCH });
       seed.classList.add('mode'); tl.rows.appendChild(seed);
-      tl.record.push({ t: L('Deep research — a fuller pass', '深度研究 — 更完整的一遍'), i: MARK_RESEARCH });
+      tl.record.push({ t: L('Research mode — answers only from what we publish', '研究模式——只根据我们已发布的内容作答。'), i: MARK_RESEARCH });
     }
     var head = el('div', 'mmb-tk-h');
     tl.icoEl = el('span', 'mmb-tk-ic'); tl.icoEl.innerHTML = ic(tl.ico);
@@ -3020,7 +3019,7 @@
     var signinLink = '<a href="#" data-act="signin">' + LB('Sign in', '登录') + '</a>';
     if (guestMode && d && d.feature === 'pro') {
       upgradeEl.innerHTML = '<strong>' + LB('Sign in for Pro features', '登录以使用 Pro 功能') + '</strong> — ' +
-        LB('Pro, Deep Research, and image attach need an account. ', 'Pro、深度研究与图片上传需要账户。') + signinLink;
+        LB('Pro, Research mode, and image attach need an account. ', 'Pro、研究模式与图片上传需要账户。') + signinLink;
     } else if (guestMode && d && (d.feature === 'quota' || !d.feature)) {
       upgradeEl.innerHTML = '<strong>' + LB("You've used today's free messages — sign in for more.", '今日免费次数已用完 — 登录以继续。') + '</strong> ' + signinLink;
     } else if (d && d.feature === 'vision') {
@@ -3054,7 +3053,7 @@
      a live language switch (relabel) still lands on the right default. */
   function paintPlaceholder() {
     ta.placeholder = researchMode
-      ? L('Ask a research question — it comes back with a full write-up…', '提出一个研究问题 — 将返回完整研判…')
+      ? L('Ask about something we already publish…', '询问我们已经发布的内容…')
       : (zh() ? ta.getAttribute('data-ph-zh') : ta.getAttribute('data-ph-en'));
   }
   function setLane(next) {
@@ -3492,7 +3491,7 @@
     return [
       { key: 'chart', icon: '<path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/>', name: LB('/chart', '/图表'), hint: LB('Map structure, levels & what to watch', '结构、关键位与关注点'),
         run: function () { insertText(L('Map the structure on ' + sym + ' — trend, key levels, and what to watch.', '梳理 ' + sym + ' 的结构 — 趋势、关键价位与需关注之处。')); } },
-      { key: 'research', icon: '<path d="M12 3v3M12 18v3M3 12h3M18 12h3M6 6l2 2M16 16l2 2M18 6l-2 2M8 16l-2 2"/>', name: LB('/research', '/研究'), hint: LB('Deep-dive with Deep Research', '开启深度研究'),
+      { key: 'research', icon: '<path d="M12 3v3M12 18v3M3 12h3M18 12h3M6 6l2 2M16 16l2 2M18 6l-2 2M8 16l-2 2"/>', name: LB('/research', '/研究'), hint: LB('Research mode — answers only from what we publish', '研究模式——只根据我们已发布的内容作答。'),
         run: function () { if (proEligible) { if (!researchMode) setResearch(true); insertText(L('Deep-dive: ', '深度研究：')); } else { closeSlash(); showUpgrade(guestMode ? { feature: 'pro' } : {}); } } },
       { key: 'explain', icon: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3 2.4c-.6.2-1 .8-1 1.6M12 17h.01"/>', name: LB('/explain', '/解释'), hint: LB('Read this page right now', '解读当前页面'),
         run: function () { insertText(L('Explain this page — what is it telling me right now?', '解读这个页面 — 它现在告诉我什么？')); } }
