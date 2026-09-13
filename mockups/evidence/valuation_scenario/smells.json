@@ -1,6 +1,6 @@
 {
   "disclaimer": "Heuristics identify review targets; they do not determine that a page is bad.",
-  "generated_at": "2026-09-07T05:30:16Z",
+  "generated_at": "2026-09-13T18:16:16Z",
   "metric_notes": {
     "asof_present": "approximate contract probe (selector OR case-insensitive text pattern); absence is a prompt to look, not a verdict",
     "console_error_count": "distinct console 'error' texts across every state of the page the driver attempted, captured or not — a state that failed to load is often the one carrying the evidence",
@@ -15,102 +15,10 @@
   },
   "pages": [
     {
-      "metrics": {
-        "asof_present": false,
-        "by_viewport": {
-          "desktop": {
-            "document_height_px": 900,
-            "elements_wider_than_viewport": 0,
-            "horizontal_overflow": false
-          },
-          "mobile": {
-            "document_height_px": 1295,
-            "elements_wider_than_viewport": 0,
-            "horizontal_overflow": false
-          }
-        },
-        "console_error_count": 1,
-        "document_height_px": 900,
-        "duplicate_heading_texts": [],
-        "elements_wider_than_viewport": 0,
-        "heading_counts": {
-          "h1": 0,
-          "h2": 1,
-          "h3": 0,
-          "h4": 0,
-          "h5": 0,
-          "h6": 0
-        },
-        "horizontal_overflow": false,
-        "long_paragraph_count": 0,
-        "measured_in": {
-          "access": "anonymous",
-          "locale": "en",
-          "theme": "dark",
-          "viewport": "desktop"
-        },
-        "panel_count": 4,
-        "payload_bytes_total": 537979,
-        "raw_slug_hit_count": 0,
-        "raw_slug_hits": [],
-        "request_count": 9,
-        "screenshot_completion": 1.0,
-        "section_count": 0,
-        "source_present": true,
-        "todo_placeholder_hit_count": 0,
-        "todo_placeholder_hits": [],
-        "visible_word_count": 193
-      },
       "page_id": "stocks_AAPL.html",
       "route": "/stocks/AAPL.html"
     },
     {
-      "metrics": {
-        "asof_present": false,
-        "by_viewport": {
-          "desktop": {
-            "document_height_px": 900,
-            "elements_wider_than_viewport": 0,
-            "horizontal_overflow": false
-          },
-          "mobile": {
-            "document_height_px": 1231,
-            "elements_wider_than_viewport": 0,
-            "horizontal_overflow": false
-          }
-        },
-        "console_error_count": 1,
-        "document_height_px": 900,
-        "duplicate_heading_texts": [],
-        "elements_wider_than_viewport": 0,
-        "heading_counts": {
-          "h1": 0,
-          "h2": 1,
-          "h3": 0,
-          "h4": 0,
-          "h5": 0,
-          "h6": 0
-        },
-        "horizontal_overflow": false,
-        "long_paragraph_count": 0,
-        "measured_in": {
-          "access": "anonymous",
-          "locale": "en",
-          "theme": "dark",
-          "viewport": "desktop"
-        },
-        "panel_count": 4,
-        "payload_bytes_total": 440858,
-        "raw_slug_hit_count": 0,
-        "raw_slug_hits": [],
-        "request_count": 9,
-        "screenshot_completion": 1.0,
-        "section_count": 0,
-        "source_present": true,
-        "todo_placeholder_hit_count": 0,
-        "todo_placeholder_hits": [],
-        "visible_word_count": 189
-      },
       "page_id": "stocks-null_AAPL.html",
       "route": "/stocks-null/AAPL.html"
     }
@@ -120,9 +28,9 @@
     "base_url": null,
     "kind": "site_dir",
     "resolved_gitdir_or_none": null,
-    "resolved_sha_or_none": null,
-    "resolved_sha_source": "no git directory was found at or above --site-dir; nothing resolved",
-    "site_dir": "/private/tmp/claude-501/-Users-chriswong-Documents-Cluade-Macro-Dashboard--claude-worktrees-market-ontology-meta-ceo-b-fc4eef/7cd4fae1-1ed9-41c2-adb4-1e5c6b0fbc5b/scratchpad/vs_evidence/evidence_site"
+    "resolved_sha_or_none": "a335fdaee970",
+    "resolved_sha_source": "re-captured at this checkout's HEAD after the bounded heal; sha=a335fdaee970",
+    "site_dir": "/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/vs-evidence-50uohw6y"
   },
   "tool": {
     "module_ref": "scripts/capture_page_evidence.py",
