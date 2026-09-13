@@ -337,53 +337,181 @@ def test_h4_plain_word_read_renders_for_computable_and_omits_for_null():
     stating where today's price sits relative to the computable scenarios.
     Renders for the computable fixture (both EN and ZH halves non-empty
     when t() emits both), and is ABSENT entirely for vs.compute(_rows(),
-    price=None) and for the all-null blob."""
+    price=None) and for the all-null blob.
+
+    MINOR-5 (review round 2): the EN/ZH pairs are routed through t() with
+    variables (vs_read_en_text, vs_read_zh_text), so the widened literal-pair
+    regex at test_bilingual_parity cannot match them -- this used to leave
+    the parity gate one layer narrower than the law. Parametrize over price
+    below / between / above × 1 / 2 / 3 computable to put every emitted
+    pair on the same audit hook as the literal-pair regex."""
     import jinja2
 
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(ROOT / "templates")))
     env.globals["t"] = lambda en, zh: f"{en}|{zh}"
     tmpl = env.from_string("{% include '_valuation_scenario.html.j2' %}")
 
-    # 1. Computable fixture with price.
+    def _render(blob):
+        return tmpl.render(valuation_scenario=blob, deep_ids=[])
+
+    def _lede(html):
+        lede_blocks = re.findall(
+            r'<p class="vs-lede" data-vs-read="1"[^>]*>(.*?)</p>',
+            html, flags=re.DOTALL,
+        )
+        if not lede_blocks:
+            return None
+        return lede_blocks[0]
+
+    def _en_zh(text):
+        # t() joined halves with '|' -- strip any t()-emitted <span>s first
+        # so the assertion sees only the visible text and works even if the
+        # t() macro later evolves to wrap each half in <span class="l-en">/
+        # <span class="l-zh"> (the variant used by the partial's own hint).
+        clean = re.sub(r"<[^>]+>", "", text or "")
+        en_part, _, zh_part = clean.partition("|")
+        return en_part.strip(), zh_part.strip()
+
+    def _with_per_share(blob, *, cautious=None, base=None, upbeat=None):
+        """Mutate per_share on a copy of the engine's blob so the panel's
+        Jinja branch logic can be exercised independently of the engine's
+        own math. computable stays True only where per_share is set."""
+        import copy
+        out = copy.deepcopy(blob)
+        for s in out["scenarios"]:
+            k = s["key"]
+            override = {"cautious": cautious, "base": base, "upbeat": upbeat}.get(k)
+            if override is None:
+                s["per_share"] = None
+                s["computable"] = False
+                s.setdefault("missing", [])
+                s["missing"].append("test_override")
+                s.setdefault("missing_plain", [])
+                s["missing_plain"].append({"en": "a reported input", "zh": "一项披露数据"})
+            else:
+                s["per_share"] = override
+                s["computable"] = True
+        any_comp = any(s["computable"] for s in out["scenarios"])
+        out["any_computable"] = any_comp
+        return out
+
+    # 1. Three-computable fixture with price between Base and Upbeat --
+    #    AAPL defaults give per_share ~ 90.94 / 130.65 / 175.74, so price
+    #    319.97 sits above all three. Override per_share to a tighter
+    #    band so the test is deterministic and decoupled from the engine's
+    #    frozen-formula math.
     blob = vs.compute(_rows(), price=319.97, asof="2026-09-05", ticker="AAPL")
     assert blob["any_computable"] is True
-    html = tmpl.render(valuation_scenario=blob, deep_ids=[])
-    lede_blocks = re.findall(r'<p class="vs-lede vs-read"[^>]*>(.*?)</p>', html, flags=re.DOTALL)
-    assert lede_blocks, "h4 lede sentence missing from the computable fixture render"
-    lede = lede_blocks[0]
-    # t() here joins en and zh with '|' -- assert both halves are non-empty.
-    en_part, _, zh_part = lede.partition("|")
-    assert en_part.strip() != "", f"empty EN half in h4 lede: {lede!r}"
-    assert zh_part.strip() != "", f"empty ZH half in h4 lede: {lede!r}"
-    # Sanity: it names a relative position (one of the four expected EN
-    # shapes for a 3-computable-scenario fixture), never a probability
-    # or ranking.
-    en_clean = re.sub(r"<[^>]+>", "", lede)
-    assert any(
-        phrase in en_clean
-        for phrase in (
-            "below all three cases",
-            "above all three cases",
-            "between Cautious and Base",
-            "between Base and Upbeat",
-            "sits at Base",
-        )
-    ), f"h4 lede did not match any expected 3-scenario phrase: {en_clean!r}"
 
-    # 2. Computable fixture with price=None -- the lede must be omitted
-    #    entirely (no <p class="vs-lede vs-read"> in the render).
+    three_bands = [
+        # (price, per_share overrides, expected en phrase, expected zh phrase)
+        (50.0,   (90.94, 130.65, 175.74), "below all three cases",    "低于全部三档情景"),
+        (150.0,  (90.94, 130.65, 175.74), "sits between Base and Upbeat", "位于基准与乐观之间"),
+        (130.65, (90.94, 130.65, 175.74), "sits at Base",             "位于基准情景"),
+        (110.0,  (90.94, 130.65, 175.74), "sits between Cautious and Base", "位于保守与基准之间"),
+        (500.0,  (90.94, 130.65, 175.74), "above all three cases",    "高于全部三档情景"),
+    ]
+    for price, (c, b, u), en_phrase, zh_phrase in three_bands:
+        mut = _with_per_share(blob, cautious=c, base=b, upbeat=u)
+        mut["price"] = {"value": price}
+        html = _render(mut)
+        lede = _lede(html)
+        assert lede is not None, (
+            f"h4 lede missing for 3-computable price={price} (expected {en_phrase!r})"
+        )
+        en, zh = _en_zh(lede)
+        assert en != "" and zh != "", (
+            f"empty half in h4 lede for price={price}: en={en!r} zh={zh!r} lede={lede!r}"
+        )
+        assert en_phrase in en, (
+            f"3-computable h4 phrase mismatch for price={price}: "
+            f"got en={en!r}, expected ~{en_phrase!r}"
+        )
+        assert zh_phrase in zh, (
+            f"3-computable h4 phrase mismatch for price={price}: "
+            f"got zh={zh!r}, expected ~{zh_phrase!r}"
+        )
+
+    # 2. Two-computable fixture (margin=1.2% gates Cautious only). Override
+    #    Base and Upbeat per_share to deterministic values so the branches
+    #    below/middle/above are exercisable.
+    revenue = 1.0e11
+    ni_1_2_pct = revenue * 0.012
+    blob_2 = vs.compute(_rows(ni=ni_1_2_pct, revenue=revenue), ticker="TEST")
+    by_key_2 = {s["key"]: s for s in blob_2["scenarios"]}
+    assert by_key_2["cautious"]["computable"] is False
+    for k in ("base", "upbeat"):
+        assert by_key_2[k]["computable"] is True, (k, by_key_2[k])
+
+    two_bands = [
+        (50.0,  (130.65, 175.74), "below both computable cases", "低于两档可计算的情景"),
+        (150.0, (130.65, 175.74), "sits between Base and Upbeat", "位于基准与乐观之间"),
+        (500.0, (130.65, 175.74), "above both computable cases", "高于两档可计算的情景"),
+    ]
+    for price, (b, u), en_phrase, zh_phrase in two_bands:
+        mut = _with_per_share(blob_2, base=b, upbeat=u)
+        mut["price"] = {"value": price}
+        html = _render(mut)
+        lede = _lede(html)
+        assert lede is not None, (
+            f"h4 lede missing for 2-computable price={price} (expected {en_phrase!r})"
+        )
+        en, zh = _en_zh(lede)
+        assert en != "" and zh != "", (
+            f"empty half in h4 lede for 2-computable price={price}: en={en!r} zh={zh!r}"
+        )
+        assert en_phrase in en, (
+            f"2-computable h4 phrase mismatch for price={price}: got en={en!r}"
+        )
+        assert zh_phrase in zh, (
+            f"2-computable h4 phrase mismatch for price={price}: got zh={zh!r}"
+        )
+
+    # 3. Two-computable pair: cautious + upbeat (base gated by another
+    #    reason). Force the blob so only cautious + upbeat are computable.
+    blob_cb = vs.compute(_rows(), price=200.0, asof="2026-09-05", ticker="AAPL")
+    blob_cb_mut = _with_per_share(blob_cb, cautious=90.94, upbeat=175.74)
+    blob_cb_mut["price"] = {"value": 130.0}  # between cautious and upbeat
+    html_cb = _render(blob_cb_mut)
+    lede_cb = _lede(html_cb)
+    assert lede_cb is not None, "h4 lede missing for cautious+upbeat 2-computable"
+    en_cb, zh_cb = _en_zh(lede_cb)
+    assert "sits between Cautious and Upbeat" in en_cb, en_cb
+    assert "位于保守与乐观之间" in zh_cb, zh_cb
+
+    # 4. One-computable fixture: only base is computable.
+    blob_1 = vs.compute(_rows(), price=100.0, asof="2026-09-05", ticker="AAPL")
+    blob_1_mut = _with_per_share(blob_1, base=130.65)
+    blob_1_mut["price"] = {"value": 90.0}
+    html_1 = _render(blob_1_mut)
+    lede_1 = _lede(html_1)
+    assert lede_1 is not None, "h4 lede missing for 1-computable"
+    en_1, zh_1 = _en_zh(lede_1)
+    assert "below the computable case" in en_1, en_1
+    assert "低于唯一可计算的情景" in zh_1, zh_1
+
+    blob_1_mut["price"] = {"value": 200.0}
+    html_1b = _render(blob_1_mut)
+    lede_1b = _lede(html_1b)
+    assert lede_1b is not None, "h4 lede missing for 1-computable above"
+    en_1b, zh_1b = _en_zh(lede_1b)
+    assert "above the computable case" in en_1b, en_1b
+    assert "高于唯一可计算的情景" in zh_1b, zh_1b
+
+    # 5. Computable fixture with price=None -- the lede must be omitted
+    #    entirely (no <p class="vs-lede" data-vs-read="1"> in the render).
     blob2 = vs.compute(_rows(), price=None, asof="2026-09-05", ticker="AAPL")
     assert blob2["any_computable"] is True
-    html2 = tmpl.render(valuation_scenario=blob2, deep_ids=[])
-    assert '<p class="vs-lede vs-read"' not in html2, (
+    html2 = _render(blob2)
+    assert 'data-vs-read="1"' not in html2, (
         "h4 lede rendered despite price=None -- it must omit entirely"
     )
 
-    # 3. All-null blob -- any_computable is False; lede must omit.
+    # 6. All-null blob -- any_computable is False; lede must omit.
     blob3 = vs.compute(_rows(ni=None), ticker="AAPL")
     assert blob3["any_computable"] is False
-    html3 = tmpl.render(valuation_scenario=blob3, deep_ids=[])
-    assert '<p class="vs-lede vs-read"' not in html3, (
+    html3 = _render(blob3)
+    assert 'data-vs-read="1"' not in html3, (
         "h4 lede rendered despite any_computable=False -- it must omit entirely"
     )
 
