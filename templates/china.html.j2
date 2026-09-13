@@ -1568,6 +1568,7 @@
   @media (prefers-reduced-motion:reduce){
     [data-theme="light"] body.page-china .mx-skel{animation:none;background-image:none}
   }
+  body.page-china .mx-vh .mx5-gauge-svg path.cnx-arc-bg{stroke:color-mix(in srgb, var(--text) 8%, transparent)}
   [data-theme="light"] body.page-china .mx-vh .mx5-gauge-svg path.cnx-arc-bg{
     stroke:color-mix(in srgb, var(--text) 12%, transparent)}
   body.page-china .cnx-wrap .mx-vh .cnx-gauge-fill{filter:url(#cnxArcGlow)}
@@ -1983,7 +1984,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
               <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
             </filter>
           </defs>
-          <path class="cnx-arc-bg" d="M 14 75 A 56 56 0 0 1 126 75" stroke="rgba(255,255,255,.08)" stroke-width="10" stroke-linecap="round" fill="none"/>
+          <path class="cnx-arc-bg" d="M 14 75 A 56 56 0 0 1 126 75" stroke-width="10" stroke-linecap="round" fill="none"/>
           <path id="mx5-gauge-arc-fill" class="cnx-gauge-fill"
                 d="M 14 75 A 56 56 0 0 1 126 75" stroke-width="10" stroke-linecap="round" fill="none"
                 stroke-dasharray="{{ _mx5_filled }} {{ _mx5_gap }}" filter="url(#cnxArcGlow)"/>
