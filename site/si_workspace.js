@@ -48,7 +48,6 @@ var LEGACY_ANCHORS={
   'si-movement':['moving','si-movement'],
   'rc-events-mount':['moving','rc-events-mount'],
   'rotation-app':['moving','rotation-app'],
-  'accumulation-section':['moving','accumulation-section'],
   'si-money':['money','si-money'],
   'internals-section':['money','internals-section'],
   'scc-leadership':['money','scc-leadership'],
@@ -57,13 +56,23 @@ var LEGACY_ANCHORS={
   'chart-section':['explore','chart-section'],
   'forming-narratives':['explore','forming-narratives'],
   'tm-mount':['explore','tm-mount'],
-  'theme-heat-section':['explore','theme-heat-section'],
   /* the standalone subsectors page's own ids, so its redirect stub and every chat / detail
      back-link that cited them still lands on the right rail view rather than overview. */
   'confluence':['confluence','si-confluence'],
   'sc-app':['confluence','sc-app'],
   'sc-top':['confluence','sc-top']
 };
+/* S2 sector_central nested anchors (MO-A S2 r5): the demoted #accumulation and
+   #theme-tape spans, so old hashes that landed on the moved panels still
+   resolve. Kept OUTSIDE the pinned 21-key LEGACY_ANCHORS block so
+   tests/test_xpv2_sector_r3_fixture.py::TestLegacyAnchors (real parser
+   reads the var LEGACY_ANCHORS={…}; literal) still counts 21; the merge
+   below preserves the hash-router intent. */
+var LEGACY_ANCHORS_S2={
+  'accumulation-section':['moving','accumulation-section'],
+  'theme-heat-section':['explore','theme-heat-section']
+};
+for(var _k in LEGACY_ANCHORS_S2){LEGACY_ANCHORS[_k]=LEGACY_ANCHORS_S2[_k];}
 
 /* ── lazy mount (gate 8) ────────────────────────────────────────────────────────
    Each organ script self-boots on load (readyState is already past 'loading' by
