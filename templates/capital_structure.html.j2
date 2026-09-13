@@ -108,6 +108,72 @@
   </section>
   {# B-F09-4 PREMIUM BLOCK END #}
 
+  {# ── covenant-headroom:start — B-F09-13 (MO-PAID-062 slice 2). Keep contiguous.
+     covenant_headroom is an OPTIONAL kwarg: guarded so any caller that renders
+     this template under StrictUndefined without it (tests/test_capital_structure_page.py)
+     still renders. The pure engine is in engine/covenant_headroom.py; the
+     builder wires the parquet + statements + ledger reads. Zero authority:
+     no rank, no score, no trade signal — only a plain reading of public
+     filings vs the agreement's own numbers, with a typed refusal if either
+     side is missing. ── #}
+  {% set covenant_headroom = covenant_headroom if covenant_headroom is defined else none %}
+  {% if covenant_headroom %}
+  <section class="cs-latest-card cs-covenant-headroom" id="cs-covenant-headroom" aria-labelledby="cs-covenant-headroom-title">
+    <div class="cs-section-heading">
+      <div>
+        <p class="cs-kicker">{{ t('One issuer, one covenant', '单一发行人，单一契约') }}</p>
+        <h2 id="cs-covenant-headroom-title">{{ t('How much room is left under the covenant', '契约下还有多少空间') }}</h2>
+      </div>
+      <span class="cs-state-chip">{{ t('Reading only — not a recommendation to act', '仅供查阅 — 不是行动建议') }}</span>
+    </div>
+    {% if covenant_headroom.state == 'computed' %}
+    <p>{{ t('For', '针对') }} <strong>{{ covenant_headroom.issuer.ticker or covenant_headroom.issuer.cik }}</strong>{{ t(', the agreement states limits, the company reports results, and the gap between them is shown below.', '，协议载明限额、公司披露结果，两者之间的差距列示如下。') }}</p>
+    <div class="cs-latest-grid">
+      {% for term in covenant_headroom.terms %}
+      {% if term.state == 'computed' %}
+      <div>
+        <span>{{ t(term.term_name | replace('_', ' '), term.term_name | replace('_', ' ')) }}</span>
+        <strong>
+          {% if term.term_name.startswith('maximum_') %}
+            {{ t('Limit', '限额') }} {{ '%.2fx'|format(term.limit_raw) }}
+            · {{ t('Actual', '实际') }} {{ '%.2fx'|format(term.actual_ratio) }}
+            · {{ t('Headroom', '余量') }} {{ '%+.2fx'|format(term.headroom_ratio) }}
+          {% else %}
+            {{ t('Floor', '下限') }} {{ '%.2fx'|format(term.limit_raw) }}
+            · {{ t('Actual', '实际') }} {{ '%.2fx'|format(term.actual_ratio) }}
+            · {{ t('Headroom', '余量') }} {{ '%+.2fx'|format(term.headroom_ratio) }}
+          {% endif %}
+        </strong>
+      </div>
+      {% else %}
+      <div>
+        <span>{{ t(term.term_name | replace('_', ' '), term.term_name | replace('_', ' ')) }}</span>
+        <strong>{{ t('Not computed', '未计算') }}</strong>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+    <p class="cs-section-note">{{ t(covenant_headroom.basis.basis_en, covenant_headroom.basis.basis_zh) }}</p>
+    <p class="cs-section-note">{{ t(covenant_headroom.ceiling_en, covenant_headroom.ceiling_zh) }}</p>
+    {% else %}
+    <div class="cs-unavailable">
+      <span class="cs-unavailable-mark" aria-hidden="true">↳</span>
+      <div>
+        <strong>{{ t(covenant_headroom.refusal_label_en or 'No covenant headroom is ready to show right now.', covenant_headroom.refusal_label_zh or '目前没有可展示的契约余量。') }}</strong>
+        <span>{{ t(covenant_headroom.refusal_detail_en or '', covenant_headroom.refusal_detail_zh or '') }}</span>
+      </div>
+    </div>
+    <p class="cs-section-note">{{ t(covenant_headroom.ceiling_en, covenant_headroom.ceiling_zh) }}</p>
+    {% endif %}
+    <div class="cs-unavailable">
+      <span class="cs-unavailable-mark" aria-hidden="true">↳</span>
+      <div><strong>{{ t('Not covered here', '此处不涉及') }}</strong>
+      <span>{{ t('Forecasted EBITDA, run-rate leverage, and any forward-looking covenant slack are not part of this reading.', '预期 EBITDA、运行率杠杆及任何前瞻性契约宽松均不在本次查阅范围内。') }}</span></div>
+    </div>
+  </section>
+  {% endif %}
+  {# ── covenant-headroom:end ── #}
+
   {# ── policy-watch:start — B-F09-6 (MO-PAID-067). Keep contiguous.
      policy_watch is an OPTIONAL kwarg: guarded so any caller that renders this
      template under StrictUndefined without it (tests/test_capital_structure_page.py)

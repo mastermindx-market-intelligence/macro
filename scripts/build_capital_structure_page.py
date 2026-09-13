@@ -25,7 +25,7 @@ import json
 import os
 import shutil
 import sys
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
@@ -236,7 +236,14 @@ def _write_projection_artifact(root: Path, payload: dict) -> Path:
 def _section_html(html: str) -> str:
     start = html.index('id="cs-policy-projection"')
     end = html.index("</section>", start)
-    return html[html.rindex("<section", 0, start):end + len("</section>")]
+    # The opening <section for THIS id is the one whose id attribute matches.
+    # Earlier rindex("<section", 0, start) returns the `<section` opening the
+    # PRECEDING section (e.g. policy-watch) when an intervening section is
+    # inserted (B-F09-13 covenant headroom), which double-counts that section
+    # and blows the budget. Walk forward from the previous </section> instead.
+    prev_close = html.rfind("</section>", 0, start)
+    section_open = html.index("<section", prev_close)
+    return html[section_open:end + len("</section>")]
 
 
 def _fence_section_budget(html: str) -> None:
@@ -246,6 +253,165 @@ def _fence_section_budget(html: str) -> None:
         raise RuntimeError(
             f"policy-projection section over budget: {n} > {SECTION_BUDGET_BYTES}"
         )
+
+
+# ── covenant-headroom:start (B-F09-13, MO-PAID-062 slice 2) ──
+# Display-only covenant headroom view-model for the one extracted issuer
+# with at least one direct covenant-term observation. Pure engine, zero
+# authority — see engine/covenant_headroom.py for the closed-set defenses.
+# Builder reads:
+#   data/capital_structure/covenant_term_observations.parquet  (the producer)
+#   data/edgar/statements.parquet                              (the inputs)
+#   data/edgar/ticker_cik_ledger.json                          (ticker→CIK)
+#   data/capital_structure/health.json                         (outage flag)
+#   data/capital_structure/source_manifest.jsonl               (cik-by-manifest)
+# Any read failure fails closed to a typed no_terms_extracted payload —
+# the page then renders the plain-word null copy.
+def _covenant_headroom(root: Path) -> dict:
+    """Materialize the headroom payload for the desk. Never raises."""
+    from engine import covenant_headroom as headroom_engine  # noqa: PLC0415
+
+    now_iso = datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+
+    # 1) Observations parquet — empty list on any failure.
+    try:
+        import pandas as _pd  # noqa: PLC0415
+        obs_df = _pd.read_parquet(
+            root / "data" / "capital_structure" / "covenant_term_observations.parquet"
+        )
+        observations: list[dict] = []
+        if len(obs_df):
+            for _, row in obs_df.iterrows():
+                try:
+                    payload = json.loads(row["observation_json"])
+                except (TypeError, ValueError):
+                    continue
+                if isinstance(payload, dict):
+                    payload.setdefault("source_manifest_id", row.get("source_manifest_id"))
+                    payload.setdefault("issuer_id", row.get("issuer_id"))
+                    payload.setdefault("observation_id", row.get("observation_id"))
+                    payload.setdefault("term_name", row.get("term_name"))
+                    payload.setdefault("logical_observation_id", row.get("logical_observation_id"))
+                    payload.setdefault("state", row.get("state"))
+                    payload.setdefault("correction_version", row.get("correction_version", 1))
+                    observations.append(payload)
+    except Exception:  # noqa: BLE001 — a chip must never crash the desk build
+        observations = []
+
+    # 2) Statements parquet — empty map on any failure.
+    fundamentals_by_cik: dict[str, dict] = {}
+    try:
+        import pandas as _pd  # noqa: PLC0415
+        st_df = _pd.read_parquet(root / "data" / "edgar" / "statements.parquet")
+        # Pull the ticker→CIK ledger to join statements.ticker → CIK.
+        try:
+            ledger = json.loads(
+                (root / "data" / "edgar" / "ticker_cik_ledger.json").read_text(encoding="utf-8")
+            )
+            ticker_to_cik = dict(ledger.get("tickers") or {})
+        except (OSError, ValueError):
+            ticker_to_cik = {}
+        for _, st_row in st_df.iterrows():
+            ticker = st_row.get("ticker")
+            if not isinstance(ticker, str) or not ticker:
+                continue
+            cik_int = ticker_to_cik.get(ticker)
+            if cik_int is None:
+                continue
+            cik = f"{int(cik_int):010d}"
+            fundamentals_by_cik.setdefault(cik, {
+                "cik": cik,
+                "operating_income": _maybe_float(st_row.get("op_income")),
+                "depreciation": _maybe_float(st_row.get("depreciation")),
+                "interest_expense": _maybe_float(st_row.get("interest_exp")),
+                "cash_and_equivalents": _maybe_float(st_row.get("cash")),
+                "debt_long_term": _maybe_float(st_row.get("debt_lt")),
+                "debt_current": _maybe_float(st_row.get("debt_cur")),
+                "period_end": _maybe_str(st_row.get("period_end")),
+            })
+    except Exception:  # noqa: BLE001
+        fundamentals_by_cik = {}
+
+    # 3) cik_to_ticker (reverse of the same ledger)
+    cik_to_ticker: dict[str, str] = {}
+    try:
+        ledger = json.loads(
+            (root / "data" / "edgar" / "ticker_cik_ledger.json").read_text(encoding="utf-8")
+        )
+        for ticker, cik_int in (ledger.get("tickers") or {}).items():
+            cik_to_ticker[f"{int(cik_int):010d}"] = ticker
+    except (OSError, ValueError):
+        cik_to_ticker = {}
+
+    # 4) source_manifest.jsonl — for the cik_by_source_manifest_id fallback.
+    cik_by_source_manifest_id: dict[str, str] = {}
+    try:
+        with (root / "data" / "capital_structure" / "source_manifest.jsonl").open(
+            encoding="utf-8"
+        ) as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    rec = json.loads(line)
+                except ValueError:
+                    continue
+                mid = rec.get("manifest_id")
+                issuer = rec.get("issuer") or {}
+                cik = issuer.get("cik")
+                if isinstance(mid, str) and cik is not None:
+                    cik_by_source_manifest_id[mid] = f"{int(cik):010d}"
+    except OSError:
+        cik_by_source_manifest_id = {}
+
+    # 5) Health (optional)
+    health = None
+    try:
+        h = json.loads(
+            (root / "data" / "capital_structure" / "health.json").read_text(encoding="utf-8")
+        )
+        health = h if isinstance(h, dict) else None
+    except (OSError, ValueError):
+        health = None
+
+    try:
+        return headroom_engine.compute_headroom(
+            observations,
+            fundamentals_by_cik,
+            cik_to_ticker,
+            health=health,
+            generated_at=now_iso,
+            cik_by_source_manifest_id=cik_by_source_manifest_id,
+        )
+    except Exception:  # noqa: BLE001 — closed refusal, never raise from a builder
+        return headroom_engine.compute_headroom(
+            [], {}, {},
+            generated_at=now_iso,
+        )
+
+
+def _maybe_float(v):
+    if v is None:
+        return None
+    try:
+        import math as _math
+        f = float(v)
+        if _math.isnan(f):
+            return None
+        return f
+    except (TypeError, ValueError):
+        return None
+
+
+def _maybe_str(v):
+    if v is None:
+        return None
+    s = str(v).strip()
+    return s or None
+
+
+# ── covenant-headroom:end ──
 
 
 def render(root: Path) -> Path:
@@ -303,6 +469,7 @@ def render(root: Path) -> Path:
         premium=_featured_premium(root),
         policy_watch=watch,
         policy_projection=payload,
+        covenant_headroom=_covenant_headroom(root),
     )
     # Shared navigation templates intentionally contain indentation around
     # conditional blocks. Normalize generated-only blank-line whitespace so the

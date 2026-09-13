@@ -3060,7 +3060,28 @@ jobs:
           tests/test_nwqs_c_dilution.py
           tests/test_compile_capital_structure_registration_lifecycles.py
           tests/test_covenant_terms.py
-          tests/test_compile_capital_structure_covenant_terms.py -q
+          tests/test_compile_capital_structure_covenant_terms.py
+          tests/test_covenant_headroom.py -q
+
+  covenant-headroom:
+    if: ${{ false }}
+    gate: code
+    # B-F09-13 (MO-PAID-062 slice 2): zero-authority covenant headroom
+    # view-model for the one extracted issuer. Pure engine + closed-set
+    # defenses (REFUSALS, COVENANT_METRIC_MAP, _NO_EXTRAPOLATION_KEYS,
+    # _ZERO_AUTHORITY_KEYS). The capital-structure-intelligence job above is
+    # `gate: data` and never runs on PRs, so this `gate: code` job is the
+    # gate that actually runs the test on every PR. Same tmp_path fixture
+    # discipline as board-shadow-substrate: no committed data/site moves.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: install test deps
+        run: pip install pytest pandas numpy pyarrow jinja2
+      - name: covenant headroom engine — closed refusal set, zero authority, no extrapolation
+        run: python -m pytest tests/test_covenant_headroom.py -q
 
   stock-seasonality:
     if: ${{ false }}
@@ -6930,6 +6951,10 @@ jobs:
       - "engine/ai_desk.py"
       - "engine/ai_desk_scorer.py"
       - "engine/alert_triage.py"
+      # B-F09-13 closure widening (contract-delta 2026-09-13): the covenant
+      # headroom view-model sits in this job's import closure via the build
+      # pipeline; widening here keeps the curated scope honest.
+      - "engine/covenant_headroom.py"
       - "engine/debt_maturity.py"
       # engine/alert_triage.py imports engine/alert_time.py (the Alert Center
       # three-clock / ET board-day contract, Wave 7 2026-08-20), so this curated
@@ -10858,6 +10883,12 @@ jobs:
       - "engine/ai_desk.py"
       - "engine/ai_desk_scorer.py"
       - "engine/alert_triage.py"
+      # B-F09-13 closure widening (contract-delta 2026-09-13): covenant
+      # headroom view-model + covenant_terms producer are in this job's
+      # import closure via the build pipeline; widening here keeps the
+      # curated scope honest.
+      - "engine/covenant_headroom.py"
+      - "engine/capital_structure/covenant_terms.py"
       - "engine/debt_maturity.py"
       # engine/alert_triage.py imports engine/alert_time.py (the Alert Center
       # three-clock / ET board-day contract, Wave 7 2026-08-20), so this curated
