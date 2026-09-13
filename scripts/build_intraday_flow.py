@@ -70,6 +70,54 @@ _LEDGER_FILE = "ledger.parquet"
 # Horizons (calendar days) for forward return stamping.
 _FWD_HORIZONS: tuple[int, ...] = (1, 5, 10, 21)
 
+_MONTH_ABBR = (
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+)
+
+
+def _as_of_display(
+    as_of: str | datetime | None,
+    *,
+    now: datetime | None = None,  # noqa: ARG001 — kept so callers/tests can pass it
+) -> dict[str, str]:
+    """Absolute humanized UTC stamp for the board. Never returns ISO.
+
+    EN: ``10 Sep 11:34pm UTC``; ZH: ``9月10日 23:34 UTC``. Calendar date, never
+    a relative day word — a nightly board is read for ~23.5h after bake, so a
+    frozen relative day is false almost all day. Empty dict when the stamp
+    cannot be formed (absent / unparseable payload).
+    """
+    if as_of is None or as_of == "":
+        return {}
+    if isinstance(as_of, datetime):
+        dt = as_of
+    else:
+        try:
+            raw = str(as_of).strip()
+            if raw.endswith("Z"):
+                raw = raw[:-1] + "+00:00"
+            dt = datetime.fromisoformat(raw)
+        except (TypeError, ValueError):
+            return {}
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    else:
+        dt = dt.astimezone(timezone.utc)
+
+    hour = dt.hour
+    h12 = hour % 12 or 12
+    ampm = "am" if hour < 12 else "pm"
+    time_en = f"{h12}:{dt.minute:02d}{ampm}"
+    time_zh = f"{hour:02d}:{dt.minute:02d}"
+    day_en = f"{dt.day} {_MONTH_ABBR[dt.month - 1]}"
+    day_zh = f"{dt.month}月{dt.day}日"
+
+    return {
+        "en": f"{day_en} {time_en} UTC",
+        "zh": f"{day_zh} {time_zh} UTC",
+    }
+
 
 def _ledger_enabled() -> bool:
     """True only when running in the nightly lane.
@@ -948,6 +996,7 @@ def _run_nightly(cfg: dict, data_root: Path, site_root: Path, tpl_root: Path) ->
         "schema": "intraday_flow_base.v1",
         "built_utc": as_of,
         "as_of": as_of,
+        "as_of_display": _as_of_display(as_of),
         "n_leaders": len(leaders),
         "universe_baskets": ift_cfg.get("universe_baskets", []),
         "rvol_confirm": ift_cfg.get("rvol_confirm", 1.30),

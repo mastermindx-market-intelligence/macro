@@ -4501,3 +4501,108 @@ def test_no_empty_pack_in_the_code_gate_partition() -> None:
         "12 — an empty pack's name would vanish from main's ci.yml baseline "
         "and any PR whose plan lands work there could never refresh a red"
     )
+
+
+# ── W7A_7070_HEAL H4: regression lock for # inside folded `run: >` scalars ──
+#
+# The W11 round-1 heal moved a 4-line `#` comment INTO a folded `run: >` pytest
+# scalar at .github/ci/legacy-jobs.yml:2498-2501. YAML folds the scalar onto ONE
+# shell line where `#` starts a shell comment, so the entire w11 suite was
+# effectively dropped from the argv (effective 113 of 173 listed) without any of
+# check_contract_delta / audit_unrun_tests / run_ci_pack validate catching it
+# (those text-parse YAML rather than the folded shell). The exact fleet-hazard
+# this round closed must not recur undetected.
+
+
+_FOLDED_RUN_RE = re.compile(r"^( +)run: >-?\s*$", re.MULTILINE)
+
+
+def _iter_folded_run_scalars(text: str) -> list[tuple[int, int, str]]:
+    """Yield (indent, line_number, scalar_text) for every folded `run: >` scalar.
+
+    A folded scalar ends at the first line whose indent is `<=` the indicator
+    line's indent (or EOF). YAML folded scalars collapse newlines into spaces
+    when consumed by a shell — so a `#` token anywhere inside is a shell
+    comment, NOT a YAML comment.
+    """
+    out: list[tuple[int, int, str]] = []
+    for m in _FOLDED_RUN_RE.finditer(text):
+        indent = len(m.group(1))
+        # line_number of the `run: >` indicator (YAML is 1-indexed for grep parity)
+        line_no = text.count("\n", 0, m.start()) + 1
+        # Walk subsequent lines collecting the scalar body
+        body_lines: list[str] = []
+        cursor = m.end()
+        body_indent = indent + 1
+        while cursor < len(text):
+            nl = text.find("\n", cursor)
+            if nl == -1:
+                chunk = text[cursor:]
+                nl = len(text)
+            else:
+                chunk = text[cursor:nl]
+            stripped = chunk.lstrip(" ")
+            if chunk == "" or chunk.startswith(" " * body_indent):
+                body_lines.append(chunk)
+                cursor = nl + 1
+                continue
+            # First non-empty line at <= indicator indent ends the scalar
+            if stripped == "" or len(chunk) - len(chunk.lstrip(" ")) <= indent:
+                if stripped == "":
+                    # Blank line at <= indicator indent also ends it
+                    break
+                break
+            break
+        out.append((indent, line_no, "\n".join(body_lines)))
+    return out
+
+
+def test_no_hash_token_inside_folded_run_scalar_in_legacy_jobs_manifest() -> None:
+    """Every folded `run: >` pytest scalar must be free of `#` shell-comment tokens.
+
+    A `#` inside a folded scalar (e.g. ``run: >\\n  # W11 coverage-true\\n  python -m
+    pytest ...``) becomes a shell comment when GitHub folds it back into one argv
+    line, silently dropping every pytest token that follows. That is how
+    a95d2856e077 / de288cf6706f dropped 60 of main's own suites while every
+    contract-delta / audit_unrun_tests / run_ci_pack validate check stayed green.
+
+    RED-first: inserting a `# ...` line inside the folded scalar at
+    .github/ci/legacy-jobs.yml (e.g. at the engine-render-guards step) FAILS this
+    test; reverting that insertion restores the green.
+    """
+    text = MANIFEST.read_text(encoding="utf-8")
+    scalars = _iter_folded_run_scalars(text)
+    assert scalars, "expected at least one folded run: > scalar in legacy-jobs.yml"
+
+    # Vacuity guard: confirm at least one folded scalar is a pytest invocation,
+    # otherwise a future PR could clear this test by deleting every folded pytest
+    # step (and the harness would no longer catch the # hazard class at all).
+    pytest_folded = [
+        (indent, line_no, body)
+        for indent, line_no, body in scalars
+        if "pytest" in body
+    ]
+    assert pytest_folded, (
+        "no folded `run: >` pytest scalar found — the vacuity guard below would "
+        "be untestable; check that the manifest still carries folded pytest steps"
+    )
+
+    offenders: list[tuple[int, int, str, list[str]]] = []
+    for indent, line_no, body in scalars:
+        # A `#` token anywhere in the scalar body is the hazard; flag the lines.
+        bad_lines = [
+            ln for ln in body.splitlines() if "#" in ln
+        ]
+        if bad_lines:
+            offenders.append((indent, line_no, body, bad_lines))
+
+    assert not offenders, (
+        "folded `run: >` scalars in .github/ci/legacy-jobs.yml must not contain "
+        "# shell-comment tokens — YAML folds them onto one argv line where '#' "
+        "starts a shell comment, silently dropping every pytest token that "
+        "follows. Offenders (indicator line, offending body lines):\n"
+        + "\n".join(
+            f"  line {ln}: {bl[:120]}"
+            for _indent, ln, _body, bl in offenders
+        )
+    )

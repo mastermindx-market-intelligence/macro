@@ -1,0 +1,12 @@
+# Disclosure (W7A_7070_HEAL H2, Meta-CEO B seat, 2026-09-13):
+# capturedAtHead = c47117579e66ff820dd5c19cb67958896be2926d (three commits behind the
+# current head). The 64 PNGs in this receipt predate the two R-NEVER glyph hunks at
+# head: templates/intraday_flow.html.j2 :636 (degraded dot swapped from U+26AA to
+# U+00B7) and :1575 (trailing ' ↑' removed from the count-label constructor).
+# No visual change to the rest of the crops. R-NEVER bars recapture; the surface
+# still rendered and the crops remain valid for everything they depicted. Disclosure
+# lives in manifest.json notes as well.
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/intraday_flow.html.j2
+manifest: mockups/evidence/intraday-flow-w11/manifest.json
