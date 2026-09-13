@@ -1573,6 +1573,26 @@ def test_heal_empty_reason_is_the_frozen_sentence(monkeypatch):
     assert rates["reason_zh"] == "目前没有待办的既定日期节点。"
 
 
+def test_publication_compaction_preserves_inline_separators():
+    """Publication compaction removes indentation, not visible inline spacing."""
+    raw = (
+        '<section id="cs-policy-projection">\n'
+        '    <div>\n'
+        '      <li><strong>Event</strong> <time>in 2 days</time> '
+        '<a href="https://example.com">Source</a></li>\n'
+        '    </div>\n'
+        '</section>'
+    )
+    compact = page_builder._compact_policy_projection_section(raw)
+    section = page_builder._section_html(compact)
+    assert "\n" not in section
+    assert "</strong> <time>" in section
+    assert "</time> <a " in section
+    assert len(section.encode("utf-8")) < len(
+        page_builder._section_html(raw).encode("utf-8")
+    )
+
+
 def test_publication_lanes_execute_capital_structure_page_builder():
     """The F09 page builder must execute, not merely appear in trigger paths."""
     daily = (ROOT / "scripts" / "ci" / "daily_engine_regime_dashboard.sh").read_text(
