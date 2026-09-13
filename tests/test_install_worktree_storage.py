@@ -158,3 +158,117 @@ def test_session_start_malformed_shape_refuses_before_install_writes(session_ins
     assert {p: p.read_bytes() for p in preserved} == before
     assert not (case['home'] / '.codex/AGENTS.md').exists()
     assert not (case['home'] / '.claude/CLAUDE.md').exists()
+
+
+_COMMON_BAD_COMMAND_FIELDS = [
+    ('missing-command', 'command', None), ('empty-command', 'command', ''),
+    ('blank-command', 'command', ' \t\n'),
+    ('timeout-object', 'timeout', {}), ('timeout-string', 'timeout', '30'),
+    ('timeout-bool', 'timeout', True), ('timeout-null', 'timeout', None),
+    ('timeout-nan', 'timeout', float('nan')), ('timeout-infinite', 'timeout', float('inf')),
+    ('status-object', 'statusMessage', {}), ('status-null', 'statusMessage', None),
+    ('async-string', 'async', 'false'), ('async-number', 'async', 0),
+    ('async-null', 'async', None),
+]
+_CLIENT_BAD_COMMAND_FIELDS = [
+    ('codex', 'fractional-timeout', 'timeout', 1.5),
+    ('codex', 'negative-timeout', 'timeout', -1),
+    ('codex', 'overflow-timeout', 'timeout', 2**64),
+    ('codex', 'context-object', 'additionalContextLimit', {}),
+    ('codex', 'context-bool', 'additionalContextLimit', True),
+    ('codex', 'context-negative', 'additionalContextLimit', -1),
+    ('codex', 'context-fractional', 'additionalContextLimit', 0.5),
+    ('codex', 'context-overflow', 'additionalContextLimit', 2**64),
+    ('codex', 'windows-command-object', 'commandWindows', {}),
+    ('codex', 'windows-command-null', 'commandWindows', None),
+    ('claude', 'rewake-number', 'asyncRewake', 0),
+    ('claude', 'once-string', 'once', 'true'),
+    ('claude', 'args-string', 'args', 'script.py'),
+    ('claude', 'args-nonstring', 'args', ['script.py', 3]),
+    ('claude', 'shell-unknown', 'shell', 'zsh'),
+    ('claude', 'condition-object', 'if', {}),
+]
+
+
+@pytest.mark.parametrize('client,case_name,field,value', [
+    (client, name, field, value)
+    for client in ('claude', 'codex') for name, field, value in _COMMON_BAD_COMMAND_FIELDS
+] + _CLIENT_BAD_COMMAND_FIELDS)
+def test_command_leaf_refusal_precedes_every_install_write(session_install, client, case_name, field, value):
+    case = session_install
+    hook = {'type': 'command', 'command': case['command']}
+    if case_name == 'missing-command':
+        del hook['command']
+    else:
+        hook[field] = value
+    path = case['paths'][client]
+    config = json.loads(path.read_text())
+    config['hooks']['SessionStart'].append({'hooks': [hook]})
+    path.write_text(json.dumps(config))
+    for key in ('library', 'policy'):
+        case[key].parent.mkdir(parents=True, exist_ok=True)
+        case[key].write_bytes(b'preserved installation\n')
+    profile = case['home'] / 'Library/Application Support/Claude/claude_desktop_config.json'
+    profile.parent.mkdir(parents=True)
+    profile.write_text('{"preferences":{"unrelated":"keep"}}')
+    for instruction in (case['home'] / '.codex/AGENTS.md', case['home'] / '.claude/CLAUDE.md'):
+        instruction.write_text('preserved instructions\n')
+    root = case['home'].parent
+
+    def snapshot():
+        return {str(p.relative_to(root)): p.read_bytes() if p.is_file() else None
+                for p in root.rglob('*')}
+
+    before = snapshot()
+    refused = AssertionError('installation write reached before command-field refusal')
+    with patch.object(Path, 'mkdir', side_effect=refused), \
+         patch.object(Path, 'write_text', side_effect=refused), \
+         patch.object(Path, 'write_bytes', side_effect=refused), \
+         patch.object(installer, 'write_if_unchanged', side_effect=refused), \
+         pytest.raises(RuntimeError, match='reconciliation'):
+        case['run']()
+    assert snapshot() == before  # Includes backup/receipt directories and all installed files.
+
+
+@pytest.mark.parametrize('client,options', [
+    ('codex', {'timeout': 300, 'async': True, 'statusMessage': '',
+               'commandWindows': 'py startup.py', 'additionalContextLimit': 0}),
+    ('codex', {'timeout': 0, 'async': False, 'additionalContextLimit': 5000}),
+    ('claude', {'timeout': 0.5, 'async': True, 'asyncRewake': False,
+                'once': True, 'statusMessage': 'Preparing workspace', 'shell': 'bash'}),
+])
+def test_valid_command_execution_fields_survive_idempotent_install(session_install, client, options):
+    case = session_install
+    path = case['paths'][client]
+    config = json.loads(path.read_text())
+    valid = {'type': 'command', 'command': case['command'], **options,
+             'futureMetadata': {'preserve': ['opaque']}}
+    config['hooks']['SessionStart'].append({'hooks': [valid]})
+    if client == 'claude':
+        config['hooks']['SessionStart'].append({'hooks': [
+            {'type': 'command', 'command': 'python3', 'args': ['notes.py'],
+             'shell': 'powershell', 'if': 'Bash(git status)', 'asyncRewake': True}]})
+    path.write_text(json.dumps(config))
+    case['run']()
+    first = path.read_bytes()
+    assert json.loads(first)['hooks'] == config['hooks']
+    case['run']()
+    assert path.read_bytes() == first
+
+
+@pytest.mark.parametrize('options', [{'args': []}, {'if': 'Bash(git status)'}])
+def test_claude_execution_mode_cannot_mask_shell_startup_hook(session_install, options):
+    case = session_install
+    path = case['paths']['claude']
+    config = json.loads(path.read_text())
+    existing = {'hooks': [{'type': 'command', 'command': case['command'], **options}]}
+    config['hooks']['SessionStart'].append(existing)
+    path.write_text(json.dumps(config))
+    case['run']()
+    groups = json.loads(path.read_text())['hooks']['SessionStart']
+    assert groups[:2] == [case['unrelated'], existing]
+    assert len(groups) == 3
+    assert groups[2] == {'hooks': [{'type': 'command', 'command': case['command'], 'timeout': 300}]}
+    first = path.read_bytes()
+    case['run']()
+    assert path.read_bytes() == first

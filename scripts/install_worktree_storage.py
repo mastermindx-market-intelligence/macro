@@ -8,6 +8,7 @@ import argparse
 import copy
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import shutil
@@ -41,6 +42,48 @@ def write_if_unchanged(path, before, after):
             os.unlink(tmp)
 
 
+def validate_command_hook(hook, *, codex):
+    """Validate documented execution fields without rewriting unrelated metadata.
+
+    Codex: https://learn.chatgpt.com/docs/config-schema.json (HookHandlerConfig).
+    Claude: https://code.claude.com/docs/en/hooks#command-hook-fields.
+    Claude accepts numeric timeouts; Codex uses unsigned integer seconds.
+    """
+    def require(valid, field):
+        if not valid:
+            raise RuntimeError(f'SessionStart settings need reconciliation: invalid command hook {field}')
+
+    require(isinstance(hook.get('command'), str) and bool(hook['command'].strip()), 'command')
+    if 'timeout' in hook:
+        value = hook['timeout']
+        if codex:
+            valid = type(value) is int and 0 <= value < 2**64
+        else:
+            try:
+                valid = type(value) in (int, float) and math.isfinite(value)
+            except OverflowError:
+                valid = False
+        require(valid, 'timeout')
+    strings = ('statusMessage', 'commandWindows') if codex else ('statusMessage', 'if')
+    booleans = ('async',) if codex else ('async', 'asyncRewake', 'once')
+    for field in strings:
+        if field in hook:
+            require(isinstance(hook[field], str), field)
+    for field in booleans:
+        if field in hook:
+            require(type(hook[field]) is bool, field)
+    if codex:
+        if 'additionalContextLimit' in hook:
+            value = hook['additionalContextLimit']
+            require(type(value) is int and 0 <= value < 2**64, 'additionalContextLimit')
+    else:
+        if 'args' in hook:
+            require(isinstance(hook['args'], list)
+                    and all(isinstance(arg, str) for arg in hook['args']), 'args')
+        if 'shell' in hook:
+            require(hook['shell'] in ('bash', 'powershell'), 'shell')
+
+
 def reconcile_session_start(original, command, *, codex=False):
     """Prepare startup coverage without letting restricted/non-command hooks mask it."""
     def malformed():
@@ -64,8 +107,13 @@ def reconcile_session_start(original, command, *, codex=False):
             if (not isinstance(hook, dict) or not isinstance(hook.get('type'), str)
                     or ('command' in hook and not isinstance(hook['command'], str))):
                 malformed()
+            if hook['type'] == 'command':
+                validate_command_hook(hook, codex=codex)
+            # Claude's args form treats command as an executable, not this
+            # shell string. Its tool-only `if` condition never fires on SessionStart.
+            shell_startup = codex or ('args' not in hook and 'if' not in hook)
             if (group.get('matcher', '') == '' and hook['type'] == 'command'
-                    and hook.get('command') == command):
+                    and hook.get('command') == command and shell_startup):
                 covered = True
     if not covered:
         hook = dict(type='command', command=command, timeout=300)
