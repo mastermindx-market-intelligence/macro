@@ -93,6 +93,10 @@ do_not_redo:
   - Do not use the Radar minute reader as a bulk whole-universe research crawler.
   - Do not treat Massive entitlement, a successful API response, or green CI as W3 admission.
   - Do not begin outcome testing while this handoff says HOLD.
+danger_areas:
+  - Terminal 4H early-close parity is known-bad until actual exchange close becomes load-bearing; do not normalize away the 5/5 preserved failures.
+  - Massive daily is raw-basis while the Terminal intraday path is adjusted; cross-basis splice or comparison requires an explicit same-basis contract.
+  - Whole-universe Terminal 4H is not homogeneous because names without stored 5m history can fall back to provider-built 1h bars beginning at 10:00 ET.
 ---
 
 # TECHNICAL-OPPORTUNITY-INTELLIGENCE W2-0 close handoff — 2026-09-12
