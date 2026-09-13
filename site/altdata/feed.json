@@ -1,6 +1,6 @@
 {
-  "generated_utc": "2026-09-12T22:38:28.070519+00:00",
-  "as_of": "2026-09-12",
+  "generated_utc": "2026-09-13T00:07:13.563976+00:00",
+  "as_of": "2026-09-13",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
   "note": "Deterministic alt-data signals + normalized event feed for the reasoning brain. Display/context-only \u2014 not a scored axis.",
@@ -5967,15 +5967,6 @@
           "parties": "D"
         },
         {
-          "ticker": "SPCX",
-          "net": 8,
-          "buys": 8,
-          "sells": 0,
-          "members": 4,
-          "est_usd": 113004.0,
-          "parties": "Democratic/R/Republican"
-        },
-        {
           "ticker": "APH",
           "net": 6,
           "buys": 6,
@@ -6048,13 +6039,22 @@
           "parties": "D"
         },
         {
-          "ticker": "CVX",
+          "ticker": "FIS",
           "net": 4,
           "buys": 4,
           "sells": 0,
           "members": 2,
           "est_usd": 32002.0,
-          "parties": "R/Republican"
+          "parties": "Democratic/R"
+        },
+        {
+          "ticker": "MNST",
+          "net": 4,
+          "buys": 4,
+          "sells": 0,
+          "members": 2,
+          "est_usd": 32002.0,
+          "parties": "D"
         }
       ],
       "sells": [
@@ -6072,15 +6072,6 @@
           "net": -16,
           "buys": 0,
           "sells": 16,
-          "members": 1,
-          "est_usd": 0.0,
-          "parties": "D"
-        },
-        {
-          "ticker": "MIDD",
-          "net": -14,
-          "buys": 0,
-          "sells": 14,
           "members": 1,
           "est_usd": 0.0,
           "parties": "D"
@@ -6113,6 +6104,15 @@
           "parties": "D"
         },
         {
+          "ticker": "MIDD",
+          "net": -12,
+          "buys": 0,
+          "sells": 12,
+          "members": 1,
+          "est_usd": 0.0,
+          "parties": "D"
+        },
+        {
           "ticker": "CCI",
           "net": -10,
           "buys": 0,
@@ -6132,15 +6132,6 @@
         },
         {
           "ticker": "TDY",
-          "net": -10,
-          "buys": 0,
-          "sells": 10,
-          "members": 1,
-          "est_usd": 0.0,
-          "parties": "D"
-        },
-        {
-          "ticker": "WAB",
           "net": -10,
           "buys": 0,
           "sells": 10,
@@ -6192,6 +6183,15 @@
           "members": 2,
           "est_usd": 0.0,
           "parties": "R"
+        },
+        {
+          "ticker": "CLH",
+          "net": -8,
+          "buys": 0,
+          "sells": 8,
+          "members": 1,
+          "est_usd": 0.0,
+          "parties": "D"
         }
       ]
     },
@@ -6460,18 +6460,13 @@
     "material_8k": [
       {
         "ticker": "NWS",
-        "count": 20,
+        "count": 19,
         "items": "8.01"
       },
       {
         "ticker": "CHTR",
         "count": 5,
         "items": "1.01, 2.01, 2.03, 5.02, 7.01"
-      },
-      {
-        "ticker": "CTVA",
-        "count": 5,
-        "items": "1.01, 7.01, 8.01"
       },
       {
         "ticker": "MSTR",
@@ -6489,9 +6484,9 @@
         "items": "1.01, 2.03, 7.01"
       },
       {
-        "ticker": "LH",
+        "ticker": "CTVA",
         "count": 4,
-        "items": "5.02, 7.01"
+        "items": "1.01, 8.01"
       },
       {
         "ticker": "SYY",
@@ -6509,24 +6504,14 @@
         "items": "1.01, 5.02, 7.01, 8.01"
       },
       {
-        "ticker": "CORZ",
-        "count": 3,
-        "items": "1.01, 2.03, 7.01, 8.01"
-      },
-      {
         "ticker": "LEU",
         "count": 3,
         "items": "1.01, 5.02, 7.01, 8.01"
       },
       {
-        "ticker": "MLM",
+        "ticker": "LH",
         "count": 3,
-        "items": "1.01, 2.01, 2.03, 5.02, 7.01, 8.01"
-      },
-      {
-        "ticker": "MOS",
-        "count": 3,
-        "items": "2.03, 8.01"
+        "items": "7.01"
       },
       {
         "ticker": "PM",
@@ -6569,11 +6554,6 @@
         "items": "1.01, 2.03, 5.02"
       },
       {
-        "ticker": "ARE",
-        "count": 2,
-        "items": "1.01, 2.03, 8.01"
-      },
-      {
         "ticker": "AWK",
         "count": 2,
         "items": "7.01, 8.01"
@@ -6582,6 +6562,26 @@
         "ticker": "BA",
         "count": 2,
         "items": "1.01, 2.03, 5.02"
+      },
+      {
+        "ticker": "BAX",
+        "count": 2,
+        "items": "1.01, 5.02, 7.01, 8.01"
+      },
+      {
+        "ticker": "BG",
+        "count": 2,
+        "items": "5.02, 8.01"
+      },
+      {
+        "ticker": "BJ",
+        "count": 2,
+        "items": "5.02, 8.01"
+      },
+      {
+        "ticker": "BPOP",
+        "count": 2,
+        "items": "5.02, 8.01"
       }
     ],
     "special_situations": [
@@ -26416,46 +26416,11 @@
     ],
     "lobbying": [
       {
-        "ticker": "TAL",
-        "spend_usd": 271000.0,
-        "filings": 2,
-        "spike_x": 1.58,
-        "top_issue": "Budget/Appropriations"
-      },
-      {
         "ticker": "CRMD",
         "spend_usd": 220000.0,
         "filings": 1,
         "spike_x": 0.58,
         "top_issue": "Health Issues"
-      },
-      {
-        "ticker": "MCK",
-        "spend_usd": 40000.0,
-        "filings": 1,
-        "spike_x": 0.05,
-        "top_issue": "Medicare/Medicaid"
-      },
-      {
-        "ticker": "D",
-        "spend_usd": 0.0,
-        "filings": 1,
-        "spike_x": 0.0,
-        "top_issue": "Defense"
-      },
-      {
-        "ticker": "ROK",
-        "spend_usd": 0.0,
-        "filings": 1,
-        "spike_x": 0.0,
-        "top_issue": null
-      },
-      {
-        "ticker": "TDC",
-        "spend_usd": 0.0,
-        "filings": 1,
-        "spike_x": 0.0,
-        "top_issue": "Computer Industry"
       }
     ],
     "offexchange": [
@@ -29542,63 +29507,63 @@
       {
         "ticker": "LEN",
         "next_date": "2026-09-16",
-        "days_to": 4,
+        "days_to": 3,
         "eps_forecast": 1.3,
         "last_surprise_pct": 6.5
       },
       {
         "ticker": "AZO",
         "next_date": "2026-09-22",
-        "days_to": 10,
+        "days_to": 9,
         "eps_forecast": 54.97,
         "last_surprise_pct": 5.2
       },
       {
         "ticker": "GIS",
         "next_date": "2026-09-23",
-        "days_to": 11,
+        "days_to": 10,
         "eps_forecast": 0.71,
         "last_surprise_pct": 15.8
       },
       {
         "ticker": "PAYX",
         "next_date": "2026-09-23",
-        "days_to": 11,
+        "days_to": 10,
         "eps_forecast": 1.33,
         "last_surprise_pct": 0.8
       },
       {
         "ticker": "COST",
         "next_date": "2026-09-24",
-        "days_to": 12,
+        "days_to": 11,
         "eps_forecast": 6.48,
         "last_surprise_pct": null
       },
       {
         "ticker": "FDS",
         "next_date": "2026-09-30",
-        "days_to": 18,
+        "days_to": 17,
         "eps_forecast": 4.3,
         "last_surprise_pct": 2.0
       },
       {
         "ticker": "MU",
         "next_date": "2026-09-30",
-        "days_to": 18,
+        "days_to": 17,
         "eps_forecast": 31.17,
         "last_surprise_pct": 18.6
       },
       {
         "ticker": "ACN",
         "next_date": "2026-10-01",
-        "days_to": 19,
+        "days_to": 18,
         "eps_forecast": 3.19,
         "last_surprise_pct": 2.7
       },
       {
         "ticker": "NKE",
         "next_date": "2026-10-01",
-        "days_to": 19,
+        "days_to": 18,
         "eps_forecast": 0.45,
         "last_surprise_pct": 81.8
       }
@@ -29795,17 +29760,6 @@
         "why": "analyst_upgrade_cluster: net upgrades +39 revision delta \u00b7 github_momentum: +0.21% stars \u00b7 patent_cluster: 218 grants, 24 IPC classes \u00b7 retail_buzz: 207 WSB mentions \u00b7 special_situation: Acquisitions"
       },
       {
-        "ticker": "SPCX",
-        "score": 3,
-        "weighted_score": 1.4,
-        "channel_list": [
-          "13f_add",
-          "congress_cluster",
-          "special_situation"
-        ],
-        "why": "13f_add: ONTARIO TEACHERS PENSION PLAN BOARD +$8,658,544,075 \u00b7 congress_cluster: 4 members net +8 \u00b7 special_situation: Acquisitions"
-      },
-      {
         "ticker": "SMCI",
         "score": 3,
         "weighted_score": 1.35,
@@ -29860,17 +29814,6 @@
           "stocktwits_bull"
         ],
         "why": "analyst_upgrade_cluster: net upgrades +30 revision delta \u00b7 material_8k: 2 material 8-Ks (items 1.01, 2.03, 5.02) \u00b7 retail_buzz: 51 WSB mentions \u00b7 stocktwits_bull: 84% bull \u00b7 563,282 watching"
-      },
-      {
-        "ticker": "MLM",
-        "score": 3,
-        "weighted_score": 1.2,
-        "channel_list": [
-          "congress_buy",
-          "material_8k",
-          "special_situation"
-        ],
-        "why": "congress_buy: 1 member(s) net +6 \u00b7 material_8k: 3 material 8-Ks (items 1.01, 2.01, 2.03, 5.02, 7.01, 8.01) \u00b7 special_situation: Acquisitions"
       },
       {
         "ticker": "CRWD",
@@ -29974,6 +29917,27 @@
           "trump"
         ],
         "why": "insider_mspr: MSPR 64.3 \u00b7 trump: ADOBE INC"
+      },
+      {
+        "ticker": "RTX",
+        "score": 2,
+        "weighted_score": 1.0,
+        "channel_list": [
+          "analyst_upgrade_cluster",
+          "unusual_options"
+        ],
+        "why": "analyst_upgrade_cluster: net upgrades +23 revision delta \u00b7 unusual_options: 4.28\u00d7 vol/OI, call-skew"
+      },
+      {
+        "ticker": "UNP",
+        "score": 3,
+        "weighted_score": 0.95,
+        "channel_list": [
+          "13f_add",
+          "analyst_upgrade_cluster",
+          "special_situation"
+        ],
+        "why": "13f_add: Curated Wealth Partners LLC +$2,030,517,264 \u00b7 analyst_upgrade_cluster: net upgrades +22 revision delta \u00b7 special_situation: Acquisitions"
       }
     ]
   }
