@@ -27,6 +27,9 @@ changed:
   - path: docs/plans/2026-09-13-policy-watch-current-analysis-r2.md
     what: Records the bounded test-first implementation and release plan.
 verified:
+  - claim: Current compatible Sol procedure was loaded atomically before continuing modification.
+    command: GitHub protected master read of docs/sol_skills/INDEX.md, COLD_START.md, RECONCILE_STATE.md and CLOSEOUT.md at 9ed16bf0fcc5b47e870350ff2413ff5c8c73b447.
+    result: All four files declare mastermind.sol_skillpack.v1, Skillpack 1.0.1 and minimum bootstrap major 1; compatible with bootstrap major 1.
   - claim: R1 is already production-proven on the canonical public route before R2 begins.
     command: Public browser matrix against https://www.mastermind-x.com/policy_watch.html plus source/live SHA-256 comparison.
     result: Eight of eight cells returned 200 with zero console/request failures or horizontal overflow; 44 historical calls remained; public bytes matched origin/main; no Needs refresh literal remained.
