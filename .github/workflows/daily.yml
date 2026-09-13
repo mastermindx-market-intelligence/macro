@@ -1625,6 +1625,25 @@ jobs:
         run: |
           python -m engine.theme_trade_flows \
             || echo "::warning::theme_trade_flows rollup failed (non-fatal)"
+      - name: MO-B F09-10 — USGS Mineral Commodity Summaries ingest (non-fatal)
+        timeout-minutes: 5
+        continue-on-error: true
+        if: ${{ vars.USGS_MCS_ENABLED == 'true' }}
+        # Keyless ScienceBase NMIC annual release. Off the render path.
+        # Outputs data/usgs_mcs/ staged by this job's `git add data/ … site/basketdata/` commit step.
+        run: |
+          python -m collectors.usgs_mcs \
+            || echo "::warning::usgs_mcs ingest failed (non-fatal)"
+      - name: MO-B F09-10 — critical-minerals supply-concentration rollup (non-fatal)
+        timeout-minutes: 5
+        continue-on-error: true
+        if: ${{ vars.USGS_MCS_ENABLED == 'true' }}
+        # Pure in-memory projection of the parquet above. Honest null when absent.
+        # Writes data/neuralweb/critical_minerals_supply.json + site/basketdata/critical_minerals_supply.json
+        # (staged via `git add data/ … site/basketdata/` below).
+        run: |
+          python -m engine.critical_minerals_supply \
+            || echo "::warning::critical_minerals_supply rollup failed (non-fatal)"
       - name: TIL W10 — ClinicalTrials.gov theme pipeline ingest (non-fatal)
         # Cap: measured 6.6s; 10m covers a slow CT.gov night and bounds a stalled fetch.
         timeout-minutes: 10
