@@ -2,15 +2,16 @@
 
 ## Verdict
 
-`PARTIAL` — the active 32-passport P0/P1/P2/archive universe is normalized and the remaining owner-routed/blocked family residue is now explicitly classified, but W1 still owes source-quality cleanup, the independent >=20-passport reproduction review, and the exact return-head validation battery before Sol acceptance.
+`PARTIAL` — the active 32-passport P0/P1/P2/archive universe and the remaining owner-routed/blocked family residue are normalized. W1 no longer has a known source-quality blocker in its active P0/P1 set; it still owes the independent >=20-passport reproduction review and the exact return-head validation battery before Sol acceptance.
 
 ## Capability gained
 
 Before this carrier, W1 had no current machine-readable TOI method census. This branch now provides:
 
-- **32 method passports** using `toi.method_passport.v1`: 12 P0, 11 P1, 7 P2, 2 archive;
-- **10 additional residual-family dispositions** covering family-level gap/imbalance, divergence, candlestick/bar residue, cycle/phase ownership, breadth/peer context, market-regime conditioning, sequence/representation learning, exhaustion/extension, and two blocked proprietary families;
-- creator/official/primary source receipts with explicit rights class, including three Elliott/ordered-path research receipts with hybrid-model limitations preserved;
+- **32 method passports** using `toi.method_passport.v1`: 12 P0, 10 P1, 8 P2, 2 archive;
+- **10 additional residual-family dispositions** covering gap/imbalance, divergence, candlestick/bar residue, cycle/phase ownership, breadth/peer context, market-regime conditioning, sequence/representation learning, exhaustion/extension, and two blocked proprietary families;
+- creator/official/primary source receipts with explicit rights class, including method-specific official formula receipts for Donchian Channels, CMF, Choppiness, Relative Volume, SuperTrend and Williams Fractals;
+- three Elliott/ordered-path research receipts with hybrid-model limitations preserved;
 - alias/equivalence normalization distinct from dependency clustering across all 32 active passports;
 - exact local implementation paths and signal IDs for **27** passports and explicit `missing` state for **5**;
 - explicit ownership routing for incumbent Setup Species, CPI, Terminal display, Live Entry Radar, existing Market/Regime owners, later-context path research and W3 candidates;
@@ -24,13 +25,13 @@ This materially shrinks W3's rediscovery/search space while preserving negative 
 
 `toi.bb_bandwidth`, `toi.bb_kc_squeeze`, `toi.natr_percentile`, `toi.hvr`, `toi.nr7`, `toi.range_expansion`, `toi.donchian_breakout`, `toi.donchian_fakeout`, `toi.fractal_swing_structure`, `toi.benchmark_rs`, `toi.cmf`, `toi.rvol`.
 
-### P1 — adjacent controls/context (11)
+### P1 — adjacent controls/context (10)
 
-`toi.support_resistance`, `toi.adx_dmi`, `toi.choppiness`, `toi.momentum_12_1`, `toi.momentum_acceleration`, `toi.high52`, `toi.obv`, `toi.inside_bar`, `toi.ulcer`, `toi.round_levels`, `toi.short_reversal`.
+`toi.support_resistance`, `toi.adx_dmi`, `toi.choppiness`, `toi.momentum_12_1`, `toi.momentum_acceleration`, `toi.high52`, `toi.obv`, `toi.ulcer`, `toi.round_levels`, `toi.short_reversal`.
 
-### P2 — later/context/control families (7)
+### P2 — later/context/control families (8)
 
-`toi.ma_trend`, `toi.rsi_oscillator`, `toi.kama_er`, `toi.supertrend`, `toi.connors_rsi`, `toi.geometric_double_pattern`, `toi.ordered_path_elliott`.
+`toi.inside_bar`, `toi.ma_trend`, `toi.rsi_oscillator`, `toi.kama_er`, `toi.supertrend`, `toi.connors_rsi`, `toi.geometric_double_pattern`, `toi.ordered_path_elliott`.
 
 ### Archive/comparator families (2)
 
@@ -40,11 +41,11 @@ Twenty-seven of 32 are exact local implementations. Five are intentionally `miss
 
 ## Residual family census
 
-`w1_residual_family_dispositions.json` closes the broad method-family archaeology without inflating the first W3 trial family. It explicitly classifies ten residual families:
+`w1_residual_family_dispositions.json` closes the broad method-family archaeology without inflating the first W3 trial family. It classifies ten residual families:
 
-- generic FVG/gap imbalance is P2 later-context and is explicitly **not** the killed PM3 gap-map construction; `DNR:KILL-PM3-GAP-MAP` remains binding;
-- divergence is P2 later-context but current pivot availability caveats block direct W3 use until confirmation/known-at semantics are explicit;
-- broad named candlestick enumeration is archived because deterministic bar grammar is already represented and more names would mostly multiply aliases;
+- generic FVG/gap imbalance is P2 later-context and explicitly **not** the killed PM3 gap-map construction; `DNR:KILL-PM3-GAP-MAP` remains binding;
+- divergence is P2 later-context, with causal confirmation/known-at behavior required before any experiment;
+- broad named candlestick enumeration is archived because deterministic bar grammar already represents the useful mechanism and more names would multiply aliases;
 - cycle phase/transition state remains owned by Cycle Pattern Intelligence and can only be consumed as separately governed context/comparator;
 - breadth/peer confirmation must reuse the canonical breadth/universe substrate rather than create a TOI store;
 - market-regime conditioning must consume the existing regime plane and may not create a fused regime/technical score;
@@ -53,28 +54,27 @@ Twenty-seven of 32 are exact local implementations. Five are intentionally `miss
 - GoNoGo-style fused vendor composites remain blocked under `DNR:KILL-FUSED-COMPOSITE` where weights are undisclosed/redundant;
 - TW Pivot/undisclosed pivot methods remain blocked proprietary rather than guessed.
 
-These ten family-level dispositions do not enter the first Compression Release W3 search family without a new preregistered decision.
+These family-level dispositions do not enter the first Compression Release W3 search family without a new preregistered decision.
 
 ## Source state
 
 P0/P1 source law is machine-enforceable: every current P0/P1 passport resolves at least one registered primary/official source receipt, and licensed receipts require an explicit repository rights reference. Practitioner sources may be recorded but do not satisfy that gate by themselves.
 
-The source registry now includes creator/official Bollinger material, TA-Lib formula documentation, primary momentum/reversal/52-week literature, New York Fed support/resistance/order-clustering evidence, public bar-grammar methodology, Fibonacci negative evidence, three Elliott/ordered-path studies, and the Massive internal rights receipt.
+The source registry now includes creator/official Bollinger material; corrected TA-Lib coverage limited to documented functions; TradingView official formula pages for Donchian, CMF, Choppiness, Relative Volume and SuperTrend; MetaTrader's official Williams-fractal definition; primary momentum/reversal/52-week literature; New York Fed support/resistance/order-clustering evidence; public TheSTRAT methodology; Fibonacci negative evidence; three Elliott/ordered-path studies; and the Massive internal rights receipt.
+
+The prior source-quality defect is closed conservatively rather than by weakening the gate. `toi.inside_bar` now binds the public-practitioner STRAT receipt and is **P2 / toi_later_context**, so the branded 2-1-2 / 3-1-2 aliases no longer receive P1/W3 authority from a broad formula catalog. The local deterministic implementation remains useful later-context evidence.
 
 The Elliott receipts are deliberately qualified. Vantuch et al. provides an explicit pattern-detection algorithm; Jarusek et al. and Atsalakis et al. are hybrid neural/neuro-fuzzy systems. Those studies support testing an ordered-path representation, **not** assuming a universal deterministic five-wave law or granting forecast authority.
-
-### Remaining source-quality debt
-
-The `toi.inside_bar` P1 passport still cites the broad formula catalog while `SRC-STRAT-PUBLIC` is registered as the more specific public-methodology source for the 2-1-2 / 3-1-2 naming. That practitioner receipt cannot independently satisfy the P0/P1 primary/official-source gate. W1 therefore must either bind a sufficiently authoritative source for the specific branded scenario claims or narrow/downgrade the branded alias before final acceptance. This remains a visible acceptance item, not a hidden green.
 
 ## Equivalence and dependency state
 
 Equivalence classes answer "same method / subtype / alias?" while dependency clusters answer "likely overlapping evidence family?" They remain separate. The 32 active passports resolve into **29 equivalence classes**. Donchian breakout/fakeout, support-resistance/round-level control, and medium-term momentum/acceleration remain explicit within-family relationships rather than independent votes.
 
-The P2 wave makes several previously implicit dependencies visible:
+The P2 layer makes several dependencies visible:
 
 - moving-average crosses and ribbons are one moving-average-trend evidence family;
 - classic RSI and Connors RSI share `rsi_mean_reversion` dependence and cannot be counted as independent confluence;
+- inside/outside-bar/TheSTRAT grammar is later-context structure, not first-vertical authority;
 - MACD/StochRSI is an incumbent Setup Species comparator, not a new method birth;
 - KAMA/ER and SuperTrend remain adaptive context/display families under existing entry-stack blocks;
 - geometric double patterns stay within broad pattern-structure dependence;
@@ -84,9 +84,9 @@ The P2 wave makes several previously implicit dependencies visible:
 
 `DNR:KILL-OUTCOME-AUDITION` is explicitly attached to short reversal and ordered-path/Elliott. It forbids per-name best-of-grid timer/count selection while leaving generic causal measurement available as a research control.
 
-`DNR:KILL-PM3-GAP-MAP`, `DNR:KILL-FUSED-COMPOSITE`, `DNR:KILL-REGIME-SCORECARD`, and `DNR:KILL-ROTATION-CYCLE-CONFLUENCE` are now represented in the residual-family census where they are load-bearing. Construction-scoped kills remain kills without erasing a lawful generic measurement that is explicitly non-equivalent.
+`DNR:KILL-PM3-GAP-MAP`, `DNR:KILL-FUSED-COMPOSITE`, `DNR:KILL-REGIME-SCORECARD`, and `DNR:KILL-ROTATION-CYCLE-CONFLUENCE` are represented in the residual-family census where load-bearing. Construction-scoped kills remain kills without erasing a lawful generic measurement that is explicitly non-equivalent.
 
-Existing RUL-33 adaptive/oscillator entry-stack blocks are preserved in passport failure/ownership fields without inventing a fake stable DNR key. KAMA/ER, SuperTrend and Connors RSI therefore remain display/context families rather than silently becoming W3 candidates.
+Existing RUL-33 adaptive/oscillator entry-stack blocks remain preserved without inventing a fake stable DNR key. KAMA/ER, SuperTrend and Connors RSI therefore remain display/context families rather than silently becoming W3 candidates.
 
 Owner boundaries remain unchanged:
 
@@ -112,18 +112,17 @@ This preserves the strategic hypothesis without allowing the project to skip the
 
 ## Independent review gate
 
-The deterministic sample in `w1_reproduction_sample.json` freezes 20 passports by SHA-256 ordering and contains no outcome-derived selection. W1 still requires an **independent reviewer** to reproduce source, formula, exact-local identity, lag/repaint behavior, owner disposition and DNR interpretation for all 20.
+The deterministic sample in `w1_reproduction_sample.json` freezes 20 passports by SHA-256 ordering and contains no outcome-derived selection. Because no method IDs changed during source-quality repair, the 20-method sample membership is unchanged; the independent reviewer must review the **latest immutable W1 head**, not the older pre-correction head.
 
-Sol has originated capacity-placement operation `toi-w1-20-passport-independent-review-20260913-sol-001` with `PREFERRED_AVENUE=Terra`, `CAPACITY_SELECTABLE`, state `WAITING_CAPACITY / needs_placement`. No reviewer-specific START or watcher is claimed before canonical placement binds a receiver.
+Operation `toi-w1-20-passport-independent-review-20260913-sol-001` remains `WAITING_CAPACITY / needs_placement`, preferred avenue Terra. No receiver PICKUP_ACK, START, review effect or receiver-specific watcher is claimed before canonical placement binds a reviewer.
 
 ## Remaining acceptance gates
 
 W1 cannot be accepted until all of the following are closed:
 
-1. resolve the `toi.inside_bar` branded-scenario source-quality item described above;
-2. complete the independent skeptical reproduction of the frozen 20-passport sample and adjudicate every failure/correction on this same carrier;
-3. rerun `python3 scripts/agentos.py validate`, all three W1 validators, `pytest tests/test_toi_w1_census.py -q`, and `git diff --check` on the exact return head;
-4. return exact head, changed-file inventory, current-base compatibility and hosted checks to Sol for acceptance.
+1. complete the independent skeptical reproduction of the frozen 20-passport sample against the latest immutable head and adjudicate every failure/correction on this same carrier;
+2. rerun `python3 scripts/agentos.py validate`, all three W1 validators, `pytest tests/test_toi_w1_census.py -q`, and `git diff --check` on the exact return head;
+3. return exact head, changed-file inventory, current-base compatibility and hosted checks to Sol for acceptance.
 
 ## W3 gate
 
@@ -133,6 +132,6 @@ W3 Compression Release outcome testing still requires accepted W1 and accepted W
 
 ## Exact next action
 
-Keep this W1 carrier stable while the independent reviewer is placed. In parallel, settle the inside-bar source-quality item without expanding the trial family. After the independent return, apply only evidence-driven corrections, run the exact validation battery and return to Sol for W1 acceptance.
+Hold this carrier to evidence-only corrections while Capacity places the independent reviewer. Retarget the unconsumed review operation to the latest immutable W1 head, complete the 20-passport reproduction, apply only evidence-driven corrections, run the exact validation battery and return to Sol for W1 acceptance.
 
-W2-0 proceeds independently on PR #7094. Its previously demonstrated waiver conflict has now been reconciled to current main plus the single TOI W2 records-only waiver without changing any W2 scientific/authority blob; it must still clear exact-head hosted checks and Sol release review before merge. W3 remains held until both predecessors are accepted.
+W2-0 proceeds independently on PR #7094. Its waiver collision has been reconciled without changing any W2 scientific/authority blob; it must still clear exact-head hosted checks and Sol release review before merge. W3 remains held until both predecessors are accepted.
