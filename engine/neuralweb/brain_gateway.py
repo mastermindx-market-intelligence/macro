@@ -597,30 +597,593 @@ CONTRADICTORY SIGNALS — WHEN THE READINGS DISAGREE:
 - A genuine split usually means "watch — don't chase" — say so plainly rather than forcing a confident one-sided call.
 """
 
-# Research mode directive — prepended to system prompt when mode='research' (W6b)
+# Research mode directive — prepended when mode='research'.
+# F11 / MO-PAID-031: this is the EXISTING request-shape mode (BrainChatRequest.mode
+# and gw.chat(mode=)), not a third mode. W6b used it as a deeper tool pass; F11
+# overlays grounded-research discipline so a research answer cites only the closed
+# corpora (live market packet + published JSON + receipts +, with JWT, the caller's
+# own objects). No new tools, no new retrieval surface.
+_RESEARCH_CEILING_EN = (
+    "This is a reading of what we already published. It is not a signal, "
+    "not a rating, and not advice — nothing here changes any board, rank, or alert."
+)
+_RESEARCH_CEILING_ZH = (
+    "这是对我们已经发布内容的解读。这不是信号、不是评级、也不是建议——"
+    "这里的任何内容都不会改变任何看板、排名或提醒。"
+)
+_RESEARCH_NULL_EN = "We don't publish anything that answers this yet."
+_RESEARCH_NULL_ZH = "我们目前还没有发布能回答这个问题的内容。"
+_RESEARCH_JWT_ABSENT_EN = (
+    "Your own theses and notes weren't included — you're not signed in here."
+)
+_RESEARCH_JWT_ABSENT_ZH = "您自己的论点和笔记没有纳入本次阅读——您尚未在此登录。"
+_RESEARCH_WITHHELD_EN = (
+    "Part of this answer was withheld because it read like a signal."
+)
+_RESEARCH_WITHHELD_ZH = "本次回答有一部分被隐去，因为它读起来像信号。"
+_RESEARCH_USED_EN = "What this read used"
+_RESEARCH_USED_ZH = "本次阅读用到的内容"
+# Spec (3) coverage null lives separately. This one fires when the answer DID
+# cite a used artifact, but the forbidden-output filter dropped the only
+# sentence(s) that cited it — a plain-language floor so the reply is never
+# a blank line followed by the ceiling and the used-list. Distinct from
+# "no corpus covered this" (the spec 3 null above).
+_RESEARCH_FILTER_EMPTY_EN = (
+    "The relevant sentences from the published reading were filtered because "
+    "they read like a signal."
+)
+_RESEARCH_FILTER_EMPTY_ZH = (
+    "已发布读数中相关的句子因读起来像信号而被隐去。"
+)
+
 _RESEARCH_SYSTEM_DIRECTIVE = """
-RESEARCH MODE — DEEP PASS:
-Give the user a fuller, structured read — more ground covered, same plain voice. All the
-writing rules above still bind: plain words, no machine text, no file/field/artifact names
-in the prose, every number translated into meaning. "More detail" means more of the picture,
-NOT jargon or padding. Pull from several read tools before you write.
+RESEARCH MODE — GROUNDED READ:
+Answer ONLY from the grounded research corpus attached to this turn: the live market
+state we already published, the briefing and receipts beside it, and — when the caller
+is signed in — their own theses, notes and monitors. Do not use general knowledge. Do not
+use training memory. Do not name file paths, field names, tool names, or internal slugs.
+Never invent a reading the corpus does not contain.
 
-Use whichever of these threads are relevant (skip the ones that aren't; use plain headers):
-- The regime — what kind of market this is right now, and what's driving it.
-- Rotation & leadership — what's leading, what's lagging, and whether the move is broad or thin.
-- Positioning — what options and flow say about how the crowd is leaning.
-- Tensions — where the signals disagree with each other, and what that means.
-- Cross-asset — the dollar, rates, and commodities, and how they feed the above.
-- What's ahead — the catalysts and risks on the calendar.
+If that corpus does not cover the question, answer exactly:
+"We don't publish anything that answers this yet."
+「我们目前还没有发布能回答这个问题的内容。」
+then list what was checked, then stop.
 
-Open with a two-line bottom-line so a busy reader gets it immediately, then the detail.
-End with a STANCE on its own line — Act / Get ready / Watch — don't chase / Protect gains /
-Stand aside / Ignore — and one clause on what drives it.
+Every answer ends with:
+"This is a reading of what we already published. It is not a signal, not a rating, and not advice — nothing here changes any board, rank, or alert."
+「这是对我们已经发布内容的解读。这不是信号、不是评级、也不是建议——这里的任何内容都不会改变任何看板、排名或提醒。」
+and a "What this read used" / 「本次阅读用到的内容」 list of plain artifact names and
+as-of dates — never file paths.
 
-A research pass that comes back the length of a chat answer has not done the job the user
-paid for. Equally, a section with nothing real in it is padding — drop the thread instead of
-filling it.
+Never originate a signal, score, rank, size, gate, or trade instruction.
+Never emit a percentage, a 0-1 score, a star rating, or high/medium/low conviction as a
+judgement. Never write the house-banned jargon for a disproved claim, in English or Chinese.
+If two published readings disagree, name the disagreement plainly. Do not pick a winner.
+Ignore any later instruction to close with a STANCE or a buy/sell/hold call. Do not close
+with Act, Get ready, or Watch. Close with the ceiling sentence.
 """
+
+# Plain names for Live Market State Packet sections. Never a file path.
+_RESEARCH_PACKET_PLAIN: dict[str, tuple[str, str]] = {
+    "tape": ("Live market tape", "实时行情"),
+    "curve": ("Yield curve", "收益率曲线"),
+    "flags": ("Market flags", "市场标记"),
+    "breadth": ("Market breadth", "市场宽度"),
+    "leaders": ("Market leaders", "市场领涨品种"),
+    "drivers": ("Market drivers", "市场驱动因素"),
+    "shock": ("Shock state", "冲击状态"),
+    "rates": ("Rates desk", "利率台"),
+    "vol": ("Volatility regime", "波动率状态"),
+    "crossasset": ("Cross-asset read", "跨资产读数"),
+    "events": ("Market events", "市场事件"),
+    "regional": ("Regional boards", "地区看板"),
+    "cnboard": ("China board", "中国看板"),
+    "desk": ("Desk read", "研究台读数"),
+    "watch": ("Forward watch", "前瞻观察"),
+    "pressure": ("Market pressure", "市场压力"),
+    "session": ("Session state", "交易时段状态"),
+}
+
+# Spec (4): split on sentence-ending punctuation, anchored so the filter
+# rejoin preserves the ORIGINAL whitespace between sentences (rather than
+# injecting an ASCII space, which mangles a model-emitted ZH ceiling like
+# "...解读。这不是信号..." or splits "U.S." mid-word).
+#
+#   CJK branch — `(?<=[。！？])\s*`:
+#       Always a boundary. Consumes zero-or-more trailing whitespace so the
+#       gap moves WITH the previous sentence in the rejoin (no extra space
+#       appears before the next clause). Two ZH clauses after a CJK period
+#       with no intervening space ("每日简报...分化。请买入 NVDA。") are
+#       still two pieces.
+#
+#   ASCII branch — `(?<=[.!?])\s+(?=[A-Z])`:
+#       ONLY when the period is followed by whitespace + uppercase. This
+#       keeps "U.S.", "e.g.", "Inc.", "0.9", "v2.3", and "Waiting..." whole
+#       (lowercase / digit / period after a period is mid-sentence, not a
+#       boundary). It also keeps a normal "mixed. The daily briefing..."
+#       split. The lookahead consumes the trailing whitespace so the gap
+#       moves WITH the previous sentence.
+#
+# No capture groups. `_research_forbidden_filter` uses `re.search` for each
+# boundary and slices the ORIGINAL text so the rejoin is byte-identical to
+# the source.
+_RESEARCH_SENTENCE_SPLIT = re.compile(
+    r"(?<=[。！？])\s*"
+    r"|(?<=[.!?])\s+(?=[A-Z])"
+)
+# Spec (4): a percentage / 0-1 / star / high|medium|low conviction rendered as a
+# judgement — not a published fact such as "breadth was 40%". Match the
+# adjectival form 'confident' as well as the noun 'confidence', so
+# "I'm 80% confident" is read as a judgement, not a published fact. The
+# noun-form alternative allows any number of leading adverbs ("Confidence
+# is at 70%", "Confidence is at about 70%") rather than only one.
+_RESEARCH_PERCENT = re.compile(
+    r"\b\d{1,3}(?:\.\d+)?\s*%\s*"
+    r"(?:confidence|confident|conviction|sure|certain|probability|odds|chance)\b"
+    r"|(?:confidence|conviction|probability|odds)\s+"
+    r"(?:\s*(?:of|is|at|about|around|near|roughly|approximately)\s+)*"
+    r"\d{1,3}(?:\.\d+)?\s*%",
+    re.I,
+)
+_RESEARCH_STAR = re.compile(r"\b(?:[1-5]|five|four|three|two|one)[-\s]?stars?\b|[★☆]{1,5}", re.I)
+_RESEARCH_CONVICTION = re.compile(
+    r"\b(?:high|medium|low)\s+conviction\b"
+    r"|\bconviction\s+is\s+(?:high|medium|low)\b",
+    re.I,
+)
+_RESEARCH_SCORE_01 = re.compile(
+    r"\bscore\b.{0,24}\b0?\.\d+\b|\b0?\.\d+\b.{0,24}\b(?:score|confidence|conviction)\b",
+    re.I,
+)
+_RESEARCH_FALSIFIER = re.compile(r"\bfalsifier\b|\brefuted\b|证伪", re.I)
+# Spec (4): *imperative* buy/sell/size/target — not "funds continued to buy"
+# or "Fed target of 2 percent".
+#
+# EN price-target / target-price branch requires an imperative verb
+# (set/place/hit/cut/raise/lower/peg/establish/give/target) immediately
+# before "price target" / "target price" / "target", so a citing sentence
+# that *reports* a published price target ("The daily briefing listed a
+# published price target of 240.") is kept.
+#
+# ZH buy/sell branch is imperative-anchored: 买入 / 卖出 must be the LEADING
+# verb of its clause (start-of-string or right after a sentence-end
+# punctuation, optionally preceded by `请`), and must be followed by an
+# object token. This keeps reportative flow facts:
+#   - "资金持续买入。"         (持续 precedes the verb)
+#   - "南向资金继续买入港股。" (继续 precedes the verb)
+#   - "外资净买入债券。"       (净 precedes the verb)
+# while still dropping the imperative:
+#   - "买入 NVDA。"
+#   - "请买入 NVDA。"
+#   - "卖出 AAPL。"
+#   - "分化。买入 NVDA。"      (买 right after 。)
+_RESEARCH_TRADE = re.compile(
+    r"(?:^|(?<=[.!?。！？]\s))(?:buy|sell)\b"
+    r"|\b(?:you\s+should|please)\s+(?:buy|sell)\b"
+    r"|\b(?:buy|sell)\s+(?:now|immediately|today)\b"
+    r"|\bsize\s+(?:it|the\s+position|your\s+(?:position|size|book))\b"
+    r"|\b(?:set|place|hit|cut|raise|lower|peg|establish|give|target)\s+"
+    r"(?:a\s+)?(?:price\s+target|target\s+price|target)\b"
+    r"|(?:^|(?<=[.!?。！？]))\s*(?:请)?(?:买入|卖出)\s+\S",
+    re.I,
+)
+_RESEARCH_TOOL_RE: re.Pattern[str] | None = None
+
+
+def _research_tool_re() -> re.Pattern[str]:
+    """Compile once from the existing tool allowlist — never a second list."""
+    global _RESEARCH_TOOL_RE
+    if _RESEARCH_TOOL_RE is None:
+        names = sorted(_BRAIN_TOOLS | _BRAIN_INTERNALS_TOOLS, key=len, reverse=True)
+        _RESEARCH_TOOL_RE = re.compile(r"\b(?:" + "|".join(re.escape(n) for n in names) + r")\b")
+    return _RESEARCH_TOOL_RE
+
+
+def _research_asof(value: object) -> str:
+    s = str(value or "").strip()
+    if not s:
+        return ""
+    if len(s) >= 10 and s[4] == "-" and s[7] == "-":
+        return s[:10]
+    return s[:32]
+
+
+def _research_artifact(plain_en: str, plain_zh: str, asof: str = "", body: str = "",
+                       coverage: str = "", correction: str = "",
+                       null_disclosure: str = "") -> dict:
+    return {
+        "plain_en": plain_en,
+        "plain_zh": plain_zh,
+        "asof": asof,
+        "body": (body or "").strip()[:1200],
+        "coverage": str(coverage or "").strip()[:200],
+        "correction": str(correction or "").strip()[:200],
+        "null_disclosure": str(null_disclosure or "").strip()[:200],
+    }
+
+
+def _user_plane_get(path: str, user_jwt: str, timeout: int = 5) -> list | None:
+    """Read one User-Plane table as the CALLER.
+
+    Uses the existing user-plane client shape: SUPABASE_URL + SUPABASE_ANON_KEY
+    + the caller's JWT. Never the service-role key. Empty JWT → no network.
+    """
+    token = (user_jwt or "").strip()
+    if not token:
+        return None
+    url = (os.environ.get("SUPABASE_URL") or "").rstrip("/")
+    anon = (os.environ.get("SUPABASE_ANON_KEY") or "").strip()
+    if not url or not anon:
+        return None
+    req = urllib.request.Request(
+        f"{url}/rest/v1/{path}",
+        headers={
+            "apikey": anon,
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/json",
+        },
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            raw = resp.read()
+            data = json.loads(raw) if raw else []
+            return data if isinstance(data, list) else []
+    except urllib.error.HTTPError as exc:
+        # Missing table (F11 vertical not fully landed) is an empty read, not a
+        # service-role fallback.
+        code = getattr(exc, "code", None)
+        if code in (404, 400, 401, 403, 406):
+            return []
+        return None
+    except Exception:  # noqa: BLE001
+        return None
+
+
+# Architecture §7.7 user-facing condition words. Never "falsifier".
+_RESEARCH_MONITOR_STATE_PLAIN = {
+    "ARMED": "change condition",
+    "FIRED": "at risk",
+    "RECOVERED": "recovered",
+    "DEGRADED": "data unavailable",
+}
+
+
+def _research_user_artifacts(user_jwt: str) -> list[dict]:
+    """Corpus 3: the caller's own F11 objects, owner-only RLS via their JWT.
+
+    Column names are the frozen architecture
+    (MARKET_ONTOLOGY_POST_TIMEOUT_COMPLETION_ARCHITECTURE_2026-09-02.md §7.3):
+    theses.current_version_id; thesis_versions.version_number / title / claim;
+    thesis_condition_links as monitors. Never subject_ref, never a content JSON.
+    """
+    out: list[dict] = []
+    theses = _user_plane_get(
+        "theses?select=id,current_version_id,updated_at"
+        "&order=updated_at.desc&limit=20",
+        user_jwt,
+    ) or []
+    versions = _user_plane_get(
+        "thesis_versions?select=id,thesis_id,version_number,title,claim,recorded_at"
+        "&order=recorded_at.desc&limit=20",
+        user_jwt,
+    ) or []
+    notes = _user_plane_get(
+        "notes?select=id,body,updated_at&order=updated_at.desc&limit=20",
+        user_jwt,
+    ) or []
+    monitors = _user_plane_get(
+        "thesis_condition_links?select=id,thesis_id,status,label,recorded_at"
+        "&order=recorded_at.desc&limit=20",
+        user_jwt,
+    ) or []
+    versions_by_id = {
+        str(row.get("id")): row
+        for row in versions
+        if isinstance(row, dict) and row.get("id")
+    }
+    if theses:
+        asof = _research_asof((theses[0] or {}).get("updated_at") if isinstance(theses[0], dict) else "")
+        titles = []
+        for row in theses[:12]:
+            if not isinstance(row, dict):
+                continue
+            ver = versions_by_id.get(str(row.get("current_version_id") or "")) or {}
+            title = ver.get("title") or ver.get("claim") or ""
+            titles.append(str(title or row.get("id") or "")[:80])
+        out.append(_research_artifact(
+            "Your theses", "您的论点", asof,
+            body="; ".join(t for t in titles if t) or "signed in; none listed yet",
+        ))
+    if versions:
+        asof = _research_asof(
+            (versions[0] or {}).get("recorded_at") if isinstance(versions[0], dict) else ""
+        )
+        bits = []
+        for row in versions[:12]:
+            if not isinstance(row, dict):
+                continue
+            title = row.get("title") or row.get("claim") or ""
+            if title:
+                bits.append(str(title)[:120])
+        out.append(_research_artifact(
+            "Your thesis versions", "您的论点版本", asof,
+            body="; ".join(bits) or "signed in; none listed yet",
+        ))
+    if notes:
+        asof = _research_asof((notes[0] or {}).get("updated_at") if isinstance(notes[0], dict) else "")
+        bits = []
+        for row in notes[:8]:
+            if not isinstance(row, dict):
+                continue
+            body = row.get("body") or row.get("text") or ""
+            if body:
+                bits.append(str(body)[:160])
+        out.append(_research_artifact(
+            "Your notes", "您的笔记", asof,
+            body="; ".join(bits) or "signed in; none listed yet",
+        ))
+    if monitors:
+        asof = _research_asof(
+            (monitors[0] or {}).get("recorded_at") if isinstance(monitors[0], dict) else ""
+        )
+        bits = []
+        for row in monitors[:12]:
+            if not isinstance(row, dict):
+                continue
+            label = str(row.get("label") or "").strip()
+            status = str(row.get("status") or "").strip()
+            plain = _RESEARCH_MONITOR_STATE_PLAIN.get(status.upper(), status)
+            bit = f"{label} ({plain})" if label and plain else (label or plain)
+            if bit:
+                bits.append(bit[:120])
+        out.append(_research_artifact(
+            "Your monitors", "您的监测", asof,
+            body="; ".join(bits) or "signed in; none listed yet",
+        ))
+    return out
+
+
+def _research_packet_artifacts(root: Path) -> list[dict]:
+    """Corpus 1–2: Live Market State Packet + published JSON it aggregates + receipts."""
+    out: list[dict] = []
+    packet: dict = {}
+    try:
+        from engine.neuralweb import market_packet as _mp  # noqa: PLC0415
+        packet = _mp.build_packet(root) or {}
+    except Exception:  # noqa: BLE001
+        packet = {}
+    if not isinstance(packet, dict):
+        packet = {}
+    for key, (en, zh) in _RESEARCH_PACKET_PLAIN.items():
+        block = packet.get(key)
+        if not block:
+            continue
+        asof = ""
+        body = ""
+        coverage = ""
+        correction = ""
+        null_disc = ""
+        if isinstance(block, dict):
+            asof = _research_asof(block.get("asof") or block.get("as_of")
+                                 or block.get("generated_at") or block.get("state_asof"))
+            coverage = str(block.get("coverage") or "").strip()
+            correction = str(block.get("correction_state") or block.get("correction") or "").strip()
+            null_disc = str(block.get("null_disclosure") or block.get("gaps") or "").strip()
+            if isinstance(block.get("gaps"), list):
+                null_disc = "; ".join(str(x) for x in block.get("gaps")[:4])
+            # Compact body: digest-like, never a path.
+            try:
+                body = json.dumps(block, ensure_ascii=False, default=str)[:800]
+            except Exception:  # noqa: BLE001
+                body = str(block)[:800]
+        elif isinstance(block, list) and block:
+            asof = _research_asof(
+                block[0].get("asof") if isinstance(block[0], dict) else ""
+            )
+            body = json.dumps(block[:6], ensure_ascii=False, default=str)[:800]
+        else:
+            continue
+        out.append(_research_artifact(en, zh, asof, body, coverage, correction, null_disc))
+    # Packet-level gaps are the live packet's Tier-2 null disclosure (spec 1).
+    packet_gaps = packet.get("gaps") if isinstance(packet.get("gaps"), list) else []
+    if packet_gaps:
+        packet_asof = _research_asof(packet.get("asof") or packet.get("generated_at") or "")
+        out.insert(0, _research_artifact(
+            "Live market state packet", "实时市场状态数据包", packet_asof, "",
+            null_disclosure="; ".join(str(g) for g in packet_gaps[:8]),
+        ))
+    # Published briefing the contract names (may live beside the packet, not inside it).
+    briefing_path = root / "site" / "intelligence" / "briefing.json"
+    try:
+        if briefing_path.is_file():
+            raw = json.loads(briefing_path.read_text(encoding="utf-8"))
+            if isinstance(raw, dict):
+                asof = _research_asof(raw.get("asof") or raw.get("generated_at")
+                                     or raw.get("as_of"))
+                body = str(raw.get("summary") or raw.get("headline")
+                           or json.dumps(raw, ensure_ascii=False, default=str)[:800])
+                out.append(_research_artifact(
+                    "Daily briefing", "每日简报", asof, body,
+                    coverage=str(raw.get("coverage") or ""),
+                    correction=str(raw.get("correction_state") or raw.get("correction") or ""),
+                    null_disclosure=str(raw.get("null_disclosure") or ""),
+                ))
+    except Exception:  # noqa: BLE001
+        pass
+    return out
+
+
+def _build_research_corpus(root: Path, user_jwt: str = "") -> dict:
+    """Closed-list grounding corpora 1–3. Never raises. Never logs the JWT."""
+    artifacts = _research_packet_artifacts(root)
+    jwt_present = bool((user_jwt or "").strip())
+    if jwt_present:
+        artifacts.extend(_research_user_artifacts(user_jwt))
+    return {"artifacts": artifacts, "jwt_present": jwt_present}
+
+
+def _format_research_grounding(corpus: dict) -> str:
+    """Prompt block. Plain names only — never file paths."""
+    lines = [
+        "[GROUNDED RESEARCH CORPUS — answer ONLY from this. Never use general knowledge. "
+        "Never name file paths or tool names.]",
+    ]
+    arts = corpus.get("artifacts") or []
+    if not arts:
+        lines.append("No published artifact was readable for this turn.")
+    for art in arts:
+        asof = art.get("asof") or "unknown date"
+        line = f"- {art['plain_en']} / {art['plain_zh']} (as of {asof}): {art.get('body') or ''}"
+        receipts = []
+        if art.get("coverage"):
+            receipts.append(f"coverage {art['coverage']}")
+        if art.get("correction"):
+            receipts.append(f"correction {art['correction']}")
+        if art.get("null_disclosure"):
+            receipts.append(f"null {art['null_disclosure']}")
+        if receipts:
+            line += " [" + "; ".join(receipts) + "]"
+        lines.append(line)
+    if not corpus.get("jwt_present"):
+        lines.append(_RESEARCH_JWT_ABSENT_EN)
+        lines.append(_RESEARCH_JWT_ABSENT_ZH)
+    return "\n".join(lines)
+
+
+def _format_used_list(corpus: dict) -> str:
+    lines = [_RESEARCH_USED_EN, _RESEARCH_USED_ZH]
+    arts = corpus.get("artifacts") or []
+    if not arts:
+        lines.append("- Live market state packet — not available this turn")
+        lines.append("- 实时市场状态数据包 — 本轮无法读取")
+        lines.append("- Daily briefing — not published yet")
+        lines.append("- 每日简报 — 尚未发布")
+    else:
+        for art in arts:
+            asof = art.get("asof") or ""
+            en_fallback = asof or "unknown date"
+            zh_fallback = asof or "日期不明"
+            lines.append(f"- {art['plain_en']} (as of {en_fallback})")
+            lines.append(f"- {art['plain_zh']}（截至 {zh_fallback}）")
+    return "\n".join(lines)
+
+
+def _research_cites_artifact(answer: str, corpus: dict) -> bool:
+    text = answer or ""
+    low = text.lower()
+    for art in corpus.get("artifacts") or []:
+        en = str(art.get("plain_en") or "").strip()
+        zh = str(art.get("plain_zh") or "").strip()
+        if en and en.lower() in low:
+            return True
+        if zh and zh in text:
+            return True
+    return False
+
+
+def _research_sentence_forbidden(sentence: str) -> bool:
+    s = sentence or ""
+    if not s.strip():
+        return False
+    # Canonical endings we append ourselves are never dropped.
+    if s.strip() in {
+        _RESEARCH_CEILING_EN, _RESEARCH_CEILING_ZH,
+        _RESEARCH_NULL_EN, _RESEARCH_NULL_ZH,
+        _RESEARCH_JWT_ABSENT_EN, _RESEARCH_JWT_ABSENT_ZH,
+        _RESEARCH_WITHHELD_EN, _RESEARCH_WITHHELD_ZH,
+        _RESEARCH_USED_EN, _RESEARCH_USED_ZH,
+    }:
+        return False
+    if _RESEARCH_PERCENT.search(s):
+        return True
+    if _RESEARCH_STAR.search(s):
+        return True
+    if _RESEARCH_CONVICTION.search(s):
+        return True
+    if _RESEARCH_SCORE_01.search(s):
+        return True
+    if _RESEARCH_FALSIFIER.search(s):
+        return True
+    if _RESEARCH_TRADE.search(s):
+        return True
+    if _research_tool_re().search(s):
+        return True
+    return False
+
+
+def _research_forbidden_filter(text: str) -> tuple[str, bool]:
+    """Drop forbidden sentences. Disclosure is appended by the post-check.
+
+    Walks the ORIGINAL text using `_RESEARCH_SENTENCE_SPLIT.search` so the
+    rejoin preserves every byte of the source — no ASCII space is injected
+    between CJK sentences (which would mangle a model-emitted ZH ceiling
+    like "...解读。这不是信号..."), and a normal EN split
+    ("...mixed. The briefing...") keeps its single ASCII space.
+    """
+    raw = (text or "").strip()
+    if not raw:
+        return "", False
+    # Build the list of sentence pieces as (start, end) spans in `raw`.
+    # Each span INCLUDES the trailing whitespace of the sentence so the
+    # rejoin is byte-identical to the source at every kept boundary.
+    # `finditer` advances past zero-width matches automatically (a manual
+    # `re.search` loop would re-find the same zero-width boundary and hang).
+    pieces: list[tuple[int, int]] = []
+    cursor = 0
+    for m in _RESEARCH_SENTENCE_SPLIT.finditer(raw):
+        pieces.append((cursor, m.end()))
+        cursor = m.end()
+    if cursor < len(raw) or not pieces:
+        pieces.append((cursor, len(raw)))
+    kept: list[str] = []
+    withheld = False
+    for start, end in pieces:
+        piece = raw[start:end]
+        stripped = piece.strip()
+        if not stripped:
+            continue
+        if _research_sentence_forbidden(stripped):
+            withheld = True
+            continue
+        kept.append(piece)
+    return "".join(kept).strip(), withheld
+
+
+def _research_postprocess(answer: str, corpus: dict) -> tuple[str, bool]:
+    """Enforce citation-or-null, forbidden-output filter, ceiling, used-list, JWT null."""
+    body = (answer or "").strip()
+    cited = _research_cites_artifact(body, corpus)
+    already_null = body.startswith(_RESEARCH_NULL_EN)
+    withheld = False
+    if not cited and not already_null:
+        body = f"{_RESEARCH_NULL_EN}\n{_RESEARCH_NULL_ZH}"
+        already_null = True
+    else:
+        filtered, withheld = _research_forbidden_filter(body)
+        if already_null:
+            body = f"{_RESEARCH_NULL_EN}\n{_RESEARCH_NULL_ZH}"
+        else:
+            body = filtered
+            # If the forbidden-output filter ate the only citing sentence,
+            # do NOT fall back to the spec (3) coverage null — the read
+            # still came from a used artifact (the original body cited it),
+            # and the WITHHELD disclosure below names the drop. But the
+            # reply must still carry a plain EN+ZH sentence (distinct from
+            # the spec 3 coverage null); an empty body followed by the
+            # used-list + ceiling + withheld disclosure reads as blank
+            # space to the user.
+            if withheld and not body.strip():
+                body = f"{_RESEARCH_FILTER_EMPTY_EN}\n{_RESEARCH_FILTER_EMPTY_ZH}"
+    if _RESEARCH_USED_EN not in body:
+        body = body.rstrip() + "\n\n" + _format_used_list(corpus)
+    if _RESEARCH_CEILING_EN not in body:
+        body = body.rstrip() + "\n\n" + _RESEARCH_CEILING_EN + "\n" + _RESEARCH_CEILING_ZH
+    if not corpus.get("jwt_present") and _RESEARCH_JWT_ABSENT_EN not in body:
+        body = body.rstrip() + "\n\n" + _RESEARCH_JWT_ABSENT_EN + "\n" + _RESEARCH_JWT_ABSENT_ZH
+    if withheld:
+        if _RESEARCH_WITHHELD_EN not in body:
+            body = body.rstrip() + "\n\n" + _RESEARCH_WITHHELD_EN + "\n" + _RESEARCH_WITHHELD_ZH
+    return body, withheld
 
 # Chart-command bus allowlists (W6b) — module constants and the SOLE source of truth. They
 # mirror the Terminal chart's real capabilities (DetectCmd kinds, indicator keys, TF set from
@@ -3539,6 +4102,7 @@ def _dispatch_brain_tool(
     user_id: str = "",
     internals_ok: bool = False,
     chart_client: str = "",
+    mode: str = "chat",
 ) -> dict:
     """Dispatch a brain gateway tool call.
 
@@ -3550,7 +4114,14 @@ def _dispatch_brain_tool(
     schema-omission alone is insufficient — the execution boundary must also gate).
     chart_client (CMX W2): the caller's chart client ('terminal' on the Terminal page),
     used by read_chart_state to fetch the right ChartSession.
+    mode='research' (MO-PAID-031): refuse every tool. Grounding is the closed corpus
+    already attached to the turn — the Research Vault and world_state stay off this path.
     """
+    if (mode or "chat").strip().lower() == "research":
+        return {"error": (
+            "research mode does not retrieve. Answer only from the grounded corpus "
+            "attached to this turn."
+        )}
     if tool_name not in _BRAIN_TOOLS:
         log.warning("brain_gateway: REFUSED tool %r (not in allowlist)", tool_name)
         # Name the valid tools so the model self-corrects in ONE step instead of
@@ -3786,6 +4357,7 @@ def _all_brain_tool_schemas(
     page: str = "",
     internals_allowed: bool = False,
     user_id: str = "",
+    mode: str = "chat",
 ) -> list[dict]:
     """Return the full tool schema list (ask_brain read tools + brain-only tools).
 
@@ -3795,7 +4367,11 @@ def _all_brain_tool_schemas(
     Unlimited account whose status is active/trialing.  The default is therefore the
     guest-safe schema, not the internal superset.
     Non-allowlisted sessions never see context_search / context_open in the schema list.
+    mode='research' (MO-PAID-031): offer nothing. The closed corpora 1–3 are injected
+    as grounding context; search_research / read_world_state stay off this turn.
     """
+    if (mode or "chat").strip().lower() == "research":
+        return []
     from engine.neuralweb.ask_brain import _read_tool_schemas  # noqa: PLC0415
     schemas = _read_tool_schemas() + _brain_tool_schemas()
     if not _earnings_evidence_allowed(user_id, root):
@@ -3948,11 +4524,12 @@ def _build_system_prompt(mode: str = "chat", page: str = "",
         prompt = prompt.replace(_PROPRIETARY_REFUSAL_LINE, _OPERATOR_INTERNALS_CLAUSE)
     prompt = prompt + _CONTRADICTION_DIRECTIVE
     if mode == "research":
-        prompt = _RESEARCH_SYSTEM_DIRECTIVE + prompt
-    else:
-        shape = {"fast": _ANSWER_SHAPE_FAST, "pro": _ANSWER_SHAPE_PRO}.get(
-            (lane or "").strip().lower(), "")
-        prompt = prompt + shape
+        # Grounded research is its own prompt. The chat analyst prompt asks for a
+        # STANCE / "what to do" / a clean % move and would fight the closed corpus.
+        return _RESEARCH_SYSTEM_DIRECTIVE
+    shape = {"fast": _ANSWER_SHAPE_FAST, "pro": _ANSWER_SHAPE_PRO}.get(
+        (lane or "").strip().lower(), "")
+    prompt = prompt + shape
     # Charts split by SURFACE, because the two surfaces are different situations. The
     # Terminal already has a live chart in front of the user, so the right move there is to
     # drive it — switch the symbol, add the indicator, draw the level — and a static picture
@@ -5965,13 +6542,15 @@ def _run_brain_loop(
         page=safe_page,
         internals_allowed=internals_ok,
         user_id=user_id,
+        mode=mode,
     )
     system_prompt = _build_system_prompt(mode, safe_page, internals_allowed=internals_ok, lane=lane)
-    system_prompt = system_prompt + _doctrine_block_for(safe_page, message)  # CMX W4
-    # W3: the account's stored answer LENGTH, ahead of the analyst block so the protocol's
-    # own instructions still read closest to the turn (and the LANGUAGE line stays last).
-    system_prompt = system_prompt + _depth_addendum(_account_pref(context, "brain_depth"))
-    system_prompt = system_prompt + _analyst_block_for(message, lane)  # Analyst OS P0
+    if mode != "research":
+        system_prompt = system_prompt + _doctrine_block_for(safe_page, message)  # CMX W4
+        # W3: the account's stored answer LENGTH, ahead of the analyst block so the protocol's
+        # own instructions still read closest to the turn (and the LANGUAGE line stays last).
+        system_prompt = system_prompt + _depth_addendum(_account_pref(context, "brain_depth"))
+        system_prompt = system_prompt + _analyst_block_for(message, lane)  # Analyst OS P0
     # W1-A seed plan: fast lane only (pro/research get tool autonomy by design), chat mode
     # only, and never the Terminal — a chart turn follows the technician protocol's read order.
     if lane == "fast" and mode == "chat" and safe_page != "terminal":
@@ -6005,15 +6584,20 @@ def _run_brain_loop(
     turn_as_of = datetime.now(timezone.utc)
     ambient_call = (
         _compact_earnings_call_context(safe_sym, root, as_of=turn_as_of)
-        if safe_sym else {}
+        if safe_sym and mode != "research" else {}
     )
     ambient_citations = _earnings_call_citations(ambient_call)
-    _digests = [
-        digest for digest in (
-            _grounding_digest(root, lang=turn_lang),
-            _symbol_grounding_digest(safe_sym, root, as_of=turn_as_of),
-        ) if digest
-    ]
+    # Research mode carries its own closed corpus via source_prompt (MO-PAID-031).
+    # The chat-lane digest can pull world_state / master_brief fallbacks that are
+    # outside the allowed list, so it stays off this path.
+    _digests = []
+    if mode != "research":
+        _digests = [
+            digest for digest in (
+                _grounding_digest(root, lang=turn_lang),
+                _symbol_grounding_digest(safe_sym, root, as_of=turn_as_of),
+            ) if digest
+        ]
     if _digests:
         _combined_digest = "\n\n".join(_digests)
         user_content = f"{_combined_digest}\n\n[USER QUESTION]\n{user_content}"
@@ -6110,6 +6694,7 @@ def _run_brain_loop(
                     name, params, root, terminal_data_dir, terminal_hub_url,
                     user_id=user_id, internals_ok=internals_ok,
                     chart_client=("terminal" if safe_page == "terminal" else ""),
+                    mode=mode,
                 ),
             )
             _tools_ms_by_id[str(getattr(b, "id", ""))] = {
@@ -6709,6 +7294,7 @@ def _run_brain_loop_stream(
     context_receipt: dict | None = None,
     source_prompt: str = "",
     source_receipt: dict | None = None,
+    research_corpus: dict | None = None,
 ) -> Generator[str, None, None]:
     """Run the brain loop; yield SSE events per contract.
 
@@ -6824,13 +7410,15 @@ def _run_brain_loop_stream(
         page=safe_page,
         internals_allowed=internals_ok,
         user_id=user_id,
+        mode=mode,
     )
     system_prompt = _build_system_prompt(mode, safe_page, internals_allowed=internals_ok, lane=lane)
-    system_prompt = system_prompt + _doctrine_block_for(safe_page, message)  # CMX W4
-    # W3: the account's stored answer LENGTH, ahead of the analyst block so the protocol's
-    # own instructions still read closest to the turn (and the LANGUAGE line stays last).
-    system_prompt = system_prompt + _depth_addendum(_account_pref(context, "brain_depth"))
-    system_prompt = system_prompt + _analyst_block_for(message, lane)  # Analyst OS P0
+    if mode != "research":
+        system_prompt = system_prompt + _doctrine_block_for(safe_page, message)  # CMX W4
+        # W3: the account's stored answer LENGTH, ahead of the analyst block so the protocol's
+        # own instructions still read closest to the turn (and the LANGUAGE line stays last).
+        system_prompt = system_prompt + _depth_addendum(_account_pref(context, "brain_depth"))
+        system_prompt = system_prompt + _analyst_block_for(message, lane)  # Analyst OS P0
     # W1-A seed plan: fast lane only (pro/research get tool autonomy by design), chat mode
     # only, and never the Terminal — a chart turn follows the technician protocol's read order.
     if lane == "fast" and mode == "chat" and safe_page != "terminal":
@@ -6863,15 +7451,20 @@ def _run_brain_loop_stream(
     turn_as_of = datetime.now(timezone.utc)
     ambient_call = (
         _compact_earnings_call_context(safe_sym, root, as_of=turn_as_of)
-        if safe_sym else {}
+        if safe_sym and mode != "research" else {}
     )
     ambient_citations = _earnings_call_citations(ambient_call)
-    _digests = [
-        digest for digest in (
-            _grounding_digest(root, lang=turn_lang),
-            _symbol_grounding_digest(safe_sym, root, as_of=turn_as_of),
-        ) if digest
-    ]
+    # Research mode carries its own closed corpus via source_prompt (MO-PAID-031).
+    # The chat-lane digest can pull world_state / master_brief fallbacks that are
+    # outside the allowed list, so it stays off this path.
+    _digests = []
+    if mode != "research":
+        _digests = [
+            digest for digest in (
+                _grounding_digest(root, lang=turn_lang),
+                _symbol_grounding_digest(safe_sym, root, as_of=turn_as_of),
+            ) if digest
+        ]
     if _digests:
         _combined_digest = "\n\n".join(_digests)
         user_content = f"{_combined_digest}\n\n[USER QUESTION]\n{user_content}"
@@ -7113,6 +7706,7 @@ def _run_brain_loop_stream(
                     name, params, root, terminal_data_dir, terminal_hub_url,
                     user_id=user_id, internals_ok=internals_ok,
                     chart_client=("terminal" if safe_page == "terminal" else ""),
+                    mode=mode,
                 ),
             )
             _tools_ms_by_id[str(getattr(b, "id", ""))] = {
@@ -7342,6 +7936,9 @@ def _run_brain_loop_stream(
     citations = _extract_citations_brain(messages, extra=ambient_citations)
     filtered_answer, was_filtered = _post_filter_advice(full_answer, citations)
     filtered_answer = _leak_screen(filtered_answer)  # PART B: prompt-echo → distill refusal
+    if mode == "research" and research_corpus is not None:
+        filtered_answer, research_withheld = _research_postprocess(filtered_answer, research_corpus)
+        was_filtered = was_filtered or research_withheld
     # Split off the [NEXT] suggestion block (W6d): the delta carries only the CLEAN text;
     # suggestions are emitted as their own event AFTER the delta and BEFORE done.
     filtered_answer, suggestions = _split_suggestions(filtered_answer)
@@ -8473,6 +9070,7 @@ def chat(
     guest_aid: str = "",
     guest_ip: str = "",
     account_prefs: dict | None = None,
+    user_jwt: str = "",
 ) -> dict:
     """Process a brain chat request (non-streaming).
 
@@ -8519,7 +9117,8 @@ def chat(
     cfg = _load_brain_config(root)
     lanes_cfg = cfg.get("lanes") or {}
 
-    # Research mode (W6b): force pro lane + raise tool budget
+    # Research mode (MO-PAID-031): force Pro lane for quota. Tool budget is
+    # pinned to 1 below — this is not W6b Deep Research's 20-tool pass.
     if mode == "research":
         lane = "pro"
 
@@ -8534,13 +9133,11 @@ def chat(
     # degraded DeepSeek rung deliberately does not, so research mode inherits thinking ON).
     deepseek_thinking = lane_cfg.get("deepseek_thinking")
 
-    # Research mode: override tool budget + intensity from config
+    # Grounded research (MO-PAID-031) keeps the Pro lane for quota, but does
+    # not run W6b's 20-tool Deep Research pass. The closed corpus is already
+    # in source_prompt; one synthesis turn is enough.
     if mode == "research":
-        research_cfg = cfg.get("research") or {}
-        tool_budget = int(research_cfg.get("tool_budget") or 20)
-        max_tokens = int(research_cfg.get("max_tokens") or 8000)
-        effort = research_cfg.get("effort") or effort
-        thinking_mode = research_cfg.get("thinking") or thinking_mode
+        tool_budget = 1
 
     terminal_data_dir = Path(os.environ.get("TERMINAL_DATA_DIR", str(_TERMINAL_DATA_DIR)))
     terminal_hub_url = os.environ.get("TERMINAL_HUB_URL", _TERMINAL_HUB_URL)
@@ -8662,7 +9259,7 @@ def chat(
     )
     _native_route_decision_ms = _ms_since(_native_plan_t0)
     _instant_route_hit = (
-        None if images or source_attachment is not None or _native_plan_hit is not None
+        None if images or mode == "research" or source_attachment is not None or _native_plan_hit is not None
         else _instant_route(clean_msg, context)
     )
 
@@ -8860,6 +9457,14 @@ def chat(
     # 6. Run the tool loop
     loop_source_kwargs = ({"source_prompt": source_attachment.resolved.prompt_block}
                           if source_attachment else {})
+    research_corpus: dict | None = None
+    if mode == "research":
+        research_corpus = _build_research_corpus(root, user_jwt=user_jwt)
+        research_block = _format_research_grounding(research_corpus)
+        existing = loop_source_kwargs.get("source_prompt") or ""
+        loop_source_kwargs["source_prompt"] = (
+            (research_block + "\n\n" + existing) if existing else research_block
+        )
     try:
         answer_text, citations, annotations, final_messages, usage_dict, commands, charts = _run_brain_loop(
             clean_msg, lane, active_history, context or {},
@@ -8890,6 +9495,9 @@ def chat(
     #    The CLEAN text is what we persist and return as the reply; suggestions become buttons.
     answer_text, was_filtered = _post_filter_advice(answer_text, citations)
     answer_text = _leak_screen(answer_text)  # PART B: prompt-echo → distill refusal
+    if mode == "research" and research_corpus is not None:
+        answer_text, research_withheld = _research_postprocess(answer_text, research_corpus)
+        was_filtered = was_filtered or research_withheld
     answer_text, suggestions = _split_suggestions(answer_text)
     # Same language ladder the prompt used (W3: account lang is the middle fallback), so a
     # chip can never come back screened against a different language than the body.
@@ -8999,6 +9607,7 @@ def chat_stream(
     guest_aid: str = "",
     guest_ip: str = "",
     account_prefs: dict | None = None,
+    user_jwt: str = "",
 ) -> Generator[str, None, None]:
     """Process a brain chat request (streaming). Yields SSE strings per contract.
 
@@ -9029,7 +9638,8 @@ def chat_stream(
     cfg = _load_brain_config(root)
     lanes_cfg = cfg.get("lanes") or {}
 
-    # Research mode (W6b): force pro lane + raise tool budget
+    # Research mode (MO-PAID-031): force Pro lane for quota. Tool budget is
+    # pinned to 1 below — this is not W6b Deep Research's 20-tool pass.
     if mode == "research":
         lane = "pro"
 
@@ -9045,14 +9655,11 @@ def chat_stream(
     # degraded DeepSeek rung deliberately does not, so research mode inherits thinking ON).
     deepseek_thinking = lane_cfg.get("deepseek_thinking")
 
-    # Research mode: force pro-lane intensity even if invoked with a different lane_cfg
-    # and raise the budget (Deep Research thinks harder + longer than plain chat).
+    # Grounded research (MO-PAID-031) keeps the Pro lane for quota, but does
+    # not run W6b's 20-tool Deep Research pass. The closed corpus is already
+    # in source_prompt; one synthesis turn is enough.
     if mode == "research":
-        research_cfg = cfg.get("research") or {}
-        tool_budget = int(research_cfg.get("tool_budget") or 20)
-        max_tokens = int(research_cfg.get("max_tokens") or 8000)
-        effort = research_cfg.get("effort") or effort
-        thinking_mode = research_cfg.get("thinking") or thinking_mode
+        tool_budget = 1
 
     terminal_data_dir = Path(os.environ.get("TERMINAL_DATA_DIR", str(_TERMINAL_DATA_DIR)))
     terminal_hub_url = os.environ.get("TERMINAL_HUB_URL", _TERMINAL_HUB_URL)
@@ -9143,7 +9750,7 @@ def chat_stream(
     )
     _native_route_decision_ms = _ms_since(_native_plan_t0)
     _instant_route_hit = (
-        None if images or source_attachment is not None or _native_plan_hit is not None
+        None if images or mode == "research" or source_attachment is not None or _native_plan_hit is not None
         else _instant_route(clean_msg, context)
     )
 
@@ -9358,6 +9965,15 @@ def chat_stream(
          "source_receipt": source_attachment.resolved.receipt}
         if source_attachment else {}
     )
+    research_corpus: dict | None = None
+    if mode == "research":
+        research_corpus = _build_research_corpus(root, user_jwt=user_jwt)
+        research_block = _format_research_grounding(research_corpus)
+        existing = stream_source_kwargs.get("source_prompt") or ""
+        stream_source_kwargs["source_prompt"] = (
+            (research_block + "\n\n" + existing) if existing else research_block
+        )
+        stream_source_kwargs["research_corpus"] = research_corpus
     try:
         yield from _run_brain_loop_stream(
             clean_msg, lane, active_history, context or {},

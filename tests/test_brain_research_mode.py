@@ -1,0 +1,868 @@
+"""B-F11-6 / MO-PAID-031 — grounded research mode.
+
+RED-first suite. Uses the gateway's existing LLM test doubles
+(_MockClient / _MockResponse / _MockBlock), the same idiom as
+tests/test_brain_gateway.py. No network, no data/, no site/ from the
+checkout — fixtures write their own briefing under tmp.
+
+Coverage:
+  1. A question outside coverage returns the exact null form (EN+ZH)
+     plus the plain list of what was checked.
+  2. Every research answer carries the ceiling sentence (verbatim EN + ZH).
+  3. Every research answer carries a 'What this read used' list of plain
+     names + asof dates (never file paths).
+  4. JWT-absent prints the unsigned-in null (EN+ZH).
+  5. Forbidden-output filter: judgement scores, falsifier/refuted/证伪,
+     allowlist tool names, imperative buy/sell/size/target.
+  6. An answer that cites no used artifact is replaced by the null form.
+  7. BRAIN_INTERNALS_ALLOWLIST / internals tool set identity and length
+     are unchanged (no widening, mirroring, cache, or second list).
+  8. Widget copy in templates/mm_brain.js.
+  9. User-plane reads never send the service-role key.
+"""
+from __future__ import annotations
+
+import json
+import os
+import pathlib
+import sys
+from unittest.mock import MagicMock, patch
+
+import pytest
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
+
+from engine.neuralweb import brain_gateway as gw  # noqa: E402
+
+
+# Frozen allowlist identity — if research mode widens or duplicates the
+# internals set, this suite fails closed.
+_FROZEN_INTERNALS = frozenset({"context_search", "context_open"})
+_FROZEN_TOOLS_LEN = 63
+
+CEILING_EN = (
+    "This is a reading of what we already published. It is not a signal, "
+    "not a rating, and not advice — nothing here changes any board, rank, or alert."
+)
+CEILING_ZH = (
+    "这是对我们已经发布内容的解读。这不是信号、不是评级、也不是建议——"
+    "这里的任何内容都不会改变任何看板、排名或提醒。"
+)
+NULL_EN = "We don't publish anything that answers this yet."
+NULL_ZH = "我们目前还没有发布能回答这个问题的内容。"
+JWT_ABSENT_EN = "Your own theses and notes weren't included — you're not signed in here."
+JWT_ABSENT_ZH = "您自己的论点和笔记没有纳入本次阅读——您尚未在此登录。"
+WITHHELD_EN = "Part of this answer was withheld because it read like a signal."
+WITHHELD_ZH = "本次回答有一部分被隐去，因为它读起来像信号。"
+USED_EN = "What this read used"
+USED_ZH = "本次阅读用到的内容"
+
+TOGGLE_EN = "Research mode — answers only from what we publish"
+TOGGLE_ZH = "研究模式——只根据我们已发布的内容作答。"
+
+
+@pytest.fixture(autouse=True)
+def _ai_costs_ledger_to_tmp(tmp_path, monkeypatch):
+    monkeypatch.setattr(
+        "lib.ai_costs._write_ledger_path",
+        lambda root=None: tmp_path / "ai_costs" / "usage.jsonl",
+    )
+
+
+def _make_research_root(tmp_path: pathlib.Path, *, with_briefing: bool = True) -> pathlib.Path:
+    """Minimal repo root with a published briefing the research corpus can read."""
+    root = tmp_path / "repo"
+    intel = root / "site" / "intelligence"
+    intel.mkdir(parents=True, exist_ok=True)
+    if with_briefing:
+        (intel / "briefing.json").write_text(
+            json.dumps({
+                "asof": "2026-09-12",
+                "generated_at": "2026-09-12T20:00:00Z",
+                "coverage": "full",
+                "correction_state": "none",
+                "null_disclosure": "",
+                "summary": "US session mixed. Breadth was thin.",
+            }),
+            encoding="utf-8",
+        )
+    live = root / "site" / "live"
+    live.mkdir(parents=True, exist_ok=True)
+    (live / "quotes.json").write_text(
+        json.dumps({"asof": "2026-09-12T20:00:00Z"}),
+        encoding="utf-8",
+    )
+    nw = root / "data" / "neuralweb"
+    nw.mkdir(parents=True, exist_ok=True)
+    (nw / "world_state.json").write_text(json.dumps({"regime": "Q1"}), encoding="utf-8")
+    return root
+
+
+def _research_chat(tmp_path, reply_text: str, message: str = "What is the capital of France?",
+                   user_jwt: str = "", *, with_briefing: bool = True):
+    """Drive gw.chat(mode='research') with the gateway's loop replaced by a double."""
+    root = _make_research_root(tmp_path, with_briefing=with_briefing)
+
+    def _mock_loop(*args, **kwargs):
+        return reply_text, [], [], [], {}, [], []
+
+    with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+        with patch.object(gw, "_build_lane_providers",
+                          return_value=[{"client": MagicMock(), "model": "claude-opus-4-8"}]):
+            with patch.object(gw, "_resolve_tier",
+                              return_value={"tier": "pro", "status": "active",
+                                            "current_period_end": None}):
+                with patch.object(gw, "_ensure_thread", return_value=None):
+                    with patch.object(gw, "_run_brain_loop", side_effect=_mock_loop):
+                        with patch("lib.ai_costs.record_usage", return_value=True):
+                            return gw.chat(
+                                message, "user_research",
+                                mode="research",
+                                root=root,
+                                user_jwt=user_jwt,
+                            )
+
+
+# ---------------------------------------------------------------------------
+# 1. Corpus restriction → exact null form
+# ---------------------------------------------------------------------------
+
+def test_outside_coverage_returns_exact_null_form(tmp_path):
+    """A fixture question the published corpora do not cover → exact null form."""
+    result = _research_chat(
+        tmp_path,
+        "France won the 1998 World Cup. Paris is lovely in June.",
+        message="Who won the 1998 World Cup?",
+        with_briefing=False,
+    )
+    reply = result["reply"]
+    assert reply.startswith(NULL_EN), reply
+    assert NULL_ZH in reply
+    assert USED_EN in reply
+    assert USED_ZH in reply
+    # Never a file path in the used-list.
+    assert "site/" not in reply
+    assert "engine/" not in reply
+    assert ".json" not in reply
+    assert "falsifier" not in reply.lower()
+    assert "证伪" not in reply
+
+
+def test_uncited_answer_replaced_by_null_form(tmp_path):
+    """Deterministic post-check: an answer that cites no used artifact is the null form."""
+    result = _research_chat(
+        tmp_path,
+        "Generally speaking, equities rally when the Fed cuts.",
+        message="What happens when the Fed cuts?",
+    )
+    reply = result["reply"]
+    assert NULL_EN in reply
+    assert NULL_ZH in reply
+    # The model's general-knowledge sentence must not survive.
+    assert "Generally speaking" not in reply
+
+
+# ---------------------------------------------------------------------------
+# 2. Ceiling sentence
+# ---------------------------------------------------------------------------
+
+def test_ceiling_sentence_present_on_grounded_answer(tmp_path):
+    result = _research_chat(
+        tmp_path,
+        "The daily briefing says the US session was mixed and breadth was thin.",
+        message="How did the US session look?",
+    )
+    reply = result["reply"]
+    assert CEILING_EN in reply
+    assert CEILING_ZH in reply
+
+
+def test_ceiling_sentence_present_on_null_form(tmp_path):
+    result = _research_chat(
+        tmp_path,
+        "I do not know.",
+        message="Who won the 1998 World Cup?",
+        with_briefing=False,
+    )
+    reply = result["reply"]
+    assert CEILING_EN in reply
+    assert CEILING_ZH in reply
+
+
+# ---------------------------------------------------------------------------
+# 3. Used-artifacts list
+# ---------------------------------------------------------------------------
+
+def test_used_artifacts_list_present_with_plain_names(tmp_path):
+    result = _research_chat(
+        tmp_path,
+        "The daily briefing says the US session was mixed and breadth was thin.",
+        message="How did the US session look?",
+    )
+    reply = result["reply"]
+    assert USED_EN in reply
+    assert USED_ZH in reply
+    assert "Daily briefing" in reply
+    assert "2026-09-12" in reply
+    assert "site/intelligence/briefing.json" not in reply
+    assert "/var/lib/macro-live" not in reply
+
+
+# ---------------------------------------------------------------------------
+# 4. JWT-absent null
+# ---------------------------------------------------------------------------
+
+def test_jwt_absent_prints_unsigned_in_null(tmp_path):
+    result = _research_chat(
+        tmp_path,
+        "The daily briefing says the US session was mixed and breadth was thin.",
+        message="How did the US session look?",
+        user_jwt="",
+    )
+    reply = result["reply"]
+    assert JWT_ABSENT_EN in reply
+    assert JWT_ABSENT_ZH in reply
+
+
+def test_jwt_present_does_not_print_unsigned_in_null(tmp_path):
+    """A signed-in caller does not get the unsigned-in sentence.
+
+    The user-plane GET is mocked so we never hit the network; an empty row
+    set is still a signed-in read, not an unsigned-in one.
+    """
+    with patch.object(gw, "_user_plane_get", return_value=[]):
+        result = _research_chat(
+            tmp_path,
+            "The daily briefing says the US session was mixed and breadth was thin.",
+            message="How did the US session look?",
+            user_jwt="header.payload.sig",
+        )
+    reply = result["reply"]
+    assert JWT_ABSENT_EN not in reply
+    assert JWT_ABSENT_ZH not in reply
+
+
+# ---------------------------------------------------------------------------
+# 5. Forbidden-output filter
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize(
+    "raw,should_drop",
+    [
+        ("I have 80% confidence this setup works.", True),
+        ("Conviction is high on this name.", True),
+        ("Score this a 0.9 on the desk's scale.", True),
+        ("Five-star setup from here.", True),
+        ("The falsifier has fired.", True),
+        ("This claim is refuted.", True),
+        ("该条件已经证伪。", True),
+        ("Call context_search on the repo.", True),
+        ("You should buy NVDA immediately.", True),
+        ("Sell the position and size it down.", True),
+        ("Set a target of 240 on the name.", True),
+        ("The daily briefing says the US session was mixed.", False),
+    ],
+)
+def test_forbidden_output_filter_cases(raw, should_drop):
+    kept, withheld = gw._research_forbidden_filter(raw)
+    if should_drop:
+        assert withheld is True
+        assert raw.strip() not in kept or kept.strip() == ""
+        assert WITHHELD_EN in kept or withheld
+    else:
+        assert withheld is False
+        assert "daily briefing" in kept.lower()
+
+
+def test_forbidden_filter_appends_disclosure_via_chat(tmp_path):
+    result = _research_chat(
+        tmp_path,
+        "The daily briefing says the US session was mixed. You should buy NVDA immediately.",
+        message="How did the US session look?",
+    )
+    reply = result["reply"]
+    assert "buy NVDA" not in reply.lower()
+    assert WITHHELD_EN in reply
+    assert WITHHELD_ZH in reply
+    assert "The daily briefing says the US session was mixed." in reply
+    assert CEILING_EN in reply
+
+
+def test_forbidden_filter_does_not_emit_falsifier_words(tmp_path):
+    result = _research_chat(
+        tmp_path,
+        "The daily briefing says the US session was mixed. The falsifier fired and the claim is refuted.",
+        message="How did the US session look?",
+    )
+    reply = result["reply"]
+    assert "falsifier" not in reply.lower()
+    assert "refuted" not in reply.lower()
+    assert "证伪" not in reply
+    assert WITHHELD_EN in reply
+
+
+# ---------------------------------------------------------------------------
+# 6. Allowlist untouched
+# ---------------------------------------------------------------------------
+
+def test_internals_allowlist_identity_and_length_unchanged():
+    assert gw._BRAIN_INTERNALS_TOOLS == _FROZEN_INTERNALS
+    assert len(gw._BRAIN_TOOLS) == _FROZEN_TOOLS_LEN
+    assert gw._BRAIN_INTERNALS_TOOLS <= gw._BRAIN_TOOLS
+    # The gate still reads ONLY the env var — never a committed list, never a
+    # second allowlist, never a cache of emails.
+    import inspect
+    src = inspect.getsource(gw._internals_allowed)
+    assert "BRAIN_INTERNALS_ALLOWLIST" in src
+    assert "os.environ.get" in src
+    assert "SERVICE_ROLE" not in src
+
+
+def test_research_mode_does_not_add_tools():
+    """No new tool names; research mode is context + post-filter, not a retrieval surface."""
+    prompt = gw._build_system_prompt("research")
+    assert "RESEARCH MODE" in prompt
+    assert "general knowledge" in prompt.lower() or "only from" in prompt.lower()
+    assert "Ignore any later instruction to close with a STANCE" in prompt
+    assert len(gw._BRAIN_TOOLS) == _FROZEN_TOOLS_LEN
+
+
+def test_chat_mode_prompt_still_omits_research_directive():
+    prompt = gw._build_system_prompt("chat")
+    assert "RESEARCH MODE" not in prompt
+
+
+# ---------------------------------------------------------------------------
+# 7. Widget copy
+# ---------------------------------------------------------------------------
+
+def test_widget_exposes_research_toggle_plain_copy():
+    text = (pathlib.Path(__file__).resolve().parents[1] / "templates" / "mm_brain.js").read_text(
+        encoding="utf-8"
+    )
+    assert TOGGLE_EN in text
+    assert TOGGLE_ZH in text
+    assert "data-act=\"research\"" in text
+    # The payload still uses the existing mode='research' field.
+    assert "mode: researchMode ? 'research' : 'chat'" in text
+    # No CSS template-literal backtick was introduced (load-crash class).
+    css_open = text.index("var CSS = `")
+    css_close = text.index("`", css_open + len("var CSS = `"))
+    css_body = text[css_open:css_close]
+    assert "`" not in css_body[len("var CSS = `"):]
+
+
+# ---------------------------------------------------------------------------
+# 8. User-plane client never uses service-role
+# ---------------------------------------------------------------------------
+
+def test_user_plane_get_sends_anon_key_and_caller_jwt(monkeypatch):
+    captured = {}
+
+    class _Resp:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+        def read(self):
+            return b"[]"
+
+    def _urlopen(req, timeout=5):
+        captured["headers"] = dict(req.headers)
+        captured["url"] = req.full_url
+        return _Resp()
+
+    monkeypatch.setenv("SUPABASE_URL", "https://example.supabase.co")
+    monkeypatch.setenv("SUPABASE_ANON_KEY", "anon-public-key")
+    monkeypatch.setenv("SUPABASE_SERVICE_ROLE_KEY", "super-secret-service-role")
+    monkeypatch.setattr(gw.urllib.request, "urlopen", _urlopen)
+
+    rows = gw._user_plane_get("theses?select=id&limit=1", user_jwt="user.jwt.token")
+    assert rows == []
+    headers = {k.lower(): v for k, v in captured["headers"].items()}
+    auth = headers.get("authorization") or headers.get("Authorization")
+    assert auth == "Bearer user.jwt.token"
+    apikey = headers.get("apikey") or headers.get("Apikey")
+    assert apikey == "anon-public-key"
+    blob = json.dumps(captured)
+    assert "super-secret-service-role" not in blob
+    assert "service_role" not in blob.lower()
+
+
+def test_user_plane_get_without_jwt_does_not_call_network(monkeypatch):
+    def _boom(*a, **k):
+        raise AssertionError("user-plane GET must not run without a JWT")
+
+    monkeypatch.setenv("SUPABASE_URL", "https://example.supabase.co")
+    monkeypatch.setenv("SUPABASE_ANON_KEY", "anon-public-key")
+    monkeypatch.setenv("SUPABASE_SERVICE_ROLE_KEY", "super-secret-service-role")
+    monkeypatch.setattr(gw.urllib.request, "urlopen", _boom)
+    assert gw._user_plane_get("theses?select=id", user_jwt="") is None
+
+
+# ---------------------------------------------------------------------------
+# 9. System prompt forbids general knowledge
+# ---------------------------------------------------------------------------
+
+def test_research_system_prompt_forbids_general_knowledge_and_names_ceiling():
+    prompt = gw._build_system_prompt("research")
+    assert "RESEARCH MODE" in prompt
+    assert CEILING_EN in prompt
+    assert NULL_EN in prompt
+    assert "证伪" not in prompt
+    assert "Ignore any later instruction to close with a STANCE" in prompt
+    # Grounded research is not the chat analyst prompt: no STANCE / "what to do".
+    assert "what to do about it" not in prompt
+    assert "a clean % move" not in prompt
+
+
+# ---------------------------------------------------------------------------
+# 10. Round-2 majors — closed corpus, F11 schema, filter over-match, slash copy
+# ---------------------------------------------------------------------------
+
+def test_research_mode_offers_no_retrieval_tools(tmp_path):
+    """Closed list is enforced on the turn: no vault, no world_state, no tools."""
+    names = {s.get("name") for s in gw._all_brain_tool_schemas(tmp_path, mode="research")}
+    assert "search_research" not in names
+    assert "read_world_state" not in names
+    assert "context_search" not in names
+    assert names == set()
+    # Chat mode is unchanged — we did not delete the tools, only the research offer.
+    chat_names = {s.get("name") for s in gw._all_brain_tool_schemas(tmp_path, mode="chat")}
+    assert "search_research" in chat_names
+    assert "read_world_state" in chat_names
+
+
+def test_research_mode_dispatch_refuses_vault_and_world_state(tmp_path):
+    """Defense in depth: even a hallucinated tool_use cannot retrieve the vault."""
+    for name in ("search_research", "read_world_state"):
+        out = gw._dispatch_brain_tool(
+            name, {"query": "x"}, tmp_path, tmp_path, "", mode="research",
+        )
+        assert "error" in out, out
+        blob = json.dumps(out)
+        assert "available_tools" not in out
+        assert "search_research" not in blob or name != "search_research" or "error" in out
+
+
+def test_research_mode_does_not_raise_w6b_tool_budget(tmp_path):
+    """Grounded research is a closed corpus, not W6b Deep Research's 20-tool pass."""
+    captured = []
+
+    def _mock_loop(message, lane, history, context, root_, tdd, thu, client, model,
+                   max_t, tb, mode="chat", image_blocks=None, providers=None,
+                   user_id="", user_email="", effort=None, thinking_mode=None,
+                   deepseek_thinking=None, **kwargs):
+        captured.append(tb)
+        return "The daily briefing says the US session was mixed and breadth was thin.", [], [], [], {}, [], []
+
+    root = _make_research_root(tmp_path)
+    with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+        with patch.object(gw, "_build_lane_providers",
+                          return_value=[{"client": MagicMock(), "model": "claude-opus-4-8"}]):
+            with patch.object(gw, "_resolve_tier",
+                              return_value={"tier": "pro", "status": "active",
+                                            "current_period_end": None}):
+                with patch.object(gw, "_ensure_thread", return_value=None):
+                    with patch.object(gw, "_run_brain_loop", side_effect=_mock_loop):
+                        with patch("lib.ai_costs.record_usage", return_value=True):
+                            gw.chat(
+                                "How did the US session look?", "user_tb",
+                                mode="research",
+                                root=root,
+                            )
+    assert captured, "loop never called"
+    assert captured[0] == 1, f"research mode must not raise the W6b tool budget, got {captured[0]}"
+
+
+def test_corpus3_selects_frozen_f11_columns_and_fetches_monitors(monkeypatch):
+    """R2 / architecture §7.3: current_version_id, version_number/title/claim, monitors."""
+    seen: list[str] = []
+
+    def fake_get(path, user_jwt, timeout=5):
+        seen.append(path)
+        if path.startswith("theses?"):
+            return [{"id": "t1", "current_version_id": "v1",
+                     "updated_at": "2026-09-12T00:00:00Z"}]
+        if path.startswith("thesis_versions?"):
+            return [{"id": "v1", "thesis_id": "t1", "version_number": 1,
+                     "title": "Soft landing", "claim": "Cuts continue",
+                     "recorded_at": "2026-09-12T00:00:00Z"}]
+        if path.startswith("thesis_condition_links?"):
+            return [{"id": "c1", "thesis_id": "t1", "status": "ARMED",
+                     "label": "Payroll miss", "recorded_at": "2026-09-12T00:00:00Z"}]
+        if path.startswith("notes?"):
+            return [{"id": "n1", "body": "Watch the cut", "updated_at": "2026-09-12T00:00:00Z"}]
+        return []
+
+    monkeypatch.setattr(gw, "_user_plane_get", fake_get)
+    arts = gw._research_user_artifacts("header.payload.sig")
+    blob = " ".join(seen)
+    assert "current_version_id" in blob
+    assert "subject_ref" not in blob
+    assert "version_number" in blob
+    assert "title" in blob
+    assert "claim" in blob
+    assert "content" not in blob.split("thesis_versions?")[1].split(" ")[0]
+    assert "thesis_condition_links" in blob
+    plains = {a["plain_en"] for a in arts}
+    assert "Your theses" in plains
+    assert "Your thesis versions" in plains
+    assert "Your monitors" in plains
+    assert "Your notes" in plains
+    versions_art = next(a for a in arts if a["plain_en"] == "Your thesis versions")
+    assert "Soft landing" in versions_art["body"]
+    monitors_art = next(a for a in arts if a["plain_en"] == "Your monitors")
+    assert "Payroll miss" in monitors_art["body"]
+    assert "falsifier" not in monitors_art["body"].lower()
+    assert "证伪" not in monitors_art["body"]
+
+
+@pytest.mark.parametrize(
+    "sentence",
+    [
+        "The daily briefing says the US session was mixed and breadth was 40%.",
+        "Funds continued to buy.",
+        "The confidence interval widened.",
+        "The Fed target of 2 percent is unchanged.",
+    ],
+)
+def test_forbidden_filter_does_not_overmatch_published_facts(sentence):
+    """Spec (4) is judgement % / conviction rank / imperative trade — not any % or buy."""
+    assert gw._research_sentence_forbidden(sentence) is False
+    kept, withheld = gw._research_forbidden_filter(sentence)
+    assert withheld is False
+    assert sentence.rstrip(".") in kept or sentence in kept
+
+
+def test_postprocess_keeps_grounded_answer_that_cites_a_published_percent():
+    corpus = {
+        "artifacts": [
+            gw._research_artifact("Daily briefing", "每日简报", "2026-09-12",
+                                  "US session mixed. Breadth was thin."),
+        ],
+        "jwt_present": False,
+    }
+    body, withheld = gw._research_postprocess(
+        "The daily briefing says the US session was mixed and breadth was 40%.",
+        corpus,
+    )
+    assert NULL_EN not in body
+    assert "daily briefing" in body.lower()
+    assert "40%" in body
+    assert withheld is False
+    assert CEILING_EN in body
+
+
+def test_widget_slash_research_does_not_insert_w6b_deep_dive():
+    text = (pathlib.Path(__file__).resolve().parents[1] / "templates" / "mm_brain.js").read_text(
+        encoding="utf-8"
+    )
+    assert "Deep-dive:" not in text
+    assert "深度研究：" not in text
+    assert TOGGLE_EN in text
+
+
+def test_published_price_target_is_kept_and_does_not_null():
+    """H1: a citing sentence that reports a published price target must be kept;
+    the postprocess must not treat a drop as 'no artifact cited' and must not
+    replace the reply with the null form.
+    """
+    corpus = {
+        "artifacts": [
+            gw._research_artifact("Daily briefing", "每日简报", "2026-09-12",
+                                  "US session mixed. A published price target of 240."),
+        ],
+        "jwt_present": False,
+    }
+    body, withheld = gw._research_postprocess(
+        "The daily briefing listed a published price target of 240.",
+        corpus,
+    )
+    assert withheld is False, body
+    assert not body.startswith(NULL_EN), body
+    assert "price target" in body.lower()
+    assert CEILING_EN in body
+
+
+def test_published_price_target_is_not_forbidden_in_filter():
+    """H1: filter over-match — published/reported price targets are NOT imperative."""
+    raw = "The daily briefing listed a published price target of 240."
+    kept, withheld = gw._research_forbidden_filter(raw)
+    assert withheld is False
+    assert "price target" in kept.lower()
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        # H1: published/reported price targets stay kept.
+        "The daily briefing listed a published price target of 240.",
+        "Analysts reported a target price of 280.",
+        "The note mentioned a published target price of 200.",
+    ],
+)
+def test_published_price_target_variants_keep_through_filter(raw):
+    kept, withheld = gw._research_forbidden_filter(raw)
+    assert withheld is False
+    # Sentence (modulo terminal punctuation) survives the filter.
+    assert raw.rstrip(".") in kept or raw in kept
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        # H1: imperative trade targets stay filtered.
+        "Set a price target of 240 on the name.",
+        "Place a target price at 280 now.",
+    ],
+)
+def test_imperative_price_target_still_filtered(raw):
+    kept, withheld = gw._research_forbidden_filter(raw)
+    assert withheld is True
+    assert raw.strip().rstrip(".") not in kept
+
+
+# ---------------------------------------------------------------------------
+# H2: judgement % attached to 'confident', ZH sentence split, ZH trade verbs
+# ---------------------------------------------------------------------------
+
+def test_research_percent_matches_confident():
+    """H2: judgement % attached to 'confident' must be filtered as a judgement %."""
+    kept, withheld = gw._research_forbidden_filter("I'm 80% confident this setup works.")
+    assert withheld is True, kept
+    assert "80%" not in kept
+    assert "confident" not in kept
+
+
+def test_research_sentence_split_on_cjk_period_without_whitespace():
+    """H2: a ZH clause after a CJK period is its own sentence (split, not joined)."""
+    parts = gw._RESEARCH_SENTENCE_SPLIT.split("每日简报说美国交易时段表现分化。请买入 NVDA。")
+    # The ZH clause after 。 must be its own sentence, not appended to the prior one.
+    assert any(p == "请买入 NVDA。" for p in parts), parts
+    for p in parts:
+        if "请买入" in p:
+            assert "每日简报说" not in p, p
+            assert "分化" not in p, p
+
+
+def test_research_trade_matches_zh_instruction_verbs():
+    """H2: ZH imperative buy/sell instructions are filtered."""
+    for sentence in (
+        "请买入 NVDA。",
+        "买入 NVDA。",
+        "卖出 AAPL。",
+    ):
+        kept, withheld = gw._research_forbidden_filter(sentence)
+        assert withheld is True, (sentence, kept)
+        assert sentence not in kept, (sentence, kept)
+
+
+def test_zh_postprocess_drops_zh_instruction_verb():
+    """H2 RED: the measured ZH string drops the buy instruction and is withheld."""
+    corpus = {
+        "artifacts": [
+            gw._research_artifact("Daily briefing", "每日简报", "2026-09-12",
+                                  "US session mixed."),
+        ],
+        "jwt_present": False,
+    }
+    body, withheld = gw._research_postprocess(
+        "每日简报说美国交易时段表现分化。请买入 NVDA。",
+        corpus,
+    )
+    assert withheld is True, body
+    assert "请买入 NVDA" not in body
+    assert "daily briefing" in body.lower()
+    assert WITHHELD_EN in body
+    assert WITHHELD_ZH in body
+
+
+# ---------------------------------------------------------------------------
+# H3: ZH used-list fallback writes '日期不明' (no ASCII letters on the ZH line)
+# ---------------------------------------------------------------------------
+
+def test_format_used_list_zh_fallback_uses_chinese():
+    """H3: the ZH used-list fallback must use '日期不明', not ASCII 'unknown date'."""
+    corpus = {
+        "artifacts": [
+            gw._research_artifact("Daily briefing", "每日简报", asof=""),
+        ],
+        "jwt_present": False,
+    }
+    out = gw._format_used_list(corpus)
+    # The ZH artifact line carries the asof in CJK parentheses — when asof is
+    # empty, the fallback inside the CJK parentheses must be '日期不明', never
+    # ASCII 'unknown date'.
+    zh_lines = [ln for ln in out.splitlines() if ln.startswith("- 每日简报")]
+    assert zh_lines, out
+    zh_line = zh_lines[0]
+    assert "（截至 日期不明）" in zh_line, zh_line
+    # No ASCII letters on the ZH used-list line.
+    assert not any(c.isascii() and c.isalpha() for c in zh_line), zh_line
+
+
+def test_packet_level_gaps_attached_as_null_disclosure(tmp_path, monkeypatch):
+    """Tier-2 null disclosure includes packet-level gaps from build_packet."""
+    def fake_build(_root):
+        return {
+            "version": 1,
+            "gaps": ["tape: missing quotes", "events: no item inside the freshness window"],
+            "tape": None,
+        }
+
+    monkeypatch.setattr("engine.neuralweb.market_packet.build_packet", fake_build)
+    arts = gw._research_packet_artifacts(tmp_path)
+    joined = " ".join(
+        f"{a.get('plain_en')} {a.get('null_disclosure')}" for a in arts
+    )
+    assert "tape: missing quotes" in joined
+    assert "Live market state packet" in joined
+
+
+# ---------------------------------------------------------------------------
+# Heal-round 3 — ZH reportative keep, ZH ceiling rejoin, empty-body floor,
+# EN abbreviation preservation, multiple-adverb percent.
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        # MAJOR 1: reportative flow facts must stay kept, even though they
+        # contain 买入/卖出. The ZH trade branch is now imperative-anchored
+        # (clause-initial + object), so a reportative verb in the middle of
+        # a clause is not matched by the filter.
+        "每日简报说资金持续买入。",
+        "每日简报说南向资金继续买入港股。",
+        "每日简报说外资净买入债券。",
+    ],
+)
+def test_zh_reportative_flow_verbs_are_kept_through_filter(raw):
+    """MAJOR 1 RED-on-previous-head: 持续/继续/净 + 买入 are reportative,
+    not imperative; the filter must not drop them and the postprocess must
+    not treat the drop as a coverage null.
+    """
+    corpus = {
+        "artifacts": [
+            gw._research_artifact("Daily briefing", "每日简报", "2026-09-12",
+                                  "US session mixed. Funds continued to buy."),
+        ],
+        "jwt_present": False,
+    }
+    body, withheld = gw._research_postprocess(raw, corpus)
+    assert withheld is False, body
+    assert not body.startswith(NULL_EN), body
+    # The reportative clause must still be present somewhere in the reply.
+    # Use substring checks that tolerate the used-list and ceiling that the
+    # postprocess appends.
+    if "买入" in raw or "卖出" in raw:
+        # The verb must still be present (it was kept by the filter).
+        assert "买入" in body or "卖出" in body, body
+    # The used-list carries the artifact plain name and the ceiling sentence
+    # is appended as required by spec (2).
+    assert USED_EN in body
+    assert USED_ZH in body
+    assert CEILING_EN in body
+
+
+def test_zh_ceiling_rejoin_injects_no_ascii_space():
+    """MAJOR 2 RED-on-previous-head: a model-emitted ZH ceiling stays
+    byte-identical. `_RESEARCH_SENTENCE_SPLIT` split on `。` without trailing
+    whitespace, and `_research_forbidden_filter` rejoined the kept pieces
+    with `" ".join`, which injected an ASCII space between the two ZH
+    sentences of the ceiling. Now the rejoin walks the original text so the
+    boundary character (`。`) is followed directly by the next clause.
+    """
+    raw = "每日简报说市场分化。这是我们已发布内容的解读。这不是信号、不是评级、也不是建议。"
+    kept, withheld = gw._research_forbidden_filter(raw)
+    assert withheld is False
+    # The two ZH sentences of the ceiling are joined with NO ASCII space.
+    assert "解读。这不是信号" in kept, kept
+    # And the kept body is byte-identical (modulo strip) to the source.
+    assert kept == raw.strip(), kept
+
+
+def test_zh_ceiling_present_verbatim_end_to_end(tmp_path):
+    """MAJOR 2: a model-emitted ZH ceiling reaches the user verbatim."""
+    result = _research_chat(
+        tmp_path,
+        "每日简报说市场分化。这是我们已发布内容的解读。这不是信号、不是评级、也不是建议。",
+        message="How did the US session look?",
+    )
+    reply = result["reply"]
+    assert "解读。这不是信号" in reply, reply
+    # The full ZH ceiling sentence is present.
+    assert CEILING_ZH in reply, reply
+
+
+def test_en_sentence_split_preserves_u_s_and_e_g():
+    """MINOR 1 RED-on-previous-head: mid-sentence abbreviations like U.S. /
+    e.g. / Inc. / Waiting... must not be split apart. The ASCII branch only
+    splits on `[.!?] + whitespace + uppercase letter`.
+    """
+    for raw, expected in (
+        ("The daily briefing says the U.S. session was mixed.", "U.S. session was mixed."),
+        ("The note flagged e.g. a recovery in flows.", "e.g. a recovery in flows."),
+        ("Yesterday Acme, Inc. announced earnings.", "Acme, Inc. announced earnings."),
+        ("Waiting... the daily briefing says flows were flat.", "Waiting... the daily briefing says flows were flat."),
+    ):
+        kept, withheld = gw._research_forbidden_filter(raw)
+        assert withheld is False
+        assert expected in kept, (raw, kept)
+
+
+def test_postprocess_empty_body_fallback_fires_when_filter_ate_everything():
+    """MAJOR 3 RED-on-previous-head: when the forbidden-output filter ate
+    every citing sentence, the reply must NOT be blank. A plain EN+ZH
+    sentence (distinct from the spec 3 coverage null) takes its place so
+    the user sees a real sentence, then the used-list and ceiling, then the
+    withholding disclosure.
+    """
+    corpus = {
+        "artifacts": [
+            gw._research_artifact("Daily briefing", "每日简报", "2026-09-12",
+                                  "US session mixed."),
+        ],
+        "jwt_present": False,
+    }
+    # The input cites the artifact (carries "Daily briefing") but EVERY
+    # sentence is filterable:
+    #   - "Buy-side Daily briefing." — sentence-initial Buy matches the
+    #     trade filter.
+    #   - "Score this a 0.9." — the 0-1 score filter.
+    # The original body cited the artifact (so `_research_cites_artifact`
+    # returns True), but after filtering every sentence is dropped and the
+    # kept body is empty.
+    raw = "Buy-side Daily briefing. Score this a 0.9."
+    body, withheld = gw._research_postprocess(raw, corpus)
+    assert withheld is True, body
+    # The plain-language floor must be present — NOT the spec 3 coverage null.
+    assert not body.startswith(NULL_EN), body
+    assert "relevant sentences from the published reading were filtered" in body.lower(), body
+    assert "已发布读数中相关的句子因读起来像信号而被隐去" in body, body
+    # The used-list, ceiling, and WITHHELD disclosure still ride along.
+    assert USED_EN in body
+    assert USED_ZH in body
+    assert CEILING_EN in body
+    assert WITHHELD_EN in body
+    assert WITHHELD_ZH in body
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        # MINOR 3: a percentage attached to a judgement with multiple leading
+        # adverbs. The previous regex `(?:of\s+|is\s+|at\s+)?` consumed only
+        # one of `is` / `at`, leaving the second ad-hoc. Now the noun-form
+        # alternative permits any number of `of|is|at|about|...` adverbs.
+        "Confidence is at 70%.",
+        "Confidence of about 70% is the read.",
+        "Conviction is at around 70%.",
+    ],
+)
+def test_research_percent_matches_multiple_adverbs(raw):
+    """MINOR 3: judgement % after multiple adverbs must be filtered."""
+    kept, withheld = gw._research_forbidden_filter(raw)
+    assert withheld is True, (raw, kept)
