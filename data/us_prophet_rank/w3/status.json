@@ -36,32 +36,32 @@
   "first_lawful_comparison_read": "PENDING until 20 matured H=10 sessions",
   "honest_n_floor": 20,
   "last_run": {
-    "board_as_of": "2026-09-09",
+    "board_as_of": "2026-09-11",
     "coverage": {
-      "identical": 0,
+      "identical": 8,
       "matured": 0,
-      "revisions_refused": 0,
-      "stamps": 1,
-      "written": 8
+      "revisions_refused": 5,
+      "stamps": 0,
+      "written": 0
     },
     "dry_run": false,
     "failures": [],
     "family": {
-      "identical": 0,
+      "identical": 8,
       "matured": 0,
-      "revisions_refused": 0,
-      "stamps": 1,
-      "written": 8
+      "revisions_refused": 5,
+      "stamps": 0,
+      "written": 0
     },
     "n_coverage_rows": 8,
     "n_family_rows": 8,
-    "n_paired_rows": 873,
+    "n_paired_rows": 958,
     "paired": {
-      "identical": 755,
-      "matured": 55,
+      "identical": 900,
+      "matured": 58,
       "revisions_refused": 0,
-      "stamps": 2,
-      "written": 118
+      "stamps": 1,
+      "written": 58
     },
     "reconstruction_refused": [
       "2026-07-31",
@@ -72,25 +72,446 @@
       "2026-08-14",
       "2026-09-02"
     ],
-    "require_stamp": "2026-09-09",
-    "same_stamp_revisions_refused": [],
+    "require_stamp": "2026-09-11",
+    "same_stamp_revisions_refused": [
+      {
+        "changed_fields": [
+          {
+            "existing": 24,
+            "field": "rows_contributing",
+            "incoming": 30
+          },
+          {
+            "existing": 3,
+            "field": "distinct_values",
+            "incoming": 2
+          },
+          {
+            "existing": 0.3958333333,
+            "field": "modal_value",
+            "incoming": 0.3
+          },
+          {
+            "existing": 0.6666666667,
+            "field": "modal_share",
+            "incoming": 0.5666666667
+          },
+          {
+            "existing": 0.237840886,
+            "field": "dispersion",
+            "incoming": 0.2477678125
+          },
+          {
+            "existing": 1.4358974359,
+            "field": "mean_abs_rank_delta",
+            "incoming": 1.9607843137
+          },
+          {
+            "existing": 8,
+            "field": "max_abs_rank_delta",
+            "incoming": 14
+          },
+          {
+            "existing": 21,
+            "field": "rows_moved",
+            "incoming": 33
+          },
+          {
+            "existing": 0,
+            "field": "top30_churn",
+            "incoming": 4
+          }
+        ],
+        "existing_fingerprint": "0755fae9ef1b21bc2a3d7a2b1bc175ee353c0ece88fbcb24c32a04cd6956a121",
+        "grain": "family",
+        "incoming_fingerprint": "3d58b6494181236e60b8170cd7201f938a8e0c2854d40358d25ac4e53e32270c",
+        "key": [
+          "2026-09-11",
+          "F1_TECHNICAL_CONFLUENCE"
+        ],
+        "kind": "SAME_STAMP_REVISION_REFUSED",
+        "schema": "us.prophet_w3_revision/v1",
+        "stamp_date": "2026-09-11"
+      },
+      {
+        "changed_fields": [
+          {
+            "existing": 39,
+            "field": "rows_contributing",
+            "incoming": 51
+          },
+          {
+            "existing": 35,
+            "field": "distinct_values",
+            "incoming": 44
+          },
+          {
+            "existing": 0.5512820513,
+            "field": "modal_value",
+            "incoming": 0.2058823529
+          },
+          {
+            "existing": 0.0512820513,
+            "field": "modal_share",
+            "incoming": 0.0392156863
+          },
+          {
+            "existing": 0.2490097382,
+            "field": "dispersion",
+            "incoming": 0.2381799513
+          },
+          {
+            "existing": 1.641025641,
+            "field": "mean_abs_rank_delta",
+            "incoming": 3.1764705882
+          },
+          {
+            "existing": 8,
+            "field": "max_abs_rank_delta",
+            "incoming": 14
+          },
+          {
+            "existing": 24,
+            "field": "rows_moved",
+            "incoming": 38
+          },
+          {
+            "existing": 0,
+            "field": "top30_churn",
+            "incoming": 6
+          }
+        ],
+        "existing_fingerprint": "3a5656fb881b0f243417d27103bda29a11e59793fb1cfcab40e9ea7425bf51a3",
+        "grain": "family",
+        "incoming_fingerprint": "9405cb76547a61b8d8bc92d1b6643b6e456933ffb760b126b0d0b6d5c2322f50",
+        "key": [
+          "2026-09-11",
+          "F2_MOMENTUM_EXTENSION"
+        ],
+        "kind": "SAME_STAMP_REVISION_REFUSED",
+        "schema": "us.prophet_w3_revision/v1",
+        "stamp_date": "2026-09-11"
+      },
+      {
+        "changed_fields": [
+          {
+            "existing": 39,
+            "field": "rows_contributing",
+            "incoming": 51
+          },
+          {
+            "existing": 0.4743589744,
+            "field": "modal_value",
+            "incoming": 0.4705882353
+          },
+          {
+            "existing": 0.9230769231,
+            "field": "modal_share",
+            "incoming": 0.9215686275
+          },
+          {
+            "existing": 0.1332346775,
+            "field": "dispersion",
+            "incoming": 0.1344246
+          },
+          {
+            "existing": 0.5128205128,
+            "field": "mean_abs_rank_delta",
+            "incoming": 0.862745098
+          },
+          {
+            "existing": 5,
+            "field": "max_abs_rank_delta",
+            "incoming": 15
+          },
+          {
+            "existing": 13,
+            "field": "rows_moved",
+            "incoming": 17
+          }
+        ],
+        "existing_fingerprint": "bf7761608a83e3ffc05c89806be1b1fbdc1329653192962de6de43667940925f",
+        "grain": "family",
+        "incoming_fingerprint": "1008fc5022de83218c8ba86fb2af7e69f92cdd5e04564cda3309a5b5f7691ae1",
+        "key": [
+          "2026-09-11",
+          "F4_CATALYST_EVENT"
+        ],
+        "kind": "SAME_STAMP_REVISION_REFUSED",
+        "schema": "us.prophet_w3_revision/v1",
+        "stamp_date": "2026-09-11"
+      },
+      {
+        "changed_fields": [
+          {
+            "existing": 39,
+            "field": "rows_contributing",
+            "incoming": 51
+          },
+          {
+            "existing": 2,
+            "field": "distinct_values",
+            "incoming": 8
+          },
+          {
+            "existing": 0.4423076923,
+            "field": "modal_value",
+            "incoming": 0.4558823529
+          },
+          {
+            "existing": 0.7179487179,
+            "field": "modal_share",
+            "incoming": 0.4117647059
+          },
+          {
+            "existing": 0.1124995434,
+            "field": "dispersion",
+            "incoming": 0.1047330553
+          },
+          {
+            "existing": 0.7179487179,
+            "field": "mean_abs_rank_delta",
+            "incoming": 1.4117647059
+          },
+          {
+            "existing": 3,
+            "field": "max_abs_rank_delta",
+            "incoming": 9
+          },
+          {
+            "existing": 16,
+            "field": "rows_moved",
+            "incoming": 33
+          },
+          {
+            "existing": 0,
+            "field": "top30_churn",
+            "incoming": 2
+          }
+        ],
+        "existing_fingerprint": "e1d702b73bd4db9d4d9906bbaf56a7531afae2c4ac8ba6da7ff3493521a9bc94",
+        "grain": "family",
+        "incoming_fingerprint": "ec087fe3d96473cd6a0baaf45eb0ef76131de5b9fb4531311ee715b108c1851d",
+        "key": [
+          "2026-09-11",
+          "F5_FLOW_POSITIONING"
+        ],
+        "kind": "SAME_STAMP_REVISION_REFUSED",
+        "schema": "us.prophet_w3_revision/v1",
+        "stamp_date": "2026-09-11"
+      },
+      {
+        "changed_fields": [
+          {
+            "existing": false,
+            "field": "active",
+            "incoming": true
+          },
+          {
+            "existing": true,
+            "field": "abstaining",
+            "incoming": false
+          },
+          {
+            "existing": null,
+            "field": "rows_contributing",
+            "incoming": 51
+          },
+          {
+            "existing": null,
+            "field": "distinct_values",
+            "incoming": 2
+          },
+          {
+            "existing": null,
+            "field": "modal_value",
+            "incoming": 0.5
+          },
+          {
+            "existing": null,
+            "field": "modal_share",
+            "incoming": 0.9803921569
+          },
+          {
+            "existing": null,
+            "field": "dispersion",
+            "incoming": 0.0693241942
+          },
+          {
+            "existing": null,
+            "field": "mean_abs_rank_delta",
+            "incoming": 0.5882352941
+          },
+          {
+            "existing": null,
+            "field": "max_abs_rank_delta",
+            "incoming": 14
+          },
+          {
+            "existing": null,
+            "field": "rows_moved",
+            "incoming": 16
+          },
+          {
+            "existing": null,
+            "field": "top30_churn",
+            "incoming": 2
+          }
+        ],
+        "existing_fingerprint": "0a170f2651db0e29e76a52bf1437da6f70f380e75deb25dbf355e1f595b900b8",
+        "grain": "family",
+        "incoming_fingerprint": "92cbf8df3a2be061e4ae1dde6150b95d1f0638f00af6be81e66ec7cc59e546bd",
+        "key": [
+          "2026-09-11",
+          "F8_ATTENTION_CROWDING"
+        ],
+        "kind": "SAME_STAMP_REVISION_REFUSED",
+        "schema": "us.prophet_w3_revision/v1",
+        "stamp_date": "2026-09-11"
+      },
+      {
+        "changed_fields": [
+          {
+            "existing": 39,
+            "field": "distinct_values",
+            "incoming": 49
+          }
+        ],
+        "existing_fingerprint": "91b6621a0021406a98e0ad57266220656ad46a49246f7b3e8c7c8764a5bf448e",
+        "grain": "coverage",
+        "incoming_fingerprint": "db07f851f067f6e531bab96328f172624389dce69c2792f0a0f2f9da623b91c3",
+        "key": [
+          "2026-09-11",
+          "alpha"
+        ],
+        "kind": "SAME_STAMP_REVISION_REFUSED",
+        "schema": "us.prophet_w3_revision/v1",
+        "stamp_date": "2026-09-11"
+      },
+      {
+        "changed_fields": [
+          {
+            "existing": "below_presence",
+            "field": "status",
+            "incoming": "voting"
+          },
+          {
+            "existing": 0.435897,
+            "field": "coverage",
+            "incoming": 0.509804
+          },
+          {
+            "existing": "below_presence_floor",
+            "field": "reason",
+            "incoming": "admitted and not collapsed"
+          }
+        ],
+        "existing_fingerprint": "386956f2a21320871bb1d538c011bf675d3f805012cdfadbb658a13baf001371",
+        "grain": "coverage",
+        "incoming_fingerprint": "9e774b4a695979ec4ed98928037c138c9f7c925e867325ee7e8f886acb8757cb",
+        "key": [
+          "2026-09-11",
+          "gex_confirm_verdict"
+        ],
+        "kind": "SAME_STAMP_REVISION_REFUSED",
+        "schema": "us.prophet_w3_revision/v1",
+        "stamp_date": "2026-09-11"
+      },
+      {
+        "changed_fields": [
+          {
+            "existing": "vote_inert",
+            "field": "status",
+            "incoming": "voting"
+          },
+          {
+            "existing": 1,
+            "field": "distinct_values",
+            "incoming": 2
+          },
+          {
+            "existing": 0,
+            "field": "variation_share",
+            "incoming": 1
+          },
+          {
+            "existing": "vote_inert",
+            "field": "reason",
+            "incoming": "admitted and not collapsed"
+          }
+        ],
+        "existing_fingerprint": "8c164527d2c94901f2068678fb24e99eb6329c9ea5138db274f40446dcfd5fe3",
+        "grain": "coverage",
+        "incoming_fingerprint": "c939f24771c142668fa6b1b4677b53e0bccc7ea321e7617d89e2b4bde0650b7b",
+        "key": [
+          "2026-09-11",
+          "news_burst"
+        ],
+        "kind": "SAME_STAMP_REVISION_REFUSED",
+        "schema": "us.prophet_w3_revision/v1",
+        "stamp_date": "2026-09-11"
+      },
+      {
+        "changed_fields": [
+          {
+            "existing": 38,
+            "field": "distinct_values",
+            "incoming": 46
+          }
+        ],
+        "existing_fingerprint": "9f62ead3075b1c3a583b7c7f452af497fd591e7b6c411e0e9b44d17916aec1d4",
+        "grain": "coverage",
+        "incoming_fingerprint": "19f7e33397fa9364114d53631cae286debf7b9ef3138857733b3c770c8643554",
+        "key": [
+          "2026-09-11",
+          "off_high"
+        ],
+        "kind": "SAME_STAMP_REVISION_REFUSED",
+        "schema": "us.prophet_w3_revision/v1",
+        "stamp_date": "2026-09-11"
+      },
+      {
+        "changed_fields": [
+          {
+            "existing": 0.615385,
+            "field": "coverage",
+            "incoming": 0.588235
+          },
+          {
+            "existing": 3,
+            "field": "distinct_values",
+            "incoming": 2
+          }
+        ],
+        "existing_fingerprint": "543e17a73940b346743334c28c02ee37713c31c01dc890f830af2202562904a6",
+        "grain": "coverage",
+        "incoming_fingerprint": "05e29b9b90194354131c5430c5db297ce7651e57277467f4a58de0c47204ed7c",
+        "key": [
+          "2026-09-11",
+          "tier_cascade"
+        ],
+        "kind": "SAME_STAMP_REVISION_REFUSED",
+        "schema": "us.prophet_w3_revision/v1",
+        "stamp_date": "2026-09-11"
+      }
+    ],
     "sessions_written": {
-      "identical": 14,
+      "identical": 17,
       "matured": 0,
       "refused": 0,
-      "written": 1
+      "written": 0
     }
   },
   "latest_session": {
     "liveness": "unmatured",
     "reason": "paired observation accrued; H=10 outcome pending (not zero)",
-    "stamp_date": "2026-09-09"
+    "stamp_date": "2026-09-11"
   },
   "matured_h10_sessions": 0,
   "missing_sessions": [],
   "n_degraded_or_unpaired": 7,
   "n_missing": 0,
-  "paired_sessions_accrued": 15,
+  "paired_sessions_accrued": 17,
   "same_stamp_revisions_refused": [
     {
       "changed_fields": [
@@ -2052,14 +2473,414 @@
         "tier_cascade"
       ],
       "stamp_date": "2026-09-04"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 24,
+          "field": "rows_contributing",
+          "incoming": 30
+        },
+        {
+          "existing": 3,
+          "field": "distinct_values",
+          "incoming": 2
+        },
+        {
+          "existing": 0.3958333333,
+          "field": "modal_value",
+          "incoming": 0.3
+        },
+        {
+          "existing": 0.6666666667,
+          "field": "modal_share",
+          "incoming": 0.5666666667
+        },
+        {
+          "existing": 0.237840886,
+          "field": "dispersion",
+          "incoming": 0.2477678125
+        },
+        {
+          "existing": 1.4358974359,
+          "field": "mean_abs_rank_delta",
+          "incoming": 1.9607843137
+        },
+        {
+          "existing": 8,
+          "field": "max_abs_rank_delta",
+          "incoming": 14
+        },
+        {
+          "existing": 21,
+          "field": "rows_moved",
+          "incoming": 33
+        },
+        {
+          "existing": 0,
+          "field": "top30_churn",
+          "incoming": 4
+        }
+      ],
+      "existing_fingerprint": "0755fae9ef1b21bc2a3d7a2b1bc175ee353c0ece88fbcb24c32a04cd6956a121",
+      "grain": "family",
+      "incoming_fingerprint": "3d58b6494181236e60b8170cd7201f938a8e0c2854d40358d25ac4e53e32270c",
+      "key": [
+        "2026-09-11",
+        "F1_TECHNICAL_CONFLUENCE"
+      ],
+      "stamp_date": "2026-09-11"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 39,
+          "field": "rows_contributing",
+          "incoming": 51
+        },
+        {
+          "existing": 35,
+          "field": "distinct_values",
+          "incoming": 44
+        },
+        {
+          "existing": 0.5512820513,
+          "field": "modal_value",
+          "incoming": 0.2058823529
+        },
+        {
+          "existing": 0.0512820513,
+          "field": "modal_share",
+          "incoming": 0.0392156863
+        },
+        {
+          "existing": 0.2490097382,
+          "field": "dispersion",
+          "incoming": 0.2381799513
+        },
+        {
+          "existing": 1.641025641,
+          "field": "mean_abs_rank_delta",
+          "incoming": 3.1764705882
+        },
+        {
+          "existing": 8,
+          "field": "max_abs_rank_delta",
+          "incoming": 14
+        },
+        {
+          "existing": 24,
+          "field": "rows_moved",
+          "incoming": 38
+        },
+        {
+          "existing": 0,
+          "field": "top30_churn",
+          "incoming": 6
+        }
+      ],
+      "existing_fingerprint": "3a5656fb881b0f243417d27103bda29a11e59793fb1cfcab40e9ea7425bf51a3",
+      "grain": "family",
+      "incoming_fingerprint": "9405cb76547a61b8d8bc92d1b6643b6e456933ffb760b126b0d0b6d5c2322f50",
+      "key": [
+        "2026-09-11",
+        "F2_MOMENTUM_EXTENSION"
+      ],
+      "stamp_date": "2026-09-11"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 39,
+          "field": "rows_contributing",
+          "incoming": 51
+        },
+        {
+          "existing": 0.4743589744,
+          "field": "modal_value",
+          "incoming": 0.4705882353
+        },
+        {
+          "existing": 0.9230769231,
+          "field": "modal_share",
+          "incoming": 0.9215686275
+        },
+        {
+          "existing": 0.1332346775,
+          "field": "dispersion",
+          "incoming": 0.1344246
+        },
+        {
+          "existing": 0.5128205128,
+          "field": "mean_abs_rank_delta",
+          "incoming": 0.862745098
+        },
+        {
+          "existing": 5,
+          "field": "max_abs_rank_delta",
+          "incoming": 15
+        },
+        {
+          "existing": 13,
+          "field": "rows_moved",
+          "incoming": 17
+        }
+      ],
+      "existing_fingerprint": "bf7761608a83e3ffc05c89806be1b1fbdc1329653192962de6de43667940925f",
+      "grain": "family",
+      "incoming_fingerprint": "1008fc5022de83218c8ba86fb2af7e69f92cdd5e04564cda3309a5b5f7691ae1",
+      "key": [
+        "2026-09-11",
+        "F4_CATALYST_EVENT"
+      ],
+      "stamp_date": "2026-09-11"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 39,
+          "field": "rows_contributing",
+          "incoming": 51
+        },
+        {
+          "existing": 2,
+          "field": "distinct_values",
+          "incoming": 8
+        },
+        {
+          "existing": 0.4423076923,
+          "field": "modal_value",
+          "incoming": 0.4558823529
+        },
+        {
+          "existing": 0.7179487179,
+          "field": "modal_share",
+          "incoming": 0.4117647059
+        },
+        {
+          "existing": 0.1124995434,
+          "field": "dispersion",
+          "incoming": 0.1047330553
+        },
+        {
+          "existing": 0.7179487179,
+          "field": "mean_abs_rank_delta",
+          "incoming": 1.4117647059
+        },
+        {
+          "existing": 3,
+          "field": "max_abs_rank_delta",
+          "incoming": 9
+        },
+        {
+          "existing": 16,
+          "field": "rows_moved",
+          "incoming": 33
+        },
+        {
+          "existing": 0,
+          "field": "top30_churn",
+          "incoming": 2
+        }
+      ],
+      "existing_fingerprint": "e1d702b73bd4db9d4d9906bbaf56a7531afae2c4ac8ba6da7ff3493521a9bc94",
+      "grain": "family",
+      "incoming_fingerprint": "ec087fe3d96473cd6a0baaf45eb0ef76131de5b9fb4531311ee715b108c1851d",
+      "key": [
+        "2026-09-11",
+        "F5_FLOW_POSITIONING"
+      ],
+      "stamp_date": "2026-09-11"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": false,
+          "field": "active",
+          "incoming": true
+        },
+        {
+          "existing": true,
+          "field": "abstaining",
+          "incoming": false
+        },
+        {
+          "existing": null,
+          "field": "rows_contributing",
+          "incoming": 51
+        },
+        {
+          "existing": null,
+          "field": "distinct_values",
+          "incoming": 2
+        },
+        {
+          "existing": null,
+          "field": "modal_value",
+          "incoming": 0.5
+        },
+        {
+          "existing": null,
+          "field": "modal_share",
+          "incoming": 0.9803921569
+        },
+        {
+          "existing": null,
+          "field": "dispersion",
+          "incoming": 0.0693241942
+        },
+        {
+          "existing": null,
+          "field": "mean_abs_rank_delta",
+          "incoming": 0.5882352941
+        },
+        {
+          "existing": null,
+          "field": "max_abs_rank_delta",
+          "incoming": 14
+        },
+        {
+          "existing": null,
+          "field": "rows_moved",
+          "incoming": 16
+        },
+        {
+          "existing": null,
+          "field": "top30_churn",
+          "incoming": 2
+        }
+      ],
+      "existing_fingerprint": "0a170f2651db0e29e76a52bf1437da6f70f380e75deb25dbf355e1f595b900b8",
+      "grain": "family",
+      "incoming_fingerprint": "92cbf8df3a2be061e4ae1dde6150b95d1f0638f00af6be81e66ec7cc59e546bd",
+      "key": [
+        "2026-09-11",
+        "F8_ATTENTION_CROWDING"
+      ],
+      "stamp_date": "2026-09-11"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 39,
+          "field": "distinct_values",
+          "incoming": 49
+        }
+      ],
+      "existing_fingerprint": "91b6621a0021406a98e0ad57266220656ad46a49246f7b3e8c7c8764a5bf448e",
+      "grain": "coverage",
+      "incoming_fingerprint": "db07f851f067f6e531bab96328f172624389dce69c2792f0a0f2f9da623b91c3",
+      "key": [
+        "2026-09-11",
+        "alpha"
+      ],
+      "stamp_date": "2026-09-11"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": "below_presence",
+          "field": "status",
+          "incoming": "voting"
+        },
+        {
+          "existing": 0.435897,
+          "field": "coverage",
+          "incoming": 0.509804
+        },
+        {
+          "existing": "below_presence_floor",
+          "field": "reason",
+          "incoming": "admitted and not collapsed"
+        }
+      ],
+      "existing_fingerprint": "386956f2a21320871bb1d538c011bf675d3f805012cdfadbb658a13baf001371",
+      "grain": "coverage",
+      "incoming_fingerprint": "9e774b4a695979ec4ed98928037c138c9f7c925e867325ee7e8f886acb8757cb",
+      "key": [
+        "2026-09-11",
+        "gex_confirm_verdict"
+      ],
+      "stamp_date": "2026-09-11"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": "vote_inert",
+          "field": "status",
+          "incoming": "voting"
+        },
+        {
+          "existing": 1,
+          "field": "distinct_values",
+          "incoming": 2
+        },
+        {
+          "existing": 0,
+          "field": "variation_share",
+          "incoming": 1
+        },
+        {
+          "existing": "vote_inert",
+          "field": "reason",
+          "incoming": "admitted and not collapsed"
+        }
+      ],
+      "existing_fingerprint": "8c164527d2c94901f2068678fb24e99eb6329c9ea5138db274f40446dcfd5fe3",
+      "grain": "coverage",
+      "incoming_fingerprint": "c939f24771c142668fa6b1b4677b53e0bccc7ea321e7617d89e2b4bde0650b7b",
+      "key": [
+        "2026-09-11",
+        "news_burst"
+      ],
+      "stamp_date": "2026-09-11"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 38,
+          "field": "distinct_values",
+          "incoming": 46
+        }
+      ],
+      "existing_fingerprint": "9f62ead3075b1c3a583b7c7f452af497fd591e7b6c411e0e9b44d17916aec1d4",
+      "grain": "coverage",
+      "incoming_fingerprint": "19f7e33397fa9364114d53631cae286debf7b9ef3138857733b3c770c8643554",
+      "key": [
+        "2026-09-11",
+        "off_high"
+      ],
+      "stamp_date": "2026-09-11"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 0.615385,
+          "field": "coverage",
+          "incoming": 0.588235
+        },
+        {
+          "existing": 3,
+          "field": "distinct_values",
+          "incoming": 2
+        }
+      ],
+      "existing_fingerprint": "543e17a73940b346743334c28c02ee37713c31c01dc890f830af2202562904a6",
+      "grain": "coverage",
+      "incoming_fingerprint": "05e29b9b90194354131c5430c5db297ce7651e57277467f4a58de0c47204ed7c",
+      "key": [
+        "2026-09-11",
+        "tier_cascade"
+      ],
+      "stamp_date": "2026-09-11"
     }
   ],
   "schema": "us.prophet_w3_status/v1",
   "structural": {
-    "n_coverage_rows": 120,
-    "n_family_rows": 120,
+    "n_coverage_rows": 136,
+    "n_family_rows": 136,
     "outcome_blind": true,
     "schema": "prophet_fusion.w3_structural.v1"
   },
-  "unmatured_sessions": 15
+  "unmatured_sessions": 17
 }

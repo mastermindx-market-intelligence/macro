@@ -1,0 +1,6 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/capital_structure.html.j2
+  - templates/capital_structure.css
+  - site/capital_structure.css
+manifest: mockups/evidence/policy-projection-f09-6b/manifest.json
