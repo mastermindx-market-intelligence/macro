@@ -1,14 +1,19 @@
 ---
 key: REGIME-HMM-FORWARD-GATE-MIS-SPECIFIED
 claim: >
-  The current regime_fwd_hmm grading path cannot establish HMM +21 predictive skill: it stores a
+  At inspected main a6939ca6, the regime_fwd_hmm grading path cannot establish HMM +21 predictive skill: it stores a
   contemporaneous filtered state posterior but scores its modal state against a later quad, reads the
   realized state from mutable rewritten regime_history, and uses a raw-row Wilson gate despite overlapping
-  +21-observation horizons. The live RegimeOne status projection additionally reads a doubled /regime path.
+  +21-observation horizons. At that source revision, the RegimeOne status projection additionally reads a doubled /regime path.
 falsifier: >
-  Superseded only by accepted source proving a prospective issuance-time +21 distribution from the frozen
-  information set, correction-safe as-issued outcome maturity, strong same-cutoff baselines, dependence-aware
-  uncertainty, and a correct canonical ledger status read, followed by natural production evidence.
+  Reinspect `git show a6939ca6f8e6bfea6e4e765d2cfe8e16ec607fdb:engine/regime_one.py`
+  and `git show a6939ca6f8e6bfea6e4e765d2cfe8e16ec607fdb:scripts/validate_regime_fwd.py`.
+  This dated source finding is false if those pinned versions already issue a +21 transition forecast,
+  bind correction-safe as-issued targets, and compare strong same-cutoff baselines with dependence-aware
+  uncertainty. The separate doubled-path finding is false if
+  `git show a6939ca6f8e6bfea6e4e765d2cfe8e16ec607fdb:engine/run.py` passes the data root to
+  RegimeOne compute. Later accepted source and natural production evidence may supersede these gaps;
+  a W0 data-root repair alone does not establish W2 forecasting or admission.
 so_what: >
   Treat the existing HMM ledger as saved current-state/persistence-probe evidence, not forward HMM admission
   evidence. Finish #7015 temporal honesty without widening it; build explicit anticipation as a later bounded
