@@ -1,4 +1,20 @@
 schema: mastermind.page_evidence_receipt.v1
 changed_paths:
+  - scripts/build_ipo.py
   - templates/ipo.html.j2
+  - tests/test_ipo.py
+  - mockups/evidence/credit-window-f09-2/EVIDENCE.yml
+  - mockups/evidence/credit-window-f09-2/manifest.json
+  - mockups/evidence/credit-window-f09-2/manifest_not_evaluable.json
+  - mockups/evidence/credit-window-f09-2/smells.json
+  - mockups/evidence/credit-window-f09-2/smells_not_evaluable.json
+  - mockups/evidence/credit-window-f09-2/1935851690465d79.png
+  - mockups/evidence/credit-window-f09-2/38abd91507ce17ca.png
+  - mockups/evidence/credit-window-f09-2/3de3884d817b21c9.png
+  - mockups/evidence/credit-window-f09-2/8bd1a5a86e241634.png
+  - mockups/evidence/credit-window-f09-2/9062e257b921c9d2--not-evaluable.png
+  - mockups/evidence/credit-window-f09-2/a250ea42f50dc5d0.png
+  - mockups/evidence/credit-window-f09-2/d39fa0349f0587bd.png
+  - mockups/evidence/credit-window-f09-2/e72b7609fec789d5.png
+  - mockups/evidence/credit-window-f09-2/f86efa2f8bc5139a.png
 manifest: mockups/evidence/credit-window-f09-2/manifest.json
