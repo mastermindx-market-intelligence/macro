@@ -21,6 +21,7 @@ def _load(name: str, rel: str):
 passports = _load("toi_w1_passports", "scripts/research/validate_toi_w1_passports.py")
 equiv = _load("toi_w1_equiv", "scripts/research/validate_toi_w1_equivalence.py")
 sources = _load("toi_w1_sources", "scripts/research/validate_toi_w1_sources.py")
+residuals = _load("toi_w1_residuals", "scripts/research/validate_toi_w1_residuals.py")
 
 
 def _rows():
@@ -30,6 +31,10 @@ def _rows():
 def _source_map():
     payload = json.loads(sources.SOURCES.read_text(encoding="utf-8"))
     return sources.validate_sources(payload)
+
+
+def _residual_payload():
+    return json.loads(residuals.RESIDUALS.read_text(encoding="utf-8"))
 
 
 def test_current_passports_validate():
@@ -161,6 +166,44 @@ def test_inside_bar_practitioner_family_is_not_p0_or_p1_authority():
     assert inside["research_priority"] == "P2"
     assert inside["owner_disposition"] == "toi_later_context"
     assert "primary-or-official" in inside["known_failure_modes"][0]
+
+
+def test_residual_family_census_validates_and_stays_out_of_first_w3():
+    result = residuals.validate(_residual_payload())
+    assert result == {
+        "status": "valid",
+        "family_count": 10,
+        "family_counts": {"P2": 6, "archive": 2, "blocked": 2, "total": 10},
+    }
+
+
+def test_residual_duplicate_family_fails_closed():
+    bad = copy.deepcopy(_residual_payload())
+    bad["families"].append(copy.deepcopy(bad["families"][0]))
+    with pytest.raises(ValueError, match="exactly 10 families"):
+        residuals.validate(bad)
+
+
+def test_residual_bad_dnr_fails_closed():
+    bad = copy.deepcopy(_residual_payload())
+    bad["families"][0]["dnr_keys"] = ["KILL-PM3-GAP-MAP"]
+    with pytest.raises(ValueError, match="invalid DNR key"):
+        residuals.validate(bad)
+
+
+def test_residual_blocked_family_cannot_become_active():
+    bad = copy.deepcopy(_residual_payload())
+    row = next(r for r in bad["families"] if r["research_priority"] == "blocked")
+    row["owner_disposition"] = "toi_later_context"
+    with pytest.raises(ValueError, match="blocked family must fail closed"):
+        residuals.validate(bad)
+
+
+def test_residual_outcome_read_fails_closed():
+    bad = copy.deepcopy(_residual_payload())
+    bad["outcomes_read"] = True
+    with pytest.raises(ValueError, match="outcome-blind"):
+        residuals.validate(bad)
 
 
 def test_elliott_sources_are_evidence_not_authority():
