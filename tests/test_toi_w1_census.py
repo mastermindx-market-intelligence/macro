@@ -35,9 +35,10 @@ def _source_map():
 def test_current_p0_passports_validate():
     result = passports.validate_rows(_rows(), passports._source_ids())
     assert result["status"] == "valid"
-    assert result["count"] >= 23
-    assert result["priority_counts"]["P0"] >= 12
-    assert result["priority_counts"]["P1"] >= 11
+    assert result["count"] == 23
+    assert result["exact_local_count"] == 20
+    assert result["priority_counts"]["P0"] == 12
+    assert result["priority_counts"]["P1"] == 11
 
 
 def test_unknown_passport_key_fails_closed():
@@ -65,6 +66,20 @@ def test_exact_local_without_signal_ids_fails_closed():
     rows = copy.deepcopy(_rows())
     rows[0]["local_implementation"]["signal_ids"] = []
     with pytest.raises(ValueError, match="requires paths and signal_ids"):
+        passports.validate_rows(rows, passports._source_ids())
+
+
+def test_exact_local_missing_path_fails_closed():
+    rows = copy.deepcopy(_rows())
+    rows[0]["local_implementation"]["paths"] = ["engine/does_not_exist.py"]
+    with pytest.raises(ValueError, match="exact local path missing"):
+        passports.validate_rows(rows, passports._source_ids())
+
+
+def test_exact_local_unknown_signal_id_fails_closed():
+    rows = copy.deepcopy(_rows())
+    rows[0]["local_implementation"]["signal_ids"] = ["definitely_not_a_real_signal_id"]
+    with pytest.raises(ValueError, match="signal_id .* not found"):
         passports.validate_rows(rows, passports._source_ids())
 
 
@@ -114,12 +129,8 @@ def test_current_source_receipts_validate():
 def test_practitioner_source_is_registered_but_cannot_satisfy_p0_p1_primary_gate():
     source_map = _source_map()
     assert source_map["SRC-STRAT-PUBLIC"]["source_type"] == "public_practitioner_methodology"
-    rows = copy.deepcopy(_rows())
-    rows[0]["source_refs"] = ["SRC-STRAT-PUBLIC"]
-    rows[0]["rights_ref"] = "SRC-STRAT-PUBLIC"
-    original = sources.PASSPORTS
-    # validate_passport_bindings reads the file, so reproduce its primary/official predicate
-    acceptable = [source_map[ref] for ref in rows[0]["source_refs"] if source_map[ref]["source_type"] in sources.PRIMARY_OR_OFFICIAL_SOURCE_TYPES]
+    refs = ["SRC-STRAT-PUBLIC"]
+    acceptable = [source_map[ref] for ref in refs if source_map[ref]["source_type"] in sources.PRIMARY_OR_OFFICIAL_SOURCE_TYPES]
     assert acceptable == []
 
 
