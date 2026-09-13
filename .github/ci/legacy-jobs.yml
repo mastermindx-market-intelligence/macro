@@ -6575,6 +6575,15 @@ jobs:
     #                             client-sent user id is ignored), validation, the
     #                             user_metadata MERGE, the email_prefs lang mirror, and the
     #                             honest partial/total failure statuses.
+    #   test_alert_prefs.py     — B-F08-1a alert delivery preferences (email opt-in,
+    #                             category subset, IANA tz, quiet hours): storage-shape
+    #                             validation via lib.user_prefs.normalize_value, the
+    #                             quiet_hours wire sentinel "off" reaching the writer as
+    #                             None (never the literal string), GET /api/account/prefs
+    #                             readback with unset/categories_available, no site/data
+    #                             filesystem writes, and the account.js JS-source
+    #                             contract for the new alert-prefs group (same
+    #                             no-browser-harness idiom as test_shared_pref_atomics.py).
     #   test_account_team_fields.py — GET /api/account teams field: RLS-scoped
     #                             PostgREST read (caller token on Authorization,
     #                             never the service-role key), own-row filter,
@@ -6612,7 +6621,7 @@ jobs:
       - name: billing + lifecycle email tests (app/billing_emails.py)
         run: python -m pytest tests/test_billing_emails.py -v
       - name: account preference tests (app/account_prefs.py)
-        run: python -m pytest tests/test_account_prefs.py -v
+        run: python -m pytest tests/test_account_prefs.py tests/test_alert_prefs.py -v
       - name: account team-membership tests (lib/team_membership.py)
         run: python -m pytest tests/test_account_team_fields.py -v
       - name: shared preference atomics contract (templates/theme.js)
