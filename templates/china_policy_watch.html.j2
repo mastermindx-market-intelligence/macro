@@ -73,6 +73,23 @@
   .pw .sh-needle-tip{filter:drop-shadow(0 0 3.5px var(--sh-accent))}
   /* theme.css owns the light pointer; policy-watch supplies its direction-neutral
      pressure-state accent through --sh-accent. */
+  /* gauge halo tones: opacity-tinted from --text so dark + light themes both
+     adapt. Dark keeps the SVG glow; light must not transplant it over the
+     .sh-hero-right money copy. */
+  .pw .sh-gauge-track{stroke:color-mix(in srgb, var(--text) 8%, transparent)}
+  .pw .sh-gauge-ticks{stroke:color-mix(in srgb, var(--text) 20%, transparent)}
+  .pw .sh-gauge-label{fill:color-mix(in srgb, var(--text) 26%, transparent)}
+  .pw .sh-gauge-denom{fill:color-mix(in srgb, var(--text) 32%, transparent)}
+  [data-theme="light"] .pw .sh-gauge-svg{overflow:hidden}
+  [data-theme="light"] .pw .sh-gauge-fill{filter:none}
+  [data-theme="light"] .pw .sh-gauge-track{stroke:color-mix(in srgb, var(--text) 14%, transparent)}
+  [data-theme="light"] .pw .sh-gauge-ticks{stroke:color-mix(in srgb, var(--text) 32%, transparent)}
+  [data-theme="light"] .pw .sh-gauge-label{fill:color-mix(in srgb, var(--text) 48%, transparent)}
+  [data-theme="light"] .pw .sh-gauge-denom{fill:color-mix(in srgb, var(--text) 40%, transparent)}
+  [data-theme="light"] .pw .sh-needle-tip{filter:none}
+  [data-theme="light"] .pw .sh-hero-right{position:relative;z-index:2}
+  [data-theme="light"] .pw .sh-big{text-shadow:none}
+  [data-theme="light"] .pw .sh-dot-firing{box-shadow:none}
   .pw .sh-score-line{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
   .pw .sh-big{font-size:60px;font-weight:800;line-height:.9;letter-spacing:-.035em;font-variant-numeric:tabular-nums;color:var(--sh-accent);text-shadow:0 0 34px var(--sh-glow)}
   @media(max-width:560px){.pw .sh-big{font-size:40px}}
@@ -174,7 +191,27 @@
   .pw .feed .tt{font-size:13px;line-height:1.45}
   .pw .feed .tt a{color:var(--text)}.pw .feed .tt a:hover{color:var(--ink-link, var(--link))}
   .pw .disc{font-size:11px;color:var(--muted);margin-top:14px;line-height:1.55}
+  .pw .empty{margin:12px 0 0;font-size:14px;line-height:1.5;color:var(--text);font-weight:500}
+  .pw .empty-why{margin:6px 0 0;font-size:12px;line-height:1.45;color:var(--muted)}
   .pw .warming{border-radius:14px;border:1px solid var(--mx5-glass-border);background:rgba(255,255,255,.03);padding:16px 18px;font-size:13px;color:var(--muted)}
+  .pw .pw-hero-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:2px 0 0}
+  .pw .dtp-asof,.pw .dtp{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);border:1px solid var(--mx5-glass-border);border-radius:var(--r-pill,999px);padding:3px 10px;font-weight:500;letter-spacing:0;text-transform:none;white-space:nowrap}
+  .pw .cnx-ctitle .dtp{margin-left:auto;font-weight:500}
+  .pw .pw-table-scroll{display:block;overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch}
+  .pw .pw-table-scroll .pw-table-inner{min-width:520px;width:max-content}
+  .pw .pw-backdrop{margin-top:16px;padding:14px 14px 4px;border:1px solid var(--mx5-glass-border);border-radius:var(--r-card,14px);background:color-mix(in srgb, var(--text) 4%, transparent)}
+  [data-theme="light"] .pw .pw-backdrop{background:color-mix(in srgb, var(--panel) 75%, transparent);box-shadow:inset 0 1px 0 color-mix(in srgb, var(--panel) 90%, transparent), 0 6px 18px color-mix(in srgb, var(--text) 6%, transparent)}
+  .pw .pw-backdrop .co-h{font-size:11.5px;letter-spacing:.04em;text-transform:uppercase}
+  .pw .pw-backdrop .pw-stance{font-size:13px;line-height:1.55;color:var(--text);margin:0 0 10px}
+  .pw .pw-see-all{margin:10px 0 0;font-size:12.5px}
+  .pw .pw-see-all a{color:var(--ink-link, var(--link));font-weight:600}
+  .pw .pw-baskets{font-size:10px;color:var(--muted)}
+  .pw .metric .k{display:flex;align-items:center;gap:4px}
+  .pw .pw-sector-all{margin-top:12px;border-top:1px dashed var(--mx5-glass-border);padding-top:10px}
+  .pw .pw-sector-all summary{cursor:pointer;font-size:12.5px;color:var(--muted);font-weight:600}
+  .pw .feed li{flex-wrap:wrap}
+  .pw .pw-deep{margin:8px 0 4px;font-size:12px}
+  .pw .pw-deep a{color:var(--ink-link, var(--link));font-weight:600}
 {% endblock %}
 
 {% block content %}
@@ -186,7 +223,10 @@
   <div class="pw-hero-head">
     <p class="pw-eyebrow">🇨🇳 {{ t('National Team Radar', '国家队雷达') }}</p>
     <h1>{{ t('China Policy &amp; State-Hand Watch', '中国政策与国家队监测') }}</h1>
-    <p class="lens">{{ t('Is Beijing defending the market right now? — the national team footprint · PBoC stance · policy backdrop · context only · as of', '北京此刻是否在护盘？——国家队足迹 · 央行立场 · 政策背景 · 仅供参考 · 截至') }} {{ pw.asof if pw else '—' }}</p>
+    <p class="lens" data-ev="subtitle">{{ t('Is Beijing defending the market right now?', '北京此刻是否在护盘？') }}</p>
+    <div class="pw-hero-meta">
+      <span class="dtp-asof">{{ t('as of', '截至') }} {{ pw.asof if pw else '—' }}</span>
+    </div>
   </div>
 
 {% if not pw %}
@@ -200,7 +240,7 @@
   {% set filled = (p.score / 100 * arc_len) | round(1) %}
   {% set gap = (arc_len - filled) | round(1) %}
   {% set needle = (p.score / 100 * 180 - 90) | round(1) %}
-  <div class="cnx-card sh-hero">
+  <div class="cnx-card sh-hero" data-l1="hero">
     <div class="sh-hero-left">
       <span class="sh-regime-pill"><span class="dot"></span>{{ bl(p.band_en, p.band_zh) }} · {{ t('state-hand watch', '国家队监测') }}</span>
       <div class="sh-gauge-row">
@@ -210,18 +250,18 @@
             <filter id="shNeedleGlow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
             <filter id="shArcGlow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
           </defs>
-          <path d="M 14 75 A 56 56 0 0 1 126 75" stroke="rgba(255,255,255,.08)" stroke-width="10" stroke-linecap="round" fill="none"/>
+          <path class="sh-gauge-track" d="M 14 75 A 56 56 0 0 1 126 75" stroke-width="10" stroke-linecap="round" fill="none"/>
           <path class="sh-gauge-fill" d="M 14 75 A 56 56 0 0 1 126 75" stroke-width="10" stroke-linecap="round" fill="none" stroke-dasharray="{{ filled }} {{ gap }}" filter="url(#shArcGlow)"/>
-          <g stroke="rgba(255,255,255,.20)" stroke-width="1.2">
+          <g class="sh-gauge-ticks" stroke-width="1.2">
             <line x1="70" y1="19" x2="70" y2="26" transform="rotate(-90 70 75)"/>
             <line x1="70" y1="19" x2="70" y2="26" transform="rotate(-45 70 75)"/>
             <line x1="70" y1="19" x2="70" y2="26" transform="rotate(0 70 75)"/>
             <line x1="70" y1="19" x2="70" y2="26" transform="rotate(45 70 75)"/>
             <line x1="70" y1="19" x2="70" y2="26" transform="rotate(90 70 75)"/>
           </g>
-          <text x="14" y="95" fill="rgba(255,255,255,.26)" font-size="11" text-anchor="middle" font-family="Inter,sans-serif">0</text>
-          <text x="70" y="10" fill="rgba(255,255,255,.26)" font-size="11" text-anchor="middle" font-family="Inter,sans-serif">50</text>
-          <text x="126" y="95" fill="rgba(255,255,255,.26)" font-size="11" text-anchor="middle" font-family="Inter,sans-serif">100</text>
+          <text class="sh-gauge-label" x="14" y="95" font-size="11" text-anchor="middle" font-family="Inter,sans-serif">0</text>
+          <text class="sh-gauge-label" x="70" y="10" font-size="11" text-anchor="middle" font-family="Inter,sans-serif">50</text>
+          <text class="sh-gauge-label" x="126" y="95" font-size="11" text-anchor="middle" font-family="Inter,sans-serif">100</text>
           <g class="sh-needle odo-needle odo-needle--compact" style="--odo-accent:var(--sh-accent)" transform="rotate({{ needle }} 70 75)" filter="url(#shNeedleGlow)">
             <line x1="70" y1="75" x2="70" y2="24" stroke="rgba(255,255,255,.30)" stroke-width="5" stroke-linecap="round"/>
             <polygon points="69,75 71,75 70.5,24 69.5,24" fill="white" opacity=".94"/>
@@ -231,12 +271,15 @@
             <circle class="sh-needle-tip" cx="70" cy="25.5" r="2.5"/>
           </g>
           <text class="sh-numeral" x="70" y="62" font-size="24" font-weight="800" text-anchor="middle" font-family="Inter,sans-serif">{{ p.score }}</text>
-          <text x="70" y="73" fill="rgba(255,255,255,.32)" font-size="11" text-anchor="middle" font-family="Inter,sans-serif">/ 100</text>
+          <text class="sh-gauge-denom" x="70" y="73" font-size="11" text-anchor="middle" font-family="Inter,sans-serif">/ 100</text>
         </svg>
         <div>
           <div class="sh-score-line"><span class="sh-big">{{ p.score }}</span></div>
           <div class="sh-verdict">{{ bl(p.band_en, p.band_zh) }}</div>
           <div class="sh-sub">{{ t('State-Hand pressure', '国家队干预压力') }} · {{ nt.tell_counts.firing }}/{{ nt.tell_counts.total }} {{ t('tells firing', '迹象点亮') }}</div>
+          {% if nt.asof_inputs %}
+          <p style="margin:8px 0 0"><span class="stale-chip {{ 'old' if nt.stale }}">{{ t('State-hand inputs', '国家队输入') }} · {{ nt.asof_inputs }}{% if nt.age_days is not none %} · {{ nt.age_days }}{{ t('d ago', '日前') }}{% endif %}{% if nt.stale %} · {{ t('may be stale', '可能过时') }}{% endif %}</span></p>
+          {% endif %}
         </div>
       </div>
       <p class="sh-stance">{{ bl(nt.stance.en, nt.stance.zh) }}</p>
@@ -279,12 +322,12 @@
       {% for tier, cap_en, cap_zh in [('leading', 'before the buying', '买入之前'), ('coincident', 'during — the fingerprint', '买入期间——指纹'), ('confirming', 'after — the relay', '之后——接力')] %}
       <div class="sh-tier"><span class="sh-tier-k">{{ t(tier|capitalize, ({'leading':'先行','coincident':'同步','confirming':'确认'})[tier]) }}</span><span class="sh-tier-c">{{ t(cap_en, cap_zh) }}</span></div>
       {% for tl in nt.tells if tl.tier == tier %}
-      <div class="sh-tell {{ 'is-null' if tl.state=='null' }}">
+      <div class="sh-tell {{ 'is-null' if tl.state=='null' }}" data-ev="tell-{{ tl.key }}">
         <span class="sh-dot sh-dot-{{ tl.state }}"></span>
         <div class="sh-tell-txt">
           <div class="sh-tell-top">
             <span class="sh-tell-label">{{ bl(tl.label_en, tl.label_zh) }}</span>
-            {% if tl.value_fmt %}<span class="sh-tell-val">{{ tl.value_fmt }}</span>{% endif %}
+            {% if tl.value_fmt_en or tl.value_fmt_zh or tl.value_fmt %}<span class="sh-tell-val">{{ bl(tl.value_fmt_en or tl.value_fmt, tl.value_fmt_zh or tl.value_fmt_en or tl.value_fmt) }}</span>{% endif %}
           </div>
           <div class="sh-tell-rc">{% if tl.state=='null' %}{{ t('No reading yet', '暂无读数') }}{% else %}{{ bl(tl.receipt_en, tl.receipt_zh) }}{% endif %}</div>
         </div>
@@ -295,11 +338,18 @@
   </div>
   {% endif %}
 
-  <!-- curated policy thesis -->
+  <!-- curated policy thesis + NPC chips (NPC demoted here from its own L1 card) -->
   {% if pw.intel and pw.intel.thesis %}
-  <div class="cnx-card">
+  <div class="cnx-card" data-l1="thesis">
     <div class="callout key" style="margin-bottom:10px"><span class="co-h">{{ t('The policy thesis', '政策核心论点') }}</span>{{ bl(pw.intel.thesis.en, pw.intel.thesis.zh) }}</div>
-    {% if pw.intel.regime_read %}<div class="callout warn" style="margin-bottom:0"><span class="co-h">{{ t('How to read it', '如何解读') }}</span>{{ bl(pw.intel.regime_read.en, pw.intel.regime_read.zh) }}</div>{% endif %}
+    {% if pw.intel.regime_read %}<div class="callout warn" style="margin-bottom:10px"><span class="co-h">{{ t('How to read it', '如何解读') }}</span>{{ bl(pw.intel.regime_read.en, pw.intel.regime_read.zh) }}</div>{% endif %}
+    {% if pw.intel.npc_targets_2026 %}
+    <div class="chips" data-landing="npc-2026">
+      {% for tg in pw.intel.npc_targets_2026 %}
+      <span class="nchip">{{ bl(tg.label_en, tg.label_zh) }} <b>{{ bl(tg.value_en or tg.value, tg.value_zh or tg.value) }}</b></span>
+      {% endfor %}
+    </div>
+    {% endif %}
     {% set id = pw.intel_dates if pw.intel_dates else {} %}
     {% set st = id.staleness if id.staleness else {} %}
     {% if st.as_of %}
@@ -308,17 +358,29 @@
   </div>
   {% endif %}
 
-  <!-- PBoC stance + corridor -->
+  <!-- PBoC stance + corridor; FX/NBS nested as China macro backdrop (not a peer L1 card) -->
+  {% set _ctips = {
+    'fr007': ('FR007 is the 7-day repo fixing — the PBoC money-market heartbeat.', 'FR007是7天期回购定盘利率，央行货币市场的心跳。'),
+    'shibor_on': ('SHIBOR O/N is the overnight Shanghai interbank offered rate.', '隔夜SHIBOR是上海银行间同业拆放隔夜利率。'),
+    'shibor_3m': ('SHIBOR 3M is the 3-month Shanghai interbank offered rate.', '3个月SHIBOR是上海银行间同业拆放3个月利率。'),
+    'rrr': ('RRR is the reserve requirement ratio for large banks. The why-line uses an 18-month cumulative window.', '存准率是大型银行存款准备金率。立场说明使用18个月累计窗口。'),
+    'lpr_1y': ('1-year loan prime rate — the PBoC policy benchmark for most new loans.', '1年期贷款市场报价利率，多数新发放贷款的政策基准。'),
+    'lpr_5y': ('5-year loan prime rate — the mortgage benchmark.', '5年期贷款市场报价利率，房贷定价基准。')
+  } %}
   {% if pw.pboc %}
-  <div class="cnx-card">
-    <div class="cnx-ctitle">🪙 {{ t('PBoC stance &amp; rate corridor', '央行立场与利率走廊') }}</div>
+  <div class="cnx-card" data-l1="pboc">
+    <div class="cnx-ctitle">🪙 {{ t('PBoC stance &amp; rate corridor', '央行立场与利率走廊') }}{% if pw.pboc_asof %} <span class="dtp">{{ t('as of', '截至') }} {{ pw.pboc_asof }}</span>{% endif %}</div>
     <div class="stance-hero">
       <span class="stance-badge st-{{ pw.pboc.stance }}">{{ bl(pw.pboc.stance_en, pw.pboc.stance_zh) }}</span>
       <span class="why">{{ bl(pw.pboc.rationale.en, pw.pboc.rationale.zh) }}</span>
     </div>
     <div class="mgrid">
       {% for c in pw.pboc.corridor %}
-      <div class="metric"><div class="k">{{ bl(c.label_en, c.label_zh) }}</div><div class="v">{{ '%.2f'|format(c.value) }}{{ c.unit }}</div></div>
+      <div class="metric">
+        <div class="k">{{ bl(c.label_en, c.label_zh) }}{% if c.key in _ctips %} <button class="lens-q" type="button" tabindex="0" aria-label="Explain" data-aria-en="Explain" data-aria-zh="说明" data-tip-en="{{ _ctips[c.key][0] }}" data-tip-zh="{{ _ctips[c.key][1] }}">?</button>{% endif %}</div>
+        <div class="v">{{ '%.2f'|format(c.value) }}{{ c.unit }}</div>
+        {% if c.slice_en or c.window_en %}<div class="s">{% if c.slice_en %}{{ bl(c.slice_en, c.slice_zh) }}{% elif c.window_en %}{{ bl(c.window_en, c.window_zh) }}{% endif %}</div>{% endif %}
+      </div>
       {% endfor %}
     </div>
     {% if pw.pboc.last_moves %}
@@ -328,87 +390,105 @@
       {% endfor %}
     </ul>
     {% endif %}
-  </div>
-  {% endif %}
 
-  <!-- FX & reserves -->
-  {% if pw.pboc and pw.pboc.fx %}
-  {% set fx = pw.pboc.fx %}
-  <div class="cnx-card">
-    <div class="cnx-ctitle">💱 {{ t('FX &amp; reserves', '外汇与储备') }}</div>
-    <div class="mgrid">
-      {% if fx.reserves %}<div class="metric"><div class="k">{{ t('FX reserves', '外汇储备') }}</div><div class="v">${{ (fx.reserves/10000)|round(2) }}T</div><div class="s">{% if fx.reserves_mom %}{{ '%+.0f'|format(fx.reserves_mom) }} {{ t('bn MoM', '亿环比') }}{% endif %} · {{ fx.asof_reserves }}</div></div>{% endif %}
-      {% if fx.gold %}<div class="metric"><div class="k">{{ t('Gold reserves', '黄金储备') }}</div><div class="v">{{ fx.gold|round(0)|int }}t</div></div>{% endif %}
-      {% if fx.usd_cny %}<div class="metric"><div class="k">{{ t('USD / CNY', '美元兑人民币') }}</div><div class="v">{{ '%.3f'|format(fx.usd_cny) }}</div><div class="s">{% if fx.usd_cny_chg_20d is not none %}{{ '%+.3f'|format(fx.usd_cny_chg_20d) }} {{ t('20d', '20日') }}{% endif %} · {{ fx.asof_cny }}</div></div>{% endif %}
+    {% set fx = pw.pboc.fx if pw.pboc.fx else {} %}
+    {% if fx or pw.nbs_prints %}
+    <div class="pw-backdrop" data-landing="china-macro-backdrop">
+      <div class="cnx-ctitle" style="margin-bottom:8px">🌏 {{ t('China macro backdrop', '中国宏观背景') }}{% if pw.backdrop_asof %} <span class="dtp">{{ t('as of', '截至') }} {{ pw.backdrop_asof }}</span>{% endif %}</div>
+      {% if pw.nbs_stance_en %}<p class="pw-stance">{{ bl(pw.nbs_stance_en, pw.nbs_stance_zh) }}</p>{% endif %}
+      <div class="mgrid">
+        {% if fx.reserves %}<div class="metric" data-ev="fx-mom"><div class="k">{{ t('FX reserves', '外汇储备') }}</div><div class="v">${{ (fx.reserves/10000)|round(2) }}T</div><div class="s">{% if fx.reserves_mom is not none %}{{ '%+.1f'|format(fx.reserves_mom/10) }} {{ t('bn MoM', '十亿美元环比') }}{% endif %} · {{ fx.asof_reserves }}</div></div>{% endif %}
+        {% if fx.gold %}<div class="metric"><div class="k">{{ t('Gold reserves', '黄金储备') }}</div><div class="v">{{ fx.gold|round(0)|int }}t</div></div>{% endif %}
+        {% if fx.usd_cny %}<div class="metric"><div class="k">{{ t('USD / CNY', '美元兑人民币') }}</div><div class="v">{{ '%.3f'|format(fx.usd_cny) }}</div><div class="s">{% if fx.usd_cny_chg_20d is not none %}{{ '%+.3f'|format(fx.usd_cny_chg_20d) }} {{ t('20d', '20日') }}{% endif %} · {{ fx.asof_cny }}</div></div>{% endif %}
+        {% for r in pw.nbs_prints %}
+        <div class="metric">
+          <div class="k">{{ bl(r.label_en, r.label_zh) }}{% if r.key == 'tsf_total' %} <button class="lens-q" type="button" tabindex="0" aria-label="Explain" data-aria-en="Explain" data-aria-zh="说明" data-tip-en="TSF is total social financing — the monthly credit pulse across bank and non-bank channels." data-tip-zh="社融是社会融资规模——银行与非银行渠道的当月信用脉冲。">?</button>{% endif %}</div>
+          <div class="v">{% if r.unit == '¥bn' %}¥{{ r.value }}bn{% else %}{{ r.value }}{{ r.unit }}{% endif %}</div>
+          <div class="s">{% if r.dir_en %}{{ bl(r.dir_en, r.dir_zh) }} · {% endif %}{{ r.asof }}</div>
+        </div>
+        {% endfor %}
+      </div>
+      {% set _n_fx = (1 if fx.reserves else 0) + (1 if fx.gold else 0) + (1 if fx.usd_cny else 0) %}
+      {% set _n_nbs = pw.nbs_prints|length %}
+      <p class="pw-deep"><a href="china.html">{{ t('China desk', '中国桌面') }} →</a> <span class="l-en">{{ _n_fx + _n_nbs }} prints on this card</span><span class="l-zh">本卡 {{ _n_fx + _n_nbs }} 项读数</span></p>
     </div>
+    {% endif %}
   </div>
   {% endif %}
 
-  <!-- NBS prints -->
-  {% if pw.nbs_prints %}
-  <div class="cnx-card">
-    <div class="cnx-ctitle">📊 {{ t('NBS latest prints', '统计局最新数据') }}</div>
-    <div class="mgrid">
-      {% for r in pw.nbs_prints %}
-      <div class="metric"><div class="k">{{ bl(r.label_en, r.label_zh) }}</div><div class="v">{{ r.value }}{{ r.unit }}</div><div class="s">{{ r.asof }}</div></div>
-      {% endfor %}
-    </div>
-  </div>
-  {% endif %}
-
-  <!-- NPC targets -->
-  {% if pw.intel and pw.intel.npc_targets_2026 %}
-  <div class="cnx-card">
-    <div class="cnx-ctitle">🎯 {{ t('NPC 2026 targets', '两会2026目标') }}</div>
-    <div class="chips">
-      {% for tg in pw.intel.npc_targets_2026 %}
-      <span class="nchip">{{ bl(tg.label_en, tg.label_zh) }} <b>{{ tg.value }}</b></span>
-      {% endfor %}
-    </div>
-  </div>
-  {% endif %}
-
-  <!-- sector-policy tracker -->
+  <!-- sector-policy tracker (capped 8; remainder lands in #pw-sector-all) -->
   {% if pw.intel and pw.intel.sector_policy %}
-  <div class="cnx-card">
-    <div class="cnx-ctitle">🧭 {{ t('Sector-policy tracker', '行业政策追踪') }}</div>
+  {% set _sp_all = pw.intel.sector_policy %}
+  {% set _sp_n = _sp_all|length %}
+  {% set _sp_cap = pw.sector_table_cap if pw.sector_table_cap else 8 %}
+  <div class="cnx-card" data-l1="sectors" data-ev="sector-cap">
+    <div class="cnx-ctitle">🧭 {{ t('Sector-policy tracker', '行业政策追踪') }}{% if pw.intel.as_of %} <span class="dtp">{{ t('as of', '截至') }} {{ pw.intel.as_of }}</span>{% endif %}</div>
+    <div class="pw-table-scroll"><div class="pw-table-inner">
     <table class="pwd">
       <thead><tr><th>{{ t('Sector', '行业') }}</th><th>{{ t('Stance', '立场') }}</th><th>{{ t('Policy read', '政策解读') }}</th></tr></thead>
       <tbody>
-      {% for s in pw.intel.sector_policy %}
+      {% for s in _sp_all[:_sp_cap] %}
         <tr>
-          <td>{{ bl(s.sector_en, s.sector_zh) }}{% if s.baskets %}<br><span style="font-size:10px;color:var(--muted)">{{ s.baskets|join(' · ') }}</span>{% endif %}</td>
+          <td>{{ bl(s.sector_en, s.sector_zh) }}{% if s.basket_labels %}<br><span class="pw-baskets">{% for b in s.basket_labels %}{{ bl(b.en, b.zh) }}{% if not loop.last %} · {% endif %}{% endfor %}</span> <button class="lens-q" type="button" tabindex="0" aria-label="Explain" data-aria-en="Explain" data-aria-zh="说明" data-tip-en="Basket ids: {{ (s.baskets or [])|join(', ') }}" data-tip-zh="篮子编号：{{ (s.baskets or [])|join('、') }}">?</button>{% endif %}</td>
           <td><span class="pill p-{{ s.stance }}">{{ t(s.stance|capitalize, ({'supportive':'支持','restrictive':'限制','neutral':'中性'}).get(s.stance, s.stance)) }}</span></td>
           <td>{{ bl(s.note_en, s.note_zh) }}</td>
         </tr>
       {% endfor %}
       </tbody>
     </table>
+    </div></div>
+    {% if _sp_n > _sp_cap %}
+    <p class="pw-see-all"><a href="#pw-sector-all"><span class="l-en">See all {{ _sp_n }} →</span><span class="l-zh">查看全部 {{ _sp_n }} 条 →</span></a></p>
+    <details class="pw-sector-all" id="pw-sector-all">
+      <summary>{{ t('All sector-policy rows', '全部行业政策') }} ({{ _sp_n }})</summary>
+      <div class="pw-table-scroll"><div class="pw-table-inner">
+      <table class="pwd">
+        <thead><tr><th>{{ t('Sector', '行业') }}</th><th>{{ t('Stance', '立场') }}</th><th>{{ t('Policy read', '政策解读') }}</th></tr></thead>
+        <tbody>
+        {% for s in _sp_all %}
+          <tr>
+            <td>{{ bl(s.sector_en, s.sector_zh) }}{% if s.basket_labels %}<br><span class="pw-baskets">{% for b in s.basket_labels %}{{ bl(b.en, b.zh) }}{% if not loop.last %} · {% endif %}{% endfor %}</span>{% endif %}</td>
+            <td><span class="pill p-{{ s.stance }}">{{ t(s.stance|capitalize, ({'supportive':'支持','restrictive':'限制','neutral':'中性'}).get(s.stance, s.stance)) }}</span></td>
+            <td>{{ bl(s.note_en, s.note_zh) }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      </div></div>
+    </details>
+    {% endif %}
   </div>
   {% endif %}
 
-  <!-- official policy tape -->
-  {% if pw.policy_feed %}
-  <div class="cnx-card">
-    <div class="cnx-ctitle">📰 {{ t('Official policy tape', '官方政策快讯') }}</div>
+  <!-- policy tape -->
+  <div class="cnx-card" data-l1="tape">
+    <div class="cnx-ctitle">📰 {{ t('Policy tape', '政策快讯') }}{% if pw.feed_asof %} <span class="dtp">{{ t('as of', '截至') }} {{ pw.feed_asof }}</span>{% endif %}</div>
+    {% if pw.policy_feed %}
     <ul class="feed">
       {% for it in pw.policy_feed %}
-      <li>
+      <li{% if loop.first %} data-ev="tape-row"{% endif %}>
+        {% if it.source_chip %}<span class="tag">{{ it.source_chip }}</span>{% endif %}
         <span class="tag">{{ bl(it.theme_en, it.theme_zh) }}</span>
         <div class="tt">
           {% if it.url %}<a href="{{ it.url }}" target="_blank" rel="noopener">{{ it.title }}</a>{% else %}{{ it.title }}{% endif %}
-          {% if it.scheduled_ref %} <span style="font-size:10px;color:#e0973a">📅 {{ it.scheduled_ref }}</span>{% endif %}
         </div>
       </li>
       {% endfor %}
     </ul>
+    {% elif pw.policy_feed_status == 'unavailable' %}
+    <p class="empty">{{ t("Policy tape unavailable right now — source didn't load", '政策快讯暂不可用——数据源未加载') }}</p>
+    <p class="empty-why">{{ t('This is a missing source, not a quiet tape. Other panels on this page are still current.', '这是数据源未加载，不是快讯为空。本页其他栏目仍为最新。') }}</p>
+    {% else %}
+    <p class="empty">{{ t('No China official policy items on the tape right now.', '当前暂无中国官方政策快讯。') }}</p>
+    <p class="empty-why">{{ t('This desk only shows China-relevant official and policy rows. A quiet tape is not a missing page.', '本栏只收录与中国相关的官方与政策条目。快讯为空不等于页面缺失。') }}</p>
+    {% endif %}
   </div>
-  {% endif %}
 
   <!-- prediction ledger -->
   {% if pw.intel and pw.intel.predictions %}
-  <div class="cnx-card">
+  <div class="cnx-card" data-l1="ledger">
     <div class="cnx-ctitle">🔮 {{ t('Policy prediction ledger', '政策预测台账') }} <span class="sub">{{ t('dated, checkable — accountability, not a forecast service', '有日期、可检验——问责，而非预测服务') }}</span></div>
+    <div class="pw-table-scroll"><div class="pw-table-inner">
     <table class="pwd">
       <thead><tr><th>{{ t('Prediction', '预测') }}</th><th>{{ t('Check by', '核查日') }}</th><th>{{ t('Status', '状态') }}</th></tr></thead>
       <tbody>
@@ -417,10 +497,11 @@
       {% endfor %}
       </tbody>
     </table>
+    </div></div>
   </div>
   {% endif %}
 
-  <p class="disc">{{ t('Context only — not a signal, score or trade. The National Team Radar fuses the public footprint of state intervention into a display-tier intensity read; it is not a buy signal and never gates a trade. PBoC corridor + NBS prints are point-in-time and may be revised; the sector matrix, NPC targets and prediction ledger are a hand-curated, dated intel substrate (data/china_policy/intel.json), not a model output.', '仅供参考，非信号、评分或交易。国家队雷达将国家干预的公开足迹汇成一个展示层强度读数；它不是买入信号，也从不用于交易闸口。央行利率走廊与统计局数据为特定时点快照，可能修订；行业矩阵、两会目标与预测台账为人工整理、有日期的情报底稿（data/china_policy/intel.json），并非模型输出。') }}</p>
+  <p class="disc">{{ t('Context only — not a signal, score or trade. The National Team Radar is a read on what the state is doing, not a buy signal; it never gates a trade. PBoC corridor + China macro backdrop are point-in-time and may be revised; the sector matrix, NPC targets and prediction ledger are a hand-curated, dated intel substrate, not a model output.', '仅供参考，非信号、评分或交易。国家队雷达仅为国家队动向的观察，非买入信号，也从不用于交易闸口。央行利率走廊与中国宏观背景为特定时点快照，可能修订；行业矩阵、两会目标与预测台账为人工整理、有日期的情报底稿，并非模型输出。') }} <button class="lens-q" type="button" tabindex="0" aria-label="Explain" data-aria-en="Explain" data-aria-zh="说明" data-tip-en="A read on what the state is doing, not a buy signal." data-tip-zh="仅为国家队动向的观察，非买入信号" data-tip-rc-en="Hand-curated, dated intel substrate — not a model output." data-tip-rc-zh="人工整理、有日期的情报底稿，并非模型输出。">?</button></p>
 {% endif %}
 </div>
 {% endblock %}
@@ -431,6 +512,16 @@
   window.shPop=function(id,e){if(e){e.stopPropagation();}var p=document.getElementById(id);if(!p)return;var open=p.classList.contains('open');document.querySelectorAll('.pw .sh-pop.open').forEach(function(x){x.classList.remove('open');});if(!open){p.classList.add('open');}};
   document.addEventListener('click',function(){document.querySelectorAll('.pw .sh-pop.open').forEach(function(x){x.classList.remove('open');});});
   document.addEventListener('keydown',function(e){if(e.key==='Escape'){document.querySelectorAll('.pw .sh-pop.open').forEach(function(x){x.classList.remove('open');});}});
+  function pwAria(){
+    var lang=document.documentElement.getAttribute('data-lang')||'en';
+    document.querySelectorAll('.pw [data-aria-en]').forEach(function(el){
+      el.setAttribute('aria-label', lang==='zh'
+        ? (el.getAttribute('data-aria-zh')||el.getAttribute('data-aria-en'))
+        : el.getAttribute('data-aria-en'));
+    });
+  }
+  document.addEventListener('langchange', pwAria);
+  pwAria();
 })();
 </script>
 {% endblock %}

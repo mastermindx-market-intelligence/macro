@@ -88,7 +88,7 @@ MACRO_THEMES: dict[str, list[str]] = {
 }
 # theme display labels (EN, ZH)
 THEME_LABEL: dict[str, tuple[str, str]] = {
-    "monetary": ("PBoC", "央行"), "inflation": ("Inflation", "物价"),
+    "monetary": ("Monetary policy", "货币政策"), "inflation": ("Inflation", "物价"),
     "growth": ("Growth", "增长"), "credit": ("Credit", "信用"),
     "fiscal": ("Fiscal/Trade", "财政/贸易"), "policy": ("Policy", "政策"),
     "politics": ("Politics", "政治/地缘"), "tech": ("Tech", "科技"),
@@ -685,7 +685,11 @@ def _is_china_anchored(text: str) -> bool:
     context at all (a UK piece renders HM Treasury as plain 财政部). PURE."""
     blob = text or ""
     neut = _FOREIGN_CB.sub("", blob)
-    if any(tok in neut for tok in _CN_ANCHOR_STRONG):
+    # ASCII tokens in _CN_ANCHOR_STRONG are capitalized ("China","PBoC"); hosts
+    # and some wires arrive lowercased. Casefold both sides so chinadaily.com.cn
+    # and "pboc cuts rates" still match. CJK tokens are unchanged by casefold.
+    neut_cf = neut.casefold()
+    if any(tok.casefold() in neut_cf for tok in _CN_ANCHOR_STRONG):
         return True
     if _FOREIGN_CB.search(blob):
         return False
