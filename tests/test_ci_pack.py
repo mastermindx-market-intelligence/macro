@@ -3942,12 +3942,102 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     The companion test below pins all three always-on gates so the OPPOSITE
     regression — a future curation silently narrowing a deliberate whole-tree
     gate off its subject — reds loudly instead of shipping a false green.
+
+    JOB COUNTS RE-BASED to 132/129/125 (wave 9, 2026-09-13,
+    B-HEAL-CI-PACK-CEILING-1). Measured on main 021b2ae3a4a6, diffing
+    selected-job NAME sets per probe against the wave-8 baseline manifest
+    (a8075391fa89); that baseline manifest re-measured on today's tree gives
+    130/126/121 at 5,560/5,313/5,299 — the wave-8 figures above to the job
+    and the weight-second — so the whole delta is manifest-side:
+
+        templates/index.html          131 jobs / 5,703 weight (AT ceiling 131 —
+          the zero-headroom defect again)
+          entrants: market-os-macro-workspaces (fallback, w39)
+        scripts/build_free_content.py 128 jobs / 5,460 weight (was ceiling 127)
+          entrants: market-os-macro-workspaces (fallback, w39),
+                    public-render-fastlane (fallback, w17)
+        engine/prophet/plan_book.py   124 jobs / 5,454 weight (was ceiling 122)
+          entrants: ccw-w3-credit-momentum (fallback, w10),
+                    market-os-macro-workspaces (fallback, w39),
+                    public-render-fastlane (fallback, w17)
+
+    Nothing leaves any probe. Unlike wave 8, NONE of the three entrants is a
+    deliberately-unscoped always-on gate: no block text claims whole-tree
+    breadth on purpose, and every match is an inferred opaque-fallback claim
+    that its own block does not justify. Each is therefore a CURATION
+    CANDIDATE with a named follow-on; all three are ratcheted here so main
+    goes green today, and the ceiling keeps flagging them until curated:
+
+    ``ccw-w3-credit-momentum`` (legacy-jobs.yml ~6299; no ``paths:``, no
+    ``scope:``; its header is a coverage inventory — "CCW-W3 credit momentum
+    organ: engine/credit_momentum.py …" — with no self-justification for
+    breadth). Present at wave 8 with ZERO probe-relevant ambiguities; #6904
+    (merge 49451c5148c4) appended tests/test_credit_window.py to its step,
+    and that suite carries five opaque constructs (:173/:175 tmp_path
+    rglobs, :187 a ``root / "engine"`` ``.glob("*.py")`` AST scan in
+    ``test_not_imported_by_any_scoring_module``, :196, :452 a
+    ``git ls-files data/…`` subprocess) that resolve to ``engine/**`` and
+    ``engine/**/*.py``. The one honest claim is on top-level ``engine/*.py``
+    whose names contain score/regime/axis, which inference widens to the
+    whole engine tree — the ``options-estate-guards`` shape, not the
+    ``reference-integrity`` one. Follow-on: B-CUR-CCW-W3-1.
+
+    ``public-render-fastlane`` (legacy-jobs.yml ~9033; no ``paths:``, no
+    ``scope:``; block text describes "Public fast-path contract … Renders to
+    a tmp dir; network-free", no always-on justification). Present at wave 8
+    matching only templates/index.html (already funded). #6828 (F13-X1,
+    8431aeafcc39) appended tests/test_help_directory.py + its contract suite
+    to its step, B-F13-3 (dcd0eee135cc) added the ``--deselect``, and #6909
+    (F13-1) appended three glossary suites. test_help_directory.py's closure is 543
+    files because of ``import scripts.build_site as bs`` at :67 — inside the
+    body of ``test_build_site_renders_help_page_with_the_full_view_model``,
+    the ONE test the job's own command ``--deselect``s (inference does not
+    read ``--deselect``); that closure reaches engine/alert_triage.py:639
+    (dynamic import), engine/codex_lane/runner.py:531/:748 (subprocess
+    invocation) and collectors/sec_document_spine.py:776 (filesystem glob),
+    i.e. ``engine/**`` + ``scripts/**``. The contract sibling's closure is 9
+    files. Smear from a test the job never runs. Follow-on:
+    B-CUR-PUBLIC-RENDER-FASTLANE-1.
+
+    ``market-os-macro-workspaces`` (legacy-jobs.yml ~14122; born after wave 8,
+    Market Ontology F01 R1A). Declares 21 ``paths:`` (its contract schema,
+    ``engine/market_os/**``, scripts/build_macro_workspaces.py and its 18
+    suites) but NOT ``scope: exclusive``, so the declaration is unioned
+    under inference and none of the declared paths covers any probe; every
+    probe match is fallback: scripts/build_macro_workspaces.py:52
+    (subprocess invocation → ``engine/**``, ``scripts/**``,
+    ``templates/**``), tests/test_macro_workspace_build.py:69 (filesystem
+    roots=scripts) and tests/test_macro_workspace_prior_publication.py:301/
+    :470 (dynamic import → ``engine/**``, ``scripts/**``). Its block text is
+    a NARROW self-description — "All four suites are offline and
+    synthetic-fixture driven; the only real input ever read at build time
+    is data/regime/latest.json" — and its sibling
+    ``market-os-macro-suite-pages`` was curated ``scope: exclusive`` at
+    birth. Follow-on: B-CUR-MARKET-OS-MACRO-WORKSPACES-1.
+
+    Ceilings are set at measurement + 1 per the wave-3 rule (132/129/125),
+    re-funding the headroom promise on all three axes — templates/index.html
+    sat AT its ceiling again. WEIGHT and PACK ceilings stay unmoved (5,800 /
+    5,600 / 5,600 and 10 packs): measured weights are 5,703 / 5,460 / 5,454;
+    packs are 10 / 10 / 10 (the two code probes were 9 at wave 8), and with
+    PACK_TARGET_SECONDS = 600 an 11th pack needs > 6,000 weight-seconds,
+    above every weight ceiling, so the weight axis still reds first. This
+    nodeid lives only in a ``gate: data`` job (``workflow-yaml``), so PR
+    packs (``--gate code``) never run it; it runs only on push to main via
+    integration-baseline.yml (direct pytest, :197) and in data-health.yml's
+    ``--gate data`` packs — so the two breaches reached main unseen: the runner
+    reproduces 131/128/124 exactly (integration-baseline run 34716383790 at
+    c78d5a4f), the last fully green integration-baseline run on main is
+    34290518926 at 4603d7bb392d (2026-09-08 23:24Z) — none of the 54
+    non-cancelled runs since it was green as of this measurement — and the
+    seat's finding places this step's own last green at 4b2f97f196d5
+    (2026-09-09 00:20Z, 690 passed).
     """
     jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
     for probe, max_jobs, max_weight in (
-        ("templates/index.html", 131, 5_800),
-        ("scripts/build_free_content.py", 127, 5_600),
-        ("engine/prophet/plan_book.py", 122, 5_600),
+        ("templates/index.html", 132, 5_800),
+        ("scripts/build_free_content.py", 129, 5_600),
+        ("engine/prophet/plan_book.py", 125, 5_600),
     ):
         selected, reason = PACK.select_jobs(jobs, [probe])
         weight = sum(job.weight for job in selected)
