@@ -3353,7 +3353,17 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml
+        # jinja2 joined 2026-09-13 for tests/test_cycle_w8_truth.py (W7-A round-2
+        # heal): that suite does `from scripts import build_cycle`, and
+        # scripts/build_cycle.py:61 has a module-level
+        # `from jinja2 import Environment, FileSystemLoader` that is unavoidable.
+        # Verified in a clean venv — without jinja2 the suite ERRORS at collection
+        # (red), it does not skip, so the guard cannot go dark by losing a dependency.
+        # Same failure mode as the precedent at .github/ci/legacy-jobs.yml:513
+        # (forensic detector cross-pin) and :1302 (analyzer-i18n). pip pulls
+        # markupsafe transitively; this line is the minimal widening R3 needs to
+        # keep the suite's run honest.
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
       - name: same instrument agrees across pages (or declares its basis)
         run: python3 scripts/check_cycle_consistency.py site
       - name: consistency + phase-coherence regression tests
