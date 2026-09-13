@@ -1,47 +1,47 @@
 {
   "schema": "macro_snapshot.v1.2",
-  "asof": "2026-09-01",
-  "oldest_component_asof": "2026-08-28",
-  "macro_context_id": "f3d5a242fd6d3e27",
+  "asof": "2026-09-12",
+  "oldest_component_asof": "2026-09-10",
+  "macro_context_id": "b5ecd7eb331b79f9",
   "labels": {
     "us": {
-      "us_quad": "Q2",
+      "us_quad": "Q3",
       "us_transition_state": "TRANSITIONING",
-      "us_fused_risk": "neutral",
+      "us_fused_risk": "elevated",
       "us_vol_regime": "normalizing",
-      "us_risk_radar": "calm",
+      "us_risk_radar": "caution",
       "us_rate_pressure": "pressure",
       "us_business_cycle_phase": "recovery",
-      "us_liquidity_quality": "neutral-hollow",
-      "us_liquidity_overlay": "neutral",
+      "us_liquidity_quality": "stress-expansion",
+      "us_liquidity_overlay": "expanding",
       "us_froth_band": "calm",
       "us_dislocation": "calm",
       "us_gamma_regime": "long",
       "us_repricing_state": "QUIET",
       "us_vol_ts_state": "contango",
-      "us_vrp_state": "normal",
-      "cross_asset_verdict": "confirm"
+      "us_vrp_state": "rich (vol overpriced \u2014 constructive)",
+      "cross_asset_verdict": "diverge"
     },
     "market": {
       "market_state_verdict": "RISK_ON"
     },
     "transmission": {
-      "yield_curve_regime": "bull_flattener",
+      "yield_curve_regime": "bear_flattener",
       "recession_risk": "low"
     },
     "fx": {
       "usd_trend": "down",
-      "usd_regime": "US growth premium",
+      "usd_regime": "Global reflation",
       "fx_risk": "risk-on",
       "real_rate_regime": "Restrictive real yields",
-      "fx_liquidity_dir": "supportive",
+      "fx_liquidity_dir": "soft",
       "fx_regime_radar": null,
       "usd_valuation": "fair",
       "usd_positioning": "neutral",
       "fed_path_lean": "hawkish_repricing",
       "fx_eurusd_action": "FLAT",
       "fx_gbpusd_action": "FLAT",
-      "fx_usdjpy_action": "SHORT",
+      "fx_usdjpy_action": "FLAT",
       "fx_usdchf_action": "FLAT",
       "fx_audusd_action": "SHORT",
       "fx_usdcad_action": "FLAT",
@@ -59,62 +59,62 @@
     "commodity": {
       "commodity_regime": "Stagflation",
       "commodity_favored": "Gold, Silver",
-      "commodity_mtf_grade": "BUY-THE-DIP",
-      "commodity_ladder": "TOP WATCH",
-      "commodity_shock_state": "blowoff",
+      "commodity_mtf_grade": "TREND-FOLLOW",
+      "commodity_ladder": "TURN SIGNALED",
+      "commodity_shock_state": "normal",
       "commodity_confluence_state": "Neutral",
       "commodity_breadth_bucket": "broad",
-      "gold_action": "HOLD",
-      "silver_action": "HOLD",
-      "copper_action": "BUY",
+      "gold_action": "SELL",
+      "silver_action": "SELL",
+      "copper_action": "HOLD",
       "oil_action": "HOLD"
     },
     "china": {
       "china_quad": "Q4",
-      "china_property_regime": "Deep contraction (easing)",
+      "china_property_regime": "Contraction (easing)",
       "china_fe_band": "Neutral"
     },
     "hk": {
-      "hk_quad": "Q1",
-      "hk_risk_state": "Risk-on",
+      "hk_quad": "Q4",
+      "hk_risk_state": "Neutral",
       "hk_peg_state": "weak-side (outflow)"
     },
     "canada": {
-      "canada_quad": "Q3",
-      "canada_overlay_state": "Risk-on",
-      "canada_cycle_tag": "late"
+      "canada_quad": "Q2",
+      "canada_overlay_state": "Neutral",
+      "canada_cycle_tag": "mid"
     },
     "dispersion": {
-      "dispersion_state": "lean_in"
+      "dispersion_state": "neutral"
     },
     "intl": {
       "intl_au_quad": "Q3",
-      "intl_ez_quad": "Q1",
+      "intl_ez_quad": "Q3",
       "intl_gb_quad": "Q3",
-      "intl_in_quad": "Q2",
+      "intl_in_quad": "Q3",
       "intl_jp_quad": "Q3",
       "intl_kr_quad": "Q3",
       "intl_tw_quad": "Q3"
     }
   },
   "sources": {
-    "data/regime/latest.json": "2026-08-31",
-    "data/market_state/latest.json": "2026-08-31",
-    "data/transmission/latest.json": "2026-08-31",
-    "data/forex/latest.json": "2026-09-01",
-    "data/bonds/bond_health.json": "2026-08-31",
-    "data/commodity/latest.json": "2026-08-31",
-    "data/china_regime/latest.json": "2026-08-31",
-    "data/hk_regime/latest.json": "2026-08-31",
-    "data/canada_regime/latest.json": "2026-08-31",
-    "data/dispersion/regime.json": "2026-08-31",
-    "data/intl_regime/AU_history.parquet": "2026-09-01",
-    "data/intl_regime/EZ_history.parquet": "2026-08-28",
-    "data/intl_regime/GB_history.parquet": "2026-08-28",
-    "data/intl_regime/IN_history.parquet": "2026-08-28",
-    "data/intl_regime/JP_history.parquet": "2026-09-01",
-    "data/intl_regime/KR_history.parquet": "2026-09-01",
-    "data/intl_regime/TW_history.parquet": "2026-09-01"
+    "data/regime/latest.json": "2026-09-11",
+    "data/market_state/latest.json": "2026-09-11",
+    "data/transmission/latest.json": "2026-09-11",
+    "data/forex/latest.json": "2026-09-12",
+    "data/bonds/bond_health.json": "2026-09-11",
+    "data/commodity/latest.json": "2026-09-11",
+    "data/china_regime/latest.json": "2026-09-11",
+    "data/hk_regime/latest.json": "2026-09-11",
+    "data/canada_regime/latest.json": "2026-09-11",
+    "data/dispersion/regime.json": "2026-09-12",
+    "data/intl_regime/AU_history.parquet": "2026-09-11",
+    "data/intl_regime/EZ_history.parquet": "2026-09-10",
+    "data/intl_regime/GB_history.parquet": "2026-09-10",
+    "data/intl_regime/IN_history.parquet": "2026-09-10",
+    "data/intl_regime/JP_history.parquet": "2026-09-11",
+    "data/intl_regime/KR_history.parquet": "2026-09-11",
+    "data/intl_regime/TW_history.parquet": "2026-09-11"
   },
   "gaps": [],
   "display_only": true

@@ -1,0 +1,142 @@
+
+/* DARK TREATMENT: an open command-centre canvas; quiet luminance and a thin
+   cyan instrument rail separate the fixed destinations without a panel slab. */
+*{box-sizing:border-box}
+body{margin:0;padding-top:18px;background:var(--bg);color:var(--text);font:14.5px/1.55 var(--font-ui);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.help-shell{max-width:1120px;margin:0 auto;padding:clamp(28px,5vw,64px) clamp(18px,4vw,44px) 80px}
+.help-hero{max-width:760px;padding:18px 0 34px;position:relative}
+.help-hero::before{content:"";position:absolute;left:-28px;top:10px;bottom:34px;width:2px;background:linear-gradient(180deg,var(--link),transparent)}
+.help-kicker{display:block;margin:0 0 14px;color:var(--muted);font:650 11px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase}
+.help-hero h1{margin:0;font:760 clamp(34px,6vw,64px)/1 var(--font-ui);letter-spacing:-.045em}
+.help-owners{margin:16px 0 0;color:var(--muted);font-size:clamp(14px,2vw,16px)}
+.help-controls{display:grid;grid-template-columns:minmax(220px,1fr) auto auto;gap:14px;align-items:center;padding:16px 0 24px;border-top:1px solid var(--line)}
+.help-search{position:relative;max-width:520px}
+.help-search input{width:100%;min-height:44px;padding:10px 42px 10px 14px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel2);color:var(--text);font:inherit;outline:none}
+.help-search input:focus{border-color:var(--link);box-shadow:0 0 16px -5px color-mix(in srgb,var(--link) 55%,transparent)}
+.help-search svg{position:absolute;right:14px;top:13px;width:18px;height:18px;fill:none;stroke:var(--muted);stroke-width:1.8}
+.help-filters{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:7px}
+.help-filter{min-height:44px;padding:8px 13px;border:1px solid var(--line);border-radius:var(--r-pill,999px);background:transparent;color:var(--muted);font:650 12px/1 var(--font-ui);cursor:pointer}
+.help-filter:hover,.help-filter[aria-pressed="true"]{border-color:color-mix(in srgb,var(--link) 65%,var(--line));color:var(--text);background:var(--panel2)}
+.help-meta{display:flex;justify-content:space-between;gap:16px;margin:0 0 13px;color:var(--muted);font:600 11px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase}
+.help-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:transparent}
+.help-card{min-width:0;min-height:138px;padding:21px 22px;background:var(--bg);box-shadow:0 0 0 1px var(--line);display:flex;flex-direction:column;justify-content:space-between;gap:24px;transition:background .16s ease,transform .16s ease}
+.help-card:hover,.help-card:focus-visible{background:var(--panel);outline:none;transform:translateY(-1px)}
+.help-card[hidden]{display:none}
+.help-card-top{display:flex;align-items:center;gap:10px;color:var(--muted);font:650 10px/1 var(--font-mono);letter-spacing:.1em;text-transform:uppercase}
+.help-state{margin-left:auto;color:var(--ink-ok,var(--ok));letter-spacing:.04em}
+.help-card[data-entry-state="unknown"]{cursor:not-allowed}
+.help-card[data-entry-state="unknown"] .help-state{color:var(--muted)}
+.help-card[data-entry-state="unknown"]:hover{transform:none}
+.help-card-title{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;font:680 clamp(18px,2.3vw,24px)/1.2 var(--font-ui);letter-spacing:-.02em}
+.help-arrow{color:var(--link);font:400 24px/1 var(--font-ui);transition:transform .16s ease}
+.help-card:hover .help-arrow{transform:translateX(3px)}
+.help-state-panel{padding:44px 22px;border:1px dashed var(--line);color:var(--muted);text-align:center;font:650 12px/1.5 var(--font-mono);letter-spacing:.08em;text-transform:uppercase}
+.help-state-panel[hidden]{display:none}
+
+/* LIGHT TREATMENT: a cool research-workspace canvas with white material cards,
+   crisp hairlines and short shadows. No dark-theme glow is carried onto paper. */
+html[data-theme="light"] .help-hero::before{background:var(--link)}
+html[data-theme="light"] .help-search input{background:var(--panel);box-shadow:0 1px 2px color-mix(in srgb,var(--text) 7%,transparent)}
+html[data-theme="light"] .help-search input:focus{box-shadow:0 0 0 3px color-mix(in srgb,var(--link) 16%,transparent)}
+html[data-theme="light"] .help-grid{gap:12px;background:transparent;border:0}
+html[data-theme="light"] .help-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card,12px);box-shadow:0 8px 24px color-mix(in srgb,var(--text) 7%,transparent)}
+html[data-theme="light"] .help-card:hover,html[data-theme="light"] .help-card:focus-visible{border-color:color-mix(in srgb,var(--link) 45%,var(--line));box-shadow:0 12px 28px color-mix(in srgb,var(--text) 11%,transparent)}
+
+@media (max-width:760px){
+  .help-controls{grid-template-columns:1fr;align-items:stretch}
+  .help-search{max-width:none}
+  .help-filters{justify-content:flex-start}
+}
+@media (max-width:600px){
+  .help-shell{padding:24px 16px 58px}
+  .help-hero{padding:12px 12px 28px}
+  .help-hero::before{left:0;top:8px;bottom:28px}
+  .help-grid{grid-template-columns:1fr}
+  .help-card{min-height:118px;padding:18px}
+  html[data-theme="light"] .help-grid{gap:10px}
+}
+@media (prefers-reduced-motion:reduce){.help-card,.help-arrow{transition:none}.help-card:hover{transform:none}}
+/* ==== BEGIN packet B-F13-3 — answers · changelog · support by plan ==== */
+/* DARK TREATMENT (command center): no containers. Sections separate by luminance,
+   and the hero's cyan instrument rail is extended into the changelog spine. */
+.help-count-wrap{display:flex;align-items:baseline;gap:5px;padding-left:4px;white-space:nowrap}
+.help-count{color:var(--muted);font:600 var(--fs-label)/1 var(--font-mono);letter-spacing:.09em;font-variant-numeric:tabular-nums}
+.help-count-label{color:var(--muted);font:600 11px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase}
+.help-sec{padding:34px 0 0}
+.help-sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin:0 0 16px;padding:0 0 12px;border-bottom:1px solid var(--line)}
+.help-sec-head h2{margin:0;font:680 clamp(19px,2.4vw,26px)/1.15 var(--font-ui);letter-spacing:-.025em}
+.help-sec-note{color:var(--muted);font:600 var(--fs-label)/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;text-align:right}
+
+.help-answers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:44px;row-gap:0;margin:0}
+.help-a{min-width:0;padding:18px 0;border-top:1px solid color-mix(in srgb,var(--line) 62%,transparent)}
+/* Default first-row hairline is STATIC so the unfiltered grid (and the JS-dead
+   empty-directory page) never shows an orphan line over the first row.
+   JS below only restates the first visible row after a filter hides siblings. */
+.help-answers .help-a:nth-child(-n+2){border-top:0}
+.help-answers .help-a.help-a-row-rest{border-top:1px solid color-mix(in srgb,var(--line) 62%,transparent)}
+.help-a[hidden]{display:none}
+.help-a dt{margin:0 0 6px;font:660 15.5px/1.35 var(--font-ui);letter-spacing:-.01em;color:var(--text)}
+.help-a dd{margin:0;color:var(--muted);font-size:14px;line-height:1.55}
+.help-a dd a{color:var(--link);border-bottom:1px solid color-mix(in srgb,var(--link) 38%,transparent)}
+.help-a dd a:hover,.help-a dd a:focus-visible{border-bottom-color:var(--link)}
+
+.help-log{position:relative;margin:0;padding:4px 0 0 26px;list-style:none}
+.help-log::before{content:"";position:absolute;left:3px;top:12px;bottom:8px;width:1px;background:var(--line)}
+.help-log::after{content:"";position:absolute;left:3px;top:12px;height:64px;width:1px;background:linear-gradient(180deg,var(--link),transparent)}
+.help-log li{position:relative;padding:0 0 20px}
+.help-log li::before{content:"";position:absolute;left:-26px;top:6px;width:7px;height:7px;background:var(--panel2);box-shadow:0 0 0 1px var(--line)}
+.help-log li:first-child::before{background:var(--link);box-shadow:0 0 0 1px var(--link)}
+.help-log time{display:block;margin:0 0 4px;color:var(--muted);font:600 var(--fs-label)/1 var(--font-mono);letter-spacing:.09em;font-variant-numeric:tabular-nums}
+.help-log .help-pr{margin-left:8px;color:var(--muted);font:600 var(--fs-micro)/1 var(--font-mono);letter-spacing:.06em}
+.help-log p{margin:0;font-size:14.5px;line-height:1.5}
+
+.help-plans{display:grid;gap:0;margin:0 0 22px;padding:0;list-style:none}
+.help-plan{display:grid;grid-template-columns:132px minmax(0,1fr);gap:18px;align-items:start;padding:16px 0 16px 14px;border-top:1px solid color-mix(in srgb,var(--line) 62%,transparent);border-left:2px solid var(--ok)}
+.help-plan:first-child{border-top:0}
+.help-plan[data-plan-state="unknown"]{border-left-color:var(--muted)}
+.help-plan-name{font:660 14px/1.4 var(--font-ui);color:var(--text)}
+.help-plan-promise{margin:0;color:var(--muted);font-size:14px;line-height:1.55}
+.help-support-cta{display:inline-block;min-height:44px;padding:12px 20px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel2);color:var(--text);font:650 13px/1.3 var(--font-ui)}
+.help-support-cta:hover,.help-support-cta:focus-visible{border-color:color-mix(in srgb,var(--link) 60%,var(--line))}
+
+.help-empty{margin:0;padding:20px 0 2px;color:var(--muted);font-size:13.5px;line-height:1.55}
+
+/* LIGHT TREATMENT (research workspace): the separation mechanism changes from
+   luminance to material — hairlines alone on white read as unloaded, so the answer
+   list becomes one white sheet with internal hairlines. The rail loses its fade (a
+   fade to transparent on white reads as an artifact) and its head becomes a solid
+   segment. The log node inverts figure/ground: white fill, ink ring. Depth arrives
+   as a short shadow, which dark cannot use at all on its near-black canvas. */
+html[data-theme="light"] .help-answers{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card,12px);box-shadow:0 8px 24px color-mix(in srgb,var(--text) 7%,transparent);padding:6px 26px 10px;column-gap:38px}
+html[data-theme="light"] .help-a{border-top-color:var(--line)}
+html[data-theme="light"] .help-a dd{color:color-mix(in srgb,var(--text) 78%,var(--muted))}
+html[data-theme="light"] .help-log::before{background:var(--line)}
+html[data-theme="light"] .help-log::after{height:24px;background:var(--link)}
+html[data-theme="light"] .help-log li::before{background:var(--panel);box-shadow:0 0 0 1px var(--line)}
+html[data-theme="light"] .help-log li:first-child::before{background:var(--link);box-shadow:0 0 0 1px var(--link)}
+html[data-theme="light"] .help-log p{color:color-mix(in srgb,var(--text) 82%,var(--muted))}
+html[data-theme="light"] .help-plan{border-left-width:3px}
+html[data-theme="light"] .help-plan-promise{color:color-mix(in srgb,var(--text) 78%,var(--muted))}
+html[data-theme="light"] .help-support-cta{background:var(--panel);box-shadow:0 1px 2px color-mix(in srgb,var(--text) 8%,transparent)}
+
+@media (max-width:900px){
+  .help-answers{grid-template-columns:1fr;column-gap:0}
+  .help-answers .help-a:nth-child(1){border-top:0}
+  .help-answers .help-a:nth-child(n+2){border-top:1px solid color-mix(in srgb,var(--line) 62%,transparent)}
+}
+/* JS-owned filtered first-row: must follow the 900px n+2 restore so
+   (0,3,0) plus source order beats `.help-answers .help-a:nth-child(n+2)`. */
+.help-answers .help-a.help-a-row-first{border-top:0}
+@media (max-width:760px){
+  .help-controls{grid-template-columns:1fr}
+  .help-count-wrap{padding-left:0}
+}
+@media (max-width:600px){
+  .help-sec{padding-top:26px}
+  .help-plan{grid-template-columns:1fr;gap:6px;padding-left:12px}
+  .help-log{padding-left:22px}
+  .help-log li::before{left:-22px}
+  html[data-theme="light"] .help-answers{padding:4px 16px 8px}
+}
+/* ==== END packet B-F13-3 ==== */

@@ -8,17 +8,16 @@
     "cn_gold",
     "cn_metals",
     "cn_pharma_cxo",
-    "cn_rare_earth",
     "cn_robotics",
     "cn_semis"
   ],
   "held": [
-    "cn_ai_compute",
     "cn_gold",
+    "cn_ai_compute",
     "cn_pharma_cxo",
     "cn_robotics"
   ],
-  "leader": "cn_ai_compute",
+  "leader": "cn_gold",
   "names": {
     "cn_ai_compute": "AI Compute & Optics",
     "cn_appliances": "Home Appliances",

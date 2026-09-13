@@ -15,9 +15,9 @@
     "score": 0.9938
   },
   "XLC": {
-    "streak": 3,
-    "last_date": "2026-07-29",
-    "score": 0.9905
+    "streak": 5,
+    "last_date": "2026-09-11",
+    "score": 0.9323
   },
   "non_ai_software": {
     "streak": 6,
@@ -55,8 +55,18 @@
     "score": 0.68
   },
   "SMH": {
+    "streak": 3,
+    "last_date": "2026-09-09",
+    "score": 0.9779
+  },
+  "non_ai_tech": {
+    "streak": 1,
+    "last_date": "2026-09-03",
+    "score": 1.0
+  },
+  "XLU": {
     "streak": 2,
-    "last_date": "2026-08-31",
-    "score": 0.9943
+    "last_date": "2026-09-08",
+    "score": 0.9906
   }
 }

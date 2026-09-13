@@ -210,6 +210,16 @@ lanes:
           scoped decimal strings and exact cell spans, and fails on missing/mismatched bytes. It does not aggregate
           rows or create instruments, remaining capacity, risk, probability, ranking,
           sizing, entry, or Prophet authority.
+      - id: compile_capital_structure_covenant_terms
+        module: scripts.compile_capital_structure_covenant_terms
+        note: >
+          Capital Structure Intelligence B-F09-5 filing-text covenant extraction
+          producer (source-first slice). Reads source-manifest-addressed credit-
+          agreement exhibits, emits closed-enum covenant-term observations with
+          exact source identity, and never derives capacity or headroom. A producer
+          fault writes a typed covenant_extraction health marker and must not fail
+          the fail-closed health gate. Context-only; no rank, size, gate, trade, or
+          Prophet authority.
       - id: check_capital_structure_health
         module: scripts.check_capital_structure_health
         note: >
@@ -628,6 +638,15 @@ lanes:
           Deterministic Filing Forensics display/context projection. Reads the committed
           SEC quarterly and annual panels, writes an ignored private state plus the public
           data-free workbench shell, and grants no score or trading authority.
+      - id: build_macro_workspaces
+        module: scripts.build_macro_workspaces
+        note: >
+          F01 Market OS macro workspace snapshots (macro_workspace_snapshot.v1
+          producer; runs before build_site so pages render against the freshest
+          generation). The invocation shipped in daily_engine_regime_dashboard.sh
+          (#6847/#6848) without this declaration; the commercial-activation carrier
+          was the first whose pack plan scheduled dag-conformance over that tree,
+          so the declaration lands here.
       - id: build_site
         module: scripts.build_site
       - id: build_ticker_pages
@@ -1249,6 +1268,8 @@ lanes:
         module: scripts.build_intel_hub
       - id: build_aibrief
         module: scripts.build_aibrief
+      - id: build_am_edition
+        module: scripts.build_am_edition
       - id: build_mastermind
         module: scripts.build_mastermind
       - id: build_ai_desk_page
@@ -1259,6 +1280,14 @@ lanes:
           B6 Watchlist buy-zone sentinel — operator Supabase watchlist x buy-zone
           enter-detection -> alert JSONL + Discord dispatch.  Fail-soft (missing
           creds/table/network -> one log line, exit 0).  Same-day idempotent.
+      - id: thesis_condition_monitor
+        module: scripts.run_thesis_condition_monitor
+        note: >
+          F11 thesis condition monitor — reads committed falsifiers.json +
+          tripwire_state.json and enqueues public.alert_outbox rows for newly
+          latched windows. Fail-soft (absent creds/tables -> typed
+          READ_UNAVAILABLE, 0 rows, exit 0). Dormant unless
+          THESIS_MONITOR_ENABLE=1. Delivery is F08's drain, never this step.
       - id: notify
         module: scripts.notify
       - id: push_alerts
@@ -2474,6 +2503,7 @@ lanes:
           cl_markets:
             - scripts.build_commodities
             - scripts.build_spr
+            - scripts.build_sanctions_map
             - scripts.build_forex
             - scripts.build_bonds
             - scripts.build_crossasset
@@ -2713,6 +2743,7 @@ lanes:
           cl_markets:
             - scripts.build_commodities
             - scripts.build_spr
+            - scripts.build_sanctions_map
             - scripts.build_forex
             - scripts.build_bonds
             - scripts.build_crossasset
@@ -2803,6 +2834,8 @@ lanes:
         module: scripts.build_calibration
       - id: build_aibrief
         module: scripts.build_aibrief
+      - id: build_am_edition
+        module: scripts.build_am_edition
       - id: build_mastermind
         module: scripts.build_mastermind
       - id: build_ai_desk_page

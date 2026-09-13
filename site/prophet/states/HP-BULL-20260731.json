@@ -1,31 +1,31 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "HP-BULL-20260731",
-  "asof": "2026-08-31",
+  "asof": "2026-09-12",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 67.2,
-  "raw_confidence": 68.6,
-  "delta_vs_base": 7.2,
+  "management_confidence": 68.8,
+  "raw_confidence": 68.1,
+  "delta_vs_base": 8.8,
   "recommended_action": "hold",
   "human_state": "On Track",
   "components": {
     "validity": 100.0,
-    "progress": 45.0,
-    "pace": 60.1,
+    "progress": 47.4,
+    "pace": 56.4,
     "retention": 50.0,
-    "overlay": 67.0
+    "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.865,
-    "dist_to_t1_r": 0.635,
-    "dist_to_t2_r": 2.135,
-    "horizon_pct_used": 53.3,
-    "p1": 0.5768,
-    "p2": 0.2884,
+    "dist_to_stop_r": 1.927,
+    "dist_to_t1_r": 0.573,
+    "dist_to_t2_r": 2.073,
+    "horizon_pct_used": 80.0,
+    "p1": 0.6177,
+    "p2": 0.3089,
     "p3": null,
-    "move_r": 0.865,
-    "mfe_r": 1.017,
+    "move_r": 0.927,
+    "mfe_r": 1.407,
     "mae_r": 0.0
   },
   "rr_ratio": 1.5,
@@ -39,12 +39,12 @@
     "recommended_action": "display \u2014 narrate, not authoritative order",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
-  "_mfe": 7.620001220703124,
+  "_mfe": 10.539999389648436,
   "_mae": 0.0,
-  "_max_p1": 0.6782377588520805,
+  "_max_p1": 0.9381396875521528,
   "_first_trigger_ts": "2026-08-12",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 24,
-  "tau": 0.5333
+  "days_elapsed": 36,
+  "tau": 0.8
 }

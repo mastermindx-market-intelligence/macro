@@ -1,11 +1,11 @@
 {
-  "last_snapshot_date": "2026-09-01",
-  "n_symbols": 13177,
-  "n_etf": 5647,
+  "last_snapshot_date": "2026-09-13",
+  "n_symbols": 13214,
+  "n_etf": 5676,
   "n_preferred": 384,
-  "n_common_estimate": 7113,
-  "last_cik_map_date": "2026-08-31",
-  "n_cik_rows": 10391,
+  "n_common_estimate": 7121,
+  "last_cik_map_date": "2026-09-07",
+  "n_cik_rows": 10415,
   "_display_only": true,
   "_version": "v1"
 }

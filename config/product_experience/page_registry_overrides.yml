@@ -683,6 +683,13 @@ pages:
   # ── intelligence_desk · named research desks ──────────────────────────────────
   # A standing desk over one domain: policy, flow, alt-data, smart money, China.
 
+  macro:sanctions_map:
+    priority: "P0"
+    archetype: "intelligence_desk"
+    primary_user_question: "Where do US sanctions point today, and which countries is our coverage silent about?"
+    evidence: [engine/sanctions_map.py, config/sanctions_ofac_programs.yml, templates/sanctions_map.html.j2]
+    note: "base map + OFAC sanctions overlay, display-only leaf (packet A-F02-1)"
+
   macro:advanced:
     archetype: "intelligence_desk"
     why: "renders the Quant Lab surface (page title is 'Quant Lab'), so it takes the desk archetype"
@@ -1125,6 +1132,10 @@ pages:
   macro:support:
     archetype: "utility"
 
+  macro:help:
+    archetype: "utility"
+    why: "public help directory over existing product owners — a utility surface, not a product board"
+
   macro:terms:
     archetype: "utility"
 
@@ -1161,3 +1172,60 @@ pages:
     access_shell: "anonymous"
     payload_tier: "public"
     evidence: [terminal/app/login/page.tsx]
+
+  macro:macro_monetary:
+    archetype: "command_center"
+    why: "Macro & Monetary suite hub — the single entry point to the fourteen workspaces"
+
+  macro:macro_liquidity_regime:
+    archetype: "regime_dashboard"
+
+  macro:macro_growth_real_economy:
+    archetype: "regime_dashboard"
+
+  macro:macro_business_activity:
+    archetype: "regime_dashboard"
+
+  macro:macro_labor_markets:
+    archetype: "regime_dashboard"
+
+  macro:macro_inflation_system:
+    archetype: "regime_dashboard"
+
+  macro:macro_monetary_policy:
+    archetype: "regime_dashboard"
+
+  macro:macro_financial_conditions:
+    archetype: "regime_dashboard"
+
+  macro:macro_liquidity_central_banks:
+    archetype: "regime_dashboard"
+
+  macro:macro_capital_structure:
+    archetype: "regime_dashboard"
+
+  macro:macro_housing_real_estate:
+    archetype: "regime_dashboard"
+
+  macro:macro_consumer_payments:
+    archetype: "regime_dashboard"
+
+  macro:macro_national_debt_liabilities:
+    archetype: "regime_dashboard"
+
+  macro:macro_rates_curves:
+    archetype: "regime_dashboard"
+
+  macro:macro_trade_flows:
+    archetype: "regime_dashboard"
+
+  # Pre-existing stragglers healed in passing (2026-09-04, R2 pages wave):
+  # both rows sat unclassified on main's committed registry — the
+  # product-experience classification tests were dark under pack starvation.
+  # reference.html is the indicators-and-terms glossary; the Price of Duration
+  # page is a research report. Both are reading surfaces.
+  macro:reference:
+    archetype: "editorial"
+
+  macro:report_price_of_duration:
+    archetype: "editorial"

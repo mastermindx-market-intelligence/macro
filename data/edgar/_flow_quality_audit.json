@@ -1,20 +1,56 @@
 {
-"applied": "2026-08-29T07:21:24.903054+00:00",
-"rows_flagged": 168,
-"tickers_flagged": 51,
+"applied": "2026-09-12T17:34:06.220343+00:00",
+"rows_flagged": 173,
+"tickers_flagged": 53,
 "by_flag": {
-"ni:xsrc_scale": 89,
+"ni:xsrc_scale": 93,
 "ni:xsrc_cohort": 5,
-"ni:flank_scale": 53,
+"ni:flank_scale": 54,
 "cfo:flank_scale": 6,
 "revenue:flank_scale": 12,
 "dividends:flank_scale": 1,
 "op_income:flank_scale": 2
 },
-"repaired": 168,
+"repaired": 173,
 "nulled": 0,
-"mirrors": 115,
+"mirrors": 119,
 "rows": [
+{
+"ticker": "AIT",
+"fy": 2022,
+"col": "ni",
+"flag": "xsrc_scale",
+"raw": 257414.0,
+"repair": 257414000.0,
+"note": "x1e3 vs statements"
+},
+{
+"ticker": "AIT",
+"fy": 2023,
+"col": "ni",
+"flag": "xsrc_scale",
+"raw": 346739.0,
+"repair": 346739000.0,
+"note": "x1e3 vs statements"
+},
+{
+"ticker": "AIT",
+"fy": 2024,
+"col": "ni",
+"flag": "xsrc_scale",
+"raw": 385762.0,
+"repair": 385762000.0,
+"note": "x1e3 vs statements"
+},
+{
+"ticker": "AIT",
+"fy": 2025,
+"col": "ni",
+"flag": "xsrc_scale",
+"raw": 392988.0,
+"repair": 392988000.0,
+"note": "x1e3 vs statements"
+},
 {
 "ticker": "ANET",
 "fy": 2021,
@@ -1220,6 +1256,15 @@
 "raw": 37900.0,
 "repair": 37900000.0,
 "note": "x1e3 flank"
+},
+{
+"ticker": "PAYX",
+"fy": 2023,
+"col": "ni",
+"flag": "flank_scale",
+"raw": 1690.0,
+"repair": 1690000000.0,
+"note": "x1e6 flank"
 },
 {
 "ticker": "PKE",
