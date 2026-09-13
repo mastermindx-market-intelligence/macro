@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import subprocess
 import tempfile
+import time
 import unittest
 from unittest.mock import patch
 
@@ -30,6 +31,16 @@ class StorageTests(unittest.TestCase):
         self.git(r,'add','.'); self.git(r,'commit','-m','fixture'); return r
     def create(self, r, name='test', session='one'):
         return s.create_worktree(self.policy, r, name, session, base='HEAD', fetch=False)
+    def gc_candidate(self, repo, root):
+        from scripts import worktree_gc as gc
+        self.git(repo, 'update-ref', 'refs/remotes/origin/main', 'HEAD')
+        wt = next(w for w in gc.parse_worktree_list(
+            self.git(repo, 'worktree', 'list', '--porcelain')) if w.path == root)
+        with patch.object(gc, 'worktree_storage', s):
+            gc.classify(wt, repo, {**gc.DEFAULT_CONFIG, 'min_age_days': 0,
+                                  '_storage_policy': self.policy}, {}, {}, True, repo, time.time())
+        self.assertEqual(wt.verdict, 'SAFE_MERGED')
+        return wt
     def test_valid_root(self):
         root=s.prepare_root(self.policy); self.assertEqual(root,self.mount/'workspaces')
         self.assertEqual(root.stat().st_dev,self.mount.stat().st_dev)
@@ -98,7 +109,7 @@ class StorageTests(unittest.TestCase):
     def test_gc_removes_safe_storage_locked_tree_without_force(self):
         from scripts import worktree_gc as gc
         r=self.repository(); d=self.create(r)
-        wt=gc.Worktree(path=d,head=self.git(d,'rev-parse','HEAD'),locked=True,lock_reason=s.LOCK_REASON,verdict='SAFE_MERGED')
+        wt=self.gc_candidate(r,d)
         with patch.object(gc,'worktree_storage',s,create=True), patch.object(gc,'proc_cwd_map',return_value={}), patch.object(gc,'_ledger_write'):
             result=gc.apply_deletions(r,[wt],{'_storage_policy':self.policy},[Path(self.policy['root'])])
         self.assertEqual(result['errors'],[]); self.assertEqual(result['deleted'],[str(d)]); self.assertFalse(d.exists())
@@ -114,7 +125,7 @@ class StorageTests(unittest.TestCase):
             procs=gc.proc_cwd_map([d])
         self.assertEqual(procs,{str(d):['4321:root-owner'],str(d/'src'):['4322:child-owner']})
 
-        wt=gc.Worktree(path=d,head=self.git(d,'rev-parse','HEAD'),locked=True,lock_reason=s.LOCK_REASON,verdict='SAFE_MERGED')
+        wt=self.gc_candidate(r,d)
         with patch.object(gc,'worktree_storage',s), patch.object(gc,'_run',return_value=(0,f'p4321\ncfinal-owner\nn{d}\n','')), patch.object(gc,'_ledger_write'):
             result=gc.apply_deletions(r,[wt],{'_storage_policy':self.policy},[Path(self.policy['root'])])
         self.assertEqual(result['deleted'],[])
@@ -149,7 +160,7 @@ class StorageTests(unittest.TestCase):
     def test_gc_keeps_work_that_became_dirty_after_report(self):
         from scripts import worktree_gc as gc
         r=self.repository(); d=self.create(r)
-        wt=gc.Worktree(path=d,head=self.git(d,'rev-parse','HEAD'),locked=True,lock_reason=s.LOCK_REASON,verdict='SAFE_MERGED')
+        wt=self.gc_candidate(r,d)
         (d/'src/code.py').write_text('new unfinished work')
         with patch.object(gc,'worktree_storage',s,create=True), patch.object(gc,'proc_cwd_map',return_value={}), patch.object(gc,'_ledger_write'):
             result=gc.apply_deletions(r,[wt],{'_storage_policy':self.policy},[Path(self.policy['root'])])
@@ -189,7 +200,7 @@ class StorageTests(unittest.TestCase):
         for raises in (False, True):
             with self.subTest(raises=raises):
                 d=self.create(r,session=str(raises))
-                wt=gc.Worktree(path=d,head=self.git(d,'rev-parse','HEAD'),locked=True,lock_reason=s.LOCK_REASON,verdict='SAFE_MERGED')
+                wt=self.gc_candidate(r,d)
                 original=gc._git
                 def disappear(repo,*args,**kwargs):
                     if args[:2] == ('worktree','remove'):
@@ -203,6 +214,148 @@ class StorageTests(unittest.TestCase):
                 self.assertEqual(result['deleted'],[]); self.assertTrue(result['errors'])
                 record=next(w for w in gc.parse_worktree_list(self.git(r,'worktree','list','--porcelain')) if w.path==d)
                 self.assertTrue(record.locked); self.assertEqual(record.lock_reason,s.LOCK_REASON)
+
+
+class FinalExternalRevalidationTests(unittest.TestCase):
+    """Exercise reactivation on real disposable Git metadata; intercept removal."""
+
+    setUp = StorageTests.setUp
+    git = StorageTests.git
+    repository = StorageTests.repository
+    create = StorageTests.create
+
+    def eligible(self):
+        from scripts import worktree_gc as gc
+        import re
+        repo = self.repository()
+        root = self.create(repo)
+        self.git(repo, 'update-ref', 'refs/remotes/origin/main', 'HEAD')
+        wt = next(w for w in gc.parse_worktree_list(
+            self.git(repo, 'worktree', 'list', '--porcelain')) if w.path == root)
+        gitdir = gc.gitdir_for(wt)
+        old = int(time.time()) - 10 * 86400
+        log = gitdir / 'logs/HEAD'
+        log.write_text(re.sub(r' \d+ ([+-]\d{4})(?=\t|\n|$)',
+                             lambda m: f' {old} {m[1]}', log.read_text()))
+        harness = patch.object(gc, 'session_activity_mtime', return_value=None)
+        harness.start()
+        self.addCleanup(harness.stop)
+        cfg = {**gc.DEFAULT_CONFIG, 'min_age_days': 7,
+               'delete_local_branches': False, '_storage_policy': self.policy}
+        with patch.object(gc, 'worktree_storage', s):
+            gc.classify(wt, repo, cfg, {}, {}, True, repo, time.time())
+        self.assertEqual(wt.verdict, 'SAFE_MERGED', (wt.age_sources, log.read_text()))
+        return gc, repo, root, wt, cfg, gitdir
+
+    def apply(self, gc, repo, root, wt, cfg, after_status=None):
+        original = gc._git
+        effects = []
+        injected = []
+
+        def observed(where, *args, **kwargs):
+            if args[:2] in (('worktree', 'unlock'), ('worktree', 'remove')):
+                effects.append(args[1])
+                return (0, '', '') if args[1] == 'unlock' else (1, '', 'intercepted fixture removal')
+            if args[:2] == ('worktree', 'prune'):
+                return 0, '', ''
+            result = original(where, *args, **kwargs)
+            if after_status and 'status' in args and not injected:
+                injected.append(True)
+                after_status()
+            return result
+
+        with patch.object(gc, 'worktree_storage', s), \
+             patch.object(gc, 'proc_cwd_map', return_value={}), \
+             patch.object(gc, '_ledger_write'), patch.object(gc, '_git', side_effect=observed):
+            result = gc.apply_deletions(repo, [wt], cfg, [Path(self.policy['root'])])
+        self.assertTrue(root.is_dir())
+        self.assertTrue((gc.gitdir_for(wt) / 'locked').is_file())
+        return result, effects
+
+    def test_same_head_branch_change_after_classification_is_retained(self):
+        gc, repo, root, wt, cfg, gitdir = self.eligible()
+        log = gitdir / 'logs/HEAD'
+        before = log.read_bytes()
+        self.git(root, 'switch', '-c', 'reactivated')
+        log.write_bytes(before)  # Isolate branch identity from the separate activity veto.
+        self.assertEqual(self.git(root, 'rev-parse', 'HEAD'), wt.head)
+        _, effects = self.apply(gc, repo, root, wt, cfg)
+        self.assertEqual(effects, [])
+
+    def test_same_head_branch_change_after_final_status_is_retained(self):
+        gc, repo, root, wt, cfg, gitdir = self.eligible()
+        log = gitdir / 'logs/HEAD'
+        before = log.read_bytes()
+        def reactivate():
+            self.git(root, 'switch', '-c', 'reactivated')
+            log.write_bytes(before)
+        _, effects = self.apply(gc, repo, root, wt, cfg, reactivate)
+        self.assertEqual(effects, [])
+        self.assertEqual(self.git(root, 'rev-parse', 'HEAD'), wt.head)
+
+    def test_unchanged_branch_renewed_strong_activity_is_retained(self):
+        gc, repo, root, wt, cfg, _ = self.eligible()
+        self.git(root, 'checkout', wt.branch)
+        _, effects = self.apply(gc, repo, root, wt, cfg)
+        self.assertEqual(effects, [])
+
+    def test_new_strong_activity_still_older_than_age_floor_is_retained(self):
+        gc, repo, root, wt, cfg, gitdir = self.eligible()
+        import re
+        log = gitdir / 'logs/HEAD'
+        renewed = int(time.time()) - 8 * 86400
+        log.write_text(re.sub(r' \d+ ([+-]\d{4})(?=\t|\n|$)',
+                             lambda m: f' {renewed} {m[1]}', log.read_text()))
+        _, effects = self.apply(gc, repo, root, wt, cfg)
+        self.assertEqual(effects, [])
+
+    def test_unavailable_strong_activity_is_retained(self):
+        gc, repo, root, wt, cfg, gitdir = self.eligible()
+        (gitdir / 'logs/HEAD').unlink()
+        _, effects = self.apply(gc, repo, root, wt, cfg)
+        self.assertEqual(effects, [])
+
+    def test_changed_lock_reason_is_retained(self):
+        gc, repo, root, wt, cfg, gitdir = self.eligible()
+        (gitdir / 'locked').write_text('operator now owns this lock\n')
+        _, effects = self.apply(gc, repo, root, wt, cfg)
+        self.assertEqual(effects, [])
+        self.assertEqual((gitdir / 'locked').read_text(), 'operator now owns this lock\n')
+
+    def test_added_storage_lock_after_classification_is_retained(self):
+        gc, repo, root, wt, cfg, gitdir = self.eligible()
+        self.git(repo, 'worktree', 'unlock', str(root))
+        wt = next(w for w in gc.parse_worktree_list(
+            self.git(repo, 'worktree', 'list', '--porcelain')) if w.path == root)
+        with patch.object(gc, 'worktree_storage', s):
+            gc.classify(wt, repo, cfg, {}, {}, True, repo, time.time())
+        self.assertEqual(wt.verdict, 'SAFE_MERGED')
+        self.git(repo, 'worktree', 'lock', '--reason', s.LOCK_REASON, str(root))
+        _, effects = self.apply(gc, repo, root, wt, cfg)
+        self.assertEqual(effects, [])
+
+    def test_changed_common_store_binding_is_retained(self):
+        gc, repo, root, wt, cfg, gitdir = self.eligible()
+        import shutil
+        alternate = self.base / 'alternate-common'
+        shutil.copytree(repo / '.git', alternate)
+        (gitdir / 'commondir').write_text(str(alternate) + '\n')
+        _, effects = self.apply(gc, repo, root, wt, cfg)
+        self.assertEqual(effects, [])
+
+    def test_changed_private_directory_identity_is_retained(self):
+        gc, repo, root, wt, cfg, gitdir = self.eligible()
+        import shutil
+        previous = gitdir.with_name(gitdir.name + '-previous')
+        gitdir.rename(previous)
+        shutil.copytree(previous, gitdir)
+        _, effects = self.apply(gc, repo, root, wt, cfg)
+        self.assertEqual(effects, [])
+
+    def test_unchanged_eligible_tree_reaches_nonforce_removal(self):
+        gc, repo, root, wt, cfg, _ = self.eligible()
+        _, effects = self.apply(gc, repo, root, wt, cfg)
+        self.assertEqual(effects, ['unlock', 'remove'])
 
 
 class FilesystemMetadataTests(unittest.TestCase):

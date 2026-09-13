@@ -5,6 +5,7 @@ Never edits Codex app state, shared checkouts, credentials, runner services or
 workload concurrency. Backups contain only the specific settings being changed.
 """
 import argparse
+import copy
 import hashlib
 import json
 import os
@@ -40,6 +41,40 @@ def write_if_unchanged(path, before, after):
             os.unlink(tmp)
 
 
+def reconcile_session_start(original, command, *, codex=False):
+    """Prepare startup coverage without letting restricted/non-command hooks mask it."""
+    def malformed():
+        raise RuntimeError('SessionStart settings need reconciliation: malformed hook shape')
+
+    if not isinstance(original, dict):
+        malformed()
+    config = copy.deepcopy(original)
+    hooks = config.setdefault('hooks', {})
+    if not isinstance(hooks, dict):
+        malformed()
+    groups = hooks.setdefault('SessionStart', [])
+    if not isinstance(groups, list):
+        malformed()
+    covered = False
+    for group in groups:
+        if (not isinstance(group, dict) or not isinstance(group.get('hooks'), list)
+                or not isinstance(group.get('matcher', ''), str)):
+            malformed()
+        for hook in group['hooks']:
+            if (not isinstance(hook, dict) or not isinstance(hook.get('type'), str)
+                    or ('command' in hook and not isinstance(hook['command'], str))):
+                malformed()
+            if (group.get('matcher', '') == '' and hook['type'] == 'command'
+                    and hook.get('command') == command):
+                covered = True
+    if not covered:
+        hook = dict(type='command', command=command, timeout=300)
+        if codex:
+            hook['statusMessage'] = 'Checking external worktree storage'
+        groups.append(dict(hooks=[hook]))
+    return config
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--apply', action='store_true')
@@ -60,10 +95,8 @@ def main():
                          claude_profiles=[str(p.parent.name) for p in configs], cli_settings=str(cli))))
     if not args.apply:
         return
-    storage.prepare_root(policy)
     stamp = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')
     backup = root / 'backups' / ('storage-install-' + stamp)
-    backup.mkdir(parents=True, exist_ok=False)
     changes = []
     originals = {}
     for path in configs:
@@ -73,13 +106,17 @@ def main():
                             before=dict(present='chillingSlothLocation' in prefs, value=prefs.get('chillingSlothLocation'))))
     originals[cli] = cli.read_bytes() if cli.exists() else None
     original_cli = json.loads(originals[cli]) if originals[cli] else {}
+    originals[codex] = codex.read_bytes() if codex.exists() else None
+    original_codex = json.loads(originals[codex]) if originals[codex] else {}
+    start_command = f'python3 "{library}" session-start'
+    # Reconcile BOTH clients before the first helper/policy/settings write.
+    cli_config = reconcile_session_start(original_cli, start_command)
+    codex_config = reconcile_session_start(original_codex, start_command, codex=True)
     command = f'python3 "{library}" create'
     old_create = original_cli.get('hooks', {}).get('WorktreeCreate', [])
     if not args.without_create_hook and old_create and not all(h.get('command') == command for group in old_create for h in group.get('hooks', [])):
         raise RuntimeError('existing global WorktreeCreate needs reconciliation; not replaced')
     changes.append(dict(path=str(cli), key='hooks', before=original_cli.get('hooks')))
-    originals[codex] = codex.read_bytes() if codex.exists() else None
-    original_codex = json.loads(originals[codex]) if originals[codex] else {}
     changes.append(dict(path=str(codex), key='hooks', before=original_codex.get('hooks')))
     instructions = (
         '\n<!-- mastermind-external-worktree-storage -->\n'
@@ -105,6 +142,8 @@ def main():
         changes.append(dict(path=str(path), key='appended_instruction_block',
                             before=dict(present=path.exists(), already_present=instructions in (originals[path] or b'')),
                             installed_block=instructions.decode()))
+    storage.prepare_root(policy)
+    backup.mkdir(parents=True, exist_ok=False)
     receipt_path = backup / 'receipt.json'
     receipt_path.write_text(json.dumps(dict(status='PREPARED', installed_at=stamp, changes=changes,
         helper_previously_present=library.exists(), policy_previously_present=storage.POLICY_PATH.exists()), indent=2)+'\n')
@@ -127,7 +166,7 @@ def main():
             write_if_unchanged(path, before, (json.dumps(config, indent=2)+'\n').encode())
         assert json.loads(path.read_text())['preferences']['chillingSlothLocation'] == wanted
     before = originals[cli]
-    config = json.loads(before) if before else {}
+    config = cli_config
     hooks = config.setdefault('hooks', {})
     # Preserve other hooks. There was no global WorktreeCreate on the audited
     # host; refuse unfamiliar creation wiring instead of restoring duplicates.
@@ -137,19 +176,10 @@ def main():
         raise RuntimeError('existing global WorktreeCreate needs reconciliation; not replaced')
     if not args.without_create_hook:
         hooks['WorktreeCreate'] = [dict(hooks=[dict(type='command', command=command, timeout=300)])]
-    start_command = f'python3 "{library}" session-start'
-    starts = hooks.setdefault('SessionStart', [])
-    if not any(h.get('command') == start_command for group in starts for h in group.get('hooks', [])):
-        starts.append(dict(hooks=[dict(type='command', command=start_command, timeout=300)]))
     write_if_unchanged(cli, before, (json.dumps(config, indent=2)+'\n').encode())
     # The user hook covers all Codex projects, including old source snapshots.
     # Trust remains an explicit native Codex step; never edit its trust store.
-    config = original_codex
-    starts = config.setdefault('hooks', {}).setdefault('SessionStart', [])
-    if not any(h.get('command') == start_command for group in starts for h in group.get('hooks', [])):
-        starts.append(dict(hooks=[dict(type='command', command=start_command, timeout=300,
-                                      statusMessage='Checking external worktree storage')]))
-    write_if_unchanged(codex, originals[codex], (json.dumps(config, indent=2)+'\n').encode())
+    write_if_unchanged(codex, originals[codex], (json.dumps(codex_config, indent=2)+'\n').encode())
     for path in instruction_paths:
         before = originals[path]
         if instructions not in (before or b''):

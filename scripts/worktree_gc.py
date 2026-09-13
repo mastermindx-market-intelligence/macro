@@ -75,6 +75,7 @@ import glob as globmod
 import importlib.util
 import json
 import logging
+import math
 import os
 import shutil
 import socket
@@ -153,6 +154,13 @@ def _git(repo: Path, *args: str, timeout: int = 30) -> tuple[int, str, str]:
 
 # ── discovery ────────────────────────────────────────────────────────────────
 
+@dataclass(frozen=True)
+class ExternalSnapshot:
+    identity: tuple
+    strong_activity: tuple[tuple[str, float], ...]
+    min_age_days: float
+
+
 @dataclass
 class Worktree:
     path: Path
@@ -171,6 +179,7 @@ class Worktree:
     proof: str = ""
     reasons: list[str] = field(default_factory=list)
     orphan: bool = False            # directory with no registration
+    external_snapshot: ExternalSnapshot | None = None
 
 
 def resolve_primary_root(start: Path | None = None) -> Path:
@@ -364,6 +373,18 @@ def _reflog_last_epoch(gitdir: Path) -> float | None:
         return None
 
 
+def strong_activity_epochs(wt: Worktree, gitdir: Path | None) -> dict[str, float]:
+    strong = {}
+    if gitdir is not None:
+        epoch = _reflog_last_epoch(gitdir)
+        if epoch is not None:
+            strong["reflog_entry"] = epoch
+    epoch = session_activity_mtime(wt.path)
+    if epoch is not None:
+        strong["session_dir"] = epoch
+    return strong
+
+
 def activity_age_days(wt: Worktree, gitdir: Path | None, now: float) -> tuple[float | None, dict]:
     """Age in days of the most recent STRONG activity signal.
 
@@ -386,7 +407,7 @@ def activity_age_days(wt: Worktree, gitdir: Path | None, now: float) -> tuple[fl
     readable — callers fail closed for registered trees; orphans (no git
     metadata at all) fall back to the weak file mtimes recorded in sources.
     """
-    strong: dict[str, float] = {}
+    strong = strong_activity_epochs(wt, gitdir)
     weak: dict[str, float] = {}
 
     def _stat(label: str, p: Path) -> None:
@@ -400,13 +421,6 @@ def activity_age_days(wt: Worktree, gitdir: Path | None, now: float) -> tuple[fl
     if gitdir is not None:
         _stat("gitdir_HEAD", gitdir / "HEAD")
         _stat("gitdir_index", gitdir / "index")
-        re_epoch = _reflog_last_epoch(gitdir)
-        if re_epoch is not None:
-            strong["reflog_entry"] = re_epoch
-    sm = session_activity_mtime(wt.path)
-    if sm is not None:
-        strong["session_dir"] = sm
-
     sources = {f"weak:{k}": round((now - v) / 86400.0, 2) for k, v in weak.items()}
     sources.update({k: round((now - v) / 86400.0, 2) for k, v in strong.items()})
     if not strong:
@@ -426,6 +440,50 @@ def gitdir_for(wt: Worktree) -> Path | None:
             p = Path(line[len("gitdir:"):].strip())
             return p if p.is_dir() else None
     return None
+
+
+def external_snapshot(wt: Worktree, primary: Path, min_age_days: float) -> ExternalSnapshot | None:
+    """Bind eligibility to this registration, Git store and exact strong signals.
+
+    Store immutable values, never live Path/stat objects or rounded report ages.
+    Any unreadable binding or activity fails closed before storage-owned unlock.
+    """
+    try:
+        private = gitdir_for(wt)
+        if private is None:
+            return None
+        private = private.resolve(strict=True)
+        common_text = (private / "commondir").read_text().strip()
+        common = (private / common_text).resolve(strict=True)
+        rc, out, _ = _git(primary, "rev-parse", "--path-format=absolute", "--git-common-dir")
+        if rc or common != Path(out.strip()).resolve(strict=True):
+            return None
+        backlink = (private / "gitdir").read_text().strip()
+        if (not common_text or private.parent != common / "worktrees"
+                or Path(backlink).resolve(strict=True) != (wt.path / ".git").resolve(strict=True)):
+            return None
+        try:
+            lock_bytes = (private / "locked").read_bytes()
+        except FileNotFoundError:
+            lock_bytes = None
+        if (wt.locked != (lock_bytes is not None)
+                or (lock_bytes is not None and lock_bytes.decode().strip() != wt.lock_reason)):
+            return None
+        strong = strong_activity_epochs(wt, private)
+        if (not strong or not all(math.isfinite(v) for v in strong.values())
+                or not math.isfinite(min_age_days) or min_age_days < 0
+                or (time.time() - max(strong.values())) / 86400 < min_age_days):
+            return None
+        binding = []
+        for path in (wt.path, private, common):
+            st = path.stat()
+            binding.append((str(path.resolve(strict=True)), st.st_dev, st.st_ino))
+        identity = (str(wt.path), wt.head, wt.branch, wt.detached, wt.locked,
+                    wt.lock_reason, tuple(binding), (wt.path / ".git").read_bytes(),
+                    common_text, backlink, lock_bytes)
+        return ExternalSnapshot(identity, tuple(sorted(strong.items())), min_age_days)
+    except (OSError, ValueError, RuntimeError):
+        return None
 
 
 def status_clean(wt: Worktree) -> bool | None:
@@ -514,6 +572,7 @@ def classify(
     now: float,
 ) -> None:
     """Assign wt.verdict / wt.proof / wt.reasons.  Fail-closed at every step."""
+    wt.external_snapshot = None
     if wt.path.resolve() == primary.resolve():
         wt.verdict = "PRIMARY"
         return
@@ -603,6 +662,13 @@ def classify(
         wt.verdict = "ERROR"
         wt.reasons.append("no HEAD recorded")
         return
+
+    if external:
+        wt.external_snapshot = external_snapshot(wt, primary, float(cfg["min_age_days"]))
+        if wt.external_snapshot is None:
+            wt.verdict = "ERROR"
+            wt.reasons.append("external registration binding or strong activity unverified")
+            return
 
     # Content proofs (any one suffices for SAFE_MERGED).
     rc, _, _ = _git(primary, "merge-base", "--is-ancestor", wt.head, "origin/main")
@@ -763,12 +829,10 @@ def apply_deletions(
             if worktree_storage.materialized_index_safe(wt.path, allow_sparse=True) is not True:
                 summary["errors"].append(f"{wt.path}: external index preservation guard refused")
                 continue
-            rc, listing, err = _git(primary, "worktree", "list", "--porcelain")
-            current = next((w for w in parse_worktree_list(listing) if w.path == wt.path), None)
             rc2, status, _ = _git(wt.path, "--no-optional-locks", "-c", "core.fsmonitor=false",
                                   "status", "--porcelain", "--untracked-files=all")
             procs = proc_cwd_map([wt.path])
-            if (rc or rc2 or current is None or current.head != wt.head or status.strip()
+            if (rc2 or status.strip()
                     or procs is None or any(ps for cwd, ps in procs.items() if _under(Path(cwd), wt.path))):
                 summary["errors"].append(f"{wt.path}: external deletion revalidation failed")
                 continue
@@ -776,6 +840,16 @@ def apply_deletions(
             # Recheck at the storage-owned unlock/removal boundary as well.
             if worktree_storage.materialized_index_safe(wt.path, allow_sparse=True) is not True:
                 summary["errors"].append(f"{wt.path}: final external index preservation guard refused")
+                continue
+            # Re-read registration AFTER the status/process/index probes: a
+            # same-HEAD branch switch during those reads is real reactivation.
+            rc, listing, err = _git(primary, "worktree", "list", "--porcelain")
+            current = next((w for w in parse_worktree_list(listing) if w.path == wt.path), None)
+            before = wt.external_snapshot
+            min_age = float(cfg.get("min_age_days", before.min_age_days if before else DEFAULT_CONFIG["min_age_days"]))
+            if (rc or current is None or before is None
+                    or external_snapshot(current, primary, min_age) != before):
+                summary["errors"].append(f"{wt.path}: final external identity/activity revalidation failed")
                 continue
             if current.locked:
                 if current.lock_reason != worktree_storage.LOCK_REASON:
