@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-09-12T19:03:57.911964+00:00",
+  "generated_utc": "2026-09-12T22:38:28.070519+00:00",
   "as_of": "2026-09-12",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -25366,10 +25366,10 @@
     ],
     "analyst": [
       {
-        "ticker": "NVDA",
+        "ticker": "FTNT",
         "net_up_30d": 39,
         "breadth": 1.0,
-        "est_chg_30d": 20.43,
+        "est_chg_30d": 0.54,
         "n_analysts": 39,
         "bull_ratio": 1.0,
         "rising": true,
@@ -25377,10 +25377,10 @@
         "hot": true
       },
       {
-        "ticker": "FTNT",
+        "ticker": "NVDA",
         "net_up_30d": 39,
         "breadth": 1.0,
-        "est_chg_30d": 0.54,
+        "est_chg_30d": 20.9,
         "n_analysts": 39,
         "bull_ratio": 1.0,
         "rising": true,
@@ -25457,7 +25457,7 @@
         "ticker": "MA",
         "net_up_30d": 29,
         "breadth": 0.88,
-        "est_chg_30d": 0.14,
+        "est_chg_30d": 0.05,
         "n_analysts": 33,
         "bull_ratio": 0.94,
         "rising": true,
@@ -25465,10 +25465,10 @@
         "hot": true
       },
       {
-        "ticker": "MRVL",
+        "ticker": "AMAT",
         "net_up_30d": 27,
         "breadth": 0.93,
-        "est_chg_30d": 7.69,
+        "est_chg_30d": 8.1,
         "n_analysts": 29,
         "bull_ratio": 0.97,
         "rising": true,
@@ -25476,10 +25476,10 @@
         "hot": true
       },
       {
-        "ticker": "AMAT",
+        "ticker": "MRVL",
         "net_up_30d": 27,
         "breadth": 0.93,
-        "est_chg_30d": 8.1,
+        "est_chg_30d": 7.67,
         "n_analysts": 29,
         "bull_ratio": 0.97,
         "rising": true,
