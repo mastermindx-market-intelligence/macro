@@ -1,0 +1,53 @@
+{
+  "schema_version": "toi.alias_equivalence.v1",
+  "as_of": "2026-09-13",
+  "scope_state": "P0_SLICE_COMPLETE_W1_FULL_CENSUS_PARTIAL",
+  "classes": [
+    {"class_id":"eq.bollinger_bandwidth","canonical_method_id":"toi.bb_bandwidth","members":[{"method_id":"toi.bb_bandwidth","relationship":"first_class"}]},
+    {"class_id":"eq.bb_kc_squeeze","canonical_method_id":"toi.bb_kc_squeeze","members":[{"method_id":"toi.bb_kc_squeeze","relationship":"first_class"}]},
+    {"class_id":"eq.normalized_atr","canonical_method_id":"toi.natr_percentile","members":[{"method_id":"toi.natr_percentile","relationship":"first_class"}]},
+    {"class_id":"eq.historical_vol_ratio","canonical_method_id":"toi.hvr","members":[{"method_id":"toi.hvr","relationship":"first_class"}]},
+    {"class_id":"eq.narrow_range","canonical_method_id":"toi.nr7","members":[{"method_id":"toi.nr7","relationship":"first_class"}]},
+    {"class_id":"eq.atr_range_expansion","canonical_method_id":"toi.range_expansion","members":[{"method_id":"toi.range_expansion","relationship":"first_class"}]},
+    {"class_id":"eq.donchian_breakout_family","canonical_method_id":"toi.donchian_breakout","members":[{"method_id":"toi.donchian_breakout","relationship":"first_class"},{"method_id":"toi.donchian_fakeout","relationship":"subtype"}]},
+    {"class_id":"eq.confirmed_swing_structure","canonical_method_id":"toi.fractal_swing_structure","members":[{"method_id":"toi.fractal_swing_structure","relationship":"first_class"}]},
+    {"class_id":"eq.benchmark_relative_strength","canonical_method_id":"toi.benchmark_rs","members":[{"method_id":"toi.benchmark_rs","relationship":"first_class"}]},
+    {"class_id":"eq.chaikin_money_flow","canonical_method_id":"toi.cmf","members":[{"method_id":"toi.cmf","relationship":"first_class"}]},
+    {"class_id":"eq.relative_volume","canonical_method_id":"toi.rvol","members":[{"method_id":"toi.rvol","relationship":"first_class"}]}
+  ],
+  "alias_index": {
+    "BB Width":"toi.bb_bandwidth",
+    "BandWidth":"toi.bb_bandwidth",
+    "TTM Squeeze":"toi.bb_kc_squeeze",
+    "BB/KC squeeze":"toi.bb_kc_squeeze",
+    "nATR":"toi.natr_percentile",
+    "ATR/price":"toi.natr_percentile",
+    "HVR":"toi.hvr",
+    "short/long realized vol":"toi.hvr",
+    "NR7":"toi.nr7",
+    "thrust bar":"toi.range_expansion",
+    "range expansion":"toi.range_expansion",
+    "Donchian breakout":"toi.donchian_breakout",
+    "prior-range breakout":"toi.donchian_breakout",
+    "breakout failure":"toi.donchian_fakeout",
+    "fakeout":"toi.donchian_fakeout",
+    "Williams fractals":"toi.fractal_swing_structure",
+    "HH/HL swing structure":"toi.fractal_swing_structure",
+    "relative strength line":"toi.benchmark_rs",
+    "RS vs market":"toi.benchmark_rs",
+    "CMF":"toi.cmf",
+    "RVOL":"toi.rvol"
+  },
+  "dependency_clusters": {
+    "volatility_channel":["toi.bb_bandwidth"],
+    "compression_release":["toi.bb_kc_squeeze"],
+    "volatility_regime":["toi.natr_percentile","toi.hvr"],
+    "volatility_range":["toi.nr7","toi.range_expansion"],
+    "breakout_channel":["toi.donchian_breakout","toi.donchian_fakeout"],
+    "pattern_structure":["toi.fractal_swing_structure"],
+    "benchmark_relative_strength":["toi.benchmark_rs"],
+    "volume_money_flow":["toi.cmf"],
+    "volume_participation":["toi.rvol"]
+  },
+  "unresolved": []
+}
