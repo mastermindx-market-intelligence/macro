@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Fail-closed validator for the Technical Opportunity W1 method passports.
 
-Records-only: validates research metadata and never reads market outcomes.
+Records-only: validates research metadata and local source identity and never reads
+market outcomes.
 """
 from __future__ import annotations
 
@@ -71,10 +72,36 @@ def _source_ids(path: Path = SOURCES) -> set[str]:
     return set(ids)
 
 
+def _validate_exact_local_identity(mid: str, local: dict[str, Any]) -> None:
+    """Prove an `exact` passport names real source paths and real signal identifiers.
+
+    This is intentionally source-text identity, not formula equivalence. It closes the
+    weaker failure mode where a passport could claim an exact local implementation by
+    naming a stale/nonexistent path or a signal id that is not present in the cited
+    source. Formula/source reproduction remains a separate W1 review gate.
+    """
+    paths = local["paths"]
+    signal_ids = local["signal_ids"]
+    if any(not isinstance(p, str) or not p for p in paths):
+        raise ValueError(f"{mid}: exact local paths must be non-empty strings")
+    if any(not isinstance(sid, str) or not sid for sid in signal_ids):
+        raise ValueError(f"{mid}: exact local signal_ids must be non-empty strings")
+    texts: list[tuple[str, str]] = []
+    for rel in paths:
+        candidate = ROOT / rel
+        if not candidate.is_file():
+            raise ValueError(f"{mid}: exact local path missing: {rel}")
+        texts.append((rel, candidate.read_text(encoding="utf-8")))
+    for sid in signal_ids:
+        if not any(sid in text for _, text in texts):
+            raise ValueError(f"{mid}: signal_id {sid!r} not found in cited local paths")
+
+
 def validate_rows(rows: list[dict[str, Any]], source_ids: set[str]) -> dict[str, Any]:
     seen: set[str] = set()
     priorities: dict[str, int] = {}
     owners: dict[str, int] = {}
+    exact_local = 0
     for row in rows:
         mid = row.get("method_id", "<missing>")
         if set(row) != TOP_KEYS:
@@ -122,8 +149,11 @@ def validate_rows(rows: list[dict[str, Any]], source_ids: set[str]) -> dict[str,
         local = row["local_implementation"]
         if not isinstance(local, dict) or set(local) != LOCAL_KEYS or local["status"] not in ALLOWED["local_status"]:
             raise ValueError(f"{mid}: local implementation schema/status invalid")
-        if local["status"] == "exact" and (not local["paths"] or not local["signal_ids"]):
-            raise ValueError(f"{mid}: exact local implementation requires paths and signal_ids")
+        if local["status"] == "exact":
+            if not local["paths"] or not local["signal_ids"]:
+                raise ValueError(f"{mid}: exact local implementation requires paths and signal_ids")
+            _validate_exact_local_identity(mid, local)
+            exact_local += 1
         equiv = row["equivalence"]
         if not isinstance(equiv, dict) or set(equiv) != EQUIV_KEYS or equiv["relationship"] not in ALLOWED["relationship"]:
             raise ValueError(f"{mid}: equivalence schema invalid")
@@ -131,7 +161,7 @@ def validate_rows(rows: list[dict[str, Any]], source_ids: set[str]) -> dict[str,
             raise ValueError(f"{mid}: dnd_keys must use stable DNR:<KEY> identifiers")
         priorities[row["research_priority"]] = priorities.get(row["research_priority"], 0) + 1
         owners[row["owner_disposition"]] = owners.get(row["owner_disposition"], 0) + 1
-    return {"status": "valid", "count": len(rows), "priority_counts": priorities, "owner_counts": owners}
+    return {"status": "valid", "count": len(rows), "exact_local_count": exact_local, "priority_counts": priorities, "owner_counts": owners}
 
 
 def main() -> int:
