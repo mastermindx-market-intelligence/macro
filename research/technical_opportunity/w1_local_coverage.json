@@ -1,0 +1,33 @@
+{
+  "schema_version": "toi.local_coverage.v1",
+  "as_of": "2026-09-13",
+  "macro_base": "aa6750b68ccefeb17043e590b61e8a00565d1837",
+  "terminal_base": "45a0e78e01377502399761626899458f9d08ffd9",
+  "scope_state": "P0_P1_P2_CORE_PLUS_ARCHIVE_NORMALIZED_W1_FULL_CENSUS_PARTIAL",
+  "summary": {"passport_count":32,"p0_passports":12,"p1_passports":10,"p2_passports":8,"archive_passports":2,"exact_local":26,"partial_local":1,"missing_local":5,"p0_exact_local":11,"p0_partial_local":1,"p1_exact_local":7,"p1_missing_local":3,"p2_exact_local":7,"p2_missing_local":1,"archive_exact_local":1,"archive_missing_local":1,"partial_method_ids":["toi.rvol"],"missing_method_ids":["toi.support_resistance","toi.round_levels","toi.short_reversal","toi.fibonacci_retracement","toi.ordered_path_elliott"],"first_vertical_roles_covered":["setup","trigger","participation","context","risk"],"first_vertical_horizons":["W","D","candidate_4H"],"outcomes_read":false,"model_fit":false,"trade_authority":false},
+  "macro_implementations": [
+    {"path":"engine/bollinger_event_signals.py","methods":["toi.bb_bandwidth"],"state":"exact_local"},
+    {"path":"engine/compression_signals.py","methods":["toi.bb_kc_squeeze","toi.nr7","toi.range_expansion","toi.donchian_breakout","toi.donchian_fakeout","toi.choppiness"],"state":"exact_local"},
+    {"path":"engine/path_risk_signals.py","methods":["toi.natr_percentile","toi.hvr","toi.ulcer"],"state":"exact_local"},
+    {"path":"engine/fractal_pivot_signals.py","methods":["toi.fractal_swing_structure"],"state":"exact_local","known_at":"two completed bars after pivot center"},
+    {"path":"engine/momentum_context_signals.py","methods":["toi.benchmark_rs","toi.momentum_12_1","toi.momentum_acceleration","toi.high52"],"state":"exact_local","external_input":"bench_close only for benchmark-RS methods"},
+    {"path":"engine/volume_flow_signals.py","methods":["toi.cmf","toi.obv"],"state":"exact_local"},
+    {"path":"engine/volume_flow_signals.py","methods":["toi.rvol"],"state":"partial_local","formula_mismatch":"source-defined RVOL compares current volume with a configurable average of prior completed bars excluding current; current local _rvol uses an inclusive 20-bar rolling mean including current"},
+    {"path":"engine/trend_strength_signals.py","methods":["toi.adx_dmi"],"state":"exact_local"},
+    {"path":"engine/bar_structure_signals.py","methods":["toi.inside_bar"],"state":"exact_local","authority_boundary":"public-practitioner sequence aliases retained as P2 later context, not P1/W3 authority"},
+    {"path":"engine/ma_crosses.py","methods":["toi.ma_trend"],"state":"exact_local"},
+    {"path":"engine/trend_ribbon_signals.py","methods":["toi.ma_trend"],"state":"exact_local"},
+    {"path":"engine/rsi_signals.py","methods":["toi.rsi_oscillator"],"state":"exact_local"},
+    {"path":"engine/momentum_events.py","methods":["toi.rsi_oscillator","toi.macd_stoch_incumbent"],"state":"exact_local"},
+    {"path":"engine/adaptive_trend_signals.py","methods":["toi.kama_er","toi.supertrend"],"state":"exact_local","authority_boundary":"entry_stack_blocked families remain display/context only"},
+    {"path":"engine/rank_momentum_signals.py","methods":["toi.connors_rsi"],"state":"exact_local","authority_boundary":"method-specific ConnorsRSI(3,2,100) receipt added; RSI-family entry stacking remains blocked"},
+    {"path":"engine/formations.py","methods":["toi.geometric_double_pattern"],"state":"exact_local","known_at":"event emitted only after second pivot confirmation"}
+  ],
+  "partial_local_methods":[{"method_id":"toi.rvol","reason":"current local inclusive 20-bar denominator does not exactly reproduce the receipted prior-bar RVOL methodology; later implementation must repair or explicitly version it before W3 use"}],
+  "missing_local_methods":[{"method_id":"toi.support_resistance","reason":"no frozen causal level constructor yet; W1 records method/source only"},{"method_id":"toi.round_levels","reason":"microstructure control is source-backed but no TOI local implementation exists"},{"method_id":"toi.short_reversal","reason":"research concept is source-backed; W1 forbids per-name tuned timer implementation"},{"method_id":"toi.fibonacci_retracement","reason":"retained as a matched-control/archive family; empirical specificity evidence is weak and no TOI implementation is warranted in W1"},{"method_id":"toi.ordered_path_elliott","reason":"strategic later-context research representation; implementation waits for an explicit preregistered generic-geometry ablation after the first Compression Release vertical"}],
+  "terminal_crosswalk":{"owner":"mastermind-terminal display/visual implementation; not TOI occurrence authority","suite_order":["structure","trend","pulse","rsix","macdx"],"evidence_paths":["terminal/lib/suites/compute.ts","terminal/lib/suites/meta.ts","terminal/lib/suites/catalog.ts","terminal/lib/suites/registry.ts"],"disposition":"read-only W1 archaeology; visual primitives may be reused later, but Macro owns canonical occurrence semantics"},
+  "live_entry_radar_crosswalk":{"owner":"WS:LIVE-ENTRY-RADAR","scope":"true tactical 5m/RTH events and live evaluator","disposition":"W1 may crosswalk tactical methods but must not create a second intraday event owner"},
+  "scientific_registry_crosswalk":{"owner":"engine/species_registry.py + data/species/registry.json","disposition":"Setup Species remains canonical scientific registry; W1 does not edit or duplicate it"},
+  "automation_crosswalk":{"owner":"Signal Foundry / Research Factory","disposition":"reuse deterministic proposal screen and declarative candidate pattern in later W3; no parallel harness"},
+  "gaps_for_full_w1":["fresh bounded independent verification of the two repaired reviewer findings remains required on the repaired immutable head","run the exact Agent OS + passport/source/equivalence + W1 pytest + diff-check battery on the immutable repair head"]
+}
