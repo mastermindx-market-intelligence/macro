@@ -49,12 +49,12 @@
 ## Task 4: Render and verify production-shaped output
 
 **Files:**
-- Update: `site/policy_watch.html`
+- Generate locally, do not commit: `site/policy_watch.html`
 - Add: `mockups/evidence/policy-watch-current-analysis-r2/*`
 
 1. Run `python3 -m scripts.build_policy_watch` in the full worktree.
-2. Inspect `git status`; revert only unrelated history-appender side effects, if any.
-3. Serve the rendered site locally.
+2. Inspect `git status`; revert unrelated history-appender side effects and restore the derived site artifact after evidence capture because the normal render/publication lane owns it.
+3. Serve the production-shaped rendered site locally.
 4. Capture desktop/mobile × EN/ZH × dark/light browser evidence.
 5. Assert 44 full calls, the UK desk, current official panel, analysis snapshot date, no raw/malformed timestamps, no console/request failures, and no horizontal overflow.
 6. Run design-system, runtime-style, visual-evidence, template/site, and focused pytest checks.

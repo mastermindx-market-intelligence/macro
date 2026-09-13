@@ -18,12 +18,10 @@ changed:
     what: Derives a fail-closed bilingual analysis snapshot only from policy_intent.json state_asof; generated time, historical intel vintage and review dates are not substitutes.
   - path: templates/policy_watch.html.j2
     what: Adds one canonical bilingual analysis clock inside the existing Market views section and plain-language separation between snapshot, review and official-source clocks; L1 section count remains seven.
-  - path: site/policy_watch.html
-    what: Rebuilt production-shaped static output with the R2 date contract while preserving the current panel, UK desk, lifecycle and 44-call ledger.
   - path: tests/test_policy_watch_ui.py
     what: Adds full-builder regression coverage for valid and malformed state_asof values, date authority, bilingual copy and raw timestamp non-disclosure.
   - path: mockups/evidence/policy-watch-current-analysis-r2/
-    what: Eight-cell desktop/mobile, EN/ZH, dark/light screenshots plus mechanical and DOM proof receipts.
+    what: Eight-cell desktop/mobile, EN/ZH, dark/light screenshots plus mechanical and DOM proof receipts from a locally generated production-shaped page; the derived site file remains owned by the normal render/publication lane.
   - path: docs/plans/2026-09-13-policy-watch-current-analysis-r2.md
     what: Records the bounded test-first implementation and release plan.
 verified:
