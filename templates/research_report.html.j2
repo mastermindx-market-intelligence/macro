@@ -32,18 +32,15 @@
 :root{
   --num: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
   --rv:#4f8ff7; --rv-2:#38bdf8; --rv-ink:#9cc2ff; --rv-dim:rgba(79,143,247,.13); --rv-glow:rgba(79,143,247,.34);
-  --gold:#d8b26a; --buy:#45b873; --sell:#dCA24a; --indep:#8c93c8;
+  --gold: var(--g-hot);
   --rr-glass-bg:rgba(16,22,30,.55); --rr-glass-border:rgba(255,255,255,.12);
   --rr-shadow:0 8px 32px rgba(0,0,0,.55), 0 1.5px 0 rgba(255,255,255,.07) inset;
 }
 html[data-theme="light"]{
   --rv:#285fff; --rv-2:#0f8fd8; --rv-ink:#1b49c8; --rv-dim:rgba(40,95,255,.10); --rv-glow:rgba(40,95,255,.26); --gold:#a9812e;
-  --buy:#1f9a55; --sell:#a9781f; --indep:#5b62a8;
   --rr-glass-bg:rgba(255,255,255,.82); --rr-glass-border:rgba(0,0,0,.06);
   --rr-shadow:0 4px 24px rgba(0,0,0,.09), 0 1px 0 rgba(255,255,255,.95) inset;
 }
-html[data-lang="zh"]{ --buy:#e06464; }
-html[data-theme="light"][data-lang="zh"]{ --buy:#cf4040; }
 html:not([data-lang="zh"]) .l-zh{ display:none; } html[data-lang="zh"] .l-en{ display:none; }
 
 html,body{ background:var(--bg); }
@@ -70,10 +67,17 @@ html[data-theme="light"] .rr-crumb a{ color:var(--rv); }
   background:linear-gradient(150deg,var(--rv),var(--rv-2)); box-shadow:inset 0 1px 0 rgba(255,255,255,.28); }
 .rr-inst{ font-size:14px; font-weight:800; color:var(--text); }
 .rr-desk{ font-size:12.5px; color:var(--muted); }
-.stamp{ display:inline-flex; align-items:center; gap:5px; font-family:var(--num); font-size:10px; font-weight:700;
-  letter-spacing:.1em; text-transform:uppercase; padding:3px 9px; border-radius:6px; border:1.5px solid currentColor; }
-.stamp.buy{ color:var(--buy); } .stamp.sell{ color:var(--sell); } .stamp.indep{ color:var(--indep); }
-.stamp .dt{ width:5px; height:5px; border-radius:50%; background:currentColor; }
+/* Desk-type stamp: NEUTRAL METADATA chip. Same quiet-chip idiom in both themes
+   (hairline --line, muted foreground, transparent fill, no glow/shadow).
+   Intentionally differing mechanisms: NONE. Dual class names cover the
+   JS-vs-bake skew window (.stamp.buy/.sell plus .stamp.buy-side/.sell-side). */
+.stamp{ display:inline-flex; align-items:center; gap:5px; font-family:var(--num); font-size:10px; font-weight:600;
+  letter-spacing:.02em; padding:3px 9px; border-radius:var(--r-ctl,8px); color:var(--muted);
+  border:1px solid var(--line); background:transparent; box-shadow:none; }
+.stamp.buy, .stamp.sell, .stamp.indep,
+.stamp.buy-side, .stamp.sell-side{ color:var(--muted); border-color:var(--line);
+  background:transparent; box-shadow:none; }
+.stamp .dt{ width:5px; height:5px; border-radius:var(--r-pill,999px); background:currentColor; opacity:.7; }
 
 .rr h1{ font-weight:800; font-size:clamp(23px,3.3vw,32px); line-height:1.16; letter-spacing:-.02em; color:var(--text); margin:0 0 14px; }
 .rr-meta{ display:flex; align-items:center; gap:8px 14px; flex-wrap:wrap; font-family:var(--num); font-size:12px;
@@ -150,7 +154,7 @@ html[data-theme="light"] .rr-rel .r-inst{ color:var(--rv); }
       <span class="rr-logo">{{ n.mono }}</span>
       <span class="rr-inst">{{ n.inst }}</span>
       {% if n.desk %}<span class="rr-desk">· {{ n.desk }}</span>{% endif %}
-      <span class="stamp {{ n.stamp_cls }}"><span class="dt"></span>{{ n.stamp }}</span>
+      <span class="stamp {{ n.stamp_cls }}"><span class="dt"></span>{{ t(n.stamp_en, n.stamp_zh) }}</span>
     </div>
 
     <h1>{{ n.title }}</h1>

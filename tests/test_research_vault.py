@@ -248,6 +248,124 @@ def test_clean_title_never_raises_on_junk():
         assert isinstance(sidecar_mod.clean_title(junk), str)
 
 
+def test_clean_title_does_not_collapse_repeated_lead_or_strip_trailing_date():
+    """Slug path: clean_title must stay byte-identical to origin/main."""
+    doubled = "GS Vol Views GS Vol Views 9 Sep 2026"
+    assert sidecar_mod.clean_title(doubled) == doubled
+    assert sidecar_mod.clean_title("Oil Market Report Sep 9, 2026") == "Oil Market Report Sep 9, 2026"
+    assert sidecar_mod.clean_title("US Econ Notes July 24") == "US Econ Notes July 24"
+
+
+def test_display_title_collapses_repeated_lead_and_trailing_calendar_date():
+    assert sidecar_mod.display_title("GS Vol Views GS Vol Views 9 Sep 2026") == "GS Vol Views"
+    assert sidecar_mod.display_title("GS Vol Views") == "GS Vol Views"
+    assert sidecar_mod.display_title("Oil Market Report Sep 9, 2026") == "Oil Market Report"
+    # month+day without a year is a real title, not auto-titler furniture
+    assert sidecar_mod.display_title("US Econ Notes July 24") == "US Econ Notes July 24"
+    # paren repair still lands on the display path
+    assert sidecar_mod.display_title("Carrefour (CARR") == "Carrefour (CARR)"
+
+
+def test_clean_summary_points_strips_markdown_and_rejoins_vs_split():
+    pts = sidecar_mod.clean_summary_points([
+        "**China’s Economic Data & Structural Risks**: CPI at 0.8% y-o-y (up from 0.5%), PPI at 3.8% y-o-y (vs.",
+        "6% consensus); tobacco monopoly’s $54bn capital funding signals inflationary pressures and bad loan risks.",
+        "**Volatility Compression**: the range holds.",
+    ])
+    assert pts == [
+        "China’s Economic Data & Structural Risks: CPI at 0.8% y-o-y (up from 0.5%), PPI at 3.8% y-o-y (vs. 6% consensus); tobacco monopoly’s $54bn capital funding signals inflationary pressures and bad loan risks.",
+        "Volatility Compression: the range holds.",
+    ]
+    assert all("**" not in p for p in pts)
+
+
+def test_clean_summary_points_does_not_glue_finished_bullets():
+    pts = sidecar_mod.clean_summary_points(["Only 33% looks credible.", "Hyperscalers control 42%."])
+    assert pts == ["Only 33% looks credible.", "Hyperscalers control 42%."]
+
+
+def test_clean_summary_points_does_not_glue_sentence_final_abbrev_to_year():
+    pts = sidecar_mod.clean_summary_points([
+        "Growth is slowing in the U.S.",
+        "2026 GDP is cut to 1.2%.",
+    ])
+    assert pts == ["Growth is slowing in the U.S.", "2026 GDP is cut to 1.2%."]
+    pts2 = sidecar_mod.clean_summary_points([
+        "Risks: tariffs, FX, rates, etc.",
+        "3 of 5 desks now see a cut.",
+    ])
+    assert pts2 == ["Risks: tariffs, FX, rates, etc.", "3 of 5 desks now see a cut."]
+
+
+def test_clean_summary_points_keeps_lone_and_multiplication_asterisks():
+    pts = sidecar_mod.clean_summary_points([
+        "Non-GAAP EBITDA* rose 12%; margin* stable at 30%.",
+    ])
+    assert pts == ["Non-GAAP EBITDA* rose 12%; margin* stable at 30%."]
+    pts2 = sidecar_mod.clean_summary_points([
+        "Positioning is 3*ATR wide, roughly 2*vol of the index.",
+    ])
+    assert pts2 == ["Positioning is 3*ATR wide, roughly 2*vol of the index."]
+    pts3 = sidecar_mod.clean_summary_points(["**Heading**: the range holds."])
+    assert pts3 == ["Heading: the range holds."]
+    pts4 = sidecar_mod.clean_summary_points(["A *soft* print vs a hard one."])
+    assert pts4 == ["A soft print vs a hard one."]
+
+
+def test_clean_summary_points_keeps_lone_and_dunder_underscores():
+    pts = sidecar_mod.clean_summary_points(["The ticker is foo__bar in the tape."])
+    assert pts == ["The ticker is foo__bar in the tape."]
+    pts2 = sidecar_mod.clean_summary_points(["See `__init__` in the quoted code."])
+    assert pts2 == ["See `__init__` in the quoted code."]
+    pts3 = sidecar_mod.clean_summary_points(["Score is 3__ATR by construction."])
+    assert pts3 == ["Score is 3__ATR by construction."]
+    pts4 = sidecar_mod.clean_summary_points(["A __soft phrase__ print vs a hard one."])
+    assert pts4 == ["A soft phrase print vs a hard one."]
+    pts5 = sidecar_mod.clean_summary_points(["__Heading wrap__: the range holds."])
+    assert pts5 == ["Heading wrap: the range holds."]
+
+
+def test_normalize_cleans_summary_markdown():
+    item = sidecar_mod.normalize({
+        "title": "T", "institution": "GS",
+        "summary_points": ["**Thesis**: the range holds."],
+    })
+    assert item["summary_points"] == ["Thesis: the range holds."]
+
+
+def test_desk_type_is_never_a_rating():
+    assert sidecar_mod.desk_type("sell") == ("Sell-side", "卖方", "sell-side")
+    assert sidecar_mod.desk_type("buy") == ("Buy-side", "买方", "buy-side")
+    assert sidecar_mod.desk_type("independent") == ("Independent", "独立", "indep")
+    assert sidecar_mod.desk_type("wat") == ("Independent", "独立", "indep")
+    for _, zh, _ in (sidecar_mod.desk_type(s) for s in ("buy", "sell", "independent")):
+        assert zh not in ("看多", "看空")
+
+
+def test_canon_institution_merges_spellings_and_drops_folder_names_from_facet():
+    assert sidecar_mod.canon_institution("Blackrock") == "BlackRock"
+    assert sidecar_mod.canon_institution("ScotiaBank") == "Scotiabank"
+    assert sidecar_mod.canon_institution("ING Direct") == "ING"
+    assert sidecar_mod.canon_institution("Goldman Sachs") == "Goldman Sachs"
+    assert sidecar_mod.canon_institution("SG Prime") == "Société Générale"
+    assert sidecar_mod.institution_is_desk("New folder") is False
+    assert sidecar_mod.institution_is_desk("S&T") is False
+    assert sidecar_mod.institution_is_desk("Goldman Sachs") is True
+    assert sidecar_mod.institution_is_desk("Société Générale") is True
+    assert sidecar_mod.institution_display("S&T") == "Institutional desk"
+    assert sidecar_mod.institution_display("New folder") == "Institutional desk"
+    assert sidecar_mod.institution_display("SG Prime") == "Société Générale"
+    assert sidecar_mod.institution_display("Goldman Sachs") == "Goldman Sachs"
+    assert sidecar_mod.institution_display_pair("Unknown") == ("Unknown", "未知")
+    assert sidecar_mod.institution_display_pair("") == ("Unknown", "未知")
+
+
+def test_desk_stamp_classes_emit_legacy_and_desk_type_names():
+    assert sidecar_mod.desk_stamp_classes("sell") == "sell-side sell"
+    assert sidecar_mod.desk_stamp_classes("buy") == "buy-side buy"
+    assert sidecar_mod.desk_stamp_classes("independent") == "indep"
+
+
 def test_clean_title_is_slug_stable_for_paren_repair():
     """The repair must never move an already-indexed /research/ URL.
 
@@ -438,6 +556,42 @@ def test_public_summary_describes_the_full_catalog_not_a_preview_slice():
             {"name": "Desk C", "count": 1},
         ],
     }
+
+
+def test_public_summary_merges_institution_spellings_and_drops_folder_names():
+    cat = {
+        "items": [
+            {"id": "a", "institution": "Blackrock", "published_at": "2026-07-31T10:00:00Z"},
+            {"id": "b", "institution": "BlackRock", "published_at": "2026-07-30T10:00:00Z"},
+            {"id": "c", "institution": "New folder", "published_at": "2026-07-29T10:00:00Z"},
+            {"id": "d", "institution": "S&T", "published_at": "2026-07-28T10:00:00Z"},
+        ]
+    }
+    summary = catalog_mod.public_summary(
+        cat, now=datetime(2026, 7, 31, 12, tzinfo=timezone.utc)
+    )
+    names = [row["name"] for row in summary["institutions"]]
+    assert names == ["BlackRock"]
+    assert summary["institutions"][0]["count"] == 2
+    assert "New folder" not in names and "S&T" not in names
+
+
+def test_heal_display_repairs_published_summaries_without_touching_id():
+    cat = _cat([{
+        "id": "keep-me",
+        "title": "GS Vol Views GS Vol Views 9 Sep 2026",
+        "institution": "Blackrock",
+        "summary_points": ["**Heading**: PPI at 3.8% (vs.", "6% consensus)."],
+    }])
+    n = catalog_mod.heal_display(cat)
+    assert n >= 2
+    row = cat["items"][0]
+    assert row["id"] == "keep-me"
+    # catalog storage stays slug-stable; display polish is render-only
+    assert row["title"] == "GS Vol Views GS Vol Views 9 Sep 2026"
+    assert sidecar_mod.display_title(row["title"]) == "GS Vol Views"
+    assert row["institution"] == "BlackRock"
+    assert row["summary_points"] == ["Heading: PPI at 3.8% (vs. 6% consensus)."]
 
 
 def test_catalog_upsert_is_idempotent_by_id():
