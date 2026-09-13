@@ -77,6 +77,8 @@ pages:
 
   macro:bonds:
     archetype: "regime_dashboard"
+    evidence: [templates/bonds.html.j2, scripts/build_bonds.py]
+    note: "Archetype-D regime_dashboard; six L1 blocks per frozen spec"
 
   macro:canada:
     archetype: "regime_dashboard"

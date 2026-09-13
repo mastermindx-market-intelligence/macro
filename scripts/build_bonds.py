@@ -98,6 +98,424 @@ def _r(v, n=2):
     return round(float(v), n) if v is not None and pd.notna(v) else None
 
 
+def _parse_iso_date(value):
+    """Parse an ISO date (or datetime-like). None if missing/unparseable. Never raises.
+
+    Tz-aware values are folded to UTC-naive before normalize so a ready_date of
+    ``2026-12-01T00:00:00+00:00`` compared to a naive as_of cannot TypeError
+    (fail-closed: refuse, don't raise).
+    """
+    if value is None or value == "":
+        return None
+    try:
+        ts = pd.Timestamp(value)
+        if pd.isna(ts):
+            return None
+        if ts.tz is not None:
+            ts = ts.tz_convert("UTC").tz_localize(None)
+        return ts.normalize()
+    except Exception:  # noqa: BLE001 — fail-closed
+        return None
+
+
+def _fmt_asof_zh(value) -> str | None:
+    """ZH as-of stamp (2026年9月10日). None if unparseable — never an EN leak."""
+    ts = _parse_iso_date(value)
+    if ts is None:
+        return None
+    return f"{ts.year}年{ts.month}月{ts.day}日"
+
+
+def _series_last_obs(cm_path: Path | None) -> str | None:
+    """Newest as_of on theme_daily.parquet — the series this producer already loads.
+
+    None if the file is missing, empty, or unreadable. Never invents a date.
+    """
+    if cm_path is None:
+        return None
+    td_path = Path(cm_path).parent / "series" / "theme_daily.parquet"
+    try:
+        df = pd.read_parquet(td_path)
+        if df.empty or "as_of" not in df.columns:
+            return None
+        last = pd.to_datetime(df["as_of"], errors="coerce").max()
+        if pd.isna(last):
+            return None
+        if getattr(last, "tz", None) is not None:
+            last = last.tz_convert("UTC").tz_localize(None)
+        return last.strftime("%Y-%m-%d")
+    except Exception:  # noqa: BLE001 — fail-closed
+        return None
+
+
+def _fmt_card_date(ts) -> str | None:
+    """Card dates always come from a parsed variable — never a string literal in the template."""
+    if ts is None:
+        return None
+    return ts.strftime("%d %b %Y")
+
+
+def divergence_card_state(ready, ready_date, last_obs, as_of) -> dict:
+    """Stocks-vs-bonds card state. Fail-closed: only BUILDING may print a future date.
+
+    READY — divergence_ready is true (placeholder yields; the scored read is out of scope).
+    BUILDING — not ready AND ready_date parses AND ready_date > as_of (strict).
+    DELAYED — every other case (missing/None/unparseable/<= as_of). Four honest
+    causes; last_obs is emitted only when it is strictly older than as_of:
+      stale    — last_obs < as_of (dated delay copy; last_obs_zh via _fmt_asof_zh)
+      unbuilt  — last_obs >= as_of (series current; the comparison engine is not live)
+      unknown  — last_obs is a real date but as_of is missing/unparseable, so
+                 stale vs unbuilt cannot be proved. Cause-neutral copy; no date.
+      awaiting — last_obs missing/unparseable. Never "delayed since today".
+    """
+    if ready:
+        return {
+            "state": "ready", "ready_date": None,
+            "last_obs": None, "last_obs_zh": None, "cause": None,
+        }
+    rd = _parse_iso_date(ready_date)
+    ao = _parse_iso_date(as_of)
+    if rd is not None and ao is not None and rd > ao:
+        return {
+            "state": "building", "ready_date": _fmt_card_date(rd),
+            "last_obs": None, "last_obs_zh": None, "cause": None,
+        }
+    lo = _parse_iso_date(last_obs)
+    if lo is not None and ao is not None and lo < ao:
+        return {
+            "state": "delayed", "ready_date": None,
+            "last_obs": _fmt_card_date(lo), "last_obs_zh": _fmt_asof_zh(lo),
+            "cause": "stale",
+        }
+    if lo is not None and ao is not None:
+        # last_obs >= as_of: series is current (or ahead). Do not date-claim a delay.
+        return {
+            "state": "delayed", "ready_date": None,
+            "last_obs": None, "last_obs_zh": None, "cause": "unbuilt",
+        }
+    if lo is not None:
+        # Series has a date; as_of does not. Cannot attribute a cause.
+        return {
+            "state": "delayed", "ready_date": None,
+            "last_obs": None, "last_obs_zh": None, "cause": "unknown",
+        }
+    return {
+        "state": "delayed", "ready_date": None,
+        "last_obs": None, "last_obs_zh": None, "cause": "awaiting",
+    }
+
+
+def _risk_band(score) -> tuple[tuple[str, str] | None, bool]:
+    """Plain band word + rail flag. Rail = published score exactly 0 or 100."""
+    if score is None:
+        return None, False
+    try:
+        v = float(score)
+    except (TypeError, ValueError):
+        return None, False
+    rail = v == 0.0 or v == 100.0
+    if v <= 24:
+        band = ("low", "低")
+    elif v <= 49:
+        band = ("moderate", "中等")
+    elif v <= 74:
+        band = ("elevated", "偏高")
+    else:
+        band = ("high", "高")
+    return band, rail
+
+
+_CURVE_CLAUSE = {
+    "inverted": ("inverted", "倒挂"),
+    "steep": ("steep", "陡峭"),
+    "flat": ("flat", "平坦"),
+    "normal": ("normal", "正常"),
+}
+_CREDIT_CLAUSE = {
+    "tight": ("calm", "平静"),
+    "normal": ("calm", "平静"),
+    "elevated": ("watchful", "需警惕"),
+    "distress": ("stressed", "承压"),
+    "crisis": ("stressed", "承压"),
+}
+_VOL_CLAUSE = {
+    "calm": ("quiet", "温和"),
+    "normal": ("steady", "平稳"),
+    "elevated": ("jumpy", "加剧"),
+    "crisis": ("stressed", "承压"),
+}
+_PHASE_SHORT = {
+    "late": ("late", "晚段"),
+    "early": ("early", "早段"),
+    "mid": ("mid", "中段"),
+    "recession": ("recession", "衰退"),
+}
+_PHASE_WORD = {
+    "late": ("LATE-CYCLE", "周期晚段"),
+    "early": ("EARLY-CYCLE", "周期早段"),
+    "mid": ("MID-CYCLE", "周期中段"),
+    "recession": ("RECESSION", "衰退"),
+}
+_CHG_HREF = {
+    "curve_regime": "#curve", "uninversion": "#curve",
+    "credit_band": "#credit", "rates_vol": "#stress",
+    "repo_stress": "#stress", "corr_regime": "#stress",
+    "recession_risk": "#curve",
+}
+# Same six-word vocabulary as the hero (doctrine Law 1). Alarm-grade events that
+# flip the hero to Protect must not say Ignore. Cautious default is Watch.
+_CHG_STANCE = {
+    "uninversion": ("Protect gains", "保护收益"),
+    "recession_risk": ("Protect gains", "保护收益"),
+    "repo_stress": ("Protect gains", "保护收益"),
+    "credit_band": ("Watch — don't chase", "观察，勿追"),
+    "curve_regime": ("Watch — don't chase", "观察，勿追"),
+    "corr_regime": ("Watch — don't chase", "观察，勿追"),
+    "rates_vol": ("Watch — don't chase", "观察，勿追"),
+}
+_CHG_STANCE_DEFAULT = ("Watch — don't chase", "观察，勿追")
+
+
+def _rail_caveat(input_en: str, input_zh: str, v: float) -> tuple[str, str]:
+    """Floor vs ceiling wording; the printed value is the true rail, never 0.0-for-100."""
+    if v == 0.0:
+        loc_en, loc_zh, shown = "bottom", "下限", "0.0"
+    else:
+        loc_en, loc_zh, shown = "top", "上限", "100.0"
+    en = (f"Read the score with care: the {input_en} input is at the {loc_en} of "
+          f"its scale ({shown}/100) — a rail, not a fine-grained measurement.")
+    zh = f"读数注意：{input_zh}分项已触及量表{loc_zh}（{shown}/100）——这是量表边界，并非精细测量。"
+    return en, zh
+
+
+def _curve_clause_key(cu: dict) -> str | None:
+    """Shape word from inversion flags + 2s10s. Missing spread → None (never 'flat')."""
+    if cu.get("tp_adj_inverted") or cu.get("inverted"):
+        return "inverted"
+    spread = cu.get("spread_2s10s")
+    if spread is None:
+        return None
+    try:
+        s = float(spread)
+    except (TypeError, ValueError):
+        return None
+    if s >= 1.0:
+        return "steep"
+    if s <= 0.15:
+        return "flat"
+    return "normal"
+
+
+def _hero_pack(vm: dict, as_of_disp: str, phase_key: str | None) -> dict:
+    """VerdictHero fields — stance, clause words, rail caveat, risk pills. Frozen §1.3."""
+    h = vm.get("health") or {}
+    cu = vm.get("curve") or {}
+    cr = vm.get("credit") or {}
+    st = vm.get("stress") or {}
+    health = h.get("score")
+    alarms = vm.get("alarms") or []
+
+    # Stance — top-down, first match wins (§1.3).
+    if alarms:
+        stance_en, stance_zh, stance_cls = "Protect gains", "保护收益", "mx-stance-down"
+    elif health is not None and health < 40:
+        stance_en, stance_zh, stance_cls = "Stand aside", "观望回避", "mx-stance-down"
+    elif (health is not None and 40 <= health <= 69) or (
+            phase_key == "late" and health is not None and health >= 70):
+        stance_en, stance_zh, stance_cls = "Watch — don't chase", "观察，勿追", "mx-stance-warn"
+    elif health is not None and health >= 70 and phase_key != "late":
+        stance_en, stance_zh, stance_cls = "In favour — stay invested", "顺风环境——保持持仓", "mx-stance-up"
+    else:
+        stance_en, stance_zh, stance_cls = "Watch — don't chase", "观察，勿追", "mx-stance-warn"
+
+    curve_key = _curve_clause_key(cu)
+    credit_key = (cr.get("band_en") or "normal").lower()
+    vol_key = (st.get("band_en") or "normal").lower()
+    curve_w = _CURVE_CLAUSE.get(curve_key)
+    if curve_w is None:
+        curve_frag_en = "the curve's shape is not readable yet"
+        curve_frag_zh = "曲线形态尚不可读"
+    else:
+        curve_frag_en = f"the curve is {curve_w[0]}"
+        curve_frag_zh = f"曲线{curve_w[1]}"
+    credit_w = _CREDIT_CLAUSE.get(credit_key, _CREDIT_CLAUSE["normal"])
+    vol_w = _VOL_CLAUSE.get(vol_key, _VOL_CLAUSE["normal"])
+    phase_s = _PHASE_SHORT.get(phase_key or "", ("—", "—"))
+    phase_w = _PHASE_WORD.get(phase_key or "", ((h.get("phase_en") or "—").upper(), h.get("phase_zh") or "—"))
+    band_en = (h.get("label") or "—").upper()
+    band_zh = h.get("label_zh") or band_en
+    band_clause = (h.get("label") or "—").lower()
+
+    rec_band, rec_rail = _risk_band(h.get("recession_risk"))
+    dd_band, dd_rail = _risk_band(h.get("drawdown_risk"))
+
+    caveat_en = caveat_zh = None
+    if rec_rail:
+        caveat_en, caveat_zh = _rail_caveat(
+            "recession-risk", "衰退风险", float(h.get("recession_risk")))
+    elif dd_rail:
+        caveat_en, caveat_zh = _rail_caveat(
+            "drawdown-risk", "回撤风险", float(h.get("drawdown_risk")))
+
+    as_of_zh = _fmt_asof_zh(as_of_disp)
+
+    return {
+        "word_en": f"{band_en}, {phase_w[0]}",
+        "word_zh": f"{band_zh} · {phase_w[1]}",
+        "clause_en": (f"Bonds are {band_clause} and the cycle is {phase_s[0]}: "
+                      f"{curve_frag_en}, credit is {credit_w[0]}, "
+                      f"rate swings are {vol_w[0]}."),
+        "clause_zh": (f"债市{band_zh}、周期处于{phase_s[1]}：{curve_frag_zh}，"
+                      f"信用{credit_w[1]}，利率波动{vol_w[1]}。"),
+        "stance_en": stance_en, "stance_zh": stance_zh, "stance_cls": stance_cls,
+        "as_of": as_of_disp,
+        "as_of_zh": as_of_zh,
+        "caveat_en": caveat_en, "caveat_zh": caveat_zh,
+        "rec_band_en": None if rec_rail else (rec_band[0] if rec_band else None),
+        "rec_band_zh": None if rec_rail else (rec_band[1] if rec_band else None),
+        "rec_rail": rec_rail,
+        "dd_band_en": None if dd_rail else (dd_band[0] if dd_band else None),
+        "dd_band_zh": None if dd_rail else (dd_band[1] if dd_band else None),
+        "dd_rail": dd_rail,
+        "rec_score": h.get("recession_risk"),
+        "dd_score": h.get("drawdown_risk"),
+    }
+
+
+def _changed_rows(timeline: list[dict]) -> list[dict]:
+    """Newest ≤4 timeline events as What-changed rows. Empty list → empty-state copy in the template."""
+    rows: list[dict] = []
+    for day in timeline or []:
+        for e in day.get("events") or []:
+            ts = e.get("ts") or day.get("day")
+            try:
+                when = pd.Timestamp(ts).strftime("%m-%d")
+            except Exception:  # noqa: BLE001
+                when = ""
+            rows.append({
+                "when": when,
+                "name_en": e.get("label") or e.get("type") or "",
+                "name_zh": e.get("label_zh") or e.get("type") or "",
+                "what_en": e.get("headline") or "",
+                "what_zh": e.get("headline_zh") or "",
+                "href": _CHG_HREF.get(e.get("type"), "#"),
+                "stance_en": _CHG_STANCE.get(e.get("type"), _CHG_STANCE_DEFAULT)[0],
+                "stance_zh": _CHG_STANCE.get(e.get("type"), _CHG_STANCE_DEFAULT)[1],
+            })
+            if len(rows) >= 4:
+                return rows
+    return rows
+
+
+def _watching(vm: dict) -> list[dict]:
+    """2–4 watch conditions derived from the VM they presuppose. Never falsifier language.
+
+    An un-inverted curve must not be watched as if it were still inverted; stressed
+    credit must not be watched as if it were calm. Unknown → cautious phrasing.
+    """
+    cu = (vm or {}).get("curve") or {}
+    cr = (vm or {}).get("credit") or {}
+    xa = (vm or {}).get("cross") or {}
+
+    inv = cu.get("tp_adj_inverted")
+    inv2 = cu.get("inverted")
+    if inv is True or inv2 is True:
+        curve = {
+            "cond_en": "The curve un-inverts while short rates fall",
+            "cond_zh": "曲线在短端利率下行时解除倒挂",
+            "then_en": "…would mark the late-cycle handoff and move the stance toward Protect gains.",
+            "then_zh": "…将标志周期晚段交接，立场转向「保护收益」。",
+        }
+    elif inv is False or inv2 is False:
+        curve = {
+            "cond_en": "The curve inverts again while growth still holds",
+            "cond_zh": "增长仍在时曲线再次倒挂",
+            "then_en": "…would reopen the recession-lead and move the stance toward Watch.",
+            "then_zh": "…将重新打开衰退领先信号，立场转向观察。",
+        }
+    else:
+        curve = {
+            "cond_en": "The curve's slope turns clearly negative",
+            "cond_zh": "曲线斜率转为明确为负",
+            "then_en": "…would be the inversion we would then watch, not assume.",
+            "then_zh": "…才是需要开始观察的倒挂，而非当下的假定。",
+        }
+
+    band = (cr.get("band_en") or "").lower()
+    if band in ("tight", "normal"):
+        credit = {
+            "cond_en": "High-yield spreads move from calm into elevated",
+            "cond_zh": "高收益利差从平静升至偏高",
+            "then_en": "…would flip the credit driver and cap the health read.",
+            "then_zh": "…将翻转信用驱动并压制健康度读数。",
+        }
+    elif band in ("elevated", "distress", "crisis"):
+        credit = {
+            "cond_en": "High-yield spreads ease back toward calm",
+            "cond_zh": "高收益利差回落到平静",
+            "then_en": "…would lift the credit cap on the health read.",
+            "then_zh": "…将解除信用对健康度读数的压制。",
+        }
+    else:
+        credit = {
+            "cond_en": "High-yield extra yield leaves its current band",
+            "cond_zh": "高收益额外收益离开当前区间",
+            "then_en": "…would flip the credit driver either way.",
+            "then_zh": "…将从任一方向翻转信用驱动。",
+        }
+
+    hedge = xa.get("hedge_working")
+    if hedge is True:
+        corr = {
+            "cond_en": "Stock-bond correlation turns positive and stays there",
+            "cond_zh": "股债相关性转正并维持",
+            "then_en": "…would mean the Treasury hedge has stopped working.",
+            "then_zh": "…意味着国债对冲已失效。",
+        }
+    elif hedge is False:
+        corr = {
+            "cond_en": "Stock-bond correlation turns negative and stays there",
+            "cond_zh": "股债相关性转负并维持",
+            "then_en": "…would mean the Treasury hedge is working again.",
+            "then_zh": "…意味着国债对冲重新生效。",
+        }
+    else:
+        corr = {
+            "cond_en": "Stock-bond correlation holds one sign for a month",
+            "cond_zh": "股债相关性同号维持一个月",
+            "then_en": "…would tell us whether the Treasury hedge is working.",
+            "then_zh": "…将表明国债对冲是否有效。",
+        }
+
+    return [curve, credit, corr]
+
+
+def _agree_band(agreement) -> tuple[str, str]:
+    """Plain agreement band for the duration-lean pill (§2.11a)."""
+    if agreement is None:
+        return "factors are split", "各因子存在分歧"
+    try:
+        a = float(agreement)
+    except (TypeError, ValueError):
+        return "factors are split", "各因子存在分歧"
+    if a >= 0.80:
+        return "factors strongly agree", "各因子高度一致"
+    if a >= 0.55:
+        return "factors mostly agree", "各因子多数一致"
+    return "factors are split", "各因子存在分歧"
+
+
+def _tailwind_counts(xasset_vm: dict | None) -> tuple[int, int]:
+    n_t = n_h = 0
+    for a in (xasset_vm or {}).get("assets") or []:
+        v = (a.get("verdict") or "").lower()
+        if v == "tailwind":
+            n_t += 1
+        elif v == "headwind":
+            n_h += 1
+    return n_t, n_h
+
+
 def _tail_years(df: pd.DataFrame, years: float) -> pd.DataFrame:
     if df is None or df.empty:
         return df
@@ -536,6 +954,9 @@ def build_corp_credit_vm(data_root: Path | None = None) -> dict:
         "finra": None,
         "maturity_wall": [],
         "divergence_accruing": True,
+        "divergence_ready": False,
+        "divergence_ready_date": None,
+        "divergence_last_obs": None,
         "footer_as_of": _ACCRUING_AS_OF,
     }
 
@@ -596,8 +1017,18 @@ def build_corp_credit_vm(data_root: Path | None = None) -> dict:
     maturity_wall = _build_maturity_wall(cm_path)
 
     # Divergence: all accruing = show placeholder card
+    # V7: divergence_accruing is a QUADRANT test (every row's quadrant == "accruing"),
+    # not a readiness test — it must not be repurposed as one (§3.1).
     divergence = cm.get("divergence") or []
     divergence_accruing = all(d.get("quadrant") == "accruing" for d in divergence) if divergence else True
+    # No scored divergence read ships in this packet (engine-lane). last_obs is
+    # the newest as_of on theme_daily.parquet — the series this producer already
+    # loads for theme levels. None when that series is underivable. The card
+    # helper (not this flag) chooses among stale / unbuilt / awaiting copy;
+    # a current series must not be blamed on a feed delay.
+    divergence_ready = False
+    divergence_ready_date = None
+    divergence_last_obs = _series_last_obs(cm_path)
 
     return {
         "accruing": accruing_flag,
@@ -610,6 +1041,9 @@ def build_corp_credit_vm(data_root: Path | None = None) -> dict:
         "finra": finra,
         "maturity_wall": maturity_wall,
         "divergence_accruing": divergence_accruing,
+        "divergence_ready": divergence_ready,
+        "divergence_ready_date": divergence_ready_date,
+        "divergence_last_obs": divergence_last_obs,
         "footer_as_of": as_of,
     }
 
@@ -1164,6 +1598,9 @@ def _vm(snap: dict, fr: pd.DataFrame, calib: dict | None = None) -> dict:
         "edge_pp": comp_cond.get("high_edge_pp"),
         "ic_recession": comp.get("ic_recession"),
         "span": comp.get("span"),
+        "n": comp.get("n"),
+        "ic_horizon_en": "12 months",
+        "ic_horizon_zh": "12个月",
         "vs_best": (calib.get("composite_vs_best_leg") or {}).get("verdict"),
     })
     p = snap["pillars"]
@@ -1189,7 +1626,7 @@ def _vm(snap: dict, fr: pd.DataFrame, calib: dict | None = None) -> dict:
             "score": snap.get("health_score"), "label": hl,
             "label_zh": {"healthy": "健康", "mixed": "中性", "stressed": "承压"}.get(hl, hl),
             "color": HEALTH_COLOR.get(hl, C["muted"]),
-            "phase_en": ph[0], "phase_zh": ph[1], "phase_color": ph[2],
+            "phase_key": phase, "phase_en": ph[0], "phase_zh": ph[1], "phase_color": ph[2],
             "verdict_en": snap.get("verdict_en"), "verdict_zh": snap.get("verdict_zh"),
             "recession_risk": _r(snap.get("recession_risk"), 0),
             "drawdown_risk": _r(snap.get("drawdown_risk"), 0),
@@ -1445,6 +1882,7 @@ def main() -> int:
     last_valid = fr.dropna(how="all").index.max()
     as_of = snap.get("as_of") or (last_valid.strftime("%Y-%m-%d") if pd.notna(last_valid) else built[:10])
     as_of_disp = pd.Timestamp(as_of).strftime("%b %d, %Y")
+    as_of_zh = _fmt_asof_zh(as_of) or as_of_disp
     lo, hi = fr.index.min(), fr.index.max()
     span = f"{lo.date()}..{hi.date()}" if pd.notna(lo) and pd.notna(hi) else "—"
 
@@ -1544,12 +1982,24 @@ def main() -> int:
     from engine.i18n import tr, td
     env = Environment(loader=FileSystemLoader(str(config.ROOT / "templates")), autoescape=True)
     env.globals.update(tr=tr, td=td)
+    xasset_vm = _xasset_vm(xasset)
+    n_tail, n_head = _tailwind_counts(xasset_vm)
+    dur = (compass or {}).get("duration") or {}
+    agree_en, agree_zh = _agree_band(dur.get("agreement"))
     html = env.get_template("bonds.html.j2").render(
-        C=C, as_of=as_of_disp, built=built, span=span, vm=vm, charts=charts, credit_cycle=credit_cycle,
+        C=C, as_of=as_of_disp, as_of_zh=as_of_zh, as_of_iso=as_of, built=built, span=span, vm=vm, charts=charts,
+        credit_cycle=credit_cycle,
         fed_path=fed_path, treasury_supply=treasury_supply, usd_link=usd_link,
-        intl=intl, compass=compass, xasset=xasset, xasset_vm=_xasset_vm(xasset),
+        intl=intl, compass=compass, xasset=xasset, xasset_vm=xasset_vm,
         timeline=timeline, timeline_days=acfg["timeline_days"], n_alerts=len(recent),
-        cc_vm=cc_vm, glance=_glance(vm), key_levels=_key_levels(f, vm))
+        cc_vm=cc_vm, glance=_glance(vm), key_levels=_key_levels(f, vm),
+        hero=_hero_pack(vm, as_of_disp, (vm.get("health") or {}).get("phase_key")),
+        changed=_changed_rows(timeline), watching=_watching(vm),
+        div_card=divergence_card_state(
+            cc_vm.get("divergence_ready"), cc_vm.get("divergence_ready_date"),
+            cc_vm.get("divergence_last_obs"), as_of),
+        n_tailwind=n_tail, n_headwind=n_head,
+        agree_en=agree_en, agree_zh=agree_zh)
     site = config.ROOT / config.load()["storage"]["site_dir"]
     write_page(site / "bonds.html", html)
     log.info("wrote %s/bonds.html (%d KB)", site, len(html) // 1024)
