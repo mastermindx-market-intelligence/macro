@@ -1,108 +1,51 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-09-08",
-  "generated_at": "2026-09-09T13:22:29.133371+00:00",
+  "as_of": "2026-09-11",
+  "generated_at": "2026-09-13T14:08:58.277491+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-09-08-AN-20260909132229-1",
-      "ticker": "AN",
-      "name": null,
-      "lean": "constructive",
-      "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The residual-alpha selection is modestly positive, while the constructive base-building verdict and unblocked entry provide a defined setup without an extension brake. Conviction stays low because prior constructive calls had only 32% directional accuracy.",
-      "evidence": [
-        "Verdict: Constructive \u2014 building a base",
-        "Selection axis: z 0.43, 57th percentile",
-        "Entry unblocked: 63rd percentile",
-        "No listed risk cautions"
-      ],
-      "dissent": "The quality and tailwind axes are below median, and momentum is essentially flat, so the base may fail to produce relative strength.",
-      "falsifier": {
-        "text": "A failed turn lower from the base accompanied by sustained underperformance versus the S&P 500.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "AN",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 20
-        }
-      },
-      "check_by": "2026-10-06",
-      "engine_verdict": "Constructive \u2014 building a base"
-    },
-    {
-      "id": "2026-09-08-WFC-20260909132229-2",
-      "ticker": "WFC",
+      "id": "2026-09-11-SIG-20260913140858-1",
+      "ticker": "SIG",
       "name": null,
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The fresh-buy entry is offset by near-zero residual-alpha selection and explicit accounting and crowded-basket risk controls. With no clear directional edge, the appropriate read is watchful rather than chasing or shorting the uptrend.",
+      "thesis": "The neutral verdict is appropriate: the trend is up and the cycle is unblocked, but entry quality is weak and the supplied selection evidence is mixed. The validated risk framework supports watching the fresh-buy signal without inferring outperformance from the rank.",
       "evidence": [
         "Verdict: Neutral \u2014 no clear edge",
-        "Selection axis: z -0.05, 49th percentile",
-        "Entry unblocked: 62nd percentile",
-        "Accounting quality: watch",
-        "Financials basket: crowded and stretched"
+        "Entry axis: z -1.07, 34th percentile",
+        "Board: up / FRESH BUY",
+        "Quality: clean accounting, 65th percentile"
       ],
-      "dissent": "A fresh positive earnings-surprise context and immediate uptrend entry could sustain relative momentum despite the risk flags.",
+      "dissent": "The fresh-buy signal, positive revisions and clean quality profile could sustain relative strength in a calm tape.",
       "falsifier": {
-        "text": "A sustained relative breakout versus the S&P 500 while the accounting warning and crowded-basket condition ease.",
+        "text": "A sustained advance that keeps SIG outperforming the S&P 500 while the uptrend remains intact.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-10-06",
+      "check_by": "2026-10-09",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-08-F-20260909132229-3",
-      "ticker": "F",
-      "name": null,
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The turn signal and positive momentum context are counterbalanced by a negative recent earnings-surprise reading, accounting watch, and a sector basket below its long-term trend. Those shipped risk controls argue against a constructive call, but the active upturn is insufficient for a directional short.",
-      "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Board state: TURN SIGNALED, direction up",
-        "SUE z: -0.89",
-        "Accounting quality: watch",
-        "Consumer Discretionary basket below long-term trend"
-      ],
-      "dissent": "Positive revisions and momentum could confirm the turn and drive outperformance from a position still 15.3% below its high.",
-      "falsifier": {
-        "text": "Sustained outperformance versus the S&P 500 with the turn intact and the sector basket recovering its long-term trend.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-10-06",
-      "engine_verdict": "Neutral \u2014 no clear edge"
-    },
-    {
-      "id": "2026-09-08-NX-20260909132229-4",
+      "id": "2026-09-11-NX-20260913140858-2",
       "ticker": "NX",
       "name": null,
       "lean": "cautious",
-      "conviction": "low",
+      "conviction": "medium",
       "horizon_d": 20,
-      "thesis": "The lagging verdict is supported by weak residual-alpha selection, sharply poor entry characteristics, negative revisions, and an accounting warning. This is an actual relative-weakness case rather than an extension-only short, although the upward turn keeps conviction low.",
+      "thesis": "Relative weakness is an actual bearish signal rather than an extension warning, and it is reinforced by weak revisions and the accounting-quality flag. The turn signal and unblocked cycle temper the downside call, but do not yet repair the lagging profile.",
       "evidence": [
         "Verdict: Lagging \u2014 relative weakness",
-        "Selection axis: z -0.74, 39th percentile",
-        "Entry axis: z -1.93, 23rd percentile",
-        "Revisions z: -1.09",
-        "Accounting quality: warn"
+        "Revisions: z -1.49",
+        "Quality: accounting warn, 42nd percentile",
+        "Board: TURN SIGNALED with caution urgency"
       ],
-      "dissent": "The stock is at its reported high with an upward turn signal, so momentum persistence could overwhelm the weak cross-sectional profile.",
+      "dissent": "The up direction and turn signal could mark an early recovery that outruns the backward-looking weakness measures.",
       "falsifier": {
-        "text": "Sustained outperformance versus the S&P 500 after the turn signal, accompanied by improving revisions and no renewed lottery-spike behavior.",
+        "text": "NX begins outperforming the S&P 500 and maintains that relative improvement through the horizon.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "NX",
@@ -112,64 +55,120 @@
           "horizon_d": 20
         }
       },
-      "check_by": "2026-10-06",
+      "check_by": "2026-10-09",
       "engine_verdict": "Lagging \u2014 relative weakness"
     },
     {
-      "id": "2026-09-08-SMP-20260909132229-5",
-      "ticker": "SMP",
+      "id": "2026-09-11-TEL-20260913140858-3",
+      "ticker": "TEL",
       "name": null,
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The unblocked fresh-buy entry is favorable, but residual-alpha selection is near zero and the tailwind and quality axes are below median. With no explicit bearish risk block and an intact uptrend, there is not enough evidence for either a constructive call or a short.",
+      "thesis": "A favorable entry and clean accounting are offset by weak momentum and an explicitly neutral verdict. With no cycle block, the risk controls support observation rather than a directional bet.",
       "evidence": [
         "Verdict: Neutral \u2014 no clear edge",
-        "Selection axis: z -0.05, 49th percentile",
-        "Entry unblocked: 62nd percentile",
-        "Accounting quality: clean",
-        "Board state: FRESH BUY, direction up"
+        "Entry: 61st percentile, not blocked",
+        "Momentum: z -1.17",
+        "Quality: clean accounting"
       ],
-      "dissent": "The immediate fresh-buy signal and positive momentum context could develop into durable relative strength.",
+      "dissent": "The fresh-buy state, up direction and positive revisions could produce meaningful relative upside from 14.3% below the high.",
       "falsifier": {
-        "text": "A sustained relative breakout versus the S&P 500 supported by improving revisions and selection strength.",
+        "text": "TEL establishes sustained relative strength versus the S&P 500 while preserving its fresh-buy uptrend.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-10-06",
+      "check_by": "2026-10-09",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-08-PCRX-20260909132229-6",
-      "ticker": "PCRX",
+      "id": "2026-09-11-TKO-20260913140858-4",
+      "ticker": "TKO",
       "name": null,
-      "lean": "cautious",
+      "lean": "constructive",
       "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "Despite a fresh-buy entry and clean accounting, the deterministic lagging verdict aligns with weak residual-alpha selection and deeply negative revisions. That genuine relative-weakness signal supports caution, but the favorable entry, quality, and tailwind keep conviction low.",
+      "horizon_d": 30,
+      "thesis": "The deterministic verdict identifies a developing base, with an unblocked entry and strongly positive revisions supporting a conditional constructive read. Conviction stays low because the sector basket is below trend, accounting is on watch, and prior constructive directional accuracy is only 30.8%.",
       "evidence": [
-        "Verdict: Lagging \u2014 relative weakness",
-        "Selection axis: z -0.96, 36th percentile",
-        "Revisions z: -1.56",
-        "Entry unblocked: 64th percentile",
-        "Quality and tailwind: 55th percentile"
+        "Verdict: Constructive \u2014 building a base",
+        "Revisions: z 1.40",
+        "Entry: 57th percentile, not blocked",
+        "Risks: accounting watch and sector basket below long-term trend"
       ],
-      "dissent": "The fresh-buy state, upward direction, and supportive entry and quality axes could mark an inflection before revisions recover.",
+      "dissent": "The below-trend sector backdrop and accounting concern could overwhelm the nascent base and leave TKO lagging the index.",
       "falsifier": {
-        "text": "Sustained outperformance versus the S&P 500 with the fresh-buy trend intact and revisions turning materially less negative.",
+        "text": "The signaled turn fails and TKO persistently underperforms the S&P 500 over the horizon.",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "PCRX",
+          "subject_ticker": "TKO",
           "vs": "SPY",
-          "op": ">",
-          "threshold": 0.05,
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 30
+        }
+      },
+      "check_by": "2026-10-23",
+      "engine_verdict": "Constructive \u2014 building a base"
+    },
+    {
+      "id": "2026-09-11-CLH-20260913140858-5",
+      "ticker": "CLH",
+      "name": null,
+      "lean": "constructive",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "The building-base verdict is supported by an uptrend, an unblocked entry and clean accounting, with no listed caution requiring a risk downgrade. Conviction remains low because the board rank has no validated forward edge and the historical constructive calls have weak directional accuracy.",
+      "evidence": [
+        "Verdict: Constructive \u2014 building a base",
+        "Board: up / TURN SIGNALED / urgency now",
+        "Entry: 59th percentile, not blocked",
+        "Quality flag: accounting clean"
+      ],
+      "dissent": "At only 1.1% below its high, a failed turn could expose poor timing despite the otherwise constructive profile.",
+      "falsifier": {
+        "text": "CLH loses its uptrend and underperforms the S&P 500 through the horizon.",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "CLH",
+          "vs": "SPY",
+          "op": "<",
+          "threshold": -0.05,
           "horizon_d": 20
         }
       },
-      "check_by": "2026-10-06",
-      "engine_verdict": "Lagging \u2014 relative weakness"
+      "check_by": "2026-10-09",
+      "engine_verdict": "Constructive \u2014 building a base"
+    },
+    {
+      "id": "2026-09-11-CSR-20260913140858-6",
+      "ticker": "CSR",
+      "name": null,
+      "lean": "constructive",
+      "conviction": "low",
+      "horizon_d": 30,
+      "thesis": "The building-base verdict and imminent, unblocked turn support a conditional constructive lean, while very strong revisions provide context rather than a standalone forecast. Low historical accuracy for constructive calls and the accounting-watch flag keep conviction restrained.",
+      "evidence": [
+        "Verdict: Constructive \u2014 building a base",
+        "Board: up / TURN SIGNALED / urgency imminent",
+        "Revisions: z 2.00",
+        "Risk: accounting quality on watch"
+      ],
+      "dissent": "Weak momentum and the accounting concern could mean the apparent turn never develops into relative leadership.",
+      "falsifier": {
+        "text": "CSR's turn deteriorates and the shares underperform the S&P 500 over the horizon.",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "CSR",
+          "vs": "SPY",
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 30
+        }
+      },
+      "check_by": "2026-10-23",
+      "engine_verdict": "Constructive \u2014 building a base"
     }
   ],
   "disclaimer": "Accountable AI judgment on the deterministic top picks. The cross-sectional rank has no validated forward edge; these leans are fallible, falsifiable conditionals graded against reality \u2014 never position sizes. See the track record."

@@ -74,6 +74,7 @@ NULL_REASON: dict[str, dict[str, str]] = {
     "COMPUTATION_REFUSED": _pair("Computation refused", "拒绝计算"),
     "OUT_OF_REGION": _pair("Outside this region", "超出该地区范围"),
     "NOT_COVERED": _pair("Not covered", "未覆盖"),
+    "VECTOR_INCOMPLETE": _pair("Vector incomplete", "位移向量不完整"),
 }
 
 PRESENCE: dict[str, dict[str, str]] = {
@@ -88,6 +89,58 @@ PRESENCE_TONE: dict[str, str] = {
     "PARTIAL": "warn",
     "ABSENT": "neutral",
     "DISAGREEMENT": "bad",
+}
+
+# Typed contradiction kinds a workspace engine may attach to
+# availability.contradiction.kind. Closed: an unreviewed kind degrades
+# through label() and is reported by unknown_tokens().
+CONTRADICTION_KIND: dict[str, dict[str, str]] = {
+    "quantity_vs_quality": _pair(
+        "Quantity rising while quality weakens", "数量上升，质量走弱"),
+    "hollow_expansion": _pair(
+        "Expansion without solid backing", "扩张缺乏实质支撑"),
+    "depth_breadth_divergence": _pair(
+        "Depth and breadth disagree", "深度与广度相悖"),
+    "nowcast_vs_hard_data": _pair(
+        "Nowcast and hard data disagree", "即时预测与实际数据相悖"),
+    "narrow_breadth_despite_level": _pair(
+        "High level, narrow breadth", "整体水平高，但广度狭窄"),
+    "sticky_led_but_headline_disinflationary": _pair(
+        "Sticky prices lead while headline inflation eases",
+        "粘性价格领涨，整体通胀却在回落"),
+    "low_hires_low_fires": _pair(
+        "Few hires and few layoffs", "招聘少，裁员也少"),
+    "claims_income_divergence": _pair(
+        "Jobless claims and income disagree", "失业申领与收入相悖"),
+    "trade_balance_identity_disagreement": _pair(
+        "Trade balance parts do not add up", "贸易差额各分项对不上"),
+    "spending_on_credit_vs_confidence_divergence": _pair(
+        "Confidence rising, but spending may rely more on credit",
+        "信心上升，但消费可能更依赖信贷"),
+    "nominal_real_breakeven_decomposition_disagreement": _pair(
+        "Nominal, real and breakeven yields do not add up",
+        "名义、实际与盈亏平衡收益率对不上"),
+    "issuer_event_contradiction": _pair(
+        "Issuer events contradict the read", "发行人事件与判断相悖"),
+    "issuance_demand_stress_vs_bond_desk_calm": _pair(
+        "Issuance demand stressed while the bond desk is calm",
+        "发行需求承压，债券交易台却平静"),
+    "home_price_vs_rent_divergence": _pair(
+        "Home prices and rents disagree", "房价与租金相悖"),
+    "hawk_ease_split": _pair(
+        "Hawkish and easing pressures both active, roughly balanced",
+        "鹰派与宽松压力并存，大体制衡"),
+    "global_state_vs_fed_desk": _pair(
+        "Global state and the Fed desk disagree", "全球状态与美联储交易台相悖"),
+    "dots_vs_market_path": _pair(
+        "Fed dots and the market path disagree", "美联储点阵图与市场路径相悖"),
+    "broad_stress_vs_risk_appetite": _pair(
+        "Official stress reads calm; market appetite is risk-off",
+        "官方压力读数平静，市场却偏向避险"),
+}
+
+CONTRADICTION_KIND_TONE: dict[str, str] = {
+    kind: "warn" for kind in CONTRADICTION_KIND
 }
 
 # --- section 8.1 evidence classes -------------------------------------------
@@ -134,6 +187,9 @@ COMPARABILITY: dict[str, dict[str, str]] = {
     "COMPARABLE": _pair("Comparable with the prior accepted print",
                         "与上一已接受读数可比"),
     "NO_PRIOR": _pair("No comparable prior print", "没有可比的历史读数"),
+    "NO_EARLIER_PUBLICATION": _pair(
+        "No earlier reading available to compare yet.",
+        "暂无可比较的更早读数。"),
     "METHOD_CHANGED": _pair("Method version changed — shown as a method change, not a delta",
                             "方法版本已变更 — 按方法变更呈现，而非数值变化"),
     "DEFINITION_INCOMPARABLE": _pair("Definitions are not comparable — numeric comparison refused",
@@ -216,6 +272,10 @@ BASIS: dict[str, dict[str, str]] = {
     "level": _pair("Level", "水平值"),
     "composite_prior_only": _pair("Composite, prior-only inputs", "复合指标（仅使用先验输入）"),
     "roc_over_owner_window": _pair("Rate of change over the owner window", "所有者窗口内的变化率"),
+    "constant_maturity_investment_basis": _pair(
+        "Constant-maturity investment basis",
+        "固定期限投资基准",
+    ),
 }
 
 # --- owner categorical readings ---------------------------------------------
@@ -310,6 +370,7 @@ _VOCABULARIES: dict[str, dict[str, dict[str, str]]] = {
     "freshness": FRESHNESS,
     "null_reason": NULL_REASON,
     "presence": PRESENCE,
+    "contradiction_kind": CONTRADICTION_KIND,
     "evidence_class": EVIDENCE_CLASS,
     "evidence_claim": EVIDENCE_CLAIM,
     "confidence_band": CONFIDENCE_BAND,
@@ -368,6 +429,8 @@ def tone(vocabulary: str, token: Any, default: str = "neutral") -> str:
         return FRESHNESS_TONE.get(str(token), default)
     if vocabulary == "presence":
         return PRESENCE_TONE.get(str(token), default)
+    if vocabulary == "contradiction_kind":
+        return CONTRADICTION_KIND_TONE.get(str(token), default)
     return default
 
 

@@ -1,19 +1,17 @@
 {
   "snap": false,
   "relief_magnitude": null,
-  "roro": 0.749,
+  "roro": 0.517,
   "cap_recent": false,
-  "fear_built": 0.269,
-  "roro_velocity": 0.047,
-  "vel_pctile": 0.601,
-  "legs_up": 1,
+  "fear_built": 0.332,
+  "roro_velocity": -0.187,
+  "vel_pctile": 0.149,
+  "legs_up": 0,
   "legs_total": 7,
-  "flipped_legs": [
-    "copper_gold"
-  ],
-  "days_since_last_snap": 62,
+  "flipped_legs": [],
+  "days_since_last_snap": 65,
   "fear_rebuilding": true,
-  "vix_term": 0.855,
+  "vix_term": 0.852,
   "status": "dormant",
   "gates": {
     "velocity": false,
@@ -22,12 +20,6 @@
     "washout": false
   },
   "min_legs": 4,
-  "flipped_legs_named": [
-    {
-      "key": "copper_gold",
-      "en": "Copper/Gold",
-      "zh": "\u94dc\uff0f\u91d1 \u6bd4"
-    }
-  ],
+  "flipped_legs_named": [],
   "magnitude_band": null
 }

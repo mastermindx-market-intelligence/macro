@@ -1,7 +1,7 @@
 {
   "schema": "discovery_confluence.v1",
-  "as_of": "2026-09-08",
-  "generated_at": "2026-09-09T04:09:05.178211+00:00",
+  "as_of": "2026-09-12",
+  "generated_at": "2026-09-13T03:48:38.417524+00:00",
   "authority": {
     "may_rank": false,
     "may_gate": false,
@@ -18,7 +18,8 @@
     "phrase_velocity": "/Users/chriswong/actions-runner-2/_work/macro/macro/site/basketdata/phrase_velocity.json",
     "github_adoption": "/Users/chriswong/actions-runner-2/_work/macro/macro/site/basketdata/github_adoption.json"
   },
-  "confluence_candidates": [
+  "confluence_candidates": [],
+  "single_leg_phrase": [
     {
       "theme_id": "ai_semiconductors",
       "baskets": [
@@ -26,46 +27,21 @@
         "ai_infra"
       ],
       "phrase_accelerating": true,
-      "adoption_positive": true,
-      "top_phrases": [
-        {
-          "phrase": "on allocation",
-          "recent_count": 2,
-          "prior_count": 0,
-          "recent_filers": 2,
-          "prior_filers": 0,
-          "velocity_z": 2.0,
-          "is_affinity_phrase": true
-        }
-      ],
-      "basket_z_scores": {
-        "ai_semiconductors": 0.146,
-        "ai_infra": 0.146
-      },
-      "confidence": "both_legs"
-    }
-  ],
-  "single_leg_phrase": [
-    {
-      "theme_id": "space_satellite",
-      "baskets": [
-        "space_economy"
-      ],
-      "phrase_accelerating": true,
       "adoption_positive": false,
       "top_phrases": [
         {
-          "phrase": "supply constrained",
+          "phrase": "on allocation",
           "recent_count": 2,
           "prior_count": 1,
           "recent_filers": 2,
           "prior_filers": 1,
           "velocity_z": 1.0,
-          "is_affinity_phrase": false
+          "is_affinity_phrase": true
         }
       ],
       "basket_z_scores": {
-        "space_economy": null
+        "ai_semiconductors": -0.007,
+        "ai_infra": -0.007
       },
       "confidence": "phrase_only"
     }
@@ -80,18 +56,18 @@
       "adoption_positive": true,
       "top_phrases": [],
       "basket_z_scores": {
-        "cybersecurity": 1.499
+        "cybersecurity": 0.928
       },
       "confidence": "adoption_only"
     }
   ],
   "novel_phrase_clusters": [],
   "summary": {
-    "both_legs_count": 1,
+    "both_legs_count": 0,
     "single_leg_phrase_count": 1,
     "single_leg_adoption_count": 1,
     "novel_phrase_count": 0,
     "themes_evaluated": 18,
-    "note": "1 themes show confluence (both legs accelerating). 1 show phrase-only acceleration. 1 show adoption-only positive. 0 novel phrase clusters with no theme home."
+    "note": "0 themes show confluence (both legs accelerating). 1 show phrase-only acceleration. 1 show adoption-only positive. 0 novel phrase clusters with no theme home."
   }
 }

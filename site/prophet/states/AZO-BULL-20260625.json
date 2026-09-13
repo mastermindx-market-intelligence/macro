@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "AZO-BULL-20260625",
-  "asof": "2026-09-09",
+  "asof": "2026-09-13",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 32.9,
-  "raw_confidence": 29.5,
-  "delta_vs_base": -27.1,
+  "management_confidence": 24.8,
+  "raw_confidence": 20.0,
+  "delta_vs_base": -35.2,
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 35.4,
+    "validity": 3.7,
     "progress": 0.0,
-    "pace": 10.0,
+    "pace": 4.7,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 64.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.463,
+    "dist_to_stop_r": 0.131,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 133.3,
-    "p1": -0.3577,
-    "p2": -0.1789,
+    "horizon_pct_used": 142.2,
+    "p1": -0.5791,
+    "p2": -0.2895,
     "p3": null,
-    "move_r": -0.537,
+    "move_r": -0.869,
     "mfe_r": 0.359,
-    "mae_r": -0.622
+    "mae_r": -0.869
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Falling Behind Schedule",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 81.02011718750009,
-  "_mae": -140.2699218749999,
+  "_mae": -195.8499999999999,
   "_max_p1": 0.23955919394302305,
   "_first_trigger_ts": "2026-07-11",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 60,
-  "tau": 1.3333
+  "days_elapsed": 64,
+  "tau": 1.4222
 }

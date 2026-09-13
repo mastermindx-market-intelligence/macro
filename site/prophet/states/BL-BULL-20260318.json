@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "BL-BULL-20260318",
-  "asof": "2026-09-09",
+  "asof": "2026-09-13",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 17.3,
@@ -14,23 +14,23 @@
     "progress": 60.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": -12.727,
+    "dist_to_stop_r": -29.0,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 46.7,
-    "p1": -7.8182,
-    "p2": -3.9091,
+    "horizon_pct_used": 55.6,
+    "p1": -18.6667,
+    "p2": -9.3333,
     "p3": null,
-    "move_r": -11.727,
+    "move_r": -28.0,
     "mfe_r": 20.818,
-    "mae_r": -11.727
+    "mae_r": -28.0
   },
   "rr_ratio": null,
   "rr_grade": null,
-  "change_reason": "Phase: at_t2 \u2192 invalidated",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 2.2900012207031253,
-  "_mae": -1.2900006103515622,
+  "_mae": -3.079999618530273,
   "_max_p1": 13.87879527698871,
   "_first_trigger_ts": "2026-08-27",
   "_first_t1_ts": "2026-08-20",
   "_first_t2_ts": "2026-08-20",
-  "days_elapsed": 21,
-  "tau": 0.4667
+  "days_elapsed": 25,
+  "tau": 0.5556
 }

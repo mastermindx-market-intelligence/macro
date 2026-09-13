@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ROST-BULL-20260721",
-  "asof": "2026-09-09",
+  "asof": "2026-09-13",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 39.3,
@@ -10,23 +10,23 @@
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 76.5,
+    "validity": 81.6,
     "progress": 0.0,
-    "pace": 23.3,
+    "pace": 18.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 67.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.82,
+    "dist_to_stop_r": 0.86,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 111.1,
-    "p1": -0.1199,
-    "p2": -0.0599,
+    "horizon_pct_used": 120.0,
+    "p1": -0.0934,
+    "p2": -0.0467,
     "p3": null,
-    "move_r": -0.18,
+    "move_r": -0.14,
     "mfe_r": 0.538,
-    "mae_r": -0.201
+    "mae_r": -0.292
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 19.42999572753905,
-  "_mae": -7.260006713867199,
+  "_mae": -10.529995727539074,
   "_max_p1": 0.3588180189757906,
   "_first_trigger_ts": "2026-07-25",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 50,
-  "tau": 1.1111
+  "days_elapsed": 54,
+  "tau": 1.2
 }

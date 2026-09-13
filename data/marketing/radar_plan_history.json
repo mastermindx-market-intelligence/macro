@@ -2,6 +2,46 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-09-12",
+      "tickers": [
+        "CAVA",
+        "CWST",
+        "EZPW",
+        "GMED",
+        "RHP",
+        "SEDG"
+      ]
+    },
+    {
+      "as_of": "2026-09-11",
+      "tickers": [
+        "ALGM",
+        "ASTE",
+        "CHTR",
+        "MPT",
+        "PCG",
+        "POST",
+        "SIG",
+        "VTR",
+        "WMB"
+      ]
+    },
+    {
+      "as_of": "2026-09-10",
+      "tickers": [
+        "ADM",
+        "ALV",
+        "BABA",
+        "DYN",
+        "EZPW",
+        "FN",
+        "KMT",
+        "LAUR",
+        "LILA",
+        "SEI"
+      ]
+    },
+    {
       "as_of": "2026-09-09",
       "tickers": [
         "ABM",
@@ -110,93 +150,6 @@
         "WMB",
         "XLE",
         "XME"
-      ]
-    },
-    {
-      "as_of": "2026-09-05",
-      "tickers": [
-        "ALGM",
-        "ATRA",
-        "BJ",
-        "GPI",
-        "HWM",
-        "ICLR",
-        "LAUR",
-        "LEA",
-        "LILA",
-        "PFLEX",
-        "PRDO",
-        "RHP",
-        "SEDG",
-        "SMP",
-        "UTHR"
-      ]
-    },
-    {
-      "as_of": "2026-09-04",
-      "tickers": [
-        "ACLOX",
-        "AESI",
-        "AGYS",
-        "AIN",
-        "AMR",
-        "BA",
-        "BGC",
-        "BLDR",
-        "BNY",
-        "DFIN",
-        "DUOL",
-        "EQIX",
-        "EZPW",
-        "HD",
-        "HLT",
-        "IART",
-        "LABD",
-        "LAUR",
-        "LNN",
-        "LUMN",
-        "NBIX",
-        "NYT",
-        "PECO",
-        "PG",
-        "POST",
-        "RHI",
-        "RNR",
-        "SGI",
-        "TGTX",
-        "UGI",
-        "VYX",
-        "WWW",
-        "XRAY"
-      ]
-    },
-    {
-      "as_of": "2026-09-01",
-      "tickers": [
-        "AEO",
-        "ALV",
-        "AM",
-        "CRWV",
-        "CVBF",
-        "EZPW",
-        "GO",
-        "KEX",
-        "KMI",
-        "LIVN",
-        "MPT",
-        "NNN",
-        "ORLY",
-        "PETZ",
-        "PLNT",
-        "PRVA",
-        "RNAQ",
-        "SAH",
-        "SON",
-        "STAG",
-        "UTHR",
-        "VYX",
-        "WH",
-        "WHR"
       ]
     }
   ]

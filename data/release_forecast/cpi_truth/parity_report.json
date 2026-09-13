@@ -1,8 +1,8 @@
 {
-  "asof": "2026-09-09T10:42:19+00:00",
+  "asof": "2026-09-13T10:20:24+00:00",
   "authority": false,
   "candidate_coverage": {
-    "candidate_period_end": "2026-07",
+    "candidate_period_end": "2026-08",
     "candidate_period_start": "1996-12",
     "coherent_targets_rejected_after_nonpublication": [
       "2025-11"
@@ -16,13 +16,13 @@
       "release_date": "1997-01-14",
       "release_lag_days": 14
     },
-    "target_rows": 708,
+    "target_rows": 710,
     "targets_per_release": {
-      "cpi_core": 354,
-      "cpi_headline": 354
+      "cpi_core": 355,
+      "cpi_headline": 355
     }
   },
-  "candidate_data_asof": "2026-09-09T10:42:19+00:00",
+  "candidate_data_asof": "2026-09-13T10:20:24+00:00",
   "candidate_target_epoch": {
     "name": "alfred_same_release_vintage_proxy_v1",
     "promotion_authorized": false,
@@ -520,8 +520,8 @@
     "ordinary": 9
   },
   "display_only": true,
-  "evidence_available_at": "2026-09-09T10:42:19+00:00",
-  "history_hash": "sha256:979d7ffae0abd96ebe03408326a3eabef73c3f544db4a7c48a475cb89e09c9d4",
+  "evidence_available_at": "2026-09-13T10:20:24+00:00",
+  "history_hash": "sha256:02de7995f3ecfeff7bf35bf083111a791bc32e4482d4c15a67a378820b61d760",
   "history_schema": "release_cpi_target_history.v1",
   "n_cases": 15,
   "n_metric_comparisons": 28,

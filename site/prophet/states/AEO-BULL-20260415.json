@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "AEO-BULL-20260415",
-  "asof": "2026-09-09",
-  "phase": "overtime",
-  "detection_phase": "overtime",
-  "management_confidence": 39.2,
-  "raw_confidence": 40.0,
-  "delta_vs_base": -20.8,
-  "recommended_action": "trim",
-  "human_state": "Window Elapsed \u2014 Awaiting Close",
+  "asof": "2026-09-13",
+  "phase": "invalidated",
+  "detection_phase": "invalidated",
+  "management_confidence": 12.7,
+  "raw_confidence": 8.0,
+  "delta_vs_base": -47.3,
+  "recommended_action": "invalidated",
+  "human_state": "Invalidated",
   "components": {
-    "validity": 100.0,
-    "progress": 10.4,
-    "pace": 18.0,
-    "retention": 14.7,
-    "overlay": 53.0
+    "validity": 0.0,
+    "progress": 0.0,
+    "pace": 0.0,
+    "retention": 0.0,
+    "overlay": 67.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.123,
-    "dist_to_t1_r": 1.377,
-    "dist_to_t2_r": 2.877,
-    "horizon_pct_used": 120.0,
-    "p1": 0.0817,
-    "p2": 0.0409,
+    "dist_to_stop_r": -0.297,
+    "dist_to_t1_r": 1.5,
+    "dist_to_t2_r": 3.0,
+    "horizon_pct_used": 128.9,
+    "p1": -0.8645,
+    "p2": -0.4323,
     "p3": null,
-    "move_r": 0.123,
+    "move_r": -1.297,
     "mfe_r": 0.832,
-    "mae_r": -0.665
+    "mae_r": -1.613
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.2899996948242176,
-  "_mae": -1.0300000000000011,
+  "_mae": -2.5000002670288097,
   "_max_p1": 0.5548385784190185,
   "_first_trigger_ts": "2026-07-20",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 54,
-  "tau": 1.2
+  "days_elapsed": 58,
+  "tau": 1.2889
 }
