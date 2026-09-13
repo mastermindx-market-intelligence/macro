@@ -353,7 +353,7 @@ def test_rendered_lane_copy_carries_no_buy_verb():
     rendered = [
         "Bottoming watch", "cycle lows forming — watch, don't chase",
         "cycle turn signal — watch only", "below 200-day trend — gate shut",
-        "no basing candidates tonight", "may be bottoming",
+        "no basing candidates", "may be bottoming",
         NULL_DISCLOSURE_EN,
     ]
     for s in rendered:
@@ -407,7 +407,7 @@ def test_template_lane_declares_the_watch_caption_in_both_languages():
               "cycle lows forming", "周期底部形成中",
               "cycle turn signal — watch only", "周期转折信号——仅观察",
               "below 200-day trend — gate shut", "低于200日趋势——闸门关闭",
-              "no basing candidates tonight", "今晚无筑底候选",
+              "no basing candidates", "无筑底候选",
               "may be bottoming", "或正筑底"):
         assert s in src, f"missing lane string: {s!r}"
 

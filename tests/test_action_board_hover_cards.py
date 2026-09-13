@@ -98,7 +98,8 @@ def test_sector_hover_card_is_short_and_decision_focused():
 
 def test_theme_hover_card_prioritizes_score_breadth_risk_and_leaders():
     payload = _row_payload(_render(), "basket/payments_fintech.html")
-    assert "Theme basket" in payload and "Broad and leading" in payload
+    assert "Theme basket" in payload and "Not a buy yet" in payload
+    assert "WAIT" in payload and "尚不可买" in payload
     assert "row-pop-score-ring up" in payload and "--score:62" in payload
     assert "+4.2%" in payload and "75%" in payload and ">Low<" in payload
     assert "PYPL · GPN · FIS" in payload
