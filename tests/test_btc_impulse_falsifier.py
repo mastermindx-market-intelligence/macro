@@ -238,10 +238,12 @@ def test_radar_auto_demotes_on_gate():
                    "min_holdout_n": 30},
             "d3": {"status": "leading", "pass": True, "dir": "down",
                    "label": "SOPR profit-take spike", "floor": 1.3,
-                   "min_holdout_n": 30},
+                   "min_holdout_n": 30, "lift_holdout": 1.5,
+                   "perm_p": 0.01, "n_fires_holdout": 40},
             "u1": {"status": "leading", "pass": True, "dir": "up",
                    "label": "SOPR capitulation (wash-out)", "floor": 1.3,
-                   "min_holdout_n": 30},
+                   "min_holdout_n": 30, "lift_holdout": 1.5,
+                   "perm_p": 0.01, "n_fires_holdout": 40},
         },
     }
     bt.load_gate = lambda: gate

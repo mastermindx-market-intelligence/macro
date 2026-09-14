@@ -229,6 +229,12 @@ def test_pressure_direction_uses_typed_identity_not_alert_volume():
     bounce = _event(type_="impulse_warn_up", event_id="impulse_warn_up:2026-09-10T00:00:u1",
                     context={"leg": "u1", "evidence_key": "u1"})
     bounce["claim_eligible"] = True
+    bounce["direction"] = "up"
+    directionless = _event(
+        type_="impulse_warn_up", event_id="impulse_warn_up:2026-09-10T00:00:u1",
+        context={"leg": "u1", "evidence_key": "u1"},
+    )
+    directionless["claim_eligible"] = True
     denied_down = _event()
     denied_down["claim_eligible"] = False
 
@@ -236,6 +242,7 @@ def test_pressure_direction_uses_typed_identity_not_alert_volume():
     assert at.pressure_effect(bearish) == "risk_off"
     assert at.pressure_effect(nondirectional) == "nondirectional"
     assert at.pressure_effect(bounce) == "risk_on"
+    assert at.pressure_effect(directionless) == "unknown"
     assert at.pressure_effect(denied_down) == "unknown"
 
 

@@ -880,8 +880,9 @@ def pressure_effect(alert: dict) -> str:
         if alert.get("claim_eligible") is not True:
             return "unknown"
         direction = alert.get("direction") or context.get("direction")
-        if direction is None:
-            direction = "up" if type_ == "impulse_warn_up" else "down"
+        # Alert type is an observation identity, not a substitute for typed
+        # direction evidence.  Missing/unknown direction stays unknown even when
+        # the current passport is otherwise claim-eligible.
         return "risk_off" if direction == "down" else ("risk_on" if direction == "up" else "unknown")
 
     if type_ == "risk_regime" and source in {"commodity", "vector"}:

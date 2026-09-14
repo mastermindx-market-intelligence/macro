@@ -123,7 +123,8 @@ def _permission_result(identity: str, evaluation: date | None, *, reason: str,
         "validation_state": (
             "current" if reason in {"eligible", "demoted", "insufficient_n", "no_data",
                                      "unknown_status", "inconsistent_verdict",
-                                     "leg_contract_mismatch", "leg_malformed", "leg_missing",
+                                     "leg_contract_mismatch", "leg_evidence_malformed",
+                                     "leg_malformed", "leg_missing",
                                      "legs_contract_mismatch"}
             else reason
         ),
@@ -284,6 +285,49 @@ def resolve_leg_permission(gate_snapshot, identity: str, evaluation_date) -> dic
                                           validation_age_days=age,
                                           gate_read_state=read_state, gate_path=gate_path,
                                           target=target, model_version=model_version)
+            # A refusal status already fails closed and should remain explicit even
+            # when old artifacts omit its diagnostic measurements.  Only a row that
+            # seeks current ``leading`` authority must prove the measurements that
+            # earned that label; never let status/pass labels self-authorize.
+            if status == "leading":
+                n_holdout = row.get("n_fires_holdout")
+                lift_holdout = row.get("lift_holdout")
+                perm_p = row.get("perm_p")
+                count_valid = (
+                    isinstance(n_holdout, (int, np.integer))
+                    and not isinstance(n_holdout, (bool, np.bool_))
+                    and int(n_holdout) >= 0
+                )
+                lift_valid = (
+                    isinstance(lift_holdout, (int, float, np.integer, np.floating))
+                    and not isinstance(lift_holdout, (bool, np.bool_))
+                    and np.isfinite(float(lift_holdout))
+                )
+                p_valid = (
+                    isinstance(perm_p, (int, float, np.integer, np.floating))
+                    and not isinstance(perm_p, (bool, np.bool_))
+                    and np.isfinite(float(perm_p))
+                    and 0.0 <= float(perm_p) <= 1.0
+                )
+                if not count_valid or not lift_valid or not p_valid:
+                    return _permission_result(identity, evaluation,
+                                              reason="leg_evidence_malformed",
+                                              direction=direction, validation_asof=validation,
+                                              validation_age_days=age,
+                                              gate_read_state=read_state, gate_path=gate_path,
+                                              target=target, model_version=model_version)
+                measured_leading = (
+                    int(n_holdout) >= int(evaluator.MIN_HOLDOUT_N)
+                    and float(lift_holdout) >= float(expected["floor"])
+                    and float(perm_p) <= float(evaluator.P_MAX)
+                )
+                if not measured_leading:
+                    return _permission_result(identity, evaluation,
+                                              reason="inconsistent_verdict",
+                                              direction=direction, validation_asof=validation,
+                                              validation_age_days=age,
+                                              gate_read_state=read_state, gate_path=gate_path,
+                                              target=target, model_version=model_version)
         elif row.get("pass") not in (None, False):
             return _permission_result(identity, evaluation,
                                       reason="inconsistent_verdict",

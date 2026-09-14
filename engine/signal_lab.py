@@ -1897,6 +1897,7 @@ _ALERT_TRUST_STATUS = {
     "evaluation_time_invalid": ("Evaluation date invalid", "评估日期无效"),
     "unknown_identity": ("Signal identity unknown", "信号身份未知"),
     "leg_malformed": ("Validation row malformed", "验证记录格式错误"),
+    "leg_evidence_malformed": ("Measured validation evidence missing or malformed", "验证测量证据缺失或格式错误"),
     "leg_contract_mismatch": ("Validation row contract mismatch", "验证记录契约不一致"),
     "legs_contract_mismatch": ("Validation set contract mismatch", "验证集合契约不一致"),
     "inconsistent_verdict": ("Validation verdict is internally inconsistent", "验证结论内部矛盾"),

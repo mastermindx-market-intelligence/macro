@@ -27,6 +27,18 @@ def _gate(*, asof="2026-09-10", d2="leading", d3="leading", u1="leading",
     }
     legs = {}
     for key, status in statuses.items():
+        if status == "leading":
+            metrics = {
+                "d2": {"lift_holdout": 1.826, "perm_p": 0.01, "n_fires_holdout": 61},
+                "d3": {"lift_holdout": 1.5, "perm_p": 0.01, "n_fires_holdout": 31},
+                "u1": {"lift_holdout": 1.7, "perm_p": 0.0025, "n_fires_holdout": 40},
+            }[key]
+        elif status == "insufficient_n":
+            metrics = {"lift_holdout": max(1.7, specs[key]["floor"]),
+                       "perm_p": 0.01, "n_fires_holdout": 14}
+        else:
+            metrics = {"lift_holdout": max(0.0, specs[key]["floor"] - 0.1),
+                       "perm_p": 0.20, "n_fires_holdout": 40}
         row = {
             "status": status,
             "pass": status == "leading",
@@ -34,9 +46,7 @@ def _gate(*, asof="2026-09-10", d2="leading", d3="leading", u1="leading",
             "label": specs[key]["label"],
             "floor": specs[key]["floor"],
             "min_holdout_n": 30,
-            "lift_holdout": {"d2": 1.826, "d3": 1.198, "u1": 1.7}[key],
-            "perm_p": {"d2": 0.4343, "d3": 0.4213, "u1": 0.0025}[key],
-            "n_fires_holdout": {"d2": 61, "d3": 31, "u1": 14}[key],
+            **metrics,
         }
         if status == "no_data":
             row = {"status": "no_data", "pass": None, "label": specs[key]["label"]}
@@ -105,6 +115,72 @@ def test_model_permission_rejects_malformed_or_conflicting_leg_rows(mutate, reas
     out = radar.resolve_leg_permission(gate, "d2", "2026-09-10")
     assert out["permitted"] is False
     assert out["reason"] == reason
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "delete"),
+    [
+        ("n_fires_holdout", None, True),
+        ("n_fires_holdout", None, False),
+        ("n_fires_holdout", "61", False),
+        ("lift_holdout", None, True),
+        ("lift_holdout", None, False),
+        ("lift_holdout", "1.826", False),
+        ("perm_p", None, True),
+        ("perm_p", None, False),
+        ("perm_p", "0.01", False),
+    ],
+)
+def test_leading_permission_requires_structurally_valid_measured_evidence(field, value, delete):
+    gate = _gate()
+    if delete:
+        gate["legs"]["d2"].pop(field)
+    else:
+        gate["legs"]["d2"][field] = value
+    out = radar.resolve_leg_permission(gate, "d2", "2026-09-10")
+    assert out["permitted"] is False
+    assert out["reason"] == "leg_evidence_malformed"
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("n_fires_holdout", 29),
+        ("lift_holdout", 1.49),
+        ("perm_p", 0.051),
+    ],
+)
+def test_leading_permission_recomputes_measured_verdict_instead_of_trusting_status(field, value):
+    gate = _gate()
+    gate["legs"]["d2"][field] = value
+    out = radar.resolve_leg_permission(gate, "d2", "2026-09-10")
+    assert out["permitted"] is False
+    assert out["reason"] == "inconsistent_verdict"
+
+
+def test_demoted_permission_allows_null_edge_metrics_but_never_authorizes():
+    gate = _gate(d2="demoted")
+    gate["legs"]["d2"].update({
+        "lift_holdout": None, "perm_p": None, "n_fires_holdout": 0,
+    })
+    out = radar.resolve_leg_permission(gate, "d2", "2026-09-10")
+    assert out["permitted"] is False
+    assert out["reason"] == "demoted"
+
+
+def test_malformed_measured_evidence_is_explicit_in_bilingual_passport_copy():
+    gate = _gate()
+    gate["legs"]["d2"].pop("perm_p")
+    passport = E.impulse_passport(
+        "d2", event_at="2026-09-10", event_precision="date",
+        board_date="2026-09-10", source_asof="2026-09-10", gate=gate,
+    )
+    assert passport["status"] == "leg_evidence_malformed"
+    assert "measured" in passport["status_text"].lower()
+    assert "测量" in passport["status_zh"]
+    projected = E.current_projection(passport)
+    assert "measured" in projected["edge"].lower()
+    assert "测量" in projected["edge_zh"]
 
 
 def test_model_permission_preserves_observed_nonleading_statuses_and_composite_is_exact():

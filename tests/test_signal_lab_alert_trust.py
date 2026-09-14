@@ -71,8 +71,11 @@ def test_signal_lab_template_renders_stable_exact_anchors_and_plain_current_stat
 def test_eligible_rows_do_not_render_stale_failure_specific_limits():
     gate = _gate()
     for row in gate["legs"].values():
-        row["status"] = "leading"
-        row["pass"] = True
+        row.update({
+            "status": "leading", "pass": True,
+            "lift_holdout": max(float(row["floor"]) + 0.2, 1.5),
+            "perm_p": 0.01, "n_fires_holdout": 40,
+        })
     gate["all_pass"] = True
     payload = signal_lab.build_scorecard(gate=gate, evaluation_date=date(2026, 9, 10))
     rows = payload["alert_trust"]["rows"]
