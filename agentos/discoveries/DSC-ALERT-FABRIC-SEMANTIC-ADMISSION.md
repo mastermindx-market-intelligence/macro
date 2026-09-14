@@ -1,29 +1,31 @@
 ---
 key: ALERT-FABRIC-SEMANTIC-ADMISSION
 claim: >
-  The expanded Alert Intelligence Fabric has a Sol-reviewed functional basis for visual
-  design. Chris explicitly directed this session to conduct the review itself and keep
-  moving without subagents. Sol reconciled the original v0.3, newer committed review
-  amendments, canvas brief and attached v0.3.1 packet, then issued PASS FOR VISUAL DESIGN.
-  This closes the architecture-to-Figma gate only; the product remains SPEC_ONLY.
+  Chris supplied both real Alert Center V2 Figma links. Sol inspected both and selected
+  wvVt4GTPGMqnaPprVnbloU as the working file, preserving EQlAQXIOdRdO63nMX2RK3u as an
+  untouched reference. Page 33:222 now contains 33 editable artboards and six configured
+  primary prototype flows. The design is PARTIAL; expanded runtime capability remains
+  SPEC_ONLY. The earlier file-identification and independent-review waits are not open gates.
 falsifier: >
-  Read research/alert_intelligence/DESIGN_ENTRY_RULING_20260914.md at
-  1f55716e35cefb431d75f4d74256dd57d48e028c, blob
-  b28b7bc8f6e1b2467baba762d375d4df7cb8111f, against its exact named inputs and current
-  Chairman directive. Reopen only a concrete material contradiction or source-law change,
-  not a missing second reviewer or unexecuted implementation tests presented as design gates.
+  Read the selected Figma page and the exact inventory in
+  research/alert_intelligence/FIGMA_CONNECTED_JOURNEYS_PASS_20260914.md at
+  df7c14d0e68008f12365c5ae40ac8a40fb89ca00. Recheck saved node IDs, reactions, source-page
+  counts and the named route chains. Correct any unsupported claim; a subsequent deliberate
+  design pass supersedes this snapshot rather than making it current by assumption.
 so_what: >
-  Proceed to the existing Figma brief's Pass A and primary-journey Pass B. The remaining
-  design-entry dependency is identification/access to both actual Alert Center V2 draft
-  Share URLs, not another architectural brainstorm or subagent review. Preserve both files
-  and #7022; no third Figma file, new alert system or release is authorized by this record.
+  Continue the secondary source-evidence/settings/coverage interactions on page 33:222,
+  then finish the missing responsive, language and required-theme states under the same
+  accepted brief. Do not ask for the two links again, create a third file, restart broad
+  architecture, wait for a subagent, replace #7022, or call the prototype a shipped product.
 kind: architecture
 verified_at: 2026-09-14
 verified_by: >
-  Sol author/CEO review under Chris's current instruction; native GitHub source reads and
-  exact-blob readback of the published ruling; attached document-package verifier rerun.
-  No independent PASS, product-test pass, production-browser acceptance, database migration,
-  real email send or Figma edit was established this turn.
+  Native Figma file/component/variable inspection, canvas writes, representative rendered
+  screenshots and saved-state verification: 33 artboards, 144 configured click targets,
+  six primary route chains present, no missing destinations or measured containment
+  overruns, no missing fonts or English-only residue in the five Chinese artboards.
+  No interactive Present-mode, production-browser, real-source pipeline or received-email
+  acceptance is claimed by those design checks.
 scope:
   - macro
   - mastermind-terminal
@@ -31,112 +33,121 @@ scope:
 confidence: verified
 ---
 
-## Current state and reading order
+## Current state
 
-**Design basis accepted by Sol; implementation remains SPEC_ONLY.** Current operation is
-`alert-fabric-design-entry-20260914-sol-001` on existing Draft PR #7135, branch
-`sol/alert-fabric-architecture-20260913`. The latest live Chairman directive replaces the
-previous requirement to await another reviewer for design entry only. It does not waive
-later source, code, schema, privacy, model, release or real-path acceptance.
+**Architecture-to-design gate remains closed by Sol's approved ruling. Design: PARTIAL,
+with an editable connected primary prototype. Expanded product/runtime: SPEC_ONLY.**
+Chris explicitly directed Sol to conduct the review itself and keep moving without subagents.
+That instruction has not been turned back into another review wait.
 
-1. **Controlling review/ruling:** `research/alert_intelligence/DESIGN_ENTRY_RULING_20260914.md`,
+This record supersedes the missing-Figma-link dependency and Pass-A-not-started continuation
+in its prior version at `b5e86005af51dc37e6cf5513cf68a3488fff0174`. That version preserves the
+full earlier source/review history, including the unobserved advisory reviewer result. This
+canvas pass did not spawn, retry, cancel or claim completion of that historical invocation.
+It remains irrelevant to the already-closed design-entry gate; any later recovered substantive
+finding is still assessed on its merits.
+
+## Controlling reading order
+
+1. **Current canvas return:** `research/alert_intelligence/FIGMA_CONNECTED_JOURNEYS_PASS_20260914.md`,
+   commit `df7c14d0e68008f12365c5ae40ac8a40fb89ca00`, blob
+   `8e09915e6600936524bd164ee9f530cff42a8f2b`. This contains the full node inventory,
+   saved reaction chains, verification limits and unfinished design work.
+2. **Design-entry ruling:** `research/alert_intelligence/DESIGN_ENTRY_RULING_20260914.md`,
    commit `1f55716e35cefb431d75f4d74256dd57d48e028c`, blob
-   `b28b7bc8f6e1b2467baba762d375d4df7cb8111f`, SHA256
-   `4b3cdb90d8ee96e3ca7382613ec269b04745010392f088b38ee509bea4495022`.
-2. Functional base: `research/ALERT_INTELLIGENCE_FABRIC_FUNCTIONAL_FREEZE_CANDIDATE_20260913.md`,
-   original content commit `247d141a4aee2ae909ae266cf9838a361c72ee2d`, SHA256
-   `57845f1b7dd4c36063c74f6c73d3861362540d9ad0f8685e7d17f322ce8ca945`.
-3. Preserved committed amendments: `research/alert_intelligence/V03_REVIEW_AMENDMENTS_20260913.md`,
-   commit `5ac1ded87919c4a5f0b2c3db5c512de8f4d9ee35`, blob
-   `368a51d347731a33ef8066a9a791d53b5831405f`. They control the clauses they amend except where
-   the current ruling makes a more specific choice.
-4. Canvas execution: `research/alert_intelligence/FIGMA_EXECUTION_BRIEF_20260913.md`,
-   commit `10c25947b6ef2a35297ea5f24de3ce443d5f8191`, blob
-   `5040865deecb40fe7d48f7da8a427e8ed0b95713`, subject to the current ruling.
-5. v0.1/v0.2 and `source_bound_cases_20260913.json` remain thesis/source background.
-   The earlier refund example has recurrence unestablished; no nonrecurrence, consensus
-   beat or forward-return claim is inferred from the retained fixture.
+   `b28b7bc8f6e1b2467baba762d375d4df7cb8111f`.
+3. **Functional architecture:** `research/ALERT_INTELLIGENCE_FABRIC_FUNCTIONAL_FREEZE_CANDIDATE_20260913.md`
+   plus `research/alert_intelligence/V03_REVIEW_AMENDMENTS_20260913.md`; the design-entry
+   ruling controls its more specific choices. Earlier v0.1/v0.2 remain background, not
+   authority to restart the program or restore unsupported recurrence language.
+4. **Canvas brief:** `research/alert_intelligence/FIGMA_EXECUTION_BRIEF_20260913.md`,
+   subject to the accepted route/theme corrections.
 
-The attached v0.3.1 file (SHA256
-`ab10af5eca299a554267896a862354b2ed78cb7cee86eab14dfe49658ed9e794`) was reviewed, not blindly
-applied over the newer repository amendments. Its patch verifier passed document-integrity
-checks. The two 25-case lists share the base 18 but differ in their additional cases; they
-are neither 50 independent tests nor executed product acceptance. The new ruling reconciles
-all distinct behaviors without inventing an independent review.
+## Figma identities — resolved
 
-## Final selected behavior
+**Working:** `wvVt4GTPGMqnaPprVnbloU`, MastermindX — Alert Center V2 Canonical.
+**Reference, no writes:** `EQlAQXIOdRdO63nMX2RK3u`, Mastermind Alert Center V2 — Canonical Ship Design.
+**Working page:** `33:222`, `07 — Alert Intelligence · Connected Journeys`.
 
-Keep native source/semantic identity independent of monitor baselines. Preserve original
-Prophet admission separately from current field-specific board reads, with actual source
-vintage, plan applicability and source-owned historical revisions. The existing card-helper
-precedence mismatch remains a later owner implementation repair, not a fixed runtime claim.
+- Desktop primary start: `33:223`.
+- Mobile English start: `38:150`.
+- Mobile Chinese start: `47:255`.
+- Light evidence start: `44:218`.
+- Immediate email start: `37:183`.
+- Digest start: `37:201`.
 
-Keep the newer global refusal, account digest cap, affirmative monitor requests and quiet-hour
-precedence. Preserve requested-but-unverifiable delivery in the existing outbox; known opt-out
-is not temporary uncertainty. Whole-bundle recovery reassignment is permitted only before any
-external attempt through the exact transactional, history-preserving rules in the ruling;
-no blind clearing of assignment, partial split or movement of an uncertain/attempted envelope.
+Both files were compared using their real components, variables, desktop/mobile content and
+handoff material, not titles or relative edit dates. The selected file had the stronger
+reusable foundation. The second file retains useful state/bilingual/browser reference work.
+All seven original working-file pages remain, with their original 35 components and 212
+instances. No third file, sharing change, replacement library or account upgrade was made.
+The old `QO3CthsB5KzPVKdgfcVPMI` access error is not a present dependency.
 
-Keep one proposed F08 `alert_notices` relation for private references and exact-notice read/archive
-state; existing `alerts` own conditions, `alert_outbox` owns delivery, `email_log` owns attempts,
-and account preferences retain their owner. Trusted evaluator progress is separated from editable
-condition definitions, with guarded definition versions. Source scopes are typed, not fake tickers.
+## What the design now demonstrates
 
-Use owner-adopted interpretation corrections, including when market source bytes are unchanged.
-A wording rewrite is not a new development. Use unambiguous, versioned digest time windows and
-prospective timezone changes. No external exactly-once delivery promise or automatic retry of
-an unknown result is made.
+The configured desktop flow connects shared Now to original/current evidence, a simulated
+private-workspace entry, monitor setup, effective account digest/quiet-hour policy, saved
+awaiting-first-check confirmation, personal updates and evidence return. Separate email
+flows reach original/current notice detail, explanation corrections and an unconfirmed-send
+History state. The 390px English and Chinese primary journeys preserve those core meanings.
 
-F08's private/holdings-coupled Terminal surface remains the owner; Macro keeps shared investigation
-and contextual entry/return. Current Terminal is dark-only under its active specific decision;
-Macro owes dark and light. Both owe EN/ZH and responsive journeys. No page-local Terminal theme,
-new header family or private data in shared/static artifacts is selected.
+Private tabs and notice detail remain in the existing Terminal shell. Shared-context exits
+are explicit. Current Terminal is dark-only; shared Macro has new light Now and evidence
+compositions. No third header family or private data baked into shared market artifacts is
+selected. Existing buttons, tabs, evidence rows, typography and variables are reused.
 
-## Source/procedure freshness
+Native readback found 144 configured targets, including repeated navigation and variants;
+all destinations resolved and the six named primary chains were present. Final saved-state
+checks found no measured text/frame/instance containment overruns at their one-pixel
+boundary tolerance, no missing fonts, and no English-only untranslated UI residue in the
+five Chinese screens. Representative screenshot review repaired collapsed auto-layout,
+raw dark paints in light navigation, nonpersisted Chinese button overrides and local row
+text overruns. These checks are not a full accessibility, interaction or production pass.
 
-Compatible Skillpack 1.0.1 was read at protected Mastermind
-`6f77fb69494958cd984f3c03d4f8f9cc2b20b878` (INDEX, REVIEW_RETURN, RECONCILE_STATE, CLOSEOUT).
-Macro source pin is `a9aa2ef69943d635af19c4149a78e91b72e465c0`; six material implementation
-blobs were individually checked and match the v0.3 references. F08 and the Terminal-specific
-theme decision were reread. Terminal moved to `1aca671d93c965a7cc9c3a92c5d28b1ae836ee77`;
-its compared single-commit movement is evidence/AI-quota/i18n work, not replacement of the
-alert/schema owners. This is bounded compatibility, not green merge-ref or production proof.
+The ADBE transition is synthetic source-shaped design content, not an actual September 11
+entry-state claim. The AAPL example preserves the source-stated contribution with recurrence
+unestablished. All new artboards explicitly identify prototype/sample behavior. No credentials,
+private customer rows, live monitors or real email messages were used or created.
 
-## Prior one-shot review history, preserved without waiting
+## What remains and what must not be restarted
 
-The repository's earlier `alert-fabric-v03-independent-review-20260913-sol-002` report is
-recorded as REQUEST_REPAIR, provider session `0b0716ac-34b9-4d1d-9463-6ff83179283e`, exit 0,
-one turn, 172.68 seconds. Its input hash is
-`8a42b14dee399cfed8c0b2620b23932efd6cb79877af03f93e95126f4a5fb25c`. The preceding `...-001`
-returned no usable review; it is not a pass. These historical observations are preserved.
+Secondary controls still need their complete mock interaction paths: full source-document
+inspection, search/filter transitions, account notification editing, mobile secondary
+situation/monitor destinations and remaining coverage/catalyst links. The complete variant
+matrix also remains open: desktop Chinese, mobile Situation/Explore/History/email, the rest
+of shared Macro light, and the additional empty/permission/save/recovery states.
 
-The post-repair `...-003` report at Studio PID 82781 remains unobserved. The exact device
-`3f5ce987-e3eb-40a3-af9f-4b0ae54919cc` was reported offline this turn. No process completion,
-PASS or cancellation is inferred, and no invocation is retried. Any later recovered material
-finding still receives review on its merits. Under Chris's current directive, retrieving that
-advisory result is no longer a design-entry prerequisite. There is no continuing worker/watch
-obligation from these tools-disabled one-shots; no new reviewer or watcher was launched.
+Current Terminal light is intentionally not owed. Actual Present-mode walkthrough,
+keyboard/focus, long-content extremes and complete semantic parity still need design
+acceptance. Do not equate 33 artboards, configured targets or a successful screenshot
+with complete canvas/product acceptance. Do not require a new architectural review to
+finish those already-scoped design obligations.
 
-## Figma dependency and no-rebuild boundary
+After complete design acceptance, the build still extends native Prophet/News/event/identity
+owners, source-owned historical evidence, existing user conditions, proposed private notices,
+account preferences, the existing outbox and mailer. The source/card precedence mismatch,
+trusted monitor progress, digest membership, correction and uncertain-effect rules remain
+implementation obligations, not fixes produced by these mockups.
 
-Chris showed two Alert Center V2 drafts. Neither screenshot establishes a file key. The native
-Figma identity is `mastermindx6031@gmail.com`, Professional/Full. The one historical key
-`QO3CthsB5KzPVKdgfcVPMI` was checked and still returns an edit-access error, which does not
-identify either newer draft. The native browser connection is unavailable and the verified
-Studio is offline. Both actual Share links have been requested; do not guess file IDs, alter
-sharing, create a third file, use unrelated devices or request an unnecessary plan upgrade.
+## Source and release boundaries
 
-PR #7022 remains its separate implementation/source carrier at the referenced candidate
-`c83a5771b54e6e487cdb2d06be45ccbf480e560d`. No source-writer transfer, Source Continuity
-resolution, feature change, real customer state, migration, email, merge or deployment was
-performed. #7135 remains Draft; its pickup metadata reports a merge conflict. Design approval
-is not Git integration acceptance and does not authorize a rebase merely to clear that state.
+The Figma pass used compatible Skillpack 1.0.1 pinned to Mastermind
+`2aa28559a857461fd674fae52d2904116b854891` and the already accepted design-entry ruling.
+Terminal shell structure was read at `1aca671d93c965a7cc9c3a92c5d28b1ae836ee77` from the
+existing AppShell/AppNav files. It is a design reference, not a fresh deployed-browser capture.
+
+PR #7135 remains the records/design carrier on `sol/alert-fabric-architecture-20260913`, Draft.
+PR #7022 remains the existing separate implementation/source carrier, historically referenced
+at `c83a5771b54e6e487cdb2d06be45ccbf480e560d`; no source-writer transfer, Source Continuity
+resolution, feature change, migration, runtime Job, subagent, watcher, merge, deployment or
+live customer send occurred in this design pass. Fresh GitHub release state and actual
+production proofs will be required for implementation, independently of visual approval.
 
 ## Exact next action
 
-On receiving the two Figma Share links, execute Pass A of the existing brief: inspect both
-files' real pages, components, tokens, prototypes and handoff lineage; select the least-destructive
-working file and retain the other as reference. Then immediately execute the primary journey
-pass: Now → original/current evidence → supported monitor → effective delivery confirmation →
-return → meaningful update/correction. No new architecture restart or independent-review wait
-is owed before this work. Stop only on a real file-access/identity or changed-scope boundary.
+Finish the secondary evidence/settings/coverage journeys on the current working page,
+then the missing responsive/language/required-theme and negative-state variants. Preserve
+original/reference content and existing component instances; update the node/interaction
+inventory after the next pass. Do not rediscover the company, request the known Figma links,
+start another design file or reopen the independent-review wait. Once the complete visual
+journey is accepted, reconcile #7022 and proceed through its bounded build/proof gates.
