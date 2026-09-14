@@ -1,11 +1,12 @@
-# China Archetype-D S1 — evidence matrix (round 7)
+# China Archetype-D S1 — evidence matrix (round 8)
 
 Five L1 subjects × dark/light × EN/ZH × 1440/390.
 Spec G7 names this the 20-crop matrix; the product of those axes is 40 cells.
 
-**Round**: 7 (post C1 revert `--tooltip-shadow` + C2 conviction-profile wiring).
-**Captured at code commit**: `550883426f7c1d8b1732657b51e7e09f2ab1e7af`.
-**Captured at**: `2026-09-14T05:29:42Z` (see `manifest.json`).
+**Round**: 8 (post C1 revert `--tooltip-shadow` + C2 conviction-profile wiring + C3 capture against final code commit; qwen-r1 M4 closed by recapture).
+**Captured at code commit**: `636227f7e0c16fed9689fb031110a24cbf6bae12` (final code head — the contract-delta widening commit; pixel content unchanged from the C1+C2 commit `550883426f7c`, the path widener only added `tests/test_china_archetype_d_s1.py` to conviction-profile's paths block).
+**Captured at**: `2026-09-14T08:57:59Z` (see `manifest.json`).
+**Two-commit provenance preserved**: capture_sha == `636227f7e0c16fed9689fb031110a24cbf6bae12`, the code commit that produced the pixels.
 
 ## Fixture
 
