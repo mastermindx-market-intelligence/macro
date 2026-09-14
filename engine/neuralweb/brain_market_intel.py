@@ -1464,15 +1464,8 @@ def _meta_field(item: dict, document, key: str) -> str:
 
 
 def _positive_int(value) -> int | None:
-    if isinstance(value, bool):
-        return None
-    if isinstance(value, float) and not value.is_integer():
-        return None
-    try:
-        number = int(value)
-    except (TypeError, ValueError):
-        return None
-    return number if number > 0 else None
+    """A literal positive JSON/Python integer, never a coercible lookalike."""
+    return value if type(value) is int and value > 0 else None
 
 
 def _partial_evidence_search_note(evidence) -> str:
@@ -1634,6 +1627,8 @@ def _project_evidence_passage(raw, report_id: str) -> dict | None:
     match_end_char = start_char + (clipped_match_end - clip_start)
 
     page = _positive_int(locator_raw.get("page")) if kind == "page_text_span" else None
+    if kind == "page_text_span" and page is None:
+        return None
     locator = {
         "kind": kind,
         "start_char": start_char,
@@ -1697,8 +1692,10 @@ def _project_evidence(raw, *, report_id: str, published_at: str,
             binding_raw.get("text_layer"), _REPORT_TEXT_LAYER_MAX_CHARS),
         "page_count": _positive_int(binding_raw.get("page_count")),
     }
+    passages_raw = payload.get("passages") if status == "matched" else []
+    passages_raw = passages_raw if isinstance(passages_raw, list) else []
     projected = []
-    for passage in payload.get("passages") or []:
+    for passage in passages_raw:
         item = _project_evidence_passage(passage, report_id)
         if item is not None:
             projected.append(item)
@@ -1811,7 +1808,8 @@ def _fit_evidence_response_budget(response: dict) -> bool:
 
     passages = evidence.get("passages")
     passages = passages if isinstance(passages, list) else []
-    if overflow() and passages:
+    matched = evidence.get("status") == "matched"
+    if overflow() and matched and passages:
         first = passages[0] if isinstance(passages[0], dict) else {}
         support = first.get("match_text") or first.get("text") or ""
         if isinstance(support, str) and support:
@@ -1826,11 +1824,12 @@ def _fit_evidence_response_budget(response: dict) -> bool:
 
     while overflow() and len(passages) > 1:
         passages.pop()
-        first = passages[0] if isinstance(passages[0], dict) else {}
-        support = first.get("match_text") or first.get("text") or ""
-        if isinstance(support, str) and support:
-            report["body_text"] = support
-            report["body_truncated"] = True
+        if matched:
+            first = passages[0] if isinstance(passages[0], dict) else {}
+            support = first.get("match_text") or first.get("text") or ""
+            if isinstance(support, str) and support:
+                report["body_text"] = support
+                report["body_truncated"] = True
 
     # The bounded query is useful but not source identity; yield its tail only if
     # all public/redundant fields above were insufficient.
@@ -1843,8 +1842,14 @@ def _fit_evidence_response_budget(response: dict) -> bool:
 
 
 def _report_error(code: str, note: str, **extra) -> dict:
-    """One honest error envelope. The model explains the gate; it never invents."""
-    return {"schema": _REPORT_SCHEMA, "error": code, "note": note, **extra}
+    """One bounded honest error envelope; caller text never escapes the ceiling."""
+    projected = dict(extra)
+    if "report_id" in projected:
+        projected["report_id"] = _bounded_report_text(projected.get("report_id"))
+    for key in ("remaining", "limit"):
+        if key in projected:
+            projected[key] = _nonnegative_int(projected.get(key))
+    return {"schema": _REPORT_SCHEMA, "error": code, "note": note, **projected}
 
 
 def _evidence_body(selection) -> tuple[str, bool]:

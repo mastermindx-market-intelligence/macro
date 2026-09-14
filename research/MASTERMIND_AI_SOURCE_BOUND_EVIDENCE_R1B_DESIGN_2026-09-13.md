@@ -39,7 +39,10 @@ canonical lowercase 64-hex `content_sha256`; case-folding, whitespace trimming,
 or any other normalization is forbidden because it would manufacture a source-
 identity claim. A missing/malformed/non-string/wrong-length/noncanonical source
 hash fails CLOSED to bounded public metadata/excerpt and an honest source-
-identity-unverified note — never a scan/extraction claim.
+identity-unverified note — never a scan/extraction claim. Locator offsets, page
+numbers, source/stored counts, and page counts are trusted only when supplied as
+literal integers of the required sign; numeric strings, floats, booleans, and
+malformed passage containers are never coerced into evidence facts.
 
 No matching passage, an unavailable body, an unverified source identity, or an
 image-only scan is disclosed and does not consume full-text quota. A quota
@@ -112,7 +115,10 @@ any stored/source text lies outside those spans. In generic mode the existing
   corpus beyond the legacy 12,000-character opening prefix. `REPORT_BODY_MAX_CHARS`
   remains a per-response model-context ceiling over every string value—not only
   `body_text`, but excerpts, metadata, URLs, query echoes, passage duplicates,
-  matched terms, hashes, and notes. Bounded passage count/window, sparse publisher
+  matched terms, hashes, notes, and caller-supplied identifiers in error envelopes.
+  Budget trimming may duplicate a passage into legacy `body_text` only while the
+  evidence status is `matched`; a no-match/unavailable status can never acquire
+  publisher text during fitting. Bounded passage count/window, sparse publisher
   quotation, attribution, one debit per served view, no redistribution, and no
   new lifetime ledger remain binding.
 - A denied debit returns only the existing limit error and leaks no passage,
@@ -145,9 +151,12 @@ any stored/source text lies outside those spans. In generic mode the existing
   when coverage is unknown, disclose that absence is not evidence. The current
   no-match request is unmetered; a later generic full-note re-call remains
   available and takes the existing one-time debit if a nonempty body is served.
-- A selector that reports a match but supplies no usable literal passage text is
-  an honest no-support/body-unavailable disclosure, not a scan or extraction
-  failure, and is not charged.
+- A selector that reports a match but supplies no usable literal passage text—or
+  supplies a malformed non-list passage container—is an honest no-support/body-
+  unavailable disclosure, not an exception, scan, or extraction failure, and is
+  not charged. Passages attached to an upstream no-match/unavailable status are
+  supporting-data corruption and are discarded before projection; they never
+  enter either `evidence.passages` or legacy `body_text`.
 - `view_limit_reached`: no report/evidence payload and no source-text leakage.
 
 ## 6. Product boundary
@@ -167,7 +176,10 @@ without changing this contract.
    passage rather than opening boilerplate.
 2. The passage carries stable hashes, character offsets, supported terms, page
    when known, and a canonical `doc`(+`page`/`q` fragment) deep link that never
-   carries publisher match text or a `find=` param. R1B emits the character-span
+   carries publisher match text or a `find=` param. Offsets/counts require literal
+   nonnegative integers and page values require literal positive integers; a
+   numeric string, float, boolean, or structurally malformed page locator fails
+   closed. R1B emits the character-span
    and page locators in the passage payload itself, but the current viewer
    consumes only `doc`; consuming the fragment `page`/`q` remains Repair B and is
    not shipped by this commit.
@@ -184,8 +196,11 @@ without changing this contract.
 6. Matched text debits exactly once, only after strict projection and recursive
    whole-response budgeting produce at least one coherent passage and nonempty
    body. No-match, unavailable body, image-only body, an invalid projected
-   passage, an envelope that cannot be fit safely under the ceiling, and a matched
-   selector without usable text debit zero times.
+   passage/container, an envelope that cannot be fit safely under the ceiling,
+   and a matched selector without usable text debit zero times. Nonmatched budget
+   fitting leaves both `evidence.passages` and `body_text` empty, and every error
+   envelope bounds caller IDs while accepting quota counts only as literal
+   nonnegative integers under the same response ceiling.
 7. An exhausted generic or specific request leaks no report, evidence, source text,
    reader access, or selector access.
 8. Existing search, clusters, report-rights, exposure-cap, fail-soft, attribution,

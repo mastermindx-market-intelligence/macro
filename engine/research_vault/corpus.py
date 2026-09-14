@@ -287,15 +287,8 @@ def _original_span(origins: list[int], start: int, end: int) -> tuple[int, int] 
 
 
 def _evidence_int(value) -> int | None:
-    if isinstance(value, bool):
-        return None
-    if isinstance(value, float) and not value.is_integer():
-        return None
-    try:
-        result = int(value)
-    except (TypeError, ValueError):
-        return None
-    return result if result >= 0 else None
+    """A literal nonnegative JSON/Python integer, never a coercible lookalike."""
+    return value if type(value) is int and value >= 0 else None
 
 
 def _source_binding(document: dict, body: str) -> dict:
