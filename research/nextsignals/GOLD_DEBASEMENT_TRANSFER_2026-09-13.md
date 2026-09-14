@@ -136,3 +136,10 @@ Why:
 The existing Commodity Vector gold residual/driver-axis architecture remains the canonical system. The 21-day controlled effect is retained as a research discovery, not product authority; any future use would require a **new original frozen hypothesis** rather than threshold-mining this public rule family.
 
 Private reproducibility artifacts: `/Users/chriswong/nextsignals_corpus_staging/analysis/gold_debasement_replication/results.json`, `decision_panel.csv`, and `/Users/chriswong/nextsignals_corpus_staging/analysis/gold_debasement_transfer.py`. Raw corpus/media remain private and are not committed.
+## 10. Acceptance and exact next action
+
+This research slice is complete when this record is merged with green repository validation. It establishes no new gold feature and changes no production signal or authority. The existing Commodity Vector gold residual/driver-axis system remains canonical.
+
+Do **not** spend the next wave retuning this 40-observation tracker. The public yen/dollar confirmation mechanics are not specified precisely enough for a direct formula replication, so that branch stays held unless a source-complete rule is recovered or Mastermind deliberately preregisters a new original hypothesis before outcomes.
+
+Exact next action in the corpus program: perform current-owner/collision archaeology for the **BTC ETF-flow intelligence** family, compare the public concept set against Mastermind's existing Farside/Coinbase-Premium/crypto owners, and freeze one non-duplicative point-in-time incrementality hypothesis before reading forward outcomes. If the concept is already subsumed by an existing owner, record that as a no-build result rather than creating another crypto signal plane. Keep PR #7104's acquisition carrier separate and do not alter `WS-CRYPTO-INTELLIGENCE` product/trade authority from a research transfer test.
