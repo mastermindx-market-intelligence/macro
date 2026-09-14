@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from hashlib import sha256
 
 from engine.provider_account_pool import AccountObservation, AccountSelection, AccountPoolError
