@@ -965,9 +965,14 @@ on:
       - "app/requirements.txt"
       - "scripts/compile_capital_structure_events.py"
       - "scripts/compile_capital_structure_document_terms.py"
+      - "scripts/compile_capital_structure_covenant_terms.py"
       - "scripts/materialize_capital_structure_share_counts.py"
       - "scripts/retain_capital_structure_share_counts.py"
       - "scripts/build_capital_structure_projection.py"
+      # B-F09-6b (MO-PAID-067) trigger closure: the capital-markets policy
+      # projection leaf. The page builder is the producer. A module-only edit
+      # must still start CI so capital-structure-intelligence runs the named suite.
+      - "engine/capital_policy_projection.py"
       - "scripts/build_capital_structure_page.py"
       - "contracts/capital_structure_*.schema.json"
       - "docs/CAPITAL_STRUCTURE_INTELLIGENCE_CONTRACT.md"
@@ -1701,6 +1706,7 @@ on:
       - "scripts/build_chronicle.py"
       - "data/chronicle/**"
       - "tests/test_chronicle.py"
+      - "tests/test_chronicle_impact.py"
       - "admin/chronicle.py"
       # RIC W4 EVW: event-window engine + forward ledger + ex-ante read (P3 RIC program).
       # engine/** already covers engine/event_window.py; test file + research doc +

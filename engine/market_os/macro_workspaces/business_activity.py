@@ -82,6 +82,13 @@ from __future__ import annotations
 from hashlib import sha256
 from typing import Any, Mapping
 
+from engine.market_os.macro_workspaces.publication_prior import (
+    apply_headline_publication_fields,
+    attach_prior_publication,
+    no_earlier_publication,
+    resolve_publication_prior,
+)
+
 METHOD_VERSION = "business_activity.compose.v1"
 DEFINITION_VERSION = "1.0.0"
 PRODUCER = "engine.market_os.macro_workspaces.business_activity"
@@ -340,6 +347,9 @@ def _changes(metrics_by_id: dict, asof: str | None, prior_snapshot: Mapping | No
     if prior_snapshot is None:
         return {"comparability": "NO_PRIOR", "prior_generation_id": None, "prior_effective_date": None,
                 "prior_method_version": None, "deltas": [], "status": "ABSENT", "null_reason": "WARMUP"}
+    prior_snapshot = resolve_publication_prior(prior_snapshot, asof)
+    if prior_snapshot is None:
+        return no_earlier_publication()
     prior_method = _get(prior_snapshot, "headline", "method_version")
     prior_gen = _get(prior_snapshot, "generation", "generation_id")
     prior_eff = _get(prior_snapshot, "headline", "effective_date")
@@ -751,7 +761,9 @@ def compose(regime_latest: Mapping[str, Any], *, built_at: str,
     if contradiction["present"]:
         reasons.append(f"contradiction={contradiction['kind']}")
 
-    headline = _headline(asof, prior_snapshot)
+    publication_prior = resolve_publication_prior(prior_snapshot, asof)
+    headline = _headline(asof, publication_prior)
+    apply_headline_publication_fields(headline, publication_prior, raw_prior=prior_snapshot)
     changes = _changes(metrics_by_id, asof, prior_snapshot)
 
     snapshot = {
@@ -807,4 +819,4 @@ def compose(regime_latest: Mapping[str, Any], *, built_at: str,
             "privacy_note": "Event definitions reuse the existing first-party analytics owner; no second analytics store, no user identity copied into the artifact.",
         },
     }
-    return snapshot
+    return attach_prior_publication(snapshot, publication_prior)

@@ -1,0 +1,745 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "generated_at": "2026-09-08T05:41:50Z",
+  "outcome": "captured",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them",
+    "source": "rebuilt site/policy_watch.html from the current branch via python3 -m scripts.build_policy_watch; seed = config/policy_lifecycle_seed.json folded against data/policy/intel.json"
+  },
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [
+      "proposed",
+      "in_force",
+      "enforced",
+      "stalled"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "pages": [
+    {
+      "page_id": "policy_watch.html",
+      "registry_route": "/policy_watch.html",
+      "route": "/policy_watch.html",
+      "route_kind": "explicit_override",
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        },
+        {
+          "captured": false,
+          "dimension": "lifecycle_state",
+          "reason": "seed emits no passed / withdrawn / struck_down / superseded / unknown / correction row",
+          "value": "passed"
+        }
+      ],
+      "metrics": {
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        }
+      },
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "dark_en_1440.png",
+          "force_state": null,
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 5080,
+          "clip_target": "full page (window-size 1440 x scrollHeight)",
+          "verified_how": "Pillow size + DOM section rect inside captured CSS box",
+          "bytes": 1975104,
+          "sha256": "e4ec75b0d81b66d9538b4ed42518c0317160548fea0f3eb6d9407a62f95978a0",
+          "width": 2880,
+          "height": 10160,
+          "css_size": [
+            1440.0,
+            5080.0
+          ],
+          "section_metrics": {
+            "sectionTop": 1824.796875,
+            "sectionBottom": 3142.03125,
+            "rowCount": 6,
+            "visibleRowCount": 6
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "dark_zh_1440.png",
+          "force_state": null,
+          "locale": "zh",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 4902,
+          "clip_target": "full page (window-size 1440 x scrollHeight)",
+          "verified_how": "Pillow size + DOM section rect inside captured CSS box",
+          "bytes": 2134493,
+          "sha256": "7e36cfa551173fd353152a3ae1241e709d3d56e5e202fb0dbf0b8c14e92f4ac3",
+          "width": 2880,
+          "height": 9804,
+          "css_size": [
+            1440.0,
+            4902.0
+          ],
+          "section_metrics": {
+            "sectionTop": 1707.796875,
+            "sectionBottom": 3004.78125,
+            "rowCount": 6,
+            "visibleRowCount": 6
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "light_en_1440.png",
+          "force_state": null,
+          "locale": "en",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 5080,
+          "clip_target": "full page (window-size 1440 x scrollHeight)",
+          "verified_how": "Pillow size + DOM section rect inside captured CSS box",
+          "bytes": 1991628,
+          "sha256": "49b52d07dcf010ae3f0421fcae75e6331af0535413abc9bfa645b3cb347f20bc",
+          "width": 2880,
+          "height": 10160,
+          "css_size": [
+            1440.0,
+            5080.0
+          ],
+          "section_metrics": {
+            "sectionTop": 1824.796875,
+            "sectionBottom": 3142.03125,
+            "rowCount": 6,
+            "visibleRowCount": 6
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "light_zh_1440.png",
+          "force_state": null,
+          "locale": "zh",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 4902,
+          "clip_target": "full page (window-size 1440 x scrollHeight)",
+          "verified_how": "Pillow size + DOM section rect inside captured CSS box",
+          "bytes": 2157098,
+          "sha256": "fd4f8faaad87118b124894aaeee6e0b3ba1a5d570acaa9f7d49c446daa141cb7",
+          "width": 2880,
+          "height": 9804,
+          "css_size": [
+            1440.0,
+            4902.0
+          ],
+          "section_metrics": {
+            "sectionTop": 1707.796875,
+            "sectionBottom": 3004.78125,
+            "rowCount": 6,
+            "visibleRowCount": 6
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "dark_en_390.png",
+          "force_state": null,
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 9687,
+          "clip_target": "iframe#frame bounding box (390 x iframe scrollHeight)",
+          "verified_how": "Pillow crop of window to iframe bbox; DOM section rect inside crop",
+          "bytes": 2203195,
+          "sha256": "fc29bc77be867df4f17cb1b53a5fa104121dfa6bc87e331a7adebea736dc3292",
+          "width": 780,
+          "height": 19374,
+          "css_size": [
+            390.0,
+            9687.0
+          ],
+          "section_metrics": {
+            "sectionTop": 3561.7421875,
+            "sectionBottom": 6154.5625,
+            "rowCount": 6,
+            "visibleRowCount": 6
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "dark_zh_390.png",
+          "force_state": null,
+          "locale": "zh",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 9089,
+          "clip_target": "iframe#frame bounding box (390 x iframe scrollHeight)",
+          "verified_how": "Pillow crop of window to iframe bbox; DOM section rect inside crop",
+          "bytes": 2239237,
+          "sha256": "394f28a24a2fb2a0a0a82d08b20c521e0cadda2fce9591adfb48b27293e2cd74",
+          "width": 780,
+          "height": 18178,
+          "css_size": [
+            390.0,
+            9089.0
+          ],
+          "section_metrics": {
+            "sectionTop": 3378.046875,
+            "sectionBottom": 5824.828125,
+            "rowCount": 6,
+            "visibleRowCount": 6
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "light_en_390.png",
+          "force_state": null,
+          "locale": "en",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 9687,
+          "clip_target": "iframe#frame bounding box (390 x iframe scrollHeight)",
+          "verified_how": "Pillow crop of window to iframe bbox; DOM section rect inside crop",
+          "bytes": 2259023,
+          "sha256": "9b5a0ea94f4d28a9ab40172cc3946110b601672d7832312253f997563da56cea",
+          "width": 780,
+          "height": 19374,
+          "css_size": [
+            390.0,
+            9687.0
+          ],
+          "section_metrics": {
+            "sectionTop": 3561.7421875,
+            "sectionBottom": 6154.5625,
+            "rowCount": 6,
+            "visibleRowCount": 6
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "light_zh_390.png",
+          "force_state": null,
+          "locale": "zh",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 9089,
+          "clip_target": "iframe#frame bounding box (390 x iframe scrollHeight)",
+          "verified_how": "Pillow crop of window to iframe bbox; DOM section rect inside crop",
+          "bytes": 2288141,
+          "sha256": "2c195d68cb6620ef3d7267d11d31bf04cb80e1bdb72ff25e4be4cf1ba9b4daf4",
+          "width": 780,
+          "height": 18178,
+          "css_size": [
+            390.0,
+            9089.0
+          ],
+          "section_metrics": {
+            "sectionTop": 3378.046875,
+            "sectionBottom": 5824.828125,
+            "rowCount": 6,
+            "visibleRowCount": 6
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "state_proposed_light_en_1440.png",
+          "force_state": "proposed",
+          "filter": "element capture of section#policy after CSS hide .pw-stage:not([data-policy-id=\"lever_dollar_bridge\"])",
+          "item_id": "lever_dollar_bridge",
+          "locale": "en",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 495,
+          "clip_target": "section#policy element bounding rect",
+          "verified_how": "Playwright element screenshot + Pillow size + one visible row + section rect",
+          "bytes": 262450,
+          "sha256": "b4c55183b83260d8ebf4561fccc45e852c888b1117d8c83b2547542300858e3b",
+          "width": 2720,
+          "height": 994,
+          "css_size": [
+            1360.0,
+            497.0
+          ],
+          "section_metrics": {
+            "sectionTop": 1824.796875,
+            "sectionBottom": 2320.0234375,
+            "rowCount": 6,
+            "visibleRowCount": 1
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "state_proposed_dark_zh_1440.png",
+          "force_state": "proposed",
+          "filter": "element capture of section#policy after CSS hide .pw-stage:not([data-policy-id=\"lever_dollar_bridge\"])",
+          "item_id": "lever_dollar_bridge",
+          "locale": "zh",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 475,
+          "clip_target": "section#policy element bounding rect",
+          "verified_how": "Playwright element screenshot + Pillow size + one visible row + section rect",
+          "bytes": 284410,
+          "sha256": "e402da505eff44e7660bae3554d89cd3d5d821ca44bbcffeccf08de679f51110",
+          "width": 2720,
+          "height": 952,
+          "css_size": [
+            1360.0,
+            476.0
+          ],
+          "section_metrics": {
+            "sectionTop": 1707.796875,
+            "sectionBottom": 2182.7734375,
+            "rowCount": 6,
+            "visibleRowCount": 1
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "state_in_force_light_en_1440.png",
+          "force_state": "in_force",
+          "filter": "element capture of section#policy after CSS hide .pw-stage:not([data-policy-id=\"lever_fed_nexus\"])",
+          "item_id": "lever_fed_nexus",
+          "locale": "en",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 518,
+          "clip_target": "section#policy element bounding rect",
+          "verified_how": "Playwright element screenshot + Pillow size + one visible row + section rect",
+          "bytes": 272911,
+          "sha256": "9657cef924ebff3a8d4ba41f759e8eadee5f25835cbada536a1b5eebd613c4e9",
+          "width": 2720,
+          "height": 1038,
+          "css_size": [
+            1360.0,
+            519.0
+          ],
+          "section_metrics": {
+            "sectionTop": 1824.796875,
+            "sectionBottom": 2342.6953125,
+            "rowCount": 6,
+            "visibleRowCount": 1
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "state_in_force_dark_zh_1440.png",
+          "force_state": "in_force",
+          "filter": "element capture of section#policy after CSS hide .pw-stage:not([data-policy-id=\"lever_fed_nexus\"])",
+          "item_id": "lever_fed_nexus",
+          "locale": "zh",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 480,
+          "clip_target": "section#policy element bounding rect",
+          "verified_how": "Playwright element screenshot + Pillow size + one visible row + section rect",
+          "bytes": 276431,
+          "sha256": "17857106c8693234ab4f4a4142a17629ab6a063ea1183a58f9bad7f33d8e7db4",
+          "width": 2720,
+          "height": 964,
+          "css_size": [
+            1360.0,
+            482.0
+          ],
+          "section_metrics": {
+            "sectionTop": 1707.796875,
+            "sectionBottom": 2188.046875,
+            "rowCount": 6,
+            "visibleRowCount": 1
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "state_enforced_light_en_1440.png",
+          "force_state": "enforced",
+          "filter": "element capture of section#policy after CSS hide .pw-stage:not([data-policy-id=\"lever_nuclear\"])",
+          "item_id": "lever_nuclear",
+          "locale": "en",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 518,
+          "clip_target": "section#policy element bounding rect",
+          "verified_how": "Playwright element screenshot + Pillow size + one visible row + section rect",
+          "bytes": 277342,
+          "sha256": "6e43e28608d89cc7e11c5f67d85a0e952b456e74a36f65255dedd0cf13b98f8f",
+          "width": 2720,
+          "height": 1038,
+          "css_size": [
+            1360.0,
+            519.0
+          ],
+          "section_metrics": {
+            "sectionTop": 1824.796875,
+            "sectionBottom": 2342.6953125,
+            "rowCount": 6,
+            "visibleRowCount": 1
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "state_enforced_dark_zh_1440.png",
+          "force_state": "enforced",
+          "filter": "element capture of section#policy after CSS hide .pw-stage:not([data-policy-id=\"lever_nuclear\"])",
+          "item_id": "lever_nuclear",
+          "locale": "zh",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 498,
+          "clip_target": "section#policy element bounding rect",
+          "verified_how": "Playwright element screenshot + Pillow size + one visible row + section rect",
+          "bytes": 288278,
+          "sha256": "2bccf5d4a7efedf1c2fbb48bba8f9d0c4a64c38f36cfa412cf04d85592ef03d1",
+          "width": 2720,
+          "height": 998,
+          "css_size": [
+            1360.0,
+            499.0
+          ],
+          "section_metrics": {
+            "sectionTop": 1707.796875,
+            "sectionBottom": 2205.4453125,
+            "rowCount": 6,
+            "visibleRowCount": 1
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "captured": true,
+          "file": "state_stalled_light_en_1440.png",
+          "force_state": "stalled",
+          "filter": "element capture of section#policy after CSS hide .pw-stage:not([data-policy-id=\"lever_chips\"])",
+          "item_id": "lever_chips",
+          "locale": "en",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 523,
+          "clip_target": "section#policy element bounding rect",
+          "verified_how": "Playwright element screenshot + Pillow size + one visible row + section rect",
+          "bytes": 269591,
+          "sha256": "67edcaf9ef9f00bed74e35fed398ae1a9023facc820b2171ddb860f9deb9caee",
+          "width": 2720,
+          "height": 1048,
+          "css_size": [
+            1360.0,
+            524.0
+          ],
+          "section_metrics": {
+            "sectionTop": 1824.796875,
+            "sectionBottom": 2347.96875,
+            "rowCount": 6,
+            "visibleRowCount": 1
+          }
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "captured": true,
+          "file": "state_stalled_dark_zh_1440.png",
+          "force_state": "stalled",
+          "filter": "element capture of section#policy after CSS hide .pw-stage:not([data-policy-id=\"lever_chips\"])",
+          "item_id": "lever_chips",
+          "locale": "zh",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 520,
+          "clip_target": "section#policy element bounding rect",
+          "verified_how": "Playwright element screenshot + Pillow size + one visible row + section rect",
+          "bytes": 306339,
+          "sha256": "024a5316bc4ee910bd0b1b4fefe15104eaf76a1b32c361a724a9c90925b461b3",
+          "width": 2720,
+          "height": 1044,
+          "css_size": [
+            1360.0,
+            522.0
+          ],
+          "section_metrics": {
+            "sectionTop": 1707.796875,
+            "sectionBottom": 2228.1171875,
+            "rowCount": 6,
+            "visibleRowCount": 1
+          }
+        }
+      ]
+    }
+  ],
+  "selection": {
+    "explicit_routes": [
+      "/policy_watch.html"
+    ],
+    "max_pages": 1,
+    "mode": "explicit_routes",
+    "note": "headless Chrome via Playwright, --force-device-scale-factor=2; 1440 composition = full page at measured scrollHeight; 390 = iframe harness cropped to the iframe bounding box; state_* = element capture of section#policy after hiding other rows",
+    "priority": null,
+    "registry": null,
+    "registry_rows": 0,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": null,
+    "kind": "site_dir",
+    "site_dir": "site",
+    "resolved_sha_or_none": "b36e6de6aef3e5c36a2cef810eac654bde275f49",
+    "resolved_sha_source": "HEAD of the capture worktree before the evidence commit"
+  },
+  "tool": {
+    "module_ref": "playwright chromium + Pillow crop; --force-device-scale-factor=2",
+    "user_agent": "A-F02-2 r3 recapture",
+    "version": "chrome-headless"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 16,
+    "states_captured": 16
+  },
+  "capture_commands": [
+    {
+      "file": "dark_en_1440.png",
+      "theme": "dark",
+      "lang": "en",
+      "width": 1440,
+      "clip_target": "full page (window-size 1440 x scrollHeight)",
+      "cmd": "playwright chromium --force-device-scale-factor=2 viewport 1440x5080 full_page screenshot /Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/dark_en_1440.png"
+    },
+    {
+      "file": "dark_zh_1440.png",
+      "theme": "dark",
+      "lang": "zh",
+      "width": 1440,
+      "clip_target": "full page (window-size 1440 x scrollHeight)",
+      "cmd": "playwright chromium --force-device-scale-factor=2 viewport 1440x4902 full_page screenshot /Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/dark_zh_1440.png"
+    },
+    {
+      "file": "light_en_1440.png",
+      "theme": "light",
+      "lang": "en",
+      "width": 1440,
+      "clip_target": "full page (window-size 1440 x scrollHeight)",
+      "cmd": "playwright chromium --force-device-scale-factor=2 viewport 1440x5080 full_page screenshot /Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/light_en_1440.png"
+    },
+    {
+      "file": "light_zh_1440.png",
+      "theme": "light",
+      "lang": "zh",
+      "width": 1440,
+      "clip_target": "full page (window-size 1440 x scrollHeight)",
+      "cmd": "playwright chromium --force-device-scale-factor=2 viewport 1440x4902 full_page screenshot /Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/light_zh_1440.png"
+    },
+    {
+      "file": "dark_en_390.png",
+      "theme": "dark",
+      "lang": "en",
+      "width": 390,
+      "clip_target": "iframe#frame bounding box (390 x iframe scrollHeight)",
+      "cmd": "playwright 800xH harness file://site/_cap_mo_f02_2_harness390_dark_en.html; Pillow crop to iframe bbox -> /Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/dark_en_390.png"
+    },
+    {
+      "file": "dark_zh_390.png",
+      "theme": "dark",
+      "lang": "zh",
+      "width": 390,
+      "clip_target": "iframe#frame bounding box (390 x iframe scrollHeight)",
+      "cmd": "playwright 800xH harness file://site/_cap_mo_f02_2_harness390_dark_zh.html; Pillow crop to iframe bbox -> /Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/dark_zh_390.png"
+    },
+    {
+      "file": "light_en_390.png",
+      "theme": "light",
+      "lang": "en",
+      "width": 390,
+      "clip_target": "iframe#frame bounding box (390 x iframe scrollHeight)",
+      "cmd": "playwright 800xH harness file://site/_cap_mo_f02_2_harness390_light_en.html; Pillow crop to iframe bbox -> /Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/light_en_390.png"
+    },
+    {
+      "file": "light_zh_390.png",
+      "theme": "light",
+      "lang": "zh",
+      "width": 390,
+      "clip_target": "iframe#frame bounding box (390 x iframe scrollHeight)",
+      "cmd": "playwright 800xH harness file://site/_cap_mo_f02_2_harness390_light_zh.html; Pillow crop to iframe bbox -> /Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/light_zh_390.png"
+    },
+    {
+      "file": "state_proposed_light_en_1440.png",
+      "theme": "light",
+      "lang": "en",
+      "width": 1440,
+      "clip_target": "section#policy element bounding rect",
+      "cmd": "playwright element screenshot section#policy (filter lever_dollar_bridge) -> /Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/state_proposed_light_en_1440.png"
+    },
+    {
+      "file": "state_proposed_dark_zh_1440.png",
+      "theme": "dark",
+      "lang": "zh",
+      "width": 1440,
+      "clip_target": "section#policy element bounding rect",
+      "cmd": "playwright element screenshot section#policy (filter lever_dollar_bridge) -> /Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/state_proposed_dark_zh_1440.png"
+    },
+    {
+      "file": "state_in_force_light_en_1440.png",
+      "theme": "light",
+      "lang": "en",
+      "width": 1440,
+      "clip_target": "section#policy element bounding rect",
+      "cmd": "playwright element screenshot section#policy (filter lever_fed_nexus) -> /Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/state_in_force_light_en_1440.png"
+    },
+    {
+      "file": "state_in_force_dark_zh_1440.png",
+      "theme": "dark",
+      "lang": "zh",
+      "width": 1440,
+      "clip_target": "section#policy element bounding rect",
+      "cmd": "playwright element screenshot section#policy (filter lever_fed_nexus) -> /Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/state_in_force_dark_zh_1440.png"
+    },
+    {
+      "file": "state_enforced_light_en_1440.png",
+      "theme": "light",
+      "lang": "en",
+      "width": 1440,
+      "clip_target": "section#policy element bounding rect",
+      "cmd": "playwright element screenshot section#policy (filter lever_nuclear) -> /Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/state_enforced_light_en_1440.png"
+    },
+    {
+      "file": "state_enforced_dark_zh_1440.png",
+      "theme": "dark",
+      "lang": "zh",
+      "width": 1440,
+      "clip_target": "section#policy element bounding rect",
+      "cmd": "playwright element screenshot section#policy (filter lever_nuclear) -> /Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/state_enforced_dark_zh_1440.png"
+    },
+    {
+      "file": "state_stalled_light_en_1440.png",
+      "theme": "light",
+      "lang": "en",
+      "width": 1440,
+      "clip_target": "section#policy element bounding rect",
+      "cmd": "playwright element screenshot section#policy (filter lever_chips) -> /Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/state_stalled_light_en_1440.png"
+    },
+    {
+      "file": "state_stalled_dark_zh_1440.png",
+      "theme": "dark",
+      "lang": "zh",
+      "width": 1440,
+      "clip_target": "section#policy element bounding rect",
+      "cmd": "playwright element screenshot section#policy (filter lever_chips) -> /Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/worktrees/wf_a2c8132e-faa-12/mockups/evidence/mo-f02-2/state_stalled_dark_zh_1440.png"
+    }
+  ]
+}
