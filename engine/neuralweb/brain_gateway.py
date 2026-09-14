@@ -5191,6 +5191,45 @@ def _pro_degraded_providers(
 # Vision: image attachments (W6c-vision)
 # ---------------------------------------------------------------------------
 
+
+def _build_local_vision_providers(root: Path | None = None) -> list[dict]:
+    """Build the private final vision rung from ``brain.yml:vision`` only.
+
+    This is intentionally separate from :func:`_build_lane_providers`: the local
+    9B model is continuity for uploaded images after the frontier waterfall is
+    exhausted, not a text-lane authority and not a source of signals, scores, or
+    research judgements. Missing/disabled/malformed config fails open to ``[]``.
+    """
+    try:
+        cfg = _load_brain_config(root)
+        local = ((cfg.get("vision") or {}).get("local_fallback") or {})
+        if local.get("enabled") is not True:
+            return []
+
+        from engine import llm_auth  # noqa: PLC0415
+
+        build_cfg = {
+            "provider_order": ["ollama"],
+            # build_providers normally appends Codex to a non-OAuth list. This
+            # helper owns exactly one local rung, so suppress that insertion.
+            "codex_provider": False,
+            "ollama_base_url": local.get("base_url"),
+            "ollama_base_url_env": local.get("base_url_env") or "OLLAMA_BASE_URL",
+            "ollama_model": local.get("model") or "qwen3.5:9b",
+            "ollama_timeout_s": local.get("timeout_s") or 180,
+            "ollama_num_ctx": local.get("num_ctx") or 32768,
+            "ollama_keep_alive": local.get("keep_alive") or "5m",
+            "respect_provider_cooling": False,
+        }
+        return [
+            p for p in llm_auth.build_providers(build_cfg)
+            if p.get("name") == "ollama" and p.get("client") is not None
+        ]
+    except Exception as exc:  # noqa: BLE001 — continuity must never break the turn
+        log.warning("brain_gateway: local vision fallback unavailable (%s)", type(exc).__name__)
+        return []
+
+
 _VISION_MAX_IMAGES = 4
 _VISION_MAX_BYTES = 3_500_000  # ~3.5MB decoded per image (anthropic hard limit is 5MB)
 _VISION_MEDIA_TYPES = {"image/jpeg", "image/png", "image/gif", "image/webp"}
@@ -5244,6 +5283,10 @@ def _is_claude_provider(p: dict) -> bool:
     return str(p.get("model") or "").startswith("claude")
 
 
+def _is_ollama_provider(p: dict) -> bool:
+    return str(p.get("name") or "") == "ollama"
+
+
 def _pick_vision_provider(providers: list[dict]) -> dict | None:
     """Return the provider that should serve an image turn, or None.
 
@@ -5252,9 +5295,10 @@ def _pick_vision_provider(providers: list[dict]) -> dict | None:
     Codex CLI has no inline-image field — engine.codex_provider stages each image
     to a file and enables the CLI's view_image tool for that one call.
 
-    Claude (claude-*) stays the FALLBACK, not the default: a dead, unauthenticated
-    or usage-capped Codex account must not take vision down with it. Text-only
-    providers (DeepSeek) are never selected, so a lane with neither returns None.
+    Claude (claude-*) stays the frontier FALLBACK, not the default. Private
+    Ollama is the final continuity rung after every remote account, and only when
+    explicitly supplied by the vision-only config. Text-only providers such as
+    DeepSeek are never selected.
     """
     for p in providers:
         if _is_codex_provider(p):
@@ -5262,35 +5306,36 @@ def _pick_vision_provider(providers: list[dict]) -> dict | None:
     for p in providers:
         if _is_claude_provider(p):
             return p
+    for p in providers:
+        if _is_ollama_provider(p):
+            return p
     return None
 
 
 def _vision_capable(providers: list[dict]) -> list[dict]:
-    """Vision-capable rungs of one provider list, codex first then claude.
+    """Vision-capable rungs of one provider list: Codex, Claude, then Ollama.
 
-    Both need a built client — a descriptor whose client failed to construct is a
-    rung `make_call` would skip, and putting it at the head of a vision chain would
-    read as "vision available" while serving nothing.
+    Every rung needs a built client — a descriptor whose client failed to
+    construct is a rung ``make_call`` would skip, and putting it in the chain
+    would read as "vision available" while serving nothing.
     """
     usable = [p for p in providers if p.get("client") is not None]
-    return ([p for p in usable if _is_codex_provider(p)]
-            + [p for p in usable if _is_claude_provider(p) and not _is_codex_provider(p)])
+    return (
+        [p for p in usable if _is_codex_provider(p)]
+        + [p for p in usable if _is_claude_provider(p) and not _is_codex_provider(p)]
+        + [p for p in usable if _is_ollama_provider(p)]
+    )
 
 
 def _vision_providers(lane: str, providers: list[dict], root: Path | None) -> list[dict]:
-    """Ordered vision-capable providers for an image turn — codex first, claude after.
+    """Ordered providers for an image turn: Codex -> Claude -> private Ollama.
 
-    CODEX FIRST (operator directive 2026-07-31): the attached Codex subscription is
-    flat-rate and Anthropic is metered, so an image turn is routed to codex when the
-    lane has it (engine.codex_provider stages the image to a file and enables the
-    CLI's view_image tool for that call).
-
-    Claude rungs follow in the same list so the turn FAILS OVER rather than dying
-    when Codex is capped, unauthenticated or absent. When the resulting chain has no
-    claude rung at all — Fast with DeepSeek (text-only) and codex, or with neither —
-    the Pro lane's claude providers (Opus via OAuth) are borrowed as the tail, so
-    image turns work regardless of lane. Multiple entries also enable OAuth-token
-    failover on 429. [] when nothing vision-capable exists anywhere.
+    The attached Codex subscription remains first and Claude remains the frontier
+    failover. Fast borrows Pro's Claude pool when it has no in-lane Claude rung.
+    Finally, the separately configured private Ollama model is appended once, so a
+    simultaneous remote auth/rate-limit outage degrades model quality rather than
+    deleting the user's uploaded image or failing the turn. Ollama is never added to
+    normal text lanes by this function.
     """
     chain = _vision_capable(providers)
     if lane != "pro" and not any(_is_claude_provider(p) for p in chain):
@@ -5301,6 +5346,17 @@ def _vision_providers(lane: str, providers: list[dict], root: Path | None) -> li
             borrowed = []
         already = {id(p) for p in chain}
         chain = chain + [p for p in borrowed if id(p) not in already]
+
+    local = _build_local_vision_providers(root)
+    identities = {
+        (str(p.get("name") or ""), str(p.get("model") or ""), id(p.get("client")))
+        for p in chain
+    }
+    for p in local:
+        identity = (str(p.get("name") or ""), str(p.get("model") or ""), id(p.get("client")))
+        if identity not in identities:
+            chain.append(p)
+            identities.add(identity)
     return chain
 
 
@@ -5554,7 +5610,17 @@ def _create_failover(cands: list[dict], *, per_model_kwargs=None, **kwargs) -> t
             last = exc
             _mark_provider_dead_if_auth(p, exc)
             _pool_cool_for_exc(p, exc)  # cool a rate-limited/dead pool key for the next turn
-            if not _is_failover_error(exc) or i >= len(cands) - 1:
+            failover_worthy = _is_failover_error(exc)
+            if not failover_worthy or i >= len(cands) - 1:
+                if failover_worthy and i >= len(cands) - 1:
+                    labels = [
+                        f"{q.get('name') or '?'}:{q.get('model') or '?'}"
+                        for q in cands if q.get("client") is not None
+                    ]
+                    log.error(
+                        "brain_gateway: provider waterfall exhausted candidates=%s final_error=%s",
+                        labels, type(exc).__name__,
+                    )
                 raise
             log.warning("brain_gateway: provider %s create failed (%s) — failover to next",
                         p.get("model"), str(exc)[:80])
@@ -8742,8 +8808,8 @@ def chat(
     model = providers[0].get("model") or "unknown"
 
     # 4b. Vision (W6c): Pro-gated (operator decision) — Free/Trial answer text-only.
-    # An image turn is served by a claude vision model (in-lane Haiku when a key exists,
-    # else the Pro lane's Opus via OAuth), with OAuth-token failover across them.
+    # An image turn uses Codex first, then Claude; the private Ollama model is the
+    # final vision-only continuity rung when every remote account is unavailable.
     image_blocks = _image_blocks(images)
     turn_providers = providers
     if image_blocks and not _unlimited_allowed(user_email) and _get_allowance(tier, status, "pro", root).get("limit", 0) == 0:
@@ -9220,9 +9286,8 @@ def chat_stream(
     model = providers[0].get("model") or "unknown"
 
     # 3b. Vision (W6c): Pro-gated (operator decision) — Free/Trial answer text-only.
-    # Image turns are served by a claude vision model (in-lane Haiku when a key exists,
-    # else Pro's Opus via OAuth) with token failover. Resolved before the meta event so
-    # the reported model serves the turn.
+    # Image turns use Codex first, then Claude, then the private vision-only Ollama
+    # continuity rung. Resolved before the meta event so the reported model serves the turn.
     image_blocks = _image_blocks(images)
     turn_providers = providers
     if image_blocks and not _unlimited_allowed(user_email) and _get_allowance(tier, status, "pro", root).get("limit", 0) == 0:
