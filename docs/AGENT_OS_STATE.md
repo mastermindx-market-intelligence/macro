@@ -2,20 +2,21 @@
 
 # Agent OS state
 
-Generated: 2026-09-13T03:36:45Z  |  69 workstreams (50 active · 1 awaiting_ci · 2 awaiting_review · 4 blocked · 8 done · 4 parked)
+Generated: 2026-09-14T03:17:59Z  |  69 workstreams (50 active · 1 awaiting_ci · 2 awaiting_review · 4 blocked · 8 done · 4 parked)
 
 | Input | Value |
 |---|---|
 | active_builds | data/governance/active_builds.json@2026-09-12T07:22:43.959729+00:00 |
-| active_builds age | 20.2h |
+| active_builds age | 43.9h |
 | worktrees | 1 |
-| records | 69 WS · 316 DEC · 264 DSC · 453 handoffs |
+| records | 69 WS · 317 DEC · 267 DSC · 458 handoffs |
 
 ## Degraded inputs
 
 - active_builds.v1 open_prs is TRUNCATED at the gh --limit cap — some open PRs are missing from the join, so a wave may read 'unknown' while its PR is open
 - Mastermind checkout not found — p0 ids unvalidated, p0_active unknown
 - uncommitted-work scan skipped over 1 worktrees (one `git status` each) — re-run with --scan-uncommitted for stranded work
+- active_builds.v1 is 44h old — PR state predates the last nightly sweep
 
 ## Workstreams
 
@@ -53,7 +54,7 @@ Generated: 2026-09-13T03:36:45Z  |  69 workstreams (50 active · 1 awaiting_ci �
 | [`WS:EVAL-OS-OUTPUT-HEALTH`](../agentos/workstreams/WS-EVAL-OS-OUTPUT-HEALTH.md) | done | Eval-OS program (CEO Sol; Fable COO execution lane) | qualitative-intelligence | done:2 | — | None for T4 output health. This bounded workstream is complete and PROVEN_LIVE. Any T7/T8 evidence-scorecard/CEO-view work is a separate Eval OS wave under the recovery architecture and requires a fresh operation/carrier; do not reopen H1 or use this workstream as score authority. |
 | [`WS:EVAL-OS-T1-ENGINE-REGISTRY`](../agentos/workstreams/WS-EVAL-OS-T1-ENGINE-REGISTRY.md) | done | Eval-OS session (COO Fable lane) | qualitative-intelligence | done:3 | #5620(unknown) | This bounded T1 workstream is complete. Preserve the landed registry/guard/overlay and its two deliberate output_class nulls as durable residue. Any T4 output-health work, T12 Agent OS tier interface, prospective evidence accrual, cortex two-species adjudication, options_structure curation, or T7/T8 measurement belongs to its own canonical workstream/wave and does not reopen T1. |
 | [`WS:EXECUTIVE-ATTENTION-ECONOMICS`](../agentos/workstreams/WS-EXECUTIVE-ATTENTION-ECONOMICS.md) | active | ceo-sol | project-active-build-control | done:1 todo:6 | — | Review, current-base join, validate and protect Macro PR #6690 as the sole ten-record Agent OS projection of protected F0G. Then fresh-read current protected Mastermind/Macro and ask the canonical Capacity/runtime owner to bind exactly one bounded A1 implementation carrier using the frozen mission and non-goals above. Do not call A1 QUEUED, STARTED or in progress until that live owner records the exact Job/Attempt/Worker/receiver binding. |
-| [`WS:EXECUTIVE-CAPACITY-FABRIC`](../agentos/workstreams/WS-EXECUTIVE-CAPACITY-FABRIC.md) | active | ceo-sol | shared-ai-provider-control | done:3 in_progress:2 todo:6 | #6297(unknown) #150(unknown) | At native execution time, re-pin CURRENT protected Mastermind and the immutable H0 repair release 229aebce5e8d0c1c7372f5fead9c24516b027cc1 plus accepted Macro dcdd939c45b23abce5ba04f95e330ac914a3904b. As of this reconciliation the current protected carrier is dfd69451dce5e186ce05f65446023fbe21f07a58 and the repair pin remains 229aebce5e8d0c1c7372f5fead9c24516b027cc1. Before building, require repair ancestry and exact mode/blob equality for all five authenticated H0 paths; if protected master advances, move only the carrier pin after the same reproof. Then execute the final v3 build and one bounded native administrator ceremony, require repair PASS plus two verify-only H0_INSTALLED_HOST_PASS_NOT_P0_ACCEPTED receipts, empty stderr, disposable root-carrier absence and disabled/unloaded broker state with sockets absent, and STOP for independent CF2-P0. OCR-1 Task 4 and OCR-3 Task 1 may proceed separately on their own lawful carriers; OCR-2C Family B remains a separate architecture gate. |
+| [`WS:EXECUTIVE-CAPACITY-FABRIC`](../agentos/workstreams/WS-EXECUTIVE-CAPACITY-FABRIC.md) | active | ceo-sol | shared-ai-provider-control | done:5 in_progress:3 todo:4 | #6297(unknown) #150(unknown) #449(unknown) #471(unknown) | Fable principal integration, operation agent-fabric-end-to-end-fable-integration-20260913-sol-001, Wave 1 (root refresh, #578 amendment per R1, #581 rebase per R3, capacity-source shape) under ruling orch/fabric/INTEGRATION_RULING_W1.md (Fable, 2026-09-13); the seven open Mastermind carriers are pinned in "Wave 1 open carriers" below. Protected Mastermind master at this record repair is 89d890f0ae526205e762ad2924b6590f35847e8f and accepted Macro CF1 remains dcdd939c45b23abce5ba04f95e330ac914a3904b. Any native H0 build or root action still belongs to the CF2-H0 wave: re-pin CURRENT protected Mastermind, keep the immutable repair release 229aebce5e8d0c1c7372f5fead9c24516b027cc1, and require repair ancestry plus exact mode/blob equality for all five authenticated H0 paths before treating a pin as CARRIER_COMMIT_SHA. OCR-1 Task 4 and OCR-3 Task 1 may proceed separately on their own lawful carriers; OCR-2C Family B remains a separate architecture gate. |
 | [`WS:EXECUTIVE-OS-DISASTER-RECOVERY`](../agentos/workstreams/WS-EXECUTIVE-OS-DISASTER-RECOVERY.md) | active | coo-fable | executive-os | done:6 in_progress:1 todo:2 | — | Execute the DR-PROMOTE Chairman ceremony sitting per ops/executive_os/DR_RUNBOOK.md §ceremony (standing key custody, vault PAT, optional R2, daemon arming with H0/P0, live DB first export + privileged census, full-ceremony RTO measurement). The weekly drill (dr-drill.yml) is self-sustaining; a red weekly drill is the program's regression signal. Operation carrier: mastermind-executive-os-offhost-disaster-recovery-20260830-sol-pro-001 (Chairman direct-delivery to the Fable COO session of 2026-09-01; Chairman full-completion override same date). |
 | [`WS:FINANCIAL-INTELLIGENCE-FABRIC`](../agentos/workstreams/WS-FINANCIAL-INTELLIGENCE-FABRIC.md) | active | coo-fable | fundamental-forensics | done:3 in_progress:1 todo:8 | #5889(unknown) #5983(unknown) #6157(unknown) #6235(unknown) #6254(unknown) #6268(unknown) #6302(unknown) #6352(unknown) #6382(unknown) | FIF-3A4R is ACCEPTED_ARCHITECTURE / ON_MAIN / NOT_BUILT via PR #6382 (accepted head 07755cb557a53af1341d8b6323a412631af8d83e; squash merge fe8caca04b634686fc8d8707a188ea1a8477c31c; DEC:FIF-3A4R-CROSS-FILING-LINEAGE-ACCEPTED-ON-MAIN). Sol has closed the A4R research gate. Do not implement FIF-3A4 from this records closeout; implementation requires a separate Sol commission. FIF-1 remains DONE / FROZEN. FIF-2 remains DONE / FIXTURE_PROVEN SERVICE SUBSTRATE. FIF-3 remains IN_PROGRESS. FIF-3A1/A2 remain ACCEPTED / GOLDEN FIXTURE PROVEN / ON_MAIN. FIF-3A3 remains ACCEPTED / GOLDEN QUERY CONVERGENCE PROVEN / ON_MAIN. Production attested issuer service remains NOT_BUILT. Do not call FIF-3 done, do not claim production issuer coverage, and do not start another issuer from the A4R closeout. |
 | [`WS:FLOW-OBSERVATORY-V2`](../agentos/workstreams/WS-FLOW-OBSERVATORY-V2.md) | done | fable | china-system | done:9 | #6776(merged) #6780(merged) #6791(merged) #6795(merged) #6796(merged) #6808(merged) #6812(merged) #6815(merged) | Program complete (ACCEPTED-WITH-LIMITATIONS, 2026-09-04). Maintenance only: watch the second valid asia-close session confirm live transitions; see the 2026-09-04 closeout handoff for the limitation ledger. |
@@ -196,6 +197,8 @@ Generated: 2026-09-13T03:36:45Z  |  69 workstreams (50 active · 1 awaiting_ci �
 - WS:EVAL-OS-T1-ENGINE-REGISTRY — record_disagrees_with_execution: wave W2 cites PR #5620, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)
 - WS:EXECUTIVE-CAPACITY-FABRIC — record_disagrees_with_execution: wave CF1 cites PR #6297, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)
 - WS:EXECUTIVE-CAPACITY-FABRIC — record_disagrees_with_execution: wave CF2-F cites PR #150, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)
+- WS:EXECUTIVE-CAPACITY-FABRIC — record_disagrees_with_execution: wave RF1 cites PR #449, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)
+- WS:EXECUTIVE-CAPACITY-FABRIC — record_disagrees_with_execution: wave HF1-A cites PR #471, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)
 - WS:FINANCIAL-INTELLIGENCE-FABRIC — record_disagrees_with_execution: wave FIF-1 cites PR #5889, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)
 - WS:FINANCIAL-INTELLIGENCE-FABRIC — record_disagrees_with_execution: wave FIF-2 cites PR #5983, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)
 - WS:FINANCIAL-INTELLIGENCE-FABRIC — record_disagrees_with_execution: wave FIF-2 cites PR #6157, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)
@@ -300,6 +303,8 @@ Generated: 2026-09-13T03:36:45Z  |  69 workstreams (50 active · 1 awaiting_ci �
 - agentos/workstreams/WS-TEMPORAL-GRAIN-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'agentos/handoffs/TEMPORAL-GRAIN-INTELLIGENCE-' does not exist in repo 'macro'
 - agentos/workstreams/WS-TOP-ANATOMY.md: [phantom-owns-path] owns_paths entry 'scripts/research_top_anatomy_' does not exist in repo 'macro'
 - agentos/workstreams/WS-TOP-ANATOMY.md: [phantom-owns-path] owns_paths entry 'reports/top-anatomy-' does not exist in repo 'macro'
+- agentos/decisions/DEC-AGENTOS-NO-TASK-STORE.md: [review-overdue] review_by 2026-09-12 has passed
+- agentos/decisions/DEC-AGENTOS-START-NEXT-VS-AGENDA.md: [review-overdue] review_by 2026-09-12 has passed
 - agentos/decisions/DEC-BIOCATALYST-P1-FIRST-VERTICAL-MILESTONE-RADAR.md: [review-overdue] review_by 2026-08-27 has passed
 - agentos/decisions/DEC-CS-V2-CLOSED-BUNDLE-ATOMIC-PERSISTENCE.md: [review-overdue] review_by 2026-08-25 has passed
 - agentos/decisions/DEC-CS-V2-EVIDENCE-IDENTITY-OCCURRENCE-BYTES.md: [review-overdue] review_by 2026-08-25 has passed
