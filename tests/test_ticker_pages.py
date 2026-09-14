@@ -1509,6 +1509,7 @@ class TestTemplateRender:
         js = (_REPO / "site" / "assets" / "js" / "company-intelligence-dossier.js").read_text(encoding="utf-8")
 
         assert "earnings.public_wire_routes/v1" in js
+        assert "earnings.public_wire_routes/v2" in js
         assert "routes.events" in js
         assert "event_id" in js and "transcript_id" in js
         assert "history.hidden = events.length <= 1" in js

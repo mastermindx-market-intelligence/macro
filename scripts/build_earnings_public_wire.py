@@ -21,7 +21,7 @@ from __future__ import annotations
 import argparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 import email.utils
 from hashlib import sha256
 import html
@@ -69,6 +69,7 @@ log = logging.getLogger("build_earnings_public_wire")
 
 DEFAULT_SOURCE_BASE = "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev"
 DEFAULT_SOURCE_MANIFEST = "earnings_story_packets/manifest.json"
+DEFAULT_TRANSCRIPT_INDEX_URL = "https://app.mastermind-x.com/data/tx/index.json"
 OUTPUT_RELATIVE = Path("stocks") / "earnings"
 ROUTE_CATALOG_FILENAME = "route-catalog.json"
 FEED_FILENAME = "feed.xml"
@@ -85,11 +86,16 @@ INDEX_PAGE_SIZE = 96
 # This lane is intentionally memory-bound while it hydrates a generation.  The
 # served route catalog is its only persisted state; the packet graph and source
 # marker must never become a Git artifact or a public bulk-data endpoint.
-MAX_MANIFEST_BYTES = 8 * 1024 * 1024
+MAX_MANIFEST_BYTES = 64 * 1024 * 1024
+MAX_TRANSCRIPT_INDEX_BYTES = 16 * 1024 * 1024
 MAX_PACKET_BYTES = 2 * 1024 * 1024
-MAX_SOURCE_PACKET_COUNT = 10_000
+MAX_SOURCE_PACKET_COUNT = 100_000
+MAX_SELECTED_PACKET_COUNT = 10_000
+MAX_SELECTED_PACKET_BYTES = 1024 * 1024 * 1024
 MAX_EXISTING_AGE_SECONDS = 48 * 60 * 60
-ROUTE_CATALOG_SCHEMA = "earnings.public_wire_routes/v1"
+ROUTE_CATALOG_SCHEMA_V1 = "earnings.public_wire_routes/v1"
+ROUTE_CATALOG_SCHEMA_V2 = "earnings.public_wire_routes/v2"
+ROUTE_CATALOG_SCHEMA = ROUTE_CATALOG_SCHEMA_V2
 
 
 def _renderer_version() -> str:
@@ -131,6 +137,23 @@ class BuildResult:
     source: str
     article_count: int
     output_dir: Path
+
+
+@dataclass(frozen=True)
+class PacketSelection:
+    admitted_keys: frozenset[str]
+    changed_keys: frozenset[str]
+    forward_new_keys: frozenset[str]
+    skipped_historical_keys: frozenset[str]
+    selected_keys: frozenset[str]
+
+
+@dataclass(frozen=True)
+class StoryManifestSnapshot:
+    manifest: dict[str, Any]
+    raw: bytes
+    generation_id: str
+    manifest_sha256: str
 
 
 def _canonical_json(payload: object) -> bytes:
@@ -211,79 +234,173 @@ def _validate_remote_manifest(manifest: Mapping[str, Any]) -> None:
         raise PublicWireBuildError(f"public story packet manifest failed contract verification: {exc}") from exc
 
 
-def fetch_current_publication(
-    *, source_base: str = DEFAULT_SOURCE_BASE,
-    fetch: Callable[[str], bytes] | None = None,
-    workers: int = 12,
-    timeout: float = 30.0,
-) -> dict[str, Any]:
-    """Hydrate every current packet only after its immutable receipt is known.
+def _read_remote_bytes(
+    url: str,
+    *,
+    limit: int,
+    timeout: float,
+    fetch: Callable[[str], bytes] | None,
+) -> bytes:
+    if limit <= 0:
+        raise PublicWireBuildError("remote read byte limit must be positive")
+    if fetch is None:
+        return _http_fetch(url, timeout=timeout, max_bytes=limit)
+    try:
+        payload = fetch(url)
+    except PublicWireBuildError:
+        raise
+    except Exception as exc:  # noqa: BLE001 - injected fixtures share the production boundary.
+        raise PublicWireBuildError(f"unable to fetch {url}: {exc}") from exc
+    if not isinstance(payload, bytes):
+        raise PublicWireBuildError(f"source fetch did not return bytes for {url}")
+    if len(payload) > limit:
+        raise PublicWireBuildError(f"remote object exceeds safe size bound: {url}")
+    return payload
 
-    The function is deliberately all-or-nothing. A single missing, altered, or
-    malformed object raises before a candidate public-wire manifest is built;
-    callers can then retain their prior verified publication rather than emit a
-    silently shrunken archive.
-    """
+
+def _story_snapshot_from_bytes(
+    raw: bytes,
+    *,
+    label: str,
+    expected_generation_id: str | None = None,
+    expected_manifest_sha256: str | None = None,
+) -> StoryManifestSnapshot:
+    manifest = _json_bytes(raw, label=label)
+    if raw != _canonical_json(manifest):
+        raise PublicWireBuildError(f"{label} is not canonical bytes")
+    _validate_remote_manifest(manifest)
+    generation_id = manifest.get("generation_id")
+    packets = manifest.get("packets")
+    files = manifest.get("files")
+    if not isinstance(generation_id, str) or not isinstance(packets, Mapping) or not isinstance(files, Mapping):
+        raise PublicWireBuildError(f"{label} lacks generation, packets, or files")
+    if len(packets) > MAX_SOURCE_PACKET_COUNT:
+        raise PublicWireBuildError("public story packet catalog exceeds safe count bound")
+    manifest_sha = sha256(raw).hexdigest()
+    if expected_generation_id is not None and generation_id != expected_generation_id:
+        raise PublicWireBuildError(f"{label} generation does not match accepted route state")
+    if expected_manifest_sha256 is not None and manifest_sha != expected_manifest_sha256:
+        raise PublicWireBuildError(f"{label} sha256 does not match accepted route state")
+    return StoryManifestSnapshot(
+        manifest=dict(manifest),
+        raw=raw,
+        generation_id=generation_id,
+        manifest_sha256=manifest_sha,
+    )
+
+
+def _load_current_story_snapshot(
+    *,
+    source_base: str,
+    fetch: Callable[[str], bytes] | None,
+    timeout: float,
+) -> StoryManifestSnapshot:
+    base = source_base.rstrip("/")
+    if not base.startswith("https://"):
+        raise PublicWireBuildError("public packet source must use https")
+    marker_url = _source_url(base, DEFAULT_SOURCE_MANIFEST)
+    marker_raw = _read_remote_bytes(
+        marker_url, limit=MAX_MANIFEST_BYTES, timeout=timeout, fetch=fetch,
+    )
+    marker = _story_snapshot_from_bytes(marker_raw, label="public story packet marker")
+    immutable_url = _source_url(
+        base, f"earnings_story_packets/generations/{marker.generation_id}/manifest.json",
+    )
+    immutable_raw = _read_remote_bytes(
+        immutable_url, limit=MAX_MANIFEST_BYTES, timeout=timeout, fetch=fetch,
+    )
+    immutable = _story_snapshot_from_bytes(
+        immutable_raw,
+        label="immutable public story packet manifest",
+        expected_generation_id=marker.generation_id,
+        expected_manifest_sha256=marker.manifest_sha256,
+    )
+    if marker.raw != immutable.raw or marker.manifest != immutable.manifest:
+        raise PublicWireBuildError(
+            "mutable story packet marker does not equal immutable generation manifest"
+        )
+    return marker
+
+
+def _load_prior_story_snapshot(
+    state: Mapping[str, Any],
+    *,
+    source_base: str,
+    fetch: Callable[[str], bytes] | None,
+    timeout: float,
+) -> StoryManifestSnapshot:
+    generation_id = str(state["source_generation_id"])
+    manifest_sha = str(state["source_manifest_sha256"])
+    url = _source_url(
+        source_base.rstrip("/"),
+        f"earnings_story_packets/generations/{generation_id}/manifest.json",
+    )
+    raw = _read_remote_bytes(url, limit=MAX_MANIFEST_BYTES, timeout=timeout, fetch=fetch)
+    return _story_snapshot_from_bytes(
+        raw,
+        label="accepted prior story packet manifest",
+        expected_generation_id=generation_id,
+        expected_manifest_sha256=manifest_sha,
+    )
+
+
+def _load_transcript_index(
+    *,
+    fetch: Callable[[str], bytes] | None,
+    timeout: float,
+    index_url: str = DEFAULT_TRANSCRIPT_INDEX_URL,
+) -> dict[str, Any]:
+    raw = _read_remote_bytes(
+        index_url, limit=MAX_TRANSCRIPT_INDEX_BYTES, timeout=timeout, fetch=fetch,
+    )
+    payload = _json_bytes(raw, label="terminal transcript index")
+    generated_at = payload.get("generated_at")
+    dates = payload.get("dates")
+    if not isinstance(generated_at, str) or len(generated_at) < 10:
+        raise PublicWireBuildError("terminal transcript index generated_at is invalid")
+    if not isinstance(dates, Mapping):
+        raise PublicWireBuildError("terminal transcript index dates map is invalid")
+    if len(dates) > MAX_SOURCE_PACKET_COUNT:
+        raise PublicWireBuildError("terminal transcript index exceeds safe count bound")
+    if any(not isinstance(key, str) or not isinstance(value, str) for key, value in dates.items()):
+        raise PublicWireBuildError("terminal transcript index dates map is invalid")
+    return dict(payload)
+
+
+def _hydrate_publication(
+    snapshot: StoryManifestSnapshot,
+    *,
+    selected_keys: set[str] | frozenset[str],
+    source_base: str,
+    fetch: Callable[[str], bytes] | None,
+    workers: int,
+    timeout: float,
+    allow_empty: bool,
+) -> dict[str, Any]:
     if workers < 1 or workers > 32:
         raise PublicWireBuildError("workers must be between 1 and 32")
     if timeout <= 0:
         raise PublicWireBuildError("timeout must be positive")
-    source_base = source_base.rstrip("/")
-    if not source_base.startswith("https://"):
-        raise PublicWireBuildError("public packet source must use https")
-    read = fetch or (lambda url, limit: _http_fetch(url, timeout=timeout, max_bytes=limit))
-    def read_source(url: str, *, limit: int) -> bytes:
-        try:
-            try:
-                payload = read(url, limit)  # type: ignore[misc]
-            except TypeError:
-                # The tiny one-argument seam keeps deterministic unit fixtures
-                # ergonomic; the production implementation always receives the
-                # explicit byte ceiling above.
-                payload = read(url)  # type: ignore[call-arg]
-        except PublicWireBuildError:
-            raise
-        except Exception as exc:  # noqa: BLE001 - injected fetchers share the same fail-closed boundary.
-            raise PublicWireBuildError(f"unable to fetch {url}: {exc}") from exc
-        if not isinstance(payload, bytes):
-            raise PublicWireBuildError(f"source fetch did not return bytes for {url}")
-        if len(payload) > limit:
-            raise PublicWireBuildError("public story packet object exceeds safe size bound")
-        return payload
-    manifest_url = _source_url(source_base, DEFAULT_SOURCE_MANIFEST)
-    raw_manifest = read_source(manifest_url, limit=MAX_MANIFEST_BYTES)
-    manifest = _json_bytes(raw_manifest, label="public story packet manifest")
-    if raw_manifest != _canonical_json(manifest):
-        raise PublicWireBuildError("public story packet marker is not canonical bytes")
-    _validate_remote_manifest(manifest)
-
+    manifest = snapshot.manifest
     files = manifest.get("files")
     packets = manifest.get("packets")
     policy = manifest.get("policy")
     if not isinstance(files, Mapping) or not isinstance(packets, Mapping) or not isinstance(policy, Mapping):
         raise PublicWireBuildError("public story packet manifest lacks files, packets, or policy")
     policy_snapshot = policy.get("snapshot")
-    generation_id = manifest.get("generation_id")
-    if not isinstance(policy_snapshot, Mapping) or not isinstance(generation_id, str):
-        raise PublicWireBuildError("public story packet manifest policy or generation is invalid")
-    immutable_url = _source_url(
-        source_base, f"earnings_story_packets/generations/{generation_id}/manifest.json",
-    )
-    raw_immutable = read_source(immutable_url, limit=MAX_MANIFEST_BYTES)
-    immutable = _json_bytes(raw_immutable, label="immutable public story packet manifest")
-    if raw_immutable != _canonical_json(immutable):
-        raise PublicWireBuildError("immutable public story packet manifest is not canonical bytes")
-    _validate_remote_manifest(immutable)
-    if (
-        raw_manifest != raw_immutable
-        or manifest != immutable
-        or sha256(raw_manifest).hexdigest() != sha256(raw_immutable).hexdigest()
-    ):
-        raise PublicWireBuildError("mutable story packet marker does not equal immutable generation manifest")
-    if len(packets) > MAX_SOURCE_PACKET_COUNT:
-        raise PublicWireBuildError("public story packet catalog exceeds safe count bound")
+    if not isinstance(policy_snapshot, Mapping):
+        raise PublicWireBuildError("public story packet manifest policy is invalid")
+    selected = set(selected_keys)
+    if len(selected) > MAX_SELECTED_PACKET_COUNT:
+        raise PublicWireBuildError("selected packet catalog exceeds safe count bound")
+    unknown = selected - set(packets)
+    if unknown:
+        raise PublicWireBuildError(f"selected packet keys are absent from current source: {sorted(unknown)[:3]}")
 
-    def one(event_key: str, index: object) -> tuple[str, dict[str, Any] | None]:
+    selected_receipts: dict[str, tuple[Mapping[str, Any], str, str, int]] = {}
+    selected_bytes = 0
+    for event_key in sorted(selected):
+        index = packets[event_key]
         if not isinstance(index, Mapping):
             raise PublicWireBuildError(f"packet index is invalid for {event_key}")
         object_key = index.get("object_key")
@@ -298,9 +415,18 @@ def fetch_current_publication(
             raise PublicWireBuildError(f"packet receipt is invalid for {event_key}")
         if expected_bytes > MAX_PACKET_BYTES:
             raise PublicWireBuildError(f"packet receipt exceeds safe size bound for {event_key}")
-        raw_packet = read_source(
-            _source_url(source_base, f"earnings_story_packets/{object_key}"),
-            limit=MAX_PACKET_BYTES,
+        selected_bytes += expected_bytes
+        if selected_bytes > MAX_SELECTED_PACKET_BYTES:
+            raise PublicWireBuildError("selected packet bytes exceed safe bound")
+        selected_receipts[event_key] = (index, object_key, expected_sha, expected_bytes)
+
+    base = source_base.rstrip("/")
+
+    def one(event_key: str) -> tuple[str, dict[str, Any] | None]:
+        index, object_key, expected_sha, expected_bytes = selected_receipts[event_key]
+        packet_url = _source_url(base, f"earnings_story_packets/{object_key}")
+        raw_packet = _read_remote_bytes(
+            packet_url, limit=MAX_PACKET_BYTES, timeout=timeout, fetch=fetch,
         )
         if len(raw_packet) != expected_bytes or sha256(raw_packet).hexdigest() != expected_sha:
             raise PublicWireBuildError(f"packet receipt mismatch for {event_key}")
@@ -308,19 +434,19 @@ def fetch_current_publication(
         if packet.get("packet_id") != index.get("packet_id"):
             raise PublicWireBuildError(f"packet identity mismatch for {event_key}")
         story = packet.get("story")
-        if not isinstance(story, Mapping) or story.get("story_id") != index.get("story_id") or story.get("story_revision_id") != index.get("story_revision_id"):
+        if (
+            not isinstance(story, Mapping)
+            or story.get("story_id") != index.get("story_id")
+            or story.get("story_revision_id") != index.get("story_revision_id")
+        ):
             raise PublicWireBuildError(f"story identity mismatch for {event_key}")
         try:
             validate_story_packet(packet, policy=policy_snapshot)
-        except Exception as exc:  # noqa: BLE001 - never quietly skip a malformed receipt-bound packet.
+        except Exception as exc:  # noqa: BLE001 - never skip malformed receipt-bound packets.
             raise PublicWireBuildError(f"story packet contract failed for {event_key}: {exc}") from exc
-        # The upstream catalog deliberately retains Tier-C/non-ready objects.
-        # They are valid context artifacts, but have no public wire derivative.
-        # Excluding them is distinct from accepting an incomplete download: every
-        # current packet has already been fetched, hashed, and contract-checked.
         digest = packet.get("digest")
-        source = story.get("source") if isinstance(story, Mapping) else None
-        promotion = story.get("promotion") if isinstance(story, Mapping) else None
+        source = story.get("source")
+        promotion = story.get("promotion")
         if not (
             story.get("status") == "source_ready"
             and isinstance(promotion, Mapping)
@@ -337,7 +463,7 @@ def fetch_current_publication(
         article = compile_public_wire_article(
             packet,
             policy_snapshot=policy_snapshot,
-            generation_id=generation_id,
+            generation_id=snapshot.generation_id,
             object_key=object_key,
             object_sha256=expected_sha,
             object_bytes=expected_bytes,
@@ -348,64 +474,241 @@ def fetch_current_publication(
         return event_key, article
 
     outcomes: dict[str, dict[str, Any]] = {}
-    # Submit in key order so the audit surface and failures are deterministic;
-    # completion order is intentionally irrelevant to the frozen final manifest.
     with ThreadPoolExecutor(max_workers=workers, thread_name_prefix="earnings-wire") as executor:
-        futures = {executor.submit(one, key, index): key for key, index in sorted(packets.items())}
+        futures = {executor.submit(one, key): key for key in sorted(selected)}
         for future in as_completed(futures):
             event_key = futures[future]
             try:
                 key, article = future.result()
-            except Exception as exc:  # noqa: BLE001 - preserve first source error with its event identity.
+            except Exception as exc:  # noqa: BLE001 - preserve the first source error and identity.
                 for outstanding in futures:
                     outstanding.cancel()
                 raise PublicWireBuildError(f"public packet hydration failed at {event_key}: {exc}") from exc
             if article is not None:
                 outcomes[key] = article
-    if not outcomes:
-        raise PublicWireBuildError("current packet catalog contains no public-wire-eligible exact evidence")
-    publication = build_public_wire_manifest(
+    if not outcomes and not allow_empty:
+        raise PublicWireBuildError("selected packet catalog contains no public-wire-eligible exact evidence")
+    return build_public_wire_manifest(
         list(outcomes.values()),
-        source_generation_id=generation_id,
-        source_manifest_sha256=source_manifest_sha256(raw_manifest),
+        source_generation_id=snapshot.generation_id,
+        source_manifest_sha256=snapshot.manifest_sha256,
         source_packet_count=len(packets),
         source_packet_manifest_schema=str(manifest.get("schema") or ""),
         canonical_base=SITE_BASE.rstrip("/"),
     )
-    return publication
+
+
+def fetch_current_publication(
+    *, source_base: str = DEFAULT_SOURCE_BASE,
+    fetch: Callable[[str], bytes] | None = None,
+    workers: int = 12,
+    timeout: float = 30.0,
+) -> dict[str, Any]:
+    """Hydrate one bounded complete source generation for standalone callers."""
+    snapshot = _load_current_story_snapshot(
+        source_base=source_base, fetch=fetch, timeout=timeout,
+    )
+    packets = snapshot.manifest.get("packets")
+    assert isinstance(packets, Mapping)
+    if len(packets) > MAX_SELECTED_PACKET_COUNT:
+        raise PublicWireBuildError(
+            "standalone full hydration exceeds selected packet safe count; "
+            "incremental route state is required"
+        )
+    return _hydrate_publication(
+        snapshot,
+        selected_keys=set(packets),
+        source_base=source_base,
+        fetch=fetch,
+        workers=workers,
+        timeout=timeout,
+        allow_empty=False,
+    )
+
+
+def _parse_iso_day(value: object, *, name: str) -> date:
+    if not isinstance(value, str):
+        raise PublicWireBuildError(f"{name} must be an ISO date")
+    try:
+        return date.fromisoformat(value)
+    except ValueError as exc:
+        raise PublicWireBuildError(f"{name} must be an ISO date") from exc
+
+
+def _latest_route_date(routes: Mapping[str, Any]) -> date:
+    latest: date | None = None
+    for ticker, raw_route in routes.items():
+        if not isinstance(ticker, str) or not isinstance(raw_route, Mapping):
+            raise PublicWireBuildError("public earnings wire routes are invalid")
+        events = raw_route.get("events")
+        if not isinstance(events, Mapping):
+            raise PublicWireBuildError("public earnings wire route events are invalid")
+        for raw_event in events.values():
+            if not isinstance(raw_event, Mapping):
+                raise PublicWireBuildError("public earnings wire route event is invalid")
+            event_day = _parse_iso_day(
+                raw_event.get("date"), name="public earnings wire route event date",
+            )
+            if latest is None or event_day > latest:
+                latest = event_day
+    if latest is None:
+        raise PublicWireBuildError("public earnings wire routes contain no dated events")
+    return latest
+
+
+def _admitted_packet_keys(state: Mapping[str, Any]) -> frozenset[str]:
+    routes = state.get("routes")
+    if not isinstance(routes, Mapping):
+        raise PublicWireBuildError("public earnings wire state has no routes")
+    keys: set[str] = set()
+    for ticker, raw_route in routes.items():
+        if not isinstance(ticker, str) or not isinstance(raw_route, Mapping):
+            raise PublicWireBuildError("public earnings wire routes are invalid")
+        events = raw_route.get("events")
+        if not isinstance(events, Mapping):
+            raise PublicWireBuildError("public earnings wire route events are invalid")
+        for fallback_tx, raw_event in events.items():
+            if not isinstance(raw_event, Mapping):
+                raise PublicWireBuildError("public earnings wire route event is invalid")
+            transcript_id = raw_event.get("transcript_id", fallback_tx)
+            if not isinstance(transcript_id, str) or not transcript_id:
+                raise PublicWireBuildError("public earnings wire transcript id is invalid")
+            keys.add(f"{ticker}/{transcript_id}")
+    return frozenset(keys)
+
+
+def _select_incremental_packet_keys(
+    *,
+    prior_packets: Mapping[str, Any],
+    current_packets: Mapping[str, Any],
+    prior_state: Mapping[str, Any],
+    transcript_index: Mapping[str, Any] | None,
+) -> PacketSelection:
+    prior_keys = set(prior_packets)
+    current_keys = set(current_packets)
+    missing = prior_keys - current_keys
+    if missing:
+        raise PublicWireBuildError(
+            f"current story packet catalog shrank; missing prior keys: {sorted(missing)[:3]}"
+        )
+
+    admitted = set(_admitted_packet_keys(prior_state))
+    missing_prior_admitted = admitted - prior_keys
+    if missing_prior_admitted:
+        raise PublicWireBuildError(
+            f"accepted route state is not contained in its source generation: {sorted(missing_prior_admitted)[:3]}"
+        )
+    missing_admitted = admitted - current_keys
+    if missing_admitted:
+        raise PublicWireBuildError(
+            f"current story packet catalog lost admitted keys: {sorted(missing_admitted)[:3]}"
+        )
+    changed = {
+        key for key in prior_keys & current_keys
+        if current_packets[key] != prior_packets[key]
+    }
+    new = current_keys - prior_keys
+
+    floor = _parse_iso_day(
+        prior_state.get("forward_selection_floor_date"),
+        name="forward selection floor date",
+    )
+    forward_new: set[str] = set()
+    skipped_historical: set[str] = set()
+    if new:
+        if not isinstance(transcript_index, Mapping):
+            raise PublicWireBuildError("terminal transcript index is required for new packet selection")
+        generated_at = transcript_index.get("generated_at")
+        if not isinstance(generated_at, str) or len(generated_at) < 10:
+            raise PublicWireBuildError("terminal transcript index generated_at is invalid")
+        try:
+            ceiling = date.fromisoformat(generated_at[:10])
+        except ValueError as exc:
+            raise PublicWireBuildError("terminal transcript index generated_at is invalid") from exc
+        dates = transcript_index.get("dates")
+        if not isinstance(dates, Mapping):
+            raise PublicWireBuildError("terminal transcript index dates map is invalid")
+    else:
+        ceiling = floor
+        dates = {}
+
+    for key in sorted(new):
+        event_day = _parse_iso_day(
+            dates.get(key), name=f"terminal transcript date for {key}",
+        )
+        if event_day > ceiling:
+            raise PublicWireBuildError(
+                f"terminal transcript date for {key} is later than index generated_at"
+            )
+        # The persisted floor is inclusive. A source generation can advance
+        # during the same UTC day as the newest accepted call, so a strict
+        # comparison would permanently strand legitimate same-day additions.
+        if event_day >= floor:
+            forward_new.add(key)
+        else:
+            skipped_historical.add(key)
+
+    selected = admitted | changed | forward_new
+    if len(selected) > MAX_SELECTED_PACKET_COUNT:
+        raise PublicWireBuildError("selected packet catalog exceeds safe count bound")
+    return PacketSelection(
+        admitted_keys=frozenset(admitted),
+        changed_keys=frozenset(changed),
+        forward_new_keys=frozenset(forward_new),
+        skipped_historical_keys=frozenset(skipped_historical),
+        selected_keys=frozenset(selected),
+    )
 
 
 def load_public_build_state(out_dir: Path) -> dict[str, Any] | None:
-    """Read the redacted public routing state, never a retained packet manifest.
+    """Read and normalize the redacted public routing state.
 
-    The state is deliberately safe to serve: it contains route identity,
-    presentation names, and a generation/hash receipt only.  It is sufficient
-    to skip a no-change hydration, but deliberately insufficient to recreate a
-    page or leak the evidence corpus.
+    Version 1 is accepted only as a migration source. Its forward-selection
+    floor is derived once from the newest already-published event. Version 2
+    carries that floor explicitly and must preserve it across later builds.
     """
     path = Path(out_dir) / ROUTE_CATALOG_FILENAME
     if not path.is_file():
         return None
-    payload = _json_bytes(path.read_bytes(), label="public earnings wire route catalog")
-    expected = {
-        "schema", "source_generation_id", "source_manifest_sha256", "verified_at",
-        "company_generation_id", "renderer_version", "article_count", "as_of", "routes",
-    }
-    if set(payload) != expected or payload.get("schema") != ROUTE_CATALOG_SCHEMA:
+    try:
+        payload = _json_bytes(path.read_bytes(), label="public earnings wire route catalog")
+        common = {
+            "schema", "source_generation_id", "source_manifest_sha256", "verified_at",
+            "company_generation_id", "renderer_version", "article_count", "as_of", "routes",
+        }
+        schema = payload.get("schema")
+        if schema == ROUTE_CATALOG_SCHEMA_V1:
+            if set(payload) != common:
+                return None
+        elif schema == ROUTE_CATALOG_SCHEMA_V2:
+            if set(payload) != common | {"forward_selection_floor_date"}:
+                return None
+        else:
+            return None
+        if not isinstance(payload.get("source_generation_id"), str) or not re.fullmatch(r"[0-9a-f]{32}", payload["source_generation_id"]):
+            return None
+        if not isinstance(payload.get("source_manifest_sha256"), str) or not re.fullmatch(r"[0-9a-f]{64}", payload["source_manifest_sha256"]):
+            return None
+        if not isinstance(payload.get("verified_at"), str) or not isinstance(payload.get("article_count"), int):
+            return None
+        if payload.get("company_generation_id") is not None and not isinstance(payload.get("company_generation_id"), str):
+            return None
+        if not isinstance(payload.get("renderer_version"), str) or not re.fullmatch(r"[0-9a-f]{64}", payload["renderer_version"]):
+            return None
+        routes = payload.get("routes")
+        if not isinstance(routes, Mapping):
+            return None
+        normalized = dict(payload)
+        if schema == ROUTE_CATALOG_SCHEMA_V1:
+            normalized["forward_selection_floor_date"] = _latest_route_date(routes).isoformat()
+        else:
+            normalized["forward_selection_floor_date"] = _parse_iso_day(
+                payload.get("forward_selection_floor_date"),
+                name="forward selection floor date",
+            ).isoformat()
+        return normalized
+    except PublicWireBuildError:
         return None
-    if not isinstance(payload.get("source_generation_id"), str) or not re.fullmatch(r"[0-9a-f]{32}", payload["source_generation_id"]):
-        return None
-    if not isinstance(payload.get("source_manifest_sha256"), str) or not re.fullmatch(r"[0-9a-f]{64}", payload["source_manifest_sha256"]):
-        return None
-    if not isinstance(payload.get("verified_at"), str) or not isinstance(payload.get("article_count"), int):
-        return None
-    if payload.get("company_generation_id") is not None and not isinstance(payload.get("company_generation_id"), str):
-        return None
-    if not isinstance(payload.get("renderer_version"), str) or not re.fullmatch(r"[0-9a-f]{64}", payload["renderer_version"]):
-        return None
-    if not isinstance(payload.get("routes"), Mapping):
-        return None
-    return dict(payload)
 
 
 def _state_age_seconds(state: Mapping[str, Any], *, now: datetime) -> float:
@@ -449,7 +752,7 @@ def _atomic_write(path: Path, data: bytes) -> None:
 
 def _route_catalog(
     manifest: Mapping[str, Any], *, alignment: Mapping[str, Mapping[str, Any]], verified_at: str,
-    company_generation_id: str | None,
+    company_generation_id: str | None, forward_selection_floor_date: str | None = None,
 ) -> bytes:
     """Emit the smallest public routing contract needed by ticker dossiers.
 
@@ -480,8 +783,14 @@ def _route_catalog(
             latest["date"], latest["period"], latest["href"]
         ):
             current["latest"] = candidate
+    floor = (
+        _parse_iso_day(forward_selection_floor_date, name="forward selection floor date")
+        if forward_selection_floor_date is not None
+        else _latest_route_date(routes)
+    )
     payload = {
         "schema": ROUTE_CATALOG_SCHEMA,
+        "forward_selection_floor_date": floor.isoformat(),
         "source_generation_id": str(manifest["source"]["generation_id"]),
         "source_manifest_sha256": str(manifest["source"]["manifest_sha256"]),
         "company_generation_id": company_generation_id,
@@ -1127,6 +1436,11 @@ def publish_public_wire(
         _route_catalog(
             manifest, alignment=alignment, verified_at=verified_at,
             company_generation_id=company_generation_id,
+            forward_selection_floor_date=(
+                str(prior_state["forward_selection_floor_date"])
+                if prior_state is not None and prior_state.get("forward_selection_floor_date") is not None
+                else None
+            ),
         ),
     )
     _remove_legacy_public_state(out_dir)
@@ -1146,12 +1460,12 @@ def build(
     company_reader: Callable[[Mapping[str, Any]], Mapping[str, Any]] | None = None,
     now: datetime | None = None,
 ) -> BuildResult:
-    """Build from fresh immutable source, or retain a recent existing public wire.
+    """Build from current immutable truth with bounded incremental hydration.
 
-    There is intentionally no offline manifest replay.  On an upstream outage,
-    the already-rendered public bytes are the fallback and are never rewritten;
-    after 48 hours that fallback becomes a hard failure instead of silently
-    presenting stale research as current.
+    The redacted route catalog identifies the last accepted story generation and
+    the fixed forward-selection floor. A refresh rebuilds admitted records,
+    re-evaluates corrections, and considers only newly added calls on or after
+    that floor. Historical backfill never turns the hourly lane into a corpus replay.
     """
     destination = Path(out_dir) if out_dir is not None else _REPO / "site" / OUTPUT_RELATIVE
     now = now or datetime.now(timezone.utc)
@@ -1159,61 +1473,92 @@ def build(
     if offline:
         safe = _safe_existing_state_or_raise(destination, now=now)
         return BuildResult("existing", "existing", int(safe["article_count"]), destination)
+
     try:
-        # Fetch marker + immutable manifest first.  This is purposefully split
-        # from packet hydration so an unchanged verified generation costs two
-        # tiny GETs, not another full 500-packet run.
-        manifest_url = _source_url(source_base.rstrip("/"), DEFAULT_SOURCE_MANIFEST)
-        read = fetch or (lambda url: _http_fetch(url, timeout=timeout, max_bytes=MAX_MANIFEST_BYTES))
-        try:
-            marker_raw = read(manifest_url)  # type: ignore[call-arg]
-        except Exception as exc:  # noqa: BLE001
-            raise PublicWireBuildError(f"unable to fetch {manifest_url}: {exc}") from exc
-        if not isinstance(marker_raw, bytes) or len(marker_raw) > MAX_MANIFEST_BYTES:
-            raise PublicWireBuildError("public story packet marker exceeds safe size bound")
-        marker = _json_bytes(marker_raw, label="public story packet marker")
-        if marker_raw != _canonical_json(marker):
-            raise PublicWireBuildError("public story packet marker is not canonical bytes")
-        _validate_remote_manifest(marker)
-        generation_id = str(marker["generation_id"])
-        marker_sha = sha256(marker_raw).hexdigest()
-        immutable_url = _source_url(source_base.rstrip("/"), f"earnings_story_packets/generations/{generation_id}/manifest.json")
-        try:
-            immutable_raw = read(immutable_url)  # type: ignore[call-arg]
-        except Exception as exc:  # noqa: BLE001
-            raise PublicWireBuildError(f"unable to fetch {immutable_url}: {exc}") from exc
-        if not isinstance(immutable_raw, bytes) or len(immutable_raw) > MAX_MANIFEST_BYTES:
-            raise PublicWireBuildError("immutable story packet manifest exceeds safe size bound")
-        immutable = _json_bytes(immutable_raw, label="immutable public story packet manifest")
-        if (
-            immutable_raw != _canonical_json(immutable)
-            or marker_raw != immutable_raw
-            or marker != immutable
-            or marker_sha != sha256(immutable_raw).hexdigest()
-        ):
-            raise PublicWireBuildError("mutable story packet marker does not equal immutable generation manifest")
-        _validate_remote_manifest(immutable)
+        current = _load_current_story_snapshot(
+            source_base=source_base, fetch=fetch, timeout=timeout,
+        )
         if not force and private_out_dir is None and state is not None and (
-            state["source_generation_id"] == generation_id
-            and state["source_manifest_sha256"] == marker_sha
+            state["source_generation_id"] == current.generation_id
+            and state["source_manifest_sha256"] == current.manifest_sha256
             and state["renderer_version"] == _renderer_version()
         ):
             safe = _safe_existing_state_or_raise(destination, now=now)
             company_generation = _probe_company_generation(safe, company_reader=company_reader)
             if company_generation is None or company_generation == safe.get("company_generation_id"):
                 return BuildResult("unchanged", "unchanged", int(safe["article_count"]), destination)
-        # ``fetch_current_publication`` repeats marker validation to preserve a
-        # standalone fail-closed API.  Its packets are only hydrated on a new
-        # verified source generation.
-        manifest = fetch_current_publication(
-            source_base=source_base, fetch=fetch, workers=workers, timeout=timeout,
+
+        current_packets = current.manifest.get("packets")
+        if not isinstance(current_packets, Mapping):
+            raise PublicWireBuildError("current story packet manifest has no packet catalog")
+
+        if state is None:
+            if len(current_packets) > MAX_SELECTED_PACKET_COUNT:
+                raise PublicWireBuildError(
+                    "large story packet catalog requires a valid prior earnings-wire route catalog "
+                    "for bounded bootstrap"
+                )
+            selected_keys = set(current_packets)
+            allow_empty = False
+        else:
+            if (
+                state["source_generation_id"] == current.generation_id
+                and state["source_manifest_sha256"] == current.manifest_sha256
+            ):
+                prior = current
+            else:
+                prior = _load_prior_story_snapshot(
+                    state, source_base=source_base, fetch=fetch, timeout=timeout,
+                )
+            prior_packets = prior.manifest.get("packets")
+            if not isinstance(prior_packets, Mapping):
+                raise PublicWireBuildError("accepted prior story manifest has no packet catalog")
+            needs_dates = bool(set(current_packets) - set(prior_packets))
+            transcript_index = (
+                _load_transcript_index(fetch=fetch, timeout=timeout)
+                if needs_dates
+                else None
+            )
+            selection = _select_incremental_packet_keys(
+                prior_packets=prior_packets,
+                current_packets=current_packets,
+                prior_state=state,
+                transcript_index=transcript_index,
+            )
+            selected_keys = set(selection.selected_keys)
+            allow_empty = True
+            log.info(
+                "earnings wire incremental selection: admitted=%d changed=%d "
+                "forward_new=%d skipped_historical=%d selected=%d source_total=%d",
+                len(selection.admitted_keys),
+                len(selection.changed_keys),
+                len(selection.forward_new_keys),
+                len(selection.skipped_historical_keys),
+                len(selection.selected_keys),
+                len(current_packets),
+            )
+
+        manifest = _hydrate_publication(
+            current,
+            selected_keys=selected_keys,
+            source_base=source_base,
+            fetch=fetch,
+            workers=workers,
+            timeout=timeout,
+            allow_empty=allow_empty,
         )
     except PublicWireBuildError as fresh_error:
-        safe = _safe_existing_state_or_raise(destination, now=now)
+        try:
+            safe = _safe_existing_state_or_raise(destination, now=now)
+        except PublicWireBuildError as fallback_error:
+            raise PublicWireBuildError(
+                "fresh earnings wire source failed: "
+                f"{fresh_error}; existing publication fallback unavailable: {fallback_error}"
+            ) from fresh_error
         log.warning("fresh earnings wire source failed; retaining recent existing publication: %s", fresh_error)
         return BuildResult("existing", "existing", int(safe["article_count"]), destination)
 
-    result = publish_public_wire(
+    return publish_public_wire(
         manifest,
         out_dir=destination,
         private_out_dir=private_out_dir,
@@ -1221,7 +1566,6 @@ def build(
         company_reader=company_reader,
         now=now,
     )
-    return result
 
 
 def main(argv: list[str] | None = None) -> int:

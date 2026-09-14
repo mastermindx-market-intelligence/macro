@@ -37,6 +37,7 @@ from engine.earnings_narrative.context_packets import (
 from engine.neuralweb.earnings_context_reader import read_earnings_evidence
 from engine.earnings_narrative.story_store import write_story_packet_generation
 from engine.earnings_transcript_intake import canonical_body_sha256
+from scripts import build_earnings_public_wire as wire_builder
 from scripts.build_earnings_public_wire import (
     DEFAULT_SOURCE_BASE,
     MAX_MANIFEST_BYTES,
@@ -124,6 +125,168 @@ def _story_packet(tmp_path: Path) -> tuple[dict, dict, bytes, bytes]:
     entry = manifest["packets"]["AAPL/2026Q1"]
     packet_raw = (store / entry["object_key"]).read_bytes()
     return json.loads(packet_raw), manifest, manifest_raw, packet_raw
+
+
+def _story_generation(
+    tmp_path: Path,
+    specs: list[tuple[str, str, str]],
+    *,
+    generated_at: str,
+) -> tuple[dict, bytes, dict[str, bytes], dict]:
+    symbols: dict[str, list[str]] = {}
+    revisions: dict[str, str] = {}
+    dates: dict[str, str] = {}
+    pairs: list[EvidencePair] = []
+    for ticker, transcript_id, call_date in specs:
+        body = deepcopy(_body())
+        body.update({
+            "ticker": ticker,
+            "id": transcript_id,
+            "period": transcript_id,
+            "date": call_date,
+            "title": f"{ticker} earnings call",
+        })
+        body_sha = canonical_body_sha256(body)
+        key = f"{ticker}/{transcript_id}"
+        symbols.setdefault(ticker, []).append(transcript_id)
+        revisions[key] = body_sha
+        dates[key] = call_date
+        index = {
+            "schema": "mastermind.tx-index/v1",
+            "generated_at": generated_at,
+            "symbols": symbols,
+            "revisions": revisions,
+            "dates": dates,
+            "body_count": len(revisions),
+            "symbol_count": len(symbols),
+        }
+        fact_pack, claim_graph = build_evidence_pair(
+            body,
+            index_payload=index,
+            indexed_body_sha256=body_sha,
+            index_generated_at=generated_at,
+        )
+        pairs.append(EvidencePair(fact_pack=fact_pack, claim_graph=claim_graph, transcript=body))
+
+    evidence = tmp_path / "evidence"
+    write_generation(
+        evidence,
+        pairs,
+        coverage={
+            "selection_policy": "explicit_input",
+            "batch_limit": len(pairs),
+            "historical_completeness": False,
+            "index_body_count": len(pairs),
+            "index_generated_at": generated_at,
+        },
+    )
+    store = tmp_path / "story-packets"
+    _generation, manifest = write_story_packet_generation(store, evidence)
+    raw = (store / "manifest.json").read_bytes()
+    packets = {
+        key: (store / entry["object_key"]).read_bytes()
+        for key, entry in manifest["packets"].items()
+    }
+    transcript_index = {
+        "schema": "mastermind.tx-index/v1",
+        "generated_at": generated_at,
+        "symbols": {ticker: sorted(ids) for ticker, ids in symbols.items()},
+        "revisions": revisions,
+        "dates": dates,
+        "body_count": len(revisions),
+        "symbol_count": len(symbols),
+    }
+    return manifest, raw, packets, transcript_index
+
+
+def _story_generation_from_bodies(
+    evidence_root: Path,
+    bodies: list[dict],
+    *,
+    generated_at: str,
+    store: Path,
+) -> tuple[dict, bytes, dict[str, bytes], dict]:
+    symbols: dict[str, list[str]] = {}
+    revisions: dict[str, str] = {}
+    dates: dict[str, str] = {}
+    pairs: list[EvidencePair] = []
+    for body in bodies:
+        ticker = str(body["ticker"])
+        transcript_id = str(body["id"])
+        call_date = str(body["date"])
+        body_sha = canonical_body_sha256(body)
+        key = f"{ticker}/{transcript_id}"
+        symbols.setdefault(ticker, []).append(transcript_id)
+        revisions[key] = body_sha
+        dates[key] = call_date
+        index = {
+            "schema": "mastermind.tx-index/v1",
+            "generated_at": generated_at,
+            "symbols": {symbol: sorted(ids) for symbol, ids in symbols.items()},
+            "revisions": dict(revisions),
+            "dates": dict(dates),
+            "body_count": len(revisions),
+            "symbol_count": len(symbols),
+        }
+        fact_pack, claim_graph = build_evidence_pair(
+            body,
+            index_payload=index,
+            indexed_body_sha256=body_sha,
+            index_generated_at=generated_at,
+        )
+        pairs.append(EvidencePair(fact_pack=fact_pack, claim_graph=claim_graph, transcript=body))
+
+    write_generation(
+        evidence_root,
+        pairs,
+        coverage={
+            "selection_policy": "explicit_input",
+            "batch_limit": len(pairs),
+            "historical_completeness": False,
+            "index_body_count": len(pairs),
+            "index_generated_at": generated_at,
+        },
+    )
+    _generation, manifest = write_story_packet_generation(store, evidence_root)
+    raw = (store / "manifest.json").read_bytes()
+    packets = {
+        key: (store / entry["object_key"]).read_bytes()
+        for key, entry in manifest["packets"].items()
+    }
+    transcript_index = {
+        "schema": "mastermind.tx-index/v1",
+        "generated_at": generated_at,
+        "symbols": {ticker: sorted(ids) for ticker, ids in symbols.items()},
+        "revisions": revisions,
+        "dates": dates,
+        "body_count": len(revisions),
+        "symbol_count": len(symbols),
+    }
+    return manifest, raw, packets, transcript_index
+
+
+def _canonical_test_json(payload: object) -> bytes:
+    return json.dumps(
+        payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False,
+    ).encode("utf-8") + b"\n"
+
+
+def _generation_remote(
+    manifest: dict,
+    raw: bytes,
+    packets: dict[str, bytes],
+    *,
+    include_marker: bool,
+) -> dict[str, bytes]:
+    remote = {
+        f"{DEFAULT_SOURCE_BASE}/earnings_story_packets/generations/{manifest['generation_id']}/manifest.json": raw,
+    }
+    if include_marker:
+        remote[f"{DEFAULT_SOURCE_BASE}/earnings_story_packets/manifest.json"] = raw
+    for key, packet_raw in packets.items():
+        object_key = manifest["packets"][key]["object_key"]
+        remote[f"{DEFAULT_SOURCE_BASE}/earnings_story_packets/{object_key}"] = packet_raw
+    return remote
 
 
 def _article(tmp_path: Path) -> tuple[dict, dict, bytes, bytes]:
@@ -214,6 +377,378 @@ def _current_company(_params: dict) -> dict:
     }
 
 
+def _route_event(ticker: str, transcript_id: str, call_date: str) -> dict:
+    return {
+        "href": f"{ticker.lower()}-{transcript_id.lower()}-call-record.html",
+        "period": transcript_id,
+        "date": call_date,
+        "transcript_id": transcript_id,
+        "dossier_available": False,
+    }
+
+
+def _route_state(*, schema: str, floor: str | None = None) -> dict:
+    aapl = _route_event("AAPL", "2026Q1", "2026-01-30")
+    msft = _route_event("MSFT", "2026Q2", "2026-02-10")
+    state = {
+        "schema": schema,
+        "source_generation_id": "a" * 32,
+        "source_manifest_sha256": "b" * 64,
+        "verified_at": "2026-02-11T00:00:00Z",
+        "company_generation_id": None,
+        "renderer_version": "c" * 64,
+        "article_count": 2,
+        "as_of": "2026-02-11T00:00:00Z",
+        "routes": {
+            "AAPL": {"company_name": "Apple Inc.", "latest": aapl, "events": {"2026Q1": aapl}},
+            "MSFT": {"company_name": "Microsoft Corp.", "latest": msft, "events": {"2026Q2": msft}},
+        },
+    }
+    if floor is not None:
+        state["forward_selection_floor_date"] = floor
+    return state
+
+
+def test_route_catalog_v1_migrates_floor_and_v2_preserves_it(tmp_path: Path) -> None:
+    out_dir = tmp_path / "wire"
+    out_dir.mkdir()
+    catalog = out_dir / ROUTE_CATALOG_FILENAME
+    catalog.write_text(json.dumps(_route_state(schema="earnings.public_wire_routes/v1")), encoding="utf-8")
+
+    migrated = wire_builder.load_public_build_state(out_dir)
+    assert migrated is not None
+    assert migrated["forward_selection_floor_date"] == "2026-02-10"
+
+    catalog.write_text(json.dumps(_route_state(
+        schema="earnings.public_wire_routes/v2", floor="2026-01-30",
+    )), encoding="utf-8")
+    preserved = wire_builder.load_public_build_state(out_dir)
+    assert preserved is not None
+    assert preserved["forward_selection_floor_date"] == "2026-01-30"
+
+
+def test_incremental_selector_hydrates_admitted_changed_and_forward_new_only() -> None:
+    prior_packets = {
+        "AAPL/2026Q1": {"object_key": "objects/a.json", "source_sha256": "1"},
+        "HOLD/2026Q1": {"object_key": "objects/h.json", "source_sha256": "2"},
+        "CORR/2025Q4": {"object_key": "objects/c-old.json", "source_sha256": "3"},
+    }
+    current_packets = {
+        **prior_packets,
+        "CORR/2025Q4": {"object_key": "objects/c-new.json", "source_sha256": "4"},
+        "NEW/2026Q2": {"object_key": "objects/n.json", "source_sha256": "5"},
+        "BACK/2024Q4": {"object_key": "objects/b.json", "source_sha256": "6"},
+    }
+    state = _route_state(schema="earnings.public_wire_routes/v2", floor="2026-01-30")
+    state["routes"] = {
+        "AAPL": state["routes"]["AAPL"],
+    }
+    transcript_index = {
+        "generated_at": "2026-03-01T00:00:00Z",
+        "dates": {
+            "NEW/2026Q2": "2026-02-20",
+            "BACK/2024Q4": "2024-12-10",
+        },
+    }
+
+    selection = wire_builder._select_incremental_packet_keys(
+        prior_packets=prior_packets,
+        current_packets=current_packets,
+        prior_state=state,
+        transcript_index=transcript_index,
+    )
+
+    assert selection.admitted_keys == frozenset({"AAPL/2026Q1"})
+    assert selection.changed_keys == frozenset({"CORR/2025Q4"})
+    assert selection.forward_new_keys == frozenset({"NEW/2026Q2"})
+    assert selection.skipped_historical_keys == frozenset({"BACK/2024Q4"})
+    assert selection.selected_keys == frozenset({"AAPL/2026Q1", "CORR/2025Q4", "NEW/2026Q2"})
+    assert "HOLD/2026Q1" not in selection.selected_keys
+
+
+def test_incremental_selector_includes_new_packet_on_floor_date() -> None:
+    state = _route_state(schema="earnings.public_wire_routes/v2", floor="2026-01-30")
+    state["routes"] = {}
+    selection = wire_builder._select_incremental_packet_keys(
+        prior_packets={},
+        current_packets={"SAME/2026Q1": {"object_key": "objects/same.json"}},
+        prior_state=state,
+        transcript_index={
+            "generated_at": "2026-02-01T00:00:00Z",
+            "dates": {"SAME/2026Q1": "2026-01-30"},
+        },
+    )
+    assert selection.forward_new_keys == frozenset({"SAME/2026Q1"})
+    assert selection.skipped_historical_keys == frozenset()
+
+
+
+def test_incremental_selector_rejects_new_key_without_a_date() -> None:
+    state = _route_state(schema="earnings.public_wire_routes/v2", floor="2026-01-30")
+    state["routes"] = {}
+    with pytest.raises(PublicWireBuildError, match="date"):
+        wire_builder._select_incremental_packet_keys(
+            prior_packets={},
+            current_packets={"NEW/2026Q2": {"object_key": "objects/n.json"}},
+            prior_state=state,
+            transcript_index={"generated_at": "2026-03-01T00:00:00Z", "dates": {}},
+        )
+
+
+def test_incremental_selector_rejects_selected_packet_overflow(monkeypatch: pytest.MonkeyPatch) -> None:
+    state = _route_state(schema="earnings.public_wire_routes/v2", floor="2026-01-30")
+    state["routes"] = {}
+    monkeypatch.setattr(wire_builder, "MAX_SELECTED_PACKET_COUNT", 2, raising=False)
+    current = {
+        f"NEW{i}/2026Q1": {"object_key": f"objects/{i}.json"}
+        for i in range(3)
+    }
+    dates = {key: "2026-02-01" for key in current}
+    with pytest.raises(PublicWireBuildError, match="selected packet catalog exceeds safe count bound"):
+        wire_builder._select_incremental_packet_keys(
+            prior_packets={},
+            current_packets=current,
+            prior_state=state,
+            transcript_index={"generated_at": "2026-02-02T00:00:00Z", "dates": dates},
+        )
+
+
+def test_hydration_rejects_selected_byte_overflow_before_packet_fetch(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _article_payload, manifest, manifest_raw, packet_raw = _article(tmp_path / "byte-overflow")
+    remote, packet_url = _remote(manifest, manifest_raw, packet_raw)
+    calls: list[str] = []
+    monkeypatch.setattr(
+        wire_builder, "MAX_SELECTED_PACKET_BYTES", len(packet_raw) - 1, raising=False,
+    )
+
+    with pytest.raises(PublicWireBuildError, match="selected packet bytes exceed safe bound"):
+        fetch_current_publication(
+            fetch=lambda url: calls.append(url) or remote[url], workers=1,
+        )
+
+    assert packet_url not in calls
+
+
+
+def test_incremental_selector_rejects_source_catalog_shrinkage() -> None:
+    state = _route_state(schema="earnings.public_wire_routes/v2", floor="2026-01-30")
+    state["routes"] = {}
+    with pytest.raises(PublicWireBuildError, match="catalog shrank"):
+        wire_builder._select_incremental_packet_keys(
+            prior_packets={"OLD/2025Q4": {"object_key": "objects/old.json"}},
+            current_packets={},
+            prior_state=state,
+            transcript_index=None,
+        )
+
+
+def test_incremental_selector_rejects_future_dated_new_packet() -> None:
+    state = _route_state(schema="earnings.public_wire_routes/v2", floor="2026-01-30")
+    state["routes"] = {}
+    with pytest.raises(PublicWireBuildError, match="later than index generated_at"):
+        wire_builder._select_incremental_packet_keys(
+            prior_packets={},
+            current_packets={"NEW/2026Q2": {"object_key": "objects/new.json"}},
+            prior_state=state,
+            transcript_index={
+                "generated_at": "2026-02-01T23:59:59Z",
+                "dates": {"NEW/2026Q2": "2026-02-02"},
+            },
+        )
+
+
+def test_prior_story_manifest_must_match_route_catalog_receipt(tmp_path: Path) -> None:
+    prior, prior_raw, prior_packets, _index = _story_generation(
+        tmp_path / "prior-receipt",
+        [("AAPL", "2026Q1", "2026-01-30")],
+        generated_at="2026-02-01T00:00:00Z",
+    )
+    state = _route_state(schema="earnings.public_wire_routes/v2", floor="2026-01-30")
+    state["routes"] = {"AAPL": state["routes"]["AAPL"]}
+    state["source_generation_id"] = prior["generation_id"]
+    state["source_manifest_sha256"] = "0" * 64
+    remote = _generation_remote(prior, prior_raw, prior_packets, include_marker=False)
+
+    with pytest.raises(PublicWireBuildError, match="sha256 does not match accepted route state"):
+        wire_builder._load_prior_story_snapshot(
+            state,
+            source_base=DEFAULT_SOURCE_BASE,
+            fetch=lambda url: remote[url],
+            timeout=1.0,
+        )
+
+
+def test_large_catalog_without_prior_state_fails_before_packet_hydration(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    current, current_raw, current_packets, _index = _story_generation(
+        tmp_path / "large-bootstrap",
+        [("AAPL", "2026Q1", "2026-01-30"), ("MSFT", "2026Q2", "2026-02-10")],
+        generated_at="2026-02-11T00:00:00Z",
+    )
+    monkeypatch.setattr(wire_builder, "MAX_SELECTED_PACKET_COUNT", 1)
+    remote = _generation_remote(current, current_raw, current_packets, include_marker=True)
+    calls: list[str] = []
+
+    def fetch(url: str) -> bytes:
+        calls.append(url)
+        return remote[url]
+
+    with pytest.raises(PublicWireBuildError, match="requires a valid prior earnings-wire route catalog"):
+        build(
+            out_dir=tmp_path / "empty-wire",
+            fetch=fetch,
+            workers=1,
+            company_reader=_current_company,
+            now=datetime(2026, 2, 11, tzinfo=timezone.utc),
+        )
+
+    packet_urls = {
+        f"{DEFAULT_SOURCE_BASE}/earnings_story_packets/{entry['object_key']}"
+        for entry in current["packets"].values()
+    }
+    assert packet_urls.isdisjoint(calls)
+
+
+def test_build_incrementally_hydrates_admitted_and_forward_events_only(tmp_path: Path) -> None:
+    prior, prior_raw, prior_packets, _prior_index = _story_generation(
+        tmp_path / "prior",
+        [("AAPL", "2026Q1", "2026-01-30")],
+        generated_at="2026-02-01T00:00:00Z",
+    )
+    current, current_raw, current_packets, current_index = _story_generation(
+        tmp_path / "current",
+        [
+            ("AAPL", "2026Q1", "2026-01-30"),
+            ("NEW", "2026Q2", "2026-02-20"),
+            ("BACK", "2024Q4", "2024-12-10"),
+        ],
+        generated_at="2026-03-01T00:00:00Z",
+    )
+    out_dir = tmp_path / "site" / "stocks" / "earnings"
+
+    prior_remote = _generation_remote(prior, prior_raw, prior_packets, include_marker=True)
+    build(
+        out_dir=out_dir,
+        fetch=lambda url: prior_remote[url],
+        workers=1,
+        company_reader=_current_company,
+        now=datetime(2026, 2, 1, tzinfo=timezone.utc),
+    )
+
+    remote = _generation_remote(current, current_raw, current_packets, include_marker=True)
+    remote.update(_generation_remote(prior, prior_raw, prior_packets, include_marker=False))
+    remote["https://app.mastermind-x.com/data/tx/index.json"] = _canonical_test_json(current_index)
+    calls: list[str] = []
+
+    def fetch(url: str, *_args: object) -> bytes:
+        calls.append(url)
+        return remote[url]
+
+    result = build(
+        out_dir=out_dir,
+        fetch=fetch,
+        workers=1,
+        company_reader=_current_company,
+        now=datetime(2026, 3, 1, tzinfo=timezone.utc),
+    )
+
+    assert result.article_count == 2
+    catalog = json.loads((out_dir / ROUTE_CATALOG_FILENAME).read_text(encoding="utf-8"))
+    assert catalog["schema"] == "earnings.public_wire_routes/v2"
+    assert catalog["forward_selection_floor_date"] == "2026-01-30"
+    assert set(catalog["routes"]) == {"AAPL", "NEW"}
+    assert catalog["source_generation_id"] == current["generation_id"]
+
+    current_urls = {
+        key: f"{DEFAULT_SOURCE_BASE}/earnings_story_packets/{entry['object_key']}"
+        for key, entry in current["packets"].items()
+    }
+    assert current_urls["AAPL/2026Q1"] in calls
+    assert current_urls["NEW/2026Q2"] in calls
+    assert current_urls["BACK/2024Q4"] not in calls
+    assert (
+        f"{DEFAULT_SOURCE_BASE}/earnings_story_packets/generations/"
+        f"{prior['generation_id']}/manifest.json"
+    ) in calls
+
+
+def test_corrected_admitted_packet_that_becomes_held_removes_public_and_private_records(tmp_path: Path) -> None:
+    store = tmp_path / "story-packets"
+    aapl = deepcopy(_body())
+    msft = deepcopy(_body())
+    msft.update({
+        "ticker": "MSFT",
+        "id": "2026Q2",
+        "period": "Q2 FY2026",
+        "date": "2026-02-10",
+        "title": "MSFT earnings call",
+    })
+    prior, prior_raw, prior_packets, _prior_index = _story_generation_from_bodies(
+        tmp_path / "evidence-prior",
+        [aapl, msft],
+        generated_at="2026-02-11T00:00:00Z",
+        store=store,
+    )
+    out_dir = tmp_path / "site" / "stocks" / "earnings"
+    private_dir = tmp_path / "private-earnings"
+    prior_remote = _generation_remote(prior, prior_raw, prior_packets, include_marker=True)
+    build(
+        out_dir=out_dir,
+        private_out_dir=private_dir,
+        fetch=lambda url: prior_remote[url],
+        workers=1,
+        company_reader=_current_company,
+        now=datetime(2026, 2, 11, tzinfo=timezone.utc),
+    )
+
+    aapl_page = out_dir / "aapl-2026q1-call-record.html"
+    msft_page = out_dir / "msft-2026q2-call-record.html"
+    aapl_private = private_dir / "records" / "aapl-2026q1-call-record.json"
+    msft_private = private_dir / "records" / "msft-2026q2-call-record.json"
+    assert aapl_page.is_file() and msft_page.is_file()
+    assert aapl_private.is_file() and msft_private.is_file()
+
+    corrected_aapl = deepcopy(aapl)
+    corrected_aapl["segments"] = [{
+        "speaker": "Chief Executive Officer",
+        "role": "executive",
+        "text": "Thank you for joining today. We appreciate your interest in the company.",
+    }]
+    current, current_raw, current_packets, _current_index = _story_generation_from_bodies(
+        tmp_path / "evidence-current",
+        [corrected_aapl, msft],
+        generated_at="2026-02-12T00:00:00Z",
+        store=store,
+    )
+    corrected_packet = json.loads(current_packets["AAPL/2026Q1"])
+    assert corrected_packet["story"]["promotion"]["tier"] == "C"
+    assert corrected_packet["story"]["promotion"]["article_eligible"] is False
+
+    remote = _generation_remote(current, current_raw, current_packets, include_marker=True)
+    remote.update(_generation_remote(prior, prior_raw, prior_packets, include_marker=False))
+    result = build(
+        out_dir=out_dir,
+        private_out_dir=private_dir,
+        fetch=lambda url: remote[url],
+        workers=1,
+        company_reader=_current_company,
+        now=datetime(2026, 2, 12, tzinfo=timezone.utc),
+    )
+
+    assert result.article_count == 1
+    assert not aapl_page.exists()
+    assert not aapl_private.exists()
+    assert msft_page.is_file()
+    assert msft_private.is_file()
+    catalog = json.loads((out_dir / ROUTE_CATALOG_FILENAME).read_text(encoding="utf-8"))
+    assert set(catalog["routes"]) == {"MSFT"}
+    assert catalog["source_generation_id"] == current["generation_id"]
+    assert catalog["forward_selection_floor_date"] == "2026-02-10"
+
+
 def test_wire_builder_verifies_immutable_generation_aligns_and_persists_only_redacted_state(tmp_path: Path) -> None:
     _article_payload, manifest, manifest_raw, packet_raw = _article(tmp_path / "source")
     remote, packet_url = _remote(manifest, manifest_raw, packet_raw)
@@ -247,7 +782,8 @@ def test_wire_builder_verifies_immutable_generation_aligns_and_persists_only_red
     assert not (out_dir / "article_manifest.json").exists()
     assert not (out_dir / "publications").exists()
     public_routes = json.loads((out_dir / ROUTE_CATALOG_FILENAME).read_text(encoding="utf-8"))
-    assert public_routes["schema"] == "earnings.public_wire_routes/v1"
+    assert public_routes["schema"] == "earnings.public_wire_routes/v2"
+    assert public_routes["forward_selection_floor_date"] == "2026-01-30"
     assert public_routes["company_generation_id"] == "c" * 24
     assert re.fullmatch(r"[0-9a-f]{64}", public_routes["renderer_version"])
     assert public_routes["routes"]["AAPL"]["company_name"] == "Apple Inc."
@@ -362,9 +898,12 @@ def test_wire_caps_and_stale_existing_fallback_fail_closed(tmp_path: Path) -> No
                      now=datetime(2026, 2, 2, 12, tzinfo=timezone.utc))
     assert retained.source == "existing"
     assert (out_dir / "index.html").read_bytes() == before
-    with pytest.raises(PublicWireBuildError, match="older than 48 hours"):
+    with pytest.raises(PublicWireBuildError) as excinfo:
         build(out_dir=out_dir, fetch=lambda _url: (_ for _ in ()).throw(RuntimeError("offline")), workers=1,
               now=datetime(2026, 2, 3, 1, tzinfo=timezone.utc))
+    message = str(excinfo.value)
+    assert "offline" in message
+    assert "older than 48 hours" in message
 
 
 def test_company_alignment_requires_latest_event_not_only_history(tmp_path: Path) -> None:
