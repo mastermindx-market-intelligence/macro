@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-10T23:31:10.620078+00:00",
-  "count": 2085,
+  "generated_at": "2026-09-14T15:21:32.082896+00:00",
+  "count": 2095,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -24,6 +24,7 @@
     "Blackrock",
     "Canaccord",
     "Cantor",
+    "Capital Alpha",
     "Citadel",
     "Citi",
     "CommBank",
@@ -96,6 +97,206 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-mxwdu5abpok-060cf3",
+      "title": "Economics Week Ahead in Economics Fed and BoJ to hike",
+      "institution": "Societe Generale",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T01:10:35Z",
+      "summary_points": [
+        "**Fed & BoJ Rate Hikes Imminent**: August US inflation data supports 25bps Fed hike; BoJ hikes 25bps as inflation nears 2%, with ECB holding and BoE on hold amid energy costs.",
+        "**Central Bank Policy Divergence**: Fed, ECB, BoJ, RBI, BoK, CBC hiking (tightening) vs.",
+        "BoE, BCB, CNB cutting (loosening), driving USD strength, GBP weakness, and BRL/CZK currency risks.",
+        "**Euro Area Energy Shock**: Energy prices surged >20% in two weeks, escalating inflation risks; ECB likely skips October hike, prioritizing December meeting amid revised France growth (0.5% vs 0.7%).",
+        "**UK BoE Holds Rates Despite High CPI**: BoE holds at 3.75% (6-3 vote) despite 3.2% yoy headline CPI (5-month high), driven by 7% mom fuel prices; unemployment to rise to 5.1%."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 24,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ck6rcqvqrby-34f413",
+      "title": "The 720 Greater China Tech Tours, Fed rate hike, BHP, SZS, AmorePacific, Gigadevice, SEMCO, TDK, Horizon Robotics, Recruit",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T00:51:06Z",
+      "summary_points": [
+        "**Greater China Tech Tours**: Semiconductor capex to grow double-digit to $82bn by 2030E (AI demand, production diversification), with local suppliers benefiting from localization despite upstream tightness; optical module demand surge from AI server ramp-ups favors testing/coupling equipment suppliers.",
+        "**BHP Copper SA Expansion**: $15bn investment to double output (500ktpa), 20% IRR, 40% cost reduction via block caving, 55% long-run EBITDA margin; NPV uplift after Oak Dam removal.",
+        "**AI-Driven Tech Sector Momentum**: Key catalysts include AccoTest (100%+ order growth, STS8600 ramp), Samsung (40% MLCC revenue mix by 2028), TDK (AI-driven capacity expansion), and Horizon Robotics (30% Urban NOA adoption); tight supply impacts near-term shipments but gross margins stable and pricing upside for 12-18 months.",
+        "**US AI Infrastructure Spending Outlook**: Management bullish on AI infrastructure spending despite bottlenecks; 8-10 new fabs to accelerate 2027 wafer equipment demand; AI inference workloads driving persistent NAND/mass storage tightness supporting higher pricing/margins for 12-18 months."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-fsxbylntfm1-fa6d7c",
+      "title": "Samsung Electro Mechanics (009150.KS) 8 key takeaways from U.S",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T00:50:46Z",
+      "summary_points": [
+        "**3Q26 Guidance & Core Fundamentals Improved**: Revenue/OP guidance maintained despite forex volatility, with MLCC (high teens% qoq, ~20% OPM) and substrate (20% revenue growth, ~20% OPM) showing robust fundamentals.",
+        "**AI Datacenter MLCC Growth & Margin Tailwinds**: AI datacenter MLCC revenue mix to reach 40% by 2028 (vs.",
+        "20% current), driving 70-80% market growth and 70-80% higher margins (up to 40%).",
+        "**ABF Substrate Supply Tightness & Long-Term Contracts**: Severe ABF supply constraints (vs.",
+        "MLCC) securing 2032 LTAs with prepayment, ensuring utilization; ABF revenue to triple by 2030."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-gxj7hz0d3w9-463871",
+      "title": "Bear Traps Report Turning Point Final IV Sep 13 2026",
+      "institution": "Bear Traps",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-13T22:18:14Z",
+      "summary_points": [
+        "**Fed's Rate Hike Stance**: PPI/CPI confirm rate hike; Fed has \"ZERO room for sustained hikes\" → bearish for hard assets and U.S.",
+        "equities (IG spreads blowing out, CCCs deteriorating).",
+        "**China's Oil Weaponization**: Aggressive crude stockpiling via Middle East curtailment/Red Sea disruptions exploits Saudi output lows (6.2M b/d) to target U.S.",
+        "CPI/Fed policy, reshaping market dynamics.",
+        "**Wealth Concentration Risk**: Top 10% drive ~1/3 economy and hold 87% of wealth → economy \"more levered to asset prices than ever,\" amplifying pullback impact from AI slowdowns."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 22,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-m5k4dgocvoe-a6d4ab",
+      "title": "MS China's Next Industrial Revolution",
+      "institution": "Morgan Stanley",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-13T17:09:57Z",
+      "summary_points": [
+        "Fed Policy Shift**: Q3 CPI data confirms persistent inflation, delaying rate cuts to Q1 2025; bond yields surge 25bps on hawkish Fed pivot **Ukraine Conflict Escalation**: Russian strikes on Ukrainian energy infrastructure disrupt EU gas flows, triggering 12% price spike and rerouting LNG contracts **ETF Outflows**: $18B equity ETF net outflows in 72 hours, accelerating technicals in S&P 500 futures and widening volatility index (VIX) to 22.5"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 198,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xzxo4gsgtg8-a408ff",
+      "title": "Capital Alpha Partners Capital Alpha Outlook The Week Ahead from Washington September 8, 2026",
+      "institution": "Capital Alpha",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-13T16:43:44Z",
+      "summary_points": [
+        "**Clarity Act Passage Risk**: House session cut guarantees bill won’t reach president’s desk before midterms, odds of law passage <20% this year - **Midterm Policy Catalysts**: AI/data centers, financial regulations (Clarity Act, crypto), health care (Chinese biotechs, FDA), defense (Middle East/Ukraine, FY27 DoD), energy (permits, Venezuela oil) driving market moves - **SEC Regulatory Shifts**: SEC seeks OMB approval to expand retail access to private markets and broaden performance fee eligibility, alongside crypto custody and ISS proxy advisory actions—key for market structure and fee dynamics - **Healthcare Policy & Geopolitical Risks**: Employer health costs rising 8.2-9.5% critical for sector exposure; NIH-DOD agreement targeted as Iran-funding backdoor amid lame duck delays - **New BEAD Guidance**: NTIA releases $21B funding process for missed BEAD locations, directly impacting infrastructure deployment flows and subsidy program execution"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-7nb5vkdeljr-c803a6",
+      "title": "China Weekly Kickstart Markets fell 1 3 dragged by offshore tech",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-13T15:50:58Z",
+      "summary_points": [
+        "**Capital Injection Plans**: Rmb360bn Ministry of Finance-led capital injection by major banks/insurers offsets offshore tech drag (MXCN/CSI300 -1%/-3% vs HISTECH -5.5%).",
+        "**Inflation & Trade Growth**: CPI/PPI +0.8%/+3.8% yoy, exports/imports +24.9%/+28.2% yoy accelerated in August, Southbound flows US$5.1bn ytd.",
+        "**AI Profit Shift**: 45% of MSCI China constituents beat estimates; China’s AI supply chain profit pool tilts toward hardware, global AI profit share expanding.",
+        "**VIE Regulatory Risk**: 7 stocks (28%) with VIE structures face tightening scrutiny, risking valuation adjustments or liquidity constraints.",
+        "**Concentrated Ownership**: 17 stocks (68%) have >50% ownership by top 3 shareholders, raising governance and liquidity risks amid geopolitics."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": true,
+      "pages": 26,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-zfcocnsw7pw-1ba312",
+      "title": "9.9.2026 From Ellen Hazen AI Spending Resilient Growth and Rising Rates",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-12T22:48:29Z",
+      "summary_points": [
+        "**AI Capex as Macro Driver**: Hyperscalers' AI capex to surge 110% to $750B by 2025 (2.4% of US GDP), exceeding 8% of US capital expenditures, driving structural demand for debt issuance and supply chain strain.",
+        "**Debt & Balance Sheet Risk**: AI capex growth strains financing chains (power, construction, semiconductors), with Meta/Amazon increasing debt issuance (124%/55% YoY), though strong core businesses sustain balance sheets.",
+        "**Earnings Valuation Gap**: S&P 500 Q2 earnings growth at 51% (above estimates), with forward 24-month P/E at 16.9x (below 10-year median 17.3x), signaling potential undervaluation despite rising earnings estimates.",
+        "**Fiscal Policy Tension**: Federal interest expense now 13% of budget (up from 8% pre-COVID), amid CPI/PCE at 3.4%/3.3% (above 2% target), fueling restrictive monetary policy debates."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-r4dk4ciyftn-2a1b52",
+      "title": "MS Savone Global Reflections 12 Sep 2026",
+      "institution": "Morgan Stanley",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-12T22:41:30Z",
+      "summary_points": [
+        "**Fed Policy Mispricing**: Markets price 90% chance of Sept Fed hike despite disinflation signals; 10Y yield at highest since Oct 2023 amid Middle East escalation pushing Brent oil above $100/bbl.",
+        "**AI Labor Premium**: High AI-exposure occupations show 2x median salaries ($100k vs $45k), 80%+ Bachelor’s degrees, and near 100% metro concentration—signaling structural labor market shift.",
+        "**S&P 500 Dispersion**: Sector/factor-driven volatility at 90th percentile (vs 5Y), indicating low single-name correlation; portfolio managers must prioritize sector allocation over individual stocks.",
+        "**EU Equity Sell-Off**: 28% of EU stocks down >20% from 1Y highs despite 5Y-high earnings revisions, driven by geopolitical/policy risks overriding fundamentals.",
+        "**AI Sector Valuation Metrics**: AI stocks (MDB: ~15x EPS, AKAM: edge inference exposure, OKTA: ~27x FCF) show growth drivers (secure repos +60%, CI/CD pipelines +40%)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 38,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-jjztydhblqm-47f82c",
+      "title": "China Weekly Kickstart Markets fell 1 3 dragged by offshore tech",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-12T22:30:07Z",
+      "summary_points": [
+        "**Capital Injection Plans**: Rmb360bn Ministry of Finance-led capital injection by major banks/insurers offsetting offshore tech drag (MXCN/CSI300 -1%/-3% vs HISTECH -5.5%).",
+        "**Inflation & Trade Growth**: CPI/PPI +0.8%/+3.8% yoy, exports/imports +24.9%/+28.2% yoy accelerated in August, Southbound flows US$5.1bn ytd.",
+        "**Earnings & AI Profit Shift**: 45% of MSCI China constituents beat estimates (IT/Health Care top); China’s AI supply chain profit pool tilting toward hardware, global AI profit share expanding.",
+        "**Corporate Tax Fundamentals**: Corporate income tax rose 20% yoy in 2025 (strong earnings + higher effective tax rates), signaling robust tax revenue fundamentals.",
+        "**VIE & Ownership Risks**: 7 stocks (28%) feature VIE structures (regulatory scrutiny risk); 17 stocks (68%) have >50% top 3 shareholder ownership (governance/liquidity concerns)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 26,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-5wdraceeyrf-0f39b4",
       "title": "GS Vol Views GS Vol Views 9 Sep 2026",
