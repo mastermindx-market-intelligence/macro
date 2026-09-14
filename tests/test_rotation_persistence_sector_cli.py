@@ -97,3 +97,41 @@ def test_cli_writes_strict_deterministic_json_and_markdown(tmp_path: Path) -> No
     assert decoded["produced_at"] == "2026-09-12T21:00:00Z"
     assert b"NaN" not in json1 and b"Infinity" not in json1
     assert decoded["authority"]["may_trade"] is False
+
+
+def test_loader_preserves_relative_logical_source_paths(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    data_dir = tmp_path / "data" / "yahoo"
+    dates = pd.bdate_range("2026-01-02", periods=110)
+    rows = [(date.date().isoformat(), 100.0 + i) for i, date in enumerate(dates)]
+    _write_price(data_dir / "XLB.parquet", rows)
+    monkeypatch.chdir(tmp_path)
+
+    _, receipt = load_price_panel(Path("data/yahoo"), symbols=("XLB",))
+
+    assert receipt["data_dir"] == "data/yahoo"
+    assert receipt["files"]["XLB"]["path"] == "data/yahoo/XLB.parquet"
+
+
+def test_committed_real_archive_result_regenerates_byte_for_byte(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    repo_root = Path(__file__).resolve().parents[1]
+    committed = repo_root / "research" / "rotation_persistence" / "sector_control_rph1"
+    output = tmp_path / "research" / "regenerated"
+    monkeypatch.chdir(repo_root)
+
+    exit_code = main(
+        [
+            "--data-dir",
+            "data/yahoo",
+            "--output-dir",
+            str(output),
+            "--produced-at",
+            "2026-09-12T21:00:00Z",
+        ],
+        repo_root=tmp_path,
+    )
+
+    assert exit_code == 0
+    for filename in OUTPUT_FILENAMES:
+        assert (output / filename).read_bytes() == (committed / filename).read_bytes()

@@ -11,10 +11,14 @@ from scripts.research.rotation_persistence.contracts import ContractError
 from scripts.research.rotation_persistence.sector_control import (
     AUTHORITY,
     SECTORS,
+    _outcome_rows,
     aggregate_completed_bars,
     build_result,
+    correlation_control,
+    dispersion_control,
     leadership_surface,
     macd_bullish_crosses,
+    macd_control,
 )
 
 
@@ -90,3 +94,89 @@ def test_result_contract_is_context_only_and_has_no_trade_authority(tmp_path: Pa
         "may_modify_prophet": False,
         "may_modify_oracle": False,
     }
+
+
+def test_future_outcomes_start_at_signal_close_and_use_strictly_later_session() -> None:
+    panel = _panel(20)
+    signal_date = panel.index[5]
+    outcome_date = panel.index[8]
+    panel.loc[signal_date, "XLB"] = 100.0
+    panel.loc[outcome_date, "XLB"] = 115.0
+    panel.loc[signal_date, "SPY"] = 200.0
+    panel.loc[outcome_date, "SPY"] = 210.0
+    empty = pd.Series([], index=pd.DatetimeIndex([]), dtype=bool)
+    crosses = {symbol: empty.copy() for symbol in SECTORS}
+    crosses["XLB"] = pd.Series([True], index=pd.DatetimeIndex([signal_date]))
+
+    rows = _outcome_rows(panel, crosses, horizon=3)
+
+    assert len(rows) == 1
+    assert rows[0]["signal_date"] == signal_date
+    assert rows[0]["outcome_date"] == outcome_date
+    assert rows[0]["absolute_return"] == pytest.approx(0.15)
+    assert rows[0]["spy_relative_return"] == pytest.approx(0.10)
+
+
+def test_dispersion_and_correlation_remain_distinct_measured_controls() -> None:
+    panel = _panel(340)
+    dispersion = dispersion_control(panel)
+    correlation = correlation_control(panel)
+
+    assert dispersion["definition"].startswith("sample_std")
+    assert correlation["definition"].startswith("mean_of_55")
+    assert dispersion["windows"]["recent_20"]["state"] == "MEASURED"
+    assert correlation["windows"]["recent_20"]["state"] == "MEASURED"
+    assert dispersion["recent_20_vs_prior_252"]["state"] == "MEASURED"
+    assert correlation["recent_20_vs_prior_252"]["state"] == "MEASURED"
+
+
+def test_macd_control_reports_every_predeclared_phase_separately() -> None:
+    control, hierarchy = macd_control(_panel(340))
+
+    assert set(control["timeframes"]) == {"1D", "2D", "3D"}
+    assert set(control["timeframes"]["1D"]["phases"]) == {"0"}
+    assert set(control["timeframes"]["2D"]["phases"]) == {"0", "1"}
+    assert set(control["timeframes"]["3D"]["phases"]) == {"0", "1", "2"}
+    assert set(hierarchy) == {"1", "3", "5", "10"}
+
+
+def test_history_floor_counts_100_completed_three_day_bars_plus_daily_outcome() -> None:
+    panel = _panel(312)
+    receipt = {
+        "source_revision": "deadbeef",
+        "files": {symbol: {"sha256": "0" * 64} for symbol in (*SECTORS, "SPY")},
+        "common_rows": len(panel),
+        "first_session": panel.index[0].date().isoformat(),
+        "last_session": panel.index[-1].date().isoformat(),
+    }
+
+    result = build_result(panel, receipt, produced_at="2026-09-12T21:00:00Z")
+
+    assert result["quality"]["state"] == "MEASURED"
+    assert result["quality"]["latest_eligible_signal_position_by_phase"]["3D.p2"] == 301
+
+
+def test_build_result_rejects_source_receipt_that_disagrees_with_panel() -> None:
+    panel = _panel(320)
+    receipt = {
+        "source_revision": "deadbeef",
+        "files": {symbol: {"sha256": "0" * 64} for symbol in (*SECTORS, "SPY")},
+        "common_rows": len(panel) - 1,
+        "first_session": panel.index[0].date().isoformat(),
+        "last_session": panel.index[-1].date().isoformat(),
+    }
+    with pytest.raises(ContractError, match="source receipt"):
+        build_result(panel, receipt, produced_at="2026-09-12T21:00:00Z")
+
+
+def test_macd_warmup_blocks_a_real_early_cross() -> None:
+    idx = pd.bdate_range("2026-01-02", periods=80)
+    values = np.full(80, 100.0)
+    values[60:] = np.linspace(110.0, 130.0, 20)
+    closes = pd.Series(values, index=idx)
+
+    unrestricted = macd_bullish_crosses(closes, min_completed_bars=1)
+    frozen = macd_bullish_crosses(closes, min_completed_bars=100)
+
+    assert len(unrestricted) >= 1
+    assert frozen.empty

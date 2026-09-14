@@ -13007,6 +13007,11 @@ jobs:
           tests/test_rotation_persistence_metrics.py
           tests/test_rotation_persistence_survival.py
           tests/test_rotation_persistence_cli.py -q
+      - name: sector rotation daily control — leadership, dispersion, phase-complete MACD
+        run: >-
+          python -m pytest
+          tests/test_rotation_persistence_sector_control.py
+          tests/test_rotation_persistence_sector_cli.py -q
 
   zh-filing-term:
     # ui.zh_filing_term PR gate: 申报 must never reach user-facing Chinese copy.
