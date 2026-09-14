@@ -1148,6 +1148,9 @@ _REPORT_SCHEMA = "brain.research_report.v1"
 _EVIDENCE_SCHEMA = "brain.research_evidence.v1"
 _RESEARCH_VAULT_URL = "https://mastermind-x.com/research_vault.html"
 REPORT_BODY_MAX_CHARS = 12_000
+_EVIDENCE_QUERY_MAX_CHARS = 512
+_EVIDENCE_TERM_MAX_CHARS = 120
+_EVIDENCE_TERM_LIMIT = 12
 # Named so the model can tell the user where the rest of the report lives. The
 # budget COVERS this marker (the _truncate idiom) — a "12,000 + marker" result
 # would break any caller sizing a context window off the documented number.
@@ -1199,10 +1202,10 @@ _REPORT_NO_EVIDENCE = (
     "empty query to read it generically, or offer the source-opening link for "
     "manual review."
 )
-_REPORT_EVIDENCE_QUERY_SHORT = (
-    " The report question did not contain a meaningful evidence term. No full-text "
-    "view was served or charged; ask for a more specific question, or Brain may "
-    "re-call this same report with an empty query to open the note generically."
+_REPORT_NO_USABLE_PASSAGE = (
+    " Matching terms were found, but no usable passage text was available. No "
+    "full-text view was served or charged; do not describe this as a scan or "
+    "extraction failure."
 )
 
 # view_ratelimit.allow() keys a SECOND ledger on sha256(ip)[:16], and maps an
@@ -1293,12 +1296,58 @@ def _select_evidence(document, query: str) -> dict:
 
 
 def _evidence_requested(query: str) -> bool:
-    """Use the corpus selector's admission rule; never duplicate token logic."""
+    """Classify report intent, then use the corpus owner's one atom admission law."""
     try:
         from engine.research_vault import corpus as corpus_mod  # noqa: PLC0415
+        if _is_generic_report_intent(query, corpus_mod):
+            return False
         return corpus_mod.evidence_query_is_meaningful(query)
     except Exception:  # noqa: BLE001 — preserve the generic report path on failure
         return False
+
+
+_GENERIC_EN_INTENT_WORDS = frozenset({
+    "argument", "arguments", "argue", "overview", "summarise", "summarize",
+    "summary",
+})
+_GENERIC_EN_DOCUMENT_WORDS = frozenset({
+    "document", "documents", "note", "notes", "paper", "papers", "report",
+    "reports", "research", "study", "studies",
+})
+_GENERIC_EN_SCAFFOLDING_WORDS = frozenset({
+    "can", "could", "does", "explain", "give", "is", "it", "main", "please",
+    "the", "this", "what", "you", "your",
+})
+_GENERIC_ZH_INTENT_PHRASES = ("总结", "概括", "摘要", "主要观点", "论点")
+_GENERIC_ZH_DOCUMENT_PHRASES = ("报告", "研究", "论文", "文件", "文档", "笔记")
+_GENERIC_ZH_SCAFFOLDING_PHRASES = ("请", "这份", "这篇", "一下")
+
+
+def _is_generic_report_intent(query, corpus_mod) -> bool:
+    """True when named summary/argument intent leaves no corpus content atom.
+
+    This deliberately classifies chat intent in Brain.  It removes named intent,
+    document-target, and question/politeness scaffolding without tokenizing for
+    retrieval, then asks the corpus owner whether any meaningful content atom
+    remains.  The selector stays the sole atom/stopword owner.
+    """
+    normalized = unicodedata.normalize("NFKC", str(query or "")).casefold()
+    en_words = re.findall(r"[a-z]+", normalized)
+    has_en_intent = bool(set(en_words) & _GENERIC_EN_INTENT_WORDS)
+    has_en_document = bool(set(en_words) & _GENERIC_EN_DOCUMENT_WORDS)
+    has_zh_intent = any(term in normalized for term in _GENERIC_ZH_INTENT_PHRASES)
+    has_zh_document = any(term in normalized for term in _GENERIC_ZH_DOCUMENT_PHRASES)
+    if not ((has_en_intent and has_en_document) or (has_zh_intent and has_zh_document)):
+        return False
+
+    residual = normalized
+    for word in (_GENERIC_EN_INTENT_WORDS | _GENERIC_EN_DOCUMENT_WORDS
+                 | _GENERIC_EN_SCAFFOLDING_WORDS):
+        residual = re.sub(rf"\b{re.escape(word)}\b", " ", residual)
+    for phrase in (_GENERIC_ZH_INTENT_PHRASES + _GENERIC_ZH_DOCUMENT_PHRASES
+                   + _GENERIC_ZH_SCAFFOLDING_PHRASES):
+        residual = residual.replace(phrase, " ")
+    return not corpus_mod.evidence_query_is_meaningful(residual)
 
 
 def _peek_report_view(user_id: str, now: datetime) -> dict | None:
@@ -1361,6 +1410,8 @@ def _meta_field(item: dict, document, key: str) -> str:
 def _positive_int(value) -> int | None:
     if isinstance(value, bool):
         return None
+    if isinstance(value, float) and not value.is_integer():
+        return None
     try:
         number = int(value)
     except (TypeError, ValueError):
@@ -1369,7 +1420,7 @@ def _positive_int(value) -> int | None:
 
 
 def _partial_evidence_search_note(evidence) -> str:
-    """Name a searched prefix only when the binding proves its exact counts."""
+    """Distinguish complete, partial, and unverified search coverage."""
     binding = (evidence or {}).get("source_binding") if isinstance(evidence, dict) else None
     binding = binding if isinstance(binding, dict) else {}
     stored = _positive_int(binding.get("stored_char_count"))
@@ -1379,7 +1430,37 @@ def _partial_evidence_search_note(evidence) -> str:
             f" Only the stored prefix ({stored} of {source} source characters) was "
             "searched; absence does not prove the omitted tail lacks the topic."
         )
+    if binding.get("coverage") == "unknown":
+        return (
+            " Coverage could not be verified; absence is not evidence that the "
+            "source lacks the topic."
+        )
     return ""
+
+
+def _nonnegative_int(value) -> int | None:
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, float) and not value.is_integer():
+        return None
+    try:
+        result = int(value)
+    except (TypeError, ValueError):
+        return None
+    return result if result >= 0 else None
+
+
+def _sha256_or_empty(value) -> str:
+    digest = value if isinstance(value, str) else ""
+    digest = digest.strip().lower()
+    return digest if re.fullmatch(r"[0-9a-f]{64}", digest) else ""
+
+
+def _bounded_evidence_query(query) -> str:
+    text = str(query or "")
+    if len(text) <= _EVIDENCE_QUERY_MAX_CHARS:
+        return text
+    return text[:_EVIDENCE_QUERY_MAX_CHARS - 1] + "…"
 
 
 def _evidence_open_url(report_id: str, match_text: str = "", page=None) -> str:
@@ -1414,8 +1495,9 @@ def _project_evidence_passage(raw, report_id: str) -> dict | None:
         locator["page"] = page
     match_text = str(raw.get("match_text") or "")
     terms = raw.get("matched_terms")
-    terms = [str(term) for term in terms if isinstance(term, str)] \
+    terms = [term[:_EVIDENCE_TERM_MAX_CHARS] for term in terms if isinstance(term, str)] \
         if isinstance(terms, list) else []
+    terms = terms[:_EVIDENCE_TERM_LIMIT]
     return {
         "text": str(raw.get("text") or ""),
         "match_text": match_text,
@@ -1430,22 +1512,40 @@ def _project_evidence(raw, *, report_id: str, published_at: str,
     """Whitelisted evidence envelope bound to one report and one access decision."""
     payload = raw if isinstance(raw, dict) else {}
     status = str(payload.get("status") or "body_unavailable")
-    if status not in {"matched", "no_matching_passage", "query_too_short",
-                      "body_unavailable"}:
+    if status not in {"matched", "no_matching_passage", "body_unavailable"}:
         status = "body_unavailable"
     binding_raw = payload.get("source_binding") \
         if isinstance(payload.get("source_binding"), dict) else {}
+    coverage = str(binding_raw.get("coverage") or "unknown")
+    coverage = coverage if coverage in {"complete", "prefix_partial", "unknown"} else "unknown"
+    stored = _nonnegative_int(binding_raw.get("stored_char_count"))
+    source = _nonnegative_int(binding_raw.get("source_char_count"))
+    tail_raw = binding_raw.get("tail_omitted")
+    tail_is_valid = tail_raw is None or isinstance(tail_raw, bool)
+    tail = tail_raw if isinstance(tail_raw, bool) else None
+    if not tail_is_valid:
+        coverage = "unknown"
+    elif coverage == "complete" and (stored is None or source != stored):
+        coverage = "unknown"
+    elif coverage == "prefix_partial" and (stored is None or source is None or source <= stored):
+        coverage = "unknown"
+    if coverage == "unknown":
+        source, tail = None, None
+    elif coverage == "complete":
+        tail = False
+    else:
+        tail = True
     binding = {
         "report_id": report_id,
         "published_at": published_at,
-        "content_sha256": str(binding_raw.get("content_sha256") or ""),
-        "stored_body_sha256": str(binding_raw.get("stored_body_sha256") or ""),
-        "coverage": str(binding_raw.get("coverage") or "unknown"),
-        "source_char_count": binding_raw.get("source_char_count"),
-        "stored_char_count": binding_raw.get("stored_char_count"),
-        "tail_omitted": binding_raw.get("tail_omitted"),
-        "text_layer": str(binding_raw.get("text_layer") or ""),
-        "page_count": binding_raw.get("page_count"),
+        "content_sha256": _sha256_or_empty(binding_raw.get("content_sha256")),
+        "stored_body_sha256": _sha256_or_empty(binding_raw.get("stored_body_sha256")),
+        "coverage": coverage,
+        "source_char_count": source,
+        "stored_char_count": stored,
+        "tail_omitted": tail,
+        "text_layer": binding_raw.get("text_layer") if isinstance(binding_raw.get("text_layer"), str) else "",
+        "page_count": _positive_int(binding_raw.get("page_count")),
     }
     projected = []
     for passage in payload.get("passages") or []:
@@ -1457,7 +1557,7 @@ def _project_evidence(raw, *, report_id: str, published_at: str,
     return {
         "schema": _EVIDENCE_SCHEMA,
         "status": status,
-        "query": str(query or ""),
+        "query": _bounded_evidence_query(query),
         "report_id": report_id,
         "published_at": published_at,
         "passages": projected,
@@ -1600,13 +1700,12 @@ def _research_report(root: Path, report_id, *, query="", user_ctx,
 
     evidence_query = str(query or "")
     evidence_requested = _evidence_requested(evidence_query)
-    if evidence_requested:
-        preflight = _peek_report_view(uid, now)
-        if (isinstance(preflight, dict)
-                and preflight.get("remaining") == 0):
-            return _report_error(
-                "view_limit_reached", _REPORT_ERR_LIMIT,
-                report_id=rid, remaining=0, limit=preflight.get("limit"))
+    preflight = _peek_report_view(uid, now)
+    if (isinstance(preflight, dict)
+            and preflight.get("remaining") == 0):
+        return _report_error(
+            "view_limit_reached", _REPORT_ERR_LIMIT,
+            report_id=rid, remaining=0, limit=preflight.get("limit"))
     document = (
         _load_evidence_document(rid)
         if evidence_requested
@@ -1615,6 +1714,7 @@ def _research_report(root: Path, report_id, *, query="", user_ctx,
 
     quota: dict | None = None
     evidence: dict | None = None
+    matched_without_usable_text = False
     if evidence_requested:
         selection = _select_evidence(document, evidence_query)
         status = str(selection.get("status") or "body_unavailable")
@@ -1622,6 +1722,7 @@ def _research_report(root: Path, report_id, *, query="", user_ctx,
         if status == "matched" and not candidate_body:
             selection = {**selection, "status": "body_unavailable", "passages": []}
             status = "body_unavailable"
+            matched_without_usable_text = True
 
         if status == "matched":
             allowed, info = _charge_report_view(uid, now)
@@ -1671,8 +1772,8 @@ def _research_report(root: Path, report_id, *, query="", user_ctx,
             note += _REPORT_EVIDENCE_NOTE
         elif status == "no_matching_passage":
             note += _REPORT_NO_EVIDENCE + _partial_evidence_search_note(evidence)
-        elif status == "query_too_short":
-            note += _REPORT_EVIDENCE_QUERY_SHORT + _partial_evidence_search_note(evidence)
+        elif matched_without_usable_text:
+            note += _REPORT_NO_USABLE_PASSAGE
         else:
             layer = str((document or {}).get("text_layer") or "") \
                 if isinstance(document, dict) else ""

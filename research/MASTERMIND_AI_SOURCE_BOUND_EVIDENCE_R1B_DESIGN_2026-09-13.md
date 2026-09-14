@@ -3,7 +3,7 @@
 **Status:** APPROVED continuation under the Chairman's Mastermind AI upgrade directive
 **Operation:** `mastermind-ai-r1b-source-bound-evidence-20260913-sol-001`
 **Program owner:** `macro-mastermind-ai`
-**Protected procedure (current procedure observation):** `mastermindx-market-intelligence/Mastermind@2aa28559a857461fd674fae52d2904116b854891` (the historical operation epoch remains 2026-09-13)
+**Protected procedure (current repair observation):** `mastermindx-market-intelligence/Mastermind@6061c0b32f1adad56a1282bbc01e70ce7f0a5a44` (Skillpack 1.0.1 / bootstrap 1; the historical operation epoch remains 2026-09-13)
 **Predecessor:** R1A bilingual exact lexical catalog retrieval, PR #7079
 
 ## 0. Observable outcome
@@ -16,7 +16,12 @@ page number when the extraction carries page boundaries, publication time, and a
 canonical deep link that opens the same Research Vault document and carries the
 matching-text/page locators for the still-pending viewer wave.
 
-Blank or one-character/noise queries retain the existing generic full-note path.
+Blank, stopword/noise-only, and generic summary/argument requests retain the
+existing generic full-note path. Generic intent is punctuation- and
+position-insensitive in English and Chinese: Brain removes named summary/argument,
+document-target, and polite/question scaffolding, then asks the corpus's existing
+atom owner whether a real content topic remains. A residual topic takes the
+source-bound evidence path.
 No matching passage, an unavailable body, or an image-only scan is disclosed and
 does not consume full-text quota. A quota denial returns no report or evidence
 text.
@@ -40,7 +45,9 @@ This wave extends the existing `engine/research_vault/corpus.py` owner and
 It does **not** add an embedding store, vector database, reranker, model call,
 query log, cache, entitlement plane, quota ledger, document store, citation
 database, or UI fork. Catalog search remains the report-discovery owner; the
-corpus remains body/source authority; Brain remains the chat projection owner;
+corpus remains body/source authority and the sole owner of content atoms,
+stopwords, passage matching, and source binding; Brain remains the chat intent
+and projection owner;
 Research Vault remains the source-opening owner.
 
 The deterministic selector applies NFKC/casefold for locating only. ASCII words
@@ -51,8 +58,7 @@ text is always sliced from the original stored body.
 
 `brain.research_evidence.v1` contains:
 
-- `status`: `matched`, `no_matching_passage`, `query_too_short`, or
-  `body_unavailable`;
+- `status`: `matched`, `no_matching_passage`, or `body_unavailable`;
 - original `query`, `report_id`, and `published_at`;
 - zero to three passages with exact text, matched source text, supported terms,
   locator, and source-opening URL;
@@ -72,11 +78,12 @@ any stored/source text lies outside those spans. In generic mode the existing
 - Missing signed-in identity fails closed before catalog or corpus access.
 - An unknown report ID never probes the corpus.
 - The existing Pro gateway and hourly view ledger remain the owners.
-- Before query-conditioned passage selection, the existing report-view limiter is
-  peeked using the same identity, scope, and clock as the debit. Exhausted users
-  receive the uniform limit response before selection, source binding, or passage
-  metadata can reveal query-conditioned information. A peek storage failure stays
-  fail-open; a served matched view still takes its existing one-time debit.
+- After catalog identity and before either generic or evidence document read, the
+  existing report-view limiter is peeked using the same identity, scope, and clock
+  as the debit. Exhausted users receive the byte-equivalent uniform limit response
+  before a reader, selector, source binding, or passage metadata can reveal paid
+  body presence or query-conditioned information. A peek storage failure stays
+  fail-open; a served body or matched view still takes its existing one-time debit.
 - A no-match/unavailable read is unmetered only after that privacy preflight; the
   debit happens before matched text is returned.
 - Sol's ruling: an entitled query-centered retrieval may search the lawful stored
@@ -91,7 +98,9 @@ any stored/source text lies outside those spans. In generic mode the existing
   character locators describe the stored extraction, not invented document time.
 - `content_sha256` binds the source PDF bytes; `stored_body_sha256` binds the
   exact searchable extraction. `coverage` discloses whether the stored text is
-  complete, a capped prefix, or unknown.
+  complete, a capped prefix, or unknown. Unknown never carries a source character
+  count; a no-match explicitly states that coverage could not be verified and that
+  absence is not evidence.
 - Corpus refresh/correction uses the existing owner. No evidence result is
   retained, so a corrected row is reflected on the next read.
 - Retrieved text is data, never instruction, rank, confidence, forecast, gate,
@@ -104,12 +113,15 @@ any stored/source text lies outside those spans. In generic mode the existing
 - `vault_unavailable`: catalog/path failure; no invented content.
 - `body_unavailable`: public metadata/excerpt only, honest scan/temporary
   shortfall note, no debit.
-- `query_too_short`: public metadata/excerpt only, ask for a specific question or
-  re-call the same report with an empty query for a generic read, no debit.
 - `no_matching_passage`: public metadata/excerpt plus document-opening link, no
   inference from absence; when only a stored prefix was searched, disclose its
   stored/source character counts and that the omitted tail may contain the topic;
-  a generic empty-query re-call remains available, no debit.
+  when coverage is unknown, disclose that absence is not evidence. The current
+  no-match request is unmetered; a later generic full-note re-call remains
+  available and takes the existing one-time debit if a nonempty body is served.
+- A selector that reports a match but supplies no usable literal passage text is
+  an honest no-support/body-unavailable disclosure, not a scan or extraction
+  failure, and is not charged.
 - `view_limit_reached`: no report/evidence payload and no source-text leakage.
 
 ## 6. Product boundary
@@ -133,13 +145,15 @@ without changing this contract.
    and page remains Repair B and is not shipped by this commit.
 3. ASCII identifier boundaries reject decoys such as `AAPLX`; Chinese phrase
    matching remains deterministic.
-4. Blank/noise calls use `get_document`, preserve the existing full-note
-   projection and quota behavior, and return `evidence: null`.
+4. Blank, stopword/noise-only, and generic summary/argument calls use
+   `get_document`, preserve the existing full-note projection and quota behavior,
+   and return `evidence: null`; a residual topic uses `get_evidence_document`.
 5. Meaningful exact-question calls use `get_evidence_document`; the legacy reader
    is not touched.
 6. Matched text debits exactly once. No-match, unavailable body, image-only body,
-   and too-short evidence query debit zero times.
-7. Denial leaks no report, evidence, or source text.
+   and a matched selector without usable text debit zero times.
+7. An exhausted generic or specific request leaks no report, evidence, source text,
+   reader access, or selector access.
 8. Existing search, clusters, report-rights, exposure-cap, fail-soft, attribution,
    gateway, and tool-schema contracts remain green.
 9. Independent review checks source binding, quota order, rights wording,

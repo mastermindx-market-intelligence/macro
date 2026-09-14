@@ -174,13 +174,15 @@ _EVIDENCE_RAW_ATOM_RE = re.compile(
 )
 _EVIDENCE_WORD_RE = re.compile(r"[a-z0-9]{2,}")
 _EVIDENCE_STOPWORDS = frozenset({
-    "about", "after", "again", "also", "among", "and", "are", "because",
-    "before", "being", "between", "both", "but", "can", "could", "did",
-    "does", "doing", "for", "from", "had", "has", "have", "how", "into",
-    "its", "may", "more", "most", "not", "our", "should", "that", "the",
-    "their", "them", "then", "there", "these", "they", "this", "those",
-    "through", "under", "very", "was", "were", "what", "when", "where",
-    "which", "why", "will", "with", "would", "you", "your",
+    "about", "after", "again", "also", "among", "an", "and", "are", "as",
+    "at", "be", "because", "before", "being", "between", "both", "but",
+    "by", "can", "could", "did", "do", "does", "doing", "for", "from",
+    "had", "has", "have", "how", "if", "in", "into", "is", "it", "its",
+    "may", "me", "more", "most", "no", "not", "of", "on", "or", "our",
+    "should", "so", "that", "the", "their", "them", "then", "there",
+    "these", "they", "this", "those", "through", "to", "under", "us",
+    "very", "was", "we", "were", "what", "when", "where", "which", "why",
+    "will", "with", "would", "you", "your",
 })
 
 
@@ -226,13 +228,6 @@ def _evidence_identifier(raw: str) -> bool:
 def _evidence_atoms(query) -> tuple[str, ...]:
     """Ordered, de-duplicated meaningful atoms for passage support."""
     normalized, _ = _evidence_normalize_with_map(query)
-    if normalized.strip() in {
-        "summarize this report",
-        "summarise this report",
-        "what does this note argue?",
-        "what does this report argue?",
-    }:
-        return ()
     atoms: list[str] = []
 
     def add(atom: str) -> None:
@@ -281,6 +276,8 @@ def _original_span(origins: list[int], start: int, end: int) -> tuple[int, int] 
 def _evidence_int(value) -> int | None:
     if isinstance(value, bool):
         return None
+    if isinstance(value, float) and not value.is_integer():
+        return None
     try:
         result = int(value)
     except (TypeError, ValueError):
@@ -306,7 +303,7 @@ def _source_binding(document: dict, body: str) -> dict:
         "content_sha256": digest,
         "stored_body_sha256": hashlib.sha256(body.encode("utf-8")).hexdigest(),
         "coverage": coverage,
-        "source_char_count": source_chars,
+        "source_char_count": source_chars if coverage != "unknown" else None,
         "stored_char_count": stored_chars,
         "tail_omitted": tail_omitted,
         "text_layer": str(document.get("text_layer") or ""),
