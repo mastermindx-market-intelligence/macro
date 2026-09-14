@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-14T15:21:32.082896+00:00",
-  "count": 2095,
+  "generated_at": "2026-09-14T18:44:57.948324+00:00",
+  "count": 2106,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -98,6 +98,172 @@
   ],
   "items": [
     {
+      "id": "marketdesk-2bjqnt4xqgi-8c8a40",
+      "title": "Investor Positioning and Flows Sep 14",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T17:00:27Z",
+      "summary_points": [
+        "**Oil Overvaluation & Geopolitical Backwardation**: WTI at 102.5 vs.",
+        "6 fair value (56.3% deviation), breaching historical ±30% band; Brent backwardation (1m/6m ratio >1.0) driven by Iran war/Ukraine, signaling acute supply disruption and sustained volatility risk.",
+        "**Bond Positioning Extremes & Yield Correlation**: Bond positioning near 5th percentile (last seen 2018/2022), strong inverse correlation (-65%) with 10y yield vs.",
+        "200d MA, signaling potential yield peak and reversal risk amid rising 10y yields (3-year high).",
+        "**Earnings Season Rally Window**: Post-earnings lull exiting; historical +2% S&P 500 rally into earnings season with resilient corporate guidance (74% of 2020 guidance exceeding consensus), creating near-term upside opportunity before mid-term election noise."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": true,
+      "pages": 61,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-6gjihvsar3f-744c37",
+      "title": "Trading Catalysts Time for a Fed hike; and BofA Real Estate conference",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T13:27:02Z",
+      "summary_points": [
+        "**Fed Hike Expectations**: Markets price 20bps Sep FOMC hike, 80bps over 12 months; Jackson Hole remarks and Treasury curve flattening signal tightening credibility, risking long-end volatility.",
+        "**REIT Fundamentals**: 72% of REITs beat Q2 earnings (vs 60% historical avg), 87% raised guidance; supply declines (20-50%) support recovery across retail/senior housing/industrial.",
+        "**FCF Quality Advantage**: VFLO (VictoryShares Free Cash Flow ETF) offers 37.5% YTD return, 13.7x P/E vs S&P 500’s 21.3x, with 40% energy/healthcare exposure amid S&P 500 FCF yield at record lows.",
+        "**Top Compounding REITs**: AHR (target $71, 31x AFFO) and WELL (target $292, 26x AFFO) lead healthcare/retail REITs with strong compounding capacity.",
+        "**Key REIT Risks**: AHR exposed to Trilogy/SNF reimbursement risk; WELL vulnerable to reimbursement cuts, interest rates, and tenant credit risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ajv6lk8e8za-35bef4",
+      "title": "S&P 500 EPS Outlook Beyond the 2026 boom momentum persists, pace moderates",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T13:26:57Z",
+      "summary_points": [
+        "**AI-Driven Earnings Concentration**: Top 5 tech stocks (NVDA, GOOGL, MU, MSFT, AAPL) now 27% of NTM S&P 500 earnings, risking volatility; 58.7% of 2027 EPS growth driven by semiconductors (NVDA, MU, AVGO).",
+        "**EPS Growth Deceleration & Sustainability**: 2026 EPS forecast raised to $365 (+33% YoY) but 2027E at $410 (+12% YoY); Q2 2026 EPS growth (50% YoY) heavily inflated by one-time gains (AMZN/GOOGL), signaling unsustainable momentum.",
+        "**Hyperscalers' Capex Sustainability Risk**: Hyperscalers’ capex as % of operating cash flow >100% in 2026/2027, with D&A burden rising to 12% of revenue by 2027; upward capex revisions (50% since Jan) threaten growth trajectory.",
+        "**Sector Imbalance & Margin Pressures**: Tech leads margin expansion (34.9%→43.4% EBIT margin 2026-2027) while Energy faces compression; sticky inflation and geopolitical tensions limit return potential despite strong EPS.",
+        "**AI Monetization & Productivity**: AI-related revenue growth to outpace capex in H2 2027, but hyperscalers’ AI spend (90% YoY to 35% in 2027) and DDR5 memory price surge (85% YTD) create margin pressure for non-memory sectors."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 17,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-pp8zmfuhvfo-431fcd",
+      "title": "GS Early Morning Research Recap Ratings and Target Price Changes September 14, 2026 as of 5 30 AM ET",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T13:19:53Z",
+      "summary_points": [
+        "**US Rate Hike Uncertainty**: Fed's \"hike without signal\" creates policy direction ambiguity, impacting global risk assets and yield curves.",
+        "**China Inflation & Trade Acceleration**: August data shows rising inflation and trade growth, critical for EM asset allocation and China market positioning.",
+        "**Korea Equity Rebound**: KOSPI +3.3% driven by industrials and stronger KRW ahead of FOMC, signaling currency-driven equity gains.",
+        "**India Small/Midcap Flows**: Domestic fund inflows +19% in August supporting sector resilience despite NIFTY -2% decline.",
+        "**Summit Therapeutics Breakthrough**: Ivonescimab beats Keytruda in Phase 3 lung cancer OS, a critical biotech catalyst."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 21,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-p5j26yp8d3v-810026",
+      "title": "Market Intelligence US Morning Update",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T13:19:32Z",
+      "summary_points": [
+        "**Fed Policy vs.",
+        "Market Pricing**: Fed likely holds September rate hike despite 90% market pricing, citing neutral rate rise (25bp) due to AI-driven structural inflation; fundamentals show limited justification (core PCE improvement, one-off inflation overshoot).",
+        "**AI Infrastructure Bottlenecks**: Semiconductors face critical datacenter capacity/power constraints amid robust AI demand (DRAM, NAND, advanced packaging), with vendor differentiation hinging on deployment, services, and supply-chain capabilities.",
+        "**Healthcare Catalysts**: Summit Therapeutics' Phase 3 success (Ivonescimab vs.",
+        "Keytruda) versus AstraZeneca's SERENA-4 failure creates pivotal biotech positioning shifts for portfolio allocation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ybgrjrviv8y-78584e",
+      "title": "Rexel S.A. (RXL.PA) Barometer and thoughts into 3Q26",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T13:18:45Z",
+      "summary_points": [
+        "**Revised Growth & Margin Outlook**: Goldman Sachs upgrades FY26/27 sales estimates (3%/3% above consensus) and EBITA margins (3%/3%) driven by France/Germany industrial activity, electrification demand, and copper pricing; maintains Buy with €44 price target (20.5% upside).",
+        "**Cash Flow & Operational Strength**: Revenue growth (7.5% 12/26E, 9.2% 12/27E), EBIT growth (20.4% 12/26E, 16.8% 12/27E), and FCF rising to €1,132.7m (12/28E) with 2.6x dividend cover ensure sustainable payouts and operational efficiency.",
+        "**Undervaluation & Catalysts**: EV/EBITDA declining to 7.3x (vs.",
+        "6x) and EV/EBIT at 10.2x (below peer median) signal significant upside; key catalysts include datacenter demand, AI efficiency gains, and copper pricing tailwinds.",
+        "**Key Risks**: Price deflation in key products, further interest rate hikes, market share losses in Europe/US, value-dilutive M&A, and FX volatility threaten near-term execution."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 17,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-39v1208hhid-c98fcb",
+      "title": "GS Utilities Daily Drax Market conditions point to FY EBITDA upgrades",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T13:18:39Z",
+      "summary_points": [
+        "**Drax EBITDA Catalyst**: Unhedged UK generation benefits from higher power prices/intraday spreads; 2% ahead of consensus EBITDA (€696m), with upside from CFD extension/data center development.",
+        "**RWE-UAE Strategic Partnership**: MOU for German offshore wind (2027 auction) + LOI for LNG supplies; €3bn indicative investment under 2026 strategic agreement.",
+        "**Electrification Policy Shift**: ETS revision (price volatility limit from 2030), Netherlands gas storage cut, Germany gas prep; PowerGen investments tripling to €2tn, RWE/Orsted upgraded to Buy."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-hws7il0fgoi-bddba8",
+      "title": "JPM US Market Intelligence | Morning Briefing",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T10:42:53Z",
+      "summary_points": [
+        "**Fed Policy Uncertainty & Yield Curve**: 10Y yield at cycle high (4.99%) historically delays equity recovery (8 weeks); bear-flattened curve (2Y+10Y up 26bp/18bp) drives SPX/NDX declines amid opaque Fed communications and persistent tightening (dot plot 3.25%).",
+        "**AI Sell-Off Catalysts**: Semis down 4.7% (NVDA -3.2%, TSLA -2.1%) amid AI pullback; China/Trump pushback amplifies volatility; AI monetization still preliminary despite cloud sales growth (hyperscalers’ leverage 1.6x vs.",
+        "IG/HG 3.2x).",
+        "**Geopolitical & Inflation Risks**: Saudi pipeline disruption, Iran/GCC tensions delay meetings; US/Iran clashes + El Niño pressure commodities/shipping rates, elevating inflation risk (MOVE Index high).",
+        "**Critical Yield-Return Correlation**: Sept rate move >2 std dev higher correlates with -1.66% S&P 500 monthly return; 10Y yield 2z (~50-55bp) historically signals negative equity performance."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 30,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-mxwdu5abpok-060cf3",
       "title": "Economics Week Ahead in Economics Fed and BoJ to hike",
       "institution": "Societe Generale",
@@ -156,6 +322,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-oqv4veyoxen-c1fa76",
+      "title": "UBS Carroll AI Semis and Memory buying; EWZ and EEM upside; Gold buying",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T00:16:08Z",
+      "summary_points": [
+        "**AI Semis/Memory Options Surge**: $250m call option buying on US semis (SNDK, INTX, DRAM, BE, SKHY, AMD, CRWW) ahead of CPI, positioning below prior peaks despite broader AI trade.",
+        "**European Rate Repricing Post-ECB**: Aggressive repricing following ECB meeting, amplified by stops on Dec26/27, Euribor receiver positions, and steepener structures (10s30s +9bps).",
+        "**CHF Unwinding & EUR Topsides**: HFs unwinding CHF shorts via EURCHF buying post-Swiss data, while EUR topside trades (calls/spreads targeting 1.20) and USDJPY downside buying reflect dollar selling flows ahead of CPI."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
@@ -256,6 +441,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-xlshtb8e7on-a95fd9",
+      "title": "Investment weekly 11 september 2026",
+      "institution": "HSBC",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-12T22:44:10Z",
+      "summary_points": [
+        "**Resilient Credit Spreads Amid Yield Shifts**: Tight corporate credit spreads persist despite rising G7 yields due to funding lags, strong fundamentals, and diversification; risks include complacency if yields weaken fundamentals.",
+        "**2026 IPO Surge Reshapes EM Markets**: US and EM (China/HK) lead AI-focused IPOs in 2026, shifting EM benchmarks from commodities to innovation, creating growth trajectories but with valuation risks.",
+        "**Geopolitical & AI-Driven Growth Dynamics**: Middle East conflict (inflationary shock) and China’s \"tech/green exports\" (\"China shock 2.0\") create mixed signals; US AI boom drives growth but spurs volatility and EM fragmentation risks.",
+        "**US Inflation & Fed Policy Uncertainty**: PPI (0.4% mom) signals persistent inflation, while CPI yoy flat; Fed Funds Rate at 3.75% with close call on cuts, creating uncertainty for US equities and bonds.",
+        "**Asset Class Divergence**: Equities (GEM +26.0% 1Y) outperform, but corporate bonds (HY -0.7%, IG -1.3%) and alternatives (Gold -18.9%, Crypto -17.2%) weaken amid global yield pressures."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-r4dk4ciyftn-2a1b52",
       "title": "MS Savone Global Reflections 12 Sep 2026",
       "institution": "Morgan Stanley",
@@ -273,6 +479,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 38,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-sm4couakhgu-5a4487",
+      "title": "Mim investment strategy insights higher bond yields limited stress",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-12T22:40:46Z",
+      "summary_points": [
+        "**Bond Yield Trends**: Fixed income positioning pivotal amid higher yields and limited stress, reflecting internal consensus on asset class dynamics.",
+        "**Global Yield Normalization**: Yield rise driven by policy tightening/inflation (not fiscal deficits), confirming secular normalization across G10, Japan, Europe, and China.",
+        "**Housing Market Risk**: Affordability decline from higher yields/mortgage rates has trapped housing markets in holding pattern, key vulnerability.",
+        "**EM Resilience**: EMs resilient via strong corporate balance sheets and attractive valuations; U.S.",
+        "yields manageable but sharp rise problematic."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
