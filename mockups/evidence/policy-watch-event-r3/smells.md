@@ -2,11 +2,11 @@
 
 _Heuristics identify review targets; they do not determine that a page is bad._
 
-Generated 2026-09-14T01:45:00Z · schema `mastermind.ux_smell_report.v1`
+Generated 2026-09-14T07:21:01Z · schema `mastermind.ux_smell_report.v1`
 
 | route | page_id | words | h1 | panels | height px | h-overflow | slug hits | TODO hits | as-of | source | shots |
 | --- | --- | ---: | ---: | ---: | ---: | :---: | ---: | ---: | :---: | :---: | ---: |
-| /policy_watch.html | macro:policy_watch | 1658 | 1 | 60 | 5948 | no | 0 | 0 | yes | no | 1.0 |
+| /policy_watch.html | macro:policy_watch | 1669 | 1 | 60 | 5976 | no | 0 | 0 | yes | no | 1.0 |
 
 ## Metric notes
 

@@ -1,5 +1,8 @@
 {
   "schema": "mastermind.policy_watch.event_r3.browser_proof.v1",
+  "code_head": "8b94d19648ab74ee99fb4e5c6e97c97eb855ae8a",
+  "code_tree": "32229dac08a0ff59e768e5ee2692af6556d0527c",
+  "page_sha256": "24700f5ae337816f9f7e197d1e7c39223b4bd27981a49314f931d780c694c2e7",
   "url": "http://127.0.0.1:8878/policy_watch.html",
   "authority": "existing data/europe_news_vector artifacts produced by engine.europe_news_intel; display-only consumer",
   "summary": {
@@ -447,8 +450,5 @@
       "failed_requests": [],
       "accepted": true
     }
-  ],
-  "code_head": "ad7bdcbb45ac4f074af2ecdb6a6217ef09cfe8c7",
-  "code_tree": "59694ae061c01b044f36b67da4d8d81162a73a32",
-  "page_sha256": "5ea67c74c0414fc31268d431baf22f2bc855d27250bd0c095d22e6d31c6316c5"
+  ]
 }

@@ -34,13 +34,18 @@ changed:
       Renders the feed inside the existing Policy stages section with source-
       original titles, bilingual publisher/theme/clock labels, direct official
       links, per-source health and an explicit discovery-only authority ceiling.
-      The seven-section composition remains unchanged.
+      The exact-head review repair makes partial copy cover delayed, stale,
+      non-responding and not-yet-covered sources, and makes outage/stale saved-item
+      copy conditional rather than promising rows that may not exist. The
+      seven-section composition remains unchanged.
   - path: tests/test_policy_watch_ui.py
     what: >
       Adds RED-first producer/consumer regressions for rights, URL and identity
       admission, publisher and known-at clocks, per-source staleness, delayed and
       outage states, read-only behavior, bilingual copy and preservation of the
-      R1, R2, UK and 44-call surfaces.
+      R1, R2, UK and 44-call surfaces. Three additional RED-first render tests pin
+      truthful partial, empty-outage and empty-stale explanations after exact-head
+      review found the prior copy overclaimed degraded conditions.
   - path: docs/plans/2026-09-14-policy-watch-official-events-r3.md
     what: >
       Freezes the bounded owner, time/null/correction, UI and production-proof
@@ -61,8 +66,8 @@ verified:
       continuation.
     command: >
       GitHub reads of docs/sol_skills/INDEX.md, COLD_START.md,
-      RECONCILE_STATE.md, REVIEW_RETURN.md, CLOSEOUT.md and COMMISSION_WAVE.md at
-      Mastermind protected master dfa518c079bca971ae55d53a1a6cd67d7128a039.
+      RECONCILE_STATE.md, REVIEW_RETURN.md and CLOSEOUT.md at Mastermind protected
+      master 6061c0b32f1adad56a1282bbc01e70ce7f0a5a44.
     result: >
       Every file declares mastermind.sol_skillpack.v1, Skillpack 1.0.1 and
       minimum bootstrap major 1; compatible with bootstrap major 1.
@@ -71,31 +76,31 @@ verified:
       surfaces remain green with the R3 consumer.
     command: >
       MM_DATA_GUARD=trace PYTHONDONTWRITEBYTECODE=1 python3 -m pytest -q
-      -p no:cacheprovider --basetemp=/tmp/pw-r3-full-final
+      -p no:cacheprovider --basetemp=/tmp/pw-r3-full-repair-final
       tests/test_policy_calendar.py tests/test_policy_dates.py
       tests/test_policy_intent_desk.py tests/test_policy_layer_leaves.py
       tests/test_policy_lever.py tests/test_policy_lifecycle.py
       tests/test_policy_summary.py tests/test_policy_watch_register.py
       tests/test_policy_watch_ui.py tests/test_uk_policy_brain.py
       tests/test_macro_news.py tests/test_europe_news_intel.py
-    result: "342 passed in 169.84 seconds."
+    result: "345 passed in 88.18 seconds on Python 3.12.13."
   - claim: >
       R3-specific truth, time, rights, degraded-state and UI regressions are green.
     command: >
       MM_DATA_GUARD=trace PYTHONDONTWRITEBYTECODE=1 python3 -m pytest
       tests/test_policy_watch_ui.py -q -p no:cacheprovider
-      --basetemp=/tmp/pw-r3-focused-final -k 'r3_'
-    result: "18 passed, 109 deselected in 10.66 seconds."
+      --basetemp=/tmp/pw-r3-repair-r3-all -k 'r3_'
+    result: "21 passed, 109 deselected in 5.94 seconds; the three repair regressions were first observed RED with the expected copy assertions."
   - claim: >
       Semantic implementation bytes are pinned independently of the evidence
       commit.
     command: >
-      git show --stat --oneline ad7bdcbb45ac4f074af2ecdb6a6217ef09cfe8c7
+      git show --stat --oneline 8b94d19648ab74ee99fb4e5c6e97c97eb855ae8a
       and read mockups/evidence/policy-watch-event-r3/render-receipt.json.
     result: >
-      Semantic code commit ad7bdcbb45ac4f074af2ecdb6a6217ef09cfe8c7,
-      tree 59694ae061c01b044f36b67da4d8d81162a73a32; the receipt carries
-      SHA-256 for every source path and the rendered page.
+      Repaired semantic code commit 8b94d19648ab74ee99fb4e5c6e97c97eb855ae8a,
+      tree 32229dac08a0ff59e768e5ee2692af6556d0527c; the receipt carries
+      SHA-256 for every source path and rendered page 24700f5ae337816f9f7e197d1e7c39223b4bd27981a49314f931d780c694c2e7.
   - claim: >
       Current checked-in Europe artifacts produce a useful real feed without
       widening authority.
@@ -113,25 +118,29 @@ verified:
     command: >
       python3 scripts/capture_page_evidence.py for policy_watch.html across
       desktop/mobile, EN/ZH and light/dark, followed by
-      python3 /tmp/policy_watch_r3_dom_probe.py.
+      python3 /tmp/policy_watch_r3_dom_probe_repair.py.
     result: >
-      Eight of eight cells captured and accepted; HTTP 200; four real events;
-      correct localized publisher and clock copy; one state explanation; R2 clock,
-      current panel, UK desk, 44 calls and seven sections preserved; zero console
-      errors, page errors, failed requests, visible machine tokens or horizontal
-      overflow.
+      Eight of eight cells captured and accepted on repaired semantic commit
+      8b94d19648ab; HTTP 200; four real events; correct localized publisher and
+      clock copy; one current-state explanation; R2 clock, current panel, UK desk,
+      44 calls and seven sections preserved; zero console errors, page errors,
+      failed requests, visible machine tokens or horizontal overflow. Degraded
+      state wording is separately bound by the RED-first render regressions and
+      template source receipt rather than falsely claimed visible in a current-state page.
   - claim: >
       Source and repository contracts are clean before hosted CI.
     command: >
       git diff --check; py_compile; Ruff E9,F63,F7,F82;
       check_design_system --mode enforce-added; check_runtime_style_injection;
-      check_zh_filing_term; check_template_site_sync;
-      check_contract_delta --base origin/main; audit_unrun_tests.
+      check_zh_filing_term; check_ui_visual_evidence; check_template_site_sync;
+      check_contract_delta --base origin/main; audit_unrun_tests; agentos validate.
     result: >
       Diff and compile clean; Ruff clean; zero added design findings; runtime
-      style guard green; no unlicensed filing term; 98 template/site pairs in
-      sync; contract delta 0 introduced and 0 inherited; unrun audit exit 0 with
-      only existing warnings.
+      style guard green; no unlicensed filing term; visual-evidence gate green
+      over eight refreshed screenshots; 98 template/site pairs in sync; contract
+      delta 0 introduced and 0 inherited against base a0515d73b9fe; unrun audit
+      exits 0 over 2,774 suites with zero strictly-dark suites and only inherited
+      warnings; Agent OS reports 0 errors and 49 inherited warnings.
   - claim: >
       Current main movement is compatible and does not collide with this carrier.
     command: >
@@ -141,6 +150,20 @@ verified:
       Main movement is generated data and site publication only; zero owned-path
       collisions; merge-tree succeeds without conflicts. Main ancestry alone is
       not treated as a reason to rebuild or force-merge generated movement.
+  - claim: >
+      The predecessor R2 analysis-snapshot capability is merged and proven on the
+      canonical public route before R3 release.
+    command: >
+      Read PR7109 merge identity; compare SHA-256 of current main, production
+      checkout, site.served and the public CDN response; run the canonical page
+      evidence harness against https://www.mastermind-x.com/policy_watch.html.
+    result: >
+      PR7109 merged as 08d437b1c6d9a45ae5bab4111240e71418b3b10c;
+      all four served/source byte surfaces matched SHA-256
+      1eddf3a56c6adb3aeb9eb4f0564f85760eba7bdcdee6064fb60e7a514449cccf;
+      eight of eight public desktop/mobile, EN/ZH, dark/light states captured with
+      zero console errors, failed responses or horizontal overflow. R2 is
+      PROVEN_LIVE and is a preserved dependency, not work R3 may rebuild.
 unverified:
   - claim: "Independent exact-head adversarial review accepts the complete final PR head."
     what_would_verify: >
@@ -222,11 +245,12 @@ danger_areas:
 ## §0 State — what is true right now
 
 PR #7136 contains a source-ready official-policy-event consumer built on the existing Europe
-producer and qbus identity plane. The semantic implementation is commit
-`ad7bdcbb45ac4f074af2ecdb6a6217ef09cfe8c7`; real checked-in inputs produce four current official
-events, and the complete local eight-cell browser contract passes. The capability remains
-**BUILT_NOT_PROVEN** because independent review, hosted CI, merge, normal publication and canonical
-public proof are still separate unfinished gates.
+producer and qbus identity plane. Exact-head review found one material truth-copy defect on the
+worker return; the RED-first repair is semantic commit
+`8b94d19648ab74ee99fb4e5c6e97c97eb855ae8a`. Real checked-in inputs produce four current official
+events, all 345 bounded tests pass, and the refreshed local eight-cell browser contract passes. The
+capability remains **BUILT_NOT_PROVEN** because exact-final-head independent review, hosted CI,
+merge, normal publication and canonical public proof are still separate unfinished gates.
 
 ## §1 What is LEFT — in order
 
