@@ -266,10 +266,57 @@ def test_changelog_renders_on_the_help_page(tmp_path: Path) -> None:
     html = (tmp_path / "help.html").read_text(encoding="utf-8")
     assert 'data-changelog-state="published"' in html
     assert '<time datetime="2026-09-04"' in html
-    assert "#6849" in html
+    # MO-B F13-4: the rail is reader copy, so it carries the date only. The raw
+    # merge number stayed in the YAML as provenance and is never printed.
+    log = re.search(r'<ul class="help-log">(?P<body>.*?)</ul>', html, re.DOTALL)
+    assert log is not None
+    assert not re.search(r"#\d{3,}", log.group("body")), "the changelog rail prints a raw merge number"
+    assert "help-pr" not in log.group("body"), "the changelog rail still carries the dead pr span"
     vm = product_changelog(ROOT)
     newest = vm["entries"][0]
     assert newest["zh"] in html
+
+
+# Frozen fixture (MO-B F13-4 R1): every user-facing merge since 2026-09-06 that a
+# reader can see on the site, as (pr, merge date). The pr is provenance only — it is
+# asserted here so the rail cannot silently drop a shipped change, and it is never
+# printed on the page (see test_changelog_renders_on_the_help_page).
+_MERGES_SINCE_0906 = (
+    (6926, "2026-09-08"),
+    (6900, "2026-09-08"),
+    (6928, "2026-09-09"),
+    (6899, "2026-09-09"),
+    (6959, "2026-09-09"),
+    (6904, "2026-09-10"),
+    (6896, "2026-09-10"),
+    (7008, "2026-09-11"),
+    (6920, "2026-09-11"),
+    (7007, "2026-09-12"),
+    (6909, "2026-09-12"),
+    (6905, "2026-09-12"),
+    (7010, "2026-09-12"),
+    (7083, "2026-09-12"),
+    (7006, "2026-09-12"),
+)
+
+
+def test_changelog_covers_every_user_facing_merge_since_0906() -> None:
+    entries = product_changelog(ROOT)["entries"]
+    by_pr = {e["pr"]: e for e in entries}
+    for pr, date in _MERGES_SINCE_0906:
+        assert pr in by_pr, f"the changelog is missing the {date} change a reader can see"
+        assert by_pr[pr]["date"] == date, pr
+    newest_fixture = max(date for _, date in _MERGES_SINCE_0906)
+    assert newest_fixture == "2026-09-12"
+    assert max(e["date"] for e in entries) >= newest_fixture
+
+
+def test_no_changelog_entry_text_carries_a_pr_number() -> None:
+    for e in product_changelog(ROOT)["entries"]:
+        for text in (e["en"], e["zh"]):
+            assert not re.search(r"#\d{3,}", text), text
+            assert not re.search(r"\bPR\b", text), text
+            assert not re.search(r"\d{4,}", text), text
 
 
 def test_missing_changelog_file_degrades_to_a_disclosed_empty_state(tmp_path: Path) -> None:
