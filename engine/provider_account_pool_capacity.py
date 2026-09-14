@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from engine.provider_account_pool import AccountPoolError
 from engine.provider_account_pool_checks import normalize_id, valid_percent
 from engine.provider_account_pool_types import CapacityEvidence
