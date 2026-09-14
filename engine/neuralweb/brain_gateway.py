@@ -717,9 +717,16 @@ _RESEARCH_SENTENCE_SPLIT = re.compile(
 # "I'm 80% confident" is read as a judgement, not a published fact. The
 # noun-form alternative allows any number of leading adverbs ("Confidence
 # is at 70%", "Confidence is at about 70%") rather than only one.
+#
+# `confidence\s+interval` (EN) and `置信区间` (ZH) are EXCLUDED from the
+# judgement-% branch — a published 95% CI is a quantitative read, not a
+# judgement; the keep-list name says so and the contract names it as a
+# published fact the read may carry. Same for `95% confidence` followed by
+# ` interval`.
 _RESEARCH_PERCENT = re.compile(
     r"\b\d{1,3}(?:\.\d+)?\s*%\s*"
-    r"(?:confidence|confident|conviction|sure|certain|probability|odds|chance)\b"
+    r"(?:confidence(?![\s-]+interval\b)|置信(?!区间)|"
+    r"confident|conviction|sure|certain|probability|odds|chance)\b"
     r"|(?:confidence|conviction|probability|odds)\s+"
     r"(?:\s*(?:of|is|at|about|around|near|roughly|approximately)\s+)*"
     r"\d{1,3}(?:\.\d+)?\s*%",
@@ -745,6 +752,16 @@ _RESEARCH_FALSIFIER = re.compile(r"\bfalsifier\b|\brefuted\b|证伪", re.I)
 # that *reports* a published price target ("The daily briefing listed a
 # published price target of 240.") is kept.
 #
+# EN buy/sell branch mirrors the ZH shape: sentence-initial (start-of-
+# string or right after `.!?。！？` + space), then `buy|sell`, then
+# `(?![\w-])` so a compound adjective (`Buy-side flows`, `Sell-side
+# positioning`) does NOT fire (the `\b` boundary between `Buy` and `-`
+# is a word boundary, which is exactly the over-match H1 closed), then a
+# required object token `\s+\S`. This keeps reportative EN desk prose
+# (`Buy-side flows were strong.`, `Sell-side positioning was thin.`)
+# while still dropping the imperative (`Buy NVDA now.`,
+# `You should buy NVDA.`, sentence-initial `Buy NVDA.`).
+#
 # ZH buy/sell branch is imperative-anchored: 买入 / 卖出 must be the LEADING
 # verb of its clause (start-of-string or right after a sentence-end
 # punctuation, optionally preceded by `请`), and must be followed by an
@@ -758,7 +775,7 @@ _RESEARCH_FALSIFIER = re.compile(r"\bfalsifier\b|\brefuted\b|证伪", re.I)
 #   - "卖出 AAPL。"
 #   - "分化。买入 NVDA。"      (买 right after 。)
 _RESEARCH_TRADE = re.compile(
-    r"(?:^|(?<=[.!?。！？]\s))(?:buy|sell)\b"
+    r"(?:^|(?<=[.!?。！？]\s))(?:buy|sell)(?![\w-])\s+\S"
     r"|\b(?:you\s+should|please)\s+(?:buy|sell)\b"
     r"|\b(?:buy|sell)\s+(?:now|immediately|today)\b"
     r"|\bsize\s+(?:it|the\s+position|your\s+(?:position|size|book))\b"
@@ -932,7 +949,12 @@ def _research_user_artifacts(user_jwt: str) -> list[dict]:
                 continue
             label = str(row.get("label") or "").strip()
             status = str(row.get("status") or "").strip()
-            plain = _RESEARCH_MONITOR_STATE_PLAIN.get(status.upper(), status)
+            # m4: outside the four architecture §7.7 plain words, fall back
+            # to a plain EN+ZH sentence instead of the raw status enum — a
+            # raw slug can enter the grounding block the model may echo.
+            plain = _RESEARCH_MONITOR_STATE_PLAIN.get(status.upper())
+            if plain is None:
+                plain = "state not published / 状态未发布"
             bit = f"{label} ({plain})" if label and plain else (label or plain)
             if bit:
                 bits.append(bit[:120])
@@ -1176,8 +1198,14 @@ def _research_postprocess(answer: str, corpus: dict) -> tuple[str, bool]:
                 body = f"{_RESEARCH_FILTER_EMPTY_EN}\n{_RESEARCH_FILTER_EMPTY_ZH}"
     if _RESEARCH_USED_EN not in body:
         body = body.rstrip() + "\n\n" + _format_used_list(corpus)
-    if _RESEARCH_CEILING_EN not in body:
-        body = body.rstrip() + "\n\n" + _RESEARCH_CEILING_EN + "\n" + _RESEARCH_CEILING_ZH
+    if _RESEARCH_CEILING_EN not in body or _RESEARCH_CEILING_ZH not in body:
+        # m3: gate on EN AND ZH so a model-emitted verbatim ZH ceiling is
+        # not duplicated by re-appending the canonical block.
+        body = body.rstrip()
+        if _RESEARCH_CEILING_EN not in body:
+            body += "\n\n" + _RESEARCH_CEILING_EN
+        if _RESEARCH_CEILING_ZH not in body:
+            body += "\n" + _RESEARCH_CEILING_ZH
     if not corpus.get("jwt_present") and _RESEARCH_JWT_ABSENT_EN not in body:
         body = body.rstrip() + "\n\n" + _RESEARCH_JWT_ABSENT_EN + "\n" + _RESEARCH_JWT_ABSENT_ZH
     if withheld:

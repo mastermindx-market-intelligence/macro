@@ -827,15 +827,18 @@ def test_postprocess_empty_body_fallback_fires_when_filter_ate_everything():
         ],
         "jwt_present": False,
     }
-    # The input cites the artifact (carries "Daily briefing") but EVERY
+    # The input cites the artifact (carries "daily briefing") but EVERY
     # sentence is filterable:
-    #   - "Buy-side Daily briefing." — sentence-initial Buy matches the
-    #     trade filter.
+    #   - "Buy NVDA on the daily briefing." — sentence-initial Buy + an
+    #     object token matches the trade filter (after H1 the EN branch
+    #     requires `buy|sell` followed by a non-word, non-dash char and
+    #     then `\s+\S`; "Buy NVDA" still matches while "Buy-side" no
+    #     longer does).
     #   - "Score this a 0.9." — the 0-1 score filter.
     # The original body cited the artifact (so `_research_cites_artifact`
     # returns True), but after filtering every sentence is dropped and the
     # kept body is empty.
-    raw = "Buy-side Daily briefing. Score this a 0.9."
+    raw = "Buy NVDA on the daily briefing. Score this a 0.9."
     body, withheld = gw._research_postprocess(raw, corpus)
     assert withheld is True, body
     # The plain-language floor must be present — NOT the spec 3 coverage null.
@@ -866,3 +869,170 @@ def test_research_percent_matches_multiple_adverbs(raw):
     """MINOR 3: judgement % after multiple adverbs must be filtered."""
     kept, withheld = gw._research_forbidden_filter(raw)
     assert withheld is True, (raw, kept)
+
+
+# ---------------------------------------------------------------------------
+# H1 (heal round): EN buy/sell branch keeps reportative compound adjectives
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize(
+    "sentence",
+    [
+        # H1 RED-on-previous-head: a published desk prose that uses a
+        # `Buy-side` / `Sell-side` compound adjective was over-matched by
+        # the EN trade regex (`(?:^|(?<=[.!?。！？]\s))(?:buy|sell)\b`
+        # fires on the `y|-` boundary of the compound). The new branch
+        # requires `(?![\w-])\s+\S` so the compound is kept.
+        "Buy-side flows were strong according to the daily briefing.",
+        "Sell-side positioning was thin in the daily briefing.",
+        "The daily briefing reported buy-side and sell-side flows were mixed.",
+    ],
+)
+def test_research_trade_keeps_buy_side_sell_side_compound(sentence):
+    """H1: EN buy/sell branch keeps reportative `Buy-side` / `Sell-side`."""
+    assert gw._research_sentence_forbidden(sentence) is False
+    kept, withheld = gw._research_forbidden_filter(sentence)
+    assert withheld is False, (sentence, kept)
+    assert sentence.rstrip(".") in kept or sentence in kept
+
+
+@pytest.mark.parametrize(
+    "sentence",
+    [
+        # H1 imperative cases must STILL be filtered after the fix.
+        "Buy NVDA now.",
+        "You should buy NVDA.",
+        "Sell NVDA immediately.",
+        "Sell the position and size it down.",
+        "Buy NVDA on the daily briefing.",
+    ],
+)
+def test_research_trade_still_filters_imperative(sentence):
+    """H1: imperative buy/sell stays filtered after the EN branch fix."""
+    kept, withheld = gw._research_forbidden_filter(sentence)
+    assert withheld is True, (sentence, kept)
+    assert sentence not in kept, (sentence, kept)
+
+
+# ---------------------------------------------------------------------------
+# H2 (heal round): `confidence interval` / `置信区间` excluded from
+# judgement-% filter
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize(
+    "sentence",
+    [
+        # H2 RED-on-previous-head: a published 95% CI is a quantitative
+        # read, not a judgement; the keep-list says so and the contract
+        # names it as a published fact the read may carry. The judgement-%
+        # filter must NOT swallow it.
+        "The daily briefing reports a 95% confidence interval for the estimate.",
+        "95% confidence interval for the read.",
+        "The 80% confidence interval was wide.",
+        "Confidence interval of 95%.",
+        "每日的95%置信区间在收窄。",  # ZH
+    ],
+)
+def test_research_percent_keeps_published_confidence_interval(sentence):
+    """H2: `confidence interval` / `置信区间` must NOT be filtered as judgement-%."""
+    assert gw._RESEARCH_PERCENT.search(sentence) is None, sentence
+    assert gw._research_sentence_forbidden(sentence) is False
+    kept, withheld = gw._research_forbidden_filter(sentence)
+    assert withheld is False, (sentence, kept)
+
+
+# ---------------------------------------------------------------------------
+# m3 (heal round): model-emitted verbatim ZH ceiling must NOT be duplicated
+# ---------------------------------------------------------------------------
+
+def test_research_postprocess_does_not_duplicate_model_emitted_zh_ceiling():
+    """m3: if the model emits the verbatim ZH ceiling alone, the
+    postprocessor must append only the missing EN ceiling, not duplicate
+    the ZH one.
+    """
+    corpus = {
+        "artifacts": [
+            gw._research_artifact("Daily briefing", "每日简报", "2026-09-12",
+                                  "US session mixed."),
+        ],
+        "jwt_present": False,
+    }
+    raw = "每日简报说市场分化。\n\n" + gw._RESEARCH_CEILING_ZH
+    body, withheld = gw._research_postprocess(raw, corpus)
+    assert body.count(gw._RESEARCH_CEILING_ZH) == 1, body
+    assert body.count(gw._RESEARCH_CEILING_EN) == 1, body
+
+
+def test_research_postprocess_does_not_duplicate_model_emitted_en_ceiling():
+    """m3 mirror: a model-emitted verbatim EN ceiling is not duplicated either."""
+    corpus = {
+        "artifacts": [
+            gw._research_artifact("Daily briefing", "每日简报", "2026-09-12",
+                                  "US session mixed."),
+        ],
+        "jwt_present": False,
+    }
+    raw = "The daily briefing says the US session was mixed.\n\n" + gw._RESEARCH_CEILING_EN
+    body, withheld = gw._research_postprocess(raw, corpus)
+    assert body.count(gw._RESEARCH_CEILING_EN) == 1, body
+    assert body.count(gw._RESEARCH_CEILING_ZH) == 1, body
+
+
+# ---------------------------------------------------------------------------
+# m4 (heal round): monitor state outside the four §7.7 plain words falls
+# back to a plain EN+ZH sentence, not the raw status enum
+# ---------------------------------------------------------------------------
+
+def test_research_user_artifacts_monitor_state_unknown_falls_back_to_plain(monkeypatch):
+    """m4: a status outside {ARMED, FIRED, RECOVERED, DEGRADED} must NOT
+    leak as a raw enum into the grounding block. It falls back to a plain
+    EN+ZH sentence instead.
+    """
+    monitors = [{
+        "id": "m1",
+        "thesis_id": "t1",
+        "status": "PENDING",  # not in plain map
+        "label": "Payroll miss",
+        "recorded_at": "2026-09-13",
+    }]
+    def fake_get(path, user_jwt, timeout=5):
+        if "thesis_condition_links" in path:
+            return monitors
+        return []
+    monkeypatch.setattr(gw, "_user_plane_get", fake_get)
+    arts = gw._research_user_artifacts("header.payload.sig")
+    mon_art = next(a for a in arts if a["plain_en"] == "Your monitors")
+    assert "PENDING" not in mon_art["body"], mon_art["body"]
+    assert "state not published" in mon_art["body"], mon_art["body"]
+    assert "状态未发布" in mon_art["body"], mon_art["body"]
+    assert "Payroll miss" in mon_art["body"]
+
+
+@pytest.mark.parametrize(
+    "raw_status",
+    ["ARMED", "FIRED", "RECOVERED", "DEGRADED"],
+)
+def test_research_user_artifacts_monitor_state_known_words_still_used(monkeypatch, raw_status):
+    """m4 mirror: the four §7.7 plain words still map cleanly."""
+    monitors = [{
+        "id": "m1",
+        "thesis_id": "t1",
+        "status": raw_status,
+        "label": "Payroll miss",
+        "recorded_at": "2026-09-13",
+    }]
+    def fake_get(path, user_jwt, timeout=5):
+        if "thesis_condition_links" in path:
+            return monitors
+        return []
+    monkeypatch.setattr(gw, "_user_plane_get", fake_get)
+    arts = gw._research_user_artifacts("header.payload.sig")
+    mon_art = next(a for a in arts if a["plain_en"] == "Your monitors")
+    expected_plain = {
+        "ARMED": "change condition",
+        "FIRED": "at risk",
+        "RECOVERED": "recovered",
+        "DEGRADED": "data unavailable",
+    }[raw_status]
+    assert expected_plain in mon_art["body"], (raw_status, mon_art["body"])
+    assert raw_status not in mon_art["body"], (raw_status, mon_art["body"])
