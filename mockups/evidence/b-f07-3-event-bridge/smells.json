@@ -1,0 +1,12 @@
+{
+  "schema": "mastermind.page_evidence_smells.v1",
+  "packet": "B-F07-3",
+  "host_count": 3,
+  "captured_cells": 8,
+  "smells": [],
+  "notes": [
+    "Hosts are static HTML; theme.js paints theme; the bridge line is server-rendered. No JS bridge path mutates the line.",
+    "Capture cropped to the #va-event-bridge element only (Tier-2 receipt).",
+    "Typed-null path is verified by tests/test_valuation_event_bridge.py::test_panel_renders_typed_null_*."
+  ]
+}

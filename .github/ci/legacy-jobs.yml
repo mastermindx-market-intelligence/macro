@@ -1286,6 +1286,12 @@ jobs:
       - "tests/test_valuation_scenario.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "tests/test_valuation_assumptions.py"
+      # B-F07-3 closure widening 2026-09-13: the bridge module + panel
+      # insertion + bilingual null path are pinned by tests/test_valuation_event_bridge.py.
+      # Pure closed-map invariant + per-event-class non-fallback fixtures + the
+      # typed-null render path. No new source — wired through the existing
+      # B-F07-2 valuation_scenario_controls.v1 blob shape.
+      - "tests/test_valuation_event_bridge.py"
     # Wired 2026-08-02: neither suite was named by ANY run step, so #4297's caution
     # rewrite ran 4 stock_score pins red for a day with no CI signal, and the dossier's
     # prose-matched risk_veto died silently. test_stock_score pins the honesty
@@ -1376,11 +1382,12 @@ jobs:
       # fixture dicts only. Own step per this job's precedent (step = masking unit).
       - name: security_state.v1 view-model projection (B1A)
         run: python -m pytest tests/test_security_state_view_model.py -q
-      - name: valuation scenario V1 + user-adjustable assumptions (B-F07-1 / B-F07-2)
+      - name: valuation scenario V1 + user-adjustable assumptions (B-F07-1 / B-F07-2 / B-F07-3)
         run: >
           python -m pytest
           tests/test_valuation_scenario.py
-          tests/test_valuation_assumptions.py -q
+          tests/test_valuation_assumptions.py
+          tests/test_valuation_event_bridge.py -q
 
   chronicle-suite:
     if: ${{ false }}

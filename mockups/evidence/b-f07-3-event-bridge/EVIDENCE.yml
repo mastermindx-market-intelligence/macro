@@ -1,0 +1,33 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/_valuation_assumptions.html.j2
+  - engine/valuation_event_bridge.py
+  - tests/test_valuation_event_bridge.py
+manifest: mockups/evidence/b-f07-3-event-bridge/manifest.json
+smells:   mockups/evidence/b-f07-3-event-bridge/smells.json
+smells_md: mockups/evidence/b-f07-3-event-bridge/smells.md
+captured_cells:
+  - valuation-event-bridge-tender-offer_desktop_dark_en.png
+  - valuation-event-bridge-tender-offer_desktop_dark_zh.png
+  - valuation-event-bridge-tender-offer_desktop_light_en.png
+  - valuation-event-bridge-tender-offer_desktop_light_zh.png
+  - valuation-event-bridge-tender-offer_mobile_dark_en.png
+  - valuation-event-bridge-tender-offer_mobile_dark_zh.png
+  - valuation-event-bridge-tender-offer_mobile_light_en.png
+  - valuation-event-bridge-tender-offer_mobile_light_zh.png
+matrix: 8 cells = dark+light × EN+ZH × 1440/390 (desktop, mobile)
+subject: B-F07-3 valuation panel event-to-assumption bridge line
+state:   populated (Tender Offers → "usually lifts the multiple people pay")
+note: |
+  The populated state is the receipt the spec names; the typed-null state is
+  covered by tests/test_valuation_event_bridge.py::test_panel_renders_typed_null_*
+  and is not separately captured (one receipt, not two — same line, two states).
+capture: |
+  Hosts rendered by _render_bridge.py from the FROZEN valuation_assumptions
+  template + engine/valuation_event_bridge.py::bridge("Tender Offers").
+  Capture run by _capture_bridge.py against the committed hosts with
+  --theme dark/light, --locale en/zh, --viewport desktop=1440x900 / mobile=390x844
+  and a 200ms settle post-data-theme/data-lang stamp. Screenshots cropped to
+  the #va-event-bridge element only (Tier-2 receipt, not the full panel).
+captured_at: 2026-09-13T16:30Z
+resolved_sha_or_none: null   # filled at PR open time (see PR body)
