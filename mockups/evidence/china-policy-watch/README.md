@@ -1,4 +1,4 @@
-# China Policy Watch — W5 r4 evidence
+# China Policy Watch — W5 r5 evidence
 
 Fixture-rendered `templates/china_policy_watch.html.j2` (no live `data/` bake).
 Playwright seeds `localStorage` (`theme`, `lang`, clears `themeAuto`), sets
