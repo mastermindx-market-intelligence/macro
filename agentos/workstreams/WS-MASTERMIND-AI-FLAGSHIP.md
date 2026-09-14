@@ -32,8 +32,8 @@ waves:
   - id: R2
     title: Deliver an earnings-to-financial-bridge thesis investigation
     status: todo
-    depends_on: [R0, R1]
-    next_action: Connect existing company and earnings readers to inspectable calculations and competing interpretations.
+    depends_on: [R0]
+    next_action: Connect existing company and earnings readers to inspectable calculations and competing interpretations; only a case requiring public evidence depends on R1.
   - id: R3
     title: Save and update a research case through real monitoring
     status: todo
@@ -42,13 +42,13 @@ waves:
   - id: R4
     title: Improve difficult investigations with cross-engine and portfolio context
     status: todo
-    depends_on: [R3]
-    next_action: Add typed engine context and bounded specialists only where controlled task evaluation demonstrates utility.
+    depends_on: [R2]
+    next_action: Add typed engine context and bounded specialists where controlled evaluation demonstrates utility; do not wait for unrelated persistence or public-search gates.
   - id: R5
     title: Deliver rights-cleared intelligence as a reliable data product
     status: todo
-    depends_on: [R4]
-    next_action: Establish admitted coverage, delay, version, correction and redistribution contracts through existing owners.
+    depends_on: [R2]
+    next_action: Package individually proven intelligence capabilities with admitted coverage, delay, version, correction and redistribution contracts; no blanket dependency on every retail feature.
 discoveries:
   - DSC:BRAIN-FINANCIAL-SCENARIO-REFUSAL
 landmines:
@@ -64,6 +64,7 @@ do_not_redo:
   - Do not bypass the incumbent Fabric or credential boundaries with raw local spawning.
   - Do not make full autonomous Fabric completion a prerequisite for a separately qualified narrow gateway repair.
   - Do not silently loosen the published-only Research guarantee or silently remove active investigation.
+  - Do not turn the recommended product sequence into false universal blockers; preserve actual per-capability dependencies.
 artifacts:
   - research/mastermind_ai_flagship/R2_META_CEO_PROGRAM_PACKET_2026-09-14.md
   - research/mastermind_ai_flagship/R2_RUNTIME_OBSERVATIONS_2026-09-14.json
@@ -71,7 +72,8 @@ next_action: >
   Sol carries R0 from current gateway custody and delivery admission through a narrow
   finance-scope prompt repair, focused regression tests, independent review and
   deployed before/after customer-path acceptance. Preserve P2 effect-unknown state.
-  Public-only search qualification may proceed independently on disjoint paths.
+  Public-only search qualification and owned-data financial-bridge design may proceed
+  independently on disjoint paths; cases requiring external evidence alone depend on R1.
 ---
 
 ## Evidence boundary
@@ -85,3 +87,12 @@ or investment-outperformance evidence exists from this session.
 The existing semantic parent is `macro-mastermind-ai`; this is an Agent OS knowledge
 record, not a competing program admission or control plane. Sol is accountable for
 continuity, but this record does not prove a running Executive worker or live session.
+
+## Dependency discipline
+
+The R0→R1→R2→R3→R4→R5 prose sequence is a prioritization narrative, not a universal
+serial gate. A financial bridge using already authorized owned evidence can advance
+without new public-search credentials. Cross-engine analysis does not wait for case
+persistence. Each API/data product needs proof of the capability it exposes and its
+own rights, not completion of every retail surface. Preserve source custody and
+contract-specific dependencies without inventing broader blockers.
