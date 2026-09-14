@@ -1,0 +1,19 @@
+{
+  "kind": "trailing-whitespace-publication-normalization",
+  "semantics_changed": false,
+  "records": [
+    {
+      "path": "research/grey_deer/RRU_LEGACY_COHORT_RED_2026_09_09.txt",
+      "raw_retained_local_only": "research/grey_deer/RRU_LEGACY_COHORT_RED_2026_09_09.txt.raw.local",
+      "raw_sha256": "b7e1f1e82271ea9ca47f4593152c2d15df2066551904e893448eea1a77ed25e5",
+      "published_sha256": "5c811708f053ce757190dcd8e57e1a8454ff7c7f047deb7eaa2b785dbb4bf763"
+    },
+    {
+      "path": "research/grey_deer/RRU_LEGACY_COHORT_CONTRAST_RED_2026_09_09.txt",
+      "raw_retained_local_only": "research/grey_deer/RRU_LEGACY_COHORT_CONTRAST_RED_2026_09_09.txt.raw.local",
+      "raw_sha256": "75cf92f2f3e386506d2126aa16b1e97a7058503fde16317b1aef93a88e72ac44",
+      "published_sha256": "92f6568838b5caa6b0f29b734a6d360bb139e80dceec9eff4fc202ee23af2fd5"
+    }
+  ],
+  "helper_change": "Remove trailing blank line; candidate reverified after normalization"
+}

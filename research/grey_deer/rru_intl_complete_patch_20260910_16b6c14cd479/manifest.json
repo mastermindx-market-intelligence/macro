@@ -1,0 +1,85 @@
+{
+  "source_pin": "16b6c14cd4791dde7cd7217a6945987805b0fa16",
+  "capability": "uninstalled_research_candidate",
+  "patch_format": "unified_zero_context; exact before hashes required",
+  "paths": {
+    "engine/international_macro_dashboard.py": {
+      "before_sha256": "ba656f2786a54df357009ded2e269431ad3759a421c346fe26990e16282fec4a",
+      "after_sha256": "e78539ee31e160af62680f9d121ab49bafb116b42fa1547dc5663ff65bba50c9"
+    },
+    "engine/intl_run.py": {
+      "before_sha256": "dc48bce3bf4f863e39b46e6cac28af0b82e367207fbbc45bc3dd216cd160e55f",
+      "after_sha256": "cc34d1ae42444f0f7d2570088cda1f0d9709b512c97fdbd78fcb901aaebc0890"
+    },
+    "engine/market_state.py": {
+      "before_sha256": "4a8634dcfae1703b8adc28f3a027309ba65312dce4e0a8236c1876cc02e2f684",
+      "after_sha256": "b2b25c80b928923b4a99fb33140760e1020a49159ed73504d68ae9c80345cb50"
+    },
+    "engine/risk_radar_intl.py": {
+      "before_sha256": "1596e1da4794bf97d49f6f0ae42eaabff7226fa812fb0a96bfb0a6242faf7cd7",
+      "after_sha256": "96e00c04580c8cbff5c07ddd0bdf2a3051b7344d6e27e0c08b40333b8ca91b30"
+    },
+    "engine/risk_radar_intl_audit.py": {
+      "before_sha256": "59215f15f68371a114213a9beac5f5d5023725425de37ab9e17e60e34a2870aa",
+      "after_sha256": "b651ff21713dcfcc31ac08bf774e85b4ba29be6514c8854ae16b1b31f0d8af15"
+    },
+    "engine/risk_radar_intl_tune.py": {
+      "before_sha256": "a7f3adbf3ea60f62eaf9346300c176c138d90c054cf348d81c0f96ca14ca7f58",
+      "after_sha256": "ed9003c72cda9de36201f802c1b5d78248db75428041dee5e58a0f5cfc568a26"
+    },
+    "engine/risk_radar_recovery.py": {
+      "before_sha256": "321545a3cace15f20d23b564e1b43595ccd0804fab3de362eceb5a580695c593",
+      "after_sha256": "b817d1fb4d8ba0484bfc3ef8f66c40e35f5762bf5cde02c1d45435277ef9f5a8"
+    },
+    "scripts/build_canada.py": {
+      "before_sha256": "bbf712638c4e378e4af516dfc4dec0033bd98bbae5c386f819ed5553d3876269",
+      "after_sha256": "627b32b7f60da9a2762e1e74da2dc651b640661d00cbf3e825e75d489098400b"
+    },
+    "scripts/build_china.py": {
+      "before_sha256": "1e5d0cbfba24f4e44c0e6c8850a16809bcfab6b4e5acf9cb58b2a2bb99b870e6",
+      "after_sha256": "3a7da97c320a078803fa3cd9c5523e09e34681199f899062d2b8be1c156dae95"
+    },
+    "scripts/build_china_risk_state.py": {
+      "before_sha256": "3dc2f44d6c1a23e18edaa0c9631d093c06134768add6cc83a22c8f833a481db8",
+      "after_sha256": "73f0224b8ceba99d76fa1e55b89913e4d6c51718c7115de74dd0df045e7ee667"
+    },
+    "scripts/build_hk.py": {
+      "before_sha256": "8df616b82725e50d7cd93d7acf3e8a31297d9a98e61cd91a6061c8e3ade0b7ef",
+      "after_sha256": "87e9ec5e2ad4a4525f08ada2fb7f2d89808987b81def78e092b8adb62fffe643"
+    },
+    "scripts/build_international_macro.py": {
+      "before_sha256": "98fc3c9a69ad057f9b565335a6b21a5cf39185663d30c721f7c31d9fe6363fdc",
+      "after_sha256": "d72412bf5f716fc1c051314ea7d7d78ef52e3ed2d96041a5228be907d803bae2"
+    },
+    "templates/_risk_radar_card.html.j2": {
+      "before_sha256": "fe784862a462a62eae7e76b4c9df32cb2aefb01738a138ce262e2d171188d2d3",
+      "after_sha256": "6ca2e9b783f6d8f0f7c0b4496160d6c3a020fd6cdb979fd57c459ca901c5ba48"
+    },
+    "templates/baskets_desk.js": {
+      "before_sha256": "bf97c8ba2ce8198e02a39ea3e2bc3097ed53027f7835e8821e99b320fe1c62dd",
+      "after_sha256": "81fd19205af98c7872bfdd1b10397414b7abf7fa899a955470a5d3b0add5262a"
+    },
+    "templates/china.html.j2": {
+      "before_sha256": "cb6e0685b96a6d897e9562418927c0bb5d5e656d4b31c99e843ec5f213fa7031",
+      "after_sha256": "236da2e7f7d56913d0308698eab6b65c00d577f8fe7b6ea70a24fecc0606929e"
+    },
+    "templates/cn_reversal_sleeve.html.j2": {
+      "before_sha256": "9056c65d7c1c6361860186361d8b05e036f20928834f52a15dbbd35108f960e4",
+      "after_sha256": "dc40baaf1d710b0ef18c7a55a85d1098fb6417d22c552db47003f1a7144531fc"
+    },
+    "templates/international_macro.html.j2": {
+      "before_sha256": "75211045dece285dd2da673733999260b3cb1910165b3417823c21cdc5e360d1",
+      "after_sha256": "a6208ec651c37b56780bbad8c9f4d793a199e70a3af8e02a3e8c60cbcb39372a"
+    }
+  },
+  "patch_sha256": "83846c4e953fedd643e30953da14ee57907f477631d717a06ebef82b853f7108",
+  "production": false,
+  "release_ready": false,
+  "remaining_release_gates": [
+    "independent full-candidate review",
+    "source custody and current integration",
+    "real-input applicability",
+    "installed-policy cutover",
+    "production publication and entitled browser proof"
+  ]
+}
