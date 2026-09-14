@@ -124,6 +124,80 @@
           "3D.p0": 0.0002946960834413481,
           "3D.p1": -0.0008299285228819953,
           "3D.p2": -0.001061908006925405
+        },
+        "phase_samples": {
+          "1D.p0": {
+            "completed_bar_count": 2067,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-19",
+            "median_spy_relative_return": 3.848453560051368e-05,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 836,
+            "signal_end_date": "2026-09-08",
+            "signal_start_date": "2018-11-07",
+            "state": "MEASURED",
+            "unique_signal_dates": 561
+          },
+          "2D.p0": {
+            "completed_bar_count": 1033,
+            "completed_bar_end_date": "2026-09-08",
+            "completed_bar_start_date": "2018-06-20",
+            "median_spy_relative_return": 4.400603544696402e-05,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 429,
+            "signal_end_date": "2026-08-12",
+            "signal_start_date": "2019-04-08",
+            "state": "MEASURED",
+            "unique_signal_dates": 294
+          },
+          "2D.p1": {
+            "completed_bar_count": 1033,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-21",
+            "median_spy_relative_return": -0.0002576083531544704,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 420,
+            "signal_end_date": "2026-08-19",
+            "signal_start_date": "2019-04-05",
+            "state": "MEASURED",
+            "unique_signal_dates": 285
+          },
+          "3D.p0": {
+            "completed_bar_count": 689,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-21",
+            "median_spy_relative_return": 0.0002946960834413481,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 269,
+            "signal_end_date": "2026-08-10",
+            "signal_start_date": "2019-09-05",
+            "state": "MEASURED",
+            "unique_signal_dates": 180
+          },
+          "3D.p1": {
+            "completed_bar_count": 688,
+            "completed_bar_end_date": "2026-09-04",
+            "completed_bar_start_date": "2018-06-22",
+            "median_spy_relative_return": -0.0008299285228819953,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 279,
+            "signal_end_date": "2026-08-14",
+            "signal_start_date": "2019-08-28",
+            "state": "MEASURED",
+            "unique_signal_dates": 188
+          },
+          "3D.p2": {
+            "completed_bar_count": 688,
+            "completed_bar_end_date": "2026-09-08",
+            "completed_bar_start_date": "2018-06-25",
+            "median_spy_relative_return": -0.001061908006925405,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 278,
+            "signal_end_date": "2026-08-07",
+            "signal_start_date": "2019-09-04",
+            "state": "MEASURED",
+            "unique_signal_dates": 184
+          }
         }
       },
       "recent_20": {
@@ -135,6 +209,80 @@
           "3D.p0": -0.0004900101423501724,
           "3D.p1": -0.005991668239825942,
           "3D.p2": -0.0017735617841536655
+        },
+        "phase_samples": {
+          "1D.p0": {
+            "completed_bar_count": 2067,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-19",
+            "median_spy_relative_return": 0.001438717585481919,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 24,
+            "signal_end_date": "2026-09-08",
+            "signal_start_date": "2026-07-13",
+            "state": "MEASURED",
+            "unique_signal_dates": 20
+          },
+          "2D.p0": {
+            "completed_bar_count": 1033,
+            "completed_bar_end_date": "2026-09-08",
+            "completed_bar_start_date": "2018-06-20",
+            "median_spy_relative_return": -0.002259337231130698,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 23,
+            "signal_end_date": "2026-08-12",
+            "signal_start_date": "2026-05-11",
+            "state": "MEASURED",
+            "unique_signal_dates": 20
+          },
+          "2D.p1": {
+            "completed_bar_count": 1033,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-21",
+            "median_spy_relative_return": -0.0024193965163045172,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 28,
+            "signal_end_date": "2026-08-19",
+            "signal_start_date": "2026-04-08",
+            "state": "MEASURED",
+            "unique_signal_dates": 20
+          },
+          "3D.p0": {
+            "completed_bar_count": 689,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-21",
+            "median_spy_relative_return": -0.0004900101423501724,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 29,
+            "signal_end_date": "2026-08-10",
+            "signal_start_date": "2026-01-12",
+            "state": "MEASURED",
+            "unique_signal_dates": 20
+          },
+          "3D.p1": {
+            "completed_bar_count": 688,
+            "completed_bar_end_date": "2026-09-04",
+            "completed_bar_start_date": "2018-06-22",
+            "median_spy_relative_return": -0.005991668239825942,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 28,
+            "signal_end_date": "2026-08-14",
+            "signal_start_date": "2025-12-24",
+            "state": "MEASURED",
+            "unique_signal_dates": 20
+          },
+          "3D.p2": {
+            "completed_bar_count": 688,
+            "completed_bar_end_date": "2026-09-08",
+            "completed_bar_start_date": "2018-06-25",
+            "median_spy_relative_return": -0.0017735617841536655,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 30,
+            "signal_end_date": "2026-08-07",
+            "signal_start_date": "2025-12-04",
+            "state": "MEASURED",
+            "unique_signal_dates": 20
+          }
         }
       },
       "recent_60": {
@@ -146,6 +294,80 @@
           "3D.p0": 0.0003981722756635775,
           "3D.p1": -0.0005604461190147347,
           "3D.p2": -0.001287786337176633
+        },
+        "phase_samples": {
+          "1D.p0": {
+            "completed_bar_count": 2067,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-19",
+            "median_spy_relative_return": 6.755055103602192e-05,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 80,
+            "signal_end_date": "2026-09-08",
+            "signal_start_date": "2026-01-12",
+            "state": "MEASURED",
+            "unique_signal_dates": 60
+          },
+          "2D.p0": {
+            "completed_bar_count": 1033,
+            "completed_bar_end_date": "2026-09-08",
+            "completed_bar_start_date": "2018-06-20",
+            "median_spy_relative_return": -0.0016775922150227274,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 75,
+            "signal_end_date": "2026-08-12",
+            "signal_start_date": "2025-05-12",
+            "state": "MEASURED",
+            "unique_signal_dates": 60
+          },
+          "2D.p1": {
+            "completed_bar_count": 1033,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-21",
+            "median_spy_relative_return": -6.841650719530135e-05,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 78,
+            "signal_end_date": "2026-08-19",
+            "signal_start_date": "2025-04-25",
+            "state": "MEASURED",
+            "unique_signal_dates": 60
+          },
+          "3D.p0": {
+            "completed_bar_count": 689,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-21",
+            "median_spy_relative_return": 0.0003981722756635775,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 86,
+            "signal_end_date": "2026-08-10",
+            "signal_start_date": "2024-07-26",
+            "state": "MEASURED",
+            "unique_signal_dates": 60
+          },
+          "3D.p1": {
+            "completed_bar_count": 688,
+            "completed_bar_end_date": "2026-09-04",
+            "completed_bar_start_date": "2018-06-22",
+            "median_spy_relative_return": -0.0005604461190147347,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 83,
+            "signal_end_date": "2026-08-14",
+            "signal_start_date": "2024-07-16",
+            "state": "MEASURED",
+            "unique_signal_dates": 60
+          },
+          "3D.p2": {
+            "completed_bar_count": 688,
+            "completed_bar_end_date": "2026-09-08",
+            "completed_bar_start_date": "2018-06-25",
+            "median_spy_relative_return": -0.001287786337176633,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 81,
+            "signal_end_date": "2026-08-07",
+            "signal_start_date": "2024-08-15",
+            "state": "MEASURED",
+            "unique_signal_dates": 60
+          }
         }
       }
     },
@@ -159,6 +381,80 @@
           "3D.p0": -0.0010820586826031375,
           "3D.p1": -0.004493058820961182,
           "3D.p2": 0.00036042462753693716
+        },
+        "phase_samples": {
+          "1D.p0": {
+            "completed_bar_count": 2067,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-19",
+            "median_spy_relative_return": 5.706730639443158e-05,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 832,
+            "signal_end_date": "2026-08-24",
+            "signal_start_date": "2018-11-07",
+            "state": "MEASURED",
+            "unique_signal_dates": 557
+          },
+          "2D.p0": {
+            "completed_bar_count": 1033,
+            "completed_bar_end_date": "2026-09-08",
+            "completed_bar_start_date": "2018-06-20",
+            "median_spy_relative_return": -0.0023402455050429705,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 429,
+            "signal_end_date": "2026-08-12",
+            "signal_start_date": "2019-04-08",
+            "state": "MEASURED",
+            "unique_signal_dates": 294
+          },
+          "2D.p1": {
+            "completed_bar_count": 1033,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-21",
+            "median_spy_relative_return": -0.0019804366778166105,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 420,
+            "signal_end_date": "2026-08-19",
+            "signal_start_date": "2019-04-05",
+            "state": "MEASURED",
+            "unique_signal_dates": 285
+          },
+          "3D.p0": {
+            "completed_bar_count": 689,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-21",
+            "median_spy_relative_return": -0.0010820586826031375,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 269,
+            "signal_end_date": "2026-08-10",
+            "signal_start_date": "2019-09-05",
+            "state": "MEASURED",
+            "unique_signal_dates": 180
+          },
+          "3D.p1": {
+            "completed_bar_count": 688,
+            "completed_bar_end_date": "2026-09-04",
+            "completed_bar_start_date": "2018-06-22",
+            "median_spy_relative_return": -0.004493058820961182,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 279,
+            "signal_end_date": "2026-08-14",
+            "signal_start_date": "2019-08-28",
+            "state": "MEASURED",
+            "unique_signal_dates": 188
+          },
+          "3D.p2": {
+            "completed_bar_count": 688,
+            "completed_bar_end_date": "2026-09-08",
+            "completed_bar_start_date": "2018-06-25",
+            "median_spy_relative_return": 0.00036042462753693716,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 278,
+            "signal_end_date": "2026-08-07",
+            "signal_start_date": "2019-09-04",
+            "state": "MEASURED",
+            "unique_signal_dates": 184
+          }
         }
       },
       "recent_20": {
@@ -170,6 +466,80 @@
           "3D.p0": -0.02099469807013299,
           "3D.p1": -0.01588937418302666,
           "3D.p2": -0.00973967411111104
+        },
+        "phase_samples": {
+          "1D.p0": {
+            "completed_bar_count": 2067,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-19",
+            "median_spy_relative_return": -0.008375911963135863,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 24,
+            "signal_end_date": "2026-08-24",
+            "signal_start_date": "2026-07-01",
+            "state": "MEASURED",
+            "unique_signal_dates": 20
+          },
+          "2D.p0": {
+            "completed_bar_count": 1033,
+            "completed_bar_end_date": "2026-09-08",
+            "completed_bar_start_date": "2018-06-20",
+            "median_spy_relative_return": -0.011285557815398972,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 23,
+            "signal_end_date": "2026-08-12",
+            "signal_start_date": "2026-05-11",
+            "state": "MEASURED",
+            "unique_signal_dates": 20
+          },
+          "2D.p1": {
+            "completed_bar_count": 1033,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-21",
+            "median_spy_relative_return": -0.010657607792611545,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 28,
+            "signal_end_date": "2026-08-19",
+            "signal_start_date": "2026-04-08",
+            "state": "MEASURED",
+            "unique_signal_dates": 20
+          },
+          "3D.p0": {
+            "completed_bar_count": 689,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-21",
+            "median_spy_relative_return": -0.02099469807013299,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 29,
+            "signal_end_date": "2026-08-10",
+            "signal_start_date": "2026-01-12",
+            "state": "MEASURED",
+            "unique_signal_dates": 20
+          },
+          "3D.p1": {
+            "completed_bar_count": 688,
+            "completed_bar_end_date": "2026-09-04",
+            "completed_bar_start_date": "2018-06-22",
+            "median_spy_relative_return": -0.01588937418302666,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 28,
+            "signal_end_date": "2026-08-14",
+            "signal_start_date": "2025-12-24",
+            "state": "MEASURED",
+            "unique_signal_dates": 20
+          },
+          "3D.p2": {
+            "completed_bar_count": 688,
+            "completed_bar_end_date": "2026-09-08",
+            "completed_bar_start_date": "2018-06-25",
+            "median_spy_relative_return": -0.00973967411111104,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 30,
+            "signal_end_date": "2026-08-07",
+            "signal_start_date": "2025-12-04",
+            "state": "MEASURED",
+            "unique_signal_dates": 20
+          }
         }
       },
       "recent_60": {
@@ -181,6 +551,80 @@
           "3D.p0": -0.007903214692528304,
           "3D.p1": -0.006869058006388928,
           "3D.p2": -0.0056003010879778214
+        },
+        "phase_samples": {
+          "1D.p0": {
+            "completed_bar_count": 2067,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-19",
+            "median_spy_relative_return": -0.010947272477210446,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 82,
+            "signal_end_date": "2026-08-24",
+            "signal_start_date": "2026-01-02",
+            "state": "MEASURED",
+            "unique_signal_dates": 60
+          },
+          "2D.p0": {
+            "completed_bar_count": 1033,
+            "completed_bar_end_date": "2026-09-08",
+            "completed_bar_start_date": "2018-06-20",
+            "median_spy_relative_return": -0.009198037597007547,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 75,
+            "signal_end_date": "2026-08-12",
+            "signal_start_date": "2025-05-12",
+            "state": "MEASURED",
+            "unique_signal_dates": 60
+          },
+          "2D.p1": {
+            "completed_bar_count": 1033,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-21",
+            "median_spy_relative_return": -0.007265999739547835,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 78,
+            "signal_end_date": "2026-08-19",
+            "signal_start_date": "2025-04-25",
+            "state": "MEASURED",
+            "unique_signal_dates": 60
+          },
+          "3D.p0": {
+            "completed_bar_count": 689,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-21",
+            "median_spy_relative_return": -0.007903214692528304,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 86,
+            "signal_end_date": "2026-08-10",
+            "signal_start_date": "2024-07-26",
+            "state": "MEASURED",
+            "unique_signal_dates": 60
+          },
+          "3D.p1": {
+            "completed_bar_count": 688,
+            "completed_bar_end_date": "2026-09-04",
+            "completed_bar_start_date": "2018-06-22",
+            "median_spy_relative_return": -0.006869058006388928,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 83,
+            "signal_end_date": "2026-08-14",
+            "signal_start_date": "2024-07-16",
+            "state": "MEASURED",
+            "unique_signal_dates": 60
+          },
+          "3D.p2": {
+            "completed_bar_count": 688,
+            "completed_bar_end_date": "2026-09-08",
+            "completed_bar_start_date": "2018-06-25",
+            "median_spy_relative_return": -0.0056003010879778214,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 81,
+            "signal_end_date": "2026-08-07",
+            "signal_start_date": "2024-08-15",
+            "state": "MEASURED",
+            "unique_signal_dates": 60
+          }
         }
       }
     },
@@ -194,6 +638,80 @@
           "3D.p0": -0.0006173110674214666,
           "3D.p1": -0.000558762224021514,
           "3D.p2": -0.001091419314171782
+        },
+        "phase_samples": {
+          "1D.p0": {
+            "completed_bar_count": 2067,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-19",
+            "median_spy_relative_return": -0.0007891739691667787,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 834,
+            "signal_end_date": "2026-09-03",
+            "signal_start_date": "2018-11-07",
+            "state": "MEASURED",
+            "unique_signal_dates": 559
+          },
+          "2D.p0": {
+            "completed_bar_count": 1033,
+            "completed_bar_end_date": "2026-09-08",
+            "completed_bar_start_date": "2018-06-20",
+            "median_spy_relative_return": -0.00013005171742697108,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 429,
+            "signal_end_date": "2026-08-12",
+            "signal_start_date": "2019-04-08",
+            "state": "MEASURED",
+            "unique_signal_dates": 294
+          },
+          "2D.p1": {
+            "completed_bar_count": 1033,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-21",
+            "median_spy_relative_return": -0.0009493026204717703,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 420,
+            "signal_end_date": "2026-08-19",
+            "signal_start_date": "2019-04-05",
+            "state": "MEASURED",
+            "unique_signal_dates": 285
+          },
+          "3D.p0": {
+            "completed_bar_count": 689,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-21",
+            "median_spy_relative_return": -0.0006173110674214666,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 269,
+            "signal_end_date": "2026-08-10",
+            "signal_start_date": "2019-09-05",
+            "state": "MEASURED",
+            "unique_signal_dates": 180
+          },
+          "3D.p1": {
+            "completed_bar_count": 688,
+            "completed_bar_end_date": "2026-09-04",
+            "completed_bar_start_date": "2018-06-22",
+            "median_spy_relative_return": -0.000558762224021514,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 279,
+            "signal_end_date": "2026-08-14",
+            "signal_start_date": "2019-08-28",
+            "state": "MEASURED",
+            "unique_signal_dates": 188
+          },
+          "3D.p2": {
+            "completed_bar_count": 688,
+            "completed_bar_end_date": "2026-09-08",
+            "completed_bar_start_date": "2018-06-25",
+            "median_spy_relative_return": -0.001091419314171782,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 278,
+            "signal_end_date": "2026-08-07",
+            "signal_start_date": "2019-09-04",
+            "state": "MEASURED",
+            "unique_signal_dates": 184
+          }
         }
       },
       "recent_20": {
@@ -205,6 +723,80 @@
           "3D.p0": -0.013798107475176402,
           "3D.p1": -0.0009409353529497011,
           "3D.p2": -0.004217533849292077
+        },
+        "phase_samples": {
+          "1D.p0": {
+            "completed_bar_count": 2067,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-19",
+            "median_spy_relative_return": -0.006984989016442178,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 24,
+            "signal_end_date": "2026-09-03",
+            "signal_start_date": "2026-07-06",
+            "state": "MEASURED",
+            "unique_signal_dates": 20
+          },
+          "2D.p0": {
+            "completed_bar_count": 1033,
+            "completed_bar_end_date": "2026-09-08",
+            "completed_bar_start_date": "2018-06-20",
+            "median_spy_relative_return": -0.004973778228030135,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 23,
+            "signal_end_date": "2026-08-12",
+            "signal_start_date": "2026-05-11",
+            "state": "MEASURED",
+            "unique_signal_dates": 20
+          },
+          "2D.p1": {
+            "completed_bar_count": 1033,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-21",
+            "median_spy_relative_return": -0.004585545964030269,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 28,
+            "signal_end_date": "2026-08-19",
+            "signal_start_date": "2026-04-08",
+            "state": "MEASURED",
+            "unique_signal_dates": 20
+          },
+          "3D.p0": {
+            "completed_bar_count": 689,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-21",
+            "median_spy_relative_return": -0.013798107475176402,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 29,
+            "signal_end_date": "2026-08-10",
+            "signal_start_date": "2026-01-12",
+            "state": "MEASURED",
+            "unique_signal_dates": 20
+          },
+          "3D.p1": {
+            "completed_bar_count": 688,
+            "completed_bar_end_date": "2026-09-04",
+            "completed_bar_start_date": "2018-06-22",
+            "median_spy_relative_return": -0.0009409353529497011,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 28,
+            "signal_end_date": "2026-08-14",
+            "signal_start_date": "2025-12-24",
+            "state": "MEASURED",
+            "unique_signal_dates": 20
+          },
+          "3D.p2": {
+            "completed_bar_count": 688,
+            "completed_bar_end_date": "2026-09-08",
+            "completed_bar_start_date": "2018-06-25",
+            "median_spy_relative_return": -0.004217533849292077,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 30,
+            "signal_end_date": "2026-08-07",
+            "signal_start_date": "2025-12-04",
+            "state": "MEASURED",
+            "unique_signal_dates": 20
+          }
         }
       },
       "recent_60": {
@@ -216,6 +808,80 @@
           "3D.p0": -0.003442678268827437,
           "3D.p1": -0.0017944716771625124,
           "3D.p2": -0.0030574879833779045
+        },
+        "phase_samples": {
+          "1D.p0": {
+            "completed_bar_count": 2067,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-19",
+            "median_spy_relative_return": -0.007008019749706829,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 82,
+            "signal_end_date": "2026-09-03",
+            "signal_start_date": "2026-01-06",
+            "state": "MEASURED",
+            "unique_signal_dates": 60
+          },
+          "2D.p0": {
+            "completed_bar_count": 1033,
+            "completed_bar_end_date": "2026-09-08",
+            "completed_bar_start_date": "2018-06-20",
+            "median_spy_relative_return": -0.002229139409994696,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 75,
+            "signal_end_date": "2026-08-12",
+            "signal_start_date": "2025-05-12",
+            "state": "MEASURED",
+            "unique_signal_dates": 60
+          },
+          "2D.p1": {
+            "completed_bar_count": 1033,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-21",
+            "median_spy_relative_return": -0.0014139151637659886,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 78,
+            "signal_end_date": "2026-08-19",
+            "signal_start_date": "2025-04-25",
+            "state": "MEASURED",
+            "unique_signal_dates": 60
+          },
+          "3D.p0": {
+            "completed_bar_count": 689,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-21",
+            "median_spy_relative_return": -0.003442678268827437,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 86,
+            "signal_end_date": "2026-08-10",
+            "signal_start_date": "2024-07-26",
+            "state": "MEASURED",
+            "unique_signal_dates": 60
+          },
+          "3D.p1": {
+            "completed_bar_count": 688,
+            "completed_bar_end_date": "2026-09-04",
+            "completed_bar_start_date": "2018-06-22",
+            "median_spy_relative_return": -0.0017944716771625124,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 83,
+            "signal_end_date": "2026-08-14",
+            "signal_start_date": "2024-07-16",
+            "state": "MEASURED",
+            "unique_signal_dates": 60
+          },
+          "3D.p2": {
+            "completed_bar_count": 688,
+            "completed_bar_end_date": "2026-09-08",
+            "completed_bar_start_date": "2018-06-25",
+            "median_spy_relative_return": -0.0030574879833779045,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 81,
+            "signal_end_date": "2026-08-07",
+            "signal_start_date": "2024-08-15",
+            "state": "MEASURED",
+            "unique_signal_dates": 60
+          }
         }
       }
     },
@@ -229,6 +895,80 @@
           "3D.p0": -0.0017632926643249558,
           "3D.p1": -0.0022255819474114036,
           "3D.p2": -0.0017937045615470382
+        },
+        "phase_samples": {
+          "1D.p0": {
+            "completed_bar_count": 2067,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-19",
+            "median_spy_relative_return": -0.00041659473925670376,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 833,
+            "signal_end_date": "2026-09-01",
+            "signal_start_date": "2018-11-07",
+            "state": "MEASURED",
+            "unique_signal_dates": 558
+          },
+          "2D.p0": {
+            "completed_bar_count": 1033,
+            "completed_bar_end_date": "2026-09-08",
+            "completed_bar_start_date": "2018-06-20",
+            "median_spy_relative_return": -0.00024270923596825256,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 429,
+            "signal_end_date": "2026-08-12",
+            "signal_start_date": "2019-04-08",
+            "state": "MEASURED",
+            "unique_signal_dates": 294
+          },
+          "2D.p1": {
+            "completed_bar_count": 1033,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-21",
+            "median_spy_relative_return": -0.00020362348198443847,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 420,
+            "signal_end_date": "2026-08-19",
+            "signal_start_date": "2019-04-05",
+            "state": "MEASURED",
+            "unique_signal_dates": 285
+          },
+          "3D.p0": {
+            "completed_bar_count": 689,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-21",
+            "median_spy_relative_return": -0.0017632926643249558,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 269,
+            "signal_end_date": "2026-08-10",
+            "signal_start_date": "2019-09-05",
+            "state": "MEASURED",
+            "unique_signal_dates": 180
+          },
+          "3D.p1": {
+            "completed_bar_count": 688,
+            "completed_bar_end_date": "2026-09-04",
+            "completed_bar_start_date": "2018-06-22",
+            "median_spy_relative_return": -0.0022255819474114036,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 279,
+            "signal_end_date": "2026-08-14",
+            "signal_start_date": "2019-08-28",
+            "state": "MEASURED",
+            "unique_signal_dates": 188
+          },
+          "3D.p2": {
+            "completed_bar_count": 688,
+            "completed_bar_end_date": "2026-09-08",
+            "completed_bar_start_date": "2018-06-25",
+            "median_spy_relative_return": -0.0017937045615470382,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 278,
+            "signal_end_date": "2026-08-07",
+            "signal_start_date": "2019-09-04",
+            "state": "MEASURED",
+            "unique_signal_dates": 184
+          }
         }
       },
       "recent_20": {
@@ -240,6 +980,80 @@
           "3D.p0": -0.015666290102793967,
           "3D.p1": -0.009583087464540119,
           "3D.p2": -0.005072409891477669
+        },
+        "phase_samples": {
+          "1D.p0": {
+            "completed_bar_count": 2067,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-19",
+            "median_spy_relative_return": -0.009403443294776492,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 24,
+            "signal_end_date": "2026-09-01",
+            "signal_start_date": "2026-07-02",
+            "state": "MEASURED",
+            "unique_signal_dates": 20
+          },
+          "2D.p0": {
+            "completed_bar_count": 1033,
+            "completed_bar_end_date": "2026-09-08",
+            "completed_bar_start_date": "2018-06-20",
+            "median_spy_relative_return": -0.006577042244961584,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 23,
+            "signal_end_date": "2026-08-12",
+            "signal_start_date": "2026-05-11",
+            "state": "MEASURED",
+            "unique_signal_dates": 20
+          },
+          "2D.p1": {
+            "completed_bar_count": 1033,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-21",
+            "median_spy_relative_return": -0.009266988832140166,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 28,
+            "signal_end_date": "2026-08-19",
+            "signal_start_date": "2026-04-08",
+            "state": "MEASURED",
+            "unique_signal_dates": 20
+          },
+          "3D.p0": {
+            "completed_bar_count": 689,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-21",
+            "median_spy_relative_return": -0.015666290102793967,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 29,
+            "signal_end_date": "2026-08-10",
+            "signal_start_date": "2026-01-12",
+            "state": "MEASURED",
+            "unique_signal_dates": 20
+          },
+          "3D.p1": {
+            "completed_bar_count": 688,
+            "completed_bar_end_date": "2026-09-04",
+            "completed_bar_start_date": "2018-06-22",
+            "median_spy_relative_return": -0.009583087464540119,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 28,
+            "signal_end_date": "2026-08-14",
+            "signal_start_date": "2025-12-24",
+            "state": "MEASURED",
+            "unique_signal_dates": 20
+          },
+          "3D.p2": {
+            "completed_bar_count": 688,
+            "completed_bar_end_date": "2026-09-08",
+            "completed_bar_start_date": "2018-06-25",
+            "median_spy_relative_return": -0.005072409891477669,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 30,
+            "signal_end_date": "2026-08-07",
+            "signal_start_date": "2025-12-04",
+            "state": "MEASURED",
+            "unique_signal_dates": 20
+          }
         }
       },
       "recent_60": {
@@ -251,6 +1065,80 @@
           "3D.p0": -0.005491552210319384,
           "3D.p1": -0.006979609393232167,
           "3D.p2": -0.0031928698451437754
+        },
+        "phase_samples": {
+          "1D.p0": {
+            "completed_bar_count": 2067,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-19",
+            "median_spy_relative_return": -0.010735088678062554,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 82,
+            "signal_end_date": "2026-09-01",
+            "signal_start_date": "2026-01-05",
+            "state": "MEASURED",
+            "unique_signal_dates": 60
+          },
+          "2D.p0": {
+            "completed_bar_count": 1033,
+            "completed_bar_end_date": "2026-09-08",
+            "completed_bar_start_date": "2018-06-20",
+            "median_spy_relative_return": -0.0027538083395730606,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 75,
+            "signal_end_date": "2026-08-12",
+            "signal_start_date": "2025-05-12",
+            "state": "MEASURED",
+            "unique_signal_dates": 60
+          },
+          "2D.p1": {
+            "completed_bar_count": 1033,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-21",
+            "median_spy_relative_return": -0.0028643756347311866,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 78,
+            "signal_end_date": "2026-08-19",
+            "signal_start_date": "2025-04-25",
+            "state": "MEASURED",
+            "unique_signal_dates": 60
+          },
+          "3D.p0": {
+            "completed_bar_count": 689,
+            "completed_bar_end_date": "2026-09-09",
+            "completed_bar_start_date": "2018-06-21",
+            "median_spy_relative_return": -0.005491552210319384,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 86,
+            "signal_end_date": "2026-08-10",
+            "signal_start_date": "2024-07-26",
+            "state": "MEASURED",
+            "unique_signal_dates": 60
+          },
+          "3D.p1": {
+            "completed_bar_count": 688,
+            "completed_bar_end_date": "2026-09-04",
+            "completed_bar_start_date": "2018-06-22",
+            "median_spy_relative_return": -0.006979609393232167,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 83,
+            "signal_end_date": "2026-08-14",
+            "signal_start_date": "2024-07-16",
+            "state": "MEASURED",
+            "unique_signal_dates": 60
+          },
+          "3D.p2": {
+            "completed_bar_count": 688,
+            "completed_bar_end_date": "2026-09-08",
+            "completed_bar_start_date": "2018-06-25",
+            "median_spy_relative_return": -0.0031928698451437754,
+            "observation_unit": "sector_signal_date",
+            "sector_date_observations": 81,
+            "signal_end_date": "2026-08-07",
+            "signal_start_date": "2024-08-15",
+            "state": "MEASURED",
+            "unique_signal_dates": 60
+          }
         }
       }
     }
@@ -290,6 +1178,11 @@
               "n": 20,
               "sample_std": 0.4321695875626756,
               "start_date": "2026-08-11",
+              "state": "MEASURED"
+            },
+            "recent_20_vs_all": {
+              "mean_difference": 0.01979229340837598,
+              "median_difference": -0.040909090909090916,
               "state": "MEASURED"
             },
             "recent_60": {
@@ -334,6 +1227,11 @@
               "start_date": "2026-08-11",
               "state": "MEASURED"
             },
+            "recent_20_vs_all": {
+              "mean_difference": 0.004565458990887228,
+              "median_difference": -0.03636363636363649,
+              "state": "MEASURED"
+            },
             "recent_60": {
               "anchors": 60,
               "end_date": "2026-09-08",
@@ -374,6 +1272,11 @@
               "n": 20,
               "sample_std": 0.19041352352582647,
               "start_date": "2026-08-11",
+              "state": "MEASURED"
+            },
+            "recent_20_vs_all": {
+              "mean_difference": -0.06462917685411584,
+              "median_difference": -0.33333333333333337,
               "state": "MEASURED"
             },
             "recent_60": {
@@ -421,6 +1324,11 @@
               "start_date": "2026-07-29",
               "state": "MEASURED"
             },
+            "recent_20_vs_all": {
+              "mean_difference": 0.08140918021075193,
+              "median_difference": 0.13636363636363638,
+              "state": "MEASURED"
+            },
             "recent_60": {
               "anchors": 60,
               "end_date": "2026-08-25",
@@ -463,6 +1371,11 @@
               "start_date": "2026-07-29",
               "state": "MEASURED"
             },
+            "recent_20_vs_all": {
+              "mean_difference": 0.03188158599749952,
+              "median_difference": 0.0318181818181818,
+              "state": "MEASURED"
+            },
             "recent_60": {
               "anchors": 60,
               "end_date": "2026-08-25",
@@ -503,6 +1416,11 @@
               "n": 20,
               "sample_std": 0.21898222844392876,
               "start_date": "2026-07-29",
+              "state": "MEASURED"
+            },
+            "recent_20_vs_all": {
+              "mean_difference": 0.06191879502292086,
+              "median_difference": 0.0,
               "state": "MEASURED"
             },
             "recent_60": {
@@ -550,6 +1468,11 @@
               "start_date": "2026-07-15",
               "state": "MEASURED"
             },
+            "recent_20_vs_all": {
+              "mean_difference": 0.06398007717849771,
+              "median_difference": 0.05,
+              "state": "MEASURED"
+            },
             "recent_60": {
               "anchors": 60,
               "end_date": "2026-08-11",
@@ -592,6 +1515,11 @@
               "start_date": "2026-07-15",
               "state": "MEASURED"
             },
+            "recent_20_vs_all": {
+              "mean_difference": 0.08711298573095216,
+              "median_difference": 0.1,
+              "state": "MEASURED"
+            },
             "recent_60": {
               "anchors": 60,
               "end_date": "2026-08-11",
@@ -632,6 +1560,11 @@
               "n": 20,
               "sample_std": 0.16754156331667822,
               "start_date": "2026-07-15",
+              "state": "MEASURED"
+            },
+            "recent_20_vs_all": {
+              "mean_difference": 0.17068114511352417,
+              "median_difference": 0.0,
               "state": "MEASURED"
             },
             "recent_60": {
@@ -679,6 +1612,11 @@
               "start_date": "2026-08-07",
               "state": "MEASURED"
             },
+            "recent_20_vs_all": {
+              "mean_difference": -0.02266515257299414,
+              "median_difference": 0.022727272727272728,
+              "state": "MEASURED"
+            },
             "recent_60": {
               "anchors": 60,
               "end_date": "2026-09-03",
@@ -721,6 +1659,11 @@
               "start_date": "2026-08-07",
               "state": "MEASURED"
             },
+            "recent_20_vs_all": {
+              "mean_difference": -0.020661905397588276,
+              "median_difference": -0.09090909090909094,
+              "state": "MEASURED"
+            },
             "recent_60": {
               "anchors": 60,
               "end_date": "2026-09-03",
@@ -761,6 +1704,11 @@
               "n": 20,
               "sample_std": 0.2128887912195017,
               "start_date": "2026-08-07",
+              "state": "MEASURED"
+            },
+            "recent_20_vs_all": {
+              "mean_difference": -0.13799151574481971,
+              "median_difference": 0.0,
               "state": "MEASURED"
             },
             "recent_60": {
@@ -808,6 +1756,11 @@
               "start_date": "2026-08-05",
               "state": "MEASURED"
             },
+            "recent_20_vs_all": {
+              "mean_difference": 0.0557145463678532,
+              "median_difference": 0.08636363636363638,
+              "state": "MEASURED"
+            },
             "recent_60": {
               "anchors": 60,
               "end_date": "2026-09-01",
@@ -850,6 +1803,11 @@
               "start_date": "2026-08-05",
               "state": "MEASURED"
             },
+            "recent_20_vs_all": {
+              "mean_difference": -0.05335575252772706,
+              "median_difference": -0.10909090909090913,
+              "state": "MEASURED"
+            },
             "recent_60": {
               "anchors": 60,
               "end_date": "2026-09-01",
@@ -890,6 +1848,11 @@
               "n": 20,
               "sample_std": 0.20232565955562798,
               "start_date": "2026-08-05",
+              "state": "MEASURED"
+            },
+            "recent_20_vs_all": {
+              "mean_difference": -0.14935489139310798,
+              "median_difference": -0.3333333333333333,
               "state": "MEASURED"
             },
             "recent_60": {
@@ -937,6 +1900,11 @@
               "start_date": "2026-08-03",
               "state": "MEASURED"
             },
+            "recent_20_vs_all": {
+              "mean_difference": 0.18162453134172496,
+              "median_difference": 0.1181818181818182,
+              "state": "MEASURED"
+            },
             "recent_60": {
               "anchors": 60,
               "end_date": "2026-08-28",
@@ -979,6 +1947,11 @@
               "start_date": "2026-08-03",
               "state": "MEASURED"
             },
+            "recent_20_vs_all": {
+              "mean_difference": 0.011054438450220694,
+              "median_difference": -0.0636363636363636,
+              "state": "MEASURED"
+            },
             "recent_60": {
               "anchors": 60,
               "end_date": "2026-08-28",
@@ -1019,6 +1992,11 @@
               "n": 20,
               "sample_std": 0.2128887912195017,
               "start_date": "2026-08-03",
+              "state": "MEASURED"
+            },
+            "recent_20_vs_all": {
+              "mean_difference": -0.0019208762465261486,
+              "median_difference": 0.0,
               "state": "MEASURED"
             },
             "recent_60": {
@@ -1072,6 +2050,11 @@
               "start_date": "2026-08-11",
               "state": "MEASURED"
             },
+            "recent_20_vs_all": {
+              "mean_difference": -0.1339517580812954,
+              "median_difference": -0.05454545454545455,
+              "state": "MEASURED"
+            },
             "recent_60": {
               "anchors": 60,
               "end_date": "2026-09-08",
@@ -1114,6 +2097,11 @@
               "start_date": "2026-08-11",
               "state": "MEASURED"
             },
+            "recent_20_vs_all": {
+              "mean_difference": -0.07701777123732889,
+              "median_difference": -0.12272727272727268,
+              "state": "MEASURED"
+            },
             "recent_60": {
               "anchors": 60,
               "end_date": "2026-09-08",
@@ -1154,6 +2142,11 @@
               "n": 20,
               "sample_std": 0.20160177294309983,
               "start_date": "2026-08-11",
+              "state": "MEASURED"
+            },
+            "recent_20_vs_all": {
+              "mean_difference": 0.012299854439592472,
+              "median_difference": 0.0,
               "state": "MEASURED"
             },
             "recent_60": {
@@ -1201,6 +2194,11 @@
               "start_date": "2026-07-29",
               "state": "MEASURED"
             },
+            "recent_20_vs_all": {
+              "mean_difference": -0.18458903281975353,
+              "median_difference": -0.06818181818181818,
+              "state": "MEASURED"
+            },
             "recent_60": {
               "anchors": 60,
               "end_date": "2026-08-25",
@@ -1243,6 +2241,11 @@
               "start_date": "2026-07-29",
               "state": "MEASURED"
             },
+            "recent_20_vs_all": {
+              "mean_difference": -0.18383008251729457,
+              "median_difference": -0.15000000000000002,
+              "state": "MEASURED"
+            },
             "recent_60": {
               "anchors": 60,
               "end_date": "2026-08-25",
@@ -1283,6 +2286,11 @@
               "n": 20,
               "sample_std": 0.24838660679019817,
               "start_date": "2026-07-29",
+              "state": "MEASURED"
+            },
+            "recent_20_vs_all": {
+              "mean_difference": -0.010688758934372933,
+              "median_difference": 0.0,
               "state": "MEASURED"
             },
             "recent_60": {
@@ -1330,6 +2338,11 @@
               "start_date": "2026-07-15",
               "state": "MEASURED"
             },
+            "recent_20_vs_all": {
+              "mean_difference": -0.10098365698001271,
+              "median_difference": -0.18181818181818182,
+              "state": "MEASURED"
+            },
             "recent_60": {
               "anchors": 60,
               "end_date": "2026-08-11",
@@ -1372,6 +2385,11 @@
               "start_date": "2026-07-15",
               "state": "MEASURED"
             },
+            "recent_20_vs_all": {
+              "mean_difference": 0.12612501265339496,
+              "median_difference": 0.0590909090909091,
+              "state": "MEASURED"
+            },
             "recent_60": {
               "anchors": 60,
               "end_date": "2026-08-11",
@@ -1412,6 +2430,11 @@
               "n": 20,
               "sample_std": 0.18337320140672694,
               "start_date": "2026-07-15",
+              "state": "MEASURED"
+            },
+            "recent_20_vs_all": {
+              "mean_difference": 0.13148873653281096,
+              "median_difference": 0.0,
               "state": "MEASURED"
             },
             "recent_60": {
@@ -1459,6 +2482,11 @@
               "start_date": "2026-08-07",
               "state": "MEASURED"
             },
+            "recent_20_vs_all": {
+              "mean_difference": -0.17309540827240386,
+              "median_difference": -0.14545454545454548,
+              "state": "MEASURED"
+            },
             "recent_60": {
               "anchors": 60,
               "end_date": "2026-09-03",
@@ -1501,6 +2529,11 @@
               "start_date": "2026-08-07",
               "state": "MEASURED"
             },
+            "recent_20_vs_all": {
+              "mean_difference": -0.11554465970918196,
+              "median_difference": -0.19999999999999998,
+              "state": "MEASURED"
+            },
             "recent_60": {
               "anchors": 60,
               "end_date": "2026-09-03",
@@ -1541,6 +2574,11 @@
               "n": 20,
               "sample_std": 0.1675415633166782,
               "start_date": "2026-08-07",
+              "state": "MEASURED"
+            },
+            "recent_20_vs_all": {
+              "mean_difference": 0.018552695483244286,
+              "median_difference": 0.0,
               "state": "MEASURED"
             },
             "recent_60": {
@@ -1588,6 +2626,11 @@
               "start_date": "2026-08-05",
               "state": "MEASURED"
             },
+            "recent_20_vs_all": {
+              "mean_difference": -0.1704345037587216,
+              "median_difference": -0.19090909090909092,
+              "state": "MEASURED"
+            },
             "recent_60": {
               "anchors": 60,
               "end_date": "2026-09-01",
@@ -1630,6 +2673,11 @@
               "start_date": "2026-08-05",
               "state": "MEASURED"
             },
+            "recent_20_vs_all": {
+              "mean_difference": -0.1704345037587216,
+              "median_difference": -0.19090909090909092,
+              "state": "MEASURED"
+            },
             "recent_60": {
               "anchors": 60,
               "end_date": "2026-09-01",
@@ -1670,6 +2718,11 @@
               "n": 20,
               "sample_std": 0.2483866067901982,
               "start_date": "2026-08-05",
+              "state": "MEASURED"
+            },
+            "recent_20_vs_all": {
+              "mean_difference": -0.003978285529087688,
+              "median_difference": 0.0,
               "state": "MEASURED"
             },
             "recent_60": {
@@ -1717,6 +2770,11 @@
               "start_date": "2026-08-03",
               "state": "MEASURED"
             },
+            "recent_20_vs_all": {
+              "mean_difference": -0.15377608661213385,
+              "median_difference": -0.18181818181818182,
+              "state": "MEASURED"
+            },
             "recent_60": {
               "anchors": 60,
               "end_date": "2026-08-28",
@@ -1759,6 +2817,11 @@
               "start_date": "2026-08-03",
               "state": "MEASURED"
             },
+            "recent_20_vs_all": {
+              "mean_difference": -0.17693802795924302,
+              "median_difference": -0.20909090909090908,
+              "state": "MEASURED"
+            },
             "recent_60": {
               "anchors": 60,
               "end_date": "2026-08-28",
@@ -1799,6 +2862,11 @@
               "n": 20,
               "sample_std": 0.2559239653166382,
               "start_date": "2026-08-03",
+              "state": "MEASURED"
+            },
+            "recent_20_vs_all": {
+              "mean_difference": -0.02108678021086785,
+              "median_difference": 0.0,
               "state": "MEASURED"
             },
             "recent_60": {
@@ -1848,8 +2916,10 @@
               "median_absolute_return": 0.0008835967610095752,
               "median_spy_relative_return": 3.848453560051368e-05,
               "n": 836,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.5358851674641149,
               "positive_spy_relative_rate": 0.5023923444976076,
+              "sector_date_observations": 836,
               "start_date": "2018-11-07",
               "state": "MEASURED",
               "unique_signal_dates": 561
@@ -1861,8 +2931,10 @@
               "median_absolute_return": 0.0003308932063215142,
               "median_spy_relative_return": 0.001438717585481919,
               "n": 24,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.5,
               "positive_spy_relative_rate": 0.625,
+              "sector_date_observations": 24,
               "start_date": "2026-07-13",
               "state": "MEASURED",
               "unique_signal_dates": 20
@@ -1874,8 +2946,10 @@
               "median_absolute_return": 0.0,
               "median_spy_relative_return": 6.755055103602192e-05,
               "n": 80,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.475,
               "positive_spy_relative_rate": 0.5125,
+              "sector_date_observations": 80,
               "start_date": "2026-01-12",
               "state": "MEASURED",
               "unique_signal_dates": 60
@@ -1889,8 +2963,10 @@
               "median_absolute_return": 0.007553469790574696,
               "median_spy_relative_return": 5.706730639443158e-05,
               "n": 832,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.5925480769230769,
               "positive_spy_relative_rate": 0.5012019230769231,
+              "sector_date_observations": 832,
               "start_date": "2018-11-07",
               "state": "MEASURED",
               "unique_signal_dates": 557
@@ -1902,8 +2978,10 @@
               "median_absolute_return": -0.0043162743106177626,
               "median_spy_relative_return": -0.008375911963135863,
               "n": 24,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.375,
               "positive_spy_relative_rate": 0.4166666666666667,
+              "sector_date_observations": 24,
               "start_date": "2026-07-01",
               "state": "MEASURED",
               "unique_signal_dates": 20
@@ -1915,8 +2993,10 @@
               "median_absolute_return": -0.0033930492781680255,
               "median_spy_relative_return": -0.010947272477210446,
               "n": 82,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.4268292682926829,
               "positive_spy_relative_rate": 0.4268292682926829,
+              "sector_date_observations": 82,
               "start_date": "2026-01-02",
               "state": "MEASURED",
               "unique_signal_dates": 60
@@ -1930,8 +3010,10 @@
               "median_absolute_return": 0.002432393100078367,
               "median_spy_relative_return": -0.0007891739691667787,
               "n": 834,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.5503597122302158,
               "positive_spy_relative_rate": 0.4748201438848921,
+              "sector_date_observations": 834,
               "start_date": "2018-11-07",
               "state": "MEASURED",
               "unique_signal_dates": 559
@@ -1943,8 +3025,10 @@
               "median_absolute_return": -0.0008965997701619322,
               "median_spy_relative_return": -0.006984989016442178,
               "n": 24,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.4583333333333333,
               "positive_spy_relative_rate": 0.3333333333333333,
+              "sector_date_observations": 24,
               "start_date": "2026-07-06",
               "state": "MEASURED",
               "unique_signal_dates": 20
@@ -1956,8 +3040,10 @@
               "median_absolute_return": -0.0020186737406182598,
               "median_spy_relative_return": -0.007008019749706829,
               "n": 82,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.4268292682926829,
               "positive_spy_relative_rate": 0.3780487804878049,
+              "sector_date_observations": 82,
               "start_date": "2026-01-06",
               "state": "MEASURED",
               "unique_signal_dates": 60
@@ -1971,8 +3057,10 @@
               "median_absolute_return": 0.0022049432215938136,
               "median_spy_relative_return": -0.00041659473925670376,
               "n": 833,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.5378151260504201,
               "positive_spy_relative_rate": 0.4849939975990396,
+              "sector_date_observations": 833,
               "start_date": "2018-11-07",
               "state": "MEASURED",
               "unique_signal_dates": 558
@@ -1984,8 +3072,10 @@
               "median_absolute_return": -0.006068677627554586,
               "median_spy_relative_return": -0.009403443294776492,
               "n": 24,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.25,
               "positive_spy_relative_rate": 0.2916666666666667,
+              "sector_date_observations": 24,
               "start_date": "2026-07-02",
               "state": "MEASURED",
               "unique_signal_dates": 20
@@ -1997,8 +3087,10 @@
               "median_absolute_return": -0.004302716697603293,
               "median_spy_relative_return": -0.010735088678062554,
               "n": 82,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.4146341463414634,
               "positive_spy_relative_rate": 0.36585365853658536,
+              "sector_date_observations": 82,
               "start_date": "2026-01-05",
               "state": "MEASURED",
               "unique_signal_dates": 60
@@ -2032,8 +3124,10 @@
                   "median_absolute_return": 0.0008835967610095752,
                   "median_spy_relative_return": 3.848453560051368e-05,
                   "n": 836,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5358851674641149,
                   "positive_spy_relative_rate": 0.5023923444976076,
+                  "sector_date_observations": 836,
                   "start_date": "2018-11-07",
                   "state": "MEASURED",
                   "unique_signal_dates": 561
@@ -2045,8 +3139,10 @@
                   "median_absolute_return": 0.0003308932063215142,
                   "median_spy_relative_return": 0.001438717585481919,
                   "n": 24,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5,
                   "positive_spy_relative_rate": 0.625,
+                  "sector_date_observations": 24,
                   "start_date": "2026-07-13",
                   "state": "MEASURED",
                   "unique_signal_dates": 20
@@ -2058,8 +3154,10 @@
                   "median_absolute_return": 0.0,
                   "median_spy_relative_return": 6.755055103602192e-05,
                   "n": 80,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.475,
                   "positive_spy_relative_rate": 0.5125,
+                  "sector_date_observations": 80,
                   "start_date": "2026-01-12",
                   "state": "MEASURED",
                   "unique_signal_dates": 60
@@ -2073,8 +3171,10 @@
                   "median_absolute_return": 0.007553469790574696,
                   "median_spy_relative_return": 5.706730639443158e-05,
                   "n": 832,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5925480769230769,
                   "positive_spy_relative_rate": 0.5012019230769231,
+                  "sector_date_observations": 832,
                   "start_date": "2018-11-07",
                   "state": "MEASURED",
                   "unique_signal_dates": 557
@@ -2086,8 +3186,10 @@
                   "median_absolute_return": -0.0043162743106177626,
                   "median_spy_relative_return": -0.008375911963135863,
                   "n": 24,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.375,
                   "positive_spy_relative_rate": 0.4166666666666667,
+                  "sector_date_observations": 24,
                   "start_date": "2026-07-01",
                   "state": "MEASURED",
                   "unique_signal_dates": 20
@@ -2099,8 +3201,10 @@
                   "median_absolute_return": -0.0033930492781680255,
                   "median_spy_relative_return": -0.010947272477210446,
                   "n": 82,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.4268292682926829,
                   "positive_spy_relative_rate": 0.4268292682926829,
+                  "sector_date_observations": 82,
                   "start_date": "2026-01-02",
                   "state": "MEASURED",
                   "unique_signal_dates": 60
@@ -2114,8 +3218,10 @@
                   "median_absolute_return": 0.002432393100078367,
                   "median_spy_relative_return": -0.0007891739691667787,
                   "n": 834,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5503597122302158,
                   "positive_spy_relative_rate": 0.4748201438848921,
+                  "sector_date_observations": 834,
                   "start_date": "2018-11-07",
                   "state": "MEASURED",
                   "unique_signal_dates": 559
@@ -2127,8 +3233,10 @@
                   "median_absolute_return": -0.0008965997701619322,
                   "median_spy_relative_return": -0.006984989016442178,
                   "n": 24,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.4583333333333333,
                   "positive_spy_relative_rate": 0.3333333333333333,
+                  "sector_date_observations": 24,
                   "start_date": "2026-07-06",
                   "state": "MEASURED",
                   "unique_signal_dates": 20
@@ -2140,8 +3248,10 @@
                   "median_absolute_return": -0.0020186737406182598,
                   "median_spy_relative_return": -0.007008019749706829,
                   "n": 82,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.4268292682926829,
                   "positive_spy_relative_rate": 0.3780487804878049,
+                  "sector_date_observations": 82,
                   "start_date": "2026-01-06",
                   "state": "MEASURED",
                   "unique_signal_dates": 60
@@ -2155,8 +3265,10 @@
                   "median_absolute_return": 0.0022049432215938136,
                   "median_spy_relative_return": -0.00041659473925670376,
                   "n": 833,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5378151260504201,
                   "positive_spy_relative_rate": 0.4849939975990396,
+                  "sector_date_observations": 833,
                   "start_date": "2018-11-07",
                   "state": "MEASURED",
                   "unique_signal_dates": 558
@@ -2168,8 +3280,10 @@
                   "median_absolute_return": -0.006068677627554586,
                   "median_spy_relative_return": -0.009403443294776492,
                   "n": 24,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.25,
                   "positive_spy_relative_rate": 0.2916666666666667,
+                  "sector_date_observations": 24,
                   "start_date": "2026-07-02",
                   "state": "MEASURED",
                   "unique_signal_dates": 20
@@ -2181,8 +3295,10 @@
                   "median_absolute_return": -0.004302716697603293,
                   "median_spy_relative_return": -0.010735088678062554,
                   "n": 82,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.4146341463414634,
                   "positive_spy_relative_rate": 0.36585365853658536,
+                  "sector_date_observations": 82,
                   "start_date": "2026-01-05",
                   "state": "MEASURED",
                   "unique_signal_dates": 60
@@ -2205,8 +3321,10 @@
               "median_absolute_return": 0.0009850965941460288,
               "median_spy_relative_return": -0.00022903654314454513,
               "n": 849,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.5300353356890459,
               "positive_spy_relative_rate": 0.4876325088339223,
+              "sector_date_observations": 849,
               "start_date": "2019-04-05",
               "state": "MEASURED",
               "unique_signal_dates": 579
@@ -2218,8 +3336,10 @@
               "median_absolute_return": -0.0014588860708137918,
               "median_spy_relative_return": -0.002004194458804509,
               "n": 25,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.36,
               "positive_spy_relative_rate": 0.48,
+              "sector_date_observations": 25,
               "start_date": "2026-07-06",
               "state": "MEASURED",
               "unique_signal_dates": 20
@@ -2231,8 +3351,10 @@
               "median_absolute_return": -0.0013900651843954392,
               "median_spy_relative_return": -0.002004194458804509,
               "n": 75,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.41333333333333333,
               "positive_spy_relative_rate": 0.4,
+              "sector_date_observations": 75,
               "start_date": "2025-12-10",
               "state": "MEASURED",
               "unique_signal_dates": 60
@@ -2246,8 +3368,10 @@
               "median_absolute_return": 0.008206799761238726,
               "median_spy_relative_return": -0.002269090422904574,
               "n": 849,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.6042402826855123,
               "positive_spy_relative_rate": 0.46996466431095407,
+              "sector_date_observations": 849,
               "start_date": "2019-04-05",
               "state": "MEASURED",
               "unique_signal_dates": 579
@@ -2259,8 +3383,10 @@
               "median_absolute_return": -0.004670349022541154,
               "median_spy_relative_return": -0.012737575753283714,
               "n": 25,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.24,
               "positive_spy_relative_rate": 0.24,
+              "sector_date_observations": 25,
               "start_date": "2026-07-06",
               "state": "MEASURED",
               "unique_signal_dates": 20
@@ -2272,8 +3398,10 @@
               "median_absolute_return": -0.0010223490715931538,
               "median_spy_relative_return": -0.011636899585295013,
               "n": 75,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.4533333333333333,
               "positive_spy_relative_rate": 0.32,
+              "sector_date_observations": 75,
               "start_date": "2025-12-10",
               "state": "MEASURED",
               "unique_signal_dates": 60
@@ -2287,8 +3415,10 @@
               "median_absolute_return": 0.0022970689792556342,
               "median_spy_relative_return": -0.0006353031652737151,
               "n": 849,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.5594817432273262,
               "positive_spy_relative_rate": 0.4840989399293286,
+              "sector_date_observations": 849,
               "start_date": "2019-04-05",
               "state": "MEASURED",
               "unique_signal_dates": 579
@@ -2300,8 +3430,10 @@
               "median_absolute_return": 0.0023699129006833353,
               "median_spy_relative_return": -0.0009216059845862379,
               "n": 25,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.56,
               "positive_spy_relative_rate": 0.48,
+              "sector_date_observations": 25,
               "start_date": "2026-07-06",
               "state": "MEASURED",
               "unique_signal_dates": 20
@@ -2313,8 +3445,10 @@
               "median_absolute_return": -0.0008289873614438781,
               "median_spy_relative_return": -0.004315336873918607,
               "n": 75,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.49333333333333335,
               "positive_spy_relative_rate": 0.37333333333333335,
+              "sector_date_observations": 75,
               "start_date": "2025-12-10",
               "state": "MEASURED",
               "unique_signal_dates": 60
@@ -2328,8 +3462,10 @@
               "median_absolute_return": 0.0035056610515313835,
               "median_spy_relative_return": -0.00024270923596825256,
               "n": 849,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.5571260306242638,
               "positive_spy_relative_rate": 0.49352179034157834,
+              "sector_date_observations": 849,
               "start_date": "2019-04-05",
               "state": "MEASURED",
               "unique_signal_dates": 579
@@ -2341,8 +3477,10 @@
               "median_absolute_return": -0.0058575444754549455,
               "median_spy_relative_return": -0.006577042244961584,
               "n": 25,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.44,
               "positive_spy_relative_rate": 0.48,
+              "sector_date_observations": 25,
               "start_date": "2026-07-06",
               "state": "MEASURED",
               "unique_signal_dates": 20
@@ -2354,8 +3492,10 @@
               "median_absolute_return": -0.003914062121282202,
               "median_spy_relative_return": -0.008704866276687317,
               "n": 75,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.4533333333333333,
               "positive_spy_relative_rate": 0.37333333333333335,
+              "sector_date_observations": 75,
               "start_date": "2025-12-10",
               "state": "MEASURED",
               "unique_signal_dates": 60
@@ -2389,8 +3529,10 @@
                   "median_absolute_return": 0.0,
                   "median_spy_relative_return": 4.400603544696402e-05,
                   "n": 429,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.49184149184149184,
                   "positive_spy_relative_rate": 0.5011655011655012,
+                  "sector_date_observations": 429,
                   "start_date": "2019-04-08",
                   "state": "MEASURED",
                   "unique_signal_dates": 294
@@ -2402,8 +3544,10 @@
                   "median_absolute_return": -0.0005453081612678545,
                   "median_spy_relative_return": -0.002259337231130698,
                   "n": 23,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.4782608695652174,
                   "positive_spy_relative_rate": 0.43478260869565216,
+                  "sector_date_observations": 23,
                   "start_date": "2026-05-11",
                   "state": "MEASURED",
                   "unique_signal_dates": 20
@@ -2415,8 +3559,10 @@
                   "median_absolute_return": -0.0005767886995768912,
                   "median_spy_relative_return": -0.0016775922150227274,
                   "n": 75,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.48,
                   "positive_spy_relative_rate": 0.4266666666666667,
+                  "sector_date_observations": 75,
                   "start_date": "2025-05-12",
                   "state": "MEASURED",
                   "unique_signal_dates": 60
@@ -2430,8 +3576,10 @@
                   "median_absolute_return": 0.00681752679937353,
                   "median_spy_relative_return": -0.0023402455050429705,
                   "n": 429,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5874125874125874,
                   "positive_spy_relative_rate": 0.47086247086247085,
+                  "sector_date_observations": 429,
                   "start_date": "2019-04-08",
                   "state": "MEASURED",
                   "unique_signal_dates": 294
@@ -2443,8 +3591,10 @@
                   "median_absolute_return": -0.004230792705829378,
                   "median_spy_relative_return": -0.011285557815398972,
                   "n": 23,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.43478260869565216,
                   "positive_spy_relative_rate": 0.43478260869565216,
+                  "sector_date_observations": 23,
                   "start_date": "2026-05-11",
                   "state": "MEASURED",
                   "unique_signal_dates": 20
@@ -2456,8 +3606,10 @@
                   "median_absolute_return": -0.0016433781621819632,
                   "median_spy_relative_return": -0.009198037597007547,
                   "n": 75,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.4666666666666667,
                   "positive_spy_relative_rate": 0.3333333333333333,
+                  "sector_date_observations": 75,
                   "start_date": "2025-05-12",
                   "state": "MEASURED",
                   "unique_signal_dates": 60
@@ -2471,8 +3623,10 @@
                   "median_absolute_return": 0.0014886680796231122,
                   "median_spy_relative_return": -0.00013005171742697108,
                   "n": 429,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5384615384615384,
                   "positive_spy_relative_rate": 0.4988344988344988,
+                  "sector_date_observations": 429,
                   "start_date": "2019-04-08",
                   "state": "MEASURED",
                   "unique_signal_dates": 294
@@ -2484,8 +3638,10 @@
                   "median_absolute_return": 0.002921375286944805,
                   "median_spy_relative_return": -0.004973778228030135,
                   "n": 23,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5652173913043478,
                   "positive_spy_relative_rate": 0.34782608695652173,
+                  "sector_date_observations": 23,
                   "start_date": "2026-05-11",
                   "state": "MEASURED",
                   "unique_signal_dates": 20
@@ -2497,8 +3653,10 @@
                   "median_absolute_return": 0.00047854745293407497,
                   "median_spy_relative_return": -0.002229139409994696,
                   "n": 75,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.52,
                   "positive_spy_relative_rate": 0.4,
+                  "sector_date_observations": 75,
                   "start_date": "2025-05-12",
                   "state": "MEASURED",
                   "unique_signal_dates": 60
@@ -2512,8 +3670,10 @@
                   "median_absolute_return": 0.003269537439306802,
                   "median_spy_relative_return": -0.00024270923596825256,
                   "n": 429,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5454545454545454,
                   "positive_spy_relative_rate": 0.49184149184149184,
+                  "sector_date_observations": 429,
                   "start_date": "2019-04-08",
                   "state": "MEASURED",
                   "unique_signal_dates": 294
@@ -2525,8 +3685,10 @@
                   "median_absolute_return": -0.007079427476104017,
                   "median_spy_relative_return": -0.006577042244961584,
                   "n": 23,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.43478260869565216,
                   "positive_spy_relative_rate": 0.43478260869565216,
+                  "sector_date_observations": 23,
                   "start_date": "2026-05-11",
                   "state": "MEASURED",
                   "unique_signal_dates": 20
@@ -2538,8 +3700,10 @@
                   "median_absolute_return": -0.0008178952952836438,
                   "median_spy_relative_return": -0.0027538083395730606,
                   "n": 75,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.48,
                   "positive_spy_relative_rate": 0.44,
+                  "sector_date_observations": 75,
                   "start_date": "2025-05-12",
                   "state": "MEASURED",
                   "unique_signal_dates": 60
@@ -2575,8 +3739,10 @@
                   "median_absolute_return": 0.001423883039808116,
                   "median_spy_relative_return": -0.0002576083531544704,
                   "n": 420,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.569047619047619,
                   "positive_spy_relative_rate": 0.4738095238095238,
+                  "sector_date_observations": 420,
                   "start_date": "2019-04-05",
                   "state": "MEASURED",
                   "unique_signal_dates": 285
@@ -2588,8 +3754,10 @@
                   "median_absolute_return": -0.0015596834502145662,
                   "median_spy_relative_return": -0.0024193965163045172,
                   "n": 28,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.35714285714285715,
                   "positive_spy_relative_rate": 0.35714285714285715,
+                  "sector_date_observations": 28,
                   "start_date": "2026-04-08",
                   "state": "MEASURED",
                   "unique_signal_dates": 20
@@ -2601,8 +3769,10 @@
                   "median_absolute_return": 0.00015713534096872817,
                   "median_spy_relative_return": -6.841650719530135e-05,
                   "n": 78,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5,
                   "positive_spy_relative_rate": 0.47435897435897434,
+                  "sector_date_observations": 78,
                   "start_date": "2025-04-25",
                   "state": "MEASURED",
                   "unique_signal_dates": 60
@@ -2616,8 +3786,10 @@
                   "median_absolute_return": 0.009374426525975199,
                   "median_spy_relative_return": -0.0019804366778166105,
                   "n": 420,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.6214285714285714,
                   "positive_spy_relative_rate": 0.46904761904761905,
+                  "sector_date_observations": 420,
                   "start_date": "2019-04-05",
                   "state": "MEASURED",
                   "unique_signal_dates": 285
@@ -2629,8 +3801,10 @@
                   "median_absolute_return": -0.0008960971249789007,
                   "median_spy_relative_return": -0.010657607792611545,
                   "n": 28,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.39285714285714285,
                   "positive_spy_relative_rate": 0.2857142857142857,
+                  "sector_date_observations": 28,
                   "start_date": "2026-04-08",
                   "state": "MEASURED",
                   "unique_signal_dates": 20
@@ -2642,8 +3816,10 @@
                   "median_absolute_return": 0.00349727174461667,
                   "median_spy_relative_return": -0.007265999739547835,
                   "n": 78,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5128205128205128,
                   "positive_spy_relative_rate": 0.358974358974359,
+                  "sector_date_observations": 78,
                   "start_date": "2025-04-25",
                   "state": "MEASURED",
                   "unique_signal_dates": 60
@@ -2657,8 +3833,10 @@
                   "median_absolute_return": 0.003272790678169768,
                   "median_spy_relative_return": -0.0009493026204717703,
                   "n": 420,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.580952380952381,
                   "positive_spy_relative_rate": 0.46904761904761905,
+                  "sector_date_observations": 420,
                   "start_date": "2019-04-05",
                   "state": "MEASURED",
                   "unique_signal_dates": 285
@@ -2670,8 +3848,10 @@
                   "median_absolute_return": -0.0022011165317021297,
                   "median_spy_relative_return": -0.004585545964030269,
                   "n": 28,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.4642857142857143,
                   "positive_spy_relative_rate": 0.39285714285714285,
+                  "sector_date_observations": 28,
                   "start_date": "2026-04-08",
                   "state": "MEASURED",
                   "unique_signal_dates": 20
@@ -2683,8 +3863,10 @@
                   "median_absolute_return": 0.003848279220832862,
                   "median_spy_relative_return": -0.0014139151637659886,
                   "n": 78,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5769230769230769,
                   "positive_spy_relative_rate": 0.41025641025641024,
+                  "sector_date_observations": 78,
                   "start_date": "2025-04-25",
                   "state": "MEASURED",
                   "unique_signal_dates": 60
@@ -2698,8 +3880,10 @@
                   "median_absolute_return": 0.0041095869267949725,
                   "median_spy_relative_return": -0.00020362348198443847,
                   "n": 420,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.569047619047619,
                   "positive_spy_relative_rate": 0.49523809523809526,
+                  "sector_date_observations": 420,
                   "start_date": "2019-04-05",
                   "state": "MEASURED",
                   "unique_signal_dates": 285
@@ -2711,8 +3895,10 @@
                   "median_absolute_return": -0.003517027996188249,
                   "median_spy_relative_return": -0.009266988832140166,
                   "n": 28,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.42857142857142855,
                   "positive_spy_relative_rate": 0.39285714285714285,
+                  "sector_date_observations": 28,
                   "start_date": "2026-04-08",
                   "state": "MEASURED",
                   "unique_signal_dates": 20
@@ -2724,8 +3910,10 @@
                   "median_absolute_return": 0.0025816693979640037,
                   "median_spy_relative_return": -0.0028643756347311866,
                   "n": 78,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5769230769230769,
                   "positive_spy_relative_rate": 0.46153846153846156,
+                  "sector_date_observations": 78,
                   "start_date": "2025-04-25",
                   "state": "MEASURED",
                   "unique_signal_dates": 60
@@ -2748,8 +3936,10 @@
               "median_absolute_return": 0.0,
               "median_spy_relative_return": -0.0005412058339984149,
               "n": 826,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.49878934624697335,
               "positive_spy_relative_rate": 0.463680387409201,
+              "sector_date_observations": 826,
               "start_date": "2019-08-28",
               "state": "MEASURED",
               "unique_signal_dates": 552
@@ -2761,8 +3951,10 @@
               "median_absolute_return": -0.0038849129578061303,
               "median_spy_relative_return": -0.00270168473804272,
               "n": 32,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.3125,
               "positive_spy_relative_rate": 0.3125,
+              "sector_date_observations": 32,
               "start_date": "2026-06-26",
               "state": "MEASURED",
               "unique_signal_dates": 20
@@ -2774,8 +3966,10 @@
               "median_absolute_return": -0.0012380948499419175,
               "median_spy_relative_return": -0.001550086859717914,
               "n": 86,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.4186046511627907,
               "positive_spy_relative_rate": 0.43023255813953487,
+              "sector_date_observations": 86,
               "start_date": "2025-12-22",
               "state": "MEASURED",
               "unique_signal_dates": 60
@@ -2789,8 +3983,10 @@
               "median_absolute_return": 0.007080760099866024,
               "median_spy_relative_return": -0.001920804042511104,
               "n": 826,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.5956416464891041,
               "positive_spy_relative_rate": 0.46973365617433416,
+              "sector_date_observations": 826,
               "start_date": "2019-08-28",
               "state": "MEASURED",
               "unique_signal_dates": 552
@@ -2802,8 +3998,10 @@
               "median_absolute_return": -0.010092380794275269,
               "median_spy_relative_return": -0.015142357688892827,
               "n": 32,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.15625,
               "positive_spy_relative_rate": 0.25,
+              "sector_date_observations": 32,
               "start_date": "2026-06-26",
               "state": "MEASURED",
               "unique_signal_dates": 20
@@ -2815,8 +4013,10 @@
               "median_absolute_return": -0.004731179240249461,
               "median_spy_relative_return": -0.0133673408671805,
               "n": 86,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.3488372093023256,
               "positive_spy_relative_rate": 0.313953488372093,
+              "sector_date_observations": 86,
               "start_date": "2025-12-22",
               "state": "MEASURED",
               "unique_signal_dates": 60
@@ -2830,8 +4030,10 @@
               "median_absolute_return": 0.0011248870267487332,
               "median_spy_relative_return": -0.0006417695079400376,
               "n": 826,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.5278450363196125,
               "positive_spy_relative_rate": 0.47699757869249393,
+              "sector_date_observations": 826,
               "start_date": "2019-08-28",
               "state": "MEASURED",
               "unique_signal_dates": 552
@@ -2843,8 +4045,10 @@
               "median_absolute_return": -0.009208894077244567,
               "median_spy_relative_return": -0.012175477774095389,
               "n": 32,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.21875,
               "positive_spy_relative_rate": 0.21875,
+              "sector_date_observations": 32,
               "start_date": "2026-06-26",
               "state": "MEASURED",
               "unique_signal_dates": 20
@@ -2856,8 +4060,10 @@
               "median_absolute_return": -0.002244750639905202,
               "median_spy_relative_return": -0.006166558130164312,
               "n": 86,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.4418604651162791,
               "positive_spy_relative_rate": 0.36046511627906974,
+              "sector_date_observations": 86,
               "start_date": "2025-12-22",
               "state": "MEASURED",
               "unique_signal_dates": 60
@@ -2871,8 +4077,10 @@
               "median_absolute_return": 0.002850944127859356,
               "median_spy_relative_return": -0.0018945646396079652,
               "n": 826,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.549636803874092,
               "positive_spy_relative_rate": 0.4491525423728814,
+              "sector_date_observations": 826,
               "start_date": "2019-08-28",
               "state": "MEASURED",
               "unique_signal_dates": 552
@@ -2884,8 +4092,10 @@
               "median_absolute_return": -0.0070133068195354364,
               "median_spy_relative_return": -0.009880033233387708,
               "n": 32,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.28125,
               "positive_spy_relative_rate": 0.21875,
+              "sector_date_observations": 32,
               "start_date": "2026-06-26",
               "state": "MEASURED",
               "unique_signal_dates": 20
@@ -2897,8 +4107,10 @@
               "median_absolute_return": -0.003543942464668881,
               "median_spy_relative_return": -0.009583087464540119,
               "n": 86,
+              "observation_unit": "sector_signal_date",
               "positive_absolute_rate": 0.43023255813953487,
               "positive_spy_relative_rate": 0.313953488372093,
+              "sector_date_observations": 86,
               "start_date": "2025-12-22",
               "state": "MEASURED",
               "unique_signal_dates": 60
@@ -2932,8 +4144,10 @@
                   "median_absolute_return": 0.0011282695176135782,
                   "median_spy_relative_return": 0.0002946960834413481,
                   "n": 269,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5464684014869888,
                   "positive_spy_relative_rate": 0.5130111524163569,
+                  "sector_date_observations": 269,
                   "start_date": "2019-09-05",
                   "state": "MEASURED",
                   "unique_signal_dates": 180
@@ -2945,8 +4159,10 @@
                   "median_absolute_return": -0.0024894852482204577,
                   "median_spy_relative_return": -0.0004900101423501724,
                   "n": 29,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.41379310344827586,
                   "positive_spy_relative_rate": 0.41379310344827586,
+                  "sector_date_observations": 29,
                   "start_date": "2026-01-12",
                   "state": "MEASURED",
                   "unique_signal_dates": 20
@@ -2958,8 +4174,10 @@
                   "median_absolute_return": 0.0004134806039335359,
                   "median_spy_relative_return": 0.0003981722756635775,
                   "n": 86,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5116279069767442,
                   "positive_spy_relative_rate": 0.5232558139534884,
+                  "sector_date_observations": 86,
                   "start_date": "2024-07-26",
                   "state": "MEASURED",
                   "unique_signal_dates": 60
@@ -2973,8 +4191,10 @@
                   "median_absolute_return": 0.00752165332048671,
                   "median_spy_relative_return": -0.0010820586826031375,
                   "n": 269,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5947955390334573,
                   "positive_spy_relative_rate": 0.4795539033457249,
+                  "sector_date_observations": 269,
                   "start_date": "2019-09-05",
                   "state": "MEASURED",
                   "unique_signal_dates": 180
@@ -2986,8 +4206,10 @@
                   "median_absolute_return": -0.009427327904829474,
                   "median_spy_relative_return": -0.02099469807013299,
                   "n": 29,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.3103448275862069,
                   "positive_spy_relative_rate": 0.3103448275862069,
+                  "sector_date_observations": 29,
                   "start_date": "2026-01-12",
                   "state": "MEASURED",
                   "unique_signal_dates": 20
@@ -2999,8 +4221,10 @@
                   "median_absolute_return": -0.000309684957958245,
                   "median_spy_relative_return": -0.007903214692528304,
                   "n": 86,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.47674418604651164,
                   "positive_spy_relative_rate": 0.45348837209302323,
+                  "sector_date_observations": 86,
                   "start_date": "2024-07-26",
                   "state": "MEASURED",
                   "unique_signal_dates": 60
@@ -3014,8 +4238,10 @@
                   "median_absolute_return": 0.0017786462900983846,
                   "median_spy_relative_return": -0.0006173110674214666,
                   "n": 269,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5427509293680297,
                   "positive_spy_relative_rate": 0.4795539033457249,
+                  "sector_date_observations": 269,
                   "start_date": "2019-09-05",
                   "state": "MEASURED",
                   "unique_signal_dates": 180
@@ -3027,8 +4253,10 @@
                   "median_absolute_return": -0.010243503243773877,
                   "median_spy_relative_return": -0.013798107475176402,
                   "n": 29,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.27586206896551724,
                   "positive_spy_relative_rate": 0.2413793103448276,
+                  "sector_date_observations": 29,
                   "start_date": "2026-01-12",
                   "state": "MEASURED",
                   "unique_signal_dates": 20
@@ -3040,8 +4268,10 @@
                   "median_absolute_return": -0.0003939179142155025,
                   "median_spy_relative_return": -0.003442678268827437,
                   "n": 86,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.47674418604651164,
                   "positive_spy_relative_rate": 0.3953488372093023,
+                  "sector_date_observations": 86,
                   "start_date": "2024-07-26",
                   "state": "MEASURED",
                   "unique_signal_dates": 60
@@ -3055,8 +4285,10 @@
                   "median_absolute_return": 0.004178075380859347,
                   "median_spy_relative_return": -0.0017632926643249558,
                   "n": 269,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.587360594795539,
                   "positive_spy_relative_rate": 0.4312267657992565,
+                  "sector_date_observations": 269,
                   "start_date": "2019-09-05",
                   "state": "MEASURED",
                   "unique_signal_dates": 180
@@ -3068,8 +4300,10 @@
                   "median_absolute_return": -0.010791429063540692,
                   "median_spy_relative_return": -0.015666290102793967,
                   "n": 29,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.2413793103448276,
                   "positive_spy_relative_rate": 0.13793103448275862,
+                  "sector_date_observations": 29,
                   "start_date": "2026-01-12",
                   "state": "MEASURED",
                   "unique_signal_dates": 20
@@ -3081,8 +4315,10 @@
                   "median_absolute_return": 0.00044357334149097705,
                   "median_spy_relative_return": -0.005491552210319384,
                   "n": 86,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5,
                   "positive_spy_relative_rate": 0.38372093023255816,
+                  "sector_date_observations": 86,
                   "start_date": "2024-07-26",
                   "state": "MEASURED",
                   "unique_signal_dates": 60
@@ -3118,8 +4354,10 @@
                   "median_absolute_return": -0.0005558999510774099,
                   "median_spy_relative_return": -0.0008299285228819953,
                   "n": 279,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.4731182795698925,
                   "positive_spy_relative_rate": 0.4265232974910394,
+                  "sector_date_observations": 279,
                   "start_date": "2019-08-28",
                   "state": "MEASURED",
                   "unique_signal_dates": 188
@@ -3131,8 +4369,10 @@
                   "median_absolute_return": -0.0030489743007064973,
                   "median_spy_relative_return": -0.005991668239825942,
                   "n": 28,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.35714285714285715,
                   "positive_spy_relative_rate": 0.39285714285714285,
+                  "sector_date_observations": 28,
                   "start_date": "2025-12-24",
                   "state": "MEASURED",
                   "unique_signal_dates": 20
@@ -3144,8 +4384,10 @@
                   "median_absolute_return": -0.004000995864486545,
                   "median_spy_relative_return": -0.0005604461190147347,
                   "n": 83,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.3132530120481928,
                   "positive_spy_relative_rate": 0.4578313253012048,
+                  "sector_date_observations": 83,
                   "start_date": "2024-07-16",
                   "state": "MEASURED",
                   "unique_signal_dates": 60
@@ -3159,8 +4401,10 @@
                   "median_absolute_return": 0.005658879664117711,
                   "median_spy_relative_return": -0.004493058820961182,
                   "n": 279,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5842293906810035,
                   "positive_spy_relative_rate": 0.4265232974910394,
+                  "sector_date_observations": 279,
                   "start_date": "2019-08-28",
                   "state": "MEASURED",
                   "unique_signal_dates": 188
@@ -3172,8 +4416,10 @@
                   "median_absolute_return": -0.006876898684202437,
                   "median_spy_relative_return": -0.01588937418302666,
                   "n": 28,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.25,
                   "positive_spy_relative_rate": 0.2857142857142857,
+                  "sector_date_observations": 28,
                   "start_date": "2025-12-24",
                   "state": "MEASURED",
                   "unique_signal_dates": 20
@@ -3185,8 +4431,10 @@
                   "median_absolute_return": -0.0002364373783712015,
                   "median_spy_relative_return": -0.006869058006388928,
                   "n": 83,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.4939759036144578,
                   "positive_spy_relative_rate": 0.3855421686746988,
+                  "sector_date_observations": 83,
                   "start_date": "2024-07-16",
                   "state": "MEASURED",
                   "unique_signal_dates": 60
@@ -3200,8 +4448,10 @@
                   "median_absolute_return": 0.0017850165296688925,
                   "median_spy_relative_return": -0.000558762224021514,
                   "n": 279,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5376344086021505,
                   "positive_spy_relative_rate": 0.4838709677419355,
+                  "sector_date_observations": 279,
                   "start_date": "2019-08-28",
                   "state": "MEASURED",
                   "unique_signal_dates": 188
@@ -3213,8 +4463,10 @@
                   "median_absolute_return": 0.0033906587075630545,
                   "median_spy_relative_return": -0.0009409353529497011,
                   "n": 28,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5357142857142857,
                   "positive_spy_relative_rate": 0.5,
+                  "sector_date_observations": 28,
                   "start_date": "2025-12-24",
                   "state": "MEASURED",
                   "unique_signal_dates": 20
@@ -3226,8 +4478,10 @@
                   "median_absolute_return": 5.3392540465102556e-05,
                   "median_spy_relative_return": -0.0017944716771625124,
                   "n": 83,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5060240963855421,
                   "positive_spy_relative_rate": 0.4939759036144578,
+                  "sector_date_observations": 83,
                   "start_date": "2024-07-16",
                   "state": "MEASURED",
                   "unique_signal_dates": 60
@@ -3241,8 +4495,10 @@
                   "median_absolute_return": 0.002946670935937812,
                   "median_spy_relative_return": -0.0022255819474114036,
                   "n": 279,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5483870967741935,
                   "positive_spy_relative_rate": 0.44802867383512546,
+                  "sector_date_observations": 279,
                   "start_date": "2019-08-28",
                   "state": "MEASURED",
                   "unique_signal_dates": 188
@@ -3254,8 +4510,10 @@
                   "median_absolute_return": 4.9479634978866205e-05,
                   "median_spy_relative_return": -0.009583087464540119,
                   "n": 28,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5,
                   "positive_spy_relative_rate": 0.35714285714285715,
+                  "sector_date_observations": 28,
                   "start_date": "2025-12-24",
                   "state": "MEASURED",
                   "unique_signal_dates": 20
@@ -3267,8 +4525,10 @@
                   "median_absolute_return": 0.0007100671842279471,
                   "median_spy_relative_return": -0.006979609393232167,
                   "n": 83,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5060240963855421,
                   "positive_spy_relative_rate": 0.40963855421686746,
+                  "sector_date_observations": 83,
                   "start_date": "2024-07-16",
                   "state": "MEASURED",
                   "unique_signal_dates": 60
@@ -3304,8 +4564,10 @@
                   "median_absolute_return": -0.0005013760952637947,
                   "median_spy_relative_return": -0.001061908006925405,
                   "n": 278,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.4784172661870504,
                   "positive_spy_relative_rate": 0.45323741007194246,
+                  "sector_date_observations": 278,
                   "start_date": "2019-09-04",
                   "state": "MEASURED",
                   "unique_signal_dates": 184
@@ -3317,8 +4579,10 @@
                   "median_absolute_return": -0.0006713454414351561,
                   "median_spy_relative_return": -0.0017735617841536655,
                   "n": 30,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.43333333333333335,
                   "positive_spy_relative_rate": 0.4666666666666667,
+                  "sector_date_observations": 30,
                   "start_date": "2025-12-04",
                   "state": "MEASURED",
                   "unique_signal_dates": 20
@@ -3330,8 +4594,10 @@
                   "median_absolute_return": 0.00051599486350562,
                   "median_spy_relative_return": -0.001287786337176633,
                   "n": 81,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5061728395061729,
                   "positive_spy_relative_rate": 0.4567901234567901,
+                  "sector_date_observations": 81,
                   "start_date": "2024-08-15",
                   "state": "MEASURED",
                   "unique_signal_dates": 60
@@ -3345,8 +4611,10 @@
                   "median_absolute_return": 0.009358325093710818,
                   "median_spy_relative_return": 0.00036042462753693716,
                   "n": 278,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.6079136690647482,
                   "positive_spy_relative_rate": 0.5035971223021583,
+                  "sector_date_observations": 278,
                   "start_date": "2019-09-04",
                   "state": "MEASURED",
                   "unique_signal_dates": 184
@@ -3358,8 +4626,10 @@
                   "median_absolute_return": 0.000630135679418109,
                   "median_spy_relative_return": -0.00973967411111104,
                   "n": 30,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5,
                   "positive_spy_relative_rate": 0.36666666666666664,
+                  "sector_date_observations": 30,
                   "start_date": "2025-12-04",
                   "state": "MEASURED",
                   "unique_signal_dates": 20
@@ -3371,8 +4641,10 @@
                   "median_absolute_return": 0.003941018144565822,
                   "median_spy_relative_return": -0.0056003010879778214,
                   "n": 81,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5308641975308642,
                   "positive_spy_relative_rate": 0.4567901234567901,
+                  "sector_date_observations": 81,
                   "start_date": "2024-08-15",
                   "state": "MEASURED",
                   "unique_signal_dates": 60
@@ -3386,8 +4658,10 @@
                   "median_absolute_return": 0.00015957609161398878,
                   "median_spy_relative_return": -0.001091419314171782,
                   "n": 278,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5035971223021583,
                   "positive_spy_relative_rate": 0.4676258992805755,
+                  "sector_date_observations": 278,
                   "start_date": "2019-09-04",
                   "state": "MEASURED",
                   "unique_signal_dates": 184
@@ -3399,8 +4673,10 @@
                   "median_absolute_return": 0.00010053509665769456,
                   "median_spy_relative_return": -0.004217533849292077,
                   "n": 30,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5,
                   "positive_spy_relative_rate": 0.36666666666666664,
+                  "sector_date_observations": 30,
                   "start_date": "2025-12-04",
                   "state": "MEASURED",
                   "unique_signal_dates": 20
@@ -3412,8 +4688,10 @@
                   "median_absolute_return": 0.0008859327543904172,
                   "median_spy_relative_return": -0.0030574879833779045,
                   "n": 81,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5308641975308642,
                   "positive_spy_relative_rate": 0.4444444444444444,
+                  "sector_date_observations": 81,
                   "start_date": "2024-08-15",
                   "state": "MEASURED",
                   "unique_signal_dates": 60
@@ -3427,8 +4705,10 @@
                   "median_absolute_return": 0.0006628127996258781,
                   "median_spy_relative_return": -0.0017937045615470382,
                   "n": 278,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5143884892086331,
                   "positive_spy_relative_rate": 0.4676258992805755,
+                  "sector_date_observations": 278,
                   "start_date": "2019-09-04",
                   "state": "MEASURED",
                   "unique_signal_dates": 184
@@ -3440,8 +4720,10 @@
                   "median_absolute_return": 0.0006881206343328783,
                   "median_spy_relative_return": -0.005072409891477669,
                   "n": 30,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5333333333333333,
                   "positive_spy_relative_rate": 0.43333333333333335,
+                  "sector_date_observations": 30,
                   "start_date": "2025-12-04",
                   "state": "MEASURED",
                   "unique_signal_dates": 20
@@ -3453,8 +4735,10 @@
                   "median_absolute_return": 0.0018904490751430192,
                   "median_spy_relative_return": -0.0031928698451437754,
                   "n": 81,
+                  "observation_unit": "sector_signal_date",
                   "positive_absolute_rate": 0.5555555555555556,
                   "positive_spy_relative_rate": 0.4567901234567901,
+                  "sector_date_observations": 81,
                   "start_date": "2024-08-15",
                   "state": "MEASURED",
                   "unique_signal_dates": 60
@@ -3524,8 +4808,7 @@
       "3D.p1": 1766,
       "3D.p2": 1765
     },
-    "largest_forward_horizon_daily_sessions": 10,
-    "latest_eligible_signal_position_by_phase": {
+    "first_eligible_signal_position_by_phase": {
       "1D.p0": 99,
       "2D.p0": 199,
       "2D.p1": 200,
@@ -3533,6 +4816,7 @@
       "3D.p1": 300,
       "3D.p2": 301
     },
+    "largest_forward_horizon_daily_sessions": 10,
     "minimum_completed_bars": 100,
     "state": "MEASURED"
   },

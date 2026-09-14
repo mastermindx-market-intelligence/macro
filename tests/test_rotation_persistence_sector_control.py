@@ -7,11 +7,16 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from scripts.research.rotation_persistence.contracts import ContractError
+from scripts.research.rotation_persistence.contracts import ContractError, strict_json_dumps
 from scripts.research.rotation_persistence.sector_control import (
     AUTHORITY,
     SECTORS,
+    _hierarchy_descriptor,
+    _history_quality,
     _outcome_rows,
+    _signal_cell,
+    _spearman,
+    _top_three,
     aggregate_completed_bars,
     build_result,
     correlation_control,
@@ -19,6 +24,7 @@ from scripts.research.rotation_persistence.sector_control import (
     leadership_surface,
     macd_bullish_crosses,
     macd_control,
+    render_markdown,
 )
 
 
@@ -153,7 +159,8 @@ def test_history_floor_counts_100_completed_three_day_bars_plus_daily_outcome() 
     result = build_result(panel, receipt, produced_at="2026-09-12T21:00:00Z")
 
     assert result["quality"]["state"] == "MEASURED"
-    assert result["quality"]["latest_eligible_signal_position_by_phase"]["3D.p2"] == 301
+    assert result["quality"]["first_eligible_signal_position_by_phase"]["3D.p2"] == 301
+    assert "latest_eligible_signal_position_by_phase" not in result["quality"]
 
 
 def test_build_result_rejects_source_receipt_that_disagrees_with_panel() -> None:
@@ -180,3 +187,167 @@ def test_macd_warmup_blocks_a_real_early_cross() -> None:
 
     assert len(unrestricted) >= 1
     assert frozen.empty
+
+
+def test_spearman_uses_average_ranks_and_pins_direction() -> None:
+    index = ["a", "b", "c"]
+    assert _spearman(pd.Series([1.0, 2.0, 3.0], index=index), pd.Series([4.0, 5.0, 6.0], index=index)) == pytest.approx(1.0)
+    assert _spearman(pd.Series([1.0, 2.0, 3.0], index=index), pd.Series([6.0, 5.0, 4.0], index=index)) == pytest.approx(-1.0)
+    assert _spearman(pd.Series([1.0, 1.0, 3.0], index=index), pd.Series([1.0, 2.0, 3.0], index=index)) == pytest.approx(0.8660254037844387)
+
+
+def test_top_three_breaks_equal_leadership_by_ticker() -> None:
+    values = pd.Series(0.0, index=SECTORS)
+    values.loc[["XLY", "XLE", "XLB", "XLC"]] = 1.0
+
+    assert _top_three(values) == ("XLB", "XLC", "XLE")
+
+
+def test_leadership_surface_includes_final_matured_anchor_and_formula() -> None:
+    index = pd.bdate_range("2026-01-02", periods=12)
+    rates = np.linspace(0.001, 0.011, len(SECTORS))
+    values = {
+        symbol: np.exp(4.0 + rates[position] * np.arange(len(index)))
+        for position, symbol in enumerate(SECTORS)
+    }
+    panel = pd.DataFrame(values, index=index)
+
+    result = leadership_surface(panel, lookback=1, horizons=(1,))
+    cell = result["horizons"]["1"]
+
+    assert cell["eligible_anchors"] == 10
+    assert cell["rank_persistence"]["all"]["end_date"] == index[-2].date().isoformat()
+    assert cell["rank_persistence"]["all"]["mean"] == pytest.approx(1.0)
+    assert cell["predictive_persistence"]["all"]["mean"] == pytest.approx(1.0)
+    assert cell["top3_retention"]["all"]["mean"] == pytest.approx(1.0)
+
+
+def test_signal_cell_discloses_sector_date_unit_and_latest_unique_dates() -> None:
+    dates = pd.bdate_range("2026-01-02", periods=25)
+    rows = [
+        {
+            "symbol": symbol,
+            "signal_date": date,
+            "outcome_date": date + pd.offsets.BDay(1),
+            "absolute_return": 0.01,
+            "spy_relative_return": 0.005,
+        }
+        for date in dates
+        for symbol in ("XLB", "XLC")
+    ]
+
+    cell = _signal_cell(rows, latest_dates=20)
+
+    assert cell["observation_unit"] == "sector_signal_date"
+    assert cell["sector_date_observations"] == 40
+    assert cell["n"] == 40
+    assert cell["unique_signal_dates"] == 20
+    assert cell["start_date"] == dates[5].date().isoformat()
+    assert cell["end_date"] == dates[-1].date().isoformat()
+
+
+def _fake_phase(value: float) -> dict:
+    return {
+        "completed_bars": 120,
+        "first_completed_bar": "2025-01-03",
+        "last_completed_bar": "2026-06-30",
+        "outcomes": {
+            "1": {
+                "all": {
+                    "state": "MEASURED",
+                    "observation_unit": "sector_signal_date",
+                    "sector_date_observations": 12,
+                    "n": 12,
+                    "unique_signal_dates": 9,
+                    "start_date": "2025-06-02",
+                    "end_date": "2026-06-20",
+                    "median_spy_relative_return": value,
+                }
+            }
+        },
+    }
+
+
+def test_hierarchy_descriptor_discloses_every_phase_sample_span() -> None:
+    timeframes = {
+        "1D": {"phases": {"0": _fake_phase(0.05)}},
+        "2D": {"phases": {"0": _fake_phase(0.01), "1": _fake_phase(0.02)}},
+        "3D": {
+            "phases": {
+                "0": _fake_phase(0.01),
+                "1": _fake_phase(0.02),
+                "2": _fake_phase(0.03),
+            }
+        },
+    }
+
+    descriptor = _hierarchy_descriptor(timeframes, horizon=1, window="all")
+
+    assert descriptor["label"] == "ONE_DAY_ABOVE_ALL_SLOWER_PHASES"
+    assert set(descriptor["phase_samples"]) == {
+        "1D.p0", "2D.p0", "2D.p1", "3D.p0", "3D.p1", "3D.p2"
+    }
+    sample = descriptor["phase_samples"]["3D.p2"]
+    assert sample["completed_bar_count"] == 120
+    assert sample["completed_bar_start_date"] == "2025-01-03"
+    assert sample["completed_bar_end_date"] == "2026-06-30"
+    assert sample["observation_unit"] == "sector_signal_date"
+    assert sample["sector_date_observations"] == 12
+    assert sample["unique_signal_dates"] == 9
+    assert sample["signal_start_date"] == "2025-06-02"
+    assert sample["signal_end_date"] == "2026-06-20"
+
+
+def test_leadership_reports_recent_to_all_history_comparison() -> None:
+    cell = leadership_surface(_panel(80), lookback=5, horizons=(1,))["horizons"]["1"]
+    comparison = cell["rank_persistence"]["recent_20_vs_all"]
+
+    assert comparison["state"] == "MEASURED"
+    assert comparison["mean_difference"] == pytest.approx(
+        cell["rank_persistence"]["recent_20"]["mean"]
+        - cell["rank_persistence"]["all"]["mean"]
+    )
+    assert comparison["median_difference"] == pytest.approx(
+        cell["rank_persistence"]["recent_20"]["median"]
+        - cell["rank_persistence"]["all"]["median"]
+    )
+
+
+def test_history_quality_names_first_eligible_position_and_refuses_short_forward_tail() -> None:
+    short = _history_quality(_panel(311))
+    measured = _history_quality(_panel(312))
+
+    assert short["state"] == "INSUFFICIENT_HISTORY"
+    assert short["daily_forward_sessions_available_by_phase"]["3D.p2"] == 9
+    assert measured["state"] == "MEASURED"
+    assert measured["first_eligible_signal_position_by_phase"]["3D.p2"] == 301
+    assert "latest_eligible_signal_position_by_phase" not in measured
+
+
+def test_strict_json_directly_refuses_nonfinite_values() -> None:
+    with pytest.raises(ValueError, match="strict JSON refuses"):
+        strict_json_dumps({"bad": float("nan")})
+
+
+def test_markdown_discloses_leadership_samples_and_phase_evidence() -> None:
+    panel = _panel(340)
+    receipt = {
+        "source_revision": "deadbeef",
+        "files": {symbol: {"sha256": "0" * 64} for symbol in (*SECTORS, "SPY")},
+        "common_rows": len(panel),
+        "first_session": panel.index[0].date().isoformat(),
+        "last_session": panel.index[-1].date().isoformat(),
+    }
+    result = build_result(panel, receipt, produced_at="2026-09-12T21:00:00Z")
+    report = render_markdown(result)
+    recent = result["leadership"]["5"]["horizons"]["1"]["rank_persistence"]["recent_20"]
+
+    assert "Recent anchors" in report
+    assert "Recent N" in report
+    assert "Recent std" in report
+    assert "All-history N" in report
+    assert "Recent-minus-all mean" in report
+    assert f"| 5 | 1 | Rank persistence | {recent['anchors']} | {recent['n']} |" in report
+    assert "## MACD phase evidence" in report
+    assert "Sector-date observations" in report
+    assert "Unique signal dates" in report

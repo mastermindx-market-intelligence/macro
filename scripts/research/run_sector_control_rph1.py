@@ -27,7 +27,8 @@ def validate_output_dir(out_dir: Path, *, repo_root: Path | None = None) -> Path
         if repo_root is not None
         else Path(__file__).resolve().parents[2]
     )
-    candidate = Path(out_dir).expanduser().resolve()
+    requested = Path(out_dir).expanduser()
+    candidate = (root / requested if not requested.is_absolute() else requested).resolve()
     if candidate == root:
         raise ContractError("research-safe output cannot be the repository root")
     for owner in _FORBIDDEN_OWNER_ROOTS:
@@ -66,10 +67,15 @@ def _parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None, *, repo_root: Path | None = None) -> int:
     args = _parser().parse_args(argv)
+    root = (
+        Path(repo_root).expanduser().resolve()
+        if repo_root is not None
+        else Path(__file__).resolve().parents[2]
+    )
     try:
         produced_at = _iso_clock(args.produced_at)
-        out_dir = validate_output_dir(args.output_dir, repo_root=repo_root)
-        panel, receipt = load_price_panel(args.data_dir)
+        out_dir = validate_output_dir(args.output_dir, repo_root=root)
+        panel, receipt = load_price_panel(args.data_dir, repo_root=root)
         result = build_result(panel, receipt, produced_at)
         markdown = render_markdown(result)
         atomic_write_json(out_dir / OUTPUT_FILENAMES[0], result)

@@ -70,9 +70,14 @@ def _normalized_price_series(
     frame = pd.read_parquet(path)
     if "close" not in frame.columns:
         raise ContractError(f"{symbol} parquet requires a close column")
+    if not isinstance(frame.index, pd.DatetimeIndex):
+        raise ContractError(f"{symbol} parquet index must be a DatetimeIndex")
 
     rows_read = int(len(frame))
-    dates = pd.to_datetime(frame.index, errors="coerce", utc=True).tz_localize(None).normalize()
+    dates = frame.index
+    if dates.tz is not None:
+        dates = dates.tz_localize(None)
+    dates = dates.normalize()
     normalized = pd.DataFrame(
         {"date": dates, "close": frame["close"].to_numpy(), "order": np.arange(rows_read)}
     )
@@ -113,13 +118,25 @@ def _normalized_price_series(
     return series, receipt
 
 
+def _canonical_path(path: Path, *, repo_root: Path) -> tuple[Path, str]:
+    requested = Path(path).expanduser()
+    resolved = (repo_root / requested if not requested.is_absolute() else requested).resolve()
+    try:
+        logical = resolved.relative_to(repo_root).as_posix()
+    except ValueError:
+        logical = resolved.as_posix()
+    return resolved, logical
+
+
 def load_price_panel(
-    data_dir: Path, symbols: tuple[str, ...] = ALL_SYMBOLS
+    data_dir: Path,
+    symbols: tuple[str, ...] = ALL_SYMBOLS,
+    *,
+    repo_root: Path | None = None,
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
     """Load exact complete-date close panel and byte-bind every input file."""
-    requested_data_dir = Path(data_dir).expanduser()
-    logical_data_dir = requested_data_dir.as_posix()
-    resolved_data_dir = requested_data_dir.resolve()
+    root = Path(repo_root).expanduser().resolve() if repo_root is not None else Path.cwd().resolve()
+    resolved_data_dir, logical_data_dir = _canonical_path(Path(data_dir), repo_root=root)
     if not symbols or len(set(symbols)) != len(symbols):
         raise ContractError("symbols must be non-empty and unique")
 
@@ -127,9 +144,13 @@ def load_price_panel(
     files: dict[str, dict[str, Any]] = {}
     union_index = pd.DatetimeIndex([])
     for symbol in symbols:
-        logical_path = (requested_data_dir / f"{symbol}.parquet").as_posix()
+        source_path = resolved_data_dir / f"{symbol}.parquet"
+        try:
+            logical_path = source_path.relative_to(root).as_posix()
+        except ValueError:
+            logical_path = source_path.as_posix()
         series, file_receipt = _normalized_price_series(
-            resolved_data_dir / f"{symbol}.parquet", symbol, logical_path=logical_path
+            source_path, symbol, logical_path=logical_path
         )
         series_by_symbol[symbol] = series
         files[symbol] = file_receipt
@@ -206,6 +227,20 @@ def _window_summaries(entries: list[tuple[pd.Timestamp, float | None]]) -> dict[
     return {name: _summary(window) for name, window in _window_entries(entries).items()}
 
 
+def _summary_comparison(recent: dict[str, Any], baseline: dict[str, Any]) -> dict[str, Any]:
+    if recent["state"] != "MEASURED" or baseline["state"] != "MEASURED":
+        return {
+            "state": "INSUFFICIENT_HISTORY",
+            "mean_difference": None,
+            "median_difference": None,
+        }
+    return {
+        "state": "MEASURED",
+        "mean_difference": recent["mean"] - baseline["mean"],
+        "median_difference": recent["median"] - baseline["median"],
+    }
+
+
 def _spearman(left: pd.Series, right: pd.Series) -> float | None:
     aligned = pd.concat([left.astype(float), right.astype(float)], axis=1).dropna()
     if len(aligned) < 2 or aligned.iloc[:, 0].nunique() < 2 or aligned.iloc[:, 1].nunique() < 2:
@@ -254,11 +289,18 @@ def leadership_surface(
             later_top = set(_top_three(later))
             retention_entries.append((anchor, len(current_top & later_top) / 3.0))
 
+        rank_windows = _window_summaries(rank_entries)
+        predictive_windows = _window_summaries(predictive_entries)
+        retention_windows = _window_summaries(retention_entries)
+        for windows in (rank_windows, predictive_windows, retention_windows):
+            windows["recent_20_vs_all"] = _summary_comparison(
+                windows["recent_20"], windows["all"]
+            )
         output["horizons"][str(horizon)] = {
             "eligible_anchors": int(len(rank_entries)),
-            "rank_persistence": _window_summaries(rank_entries),
-            "predictive_persistence": _window_summaries(predictive_entries),
-            "top3_retention": _window_summaries(retention_entries),
+            "rank_persistence": rank_windows,
+            "predictive_persistence": predictive_windows,
+            "top3_retention": retention_windows,
         }
     return output
 
@@ -353,6 +395,8 @@ def _signal_cell(rows: list[dict[str, Any]], *, latest_dates: int | None) -> dic
     measured = len(selected) >= MIN_OBSERVATIONS
     return {
         "state": "MEASURED" if measured else "INSUFFICIENT_SIGNALS",
+        "observation_unit": "sector_signal_date",
+        "sector_date_observations": int(len(selected)),
         "unique_signal_dates": int(len(selected_dates)),
         "n": int(len(selected)),
         "start_date": _iso_date(min(selected_dates)) if selected_dates else None,
@@ -434,14 +478,27 @@ def _hierarchy_descriptor(
     timeframes: dict[str, dict[str, Any]], horizon: int, window: str
 ) -> dict[str, Any]:
     medians: dict[str, float | None] = {}
+    phase_samples: dict[str, dict[str, Any]] = {}
     required = [("1D", "0"), ("2D", "0"), ("2D", "1"), ("3D", "0"), ("3D", "1"), ("3D", "2")]
     for timeframe, phase in required:
-        cell = timeframes[timeframe]["phases"][phase]["outcomes"][str(horizon)][window]
-        medians[f"{timeframe}.p{phase}"] = (
-            cell["median_spy_relative_return"] if cell["state"] == "MEASURED" else None
-        )
+        phase_result = timeframes[timeframe]["phases"][phase]
+        cell = phase_result["outcomes"][str(horizon)][window]
+        key = f"{timeframe}.p{phase}"
+        medians[key] = cell["median_spy_relative_return"] if cell["state"] == "MEASURED" else None
+        phase_samples[key] = {
+            "state": cell["state"],
+            "completed_bar_count": phase_result["completed_bars"],
+            "completed_bar_start_date": phase_result["first_completed_bar"],
+            "completed_bar_end_date": phase_result["last_completed_bar"],
+            "observation_unit": cell["observation_unit"],
+            "sector_date_observations": cell["sector_date_observations"],
+            "unique_signal_dates": cell["unique_signal_dates"],
+            "signal_start_date": cell["start_date"],
+            "signal_end_date": cell["end_date"],
+            "median_spy_relative_return": cell["median_spy_relative_return"],
+        }
     if any(value is None for value in medians.values()):
-        return {"label": "INSUFFICIENT_SIGNALS", "medians": medians}
+        return {"label": "INSUFFICIENT_SIGNALS", "medians": medians, "phase_samples": phase_samples}
     one_day = medians["1D.p0"]
     slower = [value for key, value in medians.items() if key != "1D.p0"]
     assert one_day is not None and all(value is not None for value in slower)
@@ -451,7 +508,7 @@ def _hierarchy_descriptor(
         label = "ONE_DAY_BELOW_ALL_SLOWER_PHASES"
     else:
         label = "MIXED_PHASES"
-    return {"label": label, "medians": medians}
+    return {"label": label, "medians": medians, "phase_samples": phase_samples}
 
 
 def macd_control(panel: pd.DataFrame) -> tuple[dict[str, Any], dict[str, Any]]:
@@ -500,7 +557,7 @@ def macd_control(panel: pd.DataFrame) -> tuple[dict[str, Any], dict[str, Any]]:
 
 def _history_quality(panel: pd.DataFrame) -> dict[str, Any]:
     completed_by_phase: dict[str, int] = {}
-    eligible_position_by_phase: dict[str, int] = {}
+    first_eligible_position_by_phase: dict[str, int] = {}
     forward_available_by_phase: dict[str, int] = {}
     for sessions in (1, 2, 3):
         for phase in range(sessions):
@@ -509,7 +566,7 @@ def _history_quality(panel: pd.DataFrame) -> dict[str, Any]:
                 len(aggregate_completed_bars(panel, sessions=sessions, phase=phase))
             )
             position = phase + sessions * MACD_MIN_COMPLETED_BARS - 1
-            eligible_position_by_phase[key] = int(position)
+            first_eligible_position_by_phase[key] = int(position)
             forward_available_by_phase[key] = max(0, int(len(panel) - 1 - position))
     enough = all(
         completed_by_phase[f"3D.p{phase}"] >= MACD_MIN_COMPLETED_BARS
@@ -520,7 +577,7 @@ def _history_quality(panel: pd.DataFrame) -> dict[str, Any]:
         "state": "MEASURED" if enough else "INSUFFICIENT_HISTORY",
         "common_sessions": int(len(panel)),
         "completed_bars_by_phase": completed_by_phase,
-        "latest_eligible_signal_position_by_phase": eligible_position_by_phase,
+        "first_eligible_signal_position_by_phase": first_eligible_position_by_phase,
         "daily_forward_sessions_available_by_phase": forward_available_by_phase,
         "minimum_completed_bars": MACD_MIN_COMPLETED_BARS,
         "largest_forward_horizon_daily_sessions": max(FORWARD_HORIZONS),
@@ -624,19 +681,28 @@ def render_markdown(result: dict[str, Any]) -> str:
         "",
         "## Leadership surface",
         "",
-        "| Lookback | Horizon | Recent rank rho | Recent predictive rho | Recent top-three retention |",
-        "|---:|---:|---:|---:|---:|",
+        "| Lookback | Horizon | Metric | Recent anchors | Recent N | Recent mean | Recent std | All-history anchors | All-history N | All-history mean | All-history std | Recent-minus-all mean |",
+        "|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
     ]
+    metric_labels = (
+        ("rank_persistence", "Rank persistence"),
+        ("predictive_persistence", "Predictive persistence"),
+        ("top3_retention", "Top-three retention"),
+    )
     for lookback in ("5", "21"):
         for horizon in LEADERSHIP_HORIZONS:
             cell = result["leadership"][lookback]["horizons"][str(horizon)]
-            rank = cell["rank_persistence"]["recent_20"]
-            predictive = cell["predictive_persistence"]["recent_20"]
-            retention = cell["top3_retention"]["recent_20"]
-            lines.append(
-                f"| {lookback} | {horizon} | {_fmt(rank['mean'])} | "
-                f"{_fmt(predictive['mean'])} | {_fmt(retention['mean'])} |"
-            )
+            for metric_key, metric_label in metric_labels:
+                windows = cell[metric_key]
+                recent = windows["recent_20"]
+                all_history = windows["all"]
+                comparison = windows["recent_20_vs_all"]
+                lines.append(
+                    f"| {lookback} | {horizon} | {metric_label} | {recent['anchors']} | "
+                    f"{recent['n']} | {_fmt(recent['mean'])} | {_fmt(recent['sample_std'])} | "
+                    f"{all_history['anchors']} | {all_history['n']} | {_fmt(all_history['mean'])} | "
+                    f"{_fmt(all_history['sample_std'])} | {_fmt(comparison['mean_difference'])} |"
+                )
 
     dispersion = result["dispersion"]["recent_20_vs_prior_252"]
     correlation = result["correlation"]["recent_20_vs_prior_252"]
@@ -662,6 +728,32 @@ def render_markdown(result: dict[str, Any]) -> str:
             f"| {horizon} | `{cells['all']['label']}` | "
             f"`{cells['recent_20']['label']}` | `{cells['recent_60']['label']}` |"
         )
+
+    lines.extend(
+        [
+            "",
+            "## MACD phase evidence",
+            "",
+            "Phase-specific samples are primary. Each row states the completed-bar span and the sector-signal-date observations used by the hierarchy descriptor.",
+            "",
+            "| Forward horizon | Window | Phase | Completed bars | Completed-bar start | Completed-bar end | State | Observation unit | Sector-date observations | Unique signal dates | Signal start | Signal end | Median SPY-relative return |",
+            "|---:|---|---|---:|---|---|---|---|---:|---:|---|---|---:|",
+        ]
+    )
+    phase_order = ("1D.p0", "2D.p0", "2D.p1", "3D.p0", "3D.p1", "3D.p2")
+    for horizon in FORWARD_HORIZONS:
+        for window in SIGNAL_WINDOWS:
+            samples = result["hierarchy"][str(horizon)][window]["phase_samples"]
+            for phase in phase_order:
+                sample = samples[phase]
+                lines.append(
+                    f"| {horizon} | {window} | {phase} | {sample['completed_bar_count']} | "
+                    f"{_fmt(sample['completed_bar_start_date'])} | {_fmt(sample['completed_bar_end_date'])} | "
+                    f"{sample['state']} | {sample['observation_unit']} | "
+                    f"{sample['sector_date_observations']} | {sample['unique_signal_dates']} | "
+                    f"{_fmt(sample['signal_start_date'])} | {_fmt(sample['signal_end_date'])} | "
+                    f"{_fmt(sample['median_spy_relative_return'])} |"
+                )
 
     lines.extend(["", "## Boundaries", ""])
     for item in result["limitations"]:

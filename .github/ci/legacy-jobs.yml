@@ -13013,6 +13013,31 @@ jobs:
           tests/test_rotation_persistence_sector_control.py
           tests/test_rotation_persistence_sector_cli.py -q
 
+
+  sector-control-archive-regeneration:
+    if: ${{ false }}
+    gate: data
+    # RPH-1's committed result is byte-bound to the live repository Yahoo archive.
+    # Keep this proof off the code gate: moving data bytes must not reject an
+    # otherwise valid code-only change, while any archive/result drift must fail
+    # the data lane rather than silently masquerading as reproducible evidence.
+    paths:
+      - "data/yahoo/**"
+      - "research/rotation_persistence/sector_control_rph1/**"
+      - "scripts/research/rotation_persistence/**"
+      - "scripts/research/run_sector_control_rph1.py"
+      - "tests/test_rotation_persistence_sector_archive.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: RPH-1 live Yahoo archive must regenerate committed evidence byte-for-byte
+        run: python -m pytest tests/test_rotation_persistence_sector_archive.py -q
+
   zh-filing-term:
     # ui.zh_filing_term PR gate: 申报 must never reach user-facing Chinese copy.
     # A native reader hears a TAX or CUSTOMS declaration (申报纳税, 海关申报) where

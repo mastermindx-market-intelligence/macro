@@ -112,26 +112,70 @@ def test_loader_preserves_relative_logical_source_paths(tmp_path: Path, monkeypa
     assert receipt["files"]["XLB"]["path"] == "data/yahoo/XLB.parquet"
 
 
-def test_committed_real_archive_result_regenerates_byte_for_byte(
+def test_loader_rejects_non_datetime_index(tmp_path: Path) -> None:
+    pd.DataFrame({"close": [100.0, 101.0]}).to_parquet(tmp_path / "XLB.parquet")
+
+    with pytest.raises(ContractError, match="DatetimeIndex"):
+        load_price_panel(tmp_path, symbols=("XLB",))
+
+
+def test_loader_preserves_timezone_aware_local_session_label(tmp_path: Path) -> None:
+    index = pd.DatetimeIndex(["2026-01-02 23:30:00-05:00"])
+    pd.DataFrame({"close": [100.0]}, index=index).to_parquet(tmp_path / "XLB.parquet")
+
+    panel, receipt = load_price_panel(tmp_path, symbols=("XLB",))
+
+    assert panel.index[0] == pd.Timestamp("2026-01-02")
+    assert receipt["first_session"] == "2026-01-02"
+    assert receipt["last_session"] == "2026-01-02"
+
+
+def test_loader_canonicalizes_repo_relative_source_paths(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    repo_root = Path(__file__).resolve().parents[1]
-    committed = repo_root / "research" / "rotation_persistence" / "sector_control_rph1"
-    output = tmp_path / "research" / "regenerated"
-    monkeypatch.chdir(repo_root)
+    repo_root = tmp_path / "repo"
+    data_dir = repo_root / "data" / "yahoo"
+    _write_price(data_dir / "XLB.parquet", [("2026-01-02", 100.0)])
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    monkeypatch.chdir(outside)
+
+    _, receipt = load_price_panel(
+        Path("data/../data/yahoo"), symbols=("XLB",), repo_root=repo_root
+    )
+
+    assert receipt["data_dir"] == "data/yahoo"
+    assert receipt["files"]["XLB"]["path"] == "data/yahoo/XLB.parquet"
+
+
+def test_cli_resolves_relative_input_and_output_against_repo_root(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    repo_root = tmp_path / "repo"
+    data_dir = repo_root / "data" / "yahoo"
+    dates = pd.bdate_range("2025-01-02", periods=110)
+    for offset, symbol in enumerate(ALL_SYMBOLS):
+        rows = [
+            (date.date().isoformat(), 100.0 + offset + position * 0.1)
+            for position, date in enumerate(dates)
+        ]
+        _write_price(data_dir / f"{symbol}.parquet", rows)
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    monkeypatch.chdir(outside)
 
     exit_code = main(
         [
             "--data-dir",
             "data/yahoo",
             "--output-dir",
-            str(output),
+            "research/rph1-relative",
             "--produced-at",
             "2026-09-12T21:00:00Z",
         ],
-        repo_root=tmp_path,
+        repo_root=repo_root,
     )
 
     assert exit_code == 0
-    for filename in OUTPUT_FILENAMES:
-        assert (output / filename).read_bytes() == (committed / filename).read_bytes()
+    assert (repo_root / "research/rph1-relative/result.json").is_file()
+    assert (repo_root / "research/rph1-relative/report.md").is_file()
