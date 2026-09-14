@@ -1291,6 +1291,7 @@ jobs:
       # Pure closed-map invariant + per-event-class non-fallback fixtures + the
       # typed-null render path. No new source — wired through the existing
       # B-F07-2 valuation_scenario_controls.v1 blob shape.
+      - "engine/valuation_event_bridge.py"
       - "tests/test_valuation_event_bridge.py"
     # Wired 2026-08-02: neither suite was named by ANY run step, so #4297's caution
     # rewrite ran 4 stock_score pins red for a day with no CI signal, and the dossier's
