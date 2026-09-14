@@ -42,7 +42,11 @@ hash fails CLOSED to bounded public metadata/excerpt and an honest source-
 identity-unverified note — never a scan/extraction claim. Locator offsets, page
 numbers, source/stored counts, and page counts are trusted only when supplied as
 literal integers of the required sign; numeric strings, floats, booleans, and
-malformed passage containers are never coerced into evidence facts.
+malformed passage containers are never coerced into evidence facts. The corpus
+accepts publisher `body` only when it is already a string—Python representations
+of dicts, lists, tuples, numbers, and booleans are never searchable evidence.
+Caller passage windows accept only literal integers and clamp to the frozen safe
+`[80, EVIDENCE_WINDOW_CHARS]` interval; nonliteral values use the safe default.
 
 No matching passage, an unavailable body, an unverified source identity, or an
 image-only scan is disclosed and does not consume full-text quota. A quota
@@ -71,6 +75,12 @@ corpus remains body/source authority and the sole owner of content atoms,
 stopwords, passage matching, and source binding; Brain remains the chat intent
 and projection owner;
 Research Vault remains the source-opening owner.
+
+### 2.1 Successor authority and CI-ownership receipt
+
+R1B explicitly supersedes the earlier lexical R1 two-path/protected-boundary restriction only for `engine/research_vault/corpus.py`, which is the canonical body/source owner required by this capability, and for the two minimal `.github/ci/legacy-jobs.yml` registrations that assign `tests/test_brain_research_evidence.py` to `neural-web-core` and `tests/test_research_evidence_passages.py` to `research-vault`. Hosted `contract-delta` proved both suites were otherwise unowned. This carrier adds no job, workflow, dependency, gate, or duplicate owner, and it does not lift any other R1 non-goal.
+
+The 2026-09-14 pre-publication census covered 227 open pull requests. Seventy-one other PRs touched `.github/ci/legacy-jobs.yml`, so the manifest is explicitly high-contention. Patch-level inspection found no other PR touching either exact ownership anchor (`tests/test_brain_market_intel.py` / `tests/test_research_vault.py`) or naming either new suite. PR #6861 included `neural-web-core` only as unchanged context while adding a preceding job step; it did not modify the owner block. Any later writer touching either exact owner block or ownership line requires reconciliation before publication. Broad manifest-path non-overlap is not claimed.
 
 The deterministic selector applies NFKC/casefold for locating only. ASCII words
 and identifiers use exact boundaries; Han phrases use literal matching. Emitted

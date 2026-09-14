@@ -10,6 +10,8 @@
 
 **Spec:** `research/MASTERMIND_AI_BILINGUAL_RESEARCH_R1_DESIGN_2026-09-10.md`
 
+> **Successor authority — R1B (2026-09-14):** The path restrictions and protected-boundary checks below govern the original lexical R1 task. The separately approved source-bound-evidence successor in `research/MASTERMIND_AI_SOURCE_BOUND_EVIDENCE_R1B_DESIGN_2026-09-13.md` supersedes them only for its explicit `engine/research_vault/corpus.py` owner extension and the minimal `.github/ci/legacy-jobs.yml` ownership registration for the two newly introduced suites. That exception does not reopen any other R1 non-goal or authorize another job, workflow, dependency, retrieval plane, quota plane, or product authority.
+
 ## Global Constraints
 
 - Operation key: `mastermind-ai-r1-lexical-retrieval-20260911-sol-001`.
@@ -339,7 +341,7 @@ git diff -- engine/neuralweb/brain_market_intel.py tests/test_brain_market_intel
 git diff -- engine/research_vault app/research.py .github/ci/legacy-jobs.yml config/mastermind_programs.yml
 ```
 
-Expected: the protected-boundary diff is empty.
+Expected for the original lexical R1 task: the protected-boundary diff is empty. When this historical plan is carried in the approved R1B successor, the only permitted exceptions are the R1B corpus-owner delta and the exact two owner-manifest registrations recorded in the R1B design; every other protected-boundary diff must remain empty.
 
 - [ ] **Step 11: Commit the green implementation**
 

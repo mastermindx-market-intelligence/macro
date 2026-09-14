@@ -79,11 +79,15 @@ No atom repetition can buy additional weight.
 - No CI job or workflow edit unless the existing owner manifest proves the suite is unregistered; current inspection shows it already runs in the neural-web core job.
 - No claim that Chinese retrieval is complete merely because literal Chinese matching works.
 
+These are the frozen boundaries of the lexical R1 wave. The approved R1B successor may modify the existing corpus owner and minimally register its newly introduced suites in the existing CI owner manifest, but only under the explicit authority and collision receipt in the R1B design. No other R1 boundary is lifted.
+
 ## 6. Collision and ownership boundary
 
 A fresh 177-open-PR census found no open PR touching `engine/neuralweb/brain_market_intel.py` or `tests/test_brain_market_intel.py`. PR #7045 owns adjacent Research Vault catalog/ingest/sidecar/app paths and must remain untouched. Many PRs touch `.github/ci/legacy-jobs.yml`; this wave does not.
 
 Before push and before merge, refresh `origin/main` and repeat the exact two-path collision census. If either primary path gains another active writer, stop and reconcile rather than force, rebase over, or duplicate the change.
+
+For the R1B successor only, its separately recorded collision boundary replaces this historical two-path census for the additional corpus and CI-owner lines. High manifest contention is not treated as blanket clearance: only exact owner-block and ownership-line non-overlap permits publication.
 
 ## 7. Acceptance
 
