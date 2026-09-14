@@ -1,0 +1,447 @@
+diff --git a/.github/ci/legacy-jobs.yml b/.github/ci/legacy-jobs.yml
+index 1aba18a9bb1d..ff9ed78ef729 100644
+--- a/.github/ci/legacy-jobs.yml
++++ b/.github/ci/legacy-jobs.yml
+@@ -9959 +9959 @@ jobs:
+-        run: python -m pytest tests/test_landing_navigation.py tests/test_landing_mobile_reflow.py tests/test_oip_w1_nav_regroup.py tests/test_hub_welcome_persona.py tests/test_start_publish_integrity.py -q
++        run: python -m pytest tests/test_landing_navigation.py tests/test_landing_mobile_reflow.py tests/test_landing_research_entry.py tests/test_oip_w1_nav_regroup.py tests/test_hub_welcome_persona.py tests/test_start_publish_integrity.py -q
+diff --git a/data/marketing/ad_central/arenas.jsonl b/data/marketing/ad_central/arenas.jsonl
+index 078c192349eb..2c55b0b681b7 100644
+--- a/data/marketing/ad_central/arenas.jsonl
++++ b/data/marketing/ad_central/arenas.jsonl
+@@ -4,0 +5 @@
++{"schema":"marketing.ad_arena/v1","arena_id":"hero-connected-research-20260910","hypothesis":"For the same connected-research example, does an outcome-led headline improve qualified entry compared with evidence-led positioning?","plane":"owned","unit":"visitor","primary_metric":"signup_rate","arm_creative_ids":["adc-2206449b1e0e","adc-d57dceafb969"],"control_creative_id":"adc-2206449b1e0e","assignment_weights":{"adc-2206449b1e0e":0.5,"adc-d57dceafb969":0.5},"holdout":0.0,"n_floor":100,"guardrails":{},"secondary_metrics":[],"status":"planned","start_at":null,"stop_at":null,"mode":"shadow","envelope_usd":0.0}
+diff --git a/data/marketing/ad_central/creatives.jsonl b/data/marketing/ad_central/creatives.jsonl
+index 7fbdd49e6543..12d72b853cca 100644
+--- a/data/marketing/ad_central/creatives.jsonl
++++ b/data/marketing/ad_central/creatives.jsonl
+@@ -10,0 +11,2 @@
++{"creative_id":"adc-2206449b1e0e","arena_id":"hero-connected-research-20260910","opportunity_id":"homepage-research-entry-20260910","format_id":"site_hero","plane":"owned","angle":"Market context, company research and an AI analyst in one workspace.","hook":"See what changed. Understand why it matters.","proof":"Start with a company. Inspect the evidence.","cta":"Create my free desk","headline":"See what changed. Understand why it matters.","body":"Market context, company research and an AI analyst in one workspace. Start with a company. Inspect the evidence.","cta_label":"Create my free desk","destination":"https://www.mastermind-x.com/?utm_source=x&utm_medium=adcentral&utm_campaign=ad&utm_content=adc-2206449b1e0e","claim_passport_id":null,"claim_type":"promotional","media_ref":null,"status":"draft","refusals":[],"mode":"shadow"}
++{"creative_id":"adc-d57dceafb969","arena_id":"hero-connected-research-20260910","opportunity_id":"homepage-research-entry-20260910","format_id":"site_hero","plane":"owned","angle":"Market context, company research and an AI analyst in one workspace.","hook":"Your research. Connected to the evidence.","proof":"Start with a company. Inspect the evidence.","cta":"Create my free desk","headline":"Your research. Connected to the evidence.","body":"Market context, company research and an AI analyst in one workspace. Start with a company. Inspect the evidence.","cta_label":"Create my free desk","destination":"https://www.mastermind-x.com/?utm_source=x&utm_medium=adcentral&utm_campaign=ad&utm_content=adc-d57dceafb969","claim_passport_id":null,"claim_type":"promotional","media_ref":null,"status":"draft","refusals":[],"mode":"shadow"}
+diff --git a/site/about.html b/site/about.html
+index ff26852eb484..e3a43081fce0 100644
+--- a/site/about.html
++++ b/site/about.html
+@@ -84 +84 @@
+-<link rel="stylesheet" href="landing.css?v=689af9c0">
++<link rel="stylesheet" href="landing.css?v=796dbcb3">
+diff --git a/site/index.html b/site/index.html
+index 1589cb781547..ba8a2bf3d3b9 100644
+--- a/site/index.html
++++ b/site/index.html
+@@ -90 +90 @@
+-<link rel="stylesheet" href="landing.css?v=689af9c0">
++<link rel="stylesheet" href="landing.css?v=796dbcb3">
+@@ -204,12 +204,3 @@
+-      <span class="live-pill" data-zh="实时 · 今日研判"><i></i>LIVE · MARKET READ</span>
+-      <!-- BRAND IN THE H1 — SEO_SUPERCHARGE_MASTERPLAN §0.8. Google does not associate
+-           "MastermindX" with this site, so the page's one h1 has to say the name. The
+-           wordmark is a MASTHEAD LINE: one span sized in `em` off the h1's own clamp, so
+-           it rides the existing responsive scale and the three authored headline lines
+-           below it are untouched (gradient third line, display face, motion: all as
+-           shipped — operator identity ruling, landing.css §.cov-copy h1).
+-           The same span is carried by BOTH adtest arms below: adtest.js rewrites this
+-           h1's innerHTML wholesale when the arena goes live, so a brand that lived only
+-           here would silently vanish from the h1 the day the test starts. -->
+-      <h1 data-adtest-slot="hero_headline" data-zh="<span class='h1-brand' style='display:block;font-size:.42em;letter-spacing:.05em;margin-bottom:.34em;color:var(--ink-soft)'>MastermindX</span><span class='zh-line'>你自己的</span><span class='zh-line zh-line-punct'>市场情报中心。</span><span class='dim zh-line zh-line-punct'>机构级水准。</span>"><span class="h1-brand" style="display:block;font-size:.42em;letter-spacing:.05em;margin-bottom:.34em;color:var(--ink-soft)">MastermindX</span>Your personal<br>market intelligence desk.<br><span class="dim">Institutional-grade.</span></h1>
+-      <p class="sub" data-adtest-slot="hero_sub" data-zh="宏观环境、个股信号、期权资金流和深度研究都在一处，帮你看清市场为什么在动、眼下该盯哪里。<b>往下翻，直接看实际效果。</b>">Macro context, stock signals, options flow, and deep research come together in one clear view—so you can see what is moving the market and understand why. <b>See it in action below.</b></p>
++      <span class="live-pill" data-zh="你的市场研究台">YOUR RESEARCH DESK</span>
++      <h1 data-adtest-slot="hero_headline" data-zh="&lt;span class=&#x27;h1-brand&#x27; style=&#x27;display:block;font-size:.42em;letter-spacing:.05em;margin-bottom:.34em;color:var(--ink-soft)&#x27;&gt;MastermindX&lt;/span&gt;&lt;span class=&#x27;zh-line zh-line-punct&#x27;&gt;看清市场变化。&lt;/span&gt;&lt;span class=&#x27;dim zh-line zh-line-punct&#x27;&gt;理解背后意义。&lt;/span&gt;"><span class="h1-brand" style="display:block;font-size:.42em;letter-spacing:.05em;margin-bottom:.34em;color:var(--ink-soft)">MastermindX</span>See what changed.<br><span class="dim">Understand why it matters.</span></h1>
++      <p class="sub" data-adtest-slot="hero_sub" data-zh="宏观背景、公司研究和 AI 分析助手，汇集于同一工作台。从一家公司开始，深入查看证据。">Market context, company research and an AI analyst in one workspace. Start with a company. Inspect the evidence.</p>
+@@ -217,2 +208,4 @@
+-        <a class="btn primary js-startfree" href="https://app.mastermind-x.com/terminal?signup=1" data-zh="免费开始">Start free</a>
+-        <a class="btn" href="start.html" data-zh="看实时演示">See it live</a>
++        <a class="btn primary js-startfree" href="https://app.mastermind-x.com/terminal?signup=1" data-zh="创建免费研究台">Create my free desk</a>
++        <a class="btn" href="#research-example" data-zh="探索研究示例">Explore an example</a>
++      </div>
++      <p class="micro" data-zh="免费方案 · 无需信用卡">Free plan. No credit card.</p>
+@@ -220,9 +212,0 @@
+-      <p class="micro" data-zh="免费试用 · 机构级市场情报">FREE TRIAL · INSTITUTIONAL MARKET INTELLIGENCE</p>
+-      <!-- ENTITY SENTENCE (§0.8) — the blunt "what this is" line, in the reader's own
+-           words and in the crawler's. Deliberately subordinate: it sits below the CTAs
+-           at body-small in --faint, so it costs the hero no attention, and it repeats
+-           the Organization.description above and /about.html's lede verbatim, because
+-           an entity is resolved by the SAME sentence appearing in the same voice on
+-           every surface that claims the name. -->
+-      <p class="ent-line" style="margin:20px auto 0;max-width:64ch;font-size:.86rem;line-height:1.6;color:var(--faint)" data-zh="<b style='font-weight:600;color:var(--muted)'>MastermindX</b> 是一个面向主动投资者的 AI 市场情报平台：分级个股信号、期权资金流、宏观市况仪表盘、深度研究，还有一位 AI 分析师——全部每晚重建。"><b style="font-weight:600;color:var(--muted)">MastermindX</b> is an AI-powered market intelligence platform for active investors — graded stock signals, options flow, macro regime dashboards, deep research and an AI analyst, rebuilt nightly.</p>
+-    </div>
+@@ -236 +220 @@
+-    <script type="application/json" id="mm-adtest">{"arena_id":"hero-promise-vs-receipt","status":"planned","mode":"shadow","holdout":0.0,"arms":[{"id":"adc-a929e26ce95c","w":0.5,"copy":{"hero_headline":{"html":"<span class=\"h1-brand\" style=\"display:block;font-size:.42em;letter-spacing:.05em;margin-bottom:.34em;color:var(--ink-soft)\">MastermindX</span>Your personal<br>market intelligence desk.<br><span class=\"dim\">Institutional-grade.</span>","zh":"<span class='h1-brand' style='display:block;font-size:.42em;letter-spacing:.05em;margin-bottom:.34em;color:var(--ink-soft)'>MastermindX</span><span class='zh-line'>你自己的</span><span class='zh-line zh-line-punct'>市场情报中心。</span><span class='dim zh-line zh-line-punct'>机构级水准。</span>"},"hero_sub":{"html":"Macro context, stock signals, options flow, and deep research come together in one clear view—so you can see what is moving the market and understand why. <b>See it in action below.</b>","zh":"宏观环境、个股信号、期权资金流和深度研究都在一处，帮你看清市场为什么在动、眼下该盯哪里。<b>往下翻，直接看实际效果。</b>"}}},{"id":"adc-67661666832f","w":0.5,"copy":{"hero_headline":{"html":"<span class=\"h1-brand\" style=\"display:block;font-size:.42em;letter-spacing:.05em;margin-bottom:.34em;color:var(--ink-soft)\">MastermindX</span>Every call we make<br>goes on the record.<br><span class=\"dim\">Including the wrong ones.</span>","zh":"<span class='h1-brand' style='display:block;font-size:.42em;letter-spacing:.05em;margin-bottom:.34em;color:var(--ink-soft)'>MastermindX</span><span class='zh-line'>我们的每一次判断</span><span class='zh-line zh-line-punct'>都会留下记录。<span class='dim'>包括错的那些。</span></span>"},"hero_sub":{"html":"Macro, signals, options flow and deep research — timestamped when we say it, graded after the market answers. <b>Live, below.</b>","zh":"宏观、信号、期权流与深度研究——判断发出即打时间戳，事后由市场检验并留档。<b>就在下方，实时运行。</b>"}}}]}</script>
++    <script type="application/json" id="mm-adtest">{"arena_id":"hero-connected-research-20260910","status":"planned","mode":"shadow","holdout":0.0,"arms":[{"id":"adc-2206449b1e0e","w":0.5,"copy":{"hero_headline":{"html":"<span class=\"h1-brand\" style=\"display:block;font-size:.42em;letter-spacing:.05em;margin-bottom:.34em;color:var(--ink-soft)\">MastermindX</span>See what changed.<br><span class=\"dim\">Understand why it matters.</span>","zh":"<span class='h1-brand' style='display:block;font-size:.42em;letter-spacing:.05em;margin-bottom:.34em;color:var(--ink-soft)'>MastermindX</span><span class='zh-line zh-line-punct'>看清市场变化。</span><span class='dim zh-line zh-line-punct'>理解背后意义。</span>"},"hero_sub":{"html":"Market context, company research and an AI analyst in one workspace. Start with a company. Inspect the evidence.","zh":"宏观背景、公司研究和 AI 分析助手，汇集于同一工作台。从一家公司开始，深入查看证据。"}}},{"id":"adc-d57dceafb969","w":0.5,"copy":{"hero_headline":{"html":"<span class=\"h1-brand\" style=\"display:block;font-size:.42em;letter-spacing:.05em;margin-bottom:.34em;color:var(--ink-soft)\">MastermindX</span>Your research.<br><span class=\"dim\">Connected to the evidence.</span>","zh":"<span class='h1-brand' style='display:block;font-size:.42em;letter-spacing:.05em;margin-bottom:.34em;color:var(--ink-soft)'>MastermindX</span><span class='zh-line zh-line-punct'>你的研究。</span><span class='dim zh-line zh-line-punct'>与证据相连。</span>"},"hero_sub":{"html":"Market context, company research and an AI analyst in one workspace. Start with a company. Inspect the evidence.","zh":"宏观背景、公司研究和 AI 分析助手，汇集于同一工作台。从一家公司开始，深入查看证据。"}}}]}</script>
+@@ -239 +223,45 @@
+-    <!-- the pyramid — five live desk cards, one choreographed regime cycle -->
++<section class="research-example" id="research-example" aria-labelledby="research-example-title">
++  <div class="re-bar">
++    <span class="re-symbol">AAPL <span data-zh="苹果公司">Apple</span></span>
++    <span class="re-date" data-zh="历史研究示例 · 2026年9月9日">Historical research example · 9 Sep 2026</span>
++  </div>
++  <div class="re-intro">
++    <p class="re-kicker" data-zh="把研究连起来">CONNECT THE RESEARCH</p>
++    <h2 id="research-example-title" data-zh="现金流强劲，估值是否合理？">Strong cash flow. What about valuation?</h2>
++    <p data-zh="先看企业，再看估值，最后检查市场背景。">Start with the business, examine the valuation, then check the wider context.</p>
++  </div>
++  <div class="re-steps">
++    <article class="re-step">
++      <p class="re-step-label"><span>01</span> <span data-zh="理解企业">Understand the business</span></p>
++      <h3 data-zh="先看现金创造能力。">Start with cash generation.</h3>
++      <dl class="re-metrics">
++        <div><dt data-zh="FY2025 营业收入">FY2025 revenue</dt><dd>$416.2B</dd></div>
++        <div><dt data-zh="FY2025 自由现金流">FY2025 free cash flow</dt><dd>$98.8B</dd></div>
++      </dl>
++      <p data-zh="把现金流与收入一起看，再深入核对财务明细。">Read cash flow alongside revenue, then inspect the financial detail behind the numbers.</p>
++      <a class="re-source" href="stocks/AAPL.html#financials" data-zh="查看苹果财务数据 →">Open Apple's financials →</a>
++    </article>
++    <article class="re-step re-counterpoint">
++      <p class="re-step-label"><span>02</span> <span data-zh="检验另一面">Test the counterpoint</span></p>
++      <h3 data-zh="企业质量与估值，分开看。">Examine quality and price separately.</h3>
++      <p class="re-value">47.63<span>×</span></p>
++      <p class="re-value-label" data-zh="市值 / 自由现金流 · 2026年9月9日快照">Price / free cash flow · 9 Sep 2026 snapshot</p>
++      <p data-zh="这样的估值隐含了怎样的增长预期？与同行比较，并检查假设。">What growth does this valuation assume? Compare peers and examine the assumptions.</p>
++      <a class="re-source" href="stocks/AAPL.html#valuation" data-zh="检查估值对比 →">Inspect the valuation →</a>
++    </article>
++    <article class="re-step">
++      <p class="re-step-label"><span>03</span> <span data-zh="连接市场背景">Connect the wider context</span></p>
++      <h3 data-zh="还有什么可能改变判断？">What else could change the picture?</h3>
++      <div class="re-topics"><span data-zh="行业">Sector</span><span data-zh="宏观敞口">Macro exposure</span><span data-zh="近期事件">Recent events</span></div>
++      <p data-zh="把公司证据与行业、市场敞口和近期新闻一起检查。不同读数不一定一致。">Check company evidence alongside its sector, market exposure and recent news. Different reads need not agree.</p>
++      <a class="re-source" href="stocks/AAPL.html#why" data-zh="查看市场背景 →">Connect the context →</a>
++    </article>
++  </div>
++  <div class="re-bottom">
++    <p data-zh="这是整理好的历史示例，不是实时报价、AI 回答或投资建议。财年与估值快照日期不同；档案页显示最新已发布背景。">Curated example—not a live quote, AI answer or recommendation. Fiscal periods and snapshot dates differ; the dossier shows its latest published context.</p>
++    <a class="btn primary" href="stocks/AAPL.html" data-zh="打开完整苹果档案 →">Explore the full Apple dossier →</a>
++  </div>
++</section>
++
++<details class="hero-demos"><summary data-zh="探索其他示意仪表盘">Explore other illustrated dashboards</summary><p data-zh="脚本化示意，不是当前市场数据。">Scripted illustrations, not current market data.</p>
++    <!-- the pyramid — five illustrative desk cards, one scripted regime cycle -->
+@@ -244 +272 @@
+-        <p class="kicker mk" data-zh="科技股 — 今日 <span class='asof'>实时</span>">TECHNOLOGY — TODAY <span class="asof">live</span></p>
++        <p class="kicker mk" data-zh="科技股 — 演示 <span class='asof'>演示</span>">TECHNOLOGY — DEMO <span class="asof">demo</span></p>
+@@ -260 +288 @@
+-        <p class="kicker mk"><span data-zh="Prophet · 今日">PROPHET · TODAY</span><span class="asof" data-zh="免费">free</span></p>
++        <p class="kicker mk"><span data-zh="Prophet · 演示">PROPHET · DEMO</span><span class="asof" data-zh="免费">free</span></p>
+@@ -329,0 +358 @@
++</details>
+@@ -337,8 +365,0 @@
+-    <div class="tlogos rv" aria-label="Institutions whose teams use Mastermind">
+-      <img src="assets/landing/logos/logo-ubs-gray.svg" alt="UBS" height="22">
+-      <img src="assets/landing/logos/logo-black-rock-gray.png" alt="BlackRock" height="17">
+-      <img src="assets/landing/logos/logo-edward-gray.png" alt="Edward Jones" height="20">
+-      <img src="assets/landing/logos/logo-fidelity-gray.png" alt="Fidelity" height="25">
+-      <img src="assets/landing/logos/logo-ritholtz-gray.png" alt="Ritholtz Wealth Management" height="30">
+-      <img src="assets/landing/logos/logo-lpl-gray.png" alt="LPL Financial" height="16">
+-    </div>
+diff --git a/site/landing.css b/site/landing.css
+index 6911258bc83e..0d511cc400a0 100644
+--- a/site/landing.css
++++ b/site/landing.css
+@@ -1437,0 +1438,51 @@ footer{background:#04070c;border-top:1px solid #10161f;padding:56px 0 48px;color
++
++/* Research-first acquisition: authored content before optional motion. */
++.research-example{position:relative;z-index:12;background:var(--panel);border:1px solid var(--hair-2);border-radius:var(--r-xl);box-shadow:var(--sh-stage);margin:32px 0 28px;overflow:hidden;scroll-margin-top:88px}
++.re-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 24px;border-bottom:1px solid var(--hair)}
++.re-symbol{font-weight:800;font-size:14px;letter-spacing:.04em}
++.re-symbol span{font-weight:500;letter-spacing:0;color:var(--muted);margin-left:10px}
++.re-date{font-size:12px;color:var(--muted)}
++.re-intro{max-width:760px;padding:28px 28px 20px}
++.re-kicker{font:600 11px/1.4 var(--mono);letter-spacing:.08em;color:var(--blue);margin:0 0 10px}
++.re-intro h2{font:800 clamp(26px,3vw,36px)/1.12 var(--display);letter-spacing:-.025em;margin:0 0 12px}
++.re-intro>p:last-child{font-size:16px;line-height:1.6;color:var(--muted);margin:0}
++.re-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--hair)}
++.re-step{min-width:0;padding:24px 28px;display:flex;flex-direction:column;gap:14px}
++.re-step+.re-step{border-left:1px solid var(--hair)}
++.re-step-label{display:flex;gap:8px;align-items:center;font-size:12px;font-weight:600;color:var(--muted);margin:0}
++.re-step-label>span:first-child{font-family:var(--mono);color:var(--blue)}
++.re-step h3{font:700 20px/1.25 var(--display);letter-spacing:-.02em;margin:0}
++.re-step>p:not(.re-step-label):not(.re-value):not(.re-value-label){font-size:14px;line-height:1.6;color:var(--muted);margin:0}
++.re-metrics{display:grid;gap:12px;margin:0}
++.re-metrics div{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
++.re-metrics dt{font-size:12px;color:var(--muted)}
++.re-metrics dd{font-size:25px;font-weight:750;font-variant-numeric:tabular-nums;margin:0;letter-spacing:-.025em}
++.re-value{font-size:40px;font-weight:800;line-height:1;margin:2px 0 0;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
++.re-value span{font-size:24px;font-weight:500;color:var(--muted);margin-left:4px}
++.re-value-label{font-size:12px;line-height:1.5;color:var(--muted);margin:0}
++.re-source{display:flex;align-items:center;min-height:44px;font-size:13px;font-weight:650;color:var(--blue);margin-top:auto;text-decoration:none}
++.re-source:hover,.re-source:focus-visible{text-decoration:underline}
++.re-topics{display:flex;flex-wrap:wrap;gap:6px}
++.re-topics span{border:1px solid var(--hair-2);border-radius:var(--r-sm);padding:5px 8px;font-size:11px;color:var(--muted)}
++.re-bottom{display:flex;gap:24px;align-items:center;justify-content:space-between;border-top:1px solid var(--hair);padding:20px 28px}
++.re-bottom p{font-size:12px;line-height:1.6;color:var(--muted);max-width:62ch;margin:0}
++.re-bottom .btn{flex-shrink:0}
++.hero-demos{margin:0 0 28px;position:relative;z-index:10}
++.hero-demos summary{cursor:pointer;text-align:center;color:var(--muted);font-size:13px;padding:12px}
++.hero-demos>p{text-align:center;color:var(--muted);font-size:12px;line-height:1.6}
++.cov-copy h1{font-size:clamp(32px,5vw,64px);line-height:1.03}
++@media(max-width:900px){
++ .re-steps{grid-template-columns:minmax(0,1fr)}
++ .re-step+.re-step{border-left:0;border-top:1px solid var(--hair)}
++ .re-bottom{align-items:flex-start;flex-direction:column;gap:16px}
++}
++@media(max-width:480px){
++ .re-bar{align-items:flex-start;flex-direction:column;gap:6px;padding:14px 18px}
++ .re-intro,.re-step{padding:22px 18px}
++ .re-bottom{padding:18px}
++ .re-bottom .btn{white-space:normal;text-align:center;width:100%;justify-content:center}
++ .cov-copy .cta-row{flex-direction:column;align-items:stretch;gap:10px}
++ .cov-copy .cta-row .btn{justify-content:center}
++}
++
++.cov-copy .micro{font:inherit;font-size:13px;line-height:1.5;letter-spacing:0;text-transform:none;color:var(--muted)}
+diff --git a/site/products/market-dashboards.html b/site/products/market-dashboards.html
+index a8df1467093c..d429de2d4cf5 100644
+--- a/site/products/market-dashboards.html
++++ b/site/products/market-dashboards.html
+@@ -84 +84 @@
+-<link rel="stylesheet" href="../landing.css?v=689af9c0">
++<link rel="stylesheet" href="../landing.css?v=796dbcb3">
+diff --git a/site/products/market-terminal.html b/site/products/market-terminal.html
+index f90178f65c3d..5d12c010c603 100644
+--- a/site/products/market-terminal.html
++++ b/site/products/market-terminal.html
+@@ -84 +84 @@
+-<link rel="stylesheet" href="../landing.css?v=689af9c0">
++<link rel="stylesheet" href="../landing.css?v=796dbcb3">
+diff --git a/site/products/mastermind-ai.html b/site/products/mastermind-ai.html
+index 348c49ee5fb0..07e1fcec64bc 100644
+--- a/site/products/mastermind-ai.html
++++ b/site/products/mastermind-ai.html
+@@ -83 +83 @@
+-<link rel="stylesheet" href="../landing.css?v=689af9c0">
++<link rel="stylesheet" href="../landing.css?v=796dbcb3">
+diff --git a/templates/about.html b/templates/about.html
+index ff26852eb484..e3a43081fce0 100644
+--- a/templates/about.html
++++ b/templates/about.html
+@@ -84 +84 @@
+-<link rel="stylesheet" href="landing.css?v=689af9c0">
++<link rel="stylesheet" href="landing.css?v=796dbcb3">
+diff --git a/templates/index.html b/templates/index.html
+index 1589cb781547..ba8a2bf3d3b9 100644
+--- a/templates/index.html
++++ b/templates/index.html
+@@ -90 +90 @@
+-<link rel="stylesheet" href="landing.css?v=689af9c0">
++<link rel="stylesheet" href="landing.css?v=796dbcb3">
+@@ -204,12 +204,3 @@
+-      <span class="live-pill" data-zh="实时 · 今日研判"><i></i>LIVE · MARKET READ</span>
+-      <!-- BRAND IN THE H1 — SEO_SUPERCHARGE_MASTERPLAN §0.8. Google does not associate
+-           "MastermindX" with this site, so the page's one h1 has to say the name. The
+-           wordmark is a MASTHEAD LINE: one span sized in `em` off the h1's own clamp, so
+-           it rides the existing responsive scale and the three authored headline lines
+-           below it are untouched (gradient third line, display face, motion: all as
+-           shipped — operator identity ruling, landing.css §.cov-copy h1).
+-           The same span is carried by BOTH adtest arms below: adtest.js rewrites this
+-           h1's innerHTML wholesale when the arena goes live, so a brand that lived only
+-           here would silently vanish from the h1 the day the test starts. -->
+-      <h1 data-adtest-slot="hero_headline" data-zh="<span class='h1-brand' style='display:block;font-size:.42em;letter-spacing:.05em;margin-bottom:.34em;color:var(--ink-soft)'>MastermindX</span><span class='zh-line'>你自己的</span><span class='zh-line zh-line-punct'>市场情报中心。</span><span class='dim zh-line zh-line-punct'>机构级水准。</span>"><span class="h1-brand" style="display:block;font-size:.42em;letter-spacing:.05em;margin-bottom:.34em;color:var(--ink-soft)">MastermindX</span>Your personal<br>market intelligence desk.<br><span class="dim">Institutional-grade.</span></h1>
+-      <p class="sub" data-adtest-slot="hero_sub" data-zh="宏观环境、个股信号、期权资金流和深度研究都在一处，帮你看清市场为什么在动、眼下该盯哪里。<b>往下翻，直接看实际效果。</b>">Macro context, stock signals, options flow, and deep research come together in one clear view—so you can see what is moving the market and understand why. <b>See it in action below.</b></p>
++      <span class="live-pill" data-zh="你的市场研究台">YOUR RESEARCH DESK</span>
++      <h1 data-adtest-slot="hero_headline" data-zh="&lt;span class=&#x27;h1-brand&#x27; style=&#x27;display:block;font-size:.42em;letter-spacing:.05em;margin-bottom:.34em;color:var(--ink-soft)&#x27;&gt;MastermindX&lt;/span&gt;&lt;span class=&#x27;zh-line zh-line-punct&#x27;&gt;看清市场变化。&lt;/span&gt;&lt;span class=&#x27;dim zh-line zh-line-punct&#x27;&gt;理解背后意义。&lt;/span&gt;"><span class="h1-brand" style="display:block;font-size:.42em;letter-spacing:.05em;margin-bottom:.34em;color:var(--ink-soft)">MastermindX</span>See what changed.<br><span class="dim">Understand why it matters.</span></h1>
++      <p class="sub" data-adtest-slot="hero_sub" data-zh="宏观背景、公司研究和 AI 分析助手，汇集于同一工作台。从一家公司开始，深入查看证据。">Market context, company research and an AI analyst in one workspace. Start with a company. Inspect the evidence.</p>
+@@ -217,2 +208,4 @@
+-        <a class="btn primary js-startfree" href="https://app.mastermind-x.com/terminal?signup=1" data-zh="免费开始">Start free</a>
+-        <a class="btn" href="start.html" data-zh="看实时演示">See it live</a>
++        <a class="btn primary js-startfree" href="https://app.mastermind-x.com/terminal?signup=1" data-zh="创建免费研究台">Create my free desk</a>
++        <a class="btn" href="#research-example" data-zh="探索研究示例">Explore an example</a>
++      </div>
++      <p class="micro" data-zh="免费方案 · 无需信用卡">Free plan. No credit card.</p>
+@@ -220,9 +212,0 @@
+-      <p class="micro" data-zh="免费试用 · 机构级市场情报">FREE TRIAL · INSTITUTIONAL MARKET INTELLIGENCE</p>
+-      <!-- ENTITY SENTENCE (§0.8) — the blunt "what this is" line, in the reader's own
+-           words and in the crawler's. Deliberately subordinate: it sits below the CTAs
+-           at body-small in --faint, so it costs the hero no attention, and it repeats
+-           the Organization.description above and /about.html's lede verbatim, because
+-           an entity is resolved by the SAME sentence appearing in the same voice on
+-           every surface that claims the name. -->
+-      <p class="ent-line" style="margin:20px auto 0;max-width:64ch;font-size:.86rem;line-height:1.6;color:var(--faint)" data-zh="<b style='font-weight:600;color:var(--muted)'>MastermindX</b> 是一个面向主动投资者的 AI 市场情报平台：分级个股信号、期权资金流、宏观市况仪表盘、深度研究，还有一位 AI 分析师——全部每晚重建。"><b style="font-weight:600;color:var(--muted)">MastermindX</b> is an AI-powered market intelligence platform for active investors — graded stock signals, options flow, macro regime dashboards, deep research and an AI analyst, rebuilt nightly.</p>
+-    </div>
+@@ -236 +220 @@
+-    <script type="application/json" id="mm-adtest">{"arena_id":"hero-promise-vs-receipt","status":"planned","mode":"shadow","holdout":0.0,"arms":[{"id":"adc-a929e26ce95c","w":0.5,"copy":{"hero_headline":{"html":"<span class=\"h1-brand\" style=\"display:block;font-size:.42em;letter-spacing:.05em;margin-bottom:.34em;color:var(--ink-soft)\">MastermindX</span>Your personal<br>market intelligence desk.<br><span class=\"dim\">Institutional-grade.</span>","zh":"<span class='h1-brand' style='display:block;font-size:.42em;letter-spacing:.05em;margin-bottom:.34em;color:var(--ink-soft)'>MastermindX</span><span class='zh-line'>你自己的</span><span class='zh-line zh-line-punct'>市场情报中心。</span><span class='dim zh-line zh-line-punct'>机构级水准。</span>"},"hero_sub":{"html":"Macro context, stock signals, options flow, and deep research come together in one clear view—so you can see what is moving the market and understand why. <b>See it in action below.</b>","zh":"宏观环境、个股信号、期权资金流和深度研究都在一处，帮你看清市场为什么在动、眼下该盯哪里。<b>往下翻，直接看实际效果。</b>"}}},{"id":"adc-67661666832f","w":0.5,"copy":{"hero_headline":{"html":"<span class=\"h1-brand\" style=\"display:block;font-size:.42em;letter-spacing:.05em;margin-bottom:.34em;color:var(--ink-soft)\">MastermindX</span>Every call we make<br>goes on the record.<br><span class=\"dim\">Including the wrong ones.</span>","zh":"<span class='h1-brand' style='display:block;font-size:.42em;letter-spacing:.05em;margin-bottom:.34em;color:var(--ink-soft)'>MastermindX</span><span class='zh-line'>我们的每一次判断</span><span class='zh-line zh-line-punct'>都会留下记录。<span class='dim'>包括错的那些。</span></span>"},"hero_sub":{"html":"Macro, signals, options flow and deep research — timestamped when we say it, graded after the market answers. <b>Live, below.</b>","zh":"宏观、信号、期权流与深度研究——判断发出即打时间戳，事后由市场检验并留档。<b>就在下方，实时运行。</b>"}}}]}</script>
++    <script type="application/json" id="mm-adtest">{"arena_id":"hero-connected-research-20260910","status":"planned","mode":"shadow","holdout":0.0,"arms":[{"id":"adc-2206449b1e0e","w":0.5,"copy":{"hero_headline":{"html":"<span class=\"h1-brand\" style=\"display:block;font-size:.42em;letter-spacing:.05em;margin-bottom:.34em;color:var(--ink-soft)\">MastermindX</span>See what changed.<br><span class=\"dim\">Understand why it matters.</span>","zh":"<span class='h1-brand' style='display:block;font-size:.42em;letter-spacing:.05em;margin-bottom:.34em;color:var(--ink-soft)'>MastermindX</span><span class='zh-line zh-line-punct'>看清市场变化。</span><span class='dim zh-line zh-line-punct'>理解背后意义。</span>"},"hero_sub":{"html":"Market context, company research and an AI analyst in one workspace. Start with a company. Inspect the evidence.","zh":"宏观背景、公司研究和 AI 分析助手，汇集于同一工作台。从一家公司开始，深入查看证据。"}}},{"id":"adc-d57dceafb969","w":0.5,"copy":{"hero_headline":{"html":"<span class=\"h1-brand\" style=\"display:block;font-size:.42em;letter-spacing:.05em;margin-bottom:.34em;color:var(--ink-soft)\">MastermindX</span>Your research.<br><span class=\"dim\">Connected to the evidence.</span>","zh":"<span class='h1-brand' style='display:block;font-size:.42em;letter-spacing:.05em;margin-bottom:.34em;color:var(--ink-soft)'>MastermindX</span><span class='zh-line zh-line-punct'>你的研究。</span><span class='dim zh-line zh-line-punct'>与证据相连。</span>"},"hero_sub":{"html":"Market context, company research and an AI analyst in one workspace. Start with a company. Inspect the evidence.","zh":"宏观背景、公司研究和 AI 分析助手，汇集于同一工作台。从一家公司开始，深入查看证据。"}}}]}</script>
+@@ -239 +223,45 @@
+-    <!-- the pyramid — five live desk cards, one choreographed regime cycle -->
++<section class="research-example" id="research-example" aria-labelledby="research-example-title">
++  <div class="re-bar">
++    <span class="re-symbol">AAPL <span data-zh="苹果公司">Apple</span></span>
++    <span class="re-date" data-zh="历史研究示例 · 2026年9月9日">Historical research example · 9 Sep 2026</span>
++  </div>
++  <div class="re-intro">
++    <p class="re-kicker" data-zh="把研究连起来">CONNECT THE RESEARCH</p>
++    <h2 id="research-example-title" data-zh="现金流强劲，估值是否合理？">Strong cash flow. What about valuation?</h2>
++    <p data-zh="先看企业，再看估值，最后检查市场背景。">Start with the business, examine the valuation, then check the wider context.</p>
++  </div>
++  <div class="re-steps">
++    <article class="re-step">
++      <p class="re-step-label"><span>01</span> <span data-zh="理解企业">Understand the business</span></p>
++      <h3 data-zh="先看现金创造能力。">Start with cash generation.</h3>
++      <dl class="re-metrics">
++        <div><dt data-zh="FY2025 营业收入">FY2025 revenue</dt><dd>$416.2B</dd></div>
++        <div><dt data-zh="FY2025 自由现金流">FY2025 free cash flow</dt><dd>$98.8B</dd></div>
++      </dl>
++      <p data-zh="把现金流与收入一起看，再深入核对财务明细。">Read cash flow alongside revenue, then inspect the financial detail behind the numbers.</p>
++      <a class="re-source" href="stocks/AAPL.html#financials" data-zh="查看苹果财务数据 →">Open Apple's financials →</a>
++    </article>
++    <article class="re-step re-counterpoint">
++      <p class="re-step-label"><span>02</span> <span data-zh="检验另一面">Test the counterpoint</span></p>
++      <h3 data-zh="企业质量与估值，分开看。">Examine quality and price separately.</h3>
++      <p class="re-value">47.63<span>×</span></p>
++      <p class="re-value-label" data-zh="市值 / 自由现金流 · 2026年9月9日快照">Price / free cash flow · 9 Sep 2026 snapshot</p>
++      <p data-zh="这样的估值隐含了怎样的增长预期？与同行比较，并检查假设。">What growth does this valuation assume? Compare peers and examine the assumptions.</p>
++      <a class="re-source" href="stocks/AAPL.html#valuation" data-zh="检查估值对比 →">Inspect the valuation →</a>
++    </article>
++    <article class="re-step">
++      <p class="re-step-label"><span>03</span> <span data-zh="连接市场背景">Connect the wider context</span></p>
++      <h3 data-zh="还有什么可能改变判断？">What else could change the picture?</h3>
++      <div class="re-topics"><span data-zh="行业">Sector</span><span data-zh="宏观敞口">Macro exposure</span><span data-zh="近期事件">Recent events</span></div>
++      <p data-zh="把公司证据与行业、市场敞口和近期新闻一起检查。不同读数不一定一致。">Check company evidence alongside its sector, market exposure and recent news. Different reads need not agree.</p>
++      <a class="re-source" href="stocks/AAPL.html#why" data-zh="查看市场背景 →">Connect the context →</a>
++    </article>
++  </div>
++  <div class="re-bottom">
++    <p data-zh="这是整理好的历史示例，不是实时报价、AI 回答或投资建议。财年与估值快照日期不同；档案页显示最新已发布背景。">Curated example—not a live quote, AI answer or recommendation. Fiscal periods and snapshot dates differ; the dossier shows its latest published context.</p>
++    <a class="btn primary" href="stocks/AAPL.html" data-zh="打开完整苹果档案 →">Explore the full Apple dossier →</a>
++  </div>
++</section>
++
++<details class="hero-demos"><summary data-zh="探索其他示意仪表盘">Explore other illustrated dashboards</summary><p data-zh="脚本化示意，不是当前市场数据。">Scripted illustrations, not current market data.</p>
++    <!-- the pyramid — five illustrative desk cards, one scripted regime cycle -->
+@@ -244 +272 @@
+-        <p class="kicker mk" data-zh="科技股 — 今日 <span class='asof'>实时</span>">TECHNOLOGY — TODAY <span class="asof">live</span></p>
++        <p class="kicker mk" data-zh="科技股 — 演示 <span class='asof'>演示</span>">TECHNOLOGY — DEMO <span class="asof">demo</span></p>
+@@ -260 +288 @@
+-        <p class="kicker mk"><span data-zh="Prophet · 今日">PROPHET · TODAY</span><span class="asof" data-zh="免费">free</span></p>
++        <p class="kicker mk"><span data-zh="Prophet · 演示">PROPHET · DEMO</span><span class="asof" data-zh="免费">free</span></p>
+@@ -329,0 +358 @@
++</details>
+@@ -337,8 +365,0 @@
+-    <div class="tlogos rv" aria-label="Institutions whose teams use Mastermind">
+-      <img src="assets/landing/logos/logo-ubs-gray.svg" alt="UBS" height="22">
+-      <img src="assets/landing/logos/logo-black-rock-gray.png" alt="BlackRock" height="17">
+-      <img src="assets/landing/logos/logo-edward-gray.png" alt="Edward Jones" height="20">
+-      <img src="assets/landing/logos/logo-fidelity-gray.png" alt="Fidelity" height="25">
+-      <img src="assets/landing/logos/logo-ritholtz-gray.png" alt="Ritholtz Wealth Management" height="30">
+-      <img src="assets/landing/logos/logo-lpl-gray.png" alt="LPL Financial" height="16">
+-    </div>
+diff --git a/templates/landing.css b/templates/landing.css
+index 6911258bc83e..0d511cc400a0 100644
+--- a/templates/landing.css
++++ b/templates/landing.css
+@@ -1437,0 +1438,51 @@ footer{background:#04070c;border-top:1px solid #10161f;padding:56px 0 48px;color
++
++/* Research-first acquisition: authored content before optional motion. */
++.research-example{position:relative;z-index:12;background:var(--panel);border:1px solid var(--hair-2);border-radius:var(--r-xl);box-shadow:var(--sh-stage);margin:32px 0 28px;overflow:hidden;scroll-margin-top:88px}
++.re-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 24px;border-bottom:1px solid var(--hair)}
++.re-symbol{font-weight:800;font-size:14px;letter-spacing:.04em}
++.re-symbol span{font-weight:500;letter-spacing:0;color:var(--muted);margin-left:10px}
++.re-date{font-size:12px;color:var(--muted)}
++.re-intro{max-width:760px;padding:28px 28px 20px}
++.re-kicker{font:600 11px/1.4 var(--mono);letter-spacing:.08em;color:var(--blue);margin:0 0 10px}
++.re-intro h2{font:800 clamp(26px,3vw,36px)/1.12 var(--display);letter-spacing:-.025em;margin:0 0 12px}
++.re-intro>p:last-child{font-size:16px;line-height:1.6;color:var(--muted);margin:0}
++.re-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--hair)}
++.re-step{min-width:0;padding:24px 28px;display:flex;flex-direction:column;gap:14px}
++.re-step+.re-step{border-left:1px solid var(--hair)}
++.re-step-label{display:flex;gap:8px;align-items:center;font-size:12px;font-weight:600;color:var(--muted);margin:0}
++.re-step-label>span:first-child{font-family:var(--mono);color:var(--blue)}
++.re-step h3{font:700 20px/1.25 var(--display);letter-spacing:-.02em;margin:0}
++.re-step>p:not(.re-step-label):not(.re-value):not(.re-value-label){font-size:14px;line-height:1.6;color:var(--muted);margin:0}
++.re-metrics{display:grid;gap:12px;margin:0}
++.re-metrics div{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
++.re-metrics dt{font-size:12px;color:var(--muted)}
++.re-metrics dd{font-size:25px;font-weight:750;font-variant-numeric:tabular-nums;margin:0;letter-spacing:-.025em}
++.re-value{font-size:40px;font-weight:800;line-height:1;margin:2px 0 0;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
++.re-value span{font-size:24px;font-weight:500;color:var(--muted);margin-left:4px}
++.re-value-label{font-size:12px;line-height:1.5;color:var(--muted);margin:0}
++.re-source{display:flex;align-items:center;min-height:44px;font-size:13px;font-weight:650;color:var(--blue);margin-top:auto;text-decoration:none}
++.re-source:hover,.re-source:focus-visible{text-decoration:underline}
++.re-topics{display:flex;flex-wrap:wrap;gap:6px}
++.re-topics span{border:1px solid var(--hair-2);border-radius:var(--r-sm);padding:5px 8px;font-size:11px;color:var(--muted)}
++.re-bottom{display:flex;gap:24px;align-items:center;justify-content:space-between;border-top:1px solid var(--hair);padding:20px 28px}
++.re-bottom p{font-size:12px;line-height:1.6;color:var(--muted);max-width:62ch;margin:0}
++.re-bottom .btn{flex-shrink:0}
++.hero-demos{margin:0 0 28px;position:relative;z-index:10}
++.hero-demos summary{cursor:pointer;text-align:center;color:var(--muted);font-size:13px;padding:12px}
++.hero-demos>p{text-align:center;color:var(--muted);font-size:12px;line-height:1.6}
++.cov-copy h1{font-size:clamp(32px,5vw,64px);line-height:1.03}
++@media(max-width:900px){
++ .re-steps{grid-template-columns:minmax(0,1fr)}
++ .re-step+.re-step{border-left:0;border-top:1px solid var(--hair)}
++ .re-bottom{align-items:flex-start;flex-direction:column;gap:16px}
++}
++@media(max-width:480px){
++ .re-bar{align-items:flex-start;flex-direction:column;gap:6px;padding:14px 18px}
++ .re-intro,.re-step{padding:22px 18px}
++ .re-bottom{padding:18px}
++ .re-bottom .btn{white-space:normal;text-align:center;width:100%;justify-content:center}
++ .cov-copy .cta-row{flex-direction:column;align-items:stretch;gap:10px}
++ .cov-copy .cta-row .btn{justify-content:center}
++}
++
++.cov-copy .micro{font:inherit;font-size:13px;line-height:1.5;letter-spacing:0;text-transform:none;color:var(--muted)}
+diff --git a/tests/test_landing_research_entry.py b/tests/test_landing_research_entry.py
+new file mode 100644
+index 000000000000..c9b0cb80a0ba
+--- /dev/null
++++ b/tests/test_landing_research_entry.py
+@@ -0,0 +1,60 @@
++"""The homepage's first research example must be useful, dated and navigable."""
++from pathlib import Path
++import json
++import pytest
++from bs4 import BeautifulSoup
++
++ROOT = Path(__file__).resolve().parents[1]
++
++
++@pytest.mark.parametrize('surface', ['templates', 'site'])
++def test_outcome_hero_and_free_entry_are_unambiguous(surface):
++    page = BeautifulSoup((ROOT / surface / 'index.html').read_text(), 'html.parser')
++    hero = page.select_one('.cov-copy')
++    assert 'See what changed.' in hero.h1.get_text(' ', strip=True)
++    assert 'Understand why it matters.' in hero.h1.get_text(' ', strip=True)
++    assert 'MastermindX' in hero.h1.get_text()
++    assert hero.select_one('a[href="#research-example"]')
++    assert 'No credit card' in hero.select_one('.micro').get_text()
++    assert 'TRIAL' not in hero.select_one('.micro').get_text().upper()
++    assert not hero.select('.ent-line')
++
++
++@pytest.mark.parametrize('surface', ['templates', 'site'])
++def test_example_is_static_dated_and_not_a_live_model_answer(surface):
++    page = BeautifulSoup((ROOT / surface / 'index.html').read_text(), 'html.parser')
++    example = page.select_one('#research-example')
++    assert example, 'A useful example must exist in authored HTML, before animation'
++    text = example.get_text(' ', strip=True)
++    for phrase in ['AAPL', '9 Sep 2026', 'FY2025', '$416.2B', '$98.8B', '47.63', 'not a live quote']:
++        assert phrase in text
++    assert example.select_one('[data-zh]')
++    assert len(example.select('.re-step')) == 3
++    for link in example.select('a.re-source'):
++        path, anchor = link['href'].split('#')
++        target = BeautifulSoup((ROOT / 'site' / path).read_text(), 'html.parser')
++        assert target.find(id=anchor), f'Destination must preserve a real AAPL section: {link}'
++    assert {a['href'] for a in example.select('a.re-source')} == {
++        'stocks/AAPL.html#financials', 'stocks/AAPL.html#valuation', 'stocks/AAPL.html#why'
++    }
++
++
++@pytest.mark.parametrize('surface', ['templates', 'site'])
++def test_demo_and_institutional_relationships_are_not_overclaimed(surface):
++    page = BeautifulSoup((ROOT / surface / 'index.html').read_text(), 'html.parser')
++    disclosure = page.select_one('details.hero-demos')
++    assert disclosure and disclosure.find('summary')
++    assert 'not current market data' in disclosure.get_text(' ', strip=True)
++    assert disclosure.select_one('#pyr'), 'Retain existing demonstration IDs until composition'
++    assert not page.select('.tlogos'), 'Unsubstantiated institutional-use assertion must not remain'
++    assert 'PROPHET · TODAY' not in disclosure.get_text()
++    assert 'TECHNOLOGY — TODAY' not in disclosure.get_text()
++
++
++def test_new_copy_has_a_fresh_shadow_identity_not_a_relabelled_experiment():
++    page = BeautifulSoup((ROOT / 'templates/index.html').read_text(), 'html.parser')
++    config = json.loads(page.select_one('#mm-adtest').string)
++    assert config['arena_id'] == 'hero-connected-research-20260910'
++    assert config['status'] == 'planned' and config['mode'] == 'shadow'
++    assert len(config['arms']) == 2
++    assert not {'adc-a929e26ce95c', 'adc-67661666832f'} & {a['id'] for a in config['arms']}
