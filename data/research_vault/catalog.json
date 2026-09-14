@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-14T21:41:27.767512+00:00",
-  "count": 2114,
+  "generated_at": "2026-09-14T21:56:28.091735+00:00",
+  "count": 2115,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -322,6 +322,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 18,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rnbupbkebci-d44be6",
+      "title": "GS EUROPEAN EXPRESS Software Defence Straumann flatexDEGIRO Informa Macro Global Corporate Access",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T13:18:32Z",
+      "summary_points": [
+        "**Europe Defense Geopolitical Gap**: Ukraine conflict exposes cost-exchange dynamic (attackers cheaper than defenders), highlighting short-range counter-UAS as undervalued growth area requiring integrated combined-arms deployment.",
+        "**Geopolitical Supply Shock Impact**: Russia/Mideast export shortfall in oil products outweighs China pickup, driving energy price inflation and structural supply chain risks.",
+        "**Europe Tech AI Adoption Shift**: AI moving from pilots to production; agentic commerce emerging as medium-term payment opportunity, with incumbents prioritizing orchestration/security in control panels.",
+        "**Semiconductor Memory Fundamentals**: Positive investor sentiment on South Korea memory sector (SK Hynix, CL) driven by fundamentals and tech sector focus, reiterating Buy.",
+        "**EU Tech Policy Regulatory Risk**: European AI & Semiconductors Symposium (Nov) critical for tracking EU regulatory developments and supply chain risks impacting portfolio positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
       "language": "en",
       "needs_metadata": false
     },
