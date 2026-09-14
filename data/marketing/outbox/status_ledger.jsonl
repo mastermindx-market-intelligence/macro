@@ -6264,3 +6264,9 @@
 {"id":"ob-2026-09-14-5fcc008521","from":"approved","to":"posting","at":"2026-09-14T18:44:05Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-09-14-5fcc008521","from":"posting","to":"posted","at":"2026-09-14T18:44:07Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6aa8407725d498309c6f3335","external_url":null,"at":"2026-09-14T18:43:56Z","booked_at":"2026-09-14T18:43:56Z"}}
 {"id":"ob-2026-09-14-7b1c1e53fe","from":"approved","to":"quarantined","at":"2026-09-14T18:44:07Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
+{"id":"ob-2026-09-14-009934b599","from":"queued","to":"approved","at":"2026-09-14T18:54:49Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-09-14-1708708f1a","from":"queued","to":"approved","at":"2026-09-14T18:54:49Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-09-14-48d5ef3e6a","from":"queued","to":"approved","at":"2026-09-14T18:54:49Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-09-14-009934b599","from":"approved","to":"quarantined","at":"2026-09-14T18:54:51Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
+{"id":"ob-2026-09-14-1708708f1a","from":"approved","to":"quarantined","at":"2026-09-14T18:54:51Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
+{"id":"ob-2026-09-14-48d5ef3e6a","from":"approved","to":"quarantined","at":"2026-09-14T18:54:51Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
