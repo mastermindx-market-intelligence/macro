@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-14T20:41:24.043148+00:00",
-  "count": 2111,
+  "generated_at": "2026-09-14T20:56:45.092577+00:00",
+  "count": 2112,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -405,6 +405,23 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-56qaylyeixt-0363dd",
+      "title": "This Week in Asia Pacific Macro 14 20 September (Audio)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T00:49:38Z",
+      "summary_points": [
+        "**BOJ MPM**: Critical for yen direction and regional risk sentiment; policy stance likely to influence global FX and equity flows - **China Activity Data**: Fundamental gauge of economic health; directly impacts commodity demand, EM risk appetite, and portfolio positioning - **India CPI**: Key inflation indicator driving RBI policy trajectory; affects yield curves and capital allocation in major emerging market portfolio"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
