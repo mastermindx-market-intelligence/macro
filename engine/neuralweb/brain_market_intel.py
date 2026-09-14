@@ -1195,13 +1195,14 @@ _REPORT_EVIDENCE_NOTE = (
 _REPORT_NO_EVIDENCE = (
     " No matching passage for the exact question was found in the stored research "
     "text. No full-text view was served; it was not charged. Say that plainly; do "
-    "not infer an answer from absence, and offer the source-opening link for "
+    "not infer an answer from absence. Brain may re-call this same report with an "
+    "empty query to read it generically, or offer the source-opening link for "
     "manual review."
 )
 _REPORT_EVIDENCE_QUERY_SHORT = (
     " The report question did not contain a meaningful evidence term. No full-text "
-    "view was served or charged; ask for a more specific question or use a blank "
-    "query to open the note generically."
+    "view was served or charged; ask for a more specific question, or Brain may "
+    "re-call this same report with an empty query to open the note generically."
 )
 
 # view_ratelimit.allow() keys a SECOND ledger on sha256(ip)[:16], and maps an
@@ -1291,6 +1292,26 @@ def _select_evidence(document, query: str) -> dict:
         }
 
 
+def _evidence_requested(query: str) -> bool:
+    """Use the corpus selector's admission rule; never duplicate token logic."""
+    try:
+        from engine.research_vault import corpus as corpus_mod  # noqa: PLC0415
+        return corpus_mod.evidence_query_is_meaningful(query)
+    except Exception:  # noqa: BLE001 — preserve the generic report path on failure
+        return False
+
+
+def _peek_report_view(user_id: str, now: datetime) -> dict | None:
+    """Read the canonical report-view limiter without debiting it; fail open."""
+    try:
+        from engine.research_vault import view_ratelimit  # noqa: PLC0415
+        info = view_ratelimit.peek(
+            user_id, _BRAIN_VIEW_IP_PREFIX + user_id, now=now)
+        return info if isinstance(info, dict) else None
+    except Exception:  # noqa: BLE001 — same availability rule as allow()
+        return None
+
+
 def _charge_report_view(user_id: str, now: datetime) -> tuple[bool, dict]:
     """Debit ONE hourly view for this user. Returns (allowed, {remaining, limit}).
 
@@ -1338,11 +1359,27 @@ def _meta_field(item: dict, document, key: str) -> str:
 
 
 def _positive_int(value) -> int | None:
+    if isinstance(value, bool):
+        return None
     try:
         number = int(value)
     except (TypeError, ValueError):
         return None
     return number if number > 0 else None
+
+
+def _partial_evidence_search_note(evidence) -> str:
+    """Name a searched prefix only when the binding proves its exact counts."""
+    binding = (evidence or {}).get("source_binding") if isinstance(evidence, dict) else None
+    binding = binding if isinstance(binding, dict) else {}
+    stored = _positive_int(binding.get("stored_char_count"))
+    source = _positive_int(binding.get("source_char_count"))
+    if binding.get("coverage") == "prefix_partial" and stored and source and source > stored:
+        return (
+            f" Only the stored prefix ({stored} of {source} source characters) was "
+            "searched; absence does not prove the omitted tail lacks the topic."
+        )
+    return ""
 
 
 def _evidence_open_url(report_id: str, match_text: str = "", page=None) -> str:
@@ -1529,9 +1566,10 @@ def _research_report(root: Path, report_id, *, query="", user_ctx,
       2. EXISTENCE in the committed catalog — an id the catalog does not carry
          never reaches the corpus, so a hallucinated id cannot probe the store;
       3. public layers — catalog metadata + the committed excerpt;
-      4. a meaningful query selects deterministic, source-bound passages through
-         the corpus owner; blank/noise preserves the existing generic note path;
-      5. ONLY text that will actually be served debits one hourly view;
+      4. the corpus selector's admission rule chooses deterministic, source-bound
+         passages or the existing generic note path;
+      5. an exhausted evidence request is denied before selection; ONLY text that
+         will actually be served debits one hourly view;
       6. the whitelisted report/evidence projections + the rights note.
     """
     uid = str((user_ctx or {}).get("user_id") or "").strip()
@@ -1561,7 +1599,14 @@ def _research_report(root: Path, report_id, *, query="", user_ctx,
     paragraphs = _excerpt_paragraphs(root, rid)
 
     evidence_query = str(query or "")
-    evidence_requested = bool(_tokenize(evidence_query))
+    evidence_requested = _evidence_requested(evidence_query)
+    if evidence_requested:
+        preflight = _peek_report_view(uid, now)
+        if (isinstance(preflight, dict)
+                and preflight.get("remaining") == 0):
+            return _report_error(
+                "view_limit_reached", _REPORT_ERR_LIMIT,
+                report_id=rid, remaining=0, limit=preflight.get("limit"))
     document = (
         _load_evidence_document(rid)
         if evidence_requested
@@ -1625,9 +1670,9 @@ def _research_report(root: Path, report_id, *, query="", user_ctx,
         if status == "matched":
             note += _REPORT_EVIDENCE_NOTE
         elif status == "no_matching_passage":
-            note += _REPORT_NO_EVIDENCE
+            note += _REPORT_NO_EVIDENCE + _partial_evidence_search_note(evidence)
         elif status == "query_too_short":
-            note += _REPORT_EVIDENCE_QUERY_SHORT
+            note += _REPORT_EVIDENCE_QUERY_SHORT + _partial_evidence_search_note(evidence)
         else:
             layer = str((document or {}).get("text_layer") or "") \
                 if isinstance(document, dict) else ""
@@ -1888,9 +1933,11 @@ RESEARCH_TOOL_SCHEMA: dict = {
         "Set mode='report' with report_id to open ONE note in depth once a "
         "search or clusters result has named it — when the user asks what a "
         "specific report actually argues, or you need its reasoning rather than "
-        "its headline. Pass the user's exact question in query to return a "
-        "query-centered supporting passage with a source fingerprint and an "
-        "'Open source' link. Use a blank query only to open the note generically. "
+        "its headline. For generic requests such as 'summarize this report' or "
+        "'what does this note argue?', pass an empty query to open the note "
+        "generically. Pass the exact question only for a specific factual "
+        "request, to return a query-centered supporting passage with a source "
+        "fingerprint and an 'Open source' link. "
         "Text actually served is metered hourly for PRO members, so call it for "
         "the one report that matters, not for every hit; no matching passage or "
         "unavailable body is not charged. Attribute it to its institution, quote "
@@ -1906,9 +1953,11 @@ RESEARCH_TOOL_SCHEMA: dict = {
                     "phrase. One meaningful term is accepted (e.g. "
                     "'semiconductors', 'AAPL', '中国流动性'); add focused terms "
                     "when the first result set is broad. With mode='report', pass "
-                    "the user's exact question so Brain can return source-bound "
-                    "supporting passages; pass '' only for the legacy generic "
-                    "full-note view. Not read when mode='clusters'."
+                    "an empty query for generic requests such as 'summarize this "
+                    "report' or 'what does this note argue?'; pass the user's exact "
+                    "question only for a specific factual request so Brain can "
+                    "return source-bound supporting passages. Not read when "
+                    "mode='clusters'."
                 ),
             },
             "limit": {

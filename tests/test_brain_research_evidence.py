@@ -165,6 +165,26 @@ def test_no_matching_passage_is_unmetered_and_body_is_omitted(
     assert params == {"doc": [REPORT_ID]}
     assert "no matching passage" in result["note"].lower()
     assert "not charged" in result["note"].lower()
+    assert "same report" in result["note"].lower()
+    assert "empty query" in result["note"].lower()
+
+
+def test_partial_no_match_names_the_searched_prefix_and_its_counts(
+        tmp_path, monkeypatch):
+    """A failed lexical search cannot imply absence from an omitted source tail."""
+    _seed(tmp_path)
+    body = "This report only discusses oil supply."
+    _stub_documents(monkeypatch, body, char_count=len(body) + 500)
+    debits = _stub_quota(monkeypatch)
+
+    result = _report(tmp_path, "semiconductor inventories")
+
+    assert result["evidence"]["status"] == "no_matching_passage"
+    assert debits == []
+    note = result["note"].lower()
+    assert "stored prefix" in note
+    assert f"{len(body)}" in note and f"{len(body) + 500}" in note
+    assert "does not prove" in note and "omitted tail" in note
 
 
 def test_blank_and_noise_queries_keep_the_legacy_full_note_path(
@@ -175,15 +195,15 @@ def test_blank_and_noise_queries_keep_the_legacy_full_note_path(
     )
     debits = _stub_quota(monkeypatch)
 
-    for query in ("", "x"):
+    for query in ("", "x", "the and", "summarize this report", "what does this note argue?"):
         result = _report(tmp_path, query)
         assert result["report"]["body_text"] == "The complete stored argument."
         assert result["report"]["body_truncated"] is False
         assert result["evidence"] is None
 
     assert evidence_calls == []
-    assert legacy_calls == [REPORT_ID, REPORT_ID]
-    assert len(debits) == 2
+    assert legacy_calls == [REPORT_ID] * 5
+    assert len(debits) == 5
 
 
 def test_unavailable_evidence_body_is_disclosed_and_unmetered(
@@ -221,6 +241,85 @@ def test_denied_evidence_view_leaks_no_passage_or_body(tmp_path, monkeypatch):
     assert "AAPL demand is accelerating" not in json.dumps(result)
 
 
+def test_exhausted_evidence_preflight_is_uniform_and_skips_selection(
+        tmp_path, monkeypatch):
+    """No exhausted request may reveal whether its terms occur in the paid body."""
+    from engine.research_vault import view_ratelimit
+
+    _seed(tmp_path)
+    _stub_documents(monkeypatch, "AAPL demand is accelerating.")
+    debits = _stub_quota(monkeypatch)
+    peeks: list[tuple] = []
+    selector_calls: list[str] = []
+    original_select = bmi._select_evidence
+
+    def peek(user_id, ip, now=None):
+        peeks.append((user_id, ip, now))
+        return {"remaining": 0, "limit": 12}
+
+    def select(document, query):
+        selector_calls.append(query)
+        return original_select(document, query)
+
+    monkeypatch.setattr(view_ratelimit, "peek", peek)
+    monkeypatch.setattr(bmi, "_select_evidence", select)
+
+    for query in ("AAPL demand", "semiconductor inventories"):
+        result = _report(tmp_path, query)
+        assert result["error"] == "view_limit_reached"
+        assert set(result) == {"schema", "error", "note", "report_id", "remaining", "limit"}
+        assert "report" not in result and "evidence" not in result
+
+    assert len(peeks) == 2
+    assert selector_calls == []
+    assert debits == []
+
+
+def test_evidence_peek_failure_fails_open_and_a_served_match_still_debits(
+        tmp_path, monkeypatch):
+    """Read-only limiter trouble preserves availability but never skips the debit."""
+    from engine.research_vault import view_ratelimit
+
+    _seed(tmp_path)
+    _stub_documents(monkeypatch, "AAPL demand is accelerating.")
+    debits = _stub_quota(monkeypatch)
+    peeks: list[tuple] = []
+
+    def peek(user_id, ip, now=None):
+        peeks.append((user_id, ip, now))
+        raise OSError("read-only limiter state")
+
+    monkeypatch.setattr(view_ratelimit, "peek", peek)
+    result = _report(tmp_path, "AAPL demand")
+
+    assert result["evidence"]["status"] == "matched"
+    assert len(peeks) == 1
+    assert len(debits) == 1
+
+
+def test_evidence_mode_whole_response_obeys_the_existing_response_cap(
+        tmp_path, monkeypatch):
+    """Passage mode cannot hide an over-cap text field outside body_text."""
+    _seed(tmp_path)
+    _stub_documents(monkeypatch, "AAPL demand " + ("supporting context " * 5000))
+    _stub_quota(monkeypatch)
+
+    result = _report(tmp_path, "AAPL demand")
+
+    def walk(node):
+        if isinstance(node, str):
+            assert len(node) <= bmi.REPORT_BODY_MAX_CHARS
+        elif isinstance(node, dict):
+            for value in node.values():
+                walk(value)
+        elif isinstance(node, list):
+            for value in node:
+                walk(value)
+
+    walk(result)
+    assert result["report"]["body_truncated"] is True
+
+
 def test_tool_schema_tells_the_model_to_request_and_open_supporting_evidence():
     schema = bmi.RESEARCH_TOOL_SCHEMA
     description = schema["description"].lower()
@@ -229,6 +328,9 @@ def test_tool_schema_tells_the_model_to_request_and_open_supporting_evidence():
 
     assert "supporting passage" in description
     assert "open source" in description
+    assert "summarize this report" in query_help
+    assert "what does this note argue" in query_help
+    assert "empty query" in query_help
     assert "exact question" in query_help
     assert "report" in query_help and "ignored" not in query_help
     assert "query-centered" in mode_help

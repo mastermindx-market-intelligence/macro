@@ -226,6 +226,13 @@ def _evidence_identifier(raw: str) -> bool:
 def _evidence_atoms(query) -> tuple[str, ...]:
     """Ordered, de-duplicated meaningful atoms for passage support."""
     normalized, _ = _evidence_normalize_with_map(query)
+    if normalized.strip() in {
+        "summarize this report",
+        "summarise this report",
+        "what does this note argue?",
+        "what does this report argue?",
+    }:
+        return ()
     atoms: list[str] = []
 
     def add(atom: str) -> None:
@@ -239,6 +246,11 @@ def _evidence_atoms(query) -> tuple[str, ...]:
             for word in _EVIDENCE_WORD_RE.findall(raw):
                 add(word)
     return tuple(atoms)
+
+
+def evidence_query_is_meaningful(query) -> bool:
+    """Whether the selector treats ``query`` as a passage-evidence request."""
+    return bool(_evidence_atoms(query))
 
 
 def _iter_evidence_hits(text: str, needle: str):
@@ -267,6 +279,8 @@ def _original_span(origins: list[int], start: int, end: int) -> tuple[int, int] 
 
 
 def _evidence_int(value) -> int | None:
+    if isinstance(value, bool):
+        return None
     try:
         result = int(value)
     except (TypeError, ValueError):
@@ -277,7 +291,8 @@ def _evidence_int(value) -> int | None:
 def _source_binding(document: dict, body: str) -> dict:
     source_chars = _evidence_int(document.get("char_count"))
     stored_chars = len(body)
-    if source_chars is None:
+    if (source_chars is None or (source_chars == 0 and stored_chars > 0)
+            or source_chars < stored_chars):
         coverage, tail_omitted = "unknown", None
     elif source_chars > stored_chars:
         coverage, tail_omitted = "prefix_partial", True

@@ -102,6 +102,30 @@ def test_source_binding_names_exact_pdf_and_stored_body_digests_and_coverage():
     }
 
 
+def test_source_binding_fails_closed_for_invalid_or_contradictory_lengths():
+    """Bad source counts must never claim complete coverage or an omitted tail."""
+    body = "stored evidence body"
+    cases = (
+        (len(body) + 1, "prefix_partial", True),
+        (len(body), "complete", False),
+        (None, "unknown", None),
+        ("not-a-count", "unknown", None),
+        (-1, "unknown", None),
+        (0, "unknown", None),
+        (len(body) - 1, "unknown", None),
+        (True, "unknown", None),
+        (False, "unknown", None),
+    )
+
+    for char_count, coverage, tail_omitted in cases:
+        result = corpus.find_evidence_passages(
+            _doc(body, char_count=char_count), "evidence"
+        )
+        binding = result["source_binding"]
+        assert binding["coverage"] == coverage, char_count
+        assert binding["tail_omitted"] is tail_omitted, char_count
+
+
 def test_no_match_and_noise_query_are_distinct_and_never_manufacture_a_passage():
     body = "Only oil supply is discussed."
 

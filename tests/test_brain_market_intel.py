@@ -1508,6 +1508,7 @@ def _stub_document(monkeypatch, body: str, *, calls: list | None = None, **over)
         row = {"doc_id": doc_id, "title": "Corpus Title", "institution": "Corpus Co",
                "side": "sell", "published_at": "2026-01-01T00:00:00Z",
                "summary": "corpus summary", "body": body,
+               "pages": 1, "char_count": len(body), "content_sha256": "a" * 64,
                # corpus.DOCUMENT_FIELDS carries the measured text-layer state; ''
                # is the unmeasured default a pre-probe row returns.
                "text_layer": ""}
@@ -1515,6 +1516,7 @@ def _stub_document(monkeypatch, body: str, *, calls: list | None = None, **over)
         return row
 
     monkeypatch.setattr(corpus_mod, "get_document", _get_document)
+    monkeypatch.setattr(corpus_mod, "get_evidence_document", _get_document)
 
 
 def _stub_no_document(monkeypatch, calls: list | None = None):
@@ -1914,17 +1916,26 @@ def test_report_mode_is_recognised_case_and_whitespace_insensitively(tmp_path, m
         assert result["schema"] == "brain.research_report.v1", mode
 
 
-def test_report_mode_ignores_the_query_and_the_short_query_gate(tmp_path, monkeypatch):
-    """A Pro member asking what ONE note argues is not searching — the 2-token
-    gate must not fire on a mode that never reads the query."""
+def test_report_mode_keeps_the_full_note_path_for_blank_and_noise_queries(
+        tmp_path, monkeypatch):
+    """Only selector-classified blank/noise requests use the generic full note."""
     _seed_one(tmp_path)
     _stub_document(monkeypatch, "the argument")
-    _stub_quota(monkeypatch)
-    for query in ("", "x", None, "completely unrelated words"):
+    debits: list = []
+    _stub_quota(monkeypatch, calls=debits)
+    for query in ("", "x", None):
         result = bmi.search_research(tmp_path, query, now=NOW, mode="report",
                                      report_id="gs-oil-1", user_ctx=_PRO)
         assert result["report"]["body_text"] == "the argument", query
         assert result["note"] != "query too short"
+
+    result = bmi.search_research(
+        tmp_path, "completely unrelated words", now=NOW, mode="report",
+        report_id="gs-oil-1", user_ctx=_PRO)
+    assert result["evidence"]["status"] == "no_matching_passage"
+    assert result["report"]["body_text"] == ""
+    assert result["report"]["body_truncated"] is False
+    assert len(debits) == 3
 
 
 def test_search_and_clusters_never_reach_the_corpus_or_the_ledger(tmp_path, monkeypatch):
