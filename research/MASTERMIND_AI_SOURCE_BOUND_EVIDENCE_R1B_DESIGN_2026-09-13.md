@@ -13,18 +13,35 @@ question in `mode="report"` and receive one to three deterministic passages
 centered on the user's terms. Every passage is bound to the stored source by
 document identity, source-PDF SHA-256, stored-body SHA-256, exact character span,
 page number when the extraction carries page boundaries, publication time, and a
-canonical deep link that opens the same Research Vault document and carries the
-matching-text/page locators for the still-pending viewer wave.
+canonical deep link that opens the same Research Vault document. The link carries
+only `doc` (query string) plus an optional `page`/`q` fragment — never publisher
+match text — for the still-pending viewer wave.
 
 Blank, stopword/noise-only, and generic summary/argument requests retain the
-existing generic full-note path. Generic intent is punctuation- and
-position-insensitive in English and Chinese: Brain removes named summary/argument,
-document-target, and polite/question scaffolding, then asks the corpus's existing
-atom owner whether a real content topic remains. A residual topic takes the
-source-bound evidence path.
-No matching passage, an unavailable body, or an image-only scan is disclosed and
-does not consume full-text quota. A quota denial returns no report or evidence
-text.
+existing generic full-note path. Generic intent is a CATEGORY/STRUCTURE
+classification, punctuation- and position-insensitive, not a sentence table:
+Brain removes a named summary/argument/overview intent trigger (EN word, ZH
+phrase, or a TL;DR spelling), document-target (including an institution/proper
+noun immediately modifying the document word), and polite/question/format
+scaffolding, then asks the corpus's existing atom owner whether a real content
+topic remains. A residual topic takes the source-bound evidence path. Chinese
+generic-intent recognition covers named intent phrases (总结/概括/摘要/分析/
+主要观点/论点) and the "what does this say" idiom (讲了什么/说了什么); Chinese
+EXACT-QUESTION retrieval, by contrast, is honestly scoped to literal key-term/
+key-phrase matching (no sentence segmentation) — the tool schema tells the model
+to pass 1-3 literal Chinese terms for a specific factual request, not an
+unsegmented sentence.
+
+A passage window is bounded independent of match length: an arbitrarily long
+single atom (one unsegmented Han run) is clamped to the configured window, never
+exposing the whole match. A source-bound passage also requires a canonical
+lowercase 64-hex `content_sha256`; a missing/malformed/non-string/wrong-length
+source hash fails CLOSED to bounded public metadata/excerpt and an honest
+source-identity-unverified note — never a scan/extraction claim.
+
+No matching passage, an unavailable body, an unverified source identity, or an
+image-only scan is disclosed and does not consume full-text quota. A quota
+denial returns no report or evidence text.
 
 ## 1. User and machine jobs
 
@@ -112,7 +129,10 @@ any stored/source text lies outside those spans. In generic mode the existing
 - `report_not_found`: catalog does not carry the requested ID; no corpus read.
 - `vault_unavailable`: catalog/path failure; no invented content.
 - `body_unavailable`: public metadata/excerpt only, honest scan/temporary
-  shortfall note, no debit.
+  shortfall note, no debit. A missing/malformed source-PDF `content_sha256`
+  reuses this same status (no second identity/status plane) but with a distinct
+  honest note — a source-identity gap, never described as a scan or extraction
+  failure.
 - `no_matching_passage`: public metadata/excerpt plus document-opening link, no
   inference from absence; when only a stored prefix was searched, disclose its
   stored/source character counts and that the omitted tail may contain the topic;
@@ -140,11 +160,16 @@ without changing this contract.
 1. A full-width `ＡＡＰＬ demand` question returns the exact original `AAPL demand`
    passage rather than opening boilerplate.
 2. The passage carries stable hashes, character offsets, supported terms, page
-   when known, and a canonical `doc/find/page` deep link. R1B emits all three
-   locators, but the current viewer consumes only `doc`; consuming matching text
-   and page remains Repair B and is not shipped by this commit.
-3. ASCII identifier boundaries reject decoys such as `AAPLX`; Chinese phrase
-   matching remains deterministic.
+   when known, and a canonical `doc`(+`page`/`q` fragment) deep link that never
+   carries publisher match text or a `find=` param. R1B emits the character-span
+   and page locators in the passage payload itself, but the current viewer
+   consumes only `doc`; consuming the fragment `page`/`q` remains Repair B and is
+   not shipped by this commit.
+3. ASCII identifier boundaries reject decoys such as `AAPLX` while still matching
+   directly against adjacent Han script (Han is not an ASCII identifier
+   continuation); Chinese literal key-term/key-phrase matching remains
+   deterministic — Chinese sentence segmentation is out of scope and is not
+   claimed.
 4. Blank, stopword/noise-only, and generic summary/argument calls use
    `get_document`, preserve the existing full-note projection and quota behavior,
    and return `evidence: null`; a residual topic uses `get_evidence_document`.

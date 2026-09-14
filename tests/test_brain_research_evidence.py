@@ -512,6 +512,7 @@ def test_evidence_mode_whole_response_obeys_the_existing_response_cap(
     caught. Reuses the pre-existing owner invariant's per-node `_walk` shape
     (tests/test_brain_market_intel.py:1637) — no key anywhere, including a field
     added later, may exceed the cap — plus the commission's recursive-sum check."""
+    _seed(tmp_path)
     han_run = "甲乙丙丁戊己庚辛壬癸" * 2000  # 20,000 Han chars, one unsegmented atom
     body = "前言。" + han_run + "。结论。"
     _stub_documents(monkeypatch, body)
@@ -550,6 +551,7 @@ def test_evidence_mode_whole_response_cap_escalates_across_several_long_atoms(
         tmp_path, monkeypatch):
     """The BLOCKER-1 falsifier's escalated case: several long Han runs must not
     each smuggle their full length through multiple passages."""
+    _seed(tmp_path)
     chunk = "子丑寅卯辰巳午未申酉" * 800  # 8,000 Han chars
     body = f"{chunk}。分隔一。{chunk}。分隔二。{chunk}"
     _stub_documents(monkeypatch, body)

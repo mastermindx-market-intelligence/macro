@@ -248,8 +248,21 @@ def evidence_query_is_meaningful(query) -> bool:
     return bool(_evidence_atoms(query))
 
 
+def _ascii_alnum_boundary(char: str) -> bool:
+    """True when ``char`` is an ASCII letter/digit that can extend an ASCII
+    identifier. Han (and other non-ASCII) characters are NOT boundary-blocking
+    for an ASCII needle — ``.isalnum()`` alone returns True for Han, which would
+    otherwise reject a Latin ticker/acronym embedded in Chinese prose."""
+    return char.isascii() and char.isalnum()
+
+
 def _iter_evidence_hits(text: str, needle: str):
-    """Yield normalized [start,end) hits with exact ASCII identifier boundaries."""
+    """Yield normalized [start,end) hits with exact ASCII identifier boundaries.
+
+    An ASCII needle (ticker, acronym) may sit directly against Han script on
+    either side — Han is not an ASCII identifier continuation — but a longer
+    ASCII sibling (``AAPLX`` for a ``AAPL`` needle) still correctly blocks it.
+    """
     if not needle:
         return
     start = 0
@@ -260,8 +273,8 @@ def _iter_evidence_hits(text: str, needle: str):
             return
         end = found + len(needle)
         if not bounded or (
-            (found == 0 or not text[found - 1].isalnum())
-            and (end == len(text) or not text[end].isalnum())
+            (found == 0 or not _ascii_alnum_boundary(text[found - 1]))
+            and (end == len(text) or not _ascii_alnum_boundary(text[end]))
         ):
             yield found, end
         start = found + max(1, len(needle))
@@ -313,8 +326,14 @@ def _source_binding(document: dict, body: str) -> dict:
 
 def _passage_bounds(body: str, match_start: int, match_end: int,
                     window_chars: int) -> tuple[int, int]:
-    """A bounded source slice centered on the match and confined to its PDF page."""
-    cap = max(match_end - match_start, max(80, int(window_chars)))
+    """A bounded source slice centered on the match and confined to its PDF page.
+
+    ``cap`` is independent of match length — an arbitrarily long single atom
+    (e.g. one unsegmented Han run) must never make the emitted window grow past
+    the configured budget; the match itself is clamped to the window by the
+    caller when it exceeds ``cap``.
+    """
+    cap = max(80, int(window_chars))
     page_start, page_end = 0, len(body)
     if "\f" in body:
         previous = body.rfind("\f", 0, match_start)
@@ -357,6 +376,12 @@ def find_evidence_passages(
         "passages": [],
         "source_binding": binding,
     }
+    # A source-bound passage requires a canonical source-PDF fingerprint. Missing,
+    # empty, malformed, non-string, or wrong-length content_sha256 fails CLOSED —
+    # no passage or publisher body text, regardless of query shape — rather than
+    # serving text this row cannot prove came from the fingerprinted PDF.
+    if not binding["content_sha256"]:
+        return {"status": "body_unavailable", **base}
     if not atoms:
         return {"status": "query_too_short", **base}
     if not body:
@@ -417,12 +442,18 @@ def find_evidence_passages(
         p_start, p_end = candidate["passage_start"], candidate["passage_end"]
         if any(not (p_end <= start or p_start >= end) for start, end in selected_ranges):
             continue
+        # An atom longer than the window (one unsegmented Han run, say) must not
+        # widen the emitted window — clamp the match span to it so the locator
+        # stays coherent (start <= match_start < match_end <= end) and match_text
+        # never exceeds the bounded passage text.
+        match_start = max(candidate["start"], p_start)
+        match_end = min(candidate["end"], p_end)
         locator = {
             "kind": "text_span",
             "start_char": p_start,
             "end_char": p_end,
-            "match_start_char": candidate["start"],
-            "match_end_char": candidate["end"],
+            "match_start_char": match_start,
+            "match_end_char": match_end,
         }
         if "\f" in body:
             page = body.count("\f", 0, candidate["start"]) + 1
@@ -431,7 +462,7 @@ def find_evidence_passages(
                 locator["page"] = page
         passages.append({
             "text": body[p_start:p_end],
-            "match_text": body[candidate["start"]:candidate["end"]],
+            "match_text": body[match_start:match_end],
             "matched_terms": candidate["supported"],
             "locator": locator,
         })

@@ -75,7 +75,7 @@ import re
 import unicodedata
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from urllib.parse import urlencode
+from urllib.parse import quote, urlencode
 
 # --------------------------------------------------------------------------- #
 # Output contract (TI-R5 whitelist)
@@ -1151,6 +1151,15 @@ REPORT_BODY_MAX_CHARS = 12_000
 _EVIDENCE_QUERY_MAX_CHARS = 512
 _EVIDENCE_TERM_MAX_CHARS = 120
 _EVIDENCE_TERM_LIMIT = 12
+# Defense in depth only — the corpus owner already bounds a passage window
+# independent of match length (EVIDENCE_WINDOW_CHARS). This is a second, cheap
+# ceiling here so a corrupted/mocked upstream selector still cannot smuggle an
+# unbounded string through the projector.
+_EVIDENCE_PASSAGE_TEXT_MAX_CHARS = 1_200
+# Bounds the link's PERCENT-ENCODED `q=` fragment, not the raw query — a CJK
+# character can encode to 9 chars (%XX%XX%XX), so bounding only the raw text
+# (_EVIDENCE_QUERY_MAX_CHARS) would let the encoded URL balloon regardless.
+_EVIDENCE_LINK_Q_MAX_ENCODED_CHARS = 200
 # Named so the model can tell the user where the rest of the report lives. The
 # budget COVERS this marker (the _truncate idiom) — a "12,000 + marker" result
 # would break any caller sizing a context window off the documented number.
@@ -1206,6 +1215,15 @@ _REPORT_NO_USABLE_PASSAGE = (
     " Matching terms were found, but no usable passage text was available. No "
     "full-text view was served or charged; do not describe this as a scan or "
     "extraction failure."
+)
+# Distinct from _REPORT_SCAN_ONLY: an image-only PDF has no text at all, but an
+# identity-unverified row may well have readable text — it just cannot be bound
+# to a canonical source-PDF fingerprint, so nothing sourced from it is served.
+_REPORT_SOURCE_UNVERIFIED = (
+    " This report's stored text carries no verified source-PDF fingerprint, so "
+    "no full-text view was served or charged. This is a source-identity gap, "
+    "not a scan or extraction failure — say that plainly; do not describe the "
+    "document as unreadable or image-only."
 )
 
 # view_ratelimit.allow() keys a SECOND ledger on sha256(ip)[:16], and maps an
@@ -1306,41 +1324,71 @@ def _evidence_requested(query: str) -> bool:
         return False
 
 
+# Self-sufficient generic-summary triggers: a single occurrence classifies as
+# generic INTENT on its own (no co-occurring document word required) — the real
+# safety gate is the residual-emptiness check below, not this vocabulary. A
+# genuine specific-topic question using one of these words (e.g. "Explain the
+# Fed's rate decision") still leaves a non-empty residual and stays evidence.
 _GENERIC_EN_INTENT_WORDS = frozenset({
     "argument", "arguments", "argue", "overview", "summarise", "summarize",
-    "summary",
+    "summary", "gist", "thesis", "takeaway", "takeaways", "explain", "tell",
+    "walk", "break",
 })
 _GENERIC_EN_DOCUMENT_WORDS = frozenset({
     "document", "documents", "note", "notes", "paper", "papers", "report",
     "reports", "research", "study", "studies",
 })
+# Structural scaffolding: politeness, question form, pronouns, and output-format
+# cues that carry no market/document content of their own. None of these is a
+# real topic word, so stripping them cannot hide a genuine residual question.
 _GENERIC_EN_SCAFFOLDING_WORDS = frozenset({
-    "can", "could", "does", "explain", "give", "is", "it", "main", "please",
-    "the", "this", "what", "you", "your",
+    "can", "could", "does", "give", "is", "it", "main", "please", "the",
+    "this", "what", "you", "your", "provide", "down", "key", "bullet",
+    "bullets", "point", "points", "format", "say", "says", "said", "me",
 })
-_GENERIC_ZH_INTENT_PHRASES = ("总结", "概括", "摘要", "主要观点", "论点")
+_TLDR_RE = re.compile(r"\btl\s*;?\s*dr\b")
+# A 1-3 word Titlecase run immediately before a document word ("the Goldman
+# report", "this Example Bank note") is a document-TARGET modifier, not a
+# residual topic — this is a structural (position + capitalization) rule, never
+# an institution allowlist: any capitalized word in that slot qualifies.
+_EN_TARGET_MODIFIER_RE = re.compile(
+    r"(?:\b[A-Z][A-Za-z]*\b\s+){1,3}(?=(?:"
+    + "|".join(sorted(_GENERIC_EN_DOCUMENT_WORDS, reverse=True))
+    + r")\b)"
+)
+_GENERIC_ZH_INTENT_PHRASES = (
+    "总结", "概括", "摘要", "主要观点", "论点", "分析",
+    "讲了什么", "说了什么", "说的是什么",
+)
 _GENERIC_ZH_DOCUMENT_PHRASES = ("报告", "研究", "论文", "文件", "文档", "笔记")
-_GENERIC_ZH_SCAFFOLDING_PHRASES = ("请", "这份", "这篇", "一下")
+_GENERIC_ZH_SCAFFOLDING_PHRASES = ("请", "这份", "这篇", "一下", "帮我", "是什么")
 
 
 def _is_generic_report_intent(query, corpus_mod) -> bool:
     """True when named summary/argument intent leaves no corpus content atom.
 
-    This deliberately classifies chat intent in Brain.  It removes named intent,
-    document-target, and question/politeness scaffolding without tokenizing for
-    retrieval, then asks the corpus owner whether any meaningful content atom
-    remains.  The selector stays the sole atom/stopword owner.
+    This deliberately classifies chat CATEGORY/STRUCTURE in Brain, never a
+    sentence table: an intent trigger (EN word, ZH phrase, or a TL;DR spelling)
+    must be present, and — after removing that trigger plus document-target and
+    politeness/question/format scaffolding — the corpus owner must find no
+    meaningful content atom left in the residual. A real topic (a ticker, a
+    theme, a Chinese key phrase) always survives this strip and keeps the query
+    on the evidence path; the selector stays the sole atom/stopword owner.
     """
-    normalized = unicodedata.normalize("NFKC", str(query or "")).casefold()
+    nfkc = unicodedata.normalize("NFKC", str(query or ""))
+    # Strip document-target modifiers (institution/proper-noun before a document
+    # word) BEFORE casefolding — capitalization is what identifies the slot.
+    nfkc = _EN_TARGET_MODIFIER_RE.sub(" ", nfkc)
+    normalized = nfkc.casefold()
+
     en_words = re.findall(r"[a-z]+", normalized)
     has_en_intent = bool(set(en_words) & _GENERIC_EN_INTENT_WORDS)
-    has_en_document = bool(set(en_words) & _GENERIC_EN_DOCUMENT_WORDS)
     has_zh_intent = any(term in normalized for term in _GENERIC_ZH_INTENT_PHRASES)
-    has_zh_document = any(term in normalized for term in _GENERIC_ZH_DOCUMENT_PHRASES)
-    if not ((has_en_intent and has_en_document) or (has_zh_intent and has_zh_document)):
+    has_tldr = bool(_TLDR_RE.search(normalized))
+    if not (has_en_intent or has_zh_intent or has_tldr):
         return False
 
-    residual = normalized
+    residual = _TLDR_RE.sub(" ", normalized)
     for word in (_GENERIC_EN_INTENT_WORDS | _GENERIC_EN_DOCUMENT_WORDS
                  | _GENERIC_EN_SCAFFOLDING_WORDS):
         residual = re.sub(rf"\b{re.escape(word)}\b", " ", residual)
@@ -1366,7 +1414,13 @@ def _charge_report_view(user_id: str, now: datetime) -> tuple[bool, dict]:
 
     Called exactly once per served BODY and never for the excerpt-only fallback —
     the excerpt is already public, and metering a public read would deny a member
-    material he can see on the website.
+    material he can see on the website. The report-mode PREFLIGHT (peeked before
+    this function ever runs) is a separate, uniform gate applied before either the
+    generic or evidence reader — it may withhold even the public excerpt from an
+    exhausted caller, because letting an exhausted request through to a cheaper
+    fallback while a servable one is denied would itself be a paid-body-presence
+    oracle. That preflight does not change the quota owner or its state; this
+    function still debits only an actually-served paid body.
 
     Fails OPEN on an unusable limiter (import/IO error), mirroring
     view_ratelimit's own documented rule: a broken ledger must not lock a paying
@@ -1463,47 +1517,93 @@ def _bounded_evidence_query(query) -> str:
     return text[:_EVIDENCE_QUERY_MAX_CHARS - 1] + "…"
 
 
-def _evidence_open_url(report_id: str, match_text: str = "", page=None) -> str:
-    """Public, source-opening Research Vault URL; never an internal path."""
-    params: list[tuple[str, str]] = [("doc", str(report_id or ""))]
-    match = str(match_text or "").strip()
-    if match:
-        params.append(("find", match[:220]))
+def _evidence_link_query(query) -> str:
+    """NFKC-normalized, bounded, user-authored text for the link's ``q`` — never
+    publisher/passage text. Blank/whitespace-only input omits ``q`` entirely."""
+    text = str(query or "").strip()
+    if not text:
+        return ""
+    return _bounded_evidence_query(unicodedata.normalize("NFKC", text)).strip()
+
+
+def _evidence_open_url(report_id: str, *, page=None, q: str = "") -> str:
+    """Public, rights-safe Research Vault URL — never publisher/passage text or
+    an internal path.
+
+    ``doc`` is the only query-string param. An optional fragment carries a
+    positive ``page`` and/or the bounded user-authored ``q`` — never publisher
+    match text, source spans/hashes, or internal paths. Passage-level callers
+    pass only ``page``; the top-level evidence link may add ``q`` once.
+    """
+    url = f"{_RESEARCH_VAULT_URL}?{urlencode([('doc', str(report_id or ''))])}"
+    fragment: list[str] = []
     page_number = _positive_int(page)
     if page_number is not None:
-        params.append(("page", str(page_number)))
-    return f"{_RESEARCH_VAULT_URL}?{urlencode(params)}"
+        fragment.append(f"page={page_number}")
+    q_text = _evidence_link_query(q)
+    if q_text:
+        # Percent-encoding inflates non-ASCII (a CJK char can become 9 chars,
+        # %XX%XX%XX) — bound the ENCODED form, not just the raw text, so a long
+        # Chinese query cannot balloon the response-string budget through the URL.
+        encoded = quote(q_text, safe="")
+        while encoded and len(encoded) > _EVIDENCE_LINK_Q_MAX_ENCODED_CHARS:
+            q_text = q_text[:-1]
+            encoded = quote(q_text, safe="")
+        if encoded:
+            fragment.append(f"q={encoded}")
+    if fragment:
+        url += "#" + "&".join(fragment)
+    return url
 
 
 def _project_evidence_passage(raw, report_id: str) -> dict | None:
-    """Literal R1B passage projection; no upstream dict passthrough."""
+    """Literal R1B passage projection; no upstream dict passthrough.
+
+    Fails CLOSED (omits the whole passage) rather than raising or coercing on
+    a malformed upstream shape: non-integer/negative/bool locator offsets, an
+    incoherent span (not start <= match_start < match_end <= end), or non-string
+    text/match_text. A non-string field is never rendered as a Python repr.
+    """
     if not isinstance(raw, dict):
         return None
     locator_raw = raw.get("locator") if isinstance(raw.get("locator"), dict) else {}
     kind = str(locator_raw.get("kind") or "text_span")
     if kind not in {"text_span", "page_text_span"}:
         kind = "text_span"
+    start_char = _nonnegative_int(locator_raw.get("start_char"))
+    end_char = _nonnegative_int(locator_raw.get("end_char"))
+    match_start_char = _nonnegative_int(locator_raw.get("match_start_char"))
+    match_end_char = _nonnegative_int(locator_raw.get("match_end_char"))
+    if None in (start_char, end_char, match_start_char, match_end_char):
+        return None
+    if not (start_char <= match_start_char < match_end_char <= end_char):
+        return None
+    text = raw.get("text")
+    match_text = raw.get("match_text")
+    if not isinstance(text, str) or not isinstance(match_text, str):
+        return None
+    text = text[:_EVIDENCE_PASSAGE_TEXT_MAX_CHARS]
+    match_text = match_text[:_EVIDENCE_PASSAGE_TEXT_MAX_CHARS]
+    page = _positive_int(locator_raw.get("page")) if kind == "page_text_span" else None
     locator = {
         "kind": kind,
-        "start_char": int(locator_raw.get("start_char") or 0),
-        "end_char": int(locator_raw.get("end_char") or 0),
-        "match_start_char": int(locator_raw.get("match_start_char") or 0),
-        "match_end_char": int(locator_raw.get("match_end_char") or 0),
+        "start_char": start_char,
+        "end_char": end_char,
+        "match_start_char": match_start_char,
+        "match_end_char": match_end_char,
     }
-    page = _positive_int(locator_raw.get("page")) if kind == "page_text_span" else None
     if page is not None:
         locator["page"] = page
-    match_text = str(raw.get("match_text") or "")
     terms = raw.get("matched_terms")
     terms = [term[:_EVIDENCE_TERM_MAX_CHARS] for term in terms if isinstance(term, str)] \
         if isinstance(terms, list) else []
     terms = terms[:_EVIDENCE_TERM_LIMIT]
     return {
-        "text": str(raw.get("text") or ""),
+        "text": text,
         "match_text": match_text,
         "matched_terms": terms,
         "locator": locator,
-        "open_url": _evidence_open_url(report_id, match_text, page),
+        "open_url": _evidence_open_url(report_id, page=page),
     }
 
 
@@ -1552,8 +1652,15 @@ def _project_evidence(raw, *, report_id: str, published_at: str,
         item = _project_evidence_passage(passage, report_id)
         if item is not None:
             projected.append(item)
-    open_url = projected[0]["open_url"] if projected \
-        else _evidence_open_url(report_id)
+    # Top-level open_url may carry the bounded user query once (fragment `q=`)
+    # to avoid repeated inflation across passages; passage-level open_url stays
+    # doc+page only (see _project_evidence_passage).
+    top_page = None
+    if projected:
+        first_locator = projected[0].get("locator") or {}
+        if first_locator.get("kind") == "page_text_span":
+            top_page = first_locator.get("page")
+    open_url = _evidence_open_url(report_id, page=top_page, q=query)
     return {
         "schema": _EVIDENCE_SCHEMA,
         "status": status,
@@ -1711,6 +1818,10 @@ def _research_report(root: Path, report_id, *, query="", user_ctx,
         if evidence_requested
         else _load_corpus_document(rid)
     )
+    # Independent re-check (defense in depth alongside the corpus owner's own
+    # fail-closed gate) so the note can distinguish an identity gap from a scan.
+    identity_ok = bool(_sha256_or_empty((document or {}).get("content_sha256"))) \
+        if isinstance(document, dict) else False
 
     quota: dict | None = None
     evidence: dict | None = None
@@ -1774,6 +1885,8 @@ def _research_report(root: Path, report_id, *, query="", user_ctx,
             note += _REPORT_NO_EVIDENCE + _partial_evidence_search_note(evidence)
         elif matched_without_usable_text:
             note += _REPORT_NO_USABLE_PASSAGE
+        elif not identity_ok:
+            note += _REPORT_SOURCE_UNVERIFIED
         else:
             layer = str((document or {}).get("text_layer") or "") \
                 if isinstance(document, dict) else ""
@@ -2056,9 +2169,12 @@ RESEARCH_TOOL_SCHEMA: dict = {
                     "when the first result set is broad. With mode='report', pass "
                     "an empty query for generic requests such as 'summarize this "
                     "report' or 'what does this note argue?'; pass the user's exact "
-                    "question only for a specific factual request so Brain can "
-                    "return source-bound supporting passages. Not read when "
-                    "mode='clusters'."
+                    "question only for a specific factual request in English so "
+                    "Brain can return source-bound supporting passages. For "
+                    "Chinese, matching is literal (no sentence segmentation), so "
+                    "pass 1-3 literal key terms or phrases (e.g. '通胀预期', "
+                    "'美联储 利率') rather than a full unsegmented sentence. Not "
+                    "read when mode='clusters'."
                 ),
             },
             "limit": {
