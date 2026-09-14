@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-14T22:59:55.779949+00:00",
-  "count": 2118,
+  "generated_at": "2026-09-14T23:26:38.562693+00:00",
+  "count": 2119,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -157,6 +157,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 17,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ns1um7svlqz-af5b73",
+      "title": "Systematic Flows Monitor CTA equity positioning becomes more fragile as trends strengthen elsewhere",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T13:26:41Z",
+      "summary_points": [
+        "**CTA Equity Positioning Fragility**: S&P 500 near stop-out levels (50bps) with risk-on spikes preventing selling, increasing sensitivity to weaknesses as CTAs trim SX5E/RTY but longs remain intact.",
+        "**Down Market Systematic Unwinding Risk**: Systematic strategies could sell $157bn in down markets, with CTAs driving significant equity unwinds, signaling high market stress and potential for further selling pressure.",
+        "**Oil & Geopolitical Flows**: CTAs add to oil longs amid 9% weekly gain and escalating Iran hostilities, positioning at most bullish since 4-Mar, with concentrated oil/soybean longs and copper shorts.",
+        "**Delta-Hedging Volatility Impact**: Delta-hedging confined to last 15 minutes suppresses S&P 500 e-mini realized volatility by 1.1pt (12%), highlighting gamma’s role in volatility dynamics.",
+        "**CTA Stop-Out Concentration**: RTYA Index and GCA Comdty show highest current stop-outs (4 models each), signaling elevated CTA risk in equity/commodity markets."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 24,
       "language": "en",
       "needs_metadata": false
     },
