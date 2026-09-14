@@ -5318,3 +5318,4 @@
 {"date": "2026-09-11", "ticker": "GTLB", "score": 17.0, "percentile": 0.6756756756756757, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
 {"date": "2026-09-11", "ticker": "HRB", "score": 8.0, "percentile": 0.36036036036036034, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
 {"date": "2026-09-11", "ticker": "DUOL", "score": 26.0, "percentile": 0.7702702702702703, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-09-11", "ticker": "COCO", "score": 0.0, "percentile": 0.08558558558558559, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}

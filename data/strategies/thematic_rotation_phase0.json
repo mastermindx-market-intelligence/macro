@@ -1,7 +1,7 @@
 {
   "schema": "thematic_rotation_phase0.v1",
   "region": "us",
-  "generated_at": "2026-09-13T09:01:53.043814+00:00",
+  "generated_at": "2026-09-14T09:32:10.982856+00:00",
   "cost_bps": 10.0,
   "universes": {
     "sectors": {
@@ -140,7 +140,7 @@
         "top3_mom6_rel": {
           "cagr": 0.8236,
           "sharpe": 1.31,
-          "max_dd": -0.27,
+          "max_dd": -0.2699,
           "calmar": 3.05,
           "n_months": 27,
           "dsr": 0.639
@@ -164,8 +164,8 @@
       },
       "rank_ic": {
         "1m": {
-          "mean_ic": 0.0989,
-          "ic_t_hac": 2.363,
+          "mean_ic": 0.0988,
+          "ic_t_hac": 2.358,
           "hit": 0.6,
           "n_steps": 25
         },
@@ -185,14 +185,14 @@
           "n": 1095
         },
         "below_trend": {
-          "mean": 0.0345,
+          "mean": 0.0346,
           "std": 0.1061,
           "sharpe": 1.13,
           "p05": -0.099,
           "n": 718
         },
         "mean_diff_t": -1.28,
-        "mean_diff_p": 0.202
+        "mean_diff_p": 0.2014
       },
       "extension_drawdown": {
         "fwd_days": 63,
