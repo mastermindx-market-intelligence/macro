@@ -1,8 +1,8 @@
 {
   "schema": "stage_context.v1",
-  "asof": "2026-09-12",
+  "asof": "2026-09-13",
   "data_session": "2026-09-11",
-  "built": "2026-09-12T09:20:39Z",
+  "built": "2026-09-13T09:00:56Z",
   "is_context_only": true,
   "display_only": true,
   "disclaimer": "Context only — stage classification display, never a signal or sizing input.",
@@ -61,67 +61,21 @@
   "counts": {
     "total": 2711,
     "stage1": 116,
-    "stage2": 1462,
-    "stage2_fresh": 310,
+    "stage2": 1461,
+    "stage2_fresh": 309,
     "stage3": 254,
-    "stage4": 879,
+    "stage4": 880,
     "too_young": 344,
     "new_today": 13
   },
   "market": {
     "pct_stage2": 53.9,
-    "pct_stage4": 32.4,
+    "pct_stage4": 32.5,
     "weather": "advancing",
     "spy_stage": 2,
     "spy_weeks": 20
   },
   "top_stage2": [
-    {
-      "ticker": "AFRI",
-      "company": "Forafric Global PLC",
-      "sector": "Consumer Defensive",
-      "stage_source_asof": "2026-09-11",
-      "stage_week_end": "2026-09-11",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 3,
-      "fresh": true,
-      "sga_score": 75,
-      "ma30_slope_pct5w": 1.524,
-      "pct_vs_ma30": 8.34,
-      "mansfield_rs": 1.44,
-      "vol_ratio": 1.37,
-      "event": "pullback_resume",
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.2875,
-      "earnings": {
-        "present": false,
-        "sentiment": null,
-        "performance": null,
-        "tone_word": null,
-        "tags": [],
-        "quarter": null,
-        "summary": null
-      },
-      "why": [
-        "Early in its climb — 3 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 3 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 0.8489,
-      "atr_ext": 1.004,
-      "atr_pct_price": 0.07668,
-      "sata_score": 6,
-      "sata_change_1w": 0,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": null
-    },
     {
       "ticker": "JILL",
       "company": "J.Jill Inc",
@@ -316,6 +270,57 @@
       "sata_change_1w": 0,
       "stage_detailed": "2X_fallback_bullish",
       "industry_percentile": 61.8
+    },
+    {
+      "ticker": "PLUS",
+      "company": "ePlus, Inc.",
+      "sector": "Information Technology",
+      "stage_source_asof": "2026-09-11",
+      "stage_week_end": "2026-09-11",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 1,
+      "fresh": true,
+      "sga_score": 60,
+      "ma30_slope_pct5w": 0.755,
+      "pct_vs_ma30": 9.63,
+      "mansfield_rs": 1.66,
+      "vol_ratio": 0.84,
+      "event": null,
+      "gate_tier": "T2",
+      "blackout": false,
+      "arc_pos": 0.2625,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.1,
+        "performance": 5.0,
+        "tone_word": "mixed",
+        "tags": [
+          "margin_contraction",
+          "demand_acceleration",
+          "macro_sensitivity",
+          "buyback_or_dividend"
+        ],
+        "quarter": "Q1",
+        "summary": "ePlus reported Q1 FY2027 net sales of $649.1 million, up 1% year-over-year, with product revenue up 0.6% and managed services up over 15% to exceed $50 million for the first time. However, professional services declined 5.1%, gross margin fell to 23.3% from 23.9%, and non-GAAP…"
+      },
+      "why": [
+        "Early in its climb — 1 weeks up so far",
+        "Trading above its 30-week line — the trend is with it",
+        "Also shows a strong confirmation from our other checks"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 1 周",
+        "位于 30 周均线之上 — 趋势向好",
+        "其他多项验证同样给出强确认"
+      ],
+      "atr_14w": 6.4091,
+      "atr_ext": 1.258,
+      "atr_pct_price": 0.06979,
+      "sata_score": 6,
+      "sata_change_1w": 2,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 43.5
     },
     {
       "ticker": "MARA",
@@ -1297,6 +1302,50 @@
       "industry_percentile": 56.7
     },
     {
+      "ticker": "AFRI",
+      "company": "Forafric Global PLC",
+      "sector": "Consumer Defensive",
+      "stage_source_asof": "2026-09-11",
+      "stage_week_end": "2026-09-11",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 3,
+      "fresh": true,
+      "sga_score": 50,
+      "ma30_slope_pct5w": 1.524,
+      "pct_vs_ma30": 8.34,
+      "mansfield_rs": 1.44,
+      "vol_ratio": 1.37,
+      "event": "pullback_resume",
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.2875,
+      "earnings": {
+        "present": false,
+        "sentiment": null,
+        "performance": null,
+        "tone_word": null,
+        "tags": [],
+        "quarter": null,
+        "summary": null
+      },
+      "why": [
+        "Early in its climb — 3 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 3 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 0.8489,
+      "atr_ext": 1.004,
+      "atr_pct_price": 0.07668,
+      "sata_score": 6,
+      "sata_change_1w": 0,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": null
+    },
+    {
       "ticker": "AII",
       "company": "American Integrity Insurance Group Inc",
       "sector": "Financial",
@@ -1343,6 +1392,56 @@
       "sata_change_1w": 0,
       "stage_detailed": "2A_strong_breakout",
       "industry_percentile": null
+    },
+    {
+      "ticker": "CLSK",
+      "company": "CleanSpark, Inc.",
+      "sector": "Information Technology",
+      "stage_source_asof": "2026-09-11",
+      "stage_week_end": "2026-09-11",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 1,
+      "fresh": true,
+      "sga_score": 50,
+      "ma30_slope_pct5w": 0.858,
+      "pct_vs_ma30": 7.72,
+      "mansfield_rs": -4.31,
+      "vol_ratio": 0.86,
+      "event": null,
+      "gate_tier": "T2",
+      "blackout": false,
+      "arc_pos": 0.2625,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.7,
+        "performance": 6.5,
+        "tone_word": "confident",
+        "tags": [
+          "guidance_raised",
+          "new_product",
+          "margin_contraction"
+        ],
+        "quarter": "Q3",
+        "summary": "Q3 FY2026 revenue was $138M, up 1% sequentially; GAAP net loss narrowed to $240M from $378M, driven by a smaller Bitcoin mark-to-market loss. Adjusted EBITDA was negative $113M including that non-cash item, but positive $20M when normalized. The major event was a 20-year tripl…"
+      },
+      "why": [
+        "Early in its climb — 1 weeks up so far",
+        "Trading above its 30-week line — the trend is with it",
+        "Also shows a strong confirmation from our other checks"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 1 周",
+        "位于 30 周均线之上 — 趋势向好",
+        "其他多项验证同样给出强确认"
+      ],
+      "atr_14w": 2.572,
+      "atr_ext": 0.381,
+      "atr_pct_price": 0.18815,
+      "sata_score": 5,
+      "sata_change_1w": 1,
+      "stage_detailed": "2X_catch_price_above_ma",
+      "industry_percentile": 52.4
     },
     {
       "ticker": "FIGS",
@@ -2941,97 +3040,6 @@
       "sata_change_1w": 0,
       "stage_detailed": "2A_strong_breakout",
       "industry_percentile": 86.4
-    },
-    {
-      "ticker": "DLO",
-      "company": "DLocal Limited",
-      "sector": "Technology",
-      "stage_source_asof": "2026-09-11",
-      "stage_week_end": "2026-09-11",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 9,
-      "fresh": true,
-      "sga_score": 45,
-      "ma30_slope_pct5w": 2.263,
-      "pct_vs_ma30": 11.98,
-      "mansfield_rs": 1.5,
-      "vol_ratio": 1.11,
-      "event": null,
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.3625,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.5,
-        "performance": 7.8,
-        "tone_word": "confident",
-        "tags": [
-          "beat_and_raise",
-          "margin_expansion"
-        ],
-        "quarter": "Q2",
-        "summary": "DLocal reported Q2 FY26 TPV of $17.7 billion (up 92% YoY) and gross profit of $127 million (up 29% YoY), driven by record performance in Brazil ($40M GP) and Argentina ($20M GP). Management raised full-year guidance for TPV growth to 60%-70% and gross profit growth to 25%-30%,…"
-      },
-      "why": [
-        "Early in its climb — 9 weeks up so far",
-        "Trading above its 30-week line — the trend is with it"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 9 周",
-        "位于 30 周均线之上 — 趋势向好"
-      ],
-      "atr_14w": 1.3927,
-      "atr_ext": 1.141,
-      "atr_pct_price": 0.09372,
-      "sata_score": 6,
-      "sata_change_1w": -1,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 62.5
-    },
-    {
-      "ticker": "HNVR",
-      "company": "Hanover Bancorp Inc",
-      "sector": "Financial",
-      "stage_source_asof": "2026-09-11",
-      "stage_week_end": "2026-09-11",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 7,
-      "fresh": true,
-      "sga_score": 45,
-      "ma30_slope_pct5w": 3.014,
-      "pct_vs_ma30": 13.47,
-      "mansfield_rs": 7.0,
-      "vol_ratio": 0.89,
-      "event": null,
-      "gate_tier": null,
-      "blackout": false,
-      "arc_pos": 0.3375,
-      "earnings": {
-        "present": false,
-        "sentiment": null,
-        "performance": null,
-        "tone_word": null,
-        "tags": [],
-        "quarter": null,
-        "summary": null
-      },
-      "why": [
-        "Early in its climb — 7 weeks up so far",
-        "Trading above its 30-week line — the trend is with it"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 7 周",
-        "位于 30 周均线之上 — 趋势向好"
-      ],
-      "atr_14w": 1.4328,
-      "atr_ext": 2.218,
-      "atr_pct_price": 0.0535,
-      "sata_score": 8,
-      "sata_change_1w": 0,
-      "stage_detailed": "2D_extended_run",
-      "industry_percentile": null
     }
   ],
   "warnings_stage3": [
@@ -3054,15 +3062,15 @@
       "sga_score": 26
     },
     {
-      "ticker": "AVO",
-      "company": "Mission Produce Inc",
-      "weeks_in_stage": 3,
-      "sga_score": 25
-    },
-    {
       "ticker": "CAMT",
       "company": "Camtek Ltd.",
       "weeks_in_stage": 2,
+      "sga_score": 25
+    },
+    {
+      "ticker": "PLMR",
+      "company": "Palomar Holdings, Inc.",
+      "weeks_in_stage": 6,
       "sga_score": 25
     },
     {
@@ -3166,7 +3174,7 @@
     {
       "sector": "Energy",
       "n": 120,
-      "pct_stage2": 70.8,
+      "pct_stage2": 70.0,
       "trend": "up"
     },
     {
@@ -10002,8 +10010,8 @@
       19
     ],
     "NFE": [
-      2,
-      2
+      4,
+      125
     ],
     "NFLX": [
       4,
@@ -36734,8 +36742,8 @@
       "event": "pullback_resume"
     },
     "NFE": {
-      "stage": 2,
-      "fresh": true,
+      "stage": 4,
+      "fresh": false,
       "event": null
     },
     "NFLX": {

@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.mechanism_pathways.v1",
-  "as_of": "2026-09-12",
+  "as_of": "2026-09-13",
   "display_only": true,
   "not_a_signal": true,
   "authority": {
@@ -28,7 +28,7 @@
       "family": "rates",
       "driver": "fed_repricing",
       "pathway_role": "primary",
-      "as_of": "2026-09-12",
+      "as_of": "2026-09-13",
       "direction_en": "hawkish repricing — cuts priced out, front-end up",
       "direction_zh": "鹰派重定价 — 计入更少降息、前端利率上行",
       "confidence_ceiling": "context_only",
@@ -38,7 +38,7 @@
       "nodes": [
         {
           "node_id": "driver_fed_repricing",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "fed_repricing",
@@ -58,7 +58,7 @@
         },
         {
           "node_id": "leg_fed_repricing_0",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "2y yield",
@@ -78,7 +78,7 @@
         },
         {
           "node_id": "leg_fed_repricing_1",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "rate-path (2y−FF)",
@@ -98,7 +98,7 @@
         },
         {
           "node_id": "leg_fed_repricing_2",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "10y yield",
@@ -118,7 +118,7 @@
         },
         {
           "node_id": "transmission_expectations_order1",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "domain": "transmission",
           "source_artifact": "data/transmission/latest.json",
           "entity": "transmission channel",
@@ -138,7 +138,7 @@
         },
         {
           "node_id": "transmission_expectations_order2",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "domain": "transmission",
           "source_artifact": "data/transmission/latest.json",
           "entity": "transmission channel",
@@ -158,7 +158,7 @@
         },
         {
           "node_id": "transmission_expectations_order3",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "domain": "transmission",
           "source_artifact": "data/transmission/latest.json",
           "entity": "transmission channel",
@@ -256,7 +256,7 @@
       "family": "china",
       "driver": "china_stimulus",
       "pathway_role": "alternate",
-      "as_of": "2026-09-12",
+      "as_of": "2026-09-13",
       "direction_en": "China risk-off — A-shares/HK & copper lead down",
       "direction_zh": "",
       "confidence_ceiling": "context_only",
@@ -266,7 +266,7 @@
       "nodes": [
         {
           "node_id": "driver_china_stimulus",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "china_stimulus",
@@ -292,7 +292,7 @@
       "family": "rates",
       "driver": "real_rate_shock",
       "pathway_role": "alternate",
-      "as_of": "2026-09-12",
+      "as_of": "2026-09-13",
       "direction_en": "real yields rising — restrictive, gold & duration hit",
       "direction_zh": "",
       "confidence_ceiling": "context_only",
@@ -302,7 +302,7 @@
       "nodes": [
         {
           "node_id": "driver_real_rate_shock",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "real_rate_shock",
@@ -322,7 +322,7 @@
         },
         {
           "node_id": "transmission_real_rate_order1",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "domain": "transmission",
           "source_artifact": "data/transmission/latest.json",
           "entity": "transmission channel",
@@ -342,7 +342,7 @@
         },
         {
           "node_id": "transmission_real_rate_order2",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "domain": "transmission",
           "source_artifact": "data/transmission/latest.json",
           "entity": "transmission channel",
@@ -362,7 +362,7 @@
         },
         {
           "node_id": "transmission_real_rate_order3",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "domain": "transmission",
           "source_artifact": "data/transmission/latest.json",
           "entity": "transmission channel",

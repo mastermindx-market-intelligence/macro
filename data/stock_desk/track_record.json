@@ -1,23 +1,23 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-09-12",
-  "scored_total": 178,
-  "open": 55,
-  "unscored_neutral": 235,
+  "as_of": "2026-09-13",
+  "scored_total": 179,
+  "open": 59,
+  "unscored_neutral": 237,
   "overall": {
-    "n": 178,
+    "n": 179,
     "hits": 115,
-    "misses": 63,
-    "hit_rate": 0.646,
-    "dir_accuracy": 0.421
+    "misses": 64,
+    "hit_rate": 0.642,
+    "dir_accuracy": 0.419
   },
   "by_lean": {
     "constructive": {
-      "n": 106,
+      "n": 107,
       "hits": 61,
-      "misses": 45,
-      "hit_rate": 0.575,
-      "dir_accuracy": 0.311
+      "misses": 46,
+      "hit_rate": 0.57,
+      "dir_accuracy": 0.308
     },
     "neutral": {
       "n": 0,
@@ -43,11 +43,11 @@
   },
   "by_conviction": {
     "low": {
-      "n": 148,
+      "n": 149,
       "hits": 94,
-      "misses": 54,
-      "hit_rate": 0.635,
-      "dir_accuracy": 0.392
+      "misses": 55,
+      "hit_rate": 0.631,
+      "dir_accuracy": 0.389
     },
     "medium": {
       "n": 28,
@@ -64,8 +64,17 @@
       "dir_accuracy": 0.0
     }
   },
-  "calibration_note": "178 leans scored, hit-rate 0.646 (directional accuracy 0.421). Chance alone would land a hit-rate near 0.7513 (directional accuracy near 0.5073) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
+  "calibration_note": "179 leans scored, hit-rate 0.642 (directional accuracy 0.419). Chance alone would land a hit-rate near 0.7513 (directional accuracy near 0.5073) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
   "recent": [
+    {
+      "id": "2026-07-31-SHOO-20260807174121-4",
+      "ticker": "SHOO",
+      "lean": "constructive",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.0915,
+      "check_by": "2026-09-11"
+    },
     {
       "id": "2026-07-29-TMP-1",
       "ticker": "TMP",
@@ -164,15 +173,6 @@
       "outcome": "hit",
       "realized": 0.0096,
       "check_by": "2026-09-02"
-    },
-    {
-      "id": "2026-07-28-ROST-1",
-      "ticker": "ROST",
-      "lean": "cautious",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": -0.115,
-      "check_by": "2026-09-01"
     }
   ]
 }

@@ -1,13 +1,13 @@
 {
   "schema": "neuralweb.evidence_clock.v1",
-  "as_of": "2026-09-12",
-  "generated_utc": "2026-09-12T10:46:42Z",
+  "as_of": "2026-09-13",
+  "generated_utc": "2026-09-13T10:25:42Z",
   "authority": "display_only",
   "summary": {
     "n_rows": 315,
     "by_state": {
-      "overdue": 21,
-      "due": 12,
+      "overdue": 22,
+      "due": 11,
       "human_review": 0,
       "missing": 1,
       "stale": 1,
@@ -133,7 +133,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 3832,
+        "n_open": 3878,
         "n_past_check_by": 3059
       },
       "allowed_actions": [
@@ -181,7 +181,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 3832,
+        "n_open": 3878,
         "n_past_check_by": 3059
       },
       "allowed_actions": [
@@ -229,7 +229,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 31986,
+        "n_open": 32714,
         "n_past_check_by": 22796
       },
       "allowed_actions": [
@@ -277,7 +277,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 31986,
+        "n_open": 32714,
         "n_past_check_by": 22796
       },
       "allowed_actions": [
@@ -465,7 +465,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 4604,
+        "n_open": 4676,
         "n_past_check_by": 3214
       },
       "allowed_actions": [
@@ -577,7 +577,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 1432,
+        "n_open": 1441,
         "n_past_check_by": 450
       },
       "allowed_actions": [
@@ -824,6 +824,38 @@
       "packet": null
     },
     {
+      "clock_id": "cortex:cortex-2026-08-08-when-an-equity-q2-regime-is-simultaneous-197757",
+      "source_system": "cortex",
+      "subject_id": "cortex-2026-08-08-when-an-equity-q2-regime-is-simultaneous-197757",
+      "subject_type": "hypothesis",
+      "owner_program": "neural-web",
+      "clock_type": "come_back_on",
+      "due_at": "2026-09-05",
+      "as_of": "2026-08-08",
+      "state": "overdue",
+      "date_state": "overdue",
+      "readiness": {
+        "horizon_d": 21,
+        "status": "registered"
+      },
+      "allowed_actions": [
+        "inspect",
+        "print_gap"
+      ],
+      "forbidden_actions": [
+        "promote",
+        "mutate_source_state",
+        "score"
+      ],
+      "evidence_refs": [
+        "data/neuralweb/machine_registry.jsonl"
+      ],
+      "regenerate_cmd": null,
+      "acknowledged": false,
+      "review": null,
+      "packet": null
+    },
+    {
       "clock_id": "qledger:basket_turn.v1",
       "source_system": "qledger",
       "subject_id": "basket_turn.v1",
@@ -849,38 +881,6 @@
       ],
       "evidence_refs": [
         "data/qledger/claims.jsonl"
-      ],
-      "regenerate_cmd": null,
-      "acknowledged": false,
-      "review": null,
-      "packet": null
-    },
-    {
-      "clock_id": "cortex:cortex-2026-08-08-when-an-equity-q2-regime-is-simultaneous-197757",
-      "source_system": "cortex",
-      "subject_id": "cortex-2026-08-08-when-an-equity-q2-regime-is-simultaneous-197757",
-      "subject_type": "hypothesis",
-      "owner_program": "neural-web",
-      "clock_type": "come_back_on",
-      "due_at": "2026-09-05",
-      "as_of": "2026-08-08",
-      "state": "due",
-      "date_state": "due",
-      "readiness": {
-        "horizon_d": 21,
-        "status": "registered"
-      },
-      "allowed_actions": [
-        "inspect",
-        "print_gap"
-      ],
-      "forbidden_actions": [
-        "promote",
-        "mutate_source_state",
-        "score"
-      ],
-      "evidence_refs": [
-        "data/neuralweb/machine_registry.jsonl"
       ],
       "regenerate_cmd": null,
       "acknowledged": false,
@@ -1118,7 +1118,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-09-12",
+      "due_at": "2026-09-13",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -1150,7 +1150,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-09-12",
+      "due_at": "2026-09-13",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -1182,7 +1182,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-09-12",
+      "due_at": "2026-09-13",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -1214,7 +1214,7 @@
       "subject_type": "experiment",
       "owner_program": "engine-fix",
       "clock_type": "awaiting_execution",
-      "due_at": "2026-09-12",
+      "due_at": "2026-09-13",
       "as_of": "2026-07-06",
       "state": "due",
       "date_state": "due",
@@ -1370,8 +1370,8 @@
       "state": "blocked",
       "date_state": "accruing",
       "readiness": {
-        "n_claims": 93185,
-        "n_with_falsifier": 859,
+        "n_claims": 94819,
+        "n_with_falsifier": 872,
         "falsifier_coverage": "0.9%",
         "blocking_reason": "falsifier coverage 0.9%; not a promotion-grade substrate"
       },
@@ -9617,7 +9617,7 @@
       "state": "accruing",
       "date_state": "accruing",
       "readiness": {
-        "n_open": 43,
+        "n_open": 46,
         "n_past_check_by": 0
       },
       "allowed_actions": [
@@ -9649,7 +9649,7 @@
       "state": "accruing",
       "date_state": "accruing",
       "readiness": {
-        "n_open": 17,
+        "n_open": 18,
         "n_past_check_by": 0
       },
       "allowed_actions": [

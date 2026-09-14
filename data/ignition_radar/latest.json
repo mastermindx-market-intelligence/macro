@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-09-12",
+  "as_of": "2026-09-13",
   "data_session": "2026-09-11",
   "state": "off",
   "k_count": 0,
@@ -55,8 +55,8 @@
       "lit": false,
       "fresh": false,
       "since": null,
-      "detail_en": "pct_above_50=33.7% (was 59.1% 10d ago)",
-      "detail_zh": "50\u65e5\u7ebf\u4e0a\u6bd4\u4f8b=33.7%\uff0810\u65e5\u524d59.1%\uff09",
+      "detail_en": "pct_above_50=39.1% (was 53.1% 10d ago)",
+      "detail_zh": "50\u65e5\u7ebf\u4e0a\u6bd4\u4f8b=39.1%\uff0810\u65e5\u524d53.1%\uff09",
       "source": "breadth"
     },
     {
@@ -66,8 +66,8 @@
       "lit": false,
       "fresh": false,
       "since": null,
-      "detail_en": "10d mean(nh-nl)=-1.6 (was 13.7 10d ago)",
-      "detail_zh": "10\u65e5\u5747(\u65b0\u9ad8-\u65b0\u4f4e)=-1.6\uff0810\u65e5\u524d13.7\uff09",
+      "detail_en": "10d mean(nh-nl)=-2.3 (was 11.5 10d ago)",
+      "detail_zh": "10\u65e5\u5747(\u65b0\u9ad8-\u65b0\u4f4e)=-2.3\uff0810\u65e5\u524d11.5\uff09",
       "source": "breadth"
     },
     {
@@ -317,7 +317,7 @@
     "n_qualifying": 15,
     "null": false,
     "floor": "state in igniting/running (pre-registered ALERT_STATES); empty when nothing clears \u2014 honest null",
-    "as_of": "2026-09-12"
+    "as_of": "2026-09-13"
   },
   "narrow_top": {
     "basket_id": "XLC",
@@ -331,5 +331,5 @@
     "phase": null
   },
   "accruing": "accruing \u2014 display-only until >=30 broad-state grades + operator ruling. Forward-graded by engine/ignition_audit.py (US arm).",
-  "_timing_s": 2.44
+  "_timing_s": 2.79
 }

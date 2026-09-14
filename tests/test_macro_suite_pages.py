@@ -351,25 +351,29 @@ def test_every_engine_contradiction_kind_has_a_reviewed_label() -> None:
     assert unlabelled == set(), unlabelled
 
 
-def test_the_two_healed_contradiction_labels_agree_with_their_producers() -> None:
+def test_the_three_healed_contradiction_labels_agree_with_their_producers() -> None:
     """Producer -> display: a contradiction label must not contradict the engine
-    sentence printed beside it.
+    sentence printed beside it, and must not claim more than that sentence
+    computes.
 
-    ``lib/macro_suite_view.py:124`` resolves the CONTRADICTION_KIND label and
-    ``:126`` carries the producer's own EN/ZH sentence, so the two land in one
-    block and a reversed label is refuted where the reader meets it. Nothing
-    else in this file joins the two: the coverage test above asserts only that
-    a label EXISTS, and the producer-side suites never read display text --
-    which is how two frozen pairs came to state the opposite of the engine.
+    ``lib/macro_suite_view.py:134`` resolves the CONTRADICTION_KIND label and
+    ``:136`` carries the producer's own EN/ZH sentence, so the two land in one
+    block and a label its own sentence refutes is caught where the reader meets
+    it. Nothing else in this file joins the two: the coverage test above asserts
+    only that a label EXISTS, and the producer-side suites never read this label
+    table -- which is how two frozen pairs came to state the opposite of the
+    engine, and a third came to name a split between rhetoric and financial
+    conditions that its producer never computes.
 
     So call the detectors that EMIT these kinds, take the kind they emit (an
     engine rename fails here rather than quietly relabelling nothing), install
     the emitted contradiction on a copy of the shipped snapshot and read the
-    label off the real view. Reverting either pair fails this test.
+    label off the real view. Reverting any of the three pairs fails this test.
     """
     # Local import: this is the only test that needs the producers, and the
     # claim under test is precisely the join between them and the label table.
-    from engine.market_os.macro_workspaces import consumer_payments, financial_conditions
+    from engine.market_os.macro_workspaces import (
+        consumer_payments, financial_conditions, monetary_policy)
 
     def _label_a_reader_meets(emitted: Mapping[str, Any]) -> dict[str, str]:
         snapshot = json.loads(_body_path(DATA_ROOT).read_text(encoding="utf-8"))
@@ -417,6 +421,33 @@ def test_the_two_healed_contradiction_labels_agree_with_their_producers() -> Non
     assert "平静" in stress_label["zh"], stress_label["zh"]
     assert "避险" in stress_label["zh"], stress_label["zh"]
     assert "整体承压" not in stress_label["zh"], stress_label["zh"]
+
+    # -- pair 3: monetary_policy, both pressure legs active and balanced -----
+    # The producer emits this kind only for net_state "two_sided" with both
+    # scores > 0 (``monetary_policy.py:456``); an empty divergence list keeps
+    # D1_dots_vs_market out, so exactly one contradiction can be emitted.
+    split_emitted = monetary_policy._detect_contradictions(
+        [], {"net_state": "two_sided", "hawk_score": 2.0, "ease_score": 1.8})
+    assert len(split_emitted) == 1, split_emitted
+    split = split_emitted[0]
+    assert split["kind"] == "hawk_ease_split"
+    # The producer's own sentence claims a BALANCE of two pressure legs, and it
+    # computes hawk_score / ease_score only -- no conditions index -- so the
+    # label may not name a talk-versus-conditions split.
+    assert "balanced" in split["en"], split["en"]
+    assert "unbalanced" not in split["en"], split["en"]
+    assert "制衡" in split["zh"] and "未制衡" not in split["zh"], split["zh"]
+    split_label = _label_a_reader_meets(split)
+    # "balanced" is a substring of "unbalanced" and of "imbalanced", so the
+    # positive claim alone would survive an inverted rewrite of this pair.
+    assert "balanced" in split_label["en"], split_label["en"]
+    assert "unbalanced" not in split_label["en"], split_label["en"]
+    assert "imbalanced" not in split_label["en"], split_label["en"]
+    assert "talk" not in split_label["en"], split_label["en"]
+    assert "conditions" not in split_label["en"], split_label["en"]
+    assert "制衡" in split_label["zh"], split_label["zh"]
+    assert "未制衡" not in split_label["zh"], split_label["zh"]
+    assert "言辞" not in split_label["zh"], split_label["zh"]
 
 
 def test_every_published_horizon_and_region_has_a_reviewed_name() -> None:

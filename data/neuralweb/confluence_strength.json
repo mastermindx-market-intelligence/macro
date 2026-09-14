@@ -2101,6 +2101,19 @@
       "regime_bucket": "Q3"
     },
     {
+      "subject": "ATO",
+      "as_of": "2026-07-02",
+      "direction": 1,
+      "horizon": "63.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "desk:stock_desk",
+        "radar"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
       "subject": "COIN",
       "as_of": "2026-07-02",
       "direction": 1,
@@ -17534,6 +17547,19 @@
       "regime_bucket": "Q3"
     },
     {
+      "subject": "YUM",
+      "as_of": "2026-08-21",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "altdata",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
       "subject": "ABBV",
       "as_of": "2026-08-24",
       "direction": -1,
@@ -18630,6 +18656,19 @@
       "regime_bucket": "Q3"
     },
     {
+      "subject": "ACM",
+      "as_of": "2026-08-28",
+      "direction": -1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
       "subject": "ADBE",
       "as_of": "2026-08-28",
       "direction": -1,
@@ -18856,7 +18895,7 @@
       "subject": "ADM",
       "as_of": "2026-08-31",
       "direction": 1,
-      "horizon": "63.0",
+      "horizon": "5.0",
       "n_confirming_raw": 2,
       "n_independent_confirming": 2.0,
       "engines": [
@@ -19110,6 +19149,32 @@
       "n_independent_confirming": 2.0,
       "engines": [
         "altdata",
+        "track_record"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "MRK",
+      "as_of": "2026-09-09",
+      "direction": 1,
+      "horizon": "21.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "altdata",
+        "track_record"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "MRK",
+      "as_of": "2026-09-09",
+      "direction": 1,
+      "horizon": "63.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "radar",
         "track_record"
       ],
       "regime_bucket": "Q3"
@@ -20220,10 +20285,36 @@
       "regime_bucket": "Q3"
     },
     {
+      "subject": "HLT",
+      "as_of": "2026-08-26",
+      "direction": 1,
+      "horizon": "10.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "track_record",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
       "subject": "KDP",
       "as_of": "2026-08-26",
       "direction": 1,
       "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "track_record",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "KDP",
+      "as_of": "2026-08-26",
+      "direction": 1,
+      "horizon": "10.0",
       "n_confirming_raw": 2,
       "n_independent_confirming": 2.0,
       "engines": [
@@ -20246,10 +20337,36 @@
       "regime_bucket": "Q3"
     },
     {
+      "subject": "SPGI",
+      "as_of": "2026-08-26",
+      "direction": 1,
+      "horizon": "10.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "track_record",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
       "subject": "WMB",
       "as_of": "2026-08-26",
       "direction": 1,
       "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "track_record",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "WMB",
+      "as_of": "2026-08-26",
+      "direction": 1,
+      "horizon": "10.0",
       "n_confirming_raw": 2,
       "n_independent_confirming": 2.0,
       "engines": [
@@ -20281,6 +20398,6 @@
     "confluence_strength: no clusters in lobes block — no discount"
   ],
   "produced_by": "engine/neuralweb/confluence_strength.py",
-  "produced_at": "2026-09-12T10:28:09Z",
+  "produced_at": "2026-09-13T10:07:59Z",
   "authority_check": []
 }

@@ -1,21 +1,21 @@
 {
-  "appended": 3,
+  "appended": 2,
   "asof": "2026-09-11",
   "candidates": {
     "R": 0,
-    "T": 6,
+    "T": 8,
     "W": 4
   },
   "deduped": {
     "R": 0,
-    "T": 4,
-    "W": 3
+    "T": 6,
+    "W": 4
   },
   "dry_run": false,
   "feature_source": {
     "enabled": true,
     "foresight": {
-      "asof": "2026-09-12",
+      "asof": "2026-09-13",
       "consulted": true,
       "n_keys": 27,
       "n_themes": 18,
@@ -27,26 +27,26 @@
       "coil_min_sessions": 293,
       "consulted": true,
       "null_reasons": {
-        "ohlcv_absent": 16
+        "ohlcv_absent": 15
       },
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
       "themes_read": {
-        "Commodities Agriculture": {
-          "theme_thrust_frac": 0.0,
+        "Hardware": {
+          "theme_thrust_frac": 0.0889,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         },
-        "Hardware": {
-          "theme_thrust_frac": 0.0889,
+        "Telecommunications": {
+          "theme_thrust_frac": 0.0323,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         }
       },
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 63,
-      "tickers_read": 79
+      "tickers_ok": 67,
+      "tickers_read": 82
     },
     "keys": [
       "relay_count_3d",
@@ -67,7 +67,7 @@
       "consulted": true,
       "high_lookback": 63,
       "members_indexed": 185,
-      "n_covered": 1,
+      "n_covered": 120,
       "reason": null,
       "window_sessions": 21
     },
@@ -83,14 +83,9 @@
   },
   "feature_source_w": {
     "atlas": {
-      "consulted": true,
-      "direction": "bull",
-      "grid": "W",
-      "horizon": "13w",
-      "n_asked": 1,
-      "n_covered": 1,
-      "reason": null,
-      "source": "engine.event_atlas.receipt"
+      "consulted": false,
+      "n_asked": 0,
+      "n_covered": 0
     },
     "enabled": true,
     "keys": [
@@ -113,12 +108,10 @@
   "flag_tickers": {
     "R": [],
     "T": [
-      "TEL",
-      "ANDE"
+      "GLW",
+      "APH"
     ],
-    "W": [
-      "LITE"
-    ]
+    "W": []
   },
   "n_universe": 1496,
   "overflow": {
@@ -126,8 +119,8 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-09-12 14:59:55",
-  "runtime_s": 100.8,
+  "run_utc": "2026-09-13 16:39:04",
+  "runtime_s": 139.3,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": 0,
@@ -178,7 +171,7 @@
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 21.6,
+    "runtime_s": 23.2,
     "skipped": 4,
     "source": "baskets/membership.json",
     "state_turn": 83,

@@ -390,7 +390,7 @@
   "degraded": false,
   "schema_version": 1,
   "produced_by": "scripts/build_liquidity_plumbing.py",
-  "produced_at": "2026-09-12T10:39:08Z",
+  "produced_at": "2026-09-13T10:18:19Z",
   "inputs_hash": "sha256:a25e57da87392d445a5d62b952295fa30128378eb26c434d47555e7438d687f8",
   "tier": "shadow"
 }

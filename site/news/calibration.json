@@ -1,9 +1,9 @@
 {
   "schema": "news_event_calibration.v1",
   "is_context_only": true,
-  "asof": "2026-09-12",
-  "n_events_logged": 700,
-  "n_events_graded": 371,
+  "asof": "2026-09-13",
+  "n_events_logged": 706,
+  "n_events_graded": 372,
   "classes": [
     {
       "event_type": "activist_campaign",
@@ -86,11 +86,11 @@
     {
       "event_type": "earnings_result",
       "direction": "mixed",
-      "n": 229,
-      "n_graded": 107,
+      "n": 230,
+      "n_graded": 108,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
-      "avg_rel_5d": 0.002217065887850467,
+      "avg_rel_5d": 0.003324964969135802,
       "avg_rel_21d": 0.003051206779661016,
       "wilson_low_5d": null,
       "wilson_high_5d": null,
@@ -99,7 +99,7 @@
     {
       "event_type": "equity_offering",
       "direction": "bearish",
-      "n": 21,
+      "n": 23,
       "n_graded": 9,
       "hit_5d": 0.3333333333333333,
       "hit_21d": 0.5555555555555556,
@@ -129,7 +129,7 @@
       "n_graded": 15,
       "hit_5d": 0.7333333333333333,
       "hit_21d": 0.5833333333333334,
-      "avg_rel_5d": 0.0126648,
+      "avg_rel_5d": 0.014088999999999999,
       "avg_rel_21d": 0.009555666666666665,
       "wilson_low_5d": 0.480491,
       "wilson_high_5d": 0.891027,
@@ -138,11 +138,11 @@
     {
       "event_type": "litigation",
       "direction": "bearish",
-      "n": 169,
+      "n": 170,
       "n_graded": 144,
       "hit_5d": 0.5138888888888888,
       "hit_21d": 0.3644067796610169,
-      "avg_rel_5d": 0.00024706886574074046,
+      "avg_rel_5d": 0.0002099473379629627,
       "avg_rel_21d": 0.029389036723163838,
       "wilson_low_5d": 0.43296,
       "wilson_high_5d": 0.594096,
@@ -151,7 +151,7 @@
     {
       "event_type": "macro_release",
       "direction": "informational",
-      "n": 55,
+      "n": 56,
       "n_graded": 9,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -242,7 +242,7 @@
     {
       "event_type": "product_launch",
       "direction": "bullish",
-      "n": 10,
+      "n": 11,
       "n_graded": 4,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -280,7 +280,7 @@
     }
   ],
   "reject_audit": {
-    "n_sampled": 1148,
+    "n_sampled": 1163,
     "n_graded": 0,
     "classes": []
   }

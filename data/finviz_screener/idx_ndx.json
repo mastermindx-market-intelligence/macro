@@ -1,6 +1,6 @@
 {
 "filter":"idx_ndx",
-"as_of":"2026-09-12 02:41 UTC",
+"as_of":"2026-09-13 02:29 UTC",
 "n":102,
 "total_reported":102,
 "unmapped_industries":[],
@@ -22,20 +22,20 @@
 "market_cap_b":4849.21
 },
 {
-"ticker":"GOOGL",
-"company":"Alphabet Inc",
-"industry":"Internet Content & Information",
-"sector":"Communication Services",
-"country":"USA",
-"market_cap_b":4127.42
-},
-{
 "ticker":"GOOG",
 "company":"Alphabet Inc",
 "industry":"Internet Content & Information",
 "sector":"Communication Services",
 "country":"USA",
-"market_cap_b":4117.59
+"market_cap_b":4123.0
+},
+{
+"ticker":"GOOGL",
+"company":"Alphabet Inc",
+"industry":"Internet Content & Information",
+"sector":"Communication Services",
+"country":"USA",
+"market_cap_b":4123.0
 },
 {
 "ticker":"MSFT",
@@ -67,7 +67,7 @@
 "industry":"Semiconductors",
 "sector":"Technology",
 "country":"USA",
-"market_cap_b":1722.2
+"market_cap_b":1728.01
 },
 {
 "ticker":"META",
@@ -187,7 +187,7 @@
 "industry":"Software - Infrastructure",
 "sector":"Technology",
 "country":"USA",
-"market_cap_b":269.48
+"market_cap_b":270.47
 },
 {
 "ticker":"TXN",
