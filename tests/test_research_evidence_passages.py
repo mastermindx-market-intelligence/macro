@@ -106,24 +106,34 @@ def test_source_binding_fails_closed_for_invalid_or_contradictory_lengths():
     """Bad source counts must never claim complete coverage or an omitted tail."""
     body = "stored evidence body"
     cases = (
-        (len(body) + 1, "prefix_partial", True),
-        (len(body), "complete", False),
-        (None, "unknown", None),
-        ("not-a-count", "unknown", None),
-        (-1, "unknown", None),
-        (0, "unknown", None),
-        (len(body) - 1, "unknown", None),
-        (True, "unknown", None),
-        (False, "unknown", None),
+        (len(body) + 1, "prefix_partial", True, len(body) + 1),
+        (len(body), "complete", False, len(body)),
+        (None, "unknown", None, None),
+        ("not-a-count", "unknown", None, None),
+        (-1, "unknown", None, None),
+        (0, "unknown", None, None),
+        (len(body) - 1, "unknown", None, None),
+        (True, "unknown", None, None),
+        (False, "unknown", None, None),
+        (len(body) - 0.5, "unknown", None, None),
     )
 
-    for char_count, coverage, tail_omitted in cases:
+    for char_count, coverage, tail_omitted, source_char_count in cases:
         result = corpus.find_evidence_passages(
             _doc(body, char_count=char_count), "evidence"
         )
         binding = result["source_binding"]
         assert binding["coverage"] == coverage, char_count
         assert binding["tail_omitted"] is tail_omitted, char_count
+        assert binding["source_char_count"] is source_char_count, char_count
+
+
+def test_evidence_integer_helper_rejects_bools_and_nonintegral_floats():
+    assert corpus._evidence_int(True) is None
+    assert corpus._evidence_int(False) is None
+    assert corpus._evidence_int(1.5) is None
+    assert corpus._evidence_int(-0.5) is None
+    assert corpus._evidence_int(7.0) == 7
 
 
 def test_no_match_and_noise_query_are_distinct_and_never_manufacture_a_passage():

@@ -183,11 +183,36 @@ def test_partial_no_match_names_the_searched_prefix_and_its_counts(
     assert debits == []
     note = result["note"].lower()
     assert "stored prefix" in note
-    assert f"{len(body)}" in note and f"{len(body) + 500}" in note
+    assert f"({len(body)} of {len(body) + 500} source characters)" in note
     assert "does not prove" in note and "omitted tail" in note
 
 
-def test_blank_and_noise_queries_keep_the_legacy_full_note_path(
+def test_no_match_discloses_complete_partial_and_unknown_coverage_distinctly(
+        tmp_path, monkeypatch):
+    _seed(tmp_path)
+    body = "This report only discusses oil supply."
+    debits = _stub_quota(monkeypatch)
+    notes = {}
+
+    for name, char_count in {
+        "complete": len(body),
+        "prefix_partial": len(body) + 500,
+        "unknown": None,
+    }.items():
+        _stub_documents(monkeypatch, body, char_count=char_count)
+        result = _report(tmp_path, "semiconductor inventories")
+        assert result["evidence"]["status"] == "no_matching_passage"
+        notes[name] = result["note"].lower()
+
+    assert "stored prefix" not in notes["complete"]
+    assert "stored prefix" in notes["prefix_partial"]
+    assert "coverage could not be verified" in notes["unknown"]
+    assert "absence is not evidence" in notes["unknown"]
+    assert len(set(notes.values())) == 3
+    assert debits == []
+
+
+def test_generic_intent_variants_and_noise_keep_the_legacy_full_note_path(
         tmp_path, monkeypatch):
     _seed(tmp_path)
     evidence_calls, legacy_calls = _stub_documents(
@@ -195,15 +220,42 @@ def test_blank_and_noise_queries_keep_the_legacy_full_note_path(
     )
     debits = _stub_quota(monkeypatch)
 
-    for query in ("", "x", "the and", "summarize this report", "what does this note argue?"):
+    generic_queries = (
+        "Summarize this report.",
+        "Can you please summarize this report?",
+        "What does this note argue",
+        "What is the main argument of this paper?",
+        "总结这份报告",
+        "请概括这篇研究的主要观点",
+        "in", "is it", "what is the", "to be or not to be", "", "x",
+    )
+    for query in generic_queries:
         result = _report(tmp_path, query)
         assert result["report"]["body_text"] == "The complete stored argument."
         assert result["report"]["body_truncated"] is False
         assert result["evidence"] is None
 
     assert evidence_calls == []
-    assert legacy_calls == [REPORT_ID] * 5
-    assert len(debits) == 5
+    assert legacy_calls == [REPORT_ID] * len(generic_queries)
+    assert len(debits) == len(generic_queries)
+
+
+def test_generic_intent_with_a_residual_topic_uses_evidence_selection(
+        tmp_path, monkeypatch):
+    _seed(tmp_path)
+    evidence_calls, legacy_calls = _stub_documents(
+        monkeypatch, "Inflation expectations are rising."
+    )
+    debits = _stub_quota(monkeypatch)
+
+    result = _report(
+        tmp_path, "Summarize this report's discussion of inflation expectations"
+    )
+
+    assert result["evidence"]["status"] == "matched"
+    assert evidence_calls == [REPORT_ID]
+    assert legacy_calls == []
+    assert len(debits) == 1
 
 
 def test_unavailable_evidence_body_is_disclosed_and_unmetered(
@@ -227,6 +279,31 @@ def test_unavailable_evidence_body_is_disclosed_and_unmetered(
     assert "scanned/image-only" in result["note"]
 
 
+def test_matched_selector_without_usable_text_is_not_called_an_extraction_failure(
+        tmp_path, monkeypatch):
+    _seed(tmp_path)
+    _stub_documents(monkeypatch, "AAPL demand is accelerating.")
+    debits = _stub_quota(monkeypatch)
+    monkeypatch.setattr(bmi, "_select_evidence", lambda document, query: {
+        "status": "matched",
+        "passages": [],
+        "source_binding": {
+            "coverage": "complete",
+            "stored_char_count": 28,
+            "source_char_count": 28,
+            "tail_omitted": False,
+        },
+    })
+
+    result = _report(tmp_path, "AAPL demand")
+
+    assert result["evidence"]["status"] == "body_unavailable"
+    assert result["report"]["body_text"] == ""
+    assert debits == []
+    assert "no usable passage text was available" in result["note"].lower()
+    assert "not reachable right now" not in result["note"].lower()
+
+
 def test_denied_evidence_view_leaks_no_passage_or_body(tmp_path, monkeypatch):
     _seed(tmp_path)
     _stub_documents(monkeypatch, "AAPL demand is accelerating.")
@@ -241,13 +318,15 @@ def test_denied_evidence_view_leaks_no_passage_or_body(tmp_path, monkeypatch):
     assert "AAPL demand is accelerating" not in json.dumps(result)
 
 
-def test_exhausted_evidence_preflight_is_uniform_and_skips_selection(
+def test_exhausted_report_preflight_is_uniform_and_skips_all_document_reads(
         tmp_path, monkeypatch):
     """No exhausted request may reveal whether its terms occur in the paid body."""
     from engine.research_vault import view_ratelimit
 
     _seed(tmp_path)
-    _stub_documents(monkeypatch, "AAPL demand is accelerating.")
+    evidence_calls, legacy_calls = _stub_documents(
+        monkeypatch, "AAPL demand is accelerating."
+    )
     debits = _stub_quota(monkeypatch)
     peeks: list[tuple] = []
     selector_calls: list[str] = []
@@ -264,14 +343,19 @@ def test_exhausted_evidence_preflight_is_uniform_and_skips_selection(
     monkeypatch.setattr(view_ratelimit, "peek", peek)
     monkeypatch.setattr(bmi, "_select_evidence", select)
 
-    for query in ("AAPL demand", "semiconductor inventories"):
+    envelopes = []
+    for query in ("summarize this report", "AAPL demand"):
         result = _report(tmp_path, query)
         assert result["error"] == "view_limit_reached"
         assert set(result) == {"schema", "error", "note", "report_id", "remaining", "limit"}
         assert "report" not in result and "evidence" not in result
+        envelopes.append(result)
 
     assert len(peeks) == 2
+    assert envelopes[0] == envelopes[1]
     assert selector_calls == []
+    assert evidence_calls == []
+    assert legacy_calls == []
     assert debits == []
 
 
@@ -304,20 +388,81 @@ def test_evidence_mode_whole_response_obeys_the_existing_response_cap(
     _stub_documents(monkeypatch, "AAPL demand " + ("supporting context " * 5000))
     _stub_quota(monkeypatch)
 
-    result = _report(tmp_path, "AAPL demand")
+    result = _report(tmp_path, "AAPL demand " + ("unmatched-term " * 5000))
 
-    def walk(node):
+    def string_total(node):
         if isinstance(node, str):
-            assert len(node) <= bmi.REPORT_BODY_MAX_CHARS
+            return len(node)
         elif isinstance(node, dict):
-            for value in node.values():
-                walk(value)
+            return sum(string_total(value) for value in node.values())
         elif isinstance(node, list):
-            for value in node:
-                walk(value)
+            return sum(string_total(value) for value in node)
+        return 0
 
-    walk(result)
-    assert result["report"]["body_truncated"] is True
+    assert string_total(result) <= bmi.REPORT_BODY_MAX_CHARS
+    assert result["evidence"]["status"] == "matched"
+
+
+def test_brain_projection_never_exports_corpus_only_query_too_short_status():
+    projected = bmi._project_evidence(
+        {
+            "status": "query_too_short",
+            "passages": [],
+            "source_binding": {},
+        },
+        report_id=REPORT_ID, published_at=PUBLISHED_AT,
+        query="in", allowed=False,
+    )
+
+    assert projected["status"] == "body_unavailable"
+
+
+def test_evidence_projection_rejects_invalid_binding_types_and_preserves_only_schema(
+        ):
+    projected = bmi._project_evidence(
+        {
+            "status": "no_matching_passage",
+            "source_binding": {
+                "content_sha256": "not-a-sha",
+                "stored_body_sha256": "also-not-a-sha",
+                "coverage": "complete-but-unproved",
+                "source_char_count": True,
+                "stored_char_count": 1.5,
+                "tail_omitted": "yes",
+                "page_count": True,
+            },
+        },
+        report_id=REPORT_ID, published_at=PUBLISHED_AT, query="query", allowed=False,
+    )
+
+    assert projected["source_binding"] == {
+        "report_id": REPORT_ID,
+        "published_at": PUBLISHED_AT,
+        "content_sha256": "",
+        "stored_body_sha256": "",
+        "coverage": "unknown",
+        "source_char_count": None,
+        "stored_char_count": None,
+        "tail_omitted": None,
+        "text_layer": "",
+        "page_count": None,
+    }
+
+    invalid_tail = bmi._project_evidence(
+        {
+            "status": "no_matching_passage",
+            "source_binding": {
+                "coverage": "complete",
+                "source_char_count": 10,
+                "stored_char_count": 10,
+                "tail_omitted": "no",
+            },
+        },
+        report_id=REPORT_ID, published_at=PUBLISHED_AT, query="query", allowed=False,
+    )
+    assert invalid_tail["source_binding"]["coverage"] == "unknown"
+    assert invalid_tail["source_binding"]["source_char_count"] is None
+    assert invalid_tail["source_binding"]["tail_omitted"] is None
 
 
 def test_tool_schema_tells_the_model_to_request_and_open_supporting_evidence():
