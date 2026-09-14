@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-14T20:11:15.853123+00:00",
-  "count": 2110,
+  "generated_at": "2026-09-14T20:41:24.043148+00:00",
+  "count": 2111,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -445,6 +445,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 22,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-m1wgdpmhzbf-57e689",
+      "title": "Strategy Espresso Germany The Earnings Recovery Still Ahead",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-13T19:50:10Z",
+      "summary_points": [
+        "**Germany's EPS Growth Edge**: 17% consensus EPS growth for German equities (2027) vs.",
+        "STOXX 600’s 9%, with DAX/MDAX growth exceeding Europe’s base case (DAX +10% conservative, MDAX +16% vs.",
+        "STOXX +11%).",
+        "**Valuation Discount & GARP Opportunity**: DAX trades at 15x P/E (25% discount vs.",
+        "US) despite comparable growth expectations, ranking among Europe’s most attractive markets on PEG basis."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
       "language": "en",
       "needs_metadata": false
     },
