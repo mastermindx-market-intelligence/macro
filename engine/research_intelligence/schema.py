@@ -68,34 +68,20 @@ def _support(value: Any, claim_count: int) -> list[int]:
     return out
 
 
-def _contains_token_sequence(haystack: list[str], needle: list[str]) -> bool:
-    if not needle or len(needle) > len(haystack):
-        return False
-    width = len(needle)
-    return any(haystack[index:index + width] == needle for index in range(len(haystack) - width + 1))
-
-
 def claim_statement_supported(statement: str, evidence: list[dict[str, str]]) -> bool:
-    """Whether a source-claim statement is lexically bound to its evidence.
+    """Whether a source-claim statement is exactly extractive evidence.
 
-    Statements are required to stay extractive: either the statement is a token
-    subsequence of one verified quote, or a quote covers at least 75% of the
-    statement tokens. This allows a short source qualifier while preventing an
-    unrelated genuine quote from laundering a fabricated attribution.
+    Partial lexical overlap can omit polarity or modality, so a statement is
+    valid only when its canonical token sequence exactly equals one quote.
     """
     statement_tokens = citation_normalize(statement).split()
     if not statement_tokens:
         return False
     for row in evidence:
-        evidence_tokens = citation_normalize(row.get("quote_span", "")).split()
-        if not evidence_tokens:
+        if not isinstance(row, dict):
             continue
-        if _contains_token_sequence(evidence_tokens, statement_tokens):
-            return True
-        if (
-            _contains_token_sequence(statement_tokens, evidence_tokens)
-            and len(evidence_tokens) * 4 >= len(statement_tokens) * 3
-        ):
+        evidence_tokens = citation_normalize(row.get("quote_span", "")).split()
+        if statement_tokens == evidence_tokens:
             return True
     return False
 

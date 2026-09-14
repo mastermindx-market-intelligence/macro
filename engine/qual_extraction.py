@@ -177,11 +177,64 @@ _CITATION_NUMBER_AT = re.compile(
 )
 _CITATION_CURRENCY = frozenset("$€£¥")
 _CITATION_SIGNS = frozenset("+-−")
-_CITATION_HARD_BOUNDARIES = frozenset(".,!?;:。！？；，、：—–")
+_CITATION_HARD_BOUNDARIES = frozenset(".,!?;:。！？；，、：—–\r\n\v\f\u0085\u2028\u2029")
+_CITATION_CONTEXT_BOUNDARIES = frozenset("!?。！？\r\n\v\f\u0085\u2028\u2029")
 _CITATION_BOUNDARY_TOKEN = "\x1e"
+_CITATION_PERIOD_ABBREVIATIONS = frozenset({
+    "approx", "co", "corp", "dec", "dept", "dr", "e.g", "est", "etc",
+    "feb", "fig", "govt", "i.e", "inc", "jan", "jr", "jul", "jun",
+    "ltd", "mar", "mr", "mrs", "ms", "no", "nov", "oct", "prof",
+    "sep", "sept", "sr", "st", "vs",
+})
+_CITATION_CLOSING_PUNCTUATION = frozenset("'\"’”)]}》】」』")
 
 
-def _citation_tokens(text: str, *, preserve_hard_boundaries: bool = False) -> list[str]:
+def _period_ends_context_unit(text: str, index: int) -> bool:
+    """Conservatively classify a period as a sentence/context boundary.
+
+    Unknown punctuation stays inside the context unit rather than creating a
+    new claim start, so abbreviation ambiguity fails closed by retaining more
+    source context. Decimals are consumed by the numeric tokenizer before this
+    helper is reached.
+    """
+    if index < 0 or index >= len(text) or text[index] != ".":
+        return False
+    if index > 0 and index + 1 < len(text):
+        if text[index - 1].isdigit() and text[index + 1].isdigit():
+            return False
+    cursor = index + 1
+    while cursor < len(text) and text[cursor] in _CITATION_CLOSING_PUNCTUATION:
+        cursor += 1
+    if cursor >= len(text):
+        return True
+    if text[cursor] in _CITATION_CONTEXT_BOUNDARIES:
+        return True
+    if not text[cursor].isspace():
+        return False
+    while cursor < len(text) and text[cursor].isspace():
+        if text[cursor] in _CITATION_CONTEXT_BOUNDARIES:
+            return True
+        cursor += 1
+    while cursor < len(text) and text[cursor] in _CITATION_CLOSING_PUNCTUATION:
+        cursor += 1
+    if cursor >= len(text):
+        return True
+
+    left = index - 1
+    while left >= 0 and text[left].isalpha():
+        left -= 1
+    word = text[left + 1:index].casefold()
+    if len(word) == 1 or word in _CITATION_PERIOD_ABBREVIATIONS:
+        return False
+    return True
+
+
+def _citation_tokens(
+    text: str,
+    *,
+    preserve_hard_boundaries: bool = False,
+    preserve_context_boundaries: bool = False,
+) -> list[str]:
     """Return Unicode-safe citation tokens with Han characters addressable.
 
     NFKC makes full-width and compatibility typography comparable. Non-Han
@@ -189,8 +242,10 @@ def _citation_tokens(text: str, *, preserve_hard_boundaries: bool = False) -> li
     cannot ground itself inside ``corporate``. Numeric tokens preserve signs,
     decimals, percentages, and common magnitude units. Han characters are
     individual tokens because Chinese source text does not require whitespace.
-    The verifier may also retain a non-user-producible boundary token for clause
-    punctuation so adjacent sentences cannot be spliced into a fabricated quote.
+    The verifier may also retain a non-user-producible boundary token. Legacy
+    mode preserves every historical punctuation boundary; context mode preserves
+    only sentence/line boundaries so commas, colons, and abbreviations cannot be
+    used either to strip modality or to reject otherwise complete finance prose.
     """
     normalized = unicodedata.normalize("NFKC", str(text or "")).casefold()
     tokens: list[str] = []
@@ -216,12 +271,16 @@ def _citation_tokens(text: str, *, preserve_hard_boundaries: bool = False) -> li
                 continue
             flush()
             continue
-        if char in _CITATION_HARD_BOUNDARIES:
-            if (
-                preserve_hard_boundaries
-                and tokens
-                and tokens[-1] != _CITATION_BOUNDARY_TOKEN
-            ):
+        context_boundary = (
+            preserve_context_boundaries
+            and (
+                char in _CITATION_CONTEXT_BOUNDARIES
+                or (char == "." and _period_ends_context_unit(normalized, index))
+            )
+        )
+        legacy_boundary = preserve_hard_boundaries and char in _CITATION_HARD_BOUNDARIES
+        if context_boundary or legacy_boundary:
+            if tokens and tokens[-1] != _CITATION_BOUNDARY_TOKEN:
                 tokens.append(_CITATION_BOUNDARY_TOKEN)
             index += 1
             continue
@@ -254,30 +313,55 @@ def citation_normalize(text: str) -> str:
     return " ".join(_citation_tokens(text))
 
 
-def quote_span_verified(body: str, quote_span: str, *, minimum_chars: int = 4) -> bool:
+def quote_span_verified(
+    body: str,
+    quote_span: str,
+    *,
+    minimum_chars: int = 4,
+    require_complete_clause: bool = False,
+) -> bool:
     """Whether a purported quote is present at citation-token boundaries.
 
     This is the shared anti-hallucination primitive for body-bearing qualitative
     lanes. ``minimum_chars`` is explicit so callers verifying short numeric
     literals can choose a smaller boundary without reimplementing normalization.
+    Clause mode additionally requires the match to occupy one complete
+    sentence/line context unit. Soft punctuation and abbreviations stay inside
+    that unit so they cannot create a polarity- or modality-stripping start.
     """
+    if type(require_complete_clause) is not bool:
+        raise ValueError("require_complete_clause must be a boolean")
     if isinstance(minimum_chars, bool) or not isinstance(minimum_chars, int) or minimum_chars < 1:
         raise ValueError("minimum_chars must be a positive integer")
-    source_tokens = _citation_tokens(body, preserve_hard_boundaries=True)
-    span_tokens = _citation_tokens(quote_span, preserve_hard_boundaries=True)
+    token_options = (
+        {"preserve_context_boundaries": True}
+        if require_complete_clause
+        else {"preserve_hard_boundaries": True}
+    )
+    source_tokens = _citation_tokens(body, **token_options)
+    span_tokens = _citation_tokens(quote_span, **token_options)
     while span_tokens and span_tokens[0] == _CITATION_BOUNDARY_TOKEN:
         span_tokens.pop(0)
     while span_tokens and span_tokens[-1] == _CITATION_BOUNDARY_TOKEN:
         span_tokens.pop()
+    if require_complete_clause and _CITATION_BOUNDARY_TOKEN in span_tokens:
+        return False
     span_chars = sum(
         len(token) for token in span_tokens if token != _CITATION_BOUNDARY_TOKEN
     )
     if not span_tokens or span_chars < minimum_chars:
         return False
-    separator = "\x1f"
-    source = separator + separator.join(source_tokens) + separator
-    span = separator + separator.join(span_tokens) + separator
-    return span in source
+    for start in range(len(source_tokens) - len(span_tokens) + 1):
+        end = start + len(span_tokens)
+        if source_tokens[start:end] != span_tokens:
+            continue
+        if not require_complete_clause:
+            return True
+        starts_at_boundary = start == 0 or source_tokens[start - 1] == _CITATION_BOUNDARY_TOKEN
+        ends_at_boundary = end == len(source_tokens) or source_tokens[end] == _CITATION_BOUNDARY_TOKEN
+        if starts_at_boundary and ends_at_boundary:
+            return True
+    return False
 
 
 # --------------------------------------------------------------------------- #

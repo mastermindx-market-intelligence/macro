@@ -859,17 +859,17 @@ def _rio_sample(doc_id="r1", *, body=RIO_BODY):
         },
         "claims": [
             {
-                "statement": "Real yields rose to 2.1%.",
-                "evidence": [{"quote_span": "real yields rose to 2.1%", "location": "opening"}],
+                "statement": "Goldman says real yields rose to 2.1%.",
+                "evidence": [{"quote_span": "Goldman says real yields rose to 2.1%.", "location": "opening"}],
                 "numbers": ["2.1%", "99%"],
                 "entities": ["real_yields"],
                 "horizon": "current",
                 "explicit": True,
             },
             {
-                "statement": "Higher real yields are tightening financial conditions.",
+                "statement": "Higher real yields are tightening financial conditions and pressuring long-duration assets.",
                 "evidence": [{
-                    "quote_span": "Higher real yields are tightening financial conditions and pressuring long-duration assets",
+                    "quote_span": "Higher real yields are tightening financial conditions and pressuring long-duration assets.",
                     "location": "opening",
                 }],
                 "numbers": [],
@@ -1172,6 +1172,111 @@ def test_rio_drops_statement_backed_by_unrelated_real_evidence():
     assert out["claims"][0]["statement"].startswith("Higher real yields")
 
 
+def test_rio_rejects_negation_stripped_from_inner_evidence():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+
+    body = "Goldman does not expect inflation to rise this year."
+    obj = _rio_sample(body=body)
+    obj["claims"] = [{
+        "statement": "inflation to rise this year",
+        "evidence": [{"quote_span": "inflation to rise this year"}],
+        "numbers": [], "entities": ["inflation"], "horizon": "current", "explicit": True,
+    }]
+    obj["analysis"]["thesis"]["support_claim_indices"] = [0]
+    with pytest.raises(ValueError, match="no source claim survived"):
+        parse_model_output(
+            json.dumps(obj),
+            expected_document_id="r1",
+            expected_document=obj["document"],
+            source_body=body,
+        )
+
+
+def test_rio_rejects_negation_stripped_even_from_full_sentence_evidence():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+
+    body = "Goldman does not expect inflation to rise this year."
+    obj = _rio_sample(body=body)
+    obj["claims"] = [{
+        "statement": "inflation to rise this year",
+        "evidence": [{"quote_span": body}],
+        "numbers": [], "entities": ["inflation"], "horizon": "current", "explicit": True,
+    }]
+    obj["analysis"]["thesis"]["support_claim_indices"] = [0]
+    with pytest.raises(ValueError, match="no source claim survived"):
+        parse_model_output(
+            json.dumps(obj),
+            expected_document_id="r1",
+            expected_document=obj["document"],
+            source_body=body,
+        )
+
+
+def test_rio_rejects_denial_modality_and_uncertainty_stripping():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+
+    cases = [
+        ("The report denies that revenue increased sharply.", "revenue increased sharply"),
+        ("Management may reduce guidance next quarter.", "reduce guidance next quarter"),
+        ("Policymakers cannot rule out a recession.", "a recession"),
+        ("The report denies, based on new evidence, that revenue increased sharply.", "that revenue increased sharply"),
+        ("Management may, subject to board approval, reduce guidance next quarter.", "reduce guidance next quarter"),
+        ("We cannot rule out: a recession in 2027.", "a recession in 2027"),
+    ]
+    for body, stripped in cases:
+        obj = _rio_sample(body=body)
+        obj["claims"] = [{
+            "statement": stripped,
+            "evidence": [{"quote_span": stripped}],
+            "numbers": [], "entities": [], "horizon": "current", "explicit": True,
+        }]
+        obj["analysis"]["thesis"]["support_claim_indices"] = [0]
+        with pytest.raises(ValueError, match="no source claim survived"):
+            parse_model_output(
+                json.dumps(obj),
+                expected_document_id="r1",
+                expected_document=obj["document"],
+                source_body=body,
+            )
+
+
+def test_rio_accepts_complete_source_context_with_finance_abbreviations_and_commas():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+
+    body = "U.S. management may, subject to board approval, reduce guidance next quarter."
+    obj = _rio_sample(body=body)
+    obj["claims"] = [{
+        "statement": body,
+        "evidence": [{"quote_span": body}],
+        "numbers": [], "entities": ["U.S."], "horizon": "next quarter", "explicit": True,
+    }]
+    obj["analysis"]["thesis"]["support_claim_indices"] = [0]
+    out = parse_model_output(
+        json.dumps(obj),
+        expected_document_id="r1",
+        expected_document=obj["document"],
+        source_body=body,
+    )
+    assert out["claims"][0]["statement"] == body
+
+
+def test_validate_rio_rejects_partial_statement_evidence_overlap():
+    from engine.research_intelligence.schema import validate_rio
+
+    obj = _rio_sample()
+    obj["claims"][0]["statement"] = "real yields rose to 2.1%."
+    obj["claims"][0]["evidence"] = [{
+        "quote_span": "Goldman says real yields rose to 2.1%.",
+        "location": "opening",
+    }]
+    with pytest.raises(ValueError, match="not grounded by its evidence"):
+        validate_rio(obj)
+
+
 def test_rio_rejects_verbatim_thesis_summary_before_projection():
     import json
     from engine.research_intelligence.extractor import parse_model_output
@@ -1306,8 +1411,8 @@ def test_rio_accepts_exact_han_quote_grounding():
     body = "中国流动性正在改善，但房地产风险仍然存在。"
     obj = _rio_sample(body=body)
     obj["claims"] = [{
-        "statement": "中国流动性正在改善。",
-        "evidence": [{"quote_span": "流动性正在改善"}],
+        "statement": body,
+        "evidence": [{"quote_span": body}],
         "numbers": [],
         "entities": ["中国流动性"],
         "horizon": "current",
@@ -1333,7 +1438,7 @@ def test_rio_accepts_exact_han_quote_grounding():
         expected_document=obj["document"],
         source_body=body,
     )
-    assert out["claims"][0]["evidence"] == [{"quote_span": "流动性正在改善"}]
+    assert out["claims"][0]["evidence"] == [{"quote_span": body}]
 
 
 def test_rio_rejects_quote_that_is_only_a_substring_of_another_token():
@@ -1440,7 +1545,7 @@ def test_rio_preserves_verbatim_evidence_text():
     import json
     from engine.research_intelligence.extractor import parse_model_output
 
-    body = "Revenue  rose\n20%."
+    body = "Revenue  rose\t20%."
     obj = _rio_sample(body=body)
     obj["claims"] = [{
         "statement": "Revenue rose 20%.",

@@ -16,6 +16,8 @@ import sys
 import tempfile
 from unittest.mock import MagicMock, patch
 
+import pytest
+
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 
 import engine.qual_extraction as qe  # noqa: E402
@@ -500,6 +502,69 @@ def test_shared_quote_span_verifier_rejects_cross_sentence_splices():
     chinese = "流动性改善。房地产风险上升。"
     assert not qe.quote_span_verified(chinese, "改善房地产")
     assert qe.quote_span_verified(chinese, "改善。房地产")
+
+
+def test_shared_quote_verifier_clause_mode_rejects_context_stripped_fragments():
+    cases = [
+        ("Goldman does not expect inflation to rise this year.", "inflation to rise this year"),
+        ("The report denies that revenue increased sharply.", "revenue increased sharply"),
+        ("Management may reduce guidance next quarter.", "reduce guidance next quarter"),
+        ("Policymakers cannot rule out a recession.", "a recession"),
+    ]
+    for body, fragment in cases:
+        assert not qe.quote_span_verified(body, fragment, require_complete_clause=True)
+
+
+def test_shared_quote_verifier_clause_mode_rejects_soft_punctuation_context_stripping():
+    cases = [
+        ("Management may, subject to board approval, reduce guidance next quarter.", "reduce guidance next quarter."),
+        ("The report denies, based on new evidence, that revenue increased sharply.", "that revenue increased sharply."),
+        ("We cannot rule out: a recession in 2027.", "a recession in 2027."),
+    ]
+    for body, fragment in cases:
+        assert not qe.quote_span_verified(body, fragment, require_complete_clause=True)
+
+
+def test_shared_quote_verifier_clause_mode_accepts_complete_clauses():
+    english = "Goldman does not expect inflation to rise this year."
+    han = "中国流动性正在改善。"
+    newline_body = "First clause\nSecond clause"
+
+    assert qe.quote_span_verified(
+        english, "Goldman does not expect inflation to rise this year.", require_complete_clause=True
+    )
+    assert qe.quote_span_verified(han, "中国流动性正在改善。", require_complete_clause=True)
+    assert qe.quote_span_verified(newline_body, "First clause", require_complete_clause=True)
+    assert qe.quote_span_verified(newline_body, "Second clause", require_complete_clause=True)
+
+
+def test_shared_quote_verifier_clause_mode_accepts_internal_punctuation_and_abbreviations():
+    clauses = [
+        "U.S. inflation may rise next quarter.",
+        "Acme Inc. expects revenue to rise.",
+        "Revenue, adjusted for FX, rose 10%.",
+        "Management may, subject to board approval, reduce guidance next quarter.",
+    ]
+    for clause in clauses:
+        assert qe.quote_span_verified(clause, clause, require_complete_clause=True)
+
+
+def test_shared_quote_verifier_clause_mode_rejects_multiple_complete_clauses():
+    body = "Demand is strong. Losses widened sharply."
+    span = "Demand is strong. Losses widened sharply."
+    assert qe.quote_span_verified(body, span)
+    assert not qe.quote_span_verified(body, span, require_complete_clause=True)
+
+
+def test_shared_quote_verifier_clause_mode_validates_option_type():
+    for invalid in (None, 1, "yes"):
+        with pytest.raises(ValueError, match="require_complete_clause must be a boolean"):
+            qe.quote_span_verified("A clause.", "A clause.", require_complete_clause=invalid)
+
+
+def test_shared_quote_verifier_default_remains_fragment_compatible():
+    body = "Goldman does not expect inflation to rise this year."
+    assert qe.quote_span_verified(body, "inflation to rise this year")
 
 
 if __name__ == "__main__":
