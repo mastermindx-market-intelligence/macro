@@ -1151,6 +1151,8 @@ REPORT_BODY_MAX_CHARS = 12_000
 _EVIDENCE_QUERY_MAX_CHARS = 512
 _EVIDENCE_TERM_MAX_CHARS = 120
 _EVIDENCE_TERM_LIMIT = 12
+_REPORT_META_MAX_CHARS = 512
+_REPORT_TEXT_LAYER_MAX_CHARS = 80
 # Defense in depth only — the corpus owner already bounds a passage window
 # independent of match length (EVIDENCE_WINDOW_CHARS). This is a second, cheap
 # ceiling here so a corrupted/mocked upstream selector still cannot smuggle an
@@ -1493,21 +1495,29 @@ def _partial_evidence_search_note(evidence) -> str:
 
 
 def _nonnegative_int(value) -> int | None:
-    if isinstance(value, bool):
-        return None
-    if isinstance(value, float) and not value.is_integer():
-        return None
-    try:
-        result = int(value)
-    except (TypeError, ValueError):
-        return None
-    return result if result >= 0 else None
+    """A literal nonnegative JSON/Python integer, never a coercible lookalike."""
+    return value if type(value) is int and value >= 0 else None
 
 
 def _sha256_or_empty(value) -> str:
-    digest = value if isinstance(value, str) else ""
-    digest = digest.strip().lower()
-    return digest if re.fullmatch(r"[0-9a-f]{64}", digest) else ""
+    """Return only an already-canonical lowercase SHA-256 fingerprint.
+
+    Source identity is not a user convenience field: case-folding or trimming a
+    malformed upstream value would silently manufacture a different canonical
+    claim. Reject any non-string, padded, uppercase, or otherwise noncanonical
+    representation instead.
+    """
+    return value if isinstance(value, str) and re.fullmatch(r"[0-9a-f]{64}", value) else ""
+
+
+def _bounded_report_text(value, limit: int = _REPORT_META_MAX_CHARS) -> str:
+    """Bound one display-only metadata string without coercing arbitrary objects."""
+    if not isinstance(value, str):
+        return ""
+    text = value.strip()
+    if len(text) <= limit:
+        return text
+    return text[:max(0, limit - 1)] + ("…" if limit else "")
 
 
 def _bounded_evidence_query(query) -> str:
@@ -1582,8 +1592,47 @@ def _project_evidence_passage(raw, report_id: str) -> dict | None:
     match_text = raw.get("match_text")
     if not isinstance(text, str) or not isinstance(match_text, str):
         return None
-    text = text[:_EVIDENCE_PASSAGE_TEXT_MAX_CHARS]
-    match_text = match_text[:_EVIDENCE_PASSAGE_TEXT_MAX_CHARS]
+
+    # A source locator is a claim about the emitted literal slice, not decorative
+    # metadata. Reject mismatched upstream text before any defensive clipping.
+    span_chars = end_char - start_char
+    relative_match_start = match_start_char - start_char
+    relative_match_end = match_end_char - start_char
+    if len(text) != span_chars:
+        return None
+    if text[relative_match_start:relative_match_end] != match_text:
+        return None
+
+    # Keep a bounded source window around the match and rewrite every absolute
+    # offset to the exact emitted slice. If the match itself exceeds the cap, the
+    # bounded prefix remains a truthful literal subspan with coherent locators.
+    clip_start = 0
+    clip_end = len(text)
+    if len(text) > _EVIDENCE_PASSAGE_TEXT_MAX_CHARS:
+        cap = _EVIDENCE_PASSAGE_TEXT_MAX_CHARS
+        match_chars = relative_match_end - relative_match_start
+        if match_chars >= cap:
+            clip_start = relative_match_start
+            clip_end = min(len(text), clip_start + cap)
+        else:
+            room = cap - match_chars
+            clip_start = max(0, relative_match_start - (room // 2))
+            clip_end = min(len(text), clip_start + cap)
+            if clip_end - clip_start < cap:
+                clip_start = max(0, clip_end - cap)
+
+    clipped_match_start = max(relative_match_start, clip_start)
+    clipped_match_end = min(relative_match_end, clip_end)
+    if clipped_match_start >= clipped_match_end:
+        return None
+    source_text = text
+    text = source_text[clip_start:clip_end]
+    match_text = source_text[clipped_match_start:clipped_match_end]
+    start_char += clip_start
+    end_char = start_char + len(text)
+    match_start_char = start_char + (clipped_match_start - clip_start)
+    match_end_char = start_char + (clipped_match_end - clip_start)
+
     page = _positive_int(locator_raw.get("page")) if kind == "page_text_span" else None
     locator = {
         "kind": kind,
@@ -1637,14 +1686,15 @@ def _project_evidence(raw, *, report_id: str, published_at: str,
         tail = True
     binding = {
         "report_id": report_id,
-        "published_at": published_at,
+        "published_at": _bounded_report_text(published_at),
         "content_sha256": _sha256_or_empty(binding_raw.get("content_sha256")),
         "stored_body_sha256": _sha256_or_empty(binding_raw.get("stored_body_sha256")),
         "coverage": coverage,
         "source_char_count": source,
         "stored_char_count": stored,
         "tail_omitted": tail,
-        "text_layer": binding_raw.get("text_layer") if isinstance(binding_raw.get("text_layer"), str) else "",
+        "text_layer": _bounded_report_text(
+            binding_raw.get("text_layer"), _REPORT_TEXT_LAYER_MAX_CHARS),
         "page_count": _positive_int(binding_raw.get("page_count")),
     }
     projected = []
@@ -1666,7 +1716,7 @@ def _project_evidence(raw, *, report_id: str, published_at: str,
         "status": status,
         "query": _bounded_evidence_query(query),
         "report_id": report_id,
-        "published_at": published_at,
+        "published_at": _bounded_report_text(published_at),
         "passages": projected,
         "source_binding": binding,
         "access": {"decision": "allowed" if allowed else "not_served",
@@ -1695,15 +1745,101 @@ def _project_report(
     """
     return {
         "id": report_id,
-        "title": title,
-        "institution": institution,
-        "side": side,
-        "published_at": published_at,
+        "title": _bounded_report_text(title),
+        "institution": _bounded_report_text(institution),
+        "side": _bounded_report_text(side),
+        "published_at": _bounded_report_text(published_at),
         "summary_points": summary_points,
         "excerpt_paragraphs": excerpt_paragraphs,
         "body_text": body_text,
         "body_truncated": body_truncated,
     }
+
+
+def _response_string_total(value) -> int:
+    """Recursive character count for every string value in one tool response."""
+    if isinstance(value, str):
+        return len(value)
+    if isinstance(value, dict):
+        return sum(_response_string_total(item) for item in value.values())
+    if isinstance(value, (list, tuple)):
+        return sum(_response_string_total(item) for item in value)
+    return 0
+
+
+def _trim_string_list(values, overflow: int) -> int:
+    """Remove/truncate list tail strings until ``overflow`` characters are gone."""
+    if not isinstance(values, list):
+        return overflow
+    while values and overflow > 0:
+        last = values[-1]
+        if not isinstance(last, str):
+            values.pop()
+            continue
+        if len(last) <= overflow:
+            overflow -= len(last)
+            values.pop()
+            continue
+        values[-1] = last[:len(last) - overflow].rstrip()
+        overflow = 0
+        if not values[-1]:
+            values.pop()
+    return overflow
+
+
+def _fit_evidence_response_budget(response: dict) -> bool:
+    """Fit an evidence response under the shared 12k string ceiling in place.
+
+    Public excerpts and summaries yield first. The legacy ``body_text`` duplicate
+    may collapse to the first literal match while the authoritative evidence
+    passage remains intact. Only then are optional matched-term labels and extra
+    passages removed. Identity, hashes, rights note, and one usable passage are
+    never silently truncated.
+    """
+    report = response.get("report") if isinstance(response, dict) else None
+    evidence = response.get("evidence") if isinstance(response, dict) else None
+    if not isinstance(report, dict) or not isinstance(evidence, dict):
+        return False
+
+    def overflow() -> int:
+        return max(0, _response_string_total(response) - REPORT_BODY_MAX_CHARS)
+
+    over = overflow()
+    over = _trim_string_list(report.get("excerpt_paragraphs"), over)
+    if over:
+        over = _trim_string_list(report.get("summary_points"), overflow())
+
+    passages = evidence.get("passages")
+    passages = passages if isinstance(passages, list) else []
+    if overflow() and passages:
+        first = passages[0] if isinstance(passages[0], dict) else {}
+        support = first.get("match_text") or first.get("text") or ""
+        if isinstance(support, str) and support:
+            report["body_text"] = support
+            report["body_truncated"] = True
+
+    for passage in reversed(passages):
+        if not overflow():
+            break
+        if isinstance(passage, dict):
+            _trim_string_list(passage.get("matched_terms"), overflow())
+
+    while overflow() and len(passages) > 1:
+        passages.pop()
+        first = passages[0] if isinstance(passages[0], dict) else {}
+        support = first.get("match_text") or first.get("text") or ""
+        if isinstance(support, str) and support:
+            report["body_text"] = support
+            report["body_truncated"] = True
+
+    # The bounded query is useful but not source identity; yield its tail only if
+    # all public/redundant fields above were insufficient.
+    over = overflow()
+    query = evidence.get("query")
+    if over and isinstance(query, str):
+        evidence["query"] = query[:max(0, len(query) - over)]
+
+    return _response_string_total(response) <= REPORT_BODY_MAX_CHARS
 
 
 def _report_error(code: str, note: str, **extra) -> dict:
@@ -1825,41 +1961,41 @@ def _research_report(root: Path, report_id, *, query="", user_ctx,
 
     quota: dict | None = None
     evidence: dict | None = None
+    pending_evidence_charge = False
     matched_without_usable_text = False
     if evidence_requested:
         selection = _select_evidence(document, evidence_query)
-        status = str(selection.get("status") or "body_unavailable")
-        candidate_body, candidate_truncated = _evidence_body(selection)
-        if status == "matched" and not candidate_body:
-            selection = {**selection, "status": "body_unavailable", "passages": []}
+        # Projection is the final trust boundary. Validate/clip every passage and
+        # canonical binding before body assembly or quota mutation; a raw selector
+        # status is never sufficient debit authority.
+        evidence = _project_evidence(
+            selection,
+            report_id=rid,
+            published_at=_meta_field(item, document, "published_at"),
+            query=evidence_query,
+            allowed=False,
+        )
+        status = str(evidence.get("status") or "body_unavailable")
+        binding = evidence.get("source_binding") or {}
+        binding_ok = bool(
+            binding.get("content_sha256") and binding.get("stored_body_sha256"))
+        candidate_body, candidate_truncated = _evidence_body(evidence)
+        if status == "matched" and (not binding_ok or not candidate_body):
+            evidence["status"] = "body_unavailable"
+            evidence["passages"] = []
             status = "body_unavailable"
-            matched_without_usable_text = True
+            candidate_body, candidate_truncated = "", False
+            raw_passages = selection.get("passages") if isinstance(selection, dict) else None
+            matched_without_usable_text = binding_ok or not raw_passages
 
         if status == "matched":
-            allowed, info = _charge_report_view(uid, now)
-            if not allowed:
-                return _report_error(
-                    "view_limit_reached", _REPORT_ERR_LIMIT,
-                    report_id=rid, remaining=0, limit=(info or {}).get("limit"))
-            quota = {"remaining": (info or {}).get("remaining"),
-                     "limit": (info or {}).get("limit")}
+            # A matched projection is only a draft until the COMPLETE response
+            # fits the shared context ceiling. Quota mutation happens after that
+            # final invariant, never on selector status or a partial envelope.
+            pending_evidence_charge = True
             body_text, truncated = candidate_body, candidate_truncated
-            evidence = _project_evidence(
-                selection,
-                report_id=rid,
-                published_at=_meta_field(item, document, "published_at"),
-                query=evidence_query,
-                allowed=True,
-            )
         else:
             body_text, truncated = "", False
-            evidence = _project_evidence(
-                selection,
-                report_id=rid,
-                published_at=_meta_field(item, document, "published_at"),
-                query=evidence_query,
-                allowed=False,
-            )
     else:
         body_raw = str((document or {}).get("body") or "")
         if body_raw.strip():
@@ -1874,9 +2010,10 @@ def _research_report(root: Path, report_id, *, query="", user_ctx,
         else:
             body_text, truncated = "", False
 
-    institution = _meta_field(item, document, "institution")
-    note = _REPORT_NOTE.format(
+    institution = _bounded_report_text(_meta_field(item, document, "institution"))
+    rights_note = _REPORT_NOTE.format(
         institution=institution or _REPORT_NOTE_FALLBACK_INSTITUTION)
+    note = rights_note
     if evidence_requested:
         status = str((evidence or {}).get("status") or "body_unavailable")
         if status == "matched":
@@ -1900,7 +2037,7 @@ def _research_report(root: Path, report_id, *, query="", user_ctx,
             if isinstance(document, dict) else ""
         note += _REPORT_SCAN_ONLY if layer == "none" else _REPORT_EXCERPT_ONLY
 
-    return {
+    response = {
         "schema": _REPORT_SCHEMA,
         "asof": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
         "report": _project_report(
@@ -1918,6 +2055,76 @@ def _research_report(root: Path, report_id, *, query="", user_ctx,
         "evidence": evidence,
         "note": note,
     }
+
+    if evidence_requested:
+        # This is the last pure transformation before a paid-view mutation. It
+        # counts EVERY response string—including public excerpts, metadata, URLs,
+        # duplicated passage text, terms, and notes—not merely report.body_text.
+        budget_ok = _fit_evidence_response_budget(response)
+        projected = response.get("evidence")
+        projected = projected if isinstance(projected, dict) else {}
+        final_passages = projected.get("passages")
+        final_passages = final_passages if isinstance(final_passages, list) else []
+        final_body = response["report"].get("body_text")
+        final_match_is_servable = bool(
+            budget_ok
+            and projected.get("status") == "matched"
+            and final_passages
+            and isinstance(final_body, str)
+            and final_body.strip()
+        )
+
+        if not budget_ok and not pending_evidence_charge:
+            # Even an unmetered no-match/body-unavailable envelope must honor the
+            # same caller context ceiling. Public/contextual fields yield first;
+            # the honest retrieval status and source identity remain intact.
+            response["report"]["summary_points"] = []
+            response["report"]["excerpt_paragraphs"] = []
+            projected["query"] = ""
+            if not _fit_evidence_response_budget(response):
+                return _report_error(
+                    "body_unavailable",
+                    "This report could not be represented within the response "
+                    "safety ceiling. No full-text view was served or charged.",
+                    report_id=rid,
+                )
+
+        if pending_evidence_charge and not final_match_is_servable:
+            # Fail closed before touching quota. Keep public identity only and
+            # state the shortfall honestly; never charge a projection that could
+            # not survive validation or the complete response budget.
+            pending_evidence_charge = False
+            projected["status"] = "body_unavailable"
+            projected["passages"] = []
+            projected["query"] = ""
+            projected["access"] = {"decision": "not_served", "metered": False}
+            response["report"]["summary_points"] = []
+            response["report"]["excerpt_paragraphs"] = []
+            response["report"]["body_text"] = ""
+            response["report"]["body_truncated"] = False
+            response["quota"] = None
+            response["note"] = rights_note + _REPORT_NO_USABLE_PASSAGE
+            if not _fit_evidence_response_budget(response):
+                return _report_error(
+                    "body_unavailable",
+                    "This report could not be served within the response safety "
+                    "ceiling. No full-text view was served or charged.",
+                    report_id=rid,
+                )
+
+        if pending_evidence_charge:
+            allowed, info = _charge_report_view(uid, now)
+            if not allowed:
+                return _report_error(
+                    "view_limit_reached", _REPORT_ERR_LIMIT,
+                    report_id=rid, remaining=0, limit=(info or {}).get("limit"))
+            response["quota"] = {
+                "remaining": _nonnegative_int((info or {}).get("remaining")),
+                "limit": _nonnegative_int((info or {}).get("limit")),
+            }
+            projected["access"] = {"decision": "allowed", "metered": True}
+
+    return response
 
 
 def search_research(

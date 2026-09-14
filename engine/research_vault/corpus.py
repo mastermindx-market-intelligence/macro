@@ -308,8 +308,8 @@ def _source_binding(document: dict, body: str) -> dict:
         coverage, tail_omitted = "prefix_partial", True
     else:
         coverage, tail_omitted = "complete", False
-    digest = str(document.get("content_sha256") or "").strip().lower()
-    if not re.fullmatch(r"[0-9a-f]{64}", digest):
+    digest = document.get("content_sha256")
+    if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest):
         digest = ""
     pages = _evidence_int(document.get("pages"))
     return {

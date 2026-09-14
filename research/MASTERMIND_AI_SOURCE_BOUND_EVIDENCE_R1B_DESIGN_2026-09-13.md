@@ -34,10 +34,12 @@ unsegmented sentence.
 
 A passage window is bounded independent of match length: an arbitrarily long
 single atom (one unsegmented Han run) is clamped to the configured window, never
-exposing the whole match. A source-bound passage also requires a canonical
-lowercase 64-hex `content_sha256`; a missing/malformed/non-string/wrong-length
-source hash fails CLOSED to bounded public metadata/excerpt and an honest
-source-identity-unverified note — never a scan/extraction claim.
+exposing the whole match. A source-bound passage also requires an already-
+canonical lowercase 64-hex `content_sha256`; case-folding, whitespace trimming,
+or any other normalization is forbidden because it would manufacture a source-
+identity claim. A missing/malformed/non-string/wrong-length/noncanonical source
+hash fails CLOSED to bounded public metadata/excerpt and an honest source-
+identity-unverified note — never a scan/extraction claim.
 
 No matching passage, an unavailable body, an unverified source identity, or an
 image-only scan is disclosed and does not consume full-text quota. A quota
@@ -101,14 +103,18 @@ any stored/source text lies outside those spans. In generic mode the existing
   before a reader, selector, source binding, or passage metadata can reveal paid
   body presence or query-conditioned information. A peek storage failure stays
   fail-open; a served body or matched view still takes its existing one-time debit.
-- A no-match/unavailable read is unmetered only after that privacy preflight; the
-  debit happens before matched text is returned.
+- A no-match/unavailable read is unmetered only after that privacy preflight.
+  Selector status alone is never debit authority: Brain first performs literal
+  projection, strict locator/source-identity validation, body assembly from the
+  projected passages, and recursive whole-envelope budgeting. Only a valid,
+  nonempty matched envelope that will actually be returned takes one debit.
 - Sol's ruling: an entitled query-centered retrieval may search the lawful stored
   corpus beyond the legacy 12,000-character opening prefix. `REPORT_BODY_MAX_CHARS`
-  remains a per-response model-context ceiling, not a lifetime unique-text
-  entitlement ceiling. Bounded passage count/window, sparse publisher quotation,
-  attribution, one debit per served view, no redistribution, and no new lifetime
-  ledger remain binding.
+  remains a per-response model-context ceiling over every string value—not only
+  `body_text`, but excerpts, metadata, URLs, query echoes, passage duplicates,
+  matched terms, hashes, and notes. Bounded passage count/window, sparse publisher
+  quotation, attribution, one debit per served view, no redistribution, and no
+  new lifetime ledger remain binding.
 - A denied debit returns only the existing limit error and leaks no passage,
   body, hash-derived content, or evidence envelope.
 - Catalog publication time remains the visible publication authority. Page and
@@ -175,17 +181,20 @@ without changing this contract.
    and return `evidence: null`; a residual topic uses `get_evidence_document`.
 5. Meaningful exact-question calls use `get_evidence_document`; the legacy reader
    is not touched.
-6. Matched text debits exactly once. No-match, unavailable body, image-only body,
-   and a matched selector without usable text debit zero times.
+6. Matched text debits exactly once, only after strict projection and recursive
+   whole-response budgeting produce at least one coherent passage and nonempty
+   body. No-match, unavailable body, image-only body, an invalid projected
+   passage, an envelope that cannot be fit safely under the ceiling, and a matched
+   selector without usable text debit zero times.
 7. An exhausted generic or specific request leaks no report, evidence, source text,
    reader access, or selector access.
 8. Existing search, clusters, report-rights, exposure-cap, fail-soft, attribution,
    gateway, and tool-schema contracts remain green.
 9. Independent review checks source binding, quota order, rights wording,
    whitelisting, correction behavior, and absence of a duplicate retrieval plane.
-10. Repair B wires `find` and `page` into the existing Research Vault viewer after
-    a fresh collision census; until then the link opens the canonical document but
-    does not position it at matching text/page.
+10. Repair B teaches the existing Research Vault viewer to consume the bounded
+    `page`/user-`q` fragment after a fresh collision census; until then the link
+    opens the canonical document but does not position it at matching text/page.
 11. Merge, deployment, a real entitled Brain call, a working deep link, and final
     acceptance remain distinct gates.
 
