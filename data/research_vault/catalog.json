@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-14T18:44:57.948324+00:00",
-  "count": 2106,
+  "generated_at": "2026-09-14T19:01:13.051872+00:00",
+  "count": 2107,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -178,6 +178,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 21,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ewdierpbnwg-46136c",
+      "title": "Global Rates Notes Revising Gilt Yield Forecasts Higher",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T13:19:47Z",
+      "summary_points": [
+        "**Gilt Yield Forecast Revision**: 10y Gilt yield forecast raised to 5% end-2026 (vs 4.4%) due to energy price highs triggering BoE action, limiting front-end relief; 25y Gilts remain vulnerable to energy price upside.",
+        "**Gilt-Yield Correlation Drivers**: Strong correlation with energy prices/global yields driven by UK’s high forecast uncertainty, largest duration-weighted bond supply increase, monetary policy surprises, and fiscal policy headroom constraints.",
+        "**UK-Germany Yield Curve Divergence**: UK 2s10s spread remains wider than Germany’s (Exhibit 2), indicating persistent relative economic signals (e.g., inflation expectations) and potential for higher UK yields vs Eurozone.",
+        "**Elevated Swap Spreads**: UK 10y swap spreads persistently wide despite Gilt sell-off (Exhibit 3), signaling underlying credit risk or liquidity concerns in UK bond market, critical for duration positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
