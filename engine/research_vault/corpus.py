@@ -29,6 +29,7 @@ above them for why the cache lives here rather than in the router.
 """
 from __future__ import annotations
 
+import hashlib
 import logging
 import os
 import re
@@ -36,6 +37,7 @@ import sqlite3
 import tempfile
 import threading
 import time
+import unicodedata
 from pathlib import Path
 
 log = logging.getLogger("research_vault.corpus")
@@ -150,6 +152,283 @@ _EXCERPT_LEN = 240
 # while bounding the file. Raise deliberately if deep-tail search matters more
 # than transfer size.
 BODY_MAX_CHARS = 60_000
+
+
+# ---------------------------------------------------------------------------
+# R1B source-bound evidence passages — pure projection over one entitled row
+# ---------------------------------------------------------------------------
+# This is deliberately NOT another index. The existing corpus is the retrieval
+# authority and its stored `body` is the exact text surface this selector reads.
+# Normalization exists only for locating a user's words; every emitted passage is
+# sliced from the original body so width, case, punctuation and source language
+# remain the publisher's, not ours.
+EVIDENCE_PASSAGE_LIMIT = 3
+EVIDENCE_WINDOW_CHARS = 900
+
+_EVIDENCE_HAN_RANGE = (
+    r"\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\U00020000-\U0002fa1f"
+)
+_EVIDENCE_HAN_RE = re.compile("[" + _EVIDENCE_HAN_RANGE + "]+")
+_EVIDENCE_RAW_ATOM_RE = re.compile(
+    r"[A-Za-z0-9]+(?:[.\-][A-Za-z0-9]+)*|[" + _EVIDENCE_HAN_RANGE + "]+"
+)
+_EVIDENCE_WORD_RE = re.compile(r"[a-z0-9]{2,}")
+_EVIDENCE_STOPWORDS = frozenset({
+    "about", "after", "again", "also", "among", "and", "are", "because",
+    "before", "being", "between", "both", "but", "can", "could", "did",
+    "does", "doing", "for", "from", "had", "has", "have", "how", "into",
+    "its", "may", "more", "most", "not", "our", "should", "that", "the",
+    "their", "them", "then", "there", "these", "they", "this", "those",
+    "through", "under", "very", "was", "were", "what", "when", "where",
+    "which", "why", "will", "with", "would", "you", "your",
+})
+
+
+def _evidence_normalize_with_map(value) -> tuple[str, list[int]]:
+    """NFKC/casefold text plus a normalized-index → original-index map.
+
+    Whitespace runs collapse to one ASCII space so a phrase still matches across
+    PDF line breaks. The map points every normalized codepoint back to the source
+    character that produced it (including casefold expansions such as ß → ss).
+    It is used only to recover exact source slices; normalized text is never
+    returned to a caller.
+    """
+    source = str(value or "")
+    out: list[str] = []
+    origins: list[int] = []
+    for index, char in enumerate(source):
+        piece = unicodedata.normalize("NFKC", char).casefold()
+        for normalized in piece:
+            if normalized.isspace():
+                if out and out[-1] != " ":
+                    out.append(" ")
+                    origins.append(index)
+            else:
+                out.append(normalized)
+                origins.append(index)
+    return "".join(out), origins
+
+
+def _evidence_identifier(raw: str) -> bool:
+    """The exact identifier shapes already admitted by Brain R1A."""
+    if "." in raw:
+        return True
+    parts = raw.split("-")
+    return (
+        len(parts) == 2
+        and 1 <= len(parts[0]) <= 5
+        and len(parts[1]) == 1
+        and parts[0].isalnum()
+        and parts[1].isalpha()
+    )
+
+
+def _evidence_atoms(query) -> tuple[str, ...]:
+    """Ordered, de-duplicated meaningful atoms for passage support."""
+    normalized, _ = _evidence_normalize_with_map(query)
+    atoms: list[str] = []
+
+    def add(atom: str) -> None:
+        if len(atom) >= 2 and atom not in _EVIDENCE_STOPWORDS and atom not in atoms:
+            atoms.append(atom)
+
+    for raw in _EVIDENCE_RAW_ATOM_RE.findall(normalized):
+        if _EVIDENCE_HAN_RE.fullmatch(raw) or _evidence_identifier(raw):
+            add(raw)
+        else:
+            for word in _EVIDENCE_WORD_RE.findall(raw):
+                add(word)
+    return tuple(atoms)
+
+
+def _iter_evidence_hits(text: str, needle: str):
+    """Yield normalized [start,end) hits with exact ASCII identifier boundaries."""
+    if not needle:
+        return
+    start = 0
+    bounded = needle.isascii()
+    while True:
+        found = text.find(needle, start)
+        if found < 0:
+            return
+        end = found + len(needle)
+        if not bounded or (
+            (found == 0 or not text[found - 1].isalnum())
+            and (end == len(text) or not text[end].isalnum())
+        ):
+            yield found, end
+        start = found + max(1, len(needle))
+
+
+def _original_span(origins: list[int], start: int, end: int) -> tuple[int, int] | None:
+    if start < 0 or end <= start or end > len(origins):
+        return None
+    return origins[start], origins[end - 1] + 1
+
+
+def _evidence_int(value) -> int | None:
+    try:
+        result = int(value)
+    except (TypeError, ValueError):
+        return None
+    return result if result >= 0 else None
+
+
+def _source_binding(document: dict, body: str) -> dict:
+    source_chars = _evidence_int(document.get("char_count"))
+    stored_chars = len(body)
+    if source_chars is None:
+        coverage, tail_omitted = "unknown", None
+    elif source_chars > stored_chars:
+        coverage, tail_omitted = "prefix_partial", True
+    else:
+        coverage, tail_omitted = "complete", False
+    digest = str(document.get("content_sha256") or "").strip().lower()
+    if not re.fullmatch(r"[0-9a-f]{64}", digest):
+        digest = ""
+    pages = _evidence_int(document.get("pages"))
+    return {
+        "content_sha256": digest,
+        "stored_body_sha256": hashlib.sha256(body.encode("utf-8")).hexdigest(),
+        "coverage": coverage,
+        "source_char_count": source_chars,
+        "stored_char_count": stored_chars,
+        "tail_omitted": tail_omitted,
+        "text_layer": str(document.get("text_layer") or ""),
+        "page_count": pages if pages and pages > 0 else None,
+    }
+
+
+def _passage_bounds(body: str, match_start: int, match_end: int,
+                    window_chars: int) -> tuple[int, int]:
+    """A bounded source slice centered on the match and confined to its PDF page."""
+    cap = max(match_end - match_start, max(80, int(window_chars)))
+    page_start, page_end = 0, len(body)
+    if "\f" in body:
+        previous = body.rfind("\f", 0, match_start)
+        following = body.find("\f", match_end)
+        page_start = previous + 1 if previous >= 0 else 0
+        page_end = following if following >= 0 else len(body)
+    room = max(0, cap - (match_end - match_start))
+    start = max(page_start, match_start - room // 2)
+    end = min(page_end, start + cap)
+    if end - start < cap:
+        start = max(page_start, end - cap)
+    while start < match_start and body[start].isspace():
+        start += 1
+    while end > match_end and body[end - 1].isspace():
+        end -= 1
+    return start, end
+
+
+def find_evidence_passages(
+    document: dict,
+    query,
+    *,
+    limit: int = EVIDENCE_PASSAGE_LIMIT,
+    window_chars: int = EVIDENCE_WINDOW_CHARS,
+) -> dict:
+    """Return query-centered, source-bound passages from one entitled corpus row.
+
+    Matching is deterministic NFKC/casefold lexical retrieval. ASCII atoms use
+    exact word/identifier boundaries; Han phrases use literal substring matching.
+    Page numbers are emitted only when the stored extraction contains form-feed
+    boundaries from pdftotext; otherwise the locator honestly remains a text span.
+    No score, confidence or model judgment is produced.
+    """
+    row = document if isinstance(document, dict) else {}
+    body = str(row.get("body") or "")
+    atoms = _evidence_atoms(query)
+    binding = _source_binding(row, body)
+    base = {
+        "query": str(query or ""),
+        "passages": [],
+        "source_binding": binding,
+    }
+    if not atoms:
+        return {"status": "query_too_short", **base}
+    if not body:
+        return {"status": "body_unavailable", **base}
+
+    normalized, origins = _evidence_normalize_with_map(body)
+    occurrences: dict[str, list[tuple[int, int, int, int]]] = {}
+    for atom in atoms:
+        hits: list[tuple[int, int, int, int]] = []
+        for norm_start, norm_end in _iter_evidence_hits(normalized, atom):
+            source_span = _original_span(origins, norm_start, norm_end)
+            if source_span is not None:
+                hits.append((norm_start, norm_end, source_span[0], source_span[1]))
+        occurrences[atom] = hits
+
+    phrase = " ".join(atoms)
+    candidates: dict[tuple[int, int], dict] = {}
+    phrase_terms = list(atoms)
+    if len(atoms) > 1:
+        for norm_start, norm_end in _iter_evidence_hits(normalized, phrase):
+            source_span = _original_span(origins, norm_start, norm_end)
+            if source_span is None:
+                continue
+            candidates[source_span] = {
+                "start": source_span[0], "end": source_span[1],
+                "phrase": True, "anchor_terms": phrase_terms,
+            }
+    for atom in atoms:
+        for _ns, _ne, source_start, source_end in occurrences[atom]:
+            candidates.setdefault((source_start, source_end), {
+                "start": source_start, "end": source_end,
+                "phrase": False, "anchor_terms": [atom],
+            })
+    if not candidates:
+        return {"status": "no_matching_passage", **base}
+
+    ranked: list[tuple[tuple, dict]] = []
+    for candidate in candidates.values():
+        p_start, p_end = _passage_bounds(
+            body, candidate["start"], candidate["end"], window_chars)
+        supported = [
+            atom for atom in atoms
+            if any(not (end <= p_start or start >= p_end)
+                   for _ns, _ne, start, end in occurrences[atom])
+        ]
+        candidate.update({"passage_start": p_start, "passage_end": p_end,
+                          "supported": supported})
+        key = (-int(candidate["phrase"]), -len(supported), candidate["start"],
+               -(candidate["end"] - candidate["start"]))
+        ranked.append((key, candidate))
+    ranked.sort(key=lambda row_: row_[0])
+
+    passages: list[dict] = []
+    selected_ranges: list[tuple[int, int]] = []
+    cap = max(1, min(EVIDENCE_PASSAGE_LIMIT, int(limit)))
+    page_count = binding["page_count"]
+    for _key, candidate in ranked:
+        p_start, p_end = candidate["passage_start"], candidate["passage_end"]
+        if any(not (p_end <= start or p_start >= end) for start, end in selected_ranges):
+            continue
+        locator = {
+            "kind": "text_span",
+            "start_char": p_start,
+            "end_char": p_end,
+            "match_start_char": candidate["start"],
+            "match_end_char": candidate["end"],
+        }
+        if "\f" in body:
+            page = body.count("\f", 0, candidate["start"]) + 1
+            if page_count is None or page <= page_count:
+                locator["kind"] = "page_text_span"
+                locator["page"] = page
+        passages.append({
+            "text": body[p_start:p_end],
+            "match_text": body[candidate["start"]:candidate["end"]],
+            "matched_terms": candidate["supported"],
+            "locator": locator,
+        })
+        selected_ranges.append((p_start, p_end))
+        if len(passages) >= cap:
+            break
+
+    return {"status": "matched", **base, "passages": passages}
+
 
 
 # ---------------------------------------------------------------------------
@@ -476,6 +755,10 @@ DOCUMENT_FIELDS: tuple[str, ...] = (
     "doc_id", "title", "institution", "side", "published_at", "summary", "body",
     "text_layer",
 )
+EVIDENCE_DOCUMENT_FIELDS: tuple[str, ...] = DOCUMENT_FIELDS + (
+    "pages", "char_count", "content_sha256",
+)
+_NUMERIC_DOCUMENT_FIELDS = frozenset({"pages", "char_count"})
 
 
 def valid_doc_id(doc_id) -> bool:
@@ -613,24 +896,13 @@ def reset_cache() -> None:
         _corpus_refreshing = False
 
 
-def get_document(doc_id: str, store_factory=None) -> dict | None:
-    """One document's stored row by id, or None. Never raises.
+def _read_document_fields(doc_id: str, fields: tuple[str, ...],
+                          store_factory=None) -> dict | None:
+    """Read one whitelisted projection from the shared corpus. Never raises.
 
-    ``{doc_id, title, institution, side, published_at, summary, body, text_layer}``
-    — :data:`DOCUMENT_FIELDS`, built literally. ``body`` is the pdftotext extraction
-    capped at :data:`BODY_MAX_CHARS` when it was ingested; slicing it further for a
-    given surface is that surface's decision, not this reader's.
-
-    ``text_layer`` is what lets a caller looking at an EMPTY ``body`` tell the two
-    causes apart: ``'none'`` — the extractor ran and this PDF is a scan, so the
-    public excerpt is all the text that will ever exist for it — versus
-    ``'unavailable'``/``''``, where our own extraction failed or was never measured
-    and a later run may still fill it (``ingest._reextract_bodies``). Both serve the
-    same excerpt; they owe the user different sentences.
-
-    None covers every degraded case on purpose — malformed id, no store, corpus
-    unreachable, unknown id, sqlite trouble — because every caller treats them the
-    same: fall back to the public material and say so.
+    Optional v2 columns are selected only when the corpus actually carries them;
+    a partially migrated file therefore returns honest empty/None metadata instead
+    of making the entire document disappear.
     """
     if not valid_doc_id(doc_id):
         return None
@@ -642,16 +914,17 @@ def get_document(doc_id: str, store_factory=None) -> dict | None:
     if conn is None:
         return None
 
+    available: set[str] = set()
+    row = None
     try:
-        # ``text_layer`` is a v2 column: naming it unconditionally would raise on a
-        # corpus whose migration did not land, and this reader's never-raise
-        # contract would then turn that into "every document is missing". Selected
-        # only when the file actually has it (the `upsert`/`sha_index` idiom).
-        has_layer = "text_layer" in _existing_columns(conn)
+        available = _existing_columns(conn)
+        selected = [field for field in fields if field in available]
+        if not selected or "doc_id" not in selected:
+            return None
         row = conn.execute(
-            "SELECT doc_id, title, institution, side, published_at, summary, body"
-            + (", text_layer" if has_layer else "")
-            + " FROM documents WHERE doc_id = ?", (doc_id,)).fetchone()
+            f"SELECT {','.join(selected)} FROM documents WHERE doc_id = ?",
+            (doc_id,),
+        ).fetchone()
     except Exception as exc:  # noqa: BLE001 — corrupt/partial copy → no document
         log.debug("research_vault: document read failed (%s)", exc)
         return None
@@ -663,15 +936,36 @@ def get_document(doc_id: str, store_factory=None) -> dict | None:
 
     if row is None:
         return None
-    return {
-        "doc_id": row["doc_id"] or "",
-        "title": row["title"] or "",
-        "institution": row["institution"] or "",
-        "side": row["side"] or "",
-        "published_at": row["published_at"] or "",
-        "summary": row["summary"] or "",
-        "body": row["body"] or "",
-        # '' is the honest "not measured" — never 'none', which would assert the
-        # document HAS no text on the strength of a column we could not read.
-        "text_layer": (row["text_layer"] or "") if has_layer else "",
-    }
+    result: dict = {}
+    for field in fields:
+        if field not in available:
+            result[field] = None if field in _NUMERIC_DOCUMENT_FIELDS else ""
+            continue
+        value = row[field]
+        result[field] = value if field in _NUMERIC_DOCUMENT_FIELDS else (value or "")
+    return result
+
+
+def get_document(doc_id: str, store_factory=None) -> dict | None:
+    """One document's legacy body projection by id, or None. Never raises.
+
+    The exact :data:`DOCUMENT_FIELDS` contract is intentionally unchanged. Body is
+    the pdftotext extraction capped at :data:`BODY_MAX_CHARS`; ``text_layer``
+    distinguishes an image-only scan (``none``) from a temporary/unmeasured
+    extraction shortfall. All degraded cases return None so callers can fall back
+    to public excerpts without leaking an internal failure.
+    """
+    return _read_document_fields(doc_id, DOCUMENT_FIELDS, store_factory=store_factory)
+
+
+def get_evidence_document(doc_id: str, store_factory=None) -> dict | None:
+    """Entitled R1B projection with only the metadata needed to bind passages.
+
+    It extends the same row and cache owner as :func:`get_document`; it is not a
+    second corpus or retrieval plane. ``pages`` enables a real page locator when
+    the body has form-feed boundaries, ``char_count`` discloses prefix coverage,
+    and ``content_sha256`` binds the passage to the exact source PDF bytes.
+    """
+    return _read_document_fields(
+        doc_id, EVIDENCE_DOCUMENT_FIELDS, store_factory=store_factory
+    )
