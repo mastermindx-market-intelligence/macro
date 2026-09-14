@@ -1,7 +1,7 @@
 {
   "by_family": {
     "altdata": {
-      "n_recent_fires": 2166,
+      "n_recent_fires": 2172,
       "n_hostile_regime": 87,
       "n_breadth_unconfirmed": 489,
       "n_repeat_fire": 18,
@@ -1598,9 +1598,9 @@
       ]
     },
     "cn_importance_v0": {
-      "n_recent_fires": 3627,
-      "n_hostile_regime": 86,
-      "n_breadth_unconfirmed": 1243,
+      "n_recent_fires": 3616,
+      "n_hostile_regime": 90,
+      "n_breadth_unconfirmed": 1247,
       "n_repeat_fire": 183,
       "repeat_fire_proxy_note": "repeat_fire proxies extension (>=3 prior fires in 21d for same (engine,symbol)) until per-ticker price context lands; NOT a genuine extension metric",
       "flagged": [
@@ -2018,8 +2018,17 @@
         },
         {
           "engine": "cn_importance_v0",
-          "symbol": "002998.SZ",
-          "as_of": "2026-09-10",
+          "symbol": "688585.SS",
+          "as_of": "2026-09-11",
+          "flags": [
+            "hostile_regime",
+            "breadth_unconfirmed"
+          ]
+        },
+        {
+          "engine": "cn_importance_v0",
+          "symbol": "688585.SS",
+          "as_of": "2026-09-11",
           "flags": [
             "hostile_regime",
             "breadth_unconfirmed"
@@ -2036,16 +2045,7 @@
         },
         {
           "engine": "cn_importance_v0",
-          "symbol": "301510.SZ",
-          "as_of": "2026-09-10",
-          "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "cn_importance_v0",
-          "symbol": "301510.SZ",
+          "symbol": "002998.SZ",
           "as_of": "2026-09-10",
           "flags": [
             "hostile_regime",
@@ -2055,9 +2055,9 @@
       ]
     },
     "cn_importance_v0_pit": {
-      "n_recent_fires": 3627,
-      "n_hostile_regime": 86,
-      "n_breadth_unconfirmed": 1243,
+      "n_recent_fires": 3616,
+      "n_hostile_regime": 90,
+      "n_breadth_unconfirmed": 1247,
       "n_repeat_fire": 183,
       "repeat_fire_proxy_note": "repeat_fire proxies extension (>=3 prior fires in 21d for same (engine,symbol)) until per-ticker price context lands; NOT a genuine extension metric",
       "flagged": [
@@ -2475,8 +2475,17 @@
         },
         {
           "engine": "cn_importance_v0_pit",
-          "symbol": "002998.SZ",
-          "as_of": "2026-09-10",
+          "symbol": "688585.SS",
+          "as_of": "2026-09-11",
+          "flags": [
+            "hostile_regime",
+            "breadth_unconfirmed"
+          ]
+        },
+        {
+          "engine": "cn_importance_v0_pit",
+          "symbol": "688585.SS",
+          "as_of": "2026-09-11",
           "flags": [
             "hostile_regime",
             "breadth_unconfirmed"
@@ -2493,16 +2502,7 @@
         },
         {
           "engine": "cn_importance_v0_pit",
-          "symbol": "301510.SZ",
-          "as_of": "2026-09-10",
-          "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "cn_importance_v0_pit",
-          "symbol": "301510.SZ",
+          "symbol": "002998.SZ",
           "as_of": "2026-09-10",
           "flags": [
             "hostile_regime",
@@ -2953,12 +2953,21 @@
       ]
     },
     "desk:stock_desk": {
-      "n_recent_fires": 174,
-      "n_hostile_regime": 6,
-      "n_breadth_unconfirmed": 66,
+      "n_recent_fires": 175,
+      "n_hostile_regime": 7,
+      "n_breadth_unconfirmed": 67,
       "n_repeat_fire": 6,
       "repeat_fire_proxy_note": "repeat_fire proxies extension (>=3 prior fires in 21d for same (engine,symbol)) until per-ticker price context lands; NOT a genuine extension metric",
       "flagged": [
+        {
+          "engine": "desk:stock_desk",
+          "symbol": "SHOO",
+          "as_of": "2026-09-11",
+          "flags": [
+            "hostile_regime",
+            "breadth_unconfirmed"
+          ]
+        },
         {
           "engine": "desk:stock_desk",
           "symbol": "CASY",
@@ -3353,14 +3362,6 @@
         {
           "engine": "desk:stock_desk",
           "symbol": "APP",
-          "as_of": "2026-08-19",
-          "flags": [
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "desk:stock_desk",
-          "symbol": "CLH",
           "as_of": "2026-08-19",
           "flags": [
             "breadth_unconfirmed"
@@ -4305,10 +4306,10 @@
       ]
     },
     "intel_hub": {
-      "n_recent_fires": 5294,
+      "n_recent_fires": 5216,
       "n_hostile_regime": 188,
       "n_breadth_unconfirmed": 1702,
-      "n_repeat_fire": 3534,
+      "n_repeat_fire": 3459,
       "repeat_fire_proxy_note": "repeat_fire proxies extension (>=3 prior fires in 21d for same (engine,symbol)) until per-ticker price context lands; NOT a genuine extension metric",
       "flagged": [
         {
@@ -4521,6 +4522,22 @@
         },
         {
           "engine": "intel_hub",
+          "symbol": "MMSI",
+          "as_of": "2026-09-13",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "intel_hub",
+          "symbol": "MMSI",
+          "as_of": "2026-09-13",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "intel_hub",
           "symbol": "MOBI",
           "as_of": "2026-09-13",
           "flags": [
@@ -4546,6 +4563,22 @@
         {
           "engine": "intel_hub",
           "symbol": "MSFT",
+          "as_of": "2026-09-13",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "intel_hub",
+          "symbol": "MU",
+          "as_of": "2026-09-13",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "intel_hub",
+          "symbol": "MU",
           "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
@@ -4665,7 +4698,7 @@
         },
         {
           "engine": "intel_hub",
-          "symbol": "RTX",
+          "symbol": "REGN",
           "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
@@ -4673,39 +4706,7 @@
         },
         {
           "engine": "intel_hub",
-          "symbol": "RTX",
-          "as_of": "2026-09-13",
-          "flags": [
-            "repeat_fire"
-          ]
-        },
-        {
-          "engine": "intel_hub",
-          "symbol": "TKO",
-          "as_of": "2026-09-13",
-          "flags": [
-            "repeat_fire"
-          ]
-        },
-        {
-          "engine": "intel_hub",
-          "symbol": "TKO",
-          "as_of": "2026-09-13",
-          "flags": [
-            "repeat_fire"
-          ]
-        },
-        {
-          "engine": "intel_hub",
-          "symbol": "VITL",
-          "as_of": "2026-09-13",
-          "flags": [
-            "repeat_fire"
-          ]
-        },
-        {
-          "engine": "intel_hub",
-          "symbol": "VITL",
+          "symbol": "REGN",
           "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
@@ -5674,10 +5675,10 @@
       ]
     },
     "reflex.options_flow_attention": {
-      "n_recent_fires": 605,
+      "n_recent_fires": 617,
       "n_hostile_regime": 0,
       "n_breadth_unconfirmed": 43,
-      "n_repeat_fire": 153,
+      "n_repeat_fire": 156,
       "repeat_fire_proxy_note": "repeat_fire proxies extension (>=3 prior fires in 21d for same (engine,symbol)) until per-ticker price context lands; NOT a genuine extension metric",
       "flagged": [
         {
@@ -5946,7 +5947,7 @@
         },
         {
           "engine": "reflex.options_flow_attention",
-          "symbol": "ROST",
+          "symbol": "CL",
           "as_of": "2026-08-12",
           "flags": [
             "repeat_fire"
@@ -6083,12 +6084,20 @@
       ]
     },
     "stock_desk": {
-      "n_recent_fires": 46,
+      "n_recent_fires": 50,
       "n_hostile_regime": 14,
       "n_breadth_unconfirmed": 26,
-      "n_repeat_fire": 8,
+      "n_repeat_fire": 9,
       "repeat_fire_proxy_note": "repeat_fire proxies extension (>=3 prior fires in 21d for same (engine,symbol)) until per-ticker price context lands; NOT a genuine extension metric",
       "flagged": [
+        {
+          "engine": "stock_desk",
+          "symbol": "NX",
+          "as_of": "2026-09-13",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
         {
           "engine": "stock_desk",
           "symbol": "AN",
@@ -6781,12 +6790,20 @@
       ]
     },
     "thematic_desk": {
-      "n_recent_fires": 18,
+      "n_recent_fires": 19,
       "n_hostile_regime": 7,
       "n_breadth_unconfirmed": 10,
-      "n_repeat_fire": 6,
+      "n_repeat_fire": 7,
       "repeat_fire_proxy_note": "repeat_fire proxies extension (>=3 prior fires in 21d for same (engine,symbol)) until per-ticker price context lands; NOT a genuine extension metric",
       "flagged": [
+        {
+          "engine": "thematic_desk",
+          "symbol": "SIL",
+          "as_of": "2026-09-14",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
         {
           "engine": "thematic_desk",
           "symbol": "SIL",
@@ -6904,9 +6921,9 @@
       ]
     },
     "track_record": {
-      "n_recent_fires": 1870,
-      "n_hostile_regime": 75,
-      "n_breadth_unconfirmed": 915,
+      "n_recent_fires": 1875,
+      "n_hostile_regime": 80,
+      "n_breadth_unconfirmed": 920,
       "n_repeat_fire": 140,
       "repeat_fire_proxy_note": "repeat_fire proxies extension (>=3 prior fires in 21d for same (engine,symbol)) until per-ticker price context lands; NOT a genuine extension metric",
       "flagged": [
@@ -7142,6 +7159,51 @@
         },
         {
           "engine": "track_record",
+          "symbol": "KDP",
+          "as_of": "2026-09-09",
+          "flags": [
+            "hostile_regime",
+            "breadth_unconfirmed"
+          ]
+        },
+        {
+          "engine": "track_record",
+          "symbol": "KDP",
+          "as_of": "2026-09-09",
+          "flags": [
+            "hostile_regime",
+            "breadth_unconfirmed"
+          ]
+        },
+        {
+          "engine": "track_record",
+          "symbol": "KDP",
+          "as_of": "2026-09-09",
+          "flags": [
+            "hostile_regime",
+            "breadth_unconfirmed"
+          ]
+        },
+        {
+          "engine": "track_record",
+          "symbol": "KDP",
+          "as_of": "2026-09-09",
+          "flags": [
+            "hostile_regime",
+            "breadth_unconfirmed"
+          ]
+        },
+        {
+          "engine": "track_record",
+          "symbol": "KDP",
+          "as_of": "2026-09-09",
+          "flags": [
+            "hostile_regime",
+            "breadth_unconfirmed"
+          ]
+        },
+        {
+          "engine": "track_record",
           "symbol": "KMI",
           "as_of": "2026-09-09",
           "flags": [
@@ -7319,51 +7381,6 @@
         {
           "engine": "track_record",
           "symbol": "NWSA",
-          "as_of": "2026-09-09",
-          "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "track_record",
-          "symbol": "QCOM",
-          "as_of": "2026-09-09",
-          "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "track_record",
-          "symbol": "QCOM",
-          "as_of": "2026-09-09",
-          "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "track_record",
-          "symbol": "QCOM",
-          "as_of": "2026-09-09",
-          "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "track_record",
-          "symbol": "QCOM",
-          "as_of": "2026-09-09",
-          "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "track_record",
-          "symbol": "QCOM",
           "as_of": "2026-09-09",
           "flags": [
             "hostile_regime",
@@ -7373,10 +7390,10 @@
       ]
     },
     "us_board": {
-      "n_recent_fires": 7477,
+      "n_recent_fires": 7492,
       "n_hostile_regime": 0,
-      "n_breadth_unconfirmed": 3356,
-      "n_repeat_fire": 2624,
+      "n_breadth_unconfirmed": 3366,
+      "n_repeat_fire": 2634,
       "repeat_fire_proxy_note": "repeat_fire proxies extension (>=3 prior fires in 21d for same (engine,symbol)) until per-ticker price context lands; NOT a genuine extension metric",
       "flagged": [
         {
@@ -7570,6 +7587,15 @@
         {
           "engine": "us_board",
           "symbol": "COCO",
+          "as_of": "2026-08-31",
+          "flags": [
+            "breadth_unconfirmed",
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "us_board",
+          "symbol": "CORT",
           "as_of": "2026-08-31",
           "flags": [
             "breadth_unconfirmed",
@@ -7799,29 +7825,20 @@
           "flags": [
             "breadth_unconfirmed"
           ]
-        },
-        {
-          "engine": "us_board",
-          "symbol": "INDV",
-          "as_of": "2026-08-31",
-          "flags": [
-            "breadth_unconfirmed",
-            "repeat_fire"
-          ]
         }
       ]
     },
     "us_importance_v0": {
-      "n_recent_fires": 31637,
-      "n_hostile_regime": 2098,
-      "n_breadth_unconfirmed": 14504,
-      "n_repeat_fire": 16095,
+      "n_recent_fires": 31845,
+      "n_hostile_regime": 2140,
+      "n_breadth_unconfirmed": 14562,
+      "n_repeat_fire": 16139,
       "repeat_fire_proxy_note": "repeat_fire proxies extension (>=3 prior fires in 21d for same (engine,symbol)) until per-ticker price context lands; NOT a genuine extension metric",
       "flagged": [
         {
           "engine": "us_importance_v0",
           "symbol": "AAPL",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -7829,7 +7846,7 @@
         {
           "engine": "us_importance_v0",
           "symbol": "AAPL",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -7837,7 +7854,7 @@
         {
           "engine": "us_importance_v0",
           "symbol": "AAPL",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -7845,7 +7862,7 @@
         {
           "engine": "us_importance_v0",
           "symbol": "AAPL",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -7853,7 +7870,7 @@
         {
           "engine": "us_importance_v0",
           "symbol": "AAPL",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -7861,39 +7878,39 @@
         {
           "engine": "us_importance_v0",
           "symbol": "AAPL",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
         },
         {
           "engine": "us_importance_v0",
-          "symbol": "AMZN",
-          "as_of": "2026-09-12",
+          "symbol": "AI",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
         },
         {
           "engine": "us_importance_v0",
-          "symbol": "AMZN",
-          "as_of": "2026-09-12",
+          "symbol": "AI",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
         },
         {
           "engine": "us_importance_v0",
-          "symbol": "AMZN",
-          "as_of": "2026-09-12",
+          "symbol": "DAL",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
         },
         {
           "engine": "us_importance_v0",
-          "symbol": "AMZN",
-          "as_of": "2026-09-12",
+          "symbol": "DAL",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -7901,7 +7918,7 @@
         {
           "engine": "us_importance_v0",
           "symbol": "GOOGL",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -7909,23 +7926,7 @@
         {
           "engine": "us_importance_v0",
           "symbol": "GOOGL",
-          "as_of": "2026-09-12",
-          "flags": [
-            "repeat_fire"
-          ]
-        },
-        {
-          "engine": "us_importance_v0",
-          "symbol": "J",
-          "as_of": "2026-09-12",
-          "flags": [
-            "repeat_fire"
-          ]
-        },
-        {
-          "engine": "us_importance_v0",
-          "symbol": "J",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -7933,7 +7934,7 @@
         {
           "engine": "us_importance_v0",
           "symbol": "META",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -7941,23 +7942,7 @@
         {
           "engine": "us_importance_v0",
           "symbol": "META",
-          "as_of": "2026-09-12",
-          "flags": [
-            "repeat_fire"
-          ]
-        },
-        {
-          "engine": "us_importance_v0",
-          "symbol": "MSFT",
-          "as_of": "2026-09-12",
-          "flags": [
-            "repeat_fire"
-          ]
-        },
-        {
-          "engine": "us_importance_v0",
-          "symbol": "MSFT",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -7965,7 +7950,7 @@
         {
           "engine": "us_importance_v0",
           "symbol": "NVDA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -7973,7 +7958,7 @@
         {
           "engine": "us_importance_v0",
           "symbol": "NVDA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -7981,7 +7966,7 @@
         {
           "engine": "us_importance_v0",
           "symbol": "NVDA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -7989,7 +7974,7 @@
         {
           "engine": "us_importance_v0",
           "symbol": "NVDA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -7997,7 +7982,7 @@
         {
           "engine": "us_importance_v0",
           "symbol": "NVDA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8005,7 +7990,7 @@
         {
           "engine": "us_importance_v0",
           "symbol": "NVDA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8013,7 +7998,7 @@
         {
           "engine": "us_importance_v0",
           "symbol": "NVDA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8021,7 +8006,7 @@
         {
           "engine": "us_importance_v0",
           "symbol": "NVDA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8029,7 +8014,7 @@
         {
           "engine": "us_importance_v0",
           "symbol": "NVDA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8037,7 +8022,7 @@
         {
           "engine": "us_importance_v0",
           "symbol": "NVDA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8045,7 +8030,7 @@
         {
           "engine": "us_importance_v0",
           "symbol": "NVDA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8053,7 +8038,7 @@
         {
           "engine": "us_importance_v0",
           "symbol": "NVDA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8061,7 +8046,7 @@
         {
           "engine": "us_importance_v0",
           "symbol": "NVDA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8069,23 +8054,39 @@
         {
           "engine": "us_importance_v0",
           "symbol": "NVDA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
         },
         {
           "engine": "us_importance_v0",
-          "symbol": "OLLI",
-          "as_of": "2026-09-12",
+          "symbol": "NVDA",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
         },
         {
           "engine": "us_importance_v0",
-          "symbol": "OLLI",
-          "as_of": "2026-09-12",
+          "symbol": "NVDA",
+          "as_of": "2026-09-13",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "us_importance_v0",
+          "symbol": "PATH",
+          "as_of": "2026-09-13",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "us_importance_v0",
+          "symbol": "PATH",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8093,7 +8094,7 @@
         {
           "engine": "us_importance_v0",
           "symbol": "TSLA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8101,6 +8102,14 @@
         {
           "engine": "us_importance_v0",
           "symbol": "TSLA",
+          "as_of": "2026-09-13",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "us_importance_v0",
+          "symbol": "AAPL",
           "as_of": "2026-09-12",
           "flags": [
             "repeat_fire"
@@ -8108,7 +8117,7 @@
         },
         {
           "engine": "us_importance_v0",
-          "symbol": "TSLA",
+          "symbol": "AAPL",
           "as_of": "2026-09-12",
           "flags": [
             "repeat_fire"
@@ -8116,7 +8125,7 @@
         },
         {
           "engine": "us_importance_v0",
-          "symbol": "TSLA",
+          "symbol": "AAPL",
           "as_of": "2026-09-12",
           "flags": [
             "repeat_fire"
@@ -8124,127 +8133,121 @@
         },
         {
           "engine": "us_importance_v0",
-          "symbol": "ACT",
-          "as_of": "2026-09-11",
+          "symbol": "AAPL",
+          "as_of": "2026-09-12",
           "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "us_importance_v0",
-          "symbol": "ACT",
-          "as_of": "2026-09-11",
-          "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "us_importance_v0",
-          "symbol": "ADYEY",
-          "as_of": "2026-09-11",
-          "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "us_importance_v0",
-          "symbol": "ADYEY",
-          "as_of": "2026-09-11",
-          "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "us_importance_v0",
-          "symbol": "AGESY",
-          "as_of": "2026-09-11",
-          "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "us_importance_v0",
-          "symbol": "AGESY",
-          "as_of": "2026-09-11",
-          "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "us_importance_v0",
-          "symbol": "AGESY",
-          "as_of": "2026-09-11",
-          "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "us_importance_v0",
-          "symbol": "AGESY",
-          "as_of": "2026-09-11",
-          "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "us_importance_v0",
-          "symbol": "AGESY",
-          "as_of": "2026-09-11",
-          "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "us_importance_v0",
-          "symbol": "AGESY",
-          "as_of": "2026-09-11",
-          "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "us_importance_v0",
-          "symbol": "AI",
-          "as_of": "2026-09-11",
-          "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed",
             "repeat_fire"
           ]
         },
         {
           "engine": "us_importance_v0",
-          "symbol": "AI",
-          "as_of": "2026-09-11",
+          "symbol": "AAPL",
+          "as_of": "2026-09-12",
           "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed",
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "us_importance_v0",
+          "symbol": "AAPL",
+          "as_of": "2026-09-12",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "us_importance_v0",
+          "symbol": "AAPL",
+          "as_of": "2026-09-12",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "us_importance_v0",
+          "symbol": "AAPL",
+          "as_of": "2026-09-12",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "us_importance_v0",
+          "symbol": "AAPL",
+          "as_of": "2026-09-12",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "us_importance_v0",
+          "symbol": "AAPL",
+          "as_of": "2026-09-12",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "us_importance_v0",
+          "symbol": "AMZN",
+          "as_of": "2026-09-12",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "us_importance_v0",
+          "symbol": "AMZN",
+          "as_of": "2026-09-12",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "us_importance_v0",
+          "symbol": "AMZN",
+          "as_of": "2026-09-12",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "us_importance_v0",
+          "symbol": "AMZN",
+          "as_of": "2026-09-12",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "us_importance_v0",
+          "symbol": "AMZN",
+          "as_of": "2026-09-12",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "us_importance_v0",
+          "symbol": "AMZN",
+          "as_of": "2026-09-12",
+          "flags": [
             "repeat_fire"
           ]
         }
       ]
     },
     "us_importance_v0_pit": {
-      "n_recent_fires": 31637,
-      "n_hostile_regime": 2098,
-      "n_breadth_unconfirmed": 14504,
-      "n_repeat_fire": 16095,
+      "n_recent_fires": 31845,
+      "n_hostile_regime": 2140,
+      "n_breadth_unconfirmed": 14562,
+      "n_repeat_fire": 16139,
       "repeat_fire_proxy_note": "repeat_fire proxies extension (>=3 prior fires in 21d for same (engine,symbol)) until per-ticker price context lands; NOT a genuine extension metric",
       "flagged": [
         {
           "engine": "us_importance_v0_pit",
           "symbol": "AAPL",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8252,7 +8255,7 @@
         {
           "engine": "us_importance_v0_pit",
           "symbol": "AAPL",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8260,7 +8263,7 @@
         {
           "engine": "us_importance_v0_pit",
           "symbol": "AAPL",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8268,7 +8271,7 @@
         {
           "engine": "us_importance_v0_pit",
           "symbol": "AAPL",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8276,7 +8279,7 @@
         {
           "engine": "us_importance_v0_pit",
           "symbol": "AAPL",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8284,39 +8287,39 @@
         {
           "engine": "us_importance_v0_pit",
           "symbol": "AAPL",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
         },
         {
           "engine": "us_importance_v0_pit",
-          "symbol": "AMZN",
-          "as_of": "2026-09-12",
+          "symbol": "AI",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
         },
         {
           "engine": "us_importance_v0_pit",
-          "symbol": "AMZN",
-          "as_of": "2026-09-12",
+          "symbol": "AI",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
         },
         {
           "engine": "us_importance_v0_pit",
-          "symbol": "AMZN",
-          "as_of": "2026-09-12",
+          "symbol": "DAL",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
         },
         {
           "engine": "us_importance_v0_pit",
-          "symbol": "AMZN",
-          "as_of": "2026-09-12",
+          "symbol": "DAL",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8324,7 +8327,7 @@
         {
           "engine": "us_importance_v0_pit",
           "symbol": "GOOGL",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8332,23 +8335,7 @@
         {
           "engine": "us_importance_v0_pit",
           "symbol": "GOOGL",
-          "as_of": "2026-09-12",
-          "flags": [
-            "repeat_fire"
-          ]
-        },
-        {
-          "engine": "us_importance_v0_pit",
-          "symbol": "J",
-          "as_of": "2026-09-12",
-          "flags": [
-            "repeat_fire"
-          ]
-        },
-        {
-          "engine": "us_importance_v0_pit",
-          "symbol": "J",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8356,7 +8343,7 @@
         {
           "engine": "us_importance_v0_pit",
           "symbol": "META",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8364,23 +8351,7 @@
         {
           "engine": "us_importance_v0_pit",
           "symbol": "META",
-          "as_of": "2026-09-12",
-          "flags": [
-            "repeat_fire"
-          ]
-        },
-        {
-          "engine": "us_importance_v0_pit",
-          "symbol": "MSFT",
-          "as_of": "2026-09-12",
-          "flags": [
-            "repeat_fire"
-          ]
-        },
-        {
-          "engine": "us_importance_v0_pit",
-          "symbol": "MSFT",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8388,7 +8359,7 @@
         {
           "engine": "us_importance_v0_pit",
           "symbol": "NVDA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8396,7 +8367,7 @@
         {
           "engine": "us_importance_v0_pit",
           "symbol": "NVDA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8404,7 +8375,7 @@
         {
           "engine": "us_importance_v0_pit",
           "symbol": "NVDA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8412,7 +8383,7 @@
         {
           "engine": "us_importance_v0_pit",
           "symbol": "NVDA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8420,7 +8391,7 @@
         {
           "engine": "us_importance_v0_pit",
           "symbol": "NVDA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8428,7 +8399,7 @@
         {
           "engine": "us_importance_v0_pit",
           "symbol": "NVDA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8436,7 +8407,7 @@
         {
           "engine": "us_importance_v0_pit",
           "symbol": "NVDA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8444,7 +8415,7 @@
         {
           "engine": "us_importance_v0_pit",
           "symbol": "NVDA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8452,7 +8423,7 @@
         {
           "engine": "us_importance_v0_pit",
           "symbol": "NVDA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8460,7 +8431,7 @@
         {
           "engine": "us_importance_v0_pit",
           "symbol": "NVDA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8468,7 +8439,7 @@
         {
           "engine": "us_importance_v0_pit",
           "symbol": "NVDA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8476,7 +8447,7 @@
         {
           "engine": "us_importance_v0_pit",
           "symbol": "NVDA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8484,7 +8455,7 @@
         {
           "engine": "us_importance_v0_pit",
           "symbol": "NVDA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8492,23 +8463,39 @@
         {
           "engine": "us_importance_v0_pit",
           "symbol": "NVDA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
         },
         {
           "engine": "us_importance_v0_pit",
-          "symbol": "OLLI",
-          "as_of": "2026-09-12",
+          "symbol": "NVDA",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
         },
         {
           "engine": "us_importance_v0_pit",
-          "symbol": "OLLI",
-          "as_of": "2026-09-12",
+          "symbol": "NVDA",
+          "as_of": "2026-09-13",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "us_importance_v0_pit",
+          "symbol": "PATH",
+          "as_of": "2026-09-13",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "us_importance_v0_pit",
+          "symbol": "PATH",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8516,7 +8503,7 @@
         {
           "engine": "us_importance_v0_pit",
           "symbol": "TSLA",
-          "as_of": "2026-09-12",
+          "as_of": "2026-09-13",
           "flags": [
             "repeat_fire"
           ]
@@ -8524,6 +8511,14 @@
         {
           "engine": "us_importance_v0_pit",
           "symbol": "TSLA",
+          "as_of": "2026-09-13",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "us_importance_v0_pit",
+          "symbol": "AAPL",
           "as_of": "2026-09-12",
           "flags": [
             "repeat_fire"
@@ -8531,7 +8526,7 @@
         },
         {
           "engine": "us_importance_v0_pit",
-          "symbol": "TSLA",
+          "symbol": "AAPL",
           "as_of": "2026-09-12",
           "flags": [
             "repeat_fire"
@@ -8539,7 +8534,7 @@
         },
         {
           "engine": "us_importance_v0_pit",
-          "symbol": "TSLA",
+          "symbol": "AAPL",
           "as_of": "2026-09-12",
           "flags": [
             "repeat_fire"
@@ -8547,111 +8542,105 @@
         },
         {
           "engine": "us_importance_v0_pit",
-          "symbol": "ACT",
-          "as_of": "2026-09-11",
+          "symbol": "AAPL",
+          "as_of": "2026-09-12",
           "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "us_importance_v0_pit",
-          "symbol": "ACT",
-          "as_of": "2026-09-11",
-          "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "us_importance_v0_pit",
-          "symbol": "ADYEY",
-          "as_of": "2026-09-11",
-          "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "us_importance_v0_pit",
-          "symbol": "ADYEY",
-          "as_of": "2026-09-11",
-          "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "us_importance_v0_pit",
-          "symbol": "AGESY",
-          "as_of": "2026-09-11",
-          "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "us_importance_v0_pit",
-          "symbol": "AGESY",
-          "as_of": "2026-09-11",
-          "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "us_importance_v0_pit",
-          "symbol": "AGESY",
-          "as_of": "2026-09-11",
-          "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "us_importance_v0_pit",
-          "symbol": "AGESY",
-          "as_of": "2026-09-11",
-          "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "us_importance_v0_pit",
-          "symbol": "AGESY",
-          "as_of": "2026-09-11",
-          "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "us_importance_v0_pit",
-          "symbol": "AGESY",
-          "as_of": "2026-09-11",
-          "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed"
-          ]
-        },
-        {
-          "engine": "us_importance_v0_pit",
-          "symbol": "AI",
-          "as_of": "2026-09-11",
-          "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed",
             "repeat_fire"
           ]
         },
         {
           "engine": "us_importance_v0_pit",
-          "symbol": "AI",
-          "as_of": "2026-09-11",
+          "symbol": "AAPL",
+          "as_of": "2026-09-12",
           "flags": [
-            "hostile_regime",
-            "breadth_unconfirmed",
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "us_importance_v0_pit",
+          "symbol": "AAPL",
+          "as_of": "2026-09-12",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "us_importance_v0_pit",
+          "symbol": "AAPL",
+          "as_of": "2026-09-12",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "us_importance_v0_pit",
+          "symbol": "AAPL",
+          "as_of": "2026-09-12",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "us_importance_v0_pit",
+          "symbol": "AAPL",
+          "as_of": "2026-09-12",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "us_importance_v0_pit",
+          "symbol": "AAPL",
+          "as_of": "2026-09-12",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "us_importance_v0_pit",
+          "symbol": "AMZN",
+          "as_of": "2026-09-12",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "us_importance_v0_pit",
+          "symbol": "AMZN",
+          "as_of": "2026-09-12",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "us_importance_v0_pit",
+          "symbol": "AMZN",
+          "as_of": "2026-09-12",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "us_importance_v0_pit",
+          "symbol": "AMZN",
+          "as_of": "2026-09-12",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "us_importance_v0_pit",
+          "symbol": "AMZN",
+          "as_of": "2026-09-12",
+          "flags": [
+            "repeat_fire"
+          ]
+        },
+        {
+          "engine": "us_importance_v0_pit",
+          "symbol": "AMZN",
+          "as_of": "2026-09-12",
+          "flags": [
             "repeat_fire"
           ]
         }
@@ -9076,7 +9065,7 @@
   "gaps": [],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/lagging.py",
-  "produced_at": "2026-09-13T10:07:47Z",
-  "inputs_hash": "sha256:30c4d597471f17ad795d14c11cbd9fb2203b1fc310c1ccb8e8d1c7dadff2c0a8",
+  "produced_at": "2026-09-14T10:57:11Z",
+  "inputs_hash": "sha256:1f8c6e61c94c408c6d0c9994f1036ee101e92424a22fb5760d52222712c816f8",
   "tier": "infrastructure"
 }
