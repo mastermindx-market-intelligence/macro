@@ -42,6 +42,7 @@ from engine.portfolio_changes import (  # noqa: E402
     snapshot_state,
 )
 from engine.portfolio_digest import compose_digest, idem_key  # noqa: E402
+from engine import portfolio_digest as digest_mod  # noqa: E402
 from engine.portfolio_vocab import CLASS_WORD  # noqa: E402
 from tests.test_portfolio_brief import BOOKS, TODAY, _ctx  # noqa: E402
 
@@ -434,6 +435,159 @@ def test_digest_carries_no_money_fields():
     blob = json.dumps(d, ensure_ascii=False)
     for money in ("shares", "entry_price", "cost_basis", "market_value", "pnl"):
         assert money not in blob
+
+
+# ── the send path says, in plain words and with a date, that it is still off ──
+#
+# MO-PAID-085 residual (packet W9B_F08_12). The digest has no transport of its own:
+# app/mailer.py is_configured() needs MAIL_SMTP_HOST + USER + PASS + MAIL_FROM, nothing
+# outside the module calls compose_digest, and docs/ops/email-support-setup.md records
+# the estate as shipping in mail-off mode. Switching delivery on also needs a
+# privacy/risk review that has not happened. So the seat fork (W9 RATIFICATION row
+# w9b_f08_12) resolves to the honesty line, not the wire. These tests pin that the
+# module SAYS so — dated, in both languages, with the digest's OWN missing transport
+# named once for the seat, and with the alert lane's dormant flag kept off this path.
+
+def test_send_path_reports_itself_off_as_of_a_real_date():
+    """An undated 'not wired' claim cannot be aged by a reader, which is exactly why
+    LEDGER_MOVES #10 kept re-filing it. The statement now carries the date it was
+    checked against origin/main, so the next reader knows how stale it may be."""
+    from datetime import date  # noqa: PLC0415
+
+    st = digest_mod.send_path_status()
+    assert st["state"] == "off", "the drain has no configured transport, so this is off"
+    assert st["asof"] == digest_mod.SEND_PATH_ASOF
+    asof = date.fromisoformat(digest_mod.SEND_PATH_ASOF)
+    assert asof <= date.today(), "the honesty line may not be dated in the future"
+    # the date is IN the sentence a human reads, not only in a sibling field
+    assert digest_mod.SEND_PATH_ASOF in st["en"]
+    assert digest_mod.SEND_PATH_ASOF in st["zh"]
+
+
+def test_send_path_honesty_is_plain_bilingual_copy():
+    """Plain-language law + ZH parity, applied to the one sentence this lane ships."""
+    import re  # noqa: PLC0415
+
+    st = digest_mod.send_path_status()
+    en, zh = st["en"], st["zh"]
+    assert en.strip() and zh.strip()
+    assert en != zh, "ZH must be a real translation, not the EN string reused"
+    assert re.search(r"[\u4e00-\u9fff]", zh), "ZH twin must be real Chinese"
+    assert "。" in zh and "，" in zh, "ZH twin must use CJK punctuation"
+    for word in ("falsifier", "refuted", "validated", "证伪"):
+        assert word not in en.lower() and word not in zh.lower()
+    # no machine text in a line a person could be shown: no env slugs, no snake_case,
+    # no shouted enum, and no untranslated stat
+    for slug in ("MAIL_SMTP", "ALERT_DRAIN_ENABLE", "skipped_no_smtp", "send_fn",
+                 "NOT WIRED", "NEEDS_SEAT", "psi_digest"):
+        assert slug not in en and slug not in zh, f"machine text in user copy: {slug}"
+    assert "_" not in en and "_" not in zh
+    assert en.rstrip().endswith(".") and zh.rstrip().endswith("。")
+
+
+def test_the_undated_not_wired_claim_is_replaced_not_left_beside_the_new_one():
+    """Drop or wire. The honesty fork drops the undated sentence and keeps one dated
+    one — two competing claims about the same path is how the ledger kept reopening."""
+    src = (ROOT / "engine" / "portfolio_digest.py").read_text(encoding="utf-8")
+    assert "THE SEND PATH IS NOT WIRED, DELIBERATELY" not in src
+    assert digest_mod.SEND_PATH_ASOF in src
+
+
+def test_exactly_one_needs_seat_line_names_the_missing_transport():
+    """The seat ruling asks for ONE NEEDS_SEAT line, and it must name the transport
+    concretely — 'a transport' sends the next reader back to the same investigation.
+
+    Round 2 (review MAJOR-1): the line used to name the ALERT lane's dormant flag
+    (``ALERT_DRAIN_ENABLE``) as a precondition for this path. It cannot be one — that
+    flag gates transactional ``alert_fire`` rows out of ``public.alert_outbox``, a
+    digest is ``marketing`` class with no row there, and the module's own evidence says
+    the alert drain "is not a drop-in home even once enabled". Naming it inside "stays
+    off until ..." would also hand a future lane a production enable that this packet's
+    OUT OF SCOPE forbids. So the line must name the digest's OWN missing transport, and
+    may mention that flag only in the sentence that rules it off this path."""
+    src = (ROOT / "engine" / "portfolio_digest.py").read_text(encoding="utf-8")
+    assigned = [t.id for node in ast.parse(src).body if isinstance(node, ast.Assign)
+                for t in node.targets if isinstance(t, ast.Name) and t.id == "NEEDS_SEAT"]
+    assert assigned == ["NEEDS_SEAT"], f"expected one NEEDS_SEAT line, got {assigned}"
+    line = digest_mod.NEEDS_SEAT
+    assert line.startswith("NEEDS_SEAT:")
+    assert line.count("NEEDS_SEAT") == 1
+    # the digest's own transport, named concretely: the four variables the mailer's
+    # predicate actually consults (app/mailer.py::is_configured), never an invented one
+    for token in ("MAIL_SMTP_HOST", "MAIL_SMTP_USER", "MAIL_SMTP_PASS", "MAIL_FROM",
+                  "is_configured()"):
+        assert token in line, f"NEEDS_SEAT must name the missing transport: {token}"
+    # plus the two non-credential legs the ruling's honesty fork owes the seat
+    for token in ("suppression", "one-click unsub", "privacy/risk review"):
+        assert token in line, f"NEEDS_SEAT must name the missing leg: {token}"
+    # the alert lane's flag may appear ONLY after the precondition list, inside the
+    # sentence that rules it off this path
+    head, sep, tail = line.partition("ALERT_DRAIN_ENABLE")
+    assert sep, "the alert lane's flag is never ruled off this path"
+    assert "NOT a precondition" in tail, \
+        "ALERT_DRAIN_ENABLE may be named only to say it is not on the digest path"
+    assert "drain_alert_outbox" not in head, \
+        "the alert drain may not be listed as a precondition for the digest path"
+
+
+def test_the_dated_honesty_claim_is_checkable_on_this_tree():
+    """A dated claim nobody can re-check ages into the same stale sentence it replaced.
+    This reads the facts the claim rests on, so a lane that configures the
+    transport trips it and SEND_PATH_ASOF has to be re-verified deliberately."""
+    drain_script = (ROOT / "scripts" / "drain_alert_outbox.py").read_text(encoding="utf-8")
+    assert "ALERT_DRAIN_ENABLE" in drain_script, "the drain's enable flag moved"
+    assert "send_fn = None" in drain_script, \
+        "the drain no longer forces send_fn=None while dormant — re-check the honesty line"
+    mailer_src = (ROOT / "app" / "mailer.py").read_text(encoding="utf-8")
+    assert "def is_configured()" in mailer_src, "the mailer's transport predicate moved"
+    assert "MAIL_SMTP_HOST" in mailer_src and "MAIL_SMTP_* unset" in mailer_src
+    deploy_doc = (ROOT / "app" / "deploy" / "README.md").read_text(encoding="utf-8")
+    assert "DORMANT" in deploy_doc and "ALERT_DRAIN_ENABLE=1" in deploy_doc
+    # Round 2 (review MAJOR-1): the reason the existing drain is not the digest's home
+    # must stay true, or the seat's "if the drain has a configured transport" fork has
+    # to be re-argued rather than assumed by the next reader.
+    drain_mod_src = (ROOT / "engine" / "alert_delivery_drain.py").read_text(encoding="utf-8")
+    assert "alert_fire" in drain_mod_src, "the alert drain's row class moved"
+    assert digest_mod.CLS == "marketing", \
+        "the digest's class moved — the seat fork has to be re-argued, not inherited"
+    # Round 2 (review MINOR-2): the credential clause is a DEPLOYED fact, so the
+    # docstring must cite the in-repo statement of record and name where the deployed
+    # value is written from — and the claim must also rest on what this tree CAN prove,
+    # which is that nothing outside the module calls the composer at all.
+    src = (ROOT / "engine" / "portfolio_digest.py").read_text(encoding="utf-8")
+    assert "docs/ops/email-support-setup.md" in src, \
+        "the credential clause lost its only in-repo citation"
+    assert "deploy-api-secrets.yml" in src, \
+        "the docstring must name where the deployed credential fact is written from"
+    ops_doc = (ROOT / "docs" / "ops" / "email-support-setup.md").read_text(encoding="utf-8")
+    assert "mail-off mode" in ops_doc and "Mail-off mode" in ops_doc, \
+        "the ops doc's mail-off statement of record moved"
+    callers = []
+    for top in ("app", "engine", "scripts"):
+        for path in (ROOT / top).rglob("*.py"):
+            if path.name == "portfolio_digest.py":
+                continue
+            if "compose_digest" in path.read_text(encoding="utf-8", errors="ignore"):
+                callers.append(str(path.relative_to(ROOT)))
+    assert callers == [], (
+        f"a caller of compose_digest appeared: {callers} — the send path may no longer "
+        "be off, so SEND_PATH_ASOF and the honesty line need re-verifying")
+
+
+def test_the_honesty_line_never_reaches_a_reader_and_changes_no_send_contract():
+    """The path is off, so the composed email must not carry an engineering status
+    line; and shipping the honesty must not have touched the composer's contract."""
+    st = digest_mod.send_path_status()
+    d = compose_digest(_snap(), _snap(_moved_ctx()), user_id="u1", asof="2026-07-23",
+                       population="positions")
+    blob = json.dumps(d, ensure_ascii=False)
+    assert st["en"] not in blob and st["zh"] not in blob
+    assert "NEEDS_SEAT" not in blob
+    assert set(d) == {"template", "cls", "idem_key", "subject", "title_en", "title_zh",
+                      "preheader", "eyebrow", "why_en", "why_zh", "blocks",
+                      "change_count"}, "the send-argument contract moved"
+    # reading the status must not be able to deliver anything, and must not raise
+    assert digest_mod.send_path_status() == st
 
 
 # ── ADVERSARIAL: the same copy bar as the brief ──────────────────────────────
