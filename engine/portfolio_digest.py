@@ -12,24 +12,47 @@ instead of inferring it; only its ``en``/``zh`` fields may ever be rendered.
 Why "off" and not merely "unwired by choice" — the seat ruling for this packet (W9
 RATIFICATION row ``w9b_f08_12``) is conditional: wire the digest into the existing drain
 *if the drain has a configured transport*, otherwise ship the dated honesty line and name
-the missing transport once. The drain has no configured transport, so this is the honesty
-line and ``NEEDS_SEAT`` below names what is missing. The evidence, all on ``origin/main``:
+the missing transport once. The digest has no transport of its own and the existing drain
+is not its home, so this is the honesty line and ``NEEDS_SEAT`` below names what is
+missing.
 
-* The drain this digest would send through — ``engine/alert_delivery_drain.py`` reached
-  via ``scripts/drain_alert_outbox.py`` — ships DORMANT. Without ``ALERT_DRAIN_ENABLE=1``
-  that script computes ``send_fn = None``, and ``app/deploy/README.md`` says "until set,
-  ``python -m scripts.drain_alert_outbox`` forces ``--dry-run`` (decisions only, no sends,
-  no writes)". Enabling live sends requires a separate opus privacy/risk review (F08
-  architecture freeze §10 V4) which has not happened, and this packet is not that review.
-* The mailer's transport is separately unconfigured: ``app.mailer.is_configured()`` needs
-  ``MAIL_SMTP_HOST`` + ``MAIL_SMTP_USER`` + ``MAIL_SMTP_PASS`` + ``MAIL_FROM``, and
-  without them ``send()`` returns ``'skipped_no_smtp'`` rather than mailing.
-* The alert drain is not a drop-in home even once enabled: it moves transactional
-  ``alert_fire`` rows out of ``public.alert_outbox``, while a digest is ``marketing``
-  class (see ``CLS``) and needs the suppression / opt-out / one-click-unsub leg that
-  drain does not have. Its own code files a marketing row that reaches it under
-  "a marketing-only ledger race that should never reach this transactional class in
-  practice".
+Four reads support that. Three are IN-TREE and re-checkable on ``origin/main`` — a test
+pins them. The fourth is a DEPLOYED fact this tree can document but never prove. Keep the
+two apart: only the first three can be re-verified by reading the repo, so a reader who
+wants to age the claim knows which leg needs a host and which needs a checkout.
+
+* IN-TREE, and the load-bearing leg: nothing calls the composer. ``git grep -n
+  "compose_digest" -- ':!tests/'`` returns this file alone, so no endpoint, job or script
+  under ``app/``, ``engine/`` or ``scripts/`` composes a digest in order to hand it to
+  anything. A send path with no caller cannot send, whatever the credentials say.
+* IN-TREE: the predicate a future send would have to satisfy is
+  ``app/mailer.py:126-133`` ``is_configured()`` — ``MAIL_SMTP_HOST`` + ``MAIL_SMTP_USER``
+  + ``MAIL_SMTP_PASS`` + ``MAIL_FROM`` — and ``app/mailer.py:408-411`` returns
+  ``'skipped_no_smtp'`` rather than mailing when it is false.
+* IN-TREE: the existing drain is not a drop-in home even once enabled.
+  ``engine/alert_delivery_drain.py``, reached via ``scripts/drain_alert_outbox.py``, moves
+  transactional ``alert_fire`` rows out of ``public.alert_outbox``, while a digest is
+  ``marketing`` class (see ``CLS``) and needs the suppression / digest opt-in /
+  one-click-unsub leg that drain does not have. Its own code files a marketing row that
+  reaches it under "a marketing-only ledger race that should never reach this
+  transactional class in practice". ``ALERT_DRAIN_ENABLE=1``
+  (``scripts/drain_alert_outbox.py:43-46``; ``app/deploy/README.md:361-363``, "Ships
+  DORMANT … forces ``--dry-run`` (decisions only, no sends, no writes)") is THAT lane's
+  flag and is **not** a precondition for this path: a digest is not an ``alert_fire`` row,
+  so no value of that flag can ever send one. The same is true of the opus privacy/risk
+  review ``app/deploy/README.md:363-365`` requires before the alert drain's live sends —
+  it is scoped to that lane, has not been performed, and is not a substitute for the
+  review a marketing-class digest send would owe in its own right.
+* DEPLOYED, documented here but not provable from this tree: whether relay credentials
+  are actually set lives in ``/etc/macro-api.env``, written from repo secrets by
+  ``.github/workflows/deploy-api-secrets.yml:163``. The in-repo statement of record is
+  ``docs/ops/email-support-setup.md:3`` — the estate "works today in **mail-off mode**" —
+  with §4 (``:126``) spelling out what mail-off looks like and ``:71`` restating that
+  ``is_configured()`` requires host + user + pass + from, a partial config counting as
+  mail-off on purpose. Re-checking THIS clause means reading the deployed environment, not
+  this checkout. What the digest would additionally owe before a first send is PSI §19.5
+  gate 12 (``research/PORTFOLIO_SUPERINTELLIGENCE_MASTERPLAN_BY_FABLE.md:673``): opt-in →
+  change → ONE email → one-click unsub honored, with mail-off degrading clean.
 
 Wiring the nightly job — recipient resolution, the ``email_prefs`` digest opt-in, the
 quiet-day/weekly-heartbeat schedule, suppression, the one-click unsub URL — therefore
@@ -94,30 +117,35 @@ SEND_PATH_STATE = "off"
 
 SEND_PATH_HONESTY_EN = (
     "Portfolio change digests are not being emailed yet. As of " + SEND_PATH_ASOF +
-    " this code writes the digest and then stops: it has never delivered one, because "
-    "the mail service it would hand the digest to has no delivery credentials set up, "
-    "and switching delivery on still needs a privacy review that has not been done. "
-    "No digest will reach a reader until both of those are in place."
+    ", nothing is emailed — the digest is written and then stops, and none has ever "
+    "reached a reader. Two things are missing: the mail service it would be handed to "
+    "has no delivery credentials set up, and switching delivery on still needs a privacy "
+    "review that has not been done. Digests will reach readers once both are in place."
 )
 
 SEND_PATH_HONESTY_ZH = (
     "投资组合变化摘要目前还不会发送邮件。截至 " + SEND_PATH_ASOF +
-    "，这段代码只负责把摘要写好，然后就停在这里：它从未投递过任何一封摘要，"
-    "因为它要交给的邮件服务还没有配置好发送凭据，而且开启投递还需要一次尚未完成的隐私审查。"
-    "只有这两件事都办妥之后，摘要才会送到读者手中。"
+    "，没有任何邮件会发出：摘要只会被写好，也从未有一封送到读者手中。还缺两件事："
+    "接收摘要的邮件服务还没有配置发送凭据；开启投递还需要一次尚未完成的隐私审查。"
+    "只有这两件事都办妥，摘要才会送到读者手中。"
 )
 
-# The ONE needs-seat line this packet owes (W9 RATIFICATION row w9b_f08_12): the
-# transport that is missing, named concretely so the next reader does not redo the
-# investigation. Engineer-facing — this string must never be rendered to a user.
+# The ONE needs-seat line this packet owes (W9 RATIFICATION row w9b_f08_12): the digest's
+# OWN missing transport, named concretely so the next reader does not redo the
+# investigation. Engineer-facing — this string must never be rendered to a user. The alert
+# lane's dormant flag is named only to be ruled off this path (review round 2 MAJOR-1):
+# listing it as a precondition would hand a future lane a production enable this packet's
+# OUT OF SCOPE forbids, for a flag that can never send a digest in any case.
 NEEDS_SEAT = (
-    "NEEDS_SEAT: the digest send path stays off until a transport is configured — "
-    "MAIL_SMTP_HOST + MAIL_SMTP_USER + MAIL_SMTP_PASS + MAIL_FROM so "
-    "app.mailer.is_configured() is true (today send() returns 'skipped_no_smtp'), and "
-    "ALERT_DRAIN_ENABLE=1 in /etc/macro-api.env so scripts/drain_alert_outbox.py stops "
-    "passing send_fn=None; plus the F08 freeze §10 V4 privacy/risk review, plus a "
-    "marketing-class leg (suppression / digest opt-in / one-click unsub) that the "
-    "transactional alert_outbox drain does not have."
+    "NEEDS_SEAT: the digest send path stays off until the digest has a transport of its "
+    "own — MAIL_SMTP_HOST + MAIL_SMTP_USER + MAIL_SMTP_PASS + MAIL_FROM so "
+    "app.mailer.is_configured() is true (today send() returns 'skipped_no_smtp'); a "
+    "marketing-class leg the transactional drain does not have (suppression / email_prefs "
+    "digest opt-in / one-click unsub — PSI §19.5 gate 12); and a privacy/risk review for "
+    "mailing holdings-level content to real users. ALERT_DRAIN_ENABLE=1 is the alert "
+    "lane's flag and is NOT a precondition here: scripts/drain_alert_outbox.py moves "
+    "transactional alert_fire rows out of public.alert_outbox and a digest is not one, so "
+    "this path needs its own scripts/ seam, exactly as that drain has its own."
 )
 
 
