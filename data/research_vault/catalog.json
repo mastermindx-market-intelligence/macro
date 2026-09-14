@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-14T19:33:01.032028+00:00",
-  "count": 2108,
+  "generated_at": "2026-09-14T20:00:38.222882+00:00",
+  "count": 2109,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -280,6 +280,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-wm23isqukdk-954c69",
+      "title": "Americas Technology Software Highlights from GS Comm+Tech conversations",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T13:18:34Z",
+      "summary_points": [
+        "**AI Value Shift to Platforms**: Value migration from GPU infrastructure to AI platforms (deploying/management/scaling) drives higher-margin software services; DigitalOcean’s token/agent flows and CoreWeave’s managed inference signal infrastructure evolution toward cloud architecture.",
+        "**Sovereign AI & Self-Managed Infrastructure**: Geopolitical tensions accelerate demand for sovereign/self-hosted deployments (CoreWeave’s 1GW+ power contracts, MongoDB’s self-managed focus), shifting from hyperscalers to local control for data/security/latency.",
+        "**Cost Optimization Levers**: Token generation economics, inference optimization, and agent orchestration (e.g., DigitalOcean’s model routing) are critical focus areas; token monetization variability directly impacts revenue streams.",
+        "**Governance as Differentiation Catalyst**: Data gravity weakening shifts value to governance (Databricks’ Unity Catalog), semantics, and enterprise context; Snowflake notes openness reduces storage switching costs but governance drives retention.",
+        "**Security Valuation at Elevated Multiples**: Frontier model disruption (e.g., CrowdStrike’s SafeMind) and identity-centric security (Okta/SailPoint) command premium multiples; Palo Alto’s sensor data compounds 2-5% cloud spend take rate."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 18,
       "language": "en",
       "needs_metadata": false
     },
