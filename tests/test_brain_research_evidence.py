@@ -873,3 +873,100 @@ def test_large_public_excerpt_is_budgeted_before_evidence_debit(tmp_path, monkey
     assert result["evidence"]["passages"]
     assert "AAPL demand" in result["report"]["body_text"]
     assert sum(map(len, result["report"]["excerpt_paragraphs"])) < 20_000
+
+
+
+def _recursive_string_total(node) -> int:
+    if isinstance(node, str):
+        return len(node)
+    if isinstance(node, dict):
+        return sum(_recursive_string_total(value) for value in node.values())
+    if isinstance(node, list):
+        return sum(_recursive_string_total(value) for value in node)
+    return 0
+
+
+def test_distinct_multi_atom_cjk_envelope_is_budgeted_before_one_debit(
+        tmp_path, monkeypatch):
+    """R6 discriminator for the passages × text × terms budget dimension."""
+    _seed(tmp_path)
+    atoms = [char * 160 for char in "甲乙丙丁戊己庚辛壬癸子丑"]
+    phrase = " ".join(atoms)
+    separator = "。" + ("背景材料" * 350) + "。"
+    body = separator.join((phrase, phrase, phrase))
+    _stub_documents(monkeypatch, body)
+    debits = _stub_quota(monkeypatch)
+
+    result = _report(tmp_path, phrase)
+
+    assert result["evidence"]["status"] == "matched"
+    assert 1 <= len(result["evidence"]["passages"]) <= 3
+    assert _recursive_string_total(result) <= bmi.REPORT_BODY_MAX_CHARS
+    assert len(debits) == 1
+
+
+def test_unmetered_no_match_still_obeys_whole_response_budget(
+        tmp_path, monkeypatch):
+    _seed(tmp_path)
+    excerpts = tmp_path / "data" / "research_vault" / "excerpts.json"
+    excerpts.write_text(json.dumps({
+        "schema": 1,
+        "excerpts": {REPORT_ID: ["PUBLIC" * 4_000]},
+    }), encoding="utf-8")
+    _stub_documents(monkeypatch, "AAPL demand is accelerating.")
+    debits = _stub_quota(monkeypatch)
+
+    result = _report(tmp_path, "semiconductor inventories")
+
+    assert result["evidence"]["status"] == "no_matching_passage"
+    assert result["evidence"]["passages"] == []
+    assert result["report"]["body_text"] == ""
+    assert debits == []
+    assert _recursive_string_total(result) <= bmi.REPORT_BODY_MAX_CHARS
+
+
+def test_oversized_selector_text_is_projected_before_body_and_debit(
+        tmp_path, monkeypatch):
+    _seed(tmp_path)
+    _stub_documents(monkeypatch, "AAPL demand is accelerating.")
+    debits = _stub_quota(monkeypatch)
+    source = ("x" * 7_000) + "AAPL demand" + ("y" * 7_000)
+    match_start = source.index("AAPL demand")
+    monkeypatch.setattr(bmi, "_select_evidence", lambda document, query: {
+        "status": "matched",
+        "passages": [{
+            "text": source,
+            "match_text": "AAPL demand",
+            "matched_terms": ["aapl", "demand"],
+            "locator": {
+                "kind": "text_span",
+                "start_char": 0,
+                "end_char": len(source),
+                "match_start_char": match_start,
+                "match_end_char": match_start + len("AAPL demand"),
+            },
+        }],
+        "source_binding": {
+            "content_sha256": PDF_SHA,
+            "stored_body_sha256": "b" * 64,
+            "coverage": "complete",
+            "stored_char_count": len(source),
+            "source_char_count": len(source),
+            "tail_omitted": False,
+            "text_layer": "full",
+            "page_count": 1,
+        },
+    })
+
+    result = _report(tmp_path, "AAPL demand")
+
+    passage = result["evidence"]["passages"][0]
+    locator = passage["locator"]
+    relative_start = locator["match_start_char"] - locator["start_char"]
+    relative_end = locator["match_end_char"] - locator["start_char"]
+    assert result["evidence"]["status"] == "matched"
+    assert len(passage["text"]) <= bmi._EVIDENCE_PASSAGE_TEXT_MAX_CHARS
+    assert passage["match_text"] == passage["text"][relative_start:relative_end]
+    assert len(result["report"]["body_text"]) <= bmi._EVIDENCE_PASSAGE_TEXT_MAX_CHARS
+    assert _recursive_string_total(result) <= bmi.REPORT_BODY_MAX_CHARS
+    assert len(debits) == 1
