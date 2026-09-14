@@ -32,10 +32,13 @@ wants to age the claim knows which leg needs a host and which needs a checkout.
 * IN-TREE: the existing drain is not a drop-in home even once enabled.
   ``engine/alert_delivery_drain.py``, reached via ``scripts/drain_alert_outbox.py``, moves
   transactional ``alert_fire`` rows out of ``public.alert_outbox``, while a digest is
-  ``marketing`` class (see ``CLS``) and needs the suppression / digest opt-in /
-  one-click-unsub leg that drain does not have. Its own code files a marketing row that
-  reaches it under "a marketing-only ledger race that should never reach this
-  transactional class in practice". ``ALERT_DRAIN_ENABLE=1``
+  ``marketing`` class (see ``CLS``) and needs the email_prefs digest opt-in / unsub /
+  one-click leg that drain does not have (measured: ``grep -c email_prefs
+  engine/alert_delivery_drain.py`` is 0, ``grep -c unsub`` is 0, ``grep -c one-click``
+  is 0 — the drain DOES have email_suppression at :473 / :305, so that is not a
+  missing leg). Its own code files a marketing row that reaches it under
+  "a marketing-only ledger race that should never reach this transactional class in
+  practice". ``ALERT_DRAIN_ENABLE=1``
   (``scripts/drain_alert_outbox.py:43-46``; ``app/deploy/README.md:361-363``, "Ships
   DORMANT … forces ``--dry-run`` (decisions only, no sends, no writes)") is THAT lane's
   flag and is **not** a precondition for this path: a digest is not an ``alert_fire`` row,
@@ -45,7 +48,10 @@ wants to age the claim knows which leg needs a host and which needs a checkout.
   review a marketing-class digest send would owe in its own right.
 * DEPLOYED, documented here but not provable from this tree: whether relay credentials
   are actually set lives in ``/etc/macro-api.env``, written from repo secrets by
-  ``.github/workflows/deploy-api-secrets.yml:163``. The in-repo statement of record is
+  ``.github/workflows/deploy-api-secrets.yml:195`` (``touch /etc/macro-api.env`` and
+  the heredoc that writes the MAIL_SMTP_* keys; ``:163`` is the value-source line
+  ``_add MAIL_SMTP_HOST "$MAIL_HOST"``, not the env-file write). The in-repo
+  statement of record is
   ``docs/ops/email-support-setup.md:3`` — the estate "works today in **mail-off mode**" —
   with §4 (``:126``) spelling out what mail-off looks like and ``:71`` restating that
   ``is_configured()`` requires host + user + pass + from, a partial config counting as
@@ -91,6 +97,8 @@ vocabulary. The lines are the change engine's own, passed through verbatim.
 """
 from __future__ import annotations
 
+import re
+
 from engine.portfolio_changes import diff_snapshots
 
 TEMPLATE = "psi_digest"
@@ -115,8 +123,33 @@ SEND_PATH_ASOF = "2026-09-13"
 # pair below, which carry no enum, no slug and no config name.
 SEND_PATH_STATE = "off"
 
+_REFUSAL_MONTHS_EN = ("Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+
+
+def _plain_date(iso):
+    """``"2026-09-13"`` → ``("13 Sep 2026", "2026年9月13日")``; unparseable → ``("", "")``.
+
+    Local twin of ``engine.prophet_bridge._plain_date`` (prophet_bridge.py:1386) — the
+    same plain-word date form the rest of the reader-facing copy uses, for the same
+    doctrine reason (Law 2/Law 3: a date a reader reads at full precision, not an
+    identifier). FAIL-SOFT by design — every caller drops its date clause on ``("", "")``
+    rather than printing a wrong day, so a bad input cannot reach a reader.
+    """
+    match = re.match(r"\s*(\d{4})-(\d{2})-(\d{2})", str(iso or ""))
+    if not match:
+        return ("", "")
+    year, month, day = (int(g) for g in match.groups())
+    if not 1 <= month <= 12 or not 1 <= day <= 31:
+        return ("", "")
+    return (f"{day} {_REFUSAL_MONTHS_EN[month - 1]} {year}",
+            f"{year}年{month}月{day}日")
+
+
+_SEND_PATH_DATE_EN, _SEND_PATH_DATE_ZH = _plain_date(SEND_PATH_ASOF)
+
 SEND_PATH_HONESTY_EN = (
-    "Portfolio change digests are not being emailed yet. As of " + SEND_PATH_ASOF +
+    "Portfolio change digests are not being emailed yet. As of " + _SEND_PATH_DATE_EN +
     ", nothing is emailed — the digest is written and then stops, and none has ever "
     "reached a reader. Two things are missing: the mail service it would be handed to "
     "has no delivery credentials set up, and switching delivery on still needs a privacy "
@@ -124,9 +157,9 @@ SEND_PATH_HONESTY_EN = (
 )
 
 SEND_PATH_HONESTY_ZH = (
-    "投资组合变化摘要目前还不会发送邮件。截至 " + SEND_PATH_ASOF +
-    "，没有任何邮件会发出：摘要只会被写好，也从未有一封送到读者手中。还缺两件事："
-    "接收摘要的邮件服务还没有配置发送凭据；开启投递还需要一次尚未完成的隐私审查。"
+    "投资组合变化摘要目前还不会发送邮件。截至 " + _SEND_PATH_DATE_ZH +
+    "，没有任何邮件会发出：摘要只会生成，不会发出，也从未有一封送到读者手中。还缺两件事："
+    "负责发送的邮件服务还没有配置发送凭据；开启投递还需要一次尚未完成的隐私审查。"
     "只有这两件事都办妥，摘要才会送到读者手中。"
 )
 
@@ -140,12 +173,14 @@ NEEDS_SEAT = (
     "NEEDS_SEAT: the digest send path stays off until the digest has a transport of its "
     "own — MAIL_SMTP_HOST + MAIL_SMTP_USER + MAIL_SMTP_PASS + MAIL_FROM so "
     "app.mailer.is_configured() is true (today send() returns 'skipped_no_smtp'); a "
-    "marketing-class leg the transactional drain does not have (suppression / email_prefs "
-    "digest opt-in / one-click unsub — PSI §19.5 gate 12); and a privacy/risk review for "
-    "mailing holdings-level content to real users. ALERT_DRAIN_ENABLE=1 is the alert "
-    "lane's flag and is NOT a precondition here: scripts/drain_alert_outbox.py moves "
-    "transactional alert_fire rows out of public.alert_outbox and a digest is not one, so "
-    "this path needs its own scripts/ seam, exactly as that drain has its own."
+    "marketing-class leg the transactional drain does not have (email_prefs digest "
+    "opt-in / unsub / one-click — PSI §19.5 gate 12; the drain DOES have "
+    "email_suppression at engine/alert_delivery_drain.py:473, so that is not a "
+    "missing leg); and a privacy/risk review for mailing holdings-level content to "
+    "real users. ALERT_DRAIN_ENABLE=1 is the alert lane's flag and is NOT a "
+    "precondition here: scripts/drain_alert_outbox.py moves transactional alert_fire "
+    "rows out of public.alert_outbox and a digest is not one, so this path needs its "
+    "own scripts/ seam, exactly as that drain has its own."
 )
 
 

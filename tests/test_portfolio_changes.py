@@ -459,9 +459,19 @@ def test_send_path_reports_itself_off_as_of_a_real_date():
     assert st["asof"] == digest_mod.SEND_PATH_ASOF
     asof = date.fromisoformat(digest_mod.SEND_PATH_ASOF)
     assert asof <= date.today(), "the honesty line may not be dated in the future"
-    # the date is IN the sentence a human reads, not only in a sibling field
-    assert digest_mod.SEND_PATH_ASOF in st["en"]
-    assert digest_mod.SEND_PATH_ASOF in st["zh"]
+    # the date is IN the sentence a human reads, in plain-word form (Law 2/Law 3 —
+    # a date a reader reads at full precision, never an identifier); the raw ISO
+    # stays on the machine field only.
+    plain_en, plain_zh = digest_mod._plain_date(digest_mod.SEND_PATH_ASOF)
+    assert plain_en and plain_zh, "_plain_date must resolve the asof"
+    assert plain_en in st["en"], \
+        "the renderable EN must carry the formatted date, not the raw ISO"
+    assert plain_zh in st["zh"], \
+        "the renderable ZH must carry the formatted date, not the raw ISO"
+    assert digest_mod.SEND_PATH_ASOF not in st["en"], \
+        "raw ISO date is forbidden in renderable EN copy (Law 2/Law 3)"
+    assert digest_mod.SEND_PATH_ASOF not in st["zh"], \
+        "raw ISO date is forbidden in renderable ZH copy (Law 2/Law 3)"
 
 
 def test_send_path_honesty_is_plain_bilingual_copy():
@@ -517,8 +527,17 @@ def test_exactly_one_needs_seat_line_names_the_missing_transport():
     for token in ("MAIL_SMTP_HOST", "MAIL_SMTP_USER", "MAIL_SMTP_PASS", "MAIL_FROM",
                   "is_configured()"):
         assert token in line, f"NEEDS_SEAT must name the missing transport: {token}"
-    # plus the two non-credential legs the ruling's honesty fork owes the seat
-    for token in ("suppression", "one-click unsub", "privacy/risk review"):
+    # plus the three non-credential legs the ruling's honesty fork owes the seat —
+    # measured absences on engine/alert_delivery_drain.py (grep -c: email_prefs 0,
+    # unsub 0, one-click 0). The drain DOES have email_suppression (line 473 / 305),
+    # so claiming it lacks "suppression" as a separate missing-leg is false and is no
+    # longer pinned here. (A reference to email_suppression as the truth-telling leg
+    # is allowed — only the bare "suppression" token is forbidden.)
+    import re  # noqa: PLC0415
+    assert not re.search(r"(?<![a-z_])suppression(?![a-z_])", line), \
+        "the drain has email_suppression (engine/alert_delivery_drain.py:473) — " \
+        "claim it lacks 'suppression' is false; pin the measured absences instead"
+    for token in ("email_prefs", "unsub", "one-click", "privacy/risk review"):
         assert token in line, f"NEEDS_SEAT must name the missing leg: {token}"
     # the alert lane's flag may appear ONLY after the precondition list, inside the
     # sentence that rules it off this path
@@ -548,6 +567,16 @@ def test_the_dated_honesty_claim_is_checkable_on_this_tree():
     # to be re-argued rather than assumed by the next reader.
     drain_mod_src = (ROOT / "engine" / "alert_delivery_drain.py").read_text(encoding="utf-8")
     assert "alert_fire" in drain_mod_src, "the alert drain's row class moved"
+    # Round 2 (review m3): the seat's "not a drop-in home even once enabled" claim
+    # rests on the measured absences. If a future lane adds email_prefs or an unsub
+    # leg here, the fork has to be re-argued, not silently inherited — count is
+    # checked, not substring (an `unsub_url` would still count as an unsub leg).
+    assert drain_mod_src.count("email_prefs") == 0, \
+        "the alert drain gained an email_prefs leg — the digest's drop-in-home " \
+        "argument has to be re-derived"
+    assert drain_mod_src.count("unsub") == 0, \
+        "the alert drain gained an unsub leg — the digest's drop-in-home argument " \
+        "has to be re-derived"
     assert digest_mod.CLS == "marketing", \
         "the digest's class moved — the seat fork has to be re-argued, not inherited"
     # Round 2 (review MINOR-2): the credential clause is a DEPLOYED fact, so the
