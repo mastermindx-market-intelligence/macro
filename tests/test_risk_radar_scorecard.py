@@ -1132,6 +1132,9 @@ def test_publication_change_uses_current_dynamic_bubble_label(tmp_path) -> None:
 
     change = rra.publication_change(current, root=tmp_path)
 
+    bubble = next(row for row in change["scares"] if row["scare"] == "bubble")
+    assert bubble["label_en"] == "Trend extension watch"
+    assert bubble["label_zh"] == "趋势延伸观察"
     assert "Lead Growth scare / defensive rotation→Trend extension watch" in change["summary_en"]
     assert "主导 增长恐慌/防御轮动→趋势延伸观察" in change["summary_zh"]
     assert "blow-off unwind" not in change["summary_en"]
@@ -1490,6 +1493,108 @@ def test_publication_change_and_card_direction_matches_delta_or_unavailable(tmp_
     assert rd["top_score_display"] is None
     assert rd["change"]["score"]["direction"] is None
     assert rd["change"]["week"]["score"] is None
+
+
+
+def test_alert_view_preserves_ratchet_cause_fullwidth_parens_without_flag_count() -> None:
+    """F1: absent n_flags + ratchet cause with full-width （…） survives alert_view intact."""
+    idx = pd.bdate_range("2026-09-08", periods=2)
+    hist = pd.DataFrame({
+        "quad": ["Q1", "Q1"],
+        "transition_state": ["STABLE", "WEAKENING"],
+        "n_flags": [1, -1],  # omitted (not nonnegative integral)
+        "growth_confidence": [0.6, 0.6],
+        "inflation_confidence": [0.6, 0.6],
+        "flag_breadth_price": [True, True],
+        "flag_credit_equity": [False, False],
+        "flag_ratio_inflection": [False, False],
+        "flag_inflation_basket": [False, False],
+        "flag_confidence_decay": [False, False],
+        "flag_gex": [False, False],
+        "flag_rotation_persistence": [False, False],
+        "transition_ratcheted": [False, True],
+        "transition_dwell_remaining": [pd.NA, 2],
+    }, index=idx)
+
+    alert = transition_state_change(hist, pd.DataFrame())
+    assert alert is not None
+    assert "flags active" not in alert.message
+    assert "预警激活" not in alert.message_zh
+    assert "（尚需 2 个干净交易日）" in alert.message_zh
+
+    view = alert_view(alert.rule, alert.severity, alert.message, alert.message_zh)
+    assert "预警激活" not in view["message_zh"]
+    assert "棘轮/底线将主状态维持在原始旗标计数之上" in view["message_zh"]
+    assert "（尚需 2 个干净交易日）" in view["message_zh"]
+    assert "warning flags active" not in view["message"]
+    assert "ratchet/floor held the headline above the raw flag count" in view["message"]
+    assert "(2 clean sessions remain)" in view["message"]
+
+
+def test_radar_card_omits_delta_chip_when_direction_typed_absent(monkeypatch) -> None:
+    """F2: conflicting direction normalized to None => no rrx-delta / arrow / rising|easing."""
+    monkeypatch.setattr("engine.market_state._rr_scorecard_track", lambda market: None)
+    bad = {
+        "available": True,
+        "current_asof": "2026-09-09",
+        "prior_asof": "2026-09-08",
+        "score": {"current": 65.7, "prior": 75.1, "delta": -9.4, "direction": "rising"},
+        "week": {"available": False, "null_reason": "NO_WEEK_REFERENCE"},
+        "summary_en": "x", "summary_zh": "y",
+    }
+    rr = {
+        **_current_snapshot(),
+        "market": "us", "alert": False, "gross_factor": 1.0,
+        "drawdown_prob": {"h5": 0.08, "h10": 0.12, "h21": 0.20,
+                          "lift_h21": 1.1, "base_h5": 0.036,
+                          "base_h10": 0.086, "base_h21": 0.178},
+        "forward_log": {"n_graded": 0, "publication_change": bad},
+    }
+    rd = _radar_to_rd(rr)
+    assert rd["change"]["score"]["direction"] is None
+    assert rd["change"]["score"]["delta"] == -9.4
+
+    env = Environment(loader=FileSystemLoader(str(ROOT / "templates")),
+                      autoescape=True, undefined=StrictUndefined)
+    tpl = env.from_string(
+        '{% import "_risk_radar_card.html.j2" as rrc %}'
+        '{{ rrc.risk_radar_card(rd, [], false) }}'
+    )
+    html = tpl.render(rd=rd)
+    assert "rrx-delta" not in html
+    assert "is-easing" not in html and "is-rising" not in html
+    assert "▼" not in html and "▲" not in html
+
+
+def test_publication_change_rejects_machine_identifier_en_keeps_human_english(tmp_path) -> None:
+    """F3: ordinary EN labels survive; identifier-like machine slugs never reach user copy."""
+    prior = _ledger_row(
+        "2026-09-08", "caution", 72.0, 72.0, "caution",
+        [_leg("growth_cyc_def", 0.70)],
+    )
+    prior["dominant_scare"] = "growth"
+    _write_ledger(tmp_path, [prior])
+    current = _current_snapshot()
+    current["dominant_scare"] = "bubble"
+    current["dominant_label_en"] = "Trend extension watch"
+    current["dominant_label_zh"] = "趋势延伸观察"
+    current["scares"] = [
+        {"scare": "bubble", "label_en": "Trend extension watch",
+         "label_zh": "趋势延伸观察", "score": 65.7, "band": "watch",
+         "firing_legs": [_leg("bubble_ext", 0.81)]},
+        {"scare": "totally_unknown_scare", "label_en": "totally_unknown_scare",
+         "label_zh": "totally_unknown_scare", "score": 11.0, "band": "watch",
+         "firing_legs": []},
+    ]
+
+    change = rra.publication_change(current, root=tmp_path)
+    by = {row["scare"]: row for row in change["scares"]}
+    assert by["bubble"]["label_en"] == "Trend extension watch"
+    assert "Trend extension watch" in change["summary_en"]
+    assert by["totally_unknown_scare"]["label_en"] == "Unclassified risk"
+    assert "totally_unknown_scare" not in change["summary_en"]
+    assert "totally_unknown_scare" not in change["summary_zh"]
+    assert "totally_unknown_scare" not in by["totally_unknown_scare"]["label_zh"]
 
 
 def test_transition_alert_flag_breadth_price_uses_frozen_zh_vocab() -> None:

@@ -98,7 +98,9 @@
 {%- set _display_score = (rd.top_score_display if (rd.top_score_display is defined and rd.top_score_display is not none) else (_display_score_row.current if (_display_score_row and _display_score_row.current is defined and _display_score_row.current is not none) else (rd.top_score if rd.top_score is defined else none))) -%}
 {%- set _chg_score = _chg.score if (_chg and _chg.score is defined and _chg.score) else none -%}
 {%- set _chg_delta = _chg_score.delta if (_chg_score and _chg_score.delta is defined and _chg_score.delta is not none) else none -%}
-{%- set _chg_direction = _chg_score.direction if (_chg_score and _chg_score.direction is defined and _chg_score.direction) else ('rising' if _chg_delta is not none and _chg_delta > 0 else ('easing' if _chg_delta is not none and _chg_delta < 0 else 'flat')) -%}
+{#- Honor typed direction absence from _radar_to_rd: never invent rising/easing/flat
+   from a finite delta when direction was cleared (conflict) or omitted. -#}
+{%- set _chg_direction = _chg_score.direction if (_chg_score and _chg_score.direction is defined and _chg_score.direction) else none -%}
 {%- set _chg_prior = _chg_score.prior if (_chg_score and _chg_score.prior is defined and _chg_score.prior is not none) else none -%}
 {%- set _chg_week = _chg.week if (_chg and _chg.week is defined and _chg.week and _chg.week.available is defined and _chg.week.available and _chg.week.score is defined and _chg.week.score is not none) else none -%}
 {%- set _chg_summary_en = _chg.summary_en if (_chg and _chg.summary_en is defined and _chg.summary_en) else '' -%}
@@ -112,7 +114,7 @@
     <div class="rrx-id">
       <div class="rrx-ttl">{{ t('Risk Radar','风险雷达') }}
         <span class="rrx-badge">{{ t(rd.state|upper, rd.state_zh) }}{% if _display_score is not none %} · {{ _display_score }}/100{% endif %}</span>
-        {% if _chg_delta is not none %}{% set _chg_abs = (0 - _chg_delta) if _chg_delta < 0 else _chg_delta %}<span class="rrx-delta is-{{ _chg_direction }}">{{ '▲' if _chg_delta > 0 else ('▼' if _chg_delta < 0 else '•') }}{{ '%.1f'|format(_chg_abs) }}<span class="rrx-delta-hz">{{ t('VS PREV','较前值') }}</span></span>{% endif %}
+        {% if _chg_delta is not none and _chg_direction %}{% set _chg_abs = (0 - _chg_delta) if _chg_delta < 0 else _chg_delta %}<span class="rrx-delta is-{{ _chg_direction }}">{{ '▲' if _chg_delta > 0 else ('▼' if _chg_delta < 0 else '•') }}{{ '%.1f'|format(_chg_abs) }}<span class="rrx-delta-hz">{{ t('VS PREV','较前值') }}</span></span>{% endif %}
         {{ help('Pullback-risk gauge. Use high readings to trim risk, not to pick stocks.', '回撤风险仪表。高读数用于降风险，不用于选股。') }}
       </div>
       {% if rd.label_en %}<div class="rrx-dom">{{ t(rd.label_en, rd.label_zh) }}</div>{% endif %}

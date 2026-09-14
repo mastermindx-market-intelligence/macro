@@ -1227,13 +1227,17 @@ def _plain_transition_msg(message: str, message_zh: str = "") -> tuple[str, str]
           f"{_TS_PLAIN_EN.get(prev, prev.replace('_', ' ').lower())} to "
           f"{_TS_PLAIN_EN.get(cur, cur.replace('_', ' ').lower())}"
           f"{count_en}{detail_en}")
-    if message_zh and "）" in message_zh:
-        detail_zh = message_zh.split("）", 1)[1]
+    # Strip the Chinese count badge only when EN captured a count AND the exact
+    # authored marker is present. Otherwise keep detail from the first fullwidth
+    # semicolon so ratchet/hysteresis causes with （…） survive intact — never
+    # fabricate 预警激活 from a paren that is not the count marker.
+    count_zh = f"（{n} 个预警激活）" if n is not None else ""
+    if message_zh and n is not None and count_zh and count_zh in message_zh:
+        detail_zh = message_zh.split(count_zh, 1)[1]
     elif message_zh and "；" in message_zh:
         detail_zh = "；" + message_zh.split("；", 1)[1]
     else:
         detail_zh = ""
-    count_zh = f"（{n} 个预警激活）" if n is not None else ""
     zh = (f"周期状态由「{_TS_PLAIN_ZH.get(prev, prev)}」转为"
           f"「{_TS_PLAIN_ZH.get(cur, cur)}」{count_zh}{detail_zh}")
     return en, zh

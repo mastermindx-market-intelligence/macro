@@ -393,6 +393,26 @@ def _ascii_slug_like(value) -> bool:
     return all(ord(ch) < 128 for ch in text) and any(ch.isalpha() for ch in text)
 
 
+def _machine_identifier_like(value) -> bool:
+    """True for identifier-like machine keys (snake_case / slug tokens), not ordinary English.
+
+    Ordinary human English usually contains spaces or punctuation beyond the
+    identifier charset; machine keys are compact tokens (``bubble_ext``,
+    ``future_scare_slug``). Used to filter EN glance labels without hardcoding
+    producer phrases.
+    """
+    if not isinstance(value, str):
+        return False
+    text = value.strip()
+    if not text or " " in text:
+        return False
+    if any(ord(ch) >= 128 for ch in text):
+        return False
+    if not all(ch.isalnum() or ch in "_-/" for ch in text):
+        return False
+    return any(ch.isalpha() for ch in text)
+
+
 def _machine_key_set() -> set[str]:
     return set(_LEG_DISPLAY) | set(_STATE_DISPLAY) | set(_SCARE_DISPLAY)
 
@@ -622,11 +642,11 @@ def publication_change(snap: dict, root=None) -> dict:
             cleared = [leg for leg in old_legs if leg not in cur_set]
             label_en = (cur.get("label_en") or old.get("label_en") or
                         _scare_label(key, "en") or "Unclassified risk")
-            if _ascii_slug_like(label_en) and label_en not in {
-                    pair[0] for pair in _SCARE_DISPLAY.values()}:
-                # Keep known English display phrases; reject raw machine slugs in EN glance copy.
-                mapped = _scare_label(key, "en")
-                label_en = mapped or "Unclassified risk"
+            if _machine_identifier_like(label_en):
+                # Reject identifier-like machine keys from EN glance copy; keep ordinary English.
+                # Only accept a known display-map phrase — never title-case the slug into copy.
+                mapped = _SCARE_DISPLAY.get(key)
+                label_en = mapped[0] if mapped else "Unclassified risk"
             raw_zh = cur.get("label_zh") if isinstance(cur.get("label_zh"), str) else None
             if raw_zh is None and isinstance(old.get("label_zh"), str):
                 raw_zh = old.get("label_zh")
