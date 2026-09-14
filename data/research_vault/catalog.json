@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-14T22:41:33.705998+00:00",
-  "count": 2117,
+  "generated_at": "2026-09-14T22:59:55.779949+00:00",
+  "count": 2118,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -587,6 +587,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 43,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-5beyanvpckt-ec7b7b",
+      "title": "MS Digital Assets From Disruption to Convergence",
+      "institution": "Morgan Stanley",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-13T17:10:10Z",
+      "summary_points": [
+        "**Stablecoin & Tokenization Scale**: Stablecoins exceed $300B (0.25% of global M2), tokenized RWA near $40B; institutional adoption driven by regulatory clarity (GENIUS Act, CLARITY proposal) and programmable rails for payments (e.g., $357B daily repo volume via Broadridge).",
+        "**Bitcoin’s Macro-Dependent Credibility**: Bitcoin’s \"digital gold\" thesis hinges on macro conditions (low credibility in high inflation/geopolitical stress); critical for portfolio managers to monitor inflation, geopolitics, and its negative correlation with USD (−0.22) and Nasdaq (−0.45).",
+        "**Institutional Infrastructure Shift**: 60% of market cap (Bloomberg WFI) engaged; convergence via mixed public/private rails (public for distribution, private for privacy) enables tokenized cash management, repo, and cross-border payments as near-term adoption drivers.",
+        "**Critical Risks**: Quantum computing threats to cryptography, fragmented regulations, liquidity constraints (e.g., token structure limiting value accrual), and operational vulnerabilities (hacks, smart contract bugs) outweigh short-term volatility (40% annualized).",
+        "**Value Capture Dynamics**: Open protocols capture crypto value; incumbents gain via client relationships, while crypto-native challengers require durable usage metrics (transaction volumes, institutional clients) beyond mere adoption."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 101,
       "language": "en",
       "needs_metadata": false
     },
