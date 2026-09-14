@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-14T22:11:29.805697+00:00",
-  "count": 2116,
+  "generated_at": "2026-09-14T22:41:33.705998+00:00",
+  "count": 2117,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -524,6 +524,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 22,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-edebpwrigmr-f86aa5",
+      "title": "China What do local clients think about the economy Local marketing takeaways, September 2026",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-13T19:50:12Z",
+      "summary_points": [
+        "**Fed Policy & Geopolitical Uncertainty**: Local investors cautious on Fed rate hike (stronger CPI) and low Trump-Xi agreement expectations, with fixed income focus on RMB volatility.",
+        "**Policy Easing Skepticism**: Low confidence in cyclical stimulus due to anti-corruption, tax collection as revenue tool, and policy coordination risks limiting impact despite demand concerns.",
+        "**AI Capex Divergence**: Bulls (2026-27) vs.",
+        "bears (2028+) on AI investment, with bears citing deteriorating returns, rising costs, and labor market disruption from adoption.",
+        "**RMB & Bond Market Outlook**: Goldman forecasts gradual RMB appreciation (6.60/6.40 USD/CNY), FX losses at 4% of H1 2026 earnings; long-term yields remain low due to slow credit growth and debt resolution."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
