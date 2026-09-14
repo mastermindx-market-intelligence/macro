@@ -1292,6 +1292,15 @@ jobs:
       - "tests/test_china_archetype_d_s1.py"
 
       # --- contract-delta widening for conviction-profile (CURE round 1 widen-paths fix) ---
+      - "site/basketdata/fear_greed.json"
+      - "site/btc_strategy.html"
+      - "site/china_intel/analogs.json"
+      - "site/chinaaltdata/by_ticker.json"
+      - "site/chinanews/by_ticker.json"
+      - "site/chinaradar/radar.json"
+      - "site/chinaspecialdata/special.json"
+      - "site/factordata/basket_washout_state.json"
+      - "site/factordata/china_standouts.json"
       - "engine/falsifier_tripwires.py"
       - "engine/forward_calendar_context.py"
       - "engine/forward_dist.py"
