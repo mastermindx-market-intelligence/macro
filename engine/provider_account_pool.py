@@ -8,16 +8,17 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import re
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Iterable
+from typing import Any, Iterable, Mapping
 
 _ID_RE = re.compile(r"^[a-z0-9][a-z0-9._:-]{0,127}$")
 _STATES = frozenset({"available", "cooling", "unavailable", "unknown"})
 _HORIZONS = ("five_hour", "weekly", "monthly")
 _EFFECT_STATES = frozenset({"proven_no_effect", "effect_unknown", "effect_observed"})
-_SAFE_REFUSALS = frozenset({"usage_limit", "auth"})
+_SAFE_REFUSALS = frozenset({"usage_limit"})
 
 
 class AccountPoolError(ValueError):
@@ -26,7 +27,7 @@ class AccountPoolError(ValueError):
 
 @dataclass(frozen=True)
 class UsageWindow:
-    used_percent: int | None
+    used_percent: int | float | None
     reset_at: str | None = None
 
 
@@ -70,7 +71,9 @@ class RolloverDecision:
 
 
 def _id(value: object, field: str) -> str:
-    text = str(value or "").strip().lower()
+    if not isinstance(value, str):
+        raise AccountPoolError(f"invalid {field}")
+    text = value.strip().lower()
     if _ID_RE.fullmatch(text) is None:
         raise AccountPoolError(f"invalid {field}")
     return text
@@ -89,10 +92,11 @@ def _time(value: object, field: str) -> datetime:
     return parsed.astimezone(timezone.utc)
 
 
-def _percent(value: int | None) -> int | None:
+def _percent(value: int | float | None) -> int | float | None:
     if value is None:
         return None
-    if isinstance(value, bool) or not isinstance(value, int) or not 0 <= value <= 100:
+    if (isinstance(value, bool) or not isinstance(value, (int, float))
+            or not 0 <= value <= 100 or not math.isfinite(value)):
         raise AccountPoolError("invalid usage percent")
     return value
 
@@ -175,6 +179,46 @@ def build_snapshot(
     return PoolSnapshot(pool, provider_id, product_id, generated_at, required, rows, generation)
 
 
+def observation_from_usage_rows(
+    *, account_id: str, state: str, observed_at: str, stale_after: str,
+    quota_rows: Iterable[Mapping[str, Any]],
+    concurrency_used: int | None = None, concurrency_limit: int | None = None,
+) -> AccountObservation:
+    """Compose native account-shared usage rows, without making capacity authority.
+
+    Enrollment identity, enablement, health and freshness are supplied by the
+    existing owner. This function neither authenticates nor records an account.
+    Missing windows remain unknown. Provider exhaustion dominates a display state.
+    """
+    windows = {name: UsageWindow(None) for name in _HORIZONS}
+    seen = set()
+    exhausted = False
+    observed = _time(observed_at, "observed_at")
+    for row in quota_rows:
+        if not isinstance(row, Mapping):
+            raise AccountPoolError("invalid quota row")
+        horizon = row.get("horizon")
+        if horizon not in _HORIZONS or horizon in seen:
+            raise AccountPoolError("duplicate or unsupported quota horizon")
+        if row.get("metric") != "provider_allocation" or row.get("scope") != "account_shared":
+            raise AccountPoolError("quota row is not account-shared allocation")
+        if _time(row.get("observed_at"), "observed_at") != observed:
+            raise AccountPoolError("mixed-time quota observation")
+        seen.add(horizon)
+        status = row.get("status")
+        if status not in {"limited", "exhausted"}:
+            continue
+        windows[horizon] = _window(UsageWindow(row.get("used_percent"), row.get("reset_at")))
+        exhausted = exhausted or status == "exhausted"
+    if exhausted and str(state).strip().lower() == "available":
+        state = "cooling"
+    return _observation(AccountObservation(
+        account_id, state, observed_at, stale_after,
+        windows["five_hour"], windows["weekly"], windows["monthly"],
+        concurrency_used, concurrency_limit,
+    ))
+
+
 def _window_by_name(row: AccountObservation, horizon: str) -> UsageWindow:
     if horizon == "five_hour":
         return row.five_hour
@@ -185,19 +229,27 @@ def _window_by_name(row: AccountObservation, horizon: str) -> UsageWindow:
     raise AccountPoolError("unsupported horizon")
 
 
-def member_eligible(snapshot: PoolSnapshot, row: AccountObservation) -> bool:
-    """Return whether a member is safely selectable at snapshot generation time."""
+def member_eligible(
+    snapshot: PoolSnapshot, row: AccountObservation, *, now: str | None = None
+) -> bool:
+    """Check capacity at the request clock; never infer reset or freshness."""
 
     if row.state != "available":
         return False
-    at = _time(snapshot.generated_at, "generated_at")
+    generated = _time(snapshot.generated_at, "generated_at")
+    at = _time(now, "now") if now is not None else generated
+    if generated > at or _time(row.observed_at, "observed_at") > generated:
+        return False
     if at >= _time(row.stale_after, "stale_after"):
         return False
     windows = tuple(_window_by_name(row, horizon) for horizon in _HORIZONS)
     if any(window.used_percent is not None and window.used_percent >= 100 for window in windows):
         return False
     for horizon in snapshot.required_horizons:
-        if _window_by_name(row, horizon).used_percent is None:
+        window = _window_by_name(row, horizon)
+        if window.used_percent is None or window.reset_at is None:
+            return False
+        if _time(window.reset_at, "reset_at") <= at:
             return False
     if row.concurrency_limit is not None and row.concurrency_used is not None:
         if row.concurrency_used >= row.concurrency_limit:
@@ -208,8 +260,10 @@ def member_eligible(snapshot: PoolSnapshot, row: AccountObservation) -> bool:
 def _session(value: str | None) -> str | None:
     if value is None:
         return None
+    if not isinstance(value, str):
+        raise AccountPoolError("invalid session_id")
     text = value.strip()
-    if not text or len(text) > 512 or any(ord(ch) < 32 for ch in text):
+    if value != text or not text or len(text) > 512 or any(ord(ch) < 33 or ord(ch) > 126 for ch in text):
         raise AccountPoolError("invalid session_id")
     return text
 
@@ -223,7 +277,7 @@ def _rank(snapshot: PoolSnapshot, row: AccountObservation, session_id: str | Non
     required = [_window_by_name(row, horizon).used_percent for horizon in snapshot.required_horizons]
     if any(value is None for value in required):
         raise AccountPoolError("required horizon unexpectedly unknown")
-    pressure = [int(value) for value in required if value is not None]
+    pressure = [value for value in required if value is not None]
     concurrency = 0
     if row.concurrency_used is not None and row.concurrency_limit is not None:
         concurrency = (100 * row.concurrency_used) // row.concurrency_limit
@@ -238,12 +292,30 @@ def select_account(
     *,
     sticky_account_id: str | None = None,
     session_id: str | None = None,
+    excluded_account_ids: Iterable[str] = (),
+    now: str | None = None,
 ) -> AccountSelection:
     """Select one member while preserving healthy session stickiness."""
 
+    if not isinstance(snapshot, PoolSnapshot):
+        raise AccountPoolError("invalid pool snapshot")
+    checked = build_snapshot(
+        pool_id=snapshot.pool_id, provider=snapshot.provider, product=snapshot.product,
+        generated_at=snapshot.generated_at, members=snapshot.members,
+        required_horizons=snapshot.required_horizons,
+    )
+    if checked.generation != snapshot.generation:
+        raise AccountPoolError("pool generation disagrees with membership")
+    snapshot = checked
+    if isinstance(excluded_account_ids, (str, bytes)):
+        raise AccountPoolError("excluded accounts must be an iterable of ids")
+    excluded = {_id(item, "excluded_account_id") for item in excluded_account_ids}
+    if not excluded.issubset({row.account_id for row in snapshot.members}):
+        raise AccountPoolError("excluded account is not a pool member")
     sticky = _id(sticky_account_id, "sticky_account_id") if sticky_account_id else None
     session = _session(session_id)
-    eligible = [row for row in snapshot.members if member_eligible(snapshot, row)]
+    eligible = [row for row in snapshot.members
+                if row.account_id not in excluded and member_eligible(snapshot, row, now=now)]
     if sticky is not None:
         for row in eligible:
             if row.account_id == sticky:
@@ -282,6 +354,7 @@ __all__ = [
     "UsageWindow",
     "build_snapshot",
     "member_eligible",
+    "observation_from_usage_rows",
     "rollover_decision",
     "select_account",
 ]

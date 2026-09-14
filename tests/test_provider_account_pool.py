@@ -123,7 +123,7 @@ def test_equal_capacity_uses_stable_session_affinity_and_spreads_sessions():
 
 def test_rollover_requires_proven_no_effect_and_safe_refusal():
     assert rollover_decision("proven_no_effect", "usage_limit").allowed is True
-    assert rollover_decision("proven_no_effect", "auth").allowed is True
+    assert rollover_decision("proven_no_effect", "auth").allowed is False
     assert rollover_decision("effect_unknown", "usage_limit").allowed is False
     assert rollover_decision("effect_observed", "usage_limit").allowed is False
     assert rollover_decision("proven_no_effect", "timeout").allowed is False
