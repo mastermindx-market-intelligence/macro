@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-14T23:26:38.562693+00:00",
-  "count": 2119,
+  "generated_at": "2026-09-14T23:41:40.852852+00:00",
+  "count": 2120,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -684,6 +684,25 @@
       "tickers": [],
       "top_pick": true,
       "pages": 26,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-3jg8ltvkn0g-91a365",
+      "title": "Samsung Electro Mechanics (009150.KS) 8 key takeaways from U.S. NDR AI providing a significant tailwind to MLCC and ABF; Buy",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-13T15:50:27Z",
+      "summary_points": [
+        "**AI Datacenter MLCC Revenue Surge**: AI datacenter MLCC revenue mix to reach 40% by 2028 (up from 20% in 2024), with 70-80% market growth in 2024 and 100% YoY growth; higher AI mix drives up to 40% margins, providing significant margin tailwinds.",
+        "**Tight Supply & LTA Secured Pricing**: MLCC supply tightness drives price hikes (10% revenue impact), with 60% of MLCC revenue covered by LTAs next year; ABF substrate supply tightness (worse than MLCC) leads to 2032 LTAs with prepayment, ensuring capacity utilization and tripling ABF revenue by 2030.",
+        "**Valuation Upside & Growth Catalysts**: Goldman Sachs target surged 13.0x to W2,250,000 (60.7% upside), driven by AI/server/auto MLCC demand and FC-BGA growth; key catalysts include AI customer expansion and sustained MLCC demand from AI/server/auto sectors."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
