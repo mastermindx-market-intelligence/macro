@@ -970,3 +970,158 @@ def test_oversized_selector_text_is_projected_before_body_and_debit(
     assert len(result["report"]["body_text"]) <= bmi._EVIDENCE_PASSAGE_TEXT_MAX_CHARS
     assert _recursive_string_total(result) <= bmi.REPORT_BODY_MAX_CHARS
     assert len(debits) == 1
+
+
+
+def test_nonmatched_overflow_never_promotes_unmetered_passage_into_body(
+        tmp_path, monkeypatch):
+    """Budget fitting must not turn a corrupted non-match envelope into a free
+    publisher-text response merely because projected passages are present."""
+    _seed(tmp_path)
+    _stub_documents(monkeypatch, "AAPL demand is accelerating.")
+    debits = _stub_quota(monkeypatch)
+
+    passages = []
+    for index in range(3):
+        token = f"SECRET{index:02d} "
+        text = (token * 200)[:bmi._EVIDENCE_PASSAGE_TEXT_MAX_CHARS]
+        start = index * len(text)
+        passages.append({
+            "text": text,
+            "match_text": text,
+            "matched_terms": [chr(65 + term) * 120 for term in range(12)],
+            "locator": {
+                "kind": "text_span",
+                "start_char": start,
+                "end_char": start + len(text),
+                "match_start_char": start,
+                "match_end_char": start + len(text),
+            },
+        })
+
+    for selector_status in ("no_matching_passage", "body_unavailable"):
+        monkeypatch.setattr(bmi, "_select_evidence", lambda document, query,
+                            status=selector_status: {
+            "status": status,
+            "passages": passages,
+            "source_binding": {
+                "content_sha256": PDF_SHA,
+                "stored_body_sha256": "b" * 64,
+                "coverage": "complete",
+                "stored_char_count": sum(len(p["text"]) for p in passages),
+                "source_char_count": sum(len(p["text"]) for p in passages),
+                "tail_omitted": False,
+                "text_layer": "full",
+                "page_count": 1,
+            },
+        })
+
+        result = _report(tmp_path, "AAPL demand")
+
+        assert result["evidence"]["status"] == selector_status
+        assert result["evidence"]["access"] == {
+            "decision": "not_served", "metered": False,
+        }
+        assert result["quota"] is None
+        assert result["report"]["body_text"] == ""
+        assert result["report"]["body_truncated"] is False
+        assert _recursive_string_total(result) <= bmi.REPORT_BODY_MAX_CHARS
+
+    assert debits == []
+
+
+def test_malformed_passage_containers_fail_closed_without_exception_or_debit(
+        tmp_path, monkeypatch):
+    _seed(tmp_path)
+    _stub_documents(monkeypatch, "AAPL demand is accelerating.")
+    debits = _stub_quota(monkeypatch)
+    valid_passage = {
+        "text": "AAPL demand",
+        "match_text": "AAPL demand",
+        "matched_terms": ["aapl", "demand"],
+        "locator": {
+            "kind": "text_span",
+            "start_char": 0,
+            "end_char": 11,
+            "match_start_char": 0,
+            "match_end_char": 11,
+        },
+    }
+    binding = {
+        "content_sha256": PDF_SHA,
+        "stored_body_sha256": "b" * 64,
+        "coverage": "complete",
+        "stored_char_count": 28,
+        "source_char_count": 28,
+        "tail_omitted": False,
+        "text_layer": "full",
+        "page_count": 1,
+    }
+
+    for malformed in (123, object(), "not-a-list", {"passage": valid_passage},
+                      (valid_passage,)):
+        monkeypatch.setattr(bmi, "_select_evidence", lambda document, query,
+                            value=malformed: {
+            "status": "matched",
+            "passages": value,
+            "source_binding": binding,
+        })
+
+        result = _report(tmp_path, "AAPL demand")
+
+        assert result["evidence"]["status"] == "body_unavailable", type(malformed)
+        assert result["evidence"]["passages"] == [], type(malformed)
+        assert result["report"]["body_text"] == "", type(malformed)
+        assert result["report"]["body_truncated"] is False, type(malformed)
+        assert result["quota"] is None, type(malformed)
+
+    assert debits == []
+
+
+def test_page_locator_and_binding_accept_only_literal_positive_ints():
+    raw = {
+        "text": "some text",
+        "match_text": "text",
+        "matched_terms": ["text"],
+        "locator": {
+            "kind": "page_text_span",
+            "page": 2,
+            "start_char": 0,
+            "end_char": 9,
+            "match_start_char": 5,
+            "match_end_char": 9,
+        },
+    }
+    projected = bmi._project_evidence_passage(raw, REPORT_ID)
+    assert projected is not None
+    assert projected["locator"]["page"] == 2
+
+    for malformed in ("2", " 2 ", 2.0, True, False, 0, -1, 1.5, None):
+        candidate = {
+            **raw,
+            "locator": {**raw["locator"], "page": malformed},
+        }
+        assert bmi._project_evidence_passage(candidate, REPORT_ID) is None, malformed
+
+        envelope = bmi._project_evidence({
+            "status": "no_matching_passage",
+            "passages": [],
+            "source_binding": {"page_count": malformed},
+        }, report_id=REPORT_ID, published_at=PUBLISHED_AT,
+            query="query", allowed=False)
+        assert envelope["source_binding"]["page_count"] is None, malformed
+
+
+def test_error_envelope_bounds_caller_report_id_under_shared_ceiling(tmp_path):
+    _seed(tmp_path)
+    caller_id = "x" * 50_000
+
+    result = bmi.search_research(
+        tmp_path, "AAPL demand", mode="report", report_id=caller_id,
+        user_ctx=PRO, now=NOW,
+    )
+
+    assert result["error"] == "report_not_found"
+    assert result["report_id"] != caller_id
+    assert len(result["report_id"]) <= bmi._REPORT_META_MAX_CHARS
+    assert _recursive_string_total(result) <= bmi.REPORT_BODY_MAX_CHARS

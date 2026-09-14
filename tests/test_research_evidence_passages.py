@@ -110,6 +110,8 @@ def test_source_binding_fails_closed_for_invalid_or_contradictory_lengths():
         (len(body), "complete", False, len(body)),
         (None, "unknown", None, None),
         ("not-a-count", "unknown", None, None),
+        (str(len(body)), "unknown", None, None),
+        (float(len(body)), "unknown", None, None),
         (-1, "unknown", None, None),
         (0, "unknown", None, None),
         (len(body) - 1, "unknown", None, None),
@@ -128,12 +130,19 @@ def test_source_binding_fails_closed_for_invalid_or_contradictory_lengths():
         assert binding["source_char_count"] is source_char_count, char_count
 
 
-def test_evidence_integer_helper_rejects_bools_and_nonintegral_floats():
-    assert corpus._evidence_int(True) is None
-    assert corpus._evidence_int(False) is None
-    assert corpus._evidence_int(1.5) is None
-    assert corpus._evidence_int(-0.5) is None
-    assert corpus._evidence_int(7.0) == 7
+def test_evidence_integer_helper_accepts_only_literal_nonnegative_ints():
+    assert corpus._evidence_int(0) == 0
+    assert corpus._evidence_int(7) == 7
+    for malformed in (True, False, "7", " 7 ", 7.0, 1.5, -0.5, -1, None):
+        assert corpus._evidence_int(malformed) is None, malformed
+
+
+def test_source_binding_rejects_coercible_page_counts():
+    body = "stored evidence body"
+    assert corpus._source_binding(_doc(body, pages=7), body)["page_count"] == 7
+    for malformed in ("7", " 7 ", 7.0, True, False, 0, -1, 1.5, None):
+        binding = corpus._source_binding(_doc(body, pages=malformed), body)
+        assert binding["page_count"] is None, malformed
 
 
 def test_no_match_and_noise_query_are_distinct_and_never_manufacture_a_passage():
