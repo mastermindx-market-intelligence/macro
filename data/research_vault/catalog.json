@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-14T19:13:16.163983+00:00",
-  "count": 2107,
+  "generated_at": "2026-09-14T19:33:01.032028+00:00",
+  "count": 2108,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -219,6 +219,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-wlszzqzjd5l-abd123",
+      "title": "Asia Pacific Portfolio Strategy Asian equity market daily update",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T13:19:25Z",
+      "summary_points": [
+        "**FII Outflows in EM Asia**: Taiwan (-40.185bn USD) and Korea (-115.725bn USD) show severe 2025 YTD outflows, signaling capital flight risks requiring hedging.",
+        "**Valuation Disparities**: Korea (P/E 4.7, P/B 2.1) trades at deep discount vs Taiwan (P/E 17.9, P/B 5.7), with GS targeting 20% upside for Taiwan vs 19% for India.",
+        "**Market Breadth Divergence**: Japan (+42% YTD) outperforms Indonesia (-56%) and Hong Kong (-24%), reflecting geopolitical-driven flow shifts toward resilient markets.",
+        "**MXJP Overvaluation Risk**: Equity/bond yield gap at 149bp (-1.8s.d.) implies expensive equities (UST10Y Yield: 4.97%), signaling downside risk for equity-heavy allocations.",
+        "**Sectoral Revisions**: Japan Energy (+9.0% revisions) offers upside vs China Real Estate (negative revisions), highlighting sector-specific flow risks for portfolio allocation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
       "language": "en",
       "needs_metadata": false
     },
