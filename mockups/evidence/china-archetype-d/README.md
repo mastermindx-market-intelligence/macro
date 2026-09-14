@@ -99,7 +99,7 @@ L1 index strip is SSE / CSI 300 / ChiNext / HSI — **no inverted-quote tile ren
 
 ## Defect-state cells
 
-The happy-path fixture pins posture NEUTRAL + three firing reasons, so it never exercises mixed/majority/empty/unknown/reconcile. These five extra cells (dark+light EN, 1440; hero-reconcile also dark+light ZH overlay) close that gap. They are aliases in `cells/`, not extra G7 subjects (the visual-evidence gate still requires eight REST cells on each of the five L1 subjects).
+The happy-path fixture pins posture NEUTRAL + three firing reasons, so it never exercises mixed/majority/empty/unknown/reconcile. These five extra cells (dark+light EN, 1440; hero-reconcile also dark+light ZH overlay) close that gap. They are aliased captures at the corpus root, not extra G7 subjects (the visual-evidence gate still requires eight REST cells on each of the five L1 subjects).
 
 | Cell | Subject | What it exercises | Aliases |
 |---|---|---|---|

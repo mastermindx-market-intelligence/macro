@@ -30,7 +30,7 @@ sys.path.insert(0, str(_ROOT))
 REPO_ROOT = _ROOT
 TEMPLATES_DIR = REPO_ROOT / "templates"
 OUT_DIR = REPO_ROOT / "mockups" / "evidence" / "china-archetype-d"
-CELLS_DIR = OUT_DIR / "cells"
+CELLS_DIR = OUT_DIR  # canonical estate shape: PNGs at corpus root (was cells/)
 
 SUBJECTS: tuple[tuple[str, str], ...] = (
     ("hero", '[data-ev="hero"]'),
