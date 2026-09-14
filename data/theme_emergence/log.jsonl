@@ -31,3 +31,5 @@
 {"sic":"2834","sic_desc":"Pharmaceutical Preparations","asof":"2026-08-28","ts":"2026-09-04T11:13:00.580435+00:00","n_new_filers":17,"velocity":12,"new_filers":["APVO","AXSM","BMRN","CORT","HIND","HYPD","IBIO","IMNM","INO","MBIO","MNKD","PBH"]}
 {"sic":"3674","sic_desc":"Semiconductors & Related Devices","asof":"2026-08-28","ts":"2026-09-04T11:13:00.580435+00:00","n_new_filers":16,"velocity":12,"new_filers":["AAOI","CBRS","CRDO","CRUS","DIOD","GSIT","IPGP","KOPN","MCHP","MRVL","MX","OSIS"]}
 {"sic":"7372","sic_desc":"Services-Prepackaged Software","asof":"2026-09-01","ts":"2026-09-04T11:13:00.580435+00:00","n_new_filers":6,"velocity":3,"new_filers":["BSY","CDNS","FSLY","NABL","PCTY","RBRK"]}
+{"sic":"3674","sic_desc":"Semiconductors & Related Devices","asof":"2026-09-10","ts":"2026-09-11T08:50:47.312138+00:00","n_new_filers":16,"velocity":12,"new_filers":["AAOI","CBRS","CRDO","CRUS","DIOD","GSIT","IPGP","KOPN","MCHP","MRVL","MX","OSIS"]}
+{"sic":"7374","sic_desc":"Services-Computer Processing & Data Preparation","asof":"2026-09-04","ts":"2026-09-11T08:50:47.312138+00:00","n_new_filers":4,"velocity":3,"new_filers":["BRUN","MOVE","OOMA","SHAZ"]}

@@ -11,15 +11,15 @@
   "assets": {
     "gold": {
       "weights": {
-        "trend": 0.0639,
-        "dollar": -0.0627,
-        "real_rates": 0.0299,
-        "value": -0.1124,
-        "positioning": -0.041,
-        "carry": 0.1841,
-        "liquidity": 0.151,
-        "growth": -0.03,
-        "inflation": -0.1251,
+        "trend": 0.0634,
+        "dollar": -0.0625,
+        "real_rates": 0.03,
+        "value": -0.1129,
+        "positioning": -0.0412,
+        "carry": 0.1842,
+        "liquidity": 0.1503,
+        "growth": -0.0298,
+        "inflation": -0.1258,
         "cycle": 0.1,
         "mtf": 0.06,
         "alerts": 0.04
@@ -51,25 +51,25 @@
       "diagnostics": {
         "trend": {
           "corr_63": 0.094,
-          "corr_126": 0.161,
+          "corr_126": 0.159,
           "corr_pre": -0.25,
-          "corr_post": 0.256,
+          "corr_post": 0.253,
           "stable": false,
           "raw_weight": 0.062
         },
         "structure": {
-          "corr_63": 0.013,
-          "corr_126": 0.035,
+          "corr_63": 0.012,
+          "corr_126": 0.036,
           "corr_pre": -0.166,
           "corr_post": 0.159,
           "stable": false,
           "raw_weight": 0.012
         },
         "risk": {
-          "corr_63": -0.043,
-          "corr_126": -0.006,
+          "corr_63": -0.044,
+          "corr_126": -0.005,
           "corr_pre": -0.008,
-          "corr_post": 0.016,
+          "corr_post": 0.018,
           "stable": false,
           "raw_weight": -0.008
         },
@@ -77,68 +77,68 @@
           "corr_63": -0.071,
           "corr_126": -0.056,
           "corr_pre": -0.063,
-          "corr_post": -0.045,
+          "corr_post": -0.044,
           "stable": true,
           "raw_weight": -0.061
         },
         "real_rates": {
           "corr_63": 0.063,
-          "corr_126": 0.065,
+          "corr_126": 0.066,
           "corr_pre": -0.184,
-          "corr_post": 0.207,
+          "corr_post": 0.208,
           "stable": false,
           "raw_weight": 0.029
         },
         "value": {
-          "corr_63": -0.106,
-          "corr_126": -0.111,
+          "corr_63": -0.105,
+          "corr_126": -0.112,
           "corr_pre": -0.101,
-          "corr_post": -0.204,
+          "corr_post": -0.205,
           "stable": true,
           "raw_weight": -0.11
         },
         "positioning": {
-          "corr_63": -0.086,
-          "corr_126": -0.09,
+          "corr_63": -0.087,
+          "corr_126": -0.091,
           "corr_pre": 0.062,
           "corr_post": -0.146,
           "stable": false,
           "raw_weight": -0.04
         },
         "shock": {
-          "corr_63": 0.008,
-          "corr_126": 0.035,
+          "corr_63": 0.007,
+          "corr_126": 0.036,
           "corr_pre": -0.037,
-          "corr_post": 0.045,
+          "corr_post": 0.046,
           "stable": false,
           "raw_weight": 0.012
         },
         "carry": {
-          "corr_63": 0.184,
-          "corr_126": 0.177,
+          "corr_63": 0.183,
+          "corr_126": 0.178,
           "corr_pre": 0.122,
           "corr_post": 0.275,
           "stable": true,
-          "raw_weight": 0.179
+          "raw_weight": 0.18
         },
         "riskoff": {
           "corr_63": 0.019,
-          "corr_126": -0.017,
+          "corr_126": -0.016,
           "corr_pre": -0.023,
-          "corr_post": -0.066,
+          "corr_post": -0.064,
           "stable": true,
-          "raw_weight": -0.005
+          "raw_weight": -0.004
         },
         "liquidity": {
-          "corr_63": 0.144,
-          "corr_126": 0.149,
+          "corr_63": 0.145,
+          "corr_126": 0.148,
           "corr_pre": 0.086,
-          "corr_post": 0.175,
+          "corr_post": 0.173,
           "stable": true,
           "raw_weight": 0.147
         },
         "growth": {
-          "corr_63": -0.08,
+          "corr_63": -0.079,
           "corr_126": -0.057,
           "corr_pre": 0.053,
           "corr_post": -0.184,
@@ -146,12 +146,12 @@
           "raw_weight": -0.029
         },
         "inflation": {
-          "corr_63": -0.11,
-          "corr_126": -0.128,
+          "corr_63": -0.111,
+          "corr_126": -0.129,
           "corr_pre": -0.179,
-          "corr_post": -0.109,
+          "corr_post": -0.11,
           "stable": true,
-          "raw_weight": -0.122
+          "raw_weight": -0.123
         }
       },
       "score_bins": [
@@ -163,41 +163,41 @@
         },
         {
           "action": "SELL",
-          "n": 1322,
-          "avg_fwd126_pct": 2.69,
-          "hit_pct": 64.4
+          "n": 1329,
+          "avg_fwd126_pct": 2.68,
+          "hit_pct": 64.2
         },
         {
           "action": "HOLD",
-          "n": 2785,
-          "avg_fwd126_pct": 5.06,
+          "n": 2786,
+          "avg_fwd126_pct": 5.07,
           "hit_pct": 64.7
         },
         {
           "action": "BUY",
-          "n": 1654,
+          "n": 1649,
           "avg_fwd126_pct": 9.72,
-          "hit_pct": 79.5
+          "hit_pct": 79.6
         },
         {
           "action": "STRONG BUY",
-          "n": 490,
-          "avg_fwd126_pct": 13.02,
-          "hit_pct": 95.1
+          "n": 493,
+          "avg_fwd126_pct": 13.0,
+          "hit_pct": 94.9
         }
       ]
     },
     "silver": {
       "weights": {
-        "risk": -0.0692,
-        "real_rates": 0.0505,
-        "value": 0.2106,
-        "shock": -0.0535,
-        "carry": 0.1216,
-        "riskoff": -0.0261,
-        "liquidity": 0.0425,
-        "growth": -0.0896,
-        "inflation": -0.1364,
+        "risk": -0.0684,
+        "real_rates": 0.0507,
+        "value": 0.2114,
+        "shock": -0.053,
+        "carry": 0.1222,
+        "riskoff": -0.0258,
+        "liquidity": 0.0421,
+        "growth": -0.0895,
+        "inflation": -0.137,
         "cycle": 0.1,
         "mtf": 0.06,
         "alerts": 0.04
@@ -229,25 +229,25 @@
       "diagnostics": {
         "trend": {
           "corr_63": -0.045,
-          "corr_126": -0.005,
+          "corr_126": -0.006,
           "corr_pre": -0.217,
-          "corr_post": 0.103,
+          "corr_post": 0.101,
           "stable": false,
-          "raw_weight": -0.008
+          "raw_weight": -0.009
         },
         "structure": {
           "corr_63": -0.04,
-          "corr_126": 0.014,
+          "corr_126": 0.015,
           "corr_pre": -0.054,
-          "corr_post": 0.046,
+          "corr_post": 0.047,
           "stable": false,
-          "raw_weight": -0.002
+          "raw_weight": -0.001
         },
         "risk": {
           "corr_63": -0.082,
-          "corr_126": -0.042,
+          "corr_126": -0.041,
           "corr_pre": -0.004,
-          "corr_post": -0.064,
+          "corr_post": -0.062,
           "stable": true,
           "raw_weight": -0.055
         },
@@ -260,36 +260,36 @@
           "raw_weight": -0.001
         },
         "real_rates": {
-          "corr_63": 0.087,
-          "corr_126": 0.091,
+          "corr_63": 0.086,
+          "corr_126": 0.092,
           "corr_pre": -0.122,
           "corr_post": 0.223,
           "stable": false,
-          "raw_weight": 0.04
+          "raw_weight": 0.041
         },
         "value": {
           "corr_63": 0.156,
-          "corr_126": 0.174,
+          "corr_126": 0.175,
           "corr_pre": 0.184,
-          "corr_post": 0.279,
+          "corr_post": 0.28,
           "stable": true,
-          "raw_weight": 0.168
+          "raw_weight": 0.169
         },
         "positioning": {
           "corr_63": 0.063,
-          "corr_126": 0.001,
+          "corr_126": 0.0,
           "corr_pre": 0.125,
           "corr_post": -0.094,
           "stable": false,
           "raw_weight": 0.01
         },
         "shock": {
-          "corr_63": -0.062,
-          "corr_126": -0.033,
+          "corr_63": -0.063,
+          "corr_126": -0.032,
           "corr_pre": -0.01,
-          "corr_post": -0.073,
+          "corr_post": -0.072,
           "stable": true,
-          "raw_weight": -0.043
+          "raw_weight": -0.042
         },
         "carry": {
           "corr_63": 0.116,
@@ -297,21 +297,21 @@
           "corr_pre": 0.037,
           "corr_post": 0.209,
           "stable": true,
-          "raw_weight": 0.097
+          "raw_weight": 0.098
         },
         "riskoff": {
           "corr_63": -0.038,
-          "corr_126": -0.05,
+          "corr_126": -0.049,
           "corr_pre": 0.0,
-          "corr_post": -0.166,
+          "corr_post": -0.164,
           "stable": false,
           "raw_weight": -0.021
         },
         "liquidity": {
           "corr_63": 0.073,
-          "corr_126": 0.077,
+          "corr_126": 0.076,
           "corr_pre": -0.029,
-          "corr_post": 0.14,
+          "corr_post": 0.138,
           "stable": false,
           "raw_weight": 0.034
         },
@@ -321,11 +321,11 @@
           "corr_pre": -0.006,
           "corr_post": -0.198,
           "stable": true,
-          "raw_weight": -0.072
+          "raw_weight": -0.071
         },
         "inflation": {
-          "corr_63": -0.116,
-          "corr_126": -0.105,
+          "corr_63": -0.117,
+          "corr_126": -0.106,
           "corr_pre": -0.095,
           "corr_post": -0.123,
           "stable": true,
@@ -335,45 +335,45 @@
       "score_bins": [
         {
           "action": "STRONG SELL",
-          "n": 535,
-          "avg_fwd126_pct": 0.63,
-          "hit_pct": 43.4
+          "n": 541,
+          "avg_fwd126_pct": 0.59,
+          "hit_pct": 43.1
         },
         {
           "action": "SELL",
-          "n": 1709,
-          "avg_fwd126_pct": 6.35,
-          "hit_pct": 52.1
+          "n": 1710,
+          "avg_fwd126_pct": 6.27,
+          "hit_pct": 52.0
         },
         {
           "action": "HOLD",
-          "n": 1812,
-          "avg_fwd126_pct": 8.07,
+          "n": 1799,
+          "avg_fwd126_pct": 8.11,
           "hit_pct": 56.0
         },
         {
           "action": "BUY",
-          "n": 1729,
-          "avg_fwd126_pct": 8.36,
-          "hit_pct": 67.3
+          "n": 1736,
+          "avg_fwd126_pct": 8.42,
+          "hit_pct": 67.5
         },
         {
           "action": "STRONG BUY",
-          "n": 545,
-          "avg_fwd126_pct": 19.65,
-          "hit_pct": 83.9
+          "n": 550,
+          "avg_fwd126_pct": 19.46,
+          "hit_pct": 83.3
         }
       ]
     },
     "copper": {
       "weights": {
-        "structure": 0.1045,
-        "risk": -0.1857,
-        "dollar": 0.0354,
-        "real_rates": 0.1067,
-        "carry": -0.0294,
-        "riskoff": 0.1521,
-        "liquidity": 0.0414,
+        "structure": 0.1035,
+        "risk": -0.1873,
+        "dollar": 0.0352,
+        "real_rates": 0.1059,
+        "carry": -0.03,
+        "riskoff": 0.1512,
+        "liquidity": 0.042,
         "growth": 0.1449,
         "cycle": 0.1,
         "mtf": 0.06,
@@ -381,7 +381,7 @@
       },
       "thresholds": {
         "strong_sell": -35.0,
-        "sell": -15.1,
+        "sell": -15.2,
         "buy": 10.0,
         "strong_buy": 35.0
       },
@@ -405,98 +405,98 @@
       "score_reliable": false,
       "diagnostics": {
         "trend": {
-          "corr_63": 0.025,
-          "corr_126": 0.051,
+          "corr_63": 0.026,
+          "corr_126": 0.052,
           "corr_pre": -0.079,
           "corr_post": 0.108,
           "stable": false,
           "raw_weight": 0.019
         },
         "structure": {
-          "corr_63": 0.083,
-          "corr_126": 0.085,
+          "corr_63": 0.084,
+          "corr_126": 0.084,
           "corr_pre": 0.136,
-          "corr_post": 0.01,
+          "corr_post": 0.007,
           "stable": true,
-          "raw_weight": 0.085
+          "raw_weight": 0.084
         },
         "risk": {
           "corr_63": -0.138,
-          "corr_126": -0.157,
+          "corr_126": -0.158,
           "corr_pre": -0.125,
-          "corr_post": -0.211,
+          "corr_post": -0.214,
           "stable": true,
-          "raw_weight": -0.15
+          "raw_weight": -0.151
         },
         "dollar": {
-          "corr_63": 0.068,
-          "corr_126": 0.062,
+          "corr_63": 0.067,
+          "corr_126": 0.061,
           "corr_pre": -0.051,
-          "corr_post": 0.172,
+          "corr_post": 0.17,
           "stable": false,
-          "raw_weight": 0.029
+          "raw_weight": 0.028
         },
         "real_rates": {
-          "corr_63": 0.09,
-          "corr_126": 0.085,
+          "corr_63": 0.089,
+          "corr_126": 0.084,
           "corr_pre": 0.055,
-          "corr_post": 0.079,
+          "corr_post": 0.078,
           "stable": true,
           "raw_weight": 0.086
         },
         "positioning": {
           "corr_63": -0.017,
-          "corr_126": -0.016,
+          "corr_126": -0.017,
           "corr_pre": 0.163,
-          "corr_post": -0.195,
+          "corr_post": -0.197,
           "stable": false,
-          "raw_weight": -0.007
+          "raw_weight": -0.008
         },
         "shock": {
           "corr_63": -0.027,
-          "corr_126": -0.017,
+          "corr_126": -0.018,
           "corr_pre": 0.048,
-          "corr_post": -0.04,
+          "corr_post": -0.041,
           "stable": false,
           "raw_weight": -0.009
         },
         "carry": {
           "corr_63": -0.065,
-          "corr_126": -0.047,
+          "corr_126": -0.048,
           "corr_pre": -0.188,
-          "corr_post": 0.166,
+          "corr_post": 0.163,
           "stable": false,
           "raw_weight": -0.024
         },
         "riskoff": {
           "corr_63": 0.097,
-          "corr_126": 0.136,
+          "corr_126": 0.135,
           "corr_pre": 0.13,
-          "corr_post": 0.142,
+          "corr_post": 0.138,
           "stable": true,
-          "raw_weight": 0.123
+          "raw_weight": 0.122
         },
         "liquidity": {
           "corr_63": 0.034,
-          "corr_126": 0.095,
+          "corr_126": 0.096,
           "corr_pre": -0.038,
-          "corr_post": 0.232,
+          "corr_post": 0.235,
           "stable": false,
-          "raw_weight": 0.033
+          "raw_weight": 0.034
         },
         "growth": {
           "corr_63": 0.123,
           "corr_126": 0.114,
           "corr_pre": 0.042,
-          "corr_post": 0.142,
+          "corr_post": 0.141,
           "stable": true,
           "raw_weight": 0.117
         },
         "inflation": {
           "corr_63": 0.104,
-          "corr_126": 0.008,
+          "corr_126": 0.009,
           "corr_pre": 0.045,
-          "corr_post": -0.017,
+          "corr_post": -0.014,
           "stable": false,
           "raw_weight": 0.018
         }
@@ -505,26 +505,26 @@
         {
           "action": "STRONG SELL",
           "n": 844,
-          "avg_fwd126_pct": -5.51,
-          "hit_pct": 39.1
+          "avg_fwd126_pct": -5.61,
+          "hit_pct": 38.9
         },
         {
           "action": "SELL",
-          "n": 1715,
-          "avg_fwd126_pct": 2.84,
-          "hit_pct": 49.6
+          "n": 1720,
+          "avg_fwd126_pct": 2.9,
+          "hit_pct": 49.7
         },
         {
           "action": "HOLD",
-          "n": 2755,
-          "avg_fwd126_pct": 10.46,
-          "hit_pct": 64.4
+          "n": 2777,
+          "avg_fwd126_pct": 10.47,
+          "hit_pct": 64.7
         },
         {
           "action": "BUY",
-          "n": 1061,
-          "avg_fwd126_pct": 10.09,
-          "hit_pct": 70.2
+          "n": 1040,
+          "avg_fwd126_pct": 10.15,
+          "hit_pct": 70.0
         },
         {
           "action": "STRONG BUY",
@@ -536,23 +536,23 @@
     },
     "oil": {
       "weights": {
-        "trend": -0.141,
-        "structure": -0.032,
-        "risk": -0.0877,
-        "dollar": 0.0965,
-        "real_rates": 0.1124,
-        "value": 0.0736,
-        "shock": -0.0894,
-        "riskoff": 0.0184,
-        "liquidity": 0.0277,
-        "growth": 0.1212,
+        "trend": -0.1408,
+        "structure": -0.0325,
+        "risk": -0.0881,
+        "dollar": 0.0961,
+        "real_rates": 0.1118,
+        "value": 0.0734,
+        "shock": -0.0896,
+        "riskoff": 0.0185,
+        "liquidity": 0.0278,
+        "growth": 0.1214,
         "cycle": 0.1,
         "mtf": 0.06,
         "alerts": 0.04
       },
       "thresholds": {
         "strong_sell": -35.0,
-        "sell": -13.4,
+        "sell": -13.5,
         "buy": 10.0,
         "strong_buy": 35.0
       },
@@ -577,38 +577,38 @@
       "diagnostics": {
         "trend": {
           "corr_63": -0.153,
-          "corr_126": -0.183,
+          "corr_126": -0.184,
           "corr_pre": -0.39,
-          "corr_post": -0.131,
+          "corr_post": -0.13,
           "stable": true,
           "raw_weight": -0.173
         },
         "structure": {
-          "corr_63": -0.054,
+          "corr_63": -0.055,
           "corr_126": -0.032,
           "corr_pre": -0.051,
           "corr_post": -0.031,
           "stable": true,
-          "raw_weight": -0.039
+          "raw_weight": -0.04
         },
         "risk": {
-          "corr_63": -0.14,
+          "corr_63": -0.142,
           "corr_126": -0.092,
           "corr_pre": -0.153,
-          "corr_post": -0.064,
+          "corr_post": -0.065,
           "stable": true,
           "raw_weight": -0.108
         },
         "dollar": {
-          "corr_63": 0.063,
+          "corr_63": 0.062,
           "corr_126": 0.146,
           "corr_pre": 0.073,
           "corr_post": 0.223,
           "stable": true,
-          "raw_weight": 0.119
+          "raw_weight": 0.118
         },
         "real_rates": {
-          "corr_63": 0.105,
+          "corr_63": 0.103,
           "corr_126": 0.155,
           "corr_pre": 0.346,
           "corr_post": 0.028,
@@ -621,10 +621,10 @@
           "corr_pre": 0.222,
           "corr_post": 0.024,
           "stable": true,
-          "raw_weight": 0.091
+          "raw_weight": 0.09
         },
         "positioning": {
-          "corr_63": 0.007,
+          "corr_63": 0.008,
           "corr_126": 0.013,
           "corr_pre": 0.128,
           "corr_post": -0.011,
@@ -632,7 +632,7 @@
           "raw_weight": 0.005
         },
         "shock": {
-          "corr_63": -0.066,
+          "corr_63": -0.068,
           "corr_126": -0.132,
           "corr_pre": -0.159,
           "corr_post": -0.12,
@@ -640,7 +640,7 @@
           "raw_weight": -0.11
         },
         "carry": {
-          "corr_63": -0.009,
+          "corr_63": -0.011,
           "corr_126": -0.036,
           "corr_pre": -0.066,
           "corr_post": 0.022,
@@ -656,7 +656,7 @@
           "raw_weight": 0.023
         },
         "liquidity": {
-          "corr_63": 0.025,
+          "corr_63": 0.027,
           "corr_126": 0.101,
           "corr_pre": -0.038,
           "corr_post": 0.221,
@@ -664,7 +664,7 @@
           "raw_weight": 0.034
         },
         "growth": {
-          "corr_63": 0.13,
+          "corr_63": 0.131,
           "corr_126": 0.159,
           "corr_pre": 0.189,
           "corr_post": 0.1,
@@ -672,8 +672,8 @@
           "raw_weight": 0.149
         },
         "inflation": {
-          "corr_63": 0.003,
-          "corr_126": 0.02,
+          "corr_63": 0.001,
+          "corr_126": 0.019,
           "corr_pre": -0.006,
           "corr_post": 0.031,
           "stable": false,
@@ -683,27 +683,27 @@
       "score_bins": [
         {
           "action": "STRONG SELL",
-          "n": 872,
-          "avg_fwd126_pct": -7.62,
-          "hit_pct": 40.9
+          "n": 879,
+          "avg_fwd126_pct": -7.66,
+          "hit_pct": 40.8
         },
         {
           "action": "SELL",
-          "n": 1695,
-          "avg_fwd126_pct": 0.52,
-          "hit_pct": 44.9
+          "n": 1693,
+          "avg_fwd126_pct": 0.59,
+          "hit_pct": 45.1
         },
         {
           "action": "HOLD",
-          "n": 2472,
-          "avg_fwd126_pct": 7.13,
+          "n": 2479,
+          "avg_fwd126_pct": 7.15,
           "hit_pct": 62.1
         },
         {
           "action": "BUY",
-          "n": 1229,
+          "n": 1223,
           "avg_fwd126_pct": 19.18,
-          "hit_pct": 77.5
+          "hit_pct": 77.4
         },
         {
           "action": "STRONG BUY",
