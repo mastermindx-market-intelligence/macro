@@ -1,6 +1,6 @@
 {
   "schema": "signal_factory.v1",
-  "generated_utc": "2026-09-05T17:21:38+00:00",
+  "generated_utc": "2026-09-12T17:03:13+00:00",
   "span": "2023-09-29..2026-03-31",
   "rebalances": 11,
   "horizon_d": 63,

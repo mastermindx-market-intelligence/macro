@@ -33,8 +33,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>China Tape — Macro Dashboard</title>
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang');if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<link rel="stylesheet" href="theme.css?v=f41f9a21">
-<link rel="stylesheet" href="assets/css/32655cfe.css?v=32655cfe">
+<link rel="stylesheet" href="theme.css?v=63df1679">
+<link rel="stylesheet" href="assets/css/00738b9b.css?v=00738b9b">
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
 <link rel="preload" as="style" href="navigation-refresh.css?v=c299c324">
 
@@ -184,6 +184,7 @@
         </div>
         <a href="intl_stocks.html"><span class="submenu-icon submenu-icon-stocks" aria-hidden="true"></span><span class="l-en">Stock Dashboard</span><span class="l-zh">股票仪表盘</span><span class="d"><span class="l-en">Prophet cross-market · sectors</span><span class="l-zh">Prophet 跨市场 · 板块</span></span></a>
         <a href="baskets_intl.html"><span class="submenu-icon submenu-icon-baskets" aria-hidden="true"></span><span class="l-en">Thematic Baskets</span><span class="l-zh">主题篮子</span><span class="d"><span class="l-en">Cross-country theme baskets · ex-US</span><span class="l-zh">跨国主题篮子 · 除美</span></span></a>
+        <a href="sanctions_map.html"><span class="submenu-icon submenu-icon-policy" aria-hidden="true"></span><span class="l-en">Sanctions Map</span><span class="l-zh">制裁地图</span><span class="d"><span class="l-en">Where US sanctions point · OFAC public list</span><span class="l-zh">美国制裁指向何处 · OFAC 公开名单</span></span></a>
       </div>
     </div>
     <div class="nav-dd">
@@ -313,17 +314,17 @@
       
       
       <p class="cn-lead">
-        <span class="l-en"><b>24</b> stories cleared the macro filter; official policy tone leans cautious. <b>17</b> rated high-impact, led by <b>fiscal & trade</b>.</span>
-        <span class="l-zh"><b>24</b> 条通过宏观筛选；官方政策基调偏谨慎。其中 <b>17</b> 条高影响，主导<b>财政与贸易</b>。</span>
+        <span class="l-en"><b>24</b> stories cleared the macro filter; official policy tone leans supportive. <b>10</b> rated high-impact, led by <b>equity market</b>.</span>
+        <span class="l-zh"><b>24</b> 条通过宏观筛选；官方政策基调偏积极。其中 <b>10</b> 条高影响，主导<b>股票市场</b>。</span>
       </p>
       <p class="cn-asof"><span class="l-en">As of</span><span class="l-zh">截至</span>  · <span class="l-en">context, not trade calls</span><span class="l-zh">仅供参考，非交易信号</span></p>
       <div class="cn-glance">
         
         
-        <span class="cn-gchip st-cautious"><span class="dot"></span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span> <b><span class="l-en">leans cautious</span><span class="l-zh">偏谨慎</span></b></span>
+        <span class="cn-gchip st-supportive"><span class="dot"></span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span> <b><span class="l-en">leans supportive</span><span class="l-zh">偏积极</span></b></span>
         
-        <span class="cn-gchip hot"><span class="dot"></span><b>17</b> <span class="l-en">high-impact</span><span class="l-zh">高影响</span></span>
-        <span class="cn-gchip led th-fiscal"><span class="dot"></span><span class="l-en">Led by</span><span class="l-zh">主导</span> <b><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></b></span>
+        <span class="cn-gchip hot"><span class="dot"></span><b>10</b> <span class="l-en">high-impact</span><span class="l-zh">高影响</span></span>
+        <span class="cn-gchip led th-monetary"><span class="dot"></span><span class="l-en">Led by</span><span class="l-zh">主导</span> <b><span class="l-en">equity market</span><span class="l-zh">股票市场</span></b></span>
         <span class="cn-gchip"><b>24</b> <span class="l-en">on the tape</span><span class="l-zh">条在流</span></span>
         <span class="cn-gchip hidden" id="fresh"><span class="dot" style="background:var(--up)"></span><span id="fresh-t"></span></span>
       </div>
@@ -335,21 +336,21 @@
   <section class="cn-rail3">
 
     <!-- policy tone -->
-    <article class="ov-card ov-tone st-cautious" style="--ac:var(--warn)">
+    <article class="ov-card ov-tone st-supportive" style="--ac:#3bb277">
       <p class="ov-h"><span class="ic">🏛️</span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span></p>
       
       
       <div class="tg-top">
-        <div class="tg-state"><span class="l-en">leans cautious</span><span class="l-zh">偏谨慎</span></div>
-        <div class="tg-z">-1.9</div>
+        <div class="tg-state"><span class="l-en">leans supportive</span><span class="l-zh">偏积极</span></div>
+        <div class="tg-z">+2.3</div>
       </div>
       
       
       <div class="tg-track"><span class="mid"></span>
-        <span class="tg-fill" style="right:50%;width:38.2%"></span>
+        <span class="tg-fill" style="left:50%;width:45.8%"></span>
       </div>
       <div class="tg-scale"><span><span class="l-en">cautious</span><span class="l-zh">谨慎</span></span><span><span class="l-en">neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">supportive</span><span class="l-zh">积极</span></span></div>
-      <p class="ov-foot"><span class="l-en">CCTV 新闻联播 tone · against the last</span><span class="l-zh">央视《新闻联播》基调 · 对比过去</span> 86<span class="l-en">d baseline</span><span class="l-zh">天基线</span> · 2026-09-06</p>
+      <p class="ov-foot"><span class="l-en">CCTV 新闻联播 tone · against the last</span><span class="l-zh">央视《新闻联播》基调 · 对比过去</span> 93<span class="l-en">d baseline</span><span class="l-zh">天基线</span> · 2026-09-13</p>
       
     </article>
 
@@ -361,43 +362,43 @@
         
         
         
-        <div class="mx-row th-fiscal">
-          <span class="mx-name"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+        <div class="mx-row th-monetary">
+          <span class="mx-name"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
           <span class="mx-bar"><i style="width:100%"></i></span>
-          <span class="mx-n">10</span>
+          <span class="mx-n">6</span>
         </div>
         
         
-        <div class="mx-row th-credit">
-          <span class="mx-name"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
-          <span class="mx-bar"><i style="width:40%"></i></span>
-          <span class="mx-n">4</span>
+        <div class="mx-row th-markets">
+          <span class="mx-name"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+          <span class="mx-bar"><i style="width:100%"></i></span>
+          <span class="mx-n">6</span>
         </div>
         
         
-        <div class="mx-row th-policy">
-          <span class="mx-name"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
-          <span class="mx-bar"><i style="width:30%"></i></span>
-          <span class="mx-n">3</span>
+        <div class="mx-row th-tech">
+          <span class="mx-name"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
+          <span class="mx-bar"><i style="width:83%"></i></span>
+          <span class="mx-n">5</span>
         </div>
         
         
         <div class="mx-row th-inflation">
           <span class="mx-name"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
-          <span class="mx-bar"><i style="width:30%"></i></span>
-          <span class="mx-n">3</span>
+          <span class="mx-bar"><i style="width:33%"></i></span>
+          <span class="mx-n">2</span>
         </div>
         
         
-        <div class="mx-row th-monetary">
-          <span class="mx-name"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
-          <span class="mx-bar"><i style="width:20%"></i></span>
+        <div class="mx-row th-credit">
+          <span class="mx-name"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
+          <span class="mx-bar"><i style="width:33%"></i></span>
           <span class="mx-n">2</span>
         </div>
         
       
       
-      <p class="ov-foot"><span class="l-en">Sources</span><span class="l-zh">来源</span>: <span class="l-en">Chinese financial press</span><span class="l-zh">中国财经媒体</span> 24</p>
+      <p class="ov-foot"><span class="l-en">Sources</span><span class="l-zh">来源</span>: <span class="l-en">Chinese financial press</span><span class="l-zh">中国财经媒体</span> 19 · <span class="l-en">global wire</span><span class="l-zh">国际通讯社</span> 4 · <span class="l-en">domestic wire</span><span class="l-zh">国内财经快讯</span> 1</p>
       
     </article>
 
@@ -408,11 +409,11 @@
       
       <div class="nx-when">
         
-          <span class="nx-days">3</span><span class="nx-unit"><span class="l-en">days out</span><span class="l-zh">天后</span></span>
+          <span class="nx-days">4</span><span class="nx-unit"><span class="l-en">days out</span><span class="l-zh">天后</span></span>
         
       </div>
-      <p class="nx-name"><span class="l-en">Customs trade (exports/imports)</span><span class="l-zh">海关进出口数据</span></p>
-      <p class="nx-date"><span class="l-en">Sep 7</span><span class="l-zh">9月7日</span> · <span style="color:#d0554f;font-weight:700"><span class="l-en">high-impact print</span><span class="l-zh">高影响数据</span></span></p>
+      <p class="nx-name"><span class="l-en">IP, FAI & retail sales</span><span class="l-zh">工业增加值、固投与社零</span></p>
+      <p class="nx-date"><span class="l-en">Sep 15</span><span class="l-zh">9月15日</span> · <span style="color:#d0554f;font-weight:700"><span class="l-en">high-impact print</span><span class="l-zh">高影响数据</span></span></p>
       
     </article>
   </section>
@@ -433,458 +434,474 @@
       <div class="tp-feed" id="feed">
         
         
-        <a class="tp-item th-monetary lead" href="https://www.gelonghui.com/live/2653436" target="_blank" rel="noopener"
+        <a class="tp-item th-monetary lead" href="https://flash.jin10.com/detail/20260914064959654800" target="_blank" rel="noopener"
            data-theme="monetary" data-importance="high"
-           data-search="下周大事提醒 next week's key events 下周大事提醒 美股周一休市；美国cpi、ppi数据，中国8月cpi、ppi与进出口数据先后出炉；下周“机圈”盛宴，苹果首款折叠屏iphone首秀，华为三折叠mate xt 2与小米 18 fold同步亮相；甲骨文等公布发布财报...... <u>9月7日(周一)：</u> 09:00 中国央行：9月7日将开展5000亿元3月期限买断式逆回购操作 中国 8月外汇储备； 柏林国际消费电子展(ifa2026)，小米参展； 华为全场景新品发布会，matext2三折叠发布； 美股因劳动节假期休市； 小米秋季新品发布会:小米18fold等发布、小米澎程上市。 <u>9月8日(周二 us stock markets closed monday; us cpi and ppi data, china august cpi, ppi, and trade data due out one after another; next week's 'phone circle' feast—apple's first foldable iphone debut, huawei tri-fold mate xt 2 and xiaomi 18 fold launching simultaneously; oracle and others to report earnings...... <u>sept 7 (monday):</u> 09:00 pboc: will conduct 500 billion yuan 3-month outright reverse repo operation on sept 7; china august foreign exchange reserves; ifa 2026 berlin, xiaomi exhibiting; huawei all-scenario new product launch, mate xt2 tri-fold release; us markets closed for labor day; xiaomi autumn new product launch: xiaomi 18 fold etc., xiaomi pengcheng listing. <u>sept 8 (tuesday 美股周一休市；美国cpi、ppi数据，中国8月cpi、ppi与进出口数据先后出炉；下周“机圈”盛宴，苹果首款折叠屏iphone首秀，华为三折叠mate xt 2与小米 18 fold同步亮相；甲骨文等公布发布财报...... <u>9月7日(周一)：</u> 09:00 中国央行：9月7日将开展5000亿元3月期限买断式逆回购操作 中国 8月外汇储备； 柏林国际消费电子展(ifa2026)，小米参展； 华为全场景新品发布会，matext2三折叠发布； 美股因劳动节假期休市； 小米秋季新品发布会:小米18fold等发布、小米澎程上市。 <u>9月8日(周二 格隆汇 pboc_liquidity consumer fiscal_trade pboc & liquidity 央行与流动性 consumer 消费 fiscal & trade 财政与贸易 ">
-          <time class="tp-when" data-t="2026-09-06T11:45:39+00:00" datetime="2026-09-06T11:45:39+00:00">09-06<br>11:45</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-06T11:45:39+00:00"></span></div>
+           data-search="本周重要事件与数据预告：超级央行周来袭、中国m2/社零公布 key events and data preview for this week: super central bank week approaches, china m2/retail sales to be released 本周重要事件与数据预告：超级央行周来袭、中国m2/社零公布 <span class="section-news">1. <b>周一：</b>①数据：加拿大8月cpi月率；<b>中国8月m2货币供应年率（待定）</b>。②假期：印度国家证券交易所休市一日。</span><br/><span class="section-news">2. <b>周二：</b>①数据：<b>中国8月社会消费品零售总额同比、中国8月规模以上工业增加值同比</b>；英国7月三个月ilo失业率、英国8月失业率、英国8月失业金申请人数；法国8月cpi月率终值；德国9月zew经济景气指数；欧元区9月zew经济景气指数、欧元区7月季调后贸易帐；美 <span class="section-news">1. <b>monday:</b> ①data: canada august cpi mom; <b>china august m2 money supply yoy (time tbd)</b>. ②holiday: national stock exchange of india closed for the day.</span><br/><span class="section-news">2. <b>tuesday:</b> ①data: <b>china august retail sales yoy, china august industrial output above designated size yoy</b>; uk july three-month ilo unemployment rate, uk august unemployment rate, uk august jobless claims; france august cpi mom final; germany september zew economic sentiment index; eurozone september zew economic sentiment index, eurozone july seasonally adjusted trade balance; u.s. <span class="section-news">1. <b>周一：</b>①数据：加拿大8月cpi月率；<b>中国8月m2货币供应年率（待定）</b>。②假期：印度国家证券交易所休市一日。</span><br/><span class="section-news">2. <b>周二：</b>①数据：<b>中国8月社会消费品零售总额同比、中国8月规模以上工业增加值同比</b>；英国7月三个月ilo失业率、英国8月失业率、英国8月失业金申请人数；法国8月cpi月率终值；德国9月zew经济景气指数；欧元区9月zew经济景气指数、欧元区7月季调后贸易帐；美 金十数据 pboc_liquidity consumer industrial pboc & liquidity 央行与流动性 consumer 消费 industry & manufacturing 工业与制造业 512880.ss">
+          <time class="tp-when" data-t="2026-09-14T06:49:59+08:00" datetime="2026-09-14T06:49:59+08:00">09-14<br>06:49</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-14T06:49:59+08:00"></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
               <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
-              <span class="cn-src">格隆汇</span>
+              <span class="cn-src">金十数据</span>
               <span class="cn-imp imp-high"><b>100</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">Next Week's Key Events</span><span class="l-zh">下周大事提醒</span></h2>
-            <p class="tp-sum"><span class="l-en">US stock markets closed Monday; US CPI and PPI data, China August CPI, PPI, and trade data due out one after another; next week's 'phone circle' feast—Apple's first foldable iPhone debut, Huawei tri-fold Mate XT 2 and Xiaomi 18 Fold launching simultaneously; Oracle and others to report earnings...... <u>Sept 7 (Monday):</u> 09:00 PBOC: Will conduct 500 billion yuan 3-month outright reverse repo operation on Sept 7; China August foreign exchange reserves; IFA 2026 Berlin, Xiaomi exhibiting; Huawei all-scenario new product launch, Mate XT2 tri-fold release; US markets closed for Labor Day; Xiaomi autumn new product launch: Xiaomi 18 Fold etc., Xiaomi Pengcheng listing. <u>Sept 8 (Tuesday</span><span class="l-zh">美股周一休市；美国CPI、PPI数据，中国8月CPI、PPI与进出口数据先后出炉；下周“机圈”盛宴，苹果首款折叠屏iPhone首秀，华为三折叠Mate XT 2与小米 18 Fold同步亮相；甲骨文等公布发布财报...... <u>9月7日(周一)：</u> 09:00 中国央行：9月7日将开展5000亿元3月期限买断式逆回购操作 中国 8月外汇储备； 柏林国际消费电子展(IFA2026)，小米参展； 华为全场景新品发布会，MateXT2三折叠发布； 美股因劳动节假期休市； 小米秋季新品发布会:小米18Fold等发布、小米澎程上市。 <u>9月8日(周二</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span></div>
+            <h2 class="tp-title"><span class="l-en">Key events and data preview for this week: Super central bank week approaches, China M2/retail sales to be released</span><span class="l-zh">本周重要事件与数据预告：超级央行周来袭、中国M2/社零公布</span></h2>
+            <p class="tp-sum"><span class="l-en"><span class="section-news">1. <b>Monday:</b> ①Data: Canada August CPI MoM; <b>China August M2 money supply YoY (time TBD)</b>. ②Holiday: National Stock Exchange of India closed for the day.</span><br/><span class="section-news">2. <b>Tuesday:</b> ①Data: <b>China August retail sales YoY, China August industrial output above designated size YoY</b>; UK July three-month ILO unemployment rate, UK August unemployment rate, UK August jobless claims; France August CPI MoM final; Germany September ZEW economic sentiment index; Eurozone September ZEW economic sentiment index, Eurozone July seasonally adjusted trade balance; U.S.</span><span class="l-zh"><span class="section-news">1. <b>周一：</b>①数据：加拿大8月CPI月率；<b>中国8月M2货币供应年率（待定）</b>。②假期：印度国家证券交易所休市一日。</span><br/><span class="section-news">2. <b>周二：</b>①数据：<b>中国8月社会消费品零售总额同比、中国8月规模以上工业增加值同比</b>；英国7月三个月ILO失业率、英国8月失业率、英国8月失业金申请人数；法国8月CPI月率终值；德国9月ZEW经济景气指数；欧元区9月ZEW经济景气指数、欧元区7月季调后贸易帐；美</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span><span class="cn-tk">512880.SS</span></div>
           </div>
         </a>
         
         
-        <a class="tp-item th-credit" href="https://wallstreetcn.com/livenews/3160961" target="_blank" rel="noopener"
-           data-theme="credit" data-importance="high"
-           data-search="财政部将发行特别国债支持8家中央金融企业补充资本 finance ministry to issue special treasury bonds to support capital replenishment of 8 central financial enterprises 财政部将发行特别国债支持8家中央金融企业补充资本 财政部将于近期发行3000亿元特别国债，支持8家中央金融企业补充核心一级资本。 当日，工商银行、农业银行、进出口银行、中国信保、中国人保、中国人寿集团、中国太平、中国再保等8家中央金融企业分别发布了增资计划。 业内人士表示，此次财政部对8家中央金融企业增资，属于“未雨绸缪”的前瞻性安排，是支持中央金融企业高质量发展、助力宏观经济行稳致远的主动作为。（新华社） the ministry of finance will soon issue 300 billion yuan in special treasury bonds to support 8 central state-owned financial enterprises in replenishing core tier-1 capital. on the same day, icbc, agricultural bank of china, export-import bank of china, sinosure, picc, china life group, china taiping, and china re each announced capital increase plans. industry insiders said this capital injection by the ministry of finance into 8 central financial enterprises is a forward-looking arrangement to 'prepare for rain before it comes,' representing proactive action to support high-quality development of central financial enterprises and steady long-term economic growth. (xinhua) 财政部将于近期发行3000亿元特别国债，支持8家中央金融企业补充核心一级资本。 当日，工商银行、农业银行、进出口银行、中国信保、中国人保、中国人寿集团、中国太平、中国再保等8家中央金融企业分别发布了增资计划。 业内人士表示，此次财政部对8家中央金融企业增资，属于“未雨绸缪”的前瞻性安排，是支持中央金融企业高质量发展、助力宏观经济行稳致远的主动作为。（新华社） 华尔街见闻 fiscal_trade fiscal & trade 财政与贸易 cbon 512800.ss">
-          <time class="tp-when" data-t="2026-09-06T11:22:42+00:00" datetime="2026-09-06T11:22:42+00:00">09-06<br>11:22</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-06T11:22:42+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
-              <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-high"><b>82</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Finance Ministry to issue special treasury bonds to support capital replenishment of 8 central financial enterprises</span><span class="l-zh">财政部将发行特别国债支持8家中央金融企业补充资本</span></h2>
-            <p class="tp-sum"><span class="l-en">The Ministry of Finance will soon issue 300 billion yuan in special treasury bonds to support 8 central state-owned financial enterprises in replenishing core Tier-1 capital. On the same day, ICBC, Agricultural Bank of China, Export-Import Bank of China, Sinosure, PICC, China Life Group, China Taiping, and China Re each announced capital increase plans. Industry insiders said this capital injection by the Ministry of Finance into 8 central financial enterprises is a forward-looking arrangement to 'prepare for rain before it comes,' representing proactive action to support high-quality development of central financial enterprises and steady long-term economic growth. (Xinhua)</span><span class="l-zh">财政部将于近期发行3000亿元特别国债，支持8家中央金融企业补充核心一级资本。 当日，工商银行、农业银行、进出口银行、中国信保、中国人保、中国人寿集团、中国太平、中国再保等8家中央金融企业分别发布了增资计划。 业内人士表示，此次财政部对8家中央金融企业增资，属于“未雨绸缪”的前瞻性安排，是支持中央金融企业高质量发展、助力宏观经济行稳致远的主动作为。（新华社）</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">CBON</span><span class="cn-tk">512800.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-credit" href="https://www.news.cn/fortune/20260906/1633e4121bf14b52859aff2dffa36888/c.html" target="_blank" rel="noopener"
-           data-theme="credit" data-importance="high"
-           data-search="共增资3600亿元 8家中央金融企业将补充资本 total capital injection of 360 billion yuan for 8 central financial enterprises to replenish capital 共增资3600亿元 8家中央金融企业将补充资本 金十数据9月6日讯，9月6日，中国工商银行等8家中央金融企业分别发布增资计划，将补充核心一级资本。据统计，8家中央金融企业计划共增资3600亿元，有助于进一步增强稳健经营能力、抵御风险能力和服务实体经济能力。根据公告消息，中国工商银行、中国农业银行两家大型国有商业银行拟向特定对象财政部、中国烟草总公司及相关子公司发行a股股票，计划募集资金分别不超过1000亿元、1600亿元。另外，财政部将向中国进出口银行、中国出口信用保险公司两家政策性金融机构分别注资300亿元、100亿元。当日，还有四家国有商业保险公司宣布增资计划。中国人保拟向特定对象财政部发行a股股 jinshi data sept 6—on sept 6, eight central financial enterprises including icbc each released capital increase plans to replenish core tier-1 capital. according to statistics, the eight central financial enterprises plan to raise a total of 360 billion yuan, helping further enhance sound operation, risk resilience, and real-economy service capabilities. based on announcements, icbc and agricultural bank of china, two large state-owned commercial banks, plan to issue a-shares to specific targets—the ministry of finance, china national tobacco corporation and related subsidiaries—with planned fundraising of up to 100 billion yuan and 160 billion yuan respectively. in addition, the ministry of finance will inject 30 billion yuan and 10 billion yuan respectively into the export-import bank of china and sinosure, two policy financial institutions. on the same day, four state-owned commercial insurance companies also announced capital increase plans. picc plans to issue a-shares to specific target the ministry of finance 金十数据9月6日讯，9月6日，中国工商银行等8家中央金融企业分别发布增资计划，将补充核心一级资本。据统计，8家中央金融企业计划共增资3600亿元，有助于进一步增强稳健经营能力、抵御风险能力和服务实体经济能力。根据公告消息，中国工商银行、中国农业银行两家大型国有商业银行拟向特定对象财政部、中国烟草总公司及相关子公司发行a股股票，计划募集资金分别不超过1000亿元、1600亿元。另外，财政部将向中国进出口银行、中国出口信用保险公司两家政策性金融机构分别注资300亿元、100亿元。当日，还有四家国有商业保险公司宣布增资计划。中国人保拟向特定对象财政部发行a股股 金十数据 fiscal_trade markets fiscal & trade 财政与贸易 equity market 股票市场 512800.ss">
-          <time class="tp-when" data-t="2026-09-06T18:18:11+08:00" datetime="2026-09-06T18:18:11+08:00">09-06<br>18:18</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-06T18:18:11+08:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
-              <span class="cn-src">金十数据</span>
-              <span class="cn-imp imp-high"><b>82</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Total capital injection of 360 billion yuan for 8 central financial enterprises to replenish capital</span><span class="l-zh">共增资3600亿元 8家中央金融企业将补充资本</span></h2>
-            <p class="tp-sum"><span class="l-en">Jinshi Data Sept 6—On Sept 6, eight central financial enterprises including ICBC each released capital increase plans to replenish core Tier-1 capital. According to statistics, the eight central financial enterprises plan to raise a total of 360 billion yuan, helping further enhance sound operation, risk resilience, and real-economy service capabilities. Based on announcements, ICBC and Agricultural Bank of China, two large state-owned commercial banks, plan to issue A-shares to specific targets—the Ministry of Finance, China National Tobacco Corporation and related subsidiaries—with planned fundraising of up to 100 billion yuan and 160 billion yuan respectively. In addition, the Ministry of Finance will inject 30 billion yuan and 10 billion yuan respectively into the Export-Import Bank of China and Sinosure, two policy financial institutions. On the same day, four state-owned commercial insurance companies also announced capital increase plans. PICC plans to issue A-shares to specific target the Ministry of Finance</span><span class="l-zh">金十数据9月6日讯，9月6日，中国工商银行等8家中央金融企业分别发布增资计划，将补充核心一级资本。据统计，8家中央金融企业计划共增资3600亿元，有助于进一步增强稳健经营能力、抵御风险能力和服务实体经济能力。根据公告消息，中国工商银行、中国农业银行两家大型国有商业银行拟向特定对象财政部、中国烟草总公司及相关子公司发行A股股票，计划募集资金分别不超过1000亿元、1600亿元。另外，财政部将向中国进出口银行、中国出口信用保险公司两家政策性金融机构分别注资300亿元、100亿元。当日，还有四家国有商业保险公司宣布增资计划。中国人保拟向特定对象财政部发行A股股</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512800.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-credit" href="https://wallstreetcn.com/livenews/3160952" target="_blank" rel="noopener"
-           data-theme="credit" data-importance="high"
-           data-search="财政部将向中国出口信用保险公司注资100亿元 finance ministry to inject 10 billion yuan into china export & credit insurance corporation 财政部将向中国出口信用保险公司注资100亿元 9月6日，中国出口信用保险公司宣布，财政部将向中国出口信用保险公司注资100亿元，此次资本补充工作按照市场化、法治化原则稳妥推进，充分体现金融行业发展前景向好。支持中国出口信用保险公司补充核心一级资本，有利于公司更好提高风险偿付能力充足率水平，增强保险人履约能力，进一步扩大出口信用保险覆盖面，有效保障中长期财务可持续，提升经营活动现金流抗压能力，支持公司更好履行政策性职能、服务实体经济。 on sept 6, sinosure announced that the ministry of finance will inject 10 billion yuan into sinosure. this capital replenishment is being steadily advanced on market-based and law-based principles, fully reflecting the bright prospects of the financial industry. supporting sinosure in replenishing core tier-1 capital helps the company better improve its solvency adequacy ratio, enhance insurer履约 capability, further expand export credit insurance coverage, effectively safeguard long-term financial sustainability, strengthen cash flow resilience of operating activities, and support the company in better fulfilling policy functions and serving the real economy. 9月6日，中国出口信用保险公司宣布，财政部将向中国出口信用保险公司注资100亿元，此次资本补充工作按照市场化、法治化原则稳妥推进，充分体现金融行业发展前景向好。支持中国出口信用保险公司补充核心一级资本，有利于公司更好提高风险偿付能力充足率水平，增强保险人履约能力，进一步扩大出口信用保险覆盖面，有效保障中长期财务可持续，提升经营活动现金流抗压能力，支持公司更好履行政策性职能、服务实体经济。 华尔街见闻 fiscal_trade fiscal & trade 财政与贸易 ">
-          <time class="tp-when" data-t="2026-09-06T09:07:08+00:00" datetime="2026-09-06T09:07:08+00:00">09-06<br>09:07</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-06T09:07:08+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
-              <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-high"><b>82</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Finance Ministry to inject 10 billion yuan into China Export & Credit Insurance Corporation</span><span class="l-zh">财政部将向中国出口信用保险公司注资100亿元</span></h2>
-            <p class="tp-sum"><span class="l-en">On Sept 6, Sinosure announced that the Ministry of Finance will inject 10 billion yuan into Sinosure. This capital replenishment is being steadily advanced on market-based and law-based principles, fully reflecting the bright prospects of the financial industry. Supporting Sinosure in replenishing core Tier-1 capital helps the company better improve its solvency adequacy ratio, enhance insurer履约 capability, further expand export credit insurance coverage, effectively safeguard long-term financial sustainability, strengthen cash flow resilience of operating activities, and support the company in better fulfilling policy functions and serving the real economy.</span><span class="l-zh">9月6日，中国出口信用保险公司宣布，财政部将向中国出口信用保险公司注资100亿元，此次资本补充工作按照市场化、法治化原则稳妥推进，充分体现金融行业发展前景向好。支持中国出口信用保险公司补充核心一级资本，有利于公司更好提高风险偿付能力充足率水平，增强保险人履约能力，进一步扩大出口信用保险覆盖面，有效保障中长期财务可持续，提升经营活动现金流抗压能力，支持公司更好履行政策性职能、服务实体经济。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-fiscal" href="https://wallstreetcn.com/livenews/3160950" target="_blank" rel="noopener"
-           data-theme="fiscal" data-importance="high"
-           data-search="财政部将向中国进出口银行注资300亿元 finance ministry to inject 30 billion yuan into export-import bank of china 财政部将向中国进出口银行注资300亿元 9月6日，中国进出口银行宣布，财政部将向中国进出口银行注资300亿元，有效巩固进出口银行资本根基、厚植可持续发展底气，显著提升服务实体经济与对外开放的资金供给能力和风险防控韧性，为更好履行政策性金融职责使命、服务国家重大战略筑牢坚实保障。（新华社） on sept 6, the export-import bank of china announced that the ministry of finance will inject 30 billion yuan into the bank, effectively consolidating its capital base and strengthening sustainable development fundamentals, significantly enhancing its capacity for funding supply to serve the real economy and opening-up, as well as its risk prevention resilience, laying a solid foundation for better fulfilling policy finance missions and serving major national strategies. (xinhua) 9月6日，中国进出口银行宣布，财政部将向中国进出口银行注资300亿元，有效巩固进出口银行资本根基、厚植可持续发展底气，显著提升服务实体经济与对外开放的资金供给能力和风险防控韧性，为更好履行政策性金融职责使命、服务国家重大战略筑牢坚实保障。（新华社） 华尔街见闻 fiscal_trade fiscal & trade 财政与贸易 512800.ss">
-          <time class="tp-when" data-t="2026-09-06T09:06:51+00:00" datetime="2026-09-06T09:06:51+00:00">09-06<br>09:06</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-06T09:06:51+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
-              <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-high"><b>74</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Finance Ministry to inject 30 billion yuan into Export-Import Bank of China</span><span class="l-zh">财政部将向中国进出口银行注资300亿元</span></h2>
-            <p class="tp-sum"><span class="l-en">On Sept 6, the Export-Import Bank of China announced that the Ministry of Finance will inject 30 billion yuan into the bank, effectively consolidating its capital base and strengthening sustainable development fundamentals, significantly enhancing its capacity for funding supply to serve the real economy and opening-up, as well as its risk prevention resilience, laying a solid foundation for better fulfilling policy finance missions and serving major national strategies. (Xinhua)</span><span class="l-zh">9月6日，中国进出口银行宣布，财政部将向中国进出口银行注资300亿元，有效巩固进出口银行资本根基、厚植可持续发展底气，显著提升服务实体经济与对外开放的资金供给能力和风险防控韧性，为更好履行政策性金融职责使命、服务国家重大战略筑牢坚实保障。（新华社）</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">512800.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-fiscal" href="https://wallstreetcn.com/livenews/3160957" target="_blank" rel="noopener"
-           data-theme="fiscal" data-importance="high"
-           data-search="中国再保计划募资30亿元用于增加核心一级资本 china re plans to raise 3 billion yuan to increase core tier-1 capital 中国再保计划募资30亿元用于增加核心一级资本 9月6日，中国再保董事会审议通过并披露向特定对象发行内资股方案。本次发行拟由财政部以现金方式认购，计划募集资金总额30亿元人民币，在扣除相关发行费用后将全部用于增加中国再保核心一级资本，募集资金规模与最终发行方案以相关监管部门最终批复为准。发行价格为1.33元/股，较中国再保近期h股二级市场价格实现溢价发行，拟发行股份约22.56亿股，发行对象承诺长期持有本次认购股份。 on sept 6, china re's board approved and disclosed a plan to issue domestic shares to specific targets. the issuance will be subscribed in cash by the ministry of finance, with planned total fundraising of 3 billion yuan, all to be used to increase china re's core tier-1 capital after deducting related issuance costs. the fundraising scale and final issuance plan are subject to final approval by relevant regulatory authorities. the issuance price is 1.33 yuan/share, at a premium to china re's recent h-share secondary market price, with approximately 2.256 billion shares to be issued, and the subscriber commits to long-term holding of the subscribed shares. 9月6日，中国再保董事会审议通过并披露向特定对象发行内资股方案。本次发行拟由财政部以现金方式认购，计划募集资金总额30亿元人民币，在扣除相关发行费用后将全部用于增加中国再保核心一级资本，募集资金规模与最终发行方案以相关监管部门最终批复为准。发行价格为1.33元/股，较中国再保近期h股二级市场价格实现溢价发行，拟发行股份约22.56亿股，发行对象承诺长期持有本次认购股份。 华尔街见闻 fiscal_trade yuan fiscal & trade 财政与贸易 yuan & fx 人民币与汇率 cny">
-          <time class="tp-when" data-t="2026-09-06T10:17:04+00:00" datetime="2026-09-06T10:17:04+00:00">09-06<br>10:17</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-06T10:17:04+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
-              <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">China Re plans to raise 3 billion yuan to increase core Tier-1 capital</span><span class="l-zh">中国再保计划募资30亿元用于增加核心一级资本</span></h2>
-            <p class="tp-sum"><span class="l-en">On Sept 6, China Re's board approved and disclosed a plan to issue domestic shares to specific targets. The issuance will be subscribed in cash by the Ministry of Finance, with planned total fundraising of 3 billion yuan, all to be used to increase China Re's core Tier-1 capital after deducting related issuance costs. The fundraising scale and final issuance plan are subject to final approval by relevant regulatory authorities. The issuance price is 1.33 yuan/share, at a premium to China Re's recent H-share secondary market price, with approximately 2.256 billion shares to be issued, and the subscriber commits to long-term holding of the subscribed shares.</span><span class="l-zh">9月6日，中国再保董事会审议通过并披露向特定对象发行内资股方案。本次发行拟由财政部以现金方式认购，计划募集资金总额30亿元人民币，在扣除相关发行费用后将全部用于增加中国再保核心一级资本，募集资金规模与最终发行方案以相关监管部门最终批复为准。发行价格为1.33元/股，较中国再保近期H股二级市场价格实现溢价发行，拟发行股份约22.56亿股，发行对象承诺长期持有本次认购股份。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-tk">CNY</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-fiscal" href="https://wallstreetcn.com/livenews/3160945" target="_blank" rel="noopener"
-           data-theme="fiscal" data-importance="high"
-           data-search="中国人保拟募资不超过150亿元用于补充资本金 picc plans to raise up to 15 billion yuan to replenish capital 中国人保拟募资不超过150亿元用于补充资本金 9月6日，中国人保公告向特定对象发行a股股票预案。本次发行拟由财政部以现金方式认购，募集资金规模不超过150亿元人民币，在扣除相关发行费用后全部用于补充公司的资本金。本次资本补充有助于中国人保进一步夯实资本基础，提升稳健经营能力和风险抵御能力，更好发挥保险业的经济减震器和社会稳定器功能。 on sept 6, picc announced its plan to issue a-shares to specific targets. the issuance will be subscribed in cash by the ministry of finance, with fundraising of no more than 15 billion yuan, all to be used to replenish the company's capital after deducting related issuance costs. this capital replenishment helps picc further consolidate its capital base, enhance sound operation and risk resilience, and better play the insurance industry's role as an economic shock absorber and social stabilizer. 9月6日，中国人保公告向特定对象发行a股股票预案。本次发行拟由财政部以现金方式认购，募集资金规模不超过150亿元人民币，在扣除相关发行费用后全部用于补充公司的资本金。本次资本补充有助于中国人保进一步夯实资本基础，提升稳健经营能力和风险抵御能力，更好发挥保险业的经济减震器和社会稳定器功能。 华尔街见闻 fiscal_trade markets yuan fiscal & trade 财政与贸易 equity market 股票市场 yuan & fx 人民币与汇率 cny">
-          <time class="tp-when" data-t="2026-09-06T08:15:35+00:00" datetime="2026-09-06T08:15:35+00:00">09-06<br>08:15</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-06T08:15:35+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
-              <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">PICC plans to raise up to 15 billion yuan to replenish capital</span><span class="l-zh">中国人保拟募资不超过150亿元用于补充资本金</span></h2>
-            <p class="tp-sum"><span class="l-en">On Sept 6, PICC announced its plan to issue A-shares to specific targets. The issuance will be subscribed in cash by the Ministry of Finance, with fundraising of no more than 15 billion yuan, all to be used to replenish the company's capital after deducting related issuance costs. This capital replenishment helps PICC further consolidate its capital base, enhance sound operation and risk resilience, and better play the insurance industry's role as an economic shock absorber and social stabilizer.</span><span class="l-zh">9月6日，中国人保公告向特定对象发行A股股票预案。本次发行拟由财政部以现金方式认购，募集资金规模不超过150亿元人民币，在扣除相关发行费用后全部用于补充公司的资本金。本次资本补充有助于中国人保进一步夯实资本基础，提升稳健经营能力和风险抵御能力，更好发挥保险业的经济减震器和社会稳定器功能。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-tk">CNY</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-fiscal" href="https://wallstreetcn.com/livenews/3160928" target="_blank" rel="noopener"
-           data-theme="fiscal" data-importance="high"
-           data-search="农业银行拟募资不超过1600亿元用于补充资本；工商银行拟募资不超过1000亿元用于补充资本 agricultural bank of china plans to raise up to 160 billion yuan to replenish capital; icbc plans to raise up to 100 billion yuan to replenish capital 农业银行拟募资不超过1600亿元用于补充资本；工商银行拟募资不超过1000亿元用于补充资本 9月6日，中国农业银行在上海证券交易所发布向特定对象发行a股股票预案，拟向特定对象中华人民共和国财政部、中国烟草总公司及其有关子公司发行a股股票，募集资金总额不超过人民币1600亿元，扣除相关发行费用后将全部用于补充核心一级资本，最终募集资金规模以监管机构批复的发行方案为准。 9月6日，中国工商银行公告称，拟向特定对象发行a股股票，发行对象为中华人民共和国财政部、中国烟草总公司及相关子公司，计划募集资金不超过1000亿元，募集资金扣除相关发行费用后拟全部用于补充核心一级资本。本次增资需履行内外部审批程序后实施。 on sept 6, agricultural bank of china released its plan to issue a-shares to specific targets on the shanghai stock exchange, proposing to issue a-shares to the ministry of finance of the prc, china national tobacco corporation, and related subsidiaries, with total fundraising of no more than 160 billion yuan, all to be used to replenish core tier-1 capital after deducting related issuance costs. the final fundraising scale is subject to the issuance plan approved by regulatory authorities. on sept 6, icbc announced plans to issue a-shares to specific targets—the ministry of finance of the prc, china national tobacco corporation, and related subsidiaries—with planned fundraising of no more than 100 billion yuan, all to be used to replenish core tier-1 capital after deducting related issuance costs. this capital increase will be implemented after completing internal and external approval procedures. 9月6日，中国农业银行在上海证券交易所发布向特定对象发行a股股票预案，拟向特定对象中华人民共和国财政部、中国烟草总公司及其有关子公司发行a股股票，募集资金总额不超过人民币1600亿元，扣除相关发行费用后将全部用于补充核心一级资本，最终募集资金规模以监管机构批复的发行方案为准。 9月6日，中国工商银行公告称，拟向特定对象发行a股股票，发行对象为中华人民共和国财政部、中国烟草总公司及相关子公司，计划募集资金不超过1000亿元，募集资金扣除相关发行费用后拟全部用于补充核心一级资本。本次增资需履行内外部审批程序后实施。 华尔街见闻 fiscal_trade markets yuan fiscal & trade 财政与贸易 equity market 股票市场 yuan & fx 人民币与汇率 cny 512800.ss 512880.ss">
-          <time class="tp-when" data-t="2026-09-06T07:33:29+00:00" datetime="2026-09-06T07:33:29+00:00">09-06<br>07:33</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-06T07:33:29+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
-              <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Agricultural Bank of China plans to raise up to 160 billion yuan to replenish capital; ICBC plans to raise up to 100 billion yuan to replenish capital</span><span class="l-zh">农业银行拟募资不超过1600亿元用于补充资本；工商银行拟募资不超过1000亿元用于补充资本</span></h2>
-            <p class="tp-sum"><span class="l-en">On Sept 6, Agricultural Bank of China released its plan to issue A-shares to specific targets on the Shanghai Stock Exchange, proposing to issue A-shares to the Ministry of Finance of the PRC, China National Tobacco Corporation, and related subsidiaries, with total fundraising of no more than 160 billion yuan, all to be used to replenish core Tier-1 capital after deducting related issuance costs. The final fundraising scale is subject to the issuance plan approved by regulatory authorities. On Sept 6, ICBC announced plans to issue A-shares to specific targets—the Ministry of Finance of the PRC, China National Tobacco Corporation, and related subsidiaries—with planned fundraising of no more than 100 billion yuan, all to be used to replenish core Tier-1 capital after deducting related issuance costs. This capital increase will be implemented after completing internal and external approval procedures.</span><span class="l-zh">9月6日，中国农业银行在上海证券交易所发布向特定对象发行A股股票预案，拟向特定对象中华人民共和国财政部、中国烟草总公司及其有关子公司发行A股股票，募集资金总额不超过人民币1600亿元，扣除相关发行费用后将全部用于补充核心一级资本，最终募集资金规模以监管机构批复的发行方案为准。 9月6日，中国工商银行公告称，拟向特定对象发行A股股票，发行对象为中华人民共和国财政部、中国烟草总公司及相关子公司，计划募集资金不超过1000亿元，募集资金扣除相关发行费用后拟全部用于补充核心一级资本。本次增资需履行内外部审批程序后实施。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-tk">CNY</span><span class="cn-tk">512800.SS</span><span class="cn-tk">512880.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-fiscal" href="https://wallstreetcn.com/livenews/3160943" target="_blank" rel="noopener"
-           data-theme="fiscal" data-importance="high"
-           data-search="财政部将向中国太平注资70亿元 finance ministry to inject 7 billion yuan into china taiping 财政部将向中国太平注资70亿元 9月6日，中国太平宣布，财政部将向中国太平保险集团有限责任公司注资70亿元。此次注资将进一步增强中国太平抵御风险能力，推动偿付能力等关键指标均衡稳健，夯实长期可持续发展根基，提升服务国家战略和实体经济高质量发展能力。 on sept 6, china taiping announced that the ministry of finance will inject 7 billion yuan into china taiping insurance group co., ltd. this capital injection will further enhance china taiping's risk resilience, promote balanced and sound key indicators such as solvency, consolidate the foundation for long-term sustainable development, and improve its ability to serve national strategies and high-quality real-economy development. 9月6日，中国太平宣布，财政部将向中国太平保险集团有限责任公司注资70亿元。此次注资将进一步增强中国太平抵御风险能力，推动偿付能力等关键指标均衡稳健，夯实长期可持续发展根基，提升服务国家战略和实体经济高质量发展能力。 华尔街见闻 fiscal_trade fiscal & trade 财政与贸易 ">
-          <time class="tp-when" data-t="2026-09-06T08:15:14+00:00" datetime="2026-09-06T08:15:14+00:00">09-06<br>08:15</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-06T08:15:14+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
-              <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Finance Ministry to inject 7 billion yuan into China Taiping</span><span class="l-zh">财政部将向中国太平注资70亿元</span></h2>
-            <p class="tp-sum"><span class="l-en">On Sept 6, China Taiping announced that the Ministry of Finance will inject 7 billion yuan into China Taiping Insurance Group Co., Ltd. This capital injection will further enhance China Taiping's risk resilience, promote balanced and sound key indicators such as solvency, consolidate the foundation for long-term sustainable development, and improve its ability to serve national strategies and high-quality real-economy development.</span><span class="l-zh">9月6日，中国太平宣布，财政部将向中国太平保险集团有限责任公司注资70亿元。此次注资将进一步增强中国太平抵御风险能力，推动偿付能力等关键指标均衡稳健，夯实长期可持续发展根基，提升服务国家战略和实体经济高质量发展能力。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-fiscal" href="https://wallstreetcn.com/livenews/3160939" target="_blank" rel="noopener"
-           data-theme="fiscal" data-importance="high"
-           data-search="财政部将向中国人寿集团注资350亿元 finance ministry to inject 35 billion yuan into china life group 财政部将向中国人寿集团注资350亿元 9月6日，中国人寿集团宣布，财政部将向中国人寿保险（集团）公司注资350亿元，进一步增强中国人寿稳健经营和风险抵御能力，为公司专注主业、完善治理、错位发展注入动力。（新华社） on sept 6, china life group announced that the ministry of finance will inject 35 billion yuan into china life insurance (group) company, further enhancing china life's sound operation and risk resilience, and injecting momentum for the company to focus on its main business, improve governance, and pursue differentiated development. (xinhua) 9月6日，中国人寿集团宣布，财政部将向中国人寿保险（集团）公司注资350亿元，进一步增强中国人寿稳健经营和风险抵御能力，为公司专注主业、完善治理、错位发展注入动力。（新华社） 华尔街见闻 fiscal_trade fiscal & trade 财政与贸易 ">
-          <time class="tp-when" data-t="2026-09-06T08:07:34+00:00" datetime="2026-09-06T08:07:34+00:00">09-06<br>08:07</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-06T08:07:34+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
-              <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Finance Ministry to inject 35 billion yuan into China Life Group</span><span class="l-zh">财政部将向中国人寿集团注资350亿元</span></h2>
-            <p class="tp-sum"><span class="l-en">On Sept 6, China Life Group announced that the Ministry of Finance will inject 35 billion yuan into China Life Insurance (Group) Company, further enhancing China Life's sound operation and risk resilience, and injecting momentum for the company to focus on its main business, improve governance, and pursue differentiated development. (Xinhua)</span><span class="l-zh">9月6日，中国人寿集团宣布，财政部将向中国人寿保险（集团）公司注资350亿元，进一步增强中国人寿稳健经营和风险抵御能力，为公司专注主业、完善治理、错位发展注入动力。（新华社）</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3160881" target="_blank" rel="noopener"
-           data-theme="policy" data-importance="high"
-           data-search="8月深圳新建商品房成交3467套 shenzhen new commercial housing sales reach 3,467 units in august 8月深圳新建商品房成交3467套 深圳市房地产中介协会发布最新数据显示，8月份，深圳新建商品房成交3467套，环比下降23.0%，同比增长4.8%；深圳二手住宅录得5108套，环比下降2.3%，同比增长7.6%。今年1-8月，深圳二手房累计录得约4.84万套，同比增长4.7%。 according to the latest data from the shenzhen real estate intermediary association, new commercial housing transactions in shenzhen totaled 3,467 units in august, down 23.0% month-on-month but up 4.8% year-on-year. second-hand residential properties recorded 5,108 transactions, down 2.3% month-on-month and up 7.6% year-on-year. from january to august, cumulative second-hand housing transactions in shenzhen reached approximately 48,400 units, up 4.7% year-on-year. 深圳市房地产中介协会发布最新数据显示，8月份，深圳新建商品房成交3467套，环比下降23.0%，同比增长4.8%；深圳二手住宅录得5108套，环比下降2.3%，同比增长7.6%。今年1-8月，深圳二手房累计录得约4.84万套，同比增长4.7%。 华尔街见闻 property property 房地产 512200.ss">
-          <time class="tp-when" data-t="2026-09-05T09:30:22+00:00" datetime="2026-09-05T09:30:22+00:00">09-05<br>09:30</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-05T09:30:22+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
-              <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Shenzhen New Commercial Housing Sales Reach 3,467 Units in August</span><span class="l-zh">8月深圳新建商品房成交3467套</span></h2>
-            <p class="tp-sum"><span class="l-en">According to the latest data from the Shenzhen Real Estate Intermediary Association, new commercial housing transactions in Shenzhen totaled 3,467 units in August, down 23.0% month-on-month but up 4.8% year-on-year. Second-hand residential properties recorded 5,108 transactions, down 2.3% month-on-month and up 7.6% year-on-year. From January to August, cumulative second-hand housing transactions in Shenzhen reached approximately 48,400 units, up 4.7% year-on-year.</span><span class="l-zh">深圳市房地产中介协会发布最新数据显示，8月份，深圳新建商品房成交3467套，环比下降23.0%，同比增长4.8%；深圳二手住宅录得5108套，环比下降2.3%，同比增长7.6%。今年1-8月，深圳二手房累计录得约4.84万套，同比增长4.7%。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-tk">512200.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-inflation" href="https://finance.sina.com.cn/stock/marketresearch/2026-09-06/doc-iniqwnma6533633.shtml" target="_blank" rel="noopener"
-           data-theme="inflation" data-importance="high"
-           data-search="下周影响市场重要资讯前瞻：8月cpi数据即将公布，成品油迎来调价窗口，港股迎重要指数调整 preview of key market information next week: august cpi data due, fuel prices face adjustment window, hong kong stocks see important index changes 下周影响市场重要资讯前瞻：8月cpi数据即将公布，成品油迎来调价窗口，港股迎重要指数调整    新浪财经股票 consumer consumer 消费 ">
-          <time class="tp-when" data-t="2026-09-06" datetime="2026-09-06">09-06</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-06"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
-              <span class="cn-src">新浪财经股票</span>
-              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Preview of key market information next week: August CPI data due, fuel prices face adjustment window, Hong Kong stocks see important index changes</span><span class="l-zh">下周影响市场重要资讯前瞻：8月CPI数据即将公布，成品油迎来调价窗口，港股迎重要指数调整</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3160870" target="_blank" rel="noopener"
-           data-theme="policy" data-importance="high"
-           data-search="亚太媒体高端论坛在深圳举办 李书磊出席开幕式并发表主旨演讲 asia-pacific media high-level forum held in shenzhen; li shulei attends opening ceremony and delivers keynote speech 亚太媒体高端论坛在深圳举办 李书磊出席开幕式并发表主旨演讲 亚太媒体高端论坛5日在广东深圳开幕。中共中央政治局委员、中宣部部长李书磊出席开幕式并发表主旨演讲。中共中央政治局委员、广东省委书记黄坤明出席并致辞。与会嘉宾认为，习近平主席提出构建亚太共同体的重大主张，为共建开放型亚太经济、推动亚太共同繁荣提供了重要指引。今年是亚太经合组织（apec）“中国年”，中国将举办亚太经合组织第三十三次领导人非正式会议，相信在各方支持下，会议将取得丰硕成果，推动亚太合作迈上新台阶。（央视新闻） the asia-pacific media high-level forum opened in shenzhen, guangdong on september 5. li shulei, member of the political bureau of the cpc central committee and head of the publicity department, attended the opening ceremony and delivered a keynote speech. huang kunming, member of the political bureau of the cpc central committee and party secretary of guangdong province, attended and delivered remarks. participants noted that president xi jinping's major proposal on building an asia-pacific community provides important guidance for jointly fostering an open asia-pacific economy and promoting common prosperity. this year is the 'china year' for apec, and china will host the 33rd apec economic leaders' meeting. it is believed that with support from all parties, the meeting will yield fruitful results and elevate asia-pacific cooperation to new heights. (cctv news) 亚太媒体高端论坛5日在广东深圳开幕。中共中央政治局委员、中宣部部长李书磊出席开幕式并发表主旨演讲。中共中央政治局委员、广东省委书记黄坤明出席并致辞。与会嘉宾认为，习近平主席提出构建亚太共同体的重大主张，为共建开放型亚太经济、推动亚太共同繁荣提供了重要指引。今年是亚太经合组织（apec）“中国年”，中国将举办亚太经合组织第三十三次领导人非正式会议，相信在各方支持下，会议将取得丰硕成果，推动亚太合作迈上新台阶。（央视新闻） 华尔街见闻 policy policy 政策 ">
-          <time class="tp-when" data-t="2026-09-05T07:00:18+00:00" datetime="2026-09-05T07:00:18+00:00">09-05<br>07:00</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-05T07:00:18+00:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
-              <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Asia-Pacific Media High-Level Forum Held in Shenzhen; Li Shulei Attends Opening Ceremony and Delivers Keynote Speech</span><span class="l-zh">亚太媒体高端论坛在深圳举办 李书磊出席开幕式并发表主旨演讲</span></h2>
-            <p class="tp-sum"><span class="l-en">The Asia-Pacific Media High-Level Forum opened in Shenzhen, Guangdong on September 5. Li Shulei, member of the Political Bureau of the CPC Central Committee and head of the Publicity Department, attended the opening ceremony and delivered a keynote speech. Huang Kunming, member of the Political Bureau of the CPC Central Committee and Party Secretary of Guangdong Province, attended and delivered remarks. Participants noted that President Xi Jinping's major proposal on building an Asia-Pacific community provides important guidance for jointly fostering an open Asia-Pacific economy and promoting common prosperity. This year is the 'China Year' for APEC, and China will host the 33rd APEC Economic Leaders' Meeting. It is believed that with support from all parties, the meeting will yield fruitful results and elevate Asia-Pacific cooperation to new heights. (CCTV News)</span><span class="l-zh">亚太媒体高端论坛5日在广东深圳开幕。中共中央政治局委员、中宣部部长李书磊出席开幕式并发表主旨演讲。中共中央政治局委员、广东省委书记黄坤明出席并致辞。与会嘉宾认为，习近平主席提出构建亚太共同体的重大主张，为共建开放型亚太经济、推动亚太共同繁荣提供了重要指引。今年是亚太经合组织（APEC）“中国年”，中国将举办亚太经合组织第三十三次领导人非正式会议，相信在各方支持下，会议将取得丰硕成果，推动亚太合作迈上新台阶。（央视新闻）</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Policy</span><span class="l-zh">政策</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-inflation" href="https://www.yicai.com/news/103353283.html" target="_blank" rel="noopener"
-           data-theme="inflation" data-importance="high"
-           data-search="美国财政部加码国债回购折射宏观金融政策新变化 未来美国如何在控制通胀、降低融资成本、维护国债市场稳定和保持市场机制可信度之间取得平衡，是观察其宏观金融政策变化的一条重要主线。 us treasury's increased bond buybacks reflect new shifts in macro-financial policy; how the us balances controlling inflation, lowering financing costs, maintaining treasury market stability and preserving market mechanism credibility is a key line for observing its macro-financial policy changes. 美国财政部加码国债回购折射宏观金融政策新变化 未来美国如何在控制通胀、降低融资成本、维护国债市场稳定和保持市场机制可信度之间取得平衡，是观察其宏观金融政策变化的一条重要主线。    第一财经 fiscal_trade fiscal & trade 财政与贸易 cbon">
-          <time class="tp-when" data-t="" >—</time>
-          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
-              <span class="cn-src">第一财经</span>
-              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">US Treasury's increased bond buybacks reflect new shifts in macro-financial policy; how the US balances controlling inflation, lowering financing costs, maintaining treasury market stability and preserving market mechanism credibility is a key line for observing its macro-financial policy changes.</span><span class="l-zh">美国财政部加码国债回购折射宏观金融政策新变化 未来美国如何在控制通胀、降低融资成本、维护国债市场稳定和保持市场机制可信度之间取得平衡，是观察其宏观金融政策变化的一条重要主线。</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">CBON</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-credit" href="https://www.yicai.com/news/103353288.html" target="_blank" rel="noopener"
-           data-theme="credit" data-importance="high"
-           data-search="财政部将发行特别国债支持8家中央金融企业补充资本 财政部将于近期发行3000亿元特别国债，支持8家中央金融企业补充核心一级资本。 finance ministry to issue special treasury bonds to support capital replenishment of 8 central financial enterprises; ministry will issue 300 billion yuan in special treasury bonds soon to support core tier-1 capital replenishment of 8 central financial enterprises. 财政部将发行特别国债支持8家中央金融企业补充资本 财政部将于近期发行3000亿元特别国债，支持8家中央金融企业补充核心一级资本。    第一财经 fiscal_trade fiscal & trade 财政与贸易 cbon">
-          <time class="tp-when" data-t="" >—</time>
-          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
-              <span class="cn-src">第一财经</span>
-              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Finance Ministry to issue special treasury bonds to support capital replenishment of 8 central financial enterprises; ministry will issue 300 billion yuan in special treasury bonds soon to support core Tier-1 capital replenishment of 8 central financial enterprises.</span><span class="l-zh">财政部将发行特别国债支持8家中央金融企业补充资本 财政部将于近期发行3000亿元特别国债，支持8家中央金融企业补充核心一级资本。</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">CBON</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-policy" href="https://www.stcn.com/article/detail/4173850.html" target="_blank" rel="noopener"
-           data-theme="policy" data-importance="high"
-           data-search="利好！事关房地产，湖南、河南，重大发布！ positive news! related to real estate, hunan and henan make major announcements! 利好！事关房地产，湖南、河南，重大发布！    证券时报 property property 房地产 512880.ss 512200.ss">
-          <time class="tp-when" data-t="" >—</time>
-          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
-              <span class="cn-src">证券时报</span>
-              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Positive news! Related to real estate, Hunan and Henan make major announcements!</span><span class="l-zh">利好！事关房地产，湖南、河南，重大发布！</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-tk">512880.SS</span><span class="cn-tk">512200.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-markets" href="https://flash.jin10.com/detail/20260906184126838800" target="_blank" rel="noopener"
-           data-theme="markets" data-importance="medium"
-           data-search="美股周一休市一日，金银油交易提前结束 us stocks closed monday for holiday, gold, silver and oil trading ends early 美股周一休市一日，金银油交易提前结束 金十数据9月6日讯，受美国劳动节假期影响，美国和加拿大股市将于9月7日（周一）休市一日。芝商所（cme）旗下贵金属、美国原油期货合约交易提前于北京时间8日02:30结束，股指期货合约交易提前于北京时间8日01:00结束。洲际交易所（ice）旗下布伦特原油期货合约交易提前于北京时间8日01:30结束。敬请各位投资者留意。 jinshi data sept 6—due to the us labor day holiday, us and canadian stock markets will be closed on monday, sept 7. cme precious metals and us crude oil futures contracts will close trading early at 02:30 beijing time on sept 8, and equity index futures contracts will close early at 01:00 beijing time on sept 8. ice brent crude oil futures contracts will close early at 01:30 beijing time on sept 8. investors please take note. 金十数据9月6日讯，受美国劳动节假期影响，美国和加拿大股市将于9月7日（周一）休市一日。芝商所（cme）旗下贵金属、美国原油期货合约交易提前于北京时间8日02:30结束，股指期货合约交易提前于北京时间8日01:00结束。洲际交易所（ice）旗下布伦特原油期货合约交易提前于北京时间8日01:30结束。敬请各位投资者留意。 金十数据 commodities commodities 大宗商品 ">
-          <time class="tp-when" data-t="2026-09-06T18:41:26+08:00" datetime="2026-09-06T18:41:26+08:00">09-06<br>18:41</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-06T18:41:26+08:00"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
-              <span class="cn-src">金十数据</span>
-              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">US stocks closed Monday for holiday, gold, silver and oil trading ends early</span><span class="l-zh">美股周一休市一日，金银油交易提前结束</span></h2>
-            <p class="tp-sum"><span class="l-en">Jinshi Data Sept 6—Due to the US Labor Day holiday, US and Canadian stock markets will be closed on Monday, Sept 7. CME precious metals and US crude oil futures contracts will close trading early at 02:30 Beijing time on Sept 8, and equity index futures contracts will close early at 01:00 Beijing time on Sept 8. ICE Brent crude oil futures contracts will close early at 01:30 Beijing time on Sept 8. Investors please take note.</span><span class="l-zh">金十数据9月6日讯，受美国劳动节假期影响，美国和加拿大股市将于9月7日（周一）休市一日。芝商所（CME）旗下贵金属、美国原油期货合约交易提前于北京时间8日02:30结束，股指期货合约交易提前于北京时间8日01:00结束。洲际交易所（ICE）旗下布伦特原油期货合约交易提前于北京时间8日01:30结束。敬请各位投资者留意。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">commodities</span><span class="l-zh">大宗商品</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-inflation" href="https://www.yicai.com/news/103352644.html" target="_blank" rel="noopener"
-           data-theme="inflation" data-importance="high"
-           data-search="下周外盘看点丨美国cpi如何影响美联储，苹果秋季发布会来了 下周最大焦点锁定在美国通胀数据；外界预计苹果届时将发布首款折叠屏iphone；甲骨文、梅西百货等将发布财报。 next week's overseas market watch: how us cpi affects fed, apple autumn launch event arrives; next week's biggest focus is us inflation data; apple is expected to unveil its first foldable iphone; oracle, macy's and others to report earnings. 下周外盘看点丨美国cpi如何影响美联储，苹果秋季发布会来了 下周最大焦点锁定在美国通胀数据；外界预计苹果届时将发布首款折叠屏iphone；甲骨文、梅西百货等将发布财报。    第一财经 consumer consumer 消费 ">
-          <time class="tp-when" data-t="" >—</time>
-          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
-              <span class="cn-src">第一财经</span>
-              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Next week's overseas market watch: How US CPI affects Fed, Apple autumn launch event arrives; next week's biggest focus is US inflation data; Apple is expected to unveil its first foldable iPhone; Oracle, Macy's and others to report earnings.</span><span class="l-zh">下周外盘看点丨美国CPI如何影响美联储，苹果秋季发布会来了 下周最大焦点锁定在美国通胀数据；外界预计苹果届时将发布首款折叠屏iPhone；甲骨文、梅西百货等将发布财报。</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-fiscal" href="https://finance.sina.com.cn/stock/marketresearch/2026-09-06/doc-iniqwsss4138384.shtml" target="_blank" rel="noopener"
-           data-theme="fiscal" data-importance="medium"
-           data-search="周末影响市场重要资讯回顾：财政部千亿级注资银行和保险公司，私募行业迎来募集阶段监管新规 weekend review of key market news: finance ministry injects billions into banks and insurers, private equity industry faces new fundraising-stage regulations 周末影响市场重要资讯回顾：财政部千亿级注资银行和保险公司，私募行业迎来募集阶段监管新规    新浪财经股票 fiscal_trade fiscal & trade 财政与贸易 512800.ss">
-          <time class="tp-when" data-t="2026-09-06" datetime="2026-09-06">09-06</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-06"></span></div>
-          <div class="tp-body">
-            <div class="tp-top">
-              
-              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
-              <span class="cn-src">新浪财经股票</span>
-              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
-            </div>
-            <h2 class="tp-title"><span class="l-en">Weekend review of key market news: Finance Ministry injects billions into banks and insurers, private equity industry faces new fundraising-stage regulations</span><span class="l-zh">周末影响市场重要资讯回顾：财政部千亿级注资银行和保险公司，私募行业迎来募集阶段监管新规</span></h2>
-            
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">512800.SS</span></div>
-          </div>
-        </a>
-        
-        
-        <a class="tp-item th-monetary" href="https://news.10jqka.com.cn/20260906/c679630438.shtml" target="_blank" rel="noopener"
-           data-theme="monetary" data-importance="medium"
-           data-search="中泰证券：9月中上旬震荡，仍可逐步提高仓位 zhongtai securities: mid-to-early september will see fluctuations; still possible to gradually increase positions 中泰证券：9月中上旬震荡，仍可逐步提高仓位 中泰证券指出，维持上证与科创50中期再度转强的判断，9月中上旬震荡，仍可逐步提高仓位。（1）中期继续增配科创50、国产半导体设备及存储、硬盘方向，同时关注有色和创新药。美债收益率及加息预期转向后，科技制造与有色的弹性更值得重视。（2）流动性弹性方向关注中证2000、国证2000。中美高层外交接触恢复、长线资金由急跌托底转向连续流入，将构成更明确的右侧信号。（3）均衡和防御资金优先配置工程机械、电力设备等制造红利。主题方向关注恒生科技龙头、端侧ai，以及设备端存储需求。(第一财经) zhongtai securities noted that it maintains its view that the sse composite and star 50 will turn stronger again in the medium term, with consolidation in early-to-mid september and room to gradually increase positions. (1) in the medium term, continue to overweight star 50, domestic semiconductor equipment, storage, and hard disk sectors, while also watching nonferrous metals and innovative drugs. after us treasury yields and rate-hike expectations shift, the elasticity of tech manufacturing and nonferrous metals deserves more attention. (2) for liquidity-elasticity directions, watch csi 2000 and cni 2000. resumed sino-us high-level diplomatic engagement and long-term funds shifting from crash-buying support to sustained inflows will form clearer right-side signals. (3) balanced and defensive capital should prioritize manufacturing dividend plays such as construction machinery and power equipment. thematic directions include hang seng tech leaders, on-device ai, and storage demand at the device end. (first financial) 中泰证券指出，维持上证与科创50中期再度转强的判断，9月中上旬震荡，仍可逐步提高仓位。（1）中期继续增配科创50、国产半导体设备及存储、硬盘方向，同时关注有色和创新药。美债收益率及加息预期转向后，科技制造与有色的弹性更值得重视。（2）流动性弹性方向关注中证2000、国证2000。中美高层外交接触恢复、长线资金由急跌托底转向连续流入，将构成更明确的右侧信号。（3）均衡和防御资金优先配置工程机械、电力设备等制造红利。主题方向关注恒生科技龙头、端侧ai，以及设备端存储需求。(第一财经) 同花顺 markets tech_policy equity market 股票市场 tech policy 科技政策 510300.ss cbon 512880.ss 512760.ss 512400.ss">
-          <time class="tp-when" data-t="2026-09-06T09:25:55+00:00" datetime="2026-09-06T09:25:55+00:00">09-06<br>09:25</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-06T09:25:55+00:00"></span></div>
+        <a class="tp-item th-monetary" href="https://wallstreetcn.com/livenews/3164465" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="提醒：日内请重点关注（以下均为北京时间） reminder: key events to watch today (all in beijing time) 提醒：日内请重点关注（以下均为北京时间） ① 10:30 澳洲联储助理主席hunter参加一场炉边谈话； ② 12:30 日本7月工业产出终值； ③ 15:00 国新办举行国务院政策例行吹风会，请工信部副部长柯吉欣和中国人民银行、国务院国资委、市场监管总局、中国证监会有关负责人介绍加强中小企业回款难问题治理有关工作情况； ④ 17:15 欧洲央行执委施纳贝尔在德国联邦经济事务和能源部的研讨会上发表主旨演说； ⑤ 20:30 加拿大8月cpi； ⑥ 21:00 欧洲央行执委奇波洛内发表讲话； ⑦ 23:15 欧洲央行行长拉加德讲话； 微信小程序搜索“见闻历”，了解更多。 ① 10:30 rba assistant governor hunter participates in a fireside chat; ② 12:30 japan july industrial production final; ③ 15:00 the state council information office holds a regular state council policy briefing, with vice minister of industry and information technology ke jixin and relevant officials from the pboc, sasac, samr and csrc introducing work on strengthening efforts to tackle the problem of difficulties in smes getting paid; ④ 17:15 ecb executive board member schnabel delivers a keynote speech at a seminar held by germany's federal ministry for economic affairs and energy; ⑤ 20:30 canada august cpi; ⑥ 21:00 ecb executive board member cipollone speaks; ⑦ 23:15 ecb president lagarde speaks; search "jianwenli" on wechat mini program for more. ① 10:30 澳洲联储助理主席hunter参加一场炉边谈话； ② 12:30 日本7月工业产出终值； ③ 15:00 国新办举行国务院政策例行吹风会，请工信部副部长柯吉欣和中国人民银行、国务院国资委、市场监管总局、中国证监会有关负责人介绍加强中小企业回款难问题治理有关工作情况； ④ 17:15 欧洲央行执委施纳贝尔在德国联邦经济事务和能源部的研讨会上发表主旨演说； ⑤ 20:30 加拿大8月cpi； ⑥ 21:00 欧洲央行执委奇波洛内发表讲话； ⑦ 23:15 欧洲央行行长拉加德讲话； 微信小程序搜索“见闻历”，了解更多。 华尔街见闻 pboc_liquidity consumer industrial markets pboc & liquidity 央行与流动性 consumer 消费 industry & manufacturing 工业与制造业 equity market 股票市场 512800.ss">
+          <time class="tp-when" data-t="2026-09-13T22:30:59+00:00" datetime="2026-09-13T22:30:59+00:00">09-13<br>22:30</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-13T22:30:59+00:00"></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
               <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
-              <span class="cn-src">同花顺</span>
-              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>100</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">Zhongtai Securities: Mid-to-early September will see fluctuations; still possible to gradually increase positions</span><span class="l-zh">中泰证券：9月中上旬震荡，仍可逐步提高仓位</span></h2>
-            <p class="tp-sum"><span class="l-en">Zhongtai Securities noted that it maintains its view that the SSE Composite and STAR 50 will turn stronger again in the medium term, with consolidation in early-to-mid September and room to gradually increase positions. (1) In the medium term, continue to overweight STAR 50, domestic semiconductor equipment, storage, and hard disk sectors, while also watching nonferrous metals and innovative drugs. After US Treasury yields and rate-hike expectations shift, the elasticity of tech manufacturing and nonferrous metals deserves more attention. (2) For liquidity-elasticity directions, watch CSI 2000 and CNI 2000. Resumed Sino-US high-level diplomatic engagement and long-term funds shifting from crash-buying support to sustained inflows will form clearer right-side signals. (3) Balanced and defensive capital should prioritize manufacturing dividend plays such as construction machinery and power equipment. Thematic directions include Hang Seng Tech leaders, on-device AI, and storage demand at the device end. (First Financial)</span><span class="l-zh">中泰证券指出，维持上证与科创50中期再度转强的判断，9月中上旬震荡，仍可逐步提高仓位。（1）中期继续增配科创50、国产半导体设备及存储、硬盘方向，同时关注有色和创新药。美债收益率及加息预期转向后，科技制造与有色的弹性更值得重视。（2）流动性弹性方向关注中证2000、国证2000。中美高层外交接触恢复、长线资金由急跌托底转向连续流入，将构成更明确的右侧信号。（3）均衡和防御资金优先配置工程机械、电力设备等制造红利。主题方向关注恒生科技龙头、端侧AI，以及设备端存储需求。(第一财经)</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">510300.SS</span><span class="cn-tk">CBON</span><span class="cn-tk">512880.SS</span><span class="cn-tk">512760.SS</span><span class="cn-tk">512400.SS</span></div>
+            <h2 class="tp-title"><span class="l-en">Reminder: Key events to watch today (all in Beijing time)</span><span class="l-zh">提醒：日内请重点关注（以下均为北京时间）</span></h2>
+            <p class="tp-sum"><span class="l-en">① 10:30 RBA Assistant Governor Hunter participates in a fireside chat; ② 12:30 Japan July industrial production final; ③ 15:00 The State Council Information Office holds a regular State Council policy briefing, with Vice Minister of Industry and Information Technology Ke Jixin and relevant officials from the PBOC, SASAC, SAMR and CSRC introducing work on strengthening efforts to tackle the problem of difficulties in SMEs getting paid; ④ 17:15 ECB Executive Board member Schnabel delivers a keynote speech at a seminar held by Germany's Federal Ministry for Economic Affairs and Energy; ⑤ 20:30 Canada August CPI; ⑥ 21:00 ECB Executive Board member Cipollone speaks; ⑦ 23:15 ECB President Lagarde speaks; Search "Jianwenli" on WeChat Mini Program for more.</span><span class="l-zh">① 10:30 澳洲联储助理主席Hunter参加一场炉边谈话； ② 12:30 日本7月工业产出终值； ③ 15:00 国新办举行国务院政策例行吹风会，请工信部副部长柯吉欣和中国人民银行、国务院国资委、市场监管总局、中国证监会有关负责人介绍加强中小企业回款难问题治理有关工作情况； ④ 17:15 欧洲央行执委施纳贝尔在德国联邦经济事务和能源部的研讨会上发表主旨演说； ⑤ 20:30 加拿大8月CPI； ⑥ 21:00 欧洲央行执委奇波洛内发表讲话； ⑦ 23:15 欧洲央行行长拉加德讲话； 微信小程序搜索“见闻历”，了解更多。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512800.SS</span></div>
           </div>
         </a>
         
         
-        <a class="tp-item th-fiscal" href="https://flash.jin10.com/detail/20260906185519185800" target="_blank" rel="noopener"
-           data-theme="fiscal" data-importance="medium"
-           data-search="黎巴嫩总统：针对财政部大楼的袭击显示出一种持续的攻击模式，反映出对国家机构的打击意图 lebanese president: attack on finance ministry building shows a sustained pattern of aggression, reflecting intent to strike state institutions 黎巴嫩总统：针对财政部大楼的袭击显示出一种持续的攻击模式，反映出对国家机构的打击意图 黎巴嫩总统：针对财政部大楼的袭击显示出一种持续的攻击模式，反映出对国家机构的打击意图。 lebanese president: the attack on the finance ministry building shows a persistent pattern of aggression, reflecting intent to strike state institutions. 黎巴嫩总统：针对财政部大楼的袭击显示出一种持续的攻击模式，反映出对国家机构的打击意图。 金十数据 fiscal_trade fiscal & trade 财政与贸易 ">
-          <time class="tp-when" data-t="2026-09-06T18:55:19+08:00" datetime="2026-09-06T18:55:19+08:00">09-06<br>18:55</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-06T18:55:19+08:00"></span></div>
+        <a class="tp-item th-inflation" href="https://flash.jin10.com/detail/20260914065021934800" target="_blank" rel="noopener"
+           data-theme="inflation" data-importance="high"
+           data-search="this week: major events — super central-bank week; china m2 and retail sales due  本周：重大事件——超级央行周；中国m2与零售销售数据即将公布 monday: canada aug cpi; china aug m2 (pending). india nse closed for holiday. tuesday: china aug retail sales yoy and industrial production yoy; china all-society electricity consumption data due (monthly release around the 15th); uk unemployment data and claimant counts; germany  周一：加拿大8月cpi；中国8月m2（待公布）。印度nse因假期休市。周二：中国8月社会消费品零售总额同比和工业增加值同比；中国全社会用电量数据待发布（每月15日左右发布）；英国失业数据和申请失业金人数；德国 金十数据 consumer industrial consumer 消费 industry & manufacturing 工业与制造业 ">
+          <time class="tp-when" data-t="2026-09-14T06:50:21+08:00" datetime="2026-09-14T06:50:21+08:00">09-14<br>06:50</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-14T06:50:21+08:00"></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
-              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
               <span class="cn-src">金十数据</span>
-              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+              <span class="cn-imp imp-high"><b>94</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">Lebanese President: Attack on Finance Ministry building shows a sustained pattern of aggression, reflecting intent to strike state institutions</span><span class="l-zh">黎巴嫩总统：针对财政部大楼的袭击显示出一种持续的攻击模式，反映出对国家机构的打击意图</span></h2>
-            <p class="tp-sum"><span class="l-en">Lebanese President: The attack on the Finance Ministry building shows a persistent pattern of aggression, reflecting intent to strike state institutions.</span><span class="l-zh">黎巴嫩总统：针对财政部大楼的袭击显示出一种持续的攻击模式，反映出对国家机构的打击意图。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span></div>
+            <h2 class="tp-title"><span class="l-en">This week: major events — super central-bank week; China M2 and retail sales due</span><span class="l-zh">本周：重大事件——超级央行周；中国M2与零售销售数据即将公布</span></h2>
+            <p class="tp-sum"><span class="l-en">Monday: Canada Aug CPI; China Aug M2 (pending). India NSE closed for holiday. Tuesday: China Aug retail sales YoY and industrial production YoY; China all-society electricity consumption data due (monthly release around the 15th); UK unemployment data and claimant counts; Germany</span><span class="l-zh">周一：加拿大8月CPI；中国8月M2（待公布）。印度NSE因假期休市。周二：中国8月社会消费品零售总额同比和工业增加值同比；中国全社会用电量数据待发布（每月15日左右发布）；英国失业数据和申请失业金人数；德国</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span></div>
           </div>
         </a>
         
         
-        <a class="tp-item th-fiscal" href="https://flash.jin10.com/detail/20260906181354359800" target="_blank" rel="noopener"
-           data-theme="fiscal" data-importance="medium"
-           data-search="伊朗经济部长抵达莫斯科 iran's economy minister arrives in moscow 伊朗经济部长抵达莫斯科 据伊朗塔斯尼姆通讯社，伊朗经济与财政部长今天星期天抵达莫斯科，旨在进行双边和多边磋商。其在莫斯科的日程安排是与俄罗斯财政部长会晤、在金砖国家和上海合作组织框架内进行磋商，以及参加伊朗和俄罗斯商人交流会议。 according to iran's tasnim news agency, iran's minister of economic affairs and finance arrived in moscow today, sunday, for bilateral and multilateral consultations. his schedule in moscow includes meetings with the russian finance minister, consultations under the brics and shanghai cooperation organization frameworks, and participation in an exchange meeting between iranian and russian businessmen. 据伊朗塔斯尼姆通讯社，伊朗经济与财政部长今天星期天抵达莫斯科，旨在进行双边和多边磋商。其在莫斯科的日程安排是与俄罗斯财政部长会晤、在金砖国家和上海合作组织框架内进行磋商，以及参加伊朗和俄罗斯商人交流会议。 金十数据 fiscal_trade fiscal & trade 财政与贸易 ">
-          <time class="tp-when" data-t="2026-09-06T18:13:54+08:00" datetime="2026-09-06T18:13:54+08:00">09-06<br>18:13</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-06T18:13:54+08:00"></span></div>
+        <a class="tp-item th-inflation" href="https://www.scmp.com/economy/china-economy/article/3366851/chinas-factory-gate-price-growth-picks-august-iran-war-fuels-energy-volatility?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="inflation" data-importance="high"
+           data-search="china’s factory-gate price growth picks up in august as iran war fuels energy volatility  中国8月工业品出厂价格涨幅回升，伊朗战争加剧能源波动 china’s factory-gate price growth accelerated in august, while consumer inflation picked up again, amid volatile energy and commodity costs linked to the us-israel war on iran.
+the producer price index rose 3.8 per cent year on year last month, up from 3.5 per cent in july, according to data released by the national bureau of statistics (nbs) on wednesday.
+the reading beat a 3.6 per cent projection from economists polled by financial data provider wind.
+meanwhile, the consumer price index (cpi),...  中国8月份工厂出厂价格增速加快，而消费者通胀再次抬头，原因在于与美以对伊朗战争相关的能源和大宗商品成本波动。国家统计局周三发布的数据显示，上月生产者价格指数同比上涨3.8%，高于7月份的3.5%。 scmp - china economy consumer commodities consumer 消费 commodities 大宗商品 ">
+          <time class="tp-when" data-t="2026-09-09T02:28:22+00:00" datetime="2026-09-09T02:28:22+00:00">09-09<br>02:28</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-09T02:28:22+00:00"></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
-              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
-              <span class="cn-src">金十数据</span>
-              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+              <span class="cn-src">SCMP - China Economy</span>
+              <span class="cn-imp imp-high"><b>84</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">Iran's Economy Minister arrives in Moscow</span><span class="l-zh">伊朗经济部长抵达莫斯科</span></h2>
-            <p class="tp-sum"><span class="l-en">According to Iran's Tasnim News Agency, Iran's Minister of Economic Affairs and Finance arrived in Moscow today, Sunday, for bilateral and multilateral consultations. His schedule in Moscow includes meetings with the Russian Finance Minister, consultations under the BRICS and Shanghai Cooperation Organization frameworks, and participation in an exchange meeting between Iranian and Russian businessmen.</span><span class="l-zh">据伊朗塔斯尼姆通讯社，伊朗经济与财政部长今天星期天抵达莫斯科，旨在进行双边和多边磋商。其在莫斯科的日程安排是与俄罗斯财政部长会晤、在金砖国家和上海合作组织框架内进行磋商，以及参加伊朗和俄罗斯商人交流会议。</span></p>
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span></div>
+            <h2 class="tp-title"><span class="l-en">China’s factory-gate price growth picks up in August as Iran war fuels energy volatility</span><span class="l-zh">中国8月工业品出厂价格涨幅回升，伊朗战争加剧能源波动</span></h2>
+            <p class="tp-sum"><span class="l-en">China’s factory-gate price growth accelerated in August, while consumer inflation picked up again, amid volatile energy and commodity costs linked to the US-Israel war on Iran.
+The producer price index rose 3.8 per cent year on year last month, up from 3.5 per cent in July, according to data released by the National Bureau of Statistics (NBS) on Wednesday.
+The reading beat a 3.6 per cent projection from economists polled by financial data provider Wind.
+Meanwhile, the consumer price index (CPI),...</span><span class="l-zh">中国8月份工厂出厂价格增速加快，而消费者通胀再次抬头，原因在于与美以对伊朗战争相关的能源和大宗商品成本波动。国家统计局周三发布的数据显示，上月生产者价格指数同比上涨3.8%，高于7月份的3.5%。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-cchip"><span class="l-en">commodities</span><span class="l-zh">大宗商品</span></span></div>
           </div>
         </a>
         
         
-        <a class="tp-item th-tech" href="https://wallstreetcn.com/livenews/3160858" target="_blank" rel="noopener"
-           data-theme="tech" data-importance="medium"
-           data-search="又一脑机接口企业启动ipo辅导 another brain-computer interface firm launches ipo tutoring 又一脑机接口企业启动ipo辅导 继今年6月上海脑机接口企业——博睿康冲刺科创板获上交所受理后，时隔3个月，上海另一家脑机接口公司也启动了科创板ipo辅导。从术理创新（上海）智能科技股份有限公司获悉，9月4日，术理创新正式启动科创板上市辅导。证监会官网ipo辅导公示系统显示，术理创新于2026年9月4日在上海证监局办理辅导备案登记，正式启动科创板ipo进程，华泰联合证券担任术理创新本次上市的辅导机构。（上证报） following brainco's star market filing acceptance by the shanghai stock exchange in june this year, another shanghai brain-computer interface company has initiated star market ipo guidance three months later. shuli innovation (shanghai) intelligent technology co., ltd. confirmed that it formally launched star market listing guidance on september 4. the csrc ipo guidance disclosure system shows shuli innovation filed guidance registration with the shanghai securities regulatory bureau on september 4, 2026, formally commencing its star market ipo process, with huatai united securities serving as the guidance institution. (shanghai securities news) 继今年6月上海脑机接口企业——博睿康冲刺科创板获上交所受理后，时隔3个月，上海另一家脑机接口公司也启动了科创板ipo辅导。从术理创新（上海）智能科技股份有限公司获悉，9月4日，术理创新正式启动科创板上市辅导。证监会官网ipo辅导公示系统显示，术理创新于2026年9月4日在上海证监局办理辅导备案登记，正式启动科创板ipo进程，华泰联合证券担任术理创新本次上市的辅导机构。（上证报） 华尔街见闻 markets equity market 股票市场 510300.ss 512880.ss">
-          <time class="tp-when" data-t="2026-09-05T04:08:12+00:00" datetime="2026-09-05T04:08:12+00:00">09-05<br>04:08</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-05T04:08:12+00:00"></span></div>
+        <a class="tp-item th-tech" href="https://wallstreetcn.com/livenews/3164467" target="_blank" rel="noopener"
+           data-theme="tech" data-importance="high"
+           data-search="中证报：a股市场打造境内优质企业上市首选地 china securities journal: a-share market positioned as preferred listing destination for quality domestic companies 中证报：a股市场打造境内优质企业上市首选地 证监会日前在部署“十五五”时期资本市场重点工作时明确，将动态完善上市标准体系，有序扩大向新向优的覆盖面；进一步畅通私募创投基金“募投管退”循环，引导“投早、投小、投长期、投硬科技”。 the csrc recently made clear when deploying key work for the capital market during the "15th five-year plan" period that it will dynamically improve the listing standards system and orderly expand coverage for new and high-quality enterprises; further smooth the "fundraising, investment, management and exit" cycle of private venture capital funds and guide "early-stage, small-scale, long-term and hard-tech" investment. 证监会日前在部署“十五五”时期资本市场重点工作时明确，将动态完善上市标准体系，有序扩大向新向优的覆盖面；进一步畅通私募创投基金“募投管退”循环，引导“投早、投小、投长期、投硬科技”。 华尔街见闻 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-09-13T22:34:35+00:00" datetime="2026-09-13T22:34:35+00:00">09-13<br>22:34</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-13T22:34:35+00:00"></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
               <span class="cn-tag"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
               <span class="cn-src">华尔街见闻</span>
-              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+              <span class="cn-imp imp-high"><b>74</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">Another Brain-Computer Interface Firm Launches IPO Tutoring</span><span class="l-zh">又一脑机接口企业启动IPO辅导</span></h2>
-            <p class="tp-sum"><span class="l-en">Following BrainCo's STAR Market filing acceptance by the Shanghai Stock Exchange in June this year, another Shanghai brain-computer interface company has initiated STAR Market IPO guidance three months later. Shuli Innovation (Shanghai) Intelligent Technology Co., Ltd. confirmed that it formally launched STAR Market listing guidance on September 4. The CSRC IPO guidance disclosure system shows Shuli Innovation filed guidance registration with the Shanghai Securities Regulatory Bureau on September 4, 2026, formally commencing its STAR Market IPO process, with Huatai United Securities serving as the guidance institution. (Shanghai Securities News)</span><span class="l-zh">继今年6月上海脑机接口企业——博睿康冲刺科创板获上交所受理后，时隔3个月，上海另一家脑机接口公司也启动了科创板IPO辅导。从术理创新（上海）智能科技股份有限公司获悉，9月4日，术理创新正式启动科创板上市辅导。证监会官网IPO辅导公示系统显示，术理创新于2026年9月4日在上海证监局办理辅导备案登记，正式启动科创板IPO进程，华泰联合证券担任术理创新本次上市的辅导机构。（上证报）</span></p>
+            <h2 class="tp-title"><span class="l-en">China Securities Journal: A-share market positioned as preferred listing destination for quality domestic companies</span><span class="l-zh">中证报：A股市场打造境内优质企业上市首选地</span></h2>
+            <p class="tp-sum"><span class="l-en">The CSRC recently made clear when deploying key work for the capital market during the "15th Five-Year Plan" period that it will dynamically improve the listing standards system and orderly expand coverage for new and high-quality enterprises; further smooth the "fundraising, investment, management and exit" cycle of private venture capital funds and guide "early-stage, small-scale, long-term and hard-tech" investment.</span><span class="l-zh">证监会日前在部署“十五五”时期资本市场重点工作时明确，将动态完善上市标准体系，有序扩大向新向优的覆盖面；进一步畅通私募创投基金“募投管退”循环，引导“投早、投小、投长期、投硬科技”。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-credit" href="https://wallstreetcn.com/livenews/3164460" target="_blank" rel="noopener"
+           data-theme="credit" data-importance="high"
+           data-search="新一批摊余成本法债基申报 new batch of amortized-cost bond funds filed 新一批摊余成本法债基申报 再度“开闸”不足1月，摊余成本法债基第二批产品已接档上报。9月11日晚间，中国证监会官网显示，13家中小基金公司上报了又一批摊余成本法债基。此次上报的产品均为63个月封闭式的债券型基金，上报的基金公司包括博远基金、瑞达基金、中海基金、泰信基金、汇泉基金、恒越基金、泉果基金、苏新基金、汇百川基金、益民基金。（上证报） less than a month after the restart, the second batch of amortized-cost bond funds has been filed. on the evening of september 11, the csrc website showed that 13 small and medium-sized fund companies filed another batch of amortized-cost bond funds. all the products filed this time are 63-month closed-end bond funds, and the fund companies include boyuan fund, ruida fund, zhonghai fund, taixin fund, huiquan fund, hengyue fund, quanguo fund, suxin fund, huibaichuan fund and yimin fund. (shanghai securities news) 再度“开闸”不足1月，摊余成本法债基第二批产品已接档上报。9月11日晚间，中国证监会官网显示，13家中小基金公司上报了又一批摊余成本法债基。此次上报的产品均为63个月封闭式的债券型基金，上报的基金公司包括博远基金、瑞达基金、中海基金、泰信基金、汇泉基金、恒越基金、泉果基金、苏新基金、汇百川基金、益民基金。（上证报） 华尔街见闻 markets equity market 股票市场 510300.ss">
+          <time class="tp-when" data-t="2026-09-13T22:23:50+00:00" datetime="2026-09-13T22:23:50+00:00">09-13<br>22:23</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-13T22:23:50+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">New batch of amortized-cost bond funds filed</span><span class="l-zh">新一批摊余成本法债基申报</span></h2>
+            <p class="tp-sum"><span class="l-en">Less than a month after the restart, the second batch of amortized-cost bond funds has been filed. On the evening of September 11, the CSRC website showed that 13 small and medium-sized fund companies filed another batch of amortized-cost bond funds. All the products filed this time are 63-month closed-end bond funds, and the fund companies include Boyuan Fund, Ruida Fund, Zhonghai Fund, Taixin Fund, Huiquan Fund, Hengyue Fund, Quanguo Fund, Suxin Fund, Huibaichuan Fund and Yimin Fund. (Shanghai Securities News)</span><span class="l-zh">再度“开闸”不足1月，摊余成本法债基第二批产品已接档上报。9月11日晚间，中国证监会官网显示，13家中小基金公司上报了又一批摊余成本法债基。此次上报的产品均为63个月封闭式的债券型基金，上报的基金公司包括博远基金、瑞达基金、中海基金、泰信基金、汇泉基金、恒越基金、泉果基金、苏新基金、汇百川基金、益民基金。（上证报）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">510300.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.yicai.com/news/103362412.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="7家券商、15名从业人员被处罚，多项业务曝出合规风险 除证监系统的处罚外，央行近期对券商反洗钱等相关违规行为的处罚也在增加。 7 securities firms and 15 practitioners were penalized, with compliance risks exposed in multiple businesses. in addition to penalties from the csrc system, the pboc's recent penalties on securities firms for anti-money laundering and other related violations are also increasing. 7家券商、15名从业人员被处罚，多项业务曝出合规风险 除证监系统的处罚外，央行近期对券商反洗钱等相关违规行为的处罚也在增加。    第一财经 pboc_liquidity pboc & liquidity 央行与流动性 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">7 securities firms and 15 practitioners were penalized, with compliance risks exposed in multiple businesses. In addition to penalties from the CSRC system, the PBOC's recent penalties on securities firms for anti-money laundering and other related violations are also increasing.</span><span class="l-zh">7家券商、15名从业人员被处罚，多项业务曝出合规风险 除证监系统的处罚外，央行近期对券商反洗钱等相关违规行为的处罚也在增加。</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.stcn.com/article/detail/4183208.html" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="加强稳市机制建设 护航资本市场平稳运行 strengthen market stabilization mechanism to safeguard smooth operation of capital market 加强稳市机制建设 护航资本市场平稳运行    证券时报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">证券时报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Strengthen market stabilization mechanism to safeguard smooth operation of capital market</span><span class="l-zh">加强稳市机制建设 护航资本市场平稳运行</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://www.cnstock.com/commonDetail/789080" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="high"
+           data-search="国常会研究算力网建设有关工作 state council executive meeting studies work related to computing network construction 国常会研究算力网建设有关工作    上海证券报 tech_policy tech policy 科技政策 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">State Council executive meeting studies work related to computing network construction</span><span class="l-zh">国常会研究算力网建设有关工作</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.yicai.com/news/103362401.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="税期叠加政府债缴款扰动，央行隔夜逆回购常态化操作稳定资金面 平滑特定时点资金面波动。 tax period overlapping with government bond payments disrupts the market, while the pboc's regular overnight reverse repo operations stabilize liquidity. smoothing liquidity fluctuations at specific time points. 税期叠加政府债缴款扰动，央行隔夜逆回购常态化操作稳定资金面 平滑特定时点资金面波动。    第一财经 pboc_liquidity pboc & liquidity 央行与流动性 ">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Tax period overlapping with government bond payments disrupts the market, while the PBOC's regular overnight reverse repo operations stabilize liquidity. Smoothing liquidity fluctuations at specific time points.</span><span class="l-zh">税期叠加政府债缴款扰动，央行隔夜逆回购常态化操作稳定资金面 平滑特定时点资金面波动。</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://finance.eastmoney.com/a/202609143872904865.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="medium"
+           data-search="上市公司密集回购增持 listed companies密集回购增持 上市公司密集回购增持 【上市公司密集回购增持】近期，全球金融市场迎来“超级央行周”。美联储将于北京时间9月17日凌晨公布最新利率决议，市场普遍预期加息25个基点，日本央行、英国央行等也将陆续公布决议，长端美债收益率处于历史高位，外围情绪扰动加大。一批a股上市公司日前密集发布股份增持、回购安排，向市场传递积极信号。 [listed companies intensify buybacks and shareholding increases] recently, global financial markets have entered a "super central bank week." the federal reserve will announce its latest interest rate decision in the early hours of september 17 beijing time, and the market widely expects a 25 basis point hike. the bank of japan, the bank of england and others will also announce decisions in succession. long-term u.s. treasury yields are at historic highs, and external sentiment disturbances are increasing. a number of a-share listed companies have recently密集密集? no. a number of a-share listed companies have recently intensively released share increase and buyback arrangements, sending positive signals to the market. 【上市公司密集回购增持】近期，全球金融市场迎来“超级央行周”。美联储将于北京时间9月17日凌晨公布最新利率决议，市场普遍预期加息25个基点，日本央行、英国央行等也将陆续公布决议，长端美债收益率处于历史高位，外围情绪扰动加大。一批a股上市公司日前密集发布股份增持、回购安排，向市场传递积极信号。 eastmoney pboc_liquidity markets pboc & liquidity 央行与流动性 equity market 股票市场 cbon">
+          <time class="tp-when" data-t="2026-09-14 03:06:37" datetime="2026-09-14 03:06:37">09-14<br>03:06</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-14 03:06:37"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
+              <span class="cn-src">Eastmoney</span>
+              <span class="cn-imp imp-medium"><b>51</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Listed companies密集回购增持</span><span class="l-zh">上市公司密集回购增持</span></h2>
+            <p class="tp-sum"><span class="l-en">[Listed companies intensify buybacks and shareholding increases] Recently, global financial markets have entered a "super central bank week." The Federal Reserve will announce its latest interest rate decision in the early hours of September 17 Beijing time, and the market widely expects a 25 basis point hike. The Bank of Japan, the Bank of England and others will also announce decisions in succession. Long-term U.S. Treasury yields are at historic highs, and external sentiment disturbances are increasing. A number of A-share listed companies have recently密集密集? no. A number of A-share listed companies have recently intensively released share increase and buyback arrangements, sending positive signals to the market.</span><span class="l-zh">【上市公司密集回购增持】近期，全球金融市场迎来“超级央行周”。美联储将于北京时间9月17日凌晨公布最新利率决议，市场普遍预期加息25个基点，日本央行、英国央行等也将陆续公布决议，长端美债收益率处于历史高位，外围情绪扰动加大。一批A股上市公司日前密集发布股份增持、回购安排，向市场传递积极信号。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">CBON</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3164473" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="险资借道私募基金，加码投资战略性新兴产业 insurance funds channel through private equity funds to increase investment in strategic emerging industries 险资借道私募基金，加码投资战略性新兴产业 近日，两家保险机构宣布私募股权基金新投资，聚焦新能源、先进制造等国家战略性新兴产业相关领域。具体来看，9月7日，新华人寿保险股份有限公司与博枫资产管理公司举行投资协议签约仪式，新华保险拟出资40亿元，投资博枫中国新能源基金，支持中国能源转型和绿色低碳发展。同在9月7日，大家人寿保险股份有限公司也对外公布落地一笔私募股权投资。（证券日报） recently, two insurance institutions announced new investments in private equity funds, focusing on fields related to national strategic emerging industries such as new energy and advanced manufacturing. specifically, on september 7, new china life insurance company ltd. and brookfield asset management held an investment agreement signing ceremony. new china insurance plans to contribute 4 billion yuan to invest in the brookfield china new energy fund to support china's energy transition and green low-carbon development. also on september 7, dajia life insurance co., ltd. announced the completion of a private equity investment. (securities daily) 近日，两家保险机构宣布私募股权基金新投资，聚焦新能源、先进制造等国家战略性新兴产业相关领域。具体来看，9月7日，新华人寿保险股份有限公司与博枫资产管理公司举行投资协议签约仪式，新华保险拟出资40亿元，投资博枫中国新能源基金，支持中国能源转型和绿色低碳发展。同在9月7日，大家人寿保险股份有限公司也对外公布落地一笔私募股权投资。（证券日报） 华尔街见闻 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-09-13T23:14:19+00:00" datetime="2026-09-13T23:14:19+00:00">09-13<br>23:14</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-13T23:14:19+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Insurance funds channel through private equity funds to increase investment in strategic emerging industries</span><span class="l-zh">险资借道私募基金，加码投资战略性新兴产业</span></h2>
+            <p class="tp-sum"><span class="l-en">Recently, two insurance institutions announced new investments in private equity funds, focusing on fields related to national strategic emerging industries such as new energy and advanced manufacturing. Specifically, on September 7, New China Life Insurance Company Ltd. and Brookfield Asset Management held an investment agreement signing ceremony. New China Insurance plans to contribute 4 billion yuan to invest in the Brookfield China New Energy Fund to support China's energy transition and green low-carbon development. Also on September 7, Dajia Life Insurance Co., Ltd. announced the completion of a private equity investment. (Securities Daily)</span><span class="l-zh">近日，两家保险机构宣布私募股权基金新投资，聚焦新能源、先进制造等国家战略性新兴产业相关领域。具体来看，9月7日，新华人寿保险股份有限公司与博枫资产管理公司举行投资协议签约仪式，新华保险拟出资40亿元，投资博枫中国新能源基金，支持中国能源转型和绿色低碳发展。同在9月7日，大家人寿保险股份有限公司也对外公布落地一笔私募股权投资。（证券日报）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://wallstreetcn.com/livenews/3164458" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="medium"
+           data-search="券商：美联储加息偏向预防，a股风险偏好有望修复 brokerages: fed rate hikes lean preventive, a-share risk appetite expected to recover 券商：美联储加息偏向预防，a股风险偏好有望修复 过去一周，a股市场维持震荡整理运行格局。中东地缘冲突推升国际油价、美联储9月加息预期快速升温等海外重大宏观事件扰动市场情绪。对此，券商策略展望报告预计，本周美联储议息会议的基础情形是加息25个基点，但这一加息更偏向预防性紧缩，对市场形成短期情绪层面的扰动。待9月美联储议息会议落地，海外不确定性逐步出清后，a股风险偏好有望修复，迎来阶段性转机。（上证报） over the past week, the a-share market maintained a pattern of volatile consolidation. major overseas macroeconomic events such as middle east geopolitical conflicts pushing up international oil prices and rapidly rising expectations for a september fed rate hike disturbed market sentiment. in response, brokerage strategy outlook reports expect the baseline scenario for this week's fed meeting to be a 25 basis point hike, but this hike is more of a precautionary tightening and creates short-term sentiment disturbance for the market. after the september fed meeting concludes and overseas uncertainties are gradually cleared, a-share risk appetite is expected to recover and usher in a phased turnaround. (shanghai securities news) 过去一周，a股市场维持震荡整理运行格局。中东地缘冲突推升国际油价、美联储9月加息预期快速升温等海外重大宏观事件扰动市场情绪。对此，券商策略展望报告预计，本周美联储议息会议的基础情形是加息25个基点，但这一加息更偏向预防性紧缩，对市场形成短期情绪层面的扰动。待9月美联储议息会议落地，海外不确定性逐步出清后，a股风险偏好有望修复，迎来阶段性转机。（上证报） 华尔街见闻 markets equity market 股票市场 510300.ss 512880.ss">
+          <time class="tp-when" data-t="2026-09-13T22:16:35+00:00" datetime="2026-09-13T22:16:35+00:00">09-13<br>22:16</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-13T22:16:35+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">PBoC</span><span class="l-zh">央行</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Brokerages: Fed rate hikes lean preventive, A-share risk appetite expected to recover</span><span class="l-zh">券商：美联储加息偏向预防，A股风险偏好有望修复</span></h2>
+            <p class="tp-sum"><span class="l-en">Over the past week, the A-share market maintained a pattern of volatile consolidation. Major overseas macroeconomic events such as Middle East geopolitical conflicts pushing up international oil prices and rapidly rising expectations for a September Fed rate hike disturbed market sentiment. In response, brokerage strategy outlook reports expect the baseline scenario for this week's Fed meeting to be a 25 basis point hike, but this hike is more of a precautionary tightening and creates short-term sentiment disturbance for the market. After the September Fed meeting concludes and overseas uncertainties are gradually cleared, A-share risk appetite is expected to recover and usher in a phased turnaround. (Shanghai Securities News)</span><span class="l-zh">过去一周，A股市场维持震荡整理运行格局。中东地缘冲突推升国际油价、美联储9月加息预期快速升温等海外重大宏观事件扰动市场情绪。对此，券商策略展望报告预计，本周美联储议息会议的基础情形是加息25个基点，但这一加息更偏向预防性紧缩，对市场形成短期情绪层面的扰动。待9月美联储议息会议落地，海外不确定性逐步出清后，A股风险偏好有望修复，迎来阶段性转机。（上证报）</span></p>
             <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">510300.SS</span><span class="cn-tk">512880.SS</span></div>
           </div>
         </a>
         
         
-        <a class="tp-item th-fiscal" href="https://finance.sina.com.cn/stock/marketresearch/2026-09-06/doc-iniqwnma6535271.shtml" target="_blank" rel="noopener"
-           data-theme="fiscal" data-importance="medium"
-           data-search="两大行拟千亿级募资，补充核心资本！财政部、中国烟草将出资 two major banks plan hundred-billion-yuan capital raises to boost core capital! ministry of finance and china tobacco to inject funds 两大行拟千亿级募资，补充核心资本！财政部、中国烟草将出资    新浪财经股票 fiscal_trade fiscal & trade 财政与贸易 ">
-          <time class="tp-when" data-t="2026-09-06" datetime="2026-09-06">09-06</time>
-          <div class="tp-spine"><span class="tp-node" data-t="2026-09-06"></span></div>
+        <a class="tp-item th-markets" href="https://www.stcn.com/article/detail/4183229.html" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="公募国际化：打造中资出海外资来华桥头堡 public fund internationalization: building a bridgehead for chinese outbound and foreign inbound investment 公募国际化：打造中资出海外资来华桥头堡    证券时报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
           <div class="tp-body">
             <div class="tp-top">
               
-              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
-              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">证券时报</span>
               <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
             </div>
-            <h2 class="tp-title"><span class="l-en">Two major banks plan hundred-billion-yuan capital raises to boost core capital! Ministry of Finance and China Tobacco to inject funds</span><span class="l-zh">两大行拟千亿级募资，补充核心资本！财政部、中国烟草将出资</span></h2>
+            <h2 class="tp-title"><span class="l-en">Public fund internationalization: building a bridgehead for Chinese outbound and foreign inbound investment</span><span class="l-zh">公募国际化：打造中资出海外资来华桥头堡</span></h2>
             
-            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span></div>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.stcn.com/article/detail/4183026.html" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="cpo龙头，环比暴增超45%！本周15股获南向资金大幅加仓 cpo leader surges more than 45% quarter-on-quarter! 15 stocks received large southbound stock connect position increases this week cpo龙头，环比暴增超45%！本周15股获南向资金大幅加仓    证券时报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">证券时报</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">CPO leader surges more than 45% quarter-on-quarter! 15 stocks received large southbound Stock Connect position increases this week</span><span class="l-zh">CPO龙头，环比暴增超45%！本周15股获南向资金大幅加仓</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://flash.jin10.com/detail/20260914073238122800" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="medium"
+           data-search="金十数据整理：每日期货市场要闻速递（2026-09-14） jinshi data compilation: daily futures market news brief (2026-09-14) 金十数据整理：每日期货市场要闻速递（2026-09-14） <span class="section-news">1. 榆林市能源局责令神木市店塔镇老张沟煤矿停产整顿。</span><br/><span class="section-news">2. 国家发改委：9月11日国内汽、柴油（标准品）价格每吨分别应上调435元、420元，调控后实际上调260元、250元。</span><br/><span class="section-news">3. 据alcircle报道，印度综合矿业集团ashapura旗下ashapura minechem计划到2028财年，将几内亚铝土矿年发运量提升至1500万吨。</span <span class="section-news">1. the yulin city energy bureau ordered the laozhanggou coal mine in dianta town, shenmu city to suspend production for rectification.</span><br/><span class="section-news">2. national development and reform commission: on september 11, domestic gasoline and diesel (standard products) prices should have been raised by 435 yuan and 420 yuan per ton respectively, but after regulation the actual increases were 260 yuan and 250 yuan.</span><br/><span class="section-news">3. according to alcircle, india's integrated mining group ashapura's ashapura minechem plans to increase annual bauxite shipments from guinea to 15 million tons by fiscal 2028.</span <span class="section-news">1. 榆林市能源局责令神木市店塔镇老张沟煤矿停产整顿。</span><br/><span class="section-news">2. 国家发改委：9月11日国内汽、柴油（标准品）价格每吨分别应上调435元、420元，调控后实际上调260元、250元。</span><br/><span class="section-news">3. 据alcircle报道，印度综合矿业集团ashapura旗下ashapura minechem计划到2028财年，将几内亚铝土矿年发运量提升至1500万吨。</span 金十数据 commodities commodities 大宗商品 ">
+          <time class="tp-when" data-t="2026-09-14T07:32:38+08:00" datetime="2026-09-14T07:32:38+08:00">09-14<br>07:32</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-14T07:32:38+08:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">金十数据</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Jinshi Data compilation: Daily futures market news brief (2026-09-14)</span><span class="l-zh">金十数据整理：每日期货市场要闻速递（2026-09-14）</span></h2>
+            <p class="tp-sum"><span class="l-en"><span class="section-news">1. The Yulin City Energy Bureau ordered the Laozhanggou Coal Mine in Dianta Town, Shenmu City to suspend production for rectification.</span><br/><span class="section-news">2. National Development and Reform Commission: On September 11, domestic gasoline and diesel (standard products) prices should have been raised by 435 yuan and 420 yuan per ton respectively, but after regulation the actual increases were 260 yuan and 250 yuan.</span><br/><span class="section-news">3. According to AlCircle, India's integrated mining group Ashapura's Ashapura Minechem plans to increase annual bauxite shipments from Guinea to 15 million tons by fiscal 2028.</span</span><span class="l-zh"><span class="section-news">1. 榆林市能源局责令神木市店塔镇老张沟煤矿停产整顿。</span><br/><span class="section-news">2. 国家发改委：9月11日国内汽、柴油（标准品）价格每吨分别应上调435元、420元，调控后实际上调260元、250元。</span><br/><span class="section-news">3. 据AlCircle报道，印度综合矿业集团Ashapura旗下Ashapura Minechem计划到2028财年，将几内亚铝土矿年发运量提升至1500万吨。</span</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">commodities</span><span class="l-zh">大宗商品</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-tech" href="https://wallstreetcn.com/livenews/3164392" target="_blank" rel="noopener"
+           data-theme="tech" data-importance="medium"
+           data-search="我国实现一体化算力统筹监测 china achieves integrated coordinated monitoring of computing power 我国实现一体化算力统筹监测 从工业和信息化部了解到，中国算力平台已实现全国一体化算力统筹监测，我国算力“一张网、一盘棋、一体化”发展格局基本形成。中国算力平台是国家级综合性算力服务平台，目前已经汇聚了超万家注册企业用户，上架2000多项优质算力产品，接入各类大模型超300个，为广大开发者提供算力调用服务，累计沉淀数十亿条算力监测大数据。（央视新闻） learned from the ministry of industry and information technology that china's computing power platform has achieved nationwide integrated computing power coordinated monitoring, and the development pattern of "one network, one chessboard, integration" for china's computing power has basically taken shape. china's computing power platform is a national-level comprehensive computing power service platform. it has currently gathered more than 10,000 registered enterprise users, listed more than 2,000 high-quality computing power products, connected more than 300 large models of various types, provided computing power invocation services for developers, and accumulated billions of pieces of computing power monitoring big data. (cctv news) 从工业和信息化部了解到，中国算力平台已实现全国一体化算力统筹监测，我国算力“一张网、一盘棋、一体化”发展格局基本形成。中国算力平台是国家级综合性算力服务平台，目前已经汇聚了超万家注册企业用户，上架2000多项优质算力产品，接入各类大模型超300个，为广大开发者提供算力调用服务，累计沉淀数十亿条算力监测大数据。（央视新闻） 华尔街见闻 industrial tech_policy industry & manufacturing 工业与制造业 tech policy 科技政策 ">
+          <time class="tp-when" data-t="2026-09-13T01:19:50+00:00" datetime="2026-09-13T01:19:50+00:00">09-13<br>01:19</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-13T01:19:50+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>52</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">China achieves integrated coordinated monitoring of computing power</span><span class="l-zh">我国实现一体化算力统筹监测</span></h2>
+            <p class="tp-sum"><span class="l-en">Learned from the Ministry of Industry and Information Technology that China's computing power platform has achieved nationwide integrated computing power coordinated monitoring, and the development pattern of "one network, one chessboard, integration" for China's computing power has basically taken shape. China's computing power platform is a national-level comprehensive computing power service platform. It has currently gathered more than 10,000 registered enterprise users, listed more than 2,000 high-quality computing power products, connected more than 300 large models of various types, provided computing power invocation services for developers, and accumulated billions of pieces of computing power monitoring big data. (CCTV News)</span><span class="l-zh">从工业和信息化部了解到，中国算力平台已实现全国一体化算力统筹监测，我国算力“一张网、一盘棋、一体化”发展格局基本形成。中国算力平台是国家级综合性算力服务平台，目前已经汇聚了超万家注册企业用户，上架2000多项优质算力产品，接入各类大模型超300个，为广大开发者提供算力调用服务，累计沉淀数十亿条算力监测大数据。（央视新闻）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://www.yicai.com/news/103362433.html" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="medium"
+           data-search="重磅经济数据即将发布，多领域释放积极信号 期待政策能够进一步精准施策，重点关注提振居民消费和民营投资，培育中长期动能。 major economic data is about to be released, with positive signals in multiple areas. expectations are for more precisely targeted policies, with focus on boosting household consumption and private investment and fostering medium- to long-term momentum. 重磅经济数据即将发布，多领域释放积极信号 期待政策能够进一步精准施策，重点关注提振居民消费和民营投资，培育中长期动能。    第一财经 consumer consumer 消费 ">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Major economic data is about to be released, with positive signals in multiple areas. Expectations are for more precisely targeted policies, with focus on boosting household consumption and private investment and fostering medium- to long-term momentum.</span><span class="l-zh">重磅经济数据即将发布，多领域释放积极信号 期待政策能够进一步精准施策，重点关注提振居民消费和民营投资，培育中长期动能。</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-tech" href="https://wallstreetcn.com/livenews/3164462" target="_blank" rel="noopener"
+           data-theme="tech" data-importance="low"
+           data-search="新品密集发布，光通信业技术迭代速度超预期 frequent new product launches, optical communication industry technology iteration speed exceeds expectations 新品密集发布，光通信业技术迭代速度超预期 “以往做光电产业的都是苦哈哈的，遇上ai如生双翼！”在日前举行的第二十七届中国国际光电博览会上，有业内人士感慨道。本届光博会上，多家上市公司及科创企业携年度重磅产品、突破性技术方案集中亮相。从最上游的激光芯片到光引擎、光纤光缆，再到交换系统等环节，围绕ai算力密集刷新技术指标，代际跃迁速度明显加快。谈及投资者对ai增长的担忧，上述业内人士表示，ai投资回报闭环已显现，现在唯一不确定的是哪一条技术路径是最终方案，但目前所有的技术路径都能找到适合的应用场景。（上证报） "in the past, those in the optoelectronics industry had a hard time, but with ai it's like growing wings!" an industry insider lamented at the recently held 27th china international optoelectronic exposition. at this year's cioe, many listed companies and sci-tech innovation enterprises unveiled their major annual products and breakthrough technology solutions. from the most upstream laser chips to optical engines, optical fiber and cable, and then to switching systems and other links, technical indicators are being intensively refreshed around ai computing power, and the pace of generational leaps has clearly accelerated. regarding investors' concerns about ai growth, the industry insider said the closed loop of ai investment returns has already emerged, and the only uncertainty now is which technological path is the final solution, but currently all technological paths can find suitable application scenarios. (shanghai securities news) “以往做光电产业的都是苦哈哈的，遇上ai如生双翼！”在日前举行的第二十七届中国国际光电博览会上，有业内人士感慨道。本届光博会上，多家上市公司及科创企业携年度重磅产品、突破性技术方案集中亮相。从最上游的激光芯片到光引擎、光纤光缆，再到交换系统等环节，围绕ai算力密集刷新技术指标，代际跃迁速度明显加快。谈及投资者对ai增长的担忧，上述业内人士表示，ai投资回报闭环已显现，现在唯一不确定的是哪一条技术路径是最终方案，但目前所有的技术路径都能找到适合的应用场景。（上证报） 华尔街见闻 markets tech_policy equity market 股票市场 tech policy 科技政策 510300.ss">
+          <time class="tp-when" data-t="2026-09-13T22:26:52+00:00" datetime="2026-09-13T22:26:52+00:00">09-13<br>22:26</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-13T22:26:52+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-low"><b>46</b> <span class="l-en">low</span><span class="l-zh">低</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Frequent new product launches, optical communication industry technology iteration speed exceeds expectations</span><span class="l-zh">新品密集发布，光通信业技术迭代速度超预期</span></h2>
+            <p class="tp-sum"><span class="l-en">"In the past, those in the optoelectronics industry had a hard time, but with AI it's like growing wings!" an industry insider lamented at the recently held 27th China International Optoelectronic Exposition. At this year's CIOE, many listed companies and sci-tech innovation enterprises unveiled their major annual products and breakthrough technology solutions. From the most upstream laser chips to optical engines, optical fiber and cable, and then to switching systems and other links, technical indicators are being intensively refreshed around AI computing power, and the pace of generational leaps has clearly accelerated. Regarding investors' concerns about AI growth, the industry insider said the closed loop of AI investment returns has already emerged, and the only uncertainty now is which technological path is the final solution, but currently all technological paths can find suitable application scenarios. (Shanghai Securities News)</span><span class="l-zh">“以往做光电产业的都是苦哈哈的，遇上AI如生双翼！”在日前举行的第二十七届中国国际光电博览会上，有业内人士感慨道。本届光博会上，多家上市公司及科创企业携年度重磅产品、突破性技术方案集中亮相。从最上游的激光芯片到光引擎、光纤光缆，再到交换系统等环节，围绕AI算力密集刷新技术指标，代际跃迁速度明显加快。谈及投资者对AI增长的担忧，上述业内人士表示，AI投资回报闭环已显现，现在唯一不确定的是哪一条技术路径是最终方案，但目前所有的技术路径都能找到适合的应用场景。（上证报）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">510300.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-tech" href="https://wallstreetcn.com/livenews/3164418" target="_blank" rel="noopener"
+           data-theme="tech" data-importance="medium"
+           data-search="上海“明珠星座计划”正式启动，目标建设吉瓦级天基计算星座 shanghai's "mingzhu constellation plan" officially launched, aiming to build a gigawatt-level space-based computing constellation 上海“明珠星座计划”正式启动，目标建设吉瓦级天基计算星座 9月13日，2026浦江创新论坛“太空算力产业生态论坛”在上海举行。“明珠星座计划”正式启动。该计划长期目标是建设吉瓦级天基计算星座，围绕国产算力载荷、光计算载荷、新型能源系统等方向开展在轨验证，随后逐步进入首批卫星部署和规模组网阶段，计划到2030年逐步建成全球覆盖、天地协同、自主可控的太空智能算力基础设施和服务网络。 on september 13, the 2026 pujiang innovation forum's "space computing power industry ecosystem forum" was held in shanghai. the "mingzhu constellation plan" was officially launched. the plan's long-term goal is to build a gigawatt-level space-based computing constellation, conducting in-orbit verification in areas such as domestic computing payloads, optical computing payloads, and new energy systems, then gradually entering the initial satellite deployment and large-scale networking stage, with plans to progressively build a globally covered, space-ground coordinated, independently controllable space intelligent computing infrastructure and service network by 2030. 9月13日，2026浦江创新论坛“太空算力产业生态论坛”在上海举行。“明珠星座计划”正式启动。该计划长期目标是建设吉瓦级天基计算星座，围绕国产算力载荷、光计算载荷、新型能源系统等方向开展在轨验证，随后逐步进入首批卫星部署和规模组网阶段，计划到2030年逐步建成全球覆盖、天地协同、自主可控的太空智能算力基础设施和服务网络。 华尔街见闻 tech_policy tech policy 科技政策 ">
+          <time class="tp-when" data-t="2026-09-13T08:53:57+00:00" datetime="2026-09-13T08:53:57+00:00">09-13<br>08:53</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-13T08:53:57+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Shanghai's "Mingzhu Constellation Plan" officially launched, aiming to build a gigawatt-level space-based computing constellation</span><span class="l-zh">上海“明珠星座计划”正式启动，目标建设吉瓦级天基计算星座</span></h2>
+            <p class="tp-sum"><span class="l-en">On September 13, the 2026 Pujiang Innovation Forum's "Space Computing Power Industry Ecosystem Forum" was held in Shanghai. The "Mingzhu Constellation Plan" was officially launched. The plan's long-term goal is to build a gigawatt-level space-based computing constellation, conducting in-orbit verification in areas such as domestic computing payloads, optical computing payloads, and new energy systems, then gradually entering the initial satellite deployment and large-scale networking stage, with plans to progressively build a globally covered, space-ground coordinated, independently controllable space intelligent computing infrastructure and service network by 2030.</span><span class="l-zh">9月13日，2026浦江创新论坛“太空算力产业生态论坛”在上海举行。“明珠星座计划”正式启动。该计划长期目标是建设吉瓦级天基计算星座，围绕国产算力载荷、光计算载荷、新型能源系统等方向开展在轨验证，随后逐步进入首批卫星部署和规模组网阶段，计划到2030年逐步建成全球覆盖、天地协同、自主可控的太空智能算力基础设施和服务网络。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-tech" href="https://www.cnstock.com/topicDetail/786324" target="_blank" rel="noopener"
+           data-theme="tech" data-importance="medium"
+           data-search="专题·2026全球工业互联网大会 | 替工厂“动脑筋”，ai让工业互联更智能 special topic · 2026 global industrial internet conference | thinking for factories, ai makes industrial interconnection smarter 专题·2026全球工业互联网大会 | 替工厂“动脑筋”，ai让工业互联更智能    上海证券报 industrial tech_policy industry & manufacturing 工业与制造业 tech policy 科技政策 kweb 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-medium"><b>52</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Special topic · 2026 Global Industrial Internet Conference | Thinking for factories, AI makes industrial interconnection smarter</span><span class="l-zh">专题·2026全球工业互联网大会 | 替工厂“动脑筋”，AI让工业互联更智能</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">KWEB</span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.scmp.com/business/article/3367086/hong-kong-home-prices-headed-15-gain-year-midland-forecast-says?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="hong kong home prices headed for 15% gain this year, midland forecast says  美联预测：香港房价今年有望上涨15% hong kong’s home prices will end the year 15 per cent higher than a year earlier, but still 16 per cent below their high-water mark in 2021, according to local property agency midland realty.
+underpinning the positive forecast, the city’s banks were not likely to follow an increase in us interest rates by the federal reserve if one occurred this year, executives from the agency said at a press conference on thursday.
+dave ma tai-yeung, ceo of midland (residential), said that as the market...  据香港地产代理美联物业称，香港房价到年底将比一年前上涨15%，但仍比2021年的高点低16%。
+支持这一乐观预测的是，如果美联储今年加息，香港的银行可能不会跟随。 scmp - business property property 房地产 512800.ss 512200.ss">
+          <time class="tp-when" data-t="2026-09-10T23:00:09+00:00" datetime="2026-09-10T23:00:09+00:00">09-10<br>23:00</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-10T23:00:09+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">SCMP - Business</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Hong Kong home prices headed for 15% gain this year, Midland forecast says</span><span class="l-zh">美联预测：香港房价今年有望上涨15%</span></h2>
+            <p class="tp-sum"><span class="l-en">Hong Kong’s home prices will end the year 15 per cent higher than a year earlier, but still 16 per cent below their high-water mark in 2021, according to local property agency Midland Realty.
+Underpinning the positive forecast, the city’s banks were not likely to follow an increase in US interest rates by the Federal Reserve if one occurred this year, executives from the agency said at a press conference on Thursday.
+Dave Ma Tai-yeung, CEO of Midland (Residential), said that as the market...</span><span class="l-zh">据香港地产代理美联物业称，香港房价到年底将比一年前上涨15%，但仍比2021年的高点低16%。
+支持这一乐观预测的是，如果美联储今年加息，香港的银行可能不会跟随。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-tk">512800.SS</span><span class="cn-tk">512200.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.scmp.com/business/china-business/article/3367212/veteran-investor-fang-fenglei-why-china-investibility-debate-no-debate-all?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="veteran investor fang fenglei on why the china ‘investibility’ debate is no debate at all  资深投资者方风雷谈为何中国‘可投资性’之争根本不成其为争论 over the past three decades, investor fang fenglei has had a major role in shaping china’s capital markets. he worked with morgan stanley in the early 1990s to help create the country’s first joint venture investment bank – china international capital corp. then, at the start of the millennium, he spearheaded the listing of state-owned giants in hong kong as ceo of bank of china international, later chairing a china joint venture with goldman sachs.
+now the chairman of hopu investments, fang...  过去三十年里，投资者方风雷在中国资本市场的塑造中发挥了重要作用。他在20世纪90年代初与摩根士丹利合作，帮助创建了中国首家合资投资银行——中国国际金融公司。随后，在千禧年之初，他牵头推动了国有巨头在香港上市，作为 scmp - business markets equity market 股票市场 510300.ss">
+          <time class="tp-when" data-t="2026-09-13T22:00:12+00:00" datetime="2026-09-13T22:00:12+00:00">09-13<br>22:00</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-13T22:00:12+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">SCMP - Business</span>
+              <span class="cn-imp imp-medium"><b>56</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Veteran investor Fang Fenglei on why the China ‘investibility’ debate is no debate at all</span><span class="l-zh">资深投资者方风雷谈为何中国‘可投资性’之争根本不成其为争论</span></h2>
+            <p class="tp-sum"><span class="l-en">Over the past three decades, investor Fang Fenglei has had a major role in shaping China’s capital markets. He worked with Morgan Stanley in the early 1990s to help create the country’s first joint venture investment bank – China International Capital Corp. Then, at the start of the millennium, he spearheaded the listing of state-owned giants in Hong Kong as CEO of Bank of China International, later chairing a China joint venture with Goldman Sachs.
+Now the chairman of Hopu Investments, Fang...</span><span class="l-zh">过去三十年里，投资者方风雷在中国资本市场的塑造中发挥了重要作用。他在20世纪90年代初与摩根士丹利合作，帮助创建了中国首家合资投资银行——中国国际金融公司。随后，在千禧年之初，他牵头推动了国有巨头在香港上市，作为</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">510300.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-credit" href="https://www.scmp.com/opinion/china-opinion/article/3366815/beijing-can-rewrite-chinas-property-rules-it-cant-undo-damage?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="credit" data-importance="medium"
+           data-search="beijing can rewrite china’s property rules, but it can’t undo the damage  北京可以改写中国房地产规则，但无法消除已经造成的损害 financial markets are notoriously prone to mistaking a fundamental institutional shift for a temporary liquidity crisis. the futurist roy amara is often credited with the observation that people tend to overestimate the short-term effect of a transformation while underestimating its long-term impact. china’s real-estate sector is furnishing a textbook case of an analogous dynamic.
+on august 28, chinese housing authorities and financial regulators announced a package to overhaul the commercial...  金融市场极易将根本性的制度转变误判为暂时的流动性危机，这一点众所周知。未来学家罗伊·阿马拉常被认为提出了这一观察：人们往往高估一场变革的短期影响，而低估其长期影响。中国的房地产行业正提供一个教科书式的案例。 scmp - china economy pboc_liquidity credit_impulse property pboc & liquidity 央行与流动性 credit & financing 信贷与社融 property 房地产 512200.ss">
+          <time class="tp-when" data-t="2026-09-11T12:30:05+00:00" datetime="2026-09-11T12:30:05+00:00">09-11<br>12:30</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-11T12:30:05+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
+              <span class="cn-src">SCMP - China Economy</span>
+              <span class="cn-imp imp-medium"><b>56</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Beijing can rewrite China’s property rules, but it can’t undo the damage</span><span class="l-zh">北京可以改写中国房地产规则，但无法消除已经造成的损害</span></h2>
+            <p class="tp-sum"><span class="l-en">Financial markets are notoriously prone to mistaking a fundamental institutional shift for a temporary liquidity crisis. The futurist Roy Amara is often credited with the observation that people tend to overestimate the short-term effect of a transformation while underestimating its long-term impact. China’s real-estate sector is furnishing a textbook case of an analogous dynamic.
+On August 28, Chinese housing authorities and financial regulators announced a package to overhaul the commercial...</span><span class="l-zh">金融市场极易将根本性的制度转变误判为暂时的流动性危机，这一点众所周知。未来学家罗伊·阿马拉常被认为提出了这一观察：人们往往高估一场变革的短期影响，而低估其长期影响。中国的房地产行业正提供一个教科书式的案例。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">credit & financing</span><span class="l-zh">信贷与社融</span></span><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-tk">512200.SS</span></div>
           </div>
         </a>
         
@@ -900,48 +917,8 @@
         
         
         <div class="cal-row">
-          <div class="cal-when soon">
-            <span class="cd">3</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
-          </div>
-          <div class="cal-name"><span class="cal-tag hi">TRADE</span><span class="l-en">Customs trade (exports/imports)</span><span class="l-zh">海关进出口数据</span></div>
-        </div>
-        
-        
-        <div class="cal-row">
-          <div class="cal-when soon">
-            <span class="cd">3</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
-          </div>
-          <div class="cal-name"><span class="cal-tag ">FXRES</span><span class="l-en">FX reserves (SAFE)</span><span class="l-zh">外汇储备（外管局）</span></div>
-        </div>
-        
-        
-        <div class="cal-row">
           <div class="cal-when ">
-            <span class="cd">6</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
-          </div>
-          <div class="cal-name"><span class="cal-tag hi">CPI</span><span class="l-en">CPI (consumer prices)</span><span class="l-zh">CPI（居民消费价格）</span></div>
-        </div>
-        
-        
-        <div class="cal-row">
-          <div class="cal-when ">
-            <span class="cd">6</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
-          </div>
-          <div class="cal-name"><span class="cal-tag hi">CREDIT</span><span class="l-en">Money supply, RMB loans & TSF</span><span class="l-zh">货币供应、人民币贷款与社融</span></div>
-        </div>
-        
-        
-        <div class="cal-row">
-          <div class="cal-when ">
-            <span class="cd">6</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
-          </div>
-          <div class="cal-name"><span class="cal-tag hi">PPI</span><span class="l-en">PPI (producer prices)</span><span class="l-zh">PPI（工业生产者价格）</span></div>
-        </div>
-        
-        
-        <div class="cal-row">
-          <div class="cal-when ">
-            <span class="cd">11</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+            <span class="cd">4</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
           </div>
           <div class="cal-name"><span class="cal-tag hi">ACTIVITY</span><span class="l-en">IP, FAI & retail sales</span><span class="l-zh">工业增加值、固投与社零</span></div>
         </div>
@@ -949,9 +926,17 @@
         
         <div class="cal-row">
           <div class="cal-when ">
-            <span class="cd">11</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+            <span class="cd">4</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
           </div>
           <div class="cal-name"><span class="cal-tag ">MLF</span><span class="l-en">MLF operation (PBoC)</span><span class="l-zh">MLF 操作（央行中期借贷便利）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">10</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">LPR</span><span class="l-en">LPR fix (loan prime rate)</span><span class="l-zh">LPR 报价（贷款市场报价利率）</span></div>
         </div>
         
       </section>
@@ -962,28 +947,22 @@
         <div class="exp-pills">
           
           
-          <span class="exp-pill"><span class="tk">512800.SS</span><span class="nm"><span class="l-en">banks</span><span class="l-zh">银行</span></span><span class="ct">×5</span></span>
+          <span class="exp-pill"><span class="tk">512880.SS</span><span class="nm"><span class="l-en">brokers</span><span class="l-zh">券商</span></span><span class="ct">×9</span></span>
           
           
-          <span class="exp-pill"><span class="tk">CBON</span><span class="nm"><span class="l-en">China bonds</span><span class="l-zh">中国债券</span></span><span class="ct">×4</span></span>
+          <span class="exp-pill"><span class="tk">510300.SS</span><span class="nm"><span class="l-en">CSI 300</span><span class="l-zh">沪深300</span></span><span class="ct">×4</span></span>
           
           
-          <span class="exp-pill"><span class="tk">512880.SS</span><span class="nm"><span class="l-en">brokers</span><span class="l-zh">券商</span></span><span class="ct">×4</span></span>
-          
-          
-          <span class="exp-pill"><span class="tk">CNY</span><span class="nm"><span class="l-en">yuan</span><span class="l-zh">人民币</span></span><span class="ct">×3</span></span>
+          <span class="exp-pill"><span class="tk">512800.SS</span><span class="nm"><span class="l-en">banks</span><span class="l-zh">银行</span></span><span class="ct">×2</span></span>
           
           
           <span class="exp-pill"><span class="tk">512200.SS</span><span class="nm"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="ct">×2</span></span>
           
           
-          <span class="exp-pill"><span class="tk">510300.SS</span><span class="nm"><span class="l-en">CSI 300</span><span class="l-zh">沪深300</span></span><span class="ct">×2</span></span>
+          <span class="exp-pill"><span class="tk">CBON</span><span class="nm"><span class="l-en">China bonds</span><span class="l-zh">中国债券</span></span></span>
           
           
-          <span class="exp-pill"><span class="tk">512760.SS</span><span class="nm"><span class="l-en">chips</span><span class="l-zh">半导体</span></span></span>
-          
-          
-          <span class="exp-pill"><span class="tk">512400.SS</span><span class="nm"><span class="l-en">metals</span><span class="l-zh">有色</span></span></span>
+          <span class="exp-pill"><span class="tk">KWEB</span><span class="nm"><span class="l-en">China internet</span><span class="l-zh">中概互联</span></span></span>
           
         </div>
       </section>
@@ -1080,6 +1059,5 @@
 </script>
 
 <script src="theme.js?v=53939d13" defer></script>
-<script defer data-whb data-root="" src="wh_banner.js?v=4a53a176"></script>
 </body>
 </html>

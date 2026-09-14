@@ -104,7 +104,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-09-03",
+        "source_asof": "2026-09-10",
         "status": "PRESENT"
       },
       {
@@ -166,8 +166,8 @@
     "comparability": "COMPARABLE",
     "deltas": [
       {
-        "current_value": 6.71,
-        "delta": 0.0,
+        "current_value": 6.76,
+        "delta": 0.05,
         "metric_id": "mortgage_30y_rate_level",
         "note": "same method version; numeric comparison permitted",
         "prior_value": 6.71
@@ -196,7 +196,7 @@
     ],
     "null_reason": null,
     "prior_effective_date": "2026-09-03",
-    "prior_generation_id": "housing_real_estate-US-05158dc150f9ccfa",
+    "prior_generation_id": "housing_real_estate-US-1bb5c47313f8d0c1",
     "prior_method_version": "housing_real_estate.compose.v1",
     "status": "PRESENT"
   },
@@ -204,7 +204,7 @@
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "housing_real_estate-US-05158dc150f9ccfa"
+    "predecessor_generation_id": "housing_real_estate-US-f9f6cce76f9abfdd"
   },
   "drivers": {
     "balance_sheet": [
@@ -283,7 +283,7 @@
       {
         "coverage_state": "PRESENT",
         "driver_id": "mortgage_30y_rate_level",
-        "impact_magnitude": 6.71,
+        "impact_magnitude": 6.76,
         "impact_sign": 1,
         "label": {
           "en": "30-year mortgage rate",
@@ -292,12 +292,12 @@
         "note": "higher = more restrictive home-purchase financing",
         "owner_field": "fred.MORTGAGE30US.mortgage_30y",
         "unit": "percent",
-        "value": 6.71
+        "value": 6.76
       },
       {
         "coverage_state": "PRESENT",
         "driver_id": "mortgage_30y_rate_change_13w",
-        "impact_magnitude": 0.23,
+        "impact_magnitude": 0.24,
         "impact_sign": 1,
         "label": {
           "en": "Mortgage rate 13w change",
@@ -306,21 +306,21 @@
         "note": "positive = financing conditions tightened over the trailing 13 weeks",
         "owner_field": "fred.MORTGAGE30US.mortgage_30y",
         "unit": "pct_pts",
-        "value": 0.23
+        "value": 0.24
       }
     ]
   },
   "generation": {
-    "built_at": "2026-09-06T21:23:24Z",
-    "calculation_as_of": "2026-09-03",
-    "code_version": "41929a0479ef0e5e4a8ac34086668c738c1e480f",
-    "content_sha256": "43098ac493b7367901c3fd04c4a19e8fd20381b03c7adbd9442d13b3bd581776",
-    "generation_id": "housing_real_estate-US-43098ac493b73679",
+    "built_at": "2026-09-13T07:23:13Z",
+    "calculation_as_of": "2026-09-10",
+    "code_version": "aa6750b68ccefeb17043e590b61e8a00565d1837",
+    "content_sha256": "671fe18a13ce0d9cf4512f523d30b0ab2553fcbe2d3bf9fa224a699a6391a3fe",
+    "generation_id": "housing_real_estate-US-671fe18a13ce0d9c",
     "producer": "engine.market_os.macro_workspaces.housing",
     "rendered_at": null
   },
   "headline": {
-    "effective_date": "2026-09-03",
+    "effective_date": "2026-09-10",
     "hysteresis": {
       "applied": false,
       "band": 0.0,
@@ -328,6 +328,7 @@
       "note": "architecture section 10.10 defines a real two-axis blueprint (demand/transaction momentum x affordability/financing pressure, supply scarce-to-abundant overlay), but the composable-core data this composer has cannot fill it in: the demand/transaction axis would need existing-home sales (rights-blocked) or Redfin pending sales (collector store empty), and the affordability axis would need a genuine price-to-income composite this estate has no income series to build. Publishing the mortgage-rate level alone as an 'affordability axis' would fabricate a composite the data does not support. The supply overlay IS computable from starts/permits and is published honestly as real metrics/drivers instead of being forced into a quadrant the contract has no dedicated overlay slot for. See the headline_unavailable implication for the reader-facing version."
     },
     "method_version": "housing_real_estate.compose.v1",
+    "movement_state": null,
     "nearest_boundary": {
       "axis": null,
       "distance": null,
@@ -406,8 +407,8 @@
         "horizon": "current",
         "implication_id": "mortgage_rate_read",
         "text": {
-          "en": "The 30-year fixed mortgage rate reads 6.71%, +0.23 percentage points over the trailing 13 weeks.",
-          "zh": "30年期固定抵押贷款利率读数为6.71%，较13周前变化+0.23个百分点。"
+          "en": "The 30-year fixed mortgage rate reads 6.76%, +0.24 percentage points over the trailing 13 weeks.",
+          "zh": "30年期固定抵押贷款利率读数为6.76%，较13周前变化+0.24个百分点。"
         },
         "trace_ref": "data/fred/MORTGAGE30US.parquet"
       },
@@ -609,7 +610,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "market_rate_level",
-        "calculation_as_of": "2026-09-03",
+        "calculation_as_of": "2026-09-10",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.MORTGAGE30US.mortgage_30y",
@@ -620,10 +621,10 @@
         "metric_id": "mortgage_30y_rate_level",
         "model_version": "housing_real_estate.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-03",
+        "observed_at": "2026-09-10",
         "owner_ref": "data/fred/MORTGAGE30US.parquet",
         "reference_id": "mastermind.market_reference/v1#mortgage_30y_rate_level",
-        "reference_period": "2026-09-03",
+        "reference_period": "2026-09-10",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -638,14 +639,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": 6.71,
+        "value": 6.76,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "trailing_13w_level_change",
-        "calculation_as_of": "2026-09-03",
+        "calculation_as_of": "2026-09-10",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.MORTGAGE30US.mortgage_30y",
@@ -656,10 +657,10 @@
         "metric_id": "mortgage_30y_rate_change_13w",
         "model_version": "housing_real_estate.compose.v1",
         "null_reason": "INSUFFICIENT_HISTORY",
-        "observed_at": "2026-09-03",
+        "observed_at": "2026-09-10",
         "owner_ref": "data/fred/MORTGAGE30US.parquet",
         "reference_id": "mastermind.market_reference/v1#mortgage_30y_rate_change_13w",
-        "reference_period": "2026-09-03",
+        "reference_period": "2026-09-10",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -674,7 +675,7 @@
           "value": null
         },
         "unit": "pct_pts",
-        "value": 0.23,
+        "value": 0.24,
         "value_type": "number"
       },
       {
@@ -1256,6 +1257,708 @@
       }
     ]
   },
+  "prior_publication": {
+    "generation": {
+      "generation_id": "housing_real_estate-US-1bb5c47313f8d0c1"
+    },
+    "headline": {
+      "effective_date": "2026-09-03",
+      "hysteresis": {
+        "applied": false,
+        "band": 0.0,
+        "held_prior": false,
+        "note": "architecture section 10.10 defines a real two-axis blueprint (demand/transaction momentum x affordability/financing pressure, supply scarce-to-abundant overlay), but the composable-core data this composer has cannot fill it in: the demand/transaction axis would need existing-home sales (rights-blocked) or Redfin pending sales (collector store empty), and the affordability axis would need a genuine price-to-income composite this estate has no income series to build. Publishing the mortgage-rate level alone as an 'affordability axis' would fabricate a composite the data does not support. The supply overlay IS computable from starts/permits and is published honestly as real metrics/drivers instead of being forced into a quadrant the contract has no dedicated overlay slot for. See the headline_unavailable implication for the reader-facing version."
+      },
+      "method_version": "housing_real_estate.compose.v1",
+      "nearest_boundary": {
+        "axis": null,
+        "distance": null,
+        "null_reason": "COMPUTATION_REFUSED"
+      },
+      "null_reason": "COMPUTATION_REFUSED",
+      "one_month_vector": {
+        "dx": null,
+        "dy": null,
+        "null_reason": "COMPUTATION_REFUSED",
+        "status": "ABSENT"
+      },
+      "prior_state": {
+        "effective_date": "2026-09-03",
+        "method_version": "housing_real_estate.compose.v1",
+        "state_id": null
+      },
+      "quadrant": {
+        "x": null,
+        "x_status": "ABSENT",
+        "y": null,
+        "y_status": "ABSENT"
+      },
+      "state_id": null,
+      "state_label": {
+        "en": null,
+        "zh": null
+      },
+      "status": "ABSENT",
+      "subtitle": {
+        "en": "Demand/transaction momentum x affordability/financing pressure; supply scarce -> abundant",
+        "zh": "需求/成交动能 × 可负担性/融资压力；供给 稀缺 → 充裕"
+      },
+      "transition_distance": null
+    },
+    "metrics": {
+      "items": [
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "market_rate_level",
+          "calculation_as_of": "2026-09-03",
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "fred.MORTGAGE30US.mortgage_30y",
+          "definition_version": "1.0.0",
+          "direction_semantics": "higher_more_restrictive_financing",
+          "freshness": "CURRENT",
+          "market_session": null,
+          "metric_id": "mortgage_30y_rate_level",
+          "model_version": "housing_real_estate.compose.v1",
+          "null_reason": null,
+          "observed_at": "2026-09-03",
+          "owner_ref": "data/fred/MORTGAGE30US.parquet",
+          "reference_id": "mastermind.market_reference/v1#mortgage_30y_rate_level",
+          "reference_period": "2026-09-03",
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "FRED:MORTGAGE30US (Freddie Mac PMMS via FRED, ruling R-2)"
+          ],
+          "status": "PRESENT",
+          "transformation": "Freddie Mac Primary Mortgage Market Survey 30-year fixed rate, republished by FRED; a market rate series SA/NSA does not apply to. (unverified against the parquet's own embedded metadata -- this composer cannot execute code to inspect it in this authoring environment; the SA/NSA basis is declared from the well-known FRED series convention / config.yml inline annotation instead, per the disclosed SA/NSA fallback law) No ALFRED point-in-time vintage exists for this series (see the no_alfred_pit_vintage_capture disclosure); the stored value is the current stored read.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "percent",
+          "value": 6.71,
+          "value_type": "percent"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "trailing_13w_level_change",
+          "calculation_as_of": "2026-09-03",
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "fred.MORTGAGE30US.mortgage_30y",
+          "definition_version": "1.0.0",
+          "direction_semantics": "higher_more_restrictive_financing",
+          "freshness": "CURRENT",
+          "market_session": null,
+          "metric_id": "mortgage_30y_rate_change_13w",
+          "model_version": "housing_real_estate.compose.v1",
+          "null_reason": "INSUFFICIENT_HISTORY",
+          "observed_at": "2026-09-03",
+          "owner_ref": "data/fred/MORTGAGE30US.parquet",
+          "reference_id": "mastermind.market_reference/v1#mortgage_30y_rate_change_13w",
+          "reference_period": "2026-09-03",
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "FRED:MORTGAGE30US"
+          ],
+          "status": "PRESENT",
+          "transformation": "Current level minus the level roughly 13 weeks (91 days) prior, in percentage points; refused when no observation lands within 10 days of that lookback target.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "pct_pts",
+          "value": 0.23,
+          "value_type": "number"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "level",
+          "calculation_as_of": "2026-07-01",
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "fred.HOUST.housing_starts",
+          "definition_version": "1.0.0",
+          "direction_semantics": "higher_more_supply_pipeline",
+          "freshness": "CURRENT",
+          "market_session": null,
+          "metric_id": "housing_starts_level",
+          "model_version": "housing_real_estate.compose.v1",
+          "null_reason": null,
+          "observed_at": "2026-07-01",
+          "owner_ref": "data/fred/HOUST.parquet",
+          "reference_id": "mastermind.market_reference/v1#housing_starts_level",
+          "reference_period": "2026-07-01",
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "FRED:HOUST"
+          ],
+          "status": "PRESENT",
+          "transformation": "Census Bureau new privately-owned housing units started, seasonally adjusted annual rate, republished by FRED. (unverified against the parquet's own embedded metadata -- this composer cannot execute code to inspect it in this authoring environment; the SA/NSA basis is declared from the well-known FRED series convention / config.yml inline annotation instead, per the disclosed SA/NSA fallback law) No ALFRED point-in-time vintage exists for this series; Census construction data is revised for months after first release, and this composer publishes the current stored (latest-revised) read.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "thousands_of_units_saar",
+          "value": 1239.0,
+          "value_type": "number"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "yoy_pct_change",
+          "calculation_as_of": "2026-07-01",
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "fred.HOUST.housing_starts",
+          "definition_version": "1.0.0",
+          "direction_semantics": "higher_more_supply_pipeline",
+          "freshness": "CURRENT",
+          "market_session": null,
+          "metric_id": "housing_starts_yoy",
+          "model_version": "housing_real_estate.compose.v1",
+          "null_reason": "INSUFFICIENT_HISTORY",
+          "observed_at": "2026-07-01",
+          "owner_ref": "data/fred/HOUST.parquet",
+          "reference_id": "mastermind.market_reference/v1#housing_starts_yoy",
+          "reference_period": "2026-07-01",
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "FRED:HOUST"
+          ],
+          "status": "PRESENT",
+          "transformation": "12-month percent change of the same SA series.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "percent",
+          "value": -13.4777,
+          "value_type": "percent"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "level",
+          "calculation_as_of": "2026-07-01",
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "fred.PERMIT.building_permits",
+          "definition_version": "1.0.0",
+          "direction_semantics": "higher_more_supply_pipeline",
+          "freshness": "CURRENT",
+          "market_session": null,
+          "metric_id": "building_permits_level",
+          "model_version": "housing_real_estate.compose.v1",
+          "null_reason": null,
+          "observed_at": "2026-07-01",
+          "owner_ref": "data/fred/PERMIT.parquet",
+          "reference_id": "mastermind.market_reference/v1#building_permits_level",
+          "reference_period": "2026-07-01",
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "FRED:PERMIT"
+          ],
+          "status": "PRESENT",
+          "transformation": "Census Bureau new private housing units authorized by building permits, seasonally adjusted annual rate, republished by FRED. (unverified against the parquet's own embedded metadata -- this composer cannot execute code to inspect it in this authoring environment; the SA/NSA basis is declared from the well-known FRED series convention / config.yml inline annotation instead, per the disclosed SA/NSA fallback law) No ALFRED point-in-time vintage exists for this series; this composer publishes the current stored (latest-revised) read.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "thousands_of_units_saar",
+          "value": 1433.0,
+          "value_type": "number"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "yoy_pct_change",
+          "calculation_as_of": "2026-07-01",
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "fred.PERMIT.building_permits",
+          "definition_version": "1.0.0",
+          "direction_semantics": "higher_more_supply_pipeline",
+          "freshness": "CURRENT",
+          "market_session": null,
+          "metric_id": "building_permits_yoy",
+          "model_version": "housing_real_estate.compose.v1",
+          "null_reason": "INSUFFICIENT_HISTORY",
+          "observed_at": "2026-07-01",
+          "owner_ref": "data/fred/PERMIT.parquet",
+          "reference_id": "mastermind.market_reference/v1#building_permits_yoy",
+          "reference_period": "2026-07-01",
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "FRED:PERMIT"
+          ],
+          "status": "PRESENT",
+          "transformation": "12-month percent change of the same SA series.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "percent",
+          "value": 2.3571,
+          "value_type": "percent"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "level_difference_permits_minus_starts",
+          "calculation_as_of": "2026-07-01",
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "fred.PERMIT.building_permits - fred.HOUST.housing_starts",
+          "definition_version": "1.0.0",
+          "direction_semantics": "higher_more_pipeline_ahead_of_starts",
+          "freshness": "CURRENT",
+          "market_session": null,
+          "metric_id": "permits_minus_starts_spread",
+          "model_version": "housing_real_estate.compose.v1",
+          "null_reason": null,
+          "observed_at": "2026-07-01",
+          "owner_ref": "data/fred/PERMIT.parquet + data/fred/HOUST.parquet",
+          "reference_id": "mastermind.market_reference/v1#permits_minus_starts_spread",
+          "reference_period": "2026-07-01",
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "FRED:PERMIT",
+            "FRED:HOUST"
+          ],
+          "status": "PRESENT",
+          "transformation": "PERMIT level minus HOUST level (both seasonally-adjusted annual rate, thousands of units) -- a same-basis SA-vs-SA subtraction, never mixed with an NSA series. A leg-floor refusal: this composer never publishes the spread from only one of the two legs -- refused rather than defaulting the missing leg to zero.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "thousands_of_units_saar",
+          "value": 194.0,
+          "value_type": "number"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "level",
+          "calculation_as_of": "2026-06-01",
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "fred.CSUSHPISA.case_shiller_sa",
+          "definition_version": "1.0.0",
+          "direction_semantics": "higher_more_expensive",
+          "freshness": "CURRENT",
+          "market_session": null,
+          "metric_id": "case_shiller_national_hpi_level",
+          "model_version": "housing_real_estate.compose.v1",
+          "null_reason": null,
+          "observed_at": "2026-06-01",
+          "owner_ref": "data/fred/CSUSHPISA.parquet",
+          "reference_id": "mastermind.market_reference/v1#case_shiller_national_hpi_level",
+          "reference_period": "2026-06-01",
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "FRED:CSUSHPISA"
+          ],
+          "status": "PRESENT",
+          "transformation": "S&P CoreLogic Case-Shiller U.S. National Home Price Index, seasonally adjusted, republished by FRED (ruling R-1 -- neutral 'via FRED' attribution, never re-branded as this estate's own index). The published print is itself a roughly 2-month-lagged 3-month moving average by S&P's own construction, which this composer discloses but never un-smooths or nowcasts. (unverified against the parquet's own embedded metadata -- this composer cannot execute code to inspect it in this authoring environment; the SA/NSA basis is declared from the well-known FRED series convention / config.yml inline annotation instead, per the disclosed SA/NSA fallback law)",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "index_pt_jan2000_100",
+          "value": 331.893,
+          "value_type": "index"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "yoy_pct_change",
+          "calculation_as_of": "2026-06-01",
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "fred.CSUSHPISA.case_shiller_sa",
+          "definition_version": "1.0.0",
+          "direction_semantics": "higher_more_expensive",
+          "freshness": "CURRENT",
+          "market_session": null,
+          "metric_id": "case_shiller_national_hpi_yoy",
+          "model_version": "housing_real_estate.compose.v1",
+          "null_reason": "INSUFFICIENT_HISTORY",
+          "observed_at": "2026-06-01",
+          "owner_ref": "data/fred/CSUSHPISA.parquet",
+          "reference_id": "mastermind.market_reference/v1#case_shiller_national_hpi_yoy",
+          "reference_period": "2026-06-01",
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "FRED:CSUSHPISA"
+          ],
+          "status": "PRESENT",
+          "transformation": "12-month percent change of the same SA, ~2-month-lagged 3-month-moving-average series.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "percent",
+          "value": 1.5237,
+          "value_type": "percent"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "level",
+          "calculation_as_of": "2026-07-31",
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "zori.national.zori",
+          "definition_version": "1.0.0",
+          "direction_semantics": "higher_more_expensive_rent",
+          "freshness": "CURRENT",
+          "market_session": null,
+          "metric_id": "national_rent_zori_level",
+          "model_version": "housing_real_estate.compose.v1",
+          "null_reason": null,
+          "observed_at": "2026-07-31",
+          "owner_ref": "data/zori/national.parquet",
+          "reference_id": "mastermind.market_reference/v1#national_rent_zori_level",
+          "reference_period": "2026-07-31",
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "Zillow Research ZORI (national, smoothed)"
+          ],
+          "status": "PRESENT",
+          "transformation": "Zillow Research ZORI (smoothed, all home types), national aggregate, collected directly from Zillow -- not FRED. Zillow's own collector-side methodology note describes this series as seasonally adjusted, but the 2026-09-04 binding source census recorded it as NOT seasonally adjusted after inspecting the stored data; this composer follows the binding census ruling (NSA) (unverified against the parquet's own embedded metadata -- this composer cannot execute code to inspect it in this authoring environment; the SA/NSA basis is declared from the well-known FRED series convention / config.yml inline annotation instead, per the disclosed SA/NSA fallback law) and never combines it with the SA Case-Shiller series in one derived read. Approximately a 1-month publication lag per the collector's own note; no ALFRED-equivalent point-in-time vintage capture exists for this series.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "usd_per_month",
+          "value": 1962.188013617572,
+          "value_type": "number"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "yoy_pct_change",
+          "calculation_as_of": "2026-07-31",
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "zori.national.zori",
+          "definition_version": "1.0.0",
+          "direction_semantics": "higher_more_expensive_rent",
+          "freshness": "CURRENT",
+          "market_session": null,
+          "metric_id": "national_rent_zori_yoy",
+          "model_version": "housing_real_estate.compose.v1",
+          "null_reason": "INSUFFICIENT_HISTORY",
+          "observed_at": "2026-07-31",
+          "owner_ref": "data/zori/national.parquet",
+          "reference_id": "mastermind.market_reference/v1#national_rent_zori_yoy",
+          "reference_period": "2026-07-31",
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "Zillow Research ZORI (national, smoothed)"
+          ],
+          "status": "PRESENT",
+          "transformation": "12-month percent change of the same (NSA-per-census) series.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "percent",
+          "value": 2.3121,
+          "value_type": "percent"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "n/a",
+          "calculation_as_of": null,
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "NONE",
+          "definition_version": "1.0.0",
+          "direction_semantics": "n/a",
+          "freshness": "RIGHTS_BLOCKED",
+          "market_session": null,
+          "metric_id": "existing_home_sales",
+          "model_version": "housing_real_estate.compose.v1",
+          "null_reason": "RIGHTS_BLOCKED",
+          "observed_at": null,
+          "owner_ref": "NONE -- NAR terms bar storage in a retrieval system (ruling R-3)",
+          "reference_id": "mastermind.market_reference/v1#existing_home_sales",
+          "reference_period": null,
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "RIGHTS_BLOCKED",
+          "source_digest": null,
+          "source_refs": [
+            "NONE -- NAR terms bar storage in a retrieval system (ruling R-3)"
+          ],
+          "status": "ABSENT",
+          "transformation": "NAR (National Association of REALTORS) existing-home-sales data is rights-blocked for storage in this estate's retrieval system -- NAR's own terms bar storage, not merely redistribution. No NAR-derived series is ever stored or shown here, and this composer never builds an emulated stand-in for NAR's own index. A future in-house affordability construct may use only public, non-NAR inputs, and would never be labeled as NAR's.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "units_saar",
+          "value": null,
+          "value_type": "count"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "n/a",
+          "calculation_as_of": null,
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "NONE",
+          "definition_version": "1.0.0",
+          "direction_semantics": "n/a",
+          "freshness": "NOT_COVERED",
+          "market_session": null,
+          "metric_id": "new_home_sales",
+          "model_version": "housing_real_estate.compose.v1",
+          "null_reason": "NOT_COVERED",
+          "observed_at": null,
+          "owner_ref": "NONE -- no Census New Residential Sales collector is wired in this estate",
+          "reference_id": "mastermind.market_reference/v1#new_home_sales",
+          "reference_period": null,
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "NONE -- no Census New Residential Sales collector is wired in this estate"
+          ],
+          "status": "ABSENT",
+          "transformation": "Census Bureau New Residential Sales would supply this leg, but no collector for that release exists in this estate today. Building a new collector is out of scope for this composer; typed as not covered rather than estimated from a different series.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "units_saar",
+          "value": null,
+          "value_type": "count"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "n/a",
+          "calculation_as_of": null,
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "NONE",
+          "definition_version": "1.0.0",
+          "direction_semantics": "n/a",
+          "freshness": "NOT_COVERED",
+          "market_session": null,
+          "metric_id": "housing_completions",
+          "model_version": "housing_real_estate.compose.v1",
+          "null_reason": "NOT_COVERED",
+          "observed_at": null,
+          "owner_ref": "NONE -- no Census completions (COMPUTSA-equivalent) collector is wired",
+          "reference_id": "mastermind.market_reference/v1#housing_completions",
+          "reference_period": null,
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "NONE -- no Census completions (COMPUTSA-equivalent) collector is wired"
+          ],
+          "status": "ABSENT",
+          "transformation": "Census Bureau housing completions (a COMPUTSA-equivalent release) has no collector registered anywhere in this estate today. This composer does not build new collectors; typed as not covered.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "units_saar",
+          "value": null,
+          "value_type": "count"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "n/a",
+          "calculation_as_of": null,
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "NONE",
+          "definition_version": "1.0.0",
+          "direction_semantics": "n/a",
+          "freshness": "SOURCE_FAILED",
+          "market_session": null,
+          "metric_id": "pending_home_sales_redfin",
+          "model_version": "housing_real_estate.compose.v1",
+          "null_reason": "SOURCE_FAILED",
+          "observed_at": null,
+          "owner_ref": "NONE -- scripts/collect_redfin_hf.py store is empty",
+          "reference_id": "mastermind.market_reference/v1#pending_home_sales_redfin",
+          "reference_period": null,
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "NONE -- scripts/collect_redfin_hf.py store is empty"
+          ],
+          "status": "ABSENT",
+          "transformation": "scripts/collect_redfin_hf.py is a real, nightly-wired collector for this leg, but its store (data/redfin_hf/) was empty on the checked runner -- an honest 'collector exists, data absent' state, distinct from a leg with no collector at all. Once populated, this leg needs a 50-day publication lag before predictive use (tightened from an optimistic 30 days by prior phase-0 study), which this composer discloses but does not implement here -- there is no data flowing yet for that machinery to operate on.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "count",
+          "value": null,
+          "value_type": "count"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "n/a",
+          "calculation_as_of": null,
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "NONE",
+          "definition_version": "1.0.0",
+          "direction_semantics": "n/a",
+          "freshness": "SOURCE_FAILED",
+          "market_session": null,
+          "metric_id": "active_listings_redfin",
+          "model_version": "housing_real_estate.compose.v1",
+          "null_reason": "SOURCE_FAILED",
+          "observed_at": null,
+          "owner_ref": "NONE -- scripts/collect_redfin_hf.py store is empty",
+          "reference_id": "mastermind.market_reference/v1#active_listings_redfin",
+          "reference_period": null,
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "NONE -- scripts/collect_redfin_hf.py store is empty"
+          ],
+          "status": "ABSENT",
+          "transformation": "scripts/collect_redfin_hf.py is a real, nightly-wired collector for this leg, but its store (data/redfin_hf/) was empty on the checked runner -- an honest 'collector exists, data absent' state, distinct from a leg with no collector at all. Once populated, this leg needs a 50-day publication lag before predictive use (tightened from an optimistic 30 days by prior phase-0 study), which this composer discloses but does not implement here -- there is no data flowing yet for that machinery to operate on.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "count",
+          "value": null,
+          "value_type": "count"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "n/a",
+          "calculation_as_of": null,
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "NONE",
+          "definition_version": "1.0.0",
+          "direction_semantics": "n/a",
+          "freshness": "SOURCE_FAILED",
+          "market_session": null,
+          "metric_id": "price_drop_share_redfin",
+          "model_version": "housing_real_estate.compose.v1",
+          "null_reason": "SOURCE_FAILED",
+          "observed_at": null,
+          "owner_ref": "NONE -- scripts/collect_redfin_hf.py store is empty",
+          "reference_id": "mastermind.market_reference/v1#price_drop_share_redfin",
+          "reference_period": null,
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "NONE -- scripts/collect_redfin_hf.py store is empty"
+          ],
+          "status": "ABSENT",
+          "transformation": "scripts/collect_redfin_hf.py is a real, nightly-wired collector for this leg, but its store (data/redfin_hf/) was empty on the checked runner -- an honest 'collector exists, data absent' state, distinct from a leg with no collector at all. Once populated, this leg needs a 50-day publication lag before predictive use (tightened from an optimistic 30 days by prior phase-0 study), which this composer discloses but does not implement here -- there is no data flowing yet for that machinery to operate on. This particular leg is additionally roughly 34.5 percent pure calendar-month seasonality when not deseasonalized (prior phase-0 finding); a future consumer must deseasonalize before use.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "percent",
+          "value": null,
+          "value_type": "percent"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "n/a",
+          "calculation_as_of": null,
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "NONE",
+          "definition_version": "1.0.0",
+          "direction_semantics": "n/a",
+          "freshness": "SOURCE_FAILED",
+          "market_session": null,
+          "metric_id": "median_days_on_market_redfin",
+          "model_version": "housing_real_estate.compose.v1",
+          "null_reason": "SOURCE_FAILED",
+          "observed_at": null,
+          "owner_ref": "NONE -- scripts/collect_redfin_hf.py store is empty",
+          "reference_id": "mastermind.market_reference/v1#median_days_on_market_redfin",
+          "reference_period": null,
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "NONE -- scripts/collect_redfin_hf.py store is empty"
+          ],
+          "status": "ABSENT",
+          "transformation": "scripts/collect_redfin_hf.py is a real, nightly-wired collector for this leg, but its store (data/redfin_hf/) was empty on the checked runner -- an honest 'collector exists, data absent' state, distinct from a leg with no collector at all. Once populated, this leg needs a 50-day publication lag before predictive use (tightened from an optimistic 30 days by prior phase-0 study), which this composer discloses but does not implement here -- there is no data flowing yet for that machinery to operate on.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "days",
+          "value": null,
+          "value_type": "count"
+        }
+      ]
+    }
+  },
   "region": {
     "code": "US",
     "display_name": "United States",
@@ -1366,7 +2069,7 @@
         },
         "owner_ref": "collectors.fred[MORTGAGE30US]",
         "provider": "Freddie Mac / FRED",
-        "reference_period": "2026-09-03",
+        "reference_period": "2026-09-10",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
