@@ -15,8 +15,10 @@ rationale: >
   integration model and implementation plan. Protected source now includes W6-C1's
   versioned consultation contract and Company MCP facet, so a new Grok callback/result
   system would be both unnecessary and architecturally wrong. The highest-value use is
-  reducing manual continuation and evidence-reconstruction while deterministic services
-  retain liveness, deduplication, effects and recovery.
+  reducing manual continuation and evidence reconstruction while deterministic services
+  retain liveness, deduplication, effects and recovery. Current protected source also
+  confirms Grok Secretary is an approved team principal and that read-only security must
+  be proportional rather than blocked by exact roster ceremony.
 alternatives:
   - option: Make Grok a second Meta-CEO or mandatory supervisor over every worker.
     why_not: >
@@ -42,14 +44,16 @@ alternatives:
       inside its current grant without a fresh Web Sol turn.
 evidence:
   - "Chairman live Grok Bot conversation: approved the operations-foreman direction and then requested hardening, infrastructure/system integration and the full implementation plan; stated Grok Bot is ready for setup after research."
-  - "Protected Mastermind f4730cc65436d86500ef827c24493f83a7e41def: W6-C1 versioned peer-consultation contract and distinct four-tool Company Consultation MCP facet; Sol Skillpack 1.0.1 / bootstrap-major 1."
+  - "Protected Mastermind d07689b7737f324c16b142d03bffc89cdcf7a27d; Sol Skillpack mastermind.sol_skillpack.v1 1.0.1 / bootstrap-major 1 loaded from that exact commit."
+  - "Protected W6-C1 at parent f4730cc65436d86500ef827c24493f83a7e41def: versioned peer-consultation contract and distinct four-tool Company Consultation MCP facet."
+  - "Protected PR #617 / merge d07689b7737f324c16b142d03bffc89cdcf7a27d: Grok Secretary is an approved team principal; exact roster count is not a read-only C1 blocker; hard stops remain concrete secret, identity, duplicate-publication, stale-truth, effect-unknown, second-plane and destructive-authority failures."
   - "Mastermind draft PR #624 at 34b2e25b946e9e7dade78fb7cead7a9f19ea2aca: five documentation paths including the controlling infrastructure amendment, full implementation plan, reconciled canary plan and owner setup runbook."
   - "Mastermind draft PR #615: W6-C2 runtime/receipt half remains unmerged/production-disarmed and is the first implementation dependency; downstream Grok code must bind to its protected interface, not draft symbols."
   - "Mastermind control_plane/wake_transport.py at f4730cc... names grok-computer with transport_implemented=false; control_plane/session_targets.py has no grok-bot reasoning surface; checked-in targets are disabled and production is false."
   - "Mastermind integrations/mastermind_company_mcp/consultation.py and server.py at f4730cc... expose exactly company.peers, company.consult, company.reply and company.consultation with one-answer/four-evidence/zero-forward-hop limits and no provider I/O."
   - "Mastermind integrations/executive_wake/codex_app_server.py at f4730cc... provides the existing one-call, typed acceptance/delivery and EFFECT_UNKNOWN adapter pattern the Grok transport must extend."
   - "Official contracts read 2026-09-14: https://cursor.com/help/grok-bot/plans ; https://cursor.com/help/grok-bot/routines ; https://docs.x.ai/grok-bot/overview ; https://docs.x.ai/grok-bot/bots ; https://docs.x.ai/grok-bot/security-faq ; https://docs.x.ai/grok/connectors/custom-mcp-tunneling ; https://docs.x.ai/grok/connectors ."
-  - "Macro agentos/README.md read at e0e3fda2fa2a44d8d64c3f0a52b9d56c1de3653b: Agent OS records continuity but never admits or starts execution."
+  - "Macro agentos/README.md read at e0e3fda2fa2a44d8d64c3f0a52b9d56c1de3653b; later main movement to 4b0d6a553b6a970688ccd2f7ac112bf30e56edf2 changes only data/research_vault/catalog.json and is path-disjoint."
 affects:
   - "mastermind:docs/superpowers/specs/2026-09-14-grok-bot-autonomy-foreman-design.md"
   - "mastermind:docs/superpowers/specs/2026-09-14-grok-bot-autonomy-infrastructure-amendment.md"
@@ -88,8 +92,9 @@ availability, requester consumption, work acceptance or completion.
 
 Use one Bot with SENTINEL and FOREMAN task modes. These are not separate identities.
 A Bot's company identity is the admitted Worker/Attempt plus RuntimeBinding. A dedicated
-Cursor user is required when credential isolation matters because all Bots under one
-user share the cloud computer/files/browser sessions/logins.
+Cursor user is required only when the connected credentials or data need isolation from
+other Bots; it is not an exact-roster or read-only observability prerequisite. Multiple
+Bots under one user still share the cloud computer/files/browser sessions/logins.
 
 The Bot never receives provider/helper credentials. It asks `company.consult` for an
 opaque peer; existing Resolver/Router/Capacity/provider owners determine a lawful route.
@@ -109,8 +114,14 @@ Independent effectful/source-modifying work remains an Executive child Job.
 Mastermind PR #624 remains documentation-only. No runtime/config/service/account/credential/
 Bot/routine/tunnel/provider/billing/production effect follows from this decision or PR.
 
-## Security and economics laws
+## Proportional security and economics laws
 
+Read-only observation should be protected by identity, least-privilege access, stale/unknown
+honesty and no duplicate state—not blocked by exact team roster count or repeated ceremony.
+Stronger gates begin when the lane adds secrets, provider submissions, result mutation,
+source writes, production effects or delegated operational authority.
+
+- Grok Secretary is an approved team principal; do not create a removal/predecessor gate.
 - Cursor/SuperGrok grants do not stack; on-demand is a separate account-level path.
 - A monthly on-demand limit is not a strict stop in the middle of a running turn.
 - Do not enable/raise on-demand or purchased-credit overflow from this program without
