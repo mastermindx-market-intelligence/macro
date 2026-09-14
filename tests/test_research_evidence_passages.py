@@ -148,6 +148,94 @@ def test_no_match_and_noise_query_are_distinct_and_never_manufacture_a_passage()
     assert noise["passages"] == []
 
 
+def test_passage_window_is_bounded_independent_of_match_length():
+    """R5 BLOCKER-1: an arbitrarily long single atom (one unsegmented Han run)
+    must not widen the emitted window past the configured cap, and the locator
+    must stay coherent (start <= match_start < match_end <= end)."""
+    han_run = "甲乙丙丁戊己庚辛壬癸" * 2000  # 20,000 Han chars, one atom
+    body = "前言。" + han_run + "。结论。"
+
+    result = corpus.find_evidence_passages(_doc(body), han_run, window_chars=900)
+
+    assert result["status"] == "matched"
+    passage = result["passages"][0]
+    cap = max(80, 900)
+    assert len(passage["text"]) <= cap
+    assert len(passage["match_text"]) <= cap
+    locator = passage["locator"]
+    assert 0 <= locator["start_char"] <= locator["match_start_char"]
+    assert locator["match_start_char"] < locator["match_end_char"]
+    assert locator["match_end_char"] <= locator["end_char"]
+    assert locator["end_char"] - locator["start_char"] <= cap
+    assert passage["text"] == body[locator["start_char"]:locator["end_char"]]
+    assert passage["match_text"] == body[
+        locator["match_start_char"]:locator["match_end_char"]
+    ]
+
+
+def test_passage_window_bounded_escalates_across_several_long_atoms():
+    """Three separated 8,000-char Han runs must not each smuggle their full
+    length through — every passage individually obeys the window cap."""
+    chunk = "子丑寅卯辰巳午未申酉" * 800  # 8,000 Han chars
+    body = f"{chunk}。ASCII break。{chunk}。ASCII break two。{chunk}"
+
+    result = corpus.find_evidence_passages(_doc(body), chunk, window_chars=900)
+
+    assert result["status"] == "matched"
+    cap = max(80, 900)
+    for passage in result["passages"]:
+        assert len(passage["text"]) <= cap
+        assert len(passage["match_text"]) <= cap
+
+
+def test_ascii_identifier_matches_adjacent_to_han_script():
+    """R5 MAJOR-2(b): Han is not an ASCII identifier continuation, so a Latin
+    ticker/acronym directly against Chinese prose must still match — but a
+    genuinely longer ASCII sibling (AAPLX) must still be rejected."""
+    fed = corpus.find_evidence_passages(_doc("美联储fed决议维持利率不变。"), "fed")
+    assert fed["status"] == "matched"
+    assert fed["passages"][0]["match_text"] == "fed"
+
+    gdp = corpus.find_evidence_passages(_doc("上半年GDP增长放缓。"), "GDP")
+    assert gdp["status"] == "matched"
+    assert gdp["passages"][0]["match_text"] == "GDP"
+
+    cpi = corpus.find_evidence_passages(_doc("本月CPI数据超预期。"), "CPI")
+    assert cpi["status"] == "matched"
+
+    aapl = corpus.find_evidence_passages(_doc("苹果AAPL公司业绩强劲。"), "AAPL")
+    assert aapl["status"] == "matched"
+    assert aapl["passages"][0]["match_text"] == "AAPL"
+
+    decoy = corpus.find_evidence_passages(_doc("苹果AAPLX决议。"), "AAPL")
+    assert decoy["status"] == "no_matching_passage", "AAPLX is not an AAPL hit"
+
+
+def test_source_identity_fails_closed_for_missing_or_malformed_content_sha256():
+    """R5 requirement 2: a source-bound passage requires a canonical lowercase
+    64-hex content_sha256. Any other shape must yield no passages/body, zero
+    debit-eligible status, and an unpolluted binding — never a match."""
+    body = "The desk raised AAPL demand estimates after channel checks."
+    bad_hashes = (
+        None, "", "   ", "not-a-sha", "a" * 63, "a" * 65,
+        "g" * 64,  # non-hex
+        12345, 1.5, True, [], {},
+    )
+    for bad in bad_hashes:
+        result = corpus.find_evidence_passages(
+            _doc(body, content_sha256=bad), "AAPL demand"
+        )
+        assert result["status"] == "body_unavailable", bad
+        assert result["passages"] == [], bad
+        assert result["source_binding"]["content_sha256"] == "", bad
+
+    # A genuinely valid digest still matches — the gate is precise, not blanket.
+    good = corpus.find_evidence_passages(
+        _doc(body, content_sha256="a" * 64), "AAPL demand"
+    )
+    assert good["status"] == "matched"
+
+
 def test_entitled_reader_adds_evidence_metadata_without_widening_legacy_reader(
         tmp_path, monkeypatch):
     import sqlite3

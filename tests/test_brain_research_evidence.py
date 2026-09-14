@@ -131,14 +131,27 @@ def test_meaningful_question_returns_exact_passage_binding_and_open_link(
     assert passage["matched_terms"] == ["aapl", "demand"]
     assert passage["locator"]["kind"] == "page_text_span"
     assert passage["locator"]["page"] == 2
-    assert passage["open_url"] == evidence["open_url"]
-    parsed = urlparse(evidence["open_url"])
-    assert parsed.scheme == "https" and parsed.netloc == "mastermind-x.com"
-    assert parsed.path == "/research_vault.html"
-    params = parse_qs(parsed.query)
-    assert params == {
-        "doc": [REPORT_ID], "find": ["AAPL demand"], "page": ["2"]
-    }
+
+    # Rights-safe link (R5 requirement 3): passage-level open_url carries only
+    # doc+page — never publisher/match text, never a `find=` param.
+    parsed_passage = urlparse(passage["open_url"])
+    assert parsed_passage.scheme == "https" and parsed_passage.netloc == "mastermind-x.com"
+    assert parsed_passage.path == "/research_vault.html"
+    assert parse_qs(parsed_passage.query) == {"doc": [REPORT_ID]}
+    assert parse_qs(parsed_passage.fragment) == {"page": ["2"]}
+    assert "find" not in passage["open_url"]
+    assert "AAPL demand" not in passage["open_url"]
+
+    # Top-level evidence.open_url may additionally carry the bounded,
+    # NFKC-normalized user query once, in the fragment, as `q=`.
+    parsed_top = urlparse(evidence["open_url"])
+    assert parse_qs(parsed_top.query) == {"doc": [REPORT_ID]}
+    top_fragment = parse_qs(parsed_top.fragment)
+    assert top_fragment["page"] == ["2"]
+    assert top_fragment["q"] == ["AAPL demand"]
+    assert "find" not in evidence["open_url"]
+    assert passage["open_url"] != evidence["open_url"]
+
     assert "query-centered" in result["note"].lower()
     assert "open source" in result["note"].lower()
 
@@ -240,6 +253,63 @@ def test_generic_intent_variants_and_noise_keep_the_legacy_full_note_path(
     assert len(debits) == len(generic_queries)
 
 
+# R5 MAJOR-1 / MAJOR-2(a): the commission's required EN/ZH CATEGORY/STRUCTURE
+# generic-intent coverage — not a sentence table, but the classifier must
+# recognize each of these shapes as "no residual topic" regardless of phrasing.
+_REQUIRED_GENERIC_QUERIES = (
+    "Summarize",
+    "Please provide an overview",
+    "Explain what this report says",
+    "Give me the gist of this report",
+    "Tell me about this paper",
+    "What are the key takeaways from this note?",
+    "Break down this research note",
+    "What's the thesis of this paper?",
+    "Walk me through this report",
+    "TL;DR",
+    "Please summarise this Example Bank note in bullet points",
+    "Summarize the Goldman report",
+    "请总结一下",
+    "帮我概括一下",
+    "这篇讲了什么",
+    "这份报告说了什么",
+    "请帮我分析这篇研究",
+    "主要观点是什么",
+)
+
+# The residual-topic controls the same commission requires to STAY on the
+# evidence path — generic-sounding vocabulary with a real topic attached must
+# never be swallowed by the generic classifier.
+_REQUIRED_RESIDUAL_TOPIC_QUERIES = (
+    "Summarize inflation expectations",
+    "What does this report say about AAPL demand?",
+    "Explain the report's view on semiconductor inventories",
+    "请总结通胀预期",
+    "这篇如何讨论苹果需求",
+    "分析美联储利率决议",
+)
+
+
+def test_required_en_zh_generic_phrasings_keep_the_legacy_full_note_path(
+        tmp_path, monkeypatch):
+    _seed(tmp_path)
+    evidence_calls, legacy_calls = _stub_documents(
+        monkeypatch, "The complete stored argument about inflation."
+    )
+    debits = _stub_quota(monkeypatch)
+
+    for query in _REQUIRED_GENERIC_QUERIES:
+        result = _report(tmp_path, query)
+        assert result["evidence"] is None, query
+        assert result["report"]["body_text"] == \
+            "The complete stored argument about inflation.", query
+        assert result["report"]["body_truncated"] is False, query
+
+    assert evidence_calls == []
+    assert legacy_calls == [REPORT_ID] * len(_REQUIRED_GENERIC_QUERIES)
+    assert len(debits) == len(_REQUIRED_GENERIC_QUERIES)
+
+
 def test_generic_intent_with_a_residual_topic_uses_evidence_selection(
         tmp_path, monkeypatch):
     _seed(tmp_path)
@@ -256,6 +326,31 @@ def test_generic_intent_with_a_residual_topic_uses_evidence_selection(
     assert evidence_calls == [REPORT_ID]
     assert legacy_calls == []
     assert len(debits) == 1
+
+
+def test_required_residual_topic_phrasings_use_evidence_selection(
+        tmp_path, monkeypatch):
+    """R5 MAJOR-1/MAJOR-2(a): each of these must NOT be classified generic —
+    a real topic word survives the intent/scaffolding strip, so evidence is
+    always populated (whether or not the seeded body happens to match)."""
+    _seed(tmp_path)
+    body = (
+        "本报告认为美联储的利率决议结果将影响通胀预期。"
+        " The desk raised AAPL demand estimates after semiconductor "
+        "inventory checks."
+    )
+    evidence_calls, legacy_calls = _stub_documents(monkeypatch, body)
+    _stub_quota(monkeypatch)
+
+    for query in _REQUIRED_RESIDUAL_TOPIC_QUERIES:
+        result = _report(tmp_path, query)
+        assert result["evidence"] is not None, query
+        assert result["evidence"]["status"] in {
+            "matched", "no_matching_passage",
+        }, query
+
+    assert legacy_calls == []
+    assert evidence_calls == [REPORT_ID] * len(_REQUIRED_RESIDUAL_TOPIC_QUERIES)
 
 
 def test_unavailable_evidence_body_is_disclosed_and_unmetered(
@@ -302,6 +397,33 @@ def test_matched_selector_without_usable_text_is_not_called_an_extraction_failur
     assert debits == []
     assert "no usable passage text was available" in result["note"].lower()
     assert "not reachable right now" not in result["note"].lower()
+
+
+def test_missing_source_identity_fails_closed_and_gives_an_honest_note(
+        tmp_path, monkeypatch):
+    """R5 requirement 2: an unverifiable content_sha256 must give an honest
+    source-identity note — never a scan/extraction claim — and must never
+    serve or charge for a full-text view."""
+    _seed(tmp_path)
+    evidence_calls, legacy_calls = _stub_documents(
+        monkeypatch, "AAPL demand is accelerating.",
+        content_sha256="not-a-valid-sha",
+    )
+    debits = _stub_quota(monkeypatch)
+
+    result = _report(tmp_path, "AAPL demand")
+
+    assert evidence_calls == [REPORT_ID] and legacy_calls == []
+    assert debits == []
+    assert result["quota"] is None
+    assert result["report"]["body_text"] == ""
+    assert result["evidence"]["status"] == "body_unavailable"
+    assert result["evidence"]["passages"] == []
+    assert result["evidence"]["source_binding"]["content_sha256"] == ""
+    note = result["note"].lower()
+    assert "source-identity" in note or "source identity" in note
+    assert "scanned/image-only" not in result["note"]
+    assert "not reachable right now" not in note
 
 
 def test_denied_evidence_view_leaks_no_passage_or_body(tmp_path, monkeypatch):
@@ -383,12 +505,57 @@ def test_evidence_peek_failure_fails_open_and_a_served_match_still_debits(
 
 def test_evidence_mode_whole_response_obeys_the_existing_response_cap(
         tmp_path, monkeypatch):
-    """Passage mode cannot hide an over-cap text field outside body_text."""
-    _seed(tmp_path)
-    _stub_documents(monkeypatch, "AAPL demand " + ("supporting context " * 5000))
+    """R5 BLOCKER-1 (H-1 fix): passage mode cannot hide an over-cap text field
+    outside body_text. Unlike the predecessor's short-atom query (which
+    de-duplicated to a few tokens and never drove the defect), this uses a long
+    Han run that actually MATCHES, so a per-node or per-response escape would be
+    caught. Reuses the pre-existing owner invariant's per-node `_walk` shape
+    (tests/test_brain_market_intel.py:1637) — no key anywhere, including a field
+    added later, may exceed the cap — plus the commission's recursive-sum check."""
+    han_run = "甲乙丙丁戊己庚辛壬癸" * 2000  # 20,000 Han chars, one unsegmented atom
+    body = "前言。" + han_run + "。结论。"
+    _stub_documents(monkeypatch, body)
     _stub_quota(monkeypatch)
 
-    result = _report(tmp_path, "AAPL demand " + ("unmatched-term " * 5000))
+    result = _report(tmp_path, han_run)
+
+    def _walk(node):
+        if isinstance(node, str):
+            assert len(node) <= bmi.REPORT_BODY_MAX_CHARS
+        elif isinstance(node, dict):
+            for value in node.values():
+                _walk(value)
+        elif isinstance(node, list):
+            for value in node:
+                _walk(value)
+
+    _walk(result)
+
+    def string_total(node):
+        if isinstance(node, str):
+            return len(node)
+        elif isinstance(node, dict):
+            return sum(string_total(value) for value in node.values())
+        elif isinstance(node, list):
+            return sum(string_total(value) for value in node)
+        return 0
+
+    assert string_total(result) <= bmi.REPORT_BODY_MAX_CHARS
+    assert result["evidence"]["status"] == "matched"
+    assert len(result["evidence"]["passages"][0]["text"]) < len(han_run)
+    assert len(result["evidence"]["passages"][0]["match_text"]) < len(han_run)
+
+
+def test_evidence_mode_whole_response_cap_escalates_across_several_long_atoms(
+        tmp_path, monkeypatch):
+    """The BLOCKER-1 falsifier's escalated case: several long Han runs must not
+    each smuggle their full length through multiple passages."""
+    chunk = "子丑寅卯辰巳午未申酉" * 800  # 8,000 Han chars
+    body = f"{chunk}。分隔一。{chunk}。分隔二。{chunk}"
+    _stub_documents(monkeypatch, body)
+    _stub_quota(monkeypatch)
+
+    result = _report(tmp_path, chunk)
 
     def string_total(node):
         if isinstance(node, str):
@@ -465,6 +632,106 @@ def test_evidence_projection_rejects_invalid_binding_types_and_preserves_only_sc
     assert invalid_tail["source_binding"]["tail_omitted"] is None
 
 
+def test_evidence_passage_projection_rejects_malformed_locators():
+    """R5 requirement 6: strict nonnegative-int validation, coherent span
+    ordering, and no Python-repr leak of a non-string text field — the whole
+    passage is omitted (fail closed), never a raised exception or a coerced
+    guess."""
+    good_raw = {
+        "text": "some text", "match_text": "text",
+        "matched_terms": ["text"],
+        "locator": {
+            "kind": "text_span", "start_char": 0, "end_char": 9,
+            "match_start_char": 5, "match_end_char": 9,
+        },
+    }
+    assert bmi._project_evidence_passage(good_raw, REPORT_ID) is not None
+
+    malformed_locators = (
+        {"start_char": "abc", "end_char": 9, "match_start_char": 5, "match_end_char": 9},
+        {"start_char": -5, "end_char": 9, "match_start_char": 5, "match_end_char": 9},
+        {"start_char": 0, "end_char": 9, "match_start_char": True, "match_end_char": 9},
+        {"start_char": 0, "end_char": 9, "match_start_char": 5, "match_end_char": 3.9},
+        {"start_char": 0, "end_char": 9, "match_start_char": 5, "match_end_char": 5},
+        {"start_char": 5, "end_char": 9, "match_start_char": 0, "match_end_char": 3},
+        {"start_char": 0, "end_char": 3, "match_start_char": 5, "match_end_char": 9},
+    )
+    for locator in malformed_locators:
+        raw = {**good_raw, "locator": locator}
+        assert bmi._project_evidence_passage(raw, REPORT_ID) is None, locator
+
+    non_string_text = {**good_raw, "text": {"a": 1}}
+    assert bmi._project_evidence_passage(non_string_text, REPORT_ID) is None
+
+    non_string_match_text = {**good_raw, "match_text": [1, 2, 3]}
+    assert bmi._project_evidence_passage(non_string_match_text, REPORT_ID) is None
+
+    unsupported_kind = {**good_raw, "locator": {**good_raw["locator"], "kind": "score"}}
+    projected = bmi._project_evidence_passage(unsupported_kind, REPORT_ID)
+    assert projected["locator"]["kind"] == "text_span"
+
+
+def test_evidence_passage_projection_bounds_text_defensively():
+    """Defense in depth: even if the corpus owner's own window cap were
+    bypassed, the projector still bounds text/match_text independently."""
+    huge = "x" * 50_000
+    raw = {
+        "text": huge, "match_text": huge, "matched_terms": [],
+        "locator": {
+            "kind": "text_span", "start_char": 0, "end_char": len(huge),
+            "match_start_char": 0, "match_end_char": len(huge),
+        },
+    }
+    projected = bmi._project_evidence_passage(raw, REPORT_ID)
+    assert len(projected["text"]) < len(huge)
+    assert len(projected["match_text"]) < len(huge)
+
+
+def test_evidence_open_url_is_rights_safe_with_bounded_fragment_query():
+    """R5 requirement 3: doc is the only query param; page/q live only in an
+    optional fragment; no publisher/match text ever enters the URL, and there
+    is no `find=` parameter at all."""
+    bare = bmi._evidence_open_url(REPORT_ID)
+    assert bare == f"https://mastermind-x.com/research_vault.html?doc={REPORT_ID}"
+
+    with_page = bmi._evidence_open_url(REPORT_ID, page=2)
+    assert with_page == (
+        f"https://mastermind-x.com/research_vault.html?doc={REPORT_ID}#page=2"
+    )
+
+    with_q = bmi._evidence_open_url(REPORT_ID, page=2, q="AAPL demand")
+    assert with_q.startswith(
+        f"https://mastermind-x.com/research_vault.html?doc={REPORT_ID}#page=2&q="
+    )
+    assert "AAPL demand" not in with_q  # bounded/encoded, not raw
+    assert "find" not in with_q
+
+    # Invalid/nonpositive page is omitted, not clamped or coerced.
+    assert bmi._evidence_open_url(REPORT_ID, page=0) == bare
+    assert bmi._evidence_open_url(REPORT_ID, page=-3) == bare
+    assert bmi._evidence_open_url(REPORT_ID, page="abc") == bare
+
+    # Blank/whitespace-only q is omitted (a generic call has no user question).
+    assert bmi._evidence_open_url(REPORT_ID, q="   ") == bare
+    assert bmi._evidence_open_url(REPORT_ID, q="") == bare
+
+    # There is no way to pass publisher/match text into this function at all.
+    import inspect
+    params = set(inspect.signature(bmi._evidence_open_url).parameters)
+    assert "match_text" not in params
+    assert "find" not in params
+
+
+def test_evidence_link_query_is_nfkc_normalized_and_bounded():
+    assert bmi._evidence_link_query("ＡＡＰＬ demand") == "AAPL demand"
+    assert bmi._evidence_link_query("") == ""
+    assert bmi._evidence_link_query("   ") == ""
+    assert bmi._evidence_link_query(None) == ""
+    long_query = "topic " * 200
+    bounded = bmi._evidence_link_query(long_query)
+    assert len(bounded) <= bmi._EVIDENCE_QUERY_MAX_CHARS
+
+
 def test_tool_schema_tells_the_model_to_request_and_open_supporting_evidence():
     schema = bmi.RESEARCH_TOOL_SCHEMA
     description = schema["description"].lower()
@@ -479,3 +746,7 @@ def test_tool_schema_tells_the_model_to_request_and_open_supporting_evidence():
     assert "exact question" in query_help
     assert "report" in query_help and "ignored" not in query_help
     assert "query-centered" in mode_help
+    # R5 requirement 5: Chinese factual retrieval is honestly scoped to literal
+    # key terms/phrases, not an unsegmented sentence the selector cannot parse.
+    assert "chinese" in query_help
+    assert "key term" in query_help or "key phrase" in query_help
