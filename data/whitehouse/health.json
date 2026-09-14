@@ -1,10 +1,23 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-09-13T00:59:41.982751+00:00",
-  "posts_seen": 10,
-  "seen_total": 184,
-  "evaluated": 0,
+  "as_of": "2026-09-14T19:26:17.199379+00:00",
+  "posts_seen": 7,
+  "seen_total": 187,
+  "evaluated": 2,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": []
+  "gate_scores": [
+    {
+      "id": "wh-2026-09-14-nominations-sent-to-the-senate-9fc3",
+      "importance": 5,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-09-14-warrior-ethos-in-action-dude-44-bravos-incredible-story",
+      "importance": 5,
+      "activated": false,
+      "degraded_reason": null
+    }
+  ]
 }
