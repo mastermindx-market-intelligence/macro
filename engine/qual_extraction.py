@@ -177,9 +177,11 @@ _CITATION_NUMBER_AT = re.compile(
 )
 _CITATION_CURRENCY = frozenset("$€£¥")
 _CITATION_SIGNS = frozenset("+-−")
+_CITATION_HARD_BOUNDARIES = frozenset(".,!?;:。！？；，、：—–")
+_CITATION_BOUNDARY_TOKEN = "\x1e"
 
 
-def _citation_tokens(text: str) -> list[str]:
+def _citation_tokens(text: str, *, preserve_hard_boundaries: bool = False) -> list[str]:
     """Return Unicode-safe citation tokens with Han characters addressable.
 
     NFKC makes full-width and compatibility typography comparable. Non-Han
@@ -187,6 +189,8 @@ def _citation_tokens(text: str) -> list[str]:
     cannot ground itself inside ``corporate``. Numeric tokens preserve signs,
     decimals, percentages, and common magnitude units. Han characters are
     individual tokens because Chinese source text does not require whitespace.
+    The verifier may also retain a non-user-producible boundary token for clause
+    punctuation so adjacent sentences cannot be spliced into a fabricated quote.
     """
     normalized = unicodedata.normalize("NFKC", str(text or "")).casefold()
     tokens: list[str] = []
@@ -211,6 +215,15 @@ def _citation_tokens(text: str) -> list[str]:
                 index += 1
                 continue
             flush()
+            continue
+        if char in _CITATION_HARD_BOUNDARIES:
+            if (
+                preserve_hard_boundaries
+                and tokens
+                and tokens[-1] != _CITATION_BOUNDARY_TOKEN
+            ):
+                tokens.append(_CITATION_BOUNDARY_TOKEN)
+            index += 1
             continue
         if char in _CITATION_CURRENCY:
             tokens.append(char)
@@ -250,9 +263,16 @@ def quote_span_verified(body: str, quote_span: str, *, minimum_chars: int = 4) -
     """
     if isinstance(minimum_chars, bool) or not isinstance(minimum_chars, int) or minimum_chars < 1:
         raise ValueError("minimum_chars must be a positive integer")
-    source_tokens = _citation_tokens(body)
-    span_tokens = _citation_tokens(quote_span)
-    if not span_tokens or sum(len(token) for token in span_tokens) < minimum_chars:
+    source_tokens = _citation_tokens(body, preserve_hard_boundaries=True)
+    span_tokens = _citation_tokens(quote_span, preserve_hard_boundaries=True)
+    while span_tokens and span_tokens[0] == _CITATION_BOUNDARY_TOKEN:
+        span_tokens.pop(0)
+    while span_tokens and span_tokens[-1] == _CITATION_BOUNDARY_TOKEN:
+        span_tokens.pop()
+    span_chars = sum(
+        len(token) for token in span_tokens if token != _CITATION_BOUNDARY_TOKEN
+    )
+    if not span_tokens or span_chars < minimum_chars:
         return False
     separator = "\x1f"
     source = separator + separator.join(source_tokens) + separator

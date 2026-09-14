@@ -492,6 +492,16 @@ def test_shared_quote_span_verifier_preserves_unicode_and_token_boundaries():
     assert not qe.quote_span_verified("AAPL demand rose.", "ＭＳＦＴ demand rose")
 
 
+def test_shared_quote_span_verifier_rejects_cross_sentence_splices():
+    body = "Demand is strong. Losses widened sharply."
+    assert not qe.quote_span_verified(body, "strong losses")
+    assert qe.quote_span_verified(body, "strong. Losses")
+
+    chinese = "流动性改善。房地产风险上升。"
+    assert not qe.quote_span_verified(chinese, "改善房地产")
+    assert qe.quote_span_verified(chinese, "改善。房地产")
+
+
 if __name__ == "__main__":
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     failed = 0

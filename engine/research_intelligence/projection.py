@@ -8,19 +8,47 @@ from engine.qual_extraction import quote_span_verified
 from .schema import validate_rio
 
 
+def _text_hash(text: str) -> str:
+    return hashlib.sha256(str(text).encode("utf-8")).hexdigest()
+
+
+def _grounded_rio(rio: dict[str, Any]) -> dict[str, Any]:
+    return validate_rio(rio, require_grounded_claims=True)
+
+
+def _supported_text_is_verbatim(
+    text: str,
+    claims: list[dict[str, Any]],
+    support: list[int],
+) -> bool:
+    for index in support:
+        for evidence in claims[index]["evidence"]:
+            quote = evidence["quote_span"]
+            if quote_span_verified(quote, text, minimum_chars=25):
+                return True
+            if quote_span_verified(text, quote, minimum_chars=25):
+                return True
+    return False
+
+
 def summary_points(rio: dict[str, Any], *, limit: int = 6) -> list[dict[str, Any]]:
-    """Project private rows without collapsing source and synthesis layers."""
-    obj = validate_rio(rio)
+    """Project private references without copying licensed source-claim text."""
+    obj = _grounded_rio(rio)
     if limit <= 0:
         return []
     doc = obj["document"]
     thesis = obj["analysis"]["thesis"]
+    if _supported_text_is_verbatim(
+        thesis["summary"], obj["claims"], thesis["support_claim_indices"]
+    ):
+        raise ValueError("analysis.thesis.summary contains verbatim private evidence")
     rows: list[dict[str, Any]] = [{
         "schema": "mastermind.research_summary_point.v1",
         "source_document_id": doc["id"],
         "source_content_sha256": doc["content_sha256"],
         "epistemic_layer": "model_synthesis",
         "text": thesis["summary"],
+        "text_visibility": "derived_summary",
         "support_claim_indices": list(thesis["support_claim_indices"]),
         "authority": "descriptive_research_only",
     }]
@@ -30,40 +58,38 @@ def summary_points(rio: dict[str, Any], *, limit: int = 6) -> list[dict[str, Any
             "source_document_id": doc["id"],
             "source_content_sha256": doc["content_sha256"],
             "epistemic_layer": "source_claim",
-            "text": claim["statement"],
+            "text": "",
+            "text_visibility": "private_rio_only",
+            "claim_statement_sha256": _text_hash(claim["statement"]),
             "support_claim_indices": [index],
             "authority": "descriptive_research_only",
         })
     dedup: list[dict[str, Any]] = []
-    seen: set[tuple[str, str, tuple[int, ...]]] = set()
+    seen: set[tuple[str, str, str, tuple[int, ...]]] = set()
     for row in rows:
         key = (
             row["epistemic_layer"],
             row["text"],
+            str(row.get("claim_statement_sha256") or ""),
             tuple(row["support_claim_indices"]),
         )
-        if row["text"] and key not in seen:
+        if key not in seen:
             seen.add(key)
             dedup.append(row)
     return dedup[:limit]
 
 
-def _quote_hash(quote: str) -> str:
-    return hashlib.sha256(str(quote).encode("utf-8")).hexdigest()
-
-
 def claim_edges(rio: dict[str, Any]) -> list[dict[str, Any]]:
-    """Project descriptive claim edges without exposing licensed quote text.
+    """Project descriptive claim edges without exposing licensed source text.
 
-    These are private context edges only. Source-content and evidence hashes
-    preserve lineage while quote spans remain inside the entitled RIO artifact.
-    Returning this projection does not waive Research Vault access controls.
+    Source-content, statement, and evidence hashes preserve lineage while all
+    private claim/quote text remains inside the entitled RIO artifact.
     """
-    obj = validate_rio(rio)
+    obj = _grounded_rio(rio)
     doc = obj["document"]
     edges: list[dict[str, Any]] = []
     for idx, claim in enumerate(obj["claims"]):
-        evidence_sha256 = [_quote_hash(e["quote_span"]) for e in claim["evidence"]]
+        evidence_sha256 = [_text_hash(e["quote_span"]) for e in claim["evidence"]]
         grounded_entities = [
             entity for entity in claim["entities"]
             if any(
@@ -71,7 +97,8 @@ def claim_edges(rio: dict[str, Any]) -> list[dict[str, Any]]:
                 for evidence in claim["evidence"]
             )
         ]
-        for entity in grounded_entities or ["__unresolved__"]:
+        entities: list[str | None] = grounded_entities if grounded_entities else [None]
+        for entity in entities:
             edges.append({
                 "schema": "mastermind.research_claim_edge.v1",
                 "source_document_id": doc["id"],
@@ -82,10 +109,8 @@ def claim_edges(rio: dict[str, Any]) -> list[dict[str, Any]]:
                 "claim_index": idx,
                 "epistemic_layer": "source_claim",
                 "entity": entity,
-                "entity_grounding": (
-                    "unresolved" if entity == "__unresolved__" else "quote_mention"
-                ),
-                "statement": claim["statement"],
+                "entity_grounding": "unresolved" if entity is None else "quote_mention",
+                "statement_sha256": _text_hash(claim["statement"]),
                 "horizon": claim["horizon"],
                 "explicit": claim["explicit"],
                 "evidence_sha256": evidence_sha256,

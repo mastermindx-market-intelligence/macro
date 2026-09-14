@@ -10,6 +10,8 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from engine.qual_extraction import citation_normalize
+
 SCHEMA = "mastermind.research_intelligence.v1"
 _SOURCE_TYPES = {"institutional_research", "qualitative_article", "transcript", "policy", "other"}
 _DIRECTIONS = {"bullish", "bearish", "mixed", "neutral", "unclear"}
@@ -66,6 +68,38 @@ def _support(value: Any, claim_count: int) -> list[int]:
     return out
 
 
+def _contains_token_sequence(haystack: list[str], needle: list[str]) -> bool:
+    if not needle or len(needle) > len(haystack):
+        return False
+    width = len(needle)
+    return any(haystack[index:index + width] == needle for index in range(len(haystack) - width + 1))
+
+
+def claim_statement_supported(statement: str, evidence: list[dict[str, str]]) -> bool:
+    """Whether a source-claim statement is lexically bound to its evidence.
+
+    Statements are required to stay extractive: either the statement is a token
+    subsequence of one verified quote, or a quote covers at least 75% of the
+    statement tokens. This allows a short source qualifier while preventing an
+    unrelated genuine quote from laundering a fabricated attribution.
+    """
+    statement_tokens = citation_normalize(statement).split()
+    if not statement_tokens:
+        return False
+    for row in evidence:
+        evidence_tokens = citation_normalize(row.get("quote_span", "")).split()
+        if not evidence_tokens:
+            continue
+        if _contains_token_sequence(evidence_tokens, statement_tokens):
+            return True
+        if (
+            _contains_token_sequence(statement_tokens, evidence_tokens)
+            and len(evidence_tokens) * 4 >= len(statement_tokens) * 3
+        ):
+            return True
+    return False
+
+
 def _analysis_rows(value: Any, claim_count: int, *, limit: int = 30) -> list[dict[str, Any]]:
     if not isinstance(value, list):
         return []
@@ -95,10 +129,13 @@ def validate_rio(
     *,
     expected_document_id: str | None = None,
     expected_document: dict[str, Any] | None = None,
+    require_grounded_claims: bool = True,
 ) -> dict[str, Any]:
     """Return a normalized RIO or raise ValueError for an off-contract object."""
     if not isinstance(value, dict):
         raise ValueError("RIO must be an object")
+    if type(require_grounded_claims) is not bool:
+        raise TypeError("require_grounded_claims must be a boolean")
     if value.get("schema") != SCHEMA:
         raise ValueError(f"unexpected schema: {value.get('schema')!r}")
     document = value.get("document")
@@ -149,6 +186,12 @@ def validate_rio(
         })
     if not normalized["claims"]:
         raise ValueError("at least one substantive claim is required")
+    if require_grounded_claims:
+        for claim in normalized["claims"]:
+            if not claim["evidence"]:
+                raise ValueError("each source claim requires grounded evidence")
+            if not claim_statement_supported(claim["statement"], claim["evidence"]):
+                raise ValueError("source claim statement is not grounded by its evidence")
 
     claim_count = len(normalized["claims"])
     analysis = value.get("analysis")

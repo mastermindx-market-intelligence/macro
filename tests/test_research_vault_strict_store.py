@@ -1007,6 +1007,57 @@ def test_rio_projections_are_descriptive_only_and_preserve_epistemic_layers():
     assert all("quote_span" not in e for e in edges)
 
 
+def test_rio_projections_reject_claims_without_grounded_evidence():
+    from engine.research_intelligence.projection import claim_edges, summary_points
+
+    obj = _rio_sample()
+    obj["claims"][0]["evidence"] = []
+    for project in (summary_points, claim_edges):
+        with pytest.raises(ValueError, match="grounded evidence"):
+            project(obj)
+
+
+def test_rio_projections_redact_private_source_claim_text():
+    import json
+    from engine.research_intelligence.projection import claim_edges, summary_points
+
+    obj = _rio_sample()
+    points = summary_points(obj)
+    source_rows = [row for row in points if row["epistemic_layer"] == "source_claim"]
+    assert len(source_rows) == len(obj["claims"])
+    assert all(row["text"] == "" for row in source_rows)
+    assert all(row["text_visibility"] == "private_rio_only" for row in source_rows)
+    assert all(len(row["claim_statement_sha256"]) == 64 for row in source_rows)
+
+    edges = claim_edges(obj)
+    assert all("statement" not in row for row in edges)
+    assert all(len(row["statement_sha256"]) == 64 for row in edges)
+    encoded = json.dumps({"points": points, "edges": edges})
+    assert "Real yields rose to 2.1%." not in encoded
+    assert "Higher real yields are tightening financial conditions." not in encoded
+
+
+def test_rio_claim_edges_use_structural_unresolved_entity_state():
+    from engine.research_intelligence.projection import claim_edges
+
+    obj = _rio_sample()
+    obj["claims"][0]["entities"] = []
+    unresolved = [row for row in claim_edges(obj) if row["claim_index"] == 0]
+    assert len(unresolved) == 1
+    assert unresolved[0]["entity"] is None
+    assert unresolved[0]["entity_grounding"] == "unresolved"
+
+    obj = _rio_sample()
+    obj["claims"][0].update({
+        "statement": "Unresolved exposure.",
+        "evidence": [{"quote_span": "unresolved exposure"}],
+        "entities": ["__unresolved__"],
+    })
+    literal = [row for row in claim_edges(obj) if row["claim_index"] == 0]
+    assert literal[0]["entity"] == "__unresolved__"
+    assert literal[0]["entity_grounding"] == "quote_mention"
+
+
 def test_rio_bad_model_output_fails_closed():
     from engine.research_intelligence.extractor import analyze_document
     def call(*args, **kwargs):
@@ -1088,6 +1139,56 @@ def test_rio_non_boolean_explicit_never_becomes_explicit():
     assert validate_rio(obj)["claims"][0]["explicit"] is False
 
 
+def test_rio_drops_fabricated_statement_even_with_real_quote():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+
+    obj = _rio_sample()
+    obj["claims"][0]["statement"] = "GS recommends clients sell ALL equities immediately."
+    out = parse_model_output(
+        json.dumps(obj),
+        expected_document_id="r1",
+        expected_document=obj["document"],
+        source_body=RIO_BODY,
+    )
+    assert len(out["claims"]) == 1
+    assert out["claims"][0]["statement"].startswith("Higher real yields")
+    assert out["analysis"]["thesis"]["support_claim_indices"] == [0]
+
+
+def test_rio_drops_statement_backed_by_unrelated_real_evidence():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+
+    obj = _rio_sample()
+    obj["claims"][0]["statement"] = obj["claims"][1]["statement"]
+    out = parse_model_output(
+        json.dumps(obj),
+        expected_document_id="r1",
+        expected_document=obj["document"],
+        source_body=RIO_BODY,
+    )
+    assert len(out["claims"]) == 1
+    assert out["claims"][0]["statement"].startswith("Higher real yields")
+
+
+def test_rio_rejects_verbatim_thesis_summary_before_projection():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+
+    obj = _rio_sample()
+    obj["analysis"]["thesis"]["summary"] = (
+        "Higher real yields are tightening financial conditions and pressuring long-duration assets."
+    )
+    with pytest.raises(ValueError, match="thesis.*verbatim"):
+        parse_model_output(
+            json.dumps(obj),
+            expected_document_id="r1",
+            expected_document=obj["document"],
+            source_body=RIO_BODY,
+        )
+
+
 def test_rio_drops_uncited_claim_and_remaps_synthesis_support():
     import json
     from engine.research_intelligence.extractor import parse_model_output
@@ -1145,6 +1246,23 @@ def test_rio_uncertainty_requires_grounded_claim_support():
     assert out["analysis"]["uncertainties"] == [
         {"statement": "Supported uncertainty", "support_claim_indices": [0]}
     ]
+
+
+def test_rio_no_provider_configuration_has_distinct_typed_state(monkeypatch):
+    from engine import llm_auth
+    from engine.research_intelligence.extractor import analyze_document
+
+    monkeypatch.setattr(llm_auth, "build_providers", lambda *_args, **_kwargs: [])
+    out = analyze_document(
+        {"id": "r1", "source_type": "institutional_research"},
+        RIO_BODY,
+        model_id="requested-model",
+    )
+    assert out["state"] == "providers_unavailable"
+    assert out["rio"] is None
+    assert out["error_code"] == "NO_PROVIDER_AVAILABLE"
+    assert out["provider"] == ""
+    assert out["model"] == ""
 
 
 def test_rio_provider_exception_is_typed_without_leaking_message():
