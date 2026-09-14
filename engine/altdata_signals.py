@@ -121,7 +121,23 @@ _CH = {
     "news_sentiment":    ("Bullish news flow", "看多新闻流"),
     "clinical_phase3_start": ("Phase-3 trial start", "三期试验启动"),
     "github_momentum":   ("Developer adoption", "开发者采用"),
+    "stocktwits_bull":   ("Stocktwits bullish", "Stocktwits 看多"),
+    "activist_13d":      ("Activist 13D filing", "维权股东 13D"),
+    "special_situation": ("Special situation", "特殊事件"),
 }
+
+
+def channel_display(slug) -> tuple[str, str]:
+    """Glance-tier EN/ZH labels for an alt-data channel slug.
+
+    Unknown slugs prettify underscores rather than leaking snake_case. Context
+    records keep the machine token; only composed copy uses this.
+    """
+    key = str(slug or "")
+    if key in _CH:
+        return _CH[key]
+    pretty = key.replace("_", " ") or key
+    return pretty, pretty
 
 
 # --------------------------------------------------------------------------- co-firing #23

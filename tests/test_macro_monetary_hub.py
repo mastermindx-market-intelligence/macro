@@ -49,6 +49,7 @@ _TEMPLATE_NAMES = (
     "macro_consumer_payments.html.j2",
     "macro_national_debt_liabilities.html.j2",
     "macro_rates_curves.html.j2",
+    "_curve_panel.html.j2",
     "macro_trade_flows.html.j2",
     "_macro_suite_shell.html.j2",
     "_seo_head.html.j2",
@@ -246,7 +247,11 @@ def test_an_unreadable_workspace_never_renders_as_calm_or_zero(tmp_path: Path) -
     victim.unlink()
 
     hub = _render(tmp_path, data_root)[builder.HUB_PAGE.output]
-    block = hub[hub.index('data-mq-workspace="housing_real_estate"'):][:1200]
+    marker = 'data-mq-workspace="housing_real_estate"'
+    idx = hub.index(marker)
+    # The class sits on the opening <li> before the data attribute.
+    tag_start = hub.rfind("<li", 0, idx)
+    block = hub[tag_start:idx + 1200]
     assert "mq-hub-absent" in block
     assert "0%" not in block
 
