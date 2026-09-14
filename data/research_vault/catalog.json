@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-14T20:00:38.222882+00:00",
-  "count": 2109,
+  "generated_at": "2026-09-14T20:11:15.853123+00:00",
+  "count": 2110,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -322,6 +322,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 30,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-qyknuyso9ed-9b014f",
+      "title": "JPM International Market Intelligence | Morning Briefing",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T07:36:53Z",
+      "summary_points": [
+        "**Geopolitical Oil Shock**: Saudi East-West pipeline suspension (drone attacks) drives oil prices up $20/bbl, escalating supply risks and triggering shipping ETF surge (BWET) due to rerouting costs.",
+        "**DM Policy Rate Surge**: Taylor rule projects DM policy rates rising 100bp (to 4.2% by Q2 2027), driven by persistent inflation gap (0.7%), forcing aggressive tightening despite cyclical recovery.",
+        "**AI Regulation Nuance**: Amodei’s call to slow frontier AI development (recursive self-improvement risks) coexists with no earnings slowdown; pro-AI administration maintains momentum, benefiting infrastructure.",
+        "**USD/JPY Downside Risk**: Concentrated put options flow around 155–160 and net shorts signal sigma downside risk, with bearish scenario (USD/JPY to 165) triggered by Fed hikes or fiscal concerns.",
+        "**Crowding as Top Risk**: 181 investor votes identify crowding as dominant risk, highlighting execution challenges and market inefficiencies for multi-strategy portfolios."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 20,
       "language": "en",
       "needs_metadata": false
     },
