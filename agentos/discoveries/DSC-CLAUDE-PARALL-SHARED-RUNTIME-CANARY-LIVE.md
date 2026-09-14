@@ -11,12 +11,16 @@ claim: >
   and dedicated runtime were not needed by the promoted seat and were removed after process and
   native-host reconciliation.
 falsifier: >
-  Falsify this topology for fleet rollout if a cold launch of a migrated seat loses its intended
-  account/login, loses either macOS Computer use grant, reads or writes another seat's Parall data,
-  requires a seat-private Anthropic application bundle for Claude Code/browser/computer-use, or if
-  the shared browser native-host/updater path resolves back into a removed per-seat runtime. Also
-  falsify broad rollout if a second independently migrated idle seat cannot reproduce the same
-  separation without changing the first seat's account or permissions.
+  Run `ps -axo pid=,ppid=,command= | grep -E 'Claude 8.app/Contents/MacOS/Claude|Mastermind Claude Runtime/Claude.app'`
+  after a cold seat launch and inspect `/Applications/Claude 8.app/Contents/Info.plist` with
+  `/usr/libexec/PlistBuddy -c 'Print :ParallExecutable'` and `-c 'Print :ParallDataStorage'`.
+  Falsify this topology for fleet rollout if the promoted wrapper does not launch the shared runtime
+  with its intended isolated Parall data directory, if the seat loses its intended account/login or
+  either macOS Computer use grant, if it reads or writes another seat's Parall data, if
+  Claude Code/browser/computer-use requires a seat-private Anthropic application bundle, or if the
+  shared browser native-host/updater path resolves back into a removed per-seat runtime. Also falsify
+  broad rollout if a second independently migrated idle seat cannot reproduce the same separation
+  without changing the first seat's account or permissions.
 so_what: >
   Use the shared signed Claude runtime plus one Parall wrapper/data directory per seat as the
   current migration candidate, but roll it out one idle seat at a time. For each seat: create a
