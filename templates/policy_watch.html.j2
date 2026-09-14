@@ -34,10 +34,10 @@
 } %}
 {% set POLICY_EVENT_STATE = {
   'current':['Current','当前','Official sources answered.','官方来源已响应。','fact'],
-  'partial':['Partial coverage','部分覆盖','Some official sources are delayed.','部分官方来源更新延迟。','warn'],
+  'partial':['Partial coverage','部分覆盖','Some official sources are delayed, stale, not responding, or not yet covered.','部分官方来源可能延迟、过时、未响应或尚未覆盖。','warn'],
   'no_recent_events':['No recent items','暂无近期动态','No recent policy events passed the focused filter.','近期没有通过聚焦筛选的政策动态。','neutral'],
-  'source_outage':['Source outage','来源中断','Official policy sources did not answer this time. Saved dated items are shown below.','本次官方政策来源未响应。以下显示已保存且带日期的动态。','warn'],
-  'stale':['Source coverage stale','来源覆盖已过时','Source coverage has not refreshed recently. Saved dated items are shown below.','来源覆盖最近未更新。以下显示已保存且带日期的动态。','warn'],
+  'source_outage':['Source outage','来源中断','Official policy sources did not answer this time. Saved dated items appear below when available.','本次官方政策来源未响应。如有已保存且带日期的动态，将显示在下方。','warn'],
+  'stale':['Source coverage stale','来源覆盖已过时','Source coverage has not refreshed recently. Saved dated items appear below when available.','来源覆盖最近未更新。如有已保存且带日期的动态，将显示在下方。','warn'],
   'no_coverage':['No coverage','暂无覆盖','Official policy-event coverage is not available yet.','官方政策动态覆盖暂不可用。','neutral'],
   'unavailable':['Unavailable','暂不可用','Official policy events are unavailable in this build.','本次构建未提供官方政策动态。','neutral']
 } %}

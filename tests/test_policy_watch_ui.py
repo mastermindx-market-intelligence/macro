@@ -2196,8 +2196,8 @@ def test_r3_official_policy_events_render_inside_existing_policy_section(monkeyp
     assert "Latest source check" in policy and "最近一次来源检查" in policy
     assert "September 13, 2026 15:35 UTC" in policy and "2026年9月13日 15:35 UTC" in policy
     assert 'href="https://ec.europa.eu/commission/presscorner/detail/en/ip_26_1842"' in policy
-    assert "Some official sources are delayed." in policy
-    assert "部分官方来源更新延迟。" in policy
+    assert "Some official sources are delayed, stale, not responding, or not yet covered." in policy
+    assert "部分官方来源可能延迟、过时、未响应或尚未覆盖。" in policy
     assert "Discovery only — not a lifecycle stage or market signal." in policy
     assert "仅用于发现——不是政策阶段，也不是市场信号。" in policy
     visible = re.sub(r"<[^>]+>", " ", policy)
@@ -2206,6 +2206,85 @@ def test_r3_official_policy_events_render_inside_existing_policy_section(monkeyp
     assert html.count('<section class="pw-section"') == 7
     assert "World events that matter" in policy
 
+
+def test_r3_partial_feed_copy_names_each_degraded_source_condition(monkeypatch):
+    feed = _r3_policy_event_view("partial")
+    feed["sources"] = [
+        {
+            "source_key": "boe_news",
+            "publisher": "Bank of England",
+            "jurisdiction": "UK",
+            "coverage_state": "DELAYED_SOURCE",
+            "checked_at": "2026-09-13T15:35:34Z",
+        },
+        {
+            "source_key": "ec_presscorner",
+            "publisher": "European Commission",
+            "jurisdiction": "EU",
+            "coverage_state": "STALE",
+            "checked_at": "2026-09-13T15:35:34Z",
+        },
+        {
+            "source_key": "official_source_outage",
+            "publisher": "Official source C",
+            "jurisdiction": "EU",
+            "coverage_state": "SOURCE_OUTAGE",
+            "checked_at": "2026-09-13T15:35:34Z",
+        },
+        {
+            "source_key": "official_source_missing",
+            "publisher": "Official source D",
+            "jurisdiction": "EU",
+            "coverage_state": "NO_COVERAGE",
+            "checked_at": "2026-09-13T15:35:34Z",
+        },
+    ]
+    html = _render_policy_watch_with_policy_events(feed, monkeypatch)
+    policy = html.split('id="policy">', 1)[1].split("</section>", 1)[0]
+
+    assert "Some official sources are delayed, stale, not responding, or not yet covered." in policy
+    assert "部分官方来源可能延迟、过时、未响应或尚未覆盖。" in policy
+    for label in ("Delayed", "Stale", "Source outage", "No coverage"):
+        assert label in policy
+    for label in ("延迟", "已过时", "来源中断", "暂无覆盖"):
+        assert label in policy
+    assert "Some official sources are delayed." not in policy
+
+
+def test_r3_source_outage_without_saved_items_does_not_promise_rows(monkeypatch):
+    feed = _r3_policy_event_view("source_outage")
+    feed["items"] = []
+    for source in feed["sources"]:
+        source["coverage_state"] = "SOURCE_OUTAGE"
+    html = _render_policy_watch_with_policy_events(feed, monkeypatch)
+    policy = html.split('id="policy">', 1)[1].split("</section>", 1)[0]
+
+    assert (
+        "Official policy sources did not answer this time. "
+        "Saved dated items appear below when available."
+    ) in policy
+    assert "本次官方政策来源未响应。如有已保存且带日期的动态，将显示在下方。" in policy
+    assert "Saved dated items are shown below." not in policy
+    assert "以下显示已保存且带日期的动态。" not in policy
+    assert 'class="pw-policy-feed-list"' not in policy
+
+
+def test_r3_stale_feed_without_saved_items_does_not_promise_rows(monkeypatch):
+    feed = _r3_policy_event_view("stale")
+    feed["items"] = []
+    for source in feed["sources"]:
+        source["coverage_state"] = "STALE"
+    html = _render_policy_watch_with_policy_events(feed, monkeypatch)
+    policy = html.split('id="policy">', 1)[1].split("</section>", 1)[0]
+
+    assert (
+        "Source coverage has not refreshed recently. "
+        "Saved dated items appear below when available."
+    ) in policy
+    assert "来源覆盖最近未更新。如有已保存且带日期的动态，将显示在下方。" in policy
+    assert "Saved dated items are shown below." not in policy
+    assert "以下显示已保存且带日期的动态。" not in policy
+    assert 'class="pw-policy-feed-list"' not in policy
 
 def test_r3_policy_event_feed_malformed_source_tier_fails_closed_not_page_wide(tmp_path):
     from datetime import datetime, timezone
