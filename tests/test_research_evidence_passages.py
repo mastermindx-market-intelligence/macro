@@ -218,6 +218,7 @@ def test_source_identity_fails_closed_for_missing_or_malformed_content_sha256():
     body = "The desk raised AAPL demand estimates after channel checks."
     bad_hashes = (
         None, "", "   ", "not-a-sha", "a" * 63, "a" * 65,
+        "A" * 64, " " + ("a" * 64), ("a" * 64) + " ",
         "g" * 64,  # non-hex
         12345, 1.5, True, [], {},
     )

@@ -651,6 +651,8 @@ def test_evidence_passage_projection_rejects_malformed_locators():
 
     malformed_locators = (
         {"start_char": "abc", "end_char": 9, "match_start_char": 5, "match_end_char": 9},
+        {"start_char": "0", "end_char": "9", "match_start_char": "5", "match_end_char": "9"},
+        {"start_char": 0.0, "end_char": 9.0, "match_start_char": 5.0, "match_end_char": 9.0},
         {"start_char": -5, "end_char": 9, "match_start_char": 5, "match_end_char": 9},
         {"start_char": 0, "end_char": 9, "match_start_char": True, "match_end_char": 9},
         {"start_char": 0, "end_char": 9, "match_start_char": 5, "match_end_char": 3.9},
@@ -687,6 +689,40 @@ def test_evidence_passage_projection_bounds_text_defensively():
     projected = bmi._project_evidence_passage(raw, REPORT_ID)
     assert len(projected["text"]) < len(huge)
     assert len(projected["match_text"]) < len(huge)
+    locator = projected["locator"]
+    assert len(projected["text"]) == locator["end_char"] - locator["start_char"]
+    relative_start = locator["match_start_char"] - locator["start_char"]
+    relative_end = locator["match_end_char"] - locator["start_char"]
+    assert projected["match_text"] == projected["text"][relative_start:relative_end]
+
+
+def test_evidence_passage_projection_clips_around_a_late_match_coherently():
+    text = ("x" * 25_000) + "AAPL demand" + ("y" * 25_000)
+    match_start = text.index("AAPL demand")
+    raw = {
+        "text": text,
+        "match_text": "AAPL demand",
+        "matched_terms": ["aapl", "demand"],
+        "locator": {
+            "kind": "text_span",
+            "start_char": 10_000,
+            "end_char": 10_000 + len(text),
+            "match_start_char": 10_000 + match_start,
+            "match_end_char": 10_000 + match_start + len("AAPL demand"),
+        },
+    }
+
+    projected = bmi._project_evidence_passage(raw, REPORT_ID)
+
+    assert projected is not None
+    assert len(projected["text"]) <= bmi._EVIDENCE_PASSAGE_TEXT_MAX_CHARS
+    assert "AAPL demand" in projected["text"]
+    locator = projected["locator"]
+    assert len(projected["text"]) == locator["end_char"] - locator["start_char"]
+    relative_start = locator["match_start_char"] - locator["start_char"]
+    relative_end = locator["match_end_char"] - locator["start_char"]
+    assert projected["match_text"] == "AAPL demand"
+    assert projected["match_text"] == projected["text"][relative_start:relative_end]
 
 
 def test_evidence_open_url_is_rights_safe_with_bounded_fragment_query():
@@ -752,3 +788,88 @@ def test_tool_schema_tells_the_model_to_request_and_open_supporting_evidence():
     # key terms/phrases, not an unsegmented sentence the selector cannot parse.
     assert "chinese" in query_help
     assert "key term" in query_help or "key phrase" in query_help
+
+
+
+def test_sha_projection_accepts_only_canonical_lowercase_hex():
+    assert bmi._sha256_or_empty("a" * 64) == "a" * 64
+    for malformed in ("A" * 64, " " + ("a" * 64), ("a" * 64) + " "):
+        assert bmi._sha256_or_empty(malformed) == ""
+
+
+def test_malformed_projected_passage_is_unmetered_end_to_end(tmp_path, monkeypatch):
+    """The raw selector is not debit authority: projection must validate the
+    final passage first, and a fail-closed projection must consume zero quota."""
+    _seed(tmp_path)
+    _stub_documents(monkeypatch, "AAPL demand is accelerating.")
+    debits = _stub_quota(monkeypatch)
+    monkeypatch.setattr(bmi, "_select_evidence", lambda document, query: {
+        "status": "matched",
+        "passages": [{
+            "text": "AAPL demand",
+            "match_text": "AAPL demand",
+            "matched_terms": ["aapl", "demand"],
+            "locator": {
+                "kind": "text_span",
+                "start_char": "0",
+                "end_char": "11",
+                "match_start_char": "0",
+                "match_end_char": "11",
+            },
+        }],
+        "source_binding": {
+            "content_sha256": PDF_SHA,
+            "stored_body_sha256": "b" * 64,
+            "coverage": "complete",
+            "stored_char_count": 28,
+            "source_char_count": 28,
+            "tail_omitted": False,
+            "text_layer": "full",
+            "page_count": 1,
+        },
+    })
+
+    result = _report(tmp_path, "AAPL demand")
+
+    assert debits == []
+    assert result["quota"] is None
+    assert result["report"]["body_text"] == ""
+    assert result["evidence"]["status"] == "body_unavailable"
+    assert result["evidence"]["passages"] == []
+    assert result["evidence"]["access"] == {
+        "decision": "not_served", "metered": False,
+    }
+    assert "no usable passage text was available" in result["note"].lower()
+
+
+def test_large_public_excerpt_is_budgeted_before_evidence_debit(tmp_path, monkeypatch):
+    """Every string in the final report envelope—not only body_text—shares the
+    12k context ceiling. A giant public excerpt is trimmed before a paid evidence
+    view is committed, while the valid source-bound passage remains usable."""
+    _seed(tmp_path)
+    excerpts = tmp_path / "data" / "research_vault" / "excerpts.json"
+    excerpts.write_text(json.dumps({
+        "schema": 1,
+        "excerpts": {REPORT_ID: ["P" * 20_000]},
+    }), encoding="utf-8")
+    _stub_documents(monkeypatch, "AAPL demand is accelerating after channel checks.")
+    debits = _stub_quota(monkeypatch)
+
+    result = _report(tmp_path, "AAPL demand")
+
+    def string_total(node):
+        if isinstance(node, str):
+            return len(node)
+        if isinstance(node, dict):
+            return sum(string_total(value) for value in node.values())
+        if isinstance(node, list):
+            return sum(string_total(value) for value in node)
+        return 0
+
+    assert string_total(result) <= bmi.REPORT_BODY_MAX_CHARS
+    assert len(debits) == 1
+    assert result["quota"] == {"remaining": 11, "limit": 12}
+    assert result["evidence"]["status"] == "matched"
+    assert result["evidence"]["passages"]
+    assert "AAPL demand" in result["report"]["body_text"]
+    assert sum(map(len, result["report"]["excerpt_paragraphs"])) < 20_000
