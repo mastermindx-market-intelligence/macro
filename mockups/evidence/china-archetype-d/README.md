@@ -1,7 +1,11 @@
-# China Archetype-D S1 — evidence matrix (round 6)
+# China Archetype-D S1 — evidence matrix (round 7)
 
 Five L1 subjects × dark/light × EN/ZH × 1440/390.
 Spec G7 names this the 20-crop matrix; the product of those axes is 40 cells.
+
+**Round**: 7 (post C1 revert `--tooltip-shadow` + C2 conviction-profile wiring).
+**Captured at code commit**: `550883426f7c1d8b1732657b51e7e09f2ab1e7af`.
+**Captured at**: `2026-09-14T05:29:42Z` (see `manifest.json`).
 
 ## Fixture
 
