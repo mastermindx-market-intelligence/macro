@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-14T20:56:45.092577+00:00",
-  "count": 2112,
+  "generated_at": "2026-09-14T21:11:27.990236+00:00",
+  "count": 2113,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -483,6 +483,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-woak3tyz9r2-81b484",
+      "title": "MS Dispelling an AI Myth Why Affluent Consumers May Be Safer Than Advertised",
+      "institution": "Morgan Stanley",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-13T17:10:17Z",
+      "summary_points": [
+        "**CHIC Household Net Benefits**: Base case shows AI drives productivity gains without significant unemployment for CHIC (college-educated, high-income, urban) households; wealth effects from equity exposure offset labor displacement risks, yielding largest gains from asset appreciation and wage growth.",
+        "**Bear Case Risk Threshold**: Rapid AI diffusion (6-year adoption vs.",
+        "base case 10x slower than internet) risks 0.6pp-4.1pp unemployment peaks, disproportionately impacting CHIC households and triggering asset declines; policy responses critical to prevent recession-like outcomes.",
+        "**Wealth Concentration Disparity**: Top 20% hold $49.8T equity wealth vs.",
+        "$8.3T labor income, highlighting extreme concentration; AI-driven capital returns amplify inequality, with CHIC households dominating asset holdings (Exhibit 4)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 43,
       "language": "en",
       "needs_metadata": false
     },
