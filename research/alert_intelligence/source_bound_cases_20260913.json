@@ -109,7 +109,7 @@
       "bytes": 173484,
       "historical_e3_reference_hash_matches": true,
       "source_content_observation": "The retained exhibit contains a results announcement and explicitly attributes part of reported gross margin and EPS to tariff refunds. It does not establish the previously hypothetical guidance-cut scenario.",
-      "proposed_intelligence_case": "Explain reported performance with its source-stated nonrecurring contribution visible; do not invent organic improvement, a guidance cut, an estimate beat, or a trade."
+      "proposed_intelligence_case": "Explain reported performance with the separately identified tariff-refund contribution visible; do not invent organic improvement, a guidance cut, an estimate beat, or a trade. Whether the refund contribution recurs is not established by this passage."
     },
     "C_TRANSCRIPT": {
       "repo": "macro",
@@ -209,7 +209,7 @@
   "journeys": [
     {"id": "A", "source_refs": ["A_EPISODE_HEAD", "A_EPISODE_EVENTS", "A_EPISODE_RECEIPT"], "bound_scope": "Actual candidate events and historical-materialization counterexample", "remaining": "Exact current actionable-plan/availability producer must be bound before an opportunity-now notification; B1 OPENED is insufficient."},
     {"id": "B", "source_refs": ["B_TRIPWIRE_STATE", "H_ALERT_API"], "bound_scope": "Actual manual/missing/armed/historical latch states; existing finite condition API", "remaining": "Private consented thesis and exact predicate binding are not read or tested in this pass."},
-    {"id": "C", "source_refs": ["C_COMPANY_METADATA", "C_COMPANY_EXHIBIT", "C_TRANSCRIPT"], "bound_scope": "Retained results event with a source-stated one-off contribution", "remaining": "Financial/graph owner join, contrary-context packet, rights-safe serving and a current-source proof remain integration requirements; hypothetical guidance cut is not claimed."},
+    {"id": "C", "source_refs": ["C_COMPANY_METADATA", "C_COMPANY_EXHIBIT", "C_TRANSCRIPT"], "bound_scope": "Retained results event with a separately stated tariff-refund contribution, whose recurrence is not established here", "remaining": "Financial/graph owner join, contrary-context packet, rights-safe serving and a current-source proof remain integration requirements; hypothetical guidance cut is not claimed."},
     {"id": "D", "source_refs": ["D_CALENDAR", "E_NEWS_INPUT"], "bound_scope": "Schedule-versus-occurrence and expected-rate-change counterexamples", "remaining": "Official released-number and revision receipt not bound here; changes/rescheduling are proposed synthetic controls, not observed events."},
     {"id": "E", "source_refs": ["E_NEWS_INPUT", "E_QBUS_CONTROLS"], "bound_scope": "Real ambiguous news mappings and existing synthetic grouping controls", "remaining": "Syndication-family independence, late-member cluster change and cross-language duplicate controls need explicit evaluation."},
     {"id": "F", "source_refs": ["A_EPISODE_EVENTS", "FG_UI_CONTROLS", "H_MAILER"], "bound_scope": "Historical reference anatomy and preserved-history receipt", "remaining": "A post-delivery correction/withdrawal case is specified but not executed or asserted present in the sampled episode file."},
