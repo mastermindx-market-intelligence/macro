@@ -3,27 +3,32 @@ key: ALERT-FABRIC-SEMANTIC-ADMISSION
 claim: >
   Alert Center's expanded intelligence architecture must distinguish source events,
   semantic changes, situation views, user monitors, notification decisions and delivery.
-  Actual retained inputs contain candidate observations recorded months after their source
-  time, prime-minister headlines tagged PM, an anticipated rate change typed macro_release,
-  and manual or missing-data tripwire states. Existing mailer/drain code does not by itself
-  supply the proposed strict personalized-alert category and unknown-send guarantees.
+  Retained inputs include late-recorded candidate observations, prime-minister headlines
+  tagged PM, an anticipated rate change typed macro_release, and manual or missing-data
+  monitoring states. Source-code inspection also finds that the current stock-card helper
+  prefers frozen plan admission over the separate current board read. Terminal already
+  owns an authenticated alerts cockpit under F08's existing route boundary.
 falsifier: >
-  At macro ed691eb2e9927b9705abf65273bd4439c54a9ef2, replay the exact locators and hashes
-  in research/alert_intelligence/source_bound_cases_20260913.json. If the event counts,
-  sample clocks, news entity/event fields, tripwire states or named mailer branches do not
-  match, correct the corresponding observation. Newer accepted owner code can supersede a
-  gap prospectively but does not rewrite this retained input evidence.
+  Replay the exact locators/hashes in research/alert_intelligence/source_bound_cases_20260913.json
+  at its declared source pins. For the new reader/route findings, inspect Macro
+  321da62b3b0163b6ab5a287fb9847a13ed7f3ed2 scripts/build_site.py::us_stance_projection,
+  engine/prophet_board_read.py, the F08 section 9 route rule, and Terminal
+  3db34e7a8e8eca4bef1ca12eba90daab6cc0c10c terminal/app/(shell)/alerts/page.tsx.
+  Correct any observation whose source does not support it. New owner code can supersede
+  a gap prospectively; it does not rewrite this retained evidence.
 so_what: >
-  Continue Draft PR 7135's architecture, not another UI prototype or event/delivery system.
-  Bind the first flagship plan/availability notification and the minimal F08 user-interaction
-  and delivery-receipt interfaces before functional freeze. Review the concrete source cases
-  and useful financial interpretation, then obtain Chairman acceptance before Figma edits.
+  Draft PR 7135 now contains v0.3's selected field, route, private-notice, digest and email
+  effect contracts. The two v0.2 integration seams are specified, not left for another
+  broad audit. Review the exact functional candidate against its 18 cases and owner law,
+  obtain architecture acceptance, then compare the two actual Figma drafts. No product
+  implementation, delivery guarantee or independent review is claimed by the proposal.
 kind: architecture
 verified_at: 2026-09-13
 verified_by: >
-  Pinned GitHub source reads, exact-byte in-memory source censuses and hash rechecks on the
-  verified authorized Studio; source-bound case manifest. No current production browser,
-  customer send, private-user read, or new product-test pass is claimed.
+  Pinned native GitHub source reads and bounded read-only source inspection on the verified
+  authorized Studio. The v0.3 document at commit 247d141a4aee2ae909ae266cf9838a361c72ee2d
+  was read back byte-exact, SHA256 57845f1b7dd4c36063c74f6c73d3861362540d9ad0f8685e7d17f322ce8ca945.
+  Document structure checks and self-review are not product tests or independent review.
 scope:
   - macro
   - mastermind-terminal
@@ -31,42 +36,60 @@ scope:
 confidence: verified
 ---
 
-## Continuation
+## Current research pointer
 
-Research: `research/ALERT_INTELLIGENCE_FABRIC_DECISION_CONTRACT_20260913.md` (v0.2), with the
-original v0.1 proposal retained. Both are **SPEC_ONLY / proposed**, not an accepted production
-contract. The discovery's verified confidence applies to the observed source facts, not to
-production effectiveness or approval of the recommendations.
+`research/ALERT_INTELLIGENCE_FABRIC_FUNCTIONAL_FREEZE_CANDIDATE_20260913.md`
+(v0.3, commit `247d141a4aee2ae909ae266cf9838a361c72ee2d`) is the specific functional
+freeze candidate. v0.1 remains the thesis background; v0.2 and the source-case manifest
+remain the semantic/source background. All recommendations remain **SPEC_ONLY** pending
+acceptance. This record's verified confidence applies to the observed source facts and
+published artifact, not production effectiveness or approval of the new schema/policies.
 
-The current plan-book source-code seam has also been identified: `scripts/build_prophet.py`
-produces `prophet.trade_plan/v1` plans and `site/prophet/index.json`; `engine/prophet_board_read.py`
-provides `prophet.board_read/v1`. That read distinguishes frozen origination `entry_status`
-from the source's current entry/actionability axis under `board_read`, marks closed plans
-not-applicable, and exposes missing data rather than fabricating a cautious action. Its
-source hashes at the research pin are `239319d023383800681a96f4a8454d1fa3f2936c` and
-`00395ac9e3db7c22bccec5f993259e75ce075032`. This narrows the next adapter investigation; it
-is NOT a fresh protected production read, per-plan freshness proof, or evidence that V4 B4
-ENTRY_OPEN has been implemented. Do not use a historical admission stamp, management prose,
-a public health projection or a B1 candidate OPENED row as a replacement for actionability.
+## Selected seam resolutions
+
+The flagship adapter reads plan identity and source-specific `board_read.fields.status`
+with actual applicability, vintage, integrity and accepted revision references. Frozen
+`entry_status`, management prose, a card verb, public health metadata or a B1 OPENED
+candidate cannot substitute for current actionability. The existing display helper's
+precedence disagreement is a source-owner compatibility gate, not a fix performed here.
+
+Personal evidence routes extend Terminal's existing `/alerts` and `/api/alerts` family.
+Macro retains the shared Alert Center and links into the same supported monitor workflow.
+F08's holdings-coupled Terminal route boundary is preserved, not silently overridden by
+adding a private portfolio client to Macro. Existing auth/publication systems remain owners.
+
+The selected minimal schema extension is one proposed F08 `alert_notices` relation in the
+existing Supabase user-data plane, containing personal decision/revision references and exact
+notice-level read/archive state. Existing `alerts` remain monitor definitions, `alert_outbox`
+remains the only delivery queue, and `email_log` remains the attempt/effect ledger. Digests
+are versioned bundles in that queue, with transactionally exclusive member assignment.
+Unknown external effects cannot be retried under a fresh key merely to clear a queued state.
+None of these proposed fields, APIs or tables has been deployed by this work.
+
+v0.3 explicitly corrects v0.2's unsupported “nonrecurring contribution” wording: the retained
+financial source establishes a refund contribution, with recurrence unestablished. No
+fixture bytes were changed. Notice-level acknowledgment also replaces v0.2's aggregate
+last-inspected suggestion so an old email cannot acknowledge a newly arrived material update.
+
+## Figma and implementation preservation
 
 The user supplied screenshots of two Alert Center V2 Figma drafts and requested that they be
-reviewed later, after the architecture. The screenshot shows a component/design-system page
-structure, not complete functional acceptance. Exact file keys and canonical selection are
-not established. Preserve both; no Figma reads or writes were performed in this continuation.
+compared after architecture. They show existing components/pages, not complete functional
+acceptance or exact file IDs. Preserve both; no Figma reads or writes occurred in this pass.
+PR #7022 remains the separate implementation carrier. This record does not edit that branch,
+transfer its writer, reconcile its Source Continuity gate, merge it or authorize release.
 
-## No-rebuild / no-release boundary
-
-PR #7022 remains the owned implementation candidate; this record does not edit its source,
-transfer its writer, reconcile its outstanding Source Continuity gate or authorize release.
-Existing F08 alert conditions, account preferences, private portfolio/watchlist/thesis owners,
-outbox, mailer and evaluation paths remain the owners. No new workstream parent, runtime Job,
-worker dispatch, watcher, database, sender or production setting is created by these records.
+No customer records, production database, mail sends, provider configuration or shared
+navigation were changed. No worker dispatch, reciprocal watcher or runtime Job was created.
+Only architecture and organizational records on the existing research carrier were advanced.
 
 ## Exact next action
 
-Sol should finish the field-by-field adapter from the protected plan-book/board-read owner
-into the alert decision and evidence return route, and settle the physical mapping for
-private read/follow/digest/unknown-effect references under the existing F08 owner. Then review
-and adjudicate the functional freeze candidate with the named positive and failure cases.
-Only after that architecture boundary should Sol compare the two actual Figma files and
-continue the visual specification. Source/architecture approval is not production acceptance.
+Review v0.3 at the exact recorded commit against its 18 source-shaped and failure scenarios,
+with particular attention to current-vs-original Prophet data, source-matched clocks, the
+existing Terminal cockpit, same-user notice/outbox assignment, consent at send time and
+unknown SMTP effects. Independent review and Chairman architecture acceptance are still
+outstanding; no independent reviewer is claimed. After acceptance, identify both real Figma
+files and select a working/reference role from their actual component coverage and lineage,
+then complete the accepted journeys in one visual specification. Production acceptance is
+separate from architecture, Figma, CI, merge and deployment.
