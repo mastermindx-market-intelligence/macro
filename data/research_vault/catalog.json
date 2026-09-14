@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-14T21:56:28.091735+00:00",
-  "count": 2115,
+  "generated_at": "2026-09-14T22:11:29.805697+00:00",
+  "count": 2116,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -447,6 +447,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rg4zr40bmze-92a0d8",
+      "title": "China Three things in China",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T00:50:15Z",
+      "summary_points": [
+        "**Trade Surplus Acceleration**: China's August trade surplus hit $119bn (exports +24.9% yoy, imports +28.2% yoy), with first-eight-month total $806bn—$24bn above 2025—despite net oil/semiconductor imports and price hikes, signaling resilient external demand.",
+        "**Supply-Side Inflation Dynamics**: CPI rose to 0.8% (PPI 3.8%) driven by energy prices, AI/comms equipment costs, and chip shortages—not demand—while rent/car prices fell (-0.6%, -1.6% yoy), critical for monetary policy assessment.",
+        "**Financial Stability Capital Injection**: RMB300bn CGSB issued for recapitalizing banks/insurers amid housing downturn, with SOE-driven consolidation reducing bank count from 4,602 (2021) to 3,619 (2025), averting systemic risk.",
+        "**RMB Policy Shift**: Beijing favoring gradual RMB appreciation, a key geopolitical signal impacting currency risk and regional market positioning for portfolio allocation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
