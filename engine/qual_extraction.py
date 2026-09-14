@@ -177,14 +177,15 @@ _CITATION_NUMBER_AT = re.compile(
 )
 _CITATION_CURRENCY = frozenset("$€£¥")
 _CITATION_SIGNS = frozenset("+-−")
-_CITATION_HARD_BOUNDARIES = frozenset(".,!?;:。！？；，、：—–\r\n\v\f\u0085\u2028\u2029")
-_CITATION_CONTEXT_BOUNDARIES = frozenset("!?。！？\r\n\v\f\u0085\u2028\u2029")
+_CITATION_HARD_BOUNDARIES = frozenset(".,!?;:。！？；，、：—–")
+_CITATION_CONTEXT_BOUNDARIES = frozenset("!?。！？")
 _CITATION_BOUNDARY_TOKEN = "\x1e"
 _CITATION_PERIOD_ABBREVIATIONS = frozenset({
-    "approx", "co", "corp", "dec", "dept", "dr", "e.g", "est", "etc",
-    "feb", "fig", "govt", "i.e", "inc", "jan", "jr", "jul", "jun",
-    "ltd", "mar", "mr", "mrs", "ms", "no", "nov", "oct", "prof",
-    "sep", "sept", "sr", "st", "vs",
+    "al", "apr", "approx", "aug", "ave", "ca", "cf", "co", "corp",
+    "dec", "dept", "dr", "e.g", "ed", "est", "etc", "feb", "fig",
+    "govt", "i.e", "inc", "jan", "jr", "jul", "jun", "ltd", "mar",
+    "mr", "mrs", "ms", "no", "nov", "oct", "pp", "prof", "sep",
+    "sept", "sr", "st", "vol", "vs",
 })
 _CITATION_CLOSING_PUNCTUATION = frozenset("'\"’”)]}》】」』")
 
@@ -198,6 +199,10 @@ def _period_ends_context_unit(text: str, index: int) -> bool:
     helper is reached.
     """
     if index < 0 or index >= len(text) or text[index] != ".":
+        return False
+    if (index > 0 and text[index - 1] == ".") or (
+        index + 1 < len(text) and text[index + 1] == "."
+    ):
         return False
     if index > 0 and index + 1 < len(text):
         if text[index - 1].isdigit() and text[index + 1].isdigit():
@@ -224,7 +229,7 @@ def _period_ends_context_unit(text: str, index: int) -> bool:
     while left >= 0 and text[left].isalpha():
         left -= 1
     word = text[left + 1:index].casefold()
-    if len(word) == 1 or word in _CITATION_PERIOD_ABBREVIATIONS:
+    if word and (len(word) <= 3 or word in _CITATION_PERIOD_ABBREVIATIONS):
         return False
     return True
 
@@ -244,8 +249,8 @@ def _citation_tokens(
     individual tokens because Chinese source text does not require whitespace.
     The verifier may also retain a non-user-producible boundary token. Legacy
     mode preserves every historical punctuation boundary; context mode preserves
-    only sentence/line boundaries so commas, colons, and abbreviations cannot be
-    used either to strip modality or to reject otherwise complete finance prose.
+    only sentence-ending punctuation so commas, colons, abbreviations, and source
+    line wrapping cannot create a polarity- or modality-stripping claim boundary.
     """
     normalized = unicodedata.normalize("NFKC", str(text or "")).casefold()
     tokens: list[str] = []
@@ -326,8 +331,8 @@ def quote_span_verified(
     lanes. ``minimum_chars`` is explicit so callers verifying short numeric
     literals can choose a smaller boundary without reimplementing normalization.
     Clause mode additionally requires the match to occupy one complete
-    sentence/line context unit. Soft punctuation and abbreviations stay inside
-    that unit so they cannot create a polarity- or modality-stripping start.
+    sentence/body context unit. Soft punctuation, abbreviations, and source line
+    wrapping stay inside it so they cannot create a polarity/modality-stripping start.
     """
     if type(require_complete_clause) is not bool:
         raise ValueError("require_complete_clause must be a boolean")

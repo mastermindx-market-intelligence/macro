@@ -24,9 +24,9 @@ def _supported_text_is_verbatim(
     for index in support:
         for evidence in claims[index]["evidence"]:
             quote = evidence["quote_span"]
-            if quote_span_verified(quote, text, minimum_chars=25):
+            if quote_span_verified(quote, text, minimum_chars=4):
                 return True
-            if quote_span_verified(text, quote, minimum_chars=25):
+            if quote_span_verified(text, quote, minimum_chars=4):
                 return True
     return False
 

@@ -1225,6 +1225,12 @@ def test_rio_rejects_denial_modality_and_uncertainty_stripping():
         ("The report denies, based on new evidence, that revenue increased sharply.", "that revenue increased sharply"),
         ("Management may, subject to board approval, reduce guidance next quarter.", "reduce guidance next quarter"),
         ("We cannot rule out: a recession in 2027.", "a recession in 2027"),
+        ("The report denies that\nrevenue increased sharply.", "revenue increased sharply"),
+        ("Management may\nreduce guidance next quarter.", "reduce guidance next quarter"),
+        ("We cannot rule out:\na recession in 2027.", "a recession in 2027"),
+        ("We do not... expect inflation to rise this year.", "expect inflation to rise this year"),
+        ("Aug. inflation rose sharply.", "inflation rose sharply"),
+        ("See et al. for methods. Recession is unlikely.", "for methods"),
     ]
     for body, stripped in cases:
         obj = _rio_sample(body=body)
@@ -1275,6 +1281,65 @@ def test_validate_rio_rejects_partial_statement_evidence_overlap():
     }]
     with pytest.raises(ValueError, match="not grounded by its evidence"):
         validate_rio(obj)
+
+
+def test_rio_rejects_short_verbatim_thesis_summary_before_projection():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+    from engine.research_intelligence.projection import summary_points
+
+    body = "Rates rose."
+    obj = _rio_sample(body=body)
+    obj["claims"] = [{
+        "statement": body,
+        "evidence": [{"quote_span": body}],
+        "numbers": [], "entities": ["rates"], "horizon": "current", "explicit": True,
+    }]
+    obj["analysis"]["thesis"].update({
+        "summary": body,
+        "support_claim_indices": [0],
+    })
+    with pytest.raises(ValueError, match="thesis.*verbatim"):
+        parse_model_output(
+            json.dumps(obj),
+            expected_document_id="r1",
+            expected_document=obj["document"],
+            source_body=body,
+        )
+    with pytest.raises(ValueError, match="verbatim private evidence"):
+        summary_points(obj)
+
+
+def test_rio_multi_evidence_statement_may_match_one_verified_context_unit():
+    from engine.research_intelligence.schema import validate_rio
+
+    obj = _rio_sample()
+    obj["claims"][0]["evidence"].append({
+        "quote_span": "Higher real yields are tightening financial conditions and pressuring long-duration assets."
+    })
+    out = validate_rio(obj)
+    assert len(out["claims"][0]["evidence"]) == 2
+
+
+def test_rio_clause_mode_rejects_multi_sentence_evidence():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+
+    obj = _rio_sample()
+    combined = RIO_BODY
+    obj["claims"] = [{
+        "statement": combined,
+        "evidence": [{"quote_span": combined}],
+        "numbers": ["2.1%"], "entities": [], "horizon": "current", "explicit": True,
+    }]
+    obj["analysis"]["thesis"]["support_claim_indices"] = [0]
+    with pytest.raises(ValueError, match="no source claim survived"):
+        parse_model_output(
+            json.dumps(obj),
+            expected_document_id="r1",
+            expected_document=obj["document"],
+            source_body=RIO_BODY,
+        )
 
 
 def test_rio_rejects_verbatim_thesis_summary_before_projection():
