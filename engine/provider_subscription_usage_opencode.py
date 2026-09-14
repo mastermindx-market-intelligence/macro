@@ -1,8 +1,9 @@
-"""OpenCode Go subscription-usage parser for Shared AI Provider Control.
+"""OpenCode Go subscription-usage acquisition for Shared AI Provider Control.
 
 The provider endpoint reports percentage/reset evidence for one subscribed
 workspace/user across rolling, weekly and monthly windows. Absolute limits are
 not invented here; callers preserve provider-native percentage semantics.
+Credential bytes are loaded only at the request boundary and are never returned.
 """
 from __future__ import annotations
 
@@ -11,9 +12,13 @@ from typing import Any, Mapping
 
 from engine.provider_subscription_usage import (
     SCHEMA,
+    CredentialLoader,
+    HttpJsonGetter,
     SubscriptionUsageError,
     SubscriptionUsageObservation,
     _closed_quota_row,
+    _credential,
+    _https_get_json,
     _percent,
     _provider_time,
     _utc_iso,
@@ -80,4 +85,30 @@ def parse_opencode_go_usage(
     )
 
 
-__all__ = ["OPENCODE_GO_USAGE_ENDPOINT", "parse_opencode_go_usage"]
+def observe_opencode_go_usage(
+    credential_loader: CredentialLoader,
+    *,
+    http_get: HttpJsonGetter = _https_get_json,
+    observed_at: datetime | str | None = None,
+    timeout_seconds: float = 10.0,
+) -> SubscriptionUsageObservation:
+    """Acquire one authenticated Go usage snapshot without exposing the API key."""
+
+    token = _credential(credential_loader)
+    payload = http_get(
+        OPENCODE_GO_USAGE_ENDPOINT,
+        {
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/json",
+            "User-Agent": "mastermind-provider-control/1.0",
+        },
+        timeout_seconds,
+    )
+    return parse_opencode_go_usage(payload, observed_at=observed_at)
+
+
+__all__ = [
+    "OPENCODE_GO_USAGE_ENDPOINT",
+    "observe_opencode_go_usage",
+    "parse_opencode_go_usage",
+]
