@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import json
 
 import pytest
 
@@ -84,4 +85,24 @@ def test_catalog_rejects_unknown_as_unlimited_policy():
     catalog = copy.deepcopy(load_catalog())
     catalog["unknown_selection_policy"] = "ASSUME_UNLIMITED"
     with pytest.raises(SubscriptionPlanError, match="fail closed"):
+        validate_catalog(catalog)
+
+
+@pytest.mark.parametrize("limit", [float("nan"), float("inf"), float("-inf"), -1, 0])
+def test_catalog_rejects_non_finite_and_nonpositive_limits(limit):
+    catalog = copy.deepcopy(load_catalog())
+    catalog["providers"]["glm"]["products"]["coding_plan"]["tiers"]["max"]["limits"][0]["limit"] = limit
+    with pytest.raises(SubscriptionPlanError, match="quota limit"):
+        validate_catalog(catalog)
+
+
+def test_catalog_accepts_finite_positive_limits_and_rejects_json_nan():
+    valid = copy.deepcopy(load_catalog())
+    valid["providers"]["glm"]["products"]["coding_plan"]["tiers"]["max"]["limits"][0]["limit"] = 1.5
+    assert validate_catalog(valid) is valid
+
+    catalog = json.loads(
+        json.dumps(valid).replace('"limit": 1.5', '"limit": NaN')
+    )
+    with pytest.raises(SubscriptionPlanError, match="quota limit"):
         validate_catalog(catalog)

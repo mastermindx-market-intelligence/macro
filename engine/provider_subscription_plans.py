@@ -9,6 +9,7 @@ from __future__ import annotations
 import copy
 import dataclasses
 import json
+import math
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -58,8 +59,13 @@ def _validate_limit(row: Any, *, reference: bool = False) -> None:
     if metric not in _ALLOWED_METRICS:
         raise SubscriptionPlanError(f"unsupported quota metric {metric!r}")
     limit = row.get("limit")
-    if isinstance(limit, bool) or not isinstance(limit, (int, float)) or limit <= 0:
-        raise SubscriptionPlanError("quota limit must be positive")
+    if (
+        isinstance(limit, bool)
+        or not isinstance(limit, (int, float))
+        or not math.isfinite(float(limit))
+        or limit <= 0
+    ):
+        raise SubscriptionPlanError("quota limit must be positive and finite")
     if not reference and row.get("window_type") not in _ALLOWED_WINDOWS:
         raise SubscriptionPlanError("authoritative limit requires a supported window_type")
     if row.get("enforced") is False and not row.get("temporary_policy"):
