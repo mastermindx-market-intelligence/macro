@@ -5391,6 +5391,11 @@ jobs:
       - tests/test_b_rec2_wave_boundary_records.py
       - tests/test_b_rec3_wave_boundary_records.py
       - tests/test_f00c_terminal_reconciliation.py
+      # W9B_REC_F07: F07 slice of orch/w8/LEDGER_MOVES.md — research note + pin
+      # test. The note is paste-only; no CSV edit; the suite reads the note
+      # from disk. Declared here so a change to either file selects the job
+      # and so the legacy-jobs.yml validators can pin the path declaration.
+      - tests/test_w9_ledger_note_f07.py
       - tests/test_f01_fx_commodity_source_rights.py
       - agentos/discoveries/DSC-COMMODITY-AND-FX-PRICE-SPINE-YAHOO-VENDOR-TERMS-ARE-RECORDED-ADVERSE.md
       - research/market_intelligence_productization/F01_FX_COMMODITY_SOURCE_RIGHTS_AND_DEPTH_2026-09.md
@@ -5414,6 +5419,10 @@ jobs:
       - agentos/handoffs/MARKET-ONTOLOGY-META-CEO-B-2026-09-07.md
       - research/market_intelligence_productization/MARKET_ONTOLOGY_HALF_A_K_CHAIN_GATE_DOCKET_2026-09-06.md
       - research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv
+      # W9B_REC_F07: the F07 slice of orch/w8/LEDGER_MOVES.md (research note).
+      # Read-only against the F00C CSV; declares both the note and the suite
+      # that pins it so the job's scope inference matches the union.
+      - research/market_intelligence_productization/W9_LEDGER_NOTE_F07_2026-09-13.md
       - research/market_intelligence_productization/F00C_TERMINAL_WAVE_RECONCILIATION_MANIFEST_2026-09-09.json
       - research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_TERMINAL_WAVE_RECONCILIATION_2026-09-09.md
       - research/market_intelligence_productization/receipts/supabase_receipt_0012_thesis_objects_2026-09-06.json
@@ -5545,7 +5554,7 @@ jobs:
           python -m pytest tests/test_agentos_schema.py tests/test_agentos_status.py \
             tests/test_agentos_compile.py tests/test_f01_fx_commodity_source_rights.py tests/test_f02_owner_map_receipts.py \
             tests/test_b_rec2_wave_boundary_records.py tests/test_b_rec3_wave_boundary_records.py \
-            tests/test_f00c_terminal_reconciliation.py -q
+            tests/test_f00c_terminal_reconciliation.py tests/test_w9_ledger_note_f07.py -q
 
   capability-broker:
     if: ${{ false }}
