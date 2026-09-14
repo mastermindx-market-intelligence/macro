@@ -20,6 +20,13 @@ def _text(value: Any, limit: int = 8000) -> str:
     return " ".join(str(value or "").split())[:limit]
 
 
+def _verbatim(value: Any, limit: int = 1600) -> str:
+    """Preserve exact evidence bytes or reject the value as non-verbatim."""
+    if not isinstance(value, str) or not value.strip() or len(value) > limit:
+        return ""
+    return value
+
+
 def _strings(value: Any, *, limit: int = 50, item_limit: int = 1000) -> list[str]:
     if not isinstance(value, list):
         return []
@@ -38,7 +45,7 @@ def _evidence(value: Any, *, limit: int = 12) -> list[dict[str, str]]:
     for raw in value[:limit]:
         if not isinstance(raw, dict):
             continue
-        quote = _text(raw.get("quote_span"), 1600)
+        quote = _verbatim(raw.get("quote_span"))
         if not quote:
             continue
         row = {"quote_span": quote}

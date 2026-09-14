@@ -482,7 +482,14 @@ def test_extract_envelope_fields():
 def test_shared_quote_span_verifier():
     assert qe.quote_span_verified(BODY, "acquire all outstanding shares")
     assert not qe.quote_span_verified(BODY, "this phrase is fabricated")
-    assert qe.citation_normalize("2.1%") == "2 1"
+    assert qe.citation_normalize("2.1%") == "2.1%"
+
+
+def test_shared_quote_span_verifier_preserves_unicode_and_token_boundaries():
+    assert not qe.quote_span_verified("Corporate earnings improved.", "rate")
+    assert qe.quote_span_verified("中国流动性正在改善。", "流动性正在改善")
+    assert qe.quote_span_verified("ＡＡＰＬ demand rose.", "AAPL demand rose")
+    assert not qe.quote_span_verified("AAPL demand rose.", "ＭＳＦＴ demand rose")
 
 
 if __name__ == "__main__":

@@ -49,6 +49,7 @@ import hashlib
 import json
 import logging
 import re
+import unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -160,23 +161,103 @@ def _norm(s: str) -> str:
     return re.sub(r"[^a-z0-9]+", " ", (s or "").lower()).strip()
 
 
+def _is_han_character(char: str) -> bool:
+    codepoint = ord(char)
+    return (
+        0x3400 <= codepoint <= 0x4DBF
+        or 0x4E00 <= codepoint <= 0x9FFF
+        or 0xF900 <= codepoint <= 0xFAFF
+        or 0x20000 <= codepoint <= 0x2FA1F
+    )
+
+
+_CITATION_NUMBER_AT = re.compile(
+    r"[+\-−]?\d+(?:[.,]\d+)*(?:\s*(?:%|bps?|trillion|billion|million|tn|bn|mm|[kmbx]))?(?!\w)",
+    re.IGNORECASE,
+)
+_CITATION_CURRENCY = frozenset("$€£¥")
+_CITATION_SIGNS = frozenset("+-−")
+
+
+def _citation_tokens(text: str) -> list[str]:
+    """Return Unicode-safe citation tokens with Han characters addressable.
+
+    NFKC makes full-width and compatibility typography comparable. Non-Han
+    letters and identifiers remain whole tokens so a quote such as ``rate``
+    cannot ground itself inside ``corporate``. Numeric tokens preserve signs,
+    decimals, percentages, and common magnitude units. Han characters are
+    individual tokens because Chinese source text does not require whitespace.
+    """
+    normalized = unicodedata.normalize("NFKC", str(text or "")).casefold()
+    tokens: list[str] = []
+    current: list[str] = []
+
+    def flush() -> None:
+        if current:
+            tokens.append("".join(current))
+            current.clear()
+
+    index = 0
+    while index < len(normalized):
+        char = normalized[index]
+        if _is_han_character(char):
+            flush()
+            tokens.append(char)
+            index += 1
+            continue
+        if current:
+            if char.isalnum():
+                current.append(char)
+                index += 1
+                continue
+            flush()
+            continue
+        if char in _CITATION_CURRENCY:
+            tokens.append(char)
+            index += 1
+            continue
+        number = None
+        if char.isdigit() or (
+            char in _CITATION_SIGNS
+            and index + 1 < len(normalized)
+            and normalized[index + 1].isdigit()
+            and (index == 0 or not normalized[index - 1].isalnum())
+        ):
+            number = _CITATION_NUMBER_AT.match(normalized, index)
+        if number is not None:
+            token = re.sub(r"\s+", "", number.group(0)).replace("−", "-")
+            tokens.append(token)
+            index = number.end()
+            continue
+        if char.isalnum():
+            current.append(char)
+        index += 1
+    flush()
+    return tokens
+
+
 def citation_normalize(text: str) -> str:
-    """Canonical typography-agnostic citation text used by qualitative extractors."""
-    return _norm(text)
+    """Canonical Unicode-safe citation text used by qualitative extractors."""
+    return " ".join(_citation_tokens(text))
 
 
 def quote_span_verified(body: str, quote_span: str, *, minimum_chars: int = 4) -> bool:
-    """Whether a purported verbatim quote is actually present in ``body``.
+    """Whether a purported quote is present at citation-token boundaries.
 
     This is the shared anti-hallucination primitive for body-bearing qualitative
-    lanes.  ``minimum_chars`` is explicit so callers verifying short numeric
+    lanes. ``minimum_chars`` is explicit so callers verifying short numeric
     literals can choose a smaller boundary without reimplementing normalization.
     """
     if isinstance(minimum_chars, bool) or not isinstance(minimum_chars, int) or minimum_chars < 1:
         raise ValueError("minimum_chars must be a positive integer")
-    source = _norm(body or "")
-    span = _norm(quote_span or "")
-    return bool(span) and len(span) >= minimum_chars and span in source
+    source_tokens = _citation_tokens(body)
+    span_tokens = _citation_tokens(quote_span)
+    if not span_tokens or sum(len(token) for token in span_tokens) < minimum_chars:
+        return False
+    separator = "\x1f"
+    source = separator + separator.join(source_tokens) + separator
+    span = separator + separator.join(span_tokens) + separator
+    return span in source
 
 
 # --------------------------------------------------------------------------- #

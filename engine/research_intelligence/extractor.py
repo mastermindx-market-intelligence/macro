@@ -7,7 +7,7 @@ import json
 import re
 from typing import Any, Callable
 
-from engine.qual_extraction import citation_normalize, quote_span_verified
+from engine.qual_extraction import quote_span_verified
 from .schema import SCHEMA, validate_rio
 
 _FENCE = re.compile(r"^\s*```(?:json)?\s*|\s*```\s*$", re.I)
@@ -104,11 +104,12 @@ def _ground_rio(rio: dict[str, Any], body: str) -> dict[str, Any]:
             continue
         grounded = dict(claim)
         grounded["evidence"] = verified
-        quote_norm = [citation_normalize(e["quote_span"]) for e in verified]
         grounded["numbers"] = [
             number for number in claim["numbers"]
-            if citation_normalize(number)
-            and any(citation_normalize(number) in quote for quote in quote_norm)
+            if any(
+                quote_span_verified(evidence["quote_span"], number, minimum_chars=1)
+                for evidence in verified
+            )
         ]
         mapping[old_index] = len(claims)
         claims.append(grounded)
@@ -197,39 +198,52 @@ def analyze_document(
     body = str(markdown or "")
     if not body.strip():
         raise ValueError("document markdown is empty")
+    requested_model = str(model_id or "").strip()
+    if not requested_model:
+        raise ValueError("model_id is required")
     system, user = build_prompt(document, body)
     expected_identity = _identity(document, body)
     fn = call or _default_call
     try:
-        raw, provider, used_model = fn(system, user, model_id=model_id, max_tokens=max_tokens)
+        raw, provider, used_model = fn(
+            system, user, model_id=requested_model, max_tokens=max_tokens
+        )
     except Exception as exc:  # noqa: BLE001 - provider failures are degraded data, never truth.
         return {
             "state": "call_failed", "rio": None, "provider": "", "model": "",
-            "requested_model": model_id, "prompt_version": PROMPT_VERSION,
+            "requested_model": requested_model, "prompt_version": PROMPT_VERSION,
             "prompt_contract_sha256": _sha(PROMPT_VERSION + "\n" + SYSTEM_PROMPT),
             "prompt_sha256": _sha(system + "\n" + user),
-            "error": str(exc)[:500],
+            "error_class": type(exc).__name__[:120],
         }
+    raw = str(raw or "")
+    provider = str(provider or "").strip()
+    used_model = str(used_model or "").strip()
     base = {
         "provider": provider,
         "model": used_model,
-        "requested_model": model_id,
+        "requested_model": requested_model,
         "prompt_version": PROMPT_VERSION,
         "prompt_contract_sha256": _sha(PROMPT_VERSION + "\n" + SYSTEM_PROMPT),
         "prompt_sha256": _sha(system + "\n" + user),
     }
     if not raw:
         return {"state": "no_model_output", "rio": None, **base}
+    if not provider or not used_model:
+        return {
+            "state": "model_provenance_unavailable", "rio": None,
+            "error_code": "SERVING_PROVENANCE_MISSING", **base,
+        }
     try:
         rio = parse_model_output(
             raw,
-            expected_document_id=str(document["id"]),
+            expected_document_id=expected_identity["id"],
             expected_document=expected_identity,
             source_body=body,
         )
     except (ValueError, TypeError, json.JSONDecodeError) as exc:
         return {
             "state": "invalid_model_output", "rio": None,
-            "error": str(exc)[:500], **base,
+            "error_class": type(exc).__name__[:120], **base,
         }
     return {"state": "ok", "rio": rio, **base}
