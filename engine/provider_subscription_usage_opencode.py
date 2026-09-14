@@ -39,6 +39,7 @@ def parse_opencode_go_usage(
     if not isinstance(payload, Mapping):
         raise SubscriptionUsageError("OPENCODE_GO_USAGE_NOT_MAPPING")
     observed = _utc_iso(observed_at)
+    observed_at_instant = datetime.fromisoformat(observed.replace("Z", "+00:00"))
     usage = payload.get("usage")
     if not isinstance(usage, Mapping):
         raise SubscriptionUsageError("OPENCODE_GO_USAGE_DATA_INVALID")
@@ -54,6 +55,10 @@ def parse_opencode_go_usage(
         reset_at = _provider_time(raw.get("resetsAt"))
         status_raw = str(raw.get("status") or "").strip().lower()
         if used_percent is None or reset_at is None or status_raw not in {"ok", "rate-limited"}:
+            degraded.append(degraded_code)
+            continue
+        reset_at_instant = datetime.fromisoformat(reset_at.replace("Z", "+00:00"))
+        if reset_at_instant <= observed_at_instant:
             degraded.append(degraded_code)
             continue
         status = "exhausted" if status_raw == "rate-limited" or used_percent >= 100 else "limited"
