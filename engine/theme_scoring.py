@@ -1018,7 +1018,10 @@ def compute_theme_intel(region: str = "us") -> dict | None:
         s = _nr._setup(rcfg) if rcfg else None
     if s is None:
         return None
-    closes, rets, idx, bench = s["closes"], s["rets"], s["idx"], s["bench"]
+    closes = s.get("theme_closes", s["closes"]) if region == "us" else s["closes"]
+    rets = s.get("theme_rets", s["rets"]) if region == "us" else s["rets"]
+    idx, bench = s["idx"], s["bench"]
+    price_resolution = s.get("theme_price_resolution") if region == "us" else None
     if len(idx) < 60:
         return None
     cfg = group_flow._cfg()
@@ -1526,6 +1529,7 @@ def compute_theme_intel(region: str = "us") -> dict | None:
             "effective_as_of": idx.max().strftime("%Y-%m-%d"),
             "status": "legacy_source_without_receipt",
         },
+        **({"price_resolution": price_resolution} if price_resolution is not None else {}),
         "observation_refusals": observation_refusals,
         "themes": themes,
         "rotation_5d": {"climbers": climbers, "fallers": fallers},

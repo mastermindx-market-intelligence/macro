@@ -1798,3 +1798,5 @@
 {"date": "2026-09-11", "ticker": "CRCT", "sga_score": 45, "gate_tier": null, "weeks_in_stage": 5, "earnings_present": true, "sentiment": 0.1, "performance": 5.5, "session_source": "stage_source_asof"}
 {"date": "2026-09-11", "ticker": "DLO", "sga_score": 45, "gate_tier": null, "weeks_in_stage": 9, "earnings_present": true, "sentiment": 0.5, "performance": 7.8, "session_source": "stage_source_asof"}
 {"date": "2026-09-11", "ticker": "HNVR", "sga_score": 45, "gate_tier": null, "weeks_in_stage": 7, "earnings_present": false, "sentiment": null, "performance": null, "session_source": "stage_source_asof"}
+{"date": "2026-09-11", "ticker": "PLUS", "sga_score": 60, "gate_tier": "T2", "weeks_in_stage": 1, "earnings_present": true, "sentiment": 0.1, "performance": 5.0, "session_source": "stage_source_asof"}
+{"date": "2026-09-11", "ticker": "CLSK", "sga_score": 50, "gate_tier": "T2", "weeks_in_stage": 1, "earnings_present": true, "sentiment": 0.7, "performance": 6.5, "session_source": "stage_source_asof"}

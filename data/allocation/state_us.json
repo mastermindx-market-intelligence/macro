@@ -9,6 +9,7 @@
     "big_pharma",
     "crypto",
     "cybersecurity",
+    "data_center_power",
     "energy_complex",
     "gold_miners",
     "industrial_distribution",
@@ -28,6 +29,7 @@
     "us_sector_health",
     "us_sector_industrials",
     "us_sector_materials",
+    "us_sector_realestate",
     "us_sector_staples",
     "us_sector_tech"
   ],

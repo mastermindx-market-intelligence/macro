@@ -1,16 +1,16 @@
 {
   "schema": "altdata_track_record.v1",
-  "as_of": "2026-09-13",
-  "scored_total": 140,
-  "open": 438,
+  "as_of": "2026-09-14",
+  "scored_total": 141,
+  "open": 441,
   "unscored_soft": 0,
   "expired": 15,
   "overall": {
-    "n": 140,
-    "hits": 92,
+    "n": 141,
+    "hits": 93,
     "misses": 48,
-    "hit_rate": 0.657,
-    "dir_accuracy": 0.471
+    "hit_rate": 0.66,
+    "dir_accuracy": 0.468
   },
   "by_conviction": {
     "high": {
@@ -28,20 +28,20 @@
       "dir_accuracy": null
     },
     "low": {
-      "n": 140,
-      "hits": 92,
+      "n": 141,
+      "hits": 93,
       "misses": 48,
-      "hit_rate": 0.657,
-      "dir_accuracy": 0.471
+      "hit_rate": 0.66,
+      "dir_accuracy": 0.468
     }
   },
   "by_kind": {
     "rel_return": {
-      "n": 140,
-      "hits": 92,
+      "n": 141,
+      "hits": 93,
       "misses": 48,
-      "hit_rate": 0.657,
-      "dir_accuracy": 0.471
+      "hit_rate": 0.66,
+      "dir_accuracy": 0.468
     },
     "level": {
       "n": 0,
@@ -52,8 +52,17 @@
     }
   },
   "by_regime": {},
-  "calibration_note": "140 scored, hit-rate 0.657 (directional accuracy 0.471).",
+  "calibration_note": "141 scored, hit-rate 0.66 (directional accuracy 0.468).",
   "recent": [
+    {
+      "id": "2026-08-07-EQIX-altconv",
+      "subject": "EQIX alt-data convergence",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.0056,
+      "check_by": "2026-09-07"
+    },
     {
       "id": "2026-08-13-RTX-altconv",
       "subject": "RTX alt-data convergence",
@@ -134,17 +143,8 @@
       "outcome": "miss",
       "realized": -0.1181,
       "check_by": "2026-09-07"
-    },
-    {
-      "id": "2026-08-07-WYNN-altconv",
-      "subject": "WYNN alt-data convergence",
-      "lean": "overweight",
-      "conviction": "low",
-      "outcome": "miss",
-      "realized": -0.1074,
-      "check_by": "2026-09-07"
     }
   ],
-  "calibration_note_zh": "\u5df2\u8bc4\u5206 140 \u6761\uff0c\u547d\u4e2d\u7387 0.657\uff08\u65b9\u5411\u51c6\u786e\u7387 0.471\uff09\u3002",
+  "calibration_note_zh": "\u5df2\u8bc4\u5206 141 \u6761\uff0c\u547d\u4e2d\u7387 0.66\uff08\u65b9\u5411\u51c6\u786e\u7387 0.468\uff09\u3002",
   "note": "Alt-data convergence theses graded vs SPY. Context-only \u2014 the signal earns a scored vote only once this track record shows forward edge."
 }
