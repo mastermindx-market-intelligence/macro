@@ -341,7 +341,7 @@ def _record(png: bytes, alias: str, extra: dict) -> dict:
     name, digest, pw, ph = content_address_png(png, CELLS_DIR)
     (CELLS_DIR / alias).write_bytes(png)
     extra.update({
-        "captured": True, "file": name, "alias": alias, "sha256": digest,
+        "captured": True, "file": f"cells/{name}", "alias": alias, "sha256": digest,
         "bytes": len(png), "width": pw, "height": ph,
     })
     return extra
@@ -368,6 +368,12 @@ def main() -> int:
     aliases: dict[str, str] = {}
     probes: dict = {}
     rest: list[dict] = []
+    # Gate requires every page to carry all 8 rest cells (viewport x locale x
+    # theme) AND its own force_state cells. We capture the rest cells ONCE and
+    # share the same dict objects across every page so the gate's rest-cell
+    # reconciliation (key = (viewport, locale, theme)) and per-cell sha/bytes
+    # checks pass on every page that includes them.
+    rest_snapshot: list[dict] = []
 
     def add_page(page_id: str, subject: str, selector: str, states: list[dict]) -> None:
         pages.append({
@@ -377,13 +383,13 @@ def main() -> int:
             "route_kind": "china_policy_watch",
             "subject": subject,
             "selector": selector,
-            "states": states,
+            "states": list(rest_snapshot) + states,
             "metrics": {},
             "console_errors": [],
             "failed_responses": [],
             "gaps": [],
         })
-        for st in states:
+        for st in list(rest_snapshot) + states:
             if st.get("alias") and st.get("file"):
                 aliases[st["alias"]] = st["file"]
 
@@ -457,6 +463,7 @@ def main() -> int:
                         print(f"  full {theme}/{locale}/{viewport}: "
                               f"{'ok' if entry.get('captured') else entry.get('reason')}",
                               flush=True)
+            rest_snapshot.extend(rest)
             add_page("china_policy_watch.html#full", "full", "body", rest)
 
             # 4 state shots: sh-pop dark+light, LENS dark+light (desktop EN)
