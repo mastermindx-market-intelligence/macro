@@ -1022,9 +1022,11 @@ def test_nonmatched_overflow_never_promotes_unmetered_passage_into_body(
         assert result["evidence"]["access"] == {
             "decision": "not_served", "metered": False,
         }
+        assert result["evidence"]["passages"] == []
         assert result["quota"] is None
         assert result["report"]["body_text"] == ""
         assert result["report"]["body_truncated"] is False
+        assert "SECRET" not in json.dumps(result)
         assert _recursive_string_total(result) <= bmi.REPORT_BODY_MAX_CHARS
 
     assert debits == []
