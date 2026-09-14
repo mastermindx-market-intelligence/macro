@@ -1127,3 +1127,18 @@ def test_error_envelope_bounds_caller_report_id_under_shared_ceiling(tmp_path):
     assert result["report_id"] != caller_id
     assert len(result["report_id"]) <= bmi._REPORT_META_MAX_CHARS
     assert _recursive_string_total(result) <= bmi.REPORT_BODY_MAX_CHARS
+
+
+def test_limit_error_sanitizes_string_quota_metadata(tmp_path, monkeypatch):
+    _seed(tmp_path)
+    monkeypatch.setattr(bmi, "_peek_report_view", lambda user_id, now: {
+        "remaining": 0,
+        "limit": "L" * 50_000,
+    })
+
+    result = _report(tmp_path, "AAPL demand")
+
+    assert result["error"] == "view_limit_reached"
+    assert result["remaining"] == 0
+    assert result["limit"] is None
+    assert _recursive_string_total(result) <= bmi.REPORT_BODY_MAX_CHARS
