@@ -1569,6 +1569,7 @@ def _build_deep(blob: dict | None, per: dict, agg: dict, ticker: str,
     dialogs = [d for d in (
         _soft(_deep_stats, blob, performance, stats),
         _soft(_deep_financials, blob),
+        _soft(_deep_valuation_scenario, blob),
         _soft(_deep_technicals, blob, ts_row),
         _soft(_deep_earnings, blob),
         _soft(_deep_options, blob, per.get("gex_v1")),
@@ -2449,6 +2450,103 @@ def _build_financials(blob: dict | None) -> dict | None:
     }
 
 
+def _valuation_scenario_view(blob: dict | None) -> dict | None:
+    """Passthrough read of the pre-computed valuation_scenario.v1 blob written
+    by scripts/build_stock_library.py (numbers-only contract; no transform
+    happens here -- the producer already emits the exact view shape)."""
+    if not blob:
+        return None
+    return (blob.get("valuation_scenario") or {}).get("v1")
+
+
+_VS_SCENARIO_TITLES_ZH = {"cautious": "保守", "base": "基准", "upbeat": "乐观"}
+
+
+def _vs_scenario_null_text(s: dict) -> tuple[str, str]:
+    """Plain-word reason a non-computable scenario shows in the Full-detail
+    dialog. Mirrors the vs_null_en/vs_null_zh Jinja macros in
+    templates/_valuation_scenario.html.j2 exactly -- same scenario-named
+    margin_too_thin sentence, same "first missing reason wins" priority (a
+    scenario carrying a more fundamental reason, e.g. "consistent period",
+    ahead of margin_too_thin in s["missing"] must not be described as merely
+    too-thin-margin) -- so the two render sites never disagree (review round
+    4 MINOR-1: this dialog printed a bare "Not computable"/"无法计算" with no
+    reason at all for a margin_too_thin scenario)."""
+    missing = s.get("missing") or []
+    key = s.get("key", "")
+    if missing and missing[0] == "margin_too_thin":
+        return (
+            f"Not computable — margins are too thin to run the {key} case",
+            f"无法计算——利润率过低，无法计算{_VS_SCENARIO_TITLES_ZH.get(key, key)}情景",
+        )
+    missing_plain = s.get("missing_plain") or []
+    reason_en = missing_plain[0]["en"] if missing_plain else "a reported input"
+    reason_zh = missing_plain[0]["zh"] if missing_plain else "一项披露数据"
+    return (f"Not computable — no {reason_en}", f"无法计算——缺少{reason_zh}")
+
+
+def _deep_valuation_scenario(blob: dict | None) -> dict | None:
+    vscn = (blob or {}).get("valuation_scenario", {}).get("v1") if blob else None
+    if not vscn:
+        return None
+    panels: list = []
+    rows = [
+        {"k_en": "Fiscal year", "k_zh": "财年", "v": str(vscn.get("fy")), "v_en": "", "v_zh": ""},
+        {"k_en": "Period end", "k_zh": "期末日期", "v": str(vscn.get("period_end")), "v_en": "", "v_zh": ""},
+        {"k_en": "Source", "k_zh": "来源", "v": "", "v_en": "SEC filings", "v_zh": "SEC披露文件"},
+        {"k_en": "Tier", "k_zh": "层级", "v": "", "v_en": "Research display only, not advice",
+         "v_zh": "仅供研究展示，非投资建议"},
+        # Review B-F07-1 MAJOR-2: was "diluted share count" -- the loader has no
+        # diluted share count column (only "eps_diluted", a per-share ratio, not
+        # a share count; see engine/valuation_scenario.py's module docstring), so
+        # the module deliberately divides by shares OUTSTANDING and labels that
+        # honestly (base kv row's "identity" field). This formula description
+        # must match what the panel actually does, not what a future producer
+        # change might someday supply.
+        # MINOR-4 (review round 3): "adj." was an abbreviation in user-facing
+        # dialog copy (same class as round-2 MINOR-3, which forced N/A -> No
+        # data); spelled out.
+        {"k_en": "Formula", "k_zh": "计算公式",
+         "v": "", "v_en": "adjusted net income x earnings multiple / share count (as reported)",
+         "v_zh": "调整后净利润 x 市盈率倍数 / 披露股数"},
+        {"k_en": "Net debt / cash", "k_zh": "净负债／净现金",
+         "v": "", "v_en": "Shown as a reported fact only — not applied to the per-share math "
+                          "(a P/E multiple already yields equity value)",
+         "v_zh": "仅作为披露事实展示，不参与每股计算（市盈率倍数本身已是股权价值）"},
+    ]
+    panels.append({"kind": "kv", "title_en": "Basis", "title_zh": "计算依据", "rows": rows})
+    for s in vscn.get("scenarios", []):
+        a = s.get("assumptions", {})
+        key = s.get("key", "")
+        # Review round 4 MINOR-1: this dialog is a fourth render site for
+        # per_share and used to gate on s.get("computable") alone, so the
+        # belt-and-braces defence in the Jinja partial (every render site
+        # requires computable AND per_share is not none AND per_share > 0)
+        # was one file short. Apply the same three-part check here.
+        _vs_ps = s.get("per_share")
+        _vs_ok = bool(s.get("computable")) and _vs_ps is not None and _vs_ps > 0
+        if _vs_ok:
+            _vs_v, _vs_v_en, _vs_v_zh = f"${_vs_ps:.2f}", "", ""
+        else:
+            _vs_v_en, _vs_v_zh = _vs_scenario_null_text(s)
+            _vs_v = ""
+        srows = [
+            {"k_en": "Sales growth", "k_zh": "销售增长", "v": f"{a.get('sales_growth_pct')}%", "v_en": "", "v_zh": ""},
+            {"k_en": "Margin change", "k_zh": "利润率变化", "v": f"{a.get('margin_delta_pp')}pp", "v_en": "", "v_zh": ""},
+            {"k_en": "Earnings multiple", "k_zh": "市盈率倍数", "v": f"{a.get('earnings_multiple')}x", "v_en": "", "v_zh": ""},
+            {"k_en": "Per-share (computed)", "k_zh": "每股价值（计算值）",
+             "v": _vs_v, "v_en": _vs_v_en, "v_zh": _vs_v_zh},
+        ]
+        panels.append({
+            "kind": "kv",
+            "title_en": key.title(),
+            "title_zh": _VS_SCENARIO_TITLES_ZH.get(key, ""),
+            "rows": srows,
+        })
+    return _mk_dialog(
+        "valuation_scenario", "How this was worked out", "计算方式说明", panels)
+
+
 def _build_valuation(blob: dict | None) -> list | None:
     if not blob:
         return None
@@ -2484,6 +2582,16 @@ def _build_valuation(blob: dict | None) -> list | None:
             "cheap": cheap,
         })
     return rows or None
+
+
+def _valuation_assumptions_view(blob: dict | None) -> dict | None:
+    """Passthrough read of valuation_scenario_controls.v1 written next to V1.
+
+    Lives after _build_valuation, outside the #6905 V1 helper cluster.
+    """
+    if not blob:
+        return None
+    return (blob.get("valuation_scenario") or {}).get("controls")
 
 
 def _build_earnings(blob: dict | None) -> dict | None:
@@ -3457,16 +3565,16 @@ _SS_IDENTITY: dict[str, dict[str, str]] = {
     },
 }
 
-# Six axes, in reading order. Titles are plain words: the axis names in the
-# contract (STATE / OPPORTUNITY_CONTEXT / PERSONAL_IMPACT) are field names, and
-# field names are not user copy.
+# Five axes, in reading order. Titles are plain words: the axis names in the
+# contract (STATE / OPPORTUNITY_CONTEXT) are field names, and field names are
+# not user copy. `personal_impact` is not an axis — F06 freeze §3 folds it
+# into Overview as one exposure row, never a sixth card.
 _SS_AXES: tuple[tuple[str, str, str], ...] = (
     ("state", "Where it stands", "当前位置"),
     ("change", "What changed", "有何变化"),
     ("opportunity_context", "Opportunity context", "机会背景"),
     ("risk", "What could go wrong", "风险"),
     ("catalyst", "What to watch next", "接下来关注"),
-    ("personal_impact", "Your position", "你的持仓"),
 )
 
 # Gate codes are deterministic machine identifiers — required in the drilldown
@@ -3635,21 +3743,62 @@ _SS_DISCLOSURES: dict[str, dict[str, str]] = {
     },
 }
 
-# Chairman plain-language law (2026-09-06), macro#6920 heal-round h5:
-# `identity_proof.legs[].description` / `artifact` / `reader` are customer
-# rows on the Identity-checks panel. Coded legs (a non-empty `code`) keep
-# the `(check, code)` tables `_SS_LEG_DESC` / `_SS_ARTIFACT` / `_SS_READER`.
-# Code-less legs MUST NOT share a `(check, "")` fallback: two different
-# code-less R8 legs exist (the proven-path PASS at engine :664 and the
-# compile-failed owner-confirmed PASS shell at :1805) and one house sentence
-# on both would print the proven-path sentence on a page whose compile
-# failed. Code-less legs are looked up in `_SS_LEG_HOUSE_BY_DESC` keyed on
-# `(check, engine description sentence)` — the exact engine string. An
-# engine sentence that changes makes the leg unmapped (row hidden,
-# completeness test RED). Unmapped legs render no description / artifact /
-# reader row: the EN slot never receives engine text and the ZH slot never
-# receives `_SS_COVERAGE_FALLBACK` ("暂不可用") for these three fields.
+# Chairman plain-language law (2026-09-06), macro#6920 round-4 review MAJOR-2,
+# B-F06-3 round-2 review MAJOR-1: `identity_proof.legs[].description` is the
+# one-line gate sentence under each identity-check header (`.ss-chk-d`). The
+# engine emits English machine prose; glance (and ZH) must print a registered
+# bilingual sentence instead. Keyed on (check, code) rather than the literal
+# sentence, because the same `check` id ("R8") carries several descriptions
+# depending on `code`. Empty code is the proven-path default for that check —
+# and it is ONLY printed on a real proven-path pass; see the guard constants
+# under this table and the `desc_house` branch in `build_security_state`.
+# Heal-round h6: the base's healed ("R8","IDENTITY_UNRESOLVED") REPLACES the
+# packet's earlier wording (one dict key, never two); ("R8","OWNER_IDENTITY_UNREAD")
+# is the base's M1 unread pair.
 _SS_LEG_DESC: dict[tuple[str, str], dict[str, str]] = {
+    ("R1", ""): {
+        "en": "This security record exists and has not been replaced.",
+        "zh": "该证券记录存在，且未被替换。",
+    },
+    ("R2", ""): {
+        "en": "This security is tied to its resolved issuer.",
+        "zh": "该证券已绑定到已解析的发行主体。",
+    },
+    ("R3", ""): {
+        "en": "Exactly one active issuer record binds this company and its identifier.",
+        "zh": "恰好一条有效的发行主体记录绑定了该公司及其识别码。",
+    },
+    ("R4", ""): {
+        "en": "This issuer currently has exactly this one security.",
+        "zh": "该发行主体当前仅有这一只证券。",
+    },
+    ("R5", ""): {
+        "en": "The listing identifier maps back to this same security.",
+        "zh": "上市标识可回映射到同一只证券。",
+    },
+    ("R6", ""): {
+        "en": "No issuer or security migration is on file for this name.",
+        "zh": "该名称没有发行主体或证券迁移记录。",
+    },
+    ("R7", ""): {
+        "en": "Workspace events and disclosures, when present, bind to the same company identifier.",
+        "zh": "若有工作区，其事件与披露均绑定同一公司识别码。",
+    },
+    # `r8_pass` is `master_cik == subject.issuer_cik and (not
+    # workspace_available or filing_cik_ok)` — the workspace conjunct is
+    # vacuous whenever no workspace was loaded this cycle, and on that path
+    # the R9 row on this same panel says no workspace listing was available
+    # to compare. So the workspace half is conditional, in both languages,
+    # exactly as ("R7", "") already words it.
+    ("R8", ""): {
+        "en": "The master company identifier matches the owner read; "
+              "if a workspace is present, it agrees too.",
+        "zh": "主数据中的公司识别码与所有者读数一致；若有工作区，工作区亦一致。",
+    },
+    ("R9", ""): {
+        "en": "The workspace primary listing agrees with this security's current ticker and venue.",
+        "zh": "工作区主上市记录与该证券当前代码及交易场所一致。",
+    },
     ("R8", "IDENTITY_UNRESOLVED"): {
         "en": "This cycle could not re-read who owns this security; this page keeps the last "
         "known ticker mapping, not a live owner read.",
@@ -3661,6 +3810,91 @@ _SS_LEG_DESC: dict[tuple[str, str], dict[str, str]] = {
         "page keeps only the last known ticker and registration number.",
         "zh": "本周期无法读取该证券的所有者；未运行所有者来源，因此本页仅保留上次已知的股票代码与注册编号。",
     },
+    # ── B-F06-3 round-5 R3: the failure sentences ──────────────────────────
+    # Promoting the receipt chain to an always-visible, equal-weight panel put
+    # the failure rows where the reader most needs the explanation, and an
+    # unmapped code rendered as an id and a status word and nothing else. Each
+    # pair below is the plain-words negation of the engine's own leg
+    # description for that check (engine/security_state.py, cited per row), in
+    # the same house form the empty-code entries use: one sentence, no code
+    # token, real Chinese. ISSUER_GROUP_AMBIGUOUS is carried by two different
+    # checks and each states its own fact.
+    ("R1", "SECURITY_SUPERSEDED"): {  # engine/security_state.py:451-460
+        "en": "This security record is missing, or it has been replaced.",
+        "zh": "该证券记录缺失，或已被替换。",
+    },
+    ("R2", "IDENTITY_UNRESOLVED"): {  # engine/security_state.py:470-475
+        "en": "This security is not tied to its resolved issuer.",
+        "zh": "该证券未绑定到已解析的发行主体。",
+    },
+    ("R3", "ISSUER_GROUP_AMBIGUOUS"): {  # engine/security_state.py:489-499
+        "en": "No single active issuer record binds this company and its identifier.",
+        "zh": "没有唯一一条有效的发行主体记录绑定该公司及其识别码。",
+    },
+    ("R4", "ISSUER_GROUP_AMBIGUOUS"): {  # engine/security_state.py:510-515
+        "en": "This issuer currently holds more than this one security, or not this one.",
+        "zh": "该发行主体当前持有的证券不止这一只，或并不包含这一只。",
+    },
+    ("R5", "LISTING_KEY_INCOHERENT"): {  # engine/security_state.py:539-544
+        "en": "The listing identifier does not map back to this same security.",
+        "zh": "上市标识无法回映射到同一只证券。",
+    },
+    ("R6", "IDENTITY_CORRECTED"): {  # engine/security_state.py:551-559
+        "en": "An issuer or security migration is on file for this name.",
+        "zh": "该名称存在发行主体或证券迁移记录。",
+    },
+    ("R7", "SUBJECT_NATIVE_PARITY_FAILED"): {  # engine/security_state.py:594-600
+        "en": "The workspace events and disclosures do not all bind to the same "
+              "company identifier.",
+        "zh": "工作区的事件与披露并非全部绑定同一公司识别码。",
+    },
+    ("R8", "IDENTITY_BRIDGE_DISAGREEMENT"): {  # engine/security_state.py:616-623
+        "en": "The master company identifier does not match the owner read, or a "
+              "present workspace disagrees.",
+        "zh": "主数据中的公司识别码与所有者读数不一致，或现有工作区与之不符。",
+    },
+    # Ruled by the seat, round 5.
+    ("R9", "CORROBORATION_DIVERGENT"): {  # engine/security_state.py:650-656
+        "en": "The workspace listing does not agree with this security's current "
+              "ticker and venue.",
+        "zh": "工作区上市记录与该证券当前的代码及交易场所不一致。",
+    },
+}
+
+# ── B-F06-3 round-3 R1/R2: an empty leg code is not a synonym for "proved" ──
+# `identity_proof.state` is one of PROVEN / PARTIAL / BLOCKED_IDENTITY_BRIDGE
+# (engine/security_state.py). PROVEN is the only state in which the empty-code
+# sentences above are a true statement about THIS read. The producer's own
+# containment shell, `compile_security_state_failure`, also emits an R8 leg
+# with result "pass" and a null code, and says in its own words that it does
+# not claim a full identity-chain pass — printing the affirmative sentence
+# there would turn an explicit non-claim into a claim, on the very page whose
+# banner says the read could not be built.
+_SS_IDENTITY_PROVEN = "PROVEN"
+
+_SS_LEG_CARRIED_OVER: dict[str, str] = {
+    "en": "Carried over from the owner read; not re-verified in this read.",
+    "zh": "沿用所有者读数中的识别码，本次读数未重新核对。",
+}
+_SS_RESULT_CARRIED_OVER: dict[str, str] = {"en": "carried over", "zh": "沿用"}
+
+# R9 is corroboration only, and the engine passes it VACUOUSLY when there is
+# no workspace primary listing to compare against (`corroboration_state`
+# UNAVAILABLE). The receipt records that state in `values_read`, so the page
+# reports what happened instead of asserting an agreement nothing checked.
+_SS_LEG_R9_UNAVAILABLE: dict[str, str] = {
+    "en": "No workspace listing was available to compare this cycle.",
+    "zh": "本周期没有可比对的工作区上市记录。",
+}
+_SS_RESULT_NOT_CHECKED: dict[str, str] = {"en": "not checked", "zh": "未核对"}
+
+# A receipt that does not record `corroboration_state` at all leaves the page
+# unable to tell a real comparison from a vacuous one, so it may only say what
+# holds when a listing IS present — the same hedge ("R7", "") already carries.
+_SS_LEG_R9_PRESENCE: dict[str, str] = {
+    "en": "The workspace primary listing, when present, agrees with this "
+          "security's current ticker and venue.",
+    "zh": "若有工作区上市记录，其与该证券当前代码及交易场所一致。",
 }
 
 # Heal-round h2 r2 (macro#6920 review MINOR-2) plus h5: coded-leg artifact
@@ -4118,7 +4352,10 @@ def _ss_leg_house_fields(
 
     Coded legs use `_SS_LEG_DESC` / `_SS_ARTIFACT` / `_SS_READER` keyed on
     (check, code). Code-less legs use `_SS_LEG_HOUSE_BY_DESC` keyed on
-    (check, exact engine description). Unmapped → (None, None, None).
+    (check, exact engine description) for artifact/reader. When that engine
+    sentence is mapped, this packet's empty-code `_SS_LEG_DESC` sentence
+    wins for the glance description (R8's workspace hedge lives there).
+    Unmapped → (None, None, None).
     """
     if leg_code:
         return (
@@ -4129,7 +4366,8 @@ def _ss_leg_house_fields(
     entry = _SS_LEG_HOUSE_BY_DESC.get((leg_check, desc_raw))
     if not entry:
         return None, None, None
-    return entry.get("desc"), entry.get("artifact"), entry.get("reader")
+    desc = _SS_LEG_DESC.get((leg_check, "")) or entry.get("desc")
+    return desc, entry.get("artifact"), entry.get("reader")
 
 
 def _ss_house_or_en_with_zh_fallback(house: dict[str, str] | None, raw: str) -> tuple[str, str]:
@@ -4376,6 +4614,42 @@ def _ss_field_rows(seq: Any) -> list[dict[str, str]]:
     return rows
 
 
+def _ss_read_value(seq: Any, field: str) -> str | None:
+    """One `values_read` entry's value, exactly as the receipt carries it.
+
+    Returns `None` when the receipt does not record that field at all. "Not
+    recorded" and "recorded as empty" are different facts, and the page has to
+    tell them apart before it decides whether a check actually ran.
+    """
+    for item in (seq if isinstance(seq, (list, tuple)) else []):
+        if not isinstance(item, dict):
+            continue
+        if _clean_str(item.get("field") or item.get("name") or item.get("k") or "") != field:
+            continue
+        if ("value" not in item) and ("v" not in item):
+            return ""
+        return _ss_value(item.get("value", item.get("v")))
+    return None
+
+
+def _ss_coverage_sentence(avail: Any, total: Any, *, required: bool) -> dict[str, str] | None:
+    """One coverage count, as the same sentence in both languages.
+
+    `avail` may be absent where `total` is known — the contract answers the two
+    questions separately — so the unknown half prints as an em dash rather than
+    a zero, which would be a claim the object never made.
+    """
+    if total is None:
+        return None
+    n = "—" if avail is None else _ss_value(avail)
+    m = _ss_value(total)
+    if required:
+        return {"en": f"{n} of {m} required reads are current.",
+                "zh": f"{m} 项必需读数中，{n} 项为当前数据。"}
+    return {"en": f"{n} of {m} optional reads are current.",
+            "zh": f"{m} 项可选读数中，{n} 项为当前数据。"}
+
+
 def _ss_is_code_identifier(s: str) -> bool:
     """True when a value names a class, method, module, call, or path."""
     if not s:
@@ -4432,8 +4706,6 @@ def _ss_identity_read_rows(seq: Any) -> list[dict[str, Any]]:
         else:
             continue
         mapped = _ss_map_identity_read_value(k, raw, has_v)
-        if mapped is None:
-            continue
         house = _SS_READ_FIELD.get(k)
         rows.append({
             "k": k,
@@ -4479,6 +4751,165 @@ def _ss_pair(node: Any, key: str = "") -> dict[str, str] | None:
     return None
 
 
+# Closed vocabulary of workspace lifecycle states the CHANGE card can print.
+# The engine composes that card's sentence itself and interpolates the owner's
+# raw lifecycle token into BOTH language slots
+# (`engine/security_state.py:1219-1223`), so the Chinese page reads
+# `Q4 2026 财报工作区状态为 complete：…` — an engine token inside customer copy
+# (Chairman plain-language law 2026-09-06). The vocabulary is closed by the
+# docket: `EVENT_STATES` (`engine/company_intelligence/events.py:43`, §4.3),
+# enforced on every producer by `CompanyEvent.__post_init__`
+# (`engine/company_intelligence/events.py:239`), reaching the reader through
+# `_lifecycle_payload` (`engine/company_intelligence/event_workspace.py:269`);
+# plus the reader's own `"unknown"` sentinel when the owner states no state at
+# all (`engine/security_state.py:1198`). This table is the projection layer, the
+# same shape as `_SS_READ_VALUE`: the compiled golden stays engine truth and is
+# never edited, and the template never receives the token.
+_SS_CHANGE_STATE: dict[str, dict[str, str]] = {
+    "discovered": {"en": "first seen", "zh": "已发现"},
+    "scheduled": {"en": "scheduled", "zh": "已排期"},
+    "rescheduled": {"en": "rescheduled", "zh": "已改期"},
+    "started": {"en": "under way", "zh": "进行中"},
+    "completed_partial": {"en": "partly complete", "zh": "部分完成"},
+    "complete": {"en": "complete", "zh": "已完成"},
+    "corrected": {"en": "corrected", "zh": "已更正"},
+    "superseded": {"en": "superseded", "zh": "已被取代"},
+    "derived_ready": {"en": "ready to read", "zh": "可供查阅"},
+    "distributed": {"en": "distributed", "zh": "已分发"},
+    "cancelled": {"en": "cancelled", "zh": "已取消"},
+    "unknown": {"en": "not stated", "zh": "未说明"},
+}
+
+# The reader does not re-validate `lifecycle.state` against `EVENT_STATES` — only
+# the producer does — and the workspace arrives over the wire, so ANY value is
+# reachable here: a wrong case (`Complete`), a different separator
+# (`in-progress`), a value from a newer contract (`v2_ready`), or a non-string
+# the engine's f-string stringified. None of them may print. They take house
+# words that say exactly what happened — the owner stated something this reader
+# does not recognise, which is NOT the same fact as "the owner stated nothing"
+# (`unknown`) — and are RECORDED for the operator, mirroring
+# `_SS_UNMAPPED_WARNED` / `_ss_warn_unmapped_identity`.
+_SS_CHANGE_STATE_UNREADABLE: dict[str, str] = {"en": "not recognised", "zh": "无法识别"}
+_SS_CHANGE_STATE_UNMAPPED: set[str] = set()
+
+# Already-projected house words, so a second application of the projection is a
+# no-op instead of re-reading its own output as an unrecognised token (which
+# would both rewrite the sentence and emit a false operator line for a value the
+# engine never sent).
+_SS_CHANGE_STATE_PROJECTED: dict[str, frozenset[str]] = {
+    slot: frozenset(
+        [entry[slot] for entry in _SS_CHANGE_STATE.values()]
+        + [_SS_CHANGE_STATE_UNREADABLE[slot]]
+    )
+    for slot in ("en", "zh")
+}
+
+# The engine's own two sentence frames. The match is anchored on the FRAME and
+# captures whatever the owner put between it and the terminator — never gated on
+# the token's shape, or the values that most need catching would walk straight
+# past the table. The Chinese frame swallows the engine's ASCII space so the
+# house words sit flush against the CJK, never `状态为 已完成`.
+_SS_CHANGE_STATE_EN_RE = re.compile(r"(?<=results workspace is )(.+?)(?=:)")
+_SS_CHANGE_STATE_ZH_RE = re.compile(r"(?<=财报工作区状态为)\s*(.+?)(?=：)")
+
+# `engine/security_state.py:1218` labels a workspace with no fiscal quarter (an
+# annual period) `"the latest period"` and interpolates that English into the
+# CHINESE frame too. Frozen here for the same reason the states are: a Latin run
+# in Chinese copy is machine text whether or not it is a token.
+_SS_CHANGE_PERIOD_ZH: dict[str, str] = {"the latest period": "最近一期"}
+_SS_CHANGE_PERIOD_ZH_RE = re.compile(
+    r"^(" + "|".join(re.escape(k) for k in _SS_CHANGE_PERIOD_ZH) + r")\s*(?=财报工作区状态为)"
+)
+
+
+def _ss_warn_unmapped_change_state(token: str, field: str = "lifecycle state") -> None:
+    """One stderr line per distinct out-of-contract value per process.
+
+    `field` names the contract field the value arrived in, because the card's
+    sentence and the drilldown's correction row read the same vocabulary out of
+    two different fields and an operator chasing one should not be sent to the
+    other. The dedupe stays keyed on the VALUE: one line per distinct value per
+    process is the contract, whichever field first carried it.
+    """
+    if token in _SS_CHANGE_STATE_UNMAPPED:
+        return
+    _SS_CHANGE_STATE_UNMAPPED.add(token)
+    print(f"change card {field} unmapped: {token}", file=sys.stderr)
+
+
+def _ss_project_change_state(pair: dict[str, str] | None) -> dict[str, str] | None:
+    """Rewrite the engine's raw lifecycle value as house words in both slots.
+
+    Falsy input is returned unchanged. A projected slot is a fixpoint: applying
+    this to its own output changes nothing and records nothing.
+    """
+    if not pair:
+        return pair
+    out = dict(pair)
+    for slot, rx in (("en", _SS_CHANGE_STATE_EN_RE), ("zh", _SS_CHANGE_STATE_ZH_RE)):
+        text = out.get(slot) or ""
+        if not text:
+            continue
+
+        def _house(m: "re.Match[str]", _slot: str = slot) -> str:
+            raw = m.group(1).strip()
+            if raw in _SS_CHANGE_STATE_PROJECTED[_slot]:
+                return raw
+            entry = _SS_CHANGE_STATE.get(raw)
+            if entry is None:
+                _ss_warn_unmapped_change_state(raw)
+                return _SS_CHANGE_STATE_UNREADABLE[_slot]
+            return entry[_slot]
+
+        out[slot] = rx.sub(_house, text)
+    zh = out.get("zh") or ""
+    if zh:
+        out["zh"] = _SS_CHANGE_PERIOD_ZH_RE.sub(
+            lambda m: _SS_CHANGE_PERIOD_ZH[m.group(1)], zh,
+        )
+    return out
+
+
+# `correction_state` is the SAME closed lifecycle vocabulary as the card's
+# sentence — the reader DERIVES it from `lifecycle.state`
+# (`engine/security_state.py:1199-1201`) — and the drilldown printed it raw into
+# both language slots (`templates/ticker.html.j2:1822`), so the Chinese page read
+# `更正状态 superseded`. It arrives as a bare token rather than inside a sentence
+# frame, so it meets `_SS_CHANGE_STATE` directly instead of through the frame
+# regexes; the row then receives an EN string and a ZH string, never the token.
+#
+# `"none"` is that derivation's own "nothing to report" default (the `.get(…,
+# "none")` fallback), not a lifecycle state, so it is absence rather than an
+# unrecognised value: it keeps the row's existing house copy ("None recorded" /
+# "无记录") by projecting to nothing. Reading it as unrecognised would misread
+# the commonest real value on the surface AND file an operator line on every
+# ordinary page.
+#
+# These are `_clean_str`'s own placeholder literals (`:276`). `_clean_str`
+# empties them only when they are the WHOLE value, so a padded `" None "`
+# survives it; matching here after `.strip()` and case-insensitively is what
+# closes that gap rather than letting whitespace decide whether absence is
+# readable.
+_SS_CORRECTION_ABSENT: frozenset[str] = frozenset({"none", "nan", "nat", "null"})
+
+
+def _ss_project_correction_state(raw: Any) -> dict[str, str] | None:
+    """House EN/ZH for one `correction_state` token; None means nothing recorded.
+
+    Same contract as `_ss_project_change_state` for values the table does not
+    know: readable house words in both slots AND one operator line, because the
+    reader does not re-validate this field either and it arrives over the wire.
+    """
+    token = _clean_str(raw).strip()
+    if not token or token.casefold() in _SS_CORRECTION_ABSENT:
+        return None
+    entry = _SS_CHANGE_STATE.get(token)
+    if entry is None:
+        _ss_warn_unmapped_change_state(token, field="correction state")
+        return dict(_SS_CHANGE_STATE_UNREADABLE)
+    return dict(entry)
+
+
 def _ss_leg(key: str, title_en: str, title_zh: str, leg: Any) -> dict[str, Any]:
     """Project one axis leg into everything its card and dialog print."""
     leg = leg if isinstance(leg, dict) else {}
@@ -4486,6 +4917,12 @@ def _ss_leg(key: str, title_en: str, title_zh: str, leg: Any) -> dict[str, Any]:
     cov = _SS_COVERAGE.get(cov_code, _SS_COVERAGE_FALLBACK)
 
     reason = _ss_pair(leg, "reason")
+    if key == "change":
+        # Every engine-composed sentence on this axis, not only the one today's
+        # engine fills: `reason` / `clause` / `actionable` render into the same
+        # card and dialog, so a lifecycle value arriving in any of them must
+        # meet the table too.
+        reason = _ss_project_change_state(reason)
     why = reason or (
         {"en": cov["why_en"], "zh": cov["why_zh"]} if cov["why_en"] else None
     )
@@ -4495,8 +4932,18 @@ def _ss_leg(key: str, title_en: str, title_zh: str, leg: Any) -> dict[str, Any]:
     # say. A card whose bold line repeats its own chip has spent its best line
     # on a word the reader already read.
     summary = _ss_pair(leg, "summary")
-    headline = _ss_pair(leg, "headline") or summary or {"en": cov["en"], "zh": cov["zh"]}
-    clause = _ss_pair(leg, "clause") or (summary if summary is not headline else None)
+    explicit_headline = _ss_pair(leg, "headline")
+    if key == "change":
+        # `summary` is projected BEFORE `headline` derives from it, so the two
+        # stay the same object: `clause` below keys off that identity, and a
+        # broken identity makes the card print its sentence twice.
+        summary = _ss_project_change_state(summary)
+        explicit_headline = _ss_project_change_state(explicit_headline)
+    headline = explicit_headline or summary or {"en": cov["en"], "zh": cov["zh"]}
+    explicit_clause = _ss_pair(leg, "clause")
+    if key == "change":
+        explicit_clause = _ss_project_change_state(explicit_clause)
+    clause = explicit_clause or (summary if summary is not headline else None)
 
     # Clocks, in the order the reference composition names them. A clock that is
     # absent is dropped rather than printed as "—": an empty clock row would
@@ -4571,6 +5018,11 @@ def _ss_leg(key: str, title_en: str, title_zh: str, leg: Any) -> dict[str, Any]:
             unresolved["code"] = _clean_str(suf.get("code") or "")
             unresolved["from"] = _clean_str(suf.get("leg") or "")
 
+    # `or ""` is the collapse the replaced line carried: a falsy non-string
+    # (`0`, `False`, `[]`) is nothing recorded, not a value to read back at the
+    # operator.
+    correction = _ss_project_correction_state(leg.get("correction_state") or "")
+
     out = {
         "key": key,
         "dlg": f"ss-{key.replace('_', '-')}",
@@ -4582,11 +5034,15 @@ def _ss_leg(key: str, title_en: str, title_zh: str, leg: Any) -> dict[str, Any]:
         "headline": headline,
         "clause": clause,
         "why": why,
-        "actionable": _ss_pair(leg, "actionable") or _SS_ACTIONABLE[cov["tone"]],
+        "actionable": (
+            _ss_project_change_state(_ss_pair(leg, "actionable")) if key == "change"
+            else _ss_pair(leg, "actionable")
+        ) or _SS_ACTIONABLE[cov["tone"]],
         "owner": _clean_str(leg.get("owner") or ""),
         "owner_object": _clean_str(leg.get("owner_object") or leg.get("owner_object_id") or ""),
         "source": _clean_str(leg.get("source") or ""),
-        "correction": _clean_str(leg.get("correction_state") or ""),
+        "correction_en": (correction or {}).get("en", ""),
+        "correction_zh": (correction or {}).get("zh", ""),
         "generation_id": _clean_str(leg.get("generation_id") or ""),
         "clocks": clock_rows,
         "asof": clock_rows[-1]["v"] if clock_rows else "",
@@ -4833,11 +5289,20 @@ def _ss_fill_opportunity(out: dict[str, Any], leg: dict) -> None:
 def _ss_fill_personal(out: dict[str, Any], leg: dict) -> None:
     """`personal_impact` on a public page is a designed state, not a blank."""
     code = _clean_str(leg.get("state") or "").upper()
-    known = _SS_PERSONAL.get(code)
-    if known and not _ss_pair(leg, "headline"):
-        out["headline"] = {"en": known["en"], "zh": known["zh"]}
-        if not _ss_pair(leg, "reason"):
-            out["why"] = {"en": known["why_en"], "zh": known["why_zh"]}
+    # F06 freeze §4: NOT_APPLICABLE on this leg is the Overview exposure row.
+    # The registered sentence is binding — never blanked, never a raw code.
+    if out.get("cov") == "NOT_APPLICABLE" and not _ss_pair(leg, "headline"):
+        out["headline"] = {
+            "en": "This does not apply to you right now.",
+            "zh": "这暂不适用于你。",
+        }
+        out["why"] = None
+    else:
+        known = _SS_PERSONAL.get(code)
+        if known and not _ss_pair(leg, "headline"):
+            out["headline"] = {"en": known["en"], "zh": known["zh"]}
+            if not _ss_pair(leg, "reason"):
+                out["why"] = {"en": known["why_en"], "zh": known["why_zh"]}
     if code:
         out["fields"] = [{"k": "state", "v": code}]
 
@@ -4854,6 +5319,10 @@ def build_security_state(blob: dict | None) -> dict | None:
     try:
         legs = ss.get("legs") if isinstance(ss.get("legs"), dict) else {}
         axes = [_ss_leg(k, en, zh, legs.get(k)) for k, en, zh in _SS_AXES]
+        personal_impact = _ss_leg(
+            "personal_impact", "Your position", "你的持仓",
+            legs.get("personal_impact"),
+        )
 
         deg_code = _clean_str(ss.get("dominant_degradation") or "").upper() or "NONE"
         deg = _SS_DEGRADATION.get(deg_code, _SS_DEGRADATION["UNAVAILABLE"])
@@ -4876,17 +5345,54 @@ def build_security_state(blob: dict | None) -> dict | None:
             leg_check = _clean_str(lg.get("check") or lg.get("leg") or lg.get("name") or "")
             leg_code = _clean_str(lg.get("code") or "")
             desc_raw = _clean_str(lg.get("description") or "")
-            # macro#6920 heal-round h5: coded legs look up (check, code);
-            # code-less legs look up (check, exact engine description). An
-            # unmapped leg renders no description / artifact / reader row.
+            # Heal-round h6: coded legs look up (check, code) in the union
+            # tables; code-less legs look up (check, exact engine description)
+            # for artifact/reader, and this packet's empty-code sentence for
+            # the glance description when that engine sentence is mapped.
+            # Unmapped legs render no description / artifact / reader row.
             desc_house, art_house, rdr_house = _ss_leg_house_fields(
                 leg_check, leg_code, desc_raw,
             )
+            # Empty-code packet sentences are verification CLAIMS. On a
+            # non-PROVEN proof they must not print even when the engine
+            # description is unmapped — the hedge still applies.
+            if not leg_code and id_code != _SS_IDENTITY_PROVEN:
+                desc_house = desc_house or _SS_LEG_DESC.get((leg_check, ""))
             desc_en, desc_zh = _ss_house_or_en_with_zh_fallback(desc_house, desc_raw)
             artifact_raw = _clean_str(lg.get("artifact") or "")
             reader_raw = _clean_str(lg.get("reader") or "")
             artifact_en, artifact_zh = _ss_house_or_en_with_zh_fallback(art_house, artifact_raw)
             reader_en, reader_zh = _ss_house_or_en_with_zh_fallback(rdr_house, reader_raw)
+            res_en, res_zh, res_tone = res["en"], res["zh"], res["tone"]
+            # The empty-code sentences are verification CLAIMS, so they only
+            # print where a verification really happened in this read. A leg
+            # that passed vacuously, or a leg carried by a failure shell, gets
+            # a non-claim and a result label that does not read as a pass. The
+            # engine's own verdict is never edited — it stays in `result`, in
+            # the receipt dialog's quoted fields, and in the page's data
+            # attribute.
+            hedged = False
+            if desc_house and not leg_code:
+                corroboration = (_ss_read_value(lg.get("values_read"), "corroboration_state")
+                                 if leg_check == "R9" else None)
+                # "Recorded, but with no value echoed" is still nothing the
+                # page can compare against, so it takes the same branch as
+                # "not recorded at all" rather than falling through to the
+                # affirmative agreement copy.
+                if corroboration is not None and not corroboration.strip():
+                    corroboration = None
+                if leg_check == "R9" and (corroboration or "").strip().upper() == "UNAVAILABLE":
+                    desc_en, desc_zh = _SS_LEG_R9_UNAVAILABLE["en"], _SS_LEG_R9_UNAVAILABLE["zh"]
+                    res_en, res_zh = _SS_RESULT_NOT_CHECKED["en"], _SS_RESULT_NOT_CHECKED["zh"]
+                    hedged = True
+                elif id_code != _SS_IDENTITY_PROVEN:
+                    desc_en, desc_zh = _SS_LEG_CARRIED_OVER["en"], _SS_LEG_CARRIED_OVER["zh"]
+                    res_en, res_zh = _SS_RESULT_CARRIED_OVER["en"], _SS_RESULT_CARRIED_OVER["zh"]
+                    hedged = True
+                elif leg_check == "R9" and corroboration is None:
+                    desc_en, desc_zh = _SS_LEG_R9_PRESENCE["en"], _SS_LEG_R9_PRESENCE["zh"]
+            if hedged:
+                res_tone = "off"
             id_legs.append({
                 "check": leg_check,
                 "desc_en": desc_en,
@@ -4899,15 +5405,15 @@ def build_security_state(blob: dict | None) -> dict | None:
                 "reader_zh": reader_zh,
                 "reads": _ss_identity_read_rows(lg.get("values_read")),
                 "result": res_code.lower(),
-                "result_en": res["en"], "result_zh": res["zh"],
-                "tone": res["tone"],
-                "ok": res_code == "PASS",
+                "result_en": res_en, "result_zh": res_zh,
+                "tone": res_tone,
+                "ok": res_code == "PASS" and not hedged,
                 "code": leg_code,
             })
 
         # The tally under the grid is the grid's own legend: same rail shapes,
-        # same words, counted from the same six legs. One canonical count per
-        # population, printed once (design system §9.5).
+        # same words, counted from the same five axis legs. One canonical count
+        # per population, printed once (design system §9.5).
         order = ["ok", "warn", "act", "off"]
         buckets: dict[tuple[str, str], dict[str, Any]] = {}
         for a in axes:
@@ -4953,69 +5459,114 @@ def build_security_state(blob: dict | None) -> dict | None:
         else:
             lg_reason = None
 
+        generated_at = _ss_clock(ss.get("generated_at"))
+        compiled_at = _ss_clock(asof.get("state_compiled_at"))
+        content_sha256 = _clean_str(ss.get("content_sha256") or "")
+        degradation = {
+            "code": deg_code, "tone": deg["tone"],
+            "en": deg["en"], "zh": deg["zh"],
+            "clean": deg_code == "NONE",
+            "failed": deg_code == "COMPILER_FAILURE",
+        }
+        identity = {
+            "code": id_code, "tone": idc["tone"],
+            "ok": id_code == "PROVEN",
+            "en": idc["en"], "zh": idc["zh"],
+            "why_en": idc["why_en"], "why_zh": idc["why_zh"],
+            "legs": id_legs,
+            "equalities": _ss_equality_rows(ident_raw.get("equalities") or []),
+            # Chairman plain-language law (2026-09-06): a refusal is a
+            # machine code (`COMPILER_FAILURE`, `IDENTITY_UNRESOLVED`, …)
+            # and must never render as bare English prose duplicated into
+            # the ZH slot — house copy from `_SS_GATES` leads, the raw
+            # code stays only as the receipt (`code`), never the sentence
+            # itself (macro#6920 round-2 MAJOR #2).
+            "refusals": [
+                {
+                    "code": code,
+                    "en": (_SS_GATES.get(code) or {}).get("en") or _ss_prettify(code),
+                    "zh": (_SS_GATES.get(code) or {}).get("zh") or _ss_prettify(code),
+                }
+                for code in (_clean_str(e) for e in (ident_raw.get("refusals") or []))
+                if code
+            ],
+            # Chairman plain-language law (2026-09-06), macro#6920
+            # round-3 MAJOR #2: a disclosure is stored engine-side as
+            # "CODE: technical description" — the code must never render
+            # as bare prose, and the raw English description must never
+            # render into the ZH slot untranslated. House copy
+            # (`_SS_DISCLOSURES`) leads in both languages; the raw code
+            # stays only in the receipt chip (`code`), never the sentence.
+            "disclosures": _ss_disclosure_rows(ident_raw.get("disclosures")),
+        }
+        # Availability and non-blocking are two different questions and the
+        # contract now answers both. `available` counts only AVAILABLE; a
+        # read that does not apply is not available, it is simply not in the
+        # way — so it is counted, and named, separately.
+        coverage = {
+            "req_total": cov_block.get("required_legs_total"),
+            "req_avail": cov_block.get("required_legs_available"),
+            "req_nonblock": cov_block.get("required_legs_nonblocking"),
+            "opt_total": cov_block.get("optional_legs_total"),
+            "opt_avail": cov_block.get("optional_legs_available"),
+            "opt_nonblock": cov_block.get("optional_legs_nonblocking"),
+        }
+        # The row used to print "2 / 2 required, current" in English against a
+        # full Chinese noun phrase — a comma-joined fragment whose "current"
+        # modified nothing the reader could name. Both languages now get the
+        # same sentence, composed once here from the same two counts.
+        coverage["req_sentence"] = _ss_coverage_sentence(
+            coverage["req_avail"], coverage["req_total"], required=True,
+        )
+        coverage["opt_sentence"] = _ss_coverage_sentence(
+            coverage["opt_avail"], coverage["opt_total"], required=False,
+        )
+        state_axis = next((a for a in axes if a["key"] == "state"), None)
+        # Coverage, degradation and the personal-impact row are top-level
+        # keys; the template reads them there. Overview keeps only the
+        # state-axis headline.
+        overview = {
+            "state_summary": (state_axis or {}).get("headline"),
+        }
+        # Overview + the axis cards + Evidence + Owner & model receipts.
+        # The template does not iterate this arithmetic; it is the count of
+        # those four groups, with axes as the only variable-length group.
+        panel_count = 1 + len(axes) + 1 + 1
+        panel_hint = {"en": f"{panel_count} panels", "zh": f"{panel_count} 个面板"}
+
+        owner_receipts = {
+            "legs": id_legs,
+            "generated_at": generated_at,
+            "compiled_at": compiled_at,
+            "content_sha256": content_sha256,
+        }
+
         return {
             "version": _clean_str(ss.get("schema") or ss.get("version") or "security_state.v1"),
             "ticker_display": _clean_str(ss.get("ticker_display") or ""),
             "security_id": _clean_str(ss.get("security_id") or ""),
             "issuer_id": _clean_str(ss.get("issuer_id") or ""),
             "listing_key": _clean_str(ss.get("listing_key") or ""),
-            "generated_at": _ss_clock(ss.get("generated_at")),
+            "generated_at": generated_at,
             "market_at": _ss_clock(asof.get("market_at")),
             "frontier_at": _ss_clock(asof.get("source_frontier_at")),
-            "compiled_at": _ss_clock(asof.get("state_compiled_at")),
-            "degradation": {
-                "code": deg_code, "tone": deg["tone"],
-                "en": deg["en"], "zh": deg["zh"],
-                "clean": deg_code == "NONE",
-                "failed": deg_code == "COMPILER_FAILURE",
-            },
-            "identity": {
-                "code": id_code, "tone": idc["tone"],
-                "ok": id_code == "PROVEN",
-                "en": idc["en"], "zh": idc["zh"],
-                "why_en": idc["why_en"], "why_zh": idc["why_zh"],
-                "legs": id_legs,
-                "equalities": _ss_equality_rows(ident_raw.get("equalities") or []),
-                # Chairman plain-language law (2026-09-06): a refusal is a
-                # machine code (`COMPILER_FAILURE`, `IDENTITY_UNRESOLVED`, …)
-                # and must never render as bare English prose duplicated into
-                # the ZH slot — house copy from `_SS_GATES` leads, the raw
-                # code stays only as the receipt (`code`), never the sentence
-                # itself (macro#6920 round-2 MAJOR #2).
-                "refusals": [
-                    {
-                        "code": code,
-                        "en": (_SS_GATES.get(code) or {}).get("en") or _ss_prettify(code),
-                        "zh": (_SS_GATES.get(code) or {}).get("zh") or _ss_prettify(code),
-                    }
-                    for code in (_clean_str(e) for e in (ident_raw.get("refusals") or []))
-                    if code
-                ],
-                # Chairman plain-language law (2026-09-06), macro#6920
-                # round-3 MAJOR #2: a disclosure is stored engine-side as
-                # "CODE: technical description" — the code must never render
-                # as bare prose, and the raw English description must never
-                # render into the ZH slot untranslated. House copy
-                # (`_SS_DISCLOSURES`) leads in both languages; the raw code
-                # stays only in the receipt chip (`code`), never the sentence.
-                "disclosures": _ss_disclosure_rows(ident_raw.get("disclosures")),
-            },
+            "compiled_at": compiled_at,
+            "degradation": degradation,
+            "identity": identity,
             "coverage_state": _clean_str(cov_block.get("overall_state") or ""),
-            # Availability and non-blocking are two different questions and the
-            # contract now answers both. `available` counts only AVAILABLE; a
-            # read that does not apply is not available, it is simply not in the
-            # way — so it is counted, and named, separately.
-            "coverage": {
-                "req_total": cov_block.get("required_legs_total"),
-                "req_avail": cov_block.get("required_legs_available"),
-                "req_nonblock": cov_block.get("required_legs_nonblocking"),
-                "opt_total": cov_block.get("optional_legs_total"),
-                "opt_avail": cov_block.get("optional_legs_available"),
-                "opt_nonblock": cov_block.get("optional_legs_nonblocking"),
-            },
+            "coverage": coverage,
             "axes": axes,
+            "panel_count": panel_count,
+            "panel_hint": panel_hint,
+            "personal_impact": personal_impact,
+            "overview": overview,
+            "owner_receipts": owner_receipts,
             "tally": tally,
-            "gates": [g for a in axes for g in a["gates"]],
+            # Axis cards plus the Overview personal_impact row: a failed gate
+            # on that leg still reaches the evidence-dialog tally. Coverage
+            # buckets (`tally`) stay the five grid cards so the count matches
+            # the cards the reader can see.
+            "gates": [g for a in list(axes) + [personal_impact] for g in a["gates"]],
             "evidence": {
                 "refs": [_clean_str(r) for r in (ev.get("evidence_block_refs") or []) if _clean_str(r)],
                 "recipe_id": _clean_str(ev.get("recipe_id") or ""),
@@ -5030,7 +5581,7 @@ def build_security_state(blob: dict | None) -> dict | None:
                               for c in (ev.get("conflicts") or [])],
                 "compiled_at": _ss_clock(comp.get("compiled_at")),
             },
-            "content_sha256": _clean_str(ss.get("content_sha256") or ""),
+            "content_sha256": content_sha256,
             "last_good": {
                 "ok": lg_ok,
                 "at": lg_at,
@@ -5161,6 +5712,7 @@ def build_page_context(
     performance = _build_performance(ticker, trailing_returns)
     financials = _build_financials(blob)
     valuation = _build_valuation(blob)
+    valuation_scenario = _valuation_scenario_view(blob)
     earnings = _build_earnings(blob)
     technicals = _build_technicals(ticker, blob, tech_screener)
     options = _build_options(blob, gex_v1, flow)
@@ -5226,6 +5778,8 @@ def build_page_context(
         index_chips.append({"en": "Russell 2000", "zh": "罗素2000"})
     hero["index_chips"] = index_chips or None
 
+    valuation_assumptions = _valuation_assumptions_view(blob)
+
     return {
         "meta": meta,
         "hero": hero,
@@ -5240,6 +5794,7 @@ def build_page_context(
         "financials": financials,
         "debt_maturity": (blob or {}).get("debt_maturity"),
         "valuation": valuation,
+        "valuation_scenario": valuation_scenario,
         "earnings": earnings,
         "technicals": technicals,
         "options": options,
@@ -5256,6 +5811,7 @@ def build_page_context(
         # Decision Spine. None for every listing whose blob carries no
         # security_state block — those pages render exactly as before.
         "security_state": build_security_state(blob),
+        "valuation_assumptions": valuation_assumptions,
         "news": news_section,
         "placeholders": {
             "analyst_targets": True,

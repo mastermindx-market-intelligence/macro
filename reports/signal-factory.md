@@ -1,6 +1,6 @@
 # Signal factory — FDR-gated decorrelated breadth (Phase 4)
 
-_2026-09-05T17:21:38+00:00_ · 2023-09-29..2026-03-31 · 11 quarters · fwd 63d · ~982 names · leak-free PIT.
+_2026-09-12T17:03:13+00:00_ · 2023-09-29..2026-03-31 · 11 quarters · fwd 63d · ~982 names · leak-free PIT.
 
 > Falsifiable, decorrelated CONTEXT score — NOT alpha. Free-data realized-IR ceiling ~0.3-0.4; a clean combined IC ~0.02-0.026 => IR ~0.10-0.22. The win is FDR-gated breadth honesty, not minting alpha.
 

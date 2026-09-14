@@ -131,7 +131,7 @@ def _context(snapshot: Mapping[str, Any], page_built_at: str) -> dict[str, Any]:
     contradiction_view = None
     if contradiction.get("present"):
         contradiction_view = {
-            "kind": L.label("presence", contradiction.get("kind")) if contradiction.get("kind") else None,
+            "kind": L.label("contradiction_kind", contradiction.get("kind")) if contradiction.get("kind") else None,
             "kind_raw": contradiction.get("kind"),
             "text": _bilingual(contradiction) or _pair("Contradiction present", "存在矛盾"),
             "components": list(contradiction.get("components") or []),
