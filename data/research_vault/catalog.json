@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-15T03:27:14.071728+00:00",
-  "count": 2131,
+  "generated_at": "2026-09-15T03:42:19.731058+00:00",
+  "count": 2132,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -584,6 +584,27 @@
         "**Fed Hike & Geopolitical Risks**: Fed hikes 25bp to 3.75%-4.00% (75bps over 7 months); Houthi advances in Red Sea and Saudi pipeline shutdown heighten risk amid US-China AI safety debate.",
         "**Asia Tech Sell-Off**: KOSPI -2.74% (SK Hynix -6.6%, Samsung -4.01%), Nikkei -1.01% driven by AI narrative concerns and tech flow reversal.",
         "**Core CPI & Market Sentiment**: Core CPI +0.29% (above expectations), PPI hawkish (hospital/airfare prices) weighs on S&P 500/NASDAQ futures amid AI regulatory uncertainty."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-wgbphuph9kv-09f11a",
+      "title": "Economics On Our Minds September 2026 FOMC Preview And So, It Begins",
+      "institution": "Societe Generale",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T01:11:13Z",
+      "summary_points": [
+        "**Structural Inflation Driver**: Underlying PCE inflation (2.5-3% trend) persists due to structurally elevated Super-Core PCE (60% of core basket), overriding temporary data shifts and driving hawkish Fed stance.",
+        "**Policy Divergence & Uncertainty**: Fed officials split on approach (Waller dovish if progress continues vs.",
+        "Williams hawkish on core trends), creating rate decision ambiguity despite consensus for September 25bp hike.",
+        "**Near-Term Hike Catalyst**: August PPI confirms persistent super-core PCE, solidifying September FOMC 25bp hike expectation and underscoring Fed funds rate undershooting inflation/labor market conditions.",
+        "**Forward Rate Path Risk**: SG forecasts two 2026 hikes (median dot), with March 2027 hike risk; rate path volatility (e.g., 3.13% probability for 3.88% rate) elevates portfolio positioning uncertainty."
       ],
       "tags": [],
       "tickers": [],
