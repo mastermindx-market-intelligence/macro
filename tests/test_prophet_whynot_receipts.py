@@ -94,7 +94,9 @@ def _env() -> jinja2.Environment:
         loader=jinja2.FileSystemLoader(str(ROOT / "templates")), autoescape=True)
     env.filters["min"] = lambda seq: min(seq)
     from engine import i18n  # noqa: PLC0415 — same import site as build_site.py
+    from scripts.build_site import us_stance_projection  # noqa: PLC0415
     env.globals.update(td=i18n.td, tr=i18n.tr, zip=zip)
+    env.globals["us_stance_projection"] = us_stance_projection
     return env
 
 
@@ -246,6 +248,28 @@ def test_template_copy_mirrors_the_engine_copy_exactly():
     assert {k: tuple(v) for k, v in mod.pvr_copy.items()} == REFUSAL_COPY
 
 
+def test_plan_not_built_copy_never_claims_every_check_passed():
+    """Screened is not validated: a failed build must not overstate the gate result."""
+    expected = (
+        "Passed initial screening — no validated entry plan was produced.",
+        "初筛已通过 — 尚未生成经核验的入场计划。",
+    )
+    cx = refusal_receipts(
+        _board(_row("CLEAR", score=88)), open_keys=(), originated_tickers=set())
+    group = next(g for g in cx["groups"] if g["reason"] == "plan_not_built")
+
+    assert (group["en"], group["zh"]) == expected
+    assert {k: v for k, v in group.items() if k not in {"en", "zh"}} == {
+        "reason": "plan_not_built", "near": True, "n": 1,
+        "names": [{"ticker": "CLEAR", "name": "CLEAR Industries", "score": 88,
+                   "why": ["plan_not_built"]}],
+    }
+    html = _shelf(cx)
+    assert expected[0] in html and expected[1] in html
+    assert "Cleared every check" not in html
+    assert "各项检查都通过" not in html
+
+
 # --------------------------------------------------------------------------- #
 # 3. Fail-closed — an unmapped status is disclosed, never dropped
 # --------------------------------------------------------------------------- #
@@ -392,17 +416,42 @@ def test_shelf_carries_no_title_attribute():
 #:   · the operator's front-facing ban (verdict/falsification language), and
 #:   · every INTERNAL token — machine status words, gate names, and the reason codes
 #:     themselves, which must stay in the JSON and never become a class or an attribute.
-#: Deliberately NOT listed: the bare English words `watch`, `hold`, `exit`, `avoid`. The
-#: lede's operator-ratified stance line is literally "Watch — don't chase", so a bare
-#: substring ban on those would fail on the copy the doctrine requires. Their machine
-#: forms (`bounce_wait`, `wait_pullback`, `await_confluence`, …) ARE checked.
+#: ``validated`` is guarded separately below: it is legal only inside the exact negative
+#: ``plan_not_built`` disclaimer. Also deliberately not listed are the bare English words
+#: `watch`, `hold`, `exit`, `avoid`. The lede's operator-ratified stance line is literally
+#: "Watch — don't chase", so a bare substring ban on those would fail on the copy the
+#: doctrine requires. Their machine forms (`bounce_wait`, `wait_pullback`,
+#: `await_confluence`, …) ARE checked.
 BANNED = (
-    "validated", "falsifier", "refuted", "证伪", "已确认", "已触发",
+    "falsifier", "refuted", "证伪", "已确认", "已触发",
     "fired", "confirmed", "triggered",
     "band_low", "tier_cascade", "admission_class", "entry_signal", "wait_reset",
     "intake", "buy_soon", "bounce_wait", "wait_pullback", "buy_now",
     "await_confluence", "extended", "topping", "T4", "conviction.band",
 ) + tuple(REFUSAL_ORDER)
+
+
+def test_validated_word_is_confined_to_the_exact_negative_disclaimer():
+    """The approved hedge must not become a blanket licence in either language."""
+    expected_en = "Passed initial screening — no validated entry plan was produced."
+    expected_zh = "初筛已通过 — 尚未生成经核验的入场计划。"
+    validated_en = {
+        reason: en for reason, (en, _zh) in REFUSAL_COPY.items()
+        if "validated" in en.lower()
+    }
+    validated_zh = {
+        reason: zh for reason, (_en, zh) in REFUSAL_COPY.items()
+        if "经核验" in zh
+    }
+    assert validated_en == {"plan_not_built": expected_en}
+    assert validated_zh == {"plan_not_built": expected_zh}
+
+    cx = refusal_receipts(
+        _board(_row("CLEAR", score=88)), open_keys=(), originated_tickers=set())
+    html = _shelf(cx)
+    assert expected_en in html and expected_zh in html
+    assert "validated" not in html.replace(expected_en, "").lower()
+    assert "经核验" not in html.replace(expected_zh, "")
 
 
 def test_shelf_leaks_no_banned_vocabulary():
@@ -474,8 +523,8 @@ def test_dashboard_imports_and_emits_the_partial_once():
 
 
 def test_shelf_sits_below_the_cards_and_above_the_panel_footnote():
-    """BELOW the plans, never between them (spec §6)."""
-    grid_close = DASH.index("end .nbgrid")
+    """BELOW the current candidate cards, never between them (spec §6)."""
+    grid_close = DASH.index("end #us-cand-grid")
     shelf = DASH.index("pvr.pvr_shelf(us_prophet_refusals)")
     footnote = DASH.index('<p class="pb-fn">')
     assert grid_close < shelf < footnote
