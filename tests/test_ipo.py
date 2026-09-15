@@ -973,3 +973,119 @@ def test_light_cw_band_tint_is_raised_into_legible_range():
     assert 16 <= pct <= 20
     # the hairline boundary edge must survive the tint raise, not be removed.
     assert "border-right:1px solid" in light_rule.group(0)
+
+
+# --------------------------------------------------------------------------- #
+# H1 (B-F09-2 audit) — Tier-1 spread fractions in bi.CW_READ["spread_range"]
+# must mirror engine.credit_window.RANGE_OPEN_PCT (33) and RANGE_SHUT_PCT (66),
+# and rates_vol fractions must mirror MOVE_OPEN_PCT (40) and MOVE_SHUT_PCT (75).
+# The pre-fix wording said "four in five days" against thresholds of 33/66, which
+# is factually inverted for the open/shut cells; this pins both the constants
+# to their canonical fractions and the copy to those fractions so the two cannot
+# silently drift apart again.
+# --------------------------------------------------------------------------- #
+def test_cw_read_percentile_fractions_match_engine_thresholds():
+    import engine.credit_window as cw
+
+    # canonical mapping from the engine's thresholds to their "N in M" fractions:
+    #   RANGE 33/66  -> "two in three"   (~67% / ~66% of trailing days)
+    #   MOVE  40     -> "three in five"  (60% = 3/5)
+    #   MOVE  75     -> "three in four"  (75% = 3/4)
+    # ZH fraction form is "<denominator>分之<numerator>": 三分之二 / 五分之三 / 四分之三.
+    expected = {
+        ("spread_range", "open"):  ("two",   "three", "三", "二"),
+        ("spread_range", "shut"):  ("two",   "three", "三", "二"),
+        ("rates_vol",    "open"):  ("three", "five",  "五", "三"),
+        ("rates_vol",    "shut"):  ("three", "four",  "四", "三"),
+    }
+
+    # the four canonical fractions must still hold against the current constants —
+    # a constant drift (e.g. RANGE_OPEN_PCT moving to 45) must NOT pass silently.
+    assert abs((100.0 - cw.RANGE_OPEN_PCT) - (2 / 3) * 100) < 5  # ~67
+    assert abs(cw.RANGE_SHUT_PCT - (2 / 3) * 100) < 5            # ~66
+    assert abs((100.0 - cw.MOVE_OPEN_PCT) - (3 / 5) * 100) < 5   # 60
+    assert abs(cw.MOVE_SHUT_PCT - (3 / 4) * 100) < 5             # 75
+
+    for (key, state), (n_en, m_en, zh_den, zh_num) in expected.items():
+        en, zh = bi.CW_READ[(key, state)]
+        assert f"{n_en} in {m_en} days" in en, (
+            f"CW_READ[({key!r}, {state!r})] EN must contain {n_en!r} in {m_en!r} "
+            f"days of the past year (per {key} thresholds); got {en!r}"
+        )
+        assert f"{zh_den}分之{zh_num}" in zh, (
+            f"CW_READ[({key!r}, {state!r})] ZH must contain {zh_den!r}分之"
+            f"{zh_num!r} (per {key} thresholds); got {zh!r}"
+        )
+
+
+# --------------------------------------------------------------------------- #
+# H2 (B-F09-2 audit) — the engine's `not_evaluable` state key (and any other
+# multi-word snake_case state key) must never reach user copy in its
+# title-cased form. Repo convention is the plain display name "No read" /
+# "暂无读数" (templates/transmission.html.j2:522, templates/foresight.html.j2:25,
+# templates/_risk_envelope_band.html.j2:171).
+# Single-word state keys ("open", "neutral", "shut") have a title-cased
+# rendering ("Open", "Neutral", "Shut") that is also the natural plain-word
+# display label — those are NOT a leak, so this test only pins the multi-word
+# snake_case case the audit actually flagged.
+# The earlier round compared EN against `key.replace("_"," ").title()` =
+# "Not Evaluable" but the pre-fix value was sentence-cased "Not evaluable"
+# (the title-cased assertion was therefore happy on the old head). Pin the
+# exact fixed values explicitly so a regression to ANY form of the engine
+# token — title-cased, sentence-cased, or any other rendering — fails.
+# --------------------------------------------------------------------------- #
+def test_cw_state_and_clause_keys_do_not_leak_engine_token():
+    # 1. the EXACT fixed display values for the audit-flagged key — fails on the
+    #    pre-fix sentence-cased "Not evaluable / 无法评估" (H2's actual leak).
+    expected_state = {
+        "not_evaluable": ("No read", "暂无读数"),
+    }
+    for key, (en_want, zh_want) in expected_state.items():
+        assert key in bi.CW_STATE, (
+            f"CW_STATE must carry the engine key {key!r}; engine state "
+            f"otherwise can't be localised."
+        )
+        en_got, zh_got = bi.CW_STATE[key]
+        assert en_got == en_want, (
+            f"CW_STATE[{key!r}].EN must be {en_want!r} (repo plain-word "
+            f"convention); got {en_got!r} — the engine token must NEVER reach "
+            f"user copy."
+        )
+        assert zh_got == zh_want, (
+            f"CW_STATE[{key!r}].ZH must be {zh_want!r} (repo plain-word "
+            f"convention); got {zh_got!r} — the engine token must NEVER reach "
+            f"user copy."
+        )
+
+    # 2. no title-cased form of any multi-word snake_case engine state key
+    #    anywhere in CW_STATE / CW_CLAUSE (defensive — a future key the audit
+    #    didn't flag must still trip this).
+    for lexicon, name in ((bi.CW_STATE, "CW_STATE"), (bi.CW_CLAUSE, "CW_CLAUSE")):
+        for key, (en, _zh) in lexicon.items():
+            if "_" not in key:
+                continue
+            title_form = key.replace("_", " ").title()
+            assert en != title_form, (
+                f"{name}[{key!r}] EN is the title-cased engine key: {en!r} — "
+                f"must not equal {title_form!r}; use a plain display name "
+                f"('No read' for `not_evaluable`, etc.) so the engine token "
+                f"never reaches user copy."
+            )
+
+    # 3. the template carries no leak of the engine token in user copy —
+    #    case-insensitive for EN (catches "Not evaluable", "NOT EVALUABLE",
+    #    "not-evaluable") but NOT the snake_case key name itself (a regex
+    #    with `_` matches the snake_case key in source comments), exact for
+    #    ZH (the pre-fix leak was the literal "无法评估").
+    tpl_path = pathlib.Path(bi.__file__).resolve().parents[1] / "templates" / "ipo.html.j2"
+    src = tpl_path.read_text()
+    assert re.search(r"not[ -]evaluable", src, re.IGNORECASE) is None, (
+        "templates/ipo.html.j2 must not carry 'not evaluable' / "
+        "'Not evaluable' / 'not-evaluable' — the engine token belongs in "
+        "CW_STATE only, never in user copy; use 'No read' / '暂无读数' instead "
+        "(see repo convention)."
+    )
+    assert "无法评估" not in src, (
+        "templates/ipo.html.j2 must not carry '无法评估' — use '暂无读数' "
+        "(see template/convention across transmission / foresight / risk bands)"
+    )
