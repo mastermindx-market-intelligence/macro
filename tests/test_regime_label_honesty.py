@@ -411,6 +411,68 @@ def test_zh_lexicon_fixups_are_ordered_longest_specific_first():
                 f"{later_bad!r} is unreachable — {bad!r} matches its prefix first")
 
 
+
+def test_regime_date_utc_overflow_is_explicitly_unknown():
+    for value in ("0001-01-01T00:00:00+23:59", "9999-12-31T23:59:59-23:59"):
+        assert mb._strict_regime_datetime(value) is None
+    # Valid dates at the supported UTC boundaries must not be rejected wholesale.
+    assert mb._strict_regime_datetime("0001-01-01T00:00:00Z").year == 1
+    assert mb._strict_regime_datetime("9999-12-31T23:59:59Z").year == 9999
+
+
+def test_probability_context_date_overflow_retains_an_unavailable_record():
+    for value in ("0001-01-01T00:00:00+23:59", "9999-12-31T23:59:59-23:59"):
+        for field, reason in (("asof", "source_asof_invalid_or_missing"),
+                              ("model_fit_asof", "model_fit_asof_invalid_or_inconsistent")):
+            context = mb._build_regime_path(
+                dict(_MACRO, quad_vector=_qv(**{field: value})), root=None,
+                reference_time="2026-07-30T00:00:00Z",
+            )["probability_context"]
+            assert context["availability"] == "unavailable"
+            assert context["reason"] == reason
+            assert "p" not in context
+            assert context["is_current"] is False
+            assert context["historical_replay_eligible"] is False
+
+
+def test_probability_context_reference_utc_overflow_is_unknown_not_silence():
+    from datetime import datetime
+    for value in ("0001-01-01T00:00:00+23:59", "9999-12-31T23:59:59-23:59"):
+        for reference in (value, datetime.fromisoformat(value)):
+            context = mb._build_regime_path(
+                dict(_MACRO, quad_vector=_qv()), root=None, reference_time=reference,
+            )["probability_context"]
+            assert context["reason"] == "freshness_clock_unknown"
+            assert context["availability"] == "unavailable"
+            assert "p" not in context
+            assert context["is_forecast"] is False
+
+
+def test_probability_context_valid_aware_clock_matches_its_utc_instant():
+    from datetime import datetime
+    raw = dict(_MACRO, quad_vector=_qv())
+    expected = mb._build_regime_path(raw, reference_time="2026-07-30T00:00:00Z")
+    aware = datetime.fromisoformat("2026-07-29T17:00:00-07:00")
+    actual = mb._build_regime_path(raw, reference_time=aware)
+    assert actual == expected
+    assert actual["probability_context"]["p"] == raw["quad_vector"]["p"]
+    assert actual["probability_context"]["availability"] == "current"
+
+
+
+def test_regime_evidence_imports_are_covered_by_existing_exclusive_jobs():
+    from scripts.run_ci_pack import _glob_to_regex, load_legacy_jobs
+    manifest = Path(__file__).resolve().parents[1] / ".github/ci/legacy-jobs.yml"
+    jobs = {job.job_id: job for job in load_legacy_jobs(manifest)}
+    missing = []
+    for name in ("biocatalyst-history", "flow-surface", "unrun-government-revenue-grader"):
+        job = jobs[name]
+        for dependency in ("engine/axes.py", "engine/regime.py"):
+            if not any(_glob_to_regex(pattern).match(dependency) for pattern in job.paths):
+                missing.append((name, dependency))
+    assert not missing, missing
+
+
 if __name__ == "__main__":
     import tempfile
 

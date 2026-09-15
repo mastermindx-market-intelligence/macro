@@ -19,8 +19,8 @@ waves:
   - id: W1
     title: Existing reader, deterministic bilingual saved note, and shared rendered consumer
     status: in_progress
-    next_action: Obtain exact-source independent review, normal checks and natural production proof.
-next_action: Review the bounded W1 candidate; keep W0 PR7015 and its release hold separate.
+    next_action: Review the recovered UTC and six-path integration on its new immutable head; conclude current-base checks, Lens acceptance and production proof.
+next_action: Complete new-head review and current-base checks for the integrated UTC/scope repair; keep W0 PR7015 and both release holds separate.
 discoveries: ["DSC:REGIME-BRIEF-READER-ALREADY-EXISTS"]
 ---
 
@@ -39,3 +39,13 @@ Local fixture/model-stub browser evidence is not actual provider synthesis or pr
 Normal publication is the only production proof path; run(persist=False) still appends the existing
 macro thesis ledger and must never be used as a supposedly read-only production probe.
 This record is organizational continuity, not a runtime assignment or proof that a worker is active.
+
+## Source integration checkpoint — 2026-09-11
+The preserved UTC overflow correction and its regression tests are now integrated with the six
+additive axes.py/regime.py scope declarations in the existing worktree. No extra model, path, job,
+runner or policy was introduced. Exact source hashes and native results are in
+research/artifacts/regime_briefing_context_20260909/source_integration_20260911j.json.
+The actual existing owning pytest command passed252 with zero failures/errors/skips on this tree;
+head-side canonical closure and suite checks returned no findings. These are local results, not
+current-base hosted or production proof. Status remains awaiting_review / BUILT_NOT_PROVEN.
+Latest continuation: agentos/handoffs/REGIME-BRIEFING-CONTEXT-2026-09-11.md.

@@ -652,7 +652,8 @@ def _strict_regime_datetime(value) -> datetime | None:
         if parsed.tzinfo is None:
             return None
         return parsed.astimezone(timezone.utc)
-    except (TypeError, ValueError):
+    except (OverflowError, TypeError, ValueError):
+        # A valid local timestamp may normalize outside datetime's UTC range.
         return None
 
 
@@ -735,7 +736,10 @@ def _regime_probability_context(qv, reference_time=None) -> dict:
     if reference_time is None:
         now = datetime.now(timezone.utc)
     elif isinstance(reference_time, datetime):
-        now = reference_time.astimezone(timezone.utc) if reference_time.tzinfo else None
+        try:
+            now = reference_time.astimezone(timezone.utc) if reference_time.tzinfo else None
+        except (OverflowError, TypeError, ValueError):
+            now = None  # Preserve the explicit unknown-clock result below.
     else:
         now = _strict_regime_datetime(reference_time)
     if now is None:
