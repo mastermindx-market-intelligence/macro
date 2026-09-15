@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-15T20:34:42.188780+00:00",
-  "count": 2180,
+  "generated_at": "2026-09-15T21:59:48.411821+00:00",
+  "count": 2185,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -99,6 +99,67 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-u5zefwi75ln-e24dbc",
+      "title": "BofA European Fund Manager Survey",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T20:49:47Z",
+      "summary_points": [
+        "**AI-driven downside risk dominates**: 43% of investors cite AI investment disappointment as top catalyst for market correction (up from 21% last month), surpassing prior inflation focus.",
+        "**European growth sentiment collapse**: European investor optimism falls to 39% (down 11pp), with net 8% expecting global growth acceleration (down 6pp), signaling deteriorating fundamentals.",
+        "**Cyclical positioning extremes**: Basic Resources (29% overweight), Tech (25% OW), and Industrials (7% OW) lead cyclical exposure, while Retail (50% underweight) lags weakest since Jul '22.",
+        "**Recession risk divergence**: European sentiment fragile at 86% expecting no recession (down 11pp), vs.",
+        "global 73% (down 6pp), highlighting regional risk perception gap."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 21,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-cfariw2ls0k-bc72a0",
+      "title": "BofA Global Fund Manager Survey",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T20:49:42Z",
+      "summary_points": [
+        "**Macro Conviction vs.",
+        "Risks**: FMS cash at 3.9% (up from 3.5%) signals fading bullishness; 4-5% neutral zone enables risk increase; contrarian trades: long UK stocks/staples/small cap, short US stocks/banks/large cap.",
+        "**Policy & Tail Risks**: DEM midterm sweep odds rising to 31%; most likely reaction: \"yields up/stocks down\" (45%); biggest tail risk: \"disorderly bond yields\" (33% vs.",
+        "Aug 27%).",
+        "**Crowded Trades**: \"Long global semiconductors\" at 53% crowded trade; Fed seen as behind-curve."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 35,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rxqyvnc4j7j-832fba",
+      "title": "GS Callahan US TMT quick hits 15 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T19:48:28Z",
+      "summary_points": [
+        "**Market Volatility & Risk Drivers**: NDX breaks 50/100 DMA downside amid oil ($109/bbl) and 10yr rates (>5%) pressuring risk appetite; FOMC and US Midterms tightening risk posture.",
+        "**FOMC Rate Hike Outlook**: 94% market pricing for hike tomorrow; oil/AI demand driving rate expectations, with risk of two hikes in 2026 impacting interest rate positioning.",
+        "**Inference Economy & Consumer Trends**: Market rewards capex-light inference names (data infra/security) as \"rising tide\" theme persists; K-shaped consumer sector with top-levered (WSM) positive, bottom-levered negative."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-szcai5aedef-942e0b",
       "title": "GS Ratra What is crowded in US Equities 15 Sep 2026",
@@ -1253,6 +1314,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-2ny6v26q8xa-c22488",
+      "title": "Cybersecurity The New Frontier of ESG Risk",
+      "institution": "Societe Generale",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T01:12:46Z",
+      "summary_points": [
+        "**Cyber Geopolitical Risk Escalation**: NATO equates major cyberattacks to armed attacks under Article 5; WEF ranks cyber risk as top short-term global threat, elevating strategic priority and directly impacting portfolio allocation and market risk exposure.",
+        "**Regulatory Liability Enforcement Acceleration**: 2026 enforcement year for DORA, NIS2, CRA, and SEC rules (e.g., 4-day reporting), shifting from disclosure to liability, increasing compliance costs and risk exposure for portfolios.",
+        "**AI Infrastructure Scale & Cyber Risk Exposure**: $600-725bn AI-specific capex (2026) and $1.6tn annual AI capex (2031e) create massive new attack surfaces, directly exposing semiconductor, hyperscaler, and utility holdings to digital trust risks.",
+        "**Cyber Risk Operationalization**: Cyber incidents now directly impact operating profit (7,551 ransomware victims up 24.9% YoY), shifting risk from IT budget to core profitability for portfolio managers.",
+        "**Governance Accountability Shortfall**: Only 15% of S&P 500 issuers disclose board oversight of AI, with 40% providing inadequate AI disclosure—critical for PMs to mandate explicit board allocation, CISO independence, and security-linked remuneration."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 15,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-wgbphuph9kv-09f11a",
       "title": "Economics On Our Minds September 2026 FOMC Preview And So, It Begins",
       "institution": "Societe Generale",
@@ -1475,6 +1557,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-pfynxtr2lrs-3f9bb7",
+      "title": "Daifuku (6383.T) Logis Tech Tokyo Takeaways Technological innovation and intensifying competition confirmed, but Daifuku's ...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T00:50:22Z",
+      "summary_points": [
+        "**Industry bifurcation & Daifuku's positioning**: Logistics sector split into commoditized low-price (Chinese AGVs for small/mid customers) and high-value segments (specialized equipment for large customers); Daifuku targeting high-value segment via scale-driven advantage and specialized offerings.",
+        "**Automation structure & humanoid integration**: Advanced warehouses 85% unmanned; 10% humanoids for flexibility (unloading/uneven areas), 5% human judgment/AI; WES optimization via AI, with humanoid speed improvements potentially substituting automation.",
+        "**Geopolitical service advantage & 2030 target**: Domestic customers prefer Daifuku over Chinese players for post-installation service; 2030 humanoid target dependent on low-cost solutions, reinforcing domestic market positioning.",
+        "**Price target & technical momentum**: 12m target ¥9,300 (71.3% upside from ¥5,429) based on FY12/29E EV/EBITDA + 80% premium; targets consistently exceed closing prices (e.g., 28.7% above ¥7,263), signaling sustained bullish technical momentum."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
