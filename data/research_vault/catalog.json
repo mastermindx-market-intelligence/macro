@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-15T22:14:49.329669+00:00",
-  "count": 2186,
+  "generated_at": "2026-09-15T22:38:49.660568+00:00",
+  "count": 2187,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -1331,6 +1331,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xnj9jqohhyy-999923",
+      "title": "US Economics Analyst A Hike Without a Signal",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T02:30:48Z",
+      "summary_points": [
+        "**Fed Terminal Rate & Cut Timing**: Terminal rate raised to 3.25-3.5% (vs 3-3.25%), with two 2027 cuts (Sep/Dec) instead of June/Dec; FOMC avoids further hikes despite weak economic case.",
+        "**Market Pricing vs.",
+        "Fed Outlook**: Goldman Sachs identifies overpricing of Fed hikes (prob.",
+        "50% Oct hike); their probability-weighted forecast is less hawkish than market pricing, signaling reduced hike expectations.",
+        "**Core Inflation Trajectory**: Core PCE cooling to 2.0% by 2028 (vs 2.5% threshold), driven by fading supply shocks (tariffs, energy), not broad-based overheating or unanchored expectations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
       "language": "en",
       "needs_metadata": false
     },
