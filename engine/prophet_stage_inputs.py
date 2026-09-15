@@ -30,11 +30,14 @@ could not tell "this name has no positive earnings call" from "there is no earni
 call data on this host at all". ``resolve_ec_source`` / ``load_ec_table_with_source``
 report that difference explicitly so a starved negative is never read as an honest one.
 
-``EC_SENT_GATE = 24`` is calibrated to EquityDesk's 0-100 ``earnings_call_sent``
-scale. It is NOT comparable to this repo's own -1..1 ``sentiment`` in
-``data/earnings_calls/scores.parquet`` (a different artifact with a sibling name).
-Re-pointing this join at another field would silently re-scale a promoted signal's
-construction, which is a promotion-gauntlet violation rather than a repair.
+``EC_SENT_GATE = 24`` is calibrated to EquityDesk's native ~−10..30
+``earnings_call_sent`` (12 is the documented neutral midpoint). It is NOT
+comparable to a 0–100 gauge, and it is NOT comparable to this repo's own
+-1..1 ``sentiment`` in ``data/earnings_calls/scores.parquet`` (a different
+artifact with a sibling name). Re-pointing this join at another field would
+silently re-scale a promoted signal's construction, which is a
+promotion-gauntlet violation rather than a repair. Values outside the native
+range are rejected with a warning (never silently re-scaled).
 """
 from __future__ import annotations
 
@@ -55,7 +58,9 @@ log = logging.getLogger(__name__)
 # --------------------------------------------------------------------------- #
 STAGE2 = 2                                 # Weinstein Stage-2 (advancing)
 FRESH_WEEKS_MAX = 10                       # §2 B-fresh: weeks_in_stage <= 10
-EC_SENT_GATE = 24                          # §2 arm C: earnings_call_sent >= 24 (published gate)
+EC_SENT_GATE = 24                          # §2 arm C: earnings_call_sent >= 24 (native ~−10..30)
+EC_SENT_NATIVE_MIN = -10                   # EquityDesk native floor (inclusive)
+EC_SENT_NATIVE_MAX = 30                    # EquityDesk native ceiling (inclusive)
 BENCH_TICKER = "SPY"                       # §2 bench
 
 # §3 two ruler parameterizations.
@@ -77,6 +82,25 @@ EC_ABSENT_REASON = (
 )
 
 _EC_COLUMNS = ["ticker", "call_date", "earnings_call_sent"]
+
+
+def _in_native_ec_range(value: float) -> bool:
+    return EC_SENT_NATIVE_MIN <= value <= EC_SENT_NATIVE_MAX
+
+
+def _reject_out_of_native_ec_sent(value: float) -> float | None:
+    """Return ``value`` if it is on the native ~−10..30 desk scale; else warn and None.
+
+    Fail-open: a foreign scale must not silently become a leash input. Matches the
+    module's existing ``log.warning`` idiom — never a hard crash on a bad row.
+    """
+    if not _in_native_ec_range(value):
+        log.warning(
+            "psi: earnings_call_sent %s outside native ~%.0f..%.0f — treating as null",
+            value, EC_SENT_NATIVE_MIN, EC_SENT_NATIVE_MAX,
+        )
+        return None
+    return value
 
 
 def _repo_root() -> Path:
@@ -150,6 +174,15 @@ def load_ec_table_with_source(
         "call_date": pd.to_datetime(df["call_date"], errors="coerce"),
         "earnings_call_sent": pd.to_numeric(df["earnings_call_sent"], errors="coerce"),
     }).dropna(subset=["call_date"])
+    sent = out["earnings_call_sent"]
+    oob = sent.notna() & ((sent < EC_SENT_NATIVE_MIN) | (sent > EC_SENT_NATIVE_MAX))
+    if bool(oob.any()):
+        n = int(oob.sum())
+        log.warning(
+            "psi: dropping %s earnings_call_sent values outside native ~%.0f..%.0f",
+            n, EC_SENT_NATIVE_MIN, EC_SENT_NATIVE_MAX,
+        )
+        out.loc[oob, "earnings_call_sent"] = pd.NA
     out = out.sort_values("call_date").reset_index(drop=True)
     return out, {**source, "rows": int(len(out))}
 
@@ -181,7 +214,9 @@ def ec_sent_at_entry(ec_by_ticker: dict[str, pd.DataFrame], ticker: str, entry_d
     if prior.empty:
         return None
     v = prior["earnings_call_sent"].iloc[-1]  # g is call_date-sorted → last is most-recent
-    return float(v) if pd.notna(v) else None
+    if pd.isna(v):
+        return None
+    return _reject_out_of_native_ec_sent(float(v))
 
 
 def ec_index(ec_df: pd.DataFrame) -> dict[str, pd.DataFrame]:
