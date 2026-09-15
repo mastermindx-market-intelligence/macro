@@ -32,6 +32,34 @@
   'stale':['This desk has not refreshed recently.','此栏目最近未更新。','Check GOV.UK for anything newer before acting.','采取行动前，请先到 GOV.UK 查看是否有更新。'],
   'model_unavailable':['The plain-word read is not ready.','平实解读尚未完成。','The headline below is the official title. No stance has been assigned.','下方标题为官方原文。尚未给出立场判断。']
 } %}
+{% set POLICY_EVENT_STATE = {
+  'current':['Current','当前','Official sources answered.','官方来源已响应。','fact'],
+  'partial':['Partial coverage','部分覆盖','Some official sources are delayed, stale, not responding, or not yet covered.','部分官方来源可能延迟、过时、未响应或尚未覆盖。','warn'],
+  'no_recent_events':['No recent items','暂无近期动态','No recent policy events passed the focused filter.','近期没有通过聚焦筛选的政策动态。','neutral'],
+  'source_outage':['Source outage','来源中断','Official policy sources did not answer this time. Saved dated items appear below when available.','本次官方政策来源未响应。如有已保存且带日期的动态，将显示在下方。','warn'],
+  'stale':['Source coverage stale','来源覆盖已过时','Source coverage has not refreshed recently. Saved dated items appear below when available.','来源覆盖最近未更新。如有已保存且带日期的动态，将显示在下方。','warn'],
+  'no_coverage':['No coverage','暂无覆盖','Official policy-event coverage is not available yet.','官方政策动态覆盖暂不可用。','neutral'],
+  'unavailable':['Unavailable','暂不可用','Official policy events are unavailable in this build.','本次构建未提供官方政策动态。','neutral']
+} %}
+{% set POLICY_EVENT_THEME = {
+  'competition_antitrust':['Competition & antitrust','竞争与反垄断'],
+  'financial_stability':['Financial stability','金融稳定'],
+  'fiscal_policy':['Fiscal policy','财政政策'],
+  'monetary_policy':['Monetary policy','货币政策'],
+  'regulatory':['Regulation','监管'],
+  'trade_policy':['Trade policy','贸易政策']
+} %}
+{% set POLICY_EVENT_COVERAGE = {
+  'COVERED':['Current','当前'],
+  'DELAYED_SOURCE':['Delayed','延迟'],
+  'SOURCE_OUTAGE':['Source outage','来源中断'],
+  'STALE':['Stale','已过时'],
+  'NO_COVERAGE':['No coverage','暂无覆盖']
+} %}
+{% set POLICY_EVENT_PUBLISHER = {
+  'boe_news':['Bank of England','英格兰银行'],
+  'ec_presscorner':['European Commission','欧盟委员会']
+} %}
 {% set TF_COPY = {
   'tf_comms': {
     'en':'Possible changes to forecasts, press conferences and meeting transcripts.',
@@ -364,6 +392,13 @@
   .pw-market-card .pw-examples{color:var(--text);font-family:var(--font-data);font-size:11.5px;font-weight:600;letter-spacing:.01em}.pw-performance{font-size:11.5px}
   .pw-ledger{display:grid;gap:8px}.pw-call{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:9px 14px;align-items:start;padding:12px 14px;border:1px solid var(--pw-hair);border-radius:11px;background:var(--panel)}.pw-call-topic{color:var(--muted);font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}.pw-call-text{grid-column:1;margin:2px 0 0;color:var(--text);font-size:12.5px;line-height:1.45}.pw-call-date{font-family:var(--font-data);font-size:11.5px;white-space:nowrap}.pw-call-status{grid-column:3;grid-row:1/3}.pw-call-id{color:var(--muted);font-family:var(--font-data);font-size:10.5px}
   .pw-monitor{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.pw-monitor-row{padding:11px 12px;border:1px solid var(--pw-hair);border-radius:10px;background:var(--pw-tile)}.pw-monitor-row strong{display:block;font-size:12.5px}.pw-monitor-row span{display:block;margin-top:3px;color:var(--pw-ink-2);font-size:11.5px}.pw-sources{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}.pw-sources a{max-width:100%;overflow-wrap:anywhere}.pw-build-note{margin:13px 0 0;color:var(--muted);font-size:11px}
+  .pw-policy-feed{margin:0 0 14px;padding:15px 16px;border:1px solid var(--pw-hair);border-radius:var(--r-card,11px);background:var(--panel)}
+  .pw-policy-feed-head{display:flex;flex-wrap:wrap;align-items:center;gap:7px 10px;margin-bottom:10px}.pw-policy-feed-head h3{margin:0;font-size:15px}.pw-policy-feed-head .pw-badge{margin-left:auto}
+  .pw-policy-feed-state{margin:0 0 10px;color:var(--pw-ink-2);font-size:12px}.pw-policy-feed-list{display:grid;gap:8px}
+  .pw-policy-event{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;padding:11px 12px;border:1px solid var(--pw-hair);border-radius:var(--r-card,11px);background:var(--pw-tile)}
+  .pw-policy-event-title{margin:0;color:var(--text);font-family:var(--font-display);font-size:13px;font-weight:600;line-height:1.4}.pw-policy-event-meta{display:flex;flex-wrap:wrap;gap:5px 10px;margin:0;color:var(--pw-ink-2);font-size:11px}.pw-policy-event-source{align-self:start;font-size:11px;white-space:nowrap}
+  .pw-policy-feed-clocks,.pw-policy-feed-sources{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.pw-policy-feed .pw-build-note{margin-top:10px}
+  @media(max-width:680px){.pw-policy-event{grid-template-columns:1fr}.pw-policy-event-source{white-space:normal}.pw-policy-feed-head .pw-badge{margin-left:0}}
   .pw-extra[hidden]{display:none!important}.pw-reveal{margin-top:12px}.pw-shell .gbtn{max-width:100%;font-family:var(--font-ui);white-space:normal;text-align:left}
   /* -- policy lifecycle: deterministic stage ledger -------------------- */
   .pw-stage-glance{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 12px}
@@ -663,6 +698,48 @@
     {% else %}
     {{ section_head('Policy stages','政策进程','Not available yet','暂不可用','Stage dates and source documents are not available yet for this update.','本次更新的阶段日期与来源文件尚不可用。') }}
     {% endif %}
+    {% set pe_state = POLICY_EVENT_STATE.get(policy_events.state if policy_events else 'unavailable', POLICY_EVENT_STATE['unavailable']) %}
+    <div class="pw-policy-feed" data-policy-event-feed="1" data-policy-events-state="{{ policy_events.state if policy_events else 'unavailable' }}">
+      <div class="pw-policy-feed-head">
+        <h3>{{ t('Official policy events','官方政策动态') }}</h3>
+        <span class="pw-badge {{ pe_state[4] }}">{{ bl(pe_state[0], pe_state[1]) }}</span>
+      </div>
+      <p class="pw-policy-feed-state">{{ bl(pe_state[2], pe_state[3]) }}</p>
+      {% if policy_events and policy_events['items'] %}
+      <div class="pw-policy-feed-list">
+        {% for event in policy_events['items'] %}
+        {% set theme_copy = POLICY_EVENT_THEME.get(event.theme, [event.theme, event.theme]) %}
+        {% set publisher_copy = POLICY_EVENT_PUBLISHER.get(event.source_key, [event.publisher, event.publisher]) %}
+        <article class="pw-policy-event" data-policy-event-id="{{ event.event_id }}" data-policy-event-theme="{{ event.theme }}">
+          <div>
+            <span class="pw-source-original">{{ t('Original source title','原文标题') }}</span>
+            <h4 class="pw-policy-event-title">{{ event.title }}</h4>
+            <p class="pw-policy-event-meta">
+              <span>{{ bl(theme_copy[0], theme_copy[1]) }}</span>
+              {% if event.jurisdiction %}<span>{{ event.jurisdiction }}</span>{% endif %}
+              {% if event.source_date_en %}<span>{{ t('Published','发布') }} {{ bl(event.source_date_en, event.source_date_zh) }}</span>{% endif %}
+              {% if event.known_at_en %}<span>{{ t('Collected','收录') }} {{ bl(event.known_at_en, event.known_at_zh) }}</span>{% endif %}
+            </p>
+          </div>
+          <a class="pw-policy-event-source" href="{{ event.url }}" rel="nofollow noopener" target="_blank">{{ bl(publisher_copy[0], publisher_copy[1]) }}</a>
+        </article>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% if policy_events and policy_events.coverage_checked_at_en %}
+      <div class="pw-policy-feed-clocks"><span class="pw-chip">{{ t('Latest source check','最近一次来源检查') }} <strong>{{ bl(policy_events.coverage_checked_at_en, policy_events.coverage_checked_at_zh) }}</strong></span></div>
+      {% endif %}
+      {% if policy_events and policy_events.sources %}
+      <div class="pw-policy-feed-sources">
+        {% for source in policy_events.sources %}
+        {% set cov = POLICY_EVENT_COVERAGE.get(source.coverage_state, POLICY_EVENT_COVERAGE['NO_COVERAGE']) %}
+        {% set publisher_copy = POLICY_EVENT_PUBLISHER.get(source.source_key, [source.publisher, source.publisher]) %}
+        <span class="pw-chip{% if source.coverage_state != 'COVERED' %} stale{% endif %}"><strong>{{ bl(publisher_copy[0], publisher_copy[1]) }}</strong> {{ bl(cov[0], cov[1]) }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+      <p class="pw-build-note">{{ t('Discovery only — not a lifecycle stage or market signal.','仅用于发现——不是政策阶段，也不是市场信号。') }}</p>
+    </div>
     {# ── deterministic lifecycle ledger (engine.policy_intent_desk.lifecycle_view) ── #}
     {% if lifecycle %}
     <div class="pw-stage-glance">
