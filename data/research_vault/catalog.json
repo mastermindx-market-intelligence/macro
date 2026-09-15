@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-15T05:57:29.989636+00:00",
-  "count": 2137,
+  "generated_at": "2026-09-15T06:12:40.780678+00:00",
+  "count": 2138,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -569,6 +569,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-dnxgcwnq3y2-640459",
+      "title": "Payments and Fintech Communacopia + Technology 2026 — Key Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T13:18:27Z",
+      "summary_points": [
+        "**Agentic Commerce Shift to Card-Centric Products**: New agentic products (Meta’s Muse, Spear Street’s Instinct) prioritize card payments, reinforcing Visa/Mastercard ecosystem benefits via fraud/tokization services; stable August consumer spending supports this structural shift.",
+        "**Visa & Mastercard Resilience**: Visa U.S.",
+        "spend volume +10% QoQ, cross-border e-commerce acceleration (14% QoQ); Mastercard shows resilient non-travel CNP volumes (AI subscriptions/digital wallets) despite Middle East disruptions.",
+        "**Key Geopolitical Risk**: Shift4 (FOUR) faces Q4 guidance risk from Middle East disruptions, contrasting with Mastercard’s cross-border recovery—highlighting asymmetric regional impact on payment processors.",
+        "**Fundamental Data & Valuation**: Visa’s $438 target (27x P/E) reflects strong fundamentals; explicit downside risks include weaker macro environment and slower cross-border growth (key for portfolio positioning)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
       "language": "en",
       "needs_metadata": false
     },
