@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-15T06:27:40.612941+00:00",
-  "count": 2139,
+  "generated_at": "2026-09-15T06:54:19.406921+00:00",
+  "count": 2140,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -976,6 +976,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-fg6qbpcq0j0-955245",
+      "title": "MS Building a better mousetrap AI spending and its contribution to US GDP growth",
+      "institution": "Morgan Stanley",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-13T17:10:28Z",
+      "summary_points": [
+        "**AI-Only GDP Contribution**: AI-only investment contributes 0.4pp to US real GDP growth (0.6pp for AI-related), accelerating to 0.42pp in H1 2026 vs.",
+        "30pp in prior period; infrastructure build-out ($39bn) drives 0.4pp of H2 2026 contribution despite lower nominal value.",
+        "**Infrastructure vs.",
+        "Adoption Distinction**: Infrastructure investment (supply-side capacity) dominates GDP impact (0.4pp), while software adoption (business utilization) contributes only 0.1pp; critical for sector allocation and growth forecasting.",
+        "**Methodology Refinements**: Revised framework isolates AI-only via counterfactual analysis (pre-AI boom trends), expands NIPA categories from 4 to 8 (e.g., data centers, servers), and adjusts for re-exports (86% of computer imports retained in US vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 32,
       "language": "en",
       "needs_metadata": false
     },

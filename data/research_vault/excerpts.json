@@ -5481,6 +5481,28 @@
    "Exhibit 4: Headline index valuations for A-share Exhibit 5: Domestic equity mutual funds are still Exhibit 6: Capex revision momentum has started to Tech companies have normalized heavily exposed to Tech equities in their portfolios slow from a high base",
    "12m fPE (x) CSI300 CSI300 Median Domestic mutual fund positoning QoQ Capex revisions % (NTM & STM Average) ChiNext Median STAR50 Median 50 50% OW/UW in IT (vs All A Index wgt) 35% CSI1000 US hyperscalers 45 Allocation in IT (as % of AUM) 43% 30% 41.3 40% 24% (2.0 s.d.) 25% 40 (0.2 s.d.)…"
   ],
+  "marketdesk-fg6qbpcq0j0-955245": [
+   "M September 7, 2026 11:00 PM GMT",
+   "AI and Economic Transition | North America Morgan Stanley & Co. LLC Foundation",
+   "Building a better mousetrap: AI",
+   "spending and its contribution to",
+   "Economist We provide a more accurate treatment of AI investment and its Sam D Coffin Economist contribution to growth. Broadly defined, AI-related spending has",
+   "contributed an average of 0.6pp to real GDP growth rates since Arunima Sinha Global Economist 2025. More narrow estimates that attempt to isolate AI-only",
+   "spending point to an average contribution of 0.4pp Heather Berger Economist",
+   "Key Takeaways Our refined growth accounting framework includes more investment categories and improves our treatment of imports.",
+   "We also provide a broad measure of AI's contribution to growth and a more narrow estimate that isolates AI-only spending.",
+   "We differentiate between AI infrastructure spending and AI adoption spending. AI diffusion will increase the relative importance of adoption spending over time.",
+   "Exhibit 1: The contribution of AI investment to growth in real US GDP accelerated beginning in 2025",
+   "Contribution to Real GDP Growth (pp) 0.70 AI-related AI-only 0.61 0.60",
+   "0.00 1H 23 to 1H 26 1H 25 to 1H 26",
+   "Source: BEA, Haver Analytics, Morgan Stanley Research",
+   "For important disclosures, refer to the Disclosure Section, located at the end of this report.",
+   "Executive Summary: Building a better mousetrap to estimate the contribution of AI spending on growth Understanding the outlook for the US economy increasingly requires understanding AI spending and how it permeates the National Income and Product Accounts. While we have long sought to understand AI and its economic effects, the evolution of the AI investment cycle has created an opportunity to refine how we track its contribution to US GDP growth. In particular, we enhance our framework along three dimensions: the treatment of imports, the separation of AI from non-AI spending, and the distinction between spending on AI infrastructure build-out and AI adoption.",
+   "Our refined methodology provides a more comprehensive view of how AI spending is flowing through the US economy. It extends beyond the technology-focused categories at the center of our original estimates, to capture the broader infrastructure required to build AI capacity. Under this broader definition, we estimate that AI-related investment has contributed 0.6pp to annualized real GDP growth on average since 2025. Narrowing the lens to isolate AI-only investment still produces a sizable 0.4pp contribution. The framework also allows us to distinguish between the infrastructure build-out and AI adoption, providing a way to track the AI cycle as it moves from capacity creation to broader diffusion across the economy.",
+   "Translating AI spending into growth is difficult since capex does not translate one-for- one into US GDP. Corporate capex measures what firms spend on long-term assets. GDP, on the other hand, measures final output of domestically produced goods and services. Spending on intermediate goods is therefore not counted, while spending on imported final goods and services is subtracted. In the case of AI investment, spending on imported equipment used in data center construction is included in corporate capex plans but does not contribute to US GDP.",
+   "First, we improve the accuracy of our import offset. We adjust imports for re-exports, so that only imported goods that remain in the US are netted out of spending. Second, we estimate the share of those imports purchased by businesses for private fixed investment, as imports can also be purchased by consumers or governments. Third, we expand the adjustment beyond imports of computers and peripherals to also include semiconductors and related devices. Although the supply of chips and memory, and the associated inflationary pressures, have been widely discussed this year, semiconductor imports were previously much smaller and slower-growing than imports of computers and peripherals. But they have accelerated sharply since 4Q25, making them increasingly critical to account for. Together, these changes provide a more precise bridge between the capex associated with the AI boom and the domestic investment recorded in GDP.",
+   "Second…"
+  ],
   "marketdesk-fimpwdyi2eu-2ee3a3": [
    "Economics Research 13 September 2026 | 8:14PM EDT",
    "Global Week Ahead: September 14 – September 20",
