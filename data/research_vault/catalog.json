@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-15T00:56:58.214921+00:00",
-  "count": 2124,
+  "generated_at": "2026-09-15T01:11:46.746768+00:00",
+  "count": 2125,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -116,6 +116,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-tzxfyszir8v-6b8fb2",
+      "title": "Fidelity equities monthly sep 2026",
+      "institution": "Fidelity",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T00:31:34Z",
+      "summary_points": [
+        "**Earnings-Hurdle Rate Pressure**: Robust corporate earnings face elevated investor hurdle rates, intensifying valuation challenges and growth narrative pressures despite S&P 500 Q2 earnings beating expectations (87% beat, driven by tech/energy).",
+        "**Energy Price Shock & Inflation Risk**: Brent crude at $95+ (vs $72 earlier) risks prolonging inflation, constraining monetary easing, and elevating volatility if policy/inflation disappoints, with institutional cash at historic lows (3.5%).",
+        "**AI Infrastructure Momentum & Valuation Risk**: AI infrastructure demand (semis, storage) drives tech earnings, but re-rated subsectors require selectivity amid valuation risks; China’s IT sector shows 42.1% earnings divergence vs consensus (highest regional divergence).",
+        "**Japan’s Structural Policy Shift**: ¥370T public-private investment (FY2040) targets AI, semiconductors, and digital infrastructure, broadening opportunities beyond tech to financials/industrials, though BoJ tightening benefits financials but raises hurdles for growth stocks.",
+        "**Geopolitical Multipliers**: Middle East tensions (Hormuz collapse) and US-Iran conflicts pressure European equities, while Gulf tensions and energy shocks compound inflation risks, offsetting earnings momentum in Europe and Asia."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
       "language": "en",
       "needs_metadata": false
     },
