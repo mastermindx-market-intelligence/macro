@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-14T23:41:40.852852+00:00",
-  "count": 2120,
+  "generated_at": "2026-09-14T23:56:42.062073+00:00",
+  "count": 2121,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -427,6 +427,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 24,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-fimpwdyi2eu-2ee3a3",
+      "title": "Global Week Ahead September 14 – September 20",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T00:51:13Z",
+      "summary_points": [
+        "**US Fed Rate Forecast Stronger Than Consensus**: Goldman Sachs forecasts 3.875% vs consensus 3.625%, signaling significant divergence in rate trajectory for rate-sensitive assets and potential market volatility.",
+        "**Ukraine Central Bank Policy Shift**: 50 bps rate hike forecast vs consensus 0%, indicating aggressive tightening amid geopolitical tensions, critical for regional flows and risk sentiment.",
+        "**Japan CPI Data Divergence**: Core CPI forecast 1 standard deviation below consensus (score -1), highlighting potential underperformance in inflation data and policy response risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
