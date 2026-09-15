@@ -1972,8 +1972,17 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
           {% if ss.evidence.recipe_id %}<div class="r6d"><span class="k">{{ t('Recipe', '配方') }}</span><span class="vv ss-id">{{ ss.evidence.recipe_id }}</span></div>{% endif %}
           {% if ss.version %}<div class="r6d"><span class="k">{{ t('Schema', '数据结构') }}</span><span class="vv ss-id">{{ ss.version }}</span></div>{% endif %}
           {% if ss.listing_key %}<div class="r6d"><span class="k">{{ t('Listing', '上市代码') }}</span><span class="vv ss-id">{{ ss.listing_key }}</span></div>{% endif %}
-          {% if ss.security_id %}<div class="r6d"><span class="k">{{ t('Security', '证券标识') }}</span><span class="vv ss-id">{{ ss.security_id }}</span></div>{% endif %}
-          {% if ss.issuer_id %}<div class="r6d"><span class="k">{{ t('Issuer', '发行人标识') }}</span><span class="vv ss-id">{{ ss.issuer_id }}</span></div>{% endif %}
+          {# Security / Issuer identifier rows: the raw `SEC:...` / `ISS:...`
+             tokens are kept on the security-state record for downstream uses
+             (the dossier guard, the data attribute, the receipt JSON) but
+             must never render as visible customer copy — a row that prints
+             the raw token leaks a machine identifier into user-facing prose.
+             H1 heal-round (PR #7122): show a plain-word EN/ZH phrase that
+             confirms the identifier was read, without printing the raw
+             token. The identifier itself is preserved in the security-state
+             data attribute (still reachable for the audit guard). #}
+          {% if ss.security_id %}<div class="r6d"><span class="k">{{ t('Security', '证券标识') }}</span><span class="vv">{{ t('Recorded on the security-state record', '记录于证券状态档案') }}</span></div>{% endif %}
+          {% if ss.issuer_id %}<div class="r6d"><span class="k">{{ t('Issuer', '发行人标识') }}</span><span class="vv">{{ t('Recorded on the security-state record', '记录于证券状态档案') }}</span></div>{% endif %}
           {% if ss.content_sha256 %}<div class="r6d"><span class="k">{{ t('Content fingerprint', '内容指纹') }}</span><span class="vv ss-id">{{ ss.content_sha256 }}</span></div>{% endif %}
           {% if ss.market_at %}<div class="r6d"><span class="k">{{ t('Market data through', '行情数据截至') }}</span><span class="vv num">{{ ss.market_at }}</span></div>{% endif %}
           {% if ss.frontier_at %}<div class="r6d"><span class="k">{{ t('Sources through', '来源截至') }}</span><span class="vv num">{{ ss.frontier_at }}</span></div>{% endif %}

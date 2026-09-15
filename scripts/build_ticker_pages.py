@@ -4298,6 +4298,12 @@ def _ss_equality_display(raw: Any, key: str = "") -> tuple[str, str, bool]:
     their house pair. Identifier-shaped values stay verbatim in ss-id.
     Anything else is the dash pair plus a warning. *key* is the equality
     check id so ticker/CUSIP gates can fire.
+
+    H1 heal-round (PR #7122): an identifier-shaped value (SEC:/ISS:/cik:/
+    US-XN.../evt_) does NOT render as visible text. ``is_id=True`` rows keep
+    ``raw_token`` for the audit guard / data attribute, but the visible
+    text is replaced with a plain-word phrase that confirms the read without
+    leaking the raw token.
     """
     if raw is None:
         return _SS_READ_ABSENT["en"], _SS_READ_ABSENT["zh"], False
@@ -4311,6 +4317,10 @@ def _ss_equality_display(raw: Any, key: str = "") -> tuple[str, str, bool]:
     if not s:
         return _SS_READ_ABSENT["en"], _SS_READ_ABSENT["zh"], False
     mapped = _ss_project_identity_token(s, key)
+    # H1: when the mapped value carries an identifier shape, withhold the
+    # raw token from visible text.
+    if mapped["is_id"]:
+        return _ID_TOKEN_WITHHELD_EN, _ID_TOKEN_WITHHELD_ZH, True
     return mapped["en"], mapped["zh"], mapped["is_id"]
 
 
@@ -4326,6 +4336,13 @@ def _ss_equality_rows(raw_list: Any) -> list[dict[str, Any]]:
         verdict = _SS_EQUALITY_VERDICT[equal]
         left_en, left_zh, left_is_id = _ss_equality_display(item.get("left_value"), check)
         right_en, right_zh, right_is_id = _ss_equality_display(item.get("right_value"), check)
+        # H1 heal-round (PR #7122): preserve the raw identifier token on
+        # ``raw_token`` for the audit guard / data attribute; visible text
+        # already withholds the token via _ID_TOKEN_WITHHLED_EN/ZH.
+        left_raw = (str(item.get("left_value")).strip()
+                    if item.get("left_value") is not None else "")
+        right_raw = (str(item.get("right_value")).strip()
+                     if item.get("right_value") is not None else "")
         rows.append({
             "check": check,
             "label_en": (house or {}).get("en") or "",
@@ -4335,9 +4352,11 @@ def _ss_equality_rows(raw_list: Any) -> list[dict[str, Any]]:
             "left_en": left_en,
             "left_zh": left_zh,
             "left_is_id": left_is_id,
+            "left_raw": left_raw if left_is_id else "",
             "right_en": right_en,
             "right_zh": right_zh,
             "right_is_id": right_is_id,
+            "right_raw": right_raw if right_is_id else "",
             "verdict_en": verdict["en"],
             "verdict_zh": verdict["zh"],
             "ok": equal,
@@ -4682,6 +4701,16 @@ def _ss_map_identity_read_value(k: str, raw: Any, has_v: bool) -> dict[str, Any]
     return _ss_project_identity_token(s, k)
 
 
+# H1 heal-round (PR #7122): identity-read rows that carry a raw identifier
+# token (SEC:/ISS:/cik:/US-XN.../evt_) must NOT render the raw token as
+# visible text. The raw token is preserved on the security-state record for
+# the audit guard / data attribute / receipt JSON; the visible text row
+# carries a plain-word phrase that confirms the read happened without
+# leaking the raw token into customer copy.
+_ID_TOKEN_WITHHELD_EN = "Recorded identifier — see security-state record"
+_ID_TOKEN_WITHHELD_ZH = "已记录标识 — 见证券状态档案"
+
+
 def _ss_identity_read_rows(seq: Any) -> list[dict[str, Any]]:
     """Project identity `values_read` into labeled customer-copy rows.
 
@@ -4690,6 +4719,13 @@ def _ss_identity_read_rows(seq: Any) -> list[dict[str, Any]]:
     Identity-checks print a frozen label; an unknown key falls back to the
     key inside `<span class="ss-id">`. An unmapped value keeps the row and
     prints the dash pair.
+
+    H1 heal-round (PR #7122): raw identifier tokens (SEC:/ISS:/cik:/US-XN.../
+    evt_) do not render as visible text. ``is_id=True`` rows keep their label
+    (so the reader sees WHICH field was read) but the value is replaced with
+    a plain-word EN/ZH phrase that confirms the read without leaking the
+    raw token. The raw token is still preserved on ``raw_token`` (data
+    attribute / audit guard) — never on the visible text.
     """
     rows: list[dict[str, Any]] = []
     for item in (seq if isinstance(seq, (list, tuple)) else []):
@@ -4707,11 +4743,21 @@ def _ss_identity_read_rows(seq: Any) -> list[dict[str, Any]]:
             continue
         mapped = _ss_map_identity_read_value(k, raw, has_v)
         house = _SS_READ_FIELD.get(k)
+        # H1 heal-round: when the mapped value carries an identifier shape,
+        # replace its visible text with a plain-word phrase. The raw token
+        # is preserved on ``raw_token`` for the audit guard; visible text
+        # never sees it.
+        raw_token = (str(raw).strip() if raw is not None else "")
+        if mapped["is_id"] and raw_token:
+            vis_en, vis_zh = _ID_TOKEN_WITHHELD_EN, _ID_TOKEN_WITHHELD_ZH
+        else:
+            vis_en, vis_zh = mapped["en"], mapped["zh"]
         rows.append({
             "k": k,
-            "v": mapped["en"],
-            "v_en": mapped["en"],
-            "v_zh": mapped["zh"],
+            "v": vis_en,
+            "v_en": vis_en,
+            "v_zh": vis_zh,
+            "raw_token": raw_token if mapped["is_id"] else "",
             "is_id": mapped["is_id"],
             "label_en": (house or {}).get("en") or "",
             "label_zh": (house or {}).get("zh") or "",
