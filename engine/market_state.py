@@ -86,10 +86,22 @@ def _clamp(x: float, lo: float = 0.0, hi: float = 1.0) -> float:
 
 
 def _num(v):
+    """Finite float projection; reject bools/containers/Series/ndarrays (any shape)."""
+    if v is None or isinstance(v, (bool, np.bool_)):
+        return None
+    if isinstance(v, (dict, list, tuple, set, memoryview)):
+        return None
+    if isinstance(v, (pd.Series, pd.DataFrame)):
+        return None
+    if isinstance(v, np.ndarray):
+        return None
+    size = getattr(v, "size", None)
+    if size is not None and size != 1 and not isinstance(v, (np.floating, np.integer)):
+        return None
     try:
         f = float(v)
         return f if np.isfinite(f) else None
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, OverflowError):
         return None
 
 
@@ -584,10 +596,40 @@ def _radar_to_rd(rr: dict) -> dict:
     display-only override both build on it. `amp`/`ceiling` default to off (the US override
     fills them in when the radar is loud)."""
     state = rr.get("state")
-    top = _num(rr.get("top_score"))
+    raw_top = rr.get("top_score")
+    top = None if isinstance(raw_top, (bool, np.bool_)) else _num(raw_top)
     dp = rr.get("drawdown_prob") or {}
     _mkt = rr.get("market") or "us"
     _track = _rr_scorecard_track(_mkt)
+    _forward_log = rr.get("forward_log")
+    _change = (_forward_log.get("publication_change")
+               if isinstance(_forward_log, dict) else None)
+    if not isinstance(_change, dict):
+        _change = None
+    elif (rr.get("asof")
+          and str(_change.get("current_asof") or "") != str(rr["asof"])):
+        _change = None
+    elif isinstance(_change, dict):
+        # Card path: re-project score numerics + direction so a conflicting/malformed
+        # payload cannot fabricate delta/direction for display.
+        from engine.risk_radar_audit import _normalize_score_direction, _change_num
+        _change = dict(_change)
+        if isinstance(_change.get("score"), dict):
+            _change["score"] = _normalize_score_direction(_change.get("score"))
+        week = _change.get("week")
+        if isinstance(week, dict) and "score" in week:
+            week = dict(week)
+            week["score"] = _change_num(week.get("score"))
+            week["delta"] = _change_num(week.get("delta"))
+            if week.get("score") is None and week.get("available"):
+                week["available"] = False
+                week.setdefault("null_reason", "WEEK_SCORE_MISSING")
+            _change["week"] = week
+    # Keep the established integer audit field stable. Additive top_score_display is the
+    # exact one-decimal projection for the shared card (including first publication); ledger
+    # and market_state_audit.radar_top remain on the legacy rounded top_score.
+    _top_audit = round(top) if top is not None else None
+    _top_display = round(float(top), 1) if top is not None else None
     # Explicit authority is emitted by current radar producers. For older artifacts, only an
     # actual loud alert may bind; a legacy caution payload is advisory by construction.
     _can_force = (bool(rr.get("can_force")) if "can_force" in rr else
@@ -605,10 +647,12 @@ def _radar_to_rd(rr: dict) -> dict:
     # optional, wall-clock scorecard must not silently rewrite an identical producer payload.
     return {
         "state": state,
-        "top_score": round(top) if top is not None else None,
+        "market": _mkt,
+        "top_score": _top_audit,
+        "top_score_display": _top_display,
         "label_en": rr.get("dominant_label_en") or "calm",
         "label_zh": rr.get("dominant_label_zh") or "平静",
-        "state_zh": _RADAR_ZH.get(state, state or ""),
+        "state_zh": _RADAR_ZH.get(state, ""),
         "do_en": _RADAR_DO.get(state, ("", ""))[0],
         "do_zh": _RADAR_DO.get(state, ("", ""))[1],
         "gross": _num(rr.get("gross_factor")),
@@ -628,12 +672,19 @@ def _radar_to_rd(rr: dict) -> dict:
         "scares": rr.get("scares") or [],
         # the radar's own forward-grade scorecard (engine/risk_radar_intl_audit) — drives the
         # card's "self-audit" line. None on the US radar (which logs via market_state_audit).
-        "forward_log": rr.get("forward_log"),
+        "forward_log": _forward_log,
+        # Display-only comparison against the existing canonical publication ledger.
+        "change": _change,
         # election-cycle MODULATOR (engine/election_cycle.py) — display chip + sizing prior; only
         # set on the US radar (the intl radars carry no midterm prior — the backtest refuted it).
         "cycle": rr.get("cycle_context"),
         # RC-R11 washout counter-read — display-tier context chip beside the banner (US radar only).
         "counterread": rr.get("counterread"),
+        # Optional display enrichments are attached by some builders after this transform.
+        # Defaults keep the shared card safe when the pure mapper is rendered directly.
+        "contagion": rr.get("contagion"),
+        "fx_context": rr.get("fx_context"),
+        "cross_asset": rr.get("cross_asset"),
         "amp": 0, "amp_keys": [], "amp_flags_en": [], "amp_flags_zh": [],
         "severe_gated": False, "ceiling": None, "candidate_ceiling": None,
         # amplification-provenance defaults (the US override fills them in when the radar is
@@ -856,7 +907,8 @@ def _radar_override(latest: dict, overrides: list) -> dict:
 def _calm_radar() -> dict:
     """The neutral radar payload for a market with no Risk-Radar source — the board
     simply omits the banner ({% if MS.radar.state %})."""
-    return {"state": None, "top_score": None, "label_en": "calm", "label_zh": "平静",
+    return {"state": None, "top_score": None, "top_score_display": None,
+            "label_en": "calm", "label_zh": "平静",
             "state_zh": "", "do_en": "", "do_zh": "", "gross": None,
             "dd5": None, "dd10": None, "dd21": None, "dd_lift": None,
             "dd_base": {"h5": None, "h10": None, "h21": None},
