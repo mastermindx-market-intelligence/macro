@@ -42,8 +42,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
-          fetch-depth: 20
-          filter: blob:none
+          # This lane consumes the complete current tree: the incremental builder
+          # reconstructs the whole Wire and the normalization passes inspect site/.
+          # `filter: blob:none` without sparse checkout still materialized every blob
+          # lazily and spent 13m09s in production run 35020030398 before the bounded
+          # retry loop began. Fetch one shallow pack instead; each publication attempt
+          # explicitly refreshes origin/main before it builds.
+          fetch-depth: 1
           # The 2026-08-15 main freeze requires a PR for GITHUB_TOKEN and
           # forbids a GitHub Actions integration bypass. Deploy keys are
           # org-disabled. OrganizationAdmin is the only working bypass, so

@@ -1696,11 +1696,35 @@ def test_public_wire_workflow_has_upstream_trigger_and_hourly_backstop() -> None
     assert "Sitemap: https://www.mastermind-x.com/stocks/earnings/sitemap.xml" in robots
 
 
-def test_public_wire_retry_budget_covers_fresh_main_regeneration_and_private_containment() -> None:
-    """The 420s shared deadline starts before a ~13-minute generation.
+def test_public_wire_checkout_materializes_required_full_tree_without_blobless_lazy_fetch() -> None:
+    """The publisher consumes the full tree; fetch it once as a shallow pack.
 
-    A ref-lock loss must buy one full rebuild from the winning main, not consume
-    the default budget before the loop reaches its first push.
+    `filter: blob:none` without a sparse profile still checks out every tracked
+    path, but materializes the blobs one-by-one. Production run 35020030398 spent
+    13m09s in checkout before the bounded two-attempt publication loop began.
+    """
+    repo = Path(__file__).resolve().parents[1]
+    workflow = yaml.safe_load(
+        (repo / ".github" / "workflows" / "earnings-public-wire.yml").read_text(
+            encoding="utf-8"
+        )
+    )
+    checkout = next(
+        step
+        for step in workflow["jobs"]["publish"]["steps"]
+        if step.get("uses") == "actions/checkout@v4"
+    )
+    options = checkout["with"]
+
+    assert options["fetch-depth"] == 1
+    assert "filter" not in options
+
+
+def test_public_wire_retry_budget_covers_fresh_main_regeneration_and_private_containment() -> None:
+    """The 1,980s publication loop buys one full fresh-main regeneration.
+
+    A ref-lock loss must buy one full rebuild from the winning main. Checkout is
+    bounded separately so it cannot consume the outer 40-minute job reserve.
     """
     repo = Path(__file__).resolve().parents[1]
     workflow = yaml.safe_load(
