@@ -2360,6 +2360,12 @@ jobs:
       # install this step already owns (it also imports engine.board_ledger,
       # already exercised by tests/test_board_ledger.py further down this same
       # step). No new job.
+      # tests/test_canada_theme_action_map.py (Canada Opportunity Map successor)
+      # rides next to test_canada_build.py and test_canada_canonical_board.py:
+      # it imports the same builder/helper surface, renders the same Canada template,
+      # and pins malformed optional owner data plus membership ambiguity fail-open
+      # behavior. The existing pandas/pyarrow/jinja2/plotly install is sufficient.
+      # No new job.
       # tests/test_canada_v36_composer.py (V3.6 acceptance repair, 2026-08-25)
       # rides the same Canada subject: byte pins on site/canada-stock-v36.js
       # ([hidden] display overrides + the card.hidden mechanism they cover).
@@ -2399,6 +2405,7 @@ jobs:
         run: >
           python -m pytest
           tests/test_canada_build.py tests/test_canada_canonical_board.py
+          tests/test_canada_theme_action_map.py
           tests/test_canada_v36_composer.py
           tests/test_stock_dashboard_first_frame_data.py
           tests/test_stock_dashboard_css.py
