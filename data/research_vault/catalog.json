@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-15T04:27:21.324381+00:00",
-  "count": 2134,
+  "generated_at": "2026-09-15T04:45:41.087809+00:00",
+  "count": 2135,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -548,6 +548,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-9tclwpg1hsr-c84538",
+      "title": "Japan Macro Macro Weekly",
+      "institution": "Mizuho",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T10:56:14Z",
+      "summary_points": [
+        "**Japan's Labour Data**: Total cash earnings +4.7% YoY (highest since Jan 1997), real wages +2.4% YoY (largest gain since May 2021), signaling sustained wage growth momentum despite geopolitical risks.",
+        "**BOJ Hawkish Policy Shift**: Policy Board member Masu advocates ending negative real rates; BOJ leadership aligns with Tamura’s 25bp hike path, confirming a hawkish tilt and accelerated rate trajectory.",
+        "**Iran Tensions & Inflation Risk**: Iran conflict-driven oil price spikes threaten to push yen-denominated import costs up 24.8% YoY, risking inflation spillover to consumer prices and forcing abrupt BOJ rate hikes.",
+        "**BOJ Rate Hike Trajectory**: Policy rate forecasted to rise from 1.25% (Jul-Sep 2026) to 1.75% (Apr-Jun 2027), with terminal rate at 1.75% amid accelerated hikes and widening JGB yield ranges."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
