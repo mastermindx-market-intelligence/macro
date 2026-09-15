@@ -2,6 +2,81 @@ schema: mastermind.product_changelog.v1
 note_en: "Work that only changed how the site is built is not listed here."
 note_zh: "\u4ec5\u6539\u53d8\u7ad9\u70b9\u6784\u5efa\u65b9\u5f0f\u3001\u4f60\u770b\u4e0d\u5230\u7684\u6539\u52a8\u4e0d\u4f1a\u5217\u5728\u8fd9\u91cc\u3002"
 entries:
+  - id: zh-card-states
+    date: 2026-09-12
+    pr: 7083
+    en: "Chinese readers: the status lines on stock pages now read as natural Chinese instead of raw system words."
+    zh: "中文用户：个股页面上的状态文字改用自然的中文表述，不再是生硬的系统词。"
+  - id: theme-reading-order
+    date: 2026-09-12
+    pr: 7010
+    en: "Theme Tracker adds a reading-order section: which themes to read first, from their recorded evidence dates."
+    zh: "主题追踪新增阅读顺序板块：根据各主题记录在案的证据日期，告诉你应该先看哪一个。"
+  - id: issuer-cockpit
+    date: 2026-09-12
+    pr: 7007
+    en: "Stock pages gain eight panels that read a company's current state in plain words."
+    zh: "个股页面新增八个面板，用平实的语言说明这家公司目前的状态。"
+  - id: policy-calendar
+    date: 2026-09-12
+    pr: 7006
+    en: "Capital markets: a dated policy calendar, set against the six windows we watch for new deals."
+    zh: "资本市场：新增带日期的政策日历，把政策事件对应到我们关注的六个发行窗口上。"
+  - id: glossary
+    date: 2026-09-12
+    pr: 6909
+    en: "New public glossary explains the terms we use, in plain language."
+    zh: "新增公开术语表，用通俗的语言解释我们用到的各种术语。"
+  - id: valuation-scenarios
+    date: 2026-09-12
+    pr: 6905
+    en: "Stock pages: see what a company might be worth under different assumptions, from its reported figures."
+    zh: "个股页面：基于公司已公布的财务数据，看看在不同假设下它可能值多少。"
+  - id: curve-hero
+    date: 2026-09-11
+    pr: 7008
+    en: "Rates: the Treasury curve page opens with today's curve shape against the prior close and the prior month."
+    zh: "利率页面：国债收益率曲线页开篇即显示今天的曲线形态，并与上一交易日收盘和上月作对比。"
+  - id: second-issuer
+    date: 2026-09-11
+    pr: 6920
+    en: "Stock pages: a second company, Microsoft, is covered end to end with an identity panel."
+    zh: "个股页面：新增第二家公司微软，从身份信息到各项状态都已完整覆盖。"
+  - id: credit-windows
+    date: 2026-09-10
+    pr: 6904
+    en: "The new-issue page now also reads whether the window is open for high-yield and investment-grade bond deals."
+    zh: "新股发行页面现在也会判断高收益债和投资级债券的发行窗口是否打开。"
+  - id: event-impact
+    date: 2026-09-10
+    pr: 6896
+    en: "News events now show which assets they touch, and how."
+    zh: "新闻事件现在会说明它影响到哪些资产，以及影响的方式。"
+  - id: help-answers-support
+    date: 2026-09-09
+    pr: 6959
+    en: "The help page answers common questions, lists what changed, and routes support requests by plan."
+    zh: "帮助页面现在会直接回答常见问题、列出更新记录，并按你的方案把客服请求送到对应入口。"
+  - id: second-country-desk
+    date: 2026-09-09
+    pr: 6928
+    en: "Policy Watch now follows politics in a second country, the United Kingdom, alongside the United States."
+    zh: "政策观察新增第二个国家：在原有的美国之外，现在也会跟踪英国的政治动向。"
+  - id: sanctions-map
+    date: 2026-09-09
+    pr: 6899
+    en: "A new sanctions map shows which countries current United States sanctions point at, and where our coverage is still silent."
+    zh: "新增制裁地图：在世界地图上标出当前美国制裁所指向的国家，也标明我们尚未覆盖的地区。"
+  - id: commodity-coverage
+    date: 2026-09-08
+    pr: 6926
+    en: "Commodities now show a coverage table of the markets we follow, and the capital-markets page carries a short note on where policy stands."
+    zh: "大宗商品页面新增覆盖表，列出我们已覆盖和尚未覆盖的市场；资本市场页面也会附上当前政策立场的简短说明。"
+  - id: policy-lifecycle
+    date: 2026-09-08
+    pr: 6900
+    en: "Policy Watch shows where each policy stands, from proposal to in force."
+    zh: "政策观察现在会说明每项政策所处的阶段，从提出一直到正式生效。"
   - id: help-page
     date: 2026-09-05
     pr: 6828
