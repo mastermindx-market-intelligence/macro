@@ -1,20 +1,20 @@
 {
-  "date": "2026-09-13",
-  "regime": "mixed / no clear trend",
-  "breadth": 0.23,
+  "date": "2026-09-14",
+  "regime": "risk-on trends",
+  "breadth": 0.38,
   "favored": [
     "equity_us",
     "equity_sm",
     "credit_hy",
-    "copper",
-    "equity_intl"
+    "gold",
+    "copper"
   ],
   "correlation": "converging",
-  "asof": "2026-09-13",
+  "asof": "2026-09-14",
   "flows": {
     "schema": "crossasset_flows.v2",
     "display_only": true,
-    "regime": "mixed / no clear trend",
+    "regime": "risk-on trends",
     "correlation": {
       "verdict": "converging",
       "absorption_pctile": 0.46,
@@ -135,7 +135,7 @@
       ],
       "spark_asof": "2026-09-11"
     },
-    "breadth": 0.23,
+    "breadth": 0.38,
     "trend_top": [
       {
         "asset": "equity_us",
@@ -153,24 +153,24 @@
         "z": 1.0
       },
       {
+        "asset": "gold",
+        "trend": "up",
+        "z": 1.0
+      },
+      {
         "asset": "copper",
         "trend": "up",
         "z": 1.0
       },
       {
-        "asset": "equity_intl",
+        "asset": "oil",
         "trend": "up",
         "z": 1.0
-      },
-      {
-        "asset": "gold",
-        "trend": "mixed",
-        "z": 0.33
       }
     ],
     "trend_summary": {
       "n": 13,
-      "n_up": 5,
+      "n_up": 7,
       "n_down": 2
     },
     "intermarket": [
@@ -178,19 +178,19 @@
         "pair": "copper_gold",
         "ratio": 0.001,
         "trend": "mid",
-        "pctile": 56.0
+        "pctile": 59.0
       },
       {
         "pair": "gold_silver",
-        "ratio": 67.636,
+        "ratio": 67.829,
         "trend": "mid",
-        "pctile": 31.0
+        "pctile": 32.0
       },
       {
         "pair": "oil_gold",
         "ratio": 0.023,
         "trend": "mid",
-        "pctile": 76.0
+        "pctile": 77.0
       },
       {
         "pair": "stocks_gold",
@@ -314,9 +314,9 @@
       ],
       "unstable_n": 0,
       "fx_stress": {
-        "dominant": null,
-        "top_key": "intervention_risk",
-        "top_val": 11.1
+        "dominant": "reflation_risk_on",
+        "top_key": "reflation_risk_on",
+        "top_val": 56.5
       }
     },
     "shadow": {

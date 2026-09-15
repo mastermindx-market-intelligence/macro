@@ -18905,14 +18905,14 @@
       "regime_bucket": "Q3"
     },
     {
-      "subject": "BG",
+      "subject": "BAH",
       "as_of": "2026-08-31",
-      "direction": 1,
-      "horizon": "63.0",
+      "direction": -1,
+      "horizon": "5.0",
       "n_confirming_raw": 2,
       "n_independent_confirming": 2.0,
       "engines": [
-        "desk:stock_desk",
+        "intel_hub",
         "radar"
       ],
       "regime_bucket": "Q3"
@@ -20398,6 +20398,6 @@
     "confluence_strength: no clusters in lobes block — no discount"
   ],
   "produced_by": "engine/neuralweb/confluence_strength.py",
-  "produced_at": "2026-09-13T10:07:59Z",
+  "produced_at": "2026-09-14T10:57:35Z",
   "authority_check": []
 }
