@@ -1,65 +1,52 @@
 ---
 key: NATIVE-CLAUDE-MULTIHOST-QUOTA-DOMAIN
 question: >
-  When one direct Claude subscription is intentionally executable from multiple Macs, how should
-  Provider Control represent shared quota/cooling versus host-local native credential/runtime health
-  without double-counting capacity, duplicating an incumbent generation owner, or creating a second
-  account identity?
+  When one direct Claude subscription is executable from multiple Macs, how should Provider Control
+  represent shared quota/cooling versus host-local native health while preserving current generation
+  owners and the accepted CF2 production claim path?
 answer: >
-  Preserve the accepted Capacity F0 tuple slot identity `(host_ref, capability_id)` and preserve the
-  generation owners already protected in Mastermind. Macro Shared AI Provider Control owns one opaque
-  `capacity_capability_id + capability_generation` for the logical provider capacity/quota domain.
-  Each host-local native custody extends the existing provider-realm owner's sealed `realm_generation`,
-  keyed by `host_ref + capacity_capability_id`; no new `binding_generation` owner is created. The
-  existing Mastermind `CapacityOwnerFact.generation`, exposed by subscription canary admission as
-  `capacity_generation`, remains an independent Capacity/Model Router fact generation and is not the
-  Macro provider-domain epoch. Provider/account-wide quota and proven usage-limit cooling are scoped
-  to `capacity_capability_id + capability_generation` and apply to every current host realm. Binary,
-  auth, config, transport and host failures remain realm-local unless evidence proves provider-domain
-  scope. Consumers never sum host rows for the same provider domain, and Family-B V2 makes no numeric
-  cross-domain fleet entitlement claim until a separately accepted relationship source exists.
+  Preserve `(host_ref, capability_id)` executable slot identity and the incumbent production CF2 join.
+  Macro Shared AI Provider Control owns one opaque `capacity_capability_id + capability_generation`
+  for the logical provider quota domain. Each host-local native custody extends the existing
+  provider-realm owner's `realm_generation`, keyed by `host_ref + capacity_capability_id`; no new
+  `binding_generation` exists. Protected `CapacityOwnerFact.generation`, exposed by the subscription
+  canary as `capacity_generation`, remains a canary Capacity/Model Router fact and is not provider
+  identity or the production CF2 claim contract. Production B5 joins Provider Capacity V2 with
+  provider-realm/readiness evidence at `(host_ref, capacity_capability_id)`, verifies both provider
+  capability and realm generations, and persists immutable evidence through the existing Executive
+  atomic claim/placement owner. Provider-domain quota/cooling applies to all current host realms only
+  when source scope proves it; host-local failures remain local. Host rows are never summed for quota.
 rationale: >
-  Protected Mastermind already seals `ProviderRealmEnrollmentReceipt.generation` as `realm_generation`
-  and separately seals Capacity/Model Router facts with their own generation. Introducing a new
-  `binding_generation` or repurposing `capacity_generation` would duplicate or overload canonical
-  semantics. The existing Capacity architecture was also explicitly designed for multiple Macs and
-  defines slot identity as `(host_ref, capability_id)`. The corrected three-owner model lets a local
-  realm repair advance only realm generation, a provider-domain replacement advance capability
-  generation, and an ordinary Capacity fact refresh advance only the existing Capacity generation.
-  It also allows future M1/M6/Studio replicas to add execution locality without pretending that one
-  Max login copied to three Macs creates three times the quota.
+  Protected Mastermind already has separate provider-realm and canary-Capacity generations, and current
+  usage of `CapacityOwnerFact` is confined to its owner/mint seam, subscription canary admission and
+  tests. Accepted CF2-F separately freezes the real production architecture as strict Macro capacity
+  snapshot plus realm-local readiness joined at `(host_ref, capacity_capability_id)` and atomically
+  recorded in claim evidence. Reusing `capacity_generation` for Macro provider identity, adding a
+  `binding_generation`, or routing production B5 through the canary fact would each duplicate or
+  overload a canonical owner. The corrected model also lets M1/M6/Studio replicas add execution
+  locality without pretending one Max login creates multiplied entitlement.
 alternatives:
   - option: Give each host replica a new capability/account id
+    why_not: Duplicates one provider quota domain and invites quota double-counting/cooling divergence.
+  - option: Introduce binding_generation beside existing realm_generation
+    why_not: Protected provider-realm receipts already own the local enrollment correction epoch.
+  - option: Call Macro provider-domain epoch capacity_generation
+    why_not: Protected Mastermind already uses that name for CapacityOwnerFact generation in canary admission.
+  - option: Use CapacityOwnerFact as the production V2 placement bridge
     why_not: >
-      Duplicates one provider quota domain as several company capacity identities and invites quota
-      double-counting and cooling divergence.
-  - option: Introduce a new binding_generation beside existing realm_generation
-    why_not: >
-      Protected provider-realm receipts already own the local enrollment correction epoch. A second
-      binding epoch would force future consumers to reconcile two truths for the same host realm.
-  - option: Call the Macro provider-domain epoch capacity_generation
-    why_not: >
-      Protected Mastermind already uses `capacity_generation` for CapacityOwnerFact generation. Reuse
-      would make two independent owner facts look equal by name and invite unsafe aliasing.
-  - option: Keep one realm_generation for both provider domain and host custody
-    why_not: >
-      A local host repair would invalidate unrelated healthy replicas, while provider-domain replacement
-      could be mistaken for an ordinary local enrollment refresh.
-  - option: Sum every host row because F0 slot identity includes host_ref
-    why_not: >
-      Slot identity is an execution coordinate, not proof of independent provider entitlement. The same
-      capability can legitimately appear on multiple hosts.
+      It is not the accepted CF2 production claim path. Promoting it would create a parallel placement
+      evidence contract and collapse worker canary state with provider-capacity truth.
+  - option: Sum host rows because slot identity includes host_ref
+    why_not: Host is an execution coordinate, not proof of independent provider entitlement.
   - option: Keep a per-row capacity_independence boolean
-    why_not: >
-      Independence is relational. A boolean does not identify what another domain is independent from
-      and can be misused as permission to add unrelated rows.
+    why_not: Independence is relational and an unqualified boolean can be misused as additive quota.
 evidence:
-  - "Accepted Capacity F0 architecture: slot identity is `(host_ref, capability_id)` and provider/account capacity is observed on a host; Mac A login is not assumed callable on Mac B."
-  - "Protected Mastermind `ProviderRealmEnrollmentReceipt` already owns a sealed `generation`, and `subscription_canary_admission` exposes it as `realm_generation`."
-  - "Protected Mastermind `CapacityOwnerFact` separately owns a generation exposed by subscription canary admission as `capacity_generation`."
-  - "Current V1 Provider Capacity normalizer validates final slot uniqueness by `(host_ref, capability_id)` even though current source observations remain single-host/capability keyed."
-  - "Current Macro `capability_manifest.v1` is a metabolism secret-reference broker, so B1 native attached-login registration needs a secret-free Shared AI Provider Control surface rather than semantic reuse by convenience."
-  - "Chairman-approved fleet direction adds M6/other Macs, so Family B must not freeze a single-host-only Claude account model."
+  - "Capacity F0: slot identity is `(host_ref, capability_id)` and provider/account capacity is observed on a host."
+  - "Protected `ProviderRealmEnrollmentReceipt` owns sealed generation consumed as `realm_generation`."
+  - "Protected `CapacityOwnerFact` owns a separate generation consumed by subscription canary admission as `capacity_generation`."
+  - "Protected code search places CapacityOwnerFact only in its fact/mint seam, canary admission and tests—not the accepted CF2 claim path."
+  - "Accepted CF2-F freezes strict Macro Provider Capacity + realm-local readiness -> `(host_ref, capacity_capability_id)` join -> existing atomic claim evidence."
+  - "Current Macro capability_manifest.v1 is a metabolism secret-reference broker, not a native attached-login registration registry."
 affects:
   - WS:EXECUTIVE-CAPACITY-FABRIC
   - shared-ai-provider-control
@@ -75,27 +62,23 @@ decided_at: 2026-09-15
 ## Consequences
 
 Family-B producer/consumer schemas use `capability_generation` for the Provider-Control logical quota
-domain and the incumbent `realm_generation` for a specific host/principal/config enrollment. A stale
-value in either dimension independently refuses current placement.
+domain and incumbent `realm_generation` for one host/principal/config enrollment. Existing canary
+`capacity_generation` keeps its current meaning and gains no production placement authority.
 
-The existing Mastermind Capacity fact generation remains `capacity_generation`; it is neither copied
-from nor assumed equal to `capability_generation`. A later B5 bridge must validate Provider Capacity V2
-and realm evidence first, then mint/consume the Capacity owner's fact under its existing law. If the
-current owner-fact schema cannot bind required provenance safely, a versioned successor is required.
+Native V2 `realm_binding` carries `capability_generation`, `realm_generation` and the enrollment
+receipt. The earlier candidate `binding_generation` and `capacity_independence` fields are superseded.
 
-For native V2 rows, `capability_id` remains the Provider-Control capacity id and `host_ref` remains the
-accepted execution-host dimension. The `realm_binding` extension carries `capability_generation`,
-`realm_generation` and the enrollment receipt. The earlier candidate `binding_generation` and
-`capacity_independence` row fields are superseded and should not ship.
+B1 native provider-domain registration is secret-free under `shared-ai-provider-control`; the
+metabolism `capability_manifest.v1` secret-ref registry is not reused as an account/domain registry.
 
-Provider Control must retain evidence scope so an account-domain usage-limit can cool all replicas,
-while a host-local binary/auth/transport/recovery defect cannot poison healthy replicas by default.
-No Claude adapter owns propagation or quota deduplication.
+B5 extends the existing CF2 source acquisition, `(host_ref, capacity_capability_id)` join, deterministic
+selection and atomic claim evidence with Provider Capacity V2 generation/realm provenance. It does not
+route production placement through `CapacityOwnerFact`. A versioned subscription canary admission may
+later bind the new provenance for a canary only if needed.
 
-B1 native provider-domain registration must be secret-free and owned by `shared-ai-provider-control`;
-the metabolism `capability_manifest.v1` secret-ref registry is not reused as the native account/domain
-registry merely because it is an existing Capacity input.
+Provider Control retains evidence scope so provider-domain usage-limit can cool all replicas while a
+host-local binary/auth/transport/recovery defect cannot poison healthy replicas by default. No Claude
+adapter owns propagation or quota deduplication.
 
-The first four-account canary stays deliberately one-realm-per-domain. Multi-host account replication
-is a later bounded proof after the core provider-domain contract works. This decision is source law
-only; it creates no registration, credential, provider turn, host realm or runtime capability.
+The first four-account canary stays one-realm-per-domain. Multi-host replication is later. This
+records-only decision creates no registration, credential, provider call, host realm, claim or runtime capability.
