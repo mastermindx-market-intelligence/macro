@@ -2410,6 +2410,25 @@ except Exception as _prefs_exc:  # noqa: BLE001
     _logging.getLogger("macro.api").warning("account prefs router not mounted: %r", _prefs_exc)
 
 # ---------------------------------------------------------------------------
+# Account actions (MO-B F12-13 — app/account_actions.py): POST
+# /api/account/{password,email,signout-everywhere,delete}. The other four calls
+# templates/account.js has been making since the account card shipped, none of
+# which had a handler here — so every control on the panel was dead. Bearer-authed
+# through require_user and mounted right after account_prefs, for the same reason:
+# both must sit AFTER that definition so the router can lazily reuse the canonical
+# Supabase bearer verifier without an import cycle.
+# ---------------------------------------------------------------------------
+try:
+    from app.account_actions import router as account_actions_router  # noqa: E402
+    app.include_router(account_actions_router)
+except Exception as _account_actions_exc:  # noqa: BLE001
+    import logging as _logging  # noqa: PLC0415
+    _logging.getLogger("macro.api").warning(
+        "account actions router not mounted (account panel controls unavailable): %r",
+        _account_actions_exc,
+    )
+
+# ---------------------------------------------------------------------------
 # Private Options Issue Desk (R6.2-A): bearer-authenticated operator review only.
 # Its state lives under MACRO_API_STATE_DIR, never in the public R2 data plane.
 # This mount is after require_user so the router can lazily reuse the canonical
