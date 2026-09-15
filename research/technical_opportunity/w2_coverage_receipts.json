@@ -1,0 +1,40 @@
+{
+  "schema_version": "toi.w2_coverage_receipts.v1",
+  "pins": {
+    "macro": "021b2ae3a4a6a508f3e0fc56d00a85b21adf1be3",
+    "terminal": "a4be9a3f4b51246200cb1b7c4f1d44730066a9a9"
+  },
+  "planes": {
+    "massive_stock_day": {
+      "manifest_tickers": 21526,
+      "first_day": "2021-07-06",
+      "last_day": "2026-09-10",
+      "processed_days": 1353,
+      "max_missing_run_weekdays": 0,
+      "spy_rows": 1302,
+      "state": "PARTIAL",
+      "reason": "Deep daily breadth is proven; historical availability/correction clocks and basis compatibility are not."
+    },
+    "terminal_intraday": {
+      "one_hour_scope": "all US by producer contract",
+      "five_minute_scope": "top-N liquid only",
+      "whole_universe_4h": "PARTIAL",
+      "reason": "Non-5m fallback uses provider-built 1h; exact 09:30-open parity is not proven."
+    },
+    "identity": {
+      "security_master_rows": 2379,
+      "active": 2378,
+      "superseded_duplicate": 1,
+      "state": "PROVEN_LIVE",
+      "broad_historical_universe": "PARTIAL"
+    },
+    "sp1500_pit": {
+      "state": "PARTIAL",
+      "reason": "Useful PIT intervals but not an all-US denominator; mid/small history has documented coverage floors."
+    }
+  },
+  "combined_panel": {
+    "capability_state": "PARTIAL",
+    "w3_admission": "HOLD"
+  }
+}
