@@ -1,0 +1,52 @@
+schema: mastermind.canada_opportunity_map_evidence.v1
+operation: canada-opportunity-map-20260909-sol-001
+base:
+  repository: mastermindx-market-intelligence/macro
+  predecessor_pr: 6832
+  predecessor_head: 5bfaa1c125f127de80bd350c8d2922df744a1162
+supersedes:
+  market: ca
+  status: immutable_historical_baseline
+  successor_manifest: mockups/evidence/canada-opportunity-map-20260909/EVIDENCE.yml
+  reason: source-bound Canada successor replaces current-byte claims without rewriting P0B
+  artifacts:
+    rendered_fixture:
+      path: mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json
+      selector: markets.ca
+    browser_receipt:
+      path: mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json
+claims:
+  source_contract: browser_fixture
+  browser_fixture: reproducible
+  canonical_build: unavailable
+  production: none
+  capability: BUILT_NOT_PROVEN
+authority:
+  theme_action: canadabasketdata/baskets.json#theme_intel.act_now
+  theme_rank: canadabasketdata/baskets.json#theme_intel.themes
+  theme_membership: canadabasketdata/baskets.json#baskets
+  stock_selection: canonical Canada Prophet setups buy+watch
+  projection: deterministic membership intersection only
+proof:
+  rendered_fixture:
+    path: mockups/evidence/canada-opportunity-map-20260909/rendered-fixture.json
+    sha256: 10acf1d8ecad74686795cb6b176c1fb7b3a36068b91019ac60bd2dd421d808d8
+  browser_receipt:
+    path: mockups/evidence/canada-opportunity-map-20260909/mobile-layout-canada.json
+    sha256: c3bd0efce917023a8a9783781c4ca81ce887cd37dc7bed1dfbb36734d2733700
+  opportunity_map_screenshot:
+    path: mockups/evidence/canada-opportunity-map-20260909/canada-opportunity-map-desktop.png
+    sha256: 7496fa1ba51af24d5d3237353825bdba19d9b64af27965a499240055c992fa8f
+  verifier:
+    path: scripts/verify_canada_opportunity_map.cjs
+    sha256: 3aadd4c2a6171aded44f0c6e6910e830e37fd3af56a80dc9bae3a02ee5d988d8
+  renderer:
+    path: scripts/render_canada_opportunity_map_fixture.py
+    sha256: dee093284cdc6e1c7d45040d9cc354dbbce9d9ff56307e2e152a111898f87324
+acceptance:
+  focused_tests: 219 passed (113 first-frame + 31 opportunity-map + 75 affected Canada/parity)
+  browser: passed
+  theme_filter_all: ca_oil_gas -> SU.TO, TOU.TO
+  theme_filter_top: ca_oil_gas -> SU.TO
+  source_population_unchanged: true
+  predecessor_p0b_evidence_rewritten: false

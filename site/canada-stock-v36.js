@@ -189,32 +189,92 @@
       zh: th.reco_zh || ({enter:"入场",accumulate:"加仓",hold:"持有",trim:"减仓",avoid:"回避"}[reco] || reco || "中性") };
   }
   function collectThemes(basketPayload, pulsePayload) {
+    function nativeId(row) {
+      if (!row || typeof row !== "object" || Array.isArray(row) || typeof row.id !== "string") return null;
+      var id = row.id.trim();
+      return id || null;
+    }
+    function uniqueRows(rows) {
+      var indexed = Object.create(null), ambiguous = Object.create(null), order = [];
+      (Array.isArray(rows) ? rows : []).forEach(function (row) {
+        var id = nativeId(row);
+        if (!id || ambiguous[id]) return;
+        if (indexed[id]) {
+          delete indexed[id];
+          ambiguous[id] = true;
+          order = order.filter(function (value) { return value !== id; });
+          return;
+        }
+        indexed[id] = row;
+        order.push(id);
+      });
+      return {indexed: indexed, ambiguous: ambiguous,
+        rows: order.map(function (id) { return indexed[id]; })};
+    }
+    function cleanSymbol(value) {
+      if (typeof value !== "string") return null;
+      var symbol = value.trim().toUpperCase();
+      return symbol || null;
+    }
+    function memberSymbol(member) {
+      if (typeof member === "string") return cleanSymbol(member);
+      if (!member || typeof member !== "object" || Array.isArray(member)) return null;
+      return cleanSymbol(member.symbol) || cleanSymbol(member.ticker);
+    }
+    function membershipFor(basket) {
+      if (!basket || !Array.isArray(basket.members)) return null;
+      var members = new Set();
+      for (var i = 0; i < basket.members.length; i += 1) {
+        var symbol = memberSymbol(basket.members[i]);
+        if (!symbol) return null;
+        members.add(symbol);
+      }
+      return members;
+    }
+    function leaderSymbols(theme) {
+      var leadership = theme && theme.leadership;
+      var top = leadership && typeof leadership === "object" && !Array.isArray(leadership) && Array.isArray(leadership.top)
+        ? leadership.top : [];
+      var leaders = [];
+      top.slice(0, 3).forEach(function (row) {
+        if (!row || typeof row !== "object" || Array.isArray(row)) return;
+        var symbol = cleanSymbol(row.ticker) || cleanSymbol(row.symbol) || cleanSymbol(row.t);
+        if (symbol) leaders.push(symbol);
+      });
+      return leaders;
+    }
+
     var ranked = pulsePayload && Array.isArray(pulsePayload.themes) ? pulsePayload.themes.slice() : [];
     if (!ranked.length) {
       var embedded = basketPayload && basketPayload.theme_intel || {};
       ranked = Array.isArray(embedded.themes) ? embedded.themes.slice() : [];
     }
-    var basketMap = Object.create(null), baskets = basketPayload && basketPayload.baskets || [];
-    if (Array.isArray(baskets)) baskets.forEach(function (b) { if (b && b.id) basketMap[b.id] = b; });
-    else if (baskets && typeof baskets === "object") Object.keys(baskets).forEach(function (k) { basketMap[k] = baskets[k]; });
+    var rawBaskets = basketPayload && basketPayload.baskets;
+    var basketRows = Array.isArray(rawBaskets) ? rawBaskets.slice() : [];
+    if (!basketRows.length && rawBaskets && typeof rawBaskets === "object") {
+      basketRows = Object.keys(rawBaskets).map(function (key) {
+        var row = rawBaskets[key];
+        if (!row || typeof row !== "object" || Array.isArray(row)) return null;
+        return row.id == null ? Object.assign({id: key}, row) : row;
+      }).filter(Boolean);
+    }
+    var themesState = uniqueRows(ranked), basketsState = uniqueRows(basketRows);
+    ranked = themesState.rows;
     /* Rank is owner-published by sector_pulse/theme_intel. The page never
        re-scores — and never MINTS: a theme the owner did not rank keeps
        rank null (the V3.7 positional fallback was sort position minted into
        a number; V3.8 law renders no number without an owner). */
     ranked.sort(function (a, b) { return (a.rank || 9999) - (b.rank || 9999); });
     var themes = ranked.map(function (th) {
-      var basket = basketMap[th.id];
-      /* Current Canada basket artifacts publish member identity as `symbol`.
-         `ticker` remains accepted for older/alternate regional producers.
-         A theme with no basket entry has UNKNOWN membership: members stays
-         null (filter no-ops, count falls back to the owner's own n_members
-         or is omitted) — an empty set here would render a false zero and
-         falsely empty the board on activation. */
-      var members = basket ? new Set((basket.members || []).map(function (m) { return ticker(typeof m === "string" ? m : (m.ticker || m.symbol)); }).filter(Boolean)) : null;
-      var leaders = (((th.leadership || {}).top) || []).map(function (x) { return ticker(x.ticker || x.symbol || x.t); }).filter(Boolean).slice(0, 3);
-      if (!leaders.length && members) leaders = Array.from(members).slice(0, 3);
-      return { kind: "theme", rank: th.rank != null ? th.rank : null, id: th.id,
-        name: { en: th.name || th.id, zh: th.name_zh || th.name || th.id },
+      var id = nativeId(th);
+      var basket = id && !basketsState.ambiguous[id] ? basketsState.indexed[id] : null;
+      /* A missing, malformed, or ambiguous basket has UNKNOWN membership.
+         Only a structurally valid member list can activate a Prophet filter;
+         a legitimate [] remains a known zero-member basket. */
+      var members = membershipFor(basket);
+      var leaders = leaderSymbols(th);
+      return { kind: "theme", rank: th.rank != null ? th.rank : null, id: id,
+        name: { en: th.name || id, zh: th.name_zh || th.name || id },
         stance: stance(th.reco, th), tone: tone(th.reco),
         count: th.n_members != null ? th.n_members : (members ? members.size : null),
         members: members, leaders: leaders };
@@ -365,9 +425,34 @@
     syncActNow(focus ? tone : null);
     if (historyMode !== false) writeActionHash(tone, historyMode === "replace" ? "replace" : "push");
   }
+  function staticThemeForFilter(id) {
+    var node = qsa('[data-ca-lead-kind="theme"][data-ca-lead-id]').find(function (el) {
+      return el.getAttribute("data-ca-lead-id") === id && el.hasAttribute("data-ca-members");
+    });
+    if (!node) return null;
+    var members = new Set(String(node.getAttribute("data-ca-members") || "").split(",").map(ticker).filter(Boolean));
+    return { kind: "theme", id: id, members: members, count: members.size,
+      name: dual(qs(".ca-theme-name b", node)) };
+  }
   function itemForFilter() {
     if (!state.filter) return null;
-    return (state.filter.kind === "theme" ? state.themes : state.sectors).find(function (x) { return x.id === state.filter.id; }) || null;
+    if (state.filter.kind === "theme") {
+      var canonical = staticThemeForFilter(state.filter.id);
+      var presentation = state.themes.find(function (x) { return x.id === state.filter.id; }) || null;
+      if (!canonical) return presentation;
+      if (!presentation) return canonical;
+      /* Server-rendered membership is the canonical projection from the
+         build seam. Optional owner fetches may enrich names/rank/stance, but
+         must never replace the already-admitted membership used to filter
+         Prophet cards. */
+      return Object.assign({}, presentation, {
+        members: canonical.members,
+        count: canonical.count,
+        name: presentation.name || canonical.name,
+        href: presentation.href || canonical.href
+      });
+    }
+    return state.sectors.find(function (x) { return x.id === state.filter.id; }) || null;
   }
   function sourceSet() { return state.source === "top" ? new Set(state.cards.slice(0, 5).map(function (c) { return ticker(c.getAttribute("data-ticker")); })) : null; }
   function allowed(tk) {
@@ -609,6 +694,12 @@
     ]).then(function (parts) {
       state.themes = collectThemes(parts[0], parts[1]);
       renderLeadership();
+      applyFilter();
+    }).catch(function () {
+      state.themes = [];
+      state.hasThemeRank = false;
+      renderLeadership();
+      applyFilter();
     });
   }
 

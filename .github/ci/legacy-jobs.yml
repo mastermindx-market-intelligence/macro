@@ -2571,8 +2571,11 @@ jobs:
     scope: exclusive
     # P0B repair: engine-render-guards is a nightly gate:data lane and therefore
     # cannot prove the hermetic zero-FOUC contract before a PR merges. Keep the
-    # generated-page population receipt there, while this small source-only job
-    # follows the prophet-lab split precedent and runs in the actual PR code gate.
+    # generated-page population receipt there, while this source-only job follows
+    # the prophet-lab split precedent and runs in the actual PR code gate. The Canada
+    # Opportunity Map helper, optional-owner parser, successor receipt, and hostile
+    # owner regressions share this same owner: moving them here closes the former
+    # gate:data false-green without creating a second CI authority.
     paths:
       - "templates/hk.html.j2"
       - "templates/canada.html.j2"
@@ -2589,6 +2592,18 @@ jobs:
       - "site/canada-stock-v36.js"
       - "site/stock-dashboard.css"
       - "site/dashboard-icons.js"
+      - "scripts/build_canada.py"
+      - "lib/config.py"
+      - "lib/illus.py"
+      - "lib/site_assets.py"
+      - "lib/store.py"
+      - "lib/pages.py"
+      - "engine/ledger_lane.py"
+      - "scripts/render_canada_opportunity_map_fixture.py"
+      - "scripts/verify_canada_opportunity_map.cjs"
+      - "mockups/evidence/canada-opportunity-map-20260909/**"
+      - "tests/test_canada_theme_action_map.py"
+      - "tests/canada_theme_client_contract_harness.cjs"
       - "scripts/render_stock_dashboard_fixture.py"
       - "scripts/verify_stock_dashboard_mobile_layout.cjs"
       - "mockups/evidence/prophet-p0b-zero-fouc/manifest.json"
@@ -2616,9 +2631,11 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install beautifulsoup4 jinja2 pytest
+        run: pip install beautifulsoup4 jinja2 numpy pandas pillow plotly pyarrow pytest pyyaml requests
       - name: stock dashboard first-frame source contract
         run: python -m pytest tests/test_stock_dashboard_first_frame.py -q
+      - name: Canada Opportunity Map owner contract
+        run: python -m pytest tests/test_canada_theme_action_map.py -q
 
   prophet-lab:
     if: ${{ false }}
