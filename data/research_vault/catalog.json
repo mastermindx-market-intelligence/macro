@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-15T01:41:59.617054+00:00",
-  "count": 2126,
+  "generated_at": "2026-09-15T02:12:02.181955+00:00",
+  "count": 2127,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -98,6 +98,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-coq9kqzagrb-8bfaf2",
+      "title": "China Consumer Staples Assessing potential impact on price volatility of key input costs",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T01:25:40Z",
+      "summary_points": [
+        "**Extreme Import Dependency**: China's 92% soybean (Brazil 74%) and 31% sugar (Brazil 87%) import reliance creates critical supply chain fragility, amplifying vulnerability to El Niño disruptions in key producing regions (Brazil drought/floods, India/Thailand monsoons).",
+        "**Commodity Price Surge & Margin Erosion**: Sugar (+19% YTD), soybeans (+21% YTD), and PET (+40% YTD) price spikes directly compress gross profit margins; e.g., +10% soybean oil cost implies ~10% earnings decline for exposed firms (e.g., Weilong).",
+        "**Sector-Specific Earnings Compression**: Beverage (CR Beverage, Nongfu) and Condiments (Haitian) face material NP downside (10-12% for Beverage, 2% for Condiments) from input cost volatility, while Dairy/Spirits show defensive resilience due to low import exposure.",
+        "**Critical Triggers for Volatility**: Brazil harvest (Jun 2026), India rainfall (Jun 2026), Panama Canal reservoir levels (Sep 2026), and Hormuz fertilizer flows (Q3+) are near-term catalysts for supply chain shocks and price spikes."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-tpo1cuxwvvp-abaad6",
       "title": "GS Equities Color US EQUITIES COLOR ROTATION 14 Sep 2026",
