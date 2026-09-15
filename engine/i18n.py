@@ -534,6 +534,13 @@ LEX: dict[str, str] = {
     "Telecom & Utilities": "电信与公用事业",
     "Gaming & Leisure": "博彩与休闲",
     "Exchange & Diversified": "交易所与综合企业",
+    "Industrials & Transport": "工业与运输",
+    "Buy now": "立即买入",
+    "Stand aside": "观望",
+    "Hang Seng Tech": "恒生科技",
+    "HK dollar peg": "港元联汇",
+    "Offshore yuan": "离岸人民币",
+    "HK overnight rate": "港元隔夜利率",
     # HK global-risk factor labels (engine.hk_global.FACTOR_LABELS)
     "US Dollar (DXY)": "美元指数（DXY）",
     "Volatility (VIX)": "波动率（VIX）",
