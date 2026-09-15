@@ -5452,6 +5452,7 @@ jobs:
       - tests/test_b_rec3_wave_boundary_records.py
       - tests/test_f00c_terminal_reconciliation.py
       - tests/test_f01_fx_commodity_source_rights.py
+      - tests/test_w9_ledger_note_f11.py
       - agentos/discoveries/DSC-COMMODITY-AND-FX-PRICE-SPINE-YAHOO-VENDOR-TERMS-ARE-RECORDED-ADVERSE.md
       - research/market_intelligence_productization/F01_FX_COMMODITY_SOURCE_RIGHTS_AND_DEPTH_2026-09.md
       - research/market_intelligence_productization/F01_FX_DISLOCATION_CHARTER_2026-09.md
@@ -5476,6 +5477,7 @@ jobs:
       - research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv
       - research/market_intelligence_productization/F00C_TERMINAL_WAVE_RECONCILIATION_MANIFEST_2026-09-09.json
       - research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_TERMINAL_WAVE_RECONCILIATION_2026-09-09.md
+      - research/market_intelligence_productization/W9_LEDGER_NOTE_F11_2026-09-13.md
       - research/market_intelligence_productization/receipts/supabase_receipt_0012_thesis_objects_2026-09-06.json
       - research/market_intelligence_productization/receipts/supabase_receipt_0014_tenancy_foundation_2026-09-08.json
       - research/market_intelligence_productization/receipts/supabase_receipt_0015_team_roles_invitations_2026-09-08.json
@@ -5605,7 +5607,7 @@ jobs:
           python -m pytest tests/test_agentos_schema.py tests/test_agentos_status.py \
             tests/test_agentos_compile.py tests/test_f01_fx_commodity_source_rights.py tests/test_f02_owner_map_receipts.py \
             tests/test_b_rec2_wave_boundary_records.py tests/test_b_rec3_wave_boundary_records.py \
-            tests/test_f00c_terminal_reconciliation.py -q
+            tests/test_f00c_terminal_reconciliation.py tests/test_w9_ledger_note_f11.py -q
 
   capability-broker:
     if: ${{ false }}
