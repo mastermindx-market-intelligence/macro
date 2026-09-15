@@ -5763,6 +5763,23 @@ body.page-macro.mx4-grid .mx5-mkt-price{
   font-size:19px;font-weight:700;line-height:1;
   color:var(--ink-1,rgba(255,255,255,.92));margin-bottom:4px;
   font-variant-numeric:tabular-nums;
+  min-height:1em;min-width:8ch;display:block;
+}
+/* Skeleton keeps the shimmer; geometry lives on the node so dropping .skel
+   (null/behind) cannot collapse the tile. ~8ch matches a live quote ("6,712.25"). */
+body.page-macro.mx4-grid .mx5-mkt-price.skel{
+  display:block;
+}
+/* .dtp-token is a chip in theme.css; on a Markets price node size it to the tile. */
+body.page-macro.mx4-grid .mx5-mkt-price.dtp-token{
+  display:block;font-size:19px;font-weight:700;letter-spacing:normal;
+  text-transform:none;gap:0;align-items:baseline;color:var(--muted);
+}
+body.page-macro.mx4-grid .mx5-mkt-delta.skel{
+  min-height:1em;min-width:3.2ch;display:block;
+}
+body.page-macro .mx5-card-stance{
+  font-size:var(--fs-sm);line-height:1.45;color:var(--ink-2);margin-top:8px;font-weight:500;
 }
 body.page-macro.mx4-grid .mx5-mkt-delta{font-size:13px;font-weight:600;}
 body.page-macro.mx4-grid .mx5-mkt-delta.up{color:var(--ink-up, var(--up,#22d97a));}
@@ -5967,6 +5984,13 @@ body.page-macro.mx4-grid .mx5-wtd-dissent{
    at the node centreline so the row reads as a timeline at a glance. */
 body.page-macro.mx4-grid .mx5-events-sub{
   font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));margin-bottom:16px;
+}
+/* None-lane Events: content height, not a stretched empty plate matching WTD. */
+body.page-macro.mx4-grid #sx-events-v2:has(.mx5-ev-none-copy){
+  align-self:start;
+}
+body.page-macro.mx4-grid #sx-events-v2:has(.mx5-ev-none-copy) .sxg-face.mx5-card-face{
+  height:auto;
 }
 body.page-macro.mx4-grid .mx5-timeline{position:relative;padding-top:6px;}
 /* rail sits on the node centreline (node zone is 22px tall, centred at 12px+11px) */
@@ -7000,6 +7024,10 @@ body.page-macro.mx4-grid .mx5-alert-title{
   font-size:13px;font-weight:600;
   color:var(--ink-1,rgba(255,255,255,.92));line-height:1.4;
 }
+body.page-macro.mx4-grid .mx5-alert-k{
+  font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-3);margin-right:6px;
+}
 body.page-macro.mx4-grid .mx5-alert-title.warn{color:var(--mx5-warn-ink);}
 body.page-macro.mx4-grid .mx5-alert-detail{
   font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));
@@ -7219,10 +7247,13 @@ html[data-theme="light"] :is(
       'Q3': ('Sticky inflation into slowing growth — the dangerous regime; defend capital first.', '通胀粘性叠加增长放缓 — 最危险的周期；优先保住本金。'),
       'Q4': ('A growth scare with cooling inflation — lean defensive, bonds over stocks.', '增长恐慌伴随通胀降温 — 偏防御，债优于股。')
     } %}
+    {# Canonical fired-alert count (one-integer law). Hero prints it once; every
+       other integer on this page that describes the same population is a labelled
+       slice of this number. Includes the dislocation banner when it is active. #}
+    {% set _nalerts = (alerts|length if alerts else 0) + (1 if (latest is defined and latest.dislocation and latest.dislocation.dislocation_active) else 0) %}
     {% if market_state %}
     {% set MS = market_state %}
     {% set _va = {'green':'▲','yellow':'▶','red':'▼'}.get(MS.color, '▶') %}
-    {% set _nalerts = (alerts|length if alerts else 0) + (1 if (latest.dislocation and latest.dislocation.dislocation_active) else 0) %}
     {# Pre-compute _band_weakest for verdict band Zone 2/3 (same logic as _weakest below) #}
     {% set _band_weakest = MS.components | sort(attribute='score') | first if (MS and MS.components is defined and MS.components) else none %}
     {% endif %}
@@ -7254,23 +7285,54 @@ html[data-theme="light"] :is(
       'tips_nominal_momentum':['the TIPS spread','TIPS 利差']
     } %}
     {% set _fs_quad = {'Q1':['Goldilocks','理想增长'],'Q2':['Reflation','再通胀'],'Q3':['Stagflation','滞胀'],'Q4':['Growth-scare/Deflation','增长恐慌／通缩']} %}
+    {# Tip describes ONLY rows this module actually renders (parameterize, never
+       enumerate). Weakest-support numbers are omitted when z/threshold/margin
+       didn't settle — a plain missing sentence, never a bare em dash. #}
+    {% set _fs_raw = raw_quad_of(latest) | trim %}
+    {% set _fs_unsup = (_fc.get('label_unsupported') is sameas true)
+                       or (latest.get('quad') and _fs_raw and _fs_raw != latest.get('quad')) %}
+    {% set _show_unsup = _fs_unsup %}
+    {% set _show_weak = (not _fs_unsup) and _fc.get('component') %}
+    {% set _show_drift = _tm.get('gaining') and _tm.get('window_sessions') %}
+    {% set _show_conf = _conf is not none and _conf is number %}
+    {% set _tip = namespace(en="Drawn only from today's regime-engine readings, shown as-is.",
+                           zh="仅取自今日周期引擎的读数，原样展示。") %}
+    {% if _show_unsup %}
+      {% set _tip.en = _tip.en ~ " Today's axes: the label's own axes no longer support it — treat the name as history." %}
+      {% set _tip.zh = _tip.zh ~ " 今日两轴：该标签自身的两轴已不再支持它——请把名称视为历史。" %}
+    {% endif %}
+    {% if _show_weak %}
+      {% if _fc.get('z') is none or _fc.get('threshold') is none or _fc.get('margin') is none %}
+        {% set _tip.en = _tip.en ~ " One input didn't settle today, so the weakest-support read is off." %}
+        {% set _tip.zh = _tip.zh ~ " 有一项输入今日未结算，最弱支撑读数暂缺。" %}
+      {% else %}
+        {% set _tip.en = _tip.en ~ " Weakest support: the component still supporting the call — slope z " ~ (_fc.get('z') | round(2) | string) ~ " vs its ±" ~ (_fc.get('threshold') | round(2) | string) ~ " cutoff, margin " ~ (_fc.get('margin') | round(2) | string) ~ "." %}
+        {% set _tip.zh = _tip.zh ~ " 最弱支撑：仍支撑当前判断的最弱分量 — 斜率 z " ~ (_fc.get('z') | round(2) | string) ~ "，阈值 ±" ~ (_fc.get('threshold') | round(2) | string) ~ "（边际 " ~ (_fc.get('margin') | round(2) | string) ~ "）。" %}
+      {% endif %}
+    {% endif %}
+    {% if _show_drift %}
+      {% set _tip.en = _tip.en ~ " Drift: how the model's regime probabilities moved over the last " ~ (_tm.window_sessions | string) ~ " sessions." %}
+      {% set _tip.zh = _tip.zh ~ " 漂移方向：模型周期概率近 " ~ (_tm.window_sessions | string) ~ " 个交易日的变化。" %}
+    {% elif _tm.get('gaining') and not _tm.get('window_sessions') %}
+      {% set _tip.en = _tip.en ~ " One input didn't settle today, so the drift window is off." %}
+      {% set _tip.zh = _tip.zh ~ " 有一项输入今日未结算，漂移窗口暂缺。" %}
+    {% endif %}
+    {% if _show_conf %}
+      {% set _tip.en = _tip.en ~ " How firmly held: 0–1 = probability behind the label × how much the inputs agree." %}
+      {% set _tip.zh = _tip.zh ~ " 把握程度：0–1 = 标签背后的概率 × 输入一致度。" %}
+    {% endif %}
+    {% set _tip.en = _tip.en ~ " Conditional context only — nothing here predicts a flip." %}
+    {% set _tip.zh = _tip.zh ~ " 仅为条件性参考 — 并非预测翻转。" %}
     <div class="mxfs">
       <div class="mxfs-hd">
         {{ t('What could change the regime call','什么会改变周期判断') }}
-        {{ help('Drawn only from today\'s regime-engine readings, shown as-is. Weakest support: the component still supporting the call — slope z ' ~ (_fc.get('z') | round(2) if _fc.get('z') is not none else '—') ~ ' vs its ±' ~ (_fc.get('threshold') | round(2) if _fc.get('threshold') is not none else '—') ~ ' cutoff, margin ' ~ (_fc.get('margin') | round(2) if _fc.get('margin') is not none else '—') ~ '. Drift: how the model\'s regime probabilities moved over the last ' ~ (_tm.get('window_sessions') or '—') ~ ' sessions. How firmly held: 0–1 = probability behind the label × how much the inputs agree. Conditional context only — nothing here predicts a flip.',
-                 '仅取自今日周期引擎的读数，原样展示。最弱支撑：仍支撑当前判断的最弱分量 — 斜率 z ' ~ (_fc.get('z') | round(2) if _fc.get('z') is not none else '—') ~ '，阈值 ±' ~ (_fc.get('threshold') | round(2) if _fc.get('threshold') is not none else '—') ~ '（边际 ' ~ (_fc.get('margin') | round(2) if _fc.get('margin') is not none else '—') ~ '）。漂移方向：模型周期概率近 ' ~ (_tm.get('window_sessions') or '—') ~ ' 个交易日的变化。把握程度：0–1 = 标签背后的概率 × 输入一致度。仅为条件性参考 — 并非预测翻转。') }}
+        {{ help(_tip.en, _tip.zh) }}
         <span class="mxfs-badge">{{ t('Context — not a forecast','情景参考 — 非预测') }}</span>
       </div>
       <div class="mxfs-subtitle">{{ t('About the regime label — not the 0-100 risk score.','指上方周期标签——并非 0-100 风险评分。') }}</div>
-      {# When the label's own axes no longer support it there IS no supporting component
-         to name, and naming one presents anti-evidence as support (the defect the engine
-         fixed in flip_condition — it now returns component=None + label_unsupported).
-         An older latest.json still carries a component here, so the same state is
-         detected from the published axes via raw_quad_of(). #}
-      {% set _fs_raw = raw_quad_of(latest) | trim %}
-      {% set _fs_unsup = (_fc.get('label_unsupported') is sameas true)
-                         or (latest.get('quad') and _fs_raw and _fs_raw != latest.get('quad')) %}
-      {% if _fs_unsup %}
+      {# Row flags (_show_unsup / _show_weak / _show_drift / _show_conf) were
+         computed above so the help tip describes only what this module renders. #}
+      {% if _show_unsup %}
       <div class="mxfs-row">
         <span class="mxfs-k">{{ t('Today’s axes','今日两轴') }}</span>
         <span class="mxfs-v">
@@ -7278,7 +7340,7 @@ html[data-theme="light"] :is(
           <span class="l-zh">读数为<b>{{ _fs_quad.get(_fs_raw, [_fs_raw, _fs_raw])[1] }}</b> — 该标签自身的两轴已不再支持它。请把这个名称视为历史，而非今日读数。</span>
         </span>
       </div>
-      {% elif _fc.get('component') %}
+      {% elif _show_weak %}
       {% set _fcl = _fs_short.get(_fc.component, [(_fc.component | replace('_',' ')), (_fc.component | replace('_',' '))]) %}
       {% set _fax_en = 'growth' if _fc.get('axis') == 'growth' else 'inflation' %}
       {% set _fax_zh = '增长' if _fc.get('axis') == 'growth' else '通胀' %}
@@ -7293,7 +7355,7 @@ html[data-theme="light"] :is(
         </span>
       </div>
       {% endif %}
-      {% if _tm.get('gaining') and _tm.get('window_sessions') %}
+      {% if _show_drift %}
       {% set _tg = _fs_quad.get(_tm.gaining, [_tm.gaining, _tm.gaining]) %}
       {% set _tl = _fs_quad.get(_tm.get('losing'), [_tm.get('losing',''), _tm.get('losing','')]) %}
       <div class="mxfs-row">
@@ -7309,7 +7371,7 @@ html[data-theme="light"] :is(
         </span>
       </div>
       {% endif %}
-      {% if _conf is not none and _conf is number %}
+      {% if _show_conf %}
       {% set _c_en = 'low' if _conf < 0.33 else ('moderate' if _conf < 0.66 else 'high') %}
       {% set _c_zh = '较松' if _conf < 0.33 else ('尚可' if _conf < 0.66 else '较稳') %}
       <div class="mxfs-row">
@@ -7485,7 +7547,7 @@ html[data-theme="light"] :is(
                 </div>
               </div>
             </div>
-            {% if macro_catalysts and macro_catalysts|length > 0 %}
+            {% if macro_catalysts is not none and macro_catalysts|length > 0 %}
             {% set _nextev = macro_catalysts[0] %}
             {# COPY-04/VIS-08: use CSS ellipsis (never bake a hard-sliced string) so ZH/EN match cleanly.
                _nextev.label_zh if present, else fall back to EN label — CSS will clip both identically. #}
@@ -8583,8 +8645,10 @@ html[data-theme="light"] :is(
         </div>
         {% endif %}
 
-        {# 3. Nearest high-impact event; otherwise show the weakest leg. #}
-        {% if macro_catalysts %}
+        {# 3. Nearest high-impact event; otherwise show the weakest leg.
+           None (unknown) does not fall through as a quiet calendar — skip the
+           event row; weakest may still fill from a different producer. #}
+        {% if macro_catalysts is not none and macro_catalysts %}
         {% set _wtd_ev = macro_catalysts | selectattr('impact','equalto','high') | list | first if (macro_catalysts | selectattr('impact','equalto','high') | list) else macro_catalysts[0] %}
         {% set _wtd_ev_zh = _wtd_ev.get('label_zh') or _wtd_ev.label %}
         <div class="mx5-action-item">
@@ -8662,7 +8726,7 @@ html[data-theme="light"] :is(
             </div>
           </div>
         </div>
-        {% elif macro_catalysts and _weakest and not _wtd_dislo %}
+        {% elif macro_catalysts is not none and macro_catalysts and _weakest and not _wtd_dislo %}
         <div class="mx5-action-item">
           <div class="mx5-action-icon mx5-ai-yellow">
             <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round">
@@ -8686,14 +8750,35 @@ html[data-theme="light"] :is(
   {# 2. EVENTS row + tray (contains Release Radar + week-ahead band) #}
   <div class="sx" id="sx-events-v2" style="--isle-color:var(--isle-events)">
     {# v5 face — UPCOMING EVENTS (week rail + impact badges; fed odds removed to Fed card) #}
-    {% set _ev_hi_cnt = (macro_catalysts | selectattr('impact','equalto','high') | list | length) if macro_catalysts else 0 %}
+    {% set _ev_hi_cnt = (macro_catalysts | selectattr('impact','equalto','high') | list | length) if (macro_catalysts is not none) else none %}
+    {# Stance from producer n (high-impact prints ahead). None = fetch failed →
+       cautious lane. [] = genuinely empty calendar. `is not defined` can never
+       fire: build_site always passes the key (None or list). #}
+    {% if macro_catalysts is not defined or macro_catalysts is none %}
+      {% set _ev_stance_en = "Watch — this read is being updated." %}
+      {% set _ev_stance_zh = "观望——该读数更新中。" %}
+    {% elif _ev_hi_cnt and _ev_hi_cnt > 0 %}
+      {% set _ev_stance_en = "Get ready — " ~ (_ev_hi_cnt | string) ~ " big prints ahead; avoid adding risk right before them." %}
+      {% set _ev_stance_zh = "做好准备——前方有 " ~ (_ev_hi_cnt | string) ~ " 项重磅数据，公布前不宜加仓。" %}
+    {% else %}
+      {% set _ev_stance_en = "Nothing scheduled that should change positioning this week." %}
+      {% set _ev_stance_zh = "本周暂无应改变仓位的安排。" %}
+    {% endif %}
     <div class="sxg-face mx5-card-face" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-events')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-events');}">
       <div class="mx5-card-title-row">
         <div class="mx5-card-title"><span class="l-en">Upcoming Events</span><span class="l-zh">近期事件</span></div>
         <div class="mx5-card-badge"><span class="l-en">This week</span><span class="l-zh">本周</span></div>
       </div>
+      <div class="mx5-card-stance">
+        <span class="l-en">{{ _ev_stance_en }}</span>
+        <span class="l-zh">{{ _ev_stance_zh }}</span>
+      </div>
       <div class="mx5-events-sub">
-        {% if _ev_hi_cnt %}
+        {% if macro_catalysts is none %}
+        {# Unknown: name the feed, the nightly recheck, and what still works. #}
+        <span class="l-en mx5-ev-none-copy">Events feed is reconnecting — re-checked nightly. The rest of this page is unaffected.</span>
+        <span class="l-zh mx5-ev-none-copy">事件数据源重连中——每晚重新检查。本页其余内容不受影响。</span>
+        {% elif _ev_hi_cnt %}
         <span class="l-en">{{ _ev_hi_cnt }} high-impact print{{ 's' if _ev_hi_cnt != 1 }} ahead</span>
         <span class="l-zh">{{ _ev_hi_cnt }} 项高影响数据待发</span>
         {% else %}
@@ -8701,7 +8786,9 @@ html[data-theme="light"] :is(
         <span class="l-zh">未来5个交易日</span>
         {% endif %}
       </div>
-      {% if macro_catalysts %}
+      {% if macro_catalysts is none %}
+      {# Unknown: stance is the cautious form. Do not deny an empty window. #}
+      {% elif macro_catalysts %}
       <div class="mx5-timeline">
         <div class="mx5-timeline-rail"></div>
         <div class="mx5-tl-items">
@@ -11236,6 +11323,37 @@ html[data-theme="light"] :is(
       <span class="l-en">{{ _fgv5_label_en }}</span>
       <span class="l-zh">{{ _fgv5_label_zh }}</span>
     </div>
+    {# Stance from producer composite zone (panic / neutral / euphoria).
+       Missing dial or empty payload → cautious lane. PANIC/Neutral/EUPHORIA
+       dial anchors stay; this is the Law-1 sentence under them. #}
+    {% if fear_greed is defined and fear_greed and fear_greed.get('dial') is not none %}
+      {% set _fg_lab = (_fgv5.get('label_en') or '') | lower %}
+      {# Label wins a label/dial disagreement (e.g. "Greed" + dial 38 is euphoria,
+         not panic). Dial bands apply only when the label names neither zone. #}
+      {% if 'fear' in _fg_lab %}
+        {% set _fg_stance_en = "Watch — don't chase weakness; extremes can snap back." %}
+        {% set _fg_stance_zh = "观望——不追跌，极端情绪可能快速反转。" %}
+      {% elif 'greed' in _fg_lab %}
+        {% set _fg_stance_en = "Protect gains — stretched optimism cuts both ways." %}
+        {% set _fg_stance_zh = "保住收益——情绪过热双向都有风险。" %}
+      {% elif _fgv5_dial < 40 %}
+        {% set _fg_stance_en = "Watch — don't chase weakness; extremes can snap back." %}
+        {% set _fg_stance_zh = "观望——不追跌，极端情绪可能快速反转。" %}
+      {% elif _fgv5_dial > 60 %}
+        {% set _fg_stance_en = "Protect gains — stretched optimism cuts both ways." %}
+        {% set _fg_stance_zh = "保住收益——情绪过热双向都有风险。" %}
+      {% else %}
+        {% set _fg_stance_en = "Stand aside — nothing to do from this panel today." %}
+        {% set _fg_stance_zh = "暂不行动——本面板今日无需操作。" %}
+      {% endif %}
+    {% else %}
+      {% set _fg_stance_en = "Watch — this read is being updated." %}
+      {% set _fg_stance_zh = "观望——该读数更新中。" %}
+    {% endif %}
+    <div class="mx5-card-stance">
+      <span class="l-en">{{ _fg_stance_en }}</span>
+      <span class="l-zh">{{ _fg_stance_zh }}</span>
+    </div>
     <div class="mx5-sentiment-label">
       <span class="l-en">Composite at {{ _fgv5_dial | int }} &middot; {{ _fgv5_label_en | lower }} zone</span>
       <span class="l-zh">综合指数 {{ _fgv5_dial | int }} &middot; {{ _fgv5_label_zh }}区间</span>
@@ -11262,6 +11380,18 @@ html[data-theme="light"] :is(
     {% if sector_heat %}
     {% set _shv5_hot = (sector_heat.get('heating') or [])[:3] %}
     {% set _shv5_cold = (sector_heat.get('cooling') or [])[:3] %}
+    {% set _sh_hot_n = (sector_heat.get('heating') or []) | length %}
+    {% if _sh_hot_n > 0 %}
+      {% set _sh_stance_en = "Watch the heating list — rotation, not chasing." %}
+      {% set _sh_stance_zh = "关注升温板块——是轮动，不是追涨。" %}
+    {% else %}
+      {% set _sh_stance_en = "Stand aside — no sector is running hot today." %}
+      {% set _sh_stance_zh = "暂不行动——今日无板块过热。" %}
+    {% endif %}
+    <div class="mx5-card-stance">
+      <span class="l-en">{{ _sh_stance_en }}</span>
+      <span class="l-zh">{{ _sh_stance_zh }}</span>
+    </div>
     {% if _shv5_hot %}
     <div class="mx5-sector-row">
       <div class="mx5-sector-sub-label"><span class="l-en">Hot</span><span class="l-zh">热门</span></div>
@@ -11318,11 +11448,15 @@ html[data-theme="light"] :is(
     {# Quiet open affordance (unified face anatomy) #}
     <div class="plf-open plf-open-sect"><span class="l-en">Open sector heat</span><span class="l-zh">打开板块热图</span> &rarr;</div>
     {% else %}
-    <div style="flex:1;display:flex;align-items:center;justify-content:center">
-      <span style="font-size:12px;color:var(--ink-3,rgba(255,255,255,.36))">
+    <div class="mx5-card-stance">
+      <span class="l-en">Watch — this read is being updated.</span>
+      <span class="l-zh">观望——该读数更新中。</span>
+    </div>
+    <div class="mx-empty">
+      <div class="mx-empty-line mx-empty-why">
         <span class="l-en">Sector data — accruing from nightly log.</span>
         <span class="l-zh">板块数据 — 每晚积累中。</span>
-      </span>
+      </div>
     </div>
     {% endif %}
   </div>
@@ -11347,26 +11481,26 @@ html[data-theme="light"] :is(
         <div class="mx5-mkt-tile" data-sym="ES=F" data-mkt="us">
           <div class="mx5-mkt-ticker">ES</div>
           <div class="mx5-mkt-sub"><span class="l-en">S&amp;P fut</span><span class="l-zh">标普期货</span></div>
-          <div class="mx5-mkt-price nb-px" data-sym="ES=F" data-mkt="us" data-bare>—</div>
-          <div class="mx5-mkt-delta nb-chg" data-sym="ES=F" data-mkt="us">—</div>
+          <div class="mx5-mkt-price nb-px skel" data-sym="ES=F" data-mkt="us" data-bare aria-busy="true"></div>
+          <div class="mx5-mkt-delta nb-chg skel" data-sym="ES=F" data-mkt="us" aria-busy="true"></div>
         </div>
         <div class="mx5-mkt-tile" data-sym="NQ=F" data-mkt="us">
           <div class="mx5-mkt-ticker">NQ</div>
           <div class="mx5-mkt-sub"><span class="l-en">Nasdaq fut</span><span class="l-zh">纳指期货</span></div>
-          <div class="mx5-mkt-price nb-px" data-sym="NQ=F" data-mkt="us" data-bare>—</div>
-          <div class="mx5-mkt-delta nb-chg" data-sym="NQ=F" data-mkt="us">—</div>
+          <div class="mx5-mkt-price nb-px skel" data-sym="NQ=F" data-mkt="us" data-bare aria-busy="true"></div>
+          <div class="mx5-mkt-delta nb-chg skel" data-sym="NQ=F" data-mkt="us" aria-busy="true"></div>
         </div>
         <div class="mx5-mkt-tile" data-sym="YM=F" data-mkt="us">
           <div class="mx5-mkt-ticker">YM</div>
           <div class="mx5-mkt-sub"><span class="l-en">Dow fut</span><span class="l-zh">道指期货</span></div>
-          <div class="mx5-mkt-price nb-px" data-sym="YM=F" data-mkt="us" data-bare>—</div>
-          <div class="mx5-mkt-delta nb-chg" data-sym="YM=F" data-mkt="us">—</div>
+          <div class="mx5-mkt-price nb-px skel" data-sym="YM=F" data-mkt="us" data-bare aria-busy="true"></div>
+          <div class="mx5-mkt-delta nb-chg skel" data-sym="YM=F" data-mkt="us" aria-busy="true"></div>
         </div>
         <div class="mx5-mkt-tile" data-sym="RTY=F" data-mkt="us">
           <div class="mx5-mkt-ticker">RTY</div>
           <div class="mx5-mkt-sub"><span class="l-en">Russell fut</span><span class="l-zh">罗素期货</span></div>
-          <div class="mx5-mkt-price nb-px" data-sym="RTY=F" data-mkt="us" data-bare>—</div>
-          <div class="mx5-mkt-delta nb-chg" data-sym="RTY=F" data-mkt="us">—</div>
+          <div class="mx5-mkt-price nb-px skel" data-sym="RTY=F" data-mkt="us" data-bare aria-busy="true"></div>
+          <div class="mx5-mkt-delta nb-chg skel" data-sym="RTY=F" data-mkt="us" aria-busy="true"></div>
         </div>
         {# ^TNX — Yahoo streams the 10-year yield as yield×10 (42.5 => 4.25%); the
            data-fmt="tnx" price tile divides by 10 + suffixes "%", and its delta renders
@@ -11375,14 +11509,14 @@ html[data-theme="light"] :is(
         <div class="mx5-mkt-tile" data-sym="^TNX" data-mkt="us">
           <div class="mx5-mkt-ticker">10Y</div>
           <div class="mx5-mkt-sub"><span class="l-en">10Y yield</span><span class="l-zh">十年期收益率</span></div>
-          <div class="mx5-mkt-price nb-px" data-sym="^TNX" data-mkt="us" data-fmt="tnx" data-bare>—</div>
-          <div class="mx5-mkt-delta nb-chg" data-sym="^TNX" data-mkt="us" data-fmt="tnx">—</div>
+          <div class="mx5-mkt-price nb-px skel" data-sym="^TNX" data-mkt="us" data-fmt="tnx" data-bare aria-busy="true"></div>
+          <div class="mx5-mkt-delta nb-chg skel" data-sym="^TNX" data-mkt="us" data-fmt="tnx" aria-busy="true"></div>
         </div>
         <div class="mx5-mkt-tile" data-sym="DX-Y.NYB" data-mkt="us">
           <div class="mx5-mkt-ticker">DXY</div>
           <div class="mx5-mkt-sub"><span class="l-en">Dollar DXY</span><span class="l-zh">美元指数</span></div>
-          <div class="mx5-mkt-price nb-px" data-sym="DX-Y.NYB" data-mkt="us" data-bare>—</div>
-          <div class="mx5-mkt-delta nb-chg" data-sym="DX-Y.NYB" data-mkt="us">—</div>
+          <div class="mx5-mkt-price nb-px skel" data-sym="DX-Y.NYB" data-mkt="us" data-bare aria-busy="true"></div>
+          <div class="mx5-mkt-delta nb-chg skel" data-sym="DX-Y.NYB" data-mkt="us" aria-busy="true"></div>
         </div>
       </div>
     </div>
@@ -11557,34 +11691,24 @@ html[data-theme="light"] :is(
   {% if mode != 'stocks' %}
   <div class="sx" id="sx-aibrief-v2" style="--isle-color:var(--isle-brief)">
     {# MX4 face — grid view card face for AI BRIEF (S3: COPY-03/BIL-01/BIL-03/VIS-02) #}
-    {# Channel slug → plain-word translation dict (COPY-03/BIL-01) #}
-    {% set _aibf_ch = {
-      'monetary':'Fed & rates','inflation':'inflation','labor':'jobs & labor',
-      'growth':'growth','credit':'credit & rates','fiscal':'fiscal policy',
-      'earnings':'earnings','guidance':'guidance','analyst':'analyst views',
-      'deals':'deals & IPOs','capital_return':'buybacks & dividends',
-      'stocks':'individual stocks','macro':'macro','rates':'rates',
-      'stock_wire':'stock wire'
-    } %}
-    {% set _aibf_ch_zh = {
-      'monetary':'美联储与利率','inflation':'通胀','labor':'就业',
-      'growth':'增长','credit':'信贷与利率','fiscal':'财政政策',
-      'earnings':'业绩','guidance':'业绩指引','analyst':'分析师观点',
-      'deals':'并购/IPO','capital_return':'回购与分红',
-      'stocks':'个股','macro':'宏观','rates':'利率',
-      'stock_wire':'个股快讯'
-    } %}
     {% if macro_news and macro_news.synthesis %}{% set _abSyn = macro_news.synthesis %}{% else %}{% set _abSyn = {} %}{% endif %}
     {% set _abCh = _abSyn.get('dominant_channel','') %}
     {% set _abTheme = _abSyn.get('dominant_theme','') %}
     {% set _abHiCnt = _abSyn.get('high_impact_count') %}
     {# v5 face — AI BRIEF (ticker pills + structured bilingual lines + required not-a-signal note) #}
-    {# prefer the engine's bilingual CHANNEL_LABEL payload dict (doctrine Law 2 — no raw
-       slugs on glance surfaces); inline dicts remain the fallback for older payloads,
-       de-underscored in BOTH languages (the old zh fallback leaked the raw slug). #}
-    {% set _abChl = ((macro_news.channel_label or {}) if macro_news else {}).get(_abCh) %}
-    {% set _abDomCh_clean = (_abChl[0] if _abChl else _aibf_ch.get(_abCh, _abCh | replace('_',' '))) if _abCh else '' %}
-    {% set _abDomCh_clean_zh = (_abChl[1] if _abChl else _aibf_ch_zh.get(_abCh, _abCh | replace('_',' '))) if _abCh else '' %}
+    {# Producer CHANNEL_LABEL (engine/macro_news.py) is the single 21-key ZH table.
+       Payload dict wins when present; env global covers older payloads; unmapped
+       slugs de-underscore (never-blocking), never an EN slug inside a ZH sentence
+       for a mapped key. #}
+    {% set _ch_ns = namespace(map={}) %}
+    {% if macro_news and macro_news.channel_label %}
+      {% set _ch_ns.map = macro_news.channel_label %}
+    {% elif CHANNEL_LABEL is defined %}
+      {% set _ch_ns.map = CHANNEL_LABEL %}
+    {% endif %}
+    {% set _abChl = _ch_ns.map.get(_abCh) if _abCh else none %}
+    {% set _abDomCh_clean = (_abChl[0] if _abChl else (_abCh | replace('_',' '))) if _abCh else '' %}
+    {% set _abDomCh_clean_zh = (_abChl[1] if _abChl else (_abCh | replace('_',' '))) if _abCh else '' %}
     <div class="sxg-face mx5-card-face" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-aibrief')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-aibrief');}">
       <div class="mx5-card-title"><span class="l-en">AI Brief</span><span class="l-zh">AI简报</span></div>
       {# Top ticker pills (VIS-02: wraps freely, no fixed-width clip) #}
@@ -11600,18 +11724,38 @@ html[data-theme="light"] :is(
         {% if _abHiCnt is not none %}
         <span class="l-en">
           <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">{{ _abHiCnt }} High-Impact Items</span><br>
-          {% if _abDomCh_clean %}Dominant channel: <span style="color:var(--mx5-accent-ink);font-weight:600">{{ _abDomCh_clean }}</span><br>{% endif %}
+          {% if _abDomCh_clean %}Dominant theme: <span style="color:var(--mx5-accent-ink);font-weight:600">{{ _abDomCh_clean }}</span><br>{% endif %}
           {{ _abHiCnt }} high-impact signals across channels
         </span>
         <span class="l-zh">
           <span style="color:var(--ink-3,rgba(255,255,255,.36));font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;">{{ _abHiCnt }} 条高影响信息</span><br>
-          {% if _abDomCh_clean_zh %}主导频道：<span style="color:var(--mx5-accent-ink);font-weight:600">{{ _abDomCh_clean_zh }}</span><br>{% endif %}
+          {% if _abDomCh_clean_zh %}主线：<span style="color:var(--mx5-accent-ink);font-weight:600">{{ _abDomCh_clean_zh }}</span><br>{% endif %}
           {{ _abHiCnt }} 条高影响信号
         </span>
         {% else %}
         <span class="l-en">Cross-asset synthesis</span>
         <span class="l-zh">跨资产综合</span>
         {% endif %}
+      </div>
+      {# Stance from producer high-impact n. {theme} = plain word for dominant channel. #}
+      {% if _abHiCnt is none %}
+        {% set _ab_stance_en = "Watch — this read is being updated." %}
+        {% set _ab_stance_zh = "观望——该读数更新中。" %}
+      {% elif _abHiCnt >= 3 %}
+        {% set _ab_stance_en = "Watch — don't chase headlines; let prices settle first." %}
+        {% set _ab_stance_zh = "观望——不追新闻，先等价格企稳。" %}
+      {% elif _abHiCnt >= 1 %}
+        {% set _ab_theme_en = _abDomCh_clean or "news" %}
+        {% set _ab_theme_zh = _abDomCh_clean_zh or "新闻" %}
+        {% set _ab_stance_en = "Watch the " ~ _ab_theme_en ~ " thread — no action needed yet." %}
+        {% set _ab_stance_zh = "关注" ~ _ab_theme_zh ~ "主线——暂无需操作。" %}
+      {% else %}
+        {% set _ab_stance_en = "Ignore — nothing in the news flow demands action." %}
+        {% set _ab_stance_zh = "可忽略——新闻流中无需行动事项。" %}
+      {% endif %}
+      <div class="mx5-card-stance">
+        <span class="l-en">{{ _ab_stance_en }}</span>
+        <span class="l-zh">{{ _ab_stance_zh }}</span>
       </div>
       {# Required not-a-signal-source note (spec §2.9) #}
       <div class="mx5-ai-note">
@@ -11637,34 +11781,43 @@ html[data-theme="light"] :is(
     {# Guard: if tier missing default to watch so legacy alerts are not silently dropped #}
     {% set _alv5_prio = _alv5_prio + (_alv5_all | rejectattr('tier','defined') | list) if _alv5_all else _alv5_prio %}
     {% set _alv5_ctx  = (_alv5_all | selectattr('tier','equalto','context') | rejectattr('rule','equalto','event_risk') | list) if _alv5_all else [] %}
-    {% set _alv5_total = _alv5_all | length %}
     {# Hot news headline (importance=high); guard importance field missing #}
     {% set _alv5_hot_news = ((macro_news.headlines | selectattr('importance','defined') | selectattr('importance','equalto','high') | list)[:1]) if (macro_news is defined and macro_news and macro_news.headlines) else [] %}
     {# Face list: first 2 prio, then hot headline, then pad prio to 3 rows total #}
     {% set _alv5_face_prio_2 = _alv5_prio[:2] %}
     {% set _alv5_prio_rest = _alv5_prio[2:] %}
-    {% set _alv5_total = _alv5_all | length %}
     <div class="sxg-face mx5-card-face" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-news')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-news');}">
       <div class="mx5-card-title-row">
         <div class="mx5-card-title"><span class="l-en">Alerts Centre</span><span class="l-zh">警报中心</span></div>
-        {% if _alv5_prio | length > 0 %}
+        {% set _al_need = _alv5_prio | length %}
+        {% if _nalerts == 0 %}
+        {# N==0 is not an amber alarm. Neutral empty form; news-fallback may sit beneath. #}
+        <div class="mx5-card-badge">
+          <span class="l-en">No alerts today</span>
+          <span class="l-zh">今日无警报</span>
+        </div>
+        {% elif _al_need > 0 %}
         <div class="mx5-card-badge" style="color:var(--mx5-warn-ink);background:var(--mx5-warn-dim);border:1px solid rgba(245,158,11,.20);">
-          <span class="l-en">{{ _alv5_prio | length }} FIRED</span>
-          <span class="l-zh">{{ _alv5_prio | length }} 条触发</span>
+          <span class="l-en">{{ _al_need }} need action · of {{ _nalerts }}</span>
+          <span class="l-zh">{{ _al_need }} 条需处理 · 共 {{ _nalerts }} 条</span>
+        </div>
+        {% else %}
+        {# Total > 0 but nothing needs action (e.g. dislocation-only): keep the
+           labelled slice, drop the amber alarm. #}
+        <div class="mx5-card-badge">
+          <span class="l-en">{{ _al_need }} need action · of {{ _nalerts }}</span>
+          <span class="l-zh">{{ _al_need }} 条需处理 · 共 {{ _nalerts }} 条</span>
         </div>
         {% endif %}
       </div>
       {% if _alv5_prio or _alv5_hot_news %}
       {# Rows rendered: up to 2 prio, 1 hot news headline, then pad prio to 3 if slots remain.
-         Two counters: total rows (layout cap) vs alert rows only (footer "X of Y in feed" —
-         the news row is not part of the alert feed and must not inflate X past Y). #}
+         Footer reprints the same need-action pair as the badge (one-integer law). #}
       {% set _alv5_face_rows_rendered = namespace(count=0) %}
-      {% set _alv5_alert_rows = namespace(count=0) %}
       <div class="mx5-alerts-list">
         {% for a in _alv5_face_prio_2 %}
         {% set _asev = 'warn' if a.severity in ('warn','high','critical') else 'info' %}
         {% set _alv5_face_rows_rendered.count = _alv5_face_rows_rendered.count + 1 %}
-        {% set _alv5_alert_rows.count = _alv5_alert_rows.count + 1 %}
         <div class="mx5-alert-item {{ _asev }}">
           <div class="mx5-alert-dot {{ _asev }}"></div>
           <div class="mx5-alert-content">
@@ -11674,8 +11827,8 @@ html[data-theme="light"] :is(
               <span class="l-zh">{{ a.plain_zh or a.plain_en }}</span>
             </div>
             <div class="mx5-alert-detail">
-              <span class="l-en">{{ a.message[:120] }}{% if a.message | length > 120 %}…{% endif %}</span>
-              <span class="l-zh">{{ (a.message_zh or a.message)[:80] }}{% if (a.message_zh or a.message) | length > 80 %}…{% endif %}</span>
+              <span class="l-en">{{ a.detail_en or a.plain_en }}</span>
+              <span class="l-zh">{{ a.detail_zh or a.detail_en or a.plain_zh or a.plain_en }}</span>
             </div>
           </div>
         </div>
@@ -11688,6 +11841,7 @@ html[data-theme="light"] :is(
           <div class="mx5-alert-dot info"></div>
           <div class="mx5-alert-content">
             <div class="mx5-alert-title">
+              <span class="mx5-alert-k"><span class="l-en">Headline</span><span class="l-zh">头条</span></span>
               <span style="font-size:12px;margin-right:3px">📰</span>
               <span class="l-en">{{ (_hn.title or '')[:80] }}{% if (_hn.title or '') | length > 80 %}…{% endif %}</span>
               <span class="l-zh">{{ (_hn.get('title_zh') or _hn.title or '')[:60] }}{% if (_hn.get('title_zh') or _hn.title or '') | length > 60 %}…{% endif %}</span>
@@ -11704,7 +11858,6 @@ html[data-theme="light"] :is(
         {% if _alv5_face_rows_rendered.count < 3 %}
         {% set _asev = 'warn' if a.severity in ('warn','high','critical') else 'info' %}
         {% set _alv5_face_rows_rendered.count = _alv5_face_rows_rendered.count + 1 %}
-        {% set _alv5_alert_rows.count = _alv5_alert_rows.count + 1 %}
         <div class="mx5-alert-item {{ _asev }}">
           <div class="mx5-alert-dot {{ _asev }}"></div>
           <div class="mx5-alert-content">
@@ -11714,8 +11867,8 @@ html[data-theme="light"] :is(
               <span class="l-zh">{{ a.plain_zh or a.plain_en }}</span>
             </div>
             <div class="mx5-alert-detail">
-              <span class="l-en">{{ a.message[:120] }}{% if a.message | length > 120 %}…{% endif %}</span>
-              <span class="l-zh">{{ (a.message_zh or a.message)[:80] }}{% if (a.message_zh or a.message) | length > 80 %}…{% endif %}</span>
+              <span class="l-en">{{ a.detail_en or a.plain_en }}</span>
+              <span class="l-zh">{{ a.detail_zh or a.detail_en or a.plain_zh or a.plain_en }}</span>
             </div>
           </div>
         </div>
@@ -11736,8 +11889,13 @@ html[data-theme="light"] :is(
       </div>
       <div class="mx5-alert-footer">
         <span>
-          <span class="l-en">Showing {{ [_alv5_alert_rows.count, _alv5_total] | min }} of {{ _alv5_total }} in feed</span>
-          <span class="l-zh">显示 {{ [_alv5_alert_rows.count, _alv5_total] | min }} / {{ _alv5_total }} 条</span>
+          {% if _nalerts == 0 %}
+          <span class="l-en">No alerts today</span>
+          <span class="l-zh">今日无警报</span>
+          {% else %}
+          <span class="l-en">{{ _al_need }} need action · of {{ _nalerts }}</span>
+          <span class="l-zh">{{ _al_need }} 条需处理 · 共 {{ _nalerts }} 条</span>
+          {% endif %}
         </span>
         <button type="button" class="gbtn gbtn-sm gbtn-quiet" onclick="event.stopPropagation();mx5OpenDlg('dlg-news')">
           <span class="l-en">View all &#8594;</span>
@@ -11752,6 +11910,7 @@ html[data-theme="light"] :is(
           <div class="mx5-alert-dot info"></div>
           <div class="mx5-alert-content">
             <div class="mx5-alert-title">
+              <span class="mx5-alert-k"><span class="l-en">Headline</span><span class="l-zh">头条</span></span>
               <span class="l-en">{{ h.title[:55] }}{% if h.title|length > 55 %}…{% endif %}</span>
               <span class="l-zh">{{ (h.get('title_zh') or h.title)[:38] }}{% if (h.get('title_zh') or h.title)|length > 38 %}…{% endif %}</span>
             </div>
@@ -11790,7 +11949,7 @@ html[data-theme="light"] :is(
        is absent. Below: a quiet single row of all six original links (nothing lost). #}
     {# ── Slot A: tonight's biggest print (events VM) — deep-links into dlg-events ── #}
     {%- set _wnx_ev = none -%}
-    {%- if macro_catalysts -%}
+    {%- if macro_catalysts is not none and macro_catalysts -%}
       {%- set _wnx_hi = (macro_catalysts | selectattr('impact','equalto','high') | list) -%}
       {%- set _wnx_ev = (_wnx_hi | first) if _wnx_hi else (macro_catalysts | first) -%}
     {%- endif -%}
@@ -11810,7 +11969,17 @@ html[data-theme="light"] :is(
       <div class="wnx-cards">
 
         {# ── Card A — tonight's biggest print ── #}
-        {% if _wnx_ev %}
+        {% if macro_catalysts is none %}
+        <a class="wnx-card" href="#dlg-events" onclick="event.preventDefault();mx5OpenDlg('dlg-events');">
+          <div class="wnx-kicker">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+            <span class="l-en">Week ahead</span><span class="l-zh">本周日历</span>
+          </div>
+          <div class="wnx-state"><span class="l-en">Watch — this read is being updated.</span><span class="l-zh">观望——该读数更新中。</span></div>
+          <div class="wnx-line"><span class="l-en">Calendar feed unavailable — the rest of this page is unaffected.</span><span class="l-zh">日历暂不可用——本页其余内容不受影响。</span></div>
+          <span class="wnx-go"><span class="l-en">See the week</span><span class="l-zh">查看日历</span> &rarr;</span>
+        </a>
+        {% elif _wnx_ev %}
         <a class="wnx-card" style="--wnx-c:var(--isle-events)" href="#dlg-events" onclick="event.preventDefault();mx5OpenDlg('dlg-events');">
           <div class="wnx-kicker">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
@@ -12100,7 +12269,7 @@ html[data-theme="light"] :is(
       <div class="mx5-dlg-body">
 
         {# — Week-ahead calendar cards — #}
-        {% if macro_catalysts %}
+        {% if macro_catalysts is not none and macro_catalysts %}
         <div class="mx5-dlg-eyebrow"><span class="l-en">This Week</span><span class="l-zh">本周</span></div>
         <div class="mx5-dlg-cal-grid">
           {% for c in macro_catalysts[:8] %}
@@ -12155,7 +12324,7 @@ html[data-theme="light"] :is(
         {# — Inline Release Radar panel — sits directly under the calendar so tapping a card
              surfaces its projection right below, before the market-pricing strip (the calendar
              cards above are its selector) — #}
-        {% if macro_catalysts %}
+        {% if macro_catalysts is not none and macro_catalysts %}
         <div class="mx5-dlg-sep"></div>
         <div class="mx5-dlg-eyebrow"><span class="l-en">Release Radar</span><span class="l-zh">数据发布雷达</span></div>
         <div style="margin:-4px 0 14px;font-size:12px;color:var(--ink-2,rgba(255,255,255,.6));line-height:1.5">
@@ -12227,7 +12396,7 @@ html[data-theme="light"] :is(
         {# Outcome enum → ZH display map, shared by this strip and dlg-fed below #}
         {% set _fed_out_zh = {'No change':'按兵不动','Rate cut':'降息','Rate hike':'加息','25bps cut':'降息25bp','50bps cut':'降息50bp','25bps hike':'加息25bp','25 bps increase':'加息25bp','25 bps decrease':'降息25bp','50+ bps increase':'加息50bp以上','50+ bps decrease':'降息50bp以上','0.1%':'0.1%','0.2%':'0.2%','0.3%':'0.3%','0.4%':'0.4%'} %}
         {% if prediction_markets and prediction_markets.events %}
-        {% if macro_catalysts %}<div class="mx5-dlg-sep"></div>{% endif %}
+        {% if macro_catalysts is not none and macro_catalysts %}<div class="mx5-dlg-sep"></div>{% endif %}
         {# Unified benchmark strip (same component as dlg-fed). Plain "X in 10" read kept below. #}
         {% set _ev_bench_rows = [] %}
         {% set _ev_head_top = none %}
@@ -12248,7 +12417,10 @@ html[data-theme="light"] :is(
         {% endif %}
         {% endif %}
 
-        {% if not macro_catalysts and not (prediction_markets and prediction_markets.events) %}
+        {% if macro_catalysts is none %}
+        <p class="muted"><span class="l-en">Watch — this read is being updated.</span><span class="l-zh">观望——该读数更新中。</span></p>
+        <p class="muted"><span class="l-en">Events feed is reconnecting — re-checked nightly. The rest of this page is unaffected.</span><span class="l-zh">事件数据源重连中——每晚重新检查。本页其余内容不受影响。</span></p>
+        {% elif not macro_catalysts and not (prediction_markets and prediction_markets.events) %}
         <p style="font-size:12px;color:var(--ink-2,rgba(255,255,255,.6));margin-top:16px"><span class="l-en">No events data available.</span><span class="l-zh">暂无事件数据。</span></p>
         {% endif %}
 
@@ -13829,15 +14001,19 @@ html[data-theme="light"] :is(
         {# Fallback teaser when master_brief is absent #}
         {% if macro_news is defined and macro_news and macro_news.synthesis and macro_news.synthesis.get('read') %}
         {% set _dlg_syn = macro_news.synthesis %}
-        {% set _dlg_ch_zh = {'monetary':'美联储与利率','inflation':'通胀','labor':'就业','growth':'增长','credit':'信贷','fiscal':'财政','fiscal_trade':'财政与贸易','earnings':'业绩','guidance':'指引','analyst':'分析师','deals':'并购','capital_return':'回购','stocks':'个股','macro':'宏观','rates':'利率','stock_wire':'个股快讯'} %}
-        {% set _dlg_ch_en = {'capital_return':'buybacks','fiscal_trade':'fiscal & trade','stock_wire':'stock wire','monetary':'Fed & rates'} %}
-        {# prefer the engine's bilingual CHANNEL_LABEL payload dict (doctrine Law 2 — no raw
-           slugs on glance surfaces); inline dicts remain the fallback for older payloads. #}
+        {# Producer CHANNEL_LABEL (21/21 ZH twins); payload wins, env global covers older payloads. #}
         {% set _dc = _dlg_syn.get('dominant_channel') %}
-        {% set _dcl = (macro_news.channel_label or {}).get(_dc) if _dc else none %}
+        {% set _dlg_ch_ns = namespace(lab=none) %}
+        {% if _dc %}
+          {% if macro_news and macro_news.channel_label %}
+            {% set _dlg_ch_ns.lab = macro_news.channel_label.get(_dc) %}
+          {% elif CHANNEL_LABEL is defined %}
+            {% set _dlg_ch_ns.lab = CHANNEL_LABEL.get(_dc) %}
+          {% endif %}
+        {% endif %}
         <div class="isle-aibrief-body">
-          <span class="l-en">{{ _dlg_syn.get('high_impact_count', 0) }} high-impact item{{ 's' if _dlg_syn.get('high_impact_count', 0) != 1 }} today{% if _dc %} · dominant: <strong>{{ _dcl[0] if _dcl else _dlg_ch_en.get(_dc, _dc|replace('_',' ')) }}</strong>{% endif %}</span>
-          <span class="l-zh">今日 {{ _dlg_syn.get('high_impact_count', 0) }} 条高影响信息{% if _dc %} · 主导：<strong>{{ _dcl[1] if _dcl else _dlg_ch_zh.get(_dc, _dc|replace('_',' ')) }}</strong>{% endif %}</span>
+          <span class="l-en">{{ _dlg_syn.get('high_impact_count', 0) }} high-impact item{{ 's' if _dlg_syn.get('high_impact_count', 0) != 1 }} today{% if _dc %} · dominant: <strong>{{ _dlg_ch_ns.lab[0] if _dlg_ch_ns.lab else (_dc|replace('_',' ')) }}</strong>{% endif %}</span>
+          <span class="l-zh">今日 {{ _dlg_syn.get('high_impact_count', 0) }} 条高影响信息{% if _dc %} · 主导：<strong>{{ _dlg_ch_ns.lab[1] if _dlg_ch_ns.lab else (_dc|replace('_',' ')) }}</strong>{% endif %}</span>
         </div>
         {% else %}
         <div class="isle-aibrief-body">{{ t('AI reads every dashboard in one place — the regime, where signals conflict, the rotation thesis and what to watch next. Research context only, never a signal.', 'AI 在一处解读每个看板 — 周期、信号冲突、轮动假设与后续关注。仅供研究参考，绝非交易信号。') }}</div>
@@ -13857,19 +14033,40 @@ html[data-theme="light"] :is(
         <button class="mx5-dlg-close" type="button" onclick="mx5CloseDlg()" aria-label="Close">&#xd7;</button>
       </div>
       <div class="mx5-dlg-body">
-        {# All fired alerts — grouped by conviction tier: act+watch (Priority) then context #}
-        {% if alerts %}
-        {% set _dlg_alv5_all = alerts %}
+        {# All fired alerts — grouped by conviction tier: act+watch (Priority) then context.
+           Dislocation is in `_nalerts` so it must be a countable row here (one-population). #}
+        {% set _dlg_dislo = (latest is defined and latest and latest.dislocation and latest.dislocation.dislocation_active) %}
+        {% if alerts or _dlg_dislo %}
+        {% set _dlg_alv5_all = alerts if alerts else [] %}
         {# Same partition as the face: event_risk (engine-tiered context = no edge claim) is
            time-critical calendar fact and sits with Priority; its chip says "Event", honest #}
         {% set _dlg_alv5_prio = (_dlg_alv5_all | selectattr('tier','in',('act','watch')) | list) + (_dlg_alv5_all | selectattr('tier','equalto','context') | selectattr('rule','equalto','event_risk') | list) + (_dlg_alv5_all | rejectattr('tier','defined') | list) %}
         {% set _dlg_alv5_ctx  = _dlg_alv5_all | selectattr('tier','equalto','context') | rejectattr('rule','equalto','event_risk') | list %}
         <div class="isle-head"><div class="isle-head-dot"></div><span class="isle-head-label"><span class="l-en">Priority</span><span class="l-zh">优先</span></span><div class="isle-head-line"></div></div>
-        {% if _dlg_alv5_prio %}
+        {% if _dlg_dislo or _dlg_alv5_prio %}
         <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
+          {% if _dlg_dislo %}
+          {% set _dlg_dl = latest.dislocation %}
+          {% set _dlg_dl_unknown = ((_dlg_dl.put_state is defined and _dlg_dl.put_state == 'unknown')
+                                    or (_dlg_dl.put_state_reliable is defined and not _dlg_dl.put_state_reliable)
+                                    or (_dlg_dl.fed_put is defined and _dlg_dl.fed_put is none)) %}
+          {% set _dlg_dl_dissent = ((_dlg_dl.geo_reversibility and _dlg_dl.geo_reversibility.agreement != 'corroborates')
+                                    or (_dlg_dl.catalyst_narrative and _dlg_dl.catalyst_narrative.agreement != 'corroborates')) %}
+          <div data-al-row class="mx5-alert-item info">
+            <div class="mx5-alert-dot info"></div>
+            <div class="mx5-alert-content">
+              <div class="mx5-alert-title">
+                <span class="mx5-alert-k"><span class="l-en">Tape</span><span class="l-zh">盘面</span></span>
+                <span class="l-en">Selling has turned stressed</span><span class="l-zh">抛售已转为压力状态</span>
+              </div>
+              <div class="mx5-alert-detail">{% if _dlg_dl_unknown %}<span class="l-en">We cannot read whether the Fed would step in today, so no call is made. Watch — don’t chase.</span><span class="l-zh">今日无法判读美联储是否会出手，因此不作判定。观察 — 不要追。</span>{% elif _dlg_dl.verdict == 'buyable_washout' %}<span class="l-en">The Fed’s backstop still reads intact, so damage like this has usually stayed shallower. Wait for the market to steady — don’t try to catch it.</span><span class="l-zh">美联储托底仍在位，此类下跌历史上通常跌幅更浅。等待市场企稳 — 不要接飞刀。</span>{% elif _dlg_dl.verdict == 'stand_aside' %}<span class="l-en">The Fed’s backstop is not there. This is the setup that kept falling through 2008 — stand aside.</span><span class="l-zh">美联储托底缺失。这正是 2008 年一路下跌的情形 — 观望。</span>{% else %}<span class="l-en">Nothing to do until it steadies. Watch — don’t chase.</span><span class="l-zh">企稳前无需行动。观察 — 不要追。</span>{% endif %}{% if _dlg_dl_dissent %} <span class="l-en">Not everything agrees — the reasons are on the signal board.</span><span class="l-zh">并非所有指标一致 — 详见信号看板。</span>{% endif %}</div>
+            </div>
+          </div>
+          {% endif %}
           {% for a in _dlg_alv5_prio %}
           {% set _asev2 = 'warn' if a.severity in ('warn','high','critical') else 'info' %}
           {% set _atier = a.tier if (a.tier is defined and a.tier) else 'watch' %}
+          <div data-al-row>
           <div style="display:flex;gap:10px;padding:12px;background:{{ 'rgba(245,158,11,.06)' if _asev2=='warn' else 'rgba(255,255,255,.03)' }};border-radius:10px;border:1px solid {{ 'rgba(245,158,11,.18)' if _asev2=='warn' else 'rgba(255,255,255,.06)' }}">
             <div style="width:8px;height:8px;border-radius:50%;background:{{ 'var(--mx5-warn)' if _asev2=='warn' else 'var(--ink-3,rgba(255,255,255,.36))' }};flex-shrink:0;margin-top:5px"></div>
             <div style="flex:1;min-width:0">
@@ -13888,7 +14085,11 @@ html[data-theme="light"] :is(
                 {% endif %}
               </div>
               <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));line-height:1.5"><span class="l-en">{{ a.message }}</span><span class="l-zh">{{ a.message_zh or a.message }}</span></div>
+              {% if a.what_en %}
+              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">{{ a.what_en }}</span><span class="l-zh">{{ a.what_zh or a.what_en }}</span></div>
+              {% endif %}
             </div>
+          </div>
           </div>
           {% endfor %}
         </div>
@@ -13902,6 +14103,7 @@ html[data-theme="light"] :is(
         <div class="isle-head"><div class="isle-head-dot"></div><span class="isle-head-label"><span class="l-en">Context</span><span class="l-zh">背景</span></span><div class="isle-head-line"></div></div>
         <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;opacity:.8">
           {% for a in _dlg_alv5_ctx %}
+          <div data-al-row>
           <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
             <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
             <div style="flex:1;min-width:0">
@@ -13913,7 +14115,11 @@ html[data-theme="light"] :is(
                 <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
               </div>
               <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">{{ a.message }}</span><span class="l-zh">{{ a.message_zh or a.message }}</span></div>
+              {% if a.what_en %}
+              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">{{ a.what_en }}</span><span class="l-zh">{{ a.what_zh or a.what_en }}</span></div>
+              {% endif %}
             </div>
+          </div>
           </div>
           {% endfor %}
         </div>
@@ -15187,7 +15393,7 @@ html[data-theme="light"] :is(
   {# Week ahead — original lower-fold band; SUPPRESSED in macro mode (moved to upper fold above
      as mx-band id="week-ahead"). Kept here for stocks mode (no catalysts so renders nothing)
      and for reference. Context-only: scheduled dates say WHEN volatility is likely, never which way. #}
-  {% if mode == 'stocks' and (macro_catalysts or (prediction_markets and prediction_markets.events)) %}
+  {% if mode == 'stocks' and ((macro_catalysts is not none and macro_catalysts) or (prediction_markets and prediction_markets.events)) %}
   <style id="cal-css">
   #week-ahead .cal-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
   #week-ahead .cal-ev{flex:1 1 0;min-width:124px;border:1px solid var(--line);
@@ -15208,7 +15414,7 @@ html[data-theme="light"] :is(
     <h2 style="margin-bottom:10px">{{ t('Week ahead — scheduled catalysts', '未来一周 — 日程催化') }}
     <summary>{{ t('Sentiment regime','情绪周期') }}
     </h2>
-    {% if macro_catalysts %}
+    {% if macro_catalysts is not none and macro_catalysts %}
     {% set _mos = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] %}
     <div class="cal-row">
       {% for c in macro_catalysts[:8] %}
