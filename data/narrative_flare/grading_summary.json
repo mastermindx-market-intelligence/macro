@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-15T03:50:37.980961+00:00",
+  "generated_at": "2026-09-15T13:12:34.433070+00:00",
   "families": {
     "narrative_source_call": {
       "n_claims": 335,
@@ -16,9 +16,11 @@
       "state": "ACCRUING",
       "excess_by_horizon_td": {
         "21": {
-          "n": 0,
-          "excess_values": [],
-          "mean_excess": null
+          "n": 1,
+          "excess_values": [
+            0.068706
+          ],
+          "mean_excess": 0.068706
         },
         "63": {
           "n": 0,
@@ -26,11 +28,11 @@
           "mean_excess": null
         }
       },
-      "excess_n_matured": 0
+      "excess_n_matured": 1
     }
   },
   "source_registry_n": 2,
-  "source_registry_total_calls": 10062,
+  "source_registry_total_calls": 10391,
   "authority": {
     "tier": "display",
     "may_rank": false,

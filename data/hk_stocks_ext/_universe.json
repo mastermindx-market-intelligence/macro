@@ -1,7 +1,7 @@
 {
-  "as_of": "2026-09-14T13:41:46Z",
+  "as_of": "2026-09-15T21:15:37Z",
   "source": "https://www.hsi.com.hk/data/eng/rt/index-series/hsci/constituents.do",
-  "n": 581,
+  "n": 582,
   "tickers": [
     "0001.HK",
     "0002.HK",
@@ -95,6 +95,7 @@
     "0598.HK",
     "0600.HK",
     "0604.HK",
+    "0625.HK",
     "0631.HK",
     "0636.HK",
     "0639.HK",

@@ -1,18 +1,281 @@
 {
   "schema": "active_builds.v1",
-  "generated_at": "2026-09-15T04:01:48.996583+00:00",
+  "generated_at": "2026-09-15T13:32:40.759225+00:00",
   "base": {
-    "sha": "07b7d0b1f279d6c1fb2417f7aad1b8c940734dcb"
+    "sha": "fa8d585d4fe0df01f6795314f305918fe22aa758"
   },
   "merged_days": 14,
   "merged_truncated": false,
   "open_prs_truncated": true,
   "open_prs": [
     {
+      "number": 7166,
+      "title": "fix(earnings-wire): restore current incremental publication",
+      "head_ref": "sol/earnings-wire-incremental-recovery-20260914",
+      "updated_at": "2026-09-15T07:43:19Z",
+      "is_draft": false,
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
+      "files_count": 100,
+      "files_truncated": true,
+      "files_error": false,
+      "files": [
+        "docs/superpowers/plans/2026-09-14-earnings-wire-incremental-recovery.md",
+        "docs/superpowers/specs/2026-09-14-earnings-wire-incremental-recovery-design.md",
+        "scripts/build_earnings_public_wire.py",
+        "site/assets/js/company-intelligence-dossier.js",
+        "site/stocks/A.html",
+        "site/stocks/AA.html",
+        "site/stocks/AAL.html",
+        "site/stocks/AAMI.html",
+        "site/stocks/AAON.html",
+        "site/stocks/AAP.html",
+        "site/stocks/AAPL.html",
+        "site/stocks/AAT.html",
+        "site/stocks/ABBV.html",
+        "site/stocks/ABCB.html",
+        "site/stocks/ABG.html",
+        "site/stocks/ABM.html",
+        "site/stocks/ABNB.html",
+        "site/stocks/ABOS.html",
+        "site/stocks/ABR.html",
+        "site/stocks/ABSI.html",
+        "site/stocks/ABT.html",
+        "site/stocks/ABUS.html",
+        "site/stocks/ABX.html",
+        "site/stocks/ACA.html",
+        "site/stocks/ACAD.html",
+        "site/stocks/ACGL.html",
+        "site/stocks/ACHC.html",
+        "site/stocks/ACHR.html",
+        "site/stocks/ACI.html",
+        "site/stocks/ACIW.html",
+        "site/stocks/ACLS.html",
+        "site/stocks/ACM.html",
+        "site/stocks/ACMR.html",
+        "site/stocks/ACN.html",
+        "site/stocks/ACRS.html",
+        "site/stocks/ACT.html",
+        "site/stocks/ACTG.html",
+        "site/stocks/ACVA.html",
+        "site/stocks/ADAM.html",
+        "site/stocks/ADBE.html",
+        "site/stocks/ADC.html",
+        "site/stocks/ADEA.html",
+        "site/stocks/ADI.html",
+        "site/stocks/ADM.html",
+        "site/stocks/ADMA.html",
+        "site/stocks/ADNT.html",
+        "site/stocks/ADP.html",
+        "site/stocks/ADPT.html",
+        "site/stocks/ADSK.html",
+        "site/stocks/ADT.html",
+        "site/stocks/ADTN.html",
+        "site/stocks/ADUS.html",
+        "site/stocks/AEE.html",
+        "site/stocks/AEHR.html",
+        "site/stocks/AEIS.html",
+        "site/stocks/AEO.html",
+        "site/stocks/AEP.html",
+        "site/stocks/AES.html",
+        "site/stocks/AESI.html",
+        "site/stocks/AEVA.html",
+        "site/stocks/AFG.html",
+        "site/stocks/AFL.html",
+        "site/stocks/AGCO.html",
+        "site/stocks/AGL.html",
+        "site/stocks/AGNT.html",
+        "site/stocks/AGO.html",
+        "site/stocks/AGX.html",
+        "site/stocks/AGYS.html",
+        "site/stocks/AHCO.html",
+        "site/stocks/AHR.html",
+        "site/stocks/AI.html",
+        "site/stocks/AIG.html",
+        "site/stocks/AII.html",
+        "site/stocks/AIN.html",
+        "site/stocks/AIR.html",
+        "site/stocks/AIRJ.html",
+        "site/stocks/AIRS.html",
+        "site/stocks/AIT.html",
+        "site/stocks/AIZ.html",
+        "site/stocks/AJG.html",
+        "site/stocks/AKAM.html",
+        "site/stocks/AKR.html",
+        "site/stocks/ALB.html",
+        "site/stocks/ALEC.html",
+        "site/stocks/ALG.html",
+        "site/stocks/ALGM.html",
+        "site/stocks/ALGN.html",
+        "site/stocks/ALGT.html",
+        "site/stocks/ALHC.html",
+        "site/stocks/ALK.html",
+        "site/stocks/ALKS.html",
+        "site/stocks/ALKT.html",
+        "site/stocks/ALL.html",
+        "site/stocks/ALLE.html",
+        "site/stocks/ALLO.html",
+        "site/stocks/ALLY.html",
+        "site/stocks/ALMS.html",
+        "site/stocks/ALNT.html",
+        "site/stocks/ALOY.html",
+        "site/stocks/ALRM.html"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 7165,
+      "title": "[DRAFT][RESEARCH] Point-in-time Macro Turnaround source and replay",
+      "head_ref": "sol/anticipate-macro-turnarounds-continuation-20260909",
+      "updated_at": "2026-09-15T07:25:52Z",
+      "is_draft": true,
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
+      "files_count": 13,
+      "files_truncated": false,
+      "files_error": false,
+      "files": [
+        ".github/ci/legacy-jobs.yml",
+        "engine/macro_turnaround.py",
+        "engine/macro_turnaround_replay.py",
+        "research/MACRO_TURNAROUND_ANTICIPATION_ARCHITECTURE_2026-09-09.md",
+        "research/MACRO_TURNAROUND_ANTICIPATION_CONTINUATION_2026-09-11.md",
+        "scripts/build_macro_turnaround_research.py",
+        "scripts/replay_macro_turnaround.py",
+        "tests/test_ci_pack.py",
+        "tests/test_macro_turnaround_evidence_change.py",
+        "tests/test_macro_turnaround_feature_honesty.py",
+        "tests/test_macro_turnaround_replay.py",
+        "tests/test_macro_turnaround_replay_cli.py",
+        "tests/test_macro_turnaround_research.py"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 7164,
+      "title": "HOLD-FOR-SOL: Recover MarketDesk extractor source lineage",
+      "head_ref": "sol/research-vault-source-lineage-r1-20260915",
+      "updated_at": "2026-09-15T07:20:13Z",
+      "is_draft": true,
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
+      "files_count": 66,
+      "files_truncated": false,
+      "files_error": false,
+      "files": [
+        ".github/ci/legacy-jobs.yml",
+        "collectors/marketdesk_extractor/.gitattributes",
+        "collectors/marketdesk_extractor/IMPORT_RECEIPT.json",
+        "collectors/marketdesk_extractor/README.md",
+        "collectors/marketdesk_extractor/SHA256SUMS",
+        "collectors/marketdesk_extractor/extractor/.env.example",
+        "collectors/marketdesk_extractor/extractor/README.md",
+        "collectors/marketdesk_extractor/extractor/deploy/ai.marketdesk.cleanup.plist",
+        "collectors/marketdesk_extractor/extractor/deploy/ai.marketdesk.feed.plist",
+        "collectors/marketdesk_extractor/extractor/deploy/ai.marketdesk.manifest.plist",
+        "collectors/marketdesk_extractor/extractor/deploy/ai.marketdesk.run.plist",
+        "collectors/marketdesk_extractor/extractor/deploy/ai.marketdesk.trickle.plist",
+        "collectors/marketdesk_extractor/extractor/docs/DEPLOY_MAC_STUDIO.md",
+        "collectors/marketdesk_extractor/extractor/docs/INTERFACES.md",
+        "collectors/marketdesk_extractor/extractor/docs/MARKETDESK_API.md",
+        "collectors/marketdesk_extractor/extractor/pyproject.toml",
+        "collectors/marketdesk_extractor/extractor/src/marketdesk_extractor/__init__.py",
+        "collectors/marketdesk_extractor/extractor/src/marketdesk_extractor/allocator.py",
+        "collectors/marketdesk_extractor/extractor/src/marketdesk_extractor/auth.py",
+        "collectors/marketdesk_extractor/extractor/src/marketdesk_extractor/backlog.py",
+        "collectors/marketdesk_extractor/extractor/src/marketdesk_extractor/cleanup.py",
+        "collectors/marketdesk_extractor/extractor/src/marketdesk_extractor/cli.py",
+        "collectors/marketdesk_extractor/extractor/src/marketdesk_extractor/config.py",
+        "collectors/marketdesk_extractor/extractor/src/marketdesk_extractor/db.py",
+        "collectors/marketdesk_extractor/extractor/src/marketdesk_extractor/discover.py",
+        "collectors/marketdesk_extractor/extractor/src/marketdesk_extractor/download.py",
+        "collectors/marketdesk_extractor/extractor/src/marketdesk_extractor/feed_probe.py",
+        "collectors/marketdesk_extractor/extractor/src/marketdesk_extractor/filters.py",
+        "collectors/marketdesk_extractor/extractor/src/marketdesk_extractor/marketdesk.py",
+        "collectors/marketdesk_extractor/extractor/src/marketdesk_extractor/parse_pdf.py",
+        "collectors/marketdesk_extractor/extractor/src/marketdesk_extractor/pipeline.py",
+        "collectors/marketdesk_extractor/extractor/src/marketdesk_extractor/publish_vault.py",
+        "collectors/marketdesk_extractor/extractor/src/marketdesk_extractor/schemas.py",
+        "collectors/marketdesk_extractor/extractor/src/marketdesk_extractor/score.py",
+        "collectors/marketdesk_extractor/extractor/src/marketdesk_extractor/storage.py",
+        "collectors/marketdesk_extractor/extractor/src/marketdesk_extractor/trickle.py",
+        "collectors/marketdesk_extractor/extractor/src/marketdesk_extractor/upload_dropbox.py",
+        "collectors/marketdesk_extractor/extractor/src/marketdesk_extractor/upload_r2.py",
+        "collectors/marketdesk_extractor/extractor/src/marketdesk_extractor/utils.py",
+        "collectors/marketdesk_extractor/extractor/tests/conftest.py",
+        "collectors/marketdesk_extractor/extractor/tests/test_allocator.py",
+        "collectors/marketdesk_extractor/extractor/tests/test_backlog.py",
+        "collectors/marketdesk_extractor/extractor/tests/test_cleanup.py",
+        "collectors/marketdesk_extractor/extractor/tests/test_db.py",
+        "collectors/marketdesk_extractor/extractor/tests/test_dedupe.py",
+        "collectors/marketdesk_extractor/extractor/tests/test_feed_probe.py",
+        "collectors/marketdesk_extractor/extractor/tests/test_feed_watcher.py",
+        "collectors/marketdesk_extractor/extractor/tests/test_filters.py",
+        "collectors/marketdesk_extractor/extractor/tests/test_manifest.py",
+        "collectors/marketdesk_extractor/extractor/tests/test_marketdesk_dating.py",
+        "collectors/marketdesk_extractor/extractor/tests/test_pipeline_integration.py",
+        "collectors/marketdesk_extractor/extractor/tests/test_publish_vault.py",
+        "collectors/marketdesk_extractor/extractor/tests/test_scoring.py",
+        "collectors/marketdesk_extractor/extractor/tests/test_self_heal.py",
+        "collectors/marketdesk_extractor/extractor/tests/test_session_expiry.py",
+        "collectors/marketdesk_extractor/extractor/tests/test_storage_guard.py",
+        "collectors/marketdesk_extractor/extractor/tests/test_trickle.py",
+        "collectors/marketdesk_extractor/extractor/tests/test_trickle_pacing.py",
+        "collectors/marketdesk_extractor/extractor/tests/test_upload_r2_key.py",
+        "collectors/marketdesk_extractor/extractor/tests/test_utils.py",
+        "collectors/marketdesk_extractor/feed.sh",
+        "collectors/marketdesk_extractor/runtime/com.mastermindx.research-feed.plist",
+        "collectors/marketdesk_extractor/runtime/com.mastermindx.research-trickle.plist",
+        "collectors/marketdesk_extractor/runtime/feed.sh",
+        "collectors/marketdesk_extractor/tools/install_runtime.py",
+        "tests/test_marketdesk_extractor_lineage.py"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 7163,
+      "title": "fix(prophet): route HK sector ranking to existing modal",
+      "head_ref": "claude/prophet-hk-sector-link-20260915",
+      "updated_at": "2026-09-15T06:42:52Z",
+      "is_draft": false,
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
+      "files_count": 3,
+      "files_truncated": false,
+      "files_error": false,
+      "files": [
+        "site/hk-stock-v36.js",
+        "templates/hk.html.j2",
+        "tests/test_hk_v37_composer.py"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 7162,
+      "title": "[OCR-2C-B][DRAFT][HOLD] Native Claude Provider Control V2 architecture",
+      "head_ref": "sol/ocr2c-family-b-provider-control-v2-20260914",
+      "updated_at": "2026-09-15T07:08:06Z",
+      "is_draft": true,
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
+      "files_count": 6,
+      "files_truncated": false,
+      "files_error": false,
+      "files": [
+        "agentos/decisions/DEC-NATIVE-CLAUDE-MULTIHOST-QUOTA-DOMAIN.md",
+        "agentos/decisions/DEC-NATIVE-CLAUDE-REALM-CAPACITY-FAMILY-B-V2.md",
+        "agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-14-OCR2C-FAMILY-B-MULTIHOST.md",
+        "agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-14-OCR2C-FAMILY-B-V2.md",
+        "research/NATIVE_CLAUDE_MULTIHOST_QUOTA_DOMAIN_AMENDMENT_2026-09-14.md",
+        "research/NATIVE_CLAUDE_REALM_PROVIDER_CONTROL_V2_ARCHITECTURE_2026-09-14.md"
+      ],
+      "protected_paths_touched": []
+    },
+    {
       "number": 7161,
       "title": "fix(prophet): identify US plan cohorts by market session",
       "head_ref": "sol/prophet-us-cohort-clock-repair-20260913",
-      "updated_at": "2026-09-15T03:43:12Z",
+      "updated_at": "2026-09-15T06:55:09Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -63,7 +326,7 @@
       "number": 7156,
       "title": "fix(brain): enforce honest China session freshness",
       "head_ref": "warp/warp-468281f45667484aa920604f387344260261acb1d8995f22ff615e6c648535ee",
-      "updated_at": "2026-09-15T03:43:16Z",
+      "updated_at": "2026-09-15T06:57:11Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -93,9 +356,9 @@
     },
     {
       "number": 7155,
-      "title": "[AGENT OS][CCR][H2][RECORDS ONLY][HOLD] Preserve current Profile Search 5xx provider gate",
+      "title": "[AGENT OS][CCR][H2][RECORDS ONLY][HOLD] Preserve repeated Profile Search 5xx support gate",
       "head_ref": "sol/ccr-h2-profile-search-health-provider-gate-closeout-20260914",
-      "updated_at": "2026-09-14T17:10:01Z",
+      "updated_at": "2026-09-15T06:57:26Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -342,8 +605,8 @@
       "number": 7142,
       "title": "[DRAFT] Add provider account pool selector",
       "head_ref": "sol/opencode-go-pool",
-      "updated_at": "2026-09-15T00:00:43Z",
-      "is_draft": true,
+      "updated_at": "2026-09-15T07:09:58Z",
+      "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
       "files_count": 5,
@@ -453,11 +716,11 @@
       "number": 7135,
       "title": "[NATIVE FIGMA + SOURCE PROOF][HOLD] Macro Alert Center \u2014 action-led design",
       "head_ref": "sol/alert-fabric-architecture-20260913",
-      "updated_at": "2026-09-14T19:33:53Z",
+      "updated_at": "2026-09-15T06:11:27Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
-      "files_count": 19,
+      "files_count": 20,
       "files_truncated": false,
       "files_error": false,
       "files": [
@@ -467,6 +730,7 @@
         "agentos/discoveries/DSC-ALERT-FABRIC-SEMANTIC-ADMISSION.md",
         "agentos/discoveries/DSC-MACRO-ALERT-CENTER-HARDENING-CANDIDATE-20260914.md",
         "agentos/discoveries/DSC-MACRO-ALERT-CENTER-SOURCE-BOUND-NATIVE-FIGMA-20260914.md",
+        "agentos/handoffs/MACRO-ALERT-CENTER.md",
         "research/ALERT_INTELLIGENCE_FABRIC_ARCHITECTURE_PROPOSAL_20260913.md",
         "research/ALERT_INTELLIGENCE_FABRIC_DECISION_CONTRACT_20260913.md",
         "research/ALERT_INTELLIGENCE_FABRIC_FUNCTIONAL_FREEZE_CANDIDATE_20260913.md",
@@ -1160,8 +1424,8 @@
       "number": 7103,
       "title": "[Provider Control][DRAFT] Add GLM, Alibaba, MiniMax subscription plan semantics",
       "head_ref": "sol/provider-subscription-catalog-20260913",
-      "updated_at": "2026-09-14T23:08:42Z",
-      "is_draft": true,
+      "updated_at": "2026-09-15T07:10:01Z",
+      "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
       "files_count": 8,
@@ -1233,7 +1497,7 @@
       "number": 7101,
       "title": "[HOLD] Research Intelligence Object v1",
       "head_ref": "sol/qual-research-rio-w1-20260912",
-      "updated_at": "2026-09-14T20:08:32Z",
+      "updated_at": "2026-09-15T07:00:02Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -1297,20 +1561,23 @@
       "number": 7095,
       "title": "HOLD: execute preregistered sector-rotation daily control RPH-1",
       "head_ref": "sol/rotation-persistence-sector-control-rph1-20260912",
-      "updated_at": "2026-09-14T18:50:16Z",
+      "updated_at": "2026-09-15T06:40:21Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
-      "files_count": 11,
+      "files_count": 14,
       "files_truncated": false,
       "files_error": false,
       "files": [
         ".github/ci/legacy-jobs.yml",
+        "agentos/handoffs/LEADERSHIP-PERSISTENCE-INTELLIGENCE-2026-09-14-RPH1.md",
+        "agentos/workstreams/WS-LEADERSHIP-PERSISTENCE-INTELLIGENCE.md",
         "docs/superpowers/plans/2026-09-12-sector-rotation-daily-control-rph1.md",
         "docs/superpowers/plans/2026-09-14-sector-rotation-daily-control-rph1-review-repair.md",
         "research/rotation_persistence/LEADERSHIP_PERSISTENCE_SECTOR_CONTROL_RPH1_PREREGISTRATION_2026-09-12.md",
         "research/rotation_persistence/sector_control_rph1/report.md",
         "research/rotation_persistence/sector_control_rph1/result.json",
+        "research/rotation_persistence/sector_control_rph1/verification.json",
         "scripts/research/rotation_persistence/sector_control.py",
         "scripts/research/run_sector_control_rph1.py",
         "tests/test_rotation_persistence_sector_archive.py",
@@ -2225,7 +2492,7 @@
       "number": 7067,
       "title": "[MO-A W10] market_structure: revive the change strip, receipt-true hero distance, window labels (round 1)",
       "head_ref": "claude/ssd-mo-heal-mstruct-w10-ccb2b65c8bc26e50",
-      "updated_at": "2026-09-14T03:37:55Z",
+      "updated_at": "2026-09-15T10:34:59Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -2560,20 +2827,24 @@
     },
     {
       "number": 7060,
-      "title": "W1: sector participation licensed-history adapter + 20-session calc (source impl, Draft/HOLD)",
+      "title": "W1: historical US sector participation evidence journey (Draft/HOLD)",
       "head_ref": "claude/ssd-sector-central-w1-source-impl-1c350aeb6815a110",
-      "updated_at": "2026-09-11T11:46:22Z",
+      "updated_at": "2026-09-15T12:42:53Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
-      "files_count": 5,
+      "files_count": 9,
       "files_truncated": false,
       "files_error": false,
       "files": [
         ".github/ci/legacy-jobs.yml",
         "collectors/breadth.py",
+        "lib/sector_participation.py",
         "scripts/build_sector_central.py",
         "templates/sector_central.html.j2",
+        "templates/sector_participation_20.js",
+        "templates/si_workspace.js",
+        "tests/test_ci_pack.py",
         "tests/test_sector_central_participation.py"
       ],
       "protected_paths_touched": []
@@ -2600,7 +2871,7 @@
       "number": 7058,
       "title": "[MO-A W7] stage_analysis: P0 truth blockers + pipeline strings (round 1)",
       "head_ref": "claude/ssd-mo-heal-stage-w7-d52c1d79149bd331",
-      "updated_at": "2026-09-13T15:40:10Z",
+      "updated_at": "2026-09-15T10:34:59Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -2715,7 +2986,7 @@
       "number": 7057,
       "title": "[MO-A S3] bonds.html \u2192 Archetype-D regime_dashboard migration",
       "head_ref": "claude/ssd-mo-build-bonds-s3-cd5364030dddd86b",
-      "updated_at": "2026-09-13T22:03:01Z",
+      "updated_at": "2026-09-15T10:35:01Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -2945,7 +3216,7 @@
       "number": 7055,
       "title": "[MO-A W6] commodities: P0 truth blockers + lexicon slug guard (round 1)",
       "head_ref": "claude/ssd-mo-heal-cmdty-w6-7c04aacc50e69b57",
-      "updated_at": "2026-09-15T02:05:39Z",
+      "updated_at": "2026-09-15T12:53:57Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -2956,103 +3227,103 @@
         ".github/ci/legacy-jobs.yml",
         "engine/commodity_confluence.py",
         "engine/commodity_index.py",
+        "mockups/evidence/commodities-w6/09da7b458ce940ee.png",
+        "mockups/evidence/commodities-w6/0a11cc879fa01de7.png",
+        "mockups/evidence/commodities-w6/0a6428489910aac9.png",
+        "mockups/evidence/commodities-w6/0b49fabf6a1d7d4c.png",
+        "mockups/evidence/commodities-w6/15f806b43e89beb6.png",
+        "mockups/evidence/commodities-w6/198cfd22f2be0b11.png",
+        "mockups/evidence/commodities-w6/1e4ee26824db6098.png",
+        "mockups/evidence/commodities-w6/29a64c38b2eb84b2.png",
+        "mockups/evidence/commodities-w6/2baf1b5054f9ca53.png",
+        "mockups/evidence/commodities-w6/2da2ccb27385aa5f.png",
+        "mockups/evidence/commodities-w6/2e52c3d3feb99001.png",
+        "mockups/evidence/commodities-w6/30b8fe530d4efafa.png",
+        "mockups/evidence/commodities-w6/3191e40db1e990b5.png",
+        "mockups/evidence/commodities-w6/3407de0a5ee1ffa9.png",
+        "mockups/evidence/commodities-w6/348723aaecf16dae.png",
+        "mockups/evidence/commodities-w6/349ea29e176425e9.png",
+        "mockups/evidence/commodities-w6/3b98ae706862c55d.png",
+        "mockups/evidence/commodities-w6/3d4dd21ccd7dc9f3.png",
+        "mockups/evidence/commodities-w6/46cdca828f2d557c.png",
+        "mockups/evidence/commodities-w6/486d969e243fddc6.png",
+        "mockups/evidence/commodities-w6/4bf1bb750909c46e.png",
+        "mockups/evidence/commodities-w6/4c69aba2fa579ede.png",
+        "mockups/evidence/commodities-w6/4ff6c18a4e395b1d.png",
+        "mockups/evidence/commodities-w6/595cbcef70fdcd09.png",
+        "mockups/evidence/commodities-w6/59afda19fe733201.png",
+        "mockups/evidence/commodities-w6/5bbac78c66c07da6.png",
+        "mockups/evidence/commodities-w6/5e848db69b20dfc1.png",
+        "mockups/evidence/commodities-w6/6532e6aaf45a0cff.png",
+        "mockups/evidence/commodities-w6/678f2744011e6b64.png",
+        "mockups/evidence/commodities-w6/698ff199fcd14809.png",
+        "mockups/evidence/commodities-w6/6afc12fa40925782.png",
+        "mockups/evidence/commodities-w6/6be1561867149b11.png",
+        "mockups/evidence/commodities-w6/6cf9a9f5ffb0cbba.png",
+        "mockups/evidence/commodities-w6/6eea1c9507b43d85.png",
+        "mockups/evidence/commodities-w6/6f9769deadff0b38.png",
+        "mockups/evidence/commodities-w6/71fd525e93627a88.png",
+        "mockups/evidence/commodities-w6/72312b2c4bfea78d.png",
+        "mockups/evidence/commodities-w6/748765243ad920ac.png",
+        "mockups/evidence/commodities-w6/76b7788ced0d03ea.png",
+        "mockups/evidence/commodities-w6/7a675dec276561d4.png",
+        "mockups/evidence/commodities-w6/7c1cad8f63132323.png",
+        "mockups/evidence/commodities-w6/7cdeca1fe5aaa042.png",
+        "mockups/evidence/commodities-w6/7d8bdaf44074a87e.png",
+        "mockups/evidence/commodities-w6/8125eb31437b2cfe.png",
+        "mockups/evidence/commodities-w6/819b69324860ec8b.png",
+        "mockups/evidence/commodities-w6/823eb88b44c5da28.png",
+        "mockups/evidence/commodities-w6/8c2d5355c427dd75.png",
+        "mockups/evidence/commodities-w6/95d04f147ad7700d.png",
+        "mockups/evidence/commodities-w6/96c37c2670c2a6e8.png",
+        "mockups/evidence/commodities-w6/96f2cdf4270cf458.png",
+        "mockups/evidence/commodities-w6/97b9ad6103faf10a.png",
+        "mockups/evidence/commodities-w6/9e466a121d906661.png",
+        "mockups/evidence/commodities-w6/9f4e548a1f5aa690.png",
         "mockups/evidence/commodities-w6/EVIDENCE.yml",
         "mockups/evidence/commodities-w6/README.md",
-        "mockups/evidence/commodities-w6/cells/01cdf6716324ad56.png",
-        "mockups/evidence/commodities-w6/cells/0234db4ded7b5b77.png",
-        "mockups/evidence/commodities-w6/cells/02801085b29f8fad.png",
-        "mockups/evidence/commodities-w6/cells/0336eb97f007fb13.png",
-        "mockups/evidence/commodities-w6/cells/0b49fabf6a1d7d4c.png",
-        "mockups/evidence/commodities-w6/cells/0f2310d704d25fa7.png",
-        "mockups/evidence/commodities-w6/cells/115254b1fff21cc6.png",
-        "mockups/evidence/commodities-w6/cells/1161689d5227ae25.png",
-        "mockups/evidence/commodities-w6/cells/16ec010fcf3c6018.png",
-        "mockups/evidence/commodities-w6/cells/1fed61c6e09df215.png",
-        "mockups/evidence/commodities-w6/cells/279d9678b4dbfd72.png",
-        "mockups/evidence/commodities-w6/cells/37c2e7a8e6265ade.png",
-        "mockups/evidence/commodities-w6/cells/3907eeb68989c60f.png",
-        "mockups/evidence/commodities-w6/cells/446db80915b78955.png",
-        "mockups/evidence/commodities-w6/cells/447988a39747feea.png",
-        "mockups/evidence/commodities-w6/cells/4f47108610c070c9.png",
-        "mockups/evidence/commodities-w6/cells/519cbd34aac9c0f6.png",
-        "mockups/evidence/commodities-w6/cells/52a60cc3aac654b6.png",
-        "mockups/evidence/commodities-w6/cells/54a6719c228043c3.png",
-        "mockups/evidence/commodities-w6/cells/59afda19fe733201.png",
-        "mockups/evidence/commodities-w6/cells/5b36bdf8a496ce4f.png",
-        "mockups/evidence/commodities-w6/cells/61d92b9d06f0822a.png",
-        "mockups/evidence/commodities-w6/cells/627f710eeff76d84.png",
-        "mockups/evidence/commodities-w6/cells/653fdba3807a321e.png",
-        "mockups/evidence/commodities-w6/cells/698ff199fcd14809.png",
-        "mockups/evidence/commodities-w6/cells/69d1ccd1c92f441f.png",
-        "mockups/evidence/commodities-w6/cells/6afc12fa40925782.png",
-        "mockups/evidence/commodities-w6/cells/6be1561867149b11.png",
-        "mockups/evidence/commodities-w6/cells/6cf9a9f5ffb0cbba.png",
-        "mockups/evidence/commodities-w6/cells/6eea1c9507b43d85.png",
-        "mockups/evidence/commodities-w6/cells/6f0e85df1ddce063.png",
-        "mockups/evidence/commodities-w6/cells/6f8edd17b1e04e89.png",
-        "mockups/evidence/commodities-w6/cells/6fd1b209717054f6.png",
-        "mockups/evidence/commodities-w6/cells/72c502d1fcdd9ff7.png",
-        "mockups/evidence/commodities-w6/cells/74260e28a1c7ac7a.png",
-        "mockups/evidence/commodities-w6/cells/76b7788ced0d03ea.png",
-        "mockups/evidence/commodities-w6/cells/77f705214b4a0ae4.png",
-        "mockups/evidence/commodities-w6/cells/87720c803d04cf67.png",
-        "mockups/evidence/commodities-w6/cells/95d04f147ad7700d.png",
-        "mockups/evidence/commodities-w6/cells/96bf79dc9631a349.png",
-        "mockups/evidence/commodities-w6/cells/96c37c2670c2a6e8.png",
-        "mockups/evidence/commodities-w6/cells/96f2cdf4270cf458.png",
-        "mockups/evidence/commodities-w6/cells/9cdb31f4fe56fd1c.png",
-        "mockups/evidence/commodities-w6/cells/9f4e548a1f5aa690.png",
-        "mockups/evidence/commodities-w6/cells/a-heat-blowoff-dark-en-desktop.png",
-        "mockups/evidence/commodities-w6/cells/a-heat-blowoff-dark-en-mobile.png",
-        "mockups/evidence/commodities-w6/cells/a-heat-blowoff-dark-zh-desktop.png",
-        "mockups/evidence/commodities-w6/cells/a-heat-blowoff-dark-zh-mobile.png",
-        "mockups/evidence/commodities-w6/cells/a-heat-blowoff-light-en-desktop.png",
-        "mockups/evidence/commodities-w6/cells/a-heat-blowoff-light-en-mobile.png",
-        "mockups/evidence/commodities-w6/cells/a-heat-blowoff-light-zh-desktop.png",
-        "mockups/evidence/commodities-w6/cells/a-heat-blowoff-light-zh-mobile.png",
-        "mockups/evidence/commodities-w6/cells/a-heat-extended-dark-en-desktop.png",
-        "mockups/evidence/commodities-w6/cells/a-heat-extended-dark-zh-desktop.png",
-        "mockups/evidence/commodities-w6/cells/a-heat-extended-light-en-desktop.png",
-        "mockups/evidence/commodities-w6/cells/a-heat-extended-light-zh-desktop.png",
-        "mockups/evidence/commodities-w6/cells/acb62ed8c91bf827.png",
-        "mockups/evidence/commodities-w6/cells/afa07f40dbad1cf8.png",
-        "mockups/evidence/commodities-w6/cells/atf-dark-en-desktop.png",
-        "mockups/evidence/commodities-w6/cells/atf-dark-en-mobile.png",
-        "mockups/evidence/commodities-w6/cells/atf-dark-zh-desktop.png",
-        "mockups/evidence/commodities-w6/cells/atf-dark-zh-mobile.png",
-        "mockups/evidence/commodities-w6/cells/atf-light-en-desktop.png",
-        "mockups/evidence/commodities-w6/cells/atf-light-en-mobile.png",
-        "mockups/evidence/commodities-w6/cells/atf-light-zh-desktop.png",
-        "mockups/evidence/commodities-w6/cells/atf-light-zh-mobile.png",
-        "mockups/evidence/commodities-w6/cells/b-live-oil-dark-en-desktop.png",
-        "mockups/evidence/commodities-w6/cells/b-live-oil-light-en-desktop.png",
-        "mockups/evidence/commodities-w6/cells/b304a4de079a9f53.png",
-        "mockups/evidence/commodities-w6/cells/b5f1e2ea70eb8d5b.png",
-        "mockups/evidence/commodities-w6/cells/bdb1399732ca1f77.png",
-        "mockups/evidence/commodities-w6/cells/bfcbb73c07b23623.png",
-        "mockups/evidence/commodities-w6/cells/c432487d1a0af969.png",
-        "mockups/evidence/commodities-w6/cells/c7b1b5f5ab1fba14.png",
-        "mockups/evidence/commodities-w6/cells/c97247fd0a9d351d.png",
-        "mockups/evidence/commodities-w6/cells/ca3cb2b3f810bbd9.png",
-        "mockups/evidence/commodities-w6/cells/ce0027d5e9e7f2d5.png",
-        "mockups/evidence/commodities-w6/cells/ce31c38ef4530870.png",
-        "mockups/evidence/commodities-w6/cells/d-cycle-missing-dark-en-desktop.png",
-        "mockups/evidence/commodities-w6/cells/d-cycle-missing-dark-zh-desktop.png",
-        "mockups/evidence/commodities-w6/cells/d-cycle-missing-light-en-desktop.png",
-        "mockups/evidence/commodities-w6/cells/d-cycle-missing-light-zh-desktop.png",
-        "mockups/evidence/commodities-w6/cells/d0abdfbb3965a751.png",
-        "mockups/evidence/commodities-w6/cells/d2c48e7953a430bc.png",
-        "mockups/evidence/commodities-w6/cells/d59d5f1383307f20.png",
-        "mockups/evidence/commodities-w6/cells/d7087ed01c39f921.png",
-        "mockups/evidence/commodities-w6/cells/dbc643e25b75309e.png",
-        "mockups/evidence/commodities-w6/cells/e-dollar-omitted-dark-en-desktop.png",
-        "mockups/evidence/commodities-w6/cells/e-dollar-value-dark-en-desktop.png",
-        "mockups/evidence/commodities-w6/cells/e304daaa0c7c0ea9.png",
-        "mockups/evidence/commodities-w6/cells/e4a01e95e2154630.png",
-        "mockups/evidence/commodities-w6/cells/e763b6e46c4aaf68.png",
-        "mockups/evidence/commodities-w6/cells/e85ef853ce9487f5.png",
-        "mockups/evidence/commodities-w6/cells/e888fef15fce3ace.png",
-        "mockups/evidence/commodities-w6/cells/e8d91132472acfd6.png"
+        "mockups/evidence/commodities-w6/a-heat-blowoff-dark-en-desktop.png",
+        "mockups/evidence/commodities-w6/a-heat-blowoff-dark-en-mobile.png",
+        "mockups/evidence/commodities-w6/a-heat-blowoff-dark-zh-desktop.png",
+        "mockups/evidence/commodities-w6/a-heat-blowoff-dark-zh-mobile.png",
+        "mockups/evidence/commodities-w6/a-heat-blowoff-light-en-desktop.png",
+        "mockups/evidence/commodities-w6/a-heat-blowoff-light-en-mobile.png",
+        "mockups/evidence/commodities-w6/a-heat-blowoff-light-zh-desktop.png",
+        "mockups/evidence/commodities-w6/a-heat-blowoff-light-zh-mobile.png",
+        "mockups/evidence/commodities-w6/a-heat-extended-dark-en-desktop.png",
+        "mockups/evidence/commodities-w6/a-heat-extended-dark-en-mobile.png",
+        "mockups/evidence/commodities-w6/a-heat-extended-dark-zh-desktop.png",
+        "mockups/evidence/commodities-w6/a-heat-extended-dark-zh-mobile.png",
+        "mockups/evidence/commodities-w6/a-heat-extended-light-en-desktop.png",
+        "mockups/evidence/commodities-w6/a-heat-extended-light-en-mobile.png",
+        "mockups/evidence/commodities-w6/a-heat-extended-light-zh-desktop.png",
+        "mockups/evidence/commodities-w6/a-heat-extended-light-zh-mobile.png",
+        "mockups/evidence/commodities-w6/a1777b1993b4727a.png",
+        "mockups/evidence/commodities-w6/a9d773eb4b95d2d5.png",
+        "mockups/evidence/commodities-w6/aef767950752283f.png",
+        "mockups/evidence/commodities-w6/atf-dark-en-desktop.png",
+        "mockups/evidence/commodities-w6/atf-dark-en-mobile.png",
+        "mockups/evidence/commodities-w6/atf-dark-zh-desktop.png",
+        "mockups/evidence/commodities-w6/atf-dark-zh-mobile.png",
+        "mockups/evidence/commodities-w6/atf-light-en-desktop.png",
+        "mockups/evidence/commodities-w6/atf-light-en-mobile.png",
+        "mockups/evidence/commodities-w6/atf-light-zh-desktop.png",
+        "mockups/evidence/commodities-w6/atf-light-zh-mobile.png",
+        "mockups/evidence/commodities-w6/b-live-oil-dark-en-desktop.png",
+        "mockups/evidence/commodities-w6/b-live-oil-dark-en-mobile.png",
+        "mockups/evidence/commodities-w6/b-live-oil-dark-zh-desktop.png",
+        "mockups/evidence/commodities-w6/b-live-oil-dark-zh-mobile.png",
+        "mockups/evidence/commodities-w6/b-live-oil-light-en-desktop.png",
+        "mockups/evidence/commodities-w6/b-live-oil-light-en-mobile.png",
+        "mockups/evidence/commodities-w6/b-live-oil-light-zh-desktop.png",
+        "mockups/evidence/commodities-w6/b-live-oil-light-zh-mobile.png",
+        "mockups/evidence/commodities-w6/b0419453cf5f9a12.png",
+        "mockups/evidence/commodities-w6/b2ee92a09b7062ce.png",
+        "mockups/evidence/commodities-w6/b47876f27057cafe.png",
+        "mockups/evidence/commodities-w6/b496c31aa67d465c.png",
+        "mockups/evidence/commodities-w6/b59004214e77b38b.png",
+        "mockups/evidence/commodities-w6/b873c6815c7c6797.png",
+        "mockups/evidence/commodities-w6/b97a701a07e2d282.png"
       ],
       "protected_paths_touched": []
     },
@@ -3060,7 +3331,7 @@
       "number": 7054,
       "title": "[MO-A S1] china.html \u2192 Archetype-D regime_dashboard migration",
       "head_ref": "claude/ssd-mo-build-china-s1-62b97c5d996668b0",
-      "updated_at": "2026-09-15T02:05:38Z",
+      "updated_at": "2026-09-15T12:57:23Z",
       "is_draft": false,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -3168,121 +3439,6 @@
         "mockups/evidence/china-archetype-d/todo-dark-zh-desktop.png",
         "mockups/evidence/china-archetype-d/todo-dark-zh-mobile.png",
         "mockups/evidence/china-archetype-d/todo-light-en-desktop.png"
-      ],
-      "protected_paths_touched": []
-    },
-    {
-      "number": 7053,
-      "title": "[MO-A W5] china_policy_watch: P0 truth blockers + LENS enabler (round 1)",
-      "head_ref": "claude/ssd-mo-heal-cpw-w5-94a35f709bc4dfc9",
-      "updated_at": "2026-09-15T02:11:13Z",
-      "is_draft": false,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 100,
-      "files_truncated": true,
-      "files_error": false,
-      "files": [
-        "data/china_policy/intel.json",
-        "engine/china_national_team.py",
-        "engine/china_news.py",
-        "engine/china_pboc_stance.py",
-        "engine/china_policy_watch.py",
-        "mockups/evidence/china-policy-watch/EVIDENCE.yml",
-        "mockups/evidence/china-policy-watch/README.md",
-        "mockups/evidence/china-policy-watch/cells/0107d1d688cf2fa6.png",
-        "mockups/evidence/china-policy-watch/cells/0d80207a7a8ec0f5.png",
-        "mockups/evidence/china-policy-watch/cells/0df3387aabdf8d7d.png",
-        "mockups/evidence/china-policy-watch/cells/129edcf36dd0c1ac.png",
-        "mockups/evidence/china-policy-watch/cells/1457150032f58bcc.png",
-        "mockups/evidence/china-policy-watch/cells/151c881c4f928d7c.png",
-        "mockups/evidence/china-policy-watch/cells/18af2f0886e436a2.png",
-        "mockups/evidence/china-policy-watch/cells/1c0a6bfcb4d7f5aa.png",
-        "mockups/evidence/china-policy-watch/cells/207ad546cb17e57e.png",
-        "mockups/evidence/china-policy-watch/cells/24efcd64a91d2654.png",
-        "mockups/evidence/china-policy-watch/cells/25ccea01ad2dfe22.png",
-        "mockups/evidence/china-policy-watch/cells/2fb64d62fdef4328.png",
-        "mockups/evidence/china-policy-watch/cells/311ea0c3ab589345.png",
-        "mockups/evidence/china-policy-watch/cells/31894b98fedb2646.png",
-        "mockups/evidence/china-policy-watch/cells/442fcf4d969f79de.png",
-        "mockups/evidence/china-policy-watch/cells/4505d2fc0033d4e6.png",
-        "mockups/evidence/china-policy-watch/cells/461d5c23ee1f1d2b.png",
-        "mockups/evidence/china-policy-watch/cells/478c99e402fbaec3.png",
-        "mockups/evidence/china-policy-watch/cells/505c6d97bad2fb8b.png",
-        "mockups/evidence/china-policy-watch/cells/575e332b2ac554d2.png",
-        "mockups/evidence/china-policy-watch/cells/5d2f841aa5e07b1c.png",
-        "mockups/evidence/china-policy-watch/cells/5e12204d14871094.png",
-        "mockups/evidence/china-policy-watch/cells/5fdf192be5a8159c.png",
-        "mockups/evidence/china-policy-watch/cells/61e13c995397f5ac.png",
-        "mockups/evidence/china-policy-watch/cells/70ebdc8b69ff3750.png",
-        "mockups/evidence/china-policy-watch/cells/7697a64616f27582.png",
-        "mockups/evidence/china-policy-watch/cells/7854e1cbac83d545.png",
-        "mockups/evidence/china-policy-watch/cells/80fc1b435f564ae4.png",
-        "mockups/evidence/china-policy-watch/cells/81985c794954d0fe.png",
-        "mockups/evidence/china-policy-watch/cells/84086c9838c35cdf.png",
-        "mockups/evidence/china-policy-watch/cells/8574963d77d56874.png",
-        "mockups/evidence/china-policy-watch/cells/8d5ef9568586e2a6.png",
-        "mockups/evidence/china-policy-watch/cells/9319564aa94fed0a.png",
-        "mockups/evidence/china-policy-watch/cells/93faad928cd2bcc8.png",
-        "mockups/evidence/china-policy-watch/cells/993a5336917fe374.png",
-        "mockups/evidence/china-policy-watch/cells/99ee6ea6eb993533.png",
-        "mockups/evidence/china-policy-watch/cells/9baaf777da0aa49d.png",
-        "mockups/evidence/china-policy-watch/cells/9cc03b449f6cd7fa.png",
-        "mockups/evidence/china-policy-watch/cells/a9d131125c76c26b.png",
-        "mockups/evidence/china-policy-watch/cells/aca235895ada13f4.png",
-        "mockups/evidence/china-policy-watch/cells/acb82487dfdc55ae.png",
-        "mockups/evidence/china-policy-watch/cells/ad7b633f9bb5ba66.png",
-        "mockups/evidence/china-policy-watch/cells/af24ca9e10895627.png",
-        "mockups/evidence/china-policy-watch/cells/afc8dae42833d055.png",
-        "mockups/evidence/china-policy-watch/cells/b0368068d85cfb80.png",
-        "mockups/evidence/china-policy-watch/cells/b08b7626432eb6ac.png",
-        "mockups/evidence/china-policy-watch/cells/b49123ded92c0d12.png",
-        "mockups/evidence/china-policy-watch/cells/b53fafc10db732d3.png",
-        "mockups/evidence/china-policy-watch/cells/b5b594fa36d03b63.png",
-        "mockups/evidence/china-policy-watch/cells/c59fe1c72b3c41d6.png",
-        "mockups/evidence/china-policy-watch/cells/c93b733fccadb251.png",
-        "mockups/evidence/china-policy-watch/cells/cee1c380a0907bc2.png",
-        "mockups/evidence/china-policy-watch/cells/cf0a1e19a160b16d.png",
-        "mockups/evidence/china-policy-watch/cells/crop-buyback-tell-after-en.png",
-        "mockups/evidence/china-policy-watch/cells/crop-buyback-tell-after-zh.png",
-        "mockups/evidence/china-policy-watch/cells/crop-buyback-tell-before-en.png",
-        "mockups/evidence/china-policy-watch/cells/crop-buyback-tell-before-zh.png",
-        "mockups/evidence/china-policy-watch/cells/crop-fx-mom-after-en.png",
-        "mockups/evidence/china-policy-watch/cells/crop-fx-mom-after-zh.png",
-        "mockups/evidence/china-policy-watch/cells/crop-fx-mom-before-en.png",
-        "mockups/evidence/china-policy-watch/cells/crop-fx-mom-before-zh.png",
-        "mockups/evidence/china-policy-watch/cells/crop-margin-tell-after-en.png",
-        "mockups/evidence/china-policy-watch/cells/crop-margin-tell-after-zh.png",
-        "mockups/evidence/china-policy-watch/cells/crop-margin-tell-before-en.png",
-        "mockups/evidence/china-policy-watch/cells/crop-margin-tell-before-zh.png",
-        "mockups/evidence/china-policy-watch/cells/crop-sector-cap-after-en.png",
-        "mockups/evidence/china-policy-watch/cells/crop-sector-cap-after-zh.png",
-        "mockups/evidence/china-policy-watch/cells/crop-sector-cap-before-en.png",
-        "mockups/evidence/china-policy-watch/cells/crop-sector-cap-before-zh.png",
-        "mockups/evidence/china-policy-watch/cells/crop-subtitle-after-en.png",
-        "mockups/evidence/china-policy-watch/cells/crop-subtitle-after-zh.png",
-        "mockups/evidence/china-policy-watch/cells/crop-subtitle-before-en.png",
-        "mockups/evidence/china-policy-watch/cells/crop-subtitle-before-zh.png",
-        "mockups/evidence/china-policy-watch/cells/crop-tape-row-after-en.png",
-        "mockups/evidence/china-policy-watch/cells/crop-tape-row-after-zh.png",
-        "mockups/evidence/china-policy-watch/cells/crop-tape-row-before-en.png",
-        "mockups/evidence/china-policy-watch/cells/crop-tape-row-before-zh.png",
-        "mockups/evidence/china-policy-watch/cells/d45f76b471b71b30.png",
-        "mockups/evidence/china-policy-watch/cells/dde5ce5fd93f117e.png",
-        "mockups/evidence/china-policy-watch/cells/e18483f0e9464a38.png",
-        "mockups/evidence/china-policy-watch/cells/e27477806c096c50.png",
-        "mockups/evidence/china-policy-watch/cells/e28d92e90e35ee42.png",
-        "mockups/evidence/china-policy-watch/cells/e38f09d24faa849e.png",
-        "mockups/evidence/china-policy-watch/cells/e90aa7c479484fab.png",
-        "mockups/evidence/china-policy-watch/cells/eac71dde8159a568.png",
-        "mockups/evidence/china-policy-watch/cells/ebd9642b4cebf21b.png",
-        "mockups/evidence/china-policy-watch/cells/ee0e93f67a5ca4b7.png",
-        "mockups/evidence/china-policy-watch/cells/f3418cfc33c3c00e.png",
-        "mockups/evidence/china-policy-watch/cells/f36577aaefbfc185.png",
-        "mockups/evidence/china-policy-watch/cells/full-dark-en-desktop.png",
-        "mockups/evidence/china-policy-watch/cells/full-dark-en-mobile.png",
-        "mockups/evidence/china-policy-watch/cells/full-dark-zh-desktop.png",
-        "mockups/evidence/china-policy-watch/cells/full-dark-zh-mobile.png"
       ],
       "protected_paths_touched": []
     },
@@ -3600,189 +3756,6 @@
         "agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-09-10-surgical-web-ceo-closure.md"
       ],
       "protected_paths_touched": []
-    },
-    {
-      "number": 7037,
-      "title": "[MO-A] i18n: retire 135 ASCII .l-zh labels on macro_context/macro_signals (frozen-spec PR-A)",
-      "head_ref": "claude/ssd-mo-legacy-zh-copy-f011bcfb842ea327",
-      "updated_at": "2026-09-14T17:05:16Z",
-      "is_draft": false,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 3,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        "engine/i18n.py",
-        "templates/macro_context.html.j2",
-        "templates/macro_signals.html.j2"
-      ],
-      "protected_paths_touched": []
-    },
-    {
-      "number": 7036,
-      "title": "Release Radar A1: diagnostic truth for CPI/PPI cards (#6868) \u2014 HOLD-FOR-SOL",
-      "head_ref": "claude/ssd-release-radar-a1-diagnostic-truth-d788ca4849d8a935",
-      "updated_at": "2026-09-11T09:27:45Z",
-      "is_draft": true,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 9,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        ".github/ci/legacy-jobs.yml",
-        "agentos/discoveries/DSC-RELEASE-RADAR-A1-LEGACY-FIELDS-ARE-NOT-THEIR-LABELS.md",
-        "engine/release_diagnostics.py",
-        "scripts/build_release_forecast.py",
-        "templates/dashboard.html.j2",
-        "tests/fixtures/release_diagnostics/radar_items.json",
-        "tests/test_release_diagnostics.py",
-        "tests/test_release_radar_render.py",
-        "tests/test_release_radar_ui.py"
-      ],
-      "protected_paths_touched": []
-    },
-    {
-      "number": 7035,
-      "title": "docs(skylit): existing-system integration ruling and US sector participation W1",
-      "head_ref": "sol/skylit-sector-integration-20260910",
-      "updated_at": "2026-09-11T06:39:53Z",
-      "is_draft": true,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 11,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        "agentos/decisions/DEC-SKYLIT-INTEGRATE-EXISTING-SECTOR-INTELLIGENCE.md",
-        "agentos/workstreams/WS-US-SECTOR-PARTICIPATION.md",
-        "research/skylit/INTEGRATION_RULING_2026-09-10.md",
-        "research/skylit/LOCAL_INPUT_PREFLIGHT_2026-09-10.md",
-        "research/skylit/RESEARCH_GATE_DISPOSITION_2026-09-10.md",
-        "research/skylit/US_SECTOR_PARTICIPATION_W1_2026-09-10.md",
-        "research/skylit/W1_DERIVED_PACKAGE_AND_UI_CONTRACT_2026-09-11.md",
-        "research/skylit/W1_PACKAGE_ID_AND_PERFORMANCE_BUDGET_2026-09-11.md",
-        "research/skylit/W1_PR7060_ADVERSARIAL_REVIEW_2026-09-11.md",
-        "research/skylit/W1_PR7060_SOL_REVIEW_2026-09-11.md",
-        "research/skylit/W1_SOURCE_IMPLEMENTATION_RULING_2026-09-11.md"
-      ],
-      "protected_paths_touched": []
-    },
-    {
-      "number": 7034,
-      "title": "HOLD: preserve native homepage cover; replacement designs not accepted",
-      "head_ref": "claude/sol-homepage-research-entry-20260910",
-      "updated_at": "2026-09-11T05:04:27Z",
-      "is_draft": true,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 100,
-      "files_truncated": true,
-      "files_error": false,
-      "files": [
-        ".github/ci/legacy-jobs.yml",
-        "agentos/handoffs/MARKET-OS-2026-09-10-homepage-mobile-reflow.md",
-        "agentos/handoffs/MARKET-OS-2026-09-10-homepage-research-entry.md",
-        "data/marketing/ad_central/arenas.jsonl",
-        "data/marketing/ad_central/creatives.jsonl",
-        "docs/plans/2026-09-09-homepage-mobile-reflow.md",
-        "docs/plans/2026-09-10-homepage-research-entry.md",
-        "mockups/evidence/homepage-mobile-reflow-20260909/1005c94f7b47fc00.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/324c7f8417ffbb97.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/3ad4fe8b92ffb0d2.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/40a9c4ad5468b4e6.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/4b8f357d6a18d9ca.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/5442bf29a46e6e5b.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/5616f68eb9e58f25.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/69eafbbda782c1f4.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/9d5264e370cb253f.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/EVIDENCE.yml",
-        "mockups/evidence/homepage-mobile-reflow-20260909/NOTES.md",
-        "mockups/evidence/homepage-mobile-reflow-20260909/REVIEW-ADJUDICATION.md",
-        "mockups/evidence/homepage-mobile-reflow-20260909/REVIEW-R1.md",
-        "mockups/evidence/homepage-mobile-reflow-20260909/SOURCE-DIFF.patch",
-        "mockups/evidence/homepage-mobile-reflow-20260909/c9d02a3c6627f597.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/capture-narrow.py",
-        "mockups/evidence/homepage-mobile-reflow-20260909/cc3a645359321d0f.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/de9a81637b8fb38d.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/eb10c11b4009f8bc.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/en-dark-320-dated-caption.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/en-dark-320-footer.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/en-dark-320-situations.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/en-dark-320.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/en-dark-390-dated-caption.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/en-dark-390-footer.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/en-dark-390-situations.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/en-light-320-dated-caption.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/en-light-320-footer.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/en-light-320-situations.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/en-light-320.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/en-light-390-dated-caption.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/en-light-390-footer.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/en-light-390-situations.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/f4076aaf4b209ded.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/f6ab83b063caec74.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/f95411def324dd27.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/live-before-320-footer-crop.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/live-before-320.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/manifest.json",
-        "mockups/evidence/homepage-mobile-reflow-20260909/narrow-layout.json",
-        "mockups/evidence/homepage-mobile-reflow-20260909/smells.json",
-        "mockups/evidence/homepage-mobile-reflow-20260909/source-snapshot.sha256",
-        "mockups/evidence/homepage-mobile-reflow-20260909/zh-dark-320-dated-caption.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/zh-dark-320-footer.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/zh-dark-320-situations.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/zh-dark-320.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/zh-dark-390-dated-caption.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/zh-dark-390-footer.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/zh-dark-390-situations.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/zh-light-320-dated-caption.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/zh-light-320-footer.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/zh-light-320-situations.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/zh-light-320.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/zh-light-390-dated-caption.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/zh-light-390-footer.png",
-        "mockups/evidence/homepage-mobile-reflow-20260909/zh-light-390-situations.png",
-        "mockups/evidence/homepage-research-entry-20260910/022564c81336cae5.png",
-        "mockups/evidence/homepage-research-entry-20260910/0efc022d2c2a659f.png",
-        "mockups/evidence/homepage-research-entry-20260910/107fe3e717125a97.png",
-        "mockups/evidence/homepage-research-entry-20260910/122e8da5ce6d8789.png",
-        "mockups/evidence/homepage-research-entry-20260910/18bd3bfd45fdef9e.png",
-        "mockups/evidence/homepage-research-entry-20260910/3c4f548d33001cfb.png",
-        "mockups/evidence/homepage-research-entry-20260910/46aac826858e48b3.png",
-        "mockups/evidence/homepage-research-entry-20260910/4a1bed6dbfc1adc0.png",
-        "mockups/evidence/homepage-research-entry-20260910/4aa2a2596b87a4b9.png",
-        "mockups/evidence/homepage-research-entry-20260910/4ab4d82257654dad.png",
-        "mockups/evidence/homepage-research-entry-20260910/4b551dd888e1fbab.png",
-        "mockups/evidence/homepage-research-entry-20260910/567acdcc2c8c094e.png",
-        "mockups/evidence/homepage-research-entry-20260910/725110d9b0ade12a.png",
-        "mockups/evidence/homepage-research-entry-20260910/8131be4b3b94416e.png",
-        "mockups/evidence/homepage-research-entry-20260910/9e4b7d70e7e05bdd.png",
-        "mockups/evidence/homepage-research-entry-20260910/EVIDENCE.yml",
-        "mockups/evidence/homepage-research-entry-20260910/NOTES.md",
-        "mockups/evidence/homepage-research-entry-20260910/SOURCE-DIFF.patch",
-        "mockups/evidence/homepage-research-entry-20260910/a5082707b7f0a0e8.png",
-        "mockups/evidence/homepage-research-entry-20260910/bc89bacfe7f6861d.png",
-        "mockups/evidence/homepage-research-entry-20260910/be7ab7ff25d7ca85.png",
-        "mockups/evidence/homepage-research-entry-20260910/c6f3c31d263232b7.png",
-        "mockups/evidence/homepage-research-entry-20260910/c753a8d62bac770d.png",
-        "mockups/evidence/homepage-research-entry-20260910/d7906e5e919c5c52.png",
-        "mockups/evidence/homepage-research-entry-20260910/en-1440-research-example.png",
-        "mockups/evidence/homepage-research-entry-20260910/en-320-research-example.png",
-        "mockups/evidence/homepage-research-entry-20260910/en-390-research-example.png",
-        "mockups/evidence/homepage-research-entry-20260910/f46a2bd716e96930.png",
-        "mockups/evidence/homepage-research-entry-20260910/f494d4e888f7b006.png",
-        "mockups/evidence/homepage-research-entry-20260910/f952b38776378ed0.png",
-        "mockups/evidence/homepage-research-entry-20260910/first-viewport-1440.png",
-        "mockups/evidence/homepage-research-entry-20260910/first-viewport-390.png",
-        "mockups/evidence/homepage-research-entry-20260910/journey.json",
-        "mockups/evidence/homepage-research-entry-20260910/manifest.json",
-        "mockups/evidence/homepage-research-entry-20260910/narrow-example.json",
-        "mockups/evidence/homepage-research-entry-20260910/smells.json",
-        "mockups/evidence/homepage-research-entry-20260910/source-snapshot.sha256"
-      ],
-      "protected_paths_touched": []
     }
   ],
   "collisions": [
@@ -3807,6 +3780,26 @@
       ],
       "shared_count": 3,
       "any_protected": true
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7070,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml",
+        "tests/test_ci_pack.py"
+      ],
+      "shared_count": 2,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7060,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml",
+        "tests/test_ci_pack.py"
+      ],
+      "shared_count": 2,
+      "any_protected": false
     },
     {
       "pr_a": 7156,
@@ -3909,6 +3902,16 @@
       "any_protected": false
     },
     {
+      "pr_a": 7095,
+      "pr_b": 7064,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml",
+        "agentos/workstreams/WS-LEADERSHIP-PERSISTENCE-INTELLIGENCE.md"
+      ],
+      "shared_count": 2,
+      "any_protected": false
+    },
+    {
       "pr_a": 7089,
       "pr_b": 7081,
       "shared_files": [
@@ -3919,6 +3922,16 @@
       "any_protected": true
     },
     {
+      "pr_a": 7070,
+      "pr_b": 7060,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml",
+        "tests/test_ci_pack.py"
+      ],
+      "shared_count": 2,
+      "any_protected": false
+    },
+    {
       "pr_a": 7056,
       "pr_b": 7050,
       "shared_files": [
@@ -3926,6 +3939,708 @@
         "engine/i18n.py"
       ],
       "shared_count": 2,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7164,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7154,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7153,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7152,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7150,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7148,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7147,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7142,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7139,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7138,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7137,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7134,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7132,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7129,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7127,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7122,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7110,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7106,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7105,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7103,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7102,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7100,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7095,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7079,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7076,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7075,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7074,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7067,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7066,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7064,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7061,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7057,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7056,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7055,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7054,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7050,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7042,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7165,
+      "pr_b": 7040,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7154,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7153,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7152,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7150,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7148,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7147,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7142,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7139,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7138,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7137,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7134,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7132,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7129,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7127,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7122,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7110,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7106,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7105,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7103,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7102,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7100,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7095,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7079,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7076,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7075,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7074,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7070,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7067,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7066,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7064,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7061,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7060,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7057,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7056,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7055,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7054,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7050,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7042,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7164,
+      "pr_b": 7040,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 7163,
+      "pr_b": 7050,
+      "shared_files": [
+        "templates/hk.html.j2"
+      ],
+      "shared_count": 1,
       "any_protected": false
     },
     {
@@ -4280,24 +4995,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7154,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7154,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7153,
       "pr_b": 7152,
       "shared_files": [
@@ -4631,24 +5328,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7153,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7153,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7152,
       "pr_b": 7150,
       "shared_files": [
@@ -4973,24 +5652,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7152,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7152,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7150,
       "pr_b": 7148,
       "shared_files": [
@@ -5306,24 +5967,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7150,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7150,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7148,
       "pr_b": 7147,
       "shared_files": [
@@ -5630,24 +6273,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7148,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7148,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7147,
       "pr_b": 7142,
       "shared_files": [
@@ -5945,24 +6570,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7147,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7147,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7142,
       "pr_b": 7139,
       "shared_files": [
@@ -6251,24 +6858,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7142,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7142,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7139,
       "pr_b": 7138,
       "shared_files": [
@@ -6548,24 +7137,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7139,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7139,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7138,
       "pr_b": 7137,
       "shared_files": [
@@ -6836,24 +7407,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7138,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7138,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7137,
       "pr_b": 7134,
       "shared_files": [
@@ -7115,24 +7668,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7137,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7137,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7134,
       "pr_b": 7132,
       "shared_files": [
@@ -7385,24 +7920,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7134,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7134,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7132,
       "pr_b": 7129,
       "shared_files": [
@@ -7646,24 +8163,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7132,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7132,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7129,
       "pr_b": 7127,
       "shared_files": [
@@ -7891,24 +8390,6 @@
     {
       "pr_a": 7129,
       "pr_b": 7040,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7129,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7129,
-      "pr_b": 7034,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -8150,24 +8631,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7127,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7127,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7122,
       "pr_b": 7110,
       "shared_files": [
@@ -8384,24 +8847,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7122,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7122,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7111,
       "pr_b": 7110,
       "shared_files": [
@@ -8593,24 +9038,6 @@
     {
       "pr_a": 7110,
       "pr_b": 7040,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7110,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7110,
-      "pr_b": 7034,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -8825,24 +9252,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7106,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7106,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7105,
       "pr_b": 7103,
       "shared_files": [
@@ -9032,24 +9441,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7105,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7105,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7103,
       "pr_b": 7102,
       "shared_files": [
@@ -9230,24 +9621,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7103,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7103,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7102,
       "pr_b": 7100,
       "shared_files": [
@@ -9419,24 +9792,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7102,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7102,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7100,
       "pr_b": 7095,
       "shared_files": [
@@ -9599,24 +9954,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7100,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7100,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7095,
       "pr_b": 7079,
       "shared_files": [
@@ -9681,15 +10018,6 @@
     },
     {
       "pr_a": 7095,
-      "pr_b": 7064,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7095,
       "pr_b": 7061,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -9763,24 +10091,6 @@
     {
       "pr_a": 7095,
       "pr_b": 7040,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7095,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7095,
-      "pr_b": 7034,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -9932,24 +10242,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7079,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7079,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7076,
       "pr_b": 7075,
       "shared_files": [
@@ -10085,24 +10377,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7076,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7076,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7075,
       "pr_b": 7074,
       "shared_files": [
@@ -10229,24 +10503,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7075,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7075,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7074,
       "pr_b": 7070,
       "shared_files": [
@@ -10364,24 +10620,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7074,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7074,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7073,
       "pr_b": 7057,
       "shared_files": [
@@ -10402,15 +10640,6 @@
     {
       "pr_a": 7072,
       "pr_b": 7050,
-      "shared_files": [
-        "engine/i18n.py"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7072,
-      "pr_b": 7037,
       "shared_files": [
         "engine/i18n.py"
       ],
@@ -10455,15 +10684,6 @@
     },
     {
       "pr_a": 7070,
-      "pr_b": 7060,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7070,
       "pr_b": 7057,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -10519,24 +10739,6 @@
     {
       "pr_a": 7070,
       "pr_b": 7040,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7070,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7070,
-      "pr_b": 7034,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -10643,24 +10845,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7067,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7067,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7066,
       "pr_b": 7064,
       "shared_files": [
@@ -10751,24 +10935,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7066,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7066,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7064,
       "pr_b": 7061,
       "shared_files": [
@@ -10843,24 +11009,6 @@
     {
       "pr_a": 7064,
       "pr_b": 7040,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7064,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7064,
-      "pr_b": 7034,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -10949,24 +11097,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7061,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7061,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7060,
       "pr_b": 7057,
       "shared_files": [
@@ -11030,24 +11160,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7060,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7060,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7057,
       "pr_b": 7056,
       "shared_files": [
@@ -11102,24 +11214,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7057,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7057,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7056,
       "pr_b": 7055,
       "shared_files": [
@@ -11156,33 +11250,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7056,
-      "pr_b": 7037,
-      "shared_files": [
-        "engine/i18n.py"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7056,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7056,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7055,
       "pr_b": 7054,
       "shared_files": [
@@ -11219,24 +11286,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7055,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7055,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7054,
       "pr_b": 7050,
       "shared_files": [
@@ -11264,24 +11313,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7054,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7054,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7050,
       "pr_b": 7042,
       "shared_files": [
@@ -11300,33 +11331,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 7050,
-      "pr_b": 7037,
-      "shared_files": [
-        "engine/i18n.py"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7050,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7050,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
       "pr_a": 7048,
       "pr_b": 7040,
       "shared_files": [
@@ -11338,51 +11342,6 @@
     {
       "pr_a": 7042,
       "pr_b": 7040,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7042,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7042,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7040,
-      "pr_b": 7036,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7040,
-      "pr_b": 7034,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7036,
-      "pr_b": 7034,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -11490,6 +11449,11 @@
       "number": 7065,
       "title": "fix(themes): enforce coherent observation populations",
       "merged_at": "2026-09-12T19:20:44Z"
+    },
+    {
+      "number": 7053,
+      "title": "[MO-A W5] china_policy_watch: P0 truth blockers + LENS enabler (round 1)",
+      "merged_at": "2026-09-15T10:34:19Z"
     },
     {
       "number": 7046,

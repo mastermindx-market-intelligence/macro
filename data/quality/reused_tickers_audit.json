@@ -1,5 +1,5 @@
 {
- "asof": "2026-09-14",
+ "asof": "2026-09-15",
  "audit": "stocks",
  "config": {
   "price_max_gap_days": 4,
@@ -37,7 +37,7 @@
     {
      "name": "ECHO",
      "kind": "zombie",
-     "detail": "dead-registry name advancing 1754d past its 2021-11-22 registry bar; overlap corr -0.139"
+     "detail": "dead-registry name advancing 1757d past its 2021-11-22 registry bar; overlap corr -0.139"
     }
    ]
   },
@@ -785,8 +785,8 @@
     {
      "ticker": "ECHO",
      "registry_last": "2021-11-22",
-     "store_tip": "2026-09-11",
-     "days_past_death": 1754,
+     "store_tip": "2026-09-14",
+     "days_past_death": 1757,
      "overlap": {
       "n_overlap": 99,
       "ret_corr_full": -0.0318,
@@ -2227,8 +2227,8 @@
     {
      "ticker": "SITC",
      "registry_last": "2025-12-22",
-     "store_tip": "2026-09-11",
-     "days_past_death": 263,
+     "store_tip": "2026-09-14",
+     "days_past_death": 266,
      "overlap": {
       "n_overlap": 1123,
       "ret_corr_full": 0.6596,
