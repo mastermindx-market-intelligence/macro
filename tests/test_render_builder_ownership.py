@@ -109,6 +109,17 @@ def test_render_uses_positive_builder_ownership_not_the_repo_wide_wildcard():
     assert _owned_modules(), "the explicit builder ownership list vanished"
 
 
+def test_aibrief_freshness_source_is_owned_by_existing_render_trigger():
+    source = ROOT / "templates" / "_aibrief_freshness.js.j2"
+    assert source.is_file(), (
+        "the versioned AI Brief client needs one canonical render-owned source; "
+        "editing only site/assets/js would deploy new bytes without re-stamping "
+        "immutable ?v= references in rendered pages"
+    )
+    assert '- "templates/**"' in RENDER
+    assert f'- "!templates/{source.name}"' not in RENDER
+
+
 def test_the_macro_suite_hook_reaches_the_page_builder():
     """The macro-suite pages (F01 R1B) enter the render lane through
     build_site's guarded hook — render.yml owns
