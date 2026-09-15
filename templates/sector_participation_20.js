@@ -33,6 +33,14 @@ async function w1Sha256(text){
 }
 function w1Array(value,length){ return Array.isArray(value)&&value.length===length; }
 function w1Text(value){ return typeof value==='string'&&Boolean(value.trim()); }
+function w1CodePointCompare(left,right){
+  var a=Array.from(left),b=Array.from(right),limit=Math.min(a.length,b.length);
+  for(var index=0;index<limit;index+=1){
+    var ac=a[index].codePointAt(0),bc=b[index].codePointAt(0);
+    if(ac!==bc) return ac<bc?-1:1;
+  }
+  return a.length-b.length;
+}
 function w1ShaId(value){ return typeof value==='string'&&/^sha256:[0-9a-f]{64}$/.test(value); }
 function w1IsoDate(value){
   if(typeof value!=='string'||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(value)) return false;
@@ -95,7 +103,8 @@ async function validatePackageCore(value,expectedGeneration){
     rosterPairs.push([symbol,member.name,member.sector]); bySector[member.sector].push(member);
   });
   rosterPairs.sort(function(a,b){
-    return a[0].localeCompare(b[0])||a[1].localeCompare(b[1])||a[2].localeCompare(b[2]);
+    return w1CodePointCompare(a[0],b[0])||
+      w1CodePointCompare(a[1],b[1])||w1CodePointCompare(a[2],b[2]);
   });
   var rosterId=await w1Sha256(JSON.stringify(rosterPairs));
   var reference=value.reference;

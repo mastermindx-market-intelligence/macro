@@ -1509,6 +1509,60 @@ api.validatePackage(pkg,pkg.generation_id).then(value=>{
     assert completed.returncode == 0, completed.stderr or completed.stdout
 
 
+
+def test_w1_client_roster_identity_is_independent_of_browser_locale(monkeypatch, tmp_path):
+    """A valid generation must not self-refuse under locale-specific collation."""
+    import os
+    import subprocess
+    from pathlib import Path
+
+    days = _sessions(25)
+    symbols = ["A", "AAPL", "ABBV", "ABNB", "ABT"]
+    members = _members(symbols)
+    closes = _wide(
+        symbols, days,
+        lambda ticker, index: 100.0 + index + symbols.index(ticker) / 100.0,
+    )
+    acquired_at = "2024-03-15T21:00:00+00:00"
+    closes.attrs["member_evidence"] = {
+        symbol: {
+            "acquired_at": acquired_at,
+            "requested_ticker": symbol,
+            "response_ticker": symbol,
+            "request_id": f"receipt-{symbol}",
+            "response_status": "OK",
+            "response_count": len(days),
+            "requested_start": days[0].isoformat(),
+            "requested_end": days[-1].isoformat(),
+        }
+        for symbol in symbols
+    }
+    result = _adapter().compute_sector_participation_20(closes, members)
+    monkeypatch.setattr(bmod.nyse_calendar, "expected_last_session", lambda: days[-1])
+    package_path = tmp_path / "breadth" / "sector_participation_20.json"
+    assert _adapter().publish_sector_participation_20(
+        result, {}, members, path=package_path) is True
+
+    client_path = Path(__file__).resolve().parents[1] / "templates" / "sector_participation_20.js"
+    script = r"""
+const fs=require('fs'),vm=require('vm'),{webcrypto}=require('node:crypto');
+const code=fs.readFileSync(process.argv[1],'utf8');
+const pkg=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+const locale=Intl.DateTimeFormat().resolvedOptions().locale.toLowerCase();
+if(!locale.startsWith('da')) process.exit(6);
+const window={crypto:webcrypto,TextEncoder};
+const context={window,crypto:webcrypto,TextEncoder,document:{getElementById:()=>null},console};
+vm.createContext(context); vm.runInContext(code,context);
+context.window.SectorParticipation20.validatePackage(pkg,pkg.generation_id)
+  .then(()=>process.exit(0))
+  .catch(error=>{console.error(error.message);process.exit(5);});
+"""
+    env = dict(os.environ, LANG="da_DK.UTF-8", LC_ALL="da_DK.UTF-8")
+    completed = subprocess.run(
+        ["node", "-e", script, str(client_path), str(package_path)],
+        text=True, capture_output=True, check=False, env=env)
+    assert completed.returncode == 0, completed.stderr or completed.stdout
+
 @pytest.mark.parametrize("violation", ["missing_response_set", "coverage_counts"])
 def test_w1_client_runtime_refuses_rehashed_required_contract_violation(
         monkeypatch, tmp_path, violation):
