@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-15T06:12:40.780678+00:00",
-  "count": 2138,
+  "generated_at": "2026-09-15T06:27:40.612941+00:00",
+  "count": 2139,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -873,6 +873,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-josglvk3kgx-6b3ab2",
+      "title": "Horizon Robotics (9660)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T00:49:37Z",
+      "summary_points": [
+        "**Product Mix & Market Growth**: Urban NOA adoption 30% (1H26 vs 23% 2025), L2 ADAS market share 50% (1H26 vs 4% 2022), overseas exports target 10m units by 2026E; driven by high-end product mix and OEM partnerships.",
+        "**Competitive Advantages**: Comprehensive chipset/software solution, licensing model (IP/tech fees), and supply chain management (memory/MLCC for 2026-27) enabling mid-double digit market share growth.",
+        "**Valuation & Target Price Momentum**: Target price HK$13.12 (2030E EV/EBITDA 29.0x), up from HK$6.10 (Dec 2024), reflecting strong bullish sentiment and 112% upside potential.",
+        "**Valuation Gap**: Current price HK$4.36 vs target HK$13.12 (04-Sep-26), indicating significant undervaluation and near-term price appreciation catalyst.",
+        "**Key Downside Risks**: Fierce competition, auto supply chain pressure, slower product mix upgrade, and geopolitical supply chain disruptions."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
