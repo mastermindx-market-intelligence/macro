@@ -24,6 +24,7 @@ python3 - <<'PY'
 import hashlib
 import json
 import os
+import subprocess
 from pathlib import Path
 
 from engine.prophet_bridge import _make_id, _normalise_iso_date, select_candidates
@@ -95,6 +96,7 @@ Path(os.environ["PROPHET_SOURCE_BLOB"]).write_bytes(board_bytes)
 os.chmod(os.environ["PROPHET_SOURCE_BLOB"], 0o400)
 
 exact = {
+    "site/factordata/us_standouts.json",
     "site/prophet/index.json",
     "site/prophet/showcase.json",
     # G-D board read: the ticker-keyed spark bodies that
@@ -145,8 +147,33 @@ def snapshot() -> dict[str, str]:
         if path.is_file()
     }
 
+
+def head_fingerprint(rel: str) -> str:
+    """Fingerprint checkout HEAD, not the already-rendered working-tree board."""
+    row = subprocess.run(
+        ["git", "ls-tree", "HEAD", "--", rel],
+        cwd=root,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    if not row:
+        return "MISSING"
+    mode, kind, object_id, _ = row.split(None, 3)
+    if kind != "blob" or mode == "120000":
+        raise RuntimeError(f"refusing non-regular HEAD source board: {rel} ({mode} {kind})")
+    blob = subprocess.check_output(
+        ["git", "cat-file", "blob", object_id], cwd=root
+    )
+    return f"{int(mode, 8) & 0o7777:04o}:{hashlib.sha256(blob).hexdigest()}"
+
+
+before = snapshot()
+# build_site wrote the source board before this step. Force its before-side to
+# checkout HEAD so the exact source bytes join every derived Prophet delta.
+before[board_rel] = head_fingerprint(board_rel)
 Path(os.environ["PROPHET_BASELINE"]).write_text(
-    json.dumps(snapshot(), sort_keys=True), encoding="utf-8"
+    json.dumps(before, sort_keys=True), encoding="utf-8"
 )
 PY
 baseline_rc=$?
@@ -317,6 +344,7 @@ from pathlib import Path
 
 root = Path(os.environ["GITHUB_WORKSPACE"])
 exact = {
+    "site/factordata/us_standouts.json",
     "site/prophet/index.json",
     "site/prophet/showcase.json",
     # G-D board read: the ticker-keyed spark bodies that

@@ -72,6 +72,7 @@ git add templates/ 2>/dev/null || true
 # under data/prophet are inputs and are unstaged but never cleaned or
 # overwritten here.
 if ! git checkout HEAD -- \
+  site/factordata/us_standouts.json \
   site/prophet \
   data/prophet/ledger.jsonl \
   data/prophet/ledger_quarantine.json \
@@ -83,6 +84,7 @@ if ! git checkout HEAD -- \
   exit 1
 fi
 git reset -q -- \
+  site/factordata/us_standouts.json \
   site/prophet \
   data/prophet \
   data/prophet_arena \

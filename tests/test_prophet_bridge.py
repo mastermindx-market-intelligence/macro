@@ -347,6 +347,34 @@ def test_weekend_recovery_keeps_publication_and_price_clocks_separate(tmp_path):
     assert plan_clock_date(plan) == "2026-08-07"
 
 
+def test_preclose_board_uses_its_observation_clock_for_origination(tmp_path):
+    standouts = _make_standouts(
+        gate_go=False,
+        buys=[_make_buy(
+            "AAPL", score=70, act_level=3, spot=150.0, anchor="2026-06-15"
+        )],
+    )
+    standouts["as_of"] = "2026-09-14"
+    standouts["staleness"].update({
+        "price_through": "2026-09-14",
+        "observed_at_utc": "2026-09-15T15:09:00+00:00",
+        "expected_session": "2026-09-14",
+    })
+    path = tmp_path / "us_standouts.json"
+    path.write_text(json.dumps(standouts), encoding="utf-8")
+
+    plans = originate_plans(
+        standouts_path=path,
+        asof="2026-09-15",
+        existing_ids=set(),
+        thetadata_store=None,
+    )
+
+    assert len(plans) == 1
+    assert plans[0]["recorded_at"] == "2026-09-15"
+    assert plans[0]["price_basis_date"] == "2026-09-14"
+
+
 def test_tier_native_signal_dates_do_not_rekey_plan_identity(tmp_path):
     """T2 uses its own event close while the immutable ID keeps the formation anchor."""
     buy = _make_buy(

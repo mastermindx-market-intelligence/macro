@@ -7,8 +7,10 @@ not rebase the engine's dirty working tree to get there.
 """
 from __future__ import annotations
 
+import json
 import os
 import subprocess
+import sys
 from pathlib import Path
 
 import yaml
@@ -18,8 +20,10 @@ from scripts.workflow_run_source import resolve_run_source
 ROOT = Path(__file__).resolve().parents[1]
 DAILY = ROOT / ".github" / "workflows" / "daily.yml"
 PROPHET_STEP = "Prophet nightly (plan refresh + ledger advancement; R2 after checkpoint)"
+BOARD_ACCEPTANCE_STEP = "prophet-board-acceptance (post-publish alarm, never a gate)"
 CHECKPOINT_STEP = "checkpoint Prophet outputs to main (durable before engine tail)"
-R2_PUBLISH_STEP = "publish Prophet public health receipt to R2 (and enforce index tombstone)"
+R2_PUBLISH_STEP = "publish Prophet public health receipt to R2"
+R2_TOMBSTONE_STEP = "enforce Prophet R2 index tombstone (unconditional)"
 ACCEPTED_SOURCE_STEP = "restore accepted Prophet source for downstream derivations"
 STAGE_SHADOW_STEP = (
     "Prophet × Stage forward-shadow (tag actual entries + nightly grade advance)"
@@ -92,6 +96,7 @@ def _accepted_source_fixture(
     _git(runner, "config", "user.email", "prophet-restore@example.invalid")
 
     base = {
+        "site/factordata/us_standouts.json": '{"generation":"stale-board"}\n',
         "site/prophet/index.json": '{"generation":"stale"}\n',
         "data/prophet/ledger.jsonl": '{"id":"existing"}\n',
         "data/prophet_arena/scoreboard.json": '{"generation":"stale"}\n',
@@ -106,6 +111,7 @@ def _accepted_source_fixture(
     _git(runner, "push", "-u", "origin", "main")
 
     accepted = {
+        "site/factordata/us_standouts.json": '{"generation":"accepted-board"}\n',
         "site/prophet/index.json": '{"generation":"accepted"}\n',
         "site/prophet/plans/NEW-BULL-20260808.json": '{"id":"NEW-BULL-20260808"}\n',
         "data/prophet/origination_receipts/run-2.json": '{"schema":"receipt/v1"}\n',
@@ -155,22 +161,26 @@ def test_successful_prophet_build_is_checkpointed_immediately_before_the_tail() 
     steps = _engine_steps()
     names = [s.get("name") for s in steps]
     build_i = names.index(PROPHET_STEP)
+    acceptance_i = names.index(BOARD_ACCEPTANCE_STEP)
     checkpoint_i = names.index(CHECKPOINT_STEP)
     r2_i = names.index(R2_PUBLISH_STEP)
+    tombstone_i = names.index(R2_TOMBSTONE_STEP)
     source_i = names.index(ACCEPTED_SOURCE_STEP)
 
-    assert checkpoint_i == build_i + 1
+    assert acceptance_i == build_i + 1
+    assert checkpoint_i == acceptance_i + 1
     assert r2_i == checkpoint_i + 1
-    assert source_i == r2_i + 1
+    assert tombstone_i == r2_i + 1
+    assert source_i == tombstone_i + 1
     assert source_i < names.index(STAGE_SHADOW_STEP)
     assert checkpoint_i < names.index(ENGINE_BARRIER_STEP)
     assert checkpoint_i < names.index("commit engine outputs")
 
 
 def test_prophet_workflow_embedded_python_is_syntactically_valid() -> None:
-    names = (PROPHET_STEP, R2_PUBLISH_STEP, STAGE_SHADOW_STEP)
+    names = (PROPHET_STEP, R2_PUBLISH_STEP, R2_TOMBSTONE_STEP, STAGE_SHADOW_STEP)
     blocks = [block for name in names for block in _python_heredocs(_step(name)["run"])]
-    assert len(blocks) >= 6
+    assert len(blocks) >= 7
     for i, source in enumerate(blocks):
         compile(source, f"daily.yml:{names}:{i}", "exec")
 
@@ -279,10 +289,20 @@ def test_r2_publisher_reconstructs_and_hashes_the_checkpointed_git_blob() -> Non
     assert '"sha256": expected_sha' in run
     assert 'if status == 412:' in run
     assert 'os.environ.get("R2_BUCKET") or "mastermindx"' in run
-    # DEC:B1-PROPHET-PUBLIC-SPLIT: the full plan book must never reach R2 again,
-    # and the forbidden key is enforced closed by a self-healing tombstone.
+    # DEC:B1-PROPHET-PUBLIC-SPLIT: this step publishes health only.
+    assert "FORBIDDEN_INDEX_KEY" not in run
+    assert "R2_INDEX_KEY" not in run
+
+
+def test_r2_index_tombstone_runs_on_every_non_cancelled_nightly() -> None:
+    tombstone = _step(R2_TOMBSTONE_STEP)
+    run = tombstone["run"]
+
+    assert tombstone["if"] == "${{ !cancelled() }}"
+    assert tombstone["continue-on-error"] is True
+    assert tombstone["timeout-minutes"] == 5
     assert "FORBIDDEN_INDEX_KEY = \"prophet/index.json\"" in run
-    assert "enforce_index_tombstone" in run
+    assert "client.head_object(Bucket=bucket, Key=FORBIDDEN_INDEX_KEY)" in run
     assert "client.delete_object(Bucket=bucket, Key=FORBIDDEN_INDEX_KEY)" in run
     assert "Prophet R2 tombstone::" in run
     assert "removed forbidden public object {FORBIDDEN_INDEX_KEY}" in run
@@ -416,6 +436,97 @@ def test_checkpoint_never_rebases_the_dirty_engine_worktree() -> None:
     assert "git pull --rebase --autostash" not in run
     assert checkpoint["continue-on-error"] is True
     assert checkpoint["timeout-minutes"] == 12
+
+
+def test_source_board_delta_is_measured_against_checkout_head(tmp_path: Path) -> None:
+    """The pre-built board must ride the narrow checkpoint with its projection.
+
+    ``build_site`` writes the board before the Prophet step begins, so a normal
+    before/after worktree snapshot sees no board change.  The publication
+    baseline must instead compare those frozen live bytes with checkout HEAD.
+    """
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _git(repo, "init", "-b", "main")
+    _git(repo, "config", "user.name", "Prophet source-board test")
+    _git(repo, "config", "user.email", "prophet-source@example.invalid")
+    board_rel = "site/factordata/us_standouts.json"
+    old_board = {
+        "as_of": "2026-09-11",
+        "gate_go": False,
+        "buy": [],
+        "staleness": {
+            "price_through": "2026-09-11",
+            "delayed": False,
+            "unknown": False,
+            "basis": "panel_majority",
+            "inputs": {"panel": {"mixed_vintage": False}},
+        },
+    }
+    new_board = {
+        **old_board,
+        "as_of": "2026-09-14",
+        "staleness": {
+            **old_board["staleness"],
+            "price_through": "2026-09-14",
+            "observed_at_utc": "2026-09-15T15:09:00+00:00",
+            "expected_session": "2026-09-14",
+        },
+    }
+    _write(repo, board_rel, json.dumps(old_board, sort_keys=True) + "\n")
+    _git(repo, "add", board_rel)
+    _git(repo, "commit", "-m", "old source board")
+    _write(repo, board_rel, json.dumps(new_board, sort_keys=True) + "\n")
+
+    blocks = _python_heredocs(_step(PROPHET_STEP)["run"])
+    assert len(blocks) >= 3
+    env = os.environ.copy()
+    env.update({
+        "GITHUB_WORKSPACE": str(repo),
+        "PROPHET_BASELINE": str(tmp_path / "before.json"),
+        "PROPHET_DELTA": str(tmp_path / "delta.tsv"),
+        "PROPHET_SOURCE_SNAPSHOT": str(tmp_path / "source.json"),
+        "PROPHET_SOURCE_BLOB": str(tmp_path / "source-board.json"),
+        "PYTHONPATH": str(ROOT),
+    })
+    for source in (blocks[0], blocks[2]):
+        result = subprocess.run(
+            [sys.executable, "-c", source],
+            cwd=ROOT,
+            env=env,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+
+    rows = [line.split("\t") for line in (tmp_path / "delta.tsv").read_text().splitlines()]
+    board_rows = [row for row in rows if row[0] == board_rel]
+    assert len(board_rows) == 1
+    _, before, after = board_rows[0]
+    assert before != "MISSING"
+    assert before != after
+
+
+def test_source_board_is_closed_inside_every_checkpoint_proof() -> None:
+    build_run = _step(PROPHET_STEP)["run"]
+    checkpoint_run = _step(CHECKPOINT_STEP)["run"]
+    publish_run = _step(R2_PUBLISH_STEP)["run"]
+    accepted_run = _step(ACCEPTED_SOURCE_STEP)["run"]
+    final_run = _step("commit engine outputs")["run"]
+    board = "site/factordata/us_standouts.json"
+
+    assert build_run.count(f'"{board}",') == 2
+    assert "before[board_rel] = head_fingerprint(board_rel)" in build_run
+    assert checkpoint_run.count(board) >= 3
+    assert board in checkpoint_run.split("PROTECTED_PROPHET_PATHS=(", 1)[1].split(")", 1)[0]
+    assert board in checkpoint_run.split('case "$rel" in', 1)[1].split("*)", 1)[0]
+    assert publish_run.count(board) >= 2
+    assert accepted_run.count(board) >= 3
+    safe_restore = final_run.split("if ! git checkout HEAD --", 1)[1].split("; then", 1)[0]
+    reset_block = final_run.split("git reset -q --", 1)[1].split("git clean -fd --", 1)[0]
+    assert board in safe_restore
+    assert board in reset_block
 
 
 def test_build_emits_a_hashed_closed_allowlist_delta_manifest() -> None:

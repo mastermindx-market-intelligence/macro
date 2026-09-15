@@ -896,9 +896,20 @@ def _resolve_origination_clocks(
                 f"{recorded_at!r}"
             )
         try:
-            from lib.nyse_calendar import last_session_on_or_before  # noqa: PLC0415
+            from datetime import datetime as _dt, timezone as _tz  # noqa: PLC0415
+            from lib.nyse_calendar import (  # noqa: PLC0415
+                expected_last_session,
+                last_session_on_or_before,
+            )
 
-            expected = last_session_on_or_before(date.fromisoformat(recorded_at))
+            raw_recorded = str(recorded_asof).strip()
+            if "T" in raw_recorded or " " in raw_recorded:
+                observed = _dt.fromisoformat(raw_recorded.replace("Z", "+00:00"))
+                if observed.tzinfo is None:
+                    observed = observed.replace(tzinfo=_tz.utc)
+                expected = expected_last_session(observed)
+            else:
+                expected = last_session_on_or_before(date.fromisoformat(recorded_at))
             if date.fromisoformat(price_basis_date) != expected:
                 errors.append(
                     f"price_basis_date {price_basis_date!r} is not the last completed "
@@ -4115,7 +4126,7 @@ def originate_plans(
     )
     recorded_at, price_basis_date, clock_errors = _resolve_origination_clocks(
         price_through=staleness.get("price_through"),
-        recorded_asof=asof,
+        recorded_asof=staleness.get("observed_at_utc") or asof,
         panel_mixed_vintage=bool(panel_staleness.get("mixed_vintage")),
         source_delayed=staleness.get("delayed"),
         source_unknown=staleness.get("unknown"),
