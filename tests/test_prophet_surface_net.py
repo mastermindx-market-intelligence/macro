@@ -243,6 +243,69 @@ def test_acceptance_script_accepts_a_fully_healthy_tree(tmp_path):
     assert problems == [], problems
 
 
+def test_acceptance_requires_a_receipt_for_a_delayed_market_session_cohort(tmp_path):
+    import datetime as dt
+
+    session = "2026-09-11"
+    published = "2026-09-13"
+    plan_id = "AAPL-BULL-20260911"
+    _write_json(tmp_path / "site" / "factordata" / "us_standouts.json", {
+        "as_of": session,
+        "buy": [{"ticker": "AAPL"}],
+        "lane_counts": {"live": 1},
+        "staleness": {"price_through": session},
+    })
+    _write_json(tmp_path / "site" / "prophet" / "index.json", {
+        "intake": HEALTHY_INTAKE,
+        "plans": [{
+            "id": plan_id,
+            "price_basis_date": session,
+            "entry_date": session,
+            "recorded_at": published,
+        }],
+    })
+    _write_json(
+        tmp_path / "site" / "prophet" / "plans" / f"{plan_id}.json",
+        {"id": plan_id, "recorded_at": published, "asset": "AAPL"},
+    )
+
+    problems = pba.check(
+        tmp_path,
+        "999",
+        dt.datetime(2026, 9, 13, 20, 0, tzinfo=dt.timezone.utc),
+    )
+    assert any("receipt" in problem for problem in problems), problems
+    assert any("market session 2026-09-11" in problem for problem in problems), problems
+
+
+def test_acceptance_price_basis_date_precedes_conflicting_publication_clocks(tmp_path):
+    import datetime as dt
+
+    session = "2026-09-11"
+    _write_json(tmp_path / "site" / "factordata" / "us_standouts.json", {
+        "as_of": session,
+        "buy": [{"ticker": "AAPL"}],
+        "lane_counts": {"live": 1},
+        "staleness": {"price_through": session},
+    })
+    _write_json(tmp_path / "site" / "prophet" / "index.json", {
+        "intake": HEALTHY_INTAKE,
+        "plans": [{
+            "id": "NOT-FRIDAY",
+            "price_basis_date": "2026-09-10",
+            "entry_date": session,
+            "recorded_at": session,
+        }],
+    })
+
+    problems = pba.check(
+        tmp_path,
+        "999",
+        dt.datetime(2026, 9, 13, 20, 0, tzinfo=dt.timezone.utc),
+    )
+    assert problems == [], problems
+
+
 def test_acceptance_script_flags_a_plan_recorded_but_never_originated(tmp_path):
     """recorded_at presence pin: a plan the run's receipt says it originated but
     that carries no recorded_at stamp on disk is a breach."""

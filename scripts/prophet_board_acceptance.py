@@ -37,9 +37,9 @@ against the clock the run started with):
     freshness_sentinel's module docstring documents at length: a rerun over
     frozen inputs can re-stamp a publication clock green while the priced
     watermark stays behind.
-  * every site/prophet/index.json plan recorded for this session
-    (``recorded_at`` truncated to date == session) has its
-    site/prophet/plans/<id>.json file present on disk.
+  * every site/prophet/index.json plan belonging to this market session
+    (``price_basis_date``, then ``entry_date``, then legacy per-plan
+    ``recorded_at``) has its site/prophet/plans/<id>.json file present on disk.
   * every plan this run's receipt(s) say it newly originated carries a
     ``recorded_at`` stamp on disk.
 
@@ -155,6 +155,26 @@ def intake_identity_breach(intake: object) -> str | None:
     return "; ".join(reasons) if reasons else None
 
 
+
+def _plan_session_stamp(plan: object) -> str | None:
+    """Market-session identity for one index plan.
+
+    ``recorded_at`` remains the publication/origination receipt clock. Delayed
+    weekend catch-ups therefore prefer ``price_basis_date`` and then
+    ``entry_date``. Only legacy plans lacking both fields fall back to
+    per-plan ``recorded_at``. This copy stays local so the acceptance alarm
+    remains an independent failure domain.
+    """
+    if not isinstance(plan, dict):
+        return None
+    stamp = (
+        plan.get("price_basis_date")
+        or plan.get("entry_date")
+        or plan.get("recorded_at")
+    )
+    text = str(stamp or "")[:10]
+    return text or None
+
 def check(root: Path, run_id: str, now: datetime) -> list[str]:
     """Every breach found for the expected session, as human-readable lines.
 
@@ -207,20 +227,20 @@ def check(root: Path, run_id: str, now: datetime) -> list[str]:
     for plan in plans:
         if not isinstance(plan, dict):
             continue
-        recorded = str(plan.get("recorded_at") or "")[:10]
-        if recorded != session_iso:
+        if _plan_session_stamp(plan) != session_iso:
             continue
         cohort.append(plan)
         plan_id = plan.get("id")
         if not plan_id:
             problems.append(
-                f"index plan recorded_at={session_iso} carries no id: {plan!r}"
+                f"index plan for market session {session_iso} carries no id: {plan!r}"
             )
             continue
         plan_file = root / "site" / "prophet" / "plans" / f"{plan_id}.json"
         if not plan_file.is_file():
             problems.append(
-                f"plan {plan_id} recorded for {session_iso} has no {plan_file}"
+                f"plan {plan_id} assigned to market session {session_iso} "
+                f"has no {plan_file}"
             )
 
     receipt_dir = root / "data" / "prophet" / "origination_receipts"
@@ -240,7 +260,8 @@ def check(root: Path, run_id: str, now: datetime) -> list[str]:
     # become a false alarm.
     if cohort and not receipts:
         problems.append(
-            f"{len(cohort)} plan(s) recorded for {session_iso} but no origination "
+            f"{len(cohort)} plan(s) belong to market session {session_iso} "
+            "but no origination "
             f"receipt {receipt_dir}/{run_id}-*.json exists for this run "
             f"(run_id={run_id!r})"
         )
