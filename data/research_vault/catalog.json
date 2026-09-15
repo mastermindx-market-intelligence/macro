@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-15T22:53:52.046060+00:00",
-  "count": 2188,
+  "generated_at": "2026-09-15T23:16:22.745858+00:00",
+  "count": 2189,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -234,6 +234,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-wdaqcldyogz-4ce2c8",
+      "title": "Capital One Financial Corp",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T12:58:40Z",
+      "summary_points": [
+        "**Credit Performance Split**: Card DQs (3.57% MoM) meet expectations; auto DQs (+14bps MoM) underperform with NCOs (+18bps MoM) ahead, signaling divergent credit quality in card vs.",
+        "auto segments.",
+        "**Valuation Target & Upside**: Buy rating with $247 12-month price target (19.5% upside from $206.68), driven by EPS growth (2027E: $19.25 → 2028E: $23.78) and 11x 2027E EPS.",
+        "**Target Price Trend Bullishness**: Goldman Sachs’ target price surged from $114 (Oct 2023) to $247 (Jul 2026), consistently exceeding closing prices (e.g., $247 vs.",
+        "$199.96), indicating sustained undervaluation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
