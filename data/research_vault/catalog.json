@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-15T00:41:47.733414+00:00",
-  "count": 2123,
+  "generated_at": "2026-09-15T00:56:58.214921+00:00",
+  "count": 2124,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -98,6 +98,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-alwzncgm1v8-2e910c",
+      "title": "Private markets",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T00:35:56Z",
+      "summary_points": [
+        "**Market Underpenetration & Growth Runway**: Japan PE AUM at ~$200B (March 2025), deal value $49B (June 2026) = 1% of GDP vs 2% in US/Europe, signaling substantial growth potential.",
+        "**Outperformance vs Public Markets**: 14.8% net IRR (5-10 yr) vs TOPIX’s 9.5%, driven by SME succession needs and governance reforms enabling transaction pipelines.",
+        "**Institutional Flow Catalyst**: GPFI’s first direct Japan PE commitment (JPY 20B) signals policy-driven shift from global to domestic allocation, overcoming historically low alternative exposure (<0.4%).",
+        "**Valuation Discount & Policy Tailwinds**: TOPIX trades at 10.3x 12m forward ROE vs US 23.7x; public-private plan targets JPY 370T across AI/semis (26%) and biotech (18%), offering compound earnings potential.",
+        "**Critical Execution Factors**: Success hinges on proprietary sourcing, local operating capability, and disciplined manager selection amid rising competition (223 PE investors in Japan, 2024 vs 73 in 2016)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-kde0lhgesh8-78970a",
       "title": "Equity Weekly 4 11 September 2026",
