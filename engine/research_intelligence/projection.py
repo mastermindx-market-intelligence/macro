@@ -16,13 +16,12 @@ def _grounded_rio(rio: dict[str, Any]) -> dict[str, Any]:
     return validate_rio(rio, require_grounded_claims=True)
 
 
-def _supported_text_is_verbatim(
+def _text_is_verbatim_private_evidence(
     text: str,
     claims: list[dict[str, Any]],
-    support: list[int],
 ) -> bool:
-    for index in support:
-        for evidence in claims[index]["evidence"]:
+    for claim in claims:
+        for evidence in claim["evidence"]:
             quote = evidence["quote_span"]
             if quote_span_verified(quote, text, minimum_chars=4):
                 return True
@@ -38,9 +37,7 @@ def summary_points(rio: dict[str, Any], *, limit: int = 6) -> list[dict[str, Any
         return []
     doc = obj["document"]
     thesis = obj["analysis"]["thesis"]
-    if _supported_text_is_verbatim(
-        thesis["summary"], obj["claims"], thesis["support_claim_indices"]
-    ):
+    if _text_is_verbatim_private_evidence(thesis["summary"], obj["claims"]):
         raise ValueError("analysis.thesis.summary contains verbatim private evidence")
     rows: list[dict[str, Any]] = [{
         "schema": "mastermind.research_summary_point.v1",

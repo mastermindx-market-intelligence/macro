@@ -1037,6 +1037,18 @@ def test_rio_projections_redact_private_source_claim_text():
     assert "Higher real yields are tightening financial conditions." not in encoded
 
 
+def test_rio_projection_rejects_verbatim_text_from_non_supporting_claim():
+    from engine.research_intelligence.projection import summary_points
+
+    obj = _rio_sample()
+    obj["analysis"]["thesis"].update({
+        "summary": obj["claims"][1]["evidence"][0]["quote_span"],
+        "support_claim_indices": [0],
+    })
+    with pytest.raises(ValueError, match="verbatim private evidence"):
+        summary_points(obj)
+
+
 def test_rio_claim_edges_use_structural_unresolved_entity_state():
     from engine.research_intelligence.projection import claim_edges
 
