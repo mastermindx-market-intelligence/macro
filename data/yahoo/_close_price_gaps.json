@@ -1,6 +1,0 @@
-{
-  "CNH_X": {
-    "status": "fetch_failed",
-    "reason": "yfinance returned None/empty (no close_price column)"
-  }
-}
