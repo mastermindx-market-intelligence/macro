@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-15T17:23:00.649864+00:00",
-  "count": 2165,
+  "generated_at": "2026-09-15T20:34:42.188780+00:00",
+  "count": 2180,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -100,6 +100,83 @@
   ],
   "items": [
     {
+      "id": "marketdesk-szcai5aedef-942e0b",
+      "title": "GS Ratra What is crowded in US Equities 15 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T19:48:24Z",
+      "summary_points": [
+        "Fed Policy Shift**: Q3 CPI data confirms persistent inflation, delaying rate cuts to Q1 2025; bond yields surge 25bps on hawkish Fed pivot **Ukraine Conflict Escalation**: Russian strikes on Ukrainian energy infrastructure disrupt EU gas flows, triggering 12% price spike and rerouting LNG contracts **ETF Outflows**: $18B equity ETF net outflows in 72 hours, accelerating technicals in S&P 500 futures and widening volatility index (VIX) to 22.5"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 1,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-j32rsu8e7fr-a6244c",
+      "title": "GS Feiler Consumer Day 2 Quick takes 15 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T19:48:23Z",
+      "summary_points": [
+        "Fed Policy Shift**: Q3 CPI print above consensus (3.2% vs 2.9%) signals persistent inflation, delaying rate cuts and increasing 2024 Fed funds rate risk.",
+        "Ukraine Conflict Escalation**: Russian strikes on Ukrainian energy infrastructure disrupt EU gas flows, triggering 15% spike in European spot prices and forcing portfolio rebalancing toward energy hedges.",
+        "S&P 500 Technical Break**: Daily close below 5,200 (200-day MA) confirms bearish momentum, triggering algorithmic sell-offs and $12B in ETF outflows over 48 hours."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 1,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-uyt59bcphd3-006bfc",
+      "title": "GS McElligott UPDATE THE STRAW THAT STIRS THE DRINK 15 Sep 2026",
+      "institution": "Nomura",
+      "side": "sell",
+      "desk": "McElligott",
+      "published_at": "2026-09-15T18:29:37Z",
+      "summary_points": [
+        "**Saudi Pipeline Closure & Houthi Disruptions**: Saudi Arabia cancels September crude cargoes; Houthi seizure of Perim Island and YASREF refinery cuts Yanbu exports to 1.1m b/d (from 4m b/d), creating supply shock with Red Sea inventory covering exports for only 2-6 days.",
+        "**US Export Ban Pricing & WTI/Brent Divergence**: Market prices \"Nuclear Option\" of US export ban, driving WTI \"turbo bid\" vs Brent amid Red Sea shipping risks and refinery disruptions, signaling terminal energy shortages.",
+        "**China-Driven Strategic Buying**: China rebuilds crude inventories (vs emergency draws) in coordination with Iran, overriding \"short energy\" sentiment (SHANGHAI CRUDE: 134.1745, SWIFT: 769.72), amplifying supply shock and geopolitical risk.",
+        "**Energy as Macro Catalyst**: Crude oil/energy now \"straw that stirs the drink\" in global risk regime, with WTI/Brent technicals reflecting trader positioning ahead of potential market disruption (\"goes off menu\")."
+      ],
+      "tags": [
+        "McElligott"
+      ],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xt0gsapcnyt-5ae3ec",
+      "title": "Global daily coalition of the exceedingly reluctant",
+      "institution": "Rabobank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T13:48:44Z",
+      "summary_points": [
+        "**Fed Hike Near Certainty**: OIS pricing 24.9bps for Wednesday’s FOMC, US 10-yr yields above 5% amid oil price rises, traders view hike as near certain.",
+        "**Oil Supply Geopolitical Risk**: Saudi pipeline attacks, Omani tanker explosion, and US SPR nearing 1980s lows drive physical tightness; Brent-front spread at highest since mid-April.",
+        "**Geopolitical Energy Risk Escalation**: US-Iran Strait of Hormuz blockade prolongs, Australia seeks Saudi supplies amid Red Sea disruptions, China’s structural trade surplus worsens imbalances."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-oyx4duc1ntu-e240ac",
       "title": "BioNTech (BNTX) Novel Novel Data at WCLC Serves as Early Validation",
       "institution": "Goldman Sachs",
@@ -108,6 +185,27 @@
       "published_at": "2026-09-15T12:58:35Z",
       "summary_points": [
         "**Clinical Validation & Pipeline Catalysts**: BioNTech's pumitamig + Efe-D combo shows 70.4% SCLC response rate with no overlapping toxicities; key near-term catalysts include BNT113 (Ph3 PFS) and gotisobart (PRESEERVE-003 stage-2 PFS/OS) - **Valuation & Key Risk Factor**: $127 DCF target (11% WACC, 19% TGR) faces material downside risk from BNT327 clinical trial failures undermining growth forecasts - **Price Target & Competitive Threats**: $127 target implies 28.5% upside from $103.76 but vulnerable to Summit Therapeutics’ ivonescimab competition and pipeline stagnation - **Analyst Sentiment & Revisions**: Goldman Sachs’ $127 target (04-Sep-26) exceeds current price, with consistent upward revisions since early 2024 reflecting strengthening confidence"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-uswfqndczsz-016afd",
+      "title": "Euro Area Data Update Mixed ZEW Survey for September",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T12:58:33Z",
+      "summary_points": [
+        "**ZEW/GDP Fundamentals**: Germany ZEW current conditions improved to +1.6sd below mean (vs.",
+        "2.0sd Feb), expectations rose to +1.0sd above (vs.",
+        "+1.3sd Feb); Q3 GDP tracking revised down to +0.02% (France +0.07%, Italy +0.19%, Spain +0.59%).",
+        "**Trade Balance Structural Shift**: Area-wide trade balance improved to EUR 5.0bn (vs.",
+        "1bn June), exports up 1.2%mom; non-energy balance shows positive momentum (vs."
       ],
       "tags": [],
       "tickers": [],
@@ -322,6 +420,68 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-d6vo6ftvqda-78688f",
+      "title": "Chewy Inc. (CHWY) Global Consumer and Retail Conference 2026 — Key Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T01:25:48Z",
+      "summary_points": [
+        "**NSPAC Expansion as Core Growth Driver**: Management targeting wallet share growth via Health (pharmacy/vet care), Autoship, and Chewy+; tech stack (AI, telehealth) expands TAM, enhances retention, and drives NSPAC growth amid pet category pressures.",
+        "**AI & Capital Allocation Focus**: Prioritizing AI in fulfillment, customer service, and marketing (current: targeting/chat; future: assortment/demand); capital allocation focused on high-return organic growth, M&A, and shareholder returns.",
+        "**40.5% Upside with Robust Growth Metrics**: Buy rating ($30 target vs.",
+        "$21.35 current price); revenue ($11.86B → $14.44B) and EBITDA ($570.5M → $1.09B) growth forecasts support valuation, with EBITDA margin expanding to 42.3% by 1/27E.",
+        "**Critical Execution Risks**: Key risks include customer churn/gross additions pressure, NSPAC growth slowdown, private label/pet health execution failures, and macroeconomic volatility impacting margins."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-li3loaosovk-c5632f",
+      "title": "Canada Economics Comment Headline and Core Inflation In Line With Expectations",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T01:25:45Z",
+      "summary_points": [
+        "**Exclusion Core Inflation Above Target**: Exclusion core inflation has exceeded BoC target for four consecutive months (monthly annualized), signaling persistent inflation pressure despite headline CPI in line.",
+        "**BoC Hike Window Confirmed**: Rate hike probability in October/December hinges on firming inflation data; BoC may act if exclusion core remains elevated.",
+        "**Sectoral Inflation Divergence**: Shelter (+0.2pp) and recreation (+0.1pp) accelerated, while transportation/clothing declined; shelter remains key inflation driver.",
+        "**CPIX Stability**: Core inflation (CPIX) unchanged at +0.3%, but exclusion core trend overrides this metric for BoC policy decisions."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-asqgxt8ziqo-141bd0",
+      "title": "China Consumer Staples Food What we learn from past El Niño cycles",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T01:25:44Z",
+      "summary_points": [
+        "**El Niño 2026-27 Forecast**: Multi-model median (ONI 3.5°C, \"Very Strong/Super\") projects strongest on record; historical precedent shows 50%+ konjac yield declines (e.g., 1997-1998), directly threatening China staples margins via crop failures.",
+        "**Raw Material Supply Shock**: Strong El Niño (2023-2024) caused 20% konjac capacity drop, sunflower seed mold-driven cost spikes, and nut procurement costs up 10%+; key harvest periods (Sep-Oct/Oct-Dec) to drive 4Q26 cost volatility.",
+        "**Target Price Divergence**: 5 of 6 staples stocks (e.g., Anjoy H: 86.00 HK$ vs.",
+        "75 HK$ closing) show targets above current prices (bullish), but Three Squirrels (15.30 RMB vs.",
+        "83 RMB) signals bearish risk amid margin pressures."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-coq9kqzagrb-8bfaf2",
       "title": "China Consumer Staples Assessing potential impact on price volatility of key input costs",
       "institution": "Goldman Sachs",
@@ -397,6 +557,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-n1yb4fod7hb-abb4a8",
+      "title": "Audio",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T00:34:32Z",
+      "summary_points": [
+        "**Oil Market Fragility**: Pipeline attacks and delayed talks drive oil prices up; China's demand drop and finite reserves weaken global shock resilience.",
+        "**US Rate Hike Risk**: Record diesel prices fuel cost pressures; markets price rate hikes despite Fed's limited control, with Chair's credibility risk elevating bond premiums.",
+        "**Asset Class Rating System**: Five-tier equity rating (Most Attractive to Least Attractive) guides tactical allocation via expected returns and scenario analysis, collapsing to three tiers when combined with other assets."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
@@ -627,6 +806,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-f3uco3grcae-012c24",
+      "title": "Nuclear Nuggets Global reactor tracker September edition",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T13:19:40Z",
+      "summary_points": [
+        "**Uranium Supply-Demand Fundamentals**: Structural deficit persists with U3O8 spot at ~$90/lb (term $96/lb), 192% 5-yr price return, and physical supply tightness (Spott Trust absence, 2.1mn lbs remaining annual purchases) driving bullish momentum.",
+        "**China's Nuclear Expansion Dominance**: 38 reactors under construction (vs.",
+        "Russia’s 8, India’s 7), accelerating capacity growth (e.g., Bailong, Zhaoyuan projects), signaling supply chain leadership and heightened demand for reactor tech/services.",
+        "**US Policy-Driven Capital Flows**: DOE $loan for Duane Arnold restart (2026) and military microreactor procurement (5 vendors for 6 bases) signal direct government capital allocation, boosting defense contractor flows and energy resilience.",
+        "**Geopolitical Supply Chain Shifts**: Niger resolving Atomic Eagle dispute, US-India $5B trade targets, and South Korea-Orano fuel deals indicate consolidation, heightened government control, and critical supply stability risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-l8tjmav0fbs-f97805",
       "title": "LATAM Today September 14, 2026",
       "institution": "Goldman Sachs",
@@ -706,6 +906,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-gqhuhwxqr8u-5e6102",
+      "title": "Adobe Inc",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T13:19:16Z",
+      "summary_points": [
+        "**Monetization Uncertainty**: Strategic freemium shift prioritizes user acquisition (MAUs >1B) over near-term revenue, delaying monetization and causing RPO deceleration; freemium expansion may delay revenue capture despite top-of-funnel momentum.",
+        "**CEO Transition & Execution Risk**: Anil Chakravarthy replacing David Wadhawani introduces execution uncertainty; RPO deceleration linked to flexible contracts and unclear FY27 conversion rates, underpinning Goldman's SELL rating (20.7% downside).",
+        "**Profitability Deterioration**: ROE declining from 69.5% (11/25) to 53.2% (11/26E), signaling margin pressure; Goldman Sachs SELL rating since Jan 2026 reflects weakening profitability.",
+        "**Leverage & Liquidity Risks**: Net debt/EBITDA rising to 0.5 (11/28E) and current ratio shrinking to 2.07 (11/26E), indicating escalating leverage and liquidity concerns amid strategic shift."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
@@ -871,6 +1091,25 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-mf5mg08vga2-7c5129",
+      "title": "Adobe Inc",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T13:18:29Z",
+      "summary_points": [
+        "**Monetization Uncertainty & Strategic Shift**: Strategic pivot to freemium model prioritizes user acquisition (MAUs >1B, creative freemium MAUs >100M) over near-term revenue, delaying monetization and causing RPO deceleration; conversion rate clarity needed for FY27.",
+        "**Leverage & Liquidity Deterioration**: Net debt/EBITDA rising to 0.5 (from 0.1) and current ratio shrinking to 2.07 (from 2.73), signaling escalating leverage and liquidity risks amid freemium-driven revenue structure.",
+        "**SELL Rating & Profitability Collapse**: Goldman Sachs SELL rating ($200 PT, 20.7% downside) driven by ROE decline (69.5% → 53.2%) and margin pressure, reflecting deteriorating fundamentals beyond temporary earnings beats."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-dnxgcwnq3y2-640459",
       "title": "Payments and Fintech Communacopia + Technology 2026 — Key Takeaways",
       "institution": "Goldman Sachs",
@@ -908,6 +1147,46 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-dmmbhsnwfh6-ea5da6",
+      "title": "JGB Strategy Weekly",
+      "institution": "Mizuho",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T10:54:49Z",
+      "summary_points": [
+        "**BOJ-Fed Policy Coordination**: BOJ to hike rates every 6 months post-Sept (next March 2027), offset by Fed inaction (no hikes 2026-27), absorbing yen downward pressure via narrowed JPY/USD spread.",
+        "**FX Impact Quantification**: BOJ tightening (1x 25bp hike) → JPY OIS ↓25bp → USD/JPY ↑3 yen; Fed unwinding (no hikes) → USD/JPY ↓5 yen (JPY appreciation).",
+        "**Fiscal Risk Trigger**: Japan’s surplus-driven fiscal structure (loan-deposit gap) risks duration mismatch, fueling \"sell Japan\" capital flight amid inflation/yen weakness concerns.",
+        "**JGB Yield Trajectory**: 2y yield stable at ~1.70% until Jan-Mar 2027, then gradual decline; 5y/10y/20y/30y yields flatten through 2027 (Mizuho base-case).",
+        "**Geopolitical Inflation Risk**: Iran tensions may accelerate 2H 2026 inflation, pushing BOJ to hike in Sept; terminal rate >2% overpriced as energy subsidies fade (2027)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 21,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-vz4sk2hwkfi-d83a67",
+      "title": "EMEA Strategy Daily",
+      "institution": "Mizuho",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T10:53:50Z",
+      "summary_points": [
+        "**Geopolitical Oil Shock**: Gulf pipeline attack and Iran-Saudi talks sustain Brent above $106/b, pressuring USD and driving 10Y yields toward 5% amid Fed hike (86% Wed) and 90bp tightening by 2026.",
+        "**EUR Inflation-ECB Conflict**: Energy inflation (Brent >$106/b) clashes with ECB policy tension, limiting rate cuts despite weak growth.",
+        "**France Fiscal Drag**: €30bn savings target and weak growth constrain EUR rate cuts, risking OAT underperformance."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
@@ -1233,6 +1512,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ryjteh0pizz-50ce5c",
+      "title": "BHP Group Ltd. (BHP.AX) Copper SA expansion to 500ktpa Assessing the returns on the Olympic Dam block cave and US$10bn inv...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T00:50:05Z",
+      "summary_points": [
+        "**Olympic Dam Block Cave Fundamentals**: $15bn investment for Phase 1 block cave program; 19% IRR, $12.3bn NPV at $5.2/lb copper, targeting $7bn EBITDA (55% margin) by 2035 with peak SA production at 490ktpa.",
+        "**Critical Execution Risk**: $15bn Olympic Dam program delivery on time/budget is pivotal; failure risks 7% price target upside and undermines $37bn copper SA NPV (14% of operating asset NAV).",
+        "**Production & Margin Growth**: SA copper production to double to 500ktpa by 2035 (vs.",
+        "172ktpa FY20), driving $7bn EBITDA (mid-2030s) and 55% margin, with mining costs dropping 40-50% to <$35/t via block cave.",
+        "**Price Sensitivity Impact**: 20% copper price rise (to $5.2/lb vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 29,
       "language": "en",
       "needs_metadata": false
     },
