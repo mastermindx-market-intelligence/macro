@@ -30,12 +30,35 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from datetime import date, datetime, timezone
 from pathlib import Path
 
 from lib import config
 
 log = logging.getLogger(__name__)
+
+# Display names for surface keys. Used by the hub chip and by the template
+# slug map (S1). Never leak the raw key into customer copy.
+SURFACE_LABELS: dict[str, tuple[str, str]] = {
+    "news": ("News", "新闻"),
+    "policy": ("Policy", "政策"),
+    "altdata": ("Alt-Data", "另类数据"),
+    "radar": ("Divergence Radar", "背离雷达"),
+    "analysis": ("Desk synthesis", "综合解读"),
+    "policy_phrase": ("Policy language", "政策表述"),
+    "narrative_divergence": ("Onshore / offshore tape", "境内外叙事"),
+    "special_situations": ("Special situations", "特殊情景"),
+    "command": ("Command list", "指挥清单"),
+    "conditions": ("Risk appetite", "风险偏好"),
+    "board": ("Buy board", "买入板"),
+    "special": ("Special situations", "特殊情景"),
+}
+
+_Z_OVER_RE = re.compile(
+    r"z\s*([+-]?\d+(?:\.\d+)?)\s*over\s*(\d+)\s*d", re.IGNORECASE)
+_Z_ZH_RE = re.compile(
+    r"(\d+)\s*日\s*z\s*([+-]?\d+(?:\.\d+)?)", re.IGNORECASE)
 
 SCHEMA = "china_intel.briefing.v6"
 MAX_STALE_OK = 35
@@ -171,7 +194,8 @@ def _policy_block() -> dict | None:
         "lpr_1y": pol.get("lpr_1y"), "lpr_5y": pol.get("lpr_5y"),
         "rrr": pol.get("rrr"), "fr007": pol.get("fr007"),
         "fx_reserves": pol.get("fx_reserves"), "usd_cny": pol.get("usd_cny"),
-        "last_moves": pol.get("last_moves") or [], "predictions": pol.get("predictions") or [],
+        "last_moves": pol.get("last_moves") or [],
+        "predictions": _bilingual_predictions(pol.get("predictions") or []),
         "asof": pol.get("asof"), "stale": pol.get("stale"),
     }
     # priced-for-easing reconciliation
@@ -381,6 +405,12 @@ def _analysis_block() -> dict | None:
     # per spec §2.4 (brain_usable = present AND not degraded_reason).
     out["llm_synthesis"] = a.get("llm_synthesis")
     out["llm_synthesis_degraded_reason"] = a.get("llm_synthesis_degraded_reason")
+    if out.get("what_matters"):
+        out["what_matters"] = [_plain_salience_item(w) for w in out["what_matters"]]
+    if out.get("cross_refs"):
+        out["cross_refs"] = [_plain_cross_ref(x) for x in out["cross_refs"]]
+    if out.get("conviction"):
+        out["conviction"] = _disambiguate_duplicate_sectors(out["conviction"])
     return out
 
 
@@ -623,21 +653,209 @@ def _analogs_block() -> dict | None:
 
 
 # --------------------------------------------------------------------------- #
+# copy helpers (plain-language rewrites at the bus; analysis.py is out of packet)
+# --------------------------------------------------------------------------- #
+_ZH_PRED_UNAVAILABLE = "暂无中文摘要"
+
+# Enum → plain-sentence WHY for the degraded-AI state (rider 4). Never leak the
+# enum; never render nothing. Unknown keys take the generic unavailable pair.
+_SYN_DEG_WHY: dict[str, tuple[str, str]] = {
+    "not_wired": (
+        "The AI cross-surface read is not connected on this desk yet.",
+        "本台跨面板 AI 解读尚未接通。",
+    ),
+    "brain_timeout": (
+        "The AI read timed out, so this desk is showing the deterministic synthesis only.",
+        "AI 解读超时，本台仅展示确定性综合。",
+    ),
+    "timeout": (
+        "The AI read timed out, so this desk is showing the deterministic synthesis only.",
+        "AI 解读超时，本台仅展示确定性综合。",
+    ),
+    "error": (
+        "The AI read failed, so this desk is showing the deterministic synthesis only.",
+        "AI 解读失败，本台仅展示确定性综合。",
+    ),
+}
+
+
+def _degraded_why(reason: str | None) -> dict | None:
+    """Map a degraded-AI enum to {en, zh} sentences. None if no reason."""
+    if not reason:
+        return None
+    key = str(reason).strip()
+    if not key:
+        return None
+    en, zh = _SYN_DEG_WHY.get(key, (
+        "The AI read is unavailable.",
+        "AI 解读不可用。",
+    ))
+    return {"en": en, "zh": zh}
+
+
+def _bilingual_predictions(raw: list) -> list[dict]:
+    """Policy predictions as {en, zh} pairs (S6). latest.json currently stores
+    English-only strings; recover ZH from intel.json when present.
+
+    A missing ZH never re-serves English into the ZH lane — that is the M6
+    defect. The honest unavailable form is 「暂无中文摘要」; EN stays on the
+    pair (and the row tip) so the ZH lane can still reach it.
+    """
+    by_en: dict[str, str] = {}
+    intel = _read_json("data/china_policy/intel.json") or {}
+    if isinstance(intel, dict):
+        for p in intel.get("predictions") or []:
+            if isinstance(p, dict) and p.get("text_en"):
+                recovered = str(p.get("text_zh") or "").strip()
+                if recovered:
+                    by_en[str(p["text_en"])] = recovered
+    out: list[dict] = []
+    for p in raw or []:
+        if isinstance(p, dict):
+            en = str(p.get("text_en") or p.get("en") or "").strip()
+            zh = str(p.get("text_zh") or p.get("zh") or by_en.get(en) or "").strip()
+            if en:
+                out.append({"en": en, "zh": zh or _ZH_PRED_UNAVAILABLE})
+        else:
+            en = str(p).strip()
+            if en:
+                recovered = (by_en.get(en) or "").strip()
+                out.append({"en": en, "zh": recovered or _ZH_PRED_UNAVAILABLE})
+    return out
+
+
+def _plain_z_meaning(z: float, n_days: str | int) -> tuple[str, str, str, str]:
+    """Law 3: what the media-tone reading means; receipt without a `z=` token."""
+    days = str(n_days)
+    if z > 0.5:
+        face_en = f"Media tone is unusually positive over {days} days."
+        face_zh = f"近{days}日媒体语气明显偏积极。"
+    elif z < -0.5:
+        face_en = f"Media tone is unusually negative over {days} days."
+        face_zh = f"近{days}日媒体语气明显偏消极。"
+    else:
+        face_en = f"Media tone is near typical over {days} days."
+        face_zh = f"近{days}日媒体语气接近常态。"
+    tip_en = f"standardized reading {z:+.2f} vs the last {days} days"
+    tip_zh = f"近{days}日标准化读数 {z:+.2f}"
+    return face_en, face_zh, tip_en, tip_zh
+
+
+def _plain_salience_item(w: dict) -> dict:
+    """Rewrite untranslated `z ±N over Nd` salience details (S3 / A3)."""
+    item = dict(w)
+    de = str(item.get("detail_en") or "")
+    dz = str(item.get("detail_zh") or "")
+    m = _Z_OVER_RE.search(de)
+    if m:
+        z_val, days = float(m.group(1)), m.group(2)
+        face_en, face_zh, tip_en, tip_zh = _plain_z_meaning(z_val, days)
+        item["detail_en"] = face_en
+        item["detail_zh"] = face_zh
+        item["detail_tip_en"] = tip_en
+        item["detail_tip_zh"] = tip_zh
+        return item
+    mz = _Z_ZH_RE.search(dz)
+    if mz:
+        days, z_val = mz.group(1), float(mz.group(2))
+        face_en, face_zh, tip_en, tip_zh = _plain_z_meaning(z_val, days)
+        item["detail_en"] = face_en
+        item["detail_zh"] = face_zh
+        item["detail_tip_en"] = tip_en
+        item["detail_tip_zh"] = tip_zh
+    return item
+
+
+def _plain_cross_ref(x: dict) -> dict:
+    """Drop 'corridor classifier' / 'priced-for-easing' from the glance tag (S4)."""
+    item = dict(x)
+    en = str(item.get("tag_en") or "")
+    zh = str(item.get("tag_zh") or "")
+    if "corridor classifier" in en.lower() or "priced-for-easing" in en.lower():
+        item["tag_en"] = (
+            "Cuts have landed but the policy stance has not flipped to easing yet "
+            "— priced in, not confirmed.")
+        item["tag_zh"] = (
+            "降息/降准已经落地，但政策立场尚未转为宽松——市场已计价，尚未确认。")
+    elif "corridor" in en.lower() or "priced-for-easing" in zh:
+        item["tag_en"] = en
+        item["tag_zh"] = zh
+    return item
+
+
+def _disambiguate_duplicate_sectors(rows: list) -> list:
+    """Two 'Banks' rows: surface the radar-key driver in the sector cell (S7 / M13)."""
+    from collections import Counter
+    counts = Counter((r.get("sector_en") or "") for r in rows)
+    out = []
+    for r in rows:
+        item = dict(r)
+        sector = item.get("sector_en") or ""
+        if sector and counts[sector] > 1:
+            key = str(item.get("key") or "").replace("_", " ").strip()
+            if key:
+                item["sector_driver_en"] = key
+                item["sector_driver_zh"] = item.get("hypothesis_zh") or key
+        out.append(item)
+    return out
+
+
+# --------------------------------------------------------------------------- #
 # public
 # --------------------------------------------------------------------------- #
-def _staleness(b: dict) -> tuple[dict, int]:
-    sa, worst = {}, 0
-    for k in ("news", "policy", "altdata", "radar", "analysis",
-              "policy_phrase", "narrative_divergence", "special_situations", "command"):
-        d = (b.get(k) or {}).get("asof") if isinstance(b.get(k), dict) else None
-        sa[k] = d
-        if d:
-            try:
-                age = (date.today() - date.fromisoformat(str(d)[:10])).days
-                worst = max(worst, age)
-            except (ValueError, TypeError):
-                pass
-    return sa, worst
+def _staleness(b: dict) -> tuple[dict, dict]:
+    """Per-surface as-of map plus the five-state oldest-feed chip (B1).
+
+    `working` is feeds WITH an asof AND age ≤ 2d — never a stale fallback.
+    An undated present feed is accounted, never dropped. States:
+
+      fresh          — dated feeds exist, all age ≤ 2d, none undated (chip off)
+      mixed          — worst > 2d and working non-empty
+      all_stale      — dated feeds exist, working empty, none undated
+      outage         — no asof on any present feed (chip on; not an all-clear)
+      undated_among  — at least one present feed has no asof, and at least one does
+    """
+    keys = ("news", "policy", "altdata", "radar", "analysis",
+            "policy_phrase", "narrative_divergence", "special_situations", "command")
+    sa: dict[str, str | None] = {}
+    aged: list[tuple[int, str, str]] = []  # (age, key, asof)
+    undated: list[str] = []
+    today = date.today()
+    for k in keys:
+        block = b.get(k)
+        if not isinstance(block, dict):
+            sa[k] = None
+            continue
+        d = block.get("asof")
+        if not d:
+            sa[k] = None
+            undated.append(k)
+            continue
+        asof_s = str(d)[:10]
+        sa[k] = asof_s
+        try:
+            age = (today - date.fromisoformat(asof_s)).days
+        except (ValueError, TypeError):
+            undated.append(k)
+            continue
+        aged.append((age, k, asof_s))
+    empty = {"age": 0, "key": None, "asof": None, "working": [], "undated": undated}
+    if not aged:
+        return sa, {**empty, "state": "outage"}
+    aged.sort(key=lambda t: t[0], reverse=True)
+    worst_age, worst_key, worst_asof = aged[0]
+    working = [{"key": k, "asof": a, "age": ag} for ag, k, a in aged if ag <= 2]
+    working.sort(key=lambda w: w["age"])
+    if undated:
+        state = "undated_among"
+    elif worst_age <= 2:
+        state = "fresh"
+    elif working:
+        state = "mixed"
+    else:
+        state = "all_stale"
+    return sa, {"age": worst_age, "key": worst_key, "asof": worst_asof,
+                "working": working, "undated": undated, "state": state}
 
 
 def briefing(asof: date | str | None = None) -> dict:
@@ -678,7 +896,16 @@ def briefing(asof: date | str | None = None) -> dict:
     b["surfaces_present"] = [k for k in ("news", "policy", "altdata", "radar", "analysis",
                                         "policy_phrase", "narrative_divergence",
                                         "special_situations", "command") if b.get(k)]
-    b["surface_asof"], b["max_staleness_days"] = _staleness(b)
+    sa, rec = _staleness(b)
+    b["surface_asof"] = sa
+    b["max_staleness_days"] = rec["age"]
+    b["max_staleness_feed"] = rec["key"]
+    b["max_staleness_feed_asof"] = rec["asof"]
+    b["stale_working_feeds"] = rec["working"]
+    b["staleness_undated"] = rec["undated"]
+    b["staleness_state"] = rec["state"]
+    deg = a.get("llm_synthesis_degraded_reason")
+    b["llm_synthesis_degraded_why"] = _degraded_why(deg)
     b["digest"] = _digest_text(b)
     return b
 

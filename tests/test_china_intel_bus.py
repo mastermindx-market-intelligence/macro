@@ -21,7 +21,10 @@ def test_briefing_shape(monkeypatch):
         assert k in b
     # v2 hoisted synthesis keys always present
     for k in ("conviction", "cross_surface", "flagged_tickers", "what_changed", "salience",
-              "surface_asof", "max_staleness_days"):
+              "surface_asof", "max_staleness_days", "max_staleness_feed",
+              "max_staleness_feed_asof", "stale_working_feeds",
+              "staleness_state", "staleness_undated",
+              "llm_synthesis_degraded_why"):
         assert k in b
     # v6: analogs key always present (may be None)
     assert "analogs" in b
