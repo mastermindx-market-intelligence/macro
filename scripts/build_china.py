@@ -22,7 +22,12 @@ from markupsafe import Markup
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import plotly.graph_objects as go  # noqa: E402
+# plotly is intentionally NOT imported at module level: tests under
+# tests/test_china_archetype_d_s1.py import this module for CHINA_TILE_COPY /
+# MARKET_TILE_SPEC without ever rendering a chart, and plotly is absent from the
+# conviction-profile CI env (proven environmental, not this PR's defect). The
+# three renderers below do `import plotly.graph_objects as go` locally so the
+# module is importable wherever the engine is.
 
 from lib import config, illus, site_assets, store  # noqa: E402
 from lib.pages import write_page  # noqa: E402
@@ -75,7 +80,10 @@ PLOT_LAYOUT = dict(
     legend={"orientation": "h", "y": 1.08})
 
 
-def _chart_html(fig: go.Figure) -> str:
+def _chart_html(fig: "plotly.graph_objects.Figure") -> str:
+    # plotly import is lazy in the callers below; the annotation is a string
+    # under `from __future__ import annotations`, so this sink needs no plotly
+    # import at all — `to_html` runs against the caller-supplied figure.
     return fig.to_html(full_html=False, include_plotlyjs=False, config={"displayModeBar": False})
 
 
@@ -185,6 +193,7 @@ def _prophet_outage_shell(reason: str = _PROPHET_OUTAGE_REASON,
 
 
 def _chart_regime(px: pd.Series, hist: pd.DataFrame, days: int = 3650) -> str:
+    import plotly.graph_objects as go  # noqa: E402  (lazy — see module docstring)
     cut = px.index.max() - pd.Timedelta(days=days)
     s = px.loc[cut:].dropna()
     sub = hist.loc[cut:]
@@ -203,6 +212,7 @@ def _chart_regime(px: pd.Series, hist: pd.DataFrame, days: int = 3650) -> str:
 
 
 def _chart_axes(hist: pd.DataFrame, days: int = 3650) -> str:
+    import plotly.graph_objects as go  # noqa: E402  (lazy — see module docstring)
     cut = hist.index.max() - pd.Timedelta(days=days)
     sub = hist.loc[cut:]
     fig = go.Figure()
