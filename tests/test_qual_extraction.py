@@ -599,6 +599,8 @@ def test_shared_quote_verifier_retains_unknown_title_style_abbreviation_context(
         ("Management may not, per cont. Guidance, raise prices.", "Guidance, raise prices."),
         ("Management may not, per resp. Guidance, raise prices.", "Guidance, raise prices."),
         ("Management may not, per trans. Guidance, raise prices.", "Guidance, raise prices."),
+        ("The Ph.D. Analyst expects inflation to rise.", "Analyst expects inflation to rise."),
+        ("An M.Sc. Research team expects inflation to rise.", "Research team expects inflation to rise."),
     ]
     for body, fragment in cases:
         assert not qe.quote_span_verified(body, fragment, require_complete_clause=True)
@@ -640,6 +642,20 @@ def test_shared_quote_verifier_clause_mode_retains_ambiguous_abbreviation_contex
     for body, fragment in cases:
         assert not qe.quote_span_verified(body, fragment, require_complete_clause=True)
 
+
+
+def test_shared_quote_verifier_clause_mode_recognizes_common_sentence_endings():
+    cases = [
+        ("Demand weakened in China. Revenue fell sharply.", "Demand weakened in China.", "Revenue fell sharply."),
+        ("The outlook is bad. Revenue fell sharply.", "The outlook is bad.", "Revenue fell sharply."),
+        ("The cycle ended in 2027. Revenue fell sharply.", "The cycle ended in 2027.", "Revenue fell sharply."),
+        ("The estimate was 2.1. Revenue fell sharply.", "The estimate was 2.1.", "Revenue fell sharply."),
+        ("Demand weakened at AAPL. Revenue fell sharply.", "Demand weakened at AAPL.", "Revenue fell sharply."),
+    ]
+    for body, first, second in cases:
+        assert qe.quote_span_verified(body, first, require_complete_clause=True)
+        assert qe.quote_span_verified(body, second, require_complete_clause=True)
+        assert not qe.quote_span_verified(body, body, require_complete_clause=True)
 
 def test_shared_quote_verifier_clause_mode_accepts_complete_clauses():
     english = "Goldman does not expect inflation to rise this year."

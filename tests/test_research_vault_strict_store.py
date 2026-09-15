@@ -1267,6 +1267,60 @@ def test_rio_rejects_denial_modality_and_uncertainty_stripping():
             )
 
 
+
+def test_rio_accepts_individual_claim_after_common_sentence_endings():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+
+    cases = [
+        "Demand weakened in China. Revenue fell sharply.",
+        "The outlook is bad. Revenue fell sharply.",
+        "The cycle ended in 2027. Revenue fell sharply.",
+        "The estimate was 2.1. Revenue fell sharply.",
+    ]
+    for body in cases:
+        obj = _rio_sample(body=body)
+        obj["claims"] = [{
+            "statement": "Revenue fell sharply.",
+            "evidence": [{"quote_span": "Revenue fell sharply."}],
+            "numbers": [], "entities": ["Revenue"], "horizon": "current", "explicit": True,
+        }]
+        obj["analysis"]["thesis"].update({
+            "summary": "Revenue momentum deteriorated.",
+            "support_claim_indices": [0],
+        })
+        out = parse_model_output(
+            json.dumps(obj),
+            expected_document_id="r1",
+            expected_document=obj["document"],
+            source_body=body,
+        )
+        assert out["claims"][0]["statement"] == "Revenue fell sharply."
+
+
+def test_rio_rejects_two_sentences_collapsed_into_one_source_claim():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+
+    body = "Demand weakened in China. Revenue fell sharply."
+    obj = _rio_sample(body=body)
+    obj["claims"] = [{
+        "statement": body,
+        "evidence": [{"quote_span": body}],
+        "numbers": [], "entities": ["China", "Revenue"], "horizon": "current", "explicit": True,
+    }]
+    obj["analysis"]["thesis"].update({
+        "summary": "Demand and revenue momentum weakened.",
+        "support_claim_indices": [0],
+    })
+    with pytest.raises(ValueError, match="no source claim survived"):
+        parse_model_output(
+            json.dumps(obj),
+            expected_document_id="r1",
+            expected_document=obj["document"],
+            source_body=body,
+        )
+
 def test_rio_accepts_complete_source_context_with_finance_abbreviations_and_commas():
     import json
     from engine.research_intelligence.extractor import parse_model_output

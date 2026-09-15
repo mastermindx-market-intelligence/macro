@@ -218,7 +218,13 @@ def _context_successor(text: str, index: int) -> tuple[int, bool]:
 
 
 def _period_ends_context_unit(text: str, index: int) -> bool:
-    """Conservatively classify a period as a sentence/context boundary."""
+    """Conservatively classify a period as a sentence/context boundary.
+
+    Only concrete abbreviation shapes suppress a boundary.  Treating every
+    short or capitalized final word as an abbreviation collapses ordinary
+    sentences ending in names (``China.``), short words (``bad.``), years, and
+    decimal values into the following sentence.
+    """
     if index < 0 or index >= len(text) or text[index] != ".":
         return False
     if _neighbor_nonspace_is_period(text, index, -1) or _neighbor_nonspace_is_period(
@@ -232,22 +238,40 @@ def _period_ends_context_unit(text: str, index: int) -> bool:
     cursor, separated = _context_successor(text, index)
     if cursor >= len(text):
         return True
-    if index > 0 and text[index - 1].isdigit():
-        return False
     if not separated:
         return False
 
     left = index - 1
-    while left >= 0 and text[left].isalpha():
+    while left >= 0 and (text[left].isalpha() or text[left] == "."):
         left -= 1
-    word = text[left + 1:index]
-    word_folded = word.casefold()
-    if word and (
-        len(word_folded) <= 3
-        or word_folded in _CITATION_PERIOD_ABBREVIATIONS
-        or word[0].isupper()
-    ):
+    token = text[left + 1:index].strip(".")
+    token_folded = token.casefold()
+    segments = [segment for segment in token.split(".") if segment]
+    dotted_abbreviation = (
+        len(segments) >= 2
+        and all(1 <= len(segment) <= 3 and segment.isalpha() for segment in segments)
+    )
+    single_initial = (
+        len(segments) == 1
+        and len(segments[0]) == 1
+        and segments[0].isupper()
+    )
+    if token_folded in _CITATION_PERIOD_ABBREVIATIONS or dotted_abbreviation or single_initial:
         return False
+
+    if index > 0 and text[index - 1].isdigit():
+        number_left = index - 1
+        while number_left >= 0 and (
+            text[number_left].isdigit() or text[number_left] in ".,"
+        ):
+            number_left -= 1
+        numeric = text[number_left + 1:index].strip(".")
+        digits = "".join(char for char in numeric if char.isdigit())
+        decimal_or_grouped = "." in numeric or "," in numeric
+        alpha_prefixed = number_left >= 0 and text[number_left].isalpha()
+        if not (decimal_or_grouped or len(digits) >= 3 or alpha_prefixed):
+            # Preserve short ordinal forms such as ``2. Quartal`` fail-closed.
+            return False
 
     next_char = text[cursor]
     if next_char.islower():
