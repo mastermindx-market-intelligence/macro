@@ -2585,7 +2585,7 @@ def test_local_vision_provider_is_built_only_from_the_vision_config(monkeypatch)
             }
         }
     }
-    monkeypatch.setenv("OLLAMA_BASE_URL", "http://100.80.236.59:11434")
+    monkeypatch.setenv("OLLAMA_BASE_URL", "http://ollama-test.ts.net:11434")
     monkeypatch.setenv("OLLAMA_MODEL", "qwen3.5:9b")
     with patch.object(gw, "_load_brain_config", return_value=cfg):
         with patch("engine.llm_auth.build_providers") as generic_builder:
