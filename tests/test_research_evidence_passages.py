@@ -294,3 +294,83 @@ def test_entitled_reader_adds_evidence_metadata_without_widening_legacy_reader(
     assert evidence["char_count"] == len(body) + 80
     assert evidence["content_sha256"] == "b" * 64
     assert evidence["body"] == body
+
+
+def _malformed_body_doc(body) -> dict:
+    return {
+        "doc_id": "desk-note-1",
+        "body": body,
+        "text_layer": "full",
+        "content_sha256": "a" * 64,
+        "char_count": 0,
+        "pages": 0,
+    }
+
+
+def test_non_string_body_values_fail_closed_without_python_repr_evidence():
+    """A corpus body is publisher text only when it is already a string."""
+    cases = (
+        {"topic": "AAPL demand estimates"},
+        ["AAPL demand estimates are rising."],
+        ("AAPL demand",),
+        12345,
+        1.5,
+        True,
+    )
+    for malformed in cases:
+        doc = (
+            _doc(malformed, char_count=0)
+            if isinstance(malformed, (dict, list, tuple))
+            else _malformed_body_doc(malformed)
+        )
+        result = corpus.find_evidence_passages(doc, "AAPL demand")
+        assert result["status"] == "body_unavailable", malformed
+        assert result["passages"] == [], malformed
+        assert result["source_binding"]["stored_char_count"] == 0, malformed
+        assert result["source_binding"]["stored_body_sha256"] == hashlib.sha256(b"").hexdigest(), malformed
+
+
+def _long_window_body() -> str:
+    return ("prefix " * 5_000) + (
+        "AAPL demand estimates rose sharply this quarter."
+    ) + (" suffix" * 5_000)
+
+
+def test_caller_sized_window_is_clamped_to_frozen_safe_maximum():
+    body = _long_window_body()
+
+    result = corpus.find_evidence_passages(
+        _doc(body), "AAPL demand", window_chars=10**9)
+
+    assert result["status"] == "matched"
+    passage = result["passages"][0]
+    assert len(passage["text"]) <= corpus.EVIDENCE_WINDOW_CHARS
+    assert len(passage["match_text"]) <= corpus.EVIDENCE_WINDOW_CHARS
+    assert (passage["locator"]["end_char"]
+            - passage["locator"]["start_char"]) <= corpus.EVIDENCE_WINDOW_CHARS
+
+
+def test_nonliteral_window_values_use_the_safe_default_without_coercion():
+    body = _long_window_body()
+    baseline = corpus.find_evidence_passages(_doc(body), "AAPL demand")
+    expected = baseline["passages"][0]
+
+    for malformed in (True, False, "900", "50", 900.0, 50.0, None):
+        result = corpus.find_evidence_passages(
+            _doc(body), "AAPL demand", window_chars=malformed)
+        assert result["status"] == "matched", malformed
+        passage = result["passages"][0]
+        assert passage["locator"] == expected["locator"], malformed
+        assert passage["text"] == expected["text"], malformed
+
+
+def test_literal_window_values_clamp_to_existing_safe_interval():
+    body = _long_window_body()
+
+    small = corpus.find_evidence_passages(
+        _doc(body), "AAPL demand", window_chars=40)
+    large = corpus.find_evidence_passages(
+        _doc(body), "AAPL demand", window_chars=5_000)
+
+    assert len(small["passages"][0]["text"]) <= 80
+    assert len(large["passages"][0]["text"]) <= corpus.EVIDENCE_WINDOW_CHARS
