@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-15T04:12:18.421202+00:00",
-  "count": 2133,
+  "generated_at": "2026-09-15T04:27:21.324381+00:00",
+  "count": 2134,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -99,6 +99,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-nj3nrtio36t-d4b49b",
+      "title": "China Weaker than expected credit extension mainly from slow bank loan extension and government bond issuance",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T01:25:52Z",
+      "summary_points": [
+        "**Credit Extension Miss**: RMB 60bn bank loan growth vs.",
+        "300bn forecast, driven by weak household demand and reduced government bond issuance (net RMB 635bn vs.",
+        "July's RMB 1,450bn).",
+        "**Social Financing & M2 Moderation**: Total social financing at RMB 1,660bn (vs.",
+        "2,000bn forecast), M2 growth at 7.5% YoY (vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-coq9kqzagrb-8bfaf2",
       "title": "China Consumer Staples Assessing potential impact on price volatility of key input costs",
