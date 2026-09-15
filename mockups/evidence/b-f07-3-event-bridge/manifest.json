@@ -1,0 +1,23 @@
+{
+  "schema": "mastermind.page_evidence_receipt.v1",
+  "packet": "B-F07-3",
+  "subject": "valuation panel event-to-assumption bridge line",
+  "host_pages": [
+    "mockups/evidence/b-f07-3-event-bridge/hosts/valuation-event-bridge-tender-offer.html",
+    "mockups/evidence/b-f07-3-event-bridge/hosts/valuation-event-bridge-restructuring.html",
+    "mockups/evidence/b-f07-3-event-bridge/hosts/valuation-event-bridge-null.html"
+  ],
+  "cells": [
+    "valuation-event-bridge-tender-offer_desktop_dark_en.png",
+    "valuation-event-bridge-tender-offer_desktop_dark_zh.png",
+    "valuation-event-bridge-tender-offer_desktop_light_en.png",
+    "valuation-event-bridge-tender-offer_desktop_light_zh.png",
+    "valuation-event-bridge-tender-offer_mobile_dark_en.png",
+    "valuation-event-bridge-tender-offer_mobile_dark_zh.png",
+    "valuation-event-bridge-tender-offer_mobile_light_en.png",
+    "valuation-event-bridge-tender-offer_mobile_light_zh.png"
+  ],
+  "matrix": "dark+light × EN+ZH × 1440/390 (desktop, mobile)",
+  "state": "populated (Tender Offers)",
+  "note": "8 cells = the populated receipt; typed-null covered by tests/test_valuation_event_bridge.py"
+}
