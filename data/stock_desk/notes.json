@@ -1,175 +1,176 @@
 {
   "schema": "stock_desk.v1",
   "as_of": "2026-09-11",
-  "generated_at": "2026-09-12T14:58:46.673783+00:00",
+  "generated_at": "2026-09-14T14:42:19.002109+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-09-11-ELV-20260912145846-1",
-      "ticker": "ELV",
+      "id": "2026-09-11-SIG-20260914144219-1",
+      "ticker": "SIG",
       "name": null,
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The deterministic verdict is neutral-no-edge, and the only leg doing heavy lifting is entry timing (off-high, RSI, vol-squeeze) with a HOLD-EXTENDED board read. No validated alpha leg fires; a cautious lean would just be shorting a name with an accounting-watch flag on timing alone.",
+      "horizon_d": 21,
+      "thesis": "The engine's own verdict is 'no clear edge' (score 50). The only validated leg, SUE, is negative (-0.37) and stale (72 days), so there is no legible standalone edge to act on; the 'FRESH BUY' board state is display-level context, not a tradeable signal.",
       "evidence": [
         "verdict: Neutral \u2014 no clear edge",
-        "board.state: HOLD \u2014 EXTENDED",
-        "entry axis only real driver (extension present)",
-        "SUE z -1.01 (negative, not a tailwind)",
-        "accounting flag: watch"
+        "trust_tier: event-edge (confluence read, not standalone alpha)",
+        "selection SUE z=-0.37, fresh 72d (validated leg is negative and stale)",
+        "entry z=-1.07, 34th pct (poor entry)"
       ],
-      "dissent": "Fresh insider-buying context plus a calm risk-on tape could let the residual alpha z (0.24) re-assert and leave a neutral lean behind.",
+      "dissent": "Revisions z=1.53 is a literature-tier positive and quality is clean, so if the next earnings print surprises up it could gap against a neutral read.",
       "falsifier": {
-        "text": "Price closes above its recent high on rising volume without an earnings event.",
+        "text": "A fresh positive SUE or a material upward revision cycle within the next month that holds up in subsequent price action.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-10-09",
+      "check_by": "2026-10-12",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-11-CSR-20260912145846-2",
+      "id": "2026-09-11-NX-20260914144219-2",
+      "ticker": "NX",
+      "name": null,
+      "lean": "cautious",
+      "conviction": "medium",
+      "horizon_d": 21,
+      "thesis": "This is a genuine lagging name: verdict 'relative weakness', score 34, selection z=-0.85 with all three legs negative (SUE -0.53, revisions -1.50, momentum -0.25), plus an accounting WAR flag. The caution is driven by an actual bearish signal, not mere extension.",
+      "evidence": [
+        "verdict: Lagging \u2014 relative weakness",
+        "cautions: Accounting quality looks weak",
+        "quality accounting flag: warn",
+        "selection z=-0.85, all legs negative",
+        "board: TURN SIGNALED, urgency=caution"
+      ],
+      "dissent": "The turn-signal could be a washout low; if short interest is high or a single contract/report resets expectations, a lagging name can mean-revert sharply.",
+      "falsifier": {
+        "text": "A weekly close above the 20-day high with improving revisions (revision z crossing back above zero).",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "NX",
+          "vs": "SPY",
+          "op": ">",
+          "threshold": 0.05,
+          "horizon_d": 21
+        }
+      },
+      "check_by": "2026-10-12",
+      "engine_verdict": "Lagging \u2014 relative weakness"
+    },
+    {
+      "id": "2026-09-11-TEL-20260914144219-3",
+      "ticker": "TEL",
+      "name": null,
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 21,
+      "thesis": "Verdict is 'no clear edge' (score 52). Momentum is deeply negative (z=-1.17) but that is context-tier; SUE is neutral (-0.21, fresh 17d) and revisions are mild positive. There is no validated bearish leg to support a cautious lean and no validated alpha to support constructive.",
+      "evidence": [
+        "verdict: Neutral \u2014 no clear edge",
+        "selection momentum z=-1.17 (context tier, not standalone)",
+        "SUE z=-0.21, fresh 17d (validated leg is neutral)",
+        "entry z=0.72, 61st pct (good entry but not a standalone signal)"
+      ],
+      "dissent": "If the -14.3% off-high is a coiled spring on a genuinely clean balance sheet and the next print beats, the asymmetry could favor upside.",
+      "falsifier": {
+        "text": "A decisive weekly close above the prior consolidation high accompanied by a positive SUE print.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-10-12",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-09-11-TKO-20260914144219-4",
+      "ticker": "TKO",
+      "name": null,
+      "lean": "constructive",
+      "conviction": "low",
+      "horizon_d": 21,
+      "thesis": "Verdict is 'constructive \u2014 building a base' with revisions a notable literature-tier positive (z=1.42) and a clean-ish fundamental picture (accounting watch, not warn). However, the engine itself flags the Communication Services basket is below trend \u2014 size risk is real, so I keep conviction low.",
+      "evidence": [
+        "verdict: Constructive \u2014 building a base",
+        "revision z=1.42 (literature tier positive)",
+        "board off-high -14.7%, dir up \u2014 base-building context",
+        "cautions: sector basket below long-term trend (size down)"
+      ],
+      "dissent": "The 'TURN SIGNALED' urgency=caution combined with an accounting 'watch' flag on a Communication Services name could be a false dawn if the sector trend remains down.",
+      "falsifier": {
+        "text": "A weekly close below the recent base low, or the revision cycle rolling over from +1.42 toward zero.",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "TKO",
+          "vs": "SPY",
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 21
+        }
+      },
+      "check_by": "2026-10-12",
+      "engine_verdict": "Constructive \u2014 building a base"
+    },
+    {
+      "id": "2026-09-11-CLH-20260914144219-5",
+      "ticker": "CLH",
+      "name": null,
+      "lean": "constructive",
+      "conviction": "low",
+      "horizon_d": 21,
+      "thesis": "Verdict is 'constructive \u2014 building a base' and the selection leg is the strongest in the set: validated SUE z=0.88 (fresh, 13d), literature revisions z=0.88, and context momentum +0.50 all pointing the same way. But the board 'TURN SIGNALED' with urgency=now and only -1.1% off-high suggests the move may already be underway.",
+      "evidence": [
+        "verdict: Constructive \u2014 building a base",
+        "SUE z=0.88, fresh 13d (validated leg positive and fresh)",
+        "revision z=0.88 (literature tier positive)",
+        "momentum z=0.50 (context tier positive)"
+      ],
+      "dissent": "Being only -1.1% off-high while flashing 'TURN SIGNALED' could mean the name is near-term exhausted and one bad print could flush it.",
+      "falsifier": {
+        "text": "A close below the base low with SUE turning negative on the next report.",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "CLH",
+          "vs": "SPY",
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 21
+        }
+      },
+      "check_by": "2026-10-12",
+      "engine_verdict": "Constructive \u2014 building a base"
+    },
+    {
+      "id": "2026-09-11-CSR-20260914144219-6",
       "ticker": "CSR",
       "name": null,
       "lean": "constructive",
       "conviction": "medium",
-      "horizon_d": 30,
-      "thesis": "Verdict is Constructive \u2014 building a base, with a TURN SIGNALED board read and the strongest revisions z (1.96) on the sheet. Entry is not blocked (off-high, vol-squeeze, imminent urgency), so the constructive lean rests on the revisions-plus-turn structure rather than price chasing.",
+      "horizon_d": 21,
+      "thesis": "The strongest confluence in the set: validated insider leg present (z=0.04) plus literature revisions very strong (z=2.02), with SUE neutral rather than negative. Even though momentum is slightly negative (-0.24), the residual-alpha ordering favors this name and the accounting 'watch' is not a 'warn'.",
       "evidence": [
         "verdict: Constructive \u2014 building a base",
-        "board.state: TURN SIGNALED, dir up, off-high -16.3%",
-        "revision z 1.96 (literature-tier, strongest in set)",
-        "entry not blocked, urgency imminent",
-        "accounting flag: watch"
+        "insider leg present (validated tier)",
+        "revision z=2.02 (literature tier, very strong)",
+        "SUE z=0.0, fresh 39d (neutral, not a negative)",
+        "board off-high -15.4%, dir up (base-building)"
       ],
-      "dissent": "The accounting-watch flag and a spotty tailwind axis (z -0.32) could mean the turn is a value trap on an un-rebased chart.",
+      "dissent": "The accounting 'watch' flag on a name whose momentum is already negative could mean the base fails rather than builds, especially with 'urgency=imminent' suggesting an event window.",
       "falsifier": {
-        "text": "Price breaks below the recent swing low it just turned off.",
+        "text": "A weekly close below the -15.4% off-high base low, or revisions collapsing sharply from the +2.02 level.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "CSR",
           "vs": "SPY",
           "op": "<",
           "threshold": -0.05,
-          "horizon_d": 30
+          "horizon_d": 21
         }
       },
-      "check_by": "2026-10-23",
+      "check_by": "2026-10-12",
       "engine_verdict": "Constructive \u2014 building a base"
-    },
-    {
-      "id": "2026-09-11-GPI-20260912145846-3",
-      "ticker": "GPI",
-      "name": null,
-      "lean": "cautious",
-      "conviction": "medium",
-      "horizon_d": 30,
-      "thesis": "Genuine lagging/relative-weakness verdict with all selection legs negative (SUE -1.07, revisions -1.34, momentum -1.68) and a -42% off-high print. The turn signal is a bounce risk, not a base; this is one of the 86%-correct short-weakness patterns, not an extended leader to never short.",
-      "evidence": [
-        "verdict: Lagging \u2014 relative weakness",
-        "SUE z -1.07 fresh 13d",
-        "revision z -1.34, alpha z -1.68",
-        "off_high_pct -42.0",
-        "drivers empty, no caution leg to offset"
-      ],
-      "dissent": "TURN SIGNALED and off-high -42% could mark capitulation into an earnings-surprise low, and SUE fresh at 13 days gives little room to fade.",
-      "falsifier": {
-        "text": "Price closes above the last swing high on volume stronger than the prior down-move.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "GPI",
-          "vs": "SPY",
-          "op": ">",
-          "threshold": 0.05,
-          "horizon_d": 30
-        }
-      },
-      "check_by": "2026-10-23",
-      "engine_verdict": "Lagging \u2014 relative weakness"
-    },
-    {
-      "id": "2026-09-11-RBLX-20260912145846-4",
-      "ticker": "RBLX",
-      "name": null,
-      "lean": "cautious",
-      "conviction": "low",
-      "horizon_d": 30,
-      "thesis": "Lagging verdict with residual momentum z -2.09 and -67.9% off high despite a FRESH BUY board label. The only leg is context-tier negative momentum, so the bear case is real but thin; quality axis is empty, which caps conviction.",
-      "evidence": [
-        "verdict: Lagging \u2014 relative weakness",
-        "alpha z -2.09 (context tier)",
-        "off_high_pct -67.9",
-        "drivers empty",
-        "quality z null \u2014 no fundamental floor visible"
-      ],
-      "dissent": "A -68% drawdown with a FRESH BUY print in calm risk-on regime is exactly where a violent short-covering bounce can outrun the benchmark.",
-      "falsifier": {
-        "text": "Price reclaims its 20-day trading range and holds for two consecutive weeks.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "RBLX",
-          "vs": "SPY",
-          "op": ">",
-          "threshold": 0.05,
-          "horizon_d": 30
-        }
-      },
-      "check_by": "2026-10-23",
-      "engine_verdict": "Lagging \u2014 relative weakness"
-    },
-    {
-      "id": "2026-09-11-C-20260912145846-5",
-      "ticker": "C",
-      "name": null,
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "Constructive-building-a-base verdict but band 'low' with only literature-tier revisions (0.64) and context momentum (0.51) firing; quality z -1.15 with an accounting-watch flag and a COUNTERTREND BOUNCE board read. The risk controls say don't chase; the edge is too thin to be constructive.",
-      "evidence": [
-        "verdict: Constructive \u2014 building a base (band low)",
-        "quality z -1.15, accounting watch",
-        "board.state: COUNTERTREND BOUNCE, dir caution",
-        "no SUE or insider leg present"
-      ],
-      "dissent": "Revisions and momentum are both positive and a countertrend bounce in a calm tape can extend further than the risk controls expect.",
-      "falsifier": {
-        "text": "Price closes above its recent countertrend highs on volume above the 10-day average.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-10-09",
-      "engine_verdict": "Constructive \u2014 building a base"
-    },
-    {
-      "id": "2026-09-11-ANDE-20260912145846-6",
-      "ticker": "ANDE",
-      "name": null,
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "Verdict is Leader with poor entry \u2014 wait for a base, with strong validated SUE (1.2), revisions (1.1) and momentum (1.57) but a COUNTERTREND BOUNCE and caution direction. Honoring both: don't short a strong leader on extension, but the engine's own entry brake says don't chase either.",
-      "evidence": [
-        "verdict: Leader \u00b7 poor entry \u2014 wait for a base",
-        "SUE z 1.2 (validated, fresh 38d)",
-        "alpha z 1.57, revision z 1.1",
-        "board.state: COUNTERTREND BOUNCE, dir caution",
-        "entry z -0.2, pullback/extended present"
-      ],
-      "dissent": "The quality axis is near neutral (z -0.24, clean accounting), so a modest extension fade on a leader can still deliver benchmark alpha if the bounce stalls.",
-      "falsifier": {
-        "text": "Price breaks below the low of its current bounce attempt on rising volume.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-10-09",
-      "engine_verdict": "Leader \u00b7 poor entry \u2014 wait for a base"
     }
   ],
   "disclaimer": "Accountable AI judgment on the deterministic top picks. The cross-sectional rank has no validated forward edge; these leans are fallible, falsifiable conditionals graded against reality \u2014 never position sizes. See the track record."
