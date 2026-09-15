@@ -42,7 +42,11 @@ hash fails CLOSED to bounded public metadata/excerpt and an honest source-
 identity-unverified note — never a scan/extraction claim. Locator offsets, page
 numbers, source/stored counts, and page counts are trusted only when supplied as
 literal integers of the required sign; numeric strings, floats, booleans, and
-malformed passage containers are never coerced into evidence facts.
+malformed passage containers are never coerced into evidence facts. The corpus
+accepts publisher `body` only when it is already a string—Python representations
+of dicts, lists, tuples, numbers, and booleans are never searchable evidence.
+Caller passage windows accept only literal integers and clamp to the frozen safe
+`[80, EVIDENCE_WINDOW_CHARS]` interval; nonliteral values use the safe default.
 
 No matching passage, an unavailable body, an unverified source identity, or an
 image-only scan is disclosed and does not consume full-text quota. A quota
@@ -71,6 +75,12 @@ corpus remains body/source authority and the sole owner of content atoms,
 stopwords, passage matching, and source binding; Brain remains the chat intent
 and projection owner;
 Research Vault remains the source-opening owner.
+
+### 2.1 Successor authority and CI-ownership receipt
+
+R1B explicitly supersedes the earlier lexical R1 two-path/protected-boundary restriction only for `engine/research_vault/corpus.py`, which is the canonical body/source owner required by this capability, and for minimal `.github/ci/legacy-jobs.yml` registration under existing pre-merge `gate: code` owners. `tests/test_brain_research_evidence.py` and the ownership regression `tests/test_mastermind_ai_evidence_ci_ownership.py` belong to `unrun-brain-gateway`; `tests/test_research_evidence_passages.py` belongs to `research-vault-api`. The rejected R9 carrier put the two product suites under `neural-web-core` and `research-vault`, both `gate: data` jobs that `ci.yml` intentionally excludes from the merge gate. `contract-delta` proved the suites were named but did not prove pre-merge execution. R10 moves each suite rather than duplicating it and adds no job, workflow, dependency, gate, or duplicate owner; every other R1 non-goal remains frozen.
+
+The 2026-09-14 collision receipt is historical evidence only; it does not authorize the R10 owner move or the new regression path. Before publication, a fresh open-PR census must prove no independent writer owns any full PR path and patch-level inspection must clear the `unrun-brain-gateway` and `research-vault-api` command anchors plus all three suite tokens. Any collision or unavailable manifest patch remains a release block. Broad manifest-path non-overlap is not claimed.
 
 The deterministic selector applies NFKC/casefold for locating only. ASCII words
 and identifiers use exact boundaries; Han phrases use literal matching. Emitted

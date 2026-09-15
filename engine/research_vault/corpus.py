@@ -286,6 +286,23 @@ def _original_span(origins: list[int], start: int, end: int) -> tuple[int, int] 
     return origins[start], origins[end - 1] + 1
 
 
+def _evidence_body_text(value) -> str:
+    """Accept publisher body text only when it is already a string.
+
+    Coercing a dict, list, tuple, number, or boolean with ``str()`` would create
+    searchable Python syntax that the publisher never wrote. Malformed bodies
+    therefore become honestly unavailable rather than fabricated evidence.
+    """
+    return value if isinstance(value, str) else ""
+
+
+def _bounded_window_chars(value) -> int:
+    """Return one literal-int evidence window inside the frozen safe interval."""
+    if type(value) is int:
+        return max(80, min(EVIDENCE_WINDOW_CHARS, value))
+    return EVIDENCE_WINDOW_CHARS
+
+
 def _evidence_int(value) -> int | None:
     """A literal nonnegative JSON/Python integer, never a coercible lookalike."""
     return value if type(value) is int and value >= 0 else None
@@ -326,7 +343,7 @@ def _passage_bounds(body: str, match_start: int, match_end: int,
     the configured budget; the match itself is clamped to the window by the
     caller when it exceeds ``cap``.
     """
-    cap = max(80, int(window_chars))
+    cap = _bounded_window_chars(window_chars)
     page_start, page_end = 0, len(body)
     if "\f" in body:
         previous = body.rfind("\f", 0, match_start)
@@ -361,7 +378,8 @@ def find_evidence_passages(
     No score, confidence or model judgment is produced.
     """
     row = document if isinstance(document, dict) else {}
-    body = str(row.get("body") or "")
+    body = _evidence_body_text(row.get("body"))
+    window_chars = _bounded_window_chars(window_chars)
     atoms = _evidence_atoms(query)
     binding = _source_binding(row, body)
     base = {
