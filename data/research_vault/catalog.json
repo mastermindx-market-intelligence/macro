@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-15T22:38:49.660568+00:00",
-  "count": 2187,
+  "generated_at": "2026-09-15T22:53:52.046060+00:00",
+  "count": 2188,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -1373,6 +1373,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 15,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-z140akhjklx-4f0d40",
+      "title": "Credit Strategy Weekly Can yields give US a breather please",
+      "institution": "Societe Generale",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T01:12:41Z",
+      "summary_points": [
+        "**Geopolitical & Yield Pressures**: Middle East conflict drives oil above $100, ECB hikes 25bp (hawkish), spiking sovereign yields; markets absorb €27.37bn weekly issuance without major sell-off before Q2 2025.",
+        "**Credit Market Resilience**: Narrow spreads (iBoxx Eur/USD Corporates at 92.5bp) persist despite heavy issuance ($655bn YTD), with Financials vs.",
+        "Non-financials spread differential at 7bp.",
+        "**Sector Allocation**: Overweight Financials (Senior Bank Bail-in, Tier 2, Sub Financial Services, Utilities) for stable carry into 2026; underweight Non-financials (Insurance, Automobiles, Basic Resources).",
+        "**Key Data Release**: Eurozone August CPI (3.3% nominal, 2.4% core) critical for confirming inflation trajectory and Fed/ECB policy pricing."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 27,
       "language": "en",
       "needs_metadata": false
     },
