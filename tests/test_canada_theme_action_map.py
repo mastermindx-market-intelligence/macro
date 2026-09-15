@@ -7,6 +7,9 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
+from scripts import build_canada as build_canada_module
 from scripts.build_canada import _canada_theme_action_map
 
 
@@ -60,6 +63,165 @@ def test_theme_action_map_fails_open_on_missing_or_malformed_owner(tmp_path: Pat
     out.mkdir()
     (out / "baskets.json").write_text('{"theme_intel":{"act_now":{}}}')
     assert _canada_theme_action_map({"buy": [], "watch": []}, tmp_path) is None
+
+
+def _load_payload(site: Path) -> dict:
+    return json.loads((site / "canadabasketdata" / "baskets.json").read_text())
+
+
+def _store_payload(site: Path, payload: dict) -> None:
+    (site / "canadabasketdata" / "baskets.json").write_text(json.dumps(payload))
+
+
+def _oil_projection(result: dict | None) -> dict:
+    assert result is not None
+    return result["lanes"]["in_favour"][0]
+
+
+@pytest.mark.parametrize(
+    "leadership",
+    ["not-a-mapping", {"top": {"ticker": "AAA.TO"}}],
+    ids=["leadership-not-mapping", "top-not-list"],
+)
+def test_theme_action_map_ignores_truthy_malformed_leadership(
+    tmp_path: Path, leadership: object,
+) -> None:
+    _write_payload(tmp_path)
+    payload = _load_payload(tmp_path)
+    payload["theme_intel"]["themes"][0]["leadership"] = leadership
+    _store_payload(tmp_path, payload)
+
+    oil = _oil_projection(
+        _canada_theme_action_map({"buy": [{"ticker": "AAA.TO"}], "watch": []}, tmp_path)
+    )
+
+    assert oil["leaders"] == []
+    assert oil["members"] == ["AAA.TO", "BBB.TO"]
+    assert oil["prophet_count"] == 1
+
+
+def test_theme_action_map_drops_malformed_optional_reason_without_aborting(
+    tmp_path: Path,
+) -> None:
+    _write_payload(tmp_path)
+    payload = _load_payload(tmp_path)
+    payload["theme_intel"]["act_now"]["add_on_pullback"][0]["reasons"] = [
+        "valid text",
+        {"unexpected": "mapping"},
+    ]
+    _store_payload(tmp_path, payload)
+
+    oil = _oil_projection(
+        _canada_theme_action_map({"buy": [{"ticker": "AAA.TO"}], "watch": []}, tmp_path)
+    )
+
+    assert oil["reason_en"] is None
+    assert oil["members"] == ["AAA.TO", "BBB.TO"]
+
+
+def test_theme_action_projection_call_seam_fails_open_on_unexpected_error(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def explode(_setups: dict | None, _site: Path) -> dict | None:
+        raise RuntimeError("optional projection exploded")
+
+    monkeypatch.setattr(build_canada_module, "_canada_theme_action_map", explode)
+    safe_call = getattr(build_canada_module, "_safe_canada_theme_action_map", None)
+
+    assert callable(safe_call), "the build call seam must own an explicit fail-open guard"
+    assert safe_call({"buy": [], "watch": []}, tmp_path) is None
+
+
+@pytest.mark.parametrize(
+    "members",
+    [
+        [None, {}, " "],
+        [{"symbol": 123}],
+    ],
+    ids=["all-invalid", "numeric-symbol"],
+)
+def test_theme_action_map_marks_malformed_nonempty_membership_unknown(
+    tmp_path: Path, members: list[object],
+) -> None:
+    _write_payload(tmp_path)
+    payload = _load_payload(tmp_path)
+    payload["baskets"][0]["members"] = members
+    _store_payload(tmp_path, payload)
+
+    oil = _oil_projection(
+        _canada_theme_action_map({"buy": [{"ticker": "AAA.TO"}], "watch": []}, tmp_path)
+    )
+
+    assert oil["membership_known"] is False
+    assert oil["members"] is None
+    assert oil["n_members"] is None
+    assert oil["prophet_count"] is None
+
+
+def test_theme_action_map_preserves_legitimate_empty_membership_as_known_zero(
+    tmp_path: Path,
+) -> None:
+    _write_payload(tmp_path)
+    payload = _load_payload(tmp_path)
+    payload["baskets"][0]["members"] = []
+    _store_payload(tmp_path, payload)
+
+    oil = _oil_projection(
+        _canada_theme_action_map({"buy": [{"ticker": "AAA.TO"}], "watch": []}, tmp_path)
+    )
+
+    assert oil["membership_known"] is True
+    assert oil["members"] == []
+    assert oil["n_members"] == 0
+    assert oil["prophet_count"] == 0
+
+
+@pytest.mark.parametrize("duplicate_owner", ["baskets", "themes"])
+def test_theme_action_map_disables_filter_for_duplicate_native_id(
+    tmp_path: Path, duplicate_owner: str,
+) -> None:
+    _write_payload(tmp_path)
+    payload = _load_payload(tmp_path)
+    if duplicate_owner == "baskets":
+        payload["baskets"].append(
+            {"id": "oil", "members": [{"symbol": "ZZZ.TO"}]}
+        )
+    else:
+        payload["theme_intel"]["themes"].append(
+            {"id": "oil", "rank": 99, "leadership": {"top": [{"ticker": "ZZZ.TO"}]}}
+        )
+    _store_payload(tmp_path, payload)
+
+    oil = _oil_projection(
+        _canada_theme_action_map({"buy": [{"ticker": "AAA.TO"}], "watch": []}, tmp_path)
+    )
+
+    assert oil["membership_known"] is False
+    assert oil["members"] is None
+    assert oil["prophet_count"] is None
+
+
+def test_theme_action_map_counts_full_valid_membership_universe(
+    tmp_path: Path,
+) -> None:
+    _write_payload(tmp_path)
+    payload = _load_payload(tmp_path)
+    payload["theme_intel"]["themes"].append(
+        {"id": "uranium", "rank": 8, "leadership": {"top": []}}
+    )
+    payload["baskets"].append(
+        {
+            "id": "uranium",
+            "members": [{"symbol": "DML.TO"}, {"symbol": "NXE.TO"}],
+        }
+    )
+    _store_payload(tmp_path, payload)
+
+    result = _canada_theme_action_map({"buy": [], "watch": []}, tmp_path)
+
+    assert result is not None
+    assert result["n_themes"] == 3
+    assert result["n_distinct_members"] == 5
 
 
 def test_template_keeps_theme_and_sector_authority_visibly_separate() -> None:
@@ -178,5 +340,5 @@ def test_successor_browser_receipt_proves_theme_to_prophet_journey() -> None:
 def test_p0b_canada_evidence_remains_immutable_predecessor() -> None:
     # The successor must not rewrite the accepted P0B evidence carrier.
     assert _sha256(P0B_EVIDENCE / "mobile-layout-canada.json") == (
-        "8c29c4858c7841035bafb2bcd6ff047c263832bc2ea506091733d4b3d9c3fa94"
+        "0c3a9cb1e23306ef320e3d85bd2e30b2814c161caefad5478a54b970d3452a38"
     )

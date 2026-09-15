@@ -107,7 +107,7 @@
         {
           "path": "templates/_navlinks.html.j2",
           "role": "jinja_template",
-          "sha256": "10ef03e1d39149ee0e94072bcdeebae3cdbdfa92c0e620efdf54b69a1109f7b8"
+          "sha256": "e37bb828e7629be1b00df0c917fa30be4236bc7be89a2ab203a8e386d2c41366"
         },
         {
           "path": "templates/_prophet_card.html.j2",
@@ -117,7 +117,7 @@
         {
           "path": "templates/_risk_radar_card.css.j2",
           "role": "jinja_template",
-          "sha256": "07b56d52a6e426352ad9ca9cc9b117d50cb50bfd2c7d8de052aaaa4dad9bb2f2"
+          "sha256": "203f682068ae42ae254a857cc572e962198623ba84123ba3a6527b373feedaa5"
         },
         {
           "path": "templates/_risk_radar_card.html.j2",
@@ -151,7 +151,7 @@
         }
       ],
       "output": "canada_stocks.html",
-      "output_sha256": "2f77cecc2e504339a14f18a94108a7ae9d872aefe67ba3a1310fe153a5a74950",
+      "output_sha256": "d75d4d0dc20f8e97737e32a927595661bca0949c53c3bc109999662fa827d794",
       "owner_cases": {
         "normal": {
           "input_transform": {
@@ -212,7 +212,7 @@
             "sha256": "561e2696a225b71fa1b1dd2e443e506daf20a55813986519cc650f7abaff6747"
           },
           "output": "canada_stocks.html",
-          "output_sha256": "2f77cecc2e504339a14f18a94108a7ae9d872aefe67ba3a1310fe153a5a74950",
+          "output_sha256": "d75d4d0dc20f8e97737e32a927595661bca0949c53c3bc109999662fa827d794",
           "owner_population": {
             "board": 9,
             "intersection": [],
@@ -270,7 +270,7 @@
             "sha256": "15f0d1d2753fa912c5911ff8c4371db69f596c0e2a0661275960a18c6f9b8f2b"
           },
           "output": "canada_stocks.null-buy.html",
-          "output_sha256": "f1f9a073a8e3a7d3f1f633bb27865488d15787add79a6c302e7f3290272c278a",
+          "output_sha256": "06dd8b7f7d6ec5996b00a3f67eca5e4d4d23832635787e824ede704126cf41a7",
           "owner_population": {
             "board": null,
             "intersection": null,
@@ -328,7 +328,7 @@
             "sha256": "4f91a49be717ebde1e9f5683353438f9de7443d7f96751d826dc87b0589e5873"
           },
           "output": "canada_stocks.watch-only.html",
-          "output_sha256": "8b8837d72d9cf23ce00ea3a8019b1d8e970325220107d3e6f94a75681e4144c1",
+          "output_sha256": "998912790aa81c65624d99af121b4b4de5a77a37a758a527fe401e5b6104a253",
           "owner_population": {
             "board": 0,
             "intersection": [],

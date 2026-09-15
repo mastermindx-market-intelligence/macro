@@ -422,8 +422,28 @@ def _canada_theme_action_map(setups: dict | None, site: Path) -> dict | None:
     if not isinstance(act, dict) or not isinstance(themes, list) or not isinstance(baskets, list):
         return None
 
-    theme_by = {str(x.get("id")): x for x in themes if isinstance(x, dict) and x.get("id")}
-    basket_by = {str(x.get("id")): x for x in baskets if isinstance(x, dict) and x.get("id")}
+    def native_id(row: object) -> str | None:
+        if not isinstance(row, dict) or not isinstance(row.get("id"), str):
+            return None
+        value = row["id"].strip()
+        return value or None
+
+    def unique_rows(rows: list) -> tuple[dict[str, dict], set[str]]:
+        indexed: dict[str, dict] = {}
+        ambiguous: set[str] = set()
+        for row in rows:
+            rid = native_id(row)
+            if rid is None or rid in ambiguous:
+                continue
+            if rid in indexed:
+                indexed.pop(rid)
+                ambiguous.add(rid)
+                continue
+            indexed[rid] = row
+        return indexed, ambiguous
+
+    theme_by, ambiguous_theme_ids = unique_rows(themes)
+    basket_by, ambiguous_basket_ids = unique_rows(baskets)
     cats = payload.get("categories") if isinstance(payload.get("categories"), list) else []
     cats_zh = payload.get("categories_zh") if isinstance(payload.get("categories_zh"), list) else []
     cat_zh = {str(cat): cats_zh[i] for i, cat in enumerate(cats) if i < len(cats_zh)}
@@ -442,32 +462,88 @@ def _canada_theme_action_map(setups: dict | None, site: Path) -> dict | None:
             out.add(ticker)
         return out
 
+    def clean_symbol(value: object) -> str | None:
+        if not isinstance(value, str):
+            return None
+        symbol = value.strip().upper()
+        return symbol or None
+
+    def member_symbol(member: object) -> str | None:
+        if isinstance(member, str):
+            return clean_symbol(member)
+        if not isinstance(member, dict):
+            return None
+        for key in ("symbol", "ticker"):
+            symbol = clean_symbol(member.get(key))
+            if symbol is not None:
+                return symbol
+        return None
+
+    def membership_for(tid: str) -> tuple[bool, set[str]]:
+        if tid in ambiguous_theme_ids or tid in ambiguous_basket_ids:
+            return False, set()
+        if tid not in theme_by:
+            return False, set()
+        basket = basket_by.get(tid)
+        raw_members = basket.get("members") if isinstance(basket, dict) else None
+        if not isinstance(raw_members, list):
+            return False, set()
+        members: set[str] = set()
+        for member in raw_members:
+            symbol = member_symbol(member)
+            if symbol is None:
+                return False, set()
+            members.add(symbol)
+        return True, members
+
     board = owner_tickers("buy")
     watch = owner_tickers("watch")
     prophet = (board | watch) if board is not None and watch is not None else None
+    membership_by: dict[str, tuple[bool, set[str]]] = {}
     distinct_members: set[str] = set()
-
-    def project(row: dict) -> dict | None:
-        if not isinstance(row, dict) or not row.get("id"):
-            return None
-        tid = str(row["id"])
-        th = theme_by.get(tid, {})
-        basket = basket_by.get(tid)
-        raw_members = basket.get("members") if isinstance(basket, dict) else None
-        membership_known = isinstance(raw_members, list)
-        members: set[str] = set()
-        if membership_known:
-            for member in raw_members:
-                symbol = member if isinstance(member, str) else (member.get("symbol") or member.get("ticker")) if isinstance(member, dict) else None
-                if symbol:
-                    members.add(str(symbol).strip().upper())
+    for tid in theme_by:
+        known, members = membership_for(tid)
+        membership_by[tid] = (known, members)
+        if known:
             distinct_members.update(members)
-        leaders = []
-        for leader in ((th.get("leadership") or {}).get("top") or [])[:3]:
-            if isinstance(leader, dict):
-                symbol = leader.get("ticker") or leader.get("symbol") or leader.get("t")
-                if symbol:
-                    leaders.append(str(symbol).strip().upper())
+
+    def optional_reason(row: dict, value_key: str, list_key: str) -> str | None:
+        explicit = row.get(value_key)
+        if explicit is not None:
+            if not isinstance(explicit, str):
+                return None
+            explicit = explicit.strip()
+            if explicit:
+                return explicit
+        reasons = row.get(list_key)
+        if reasons is None:
+            return None
+        if not isinstance(reasons, list):
+            return None
+        if any(not isinstance(reason, str) or not reason.strip() for reason in reasons):
+            return None
+        return "; ".join(reason.strip() for reason in reasons) or None
+
+    def project(row: object) -> dict | None:
+        tid = native_id(row)
+        if tid is None or not isinstance(row, dict):
+            return None
+        join_ambiguous = tid in ambiguous_theme_ids or tid in ambiguous_basket_ids
+        th = {} if join_ambiguous else theme_by.get(tid, {})
+        basket = None if join_ambiguous else basket_by.get(tid)
+        membership_known, members = membership_by.get(tid, (False, set()))
+        leaders: list[str] = []
+        leadership = th.get("leadership") if isinstance(th, dict) else None
+        top = leadership.get("top") if isinstance(leadership, dict) else None
+        if isinstance(top, list):
+            for leader in top[:3]:
+                if not isinstance(leader, dict):
+                    continue
+                for key in ("ticker", "symbol", "t"):
+                    symbol = clean_symbol(leader.get(key))
+                    if symbol is not None:
+                        leaders.append(symbol)
+                        break
         category = basket.get("category") if isinstance(basket, dict) else None
         return {
             "id": tid,
@@ -481,12 +557,12 @@ def _canada_theme_action_map(setups: dict | None, site: Path) -> dict | None:
             "action_en": row.get("action_en") or row.get("action"),
             "action_zh": row.get("action_zh") or row.get("action_en") or row.get("action"),
             "label": row.get("label"),
-            "reason_en": row.get("reason_en") or "; ".join(row.get("reasons") or []),
-            "reason_zh": row.get("reason_zh") or "; ".join(row.get("reasons_zh") or []),
+            "reason_en": optional_reason(row, "reason_en", "reasons"),
+            "reason_zh": optional_reason(row, "reason_zh", "reasons_zh"),
             "leaders": leaders,
             "membership_known": membership_known,
             "members": sorted(members) if membership_known else None,
-            "n_members": len(members) if membership_known else row.get("n_members"),
+            "n_members": len(members) if membership_known else None,
             "prophet_count": len(members & prophet) if membership_known and prophet is not None else None,
             "href": "baskets_canada.html#theme-" + tid,
         }
@@ -507,6 +583,15 @@ def _canada_theme_action_map(setups: dict | None, site: Path) -> dict | None:
         "lanes": lanes,
         "authority": "descriptive_rotation",
     }
+
+
+def _safe_canada_theme_action_map(setups: dict | None, site: Path) -> dict | None:
+    """Keep optional Canada theme projection failures out of the canonical build."""
+    try:
+        return _canada_theme_action_map(setups, site)
+    except Exception as exc:  # noqa: BLE001 -- optional projection, never fatal
+        log.warning("canada theme action projection failed (%s); skipping", exc)
+        return None
 
 def _sector_cards(latest: dict) -> list[dict]:
     """Merge the RS-rank table (from the regime run) with per-sector cycle analysis."""
@@ -1582,7 +1667,7 @@ def main() -> int:
         # Existing Canada theme intelligence projected into the stock journey.
         # Read-only consumer: theme owner keeps action/rank authority; Prophet keeps
         # stock selection authority.  Separate clocks are rendered in the template.
-        vm["theme_actions"] = _canada_theme_action_map(setups, site)
+        vm["theme_actions"] = _safe_canada_theme_action_map(setups, site)
 
         # ── top_setups: top-5 buy rows for the glance card ───────────────────
         # MUST run AFTER vm["setups"] is assigned above (the first cut ran before it
