@@ -657,6 +657,22 @@ def test_shared_quote_verifier_clause_mode_recognizes_common_sentence_endings():
         assert qe.quote_span_verified(body, second, require_complete_clause=True)
         assert not qe.quote_span_verified(body, body, require_complete_clause=True)
 
+
+def test_shared_quote_verifier_clause_mode_recognizes_finance_sentence_boundaries():
+    cases = [
+        ("Revenue fell. $AAPL dropped 5%.", "Revenue fell.", "$AAPL dropped 5%."),
+        ("Revenue fell. -5% margin pressure persisted.", "Revenue fell.", "-5% margin pressure persisted."),
+        ("Revenue fell! €100 million was impaired.", "Revenue fell!", "€100 million was impaired."),
+        ("Revenue fell? +2.1% growth followed.", "Revenue fell?", "+2.1% growth followed."),
+        ("The price was $2. Revenue fell sharply.", "The price was $2.", "Revenue fell sharply."),
+        ("The price was ¥2. Revenue fell sharply.", "The price was ¥2.", "Revenue fell sharply."),
+        ("The change was -2. Revenue fell sharply.", "The change was -2.", "Revenue fell sharply."),
+    ]
+    for body, first, second in cases:
+        assert qe.quote_span_verified(body, first, require_complete_clause=True)
+        assert qe.quote_span_verified(body, second, require_complete_clause=True)
+        assert not qe.quote_span_verified(body, body, require_complete_clause=True)
+
 def test_shared_quote_verifier_clause_mode_accepts_complete_clauses():
     english = "Goldman does not expect inflation to rise this year."
     han = "中国流动性正在改善。"

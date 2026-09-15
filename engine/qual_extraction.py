@@ -217,6 +217,23 @@ def _context_successor(text: str, index: int) -> tuple[int, bool]:
     return cursor, separated
 
 
+def _context_unit_starts_at(text: str, cursor: int) -> bool:
+    """Whether a meaningful successor can begin a new finance context unit."""
+    if cursor < 0 or cursor >= len(text):
+        return False
+    char = text[cursor]
+    if char.isupper() or char.isdigit() or _is_han_character(char):
+        return True
+    if char in _CITATION_CURRENCY:
+        return True
+    if char in _CITATION_SIGNS:
+        next_index = cursor + 1
+        if next_index < len(text) and text[next_index] in _CITATION_CURRENCY:
+            next_index += 1
+        return next_index < len(text) and text[next_index].isdigit()
+    return False
+
+
 def _period_ends_context_unit(text: str, index: int) -> bool:
     """Conservatively classify a period as a sentence/context boundary.
 
@@ -268,15 +285,19 @@ def _period_ends_context_unit(text: str, index: int) -> bool:
         numeric = text[number_left + 1:index].strip(".")
         digits = "".join(char for char in numeric if char.isdigit())
         decimal_or_grouped = "." in numeric or "," in numeric
-        alpha_prefixed = number_left >= 0 and text[number_left].isalpha()
-        if not (decimal_or_grouped or len(digits) >= 3 or alpha_prefixed):
+        prefix = text[number_left] if number_left >= 0 else ""
+        alpha_prefixed = prefix.isalpha()
+        finance_prefixed = prefix in _CITATION_CURRENCY or prefix in _CITATION_SIGNS
+        if not (
+            decimal_or_grouped
+            or len(digits) >= 3
+            or alpha_prefixed
+            or finance_prefixed
+        ):
             # Preserve short ordinal forms such as ``2. Quartal`` fail-closed.
             return False
 
-    next_char = text[cursor]
-    if next_char.islower():
-        return False
-    return next_char.isupper() or next_char.isdigit() or _is_han_character(next_char)
+    return _context_unit_starts_at(text, cursor)
 
 
 def _terminal_ends_context_unit(text: str, index: int) -> bool:
@@ -288,7 +309,7 @@ def _terminal_ends_context_unit(text: str, index: int) -> bool:
     next_char = text[cursor]
     if not separated and not _is_han_character(next_char):
         return False
-    return next_char.isupper() or next_char.isdigit() or _is_han_character(next_char)
+    return _context_unit_starts_at(text, cursor)
 
 def _citation_tokens(
     text: str,

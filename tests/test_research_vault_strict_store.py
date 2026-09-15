@@ -1298,6 +1298,38 @@ def test_rio_accepts_individual_claim_after_common_sentence_endings():
         assert out["claims"][0]["statement"] == "Revenue fell sharply."
 
 
+
+def test_rio_accepts_finance_prefixed_sentence_claims():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+
+    cases = [
+        ("Revenue fell. $AAPL dropped 5%.", "$AAPL dropped 5%."),
+        ("Revenue fell. -5% margin pressure persisted.", "-5% margin pressure persisted."),
+        ("Revenue fell! €100 million was impaired.", "€100 million was impaired."),
+        ("Revenue fell? +2.1% growth followed.", "+2.1% growth followed."),
+        ("The price was $2. Revenue fell sharply.", "Revenue fell sharply."),
+        ("The change was -2. Revenue fell sharply.", "Revenue fell sharply."),
+    ]
+    for body, statement in cases:
+        obj = _rio_sample(body=body)
+        obj["claims"] = [{
+            "statement": statement,
+            "evidence": [{"quote_span": statement}],
+            "numbers": [], "entities": [], "horizon": "current", "explicit": True,
+        }]
+        obj["analysis"]["thesis"].update({
+            "summary": "Market conditions changed materially.",
+            "support_claim_indices": [0],
+        })
+        out = parse_model_output(
+            json.dumps(obj),
+            expected_document_id="r1",
+            expected_document=obj["document"],
+            source_body=body,
+        )
+        assert out["claims"][0]["statement"] == statement
+
 def test_rio_rejects_two_sentences_collapsed_into_one_source_claim():
     import json
     from engine.research_intelligence.extractor import parse_model_output
