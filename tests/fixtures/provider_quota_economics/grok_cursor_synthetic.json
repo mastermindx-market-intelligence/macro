@@ -1,0 +1,146 @@
+{
+  "as_of": "2026-09-13T16:00:00+00:00",
+  "options": [
+    {
+      "costs": {
+        "grok-week": {
+          "amount": 1,
+          "unit": "credits"
+        },
+        "host-slots": {
+          "amount": 1,
+          "unit": "concurrent_sessions"
+        }
+      },
+      "duration_seconds": 3600,
+      "harness_ready": true,
+      "marginal_cash": 0,
+      "model_alias": "grok",
+      "model_family": "grok",
+      "option_id": "grok",
+      "permitted": true,
+      "provider": "grok",
+      "usage_allowed": true,
+      "useful_jobs_per_hour": 0
+    },
+    {
+      "costs": {
+        "cursor-month": {
+          "amount": 1,
+          "unit": "credits"
+        },
+        "host-slots": {
+          "amount": 1,
+          "unit": "concurrent_sessions"
+        }
+      },
+      "duration_seconds": 3600,
+      "harness_ready": true,
+      "marginal_cash": 0,
+      "model_alias": "cursor",
+      "model_family": "cursor",
+      "option_id": "cursor",
+      "permitted": true,
+      "provider": "cursor",
+      "usage_allowed": true,
+      "useful_jobs_per_hour": 0
+    }
+  ],
+  "policy": {
+    "burst_cap": 7,
+    "paid_spend_allowed": false,
+    "provider_precedence": [
+      {
+        "fallback": "cursor",
+        "preferred": "grok",
+        "task_kinds": [
+          "build"
+        ]
+      }
+    ]
+  },
+  "resources": [
+    {
+      "applies_to": [
+        "grok"
+      ],
+      "entitlement_generation": "synthetic-generation",
+      "evidence": "provider_reported",
+      "horizon": "weekly",
+      "limit": 100,
+      "observed_at": "2026-09-13T16:00:00+00:00",
+      "release_schedule_complete": false,
+      "releases": [],
+      "remaining": 99,
+      "reserves": {},
+      "reset_at": "2026-09-14T01:00:00+00:00",
+      "resource_id": "grok-week",
+      "unit": "credits",
+      "unobserved_holds": 0,
+      "valid_until": "2026-09-13T17:00:00+00:00",
+      "window_seconds": 604800,
+      "window_type": "fixed"
+    },
+    {
+      "applies_to": [
+        "cursor"
+      ],
+      "entitlement_generation": "synthetic-generation",
+      "evidence": "provider_reported",
+      "horizon": "monthly",
+      "limit": 100,
+      "observed_at": "2026-09-13T16:00:00+00:00",
+      "release_schedule_complete": false,
+      "releases": [],
+      "remaining": 99,
+      "reserves": {},
+      "reset_at": "2026-10-11T16:00:00+00:00",
+      "resource_id": "cursor-month",
+      "unit": "credits",
+      "unobserved_holds": 0,
+      "valid_until": "2026-09-13T17:00:00+00:00",
+      "window_seconds": 604800,
+      "window_type": "fixed"
+    },
+    {
+      "applies_to": [
+        "grok",
+        "cursor"
+      ],
+      "entitlement_generation": "synthetic-generation",
+      "evidence": "provider_reported",
+      "horizon": "concurrency",
+      "limit": 7,
+      "observed_at": "2026-09-13T16:00:00+00:00",
+      "release_schedule_complete": false,
+      "releases": [],
+      "remaining": 7,
+      "reserves": {},
+      "reset_at": null,
+      "resource_id": "host-slots",
+      "unit": "concurrent_sessions",
+      "unobserved_holds": 0,
+      "valid_until": "2026-09-13T17:00:00+00:00",
+      "window_seconds": null,
+      "window_type": "instant"
+    }
+  ],
+  "schema": "mastermind.quota_economics_preview_input/v1",
+  "task": {
+    "authorized": true,
+    "deadline_at": null,
+    "excluded_families": [],
+    "kind": "build",
+    "ready_jobs": 100,
+    "state": "READY",
+    "suitability_tiers": [
+      {
+        "model_aliases": [
+          "grok",
+          "cursor"
+        ],
+        "tier_id": "qualified"
+      }
+    ]
+  }
+}
