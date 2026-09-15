@@ -1,0 +1,105 @@
+{
+  "packet": "A-REC-W4-1",
+  "title": "F00C ledger reconciled against the merged half-A wave",
+  "recorded_at": "2026-09-09",
+  "how_verified": "Each of the seven named merge commits was confirmed an ancestor of origin/main with git merge-base --is-ancestor. Producer paths were confirmed on origin/main with git cat-file. This file is the record the suite asserts against; the suite does not call git or gh.",
+  "no_proven_live_reason": "None of the seven merged diffs contains a production readback. PROVEN_LIVE needs a production readback the seat performs separately.",
+  "stacked_head_absent_producer_paths": [
+    "engine/uk_policy_brain.py",
+    "engine/market_ontology/exposure_map.py",
+    "engine/market_ontology/__init__.py"
+  ],
+  "stacked_head_absent_reason": "This packet is stacked on claude/mo-b-rec-b5-1-ledger-reconciliation, whose merge-base with origin/main predates macro#6928 and macro#6929. Those two merges are ancestors of origin/main and are not ancestors of this stacked HEAD. The files cannot be imported into this PR without violating the named-files diff bound.",
+  "rows": [
+    {
+      "id": "MO-DELTA-032",
+      "pr": 6900,
+      "merge_sha": "ad021359a0f3da97f53eebde550b8c7cf422815e",
+      "producer_paths": [
+        "engine/policy_intent_desk.py",
+        "config/policy_lifecycle_seed.json",
+        "templates/policy_watch.html.j2"
+      ],
+      "acceptance_test": "a jurisdiction-scoped policy item advances through deterministic lifecycle states on a real store, rendered"
+    },
+    {
+      "id": "MO-PAID-007",
+      "pr": 6900,
+      "merge_sha": "ad021359a0f3da97f53eebde550b8c7cf422815e",
+      "producer_paths": [
+        "engine/policy_intent_desk.py",
+        "config/policy_lifecycle_seed.json",
+        "templates/policy_watch.html.j2"
+      ],
+      "acceptance_test": "policy_watch renders a lifecycle stage, not just a thread tag"
+    },
+    {
+      "id": "MO-PAID-023",
+      "pr": 6928,
+      "merge_sha": "4b2f97f196d5666e29e3bb8991d4f18e65a0b584",
+      "producer_paths": [
+        "engine/uk_policy_brain.py",
+        "scripts/build_policy_watch.py",
+        "templates/policy_watch.html.j2"
+      ],
+      "acceptance_test": "a second country's political desk ships under the same contract and is rendered"
+    },
+    {
+      "id": "MO-PAID-034",
+      "pr": 6931,
+      "merge_sha": "91f114ad4b7338cf82529f9ef2f11845f6589104",
+      "producer_paths": [
+        "engine/europe_news_intel.py",
+        "scripts/collect.py"
+      ],
+      "acceptance_test": "one non-China region gets an equivalent PIT event-bus module on the qbus join surface"
+    },
+    {
+      "id": "MO-DELTA-001",
+      "pr": 6897,
+      "merge_sha": "31ac6bf3ffb658c0d2b63d31fac33fa35f6a64a3",
+      "producer_paths": [
+        "engine/chronicle/market_feed_alias.py",
+        "engine/chronicle/__init__.py"
+      ],
+      "acceptance_test": "MO-PAID-017 interface confirmed to serve (or explicitly not serve) a Market-Feed surface"
+    },
+    {
+      "id": "MO-DELTA-004",
+      "pr": 6929,
+      "merge_sha": "585d9d3a0f9b023f54aa003f821d249964107e3e",
+      "producer_paths": [
+        "engine/market_ontology/exposure_map.py",
+        "engine/market_ontology/__init__.py"
+      ],
+      "acceptance_test": "a surface maps a shock node through GMI edges to company exposure"
+    },
+    {
+      "id": "MO-DELTA-015",
+      "pr": 6901,
+      "merge_sha": "413e1f930fc3cfd5deece8eff1485f9f466d68e1",
+      "producer_paths": [
+        "engine/local_projections.py"
+      ],
+      "acceptance_test": "one additional family implemented, callable, tested"
+    },
+    {
+      "id": "MO-PAID-003",
+      "pr": 6908,
+      "merge_sha": "dd1dbfb90310344fba0b9fee85ee6578c83645cc",
+      "producer_paths": [
+        "research/market_intelligence_productization/F01_FX_COMMODITY_SOURCE_RIGHTS_AND_DEPTH_2026-09.md"
+      ],
+      "acceptance_test": "vendor rights recorded and depth-parity assessment written"
+    },
+    {
+      "id": "MO-PAID-004",
+      "pr": 6908,
+      "merge_sha": "dd1dbfb90310344fba0b9fee85ee6578c83645cc",
+      "producer_paths": [
+        "research/market_intelligence_productization/F01_FX_COMMODITY_SOURCE_RIGHTS_AND_DEPTH_2026-09.md"
+      ],
+      "acceptance_test": "the producing engine module chain is named per page"
+    }
+  ]
+}
