@@ -25,6 +25,7 @@ from datetime import date, datetime, timezone
 import email.utils
 from hashlib import sha256
 import html
+from inspect import signature
 import json
 import logging
 import os
@@ -92,6 +93,7 @@ MAX_PACKET_BYTES = 2 * 1024 * 1024
 MAX_SOURCE_PACKET_COUNT = 100_000
 MAX_SELECTED_PACKET_COUNT = 10_000
 MAX_SELECTED_PACKET_BYTES = 1024 * 1024 * 1024
+MAX_DEFERRED_PACKET_COUNT = 10_000
 MAX_EXISTING_AGE_SECONDS = 48 * 60 * 60
 ROUTE_CATALOG_SCHEMA_V1 = "earnings.public_wire_routes/v1"
 ROUTE_CATALOG_SCHEMA_V2 = "earnings.public_wire_routes/v2"
@@ -145,6 +147,7 @@ class PacketSelection:
     changed_keys: frozenset[str]
     forward_new_keys: frozenset[str]
     skipped_historical_keys: frozenset[str]
+    skipped_future_keys: frozenset[str]
     selected_keys: frozenset[str]
 
 
@@ -246,7 +249,11 @@ def _read_remote_bytes(
     if fetch is None:
         return _http_fetch(url, timeout=timeout, max_bytes=limit)
     try:
-        payload = fetch(url)
+        try:
+            accepts_limit = signature(fetch).bind(url, limit)
+        except (TypeError, ValueError):
+            accepts_limit = None
+        payload = fetch(url, limit) if accepts_limit is not None else fetch(url)
     except PublicWireBuildError:
         raise
     except Exception as exc:  # noqa: BLE001 - injected fixtures share the production boundary.
@@ -375,7 +382,6 @@ def _hydrate_publication(
     fetch: Callable[[str], bytes] | None,
     workers: int,
     timeout: float,
-    allow_empty: bool,
 ) -> dict[str, Any]:
     if workers < 1 or workers > 32:
         raise PublicWireBuildError("workers must be between 1 and 32")
@@ -486,7 +492,7 @@ def _hydrate_publication(
                 raise PublicWireBuildError(f"public packet hydration failed at {event_key}: {exc}") from exc
             if article is not None:
                 outcomes[key] = article
-    if not outcomes and not allow_empty:
+    if not outcomes:
         raise PublicWireBuildError("selected packet catalog contains no public-wire-eligible exact evidence")
     return build_public_wire_manifest(
         list(outcomes.values()),
@@ -522,15 +528,17 @@ def fetch_current_publication(
         fetch=fetch,
         workers=workers,
         timeout=timeout,
-        allow_empty=False,
     )
 
 
 def _parse_iso_day(value: object, *, name: str) -> date:
     if not isinstance(value, str):
         raise PublicWireBuildError(f"{name} must be an ISO date")
+    normalized = value.strip()
+    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", normalized) is None:
+        raise PublicWireBuildError(f"{name} must be an ISO date")
     try:
-        return date.fromisoformat(value)
+        return date.fromisoformat(normalized)
     except ValueError as exc:
         raise PublicWireBuildError(f"{name} must be an ISO date") from exc
 
@@ -564,6 +572,9 @@ def _admitted_packet_keys(state: Mapping[str, Any]) -> frozenset[str]:
     for ticker, raw_route in routes.items():
         if not isinstance(ticker, str) or not isinstance(raw_route, Mapping):
             raise PublicWireBuildError("public earnings wire routes are invalid")
+        normalized_ticker = ticker.strip().upper()
+        if not normalized_ticker:
+            raise PublicWireBuildError("public earnings wire ticker is invalid")
         events = raw_route.get("events")
         if not isinstance(events, Mapping):
             raise PublicWireBuildError("public earnings wire route events are invalid")
@@ -571,10 +582,40 @@ def _admitted_packet_keys(state: Mapping[str, Any]) -> frozenset[str]:
             if not isinstance(raw_event, Mapping):
                 raise PublicWireBuildError("public earnings wire route event is invalid")
             transcript_id = raw_event.get("transcript_id", fallback_tx)
-            if not isinstance(transcript_id, str) or not transcript_id:
+            if not isinstance(transcript_id, str):
                 raise PublicWireBuildError("public earnings wire transcript id is invalid")
-            keys.add(f"{ticker}/{transcript_id}")
+            normalized_transcript = transcript_id.strip().upper()
+            if not normalized_transcript:
+                raise PublicWireBuildError("public earnings wire transcript id is invalid")
+            keys.add(f"{normalized_ticker}/{normalized_transcript}")
     return frozenset(keys)
+
+
+def _canonical_packet_key(value: object, *, name: str) -> str:
+    if not isinstance(value, str):
+        raise PublicWireBuildError(f"{name} must be a packet key")
+    parts = value.strip().split("/")
+    if len(parts) != 2:
+        raise PublicWireBuildError(f"{name} must be a packet key")
+    ticker, transcript_id = (part.strip().upper() for part in parts)
+    if not ticker or not transcript_id or len(ticker) > 32 or len(transcript_id) > 96:
+        raise PublicWireBuildError(f"{name} must be a packet key")
+    return f"{ticker}/{transcript_id}"
+
+
+def _deferred_packet_keys(state: Mapping[str, Any]) -> frozenset[str]:
+    raw = state.get("deferred_packet_keys", [])
+    if not isinstance(raw, (list, tuple, set, frozenset)):
+        raise PublicWireBuildError("deferred packet keys must be a list")
+    if len(raw) > MAX_DEFERRED_PACKET_COUNT:
+        raise PublicWireBuildError("deferred packet keys exceed safe count bound")
+    normalized = {
+        _canonical_packet_key(value, name="deferred packet key")
+        for value in raw
+    }
+    if len(normalized) != len(raw):
+        raise PublicWireBuildError("deferred packet keys contain duplicates")
+    return frozenset(normalized)
 
 
 def _select_incremental_packet_keys(
@@ -593,21 +634,38 @@ def _select_incremental_packet_keys(
         )
 
     admitted = set(_admitted_packet_keys(prior_state))
+    deferred = set(_deferred_packet_keys(prior_state))
+    overlap = admitted & deferred
+    if overlap:
+        raise PublicWireBuildError(
+            f"deferred packet keys overlap admitted routes: {sorted(overlap)[:3]}"
+        )
     missing_prior_admitted = admitted - prior_keys
     if missing_prior_admitted:
         raise PublicWireBuildError(
             f"accepted route state is not contained in its source generation: {sorted(missing_prior_admitted)[:3]}"
+        )
+    missing_prior_deferred = deferred - prior_keys
+    if missing_prior_deferred:
+        raise PublicWireBuildError(
+            f"deferred packet state is not contained in its source generation: {sorted(missing_prior_deferred)[:3]}"
         )
     missing_admitted = admitted - current_keys
     if missing_admitted:
         raise PublicWireBuildError(
             f"current story packet catalog lost admitted keys: {sorted(missing_admitted)[:3]}"
         )
-    changed = {
+    missing_deferred = deferred - current_keys
+    if missing_deferred:
+        raise PublicWireBuildError(
+            f"current story packet catalog lost deferred keys: {sorted(missing_deferred)[:3]}"
+        )
+    raw_changed = {
         key for key in prior_keys & current_keys
         if current_packets[key] != prior_packets[key]
     }
     new = current_keys - prior_keys
+    pending = new | deferred
 
     floor = _parse_iso_day(
         prior_state.get("forward_selection_floor_date"),
@@ -615,16 +673,16 @@ def _select_incremental_packet_keys(
     )
     forward_new: set[str] = set()
     skipped_historical: set[str] = set()
-    if new:
+    skipped_future: set[str] = set()
+    if pending:
         if not isinstance(transcript_index, Mapping):
-            raise PublicWireBuildError("terminal transcript index is required for new packet selection")
+            raise PublicWireBuildError("terminal transcript index is required for pending packet selection")
         generated_at = transcript_index.get("generated_at")
         if not isinstance(generated_at, str) or len(generated_at) < 10:
             raise PublicWireBuildError("terminal transcript index generated_at is invalid")
-        try:
-            ceiling = date.fromisoformat(generated_at[:10])
-        except ValueError as exc:
-            raise PublicWireBuildError("terminal transcript index generated_at is invalid") from exc
+        ceiling = _parse_iso_day(
+            generated_at[:10], name="terminal transcript index generated_at",
+        )
         dates = transcript_index.get("dates")
         if not isinstance(dates, Mapping):
             raise PublicWireBuildError("terminal transcript index dates map is invalid")
@@ -632,14 +690,16 @@ def _select_incremental_packet_keys(
         ceiling = floor
         dates = {}
 
-    for key in sorted(new):
+    for key in sorted(pending):
         event_day = _parse_iso_day(
             dates.get(key), name=f"terminal transcript date for {key}",
         )
+        # The shared transcript index also carries scheduled calls. Persist
+        # their bounded identities so advancing the source receipt cannot
+        # strand them after the completed-call ceiling catches up.
         if event_day > ceiling:
-            raise PublicWireBuildError(
-                f"terminal transcript date for {key} is later than index generated_at"
-            )
+            skipped_future.add(key)
+            continue
         # The persisted floor is inclusive. A source generation can advance
         # during the same UTC day as the newest accepted call, so a strict
         # comparison would permanently strand legitimate same-day additions.
@@ -648,6 +708,7 @@ def _select_incremental_packet_keys(
         else:
             skipped_historical.add(key)
 
+    changed = raw_changed - skipped_future
     selected = admitted | changed | forward_new
     if len(selected) > MAX_SELECTED_PACKET_COUNT:
         raise PublicWireBuildError("selected packet catalog exceeds safe count bound")
@@ -656,20 +717,30 @@ def _select_incremental_packet_keys(
         changed_keys=frozenset(changed),
         forward_new_keys=frozenset(forward_new),
         skipped_historical_keys=frozenset(skipped_historical),
+        skipped_future_keys=frozenset(skipped_future),
         selected_keys=frozenset(selected),
     )
 
 
-def load_public_build_state(out_dir: Path) -> dict[str, Any] | None:
+def load_public_build_state(
+    out_dir: Path, *, strict: bool = False,
+) -> dict[str, Any] | None:
     """Read and normalize the redacted public routing state.
 
     Version 1 is accepted only as a migration source. Its forward-selection
     floor is derived once from the newest already-published event. Version 2
     carries that floor explicitly and must preserve it across later builds.
+    Strict callers preserve the first validation cause instead of misreporting
+    a corrupt catalog as an uninitialized bootstrap.
     """
     path = Path(out_dir) / ROUTE_CATALOG_FILENAME
     if not path.is_file():
         return None
+    def reject(message: str) -> None:
+        if strict:
+            raise PublicWireBuildError(message)
+        return None
+
     try:
         payload = _json_bytes(path.read_bytes(), label="public earnings wire route catalog")
         common = {
@@ -679,35 +750,51 @@ def load_public_build_state(out_dir: Path) -> dict[str, Any] | None:
         schema = payload.get("schema")
         if schema == ROUTE_CATALOG_SCHEMA_V1:
             if set(payload) != common:
-                return None
+                return reject("public earnings wire v1 route catalog keys are invalid")
         elif schema == ROUTE_CATALOG_SCHEMA_V2:
-            if set(payload) != common | {"forward_selection_floor_date"}:
-                return None
+            v2_required = common | {"forward_selection_floor_date"}
+            if set(payload) not in {frozenset(v2_required), frozenset(v2_required | {"deferred_packet_keys"})}:
+                return reject("public earnings wire v2 route catalog keys are invalid")
         else:
-            return None
+            return reject("public earnings wire route catalog schema is invalid")
         if not isinstance(payload.get("source_generation_id"), str) or not re.fullmatch(r"[0-9a-f]{32}", payload["source_generation_id"]):
-            return None
+            return reject("public earnings wire source generation id is invalid")
         if not isinstance(payload.get("source_manifest_sha256"), str) or not re.fullmatch(r"[0-9a-f]{64}", payload["source_manifest_sha256"]):
-            return None
-        if not isinstance(payload.get("verified_at"), str) or not isinstance(payload.get("article_count"), int):
-            return None
+            return reject("public earnings wire source manifest sha256 is invalid")
+        if not isinstance(payload.get("verified_at"), str):
+            return reject("public earnings wire verified_at is invalid")
+        article_count = payload.get("article_count")
+        if not isinstance(article_count, int) or isinstance(article_count, bool) or article_count < 1:
+            return reject("public earnings wire article count is invalid")
+        if not isinstance(payload.get("as_of"), str):
+            return reject("public earnings wire as_of is invalid")
         if payload.get("company_generation_id") is not None and not isinstance(payload.get("company_generation_id"), str):
-            return None
+            return reject("public earnings wire company generation id is invalid")
         if not isinstance(payload.get("renderer_version"), str) or not re.fullmatch(r"[0-9a-f]{64}", payload["renderer_version"]):
-            return None
+            return reject("public earnings wire renderer version is invalid")
         routes = payload.get("routes")
         if not isinstance(routes, Mapping):
-            return None
+            return reject("public earnings wire routes are invalid")
+        latest_route_day = _latest_route_date(routes)
         normalized = dict(payload)
         if schema == ROUTE_CATALOG_SCHEMA_V1:
-            normalized["forward_selection_floor_date"] = _latest_route_date(routes).isoformat()
+            normalized["forward_selection_floor_date"] = latest_route_day.isoformat()
+            normalized["deferred_packet_keys"] = []
         else:
             normalized["forward_selection_floor_date"] = _parse_iso_day(
                 payload.get("forward_selection_floor_date"),
                 name="forward selection floor date",
             ).isoformat()
+            normalized["deferred_packet_keys"] = sorted(_deferred_packet_keys(payload))
+        overlap = _admitted_packet_keys(normalized) & set(normalized["deferred_packet_keys"])
+        if overlap:
+            raise PublicWireBuildError(
+                f"deferred packet keys overlap published routes: {sorted(overlap)[:3]}"
+            )
         return normalized
     except PublicWireBuildError:
+        if strict:
+            raise
         return None
 
 
@@ -725,7 +812,7 @@ def _state_age_seconds(state: Mapping[str, Any], *, now: datetime) -> float:
 
 
 def _safe_existing_state_or_raise(out_dir: Path, *, now: datetime) -> dict[str, Any]:
-    state = load_public_build_state(out_dir)
+    state = load_public_build_state(out_dir, strict=True)
     if state is None:
         raise PublicWireBuildError("no safe existing earnings-wire build state")
     if _state_age_seconds(state, now=now) > MAX_EXISTING_AGE_SECONDS:
@@ -753,11 +840,13 @@ def _atomic_write(path: Path, data: bytes) -> None:
 def _route_catalog(
     manifest: Mapping[str, Any], *, alignment: Mapping[str, Mapping[str, Any]], verified_at: str,
     company_generation_id: str | None, forward_selection_floor_date: str | None = None,
+    deferred_packet_keys: set[str] | frozenset[str] = frozenset(),
 ) -> bytes:
-    """Emit the smallest public routing contract needed by ticker dossiers.
+    """Emit the redacted routing and bounded continuation contract.
 
-    No facts, excerpts, hashes, source locators, packet keys, or receipt
-    coordinates cross this boundary.
+    No facts, excerpts, hashes, source locators, or receipt coordinates cross
+    this boundary. Deferred identities contain only ticker/transcript ids and
+    exist solely so a scheduled call cannot be stranded by a receipt advance.
     """
     routes: dict[str, dict[str, Any]] = {}
     for article in manifest["articles"]:
@@ -788,9 +877,23 @@ def _route_catalog(
         if forward_selection_floor_date is not None
         else _latest_route_date(routes)
     )
+    normalized_deferred = sorted(_deferred_packet_keys({
+        "deferred_packet_keys": deferred_packet_keys,
+    }))
+    admitted_keys = {
+        f"{ticker}/{transcript_id}"
+        for ticker, route in routes.items()
+        for transcript_id in route["events"]
+    }
+    overlap = admitted_keys & set(normalized_deferred)
+    if overlap:
+        raise PublicWireBuildError(
+            f"deferred packet keys overlap published routes: {sorted(overlap)[:3]}"
+        )
     payload = {
         "schema": ROUTE_CATALOG_SCHEMA,
         "forward_selection_floor_date": floor.isoformat(),
+        "deferred_packet_keys": normalized_deferred,
         "source_generation_id": str(manifest["source"]["generation_id"]),
         "source_manifest_sha256": str(manifest["source"]["manifest_sha256"]),
         "company_generation_id": company_generation_id,
@@ -1396,6 +1499,7 @@ def publish_public_wire(
     manifest: Mapping[str, Any], *, out_dir: Path,
     private_out_dir: Path | None = None,
     prior_state: Mapping[str, Any] | None = None,
+    deferred_packet_keys: set[str] | frozenset[str] = frozenset(),
     company_reader: Callable[[Mapping[str, Any]], Mapping[str, Any]] | None = None,
     now: datetime | None = None,
 ) -> BuildResult:
@@ -1441,6 +1545,7 @@ def publish_public_wire(
                 if prior_state is not None and prior_state.get("forward_selection_floor_date") is not None
                 else None
             ),
+            deferred_packet_keys=deferred_packet_keys,
         ),
     )
     _remove_legacy_public_state(out_dir)
@@ -1469,7 +1574,8 @@ def build(
     """
     destination = Path(out_dir) if out_dir is not None else _REPO / "site" / OUTPUT_RELATIVE
     now = now or datetime.now(timezone.utc)
-    state = load_public_build_state(destination)
+    state = load_public_build_state(destination, strict=True)
+    deferred_packet_keys: frozenset[str] = frozenset()
     if offline:
         safe = _safe_existing_state_or_raise(destination, now=now)
         return BuildResult("existing", "existing", int(safe["article_count"]), destination)
@@ -1478,6 +1584,11 @@ def build(
         current = _load_current_story_snapshot(
             source_base=source_base, fetch=fetch, timeout=timeout,
         )
+        current_packets = current.manifest.get("packets")
+        if not isinstance(current_packets, Mapping):
+            raise PublicWireBuildError("current story packet manifest has no packet catalog")
+
+        precomputed_selection: PacketSelection | None = None
         if not force and private_out_dir is None and state is not None and (
             state["source_generation_id"] == current.generation_id
             and state["source_manifest_sha256"] == current.manifest_sha256
@@ -1486,11 +1597,27 @@ def build(
             safe = _safe_existing_state_or_raise(destination, now=now)
             company_generation = _probe_company_generation(safe, company_reader=company_reader)
             if company_generation is None or company_generation == safe.get("company_generation_id"):
-                return BuildResult("unchanged", "unchanged", int(safe["article_count"]), destination)
-
-        current_packets = current.manifest.get("packets")
-        if not isinstance(current_packets, Mapping):
-            raise PublicWireBuildError("current story packet manifest has no packet catalog")
+                deferred = _deferred_packet_keys(safe)
+                if not deferred:
+                    return BuildResult("unchanged", "unchanged", int(safe["article_count"]), destination)
+                transcript_index = _load_transcript_index(fetch=fetch, timeout=timeout)
+                precomputed_selection = _select_incremental_packet_keys(
+                    prior_packets=current_packets,
+                    current_packets=current_packets,
+                    prior_state=safe,
+                    transcript_index=transcript_index,
+                )
+                if precomputed_selection.skipped_historical_keys:
+                    raise PublicWireBuildError(
+                        "deferred packet date predates the preserved forward-selection floor"
+                    )
+                if not precomputed_selection.forward_new_keys:
+                    log.info(
+                        "earnings wire deferred selection unchanged: pending=%d source_total=%d",
+                        len(precomputed_selection.skipped_future_keys),
+                        len(current_packets),
+                    )
+                    return BuildResult("unchanged", "unchanged", int(safe["article_count"]), destination)
 
         if state is None:
             if len(current_packets) > MAX_SELECTED_PACKET_COUNT:
@@ -1499,7 +1626,6 @@ def build(
                     "for bounded bootstrap"
                 )
             selected_keys = set(current_packets)
-            allow_empty = False
         else:
             if (
                 state["source_generation_id"] == current.generation_id
@@ -1513,27 +1639,35 @@ def build(
             prior_packets = prior.manifest.get("packets")
             if not isinstance(prior_packets, Mapping):
                 raise PublicWireBuildError("accepted prior story manifest has no packet catalog")
-            needs_dates = bool(set(current_packets) - set(prior_packets))
-            transcript_index = (
-                _load_transcript_index(fetch=fetch, timeout=timeout)
-                if needs_dates
-                else None
-            )
-            selection = _select_incremental_packet_keys(
-                prior_packets=prior_packets,
-                current_packets=current_packets,
-                prior_state=state,
-                transcript_index=transcript_index,
-            )
+            if precomputed_selection is not None:
+                selection = precomputed_selection
+            else:
+                needs_dates = bool(
+                    set(current_packets) - set(prior_packets)
+                    or _deferred_packet_keys(state)
+                )
+                transcript_index = (
+                    _load_transcript_index(fetch=fetch, timeout=timeout)
+                    if needs_dates
+                    else None
+                )
+                selection = _select_incremental_packet_keys(
+                    prior_packets=prior_packets,
+                    current_packets=current_packets,
+                    prior_state=state,
+                    transcript_index=transcript_index,
+                )
             selected_keys = set(selection.selected_keys)
-            allow_empty = True
+            deferred_packet_keys = selection.skipped_future_keys
             log.info(
                 "earnings wire incremental selection: admitted=%d changed=%d "
-                "forward_new=%d skipped_historical=%d selected=%d source_total=%d",
+                "forward_new=%d skipped_historical=%d skipped_future=%d "
+                "selected=%d source_total=%d",
                 len(selection.admitted_keys),
                 len(selection.changed_keys),
                 len(selection.forward_new_keys),
                 len(selection.skipped_historical_keys),
+                len(selection.skipped_future_keys),
                 len(selection.selected_keys),
                 len(current_packets),
             )
@@ -1545,7 +1679,6 @@ def build(
             fetch=fetch,
             workers=workers,
             timeout=timeout,
-            allow_empty=allow_empty,
         )
     except PublicWireBuildError as fresh_error:
         try:
@@ -1563,6 +1696,7 @@ def build(
         out_dir=destination,
         private_out_dir=private_out_dir,
         prior_state=state,
+        deferred_packet_keys=deferred_packet_keys,
         company_reader=company_reader,
         now=now,
     )

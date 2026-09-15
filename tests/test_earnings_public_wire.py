@@ -418,6 +418,7 @@ def test_route_catalog_v1_migrates_floor_and_v2_preserves_it(tmp_path: Path) -> 
     migrated = wire_builder.load_public_build_state(out_dir)
     assert migrated is not None
     assert migrated["forward_selection_floor_date"] == "2026-02-10"
+    assert migrated["deferred_packet_keys"] == []
 
     catalog.write_text(json.dumps(_route_state(
         schema="earnings.public_wire_routes/v2", floor="2026-01-30",
@@ -425,6 +426,53 @@ def test_route_catalog_v1_migrates_floor_and_v2_preserves_it(tmp_path: Path) -> 
     preserved = wire_builder.load_public_build_state(out_dir)
     assert preserved is not None
     assert preserved["forward_selection_floor_date"] == "2026-01-30"
+    assert preserved["deferred_packet_keys"] == []
+
+
+def test_route_catalog_v2_rejects_deferred_key_that_is_already_published(tmp_path: Path) -> None:
+    out_dir = tmp_path / "wire"
+    out_dir.mkdir()
+    state = _route_state(schema="earnings.public_wire_routes/v2", floor="2026-01-30")
+    state["deferred_packet_keys"] = ["AAPL/2026Q1"]
+    (out_dir / ROUTE_CATALOG_FILENAME).write_text(json.dumps(state), encoding="utf-8")
+
+    assert wire_builder.load_public_build_state(out_dir) is None
+    with pytest.raises(PublicWireBuildError, match="overlap published routes"):
+        wire_builder.load_public_build_state(out_dir, strict=True)
+
+
+def test_admitted_packet_keys_normalize_route_identity() -> None:
+    state = _route_state(schema="earnings.public_wire_routes/v2", floor="2026-01-30")
+    event = state["routes"].pop("AAPL")["events"]["2026Q1"]
+    event["transcript_id"] = " 2026q1 "
+    state["routes"][" aapl "] = {
+        "company_name": "Apple Inc.",
+        "latest": event,
+        "events": {"2026q1": event},
+    }
+    assert wire_builder._admitted_packet_keys(state) == frozenset({"AAPL/2026Q1", "MSFT/2026Q2"})
+
+
+@pytest.mark.parametrize("value", ["20260130", "2026-W05-5", "2026-01-30T12:00:00Z"])
+def test_iso_day_parser_rejects_non_canonical_dates(value: str) -> None:
+    with pytest.raises(PublicWireBuildError, match="ISO date"):
+        wire_builder._parse_iso_day(value, name="test date")
+
+
+def test_iso_day_parser_accepts_trimmed_canonical_date() -> None:
+    assert wire_builder._parse_iso_day(" 2026-01-30 ", name="test date").isoformat() == "2026-01-30"
+
+
+def test_strict_route_state_load_preserves_invalid_date_cause(tmp_path: Path) -> None:
+    out_dir = tmp_path / "wire"
+    out_dir.mkdir()
+    state = _route_state(schema="earnings.public_wire_routes/v2", floor="2026-01-30")
+    state["routes"]["AAPL"]["events"]["2026Q1"]["date"] = "not-a-date"
+    (out_dir / ROUTE_CATALOG_FILENAME).write_text(json.dumps(state), encoding="utf-8")
+
+    assert wire_builder.load_public_build_state(out_dir) is None
+    with pytest.raises(PublicWireBuildError, match="route event date"):
+        wire_builder.load_public_build_state(out_dir, strict=True)
 
 
 def test_incremental_selector_hydrates_admitted_changed_and_forward_new_only() -> None:
@@ -462,6 +510,7 @@ def test_incremental_selector_hydrates_admitted_changed_and_forward_new_only() -
     assert selection.changed_keys == frozenset({"CORR/2025Q4"})
     assert selection.forward_new_keys == frozenset({"NEW/2026Q2"})
     assert selection.skipped_historical_keys == frozenset({"BACK/2024Q4"})
+    assert selection.skipped_future_keys == frozenset()
     assert selection.selected_keys == frozenset({"AAPL/2026Q1", "CORR/2025Q4", "NEW/2026Q2"})
     assert "HOLD/2026Q1" not in selection.selected_keys
 
@@ -544,19 +593,159 @@ def test_incremental_selector_rejects_source_catalog_shrinkage() -> None:
         )
 
 
-def test_incremental_selector_rejects_future_dated_new_packet() -> None:
+def test_incremental_selector_rejects_admitted_key_disappearance() -> None:
+    state = _route_state(schema="earnings.public_wire_routes/v2", floor="2026-01-30")
+    state["routes"] = {"AAPL": state["routes"]["AAPL"]}
+    prior = {
+        "AAPL/2026Q1": {"object_key": "objects/aapl.json"},
+        "HOLD/2026Q1": {"object_key": "objects/hold.json"},
+    }
+    current = {"HOLD/2026Q1": prior["HOLD/2026Q1"]}
+
+    with pytest.raises(PublicWireBuildError, match=r"catalog shrank.*AAPL/2026Q1"):
+        wire_builder._select_incremental_packet_keys(
+            prior_packets=prior,
+            current_packets=current,
+            prior_state=state,
+            transcript_index=None,
+        )
+
+
+def test_incremental_selector_defers_future_dated_new_packet_without_blocking_current() -> None:
     state = _route_state(schema="earnings.public_wire_routes/v2", floor="2026-01-30")
     state["routes"] = {}
-    with pytest.raises(PublicWireBuildError, match="later than index generated_at"):
-        wire_builder._select_incremental_packet_keys(
-            prior_packets={},
-            current_packets={"NEW/2026Q2": {"object_key": "objects/new.json"}},
-            prior_state=state,
-            transcript_index={
-                "generated_at": "2026-02-01T23:59:59Z",
-                "dates": {"NEW/2026Q2": "2026-02-02"},
+    selection = wire_builder._select_incremental_packet_keys(
+        prior_packets={},
+        current_packets={
+            "NOW/2026Q1": {"object_key": "objects/now.json"},
+            "FUTURE/2026Q2": {"object_key": "objects/future.json"},
+        },
+        prior_state=state,
+        transcript_index={
+            "generated_at": "2026-02-01T23:59:59Z",
+            "dates": {
+                "NOW/2026Q1": "2026-02-01",
+                "FUTURE/2026Q2": "2026-02-02",
             },
-        )
+        },
+    )
+    assert selection.forward_new_keys == frozenset({"NOW/2026Q1"})
+    assert selection.skipped_future_keys == frozenset({"FUTURE/2026Q2"})
+    assert selection.selected_keys == frozenset({"NOW/2026Q1"})
+
+    state["deferred_packet_keys"] = ["FUTURE/2026Q2"]
+    matured = wire_builder._select_incremental_packet_keys(
+        prior_packets={
+            "NOW/2026Q1": {"object_key": "objects/now.json"},
+            "FUTURE/2026Q2": {"object_key": "objects/future.json"},
+        },
+        current_packets={
+            "NOW/2026Q1": {"object_key": "objects/now.json"},
+            "FUTURE/2026Q2": {"object_key": "objects/future.json"},
+        },
+        prior_state=state,
+        transcript_index={
+            "generated_at": "2026-02-02T23:59:59Z",
+            "dates": {
+                "NOW/2026Q1": "2026-02-01",
+                "FUTURE/2026Q2": "2026-02-02",
+            },
+        },
+    )
+    assert matured.forward_new_keys == frozenset({"FUTURE/2026Q2"})
+    assert matured.skipped_future_keys == frozenset()
+    assert matured.selected_keys == frozenset({"FUTURE/2026Q2"})
+
+
+def test_build_persists_and_promotes_future_packet_without_story_generation_change(
+    tmp_path: Path,
+) -> None:
+    prior, prior_raw, prior_packets, _prior_index = _story_generation(
+        tmp_path / "future-prior",
+        [("AAPL", "2026Q1", "2026-01-30")],
+        generated_at="2026-02-01T00:00:00Z",
+    )
+    current, current_raw, current_packets, current_index = _story_generation(
+        tmp_path / "future-current",
+        [
+            ("AAPL", "2026Q1", "2026-01-30"),
+            ("NOW", "2026Q1", "2026-02-01"),
+            ("FUTURE", "2026Q2", "2026-02-02"),
+        ],
+        generated_at="2026-02-02T00:00:00Z",
+    )
+    current_index["generated_at"] = "2026-02-01T23:59:59Z"
+    out_dir = tmp_path / "site" / "stocks" / "earnings"
+
+    prior_remote = _generation_remote(prior, prior_raw, prior_packets, include_marker=True)
+    build(
+        out_dir=out_dir,
+        fetch=lambda url: prior_remote[url],
+        workers=1,
+        company_reader=_current_company,
+        now=datetime(2026, 2, 1, tzinfo=timezone.utc),
+    )
+
+    remote = _generation_remote(current, current_raw, current_packets, include_marker=True)
+    remote.update(_generation_remote(prior, prior_raw, prior_packets, include_marker=False))
+    index_url = wire_builder.DEFAULT_TRANSCRIPT_INDEX_URL
+    remote[index_url] = _canonical_test_json(current_index)
+    calls: list[str] = []
+
+    def fetch(url: str, *_args: object) -> bytes:
+        calls.append(url)
+        return remote[url]
+
+    first = build(
+        out_dir=out_dir,
+        fetch=fetch,
+        workers=1,
+        company_reader=_current_company,
+        now=datetime(2026, 2, 1, 23, 59, tzinfo=timezone.utc),
+    )
+    assert first.source == "remote"
+    assert first.article_count == 2
+
+    catalog = json.loads((out_dir / ROUTE_CATALOG_FILENAME).read_text(encoding="utf-8"))
+    assert set(catalog["routes"]) == {"AAPL", "NOW"}
+    assert catalog["deferred_packet_keys"] == ["FUTURE/2026Q2"]
+    future_url = (
+        f"{DEFAULT_SOURCE_BASE}/earnings_story_packets/"
+        f"{current['packets']['FUTURE/2026Q2']['object_key']}"
+    )
+    assert future_url not in calls
+
+    calls.clear()
+    still_future = build(
+        out_dir=out_dir,
+        fetch=fetch,
+        workers=1,
+        company_reader=_current_company,
+        now=datetime(2026, 2, 2, 0, 30, tzinfo=timezone.utc),
+    )
+    assert still_future.source == "unchanged"
+    assert index_url in calls
+    assert future_url not in calls
+
+    matured_index = deepcopy(current_index)
+    matured_index["generated_at"] = "2026-02-02T23:59:59Z"
+    remote[index_url] = _canonical_test_json(matured_index)
+    calls.clear()
+
+    matured = build(
+        out_dir=out_dir,
+        fetch=fetch,
+        workers=1,
+        company_reader=_current_company,
+        now=datetime(2026, 2, 2, 23, 59, tzinfo=timezone.utc),
+    )
+    assert matured.source == "remote"
+    assert matured.article_count == 3
+    assert future_url in calls
+
+    promoted = json.loads((out_dir / ROUTE_CATALOG_FILENAME).read_text(encoding="utf-8"))
+    assert set(promoted["routes"]) == {"AAPL", "FUTURE", "NOW"}
+    assert promoted["deferred_packet_keys"] == []
 
 
 def test_prior_story_manifest_must_match_route_catalog_receipt(tmp_path: Path) -> None:
@@ -748,6 +937,102 @@ def test_corrected_admitted_packet_that_becomes_held_removes_public_and_private_
     assert catalog["source_generation_id"] == current["generation_id"]
     assert catalog["forward_selection_floor_date"] == "2026-02-10"
 
+    corrected_msft = deepcopy(msft)
+    corrected_msft["segments"] = [{
+        "speaker": "Chief Executive Officer",
+        "role": "executive",
+        "text": "Thank you for joining today. We appreciate your interest in the company.",
+    }]
+    empty_current, empty_raw, empty_packets, _empty_index = _story_generation_from_bodies(
+        tmp_path / "evidence-empty-current",
+        [corrected_aapl, corrected_msft],
+        generated_at="2026-02-13T00:00:00Z",
+        store=store,
+    )
+    empty_remote = _generation_remote(empty_current, empty_raw, empty_packets, include_marker=True)
+    empty_remote.update(_generation_remote(current, current_raw, current_packets, include_marker=False))
+    catalog_before = (out_dir / ROUTE_CATALOG_FILENAME).read_bytes()
+    page_before = msft_page.read_bytes()
+    private_before = msft_private.read_bytes()
+
+    retained = build(
+        out_dir=out_dir,
+        private_out_dir=private_dir,
+        fetch=lambda url: empty_remote[url],
+        workers=1,
+        company_reader=_current_company,
+        now=datetime(2026, 2, 13, tzinfo=timezone.utc),
+    )
+
+    assert retained.source == "existing"
+    assert retained.article_count == 1
+    assert (out_dir / ROUTE_CATALOG_FILENAME).read_bytes() == catalog_before
+    assert msft_page.read_bytes() == page_before
+    assert msft_private.read_bytes() == private_before
+
+
+def test_corrected_admitted_packet_that_remains_eligible_replaces_the_article(tmp_path: Path) -> None:
+    store = tmp_path / "story-packets"
+    prior_body = _body()
+    prior, prior_raw, prior_packets, _prior_index = _story_generation_from_bodies(
+        tmp_path / "eligible-prior",
+        [prior_body],
+        generated_at="2026-02-01T00:00:00Z",
+        store=store,
+    )
+    out_dir = tmp_path / "site" / "stocks" / "earnings"
+    private_dir = tmp_path / "private-earnings"
+    prior_remote = _generation_remote(prior, prior_raw, prior_packets, include_marker=True)
+    build(
+        out_dir=out_dir,
+        private_out_dir=private_dir,
+        fetch=lambda url: prior_remote[url],
+        workers=1,
+        company_reader=_current_company,
+        now=datetime(2026, 2, 1, tzinfo=timezone.utc),
+    )
+
+    page = out_dir / "aapl-2026q1-call-record.html"
+    private_record = private_dir / "records" / "aapl-2026q1-call-record.json"
+    prior_page = page.read_bytes()
+    prior_private = private_record.read_bytes()
+    assert b"CORRECTED VALID ARTICLE TOKEN" not in prior_page
+
+    corrected_body = deepcopy(prior_body)
+    for segment in corrected_body["segments"]:
+        segment["text"] = f'{segment["text"]} CORRECTED VALID ARTICLE TOKEN.'
+    current, current_raw, current_packets, _current_index = _story_generation_from_bodies(
+        tmp_path / "eligible-current",
+        [corrected_body],
+        generated_at="2026-02-02T00:00:00Z",
+        store=store,
+    )
+    corrected_packet = json.loads(current_packets["AAPL/2026Q1"])
+    assert corrected_packet["story"]["promotion"]["article_eligible"] is True
+
+    remote = _generation_remote(current, current_raw, current_packets, include_marker=True)
+    remote.update(_generation_remote(prior, prior_raw, prior_packets, include_marker=False))
+    result = build(
+        out_dir=out_dir,
+        private_out_dir=private_dir,
+        fetch=lambda url: remote[url],
+        workers=1,
+        company_reader=_current_company,
+        now=datetime(2026, 2, 2, tzinfo=timezone.utc),
+    )
+
+    assert result.source == "remote"
+    assert result.article_count == 1
+    updated_page = page.read_bytes()
+    updated_private = private_record.read_bytes()
+    assert updated_page != prior_page
+    assert updated_private != prior_private
+    assert b"CORRECTED VALID ARTICLE TOKEN" not in prior_private
+    assert b"CORRECTED VALID ARTICLE TOKEN" in updated_private
+    catalog = json.loads((out_dir / ROUTE_CATALOG_FILENAME).read_text(encoding="utf-8"))
+    assert catalog["source_generation_id"] == current["generation_id"]
+    assert set(catalog["routes"]) == {"AAPL"}
+
 
 def test_wire_builder_verifies_immutable_generation_aligns_and_persists_only_redacted_state(tmp_path: Path) -> None:
     _article_payload, manifest, manifest_raw, packet_raw = _article(tmp_path / "source")
@@ -868,6 +1153,20 @@ def test_wire_builder_verifies_immutable_generation_aligns_and_persists_only_red
     assert refreshed.source == "remote"
     assert packet_url in calls
     assert json.loads((out_dir / ROUTE_CATALOG_FILENAME).read_text(encoding="utf-8"))["company_generation_id"] == "d" * 24
+
+
+def test_injected_fetch_may_receive_the_enforced_byte_limit(tmp_path: Path) -> None:
+    _article_payload, manifest, manifest_raw, packet_raw = _article(tmp_path / "two-arg-fetch")
+    remote, _packet_url = _remote(manifest, manifest_raw, packet_raw)
+    limits: list[int] = []
+
+    def fetch(url: str, limit: int) -> bytes:
+        limits.append(limit)
+        return remote[url]
+
+    publication = fetch_current_publication(fetch=fetch, workers=1)
+    assert len(publication["articles"]) == 1
+    assert limits and all(limit > 0 for limit in limits)
 
 
 def test_wire_rejects_mutable_marker_mismatch_before_packet_hydration(tmp_path: Path) -> None:
@@ -1110,7 +1409,12 @@ def test_committed_wire_is_redacted_and_uses_dedicated_sitemap_only() -> None:
         for private_token in (b'"facts"', b'"receipt"', b'"object_key"', b'"source_sha256"', b'"/data/tx/'):
             assert private_token not in body, candidate
     state = json.loads(catalog.read_text(encoding="utf-8"))
-    assert state["schema"] == "earnings.public_wire_routes/v1"
+    assert state["schema"] in {
+        "earnings.public_wire_routes/v1",
+        "earnings.public_wire_routes/v2",
+    }
+    if state["schema"] == "earnings.public_wire_routes/v2":
+        assert re.fullmatch(r"\d{4}-\d{2}-\d{2}", state["forward_selection_floor_date"])
     sitemap = (wire / "sitemap.xml").read_text(encoding="utf-8")
     assert "/stocks/earnings/index.html" in sitemap
     assert "/stocks/earnings/" not in (repo / "site" / "sitemap.xml").read_text(encoding="utf-8")

@@ -687,14 +687,23 @@ __fetchImpl = function (url) {{
 
 
 # ============================================================================
-# 9. Earnings Wire route catalog v2 remains consumable by the ticker dossier
+# 9. Earnings Wire route catalog v1 and v2 remain consumable by the dossier
 # ============================================================================
 @needs_node
-def test_route_catalog_v2_resolves_exact_earnings_record() -> None:
-    """The V2 checkpoint must not disconnect the existing dossier consumer."""
+@pytest.mark.parametrize(
+    ("schema", "extra"),
+    [
+        ("earnings.public_wire_routes/v1", {}),
+        ("earnings.public_wire_routes/v2", {"forward_selection_floor_date": "2026-07-29"}),
+    ],
+)
+def test_route_catalog_v1_and_v2_resolve_exact_earnings_record(
+    schema: str, extra: dict[str, str],
+) -> None:
+    """Deployment and rollback must preserve the exact-record handoff."""
     catalog = {
-        "schema": "earnings.public_wire_routes/v2",
-        "forward_selection_floor_date": "2026-07-29",
+        "schema": schema,
+        **extra,
         "routes": {
             "AAPL": {
                 "events": {

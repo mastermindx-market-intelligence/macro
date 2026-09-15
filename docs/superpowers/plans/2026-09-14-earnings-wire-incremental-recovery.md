@@ -4,7 +4,7 @@
 
 **Goal:** Restore the public Earnings Wire beyond 2026-07-29 using bounded incremental hydration over the existing canonical story-packet and transcript planes.
 
-**Architecture:** Migrate the existing redacted route catalog to v2 with a preserved forward-selection floor. Compare its accepted immutable story generation to the current generation, then hydrate admitted routes, every correction, and only newly added calls on or after the preserved floor. Keep all existing evidence admission, rendering, private publication, and cleanup contracts.
+**Architecture:** Migrate the existing redacted route catalog to v2 with a preserved forward-selection floor and bounded deferred packet identities. Compare its accepted immutable story generation to the current generation, then hydrate admitted routes, every correction, and only completed newly added calls on or after the preserved floor. Persist only canonical `TICKER/TRANSCRIPT_ID` identities for scheduled/future dates, recheck them on otherwise-no-change refreshes, refuse an all-held empty publication, and ship the dual-schema browser consumer behind a content-hash URL. Keep all existing evidence admission, rendering, private publication, and cleanup contracts.
 
 **Tech:** Python 3.12, pytest, requests, immutable JSON manifests, GitHub Actions, static Jinja publication.
 
@@ -23,7 +23,10 @@ Add fixtures that can produce multiple packet entries, prior/current generations
 5. Selection does not fetch newly backfilled keys before the floor.
 6. Missing/invalid date for a newly added key fails before packet hydration.
 7. A selected-count or selected-byte overflow fails before packet hydration.
-8. A stale fallback error retains the causal fresh-source failure.
+8. Scheduled/future dates are deferred without blocking completed calls; non-canonical dates fail closed.
+9. An all-held selected set retains the verified prior publication instead of wiping public/private output.
+10. Route identity is canonicalized, strict state loading preserves its first validation cause, and injected fetchers remain compatible with both one- and two-argument seams.
+11. A stale fallback error retains the causal fresh-source failure.
 
 Run: `python3 -m pytest tests/test_earnings_public_wire.py -q`
 Expected: new tests fail for missing v2/incremental behavior while the prior suite remains green.
@@ -39,7 +42,7 @@ Implement:
 - `forward_selection_floor_date` parsing and v1 derivation from route events.
 - Current/prior immutable manifest fetch helpers with byte, canonicalization, contract, generation, and SHA checks.
 - A bounded Terminal index loader with explicit byte/count/date validation.
-- A pure selection function returning admitted, corrected, forward-new, skipped historical, and total selected keys.
+- A pure selection function returning admitted, corrected, forward-new, skipped historical, skipped future, and total selected keys.
 - Structural limits of 64 MiB / 100,000 source entries plus separate 10,000-packet and 1-GiB selected-work ceilings.
 - Selected-only packet hydration; standalone no-state builds retain the existing full path only below the selected ceiling.
 - Causal fresh-source plus fallback error composition.
@@ -55,6 +58,8 @@ Run the Task 1 tests until green. Make one implementation change at a time; do n
 - Modify: `tests/test_company_intelligence_dossier_js.py`
 - Modify: `tests/test_ticker_pages.py`
 - Modify: `site/assets/js/company-intelligence-dossier.js`
+- Modify: `templates/ticker.html.j2`
+- Modify: committed `site/stocks/*.html` asset references
 - Modify: `scripts/build_earnings_public_wire.py` only if tests expose a defect
 
 Add integration tests where:
@@ -64,7 +69,9 @@ Add integration tests where:
 - unchanged admitted articles remain present;
 - a new floor-date-or-later eligible event appears in HTML, route catalog, feed, sitemap, weekly intelligence, and private context;
 - the v2 catalog advances the source receipt while preserving the floor;
-- the existing ticker-dossier consumer accepts v1 and v2 catalogs and still resolves an exact call-record link under v2.
+- an all-held correction wave retains the last verified publication rather than deleting every record;
+- the existing ticker-dossier consumer behaviorally accepts both v1 and v2 catalogs;
+- the template and every committed ticker page reference the dossier asset by its actual eight-character SHA-256 prefix, preventing a one-year immutable-cache split brain.
 
 Run: `python3 -m pytest tests/test_earnings_public_wire.py tests/test_earnings_wire_freshness.py -q`.
 
