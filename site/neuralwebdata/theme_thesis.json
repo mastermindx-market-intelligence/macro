@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_thesis.v1",
-  "as_of": "2026-09-13",
-  "generated_at": "2026-09-13T10:24:53Z",
+  "as_of": "2026-09-14",
+  "generated_at": "2026-09-14T11:19:03Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -28,10 +28,10 @@
   "theses": [
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-13",
+      "as_of": "2026-09-14",
       "thesis_id": "ai_semiconductors.v1",
-      "content_hash": "sha256:3243e989b29b0fc56c461a8344fb7f3eaf00407564c3e21e3515acb885bf76fa",
-      "prev_content_hash": "sha256:4658cde5deff9c047465175396567b91551b4fe836b2fd17ee79d0cf7f3c3ecc",
+      "content_hash": "sha256:e5e49a7d80a00910ab32233fafb6bafe5601e6a98b6cda23e1064fb33e02bd6b",
+      "prev_content_hash": "sha256:3243e989b29b0fc56c461a8344fb7f3eaf00407564c3e21e3515acb885bf76fa",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -95,7 +95,7 @@
           "rule_en": "If revision_breadth for ai_semiconductors turns negative (net earnings downgrades exceed upgrades), the thesis that AI demand is above-cycle durable is weakening — watch for two consecutive negative breadth prints.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=0.597"
+          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=0.654"
         },
         {
           "id": "ai_semi_f2",
@@ -631,10 +631,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-10",
+      "as_of": "2026-09-14",
       "thesis_id": "nuclear_power.v1",
-      "content_hash": "sha256:100a36adce2c29443dd7253d490fd800731e8be42b6a8e5b43fb840b59aab30c",
-      "prev_content_hash": "sha256:8fef074a04abace72c8ead1ecbabee7af1df1aff1d3e053aac83d70452265960",
+      "content_hash": "sha256:62e2f9afa38ae23c06ff264132257c16046375755b53dac4c810b61e6806b225",
+      "prev_content_hash": "sha256:100a36adce2c29443dd7253d490fd800731e8be42b6a8e5b43fb840b59aab30c",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -693,7 +693,7 @@
           "rule_en": "If revision_breadth for nuclear_power turns negative, earnings estimate cuts are spreading — hyperscaler PPA momentum may be stalling.\n",
           "state": "FIRED",
           "fired": true,
-          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=-0.174"
+          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=-0.15"
         },
         {
           "id": "nuke_f2",
@@ -1072,10 +1072,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-13",
+      "as_of": "2026-09-14",
       "thesis_id": "medical_devices.v1",
-      "content_hash": "sha256:af578983471cfd3002f69b632d1f44d5677d46568baed88f8e9e389ecf4ae6df",
-      "prev_content_hash": "sha256:9e07808dd4421400d838cf488d4ebccd6da0a6d97f39c903eb2ff57d045d4450",
+      "content_hash": "sha256:fbf96cbf100e3de00ff1182b974d5a715bc4ef745587248206a6ff600734c2d8",
+      "prev_content_hash": "sha256:af578983471cfd3002f69b632d1f44d5677d46568baed88f8e9e389ecf4ae6df",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -1129,7 +1129,7 @@
           "rule_en": "If revision_breadth for medical_devices falls below 0.0, hospital capex cycles are overriding the installed-base recurring revenue thesis.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.031"
+          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.024"
         },
         {
           "id": "meddev_f2",
@@ -1535,7 +1535,7 @@
   ],
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-09-13T10:24:53Z",
-  "inputs_hash": "sha256:02fd518e67f95df51cb523a5880e74dc8f667ef277032befa475342fa5f6c79e",
+  "produced_at": "2026-09-14T11:19:03Z",
+  "inputs_hash": "sha256:7c932aadfaa2f0f412284f2e3395e86b9144de244819b2689b0fa1bfcb3cd08d",
   "tier": "display"
 }

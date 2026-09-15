@@ -1,25 +1,17 @@
 {
   "schema": "neuralweb.daily_brief.v1",
-  "produced_at": "2026-09-13T21:39:59.295943+00:00",
+  "produced_at": "2026-09-14T22:43:28.584810+00:00",
   "as_of": "2026-09-11",
   "status": "warn",
   "phase": "final",
   "did_the_brain_run": {
-    "cortex_status": "fresh",
-    "tool_call_batches": 4,
-    "individual_tool_calls": 9,
+    "cortex_status": "degraded",
+    "tool_call_batches": 0,
+    "individual_tool_calls": 0,
     "context_stale": false,
-    "summary": "cortex ran (9 tool calls); memo as_of 2026-09-13T21:33:48+00:00"
+    "summary": "cortex degraded — model_unavailable"
   },
-  "what_changed": [
-    {
-      "kind": "cortex_status_changed",
-      "id": "cortex",
-      "summary": "cortex status changed: degraded → fresh",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    }
-  ],
+  "what_changed": [],
   "what_contradicted": [
     {
       "id": "",
@@ -40,23 +32,15 @@
     {
       "id": "government-revenue-latest",
       "as_of": "2026-09-01",
-      "age_hours": 298.43,
+      "age_hours": 323.33,
       "freshness_sla_hours": 36,
-      "severity": "warn",
-      "kind": "stale"
-    },
-    {
-      "id": "confluence-graph",
-      "as_of": "2026-09-10",
-      "age_hours": 82.43,
-      "freshness_sla_hours": 30,
       "severity": "warn",
       "kind": "stale"
     },
     {
       "id": "treasury-watch",
       "as_of": "2026-09-10",
-      "age_hours": 82.43,
+      "age_hours": 107.33,
       "freshness_sla_hours": 48,
       "severity": "warn",
       "kind": "stale"
@@ -64,7 +48,7 @@
     {
       "id": "causal-llm-lane",
       "as_of": "2026-09-08T16:03:27+00:00",
-      "age_hours": 114.37,
+      "age_hours": 139.27,
       "freshness_sla_hours": 200,
       "severity": "watch",
       "kind": "degraded"
@@ -160,7 +144,7 @@
   ],
   "why_the_tape_moved": {
     "available": true,
-    "as_of": "2026-09-13",
+    "as_of": "2026-09-14",
     "primary": {
       "family": "rates",
       "direction": "hawkish repricing — cuts priced out, front-end up",
@@ -180,27 +164,27 @@
   },
   "operator_attention": [
     {
-      "priority": 2,
-      "area": "government-revenue-latest",
-      "summary": "lobe government-revenue-latest is warn — age 298.43h vs SLA 36h",
-      "action_type": "inspect"
+      "priority": 1,
+      "area": "cortex",
+      "summary": "cortex degraded — inspect data/neuralweb/cortex/memo.json and run_status",
+      "action_type": "ops_fix"
     },
     {
       "priority": 2,
-      "area": "confluence-graph",
-      "summary": "lobe confluence-graph is warn — age 82.43h vs SLA 30h",
+      "area": "government-revenue-latest",
+      "summary": "lobe government-revenue-latest is warn — age 323.33h vs SLA 36h",
       "action_type": "inspect"
     },
     {
       "priority": 2,
       "area": "treasury-watch",
-      "summary": "lobe treasury-watch is warn — age 82.43h vs SLA 48h",
+      "summary": "lobe treasury-watch is warn — age 107.33h vs SLA 48h",
       "action_type": "inspect"
     },
     {
       "priority": 2,
       "area": "causal-llm-lane",
-      "summary": "lobe causal-llm-lane is watch — age 114.37h vs SLA 200h",
+      "summary": "lobe causal-llm-lane is watch — age 139.27h vs SLA 200h",
       "action_type": "inspect"
     },
     {
@@ -349,6 +333,12 @@
     },
     {
       "priority": 3,
+      "area": "confluence-graph",
+      "summary": "lobe confluence-graph has gaps: stable edges (Tier-S): data/oracle/graph_s.json absent — gitignored/Mac-local on this run, stable edges (Tier-M): data/oracle/graph_m.json absent — gitignored/Mac-local on this run, confirms edges: 4 pairs lift=null (unsigned outcome basis)",
+      "action_type": "follow_up"
+    },
+    {
+      "priority": 3,
       "area": "confluence-strength",
       "summary": "lobe confluence-strength has gaps: confluence_strength: no clusters in lobes block — no discount",
       "action_type": "follow_up"
@@ -368,13 +358,13 @@
     {
       "priority": 3,
       "area": "factor-intelligence-state",
-      "summary": "lobe factor-intelligence-state has gaps: latest_board_coordinates: 3 tickers missing from panel at 2026-09-11: ['RBLX', 'WULF', 'ONON'], fire_coordinates: 15 [redacted]-lane entries skipped (tier_cascade=null — held/topped, not fires), fire_coordinates: 2 tickers had no panel row at 2026-09-11: ['RBLX', 'WULF']",
+      "summary": "lobe factor-intelligence-state has gaps: latest_board_coordinates: 3 tickers missing from panel at 2026-09-11: ['RBLX', 'WULF', 'ONON'], fire_coordinates: 21 [redacted]-lane entries skipped (tier_cascade=null — held/topped, not fires), fire_coordinates: 2 tickers had no panel row at 2026-09-11: ['RBLX', 'WULF']",
       "action_type": "follow_up"
     },
     {
       "priority": 3,
       "area": "site-factor-intelligence-state",
-      "summary": "lobe site-factor-intelligence-state has gaps: latest_board_coordinates: 3 tickers missing from panel at 2026-09-11: ['RBLX', 'WULF', 'ONON'], fire_coordinates: 15 [redacted]-lane entries skipped (tier_cascade=null — held/topped, not fires), fire_coordinates: 2 tickers had no panel row at 2026-09-11: ['RBLX', 'WULF']",
+      "summary": "lobe site-factor-intelligence-state has gaps: latest_board_coordinates: 3 tickers missing from panel at 2026-09-11: ['RBLX', 'WULF', 'ONON'], fire_coordinates: 21 [redacted]-lane entries skipped (tier_cascade=null — held/topped, not fires), fire_coordinates: 2 tickers had no panel row at 2026-09-11: ['RBLX', 'WULF']",
       "action_type": "follow_up"
     },
     {
@@ -407,28 +397,28 @@
   },
   "evidence_clock": {
     "available": true,
-    "as_of": "2026-09-13",
+    "as_of": "2026-09-14",
     "counts": {
       "overdue": 22,
-      "due": 11,
+      "due": 13,
       "human_review": 0,
       "missing": 1,
       "stale": 1,
       "blocked": 2,
       "not_ready": 0,
       "promotion_eligible": 0,
-      "accruing": 278,
+      "accruing": 276,
       "n_acknowledged": 0
     },
     "top_due": {
       "clock_id": "qledger:placebo",
       "due_at": "2026-06-22"
     },
-    "morning_line": "22 overdue, 11 due, 1 missing, 1 stale, 2 blocked, 278 accruing. Top due: qledger:placebo."
+    "morning_line": "22 overdue, 13 due, 1 missing, 1 stale, 2 blocked, 276 accruing. Top due: qledger:placebo."
   },
   "china_market_state": {
     "available": true,
-    "as_of": "2026-09-13",
+    "as_of": "2026-09-14",
     "phase": "REPAIR",
     "phase_confidence": 0.667,
     "who_controls": "mixed",
@@ -439,7 +429,7 @@
   },
   "thematic_line": {
     "available": true,
-    "as_of": "2026-09-13",
+    "as_of": "2026-09-14",
     "n_themes": 18,
     "stage_counts": {
       "WATCH": 13,
@@ -454,7 +444,7 @@
   },
   "causal_lab": {
     "available": true,
-    "asof": "2026-09-13T14:09:43Z",
+    "asof": "2026-09-14T14:55:36Z",
     "new_edges_this_week_by_verdict": {
       "insufficient_power": 22,
       "null": 11,
