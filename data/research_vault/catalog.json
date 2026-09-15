@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-15T04:45:41.087809+00:00",
-  "count": 2135,
+  "generated_at": "2026-09-15T05:27:30.254852+00:00",
+  "count": 2136,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -793,6 +793,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-6luccnc2cm7-815abf",
+      "title": "US Economic Weekly In the interest of time",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T00:49:48Z",
+      "summary_points": [
+        "**Fiscal feedback loop risk**: Interest expense now exceeds defense/Medicare spending (3.5% of GDP), creating a self-reinforcing cycle where higher rates amplify deficits, boost Treasury supply, and raise borrowing costs.",
+        "**Fed policy divergence & hawkish shift**: Governors (Barr, Waller, Kashkari) increasingly signal potential rate hikes if inflation stays above target, contrasting with disinflation signals; FOMC holds rates at 3.5%-3.75% but monitors for action.",
+        "**Sept CPI/PCE data critical**: Core CPI/PCE forecasted at 0.22%/0.24% m/m (vs Fed’s 2% target); FOMC meeting (Sep 14) hinges on this data to decide on rate hikes.",
+        "**$50bn+ Treasury cost surge risk**: 75bp Fed rate hikes could raise annual interest costs on T-bills by ~$50bn (~15bp of GDP), driven by refinancing maturing debt at higher rates.",
+        "**Debt refinancing acceleration**: 1–3bp interest rate rises accelerate debt accumulation via higher borrowing costs, narrowing debt sustainability as interest costs increase deficits."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
       "language": "en",
       "needs_metadata": false
     },
