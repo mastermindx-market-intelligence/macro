@@ -1939,8 +1939,8 @@ def _action_board_stat_chip(lane: str, e: dict, item: dict) -> None:
         stat_zh = "已延伸 · 等回调"
     elif lane == "take_profits":
         if gate_override:
-            stat_en = "backtested gate: trim"
-            stat_zh = "回测门槛：减仓"
+            stat_en = "risk check: trim"
+            stat_zh = "风险检查：减仓"
         elif urgency == "exit":
             stat_en = "momentum rolled over"
             stat_zh = "动量掉头"

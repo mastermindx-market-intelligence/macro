@@ -1,6 +1,7 @@
 {% macro t(en, zh='') -%}
 <span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
 {%- endmacro %}
+{% from "_icons.html.j2" import icon %}
 {#- `pgate` is the Act-Now board's tier gate (docs/TIER_PREVIEW_PATTERN.md), set
     only by scripts/build_sector_central.py. Defaulted ONCE here rather than
     guarded at each read site, because `{{ pgate | tojson }}` on an Undefined
@@ -15,7 +16,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>US Sector Intelligence — sectors, themes &amp; rotation — Mastermind</title>
-{% set seo_title = "US Sector Intelligence — Mastermind" %}{% set seo_desc = "Every US sector, theme and rotation in one read — cycle position, gated conviction, the rotation map, turns, flows and breadth. Updated nightly." %}{% set seo_path = "sector_central.html" %}
+{% set seo_title = "US Sector Intelligence — Mastermind" %}{% set seo_desc = "Every US sector, theme and rotation in one read — cycle position, scored conviction, the rotation map, turns, flows and breadth. Updated nightly." %}{% set seo_path = "sector_central.html" %}
 {% include "_seo_head.html.j2" %}
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="theme.css">
@@ -498,6 +499,7 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
 .rvx-hero.strain{--rvx-hero-a:color-mix(in srgb,var(--down) 13%,transparent)}
 .rvx-hero.steady{--rvx-hero-a:color-mix(in srgb,var(--up) 12%,transparent)}
 .rvx-eyebrow{display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.rvx-eyebrow h1{margin:0;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;font-weight:inherit}
 .rvx-eyebrow .as-of{margin-left:auto;text-transform:none;letter-spacing:0;font-weight:500}
 .rvx-hgrid{display:grid;grid-template-columns:1.4fr .95fr;gap:24px;margin-top:13px;align-items:center}
 .rvx-vword{font-size:38px;line-height:1.05;font-weight:800;letter-spacing:-.02em;margin:2px 0 8px}
@@ -1222,7 +1224,7 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
          value — the page's worst offenders (a "Trim" stage chip at 1.96:1). Bound
          here to the STATUS tokens (--ok/--warn/--link/--act), which deliberately do
          not flip with language, so the rotation-map legend keeps in zh exactly the
-         hues it has today. (Whether those four SHOULD flip is a doctrine question,
+         hues it has now. (Whether those four SHOULD flip is a doctrine question,
          not a contrast one — deliberately left alone.)
 
      3 · EDGE. --line #d0d4db draws a 1.37:1 hairline on a panel — a card boundary
@@ -1367,7 +1369,7 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
          fill list below, so its --si-chip resolved to nothing. Inert, not needed.
        · .tc-chip.* STAY. Their base rules (top of this file) really are frozen
          rgba and they really are boxed pills — no lane emits one on THIS page
-         today (only `.tc-chip.lever` and the bare `.si-changed` chips render),
+         currently (only `.tc-chip.lever` and the bare `.si-changed` chips render),
          but the recomposition is what keeps them legible the day one does. */
   html[data-theme="light"] .si-stage :is(.tc-chip.up, .tc-chip.aln) { --si-chip: var(--up); }
   html[data-theme="light"] .si-stage :is(.tc-chip.dn, .tc-chip.was1) { --si-chip: var(--down); }
@@ -1618,6 +1620,29 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
 
   /* — overview: the hero IS the read; no echo line beneath it — */
   .si-view[data-view="overview"] .si-view-read { display:none; }
+
+  /* post-stack: consolidate */
+  .scf-net .scf-c { background: transparent !important; }
+  .scc-universe .sc-tab .ic-svg,
+  #scc-leadership .ic-svg,
+  #sc-icon-bank .ic-svg {
+    width: 13px; height: 13px; display: inline-block; flex: none;
+    fill: none; stroke: currentColor; stroke-width: 1.8;
+    stroke-linecap: round; stroke-linejoin: round; vertical-align: -.14em; }
+  #scc-leadership .ic-svg { width: 14px; height: 14px; }
+  .mac-dot { display: inline-block; width: 8px; height: 8px; margin-right: 5px;
+    vertical-align: .05em; border: 1.5px solid currentColor; background: currentColor; }
+  .mac-dot-sq { color: var(--down); }
+  .mac-dot-tri { width: 0; height: 0; border: 0; background: none;
+    border-left: 5px solid transparent; border-right: 5px solid transparent;
+    border-bottom: 9px solid currentColor; color: var(--warn); }
+  .mac-dot-cir { border-radius: var(--r-pill, 999px); color: var(--up); }
+  .mac-dot-ring { border-radius: var(--r-pill, 999px); background: transparent; color: var(--muted); }
+  .mac-dot-lab { font-weight: 650; }
+  .sc-skel { display: flex; flex-direction: column; gap: 10px; padding: 16px 4px; }
+  .sc-skel .skel { min-height: 28px; }
+  .empty-why { color: var(--muted); font-size: 12px; margin-top: 4px; }
+  .asof-unknown { color: var(--muted); }
 </style>
 </head>
 <body class="macro-desk page-baskets">
@@ -1693,7 +1718,7 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
        Same .si-view-btn idiom as the five above; glyph is the estate's masked
        confluence icon, and ZH reuses the estate's established 子行业汇聚 so the rail,
        the view's own hero and both global-nav rows read identically. #}
-    <a class="si-view-btn" data-view="confluence" href="#confluence"><span class="si-vb-g dash-icon submenu-icon-confluence" aria-hidden="true"></span><span class="si-vb-l"><span class="l-en">Confluence</span><span class="l-zh">子行业汇聚</span></span></a>
+    <a class="si-view-btn" data-view="confluence" href="#confluence"><span class="si-vb-g dash-icon submenu-icon-confluence" aria-hidden="true"></span><span class="si-vb-l"><span class="l-en">Sub-industries</span><span class="l-zh">子行业汇聚</span></span></a>
     {# The .si-side-out "Stock entry funnel →" exit link stood here, and its own comment
        read "a link, never a sixth view". It is a sixth view now, so the link became a
        second rail entry to the SAME content — wearing the SAME confluence glyph, one row
@@ -1901,8 +1926,8 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
         var flipSign=(chg>=0&&b.cum_2d_pct<0)||(chg<0&&b.cum_2d_pct>=0);
         if(flipSign){
           var d2pct=(b.cum_2d_pct>=0?'+':'')+b.cum_2d_pct.toFixed(1)+'%';
-          var d2TipEn=fmtPct(chg)+' today after a '+d2pct+' two-day run — the session move flips the 2-day direction. Descriptive only.';
-          var d2TipZh=fmtPct(chg)+' 今日，近两日累计 '+d2pct+' — 当日走势翻转两日方向。仅供参考。';
+          var d2TipEn=fmtPct(chg)+' this session after a '+d2pct+' two-day run — the session move flips the 2-day direction. Descriptive only.';
+          var d2TipZh=fmtPct(chg)+' 本交易日，近两日累计 '+d2pct+' — 当日走势翻转两日方向。仅供参考。';
           mid+='<span class="dtp-2d" data-tip-en="'+esc(d2TipEn)+'" data-tip-zh="'+esc(d2TipZh)+'">2d '+d2pct+'</span>';
         }
       }
@@ -2116,9 +2141,9 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
   {% set _hero_cls = 'strain' if _tc_st == 'strain' else ('steady' if _tc_st == 'steady' else '') %}
   <section class="rvx-hero rvx-reveal {{ _hero_cls }}">
     <div class="rvx-eyebrow">
-      <span>{{ t('US Sector Intelligence 🇺🇸', '美国行业情报 🇺🇸') }}</span>
+      <h1>{{ t('US Sector Intelligence 🇺🇸', '美国行业情报 🇺🇸') }}</h1>
       <span class="rvx-mut" id="hero-count"></span>
-      <span class="as-of">{{ t('as of', '截至') }} <span id="asof">—</span></span>
+      <span class="as-of">{{ t('as of', '截至') }} {% if baskets_as_of is defined and baskets_as_of %}<span id="asof">{{ baskets_as_of | e }}</span>{% else %}<span id="asof" class="asof-unknown"><span class="skel" style="display:inline-block;height:11px;width:72px;vertical-align:middle"></span></span>{% endif %}</span>
     </div>
     <div class="rvx-hgrid">
       <div>
@@ -2166,7 +2191,7 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
   {% else %}
   {# ── Fallback hero when theme_context absent ── #}
   <section class="rvx-hero rvx-reveal">
-    <div class="rvx-eyebrow"><span>{{ t('US Sector Intelligence 🇺🇸', '美国行业情报 🇺🇸') }}</span><span class="rvx-mut" id="hero-count"></span><span class="as-of">{{ t('as of', '截至') }} <span id="asof">—</span></span></div>
+    <div class="rvx-eyebrow"><h1>{{ t('US Sector Intelligence 🇺🇸', '美国行业情报 🇺🇸') }}</h1><span class="rvx-mut" id="hero-count"></span><span class="as-of">{{ t('as of', '截至') }} {% if baskets_as_of is defined and baskets_as_of %}<span id="asof">{{ baskets_as_of | e }}</span>{% else %}<span id="asof" class="asof-unknown"><span class="skel" style="display:inline-block;height:11px;width:72px;vertical-align:middle"></span></span>{% endif %}</span></div>
     <div class="rvx-vword">{{ t('Thematic', '主题') }} <span class="ac">{{ t('baskets', '篮子') }}</span></div>
     <p class="rvx-vsub" id="story">{{ t('Equal-weight US theme baskets measured against the S&P 500. Use them to see which themes are leading or fading.', '等权重美国主题篮子，对标标普 500。用于观察哪些主题在走强或走弱。') }}</p>
     <div class="rvx-chips ctx" style="margin-top:12px">
@@ -2199,8 +2224,8 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
      client-rendered 4-lane themes-only board (renderActBoard, removed). #grader is retained:
      its self-grader scorecard JS reads D.grader independently of the board. ══ #}
   <section class="rvx-sec rvx-reveal" id="actnow-section" style="animation-delay:.05s">
-    {% if action_board %}{% include "_us_act_now_board.html.j2" %}{% else %}<p class="rvx-sec-sub muted">{{ t('Refreshing the action board — check back after tonight’s close.', '正在刷新操作板 — 今晚收盘后再查看。') }}</p>{% endif %}
-    <div class="rvx-sec-sub si-lane-foot">{{ t('Lanes are the only gated, graded calls on this page — everything below is context, measured nightly.', '操作清单是本页唯一的门控与自评分判断 — 下方内容均为背景信息，每晚计算。') }}
+    {% if action_board %}{%- set ab_host = 'sector_central' -%}{% include "_us_act_now_board.html.j2" %}{% else %}<p class="rvx-sec-sub muted">{{ t('Refreshing the action board — check back after the next close.', '正在刷新操作板 — 下次收盘后再查看。') }}</p>{% endif %}
+    <div class="rvx-sec-sub si-lane-foot">{{ t('Lanes are the only scored calls on this page — everything below is context, measured nightly.', '操作清单是本页唯一的评分判断 — 下方内容均为背景信息，每晚计算。') }}
       {# the funnel it drills into is the #confluence view on this page now, not a page away #}
       <a href="#confluence" style="color:var(--ink-link, var(--link))">{{ t('Drill to stocks →', '下钻到个股 →') }}</a></div>
     <div id="grader" class="grader grader-inboard" hidden></div>
@@ -2264,14 +2289,14 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
     <div class="rvx-sec-h">
       <h2>{{ t('Where everything stands', '全景位置') }}</h2>
       <span class="q">{{ t('— rotation now, cycle position over 15 years', '— 当前轮动与15年周期位置') }}</span>
-      <span class="si-vocab" data-tip-en="Leading/Improving/Weakening/Lagging describe where a group sits vs the market right now (strength × direction). Bottoming/Prime entry/Trending/Topping/Rolling over describe where it sits in its own multi-year cycle. Only the lanes above carry a gated, graded call." data-tip-zh="领先/改善/走弱/落后描述当前相对市场的位置（强度×方向）。筑底/黄金入场/趋势/见顶/回落描述其自身多年周期中的位置。仅上方操作清单为门控评分判断。">?</span>
+      <span class="si-vocab" data-tip-en="Leading/Improving/Weakening/Lagging describe where a group sits vs the market right now (strength × direction). Bottoming/Prime entry/Trending/Topping/Rolling over describe where it sits in its own multi-year cycle. Only the lanes above carry a scored call." data-tip-zh="领先/改善/走弱/落后描述当前相对市场的位置（强度×方向）。筑底/黄金入场/趋势/见顶/回落描述其自身多年周期中的位置。仅上方操作清单为评分判断。">?</span>
       <span class="r" id="rvx-count"></span>
     </div>
     <div class="scc-universe" style="margin:2px 0 10px">
       <span class="scc-universe-lab"><span class="l-en">Viewing</span><span class="l-zh">查看</span></span>
       <div class="sc-tabs" id="sc-tabs" role="tablist" aria-label="Sectors or themes">
-        <button class="sc-tab" data-fam="sectors" role="tab">🧭 <span class="l-en">Sectors</span><span class="l-zh">板块</span> <i id="sc-tab-n-sec"></i></button>
-        <button class="sc-tab on" data-fam="baskets" role="tab">🧺 <span class="l-en">Themes</span><span class="l-zh">主题</span> <i id="sc-tab-n-bsk"></i></button>
+        <button class="sc-tab" data-fam="sectors" role="tab">{{ icon('map') }} <span class="l-en">Sectors</span><span class="l-zh">板块</span> <i id="sc-tab-n-sec"></i></button>
+        <button class="sc-tab on" data-fam="baskets" role="tab">{{ icon('diamond') }} <span class="l-en">Themes</span><span class="l-zh">主题</span> <i id="sc-tab-n-bsk"></i></button>
       </div>
     </div>
     <p class="rvx-sec-sub">{{ t('Right = strong vs the S&P. Up = gaining speed this week. Leaders sweep from Leading into Weakening as they tire; laggards turn up through Improving. Hover any dot — click through for members.', '右 = 相对标普强。上 = 本周加速。领涨者会从「领先」滑向「走弱」；落后者经「改善」重新转强。悬停查看，点击进入成分页。') }}</p>
@@ -2354,15 +2379,15 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
     </section>
   </section>
 
-    {# ── One gated read per sector (11 cap-weighted ETFs) — basket-kind reads live in the lane expands above ── #}
+    {# ── One scored read per sector (11 cap-weighted ETFs) — basket-kind reads live in the lane expands above ── #}
     <div class="scc-boardhead" id="sc-board">
       <div class="scc-section-h">
-        <h2><span class="l-en">One gated read per sector</span><span class="l-zh">每个板块一个门控研判</span></h2>
-        <span class="scc-section-sub"><span class="l-en">The cycle state leads, the macro regime gates it, momentum &amp; heat confirm. Theme reads open from the lanes above.</span><span class="l-zh">周期状态主导，宏观体制门控，动量与热度确认。主题研判见上方操作清单展开。</span></span>
+        <h2><span class="l-en">One scored read per sector</span><span class="l-zh">每个板块一个评分研判</span></h2>
+        <span class="scc-section-sub"><span class="l-en">The cycle state leads, the macro regime conditions it, momentum &amp; heat confirm. Theme reads open from the lanes above.</span><span class="l-zh">周期状态主导，宏观体制约束，动量与热度确认。主题研判见上方操作清单展开。</span></span>
       </div>
     </div>
     <div id="board" class="board"></div>
-    <p class="rvx-sec-sub" style="margin-top:8px">{{ t('Cards are ordered by the fast rotation lens — display only, no forward-return claim; the conviction labels are unchanged by the ordering.', '卡片按快速轮动视角排序 — 仅作展示，无前瞻收益主张；信念标签不受排序影响。') }}
+    <p class="rvx-sec-sub" style="margin-top:8px">{{ t('Cards are ordered by the fast rotation lens — a heads-up, not a buy signal, no forward-return claim; the conviction labels are unchanged by the ordering.', '卡片按快速轮动视角排序 — 仅为提示，非买入信号，无前瞻收益主张；信念标签不受排序影响。') }}
       <span class="si-vocab" data-tip-en="Board ordering receipt: the fast rotation lens is 20-day relative momentum anchored by 5/10-day fast relative strength, adjusted for cycle state and crowding — display-tier only. Conviction itself is a gated-confluence read: the cycle state leads; the macro regime and the validated absolute-trend drawdown gate gate it; momentum (a focus lens), heat and crowding are capped context. The trend gate is validated for drawdown/staying-power control, not return alpha. No directional odds forecast; the self-grader measures realized accuracy as it accrues. When the fast lens and the conviction tier diverge by two or more steps, a split-view note appears on the card." data-tip-zh="排序说明：快速轮动视角为20日相对动量，以5/10日快速相对强度为锚，并按周期状态与拥挤度调节 — 仅展示层。信念本身为门控共振研判：周期状态主导；宏观体制与经验证的绝对趋势回撤门控进行门控；动量（聚焦视角）、热度与拥挤度为受限背景。趋势门控仅对回撤/持续性控制有效，非收益超额。无方向性概率预测；自评分器随数据累积衡量已实现准确度。当快线与信念层级相差两步及以上时，卡片上显示分歧提示。">?</span></p>
   </section>
 
@@ -2374,8 +2399,8 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
   <section class="rvx-sec rvx-reveal" id="si-movement" style="animation-delay:.12s">
     <div class="rvx-sec-h">
       <h2>{{ t("What's moving — the whole market", '正在轮动 — 全市场') }}</h2>
-      <span class="q">{{ t('— 269 subsectors & 11 sector ETFs · display-only', '— 269个子行业与11个板块ETF · 仅展示') }}</span>
-      <span class="si-vocab" data-tip-en="The broadest universe (Finviz industry groups + a Mag-7 composite). A context lens: it measures the speed of relative strength — it ranks nothing, gates nothing and sizes nothing. Detail pages open per subsector." data-tip-zh="最广的市场范围（Finviz行业分组+Mag-7组合）。背景视角：衡量相对强度的速度 — 不排序、不门控、不定仓。各子行业有详情页。">?</span>
+      <span class="q">{{ t('— 269 subsectors & 11 sector ETFs · a heads-up, not a buy signal', '— 269个子行业与11个板块ETF · 仅为提示，非买入信号') }}</span>
+      <span class="si-vocab" data-tip-en="The broadest universe (Finviz industry groups + a Mag-7 composite). A context lens: it measures the speed of relative strength — it ranks nothing, sizes nothing and does not set a call. Detail pages open per subsector." data-tip-zh="最广的市场范围（Finviz行业分组+Mag-7组合）。背景视角：衡量相对强度的速度 — 不排序、不定仓、不形成操作判断。各子行业有详情页。">?</span>
     </div>
     <p class="rvx-sec-sub">{{ t('The quadrant map over the broadest universe, the groups that just turned, and where money is rotating in and out. A heads-up layer — the lanes above stay the only calls.', '覆盖最广市场的象限图、本周拐点、以及资金流入流出的方向。此为提示层 — 操作判断仅见上方清单。') }}</p>
     <div id="rc-events-mount"></div>
@@ -2391,11 +2416,43 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
   <section class="rvx-sec rvx-reveal" id="internals-section" style="animation-delay:.15s">
     <div class="rvx-sec-h"><h2>{{ t('Under the hood', '市场内部') }}</h2><span class="q">{{ t('— is the whole market participating?', '— 整个市场都在参与吗？') }}</span></div>
     <p class="rvx-sec-sub" id="internals-sub">{{ t('Breadth tells you whether the rotation is a broad tide or a narrow few. Be selective when it is narrow.', '广度告诉你这是全面上涨还是少数领涨。领涨面窄时应精挑细选。') }}</p>
+    {%- set _mc = market_concentration if market_concentration is defined and market_concentration else none -%}
+    {%- set _mc_v = _mc.get('verdict') if _mc else none -%}
+    {%- set _mc_known = _mc_v in ('narrow', 'broad', 'mixed') -%}
+    {%- set _skel = '<span class="skel" style="display:inline-block;height:16px;width:48%;vertical-align:middle"></span>' -%}
     <div class="rvx-internals">
-      <div class="rvx-gcard verdict"><div class="gl">{{ t('MARKET BREADTH', '市场广度') }}</div><div class="gbig" id="mkt-breadth">—</div><div class="gm" id="mkt-breadth-sub"></div></div>
-      <div class="rvx-gcard"><div class="gl">{{ t('Advancers / Decliners', '上涨 / 下跌') }}</div><div class="gv" id="mkt-ad">—</div><div class="gm" id="mkt-ad-sub"></div><div class="rvx-minibar"><i id="mkt-ad-bar"></i></div></div>
-      <div class="rvx-gcard"><div class="gl">{{ t('52-wk highs / lows', '52周新高 / 新低') }}</div><div class="gv" id="mkt-hilo">—</div><div class="gm" id="mkt-hilo-sub"></div><div class="rvx-minibar"><i id="mkt-hilo-bar"></i></div></div>
-      <div class="rvx-gcard"><div class="gl">{{ t('Above 200-day', '站上200日线') }}</div><div class="gv" id="mkt-above">—</div><div class="gm" id="mkt-above-sub"></div><div class="rvx-minibar"><i id="mkt-above-bar"></i></div></div>
+      <div class="rvx-gcard verdict"><div class="gl">{{ t('MARKET BREADTH', '市场广度') }}</div>
+        {%- if _mc_known -%}
+        <div class="gbig" id="mkt-breadth" style="color:{% if _mc_v == 'broad' %}var(--up){% elif _mc_v == 'narrow' %}var(--down){% else %}var(--warn){% endif %}">{% if _mc_v == 'broad' %}{{ t('Broad', '广泛') }}{% elif _mc_v == 'narrow' %}{{ t('Narrow', '狭窄') }}{% else %}{{ t('Mixed', '中性') }}{% endif %}</div>
+        <div class="gm" id="mkt-breadth-sub">{% if _mc_v == 'broad' %}{{ t('Broad participation — a risk-on tide.', '广泛参与 — 全面上涨。') }}{% elif _mc_v == 'narrow' %}{{ t('Narrow — a few names carry it.', '狭窄 — 少数个股主导。') }}{% else %}{{ t('No strong consensus. Leadership is narrow.', '无明显共识，领涨面较窄。') }}{% endif %}</div>
+        {%- else -%}
+        <div class="gbig" id="mkt-breadth">{{ _skel | safe }}</div><div class="gm" id="mkt-breadth-sub"></div>
+        {%- endif -%}
+      </div>
+      <div class="rvx-gcard"><div class="gl">{{ t('Advancers / Decliners', '上涨 / 下跌') }}</div>
+        {%- if _mc and _mc.get('adv') is not none and _mc.get('dec') is not none -%}
+        <div class="gv" id="mkt-ad">{{ _mc.adv }}<span class="rvx-mut" style="font-size:13px"> / </span>{{ _mc.dec }}</div>
+        <div class="gm" id="mkt-ad-sub">{{ t('A/D', '涨跌比') }}{% if _mc.get('ad_ratio') is not none %} {{ '%.2f'|format(_mc.ad_ratio) }}{% endif %}</div>
+        {%- else -%}
+        <div class="gv" id="mkt-ad">{{ _skel | safe }}</div><div class="gm" id="mkt-ad-sub"></div>
+        {%- endif -%}
+        <div class="rvx-minibar"><i id="mkt-ad-bar"></i></div></div>
+      <div class="rvx-gcard"><div class="gl">{{ t('52-wk highs / lows', '52周新高 / 新低') }}</div>
+        {%- if _mc and _mc.get('nh') is not none -%}
+        <div class="gv" id="mkt-hilo"><span class="rvx-up">{{ _mc.nh }}</span><span class="rvx-mut" style="font-size:13px"> / </span><span class="rvx-dn">{{ _mc.nl }}</span></div>
+        <div class="gm" id="mkt-hilo-sub">{% if (_mc.nh or 0) >= (_mc.nl or 0) %}{{ t('more highs than lows', '新高多于新低') }}{% else %}{{ t('more lows than highs', '新低多于新高') }}{% endif %}</div>
+        {%- else -%}
+        <div class="gv" id="mkt-hilo">{{ _skel | safe }}</div><div class="gm" id="mkt-hilo-sub"></div>
+        {%- endif -%}
+        <div class="rvx-minibar"><i id="mkt-hilo-bar"></i></div></div>
+      <div class="rvx-gcard"><div class="gl">{{ t('Above 200-day', '站上200日线') }}</div>
+        {%- if _mc and _mc.get('pct_above_200') is not none -%}
+        <div class="gv" id="mkt-above">{{ _mc.pct_above_200 | round | int }}<span style="font-size:13px">%</span></div>
+        <div class="gm" id="mkt-above-sub">{% if _mc.pct_above_200 >= 60 %}{{ t('healthy majority', '健康多数') }}{% elif _mc.pct_above_200 >= 40 %}{{ t('split', '中性') }}{% else %}{{ t('weak', '偏弱') }}{% endif %}</div>
+        {%- else -%}
+        <div class="gv" id="mkt-above">{{ _skel | safe }}</div><div class="gm" id="mkt-above-sub"></div>
+        {%- endif -%}
+        <div class="rvx-minibar"><i id="mkt-above-bar"></i></div></div>
       <div class="rvx-gcard"><div class="gl">{{ t('Money flow', '资金流向') }}</div>
         {% if flow is defined and flow and flow.cluster %}
         {% set FLOW_V_EN = {'concentrated':'Crowding into a few','broad':'Spread across many','mixed':'No single group leads'} %}
@@ -2412,10 +2469,15 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
 
   <div class="scc-section-h" id="sc-heatmap">
     <h2><span class="l-en">Market heat — breadth &amp; cap-weighted moves</span><span class="l-zh">市场热度 — 宽度与市值加权涨跌</span></h2>
-    <span class="scc-section-sub"><span class="l-en">Coincident color (display context, capped in the read above) · Expand for the full 503-name treemap</span><span class="l-zh">同步色（展示背景，已在上方研判中受限计入）· 展开查看全部503只树图</span></span>
+    <span class="scc-section-sub"><span class="l-en">Coincident color (a heads-up, not a buy signal, capped in the read above) · Expand for the full 503-name treemap</span><span class="l-zh">同步色（仅为提示，非买入信号，已在上方研判中受限计入）· 展开查看全部503只树图</span></span>
   </div>
   <div id="heatmap-scorecard"></div>
 
+  <div id="sc-icon-bank" hidden>
+    <span data-ic="star">{{ icon('star') }}</span>
+    <span data-ic="bars">{{ icon('bars') }}</span>
+    <span data-ic="swirl">{{ icon('swirl') }}</span>
+  </div>
   <div id="scc-leadership" class="lead-wrap"></div>
 
 
@@ -2433,7 +2495,7 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
       <h2>{{ t('Performance table', '表现一览') }}</h2>
       <p class="sub">{{ t(
         "Every basket, sortable. Switch between plain return, return against S&P 500, and how unusual the move is for that basket. Click one to see what is in it.",
-        '所有篮子的可排序快照。可切换原始回报、相对标普 500 回报和篮子自身 z 分数。点击篮子查看成分。') }}</p>
+        '所有篮子的可排序快照。可切换原始回报、相对标普 500 回报和篮子相对自身历史的异常程度。点击篮子查看成分。') }}</p>
       <div class="chartbar"><span></span><span class="tabs" id="btbl-mode" role="group"></span></div>
       <div id="btbl-cat-filter" class="btbl-cats"></div>
       <div class="panel"><div class="ts"><table id="btable"></table></div>
@@ -2489,23 +2551,23 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
      emphasis has to be literal template HTML — matching the page footer's idiom. #}
     <div class="sc-top">
       <div class="sc-kicker">
-        <h2><span class="sc-h1-ic dash-icon submenu-icon-confluence" aria-hidden="true"></span> {{ t('Subsector Confluence', '子行业汇聚') }}</h2>
+        <h2><span class="sc-h1-ic dash-icon submenu-icon-confluence" aria-hidden="true"></span> {{ t('Sub-industry map', '子行业汇聚') }}</h2>
         <div class="sc-asof" id="sc-asof"></div>
       </div>
       <p class="sc-lede"><span class="l-en">Every sub-industry as its own basket, scored for entry <b>timing</b>. The read below is answer-first: the rotation backdrop, which groups just turned <b>buyable</b>, which are <b>late or fading</b>, and the stocks firing inside a group with the wind at its back. A timing map — <b>confirm before acting</b>.</span><span class="l-zh">将每个子行业视作独立篮子，按入场<b>时机</b>评分。下方读数以结论优先：轮动情况、哪些子行业刚转为<b>可买</b>、哪些已<b>偏晚或转弱</b>，以及在顺风子行业中触发的个股。择时图——<b>行动前请确认</b>。</span></p>
     </div>
 
     <div class="sc-tabs" role="tablist">
-      <div class="sc-tab on" data-tab="subsectors" role="tab">{{ t('S&amp;P 500', '标普500') }} <span class="n" id="tabn-sub"></span></div>
+      <div class="sc-tab on" data-tab="subsectors" role="tab">{{ t('S&P 500', '标普500') }} <span class="n" id="tabn-sub"></span></div>
       <div class="sc-tab" data-tab="nasdaq" role="tab">{{ t('Nasdaq-100', '纳斯达克100') }} <span class="n" id="tabn-ndx"></span></div>
       <div class="sc-tab" data-tab="russell" role="tab">{{ t('Russell-2000', '罗素2000') }} <span class="n" id="tabn-rut"></span></div>
       <div class="sc-tab" data-tab="baskets" role="tab">{{ t('Thematic Baskets', '主题篮子') }} <span class="n" id="tabn-bas"></span></div>
     </div>
 
-    <div id="sc-app"><div class="empty">{{ t('Loading…', '加载中…') }}</div></div>
+    <div id="sc-app"><div class="sc-skel" aria-hidden="true"><div class="skel" style="height:28px;width:42%"></div><div class="skel" style="height:88px;width:100%"></div><div class="skel" style="height:88px;width:100%"></div></div></div>
 
     <div class="sc-foot">
-      {{ t('Every subsector is an equal-weight basket of its members, scored on a 3-day cadence for entry timing — not a buy list. Tiers rank freshness of the confluence cross (T1 freshest).', '每个子行业为其成分的等权篮子，按 3 日周期为入场时机评分——并非买入清单。层级衡量汇聚交叉的新鲜度（T1 最新）。') }}
+      {{ t('Every subsector is an equal-weight basket of its members, scored on a 3-day cadence for entry timing — not a buy list. Tiers rank freshness of the timing cross (T1 freshest).', '每个子行业为其成分的等权篮子，按 3 日周期为入场时机评分——并非买入清单。层级衡量时机交叉的新鲜度（T1 最新）。') }}
       {# the donor pointed at sector_central.html#si-movement from a different page; in-page
          that is the same rail, so it is a view switch rather than a navigation. #}
       <a href="#moving">{{ t('See the rotation map', '查看轮动图') }}</a>
@@ -2627,8 +2689,8 @@ function grPulseCell(id){
   if(!p) return '<span class="muted">—</span>';
   const chg=((p.episode||{}).state_change)||'quiet', w=GR_CHG[chg]||GR_CHG.quiet;
   const pa=p.participation||{}, n=pa.activity_n, nc=p.n_covered;
-  const tipEn='How the number of members moving unusually changed against the sessions before it, and how many are moving today. A member counts as moving when its move against SPY is large versus its own last 63 sessions, or its volume runs at least 1.5x its own 63-day median. Description of participation only — never a buy or sell read.';
-  const tipZh='与此前几个交易日相比，出现异动的成分股数量如何变化，以及今日有多少只在动。当某只成分股对冲SPY后的涨跌明显大于其自身近63个交易日的常态，或成交量至少达到自身63日中位数的1.5倍时，计为「在动」。仅描述参与度，不构成买卖判断。';
+  const tipEn='How the number of members moving unusually changed against the sessions before it, and how many are moving this session. A member counts as moving when its move against SPY is large versus its own last 63 sessions, or its volume runs at least 1.5x its own 63-day median. Description of participation only — never a buy or sell read.';
+  const tipZh='与此前几个交易日相比，出现异动的成分股数量如何变化，以及本交易日有多少只在动。当某只成分股对冲SPY后的涨跌明显大于其自身近63个交易日的常态，或成交量至少达到自身63日中位数的1.5倍时，计为「在动」。仅描述参与度，不构成买卖判断。';
   const mv=(n!=null&&nc!=null)?` <span class="gpr-mv">${L(`<b>${n}</b> of <b>${nc}</b> moving`,`<b>${nc}</b> 只中 <b>${n}</b> 只在动`)}</span>`:'';
   return `<span class="gpr-cell" data-tip-en="${esc(tipEn)}" data-tip-zh="${esc(tipZh)}"><span class="gpr-chg${chg==='strengthening'||chg==='cooling'?' on':''}"><span class="g">${w[2]}</span>${L(esc(w[0]),esc(w[1]))}</span>${mv}</span>`;
 }
@@ -2636,7 +2698,7 @@ function grPulseCell(id){
 function grCmp(a,b){
   const pa=grPulseOf(a.id), pb=grPulseOf(b.id);
   if(!pa&&!pb) return 0;
-  if(!pa) return 1;                       // no read tonight → end of the list, either way
+  if(!pa) return 1;                       // no read in this session → end of the list, either way
   if(!pb) return -1;
   const ca=GR_CHG_RANK[(pa.episode||{}).state_change]??3, cb=GR_CHG_RANK[(pb.episode||{}).state_change]??3;
   if(ca!==cb) return ca-cb;
@@ -2690,8 +2752,8 @@ function renderBTable(){
   // The ordering rule is printed where it orders — never a hidden weighting.
   const rl=document.getElementById('btbl-gr-rule');
   if(rl) rl.innerHTML=gp?L(
-    'Group pulse: how many members are actually moving, and whether that count is broadening or narrowing. Sorting by it orders on state change, then breadth of movement, then agreement — no composite score. Agreement counts only where at least four members are moving; a basket without one sorts below a basket that has one. Baskets with no read tonight sit at the end. Context only: it never ranks, sizes or gates a position.',
-    '「整体动向」：有多少成分股真正在动，以及这个数量在扩散还是收窄。按它排序的依据为：参与度变化，其次是在动成分股的广度，再次是方向一致度 — 不使用任何综合评分。方向一致度仅在至少四只成分股在动时才计入；没有该读数的篮子排在有读数的之后。今晚没有读数的篮子排在最后。仅为背景：不参与排序权重、仓位或准入。'):'';
+    'Group pulse: how many members are actually moving, and whether that count is broadening or narrowing. Sorting by it orders on state change, then breadth of movement, then agreement — no composite score. Agreement counts only where at least four members are moving; a basket without one sorts below a basket that has one. Baskets with no read sit at the end. Context only: it never ranks, sizes or gates a position.',
+    '「整体动向」：有多少成分股真正在动，以及这个数量在扩散还是收窄。按它排序的依据为：参与度变化，其次是在动成分股的广度，再次是方向一致度 — 不使用任何综合评分。方向一致度仅在至少四只成分股在动时才计入；没有该读数的篮子排在有读数的之后。没有读数的篮子排在最后。仅为背景：不参与排序权重、仓位或准入。'):'';
   tbl.querySelectorAll('th[data-c]').forEach(h=>h.onclick=()=>{ const c=h.dataset.c;
     if(c===btblSort.col) btblSort.dir*=-1; else btblSort={col:c,dir:c==='name'?1:-1};
     localStorage.setItem('fw-btbl-sort',JSON.stringify(btblSort)); renderBTable(); });
@@ -3036,23 +3098,38 @@ function rvxSet(id,html){const e=document.getElementById(id);if(e)e.innerHTML=ht
 function rvxBar(id,pct,col){const e=document.getElementById(id);if(e){e.style.width=Math.max(2,Math.min(100,pct))+'%';e.style.background=col;}}
 function renderInternals(){
   const mc=(THEME&&THEME.market_concentration)||{}; const zh=isZh();
+  const why=zh?'广度不在今晚的构建中 — 上方操作清单不受影响。':'Breadth isn\'t in tonight\'s build — the lanes above are unaffected.';
   const vmap={narrow:[zh?'狭窄':'Narrow','var(--down)'],broad:[zh?'广泛':'Broad','var(--up)'],mixed:[zh?'中性':'Mixed','var(--warn)']};
-  const vv=vmap[mc.verdict]||vmap.mixed;
-  const be=document.getElementById('mkt-breadth'); if(be){be.textContent=vv[0]; be.style.color=vv[1];}
-  rvxSet('mkt-breadth-sub', mc.verdict==='broad'?(zh?'广泛参与 — 全面上涨。':'Broad participation — a risk-on tide.'):mc.verdict==='narrow'?(zh?'狭窄 — 少数个股主导。':'Narrow — a few names carry it.'):(zh?'无明显共识，领涨面较窄。':'No strong consensus. Leadership is narrow.'));
+  const known=mc.verdict==='narrow'||mc.verdict==='broad'||mc.verdict==='mixed';
+  const be=document.getElementById('mkt-breadth');
+  if(!known){
+    if(be){be.innerHTML='<div class="mx-empty"><div class="mx-empty-line">'+(zh?'广度暂缺':'Breadth isn\'t available')+'</div><div class="mx-empty-why empty-why">'+why+'</div></div>'; be.style.color='';}
+    rvxSet('mkt-breadth-sub','');
+  } else {
+    const vv=vmap[mc.verdict];
+    if(be){be.textContent=vv[0]; be.style.color=vv[1];}
+    rvxSet('mkt-breadth-sub', mc.verdict==='broad'?(zh?'广泛参与 — 全面上涨。':'Broad participation — a risk-on tide.'):mc.verdict==='narrow'?(zh?'狭窄 — 少数个股主导。':'Narrow — a few names carry it.'):(zh?'无明显共识，领涨面较窄。':'No strong consensus. Leadership is narrow.'));
+  }
   if(mc.adv!=null&&mc.dec!=null){ rvxSet('mkt-ad', mc.adv+'<span class="rvx-mut" style="font-size:13px"> / </span>'+mc.dec);
-    rvxSet('mkt-ad-sub', (zh?'涨跌比 ':'A/D ')+(mc.ad_ratio!=null?(+mc.ad_ratio).toFixed(2):'—'));
+    rvxSet('mkt-ad-sub', (zh?'涨跌比 ':'A/D ')+(mc.ad_ratio!=null?(+mc.ad_ratio).toFixed(2):''));
     rvxBar('mkt-ad-bar', mc.adv/((mc.adv+mc.dec)||1)*100, (mc.ad_ratio||0)>=1?'var(--up)':'var(--warn)'); }
+  else { rvxSet('mkt-ad', zh?'不在今晚的构建中':'Not in tonight\'s build'); rvxSet('mkt-ad-sub', zh?'涨跌家数不在今晚的构建中 — 上方操作清单不受影响。':'Advance/decline isn\'t in tonight\'s build — the lanes above are unaffected.'); }
   if(mc.nh!=null){ rvxSet('mkt-hilo', '<span class="rvx-up">'+mc.nh+'</span><span class="rvx-mut" style="font-size:13px"> / </span><span class="rvx-dn">'+mc.nl+'</span>');
     rvxSet('mkt-hilo-sub', (mc.nh>=mc.nl)?(zh?'新高多于新低':'more highs than lows'):(zh?'新低多于新高':'more lows than highs'));
     rvxBar('mkt-hilo-bar', mc.nh/(((mc.nh||0)+(mc.nl||0))||1)*100, (mc.nh>=mc.nl)?'var(--up)':'var(--down)'); }
+  else { rvxSet('mkt-hilo', zh?'不在今晚的构建中':'Not in tonight\'s build'); rvxSet('mkt-hilo-sub', zh?'新高新低不在今晚的构建中 — 上方操作清单不受影响。':'New highs and lows aren\'t in tonight\'s build — the lanes above are unaffected.'); }
   if(mc.pct_above_200!=null){ rvxSet('mkt-above', Math.round(mc.pct_above_200)+'<span style="font-size:13px">%</span>');
-    rvxSet('mkt-above-sub', mc.pct_above_200>=60?(zh?'健康多数':'healthy majority'):mc.pct_above_200>=40?(zh?'中性':'mixed'):(zh?'偏弱':'weak'));
+    rvxSet('mkt-above-sub', mc.pct_above_200>=60?(zh?'健康多数':'healthy majority'):mc.pct_above_200>=40?(zh?'中性':'split'):(zh?'偏弱':'weak'));
     rvxBar('mkt-above-bar', mc.pct_above_200, mc.pct_above_200>=60?'var(--up)':mc.pct_above_200>=40?'var(--warn)':'var(--down)'); }
+  else { rvxSet('mkt-above', zh?'不在今晚的构建中':'Not in tonight\'s build'); rvxSet('mkt-above-sub', zh?'站上200日线的比例不在今晚的构建中 — 上方操作清单不受影响。':'The 200-day share isn\'t in tonight\'s build — the lanes above are unaffected.'); }
 }
 
 function boot(){
-  const ao=document.getElementById('asof'); if(ao) ao.textContent=BASKETS.as_of||'—';
+  const ao=document.getElementById('asof');
+  if(ao){
+    if(BASKETS.as_of){ ao.textContent=BASKETS.as_of; ao.classList.remove('asof-unknown'); }
+    else { ao.textContent=isZh()?'日期未知':'date unknown'; ao.classList.add('asof-unknown'); }
+  }
   try{ renderVerdictHero(); }catch(e){ console.warn('rvx hero',e); }
   try{ renderRotationMap(); renderRotBoard(); wireRotFilters(); }catch(e){ console.warn('rvx map',e); }
   try{ renderInternals(); }catch(e){ console.warn('rvx internals',e); }
@@ -3089,9 +3166,30 @@ try{ if(window.__siViewReads) window.__siViewReads(BASKETS); }catch(e){ console.
 }
 /* ── Sector Intelligence glue: payload fetch, lane trace expands, map scope link, alerts ── */
 function __siFetch(u){ return fetch(u,{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }); }
+function __siBreadthFail(){
+  var zh=document.documentElement.getAttribute('data-lang')==='zh';
+  var msg=zh?'该读数更新中。':'This read is being updated.';
+  /* Reject → cautious only where no baked truth exists (skeleton tiles).
+     Tiles that already carry a producer value keep it, with the real #asof. */
+  [['mkt-breadth','mkt-breadth-sub'],['mkt-ad','mkt-ad-sub'],
+   ['mkt-hilo','mkt-hilo-sub'],['mkt-above','mkt-above-sub']].forEach(function(p){
+    var e=document.getElementById(p[0]); if(!e) return;
+    if(!e.querySelector('.skel')) return;
+    e.textContent=msg;
+    var s=document.getElementById(p[1]); if(s) s.textContent='';
+  });
+  var ao=document.getElementById('asof');
+  if(ao && ao.querySelector('.skel')){
+    ao.textContent=msg; ao.classList.add('asof-unknown');
+  }
+}
 function __siBoot(){
   __siFetch('basketdata/baskets.json').then(function(p){ __siInitPage(p); })
-    .catch(function(){ var el=document.getElementById('actnow'); if(el) el.innerHTML='<div class="rvx-lane-desc">'+ (document.documentElement.getAttribute('data-lang')==='zh' ? '数据加载失败 — 请刷新。' : 'Data failed to load — please refresh.') +'</div>'; });
+    .catch(function(){
+      var el=document.getElementById('actnow');
+      if(el) el.innerHTML='<div class="rvx-lane-desc">'+ (document.documentElement.getAttribute('data-lang')==='zh' ? '数据加载失败 — 请刷新。' : 'Data failed to load — please refresh.') +'</div>';
+      __siBreadthFail();
+    });
 }
 function __siWireTrace(){
   var lanes=document.getElementById('actnow'); if(!lanes||lanes.__siTraceWired) return; lanes.__siTraceWired=true;
@@ -3151,7 +3249,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
   var M = D.market || {}, GR = D.grader || {};
   function lang(){ return document.documentElement.getAttribute("data-lang") === "zh" ? "zh" : "en"; }
   function L(en, zh){ return '<span class="l-en">'+en+'</span><span class="l-zh">'+(zh==null?en:zh)+'</span>'; }
-  function esc(s){ return (s==null?'':String(s)).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c];}); }
+  function esc(s){ return (s==null?'':String(s)).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
   function pc(x){ return (x>0?'+':'')+x.toFixed(1)+'%'; }
   var asof=document.getElementById('scc-asof'); if(asof) asof.textContent=D.as_of||'';
 
@@ -3173,7 +3271,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
   function _cycSeries(id) {
     if (_cycSeriesCache[id]) return _cycSeriesCache[id];
     var cyc = window.SECTOR_CYCLES; if (!cyc) return null;
-    var today = (cyc.meta && cyc.meta.today) || null;
+    var asofDay = (cyc.meta && cyc.meta.today) || null;
     var lists = [cyc.sectors||[], cyc.baskets||[]];
     for (var li=0; li<lists.length; li++) {
       var list = lists[li];
@@ -3181,7 +3279,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
         var s = list[i];
         if (s.id !== id) continue;
         var raw = s.osc || []; if (!raw.length) return null;
-        var cutoff = (today || raw[raw.length-1].x) - 5;
+        var cutoff = (asofDay || raw[raw.length-1].x) - 5;
         var pts = raw.filter(function(p){ return p.x >= cutoff; });
         if (!pts.length) pts = raw.slice(-2);
         var result = { pts: pts, accent: s.accent || null };
@@ -3349,7 +3447,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
     } else if(rot===null){
       // Rotation artifact absent — first wired nightly hasn't run yet.
       ftRail='<div class="ft-rail ft-await"><span class="ft-rank">'+L('fast lens','快线')+'</span>'
-        +'<span class="ft-state">'+L('awaiting tonight\'s data','等待今晚数据')+'</span></div>';
+        +'<span class="ft-state">'+L('awaiting the latest data','等待最新数据')+'</span></div>';
     }
     if(c.confluence) chips.push('<span class="chip2">'+L('confluence','共振')+' <b>'+c.confluence.agree+'/'+c.confluence.of+'</b></span>');
     if(c.early) chips.push('<span class="chip2 early">'+L('early','偏早')+'</span>');
@@ -3384,23 +3482,32 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
     el.innerHTML = (D.sectors||[]).map(card).join('');
   }
   /* ---- grader scorecard ---- */
+  function hitIn10(rate){
+    var n=Math.round(Number(rate)*10);
+    if(!(n>=0)) n=0; if(n>10) n=10;
+    return n;
+  }
   function renderGrader(){
     var el=document.getElementById('grader');
     if(!GR || !GR.available){ el.hidden=false; el.innerHTML='<h2>'+L('Self-grader','自评分器')+'</h2><div class="muted sm">'+
-      L('Accruing — dated calls are logged and will be graded against realized forward returns as time passes ('+(GR.n_calls||0)+' calls logged).',
-        '累积中 — 带日期的判断已记录，将随时间推移对照已实现的前瞻收益进行评分（已记录 '+(GR.n_calls||0)+' 个判断）。')+'</div>'; return; }
+      L('Accruing — dated calls are logged and will be graded against realized forward returns as time passes.',
+        '累积中 — 带日期的判断已记录，将随时间推移对照已实现的前瞻收益进行评分。')+'</div>'; return; }
     var bh=GR.by_horizon||{}, cells=[];
     ['21d','63d','126d'].forEach(function(k){
       var h=bh[k]; if(!h) return;
-      if(h.dir_hit_rate==null){ cells.push('<div class="gr-cell"><div class="rg-k">'+k+'</div><div class="muted sm">'+L('accruing','累积中')+' (n='+(h.n||0)+')</div></div>'); return; }
-      cells.push('<div class="gr-cell"><div class="rg-k">'+k+' · n='+h.n+'</div>'+
-        '<div class="rg-v" style="font-size:16px">'+Math.round(h.dir_hit_rate*100)+'% '+L('hit','命中')+'</div>'+
-        '<div class="rg-d">'+L('rank-IC','秩相关')+' '+(h.rank_ic!=null?h.rank_ic:'—')+' · '+L('excess','超额')+' '+(h.mean_excess_vs_bench!=null?(h.mean_excess_vs_bench*100).toFixed(1)+'%':'—')+'</div></div>');
+      if(h.dir_hit_rate==null){ cells.push('<div class="gr-cell"><div class="rg-k">'+k+'</div><div class="muted sm">'+L('Accruing — too few graded calls yet','累积中 — 已评分判断尚少')+'</div></div>'); return; }
+      var x=hitIn10(h.dir_hit_rate);
+      var rcEn='Technical receipt: n='+(h.n||0)+' · rank-IC '+(h.rank_ic!=null?h.rank_ic:'n/a')+' · excess-vs-SPY '+(h.mean_excess_vs_bench!=null?(h.mean_excess_vs_bench*100).toFixed(1)+'%':'n/a')+' · '+k+'.';
+      var rcZh='技术说明：n='+(h.n||0)+' · 秩相关 '+(h.rank_ic!=null?h.rank_ic:'暂缺')+' · 相对标普超额 '+(h.mean_excess_vs_bench!=null?(h.mean_excess_vs_bench*100).toFixed(1)+'%':'暂缺')+' · '+k+'。';
+      cells.push('<div class="gr-cell"><div class="rg-k">'+k+'</div>'+
+        '<div class="rg-v" style="font-size:16px">'+L('about '+x+' in 10','约10次中有'+x+'次')+'</div>'+
+        '<div class="rg-d">'+L('directional calls held','方向判断成立')+
+        ' <span class="ftr-t1-help" data-tip-en="'+esc(rcEn)+'" data-tip-zh="'+esc(rcZh)+'">?</span></div></div>');
     });
     el.hidden=false;
     el.innerHTML='<h2>'+L('Self-grader — measured accuracy','自评分器 — 已衡量准确度')+'</h2>'+
-      '<div class="muted sm">'+L('Realized directional hit-rate, cross-sectional rank-IC and excess-vs-SPY of the conviction calls, by horizon. Sparse until it accrues; never fed back into the live score.',
-        '按时间跨度衡量信念判断的已实现方向命中率、横截面秩相关与超越SPY的超额收益。数据累积前较稀疏；绝不回灌入实时评分。')+'</div>'+
+      '<div class="muted sm">'+L('How often the conviction calls pointed the right way, by horizon. Sparse until it accrues; never fed back into the live score.',
+        '按时间跨度看信念判断方向是否正确。数据累积前较稀疏；绝不回灌入实时评分。')+'</div>'+
       '<div class="gr-grid">'+(cells.join('')||'<div class="muted sm">'+L('accruing','累积中')+'</div>')+'</div>';
   }
 
@@ -3443,6 +3550,31 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
   'use strict';
   var L = function (en, zh) { return '<span class="l-en">' + en + '</span><span class="l-zh">' + (zh == null ? en : zh) + '</span>'; };
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function ic(name) {
+    var bank = document.getElementById('sc-icon-bank');
+    var el = bank && bank.querySelector('[data-ic="' + name + '"]');
+    return el ? el.innerHTML : '';
+  }
+  function lasTip() {
+    return ' data-tip-en="Lead pace: how fast this universe is pulling away from the pack." data-tip-zh="领先节奏：该指数域相对大盘拉开的速度。"';
+  }
+  var STAGE_WORD = {
+    running: ['In motion', '运行中'],
+    coiling: ['Tightening', '收紧'],
+    coiling_primed: ['Ready to turn', '待转向']
+  };
+  function prettyMac(mac) {
+    if (mac.label_en) return L(esc(mac.label_en), esc(mac.label_zh || mac.label_en));
+    var v = String(mac.verdict || '').replace(/_/g, ' ');
+    if (!v) return L('Unstated', '未标明');
+    v = v.replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+    return L(esc(v), esc(v));
+  }
+  function macDot(color) {
+    var word = { red: ['Risk-off', '偏空'], yellow: ['Caution', '谨慎'], green: ['Constructive', '偏多'] }[color] || ['Unstated', '未标明'];
+    var shape = { red: 'mac-dot-sq', yellow: 'mac-dot-tri', green: 'mac-dot-cir' }[color] || 'mac-dot-ring';
+    return '<span class="mac-dot ' + shape + '" aria-hidden="true"></span><span class="mac-dot-lab">' + L(word[0], word[1]) + '</span>';
+  }
   function num(x, d) { return (x == null || isNaN(x)) ? '–' : Number(x).toFixed(d == null ? 0 : d); }
   function signed(x, d) { if (x == null || isNaN(x)) return '<span class="num">–</span>'; var v = Number(x); return '<span class="num ' + (v >= 0 ? 'pos' : 'neg') + '">' + (v >= 0 ? '+' : '') + v.toFixed(d == null ? 1 : d) + '</span>'; }
   function quadInfo(q) { return ({ leading: ['Leading', '领先', 'var(--up)'], improving: ['Improving', '改善', 'var(--info)'], weakening: ['Weakening', '走弱', 'var(--orange)'], lagging: ['Lagging', '落后', 'var(--down)'] })[q] || ['—', '—', 'var(--muted)']; }
@@ -3460,13 +3592,28 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
     var vcol = tr.verdict === 'validated' ? 'var(--up)' : tr.verdict === 'measuring' ? 'var(--info)' : 'var(--muted)';
     var vlab = tr.verdict === 'validated' ? L('Validated', '已验证') : tr.verdict === 'measuring' ? L('Measuring', '测量中') : L('Accruing', '积累中');
     var days = tr.n_days || 0;
-    var h = '<div class="lead-track"><span class="tr-badge" style="color:' + vcol + ';border-color:' + vcol + '">📊 ' + L('Forward track record', '前瞻战绩') + ': ' + vlab + '</span> '
+    var h = '<div class="lead-track"><span class="tr-badge" style="color:' + vcol + ';border-color:' + vcol + '">' + ic('bars') + ' ' + L('Forward track record', '前瞻战绩') + ': ' + vlab + '</span> '
       + '<span class="tr-txt">' + L((tr.n_snapshots || 0) + ' calls logged over ' + days + (days === 1 ? ' day' : ' days'), (tr.n_snapshots || 0) + ' 条记录，历时 ' + days + ' 天') + '</span>';
     var h21 = (tr.horizons || {})['21'];
     if (tr.any_matured && h21 && h21.n_matured) {
-      var bs = h21.by_stage || {}, parts = [];
-      ['running', 'coiling', 'coiling_primed'].forEach(function (st) { if (bs[st] && bs[st].hit_rate != null) parts.push((st === 'coiling_primed' ? 'coil✓' : st) + ' ' + Math.round(bs[st].hit_rate * 100) + '% (' + bs[st].n + ')'); });
-      if (parts.length) h += ' · <span class="tr-txt">' + L('21d hit-rate: ', '21日命中率：') + parts.join(', ') + '</span>';
+      var bs = h21.by_stage || {}, parts = [], rcBitsEn = [], rcBitsZh = [];
+      ['running', 'coiling', 'coiling_primed'].forEach(function (st) {
+        if (bs[st] && bs[st].hit_rate != null) {
+          var w = STAGE_WORD[st] || [st, st];
+          var nSt = bs[st].n || bs[st].n_matured || h21.n_matured || 0;
+          var x = Math.round(Number(bs[st].hit_rate) * 10);
+          if (!(x >= 0)) x = 0; if (x > 10) x = 10;
+          parts.push(L(w[0], w[1]) + ' ' + L('about ' + x + ' in 10', '约10次中有' + x + '次'));
+          rcBitsEn.push(w[0] + ' n=' + nSt + ' hit-rate ' + Math.round(bs[st].hit_rate * 100) + '%');
+          rcBitsZh.push(w[1] + ' n=' + nSt + ' 命中率 ' + Math.round(bs[st].hit_rate * 100) + '%');
+        }
+      });
+      if (parts.length) {
+        var rcEn = 'Technical receipt: 21d n=' + (h21.n_matured || 0) + ' · ' + rcBitsEn.join(' · ') + '.';
+        var rcZh = '技术说明：21日 n=' + (h21.n_matured || 0) + ' · ' + rcBitsZh.join(' · ') + '。';
+        h += ' · <span class="tr-txt">' + L('21d hit-rate: ', '21日命中率：') + parts.join(', ')
+          + ' <span class="ftr-t1-help" data-tip-en="' + esc(rcEn) + '" data-tip-zh="' + esc(rcZh) + '">?</span></span>';
+      }
     } else {
       h += ' · <span class="tr-txt" style="color:var(--muted)">' + L('grades mature at 5 / 10 / 21 / 63d — measured, not asserted', '5 / 10 / 21 / 63 日后成熟评级——实测而非断言') + '</span>';
     }
@@ -3481,41 +3628,39 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
     var lnQuad = ln ? (T[ln.tab] || {}).quadrant : null;
     var lnNote = (lnQuad === 'weakening' || lnQuad === 'lagging') ? L(' · but weakening', ' · 但走弱') : '';
     var hero = '<div class="lead-hero">';
-    if (star) hero += '<div class="lead-star"><div class="lbl">⭐ ' + L('Rising star', '上升之星') + '</div><div class="big">' + L(star.label[0], star.label[1]) + ' <span class="las">LAS ' + (star.las >= 0 ? '+' : '') + num(star.las, 2) + '</span></div><div class="why">' + L('leadership accelerating fastest — ', '领导加速最快——') + esc(whyTxt) + '</div></div>';
-    if (ln) hero += '<div class="lead-leader"><div class="lbl">' + L('Leader now', '当前领导') + '</div><div class="big">' + L(ln.label[0], ln.label[1]) + '</div><div class="why">' + L('highest RS level', '相对强弱水平最高') + lnNote + '</div></div>';
+    if (star) hero += '<div class="lead-star"><div class="lbl">' + ic('star') + ' ' + L('Rising star', '上升之星') + '</div><div class="big">' + L(star.label[0], star.label[1]) + ' <span class="las"' + lasTip() + '>' + L('Lead pace', '领先节奏') + ' ' + (star.las >= 0 ? '+' : '') + num(star.las, 2) + '</span></div><div class="why">' + L('leadership accelerating fastest — ', '领导加速最快——') + esc(whyTxt) + '</div></div>';
+    if (ln) hero += '<div class="lead-leader"><div class="lbl">' + L('Leader now', '当前领导') + '</div><div class="big">' + L(ln.label[0], ln.label[1]) + '</div><div class="why">' + L('highest relative strength', '相对强弱水平最高') + lnNote + '</div></div>';
     hero += '</div>';
     var rows = order.map(function (t) {
       var v = T[t], isStar = star && star.tab === t;
-      return '<tr' + (isStar ? ' class="star"' : '') + '><td class="u">' + (isStar ? '⭐ ' : '') + L(v.label[0], v.label[1]) + '</td>'
-        + '<td class="b">' + (v.las >= 0 ? '+' : '') + num(v.las, 2) + '</td>'
+      return '<tr' + (isStar ? ' class="star"' : '') + '><td class="u">' + (isStar ? ic('star') + ' ' : '') + L(v.label[0], v.label[1]) + '</td>'
+        + '<td class="b"' + lasTip() + '>' + (v.las >= 0 ? '+' : '') + num(v.las, 2) + '</td>'
         + '<td>' + num(v.rs_ratio, 2) + '</td>'
         + '<td>' + signed(v.rs_mom, 2) + '</td>'
         + '<td style="text-align:right">' + quadPill(v.quadrant) + '</td>'
         + '<td>' + signed(v.breadth_thrust != null ? v.breadth_thrust * 100 : null, 1) + '</td>'
         + '<td>' + (v.participation != null ? num(v.participation * 100, 0) + '%' : '–') + '</td></tr>';
     }).join('');
-    var tbl = '<table class="lead-tbl"><thead><tr><th>' + L('Universe', '指数域') + '</th><th>LAS</th><th>' + L('RS level', 'RS水平') + '</th><th>' + L('RS mom', 'RS动量') + '</th><th>' + L('Quadrant', '象限') + '</th><th>' + L('Breadth thrust', '广度推力') + '</th><th>' + L('Particip.', '参与度') + '</th></tr></thead><tbody>' + rows + '</tbody></table>';
+    var tbl = '<table class="lead-tbl"><thead><tr><th>' + L('Universe', '指数域') + '</th><th' + lasTip() + '>' + L('Lead pace', '领先节奏') + '</th><th>' + L('Relative strength', '相对强度') + '</th><th>' + L('Strength trend', '强度动量') + '</th><th>' + L('Quadrant', '象限') + '</th><th>' + L('Breadth thrust', '广度推力') + '</th><th>' + L('Particip.', '参与度') + '</th></tr></thead><tbody>' + rows + '</tbody></table>';
     var chips = ((d.drivers && d.drivers.ratios) || []).map(function (r) {
       var up = r.rising;
       return '<div class="chip ' + (up ? 'up' : 'dn') + '"><div class="ct">' + L(r.label_en, r.label_zh) + '</div>'
         + '<div class="cv">' + (up ? '▲ ' : '▼ ') + L(r.read_en, r.read_zh) + '</div>'
-        + '<div class="cm">20d ' + signed(r.mom20, 1) + ' · 60d ' + signed(r.mom60, 1) + (r.pctile != null ? ' · ' + L('pctile', '分位') + ' ' + num(r.pctile, 0) : '') + '</div></div>';
+        + '<div class="cm">20d ' + signed(r.mom20, 1) + ' · 60d ' + signed(r.mom60, 1) + '</div></div>';
     }).join('');
     var rg = d.regime, regLine = '';
     if (rg) {
       var liqZh = ({ expanding: '扩张', contracting: '收缩', neutral: '中性', unknown: '未知' })[rg.liquidity] || rg.liquidity;
       var liqTxt = rg.liquidity ? ' · ' + L('liquidity ' + rg.liquidity, '流动性' + liqZh) : '';
-      regLine = '<div class="lead-regime">🌐 ' + L('Regime backdrop', '宏观象限') + ': <b>' + esc(rg.quad) + ' ' + L(rg.name_en, rg.name_zh) + '</b> (' + L(rg.axes_en, rg.axes_zh) + ')' + liqTxt
+      regLine = '<div class="lead-regime">' + ic('swirl') + ' ' + L('Regime backdrop', '宏观象限') + ': <b>' + esc(rg.quad) + ' ' + L(rg.name_en, rg.name_zh) + '</b> (' + L(rg.axes_en, rg.axes_zh) + ')' + liqTxt
         + ' → ' + L('expected tilt: ', '预期倾向：') + L(rg.tilt_en, rg.tilt_zh) + '. <span class="rg-cav">' + L('Odds-tilt, not a rule — compare to what is actually leading.', '仅为概率倾向，非规则——请对照上方实际领涨。') + '</span></div>';
     }
     var drivers = (chips || regLine) ? '<div class="lead-drivers"><div class="dh">' + L('Why — leadership drivers (macro cause + observable ratios)', '为什么——领导驱动（宏观成因 + 可观测比率）') + '</div>' + regLine + (chips ? '<div class="chips">' + chips + '</div>' : '') + '</div>' : '';
     var mac = d.macro, macLine = '';
     if (mac) {
-      var dot = mac.color === 'red' ? '🔴' : mac.color === 'yellow' ? '🟡' : mac.color === 'green' ? '🟢' : '⚪';
-      var held = mac.severity === 'risk_off' ? L(' — coil calls held back (let washouts confirm)', ' — 蓄势信号已收敛（待清洗确认）') : '';
-      macLine = '<div class="lead-macro">' + L('Macro backdrop', '宏观背景') + ': ' + dot + ' ' + L(mac.label_en || mac.verdict || '—', mac.label_zh || mac.verdict || '—') + (mac.score != null ? ' <span style="color:var(--muted)">(' + mac.score + '/100)</span>' : '') + held + '</div>';
+      macLine = '<div class="lead-macro">' + L('Macro backdrop', '宏观背景') + ': ' + macDot(mac.color) + ' ' + prettyMac(mac) + (mac.score != null ? ' <span style="color:var(--muted)">(' + mac.score + '/100)</span>' : '') + '</div>';
     }
-    el.innerHTML = '<div class="lead-head"><h2>' + L('Index leadership rotation', '指数领导轮动') + '</h2><span class="asof">' + L('as of ' + (d.as_of || '—'), '截至 ' + (d.as_of || '—')) + '</span></div>' + hero + macLine + tbl + drivers + trackBox(d.track_record);
+    el.innerHTML = '<div class="lead-head"><h2>' + L('Index leadership rotation', '指数领导轮动') + '</h2><span class="asof">' + (d.as_of ? L('as of ' + d.as_of, '截至 ' + d.as_of) : L('date unknown', '日期未知')) + '</span></div>' + hero + macLine + tbl + drivers + trackBox(d.track_record);
     wrapTbls(el);
   }
   fetch('marketdata/index_leadership.json', { cache: 'no-cache' })
