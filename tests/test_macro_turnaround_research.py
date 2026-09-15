@@ -804,3 +804,53 @@ def test_data_quality_defensively_freezes_exclusion_mapping() -> None:
     assert quality.excluded == {"stale": "too_old"}
     with pytest.raises(TypeError):
         quality.excluded["new"] = "mutation"  # type: ignore[index]
+
+
+@pytest.mark.parametrize("directory", ["data", "site"])
+def test_build_cli_refuses_canonical_product_paths(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    directory: str,
+) -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        f"turnaround_cli_product_fence_{directory}", CLI
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    monkeypatch.setattr(module, "ROOT", tmp_path)
+    source = tmp_path / "input.json"
+    output = tmp_path / directory / "turnaround.json"
+    source.write_text(json.dumps(cli_payload()), encoding="utf-8")
+
+    assert module.main(["--input", str(source), "--output", str(output)]) == 2
+    assert not output.exists()
+    assert not output.parent.exists()
+
+
+@pytest.mark.parametrize("cap", [0.5000001, 0.75, 1.0])
+def test_family_weight_cap_cannot_disable_independent_family_breadth(cap: float) -> None:
+    with pytest.raises(ValueError, match="family_weight_cap"):
+        TurnaroundConfig(family_weight_cap=cap)
+
+
+def test_family_weight_cap_allows_a_two_family_maximum() -> None:
+    assert TurnaroundConfig(family_weight_cap=0.5).family_weight_cap == 0.5
+
+
+def test_future_period_with_early_release_is_invisible_before_its_period() -> None:
+    observations, specs, cutoff = recovery_panel()
+    engine = MacroTurnaroundEngine()
+    baseline = build_research_artifact(engine.assess(observations, specs, cutoff))
+    changed = {key: list(series) for key, series in observations.items()}
+    changed["new_orders"].append(
+        Observation(
+            period=cutoff + timedelta(days=40),
+            value=1_000_000.0,
+            available_at=cutoff - timedelta(days=1),
+        )
+    )
+
+    assert build_research_artifact(engine.assess(changed, specs, cutoff)) == baseline

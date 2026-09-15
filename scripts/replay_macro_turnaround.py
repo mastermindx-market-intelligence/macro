@@ -11,8 +11,9 @@ import json
 from pathlib import Path
 import sys
 
-ROOT=Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:sys.path.insert(0,str(ROOT))
+_ROOT=Path(__file__).resolve().parent.parent
+sys.path.insert(0,str(_ROOT))
+ROOT=_ROOT
 from engine.macro_turnaround import TurnaroundConfig
 from engine.macro_turnaround_replay import SeriesBinding, load_panel, replay
 from scripts.build_macro_turnaround_research import _unique_object, _reject_constant, _publish_immutable

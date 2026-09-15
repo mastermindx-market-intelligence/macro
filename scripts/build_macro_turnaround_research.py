@@ -16,9 +16,9 @@ from pathlib import Path
 import sys
 import tempfile
 
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
+ROOT = _ROOT
 
 from engine.macro_turnaround import (  # noqa: E402
     IndicatorSpec,
@@ -62,7 +62,19 @@ def _existing_matches(output: Path, content: bytes) -> bool:
     return True
 
 
+def _assert_research_output_path(output: Path) -> None:
+    """Keep research artifacts out of canonical data and generated product paths."""
+    resolved = output.resolve(strict=False)
+    for protected in (ROOT / "data", ROOT / "site"):
+        protected_resolved = protected.resolve(strict=False)
+        if resolved == protected_resolved or protected_resolved in resolved.parents:
+            raise ValueError(
+                "output must remain outside canonical data/ and generated site/ paths"
+            )
+
+
 def _publish_immutable(output: Path, content: bytes) -> None:
+    _assert_research_output_path(output)
     if _existing_matches(output, content):
         return
     output.parent.mkdir(parents=True, exist_ok=True)

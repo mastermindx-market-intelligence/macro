@@ -254,3 +254,39 @@ def test_growth_replay_rejects_inflation_with_the_specific_boundary(tmp_path):
 
     with pytest.raises(ValueError, match="inflation cannot stand in for growth evidence"):
         m.replay(panel, bindings(), ["2022-02-10"], domain="growth")
+
+
+def test_replay_future_period_with_early_release_is_invisible():
+    m = api()
+    df = frame()
+    cutoff = "2022-02-10"
+    baseline = m.replay(m.prepare_panel({"PPIFIS": df}), bindings(), [cutoff], domain="inflation")
+    future = df.iloc[-1].copy()
+    future["period"] = pd.Timestamp("2022-03-01")
+    future["realtime_start"] = pd.Timestamp("2022-02-01")
+    future["realtime_end"] = date.max
+    future["value"] = 1_000_000.0
+    extended = pd.concat([df, pd.DataFrame([future])], ignore_index=True)
+
+    assert m.replay(
+        m.prepare_panel({"PPIFIS": extended}), bindings(), [cutoff], domain="inflation"
+    ) == baseline
+
+
+def test_load_panel_discloses_a_missing_requested_source(tmp_path):
+    m = api()
+    _, _, manifest_hash, df = source_tree(tmp_path)
+    requested = bindings() + [m.SeriesBinding("payrolls", "PAYEMS", "labor")]
+    panel = m.load_panel(tmp_path, requested, manifest_hash, decoder=lambda _: df)
+
+    assert panel.receipt["missing_source_series"] == ["PAYEMS"]
+    assert panel.series_ids == ("PPIFIS",)
+
+
+def test_load_panel_refuses_when_every_requested_source_is_missing(tmp_path):
+    m = api()
+    _, _, manifest_hash, _ = source_tree(tmp_path)
+    requested = [m.SeriesBinding("payrolls", "PAYEMS", "labor")]
+
+    with pytest.raises(ValueError, match="no requested full-vintage source"):
+        m.load_panel(tmp_path, requested, manifest_hash, decoder=lambda _: frame("PAYEMS"))

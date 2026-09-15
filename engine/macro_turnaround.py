@@ -177,8 +177,11 @@ class TurnaroundConfig:
             raise ValueError("medium_window must exceed short_window")
         if self.robust_history < self.medium_window * 2:
             raise ValueError("robust_history is too short")
-        if not 0 < self.family_weight_cap <= 1:
-            raise ValueError("family_weight_cap must be in (0, 1]")
+        # Full diversity must require at least two independent families.  A
+        # caller-configurable cap above one half would turn this safety control
+        # into an on/off switch and let one family claim complete breadth.
+        if not 0 < self.family_weight_cap <= 0.5:
+            raise ValueError("family_weight_cap must be in (0, 0.5]")
         if self.signal_temperature <= 0:
             raise ValueError("signal_temperature must be positive")
         if not 0.5 <= self.enter_score < 1:
