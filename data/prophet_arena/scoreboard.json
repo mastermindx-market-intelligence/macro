@@ -1,6 +1,6 @@
 {
   "schema": "prophet_arena.scoreboard/v1",
-  "as_of": "2026-09-13",
+  "as_of": "2026-09-14",
   "tier": "display",
   "authority": {
     "tier": "display",
@@ -71,50 +71,8 @@
   "standing_line_zh": "\u5f71\u5b50\u8bb0\u5f55 \u2014 \u5b9e\u76d8\u7b56\u7565\u4ec5\u5728\u64cd\u4f5c\u8005\u6279\u51c6\u540e\u624d\u4f1a\u66f4\u6539",
   "headline_min_closed": 20,
   "harness_validity": {
-    "c0_plan_ids": [
-      "AAP-BULL-20260911",
-      "ALGT-BULL-20260911",
-      "ASO-BULL-20260909",
-      "CLH-BULL-20260909",
-      "DAL-BULL-20260911",
-      "GLW-BULL-20260903",
-      "GPI-BULL-20260903",
-      "HBAN-BULL-20260911",
-      "IPGP-BULL-20260909",
-      "LUV-BULL-20260911",
-      "MUSA-BULL-20260722",
-      "PLAB-BULL-20260903",
-      "PNC-BULL-20260911",
-      "RBLX-BULL-20260903",
-      "SIG-BULL-20260909",
-      "TTD-BULL-20260903",
-      "TTMI-BULL-20260909",
-      "UTL-BULL-20260820",
-      "WING-BULL-20260911",
-      "WULF-BULL-20260909"
-    ],
-    "live_plan_ids": [
-      "AAP-BULL-20260911",
-      "ALGT-BULL-20260911",
-      "ASO-BULL-20260909",
-      "CLH-BULL-20260909",
-      "DAL-BULL-20260911",
-      "GLW-BULL-20260903",
-      "GPI-BULL-20260903",
-      "HBAN-BULL-20260911",
-      "IPGP-BULL-20260909",
-      "LUV-BULL-20260911",
-      "MUSA-BULL-20260722",
-      "PLAB-BULL-20260903",
-      "PNC-BULL-20260911",
-      "RBLX-BULL-20260903",
-      "SIG-BULL-20260909",
-      "TTD-BULL-20260903",
-      "TTMI-BULL-20260909",
-      "UTL-BULL-20260820",
-      "WING-BULL-20260911",
-      "WULF-BULL-20260909"
-    ],
+    "c0_plan_ids": [],
+    "live_plan_ids": [],
     "c0_mismatch_count": 0,
     "missing_from_mirror": [],
     "extra_in_mirror": [],
@@ -337,7 +295,7 @@
     }
   ],
   "tonight": {
-    "asof": "2026-09-13",
+    "asof": "2026-09-14",
     "standouts_as_of": "2026-09-11",
     "price_through": "2026-09-11",
     "source_delayed": false,
@@ -348,7 +306,7 @@
     "dispersion": {
       "mode": "not_lean_in",
       "state": "neutral",
-      "artifact_as_of": "2026-09-13",
+      "artifact_as_of": "2026-09-14",
       "stale_sessions": 0,
       "cap": 6,
       "path": "data/dispersion/regime.json"
@@ -377,7 +335,7 @@
           "2B",
           "3B"
         ],
-        "runtime_s": 21.1
+        "runtime_s": 27.8
       }
     },
     "policies": {
@@ -388,14 +346,13 @@
           "SIG",
           "PLMR",
           "HST",
-          "GLW",
-          "VST",
           "DAL",
           "ASO",
+          "VST",
           "TEL",
           "TKO",
-          "HBAN",
           "UTL",
+          "HBAN",
           "MUSA",
           "LUV",
           "ALGT",
@@ -407,6 +364,7 @@
           "ELV",
           "SPNT",
           "WULF",
+          "GLW",
           "AAP",
           "IPGP",
           "GPI",
@@ -414,29 +372,8 @@
           "WING",
           "RBLX"
         ],
-        "plan_ids": [
-          "AAP-BULL-20260911",
-          "ALGT-BULL-20260911",
-          "ASO-BULL-20260909",
-          "CLH-BULL-20260909",
-          "DAL-BULL-20260911",
-          "GLW-BULL-20260903",
-          "GPI-BULL-20260903",
-          "HBAN-BULL-20260911",
-          "IPGP-BULL-20260909",
-          "LUV-BULL-20260911",
-          "MUSA-BULL-20260722",
-          "PLAB-BULL-20260903",
-          "PNC-BULL-20260911",
-          "RBLX-BULL-20260903",
-          "SIG-BULL-20260909",
-          "TTD-BULL-20260903",
-          "TTMI-BULL-20260909",
-          "UTL-BULL-20260820",
-          "WING-BULL-20260911",
-          "WULF-BULL-20260909"
-        ],
-        "n_plans": 20,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
           "admitted": 30,
           "cap": null,
@@ -446,29 +383,32 @@
         },
         "origination": {
           "offered": 30,
-          "skipped_duplicate_id": 3,
+          "skipped_duplicate_id": 23,
           "skipped_open_plan": 6,
           "skipped_clock_provenance": 1,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-13",
+          "recorded_at": "2026-09-14",
           "price_basis_date": "2026-09-11",
-          "clock_errors": [],
+          "clock_errors": [
+            "price_basis_date '2026-09-11' is not the last completed NYSE session for recorded_at '2026-09-14' (2026-09-14); stale boards cannot originate plans"
+          ],
           "validation_failures": [
             {
               "ticker": "CRUS",
               "id": "CRUS-BULL-20260909",
               "stage": "clock_provenance",
               "errors": [
+                "price_basis_date '2026-09-11' is not the last completed NYSE session for recorded_at '2026-09-14' (2026-09-14); stale boards cannot originate plans",
                 "formation_date '2026-09-09' postdates tier_event_date '2026-09-04'"
               ]
             }
           ],
-          "originated": 20,
+          "originated": 0,
           "validation_failed": 1
         },
-        "ledger_rows_appended": 20,
+        "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       },
       "C1_buy_soon_first": {
@@ -478,23 +418,16 @@
           "SIG",
           "PLMR",
           "HST",
-          "GLW",
-          "VST",
           "DAL",
           "ASO",
+          "VST",
           "TEL",
           "TKO",
+          "UTL",
           "HBAN"
         ],
-        "plan_ids": [
-          "ASO-BULL-20260909",
-          "DAL-BULL-20260911",
-          "GLW-BULL-20260903",
-          "HBAN-BULL-20260911",
-          "PNC-BULL-20260911",
-          "SIG-BULL-20260909"
-        ],
-        "n_plans": 6,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
           "admitted": 30,
           "cap": 12,
@@ -504,20 +437,22 @@
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 3,
+          "skipped_duplicate_id": 9,
           "skipped_open_plan": 3,
           "skipped_clock_provenance": 0,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-13",
+          "recorded_at": "2026-09-14",
           "price_basis_date": "2026-09-11",
-          "clock_errors": [],
+          "clock_errors": [
+            "price_basis_date '2026-09-11' is not the last completed NYSE session for recorded_at '2026-09-14' (2026-09-14); stale boards cannot originate plans"
+          ],
           "validation_failures": [],
-          "originated": 6,
+          "originated": 0,
           "validation_failed": 0
         },
-        "ledger_rows_appended": 6,
+        "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       },
       "C3_door_w_union": {
@@ -527,23 +462,16 @@
           "SIG",
           "PLMR",
           "HST",
-          "GLW",
-          "VST",
           "DAL",
+          "ASO",
+          "VST",
           "LITE",
           "IREN",
           "ALM",
           "KR"
         ],
-        "plan_ids": [
-          "DAL-BULL-20260911",
-          "GLW-BULL-20260903",
-          "KR-BULL-20260911",
-          "LITE-BULL-20260911",
-          "PNC-BULL-20260911",
-          "SIG-BULL-20260909"
-        ],
-        "n_plans": 6,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
           "admitted": 30,
           "cap": 12,
@@ -556,20 +484,39 @@
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 2,
+          "skipped_duplicate_id": 6,
           "skipped_open_plan": 4,
-          "skipped_clock_provenance": 0,
+          "skipped_clock_provenance": 2,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-13",
+          "recorded_at": "2026-09-14",
           "price_basis_date": "2026-09-11",
-          "clock_errors": [],
-          "validation_failures": [],
-          "originated": 6,
-          "validation_failed": 0
+          "clock_errors": [
+            "price_basis_date '2026-09-11' is not the last completed NYSE session for recorded_at '2026-09-14' (2026-09-14); stale boards cannot originate plans"
+          ],
+          "validation_failures": [
+            {
+              "ticker": "LITE",
+              "id": "LITE-BULL-20260911",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-11' is not the last completed NYSE session for recorded_at '2026-09-14' (2026-09-14); stale boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "KR",
+              "id": "KR-BULL-20260911",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-11' is not the last completed NYSE session for recorded_at '2026-09-14' (2026-09-14); stale boards cannot originate plans"
+              ]
+            }
+          ],
+          "originated": 0,
+          "validation_failed": 2
         },
-        "ledger_rows_appended": 6,
+        "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       },
       "C4_dispersion_cap": {
@@ -579,14 +526,10 @@
           "SIG",
           "PLMR",
           "HST",
-          "GLW"
+          "DAL"
         ],
-        "plan_ids": [
-          "GLW-BULL-20260903",
-          "PNC-BULL-20260911",
-          "SIG-BULL-20260909"
-        ],
-        "n_plans": 3,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
           "admitted": 30,
           "cap": 6,
@@ -594,20 +537,22 @@
         },
         "origination": {
           "offered": 6,
-          "skipped_duplicate_id": 1,
+          "skipped_duplicate_id": 4,
           "skipped_open_plan": 2,
           "skipped_clock_provenance": 0,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-13",
+          "recorded_at": "2026-09-14",
           "price_basis_date": "2026-09-11",
-          "clock_errors": [],
+          "clock_errors": [
+            "price_basis_date '2026-09-11' is not the last completed NYSE session for recorded_at '2026-09-14' (2026-09-14); stale boards cannot originate plans"
+          ],
           "validation_failures": [],
-          "originated": 3,
+          "originated": 0,
           "validation_failed": 0
         },
-        "ledger_rows_appended": 3,
+        "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       },
       "C5_align2_gate": {
@@ -621,15 +566,8 @@
           "TTD",
           "RBLX"
         ],
-        "plan_ids": [
-          "ASO-BULL-20260909",
-          "CLH-BULL-20260909",
-          "GPI-BULL-20260903",
-          "RBLX-BULL-20260903",
-          "SIG-BULL-20260909",
-          "TTD-BULL-20260903"
-        ],
-        "n_plans": 6,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
           "admitted": 30,
           "cap": 12,
@@ -637,8 +575,8 @@
           "align_gate": {
             "admitted": 8,
             "admitted_via_fallback": 4,
-            "excluded_misaligned": 21,
-            "excluded_unreadable": 1,
+            "excluded_misaligned": 22,
+            "excluded_unreadable": 0,
             "basis": "event_atlas weekly align_class == 2 (its full value), falling back to align_now == 3 (its full value) when the name has no weekly event on record; a name the atlas cannot read is excluded, never admitted"
           },
           "passed_gate": 8,
@@ -646,20 +584,22 @@
         },
         "origination": {
           "offered": 8,
-          "skipped_duplicate_id": 1,
+          "skipped_duplicate_id": 7,
           "skipped_open_plan": 1,
           "skipped_clock_provenance": 0,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-13",
+          "recorded_at": "2026-09-14",
           "price_basis_date": "2026-09-11",
-          "clock_errors": [],
+          "clock_errors": [
+            "price_basis_date '2026-09-11' is not the last completed NYSE session for recorded_at '2026-09-14' (2026-09-14); stale boards cannot originate plans"
+          ],
           "validation_failures": [],
-          "originated": 6,
+          "originated": 0,
           "validation_failed": 0
         },
-        "ledger_rows_appended": 6,
+        "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       },
       "C6_time_stop_21": {
@@ -669,14 +609,13 @@
           "SIG",
           "PLMR",
           "HST",
-          "GLW",
-          "VST",
           "DAL",
           "ASO",
+          "VST",
           "TEL",
           "TKO",
-          "HBAN",
           "UTL",
+          "HBAN",
           "MUSA",
           "LUV",
           "ALGT",
@@ -688,6 +627,7 @@
           "ELV",
           "SPNT",
           "WULF",
+          "GLW",
           "AAP",
           "IPGP",
           "GPI",
@@ -695,29 +635,8 @@
           "WING",
           "RBLX"
         ],
-        "plan_ids": [
-          "AAP-BULL-20260911",
-          "ALGT-BULL-20260911",
-          "ASO-BULL-20260909",
-          "CLH-BULL-20260909",
-          "DAL-BULL-20260911",
-          "GLW-BULL-20260903",
-          "GPI-BULL-20260903",
-          "HBAN-BULL-20260911",
-          "IPGP-BULL-20260909",
-          "LUV-BULL-20260911",
-          "MUSA-BULL-20260722",
-          "PLAB-BULL-20260903",
-          "PNC-BULL-20260911",
-          "RBLX-BULL-20260903",
-          "SIG-BULL-20260909",
-          "TTD-BULL-20260903",
-          "TTMI-BULL-20260909",
-          "UTL-BULL-20260820",
-          "WING-BULL-20260911",
-          "WULF-BULL-20260909"
-        ],
-        "n_plans": 20,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
           "admitted": 30,
           "cap": null,
@@ -727,29 +646,32 @@
         },
         "origination": {
           "offered": 30,
-          "skipped_duplicate_id": 3,
+          "skipped_duplicate_id": 23,
           "skipped_open_plan": 6,
           "skipped_clock_provenance": 1,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-13",
+          "recorded_at": "2026-09-14",
           "price_basis_date": "2026-09-11",
-          "clock_errors": [],
+          "clock_errors": [
+            "price_basis_date '2026-09-11' is not the last completed NYSE session for recorded_at '2026-09-14' (2026-09-14); stale boards cannot originate plans"
+          ],
           "validation_failures": [
             {
               "ticker": "CRUS",
               "id": "CRUS-BULL-20260909",
               "stage": "clock_provenance",
               "errors": [
+                "price_basis_date '2026-09-11' is not the last completed NYSE session for recorded_at '2026-09-14' (2026-09-14); stale boards cannot originate plans",
                 "formation_date '2026-09-09' postdates tier_event_date '2026-09-04'"
               ]
             }
           ],
-          "originated": 20,
+          "originated": 0,
           "validation_failed": 1
         },
-        "ledger_rows_appended": 20,
+        "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       },
       "C7_buy_soon_admitted": {
@@ -760,21 +682,15 @@
           "NX",
           "PLMR",
           "HST",
-          "GLW",
-          "VST",
           "DAL",
           "ASO",
+          "VST",
           "TEL",
-          "TKO"
+          "TKO",
+          "UTL"
         ],
-        "plan_ids": [
-          "ASO-BULL-20260909",
-          "DAL-BULL-20260911",
-          "GLW-BULL-20260903",
-          "PNC-BULL-20260911",
-          "SIG-BULL-20260909"
-        ],
-        "n_plans": 5,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
           "admitted": 30,
           "cap": 12,
@@ -787,20 +703,22 @@
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 4,
+          "skipped_duplicate_id": 9,
           "skipped_open_plan": 3,
           "skipped_clock_provenance": 0,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-13",
+          "recorded_at": "2026-09-14",
           "price_basis_date": "2026-09-11",
-          "clock_errors": [],
+          "clock_errors": [
+            "price_basis_date '2026-09-11' is not the last completed NYSE session for recorded_at '2026-09-14' (2026-09-14); stale boards cannot originate plans"
+          ],
           "validation_failures": [],
-          "originated": 5,
+          "originated": 0,
           "validation_failed": 0
         },
-        "ledger_rows_appended": 5,
+        "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       }
     }
