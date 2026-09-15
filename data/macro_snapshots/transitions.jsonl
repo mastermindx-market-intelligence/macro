@@ -297,3 +297,4 @@
 {"asof": "2026-09-12", "domain": "commodity", "field": "commodity_ladder", "from_value": "TOP WATCH", "to_value": "TURN SIGNALED", "macro_context_id": "b5ecd7eb331b79f9"}
 {"asof": "2026-09-12", "domain": "hk", "field": "hk_risk_state", "from_value": "Risk-on", "to_value": "Neutral", "macro_context_id": "b5ecd7eb331b79f9"}
 {"asof": "2026-09-13", "domain": "us", "field": "us_vrp_state", "from_value": "rich (vol overpriced \u2014 constructive)", "to_value": "normal", "macro_context_id": "39217b4ddc746407"}
+{"asof": "2026-09-14", "domain": "fx", "field": "fx_regime_radar", "from_value": null, "to_value": "reflation_risk_on", "macro_context_id": "85174025da642553"}
