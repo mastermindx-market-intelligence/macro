@@ -23,6 +23,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import sys
 from datetime import date
@@ -239,6 +240,19 @@ def _section_html(html: str) -> str:
     return html[html.rindex("<section", 0, start):end + len("</section>")]
 
 
+def _compact_policy_projection_section(html: str) -> str:
+    """Remove render-only line indentation inside the bounded policy section.
+
+    Inline separators stay byte-for-byte intact: only a newline and the leading
+    horizontal whitespace on the following line are removed. This keeps the
+    visible event/date/source spacing while making the raw-byte budget measure
+    semantic markup rather than Jinja source formatting.
+    """
+    section = _section_html(html)
+    compact = re.sub(r"\n[ \t]*", "", section)
+    return html.replace(section, compact, 1)
+
+
 def _fence_section_budget(html: str) -> None:
     from engine.capital_policy_projection import SECTION_BUDGET_BYTES
     n = len(_section_html(html).encode("utf-8"))
@@ -309,6 +323,7 @@ def render(root: Path) -> Path:
     # committed shell remains diff-clean without modifying global nav output.
     html = "\n".join(line.rstrip() for line in html.splitlines()) + "\n"
     if payload and 'id="cs-policy-projection"' in html:
+        html = _compact_policy_projection_section(html)
         _fence_section_budget(html)
     # The artifact is written only once the section is known to be within
     # budget, so an over-budget build cannot leave a refreshed JSON beside a
