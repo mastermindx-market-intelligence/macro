@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-15T03:42:19.731058+00:00",
-  "count": 2132,
+  "generated_at": "2026-09-15T04:12:18.421202+00:00",
+  "count": 2133,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -650,6 +650,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-hkw2jvbfkkx-c21160",
+      "title": "Fed Chatterbox September Edition",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T00:51:10Z",
+      "summary_points": [
+        "**Fed Policy Tension**: Internal conflict between officials urging rate hikes (Waller, Barr, Hammack) if inflation doesn't moderate and those advocating patience (Williams, Collins), creating significant policy uncertainty.",
+        "**Inflation Persistence Beyond Temporary Factors**: Underlying inflation remains stubbornly above 2% due to supply shocks (Middle East conflict, El Niño, AI-driven demand) and demand pressures, not temporary tariffs.",
+        "**Geopolitical Inflation Catalysts**: Middle East conflict and energy volatility now primary inflation drivers (replacing tariffs), with oil price volatility amplifying goods inflation risks.",
+        "**Economic Overheating Risk**: Schmid's warning that the economy is \"starting to overheat again\" signals rising inflationary pressures from strong activity and supply constraints.",
+        "**Monetary Policy Critical Role**: Goldman Sachs emphasizes central bank policy is pivotal to prevent sequential supply shocks from entrenching inflation, requiring decisive action."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },
