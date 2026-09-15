@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ALHC-BULL-20260825",
-  "asof": "2026-09-11",
+  "asof": "2026-09-13",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 12.7,
@@ -17,20 +17,20 @@
     "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.087,
+    "dist_to_stop_r": -0.283,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 37.8,
-    "p1": -0.7245,
-    "p2": -0.3622,
+    "horizon_pct_used": 42.2,
+    "p1": -0.8554,
+    "p2": -0.4277,
     "p3": null,
-    "move_r": -1.087,
+    "move_r": -1.283,
     "mfe_r": 0.406,
-    "mae_r": -1.087
+    "mae_r": -1.283
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Stop Level Breached",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.3099996185302736,
-  "_mae": -0.8299997711181639,
+  "_mae": -0.9800003433227538,
   "_max_p1": 0.2706002256723757,
   "_first_trigger_ts": "2026-08-25",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 17,
-  "tau": 0.3778
+  "days_elapsed": 19,
+  "tau": 0.4222
 }

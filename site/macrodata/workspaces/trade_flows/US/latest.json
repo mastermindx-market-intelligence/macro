@@ -174,7 +174,7 @@
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "trade_flows-US-ca9ec5be80a6179d"
+    "predecessor_generation_id": "trade_flows-US-0870f4ab8dc1d128"
   },
   "drivers": {
     "balance_sheet": [
@@ -309,11 +309,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-09-11T07:45:15Z",
+    "built_at": "2026-09-13T07:23:13Z",
     "calculation_as_of": "2026-07-01",
-    "code_version": "37bb7c3b6be49a2dfe254926b83e066b74a96138",
-    "content_sha256": "491a26cf2287558365fd27f1fdaec20fd8e0a2fa61241abae8ad0650cbb18512",
-    "generation_id": "trade_flows-US-491a26cf22875583",
+    "code_version": "aa6750b68ccefeb17043e590b61e8a00565d1837",
+    "content_sha256": "508aabfb38d57900bfa94b4b533399e55a628b6b753003e71471227d5ab67cdb",
+    "generation_id": "trade_flows-US-508aabfb38d57900",
     "producer": "engine.market_os.macro_workspaces.trade_flows",
     "rendered_at": null
   },

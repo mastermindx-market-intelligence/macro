@@ -1,29 +1,29 @@
 {
   "schema": "subsector_rotation.track_record.v1",
-  "as_of": "2026-09-10",
-  "generated_at": "2026-09-11T07:49:15.115867+00:00",
+  "as_of": "2026-09-11",
+  "generated_at": "2026-09-13T07:28:13.667378+00:00",
   "is_context_only": true,
-  "n_snapshots": 9944,
-  "n_days": 37,
+  "n_snapshots": 10213,
+  "n_days": 38,
   "horizons": {
     "5": {
       "n_matured": 9103,
-      "score_ic": -0.0001,
-      "score_ic_t_hac": -0.001,
-      "score_ic_t_gate": -0.001,
-      "score_ic_t_iid": -0.002,
+      "score_ic": -0.0002,
+      "score_ic_t_hac": -0.003,
+      "score_ic_t_gate": -0.003,
+      "score_ic_t_iid": -0.003,
       "hac_anticonservative": false,
       "ic_span_days": 70,
       "indep_windows": 10.0,
       "indep_windows_required": 6.0,
       "score_ic_detail": {
-        "mean_ic": -0.0001,
-        "ic_vol": 0.3381,
-        "ic_ir": -0.0,
-        "ic_ir_ann": -0.001,
-        "t_hac": -0.001,
-        "p_hac": 0.9989,
-        "hit": 0.441,
+        "mean_ic": -0.0002,
+        "ic_vol": 0.3385,
+        "ic_ir": -0.001,
+        "ic_ir_ann": -0.002,
+        "t_hac": -0.003,
+        "p_hac": 0.9976,
+        "hit": 0.412,
         "n": 34,
         "hac_lags": 5,
         "hac_lags_requested": 5,
@@ -35,12 +35,12 @@
       "by_stage": {
         "emerging": {
           "n": 402,
-          "mean_fwd_rel": -0.0046,
-          "hit_rate": 0.468
+          "mean_fwd_rel": -0.0048,
+          "hit_rate": 0.46
         },
         "neutral": {
           "n": 8293,
-          "mean_fwd_rel": 0.0004,
+          "mean_fwd_rel": 0.0003,
           "hit_rate": null
         },
         "fading": {
@@ -51,45 +51,45 @@
       },
       "v2": {
         "n_matured": 3752,
-        "score_ic": -0.0211,
-        "score_ic_t_hac": -0.441,
+        "score_ic": -0.0215,
+        "score_ic_t_hac": -0.449,
         "by_stage": {
           "emerging": {
             "n": 409,
-            "mean_fwd_rel": -0.0013,
-            "hit_rate": 0.46
+            "mean_fwd_rel": -0.0015,
+            "hit_rate": 0.455
           },
           "neutral": {
             "n": 2929,
-            "mean_fwd_rel": -0.0009,
+            "mean_fwd_rel": -0.0012,
             "hit_rate": null
           },
           "fading": {
             "n": 414,
-            "mean_fwd_rel": 0.0003,
-            "hit_rate": 0.551
+            "mean_fwd_rel": 0.0002,
+            "hit_rate": 0.556
           }
         }
       }
     },
     "10": {
       "n_matured": 8567,
-      "score_ic": 0.0086,
-      "score_ic_t_hac": 0.096,
-      "score_ic_t_gate": 0.096,
-      "score_ic_t_iid": 0.17,
+      "score_ic": 0.0085,
+      "score_ic_t_hac": 0.095,
+      "score_ic_t_gate": 0.095,
+      "score_ic_t_iid": 0.167,
       "hac_anticonservative": false,
       "ic_span_days": 66,
       "indep_windows": 4.71,
       "indep_windows_required": 6.0,
       "score_ic_detail": {
-        "mean_ic": 0.0086,
-        "ic_vol": 0.2868,
+        "mean_ic": 0.0085,
+        "ic_vol": 0.2874,
         "ic_ir": 0.03,
-        "ic_ir_ann": 0.134,
-        "t_hac": 0.096,
-        "p_hac": 0.9231,
-        "hit": 0.469,
+        "ic_ir_ann": 0.133,
+        "t_hac": 0.095,
+        "p_hac": 0.9242,
+        "hit": 0.438,
         "n": 32,
         "hac_lags": 10,
         "hac_lags_requested": 10,
@@ -101,8 +101,8 @@
       "by_stage": {
         "emerging": {
           "n": 380,
-          "mean_fwd_rel": -0.0037,
-          "hit_rate": 0.455
+          "mean_fwd_rel": -0.004,
+          "hit_rate": 0.453
         },
         "neutral": {
           "n": 7803,
@@ -111,140 +111,140 @@
         },
         "fading": {
           "n": 384,
-          "mean_fwd_rel": -0.002,
+          "mean_fwd_rel": -0.0022,
           "hit_rate": 0.49
         }
       },
       "v2": {
         "n_matured": 3216,
-        "score_ic": -0.0963,
-        "score_ic_t_hac": -3.566,
+        "score_ic": -0.0967,
+        "score_ic_t_hac": -3.443,
         "by_stage": {
           "emerging": {
             "n": 365,
-            "mean_fwd_rel": -0.003,
-            "hit_rate": 0.392
+            "mean_fwd_rel": -0.0034,
+            "hit_rate": 0.395
           },
           "neutral": {
             "n": 2491,
-            "mean_fwd_rel": -0.0015,
+            "mean_fwd_rel": -0.0018,
             "hit_rate": null
           },
           "fading": {
             "n": 360,
-            "mean_fwd_rel": 0.0056,
-            "hit_rate": 0.422
+            "mean_fwd_rel": 0.0055,
+            "hit_rate": 0.425
           }
         }
       }
     },
     "21": {
-      "n_matured": 6959,
-      "score_ic": 0.0608,
-      "score_ic_t_hac": 0.693,
-      "score_ic_t_gate": 0.693,
-      "score_ic_t_iid": 1.003,
+      "n_matured": 7227,
+      "score_ic": 0.0458,
+      "score_ic_t_hac": 0.497,
+      "score_ic_t_gate": 0.497,
+      "score_ic_t_iid": 0.756,
       "hac_anticonservative": false,
-      "ic_span_days": 55,
-      "indep_windows": 1.87,
+      "ic_span_days": 56,
+      "indep_windows": 1.9,
       "indep_windows_required": 6.0,
       "score_ic_detail": {
-        "mean_ic": 0.0608,
-        "ic_vol": 0.3091,
-        "ic_ir": 0.197,
-        "ic_ir_ann": 1.275,
-        "t_hac": 0.693,
-        "p_hac": 0.4884,
-        "hit": 0.5,
-        "n": 26,
+        "mean_ic": 0.0458,
+        "ic_vol": 0.3147,
+        "ic_ir": 0.145,
+        "ic_ir_ann": 0.943,
+        "t_hac": 0.497,
+        "p_hac": 0.6191,
+        "hit": 0.481,
+        "n": 27,
         "hac_lags": 21,
         "hac_lags_requested": 21,
         "ic_first_date": "2026-06-26",
-        "ic_last_date": "2026-08-20",
-        "ic_span_days": 55,
-        "indep_windows": 1.87
+        "ic_last_date": "2026-08-21",
+        "ic_span_days": 56,
+        "indep_windows": 1.9
       },
       "by_stage": {
         "emerging": {
-          "n": 309,
-          "mean_fwd_rel": 0.0083,
-          "hit_rate": 0.531
+          "n": 321,
+          "mean_fwd_rel": 0.0069,
+          "hit_rate": 0.52
         },
         "neutral": {
-          "n": 6338,
-          "mean_fwd_rel": 0.0077,
+          "n": 6582,
+          "mean_fwd_rel": 0.0066,
           "hit_rate": null
         },
         "fading": {
-          "n": 312,
-          "mean_fwd_rel": -0.0169,
-          "hit_rate": 0.551
+          "n": 324,
+          "mean_fwd_rel": -0.0155,
+          "hit_rate": 0.543
         }
       },
       "v2": {
-        "n_matured": 1608,
-        "score_ic": -0.0118,
+        "n_matured": 1876,
+        "score_ic": -0.0529,
         "score_ic_t_hac": null,
         "by_stage": {
           "emerging": {
-            "n": 162,
-            "mean_fwd_rel": 0.0064,
-            "hit_rate": 0.451
+            "n": 200,
+            "mean_fwd_rel": -0.0007,
+            "hit_rate": 0.405
           },
           "neutral": {
-            "n": 1279,
-            "mean_fwd_rel": 0.0001,
+            "n": 1474,
+            "mean_fwd_rel": -0.0027,
             "hit_rate": null
           },
           "fading": {
-            "n": 167,
-            "mean_fwd_rel": 0.0086,
-            "hit_rate": 0.431
+            "n": 202,
+            "mean_fwd_rel": 0.0052,
+            "hit_rate": 0.446
           }
         }
       }
     },
     "63": {
-      "n_matured": 2136,
-      "score_ic": 0.2526,
-      "score_ic_t_hac": 7.842,
-      "score_ic_t_gate": 4.732,
-      "score_ic_t_iid": 4.732,
+      "n_matured": 2403,
+      "score_ic": 0.2698,
+      "score_ic_t_hac": 9.343,
+      "score_ic_t_gate": 5.212,
+      "score_ic_t_iid": 5.212,
       "hac_anticonservative": true,
-      "ic_span_days": 13,
-      "indep_windows": 0.15,
+      "ic_span_days": 14,
+      "indep_windows": 0.16,
       "indep_windows_required": 6.0,
       "score_ic_detail": {
-        "mean_ic": 0.2526,
-        "ic_vol": 0.151,
-        "ic_ir": 1.673,
-        "ic_ir_ann": 18.777,
-        "t_hac": 7.842,
+        "mean_ic": 0.2698,
+        "ic_vol": 0.1553,
+        "ic_ir": 1.737,
+        "ic_ir_ann": 19.496,
+        "t_hac": 9.343,
         "p_hac": 0.0,
         "hit": 1.0,
-        "n": 8,
-        "hac_lags": 7,
+        "n": 9,
+        "hac_lags": 8,
         "hac_lags_requested": 63,
         "ic_first_date": "2026-06-26",
-        "ic_last_date": "2026-07-09",
-        "ic_span_days": 13,
-        "indep_windows": 0.15
+        "ic_last_date": "2026-07-10",
+        "ic_span_days": 14,
+        "indep_windows": 0.16
       },
       "by_stage": {
         "emerging": {
-          "n": 96,
-          "mean_fwd_rel": 0.0267,
-          "hit_rate": 0.521
+          "n": 107,
+          "mean_fwd_rel": 0.0294,
+          "hit_rate": 0.542
         },
         "neutral": {
-          "n": 1944,
-          "mean_fwd_rel": 0.0111,
+          "n": 2188,
+          "mean_fwd_rel": 0.01,
           "hit_rate": null
         },
         "fading": {
-          "n": 96,
-          "mean_fwd_rel": -0.1149,
-          "hit_rate": 0.802
+          "n": 108,
+          "mean_fwd_rel": -0.1122,
+          "hit_rate": 0.806
         }
       },
       "v2": {
@@ -269,75 +269,75 @@
   "note_zh": "\u6b63\u5728\u7d2f\u79ef\u524d\u77bb\u89c2\u6d4b\uff1b\u5c1a\u65e0\u5468\u671f\u901a\u8fc7 Newey-West \u663e\u8457\u6027\u68c0\u9a8c\u3002\u65e9\u671f\u6570\u636e\u4e3a\u6682\u5b9a\uff0c\u4ec5\u4f9b\u53c2\u8003\u3002",
   "recent_misses": [
     {
-      "date": "2026-08-20",
-      "key": "agriculturealtprotein",
-      "name": "Alt Protein",
-      "theme": "Agriculture & FoodTech",
-      "stage": "emerging",
-      "fwd_rel": -0.1062,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-20",
-      "key": "cybersecurityzerotrust",
-      "name": "ZeroTrust",
-      "theme": "Cybersecurity",
-      "stage": "fading",
-      "fwd_rel": 0.0643,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-20",
-      "key": "iotsecurity",
-      "name": "Security",
-      "theme": "Internet of Things",
-      "stage": "fading",
-      "fwd_rel": 0.0524,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-20",
-      "key": "cloudsecurity",
-      "name": "Security",
-      "theme": "Cloud Computing",
-      "stage": "fading",
-      "fwd_rel": 0.0422,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-20",
-      "key": "hardwarestorage",
-      "name": "Storage",
-      "theme": "Hardware",
-      "stage": "fading",
-      "fwd_rel": 0.0406,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-20",
-      "key": "cybersecuritythreatops",
-      "name": "ThreatOps",
-      "theme": "Cybersecurity",
-      "stage": "fading",
-      "fwd_rel": 0.0388,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-20",
+      "date": "2026-08-21",
       "key": "hardwareservers",
       "name": "Servers",
       "theme": "Hardware",
       "stage": "fading",
-      "fwd_rel": 0.0365,
+      "fwd_rel": 0.0959,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-20",
-      "key": "cloudhardware",
-      "name": "Hardware",
-      "theme": "Cloud Computing",
+      "date": "2026-08-21",
+      "key": "energycleanmaterials",
+      "name": "Materials",
+      "theme": "Energy Renewable",
+      "stage": "emerging",
+      "fwd_rel": -0.0953,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-08-21",
+      "key": "commmetalsbattery",
+      "name": "Battery",
+      "theme": "Commodities Metals",
+      "stage": "emerging",
+      "fwd_rel": -0.0897,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-08-21",
+      "key": "ecommercedtc",
+      "name": "DTC",
+      "theme": "E-commerce",
+      "stage": "emerging",
+      "fwd_rel": -0.0812,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-08-21",
+      "key": "hardwarestorage",
+      "name": "Storage",
+      "theme": "Hardware",
       "stage": "fading",
-      "fwd_rel": 0.03,
+      "fwd_rel": 0.0778,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-08-21",
+      "key": "healthcarenextgen",
+      "name": "Next-Gen",
+      "theme": "Healthcare & Biotech",
+      "stage": "emerging",
+      "fwd_rel": -0.074,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-08-21",
+      "key": "hardwareelectronics",
+      "name": "Electronics",
+      "theme": "Hardware",
+      "stage": "fading",
+      "fwd_rel": 0.0606,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-08-21",
+      "key": "commmetalsgold",
+      "name": "Gold",
+      "theme": "Commodities Metals",
+      "stage": "emerging",
+      "fwd_rel": -0.0474,
       "horizon_d": 21
     }
   ],
@@ -346,37 +346,37 @@
       "5": {
         "n": 9103,
         "n_v2": 3752,
-        "ic": -0.0001,
-        "ic_v2": -0.0211,
-        "gap": -0.021,
-        "t_hac": -0.001,
-        "t_hac_v2": -0.441
+        "ic": -0.0002,
+        "ic_v2": -0.0215,
+        "gap": -0.0213,
+        "t_hac": -0.003,
+        "t_hac_v2": -0.449
       },
       "10": {
         "n": 8567,
         "n_v2": 3216,
-        "ic": 0.0086,
-        "ic_v2": -0.0963,
-        "gap": -0.1049,
-        "t_hac": 0.096,
-        "t_hac_v2": -3.566
+        "ic": 0.0085,
+        "ic_v2": -0.0967,
+        "gap": -0.1052,
+        "t_hac": 0.095,
+        "t_hac_v2": -3.443
       },
       "21": {
-        "n": 6959,
-        "n_v2": 1608,
-        "ic": 0.0608,
-        "ic_v2": -0.0118,
-        "gap": -0.0726,
-        "t_hac": 0.693,
+        "n": 7227,
+        "n_v2": 1876,
+        "ic": 0.0458,
+        "ic_v2": -0.0529,
+        "gap": -0.0987,
+        "t_hac": 0.497,
         "t_hac_v2": null
       },
       "63": {
-        "n": 2136,
+        "n": 2403,
         "n_v2": 0,
-        "ic": 0.2526,
+        "ic": 0.2698,
         "ic_v2": null,
         "gap": null,
-        "t_hac": 7.842,
+        "t_hac": 9.343,
         "t_hac_v2": null
       }
     },

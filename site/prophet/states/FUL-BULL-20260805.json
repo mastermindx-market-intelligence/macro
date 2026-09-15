@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "FUL-BULL-20260805",
-  "asof": "2026-09-11",
+  "asof": "2026-09-13",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.6,
@@ -14,19 +14,19 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 61.0
+    "overlay": 64.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.198,
+    "dist_to_stop_r": -0.205,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 77.8,
-    "p1": -0.799,
-    "p2": -0.3995,
+    "horizon_pct_used": 82.2,
+    "p1": -0.8032,
+    "p2": -0.4016,
     "p3": null,
-    "move_r": -1.198,
+    "move_r": -1.205,
     "mfe_r": 0.319,
-    "mae_r": -1.198
+    "mae_r": -1.205
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 2.510001831054687,
-  "_mae": -9.419998474121094,
+  "_mae": -9.470001525878907,
   "_max_p1": 0.21289243690031276,
   "_first_trigger_ts": "2026-08-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 35,
-  "tau": 0.7778
+  "days_elapsed": 37,
+  "tau": 0.8222
 }

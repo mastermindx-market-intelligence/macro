@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "KDP-BULL-20260818",
-  "asof": "2026-09-11",
+  "asof": "2026-09-13",
   "phase": "between_t1_t2",
   "detection_phase": "post_t1_failed_hold",
   "management_confidence": 63.4,
@@ -11,20 +11,20 @@
   "human_state": "T1 Giveback Warning",
   "components": {
     "validity": 100.0,
-    "progress": 49.1,
-    "pace": 55.7,
-    "retention": 59.2,
-    "overlay": 61.0
+    "progress": 47.2,
+    "pace": 47.7,
+    "retention": 53.0,
+    "overlay": 64.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.68,
-    "dist_to_t1_r": 0.82,
-    "dist_to_t2_r": 2.32,
-    "horizon_pct_used": 53.3,
-    "p1": 0.4533,
-    "p2": 0.2267,
+    "dist_to_stop_r": 1.609,
+    "dist_to_t1_r": 0.891,
+    "dist_to_t2_r": 2.391,
+    "horizon_pct_used": 57.8,
+    "p1": 0.406,
+    "p2": 0.203,
     "p3": null,
-    "move_r": 0.68,
+    "move_r": 0.609,
     "mfe_r": 1.837,
     "mae_r": 0.0
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-18",
   "_first_t1_ts": "2026-08-24",
   "_first_t2_ts": null,
-  "days_elapsed": 24,
-  "tau": 0.5333
+  "days_elapsed": 26,
+  "tau": 0.5778
 }

@@ -1,21 +1,21 @@
 {
-  "appended": 5,
-  "asof": "2026-09-10",
+  "appended": 2,
+  "asof": "2026-09-11",
   "candidates": {
     "R": 0,
-    "T": 7,
+    "T": 8,
     "W": 4
   },
   "deduped": {
     "R": 0,
-    "T": 2,
+    "T": 6,
     "W": 4
   },
   "dry_run": false,
   "feature_source": {
     "enabled": true,
     "foresight": {
-      "asof": "2026-09-11",
+      "asof": "2026-09-13",
       "consulted": true,
       "n_keys": 27,
       "n_themes": 18,
@@ -27,31 +27,26 @@
       "coil_min_sessions": 293,
       "consulted": true,
       "null_reasons": {
-        "ohlcv_absent": 24
+        "ohlcv_absent": 15
       },
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
       "themes_read": {
-        "Crypto & Blockchain": {
-          "theme_thrust_frac": 0.0,
+        "Hardware": {
+          "theme_thrust_frac": 0.0889,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         },
-        "Energy Renewable": {
-          "theme_thrust_frac": 0.0222,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        },
-        "Semiconductors": {
-          "theme_thrust_frac": 0.0294,
+        "Telecommunications": {
+          "theme_thrust_frac": 0.0323,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         }
       },
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 105,
-      "tickers_read": 129
+      "tickers_ok": 67,
+      "tickers_read": 82
     },
     "keys": [
       "relay_count_3d",
@@ -71,14 +66,14 @@
     "relay": {
       "consulted": true,
       "high_lookback": 63,
-      "members_indexed": 164,
-      "n_covered": 1,
+      "members_indexed": 185,
+      "n_covered": 120,
       "reason": null,
       "window_sessions": 21
     },
     "turnover": {
       "consulted": true,
-      "last_session": "2026-09-10",
+      "last_session": "2026-09-11",
       "n_tickers": 1544,
       "ok": true,
       "reason": null,
@@ -113,11 +108,8 @@
   "flag_tickers": {
     "R": [],
     "T": [
-      "INTC",
-      "MU",
-      "SEDG",
-      "CLSK",
-      "MARA"
+      "GLW",
+      "APH"
     ],
     "W": []
   },
@@ -127,41 +119,41 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-09-11 14:42:50",
-  "runtime_s": 110.3,
+  "run_utc": "2026-09-13 16:39:04",
+  "runtime_s": 139.3,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": 0,
-    "asof": "2026-09-10",
-    "n_members": 164,
+    "asof": "2026-09-11",
+    "n_members": 185,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 2.912,
+        "emerging_score": 3.386,
         "rank": 1,
         "theme": "Semiconductors"
       },
       {
-        "emerging_score": 1.672,
+        "emerging_score": 1.441,
         "rank": 2,
-        "theme": "Electric Vehicles"
+        "theme": "Telecommunications"
       },
       {
-        "emerging_score": 1.528,
+        "emerging_score": 1.405,
         "rank": 3,
-        "theme": "Energy Renewable"
+        "theme": "Hardware"
       },
       {
-        "emerging_score": 1.214,
+        "emerging_score": 1.277,
         "rank": 4,
-        "theme": "Crypto & Blockchain"
+        "theme": "Commodities Agriculture"
       },
       {
-        "emerging_score": 1.167,
+        "emerging_score": 1.127,
         "rank": 5,
-        "theme": "Mega-Cap"
+        "theme": "Energy Renewable"
       }
     ]
   },
@@ -171,18 +163,18 @@
       "3B"
     ],
     "aligned": 4,
-    "asof_max": "2026-09-10",
+    "asof_max": "2026-09-11",
     "asof_mismatch": 0,
-    "asof_run": "2026-09-10",
+    "asof_run": "2026-09-11",
     "evaluated": 713,
     "fresh": 4,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 19.9,
+    "runtime_s": 23.2,
     "skipped": 4,
     "source": "baskets/membership.json",
-    "state_turn": 89,
+    "state_turn": 83,
     "universe_n": 717
   }
 }
