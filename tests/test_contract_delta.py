@@ -21,8 +21,12 @@ stop doing its job:
 """
 from __future__ import annotations
 
+import json
+import signal
+import subprocess
 from pathlib import Path
 
+import pytest
 import yaml
 
 from scripts import check_contract_delta as CCD
@@ -244,3 +248,96 @@ def test_legacy_jobs_workflow_yaml_job_runs_the_new_suite() -> None:
         step.get("run", "") for step in job.get("steps", []) if isinstance(step, dict)
     )
     assert "tests/test_contract_delta.py" in blob
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 4. base-tree materialization — mirrors the caller's sparse cone, placed under
+#    the configured temp root, always cleaned up
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _git(*args: str, cwd: Path) -> str:
+    return subprocess.run(["git", *args], cwd=cwd, check=True, capture_output=True, text=True).stdout
+
+
+def _make_repo(tmp_path: Path) -> Path:
+    """A two-commit repo with a code dir and a generated-artifact dir."""
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _git("init", "-q", "-b", "main", cwd=repo)
+    _git("config", "user.email", "t@example.com", cwd=repo)
+    _git("config", "user.name", "t", cwd=repo)
+    (repo / "engine").mkdir()
+    (repo / "data").mkdir()
+    (repo / "engine" / "x.py").write_text("X = 1\n")
+    (repo / "data" / "big.txt").write_text("generated\n")
+    (repo / "README.md").write_text("root\n")
+    _git("add", "-A", cwd=repo)
+    _git("commit", "-q", "-m", "base", cwd=repo)
+    (repo / "engine" / "x.py").write_text("X = 2\n")
+    _git("commit", "-q", "-am", "head", cwd=repo)
+    return repo
+
+
+def test_full_caller_gets_a_full_base_tree(tmp_path: Path, monkeypatch) -> None:
+    repo = _make_repo(tmp_path)
+    monkeypatch.setenv(CCD.TEMP_ROOT_ENV, str(tmp_path))
+    tree, sha, cleanup = CCD.materialize_base_tree("HEAD~1", repo_root=repo)
+    try:
+        assert tree.parent == tmp_path and tree.name.startswith("contract-delta-base-")
+        assert sha == _git("rev-parse", "HEAD~1", cwd=repo).strip()
+        assert (tree / "engine" / "x.py").read_text() == "X = 1\n"
+        assert (tree / "data" / "big.txt").exists(), "a full caller keeps the full base tree"
+    finally:
+        cleanup()
+    assert not tree.exists()
+    assert str(tree) not in _git("worktree", "list", "--porcelain", cwd=repo)
+
+
+def test_sparse_caller_gets_a_base_tree_with_the_same_cone(tmp_path: Path, monkeypatch) -> None:
+    """The whole point: no more 3.8 GiB full base under a 0.4 GiB sparse head."""
+    repo = _make_repo(tmp_path)
+    _git("sparse-checkout", "set", "--cone", "--", "engine", cwd=repo)
+    assert not (repo / "data").exists()
+    assert CCD.caller_sparse_cone(repo) == ["engine"]
+    monkeypatch.setenv(CCD.TEMP_ROOT_ENV, str(tmp_path))
+    tree, _sha, cleanup = CCD.materialize_base_tree("HEAD~1", repo_root=repo)
+    try:
+        assert (tree / "engine" / "x.py").read_text() == "X = 1\n"
+        assert (tree / "README.md").exists(), "cone mode always materializes root files"
+        assert not (tree / "data").exists(), "the omitted directory must stay omitted"
+        assert _git("config", "--get", "core.sparseCheckout", cwd=tree).strip() == "true"
+        assert _git("status", "--porcelain", cwd=tree) == ""
+    finally:
+        cleanup()
+    assert not tree.exists()
+
+
+def test_caller_sparse_cone_is_none_for_a_full_checkout(tmp_path: Path) -> None:
+    repo = _make_repo(tmp_path)
+    assert CCD.caller_sparse_cone(repo) is None
+
+
+def test_temp_root_precedence(tmp_path: Path, monkeypatch) -> None:
+    override = tmp_path / "override"
+    override.mkdir()
+    monkeypatch.setenv(CCD.TEMP_ROOT_ENV, str(override))
+    assert CCD.base_tree_temp_root() == override
+    monkeypatch.setenv(CCD.TEMP_ROOT_ENV, str(tmp_path / "does-not-exist"))
+    assert CCD.base_tree_temp_root() is None, "a dangling override falls back to the system temp dir"
+    monkeypatch.delenv(CCD.TEMP_ROOT_ENV)
+    monkeypatch.setattr(CCD, "STORAGE_POLICY", tmp_path / "no-policy.json")
+    assert CCD.base_tree_temp_root() is None
+    # a policy whose volume is not mounted must not be used (never mint onto a
+    # replacement directory on the internal disk)
+    policy = tmp_path / "policy.json"
+    policy.write_text(json.dumps({"mount_point": str(tmp_path / "vol"), "root": str(tmp_path / "vol" / "ws")}))
+    (tmp_path / "vol" / "ws").mkdir(parents=True)
+    monkeypatch.setattr(CCD, "STORAGE_POLICY", policy)
+    assert CCD.base_tree_temp_root() is None
+
+
+def test_sigterm_handler_raises_system_exit() -> None:
+    """A cancelled CI job must unwind through run()'s finally (worktree cleanup)."""
+    with pytest.raises(SystemExit) as excinfo:
+        CCD._raise_on_sigterm(signal.SIGTERM, None)
+    assert excinfo.value.code == 128 + signal.SIGTERM
