@@ -184,7 +184,7 @@
     </div>
     {%- endif %}
     {% else %}
-    <div class="rrx-rec-cats none">{{ t('No liquidity catalyst yet — risk easing on its own; watch for a policy / liquidity turn to confirm.','尚无流动性催化 — 风险自行回落；留意政策／流动性转向以确认。') }}</div>
+    <div class="rrx-rec-cats none">{{ t('Liquidity support unconfirmed — this does not establish a recovery.','流动性支持尚未确认 — 不能据此判定市场修复。') }}</div>
     {% endif %}
     {#- Market-INTERNAL confirmation channel (engine/risk_radar_market_catalysts.py, W1) — the
        second leg of the two-channel turn read (RRX masterplan §4A). US radar only (the intl
@@ -205,7 +205,11 @@
       <span class="rrx-rec-k">{{ t('Internals','市场内部') }}{{ help('Market-internal confirmation chips (breadth thrusts, follow-through, capitulation-resolution, credit rollover). Accruing — every read is forward-graded before the channel is trusted; not an all-clear.','市场内部确认信号（广度推进、放量确认、恐慌解除、信用利差回落）。积累中 — 每次读取均做前瞻评分后方可信任；并非解除警报。') }}</span>
       {% if fired_internals %}{% for c in fired_internals %}<span class="rrx-rec-chip{{ ' fresh' if c.fresh }}">{{ t(c.label_en, c.label_zh) }}</span>{% endfor %}
       {% else %}<span class="rrx-rec-chip">{{ t('no internal confirmation yet','尚无内部确认') }}</span>{% endif %}
-      {% if rv.market.veto and rv.market.veto.active %}<span class="rrx-rec-chip">⚠ {{ t('vol still unstable — turn not trusted','波动仍未稳定 — 转向暂不可信') }}</span>{% endif %}
+      {% if rv.market.veto and rv.market.veto.active is sameas true %}
+      <span class="rrx-rec-chip">⚠ {{ t('vol still unstable — turn not trusted','波动仍未稳定 — 转向暂不可信') }}</span>
+      {% elif (not rv.market.veto) or rv.market.veto.evaluated is not sameas true or rv.market.veto.active is not sameas false %}
+      <span class="rrx-rec-chip">⚠ {{ t('volatility veto unknown — turn not trusted','波动否决状态未知 — 转向暂不可信') }}</span>
+      {% endif %}
     </div>
     {#- RRX2 WA-3: drivers line ("what faded / still warm") — from rv.drivers injected by trajectory.
        Absent on old artifacts (no drivers key) → render nothing. -#}
