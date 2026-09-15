@@ -28,7 +28,14 @@ sys.path.insert(0, str(_ROOT))
 REPO_ROOT = _ROOT
 TEMPLATES_DIR = REPO_ROOT / "templates"
 OUT_DIR = REPO_ROOT / "mockups" / "evidence" / "commodities-w6"
-CELLS_DIR = OUT_DIR / "cells"
+# Canonical evidence estate shape (cured from #7055 round 1): every committed
+# screenshot PNG sits at the corpus ROOT, NEVER under a cells/ subdir. The
+# TP-0 visual-evidence gate resolves manifest `file:` refs against
+# `manifest_path.parent / file_rel` (= OUT_DIR), so a cells/ subdir would
+# silently orphan every reference and the corpus test reds on every cell.
+# A capture script that wrote into CELLS_DIR = OUT_DIR / "cells" was the
+# exact shape disease the china S1 corpus cure (cd74d8415b0f) removed.
+CELLS_DIR = OUT_DIR
 
 VIEWPORTS = {
     "desktop": (1440, 900),
@@ -498,101 +505,64 @@ def _capture(scratch: Path, subjects: set[str] | None = None) -> dict:
     aliases: dict[str, str] = {}
 
     jobs: list[dict] = []
-    # 8 base ATF viewport shots.
-    for viewport, (width, height) in VIEWPORTS.items():
-        for locale in LOCALES:
-            for theme in THEMES:
-                jobs.append({
-                    "subject": "atf", "viewport": viewport, "locale": locale,
-                    "theme": theme, "width": width, "height": height,
-                    "full_viewport": True, "clip_sels": None, "action": None,
-                    "touch": False,
-                })
+
+    def _matrix(subject: str, *, clip_sels: list[str] | None, action: str | None,
+                full_viewport: bool, touch: bool = False,
+                html: str = "commodities_w6.html") -> None:
+        """Emit one job per (viewport, locale, theme) — the COMPLETE rest-cell
+        matrix the TP-0 visual-evidence gate requires (8 base cells). Used
+        by every subject, so a recapture always carries dark+light × EN+ZH ×
+        desktop+mobile; the original PR captured only subsets per subject and
+        the corpus test red'd on every missing cell. (#7055 round 1 cure.)"""
+        for viewport, (width, height) in VIEWPORTS.items():
+            for locale in LOCALES:
+                for theme in THEMES:
+                    jobs.append({
+                        "subject": subject, "viewport": viewport, "locale": locale,
+                        "theme": theme, "width": width, "height": height,
+                        "full_viewport": full_viewport, "clip_sels": clip_sels,
+                        "action": action, "touch": touch, "html": html,
+                    })
+
+    # 8 base ATF viewport shots (full viewport, no clip).
+    _matrix("atf", clip_sels=None, action=None, full_viewport=True)
     # (a) heat-grid legend + Sugar/Corn/Soybeans — both art directions, both langs, both widths.
-    for viewport, (width, height) in VIEWPORTS.items():
-        for locale in LOCALES:
-            for theme in THEMES:
-                jobs.append({
-                    "subject": "a-heat-blowoff", "viewport": viewport, "locale": locale,
-                    "theme": theme, "width": width, "height": height,
-                    "full_viewport": False, "clip_sels": [".legend", ".grp", ".hgrid"],
-                    "action": "scroll-grains", "touch": False,
-                })
+    _matrix("a-heat-blowoff", clip_sels=[".legend", ".grp", ".hgrid"],
+            action="scroll-grains", full_viewport=False)
     # R-M1: heating oil is board-stretched + normal/bull → Extended (amber edge).
-    for locale in LOCALES:
-        for theme in THEMES:
-            jobs.append({
-                "subject": "a-heat-extended", "viewport": "desktop", "locale": locale,
-                "theme": theme, "width": 1440, "height": 900,
-                "full_viewport": False, "clip_sels": [".legend", ".grp", ".hgrid"],
-                "action": "scroll-energy-heat", "touch": False,
-            })
+    _matrix("a-heat-extended", clip_sels=[".legend", ".grp", ".hgrid"],
+            action="scroll-energy-heat", full_viewport=False)
     # (b) live strip + oil grid cell.
-    for theme in THEMES:
-        jobs.append({
-            "subject": "b-live-oil", "viewport": "desktop", "locale": "en",
-            "theme": theme, "width": 1440, "height": 900,
-            "full_viewport": False,
-            "clip_sels": [".live-strip", ".grp", ".hgrid"],
-            "action": "scroll-energy", "touch": False,
-        })
+    _matrix("b-live-oil", clip_sels=[".live-strip", ".grp", ".hgrid"],
+            action="scroll-energy", full_viewport=False)
     # (d) missing cycle sentence on cotton.
-    for theme in THEMES:
-        for locale in LOCALES:
-            jobs.append({
-                "subject": "d-cycle-missing", "viewport": "desktop", "locale": locale,
-                "theme": theme, "width": 1440, "height": 900,
-                "full_viewport": False, "clip_sels": ['.dpanel[data-detpanel="cotton"]'],
-                "action": "open-cotton", "touch": False,
-            })
-    # (e) dollar value (oil) + omitted (cotton).
-    jobs.append({
-        "subject": "e-dollar-value", "viewport": "desktop", "locale": "en",
-        "theme": "dark", "width": 1440, "height": 900,
-        "full_viewport": False, "clip_sels": ['.dpanel[data-detpanel="oil"] .det > .panel'],
-        "action": "open-oil", "touch": False,
-    })
-    jobs.append({
-        "subject": "e-dollar-omitted", "viewport": "desktop", "locale": "en",
-        "theme": "dark", "width": 1440, "height": 900,
-        "full_viewport": False, "clip_sels": ['.dpanel[data-detpanel="cotton"] .det > .panel'],
-        "action": "open-cotton", "touch": False,
-    })
-    # (f) ZH catalysts + timeline, dark+light (art direction).
-    for theme in THEMES:
-        jobs.append({
-            "subject": "f-catalysts-zh", "viewport": "desktop", "locale": "zh",
-            "theme": theme, "width": 1440, "height": 900,
-            "full_viewport": False, "clip_sels": [".cat-list", ".disclaimer"],
-            "action": "scroll-catalysts", "touch": False,
-        })
-        jobs.append({
-            "subject": "f-timeline-zh", "viewport": "desktop", "locale": "zh",
-            "theme": theme, "width": 1440, "height": 900,
-            "full_viewport": False, "clip_sels": [".timeline", ".tl-filters"],
-            "action": "scroll-timeline", "touch": False,
-        })
-    # (g) keyboard + tap.
-    jobs.append({
-        "subject": "g-lens-keyboard", "viewport": "desktop", "locale": "en",
-        "theme": "dark", "width": 1440, "height": 900,
-        "full_viewport": False, "clip_sels": [".sechd", ".board"],
-        "action": "focus-lens", "touch": False,
-    })
-    jobs.append({
-        "subject": "g-lens-tap", "viewport": "mobile", "locale": "en",
-        "theme": "dark", "width": 390, "height": 844,
-        "full_viewport": True, "clip_sels": None,
-        "action": "tap-lens", "touch": True,
-    })
+    _matrix("d-cycle-missing", clip_sels=['.dpanel[data-detpanel="cotton"]'],
+            action="open-cotton", full_viewport=False)
+    # (e) dollar value (oil).
+    _matrix("e-dollar-value",
+            clip_sels=['.dpanel[data-detpanel="oil"] .det > .panel'],
+            action="open-oil", full_viewport=False)
+    # (e) dollar omitted (cotton).
+    _matrix("e-dollar-omitted",
+            clip_sels=['.dpanel[data-detpanel="cotton"] .det > .panel'],
+            action="open-cotton", full_viewport=False)
+    # (f) ZH catalysts.
+    _matrix("f-catalysts-zh", clip_sels=[".cat-list", ".disclaimer"],
+            action="scroll-catalysts", full_viewport=False)
+    # (f) ZH timeline.
+    _matrix("f-timeline-zh", clip_sels=[".timeline", ".tl-filters"],
+            action="scroll-timeline", full_viewport=False)
+    # (g) canonical LENS keyboard focus (desktop-only action).
+    _matrix("g-lens-keyboard", clip_sels=[".sechd", ".board"],
+            action="focus-lens", full_viewport=False)
+    # (g) canonical LENS tap (mobile-only action — `.lens-pop.open`).
+    _matrix("g-lens-tap", clip_sels=None, action="tap-lens",
+            full_viewport=False, touch=True)
     # R4-M1: n_top=9 LENS tip lists every counted member (degraded glance).
-    jobs.append({
-        "subject": "h-hero-ntop9-tip", "viewport": "desktop", "locale": "en",
-        "theme": "dark", "width": 1440, "height": 900,
-        "full_viewport": False, "clip_sels": [".hero", ".lens-pop"],
-        "action": "open-hero-tip", "touch": False,
-        "html": "commodities_w6_ntop9.html",
-    })
+    # Uses the n_top=9 fixture render; full 8-cell matrix per #7055 cure.
+    _matrix("h-hero-ntop9-tip", clip_sels=[".hero", ".lens-pop"],
+            action="open-hero-tip", full_viewport=False,
+            html="commodities_w6_ntop9.html")
     if subjects:
         jobs = [j for j in jobs if j["subject"] in subjects]
 
@@ -836,6 +806,10 @@ def _capture(scratch: Path, subjects: set[str] | None = None) -> dict:
                     name, digest, pw, ph = content_address_png(png, CELLS_DIR)
                     alias = f"{subject}-{theme}-{locale}-{viewport}.png"
                     (CELLS_DIR / alias).write_bytes(png)
+                    # Alias PNG also lives at the corpus root (canonical
+                    # estate shape — see CELLS_DIR note above).
+                    if (CELLS_DIR / name).resolve() != (CELLS_DIR / alias).resolve():
+                        (CELLS_DIR / alias).write_bytes(png)
                     written.add(name)
                     written.add(alias)
                     aliases[alias] = name
@@ -1040,7 +1014,9 @@ def main(argv: list[str] | None = None) -> int:
     CELLS_DIR.mkdir(parents=True, exist_ok=True)
     if wanted:
         for stale in CELLS_DIR.glob("*.png"):
-            if any(stale.name.startswith(f"{s}-") for s in wanted):
+            if stale.name == "manifest.json" or stale.name == "EVIDENCE.yml" or stale.name == "README.md":
+                continue
+            if any(stale.name.startswith(f"{s}-") for s in wanted) or any(stale.stem.startswith(f"{s}-") for s in wanted):
                 stale.unlink()
     else:
         for stale in CELLS_DIR.glob("*.png"):
