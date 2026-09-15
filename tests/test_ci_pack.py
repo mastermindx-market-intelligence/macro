@@ -3506,6 +3506,13 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # 2026-09-15, US Sector Participation W1.  The suite imports the shared
+    # BreadthAdapter plus all six inherited siblings, the Sector Central builder,
+    # and the shipped browser client.  Inferred scope picked up an opaque scripts/**
+    # fallback when it rode unrun-scoring-engine, making an unrelated
+    # scripts/build_free_content.py PR select that job and breach the curation
+    # ratchet.  The dedicated job declares the capability's actual owner surface.
+    "sector-participation-w1",
     # 2026-08-20. `regwall-boundary` carries tests/test_regwall_json_gate.py out
     # of `tier-gate` (`gate: data`, never packed by ci.yml) and onto the merge
     # gate. It is curated for COVERAGE, not to narrow: the suite names its two
