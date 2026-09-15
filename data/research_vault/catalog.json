@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-15T23:24:22.775091+00:00",
-  "count": 2189,
+  "generated_at": "2026-09-15T23:38:57.226354+00:00",
+  "count": 2190,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -314,6 +314,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rckazdgaw4p-bd3c31",
+      "title": "Trading Catalysts Time for a Fed hike; and BofA Real Estate conference",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T12:46:07Z",
+      "summary_points": [
+        "**Fed Hike Expectations**: Markets price 20bps Sep FOMC hike, 80bps over 12 months; Jackson Hole remarks and Treasury curve flattening signal tightening credibility, risking long-end volatility.",
+        "**REIT Fundamentals**: 72% of REITs beat Q2 earnings (vs 60% historical avg), 87% raised guidance; supply declines (20-50%) support recovery across retail/senior housing/industrial.",
+        "**FCF Quality Advantage**: VFLO (VictoryShares Free Cash Flow ETF) offers 37.5% YTD return, 13.7x P/E vs S&P 500’s 21.3x, with 40% energy/healthcare exposure amid S&P 500 FCF yield at record lows.",
+        "**Top Compounding REITs**: AHR (target $71, 31x AFFO) and WELL (target $292, 26x AFFO) lead healthcare/retail REITs with strong compounding capacity.",
+        "**Key REIT Risks**: AHR exposed to Trilogy/SNF reimbursement risk; WELL vulnerable to reimbursement cuts, interest rates, and tenant credit risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
