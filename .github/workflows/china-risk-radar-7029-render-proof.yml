@@ -1,0 +1,65 @@
+name: China Risk Radar PR 7029 Render Proof
+
+on:
+  push:
+    branches:
+      - proof/china-risk-radar-7029-render-20260915-sol
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: china-risk-radar-7029-render-proof
+  cancel-in-progress: false
+
+jobs:
+  render-proof:
+    name: exact-current-candidate-render-proof
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout proof transport
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Execute immutable China render proof
+        id: proof
+        run: bash build-proof.sh
+
+      - name: Collect proof evidence
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          mkdir -p proof-artifacts
+          cp candidate/MMX_PROOF_META.json proof-artifacts/ 2>/dev/null
+          cp candidate/MMX_CRITICAL_SHA256.txt proof-artifacts/ 2>/dev/null
+          cp candidate/site/china.html proof-artifacts/ 2>/dev/null
+          cp candidate/site/mmx-proof-receipt.json proof-artifacts/ 2>/dev/null
+          cp candidate/site/mmx-proof-build.log proof-artifacts/ 2>/dev/null
+          cp /tmp/mmx-china-build.log proof-artifacts/mmx-china-build.raw.log 2>/dev/null
+          {
+            echo "workflow_sha=${GITHUB_SHA}"
+            echo "run_id=${GITHUB_RUN_ID}"
+            echo "run_attempt=${GITHUB_RUN_ATTEMPT}"
+            echo "runner_os=${RUNNER_OS}"
+            echo "collected_at_utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo "memory:"; free -h || true
+            echo "disk:"; df -h . || true
+          } > proof-artifacts/workflow-environment.txt
+          find proof-artifacts -maxdepth 1 -type f -print0 | sort -z | xargs -0 sha256sum > proof-artifacts/ARTIFACT_SHA256.txt 2>/dev/null || true
+
+      - name: Upload render proof evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: china-risk-radar-7029-render-proof-${{ github.run_id }}
+          path: proof-artifacts/
+          if-no-files-found: error
+          retention-days: 14
