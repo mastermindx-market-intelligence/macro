@@ -1,90 +1,62 @@
 {
   "schema_version": 1,
   "produced_by": "sentinel",
-  "produced_at": "2026-09-15T05:05:01Z",
+  "produced_at": "2026-09-15T19:16:03Z",
   "as_of": "2026-09-15",
   "plan_status": "pass",
   "publish_enabled": false,
   "auditor_strict": true,
   "counts": {
-    "items": 15,
-    "passed": 11,
-    "quarantined": 4,
-    "quarantined_policy": 4,
+    "items": 16,
+    "passed": 16,
+    "quarantined": 0,
+    "quarantined_policy": 0,
     "quarantined_overflow": 0,
     "warnings": 0,
     "exceptions_applied": 0
   },
-  "reasons_histogram": {
-    "cherry_pick_suspected": 2,
-    "near_dup": 2
-  },
-  "quarantined": [
-    {
-      "id": "post-meagan-038",
-      "account": "meagan",
-      "slot": "D1-S38",
-      "type": "receipt",
-      "cashtag": "$QCOM",
-      "headline": "",
-      "class": "policy",
-      "reasons": [
-        "cherry_pick_suspected"
-      ]
-    },
-    {
-      "id": "post-sophia-026",
-      "account": "sophia",
-      "slot": "D1-S26",
-      "type": "receipt",
-      "cashtag": "$EZPW",
-      "headline": "",
-      "class": "policy",
-      "reasons": [
-        "cherry_pick_suspected"
-      ]
-    },
-    {
-      "id": "post-kelly-012",
-      "account": "kelly",
-      "slot": "D1-S12",
-      "type": "macro",
-      "cashtag": "",
-      "headline": "",
-      "class": "policy",
-      "reasons": [
-        "near_dup:post-meagan-013"
-      ]
-    },
-    {
-      "id": "post-cici-003",
-      "account": "cici",
-      "slot": "D1-S3",
-      "type": "macro",
-      "cashtag": "",
-      "headline": "",
-      "class": "policy",
-      "reasons": [
-        "near_dup:post-meagan-013"
-      ]
-    }
-  ],
+  "reasons_histogram": {},
+  "quarantined": [],
   "passed": [
     {
-      "id": "post-flagship-028",
+      "id": "post-flagship-016",
       "account": "flagship",
-      "slot": "D1-S28",
+      "slot": "D1-S16",
       "type": "chart",
-      "cashtag": "$GPI",
+      "cashtag": "$IPGP",
       "headline": ""
     },
     {
-      "id": "post-flagship-041",
+      "id": "post-flagship-020",
       "account": "flagship",
-      "slot": "D1-S41",
-      "type": "watchlist",
-      "cashtag": "$HYG",
+      "slot": "D1-S20",
+      "type": "macro",
+      "cashtag": "",
       "headline": ""
+    },
+    {
+      "id": "post-flagship-025",
+      "account": "flagship",
+      "slot": "D1-S25",
+      "type": "watchlist",
+      "cashtag": "$LUMN",
+      "headline": ""
+    },
+    {
+      "id": "post-flagship-049",
+      "account": "flagship",
+      "slot": "D1-S49",
+      "type": "chart",
+      "cashtag": "$WING",
+      "headline": "$WING at 117, first close back above the September shelf."
+    },
+    {
+      "id": "post-theme-003",
+      "account": "flagship",
+      "slot": "D1-S2",
+      "type": "theme_list",
+      "cashtag": "$HPE",
+      "headline": "Hardware ripping, +2.9% avg on Monday"
     },
     {
       "id": "post-congress-001",
@@ -100,6 +72,14 @@
       "slot": "D1-S16",
       "type": "macro",
       "cashtag": "",
+      "headline": ""
+    },
+    {
+      "id": "post-founder-045",
+      "account": "founder",
+      "slot": "D1-S45",
+      "type": "chart",
+      "cashtag": "$IPGP",
       "headline": ""
     },
     {
@@ -119,6 +99,14 @@
       "headline": "Big Data ripping, +1.5% avg on Monday"
     },
     {
+      "id": "post-congress-003",
+      "account": "meagan",
+      "slot": "D1-S6",
+      "type": "congress",
+      "cashtag": "$PWR",
+      "headline": ""
+    },
+    {
       "id": "post-sophia-012",
       "account": "sophia",
       "slot": "D1-S12",
@@ -127,27 +115,19 @@
       "headline": ""
     },
     {
-      "id": "post-sophia-047",
+      "id": "post-sophia-032",
       "account": "sophia",
-      "slot": "D1-S47",
+      "slot": "D1-S32",
       "type": "chart",
-      "cashtag": "$CHRW",
+      "cashtag": "$ALGT",
       "headline": ""
     },
     {
-      "id": "post-theme-005",
-      "account": "kelly",
-      "slot": "D1-S3",
-      "type": "theme_list",
-      "cashtag": "$SYNA",
-      "headline": "Artificial Intelligence ripping, +1.3% avg on Monday"
-    },
-    {
-      "id": "post-cici-033",
-      "account": "cici",
-      "slot": "D1-S33",
-      "type": "chart",
-      "cashtag": "$WING",
+      "id": "post-congress-004",
+      "account": "sophia",
+      "slot": "D1-S21",
+      "type": "congress",
+      "cashtag": "$DLTR",
       "headline": ""
     },
     {
@@ -157,12 +137,20 @@
       "type": "theme_list",
       "cashtag": "$SMR",
       "headline": "Commodities Energy selling off, -1.2% avg on Monday"
+    },
+    {
+      "id": "post-insider-007",
+      "account": "mastermind_news",
+      "slot": "D1-S1",
+      "type": "insider",
+      "cashtag": "$ECL",
+      "headline": ""
     }
   ],
   "checks": {
     "near_dup": {
-      "pairs_checked": 78,
-      "hits": 2,
+      "pairs_checked": 98,
+      "hits": 0,
       "shared_media_hits": 0
     },
     "cadence": {
@@ -182,8 +170,8 @@
       "status": "run",
       "loss_tickers_in_window": [
         "ACM",
+        "AEP",
         "AIN",
-        "ALHC",
         "ASTE",
         "ATEN",
         "BL",
@@ -196,11 +184,12 @@
         "IART",
         "MMS",
         "MPT",
+        "MPWR",
         "PCG",
         "PPG",
         "PRVA",
+        "PSMT",
         "RHP",
-        "ROL",
         "TTD",
         "UPS",
         "UPWK",
@@ -210,37 +199,7 @@
         "WSO",
         "XRAY"
       ],
-      "cherry_pick_detected": true,
-      "loss_tickers_missing": [
-        "ACM",
-        "AIN",
-        "ALHC",
-        "ASTE",
-        "ATEN",
-        "BL",
-        "CAR",
-        "CARR",
-        "CMS",
-        "COLL",
-        "EIX",
-        "HUBG",
-        "IART",
-        "MMS",
-        "MPT",
-        "PCG",
-        "PPG",
-        "PRVA",
-        "RHP",
-        "ROL",
-        "TTD",
-        "UPS",
-        "UPWK",
-        "UTHR",
-        "WH",
-        "WHR",
-        "WSO",
-        "XRAY"
-      ]
+      "cherry_pick_detected": false
     },
     "stale_receipts": {
       "age_days": 4,
