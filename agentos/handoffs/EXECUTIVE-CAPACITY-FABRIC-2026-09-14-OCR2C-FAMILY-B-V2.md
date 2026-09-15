@@ -2,7 +2,7 @@
 workstream: WS:EXECUTIVE-CAPACITY-FABRIC
 session: sol/ocr2c-family-b-native-claude-realm-capacity-20260914
 model: sol
-ended_because: architecture_candidate_authored
+ended_because: ci_handoff
 mission: >
   Continue Chairman-approved migration of Claude/Fable orchestration from cloned macOS apps into
   the canonical Agent Fabric by resolving OCR-2C Family B first: direct claude.ai Claude Code realms
@@ -26,22 +26,26 @@ changed:
       Durable decision preserving Macro as provider/capacity identity owner and rejecting ordinal,
       config-path, Provider-PII and second-realm-id alternatives.
 verified:
-  - claim: "Current Macro main used for this records candidate is 22f6759fe6529b4768309332309d52a8ee20526a."
-    result: "Direct GitHub ref read returned that exact SHA; it is a dashboard-bot research-vault catalog commit over 449732e455bf."
-  - claim: "Current protected Mastermind authoring basis is 36f74c02edc938f7f5c41f38743f93ee34be2b2b with Skillpack 1.0.1/bootstrap 1."
-    result: "Direct protected-ref + same-commit INDEX/COLD_START read; compatible."
-  - claim: "Mastermind Family-B consumer candidate exists as Draft PR #662."
+  - claim: "Macro main used as the parent of this records candidate was 22f6759fe6529b4768309332309d52a8ee20526a."
+    command: "gh api repos/mastermindx-market-intelligence/macro/git/ref/heads/main --jq '.object.sha'"
+    result: "Returned 22f6759fe6529b4768309332309d52a8ee20526a immediately before authoring; this branch was created directly from that commit."
+  - claim: "Protected Mastermind authoring basis was 36f74c02edc938f7f5c41f38743f93ee34be2b2b with Skillpack 1.0.1/bootstrap 1."
+    command: "gh api repos/mastermindx-market-intelligence/Mastermind/git/ref/heads/master --jq '.object.sha' && gh api 'repos/mastermindx-market-intelligence/Mastermind/contents/docs/sol_skills/INDEX.md?ref=36f74c02edc938f7f5c41f38743f93ee34be2b2b' --jq '.sha'"
+    result: "Protected ref returned 36f74c02edc938f7f5c41f38743f93ee34be2b2b at authoring; same-commit INDEX reported mastermind.sol_skillpack.v1 version 1.0.1 / minimum bootstrap 1."
+  - claim: "Mastermind Family-B consumer candidate exists as Draft PR #662 on corrected head 8ed986a814b1eef9e4818c900683fd27fa1a35f1."
+    command: "gh pr view 662 -R mastermindx-market-intelligence/Mastermind --json state,isDraft,headRefOid,baseRefOid"
     result: >
-      PR #662 was created records-only from protected 36f74c02; its branch was then repaired so Macro
-      Provider Control, not the Mastermind provider-realm owner, owns the single capacity capability
-      identity. Corrected candidate head is 8ed986a814b1eef9e4818c900683fd27fa1a35f1.
+      Returned OPEN/Draft on head 8ed986a814b1eef9e4818c900683fd27fa1a35f1. That corrected head makes Macro
+      Provider Control, not the Mastermind provider-realm owner, the single capacity capability identity owner.
   - claim: "HF1-B/C/D and subscription harness binding source have merged."
+    command: "for n in 576 578 581 583; do gh pr view \"$n\" -R mastermindx-market-intelligence/Mastermind --json number,state,mergedAt,mergeCommit; done"
     result: >
       Mastermind #576 merged cb95ae8b, #578 merged d6beb70f, #581 merged 27a5d893, and #583 merged
       7868e2c2. These are source capability only; this handoff claims no live native Claude provider realm.
   - claim: "OCR-4A provider-neutral rich Operator Harness work is active separately."
+    command: "gh pr view 660 -R mastermindx-market-intelligence/Mastermind --json state,isDraft,headRefOid,title"
     result: >
-      Mastermind PR #660 is open on head a614e422c1c84b3b55be6aa855205fd2e3b1931c. Family B is kept
+      Returned OPEN on head a614e422c1c84b3b55be6aa855205fd2e3b1931c. Family B is kept
       identity/capacity-only to avoid becoming a second persistent-session/harness owner.
 unverified:
   - claim: "The Family-B architecture is accepted/frozen."
