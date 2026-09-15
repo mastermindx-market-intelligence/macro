@@ -1,0 +1,70 @@
+{
+  "schema": "mastermind_ai.flagship_research_observations.v1",
+  "status": "DIAGNOSIS_NOT_A_PRODUCTION_FIX",
+  "source_pin": "e0e3fda2fa2a44d8d64c3f0a52b9d56c1de3653b",
+  "record_base": "4b0d6a553b6a970688ccd2f7ac112bf30e56edf2",
+  "source_comparison": "Only data/research_vault/catalog.json changed between inspected pin and record base.",
+  "deployed_source_sha": null,
+  "observations": [
+    {
+      "id": "FIN-SCOPE-P1",
+      "classification": "CUSTOMER_TASK_FAILED",
+      "request": {
+        "method": "POST",
+        "url": "https://www.mastermind-x.com/api/brain/chat",
+        "body": {
+          "message": "Assess this illustrative investment thesis using only the supplied assumptions, not real company data. Revenue rises from 100 to 110 million; gross margin falls from 30% to 25%; operating expenses stay at 20 million; net working capital increases by 8 million; capital spending is 5 million; assume no interest, tax, depreciation, or other cash adjustments. Management calls growth strong. Is revenue growth enough to support a bullish thesis? Reconcile gross profit, operating profit, and simplified cash generation before and after capital spending. Explain one alternative benign interpretation and the evidence needed to distinguish it. Do not invent a house signal or a probability.",
+          "lane": "fast", "mode": "chat", "context": {"page": "macro", "lang": "en"}
+        }
+      },
+      "http_status": 200,
+      "response_extract": {
+        "ok": true,
+        "reply": "This is outside what I can do here. I'm built for live markets, finance, and this dashboard's signals and features — not worked corporate-finance exercises.",
+        "model": "deepseek-v4-pro", "lane": "fast", "route": "deep",
+        "filtered": false, "degraded": false, "citations": [],
+        "latency": {"rounds": [{"model_ms": 3355, "tools": []}], "synthesis_ms": null, "total_ms": 3561},
+        "request_id": "6e8e75fd6423488f940184d8b5c5d992",
+        "context_captured_at": "2026-09-14T08:31:59.708761Z",
+        "context_latency_lane": "instant_fact"
+      },
+      "carrier": {"connector": "Remote_Desktop_Commander", "device_id": "3f5ce987-e3eb-40a3-af9f-4b0ae54919cc", "pid": 52052, "exit_code": 0, "runtime_seconds": 4.73},
+      "limitations": ["One observed failure is not a model-wide benchmark.", "Prompt causation has not been isolated.", "Model identity is reported by the application, not independently attested.", "Context preferred lane is not executed-route evidence.", "No exact deployed revision returned."]
+    },
+    {
+      "id": "FIN-SCOPE-P2",
+      "classification": "TRANSPORT_FAILURE_BACKEND_EFFECT_UNKNOWN",
+      "request": {
+        "method": "POST", "url": "https://www.mastermind-x.com/api/brain/chat",
+        "body": {
+          "message": "I am evaluating an equity investment thesis. My scenario assumptions, in millions, are: revenue rises from 100 to 110; gross margin declines from 30% to 25%; operating expenses remain 20; net working capital increases 8; capital spending is 5; ignore interest, tax, depreciation, and other cash adjustments. These are supplied assumptions, not a request for current data. Management emphasizes strong growth. Calculate gross profit, operating profit, and cash generation before and after capital spending. Does revenue growth alone support the thesis? Give the strongest alternative explanation and the next piece of evidence that would resolve the uncertainty. Do not invent a house signal, probability, or target price.",
+          "lane": "fast", "mode": "chat", "context": {"page": "macro", "lang": "en"}
+        }
+      },
+      "http_status": 524, "response_body": null, "request_id": null, "model": null,
+      "carrier": {"connector": "Remote_Desktop_Commander", "device_id": "3f5ce987-e3eb-40a3-af9f-4b0ae54919cc", "pid": 60988, "exit_code": 0, "runtime_seconds": 16.05},
+      "retry_performed": false,
+      "next_action": "Reconcile through the existing recovery owner when possible; do not blindly replay or use another account."
+    }
+  ],
+  "oracle": {
+    "classification": "SUPPLIED_FICTIONAL_ASSUMPTIONS_NOT_MARKET_DATA",
+    "unit": "millions",
+    "gross_profit_prior": "30", "gross_profit_current": "27.5",
+    "operating_profit_prior": "10", "operating_profit_current": "7.5",
+    "operating_cash_current": "-0.5", "cash_after_capex_current": "-5.5",
+    "prior_operating_cash": null, "prior_cash_after_capex": null
+  },
+  "test_status": {
+    "acceptance_cases_specified": 53,
+    "production_answer_cases_observed": 1,
+    "production_answer_case_result": "FAILED",
+    "separate_transport_probe": "524_BACKEND_UNKNOWN",
+    "other_acceptance_cases": "NOT_EXECUTED",
+    "artifact_structure_and_numeric_oracle": "CHECKED_IN_SANDBOX_NOT_PRODUCT_CI",
+    "existing_response_evaluator": "EXECUTION_BLOCKED_NO_RESULT",
+    "canonical_agentos_validation": "NOT_RUN",
+    "production_code_changed": false,
+    "workers_spawned": 0
+  }
+}
