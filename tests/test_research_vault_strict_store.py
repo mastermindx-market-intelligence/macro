@@ -1231,6 +1231,12 @@ def test_rio_rejects_denial_modality_and_uncertainty_stripping():
         ("We do not... expect inflation to rise this year.", "expect inflation to rise this year"),
         ("Aug. inflation rose sharply.", "inflation rose sharply"),
         ("See et al. for methods. Recession is unlikely.", "for methods"),
+        ("Management may not, per Distrib. Guidance, raise prices.", "Guidance, raise prices"),
+        ("Management may not, per distrib. Guidance, raise prices.", "Guidance, raise prices"),
+        ("The filing does not say Yahoo!Finance overstated revenue.", "Finance overstated revenue"),
+        ("Revenue did not exceed the prior figure, per ibid. Q3 guidance was reiterated.", "Q3 guidance was reiterated"),
+        ("Management may not, per cont. Guidance, raise prices.", "Guidance, raise prices"),
+        ("Der Umsatz ist nicht gestiegen im 2. Quartal 2025.", "Quartal 2025"),
     ]
     for body, stripped in cases:
         obj = _rio_sample(body=body)

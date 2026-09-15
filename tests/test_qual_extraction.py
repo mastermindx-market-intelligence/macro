@@ -538,6 +538,88 @@ def test_shared_quote_verifier_clause_mode_rejects_line_wrapped_context_strippin
         assert qe.quote_span_verified(body, body, require_complete_clause=True)
 
 
+def test_shared_quote_verifier_clause_mode_retains_spaced_ellipsis_context():
+    cases = [
+        ("We do not. . . expect inflation to rise.", "expect inflation to rise."),
+        ("We do not . . . expect inflation to rise.", "expect inflation to rise."),
+        ("We do not.  . expect inflation to rise.", "expect inflation to rise."),
+    ]
+    for body, fragment in cases:
+        assert not qe.quote_span_verified(body, fragment, require_complete_clause=True)
+        assert qe.quote_span_verified(body, body, require_complete_clause=True)
+
+
+def test_shared_quote_verifier_context_punctuation_requires_a_new_sentence_shape():
+    assert not qe.quote_span_verified(
+        "We do not?! expect inflation to rise.",
+        "expect inflation to rise.",
+        require_complete_clause=True,
+    )
+    assert not qe.quote_span_verified(
+        "We do not!? expect inflation to rise.",
+        "expect inflation to rise.",
+        require_complete_clause=True,
+    )
+    assert not qe.quote_span_verified(
+        "The filing does not say Yahoo!Finance overstated revenue.",
+        "Finance overstated revenue.",
+        require_complete_clause=True,
+    )
+    assert not qe.quote_span_verified(
+        "Management may not?Raise guidance next quarter.",
+        "Raise guidance next quarter.",
+        require_complete_clause=True,
+    )
+    assert qe.quote_span_verified(
+        "Really?! Rates rose.",
+        "Rates rose.",
+        require_complete_clause=True,
+    )
+    assert qe.quote_span_verified(
+        "真的吗？通胀上升。",
+        "通胀上升。",
+        require_complete_clause=True,
+    )
+
+
+def test_shared_quote_verifier_retains_unknown_title_style_abbreviation_context():
+    cases = [
+        ("Assoc. professor expects inflation to rise.", "professor expects inflation to rise."),
+        ("Univ. Researchers expect inflation to rise.", "Researchers expect inflation to rise."),
+        ("Treas. Yields rose sharply.", "Yields rose sharply."),
+        ("Intl. Markets rallied.", "Markets rallied."),
+        ("Management may not, per Distrib. Guidance, raise prices.", "Guidance, raise prices."),
+        ("Management may not, per Transp. Outlook, raise prices.", "Outlook, raise prices."),
+        ("Management may not, per distrib. Guidance, raise prices.", "Guidance, raise prices."),
+        ("Management may not, per transp. Outlook, raise prices.", "Outlook, raise prices."),
+        ("Revenue did not exceed the prior figure, per ibid. Q3 guidance was reiterated.", "Q3 guidance was reiterated."),
+        ("Management may not, per para. Guidance, raise prices.", "Guidance, raise prices."),
+        ("Management may not, per misc. Guidance, raise prices.", "Guidance, raise prices."),
+        ("Management may not, per chap. Guidance, raise prices.", "Guidance, raise prices."),
+        ("Management may not, per cont. Guidance, raise prices.", "Guidance, raise prices."),
+        ("Management may not, per resp. Guidance, raise prices.", "Guidance, raise prices."),
+        ("Management may not, per trans. Guidance, raise prices.", "Guidance, raise prices."),
+    ]
+    for body, fragment in cases:
+        assert not qe.quote_span_verified(body, fragment, require_complete_clause=True)
+        assert qe.quote_span_verified(body, body, require_complete_clause=True)
+
+
+def test_shared_quote_verifier_retains_numeric_ordinal_context():
+    body = "Der Umsatz ist nicht gestiegen im 2. Quartal 2025."
+    assert not qe.quote_span_verified(
+        body, "Quartal 2025.", require_complete_clause=True
+    )
+    assert qe.quote_span_verified(body, body, require_complete_clause=True)
+
+
+def test_shared_quote_verifier_casefold_expansion_keeps_source_indexes_aligned():
+    body = "die straße. Gewinne stiegen."
+    assert qe.quote_span_verified(
+        body, "Gewinne stiegen.", require_complete_clause=True
+    )
+
+
 def test_shared_quote_verifier_clause_mode_retains_ellipsis_context():
     cases = [
         ("We do not... expect inflation to rise this year.", "expect inflation to rise this year."),

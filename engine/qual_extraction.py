@@ -181,58 +181,90 @@ _CITATION_HARD_BOUNDARIES = frozenset(".,!?;:。！？；，、：—–")
 _CITATION_CONTEXT_BOUNDARIES = frozenset("!?。！？")
 _CITATION_BOUNDARY_TOKEN = "\x1e"
 _CITATION_PERIOD_ABBREVIATIONS = frozenset({
-    "al", "apr", "approx", "aug", "ave", "ca", "cf", "co", "corp",
-    "dec", "dept", "dr", "e.g", "ed", "est", "etc", "feb", "fig",
-    "govt", "i.e", "inc", "jan", "jr", "jul", "jun", "ltd", "mar",
-    "mr", "mrs", "ms", "no", "nov", "oct", "pp", "prof", "sep",
-    "sept", "sr", "st", "vol", "vs",
+    "al", "apr", "approx", "assoc", "aug", "ave", "ca", "cf", "chap", "co", "cont",
+    "corp", "dec", "dept", "distrib", "dr", "e.g", "ed", "est", "etc", "feb",
+    "fig", "govt", "i.e", "ibid", "inc", "intl", "jan", "jr", "jul", "jun",
+    "ltd", "mar", "misc", "mr", "mrs", "ms", "no", "nov", "oct", "para", "pp",
+    "prof", "resp", "sep", "sept", "sr", "st", "trans", "transp", "treas", "univ", "vol", "vs",
 })
-_CITATION_CLOSING_PUNCTUATION = frozenset("'\"’”)]}》】」』")
+_CITATION_CONTEXT_PUNCTUATION = frozenset(".!?。！？")
+_CITATION_CONTEXT_WRAPPERS = frozenset("'\"‘’“”()[]{}《》【】「」『』")
+
+
+def _neighbor_nonspace_is_period(text: str, index: int, step: int) -> bool:
+    cursor = index + step
+    while 0 <= cursor < len(text) and text[cursor].isspace():
+        cursor += step
+    return 0 <= cursor < len(text) and text[cursor] == "."
+
+
+def _context_successor(text: str, index: int) -> tuple[int, bool]:
+    """Return the next meaningful character and whether syntax separated it."""
+    cursor = index + 1
+    separated = False
+    while cursor < len(text) and text[cursor] in _CITATION_CONTEXT_PUNCTUATION:
+        separated = True
+        cursor += 1
+    while cursor < len(text) and text[cursor] in _CITATION_CONTEXT_WRAPPERS:
+        separated = True
+        cursor += 1
+    while cursor < len(text) and text[cursor].isspace():
+        separated = True
+        cursor += 1
+    while cursor < len(text) and text[cursor] in _CITATION_CONTEXT_WRAPPERS:
+        separated = True
+        cursor += 1
+    return cursor, separated
 
 
 def _period_ends_context_unit(text: str, index: int) -> bool:
-    """Conservatively classify a period as a sentence/context boundary.
-
-    Unknown punctuation stays inside the context unit rather than creating a
-    new claim start, so abbreviation ambiguity fails closed by retaining more
-    source context. Decimals are consumed by the numeric tokenizer before this
-    helper is reached.
-    """
+    """Conservatively classify a period as a sentence/context boundary."""
     if index < 0 or index >= len(text) or text[index] != ".":
         return False
-    if (index > 0 and text[index - 1] == ".") or (
-        index + 1 < len(text) and text[index + 1] == "."
+    if _neighbor_nonspace_is_period(text, index, -1) or _neighbor_nonspace_is_period(
+        text, index, 1
     ):
         return False
     if index > 0 and index + 1 < len(text):
         if text[index - 1].isdigit() and text[index + 1].isdigit():
             return False
-    cursor = index + 1
-    while cursor < len(text) and text[cursor] in _CITATION_CLOSING_PUNCTUATION:
-        cursor += 1
+
+    cursor, separated = _context_successor(text, index)
     if cursor >= len(text):
         return True
-    if text[cursor] in _CITATION_CONTEXT_BOUNDARIES:
-        return True
-    if not text[cursor].isspace():
+    if index > 0 and text[index - 1].isdigit():
         return False
-    while cursor < len(text) and text[cursor].isspace():
-        if text[cursor] in _CITATION_CONTEXT_BOUNDARIES:
-            return True
-        cursor += 1
-    while cursor < len(text) and text[cursor] in _CITATION_CLOSING_PUNCTUATION:
-        cursor += 1
-    if cursor >= len(text):
-        return True
+    if not separated:
+        return False
 
     left = index - 1
     while left >= 0 and text[left].isalpha():
         left -= 1
-    word = text[left + 1:index].casefold()
-    if word and (len(word) <= 3 or word in _CITATION_PERIOD_ABBREVIATIONS):
+    word = text[left + 1:index]
+    word_folded = word.casefold()
+    if word and (
+        len(word_folded) <= 3
+        or word_folded in _CITATION_PERIOD_ABBREVIATIONS
+        or word[0].isupper()
+    ):
         return False
-    return True
 
+    next_char = text[cursor]
+    if next_char.islower():
+        return False
+    return next_char.isupper() or next_char.isdigit() or _is_han_character(next_char)
+
+
+def _terminal_ends_context_unit(text: str, index: int) -> bool:
+    if index < 0 or index >= len(text) or text[index] not in _CITATION_CONTEXT_BOUNDARIES:
+        return False
+    cursor, separated = _context_successor(text, index)
+    if cursor >= len(text):
+        return True
+    next_char = text[cursor]
+    if not separated and not _is_han_character(next_char):
+        return False
+    return next_char.isupper() or next_char.isdigit() or _is_han_character(next_char)
 
 def _citation_tokens(
     text: str,
@@ -252,7 +284,14 @@ def _citation_tokens(
     only sentence-ending punctuation so commas, colons, abbreviations, and source
     line wrapping cannot create a polarity- or modality-stripping claim boundary.
     """
-    normalized = unicodedata.normalize("NFKC", str(text or "")).casefold()
+    source_text = unicodedata.normalize("NFKC", str(text or ""))
+    folded_parts: list[str] = []
+    source_indexes: list[int] = []
+    for source_index, source_char in enumerate(source_text):
+        folded = source_char.casefold()
+        folded_parts.append(folded)
+        source_indexes.extend([source_index] * len(folded))
+    normalized = "".join(folded_parts)
     tokens: list[str] = []
     current: list[str] = []
 
@@ -276,11 +315,15 @@ def _citation_tokens(
                 continue
             flush()
             continue
+        source_index = source_indexes[index]
         context_boundary = (
             preserve_context_boundaries
             and (
-                char in _CITATION_CONTEXT_BOUNDARIES
-                or (char == "." and _period_ends_context_unit(normalized, index))
+                (char == "." and _period_ends_context_unit(source_text, source_index))
+                or (
+                    char in _CITATION_CONTEXT_BOUNDARIES
+                    and _terminal_ends_context_unit(source_text, source_index)
+                )
             )
         )
         legacy_boundary = preserve_hard_boundaries and char in _CITATION_HARD_BOUNDARIES
