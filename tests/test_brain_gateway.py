@@ -2573,17 +2573,42 @@ def test_image_blocks_caps_at_four():
     assert len(gw._image_blocks([_TINY_PNG_DATA_URI] * 8)) == gw._VISION_MAX_IMAGES == 4
 
 
-class TestVisionRoutesToCodexFirstClaudeSecond:
-    """Operator directive 2026-07-31: chat vision is CODEX-routed, not Claude-routed.
+def test_local_vision_provider_is_built_only_from_the_vision_config():
+    cfg = {
+        "vision": {
+            "local_fallback": {
+                "enabled": True,
+                "base_url": "http://100.80.236.59:11434",
+                "model": "qwen3.5:9b",
+                "timeout_s": 180,
+                "num_ctx": 32768,
+            }
+        }
+    }
+    with patch.object(gw, "_load_brain_config", return_value=cfg):
+        providers = gw._build_local_vision_providers(None)
+    assert len(providers) == 1
+    assert providers[0]["name"] == "ollama"
+    assert providers[0]["model"] == "qwen3.5:9b"
+    assert providers[0]["client"] is not None
 
-    Codex is the attached FLAT-RATE subscription; Anthropic is metered per image.
-    These tests previously pinned "first claude-* provider wins" — that is now the
-    FALLBACK half of the rule, kept because a dead, unauthenticated or usage-capped
-    Codex account must not take vision down with it (every waterfall in this estate
-    fails over). DeepSeek is still never vision.
+
+def test_local_vision_provider_is_disabled_when_the_vision_block_is_absent():
+    with patch.object(gw, "_load_brain_config", return_value={"lanes": {}}):
+        assert gw._build_local_vision_providers(None) == []
+
+
+class TestVisionRoutesToCodexFirstClaudeSecond:
+    """Vision order is remote frontier first, private local model last.
+
+    Codex is the attached flat-rate subscription; Claude remains the frontier
+    fallback. A private Ollama vision model is the final continuity rung only — it
+    must never enter normal text routing, but a remote-account outage must not make
+    an uploaded screenshot fail outright. DeepSeek is still never vision.
     """
 
     CODEX = {"name": "codex", "model": "gpt-5.6-sol", "client": "CODEX"}
+    OLLAMA = {"name": "ollama", "model": "qwen3.5:9b", "client": "OLLAMA"}
 
     def test_codex_outranks_an_in_lane_claude(self):
         providers = [{"model": "claude-haiku-4-5", "client": "H"}, self.CODEX]
@@ -2598,6 +2623,24 @@ class TestVisionRoutesToCodexFirstClaudeSecond:
         providers = [{"model": "claude-opus-4-8", "client": "O"}, {"model": "claude-sonnet-4-6"}]
         assert gw._pick_vision_provider(providers)["model"] == "claude-opus-4-8"
 
+    def test_private_ollama_serves_when_remote_vision_is_unavailable(self):
+        assert gw._pick_vision_provider([self.OLLAMA]) is self.OLLAMA
+
+    def test_private_ollama_is_last_after_codex_and_claude(self):
+        providers = [self.CODEX, {"model": "claude-haiku-4-5", "client": "H"}]
+        with patch.object(gw, "_build_local_vision_providers", return_value=[self.OLLAMA]):
+            chain = gw._vision_providers("pro", providers, None)
+        assert [p.get("name") or p["model"] for p in chain] == [
+            "codex", "claude-haiku-4-5", "ollama"]
+
+    def test_text_only_lane_uses_private_ollama_when_frontier_vision_is_absent(self):
+        with patch.object(gw, "_build_lane_providers", return_value=[]):
+            with patch.object(gw, "_build_local_vision_providers", return_value=[self.OLLAMA]):
+                chain = gw._vision_providers(
+                    "fast", [{"model": "deepseek-v4-pro", "client": "DS"}], None
+                )
+        assert [p["name"] for p in chain] == ["ollama"]
+
     def test_none_when_text_only(self):
         assert gw._pick_vision_provider([{"model": "deepseek-chat"}]) is None
 
@@ -2607,7 +2650,8 @@ class TestVisionRoutesToCodexFirstClaudeSecond:
         providers = [{"model": "deepseek-chat", "client": "DS"},
                      {"model": "claude-haiku-4-5", "client": "H"},
                      self.CODEX]
-        chain = gw._vision_providers("fast", providers, None)
+        with patch.object(gw, "_build_local_vision_providers", return_value=[]):
+            chain = gw._vision_providers("fast", providers, None)
         assert [p.get("name") or p["model"] for p in chain] == ["codex", "claude-haiku-4-5"]
 
     def test_a_codex_only_lane_borrows_pro_claude_as_the_failover_tail(self):
@@ -2616,13 +2660,17 @@ class TestVisionRoutesToCodexFirstClaudeSecond:
         providers = [{"model": "deepseek-chat", "client": "DS"}, self.CODEX]
         with patch.object(gw, "_build_lane_providers",
                           return_value=[{"model": "claude-opus-4-8", "client": "O"}]):
-            chain = gw._vision_providers("fast", providers, None)
+            with patch.object(gw, "_build_local_vision_providers", return_value=[]):
+                chain = gw._vision_providers("fast", providers, None)
         assert [p.get("name") or p["model"] for p in chain] == ["codex", "claude-opus-4-8"]
 
     def test_a_text_only_lane_still_borrows_pro_vision(self):
         with patch.object(gw, "_build_lane_providers",
                           return_value=[{"model": "claude-opus-4-8", "client": "O"}]):
-            chain = gw._vision_providers("fast", [{"model": "deepseek-chat", "client": "DS"}], None)
+            with patch.object(gw, "_build_local_vision_providers", return_value=[]):
+                chain = gw._vision_providers(
+                    "fast", [{"model": "deepseek-chat", "client": "DS"}], None
+                )
         assert [p["model"] for p in chain] == ["claude-opus-4-8"]
 
     def test_a_clientless_rung_is_not_a_vision_provider(self):
@@ -2630,17 +2678,23 @@ class TestVisionRoutesToCodexFirstClaudeSecond:
         heading the chain with it would read as 'vision available' and serve nothing."""
         providers = [{"name": "codex", "model": "gpt-5.6-sol", "client": None},
                      {"model": "claude-haiku-4-5", "client": "H"}]
-        assert [p["model"] for p in gw._vision_providers("pro", providers, None)] == ["claude-haiku-4-5"]
+        with patch.object(gw, "_build_local_vision_providers", return_value=[]):
+            chain = gw._vision_providers("pro", providers, None)
+        assert [p["model"] for p in chain] == ["claude-haiku-4-5"]
 
     def test_nothing_vision_capable_anywhere_is_an_empty_chain(self):
         with patch.object(gw, "_build_lane_providers", return_value=[]):
-            assert gw._vision_providers("fast", [{"model": "deepseek-chat", "client": "DS"}], None) == []
+            with patch.object(gw, "_build_local_vision_providers", return_value=[]):
+                assert gw._vision_providers(
+                    "fast", [{"model": "deepseek-chat", "client": "DS"}], None
+                ) == []
 
     def test_a_broken_pro_lane_does_not_break_the_codex_turn(self):
         """Borrowing the fallback tail is best-effort: if the Pro lane cannot be built,
         the turn still runs on codex rather than raising."""
         with patch.object(gw, "_build_lane_providers", side_effect=RuntimeError("no pool")):
-            chain = gw._vision_providers("fast", [self.CODEX], None)
+            with patch.object(gw, "_build_local_vision_providers", return_value=[]):
+                chain = gw._vision_providers("fast", [self.CODEX], None)
         assert [p["name"] for p in chain] == ["codex"]
 
     def test_chat_with_an_image_routes_the_turn_to_codex(self, tmp_path):
@@ -2768,6 +2822,51 @@ def test_chat_fast_image_borrows_pro_vision_when_no_in_lane_claude(tmp_path):
     assert captured["image_blocks"]
 
 
+def test_chat_image_routes_to_private_ollama_when_remote_vision_is_unavailable(tmp_path):
+    """A Pro-eligible image turn stays available when every remote vision rung is absent."""
+    root = _make_temp_root()
+    captured = {}
+    local = {"name": "ollama", "client": "OLLAMA", "model": "qwen3.5:9b"}
+
+    def _providers(lane, root_=None):
+        return {
+            "fast": [{"name": "deepseek", "client": "DS", "model": "deepseek-v4-pro"}],
+            "pro": [],
+        }[lane]
+
+    def _mock_loop(message, lane, history, context, root_, tdd, thu, client, model,
+                   max_t, tb, mode="chat", image_blocks=None, providers=None,
+                   user_id="", user_email="", effort=None, thinking_mode=None,
+                   deepseek_thinking=None):
+        captured["model"] = model
+        captured["client"] = client
+        captured["providers"] = providers
+        captured["image_blocks"] = image_blocks
+        return "The image is readable. is_context_only: true.", [], [], [], {}, [], []
+
+    with patch.dict("os.environ", {"SUPABASE_SERVICE_ROLE_KEY": "", "SUPABASE_URL": ""}):
+        with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+            with patch.object(gw, "_build_lane_providers", side_effect=_providers):
+                with patch.object(gw, "_build_local_vision_providers", return_value=[local]):
+                    with patch.object(gw, "_resolve_tier", return_value={
+                        "tier": "pro", "status": "active", "current_period_end": None
+                    }):
+                        with patch.object(gw, "_get_allowance", return_value={
+                            "limit": 100, "remaining": 100, "period": "month"
+                        }):
+                            with patch.object(gw, "_run_brain_loop", side_effect=_mock_loop):
+                                with patch("lib.ai_costs.record_usage", return_value=True):
+                                    gw.chat(
+                                        "read this screenshot", "user_local_vision",
+                                        lane="fast", images=[_TINY_PNG_DATA_URI], root=root,
+                                    )
+
+    assert captured["client"] == "OLLAMA"
+    assert captured["model"] == "qwen3.5:9b"
+    assert [p["name"] for p in captured["providers"]] == ["ollama"]
+    assert captured["image_blocks"]
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # W6c-harden: OAuth-token failover + vision Pro-gating
 # ─────────────────────────────────────────────────────────────────────────────
@@ -2824,6 +2923,28 @@ def test_create_failover_reraises_non_retryable():
     ]
     with pytest.raises(Bad):
         gw._create_failover(cands, max_tokens=10, system="", tools=[], messages=[])
+
+
+def test_create_failover_logs_typed_exhaustion_without_exception_text(caplog):
+    class Rate(Exception):
+        status_code = 429
+
+    cands = [
+        {"name": "codex", "client": _RaiseThenClient(exc=Rate("private-primary-detail")),
+         "model": "gpt-5.6-sol"},
+        {"name": "ollama", "client": _RaiseThenClient(exc=Rate("private-final-detail")),
+         "model": "qwen3.5:9b"},
+    ]
+    with caplog.at_level(logging.ERROR, logger=gw.__name__):
+        with pytest.raises(Rate):
+            gw._create_failover(cands, max_tokens=10, system="", tools=[], messages=[])
+
+    line = next(r.getMessage() for r in caplog.records if "waterfall exhausted" in r.getMessage())
+    assert "codex:gpt-5.6-sol" in line
+    assert "ollama:qwen3.5:9b" in line
+    assert "final_error=Rate" in line
+    assert "private-primary-detail" not in line
+    assert "private-final-detail" not in line
 
 
 def test_run_brain_loop_fails_over_to_next_provider():
