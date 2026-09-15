@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-15T12:19:55.862640+00:00",
-  "count": 2156,
+  "generated_at": "2026-09-15T17:23:00.649864+00:00",
+  "count": 2165,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -100,6 +100,65 @@
   ],
   "items": [
     {
+      "id": "marketdesk-oyx4duc1ntu-e240ac",
+      "title": "BioNTech (BNTX) Novel Novel Data at WCLC Serves as Early Validation",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T12:58:35Z",
+      "summary_points": [
+        "**Clinical Validation & Pipeline Catalysts**: BioNTech's pumitamig + Efe-D combo shows 70.4% SCLC response rate with no overlapping toxicities; key near-term catalysts include BNT113 (Ph3 PFS) and gotisobart (PRESEERVE-003 stage-2 PFS/OS) - **Valuation & Key Risk Factor**: $127 DCF target (11% WACC, 19% TGR) faces material downside risk from BNT327 clinical trial failures undermining growth forecasts - **Price Target & Competitive Threats**: $127 target implies 28.5% upside from $103.76 but vulnerable to Summit Therapeutics’ ivonescimab competition and pipeline stagnation - **Analyst Sentiment & Revisions**: Goldman Sachs’ $127 target (04-Sep-26) exceeds current price, with consistent upward revisions since early 2024 reflecting strengthening confidence"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-pwhjp6taul7-33f197",
+      "title": "Asia Pacific Portfolio Strategy Asian equity market daily update",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T12:58:28Z",
+      "summary_points": [
+        "**MXAPJ Valuation Stretch**: Forward P/E at 10.2x (2.7 s.d.",
+        "above average) and trailing P/B at 2.5x (2.6 s.d.",
+        "above average) indicate stretched valuations, though a 482bp equity/bond yield gap suggests relative cheapness vs.",
+        "bonds.",
+        "**Korea/China Divergence**: Korea’s Info Tech (144% YTD, 42% MXAPJ weight) dominates performance, while MXAPJ shows 83% correlation with China (CN), creating high regional volatility risk requiring hedging."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-qbu7yctjxj1-a4d278",
+      "title": "Systematic Flows Monitor CTA equity positioning becomes more fragile as trends strengthen elsewhere",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T12:45:47Z",
+      "summary_points": [
+        "**CTA Equity Positioning Fragility**: S&P 500 near 50bps stop-out level; risk-on spikes prevent selling but increase sensitivity to weaknesses as CTAs trim SX5E/RTY while longs remain intact.",
+        "**Down Market Systematic Unwinding Risk**: Systematic strategies could sell $157bn in down markets (Exhibit 1), with CTAs driving significant equity unwinds (Exhibit 2), signaling high market stress.",
+        "**Oil & Geopolitical Flows**: CTAs add oil longs amid 9% weekly gain and Iran hostilities; positioning at most bullish since 4-Mar, with oil/soybeans longs and copper shorts.",
+        "**CTA Stop-Out Concentration**: RTYA Index and GCA Comdty show highest current stop-outs (4 models each), indicating elevated CTA risk in equity/commodity markets (Exhibit 12).",
+        "**Projected Market Stress**: Equity (RTYA, NQA) and Commodity (GCA, LPA) segments face significant projected stop-outs across bearish/neutral/bullish paths (Exhibit 13), signaling systemic risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 24,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-xm8agt8ub0p-04ec2a",
       "title": "JPM Equity Strategy Equity",
       "institution": "J.P. Morgan",
@@ -121,6 +180,24 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-d5vi42nwazc-f8385b",
+      "title": "UK & EUROPEAN RESEARCH AT A GLANCE",
+      "institution": "RBC",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T11:36:29Z",
+      "summary_points": [
+        "**UniCredit Valuation Discount**: 1x P/E discount to SX7E justified by short-term capital trajectory risks, lower earnings visibility, and limited EPS revisions/value convergence to European banking average - **Travel Retail Headwinds**: Airlines’ unhedged jet fuel exposure driving capacity constraints/higher fares; prefer AVOL over SSPG/SMWH for geographic/format diversity - **Sector Perform Rating**: UniCredit S.p.A.",
+        "initiated with Sector Perform, EUR90 price target, reflecting near-term sector performance dynamics and market clarity emergence"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-pbwq0d6ywr1-887ace",
       "title": "DeutscheBank Astra Zeneca CAMBRIAN explosion tbc but feeling more SERENE after reset: u/g to Hold Sep 15 2026 converti",
       "institution": "Deutsche Bank",
@@ -138,6 +215,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 40,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-bfmruryfai5-ff170b",
+      "title": "DeutscheBank European Daily Focus Sep 15 2026 converti",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T11:23:03Z",
+      "summary_points": [
+        "**DHL Geopolitical Shift**: ME conflict drives 60% yoy EBIT growth in Express segment; strategic pivot to industrial shipments (aircraft/semiconductors) raises EBIT forecast to €7.2bn (vs.",
+        "consensus €6.9bn), critical for supply chain positioning.",
+        "**Lundbeck Downgrade Risk**: Patent cliff (2029), elevated M&A risk, and 2026-2030 revenue CAGR decline justify Sell rating; near-term catalysts create fundamental downside.",
+        "**China Fiscal Spending Tracker**: August fiscal spending improved to +1% YoY (from -2%), validated by R² 0.5 reliability metric; key policy indicator for domestic demand trajectory.",
+        "**Fed Survey Yield Impact**: 56% of respondents prioritize inflation risk over fiscal policy, driving long-term yield uncertainty ahead of FOMC; critical for bond positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
       "language": "en",
       "needs_metadata": false
     },
@@ -897,6 +995,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-l1fwuecr6ux-9b1b8e",
+      "title": "Emerging Markets Global EM Weekly Tactically trading a higher for longer global rates environment",
+      "institution": "Societe Generale",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T01:11:09Z",
+      "summary_points": [
+        "**China Rate Hike & TWD Trade**: CBC hikes rates 12.5bp to 2.125% (Sept 17), terminal rate 2.375%; favor TWD 5y receiver at 2.51% amid strong exports and FX dynamics.",
+        "**Poland Hawkish Shift**: NBP holds 3.75% but inflation surge (CPI likely exceeding tolerance) raises hike risk; MPC prioritizes stability but may act if deviation persists.",
+        "**Turkey Rate Cut Outlook**: MPC dovish on domestic inflation but external risks (oil volatility) signal 100bp cut expected Dec; lira weakening as policy cornerstone.",
+        "**KRW Tactical Opportunity**: KRW1y1y receiver at 4.25% (vs terminal CD rate 3.90%); 35bp above terminal rate signals short-term opportunity amid US rate hikes and oil prices.",
+        "**Dim Sum Quota Expansion**: Southbound Bond Connect quota raised to CNY800bn, enabling National Social Security Fund investment; non-Chinese issuers critical for CNH CCS flows."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 31,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-mxwdu5abpok-060cf3",
       "title": "Economics Week Ahead in Economics Fed and BoJ to hike",
       "institution": "Societe Generale",
@@ -1118,6 +1237,48 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-lu7cxya4jgw-68886d",
+      "title": "Optical Tour Top 10 takeaways from our visits with entrepreneurs on technology development, demand, supply, and competition",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T00:49:52Z",
+      "summary_points": [
+        "**Global Optical Demand**: 130m–200m units (800G/1.6T) globally, mid-double-digit China growth; supply chain dynamics support 39%/36% 2027E/2028E growth estimates.",
+        "**Geopolitical Pricing & Supply Chain**: 800G price decline in 2027, 1.6T at $700+; supply chain diversification, R&D, and production critical under geopolitical tension.",
+        "**Laser Supply Chain Expansion**: Chinese suppliers (Everbright, Dongshang) expanding 200G EML capacity; VPEC MOCVD expansion (62→69 units by 2027) key for semiconductor resilience.",
+        "**VPEC SiPh Ramp Risk**: Slower-than-expected SiPh business ramp poses direct valuation risk to photonics supply chain.",
+        "**Price Target Discrepancy**: Target prices (e.g., FOCI: 833 vs closing 604; VPEC: 793 vs 500) consistently above closing prices, signaling bullish sentiment but overvaluation risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-vd3za6uqxv6-c680c6",
+      "title": "Asia Leaders Conference 2026 Takeaways TECO (1504.TW) Modular Data Center in expansion, driving deployment and efficiency",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T00:49:49Z",
+      "summary_points": [
+        "**CSP Commitments Drive Demand**: Major US cloud service providers (CSPs) plan 1GW data centers in Malaysia (2025) and Thailand (2026), with Goldman Sachs raising AI server forecasts (75%/42% YoY) and capex estimates (76%/35% YoY), validating TECO’s Southeast Asia expansion thesis.",
+        "**MDC Technical Advantage**: Modular data centers (MDCs) enable 50% faster deployment (9 months vs.",
+        "traditional) and 15–20% lower capex via factory production, critical for AI infrastructure; validated by Malaysia project delivering 2.7MW to leading US CSP.",
+        "**Geopolitical Tailwinds**: Sovereign AI initiatives (e.g., Japan’s 350MW MDC-based AI data center) and US CSP regional commitments create structural demand, reducing reliance on Western markets and enhancing TECO’s regional growth trajectory.",
+        "**AI Infrastructure Alignment**: TECO’s 700MW Southeast Asia data center pipeline directly matches end-customer AI supply chain investments, with AI-driven demand surge accelerating near-term revenue visibility."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-6luccnc2cm7-815abf",
       "title": "US Economic Weekly In the interest of time",
       "institution": "Goldman Sachs",
@@ -1135,6 +1296,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-verxr0525ck-3646be",
+      "title": "UK—July Labour Market and August Inflation Preview",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T00:49:42Z",
+      "summary_points": [
+        "**UK Inflation Forecast & Energy Surge**: Headline CPI projected at 3.1% (vs BoE 2.9%), driven by energy inflation at 4.0% MoM (14.1% YoY), fueled by fuel/energy tariffs and geopolitical volatility (Russia-Ukraine impact).",
+        "**Labor Market Softening**: Unemployment rate forecast to rise to 5.0% (July revised to 5k contraction), vacancies-to-unemployment ratio at 0.39, signaling weakening employment dynamics amid private sector wage growth moderation to 2.8%.",
+        "**Core Inflation Divergence**: Core goods inflation to rise to 1.0% (from 0.9%) with electronics pressure, while underlying services inflation declines but airfares inflation accelerates, creating split in inflation trajectory."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
