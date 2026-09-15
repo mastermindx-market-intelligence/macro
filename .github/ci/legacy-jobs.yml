@@ -404,6 +404,11 @@ jobs:
       # them. Pure Python: no node, so a minimal pip lane cannot disarm it.
       - name: inline handler attributes must not interpolate JS string literals
         run: python -m pytest tests/test_admin_inline_handler_attrs.py -q
+      - name: Prophet rotation diagnostic producer and executed renderer contracts
+        run: |
+          pip install pyyaml requests
+          node --version
+          python -m pytest tests/test_prophet_rotation_diagnostics.py tests/test_prophet_rotation_diagnostics_ui.py tests/test_prophet_rotation_diagnostics_integration.py tests/test_admin_prophet.py -q
 
   path-prune-lint:
     if: ${{ false }}

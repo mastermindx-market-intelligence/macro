@@ -22,6 +22,8 @@ import logging
 from pathlib import Path
 from typing import Any
 
+from admin.prophet_diagnostics import read_diagnostics
+
 log = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
@@ -355,6 +357,7 @@ def panel(root=None) -> dict:
     return {
         "ok": True,
         "prophet_status": ps,
+        "rotation_diagnostics": read_diagnostics(repo),
         "suggestions": sug,
         "fitness": fit,
         "audit_state": ast,
