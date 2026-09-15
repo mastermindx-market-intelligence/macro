@@ -1515,7 +1515,6 @@ def test_committed_browser_receipts_are_self_binding_fixture_proof(
     assert browser["fixture_market"] == market
     historical_hashes = {
         "hk": "71427ce354ff3f40e2cc7a9e298c840453465fc3a7fcf285ea32b2a486c89a3a",
-        "ca": "caffaacaae9d50b4a31be2ee0b6e61fa1cb0463a7c797e8154886f69e7a03fbc",
     }
     historical = browser["historical_baseline"]
     assert historical["schema"] == (
@@ -1555,18 +1554,6 @@ def test_committed_browser_receipts_are_self_binding_fixture_proof(
                 "state": "composer-failed",
                 "path": "mockups/evidence/prophet-p0b-zero-fouc/hk-composer-failed-light-390.png",
                 "sha256": "17f9d95a4765f569cc01c074a8a9cd60facdcadbb4fbcf223d345d8e47fdbee4",
-            },
-        ],
-        "ca": [
-            {
-                "state": "js-disabled",
-                "path": "mockups/evidence/prophet-p0b-zero-fouc/ca-js-disabled-dark-390.png",
-                "sha256": "17b369e5f17c29d558acc2306d754ea5a9eb33543c6fd47897eb048e7da0a9e2",
-            },
-            {
-                "state": "composer-failed",
-                "path": "mockups/evidence/prophet-p0b-zero-fouc/ca-composer-failed-light-390.png",
-                "sha256": "ed067c82a490126c908eb9f53202e90e36c15dd27c57c4d464760db3861afe33",
             },
         ],
     }

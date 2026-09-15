@@ -263,12 +263,23 @@ def test_theme_action_attributes_escape_owner_strings_with_autoescape_disabled()
     actions, _ = fixture_renderer.load_action_fixture("ca")
     context = fixture_renderer.canada_context(setups, actions)
     row = context["theme_actions"]["lanes"]["in_favour"][0]
+    hostile_text = {
+        "rank": '<rank data-rank="yes">',
+        "name": '<name data-name="yes">',
+        "name_zh": '<name-zh data-name-zh="yes">',
+        "category": '<category data-category="yes">',
+        "category_zh": '<category-zh data-category-zh="yes">',
+        "leaders": ['<leader data-leader="yes">'],
+        "action_en": '<action data-action="yes">',
+        "action_zh": '<action-zh data-action-zh="yes">',
+    }
     row.update({
         "id": 'oil" data-injected="yes<',
         "members": ['AAA.TO" data-member="yes<'],
         "href": 'baskets_canada.html?x=" data-href="yes<',
-        "name": 'Oil" data-label="yes<',
+        **hostile_text,
     })
+    context["theme_actions"]["as_of"] = '<as-of data-as-of="yes">'
 
     env = Environment(loader=FileSystemLoader(root / "templates"), autoescape=False)
     env.globals.update(td=i18n.td, tr=i18n.tr, t=i18n.t)
@@ -281,7 +292,18 @@ def test_theme_action_attributes_escape_owner_strings_with_autoescape_disabled()
     assert 'data-ca-lead-id="oil&#34; data-injected=&#34;yes&lt;"' in html
     assert 'data-ca-members="AAA.TO&#34; data-member=&#34;yes&lt;"' in html
     assert 'href="baskets_canada.html?x=&#34; data-href=&#34;yes&lt;"' in html
-    assert 'aria-label="Oil&#34; data-label=&#34;yes&lt; theme research"' in html
+    assert 'aria-label="&lt;name data-name=&#34;yes&#34;&gt; theme research"' in html
+
+    from markupsafe import escape
+
+    for value in [
+        hostile_text["rank"], hostile_text["name"], hostile_text["name_zh"],
+        hostile_text["category"], hostile_text["category_zh"],
+        hostile_text["leaders"][0], hostile_text["action_en"],
+        hostile_text["action_zh"], context["theme_actions"]["as_of"],
+    ]:
+        assert value not in html
+        assert str(escape(value)) in html
 
 
 def test_composer_reconciles_theme_filter_after_optional_owner_load() -> None:
@@ -414,6 +436,21 @@ def test_successor_evidence_manifest_binds_claimed_artifacts() -> None:
         "production": "none",
         "capability": "BUILT_NOT_PROVEN",
     }
+    supersedes = manifest["supersedes"]
+    assert supersedes["market"] == "ca"
+    assert supersedes["status"] == "immutable_historical_baseline"
+    assert supersedes["successor_manifest"] == (
+        "mockups/evidence/canada-opportunity-map-20260909/EVIDENCE.yml"
+    )
+    assert supersedes["artifacts"] == {
+        "rendered_fixture": {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+            "selector": "markets.ca",
+        },
+        "browser_receipt": {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+        },
+    }
     expected_paths = {
         "rendered_fixture": SUCCESSOR_EVIDENCE / "rendered-fixture.json",
         "browser_receipt": SUCCESSOR_EVIDENCE / "mobile-layout-canada.json",
@@ -456,6 +493,22 @@ def test_successor_browser_receipt_proves_theme_to_prophet_journey() -> None:
     )
     assert receipt["construction_inputs"][theme_owner] == _sha256(ROOT / theme_owner)
     assert receipt["loaded_assets"]["site/canada-stock-v36.js"] == _sha256(ROOT / "site/canada-stock-v36.js")
+    for relative, digest in receipt["loaded_assets"].items():
+        assert _sha256(ROOT / relative) == digest
+    owner_screenshots = [
+        case["screenshot"]
+        for case in receipt["owner_projection_matrix"]["cases"]
+        if case.get("screenshot") is not None
+    ]
+    assert len(owner_screenshots) == 8
+    assert {shot["filename"] for shot in owner_screenshots} == {
+        f"owner-empty-ca-watch-only-{locale}-{theme}-{width}.png"
+        for locale in ("en", "zh")
+        for theme in ("dark", "light")
+        for width in (390, 1440)
+    }
+    for shot in owner_screenshots:
+        assert _sha256(ROOT / shot["path"]) == shot["sha256"]
     assert receipt["pass"] is True
     assert receipt["desktop"]["pass"] is True
     assert receipt["owner_projection_matrix"]["pass"] is True
