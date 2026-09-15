@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-15T03:12:10.633066+00:00",
-  "count": 2130,
+  "generated_at": "2026-09-15T03:27:14.071728+00:00",
+  "count": 2131,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -569,6 +569,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 20,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-0961x7vv7yr-a0b2df",
+      "title": "DB Early Morning Reid Macro Strategy",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T07:32:22Z",
+      "summary_points": [
+        "**Energy Surge & Sovereign Yields**: Brent crude +8.65% ($104.61), European gas +10.52% (€79.50); US core CPI +0.3% (vs +0.2% expected) drives Fed rate hike expectations (88%) and sovereign yields surge (US 2yr +25.9bps to 4.63%).",
+        "**Fed Hike & Geopolitical Risks**: Fed hikes 25bp to 3.75%-4.00% (75bps over 7 months); Houthi advances in Red Sea and Saudi pipeline shutdown heighten risk amid US-China AI safety debate.",
+        "**Asia Tech Sell-Off**: KOSPI -2.74% (SK Hynix -6.6%, Samsung -4.01%), Nikkei -1.01% driven by AI narrative concerns and tech flow reversal.",
+        "**Core CPI & Market Sentiment**: Core CPI +0.29% (above expectations), PPI hawkish (hospital/airfare prices) weighs on S&P 500/NASDAQ futures amid AI regulatory uncertainty."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
