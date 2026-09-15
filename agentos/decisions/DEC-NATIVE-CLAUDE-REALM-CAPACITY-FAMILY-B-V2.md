@@ -1,82 +1,89 @@
 ---
 key: NATIVE-CLAUDE-REALM-CAPACITY-FAMILY-B-V2
 question: >
-  After OCR-2C Family A proved that native Claude realms cannot be safely equated to existing
-  numbered Macro claude_code_oauth_N slots, how should direct claude.ai Claude Code subscription
-  realms acquire canonical capacity identity so Executive Capacity Fabric can eventually route
-  among them without provider PII, secret fingerprints, ordinal guessing or a second quota plane?
+  After Family A refused unsafe equality between native Claude realms and numbered Macro OAuth slots,
+  how should direct claude.ai Claude Code subscriptions acquire canonical provider-capacity identity,
+  host-realm custody and production placement evidence without provider PII, secret fingerprints,
+  ordinal guessing, quota multiplication or a second control plane?
 answer: >
-  Use OCR-2C Family B. Extend the existing Shared AI Provider Control owner with one opaque
-  Provider-Control-owned capacity_capability_id plus owner-issued realm_generation for each
-  managed native Claude capability. Mastermind consumes that exact coordinate and binds it to
-  one host_ref, OS-principal and opaque config-custody reference through a versioned successor
-  of the existing provider-realm receipt pattern; Mastermind does not mint another capacity/account
-  realm id. Native host observations flow back into Macro through one secret-free versioned source
-  wire, and Macro alone normalizes them into mastermind.provider_capacity.v2. Preserve
-  mastermind.provider_capacity.v1 unchanged for existing consumers. Distinct capability/custody
-  realms do not imply independent Anthropic quota pools; capacity independence stays unknown unless
-  separately accepted evidence proves it, so realm count cannot inflate aggregate quota.
+  Use Family B with incumbent owners. Macro Shared AI Provider Control owns one opaque
+  `capacity_capability_id + capability_generation` per logical native provider-capability/quota domain
+  through a secret-free versioned registration source. Mastermind extends its existing provider-realm
+  owner, preserving `realm_generation`, to bind that provider domain to exact `host_ref`, OS principal
+  and opaque config custody; no `binding_generation` or second account id is created. Existing
+  `CapacityOwnerFact.generation` / subscription-canary `capacity_generation` remains a separate canary
+  fact and is not provider identity or production placement authority. Native observations flow into
+  Macro through a secret-free scoped source wire and Macro alone normalizes them into
+  `mastermind.provider_capacity.v2`, while v1 remains unchanged. Production B5 extends the accepted
+  CF2 Provider Capacity + realm-readiness `(host_ref, capacity_capability_id)` join and existing atomic
+  claim/replay evidence rather than creating a new placement bridge. Same provider-capability domain
+  across several hosts shares quota; host rows are never summed. First production auth remains the
+  protected `/login` + dedicated OS principal/Keychain boundary; alternative auth/isolation needs a
+  separate source-law requalification.
 rationale: >
-  Family A's refusal is the correct result: config paths, app labels, plan names and numbered OAuth
-  slots are not provider-supported rotation-safe subscription identity. Family B avoids that join
-  entirely by making the company capacity owner issue the opaque capability coordinate. This keeps
-  the current ownership law intact: Macro owns provider/capacity identity and normalization, Model
-  Router owns suitability, Executive OS owns lifecycle/claim/effect reconciliation, and HF1/OCR-4A
-  own execution mechanics. Current Claude Code config-directory-specific credential/Keychain
-  isolation is useful for custody but cannot prove provider-account identity or quota independence.
-  Versioning the projection rather than patching v1 preserves existing consumers and the accepted
-  unknown/null/freshness semantics.
+  Current protected source already owns provider-realm generation and a distinct canary Capacity
+  generation, so inventing a binding generation or repurposing `capacity_generation` would duplicate
+  authority. Accepted CF2-F already owns production acquisition/join/claim evidence, so promoting
+  `CapacityOwnerFact` would create a parallel placement contract. Macro's current
+  `capability_manifest.v1` is a metabolism secret-ref broker rather than the correct native attached-
+  login registration owner. The corrected architecture therefore extends each incumbent owner at the
+  narrowest seam while preserving Family A refusal, V1 behavior, secret law and lifecycle separation.
 alternatives:
-  - option: Map claude-pro-01..04 to claude_code_oauth_1..4
-    why_not: >
-      Family A falsified the needed equality and rotation-invalidation witness. Ordinal equality is
-      operator convention, not provider capacity identity.
-  - option: Let Mastermind mint a separate native realm id and have Macro map it later
-    why_not: >
-      Creates competing provider/account identity owners and forces a second cross-owner mapping.
-      Provider Control already owns capacity_capability_id; native Claude should reuse that coordinate.
-  - option: Use CLAUDE_CONFIG_DIR or a hash of its path as the realm id
-    why_not: >
-      A config directory identifies local credential custody, not an Anthropic subscription. Raw or
-      reversible path identity also leaks host-local structure and still cannot prove quota independence.
-  - option: Persist account email/id or a token fingerprint to prove distinct accounts
-    why_not: >
-      Violates the secret/PII boundary and creates sensitive durable identity state solely to support
-      routing. Provider account identity may remain opaque while company capability identity stays safe.
+  - option: Map native realms to claude_code_oauth_N by ordinal/name/path
+    why_not: Family A falsified the required provider-supported equality and rotation witness.
+  - option: Let Mastermind mint a native account/realm id
+    why_not: Creates competing provider-account identity owners and another mapping problem.
+  - option: Add binding_generation beside realm_generation
+    why_not: Protected provider-realm receipts already own the local enrollment correction epoch.
+  - option: Call Macro provider-domain epoch capacity_generation
+    why_not: Protected Mastermind already uses that name for subscription-canary CapacityOwnerFact generation.
+  - option: Use CapacityOwnerFact as production Provider Capacity V2 placement evidence
+    why_not: Accepted CF2-F owns production snapshot acquisition, realm join, ranking, atomic claim and replay separately.
+  - option: Use capability_manifest.v1 for native attached-login registrations
+    why_not: It is a metabolism secret-reference broker with different semantics and ownership.
+  - option: Treat CLAUDE_CONFIG_DIR or config_custody_ref as account identity/isolation proof
+    why_not: Local config custody is not provider subscription identity and does not supersede protected OS-principal/Keychain auth law.
+  - option: Sum every host row as independent quota
+    why_not: Host is an execution coordinate; replicas of one provider domain consume one quota domain.
   - option: Patch mastermind.provider_capacity.v1 in place
-    why_not: >
-      Changes a protected closed contract and its material-source semantics underneath existing H0/P0/
-      CF2-I consumers. Native realm generation requires an explicit versioned evolution.
+    why_not: Violates the protected closed contract and existing CF2 consumers; V2 must coexist explicitly.
 evidence:
-  - "Mastermind OCR-2C plan on protected 36f74c02: Family A refusal requires Family B versioned Shared AI Provider Control evolution; v1 stays unchanged."
-  - "Mastermind native-Claude-capacity identity amendment: native Worker realm is not automatically a Macro claude_code_oauth_N capability; Provider Control remains the normalizer."
-  - "Macro engine/provider_capacity.py at current main ancestry: v1 slot identity is capability_id + host_ref with explicit health/cooling/quota/outcome evidence and strict unknown/freshness laws."
-  - "Claude Code current authentication documentation: CLAUDE_CONFIG_DIR changes credential-file location and macOS Keychain key, establishing local custody isolation but not provider account identity."
-  - "Mastermind PR #662 candidate head 8ed986a814b1eef9e4818c900683fd27fa1a35f1: consumer architecture preserves Provider Control identity ownership and separates persistent Operator/browser/GUI work."
+  - "Protected Mastermind `ProviderRealmEnrollmentReceipt.generation` is consumed as realm_generation."
+  - "Protected Mastermind `CapacityOwnerFact.generation` is separately consumed by subscription canary admission as capacity_generation."
+  - "Accepted CF2-F joins strict Macro Provider Capacity to realm-local readiness at `(host_ref, capacity_capability_id)` before existing atomic claim/replay evidence."
+  - "Current Macro capability_manifest.v1 is owner metabolism-phase0 and stores secret-ref names plus lane/tier policy."
+  - "Accepted Capacity F0 slot identity is `(host_ref, capability_id)` and explicitly does not make host rows independent provider entitlement."
+  - "Protected Claude preflight reports OS_PRINCIPAL_KEYCHAIN isolation and denies higher-precedence token/API/cloud auth for the first production path."
 affects:
   - WS:EXECUTIVE-CAPACITY-FABRIC
   - shared-ai-provider-control
   - mastermind/OCR-2C
   - mastermind/PF1
+  - mastermind/MH1
 confidence: high
 reversibility: costly
 decided_by: ceo-sol
-decided_at: 2026-09-14
+decided_at: 2026-09-15
 ---
 
 ## Consequences
 
-The first implementation step after this decision is protected and independently reviewed is the
-Provider-Control identity/generation contract, not a provider login and not a Claude adapter rewrite.
-The owner should use the existing capability-definition/config family or a reviewed successor instead
-of creating a runtime account registry. A typed registration receipt may export the owner-issued
-capability coordinate to Mastermind; it is an owner fact, not lifecycle state.
+B1 begins only after paired architecture acceptance. Its source target is the reviewed secret-free
+`config/provider_native_capabilities.v1.json` / `mastermind.provider_native_capability_registry/v1`
+contract in Shared AI Provider Control, plus typed
+`mastermind.provider_native_capability_registration/v1` export. No login/provider call is needed.
 
-`mastermind.provider_capacity.v2` should retain the V1 top-level semantic model and existing slot
-fields while adding a closed native `realm_binding` containing only generation, enrollment-receipt
-digest and capacity-independence state. For native Claude rows, the normal `capability_id` is the
-Provider-Control native capability key; there is no second realm/account identifier.
+Provider-realm V2 reuses `realm_generation` and binds `capacity_capability_id + capability_generation`
+to host/principal/config custody. Provider Capacity V2 adds closed `realm_binding` containing
+`capability_generation`, `realm_generation` and enrollment receipt digest. The earlier
+`binding_generation` and row-level `capacity_independence` proposals are rejected.
 
-This decision does not mark Family B implemented, installed, routed or production-proven. Until the
-cross-repository architecture is independently accepted and protected, capability state remains
-`SPEC_ONLY / RECORDS_ONLY / PRODUCTION_INERT`.
+B5 extends accepted CF2 acquisition/join/atomic-claim/replay evidence. Subscription-canary
+`CapacityOwnerFact` remains canary-only unless a separately versioned canary admission is later needed.
+
+The first real B6 realm uses protected native `/login` under a dedicated OS principal/Keychain and must
+prove restart/cold-boot/auth-precedence/realm-isolation behavior. Setup-token and same-user multi-config
+fanout remain future requalification candidates.
+
+This decision remains `SPEC_ONLY / RECORDS_ONLY / PRODUCTION_INERT` until independent paired review,
+current-base validation and explicit Sol source release.
