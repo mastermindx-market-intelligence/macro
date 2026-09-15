@@ -1,53 +1,50 @@
 name: debt-maturity-drip
-# Off-render nightly registration for packet B-F09-3's debt-maturity ladder
-# producer (META-CEO ruling round 2, B1: "refresh_cache_for_cik is called for
-# every issuer the stock library builds, inside the existing collector/
-# nightly step that already fetches companyfacts (never a network call on
-# the render path)").
+# Packet W8B_F09_11 (META-CEO B, 2026-09-13).
 #
-# collectors/edgar_facts.py._statements_for() already fetches each filer's
-# full SEC companyfacts document for the ~1,334-ticker fundamentals universe
-# (the same universe the stock library builds pages for) and now warms
-# engine/debt_maturity.py's bounded per-issuer cache from that SAME response
-# (no second SEC round trip) -- see _dm_wire_cache() in that file. That
-# collector's own docstring already claimed a "weekly, resumable, capped
-# drip (REFRESH_DAYS=30, max_new=200/run)" but had no automatic schedule of
-# its own -- only workflow_dispatch via edgar_flow_ops.yml. This workflow is
-# the missing registration: it runs the SAME pre-existing, already-tested,
-# non-force universe pass (scripts/backfill_edgar_flow.py --max N, no
-# --force, so it respects the 30-day staleness guard and is safe to run
-# nightly) on its own schedule, on a light runner, entirely separate from
-# edgar_flow_ops.yml's heavy manual `--force --max 9999` full-universe
-# actions and from daily.yml's already-timing-constrained engine job.
+# What this workflow writes, and how the writes reach origin/main:
+#   scripts/backfill_edgar_flow --max N refreshes two fetch-time caches on
+#   the runner — data/edgar/statements.parquet and the per-CIK JSON under
+#   data/debt_maturity/cache/. Those are the engine/debt_maturity.py inputs
+#   the stock panel's maturity-wall timeline renders against. Both caches
+#   are re-derivable at fetch time and carry no forward-only accrual
+#   semantics (the cache JSON files carry a fetched_at; the parquet carries
+#   an as_of), so the nightly-sole-advancer law does not bind — the
+#   debt-maturity cache is a TYPED ARTIFACT, not a forward ledger
+#   (orch/w8/W8_RULING.md, packet W8-1).
 #
-# House law: heavy compute goes off the render path (see filing-forensics-sec.yml
-# for the identical off-render pattern applied to a different SEC source).
+# Why the previous shape never reached main (R1):
+#   The prior header asserted a broad `git add data/` sweep on the same
+#   `macstudio` host would carry these writes forward. That premise failed
+#   twice:
+#     1. actions/checkout@v4 defaults to clean: true, so the first checkout
+#        in ANY subsequent job on the same runner registration runs
+#        `git clean -ffdx + git reset --hard` and deletes the untracked
+#        cache directory while reverting the tracked parquet to the last
+#        committed state. daily.yml already documents this exact failure
+#        for other artefacts (daily.yml:553, :824, :1248).
+#     2. The `macstudio` label spans several runner registrations
+#        (mac-builder-1 / -2 / -5 named in daily.yml's engine comment).
+#        Each registration has its own _work directory, so the drip and
+#        the engine job usually do not even share a tree. The 09-12 run
+#        (run id 34680521723) on mac-builder-5 produced
+#        "edgar_facts: 2841 universe, fetching 200 (cap 200)" then
+#        "edgar_facts: cache now 1590 tickers, 9230 ticker-years" on
+#        the runner — the writes happened — yet data/debt_maturity/ on
+#        origin/main stays empty (`git ls-tree -r origin/main
+#        data/debt_maturity/ | wc -l` = 0) and data/edgar/statements.parquet
+#        was last committed 5a22028be442 on 2026-08-11.
 #
-# HOST, round-2 review BLOCKER-2: this job MUST share the exact runner
-# workspace daily.yml's `engine` job checks out into, or its writes are
-# invisible to that job's "git add data/" sweep and are lost outright (a
-# fresh actions/checkout on any OTHER runner registration starts from a
-# clean tree). `macstudio-light` is a documented SEPARATE physical host from
-# `macstudio` (see close-pass.yml, heartbeat.yml, daily.yml's own `engine` job,
-# research-ingest.yml) with its own `_work` directory -- it can never carry
-# these writes forward no matter how the schedule is timed. `macstudio` is
-# the one runner label registered for both this job and `engine`
-# (edgar_flow_ops.yml already relies on the identical same-host mechanism for
-# the same statements.parquet artifact), so THIS job now runs there too.
-#
-# NIGHTLY-SOLE-ADVANCER LAW: this workflow writes ONLY to
-# data/edgar/statements.parquet and data/debt_maturity/cache/ on the runner.
-# It does NOT push to git -- the nightly ENGINE job's broad "git add data/"
-# sweep carries those writes on its next run, same as edgar_flow_ops.yml.
+# The one shape that lands (R3): this job is its OWN committer of
+# exactly its two output paths. The push step runs
+# scripts.debt_maturity_drip_push, which is GATE → STAGE → EMPTY →
+# CEILING → COMMIT → PUSH(rebase-free re-checkout cycle), stages ONLY
+# the two allowed paths, refuses oversized payloads at 48 MiB, never
+# reads a secret, and exits 0 on every refusal — the drip is fail-soft
+# (cache goes stale, not wrong). The workflow_dispatch input `push`
+# defaults to "1" so the schedule path pushes on the first run after
+# merge; setting it to "0" via the GitHub UI is the kill switch.
 on:
   schedule:
-    # 02:50 UTC -- this job and daily.yml's `engine` job now run on the SAME
-    # `macstudio` host (see the BLOCKER-2 comment above), so the separation
-    # that matters is TIME, not host: well before daily.yml's `engine` job
-    # reaches its own EDGAR/companyfacts steps (~05:00-06:30 UTC) so this
-    # bounded 25m job finishes and releases the runner before `engine` needs
-    # it -- sequential on one host, never concurrent, so this job never
-    # competes with the render-path job's budget.
     - cron: "50 2 * * *"
   workflow_dispatch:
     inputs:
@@ -55,9 +52,13 @@ on:
         description: "Max tickers to fetch this run (bounded, resumable, respects 30-day staleness)"
         required: false
         default: "200"
+      push:
+        description: "1 = commit and push the two output paths to main; 0 = leave them on the runner"
+        required: false
+        default: "1"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: debt-maturity-drip
@@ -91,5 +92,8 @@ jobs:
           if [ "$rc" -ne 0 ]; then
             echo "::warning::debt-maturity-drip exited $rc — check log (fail-soft; cache goes stale, not wrong)"
           fi
-          echo "=== data/edgar/statements.parquet + data/debt_maturity/cache updated on runner. Nightly ENGINE job's git add data/ will commit them. ==="
-          exit 0
+
+      - name: persist cache + statements to main (bounded, rebase-free, [skip ci])
+        env:
+          DEBT_MATURITY_DRIP_PUSH: ${{ github.event.inputs.push || '1' }}
+        run: python -m scripts.debt_maturity_drip_push --base main
