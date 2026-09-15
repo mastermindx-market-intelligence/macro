@@ -1,8 +1,8 @@
 {
   "schema": "stage_context.v1",
-  "asof": "2026-09-13",
+  "asof": "2026-09-14",
   "data_session": "2026-09-11",
-  "built": "2026-09-13T09:00:56Z",
+  "built": "2026-09-14T09:28:12Z",
   "is_context_only": true,
   "display_only": true,
   "disclaimer": "Context only — stage classification display, never a signal or sizing input.",
@@ -61,16 +61,16 @@
   "counts": {
     "total": 2711,
     "stage1": 116,
-    "stage2": 1461,
-    "stage2_fresh": 309,
+    "stage2": 1462,
+    "stage2_fresh": 310,
     "stage3": 254,
-    "stage4": 880,
+    "stage4": 879,
     "too_young": 344,
     "new_today": 13
   },
   "market": {
     "pct_stage2": 53.9,
-    "pct_stage4": 32.5,
+    "pct_stage4": 32.4,
     "weather": "advancing",
     "spy_stage": 2,
     "spy_weeks": 20
@@ -3173,8 +3173,8 @@
     },
     {
       "sector": "Energy",
-      "n": 120,
-      "pct_stage2": 70.0,
+      "n": 119,
+      "pct_stage2": 70.6,
       "trend": "up"
     },
     {
@@ -3209,8 +3209,8 @@
     },
     {
       "sector": "Industrials",
-      "n": 364,
-      "pct_stage2": 48.9,
+      "n": 365,
+      "pct_stage2": 49.0,
       "trend": "flat"
     },
     {
@@ -10010,8 +10010,8 @@
       19
     ],
     "NFE": [
-      4,
-      125
+      2,
+      2
     ],
     "NFLX": [
       4,
@@ -36742,8 +36742,8 @@
       "event": "pullback_resume"
     },
     "NFE": {
-      "stage": 4,
-      "fresh": false,
+      "stage": 2,
+      "fresh": true,
       "event": null
     },
     "NFLX": {
