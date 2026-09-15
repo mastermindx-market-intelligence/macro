@@ -166,11 +166,11 @@ Run the two synthetic suites together, then run the archive suite separately. Va
 
 Demonstrate targeted failure for: forward-filled missing date, retained incomplete 3D tail, cross before 100 completed bars, non-future return endpoint, rank/trade authority, non-datetime index, UTC-shifted label and endpoint omission.
 
-- [ ] **Step 2: Write verification receipt**
+- [x] **Step 2: Write verification receipt**
 
 Use strict JSON and include exact commands/results, source/output SHA-256 values, `review_reuse: FULL_REREVIEW_REQUIRED`, zero-authority capability and known external/non-semantic CI blockers.
 
-- [ ] **Step 3: Update durable records**
+- [x] **Step 3: Update durable records**
 
 Update RPH-1 wave status/artifacts/next action, add a cold-stranger handoff with verified and unverified claims, and run `python scripts/agentos.py validate`.
 
