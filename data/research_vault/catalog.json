@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-15T00:26:51.293001+00:00",
-  "count": 2122,
+  "generated_at": "2026-09-15T00:41:47.733414+00:00",
+  "count": 2123,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -73,6 +73,7 @@
     "S&T",
     "SEB",
     "SG Prime",
+    "SYZ",
     "Safra",
     "ScotiaBank",
     "Scotiabank",
@@ -97,6 +98,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-kde0lhgesh8-78970a",
+      "title": "Equity Weekly 4 11 September 2026",
+      "institution": "SYZ",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T00:12:43Z",
+      "summary_points": [
+        "**Geopolitical Inflation Catalysts**: Iran attack, Middle East energy strikes, and US-Canada trade dispute amplified inflation fears; hotter August PPI/core CPI data caused MSCI ACWI to fall 1.0%.",
+        "**Technical Sentiment Shift**: MSCI World and US 10y yield trends persisted as geopolitical shocks and inflation data overshadowed AI narrative, with strong August payrolls tempering Fed easing hopes.",
+        "**Korea Semiconductor Surge**: MSCI Korea surged 6.8% on memory-chip exporter momentum driven by sharp YoY shipment growth and AI infrastructure demand, dominating EM outperformance (MSCI EM +1.1%).",
+        "**Sector Divergence & EM Flows**: Healthcare crushed by Novartis trial failures (-4.5%), tech split (semiconductors +5.0% vs.",
+        "AI laggards); EM outperformance solely Korea-driven (China/India underperformed -1.6%/-2.8%)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-zyx4kxtohsc-63615c",
       "title": "bond investor",
