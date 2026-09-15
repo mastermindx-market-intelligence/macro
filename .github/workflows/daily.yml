@@ -3119,6 +3119,17 @@ jobs:
         # policy_watch after policy_intent). special_situations stays IN this job (not a
         # sibling job like factor_series) because it writes a PAGE + hub card that must be
         # in THIS run's deploy artifact — it is event-driven, so a one-run lag is wrong.
+        #
+        # REACHABILITY GUARD (2026-09-15): run 34957877090 proved the barrier can wedge
+        # for >3h (15:37Z→18:56Z), starving every tail consumer behind it — including
+        # master_brain + build_aibrief — until the 300m engine-job cap cancels the night.
+        # The measured normal ceiling documented above is ~28m. Give the whole band a
+        # conservative 60m cold-run budget and make timeout non-fatal, matching the
+        # existing timeout+continue-on-error doctrine used by other resilient nightly
+        # steps. A wedged regional desk may stay stale; it may not freeze the system-wide
+        # AI brief, hub, commit, and publication tail. Re-measure before changing this cap.
+        timeout-minutes: 60
+        continue-on-error: true
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY }}
