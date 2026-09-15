@@ -1,23 +1,17 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-09-14T19:26:17.199379+00:00",
-  "posts_seen": 7,
-  "seen_total": 187,
-  "evaluated": 2,
+  "as_of": "2026-09-15T18:11:53.585594+00:00",
+  "posts_seen": 6,
+  "seen_total": 188,
+  "evaluated": 1,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
   "gate_scores": [
     {
-      "id": "wh-2026-09-14-nominations-sent-to-the-senate-9fc3",
-      "importance": 5,
+      "id": "wh-2026-09-15-president-trump-promised-to-make-memphis-safe-again-one-year-later-the-numbers-p",
+      "importance": 15,
       "activated": false,
       "degraded_reason": "served_by:deepseek"
-    },
-    {
-      "id": "wh-2026-09-14-warrior-ethos-in-action-dude-44-bravos-incredible-story",
-      "importance": 5,
-      "activated": false,
-      "degraded_reason": null
     }
   ]
 }

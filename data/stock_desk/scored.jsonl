@@ -416,3 +416,5 @@
 {"id": "2026-09-11-TEL-20260913140858-3", "ticker": "TEL", "subject": "TEL", "lean": "neutral", "conviction": "low", "kind": "soft", "check_by": "2026-10-09", "outcome": "unscored", "scored_at": "2026-09-13T14:08:59.501607+00:00"}
 {"id": "2026-09-11-SIG-20260914144219-1", "ticker": "SIG", "subject": "SIG", "lean": "neutral", "conviction": "low", "kind": "soft", "check_by": "2026-10-12", "outcome": "unscored", "scored_at": "2026-09-14T14:42:20.243851+00:00"}
 {"id": "2026-09-11-TEL-20260914144219-3", "ticker": "TEL", "subject": "TEL", "lean": "neutral", "conviction": "low", "kind": "soft", "check_by": "2026-10-12", "outcome": "unscored", "scored_at": "2026-09-14T14:42:20.243863+00:00"}
+{"id": "2026-09-11-SIG-20260915045609-1", "ticker": "SIG", "subject": "SIG", "lean": "neutral", "conviction": "low", "kind": "soft", "check_by": "2026-10-09", "outcome": "unscored", "scored_at": "2026-09-15T04:56:10.592559+00:00"}
+{"id": "2026-09-11-TEL-20260915045609-3", "ticker": "TEL", "subject": "TEL", "lean": "neutral", "conviction": "low", "kind": "soft", "check_by": "2026-10-09", "outcome": "unscored", "scored_at": "2026-09-15T04:56:10.592576+00:00"}

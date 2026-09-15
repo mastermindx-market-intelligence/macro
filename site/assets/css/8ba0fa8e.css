@@ -85,6 +85,23 @@
   .pw .sh-needle-tip{filter:drop-shadow(0 0 3.5px var(--sh-accent))}
   /* theme.css owns the light pointer; policy-watch supplies its direction-neutral
      pressure-state accent through --sh-accent. */
+  /* gauge halo tones: opacity-tinted from --text so dark + light themes both
+     adapt. Dark keeps the SVG glow; light must not transplant it over the
+     .sh-hero-right money copy. */
+  .pw .sh-gauge-track{stroke:color-mix(in srgb, var(--text) 8%, transparent)}
+  .pw .sh-gauge-ticks{stroke:color-mix(in srgb, var(--text) 20%, transparent)}
+  .pw .sh-gauge-label{fill:color-mix(in srgb, var(--text) 26%, transparent)}
+  .pw .sh-gauge-denom{fill:color-mix(in srgb, var(--text) 32%, transparent)}
+  [data-theme="light"] .pw .sh-gauge-svg{overflow:hidden}
+  [data-theme="light"] .pw .sh-gauge-fill{filter:none}
+  [data-theme="light"] .pw .sh-gauge-track{stroke:color-mix(in srgb, var(--text) 14%, transparent)}
+  [data-theme="light"] .pw .sh-gauge-ticks{stroke:color-mix(in srgb, var(--text) 32%, transparent)}
+  [data-theme="light"] .pw .sh-gauge-label{fill:color-mix(in srgb, var(--text) 48%, transparent)}
+  [data-theme="light"] .pw .sh-gauge-denom{fill:color-mix(in srgb, var(--text) 40%, transparent)}
+  [data-theme="light"] .pw .sh-needle-tip{filter:none}
+  [data-theme="light"] .pw .sh-hero-right{position:relative;z-index:2}
+  [data-theme="light"] .pw .sh-big{text-shadow:none}
+  [data-theme="light"] .pw .sh-dot-firing{box-shadow:none}
   .pw .sh-score-line{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
   .pw .sh-big{font-size:60px;font-weight:800;line-height:.9;letter-spacing:-.035em;font-variant-numeric:tabular-nums;color:var(--sh-accent);text-shadow:0 0 34px var(--sh-glow)}
   @media(max-width:560px){.pw .sh-big{font-size:40px}}
@@ -186,5 +203,25 @@
   .pw .feed .tt{font-size:13px;line-height:1.45}
   .pw .feed .tt a{color:var(--text)}.pw .feed .tt a:hover{color:var(--ink-link, var(--link))}
   .pw .disc{font-size:11px;color:var(--muted);margin-top:14px;line-height:1.55}
+  .pw .empty{margin:12px 0 0;font-size:14px;line-height:1.5;color:var(--text);font-weight:500}
+  .pw .empty-why{margin:6px 0 0;font-size:12px;line-height:1.45;color:var(--muted)}
   .pw .warming{border-radius:14px;border:1px solid var(--mx5-glass-border);background:rgba(255,255,255,.03);padding:16px 18px;font-size:13px;color:var(--muted)}
+  .pw .pw-hero-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:2px 0 0}
+  .pw .dtp-asof,.pw .dtp{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);border:1px solid var(--mx5-glass-border);border-radius:var(--r-pill,999px);padding:3px 10px;font-weight:500;letter-spacing:0;text-transform:none;white-space:nowrap}
+  .pw .cnx-ctitle .dtp{margin-left:auto;font-weight:500}
+  .pw .pw-table-scroll{display:block;overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch}
+  .pw .pw-table-scroll .pw-table-inner{min-width:520px;width:max-content}
+  .pw .pw-backdrop{margin-top:16px;padding:14px 14px 4px;border:1px solid var(--mx5-glass-border);border-radius:var(--r-card,14px);background:color-mix(in srgb, var(--text) 3%, transparent)}
+  [data-theme="light"] .pw .pw-backdrop{background:color-mix(in srgb, var(--panel) 72%, transparent);box-shadow:inset 0 1px 0 color-mix(in srgb, var(--panel) 90%, transparent), 0 6px 18px color-mix(in srgb, var(--text) 6%, transparent)}
+  .pw .pw-backdrop .co-h{font-size:11.5px;letter-spacing:.04em;text-transform:uppercase}
+  .pw .pw-backdrop .pw-stance{font-size:13px;line-height:1.55;color:var(--text);margin:0 0 10px}
+  .pw .pw-see-all{margin:10px 0 0;font-size:12.5px}
+  .pw .pw-see-all a{color:var(--ink-link, var(--link));font-weight:600}
+  .pw .pw-baskets{font-size:10px;color:var(--muted)}
+  .pw .metric .k{display:flex;align-items:center;gap:4px}
+  .pw .pw-sector-all{margin-top:12px;border-top:1px dashed var(--mx5-glass-border);padding-top:10px}
+  .pw .pw-sector-all summary{cursor:pointer;font-size:12.5px;color:var(--muted);font-weight:600}
+  .pw .feed li{flex-wrap:wrap}
+  .pw .pw-deep{margin:8px 0 4px;font-size:12px}
+  .pw .pw-deep a{color:var(--ink-link, var(--link));font-weight:600}
 

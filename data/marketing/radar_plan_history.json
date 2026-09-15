@@ -2,6 +2,18 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-09-15",
+      "tickers": [
+        "CHRW",
+        "EZPW",
+        "GMED",
+        "GPI",
+        "HYG",
+        "QCOM",
+        "WING"
+      ]
+    },
+    {
       "as_of": "2026-09-14",
       "tickers": [
         "BOC",
@@ -112,29 +124,6 @@
         "VST",
         "VYX",
         "WMB"
-      ]
-    },
-    {
-      "as_of": "2026-09-07",
-      "tickers": [
-        "ACM",
-        "ALV",
-        "BTG",
-        "CXT",
-        "EMXC",
-        "HOG",
-        "HON",
-        "HWKN",
-        "KEX",
-        "LAUR",
-        "LEA",
-        "LRN",
-        "OHI",
-        "PCG",
-        "POST",
-        "PPC",
-        "PRDO",
-        "SEDG"
       ]
     }
   ]
