@@ -6907,6 +6907,52 @@ jobs:
       - name: research vault ingestion-spine + page unit tests
         run: python -m pytest tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py -q
 
+
+  research-vault-source-lineage:
+    if: ${{ false }}
+    gate: code
+    # PR-gating owner for the recovered standalone MarketDesk package and its
+    # canonical import/install/rollback contract. The suite is hermetic: no
+    # browser install, live network, launchd action, or Research Vault mutation.
+    paths:
+      - "collectors/marketdesk_extractor/**"
+      - "tests/test_marketdesk_extractor_lineage.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install recovered extractor test dependencies
+        run: pip install pytest boto3 "playwright>=1.45" "pydantic>=2.6" "python-dotenv>=1.0" "tenacity>=8.3"
+      - name: recovered MarketDesk extractor lineage tests
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1
+          PYTHONPATH=collectors/marketdesk_extractor/extractor/src
+          python -m pytest
+          tests/test_marketdesk_extractor_lineage.py
+          collectors/marketdesk_extractor/extractor/tests/test_allocator.py
+          collectors/marketdesk_extractor/extractor/tests/test_backlog.py
+          collectors/marketdesk_extractor/extractor/tests/test_cleanup.py
+          collectors/marketdesk_extractor/extractor/tests/test_db.py
+          collectors/marketdesk_extractor/extractor/tests/test_dedupe.py
+          collectors/marketdesk_extractor/extractor/tests/test_feed_probe.py
+          collectors/marketdesk_extractor/extractor/tests/test_feed_watcher.py
+          collectors/marketdesk_extractor/extractor/tests/test_filters.py
+          collectors/marketdesk_extractor/extractor/tests/test_manifest.py
+          collectors/marketdesk_extractor/extractor/tests/test_marketdesk_dating.py
+          collectors/marketdesk_extractor/extractor/tests/test_pipeline_integration.py
+          collectors/marketdesk_extractor/extractor/tests/test_publish_vault.py
+          collectors/marketdesk_extractor/extractor/tests/test_scoring.py
+          collectors/marketdesk_extractor/extractor/tests/test_self_heal.py
+          collectors/marketdesk_extractor/extractor/tests/test_session_expiry.py
+          collectors/marketdesk_extractor/extractor/tests/test_storage_guard.py
+          collectors/marketdesk_extractor/extractor/tests/test_trickle.py
+          collectors/marketdesk_extractor/extractor/tests/test_trickle_pacing.py
+          collectors/marketdesk_extractor/extractor/tests/test_upload_r2_key.py
+          collectors/marketdesk_extractor/extractor/tests/test_utils.py
+          -q -p no:cacheprovider
+
   research-vault-api:
     if: ${{ false }}
     gate: code
