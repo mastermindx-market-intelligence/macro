@@ -61,7 +61,7 @@ A current capability generation cannot rescue a stale realm generation; a fresh 
 Macro native provider-domain registration:
 
 ```text
-schema = mastermind.provider_native_realm_registration/v1
+schema = mastermind.provider_native_capability_registration/v1
 capacity_capability_id
 capability_generation
 provider = claude
