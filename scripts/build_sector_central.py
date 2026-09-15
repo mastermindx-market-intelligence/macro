@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import json
 import logging
+import math
 import sys
 from pathlib import Path
 
@@ -21,79 +22,27 @@ from jinja2 import Environment, FileSystemLoader
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from lib import config  # noqa: E402
+from lib import config, nyse_calendar  # noqa: E402
+from lib import sector_participation as w1_contract  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_sector_central")
 
 
-def read_sector_participation_20() -> dict:
-    """W1: bounded, read-only attach of the 20-session participation artifact,
-    if the existing breadth owner has published one — this builder never fetches
-    market data itself (research/skylit/W1_SOURCE_IMPLEMENTATION_RULING_2026-09-11.md
-    §2: "The builder must not fetch market data"). Never raises: absence is the
-    expected, honest "missing input" state while the licensed acquisition remains
-    unwired from the nightly collector run (a separate, explicitly gated step).
+_w1_generation_id = w1_contract.generation_id
+_validate_w1_package = w1_contract.validate_package
+_atomic_project_bytes = w1_contract.atomic_replace_bytes
 
-    R4: presence of a nonempty parquet is NOT by itself "available" or "current" —
-    the metadata sidecar's own ``available`` flag governs, and staleness is judged
-    against the DECLARED expected-session clock, never inferred from this build's
-    own timestamp or the parquet's mtime."""
-    try:
-        bdir = config.data_dir() / "breadth"
-        ppath = bdir / "sector_participation_20.parquet"
-        mpath = bdir / "sector_participation_20_meta.json"
-        if not ppath.exists() or not mpath.exists():
-            return {"available": False, "note": "not yet published"}
-        meta = json.loads(mpath.read_text())
-        if not meta.get("available"):
-            return {"available": False, "note": "producer reported no result",
-                    "fetch_failure_count": meta.get("fetch_failure_count")}
-        import pandas as pd  # local: keeps this module import-light (test_import_stays_light)
-        part = pd.read_parquet(ppath)
-        pct_cols = [c for c in part.columns if c.endswith("|pct_above_20")]
-        elig_cols = [c for c in part.columns if c.endswith("|eligible_20")]
-        has_real_data = bool(elig_cols) and part[elig_cols].notna().any().any()
-        if part.empty or not has_real_data:
-            return {"available": False, "note": "artifact carries no usable participation rows"}
-        expected_last = meta.get("expected_last_session")
-        observed_max = meta.get("observed_max_session")
-        stale = bool(expected_last and observed_max and observed_max < expected_last)
-        last = part.iloc[-1]
-        sectors = []
-        for pct_col in pct_cols:
-            sector = pct_col.rsplit("|", 1)[0]
-            pct = last.get(pct_col)
-            elig = last.get(f"{sector}|eligible_20")
-            exp = last.get(f"{sector}|expected_20")
-            above = last.get(f"{sector}|above_20")
-            sectors.append({
-                "sector": sector,
-                # None (never 0.0) means the 5-name/90%-coverage floor withheld a
-                # rate this row — the consumer must show "unavailable", not 0%.
-                "pct_above_20": None if pd.isna(pct) else float(pct),
-                "eligible_20": None if pd.isna(elig) else int(elig),
-                "expected_20": None if pd.isna(exp) else int(exp),
-                "above_20": None if pd.isna(above) else int(above),
-            })
-        sectors.sort(key=lambda s: (s["pct_above_20"] is None, s["sector"]))
-        return {
-            "available": True,
-            "basis": meta.get("basis", "split_adjusted"),
-            "window_sessions": 20,
-            "as_of": observed_max,                       # the frame's own observed clock
-            "expected_last_session": expected_last,        # the calendar's separate clock
-            "stale": stale,
-            "computed_at": meta.get("computed_at"),
-            "reference_roster_count": meta.get("reference_roster_count"),
-            "fetch_failure_count": meta.get("fetch_failure_count", 0),
-            "sector_count": len(pct_cols),
-            "sectors": sectors,        # the actual derived rates a UI renders, not just counts
-        }
-    except Exception as e:  # noqa: BLE001 — additive, never fatal
-        log.warning("sector_central: W1 participation read failed: %s", e)
-        return {"available": False, "note": "read error"}
+
+def read_sector_participation_20(*, site: Path | None = None) -> dict:
+    """Project one validated W1 generation and return its UI pointer."""
+    return w1_contract.read_public_pointer(
+        source_path=config.data_dir() / "breadth" / "sector_participation_20.json",
+        site=site,
+        current_expected_session=nyse_calendar.expected_last_session().isoformat(),
+        logger=log,
+    )
 
 
 #: Board lanes that carry the reduce-side read. The graduation-gap chip only ever
@@ -424,7 +373,7 @@ def main() -> int:
     # W1: 20-session sector participation — a separate DESCRIPTIVE context attached
     # AFTER the grader above, never inside cc.compute() or the graded object
     # (research/skylit/W1_SOURCE_IMPLEMENTATION_RULING_2026-09-11.md §2).
-    data["sector_participation"] = read_sector_participation_20()
+    data["sector_participation"] = read_sector_participation_20(site=site)
 
     payload = "window.SECTOR_CENTRAL=" + json.dumps(data, separators=(",", ":"), ensure_ascii=False) + ";\n"
     (site / "sector_central_data.js").write_text(payload, encoding="utf-8")
@@ -553,6 +502,9 @@ def main() -> int:
         src = root / "templates" / asset
         if src.exists():
             shutil.copy2(src, site / asset)
+    # W1 browser projection follows the same import-light package owner as the
+    # producer and reader; first Money activation remains the only runtime fetch.
+    w1_contract.copy_client_asset(template_root=root / "templates", site=site)
     for need in ("sector_cycles_data.js", "sector_cycles_series_data.js",
                  "sector_cycles_narr_data.js", "sector_cycles_dna_data.js",
                  "mm_charts.js", "cycle.css"):
