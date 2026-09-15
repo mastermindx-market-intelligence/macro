@@ -1269,6 +1269,23 @@ jobs:
       - "tests/test_dossier_numeric_contract.py"
       - "tests/test_stock_dossier.py"
       - "tests/test_stock_score.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "collectors/edgar_facts.py"
+      # B-F07-2 retarget 2026-09-12: the F07 suites reach debt_maturity via collectors/edgar_facts.py:179 (main #6921) — contract-delta
+      - "engine/debt_maturity.py"
+      - "scripts/build_debt_maturity.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "engine/valuation_scenario.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "engine/valuation_assumptions.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "templates/_valuation_scenario.html.j2"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "templates/_valuation_assumptions.html.j2"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "tests/test_valuation_scenario.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "tests/test_valuation_assumptions.py"
     # Wired 2026-08-02: neither suite was named by ANY run step, so #4297's caution
     # rewrite ran 4 stock_score pins red for a day with no CI signal, and the dossier's
     # prose-matched risk_veto died silently. test_stock_score pins the honesty
@@ -1359,6 +1376,11 @@ jobs:
       # fixture dicts only. Own step per this job's precedent (step = masking unit).
       - name: security_state.v1 view-model projection (B1A)
         run: python -m pytest tests/test_security_state_view_model.py -q
+      - name: valuation scenario V1 + user-adjustable assumptions (B-F07-1 / B-F07-2)
+        run: >
+          python -m pytest
+          tests/test_valuation_scenario.py
+          tests/test_valuation_assumptions.py -q
 
   chronicle-suite:
     if: ${{ false }}
@@ -1647,6 +1669,11 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
+      # scenario V1 pure module now sits in the shared engine/* import closure.
+      - "engine/valuation_scenario.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "engine/valuation_assumptions.py"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/__init__.py"
       - "engine/security_state.py"
@@ -2045,6 +2072,10 @@ jobs:
       - "templates/_navlinks.html.j2"
       - "templates/_public_footer.html.j2"
       - "templates/_public_nav.html.j2"
+      # F13-1 closure widening 2026-09-09 (contract-delta): build_site's
+      # source-bound help directory now also validates the public
+      # glossary page against this template.
+      - "templates/glossary.html.j2"
       - "templates/measurement.html.j2"
       - "templates/methodology.html.j2"
       - "templates/support.html.j2"
@@ -2345,6 +2376,10 @@ jobs:
       # pair pins (visibility declarations, stance/lane inks, light-presence
       # fence, token cleanliness via scripts.check_design_system.scan_text —
       # repo-import only, no new deps), full checkout has site/. No new job.
+      # tests/test_stock_dashboard_first_frame_data.py (P0B zero-FOUC) pins
+      # the checked-in generated HK/Canada populations and duplicate-id truth.
+      # Its source-only contract is intentionally split into the dedicated
+      # gate:code job below; generated site/** truth stays gate:data here.
       # tests/test_debt_maturity.py (packet B-F09-3, contract-delta
       # 2026-09-06) rides this step: engine.debt_maturity is a pure module
       # already covered by this job's engine/*.py glob, and the Jinja
@@ -2352,11 +2387,20 @@ jobs:
       # test_stock_dashboard_css.py's neighbours already render real stock
       # page partials — pandas/pyarrow/jinja2 are already on this step's
       # install line. No new job.
+      # tests/test_research_priority_ordering.py (A-F04-W4-1, MO-DELTA-006) is the
+      # authority-ceiling census guard for Theme Tracker's uncalibrated reading-order
+      # section: it renders templates/state_of_themes.html.j2 end to end through
+      # scripts/build_state_of_themes.py (jinja2) and loads real tmp parquet stores
+      # through engine/theme_graph/store.py (pandas/pyarrow) to pin the §2.4
+      # ok/empty/unavailable contract — the same dependency set this step already
+      # installs. Theme Tracker's owning job unrun-subsector-themes is gate: data, so
+      # the suite is named here on the census step instead. No new job.
       - name: render-guard + engine-contract tests (rot sweep 2026-07-02)
         run: >
           python -m pytest
           tests/test_canada_build.py tests/test_canada_canonical_board.py
           tests/test_canada_v36_composer.py
+          tests/test_stock_dashboard_first_frame_data.py
           tests/test_stock_dashboard_css.py
           tests/test_debt_maturity.py
           tests/test_hk_v37_composer.py
@@ -2509,7 +2553,8 @@ jobs:
           tests/test_opex.py
           tests/test_opex_risk.py
           tests/test_seo_meta_rollout.py
-          tests/test_cycles_anchor_invariance.py -q
+          tests/test_cycles_anchor_invariance.py
+          tests/test_research_priority_ordering.py -q
       # house-law registry census (post-#2297 fix): run the statement-tape schema
       # guard itself against the committed registry, not just its pytest coverage.
       # It stays in THIS job — `config/house_law_checks.yml` names this job as its
@@ -2519,6 +2564,61 @@ jobs:
       # (tests/test_statement_tape.py) is inside the sweep, one step above.
       - name: statement-tape schema guard (FL-E / FC-R9)
         run: python -m scripts.check_statement_tape
+
+  stock-dashboard-first-frame:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    # P0B repair: engine-render-guards is a nightly gate:data lane and therefore
+    # cannot prove the hermetic zero-FOUC contract before a PR merges. Keep the
+    # generated-page population receipt there, while this small source-only job
+    # follows the prophet-lab split precedent and runs in the actual PR code gate.
+    paths:
+      - "templates/hk.html.j2"
+      - "templates/canada.html.j2"
+      - "templates/stock-dashboard.css"
+      - "templates/dashboard-icons.js"
+      - "engine/__init__.py"
+      - "engine/i18n.py"
+      # Selector-visible provenance labels only: the frozen recipe validates
+      # these path names but never opens the moving bytes. Current-source
+      # identity truth remains in the separate gate:data suite below.
+      - "site/factordata/canada_standouts.json"
+      - "site/factordata/hk_standouts.json"
+      - "site/hk-stock-v36.js"
+      - "site/canada-stock-v36.js"
+      - "site/stock-dashboard.css"
+      - "site/dashboard-icons.js"
+      - "scripts/render_stock_dashboard_fixture.py"
+      - "scripts/verify_stock_dashboard_mobile_layout.cjs"
+      - "mockups/evidence/prophet-p0b-zero-fouc/manifest.json"
+      - "mockups/evidence/prophet-p0b-zero-fouc/inputs/canada-owner-fixture.json"
+      - "mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-owner-fixture.json"
+      - "mockups/evidence/prophet-p0b-zero-fouc/inputs/canada-action-fixture.json"
+      - "mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-action-fixture.json"
+      - "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/canadabasketdata/baskets.json"
+      - "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/canadabasketdata/sector_pulse_canada.json"
+      - "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/overlay.json"
+      - "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/quotes.json"
+      - "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/marketdata/rotation_events_hk.json"
+      - "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json"
+      - "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json"
+      - "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json"
+      - "mockups/evidence/prophet-p0b-zero-fouc/hk-js-disabled-dark-390.png"
+      - "mockups/evidence/prophet-p0b-zero-fouc/hk-composer-failed-light-390.png"
+      - "mockups/evidence/prophet-p0b-zero-fouc/ca-js-disabled-dark-390.png"
+      - "mockups/evidence/prophet-p0b-zero-fouc/ca-composer-failed-light-390.png"
+      - "tests/test_stock_dashboard_first_frame.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install beautifulsoup4 jinja2 pytest
+      - name: stock dashboard first-frame source contract
+        run: python -m pytest tests/test_stock_dashboard_first_frame.py -q
 
   prophet-lab:
     if: ${{ false }}
@@ -2998,6 +3098,7 @@ jobs:
           tests/test_capital_structure_page.py
           tests/test_special_situations_premium.py
           tests/test_capital_structure_policy_projection.py
+          tests/test_capital_policy_projection.py
           tests/test_capital_structure_api.py
           tests/test_capital_structure_source_identity.py
           tests/test_capital_structure_source_manifest.py
@@ -3312,11 +3413,21 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml
+        # jinja2 joined 2026-09-13 for tests/test_cycle_w8_truth.py (W7-A round-2
+        # heal): that suite does `from scripts import build_cycle`, and
+        # scripts/build_cycle.py:61 has a module-level
+        # `from jinja2 import Environment, FileSystemLoader` that is unavoidable.
+        # Verified in a clean venv — without jinja2 the suite ERRORS at collection
+        # (red), it does not skip, so the guard cannot go dark by losing a dependency.
+        # Same failure mode as the precedent at .github/ci/legacy-jobs.yml:513
+        # (forensic detector cross-pin) and :1302 (analyzer-i18n). pip pulls
+        # markupsafe transitively; this line is the minimal widening R3 needs to
+        # keep the suite's run honest.
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
       - name: same instrument agrees across pages (or declares its basis)
         run: python3 scripts/check_cycle_consistency.py site
       - name: consistency + phase-coherence regression tests
-        run: python -m pytest tests/test_cycle_consistency.py tests/test_cycle_ontology.py -q
+        run: python -m pytest tests/test_cycle_consistency.py tests/test_cycle_ontology.py tests/test_cycle_w8_truth.py -q
 
   synapse-read-gate:
     if: ${{ false }}
@@ -3580,6 +3691,11 @@ jobs:
       - "research/US_BOARD_MEASUREMENT.md"
       - "scripts/__init__.py"
       - "scripts/build_biocatalyst.py"
+      # B-F09-6b (MO-PAID-067) trigger closure: the capital-markets policy
+      # projection leaf. The page builder is the producer. Exclusive scope
+      # replaces inference; a module-only edit must still select this job,
+      # which names the suite.
+      - "engine/capital_policy_projection.py"
       - "scripts/build_capital_structure_page.py"
       - "scripts/build_chart_data.py"
       - "scripts/build_debt_maturity.py"
@@ -3641,6 +3757,10 @@ jobs:
       - "templates/_navlinks.html.j2"
       - "templates/_public_footer.html.j2"
       - "templates/_public_nav.html.j2"
+      # F13-1 closure widening 2026-09-06 (contract-delta): build_site's
+      # source-bound help directory now also validates the public
+      # glossary page against this template.
+      - "templates/glossary.html.j2"
       - "templates/measurement.html.j2"
       - "templates/methodology.html.j2"
       - "templates/support.html.j2"
@@ -5338,11 +5458,38 @@ jobs:
       - tests/test_agentos_compile.py
       - tests/test_agentos_schema.py
       - tests/test_agentos_status.py
+      - tests/test_b_rec2_wave_boundary_records.py
+      - tests/test_b_rec3_wave_boundary_records.py
+      - tests/test_f00c_terminal_reconciliation.py
       - tests/test_f01_fx_commodity_source_rights.py
       - agentos/discoveries/DSC-COMMODITY-AND-FX-PRICE-SPINE-YAHOO-VENDOR-TERMS-ARE-RECORDED-ADVERSE.md
       - research/market_intelligence_productization/F01_FX_COMMODITY_SOURCE_RIGHTS_AND_DEPTH_2026-09.md
       - research/market_intelligence_productization/F01_FX_DISLOCATION_CHARTER_2026-09.md
       - tests/test_f02_owner_map_receipts.py
+      # B-REC-B5-1 (round 3 FIX-1, widened in round 4): every record read from disk by the
+      # three suites this job's last step runs — test_b_rec2_wave_boundary_records.py,
+      # test_b_rec3_wave_boundary_records.py and test_f00c_terminal_reconciliation.py.
+      # Some of them inference cannot reach on its own: LITERAL_DIRS in
+      # ci_scope_dependencies.py has no `agentos` entry, and the 0014/0015/0016 receipts
+      # are composed as `_RECEIPTS / "name.json"` rather than full-path literals, so an
+      # edit touching only one of those selects no scoped job. The rest are single
+      # `research/` path literals inference already reaches. All twelve are declared here
+      # explicitly whether or not inference would reach them, so the closure test in
+      # test_b_rec3_wave_boundary_records.py can pin them by name; a declaration only ever
+      # widens this job's scope (infer_job_scopes() unions declared with inferred), so
+      # declaring a path inference already covers costs nothing.
+      - agentos/decisions/DEC-SUPABASE-MIGRATION-NAMESPACE-TERMINAL-LEDGER-2026-09-06.md
+      - agentos/discoveries/DSC-TERMINAL-MASTER-REQUIRES-RESOLVED-THREADS-SO-AN-ADVISORY-CODEQL-THREAD-BLOCKS-A-GREEN-HEAD.md
+      - agentos/discoveries/DSC-SEAT-TRANSFER-OVERLAP-DUPLICATES-IRREVERSIBLE-ACTS.md
+      - agentos/handoffs/MARKET-ONTOLOGY-META-CEO-B-2026-09-07.md
+      - research/market_intelligence_productization/MARKET_ONTOLOGY_HALF_A_K_CHAIN_GATE_DOCKET_2026-09-06.md
+      - research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv
+      - research/market_intelligence_productization/F00C_TERMINAL_WAVE_RECONCILIATION_MANIFEST_2026-09-09.json
+      - research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_TERMINAL_WAVE_RECONCILIATION_2026-09-09.md
+      - research/market_intelligence_productization/receipts/supabase_receipt_0012_thesis_objects_2026-09-06.json
+      - research/market_intelligence_productization/receipts/supabase_receipt_0014_tenancy_foundation_2026-09-08.json
+      - research/market_intelligence_productization/receipts/supabase_receipt_0015_team_roles_invitations_2026-09-08.json
+      - research/market_intelligence_productization/receipts/supabase_receipt_0016_account_lifecycle_requests_2026-09-09.json
       - tests/test_self_mod_fence.py
       - tests/test_ci_authority.py
       - tests/test_ci_semantic_proof.py
@@ -5466,7 +5613,9 @@ jobs:
           # out would otherwise pass as a skip. This line cannot skip.
           python3 scripts/agentos.py validate
           python -m pytest tests/test_agentos_schema.py tests/test_agentos_status.py \
-            tests/test_agentos_compile.py tests/test_f01_fx_commodity_source_rights.py tests/test_f02_owner_map_receipts.py -q
+            tests/test_agentos_compile.py tests/test_f01_fx_commodity_source_rights.py tests/test_f02_owner_map_receipts.py \
+            tests/test_b_rec2_wave_boundary_records.py tests/test_b_rec3_wave_boundary_records.py \
+            tests/test_f00c_terminal_reconciliation.py -q
 
   capability-broker:
     if: ${{ false }}
@@ -6302,7 +6451,18 @@ jobs:
         # plotly: test file imports scripts.build_bonds, which imports plotly.graph_objects
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly
       - name: CCW-W4 credit desk vm tests
-        run: python -m pytest tests/test_bonds_corp_credit_vm.py -v
+        run: python -m pytest tests/test_bonds_corp_credit_vm.py tests/test_bonds_divergence_gate.py -v
+    # T10 moved to unrun-macro-panels (gate: data). That job already installs
+    # pandas/numpy/pyarrow/jinja2/plotly; T10's verdict can flip on a nightly
+    # data commit, so it must not live on this gate: code job.
+    paths:
+      - "tests/test_bonds_corp_credit_vm.py"
+      - "tests/test_bonds_divergence_gate.py"
+      - "scripts/build_bonds.py"
+      - "templates/bonds.html.j2"
+      - "lib/macro_suite_view.py"
+      - "templates/_curve_panel.html.j2"
+      - "templates/_macro_suite_shell.html.j2"
 
   ccw-w6-study-s1:
     if: ${{ false }}
@@ -6486,6 +6646,12 @@ jobs:
     #                             client-sent user id is ignored), validation, the
     #                             user_metadata MERGE, the email_prefs lang mirror, and the
     #                             honest partial/total failure statuses.
+    #   test_account_team_fields.py — GET /api/account teams field: RLS-scoped
+    #                             PostgREST read (caller token on Authorization,
+    #                             never the service-role key), own-row filter,
+    #                             empty membership vs unavailable, truncation,
+    #                             fail-closed network/non-2xx, hostile no-fallback
+    #                             when token or user_id is missing.
     #   test_shared_pref_atomics.py — the SAME user_metadata keys, from the browser side:
     #                             templates/theme.js must write the top-level `theme` /
     #                             `theme_auto` / `lang` atomics and never the nested `prefs`
@@ -6518,6 +6684,8 @@ jobs:
         run: python -m pytest tests/test_billing_emails.py -v
       - name: account preference tests (app/account_prefs.py)
         run: python -m pytest tests/test_account_prefs.py -v
+      - name: account team-membership tests (lib/team_membership.py)
+        run: python -m pytest tests/test_account_team_fields.py -v
       - name: shared preference atomics contract (templates/theme.js)
         run: python -m pytest tests/test_shared_pref_atomics.py -v
       - name: billing webhook spine regression (app/billing.py::_handle_event)
@@ -6783,6 +6951,11 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
+      # scenario V1 pure module now sits in the shared engine/* import closure.
+      - "engine/valuation_scenario.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "engine/valuation_assumptions.py"
       # F01 R1B closure widening 2026-09-04 (contract-delta): build_site.py's
       # guarded macro-suite hook imports the page builder, which carries the
       # workspace contract/registry pair. Enumerated, not globbed — the checker
@@ -7051,6 +7224,7 @@ jobs:
       - "engine/regime_snap.py"
       - "engine/regime_snap_veto.py"
       - "engine/regime_vector.py"
+      - "engine/research_priority_ordering.py"
       - "engine/residual_alpha.py"
       - "engine/risk_envelope.py"
       - "engine/risk_radar.py"
@@ -7183,6 +7357,11 @@ jobs:
       - "scripts/__init__.py"
       - "scripts/biocatalyst_worker.py"
       - "scripts/build_biocatalyst.py"
+      # B-F09-6b (MO-PAID-067) trigger closure: the capital-markets policy
+      # projection leaf. The page builder is the producer. Exclusive scope
+      # replaces inference; a module-only edit must still select this job,
+      # which names the suite.
+      - "engine/capital_policy_projection.py"
       - "scripts/build_capital_structure_page.py"
       - "scripts/build_chart_data.py"
       - "scripts/build_debt_maturity.py"
@@ -7243,6 +7422,10 @@ jobs:
       - "templates/_navlinks.html.j2"
       - "templates/_public_footer.html.j2"
       - "templates/_public_nav.html.j2"
+      # F13-1 closure widening 2026-09-06 (contract-delta): build_site's
+      # source-bound help directory now also validates the public
+      # glossary page against this template.
+      - "templates/glossary.html.j2"
       - "templates/measurement.html.j2"
       - "templates/methodology.html.j2"
       - "templates/support.html.j2"
@@ -7378,6 +7561,11 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
+      # scenario V1 pure module now sits in the shared engine/* import closure.
+      - "engine/valuation_scenario.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "engine/valuation_assumptions.py"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/__init__.py"
       - "engine/security_state.py"
@@ -7698,6 +7886,10 @@ jobs:
       - "templates/_navlinks.html.j2"
       - "templates/_public_footer.html.j2"
       - "templates/_public_nav.html.j2"
+      # F13-1 closure widening 2026-09-09 (contract-delta): build_site's
+      # source-bound help directory now also validates the public
+      # glossary page against this template.
+      - "templates/glossary.html.j2"
       - "templates/measurement.html.j2"
       - "templates/methodology.html.j2"
       - "templates/support.html.j2"
@@ -8761,6 +8953,7 @@ jobs:
       - "site/options.html"
       - "site/options_intel_brief.json"
       - "site/prophet/index.json"
+      - "templates/market_structure.html.j2"
       - "templates/options.html.j2"
       - "tests/test_build_flow_leaders.py"
       - "tests/test_build_market_structure_page.py"
@@ -8970,6 +9163,12 @@ jobs:
       # unrun-site-surfaces, which already imports scripts.build_site under its full deps.
       - name: public fastlane split + rendered pricing copy pins
         run: python -m pytest tests/test_public_render_fastlane.py tests/test_help_directory.py tests/test_help_directory_contract.py -q --deselect tests/test_help_directory.py::test_build_site_renders_help_page_with_the_full_view_model
+      # F13-1 (2026-09-06): the public glossary directory is built by the same
+      # scripts/build_public_pages.py fast path and shares this job's exact
+      # dependency line (pytest pyyaml jinja2) with the help-directory suites
+      # immediately above.
+      - name: public glossary directory (view-model contract + rendered-page wiring)
+        run: python -m pytest tests/test_glossary.py tests/test_glossary_contract.py tests/test_glossary_letter_rail_js.py -q
 
   press-lane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -9502,6 +9701,10 @@ jobs:
       - "templates/_navlinks.html.j2"
       - "templates/_public_footer.html.j2"
       - "templates/_public_nav.html.j2"
+      # F13-1 closure widening 2026-09-09 (contract-delta): build_site's
+      # source-bound help directory now also validates the public
+      # glossary page against this template.
+      - "templates/glossary.html.j2"
       - "templates/measurement.html.j2"
       - "templates/methodology.html.j2"
       - "templates/support.html.j2"
@@ -10258,7 +10461,8 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: falsifier-register bans + chat plain-word projection
-        run: python -m pytest tests/test_front_facing_register.py tests/test_policy_watch_register.py tests/test_policy_watch_ui.py tests/test_policy_lifecycle.py tests/test_chat_plain_words.py -q
+        # B-HEAL-SKIP-ONLY-UK-POLICY-1 2026-09-13: tests/test_uk_policy_brain.py's jinja2 half rides here (outcome-spine's venv has no jinja2; skip-only gate red on main since 4b2f97f1)
+        run: python -m pytest tests/test_front_facing_register.py tests/test_policy_watch_register.py tests/test_policy_watch_ui.py tests/test_policy_lifecycle.py tests/test_chat_plain_words.py tests/test_uk_policy_brain.py -q
       - name: regime-label honesty + sizing-pill null parity + forward cycle framing
         run: python -m pytest tests/test_regime_label_honesty.py tests/test_regime_sizing_disclosure_parity.py tests/test_cycle_forward_framing.py tests/test_quad_dark_day_disclosure.py -q
 
@@ -10650,6 +10854,11 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
+      # scenario V1 pure module now sits in the shared engine/* import closure.
+      - "engine/valuation_scenario.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "engine/valuation_assumptions.py"
       # F01 R1B closure widening 2026-09-04 (contract-delta): build_site.py's
       # guarded macro-suite hook imports the page builder, which carries the
       # workspace contract/registry pair. Checker-named files only; the
@@ -11048,6 +11257,7 @@ jobs:
       - "engine/regime_snap.py"
       - "engine/regime_snap_veto.py"
       - "engine/regime_vector.py"
+      - "engine/research_priority_ordering.py"
       - "engine/residual_alpha.py"
       - "engine/risk_envelope.py"
       - "engine/risk_radar.py"
@@ -11119,6 +11329,7 @@ jobs:
       - "engine/theme_discovery.py"
       - "engine/theme_emergence.py"
       - "engine/theme_fingerprint.py"
+      - "engine/theme_graph/store.py"
       - "engine/theme_revisions.py"
       - "engine/theme_scoring.py"
       - "engine/theme_tape.py"
@@ -11195,6 +11406,11 @@ jobs:
       - "scripts/build_btc_strategy.py"
       - "scripts/build_canada.py"
       - "scripts/build_canada_library.py"
+      # B-F09-6b (MO-PAID-067) trigger closure: the capital-markets policy
+      # projection leaf. The page builder is the producer. Exclusive scope
+      # replaces inference; a module-only edit must still select this job,
+      # which names the suite.
+      - "engine/capital_policy_projection.py"
       - "scripts/build_capital_structure_page.py"
       - "scripts/build_chart_data.py"
       - "scripts/build_china.py"
@@ -11320,6 +11536,10 @@ jobs:
       - "templates/canada.html.j2"
       - "templates/china.html.j2"
       - "templates/dashboard.html.j2"
+      # F13-1 closure widening 2026-09-06 (contract-delta): build_site's
+      # source-bound help directory now also validates the public glossary
+      # page against this template.
+      - "templates/glossary.html.j2"
       - "templates/hk.html.j2"
       - "templates/intl.html.j2"
       - "templates/measurement.html.j2"
@@ -11764,6 +11984,40 @@ jobs:
       # pandas/numpy/pyarrow/pyyaml, all already on the install line above.
       - name: commodities / forex / rates / news / policy panels and their calibration guards
         run: python -m pytest tests/test_factor_universe_hold.py tests/test_build_dispersion_regime.py tests/test_build_factor_panel.py tests/test_commodity_mtf_verdict_honesty.py tests/test_congress_score.py tests/test_context_risk.py tests/test_cross_asset_context.py tests/test_crossasset_flows.py tests/test_financial_news.py tests/test_forex.py tests/test_forex_context_bus.py tests/test_news_event_ledger.py tests/test_phase_buildout.py tests/test_policy_lever.py tests/test_rates_command.py tests/test_yield_momentum.py tests/test_inputs_yield_curve.py tests/test_reflexivity_overlay.py tests/test_scorecard_incremental.py tests/test_us_sector_rotation_wiring.py tests/test_validation.py tests/test_whitehouse_build.py tests/test_commodities_ignition_copy.py -q
+      - name: A-F01-W4-1 bonds hub byte-preservation guard (T10)
+        run: python -m pytest tests/test_macro_rates_curves_bonds_guard.py -q
+    # T10 lives here (gate: data), not on ccw-w4-credit-desk (gate: code).
+    # Install already covers pandas/numpy/pyarrow/jinja2/plotly. Declared
+    # paths must cover every pytest file the commands name (pack validator);
+    # no exclusive scope, so inference still unions the rest of the closure.
+    paths:
+      - "tests/test_factor_universe_hold.py"
+      - "tests/test_build_dispersion_regime.py"
+      - "tests/test_build_factor_panel.py"
+      - "tests/test_commodity_mtf_verdict_honesty.py"
+      - "tests/test_congress_score.py"
+      - "tests/test_context_risk.py"
+      - "tests/test_cross_asset_context.py"
+      - "tests/test_crossasset_flows.py"
+      - "tests/test_financial_news.py"
+      - "tests/test_forex.py"
+      - "tests/test_forex_context_bus.py"
+      - "tests/test_news_event_ledger.py"
+      - "tests/test_phase_buildout.py"
+      - "tests/test_policy_lever.py"
+      - "tests/test_rates_command.py"
+      - "tests/test_yield_momentum.py"
+      - "tests/test_inputs_yield_curve.py"
+      - "tests/test_reflexivity_overlay.py"
+      - "tests/test_scorecard_incremental.py"
+      - "tests/test_us_sector_rotation_wiring.py"
+      - "tests/test_validation.py"
+      - "tests/test_whitehouse_build.py"
+      - "tests/test_commodities_ignition_copy.py"
+      - "tests/test_macro_rates_curves_bonds_guard.py"
+      - "scripts/build_bonds.py"
+      - "site/bonds.html"
+      - "templates/bonds.html.j2"
 
   unrun-market-plumbing:
     # live quotes / tape / GEX / options-flow / theme + tech-lab feeds behind the intraday lanes.
@@ -12186,6 +12440,11 @@ jobs:
         run: python -m pytest tests/test_okx_retail.py -q
       - name: CN risk-backdrop chip — renders, degrades, and stays out of macro mode
         run: python -m pytest tests/test_w5b_edge_chips.py -q
+      # P0B exact-source correction (2026-09-06): 14 builder/template cases are
+      # hermetic and belong in the PR code gate.  The one generated-page case
+      # remains in unrun-intl-collectors, which continues to run all 15 in data.
+      - name: HK/Canada action-board source and template contract
+        run: python -m pytest tests/test_action_board_lane_split.py -q -k 'not test_hk_static_legacy_grid_cannot_override_hidden'
       # Unrun backfill 2026-08-19 (audit_unrun_tests.py, #5952-class): the China
       # Special Situations desk's four truth contracts, shipped by #5975 and
       # extended by #5996, were named by no run: step in any workflow. Engine and
@@ -12249,7 +12508,7 @@ jobs:
       # — the fake corroborator that held a `major` band at priority 60, which is also
       # the outbound push floor. Hermetic: monkeypatched readers, injected clock.
       - name: Alert Command Center — three clocks, ET board day, and exact evidence links
-        run: python -m pytest tests/test_alert_time_contract.py tests/test_alert_triage.py tests/test_alert_coverage_recurrence.py -q
+        run: python -m pytest tests/test_alert_time_contract.py tests/test_alert_triage.py tests/test_alert_coverage_recurrence.py tests/test_act_now_board_assembler.py -q
 
   # ── RED-ON-ARRIVAL SWEEP, BATCH C (2026-07-27) ─────────────────────────────
   # The PIT / frozen-tape share of the 10 reds (docs/UNRUN_TEST_CENSUS.md §"Red on
@@ -12502,6 +12761,7 @@ jobs:
       - "engine/ledger_lane.py"
       - "engine/news_flow.py"
       - "engine/policy_calendar.py"
+      - "engine/research_priority_ordering.py"
       - "engine/sector_legs.py"
       - "engine/sector_signals.py"
       - "engine/session_anchor.py"
@@ -12515,6 +12775,8 @@ jobs:
       - "engine/technicals.py"
       - "engine/theme_emergence.py"
       - "engine/theme_fingerprint.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/store.py"
       - "engine/theme_revisions.py"
       - "engine/themes_heatmap.py"
       - "engine/vol_forecast.py"
@@ -12612,6 +12874,11 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
+      # scenario V1 pure module now sits in the shared engine/* import closure.
+      - "engine/valuation_scenario.py"
+      # B-F07-2 closure widening 2026-09-09 (contract-delta)
+      - "engine/valuation_assumptions.py"
       # B1A closure widening 2026-08-24 (contract-delta): build_stock_library's security_state stage extends this job's walked closure.
       - "engine/security_state.py"
       - "engine/theme_graph/__init__.py"
@@ -12932,6 +13199,10 @@ jobs:
       - "templates/_navlinks.html.j2"
       - "templates/_public_footer.html.j2"
       - "templates/_public_nav.html.j2"
+      # F13-1 closure widening 2026-09-09 (contract-delta): build_site's
+      # source-bound help directory now also validates the public
+      # glossary page against this template.
+      - "templates/glossary.html.j2"
       - "templates/measurement.html.j2"
       - "templates/methodology.html.j2"
       - "templates/support.html.j2"
@@ -14088,6 +14359,28 @@ jobs:
       - "templates/macro_monetary.html.j2"
       - "templates/_macro_suite_nav.html.j2"
       - "tests/test_macro_monetary_hub.py"
+      # A-F01-W4-1: ceiling-scoped Treasury curve-shape hero on rates_curves.
+      - "templates/_curve_panel.html.j2"
+      - "tests/test_macro_rates_curves_route.py"
+      # T11 reads these fourteen committed pages (thirteen siblings + the hub).
+      # Listed literally: they are computed from SUITE_PAGES at runtime and
+      # would otherwise be invisible to the trigger-closure checker. T10 no
+      # longer runs in this pandas-free job; site/bonds.html lives on
+      # ccw-w4-credit-desk.
+      - "site/macro_liquidity_regime.html"
+      - "site/macro_growth_real_economy.html"
+      - "site/macro_business_activity.html"
+      - "site/macro_labor_markets.html"
+      - "site/macro_inflation_system.html"
+      - "site/macro_monetary_policy.html"
+      - "site/macro_financial_conditions.html"
+      - "site/macro_liquidity_central_banks.html"
+      - "site/macro_capital_structure.html"
+      - "site/macro_housing_real_estate.html"
+      - "site/macro_consumer_payments.html"
+      - "site/macro_national_debt_liabilities.html"
+      - "site/macro_trade_flows.html"
+      - "site/macro_monetary.html"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -14097,6 +14390,8 @@ jobs:
           python-version: "3.12"
       - name: install suite-page test dependencies
         run: pip install pytest jinja2 pyyaml jsonschema==4.26.0
+      - name: Market OS rates & curves — curve-shape hero, ceiling, byte preservation
+        run: python -m pytest tests/test_macro_rates_curves_route.py -q
       - name: Market OS macro suite pages — shell, labels, view model, builder
         run: python -m pytest tests/test_macro_suite_pages.py tests/test_macro_workspace_prior_publication.py -q
       - name: Market OS macro suite hub — discoverability, ordering, honest absence
