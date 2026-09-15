@@ -143,3 +143,72 @@ current source/procedure, run a new effect-none prestart and, on PASS, issue a n
 HEALTH START. Until a real H2 PASS exists, keep Profile_B/account/empty-Project, PF-1 and installation
 work held. Separately, do not edit the stale shared Chairman Control Room workstream through a new
 writer: Macro PR #6816 still owns that path under unresolved exact-session/worktree continuity.
+
+## Supersession amendment — 2026-09-15 post-status-epoch observation
+
+This amendment supersedes **only** the earlier continuation clause that a materially newer generic
+Multilogin status-page epoch would be sufficient external evidence before another separately
+adjudicated observation. It preserves every earlier source, effect, no-retry, #6816 ownership and
+downstream hold boundary.
+
+### Current protected/source identity
+
+- Current protected Mastermind at the new decision was
+  `42c2688df57007319cb0af231cf5ed29da505ad4`; its new host-recovery-readiness paths are materiality-
+  disjoint from H2.
+- The exact H2 workspace remained clean at `935f8d05d7f855f810c5f14c005ab845305f235f`.
+- Exact current protected/workspace blobs remained byte-identical:
+  - health `2ecbf76ddd0cf47ce8db2689b3a70444d693d66d`;
+  - vendor `61227bb05a60f71ae7015495e334df8c268a6150`;
+  - setup `b999bfc67610385b7ee5f83e16b32dc7d6ee615e`;
+  - tests `af37a8ce6e5d8f895c8b3ca8d5e2e7b55e1e18a5`;
+  - direct dependencies `9404f7034f6e6da65ca14ea144a2b5a6c65693d8`,
+    `120782ed1e63739b9a3c2f3b2badfe5c7570c5d9`, and
+    `2e949747145e80d8df63e87cb2e308a24d515887`.
+
+### New external evidence and fresh prestart
+
+- Official Multilogin status advanced to `2026-09-14T20:52:00Z`, reported all services online and no
+  Sep 14 incident. That epoch was materially later than the previous H2 refusal at
+  `2026-09-14T17:00:53Z`, so it satisfied the **old** external-evidence predicate for one fresh
+  adjudication; it was not treated as proof that Profile Search itself was healthy.
+- A fresh current effect-none prestart passed on the exact approved Studio. The sealed snapshot remained
+  valid with 93 rows (Multilogin 28 / 3 running; GoLogin 65 / 0 running), exact Chairman seats
+  `chatgpt1/chatgpt2/chatgpt3`, one stopped noncolliding candidate, valid bindings, and zero Keychain,
+  credential, HTTP, Profile Search, lifecycle, install or write tripwire hits.
+- Final collision/source readback found no active health process, a clean workspace and no surviving
+  invocation-owned subagent parent.
+
+### New one-shot result
+
+- New same-carrier HEALTH START: `1789455209.393339`.
+- Terminal RESULT: `1789455302.437619`.
+- Exact device `3f5ce987-e3eb-40a3-af9f-4b0ae54919cc`; one process only, retry0, PID `48255`.
+- Exact confirmation was supplied once. PID `48255` settled `process_exit`, exit code `2`, runtime
+  `3.32s`; no residual exact health process remained and the workspace stayed clean.
+- The closed nine-key receipt again returned:
+  `REFUSED / effect=NONE / VENDOR_ERROR / read_surface_usable=false /
+  initial_peer_census_diagnostic=HTTP_SERVICE_UNAVAILABLE`, with all decode-context classes `NONE`.
+- No second process, failover, alternate host/vendor/profile/folder, second credential read, or
+  browser/profile/account lifecycle effect occurred.
+
+### Current ruling and exact next action
+
+`H2_HEALTH_PASS=false / READ_SURFACE_USABLE=false / CURRENT_ONE_SHOT_SPENT / NO_RETRY` remains true.
+The materially newer generic status epoch did **not** clear the Profile Search/API 5xx class. Therefore:
+
+1. Another generic `all services online` timestamp alone is no longer sufficient authority for a new
+   observation.
+2. The next external predicate is provider-side incident/support evidence specific to Profile Search
+   or the Multilogin API, or an explicit provider status incident/resolution that covers that API.
+3. Prepare a secret-free support packet containing only the closed schema/code/diagnostic, UTC epochs,
+   source/operation identities, retry0 and effect-none facts. Never include credentials, profile/folder
+   IDs, response bodies, raw headers, cookies/storage or Chairman-seat data.
+4. Do not send another provider request until that support/API-specific predicate is satisfied, current
+   source/procedure is re-pinned, a fresh effect-none prestart passes, and Sol issues a new explicit
+   same-carrier HEALTH START.
+
+No source repair is justified by the repeated 5xx class. The existing request/status-classification
+repair is functioning as designed. Keep Profile_B/account/empty-Project, PF-1 and final
+installation/rollback downstream of a real H2 PASS. All previous `do_not_redo` clauses remain binding.
+
