@@ -1432,32 +1432,34 @@ async function desktopBehavior(page, market, themeMembership = {}) {
   await page.locator(`#${version}-filter`).click();
   sequence.push(await manifest("clear"));
   if (market === "ca") {
-    const themeButton = page.locator('[data-ca-lead-kind="theme"][data-ca-lead-id="ca_oil_gas"]').first();
-    if (await themeButton.count()) {
-      const sourceBeforeTheme = await page.locator('[data-ca-source][aria-selected="true"]').getAttribute('data-ca-source');
-      await themeButton.click();
-      const themeGroup = await manifest("theme-group");
-      const sourceAfterTheme = await page.locator('[data-ca-source][aria-selected="true"]').getAttribute('data-ca-source');
-      themeGroup.source_unchanged = sourceAfterTheme === sourceBeforeTheme;
-      themeGroup.pass = themeGroup.pass && themeGroup.source_unchanged && themeGroup.theme_filter === "ca_oil_gas";
-      sequence.push(themeGroup);
-      await page.locator(`#${version}-filter`).click();
-      sequence.push(await manifest("theme-clear"));
-
-      await page.locator('[data-ca-source="top"]').click();
-      const sourceBeforeTopTheme = await page.locator('[data-ca-source][aria-selected="true"]').getAttribute('data-ca-source');
-      await themeButton.click();
-      const themeTopGroup = await manifest("theme-top-group");
-      const sourceAfterTopTheme = await page.locator('[data-ca-source][aria-selected="true"]').getAttribute('data-ca-source');
-      themeTopGroup.source_unchanged = sourceAfterTopTheme === sourceBeforeTopTheme;
-      themeTopGroup.pass = themeTopGroup.pass && themeTopGroup.source_unchanged &&
-        themeTopGroup.source === "top" && themeTopGroup.theme_filter === "ca_oil_gas" &&
-        JSON.stringify(themeTopGroup.visible) === JSON.stringify(["SU.TO"]);
-      sequence.push(themeTopGroup);
-      await page.locator(`#${version}-filter`).click();
-      sequence.push(await manifest("theme-top-clear"));
-      await page.locator('[data-ca-source="all"]').click();
+    const themeButtons = page.locator('[data-ca-lead-kind="theme"][data-ca-lead-id="ca_oil_gas"]');
+    if ((await themeButtons.count()) === 0) {
+      throw new Error("Canada Opportunity Map theme control is missing");
     }
+    const themeButton = themeButtons.first();
+    const sourceBeforeTheme = await page.locator('[data-ca-source][aria-selected="true"]').getAttribute('data-ca-source');
+    await themeButton.click();
+    const themeGroup = await manifest("theme-group");
+    const sourceAfterTheme = await page.locator('[data-ca-source][aria-selected="true"]').getAttribute('data-ca-source');
+    themeGroup.source_unchanged = sourceAfterTheme === sourceBeforeTheme;
+    themeGroup.pass = themeGroup.pass && themeGroup.source_unchanged && themeGroup.theme_filter === "ca_oil_gas";
+    sequence.push(themeGroup);
+    await page.locator(`#${version}-filter`).click();
+    sequence.push(await manifest("theme-clear"));
+
+    await page.locator('[data-ca-source="top"]').click();
+    const sourceBeforeTopTheme = await page.locator('[data-ca-source][aria-selected="true"]').getAttribute('data-ca-source');
+    await themeButton.click();
+    const themeTopGroup = await manifest("theme-top-group");
+    const sourceAfterTopTheme = await page.locator('[data-ca-source][aria-selected="true"]').getAttribute('data-ca-source');
+    themeTopGroup.source_unchanged = sourceAfterTopTheme === sourceBeforeTopTheme;
+    themeTopGroup.pass = themeTopGroup.pass && themeTopGroup.source_unchanged &&
+      themeTopGroup.source === "top" && themeTopGroup.theme_filter === "ca_oil_gas" &&
+      JSON.stringify(themeTopGroup.visible) === JSON.stringify(["SU.TO"]);
+    sequence.push(themeTopGroup);
+    await page.locator(`#${version}-filter`).click();
+    sequence.push(await manifest("theme-top-clear"));
+    await page.locator('[data-ca-source="all"]').click();
   }
   await page.setViewportSize({width: 390, height: 844});
   sequence.push(await manifest("resized-390"));

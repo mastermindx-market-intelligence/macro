@@ -1025,6 +1025,8 @@ def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate() -> N
     manifest = _yaml(MANIFEST)
     code_job = manifest["jobs"]["stock-dashboard-first-frame"]
     code_suite = "tests/test_stock_dashboard_first_frame.py"
+    opportunity_suite = "tests/test_canada_theme_action_map.py"
+    client_harness = "tests/canada_theme_client_contract_harness.cjs"
     data_suite = "tests/test_stock_dashboard_first_frame_data.py"
 
     assert code_job["gate"] == "code"
@@ -1057,24 +1059,42 @@ def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate() -> N
         "mockups/evidence/prophet-p0b-zero-fouc/hk-composer-failed-light-390.png",
         "mockups/evidence/prophet-p0b-zero-fouc/ca-js-disabled-dark-390.png",
         "mockups/evidence/prophet-p0b-zero-fouc/ca-composer-failed-light-390.png",
+        "scripts/build_canada.py",
+        "scripts/render_canada_opportunity_map_fixture.py",
+        "scripts/verify_canada_opportunity_map.cjs",
+        "mockups/evidence/canada-opportunity-map-20260909/**",
+        opportunity_suite,
+        client_harness,
         code_suite,
     }
     assert required_paths <= set(code_job["paths"])
-    assert any(code_suite in str(step.get("run") or "") for step in code_job["steps"])
-    assert _job_pip_packages(code_job) == {"beautifulsoup4", "jinja2", "pytest"}
+    code_runs = "\n".join(str(step.get("run") or "") for step in code_job["steps"])
+    assert code_suite in code_runs
+    assert opportunity_suite in code_runs
+    assert _job_pip_packages(code_job) == {
+        "beautifulsoup4", "jinja2", "numpy", "pandas", "pillow", "plotly",
+        "pyarrow", "pytest", "pyyaml", "requests",
+    }
 
     data_job = manifest["jobs"]["engine-render-guards"]
     data_runs = "\n".join(str(step.get("run") or "") for step in data_job["steps"])
     assert data_job["gate"] == "data"
     assert data_suite in data_runs
     assert code_suite not in data_runs
+    assert opportunity_suite not in data_runs
 
     jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
     code_jobs = [job for job in jobs if job.gate == "code"]
     for changed in (
         [code_suite],
+        [opportunity_suite],
+        [client_harness],
         ["templates/hk.html.j2"],
         ["site/canada-stock-v36.js"],
+        ["scripts/build_canada.py"],
+        ["scripts/render_canada_opportunity_map_fixture.py"],
+        ["scripts/verify_canada_opportunity_map.cjs"],
+        ["mockups/evidence/canada-opportunity-map-20260909/EVIDENCE.yml"],
         ["scripts/render_stock_dashboard_fixture.py"],
         ["mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-owner-fixture.json"],
         ["mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-action-fixture.json"],

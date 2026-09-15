@@ -2716,13 +2716,13 @@ html[data-lang="zh"][data-theme="light"] body.page-canada .ms-red .cax-big-score
     </div>
     {%- macro _ca_theme_row(it) -%}
       <div class="ca-theme-action-row-w">
-        <button class="ca-theme-action-row" type="button"{% if it.get('membership_known') %} data-ca-lead-kind="theme" data-ca-lead-id="{{ it.get('id') }}" data-ca-members="{{ (it.get('members') or [])|join(',') }}"{% else %} disabled{% endif %}>
+        <button class="ca-theme-action-row" type="button"{% if it.get('membership_known') %} data-ca-lead-kind="theme" data-ca-lead-id="{{ it.get('id')|e }}" data-ca-members="{{ ((it.get('members') or [])|join(','))|e }}"{% else %} disabled{% endif %}>
           <span class="ca-theme-rank">{% if it.get('rank') is not none %}#{{ it.get('rank') }}{% else %}—{% endif %}</span>
           <span class="ca-theme-name"><b>{{ t(it.get('name') or it.get('id'), it.get('name_zh') or it.get('name') or it.get('id')) }}</b><small>{% if it.get('category') %}{{ t(it.get('category'), it.get('category_zh') or it.get('category')) }}{% if it.get('leaders') %} · {% endif %}{% endif %}{% if it.get('leaders') %}{{ it.get('leaders')|join(' · ') }}{% elif it.get('n_members') is not none %}{{ it.get('n_members') }} {{ t('members','成分') }}{% endif %}</small></span>
           {% if it.get('prophet_count') is not none %}<span class="ca-theme-prophet">{{ it.get('prophet_count') }} · Prophet</span>{% endif %}
           <span class="ca-theme-state">{{ t(it.get('action_en') or it.get('action') or '—', it.get('action_zh') or it.get('action_en') or it.get('action') or '—') }}</span>
         </button>
-        <a class="ca-theme-action-go" href="{{ it.get('href') or ('baskets_canada.html#theme-' ~ it.get('id','')) }}" aria-label="{{ it.get('name') or it.get('id') }} theme research">↗</a>
+        <a class="ca-theme-action-go" href="{{ (it.get('href') or ('baskets_canada.html#theme-' ~ it.get('id','')))|e }}" aria-label="{{ (it.get('name') or it.get('id'))|e }} theme research">↗</a>
       </div>
     {%- endmacro -%}
     {%- macro _ca_theme_lane(cls, title_en, title_zh, items) -%}

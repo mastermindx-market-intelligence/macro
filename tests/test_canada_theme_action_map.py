@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 
 import pytest
+import yaml
 
 from scripts import build_canada as build_canada_module
 from scripts.build_canada import _canada_theme_action_map
@@ -252,6 +253,37 @@ def test_theme_layer_does_not_reuse_sector_action_control_hooks() -> None:
     assert "ca-theme-action-go" in theme
 
 
+def test_theme_action_attributes_escape_owner_strings_with_autoescape_disabled() -> None:
+    from engine import i18n
+    from jinja2 import Environment, FileSystemLoader
+    from scripts import render_canada_opportunity_map_fixture as fixture_renderer
+
+    root = Path(__file__).resolve().parents[1]
+    setups, _ = fixture_renderer.load_owner_fixture("ca")
+    actions, _ = fixture_renderer.load_action_fixture("ca")
+    context = fixture_renderer.canada_context(setups, actions)
+    row = context["theme_actions"]["lanes"]["in_favour"][0]
+    row.update({
+        "id": 'oil" data-injected="yes<',
+        "members": ['AAA.TO" data-member="yes<'],
+        "href": 'baskets_canada.html?x=" data-href="yes<',
+        "name": 'Oil" data-label="yes<',
+    })
+
+    env = Environment(loader=FileSystemLoader(root / "templates"), autoescape=False)
+    env.globals.update(td=i18n.td, tr=i18n.tr, t=i18n.t)
+    html = env.get_template("canada.html.j2").render(**context)
+
+    assert 'data-ca-lead-id="oil" data-injected=' not in html
+    assert 'data-ca-members="AAA.TO" data-member=' not in html
+    assert 'href="baskets_canada.html?x=" data-href=' not in html
+    assert 'aria-label="Oil" data-label=' not in html
+    assert 'data-ca-lead-id="oil&#34; data-injected=&#34;yes&lt;"' in html
+    assert 'data-ca-members="AAA.TO&#34; data-member=&#34;yes&lt;"' in html
+    assert 'href="baskets_canada.html?x=&#34; data-href=&#34;yes&lt;"' in html
+    assert 'aria-label="Oil&#34; data-label=&#34;yes&lt; theme research"' in html
+
+
 def test_composer_reconciles_theme_filter_after_optional_owner_load() -> None:
     text = (Path(__file__).resolve().parents[1] / "site/canada-stock-v36.js").read_text()
     needle = "state.themes = collectThemes(parts[0], parts[1]);"
@@ -268,10 +300,73 @@ SUCCESSOR_EVIDENCE = ROOT / "mockups/evidence/canada-opportunity-map-20260909"
 SUCCESSOR_RENDERER = ROOT / "scripts/render_canada_opportunity_map_fixture.py"
 SUCCESSOR_VERIFIER = ROOT / "scripts/verify_canada_opportunity_map.cjs"
 P0B_EVIDENCE = ROOT / "mockups/evidence/prophet-p0b-zero-fouc"
+CLIENT_CONTRACT_HARNESS = ROOT / "tests/canada_theme_client_contract_harness.cjs"
+CLIENT_COMPOSER = ROOT / "site/canada-stock-v36.js"
+
+
+def _client_theme_contract(scenario: str) -> dict:
+    run = subprocess.run(
+        ["node", str(CLIENT_CONTRACT_HARNESS), str(CLIENT_COMPOSER), scenario],
+        cwd=ROOT, capture_output=True, text=True, timeout=10, check=False,
+    )
+    assert run.returncode == 0, run.stderr
+    return json.loads(run.stdout)
+
+
+@pytest.mark.parametrize(
+    "scenario",
+    [
+        "duplicate-basket",
+        "duplicate-theme",
+        "numeric-symbol",
+        "malformed-members",
+        "numeric-id",
+        "blank-id",
+    ],
+)
+def test_client_theme_parser_never_makes_ambiguous_or_invalid_membership_actionable(
+    scenario: str,
+) -> None:
+    result = _client_theme_contract(scenario)
+    assert result["errors"] == []
+    assert result["actionable"] is False
+
+
+def test_client_theme_parser_degrades_malformed_leadership_only() -> None:
+    result = _client_theme_contract("malformed-leadership")
+    assert result["errors"] == []
+    assert result["actionable"] is True
+    assert result["leaders"] == "—"
+
+
+def test_client_theme_parser_preserves_valid_empty_membership() -> None:
+    result = _client_theme_contract("valid-empty")
+    assert result["errors"] == []
+    assert result["actionable"] is True
+    assert result["count"] == "0"
+
+
+def test_server_rendered_membership_remains_filter_authority_after_owner_fetch() -> None:
+    result = _client_theme_contract("server-wins")
+    assert result["errors"] == []
+    assert result["visible"] == ["AAA.TO"]
 
 
 def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def test_successor_renderer_uses_the_production_theme_projection() -> None:
+    from scripts import render_canada_opportunity_map_fixture as fixture_renderer
+
+    setups, _ = fixture_renderer.load_owner_fixture("ca")
+    owner_root = SUCCESSOR_EVIDENCE / "inputs/browser-data"
+    expected = _canada_theme_action_map(setups, owner_root)
+
+    assert expected is not None
+    assert fixture_renderer.canada_theme_actions(setups) == expected
+    assert expected["n_themes"] == 2
+    assert expected["n_distinct_members"] == 3
 
 
 def test_successor_fixture_is_current_source_bound_and_reproducible(tmp_path: Path) -> None:
@@ -292,9 +387,44 @@ def test_successor_fixture_is_current_source_bound_and_reproducible(tmp_path: Pa
     inputs = {row["path"]: row["sha256"] for row in market["inputs"]}
     assert inputs["templates/canada.html.j2"] == _sha256(ROOT / "templates/canada.html.j2")
     assert inputs["scripts/render_canada_opportunity_map_fixture.py"] == _sha256(SUCCESSOR_RENDERER)
+    assert inputs["scripts/build_canada.py"] == _sha256(ROOT / "scripts/build_canada.py")
+    theme_owner = (
+        "mockups/evidence/canada-opportunity-map-20260909/inputs/"
+        "browser-data/canadabasketdata/baskets.json"
+    )
+    assert inputs[theme_owner] == _sha256(ROOT / theme_owner)
     assert market["owner_population"] == {
         "board": 9, "watch": 8, "intersection": [], "unique_total": 17,
     }
+
+
+def test_successor_verifier_fails_closed_when_theme_control_is_missing() -> None:
+    text = SUCCESSOR_VERIFIER.read_text()
+    assert 'if (await themeButton.count())' not in text
+    assert 'if ((await themeButtons.count()) === 0)' in text
+    assert 'Canada Opportunity Map theme control is missing' in text
+
+
+def test_successor_evidence_manifest_binds_claimed_artifacts() -> None:
+    manifest = yaml.safe_load((SUCCESSOR_EVIDENCE / "EVIDENCE.yml").read_text())
+    assert manifest["claims"] == {
+        "source_contract": "browser_fixture",
+        "browser_fixture": "reproducible",
+        "canonical_build": "unavailable",
+        "production": "none",
+        "capability": "BUILT_NOT_PROVEN",
+    }
+    expected_paths = {
+        "rendered_fixture": SUCCESSOR_EVIDENCE / "rendered-fixture.json",
+        "browser_receipt": SUCCESSOR_EVIDENCE / "mobile-layout-canada.json",
+        "opportunity_map_screenshot": SUCCESSOR_EVIDENCE / "canada-opportunity-map-desktop.png",
+        "verifier": SUCCESSOR_VERIFIER,
+        "renderer": SUCCESSOR_RENDERER,
+    }
+    for key, expected in expected_paths.items():
+        bound = manifest["proof"][key]
+        assert ROOT / bound["path"] == expected
+        assert bound["sha256"] == _sha256(expected)
 
 
 def test_successor_browser_receipt_proves_theme_to_prophet_journey() -> None:
@@ -317,6 +447,14 @@ def test_successor_browser_receipt_proves_theme_to_prophet_journey() -> None:
     }
     assert receipt["input_html"]["sha256"] == fixture["markets"]["ca"]["output_sha256"]
     assert receipt["construction_inputs"]["templates/canada.html.j2"] == _sha256(ROOT / "templates/canada.html.j2")
+    assert receipt["construction_inputs"]["scripts/build_canada.py"] == _sha256(
+        ROOT / "scripts/build_canada.py"
+    )
+    theme_owner = (
+        "mockups/evidence/canada-opportunity-map-20260909/inputs/"
+        "browser-data/canadabasketdata/baskets.json"
+    )
+    assert receipt["construction_inputs"][theme_owner] == _sha256(ROOT / theme_owner)
     assert receipt["loaded_assets"]["site/canada-stock-v36.js"] == _sha256(ROOT / "site/canada-stock-v36.js")
     assert receipt["pass"] is True
     assert receipt["desktop"]["pass"] is True

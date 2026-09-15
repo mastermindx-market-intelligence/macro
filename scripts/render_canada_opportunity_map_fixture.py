@@ -25,6 +25,9 @@ ROOT = Path(__file__).resolve().parents[1]
 TEMPLATES = ROOT / "templates"
 SITE = ROOT / "site"
 DATA = ROOT / "data"
+THEME_OWNER_ROOT = (
+    ROOT / "mockups/evidence/canada-opportunity-map-20260909/inputs/browser-data"
+)
 sys.path.insert(0, str(ROOT))
 
 MARKETS = {
@@ -485,60 +488,13 @@ def hk_context(
 
 
 def canada_theme_actions(setups: dict[str, Any]) -> dict[str, Any]:
-    """Deterministic fixture for the real Canada theme-action consumer seam."""
-    def owner(key: str) -> set[str] | None:
-        rows = setups.get(key)
-        if not isinstance(rows, list):
-            return None
-        out: set[str] = set()
-        for row in rows:
-            if not isinstance(row, dict) or not isinstance(row.get("ticker"), str):
-                return None
-            ticker = row["ticker"].strip().upper()
-            if not ticker or ticker in out:
-                return None
-            out.add(ticker)
-        return out
+    """Project the frozen owner payload through the production Canada seam."""
+    from scripts.build_canada import _canada_theme_action_map
 
-    board = owner("buy")
-    watch = owner("watch")
-    current = (board | watch) if board is not None and watch is not None else None
-    oil = {"SU.TO", "TOU.TO"}
-    insurers = {"GWO.TO"}
-    def count(members: set[str]) -> int | None:
-        return len(members & current) if current is not None else None
-
-    return {
-        "as_of": "2026-09-02",
-        "n_themes": 16,
-        "n_distinct_members": 3,
-        "n_prophet_current": len(current) if current is not None else None,
-        "authority": "descriptive_rotation",
-        "lanes": {
-            "buy_now": [],
-            "in_favour": [{
-                "id": "ca_oil_gas", "name": "Oil & Gas Producers",
-                "name_zh": "\u6cb9\u6c14\u751f\u4ea7", "category": "Energy",
-                "category_zh": "\u80fd\u6e90", "rank": 2, "score": 69,
-                "action": "accumulate", "action_en": "ACCUMULATE",
-                "action_zh": "\u52a0\u4ed3", "leaders": ["SU.TO", "TOU.TO"],
-                "membership_known": True, "members": sorted(oil), "n_members": 2,
-                "prophet_count": count(oil),
-                "href": "baskets_canada.html#theme-ca_oil_gas",
-            }],
-            "watch": [],
-            "reduce": [{
-                "id": "ca_insurers", "name": "Insurers",
-                "name_zh": "\u4fdd\u9669", "category": "Financials",
-                "category_zh": "\u91d1\u878d", "rank": 7, "score": 40,
-                "action": "avoid", "action_en": "AVOID",
-                "action_zh": "\u56de\u907f", "leaders": ["GWO.TO"],
-                "membership_known": True, "members": sorted(insurers), "n_members": 1,
-                "prophet_count": count(insurers),
-                "href": "baskets_canada.html#theme-ca_insurers",
-            }],
-        },
-    }
+    projected = _canada_theme_action_map(setups, THEME_OWNER_ROOT)
+    if projected is None:
+        raise ValueError("frozen Canada theme owner payload is not projectable")
+    return projected
 
 
 def canada_context(
@@ -812,6 +768,11 @@ def render_market(market: str, out_dir: Path) -> dict[str, Any]:
         input_row(ROOT / "engine" / "i18n.py", "jinja_globals"),
         input_row(owner_path, "frozen_owner_fixture"),
         input_row(action_path, "frozen_action_fixture"),
+        input_row(ROOT / "scripts" / "build_canada.py", "production_theme_projection"),
+        input_row(
+            THEME_OWNER_ROOT / "canadabasketdata" / "baskets.json",
+            "frozen_theme_owner_fixture",
+        ),
     ]
     inputs.extend(
         input_row(path, "jinja_template") for path in sorted(loaded_templates)
