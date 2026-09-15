@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-09-14T11:00:20.343524+00:00",
+  "generated_utc": "2026-09-14T23:08:33.401807+00:00",
   "as_of": "2026-09-14",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -26928,10 +26928,10 @@
         {
           "ticker": "CHYM",
           "buy_usd": 0.0,
-          "sell_usd": 1096962669.0,
-          "net_usd": -1096962669.0,
+          "sell_usd": 1096910169.0,
+          "net_usd": -1096910169.0,
           "buyers": 0,
-          "sellers": 323
+          "sellers": 322
         },
         {
           "ticker": "PRMB",
@@ -26944,10 +26944,10 @@
         {
           "ticker": "DELL",
           "buy_usd": 0.0,
-          "sell_usd": 992303276.0,
-          "net_usd": -992303276.0,
+          "sell_usd": 937247637.0,
+          "net_usd": -937247637.0,
           "buyers": 0,
-          "sellers": 908
+          "sellers": 854
         },
         {
           "ticker": "ANET",
