@@ -125,6 +125,3 @@ OpenCode's current Terms explicitly restrict multiple-account circumvention. Do 
 Sol should complete the reviewed single-account streaming harness binding on the existing #622 carrier after independent source review/current-parent reconciliation. Use existing provider-home enrollment, transcript custody and broker boundaries. Only with the applicable native, enrollment, policy and runtime gates satisfied may a bounded real coding-agent task run. Prove its visible workspace result first; an approved pooled rollout additionally needs real identity, A/B/C continuity, cancellation/partial-stream safety and simultaneous-claim proof.
 
 No Fable or other worker was commissioned; no watcher is waiting. Preserve existing carriers and retrieve the full checkpoint before continuing. Never call these synthetic tests production proof or restore generic AuthError switching.
-# Executive Capacity Fabric - OpenCode Go composition checkpoint
-
-Parent: `WS:EXECUTIVE-CAPACITY-FABRIC`; owner Sol; capability state PARTIAL / BUILT_NOT_PROVEN. This is a continuation record on draft #7142, not a new workstream, runtime assignment or final acceptance.
