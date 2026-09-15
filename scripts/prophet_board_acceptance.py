@@ -17,14 +17,13 @@ could see something this check did not.
 
 WHAT IT ASSERTS, for the session this run is producing (expected_last_session
 against the clock the run started with):
-  * IF this run originated any new plan (per the origination receipt
-    mechanism the "Prophet nightly" step already writes), an immutable
-    receipt exists for THIS run id at
-    data/prophet/origination_receipts/<run_id>-*.json. A night with ZERO new
-    originations legitimately writes NO receipt (build_prophet's own
-    ``if not new_ids: raise SystemExit(0)``), so this is conditioned on the
-    cohort being non-empty — an absent receipt on an honestly-empty night
-    must never be a false alarm.
+  * IF ``index.intake.originated`` says this run originated any new plan,
+    an immutable receipt exists for THIS run id AND attempt at
+    data/prophet/origination_receipts/<run_id>-<run_attempt>-*.json. A retry
+    may carry an existing non-empty market-session cohort while originating
+    ZERO new IDs; the producer then legitimately writes NO receipt
+    (``if not new_ids: raise SystemExit(0)``), so cohort membership is never
+    used as receipt-obligation authority.
   * The intake identity holds: intake.lossless is True, intake.unaccounted
     == 0, and NOT (intake.eligible_after_skips > 0 AND intake.originated ==
     0). This is the SAME predicate scripts/freshness_sentinel.py,
@@ -175,7 +174,9 @@ def _plan_session_stamp(plan: object) -> str | None:
     text = str(stamp or "")[:10]
     return text or None
 
-def check(root: Path, run_id: str, now: datetime) -> list[str]:
+def check(
+    root: Path, run_id: str, now: datetime, run_attempt: str = "1"
+) -> list[str]:
     """Every breach found for the expected session, as human-readable lines.
 
     Pure over its inputs (root's on-disk files + the clock) — no network, no
@@ -210,16 +211,30 @@ def check(root: Path, run_id: str, now: datetime) -> list[str]:
     if not isinstance(index, dict):
         return problems + [f"{index_path} missing or unreadable"]
 
-    if not isinstance(index.get("intake"), dict):
+    intake = index.get("intake")
+    originated_count: int | None = None
+    if not isinstance(intake, dict):
         problems.append(
             f"{index_path} carries no intake block — a genuine build regression, "
             "not a legacy-fixture shape (this script only ever runs against a "
             "live nightly's own fresh output)"
         )
     else:
-        breach = intake_identity_breach(index.get("intake"))
+        breach = intake_identity_breach(intake)
         if breach:
             problems.append(f"intake identity: {breach}")
+        raw_originated = intake.get("originated")
+        if (
+            not isinstance(raw_originated, int)
+            or isinstance(raw_originated, bool)
+            or raw_originated < 0
+        ):
+            problems.append(
+                "intake.originated must be a non-negative integer for this "
+                f"run attempt, got {raw_originated!r}"
+            )
+        else:
+            originated_count = raw_originated
 
     plans = index.get("plans")
     plans = plans if isinstance(plans, list) else []
@@ -244,26 +259,49 @@ def check(root: Path, run_id: str, now: datetime) -> list[str]:
             )
 
     receipt_dir = root / "data" / "prophet" / "origination_receipts"
+    receipt_pattern = f"{run_id}-{run_attempt}-*.json"
     receipts = (
-        sorted(receipt_dir.glob(f"{run_id}-*.json")) if receipt_dir.is_dir() else []
+        sorted(receipt_dir.glob(receipt_pattern)) if receipt_dir.is_dir() else []
     )
     originated_ids: set[str] = set()
     for receipt_path in receipts:
         doc = _load_json(receipt_path)
-        if isinstance(doc, dict):
-            originated_ids.update(str(i) for i in (doc.get("originated_plan_ids") or []))
+        if not isinstance(doc, dict):
+            problems.append(f"{receipt_path} missing or unreadable")
+            continue
+        raw_ids = doc.get("originated_plan_ids")
+        if (
+            not isinstance(raw_ids, list)
+            or any(not isinstance(plan_id, str) or not plan_id for plan_id in raw_ids)
+            or raw_ids != sorted(set(raw_ids))
+        ):
+            problems.append(
+                f"{receipt_path} originated_plan_ids must be a sorted unique "
+                f"list of non-empty plan IDs, got {raw_ids!r}"
+            )
+            continue
+        originated_ids.update(raw_ids)
 
-    # A receipt is only OWED when this run's cohort is non-empty. The producer
-    # ("Prophet nightly" step, scripts/build_prophet.py via daily.yml) legitimately
-    # writes NO receipt on a night with zero new plans (`if not new_ids: raise
-    # SystemExit(0)`) — an absent receipt on an honestly-empty night must never
-    # become a false alarm.
-    if cohort and not receipts:
+    # Receipt obligation belongs to the producer-owned current-run fact, not to
+    # the accumulated session cohort. A retry can retain Friday's existing plans
+    # while originating zero new IDs, in which case the producer exits without a
+    # receipt. Bind evidence to the exact run attempt so attempt 1 cannot make
+    # attempt 2 look proven.
+    if originated_count is not None and originated_count > 0 and not receipts:
         problems.append(
-            f"{len(cohort)} plan(s) belong to market session {session_iso} "
+            f"intake.originated={originated_count} for market session {session_iso} "
             "but no origination "
-            f"receipt {receipt_dir}/{run_id}-*.json exists for this run "
-            f"(run_id={run_id!r})"
+            f"receipt {receipt_dir}/{receipt_pattern} exists for this run attempt "
+            f"(run_id={run_id!r}, run_attempt={run_attempt!r})"
+        )
+    if (
+        originated_count is not None
+        and receipts
+        and len(originated_ids) != originated_count
+    ):
+        problems.append(
+            f"intake.originated={originated_count} but exact run-attempt "
+            f"receipt evidence identifies {len(originated_ids)} unique plan(s)"
         )
 
     for plan_id in sorted(originated_ids):
@@ -318,6 +356,9 @@ def main(argv: list[str] | None = None) -> int:
         description="Post-publish Prophet US board acceptance alarm (never a gate)"
     )
     ap.add_argument("--run-id", default=os.environ.get("GITHUB_RUN_ID", ""))
+    ap.add_argument(
+        "--run-attempt", default=os.environ.get("GITHUB_RUN_ATTEMPT", "1")
+    )
     ap.add_argument("--now", default=None, help="ISO clock override (tests)")
     ap.add_argument("--root", default=str(REPO_ROOT))
     args = ap.parse_args(argv)
@@ -339,7 +380,7 @@ def main(argv: list[str] | None = None) -> int:
             flush=True,
         )
 
-    problems = check(root, run_id, now)
+    problems = check(root, run_id, now, args.run_attempt or "1")
     if problems:
         msg = "; ".join(problems)
         # Bare line-start print with flush=True — NEVER through a logger (house
