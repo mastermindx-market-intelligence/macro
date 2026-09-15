@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-15T02:27:05.199065+00:00",
-  "count": 2128,
+  "generated_at": "2026-09-15T02:42:06.730583+00:00",
+  "count": 2129,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -628,6 +628,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xbqzxz3tfma-e7bf94",
+      "title": "NAURA (002371)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T00:50:39Z",
+      "summary_points": [
+        "**Growth Drivers**: Accelerated memory/logic capex in China (clean room construction/engineer capacity) with stable blended GM at ~40%, driven by consistent demand from memory/logic sectors.",
+        "**Geopolitical Risk**: US export restrictions pose key downside risk, potentially delaying China semiconductor capacity expansion and impacting growth trajectory.",
+        "**Revenue Risk**: Slower-than-expected capacity expansion at NAURA’s mature-node customers could suppress revenue growth and earnings below current estimates.",
+        "**Upside Catalyst**: Projected revenue (Rmb38.3bn → Rmb81.1bn) and EPS (Rmb7.64 → Rmb23.69) growth through 2028E support Rmb1,200 target (89.3% upside)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
