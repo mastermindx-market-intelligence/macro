@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-15T12:12:35.096030+00:00",
+  "generated_at": "2026-09-15T12:55:00.163444+00:00",
   "as_of": "2026-09-15",
   "n_open": 95827,
-  "n_graded_today": 798,
-  "n_blocked_by_coverage": 47922,
+  "n_graded_today": 2899,
+  "n_blocked_by_coverage": 45821,
   "n_ungradeable": 12,
   "n_already_graded": 117604,
   "clock_unresolvable_claims": {
@@ -21,11 +21,9 @@
   "dry_run": false,
   "w6_readiness": {
     "n_families_ready": 0,
-    "n_families_approaching": 1,
+    "n_families_approaching": 0,
     "families_ready": [],
-    "families_approaching": [
-      "radar@21d"
-    ],
+    "families_approaching": [],
     "grader_quiet_days": 0
   },
   "regime_stamp_backfill": {
