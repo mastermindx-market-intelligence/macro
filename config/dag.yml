@@ -325,6 +325,24 @@ lanes:
           domestic-substitution (onshoring). No composite across themes.
           FENCE: SEPARATE display leg — never fused into fused_obs_z.
           Always exits 0 (tolerant; absent parquet → honest null written).
+      - id: collect_usgs_mcs
+        module: collectors.usgs_mcs
+        note: >
+          MO-B F09-10 USGS Mineral Commodity Summaries ingest (ScienceBase NMIC).
+          Off the render critical path. Nightly step is if:-gated on
+          vars.USGS_MCS_ENABLED; the checker still sees the python -m
+          invocation in the run body. Keyless public-domain annual release.
+          Ingests only the newest T7-shaped edition. Always exits 0.
+          Output: data/usgs_mcs/mcs_rows.parquet (nightly-advanced).
+      - id: build_critical_minerals_supply
+        module: engine.critical_minerals_supply
+        note: >
+          MO-B F09-10 critical-minerals supply-concentration context rollup.
+          Reads data/usgs_mcs/mcs_rows.parquet. Pure in-memory, no network.
+          Produces data/neuralweb/critical_minerals_supply.json and
+          site/basketdata/critical_minerals_supply.json.
+          Display/context only — never fused into fused_obs_z.
+          Always exits 0 (absent parquet → honest null).
       - id: collect_clinicaltrials_themes
         module: collectors.clinicaltrials_themes
         note: >

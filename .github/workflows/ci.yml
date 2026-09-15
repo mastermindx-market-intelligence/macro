@@ -1098,6 +1098,12 @@ on:
       - "tests/test_usaspending_awards.py"
       - "tests/test_usaspending_subawards.py"
       - "tests/test_census_trade.py"
+      # MO-B F09-10 USGS MCS collector + critical-minerals supply projection.
+      - "tests/test_usgs_mcs.py"
+      - "config/usgs_mcs_sources.yml"
+      - "collectors/usgs_mcs.py"
+      - "engine/critical_minerals_supply.py"
+      - "tests/fixtures/usgs_mcs/**"
       # Darkness backfill 2026-08-06: these nineteen suites were named by NO
       # pack, NO workflow, and no catch-all sweep, so editing one could not even
       # fire ci.yml.  They include the forward award-event spine's own state

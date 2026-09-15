@@ -14145,6 +14145,39 @@ artifacts:
       nuclear_power / copper_steel_electrify / glp1_obesity /
       diagnostics_lifesci / defense_aerospace / medical_devices.
 
+  neuralweb-critical-minerals-supply:
+    path: data/neuralweb/critical_minerals_supply.json
+    format: json
+    producer: engine/critical_minerals_supply.py
+    known_extra_writers: []
+    owner_program: mo-b-f09-10-usgs-mcs
+    cadence: collect
+    storage: git
+    asof_field: as_of
+    freshness_sla_hours: 2160
+    schema: critical_minerals_supply.v1
+    tier: display
+    horizon_role: context
+    weights: none
+    scored_path_surfaces: []
+    consumers:
+      - engine/critical_minerals_supply.py
+    external_consumers: []
+    notes: >
+      MO-B F09-10 (MO-DELTA-029) raw-layer critical-minerals supply context
+      from USGS Mineral Commodity Summaries (ScienceBase NMIC, public-domain
+      US Government work, keyless). Schema: {schema, as_of, generated_at,
+      authority, honesty_header, edition, commodities, coverage_stats,
+      source_note}. Per commodity: US net-import reliance, leading-producer
+      share (T7 Leading_source_precent_world), top-3 import-source share
+      (sum of the first three Fig3 Percent rows), China share of world
+      production (China ÷ World total from Commodities_Data, same period).
+      No score, rank, composite or concentration index. Authority: all
+      may_* false; is_context_only=true. FENCE: never fold into fused_obs_z.
+      Nightly collect_tail steps are if:-gated on vars.USGS_MCS_ENABLED.
+      Honest null with fresh as_of when the parquet is absent. Off render
+      path. Display/context only.
+
   site-trade-flows:
     path: site/basketdata/trade_flows.json
     format: json
