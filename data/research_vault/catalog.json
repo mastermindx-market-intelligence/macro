@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-15T01:26:56.255538+00:00",
-  "count": 2125,
+  "generated_at": "2026-09-15T01:41:59.617054+00:00",
+  "count": 2126,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -98,6 +98,23 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-tpo1cuxwvvp-abaad6",
+      "title": "GS Equities Color US EQUITIES COLOR ROTATION 14 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T01:15:48Z",
+      "summary_points": [
+        "**AI infrastructure sell-off & sector rotation**: Anthropic CEO comments triggered AI infrastructure sell-off; Software vs Semis pair surged +12.56%, signaling sector rotation amid heightened volatility - **10yr yield spike & FOMC risk**: 10yr yields briefly hit 5% (FOMC near, ~91% hike chance), reflecting acute macro risk and rate sensitivity ahead of key policy decision - **Derivatives flows & positioning**: NDX rallied off intraday lows with SPX/NDX skew bid and elevated NVIDIA call spread activity, indicating short-term hedging and directional bets - **Implied volatility shift**: S&P implied move at 0.52%, highlighting compressed near-term volatility expectations despite sharp intraday moves in key indices"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-alwzncgm1v8-2e910c",
       "title": "Private markets",
