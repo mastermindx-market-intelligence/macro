@@ -2,7 +2,7 @@
 
 **Date:** 2026-09-11
 **Operation:** `anticipate-macro-turnarounds-continuation-20260909-sol-001`
-**Protected Skillpack:** `mastermindx-market-intelligence/Mastermind@e61f2951136bdc03a7ec2f5f12f960af26656a4c`
+**Protected Skillpack:** `mastermindx-market-intelligence/Mastermind@a9e6e1667abecdff500bced40c9816c1611c3dd7`
 **Macro implementation base:** `d1d7273330df22014849d438160c0c393f4763a3`
 **Capability state of this slice:** **BUILT_NOT_PROVEN / RESEARCH_ONLY / PRODUCTION_INERT**
 
@@ -48,12 +48,12 @@ miss without rewriting history.
 | Point-in-time observation selection | BUILT_NOT_PROVEN | Period and release availability are distinct; future and conflicting vintages fail closed. |
 | Revision-safe immutable identity | BUILT_NOT_PROVEN | Input, config, artifact, manifest, source, and replay identities are deterministic and correction-safe. |
 | Multi-horizon direction and acceleration | BUILT_NOT_PROVEN | Robust level, short slope, medium slope, acceleration, and explicit unidentifiable-scale withholding. |
-| Independent-family breadth | BUILT_NOT_PROVEN | Configured family budgets prevent duplicate-series authority and disclose infeasible family caps. |
+| Independent-family breadth | BUILT_NOT_PROVEN | Configured family budgets prevent duplicate-series authority; the caller cap is constrained to `(0, 0.5]`, so one family cannot claim complete breadth. |
 | Phase state with hysteresis | BUILT_NOT_PROVEN | Research-only contraction, troughing, early recovery, expansion, peaking, slowdown, or indeterminate state. |
 | Correction and evidence-change projection | BUILT_NOT_PROVEN | Active values, vintage identity, revisions, new periods, withdrawals, exclusions, and quality changes stay distinct. |
-| Immutable JSON machine consumer | BUILT_NOT_PROVEN | Create-only hard-link publication; identical replay is idempotent; conflicts and symlinks fail closed. |
+| Immutable JSON machine consumer | BUILT_NOT_PROVEN | Create-only hard-link publication; identical replay is idempotent; conflicts, symlinks, and canonical `data/` or generated `site/` destinations fail closed. |
 | Existing canonical full-vintage adapter | BUILT_NOT_PROVEN | Read-only reuse of `engine.release_target_truth`; source and manifest bytes are digest-verified before native Parquet decoding. |
-| Point-in-time replay | BUILT_NOT_PROVEN | 156-cutoff PPIFIS replay proves bounded mechanics only; no broad-family or forecast claim. |
+| Point-in-time replay | BUILT_NOT_PROVEN | 157-cutoff PPIFIS replay proves bounded mechanics only; no broad-family or forecast claim. |
 | Pre-merge CI ownership | BUILT_NOT_PROVEN | Dedicated `macro-turnaround-research` code-gated job; hosted execution remains required. |
 | Calibrated forecast | NOT_BUILT | Raw scores and phases are explicitly unvalidated research values. |
 | Broad independent-family real-data panel | NOT_BUILT | PPIFIS-only proof is not macro breadth. |
@@ -80,7 +80,9 @@ miss without rewriting history.
    constructor. Descriptive context and research priority are the only enabled
    fields; no caller may instantiate an escalated variant.
 6. **No family-count masquerade.** Many correlated indicators in one family
-   split one capped family share; they cannot simulate independent breadth.
+   split one capped family share; they cannot simulate independent breadth. The
+   caller-visible cap cannot exceed `0.5`, so this protection is not an on/off
+   switch disguised as configuration.
 7. **No one-print phase churn.** Enter and hold thresholds are distinct and a
    prior phase is carried through walk-forward evaluation.
 
@@ -142,8 +144,9 @@ Malformed input returns nonzero and publishes no success artifact.
 
 - Historical selection is release-vintage-safe and invariant to future records,
   input ordering, identical duplication, and post-cutoff corrections.
-- Malformed, nonfinite, stale, unidentifiable-scale, irregular-frequency, and
-  conflicting evidence fails closed or remains explicitly unavailable.
+- Malformed, nonfinite, stale, unidentifiable-scale, irregular monthly
+  year-over-year history, irregular replay history, and conflicting evidence
+  fail closed or remain explicitly unavailable.
 - Immutable output resists replacement, symlink redirection, and concurrent
   conflicting publishers.
 - Manifest and source digests are verified before native canonical-data decoding;
@@ -174,3 +177,29 @@ This addendum narrows what the first source PR establishes. It does not change t
 - The bounded real-data proof is PPIFIS-only. It validates point-in-time selection and reproducibility, not broad macro breadth or independent economic cycles.
 
 The target/evaluation freeze, T1/T2 builder, broader E2 family adapters, baseline scorecards, learned models, correction loop, and premium Turnaround Desk remain later dependency-gated capabilities.
+
+## 18. Independent-review repair addendum — 2026-09-15
+
+The first exact-head adversarial review accepted the core temporal, identity,
+immutability, CI-ownership, and fixed-authority design but found three release
+blockers. The same carrier now closes them without widening capability claims:
+
+- both research CLIs reach a shared publisher guard that rejects repository
+  `data/` and generated `site/` destinations before publication;
+- `family_weight_cap` is restricted to `(0, 0.5]`, so a single family can never
+  configure itself into complete breadth;
+- explicit engine and replay regressions prove that a future economic period
+  stays invisible even when a malformed source gives it an early release date;
+- loader regressions preserve missing-source disclosure and refuse an all-missing
+  requested panel; and
+- both executable scripts use the repository's unconditional, file-derived
+  import pin before any repository import.
+
+Two nonblocking boundaries remain explicit rather than being called solved.
+The direct engine/build path assumes caller-supplied regular spacing for
+`LEVEL`, `DIFF`, and `PCT_CHANGE`; the canonical replay adapter independently
+requires complete monthly active history. Frequency typing is a later contract
+rather than an inferred rule in this PR. Also, shared JSON/publication helpers
+remain implemented in the build-script module and imported by the replay engine;
+that layering cleanup must be a bounded follow-up if adopted, not a reason to
+create a duplicate publication or parsing plane here.
