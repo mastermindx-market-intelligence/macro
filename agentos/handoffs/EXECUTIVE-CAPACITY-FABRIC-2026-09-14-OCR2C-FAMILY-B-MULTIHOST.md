@@ -46,12 +46,12 @@ verified:
   - claim: "Protected Mastermind remained 42c2688df57007319cb0af231cf5ed29da505ad4 during this hardening pass."
     command: "gh api repos/mastermindx-market-intelligence/Mastermind/git/ref/heads/master --jq '.object.sha'"
     result: "Returned 42c2688df57007319cb0af231cf5ed29da505ad4."
-  - claim: "Macro main advanced beyond the Family-B branch base through unrelated/nightly movement and requires latest-base compatibility rather than an ancestry-only merge."
+  - claim: "Macro main is moving independently of this records carrier, so compatibility must use an action-time read rather than a frozen 'current main' assertion."
     command: "gh api repos/mastermindx-market-intelligence/macro/git/ref/heads/main --jq '.object.sha'"
     result: >
-      Returned ea0283dfd192ad759c6f49a3b7b32b8ff0db4ccd during this pass. Current protected procedure requires
-      material-source/latest-merge-ref compatibility evidence; the candidate branch was not rebased or
-      merged merely to erase behind state.
+      A fresh re-read returned 1ab0f35ca4d3eac45c5983bb91742a68dd898513 after earlier reads had already
+      observed intervening main heads. Current protected procedure therefore requires action-time material-source/
+      latest-merge-ref compatibility evidence; the candidate branch was not rebased or merged merely to erase behind state.
 unverified:
   - claim: "The paired Family-B architecture, including the multi-host amendment, is independently accepted or protected."
     what_would_verify: >
