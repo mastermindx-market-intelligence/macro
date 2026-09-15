@@ -10,8 +10,8 @@ from pathlib import Path
 import pytest
 import yaml
 
-from scripts import build_canada as build_canada_module
-from scripts.build_canada import _canada_theme_action_map
+from scripts import canada_theme_action_map as theme_action_module
+from scripts.canada_theme_action_map import _canada_theme_action_map
 
 
 def _write_payload(site: Path) -> None:
@@ -126,11 +126,11 @@ def test_theme_action_projection_call_seam_fails_open_on_unexpected_error(
     def explode(_setups: dict | None, _site: Path) -> dict | None:
         raise RuntimeError("optional projection exploded")
 
-    monkeypatch.setattr(build_canada_module, "_canada_theme_action_map", explode)
-    safe_call = getattr(build_canada_module, "_safe_canada_theme_action_map", None)
+    monkeypatch.setattr(theme_action_module, "_canada_theme_action_map", explode)
 
-    assert callable(safe_call), "the build call seam must own an explicit fail-open guard"
-    assert safe_call({"buy": [], "watch": []}, tmp_path) is None
+    assert theme_action_module._safe_canada_theme_action_map(
+        {"buy": [], "watch": []}, tmp_path
+    ) is None
 
 
 @pytest.mark.parametrize(
@@ -321,6 +321,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SUCCESSOR_EVIDENCE = ROOT / "mockups/evidence/canada-opportunity-map-20260909"
 SUCCESSOR_RENDERER = ROOT / "scripts/render_canada_opportunity_map_fixture.py"
 SUCCESSOR_VERIFIER = ROOT / "scripts/verify_canada_opportunity_map.cjs"
+THEME_ACTION_OWNER = ROOT / "scripts/canada_theme_action_map.py"
 P0B_EVIDENCE = ROOT / "mockups/evidence/prophet-p0b-zero-fouc"
 CLIENT_CONTRACT_HARNESS = ROOT / "tests/canada_theme_client_contract_harness.cjs"
 CLIENT_COMPOSER = ROOT / "site/canada-stock-v36.js"
@@ -409,7 +410,7 @@ def test_successor_fixture_is_current_source_bound_and_reproducible(tmp_path: Pa
     inputs = {row["path"]: row["sha256"] for row in market["inputs"]}
     assert inputs["templates/canada.html.j2"] == _sha256(ROOT / "templates/canada.html.j2")
     assert inputs["scripts/render_canada_opportunity_map_fixture.py"] == _sha256(SUCCESSOR_RENDERER)
-    assert inputs["scripts/build_canada.py"] == _sha256(ROOT / "scripts/build_canada.py")
+    assert inputs["scripts/canada_theme_action_map.py"] == _sha256(THEME_ACTION_OWNER)
     theme_owner = (
         "mockups/evidence/canada-opportunity-map-20260909/inputs/"
         "browser-data/canadabasketdata/baskets.json"
@@ -484,9 +485,9 @@ def test_successor_browser_receipt_proves_theme_to_prophet_journey() -> None:
     }
     assert receipt["input_html"]["sha256"] == fixture["markets"]["ca"]["output_sha256"]
     assert receipt["construction_inputs"]["templates/canada.html.j2"] == _sha256(ROOT / "templates/canada.html.j2")
-    assert receipt["construction_inputs"]["scripts/build_canada.py"] == _sha256(
-        ROOT / "scripts/build_canada.py"
-    )
+    assert receipt["construction_inputs"][
+        "scripts/canada_theme_action_map.py"
+    ] == _sha256(THEME_ACTION_OWNER)
     theme_owner = (
         "mockups/evidence/canada-opportunity-map-20260909/inputs/"
         "browser-data/canadabasketdata/baskets.json"

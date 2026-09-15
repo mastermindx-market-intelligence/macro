@@ -80,14 +80,14 @@
           "sha256": "dc93511b93517c9ecd096bcb5a79144d95f2ee565fc12d98a2410ff9aa1ad72b"
         },
         {
-          "path": "scripts/build_canada.py",
+          "path": "scripts/canada_theme_action_map.py",
           "role": "production_theme_projection",
-          "sha256": "9eaf7afb5a21b9d7cdefcf823392f1d24749228be3ba0506ed5eed78784b1e22"
+          "sha256": "15fe3b46f0a0eab98c72019a30e1d8bb469c14c08dc11367a84ca8765d3267a3"
         },
         {
           "path": "scripts/render_canada_opportunity_map_fixture.py",
           "role": "recipe",
-          "sha256": "dee093284cdc6e1c7d45040d9cc354dbbce9d9ff56307e2e152a111898f87324"
+          "sha256": "550568fdad0d4a8077c215ab2295537d666c414c6bf237e3c69a7ebdbb2a5895"
         },
         {
           "path": "templates/_cmd_hero.css.j2",

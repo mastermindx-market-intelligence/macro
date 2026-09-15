@@ -1060,12 +1060,8 @@ def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate() -> N
         "mockups/evidence/prophet-p0b-zero-fouc/ca-js-disabled-dark-390.png",
         "mockups/evidence/prophet-p0b-zero-fouc/ca-composer-failed-light-390.png",
         "scripts/build_canada.py",
-        "lib/config.py",
-        "lib/illus.py",
-        "lib/site_assets.py",
-        "lib/store.py",
-        "lib/pages.py",
-        "engine/ledger_lane.py",
+        "scripts/__init__.py",
+        "scripts/canada_theme_action_map.py",
         "scripts/render_canada_opportunity_map_fixture.py",
         "scripts/verify_canada_opportunity_map.cjs",
         "mockups/evidence/canada-opportunity-map-20260909/**",
@@ -1078,8 +1074,7 @@ def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate() -> N
     assert code_suite in code_runs
     assert opportunity_suite in code_runs
     assert _job_pip_packages(code_job) == {
-        "beautifulsoup4", "jinja2", "numpy", "pandas", "pillow", "plotly",
-        "pyarrow", "pytest", "pyyaml", "requests",
+        "beautifulsoup4", "jinja2", "pytest", "pyyaml",
     }
 
     data_job = manifest["jobs"]["engine-render-guards"]
@@ -1098,12 +1093,8 @@ def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate() -> N
         ["templates/hk.html.j2"],
         ["site/canada-stock-v36.js"],
         ["scripts/build_canada.py"],
-        ["lib/config.py"],
-        ["lib/illus.py"],
-        ["lib/site_assets.py"],
-        ["lib/store.py"],
-        ["lib/pages.py"],
-        ["engine/ledger_lane.py"],
+        ["scripts/__init__.py"],
+        ["scripts/canada_theme_action_map.py"],
         ["scripts/render_canada_opportunity_map_fixture.py"],
         ["scripts/verify_canada_opportunity_map.cjs"],
         ["mockups/evidence/canada-opportunity-map-20260909/EVIDENCE.yml"],

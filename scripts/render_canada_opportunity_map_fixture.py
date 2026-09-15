@@ -489,7 +489,7 @@ def hk_context(
 
 def canada_theme_actions(setups: dict[str, Any]) -> dict[str, Any]:
     """Project the frozen owner payload through the production Canada seam."""
-    from scripts.build_canada import _canada_theme_action_map
+    from scripts.canada_theme_action_map import _canada_theme_action_map
 
     projected = _canada_theme_action_map(setups, THEME_OWNER_ROOT)
     if projected is None:
@@ -768,7 +768,10 @@ def render_market(market: str, out_dir: Path) -> dict[str, Any]:
         input_row(ROOT / "engine" / "i18n.py", "jinja_globals"),
         input_row(owner_path, "frozen_owner_fixture"),
         input_row(action_path, "frozen_action_fixture"),
-        input_row(ROOT / "scripts" / "build_canada.py", "production_theme_projection"),
+        input_row(
+            ROOT / "scripts" / "canada_theme_action_map.py",
+            "production_theme_projection",
+        ),
         input_row(
             THEME_OWNER_ROOT / "canadabasketdata" / "baskets.json",
             "frozen_theme_owner_fixture",
