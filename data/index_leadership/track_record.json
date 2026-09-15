@@ -1,7 +1,7 @@
 {
   "schema": "index_leadership.track_record.v1",
   "as_of": "2026-09-11",
-  "generated_at": "2026-09-13T08:27:42.876021+00:00",
+  "generated_at": "2026-09-14T08:47:22.885640+00:00",
   "is_context_only": true,
   "n_snapshots": 714,
   "n_days": 25,
@@ -12,21 +12,21 @@
         "running": {
           "n": 544,
           "mean_fwd_rel": -0.0047,
-          "hit_rate": 0.452
+          "hit_rate": 0.454
         },
         "coiling": {
           "n": 35,
-          "mean_fwd_rel": 0.0002,
+          "mean_fwd_rel": -0.0004,
           "hit_rate": 0.514
         },
         "coiling_primed": {
           "n": 37,
-          "mean_fwd_rel": 0.0122,
+          "mean_fwd_rel": 0.0119,
           "hit_rate": 0.595
         }
       },
-      "running_ic": -0.0545,
-      "running_ic_t_hac": -0.562,
+      "running_ic": -0.0463,
+      "running_ic_t_hac": -0.495,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -35,12 +35,12 @@
       "by_stage": {
         "running": {
           "n": 484,
-          "mean_fwd_rel": -0.0078,
-          "hit_rate": 0.428
+          "mean_fwd_rel": -0.0077,
+          "hit_rate": 0.434
         },
         "coiling": {
           "n": 33,
-          "mean_fwd_rel": -0.002,
+          "mean_fwd_rel": -0.0023,
           "hit_rate": 0.455
         },
         "coiling_primed": {
@@ -49,8 +49,8 @@
           "hit_rate": 0.562
         }
       },
-      "running_ic": -0.091,
-      "running_ic_t_hac": -0.975,
+      "running_ic": -0.0896,
+      "running_ic_t_hac": -0.964,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -59,22 +59,22 @@
       "by_stage": {
         "running": {
           "n": 363,
-          "mean_fwd_rel": -0.0095,
-          "hit_rate": 0.441
+          "mean_fwd_rel": -0.0102,
+          "hit_rate": 0.438
         },
         "coiling": {
           "n": 20,
-          "mean_fwd_rel": -0.0076,
+          "mean_fwd_rel": -0.0085,
           "hit_rate": 0.5
         },
         "coiling_primed": {
           "n": 26,
-          "mean_fwd_rel": 0.036,
+          "mean_fwd_rel": 0.0354,
           "hit_rate": 0.692
         }
       },
-      "running_ic": 0.0136,
-      "running_ic_t_hac": 0.139,
+      "running_ic": 0.0162,
+      "running_ic_t_hac": 0.164,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -83,7 +83,7 @@
       "by_stage": {
         "running": {
           "n": 26,
-          "mean_fwd_rel": -0.0468,
+          "mean_fwd_rel": -0.0465,
           "hit_rate": 0.346
         },
         "coiling": {
@@ -115,7 +115,15 @@
       "id": "russell:leisure",
       "name": "Leisure",
       "stage": "coiling_primed",
-      "fwd_rel": -0.0923,
+      "fwd_rel": -0.1182,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-08-21",
+      "id": "russell:restaurants",
+      "name": "Restaurants",
+      "stage": "running",
+      "fwd_rel": -0.0935,
       "horizon_d": 21
     },
     {
@@ -136,10 +144,10 @@
     },
     {
       "date": "2026-08-21",
-      "id": "russell:restaurants",
-      "name": "Restaurants",
+      "id": "subsectors:packaged-foods",
+      "name": "Packaged Foods",
       "stage": "running",
-      "fwd_rel": -0.0869,
+      "fwd_rel": -0.0723,
       "horizon_d": 21
     },
     {
@@ -164,14 +172,6 @@
       "name": "Gold Miners",
       "stage": "running",
       "fwd_rel": -0.0673,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-21",
-      "id": "subsectors:packaged-foods",
-      "name": "Packaged Foods",
-      "stage": "running",
-      "fwd_rel": -0.0636,
       "horizon_d": 21
     }
   ],
