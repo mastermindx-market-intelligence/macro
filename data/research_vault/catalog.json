@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-15T02:12:02.181955+00:00",
-  "count": 2127,
+  "generated_at": "2026-09-15T02:27:05.199065+00:00",
+  "count": 2128,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -174,6 +174,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-eooqgs2imui-ac525a",
+      "title": "We revise our forecast and expect a September hike after August CPI 2026 09 14",
+      "institution": "SEB",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T00:15:09Z",
+      "summary_points": [
+        "**Fed Hike Probability**: Revised to 25 bp September hike (3.75-4.00%) due to August CPI surprise (0.3% m/m) and Middle East oil price risks; 90% market pricing for hike, requiring improved inflation trends by year-end to halt at one hike.",
+        "**Core PCE Revision Criticality**: September 30 core PCE revision is the key uncertainty; Fed must observe sustained inflation trend improvement by year-end to stop at one hike.",
+        "**Fed Internal Policy Split**: Regional Fed presidents (Hammack, Logan, Kashkari) back immediate hike, while Governing Board members (Cook, Williams, Barr, Waller) signal potential hold if inflation data improves, creating near-term policy ambiguity."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
