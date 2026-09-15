@@ -1,3 +1,129 @@
+---
+workstream: WS:EXECUTIVE-CAPACITY-FABRIC
+session: sol/opencode-go-subscription-usage
+model: sol
+ended_because: blocked
+mission: >
+  Add a request-checked single-account streaming source and prove the existing public
+  reader against real provider responses without creating new capacity infrastructure
+  or claiming production activation.
+state_before: >
+  Full integration remained PARTIAL. The public-reader validation gap was open, and
+  streaming and request-check source behavior had not yet been added or proven.
+changed:
+  - path: engine/provider_subscription_guard_opencode.py
+    what: >
+      Added the Macro #7143 request guard implementation at
+      ab710f4a653fcec4cf2505ed7ab49c7faf19b623.
+  - path: tests/test_opencode_go_request_offer.py
+    what: >
+      Added the Macro #7143 request-guard tests included in the implementation commit.
+  - path: agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-14-GO-REQUEST-CHECKED-STREAM.md
+    what: >
+      Added the record of the live public-reader canary, guarded streaming source,
+      exact receipts and production boundaries.
+  - path: engine/provider_subscription_usage_opencode.py
+    what: >
+      Degrades usage windows whose reset is not strictly later than the observation
+      so an expired window is not emitted as an exact closed quota row.
+  - path: tests/test_provider_subscription_usage_opencode.py
+    what: >
+      Covers past and exactly-at reset degradation, all-future healthy windows, and
+      mixed expired and future windows.
+verified:
+  - claim: >
+      The existing public reader and CLI at Macro
+      4681a2c832ecbf489a13e79af69ab42315fe818f executed its actual --live path,
+      fetched provider JSON and HTML, and returned exit 0 with 37 model rows,
+      acquisition_origin=public_metadata_not_account_entitlement and
+      production_armed=false.
+    command: >
+      Run the exact existing public reader and CLI under isolated Python on the
+      authorized MacBook through Remote Desktop Commander, after checking source blob
+      identities before execution.
+    result: >
+      Exit 0 with 37 model rows and the stated acquisition and production fields; no
+      transcribed fixture substituted for the live reads.
+  - claim: >
+      The new source and test blob identities matched tested local bytes; 66 new tests
+      passed and the combined suite passed 198 tests; compile also passed.
+    command: >
+      Match source/test blob identities to tested local bytes and run 20 guard, 39
+      streaming, and 7 composition checks plus the prior suite with Python 3.13.5 and
+      pytest 9.0.2, followed by compile.
+    result: >
+      The 66 new checks passed, the combined suite returned 198 passed, and compile
+      passed.
+  - claim: >
+      A real loopback HTTP proof delivered the first SSE bytes before the terminal
+      event, preserved body and session, and shut down its fixture server.
+    command: >
+      Run the real loopback HTTP proof with synthetic provider, account, and admission
+      data.
+    result: >
+      Progressive first-byte delivery was observed before the terminal event; body and
+      session were preserved and the fixture server shut down without production TLS or
+      Go inference.
+unverified:
+  - claim: Streaming/request-check source is production-proven.
+    what_would_verify: >
+      Resolve the source-inspection permission boundary, reconcile existing Mastermind
+      #622 with landed #583, obtain exact current-base CI and independent review, and
+      pass the runtime and enrollment gates before a real account coding task.
+  - claim: The three registrations are verified runtime enrollment.
+    what_would_verify: >
+      Verify runtime enrollment directly rather than relying on Chairman-reported
+      registration.
+  - claim: Native public HTTP works from the sandbox.
+    what_would_verify: Retry public HTTP on a surface where sandbox DNS is not expected
+      to fail.
+  - claim: The separate native source-tree inspection is available.
+    what_would_verify: Repeat the inspection on a permitted platform without using another
+      device, worker, or carrier to evade the boundary.
+unresolved:
+  - >
+    The source-inspection permission boundary remains unresolved.
+  - >
+    Existing #622 remains in conflict with the old-parent stack and is not reconciled
+    with landed #583.
+  - >
+    The prior multi-account provider-policy, enrollment/identity and reservation gates
+    remain unresolved.
+  - >
+    Automatic quote evaluation and owner publication remain pending.
+next_actions:
+  - >
+    After resolving the source-inspection permission boundary, reconcile existing
+    #622 with landed #583 without restoring superseded credential or ACL code.
+  - >
+    Obtain exact current-base CI and independent review, then compose one disabled
+    single-account streaming binding using existing provider-home enrollment and
+    canonical provider, offer, policy, and capacity evidence.
+  - >
+    Disable outer harness and SDK retries consistently; after runtime and enrollment
+    gates pass, run one real coding-agent task through streaming, tools, and the same
+    workspace to a visible result as the first account production acceptance target.
+do_not_redo:
+  - >
+    Do not restore obsolete enrollment or ACL ancestors from #622.
+  - >
+    Do not create a parallel pricing engine for the quote integration owned by #594.
+  - >
+    Do not retry a terminal stream receipt as task acceptance or fabricate a review
+    digest.
+danger_areas:
+  - >
+    The public-read canary is not an installed recurring collector, complete router,
+    or production activation.
+  - >
+    The streaming source is not an installed localhost proxy or coding-agent harness
+    binding and owns no tools or memory.
+  - >
+    Synchronous DNS, header, and callback blocking still requires the existing
+    worker-supervisor bound.
+prs: [7143]
+---
+
 # Executive Capacity Fabric: Go public-reader and request-checked stream
 
 Parent: WS:EXECUTIVE-CAPACITY-FABRIC. Owner: Sol. Full integration remains PARTIAL; streaming/request-check source is BUILT_NOT_PROVEN for production. No new workstream, lifecycle, provider registry, quota store, scheduler or transcript was created.
