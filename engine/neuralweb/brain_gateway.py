@@ -5198,7 +5198,9 @@ def _build_local_vision_providers(root: Path | None = None) -> list[dict]:
     This is intentionally separate from :func:`_build_lane_providers`: the local
     9B model is continuity for uploaded images after the frontier waterfall is
     exhausted, not a text-lane authority and not a source of signals, scores, or
-    research judgements. Missing/disabled/malformed config fails open to ``[]``.
+    research judgements. Candidate construction is PURE — it must not emit the
+    generic provider-waterfall telemetry that describes a real lane build.
+    Missing/disabled/malformed config fails open to ``[]``.
     """
     try:
         cfg = _load_brain_config(root)
@@ -5206,25 +5208,32 @@ def _build_local_vision_providers(root: Path | None = None) -> list[dict]:
         if local.get("enabled") is not True:
             return []
 
-        from engine import llm_auth  # noqa: PLC0415
+        base_url_env = str(local.get("base_url_env") or "OLLAMA_BASE_URL")
+        base_url = str(local.get("base_url") or os.environ.get(base_url_env, "")).strip()
+        if not base_url:
+            return []
 
-        build_cfg = {
-            "provider_order": ["ollama"],
-            # build_providers normally appends Codex to a non-OAuth list. This
-            # helper owns exactly one local rung, so suppress that insertion.
-            "codex_provider": False,
-            "ollama_base_url": local.get("base_url"),
-            "ollama_base_url_env": local.get("base_url_env") or "OLLAMA_BASE_URL",
-            "ollama_model": local.get("model") or "qwen3.5:9b",
-            "ollama_timeout_s": local.get("timeout_s") or 180,
-            "ollama_num_ctx": local.get("num_ctx") or 32768,
-            "ollama_keep_alive": local.get("keep_alive") or "5m",
-            "respect_provider_cooling": False,
-        }
-        return [
-            p for p in llm_auth.build_providers(build_cfg)
-            if p.get("name") == "ollama" and p.get("client") is not None
-        ]
+        model_env = str(local.get("model_env") or "OLLAMA_MODEL")
+        model = str(
+            os.environ.get(model_env, "")
+            or local.get("model")
+            or "qwen3.5:9b"
+        ).strip()
+        from engine.ollama_provider import OllamaClient  # noqa: PLC0415
+
+        client = OllamaClient(
+            base_url=base_url,
+            timeout_s=float(local.get("timeout_s") or 180),
+            num_ctx=int(local.get("num_ctx") or 32768),
+            keep_alive=str(local.get("keep_alive") or "5m"),
+        )
+        return [{
+            "name": "ollama",
+            "env_var": base_url_env,
+            "cred": "private-endpoint",
+            "client": client,
+            "model": model,
+        }]
     except Exception as exc:  # noqa: BLE001 — continuity must never break the turn
         log.warning("brain_gateway: local vision fallback unavailable (%s)", type(exc).__name__)
         return []
@@ -5234,6 +5243,71 @@ _VISION_MAX_IMAGES = 4
 _VISION_MAX_BYTES = 3_500_000  # ~3.5MB decoded per image (anthropic hard limit is 5MB)
 _VISION_MEDIA_TYPES = {"image/jpeg", "image/png", "image/gif", "image/webp"}
 _DATA_URI_RE = re.compile(r"^data:(image/[a-zA-Z0-9.+-]+);base64,(.+)$", re.DOTALL)
+
+# A text-capable lane is the last continuity rung after every image-capable provider.
+# It receives NO image bytes and must own that limitation plainly rather than hallucinating
+# details from a screenshot it never saw.
+_IMAGE_PROVIDER_FALLBACK_NOTE = (
+    "\n\nIMAGE AVAILABILITY: The user attached an image, but every image-capable "
+    "provider was unavailable, so the image itself could not be read. Say that plainly "
+    "in one sentence, then answer only from the user's written question and the context "
+    "you actually have. Do not infer or invent any detail from the unseen image."
+)
+
+
+def _without_image_blocks(messages: Any) -> Any:
+    """Copy an Anthropic-style message list while removing image content blocks."""
+    if not isinstance(messages, list):
+        return messages
+    out: list[Any] = []
+    for message in messages:
+        if not isinstance(message, dict):
+            out.append(message)
+            continue
+        copied = dict(message)
+        content = copied.get("content")
+        if isinstance(content, list):
+            copied["content"] = [
+                block for block in content
+                if not (
+                    (isinstance(block, dict) and block.get("type") == "image")
+                    or (not isinstance(block, dict) and getattr(block, "type", None) == "image")
+                )
+            ]
+        out.append(copied)
+    return out
+
+
+def _system_with_image_fallback_note(system: Any) -> Any:
+    """Copy ``system`` and append the honest image-unavailable instruction."""
+    if isinstance(system, str):
+        return system + _IMAGE_PROVIDER_FALLBACK_NOTE
+    if isinstance(system, list):
+        copied = [dict(block) if isinstance(block, dict) else block for block in system]
+        for i in range(len(copied) - 1, -1, -1):
+            block = copied[i]
+            if isinstance(block, dict) and block.get("type") == "text":
+                block["text"] = str(block.get("text") or "") + _IMAGE_PROVIDER_FALLBACK_NOTE
+                return copied
+        copied.append({"type": "text", "text": _IMAGE_PROVIDER_FALLBACK_NOTE.strip()})
+        return copied
+    return _IMAGE_PROVIDER_FALLBACK_NOTE.strip()
+
+
+def _provider_request_kwargs(provider: dict, kwargs: dict) -> dict:
+    """Return candidate-specific request kwargs without mutating shared turn state.
+
+    Normal vision candidates receive the original request shape. A descriptor marked
+    ``image_text_fallback`` receives a copied message list with image blocks removed and
+    an explicit no-image instruction. That preserves the lane's text answer capability
+    without letting a text-only model pretend it inspected the screenshot.
+    """
+    if not provider.get("image_text_fallback"):
+        return kwargs
+    out = dict(kwargs)
+    out["messages"] = _without_image_blocks(kwargs.get("messages"))
+    out["system"] = _system_with_image_fallback_note(kwargs.get("system", ""))
+    return out
 
 
 def _image_blocks(images: list[str] | None) -> list[dict]:
@@ -5328,14 +5402,14 @@ def _vision_capable(providers: list[dict]) -> list[dict]:
 
 
 def _vision_providers(lane: str, providers: list[dict], root: Path | None) -> list[dict]:
-    """Ordered providers for an image turn: Codex -> Claude -> private Ollama.
+    """Image-turn chain: Codex -> Claude -> private Ollama -> honest text fallback.
 
     The attached Codex subscription remains first and Claude remains the frontier
     failover. Fast borrows Pro's Claude pool when it has no in-lane Claude rung.
-    Finally, the separately configured private Ollama model is appended once, so a
-    simultaneous remote auth/rate-limit outage degrades model quality rather than
-    deleting the user's uploaded image or failing the turn. Ollama is never added to
-    normal text lanes by this function.
+    The separately configured private Ollama model follows. Finally, copies of the
+    lane's text-only providers are appended with ``image_text_fallback`` so a total
+    vision outage can still answer the written question without claiming to see the
+    image. Ollama is never added to ordinary text lanes by this function.
     """
     chain = _vision_capable(providers)
     if lane != "pro" and not any(_is_claude_provider(p) for p in chain):
@@ -5357,6 +5431,19 @@ def _vision_providers(lane: str, providers: list[dict], root: Path | None) -> li
         if identity not in identities:
             chain.append(p)
             identities.add(identity)
+
+    # Preserve the lane's original text capability as the final, HONEST fallback.
+    # The copy is marked so call sites strip image blocks candidate-by-candidate;
+    # never mutate the shared lane descriptor or put this provider in normal vision.
+    for p in providers:
+        if p.get("client") is None or _pick_vision_provider([p]) is not None:
+            continue
+        q = dict(p)
+        q["image_text_fallback"] = True
+        identity = (str(q.get("name") or ""), str(q.get("model") or ""), id(q.get("client")))
+        if identity not in identities:
+            chain.append(q)
+            identities.add(identity)
     return chain
 
 
@@ -5368,9 +5455,13 @@ _RETRYABLE_STATUS = {429, 500, 502, 503, 529}
 
 
 def _is_retryable_provider_error(exc: Exception) -> bool:
-    """True for transient provider errors worth failing over to the next token/provider:
-    a 429 rate-limit, a 5xx, an 'overloaded'/'rate_limit' message, or a
-    connection/timeout error (a dead token must fail over, not fail the turn)."""
+    """True for transient/provider-specific errors worth trying on the next rung."""
+    try:
+        from engine.ollama_provider import OllamaProviderError  # noqa: PLC0415
+        if isinstance(exc, OllamaProviderError):
+            return True
+    except Exception:  # noqa: BLE001
+        pass
     code = getattr(exc, "status_code", None)
     if isinstance(code, int) and code in _RETRYABLE_STATUS:
         return True
@@ -5586,7 +5677,10 @@ def _turn_providers(client: Any, model: str, providers: list[dict] | None) -> li
     return [{"client": client, "model": model}]
 
 
-def _create_failover(cands: list[dict], *, per_model_kwargs=None, **kwargs) -> tuple[Any, str]:
+def _create_failover(
+    cands: list[dict], *, per_model_kwargs=None,
+    provider_out: list[dict] | None = None, **kwargs,
+) -> tuple[Any, str]:
     """Call messages.create across candidate providers in order; on a failover-worthy
     error (429/5xx/overloaded OR a 401/403 dead credential) fall through to the next
     token/provider. Returns (resp, used_model). Raises the last error when the final
@@ -5603,8 +5697,11 @@ def _create_failover(cands: list[dict], *, per_model_kwargs=None, **kwargs) -> t
             continue
         try:
             _mk = per_model_kwargs(p.get("model")) if per_model_kwargs else {}
-            resp = cl.messages.create(model=p.get("model"), **{**kwargs, **_mk})
+            call_kwargs = _provider_request_kwargs(p, {**kwargs, **_mk})
+            resp = cl.messages.create(model=p.get("model"), **call_kwargs)
             _pool_record_success(p, resp)  # load-balancing ledger
+            if provider_out is not None:
+                provider_out[:] = [p]
             return resp, (p.get("model") or "")
         except Exception as exc:  # noqa: BLE001
             last = exc
@@ -5632,6 +5729,22 @@ def _create_failover(cands: list[dict], *, per_model_kwargs=None, **kwargs) -> t
 # ---------------------------------------------------------------------------
 # Degraded memo reply (no provider available)
 # ---------------------------------------------------------------------------
+
+
+def _brain_usage_provider(model: str, served_provider: str = "") -> str:
+    """Map the rung that actually served to the canonical AI-cost provider name."""
+    if served_provider:
+        try:
+            from engine import llm_auth  # noqa: PLC0415
+            return llm_auth.ledger_provider_for(served_provider)[0]
+        except Exception:  # noqa: BLE001 — usage telemetry never costs the turn
+            pass
+    if str(model).startswith("gpt-"):
+        return "codex"
+    if str(model).startswith("claude"):
+        return "claude_api"
+    return "deepseek"
+
 
 def _degraded_reply(lane: str) -> str:
     return (
@@ -6118,6 +6231,7 @@ def _run_brain_loop(
     tool_call_count = 0
     last_resp = None  # track to extract usage from final response
     _cands = _turn_providers(client, model, providers)  # failover order (OAuth tokens)
+    _served_provider: list[dict] = []
     def _pmk(m):  # per-candidate model params — Claude-only / DeepSeek-only (see _create_failover)
         return {**_effort_thinking_params(m, effort, thinking_mode),
                 **_deepseek_extra_params(m, deepseek_thinking)}
@@ -6133,6 +6247,7 @@ def _run_brain_loop(
             resp, model = _create_failover(
                 _cands,
                 per_model_kwargs=_pmk,
+                provider_out=_served_provider,
                 max_tokens=max_tokens,
                 system=system_param,
                 tools=tools_param,
@@ -6233,6 +6348,7 @@ def _run_brain_loop(
             resp, model = _create_failover(
                 _cands,
                 per_model_kwargs=_pmk,
+                provider_out=_served_provider,
                 max_tokens=max_tokens,
                 system=system_param,
                 tools=tools_param,
@@ -6265,6 +6381,9 @@ def _run_brain_loop(
     # W5 Contract M: the turn's latency record rides the usage dict (see the docstring).
     _timing_stamp(timing, "total_ms", _lt0)
     usage_dict["latency"] = timing
+    usage_dict["_served_model"] = model
+    if _served_provider:
+        usage_dict["_served_provider"] = str(_served_provider[0].get("name") or "")
 
     return (
         answer_text,
@@ -6855,8 +6974,9 @@ def _run_brain_loop_stream(
         if not isinstance(usage, dict):
             usage = {}
         usage["latency"] = timing
+        public_usage = {k: v for k, v in usage.items() if not str(k).startswith("_")}
         return "data: " + json.dumps({"type": "done", "route": timing["route"],
-                                      "usage": usage, **fields}) + "\n\n"
+                                      "usage": public_usage, **fields}) + "\n\n"
 
     source_receipt_event = (
         "data: " + json.dumps({"type": "exact_source_receipt", **source_receipt}) + "\n\n"
@@ -6978,6 +7098,7 @@ def _run_brain_loop_stream(
 
     # Phase 1: tool-calling turns (streaming since W5.1 — see the round loop below)
     _cands = _turn_providers(client, model, providers)  # failover order (OAuth tokens)
+    _served_provider: list[dict] = []
     # High-intensity params (effort + adaptive thinking) added PER-CANDIDATE — Claude-only,
     # so a DeepSeek/Haiku candidate in the same failover chain never receives them; the
     # DeepSeek thinking-disable rides the same channel in the opposite direction.
@@ -7033,18 +7154,23 @@ def _run_brain_loop_stream(
                 if _stream_call is None:
                     # A provider client with no streaming surface keeps the pre-W5.1
                     # blocking call, verbatim — nothing is shown, nothing is retracted.
-                    resp = _cl.messages.create(
-                        model=_p.get("model"), max_tokens=max_tokens, system=system_param,
-                        tools=tools_param, messages=messages, **_pmk(_p.get("model")))
-                else:
-                    with _stream_call(
-                        model=_p.get("model"),
-                        max_tokens=max_tokens,
-                        system=system_param,
-                        tools=tools_param,
-                        messages=messages,
+                    call_kwargs = _provider_request_kwargs(_p, {
+                        "max_tokens": max_tokens,
+                        "system": system_param,
+                        "tools": tools_param,
+                        "messages": messages,
                         **_pmk(_p.get("model")),
-                    ) as _s:
+                    })
+                    resp = _cl.messages.create(model=_p.get("model"), **call_kwargs)
+                else:
+                    call_kwargs = _provider_request_kwargs(_p, {
+                        "max_tokens": max_tokens,
+                        "system": system_param,
+                        "tools": tools_param,
+                        "messages": messages,
+                        **_pmk(_p.get("model")),
+                    })
+                    with _stream_call(model=_p.get("model"), **call_kwargs) as _s:
                         for _chunk in _s.text_stream:
                             _txt = _gate.feed(_chunk)
                             if _gate.leaked:
@@ -7068,6 +7194,7 @@ def _run_brain_loop_stream(
                 if _gate.leaked:
                     break
                 _pool_record_success(_p, resp)  # load-balancing ledger
+                _served_provider[:] = [_p]
                 model = _p.get("model") or model
                 break
             except Exception as exc:  # noqa: BLE001
@@ -7110,7 +7237,8 @@ def _run_brain_loop_stream(
             # the wire stays clean. Anything already shown skips this and degrades.
             try:
                 resp, model = _create_failover(
-                    _cands, per_model_kwargs=_pmk, max_tokens=max_tokens,
+                    _cands, per_model_kwargs=_pmk, provider_out=_served_provider,
+                    max_tokens=max_tokens,
                     system=system_param, tools=tools_param, messages=messages)
                 log.warning("brain_gateway: round streaming failed (%s) — blocking "
                             "retry served the round", str(_round_err)[:120])
@@ -7271,18 +7399,18 @@ def _run_brain_loop_stream(
             _gate.restart()
             full_answer = ""
             try:
-                with _cl.messages.stream(
-                    model=_p.get("model"),
-                    max_tokens=max_tokens,
-                    system=system_param,
+                synth_kwargs = _provider_request_kwargs(_p, {
+                    "max_tokens": max_tokens,
+                    "system": system_param,
                     # NO tools: synthesis must produce PROSE. With tools attached the model
                     # answers a tool-budget-exhausted turn with yet another tool_use, the
                     # text stream stays empty, and the user gets the degraded stub with
                     # nothing logged — the Terminal's chart turns hit this every time,
                     # because chart work burns all 5 Fast rounds (reported 2026-07-26).
-                    messages=messages,
+                    "messages": messages,
                     **_pmk(_p.get("model")),
-                ) as s:
+                })
+                with _cl.messages.stream(model=_p.get("model"), **synth_kwargs) as s:
                     for chunk in s.text_stream:
                         _now = time.monotonic()
                         _txt = _gate.feed(chunk, now=_now)
@@ -7353,6 +7481,7 @@ def _run_brain_loop_stream(
                         continue
                 thinking_trace.extend(_cand_thinking)  # only the candidate that SHIPPED
                 _pool_record_success(_p, final_resp)  # load-balancing ledger
+                _served_provider[:] = [_p]
                 model = _p.get("model") or model
                 break
             except Exception as exc:  # noqa: BLE001
@@ -7478,6 +7607,9 @@ def _run_brain_loop_stream(
     # consumer contradicts this: mm_brain.js's finalizeDone reads only `citations` and
     # `quota`, and the response log never sees this turn (_log_brain_response drops
     # empty answers, and answer_out below still carries the REAL empty answer).
+    usage_dict["_served_model"] = model
+    if _served_provider:
+        usage_dict["_served_provider"] = str(_served_provider[0].get("name") or "")
     if source_receipt:
         citations = citations + [source_receipt]
     yield _done_event(citations=citations, quota=meta_event.get("quota", {}),
@@ -8808,8 +8940,9 @@ def chat(
     model = providers[0].get("model") or "unknown"
 
     # 4b. Vision (W6c): Pro-gated (operator decision) — Free/Trial answer text-only.
-    # An image turn uses Codex first, then Claude; the private Ollama model is the
-    # final vision-only continuity rung when every remote account is unavailable.
+    # An image turn uses Codex, Claude, then private Ollama. If all image-capable
+    # rungs fail, the lane's marked text-only tail answers with the image removed and
+    # an explicit disclosure; it never hallucinates that it inspected the attachment.
     image_blocks = _image_blocks(images)
     turn_providers = providers
     if image_blocks and not _unlimited_allowed(user_email) and _get_allowance(tier, status, "pro", root).get("limit", 0) == 0:
@@ -8952,6 +9085,9 @@ def chat(
             "is_context_only": True,
         }
 
+    model = str(usage_dict.pop("_served_model", None) or model)
+    served_provider = str(usage_dict.pop("_served_provider", None) or "")
+
     # 7. Post-filter, output leak screen, then split off the [NEXT] suggestion block (W6d).
     #    The CLEAN text is what we persist and return as the reply; suggestions become buttons.
     answer_text, was_filtered = _post_filter_advice(answer_text, citations)
@@ -8984,13 +9120,8 @@ def chat(
     try:
         _ac.record_usage(
             lane=usage_lane,
-            # Attribute to the provider that ACTUALLY served the turn, not the lane:
-            # a Fast image turn is served by Haiku (claude_api), not DeepSeek.
-            provider=(
-                "codex" if str(model).startswith("gpt-")
-                else "claude_api" if str(model).startswith("claude")
-                else "deepseek"
-            ),
+            # Attribute to the provider that ACTUALLY served the turn, not the lane.
+            provider=_brain_usage_provider(model, served_provider),
             model=model,
             stage="brain-chat",
             input_tokens=in_tok,
@@ -9286,8 +9417,9 @@ def chat_stream(
     model = providers[0].get("model") or "unknown"
 
     # 3b. Vision (W6c): Pro-gated (operator decision) — Free/Trial answer text-only.
-    # Image turns use Codex first, then Claude, then the private vision-only Ollama
-    # continuity rung. Resolved before the meta event so the reported model serves the turn.
+    # Image turns use Codex, Claude, then private Ollama. An honest text-only tail may
+    # answer after image removal if every vision rung fails. Resolved before the meta
+    # event so the first candidate identity remains truthful at turn start.
     image_blocks = _image_blocks(images)
     turn_providers = providers
     if image_blocks and not _unlimited_allowed(user_email) and _get_allowance(tier, status, "pro", root).get("limit", 0) == 0:
@@ -9462,18 +9594,15 @@ def chat_stream(
 
     # 8. Cost record (fix #1: real tokens; fix #2: accumulate ceiling backstop)
     usage_dict = usage_out[0] if usage_out else {}
+    model = str(usage_dict.pop("_served_model", None) or model)
+    served_provider = str(usage_dict.pop("_served_provider", None) or "")
     in_tok = int(usage_dict.get("input_tokens") or 0)
     out_tok = int(usage_dict.get("output_tokens") or 0)
     try:
         _ac.record_usage(
             lane=usage_lane,
-            # Attribute to the provider that ACTUALLY served the turn, not the lane:
-            # a Fast image turn is served by Haiku (claude_api), not DeepSeek.
-            provider=(
-                "codex" if str(model).startswith("gpt-")
-                else "claude_api" if str(model).startswith("claude")
-                else "deepseek"
-            ),
+            # Attribute to the provider that ACTUALLY served the turn, not the lane.
+            provider=_brain_usage_provider(model, served_provider),
             model=model,
             stage="brain-stream",
             input_tokens=in_tok,

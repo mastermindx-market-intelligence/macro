@@ -89,7 +89,10 @@ lanes:
 vision:
   local_fallback:
     enabled: true
-    base_url: http://100.80.236.59:11434
+    # The reviewed service unit already loads /etc/macro-ollama.env. Keep the
+    # private tailnet address and host-selected model out of tracked config.
+    base_url_env: OLLAMA_BASE_URL
+    model_env: OLLAMA_MODEL
     model: qwen3.5:9b
     timeout_s: 180
     num_ctx: 32768
