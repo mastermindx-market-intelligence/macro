@@ -751,6 +751,57 @@ __fetchImpl = function (url) {{
     ), out
 
 
+@needs_node
+def test_route_catalog_unknown_schema_is_ignored() -> None:
+    """An unrecognized producer contract must never create an exact handoff."""
+    catalog = {
+        "schema": "earnings.public_wire_routes/v999",
+        "routes": {
+            "AAPL": {
+                "events": {
+                    "2026Q2": {
+                        "href": "must-not-be-used.html",
+                        "period": "Q2 FY2026",
+                        "date": "2026-04-30",
+                        "transcript_id": "2026Q2",
+                        "dossier_available": True,
+                    }
+                },
+                "latest": {
+                    "href": "must-not-be-used.html",
+                    "period": "Q2 FY2026",
+                    "date": "2026-04-30",
+                    "transcript_id": "2026Q2",
+                    "dossier_available": True,
+                },
+            }
+        },
+    }
+    out = _run_ci(
+        f"""
+__routeCatalogPayload = {json.dumps(catalog)};
+__fetchImpl = function (url) {{
+  if (url.indexOf('/api/event-workspace/') >= 0) {{
+    return Promise.resolve({{
+      ok: false, status: 404,
+      json: function () {{
+        return Promise.resolve({{code: 'event_workspace_not_covered', ticker: 'AAPL'}});
+      }}
+    }});
+  }}
+  return Promise.resolve({{
+    ok: true, status: 200,
+    json: function () {{ return Promise.resolve({json.dumps(V1_POISON_PAYLOAD)}); }}
+  }});
+}};
+"""
+    )
+    assert out["mode"] == "v1", out
+    assert out["earningsRecordState"] == "archive", out
+    assert out["earningsRecordHref"] == "earnings/", out
+    assert "must-not-be-used" not in json.dumps(out), out
+
+
 # ============================================================================
 # Source-level checks (no node required)
 # ============================================================================

@@ -602,7 +602,7 @@ def test_incremental_selector_rejects_admitted_key_disappearance() -> None:
     }
     current = {"HOLD/2026Q1": prior["HOLD/2026Q1"]}
 
-    with pytest.raises(PublicWireBuildError, match=r"catalog shrank.*AAPL/2026Q1"):
+    with pytest.raises(PublicWireBuildError, match=r"lost admitted keys.*AAPL/2026Q1"):
         wire_builder._select_incremental_packet_keys(
             prior_packets=prior,
             current_packets=current,
@@ -746,6 +746,71 @@ def test_build_persists_and_promotes_future_packet_without_story_generation_chan
     promoted = json.loads((out_dir / ROUTE_CATALOG_FILENAME).read_text(encoding="utf-8"))
     assert set(promoted["routes"]) == {"AAPL", "FUTURE", "NOW"}
     assert promoted["deferred_packet_keys"] == []
+
+
+def test_deferred_overflow_falls_back_before_packet_hydration_or_writes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    prior, prior_raw, prior_packets, _prior_index = _story_generation(
+        tmp_path / "deferred-overflow-prior",
+        [("AAPL", "2026Q1", "2026-01-30")],
+        generated_at="2026-02-01T00:00:00Z",
+    )
+    current, current_raw, current_packets, current_index = _story_generation(
+        tmp_path / "deferred-overflow-current",
+        [
+            ("AAPL", "2026Q1", "2026-01-30"),
+            ("FUT1", "2026Q2", "2026-02-02"),
+            ("FUT2", "2026Q2", "2026-02-03"),
+        ],
+        generated_at="2026-02-03T00:00:00Z",
+    )
+    current_index["generated_at"] = "2026-02-01T23:59:59Z"
+    out_dir = tmp_path / "site" / "stocks" / "earnings"
+    private_dir = tmp_path / "private"
+
+    prior_remote = _generation_remote(prior, prior_raw, prior_packets, include_marker=True)
+    build(
+        out_dir=out_dir,
+        private_out_dir=private_dir,
+        fetch=lambda url: prior_remote[url],
+        workers=1,
+        company_reader=_current_company,
+        now=datetime(2026, 2, 1, tzinfo=timezone.utc),
+    )
+
+    def snapshot(root: Path) -> dict[str, bytes]:
+        return {
+            path.relative_to(root).as_posix(): path.read_bytes()
+            for path in root.rglob("*")
+            if path.is_file()
+        }
+
+    public_before = snapshot(out_dir)
+    private_before = snapshot(private_dir)
+    remote = _generation_remote(current, current_raw, current_packets, include_marker=True)
+    remote.update(_generation_remote(prior, prior_raw, prior_packets, include_marker=False))
+    remote[wire_builder.DEFAULT_TRANSCRIPT_INDEX_URL] = _canonical_test_json(current_index)
+    calls: list[str] = []
+
+    def fetch(url: str, *_args: object) -> bytes:
+        calls.append(url)
+        return remote[url]
+
+    monkeypatch.setattr(wire_builder, "MAX_DEFERRED_PACKET_COUNT", 1)
+    retained = build(
+        out_dir=out_dir,
+        private_out_dir=private_dir,
+        fetch=fetch,
+        workers=1,
+        company_reader=_current_company,
+        now=datetime(2026, 2, 1, 12, tzinfo=timezone.utc),
+    )
+
+    assert retained.source == "existing"
+    assert not any("/objects/" in url for url in calls), calls
+    assert snapshot(out_dir) == public_before
+    assert snapshot(private_dir) == private_before
 
 
 def test_prior_story_manifest_must_match_route_catalog_receipt(tmp_path: Path) -> None:

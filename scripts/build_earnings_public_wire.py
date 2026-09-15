@@ -627,11 +627,6 @@ def _select_incremental_packet_keys(
 ) -> PacketSelection:
     prior_keys = set(prior_packets)
     current_keys = set(current_packets)
-    missing = prior_keys - current_keys
-    if missing:
-        raise PublicWireBuildError(
-            f"current story packet catalog shrank; missing prior keys: {sorted(missing)[:3]}"
-        )
 
     admitted = set(_admitted_packet_keys(prior_state))
     deferred = set(_deferred_packet_keys(prior_state))
@@ -659,6 +654,11 @@ def _select_incremental_packet_keys(
     if missing_deferred:
         raise PublicWireBuildError(
             f"current story packet catalog lost deferred keys: {sorted(missing_deferred)[:3]}"
+        )
+    missing = prior_keys - current_keys
+    if missing:
+        raise PublicWireBuildError(
+            f"current story packet catalog shrank; missing prior keys: {sorted(missing)[:3]}"
         )
     raw_changed = {
         key for key in prior_keys & current_keys
@@ -708,6 +708,8 @@ def _select_incremental_packet_keys(
         else:
             skipped_historical.add(key)
 
+    if len(skipped_future) > MAX_DEFERRED_PACKET_COUNT:
+        raise PublicWireBuildError("deferred packet keys exceed safe count bound")
     changed = raw_changed - skipped_future
     selected = admitted | changed | forward_new
     if len(selected) > MAX_SELECTED_PACKET_COUNT:
