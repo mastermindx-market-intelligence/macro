@@ -1,0 +1,54 @@
+{
+  "schema": "mastermind.evidence_smells.v1",
+  "generated_at": "2026-09-13T17:54:52+00:00",
+  "smells": [
+    {
+      "crop": "1ed815b7fcabbdde",
+      "phrase": "MASTERMINDX\nUnited States\n▾\nChina\n▾\nHong Kong\n▾\nCanada\n▾\nInternational\n▾\nOther Assets\n▾\nResearch\n▾\nNVDA\nTerminal\n\nDISCOVERY\n\nResearch list\n\nWhich names deserve a look first, and why.\n\nThis is a reading list. It orders names alphabetically, ",
+      "kind": "informational",
+      "sha256": "9ee45f52d273028f"
+    },
+    {
+      "crop": "228ec3c32b00b355",
+      "phrase": "MASTERMINDX\n美国\n▾\n中国\n▾\n香港\n▾\n加拿大\n▾\n国际\n▾\n其他资产\n▾\n研究\n▾\nNVDA\n终端\n\n发现\n\n研究名单\n\n哪些公司值得先看，以及原因。\n\n这是一份阅读名单。按名称排列，或按下一项估计窗口排列。催化事项视角只保留下一份财报窗口大约 30 个交易日内开启的公司。每一行都写明一项可核对的事实，以及产生该事实的记录。\n\n本名单共 2 家公司。 数据截至 2026-09-04。\n\nLenses\n视角\n\">\n主题\n催化事项\n持仓\n估值姿态\nOrder\n排列",
+      "kind": "informational",
+      "sha256": "4b86e1f3332b26a7"
+    },
+    {
+      "crop": "421473034d98dd70",
+      "phrase": "MASTERMINDX\nUnited States\n▾\nChina\n▾\nHong Kong\n▾\nCanada\n▾\nInternational\n▾\nOther Assets\n▾\nResearch\n▾\nNVDA\nTerminal\n\nDISCOVERY\n\nResearch list\n\nWhich names deserve a look first, and why.\n\nThis is a reading list. It orders names alphabetically, ",
+      "kind": "informational",
+      "sha256": "9ee45f52d273028f"
+    },
+    {
+      "crop": "60ada0a61478a38e",
+      "phrase": "MASTERMINDX\n美国\n▾\n中国\n▾\n香港\n▾\n加拿大\n▾\n国际\n▾\n其他资产\n▾\n研究\n▾\nNVDA\n终端\n\n发现\n\n研究名单\n\n哪些公司值得先看，以及原因。\n\n这是一份阅读名单。按名称排列，或按下一项估计窗口排列。催化事项视角只保留下一份财报窗口大约 30 个交易日内开启的公司。每一行都写明一项可核对的事实，以及产生该事实的记录。\n\n本名单共 2 家公司。 数据截至 2026-09-04。\n\nLenses\n视角\n\">\n主题\n催化事项\n持仓\n估值姿态\nOrder\n排列",
+      "kind": "informational",
+      "sha256": "4b86e1f3332b26a7"
+    },
+    {
+      "crop": "65f43ab31fb50ab3",
+      "phrase": "60\nTerminal\n\nDISCOVERY\n\nResearch list\n\nWhich names deserve a look first, and why.\n\nThis is a reading list. It orders names alphabetically, or by the next estimated window. The catalyst lens keeps names whose next earnings window opens in ab",
+      "kind": "informational",
+      "sha256": "91e20a7babf55045"
+    },
+    {
+      "crop": "b7b62d65aae13efb",
+      "phrase": "NVDA\n终端\n\n发现\n\n研究名单\n\n哪些公司值得先看，以及原因。\n\n这是一份阅读名单。按名称排列，或按下一项估计窗口排列。催化事项视角只保留下一份财报窗口大约 30 个交易日内开启的公司。每一行都写明一项可核对的事实，以及产生该事实的记录。\n\n本名单共 2 家公司。 数据截至 2026-09-04。\n\nLenses\n视角\n\">\n主题\n催化事项\n持仓\n估值姿态\nOrder\n排列方式\n\">\n排列方式\n名称\n下一项估计窗口\n\n主题视角尚未提供。\n\nApple AAPL\n\n预计窗口",
+      "kind": "informational",
+      "sha256": "394e25b8fdd8b6f5"
+    },
+    {
+      "crop": "c99dc52c2ef6ccb7",
+      "phrase": "NVDA\nTerminal\n\nDISCOVERY\n\nResearch list\n\nWhich names deserve a look first, and why.\n\nThis is a reading list. It orders names alphabetically, or by the next estimated window. The catalyst lens keeps names whose next earnings window opens in ",
+      "kind": "informational",
+      "sha256": "c75e7132ac86764b"
+    },
+    {
+      "crop": "c1cd98da763c4cdd",
+      "phrase": "NVDA\n终端\n\n发现\n\n研究名单\n\n哪些公司值得先看，以及原因。\n\n这是一份阅读名单。按名称排列，或按下一项估计窗口排列。催化事项视角只保留下一份财报窗口大约 30 个交易日内开启的公司。每一行都写明一项可核对的事实，以及产生该事实的记录。\n\n本名单共 2 家公司。 数据截至 2026-09-04。\n\nLenses\n视角\n\">\n主题\n催化事项\n持仓\n估值姿态\nOrder\n排列方式\n\">\n排列方式\n名称\n下一项估计窗口\n\n主题视角尚未提供。\n\nApple AAPL\n\n预计窗口",
+      "kind": "informational",
+      "sha256": "394e25b8fdd8b6f5"
+    }
+  ]
+}

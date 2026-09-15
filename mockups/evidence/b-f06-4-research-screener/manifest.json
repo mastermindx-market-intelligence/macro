@@ -1,0 +1,407 @@
+{
+  "schema": "mastermind.page_evidence_receipt.v1",
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-09-13T17:54:52+00:00",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "crop": "1ed815b7fcabbdde",
+      "theme": "dark",
+      "lang": "en",
+      "viewport": [
+        1440,
+        900
+      ],
+      "viewport_label": "desktop",
+      "console_errors": [],
+      "failed_responses": [],
+      "url": "research_screener.html",
+      "captured": true,
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "premium"
+        },
+        {
+          "captured": false,
+          "dimension": "force_state",
+          "reason": "no force-state path documented for this packet yet",
+          "value": "calm"
+        },
+        {
+          "captured": false,
+          "dimension": "force_state",
+          "reason": "no force-state path documented for this packet yet",
+          "value": "alert"
+        }
+      ]
+    },
+    {
+      "crop": "228ec3c32b00b355",
+      "theme": "dark",
+      "lang": "zh",
+      "viewport": [
+        1440,
+        900
+      ],
+      "viewport_label": "desktop",
+      "console_errors": [],
+      "failed_responses": [],
+      "url": "research_screener.html",
+      "captured": true,
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "premium"
+        },
+        {
+          "captured": false,
+          "dimension": "force_state",
+          "reason": "no force-state path documented for this packet yet",
+          "value": "calm"
+        },
+        {
+          "captured": false,
+          "dimension": "force_state",
+          "reason": "no force-state path documented for this packet yet",
+          "value": "alert"
+        }
+      ]
+    },
+    {
+      "crop": "421473034d98dd70",
+      "theme": "light",
+      "lang": "en",
+      "viewport": [
+        1440,
+        900
+      ],
+      "viewport_label": "desktop",
+      "console_errors": [],
+      "failed_responses": [],
+      "url": "research_screener.html",
+      "captured": true,
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "premium"
+        },
+        {
+          "captured": false,
+          "dimension": "force_state",
+          "reason": "no force-state path documented for this packet yet",
+          "value": "calm"
+        },
+        {
+          "captured": false,
+          "dimension": "force_state",
+          "reason": "no force-state path documented for this packet yet",
+          "value": "alert"
+        }
+      ]
+    },
+    {
+      "crop": "60ada0a61478a38e",
+      "theme": "light",
+      "lang": "zh",
+      "viewport": [
+        1440,
+        900
+      ],
+      "viewport_label": "desktop",
+      "console_errors": [],
+      "failed_responses": [],
+      "url": "research_screener.html",
+      "captured": true,
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "premium"
+        },
+        {
+          "captured": false,
+          "dimension": "force_state",
+          "reason": "no force-state path documented for this packet yet",
+          "value": "calm"
+        },
+        {
+          "captured": false,
+          "dimension": "force_state",
+          "reason": "no force-state path documented for this packet yet",
+          "value": "alert"
+        }
+      ]
+    },
+    {
+      "crop": "65f43ab31fb50ab3",
+      "theme": "dark",
+      "lang": "en",
+      "viewport": [
+        390,
+        844
+      ],
+      "viewport_label": "mobile",
+      "console_errors": [],
+      "failed_responses": [],
+      "url": "research_screener.html",
+      "captured": true,
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "premium"
+        },
+        {
+          "captured": false,
+          "dimension": "force_state",
+          "reason": "no force-state path documented for this packet yet",
+          "value": "calm"
+        },
+        {
+          "captured": false,
+          "dimension": "force_state",
+          "reason": "no force-state path documented for this packet yet",
+          "value": "alert"
+        }
+      ]
+    },
+    {
+      "crop": "b7b62d65aae13efb",
+      "theme": "dark",
+      "lang": "zh",
+      "viewport": [
+        390,
+        844
+      ],
+      "viewport_label": "mobile",
+      "console_errors": [],
+      "failed_responses": [],
+      "url": "research_screener.html",
+      "captured": true,
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "premium"
+        },
+        {
+          "captured": false,
+          "dimension": "force_state",
+          "reason": "no force-state path documented for this packet yet",
+          "value": "calm"
+        },
+        {
+          "captured": false,
+          "dimension": "force_state",
+          "reason": "no force-state path documented for this packet yet",
+          "value": "alert"
+        }
+      ]
+    },
+    {
+      "crop": "c99dc52c2ef6ccb7",
+      "theme": "light",
+      "lang": "en",
+      "viewport": [
+        390,
+        844
+      ],
+      "viewport_label": "mobile",
+      "console_errors": [],
+      "failed_responses": [],
+      "url": "research_screener.html",
+      "captured": true,
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "premium"
+        },
+        {
+          "captured": false,
+          "dimension": "force_state",
+          "reason": "no force-state path documented for this packet yet",
+          "value": "calm"
+        },
+        {
+          "captured": false,
+          "dimension": "force_state",
+          "reason": "no force-state path documented for this packet yet",
+          "value": "alert"
+        }
+      ]
+    },
+    {
+      "crop": "c1cd98da763c4cdd",
+      "theme": "light",
+      "lang": "zh",
+      "viewport": [
+        390,
+        844
+      ],
+      "viewport_label": "mobile",
+      "console_errors": [],
+      "failed_responses": [],
+      "url": "research_screener.html",
+      "captured": true,
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "premium"
+        },
+        {
+          "captured": false,
+          "dimension": "force_state",
+          "reason": "no force-state path documented for this packet yet",
+          "value": "calm"
+        },
+        {
+          "captured": false,
+          "dimension": "force_state",
+          "reason": "no force-state path documented for this packet yet",
+          "value": "alert"
+        }
+      ]
+    }
+  ],
+  "resolved_sha_or_none": "17265624ade4d60b6205eccae2a3bf92ef8619ae",
+  "tool": "playwright/chromium 1.62.0 (tests/fixtures/research_screener/capture_evidence.py)"
+}
