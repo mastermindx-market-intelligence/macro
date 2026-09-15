@@ -936,7 +936,7 @@ pages:
     note: "pending IA §10.4 Sol ruling — archetype may move on the ruling"
 
   macro:winner_health:
-    archetype: "monitor"
+    archetype: "discovery_board"
 
   mastermind:desk:
     archetype: "monitor"
