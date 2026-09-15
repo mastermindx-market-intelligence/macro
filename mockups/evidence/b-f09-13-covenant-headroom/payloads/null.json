@@ -1,0 +1,31 @@
+{
+  "schema": "capital_structure.covenant_headroom.v1",
+  "parser_version": "capital-structure-covenant-headroom/1.0.0",
+  "authority_ceiling": "human_research_only",
+  "scored": false,
+  "state": "refused",
+  "refusal": "no_terms_extracted",
+  "null_en": "No credit agreement has been read for covenant terms yet. Of 2,450 exhibits that could hold one, 0 have been read so far.",
+  "null_zh": "尚未从任何信贷协议中读取契约条款。可能包含条款的 2,450 份附件中，目前已读取 0 份。",
+  "refusal_label_en": "No terms extracted",
+  "refusal_label_zh": "未提取到条款",
+  "disclaimer_en": "For your own research only — this is a reading of public filings, not advice or a trade call.",
+  "disclaimer_zh": "仅供自行研究 — 这是对公开披露文件的解读，不是建议，也不是交易指令。",
+  "issuer": {
+    "cik": null,
+    "ticker": null,
+    "name": null
+  },
+  "basis_en": "Measured with the numbers the company reported, not the agreement's own definitions — those usually allow adjustments we do not add back, so the true room can differ.",
+  "basis_zh": "按公司披露的数字计算，而非协议自身的定义 — 协议定义通常允许我们未加回的调整项，因此实际空间可能不同。",
+  "basis_period_end": null,
+  "terms": [],
+  "coverage": {
+    "issuers_extracted": 0,
+    "eligible_exhibits": 2450,
+    "covered_manifests": 0,
+    "state": "uncovered"
+  },
+  "computed_at": "2026-09-13T21:30:17Z",
+  "generated_at": "2026-09-13T21:30:17Z"
+}
