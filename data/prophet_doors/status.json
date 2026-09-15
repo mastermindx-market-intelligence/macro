@@ -1,6 +1,6 @@
 {
   "appended": 0,
-  "asof": "2026-09-11",
+  "asof": "2026-09-14",
   "candidates": {
     "R": 0,
     "T": 8,
@@ -86,11 +86,11 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-09-14 15:10:38",
-  "runtime_s": 107.9,
+  "run_utc": "2026-09-15 07:04:56",
+  "runtime_s": 207.5,
   "schema": "prophet_doors/v1",
   "theme_source": {
-    "age_days": 0,
+    "age_days": 3,
     "asof": "2026-09-11",
     "n_members": 185,
     "ok": true,
@@ -130,15 +130,15 @@
       "3B"
     ],
     "aligned": 4,
-    "asof_max": "2026-09-11",
+    "asof_max": "2026-09-14",
     "asof_mismatch": 0,
-    "asof_run": "2026-09-11",
+    "asof_run": "2026-09-14",
     "evaluated": 713,
     "fresh": 4,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 19.7,
+    "runtime_s": 32.7,
     "skipped": 4,
     "source": "baskets/membership.json",
     "state_turn": 83,
