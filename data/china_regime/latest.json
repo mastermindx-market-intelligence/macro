@@ -214,8 +214,8 @@
       "chg_20d_pct": -1.88
     },
     "usdcny": {
-      "level": 6.7,
-      "chg_20d_pct": -0.59
+      "level": 6.7107,
+      "chg_20d_pct": -0.43
     }
   },
   "property": {
@@ -243,10 +243,10 @@
     "direction": "stimulus-off \u2014 CSI300, brokers, property & copper/rebar lead down",
     "direction_zh": "\u523a\u6fc0\u9000\u6f6e \u2014 \u6caa\u6df1300\u3001\u5238\u5546\u3001\u5730\u4ea7\u4e0e\u94dc/\u87ba\u7eb9\u9886\u8dcc",
     "dir_sign": -1,
-    "confidence": "medium",
-    "confidence_zh": "\u4e2d",
+    "confidence": "low",
+    "confidence_zh": "\u4f4e",
     "strength": 1.1,
-    "dominance_ratio": 1.23,
+    "dominance_ratio": 1.19,
     "agreement": 1.0,
     "runner_up": "risk_off_washout",
     "runner_up_label": "Risk-off / washout",
@@ -291,8 +291,8 @@
         "label": "Risk-off / washout",
         "label_zh": "\u907f\u9669/\u6050\u614c\u51fa\u6e05",
         "family": "volatility",
-        "projection": 0.9,
-        "strength": 0.9,
+        "projection": 0.92,
+        "strength": 0.92,
         "direction": "fear spike \u2014 QVIX up, breadth collapsing, limit-downs surge"
       },
       {
@@ -300,27 +300,27 @@
         "label": "Inflation / commodities",
         "label_zh": "\u901a\u80c0/\u5927\u5b97",
         "family": "inflation",
-        "projection": -0.59,
-        "strength": 0.59,
+        "projection": -0.58,
+        "strength": 0.58,
         "direction": "upstream disinflation \u2014 PPI, coal, nonferrous & oil lead down"
-      },
-      {
-        "driver": "pboc_repricing",
-        "label": "PBoC / rates repricing",
-        "label_zh": "\u592e\u884c/\u5229\u7387\u91cd\u5b9a\u4ef7",
-        "family": "rates",
-        "projection": 0.46,
-        "strength": 0.46,
-        "direction": "rates repricing tighter \u2014 SHIBOR & CGB yields up, liquidity drained"
       },
       {
         "driver": "cny_shock",
         "label": "Yuan (CNH) shock",
         "label_zh": "\u4eba\u6c11\u5e01(CNH)\u51b2\u51fb",
         "family": "fx",
-        "projection": -0.44,
-        "strength": 0.44,
+        "projection": -0.56,
+        "strength": 0.56,
         "direction": "yuan firming \u2014 CNH down, capital-inflow relief, equities supported"
+      },
+      {
+        "driver": "liquidity_impulse",
+        "label": "Liquidity impulse",
+        "label_zh": "\u6d41\u52a8\u6027\u8109\u51b2",
+        "family": "liquidity",
+        "projection": 0.22,
+        "strength": 0.22,
+        "direction": "domestic liquidity easing \u2014 M1/M2 up, overnight cheap, small-caps & margin bid"
       },
       {
         "driver": "southbound_appetite",
@@ -332,13 +332,13 @@
         "direction": "mainland risk-on \u2014 southbound buying HK, AH premium narrowing"
       },
       {
-        "driver": "liquidity_impulse",
-        "label": "Liquidity impulse",
-        "label_zh": "\u6d41\u52a8\u6027\u8109\u51b2",
-        "family": "liquidity",
+        "driver": "pboc_repricing",
+        "label": "PBoC / rates repricing",
+        "label_zh": "\u592e\u884c/\u5229\u7387\u91cd\u5b9a\u4ef7",
+        "family": "rates",
         "projection": -0.14,
         "strength": 0.14,
-        "direction": "domestic liquidity draining \u2014 M1/M2 down, overnight dear, small-caps & margin sold"
+        "direction": "rates repricing easier \u2014 SHIBOR & CGB yields down, liquidity added"
       },
       {
         "driver": "ai_semis",
@@ -354,16 +354,16 @@
   },
   "conditions": {
     "roro": {
-      "roro": -0.03,
-      "roro_raw": -0.03,
+      "roro": -0.027,
+      "roro_raw": -0.027,
       "roro_state": "neutral",
-      "china_roro_copper_gold": 1.093,
-      "china_roro_breadth": -0.871,
+      "china_roro_copper_gold": 1.145,
+      "china_roro_breadth": -0.926,
       "china_roro_southbound": -0.205,
       "china_roro_m1_m2": 0.086,
       "china_roro_turnover": -1.47,
       "china_roro_qvix": 0.503,
-      "china_roro_usdcnh": 1.228,
+      "china_roro_usdcnh": 1.261,
       "china_roro_margin": -0.432,
       "china_roro_ah_premium": -0.202,
       "legs": [
@@ -371,14 +371,14 @@
           "key": "copper_gold",
           "name_en": "Copper / Gold",
           "name_zh": "\u94dc\uff0f\u91d1 \u6bd4",
-          "value": 1.093,
+          "value": 1.145,
           "lean": "risk-on"
         },
         {
           "key": "breadth",
           "name_en": "Breadth (% > 50d)",
           "name_zh": "\u5e02\u573a\u5bbd\u5ea6\uff08>50\u65e5\uff09",
-          "value": -0.871,
+          "value": -0.926,
           "lean": "risk-off"
         },
         {
@@ -413,7 +413,7 @@
           "key": "usdcnh",
           "name_en": "Offshore yuan (20d)",
           "name_zh": "\u79bb\u5cb8\u4eba\u6c11\u5e01\uff0820\u65e5\uff09",
-          "value": 1.228,
+          "value": 1.261,
           "lean": "risk-on"
         },
         {
@@ -2093,8 +2093,8 @@
           0.092,
           -0.049,
           -0.058,
-          0.041,
-          -0.03
+          0.025,
+          -0.027
         ]
       },
       "recession": {
@@ -6833,8 +6833,8 @@
           69.2,
           54.6,
           53.5,
-          64.4,
-          56.5
+          62.6,
+          56.7
         ]
       }
     },
@@ -6845,14 +6845,14 @@
     "fe_score": 57,
     "band": "Neutral",
     "band_zh": "\u4e2d\u6027",
-    "roro": -0.03,
+    "roro": -0.027,
     "roro_state": "neutral",
     "legs": [
       {
         "key": "copper_gold",
         "name_en": "Copper / Gold",
         "name_zh": "\u94dc\uff0f\u91d1 \u6bd4",
-        "value": 1.093,
+        "value": 1.145,
         "pct": 92,
         "lean": "risk-on"
       },
@@ -6860,8 +6860,8 @@
         "key": "breadth",
         "name_en": "Breadth (% > 50d)",
         "name_zh": "\u5e02\u573a\u5bbd\u5ea6\uff08>50\u65e5\uff09",
-        "value": -0.871,
-        "pct": 27,
+        "value": -0.926,
+        "pct": 24,
         "lean": "risk-off"
       },
       {
@@ -6900,7 +6900,7 @@
         "key": "usdcnh",
         "name_en": "Offshore yuan (20d)",
         "name_zh": "\u79bb\u5cb8\u4eba\u6c11\u5e01\uff0820\u65e5\uff09",
-        "value": 1.228,
+        "value": 1.261,
         "pct": 91,
         "lean": "risk-on"
       },
