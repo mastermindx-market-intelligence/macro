@@ -1,97 +1,117 @@
 ---
 workstream: WS:EXECUTIVE-CAPACITY-FABRIC
-session: sol/ocr2c-family-b-native-claude-realm-capacity-20260914
+session: sol/ocr2c-family-b-current-source-reconciliation-20260915
 model: sol
 ended_because: ci_handoff
 mission: >
-  Continue Chairman-approved migration of Claude/Fable orchestration from cloned macOS apps into
-  the canonical Agent Fabric by resolving OCR-2C Family B first: direct claude.ai Claude Code realms
-  need one Provider-Control-owned capacity identity/generation and a versioned secret-free capacity
-  projection before four-account automatic placement can be trusted.
+  Continue the Chairman-approved migration of Claude/Fable orchestration from cloned macOS apps into
+  canonical Agent Fabric by freezing OCR-2C Family B against current protected owners: one
+  Provider-Control provider-capability identity/generation, one incumbent provider-realm generation,
+  one accepted CF2 production claim path and honest multi-host quota semantics.
 state_before: >
-  OCR-2C Family A was already a successful refusal: no safe provider-supported secret-free equality
-  witness or rotation invalidation joins a native Claude realm to numbered Macro claude_code_oauth_N
-  slots. Family B was allowed to be designed but not implemented. Agent OS still projected several
-  HF1 Wave-1 carriers as open even though live GitHub now shows HF1-B #576, HF1-C #578, HF1-D #581 and
-  harness binding #583 merged; OCR-4A rich Operator Harness PR #660 is currently open. No Family-B
-  owner-side architecture carrier existed when this session re-read current source.
+  Family A had safely refused ordinal/native-to-OAuth equality. The first Family-B records correctly
+  kept Macro as provider/capacity owner but contained stale architecture assumptions discovered by
+  current-source archaeology: they overloaded generation names, introduced `binding_generation`
+  beside protected `realm_generation`, treated the metabolism secret-ref capability manifest as a
+  likely native registration owner, implied `CapacityOwnerFact` could bridge production V2 placement,
+  and treated newer Claude auth options as more authoritative than protected PF1/OCR-1 source law.
 changed:
   - path: research/NATIVE_CLAUDE_REALM_PROVIDER_CONTROL_V2_ARCHITECTURE_2026-09-14.md
     what: >
-      Records-only owner architecture: one opaque Provider-Control capacity_capability_id +
-      realm_generation; Mastermind binds exact native custody to that coordinate; V1 remains unchanged;
-      V2 adds realm_binding; distinct custodies do not prove independent provider quota.
+      Reconciled primary architecture defining `capacity_capability_id + capability_generation`, exact
+      secret-free B1 registry/export, incumbent provider-realm V2, scoped native observations,
+      Provider Capacity V2, canonical CF2 B5 join/claim reuse, protected first-production auth boundary,
+      exact implementation owner surfaces and hostile falsifiers.
   - path: agentos/decisions/DEC-NATIVE-CLAUDE-REALM-CAPACITY-FAMILY-B-V2.md
     what: >
-      Durable decision preserving Macro as provider/capacity identity owner and rejecting ordinal,
-      config-path, Provider-PII and second-realm-id alternatives.
+      Reconciled durable decision preserving Macro provider identity, provider-realm `realm_generation`,
+      canary `capacity_generation`, accepted CF2 production claim ownership and `/login` OS-principal law.
+  - path: research/NATIVE_CLAUDE_MULTIHOST_QUOTA_DOMAIN_AMENDMENT_2026-09-14.md
+    what: >
+      Multi-host amendment freezes quota-domain deduplication, provider-domain vs realm-local evidence
+      scope, B1 registration ownership and B5 production claim reuse.
+  - path: agentos/decisions/DEC-NATIVE-CLAUDE-MULTIHOST-QUOTA-DOMAIN.md
+    what: >
+      Durable rejection of host-row quota multiplication, new binding generation, provider-domain use
+      of canary capacity generation, CapacityOwnerFact production promotion and row-level independence.
+  - path: mastermind PR #662
+    what: >
+      Paired Mastermind primary design plus narrow amendments now preserve the same owner/generation,
+      B5 CF2 claim path and protected first-production auth rules.
 verified:
-  - claim: "Macro main used as the parent of this records candidate was 22f6759fe6529b4768309332309d52a8ee20526a."
-    command: "gh api repos/mastermindx-market-intelligence/macro/git/ref/heads/main --jq '.object.sha'"
-    result: "Returned 22f6759fe6529b4768309332309d52a8ee20526a immediately before authoring; this branch was created directly from that commit."
-  - claim: "Protected Mastermind authoring basis was 36f74c02edc938f7f5c41f38743f93ee34be2b2b with Skillpack 1.0.1/bootstrap 1."
-    command: "gh api repos/mastermindx-market-intelligence/Mastermind/git/ref/heads/master --jq '.object.sha' && gh api 'repos/mastermindx-market-intelligence/Mastermind/contents/docs/sol_skills/INDEX.md?ref=36f74c02edc938f7f5c41f38743f93ee34be2b2b' --jq '.sha'"
-    result: "Protected ref returned 36f74c02edc938f7f5c41f38743f93ee34be2b2b at authoring; same-commit INDEX reported mastermind.sol_skillpack.v1 version 1.0.1 / minimum bootstrap 1."
-  - claim: "Mastermind Family-B consumer candidate exists as Draft PR #662 on corrected head 8ed986a814b1eef9e4818c900683fd27fa1a35f1."
-    command: "gh pr view 662 -R mastermindx-market-intelligence/Mastermind --json state,isDraft,headRefOid,baseRefOid"
+  - claim: "Current protected Mastermind exposes distinct provider-realm and subscription-canary Capacity generations."
+    command: "git show 8e25bb32601ef5f40a689da6d6f24149e79e31fa:control_plane/subscription_canary_admission.py && git show 8e25bb32601ef5f40a689da6d6f24149e79e31fa:ops/executive_os/provider_realm_facts.py && git show 8e25bb32601ef5f40a689da6d6f24149e79e31fa:ops/executive_os/capacity_owner_facts.py"
     result: >
-      Returned OPEN/Draft on head 8ed986a814b1eef9e4818c900683fd27fa1a35f1. That corrected head makes Macro
-      Provider Control, not the Mastermind provider-realm owner, the single capacity capability identity owner.
-  - claim: "HF1-B/C/D and subscription harness binding source have merged."
-    command: "for n in 576 578 581 583; do gh pr view \"$n\" -R mastermindx-market-intelligence/Mastermind --json number,state,mergedAt,mergeCommit; done"
+      Subscription canary admission binds `realm_generation=realm_receipt.generation` and separately
+      `capacity_generation=capacity_fact.generation`; the facts have different canonical owners.
+  - claim: "Accepted production CF2 law is Provider Capacity plus realm readiness joined at `(host_ref, capacity_capability_id)` before the existing atomic claim/replay path."
+    command: "git show 8e25bb32601ef5f40a689da6d6f24149e79e31fa:research/MASTERMIND_EXECUTIVE_CAPACITY_CF2F_CLAIM_EVIDENCE_AND_ACQUISITION_FREEZE_2026-08-25.md"
     result: >
-      Mastermind #576 merged cb95ae8b, #578 merged d6beb70f, #581 merged 27a5d893, and #583 merged
-      7868e2c2. These are source capability only; this handoff claims no live native Claude provider realm.
-  - claim: "OCR-4A provider-neutral rich Operator Harness work is active separately."
-    command: "gh pr view 660 -R mastermindx-market-intelligence/Mastermind --json state,isDraft,headRefOid,title"
+      The frozen architecture keeps Macro as sole provider normalizer and joins strict provider-capacity
+      evidence with realm-local readiness before deterministic ranking and existing JOB_CLAIMED evidence.
+  - claim: "Current Macro capability_manifest is not the native attached-login registration owner."
+    command: "git show 142c8f6123b2a5da50e1ec95b6d0f7cb2167a009:config/capability_manifest.yml | head -20"
     result: >
-      Returned OPEN on head a614e422c1c84b3b55be6aa855205fd2e3b1931c. Family B is kept
-      identity/capacity-only to avoid becoming a second persistent-session/harness owner.
+      It remains `capability_manifest.v1`, owner `metabolism-phase0`, with secret-ref and lane/tier
+      semantics; Family B therefore freezes a separate secret-free Shared AI Provider Control registry.
+  - claim: "Current Macro Provider Capacity V1 implementation stayed byte-stable through the inspected main movement."
+    command: "git show 142c8f6123b2a5da50e1ec95b6d0f7cb2167a009:engine/provider_capacity.py | git hash-object --stdin"
+    result: "Material file identity remained the previously inspected blob `68eda49254003956dd43193ad1284959a0a14593`; Family B does not patch V1 semantics in place."
+  - claim: "Protected first-production Claude auth law remains dedicated OS principal/Keychain with native /login and stronger auth sources denied by preflight."
+    command: "git show 8e25bb32601ef5f40a689da6d6f24149e79e31fa:ops/executive_os/claude-worker-preflight.py"
+    result: >
+      Preflight isolation vocabulary includes `OS_PRINCIPAL_KEYCHAIN` and denies
+      `CLAUDE_CODE_OAUTH_TOKEN`, API keys and cloud-provider auth sources; it performs no login/model work.
+  - claim: "Current exact candidates remain records-only Draft/HOLD carriers."
+    command: "gh pr view 662 -R mastermindx-market-intelligence/Mastermind --json state,isDraft,headRefOid && gh pr view 7162 -R mastermindx-market-intelligence/macro --json state,isDraft,headRefOid"
+    result: >
+      Both remain OPEN/Draft. Exact heads continue to advance only through this same records carrier as
+      reconciliation edits land; final current heads must be re-read before independent review START.
 unverified:
-  - claim: "The Family-B architecture is accepted/frozen."
+  - claim: "The paired Family-B architecture is independently accepted/protected."
     what_would_verify: >
-      Independent current-head cross-repository architecture review of both records carriers, exact-head
-      repository checks, source protection/merge, then explicit Sol acceptance recording
-      FAMILY_B_ARCHITECTURE_FROZEN. Draft records are not acceptance.
-  - claim: "Four native Claude custodies correspond to four independent Anthropic quota pools."
+      One independent current-head cross-repository review of Mastermind #662 + Macro #7162, fresh
+      latest-base/material compatibility, exact-head repository validation and explicit Sol release.
+  - claim: "One real native Claude realm is unattended-production ready."
     what_would_verify: >
-      A separately accepted provider-supported or otherwise reviewed non-sensitive capacity-independence
-      evidence source. Distinct capability ids, host/principals, config roots, Keychain entries or plan
-      type alone do not prove quota independence.
-  - claim: "Any real native Claude Worker/provider turn is live."
+      Later B6 real `/login` realm under a dedicated OS principal/Keychain with restart, cold-boot,
+      auth-precedence and realm-isolation proof composed with canonical host recovery readiness.
+  - claim: "Different provider-capability ids represent numerically independent/additive Max quota."
     what_would_verify: >
-      Later effectful provisioning plus PF1 bounded real provider proof through the canonical Executive
-      Worker path. This architecture session ran no provider login or turn.
+      A separately accepted provider-safe relationship source; Family-B V2 intentionally makes no
+      fleet-total numeric entitlement claim.
 unresolved:
-  - "Exact source representation for Provider-Control native capability registrations should be selected during B1 current-source implementation archaeology; prefer existing capability_manifest/config ownership or a reviewed successor, never a new runtime account database."
-  - "Exact evidence that could upgrade capacity_independence from unknown to verified remains intentionally unspecified because current provider account identity evidence is not safe/canonical for persistence."
-  - "Agent OS WS:EXECUTIVE-CAPACITY-FABRIC itself still contains stale HF1 open-carrier prose; this candidate does not edit that shared workstream file before architecture acceptance, avoiding collision with other record repairs."
+  - "Independent review placement remains pre-START on Slack carrier C0BSBM78V1N/1789456126.495979 because the canonical Executive ingress returns 401 and no lawful CTO Sol receiver has ACKed/STARTed."
+  - "Exact B4 implementation decomposition of scoped provider health/cooling/quota normalization remains implementation work after B0 acceptance; architecture already fixes source scope and forbids a second normalizer."
 next_actions:
   - >
-    Independently review/protect the Macro Family-B owner candidate together with Mastermind Draft PR #662.
-    Required review questions: one canonical capability identity, V1 unchanged, generation/correction law,
-    null/freshness/quota law, no false capacity independence, zero PII/secret/path identity, and no duplicate
-    execution/session/control plane.
+    Stop architecture churn. Run exact-head Macro fences/CI and Mastermind CI on the final records heads,
+    repairing only deterministic candidate-owned failures.
   - >
-    Only after FAMILY_B_ARCHITECTURE_FROZEN, start B1 in Macro: RED-first Provider-Control native
-    capacity_capability_id + realm_generation registration/export contract. Do not perform a Claude login,
-    provider call, route activation, browser or computer-use effect from the records carriers.
+    Fresh-read and update the existing independent-review Slack carrier with the final exact heads and
+    current validation state; do not create another child or manually choose a numbered account.
   - >
-    After source acceptance, repair the main WS:EXECUTIVE-CAPACITY-FABRIC projection to mark the merged HF1
-    slices completed and point OCR-2C at the protected Family-B decision/next action; do not use this Draft
-    handoff itself as runtime truth.
+    If the independent reviewer returns PASS and latest-base compatibility is clear, Sol may explicitly
+    release/protect B0 and record `FAMILY_B_ARCHITECTURE_FROZEN`; only then commission B1.
+  - >
+    B1 implements the secret-free `config/provider_native_capabilities.v1.json` registry/export only;
+    no Claude login/provider call/route/browser/computer-use effect belongs in B1.
 do_not_redo:
-  - "Do not map native Claude realms to claude_code_oauth_N by ordinal/name/config path/plan type."
-  - "Do not let Mastermind mint a second native account/capacity id."
-  - "Do not patch mastermind.provider_capacity.v1 in place for native Claude."
-  - "Do not interpret four custodies as four-times quota."
-  - "Do not create a Claude scheduler, retry daemon, account DB, session registry or browser/GUI control plane."
-  - "Do not use HF1/OCR-4A source completion as evidence of a real provider realm or automatic capacity placement."
+  - "Do not map native realms to claude_code_oauth_N by ordinal/name/path/plan type."
+  - "Do not mint a second Mastermind account/capacity id."
+  - "Do not create binding_generation beside protected realm_generation."
+  - "Do not repurpose canary CapacityOwnerFact capacity_generation as provider identity or production claim evidence."
+  - "Do not use metabolism capability_manifest.v1 as the native attached-login registry."
+  - "Do not patch mastermind.provider_capacity.v1 in place."
+  - "Do not sum host replicas as provider entitlement."
+  - "Do not silently admit setup-token or same-user multi-config auth under current first-production source law."
+  - "Do not create a Claude scheduler, account DB, quota DB, retry plane, session registry or second claim ledger."
 danger_areas:
-  - "A human can potentially change provider login behind an unchanged local custody without a safe provider identity witness. Production therefore needs managed auth-changing commands and generation advancement; out-of-band mutation invalidates the management assumption rather than being silently accepted."
-  - "Provider-native background supervisors may restart processes; they never gain Executive retry/lifecycle authority."
-  - "Browser and computer-use are later leased resources and must not widen the Family-B identity/capacity contract."
+  - "Provider-domain, provider-realm and canary Capacity generations intentionally have different owners; integer equality is not provenance."
+  - "One provider domain replicated across Macs adds execution locality/concurrency but not provider quota."
+  - "Provider-domain usage-limit and realm-local auth/host failure require different propagation semantics."
+  - "Historical replay must return accepted claim evidence without re-reading current provider capacity."
 exact_next_action: >
-  Independent current-head review of the paired Mastermind #662 and Macro owner-side Family-B records;
-  if PASS, protect both source records and record FAMILY_B_ARCHITECTURE_FROZEN, then commission B1 only.
+  Validate final exact heads and obtain the already-originated independent paired architecture review;
+  do not start B1, provider registration, realm enrollment or any live Claude effect before B0 protection.
 ---
