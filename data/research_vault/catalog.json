@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-15T21:59:48.411821+00:00",
-  "count": 2185,
+  "generated_at": "2026-09-15T22:14:49.329669+00:00",
+  "count": 2186,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -698,6 +698,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-px1fi7qlbkr-360c67",
+      "title": "Asia FX Talk Hitting the brakes",
+      "institution": "MUFG",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T00:07:02Z",
+      "summary_points": [
+        "**Fed Hike Probability Surge**: US CPI beat (core +0.3% mom) raises Sept Fed hike odds to 88% with terminal rate at 4.53%, forecasting two hikes (Sept/Dec 2026), directly impacting global rate expectations.",
+        "**Geopolitical Oil Shock**: Middle East conflict escalation pushes Brent oil to $107/bbl, pressuring Asia FX and energy markets amid heightened risk aversion.",
+        "**Asian Market Risk Aversion**: Asian indices (KOSPI -1.76%, TWSE -1.61%, NKY -1.93%) decline amid USD strength (USDJPY +0.31%) and divergent regional flows.",
+        "**US-Asia Index Divergence**: INDU +0.98% (US equity resilience) vs.",
+        "SHCOMP -1.18% and NKY -1.93% signals critical sector allocation shifts driven by geopolitical/policy risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
