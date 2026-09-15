@@ -2,18 +2,18 @@
   "schema": "crypto.cockpit/v1",
   "contract_phase": "w0",
   "display_only": true,
-  "as_of": "2026-09-11",
-  "generated_at": "2026-09-11T06:23:07+00:00",
+  "as_of": "2026-09-14",
+  "generated_at": "2026-09-15T00:06:01+00:00",
   "hero": {
     "asset": "BTC-USD",
-    "price": 76772.14,
-    "change_24h_pct": 0.31,
+    "price": 76622.91,
+    "change_24h_pct": -0.23,
     "stance_en": "RISK-ON",
     "stance_zh": "偏多",
-    "summary_en": "The big picture reads risk-on. Support comes from fundamentals and momentum; the drag comes from behaviour versus stocks and the market cycle. Day-to-day direction is a coin flip — watch the dip-risk read below.",
-    "summary_zh": "大方向偏多。支撑来自基本面与动量；拖累来自与美股的联动与所处周期。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
-    "master_score": 28,
-    "exposure_pct": 91,
+    "summary_en": "The big picture reads risk-on. Support comes from fundamentals and momentum; the drag comes from the pace of the move and behaviour versus stocks. Day-to-day direction is a coin flip — watch the dip-risk read below.",
+    "summary_zh": "大方向偏多。支撑来自基本面与动量；拖累来自涨跌节奏与与美股的联动。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
+    "master_score": 21,
+    "exposure_pct": 46,
     "gate_active": false
   },
   "axes": [
@@ -48,9 +48,9 @@
           "label_en": "Impulse",
           "label_zh": "脉冲",
           "source": "master.board.impulse",
-          "state_en": "Neutral",
-          "state_zh": "中性",
-          "tone": "neutral",
+          "state_en": "Exhausting",
+          "state_zh": "衰竭",
+          "tone": "bear",
           "grade": "DIRECTIONAL"
         }
       ]
@@ -153,19 +153,19 @@
         "state_en": "Low",
         "state_zh": "低",
         "tone": "bull",
-        "as_of": "2026-09-11"
+        "as_of": "2026-09-14"
       },
       "spark_source": "signals.oi_mcap_ratio",
       "receipt_members": [
         {
           "key": "funding",
-          "label_en": "Perp funding",
-          "label_zh": "永续资金费率",
+          "label_en": "Funding",
+          "label_zh": "funding",
           "source": "master.board.funding",
-          "state_en": "Crowded long",
-          "state_zh": "多头拥挤",
-          "tone": "bear",
-          "grade": "EXTREMES"
+          "state_en": "Unavailable",
+          "state_zh": "暂无",
+          "tone": "neutral",
+          "grade": null
         },
         {
           "key": "cot",
@@ -210,9 +210,9 @@
           "label_en": "Holder spread (STH/LTH)",
           "label_zh": "持有者价差",
           "source": "master.board.holders",
-          "state_en": "Accumulation",
-          "state_zh": "累积",
-          "tone": "bull",
+          "state_en": "Neutral",
+          "state_zh": "中性",
+          "tone": "neutral",
           "grade": "NEW"
         },
         {

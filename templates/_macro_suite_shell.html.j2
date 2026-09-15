@@ -52,6 +52,15 @@
 {%- if node %}<span class="mq-chip mq-tone-{{ tone }}{{ ' mq-chip-' ~ kind if kind else '' }}">{{ bl(node) }}</span>{% endif -%}
 {%- endmacro -%}
 
+{#- A scalar cell, or the same em dash Effective-date uses. 0 is a real value. -#}
+{%- macro scalar_or_dash(value, as_code=False) -%}
+{%- if value is not none and value != '' -%}
+{%- if as_code -%}<code>{{ value }}</code>{%- else -%}{{ value }}{%- endif -%}
+{%- else -%}
+<span class="mq-dash">—</span>
+{%- endif -%}
+{%- endmacro -%}
+
 {%- macro clock_list(rows) -%}
 <dl class="mq-clocks">
   {%- for row in rows %}
@@ -306,7 +315,7 @@
     <p class="mq-kicker">{{ bl(head.subtitle) }}</p>
     <h2 id="mq-headline-title">
       {%- if head.state_label -%}
-      <span class="mq-state-letter" aria-hidden="true">{{ head.state_id }}</span>{{ bl(head.state_label) }}
+      {%- if head.state_id -%}<span class="mq-state-letter" aria-hidden="true">{{ head.state_id }}</span>{%- endif -%}{{ bl(head.state_label) }}
       {%- else -%}
       {{ absent(head.absence) }}
       {%- endif -%}
@@ -314,7 +323,7 @@
     <dl class="mq-headline-meta">
       <div><dt>{{ t('Effective date', '生效日期') }}</dt>
            <dd>{% if head.effective_date %}<time>{{ head.effective_date }}</time>{% else %}<span class="mq-dash">—</span>{% endif %}</dd></div>
-      <div><dt>{{ t('Method version', '方法版本') }}</dt><dd><code>{{ head.method_version }}</code></dd></div>
+      <div><dt>{{ t('Method version', '方法版本') }}</dt><dd>{% if head.method_version %}<code>{{ head.method_version }}</code>{% else %}<span class="mq-dash">—</span>{% endif %}</dd></div>
       <div><dt>{{ t('Prior accepted print', '上一已接受读数') }}</dt>
            <dd>{% if head.prior.absent %}{{ absent(view.changes.absence, True) }}{% else %}<strong>{{ head.prior.state_id }}</strong> <time>{{ head.prior.effective_date }}</time>{% endif %}</dd></div>
     </dl>
@@ -337,7 +346,7 @@
       <span class="mq-axis-direction">{{ t('Movement since the prior accepted print', '相对上一已接受读数的位移') }}</span>
       {%- else %}
       <strong class="mq-axis-value">{{ absent(head.vector.absence) }}</strong>
-      <span class="mq-axis-direction">{{ t('No vector is drawn: there is no method-comparable prior print to move from.', '不绘制向量：不存在方法可比的历史读数作为起点。') }}</span>
+      <span class="mq-axis-direction">{%- if not head.vector.incomplete -%}{{ t('No vector is drawn: there is no method-comparable prior print to move from.', '不绘制向量：不存在方法可比的历史读数作为起点。') }}{%- else -%}{{ t('The vector is not drawn: one of its two components is missing this cycle.', '不绘制向量：本周期缺少其中一个分量。') }}{%- endif -%}</span>
       {%- endif %}
     </div>
 
@@ -430,7 +439,7 @@
     <div><span>{{ bl(map.x_axis.label) }}</span><strong>{% if map.x_axis.value %}{{ map.x_axis.value }}{% else %}{{ absent(map.x_axis.absence) }}{% endif %}</strong><em>{{ bl(map.x_axis.direction) }}</em></div>
     <div><span>{{ bl(map.y_axis.label) }}</span><strong>{% if map.y_axis.value %}{{ map.y_axis.value }}{% else %}{{ absent(map.y_axis.absence) }}{% endif %}</strong><em>{{ bl(map.y_axis.direction) }}</em></div>
     <div><span>{{ t('Boundary', '分界') }}</span><strong>{{ map.x_axis.boundary_text }} / {{ map.y_axis.boundary_text }}</strong><em>{{ t('Fixed, disclosed threshold on each axis', '每条坐标轴上固定且已披露的阈值') }}</em></div>
-    <div><span>{{ t('Hysteresis band', '滞回带') }}</span><strong>±{{ view.headline.hysteresis.band }}</strong>
+    <div><span>{{ t('Hysteresis band', '滞回带') }}</span><strong>{% if view.headline.hysteresis.band %}±{{ view.headline.hysteresis.band }}{% else %}<span class="mq-dash">—</span>{% endif %}</strong>
          <em>{% if view.headline.hysteresis.applied %}{{ t('Applied against the prior print', '已对照上一读数应用') }}{% else %}{{ t('Not applied: no comparable prior print', '未应用：不存在可比的历史读数') }}{% endif %}</em></div>
   </div>
 
@@ -524,13 +533,13 @@
         <div><dt>{{ t('Reference period', '参考期') }}</dt>
              <dd>{% if metric.reference_period %}<time>{{ metric.reference_period }}</time>{% else %}<span class="mq-dash">—</span>{% endif %}</dd></div>
         <div><dt>{{ t('Basis', '基准') }}</dt><dd>{{ bl(metric.basis) }}</dd></div>
-        <div><dt>{{ t('Definition', '定义') }}</dt><dd><code>{{ metric.definition_id }}</code> · v{{ metric.definition_version }}</dd></div>
+        <div><dt>{{ t('Definition', '定义') }}</dt><dd>{% if metric.definition_id %}<code>{{ metric.definition_id }}</code>{% else %}<span class="mq-dash">—</span>{% endif %}{% if metric.definition_version %} · v{{ metric.definition_version }}{% endif %}</dd></div>
       </dl>
       <details class="mq-metric-clocks">
         <summary>{{ t('Clocks and owner', '时钟与所有者') }}</summary>
         {{ clock_list(metric.clocks) }}
-        <p class="mq-owner"><span>{{ t('Owner', '所有者') }}</span><code>{{ metric.owner_ref }}</code></p>
-        <p class="mq-owner"><span>{{ t('Authority ceiling', '权限上限') }}</span><code>{{ metric.authority_ceiling }}</code></p>
+        <p class="mq-owner"><span>{{ t('Owner', '所有者') }}</span>{{ scalar_or_dash(metric.owner_ref, True) }}</p>
+        <p class="mq-owner"><span>{{ t('Authority ceiling', '权限上限') }}</span>{{ scalar_or_dash(metric.authority_ceiling, True) }}</p>
       </details>
     </article>
     {%- endfor %}
@@ -565,7 +574,7 @@
         <th scope="row">{{ bl(item.label) }}</th>
         <td>{{ bl(item.unit) }}</td>
         <td>{{ item.count }}</td>
-        <td><time>{{ item.first }}</time> → <time>{{ item.last }}</time></td>
+        <td>{% if item.range %}{{ bl(item.range) }}{% elif item.first is not none and item.last is not none %}<time>{{ item.first }}</time> → <time>{{ item.last }}</time>{% endif %}</td>
         <td>{{ chip(item.freshness, item.freshness_tone) }}</td>
       </tr>
       {%- endfor %}
@@ -599,7 +608,7 @@
       <tbody>
         {%- for row in group.rows %}
         <tr>
-          <th scope="row">{{ bl(row.label) }}<span class="mq-owner-field"><code>{{ row.owner_field }}</code></span></th>
+          <th scope="row">{{ bl(row.label) }}<span class="mq-owner-field">{{ scalar_or_dash(row.owner_field, True) }}</span></th>
           <td>{% if row.value %}{{ bl(row.value) }}{% else %}{{ absent(row.absence, True) }}{% endif %}</td>
           <td>{{ bl(row.unit) }}</td>
           <td class="mq-delta{% if row.impact_present %} mq-delta-{{ row.impact_sign }}{% else %} mq-delta-unavailable{% endif %}">
@@ -627,14 +636,14 @@
     <summary><span>{{ bl(axis.label) }}</span><span class="mq-axis-method-value">{% if axis.value %}{{ axis.value }}{% else %}{{ absent(axis.absence, True) }}{% endif %}</span></summary>
     <dl class="mq-method-grid">
       <div><dt>{{ t('Direction', '方向') }}</dt><dd>{{ bl(axis.direction) }}</dd></div>
-      <div><dt>{{ t('Weights law', '权重法则') }}</dt><dd>{{ axis.weights_law }}</dd></div>
-      <div><dt>{{ t('Transformation', '变换') }}</dt><dd>{{ axis.transformation }}</dd></div>
-      <div><dt>{{ t('Frequency alignment', '频率对齐') }}</dt><dd>{{ axis.frequency_alignment }}</dd></div>
-      <div><dt>{{ t('Revision behaviour', '修订行为') }}</dt><dd>{{ axis.revision_behavior }}</dd></div>
-      <div><dt>{{ t('Components present', '已具备分项') }}</dt><dd>{{ axis.components_available }} / {{ t('minimum', '最少') }} {{ axis.min_components }}</dd></div>
-      <div><dt>{{ t('Coverage floor', '覆盖下限') }}</dt><dd>{{ axis.coverage_floor }}</dd></div>
-      <div><dt>{{ t('Definition version', '定义版本') }}</dt><dd><code>{{ axis.definition_version }}</code></dd></div>
-      <div><dt>{{ t('Authority ceiling', '权限上限') }}</dt><dd><code>{{ axis.authority_ceiling }}</code></dd></div>
+      <div><dt>{{ t('Weights law', '权重法则') }}</dt><dd>{{ scalar_or_dash(axis.weights_law) }}</dd></div>
+      <div><dt>{{ t('Transformation', '变换') }}</dt><dd>{{ scalar_or_dash(axis.transformation) }}</dd></div>
+      <div><dt>{{ t('Frequency alignment', '频率对齐') }}</dt><dd>{{ scalar_or_dash(axis.frequency_alignment) }}</dd></div>
+      <div><dt>{{ t('Revision behaviour', '修订行为') }}</dt><dd>{{ scalar_or_dash(axis.revision_behavior) }}</dd></div>
+      <div><dt>{{ t('Components present', '已具备分项') }}</dt><dd>{{ scalar_or_dash(axis.components_available) }} / {{ t('minimum', '最少') }} {{ scalar_or_dash(axis.min_components) }}</dd></div>
+      <div><dt>{{ t('Coverage floor', '覆盖下限') }}</dt><dd>{{ scalar_or_dash(axis.coverage_floor) }}</dd></div>
+      <div><dt>{{ t('Definition version', '定义版本') }}</dt><dd>{{ scalar_or_dash(axis.definition_version, True) }}</dd></div>
+      <div><dt>{{ t('Authority ceiling', '权限上限') }}</dt><dd>{{ scalar_or_dash(axis.authority_ceiling, True) }}</dd></div>
     </dl>
     <table class="mq-table mq-table-compact">
       <thead><tr>
@@ -647,10 +656,10 @@
       <tbody>
         {%- for component in axis.components %}
         <tr>
-          <th scope="row">{{ bl(component.label) }}<span class="mq-owner-field"><code>{{ component.owner_field }}</code></span></th>
+          <th scope="row">{{ bl(component.label) }}<span class="mq-owner-field">{{ scalar_or_dash(component.owner_field, True) }}</span></th>
           <td>{% if component.raw %}{{ bl(component.raw) }}{% else %}{{ absent(component.raw_absence, True) }}{% endif %}</td>
           <td>{% if component.standardized_present %}{{ component.standardized }}{% else %}{{ absent(component.standardized_absence, True) }}{% endif %}</td>
-          <td>{{ component.weight }}</td>
+          <td>{{ scalar_or_dash(component.weight) }}</td>
           <td class="mq-delta{% if component.contribution_present %} mq-delta-{{ component.contribution_sign }}{% else %} mq-delta-unavailable{% endif %}">
             {%- if component.contribution_present %}{{ component.contribution }}{% else %}{{ absent(component.contribution_absence, True) }}{% endif -%}
           </td>
@@ -675,9 +684,9 @@
          <dd>{% if corrections.predecessor %}<code>{{ corrections.predecessor }}</code>{% else %}<span class="mq-dash">—</span>{% endif %}</dd></div>
     <div><dt>{{ t('Changed fingerprints', '已变更指纹') }}</dt>
          <dd>{% if corrections.changed_fingerprints %}{{ corrections.changed_fingerprints | join(', ') }}{% else %}<span class="mq-dash">—</span>{% endif %}</dd></div>
-    <div><dt>{{ t('Hysteresis', '滞回') }}</dt><dd>{{ view.headline.hysteresis.note }}</dd></div>
+    <div><dt>{{ t('Hysteresis', '滞回') }}</dt><dd>{% if view.headline.hysteresis.note %}{{ view.headline.hysteresis.note }}{% else %}<span class="mq-dash">—</span>{% endif %}</dd></div>
   </dl>
-  <p class="mq-lineage-note">{{ corrections.note }}</p>
+  <p class="mq-lineage-note">{% if corrections.note %}{{ corrections.note }}{% else %}<span class="mq-dash">—</span>{% endif %}</p>
 </section>
 {%- endmacro -%}
 
@@ -735,7 +744,7 @@
         {%- for flag in evidence.authority.flags %}
         <li><span>{{ bl(flag.name) }}</span><strong class="mq-tone-{{ 'bad' if flag.value else 'ok' }}">{{ t('Yes', '是') if flag.value else t('No', '否') }}</strong></li>
         {%- endfor %}
-        <li><span>{{ t('Axis authority ceiling', '坐标轴权限上限') }}</span><strong><code>{{ evidence.authority.ceiling }}</code></strong></li>
+        <li><span>{{ t('Axis authority ceiling', '坐标轴权限上限') }}</span><strong>{% if evidence.authority.ceiling %}<code>{{ evidence.authority.ceiling }}</code>{% else %}<span class="mq-dash">—</span>{% endif %}</strong></li>
       </ul>
     </section>
 
@@ -749,7 +758,7 @@
         </header>
         <dl class="mq-method-grid">
           <div><dt>{{ t('Provider', '提供方') }}</dt><dd>{{ source.provider or '—' }}</dd></div>
-          <div><dt>{{ t('Owner', '所有者') }}</dt><dd><code>{{ source.owner_ref }}</code></dd></div>
+          <div><dt>{{ t('Owner', '所有者') }}</dt><dd>{{ scalar_or_dash(source.owner_ref, True) }}</dd></div>
           <div><dt>{{ t('Artifact', '产物') }}</dt><dd><code>{{ source.artifact_ref or '—' }}</code></dd></div>
           <div><dt>{{ t('Rights', '授权') }}</dt><dd>{{ bl(source.rights) }}</dd></div>
           <div><dt>{{ t('Correction', '更正') }}</dt><dd>{{ bl(source.correction) }}</dd></div>
@@ -782,8 +791,8 @@
         <div><dt>{{ t('Content hash', '内容哈希') }}</dt><dd><code class="mq-hash">{{ evidence.generation.content_sha256 }}</code></dd></div>
         <div><dt>{{ t('Bytes', '字节数') }}</dt><dd>{{ evidence.artifact.bytes }}</dd></div>
         <div><dt>{{ t('Generation id', '产物代号') }}</dt><dd><code>{{ evidence.generation.generation_id }}</code></dd></div>
-        <div><dt>{{ t('Producer', '生产者') }}</dt><dd><code>{{ evidence.generation.producer }}</code></dd></div>
-        <div><dt>{{ t('Producer code version', '生产端代码版本') }}</dt><dd><code>{{ evidence.generation.code_version }}</code></dd></div>
+        <div><dt>{{ t('Producer', '生产者') }}</dt><dd>{% if evidence.generation.producer %}<code>{{ evidence.generation.producer }}</code>{% else %}<span class="mq-dash">—</span>{% endif %}</dd></div>
+        <div><dt>{{ t('Producer code version', '生产端代码版本') }}</dt><dd>{% if evidence.generation.code_version %}<code>{{ evidence.generation.code_version }}</code>{% else %}<span class="mq-dash">—</span>{% endif %}</dd></div>
         <div><dt>{{ t('Client contract', '客户端契约') }}</dt><dd><code>{{ evidence.artifact.min_client_contract }}</code></dd></div>
       </dl>
       <p class="mq-lineage-note">{{ t('The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mismatch renders a refusal page instead of a state.', '本页在渲染前已按封闭 schema 校验该产物并重新计算其内容哈希。若不匹配，将呈现拒绝页面而非任何状态读数。') }}</p>
@@ -793,12 +802,24 @@
 <div class="mq-scrim" id="mq-scrim" hidden></div>
 {%- endmacro -%}
 
+{#- ── curve-shape hero slot (A-F01-W4-1) ──────────────────────────────────
+    Empty for every view that carries no `curve_hero`, and the whitespace is
+    controlled so a view without one renders byte-for-byte what it rendered
+    before this slot existed. The include sits below the suite bar and below
+    the <h1> that context_header emits, per the packet spec's §2.5 placement. -#}
+{%- macro hero_slot(view) -%}
+{%- if view.get('curve_hero') %}
+{% include "_curve_panel.html.j2" %}
+{%- endif %}
+{%- endmacro -%}
+
 {# ─────────────────────────── assembled page body ───────────────────────── #}
 {%- macro body(view) -%}
 {{ suitenav.suite_bar(suite_nav) }}
 {%- if view.decision_first %}{{ decision_first_body(view) }}{% else %}
 <main class="mq-shell" id="mq-shell">
   {{ context_header(view) }}
+  {{- hero_slot(view) }}
   {{ implications_ribbon(view) }}
   {{ headline_band(view) }}
 
@@ -922,6 +943,7 @@
       </dl>
     </div>
   </header>
+  {{- hero_slot(view) }}
 
   <section class="mq-refusal" aria-labelledby="mq-refusal-title">
     <span class="mq-refusal-mark" aria-hidden="true">⌁</span>
