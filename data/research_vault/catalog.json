@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-14T23:56:42.062073+00:00",
-  "count": 2121,
+  "generated_at": "2026-09-15T00:26:51.293001+00:00",
+  "count": 2122,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -97,6 +97,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-zyx4kxtohsc-63615c",
+      "title": "bond investor",
+      "institution": "Raymond James",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T00:03:55Z",
+      "summary_points": [
+        "**FOMC Rate Hike & Geopolitical Impact**: 90% probability of Fed Funds rate hike (3.50%–3.75%) amid Middle East tensions driving oil prices; 10-yr Treasury near 5% pushes yields up 11-26 bps (2-yr most volatile), creating immediate rate risk and flow volatility.",
+        "**Tax-Efficient Municipal Yield Opportunity**: 5% coupon muni bonds (e.g., NYC Water Revenue) at par offer 9.55% taxable equivalent yield for NY top tax bracket as 10-yr Treasuries near 5%, presenting rare tax-efficient income vs.",
+        "taxable alternatives.",
+        "**Duration Risk & Credit Quality Divergence**: Longer-duration muni portfolios (21-30Y) yield 5.06% vs.",
+        "38% for 1-10Y but face concentrated maturity risk (2027-2032) and elevated credit risk from issuers with \"--\" ratings despite AAA-BBB stability."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-2bjqnt4xqgi-8c8a40",
       "title": "Investor Positioning and Flows Sep 14",
