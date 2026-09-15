@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-15T05:27:30.254852+00:00",
-  "count": 2136,
+  "generated_at": "2026-09-15T05:57:29.989636+00:00",
+  "count": 2137,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -466,6 +466,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-p7teo7oei60-5b96b5",
+      "title": "Americas Business & Information Services Weekly debt issuance, AUM, exchange traded derivative volumes and fund formation as...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T13:19:02Z",
+      "summary_points": [
+        "**Debt Issuance Volatility**: Global debt issuance surged 119% Y/Y in September ($89.46B), High Yield rose 44% Y/Y, and Leveraged Loans jumped 59% Y/Y, signaling credit market turbulence and shifting risk appetite.",
+        "**ESG Fund Formation Collapse**: Global ESG fund formation declined 79% Y/Y, critical for ESG-focused portfolio allocation despite S&P/MSCI ESG ETF AUM growing 15-19%.",
+        "**Revenue-Debt Correlation**: SPGI/MCO ratings revenue growth (86-89% Y/Y) strongly correlates with global debt issuance volume since 2008, confirming debt market activity as a core revenue driver.",
+        "**ETF Inflows Surge**: $227.06B net ETF flows (Sep 26 MTD) with 34% Y/Y growth and 23% AUM impact, driving $484.46B TTM flows—key for portfolio positioning.",
+        "**Target Price Premiums**: SPGI target price ($457.00) exceeds closing ($346.86) by +$110.14, MSCI ($671.00 vs $561.74), and MCO ($593.00 vs $472.24), indicating strong analyst confidence in growth prospects."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 18,
       "language": "en",
       "needs_metadata": false
     },
