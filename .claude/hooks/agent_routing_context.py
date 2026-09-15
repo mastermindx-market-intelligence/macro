@@ -8,11 +8,56 @@ from pathlib import Path
 
 
 def main() -> None:
+    mode = os.environ.get("MASTERMIND_NATIVE_DELEGATION_MODE")
+    if mode is not None:
+        if mode not in {"router_only", "native_leaf"}:
+            print("FABLE HARNESS INVALID: native delegation is refused. Repair the "
+                  "launch profile; never fall back to an unprofiled session.")
+            return
+        print(
+            "FABLE HARNESS / " + mode.upper() + ": This profile narrows older "
+            "FABLE-WHY examples; a prompt never grants budget or launch authority. "
+            "Keep the native main-session tools within existing permissions. "
+            "Choose the objective, work class, scope and acceptance; the existing "
+            "Executive OS/Capacity router owns model, account and admission. "
+            "Independent subproject leaders are governed child Jobs sharing the "
+            "root envelope, not native Fable clones. Do not start provider CLIs "
+            "from Bash or use teams/workflows to bypass admission. "
+            "A missing router, quota observation or binding is UNKNOWN/BLOCKED, "
+            "not free capacity. Do not create another queue or quota ledger. "
+            "Load only granted, source-pinned skills/tools. Receive material "
+            "returns through the existing event/dialogue path; do not poll with "
+            "Fable. No live provider capacity or installed adoption is implied."
+        )
+        print("STRICT PROFILE SKILLS: model-invoked Skill is disabled until resolved skill "
+          "definitions, fork/model overrides and injected commands are qualified. "
+          "Read approved procedure files as reference context; do not execute embedded "
+          "commands automatically. Native skills remain a required later fidelity gate, "
+          "not a capability this candidate claims. Native SendMessage is also disabled "
+          "because it can resume a stopped agent without an Agent launch.")
+        if mode == "router_only":
+            print("Native Agent/Task/Workflow/TeamCreate/SendMessage/Skill are disabled. There is no "
+                  "native fallback when the router is unavailable.")
+            return
+        print("Native-leaf candidate only: ROUTE: census, subagent_type scout, "
+              "explicit model sonnet, read-only Read/Grep/Glob tools, at most "
+              "14 turns per invocation. No native resume, fork, Fable, teams "
+              "or descendants. The concurrency hint is NOT enforced under "
+              "ultracode and is NOT a lifetime, subtree or account budget. "
+              "Use this mode only for a separately qualified bounded canary.")
+
     project = Path(os.environ.get("CLAUDE_PROJECT_DIR") or ".").resolve()
     path = project / ".claude" / "agent-routing.json"
     try:
         registry = json.loads(path.read_text(encoding="utf-8"))
     except Exception:
+        return
+
+    if mode == "native_leaf":
+        spec = registry.get("routes", {}).get("census", {})
+        print("Census commission fields: " + "/".join(spec.get("required_prompt_sections", []))
+              + ". RETURN: STATUS/RESULT/EVIDENCE/GAPS/DEVIATIONS. "
+              "Ask the parent for a governed worker when shell execution or writes are needed.")
         return
 
     routes = registry.get("routes", {})
