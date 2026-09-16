@@ -863,10 +863,20 @@ jobs:
           # refuse stash/rebase wreckage (2026-08-01 d29e4dd44d: a conflicted
           # autostash apply was staged wholesale — 1,704 pages shipped markers)
           bash "${GITHUB_WORKSPACE:-.}/scripts/ci/strip_conflict_markers.sh"
-          # A China-heatmap-only defect must not suppress every other CN/HK
-          # engine output.  The heatmap step restored its tracked pair on failure
-          # and left a marker; broad staging proceeds, then the terminal marker
-          # check turns the job red after the publication tail has completed.
+          # Re-sample immediately before the no-change early exit. The first
+          # heatmap build can run before the 09:00 UTC settle boundary while this
+          # long job reaches its commit step after it; without this check a clean
+          # staging tree would exit 0 and leave yesterday silently accepted. A
+          # heatmap-only failure restores the pre-engine HEAD pair and sets the
+          # delayed-failure marker, but does not suppress other CN/HK outputs.
+          heatmap_now="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          if python -m scripts.check_china_heatmap_freshness --now "$heatmap_now"; then
+            rm -f "$RUNNER_TEMP/china-heatmap-failed"
+          else
+            touch "$RUNNER_TEMP/china-heatmap-failed"
+            git checkout HEAD -- site/marketdata/china_heatmap.json site/china_heatmap.html
+            echo "::warning title=China heatmap held before staging::current-clock freshness failed; the pre-engine pair was restored and other CN/HK outputs continue"
+          fi
           git add data/ site/
           # separate + tolerant: `git add site/ templates/` exits 128 when a pathspec
           # matches nothing, and this step runs under `-eo pipefail` — a missing

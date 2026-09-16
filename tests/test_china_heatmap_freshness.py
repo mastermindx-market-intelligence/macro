@@ -606,18 +606,31 @@ def test_asia_lane_owns_heatmap_without_blocking_other_markets() -> None:
     assert "exit 1" in block
 
 
-def test_always_commit_stages_other_outputs_before_delayed_heatmap_failure() -> None:
+def test_always_commit_rechecks_before_the_no_change_early_exit() -> None:
+    """Crossing 09:00 must be caught even when no engine bytes changed.
+
+    The commit step exits early when broad staging is empty.  Therefore the
+    current-clock heatmap check and heatmap-only rollback must happen before
+    both staging and the cached-diff early exit, without aborting unrelated
+    China/HK publication.
+    """
     workflow = WORKFLOW.read_text(encoding="utf-8")
     start = workflow.index("name: commit engine outputs")
     end = workflow.index("name: publish CN/HK stores to R2", start)
     block = workflow[start:end]
     stage = "git add data/ site/"
+    no_change = "if git diff --cached --quiet; then echo \"no engine output changes\"; exit 0; fi"
+    check = 'python -m scripts.check_china_heatmap_freshness --now "$heatmap_now"'
+    restore = "git checkout HEAD -- site/marketdata/china_heatmap.json site/china_heatmap.html"
+    pre_stage = block[:block.index(stage)]
 
     assert "if: always()" in block
-    assert stage in block
-    assert "scripts.check_china_heatmap_freshness" not in block[:block.index(stage)]
-    assert "china-heatmap-failed" in block
-    assert "git checkout HEAD -- site/marketdata/china_heatmap.json site/china_heatmap.html" in block
+    assert 'heatmap_now="$(date -u +%Y-%m-%dT%H:%M:%SZ)"' in pre_stage
+    assert check in pre_stage
+    assert 'touch "$RUNNER_TEMP/china-heatmap-failed"' in pre_stage
+    assert restore in pre_stage
+    assert "exit 1" not in pre_stage[pre_stage.index(check):]
+    assert block.index(check) < block.index(stage) < block.index(no_change)
 
 
 def test_post_rebase_tree_resamples_the_session_clock_and_isolates_failure() -> None:
