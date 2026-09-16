@@ -2,7 +2,7 @@
 workstream: "WS:PROPHET-US-AVAILABILITY"
 session: "sol/prophet-us-panel-authority-20260916-sol-001"
 model: sol
-ended_because: blocked
+ended_because: ci_handoff
 prs: [7161, 7163, 7180, 7187]
 discoveries:
   - DSC:US-PROPHET-TRACKED-PANEL-CACHE-OVERWRITE-20260916
@@ -19,28 +19,54 @@ state_before: >
 changed:
   - path: PR #7187
     what: >
-      Existing carrier for the committed-panel reader authority and visible source-date
-      repair. The carrier remains draft and unaccepted pending repair, current-base
-      integration, exact-head gates and real producer-to-browser proof.
+      The existing carrier now normalizes multiline/list cache paths, scans both
+      workflow extensions, preserves duplicate producer multiplicity, repairs its
+      Agent OS records, corrects operator-facing cache authority comments and
+      composes current main history-preservingly. It remains draft and unaccepted.
 verified:
   - claim: The carrier and related PR identities were reconciled before continuation.
     command: gh pr view 7187 --repo mastermindx-market-intelligence/macro --json headRefOid,state,isDraft,baseRefOid; git rev-parse HEAD origin/main
     result: >
       PR #7187 remained open/draft at c21c9be04bbf983bc22f8e3fe6075339bbc9ebef;
-      current origin/main was 459eafb838d9944e58e6a65413e282f2a13826ef.
+      the repair used the same branch and worktree with no replacement carrier.
+  - claim: The three recurrence holes were discriminating REDs before implementation.
+    command: >
+      python -m pytest -q
+      tests/test_daily_collect_commit_path.py::test_us_panel_cache_scan_splits_multiline_action_paths
+      tests/test_daily_collect_commit_path.py::test_us_panel_cache_scan_includes_yaml_workflows
+      tests/test_daily_collect_commit_path.py::test_duplicate_daily_panel_seed_steps_are_rejected
+    result: "3 failed on the pre-fix implementation, then 3 passed after the minimal repair."
+  - claim: The current-main composed source candidate passed its owning local matrix.
+    command: >
+      python -m pytest -q tests/test_daily_collect_commit_path.py
+      tests/test_p0_prophet_candidate_board.py tests/test_render_run_size_cap.py
+      tests/test_workflow_file_size.py tests/test_chat_nav_sync.py
+    result: "76 passed at 2e891d108553dd1f7f8d4258dad8a700982457ef."
+  - claim: Records, workflow syntax, chat navigation and differential CI contracts are clean.
+    command: >
+      python scripts/agentos.py validate; parse all .github/workflows/*.yml and *.yaml
+      with PyYAML; python -m scripts.sync_chat_nav; python scripts/check_contract_delta.py
+      --base a780b16f53ceb05944fedf04d20b3735182aab52
+    result: >
+      Agent OS reported 0 errors; 100 workflows parsed; chat nav sync was OK;
+      contract-delta reported 0 introduced and 0 inherited findings.
 unverified:
-  - claim: The repaired exact head passes hosted CI and production browser acceptance.
+  - claim: The delivered exact head passes hosted CI and production browser acceptance.
     what_would_verify: >
-      Same-head hosted checks, current-base composition, merge ancestry and a real
-      completed-session producer-to-served-board browser receipt.
+      Same-head hosted checks, source review, #7180 composition, merge ancestry and a
+      real completed-session producer-to-served-board browser receipt.
 unresolved:
   - >
-    PR #7180 is still open and overlaps daily.yml; #7187 must be composed after the
+    PR #7180 remains open and overlaps daily.yml; #7187 must be composed after the
     producer/provenance carrier rather than silently superseding it.
+  - >
+    Linux pack execution is owned by the separate active CI-host recovery session;
+    this carrier neither repairs nor bypasses that infrastructure.
 next_actions:
   - >
-    Close the recurrence-test and Agent OS schema defects on the same #7187 branch,
-    merge current main history-preservingly, verify, commit and push without force.
+    Consume the delivered #7187 exact-head checks and independent review. After #7180
+    is accepted, recompose the two carriers on current main, then prove one real
+    completed-session source-to-browser journey before any Ready or merge decision.
 do_not_redo:
   - >
     Do not restore tracked US panels from Actions cache in reader workflows, remove
