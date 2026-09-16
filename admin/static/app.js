@@ -4680,8 +4680,10 @@ function prophetRotationDiagnosticsHtml(payload) {
     ? `<div class="note muted" style="margin-top:6px">Basket component unavailable: ${baskets.length} rows exceeds ${maxRows} — disclose rather than silently truncate.</div>`
     : '';
 
+  const basketWithheld = baskets.length > maxRows || reasons.some(r =>
+    typeof r === 'string' && (r.startsWith('basket_') || r === 'duplicate_basket_ids'));
   const basketRows = rows.length === 0
-    ? `<tr><td colspan="5" class="sub muted">No baskets in audit.</td></tr>`
+    ? `<tr><td colspan="5" class="sub muted">${basketWithheld ? 'Basket evidence unavailable; see flags.' : 'No baskets in audit.'}</td></tr>`
     : rows.map(b => {
       if (!b || typeof b !== "object" || Array.isArray(b)) return '<tr><td colspan="5">Basket row unavailable</td></tr>';
       const bid     = (typeof b.basket_id === 'string') ? b.basket_id : '';
@@ -4711,7 +4713,7 @@ function prophetRotationDiagnosticsHtml(payload) {
   const srcSha = (typeof payload.source === 'object' && payload.source !== null && typeof payload.source.sha256 === 'string')
     ? payload.source.sha256 : null;
   const shaLine = srcSha
-    ? `<div class="note mono muted" style="margin-top:4px">Source SHA: ${esc(srcSha)}</div>`
+    ? `<div class="note mono muted" style="margin-top:4px;overflow-wrap:anywhere">Source SHA: ${esc(srcSha)}</div>`
     : '';
 
   // --- Named data reasons (optional) ---
@@ -4731,6 +4733,7 @@ function prophetRotationDiagnosticsHtml(payload) {
 <div class="kv"><span>Board as-of</span><b>${fmtDate(dates ? dates.board : null)}</b></div>
 <div class="kv"><span>Rotation as-of</span><b>${fmtDate(dates ? dates.rotation : null)}</b></div>
 <div class="kv"><span>Basket cutoffs as-of</span><b>${fmtDate(dates ? dates.baskets : null)}</b></div>
+<div class="kv"><span>Basket board as-of</span><b>${fmtDate(dates ? dates.basket_board : null)}</b></div>
 
 <div class="section" style="margin-top:6px">${esc(legacyNote)}</div>
 <div class="kv" style="margin-top:4px"><span>On-time opportunity conversion</span><b>Not measured</b></div>
@@ -4739,6 +4742,7 @@ ${shaLine}
 ${reasonsLine}
 
 <div class="section" style="margin-top:6px">Basket visibility</div>
+<div class="sub muted">On narrow screens, scroll the table to see counts and visibility.</div>
 <div class="tbl-scroll">
 <table>
   <thead>

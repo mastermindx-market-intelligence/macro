@@ -123,8 +123,6 @@ class TestNullUnavailable:
 
     @pytest.mark.parametrize("val", ["string", 42, True, [], {"x": 10}])
     def test_non_object_payload(self, val):
-        if isinstance(val, dict):
-            pytest.skip("dict is valid")
         r = _run_js(val)
         assert r["ok"], f"failed for {type(val).__name__}"
         assert "Rotation diagnostics unavailable" in r["html"]
@@ -186,13 +184,15 @@ class TestDatesAligned:
         assert "freshness not established" in r["html"]
 
     def test_dates_aligned_false(self):
-        p = dict(VALID_PAYLOAD, dates_aligned=False)
+        p = dict(VALID_PAYLOAD, dates_aligned=False,
+                 dates={**VALID_PAYLOAD["dates"], "board": "2026-08-31"})
         r = _run_js(p)
         assert r["ok"]
         assert "Input dates differ" in r["html"]
 
     def test_dates_aligned_null(self):
-        p = dict(VALID_PAYLOAD, dates_aligned=None)
+        p = dict(VALID_PAYLOAD, dates_aligned=None,
+                 dates={**VALID_PAYLOAD["dates"], "board": None})
         r = _run_js(p)
         assert r["ok"]
         assert "Input dates incomplete" in r["html"]
@@ -477,8 +477,10 @@ class TestBasketRows:
         ]
         r = _run_js(p)
         assert r["ok"]
-        assert "Showing first 200" in r["html"]
+        assert "Basket component unavailable" in r["html"]
         assert "250" in r["html"]
+        assert "No baskets in audit" not in r["html"]
+        assert "Basket 0" not in r["html"]
 
     def test_under_200_no_disclose(self):
         p = dict(VALID_PAYLOAD)
@@ -608,3 +610,43 @@ def test_alignment_hint_cannot_override_actual_dates():
     result = _run_js(p)
     assert result["ok"] and "Input dates differ" in result["html"]
     assert "Input dates aligned" not in result["html"]
+
+
+class TestContinuationRegressions:
+    @pytest.mark.parametrize('hint', [False, None, 'false'])
+    def test_alignment_hint_cannot_override_actual_dates(self, hint):
+        result = _run_js(dict(VALID_PAYLOAD, dates_aligned=hint))
+        assert result['ok']
+        assert 'Input dates aligned' in result['html']
+        assert 'freshness not established' in result['html']
+
+    def test_withheld_source_is_not_an_empty_audit(self):
+        result = _run_js(dict(VALID_PAYLOAD, status='partial',
+                              reasons=['basket_source_unavailable']))
+        assert result['ok']
+        assert 'Basket evidence unavailable' in result['html']
+        assert 'No baskets in audit' not in result['html']
+
+    def test_basket_board_cutoff_is_visible(self):
+        result = _run_js(dict(VALID_PAYLOAD,
+                              dates={**VALID_PAYLOAD['dates'], 'basket_board': '2026-08-28'}))
+        assert result['ok']
+        assert 'Basket board as-of' in result['html']
+        assert '2026-08-28' in result['html']
+        assert 'Input dates differ' in result['html']
+
+    def test_one_html_decode_preserves_original_text(self):
+        import html
+        payload = dict(VALID_PAYLOAD, baskets=[{
+            'basket_id': 'control', 'name': 'Oil & Gas <research>',
+            'as_of': '2026-09-01',
+            'counts': {'buy': 0, 'watch': 0, 'leaders': 1, 'ran': 0},
+            'visibility': 'leader_only', 'entry_actionability': 'not_measured',
+            'members_on_board': ['TEST'],
+        }])
+        result = _run_js(payload)
+        assert result['ok']
+        assert 'Oil &amp; Gas &lt;research&gt;' in result['html']
+        assert 'Oil &amp;amp;' not in result['html']
+        assert 'Oil & Gas <research>' in html.unescape(result['html'])
+        assert 'Matches any historical plan; not timely opportunity conversion.' in html.unescape(result['html'])
