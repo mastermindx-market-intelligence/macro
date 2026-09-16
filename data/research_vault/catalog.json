@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-16T01:09:07.534796+00:00",
-  "count": 2194,
+  "generated_at": "2026-09-16T01:24:08.676552+00:00",
+  "count": 2195,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -99,6 +99,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-drr4pjejey5-a7911a",
+      "title": "Transformational Innovation Opportunities (TRIO)",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T00:03:10Z",
+      "summary_points": [
+        "**AstraZeneca pipeline shift**: SERENA-4 failure redirects focus to AVANZAR (Dato-DXd) as key catalyst; CAMBRIA studies critical for value.",
+        "**Stryker cyberattack impact**: Production delays in peripheral vascular/orthopedics drive medical device sector underperformance; recovery expected late 2023/2024.",
+        "**Pharma outperforms Medtech**: Longevity portfolio (Eli Lilly 12.21%, J&J 8.84%) shows Pharma outperformance vs Medtech since Q4 2025.",
+        "**Geopolitical sector risks**: Wuxi Biologics faces new sanctions risk; Viking Holdings exposed to macro downturn/terrorism events.",
+        "**SPL list dominance**: \"SPL - Equity Reverse Convertibles Tactical Opportunity List\" drives 8/9 company shifts between \"Most Preferred\" and \"Not Listed,\" signaling active tactical positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-gi8p5ogu8ns-5babcf",
       "title": "Libertarians at the gate amv",
