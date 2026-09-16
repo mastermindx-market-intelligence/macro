@@ -208,16 +208,19 @@ def analyze_financial_bridge(payload: object) -> dict[str, Any]:
             observations.append('eps_up_implied_price_down')
         if opposite('current.operating_profit', 'current.simplified_operating_cash'):
             observations.append('current_profit_positive_operating_cash_negative')
-        count = sum(c['value'] is not None for c in calc.cells.values())
+        primary_cells = dict(calc.cells)
+        count = sum(c['value'] is not None for c in primary_cells.values())
+        scenario_tests = _scenario_tests(calc, data)
         return {
-            'schema': SCHEMA, 'status': 'complete' if count == len(calc.cells) else 'partial' if count else 'unavailable',
+            'schema': SCHEMA, 'status': 'complete' if count == len(primary_cells) else 'partial' if count else 'unavailable',
             'authority': 'analysis_only', 'input_provenance': 'caller_supplied_unverified',
             'currency': data['currency'], 'amount_scale': data['amount_scale'],
             'period_months': data['prior']['period_months'],
             'rounding': 'up_to_12_significant_decimal_digits_half_even',
             'inputs': {f'{p}.{f}': _plain(data[p][f]) if data[p][f] is not None else None
                        for p in ('prior','current') for f in _FIELDS},
-            'calculations': calc.cells, 'arithmetic_observations': observations,
+            'calculations': primary_cells, 'arithmetic_observations': observations,
+            'scenario_tests': scenario_tests, 'reasoning': _conditional_reasoning(observations),
             'limitations': list(_LIMITATIONS), 'errors': [],
         }
 
@@ -260,6 +263,7 @@ def financial_bridge_tool_schema() -> dict[str, Any]:
         'description': (
             'Calculate a conditional revenue-to-profit-to-cash bridge and an annual '
             'EPS-times-multiple comparison from explicit assumptions, not verified facts. '
+            'Returns equality boundaries, local sensitivities and untested rivals with evidence questions. '
             'Do not invent missing values or replace unknown cash adjustments with zero. '
             'Label all arguments unverified; same currency, scale and period length required. '
             'This pure arithmetic tool does not fetch data, verify sources, forecast prices '
@@ -275,4 +279,123 @@ def financial_bridge_tool_schema() -> dict[str, Any]:
                 'prior': period_schema(), 'current': period_schema(),
             },
         },
+    }
+
+
+def _scenario_tests(calc: _Calculator, data: dict[str, Any]) -> dict[str, Any]:
+    """Conditional equality tests using the existing request-local calculator."""
+    v = calc.values
+    results: dict[str, Any] = {}
+    money = f'{data["currency"]}_{data["amount_scale"]}'
+    def add(name, unit, formula, operands, operation, varied, target,
+            domain=None, lower=None, upper=None, kind='equality_boundary_not_forecast'):
+        calc.add(name, unit, formula, operands, operation, domain)
+        cell = calc.cells[name]
+        cell.update(authority='conditional_test_only', varied_input=varied,
+                    target_ref=target, fixed_inputs=[key for key in operands if key != varied],
+                    baseline_inputs=[key for key in operands if key == varied], interpretation=kind)
+        number = v[name]
+        if lower is not None and upper is not None:
+            cell['within_value_range'] = (lower <= number <= upper) if number is not None else None
+        results[name] = cell
+    revenue = data['current']['revenue']
+    margin = data['current']['gross_margin_pct']
+    add('hold.operating_profit_margin_pct', 'percent',
+        '(prior_operating_profit + current_operating_expenses) / current_revenue * 100',
+        ('prior.operating_profit', 'current.operating_expenses', 'current.revenue'),
+        lambda p, o, r: (p+o)/r*100, 'current.gross_margin_pct', 'prior.operating_profit',
+        'positive_current_revenue_required' if revenue is not None and revenue <= 0 else None,
+        Decimal(-1000), Decimal(100))
+    add('hold.operating_profit_revenue', money,
+        '(prior_operating_profit + current_operating_expenses) / current_margin_pct * 100',
+        ('prior.operating_profit', 'current.operating_expenses', 'current.gross_margin_pct'),
+        lambda p, o, m: (p+o)/m*100, 'current.revenue', 'prior.operating_profit',
+        'positive_current_margin_required' if margin is not None and margin <= 0 else None,
+        Decimal(0), Decimal('1e18'))
+    add('zero.operating_cash_working_capital', money,
+        'operating_profit + depreciation_amortization - cash_interest - cash_taxes + other_operating_cash_adjustments',
+        ('current.operating_profit', 'current.depreciation_amortization', 'current.cash_interest',
+         'current.cash_taxes', 'current.other_operating_cash_adjustments'),
+        lambda o, d, i, t, a: o+d-i-t+a, 'current.working_capital_increase', 'literal:0',
+        lower=Decimal('-1e18'), upper=Decimal('1e18'))
+    add('zero.cash_after_capex_working_capital', money,
+        'zero_operating_cash_working_capital - capital_expenditures',
+        ('zero.operating_cash_working_capital', 'current.capital_expenditures'),
+        lambda c, x: c-x, 'current.working_capital_increase', 'literal:0',
+        lower=Decimal('-1e18'), upper=Decimal('1e18'))
+    eps = data['current']['eps']
+    annual_domain = ('annual_eps_required' if data['current']['period_months'] != 12 else
+                     'positive_current_eps_required' if eps is not None and eps <= 0 else None)
+    add('hold.implied_price_multiple', 'multiple', 'prior_implied_price / current_annual_eps',
+        ('prior.implied_price', 'current.eps'), lambda p, e: p/e,
+        'current.earnings_multiple', 'prior.implied_price', annual_domain,
+        Decimal(0), Decimal('1e18'))
+    sensitivity = 'local_arithmetic_sensitivity_not_forecast'
+    add('sensitivity.operating_profit_per_margin_pp', money+'/percentage_point',
+        'current_revenue / 100', ('current.revenue',), lambda r: r/100,
+        'current.gross_margin_pct', 'current.operating_profit', kind=sensitivity)
+    add('sensitivity.operating_profit_per_revenue_pct', money+'/percent_change',
+        'current_revenue * current_margin_pct / 10000',
+        ('current.revenue', 'current.gross_margin_pct'), lambda r, m: r*m/10000,
+        'current.revenue', 'current.operating_profit', kind=sensitivity)
+    add('sensitivity.implied_price_per_multiple_turn', data['currency']+'/share/multiple',
+        'current_annual_eps', ('current.eps',), lambda e: e,
+        'current.earnings_multiple', 'current.implied_price', annual_domain, kind=sensitivity)
+    return results
+
+
+def _conditional_reasoning(observations: list[str]) -> dict[str, Any]:
+    """Test prompts, not inferred issuer events or sourced causal proof."""
+    definitions = {
+        'revenue_up_gross_profit_down': (
+            'Revenue growth does not imply higher gross profit under the supplied margins.',
+            ['change.revenue', 'change.gross_profit', 'bridge.gross_profit_sales_effect', 'bridge.gross_profit_margin_effect'],
+            ['hold.operating_profit_margin_pct', 'hold.operating_profit_revenue'],
+            [
+                ('Temporary launch or product-mix investment',
+                 'Dated segment mix, ramp costs and later margin conversion.',
+                 'Margins fail to recover after the proposed ramp period.'),
+                ('Persistent pricing or unit-cost pressure',
+                 'Comparable selling prices, unit costs and repeat-period margins.',
+                 'Stable prices/costs and a documented one-off mix effect explain the gap.'),
+            ]),
+        'current_profit_positive_operating_cash_negative': (
+            'Positive operating profit does not cover the supplied operating cash uses.',
+            ['current.operating_profit', 'current.simplified_operating_cash'],
+            ['zero.operating_cash_working_capital', 'zero.cash_after_capex_working_capital'],
+            [
+                ('Temporary cash-conversion timing',
+                 'Receivable collections, inventory aging, payment terms and later cash conversion.',
+                 'The proposed timing gap persists or inventory/receivables deteriorate.'),
+                ('Recurring cash burden not captured by operating profit alone',
+                 'Dated cash-interest/tax outlays, working-capital movements and residual adjustments.',
+                 'Verified nonrecurring payments unwind and comparable cash conversion recovers.'),
+            ]),
+        'eps_up_implied_price_down': (
+            'Assumed multiple contraction more than offsets annual EPS growth in this comparison.',
+            ['change.eps_pct', 'change.implied_price_pct', 'bridge.price_earnings_effect', 'bridge.price_multiple_effect'],
+            ['hold.implied_price_multiple', 'sensitivity.implied_price_per_multiple_turn'],
+            [
+                ('The lower multiple reflects a durable earnings-quality or growth concern',
+                 'Recurring versus one-off EPS, cash conversion and dated forward assumptions.',
+                 'Recurring earnings and cash conversion improve without that proposed concern.'),
+                ('The lower multiple reflects temporary repricing rather than weaker operations',
+                 'Rates, dated peer comparisons, funding needs and subsequent operating evidence.',
+                 'Company-specific operating deterioration explains the repricing better.'),
+            ]),
+    }
+    findings = []
+    for code in observations:
+        conclusion, supports, tests, rivals = definitions[code]
+        findings.append({
+            'id': code, 'conclusion': conclusion, 'conclusion_type': 'supplied_scenario_implication',
+            'supports': supports, 'reversal_tests': tests,
+            'rivals': [{'hypothesis': h, 'status': 'untested', 'evidence_to_check': e, 'would_weaken': w}
+                       for h, e, w in rivals],
+        })
+    return {
+        'basis': 'conditional_arithmetic_not_causal_proof',
+        'evidence_retrieval_performed': False, 'findings': findings,
+        'scope': 'Illustrative rival hypotheses are not exhaustive, scored, or adjudicated. No company evidence has been read.',
+        'test_assumption': 'Change one input at a time; hold other scenario inputs fixed. Equality boundaries use unrounded arithmetic; displayed values may be rounded.',
     }
