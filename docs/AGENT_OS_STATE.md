@@ -2,11 +2,11 @@
 
 # Agent OS state
 
-Generated: 2026-09-15T13:32:40Z  |  69 workstreams (50 active · 1 awaiting_ci · 2 awaiting_review · 4 blocked · 8 done · 4 parked)
+Generated: 2026-09-16T16:13:15Z  |  69 workstreams (50 active · 1 awaiting_ci · 2 awaiting_review · 4 blocked · 8 done · 4 parked)
 
 | Input | Value |
 |---|---|
-| active_builds | data/governance/active_builds.json@2026-09-15T13:32:40.759225+00:00 |
+| active_builds | data/governance/active_builds.json@2026-09-16T16:13:15.117370+00:00 |
 | active_builds age | 0.0h |
 | worktrees | 1 |
 | records | 69 WS · 318 DEC · 269 DSC · 460 handoffs |
@@ -322,6 +322,7 @@ Generated: 2026-09-15T13:32:40Z  |  69 workstreams (50 active · 1 awaiting_ci �
 - agentos/decisions/DEC-D0R-RED-TEAM-ADJUDICATION-2026-08-17.md: [review-overdue] review_by 2026-08-18 has passed
 - agentos/decisions/DEC-E3-EVENT-INTELLIGENCE-COMPILER-NOT-SCORER.md: [review-overdue] review_by 2026-08-23 has passed
 - agentos/decisions/DEC-PROPHET-US-PERMANENCE-NET.md: [review-overdue] review_by 2026-09-10 has passed
+- agentos/decisions/DEC-SI-METHOD-LAW-CHANNELS.md: [review-overdue] review_by 2026-09-15 has passed
 - agentos/decisions/DEC-W2C-M0B-V1-SOURCE-WINDOW-UNACHIEVABLE.md: [review-overdue] review_by 2026-08-27 has passed
 - agentos/decisions/DEC-W2C-M0C-V2-HYBRID-PRICE-ACTIVITY-SCOPE.md: [review-overdue] review_by 2026-08-21 has passed
 - agentos/decisions/DEC-W2C-M0C-V2-REST-SINGLE-TICKER-DAILY.md: [review-overdue] review_by 2026-08-21 has passed
