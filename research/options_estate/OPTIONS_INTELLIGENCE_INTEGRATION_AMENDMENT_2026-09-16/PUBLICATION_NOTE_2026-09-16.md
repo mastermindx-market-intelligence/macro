@@ -44,7 +44,7 @@ not on `main`; it lives only on the unmerged research draft macro #7027.
 
 Did: fetched and pinned current state; ran the two bounded read-only qualifications above (G01 diff, G06
 inspection); published the packet byte-identical; wrote the handoff record beside it; opened ONE docs-only PR;
-posted ONE custody DECISION_REQUEST on the carrier (ts recorded in the handoff record).
+posted ONE custody DECISION_REQUEST top-level on #agent-dispatch C0BSBM78V1N at ts 1789589027.207419 (delivery PR macro #7221).
 
 Did not: ACK, START, claim or register the allocated operation key; spawn any worker or lane; arm any watcher
 or cron; edit, arm, disarm, ready, rerun or merge #6604 or any listed carrier; deploy, pull, reset or restart
@@ -56,4 +56,4 @@ package or candidate store; fit, score, rank, size or promote anything.
 A successor seat must NOT re-publish this bundle, re-post the custody request, post under the terminal C0 root
 `C0BSBM78V1N/1787900289.577559`, or execute any conditional packet A–L before Sol's disposition names the
 receiver and the exact write allowlist. Read the handoff record first, then fresh-read the carrier for a Sol
-reply after the recorded request ts; act only on that edge.
+reply after ts 1789589027.207419; act only on that edge.

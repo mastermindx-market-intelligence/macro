@@ -59,11 +59,11 @@ unverified:
   - claim: The M1 miniconda interpreter and .env binding import the #6585 measured helper cleanly.
     what_would_verify: Owner-admitted adoption of a main descendant containing dbd654ed in /Users/chriswong/liveflow-ops-wt after the 16:00 ET close, an import smoke under that interpreter, then a natural untouched RTH traversal at the next 09:25 ET fire.
 unresolved:
-  - Sol disposition A/B/C of the custody DECISION_REQUEST (A = assign this seat as integration principal and admit exact write allowlists; B = another principal; C = missing capability).
+  - Sol disposition A/B/C of the custody DECISION_REQUEST posted top-level on #agent-dispatch C0BSBM78V1N at ts 1789589027.207419 (2026-09-16 ~20:03Z; https://mastermindxgroup.slack.com/archives/C0BSBM78V1N/p1789589027207419). A = assign this seat as integration principal and admit exact write allowlists; B = another principal; C = missing capability.
   - Gates G02-G05 and G07-G13 exactly as listed in VERIFICATION_AND_OPEN_GATES.md; none closed by this delivery.
   - Missing bundle files READ_ME_FIRST.md, SOURCE_REGISTER.md, ARTIFACT_VERIFICATION.json, MANIFEST.sha256 were never delivered to the seat.
 next_actions:
-  - Fresh-read #agent-dispatch for a Sol reply after the custody DECISION_REQUEST ts recorded in this record; act only on that edge.
+  - Fresh-read #agent-dispatch for a Sol reply after ts 1789589027.207419 (on that message or a root Sol names); act only on that edge.
   - On A, PICKUP_ACK then START on the carrier Sol names, then run packet B first (OA-1T installed-source adoption through its owner, after the close, with rollback receipt), then packet A scope/custody reconciliation on #6604 with #6628/#7125 owners.
   - On B, stand down and leave this record as the delivery receipt; on C, record the named gate and stop.
 do_not_redo:
@@ -76,7 +76,7 @@ danger_areas:
   - The M1 poller is a live RTH process (launchd com.mastermind.liveflow); any checkout move while it runs corrupts the session's measured state.
   - #6604 carries merge-on-green; a base heal of pack-6 could let the sweeper merge it under a scope ruling nobody has issued yet. Removing that arm requires a visible marker and ownership to merged-or-handed-back (fleet law), so do not strip it silently either.
   - Docs-only PRs must not be armed merge-on-green here: a sibling merges them before ci.yml's late hosted-plan job registers and the merged head reads ci_failed forever (2026-09-16 macro #7203).
-prs: [6604, 6585, 7027, 6628, 7125, 6867, 7070]
+prs: [7221, 6604, 6585, 7027, 6628, 7125, 6867, 7070]
 ---
 
 # Options Intelligence — integration amendment packet delivery (2026-09-16)
@@ -88,5 +88,6 @@ no worker or watcher started and source writes on HOLD. The two 2026-09-16 prece
 byte-identical, revalidate the moving facts, and mint exactly one custody request on the carrier for Sol.
 
 Read `PUBLICATION_NOTE_2026-09-16.md` for the stale-truth table and the two read-only receipts (G01 diff,
-G06 installed-source inspection). The carrier post ts is recorded in this record's `unresolved` section
-once posted; a successor acts only on Sol's reply after that ts.
+G06 installed-source inspection). The carrier post is C0BSBM78V1N ts 1789589027.207419 (delivery PR macro #7221); a successor acts only on
+Sol's reply after that ts. Mastermind protected master had moved to bf843961 by the post (packet pin 8ba7deed);
+disclosed on the carrier, not re-derived, because this delivery has effect NONE.
