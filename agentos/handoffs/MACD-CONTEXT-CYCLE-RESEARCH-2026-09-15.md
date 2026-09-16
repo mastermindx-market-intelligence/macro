@@ -5,62 +5,43 @@ model: sol
 ended_because: blocked
 mission: Repair the existing Prophet replay input/cache dependency used by the MACD study; no availability-wave closure
   or ownership transfer.
-state_before: Replay-input repair published at b72178fa16db; independent review and full historical control held; contract-delta
-  subsequently identified two unwired test suites.
+state_before: Published9513 head; interrupted uncommitted panel/producer candidate recovered, followed by a newly
+  reproduced historical-tail precedence defect.
 changed:
 - path: scripts/prophet_pit_replay.py
-  what: Restore pinned missing ticker inputs, repair control-to-replay tails, hash price bytes, and preserve restoration
-    provenance in the existing receipt.
+  what: Restore pinned missing panels and shortened historical tails before later data; require an observed board
+    output write and bound cache evidence.
 - path: tests/test_prophet_pit_replay_sparse_inputs.py
-  what: Twelve input/cache regression cases including two-stage execution and receipt consumption.
-- path: research/signal_engine/macd_context/REPLAY_INPUT_AND_CLOCK_RECOVERY_2026-09-16.md
-  what: Record verified input repair and exact archived clock sensitivity without predictive or production promotion.
-- path: .github/ci/legacy-jobs.yml
-  what: Wire both new replay test suites into the existing prophet-anticipation-intake step; no new job, waiver or dependency.
-- path: research/signal_engine/macd_context/REFERENCE_PRODUCER_QUALIFICATION_2026-09-16.md
-  what: Bind original producer run, executed checkout, publication, source parity and environment/cache metadata; preserve
-    unrecovered input limits.
+  what: Full/sparse real-subprocess, two-pass restatement/deletion, no-op, cache and final-receipt checks.
+- path: research/signal_engine/macd_context/REPLAY_SPARSE_AND_PRODUCER_CORRECTNESS_2026-09-16.md
+  what: Current source result, prior failed attempts, explicit fixture-inspection restriction and unchanged scientific
+    holds.
 verified:
-- claim: The exact final replay source passes 199 targeted tests.
-  command: PYTHONDONTWRITEBYTECODE=1 MM_DATA_GUARD=1 python3 -m pytest tests/test_prophet_pit_replay_sparse_inputs.py
-    tests/test_prophet_pit_replay_alpha_result.py tests/test_prophet_pit_replay.py -q --tb=short --basetemp=<owned-evidence>/pytest-release
-    --junitxml=<owned-evidence>/release.xml
-  result: 'PID66110: pytest exit0, 199 passed in26.72s; final source SHA2561cd6aaee24b837df431dffa96286d282f9eee19f5978ef42a4fb5ea521f0740d.'
-- claim: Real historical SPY input preparation restores all8421 rows through a two-pass transition without rewriting
-    on repeat.
-  command: Existing scripts.prophet_pit_replay.prepare_reconstruction_tree, vintage ff745b1ab54256b0188688cc5815e6675e4edef5,
-    SPY-only surface, control2026-07-14 then replay2026-07-15; assert_frame_equal against pinned Git source.
-  result: PID51948 exit0; real_benchmark_two_pass_receipt.json; no board run or canonical-store change.
-- claim: Two archived functions change calendar-sensitive context on unchanged retained inputs.
-  command: python3 research/signal_engine/macd_context/source/probe_historical_clock_dependencies.py
-  result: 'PID26117: July dates stress0.0; September dates stress0.7 withfomc; input hashes unchanged.'
-- claim: The amended existing CI step passes 199 tests; the canonical differential contract check has zero findings.
-  command: YAML-extracted prophet-anticipation-intake replay step; scripts/check_contract_delta.py --base c359ed4403c9b8a8d097a8839c99448188618298
-  result: PID73442 exit0:199 passed; PID60217 exit0:0 introduced,0 inherited.
-- claim: Original publication is tied to job87936049727, executed checkout413d6e9038f2ac12ee231e6e067ef4d400fff2a3 and
-    publicationf1f127e1ecbd24cad018af190be4793b60eb6fcc.
-  command: gh api actions/runs/29589773634/jobs; checked original job log; git ls-tree over seven named paths at trigger/checkout/publication/replay
-    vintage
-  result: Job starts July17 16:22:16Z; final checkout logged16:22:25.849919Z; publication push17:45:09.990638Z; all seven
-    declared source paths match.
+- claim: Current exact source passes237 tests, including complete-history and final-receipt consumers.
+  command: python3 -m pytest tests/test_prophet_pit_replay.py tests/test_prophet_pit_replay_alpha_result.py tests/test_prophet_pit_replay_sparse_inputs.py
+    -q --tb=short --basetemp=<owned-r4>/pytest-resumed-final --junitxml=<owned-r4>/resumed-final.xml
+  result: PID15113 exit0;237 passed in53.69s; source SHA2566cb1798216fd6c81b4c61c08f91dd634d28434c7bd45e3cf61d17f7b9cb3ee3e.
+- claim: The second pass previously substituted revised historical values or lost later-deleted history.
+  command: pytest tests/test_prophet_pit_replay_sparse_inputs.py -k two_pass_restores_truncated on the pre-repair
+    source
+  result: PID1338:4 expected failures; synthetic901 instead of101 for revised ticker/wide inputs, and a missing historical
+    row for deleted inputs.
 unverified:
-- claim: Full historical board fidelity, exact customer availability and complete original transient input state.
-  what_would_verify: Recover immutable original caches/relevant per-build state through existing owners and qualify source/environment
-    clocks; after lawful clearance of the separate security-input census, rerun the same control without a waiver.
-- claim: Independent scientific acceptance and production/predictive improvement.
-  what_would_verify: Independent source/scientific review, supported chronological tests and forward validation; no production
-    claim follows from unit tests.
+- claim: Independent review, applicable exact-head remote CI and production/scientific acceptance.
+  what_would_verify: Consume admitted independent review and concluded relevant checks; separately qualify original
+    inputs and real historical fidelity before any promotion.
+- claim: Additional final fixture-file inspection and collection.
+  what_would_verify: Lawful clearance of the specific platform restriction; earlier fixture copies cannot stand in
+    for current-source inspection.
 unresolved:
-- Specific retained-board security-input census remains platform-blocked; no retry or reconstruction.
-- Original job identified; original cache bodies, per-build data state and customer-serving time remain unverified.
-- Full control remains0.5769 against0.85; independent source/scientific review and remote CI are not complete.
+- Actual historical control remains0.5769 versus0.85; no real-market replay was run.
+- Security-input, archive-source and final fixture-path inspections remain restricted; none was retried or rerouted.
+- Source is tested but not yet committed/pushed at this pre-publication handoff; independent review is outstanding.
 next_actions:
-- Reconcile this exact source/evidence publication on existing draft PR7177; consume independent source review and applicable
-  CI without arming merge.
-- Use existing Data OS/replay archive owners to qualify original cache objects and per-build state under recovered job/source
-  clocks; keep the separately denied security-input census held.
-- Only after required qualification and lawful gate clearance, rerun the SAME historical control under the declared source/time
-  contract.
+- Publish and reconcile this exact tested source/evidence on the existing draft PR7177 without arming merge.
+- Consume exact-head independent source review and applicable CI; repair attributable defects on the same carrier.
+- After original-input qualification and lawful inspection-gate clearance, rerun the same real historical control
+  with unchanged floor.
 do_not_redo:
 - Completed crossover, factorial, repair, horizon/exit, five-benchmark, 48-contrast, recorded-context and archived-score
   studies absent an invalidator.
@@ -76,6 +57,19 @@ prs:
 decisions:
 - DEC:FORCE-MAJEURE-SESSIONS-ARE-BACKFILLED-BY-DEFAULT
 ---
+
+# Latest continuation — historical precedence and witnessed production
+
+Read `research/signal_engine/macd_context/REPLAY_SPARSE_AND_PRODUCER_CORRECTNESS_2026-09-16.md` and `replay_sparse_panel_repair_20260916_r4/verification.json` first. Protected Skillpack is Mastermind@4537f066775c73d305f82acf0643701f01f5e53c, compatible with unchanged procedure bytes. Same managed workspace, native source carrier and PR7177; no new runtime Job, worker, provider session or control plane.
+
+The recovered candidate passed229 tests. Four additional RED cases exposed loss/revision of rows removed by control-time truncation. The pinned restoration helper now recovers those rows before later-source overlays, for ticker and wide files including empty control windows and later deletions. Current237-test proof checks history sum303, final close102, full/sparse parity, source-panel preservation, no-op rejection before fidelity, cache bindings and both-pass receipt provenance. These are synthetic deterministic tests, not market-return evidence.
+
+The extra fixture-file inspection was platform-blocked after packaging stopped at its fixture-count assertion. Completed test logs/source receipts are published; older fixture copies stay explicitly tied to the older candidate. No current fixture-copy completion, independent acceptance or full historical control is inferred. Agent OS and PR metadata must name source publication separately when it happens.
+
+Do not redo completed crossover, holding/exit, benchmark,48-contrast, context or adverse archived-score work without an invalidator. The original0.5769 control, missing original transient inputs and inspection restrictions remain. No threshold waiver, score inversion, live ranking, entry, sizing, plan, trade or probability change. Existing Long-Hold/B4/Portfolio/Evaluation, TOI/Temporal Grain/Elliott and DNR holds remain.
+
+---
+
 
 # Latest continuation — CI wiring and original producer evidence
 

@@ -1,0 +1,11 @@
+{
+  "skillpack_sha": "4537f066775c73d305f82acf0643701f01f5e53c",
+  "head_before": "9513a4d9353362c6e02fe56a402008f49b44b049",
+  "hashes": {
+    "scripts/prophet_pit_replay.py": "1dee7d141b5634b1e2da0c2b5d80fc0ffb1aaa96987ef2b542068bdff7ec23a8",
+    "tests/test_prophet_pit_replay.py": "cd9935d9916479603c226847261098c33f2363c6a30a359020ebbd48be73a4df",
+    "tests/test_prophet_pit_replay_alpha_result.py": "4294dc35747464c0c435299c8d938c01241bd13aacd3b4aee57c6d53baa27bca",
+    "tests/test_prophet_pit_replay_sparse_inputs.py": "ec23e699c8cecb929fc42f018cb1ec26a9460b5db971754eb2af167d884aa15a",
+    ".github/ci/legacy-jobs.yml": "50b4a38f9a4530ed1eeb7a909f89c181b30f9990f43f8e484396d0a751873bf7"
+  }
+}

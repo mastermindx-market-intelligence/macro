@@ -1,0 +1,22 @@
+...........F..................................                           [100%]
+=================================== FAILURES ===================================
+___________ test_pipeline_receipt_retains_control_input_restoration ____________
+tests/test_prophet_pit_replay_sparse_inputs.py:187: in test_pipeline_receipt_retains_control_input_restoration
+    assert result['restored_vintage_inputs']['replay'] == {}
+E   AssertionError: assert {'data/yahoo/...ows': 2, ...}} == {}
+E
+E     Left contains 1 more item:
+E     {'data/yahoo/SPY.parquet': {'kind': 'historical_tail',
+E                                 'restored_sessions': ['2026-07-15'],
+E                                 'rows': 2,
+E                                 'source_commit': 'edb23c796a994fef5f4f939a91a47f0ec799682f',
+E                                 'source_sha256': '4051b01ef2978fdd655e542678656095f9d61710300589c6f4de351fa7c8886c',
+E                                 'through': '2026-07-15'}}
+E     Use -v to get more diff
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_prophet_pit_replay_sparse_inputs.py::test_pipeline_receipt_retains_control_input_restoration
+1 failed, 45 passed in 16.23s

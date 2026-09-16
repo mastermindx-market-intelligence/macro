@@ -1,0 +1,140 @@
+{
+  "scope": "synthetic regressions; API-absence errors retained as such",
+  "runs": [
+    {
+      "artifact": "wide-red.xml",
+      "host_sha256": "343cb284a432fdbc688938bacf14a072210b84654637eb2ae667ec48a2eca34b",
+      "pid": 95909,
+      "failures": [
+        {
+          "case": "test_missing_tracked_wide_panel_keeps_historical_rows_and_columns[False]",
+          "message": "AssertionError: DataFrame.columns are different\n\nDataFrame.columns values are different (50.0 %)\n[left]:  Index(['AAA', 'NEW'], dtype='str')\n[right]: Index(['AAA', 'RETIRED'], dtype='str')\nAt positional index 1, first diff: NEW != RETIRED",
+          "detail": "tests/test_prophet_pit_replay_sparse_inputs.py:222: in test_missing_tracked_wide_panel_keeps_historical_rows_and_columns\n    pd.testing.assert_frame_equal(actual.loc[:'2026-07-15'], old)\npandas/_libs/testing.pyx:53: in pandas._libs.testing.assert_almost_equal\n    ???\npandas/_libs/testing.pyx:171: in pandas._libs.testing.assert_almost_equal\n    ???\nE   AssertionError: DataFrame.columns are different\nE   \nE   DataFrame.columns values are different (50.0 %)\nE   [left]:  Index(['AAA', 'NEW'], dtype='str')\nE   [right]: Index(['AAA', 'RETIRED'], dtype='str')\nE   At positional index 1, first diff: NEW != RETIRED"
+        },
+        {
+          "case": "test_missing_tracked_wide_panel_keeps_historical_rows_and_columns[True]",
+          "message": "AssertionError: DataFrame.columns are different\n\nDataFrame.columns values are different (50.0 %)\n[left]:  Index(['AAA', 'NEW'], dtype='str')\n[right]: Index(['AAA', 'RETIRED'], dtype='str')\nAt positional index 1, first diff: NEW != RETIRED",
+          "detail": "tests/test_prophet_pit_replay_sparse_inputs.py:222: in test_missing_tracked_wide_panel_keeps_historical_rows_and_columns\n    pd.testing.assert_frame_equal(actual.loc[:'2026-07-15'], old)\npandas/_libs/testing.pyx:53: in pandas._libs.testing.assert_almost_equal\n    ???\npandas/_libs/testing.pyx:171: in pandas._libs.testing.assert_almost_equal\n    ???\nE   AssertionError: DataFrame.columns are different\nE   \nE   DataFrame.columns values are different (50.0 %)\nE   [left]:  Index(['AAA', 'NEW'], dtype='str')\nE   [right]: Index(['AAA', 'RETIRED'], dtype='str')\nE   At positional index 1, first diff: NEW != RETIRED"
+        },
+        {
+          "case": "test_later_panel_deletion_does_not_erase_historical_panel",
+          "message": "AssertionError: tracked historical panel silently omitted\nassert False\n +  where False = exists()\n +    where exists = (PosixPath('/Volumes/Mastermind/Mastermind/artifacts/macd-context-first-look-20260915-c3/cycle_extension_v2/replay_sparse_panel_repair_20260916_r4/pytest-red/test_later_panel_deletion_does0/vintage') / 'data/test_panel/closes.parquet').exists",
+          "detail": "tests/test_prophet_pit_replay_sparse_inputs.py:237: in test_later_panel_deletion_does_not_erase_historical_panel\n    assert (vintage / relative).exists(), 'tracked historical panel silently omitted'\nE   AssertionError: tracked historical panel silently omitted\nE   assert False\nE    +  where False = exists()\nE    +    where exists = (PosixPath('/Volumes/Mastermind/Mastermind/artifacts/macd-context-first-look-20260915-c3/cycle_extension_v2/replay_sparse_panel_repair_20260916_r4/pytest-red/test_later_panel_deletion_does0/vintage') / 'data/test_panel/closes.parquet').exists"
+        },
+        {
+          "case": "test_corrupt_tracked_wide_history_cannot_fall_back_to_later_values",
+          "message": "Failed: DID NOT RAISE PitReplayRefused",
+          "detail": "tests/test_prophet_pit_replay_sparse_inputs.py:249: in test_corrupt_tracked_wide_history_cannot_fall_back_to_later_values\n    with pytest.raises(ppr.PitReplayRefused, match='cannot restore historical price input'):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE   Failed: DID NOT RAISE PitReplayRefused"
+        },
+        {
+          "case": "test_wide_panel_restoration_is_idempotent_across_two_passes",
+          "message": "KeyError: 'data/test_panel/closes.parquet'",
+          "detail": "tests/test_prophet_pit_replay_sparse_inputs.py:261: in test_wide_panel_restoration_is_idempotent_across_two_passes\n    assert control['restored_vintage_inputs'][relative]['rows'] == 1\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE   KeyError: 'data/test_panel/closes.parquet'"
+        }
+      ]
+    },
+    {
+      "artifact": "output-red.xml",
+      "host_sha256": "03f965c102e34aa63d41d93ed9eed2f4557e9999dc65d37c31b06fc52758e5b3",
+      "pid": 44916,
+      "failures": [
+        {
+          "case": "test_successful_noop_cannot_reuse_preexisting_board_as_fresh_output",
+          "message": "Failed: DID NOT RAISE PitReplayRefused",
+          "detail": "tests/test_prophet_pit_replay_sparse_inputs.py:389: in test_successful_noop_cannot_reuse_preexisting_board_as_fresh_output\n    with pytest.raises(ppr.PitReplayRefused, match='did not write'):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE   Failed: DID NOT RAISE PitReplayRefused"
+        },
+        {
+          "case": "test_legacy_bare_cache_cannot_launder_a_noop_builder",
+          "message": "Failed: DID NOT RAISE PitReplayRefused",
+          "detail": "tests/test_prophet_pit_replay_sparse_inputs.py:402: in test_legacy_bare_cache_cannot_launder_a_noop_builder\n    with pytest.raises(ppr.PitReplayRefused, match='did not write'):\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE   Failed: DID NOT RAISE PitReplayRefused"
+        },
+        {
+          "case": "test_builder_may_read_original_board_before_writing_and_receipts_are_bound",
+          "message": "TypeError: build_board() got an unexpected keyword argument 'vintage_sha'",
+          "detail": "tests/test_prophet_pit_replay_sparse_inputs.py:413: in test_builder_may_read_original_board_before_writing_and_receipts_are_bound\n    output = ppr.build_board(vintage, through='2026-07-14', work=work,\nE   TypeError: build_board() got an unexpected keyword argument 'vintage_sha'"
+        },
+        {
+          "case": "test_identical_content_rewrite_is_a_real_output_write",
+          "message": "TypeError: build_board() got an unexpected keyword argument 'observation'",
+          "detail": "tests/test_prophet_pit_replay_sparse_inputs.py:436: in test_identical_content_rewrite_is_a_real_output_write\n    output = ppr.build_board(vintage, through='2026-07-14', work=work,\nE   TypeError: build_board() got an unexpected keyword argument 'observation'"
+        },
+        {
+          "case": "test_cache_rebuilds_when_output_or_declared_build_identity_changes[cache_body]",
+          "message": "TypeError: build_board() got an unexpected keyword argument 'vintage_sha'",
+          "detail": "tests/test_prophet_pit_replay_sparse_inputs.py:450: in test_cache_rebuilds_when_output_or_declared_build_identity_changes\n    output = ppr.build_board(vintage, **args)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE   TypeError: build_board() got an unexpected keyword argument 'vintage_sha'"
+        },
+        {
+          "case": "test_cache_rebuilds_when_output_or_declared_build_identity_changes[proof]",
+          "message": "TypeError: build_board() got an unexpected keyword argument 'vintage_sha'",
+          "detail": "tests/test_prophet_pit_replay_sparse_inputs.py:450: in test_cache_rebuilds_when_output_or_declared_build_identity_changes\n    output = ppr.build_board(vintage, **args)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE   TypeError: build_board() got an unexpected keyword argument 'vintage_sha'"
+        },
+        {
+          "case": "test_cache_rebuilds_when_output_or_declared_build_identity_changes[command]",
+          "message": "TypeError: build_board() got an unexpected keyword argument 'vintage_sha'",
+          "detail": "tests/test_prophet_pit_replay_sparse_inputs.py:450: in test_cache_rebuilds_when_output_or_declared_build_identity_changes\n    output = ppr.build_board(vintage, **args)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE   TypeError: build_board() got an unexpected keyword argument 'vintage_sha'"
+        },
+        {
+          "case": "test_cache_rebuilds_when_output_or_declared_build_identity_changes[env]",
+          "message": "TypeError: build_board() got an unexpected keyword argument 'vintage_sha'",
+          "detail": "tests/test_prophet_pit_replay_sparse_inputs.py:450: in test_cache_rebuilds_when_output_or_declared_build_identity_changes\n    output = ppr.build_board(vintage, **args)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE   TypeError: build_board() got an unexpected keyword argument 'vintage_sha'"
+        },
+        {
+          "case": "test_cache_rebuilds_when_output_or_declared_build_identity_changes[source]",
+          "message": "TypeError: build_board() got an unexpected keyword argument 'vintage_sha'",
+          "detail": "tests/test_prophet_pit_replay_sparse_inputs.py:450: in test_cache_rebuilds_when_output_or_declared_build_identity_changes\n    output = ppr.build_board(vintage, **args)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE   TypeError: build_board() got an unexpected keyword argument 'vintage_sha'"
+        },
+        {
+          "case": "test_valid_cache_restores_target_without_executing_builder_again",
+          "message": "TypeError: build_board() got an unexpected keyword argument 'observation'",
+          "detail": "tests/test_prophet_pit_replay_sparse_inputs.py:478: in test_valid_cache_restores_target_without_executing_builder_again\n    cached = ppr.build_board(vintage, **args, observation=observation)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE   TypeError: build_board() got an unexpected keyword argument 'observation'"
+        },
+        {
+          "case": "test_missing_price_fingerprint_never_reuses_a_board_cache",
+          "message": "assert 1 == 2",
+          "detail": "tests/test_prophet_pit_replay_sparse_inputs.py:491: in test_missing_price_fingerprint_never_reuses_a_board_cache\n    assert json.loads(output.read_text())['generation'] == 2\nE   assert 1 == 2"
+        }
+      ]
+    },
+    {
+      "artifact": "build-receipt-red.xml",
+      "host_sha256": "24b26a9cd068ac0c46e4b879cb955b73d9fc70fccbb86f6a1a8184138535e0d2",
+      "pid": 52567,
+      "failures": [
+        {
+          "case": "test_wide_panel_real_builder_pipeline_matches_full_checkout[False]",
+          "message": "KeyError: 'board_builds'",
+          "detail": "tests/test_prophet_pit_replay_sparse_inputs.py:334: in test_wide_panel_real_builder_pipeline_matches_full_checkout\n    assert result['board_builds']['control']['mode'] == 'fresh'\n           ^^^^^^^^^^^^^^^^^^^^^^\nE   KeyError: 'board_builds'"
+        },
+        {
+          "case": "test_wide_panel_real_builder_pipeline_matches_full_checkout[True]",
+          "message": "KeyError: 'board_builds'",
+          "detail": "tests/test_prophet_pit_replay_sparse_inputs.py:334: in test_wide_panel_real_builder_pipeline_matches_full_checkout\n    assert result['board_builds']['control']['mode'] == 'fresh'\n           ^^^^^^^^^^^^^^^^^^^^^^\nE   KeyError: 'board_builds'"
+        }
+      ]
+    },
+    {
+      "artifact": "source-cache-red.xml",
+      "host_sha256": "f9d82bd80ec0110e209c7859e059577632ff76264f290b478ad5bea74f565d78",
+      "pid": 58268,
+      "failures": [
+        {
+          "case": "test_missing_source_identity_never_reuses_a_board_cache",
+          "message": "assert 1 == 2",
+          "detail": "tests/test_prophet_pit_replay_sparse_inputs.py:507: in test_missing_source_identity_never_reuses_a_board_cache\n    assert json.loads(output.read_text())['generation'] == 2\nE   assert 1 == 2"
+        }
+      ]
+    },
+    {
+      "artifact": "provenance-red.xml",
+      "host_sha256": "111afbefde69e3ac6e0393a325966f60d7c7f2743022c79772cfeec00c2043b9",
+      "pid": 88116,
+      "failures": [
+        {
+          "case": "test_later_git_panel_is_not_mislabelled_as_auxiliary_cache",
+          "message": "AssertionError: assert 'aux' not in 'gitignored ...nd truncated'\n  \n  'aux' is contained here:\n    gitignored panel supplied from an aux checkout and truncated\n  ?                                   +++",
+          "detail": "tests/test_prophet_pit_replay_sparse_inputs.py:579: in test_later_git_panel_is_not_mislabelled_as_auxiliary_cache\n    assert 'aux' not in result['files'][relative]['note']\nE   AssertionError: assert 'aux' not in 'gitignored ...nd truncated'\nE     \nE     'aux' is contained here:\nE       gitignored panel supplied from an aux checkout and truncated\nE     ?                                   +++"
+        }
+      ]
+    }
+  ]
+}

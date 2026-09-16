@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="4" time="2.756" timestamp="2026-09-16T16:28:15.222404-07:00" hostname="Mac-Studio.ts.net lan"><testcase classname="tests.test_prophet_pit_replay_sparse_inputs" name="test_two_pass_restores_truncated_vintage_tail_before_later_history[False-ticker]" time="0.554"><failure message="AssertionError: DataFrame.iloc[:, 0] (column name=&quot;close&quot;) are different&#10;&#10;DataFrame.iloc[:, 0] (column name=&quot;close&quot;) values are different (50.0 %)&#10;[index]: [2026-07-14T00:00:00.000000, 2026-07-15T00:00:00.000000]&#10;[left]:  [100.0, 901.0]&#10;[right]: [100.0, 101.0]&#10;At positional index 1, first diff: 901.0 != 101.0">tests/test_prophet_pit_replay_sparse_inputs.py:647: in test_two_pass_restores_truncated_vintage_tail_before_later_history
+    pd.testing.assert_frame_equal(actual.loc[:'2026-07-15'], old)
+pandas/_libs/testing.pyx:53: in pandas._libs.testing.assert_almost_equal
+    ???
+pandas/_libs/testing.pyx:171: in pandas._libs.testing.assert_almost_equal
+    ???
+E   AssertionError: DataFrame.iloc[:, 0] (column name="close") are different
+E
+E   DataFrame.iloc[:, 0] (column name="close") values are different (50.0 %)
+E   [index]: [2026-07-14T00:00:00.000000, 2026-07-15T00:00:00.000000]
+E   [left]:  [100.0, 901.0]
+E   [right]: [100.0, 101.0]
+E   At positional index 1, first diff: 901.0 != 101.0</failure></testcase><testcase classname="tests.test_prophet_pit_replay_sparse_inputs" name="test_two_pass_restores_truncated_vintage_tail_before_later_history[False-wide]" time="0.327"><failure message="AssertionError: DataFrame.iloc[:, 0] (column name=&quot;AAA&quot;) are different&#10;&#10;DataFrame.iloc[:, 0] (column name=&quot;AAA&quot;) values are different (50.0 %)&#10;[index]: [2026-07-14T00:00:00.000000, 2026-07-15T00:00:00.000000]&#10;[left]:  [100.0, 901.0]&#10;[right]: [100.0, 101.0]&#10;At positional index 1, first diff: 901.0 != 101.0">tests/test_prophet_pit_replay_sparse_inputs.py:647: in test_two_pass_restores_truncated_vintage_tail_before_later_history
+    pd.testing.assert_frame_equal(actual.loc[:'2026-07-15'], old)
+pandas/_libs/testing.pyx:53: in pandas._libs.testing.assert_almost_equal
+    ???
+pandas/_libs/testing.pyx:171: in pandas._libs.testing.assert_almost_equal
+    ???
+E   AssertionError: DataFrame.iloc[:, 0] (column name="AAA") are different
+E
+E   DataFrame.iloc[:, 0] (column name="AAA") values are different (50.0 %)
+E   [index]: [2026-07-14T00:00:00.000000, 2026-07-15T00:00:00.000000]
+E   [left]:  [100.0, 901.0]
+E   [right]: [100.0, 101.0]
+E   At positional index 1, first diff: 901.0 != 101.0</failure></testcase><testcase classname="tests.test_prophet_pit_replay_sparse_inputs" name="test_two_pass_restores_truncated_vintage_tail_before_later_history[True-ticker]" time="0.274"><failure message="AssertionError: DataFrame are different&#10;&#10;DataFrame shape mismatch&#10;[left]:  (1, 1)&#10;[right]: (2, 1)">tests/test_prophet_pit_replay_sparse_inputs.py:647: in test_two_pass_restores_truncated_vintage_tail_before_later_history
+    pd.testing.assert_frame_equal(actual.loc[:'2026-07-15'], old)
+E   AssertionError: DataFrame are different
+E
+E   DataFrame shape mismatch
+E   [left]:  (1, 1)
+E   [right]: (2, 1)</failure></testcase><testcase classname="tests.test_prophet_pit_replay_sparse_inputs" name="test_two_pass_restores_truncated_vintage_tail_before_later_history[True-wide]" time="0.288"><failure message="AssertionError: DataFrame are different&#10;&#10;DataFrame shape mismatch&#10;[left]:  (1, 1)&#10;[right]: (2, 1)">tests/test_prophet_pit_replay_sparse_inputs.py:647: in test_two_pass_restores_truncated_vintage_tail_before_later_history
+    pd.testing.assert_frame_equal(actual.loc[:'2026-07-15'], old)
+E   AssertionError: DataFrame are different
+E
+E   DataFrame shape mismatch
+E   [left]:  (1, 1)
+E   [right]: (2, 1)</failure></testcase></testsuite></testsuites>
