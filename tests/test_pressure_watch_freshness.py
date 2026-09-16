@@ -199,3 +199,18 @@ def test_bad_reference_dates_remain_unknown_without_a_deadline(field, stamp):
     assert result["status"] == "unknown"
     assert result["stale"] is True
     assert result["expires_utc"] is None
+
+
+def test_pressure_producer_and_consumer_regressions_run_in_code_ci():
+    """Registration in a data-only owner cannot qualify an ordinary code PR."""
+    workflow = yaml.safe_load((ROOT / '.github/ci/legacy-jobs.yml').read_text())
+    required = {'tests/test_price_pressure.py',
+                'tests/test_pressure_watch_freshness.py',
+                'tests/test_pressure_watch_refresh.py'}
+    covered = set()
+    for job in workflow['jobs'].values():
+        if job.get('gate') != 'code':
+            continue
+        for step in job.get('steps', []):
+            covered.update(required.intersection(step.get('run', '').split()))
+    assert covered == required, f'Pressure Watch suites absent from code CI: {required - covered}'
