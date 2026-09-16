@@ -726,3 +726,130 @@ def test_client_tuning_uses_the_installed_sdk_timeout_type(monkeypatch):
     assert result["timeout"].read == 45.0
     assert result["timeout"].connect == 5.0
     assert "max_retries" not in result
+
+
+@pytest.mark.parametrize("configured", ["absent", None, 0, 3, "invalid"])
+def test_profiled_builder_disables_sdk_internal_retries(policy_boundary, monkeypatch, configured):
+    captured = []
+    sdk = sys.modules["anthropic"]
+    original = sdk.Anthropic.__init__
+    def capture(self, **kwargs):
+        captured.append(kwargs)
+        original(self, **kwargs)
+    monkeypatch.setattr(sdk.Anthropic, "__init__", capture)
+    cfg = _policy_cfg()
+    if configured != "absent":
+        cfg["client_max_retries"] = configured
+    providers = llm_auth_mod.build_providers(mb._ladder_cfg(cfg))
+    assert [p["name"] for p in providers] == ["anthropic", "deepseek"]
+    assert len(captured) == 2
+    assert all(kwargs.get("max_retries") == 0 for kwargs in captured)
+
+
+@pytest.mark.parametrize("error", [TimeoutError("missing response"),
+    ConnectionError("response lost"), ValueError("response decode failed"),
+    RuntimeError("401 in untrusted exception text"), RuntimeError("429 in exception text")])
+def test_profiled_unknown_effect_never_walks_the_waterfall(policy_boundary, error):
+    events, _, _ = policy_boundary
+    events["exception"] = error
+    text, reason = mb._call_model("system", "user", _policy_cfg())
+    assert text is None and reason == "workload_policy:WORKLOAD_PROVIDER_EFFECT_UNKNOWN"
+    assert len(events["calls"]) == 1 and events["native"] == []
+
+
+@pytest.mark.parametrize("status", [401, 403, 429, 408, 409, 500, 529])
+def test_profiled_fallback_requires_a_concrete_auth_or_quota_refusal(policy_boundary, monkeypatch, status):
+    events, _, _ = policy_boundary
+    class StatusError(Exception):
+        def __init__(self):
+            super().__init__("synthetic provider status")
+            self.status_code = status
+            self.response = types.SimpleNamespace(status_code=status)
+    sdk = sys.modules["anthropic"]
+    monkeypatch.setattr(sdk, "APIStatusError", StatusError, raising=False)
+    def create(self, **kwargs):
+        events["calls"].append(kwargs["model"])
+        if len(events["calls"]) == 1:
+            raise StatusError()
+        return types.SimpleNamespace(stop_reason=None, usage=None,
+            content=[types.SimpleNamespace(type="text", text=events["reply"])])
+    monkeypatch.setattr(sdk.Anthropic, "create", create)
+    served = {}
+    text, reason = mb._call_model("system", "user", _policy_cfg(), served=served)
+    if status in (401, 403, 429):
+        assert text == events["reply"] and reason is None
+        assert len(events["calls"]) == 2 and served["provider"] == "deepseek"
+    else:
+        assert text is None and reason == "workload_policy:WORKLOAD_PROVIDER_EFFECT_UNKNOWN"
+        assert len(events["calls"]) == 1 and not served
+
+
+@pytest.mark.parametrize("sdk_typed,response_code", [(False, 401), (True, 429), (True, None), (True, "401")])
+def test_profiled_refusal_rejects_untyped_or_conflicting_status(policy_boundary, monkeypatch, sdk_typed, response_code):
+    events, _, _ = policy_boundary
+    class StatusError(Exception):
+        status_code = 401
+        response = types.SimpleNamespace(status_code=response_code)
+    class OtherSdkStatusError(Exception):
+        pass
+    monkeypatch.setattr(sys.modules["anthropic"], "APIStatusError",
+                        StatusError if sdk_typed else OtherSdkStatusError, raising=False)
+    events["exception"] = StatusError("401 claimed without coherent SDK response")
+    text, reason = mb._call_model("system", "user", _policy_cfg())
+    assert text is None and reason == "workload_policy:WORKLOAD_PROVIDER_EFFECT_UNKNOWN"
+    assert len(events["calls"]) == 1
+
+
+def test_unprofiled_builder_preserves_explicit_sdk_retry_tuning(policy_boundary, monkeypatch):
+    sdk = sys.modules["anthropic"]
+    captured = []
+    original = sdk.Anthropic.__init__
+    def capture(self, **kwargs):
+        captured.append(kwargs)
+        original(self, **kwargs)
+    monkeypatch.setattr(sdk.Anthropic, "__init__", capture)
+    cfg = {**_SHIPPED_CFG, "provider_order": ["anthropic"], "codex_provider": False, "client_max_retries": 3}
+    assert llm_auth_mod.build_providers(mb._ladder_cfg(cfg))
+    assert len(captured) == 1 and captured[0]["max_retries"] == 3
+
+
+def test_host_profile_alone_disables_sdk_replays(policy_boundary, monkeypatch):
+    captured = []
+    sdk = sys.modules["anthropic"]
+    original = sdk.Anthropic.__init__
+    def capture(self, **kwargs):
+        captured.append(kwargs)
+        original(self, **kwargs)
+    monkeypatch.setattr(sdk.Anthropic, "__init__", capture)
+    monkeypatch.setenv("MM_PROVIDER_WORKLOAD_PROFILE", "site_batch")
+    cfg = {**_SHIPPED_CFG, "provider_order": ["anthropic"], "client_max_retries": 5}
+    assert llm_auth_mod.build_providers(mb._ladder_cfg(cfg))
+    assert len(captured) == 1 and captured[0]["max_retries"] == 0
+
+
+def test_unknown_effect_is_not_marked_dead_or_reported_as_provider_success(policy_boundary, monkeypatch):
+    from engine import provider_health
+    events, _, _ = policy_boundary
+    observations = []
+    monkeypatch.setattr(provider_health, "record_attempt", lambda **kw: observations.append(kw))
+    events["exception"] = TimeoutError("synthetic-private-marker")
+    text, reason = mb._call_model("system", "user", _policy_cfg())
+    assert text is None and reason == "workload_policy:WORKLOAD_PROVIDER_EFFECT_UNKNOWN"
+    assert "synthetic-private-marker" not in reason
+    assert len(events["calls"]) == 1
+    assert observations == [] and llm_auth_mod._dead_providers == set()
+
+
+def test_response_loss_is_visible_without_claiming_generation_never_happened(policy_boundary, tmp_path):
+    events, _, _ = policy_boundary
+    events["exception"] = TimeoutError("synthetic-private-response-error")
+    brief = mb.synthesize({}, _policy_cfg(), root=tmp_path)
+    assert brief["workload_refusal_code"] == "WORKLOAD_PROVIDER_EFFECT_UNKNOWN"
+    html = _render_policy_brief(brief)
+    assert "We could not confirm the AI response. No new brief is available." in html
+    assert "AI 回复未能确认，暂无新简报。" in html
+    assert "AI provider settings need review" not in html
+    assert "WORKLOAD_PROVIDER_EFFECT_UNKNOWN" not in html
+    assert "synthetic-private-response-error" not in html
+    assert brief["summary"] is None and brief["raw_text"] is None
+    assert len(events["calls"]) == 1

@@ -19,15 +19,20 @@ changed:
   - path: engine/llm_auth.py
     what: >
       Propagate typed workload refusals without fallback or provider-failure accounting;
-      construct configured timeouts using the installed SDK transport type.
+      construct configured timeouts using the installed SDK transport type; disable
+      SDK-internal retries for profiled inference and stop uncertain effects before
+      fallback/accounting, accepting only coherent typed SDK auth/quota rejection.
   - path: tests/test_master_brain_ladder.py
     what: >
       Real producer/builder/cache/publication/template regressions with inert providers;
-      strict SDK signature and SDK-native timeout contracts, now GREEN in this existing code-gated suite.
+      strict SDK signature/timeout contracts and 25 new R4 retry/refusal/privacy/UI
+      cases in the existing consumer code gate. Unprofiled compatibility is retained.
   - path: tests/conftest.py
     what: Permit only seven named tmp-root policy tests to exercise the real reply cache.
   - path: templates/_aibrief_body.html.j2
-    what: Plain bilingual policy-refusal copy in the existing degraded component.
+    what: >
+      Plain bilingual policy refusal; separately name an unconfirmed response without
+      falsely asserting that generation never happened or that settings are invalid.
   - path: docs/superpowers/plans/2026-09-16-ai-brief-workload-adoption.md
     what: Frozen scope, acceptance, source proof, dependency and rollout boundaries.
 verified:
@@ -46,9 +51,11 @@ verified:
       tests/test_master_brain_policy.py tests/test_master_brain_producer.py tests/test_master_brain_scorer.py
       tests/test_w7_llm_determinism.py -q --tb=short --basetemp <outside-repo-operation-temp>
     result: >
-      R3 candidate: 422 passed, exit 0 in 10.89 seconds. The former sole timeout
-      failure was reproduced RED this turn before the same-carrier repair. R2's
-      421-PASS/1-FAIL and earlier 419/420-PASS counts are historical source receipts.
+      R4 recovered candidate: 447 passed, exit 0 in 13.77 seconds on fresh rerun.
+      Recovery also restored baseline functions in memory: 19 failed, 5 controls
+      passed, 41 deselected; working source unchanged. Original test-first evidence
+      remains in the native bundle. R3's 422-PASS receipt did not cover generic
+      response loss or default SDK internal retries and is historical for R4.
   - claim: The actual producer writes one consistent payload consumed by the existing template.
     command: tests/test_master_brain_ladder.py::test_brief_real_run_publishes_policy_result_to_existing_template
     result: >
@@ -84,9 +91,38 @@ verified:
       zero native account discovery. Manifest SHA256
       d1f78eff6b7dfd9f1611677a53a327bec4183362ab7886d88f084e936d99a64e.
       This is 18 SDK scenarios, not 18 extra unique unit tests or live provider proof.
-  - claim: Current observed-main source dependency contract has no introduced or inherited findings.
+  - claim: Historical R3 observed-main source dependency contract had no introduced or inherited findings.
     command: python3 scripts/check_contract_delta.py --base 11485597cc53b3137346084aae4623cceed28a3f
     result: Exit 0; 0 introduced, 0 inherited; 269.68 seconds.
+  - claim: R4 eliminates hidden retry and fallback after ambiguous response loss.
+    command: >
+      /Volumes/Mastermind/agent-evidence/vps-aibrief-replay-r4-20260916-sol/replay-r4-final.py
+      in isolated real SDK 0.125.0 and 1.6.0 environments.
+    result: >
+      Twenty scenarios per SDK, all PASS; zero real network attempts and zero native
+      subscription discovery. Complete producer return, data/site JSON and real
+      template agree. Timeout with zero/absent/requested retries sends exactly one
+      mock request; concrete 401/403/429 rejection still permits existing fallback.
+      Missing response, 408/409/500/529 and decode failures cannot walk the waterfall.
+      Final manifest SHA256 2b2c9cedb5fe5a0d2410c4bcbd7cc24013468eafb53ea2078782decff51807f5.
+      Four Chromium cases render the actual SDK fixture output in EN/dark and ZH/light
+      at desktop/mobile widths, showing unconfirmed-response copy rather than raw code.
+  - claim: Interrupted R4 source was recovered without another writer or blind effect replay.
+    command: >
+      Exact git diff and process-cwd identity check; recovered manifest and source
+      digest verification; fresh 15-file campaign and exact-dependency SDK replays.
+    result: >
+      Same W1 branch at baseline 00a92557, four recovered dirty paths, no other
+      process occupying the worktree. Recovery manifest SHA256
+      9b784a20699bc5b1f90290cd92d07a138cd890563ef3ed042711493af2575ef7.
+      Both SDKs again passed 20 scenarios with zero native discovery and real
+      network attempts; owned environments removed. No new runtime effect inferred.
+  - claim: Current R4 source dependencies have no introduced or inherited contract findings.
+    command: python3 scripts/check_contract_delta.py --base c91daea47c77cfc55bdd41e0417eb05340f6d26a
+    result: >
+      Exit 0; 0 introduced, 0 inherited; 435.37 seconds. Relevant policy, builder,
+      Brief, template, test-fixture and config-owner paths had no intervening
+      protected-main changes since the R3 observed source baseline.
 unverified:
   - claim: The new source is merged, installed, enabled or production-proven.
     what_would_verify: >
@@ -102,11 +138,12 @@ unresolved:
   - Policy fingerprints do not synchronize credentials or establish atomic distributed revocation.
 next_actions:
   - >
-    Publish the repaired same-branch candidate and bind its exact immutable head to
-    the full regression and actual-SDK evidence; preserve parent #7179 separately.
+    Publish this verified same-writer R4 repair and bind its immutable source hashes
+    to the 447-test campaign, 40 recovered SDK scenario executions and fixture images.
   - >
-    Obtain fresh independent exact-head source review through the incumbent
-    integration owner; retain the same writer for bounded findings.
+    Independent R3 review5695421722 and W2 review5695441623 have been consumed on
+    their exact unchanged targets. The changed R4 semantic head requires fresh
+    exact-head review through the existing integration owner; retain this writer.
   - >
     Source release waits parent #7179 protection and ordinary release gates. Real
     VPS adoption, qualified inference and result consumption remain separate proof.
@@ -115,6 +152,8 @@ do_not_redo:
   - Do not activate profiles, call providers, rotate/copy credentials or spend from this source receipt.
   - Do not overwrite #7024 regime work, #7178 scheduling, #7114 routing or existing Fable/PF1 children.
 danger_areas:
+  - This is per-invocation effect safety, not a cross-run dedupe store or global reservation guarantee.
+  - Non-SDK/string-only adapter failures cannot prove an authoritative no-effect rejection and stay conservative.
   - An already-sent provider request cannot be undone; observed policy change discards its result, not its cost.
   - Internal provider descriptors contain credentials; only the closed policy receipt is published.
   - Unprofiled legacy callers deliberately retain existing behavior until explicitly migrated.
@@ -123,7 +162,7 @@ decisions:
   - DEC:EXECUTIVE-CAPACITY-FABRIC-OWNERSHIP-AND-CONTRACT
 ---
 
-## Current R3 checkpoint — timeout repaired; source validation green
+## Historical R3 checkpoint — timeout repaired; generic response loss not yet covered
 
 Procedure pin: Mastermind a78b8fe23d8e1ed129880ac47e97ebe96afa8aea, Skillpack
 1.0.1. The native process carrier accepted the previously blocked timeout edit
@@ -191,3 +230,32 @@ ok, commit e61f2951136bdc03a7ec2f5f12f960af26656a4c. The site API reports import
 proves all Codex capacity absent, or authorizes a restart. The Brief JSON endpoint
 returned401; no auth/access workaround was attempted. Source and production remain
 distinct. The current plan carries the exact allowed field readback and scope.
+
+
+## Interrupted-turn recovery and review boundary
+
+Procedure pin: protected Mastermind 8ba7deedde164c90298d3e88785d98e02fa5e2d2.
+The last visible chat checkpoint named R3, but same-carrier local source already
+held a material R4 repair and matching evidence. GitHub had not advanced. Recovery
+preserved that candidate, verified no other cwd-bound writer, re-ran the complete
+regression and both real-SDK campaigns, and added a fresh baseline RED control.
+The claim is recovered and verified source, not proof that a failed chat did no work.
+
+The current R4 methods and review criteria are in the same committed W1 plan.
+R3's independent review remains valid on 00a92557 but cannot accept R4. W2's
+independent no-blocker source review remains valid on 94f1f90b; no W2 semantic edit
+is required for its cached-response/unknown-state disclosures. Closed reviewer
+work does not close the parent programme or release the source writer.
+
+
+Current source checks completed: R4 full source-contract delta on observed main
+c91daea47c77cfc55bdd41e0417eb05340f6d26a is zero introduced/zero inherited.
+Own-PR release-status observation found W0 #7179 and W2 #7192 ci-gate failed with
+cancelled executor checks, not queued or concluded-green. Root cause and recovery
+remain with the separate CI session; no runner, workflow or job action was taken.
+
+W2 source-review disposition and actual ordinary-cache/force-read demonstration:
+https://github.com/mastermindx-market-intelligence/macro/pull/7192#issuecomment-5695903078
+The existing HTTP cache holds an identical observation until its 15-second expiry;
+force=1 sees changed source immediately, without reloading the original config.
+This did not modify reviewed W2 source or create a production adoption receipt.

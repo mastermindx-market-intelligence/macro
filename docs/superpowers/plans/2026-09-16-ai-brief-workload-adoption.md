@@ -267,3 +267,95 @@ or service operation was invoked. This baseline confirms the scheduled Portfolio
 path still advertises Claude OAuth fallback; it does not measure actual spend or
 prove that every other Codex path is unavailable. Keep production activation held
 until its separate consumer, account-eligibility and admission owners qualify it.
+
+
+## R4 — response uncertainty must not spend a second provider allocation
+
+Current procedure: protected Mastermind 8ba7deedde164c90298d3e88785d98e02fa5e2d2,
+Skillpack 1.0.1; original W1 operation, branch, writer and PR #7185 retained.
+
+The interrupted continuation left a bounded four-path candidate above R3 head
+00a9255732b6c493540f4f2474dabc685ae5464e. Recovery verified the exact diff, matching
+SDK/browser source hashes and no other process occupying this worktree. Nothing
+was reset, replayed through another carrier or assigned to another source writer.
+The recovered diff SHA256 was
+9b00842d402e9fd8933d2771d97a5dd35feae6528d052eb6492bab5accc434e9.
+
+R3's successful first call did not cover generic response loss. The real-SDK
+baseline witnesses show a timeout walking from Anthropic to DeepSeek even with
+explicit SDK retries zero. With SDK defaults, three Anthropic requests preceded
+the DeepSeek fallback. All four were mock-transport requests; the witness is
+execution-contract evidence, not a production spend observation.
+
+R4 changes only profiled inference: the existing builder sets SDK max_retries=0;
+the existing call owner accepts only coherent typed SDK 401/403/429 responses as
+permission to advance its provider waterfall. Missing responses, transport and
+decode failures, 408/409/5xx responses and exception prose are not such proof.
+Uncertain effects stop before dead-key marking, ordinary failure accounting or
+another provider. Unprofiled compatibility remains unchanged. No retry store,
+new dispatcher, reservation service or process-global SDK alias is introduced.
+
+The existing bilingual degraded notice distinguishes an unconfirmed response from
+invalid settings: no claim that provider generation never occurred. Source dates
+remain source dates. The footprint stays in the existing notice; no design,
+navigation, endpoint or publication mechanism changes.
+
+Recovery re-proved the baseline in memory without changing the working source:
+old R3 build_providers/make_call + new R4 cases => 19 failed, 5 controls passed,
+41 deselected. Current complete declared 15-file campaign => 447 passed, exit 0
+in 13.77 seconds. This campaign is not the distinct 15-file unrun-brain-desks
+command (240 passes at the reviewer's R3 head); the existing code-gated Brief
+file contains all new cases and no CI infrastructure file is changed by R4.
+
+Both recorded SDK environments were recreated with their exact dependency lists,
+using a scrubbed child environment, synthetic credentials and actual socket/DNS
+refusal counters. SDK 0.125.0 and 1.6.0 each passed all 20 full-consumer scenarios:
+real builder/client/messages, original cache, producer, data/site JSON, translation
+and real template. Zero native discovery and zero real network attempts. All
+owned temporary environments were removed. Forty scenario executions are not
+forty additional unique unit tests or independent reviewer executions.
+
+Evidence remains at the existing native owner:
+/Volumes/Mastermind/agent-evidence/vps-aibrief-replay-r4-20260916-sol
+Original final manifest SHA256:
+2b2c9cedb5fe5a0d2410c4bcbd7cc24013468eafb53ea2078782decff51807f5
+Recovery manifest SHA256:
+9b784a20699bc5b1f90290cd92d07a138cd890563ef3ed042711493af2575ef7
+No original manifest, replay driver or screenshot was overwritten during recovery.
+
+The four recovered actual-Chromium captures were hash-checked and visually read:
+English/dark and Chinese/light at desktop and mobile widths. They show the new
+unconfirmed-response copy in the real SDK fixture's rendered page. The missing
+live_config.js/cortex_memo assets and existing floating-control/footer overlap
+remain disclosed. This is fixture rendering, not production browser acceptance,
+and not a complete eight-cell redesign matrix.
+
+Independent reviews received during recovery: #7185 comment 5695421722 is valid
+only for immutable R3 00a92557; #7192 comment 5695441623 is valid for unchanged
+94f1f90b. Both reported no source blockers and reproduced their 422/341 campaigns.
+Sol consumed them as completed source-review evidence, not merge or production
+acceptance. R4 changes effect/retry semantics and therefore requires a fresh
+non-author exact-head review. Do not propagate R3 approval onto the new candidate.
+The reviews' SPEC_ONLY label does not convert implemented code into documentation;
+the correct capability ceiling remains BUILT_NOT_PROVEN.
+
+Reviewer qualifications preserved: R3 SDK receipts were independently re-hashed,
+not re-executed by the reviewer. Earlier browser fixture evidence exists but was
+not inspected in that review; no live VPS browser proof exists. #7192's ordinary
+HTTP response may be cached for 15 seconds, while force=1 uses its existing fresh
+read path. Its missing/null observation is UNKNOWN, never a no-drift claim. These
+are nonblocking disclosures, not reasons to rebuild accepted source or CI.
+
+Next: publish R4 on this same carrier, current-base integration and exact-head
+independent review, then parent-first source release and approved VPS shadow proof.
+No live profiles, credentials, accounts, provider calls or reservations change in
+this wave. Per-invocation uncertainty handling does not provide cross-run dedupe
+or the still-missing global capacity commitment. CI recovery stays with its owner.
+
+
+R4 final source-contract result: check_contract_delta.py against observed main
+c91daea47c77cfc55bdd41e0417eb05340f6d26a exited 0 with zero introduced/zero
+inherited findings (435.37 seconds). Compile/diff and Agent OS checks pass.
+A separate one-time release-status read found #7179/#7192 ci-gate failed with
+cancelled checks; it did not diagnose or alter the other session's CI recovery.
+These facts do not waive parent protection, current integration or R4 review.

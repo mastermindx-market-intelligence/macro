@@ -273,7 +273,10 @@
   {#-- 10 · DEGRADED NOTICE + FOOTER SLOT --#}
   {%- if b.get('degraded_reason') %}
   <div class="aib2-degraded">
-    {%- if b.get('workload_refusal_code') %}
+    {%- if b.get('workload_refusal_code') == 'WORKLOAD_PROVIDER_EFFECT_UNKNOWN' %}
+    <span class="l-en">We could not confirm the AI response. No new brief is available.</span>
+    <span class="l-zh">AI 回复未能确认，暂无新简报。</span>
+    {%- elif b.get('workload_refusal_code') %}
     <span class="l-en">AI provider settings need review; this brief was not generated.</span>
     <span class="l-zh">AI 服务配置需要检查；本次简报未生成。</span>
     {%- else %}

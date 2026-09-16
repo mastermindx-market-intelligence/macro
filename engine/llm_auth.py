@@ -473,6 +473,21 @@ def make_call(
                 # A policy refusal is not provider failure or retry authority.
                 # Stop before cooldown/usage accounting or a different rung.
                 raise
+            if p.get("workload_policy") is not None:
+                # A missing response does not prove the provider did no work.
+                # Only a concrete SDK auth/quota rejection authorizes this
+                # existing waterfall to advance; exception prose is not proof.
+                try:
+                    from anthropic import APIStatusError  # noqa: PLC0415
+                    code = getattr(exc, "status_code", None)
+                    response_code = getattr(getattr(exc, "response", None), "status_code", None)
+                    rejected = (isinstance(exc, APIStatusError)
+                                and type(code) is int and code in (401, 403, 429)
+                                and type(response_code) is int and response_code == code)
+                except Exception:  # absent/stubbed SDK is not retry authority
+                    rejected = False
+                if not rejected:
+                    raise ProviderWorkloadPolicyError("WORKLOAD_PROVIDER_EFFECT_UNKNOWN") from None
             _note(p, ok=False, t0=_t0,
                   error_class=_error_class(exc), detail=f"{type(exc).__name__}: {exc}")
             if _is_auth_error(exc):
@@ -1047,6 +1062,10 @@ def build_providers(
             codex_source_model = ds_model
     # Latency guards for every client built below — {} unless the caller's cfg opts in.
     tuning = _client_tuning_kwargs(cfg)
+    if workload is not None:
+        # The shared call owner classifies refusal versus uncertain effect.
+        # SDK-internal retries would replay before that owner can reconcile.
+        tuning["max_retries"] = 0
 
     def _mk_oauth_provider(env: str, cap_id: str | None = None) -> dict | None:
         """Build one oauth provider descriptor from an env-var NAME, or None."""
