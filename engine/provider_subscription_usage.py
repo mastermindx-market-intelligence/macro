@@ -307,6 +307,7 @@ class _RefuseRedirects(urllib.request.HTTPRedirectHandler):
 def _https_get_json(url: str, headers: Mapping[str, str], timeout_seconds: float) -> Mapping[str, Any]:
     request = urllib.request.Request(url, method="GET", headers=dict(headers))
     opener = urllib.request.build_opener(_RefuseRedirects())
+    transport_error: str | None = None
     try:
         with opener.open(request, timeout=timeout_seconds) as response:  # noqa: S310
             if getattr(response, "status", 200) != 200:
@@ -314,13 +315,20 @@ def _https_get_json(url: str, headers: Mapping[str, str], timeout_seconds: float
             raw = response.read(2 * 1024 * 1024 + 1)
     except urllib.error.HTTPError as exc:
         code = getattr(exc, "code", None)
-        raise SubscriptionUsageError(
+        transport_error = (
             "PROVIDER_USAGE_REDIRECT_REFUSED"
             if isinstance(code, int) and 300 <= code < 400
             else "PROVIDER_USAGE_HTTP_ERROR"
-        ) from None
+        )
     except OSError:
-        raise SubscriptionUsageError("PROVIDER_USAGE_TRANSPORT_ERROR") from None
+        transport_error = "PROVIDER_USAGE_TRANSPORT_ERROR"
+    if transport_error is not None:
+        # Raised OUTSIDE the except blocks on purpose. `raise ... from None` would
+        # only set __cause__ = None and suppress DISPLAY of __context__; the
+        # urllib exception would stay reachable as err.__context__, carrying the
+        # request URL and the response headers. Raising here, after the handler
+        # has exited, leaves __context__ itself None.
+        raise SubscriptionUsageError(transport_error)
     if len(raw) > 2 * 1024 * 1024:
         raise SubscriptionUsageError("PROVIDER_USAGE_RESPONSE_TOO_LARGE")
     try:

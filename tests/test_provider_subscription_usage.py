@@ -201,9 +201,12 @@ def test_https_get_json_redirect_refusal_error_carries_no_credential_or_header_b
     assert "fixture-redirect-sentinel" not in repr(exc)
     assert "Authorization" not in str(exc)
     assert "Bearer" not in str(exc)
-    # `from None` load-bearingly drops the request URL and response headers
-    # from the exception chain so they cannot leak through logging.
+    # Raising AFTER the except handler has exited (not inside it with
+    # `from None`) leaves `__context__` itself None, so the urllib exception —
+    # which carries the request URL and the response headers (including a
+    # redirect's `Location`) — is unreachable as `err.__context__`.
     assert exc.__cause__ is None
+    assert exc.__context__ is None
 
 
 def test_https_get_json_refuses_same_host_redirect_too():
@@ -231,6 +234,11 @@ def test_https_get_json_transport_failure_is_a_typed_subscription_usage_error():
             5.0,
         )
     assert str(excinfo.value) == "PROVIDER_USAGE_TRANSPORT_ERROR"
+    # Symmetric to the redirect path: the OSError branch must also clear the
+    # handled-exception state by exiting it before raising, so neither
+    # `__cause__` nor `__context__` carries the OSError's request state.
+    assert excinfo.value.__cause__ is None
+    assert excinfo.value.__context__ is None
 
 
 def test_minimax_reset_timestamps_map_five_hour_to_end_time_and_weekly_to_weekly_end_time():
