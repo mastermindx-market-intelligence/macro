@@ -19,11 +19,16 @@ waves:
   - id: D0
     title: Diagnose analytical failures and harden the architecture and build contract
     status: in_progress
-    next_action: Obtain independent design review and canonical record validation; source publication is not product acceptance.
+    pr: 7151
+    next_action: Complete independent architecture review and canonical record validation; design source is not product acceptance.
   - id: R0
     title: Answer legitimate supplied-assumption financial analysis
-    status: todo
-    next_action: Bind current gateway custody and an admitted delivery carrier; implement and prove the narrow finance-scope repair.
+    status: awaiting_ci
+    pr: 7152
+    next_action: >
+      Retain the existing operation and branch at ba9e7654190934d3f7c8b997eb2b21bd3a077094.
+      Resolve concluded hosted CI and the incomplete Source Continuity census, then
+      release normally and verify exact P1 and bilingual answers on the customer path.
   - id: R1
     title: Investigate a material current evidence gap through a primary public source
     status: todo
@@ -55,7 +60,7 @@ landmines:
   - The observed production Fast finance-scenario refusal used route deep, not the thinking-disabled quote shortcut.
   - Five Fast tool rounds are not necessarily five individual calls; do not misreport the budget.
   - HTTP524 probe FIN-SCOPE-P2 has an unknown backend outcome and must not be blindly replayed.
-  - Pending gateway PRs and retained source writers require current custody reconciliation; old PR text is not authority.
+  - Preserve R0 source custody, four-file scope, scope leak sentinel and restored unrelated-task refusal boundaries.
   - Synthetic Market Memory conformance and operational lineage are not live semantic reasoning or economic causality.
   - This knowledge record grants no Executive admission, provider permission or signal authority.
 do_not_redo:
@@ -65,34 +70,66 @@ do_not_redo:
   - Do not make full autonomous Fabric completion a prerequisite for a separately qualified narrow gateway repair.
   - Do not silently loosen the published-only Research guarantee or silently remove active investigation.
   - Do not turn the recommended product sequence into false universal blockers; preserve actual per-capability dependencies.
+  - Do not recreate the separate financial-scope test file or CI inventory edit; all 17 cases now live in the already-registered gateway suite.
 artifacts:
   - research/mastermind_ai_flagship/R2_META_CEO_PROGRAM_PACKET_2026-09-14.md
   - research/mastermind_ai_flagship/R2_RUNTIME_OBSERVATIONS_2026-09-14.json
 next_action: >
-  Sol carries R0 from current gateway custody and delivery admission through a narrow
-  finance-scope prompt repair, focused regression tests, independent review and
-  deployed before/after customer-path acceptance. Preserve P2 effect-unknown state.
-  Public-only search qualification and owned-data financial-bridge design may proceed
-  independently on disjoint paths; cases requiring external evidence alone depend on R1.
+  Sol completes the existing R0 release at PR7152, not a replacement wave. Head
+  ba9e7654190934d3f7c8b997eb2b21bd3a077094 is pushed, locally tested and independently
+  reviewed PASS; hosted CI and the Source Continuity census remain open gates.
+  After those resolve, verify normal deployment and real financial answers before
+  claiming R0 PROVEN_LIVE. Preserve P2 effect-unknown state and existing writer custody.
 ---
 
-## Evidence boundary
+## Latest implementation evidence
 
-The architecture and53 acceptance cases are specified; the product expansion is not
-implemented. One legitimate financial-scenario request was observed failing on the
-normal Fast/DeepSeek analytical route. A separate diagnostic returned524 and no model
-answer. No Pro comparison, exact deployed revision attestation, new worker execution
-or investment-outperformance evidence exists from this session.
+R0 operation: `mastermind-ai-flagship-r0-financial-scope-20260914-sol-001`.
+PR7152 branch: `claude/flagship-r0-financial-scope-20260914-sol`.
+Head: `ba9e7654190934d3f7c8b997eb2b21bd3a077094`.
+Tree: `e404031ec65387ca273a73a556269582267c1013`.
+Integration base: `52380b870218b61865fb56458500cac00ce4932b`.
+Skillpack: Mastermind `7642aea155d2817219135b24246b55c1d7611c66`, compatible1.0.1/bootstrap1.
+Capability state: **BUILT_NOT_PROVEN**, not merged or deployed.
 
-The existing semantic parent is `macro-mastermind-ai`; this is an Agent OS knowledge
-record, not a competing program admission or control plane. Sol is accountable for
-continuity, but this record does not prove a running Executive worker or live session.
+The initial failed CI was the glossary banner parity test. Its accepted main repair
+was integrated, preserving the separate component-vintage/session-clock rule. An
+independent reviewer then identified dropped unrelated-role-play/framing and
+one-sentence-refusal clauses. Two new tests failed before their restoration. All17
+financial-scope cases were subsequently moved, with identical function ASTs, into
+`tests/test_brain_gateway.py`; no coverage or check was removed. The final four-file
+candidate has no CI-inventory/workflow changes relative to its integrated base.
+
+Verified command: Python3.12 pytest over gateway, response evaluation, streaming,
+instant/native facts, quotas and glossary, with private operation basetemp:
+**857 passed,5existing warnings**. These are offline tests, not model-quality proof.
+Independent native read-only Opus review of the final four-file diff returned PASS;
+parent separately verified exact clean committed source. Review digest:
+`bd9bfba4fd702dd489c48db81d9dd03408e0f8407dbe8475b5d832f2736682a7`.
+Review accepted and held-release receipt: PR7152 issue comment5691863828.
+
+Hosted run35053698483 is tied to this head; latest observation had plan, contract-delta,
+main admission and hosted planning successful, with executor packs queued. This is
+not a passing CI gate. The Source Continuity adapter was invoked and returned
+`REMOTE_CENSUS_INCOMPLETE`; no typed successful checkpoint is claimed. Native tool
+safety blocks prevented one further diagnostic and completion of a browser-canary
+script; those actions were not retried through another carrier. Guest browser
+preflight did prove the actual Fast widget/input is accessible, but submitted no
+model question. Real customer response and browser answer proof remain outstanding.
+
+## Broader evidence boundary
+
+The architecture's53 acceptance cases remain specifications except for individually
+recorded executions. The larger live-search, thesis/case, portfolio and data-product
+capabilities are not implied by R0. No Pro comparison or investment-outperformance
+claim has been established. The former statement that no implementation or worker
+review existed is superseded only by the bounded R0 facts above, not by a Fabric or
+Executive dispatch claim. The one-shot reviewers are terminal and had no watchers.
 
 ## Dependency discipline
 
-The R0→R1→R2→R3→R4→R5 prose sequence is a prioritization narrative, not a universal
-serial gate. A financial bridge using already authorized owned evidence can advance
-without new public-search credentials. Cross-engine analysis does not wait for case
-persistence. Each API/data product needs proof of the capability it exposes and its
-own rights, not completion of every retail surface. Preserve source custody and
-contract-specific dependencies without inventing broader blockers.
+Wave order is prioritization, not a universal serial gate. Owned-data financial
+bridges do not require new public-search credentials. Cross-engine analysis does
+not require persistence. A data product needs proof and rights for its own exposed
+capability, not completion of every retail surface. Preserve actual source custody
+and contract-specific dependencies without inventing broader blockers.
