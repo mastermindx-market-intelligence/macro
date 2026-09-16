@@ -1,0 +1,54 @@
+{
+  "status": "PASS_RECORDED_CONTEXT_VIEW",
+  "authority": "none",
+  "source_pin": "52380b870218b61865fb56458500cac00ce4932b",
+  "input_blobs": {
+    "data/us_board_ledger/retro_grades.parquet": "67e2541add91fa335918c95e098d9aec0fcf7030",
+    "data/us_board_ledger/snapshots.jsonl": "8e39dcc977931a3900c1a63e81a31eddd039fb05",
+    "scripts/grade_us_board.py": "68ef9eb7620f0592e3cd02d66a3eae2ab0998dce"
+  },
+  "grade_sha256": "7f4bd2d5d76d13523040d32b789025cdddb2f52cc7295ad809a7c94ebb74a8c9",
+  "snapshot_sha256": "0b58bb38d292ec34737d2886134b1d32177493912171e35889ee4931c0b5fed4",
+  "raw_rows": 9614,
+  "context_candidates": 4590,
+  "joined_rows": 9614,
+  "context_status": {"attached": 8664, "pre_selection_era": 950},
+  "attached_dates": 32,
+  "metadata_parity": {
+    "position": {"both_known": 8664, "unequal": 0},
+    "entry_status": {"both_known": 8307, "unequal": 0},
+    "sector": {"both_known": 8664, "unequal": 0},
+    "align_tier": {"both_known": 1270, "unequal": 0},
+    "state": {"both_known": 8331, "unequal": 0},
+    "score": {"both_known": 8328, "unequal": 0},
+    "act_level": {"both_known": 8307, "unequal": 0}
+  },
+  "original_grade_columns_unchanged": true,
+  "parquet_roundtrip_verified": true,
+  "market_state_source_sha256": "aa5ea72082e34270f36fa0021547ec213669dbfb140e8824fa07fa486f5ca60f",
+  "market_inputs": {
+    "SPY": {"sha256": "3c81a5dde9268b5b0cf467e7bf1beb14eede4932c58b6000e105fdd58589f20c", "source": "/Users/chriswong/Documents/Cluade/macro-main/data/yahoo/SPY.parquet", "last": "2026-09-04"},
+    "RSP": {"sha256": "64877925e9c0550f14fc99b4a95c90f45b585c210c412b41ca1f668d58f2d7a7", "source": "/Users/chriswong/Documents/Cluade/macro-main/data/yahoo/RSP.parquet", "last": "2026-09-04"}
+  },
+  "market_missing_rows": 0,
+  "market_unknown_rows": 0,
+  "buy_h21_rows": 823,
+  "buy_h21_dates": 18,
+  "buy_h21_d21_known": 823,
+  "score_semantics": "Recorded signed entry-quality scores; NOT probabilities",
+  "performance_statistics_computed": false,
+  "canonical_stores_modified": false,
+  "historical_publication_times_verified": false,
+  "exact_producer_versions_verified": false,
+  "retrospective_market_context": true,
+  "scientific_admission": "PARTIAL_NOT_PROMOTION_ADMITTED",
+  "script_sha256": "c6fe571759527459d9d3185a262598d4bdcf2449295419d967fb7703101d5730",
+  "amendment_sha256": "0647383e909be124b212ecc4f859afba63caf8b6d61c6cdeb36b42a8dde0e5ac",
+  "output_sha256": {
+    "market_context_prices.parquet": "f8f4baf7cdf92288e202f3bafea386c51955196822144b7c12c16a825ac831b1",
+    "d21_coverage.csv": "4530de515eba333fdd403d3b5c6379ddcccb80b8ff58df75d7b428746d882f09",
+    "snapshot_context.parquet": "6088d36422facf1b1a14d6fa83af37217846a32c06ad9bf6d006a63925cc0f9a",
+    "joined_grades.parquet": "366d94709ea8fef4ac91cc30cf4efd975b26e68a65766082e5ca8feb99aca6db",
+    "d21_market_coverage.csv": "2348cb8b837d40c5b29d4b6610ccf687b468e10dd4162722eb9080e3bd6957b1"
+  }
+}
