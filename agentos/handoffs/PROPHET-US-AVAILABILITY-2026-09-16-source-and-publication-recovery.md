@@ -38,18 +38,23 @@ verified:
     result: "3 failed on the pre-fix implementation, then 3 passed after the minimal repair."
   - claim: The current-main composed source candidate passed its owning local matrix.
     command: >
-      python -m pytest -q tests/test_daily_collect_commit_path.py
-      tests/test_p0_prophet_candidate_board.py tests/test_render_run_size_cap.py
-      tests/test_workflow_file_size.py tests/test_chat_nav_sync.py
-    result: "76 passed at 2e891d108553dd1f7f8d4258dad8a700982457ef."
+      python -m pytest -q --basetemp=/tmp/pr7187-pytest-focused2
+      tests/test_daily_collect_commit_path.py tests/test_p0_prophet_candidate_board.py
+      tests/test_render_run_size_cap.py tests/test_workflow_file_size.py
+      tests/test_chat_nav_sync.py
+    result: >
+      76 passed in 29.53s after materializing the canonically omitted site tree;
+      implementation plus current-main composition was
+      529ce3c6b5c6ae41f12a2ee5b3119cda6725a570 before this records-only refresh.
   - claim: Records, workflow syntax, chat navigation and differential CI contracts are clean.
     command: >
       python scripts/agentos.py validate; parse all .github/workflows/*.yml and *.yaml
       with PyYAML; python -m scripts.sync_chat_nav; python scripts/check_contract_delta.py
-      --base a780b16f53ceb05944fedf04d20b3735182aab52
+      --base de36a37a3a4738e5cd59db31345790002f2582db
     result: >
-      Agent OS reported 0 errors; 100 workflows parsed; chat nav sync was OK;
-      contract-delta reported 0 introduced and 0 inherited findings.
+      Agent OS reported 0 errors and 86 inherited warnings; 98 workflow files parsed;
+      chat nav sync was OK; contract-delta reported 0 introduced and 0 inherited
+      findings with exit 0.
 unverified:
   - claim: The delivered exact head passes hosted CI and production browser acceptance.
     what_would_verify: >
@@ -62,10 +67,15 @@ unresolved:
   - >
     Linux pack execution is owned by the separate active CI-host recovery session;
     this carrier neither repairs nor bypasses that infrastructure.
+  - >
+    Completed-session panel production can still fail upstream even when reader cache
+    authority is correct. The separate input-integrity carrier owns validation/retry;
+    #7187 must not fabricate prices or treat its absence as a reader defect.
 next_actions:
   - >
-    Consume the delivered #7187 exact-head checks and independent review. After #7180
-    is accepted, recompose the two carriers on current main, then prove one real
+    History-preservingly join current main and push this repaired same carrier by normal
+    fast-forward. Consume the delivered exact-head checks and independent review. After
+    #7180 is accepted, recompose the two carriers on current main, then prove one real
     completed-session source-to-browser journey before any Ready or merge decision.
 do_not_redo:
   - >
@@ -80,14 +90,14 @@ danger_areas:
 # US Prophet: source and publication recovery
 
 ## Mission and authority
-Restore current-session US Prophet discovery end-to-end so the user sees the actual dated candidate screen, not an old board beneath a new shell. This continues `WS:PROPHET-US-AVAILABILITY` under the current Chairman’s explicit direction. The original implementation used Mastermind Skillpack pin `7642aea155d2817219135b24246b55c1d7611c66`; this repair continuation is governed by protected `master` at `0fe8074ff953b2ced9025ed40f0f66019c759967`. Executive OS owns lifecycle, Agent OS continuity, GitHub implementation, Slack transport. This handoff creates no new runtime Job, worker lease or queue.
+Restore current-session US Prophet discovery end-to-end so the user sees the actual dated candidate screen, not an old board beneath a new shell. This continues `WS:PROPHET-US-AVAILABILITY` under the current Chairman’s explicit direction. The original implementation used Mastermind Skillpack pin `7642aea155d2817219135b24246b55c1d7611c66`; this repair continuation is governed by protected `master` at `8ba7deedde164c90298d3e88785d98e02fa5e2d2`. The required Skillpack/source-law blobs are byte-identical to the previously loaded `0fe8074ff953b2ced9025ed40f0f66019c759967` revision. Executive OS owns lifecycle, Agent OS continuity, GitHub implementation, Slack transport. This handoff creates no new runtime Job, worker lease or queue.
 
 ## Verified frontier and existing carriers
-PR #7180 / `sol/prophet-us-completed-session-sourcebound-20260915` now carries `99b9bc18ded963ed5e9b9a4864bfff88a8e1d5ba`: completed-session source-bound recovery plus the previously missing regression-suite registration. 192 local release tests and the actual same-head hosted contract-delta passed; the approved Linux packs remained queued. The inactive codex/merge-queue-pilot authority context is not the selected main context; main authority is green.
+PR #7180 / `sol/prophet-us-completed-session-sourcebound-20260915` remains open at `99b9bc18ded963ed5e9b9a4864bfff88a8e1d5ba`: completed-session source-bound recovery plus its regression-suite registration. Its Linux pack execution and release decision remain owned by the separate active CI/release carrier; this branch does not modify, rerun or bypass it.
 
-PR #7163 / `claude/prophet-hk-sector-link-20260915` now carries `8ee5f854c3bf8d859679e4940ab5bdc5a8c2bd8b`: existing correct HK modal route plus explicitly superseding current-source browser evidence, preserving accepted P0B/Canada bytes. 163 exact code-owner tests, the existing full browser matrix, eight modal activations and two no-JS fallbacks passed. Curated owner closure: 34 inputs / zero uncovered. Full local contract-delta exceeded 360s and is not a pass; hosted confirmation is required.
+PR #7163 / `claude/prophet-hk-sector-link-20260915` remains open at `e2b5e7a58edc13cbad910c053ebe37d6e31399f2`: the independent HK route/browser-evidence carrier. This branch does not modify or replace it.
 
-This branch, `sol/prophet-us-panel-authority-20260916`, removes 26 redundant read-only cache overlays across seven workflows and replaces the misleading “screened tonight” promise with the actual source date or an explicit unavailable date. 54 local tests and eight candidate browser cases passed; the exact-key cache mutant was rejected. No other workflow semantics changed.
+This branch, `sol/prophet-us-panel-authority-20260916`, removes 26 redundant read-only cache overlays across seven workflows and replaces the misleading “screened tonight” promise with the actual source date or an explicit unavailable date. The repaired current-main candidate passed 76 owning tests; eight candidate browser cases passed, and exact-key, multiline-path, `.yaml`, and duplicate-seed mutants were rejected. No scoring, ranking, schedule, credential, collector, permission, or market-authority semantics changed.
 
 ## Scope, method and user journey
 Use the existing Git-tracked US breadth panels, alpha, candidate board, plan source and publishing systems. No new market data, signal engine, calendar, source registry or control plane. Preserve producer seed caches, Russell coverage, candidate/plan separation, counts, ranking thresholds, immutable-source guards, security and entitlements. All repairs are deterministic; no model-derived score/rank/admission or trade decision is introduced. A genuinely fresh zero-candidate screen is valid; never force population to satisfy a display expectation. Missing source dates stay unknown. Historical source-byte conflicts require their existing correction path, never an overwritten immutable record.
@@ -96,8 +106,8 @@ Use the existing Git-tracked US breadth panels, alpha, candidate board, plan sou
 Consume same-head CI/security and source review, integrate #7180, this input/consumer repair, and #7163 without bypassing guards; reconcile overlapping daily.yml hunks before release. Follow the existing canonical renderer/publisher. Require a real completed-session input through alpha, source-bound candidate/plan artifacts and the served HTML/premium payload. Compare source dates, generation/source digests, counts and explicit new/retained/removed names. Use a real browser on production, not these fixtures. Then repeat through a normal scheduled update before acceptance. Existing #7161 cohort-clock and #7178 regional-band reachability remain separate carriers; do not silently supersede their owners or confuse their builds with release proof.
 
 ## Genuine blockers and continuation
-At 2026-09-16T03:57Z the existing pc-ci-1/2/3 org runners were offline and all twelve #7180 Linux packs were queued. Native Desktop Commander listed Windows/WSL offline; Tailnet subsequently showed Windows online but winpc-wsl offline, and both authorized SSH reads timed out. Restore the existing WSL distro and CI services; do not add labels, new fallback runners, widen permissions, kill unrelated jobs or waive checks.
+The earlier runner-offline observation is superseded. At final reconciliation, the approved organization runners `pc-ci-1`, `pc-ci-2`, and `pc-ci-3` were online and busy draining existing trusted-pack work. Runner recovery, queued-job control, labels and reruns remain owned by the separate active CI session; this carrier does not cancel, duplicate, reroute or bypass that work.
 
-Natural daily `35041133038` finished collect successfully and its engine job `104658157677` was queued at the last observation. It was not canceled, restarted or duplicated. Reconcile that exact run before any manual run or rescue. Observe actual current run state; this handoff is not a live runtime receipt.
+A separate upstream input-integrity carrier is investigating why a completed-session row could contain populated volume but absent Close/High values while a collector still reported success. This reader-authority repair prevents stale cache overlays and discloses the source screen date; it does not fabricate missing closes, introduce a provider fallback, change rankings or claim that upstream panel production is healthy.
 
-Stop only at a genuine release/authority gate or real production proof. None of the three candidates is accepted as production-proven here. The next action is restore the existing CI host, consume exact-head outcomes, integrate the same carriers and prove the real current-session board. Completed source/evidence repairs must not be rebuilt from scratch. On an ambiguous push/deploy effect, reconcile its original carrier before any repeat.
+Protected `main` movement after integration base `de36a37a3a4738e5cd59db31345790002f2582db` through `11485597cc53b3137346084aae4623cceed28a3f` is confined to research-vault catalog and Astra Fabric research packet paths. The same carrier must history-preservingly join current `main`, push by normal fast-forward, and consume exact-head CI/security and independent review. After #7180 is accepted, recompose the producer/provenance and reader-authority carriers, then require one real completed-session producer-to-served-board browser receipt before Ready, merge acceptance or `PROVEN_LIVE`. On an ambiguous push/deploy effect, reconcile the original carrier before any repeat. Completed source/evidence repairs must not be rebuilt from scratch.
