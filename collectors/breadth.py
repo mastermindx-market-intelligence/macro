@@ -361,6 +361,27 @@ def _without_cached_completed_session(closes: pd.DataFrame, tickers: list[str],
     return cleaned
 
 
+def _mask_completed_extras_without_close(extras: dict[str, pd.DataFrame],
+                                         closes: pd.DataFrame,
+                                         tickers: list[str],
+                                         expected_session: date) -> dict[str, pd.DataFrame]:
+    """A name without a valid settlement close has no coherent OHLCV row.
+
+    High, Low and Volume come from the same accepted provider response, but they
+    can be populated even when Close is missing.  Keep their prior history and
+    other names unchanged; only mask the expected-session cells for names whose
+    completed close is absent or invalid.
+    """
+    values = _completed_close_values(closes, tickers, expected_session)
+    if values.name is None:
+        return extras
+    missing = [ticker for ticker in tickers if pd.isna(values[ticker])]
+    if not missing:
+        return extras
+    return {key: _without_cached_completed_session(frame, missing, expected_session)
+            for key, frame in extras.items()}
+
+
 def _require_completed_closes(closes: pd.DataFrame, tickers: list[str], expected_session: date) -> int:
     count = _completed_close_count(closes, tickers, expected_session)
     if count < len(tickers) * _COVERAGE_FLOOR:
@@ -511,6 +532,8 @@ class BreadthAdapter(Adapter):
                                         for k, v in captured.items()}
                         count = _completed_close_count(closes, batch, expected_session)
                         closes = _mask_invalid_completed_closes(closes, batch, expected_session)
+                        captured = _mask_completed_extras_without_close(
+                            captured, closes, batch, expected_session)
                         if count > best_count:
                             best, best_count = (closes, captured), count
                         _require_completed_closes(closes, batch, expected_session)

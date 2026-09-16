@@ -381,6 +381,23 @@ def test_partial_invalid_prices_do_not_reach_stored_or_computed_breadth(tmp_path
     assert result["breadth"].loc[str(SESSION), "n_members"] == 4
 
 
+def test_missing_completed_close_masks_same_response_high_low_and_volume(tmp_path, monkeypatch):
+    """A name without settlement cannot publish an independently current OHLCV row."""
+    adapter = _adapter(tmp_path, monkeypatch)
+
+    def download(tickers, **kwargs):
+        response = _response(tickers)
+        response.loc[str(SESSION), ("Close", "EEE")] = np.nan
+        return response
+
+    monkeypatch.setattr(breadth.yf, "download", download)
+    adapter.fetch()
+    for cache_key, fresh_prior in (("high", 102.0), ("low", 99.0), ("volume", 700.0)):
+        saved = pd.read_parquet(adapter.cache_path.parent / f"_{cache_key}_cache.parquet")
+        assert pd.isna(saved.loc[str(SESSION), "EEE"])
+        assert saved.loc["2026-09-14", "EEE"] == fresh_prior
+
+
 def test_post_seam_invalid_minority_is_missing_not_a_published_price(tmp_path, monkeypatch):
     adapter = _adapter(tmp_path, monkeypatch)
     _seed_all_caches(adapter)

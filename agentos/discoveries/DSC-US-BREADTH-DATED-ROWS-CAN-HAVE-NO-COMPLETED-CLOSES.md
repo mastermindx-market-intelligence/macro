@@ -43,3 +43,6 @@ A later exact-head adversarial test planted a finite same-date value in the exis
 
 
 The settlement-finality rule also covers the accepted response's High, Low, and Volume caches. A response can carry valid completed closes while one companion field is absent for one name; merging a finite earlier same-date extra from cache then creates false completed-session OHLCV evidence. Current source quarantines the expected-session cache row for requested US names before every Close/High/Low/Volume historical merge. RED/GREEN evidence: `research/us_prophet_availability/2026-09-16-completed-close/same-session-extra-cache-quarantine-receipt.json`.
+
+
+A completed-session OHLCV row is coherent only when Close is valid for that name. The accepted 80% partial-coverage policy does not authorize High, Low, or Volume to publish independently for the missing-close remainder. Current source masks those same-response companion fields before acceptance. RED/GREEN evidence: `research/us_prophet_availability/2026-09-16-completed-close/same-response-ohlcv-coherence-receipt.json`.

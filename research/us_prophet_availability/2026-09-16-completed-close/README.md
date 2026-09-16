@@ -61,3 +61,10 @@ The US fetch now quarantines the expected-session cache cells for the requested 
 The completed-session quarantine must cover every field persisted from the accepted response, not only Close. At exact preimage `7355c03b6ba8919ed52f0147861777051cc64c29`, fresh valid closes could be accepted while one name's fresh High, Low, or Volume was missing; the later extras-cache `combine_first` then restored a finite same-date intraday cache value. RED fixtures reproduced all three cases (`999.0` High, `1.0` Low, `999999.0` Volume).
 
 The existing quarantine helper is now applied to cached extras before merge for the three US completed-session groups. Valid fresh historical extras still override cached history; only requested names on the expected completed-session row are denied same-date cache substitution. Regional calendars, Russell, the close-coverage floor, retries, rank logic, and prior history are unchanged. Focused GREEN is **3 passed**; the four-suite owner battery is **78 passed**. Evidence: `same-session-extra-cache-quarantine-receipt.json`.
+
+
+## Same-response OHLCV coherence correction
+
+A valid partial batch can meet the 80% close floor while one requested name still lacks a completed close. At exact preimage `1a64c60bd64c41568cb51bb69fe5093630094fe2`, the same accepted response could nevertheless persist that name's current-session High, Low, and Volume, creating an independently current-looking OHLCV row without settlement. The RED fixture reproduced `EEE` with no completed close but current High `104.0` and companion extras.
+
+Before a provider attempt becomes accepted, the three US groups now mask expected-session High/Low/Volume for exactly the names whose Close is missing or invalid. Valid partial coverage, other names, all prior rows, regional calendars, Russell, retries, and ranking remain unchanged. Focused GREEN is **1 passed**; the four-suite owner battery is **79 passed**. Evidence: `same-response-ohlcv-coherence-receipt.json`.

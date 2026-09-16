@@ -107,3 +107,10 @@ This is an integration-layout repair only. #7206 source, branch, review and Russ
 The same finality defect applied to the accepted response's companion fields. At exact preimage `7355c03b6ba8919ed52f0147861777051cc64c29`, fresh valid closes with one missing fresh High, Low, or Volume value still allowed the later extras-cache merge to restore a finite same-date intraday cache value. Three RED cases reproduced the leak. Cached extras now pass through the same expected-session quarantine before merge for the three US groups. Fresh history still wins normally; only same-session cache substitution is refused. Focused GREEN is 3 passed and the owner battery is `78 passed, 34 warnings in 18.68s`. Receipt: `research/us_prophet_availability/2026-09-16-completed-close/same-session-extra-cache-quarantine-receipt.json`.
 
 No ranking, provider, retry, market-calendar, regional, Russell, workflow-dispatch, runner, or production behavior changed. Exact-head CI/security, independent review, merge/current-base integration, and full source-to-browser production proof remain required.
+
+
+## Same-response OHLCV coherence follow-through
+
+A partial batch may lawfully pass the existing 80% close floor while one name has no completed close. At exact preimage `1a64c60bd64c41568cb51bb69fe5093630094fe2`, that same accepted response still persisted the missing-close name's current-session High, Low, and Volume. The repaired source masks expected-session companion fields for exactly the names whose Close is absent or invalid before the attempt becomes accepted. Focused GREEN is 1 passed and the owner battery is `79 passed, 35 warnings in 34.48s`. Receipt: `research/us_prophet_availability/2026-09-16-completed-close/same-response-ohlcv-coherence-receipt.json`.
+
+This preserves valid partial coverage, prior history, other names, regional calendars, Russell, retries and ranking. Exact-head CI/security, independent review, merge/current-base integration and real source-to-browser production proof remain open.
