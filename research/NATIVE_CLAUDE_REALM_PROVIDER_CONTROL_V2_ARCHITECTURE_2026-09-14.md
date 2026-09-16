@@ -182,11 +182,13 @@ host_ref
 os_principal_ref
 config_custody_ref
 enrollment_state = enrolled | unenrolled
-capacity_identity_receipt_digest
+registration_receipt_digest
 source_receipt_digest
 receipt_id
 receipt_digest
 ```
+
+`registration_receipt_digest` is the canonical B1 registration digest. The withdrawn `capacity_identity_receipt_digest` name has no alias or mapping and must be rejected.
 
 `config_custody_ref` is an opaque execution/config coordinate. Under current protected PF1/OCR-1 law it is **not** proof of macOS credential independence and cannot substitute for the dedicated OS-principal/Keychain boundary.
 
@@ -194,7 +196,7 @@ A local realm repair may advance `realm_generation` without changing the provide
 
 ## 8. Ruling E — native realm observation wire is source evidence, not Worker authority
 
-After a current provider-capability registration and provider-realm enrollment exist, a bounded Mastermind source may report provider-facing observation evidence to Macro:
+After a current provider-capability registration and provider-realm enrollment exist, the fixed source-owned Mastermind B2/B3 producer may emit one provider-facing observation fact for Macro acquisition:
 
 ```text
 schema = mastermind.provider_native_realm_observation/v1
@@ -237,7 +239,7 @@ source_receipt_digest
 
 The exact closed nested field vocabulary must reuse current V1 health/cooling/quota classes wherever semantics match; B4 may add only the scope/generation identity required by Family B.
 
-This wire is an **input** to Provider Control. It cannot create a provider capability, rank workers, set another domain cooling, assert Executive completion or replace claim-time worker/realm readiness.
+This wire is acquired only through Macro's fixed source-owned `build_snapshot() -> collect_current_observations()` adapter; it is not a public request body, V2 CLI payload, Worker/model output or caller-submitted JSON. `source_receipt_digest` is content-integrity evidence, not producer authentication. The wire cannot create a provider capability, rank workers, set another domain cooling, assert Executive completion or replace claim-time worker/realm readiness.
 
 Reject raw config paths, account/org/email, tokens, fingerprints, Keychain labels/content, Worker prompts/results, Job/Attempt ids, Slack identities and provider conversation ids.
 
