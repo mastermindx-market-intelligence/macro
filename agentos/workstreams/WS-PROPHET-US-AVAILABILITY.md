@@ -16,14 +16,13 @@ class: build
 blast_radius: reversible
 ambiguity: specified
 next_action: >
-  2026-08-27 CEO-takeover wave (handoff
-  agentos/handoffs/PROPHET-US-AVAILABILITY-2026-08-27-ceo-takeover.md): permanence
-  net PR #6534 and display-truth PR #6532 armed on merge-on-green. Verify tonight's
-  B1 nightly (run 33036497832) yields a fresh session-2026-08-26 board live, close
-  the open prophet-outage issues with receipts, then observe #6534's two §0
-  production proofs on NATURAL runs (never dispatch to force them). W2's full
-  fire-drill week remains the program done-bar; chip follow-ups
-  task_7df1337c/b0e6bfee/a194ca27/0c033ef2 close the known instrument gaps.
+  PR #7180 is the active bounded producer/source-bound carrier. Prove its exact
+  final head in CI, merge only after required gates are green, then observe one
+  natural US nightly/path result showing a coherent completed-session board and
+  immutable source snapshot. Keep capability state BUILT_NOT_PROVEN until that
+  production proof. Only after #7180 is accepted, rebase/integrate PR #7161 as
+  the separate rescue/acceptance cohort-truth slice. The China sibling recovery
+  is already production-proven by run 35021696056 and must not be retried.
 owns_paths:
   - scripts/prophet_rescue.py
   - .github/workflows/prophet-rescue.yml
@@ -75,6 +74,8 @@ landmines:
   - "Never dispatch over a queued/in_progress daily run; never exceed the 2/night auto-budget — livelock and dispatch-storm classes are both measured, not hypothetical."
   - "Force-majeure reconstruction defaults to the narrow authority in DEC:FORCE-MAJEURE-SESSIONS-ARE-BACKFILLED-BY-DEFAULT: the one authorized Aug-14 PIT replay is absorbed and must not be rerun; reconstructed rows stay unmarked, and data-defect windows remain outside that authority. The 2026-08-11 no-origination/no-bake-time facts remain historical evidence, not a blanket prohibition that supersedes the later DEC."
   - "GitHub concurrency supersedes PENDING runs even when cancel-in-progress is false (DSC:GITHUB-CONCURRENCY-SUPERSEDES-PENDING). daily.yml DST crons must keep distinct groups (DEC:DAILY-CRON-SLOT-CONCURRENCY-GROUPS)."
+  - "A pre-close vendor daily bar can be provisional even when its date is today. Clip the full non-crypto scoring plane to one expected_last_session BEFORE ranking; never weaken mixed-vintage refusal to make picks appear."
+  - "Hashing a source path before and after a build is not enough if consumers reopen it: an ABA rewrite can restore the original hash after different bytes were consumed. Every Prophet consumer must use the one frozen parsed source object."
 do_not_redo:
   - "Do not re-investigate GitHub platform incidents for Aug 11-13 2026 — githubstatus history checked, zero Actions incidents; the outage was self-inflicted (workflow-size strand, fleet force-cancels, runner disk-full)."
   - "Do not build a second detection check duplicating PR #5487's run-created/run-concluded/source_asof arms."

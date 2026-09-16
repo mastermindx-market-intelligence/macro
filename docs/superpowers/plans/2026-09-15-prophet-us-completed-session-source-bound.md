@@ -176,16 +176,20 @@ Preserve the existing candidate commit and add one review correction commit:
 git commit -m "fix(prophet): preserve immutable source without owning live board"
 ```
 
-- [ ] **Step 4: Request independent code review**
+- [x] **Step 4: Request independent code review**
 
 Review against the approved outcome, source/projection integrity, product-board freshness, authority boundaries, and exact test evidence. Repair only substantiated findings.
+
+Two Cursor Codex High review passes were completed. The first identified one Important ABA defect and one Minor ISO-datetime parser gap. Both were proven RED first and repaired in `aef3120e4ce12616d99869045e07279c27847238`. The exact repaired head then received a clean re-review with zero Critical, Important, or Minor findings. Its three sandbox-blocked nested-Git checks passed on the host.
 
 - [ ] **Step 5: Publish and prove the exact head**
 
 Push the existing branch, create or update its PR, confirm required CI/security checks on the exact head, and classify the capability `BUILT_NOT_PROVEN` until a real nightly proves coherent scoring and lawful origination.
 
+PR #7180 was opened from the reviewed carrier. The branch is published; exact final-head CI/security proof remains before this step can close.
+
 ### Task 5: Separate continuation after this PR
 
-- [ ] Reconcile the cancelled China run `35019907027` from main, run logs, store tips, and R2 effects before any retry.
+- [x] Reconcile the cancelled China run `35019907027` from main, run logs, store tips, and R2 effects before any retry. The subsequent same-program carrier `35021696056` completed successfully on a descendant of repair commit `4ec24e0f4745`; current main reports source/session `2026-09-15`, reversal exact-date `true`, available `true`, degraded `false`, 99.6% scored coverage, 100% actionable coverage, no outage flag, and fresh CN/HK R2 manifests. No duplicate retry is owed.
 - [ ] Rebase or integrate PR #7161 as the separate rescue/acceptance cohort-truth slice.
 - [ ] After merge, observe a real US nightly and record whether valid candidates originate from a non-mixed completed-session board.
