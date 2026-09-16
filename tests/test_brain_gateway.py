@@ -3084,6 +3084,8 @@ def test_chat_records_a_local_vision_answer_as_ollama_not_deepseek(tmp_path):
         if call.kwargs.get("stage") == "brain-chat"
     )
     assert brain_row["provider"] == "ollama"
+    assert brain_row["cost_basis"] == "local"
+    assert brain_row["est_cost_usd"] == 0.0
 
 
 def test_chat_stream_records_a_local_vision_answer_as_ollama(tmp_path):
@@ -3125,6 +3127,8 @@ def test_chat_stream_records_a_local_vision_answer_as_ollama(tmp_path):
         if call.kwargs.get("stage") == "brain-stream"
     )
     assert brain_row["provider"] == "ollama"
+    assert brain_row["cost_basis"] == "local"
+    assert brain_row["est_cost_usd"] == 0.0
 
 
 # ─────────────────────────────────────────────────────────────────────────────

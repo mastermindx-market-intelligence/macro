@@ -5734,19 +5734,19 @@ def _create_failover(
 # ---------------------------------------------------------------------------
 
 
-def _brain_usage_provider(model: str, served_provider: str = "") -> str:
-    """Map the rung that actually served to the canonical AI-cost provider name."""
+def _brain_usage_identity(model: str, served_provider: str = "") -> tuple[str, str]:
+    """Return the canonical AI-cost provider and cost basis for the serving rung."""
     if served_provider:
         try:
             from engine import llm_auth  # noqa: PLC0415
-            return llm_auth.ledger_provider_for(served_provider)[0]
+            return llm_auth.ledger_provider_for(served_provider)
         except Exception:  # noqa: BLE001 — usage telemetry never costs the turn
             pass
     if str(model).startswith("gpt-"):
-        return "codex"
+        return "codex", "subscription"
     if str(model).startswith("claude"):
-        return "claude_api"
-    return "deepseek"
+        return "claude_api", "metered"
+    return "deepseek", "metered"
 
 
 def _degraded_reply(lane: str) -> str:
@@ -9133,10 +9133,13 @@ def chat(
         if source_attachment else {}
     )
     try:
+        usage_provider, usage_cost_basis = _brain_usage_identity(model, served_provider)
         _ac.record_usage(
             lane=usage_lane,
             # Attribute to the provider that ACTUALLY served the turn, not the lane.
-            provider=_brain_usage_provider(model, served_provider),
+            provider=usage_provider,
+            cost_basis=usage_cost_basis,
+            est_cost_usd=0.0 if usage_cost_basis == "local" else None,
             model=model,
             stage="brain-chat",
             input_tokens=in_tok,
@@ -9614,10 +9617,13 @@ def chat_stream(
     in_tok = int(usage_dict.get("input_tokens") or 0)
     out_tok = int(usage_dict.get("output_tokens") or 0)
     try:
+        usage_provider, usage_cost_basis = _brain_usage_identity(model, served_provider)
         _ac.record_usage(
             lane=usage_lane,
             # Attribute to the provider that ACTUALLY served the turn, not the lane.
-            provider=_brain_usage_provider(model, served_provider),
+            provider=usage_provider,
+            cost_basis=usage_cost_basis,
+            est_cost_usd=0.0 if usage_cost_basis == "local" else None,
             model=model,
             stage="brain-stream",
             input_tokens=in_tok,
