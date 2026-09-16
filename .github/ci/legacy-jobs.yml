@@ -1161,6 +1161,8 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "engine/price_pressure/freshness.py"
+      - "templates/_pressure_watch.html.j2"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/__init__.py"
       - "engine/earnings_release/receipts.py"
