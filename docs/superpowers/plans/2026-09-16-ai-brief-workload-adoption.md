@@ -190,3 +190,80 @@ is byte-restored to the original W1 base because its sole new test was moved.
 Final test placement recheck: the same complete 15-file group reports 421 passed,
 1 failed in 11.96 seconds. The failing timeout test now resides in the existing
 code-gated Brief file. This is the current checkpoint verdict, not full green.
+
+
+## R3 — SDK timeout repaired; complete consumer conformance
+
+Procedure pin: protected Mastermind a78b8fe23d8e1ed129880ac47e97ebe96afa8aea,
+Skillpack 1.0.1 with same-pin companions. Source parent 2db4499a, same writer,
+branch and #7185. This section supersedes the R2 current-RED verdict above.
+
+Fresh RED: the committed timeout test failed exactly on an unrelated
+httpx.Timeout object (1 failed, 39 deselected). The same native process carrier
+then accepted the narrow repair: import Timeout from the installed Anthropic SDK,
+retain the existing httpx fallback for absent/stubbed SDK and the final scalar
+fallback, and preserve omitted-key behavior. No global module alias, model or
+production dependency change. Official primary-source migration guidance confirms
+SDK-owned Timeout is portable across its httpx-to-httpx2 transport transition:
+https://github.com/anthropics/anthropic-sdk-python/blob/main/MIGRATION.md
+
+Full existing 15-file provider/Brief command: 422 passed, exit 0, 10.89 seconds.
+No prior RED was skipped, weakened or excluded. No CI workflow, runner, service,
+pack configuration or queue/cancellation action was changed. The native initial
+combined file-inspection call was blocked; it had no source effect. Independent
+source metadata, the existing regression and then the same-carrier repair were
+used; no alternate writer, worktree, device or delegated edit was substituted.
+
+Actual-SDK conformance was expanded beyond the R2 extracted callback: the REAL
+provider builder, SDK constructors/messages, Brief producer, parsed result,
+fixture data/site JSON and existing page template now run as one tested path.
+
+Nine scenarios PASS in BOTH SDK 0.125.0 and 1.6.0 (18 executions, not extra unit
+coverage): first Anthropic result; DeepSeek-only result and thinking override;
+authoritative auth refusal fallback; authoritative quota refusal fallback; empty
+eligible-provider refusal before construction; post-response TypeError with no
+replay/fallback; policy revision during execution with discarded output; cached
+actual-model provenance plus changed-model regeneration; Chinese translation via
+the same qualified builder. All actual producer returns match both fixture JSON
+outputs, and the real aibrief template consumes the result. Native subscription
+discovery stays zero. SDK transport factories inject ONLY native mock transports;
+constructors/messages are real. DNS/socket functions are denied and counted:
+zero real network attempts in either run. Environment is scrubbed before launch.
+
+Replay bundle (source-byte hashes, full driver, exact dependency lists, receipts):
+/Volumes/Mastermind/agent-evidence/vps-aibrief-sdk-r3-20260916-sol
+Manifest SHA256: d1f78eff6b7dfd9f1611677a53a327bec4183362ab7886d88f084e936d99a64e
+Driver SHA256: 01ef9215d9e6f0b76857a5e3fbe489c61de904f6eb499ff8e1156f3748f300c8
+To replay, create an isolated Python3.12 environment with the matching
+packages-<version>.txt and invoke replay.py <exact-source-tree> <new-receipt.json>
+with a scrubbed environment and disposable HOME/TMPDIR. The driver refuses a
+source tree containing .env. Never run it on the live VPS or enroll credentials.
+Both operation-owned SDK virtual environments were removed after verification.
+
+Source capability is BUILT_NOT_PROVEN; whole VPS fabric cutover remains PARTIAL.
+No real provider, current VPS SDK version, account eligibility, shared reservation,
+production publication, live policy activation or Claude-saving claim is inferred.
+Next: current-base source-contract check, immutable publication and fresh independent
+exact-head review; preserve existing parent-first release and real VPS proof gates.
+
+R3 full differential source-contract check against observed main
+11485597cc53b3137346084aae4623cceed28a3f completed: exit 0, zero introduced and
+zero inherited findings, 269.68 seconds. This validates the candidate dependency
+contract; it is not the separate runner/pack recovery programme. The observed
+main added no intervening changes on the policy, builder or Brief source surface.
+
+Read-only public live baseline, 2026-09-16T08:37:06Z (no cookies or credentials):
+- bot.mastermind-x.com/health: HTTP200, status ok, source
+  e61f2951136bdc03a7ec2f5f12f960af26656a4c; scope scheduled_portfolio_reasoning;
+  backend waterfall, primary claude_oauth_fallback, codex_available false,
+  shared_reasoning_available true, reasoning_policy_ok true, scheduled_runtime_ok true.
+- www.mastermind-x.com/api/health: HTTP200, status ok, imported process commit
+  4ec24e0f47 and checkout 11485597cc. This proves different reported generations,
+  not by itself an outage or a reason to restart the service.
+- www.mastermind-x.com/master_brief.json: HTTP401. No alternate identity/access
+  route was attempted; actual published Brief content remains unverified here.
+The existing source explicitly exposes /health for monitoring. No provider call
+or service operation was invoked. This baseline confirms the scheduled Portfolio
+path still advertises Claude OAuth fallback; it does not measure actual spend or
+prove that every other Codex path is unavailable. Keep production activation held
+until its separate consumer, account-eligibility and admission owners qualify it.

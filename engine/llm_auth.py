@@ -677,9 +677,13 @@ def _client_tuning_kwargs(cfg: dict) -> dict:
             log.warning("llm_auth: client_timeout_s=%r is not a number — SDK default kept", timeout_s)
         else:
             try:
-                import httpx  # noqa: PLC0415
-                out["timeout"] = httpx.Timeout(secs, connect=5.0)
-            except Exception:  # noqa: BLE001 — httpx absent/stubbed: a plain float is accepted too
+                try:
+                    # Use the installed SDK's transport type across 0.x/1.x.
+                    from anthropic import Timeout  # noqa: PLC0415
+                except ImportError:
+                    from httpx import Timeout  # noqa: PLC0415
+                out["timeout"] = Timeout(secs, connect=5.0)
+            except Exception:  # noqa: BLE001 — absent/stubbed SDK: a plain float is accepted too
                 out["timeout"] = secs
     return out
 

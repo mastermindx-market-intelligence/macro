@@ -17,11 +17,13 @@ changed:
       Shared-policy preflight, per-invocation and publication rechecks, cache/model
       identity and provenance, policy-aware intervals, and typed degraded output.
   - path: engine/llm_auth.py
-    what: Propagate typed workload refusals without fallback or provider-failure accounting.
+    what: >
+      Propagate typed workload refusals without fallback or provider-failure accounting;
+      construct configured timeouts using the installed SDK transport type.
   - path: tests/test_master_brain_ladder.py
     what: >
       Real producer/builder/cache/publication/template regressions with inert providers;
-      strict SDK signature and deliberately RED SDK timeout contract in this existing code-gated suite.
+      strict SDK signature and SDK-native timeout contracts, now GREEN in this existing code-gated suite.
   - path: tests/conftest.py
     what: Permit only seven named tmp-root policy tests to exercise the real reply cache.
   - path: templates/_aibrief_body.html.j2
@@ -44,9 +46,9 @@ verified:
       tests/test_master_brain_policy.py tests/test_master_brain_producer.py tests/test_master_brain_scorer.py
       tests/test_w7_llm_determinism.py -q --tb=short --basetemp <outside-repo-operation-temp>
     result: >
-      R2 current candidate has 421 passed, 1 failed, exit 1 in 11.96 seconds.
-      The only failure is test_client_tuning_uses_the_installed_sdk_timeout_type.
-      Earlier 419/420-PASS receipts refer to prior source; they are not current acceptance.
+      R3 candidate: 422 passed, exit 0 in 10.89 seconds. The former sole timeout
+      failure was reproduced RED this turn before the same-carrier repair. R2's
+      421-PASS/1-FAIL and earlier 419/420-PASS counts are historical source receipts.
   - claim: The actual producer writes one consistent payload consumed by the existing template.
     command: tests/test_master_brain_ladder.py::test_brief_real_run_publishes_policy_result_to_existing_template
     result: >
@@ -70,6 +72,21 @@ verified:
       91ff01bf7e49bd9b5628762a71fe18b30db0fa7771abbad36851a61c9132b38b.
       Missing live_config.js and cortex_memo fixture assets disclosed; existing
       floating control overlaps part of one English mobile notice capture.
+  - claim: Real SDKs construct and execute the complete shared-builder and Brief fixture path.
+    command: >
+      /Volumes/Mastermind/agent-evidence/vps-aibrief-sdk-r3-20260916-sol/replay.py
+      in isolated SDK 0.125.0 and 1.6.0 environments with scrubbed process environment.
+    result: >
+      Nine scenarios per SDK, all PASS: Anthropic, DeepSeek, authoritative auth and
+      quota refusal fallback, policy refusal, post-effect TypeError, in-flight policy
+      change, cache/model adoption, Chinese translation. Actual producer return,
+      fixture data/site JSON and real template agree. Zero real network attempts,
+      zero native account discovery. Manifest SHA256
+      d1f78eff6b7dfd9f1611677a53a327bec4183362ab7886d88f084e936d99a64e.
+      This is 18 SDK scenarios, not 18 extra unique unit tests or live provider proof.
+  - claim: Current observed-main source dependency contract has no introduced or inherited findings.
+    command: python3 scripts/check_contract_delta.py --base 11485597cc53b3137346084aae4623cceed28a3f
+    result: Exit 0; 0 introduced, 0 inherited; 269.68 seconds.
 unverified:
   - claim: The new source is merged, installed, enabled or production-proven.
     what_would_verify: >
@@ -80,18 +97,16 @@ unverified:
       Actual VPS browser observation and approved provider/service-principal canary.
       Isolated browser fixture proof is now present but does not satisfy this gate.
 unresolved:
-  - SDK 1.x rejects the current httpx.Timeout object; the code repair was tool-blocked and is not applied.
   - Core-fabric H0/P0/atomic claims, native realm evidence and service admission remain incumbent gates.
   - Native Mastermind waterfall and marketing provider caches are not migrated by this slice.
   - Policy fingerprints do not synchronize credentials or establish atomic distributed revocation.
 next_actions:
   - >
-    Preserve the same Draft #7185 writer. Once the native source edit is permitted,
-    repair the SDK timeout type using the installed SDK re-export; do not bypass
-    the denied edit, weaken the RED regression or restore request replay.
+    Publish the repaired same-branch candidate and bind its exact immutable head to
+    the full regression and actual-SDK evidence; preserve parent #7179 separately.
   - >
-    Re-run the exact 15-file group and actual-SDK construction probes, then obtain
-    fresh exact-head independent review through the incumbent integration owner.
+    Obtain fresh independent exact-head source review through the incumbent
+    integration owner; retain the same writer for bounded findings.
   - >
     Source release waits parent #7179 protection and ordinary release gates. Real
     VPS adoption, qualified inference and result consumption remain separate proof.
@@ -107,6 +122,20 @@ danger_areas:
 decisions:
   - DEC:EXECUTIVE-CAPACITY-FABRIC-OWNERSHIP-AND-CONTRACT
 ---
+
+## Current R3 checkpoint — timeout repaired; source validation green
+
+Procedure pin: Mastermind a78b8fe23d8e1ed129880ac47e97ebe96afa8aea, Skillpack
+1.0.1. The native process carrier accepted the previously blocked timeout edit
+after this turn's exact-source readback and a fresh RED reproduction. The helper
+now consumes anthropic.Timeout with the existing legacy fallback and omitted-key
+semantics. No process-global transport alias or dependency/model change occurred.
+
+The downstream source capability is BUILT_NOT_PROVEN, no longer held on the known
+SDK defect. Full live integration remains PARTIAL. DRAFT/HOLD still requires
+current source integration, independent review and the existing release owners.
+The current principal transfer to Claude8 was read from the incumbent carrier;
+this consumer operation does not claim or transfer that principal role.
 
 ## Source ownership and continuation
 
@@ -151,3 +180,14 @@ The CI-manifest collision between #7024 and the W0 dependency also exists when
 composing #7024 with parent 889174901 alone. It is not created by W1 and remains
 with the incumbent integration owners; this branch does not edit that manifest.
 Current-head composition and full dependency recheck remain separate receipts.
+
+
+## Live baseline, not activation (R3)
+
+Public health GETs at 2026-09-16T08:37:06Z: scheduled Portfolio reasoning still
+reports waterfall / claude_oauth_fallback, codex_available=false, status/policy/runtime
+ok, commit e61f2951136bdc03a7ec2f5f12f960af26656a4c. The site API reports imported
+4ec24e0f47 versus checkout11485597cc. Neither observation measures compute spend,
+proves all Codex capacity absent, or authorizes a restart. The Brief JSON endpoint
+returned401; no auth/access workaround was attempted. Source and production remain
+distinct. The current plan carries the exact allowed field readback and scope.
