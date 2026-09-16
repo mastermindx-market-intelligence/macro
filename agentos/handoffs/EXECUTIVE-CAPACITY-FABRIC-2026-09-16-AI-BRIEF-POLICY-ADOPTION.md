@@ -19,9 +19,9 @@ changed:
   - path: engine/llm_auth.py
     what: Propagate typed workload refusals without fallback or provider-failure accounting.
   - path: tests/test_master_brain_ladder.py
-    what: Real producer/builder/cache/publication/template regressions with inert providers.
-  - path: tests/test_llm_auth.py
-    what: Strict installed-SDK timeout-type regression; deliberately RED pending permitted repair.
+    what: >
+      Real producer/builder/cache/publication/template regressions with inert providers;
+      strict SDK signature and deliberately RED SDK timeout contract in this existing code-gated suite.
   - path: tests/conftest.py
     what: Permit only seven named tmp-root policy tests to exercise the real reply cache.
   - path: templates/_aibrief_body.html.j2
@@ -44,7 +44,7 @@ verified:
       tests/test_master_brain_policy.py tests/test_master_brain_producer.py tests/test_master_brain_scorer.py
       tests/test_w7_llm_determinism.py -q --tb=short --basetemp <outside-repo-operation-temp>
     result: >
-      R2 current candidate has 421 passed, 1 failed, exit 1 in 12.85 seconds.
+      R2 current candidate has 421 passed, 1 failed, exit 1 in 11.96 seconds.
       The only failure is test_client_tuning_uses_the_installed_sdk_timeout_type.
       Earlier 419/420-PASS receipts refer to prior source; they are not current acceptance.
   - claim: The actual producer writes one consistent payload consumed by the existing template.

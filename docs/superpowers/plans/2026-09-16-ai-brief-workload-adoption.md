@@ -132,7 +132,7 @@ constructs httpx.Timeout while SDK 1.x requires its own transport type. The actu
 1.6.0 constructor rejects that object with TypeError BEFORE the mock transport.
 SDK 0.125.0 accepts it. This is a compatibility witness, not VPS version evidence.
 
-The timeout regression in tests/test_llm_auth.py is deliberately NOT skipped or
+The timeout regression in tests/test_master_brain_ladder.py is deliberately NOT skipped or
 weakened. Its RED is exact: installed-SDK Timeout expected, unrelated httpx.Timeout
 observed. The attempted engine/llm_auth.py repair was blocked before execution;
 readback shows zero diff in that module. Do not route the denied edit through a
@@ -179,3 +179,14 @@ Current compilation and diff checks pass. Agent OS validation reports 0 errors,
 98 warnings. The full test verdict remains 421 PASS / 1 FAIL, not full green.
 This is a durable partial-source checkpoint. Do not spend an independent review
 allocation on release approval until the known timeout regression is repaired.
+
+
+The timeout regression initially landed in the shared helper's nightly-only test
+file. It is now in the existing Brief consumer test file, already executed by the
+unrun-brain-desks code gate. The failing contract is preserved, not skipped;
+no CI manifest, workflow, runner or service was changed. tests/test_llm_auth.py
+is byte-restored to the original W1 base because its sole new test was moved.
+
+Final test placement recheck: the same complete 15-file group reports 421 passed,
+1 failed in 11.96 seconds. The failing timeout test now resides in the existing
+code-gated Brief file. This is the current checkpoint verdict, not full green.
