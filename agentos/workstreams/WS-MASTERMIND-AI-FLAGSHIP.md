@@ -20,237 +20,228 @@ waves:
     title: Diagnose analytical failures and harden the architecture and build contract
     status: in_progress
     pr: 7151
-    next_action: Complete independent architecture review and canonical record validation; consume the public-research correction before using the older provider assumption.
+    next_action: Complete whole-architecture review and current record validation; public-research correction alone has a scoped PASS.
   - id: R0
     title: Answer legitimate supplied-assumption financial analysis
     status: awaiting_ci
     pr: 7152
     next_action: >
-      Retain ba9e7654190934d3f7c8b997eb2b21bd3a077094. Run35053698483 has now
-      concluded cancelled: three executor packs succeeded and nine were cancelled;
-      ci-gate failed. Coordinate recovery with the existing CI owner, without
-      cancelling or blindly redispatching shared work. Separately resolve Source
-      Continuity, then release normally and verify exact P1 and bilingual answers.
+      Keep ba9e7654190934d3f7c8b997eb2b21bd3a077094 and its release hold.
+      Run35053698483 concluded cancelled, with three successful executor packs,
+      nine cancelled packs and a failed ci-gate. Existing CI recovery owns the
+      interrupted run; do not cancel, waive or blindly redispatch shared proof.
+      Source Continuity and real financial-answer/browser proof remain separate.
   - id: R1
     title: Investigate a material current evidence gap through a primary public source
     status: todo
     depends_on: [R0]
     next_action: >
-      Use PUBLIC_RESEARCH_PROVIDER_QUALIFICATION_2026-09-16.md: current DeepSeek
-      Responses ignores built-in web_search. Qualify a real search/open backend
-      through existing function tools and workload owners; preserve private egress
-      and bounded Research. Qualification preparation is independent of R0 release.
+      Qualify actual search and source opening through existing function tools and
+      workload owners. Read PUBLIC_RESEARCH_PROVIDER_QUALIFICATION_2026-09-16.md,
+      not the superseded native-search assumption. Preparation is independent of R0.
   - id: R2
     title: Deliver an earnings-to-financial-bridge thesis investigation
     status: in_progress
     depends_on: [R0]
     next_action: >
-      Preserve local financial-bridge commit444c83f747571a6385e603d06adeb6186c647871
-      on claude/flagship-financial-bridge-20260916-sol. Publication was tool-safety
-      blocked; no remote branch or PR exists. Resolve that gate on the same carrier
-      before publication, independent review and CI. The pure calculation and routed
-      playbook are built locally; automatic earnings-source binding and real-model
-      customer acceptance remain unproven. Do not recreate or alternate-push the code.
+      Recover the same locked financial-bridge worktree when Studio reconnects.
+      Last confirmed commit is444c83f747571a6385e603d06adeb6186c647871; the newer
+      arithmetic-isolation repair,15 additional tests and continuation changes
+      passed609 local tests but are not committed. Reconcile the interrupted final
+      document append before writing; do not discard this working-tree delta.
+      Publication and independent-review access are separately tool-safety blocked.
+      No alternate carrier, new branch or worker may bypass those gates.
   - id: R3
     title: Save and update a research case through real monitoring
     status: todo
     depends_on: [R2]
-    next_action: Reuse existing thesis, version and monitor owners; prove save, recovery, correction and meaningful update.
+    next_action: Reuse existing thesis/version/monitor owners and prove save, recovery, corrections and meaningful updates.
   - id: R4
     title: Improve difficult investigations with cross-engine and portfolio context
     status: todo
     depends_on: [R2]
-    next_action: Add typed engine context and bounded specialists where controlled evaluation demonstrates utility; do not wait for unrelated persistence or public-search gates.
+    next_action: Admit typed engine context and bounded specialists where controlled evaluation shows utility; avoid false persistence dependencies.
   - id: R5
     title: Deliver rights-cleared intelligence as a reliable data product
     status: todo
     depends_on: [R2]
-    next_action: Package individually proven intelligence capabilities with admitted coverage, delay, version, correction and redistribution contracts; no blanket dependency on every retail feature.
+    next_action: Package individually proven intelligence with coverage, delay, version, correction and commercial-use contracts.
 discoveries:
   - DSC:BRAIN-FINANCIAL-SCENARIO-REFUSAL
 landmines:
-  - The observed production Fast finance-scenario refusal used route deep, not the thinking-disabled quote shortcut.
-  - Five Fast tool rounds are not necessarily five individual calls; do not misreport the budget.
-  - HTTP524 probe FIN-SCOPE-P2 has an unknown backend outcome and must not be blindly replayed.
-  - Preserve R0 source custody, four-file scope, scope leak sentinel and restored unrelated-task refusal boundaries.
-  - Current DeepSeek documentation ignores native web_search and max_tool_calls; successful compatibility requests are not retrieval proof.
-  - The inspected native launcher can relocate outside a Bash-denied project; do not use relocation to overcome permission boundaries.
-  - Financial-bridge tool execution does not verify model-supplied inputs, currency, periods or accounting definitions; arithmetic attribution is not causality.
-  - Financial-bridge publication was tool-safety blocked; metadata continuity here does not publish its implementation or authorize another carrier.
-  - Synthetic Market Memory conformance and operational lineage are not live semantic reasoning or economic causality.
-  - This knowledge record grants no Executive admission, provider permission or signal authority.
+  - R0's observed refusal occurred on the normal deep route, not the quote shortcut; five tool rounds need not mean five individual calls.
+  - Historical FIN-SCOPE-P2 HTTP524 is effect-unknown and must not be blindly replayed.
+  - The bridge's inputs remain unverified supplied assumptions; execution does not verify source, period, units, currency or accounting basis.
+  - Arithmetic attribution is order-dependent, not causal evidence; simplified scenario cash is not reported or audited free cash flow.
+  - A copied ambient Decimal context could produce Infinity for ordinary inputs; the local repair explicitly isolates every context setting.
+  - The new repair is a tested working-tree delta above444c83f, not a newly committed or published candidate.
+  - Publication and independent-review readiness were tool-safety blocked; local repair and metadata continuity do not grant another transport.
+  - Current-source public-research qualification must recheck vendor support; a successful request or imported search-shaped history is not executed search.
+  - The previously inspected native launcher relocates some workers past blanket project shell denial; do not invoke that path to bypass permission.
+  - Synthetic conformance, graph plumbing, model agreement and green tests are not live intelligence or trading authority.
 do_not_redo:
-  - Do not create another Brain, identity, resolver, corpus, queue, memory, transcript, auth, retry, publication or control plane.
-  - Do not treat owned Research Vault search as general public-web search.
-  - Do not bypass the incumbent Fabric or credential boundaries with raw local spawning.
-  - Do not make full autonomous Fabric completion a prerequisite for a separately qualified narrow gateway repair.
-  - Do not silently loosen the published-only Research guarantee or silently remove active investigation.
-  - Do not turn the recommended product sequence into false universal blockers; preserve actual per-capability dependencies.
-  - Do not recreate the separate R0 financial-scope test file or CI inventory edit; all 17 cases live in the already-registered gateway suite.
-  - Do not cancel or blindly redispatch shared CI; existing runner and CI recovery owners retain that work.
-  - Do not repeat the blocked financial-bridge publication via another tool, device, account, provider, branch or PR.
-  - Do not count the long-running pre-final contract-delta process as completed final-head proof or start a duplicate without reconciliation.
+  - Do not create another Brain, identity, source, queue, memory, transcript, auth, retry, publication or control plane.
+  - Do not replace the retained R0 carrier or copy its patch into the bridge candidate.
+  - Do not recreate separate unregistered test suites or alter CI policy; R0's17 and the bridge's53 cases use existing registered suites.
+  - Do not rerun blocked publication, review qualification or browser actions through another actor, account, device or tool.
+  - Do not force-clean the failed contract-check temporary worktree; its cleanup is unverified and must be reconciled by its owner.
+  - Do not treat full Fabric completion as a prerequisite for independently qualified work, or use an unqualified launcher as a shortcut.
+  - Preserve published-only Research and private-data egress limits; active research must not silently change a bounded corpus contract.
+  - Wave order is prioritization, not universal serial gates; owned-data analysis does not require public-search credentials.
 artifacts:
   - research/mastermind_ai_flagship/PUBLIC_RESEARCH_PROVIDER_QUALIFICATION_2026-09-16.md
   - research/mastermind_ai_flagship/R2_META_CEO_PROGRAM_PACKET_2026-09-14.md
   - research/mastermind_ai_flagship/R2_RUNTIME_OBSERVATIONS_2026-09-14.json
 next_action: >
-  Preserve the committed local financial bridge and resolve its native publication
-  safety gate before any same-carrier publication, exact-head independent review
-  and CI. R0 PR7152 independently remains held after its cancelled CI run; use the
-  existing recovery owner, not a new runner repair. Source Continuity and real
-  customer-answer proof remain owed. No new implementation was deployed. Do not
-  replay historical unknown effects or blocked operations through another actor.
+  Reconnect the existing Studio carrier and preserve/reconcile the tested but
+  uncommitted bridge repair above444c83f, including the uncertain final document
+  append. Commit locally only after exact readback. Publication and independent
+  review then require resolution of their existing tool-safety gates; do not
+  reissue them through alternatives. R0 stays held for existing CI recovery and
+  separate continuity/customer proof. No new product behavior is live.
 ---
 
-## Latest continuation — local financial-bridge implementation
+## Current continuation — arithmetic integrity and streaming proof
 
-Procedure pin: Mastermind `8ba7deedde164c90298d3e88785d98e02fa5e2d2`, compatible
-Skillpack1.0.1/bootstrap1, including enrolled WEB_CEO_DELEGATION. Observation date:
-2026-09-16. This update records evidence and next actions only; it does not publish
-the blocked implementation, assign a worker or grant release authority.
+Protected procedure: Mastermind8ba7deedde164c90298d3e88785d98e02fa5e2d2,
+Skillpack1.0.1/bootstrap1 including WEB_CEO_DELEGATION. Same-SHA required procedure
+bodies were fetched; their content identities match the previously read immutable
+bodies. Observation date:2026-09-16. This is organizational continuity only; no code
+is published here and no permission, runtime admission or worker assignment is granted.
 
-Operation: `mastermind-ai-financial-bridge-20260916-sol-001`.
-Local branch: `claude/flagship-financial-bridge-20260916-sol`.
-Local commit: `444c83f747571a6385e603d06adeb6186c647871`.
-Local tree: `ccef391a93db52b7c4fc41d4eb72d829c0656f4d`.
-Base: `e729d0fd9d48868b49a1911d4098c689b3d373bd`.
-Retained locked worktree on Mac Studio:
-`/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/flagship-financial-bridge-20260916-sol`.
-Local continuation file:
-`research/mastermind_ai_flagship/FINANCIAL_BRIDGE_CONTINUATION_2026-09-16.md`.
-Capability: **BUILT_NOT_PROVEN**, local only. No remote branch, PR, independent
-review, live provider request, merge or deployment for this new capability.
+Operation: mastermind-ai-financial-bridge-20260916-sol-001.
+Branch: claude/flagship-financial-bridge-20260916-sol.
+Last confirmed commit:444c83f747571a6385e603d06adeb6186c647871.
+Its tree:ccef391a93db52b7c4fc41d4eb72d829c0656f4d.
+Base:e729d0fd9d48868b49a1911d4098c689b3d373bd.
+Locked Studio worktree:
+/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/flagship-financial-bridge-20260916-sol
+Local continuation:research/mastermind_ai_flagship/FINANCIAL_BRIDGE_CONTINUATION_2026-09-16.md.
+State:BUILT_NOT_PROVEN, local only. Fresh GitHub lookup still returned404 for the
+proposed remote branch. No publication, PR, new reviewer, provider call or deployment.
 
-Six-file candidate adds a pure finite-decimal financial-scenario tool, existing
-Brain schema/allowlist/dispatcher/progress integration, an existing-library routed
-financial-thesis playbook, tests in the already-registered gateway suite, explicit
-doctrine inventory enrollment and the research continuation. It changes no provider,
-quota, identity, source reader, queue, signal formula, ranking or sizing authority.
-R0's scope paragraph and branch were not modified or copied into this candidate.
+### Reproduced defect and repaired behavior
 
-The real dispatcher computes gross profit, operating profit, simplified operating
-cash and cash after capex. Missing inputs propagate as unknown, not zero. It returns
-inputs as unverified supplied assumptions, one explicit common unit and an optional
-currency label. It performs no FX, period, source or accounting-basis verification.
-The revenue/margin/expense attribution is order-explicit arithmetic, not a causal
-estimate. The playbook directs the analyst to test a competing explanation and
-identify discriminating evidence; that instruction is not proof of model behavior.
+The initial implementation used localcontext() and set precision64, inheriting
+ambient exponent limits, rounding, traps and clamp. Two new real-dispatch tests
+used valid inputs (revenue20, gross margin25%, expenses1, explicit zero other cash
+inputs) under narrow ambient settings. Traps disabled: gross_profit was Infinity
+instead of5. Traps enabled: decimal.Clamped escaped. Both failures were observed
+before the implementation repair. This is local adversarial proof, not a claim
+that this defect has occurred on a live customer request.
 
-Actual local proof, Python3.12 with private operation-specific temporary roots:
-- Baseline gateway plus response evaluation: 432 passed.
-- New integration cases before implementation: 26 failed,359 deselected, because
-  the tool/schema/playbook were absent; no real model or provider call.
-- First implementation:26 passed. Expanded suites exposed three intentional
-  ten-versus-eleven inventory mismatches; exact census was updated while complete
-  parse equality and existing routing checks were preserved.
-- A nested schema-list sharing defect was separately reproduced by a failing test,
-  repaired with fresh nested lists and retained as a gateway regression.
-- Final command: `python3.12 -m pytest tests/test_brain_gateway.py tests/test_response_eval.py tests/test_brain_tool_economics.py tests/test_brain_analyst_doctrine.py tests/test_brain_analyst_wiring.py tests/test_brain_doctrine.py -q -p no:cacheprovider`.
-  Result: **594 passed,5existing warnings**. This includes38 new cases. The real
-  Brain loop consumes computed tool output with only the provider mocked; it does
-  not prove a live model calls the tool or interprets its result correctly.
-- `git diff --check` passed. Moving the new tests into the existing financial
-  section preserved their function ASTs and avoided R0's retained EOF additions.
-- `git merge-tree --write-tree HEAD ba9e7654190934d3f7c8b997eb2b21bd3a077094`
-  returned `b9c9ba9c7e3817ea66d72a45fad812aab90b2161`, exit0. This is conflict-free
-  composition evidence, not tested integrated execution, merge or production proof.
+The current working-tree repair constructs a fully specified fresh Context per
+call, sets precision/exponent/rounding/clamp/flags/traps explicitly and catches
+Decimal arithmetic failures without echoing input. It changes no process-wide
+context. Both hostile-context tests now pass and confirm the caller context stays
+unchanged. This supports deterministic calculation under the tested environments,
+not model input correctness or investment performance.
 
-The original fictional fixture gives profit30→27.5, operating profit10→7.5 and
-current simplified operating/after-capex cash−0.5/−5.5; prior cash remains unknown.
-Revenue3, margin−5.5 and expense0 contributions reconcile the−2.5 operating change.
-Neither this computation nor a plausible benign alternative establishes valuation,
-causation, a house signal or superior investment performance.
+### Real consumer and independent oracle
 
-A proposed handoff under Agent OS correctly failed because this workstream is
-still held in #7151 rather than present on main. The candidate moved its handoff to
-the owning research directory instead of creating a duplicate parent or weakening
-the validator. Rechecked main-based Agent OS:1116 records,0errors,98warnings.
+A new streaming regression drives existing chat_stream with the real financial
+tool dispatcher. It checks the tool result in the next provider request, both
+language progress labels, visible answer delta and terminal done event. Only
+provider/tier/thread/cost boundaries are mocked; the calculation and dispatch are
+not mocked. This is a stronger integration test, not a real-model, browser or
+customer-authentication acceptance result.
 
-The publication command was blocked by the tool safety layer. It was not split,
-reissued or moved to another carrier. Read-only reconciliation verified the exact
-clean local commit and a GitHub404 for the proposed remote branch, with an accessible
-main-ref positive control. This record is informational continuity only, not an
-alternate publication of the blocked code. No independent reviewer was launched.
+Twelve deterministic input cases compare every period output and the contribution
+sum against Fraction arithmetic, independent of the implementation's Decimal
+arithmetic. They include large amounts, negative margins, signed cash adjustments
+and working-capital releases. Existing null, schema, invalid-input and authority
+checks remain. The playbook remains routed through the existing analyst library;
+its presence does not prove a model follows the proposed thesis logic.
 
-An earlier contract-delta check remains unreconciled: parent PID57570, Python57679,
-log `/Volumes/Mastermind/agent-evidence/mastermind-ai-financial-bridge-20260916-sol-001/contract-delta.txt`
-was empty at the last observation. It began before final source refinements and
-cannot be claimed as completed final-head proof. Do not duplicate or kill another
-worker's processes. Retain this exact handle and output for same-operation recovery.
-Other local proof logs are in that same operation evidence directory, including
-`red.txt`, `schema-red.txt` and `final2-tests.txt`.
+### Actual current proof
 
-## R0 current release evidence — previous all-queued status superseded
+Initial added context tests:2 failed,397 deselected. After repair:40 financial
+cases passed. After streaming plus rational-oracle additions:53 passed,359 deselected.
+Final command (Python3.12, existing worktree, private operation temporary root):
+`python3.12 -m pytest tests/test_brain_gateway.py tests/test_response_eval.py tests/test_brain_tool_economics.py tests/test_brain_analyst_doctrine.py tests/test_brain_analyst_wiring.py tests/test_brain_doctrine.py -q -p no:cacheprovider`
+Result:609 passed,5 existing deprecation warnings,15.19seconds; process24930 exit0.
+PYTHONDONTWRITEBYTECODE=1, OPENBLAS_NUM_THREADS=1, OMP_NUM_THREADS=1 were set.
+`git diff --check` passed in that command before tests. These15 additions supplement
+38 earlier bridge cases; the53 bridge cases are NOT the original53 architecture
+acceptance specifications. The latter remain specifications except separately
+recorded executions. No metered model or source-search request was performed.
 
-PR7152 remains OPEN/DRAFT at `ba9e7654190934d3f7c8b997eb2b21bd3a077094`.
-Read-only `gh run view 35053698483 --json status,conclusion,headSha,jobs` now reports
-status completed, conclusion cancelled. Executor packs0/1/2 succeeded; packs3–11
-were cancelled. The ci-gate failed its enforce-semantic-verdict step. This is not
-all-green, and no cancellation actor or cause was inferred. This session cancelled
-or redispatched no run and changed no runner, service or label. Existing CI/host
-recovery remains with its current owner, as directed by the Chairman.
+Evidence directory:
+/Volumes/Mastermind/agent-evidence/mastermind-ai-financial-bridge-20260916-sol-001/
+Relevant files:context-red.txt, context-green.txt, stream-rational.txt,
+correctness-final.txt. Source changes:engine/neuralweb/financial_scenarios.py,
+tests/test_brain_gateway.py and the local research continuation.
 
-The R0 source-continuity and real-answer/browser acceptance gates remain separate.
-The new local arithmetic candidate does not waive them or replace R0.
+### Recovery and gates
 
-## Historical continuation — release dependency and search correction
+Studio connectivity failed, recovered sufficiently for source/test work, then
+failed again during a final continuation-document append. The earlier append headed
+"Correctness continuation — supersedes the earlier local test count" was confirmed
+written. The subsequent append about old-check/reviewer gates returned device-offline;
+a readback also returned offline. Reconcile that file before appending again.
+No new local commit was attempted after the tests, so the tested source delta remains
+uncommitted above444c83f. Do not reset, discard, remint or silently transfer it.
 
-Earlier procedure pin: Mastermind `11101d420179525678449820cbfd6228191c37ee`.
-At2026-09-16T04:28–04:39Z, job104660799513 required ci-linux and was queued without
-a runner; the organization endpoint showed pc-ci-1/2/3 all offline. One read-only
-SSH attempt via winpc-wsl timed out. Those observations explain the earlier blockage,
-not a claim that the pool remains offline now.
+The old contract check is no longer running at the successful process observation.
+Its saved traceback records base finding computation timeout after600seconds and
+cleanup timeout after300seconds. Cleanup completion is unknown. Neither this error
+nor no live PID establishes a clean temporary worktree. No repeat check, forced
+cleanup, shared-clone repair or passing contract result was claimed.
 
-The public-research addendum supersedes only the earlier R2 section6 provider claim.
-At its verification epoch, official DeepSeek Responses docs listed built-in web_search
-as ignored. Real qualified function-tool retrieval and actual supporting-source
-access are required; HTTP200, model assertions and restored historical search items
-are not search proof. Its12 cases remain specifications, not product tests.
-The correction's independent review PASS and acceptance limits are in #7151
-comment5692262175. No live source/provider qualification follows from that review.
+A separate independent-review readiness command was blocked by the tool safety
+layer. It was not reissued/split/moved; no reviewer launched. The prior publication
+block likewise remains. The prior blocked browser/diagnostic actions and historical
+P2 effect uncertainty were not replayed. This metadata update does not publish
+blocked code or ask a different actor to perform a blocked operation.
 
-The installed pool wrapper's placement helper was observed relocating certain pools
-to a parent directory upon blanket Bash denial. This was a source-proven risk, not
-an executed escape. Evidence was sent to the incumbent Fable root at message
-1789533562.479669 under1789324397.992989. Delivery is not consumption or repair;
-W1-H3/H0/PF1 and native-kit ownership remain unchanged. This continuation did not
-invoke the affected pool route or start a worker.
+## R0 unchanged release boundary
 
-## Prior R0 implementation evidence — not rerun in this continuation
+PR7152 remains OPEN/DRAFT atba9e7654190934d3f7c8b997eb2b21bd3a077094.
+Its tree is e404031ec65387ca273a73a556269582267c1013; integration base is
+52380b870218b61865fb56458500cac00ce4932b. Current read of jobs for35053698483
+confirms packs0/1/2 success, packs3–11 cancelled and ci-gate failure. No new run,
+cancellation, runner/label/service change or merge occurred. Do not infer a cause
+or cancellation actor. Existing CI/host recovery remains with its incumbent owner.
 
-Operation: `mastermind-ai-flagship-r0-financial-scope-20260914-sol-001`.
-Branch: `claude/flagship-r0-financial-scope-20260914-sol`.
-Head: `ba9e7654190934d3f7c8b997eb2b21bd3a077094`.
-Tree: `e404031ec65387ca273a73a556269582267c1013`.
-Integration base: `52380b870218b61865fb56458500cac00ce4932b`.
-Prior proof pin: Mastermind `7642aea155d2817219135b24246b55c1d7611c66`.
-State: BUILT_NOT_PROVEN, not merged or deployed at the current observation.
+Prior R0 evidence:857 local tests and independent Opus PASS; acceptance/hold receipt
+is PR7152 comment5691863828, review digest
+bd9bfba4fd702dd489c48db81d9dd03408e0f8407dbe8475b5d832f2736682a7.
+Its17 scope tests live in the registered gateway suite; scope leak sentinel and
+restored unrelated-roleplay/framing/brief-refusal boundaries remain. No CI policy
+change is in that four-file patch. These facts are historical, not rerun evidence.
+Source Continuity REMOTE_CENSUS_INCOMPLETE remains unresolved. Actual deployed
+financial answers and browser proof remain owed. Guest widget preflight was not
+an answer test. The new bridge does not replace or waive these gates.
 
-The original glossary failure was resolved by integrating its accepted main repair,
-not a test skip. Independent review caught dropped unrelated-role-play/framing and
-brief-refusal clauses, which were repaired after two new tests failed. All17 R0
-scope cases were moved AST-identically into the existing gateway suite; its final
-four-file candidate changes no CI policy. Prior local test result857passed with
-five existing warnings and independent Opus PASS remain historical evidence.
-Review digest: `bd9bfba4fd702dd489c48db81d9dd03408e0f8407dbe8475b5d832f2736682a7`.
-Review accepted/held-release receipt: PR7152 comment5691863828.
+## Other program dependencies and historical evidence
 
-The prior Source Continuity result was REMOTE_CENSUS_INCOMPLETE; no successful typed
-checkpoint is claimed. Previous diagnostic/browser-canary safety denials and
-historical P2 effect uncertainty are preserved. Guest browser preflight reached the
-real Fast widget/input but submitted no model question. Actual answer acceptance
-remains outstanding.
+Public-research correction and qualification remain in
+PUBLIC_RESEARCH_PROVIDER_QUALIFICATION_2026-09-16.md. At its checked epoch, DeepSeek
+Responses documented built-in web_search as ignored; app-defined tools must execute
+real retrieval. Recheck endpoint/model/tool/account evidence at implementation.
+A URL, imported search-shaped history or HTTP200 is not proof of supporting-source
+access. Keep minimal public egress, current evidence obligations, source opening,
+dated identity/correction checks and observation in existing response owners.
+The correction's scoped independent PASS is recorded in PR7151 comment5692262175;
+that is not whole-architecture or implementation acceptance. Its12 tests are specs.
 
-## Broader evidence and dependency discipline
+The previously inspected pool launcher relocated certain pools outside a checkout
+with blanket Bash denial. Evidence was sent to incumbent Fable root1789324397.992989
+as message1789533562.479669. Delivery is not a fix; no affected pool route was used.
+Preserve W1-H3/H0/PF1 and native-kit custody. Model, provider plan, operational role,
+source graph and trading authority remain separate.
 
-The original53 acceptance cases remain specifications except individually recorded
-executions. No real-model superiority, live public search, completed earnings-case
-journey, portfolio authority or investment-outperformance claim is established.
-No continuing external worker, armed watcher or background Web execution is claimed.
+Historical full bridge implementation evidence is preserved in the predecessor of
+this file at824b904caf66c42db72778ca3e27c901384ab70e. The original six-file candidate
+had594 passing tests, a real non-streaming loop test with mocked provider and a
+conflict-free merge-tree with R0:b9c9ba9c7e3817ea66d72a45fad812aab90b2161.
+That merge-tree is not updated integrated execution proof for the newer local repair.
+A proposed Agent OS handoff failed because this workstream is held in7151 rather
+than main; the source continuation stays in research instead of minting a duplicate
+parent. Prior main-based Agent OS check:1116 records,0errors,98warnings. This new
+metadata revision has not been claimed as hosted or full-store validation.
 
-Wave order is prioritization, not universal serial gates. Owned-data arithmetic can
-be built before public-search credentials; the full R2 evidence/thesis journey is
-not complete merely because this arithmetic sub-capability exists. Each product
-needs proof and rights for its own exposed capability. Preserve existing source
-custody and all real compatibility, permission and release gates.
+The earnings evidence-to-case journey, live public research, saved cases/monitors,
+portfolio workflow, data-provider product and investment superiority remain unproven.
+Retain the full vision; do not rename arithmetic infrastructure as completed AI.
+Sol owns source recovery, proper review, release and end-to-end acceptance.
