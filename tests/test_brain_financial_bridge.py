@@ -292,3 +292,52 @@ def test_missing_price_basis_is_in_the_decomposition_dependency_receipt():
         assert cell['value'] is None
         assert cell['missing_inputs']==['current.earnings_multiple']
         assert cell['requires']==['prior.implied_price','current.implied_price']
+
+
+def test_native_tool_schema_is_closed_and_describes_unverified_arguments():
+    import jsonschema
+    module=importlib.import_module(MODULE)
+    factory=getattr(module,'financial_bridge_tool_schema',None)
+    assert callable(factory), 'Financial bridge has no native Brain tool contract'
+    tool=factory()
+    assert tool['name']=='calculate_financial_bridge'
+    assert 'not verified facts' in tool['description']
+    assert 'Do not invent' in tool['description']
+    schema=tool['input_schema']
+    jsonschema.Draft202012Validator.check_schema(schema)
+    jsonschema.validate(scenario(),schema)
+    assert schema['additionalProperties'] is False
+    assert schema['properties']['prior']['additionalProperties'] is False
+    assert schema['properties']['current']['additionalProperties'] is False
+    for bad in (True,[],{},'os.system("echo bad")'):
+        p=scenario(); p['current']['revenue']=bad
+        with pytest.raises(jsonschema.ValidationError):
+            jsonschema.validate(p,schema)
+    changed=factory(); changed['input_schema']['required'].clear()
+    assert factory()['input_schema']['required']
+
+
+def test_existing_brain_result_transport_preserves_parallel_math_and_errors():
+    """Actual batch/result functions, simulated routing. NOT registry/live proof."""
+    from types import SimpleNamespace
+    from engine.neuralweb import brain_gateway as gateway
+    module=importlib.import_module(MODULE)
+    one=scenario(); two=scenario(); two['current']['revenue']=120
+    invalid=scenario(); invalid['portfolio']='PRIVATE_MARKER_MUST_NOT_LEAK'
+    requests=[one,two,invalid]
+    blocks=[SimpleNamespace(name='calculate_financial_bridge',input=p,id=str(i))
+            for i,p in enumerate(requests)]
+    def dispatch(name,payload):
+        assert name=='calculate_financial_bridge'
+        return module.analyze_financial_bridge(payload)
+    results=gateway._run_tool_blocks(
+        blocks,lambda block: gateway._run_tool_block(block,dispatch))
+    expected=[module.analyze_financial_bridge(p) for p in requests]
+    assert results==expected
+    assert value(results[0],'current.operating_profit')==Decimal('7.5')
+    assert value(results[1],'current.operating_profit')==Decimal('10')
+    assert results[2]['status']=='invalid_request'
+    for result in results:
+        transported=gateway._model_visible_tool_result('calculate_financial_bridge',result)
+        assert json.loads(json.dumps(transported,allow_nan=False))==result
+        assert 'PRIVATE_MARKER' not in json.dumps(transported)
