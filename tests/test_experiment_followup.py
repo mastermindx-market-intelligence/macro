@@ -240,3 +240,19 @@ def test_reader_failure_does_not_describe_a_wired_reader_as_unwired(monkeypatch)
     assert 'Reader failed' in html
     assert 'no live reader is wired' not in html
     assert 'Dated registry note' in html
+
+
+@pytest.mark.parametrize("job_id", ["biocatalyst-serving", "unrun-picks-boards"])
+def test_followup_dependency_keeps_existing_consumers_in_ci_scope(job_id):
+    """The registry's shared helper must not disappear from scoped consumer CI."""
+    from pathlib import Path
+    import yaml
+    from scripts.run_ci_pack import _matches_any
+    root = Path(__file__).resolve().parents[1]
+    manifest = yaml.safe_load((root / ".github/ci/legacy-jobs.yml").read_text())
+    paths = manifest["jobs"][job_id]["paths"]
+    assert _matches_any(paths, "engine/experiments_registry.py")
+    assert _matches_any(paths, "engine/experiment_followup.py"), (
+        f"{job_id} reaches the follow-up helper through the registry but does not "
+        "run when that helper changes"
+    )

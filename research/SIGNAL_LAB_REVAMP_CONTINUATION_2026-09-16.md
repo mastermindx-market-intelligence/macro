@@ -144,3 +144,27 @@ The nine previously omitted real-data checks now passed using the unchanged orig
 Installation-path inspection found a real omitted dependency: admin imports `engine/experiment_followup.py`, but the existing admin restart regex did not include it. The existing closure test failed on that exact missing module (PID `36631`: 1 failed, 2 passed). The correction adds only this module to the existing restart list. The complete deployment-contract test file then passed **252 tests in 83.35s** (PID `49614`, exit 0). No service, deployment, permission or production data was modified.
 
 Receipts: `research/evidence/signal-lab-followup-readiness-20260916/continued-verification.json` and `real-input-proof.json`. The deployment correction remains on this same source branch; preserve #7190's separate numerical source ownership and both existing CI job enrollments during integration. Review admission remains unassigned; neither local tests nor our own source inspection are an independent reviewer return.
+
+## Current continuation — contract-delta repair
+
+Procedure pin: Mastermind `5ee11ab1e993616f3568cfca4069cb21fa61fd8f`; loaded core and routing source blobs remain compatible and unchanged. The native combined routing-source read was refused; dedicated GitHub source reads established the current published routing documents. No runtime dispatch used another carrier.
+
+PR #7190 run `35059087168` attempt 2 is now **completed / success** on unchanged head `5f7c01437150d3c56d135c85b0ea308e3e28129b`. Do not rerun that completed work. Independent numerical review is still unassigned.
+
+PR #7212 head `6fbf60948ee746e42aaafcde90aef4bc368a5cf8` failed `contract-delta` job `104755648739`: the existing biocatalyst-serving and unrun-picks-boards curated CI scopes omitted the newly imported `engine/experiment_followup.py`. Two discriminating tests failed before the repair. Only the two exact path entries were added; all existing job commands, gates and paths were compared and preserved. New follow-up suite: 34 passed. Combined producer/admin/JS suite: 69 passed, 9 previously separately verified real-input checks deselected.
+
+The full unchanged contract checker is currently executing as native PID **41994** (child 42018), command `python3.12 scripts/check_contract_delta.py --base 4347812e120f5c2dc84190a740eb395651d351e1`; output `.pytest_cache/followup-contract-delta-green-001.log`. It was observed computing with its own base worker, not stalled. Reconcile this exact process before rerunning. No new commit/push yet.
+
+Review-interface inquiry was delivered on the existing Slack transport at `C0BSBM78V1N/1789597812.452299`. This is an organizational interface/placement question, not a worker commission, receiver assignment, Job, START or reviewer watcher. No reviewer is bound. Do not invent an active review or use the inquiry as a child-assignment edge.
+
+Exact next action: consume the full contract result, publish the bounded correction to the same #7212 branch, then consume exact-head hosted CI and the review-interface reply. Preserve production holds and the existing two-candidate integration evidence; no grading, activation, trade authority, new workstream or candidate/result rewrite is authorized by this checkpoint.
+
+## Contract-delta completion and positive-control evidence
+
+The preceding PID 41994 checkpoint is superseded: the full unmodified contract checker has completed **exit 0 / 0 introduced / 0 inherited** against exact CI base `4347812e120f5c2dc84190a740eb395651d351e1` (982.76 seconds). No process is left pending on that local gate. Evidence: `research/evidence/signal-lab-followup-readiness-20260916/ci-scope-repair.json`, including fresh 69-test JUnit hash. The completed nonhidden pytest fixture was moved into this worktree's private cache; it must not be staged.
+
+The numerical source was not changed. A fixed, causal synthetic positive control on exact #7190 source passed the unchanged battery, while a shuffled-feature control on the identical price path returned null. Both used the same rule, cost assumptions and private trial-family size 23. This proves that one known predictive construction can pass and its shuffled control does not; it is not market alpha, false-positive calibration, independent review or production acceptance. Complete reproducible diagnostic and source hash: #7190 comment `5705588463`. Earlier test naming alone did not prove positive admission because `test_planted_signal_positive_ic_and_passes` never asserted a pass verdict.
+
+#7190 completed-CI correction is durably recorded in comment `5705543207`. The same Slack review-interface inquiry remains unassigned and had no reply at the last exact-root read. No reviewer or runtime job has started, and no per-review reasoning watcher is armed while unbound.
+
+Current source correction is limited to two CI dependency entries, their two regression cases, and this evidence/continuation update. Publish it to the existing #7212 branch, retain draft/HOLD and no-auto-merge, and consume its new exact-head CI. Do not recreate the published PR, rerun #7190's completed CI, repeat the original archaeology or convert the synthetic control into a scientific admission.
