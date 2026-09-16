@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-16T01:24:08.676552+00:00",
-  "count": 2195,
+  "generated_at": "2026-09-16T01:39:13.443502+00:00",
+  "count": 2196,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -99,6 +99,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-28hnibtwani-6afe79",
+      "title": "Must C Public LatAm FINAL v2 CCM",
+      "institution": "Commbank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T00:13:34Z",
+      "summary_points": [
+        "**USD Weakness Catalyst**: Weak USD drives capital inflows, cheaper debt repayment, higher commodity prices, and reduced imported inflation, correlating with stronger LatAm GDP per capita convergence (inverse relationship).",
+        "**Commodity & Mineral Structural Edge**: High commodity prices (post-2000s supercycle) and LatAm’s dominance in critical minerals (lithium, copper, nickel) for AI/EV/energy transition provide permanent structural tailwinds beyond cyclical trends.",
+        "**Convergence Stagnation Risk**: LatAm’s GDP per capita as % of U.S.",
+        "stagnated at 26.4% (2024 vs 28% in 1990), trailing EM Asia by +20pp, with persistent non-convergence despite favorable conditions.",
+        "**Political & Fiscal Constraints**: Political rigidity, fiscal constraints, and security concerns threaten sustained growth, mirroring past crises (e.g., Volcker shock, 1994–2001 cascade)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 57,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-drr4pjejey5-a7911a",
       "title": "Transformational Innovation Opportunities (TRIO)",
