@@ -2424,3 +2424,131 @@ def test_artifact_store_reuses_w1_analyzed_body_normalization(tmp_path):
         source_body=padded_body,
     )
     assert receipt.source_content_sha256 == _sha(BODY)
+
+def test_artifact_lost_reply_and_unavailable_status_stays_effect_unknown(tmp_path):
+    from engine.research_intelligence.store import (
+        ResearchIntelligenceEffectUnknown,
+        latest_pointer_key,
+        persist_analysis,
+    )
+
+    class LostArtifactReplyAndStatus(LocalStore):
+        def __init__(self, root):
+            super().__init__(root)
+            self.unavailable_key = None
+            self.artifact_write_calls = 0
+
+        def put_bytes_strict_conditional(self, key, data, **kwargs):
+            if "/objects/" not in key:
+                return super().put_bytes_strict_conditional(key, data, **kwargs)
+            self.artifact_write_calls += 1
+            result = super().put_bytes_strict_conditional(key, data, **kwargs)
+            self.unavailable_key = key
+            raise OSError("reply lost after committed artifact write")
+
+        def get_bytes_strict_bounded(self, key, maximum_bytes):
+            if key == self.unavailable_key:
+                raise OSError("artifact status unavailable")
+            return super().get_bytes_strict_bounded(key, maximum_bytes)
+
+    store = LostArtifactReplyAndStatus(tmp_path / "store")
+    with pytest.raises(ResearchIntelligenceEffectUnknown) as unknown:
+        persist_analysis(store, _analysis(), source_body=BODY)
+
+    assert unknown.value.code == "artifact_effect_unknown"
+    assert store.artifact_write_calls == 1
+    assert not (store.root / latest_pointer_key(_rio()["document"]["id"])).exists()
+
+
+def test_pointer_lost_reply_and_unavailable_status_stays_effect_unknown(tmp_path):
+    from engine.research_intelligence.store import (
+        ResearchIntelligenceEffectUnknown,
+        persist_analysis,
+    )
+
+    class LostPointerReplyAndStatus(LocalStore):
+        def __init__(self, root):
+            super().__init__(root)
+            self.trigger = False
+            self.status_unavailable = False
+            self.pointer_write_calls = 0
+
+        def put_bytes_strict_conditional(self, key, data, **kwargs):
+            result = super().put_bytes_strict_conditional(key, data, **kwargs)
+            if self.trigger and key.endswith("/latest.json"):
+                self.trigger = False
+                self.pointer_write_calls += 1
+                self.status_unavailable = True
+                raise OSError("reply lost after committed pointer write")
+            return result
+
+        def get_bytes_strict_bounded_versioned(self, key, maximum_bytes):
+            if self.status_unavailable and key.endswith("/latest.json"):
+                raise OSError("pointer status unavailable")
+            return super().get_bytes_strict_bounded_versioned(key, maximum_bytes)
+
+    store = LostPointerReplyAndStatus(tmp_path / "store")
+    first = persist_analysis(store, _analysis(), source_body=BODY)
+    corrected = _analysis()
+    corrected["rio"]["analysis"]["thesis"]["summary"] = "Corrected interpretation."
+    store.trigger = True
+
+    with pytest.raises(ResearchIntelligenceEffectUnknown) as unknown:
+        persist_analysis(
+            store,
+            corrected,
+            source_body=BODY,
+            expected_current_artifact_sha256=first.artifact_sha256,
+        )
+
+    assert unknown.value.code == "pointer_effect_unknown"
+    assert store.pointer_write_calls == 1
+
+
+def test_pointer_lost_reply_then_different_winner_stays_effect_unknown(tmp_path):
+    from engine.research_intelligence.store import (
+        POINTER_MAX_BYTES,
+        ResearchIntelligenceEffectUnknown,
+        persist_analysis,
+    )
+
+    class LostPointerReplyThenSuperseded(LocalStore):
+        def __init__(self, root):
+            super().__init__(root)
+            self.trigger = False
+            self.candidate_pointer_writes = 0
+
+        def put_bytes_strict_conditional(self, key, data, **kwargs):
+            if not (self.trigger and key.endswith("/latest.json")):
+                return super().put_bytes_strict_conditional(key, data, **kwargs)
+            prior = super().get_bytes_strict_bounded_versioned(key, POINTER_MAX_BYTES)
+            self.candidate_pointer_writes += 1
+            accepted = super().put_bytes_strict_conditional(key, data, **kwargs)
+            assert accepted is True
+            current = super().get_bytes_strict_bounded_versioned(key, POINTER_MAX_BYTES)
+            restored = super().put_bytes_strict_conditional(
+                key,
+                prior.data,
+                expected_version=current.version,
+                content_type="application/json",
+            )
+            assert restored is True
+            self.trigger = False
+            raise OSError("candidate pointer reply lost before concurrent supersession")
+
+    store = LostPointerReplyThenSuperseded(tmp_path / "store")
+    first = persist_analysis(store, _analysis(), source_body=BODY)
+    corrected = _analysis()
+    corrected["rio"]["analysis"]["thesis"]["summary"] = "Transient correction."
+    store.trigger = True
+
+    with pytest.raises(ResearchIntelligenceEffectUnknown) as unknown:
+        persist_analysis(
+            store,
+            corrected,
+            source_body=BODY,
+            expected_current_artifact_sha256=first.artifact_sha256,
+        )
+
+    assert unknown.value.code == "pointer_effect_unknown"
+    assert store.candidate_pointer_writes == 1

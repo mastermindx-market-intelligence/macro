@@ -53,6 +53,26 @@ class ResearchIntelligenceStoreError(RuntimeError):
         self.code = code
 
 
+class ResearchIntelligenceEffectUnknown(ResearchIntelligenceStoreError):
+    """A modifying write may have committed but canonical status cannot prove it."""
+
+    def __init__(
+        self,
+        code: str,
+        message: str,
+        *,
+        write_error: BaseException,
+        status_error: BaseException | None = None,
+    ):
+        super().__init__(code, message)
+        self.write_error_type = type(write_error).__name__
+        self.status_error_code = (
+            getattr(status_error, "code", type(status_error).__name__)
+            if status_error is not None
+            else None
+        )
+
+
 class ResearchIntelligenceInvalid(ResearchIntelligenceStoreError):
     """Stored or submitted state violates the frozen artifact contract."""
 
@@ -725,22 +745,34 @@ def _reconcile_immutable_create(
     payload: bytes,
     cause: BaseException | None,
 ) -> bool:
-    readback = _read_bounded_optional(store, key, ARTIFACT_MAX_BYTES)
+    try:
+        readback = _read_bounded_optional(store, key, ARTIFACT_MAX_BYTES)
+    except ResearchIntelligenceStoreError as status_error:
+        if cause is None:
+            raise
+        raise ResearchIntelligenceEffectUnknown(
+            "artifact_effect_unknown",
+            "immutable Research Intelligence write outcome is unknown",
+            write_error=cause,
+            status_error=status_error,
+        ) from status_error
     if readback == payload:
         return True
+    if cause is not None:
+        raise ResearchIntelligenceEffectUnknown(
+            "artifact_effect_unknown",
+            "immutable Research Intelligence write outcome is unknown",
+            write_error=cause,
+        ) from cause
     if readback is not None:
-        error: ResearchIntelligenceStoreError = ResearchIntelligenceConflict(
+        raise ResearchIntelligenceConflict(
             "artifact_collision",
             "immutable Research Intelligence key holds different bytes",
         )
-    else:
-        error = ResearchIntelligenceStoreError(
-            "artifact_effect_unknown",
-            "immutable Research Intelligence write outcome is unknown",
-        )
-    if cause is not None:
-        raise error from cause
-    raise error
+    raise ResearchIntelligenceStoreError(
+        "artifact_effect_unknown",
+        "immutable Research Intelligence write outcome is unknown",
+    )
 
 
 def _ensure_immutable_artifact(
@@ -788,16 +820,29 @@ def _reconcile_pointer_write(
     expected_payload: bytes,
     cause: BaseException | None,
 ) -> bool:
-    observed, _pointer, _stored = _read_latest_state(store, document_id)
+    try:
+        observed, _pointer, _stored = _read_latest_state(store, document_id)
+    except ResearchIntelligenceStoreError as status_error:
+        if cause is None:
+            raise
+        raise ResearchIntelligenceEffectUnknown(
+            "pointer_effect_unknown",
+            "Research Intelligence latest-pointer write outcome is unknown",
+            write_error=cause,
+            status_error=status_error,
+        ) from status_error
     if observed.data == expected_payload:
         return True
-    error = ResearchIntelligenceConflict(
+    if cause is not None:
+        raise ResearchIntelligenceEffectUnknown(
+            "pointer_effect_unknown",
+            "Research Intelligence latest-pointer write outcome is unknown",
+            write_error=cause,
+        ) from cause
+    raise ResearchIntelligenceConflict(
         "pointer_conflict",
         "Research Intelligence latest pointer changed concurrently",
     )
-    if cause is not None:
-        raise error from cause
-    raise error
 
 
 def _publish_pointer(

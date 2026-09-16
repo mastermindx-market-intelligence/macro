@@ -6,6 +6,7 @@ from .schema import SCHEMA, validate_rio
 from .store import (
     ResearchIntelligenceConflict,
     ResearchIntelligenceCorrectionRequired,
+    ResearchIntelligenceEffectUnknown,
     ResearchIntelligenceInvalid,
     ResearchIntelligenceStoreError,
     ResearchIntelligenceWriteReceipt,
@@ -20,6 +21,7 @@ __all__ = [
     "SCHEMA",
     "ResearchIntelligenceConflict",
     "ResearchIntelligenceCorrectionRequired",
+    "ResearchIntelligenceEffectUnknown",
     "ResearchIntelligenceInvalid",
     "ResearchIntelligenceStoreError",
     "ResearchIntelligenceWriteReceipt",
