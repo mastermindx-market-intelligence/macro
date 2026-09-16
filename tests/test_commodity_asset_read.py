@@ -1,0 +1,246 @@
+"""Asset-read projection: one dated fact set, zero new trading authority."""
+from copy import deepcopy
+import json
+import pytest
+from scripts.commodity_asset_read import build_asset_read, exposure_percent, attach_asset_reads
+
+
+def row():
+    return {"close":100.0,"alloc_optimal":0.5,"risk_regime":"low_risk", "risk_index":12.0,
+            "momentum_state":"bull","ts_trend":"up","driver_score":-0.4}
+
+
+def view(action="BUY",down=()):
+    return {"conviction":{"action":action,"score":30},
+            "verdict":{"grade":"TREND-FOLLOW"},
+            "mtf_rows":[{"key":k,"trend":"down" if k in down else "up",
+                         "macd":"neg" if k in down else "pos"} for k in ("D","3D","W")]}
+
+
+def read(values=None,display=None,**kw):
+    defaults={"signal_asof":"2026-09-15","price_asof":"2026-09-15", "reference_asof":"2026-09-15","instrument":"GC=F"}
+    defaults.update(kw)
+    return build_asset_read("gold",row() if values is None else values,
+                            view() if display is None else display,**defaults)
+
+
+@pytest.mark.parametrize("value",[None,True,False,float("nan"),float("inf"),-0.1,1.1,"0.5"])
+def test_unknown_allocation_never_becomes_zero(value):
+    assert exposure_percent(value) is None
+
+
+@pytest.mark.parametrize("value,want",[(0,0),(0.5,50),(1,100),(0.125,12.5)])
+def test_valid_allocations_are_preserved(value,want):
+    assert exposure_percent(value)==want
+
+
+def test_gold_zero_exposure_is_not_overridden_by_positive_trend():
+    r=row();r.update(alloc_optimal=0,risk_regime="high_risk",momentum_state="bear")
+    v=read(r,view("SELL",("D","3D")))
+    assert v["state"]=="defensive" and v["exposure_pct"]==0
+    assert v["structural_trend"]=="up"
+    assert v["timeframes"][1]["trend"]=="down"
+    assert "zero_exposure" in v["reason_codes"]
+
+
+def test_buy_signal_and_zero_target_are_disclosed_not_averaged():
+    r=row();r["alloc_optimal"]=0
+    v=read(r,view("BUY"))
+    assert v["state"]=="mixed" and "policy_disagreement" in v["reason_codes"]
+
+
+def test_positive_control_remains_positive_but_grants_no_trade_authority():
+    v=read()
+    assert v["state"]=="positive"
+    assert v["authority"]=="display_only"
+    assert v["new_entry_permission"] is None
+
+
+@pytest.mark.parametrize("key",["D","3D"])
+def test_bearish_tactical_read_cannot_render_positive(key):
+    v=read(display=view("BUY",(key,)))
+    assert v["state"]=="mixed" and "tactical_disagreement" in v["reason_codes"]
+
+
+def test_high_risk_is_not_hidden_by_long_term_uptrend():
+    r=row();r["risk_regime"]="high_risk"
+    assert read(r)["state"]!="positive"
+
+
+@pytest.mark.parametrize("which",["signal_asof","price_asof","reference_asof"])
+def test_missing_date_is_explicitly_incomplete(which):
+    v=read(**{which:None})
+    assert v["state"]=="incomplete" and v["quality"]=="incomplete"
+
+
+@pytest.mark.parametrize("value",[True,123,"invalid","2026-02-31",""])
+def test_malformed_dates_never_look_current(value):
+    assert read(signal_asof=value)["state"]=="incomplete"
+
+
+def test_older_asset_does_not_inherit_freshness_from_other_assets():
+    v=read(reference_asof="2026-09-18")
+    assert v["state"]=="lagging" and v["lag_calendar_days"]==3
+    assert v["signal_asof"]=="2026-09-15"
+
+
+def test_future_or_split_snapshot_is_not_accepted():
+    assert read(signal_asof="2026-09-16")["state"]=="incomplete"
+    assert read(price_asof="2026-09-14")["state"]=="incomplete"
+
+
+@pytest.mark.parametrize("missing",["risk_regime","momentum_state","alloc_optimal"])
+def test_missing_core_policy_inputs_are_not_clearance(missing):
+    r=row();del r[missing]
+    assert read(r)["state"]=="incomplete"
+
+
+def test_missing_timeframe_is_not_filled_as_up_or_flat():
+    display=view();display["mtf_rows"]=[display["mtf_rows"][0]]
+    v=read(display=display)
+    assert v["state"]=="incomplete"
+    assert v["timeframes"][1]["trend"] is None
+
+
+def test_duplicate_timeframe_evidence_is_incomplete():
+    display=view();display["mtf_rows"].append(dict(display["mtf_rows"][0]))
+    assert read(display=display)["state"]=="incomplete"
+
+
+def test_expansion_asset_has_no_invented_allocation_policy():
+    v=build_asset_read("corn",row(),view("BUY"),signal_asof="2026-09-15",price_asof="2026-09-15",reference_asof="2026-09-15",instrument="ZC=F")
+    assert v["exposure_pct"] is None and v["allocation_applicable"] is False
+    assert v["model_action"] is None
+
+
+def test_input_objects_unchanged_and_output_strict_json():
+    r,d=row(),view();before=deepcopy((r,d));v=read(r,d)
+    assert (r,d)==before
+    json.dumps(v,allow_nan=False)
+
+
+def test_bad_model_score_is_not_smuggled_into_json():
+    d=view();d["conviction"]["score"]=float("nan")
+    assert read(display=d)["model_score"] is None
+
+
+def test_missing_instrument_is_not_silently_gold_futures():
+    assert read(instrument=None)["state"]=="incomplete"
+
+
+
+def test_one_projection_is_shared_by_detail_and_machine_index():
+    import pandas as pd
+    from lib import config
+    frames={"gold":pd.DataFrame([row()],index=pd.to_datetime(["2026-09-15"]))}
+    d={"name":"gold","mtf_rows":view()["mtf_rows"],"verdict":view()["verdict"]}
+    asset={"key":"gold",**view()}
+    projected=attach_asset_reads([d],frames,[asset],config.load()["commodities"])
+    assert d["asset_read"] is projected["gold"]
+    assert projected["gold"]["instrument"]=="GC=F"
+    assert projected["gold"]["exposure_pct"]==50
+
+
+def test_member_lag_is_measured_against_actual_newest_input():
+    import pandas as pd
+    from lib import config
+    frames={"gold":pd.DataFrame([row()],index=pd.to_datetime(["2026-09-12"])),
+            "oil":pd.DataFrame([row()],index=pd.to_datetime(["2026-09-15"]))}
+    detail=[{"name":k,"mtf_rows":view()["mtf_rows"],"verdict":view()["verdict"]} for k in frames]
+    assets=[{"key":k,**view()} for k in frames]
+    out=attach_asset_reads(detail,frames,assets,config.load()["commodities"])
+    assert out["gold"]["state"]=="lagging" and out["gold"]["lag_calendar_days"]==3
+    assert out["oil"]["quality"]=="dated"
+
+
+def test_duplicate_or_unsorted_source_dates_are_not_accepted():
+    import pandas as pd
+    from lib import config
+    for dates in (["2026-09-15","2026-09-15"],["2026-09-15","2026-09-14"]):
+        frames={"gold":pd.DataFrame([row(),row()],index=pd.to_datetime(dates))}
+        detail=[{"name":"gold","mtf_rows":view()["mtf_rows"],"verdict":view()["verdict"]}]
+        result=attach_asset_reads(detail,frames,[{"key":"gold",**view()}],config.load()["commodities"])
+        assert result["gold"]["state"]=="incomplete"
+
+
+def test_core_asset_does_not_borrow_another_assets_model():
+    import pandas as pd
+    from lib import config
+    frames={"gold":pd.DataFrame([row()],index=pd.to_datetime(["2026-09-15"]))}
+    detail=[{"name":"gold","mtf_rows":view()["mtf_rows"],"verdict":view()["verdict"]}]
+    result=attach_asset_reads(detail,frames,[{"key":"oil",**view()}],config.load()["commodities"])
+    assert result["gold"]["model_action"] is None
+    assert result["gold"]["state"]=="incomplete"
+
+
+def test_price_gap_is_visible_even_when_signal_row_is_newer():
+    import pandas as pd
+    from lib import config
+    old,new=row(),row();new["close"]=float("nan")
+    frame=pd.DataFrame([old,new],index=pd.to_datetime(["2026-09-14","2026-09-15"]))
+    detail=[{"name":"gold","mtf_rows":view()["mtf_rows"],"verdict":view()["verdict"]}]
+    result=attach_asset_reads(detail,{"gold":frame},[{"key":"gold",**view()}],config.load()["commodities"])
+    assert result["gold"]["state"]=="incomplete"
+    assert result["gold"]["price_asof"]=="2026-09-14"
+
+
+@pytest.mark.parametrize("grade",["WAIT","CAUTION","BUY-THE-DIP","DON'T CHASE","AVOID"])
+def test_asset_summary_cannot_overrule_existing_timeframe_verdict(grade):
+    display=view();display["verdict"]["grade"]=grade
+    result=read(display=display)
+    assert result["state"]!="positive"
+    assert result["timing_grade"]==grade
+
+
+def test_missing_timeframe_verdict_is_not_positive_clearance():
+    display=view();display.pop("verdict")
+    assert read(display=display)["state"]=="incomplete"
+
+
+
+def test_fixture_split_uses_actual_projection_and_preserves_policy_disagreement():
+    from scripts.capture_commodity_asset_read_evidence import fixture_context
+    context=fixture_context("split")
+    reads=context["vm"]["asset_reads"]
+    assert reads["gold"]["state"]=="defensive"
+    assert reads["gold"]["exposure_pct"]==0
+    assert reads["silver"]["state"]=="mixed"
+    assert reads["oil"]["state"]=="positive"
+    assert reads["oil"]["exposure_pct"]==100
+    assert all(r["new_entry_permission"] is None for r in reads.values())
+
+
+@pytest.mark.parametrize("scenario,state",[("incomplete","incomplete"),("lagging","lagging")])
+def test_fixture_degraded_states_are_derived_not_hardcoded(scenario,state):
+    from scripts.capture_commodity_asset_read_evidence import fixture_context
+    assert fixture_context(scenario)["vm"]["asset_reads"]["gold"]["state"]==state
+
+
+def test_real_template_renders_asset_reads_and_missing_target_honestly():
+    from scripts.capture_commodity_asset_read_evidence import fixture_context
+    from scripts.capture_commodities_w6_evidence import render_page
+    context=fixture_context("incomplete")
+    markup=render_page(context)
+    assert 'data-asset-read="gold" data-read-state="incomplete"' in markup
+    assert 'Model exposure' in markup and 'Signal date' in markup
+    assert 'None%' not in markup and 'nan%' not in markup
+    assert 'asset-read-open' in markup
+
+
+def test_asset_read_component_escapes_instrument_text():
+    from scripts.capture_commodity_asset_read_evidence import fixture_context
+    from scripts.capture_commodities_w6_evidence import render_page
+    context=fixture_context("split")
+    context["vm"]["asset_reads"]["gold"]["instrument"]='<script>alert(1)</script>'
+    markup=render_page(context)
+    assert '<script>alert(1)</script>' not in markup
+    assert '&lt;script&gt;alert(1)&lt;/script&gt;' in markup
+
+
+@pytest.mark.parametrize("target",[0.25,0.5,1.0])
+def test_negative_model_label_with_positive_target_is_disclosed(target):
+    r=row();r["alloc_optimal"]=target
+    result=read(r,view("SELL"))
+    assert result["state"]=="mixed"
+    assert result["exposure_pct"]==target*100
+    assert "policy_disagreement" in result["reason_codes"]

@@ -1432,8 +1432,12 @@ def _build_sector_vm_inner(
             entry["conviction"] = conviction
         detail.append(entry)
 
+    from scripts.commodity_asset_read import attach_asset_reads
+    asset_reads = attach_asset_reads(detail, member_results, assets, cfg_com)
+
     return {
         "stance":         stance,
+        "asset_reads":    asset_reads,
         "breadth":        breadth_vm,
         "index":          index_vm,
         "cycle_summary":  cycle_summary,
@@ -1679,6 +1683,8 @@ def main() -> int:
                                     "action": (a.get("conviction") or {}).get("action"),
                                     "conviction": (a.get("conviction") or {}).get("score")}
                          for a in assets}}
+    # Same objects as page cards/detail; no parallel decision store.
+    latest["asset_reads"] = vm.get("asset_reads", {})
     # ratios block: copper_gold and gold_silver — reuse series already computed
     # by complex_vm (cx already holds live gsr and copper_gold scalar values,
     # but we need 20d pct-change; read from the underlying results frames directly).

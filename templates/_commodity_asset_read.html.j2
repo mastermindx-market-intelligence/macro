@@ -1,0 +1,44 @@
+{# Display-only consumer. A missing read never borrows index permission. #}
+{% macro asset_read_card(read, label_en, label_zh, name, compact=false) -%}
+{% set r = read if read is mapping else {} %}
+{% set tone = r.tone if r.tone in ('up','dn','amb','mut') else 'mut' %}
+<article class="panel asset-read-card" data-asset-read="{{ name }}" data-read-state="{{ r.state or 'incomplete' }}">
+  <header class="asset-read-heading">
+    <strong>{{ t(label_en, label_zh) }}</strong>
+    <span class="faint">{{ r.instrument or t('Instrument unavailable', '品种身份缺失') }}</span>
+  </header>
+  <h3 class="asset-read-title {{ tone }}">{{ t(r.title_en or 'Evidence incomplete', r.title_zh or '证据不完整') }}</h3>
+  <div class="asset-read-facts">
+    <div><span class="mut">{{ t('Model exposure', '模型敞口') }}</span>
+      <strong>{% if r.exposure_pct is number and r.exposure_pct is not sameas true and r.exposure_pct is not sameas false and r.exposure_pct >= 0 and r.exposure_pct <= 100 %}{{ '%g'|format(r.exposure_pct) }}%{% else %}{{ t('Unavailable' if r.allocation_applicable is not sameas false else 'Not modelled', '暂无数据' if r.allocation_applicable is not sameas false else '未建模') }}{% endif %}</strong>
+    </div>
+    <div><span class="mut">{{ t('Asset risk', '品种风险') }}</span><strong>
+      {% if r.risk == 'high_risk' %}{{ t('Elevated','偏高') }}{% elif r.risk == 'low_risk' %}{{ t('Calm','平稳') }}{% else %}{{ t('Unavailable','暂无数据') }}{% endif %}
+    </strong></div>
+    <div><span class="mut">{{ t('12-month trend','12个月趋势') }}</span><strong>{{ t('Up','向上') if r.structural_trend == 'up' else t('Down','向下') if r.structural_trend == 'down' else t('Flat','走平') if r.structural_trend == 'flat' else '—' }}</strong></div>
+    <div><span class="mut">{{ t('Existing model label','现有模型标签') }}</span><strong>{{ t(r.model_action, {'STRONG BUY':'强烈买入','BUY':'买入','HOLD':'持有','SELL':'卖出','STRONG SELL':'强烈卖出'}.get(r.model_action,'')) if r.model_action else '—' }}</strong></div>
+  </div>
+  <div class="asset-read-timeframes" aria-label="{{ t('Timeframe evidence', '周期证据')|striptags }}">
+    {% for f in r.timeframes or [] %}<span class="pill">{{ t(f.label_en, f.label_zh) }} <b class="{{ 'dn' if f.trend == 'down' else 'up' if f.trend == 'up' else 'mut' }}">{{ t('Down','向下') if f.trend == 'down' else t('Up','向上') if f.trend == 'up' else t('Flat','走平') if f.trend == 'flat' else '—' }}</b></span>{% endfor %}
+  </div>
+  {% if r.reasons %}<p class="asset-read-reason">{{ t(r.reasons[0].en, r.reasons[0].zh) }}</p>{% else %}<p class="asset-read-reason">{{ t('Required evidence is unavailable. A rising index is not permission for this asset.', '必要证据缺失。指数上涨不代表此品种入场条件成立。') }}</p>{% endif %}
+  <footer class="asset-read-date">
+    {{ t('Signal date','信号日期') }} <time>{{ r.signal_asof or '—' }}</time>
+    {% if r.quality == 'lagging' %}<span class="amb"> · {{ r.lag_calendar_days }} {{ t('calendar days behind page inputs','个自然日落后于页面输入') }}</span>{% endif %}
+    {% if not compact %}<button type="button" class="dtab asset-read-open" data-det="{{ name }}">{{ t('Open asset evidence','查看品种证据') }}</button>{% endif %}
+  </footer>
+</article>
+{%- endmacro %}
+
+{% if not asset_read_detail_only|default(false) %}
+<section class="asset-read-section" aria-label="{{ t('Asset-specific conditions','逐品种条件')|striptags }}">
+  <div class="sechd"><strong>{{ t('Different assets. Different decisions.', '不同品种，分别判断。') }}</strong></div>
+  <p class="asset-read-disclosure">{{ t('Dated model outputs, not live trade instructions. Exposure is this asset policy’s target, not a portfolio allocation. Live quote updates do not refresh these signals.', '以下为带日期的模型输出，并非实时交易指令。敞口为该品种策略目标，不是组合配置；实时报价更新不会刷新这些信号。') }}</p>
+  <div class="asset-read-grid">
+    {% for name, en, zh in [('gold','Gold','黄金'),('silver','Silver','白银'),('copper','Copper','铜'),('oil','Oil · WTI','原油 · WTI')] %}
+      {{ asset_read_card((vm.asset_reads or {}).get(name), en, zh, name) }}
+    {% endfor %}
+  </div>
+  <p class="faint asset-read-method">{{ t('3-session is the engine’s existing NYSE-reference aggregation and may include a partial bar; it is not a verified match to a separate chart’s 3D candle. The long cycle and macro context do not overrule the dated asset read.', '三交易日沿用现有引擎的NYSE参考聚合，可能包含未完成K线；尚未确认与独立图表的3D K线一致。长期周期和宏观背景不覆盖带日期的品种判断。') }}</p>
+</section>
+{% endif %}
