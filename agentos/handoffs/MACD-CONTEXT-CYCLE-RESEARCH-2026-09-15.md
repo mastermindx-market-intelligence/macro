@@ -1,3 +1,91 @@
+---
+workstream: WS:PROPHET-US-AVAILABILITY
+session: sol/macd-cycle-research-20260915-c3
+model: sol
+ended_because: blocked
+mission: Repair the existing Prophet replay input/cache dependency used by the MACD study; no availability-wave closure
+  or ownership transfer.
+state_before: Draft PR7177; interrupted local replay-input edits, stale handoff metadata, and failed historical control
+  fidelity.
+changed:
+- path: scripts/prophet_pit_replay.py
+  what: Restore pinned missing ticker inputs, repair control-to-replay tails, hash price bytes, and preserve restoration
+    provenance in the existing receipt.
+- path: tests/test_prophet_pit_replay_sparse_inputs.py
+  what: Twelve input/cache regression cases including two-stage execution and receipt consumption.
+- path: research/signal_engine/macd_context/REPLAY_INPUT_AND_CLOCK_RECOVERY_2026-09-16.md
+  what: Record verified input repair and exact archived clock sensitivity without predictive or production promotion.
+verified:
+- claim: The exact final replay source passes 199 targeted tests.
+  command: PYTHONDONTWRITEBYTECODE=1 MM_DATA_GUARD=1 python3 -m pytest tests/test_prophet_pit_replay_sparse_inputs.py
+    tests/test_prophet_pit_replay_alpha_result.py tests/test_prophet_pit_replay.py -q --tb=short --basetemp=<owned-evidence>/pytest-release
+    --junitxml=<owned-evidence>/release.xml
+  result: 'PID66110: pytest exit0, 199 passed in26.72s; final source SHA2561cd6aaee24b837df431dffa96286d282f9eee19f5978ef42a4fb5ea521f0740d.'
+- claim: Real historical SPY input preparation restores all8421 rows through a two-pass transition without rewriting
+    on repeat.
+  command: Existing scripts.prophet_pit_replay.prepare_reconstruction_tree, vintage ff745b1ab54256b0188688cc5815e6675e4edef5,
+    SPY-only surface, control2026-07-14 then replay2026-07-15; assert_frame_equal against pinned Git source.
+  result: PID51948 exit0; real_benchmark_two_pass_receipt.json; no board run or canonical-store change.
+- claim: Two archived functions change calendar-sensitive context on unchanged retained inputs.
+  command: python3 research/signal_engine/macd_context/source/probe_historical_clock_dependencies.py
+  result: 'PID26117: July dates stress0.0; September dates stress0.7 withfomc; input hashes unchanged.'
+unverified:
+- claim: Full historical board-control fidelity and original execution/publication/input clocks.
+  what_would_verify: Lawfully clear the blocked retained-board input census, qualify the existing owner inputs/clocks,
+    and rerun the same control without a waiver.
+- claim: Independent scientific acceptance and production/predictive improvement.
+  what_would_verify: Independent source/scientific review, supported chronological tests and forward validation; no production
+    claim follows from unit tests.
+unresolved:
+- The specific retained-board input census was platform-blocked; its output is absent.
+- Existing full control remains0.5769 agreement against0.85 floor.
+- PR remains draft/HOLD-FOR-SOL; no merge, default-main ledger application or trading authority.
+next_actions:
+- Publish and reconcile the tested source/evidence on existing PR7177 without arming merge.
+- After lawful clearance of the specific comparison boundary, qualify historical input/source/publication clocks and
+  complete the same canonical control.
+do_not_redo:
+- Completed crossover, factorial, repair, horizon/exit, five-benchmark, 48-contrast, recorded-context and archived-score
+  studies absent an invalidator.
+- The already-absorbed August14 availability replay; this is not a new backfill authorization.
+danger_areas:
+- This workstream binding covers only the existing availability-owned replay dependency, not the entire MACD program
+  or signal-quality ownership.
+- Do not retry, split or reroute the platform-blocked census.
+- Do not equate price date with publication date or reduce the fidelity floor.
+- DNR:KILL-OUTCOME-AUDITION and TOI/Temporal Grain/Elliott holds remain.
+prs:
+- 7177
+decisions:
+- DEC:FORCE-MAJEURE-SESSIONS-ARE-BACKFILLED-BY-DEFAULT
+---
+
+## Organizational scope of this handoff
+
+The schema binds this bounded replay-owner contribution to the existing availability workstream explicitly named by the replay authority decision. It does not transfer its owner or change any wave state. The broader MACD research remains documented under `research/signal_engine/macd_context/`; signal-quality scope remains distinct from availability. The historical continuation below is retained for evidence and must not be read as an availability completion claim.
+
+# Current continuation — input repair and clock proof, September 16, 2026
+
+Read first: `research/signal_engine/macd_context/REPLAY_INPUT_AND_CLOCK_RECOVERY_2026-09-16.md` and its `replay_input_repair_20260916_r2/verification.json`. This supersedes the interrupted-input-edit/no-GREEN-test clauses, not the original scientific holds or adverse results.
+
+Mission remains useful MACD/Prophet intelligence: input and timeframe mechanisms, nested holding/exit policies, regime/breadth/sector conditions and incremental selection value. User journey remains candidate/context -> entry/add -> holding/risk -> owner-native evaluation. Infrastructure repair is a dependency, not the finished product.
+
+Protected Skillpack `bf843961c0e1b5bd45fa481f0138c71f2a87d4e2` is compatible and atomically loaded. Current explicit Chairman continuation supplies research intent. Executive OS owns lifecycle/admission; Agent OS continuity; GitHub code/evidence; existing Evaluation/TrialLedger accounting and promotion. No new Job, worker, watcher, provider or control plane was created.
+
+Same PR7177/branch and managed workspace remain. Studio Direct is absent from the current discovered tools; Remote Desktop Commander on the original Mac Studio is working. The interrupted docstring replacement was absent on readback; the owned diff was verified before further exact-preimage edits. The current source hash and real-input proof are recorded in the new receipt. Own REPL89842 was terminated after stalled input delivery; the tool reports completed with exit code null, not a claimed clean exit0. No autonomous/background research is claimed.
+
+Canonical replay now restores missing historical ticker inputs, preserves original rows, excludes later-only tickers, recovers an unchanged-blob tail between control and replay, and carries per-pass restoration provenance into the existing harness receipt. Price-cache identity includes actual bytes. Twelve new cases plus the existing replay/alpha suite passed199 tests. A real SPY input-only two-pass proof reproduced all8421 historical rows and repeated without rewriting. No full board-fidelity or production acceptance is implied.
+
+The archived function probe holds retained VIX/regime inputs constant: July15/July17 stress0.0, September15/September16 stress0.7 with `fomc`; options-expiry countdowns2/0/3/2. It confirms calendar contamination can survive a price-date fence, not the entire cause of the failed board match. Original execution/publication/input clocks remain separate and unqualified; null stays unknown, not a bearish or loss label. All methods here are deterministic; no model synthesis enters rank/size/gating.
+
+The deeper retained-board input census was platform-blocked and its output was confirmed absent. Do not retry, split, reconstruct or reroute that exact action without lawful gate clearance. The failed full control remains0.5769 versus the unchanged0.85 floor. No data-source/clock substitution or waiver is authorized to make it pass.
+
+Next: once that comparison boundary clears, qualify the retained reference's complete input/source/publication clocks through the existing owners, then repair and run the same canonical control under a predeclared contract. Obtain independent source/scientific review before admission. Keep draft/HOLD-FOR-SOL; source publication, repository CI, independent review, full-control fidelity, predictive value and production acceptance remain distinct.
+
+Do not redo completed crossover/factorial, repair, horizon/exit, benchmark/48-contrast, recorded-context or archived-score work without a material invalidator. Keep DNR:KILL-OUTCOME-AUDITION and TOI/Temporal Grain/Elliott holds. No current-v3H21 or specified SPY/RSP-divergence support is invented; no live rank, entry, plan, sizing, trade or probability change occurred. Existing branch TrialLedger bytes remain unchanged; default-main application is not claimed.
+
+---
+
 # Archive-only execution supplement — 2026-09-16
 
 The narrow scope amendment was published before outcome inspection at903f9b56b0a39a5d88892a3cbef7daf2da2e37cd: RECORDED_SCORE_DESCRIPTIVE_RULING_2026-09-16.md. It releases only the fixed archived-score description, not predictive or production use. Previous fixed-score-unexecuted clauses are superseded only for this exact audit.

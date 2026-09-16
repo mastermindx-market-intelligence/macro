@@ -480,7 +480,12 @@ def fence_no_bar_after(tree: Path, through: str, surface: PriceSurface,
         nonlocal scanned, latest
         scanned += 1
         try:
-            frame = pd.read_parquet(path)
+            raw = path.read_bytes()
+            # Endpoints alone cannot distinguish corrected prices, changed history,
+            # or two different panels ending on the same session. Hash before parsing
+            # so a repaired empty/corrupt file also invalidates the cached board.
+            state.append((relative, hashlib.sha256(raw).hexdigest()))
+            frame = pd.read_parquet(io.BytesIO(raw))
             index = _fence_index(frame)
         except Exception:  # noqa: BLE001 - unreadable is the builder's problem
             return
@@ -519,6 +524,7 @@ def fence_no_bar_after(tree: Path, through: str, surface: PriceSurface,
         "files_scanned": scanned, "ceiling": through, "max_date_found": latest,
         "violations": 0,
         "state_digest": _canonical_sha256(sorted(state))[:12],
+        "state_digest_kind": "price-path-endpoint-and-bytes-sha256/v1",
         "unscannable": sorted(unscannable),
         "unscannable_count": len(unscannable),
         "pass_ceiling": str(pass_ceiling)[:10],
@@ -648,6 +654,7 @@ def prepare_reconstruction_tree(
         "live_price_source_commit": live_sha,
         "vintage_commit": vintage_commit,
         "files": {},
+        "restored_vintage_inputs": {},
         "totals": {"written": 0, "sessions_added": 0, "unchanged": 0},
     }
 
@@ -661,15 +668,60 @@ def prepare_reconstruction_tree(
 
     for relative, pattern in surface.ticker_stores:
         directory = vintage / relative
+        vintage_tree = _tree_blobs(repo, vintage_commit, relative)
+        # A sparse checkout is not an empty historical population. Restore ONLY
+        # declared inputs already tracked at this vintage, never today's new names
+        # or today's restatements of its old rows. Existing pass-state stays intact.
+        missing = [f"{relative}/{name}" for name in sorted(vintage_tree)
+                   if Path(name).match(pattern) and not (directory / name).exists()]
+        pinned = batch_blobs(repo, vintage_commit, missing)
+        unavailable = sorted(set(missing) - set(pinned))
+        if unavailable:
+            raise PitReplayRefused(
+                "missing historical price blobs: " + ", ".join(unavailable[:8]))
+        for rel in missing:
+            path = vintage / rel
+            try:
+                restored = truncate_frame(_read_parquet_bytes(pinned[rel]), through)
+            except Exception as exc:  # noqa: BLE001 - never replace with later history
+                raise PitReplayRefused(
+                    f"cannot restore historical price input {rel}: {exc}") from exc
+            path.parent.mkdir(parents=True, exist_ok=True)
+            _atomic_parquet(restored, path)
+            manifest["restored_vintage_inputs"][rel] = {
+                "source_commit": vintage_commit,
+                "source_sha256": hashlib.sha256(pinned[rel]).hexdigest(),
+                "through": through, "rows": len(restored),
+            }
         if not directory.exists():
             continue
         # Only files whose bytes actually MOVED between the two commits can be carrying
         # a session the vintage lacks. Comparing tree object ids first turns thousands
         # of per-file `git show` forks into two `ls-tree` calls.
-        vintage_tree = _tree_blobs(repo, vintage_commit, relative)
         live_tree = _tree_blobs(repo, live_sha, relative)
         changed = [name for name, oid in live_tree.items()
                    if vintage_tree.get(name) not in (None, oid)]
+        # A control pass can truncate a restored input while Git's two source
+        # blobs stay identical. Reconsider its missing tail on the replay pass;
+        # source-object equality is not equality with the working price frame.
+        for name, oid in live_tree.items():
+            path = directory / name
+            if vintage_tree.get(name) != oid or not path.exists():
+                continue
+            try:
+                index = _fence_index(pd.read_parquet(path))
+                if index is None:
+                    continue
+                ceiling = pd.Timestamp(through)
+                if len(index):
+                    top = index.max()
+                    if getattr(top, "tz", None) is not None:
+                        ceiling = ceiling.tz_localize(top.tz)
+                    if top >= ceiling:
+                        continue
+            except Exception:  # noqa: BLE001 - leave existing unreadable-file behavior unchanged
+                continue
+            changed.append(name)
         manifest.setdefault("skipped_identical", {})[relative] = (
             len(vintage_tree) - len(changed))
         present = [name for name in sorted(changed) if (directory / name).exists()]
@@ -1007,9 +1059,10 @@ def assert_pinned_stores_unchanged(vintage: Path, *, pinned_stores: dict[str, An
 def tree_fingerprint(manifest: dict[str, Any]) -> str:
     """A short digest of the price tree state a board was built over.
 
-    Comes from the FENCE — (path, last session) for every price file it scanned — and
-    deliberately not from the overlay's own delta manifest: an identical tree state
-    produces an identical key regardless of how it got there, so a control pass run
+    Comes from the FENCE — paths, last sessions and SHA-256 hashes of actual price
+    bytes — not merely endpoints, which collide after same-date price repairs. It is
+    deliberately not the overlay delta: identical price bytes produce an identical
+    key regardless of how they got there, so a control pass run
     against a tree already at its own ceiling and a fresh replay pass against the same
     resulting tree state share one cache entry instead of each rebuilding a board that
     already exists.
@@ -2837,6 +2890,10 @@ def run_pit_replay(
         "market": market, "session": session, "vintage_sha": vintage_sha,
         "control_through": control_through, "fidelity": fidelity, "overlay": overlay,
         "alpha": alpha, "board_identity": identity, "board_path": str(board_path),
+        "restored_vintage_inputs": {
+            "control": (control_overlay.get("restored_vintage_inputs") or {}) if control else {},
+            "replay": overlay.get("restored_vintage_inputs") or {},
+        },
         "minted": [], "collided": [], "chronology_refused": [], "still_refused": [],
         "counts": {}, "reconciliation": {}, "snapshot_capture": None, "clock": None,
         "ledger_capture": None, "pinned_stores_check": pinned_stores_check,
@@ -3016,6 +3073,9 @@ def build_harness_receipt(*, market: str, session: str, entry: dict[str, Any],
         "live_price_source_commit": overlay["live_price_source_commit"],
         "overlay_totals": overlay["totals"],
         "overlay_files": overlay.get("files") or {},
+        "restored_vintage_inputs": result.get("restored_vintage_inputs") or {
+            "control": {}, "replay": overlay.get("restored_vintage_inputs") or {},
+        },
         "skipped_identical": overlay.get("skipped_identical") or {},
         "aux_panel_source": result.get("aux_panel_source"),
         "fence": overlay["fence"],

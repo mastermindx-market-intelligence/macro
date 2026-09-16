@@ -1,0 +1,45 @@
+{
+  "kind": "source_repair_verification",
+  "skillpack_sha": "bf843961c0e1b5bd45fa481f0138c71f2a87d4e2",
+  "source_sha256": "1cd6aaee24b837df431dffa96286d282f9eee19f5978ef42a4fb5ea521f0740d",
+  "test_source_sha256": "0310e0e03b305db6c587a2deeffeea5335d9b5a84c9711bdb7021f201e47726c",
+  "tests": 199,
+  "failures": 0,
+  "errors": 0,
+  "test_run_pid": 66110,
+  "tested_source_sha256": "1cd6aaee24b837df431dffa96286d282f9eee19f5978ef42a4fb5ea521f0740d",
+  "post_test_comment_only_ast_identity_verified": true,
+  "ledger_sha256": "7b6d1d8d3c7346e460631383158095ddc25e95e8c38c5fc25d77af951ebd7708",
+  "ledger_rows": 1681,
+  "default_main_application": false,
+  "independent_review": false,
+  "production_proof": false,
+  "file_hashes": {
+    "final.log": "a1d7a550658b70d3664ce4e6c1b006703993d2a264671e4c9bfb019e6c8ff258",
+    "final.xml": "eedd7ed8d232608612b7c5a66fad29bed8df68f96fe2b332da254f97eb13bd58",
+    "tail-red.log": "b1c03f839ed3aa51ae78c4e9dd070c1ccab43b929638614f6f3e5cd6077415c0",
+    "receipt-red.log": "0b8f7b784e4a0152f9ec87c6e5b835cec9b1e2bf5fa067244c4fbd65b6bd8568",
+    "benchmark_value_qa.json": "05d76a480a212137b4b64f94bb4d5ddebe0a951d19dae97887ce5cfac083d4a8",
+    "real_benchmark_two_pass_receipt.json": "b4432d38689dfc8aa1de7eb6f677c6d93da2d0dac02ae7df256b41f43d20fc8f",
+    "clock_sensitivity.json": "4e1c51391afc47edb2fca642d9207f255b72dd8bbc0e5e0f8215ef318f3732f0",
+    "release.log": "4fee265a0da7c98878208158ebd62434f94bda734fc448bd5a59141a87e2f98e",
+    "release.xml": "335cf1175c7a0e98b15b07bb4571e47d2b838da194bf96bd0fc5aa41ddcd2009",
+    "agentos-fixed.log": "7d25bbbc57b9684450d084be53ad50f9bd18a70f82d3e001dbc6aa92b2b0d3b0"
+  },
+  "exact_final_source_tested": true,
+  "agentos_validation": {
+    "pid": 83857,
+    "exit_code": 0,
+    "errors": 0,
+    "warnings": 98,
+    "scope": "existing schema validator; unrelated warnings retained"
+  },
+  "prior_test_run_pid": 19166,
+  "published_log_normalization": {
+    "tail-red.log": {
+      "raw_host_sha256": "c389218b3c259d37aac300796012ef69f33be69f5058c327682481b445ac11b3",
+      "published_sha256": "b1c03f839ed3aa51ae78c4e9dd070c1ccab43b929638614f6f3e5cd6077415c0",
+      "transformation": "trim trailing ASCII whitespace per line in repository copy only; raw host log unchanged"
+    }
+  }
+}
