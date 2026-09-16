@@ -102,3 +102,35 @@ retrievals were not bypassed. Reviewer placement remains under the existing owne
 
 Stop condition is real source/review/release/permission closure, not a CI wait alone. Records and
 component screenshots are continuity evidence, not delivery acceptance of the wider commodities program.
+
+## Completed consumer and null-target follow-through
+
+The existing asset_vm producer was still coercing None to 0% and crashing on NaN
+before the new read could render. Its two-case RED proof plus three valid controls
+now pass by reusing exposure_percent and preserving valid legacy rounding.
+
+The existing hub loader discarded asset_reads and the hub card still derived a
+Favored list from the commodity quadrant. The loader now forwards the canonical
+asset read and its card renders those dated asset descriptions, with explicit
+unavailable states and escaped text. It does not calculate another sector verdict.
+Mobile retains the established compact navigation layout; asset details are read
+on the commodity page rather than forced into a 52px navigation tile.
+
+Open #7048 owns adjacent BTC/bond/IPO hub copy. R2's helper was positioned beside
+the commodity loader, and its renderer edit was scoped to the commodity expression.
+A three-way source merge with #7048 head 8f33915a0e33ce9fe02ed6dc3de17a5b44dd7e24
+and common 909dc4edfd99b916b9b2a9f79630dee5af984d81 is conflict-free. This is not
+acceptance of #7048, and its future movement still requires reconciliation.
+
+The isolated normal build now runs build_commodities.main, the existing write_page
+and latest.json writers, and the real hub loader/chip consumer. It writes 17 reads;
+the core page states match the JSON and hub. External vendor collection and the
+optional hazard artifact are absent; no network connection was attempted. All
+outputs are in a new fixture, not site production. A first fixture setup failed
+because it copied a read-only commodity-input symlink; that symlink was not made
+writable. A new output namespace completed the replay successfully.
+
+There are now 67 focused cases, including a 1,458-combination nominal policy grid.
+The last ten-suite run before that additional grid case passed 334 tests with two
+existing warnings; the full integrated-source run is a separate receipt. No nominal
+matrix result settles the separately held malformed-input qualification.

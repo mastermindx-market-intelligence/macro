@@ -517,7 +517,9 @@ def asset_vm(asset: str, df: pd.DataFrame, calib: dict, drivers: dict | None = N
         verdicts["risk_index"] = cal_a["risk_drawdown"].get("verdict", "")
     score = cal_a.get("allocation", {}).get("optimal") or backtest(close, df["alloc_optimal"])
 
-    alloc_pct = int(round(100 * (last.get("alloc_optimal") or 0)))
+    from scripts.commodity_asset_read import exposure_percent
+    allocation_read = exposure_percent(last.get("alloc_optimal"))
+    alloc_pct = int(round(allocation_read)) if allocation_read is not None else None
     risk_on = last.get("risk_regime") == "low_risk"
     vm = {
         "key": asset, "label": META[asset]["label"], "zh": META[asset]["zh"],

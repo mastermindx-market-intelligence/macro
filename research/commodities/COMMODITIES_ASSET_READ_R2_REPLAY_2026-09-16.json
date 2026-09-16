@@ -1,0 +1,44 @@
+{
+  "kind": "isolated actual main/page/JSON/hub consumer replay",
+  "builder_exit": 0,
+  "asset_count": 17,
+  "core": {
+    "gold": {
+      "state": "defensive",
+      "exposure_pct": 0.0,
+      "model_action": "SELL",
+      "signal_asof": "2026-09-15",
+      "risk": "high_risk",
+      "timing_grade": "AVOID"
+    },
+    "silver": {
+      "state": "defensive",
+      "exposure_pct": 0.0,
+      "model_action": "SELL",
+      "signal_asof": "2026-09-15",
+      "risk": "high_risk",
+      "timing_grade": "TREND-FOLLOW"
+    },
+    "copper": {
+      "state": "caution",
+      "exposure_pct": 50.0,
+      "model_action": "HOLD",
+      "signal_asof": "2026-09-15",
+      "risk": "high_risk",
+      "timing_grade": "AVOID"
+    },
+    "oil": {
+      "state": "mixed",
+      "exposure_pct": 100.0,
+      "model_action": "SELL",
+      "signal_asof": "2026-09-15",
+      "risk": "low_risk",
+      "timing_grade": "BUY-THE-DIP"
+    }
+  },
+  "html_sha256": "75a4fbf27701259c40104a682dfa0f61058627f2a507339c468f2e7319214627",
+  "latest_sha256": "d67e70e42e3a47fdbe1b8de0c01283dcbbfb9e4f9a6914929d94243ec138f0da",
+  "network_attempts_refused": 0,
+  "production_proven": false,
+  "omissions": "new vendor collection, hazard artifact, actual published route, live hydration, rights admission and independent review"
+}

@@ -12077,6 +12077,7 @@ jobs:
       - "tests/test_commodity_asset_read.py"
       - "scripts/commodity_asset_read.py"
       - "scripts/capture_commodity_asset_read_evidence.py"
+      - "scripts/build_vector.py"
       - "templates/_commodity_asset_read.html.j2"
       - "tests/test_macro_rates_curves_bonds_guard.py"
       - "scripts/build_bonds.py"

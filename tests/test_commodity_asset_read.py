@@ -244,3 +244,93 @@ def test_negative_model_label_with_positive_target_is_disclosed(target):
     assert result["state"]=="mixed"
     assert result["exposure_pct"]==target*100
     assert "policy_disagreement" in result["reason_codes"]
+
+
+@pytest.mark.parametrize("target,expected",[(None,None),(float("nan"),None),(0.0,0),(0.5,50),(1.0,100)])
+def test_real_asset_vm_preserves_nullable_exposure(target,expected):
+    from tests.test_commodity_signals import _price, _drivers
+    from engine import commodity_signals
+    from scripts import build_commodities as builder
+    px=_price(n=900)
+    frame=commodity_signals.compute_asset({"asset":"gold","price":px,"drivers":_drivers(px.index)})
+    frame["alloc_optimal"]=frame["alloc_optimal"].astype(object)
+    frame.loc[frame.index[-1],"alloc_optimal"]=target
+    result=builder.asset_vm("gold",frame,{"assets":{},"meta":{}})
+    assert result["alloc_pct"] == expected
+
+
+
+def test_hub_loader_keeps_canonical_asset_reads(tmp_path,monkeypatch):
+    from scripts import build_vector as hub
+    data=tmp_path/"data"; (data/"commodity").mkdir(parents=True)
+    payload={"regime":"Stagflation","favored":["gold","silver"],"date":"Sep 15, 2026",
+             "asset_reads":{"gold":read()}}
+    (data/"commodity/latest.json").write_text(json.dumps(payload))
+    (tmp_path/"site").mkdir();(tmp_path/"site/commodities.html").write_text("page")
+    monkeypatch.setattr(hub.config,"load",lambda:{"storage":{"site_dir":"site"}})
+    monkeypatch.setattr(hub.config,"data_dir",lambda:data)
+    monkeypatch.setattr(hub.config,"ROOT",tmp_path)
+    state=hub._commodities_state()
+    assert state["asset_reads"]==payload["asset_reads"]
+    assert state["present"]
+
+
+def test_hub_renders_asset_evidence_not_regime_favored_list():
+    from scripts import build_vector as hub
+    vm={"risk_on":False,"risk_index":80,"risk_word":"High","momentum":-0.2}
+    r=row();r["alloc_optimal"]=0
+    gold=read(r,view("SELL",("D","3D")))
+    payload={"label":"Stagflation","favored":["gold","silver"],"asset_reads":{"gold":gold}}
+    markup=hub._g_vectors(vm,payload,{},{},{},{},{},{})
+    assert 'data-commodity-asset="gold"' in markup
+    assert 'Defensive model posture' in markup
+    assert '2026-09-15' in markup
+    assert 'Favored:' not in markup
+
+
+def test_hub_missing_or_foreign_asset_read_is_unavailable():
+    from scripts import build_vector as hub
+    wrong=read();wrong["asset"]="oil"
+    for raw in ({}, {"asset_reads":None}, {"asset_reads":{"gold":wrong}}):
+        markup=hub._commodity_asset_chips(raw)
+        assert 'Gold: Evidence unavailable' in markup
+        assert 'Positive model posture' not in markup
+        assert 'Favored:' not in markup
+
+
+def test_hub_asset_labels_escape_untrusted_text():
+    from scripts import build_vector as hub
+    gold=read();gold["title_en"]='<script>alert(1)</script>'
+    markup=hub._commodity_asset_chips({"asset_reads":{"gold":gold}})
+    assert '<script>alert(1)</script>' not in markup
+    assert '&lt;script&gt;' in markup
+
+
+def test_hub_never_infers_an_asset_from_the_sector_label():
+    from scripts import build_vector as hub
+    markup=hub._commodity_asset_chips({"label":"Reflation","favored":["gold","silver"]})
+    assert markup.count('Evidence unavailable')==4
+    assert 'Reflation' not in markup
+
+
+
+def test_asset_read_invariants_across_the_nominal_policy_grid():
+    from itertools import product
+    count=0
+    for action,target,risk,momentum,day,three,timing in product(
+        ("BUY","HOLD","SELL"),(0.0,0.5,1.0),("low_risk","high_risk"),
+        ("bull","neutral","bear"),("up","flat","down"),("up","flat","down"),
+        ("TREND-FOLLOW","WAIT","AVOID")):
+        r=row();r.update(alloc_optimal=target,risk_regime=risk,momentum_state=momentum)
+        d=view(action);d["mtf_rows"][0]["trend"]=day;d["mtf_rows"][1]["trend"]=three
+        d["verdict"]["grade"]=timing
+        result=read(r,d)
+        assert result["new_entry_permission"] is None
+        assert result["exposure_pct"]==100*target
+        if (action=="BUY" and target==0) or (action=="SELL" and target>0):
+            assert result["state"]=="mixed" and "policy_disagreement" in result["reason_codes"]
+        if result["state"]=="positive":
+            assert action=="BUY" and target>0 and risk=="low_risk"
+            assert momentum=="bull" and day==three=="up" and timing=="TREND-FOLLOW"
+        count+=1
+    assert count==1458
