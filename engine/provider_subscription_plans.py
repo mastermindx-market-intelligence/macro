@@ -41,6 +41,7 @@ class PlanSelection:
     reason: str | None = None
     usage_policy: Mapping[str, Any] | None = None
     dynamic_limits: tuple[Mapping[str, Any], ...] = ()
+    quantification_required: bool = False
 
 
 def _require_id(value: Any, label: str) -> str:
@@ -149,6 +150,14 @@ def _validate_product(provider_name: str, product_name: str, product: Any) -> No
             if key in seen_dynamic:
                 raise SubscriptionPlanError(f"tier {tier_name!r} has duplicate dynamic limit")
             seen_dynamic.add(key)
+        quantification_required = tier.get("quantification_required", False)
+        if type(quantification_required) is not bool:
+            raise SubscriptionPlanError(f"tier {tier_name!r} quantification_required must be a boolean")
+        if not tier["limits"] and not dynamic and not quantification_required:
+            raise SubscriptionPlanError(
+                f"tier {tier_name!r} has no authoritative or dynamic limits and must declare "
+                "quantification_required"
+            )
         for row in tier.get("reference_limits", []):
             _validate_limit(row, reference=True)
         for alias in tier.get("aliases", []):
@@ -243,9 +252,11 @@ def resolve_plan(provider: str, product: str, tier: str | None, *, catalog: Mapp
                 break
     if not isinstance(selected, Mapping):
         return PlanSelection(provider_key, product_key, tier_key, False, (), telemetry, "UNKNOWN_TIER", usage_policy)
+    limits = tuple(selected["limits"])
     return PlanSelection(
-        provider_key, product_key, canonical, True, tuple(selected["limits"]), telemetry,
+        provider_key, product_key, canonical, True, limits, telemetry,
         None, usage_policy, tuple(selected.get("dynamic_limits", ())),
+        bool(selected.get("quantification_required", False)) or not limits,
     )
 
 

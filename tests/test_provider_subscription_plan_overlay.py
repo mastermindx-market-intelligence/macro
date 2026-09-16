@@ -60,7 +60,7 @@ def test_overlay_cannot_replace_base_product():
             "glm": {
                 "products": {
                     "coding_plan": {
-                        "tiers": {"max": {"limits": []}},
+                        "tiers": {"max": {"limits": [], "quantification_required": True}},
                     }
                 }
             }

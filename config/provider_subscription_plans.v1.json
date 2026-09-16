@@ -525,6 +525,7 @@
           "tiers": {
             "plus": {
               "limits": [],
+              "quantification_required": true,
               "reference_limits": [
                 {
                   "horizon": "monthly",
@@ -547,6 +548,7 @@
             },
             "max": {
               "limits": [],
+              "quantification_required": true,
               "reference_limits": [
                 {
                   "horizon": "monthly",
@@ -569,6 +571,7 @@
             },
             "ultra": {
               "limits": [],
+              "quantification_required": true,
               "reference_limits": [
                 {
                   "horizon": "monthly",

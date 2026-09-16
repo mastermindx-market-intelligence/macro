@@ -106,3 +106,73 @@ def test_catalog_accepts_finite_positive_limits_and_rejects_json_nan():
     )
     with pytest.raises(SubscriptionPlanError, match="quota limit"):
         validate_catalog(catalog)
+
+
+def test_current_minimax_m3_tiers_require_quantification_and_never_read_as_usable():
+    for tier in ("plus", "max", "ultra"):
+        selection = resolve_plan("minimax", "token_plan_current_m3", tier)
+        assert selection.known is True
+        assert selection.limits == ()
+        assert selection.quantification_required is True
+        assert not (selection.known and not selection.limits and not selection.quantification_required)
+
+
+def test_no_known_tier_anywhere_reads_as_usable_without_quantification():
+    catalog = load_catalog()
+    selections = [
+        resolve_plan(provider, product, tier, catalog=catalog)
+        for provider, provider_row in catalog["providers"].items()
+        for product, product_row in provider_row["products"].items()
+        for tier in product_row["tiers"]
+    ]
+    assert len(selections) >= 20
+    assert sum(selection.known and not selection.limits for selection in selections) >= 15
+    for selection in selections:
+        assert not (selection.known and not selection.limits and not selection.quantification_required)
+
+
+def test_catalog_refuses_a_tier_with_no_authoritative_or_dynamic_limits_and_no_marker():
+    catalog = copy.deepcopy(load_catalog())
+    tier = catalog["providers"]["minimax"]["products"]["token_plan_current_m3"]["tiers"]["max"]
+    del tier["quantification_required"]
+    with pytest.raises(SubscriptionPlanError, match="quantification_required"):
+        validate_catalog(catalog)
+
+
+def test_catalog_accepts_an_empty_limit_tier_that_declares_dynamic_limits():
+    catalog = copy.deepcopy(load_catalog())
+    tier = catalog["providers"]["minimax"]["products"]["token_plan_current_m3"]["tiers"]["max"]
+    tier.pop("quantification_required", None)
+    tier["dynamic_limits"] = [{
+        "horizon": "five_hour",
+        "window_type": "rolling",
+        "metric": "provider_allocation",
+        "limit_source": "provider_reported",
+        "reset_source": "provider_reported",
+    }]
+    assert validate_catalog(catalog) is catalog
+
+
+def test_catalog_rejects_non_boolean_quantification_required():
+    catalog = copy.deepcopy(load_catalog())
+    tier = catalog["providers"]["minimax"]["products"]["token_plan_current_m3"]["tiers"]["max"]
+    for invalid in ("yes", 1):
+        tier["quantification_required"] = invalid
+        with pytest.raises(SubscriptionPlanError, match="quantification_required must be a boolean"):
+            validate_catalog(catalog)
+
+
+def test_static_and_unknown_tiers_keep_quantification_required_false():
+    static = resolve_plan("glm", "coding_plan", "max")
+    assert static.known is True
+    assert static.limits
+    assert static.quantification_required is False
+
+    unknown_provider = resolve_plan("unknown", "coding_plan", "max")
+    unknown_product = resolve_plan("glm", "unknown", "max")
+    unknown_tier = resolve_plan("glm", "coding_plan", "unknown")
+    for selection in (unknown_provider, unknown_product, unknown_tier):
+        assert selection.known is False
+        assert selection.limits == ()
+        assert selection.quantification_required is False
+        assert selection.reason.startswith("UNKNOWN_")
