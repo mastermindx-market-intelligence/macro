@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-16T06:09:42.758496+00:00",
-  "count": 2208,
+  "generated_at": "2026-09-16T06:39:50.199945+00:00",
+  "count": 2209,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -156,6 +156,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ouk2foenwfd-c40a07",
+      "title": "The 720 China Strategy, China Internet, CICC, GO, Ramsay Healthcare, Solar Industries, China GDP, Oil, US Credit",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T02:53:55Z",
+      "summary_points": [
+        "**China GDP Forecast Downgraded**: Q3 real GDP revised to 4.4% (from 4.6%), 2026 full-year to 4.5% (from 4.6%) due to weak demand, sluggish retail sales (0.4% yoy), and rising unemployment (5.3%).",
+        "**China Industrial Data Weakness**: August data worsened across manufacturing, property, infrastructure investment, and auto/appliance sectors, confirming broad economic slowdown.",
+        "**Oil Prices Near $110, Risk of $120**: Brent crude approached $110 post-Saudi pipeline closure, with Persian Gulf exports down 1.2mb/d; China’s crude import potential adds supply risk.",
+        "**China Hard Tech Earnings Revisions**: Strong upward revisions (+32% vs CSI300 +4%), driven by execution on product relevance amid cost pressures, contrasting with Internet (-26%) and MXCN (-7%)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
