@@ -1,0 +1,227 @@
+name: china-risk-radar-release-proof
+
+on:
+  push:
+    branches:
+      - claude/china-risk-recovery-safety-20260910-sol
+
+permissions:
+  contents: read
+
+concurrency:
+  group: china-risk-radar-release-proof-7029
+  cancel-in-progress: false
+
+jobs:
+  prove-current-merge:
+    if: >-
+      github.repository == 'mastermindx-market-intelligence/macro' &&
+      github.ref == 'refs/heads/claude/china-risk-recovery-safety-20260910-sol'
+    runs-on: [self-hosted, macstudio]
+    timeout-minutes: 120
+    env:
+      PRODUCT_HEAD: f09a4f078be714b1eb026d7a4178540f7a63b494
+      PROOF_WORKFLOW_PATH: .github/workflows/china-risk-radar-release-proof.yml
+    steps:
+      - name: Checkout proof carrier
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Freeze exact current integration candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          PROOF_HEAD="$(git rev-parse HEAD)"
+          PARENT="$(git rev-parse HEAD^)"
+          test "$PARENT" = "$PRODUCT_HEAD"
+          CHANGED="$(git diff --name-only "$PRODUCT_HEAD" "$PROOF_HEAD")"
+          test "$CHANGED" = "$PROOF_WORKFLOW_PATH"
+
+          git fetch --no-tags origin main
+          BASE_SHA="$(git rev-parse origin/main)"
+          git checkout --detach "$BASE_SHA"
+          git merge --no-commit --no-ff "$PROOF_HEAD"
+          TREE_SHA="$(git write-tree)"
+
+          export GIT_AUTHOR_NAME='China Risk Radar Release Proof'
+          export GIT_AUTHOR_EMAIL='noreply@mastermind-x.com'
+          export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+          export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+          CANDIDATE_SHA="$(printf 'Temporary exact-current-merge proof for PR #7029\n' | git commit-tree "$TREE_SHA" -p "$BASE_SHA" -p "$PROOF_HEAD")"
+          git reset --hard "$CANDIDATE_SHA"
+
+          PROOF_DIR="${RUNNER_TEMP}/china-risk-radar-release-proof-${GITHUB_RUN_ID}"
+          mkdir -p "$PROOF_DIR"
+          {
+            echo "PROOF_DIR=$PROOF_DIR"
+            echo "PROOF_HEAD=$PROOF_HEAD"
+            echo "BASE_SHA=$BASE_SHA"
+            echo "CANDIDATE_TREE=$TREE_SHA"
+            echo "CANDIDATE_SHA=$CANDIDATE_SHA"
+          } >> "$GITHUB_ENV"
+
+          python3 - <<'PY'
+          import json, os, pathlib
+          out = pathlib.Path(os.environ["PROOF_DIR"])
+          payload = {
+              "pr": 7029,
+              "product_head": os.environ["PRODUCT_HEAD"],
+              "proof_head": os.environ["PROOF_HEAD"],
+              "base_sha": os.environ["BASE_SHA"],
+              "candidate_tree": os.environ["CANDIDATE_TREE"],
+              "candidate_sha": os.environ["CANDIDATE_SHA"],
+              "workflow_run_id": os.environ["GITHUB_RUN_ID"],
+              "workflow_run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+          }
+          (out / "candidate.json").write_text(json.dumps(payload, indent=2) + "\n")
+          PY
+
+      - name: Prepare canonical Python and browser environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
+          if [ ! -x "$VENV/bin/python" ]; then
+            /opt/homebrew/bin/python3.12 -m venv "$VENV"
+          fi
+          echo "$VENV/bin" >> "$GITHUB_PATH"
+          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+          "$VENV/bin/python" -m pip install --quiet -r requirements.txt
+          "$VENV/bin/python" -m pip install --quiet playwright
+          "$VENV/bin/python" -m playwright install chromium
+
+      - name: Execute real China producer and prove a rewrite
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f site/china.html ]; then
+            cp site/china.html "$PROOF_DIR/china.before.html"
+          fi
+          rm -f site/china.html
+          date -u +%Y-%m-%dT%H:%M:%SZ > "$PROOF_DIR/build_started_at.txt"
+          set +e
+          CHINA_FAST_RENDER=1 python -m scripts.build_china > "$PROOF_DIR/build_china.log" 2>&1
+          RC=$?
+          set -e
+          printf '%s\n' "$RC" > "$PROOF_DIR/build_exit_code.txt"
+          test "$RC" -eq 0
+          test -s site/china.html
+          cp site/china.html "$PROOF_DIR/china.rendered.html"
+
+          python - <<'PY'
+          import hashlib, json, os, pathlib, re
+
+          root = pathlib.Path(os.environ["PROOF_DIR"])
+          log = (root / "build_china.log").read_text(errors="replace")
+          fatal = {
+              "traceback": r"Traceback \(most recent call last\):",
+              "top_level_error": r"(?im)^(?:ERROR|CRITICAL)(?:\s|:)",
+              "builder_failure": r"(?im)^\[build_china\].*(?:failed|error)",
+          }
+          hits = {name: re.findall(pattern, log) for name, pattern in fatal.items()}
+          hits = {name: values for name, values in hits.items() if values}
+          if hits:
+              raise SystemExit(f"fatal build-log markers: {sorted(hits)}")
+
+          rendered = root / "china.rendered.html"
+          html = rendered.read_text(errors="replace")
+          if "risk-radar" not in html.lower() and "Risk Radar" not in html:
+              raise SystemExit("rendered China page lacks the Risk Radar surface")
+
+          unconfirmed = ("Recovery not confirmed" in html or
+                         "修复尚未确认" in html or
+                         "volatility veto unknown — turn not trusted" in html or
+                         "波动否决状态未知 — 转向暂不可信" in html)
+          if unconfirmed:
+              forbidden = [
+                  "Begin scaling exposure back",
+                  "回补敞口",
+                  'class="rrx-rec is-turn"',
+                  'class="rrx-rec-tag"',
+              ]
+              present = [value for value in forbidden if value in html]
+              if present:
+                  raise SystemExit(f"unconfirmed render exposes turn/re-entry semantics: {present}")
+              if "does not authorize exposure changes" not in html:
+                  raise SystemExit("unconfirmed render lacks explicit no-authorization copy")
+
+          def sha(path: pathlib.Path) -> str:
+              return hashlib.sha256(path.read_bytes()).hexdigest()
+
+          before = root / "china.before.html"
+          metadata = json.loads((root / "candidate.json").read_text())
+          metadata.update({
+              "build_exit_code": 0,
+              "render_sha256": sha(rendered),
+              "render_bytes": rendered.stat().st_size,
+              "render_lines": len(html.splitlines()),
+              "prior_sha256": sha(before) if before.exists() else None,
+              "rewritten": True,
+              "unconfirmed_surface_visible": unconfirmed,
+          })
+          (root / "render_receipt.json").write_text(json.dumps(metadata, indent=2) + "\n")
+          PY
+
+      - name: Capture dark/light English/Chinese desktop/mobile proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$PROOF_DIR/cells"
+          python scripts/capture_page_evidence.py \
+            --site-dir site \
+            --routes /china.html \
+            --viewports desktop,mobile \
+            --locales en,zh \
+            --themes dark,light \
+            --max-pages 1 \
+            --delay-ms 50 \
+            --settle-ms 1200 \
+            --output-dir "$PROOF_DIR/cells" \
+            --manifest "$PROOF_DIR/manifest.json" \
+            --smells "$PROOF_DIR/smells.json" \
+            --emit-md "$PROOF_DIR/smells.md"
+
+          python - <<'PY'
+          import json, os, pathlib
+
+          root = pathlib.Path(os.environ["PROOF_DIR"])
+          images = sorted(
+              path for path in (root / "cells").rglob("*")
+              if path.is_file() and path.suffix.lower() in {".png", ".jpg", ".jpeg", ".webp"}
+          )
+          if len(images) != 8:
+              raise SystemExit(f"expected exactly 8 browser cells, found {len(images)}")
+
+          expected = {
+              (viewport, locale, theme)
+              for viewport in ("desktop", "mobile")
+              for locale in ("en", "zh")
+              for theme in ("dark", "light")
+          }
+          found = set()
+          for path in images:
+              name = path.name.lower()
+              viewport = next((value for value in ("desktop", "mobile") if value in name), None)
+              locale = next((value for value in ("en", "zh") if value in name), None)
+              theme = next((value for value in ("dark", "light") if value in name), None)
+              if viewport and locale and theme:
+                  found.add((viewport, locale, theme))
+          if found != expected:
+              raise SystemExit(f"browser matrix mismatch: expected={sorted(expected)} found={sorted(found)}")
+
+          receipt = json.loads((root / "render_receipt.json").read_text())
+          receipt["browser_cells"] = len(images)
+          receipt["browser_matrix"] = [list(cell) for cell in sorted(found)]
+          receipt["browser_files"] = [str(path.relative_to(root)) for path in images]
+          (root / "release_proof_receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
+          PY
+
+      - name: Upload immutable release-proof evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: china-risk-radar-release-proof-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.PROOF_DIR }}
+          if-no-files-found: error
+          retention-days: 14
