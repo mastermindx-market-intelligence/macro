@@ -72,6 +72,8 @@ realm, quota, credential or lifecycle service.
 Historical integrity and current eligibility remain distinct. A new execution must validate current
 Macro capability registration plus current realm enrollment/custody, including the existing
 claim-to-spawn fence. A replay returns the historical accepted evidence without new provider work.
+The reproduced V1 behavior is not itself evidence of a live exploit: absent owner key/enrollment
+still refuses; the characterization only establishes what the present receipt cannot prove.
 
 ## Provider Control implications
 
