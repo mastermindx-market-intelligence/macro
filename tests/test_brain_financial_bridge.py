@@ -262,3 +262,33 @@ def test_randomized_bridge_terms_reconcile_to_independent_arithmetic():
         assert value(r,'bridge.price_earnings_effect')==earnings_effect
         assert value(r,'bridge.price_multiple_effect')==multiple_effect
         assert earnings_effect+multiple_effect==value(r,'change.implied_price')
+
+
+def test_process_default_decimal_policy_cannot_change_a_result():
+    from decimal import DefaultContext, Inexact, Rounded
+    expected=analyze(scenario())
+    previous=DefaultContext.copy()
+    try:
+        DefaultContext.traps[Inexact]=True
+        DefaultContext.traps[Rounded]=True
+        DefaultContext.Emax=4
+        DefaultContext.Emin=-4
+        DefaultContext.clamp=1
+        assert analyze(scenario())==expected
+    finally:
+        DefaultContext.traps=previous.traps
+        DefaultContext.Emax=previous.Emax
+        DefaultContext.Emin=previous.Emin
+        DefaultContext.clamp=previous.clamp
+
+
+def test_missing_price_basis_is_in_the_decomposition_dependency_receipt():
+    p=scenario()
+    p['prior'].update(eps=5,earnings_multiple=20)
+    p['current'].update(eps=6)
+    r=analyze(p)
+    for name in ('bridge.price_earnings_effect','bridge.price_multiple_effect'):
+        cell=r['calculations'][name]
+        assert cell['value'] is None
+        assert cell['missing_inputs']==['current.earnings_multiple']
+        assert cell['requires']==['prior.implied_price','current.implied_price']
