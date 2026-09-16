@@ -14460,3 +14460,17 @@ jobs:
         run: python -m pytest tests/test_macro_suite_pages.py tests/test_macro_workspace_prior_publication.py -q
       - name: Market OS macro suite hub — discoverability, ordering, honest absence
         run: python -m pytest tests/test_macro_monetary_hub.py -q
+
+  us-breadth-completed-close:
+    if: ${{ false }}
+    gate: code
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: install bounded collector test dependencies
+        run: pip install pytest pandas numpy pyarrow pyyaml requests yfinance
+      - name: completed-session response validity and unchanged seam behavior
+        run: python -m pytest tests/test_us_breadth_completed_close.py tests/test_breadth_split_seam.py -q

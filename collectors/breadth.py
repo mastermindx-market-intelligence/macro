@@ -18,12 +18,13 @@ import io
 import logging
 import re
 import time
+from datetime import date
 
 import pandas as pd
 import yfinance as yf
 
 from collectors.base import Adapter
-from lib import config, delisted_symbols
+from lib import config, delisted_symbols, nyse_calendar
 
 log = logging.getLogger(__name__)
 
@@ -281,6 +282,44 @@ def disclose_stale_constituent_columns(members_symbols, closes: pd.DataFrame,
     return {"no_column": no_column, "never_populated": never_populated, "frozen": frozen}
 
 
+# Existing breadth coverage floor, applied to actual completed-session prices too.
+_COVERAGE_FLOOR = 0.8
+_US_CURRENT_SESSION_GROUPS = frozenset({"breadth", "smallcap_breadth", "midcap_breadth"})
+
+
+def _completed_close_count(closes: pd.DataFrame, tickers: list[str], expected_session: date) -> int:
+    """Count requested names with a finite positive close on the exact session.
+
+    Daily timestamps are market-local date labels. A later date, volume, or a
+    historical non-null column cannot substitute for this completed price row.
+    """
+    if closes.empty:
+        return 0
+    try:
+        dates = pd.DatetimeIndex(closes.index)
+        if dates.tz is not None:
+            dates = dates.tz_localize(None)
+        match = dates.normalize() == pd.Timestamp(expected_session)
+        if int(match.sum()) > 1:
+            raise ValueError("duplicate daily price rows")
+        if not match.any():
+            return 0
+        values = pd.to_numeric(closes.loc[match].iloc[0].reindex(tickers), errors="coerce")
+        return int((values.gt(0) & values.lt(float("inf"))).sum())
+    except (TypeError, ValueError) as exc:
+        raise RuntimeError(f"completed session {expected_session} has ambiguous price rows") from exc
+
+
+def _require_completed_closes(closes: pd.DataFrame, tickers: list[str], expected_session: date) -> int:
+    count = _completed_close_count(closes, tickers, expected_session)
+    if count < len(tickers) * _COVERAGE_FLOOR:
+        raise RuntimeError(
+            f"completed session {expected_session} close coverage {count}/{len(tickers)} "
+            "is below 80%; dated or volume-only rows are not current prices"
+        )
+    return count
+
+
 class BreadthAdapter(Adapter):
     name = "breadth"
     group = "breadth"
@@ -387,41 +426,72 @@ class BreadthAdapter(Adapter):
         df = df.drop_duplicates(subset="symbol", keep="first").reset_index(drop=True)
         return df[["symbol", "name", "sector"]]
 
-    def _download_closes(self, tickers: list[str], period: str) -> pd.DataFrame:
+    def _download_closes(self, tickers: list[str], period: str, *,
+                         expected_session: date | None = None) -> pd.DataFrame:
         bs = self.ycfg["batch_size"]
         parts: list[pd.DataFrame] = []
-        # ADDITIVE OHLCV capture: yfinance already downloads high/low/volume — keep them
-        # (instead of discarding all but Close) so the stock library can compute
-        # volume-based signals (engine/bottom_radar) for the full universe, not just the
-        # ~114 deep names. Stashed on self for fetch() to cache; never affects closes.
+        # Capture extras from the SAME accepted response as Close; an incomplete
+        # attempt must not supply Volume/High/Low beside a later corrected Close.
         extras: dict[str, list] = {"high": [], "low": [], "volume": []}
+        if expected_session is not None:
+            self._last_extras = {}
         for i in range(0, len(tickers), bs):
             batch = tickers[i:i + bs]
+            best = None
+            best_count = -1
             for attempt in range(self.ycfg["retries"]):
                 try:
                     df = yf.download(batch, period=period, auto_adjust=True,
                                      progress=False, group_by="column", threads=True)
                     lvl0 = (df.columns.get_level_values(0)
                             if isinstance(df.columns, pd.MultiIndex) else df.columns)
-                    parts.append(df["Close"] if "Close" in lvl0 else df)
-                    for k, F in (("high", "High"), ("low", "Low"), ("volume", "Volume")):
-                        if F in lvl0:
-                            extras[k].append(df[F])
+                    if expected_session is not None and "Close" not in lvl0:
+                        raise RuntimeError(f"completed session {expected_session} response has no Close field")
+                    closes = df["Close"] if "Close" in lvl0 else df
+                    captured = {k: df[field] for k, field in
+                                (("high", "High"), ("low", "Low"), ("volume", "Volume"))
+                                if field in lvl0}
+                    if expected_session is not None:
+                        if isinstance(closes, pd.Series):
+                            if len(batch) != 1:
+                                raise RuntimeError("completed session Close layout is ambiguous")
+                            closes = closes.to_frame(batch[0])
+                            captured = {k: (v.to_frame(batch[0]) if isinstance(v, pd.Series) else v)
+                                        for k, v in captured.items()}
+                        count = _completed_close_count(closes, batch, expected_session)
+                        if count > best_count:
+                            best, best_count = (closes, captured), count
+                        _require_completed_closes(closes, batch, expected_session)
+                    parts.append(closes)
+                    for k, frame in captured.items():
+                        extras[k].append(frame)
                     break
-                except Exception as e:  # noqa: BLE001
+                except Exception as e:  # noqa: BLE001 — same configured retry owner/budget
                     wait = self.ycfg["backoff_base_s"] * (2 ** attempt)
                     log.warning("breadth batch %d failed (%s); retry in %.0fs", i // bs, e, wait)
                     time.sleep(wait)
+            else:
+                # Preserve existing partial-universe behavior, not all-or-nothing
+                # batches. The WHOLE requested universe must still pass below.
+                if expected_session is not None and best is not None:
+                    closes, captured = best
+                    parts.append(closes)
+                    for k, frame in captured.items():
+                        extras[k].append(frame)
             time.sleep(1)
         if not parts:
-            raise RuntimeError("no constituent closes downloaded")
+            suffix = f" for completed session {expected_session}" if expected_session else ""
+            raise RuntimeError("no constituent closes downloaded" + suffix)
 
         def _wide(plist: list) -> pd.DataFrame:
             w = pd.concat(plist, axis=1)
             return w.loc[:, ~w.columns.duplicated()].sort_index()
 
+        closes = _wide(parts)
+        if expected_session is not None:
+            _require_completed_closes(closes, tickers, expected_session)
         self._last_extras = {k: _wide(v) for k, v in extras.items() if v}
-        return _wide(parts)
+        return closes
 
     def _merge_refreshed(self, fresh: pd.DataFrame, cached: pd.DataFrame) -> pd.DataFrame:
         """``fresh.combine_first(cached)`` + split-seam repair (see module comment).
@@ -484,9 +554,15 @@ class BreadthAdapter(Adapter):
     def fetch(self, full_history: bool = False) -> dict[str, pd.DataFrame]:
         members = self.constituents_checked(self.constituents())
         tickers = members["symbol"].tolist()
+        # Capture one canonical completed-session reference for this US fetch.
+        # Regional subclasses and Russell keep their existing calendars/interfaces.
+        expected_session = (nyse_calendar.expected_last_session()
+                            if self.name in _US_CURRENT_SESSION_GROUPS else None)
+        download_kwargs = ({"expected_session": expected_session}
+                           if expected_session is not None else {})
 
         if full_history:
-            closes = self._download_closes(tickers, "max")
+            closes = self._download_closes(tickers, "max", **download_kwargs)
         else:
             closes = None
             if self.cache_path.exists():
@@ -494,11 +570,11 @@ class BreadthAdapter(Adapter):
                 # refresh tail; full re-pull if cache is stale beyond the overlap
                 age = (pd.Timestamp.utcnow().tz_localize(None) - cached.index.max()).days
                 if age <= 14:
-                    fresh = self._download_closes(tickers, "1mo")
+                    fresh = self._download_closes(tickers, "1mo", **download_kwargs)
                     closes = self._merge_refreshed(fresh, cached)
             if closes is None:
                 days = self.cfg["lookback_days_live"]
-                closes = self._download_closes(tickers, f"{max(1, days // 365 + 1)}y")
+                closes = self._download_closes(tickers, f"{max(1, days // 365 + 1)}y", **download_kwargs)
             cutoff = closes.index.max() - pd.Timedelta(days=self.cfg["lookback_days_live"] + 30)
             closes = closes[closes.index >= cutoff]
 
@@ -515,9 +591,14 @@ class BreadthAdapter(Adapter):
 
         # coverage sanity: a half-empty matrix silently poisons every ratio
         live_cols = closes.dropna(axis=1, how="all").shape[1]
-        if live_cols < len(tickers) * 0.8:
+        if live_cols < len(tickers) * _COVERAGE_FLOOR:
             raise RuntimeError(f"breadth closes too sparse: {live_cols}/{len(tickers)}")
 
+        # Re-check after split-seam grafting and BEFORE any close/extras writes.
+        # A failed refresh leaves the accepted cache bytes intact and reports an
+        # actual collector failure through the existing run-status path.
+        if expected_session is not None:
+            _require_completed_closes(closes, tickers, expected_session)
         self.cache_path.parent.mkdir(parents=True, exist_ok=True)
         if not full_history:
             closes.to_parquet(self.cache_path)
