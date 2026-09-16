@@ -1,179 +1,171 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-09-11",
-  "generated_at": "2026-09-15T19:18:02.634336+00:00",
+  "as_of": "2026-09-14",
+  "generated_at": "2026-09-16T10:30:03.676012+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-09-11-SIG-20260915191802-1",
-      "ticker": "SIG",
+      "id": "2026-09-14-ISRG-20260916103003-1",
+      "ticker": "ISRG",
       "name": null,
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 40,
-      "thesis": "The engine labels this 'no clear edge' with a neutral band, and the profile shows a mixed-but-unremarkable stretch: selection z is modestly positive on revisions but SUE is negative and momentum is only modestly context. With no cycle block and a calm tape, there is no distinct directional edge relative to the S&P 500.",
+      "horizon_d": 30,
+      "thesis": "The deterministic verdict is neutral with no clear edge; the only activated driver is entry (off-high, RSI), which is a timing read, not a validated forward return signal. The -36.3% off-high and FRESH BUY board state look constructive on price, but the accounting watch flag and crowded, stretched Health Care basket argue for restraint.",
       "evidence": [
         "verdict: Neutral \u2014 no clear edge",
-        "band: neutral",
-        "SUE z -0.37 (validated leg, fresh 75d)",
-        "entry z -1.07 (weak entry leg)",
-        "board state: FRESH BUY at -5.0% off high"
+        "driver: entry only (off-high, RSI, urgency=caution)",
+        "caution: accounting quality watch",
+        "caution: Health Care basket crowded and stretched",
+        "selection z 51st pct \u2014 no rank edge"
       ],
-      "dissent": "A fresh-buy signal near the high in a calm tape may reflect re-accelerating momentum that the stale SUE (75 days) is too slow to capture.",
+      "dissent": "Insider buying plus a fresh SUE (z=1.77, 17 days old) and positive revisions could re-rate the name if the tape keeps rewarding leaders; a shallow pullback from deep off-high levels often resumes trend.",
       "falsifier": {
-        "text": "SIG breaks out to new highs on rising relative strength against the S&P 500 with no deterioration in earnings quality or revisions momentum.",
+        "text": "Price breaks back above its recent consolidation and the Health Care basket stops deteriorating.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-11-06",
+      "check_by": "2026-10-26",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-11-NX-20260915191802-2",
-      "ticker": "NX",
+      "id": "2026-09-14-BRK-B-20260916103003-2",
+      "ticker": "BRK-B",
+      "name": null,
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 30,
+      "thesis": "Deterministic verdict is neutral; the board flag is HOLD \u2014 EXTENDED with urgency 'now', meaning the engine already warns against chasing. Quality z is negative with accounting watch and a deteriorating Financials basket, so the risk controls lean against fresh exposure even though there is no bearish signal strong enough for a cautious lean.",
+      "evidence": [
+        "verdict: Neutral \u2014 no clear edge",
+        "board: HOLD \u2014 EXTENDED, urgency now",
+        "quality z -0.92 (36th pct), accounting watch",
+        "caution: Financials basket deteriorating",
+        "caution: broad tape under stress"
+      ],
+      "dissent": "Near highs with modest -2.7% off-high and positive revisions (z=0.97) means the trend could simply persist; Berkshire has not broken down technically.",
+      "falsifier": {
+        "text": "Price breaks above recent highs and the Financials basket stops deteriorating.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-10-26",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-09-14-EBAY-20260916103003-3",
+      "ticker": "EBAY",
+      "name": null,
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 30,
+      "thesis": "Verdict is neutral; the TURN SIGNALED board state is a momentum inflection warning, but it is paired with a positive entry driver (urgency now, off-high, RSI) and no clear bearish factor. The Consumer Discretionary basket is below trend and accounting is flagged watch, so there is no constructive edge, yet the signal is too mixed to justify a cautious lean.",
+      "evidence": [
+        "verdict: Neutral \u2014 no clear edge",
+        "board: TURN SIGNALED",
+        "caution: Consumer Discretionary basket below long-term trend",
+        "accounting watch flag",
+        "SUE z -0.09 (40 days old) \u2014 no earnings edge"
+      ],
+      "dissent": "The TURN SIGNALED flag is an early warning that momentum is rolling over; if the basket keeps lagging, the -7.8% off-high could extend into a genuine breakdown.",
+      "falsifier": {
+        "text": "Price breaks below the recent turn pivot and the Consumer Discretionary basket stays below trend.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-10-26",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-09-14-ASO-20260916103003-4",
+      "ticker": "ASO",
+      "name": null,
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 21,
+      "thesis": "Verdict is neutral; TURN SIGNALED with urgency caution warns of a possible momentum reversal, but quality is the only activated driver (accounting clean) and the Retail basket is explicitly below trend. The lottery-spike flag adds idiosyncratic risk, so there is no constructive case, yet no clean bearish break exists yet.",
+      "evidence": [
+        "verdict: Neutral \u2014 no clear edge",
+        "board: TURN SIGNALED, urgency caution",
+        "caution: Retail basket below long-term trend",
+        "entry flags: lottery-spike present",
+        "revisions z -1.02 \u2014 negative"
+      ],
+      "dissent": "Fresh SUE (z=0.75, 6 days old) and clean accounting could support a base if the Retail basket stabilizes; the drift is up at price 54.25.",
+      "falsifier": {
+        "text": "Price breaks below the recent turn pivot and Retail basket weakness accelerates.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-10-13",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-09-14-REXR-20260916103003-5",
+      "ticker": "REXR",
       "name": null,
       "lean": "cautious",
-      "conviction": "low",
-      "horizon_d": 40,
-      "thesis": "The engine flags active relative weakness ('Lagging \u2014 relative weakness') with negative selection, an accounting-quality warning, and negative revisions/momentum. Against a calm tape that rewards leaders, NX's lagging profile and 'TURN SIGNALED' risk state support a cautious directional lean.",
+      "conviction": "medium",
+      "horizon_d": 30,
+      "thesis": "The verdict is neutral but the underlying signal is actually adverse: SUE z is -3.0 (a large negative earnings surprise just 17 days old) with momentum z -1.0, while TURN SIGNALED and a -11% drawdown warn of a rolling top. The strong entry z (off-high, vol-squeeze) is a setup for continuation lower, not a reversal, so the risk call should shade negative relative to the S&P 500.",
       "evidence": [
-        "verdict: Lagging \u2014 relative weakness",
-        "selection z -0.85 (all three legs negative)",
-        "revision z -1.50 (literature)",
-        "accounting flag: warn",
-        "board state: TURN SIGNALED, urgency caution"
+        "SUE z -3.0, 17 days old \u2014 large negative surprise",
+        "momentum z -1.0 (context)",
+        "board: TURN SIGNALED, urgency now",
+        "off-high -11.0%",
+        "revisions z 1.09 \u2014 but does not offset SUE shock"
       ],
-      "dissent": "The upward price direction and only -5.9% from high may indicate the lagging verdict is transitioning; a quality warning alone has not historically triggered meaningful underperformance in calm regimes.",
+      "dissent": "Positive revisions (z=1.09) and a vol-squeeze entry pattern could mark a tactical bottom if the tape is genuinely calm and the REIT sector catches a bid.",
       "falsifier": {
-        "text": "NX closes above its prior recovery high and maintains relative strength versus the S&P 500 over the next two weeks, with no further deterioration in earnings revision momentum.",
+        "text": "Price reclaims its 50-day average and the vol-squeeze resolves upward with a higher low.",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "NX",
+          "subject_ticker": "REXR",
           "vs": "SPY",
           "op": ">",
           "threshold": 0.05,
-          "horizon_d": 40
+          "horizon_d": 30
         }
       },
-      "check_by": "2026-11-06",
-      "engine_verdict": "Lagging \u2014 relative weakness"
-    },
-    {
-      "id": "2026-09-11-TEL-20260915191802-3",
-      "ticker": "TEL",
-      "name": null,
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 40,
-      "thesis": "Despite a fresh-buy board state, the engine returns a neutral band ('no clear edge') with a severely negative momentum leg (alpha z -1.17) and only slightly positive revisions. The -14.3% off-high and mixed quality give no durable directional edge.",
-      "evidence": [
-        "verdict: Neutral \u2014 no clear edge",
-        "momentum z -1.17 (context)",
-        "selection z -0.22",
-        "entry z +0.72 (strong entry leg)",
-        "accounting: clean"
-      ],
-      "dissent": "Fresh-buy urgency ('now') plus a strong entry z could signal early accumulation after a deep correction; if the lagging momentum turns, TEL would be a leader rather than a neutral name.",
-      "falsifier": {
-        "text": "TEL's relative momentum versus the S&P 500 turns positive and it closes above its 40-day rolling high with sustained improving revisions.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-11-06",
+      "check_by": "2026-10-26",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-11-TKO-20260915191802-4",
-      "ticker": "TKO",
+      "id": "2026-09-14-ENSG-20260916103003-6",
+      "ticker": "ENSG",
       "name": null,
       "lean": "constructive",
-      "conviction": "medium",
-      "horizon_d": 45,
-      "thesis": "The engine's constructive verdict (building a base) with positive selection on revisions (+1.42 z) and a favorable entry leg supports a measured constructive lean. The caution on accounting and weak basket are risk size-downs, not a directional bearish signal.",
+      "conviction": "low",
+      "horizon_d": 30,
+      "thesis": "The deterministic verdict is Constructive \u2014 building a base, with all four drivers active (earnings/surprise, entry, quality, tailwind). The SUE z of 2.71 is a strong positive earnings surprise, and the TURN SIGNALED board state at a -18.9% drawdown is consistent with a base forming, not a top. I keep conviction low because the accounting-watch flag and the desk's 0.565 constructive hit rate are sobering.",
       "evidence": [
         "verdict: Constructive \u2014 building a base",
-        "revision z +1.42 (literature)",
-        "entry z +0.48, vol-squeeze present",
-        "momentum slightly positive (0.03)",
-        "board: TURN SIGNALED at -14.7% off high"
+        "drivers: earnings \u00b7 insider \u00b7 revisions, entry, quality, tailwind",
+        "SUE z 2.71, 50 days old",
+        "selection z 60th pct \u2014 supportive",
+        "entry z 60th pct (off-high, RSI)"
       ],
-      "dissent": "The 'TURN SIGNALED' board state and weak Communication Services basket could mean the base fails; the accounting watch flag suggests the earnings revision reading may be artificially inflated.",
+      "dissent": "The accounting watch flag plus a TURN SIGNALED board state could mean the base is not complete; if momentum z stays negative and price fails to hold the recent low, the constructive verdict fails.",
       "falsifier": {
-        "text": "TKO breaks below its recent base low and underperforms the S&P 500 with a fresh downgrade to earnings estimates.",
+        "text": "Price makes a lower low below the current base and the accounting concerns harden.",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "TKO",
+          "subject_ticker": "ENSG",
           "vs": "SPY",
           "op": "<",
           "threshold": -0.05,
-          "horizon_d": 45
+          "horizon_d": 30
         }
       },
-      "check_by": "2026-11-13",
-      "engine_verdict": "Constructive \u2014 building a base"
-    },
-    {
-      "id": "2026-09-11-CLH-20260915191802-5",
-      "ticker": "CLH",
-      "name": null,
-      "lean": "constructive",
-      "conviction": "medium",
-      "horizon_d": 45,
-      "thesis": "The engine's constructive verdict ('building a base') is anchored by strong selection: positive SUE (0.88), positive revisions (0.88), and positive momentum (0.5), all fresh at 16 days. The -1.1% off-high and 'TURN SIGNALED, now' board state support a favorable lean.",
-      "evidence": [
-        "verdict: Constructive \u2014 building a base",
-        "SUE z +0.88 (validated, fresh 16d)",
-        "revision z +0.88 (literature)",
-        "momentum z +0.50 (context)",
-        "no cautions, clean accounting"
-      ],
-      "dissent": "The near-high price with 'TURN SIGNALED' urgency could be a late-cycle reflection of already-priced earnings upside; retail-level extension from a clean fundamental print is fragile.",
-      "falsifier": {
-        "text": "CLH gives up its recent gains and prints a lower high relative to the S&P 500 with negative earnings revision momentum within the next month.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "CLH",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 45
-        }
-      },
-      "check_by": "2026-11-13",
-      "engine_verdict": "Constructive \u2014 building a base"
-    },
-    {
-      "id": "2026-09-11-CSR-20260915191802-6",
-      "ticker": "CSR",
-      "name": null,
-      "lean": "constructive",
-      "conviction": "medium",
-      "horizon_d": 45,
-      "thesis": "The engine's constructive verdict (building a base) is driven by a strong revisions leg (z 2.02) and an insurance-style entry (vol-squeeze). Although SUE is neutral and momentum slightly negative, the revisions signal and no cycle block support a measured constructive lean.",
-      "evidence": [
-        "verdict: Constructive \u2014 building a base",
-        "revision z +2.02 (literature)",
-        "insider z +0.04 (validated)",
-        "entry z +0.29, vol-squeeze present",
-        "accounting: watch (caution, not block)"
-      ],
-      "dissent": "The -15.4% off-high and negative momentum could indicate that strong revisions are already being re-rated downward; accounting watch flag adds fragility to the revisions signal.",
-      "falsifier": {
-        "text": "CSR fails to hold above its prior high and underperforms the S&P 500 with a measurable downward revision to consensus earnings estimates.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "CSR",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 45
-        }
-      },
-      "check_by": "2026-11-13",
+      "check_by": "2026-10-26",
       "engine_verdict": "Constructive \u2014 building a base"
     }
   ],
