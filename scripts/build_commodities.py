@@ -929,18 +929,19 @@ def _conf_action(state: str | None) -> tuple[str, str]:
 
 
 def _mtf_grade_plain(grade: str | None) -> tuple[str, str]:
-    """Convert MTF grade slug to plain bilingual pair."""
-    _map: dict[str, tuple[str, str]] = {
-        "TREND-FOLLOW": ("Go with the trend", "顺势而为"),
-        "BUY-THE-DIP":  ("Dip is buyable", "回调可买"),
-        "CAUTION":      ("Wait — signals mixed", "等待——信号混乱"),
-        "AVOID":        ("Stand aside", "按兵不动"),
-        "DON'T CHASE":  ("Watch — don't chase", "观望——勿追高"),
-        "WAIT":         ("Watch — wait", "观望等待"),
+    """Describe index timeframe conditions; an index never authorizes an asset entry."""
+    unavailable = ("Timeframe read unavailable", "周期读数缺失")
+    labels = {
+        "TREND-FOLLOW": ("Timeframes trending up", "各周期趋势向上"),
+        "BUY-THE-DIP": ("Pullback within structural uptrend", "结构上升趋势内回调"),
+        "CAUTION": ("Signals mixed", "信号分化"),
+        "AVOID": ("Defensive conditions", "条件偏防御"),
+        "DON'T CHASE": ("Structural headwinds", "结构逆风"),
+        "WAIT": ("Mixed / unconfirmed", "分化／尚未确认"),
     }
-    if not grade:
-        return ("Mixed — wait", "混合——等待")
-    return _map.get(grade.upper(), (grade, grade))
+    if not isinstance(grade, str):
+        return unavailable
+    return labels.get(grade.upper(), unavailable)
 
 
 # --------------------------------------------------------------------------- #

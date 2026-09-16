@@ -1034,3 +1034,17 @@ def test_bearish_macd_state_survives_expired_cross_event():
     a=tape(); a['mtf']['D']['macd_cross_dn']=False; a['mtf']['3D']['macd_cross_dn']=False
     v=m.confluence_verdict(a,'silver')
     assert v['grade']=='WAIT' and v['per_tf']['3D']=='down'
+
+
+@pytest.mark.parametrize('grade,expected', [
+    ('TREND-FOLLOW', 'Timeframes trending up'),
+    ('BUY-THE-DIP', 'Pullback within structural uptrend'),
+    ('AVOID', 'Defensive conditions'),
+    ('new-unknown-state', 'Timeframe read unavailable'),
+    (None, 'Timeframe read unavailable'),
+    (False, 'Timeframe read unavailable'),
+])
+def test_index_timeframe_chip_is_descriptive_not_an_instruction(grade, expected):
+    en, zh = b._mtf_grade_plain(grade)
+    assert en == expected
+    assert zh and zh != en
