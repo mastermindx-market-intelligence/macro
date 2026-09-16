@@ -131,3 +131,5 @@
 {"date":"2026-09-11","key":"educationplatforms","name":"Platforms","theme":"Education Technology","state":"turn_down","since":"2026-09-11","score":0.802,"n_members":5,"breadth":1.0,"dd_from_peak":-55.24,"up_from_trough":15.12}
 {"date":"2026-09-11","key":"healthcarenextgen","name":"Next-Gen","theme":"Healthcare & Biotech","state":"turn_down","since":"2026-09-11","score":0.716,"n_members":8,"breadth":1.0,"dd_from_peak":-8.08,"up_from_trough":60.84}
 {"date":"2026-09-11","key":"nanotechmedicine","name":"Medicine","theme":"Nanotechnology","state":"turn_down","since":"2026-09-11","score":0.682,"n_members":12,"breadth":0.917,"dd_from_peak":-5.42,"up_from_trough":85.61}
+{"date":"2026-09-15","key":"healthcarenextgen","name":"Next-Gen","theme":"Healthcare & Biotech","state":"turn_down","since":"2026-09-15","score":0.688,"n_members":8,"breadth":1.0,"dd_from_peak":-5.6,"up_from_trough":64.44}
+{"date":"2026-09-15","key":"educationplatforms","name":"Platforms","theme":"Education Technology","state":"turn_down","since":"2026-09-11","score":0.219,"n_members":5,"breadth":0.6,"dd_from_peak":-48.09,"up_from_trough":24.12}
