@@ -256,7 +256,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python "$PROOF_HELPER_PATH" \
+          python -m scripts.ci.prove_china_risk_radar_dialog \
             --site-dir site \
             --output-dir "$PROOF_DIR" \
             --candidate-sha "$CANDIDATE_SHA" \
