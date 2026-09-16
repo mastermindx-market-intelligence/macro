@@ -315,7 +315,7 @@ next_action: >
   `test` success (run 35156879220), canonical remote-complete receipt_digest
   45525cd549f57646e679a04c7fbb69fb79b5955444df92db850a8cec63200530 on the third invocation, HOLD-FOR-SOL
   and awaiting Sol's ruling. Sol accepted the
-  R48/R50/R68/R76 semantic closure at this head (root ts 1789588151), but **R80 (ts 1789590510.060009,
+  R48/R50/R68/R76 semantic closure at the OLD head 09e53b30, NOT at the current 6dc2ea83 (root ts 1789588151), but **R80 (ts 1789590510.060009,
   durable contract comment 5704046553) is a REQUEST_REPAIR, not an acceptance** — disposition verbatim
   `REQUEST_REPAIR / SAME CHILD+BRANCH+WRITER / EXACT FOUR-PATH CEILING / H4 NOT_STARTED` over
   ops/executive_os/autonomy_control.py, tests/test_executive_autonomy_control.py,
