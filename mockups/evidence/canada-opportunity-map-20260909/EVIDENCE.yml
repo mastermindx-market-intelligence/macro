@@ -44,7 +44,7 @@ proof:
     path: scripts/render_canada_opportunity_map_fixture.py
     sha256: 550568fdad0d4a8077c215ab2295537d666c414c6bf237e3c69a7ebdbb2a5895
 acceptance:
-  focused_tests: 271 passed (113 first-frame + 31 opportunity-map + 127 additional Canada/parity)
+  focused_tests: 271 passed (113 first-frame + 32 opportunity-map + 126 additional Canada/parity)
   browser: passed
   theme_filter_all: ca_oil_gas -> SU.TO, TOU.TO
   theme_filter_top: ca_oil_gas -> SU.TO

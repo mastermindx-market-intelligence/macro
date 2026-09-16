@@ -1,10 +1,27 @@
 "use strict";
 
 const fs = require("fs");
+const path = require("path");
 const vm = require("vm");
 
 const sourcePath = process.argv[2];
 const scenario = process.argv[3];
+
+if (scenario === "builder-seam") {
+  const repoRoot = path.resolve(path.dirname(sourcePath), "..");
+  const builder = fs.readFileSync(path.join(repoRoot, "scripts", "build_canada.py"), "utf8");
+  process.stdout.write(JSON.stringify({
+    scenario,
+    builder_safe_import: builder.includes(
+      "from scripts.canada_theme_action_map import _safe_canada_theme_action_map"
+    ),
+    builder_safe_call: builder.includes(
+      'vm["theme_actions"] = _safe_canada_theme_action_map(setups, site)'
+    ),
+    errors: [],
+  }) + "\n");
+  process.exit(0);
+}
 const payload = {
   baskets: [{id: "oil", members: [{symbol: "AAA.TO"}]}],
   theme_intel: {

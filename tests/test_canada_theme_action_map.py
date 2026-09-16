@@ -336,6 +336,13 @@ def _client_theme_contract(scenario: str) -> dict:
     return json.loads(run.stdout)
 
 
+def test_production_builder_uses_the_fail_open_projection_seam_in_pr_code_gate() -> None:
+    result = _client_theme_contract("builder-seam")
+    assert result["errors"] == []
+    assert result["builder_safe_import"] is True
+    assert result["builder_safe_call"] is True
+
+
 @pytest.mark.parametrize(
     "scenario",
     [
