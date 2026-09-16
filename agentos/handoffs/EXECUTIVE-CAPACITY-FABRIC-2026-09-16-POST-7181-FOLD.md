@@ -111,7 +111,7 @@ verified:
     result: >
       Exit 0. Baseline 1118 records (69 workstreams, 318 decisions, 270 discoveries, 461
       handoffs), 0 errors, 98 warnings.
-  - claim: "Protected Mastermind master is e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48 (procedure mastermind.sol_skillpack.v1 1.0.1). It was bf843961c0e1b5bd45fa481f0138c71f2a87d4e2 when first read at 20:0xZ; that pin is now SUPERSEDED and bf843961 is an ancestor of the current one, so every ancestor-of-bf843961 claim in this record still holds."
+  - claim: "READING AT 2026-09-16T20:4xZ, itself now superseded — see §8.0 and the 22:55:39Z receipt below: protected Mastermind master read e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48 (procedure mastermind.sol_skillpack.v1 1.0.1). It was bf843961c0e1b5bd45fa481f0138c71f2a87d4e2 when first read at 20:0xZ. bf843961 is an ancestor of e8803ba3, which is an ancestor of the current 4537f066775c73d305f82acf0643701f01f5e53c, so every ancestor-of-bf843961 claim in this record still holds."
     command: "gh api repos/mastermindx-market-intelligence/Mastermind/branches/master --jq .commit.sha && gh api repos/mastermindx-market-intelligence/Mastermind/compare/bf843961c0e1b5bd45fa481f0138c71f2a87d4e2...e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48"
     result: >
       SUPERSEDED, see the 22:55Z re-read below. Read at 2026-09-16T20:4xZ: e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48. The compare returns
@@ -509,9 +509,11 @@ The first intake comment (`5692075928`, 2026-09-16T04:32:53Z) names:
 The second intake comment (`5693291461`, 2026-09-16T06:52:10Z) names:
 
 - Mastermind master `0fe8074f` — VERIFIED to exist and to be an ancestor of `bf843961`, the
-  protected master as read at 2026-09-16T19:5xZ. `bf843961` has since been SUPERSEDED as the
-  current protected master by `e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48`, of which it is an
-  ancestor; the conclusion is unchanged (see §1).
+  protected master as read at 2026-09-16T19:5xZ. `bf843961` has since been SUPERSEDED — first by
+  `e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48`, then by `5ee11ab1`, and now by
+  `4537f066775c73d305f82acf0643701f01f5e53c`, the current protected master as read
+  2026-09-16T22:55:39Z (§8.0). `0fe8074f` is an ancestor of every one of them, so the conclusion is
+  unchanged (see §1).
 - #632 merged as `e1f752a58df8f874efa12e30957d911627a0c4f8` — VERIFIED EXACT.
 - #679 merged as `f590c068880dbb848bda90b80b73dbcb6688d6fc` — VERIFIED EXACT.
 - #677 head `8bd1935c4f462cc52dde433483eece2eb15eff02` — SUPERSEDED by `09e53b30092400c501a508992bf942474d70d830`.
