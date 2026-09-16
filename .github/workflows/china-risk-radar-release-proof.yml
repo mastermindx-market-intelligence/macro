@@ -23,6 +23,21 @@ jobs:
       PRODUCT_HEAD: f09a4f078be714b1eb026d7a4178540f7a63b494
       PROOF_WORKFLOW_PATH: .github/workflows/china-risk-radar-release-proof.yml
     steps:
+      - name: Clear inherited sparse checkout
+        if: runner.environment != 'github-hosted'
+        shell: bash
+        run: |
+          if [ -d "${{ github.workspace }}/.git" ]; then
+            git -C "${{ github.workspace }}" sparse-checkout disable || echo "::warning title=sparse-clear::sparse-checkout disable failed — this workspace may still hold a partial tree"
+            rc=0
+            git -C "${{ github.workspace }}" config --unset-all core.sparseCheckout || rc=$?
+            if [ "$rc" = 0 ]; then
+              echo "::notice title=sparse-clear::cleared an inherited core.sparseCheckout in this shared workspace"
+            elif [ "$rc" != 5 ]; then
+              echo "::warning title=sparse-clear::core.sparseCheckout unset exited $rc — this workspace may still be sparse"
+            fi
+          fi
+
       - name: Checkout proof carrier
         uses: actions/checkout@v4
         with:
@@ -32,6 +47,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          if [ "$(git config --bool core.sparseCheckout || true)" = "true" ]; then
+            echo "sparse checkout remains active after checkout" >&2
+            exit 1
+          fi
+          for path in \
+            scripts/build_china.py \
+            scripts/capture_page_evidence.py \
+            templates/china.html.j2 \
+            templates/_risk_radar_card.html.j2 \
+            engine/risk_radar_market_catalysts.py \
+            engine/risk_radar_recovery.py \
+            engine/risk_radar_recovery_audit.py; do
+            test -f "$path"
+          done
+
           PROOF_HEAD="$(git rev-parse HEAD)"
           CHANGED="$(git diff --name-only "$PRODUCT_HEAD" "$PROOF_HEAD")"
           test "$CHANGED" = "$PROOF_WORKFLOW_PATH"
