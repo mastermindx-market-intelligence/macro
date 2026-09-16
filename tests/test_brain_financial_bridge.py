@@ -208,3 +208,57 @@ def test_small_negative_cash_is_not_rounded_into_a_false_zero():
     for cell in r['calculations'].values():
         if cell['value'] is not None:
             assert isinstance(cell['rounded'],bool)
+
+
+def test_cli_accepts_finite_json_scientific_number_not_an_expression():
+    raw=json.dumps(scenario()).replace('"revenue": 100','"revenue": 1e2')
+    p=cli(raw)
+    assert p.returncode==0,p.stdout
+    assert value(json.loads(p.stdout),'prior.gross_profit')==Decimal('30')
+
+
+def test_empty_and_complete_scenarios_report_their_actual_calculation_state():
+    p={'basis':'supplied_scenario','currency':'USD','amount_scale':'units',
+       'prior':{'period_months':12},'current':{'period_months':12}}
+    assert analyze(p)['status']=='unavailable'
+    p=scenario()
+    for period in ('prior','current'):
+        for field in ('depreciation_amortization','cash_interest','cash_taxes',
+                      'working_capital_increase','capital_expenditures','other_operating_cash_adjustments'):
+            p[period].setdefault(field,0)
+        p[period].update(eps=5,earnings_multiple=20)
+    assert analyze(p)['status']=='complete'
+
+
+def test_pure_calculator_never_opens_files_network_or_evaluates_code(monkeypatch):
+    import builtins
+    import socket
+    module=importlib.import_module(MODULE)
+    def forbidden(*args,**kwargs):
+        raise AssertionError('calculator attempted an effect')
+    monkeypatch.setattr(builtins,'open',forbidden)
+    monkeypatch.setattr(builtins,'eval',forbidden)
+    monkeypatch.setattr(socket,'socket',forbidden)
+    assert module.analyze_financial_bridge(scenario())['status']=='partial'
+
+
+def test_randomized_bridge_terms_reconcile_to_independent_arithmetic():
+    import random
+    rng=random.Random(260916)
+    for _ in range(400):
+        p=scenario()
+        for period in ('prior','current'):
+            p[period].update(revenue=rng.randint(1,100000),gross_margin_pct=rng.randint(-20,90),
+                             operating_expenses=rng.randint(0,10000),eps=rng.randint(1,100),
+                             earnings_multiple=rng.randint(1,80))
+        r=analyze(p)
+        a,b=p['prior'],p['current']
+        expected=(Decimal(b['revenue'])*b['gross_margin_pct']-Decimal(a['revenue'])*a['gross_margin_pct'])/100
+        actual=value(r,'bridge.gross_profit_sales_effect')+value(r,'bridge.gross_profit_margin_effect')
+        assert actual==expected==value(r,'change.gross_profit')
+        assert actual+value(r,'bridge.operating_expense_effect')==value(r,'change.operating_profit')
+        earnings_effect=(b['eps']-a['eps'])*a['earnings_multiple']
+        multiple_effect=b['eps']*(b['earnings_multiple']-a['earnings_multiple'])
+        assert value(r,'bridge.price_earnings_effect')==earnings_effect
+        assert value(r,'bridge.price_multiple_effect')==multiple_effect
+        assert earnings_effect+multiple_effect==value(r,'change.implied_price')
