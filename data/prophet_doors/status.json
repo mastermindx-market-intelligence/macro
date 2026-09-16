@@ -1,15 +1,15 @@
 {
   "appended": 0,
-  "asof": "2026-09-14",
+  "asof": "2026-09-15",
   "candidates": {
-    "R": 0,
-    "T": 8,
-    "W": 4
+    "R": 1,
+    "T": 1,
+    "W": 3
   },
   "deduped": {
-    "R": 0,
-    "T": 8,
-    "W": 4
+    "R": 1,
+    "T": 1,
+    "W": 3
   },
   "dry_run": false,
   "feature_source": {
@@ -86,41 +86,41 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-09-15 07:04:56",
-  "runtime_s": 207.5,
+  "run_utc": "2026-09-16 22:29:33",
+  "runtime_s": 147.9,
   "schema": "prophet_doors/v1",
   "theme_source": {
-    "age_days": 3,
-    "asof": "2026-09-11",
-    "n_members": 185,
+    "age_days": 0,
+    "asof": "2026-09-15",
+    "n_members": 69,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 3.386,
+        "emerging_score": 2.862,
         "rank": 1,
-        "theme": "Semiconductors"
+        "theme": "Cybersecurity"
       },
       {
-        "emerging_score": 1.441,
+        "emerging_score": 2.059,
         "rank": 2,
-        "theme": "Telecommunications"
+        "theme": "Social Media"
       },
       {
-        "emerging_score": 1.405,
+        "emerging_score": 1.984,
         "rank": 3,
-        "theme": "Hardware"
+        "theme": "Biometrics"
       },
       {
-        "emerging_score": 1.277,
+        "emerging_score": 1.444,
         "rank": 4,
-        "theme": "Commodities Agriculture"
+        "theme": "Wearables"
       },
       {
-        "emerging_score": 1.127,
+        "emerging_score": 1.205,
         "rank": 5,
-        "theme": "Energy Renewable"
+        "theme": "Mega-Cap"
       }
     ]
   },
@@ -129,16 +129,16 @@
       "2B",
       "3B"
     ],
-    "aligned": 4,
-    "asof_max": "2026-09-14",
-    "asof_mismatch": 0,
-    "asof_run": "2026-09-14",
+    "aligned": 3,
+    "asof_max": "2026-09-16",
+    "asof_mismatch": 3,
+    "asof_run": "2026-09-15",
     "evaluated": 713,
     "fresh": 4,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 32.7,
+    "runtime_s": 25.3,
     "skipped": 4,
     "source": "baskets/membership.json",
     "state_turn": 83,

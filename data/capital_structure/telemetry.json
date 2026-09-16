@@ -1,10 +1,10 @@
 {
   "artifact_hashes": {
-    "event_edges": "4d2168c60386bc251f780f3a1ebff53674e7583904f951f77d33299f9bf28939",
-    "event_versions": "060dee2cb5569c4d0713e9fb39b7673d68a909ddcc629caaed15ec67ed3a1838",
-    "review_queue": "f18f4253a4c537b1e8104e900f3fe6a5142ecc454eca959ccbfa59cfde5052fd"
+    "event_edges": "705d7b3626b1f5b834023a45aa1ba6c071ba51196d16ee17915790f776ce3272",
+    "event_versions": "f90d0fc89182249564c95a41ba70660a15c407f9a54475a0174b9eb73f2f21ec",
+    "review_queue": "60b883376284a6670ccd4a7be8aa86d921edf4f2dd50c08c15d34c1496fca124"
   },
-  "as_of": "2026-09-15T13:33:21.202396+00:00",
+  "as_of": "2026-09-16T16:13:58.686041+00:00",
   "authority": {
     "entry_authority": false,
     "is_context_only": true,
@@ -14,13 +14,13 @@
   },
   "compile_failures": [],
   "counts": {
-    "accessions_grouped": 11660,
+    "accessions_grouped": 12599,
     "compile_failures": 0,
-    "event_edges": 1489,
-    "event_versions": 11852,
-    "new_event_versions": 0,
-    "review_queue": 7761,
-    "source_manifests": 37186
+    "event_edges": 1722,
+    "event_versions": 12932,
+    "new_event_versions": 540,
+    "review_queue": 8417,
+    "source_manifests": 40162
   },
   "coverage_claim": "registration_allowlist_plus_issuer_scoped_reconciliation",
   "form_policy": {
@@ -124,7 +124,7 @@
       "PRE 14C"
     ]
   },
-  "generation_id": "generation:cs:d3a4abe989b5d6562d071bfa",
+  "generation_id": "generation:cs:81f684cc58c2a0c8cd381cf7",
   "known_exclusions": [
     "424B2",
     "424B6",
@@ -172,8 +172,8 @@
   "source_ledger_receipt": {
     "form_policy_version": "capital-structure-sec-form-policy/1.2.0",
     "immutable_prefix": true,
-    "prefix_sha256": "dbf5ef728c97db90402c1ed30c0325432cce2218d083e76c417803b186b75423",
-    "record_count": 37186,
+    "prefix_sha256": "150af80a61521a08df2e5c067596a20ffbe67119095b884d7e06f3b0e10f8bb6",
+    "record_count": 40162,
     "schema": "capital_structure.source_ledger_receipt.v1"
   },
   "status": "ok"
