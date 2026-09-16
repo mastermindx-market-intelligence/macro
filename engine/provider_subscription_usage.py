@@ -10,6 +10,7 @@ import dataclasses
 import json
 import math
 import re
+import urllib.error
 import urllib.request
 from datetime import datetime, timezone
 from typing import Any, Callable, Mapping, Sequence
@@ -295,12 +296,31 @@ def _credential(loader: CredentialLoader) -> str:
     return secret
 
 
+class _RefuseRedirects(urllib.request.HTTPRedirectHandler):
+    """Never follow a redirect: an authenticated request must not re-issue its
+    Authorization header against a host the caller did not choose."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):  # noqa: D102
+        return None
+
+
 def _https_get_json(url: str, headers: Mapping[str, str], timeout_seconds: float) -> Mapping[str, Any]:
     request = urllib.request.Request(url, method="GET", headers=dict(headers))
-    with urllib.request.urlopen(request, timeout=timeout_seconds) as response:  # noqa: S310
-        if getattr(response, "status", 200) != 200:
-            raise SubscriptionUsageError("PROVIDER_USAGE_HTTP_ERROR")
-        raw = response.read(2 * 1024 * 1024 + 1)
+    opener = urllib.request.build_opener(_RefuseRedirects())
+    try:
+        with opener.open(request, timeout=timeout_seconds) as response:  # noqa: S310
+            if getattr(response, "status", 200) != 200:
+                raise SubscriptionUsageError("PROVIDER_USAGE_HTTP_ERROR")
+            raw = response.read(2 * 1024 * 1024 + 1)
+    except urllib.error.HTTPError as exc:
+        code = getattr(exc, "code", None)
+        raise SubscriptionUsageError(
+            "PROVIDER_USAGE_REDIRECT_REFUSED"
+            if isinstance(code, int) and 300 <= code < 400
+            else "PROVIDER_USAGE_HTTP_ERROR"
+        ) from None
+    except OSError:
+        raise SubscriptionUsageError("PROVIDER_USAGE_TRANSPORT_ERROR") from None
     if len(raw) > 2 * 1024 * 1024:
         raise SubscriptionUsageError("PROVIDER_USAGE_RESPONSE_TOO_LARGE")
     try:
