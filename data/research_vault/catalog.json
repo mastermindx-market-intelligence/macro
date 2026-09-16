@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-16T03:24:29.693452+00:00",
-  "count": 2201,
+  "generated_at": "2026-09-16T03:54:27.724024+00:00",
+  "count": 2202,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -100,6 +100,23 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-ifvweti4bl0-81ed6e",
+      "title": "GS FOMC View The September FOMC Goldmans Take from Traders and Research 15 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T03:20:57Z",
+      "summary_points": [
+        "**Fed Hike Driver**: 25bp hike driven by market pricing, not fundamentals; Fed likely avoids further hikes due to inflation data and geopolitical risks (Iran war, tariffs) - **Terminal Rate Shift**: Updated 2027-2028 rate forecast raises terminal rate to 3.25-3.5% (vs 3-3.25%), with delayed cuts (Sept/Dec vs June/Dec) - **Neutral Rate Trajectory**: Neutral rate expected to rise gradually to 3.25-3.5% over next year, driven by strong economy at higher rates and AI-driven equilibrium rate increases - **Geopolitical Risk Impact**: Iran war escalation and tariffs create active risk factors, directly influencing Fed policy stance and market positioning - **FX & USD Direction**: USD short vs JPY/AUD; USDJPY retest at 152, AUD potential at 7200; energy/fiscal concerns weigh on USD strength - **Gold Headwinds**: CPI-driven Fed hiking (negative for gold), Hormuz conflict logistics risks, and yield curve pressures create near-term headwinds; $4k target contingent on Fed data clarity - **Crude Oil Volatility**: Saudi pipeline shutdown (Iranian proxy attack) triggers price spikes; Houthi campaign disrupts flows, shifting volatility (put skew, short vol exit)"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": true,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-oigknaiqhfi-f22e87",
       "title": "US Economics Analyst September FOMC Preview A Hike Without a Signal",
