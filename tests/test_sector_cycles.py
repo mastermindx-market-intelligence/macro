@@ -157,3 +157,25 @@ def test_compute_json_serialisable():
         pytest.skip("no sector data")
     js = json.dumps(data)            # must not raise (no numpy/Timestamp leakage)
     assert "NaN" not in js and "Infinity" not in js
+
+
+# ── semantic session anchoring ───────────────────────────────────────────────
+
+def test_latest_cycle_session_ignores_raw_calendar_tail_without_benchmark_price():
+    idx = pd.to_datetime(["2026-09-14", "2026-09-15", "2026-09-16"])
+    closes = pd.DataFrame(
+        {
+            "SPY": [760.0, np.nan, np.nan],
+            "XLK": [184.0, 185.0, 186.0],
+        },
+        index=idx,
+    )
+    assert sc._latest_cycle_session(closes, "SPY") == pd.Timestamp("2026-09-14")
+
+
+def test_latest_cycle_session_returns_none_without_benchmark_observation():
+    closes = pd.DataFrame(
+        {"SPY": [np.nan, np.nan], "XLK": [184.0, 185.0]},
+        index=pd.to_datetime(["2026-09-14", "2026-09-15"]),
+    )
+    assert sc._latest_cycle_session(closes, "SPY") is None

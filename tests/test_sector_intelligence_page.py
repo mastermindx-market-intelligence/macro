@@ -399,3 +399,260 @@ def test_semantic_freshness_rejects_empty_action_board(tmp_path: Path) -> None:
     assert report["ok"] is False
     assert any("action board is empty" in error.lower()
                for error in report["errors"]), report
+
+
+def test_action_board_writer_binds_exact_basket_bytes(tmp_path: Path) -> None:
+    from scripts.build_sector_action_board import write_action_board
+
+    site = tmp_path / "site"
+    baskets_path = site / "basketdata" / "baskets.json"
+    baskets_path.parent.mkdir(parents=True)
+    baskets_path.write_bytes(
+        _json_bytes({
+            "as_of": "2026-09-14",
+            "theme_intel": {"as_of": "2026-09-14"},
+            "baskets": [{"id": "theme-a"}],
+        })
+    )
+    output = site / "basketdata" / "action_board.json"
+    board = {"total": 1, "buy_now": [{"ticker": "XLK"}]}
+
+    write_action_board(
+        output,
+        baskets_path=baskets_path,
+        action_board=board,
+        generated_utc="2026-09-16T06:00:00Z",
+    )
+
+    payload = json.loads(output.read_text())
+    assert payload["schema"] == "sector_intelligence_action_board.v1"
+    assert payload["as_of"] == "2026-09-14"
+    assert payload["generated_utc"] == "2026-09-16T06:00:00Z"
+    assert payload["baskets_sha256"] == hashlib.sha256(
+        baskets_path.read_bytes()
+    ).hexdigest()
+    assert payload["action_board"] == board
+
+
+def test_focused_action_builder_uses_fresh_baskets_and_canonical_board_logic(
+    tmp_path: Path,
+) -> None:
+    from scripts.build_sector_action_board import build_action_board
+
+    site = tmp_path / "site"
+    baskets_path = site / "basketdata" / "baskets.json"
+    baskets_path.parent.mkdir(parents=True)
+    baskets_path.write_bytes(_json_bytes({
+        "as_of": "2026-09-14",
+        "theme_intel": {"as_of": "2026-09-14"},
+        "baskets": [{"id": "theme-a"}],
+    }))
+    regime = tmp_path / "data" / "regime" / "latest.json"
+    regime.parent.mkdir(parents=True)
+    regime.write_text(json.dumps({
+        "dislocation": {"put_state": "normal"},
+        "playbook": {"stages": []},
+    }))
+
+    calls: list[str] = []
+
+    class Canonical:
+        @staticmethod
+        def build_alpha_data(_site):
+            calls.append("alpha")
+            return {"per_ticker": {}}
+
+        @staticmethod
+        def build_insider_data(_site):
+            calls.append("insider")
+        @staticmethod
+        def build_sector_pages(_env, _site, _generated, **kwargs):
+            calls.append("sector_pages")
+            assert kwargs["alpha"] == {"per_ticker": {}}
+            return ({"XLK": {"label": "Leader", "entry": {"urgency": "now"}}}, [])
+
+        @staticmethod
+        def sector_setup_view(_latest, _timing):
+            calls.append("sector_setup")
+            return {"sectors": [{
+                "ticker": "XLK",
+                "two_reads_chip": {"cycle_label_en": "LEADER"},
+            }]}
+
+        @staticmethod
+        def basket_action_items(_site):
+            calls.append("basket_items")
+            return {"sector_overlay": {}}
+
+        @staticmethod
+        def action_board(_timing, _notable, _basket_items, **kwargs):
+            calls.append("action_board")
+            assert "XLK" in kwargs["sector_setup_lookup"]
+            return {
+                "total": 1,
+                "buy_now": [{"kind": "sector", "ticker": "XLK"}],
+                "buy_soon": [], "on_the_run": [], "take_profits": [],
+                "hold": [], "avoid": [], "notable": [],
+            }
+
+    payload = build_action_board(
+        root=tmp_path,
+        canonical=Canonical,
+        generated_utc="2026-09-16T06:00:00Z",
+    )
+    assert calls == [
+        "alpha", "insider", "sector_pages", "sector_setup",
+        "basket_items", "action_board",
+    ]
+    assert payload["as_of"] == "2026-09-14"
+    row = payload["action_board"]["buy_now"][0]
+    assert row["two_reads_chip"] == {"cycle_label_en": "LEADER"}
+    written = json.loads(
+        (site / "basketdata" / "action_board.json").read_text()
+    )
+    assert written == payload
+
+
+# ------------------------------------------------ independent publication lane
+
+WORKFLOW = ROOT / ".github" / "workflows" / "sector-intelligence.yml"
+
+
+def test_orchestrator_runs_producers_then_validator_in_strict_order() -> None:
+    from scripts.build_sector_intelligence import run_steps
+
+    calls: list[str] = []
+
+    def step(name: str, rc: int = 0):
+        def invoke() -> int:
+            calls.append(name)
+            return rc
+        return invoke
+
+    rc = run_steps([
+        ("baskets", step("baskets")),
+        ("action_board", step("action_board")),
+        ("sector_central", step("sector_central")),
+        ("validate", step("validate")),
+    ])
+    assert rc == 0
+    assert calls == ["baskets", "action_board", "sector_central", "validate"]
+
+
+def test_orchestrator_stops_before_publishing_a_partial_generation() -> None:
+    from scripts.build_sector_intelligence import run_steps
+
+    calls: list[str] = []
+    def step(name: str, rc: int = 0):
+        def invoke() -> int:
+            calls.append(name)
+            return rc
+        return invoke
+
+    rc = run_steps([
+        ("baskets", step("baskets")),
+        ("action_board", step("action_board", rc=1)),
+        ("sector_central", step("sector_central")),
+        ("validate", step("validate")),
+    ])
+    assert rc == 1
+    assert calls == ["baskets", "action_board"]
+
+
+def test_workflow_has_independent_reconciliation_and_manual_paths() -> None:
+    src = WORKFLOW.read_text(encoding="utf-8")
+    assert "workflow_dispatch:" in src
+    assert "schedule:" in src
+    assert "push:" in src
+    assert "group: pipeline-sector-intelligence" in src
+    assert "cancel-in-progress: false" in src
+    assert "python -m scripts.build_sector_intelligence" in src
+    assert "python -m scripts.check_sector_intelligence_freshness --quiet" in src
+
+
+def test_workflow_clears_inherited_sparse_checkout_before_checkout() -> None:
+    src = WORKFLOW.read_text(encoding="utf-8")
+    guard = src.index("clear any sparse checkout")
+    checkout = src.index("uses: actions/checkout@v4")
+    assert guard < checkout
+    assert "sparse-checkout disable" in src[guard:checkout]
+    assert "config --unset-all core.sparseCheckout" in src[guard:checkout]
+
+
+def test_workflow_uses_existing_main_publication_contract() -> None:
+    src = WORKFLOW.read_text(encoding="utf-8")
+    assert "ADMIN_GH_TOKEN" in src
+    assert 'scripts/ci/push_retry.sh' in src
+    assert "push_metadata_replay_commit" in src
+    assert "sector-intelligence: publish" in src
+    assert "git add site/" not in src, "targeted lane must never stage the whole site"
+
+
+def test_workflow_runs_exact_builder_order() -> None:
+    src = WORKFLOW.read_text(encoding="utf-8")
+    # The orchestrator owns the order; the workflow must not bypass one producer.
+    for module in (
+        "scripts.build_baskets",
+        "scripts.build_sector_action_board",
+        "scripts.build_sector_central",
+        "scripts.check_sector_intelligence_freshness",
+    ):
+        assert module in (ROOT / "scripts" / "build_sector_intelligence.py").read_text()
+
+
+def test_orchestrator_uses_focused_basket_mode(monkeypatch) -> None:
+    from scripts import build_baskets
+    from scripts.build_sector_intelligence import default_steps
+
+    seen: list[bool] = []
+
+    def fake_main(*, sector_intelligence_only: bool = False) -> int:
+        seen.append(sector_intelligence_only)
+        return 0
+
+    monkeypatch.setattr(build_baskets, "main", fake_main)
+    steps = default_steps()
+    assert steps[0][0] == "scripts.build_baskets"
+    assert steps[0][1]() == 0
+    assert seen == [True]
+
+
+def test_targeted_allocation_skips_auxiliary_and_ai(monkeypatch, tmp_path) -> None:
+    from scripts import build_allocation
+
+    calls: list[str] = []
+    monkeypatch.setattr(build_allocation.config, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        build_allocation,
+        "build_region",
+        lambda region, _env, _built, _site: calls.append(f"region:{region}") or True,
+    )
+    monkeypatch.setattr(
+        build_allocation,
+        "_run_macro_narrative",
+        lambda: calls.append("macro_narrative"),
+    )
+    monkeypatch.setattr(
+        build_allocation,
+        "_run_theme_discovery",
+        lambda: calls.append("theme_discovery"),
+    )
+    monkeypatch.setattr(
+        build_allocation,
+        "_run_thematic_desk",
+        lambda regions: calls.append("thematic_desk:" + ",".join(regions)),
+    )
+
+    stale = build_allocation.main(
+        ["us"], run_auxiliary=False, run_ai=False
+    )
+    assert stale is False
+    assert calls == ["region:us"]
+
+
+def test_focused_basket_mode_stops_before_unrelated_tail() -> None:
+    src = (ROOT / "scripts" / "build_baskets.py").read_text(encoding="utf-8")
+    guard = src.index("if sector_intelligence_only:")
+    tail = src.index("from scripts.build_anticipation import main as _build_anticipation")
+    assert guard < tail
+    assert "return 0" in src[guard:tail]

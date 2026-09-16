@@ -109,7 +109,7 @@ Run: `python -m pytest tests/test_sector_central_gate.py tests/test_sector_intel
 **Files:**
 - Create: `scripts/build_sector_intelligence.py`
 - Create: `.github/workflows/sector-intelligence.yml`
-- Create: `tests/test_sector_intelligence_workflow.py`
+- Modify: `tests/test_sector_intelligence_page.py` (workflow ownership checks stay in the existing CI-owned suite)
 
 **Interfaces:**
 - Orchestrator order: baskets → action board → Sector Central → validator.
@@ -123,7 +123,7 @@ Run: `python -m pytest tests/test_sector_central_gate.py tests/test_sector_intel
 - [ ] **Step 6: Use `ADMIN_GH_TOKEN`, `push_retry.sh`, and metadata replay for the scoped commit**
 - [ ] **Step 7: Run workflow contract tests until GREEN**
 
-Run: `python -m pytest tests/test_sector_intelligence_workflow.py -q`
+Run: `python -m pytest tests/test_sector_intelligence_page.py -q`
 
 ---
 ### Task 6: Extend the existing external watchdog
@@ -155,7 +155,7 @@ Run: `python scripts/check_nightly_liveness.py --selftest`
 
 - [ ] **Step 1: Run all focused suites**
 
-Run: `python -m pytest tests/test_sector_intelligence_page.py tests/test_sector_central_gate.py tests/test_sector_intelligence_workflow.py tests/test_nightly_liveness.py -q`
+Run: `python -m pytest tests/test_sector_intelligence_page.py tests/test_sector_central_gate.py tests/test_nightly_liveness.py -q`
 
 - [ ] **Step 2: Run the real targeted build in the worktree**
 

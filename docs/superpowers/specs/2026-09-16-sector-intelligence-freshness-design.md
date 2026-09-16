@@ -1,8 +1,8 @@
 # Sector Intelligence Freshness Recovery Design
 
-**Date:** 2026-09-16  
-**Owner:** Sol  
-**Repository:** `mastermindx-market-intelligence/macro`  
+**Date:** 2026-09-16
+**Owner:** Sol
+**Repository:** `mastermindx-market-intelligence/macro`
 **Skillpack:** `mastermindx-market-intelligence/Mastermind@0fe8074ff953b2ced9025ed40f0f66019c759967`
 
 ## Outcome

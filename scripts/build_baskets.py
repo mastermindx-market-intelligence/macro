@@ -214,9 +214,11 @@ def _write_score_snapshot(ti: dict) -> None:
     p.write_text(json.dumps(slim, separators=(",", ":"), default=str))
 
 
-def main() -> int:
+def main(*, sector_intelligence_only: bool | None = None) -> int:
     if "--snapshot" in sys.argv[1:]:
         return snapshot_membership()
+    if sector_intelligence_only is None:
+        sector_intelligence_only = "--sector-intelligence" in sys.argv[1:]
     site = config.ROOT / "site"
     try:
         from engine.baskets import compute_baskets
@@ -525,15 +527,24 @@ def main() -> int:
     # copies are the fallback if a refresh fails; an absent file just hides that panel. Both
     # additive — never fatal. TODO: promote to dedicated daily.yml steps once a workflow-scoped
     # token is available.
-    try:
-        from scripts.thematic_rotation_phase0 import run_all as _phase0_all
-        _phase0_all()                                     # us, canada, china (HK skipped → US proxy)
-    except Exception as e:  # noqa: BLE001 — additive; falls back to the committed artifacts
-        log.error("thematic rotation Phase-0 refresh failed (using committed artifacts): %s", e)
+    if not sector_intelligence_only:
+        try:
+            from scripts.thematic_rotation_phase0 import run_all as _phase0_all
+            _phase0_all()                                 # us, canada, china (HK uses US proxy)
+        except Exception as e:  # noqa: BLE001 — additive; committed artifacts remain
+            log.error("thematic rotation Phase-0 refresh failed (using committed artifacts): %s", e)
     _alloc_stale = False
     try:
         from scripts.build_allocation import main as _build_allocation
-        _alloc_stale = _build_allocation()                # builds all four allocation pages
+        if sector_intelligence_only:
+            # The overview hero needs only the deterministic US allocation JSON.
+            # Do not launch multi-region pages, discovery, or model calls in the
+            # independent freshness-recovery lane.
+            _alloc_stale = _build_allocation(
+                ["us"], run_auxiliary=False, run_ai=False
+            )
+        else:
+            _alloc_stale = _build_allocation()            # full four-market publication
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         _alloc_stale = True
         log.error("allocation pages (via build_baskets) failed: %s", e, exc_info=True)
@@ -628,6 +639,13 @@ def main() -> int:
         (site / "forming_narratives.js").write_text(ne.read_text())
     log.info("wrote %s/baskets.html (%d baskets, %d categories, %d KB)",
              site, len(data["baskets"]), len(data.get("categories", [])), len(html) // 1024)
+
+    if sector_intelligence_only:
+        log.info(
+            "sector-intelligence focused basket build complete — skipped anticipation, "
+            "freeze/ledger organs, per-name event atlases, notifications, and freshness tail"
+        )
+        return 0
 
     try:
         from scripts.build_anticipation import main as _build_anticipation
