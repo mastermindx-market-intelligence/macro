@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-16T10:15:33.913057+00:00",
-  "count": 2220,
+  "generated_at": "2026-09-16T10:58:59.213670+00:00",
+  "count": 2222,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -84,6 +84,48 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-mbf4d5iyijp-e8a60b",
+      "title": "JPM US Market Intelligence | Morning Briefing Sept 16",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T10:10:00Z",
+      "summary_points": [
+        "Fed Policy Scenarios & Equity Impact: Jay’s 5 Fed policy scenarios with bond impacts; consensus 25bp hike expected to steepen yield curve, driving SPX +25bp to +75bp as equities bid on rate hike pricing (Dec/Mar 2027).",
+        "AI Infrastructure Growth Drivers: Record semi/hardware margins, 60-80% frontier-model gross margins, $20-40bn revenue per GW vs $10bn in 2025; model training unlikely to slow despite monetization fears.",
+        "AI Security & Grid Shortfall: AI-driven security spending to exceed $430bn in 3-year TAM as agentic AI expands attack surface; 50–80 GW grid shortfall by 2030 creates structural opportunity for onsite power.",
+        "US/Iran Energy Crisis: WTI >$100/bbl remains stock headwind; UK-Saudi energy talks to counter Houthi disruption, with WTI down to mid-$80s+ solution boosting stocks.",
+        "Fed Rate Hike Expectations Discrepancy: Fed projected 25bp hikes (Sep/Dec) vs market pricing 76bp by end of 2027Q1; Feroli’s 3.25% longer-run dot plot contrasts with Mkt Intel’s \"less is more\" view on 50bp hikes."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 17,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-2gzp4b9eqzn-63b75c",
+      "title": "JPM Commodity Market",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T10:09:07Z",
+      "summary_points": [
+        "Energy Markets Dominate Open Interest: Global commodity OI at $2.1T (3% WoW rise), energy markets driving 32% (US) and 49% (UK) of total, with crude oil (7 contracts, $521B) and natural gas (9% WoW surge) as primary catalysts.",
+        "Geopolitical Escalation Amplifies Energy Volatility: US-Iran conflict, Middle East tensions, and Strait of Hormuz re-closure delay Qatar LNG restart, pushing TTF prices up; energy forward curve mispriced ($6 front, $10 back) with winter volatility risks from record-low storage.",
+        "Copper Tariff Policy Creates Uncertainty: Potential phased US tariffs on refined copper imports delayed until mid-term elections, causing near-term market slack and long-term policy risk, impacting LME Copper net outflows.",
+        "Extreme Positioning in Key Sectors: Precious metals (Gold) show strongest net buying (+$2.857B 1-week) but positioning at lowest since 2018; industrial metals (Copper) at peak bullish positioning (blue area, highest since 2018), signaling reversal risk.",
+        "Energy Forward Curve Mispricing: TTF gas forward curve mispriced ($6 too high front, $10 too low back), with net long crude oil (NYMEX WTI, ICE Brent) and net short natural gas (TTF) indicating extreme sentiment and potential sharp corrections."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 24,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-gqittnbnwec-8433b0",
       "title": "JPM Europe Equity Research | Today’s Morning Meeting",
