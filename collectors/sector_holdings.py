@@ -292,6 +292,37 @@ def _report_missing_symbols(requested: list[str], returned, current) -> list[str
     return missing
 
 
+def _has_completed_stock_close(close: pd.Series, session) -> bool:
+    """A deep-stock daily label needs an actual positive finite price, not Volume."""
+    if not isinstance(close, pd.Series) or close.empty:
+        return False
+    try:
+        index = pd.DatetimeIndex(close.index)
+        if index.tz is not None:
+            index = index.tz_localize(None)
+        selected = index.normalize() == pd.Timestamp(session)
+        if int(selected.sum()) != 1:
+            return False
+        value = close.loc[selected].iloc[0]
+        if isinstance(value, (bool, type(pd.NA))):
+            return False
+        value = float(value)
+        return 0 < value < float("inf")
+    except (TypeError, ValueError, OverflowError):
+        return False
+
+
+def _completed_stock_batch_count(df: pd.DataFrame, batch: list[str], session) -> int:
+    count = 0
+    for ticker in batch:
+        try:
+            close = df[ticker]["Close"]
+        except (KeyError, TypeError):
+            continue
+        count += int(_has_completed_stock_close(close, session))
+    return count
+
+
 class StockPriceAdapter(Adapter):
     """Daily closes for the union of top-N holdings (cycle engine fuel)."""
 
@@ -349,21 +380,39 @@ class StockPriceAdapter(Adapter):
             tip = tip.tz_localize(None)
         return bool((today - tip.normalize()).days > _MAX_WINDOW_BRIDGE_DAYS)
 
-    def _download(self, batch: list[str], period: str) -> pd.DataFrame:
+    def _download(self, batch: list[str], period: str, *, expected_session=None) -> pd.DataFrame:
         import yfinance as yf
         last_exc: Exception | None = None
+        best, best_count = None, -1
         for attempt in range(self.ycfg["retries"]):
             try:
-                return yf.download(batch, period=period, auto_adjust=True,
-                                   progress=False, group_by="ticker", threads=True)
-            except Exception as e:  # noqa: BLE001
+                df = yf.download(batch, period=period, auto_adjust=True,
+                                 progress=False, group_by="ticker", threads=True)
+                if expected_session is not None:
+                    count = _completed_stock_batch_count(df, batch, expected_session)
+                    if count > best_count:
+                        best, best_count = df, count
+                    if count < len(batch) * 0.7:
+                        raise RuntimeError(
+                            f"stocks: completed session {expected_session}: "
+                            f"only {count}/{len(batch)} valid closing prices"
+                        )
+                return df
+            except Exception as e:  # noqa: BLE001 — preserve the existing retry owner/budget
                 last_exc = e
                 if attempt < self.ycfg["retries"] - 1:
                     time.sleep(self.ycfg["backoff_base_s"] * (2 ** attempt))
+        if expected_session is not None and best is not None:
+            # Batch partitioning cannot change the existing WHOLE-universe 70%
+            # availability contract. _pull discards stale names; fetch judges the
+            # actual current returned population, including retention/rebase work.
+            log.warning("stocks: completed session %s batch retry exhausted (%d/%d current)",
+                        expected_session, best_count, len(batch))
+            return best
         raise last_exc  # type: ignore[misc]
 
     def _pull(self, period: str, tlist: list[str], frames: dict[str, pd.DataFrame],
-              rebase: list[str] | None, tol: float) -> None:
+              rebase: list[str] | None, tol: float, *, expected_session=None) -> None:
         """Batched download into *frames*. When *rebase* is a list (the cheap 1mo
         window), a ticker whose window disagrees with its stored closes on the
         overlap dates (store.basis_shifted) was re-adjusted by Yahoo since the last
@@ -376,7 +425,8 @@ class StockPriceAdapter(Adapter):
             batch = tlist[i:i + self.ycfg["batch_size"]]
             if not batch:
                 continue
-            df = self._download(batch, period)
+            kwargs = {"expected_session": expected_session} if expected_session is not None else {}
+            df = self._download(batch, period, **kwargs)
             for t in batch:
                 try:
                     cols = [c for c in ["Close", "High", "Low", "Volume"] if c in df[t].columns]
@@ -388,12 +438,15 @@ class StockPriceAdapter(Adapter):
                     continue
                 if sub.empty:
                     continue
+                if expected_session is not None and not _has_completed_stock_close(sub["close"], expected_session):
+                    continue
                 if rebase is not None and store.basis_shifted(self.group, t, sub, tol=tol):
                     rebase.append(t)  # discard the window; re-pull full history below
                     continue
                 frames[t] = sub
 
     def fetch(self, full_history: bool = False) -> dict[str, pd.DataFrame]:
+        expected_session = nyse_calendar.expected_last_session()
         current = top10_union()
         if not current:
             raise RuntimeError("no holdings stored yet — run sector_holdings first")
@@ -420,12 +473,13 @@ class StockPriceAdapter(Adapter):
         rebase: list[str] = []
         tol = float(self.ycfg.get("upsert_basis_tol", 1e-3))
         for period, tlist in groups:
-            self._pull(period, tlist, frames, rebase if period == "1mo" else None, tol)
+            self._pull(period, tlist, frames, rebase if period == "1mo" else None, tol,
+                       expected_session=expected_session)
         if rebase:
             log.info("stocks: %d name(s) on a re-adjusted basis — refetching "
                      "period='max': %s", len(rebase), rebase[:12])
             try:
-                self._pull("max", rebase, frames, None, tol)
+                self._pull("max", rebase, frames, None, tol, expected_session=expected_session)
             except Exception as e:  # noqa: BLE001 — skip tonight; the guard re-flags next run
                 log.warning("stocks: basis refetch failed for %d name(s) (%s) — "
                             "kept out of this run", len(rebase), e)
@@ -433,9 +487,12 @@ class StockPriceAdapter(Adapter):
         # aggregate floor decides whether to raise — a run that dies on the floor is
         # exactly the run whose per-name detail is worth having, and a run that
         # survives it can still be hiding up to 30% silent drops.
+        frames = {ticker: frame for ticker, frame in frames.items()
+                  if "close" in frame and _has_completed_stock_close(frame["close"], expected_session)}
         _report_missing_symbols(tickers, frames, current)
         if len(frames) < len(tickers) * 0.7:
-            raise RuntimeError(f"stocks: only {len(frames)}/{len(tickers)} returned")
+            raise RuntimeError(f"stocks: completed session {expected_session}: "
+                               f"only {len(frames)}/{len(tickers)} current prices returned")
         return frames
 
 
