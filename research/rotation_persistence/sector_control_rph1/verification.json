@@ -198,6 +198,27 @@
       "state": "PASS_SEMANTICS_REPAIR_RECORDS",
       "subject_head": "27a966041272a9de6823a590e90a0c6fd7b5141d",
       "subject_tree": "213e92d606d26ca7c8078ff900870adfb48ff584"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /Users/chriswong/Documents/Cluade/Macro Dashboard/.venv/bin/python -m pytest tests/test_contract_delta.py -q --tb=short -p no:cacheprovider",
+      "log_sha256": "393110f3847a26d5f37df3f1d99cbd735a1aae37a61f2282b29e563f2f6e5d4e",
+      "name": "fresh_records_repair_contract_delta_tests",
+      "result": "15 passed in 9.45s; unrelated best-effort pytest cleanup warnings only",
+      "state": "PASS_WITH_UNRELATED_CLEANUP_WARNINGS",
+      "subject_head": "25a75a900e0453d30380450aabb086b648dced34",
+      "subject_tree": "0c1c649fa9ea780ffa642293d31d1b5230b4cf33"
+    },
+    {
+      "closure_authorization": "AUTHORIZED_RECORDS_ONLY_CLOSURE_THEN_FINAL_HEAD_REVIEW",
+      "command": "Claude Sonnet 5 independent read-only exact-head records review",
+      "name": "independent_records_repair_head_review",
+      "parent_head": "27a966041272a9de6823a590e90a0c6fd7b5141d",
+      "pr_body_verdict": "PASS",
+      "result": "PASS_FOR_CLOSURE_COMMIT; semantic bytes unchanged; authority inert; no required repairs",
+      "review_sha256": "d3c40ec2e597749b4055d5c9778861e019877c39554be23362aee00e19fef065",
+      "state": "PASS_FOR_CLOSURE_COMMIT",
+      "subject_head": "25a75a900e0453d30380450aabb086b648dced34",
+      "subject_tree": "0c1c649fa9ea780ffa642293d31d1b5230b4cf33"
     }
   ],
   "ci_ownership": {
@@ -211,14 +232,15 @@
   },
   "current_main_compatibility": {
     "candidate_changed_path_count": 14,
-    "direct_overlap_interpretation": "The shared CI manifest moved on both sides, but current-main and RPH-1 hunks are disjoint; the exact no-write merge tree completed without conflict.",
+    "direct_overlap_interpretation": "The stacked branch and current main overlap only in the shared CI manifest; the exact no-write merge tree completed without conflict and the RPH-1 hunks remain disjoint.",
     "direct_path_overlap": [
       ".github/ci/legacy-jobs.yml"
     ],
     "merge_base_with_record_head": "4b1f8fddcc4eb6f36133fca4d42018678b74d30b",
     "merge_tree_exit_code": 0,
-    "no_write_integrated_tree": "3d06b4117ca6e9da0e267a3ba748ca86c055d65b",
-    "protected_main_sha": "0da5f5fc60568301d8b62c3e0b7702ea23ff6f57",
+    "no_write_integrated_tree": "57acb64369299ff8880278be530295a63e3a9584",
+    "protected_main_sha": "453c83f051f7da88dc4c69658b389d7f96e2debd",
+    "stacked_branch_changed_path_count": 35,
     "stacked_parent_contract_git_blob_sha1": {
       "scripts/research/rotation_persistence/__init__.py": "e3b71311939007484cc65e0986f13273cdb461fb",
       "scripts/research/rotation_persistence/contracts.py": "d5f6ff4433f2dc0f0b88a7407a0a8392cb9c9863",
@@ -236,12 +258,12 @@
     "base_sha": "8d198b42f6bff491a49b1f3467b56ca4bb673f80",
     "draft": true,
     "head_ref": "sol/rotation-persistence-sector-control-rph1-20260912",
-    "head_sha": "27a966041272a9de6823a590e90a0c6fd7b5141d",
+    "head_sha": "25a75a900e0453d30380450aabb086b648dced34",
     "labels": [],
     "merge_state_status": "UNSTABLE",
     "mergeable": "MERGEABLE",
     "native_auto_merge": null,
-    "observed_at": "2026-09-16T10:04:47Z",
+    "observed_at": "2026-09-16T10:14:12Z",
     "ordinary_check_projection": {
       "aggregate_dispatch": "FAIL_UNRELATED_MARKET_OS_MACRO_SUITE_PAGES_MAIN_FAILURE",
       "ci_authority": "FAIL_UNSUPPORTED_BASE_REF",
@@ -253,6 +275,7 @@
     },
     "pr_number": 7095,
     "review_decision": null,
+    "snapshot_scope": "PRE_CLOSURE_REVIEWED_HEAD",
     "state": "OPEN"
   },
   "hosted_proof": {
@@ -312,10 +335,12 @@
   ],
   "lifecycle": {
     "deploy_authorized": false,
+    "final_closure_head_review_required": true,
+    "final_closure_head_review_state": "PENDING_AT_COMMIT",
     "mark_ready_authorized": false,
     "merge_authorized": false,
     "production_consumer_authorized": false,
-    "state": "DRAFT_HOLD_AWAITING_FINAL_RECORD_REVIEW",
+    "state": "PARKED_HOLD_FOR_SOL",
     "terminal_state_after_acceptance": "PARKED_HOLD_FOR_SOL"
   },
   "notes": [
@@ -324,13 +349,14 @@
     "A PASS verdict means PARKED / HOLD-FOR-SOL, never Ready, merge, deploy or production activation.",
     "The receipt binds the semantic implementation head/tree. Its own containing record commit cannot be self-hashed inside the same JSON object; Git and the PR body provide that outer immutable identity.",
     "Commit dfdaa67472839580828377b7b0322ea3fbe25c21 ('x') temporarily added file 'nonexistent'; ec9dee6721aed927c5e2f6f313eb1f24341d57df removed it. The final tree is unaffected and history is disclosed rather than rewritten.",
-    "The manifest ownership parse is a one-off receipt, not a committed regression guard."
+    "The manifest ownership parse is a one-off receipt, not a committed regression guard.",
+    "Records-repair head 25a75a900e0453d30380450aabb086b648dced34 / tree 0c1c649fa9ea780ffa642293d31d1b5230b4cf33 received PASS_FOR_CLOSURE_COMMIT in independent review d3c40ec2e597749b4055d5c9778861e019877c39554be23362aee00e19fef065; the review authorizes only a terminal records-only closure followed by exact closure-head confirmation.",
+    "Fresh tests/test_contract_delta.py execution at 25a75a900e0453d30380450aabb086b648dced34 passed 15 tests in 9.45s; receipt SHA-256 393110f3847a26d5f37df3f1d99cbd735a1aae37a61f2282b29e563f2f6e5d4e.",
+    "The final closure commit cannot contain its own Git SHA. GitHub PR body/review is the external immutable location for the exact closure-head confirmation; a PASS requires no further source mutation."
   ],
   "operation_key": "leadership-persistence-sector-control-rph1-20260912-sol-001",
   "pending": [
-    "commit and normally push this records-only repair on the existing branch",
-    "replace the stale PR body against the resulting exact head while preserving Draft/HOLD and native auto-merge null",
-    "obtain one exact-final-head read-only review before PARKED / HOLD-FOR-SOL",
+    "one exact-final-closure-head read-only review must pass and be recorded in the GitHub PR body or review without another source mutation",
     "a hosted archive/data-gate run remains unavailable before merge because the approved data-health workflow is main-only"
   ],
   "pr_number": 7095,
@@ -353,7 +379,7 @@
     "skillpack_schema": "mastermind.sol_skillpack.v1",
     "skillpack_version": "1.0.1"
   },
-  "recorded_at": "2026-09-16T10:04:47Z",
+  "recorded_at": "2026-09-16T10:41:46Z",
   "repaired_findings": [
     "live Yahoo archive regeneration moved from gate: code to gate: data",
     "source and output paths resolve against a canonical repository root",
@@ -367,10 +393,22 @@
   ],
   "repository": "mastermindx-market-intelligence/macro",
   "review": {
-    "final_records_head_verdict": "PENDING",
+    "final_closure_head_verdict": "PENDING_AT_COMMIT",
     "prior_reviewed_head": "c962235abf2c2b731c98693c472a116bc110e110",
     "prior_verdict": "REPAIR_REQUIRED",
-    "reason": "Semantic bytes are accepted; the exact records-only repair head still requires independent review before parking.",
+    "reason": "The records-repair head passed independent review and authorizes this terminal records-only closure commit; the resulting closure head requires one final read-only confirmation recorded externally without another source mutation.",
+    "records_repair_review": {
+      "authority_inert": true,
+      "closure_authorization": "AUTHORIZED_RECORDS_ONLY_CLOSURE_THEN_FINAL_HEAD_REVIEW",
+      "parent_head": "27a966041272a9de6823a590e90a0c6fd7b5141d",
+      "pr_body_verdict": "PASS",
+      "review_sha256": "d3c40ec2e597749b4055d5c9778861e019877c39554be23362aee00e19fef065",
+      "reviewed_head": "25a75a900e0453d30380450aabb086b648dced34",
+      "reviewed_tree": "0c1c649fa9ea780ffa642293d31d1b5230b4cf33",
+      "reviewer": "Claude Sonnet 5 independent read-only reviewer",
+      "semantic_bytes_unchanged": true,
+      "verdict": "PASS_FOR_CLOSURE_COMMIT"
+    },
     "review_reuse": "FULL_REREVIEW_REQUIRED",
     "semantic_review": {
       "recommendation": "ACCEPT_RESEARCH_AFTER_RECORDS_ONLY_REPAIR_AND_FINAL_HEAD_REVIEW",
@@ -540,12 +578,17 @@
   },
   "source_subject": {
     "base": "8d198b42f6bff491a49b1f3467b56ca4bb673f80",
+    "closure_head": "SELF_NOT_REPRESENTABLE_IN_OWN_CONTENT",
+    "closure_review_state": "PENDING_AT_COMMIT",
     "implementation_head": "5c7bf21dad34ec68eaf5075a5563de7d5805cda0",
     "implementation_tree": "8187488bcdc8d2b5aade7ea91cc79f7539e26fc0",
     "preregistration_freeze": "0a80c56135fc5879cf4079fea55912041dfce534",
     "record_assembly_parent": "5c7bf21dad34ec68eaf5075a5563de7d5805cda0",
     "record_head": "SELF_NOT_REPRESENTABLE_IN_OWN_CONTENT",
-    "review_classification": "FULL_REREVIEW_COMPLETED_SEMANTIC_PASS_RECORDS_REPAIR_REQUIRED",
+    "records_repair_head": "25a75a900e0453d30380450aabb086b648dced34",
+    "records_repair_review_sha256": "d3c40ec2e597749b4055d5c9778861e019877c39554be23362aee00e19fef065",
+    "records_repair_tree": "0c1c649fa9ea780ffa642293d31d1b5230b4cf33",
+    "review_classification": "SEMANTIC_PASS_RECORDS_REPAIR_PASS_CLOSURE_HEAD_REVIEW_REQUIRED",
     "reviewed_record_head": "27a966041272a9de6823a590e90a0c6fd7b5141d",
     "reviewed_record_tree": "213e92d606d26ca7c8078ff900870adfb48ff584"
   }

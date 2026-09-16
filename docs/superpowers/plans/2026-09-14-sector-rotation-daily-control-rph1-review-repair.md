@@ -179,9 +179,11 @@ Update RPH-1 wave status/artifacts/next action, add a cold-stranger handoff with
 Commit all repair/test/result/record files, push normally to the existing branch, confirm clean status and freeze the new exact head.
 
 Completed at `27a966041272a9de6823a590e90a0c6fd7b5141d` without rebase, reset or force-push.
-- [ ] **Step 5: Refresh the PR record**
+- [x] **Step 5: Refresh the PR record**
 
 Replace stale RED-phase prose with the exact implemented capability, source/result identities, separated data/code gates, review history, HOLD authority and explicit release condition. Confirm Draft, no `merge-on-green`, and native auto-merge null.
+
+Completed on reviewed records-repair head `25a75a900e0453d30380450aabb086b648dced34`; literal PR body SHA-256 `2fec495126b489307281b2b1281442b342881cd10a195dbae45761a6d7460375`; Draft=true, labels empty, native auto-merge null.
 
 - [x] **Step 6: Obtain immutable-head independent review**
 
@@ -189,9 +191,11 @@ Commission a read-only review of the new exact SHA covering formulas, source ide
 
 Completed on `27a966041272a9de6823a590e90a0c6fd7b5141d` / tree `213e92d606d26ca7c8078ff900870adfb48ff584`: semantic PASS, records REPAIR_REQUIRED. Review JSON SHA-256 `fc81f7a4667340a11bf3f410291bc67165dfa5b378afc1e29475e08e7b44dafe`.
 
-- [ ] **Step 7: Close only on accepted HOLD**
+- [x] **Step 7: Close only on accepted HOLD**
 
 When the rereview accepts the exact head, update `verification.json` and the handoff with the verdict identity, commit/push that record-only closure if required, and obtain review of the final record head. Leave PR #7095 Draft/HOLD and report `PARKED / HOLD-FOR-SOL`, never shipped or deployed.
+
+Closure authorized by independent records review of `25a75a900e0453d30380450aabb086b648dced34` / tree `0c1c649fa9ea780ffa642293d31d1b5230b4cf33`: `PASS_FOR_CLOSURE_COMMIT`, review SHA-256 `d3c40ec2e597749b4055d5c9778861e019877c39554be23362aee00e19fef065`. The terminal closure commit must receive one exact-head read-only confirmation recorded externally; on PASS no further source mutation is required.
 
 ## Self-Review
 

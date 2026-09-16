@@ -38,13 +38,13 @@ waves:
       authority. Do not merge or project it into a product in this wave.
   - id: RPH1
     title: Preregistered daily sector-price leadership and phase-complete MACD control
-    status: in_progress
+    status: done
     depends_on: [RPH0]
     next_action: >
-      Normally push the records-only repair after semantic PASS on 27a966041272, replace the stale
-      PR body, and obtain one exact-final-head review. Keep #7095 Draft/HOLD. The exact-head hosted
-      focused suite passed in run 34938053231; the archive lane remains main-only and locally proven
-      on one platform. No production timeframe, rank, gate, entry or trade consumer is authorized.
+      PARKED / HOLD-FOR-SOL on Draft PR #7095 after semantic PASS and records-repair review
+      PASS_FOR_CLOSURE_COMMIT at 25a75a900e04. One exact closure-head read-only confirmation is the
+      external acceptance receipt; no further source mutation is expected on PASS. The hosted archive
+      lane remains main-only and no production timeframe, rank, gate, entry or trade consumer exists.
   - id: RPH2
     title: Separately preregistered 23/30-session or deeper point-in-time stratification
     status: todo
@@ -91,10 +91,10 @@ artifacts:
   - docs/superpowers/plans/2026-09-14-sector-rotation-daily-control-rph1-review-repair.md
   - agentos/handoffs/LEADERSHIP-PERSISTENCE-INTELLIGENCE-2026-09-14-RPH1.md
 next_action: >
-  Complete the records-only closure of RPH-1: push the repaired evidence projection, replace PR #7095's
-  stale body, obtain exact-final-head review, and park it Draft/HOLD. Then advance the separate Temporal
-  Grain WMT/silver external-evidence gate; do not turn the accepted daily archive control into a
-  production timeframe or consumer. RPH-0 PR #7064 and RPH-1 PR #7095 remain separate carriers.
+  Advance the separate Temporal Grain W1A external-evidence gate on PR #6803: recover a right-safe exact
+  WMT chart recipe/export/lower-grain packet and an exact motivating-silver product/vendor/contract-or-
+  roll/session packet, then run the existing deterministic harness. RPH-1 remains parked Draft/HOLD and
+  may not become a production timeframe or consumer. RPH-0 PR #7064 remains a separate held carrier.
 ---
 
 ## Owner boundary

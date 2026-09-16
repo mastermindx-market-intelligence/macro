@@ -2,7 +2,7 @@
 workstream: "WS:LEADERSHIP-PERSISTENCE-INTELLIGENCE"
 session: "Web Sol / Mac-Studio / sol/rotation-persistence-sector-control-rph1-20260912"
 model: sol
-ended_because: ci_handoff
+ended_because: complete
 mission: >
   Execute and repair the outcome-blind RPH-1 daily sector-price control on one existing Draft/HOLD
   carrier. Separate leadership memory, subsequent-return persistence, dispersion/correlation and
@@ -108,12 +108,28 @@ verified:
       semantic_verdict=PASS; records_verdict=REPAIR_REQUIRED; recommendation is records-only repair
       followed by exact-final-head review. Review JSON SHA-256 is
       fc81f7a4667340a11bf3f410291bc67165dfa5b378afc1e29475e08e7b44dafe.
+  - claim: "The exact records-repair head authorizes terminal records-only closure."
+    command: >
+      Claude Sonnet 5 independent read-only review of 25a75a900e0453d30380450aabb086b648dced34 /
+      tree 0c1c649fa9ea780ffa642293d31d1b5230b4cf33.
+    result: >
+      PASS_FOR_CLOSURE_COMMIT; semantic_bytes_unchanged=true; authority_inert=true; PR body PASS;
+      no required repairs. Review JSON SHA-256 is
+      d3c40ec2e597749b4055d5c9778861e019877c39554be23362aee00e19fef065.
+  - claim: "The records-repair head preserves contract-delta behavior."
+    command: >
+      PYTHONDONTWRITEBYTECODE=1 /Users/chriswong/Documents/Cluade/Macro Dashboard/.venv/bin/python -m pytest
+      tests/test_contract_delta.py -q --tb=short -p no:cacheprovider
+    result: >
+      15 passed in 9.45s at 25a75a900e0453d30380450aabb086b648dced34; unrelated best-effort
+      pytest cleanup warnings only. Receipt SHA-256 is
+      393110f3847a26d5f37df3f1d99cbd735a1aae37a61f2282b29e563f2f6e5d4e.
 unverified:
-  - claim: "The exact records-only repair head is accepted for PARKED / HOLD-FOR-SOL."
+  - claim: "The exact terminal closure commit is independently confirmed."
     what_would_verify: >
-      Normally push the records-only repair, replace the PR body against that immutable head, and run
-      one independent read-only review proving that no code, tests, result.json or report.md changed
-      and that every projection is truthful.
+      One read-only review of the resulting closure head proves that its diff remains record-only,
+      authority stays inert, and the GitHub PR body binds the exact closure head. Record the PASS in
+      the PR body or review without another source mutation.
   - claim: "Hosted archive regeneration executes before merge."
     what_would_verify: >
       An approved branch-safe data-gate lane. The current data-health workflow is main-only, so this
@@ -142,14 +158,13 @@ unresolved:
     Byte-for-byte archive regeneration is proven on the authorized macOS environment only. Cross-
     platform and pandas-version byte stability remain unproven until the main-only data lane runs.
 next_actions:
-  - "Commit and normally push this records-only repair on the existing branch; do not amend, rebase, reset or force-push."
   - >
-    Replace the stale PR body against the resulting exact head, preserve Draft/HOLD, no merge-on-green
-    label and native auto-merge null.
+    Obtain one exact read-only review of the terminal closure commit and record the PASS externally in
+    PR #7095 without another source mutation. Keep the PR Draft/HOLD; never mark Ready, merge or deploy.
   - >
-    Obtain one exact-final-head read-only review proving that code, tests, result.json and report.md
-    did not change and that hosted run 34938053231 and the remaining archive gap are represented
-    truthfully. Park only on PASS; never mark Ready, merge, deploy or connect a production consumer.
+    Advance Temporal Grain PR #6803 through the right-safe exact WMT and motivating-silver evidence
+    packets. Run the existing deterministic harness only after exact identity, session, rights and
+    lower-grain receipts exist; otherwise preserve typed UNRESOLVED_DATA.
 do_not_redo:
   - "Do not create a sibling RPH-1 branch, PR, workstream, score, state store, event plane or timeframe authority."
   - "Do not modify RPH-0 PR #7064 or reinterpret its published-theme result as this sector-price control."
@@ -178,6 +193,8 @@ RPH-1 has one repaired semantic carrier whose data normalization, formulas, samp
 live regeneration and code/data CI ownership are explicit and reproducible. The exact archive contains
 2,067 complete sessions from 2018-06-19 through 2026-09-09; the evidence remains bounded to a daily
 sector-ETF control and carries zero rank, gate, sizing, trading, Prophet, Oracle or portfolio authority.
-The semantic capability and exact-head hosted code proof are accepted. The only remaining closure
-is a records-only commit, truthful PR body and exact-final-head review before PARKED / HOLD-FOR-SOL.
-The hosted archive lane remains main-only and the byte replay remains single-platform local evidence.
+The semantic capability, exact-head hosted code proof and records-repair projection are accepted.
+RPH-1 is parked Draft/HOLD with zero production authority. The terminal closure commit receives one
+external exact-head read-only confirmation; a PASS requires no further source mutation. The hosted
+archive lane remains main-only and the byte replay remains single-platform local evidence. The program
+frontier moves to Temporal Grain's exact WMT and motivating-silver evidence packets.
