@@ -341,3 +341,39 @@ def test_existing_brain_result_transport_preserves_parallel_math_and_errors():
         transported=gateway._model_visible_tool_result('calculate_financial_bridge',result)
         assert json.loads(json.dumps(transported,allow_nan=False))==result
         assert 'PRIVATE_MARKER' not in json.dumps(transported)
+
+
+def test_extreme_valid_inputs_keep_a_bounded_json_result_and_signed_values():
+    for revenue in ('0.000000000001','1','1000000000000000000'):
+        for margin in ('-1000','0','0.000000000001','100'):
+            for eps in ('0.000000000001','1000000000000000000'):
+                p=scenario()
+                for period in ('prior','current'):
+                    p[period].update(revenue=revenue,gross_margin_pct=margin,
+                                     eps=eps,earnings_multiple='1000000000000000000')
+                r=analyze(p)
+                assert r['status'] in ('partial','complete')
+                assert len(json.dumps(r,allow_nan=False)) < 20000
+                for cell in r['calculations'].values():
+                    if cell['value'] is not None:
+                        assert Decimal(cell['value']).is_finite()
+
+
+def test_missing_values_and_zero_are_distinct_in_the_actual_cli():
+    p=scenario(); del p['current']['cash_taxes']
+    result=cli(json.dumps(p))
+    assert result.returncode==0
+    r=json.loads(result.stdout)
+    assert value(r,'current.simplified_operating_cash') is None
+    assert r['calculations']['current.simplified_operating_cash']['missing_inputs']==['current.cash_taxes']
+
+
+def test_tool_metadata_defines_cash_signs_and_prevents_double_counting():
+    module=importlib.import_module(MODULE)
+    tool=module.financial_bridge_tool_schema()
+    fields=tool['input_schema']['properties']['current']['properties']
+    assert 'excluding cost of sales' in fields['operating_expenses']['description']
+    assert 'already deducted' in fields['depreciation_amortization']['description']
+    assert 'positive use' in fields['working_capital_increase']['description']
+    assert 'not the working-capital balance' in fields['working_capital_increase']['description']
+    assert 'not verified facts' in tool['description']
