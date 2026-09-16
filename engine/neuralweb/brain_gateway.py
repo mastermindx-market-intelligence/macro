@@ -5214,10 +5214,10 @@ def _build_local_vision_providers(root: Path | None = None) -> list[dict]:
         if not base_url:
             return []
 
-        model_env = str(local.get("model_env") or "OLLAMA_MODEL")
+        model_env = str(local.get("model_env") or "OLLAMA_VISION_MODEL")
         model = str(
-            os.environ.get(model_env, "")
-            or local.get("model")
+            local.get("model")
+            or os.environ.get(model_env, "")
             or "qwen3.5:9b"
         ).strip()
         from engine.ollama_provider import OllamaClient  # noqa: PLC0415
@@ -5234,6 +5234,7 @@ def _build_local_vision_providers(root: Path | None = None) -> list[dict]:
             "cred": "private-endpoint",
             "client": client,
             "model": model,
+            "vision_only": True,
         }]
     except Exception as exc:  # noqa: BLE001 — continuity must never break the turn
         log.warning("brain_gateway: local vision fallback unavailable (%s)", type(exc).__name__)
@@ -5359,7 +5360,7 @@ def _is_claude_provider(p: dict) -> bool:
 
 
 def _is_ollama_provider(p: dict) -> bool:
-    return str(p.get("name") or "") == "ollama"
+    return str(p.get("name") or "") == "ollama" and p.get("vision_only") is True
 
 
 def _pick_vision_provider(providers: list[dict]) -> dict | None:
@@ -5460,6 +5461,12 @@ def _is_retryable_provider_error(exc: Exception) -> bool:
     try:
         from engine.ollama_provider import OllamaProviderError  # noqa: PLC0415
         if isinstance(exc, OllamaProviderError):
+            # Transport/empty-response failures are provider-specific and may use the
+            # next rung. A typed 4xx payload defect would fail identically everywhere
+            # and must surface instead of silently degrading to text-only.
+            match = re.match(r"^(?:Ollama HTTP )?(4\d\d)\b", str(exc).strip())
+            if match:
+                return int(match.group(1)) in {408, 429}
             return True
     except Exception:  # noqa: BLE001
         pass
@@ -6257,7 +6264,10 @@ def _run_brain_loop(
                 messages=messages,
             )
         except Exception as exc:  # noqa: BLE001
-            log.warning("brain_gateway: model call failed at turn %d: %s", tool_call_count, exc)
+            log.warning(
+                "brain_gateway: model call failed at turn %d error=%s",
+                tool_call_count, type(exc).__name__,
+            )
             _timing_round(timing, _ms_since(_round_t0), _round_tools)
             if not answer_text:
                 raise
@@ -6363,7 +6373,10 @@ def _run_brain_loop(
                 if getattr(block, "type", "") == "text":
                     answer_text = block.text
         except Exception as exc:  # noqa: BLE001
-            log.warning("brain_gateway: synthesis pass failed (%s) — keeping last text", exc)
+            log.warning(
+                "brain_gateway: synthesis pass failed error=%s — keeping last text",
+                type(exc).__name__,
+            )
         _timing_stamp(timing, "synthesis_ms", _synth_t0)
 
     # Extract usage from the final response (fix #1: never zeros)
@@ -9086,7 +9099,10 @@ def chat(
             **loop_source_kwargs,
         )
     except Exception as exc:  # noqa: BLE001
-        log.warning("brain_gateway: loop failed (%s) — degraded reply", exc)
+        log.warning(
+            "brain_gateway: loop failed error=%s — degraded reply",
+            type(exc).__name__,
+        )
         return {
             "ok": True,
             "reply": _degraded_reply(lane),

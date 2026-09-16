@@ -2579,25 +2579,25 @@ def test_local_vision_provider_is_built_only_from_the_vision_config(monkeypatch)
             "local_fallback": {
                 "enabled": True,
                 "base_url_env": "OLLAMA_BASE_URL",
-                "model_env": "OLLAMA_MODEL",
+                "model_env": "OLLAMA_VISION_MODEL",
+                "model": "qwen3.5:9b",
                 "timeout_s": 180,
                 "num_ctx": 32768,
             }
         }
     }
     monkeypatch.setenv("OLLAMA_BASE_URL", "http://ollama-test.ts.net:11434")
-    monkeypatch.setenv("OLLAMA_MODEL", "qwen3.5:9b")
+    monkeypatch.setenv("OLLAMA_VISION_MODEL", "qwen3-coder:30b")
     with patch.object(gw, "_load_brain_config", return_value=cfg):
-        with patch("engine.llm_auth.build_providers") as generic_builder:
-            with patch("engine.provider_health.record_waterfall") as waterfall_record:
-                providers = gw._build_local_vision_providers(None)
+        with patch("engine.provider_health.record_waterfall") as waterfall_record:
+            providers = gw._build_local_vision_providers(None)
     assert len(providers) == 1
     assert providers[0]["name"] == "ollama"
     assert providers[0]["model"] == "qwen3.5:9b"
+    assert providers[0]["vision_only"] is True
     assert providers[0]["client"] is not None
     # Candidate construction is pure: probing/building the image-only continuity rung
-    # must not append a tracked provider-health row or arm unrelated providers.
-    generic_builder.assert_not_called()
+    # must not append a tracked provider-health row.
     waterfall_record.assert_not_called()
 
 
@@ -2630,7 +2630,8 @@ def test_shipped_local_vision_endpoint_is_environment_owned():
     repo = pathlib.Path(__file__).resolve().parent.parent
     local = yaml.safe_load((repo / "config" / "brain.yml").read_text())["vision"]["local_fallback"]
     assert local["base_url_env"] == "OLLAMA_BASE_URL"
-    assert local["model_env"] == "OLLAMA_MODEL"
+    assert local["model_env"] == "OLLAMA_VISION_MODEL"
+    assert local["model"] == "qwen3.5:9b"
     assert "base_url" not in local, "a private host address must not be frozen in tracked config"
 
 
@@ -2644,7 +2645,10 @@ class TestVisionRoutesToCodexFirstClaudeSecond:
     """
 
     CODEX = {"name": "codex", "model": "gpt-5.6-sol", "client": "CODEX"}
-    OLLAMA = {"name": "ollama", "model": "qwen3.5:9b", "client": "OLLAMA"}
+    OLLAMA = {
+        "name": "ollama", "model": "qwen3.5:9b", "client": "OLLAMA",
+        "vision_only": True,
+    }
 
     def test_codex_outranks_an_in_lane_claude(self):
         providers = [{"model": "claude-haiku-4-5", "client": "H"}, self.CODEX]
@@ -2661,6 +2665,18 @@ class TestVisionRoutesToCodexFirstClaudeSecond:
 
     def test_private_ollama_serves_when_remote_vision_is_unavailable(self):
         assert gw._pick_vision_provider([self.OLLAMA]) is self.OLLAMA
+
+    def test_untagged_text_ollama_is_not_treated_as_vision(self):
+        text_ollama = {
+            "name": "ollama", "model": "qwen3-coder:30b", "client": "TEXT",
+        }
+        assert gw._pick_vision_provider([text_ollama]) is None
+        with patch.object(gw, "_build_lane_providers", return_value=[]):
+            with patch.object(gw, "_build_local_vision_providers", return_value=[]):
+                chain = gw._vision_providers("fast", [text_ollama], None)
+        assert len(chain) == 1
+        assert chain[0]["model"] == "qwen3-coder:30b"
+        assert chain[0]["image_text_fallback"] is True
 
     def test_private_ollama_is_last_after_codex_and_claude(self):
         providers = [self.CODEX, {"model": "claude-haiku-4-5", "client": "H"}]
@@ -2873,7 +2889,10 @@ def test_chat_image_routes_to_private_ollama_when_remote_vision_is_unavailable(t
     """A Pro-eligible image turn stays available when every remote vision rung is absent."""
     root = _make_temp_root()
     captured = {}
-    local = {"name": "ollama", "client": "OLLAMA", "model": "qwen3.5:9b"}
+    local = {
+        "name": "ollama", "client": "OLLAMA", "model": "qwen3.5:9b",
+        "vision_only": True,
+    }
 
     def _providers(lane, root_=None):
         return {
@@ -2948,7 +2967,7 @@ def test_chat_image_falls_back_to_text_instead_of_generic_unavailable(tmp_path, 
     )], "end_turn")
     text_client = _MockClient([answer])
     local = {
-        "name": "ollama", "model": "qwen3.5:9b",
+        "name": "ollama", "model": "qwen3.5:9b", "vision_only": True,
         "client": _RaiseThenClient(exc=OllamaProviderError(
             "Ollama endpoint unavailable: http://private-tailnet-host.ts.net:11434?token=do-not-log"
         )),
@@ -2988,6 +3007,49 @@ def test_chat_image_falls_back_to_text_instead_of_generic_unavailable(tmp_path, 
     assert "do-not-log" not in caplog.text
 
 
+def test_chat_exhausted_vision_chain_redacts_private_exception_text(tmp_path, caplog):
+    """When no text fallback exists, both sync failure logs stay typed and secret-free."""
+    from engine.ollama_provider import OllamaProviderError
+
+    class RateLimited(Exception):
+        status_code = 429
+
+    root = _make_temp_root()
+    claude = {
+        "name": "anthropic", "model": "claude-opus-5",
+        "client": _RaiseThenClient(exc=RateLimited("remote account rate limited")),
+    }
+    local = {
+        "name": "ollama", "model": "qwen3.5:9b", "vision_only": True,
+        "client": _RaiseThenClient(exc=OllamaProviderError(
+            "Ollama endpoint unavailable: http://private-tailnet-host.ts.net:11434?token=do-not-log"
+        )),
+    }
+    caplog.set_level(logging.WARNING, logger=gw.__name__)
+
+    with patch.dict("os.environ", {"SUPABASE_SERVICE_ROLE_KEY": "", "SUPABASE_URL": ""}):
+        with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+            with patch.object(gw, "_build_lane_providers", return_value=[claude]):
+                with patch.object(gw, "_build_local_vision_providers", return_value=[local]):
+                    with patch.object(gw, "_resolve_tier", return_value={
+                        "tier": "pro", "status": "active", "current_period_end": None,
+                    }):
+                        with patch.object(gw, "_get_allowance", return_value={
+                            "limit": 100, "remaining": 100, "period": "month",
+                        }):
+                            with patch.object(gw, "_ensure_thread", return_value=None):
+                                result = gw.chat(
+                                    "what is in this screenshot?", "user_exhausted_vision",
+                                    lane="pro", images=[_TINY_PNG_DATA_URI], root=root,
+                                )
+
+    assert result["degraded"] is True
+    assert "unavailable" in result["reply"].lower()
+    assert "private-tailnet-host" not in caplog.text
+    assert "do-not-log" not in caplog.text
+    assert "OllamaProviderError" in caplog.text
+
+
 def test_chat_stream_image_falls_back_to_text_without_degraded_bubble(tmp_path, caplog):
     """The streaming surface obeys the same continuity contract as chat()."""
     from engine.ollama_provider import OllamaProviderError
@@ -2998,7 +3060,7 @@ def test_chat_stream_image_falls_back_to_text_without_degraded_bubble(tmp_path, 
     )], "end_turn")
     text_client = _MockClient([answer])
     local = {
-        "name": "ollama", "model": "qwen3.5:9b",
+        "name": "ollama", "model": "qwen3.5:9b", "vision_only": True,
         "client": _RaiseThenClient(exc=OllamaProviderError(
             "Ollama endpoint unavailable: http://private-tailnet-host.ts.net:11434?token=do-not-log"
         )),
@@ -3040,12 +3102,17 @@ def test_chat_stream_image_falls_back_to_text_without_degraded_bubble(tmp_path, 
     assert "do-not-log" not in caplog.text
 
 
-def test_ollama_provider_failure_is_failover_worthy():
+def test_ollama_transport_failure_is_failover_worthy_but_bad_request_is_not():
     from engine.ollama_provider import OllamaProviderError
 
     assert gw._is_failover_error(OllamaProviderError(
         "Ollama endpoint unavailable: name resolution failed"
     ))
+    assert gw._is_failover_error(OllamaProviderError("Ollama HTTP 429: overloaded"))
+    assert not gw._is_failover_error(OllamaProviderError(
+        "400 unsupported request feature: empty image"
+    ))
+    assert not gw._is_failover_error(OllamaProviderError("Ollama HTTP 422: bad payload"))
 
 
 def test_chat_records_a_local_vision_answer_as_ollama_not_deepseek(tmp_path):
@@ -3053,7 +3120,10 @@ def test_chat_records_a_local_vision_answer_as_ollama_not_deepseek(tmp_path):
     local_client = _MockClient([_MockResponse([
         _MockBlock("text", "The screenshot shows a red square.")
     ], "end_turn")])
-    local = {"name": "ollama", "model": "qwen3.5:9b", "client": local_client}
+    local = {
+        "name": "ollama", "model": "qwen3.5:9b", "client": local_client,
+        "vision_only": True,
+    }
 
     def _providers(lane, root_=None):
         return {
@@ -3093,7 +3163,10 @@ def test_chat_stream_records_a_local_vision_answer_as_ollama(tmp_path):
     local_client = _MockClient([_MockResponse([
         _MockBlock("text", "The screenshot shows a red square.")
     ], "end_turn")])
-    local = {"name": "ollama", "model": "qwen3.5:9b", "client": local_client}
+    local = {
+        "name": "ollama", "model": "qwen3.5:9b", "client": local_client,
+        "vision_only": True,
+    }
 
     def _providers(lane, root_=None):
         return {

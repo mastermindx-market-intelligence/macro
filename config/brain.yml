@@ -90,9 +90,10 @@ vision:
   local_fallback:
     enabled: true
     # The reviewed service unit already loads /etc/macro-ollama.env. Keep the
-    # private tailnet address and host-selected model out of tracked config.
+    # private tailnet address out of tracked config. Pin a known vision-capable
+    # default here; a dedicated env may supply it only when this key is absent.
     base_url_env: OLLAMA_BASE_URL
-    model_env: OLLAMA_MODEL
+    model_env: OLLAMA_VISION_MODEL
     model: qwen3.5:9b
     timeout_s: 180
     num_ctx: 32768
