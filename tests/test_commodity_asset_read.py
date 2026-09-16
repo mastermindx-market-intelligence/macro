@@ -418,3 +418,25 @@ def test_invalid_scalar_matrix_fails_closed_without_mutation():
             json.dumps(result,allow_nan=False)
             count+=1
     assert count==110
+
+
+@pytest.mark.parametrize("bad", [float("inf"),float("-inf"),True,False,"100",None,float("nan")])
+def test_nonfinite_price_cannot_advance_observation_clock(bad):
+    import pandas as pd
+    dates=pd.to_datetime(["2026-09-14","2026-09-15"])
+    frame=pd.DataFrame([row(),row()],index=dates)
+    frame["close"]=pd.Series([100.,bad],index=dates,dtype=object)
+    d={"name":"gold",**view()};assets=[{"key":"gold","conviction":view()["conviction"]}]
+    result=attach_asset_reads([d],{"gold":frame},assets,{"assets":{"gold":["GC=F"]}})["gold"]
+    assert result["price_asof"]=="2026-09-14"
+    assert result["signal_asof"]=="2026-09-15"
+    assert result["state"]=="incomplete"
+
+@pytest.mark.parametrize("price", [0.,-1.,100.])
+def test_finite_price_clock_is_preserved_without_directional_filter(price):
+    import pandas as pd
+    frame=pd.DataFrame([{**row(),"close":price}],index=pd.to_datetime(["2026-09-15"]))
+    d={"name":"gold",**view()};assets=[{"key":"gold","conviction":view()["conviction"]}]
+    result=attach_asset_reads([d],{"gold":frame},assets,{"assets":{"gold":["GC=F"]}})["gold"]
+    assert result["price_asof"]=="2026-09-15"
+    assert result["state"]=="positive" and result["exposure_pct"]==50

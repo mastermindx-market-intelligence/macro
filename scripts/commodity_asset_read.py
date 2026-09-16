@@ -205,7 +205,8 @@ def attach_asset_reads(detail, member_results, assets, cfg):
             row = frame.iloc[-1].to_dict()
             if frame.index.is_monotonic_increasing and frame.index.is_unique:
                 signal_asof = frame.index[-1]
-                closes = frame["close"].dropna()
+                # Only actual finite numerical observations may advance this clock.
+                closes = frame["close"].map(_number).dropna()
                 if len(closes):
                     price_asof = closes.index[-1]
         identity = cfg.get("assets", {}).get(name) or cfg.get("complex_members", {}).get(name)
