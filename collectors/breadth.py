@@ -337,6 +337,30 @@ def _mask_invalid_completed_closes(closes: pd.DataFrame, tickers: list[str], exp
     return masked
 
 
+def _without_cached_completed_session(closes: pd.DataFrame, tickers: list[str],
+                                      expected_session: date) -> pd.DataFrame:
+    """Do not let an earlier same-date cache observation impersonate settlement.
+
+    The cache has no per-cell finality stamp, so a finite value observed intraday
+    cannot fill a name the completed-session response omitted.  Preserve every
+    prior row and non-current constituent; only fresh source bytes may populate
+    requested names on the expected completed session.
+    """
+    if closes.empty:
+        return closes
+    dates = pd.DatetimeIndex(closes.index)
+    if dates.tz is not None:
+        dates = dates.tz_localize(None)
+    match = dates.normalize() == pd.Timestamp(expected_session)
+    if not match.any():
+        return closes
+    cleaned = closes.copy()
+    for ticker in tickers:
+        if ticker in cleaned.columns:
+            cleaned[ticker] = cleaned[ticker].mask(match)
+    return cleaned
+
+
 def _require_completed_closes(closes: pd.DataFrame, tickers: list[str], expected_session: date) -> int:
     count = _completed_close_count(closes, tickers, expected_session)
     if count < len(tickers) * _COVERAGE_FLOOR:
@@ -599,7 +623,11 @@ class BreadthAdapter(Adapter):
                 age = (pd.Timestamp.utcnow().tz_localize(None) - cached.index.max()).days
                 if age <= 14:
                     fresh = self._download_closes(tickers, "1mo", **download_kwargs)
-                    closes = self._merge_refreshed(fresh, cached)
+                    cached_for_merge = (
+                        _without_cached_completed_session(cached, tickers, expected_session)
+                        if expected_session is not None else cached
+                    )
+                    closes = self._merge_refreshed(fresh, cached_for_merge)
             if closes is None:
                 days = self.cfg["lookback_days_live"]
                 closes = self._download_closes(tickers, f"{max(1, days // 365 + 1)}y", **download_kwargs)

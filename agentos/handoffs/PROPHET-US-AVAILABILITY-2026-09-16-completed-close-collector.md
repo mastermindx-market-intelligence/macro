@@ -84,3 +84,12 @@ The next actual fetch/store check found the invalid minority could survive an ot
 New evidence file: `research/us_prophet_availability/2026-09-16-completed-close/partial-price-publication-replay.json`. The recorded-matrix reconstruction is non-production and made no provider calls. Actual fetch/store health and current price values were recovered under the repaired source. Per-name and sector alpha values match, but a strict ordered-alpha assertion failed for two reordered top-list members; do not call it byte-identical, raw-provider-response, or full-board proof. No alpha-ranking rule was changed.
 
 Continue exact-head independent review and current-base compatibility on #7200, consume the peer's response on #7206, and preserve one-owner publication. There is still no peer ACK proving ownership agreement. Do not duplicate its Russell/full-library work or retry the unresolved natural nightly without canonical reconciliation.
+
+
+## Same-session cache finality follow-through
+
+At exact preimage `e3c87afae3e42e79f615d3219092c8869305d4e6`, a new RED planted a finite value in the existing cache on the expected completed session, then returned four fresh valid closes and one missing fresh close. The 80% response passed and `fresh.combine_first(cached)` repopulated the omitted name with cached `102.0`, proving that same-date cache bytes could impersonate settlement.
+
+The same carrier now masks the expected-session cache cells for requested US names before the historical merge. Only fresh response bytes may populate that row; prior rows and regional/Russell interfaces are untouched. The focused RED failed for the intended reason; the repaired four-suite run is `75 passed, 31 warnings in 19.12s`. Evidence is `research/us_prophet_availability/2026-09-16-completed-close/same-session-cache-quarantine-receipt.json`. No provider, production store, workflow, ranking, runner or publication effect occurred.
+
+The release boundary is unchanged: exact-head CI/security, independent review, current-base composition, accepted merge and real source-to-browser proof remain required. Do not duplicate #7206 or the separately owned CI-host work.

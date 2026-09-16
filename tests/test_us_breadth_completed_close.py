@@ -141,6 +141,27 @@ def test_existing_eighty_percent_partial_coverage_is_not_changed_to_all_or_nothi
     assert pd.isna(stored.loc[str(SESSION), "EEE"]), "never fabricate the unreturned close"
 
 
+def test_cached_current_session_value_cannot_fill_a_missing_fresh_close(tmp_path, monkeypatch):
+    """A prior intraday value is not evidence of the completed close."""
+    adapter = _adapter(tmp_path, monkeypatch)
+    adapter.cache_path.parent.mkdir(parents=True)
+    cached = _response(SYMBOLS)["Close"]
+    cached.loc[str(SESSION), "EEE"] = 102.0
+    cached.to_parquet(adapter.cache_path)
+
+    def download(tickers, **kwargs):
+        response = _response(tickers)
+        response.loc[str(SESSION), ("Close", "EEE")] = np.nan
+        return response
+
+    monkeypatch.setattr(breadth.yf, "download", download)
+    result = adapter.fetch()
+    stored = pd.read_parquet(adapter.cache_path)
+    assert pd.isna(stored.loc[str(SESSION), "EEE"])
+    assert stored.loc["2026-09-14", "EEE"] == 101.0
+    assert result["breadth"].loc[str(SESSION), "n_members"] == 4
+
+
 def test_seam_repair_cannot_remove_completed_prices_before_persistence(tmp_path, monkeypatch):
     adapter = _adapter(tmp_path, monkeypatch)
     before = _seed_all_caches(adapter)

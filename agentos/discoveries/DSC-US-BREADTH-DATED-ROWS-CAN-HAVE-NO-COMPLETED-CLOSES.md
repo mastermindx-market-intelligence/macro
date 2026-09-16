@@ -5,17 +5,22 @@ claim: >
   volume while every adjusted closing price on that row is absent. Historical
   column coverage and a successful HTTP response do not prove current prices;
   without semantic response validation the collector reports success and the
-  real alpha producer remains on the prior session.
+  real alpha producer remains on the prior session. Even after response validation,
+  fresh.combine_first(cached) can refill a provider-missing completed-session cell
+  from an earlier same-date cache observation whose settlement finality is unknown.
 falsifier: >
   Run python -m pytest tests/test_us_breadth_completed_close.py -q. The production
   fetch and health-consumer regressions must reject or retry the observed
-  completed-row null shape, retain old cache bytes on exhaustion, and fail when
-  calendar, response, or post-seam validation is removed.
+  completed-row null shape, retain old cache bytes on exhaustion, refuse cached
+  same-session substitution for a missing fresh close, and fail when calendar,
+  response, post-seam, or cache-quarantine validation is removed.
 so_what: >
   Require real finite positive closes on the canonical completed NYSE session
-  inside the existing US batch retry and final persistence boundaries. Do not
-  fix this by restamping a date, changing ranks, ignoring invalid fields, or
-  inventing another collector, retry scheduler or freshness authority.
+  inside the existing US batch retry and final persistence boundaries. Before
+  historical cache merge, quarantine that expected-session row for requested
+  names so only the fresh completed-session response may populate it. Do not fix
+  this by restamping a date, changing ranks, ignoring invalid fields, or inventing
+  another collector, retry scheduler or freshness authority.
 kind: data
 verified_at: 2026-09-16
 verified_by: >
@@ -32,3 +37,6 @@ confidence: verified
 Incident source: main `aad0aaf33810c881a2da398380930eb50a9cdeda`, collector write `6a930b613598`, collector job `104621037120`, engine job `104658157677`. Before: three September-15 price rows with zero current closes despite populated volume. The isolated repaired source recovered 500/503, 599/602 and 400/400 current closes; the real alpha consumer advanced to September 15. Exact source/input/output hashes and the narrower-than-production proof boundary live in `research/us_prophet_availability/2026-09-16-completed-close/live-source-receipt.json`.
 
 This extends the incident diagnosis; it does not supersede #7187’s reader-cache defect, #7180’s source-clock/provenance repair or #7163’s publication-link/evidence repair. None of those existing branch writers is replaced by this disjoint collector operation.
+
+
+A later exact-head adversarial test planted a finite same-date value in the existing cache, then returned four fresh valid closes and one missing close at the 80% floor. Before repair, `fresh.combine_first(cached)` silently repopulated the missing name with the cached value and published five members. The cache carries no per-cell finality stamp, so that value could have been observed intraday. Current source now removes the expected-session cells for requested names from the historical merge input; prior history and regional/Russell behavior remain unchanged. The RED observed the cached value `102.0`; the repaired four-suite battery passes 75 tests. Evidence: `research/us_prophet_availability/2026-09-16-completed-close/same-session-cache-quarantine-receipt.json`.
