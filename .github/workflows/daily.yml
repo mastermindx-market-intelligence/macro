@@ -2006,9 +2006,10 @@ jobs:
       # key that collect saved. Keep that producer/consumer key byte-identical; the old
       # `russell-closes-engine-*` key was a guaranteed cold-runner miss and cut ~1,220 names
       # from the keep-FIRST name-score stamp (2026-08-10..14 incident).
-      # US Prophet: read the three Git-tracked US breadth panels from checkout.
-      # Only collect may seed those panels from Actions cache; a reader must
-      # not overwrite them. Gitignored Russell/other handoffs stay unchanged.
+      # The S&P 500/600/400 panels are Git-tracked committed inputs. Engine reads
+      # their checkout bytes and must never overlay them from Actions cache. Only
+      # daily.collect may seed them because it refreshes and commits the canonical
+      # files. The gitignored Russell same-run handoff remains cache-backed.
       - name: restore Russell 2000 breadth close cache (stock library needs constituent closes)
         uses: actions/cache/restore@v4
         with:
@@ -4741,12 +4742,11 @@ jobs:
           echo "$VENV/bin" >> "$GITHUB_PATH"
           "$VENV/bin/python" -m pip install --quiet --upgrade pip
       - run: pip install -r requirements.txt
-      # build_factor_series._closes() reads these breadth close caches (broad =
-      # breadth+smallcap+midcap, narrow = breadth). Restore-only — the collect job
-      # produces/saves them.
-      # US Prophet: read the three Git-tracked US breadth panels from checkout.
-      # Only collect may seed those panels from Actions cache; a reader must
-      # not overwrite them. Gitignored Russell/other handoffs stay unchanged.
+      # build_factor_series._closes() reads the Git-tracked S&P 500/600/400
+      # panels (broad = breadth+smallcap+midcap, narrow = breadth) directly from
+      # checkout. This reader must never overlay them from Actions cache. Only
+      # daily.collect may seed those panels because it refreshes and commits the
+      # canonical files.
       - name: factor return series (build_factor_series)
         run: python -m scripts.build_factor_series || echo "factor series skipped (additive)"
       - name: commit factor series
@@ -4815,9 +4815,9 @@ jobs:
           echo "$VENV/bin" >> "$GITHUB_PATH"
           "$VENV/bin/python" -m pip install --quiet --upgrade pip
       - run: pip install -r requirements.txt
-      # US Prophet: read the three Git-tracked US breadth panels from checkout.
-      # Only collect may seed those panels from Actions cache; a reader must
-      # not overwrite them. Gitignored Russell/other handoffs stay unchanged.
+      # Factor-panel reads the Git-tracked S&P 500/600/400 panels directly from
+      # checkout. It must never overlay them from Actions cache; only daily.collect
+      # may seed those panels because it refreshes and commits the canonical files.
       # FIX-8 (RULING-C nightly bounds): pin to 10 trading days back so a cold
       # runner never silently rebuilds a year. The one-shot deep backfill
       # (--start 2020-01-01, ~25 min) MUST be run once manually before the panel
@@ -5773,10 +5773,9 @@ jobs:
           echo "$VENV/bin" >> "$GITHUB_PATH"
           "$VENV/bin/python" -m pip install --quiet --upgrade pip
       - run: pip install -r requirements.txt
-      # the per-stock technical-signal leg reads constituent closes; restore-only.
-      # US Prophet: read the three Git-tracked US breadth panels from checkout.
-      # Only collect may seed those panels from Actions cache; a reader must
-      # not overwrite them. Gitignored Russell/other handoffs stay unchanged.
+      # The per-stock technical-signal leg reads the Git-tracked S&P 500/600/400
+      # panels directly from checkout. This reader must never overlay them from
+      # Actions cache; only daily.collect may seed, refresh and commit those files.
       - name: precompute AI stock briefs (build_stock_briefs)
         run: python -m scripts.build_stock_briefs || echo "stock briefs skipped (additive)"
       - name: commit stock briefs

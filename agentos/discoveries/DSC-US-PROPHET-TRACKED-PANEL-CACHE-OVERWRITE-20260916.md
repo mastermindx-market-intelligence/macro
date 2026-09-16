@@ -17,9 +17,11 @@ so_what: >
   overlay. A frozen page discloses its screen date rather than claiming tonight.
   This is BUILT_NOT_PROVEN until hosted gates, integration and real current-session
   producer-to-served-board proof succeed. No fresh candidate is fabricated.
-kind: finding
+kind: runtime
 verified_at: 2026-09-16
-verified_by: Sol; current Chairman-directed US Prophet recovery
+verified_by: >
+  python -m pytest tests/test_daily_collect_commit_path.py -q; gh pr view 7187
+  --repo mastermindx-market-intelligence/macro --json headRefOid,state,isDraft
 scope:
   - WS:PROPHET-US-AVAILABILITY
   - .github/workflows
@@ -29,7 +31,7 @@ related:
   - WS:PROPHET-US-AVAILABILITY
 ---
 
-Implementation base: `f981ec2543def670758ff873e47257d5b90ae732`. Procedural pin: Mastermind `7642aea155d2817219135b24246b55c1d7611c66`. Carrier branch: `sol/prophet-us-panel-authority-20260916`.
+Implementation base: `f981ec2543def670758ff873e47257d5b90ae732`. Original implementation pin: Mastermind `7642aea155d2817219135b24246b55c1d7611c66`. Current recurrence-repair pin: protected Mastermind `master` `0fe8074ff953b2ced9025ed40f0f66019c759967`. Carrier branch: `sol/prophet-us-panel-authority-20260916`.
 
 At earlier main `9579caf3f950f1a2e7b959a9b3b68d26e42e5d06`, the committed breadth/smallcap/midcap panels were all through Sep-14 (375x512, 775x635, 775x413) while the cache-busted production page still exposed board Sep-11 and “52 screened tonight”. The board copies alpha.json’s source date; healing SPY alone does not freshen those panels.
 

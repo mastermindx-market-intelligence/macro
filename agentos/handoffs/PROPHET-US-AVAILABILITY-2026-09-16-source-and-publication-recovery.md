@@ -1,7 +1,60 @@
+---
+workstream: "WS:PROPHET-US-AVAILABILITY"
+session: "sol/prophet-us-panel-authority-20260916-sol-001"
+model: sol
+ended_because: blocked
+prs: [7161, 7163, 7180, 7187]
+discoveries:
+  - DSC:US-PROPHET-TRACKED-PANEL-CACHE-OVERWRITE-20260916
+mission: >
+  Restore current-session US Prophet discovery end to end while preserving the
+  existing producer, source-bound candidate, reader, publication and browser
+  authority planes. Repair PR #7187 on its existing carrier and do not replace
+  the separate PR #7180, #7161 or #7163 owners.
+state_before: >
+  PR #7187 was BUILT_NOT_PROVEN at c21c9be04bbf983bc22f8e3fe6075339bbc9ebef.
+  It removed stale reader cache overlays and disclosed the source screen date,
+  but its recurrence scan missed multiline path blocks, .yaml workflows and
+  duplicate producer steps. Its new Agent OS records also failed schema validation.
+changed:
+  - path: PR #7187
+    what: >
+      Existing carrier for the committed-panel reader authority and visible source-date
+      repair. The carrier remains draft and unaccepted pending repair, current-base
+      integration, exact-head gates and real producer-to-browser proof.
+verified:
+  - claim: The carrier and related PR identities were reconciled before continuation.
+    command: gh pr view 7187 --repo mastermindx-market-intelligence/macro --json headRefOid,state,isDraft,baseRefOid; git rev-parse HEAD origin/main
+    result: >
+      PR #7187 remained open/draft at c21c9be04bbf983bc22f8e3fe6075339bbc9ebef;
+      current origin/main was 459eafb838d9944e58e6a65413e282f2a13826ef.
+unverified:
+  - claim: The repaired exact head passes hosted CI and production browser acceptance.
+    what_would_verify: >
+      Same-head hosted checks, current-base composition, merge ancestry and a real
+      completed-session producer-to-served-board browser receipt.
+unresolved:
+  - >
+    PR #7180 is still open and overlaps daily.yml; #7187 must be composed after the
+    producer/provenance carrier rather than silently superseding it.
+next_actions:
+  - >
+    Close the recurrence-test and Agent OS schema defects on the same #7187 branch,
+    merge current main history-preservingly, verify, commit and push without force.
+do_not_redo:
+  - >
+    Do not restore tracked US panels from Actions cache in reader workflows, remove
+    the daily.collect seed owner, or replace the gitignored Russell same-run handoff.
+danger_areas:
+  - >
+    A cache scanner that treats a multiline action path as one string or deduplicates
+    producers by panel path can pass while the stale-overlay failure remains possible.
+---
+
 # US Prophet: source and publication recovery
 
 ## Mission and authority
-Restore current-session US Prophet discovery end-to-end so the user sees the actual dated candidate screen, not an old board beneath a new shell. This continues `WS:PROPHET-US-AVAILABILITY` under the current Chairman’s explicit direction. Mastermind Skillpack pin `7642aea155d2817219135b24246b55c1d7611c66` governs procedure; Executive OS owns lifecycle, Agent OS continuity, GitHub implementation, Slack transport. This handoff creates no new runtime Job, worker lease or queue.
+Restore current-session US Prophet discovery end-to-end so the user sees the actual dated candidate screen, not an old board beneath a new shell. This continues `WS:PROPHET-US-AVAILABILITY` under the current Chairman’s explicit direction. The original implementation used Mastermind Skillpack pin `7642aea155d2817219135b24246b55c1d7611c66`; this repair continuation is governed by protected `master` at `0fe8074ff953b2ced9025ed40f0f66019c759967`. Executive OS owns lifecycle, Agent OS continuity, GitHub implementation, Slack transport. This handoff creates no new runtime Job, worker lease or queue.
 
 ## Verified frontier and existing carriers
 PR #7180 / `sol/prophet-us-completed-session-sourcebound-20260915` now carries `99b9bc18ded963ed5e9b9a4864bfff88a8e1d5ba`: completed-session source-bound recovery plus the previously missing regression-suite registration. 192 local release tests and the actual same-head hosted contract-delta passed; the approved Linux packs remained queued. The inactive codex/merge-queue-pilot authority context is not the selected main context; main authority is green.
