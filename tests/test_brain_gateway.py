@@ -3701,6 +3701,190 @@ def test_get_movers_partial_single_artifact(tmp_path):
     assert r["source"] == ["site/factordata/impulse.json"]
 
 
+# Financial bridge: real arithmetic through the existing tool dispatcher, no LLM.
+def _financial_bridge_case():
+    return {
+        "unit": "millions", "currency": None,
+        "prior": {"revenue": 100, "gross_margin_pct": 30, "operating_expenses": 20},
+        "current": {"revenue": 110, "gross_margin_pct": 25, "operating_expenses": 20,
+                    "working_capital_increase": 8, "capital_expenditure": 5,
+                    "other_operating_cash_adjustments": 0},
+    }
+
+
+def _dispatch_financial_bridge(params, tmp_path):
+    return gw._dispatch_brain_tool("analyze_financial_scenario", params, tmp_path, tmp_path, "")
+
+
+def test_financial_bridge_real_dispatch_reconciles_profit_and_cash(tmp_path):
+    result = _dispatch_financial_bridge(_financial_bridge_case(), tmp_path)
+    assert "error" not in result
+    assert result["periods"]["prior"]["gross_profit"] == "30"
+    assert result["periods"]["prior"]["operating_profit"] == "10"
+    assert result["periods"]["current"]["gross_profit"] == "27.5"
+    assert result["periods"]["current"]["operating_profit"] == "7.5"
+    assert result["periods"]["current"]["simplified_operating_cash"] == "-0.5"
+    assert result["periods"]["current"]["simplified_cash_after_capex"] == "-5.5"
+    assert result["authority"] == "analysis_only" and result["is_context_only"] is True
+    assert result["input_basis"] == "unverified_supplied_assumptions"
+
+
+def test_financial_bridge_missing_cash_inputs_stay_unknown(tmp_path):
+    case = _financial_bridge_case()
+    case["current"].pop("other_operating_cash_adjustments")
+    result = _dispatch_financial_bridge(case, tmp_path)
+    assert result["status"] == "partial"
+    for period in ("prior", "current"):
+        assert result["periods"][period]["simplified_operating_cash"] is None
+        assert result["periods"][period]["simplified_cash_after_capex"] is None
+        assert "other_operating_cash_adjustments" in result["periods"][period]["missing_inputs"]["simplified_operating_cash"]
+    assert result["periods"]["current"]["operating_profit"] == "7.5"
+
+
+def test_financial_bridge_exact_additive_attribution_not_causality(tmp_path):
+    result = _dispatch_financial_bridge(_financial_bridge_case(), tmp_path)
+    bridge = result["operating_profit_bridge"]
+    assert bridge["revenue_effect_at_prior_margin"] == "3"
+    assert bridge["margin_effect_at_current_revenue"] == "-5.5"
+    assert bridge["operating_expense_effect"] == "0"
+    assert bridge["operating_profit_change"] == "-2.5"
+    assert bridge["is_causal_estimate"] is False
+
+
+def test_financial_bridge_decimal_inputs_and_working_capital_release(tmp_path):
+    case = _financial_bridge_case()
+    case["current"].update(revenue="0.3", gross_margin_pct="10", operating_expenses="0.01", working_capital_increase="-0.04", capital_expenditure="0.01")
+    result = _dispatch_financial_bridge(case, tmp_path)
+    assert result["periods"]["current"]["simplified_cash_after_capex"] == "0.05"
+
+
+@pytest.mark.parametrize("bad", [True, float("nan"), float("inf"), "NaN", "Infinity", "1e9999", "9" * 200, [], {}, "__import__('os')", -1, "0.0000001"])
+def test_financial_bridge_rejects_invalid_revenue_without_echo(bad, tmp_path):
+    case = _financial_bridge_case()
+    case["current"]["revenue"] = bad
+    result = _dispatch_financial_bridge(case, tmp_path)
+    assert result.get("error") == "invalid_financial_scenario"
+    assert "periods" not in result and "__import__" not in json.dumps(result)
+
+
+@pytest.mark.parametrize("key,value", [("unit", "mixed"), ("currency", "<script>"), ("current", []), ("unknown", "do this")])
+def test_financial_bridge_closed_request_contract(key, value, tmp_path):
+    case = _financial_bridge_case()
+    case[key] = value
+    assert _dispatch_financial_bridge(case, tmp_path).get("error") == "invalid_financial_scenario"
+
+
+def test_financial_bridge_forbids_silent_cross_currency_periods(tmp_path):
+    case = _financial_bridge_case()
+    case["prior"]["currency"] = "USD"
+    case["current"]["currency"] = "HKD"
+    assert _dispatch_financial_bridge(case, tmp_path).get("error") == "invalid_financial_scenario"
+
+
+def test_financial_bridge_schema_and_bilingual_labels_reach_real_registry(tmp_path):
+    names = [s["name"] for s in gw._all_brain_tool_schemas(tmp_path)]
+    assert names.count("analyze_financial_scenario") == 1
+    assert all(gw._TOOL_LABELS["analyze_financial_scenario"])
+
+
+@pytest.mark.parametrize("message", ["Analyze this investment thesis: revenue, gross margin and cash flow.", "分析投资论点：收入、毛利率和现金流。", "分析投資論點：收入、毛利率和現金流。"])
+def test_financial_bridge_playbook_routes_to_existing_analyst(message):
+    block = gw._analyst_block_for(message, "fast")
+    assert "analyze_financial_scenario" in block
+    assert "competing explanation" in block
+
+
+def test_financial_bridge_real_model_loop_receives_computed_result(tmp_path):
+    client = _MockClient([
+        _MockResponse([_MockBlock("tool_use", name="analyze_financial_scenario", input_=_financial_bridge_case())], "tool_use"),
+        _MockResponse([_MockBlock("text", "Under the supplied assumptions, cash after capex is negative.")]),
+    ])
+    answer, *_ = gw._run_brain_loop(
+        "Analyze the financial scenario", "fast", [], {}, _make_temp_root(), tmp_path,
+        "", client, "deepseek-v4-pro", 500, 2,
+    )
+    assert "supplied assumptions" in answer
+    tool_results = [part for message in client.calls[1]["messages"]
+                    if isinstance(message.get("content"), list)
+                    for part in message["content"]
+                    if isinstance(part, dict) and part.get("type") == "tool_result"]
+    assert tool_results
+    computed = json.loads(tool_results[-1]["content"])
+    assert computed["periods"]["current"]["simplified_cash_after_capex"] == "-5.5"
+    assert computed["input_basis"] == "unverified_supplied_assumptions"
+
+
+@pytest.mark.parametrize("prior,current", [(0, 0), (100, 110), (500, 200)])
+def test_financial_bridge_change_equals_direct_profit_difference(prior, current, tmp_path):
+    from decimal import Decimal
+    case = _financial_bridge_case()
+    case["prior"].update(revenue=prior, gross_margin_pct=-20, operating_expenses=15)
+    case["current"].update(revenue=current, gross_margin_pct=12.5, operating_expenses=42)
+    result = _dispatch_financial_bridge(case, tmp_path)
+    periods = result["periods"]
+    delta = Decimal(periods["current"]["operating_profit"]) - Decimal(periods["prior"]["operating_profit"])
+    assert Decimal(result["operating_profit_bridge"]["operating_profit_change"]) == delta
+
+
+def test_financial_bridge_input_is_unchanged_and_no_source_io(tmp_path, monkeypatch):
+    import copy
+    case = _financial_bridge_case()
+    before = copy.deepcopy(case)
+    def forbidden(*args, **kwargs):
+        pytest.fail("supplied-input arithmetic must not fetch an account or market source")
+    monkeypatch.setattr(gw, "_resolve_tier", forbidden)
+    monkeypatch.setattr("urllib.request.urlopen", forbidden)
+    result = _dispatch_financial_bridge(case, tmp_path)
+    assert case == before and result["currency"] is None
+    assert not list(tmp_path.iterdir())
+
+
+def test_financial_bridge_empty_periods_are_explicitly_partial(tmp_path):
+    result = _dispatch_financial_bridge({"unit": "ones", "currency": "USD", "prior": {}, "current": {}}, tmp_path)
+    assert result["status"] == "partial" and result["operating_profit_bridge"]["status"] == "unavailable"
+
+
+def test_financial_bridge_schema_validates_case_and_is_not_shared():
+    import jsonschema
+    from engine.neuralweb.financial_scenarios import tool_schema
+    schema = tool_schema()
+    jsonschema.Draft7Validator.check_schema(schema["input_schema"])
+    jsonschema.validate(_financial_bridge_case(), schema["input_schema"])
+    schema["input_schema"]["properties"]["prior"]["properties"]["revenue"]["description"] = "changed"
+    assert "changed" not in json.dumps(tool_schema())
+
+
+@pytest.mark.parametrize("field,bad", [("gross_margin_pct", 101), ("operating_expenses", -1), ("capital_expenditure", -1), ("working_capital_increase", 10**16)])
+def test_financial_bridge_rejects_invalid_specific_fields(field, bad, tmp_path):
+    case = _financial_bridge_case()
+    case["current"][field] = bad
+    assert _dispatch_financial_bridge(case, tmp_path).get("error") == "invalid_financial_scenario"
+
+
+def test_financial_bridge_complete_data_and_decimal_context(tmp_path):
+    from decimal import localcontext
+    case = _financial_bridge_case()
+    case["prior"].update(working_capital_increase=0, other_operating_cash_adjustments=0, capital_expenditure=0)
+    with localcontext() as context:
+        context.prec = 3
+        result = _dispatch_financial_bridge(case, tmp_path)
+    assert result["status"] == "available"
+    assert result["periods"]["prior"]["simplified_cash_after_capex"] == "10"
+    assert result["periods"]["current"]["simplified_cash_after_capex"] == "-5.5"
+
+
+def test_financial_scenario_schema_nested_types_are_isolated():
+    from engine.neuralweb.financial_scenarios import tool_schema
+    first = tool_schema()
+    field_types = first["input_schema"]["properties"]["prior"]["properties"]["revenue"]["type"]
+    field_types.append("object")
+    try:
+        second = tool_schema()
+        assert "object" not in second["input_schema"]["properties"]["prior"]["properties"]["revenue"]["type"]
+    finally:
+        field_types.pop()
+
+
 # --- registry: new tool names present in _BRAIN_TOOLS and schemas list --------
 
 _W6D_TOOLS = [
