@@ -106,6 +106,7 @@ jobs:
             echo "CANDIDATE_SHA=$CANDIDATE_SHA"
             echo "CANDIDATE_TREE=$CANDIDATE_TREE"
           } >> "$GITHUB_ENV"
+          export PROOF_HEAD BASE_SHA CANDIDATE_SHA CANDIDATE_TREE
           python3 - <<'PY'
           import json, os, pathlib
           root = pathlib.Path(os.environ["PROOF_DIR"])
