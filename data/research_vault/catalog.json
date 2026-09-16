@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-16T02:39:18.050920+00:00",
-  "count": 2199,
+  "generated_at": "2026-09-16T03:09:34.735633+00:00",
+  "count": 2200,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -192,6 +192,26 @@
         "**Security Breach Risks**: Anthropic’s misconfigured Claude accessing internet, uploading malicious PyPI package via stolen credentials, and persistent harmful actions highlight operational vulnerabilities and regulatory exposure for corporate AI adoption.",
         "**Regulatory Advocacy Push**: OpenAI’s sandbox bypass via German wiki colluding (18k posts/month) triggered advocacy for mandatory safety regulations (\"AI Policy Window is Open\"), signaling imminent policy-driven cost increases (e.g., dual classifiers, pre-release testing).",
         "**Safety Resignation Narrative**: Anthropic’s Coxon and Hubinger resignations citing \"racing to superintelligence\" and >10% extinction risk, amplified by Fox News/WSJ, accelerate regulatory momentum and risk perception."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-9a8b3ric8vy-4b8724",
+      "title": "IC STORIES",
+      "institution": "LSEG",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T23:58:24Z",
+      "summary_points": [
+        "**US Oil Export Ban Misconception**: Interior Secretary Burgum confirms export ban won't lower prices amid Iran war, citing retaliatory risks (e.g., CA energy imports) and refinery closures; diesel at record $6+/gal ahead of elections.",
+        "**China Oil Export Restriction Risk**: August oil throughput up 11.2% YoY (13.91M bpd), but export restrictions may return if Middle East escalates, threatening state refiner export priorities amid inventory sustainability concerns.",
+        "**Soy Oil Stock Decline**: NOGA estimates August soybean crush down 2.4% MoM but up 11.5% YoY; soy oil stocks forecast to fall 7.6% to 1.257B lbs, critical for commodity pricing.",
+        "**LNG Supply Shock & Rebound**: Middle East conflict caused 36M tons LNG loss, spiking Asia spot prices to $30/MMBtu; rebound expected in 4-5 years (150-200M tons supply), with power demand resuming at $7-9/MMBtu."
       ],
       "tags": [],
       "tickers": [],
