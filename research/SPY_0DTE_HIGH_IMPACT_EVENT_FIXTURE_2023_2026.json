@@ -1,0 +1,64 @@
+{
+  "schema": "spy_0dte_high_impact_event_fixture/v1",
+  "status": "research_only_no_signal_trade_or_runtime_calendar_authority",
+  "panel_start": "2023-01-03",
+  "panel_end": "2026-09-15",
+  "purpose": "Freeze actual historical high-impact event dates for the SPY 0DTE prereg before A0/A1 return unblinding. This is a bounded reproducibility fixture, not a second product event-calendar owner.",
+  "timing_et": {
+    "CPI": "08:30",
+    "PPI": "08:30",
+    "NFP": "08:30",
+    "FOMC": "14:00"
+  },
+  "sources": {
+    "BLS_2023": "https://www.bls.gov/schedule/2023/",
+    "BLS_2024": "https://www.bls.gov/schedule/2024/",
+    "BLS_2025": "https://www.bls.gov/schedule/2025/",
+    "BLS_2026": "https://www.bls.gov/schedule/2026/",
+    "FOMC": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"
+  },
+  "source_law": [
+    "BLS dates are the as-published release days shown on the official historical year calendars; do not infer missing releases from first-Friday or month-day heuristics.",
+    "FOMC dates are the policy-decision/statement day (last day of the scheduled meeting) from the Federal Reserve calendar.",
+    "Multiple releases in one calendar month are preserved (for example two PPI releases in January 2026 after the 2025 federal shutdown disruption).",
+    "Canceled or absent releases are not invented. A date enters only when the official calendar records that release.",
+    "The fixture may label a session; it may not score, size, originate, execute, or publish a trade."
+  ],
+  "events": {
+    "2023": {
+      "NFP": ["2023-01-06", "2023-02-03", "2023-03-10", "2023-04-07", "2023-05-05", "2023-06-02", "2023-07-07", "2023-08-04", "2023-09-01", "2023-10-06", "2023-11-03", "2023-12-08"],
+      "CPI": ["2023-01-12", "2023-02-14", "2023-03-14", "2023-04-12", "2023-05-10", "2023-06-13", "2023-07-12", "2023-08-10", "2023-09-13", "2023-10-12", "2023-11-14", "2023-12-12"],
+      "PPI": ["2023-01-18", "2023-02-16", "2023-03-15", "2023-04-13", "2023-05-11", "2023-06-14", "2023-07-13", "2023-08-11", "2023-09-14", "2023-10-11", "2023-11-15", "2023-12-13"],
+      "FOMC": ["2023-02-01", "2023-03-22", "2023-05-03", "2023-06-14", "2023-07-26", "2023-09-20", "2023-11-01", "2023-12-13"]
+    },
+    "2024": {
+      "NFP": ["2024-01-05", "2024-02-02", "2024-03-08", "2024-04-05", "2024-05-03", "2024-06-07", "2024-07-05", "2024-08-02", "2024-09-06", "2024-10-04", "2024-11-01", "2024-12-06"],
+      "CPI": ["2024-01-11", "2024-02-13", "2024-03-12", "2024-04-10", "2024-05-15", "2024-06-12", "2024-07-11", "2024-08-14", "2024-09-11", "2024-10-10", "2024-11-13", "2024-12-11"],
+      "PPI": ["2024-01-12", "2024-02-16", "2024-03-14", "2024-04-11", "2024-05-14", "2024-06-13", "2024-07-12", "2024-08-13", "2024-09-12", "2024-10-11", "2024-11-14", "2024-12-12"],
+      "FOMC": ["2024-01-31", "2024-03-20", "2024-05-01", "2024-06-12", "2024-07-31", "2024-09-18", "2024-11-07", "2024-12-18"]
+    },
+    "2025": {
+      "NFP": ["2025-01-10", "2025-02-07", "2025-03-07", "2025-04-04", "2025-05-02", "2025-06-06", "2025-07-03", "2025-08-01", "2025-09-05", "2025-11-20", "2025-12-16"],
+      "CPI": ["2025-01-15", "2025-02-12", "2025-03-12", "2025-04-10", "2025-05-13", "2025-06-11", "2025-07-15", "2025-08-12", "2025-09-11", "2025-10-24", "2025-12-18"],
+      "PPI": ["2025-01-14", "2025-02-13", "2025-03-13", "2025-04-11", "2025-05-15", "2025-06-12", "2025-07-16", "2025-08-14", "2025-09-10", "2025-11-25"],
+      "FOMC": ["2025-01-29", "2025-03-19", "2025-05-07", "2025-06-18", "2025-07-30", "2025-09-17", "2025-10-29", "2025-12-10"]
+    },
+    "2026": {
+      "NFP": ["2026-01-09", "2026-02-11", "2026-03-06", "2026-04-03", "2026-05-08", "2026-06-05", "2026-07-02", "2026-08-07", "2026-09-04"],
+      "CPI": ["2026-01-13", "2026-02-13", "2026-03-11", "2026-04-10", "2026-05-12", "2026-06-10", "2026-07-14", "2026-08-12", "2026-09-11"],
+      "PPI": ["2026-01-14", "2026-01-30", "2026-02-27", "2026-03-18", "2026-04-14", "2026-05-13", "2026-06-11", "2026-07-15", "2026-08-13", "2026-09-10"],
+      "FOMC": ["2026-01-28", "2026-03-18", "2026-04-29", "2026-06-17", "2026-07-29"]
+    }
+  },
+  "known_collisions": {
+    "2023-06-14": ["PPI", "FOMC"],
+    "2023-12-13": ["PPI", "FOMC"],
+    "2024-06-12": ["CPI", "FOMC"],
+    "2026-03-18": ["PPI", "FOMC"]
+  },
+  "known_irregularities": [
+    "The 2025 federal shutdown disrupted the normal release cadence. The official BLS year calendar has no October-2025 Employment Situation or PPI release day and no November-2025 CPI release day; later releases are preserved on the dates actually published rather than backfilled heuristically.",
+    "January 2026 contains PPI releases on both 2026-01-14 (November 2025 reference period) and 2026-01-30 (December 2025 reference period).",
+    "The current product event calendar's static 2026 fallback is not used as historical truth where it disagrees with the official as-published BLS calendar."
+  ]
+}
