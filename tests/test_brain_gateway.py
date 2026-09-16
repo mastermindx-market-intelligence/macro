@@ -3109,6 +3109,12 @@ def test_ollama_transport_failure_is_failover_worthy_but_bad_request_is_not():
         "Ollama endpoint unavailable: name resolution failed"
     ))
     assert gw._is_failover_error(OllamaProviderError("Ollama HTTP 429: overloaded"))
+    # The public API accepts HTTPS image URLs, while the private Ollama adapter accepts
+    # inline base64 only. That incompatibility is provider-specific: the next marked
+    # text fallback removes the image and can still answer the written question.
+    assert gw._is_failover_error(OllamaProviderError(
+        "400 unsupported request feature: Ollama requires inline base64 images"
+    ))
     assert not gw._is_failover_error(OllamaProviderError(
         "400 unsupported request feature: empty image"
     ))

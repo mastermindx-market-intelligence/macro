@@ -5462,11 +5462,20 @@ def _is_retryable_provider_error(exc: Exception) -> bool:
         from engine.ollama_provider import OllamaProviderError  # noqa: PLC0415
         if isinstance(exc, OllamaProviderError):
             # Transport/empty-response failures are provider-specific and may use the
-            # next rung. A typed 4xx payload defect would fail identically everywhere
-            # and must surface instead of silently degrading to text-only.
-            match = re.match(r"^(?:Ollama HTTP )?(4\d\d)\b", str(exc).strip())
+            # next rung. A typed 4xx payload defect normally fails identically everywhere
+            # and must surface, except for the adapter's explicit URL-image capability
+            # mismatch: the honest text fallback removes that unsupported image input.
+            detail = str(exc).strip()
+            match = re.match(r"^(?:Ollama HTTP )?(4\d\d)\b", detail)
             if match:
-                return int(match.group(1)) in {408, 429}
+                code = int(match.group(1))
+                if code in {408, 429}:
+                    return True
+                # The public Brain API accepts HTTPS image URLs, but the private
+                # Ollama adapter accepts inline base64 only. This exact 400 is a
+                # provider capability mismatch: the marked text fallback removes
+                # the image and can still answer the user's written question.
+                return code == 400 and "requires inline base64 images" in detail.lower()
             return True
     except Exception:  # noqa: BLE001
         pass
