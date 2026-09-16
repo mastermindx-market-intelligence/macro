@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-16T05:54:38.342231+00:00",
-  "count": 2207,
+  "generated_at": "2026-09-16T06:09:42.758496+00:00",
+  "count": 2208,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -979,6 +979,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 37,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-nyfcytsrpyb-d4b42f",
+      "title": "Hiking is the wrong choice",
+      "institution": "Std Chartered",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T01:09:23Z",
+      "summary_points": [
+        "**FOMC Policy Dilemma**: Hold vs hike hinges on core PCE revisions; market prices 88% chance of 25bps hike by March, but on-hold risks USD/long-end curve damage and credibility loss if delayed.",
+        "**Inflation Data & Tariff Impact**: Supercore CPI shows steady disinflation, but Fed estimates tariffs add ~0.7% y/y to PCE; Powell’s reluctance to attribute inflation to tariffs creates two-sided outlook with lagging effects.",
+        "**Warsh's Hike Hesitation**: Hawkish rhetoric unlikely to override data; Warsh prefers hold until clearer disinflation evidence, making his vote pivotal amid insufficient hawkish members for a hike."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
