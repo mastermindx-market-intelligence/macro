@@ -174,16 +174,20 @@ Use strict JSON and include exact commands/results, source/output SHA-256 values
 
 Update RPH-1 wave status/artifacts/next action, add a cold-stranger handoff with verified and unverified claims, and run `python scripts/agentos.py validate`.
 
-- [ ] **Step 4: Commit and push the same branch**
+- [x] **Step 4: Commit and push the same branch**
 
 Commit all repair/test/result/record files, push normally to the existing branch, confirm clean status and freeze the new exact head.
+
+Completed at `27a966041272a9de6823a590e90a0c6fd7b5141d` without rebase, reset or force-push.
 - [ ] **Step 5: Refresh the PR record**
 
 Replace stale RED-phase prose with the exact implemented capability, source/result identities, separated data/code gates, review history, HOLD authority and explicit release condition. Confirm Draft, no `merge-on-green`, and native auto-merge null.
 
-- [ ] **Step 6: Obtain immutable-head independent review**
+- [x] **Step 6: Obtain immutable-head independent review**
 
 Commission a read-only review of the new exact SHA covering formulas, source identity, phase completeness, disclosure, owner boundaries, tests and current checks. Because candidate-owned blobs changed after `c962235`, classify this as `FULL_REREVIEW_REQUIRED` rather than reusing the earlier verdict.
+
+Completed on `27a966041272a9de6823a590e90a0c6fd7b5141d` / tree `213e92d606d26ca7c8078ff900870adfb48ff584`: semantic PASS, records REPAIR_REQUIRED. Review JSON SHA-256 `fc81f7a4667340a11bf3f410291bc67165dfa5b378afc1e29475e08e7b44dafe`.
 
 - [ ] **Step 7: Close only on accepted HOLD**
 

@@ -1,6 +1,6 @@
 {
   "artifact_identity": {
-    "candidate_owned_paths": {
+    "implementation_head_candidate_owned_paths": {
       ".github/ci/legacy-jobs.yml": "5cb336f68b33d8caf545670a8629881f3c9446db444f91bc615a699af33c58bd",
       "docs/superpowers/plans/2026-09-12-sector-rotation-daily-control-rph1.md": "6bdd962154196c49da0935cb30a6b1ade7483e8366a566c43df0022aadf75452",
       "docs/superpowers/plans/2026-09-14-sector-rotation-daily-control-rph1-review-repair.md": "94f03d80bace8cbe9fabedee3499065eab9e09fc584d362056afea6c471da0f9",
@@ -12,6 +12,10 @@
       "tests/test_rotation_persistence_sector_archive.py": "5fdda6e57c0b302d22b566d4edbd6d9abdb5648837f227e8046c97abffb937c8",
       "tests/test_rotation_persistence_sector_cli.py": "293ce441fb58f0f73284596c114559ee288529d1768b43acf1221c49614198b7",
       "tests/test_rotation_persistence_sector_control.py": "36396de0568bb846772d0d01b4a62e1d4e5f6aca5269b38f5c84ffbcb820b447"
+    },
+    "implementation_head_hash_scope": {
+      "head": "5c7bf21dad34ec68eaf5075a5563de7d5805cda0",
+      "interpretation": "These SHA-256 values bind the eleven semantic implementation-head paths. Record-only paths changed after that head and are intentionally excluded because the receipt cannot self-hash its own final bytes."
     },
     "report_markdown": {
       "path": "research/rotation_persistence/sector_control_rph1/report.md",
@@ -71,6 +75,8 @@
     },
     {
       "command": "Run the eleven named pytest nodes for missing-session fill, incomplete 3D tail, warm-up, future endpoint, authority, index/timezone identity, matured anchor, observation units, phase spans and Markdown disclosure",
+      "containment_note": "The containment-only node is not the mutation discriminator. The completed-bar aggregation test kills retention of an incomplete three-session tail at the construction boundary.",
+      "containment_only_node": "tests/test_rotation_persistence_sector_control.py::test_macd_never_marks_an_incomplete_three_session_tail",
       "killed_false_greens": [
         "forward_filled_or_bridged_missing_session",
         "retained_incomplete_three_session_tail",
@@ -85,9 +91,23 @@
         "markdown_that_omits_leadership_or_phase_evidence"
       ],
       "name": "adversarial_boundary_and_disclosure_suite",
+      "node_ids": [
+        "tests/test_rotation_persistence_sector_cli.py::test_loader_never_fills_missing_sessions",
+        "tests/test_rotation_persistence_sector_control.py::test_three_session_completed_bars_are_phase_explicit_and_drop_tail",
+        "tests/test_rotation_persistence_sector_control.py::test_macd_warmup_blocks_a_real_early_cross",
+        "tests/test_rotation_persistence_sector_control.py::test_future_outcomes_start_at_signal_close_and_use_strictly_later_session",
+        "tests/test_rotation_persistence_sector_control.py::test_result_contract_is_context_only_and_has_no_trade_authority",
+        "tests/test_rotation_persistence_sector_cli.py::test_loader_rejects_non_datetime_index",
+        "tests/test_rotation_persistence_sector_cli.py::test_loader_preserves_timezone_aware_local_session_label",
+        "tests/test_rotation_persistence_sector_control.py::test_leadership_surface_includes_final_matured_anchor_and_formula",
+        "tests/test_rotation_persistence_sector_control.py::test_signal_cell_discloses_sector_date_unit_and_latest_unique_dates",
+        "tests/test_rotation_persistence_sector_control.py::test_hierarchy_descriptor_discloses_every_phase_sample_span",
+        "tests/test_rotation_persistence_sector_control.py::test_markdown_discloses_leadership_samples_and_phase_evidence"
+      ],
       "result": "11 passed in 18.98s",
       "state": "PASS",
-      "subject_head": "5c7bf21dad34ec68eaf5075a5563de7d5805cda0"
+      "subject_head": "5c7bf21dad34ec68eaf5075a5563de7d5805cda0",
+      "tail_discriminator": "tests/test_rotation_persistence_sector_control.py::test_three_session_completed_bars_are_phase_explicit_and_drop_tail"
     },
     {
       "command": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.venv/bin/python scripts/run_ci_pack.py --workflow .github/ci/legacy-jobs.yml --gate code --validate-only",
@@ -105,7 +125,9 @@
     },
     {
       "command": "Parse .github/ci/legacy-jobs.yml and assert archive suite is in sector-control-archive-regeneration with gate:data and absent from every code-gated command",
+      "durability": "ONE_OFF_RECEIPT_NOT_COMMITTED_GUARD",
       "name": "archive_gate_ownership_assertion",
+      "optional_follow_up": "A later semantic wave may add a committed manifest regression test; this HOLD receipt does not claim one exists.",
       "result": "OWNERSHIP_OK job_gate=data code_jobs_checked=139",
       "state": "PASS",
       "subject_head": "5c7bf21dad34ec68eaf5075a5563de7d5805cda0"
@@ -145,6 +167,37 @@
       "result": "OPEN Draft; exact head/base; no labels; native auto-merge null; MERGEABLE/UNSTABLE",
       "state": "PASS",
       "subject_head": "5c7bf21dad34ec68eaf5075a5563de7d5805cda0"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /Users/chriswong/Documents/Cluade/Macro Dashboard/.venv/bin/python -m pytest tests/test_rotation_persistence_sector_control.py tests/test_rotation_persistence_sector_cli.py -q --tb=short -p no:cacheprovider",
+      "name": "fresh_exact_record_head_focused_synthetic_suites",
+      "result": "31 passed; tracked worktree remained clean",
+      "state": "PASS",
+      "subject_head": "27a966041272a9de6823a590e90a0c6fd7b5141d"
+    },
+    {
+      "command": "Run tests/test_rotation_persistence_sector_archive.py, then run scripts/research/run_sector_control_rph1.py with produced-at 2026-09-12T21:00:00Z and compare result.json/report.md byte-for-byte",
+      "name": "fresh_exact_record_head_archive_and_cli_byte_replay",
+      "result": "1 passed; direct CLI replay preserved result SHA-256 8a899626e4047df31c1b740f9100e5e63e185c74211d7544b3e6f6031db1bdd6 and report SHA-256 17e7fe0a851f77ebea77e80ce19a661b45808fe72f0da29f5d709108befad6af; zero tracked diff",
+      "state": "PASS_SINGLE_PLATFORM_LOCAL",
+      "subject_head": "27a966041272a9de6823a590e90a0c6fd7b5141d"
+    },
+    {
+      "command": "GitHub Actions workflow ci, workflow_dispatch run 34938053231, logical job research-price-panel, step sector rotation daily control — leadership, dispersion, phase-complete MACD",
+      "name": "exact_head_hosted_focused_suite",
+      "result": "31 passed in 57.80s at expected/tested SHA 27a966041272a9de6823a590e90a0c6fd7b5141d. Aggregate run remained red only for unrelated market-os-macro-suite-pages main_failure and its dependent not_run_prior_failure step.",
+      "run_id": 34938053231,
+      "state": "PASS_FOCUSED_WITH_UNRELATED_AGGREGATE_FAILURE",
+      "subject_head": "27a966041272a9de6823a590e90a0c6fd7b5141d"
+    },
+    {
+      "command": "Claude Fable 5.1 independent read-only FULL_REREVIEW_REQUIRED review",
+      "name": "independent_exact_record_head_full_rereview",
+      "result": "semantic_verdict=PASS; records_verdict=REPAIR_REQUIRED; records-only repair recommended",
+      "review_sha256": "fc81f7a4667340a11bf3f410291bc67165dfa5b378afc1e29475e08e7b44dafe",
+      "state": "PASS_SEMANTICS_REPAIR_RECORDS",
+      "subject_head": "27a966041272a9de6823a590e90a0c6fd7b5141d",
+      "subject_tree": "213e92d606d26ca7c8078ff900870adfb48ff584"
     }
   ],
   "ci_ownership": {
@@ -157,38 +210,45 @@
     ]
   },
   "current_main_compatibility": {
-    "candidate_changed_path_count": 11,
-    "direct_overlap_interpretation": "The shared CI manifest moved on both sides. The no-write merge tree is clean; semantic acceptance still requires exact manifest ownership review rather than ancestry alone.",
+    "candidate_changed_path_count": 14,
+    "direct_overlap_interpretation": "The shared CI manifest moved on both sides, but current-main and RPH-1 hunks are disjoint; the exact no-write merge tree completed without conflict.",
     "direct_path_overlap": [
       ".github/ci/legacy-jobs.yml"
     ],
-    "merge_base_with_implementation": "4b1f8fddcc4eb6f36133fca4d42018678b74d30b",
+    "merge_base_with_record_head": "4b1f8fddcc4eb6f36133fca4d42018678b74d30b",
     "merge_tree_exit_code": 0,
-    "no_write_integrated_tree": "de98a17f781e55d114b0443ac33410060d7617ee",
-    "protected_main_sha": "22f6759fe6529b4768309332309d52a8ee20526a",
+    "no_write_integrated_tree": "3d06b4117ca6e9da0e267a3ba748ca86c055d65b",
+    "protected_main_sha": "0da5f5fc60568301d8b62c3e0b7702ea23ff6f57",
     "stacked_parent_contract_git_blob_sha1": {
       "scripts/research/rotation_persistence/__init__.py": "e3b71311939007484cc65e0986f13273cdb461fb",
       "scripts/research/rotation_persistence/contracts.py": "d5f6ff4433f2dc0f0b88a7407a0a8392cb9c9863",
       "scripts/research/rotation_persistence/report.py": "141006ccd0580e109b84233d8486fa4f79041755"
     },
-    "state": "CLEAN_NO_WRITE_INTEGRATION"
+    "state": "CLEAN_NO_WRITE_INTEGRATION",
+    "tested_prior_snapshot": {
+      "integrated_tree": "4179aed5eeec548e5d65ff9c4416a562555a24a2",
+      "proof": "Agent OS validate PASS; focused suite 31 passed; contract-delta suite 164 passed",
+      "protected_main_sha": "e729d0fd9d48868b49a1911d4098c689b3d373bd"
+    }
   },
   "github_state": {
     "base_ref": "sol/rotation-persistence-rph0-20260910",
     "base_sha": "8d198b42f6bff491a49b1f3467b56ca4bb673f80",
     "draft": true,
     "head_ref": "sol/rotation-persistence-sector-control-rph1-20260912",
-    "head_sha": "5c7bf21dad34ec68eaf5075a5563de7d5805cda0",
+    "head_sha": "27a966041272a9de6823a590e90a0c6fd7b5141d",
     "labels": [],
     "merge_state_status": "UNSTABLE",
     "mergeable": "MERGEABLE",
     "native_auto_merge": null,
-    "observed_at": "2026-09-15T06:34:22Z",
+    "observed_at": "2026-09-16T10:04:47Z",
     "ordinary_check_projection": {
+      "aggregate_dispatch": "FAIL_UNRELATED_MARKET_OS_MACRO_SUITE_PAGES_MAIN_FAILURE",
       "ci_authority": "FAIL_UNSUPPORTED_BASE_REF",
       "ci_authority_main": "FAIL_INACTIVE_CONTEXT",
       "ci_authority_merge_queue_pilot": "FAIL_INACTIVE_CONTEXT",
-      "focused_rph1_suite_executed": false,
+      "focused_rph1_suite_executed": true,
+      "focused_rph1_workflow_dispatch_run_id": 34938053231,
       "vercel": "FAIL_UNRELATED_DAILY_DEPLOYMENT_LIMIT"
     },
     "pr_number": 7095,
@@ -197,15 +257,30 @@
   },
   "hosted_proof": {
     "exact_head_archive_lane": {
-      "local_substitute": "byte-for-byte live archive regeneration plus explicit gate:data ownership proof",
+      "cross_platform_status": "UNPROVEN",
+      "interpretation": "A future post-merge data-lane byte mismatch is a reproducibility receipt to investigate, not a research finding.",
+      "local_substitute": "Single-platform macOS byte-for-byte live archive regeneration plus explicit gate:data ownership proof",
       "reason": "the approved data-health lane is main-only and refuses a non-main ref",
       "state": "UNAVAILABLE_PRE_MERGE",
       "workflow": "data-health.yml"
     },
     "exact_head_code_dispatch": {
-      "expected_sha": "PENDING_RECORD_HEAD",
+      "aggregate_failure_scope": [
+        "market-os-macro-suite-pages: main_failure in tests/test_macro_suite_pages.py",
+        "dependent hub step: not_run_prior_failure"
+      ],
+      "aggregate_run_conclusion": "FAILURE",
+      "command": "python -m pytest tests/test_rotation_persistence_sector_control.py tests/test_rotation_persistence_sector_cli.py -q",
+      "event": "workflow_dispatch",
+      "expected_sha": "27a966041272a9de6823a590e90a0c6fd7b5141d",
+      "interpretation": "The exact RPH-1 hosted focused proof passed. The aggregate run is not called green because an unrelated Market OS page suite failed.",
+      "logical_job": "research-price-panel",
       "ref": "sol/rotation-persistence-sector-control-rph1-20260912",
-      "state": "PENDING_AFTER_IMMUTABLE_RECORD_HEAD",
+      "result": "31 passed in 57.80s",
+      "run_id": 34938053231,
+      "state": "PASS_FOCUSED_WITH_UNRELATED_AGGREGATE_FAILURE",
+      "step": "sector rotation daily control — leadership, dispersion, phase-complete MACD",
+      "tested_sha": "27a966041272a9de6823a590e90a0c6fd7b5141d",
       "workflow": "ci.yml"
     },
     "main_owned_trusted_executor": {
@@ -230,32 +305,37 @@
     "Sector ETF behavior does not prove current theme or constituent behavior.",
     "Every result is research/display context only and cannot rank, gate, size or trade.",
     "Phase-specific rows are primary; phase-pooled rows share daily source sessions and are non-independent.",
-    "Acceptance cannot select a production timeframe or create a product, Prophet, Oracle, portfolio, entry or trade consumer."
+    "Acceptance cannot select a production timeframe or create a product, Prophet, Oracle, portfolio, entry or trade consumer.",
+    "At lookback=5 and horizon=5, rank persistence and predictive persistence are algebraically identical; that cell is not two independent agreeing estimands.",
+    "Daily leadership anchors overlap across forward horizons, so recent-window observations are serially dependent and no independent-observation inference is claimed.",
+    "The byte-for-byte archive replay is proven on the authorized macOS environment only; cross-platform and pandas-version byte stability remain unproven."
   ],
   "lifecycle": {
     "deploy_authorized": false,
     "mark_ready_authorized": false,
     "merge_authorized": false,
     "production_consumer_authorized": false,
-    "state": "DRAFT_HOLD",
+    "state": "DRAFT_HOLD_AWAITING_FINAL_RECORD_REVIEW",
     "terminal_state_after_acceptance": "PARKED_HOLD_FOR_SOL"
   },
   "notes": [
     "The implementation commit was pushed normally to the existing branch; no rebase, reset, force-push or sibling carrier was used.",
     "The trusted main-owned diagnostic refused this stacked PR before candidate execution; it is a proof-gap receipt, not a semantic failure.",
     "A PASS verdict means PARKED / HOLD-FOR-SOL, never Ready, merge, deploy or production activation.",
-    "The receipt binds the semantic implementation head/tree. Its own containing record commit cannot be self-hashed inside the same JSON object; Git and the PR body provide that outer immutable identity."
+    "The receipt binds the semantic implementation head/tree. Its own containing record commit cannot be self-hashed inside the same JSON object; Git and the PR body provide that outer immutable identity.",
+    "Commit dfdaa67472839580828377b7b0322ea3fbe25c21 ('x') temporarily added file 'nonexistent'; ec9dee6721aed927c5e2f6f313eb1f24341d57df removed it. The final tree is unaffected and history is disclosed rather than rewritten.",
+    "The manifest ownership parse is a one-off receipt, not a committed regression guard."
   ],
   "operation_key": "leadership-persistence-sector-control-rph1-20260912-sol-001",
   "pending": [
-    "commit and normally push this record assembly on the existing branch",
-    "fresh independent read-only review of the resulting immutable record head",
-    "one exact-SHA ci.yml branch dispatch after the immutable record head exists",
-    "truthful PR body replacement and final accepted-HOLD adjudication",
+    "commit and normally push this records-only repair on the existing branch",
+    "replace the stale PR body against the resulting exact head while preserving Draft/HOLD and native auto-merge null",
+    "obtain one exact-final-head read-only review before PARKED / HOLD-FOR-SOL",
     "a hosted archive/data-gate run remains unavailable before merge because the approved data-health workflow is main-only"
   ],
   "pr_number": 7095,
   "procedure_identity": {
+    "historical_recorded_sha": "19b6111891ffd742ceec7c96f437a2a890847c92",
     "loaded_sources": [
       "docs/sol_skills/INDEX.md",
       "docs/sol_skills/COLD_START.md",
@@ -269,11 +349,11 @@
     ],
     "protected_ref": "master",
     "repository": "mastermindx-market-intelligence/Mastermind",
-    "sha": "19b6111891ffd742ceec7c96f437a2a890847c92",
+    "sha": "8ba7deedde164c90298d3e88785d98e02fa5e2d2",
     "skillpack_schema": "mastermind.sol_skillpack.v1",
     "skillpack_version": "1.0.1"
   },
-  "recorded_at": "2026-09-15T06:34:22Z",
+  "recorded_at": "2026-09-16T10:04:47Z",
   "repaired_findings": [
     "live Yahoo archive regeneration moved from gate: code to gate: data",
     "source and output paths resolve against a canonical repository root",
@@ -287,11 +367,20 @@
   ],
   "repository": "mastermindx-market-intelligence/macro",
   "review": {
-    "independent_exact_record_head_verdict": "PENDING",
+    "final_records_head_verdict": "PENDING",
     "prior_reviewed_head": "c962235abf2c2b731c98693c472a116bc110e110",
     "prior_verdict": "REPAIR_REQUIRED",
-    "reason": "candidate-owned implementation, tests, CI ownership and generated result blobs changed after the prior reviewed head",
-    "review_reuse": "FULL_REREVIEW_REQUIRED"
+    "reason": "Semantic bytes are accepted; the exact records-only repair head still requires independent review before parking.",
+    "review_reuse": "FULL_REREVIEW_REQUIRED",
+    "semantic_review": {
+      "recommendation": "ACCEPT_RESEARCH_AFTER_RECORDS_ONLY_REPAIR_AND_FINAL_HEAD_REVIEW",
+      "records_verdict": "REPAIR_REQUIRED",
+      "review_sha256": "fc81f7a4667340a11bf3f410291bc67165dfa5b378afc1e29475e08e7b44dafe",
+      "reviewed_head": "27a966041272a9de6823a590e90a0c6fd7b5141d",
+      "reviewed_tree": "213e92d606d26ca7c8078ff900870adfb48ff584",
+      "reviewer": "Claude Fable 5.1 independent read-only reviewer",
+      "semantic_verdict": "PASS"
+    }
   },
   "schema_version": "research.rotation_persistence.sector_control.verification.v1",
   "source_identity": {
@@ -456,6 +545,8 @@
     "preregistration_freeze": "0a80c56135fc5879cf4079fea55912041dfce534",
     "record_assembly_parent": "5c7bf21dad34ec68eaf5075a5563de7d5805cda0",
     "record_head": "SELF_NOT_REPRESENTABLE_IN_OWN_CONTENT",
-    "review_classification": "FULL_REREVIEW_REQUIRED"
+    "review_classification": "FULL_REREVIEW_COMPLETED_SEMANTIC_PASS_RECORDS_REPAIR_REQUIRED",
+    "reviewed_record_head": "27a966041272a9de6823a590e90a0c6fd7b5141d",
+    "reviewed_record_tree": "213e92d606d26ca7c8078ff900870adfb48ff584"
   }
 }

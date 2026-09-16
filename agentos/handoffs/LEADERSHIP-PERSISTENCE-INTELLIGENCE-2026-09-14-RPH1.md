@@ -40,9 +40,10 @@ changed:
       bar spans, leadership anchors/N/stddev, hierarchy phase samples and the frozen limitations.
   - path: research/rotation_persistence/sector_control_rph1/verification.json
     what: >
-      Bind protected procedure, the immutable semantic implementation head/tree, all source/output
-      hashes, focused/adversarial proof, code/data gate ownership, current-main no-write integration,
-      GitHub HOLD state and the exact hosted-proof gap.
+      Bind current protected procedure, immutable semantic and reviewed record identities, all source/
+      output hashes, exact-head hosted run 34938053231, focused/adversarial proof, one-off code/data
+      ownership receipt, fresh current-main no-write integration, GitHub HOLD state, the disclosed
+      stray history commit, overlapping-anchor dependence and the single-platform archive boundary.
   - path: agentos/workstreams/WS-LEADERSHIP-PERSISTENCE-INTELLIGENCE.md and agentos/handoffs/LEADERSHIP-PERSISTENCE-INTELLIGENCE-2026-09-14-RPH1.md
     what: >
       Describe the actual daily sector-control RPH-1 child without erasing the separate future 23/30-
@@ -61,15 +62,20 @@ verified:
     result: "1 passed in 78.76s; direct CLI replay also preserved result/report hashes with zero diff."
   - claim: "All preregistered false-green and disclosure boundaries are discriminated."
     command: >
-      Run the eleven exact pytest nodes named in sector_control_rph1/verification.json for missing-
-      session fill, incomplete tails, warm-up, future endpoints, authority, index/timezone identity,
-      final anchor, observation units, phase spans and Markdown evidence.
-    result: "11 passed in 18.98s; no named false green survived."
-  - claim: "Code/data CI ownership is valid and the live archive suite cannot leak into the code gate."
+      Run the eleven exact pytest node IDs now enumerated in sector_control_rph1/verification.json for
+      missing-session fill, incomplete tails, warm-up, future endpoints, authority, index/timezone
+      identity, final anchor, observation units, phase spans and Markdown evidence.
+    result: >
+      11 passed in 18.98s. Incomplete-tail retention is killed by
+      test_three_session_completed_bars_are_phase_explicit_and_drop_tail; the separately named MACD
+      tail test is containment-only and is not claimed as the discriminator.
+  - claim: "Code/data CI ownership is valid at the reviewed head."
     command: >
       Validate both legacy manifest gates, then parse the manifest and assert the archive path belongs
       only to sector-control-archive-regeneration with gate:data.
-    result: "139 code jobs and 74 data jobs validated; OWNERSHIP_OK job_gate=data code_jobs_checked=139."
+    result: >
+      139 code jobs and 74 data jobs validated; OWNERSHIP_OK job_gate=data code_jobs_checked=139.
+      This is a one-off receipt, not a committed regression guard.
   - claim: "Contract-delta does not expose an unowned new suite or exclusive-closure regression."
     command: "/Users/chriswong/Documents/Cluade/Macro Dashboard/.venv/bin/python scripts/check_contract_delta.py --base 8d198b42f6bff491a49b1f3467b56ca4bb673f80"
     result: "contract-delta: 0 introduced, 0 inherited (base 8d198b42f6bf); 680.40s."
@@ -89,17 +95,25 @@ verified:
   - claim: "The existing PR remains held."
     command: "gh pr view 7095 --json state,isDraft,headRefOid,baseRefOid,autoMergeRequest,labels,mergeable,mergeStateStatus"
     result: "OPEN Draft; exact head/base; no labels; native auto-merge null; MERGEABLE/UNSTABLE."
+  - claim: "Hosted code proof executed on the exact immutable record head."
+    command: >
+      GitHub Actions ci.yml workflow_dispatch run 34938053231 at expected/tested SHA
+      27a966041272a9de6823a590e90a0c6fd7b5141d.
+    result: >
+      The RPH-1 focused step passed 31 tests in 57.80s. The aggregate run remained red only for the
+      unrelated market-os-macro-suite-pages main_failure and its dependent not_run_prior_failure step.
+  - claim: "Independent immutable-head rereview accepts the semantic capability and requires only records repair."
+    command: "Claude Fable 5.1 independent read-only FULL_REREVIEW_REQUIRED review of 27a966041272 / tree 213e92d606d2."
+    result: >
+      semantic_verdict=PASS; records_verdict=REPAIR_REQUIRED; recommendation is records-only repair
+      followed by exact-final-head review. Review JSON SHA-256 is
+      fc81f7a4667340a11bf3f410291bc67165dfa5b378afc1e29475e08e7b44dafe.
 unverified:
-  - claim: "An independent reviewer accepts the exact immutable record head."
+  - claim: "The exact records-only repair head is accepted for PARKED / HOLD-FOR-SOL."
     what_would_verify: >
-      A separate read-only Opus reviewer checks the resulting commit and tree, frozen formulas,
-      source/result hashes, phase completeness, sample disclosure, owner boundaries, tests, current-
-      main comparison and current checks, then returns PASS / ACCEPTED_HOLD without modifying it.
-  - claim: "Hosted code proof executes on the exact immutable record head."
-    what_would_verify: >
-      Dispatch ci.yml once on the existing branch with expected_sha bound to that exact head and
-      reconcile the resulting semantic evidence. Main-owned trusted executor run 34936708141 already
-      failed closed before execution because PR #7095 does not target main; that refusal is not proof.
+      Normally push the records-only repair, replace the PR body against that immutable head, and run
+      one independent read-only review proving that no code, tests, result.json or report.md changed
+      and that every projection is truthful.
   - claim: "Hosted archive regeneration executes before merge."
     what_would_verify: >
       An approved branch-safe data-gate lane. The current data-health workflow is main-only, so this
@@ -120,17 +134,22 @@ unresolved:
   - >
     Phase-pooled MACD rows are non-independent because phases share daily source sessions. Phase-
     specific rows are primary, and hierarchy labels are archive-specific descriptive evidence only.
+  - >
+    At lookback=5 and horizon=5, rank and predictive persistence are algebraically identical; that
+    cell is not two independent agreeing estimands. Daily forward anchors overlap and are serially
+    dependent, so recent-window rows do not support independent-observation inference.
+  - >
+    Byte-for-byte archive regeneration is proven on the authorized macOS environment only. Cross-
+    platform and pandas-version byte stability remain unproven until the main-only data lane runs.
 next_actions:
-  - "Commit and normally push this exact record assembly on the existing branch; do not amend, rebase, reset or force-push."
+  - "Commit and normally push this records-only repair on the existing branch; do not amend, rebase, reset or force-push."
   - >
-    Obtain one fresh independent immutable-head review because candidate-owned blobs changed after
-    c962235; review reuse is FULL_REREVIEW_REQUIRED.
+    Replace the stale PR body against the resulting exact head, preserve Draft/HOLD, no merge-on-green
+    label and native auto-merge null.
   - >
-    Dispatch ci.yml once on the exact record head, reconcile candidate versus inherited failures, and
-    preserve the main-only archive-hosting gap explicitly.
-  - >
-    Replace the stale PR body, preserve Draft/HOLD, and park only after accepted review. Never mark
-    Ready, merge, deploy, or connect a production consumer.
+    Obtain one exact-final-head read-only review proving that code, tests, result.json and report.md
+    did not change and that hosted run 34938053231 and the remaining archive gap are represented
+    truthfully. Park only on PASS; never mark Ready, merge, deploy or connect a production consumer.
 do_not_redo:
   - "Do not create a sibling RPH-1 branch, PR, workstream, score, state store, event plane or timeframe authority."
   - "Do not modify RPH-0 PR #7064 or reinterpret its published-theme result as this sector-price control."
@@ -159,5 +178,6 @@ RPH-1 has one repaired semantic carrier whose data normalization, formulas, samp
 live regeneration and code/data CI ownership are explicit and reproducible. The exact archive contains
 2,067 complete sessions from 2018-06-19 through 2026-09-09; the evidence remains bounded to a daily
 sector-ETF control and carries zero rank, gate, sizing, trading, Prophet, Oracle or portfolio authority.
-The current closure path is one immutable record commit, independent review, exact-SHA hosted code
-reconciliation, a truthful PR body, and PARKED / HOLD-FOR-SOL on the existing Draft PR.
+The semantic capability and exact-head hosted code proof are accepted. The only remaining closure
+is a records-only commit, truthful PR body and exact-final-head review before PARKED / HOLD-FOR-SOL.
+The hosted archive lane remains main-only and the byte replay remains single-platform local evidence.
