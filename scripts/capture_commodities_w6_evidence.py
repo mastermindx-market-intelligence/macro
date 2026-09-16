@@ -488,6 +488,17 @@ def _new_page(browser, *, width, height, locale, theme, touch=False):
     return context, page
 
 
+
+def assert_document_fits(geometry: dict) -> None:
+    """Reject clipped/unknown browser evidence; one-pixel rounding is tolerated."""
+    import math
+    width, scroll = geometry.get("width"), geometry.get("scroll")
+    if any(isinstance(v, bool) or not isinstance(v, (int, float))
+           or not math.isfinite(v) for v in (width, scroll)):
+        raise ValueError("document geometry unavailable")
+    if width <= 0 or scroll < 0 or scroll > width + 1:
+        raise ValueError(f"document overflow: {scroll}px exceeds {width}px viewport")
+
 def _capture(scratch: Path, subjects: set[str] | None = None) -> dict:
     from scripts.capture_page_evidence import CaptureUnavailable, serve_site_dir
 
@@ -794,6 +805,9 @@ def _capture(scratch: Path, subjects: set[str] | None = None) -> dict:
                             clip_sels = None
                             job["_direct_clip"] = box
                     overlay = page.evaluate(_OVERLAY_PROBE.strip()) or []
+                    geometry = page.evaluate("({width:innerWidth,scroll:document.documentElement.scrollWidth})")
+                    entry["document_geometry"] = geometry
+                    assert_document_fits(geometry)
                     if job.get("_direct_clip"):
                         png = page.screenshot(type="png", clip=job["_direct_clip"])
                     elif job.get("full_viewport"):

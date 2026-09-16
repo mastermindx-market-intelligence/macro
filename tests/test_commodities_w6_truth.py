@@ -1048,3 +1048,35 @@ def test_index_timeframe_chip_is_descriptive_not_an_instruction(grade, expected)
     en, zh = b._mtf_grade_plain(grade)
     assert en == expected
     assert zh and zh != en
+
+
+# R1 browser acceptance: a captured PNG is not proof that warnings fit the page.
+@pytest.mark.parametrize("geometry", [
+    {"width":390,"scroll":390}, {"width":1440,"scroll":1440},
+    {"width":390,"scroll":391},
+])
+def test_browser_evidence_accepts_fitting_document(geometry):
+    from scripts.capture_commodities_w6_evidence import assert_document_fits
+    assert_document_fits(geometry)
+
+@pytest.mark.parametrize("geometry", [
+    {"width":390,"scroll":517}, {"width":390,"scroll":415},
+    {"width":0,"scroll":0}, {"width":390,"scroll":float("nan")},
+    {"width":390,"scroll":float("inf")}, {"width":True,"scroll":390}, {},
+])
+def test_browser_evidence_rejects_overflow_or_unknown_geometry(geometry):
+    from scripts.capture_commodities_w6_evidence import assert_document_fits
+    with pytest.raises(ValueError):
+        assert_document_fits(geometry)
+
+
+def test_capture_wires_document_fit_check_before_screenshot():
+    from scripts.capture_commodities_w6_evidence import _capture
+    src=inspect.getsource(_capture)
+    assert src.index("assert_document_fits(geometry)") < src.index("png = page.screenshot")
+
+
+def test_mobile_warning_layout_keeps_reasons_below_name_and_score():
+    src=_tpl()
+    assert '.brow .st { grid-column: 1 / -1; grid-row: 2;' in src
+    assert '.brow .meter { grid-column: 2; grid-row: 1;' in src
