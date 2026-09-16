@@ -38,13 +38,13 @@ waves:
       authority. Do not merge or project it into a product in this wave.
   - id: RPH1
     title: Preregistered daily sector-price leadership and phase-complete MACD control
-    status: awaiting_ci
+    status: in_progress
     depends_on: [RPH0]
     next_action: >
-      Review the immutable record head produced from semantic head 5c7bf21dad34, dispatch ci.yml with
-      expected_sha bound to that exact record head, and keep the accepted carrier Draft/HOLD. The
-      approved data-health lane is main-only, so any pre-merge hosted archive gap remains explicit;
-      no production timeframe, rank, gate, entry or trade consumer is authorized.
+      Normally push the records-only repair after semantic PASS on 27a966041272, replace the stale
+      PR body, and obtain one exact-final-head review. Keep #7095 Draft/HOLD. The exact-head hosted
+      focused suite passed in run 34938053231; the archive lane remains main-only and locally proven
+      on one platform. No production timeframe, rank, gate, entry or trade consumer is authorized.
   - id: RPH2
     title: Separately preregistered 23/30-session or deeper point-in-time stratification
     status: todo
@@ -91,10 +91,10 @@ artifacts:
   - docs/superpowers/plans/2026-09-14-sector-rotation-daily-control-rph1-review-repair.md
   - agentos/handoffs/LEADERSHIP-PERSISTENCE-INTELLIGENCE-2026-09-14-RPH1.md
 next_action: >
-  Commit and normally push the RPH-1 proof records, obtain fresh immutable-head independent review,
-  execute one exact-SHA ci.yml branch dispatch, replace the stale PR body, and then park #7095 only on
-  accepted HOLD. Preserve the main-only hosted archive gap explicitly. RPH-0 PR #7064 and RPH-1 PR
-  #7095 remain separate carriers; neither may merge, deploy or activate a production consumer.
+  Complete the records-only closure of RPH-1: push the repaired evidence projection, replace PR #7095's
+  stale body, obtain exact-final-head review, and park it Draft/HOLD. Then advance the separate Temporal
+  Grain WMT/silver external-evidence gate; do not turn the accepted daily archive control into a
+  production timeframe or consumer. RPH-0 PR #7064 and RPH-1 PR #7095 remain separate carriers.
 ---
 
 ## Owner boundary
