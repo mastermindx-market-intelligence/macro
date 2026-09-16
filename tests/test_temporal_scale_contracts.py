@@ -663,6 +663,11 @@ def test_incomplete_recipe_can_inventory_unknown_extended_hours_state() -> None:
     assert recipe.capture_status == "incomplete"
     assert recipe.chart["extended_hours_enabled"] is None
 
+    raw["capture_status"] = "complete"
+    raw["missing_fields"] = []
+    with pytest.raises(ContractError):
+        ChartRecipe.from_dict(raw)
+
 
 def test_incomplete_recipe_can_inventory_unknown_allowed_session_variants() -> None:
     raw = complete_recipe_dict()
@@ -674,6 +679,30 @@ def test_incomplete_recipe_can_inventory_unknown_allowed_session_variants() -> N
 
     assert recipe.capture_status == "incomplete"
     assert recipe.chart["allowed_session_variants"] == ()
+
+    raw["capture_status"] = "complete"
+    raw["missing_fields"] = []
+    with pytest.raises(ContractError):
+        ChartRecipe.from_dict(raw)
+
+
+def test_committed_silver_gap_recipe_does_not_invent_exact_display_identity() -> None:
+    recipe = ChartRecipe.from_json(
+        Path("research/signal_engine/temporal_scale/external_evidence/silver_incomplete_recipe.json")
+    )
+
+    assert recipe.instrument["display_symbol"] is None
+    assert "instrument.display_symbol" in recipe.missing_fields
+
+
+@pytest.mark.parametrize("name", ("wmt", "silver"))
+def test_committed_gap_recipe_inventories_unrecovered_rights_source(name: str) -> None:
+    recipe = ChartRecipe.from_json(
+        Path(f"research/signal_engine/temporal_scale/external_evidence/{name}_incomplete_recipe.json")
+    )
+
+    assert recipe.rights["source_reference"] is None
+    assert "rights.source_reference" in recipe.missing_fields
 
 
 _INVENTORIED_RECIPE_FIELDS = (

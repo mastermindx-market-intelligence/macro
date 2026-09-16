@@ -9,7 +9,7 @@ objective: >
   usefulness-mechanism claims are tested only under a frozen localization/risk ruler, any surviving
   structure-to-kernel relationship passes an instrument-disjoint preregistered test, and every
   result remains zero-authority unless a later independent promotion passes.
-status: active
+status: blocked
 program: market-timing-intelligence
 repos: [macro]
 owner: ceo-sol

@@ -25,14 +25,16 @@ changed:
       recipe is explicitly incomplete and the missing inventory is exact.
   - path: research/signal_engine/temporal_scale/external_evidence/wmt_incomplete_recipe.json
     what: >
-      Record only supported WMT discovery anchors: display symbol WMT, equity class, 720-minute chart,
-      named extended session and extended-hours enabled. Enumerate every absent identity, session,
-      adjustment, observed-indicator and export field without raw market rows.
+      Record only supported WMT discovery anchors: exact display symbol WMT, equity class, 720-minute
+      chart, named extended session and extended-hours enabled. Keep the unrecovered original chart
+      source reference null and enumerate it with every absent identity, session, adjustment,
+      observed-indicator and export field without raw market rows.
   - path: research/signal_engine/temporal_scale/external_evidence/silver_incomplete_recipe.json
     what: >
-      Record only supported silver discovery anchors: descriptive symbol silver and 480-minute chart.
-      Product class, vendor/feed, contract or roll, session, extended-hours state, chart type,
-      adjustments, observed-indicator provenance, rights source and export remain typed missing fields.
+      Record only the supported silver 480-minute discovery anchor. Keep instrument.display_symbol
+      null because “silver” is descriptive rather than an exact observed TradingView symbol. Product
+      class, exact symbol, vendor/feed, contract or roll, session, extended-hours state, chart type,
+      adjustments, observed-indicator provenance, original rights source and export remain typed missing.
   - path: research/signal_engine/temporal_scale/external_evidence/verification.json
     what: >
       Bind current protected procedure, parent source head, recipe hashes, exact missing inventories,
@@ -47,7 +49,7 @@ changed:
       Explain the two committed abstention packets, their evidence ceiling and lawful replacement path.
   - path: agentos/workstreams/WS-TEMPORAL-GRAIN-INTELLIGENCE.md
     what: >
-      Move W1A from stale awaiting_ci to in_progress external-evidence gating while preserving W1B hold.
+      Set the workstream blocked on exact identity/data/rights, keep W1A in_progress, and preserve W1B hold.
 verified:
   - claim: The pre-repair contract rejected the two unknown silver chart-state fields for the expected reasons.
     command: >
@@ -61,13 +63,19 @@ verified:
       tests/test_temporal_scale_contracts.py::test_incomplete_recipe_can_inventory_unknown_extended_hours_state
       tests/test_temporal_scale_contracts.py::test_incomplete_recipe_can_inventory_unknown_allowed_session_variants
       -q --tb=short -p no:cacheprovider
-    result: 2 passed in 1.08s; unrelated pre-existing pytest cache-cleanup warnings remained advisory.
+    result: 2 passed in 1.08s during RED/GREEN repair; the fresh complete contract module later passed 168 tests in 8.40s on Python 3.12.4.
+  - claim: Source grounding does not invent an exact silver symbol or unrecovered source references.
+    command: >
+      Run the three committed-recipe grounding nodes before and after repairing the recipe files.
+    result: >
+      RED produced three exact failures for silver display_symbol and both rights.source_reference
+      fields; the fresh combined unknown-state and grounding surface passed 5 tests in 5.67s.
   - claim: Both committed motivating-chart recipes execute through the real CLI as typed abstentions.
     command: >
       python3 -m pytest
       tests/test_temporal_scale_artifact_attack.py::test_committed_motivating_gap_recipes_emit_typed_unresolved_without_csv
       -q --tb=short -p no:cacheprovider
-    result: 2 passed in 2.23s; each result is UNRESOLVED_DATA with null mechanism and all authority false.
+    result: 2 passed in 6.74s on Python 3.12.4; each result is UNRESOLVED_DATA with null mechanism and all authority false.
   - claim: The local receipts contain no raw rows and use no external or production effect.
     command: >
       Run attack separately for each committed recipe using a nonexistent CSV and output-local ledger,
@@ -75,15 +83,31 @@ verified:
     result: >
       Both commands returned UNRESOLVED_DATA:INCOMPLETE_RECIPE with csv_loaded=false,
       network_used=false and production_ledger_used=false. WMT recipe SHA-256 is
-      07eaff301580a7ef07c717a4be8c57645f00efa98d3d9e57667349fe33078240 and result SHA-256 is
-      0cb5bd2bc9bc82fc406ae40168b9e6636fcac5c2f895addf170ef3870c4c2ee5. Silver recipe SHA-256 is
-      f1fc809c0a0492f29e9a3e77dbbea2e54d79e88e3f61807639a38637c56988ec and result SHA-256 is
-      9b0ad223c9afc73e572e489956e010bd50e54376bcedab5c0c3badacf8a57743.
+      95de2232b50c0ab436e6b46e1998bd2e3474b7cb65d6330a69ffbed544761c36 and result SHA-256 is
+      2adad93747a00e326030d19b33940accc10499214edb8e121053354b5c111287. Silver recipe SHA-256 is
+      9b25dc745506224975234d768813554f0dad27ef32ee912e56b29222e2e0daba and result SHA-256 is
+      02fd214a864a474c6bb445fa6871724a3f49873a55310014ff441444602af859.
+  - claim: The bounded repair passes its complete owned local proof surface.
+    command: >
+      Run the full session-anchor, SQ-anchor and Temporal Grain CI slice; validate Agent OS, the code-gate
+      manifest, trial registration, strict JSON and contract-delta from base db5d20c45db.
+    result: >
+      637 tests passed with one test warning in 71.28s; the contract module passed 168 tests in 8.40s;
+      Agent OS reported 1038 records and 0 errors; 133 code jobs validated; trial registration was clean;
+      strict JSON passed; contract-delta reported 0 introduced and 0 inherited in 327.73s. The emitted
+      pytest cache-cleanup permission warnings concern pre-existing browser-cache garbage and did not
+      change any test exit code.
+  - claim: The modifying procedure pin is current and compatible.
+    command: >
+      Read docs/sol_skills/INDEX.md and required skills from protected Mastermind master at one exact SHA.
+    result: >
+      Mastermind@5ee11ab1e993616f3568cfca4069cb21fa61fd8f; schema mastermind.sol_skillpack.v1;
+      skillpack 1.0.1; minimum bootstrap major 1.
 unverified:
-  - claim: The bounded repair passes the full temporal/anchor suite and binding hosted CI on its final head.
+  - claim: Binding hosted CI and immutable independent review accept the exact final semantic head.
     what_would_verify: >
-      Run the complete local temporal/anchor slice, Agent OS validation, contract-delta and exact-path
-      fences; commit/push normally; require all binding PR #6803 checks green at the immutable head.
+      Commit and push normally on the existing branch, compare the immutable head to then-current main,
+      obtain exact-head independent review, and require all binding PR #6803 checks green.
   - claim: Exact WMT TradingView indicator and bar parity is known.
     what_would_verify: >
       Replace the WMT abstention with a complete exact vendor-qualified recipe, rights-safe parent CSV,
@@ -97,8 +121,8 @@ unverified:
       Both complete motivating packets independently pass parity and mechanically survive, immutable
       exact-head review passes, and Sol posts a fresh same-carrier CONTINUE under a separate W1B preregistration.
 unresolved:
-  - The original WMT TradingView symbol/feed, session grammar, chart type, adjustments, observed indicator and export bytes remain absent.
-  - The original silver product/feed/contract-or-roll/session, chart settings, observed indicator and export bytes remain absent.
+  - The original WMT TradingView feed/ticker identity, exact source reference, session grammar, chart type, adjustments, observed indicator and export bytes remain absent.
+  - The original silver exact display symbol, product/feed/contract-or-roll/session, source reference, chart settings, observed indicator and export bytes remain absent.
   - Typed UNRESOLVED_DATA closes guessing risk but does not establish parity, usefulness, a production timeframe or a signal.
   - W1B, structure-scale derivation, ranking, gating, sizing, trading, Prophet, Oracle, portfolio use, Ready, merge and deployment remain held.
 next_actions:
