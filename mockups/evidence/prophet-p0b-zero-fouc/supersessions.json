@@ -1,0 +1,34 @@
+{
+  "schema": "mastermind.stock_dashboard_evidence_supersession.v1",
+  "markets": {
+    "hk": {
+      "change": "sector_ranking_same_page_modal",
+      "production": "none",
+      "baseline": {
+        "rendered-fixture.json": "3d088a5705be46da3ce9770ddd353efd33ddfcaafcf5231afdda115f34eb8bad",
+        "mobile-layout.json": "86bef4a16fd15f2f2200cb66023e61893ee1a8f500d58460bf06a75db795e24c",
+        "mobile-layout-canada.json": "0c3a9cb1e23306ef320e3d85bd2e30b2814c161caefad5478a54b970d3452a38",
+        "hk-js-disabled-dark-390.png": "0c5c56d9783b8d4b4358b117124120a732bf5c7770ead9d9c1b7c370715440bb",
+        "hk-composer-failed-light-390.png": "17f9d95a4765f569cc01c074a8a9cd60facdcadbb4fbcf223d345d8e47fdbee4"
+      },
+      "inputs": {
+        "templates/hk.html.j2": "809a1fa25990d07da10111baefd15be5dd65a40a992cd57357a9cf1c779a7103",
+        "site/hk-stock-v36.js": "398f4242566fc7262d5fc636a67d396e6807ecef26a13842008e4a7e7a6b51e5"
+      },
+      "successor": {
+        "fixture": {
+          "path": "mockups/evidence/prophet-hk-sector-link-20260916/rendered-fixture.json",
+          "sha256": "e8c8da1dda3a87ed1c4d92cd09ce31ba486e71e62cd91059408bc784ebd4e29a"
+        },
+        "browser": {
+          "path": "mockups/evidence/prophet-hk-sector-link-20260916/mobile-layout.json",
+          "sha256": "dab626d0c5b6ef14f87560b3befd1061330caeafff65d7fdc57c6074a4bf0c59"
+        },
+        "modal": {
+          "path": "mockups/evidence/prophet-hk-sector-link-20260916/sector-modal.json",
+          "sha256": "aeacd86dd072597800b9634a2a31d6d1e26c44e1ea93cd56764a392aa853d94f"
+        }
+      }
+    }
+  }
+}
