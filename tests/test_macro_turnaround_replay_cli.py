@@ -52,6 +52,17 @@ def test_cli_cannot_write_into_source_or_generated_product(tmp_path,target,monke
     assert (out.read_bytes() if out.exists() else None)==before
 
 
+@pytest.mark.parametrize('directory',['data','site'])
+def test_cli_refuses_symlinked_root_data_destination_before_ingestion(tmp_path,monkeypatch,directory):
+    c=cli();root=tmp_path/'source';root.mkdir();canonical=tmp_path/f'canonical-{directory}';canonical.mkdir()
+    (root/directory).symlink_to(canonical,target_is_directory=True)
+    req=tmp_path/'request.json';request(req,'0'*64);out=canonical/'turns.json'
+    def forbidden_loader(*args,**kw):raise AssertionError('symlinked canonical path must fail before source ingestion')
+    monkeypatch.setattr(c,'load_panel',forbidden_loader)
+    assert c.main(['--root',str(root),'--input',str(req),'--output',str(out)])==2
+    assert not out.exists()
+
+
 def test_no_parser_fallback_when_arrow_is_absent(tmp_path,monkeypatch,capsys):
     c=cli();m=api();root=tmp_path/'source';mp,p,h,df=source_tree(root);req=tmp_path/'request.json';request(req,h);out=tmp_path/'out.json'
     def missing(*args,**kw):raise ImportError('No Arrow installed')

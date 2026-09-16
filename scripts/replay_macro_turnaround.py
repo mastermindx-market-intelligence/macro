@@ -28,7 +28,7 @@ def main(argv:list[str]|None=None)->int:
     try:
         output=args.output.resolve();root=args.root.resolve()
         if output==args.input.resolve():raise ValueError('input and output paths must be distinct')
-        if any(output.is_relative_to(root/p) for p in ('data','site')):
+        if any(output.is_relative_to((root/p).resolve(strict=False)) for p in ('data','site')):
             raise ValueError('research replay cannot write source data or generated product paths')
         request=json.loads(args.input.read_text(encoding='utf-8'),object_pairs_hook=_unique_object,parse_constant=_reject_constant)
         fields={'schema','manifest_sha256','bindings','cutoffs','domain','config'}

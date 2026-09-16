@@ -830,7 +830,38 @@ def test_build_cli_refuses_canonical_product_paths(
     assert not output.parent.exists()
 
 
-@pytest.mark.parametrize("cap", [0.5000001, 0.75, 1.0])
+@pytest.mark.parametrize(
+    "parts",
+    [
+        ("data", "nested", "deeper", "turnaround.json"),
+        ("reports", "..", "site", "turnaround.json"),
+    ],
+)
+def test_build_cli_fence_normalizes_nested_and_parent_traversal_paths(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    parts: tuple[str, ...],
+) -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "turnaround_cli_normalized_product_fence", CLI
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    monkeypatch.setattr(module, "ROOT", tmp_path)
+    source = tmp_path / "input.json"
+    output = tmp_path.joinpath(*parts)
+    canonical = output.resolve(strict=False)
+    source.write_text(json.dumps(cli_payload()), encoding="utf-8")
+
+    assert module.main(["--input", str(source), "--output", str(output)]) == 2
+    assert not canonical.exists()
+    assert not canonical.parent.exists()
+
+
+@pytest.mark.parametrize("cap", [-0.1, 0.0, 0.5000001, 0.75, 1.0])
 def test_family_weight_cap_cannot_disable_independent_family_breadth(cap: float) -> None:
     with pytest.raises(ValueError, match="family_weight_cap"):
         TurnaroundConfig(family_weight_cap=cap)
