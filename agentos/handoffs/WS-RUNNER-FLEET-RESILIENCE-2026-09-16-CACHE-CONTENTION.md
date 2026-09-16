@@ -33,7 +33,7 @@ changed:
       preventing a slow or refused updater from creating back-to-back activations.
   - path: tests/test_ci_cache_update.py
     what: >
-      Adds eleven behavioral and policy regressions covering explicit bootstrap,
+      Adds twelve behavioral and policy regressions covering explicit bootstrap,
       legacy-marker refusal, fast-forward publication, ref drift, missing-object and
       non-fast-forward refusal, no-op scan avoidance, maintenance prohibition, service
       bounds and timer spacing.
@@ -60,10 +60,10 @@ changed:
 verified:
   - claim: "The new updater's focused behavioral and resource-contract suite passes under the CI interpreter."
     command: "python3.12 -m pytest -q tests/test_ci_cache_update.py"
-    result: "11 passed; only inherited pytest temporary-directory cleanup warnings on the Mac host."
+    result: "12 passed; only inherited pytest temporary-directory cleanup warnings on the Mac host."
   - claim: "The complete existing trusted-CI policy/canary/production-route battery remains green."
     command: "python3.12 scripts/check_runner_policy.py && python3.12 -m pytest -q tests/test_ci_cache_update.py tests/test_runner_policy.py tests/test_ci_canary_tools.py tests/test_ci_canary_workflows.py tests/test_trusted_ci_executor_workflow.py tests/test_trusted_ci_production_route.py"
-    result: "Policy OK; 259 passed with inherited pytest cleanup warnings only."
+    result: "Policy OK; 260 passed with inherited pytest cleanup warnings only."
   - claim: "The amended code-gate manifest is structurally valid and the curated exclusive scope covers its inferred closure."
     command: "python3 scripts/run_ci_pack.py --workflow .github/ci/legacy-jobs.yml --gate code --pack-count 12 --validate-only; curated_exclusive_closure_findings(.github/ci/legacy-jobs.yml)"
     result: "142 code jobs validated; trusted-ci-cache-update has no uncovered closure and all exclusive findings are zero."

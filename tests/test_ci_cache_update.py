@@ -69,6 +69,7 @@ def tool_path(
     *,
     log: Path | None = None,
     fail_batch_check: bool = False,
+    drift_before_transaction: bool = False,
 ) -> Path:
     """Supply deterministic `flock` and an optional logging Git wrapper on macOS."""
     tools = tmp_path / "tools"
@@ -77,7 +78,7 @@ def tool_path(
     flock.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
     flock.chmod(flock.stat().st_mode | stat.S_IXUSR)
 
-    if log is not None or fail_batch_check:
+    if log is not None or fail_batch_check or drift_before_transaction:
         real_git = shutil.which("git")
         assert real_git
         wrapper = tools / "git"
@@ -95,6 +96,16 @@ def tool_path(
             '      exit 0\n'
             '    fi\n'
             '    ;;\n'
+            '  *" update-ref --stdin "*)\n'
+            '    if [ "${DRIFT_BEFORE_TRANSACTION:-0}" = 1 ]; then\n'
+            '      git_dir=\n'
+            '      for arg in "$@"; do\n'
+            '        case "$arg" in --git-dir=*) git_dir=${arg#--git-dir=} ;; esac\n'
+            '      done\n'
+            '      [ -n "$git_dir" ] || exit 97\n'
+            f'      {shlex.quote(real_git)} --git-dir="$git_dir" update-ref refs/remotes/origin/main "$DRIFT_OID"\n'
+            '    fi\n'
+            '    ;;\n'
             'esac\n'
             f"exec {shlex.quote(real_git)} \"$@\"\n",
             encoding="utf-8",
@@ -109,15 +120,24 @@ def run_update(
     *,
     log: Path | None = None,
     fail_batch_check: bool = False,
+    drift_oid: str | None = None,
 ) -> subprocess.CompletedProcess[str]:
     env = os.environ.copy()
     env["PATH"] = str(
-        tool_path(tmp_path, log=log, fail_batch_check=fail_batch_check)
+        tool_path(
+            tmp_path,
+            log=log,
+            fail_batch_check=fail_batch_check,
+            drift_before_transaction=drift_oid is not None,
+        )
     ) + os.pathsep + env["PATH"]
     if log is not None:
         env["GIT_COMMAND_LOG"] = str(log)
     if fail_batch_check:
         env["FAIL_BATCH_CHECK"] = "1"
+    if drift_oid is not None:
+        env["DRIFT_BEFORE_TRANSACTION"] = "1"
+        env["DRIFT_OID"] = drift_oid
     return subprocess.run(
         [str(SCRIPT), str(cache), str(tmp_path / "cache-update.lock")],
         text=True,
@@ -237,6 +257,22 @@ def test_validation_ref_drift_refuses_before_fetching_or_publishing(tmp_path: Pa
     assert ref(cache, "refs/remotes/origin/main") == second
     assert ref(cache, VALIDATED_REF) == first
     assert ref(cache, CANDIDATE_REF) is None
+
+
+def test_atomic_publication_refuses_a_concurrent_ref_change(tmp_path: Path) -> None:
+    source, cache, first = cache_fixture(tmp_path)
+    git(cache, "update-ref", VALIDATED_REF, first)
+    second = commit(source, "candidate for publication race", "second\n")
+
+    result = run_update(tmp_path, cache, drift_oid=second)
+
+    assert result.returncode != 0
+    assert "cannot lock ref" in (result.stdout + result.stderr).lower()
+    assert ref(cache, "refs/heads/main") == first
+    assert ref(cache, "refs/remotes/origin/main") == second
+    assert ref(cache, VALIDATED_REF) == first
+    assert ref(cache, CANDIDATE_REF) is None
+    assert not (cache / ".last-update-ok").exists()
 
 
 def test_non_fast_forward_candidate_refuses_without_moving_active_refs(
