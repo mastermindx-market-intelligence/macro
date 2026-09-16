@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-16T05:24:41.466590+00:00",
-  "count": 2206,
+  "generated_at": "2026-09-16T05:54:38.342231+00:00",
+  "count": 2207,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -675,6 +675,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 26,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rbrkw9ih8yh-1b98e1",
+      "title": "JPM JPM Daily Credit",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T11:43:58Z",
+      "summary_points": [
+        "**US HG Credit Fundamentals**: AI-driven hyperscaler debt growth (92% YoY) compressing EBITDA margins (first since Q223), narrowing rating advantage (gap to 2.1x), and rising interest expense (7.0% YoY) signal sector-specific risk.",
+        "**Curve Steepening & Hyperscaler Risk**: 10s30s spreads at 41bp (flatter by 1.4bp WoW) for hyperscalers amid 92% YoY debt growth, highlighting AI capex as a key market risk factor.",
+        "**Dealer Inventory Build**: HG net dealer inventories >$13bn increased $2.9bn (50% in 3m range), with TRACE/JPME positive 5d changes, indicating sustained institutional demand for credit instruments.",
+        "**HG Spread Divergence**: Sector rotation evident: Diversified Media (123bp) and Computer Hardware (83bp) leading vs.",
+        "Health/Pharma Devices (69bp) and Refiners (86bp), with JUNI spread at 92bp (24% 1m range)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 15,
       "language": "en",
       "needs_metadata": false
     },
