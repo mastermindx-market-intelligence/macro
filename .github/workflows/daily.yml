@@ -4320,6 +4320,11 @@ jobs:
           # swallowed into a green run pins returning browsers to the old bytes for a year
           # (#3617/#3624). See render.yml for the full rationale.
           python -m scripts.optimize_assets || echo "::warning::asset optimize FAILED — ?v= stamps may be stale"
+      - name: checkpoint normalized international dashboards to main
+        if: always()
+        timeout-minutes: 8
+        continue-on-error: true
+        run: bash scripts/ci/daily_engine_intl_checkpoint.sh
       - name: fetch oracle panels from R2 (PR-C1 sponsorship shim)
         if: always()
         # PR-C1 (RUL-7): oracle panel_s.parquet + panel_m.parquet are built off-render
@@ -4467,6 +4472,8 @@ jobs:
         run: python -m scripts.build_thematic_state || echo "::warning::build_thematic_state failed (non-fatal — last committed artifact stands)"
       - name: grade thematic (TIL W6 — grading pack)
         if: always()
+        timeout-minutes: 10
+        continue-on-error: true
         # TIL W6 (PR-H) grading pack — AFTER build_thematic_state.
         # Stage 1: append attention rows → data/foresight/earliness_log.jsonl (sole nightly
         # advancer of the log), then crowd-arrival lead-lag grader → data/foresight/earliness_grades.json.
