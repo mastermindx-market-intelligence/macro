@@ -686,3 +686,22 @@ def test_shared_waterfall_propagates_policy_refusal_without_fallback(policy_boun
     with pytest.raises(ProviderWorkloadPolicyError, match="WORKLOAD_POLICY_CHANGED"):
         llm_auth_mod.make_call(providers, refuse)
     assert len(calls) == 1
+
+
+def test_profiled_brief_uses_strict_messages_signature(policy_boundary, monkeypatch):
+    """The real SDK rejects seed before a request; a **kwargs fake hid that."""
+    events, _, _ = policy_boundary
+
+    def create(self, *, model, max_tokens, system, messages):
+        events["calls"].append(model)
+        return types.SimpleNamespace(
+            stop_reason=None, usage=None,
+            content=[types.SimpleNamespace(type="text", text=events["reply"])],
+        )
+
+    monkeypatch.setattr(sys.modules["anthropic"].Anthropic, "create", create)
+    served = {}
+    text, reason = mb._call_model("system", "user", _policy_cfg(), served=served)
+    assert text == events["reply"] and reason is None
+    assert len(events["calls"]) == 1
+    assert served["provider"] == "anthropic"

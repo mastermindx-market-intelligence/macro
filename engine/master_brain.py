@@ -1849,7 +1849,10 @@ def _call_model(system: str, user: str, cfg: dict,
                 # temperature removed — rejected (400) on opus-4.7+ per Anthropic API
             }
             try:
-                if _seed is not None:
+                # Messages.create has no seed keyword. Profiled requests must be
+                # valid on the first call, not discover SDK support by replay.
+                # Leave the unprofiled compatibility path unchanged.
+                if workload is None and _seed is not None:
                     kw["seed"] = _seed
                 resp = _client.messages.create(**kw)
             except TypeError:

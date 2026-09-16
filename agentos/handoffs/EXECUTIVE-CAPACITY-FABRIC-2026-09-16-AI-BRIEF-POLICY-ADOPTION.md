@@ -20,6 +20,8 @@ changed:
     what: Propagate typed workload refusals without fallback or provider-failure accounting.
   - path: tests/test_master_brain_ladder.py
     what: Real producer/builder/cache/publication/template regressions with inert providers.
+  - path: tests/test_llm_auth.py
+    what: Strict installed-SDK timeout-type regression; deliberately RED pending permitted repair.
   - path: tests/conftest.py
     what: Permit only seven named tmp-root policy tests to exercise the real reply cache.
   - path: templates/_aibrief_body.html.j2
@@ -41,37 +43,58 @@ verified:
       tests/test_master_brain.py tests/test_master_brain_ladder.py tests/test_master_brain_zh_ladder.py
       tests/test_master_brain_policy.py tests/test_master_brain_producer.py tests/test_master_brain_scorer.py
       tests/test_w7_llm_determinism.py -q --tb=short --basetemp <outside-repo-operation-temp>
-    result: 419 passed in 16.29 seconds; no real provider, credential or publication effect.
+    result: >
+      R2 current candidate has 421 passed, 1 failed, exit 1 in 12.85 seconds.
+      The only failure is test_client_tuning_uses_the_installed_sdk_timeout_type.
+      Earlier 419/420-PASS receipts refer to prior source; they are not current acceptance.
   - claim: The actual producer writes one consistent payload consumed by the existing template.
     command: tests/test_master_brain_ladder.py::test_brief_real_run_publishes_policy_result_to_existing_template
     result: >
       Synthetic provider result equals returned Brief, fixture data JSON and fixture
       site JSON; the actual shared Jinja template renders it. Refusal rendering has
       English/Chinese plain copy and no internal workload code in its visible text.
+  - claim: The first-call seed fix passes strict and actual SDK callback boundaries.
+    command: >
+      tests/test_master_brain_ladder.py; isolated SDK 0.125.0 and 1.6.0 callback
+      probes with their native in-memory mock transports.
+    result: >
+      Strict regression RED then GREEN; 39 ladder tests pass. Both actual SDK
+      callbacks return text once, reject unsupported seed before transport, and
+      preserve typed no-replay after injected post-response TypeError.
+  - claim: The existing refusal template renders in an isolated actual browser.
+    command: >
+      Native Chromium fixture; /Volumes/Mastermind/agent-evidence/vps-aibrief-refusal-r2-20260916-sol/receipt.json
+    result: >
+      Four cases: English/dark and Chinese/light at 1440x1000 and 390x844.
+      Visible plain notice, no raw refusal code. Receipt SHA256
+      91ff01bf7e49bd9b5628762a71fe18b30db0fa7771abbad36851a61c9132b38b.
+      Missing live_config.js and cortex_memo fixture assets disclosed; existing
+      floating control overlaps part of one English mobile notice capture.
 unverified:
   - claim: The new source is merged, installed, enabled or production-proven.
     what_would_verify: >
       Parent #7179 acceptance; exact-head independent review; current-main integration
       and binding CI; authorized deployment plus real VPS input/result consumption.
-  - claim: Browser or real provider acceptance exists for this consumer.
+  - claim: Production browser and real provider acceptance exist for this consumer.
     what_would_verify: >
-      An actual browser receipt and approved provider/service-principal canary.
-      The browser-capture request was blocked before execution; path presence and
-      successful Jinja rendering are not browser or production proof.
+      Actual VPS browser observation and approved provider/service-principal canary.
+      Isolated browser fixture proof is now present but does not satisfy this gate.
 unresolved:
+  - SDK 1.x rejects the current httpx.Timeout object; the code repair was tool-blocked and is not applied.
   - Core-fabric H0/P0/atomic claims, native realm evidence and service admission remain incumbent gates.
   - Native Mastermind waterfall and marketing provider caches are not migrated by this slice.
   - Policy fingerprints do not synchronize credentials or establish atomic distributed revocation.
 next_actions:
   - >
-    Recover the Draft PR by exact head branch claude/vps-aibrief-policy-adoption-stack-20260916-sol.
-    Review its complete consumer delta above #7179, without merging into the parent branch.
+    Preserve the same Draft #7185 writer. Once the native source edit is permitted,
+    repair the SDK timeout type using the installed SDK re-export; do not bypass
+    the denied edit, weaken the RED regression or restore request replay.
   - >
-    Obtain independent review through the incumbent Fable integration route; preserve
-    the same writer for repairs and all current runtime/provider holds.
+    Re-run the exact 15-file group and actual-SDK construction probes, then obtain
+    fresh exact-head independent review through the incumbent integration owner.
   - >
-    After parent protection, perform current-main composition and normal PR retargeting,
-    conclude binding checks, then separately qualify an approved live AI Brief shadow.
+    Source release waits parent #7179 protection and ordinary release gates. Real
+    VPS adoption, qualified inference and result consumption remain separate proof.
 do_not_redo:
   - Do not rebuild the policy engine, cache store, scheduler, account/quota database or Executive admission.
   - Do not activate profiles, call providers, rotate/copy credentials or spend from this source receipt.

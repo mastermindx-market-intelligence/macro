@@ -1574,3 +1574,24 @@ class TestSDKRetriesAreNotTheEmptyTextMechanism:
         doc = _client_tuning_kwargs.__doc__ or ""
         assert "HTTP 200" in doc
         assert "max_retries" in doc
+
+
+def test_client_tuning_uses_the_installed_sdk_timeout_type(monkeypatch):
+    """SDK 1.x uses httpx2; a separately installed httpx type is incompatible."""
+    import sys
+    import types
+    from engine.llm_auth import _client_tuning_kwargs
+
+    class SdkTimeout:
+        def __init__(self, value, *, connect):
+            self.read = value
+            self.connect = connect
+
+    sdk = types.ModuleType("anthropic")
+    sdk.Timeout = SdkTimeout
+    monkeypatch.setitem(sys.modules, "anthropic", sdk)
+    result = _client_tuning_kwargs({"client_timeout_s": 45})
+    assert isinstance(result["timeout"], SdkTimeout)
+    assert result["timeout"].read == 45.0
+    assert result["timeout"].connect == 5.0
+    assert "max_retries" not in result
