@@ -35,9 +35,9 @@ cross-checks every copy against the engine so they cannot drift):
   (g) flip-line shape <-> verdict word ("→ Green if" <=> Mixed,
       "→ Mixed if" <=> Risk-on, "→ Mixed when" <=> Risk-off).
   (h) score-path endpoint <-> board score, WHEN they claim the same session:
-      the chart's last data-point carries its own date, so a gap between it and
-      the headline is legitimate and disclosed ("last graded <date>") — but only
-      while the dates DIFFER. When the last point's date equals the board's
+      the chart's last data-point carries its own date. Other market boards may
+      disclose an independent history clock, but macro.html must append its current
+      settled measured score. When the last point's date equals the board's
       as-of, the two are the same read and must carry the same number and the
       same band. Added after the 2026-08-02 operator report: macro.html baked a
       69 / Risk-on gauge beside a Jul 31 endpoint of 66, because the two come
@@ -165,8 +165,18 @@ def check_path_endpoint(name: str, html: str) -> list[str]:
     score_m, asof_m = _SCORE_ANY.search(html), _ASOF_ANY.search(html)
     if not score_m or not asof_m or not last.get("d"):
         return v
-    if str(last["d"]) != asof_m.group(1):
-        return v                      # different sessions — the header stamp discloses it
+    board_asof = asof_m.group(1)
+    if str(last["d"]) != board_asof:
+        # The US macro command scorecard promises a current settled path. Its renderer
+        # appends the settled board snapshot when the PIT ledger has not accrued yet, so
+        # a stale endpoint here means that reconciliation regressed. Other market boards
+        # retain their independently-clocked history semantics.
+        if Path(name).name == "macro.html":
+            v.append(
+                f"(h) {name}: path endpoint {last['d']} is stale versus settled board "
+                f"{board_asof} — macro display path must include the current settled score"
+            )
+        return v
     board = int(score_m.group(1))
     if float(last.get("s")) != float(board):
         v.append(
