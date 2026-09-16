@@ -100,3 +100,10 @@ The release boundary is unchanged: exact-head CI/security, independent review, c
 A current-head pairwise composition of #7200 and the separately owned #7206 returned a single conflict in `.github/ci/legacy-jobs.yml`. The implementations and tests are disjoint; both carriers had independently appended their job at EOF. The unchanged `us-breadth-completed-close` job is now positioned beside the existing breadth collector owner, with the file restored to one terminal newline. A fresh three-way merge returns zero, retains both `us-breadth-completed-close` and `us-deep-stock-completed-close`, parses as 216 jobs, and passes `run_ci_pack.py --validate-only` over the 142 legacy jobs. Receipt: `research/us_prophet_availability/2026-09-16-completed-close/ci-manifest-composition-receipt.json`.
 
 This is an integration-layout repair only. #7206 source, branch, review and Russell/deep-stock ownership were not modified. Exact committed-head merge-tree, CI/security and independent review remain open.
+
+
+## Same-session OHLCV-extra finality follow-through
+
+The same finality defect applied to the accepted response's companion fields. At exact preimage `7355c03b6ba8919ed52f0147861777051cc64c29`, fresh valid closes with one missing fresh High, Low, or Volume value still allowed the later extras-cache merge to restore a finite same-date intraday cache value. Three RED cases reproduced the leak. Cached extras now pass through the same expected-session quarantine before merge for the three US groups. Fresh history still wins normally; only same-session cache substitution is refused. Focused GREEN is 3 passed and the owner battery is `78 passed, 34 warnings in 18.68s`. Receipt: `research/us_prophet_availability/2026-09-16-completed-close/same-session-extra-cache-quarantine-receipt.json`.
+
+No ranking, provider, retry, market-calendar, regional, Russell, workflow-dispatch, runner, or production behavior changed. Exact-head CI/security, independent review, merge/current-base integration, and full source-to-browser production proof remain required.

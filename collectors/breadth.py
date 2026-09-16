@@ -667,7 +667,11 @@ class BreadthAdapter(Adapter):
                 for k, w in (getattr(self, "_last_extras", {}) or {}).items():
                     ep = self.cache_path.parent / f"_{k}_cache.parquet"
                     if ep.exists():
-                        w = w.combine_first(pd.read_parquet(ep))
+                        cached_extra = pd.read_parquet(ep)
+                        if expected_session is not None:
+                            cached_extra = _without_cached_completed_session(
+                                cached_extra, tickers, expected_session)
+                        w = w.combine_first(cached_extra)
                     w[w.index >= cutoff_e].to_parquet(ep)
             except Exception as e:  # noqa: BLE001
                 log.warning("breadth OHLCV extras cache failed (%s) — volume signals close-only", e)

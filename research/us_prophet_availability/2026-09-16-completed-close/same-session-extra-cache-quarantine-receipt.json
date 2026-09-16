@@ -1,0 +1,35 @@
+{
+  "schema": "prophet.us_breadth_same_session_extra_cache_quarantine.v1",
+  "observed_at": "2026-09-16T10:35:58Z",
+  "preimage_head": "7355c03b6ba8919ed52f0147861777051cc64c29",
+  "expected_session": "2026-09-15",
+  "production": false,
+  "provider_calls": 0,
+  "production_writes": 0,
+  "planted_shapes": [
+    {"field": "High", "cached_same_session_value": 999.0, "fresh_same_session_value": null},
+    {"field": "Low", "cached_same_session_value": 1.0, "fresh_same_session_value": null},
+    {"field": "Volume", "cached_same_session_value": 999999.0, "fresh_same_session_value": null}
+  ],
+  "red": {
+    "test": "test_cached_current_session_extra_cannot_fill_missing_fresh_extra",
+    "returncode": 1,
+    "result": "3 failed",
+    "failure": "Each missing fresh completed-session extra was repopulated from its finite same-date cache value."
+  },
+  "repair": "Before merging cached High, Low, or Volume, mask requested names on the expected completed-session row using the existing cache-finality quarantine helper.",
+  "green": {
+    "focused": "3 passed, 3 warnings in 5.89s",
+    "owning_suites": "78 passed, 34 warnings in 18.68s"
+  },
+  "preserved": [
+    "valid fresh historical extras override cached history",
+    "prior non-overlap history",
+    "regional calendar behavior",
+    "Russell behavior",
+    "80 percent close availability floor",
+    "retry budget",
+    "ranking rules"
+  ],
+  "acceptance_boundary": "Source correctness only; exact-head CI, independent review, current-base composition, merge, and real source-to-browser production proof remain open."
+}

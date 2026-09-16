@@ -162,6 +162,34 @@ def test_cached_current_session_value_cannot_fill_a_missing_fresh_close(tmp_path
     assert result["breadth"].loc[str(SESSION), "n_members"] == 4
 
 
+@pytest.mark.parametrize(
+    ("field", "cache_key", "cached_value", "fresh_prior"),
+    (("High", "high", 999.0, 102.0),
+     ("Low", "low", 1.0, 99.0),
+     ("Volume", "volume", 999999.0, 700.0)),
+)
+def test_cached_current_session_extra_cannot_fill_missing_fresh_extra(
+        tmp_path, monkeypatch, field, cache_key, cached_value, fresh_prior):
+    """Earlier same-date High/Low/Volume is not a completed-session extra."""
+    adapter = _adapter(tmp_path, monkeypatch)
+    adapter.cache_path.parent.mkdir(parents=True)
+    cached = pd.DataFrame(100.0, index=DATES, columns=SYMBOLS)
+    cached.loc[str(SESSION), "EEE"] = cached_value
+    extra_path = adapter.cache_path.parent / f"_{cache_key}_cache.parquet"
+    cached.to_parquet(extra_path)
+
+    def download(tickers, **kwargs):
+        response = _response(tickers)
+        response.loc[str(SESSION), (field, "EEE")] = np.nan
+        return response
+
+    monkeypatch.setattr(breadth.yf, "download", download)
+    adapter.fetch()
+    stored = pd.read_parquet(extra_path)
+    assert pd.isna(stored.loc[str(SESSION), "EEE"])
+    assert stored.loc["2026-09-14", "EEE"] == fresh_prior
+
+
 def test_seam_repair_cannot_remove_completed_prices_before_persistence(tmp_path, monkeypatch):
     adapter = _adapter(tmp_path, monkeypatch)
     before = _seed_all_caches(adapter)
