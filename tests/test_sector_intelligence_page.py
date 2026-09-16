@@ -660,6 +660,17 @@ def test_workflow_uses_existing_main_publication_contract() -> None:
     assert "git add site/" not in src, "targeted lane must never stage the whole site"
 
 
+def test_scoped_publication_directories_are_real_and_owned_by_the_build() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    action_builder = (ROOT / "scripts" / "build_sector_action_board.py").read_text()
+    basket_builder = (ROOT / "scripts" / "build_baskets.py").read_text()
+
+    assert (ROOT / "site" / "basket").is_dir()
+    assert (ROOT / "site" / "sectors").is_dir()
+    assert "site/basket" in workflow and "build_detail_pages" in basket_builder
+    assert "site/sectors" in workflow and "canonical.build_sector_pages" in action_builder
+
+
 def test_workflow_runs_exact_builder_order() -> None:
     src = WORKFLOW.read_text(encoding="utf-8")
     # The orchestrator owns the order; the workflow must not bypass one producer.

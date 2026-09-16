@@ -497,8 +497,13 @@ def main(*, strict: bool = False) -> int:
         # whole engine job → no commit → stale site (this exact `t`-undefined crash, #624→#643).
         # Degrade: keep the last-good committed sector_central.html (the fresh data JS/JSON written
         # above still drive the page's runtime content) and return 0 so the rest of the build ships.
+        if strict:
+            log.exception(
+                "sector_central: page render failed (%s) — focused publication withheld", e
+            )
+            return 1
         log.exception("sector_central: page render failed (%s) — keeping last-good HTML", e)
-        return 1 if strict else 0
+        return 0
 
     # the page embeds the cycle-map overlay (window.SECTOR_CYCLES) + the heatmap scorecard →
     # ensure their shared assets are present. The cycles DATA (sector_cycles_data.js) is written

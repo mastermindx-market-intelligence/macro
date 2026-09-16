@@ -179,3 +179,93 @@ def test_latest_cycle_session_returns_none_without_benchmark_observation():
         index=pd.to_datetime(["2026-09-14", "2026-09-15"]),
     )
     assert sc._latest_cycle_session(closes, "SPY") is None
+
+
+def _minimal_cycle_record(ticker: str) -> dict:
+    return {
+        "id": ticker.lower(),
+        "kind": "sector",
+        "name": ticker,
+        "now": {"rs_63d": 1.0, "rs_21d": 1.0},
+    }
+
+
+def test_compute_clips_every_sector_to_observed_benchmark_session(monkeypatch):
+    idx = pd.to_datetime(["2026-09-12", "2026-09-14", "2026-09-15"])
+    closes = pd.DataFrame(
+        {
+            "SPY": [755.0, 760.0, np.nan],
+            "XLK": [183.0, 184.0, 185.0],
+        },
+        index=idx,
+    )
+    seen_tips: list[pd.Timestamp] = []
+
+    monkeypatch.setattr(sc, "yahoo_closes", lambda basis=None: closes.copy())
+    monkeypatch.setattr(
+        sc.config,
+        "load",
+        lambda: {"engine": {"rs_ranking": {"benchmark": "SPY"}}},
+    )
+    monkeypatch.setattr(sc, "_load_baskets", lambda: {})
+    monkeypatch.setattr(sc, "build_amalgam_family", lambda *args, **kwargs: [])
+
+    def fake_build_sector(ticker, _meta, panel, _win_start, *, closes_px=None):
+        seen_tips.append(pd.Timestamp(panel.index.max()))
+        assert closes_px is not None
+        assert pd.Timestamp(closes_px.index.max()) == pd.Timestamp("2026-09-14")
+        return _minimal_cycle_record(ticker)
+
+    monkeypatch.setattr(sc, "build_sector", fake_build_sector)
+    data = sc.compute()
+
+    assert data is not None
+    assert data["meta"]["asOf"] == "2026-09-14"
+    assert seen_tips
+    assert set(seen_tips) == {pd.Timestamp("2026-09-14")}
+
+
+def test_compute_refuses_to_fabricate_session_without_benchmark(monkeypatch):
+    closes = pd.DataFrame(
+        {"SPY": [np.nan, np.nan], "XLK": [184.0, 185.0]},
+        index=pd.to_datetime(["2026-09-14", "2026-09-15"]),
+    )
+    called = False
+
+    monkeypatch.setattr(sc, "yahoo_closes", lambda basis=None: closes.copy())
+    monkeypatch.setattr(
+        sc.config,
+        "load",
+        lambda: {"engine": {"rs_ranking": {"benchmark": "SPY"}}},
+    )
+
+    def should_not_build(*args, **kwargs):
+        nonlocal called
+        called = True
+        raise AssertionError("sector construction must not run without a benchmark session")
+
+    monkeypatch.setattr(sc, "build_sector", should_not_build)
+    assert sc.compute() is None
+    assert called is False
+
+
+def test_broad_sector_cycles_builder_keeps_last_good_when_engine_has_no_session(
+    monkeypatch, tmp_path,
+):
+    from scripts import build_sector_cycles
+
+    site = tmp_path / "site"
+    site.mkdir()
+    last_good = site / "sector_cycles_data.js"
+    last_good.write_text("window.SECTOR_CYCLES={old:true};\n")
+
+    monkeypatch.setattr(build_sector_cycles.config, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        build_sector_cycles.config,
+        "load",
+        lambda: {"storage": {"site_dir": "site"}},
+    )
+    monkeypatch.setattr(sc, "compute", lambda: None)
+
+    assert build_sector_cycles.main() == 0
+    assert last_good.read_text() == "window.SECTOR_CYCLES={old:true};\n"

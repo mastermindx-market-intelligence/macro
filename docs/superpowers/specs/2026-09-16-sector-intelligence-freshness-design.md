@@ -58,6 +58,8 @@ The exact source generation is also bound across the publication pair. The actio
 
 The common date may trail `lib.nyse_calendar.expected_last_session()` by at most one completed NYSE session. That one-session budget preserves the existing post-close/nightly timing contract; two sessions behind is a positive stale failure.
 
+`engine.sector_cycles` is part of this date contract because Sector Central takes its sector-payload date from that engine. Its input panel is a calendar union and can carry an all-null future/placeholder row after the last observed market close. The effective sector-cycle session is therefore the last row with an observed close for the configured relative-strength benchmark, not the raw index tail. Rows after that session are clipped before any sector/basket cycle record is built. If the benchmark has no observation at all, the engine returns no data: broad legacy render lanes preserve their last-good output, while the independent Sector Intelligence lane fails closed and publishes nothing.
+
 The validator fails closed on an absent artifact, malformed JSON, missing date, empty action board, source-hash mismatch, cross-artifact vintage split, or excessive session lag. It reports the exact offending artifact and observed dates. It never rewrites freshness metadata to conceal stale inputs.
 ## Workflow and publication
 
@@ -113,4 +115,4 @@ Until step 7, the truthful state is `BUILT_NOT_PROVEN`, not `PROVEN_LIVE`.
 
 ## Collision and integration boundary
 
-Open Prophet PRs currently touch `daily.yml`, `render.yml`, `engine-render.yml`, and `scripts/build_site.py`. This change therefore avoids modifying those files. It adds an independent workflow and focused builder, and limits shared edits to the existing liveness watchdog and its tests. If current main changes any owned path before release, reconcile on exact blobs and rerun focused proof rather than force-merging.
+Open Prophet PRs currently touch `daily.yml`, `render.yml`, `engine-render.yml`, and `scripts/build_site.py`. This change therefore avoids modifying those files. It adds an independent workflow and focused builder. Shared edits are limited to the existing liveness watchdog and the bounded `engine.sector_cycles` completed-session anchor required to make Sector Central's own date obey the same generation contract; the broad sector-cycle builder retains its last-good fail-soft behavior when no benchmark session exists. If current main changes any owned path before release, reconcile on exact blobs and rerun focused proof rather than force-merging.
