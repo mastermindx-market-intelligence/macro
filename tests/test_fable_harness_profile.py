@@ -557,3 +557,34 @@ def test_native_composer_refuses_duplicate_or_unknown_options(project, arguments
     with pytest.raises(profile.ProfileError):
         profile.compose_native_arguments(
             project, "native_leaf", "2.1.239", project, arguments)
+
+
+# Review finding R7114REV3-3: the completeness assertion in
+# test_compiled_binding_is_complete_and_not_an_authority_grant compares the compiled
+# binding against profile.SOURCE_PATHS, so dropping an entry from SOURCE_PATHS itself
+# shrinks both sides together and stays green. Pin the qualified set literally, and pin
+# the guard's independent declaration to the same literal, so the six-source coverage
+# cannot be narrowed silently on either side.
+QUALIFIED_SOURCE_PATHS = (
+    ".claude/hooks/model_routing_guard.py",
+    ".claude/hooks/agent_routing_context.py",
+    ".claude/settings.json",
+    ".claude/agent-routing.json",
+    ".claude/agents/scout.md",
+    "scripts/fable_harness_profile.py",
+)
+
+
+def test_qualified_source_set_is_literally_six_and_agrees_across_owners():
+    assert profile.SOURCE_PATHS == QUALIFIED_SOURCE_PATHS
+    guard_spec = importlib.util.spec_from_file_location(
+        "_qualified_guard", ROOT / ".claude/hooks/model_routing_guard.py")
+    guard = importlib.util.module_from_spec(guard_spec)
+    guard_spec.loader.exec_module(guard)
+    assert tuple(guard.NATIVE_PROFILE_SOURCE_PATHS) == QUALIFIED_SOURCE_PATHS
+
+
+def test_compiled_binding_covers_the_literal_qualified_set(project):
+    compiled = profile.compile_profile(project, "native_leaf", "2.1.239")
+    binding = json.loads(compiled["settings_fragment"]["env"][profile.BINDING_ENV])
+    assert tuple(sorted(binding["files"])) == tuple(sorted(QUALIFIED_SOURCE_PATHS))
