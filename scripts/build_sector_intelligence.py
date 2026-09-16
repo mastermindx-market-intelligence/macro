@@ -37,7 +37,10 @@ def default_steps() -> list[Step]:
             lambda: build_baskets.main(sector_intelligence_only=True),
         ),
         ("scripts.build_sector_action_board", build_sector_action_board.main),
-        ("scripts.build_sector_central", build_sector_central.main),
+        (
+            "scripts.build_sector_central",
+            lambda: build_sector_central.main(strict=True),
+        ),
         ("scripts.check_sector_intelligence_freshness",
          lambda: check_sector_intelligence_freshness.main([])),
     ]

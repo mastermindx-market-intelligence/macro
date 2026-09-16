@@ -513,6 +513,69 @@ def test_focused_action_builder_uses_fresh_baskets_and_canonical_board_logic(
     assert written == payload
 
 
+def test_focused_basket_build_fails_closed_when_engine_raises(monkeypatch) -> None:
+    from engine import baskets as basket_engine
+    from scripts import build_baskets
+
+    def boom():
+        raise RuntimeError("basket engine unavailable")
+
+    monkeypatch.setattr(basket_engine, "compute_baskets", boom)
+    assert build_baskets.main(sector_intelligence_only=True) == 1
+    assert build_baskets.main(sector_intelligence_only=False) == 0
+
+
+def test_focused_basket_build_fails_closed_when_engine_returns_no_data(monkeypatch) -> None:
+    from engine import baskets as basket_engine
+    from scripts import build_baskets
+
+    monkeypatch.setattr(basket_engine, "compute_baskets", lambda: None)
+    assert build_baskets.main(sector_intelligence_only=True) == 1
+    assert build_baskets.main(sector_intelligence_only=False) == 0
+
+
+def test_sector_central_strict_mode_refuses_engine_failure(
+    monkeypatch, tmp_path: Path,
+) -> None:
+    from engine import sector_central as sector_engine
+    from scripts import build_sector_central
+
+    monkeypatch.setattr(build_sector_central.config, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        build_sector_central.config,
+        "load",
+        lambda: {"storage": {"site_dir": "site"}},
+    )
+
+    def boom():
+        raise RuntimeError("sector engine unavailable")
+
+    monkeypatch.setattr(sector_engine, "compute", boom)
+    assert build_sector_central.main(strict=True) == 1
+    assert build_sector_central.main(strict=False) == 0
+
+
+def test_focused_allocation_gate_rejects_failed_or_split_generation(
+    tmp_path: Path,
+) -> None:
+    from scripts.build_baskets import _focused_allocation_is_current
+
+    allocation = tmp_path / "allocation.json"
+    allocation.write_text(json.dumps({"as_of": "2026-09-11"}))
+
+    assert _focused_allocation_is_current(
+        allocation, theme_as_of="2026-09-14", allocation_failed=True
+    ) is False
+    assert _focused_allocation_is_current(
+        allocation, theme_as_of="2026-09-14", allocation_failed=False
+    ) is False
+
+    allocation.write_text(json.dumps({"as_of": "2026-09-14"}))
+    assert _focused_allocation_is_current(
+        allocation, theme_as_of="2026-09-14", allocation_failed=False
+    ) is True
+
+
 # ------------------------------------------------ independent publication lane
 
 WORKFLOW = ROOT / ".github" / "workflows" / "sector-intelligence.yml"
@@ -623,6 +686,23 @@ def test_orchestrator_uses_focused_basket_mode(monkeypatch) -> None:
     steps = default_steps()
     assert steps[0][0] == "scripts.build_baskets"
     assert steps[0][1]() == 0
+    assert seen == [True]
+
+
+def test_orchestrator_uses_strict_sector_central_mode(monkeypatch) -> None:
+    from scripts import build_sector_central
+    from scripts.build_sector_intelligence import default_steps
+
+    seen: list[bool] = []
+
+    def fake_main(*, strict: bool = False) -> int:
+        seen.append(strict)
+        return 0
+
+    monkeypatch.setattr(build_sector_central, "main", fake_main)
+    steps = default_steps()
+    assert steps[2][0] == "scripts.build_sector_central"
+    assert steps[2][1]() == 0
     assert seen == [True]
 
 

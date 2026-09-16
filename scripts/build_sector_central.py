@@ -333,7 +333,14 @@ def _flows_section_html() -> str | None:
         "<p class='muted sm' style='margin:8px 2px 0'>" + str(note) + "</p></div>")
 
 
-def main() -> int:
+def main(*, strict: bool = False) -> int:
+    """Build Sector Central.
+
+    Broad render lanes preserve the historical fail-soft contract. The independent
+    Sector Intelligence publication lane passes ``strict=True`` so an upstream
+    producer failure cannot be laundered by last-good files that still sit within
+    the one-session semantic freshness budget.
+    """
     root = config.ROOT
     site = root / config.load()["storage"]["site_dir"]
     site.mkdir(parents=True, exist_ok=True)
@@ -341,12 +348,12 @@ def main() -> int:
     try:
         from engine import sector_central as cc
         data = cc.compute()
-    except Exception as e:  # noqa: BLE001 — additive, never fatal
+    except Exception as e:  # noqa: BLE001 — fail-soft broadly; fail-closed in focused lane
         log.exception("sector_central engine failed: %s", e)
-        return 0
+        return 1 if strict else 0
     if not data or not data.get("sectors"):
         log.warning("sector_central: no data — skipping")
-        return 0
+        return 1 if strict else 0
 
     # self-grader: append today's calls (PIT) + grade matured ones; attach the scorecard
     try:
@@ -461,11 +468,13 @@ def main() -> int:
             baskets_sha256=_basket_sha256,
             action_board_sha256=_action_sha256,
         )
-    except Exception as e:  # noqa: BLE001 — additive, never fatal
+    except Exception as e:  # noqa: BLE001 — fail-soft broadly; fail-closed in focused lane
         # A payload we could not write must NOT be paired with a gated shell that
         # promises it: fall back to the ungated board rather than publish a page
         # whose withheld rows are unreachable for everyone, paying or not.
         log.error("sector_central: payload write failed (%s) — board ungated", e)
+        if strict:
+            return 1
         _sc_pgate = None
     try:
         html = env.get_template("sector_central.html.j2").render(
@@ -489,7 +498,7 @@ def main() -> int:
         # Degrade: keep the last-good committed sector_central.html (the fresh data JS/JSON written
         # above still drive the page's runtime content) and return 0 so the rest of the build ships.
         log.exception("sector_central: page render failed (%s) — keeping last-good HTML", e)
-        return 0
+        return 1 if strict else 0
 
     # the page embeds the cycle-map overlay (window.SECTOR_CYCLES) + the heatmap scorecard →
     # ensure their shared assets are present. The cycles DATA (sector_cycles_data.js) is written
