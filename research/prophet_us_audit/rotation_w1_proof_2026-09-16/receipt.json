@@ -1,0 +1,98 @@
+{
+  "scope": "local browser only; existing dark/English admin. Synthetic failures separately labeled.",
+  "source_sha256": "44ff637b623111d3061511aa368f1a5e457f1a4a85af6698cce650193a0f3151",
+  "observed": [
+    {
+      "kind": "real_endpoint_existing_navigation",
+      "language": "en",
+      "theme": "dark",
+      "width": 1440,
+      "documentWidth": 1433,
+      "heading": {
+        "x": 274,
+        "y": 0.234375,
+        "width": 1133,
+        "height": 23.25
+      },
+      "energy": true,
+      "control": true,
+      "mixedDates": true,
+      "conversion": true,
+      "notMeasured": true,
+      "textHasDoubleEscape": false,
+      "hashClipped": false,
+      "tableScrollHint": true
+    },
+    {
+      "kind": "real_endpoint_existing_navigation",
+      "language": "en",
+      "theme": "dark",
+      "width": 390,
+      "documentWidth": 390,
+      "heading": {
+        "x": 26,
+        "y": -0.21875,
+        "width": 338,
+        "height": 23.25
+      },
+      "energy": true,
+      "control": true,
+      "mixedDates": true,
+      "conversion": true,
+      "notMeasured": true,
+      "textHasDoubleEscape": false,
+      "hashClipped": false,
+      "tableScrollHint": true
+    },
+    {
+      "kind": "synthetic_browser_failure",
+      "name": "source_unavailable",
+      "expected": "Source unavailable",
+      "width": 390,
+      "documentWidth": 390
+    },
+    {
+      "kind": "synthetic_browser_failure",
+      "name": "withheld",
+      "expected": "Basket evidence unavailable",
+      "width": 390,
+      "documentWidth": 390
+    },
+    {
+      "kind": "synthetic_browser_failure",
+      "name": "malformed",
+      "expected": "Rotation diagnostics unavailable",
+      "width": 390,
+      "documentWidth": 390
+    },
+    {
+      "kind": "synthetic_browser_failure",
+      "name": "empty",
+      "expected": "No baskets in audit.",
+      "width": 390,
+      "documentWidth": 390
+    }
+  ],
+  "exceptions": [],
+  "interaction": {
+    "method": "semantic DOM click",
+    "body_character_keystrokes": 0,
+    "tab_discovery": 0,
+    "isolated_profile": true
+  },
+  "source_code_head": "368f8e50dadf6f3f1b020a534705827138b4cd20",
+  "implementation_state": "BUILT_NOT_PROVEN",
+  "production_proof": false,
+  "checks": {
+    "focused_plus_inline_handler": "147 passed",
+    "admin_js_no_undef": "passed",
+    "agentos_schema": "0 errors; 97 existing warnings",
+    "hosted_ci": "final repaired manifest not yet pushed",
+    "contract_delta": "0 introduced; 0 inherited against bd33e0340c7066673cfb81d17b57fab965623c5b"
+  },
+  "files": {
+    "desktop.png": "e6f5777ae5db6c15bade5d9540f0a9ede6277d1c35ebeb685f37c9812a8de68c",
+    "mobile.png": "4bca3ac50d19f22ef8a94a4599926cecce0ea0ac29f07a8a9a25772209b94605",
+    "withheld.png": "7e908742b7e97e02397d2a20b66cdaef844dd6f34e737e9d5494c6e87c1bb5b4"
+  }
+}
