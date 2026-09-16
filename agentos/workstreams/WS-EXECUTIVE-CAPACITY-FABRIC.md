@@ -324,7 +324,7 @@ next_action: >
   09e53b30 — the `OUT_OF_SCOPE_DIRT` refusal and the later `REMOTE_COMPLETE_VERIFIED`
   (receipt_digest 3edb2976…, root ts 1789591021.847339) — are HISTORICAL EVIDENCE ONLY per Sol R81 and
   release nothing. The no-retry rule is scoped to the OLD head 09e53b30 ONLY; R80 requires the canonical
-  remote-complete verifier on the NEW head once one exists) and H0 prestage attempt 2 on the existing runner. Before
+  remote-complete verifier on the NEW head, which is DONE at 6dc2ea83 — receipt_digest 45525cd5…, verified 22:44:58Z) and H0 prestage attempt 2 on the existing runner. Before
   sizing, routing, promising or reporting native Anthropic Fable/Opus capacity anywhere in this fabric,
   read DSC:CLAUDE-SUBSCRIPTION-HARNESS-IS-NOT-NATIVE-ANTHROPIC and re-run its four falsifier commands
   at the then-current protected master: the merged Claude subscription worker is a compatible-provider
