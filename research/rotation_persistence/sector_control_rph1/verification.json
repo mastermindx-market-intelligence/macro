@@ -1,0 +1,595 @@
+{
+  "artifact_identity": {
+    "implementation_head_candidate_owned_paths": {
+      ".github/ci/legacy-jobs.yml": "5cb336f68b33d8caf545670a8629881f3c9446db444f91bc615a699af33c58bd",
+      "docs/superpowers/plans/2026-09-12-sector-rotation-daily-control-rph1.md": "6bdd962154196c49da0935cb30a6b1ade7483e8366a566c43df0022aadf75452",
+      "docs/superpowers/plans/2026-09-14-sector-rotation-daily-control-rph1-review-repair.md": "94f03d80bace8cbe9fabedee3499065eab9e09fc584d362056afea6c471da0f9",
+      "research/rotation_persistence/LEADERSHIP_PERSISTENCE_SECTOR_CONTROL_RPH1_PREREGISTRATION_2026-09-12.md": "0eba038260213e577d88affb15447bea1f22454965a4efd84a8401ab13bc08b9",
+      "research/rotation_persistence/sector_control_rph1/report.md": "17e7fe0a851f77ebea77e80ce19a661b45808fe72f0da29f5d709108befad6af",
+      "research/rotation_persistence/sector_control_rph1/result.json": "8a899626e4047df31c1b740f9100e5e63e185c74211d7544b3e6f6031db1bdd6",
+      "scripts/research/rotation_persistence/sector_control.py": "d714539f6c10f3619b638deb6d3f59e036242640a9b19dfb240f6ad86b111fac",
+      "scripts/research/run_sector_control_rph1.py": "3f8f4c5d8a0fb6da1621fc379d76c4cc80fa047c997a453d49222b2b113ac7a1",
+      "tests/test_rotation_persistence_sector_archive.py": "5fdda6e57c0b302d22b566d4edbd6d9abdb5648837f227e8046c97abffb937c8",
+      "tests/test_rotation_persistence_sector_cli.py": "293ce441fb58f0f73284596c114559ee288529d1768b43acf1221c49614198b7",
+      "tests/test_rotation_persistence_sector_control.py": "36396de0568bb846772d0d01b4a62e1d4e5f6aca5269b38f5c84ffbcb820b447"
+    },
+    "implementation_head_hash_scope": {
+      "head": "5c7bf21dad34ec68eaf5075a5563de7d5805cda0",
+      "interpretation": "These SHA-256 values bind the eleven semantic implementation-head paths. Record-only paths changed after that head and are intentionally excluded because the receipt cannot self-hash its own final bytes."
+    },
+    "report_markdown": {
+      "path": "research/rotation_persistence/sector_control_rph1/report.md",
+      "sha256": "17e7fe0a851f77ebea77e80ce19a661b45808fe72f0da29f5d709108befad6af"
+    },
+    "result_json": {
+      "path": "research/rotation_persistence/sector_control_rph1/result.json",
+      "sha256": "8a899626e4047df31c1b740f9100e5e63e185c74211d7544b3e6f6031db1bdd6"
+    }
+  },
+  "authority": {
+    "is_context_only": true,
+    "may_gate": false,
+    "may_modify_oracle": false,
+    "may_modify_prophet": false,
+    "may_rank": false,
+    "may_size": false,
+    "may_trade": false
+  },
+  "branch": "sol/rotation-persistence-sector-control-rph1-20260912",
+  "capability": "RESEARCH_ONLY_DAILY_SECTOR_CONTROL",
+  "checks": [
+    {
+      "command": "Parse sector_control.py, run_sector_control_rph1.py and the three RPH-1 test modules with ast.parse",
+      "name": "python_ast_parse",
+      "result": "AST_PARSE_OK=5",
+      "state": "PASS",
+      "subject_head": "5c7bf21dad34ec68eaf5075a5563de7d5805cda0"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /Users/chriswong/Documents/Cluade/Macro Dashboard/.venv/bin/python -m pytest tests/test_rotation_persistence_sector_control.py tests/test_rotation_persistence_sector_cli.py -q --tb=short -p no:cacheprovider",
+      "name": "focused_synthetic_suites",
+      "notes": [
+        "pytest emitted unrelated best-effort cleanup warnings for pre-existing permission-denied browser-cache garbage",
+        "the test process exited 0 and no RPH-1 test failed"
+      ],
+      "result": "31 passed in 47.90s",
+      "state": "PASS",
+      "subject_head": "5c7bf21dad34ec68eaf5075a5563de7d5805cda0"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /Users/chriswong/Documents/Cluade/Macro Dashboard/.venv/bin/python -m pytest tests/test_rotation_persistence_sector_archive.py -q --tb=short -p no:cacheprovider",
+      "injected_clock": "2026-09-12T21:00:00Z",
+      "name": "live_archive_byte_regeneration_suite",
+      "result": "1 passed in 78.76s",
+      "state": "PASS",
+      "subject_head": "5c7bf21dad34ec68eaf5075a5563de7d5805cda0"
+    },
+    {
+      "command": "python scripts/research/run_sector_control_rph1.py --data-dir data/yahoo --output-dir research/rotation_persistence/sector_control_rph1 --produced-at 2026-09-12T21:00:00Z && git diff --exit-code -- result.json report.md",
+      "name": "direct_cli_byte_replay",
+      "report_sha256": "17e7fe0a851f77ebea77e80ce19a661b45808fe72f0da29f5d709108befad6af",
+      "result": "PASS in 64.65s; result and report SHA-256 values unchanged; zero diff",
+      "result_sha256": "8a899626e4047df31c1b740f9100e5e63e185c74211d7544b3e6f6031db1bdd6",
+      "state": "PASS",
+      "subject_head": "5c7bf21dad34ec68eaf5075a5563de7d5805cda0"
+    },
+    {
+      "command": "Run the eleven named pytest nodes for missing-session fill, incomplete 3D tail, warm-up, future endpoint, authority, index/timezone identity, matured anchor, observation units, phase spans and Markdown disclosure",
+      "containment_note": "The containment-only node is not the mutation discriminator. The completed-bar aggregation test kills retention of an incomplete three-session tail at the construction boundary.",
+      "containment_only_node": "tests/test_rotation_persistence_sector_control.py::test_macd_never_marks_an_incomplete_three_session_tail",
+      "killed_false_greens": [
+        "forward_filled_or_bridged_missing_session",
+        "retained_incomplete_three_session_tail",
+        "macd_cross_before_100_completed_bars",
+        "contemporaneous_or_non_future_outcome",
+        "rank_gate_size_trade_prophet_or_oracle_authority",
+        "accepted_non_datetime_index",
+        "utc_shifted_local_session_label",
+        "omitted_final_matured_leadership_anchor",
+        "hidden_sector_date_observation_unit_or_unique_dates",
+        "hidden_phase_sample_or_completed_bar_span",
+        "markdown_that_omits_leadership_or_phase_evidence"
+      ],
+      "name": "adversarial_boundary_and_disclosure_suite",
+      "node_ids": [
+        "tests/test_rotation_persistence_sector_cli.py::test_loader_never_fills_missing_sessions",
+        "tests/test_rotation_persistence_sector_control.py::test_three_session_completed_bars_are_phase_explicit_and_drop_tail",
+        "tests/test_rotation_persistence_sector_control.py::test_macd_warmup_blocks_a_real_early_cross",
+        "tests/test_rotation_persistence_sector_control.py::test_future_outcomes_start_at_signal_close_and_use_strictly_later_session",
+        "tests/test_rotation_persistence_sector_control.py::test_result_contract_is_context_only_and_has_no_trade_authority",
+        "tests/test_rotation_persistence_sector_cli.py::test_loader_rejects_non_datetime_index",
+        "tests/test_rotation_persistence_sector_cli.py::test_loader_preserves_timezone_aware_local_session_label",
+        "tests/test_rotation_persistence_sector_control.py::test_leadership_surface_includes_final_matured_anchor_and_formula",
+        "tests/test_rotation_persistence_sector_control.py::test_signal_cell_discloses_sector_date_unit_and_latest_unique_dates",
+        "tests/test_rotation_persistence_sector_control.py::test_hierarchy_descriptor_discloses_every_phase_sample_span",
+        "tests/test_rotation_persistence_sector_control.py::test_markdown_discloses_leadership_samples_and_phase_evidence"
+      ],
+      "result": "11 passed in 18.98s",
+      "state": "PASS",
+      "subject_head": "5c7bf21dad34ec68eaf5075a5563de7d5805cda0",
+      "tail_discriminator": "tests/test_rotation_persistence_sector_control.py::test_three_session_completed_bars_are_phase_explicit_and_drop_tail"
+    },
+    {
+      "command": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.venv/bin/python scripts/run_ci_pack.py --workflow .github/ci/legacy-jobs.yml --gate code --validate-only",
+      "name": "legacy_ci_manifest_code_gate",
+      "result": "139 jobs validated",
+      "state": "PASS",
+      "subject_head": "5c7bf21dad34ec68eaf5075a5563de7d5805cda0"
+    },
+    {
+      "command": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.venv/bin/python scripts/run_ci_pack.py --workflow .github/ci/legacy-jobs.yml --gate data --validate-only",
+      "name": "legacy_ci_manifest_data_gate",
+      "result": "74 jobs validated; sector-control-archive-regeneration selected in the data lane",
+      "state": "PASS",
+      "subject_head": "5c7bf21dad34ec68eaf5075a5563de7d5805cda0"
+    },
+    {
+      "command": "Parse .github/ci/legacy-jobs.yml and assert archive suite is in sector-control-archive-regeneration with gate:data and absent from every code-gated command",
+      "durability": "ONE_OFF_RECEIPT_NOT_COMMITTED_GUARD",
+      "name": "archive_gate_ownership_assertion",
+      "optional_follow_up": "A later semantic wave may add a committed manifest regression test; this HOLD receipt does not claim one exists.",
+      "result": "OWNERSHIP_OK job_gate=data code_jobs_checked=139",
+      "state": "PASS",
+      "subject_head": "5c7bf21dad34ec68eaf5075a5563de7d5805cda0"
+    },
+    {
+      "command": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.venv/bin/python scripts/check_contract_delta.py --base 8d198b42f6bff491a49b1f3467b56ca4bb673f80",
+      "name": "contract_delta",
+      "result": "contract-delta: 0 introduced, 0 inherited (base 8d198b42f6bf)",
+      "runtime_seconds": 680.4,
+      "state": "PASS",
+      "subject_head": "5c7bf21dad34ec68eaf5075a5563de7d5805cda0"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /Users/chriswong/Documents/Cluade/Macro Dashboard/.venv/bin/python scripts/agentos.py validate",
+      "name": "agentos_validate_after_record_update",
+      "result": "1095 records; 0 errors; 76 unrelated repository warnings",
+      "state": "PASS_WITH_WARNINGS",
+      "subject_parent": "5c7bf21dad34ec68eaf5075a5563de7d5805cda0"
+    },
+    {
+      "command": "git merge-tree --write-tree 22f6759fe6529b4768309332309d52a8ee20526a 5c7bf21dad34ec68eaf5075a5563de7d5805cda0",
+      "name": "current_main_no_write_integration",
+      "result": "de98a17f781e55d114b0443ac33410060d7617ee",
+      "state": "PASS",
+      "subject_head": "5c7bf21dad34ec68eaf5075a5563de7d5805cda0"
+    },
+    {
+      "command": "workflow_dispatch trusted-ci-executor.yml on protected main with pr_number=7095",
+      "name": "trusted_executor_hosted_preflight",
+      "result": "run 34936708141 refused before candidate execution: pull request #7095 does not target main",
+      "state": "FAIL_CLOSED_EXPECTED_STACKED_BASE",
+      "subject_head": "5c7bf21dad34ec68eaf5075a5563de7d5805cda0"
+    },
+    {
+      "command": "gh pr view 7095 --json state,isDraft,headRefOid,baseRefOid,autoMergeRequest,labels,mergeable,mergeStateStatus",
+      "name": "github_hold_state",
+      "result": "OPEN Draft; exact head/base; no labels; native auto-merge null; MERGEABLE/UNSTABLE",
+      "state": "PASS",
+      "subject_head": "5c7bf21dad34ec68eaf5075a5563de7d5805cda0"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /Users/chriswong/Documents/Cluade/Macro Dashboard/.venv/bin/python -m pytest tests/test_rotation_persistence_sector_control.py tests/test_rotation_persistence_sector_cli.py -q --tb=short -p no:cacheprovider",
+      "name": "fresh_exact_record_head_focused_synthetic_suites",
+      "result": "31 passed; tracked worktree remained clean",
+      "state": "PASS",
+      "subject_head": "27a966041272a9de6823a590e90a0c6fd7b5141d"
+    },
+    {
+      "command": "Run tests/test_rotation_persistence_sector_archive.py, then run scripts/research/run_sector_control_rph1.py with produced-at 2026-09-12T21:00:00Z and compare result.json/report.md byte-for-byte",
+      "name": "fresh_exact_record_head_archive_and_cli_byte_replay",
+      "result": "1 passed; direct CLI replay preserved result SHA-256 8a899626e4047df31c1b740f9100e5e63e185c74211d7544b3e6f6031db1bdd6 and report SHA-256 17e7fe0a851f77ebea77e80ce19a661b45808fe72f0da29f5d709108befad6af; zero tracked diff",
+      "state": "PASS_SINGLE_PLATFORM_LOCAL",
+      "subject_head": "27a966041272a9de6823a590e90a0c6fd7b5141d"
+    },
+    {
+      "command": "GitHub Actions workflow ci, workflow_dispatch run 34938053231, logical job research-price-panel, step sector rotation daily control — leadership, dispersion, phase-complete MACD",
+      "name": "exact_head_hosted_focused_suite",
+      "result": "31 passed in 57.80s at expected/tested SHA 27a966041272a9de6823a590e90a0c6fd7b5141d. Aggregate run remained red only for unrelated market-os-macro-suite-pages main_failure and its dependent not_run_prior_failure step.",
+      "run_id": 34938053231,
+      "state": "PASS_FOCUSED_WITH_UNRELATED_AGGREGATE_FAILURE",
+      "subject_head": "27a966041272a9de6823a590e90a0c6fd7b5141d"
+    },
+    {
+      "command": "Claude Fable 5.1 independent read-only FULL_REREVIEW_REQUIRED review",
+      "name": "independent_exact_record_head_full_rereview",
+      "result": "semantic_verdict=PASS; records_verdict=REPAIR_REQUIRED; records-only repair recommended",
+      "review_sha256": "fc81f7a4667340a11bf3f410291bc67165dfa5b378afc1e29475e08e7b44dafe",
+      "state": "PASS_SEMANTICS_REPAIR_RECORDS",
+      "subject_head": "27a966041272a9de6823a590e90a0c6fd7b5141d",
+      "subject_tree": "213e92d606d26ca7c8078ff900870adfb48ff584"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 /Users/chriswong/Documents/Cluade/Macro Dashboard/.venv/bin/python -m pytest tests/test_contract_delta.py -q --tb=short -p no:cacheprovider",
+      "log_sha256": "393110f3847a26d5f37df3f1d99cbd735a1aae37a61f2282b29e563f2f6e5d4e",
+      "name": "fresh_records_repair_contract_delta_tests",
+      "result": "15 passed in 9.45s; unrelated best-effort pytest cleanup warnings only",
+      "state": "PASS_WITH_UNRELATED_CLEANUP_WARNINGS",
+      "subject_head": "25a75a900e0453d30380450aabb086b648dced34",
+      "subject_tree": "0c1c649fa9ea780ffa642293d31d1b5230b4cf33"
+    },
+    {
+      "closure_authorization": "AUTHORIZED_RECORDS_ONLY_CLOSURE_THEN_FINAL_HEAD_REVIEW",
+      "command": "Claude Sonnet 5 independent read-only exact-head records review",
+      "name": "independent_records_repair_head_review",
+      "parent_head": "27a966041272a9de6823a590e90a0c6fd7b5141d",
+      "pr_body_verdict": "PASS",
+      "result": "PASS_FOR_CLOSURE_COMMIT; semantic bytes unchanged; authority inert; no required repairs",
+      "review_sha256": "d3c40ec2e597749b4055d5c9778861e019877c39554be23362aee00e19fef065",
+      "state": "PASS_FOR_CLOSURE_COMMIT",
+      "subject_head": "25a75a900e0453d30380450aabb086b648dced34",
+      "subject_tree": "0c1c649fa9ea780ffa642293d31d1b5230b4cf33"
+    }
+  ],
+  "ci_ownership": {
+    "live_archive_data_suite": "tests/test_rotation_persistence_sector_archive.py",
+    "live_archive_gate": "data",
+    "live_archive_job": "sector-control-archive-regeneration",
+    "synthetic_code_suites": [
+      "tests/test_rotation_persistence_sector_control.py",
+      "tests/test_rotation_persistence_sector_cli.py"
+    ]
+  },
+  "current_main_compatibility": {
+    "candidate_changed_path_count": 14,
+    "direct_overlap_interpretation": "The stacked branch and current main overlap only in the shared CI manifest; the exact no-write merge tree completed without conflict and the RPH-1 hunks remain disjoint.",
+    "direct_path_overlap": [
+      ".github/ci/legacy-jobs.yml"
+    ],
+    "merge_base_with_record_head": "4b1f8fddcc4eb6f36133fca4d42018678b74d30b",
+    "merge_tree_exit_code": 0,
+    "no_write_integrated_tree": "57acb64369299ff8880278be530295a63e3a9584",
+    "protected_main_sha": "453c83f051f7da88dc4c69658b389d7f96e2debd",
+    "stacked_branch_changed_path_count": 35,
+    "stacked_parent_contract_git_blob_sha1": {
+      "scripts/research/rotation_persistence/__init__.py": "e3b71311939007484cc65e0986f13273cdb461fb",
+      "scripts/research/rotation_persistence/contracts.py": "d5f6ff4433f2dc0f0b88a7407a0a8392cb9c9863",
+      "scripts/research/rotation_persistence/report.py": "141006ccd0580e109b84233d8486fa4f79041755"
+    },
+    "state": "CLEAN_NO_WRITE_INTEGRATION",
+    "tested_prior_snapshot": {
+      "integrated_tree": "4179aed5eeec548e5d65ff9c4416a562555a24a2",
+      "proof": "Agent OS validate PASS; focused suite 31 passed; contract-delta suite 164 passed",
+      "protected_main_sha": "e729d0fd9d48868b49a1911d4098c689b3d373bd"
+    }
+  },
+  "github_state": {
+    "base_ref": "sol/rotation-persistence-rph0-20260910",
+    "base_sha": "8d198b42f6bff491a49b1f3467b56ca4bb673f80",
+    "draft": true,
+    "head_ref": "sol/rotation-persistence-sector-control-rph1-20260912",
+    "head_sha": "25a75a900e0453d30380450aabb086b648dced34",
+    "labels": [],
+    "merge_state_status": "UNSTABLE",
+    "mergeable": "MERGEABLE",
+    "native_auto_merge": null,
+    "observed_at": "2026-09-16T10:14:12Z",
+    "ordinary_check_projection": {
+      "aggregate_dispatch": "FAIL_UNRELATED_MARKET_OS_MACRO_SUITE_PAGES_MAIN_FAILURE",
+      "ci_authority": "FAIL_UNSUPPORTED_BASE_REF",
+      "ci_authority_main": "FAIL_INACTIVE_CONTEXT",
+      "ci_authority_merge_queue_pilot": "FAIL_INACTIVE_CONTEXT",
+      "focused_rph1_suite_executed": true,
+      "focused_rph1_workflow_dispatch_run_id": 34938053231,
+      "vercel": "FAIL_UNRELATED_DAILY_DEPLOYMENT_LIMIT"
+    },
+    "pr_number": 7095,
+    "review_decision": null,
+    "snapshot_scope": "PRE_CLOSURE_REVIEWED_HEAD",
+    "state": "OPEN"
+  },
+  "hosted_proof": {
+    "exact_head_archive_lane": {
+      "cross_platform_status": "UNPROVEN",
+      "interpretation": "A future post-merge data-lane byte mismatch is a reproducibility receipt to investigate, not a research finding.",
+      "local_substitute": "Single-platform macOS byte-for-byte live archive regeneration plus explicit gate:data ownership proof",
+      "reason": "the approved data-health lane is main-only and refuses a non-main ref",
+      "state": "UNAVAILABLE_PRE_MERGE",
+      "workflow": "data-health.yml"
+    },
+    "exact_head_code_dispatch": {
+      "aggregate_failure_scope": [
+        "market-os-macro-suite-pages: main_failure in tests/test_macro_suite_pages.py",
+        "dependent hub step: not_run_prior_failure"
+      ],
+      "aggregate_run_conclusion": "FAILURE",
+      "command": "python -m pytest tests/test_rotation_persistence_sector_control.py tests/test_rotation_persistence_sector_cli.py -q",
+      "event": "workflow_dispatch",
+      "expected_sha": "27a966041272a9de6823a590e90a0c6fd7b5141d",
+      "interpretation": "The exact RPH-1 hosted focused proof passed. The aggregate run is not called green because an unrelated Market OS page suite failed.",
+      "logical_job": "research-price-panel",
+      "ref": "sol/rotation-persistence-sector-control-rph1-20260912",
+      "result": "31 passed in 57.80s",
+      "run_id": 34938053231,
+      "state": "PASS_FOCUSED_WITH_UNRELATED_AGGREGATE_FAILURE",
+      "step": "sector rotation daily control — leadership, dispersion, phase-complete MACD",
+      "tested_sha": "27a966041272a9de6823a590e90a0c6fd7b5141d",
+      "workflow": "ci.yml"
+    },
+    "main_owned_trusted_executor": {
+      "admission_job": "PASS",
+      "candidate_pack": "SKIPPED",
+      "control_ref": "main",
+      "interpretation": "This is a truthful main-owned refusal receipt, not semantic test failure and not hosted proof.",
+      "planner_job": "FAIL_CLOSED",
+      "reason": "pull request #7095 does not target main",
+      "run_id": 34936708141,
+      "state": "REFUSED_BEFORE_CANDIDATE_EXECUTION",
+      "workflow": "trusted-ci-executor.yml"
+    },
+    "unrelated_noise": [
+      "Vercel daily free-deployment limit",
+      "stacked-base ci-authority unsupported_base_ref"
+    ]
+  },
+  "known_boundaries": [
+    "Daily repository Yahoo closes are an archive control, not exact vendor-chart parity.",
+    "MACD marks use signal-session closes and ignore execution, spread, slippage and latency.",
+    "Sector ETF behavior does not prove current theme or constituent behavior.",
+    "Every result is research/display context only and cannot rank, gate, size or trade.",
+    "Phase-specific rows are primary; phase-pooled rows share daily source sessions and are non-independent.",
+    "Acceptance cannot select a production timeframe or create a product, Prophet, Oracle, portfolio, entry or trade consumer.",
+    "At lookback=5 and horizon=5, rank persistence and predictive persistence are algebraically identical; that cell is not two independent agreeing estimands.",
+    "Daily leadership anchors overlap across forward horizons, so recent-window observations are serially dependent and no independent-observation inference is claimed.",
+    "The byte-for-byte archive replay is proven on the authorized macOS environment only; cross-platform and pandas-version byte stability remain unproven."
+  ],
+  "lifecycle": {
+    "deploy_authorized": false,
+    "final_closure_head_review_required": true,
+    "final_closure_head_review_state": "PENDING_AT_COMMIT",
+    "mark_ready_authorized": false,
+    "merge_authorized": false,
+    "production_consumer_authorized": false,
+    "state": "PARKED_HOLD_FOR_SOL",
+    "terminal_state_after_acceptance": "PARKED_HOLD_FOR_SOL"
+  },
+  "notes": [
+    "The implementation commit was pushed normally to the existing branch; no rebase, reset, force-push or sibling carrier was used.",
+    "The trusted main-owned diagnostic refused this stacked PR before candidate execution; it is a proof-gap receipt, not a semantic failure.",
+    "A PASS verdict means PARKED / HOLD-FOR-SOL, never Ready, merge, deploy or production activation.",
+    "The receipt binds the semantic implementation head/tree. Its own containing record commit cannot be self-hashed inside the same JSON object; Git and the PR body provide that outer immutable identity.",
+    "Commit dfdaa67472839580828377b7b0322ea3fbe25c21 ('x') temporarily added file 'nonexistent'; ec9dee6721aed927c5e2f6f313eb1f24341d57df removed it. The final tree is unaffected and history is disclosed rather than rewritten.",
+    "The manifest ownership parse is a one-off receipt, not a committed regression guard.",
+    "Records-repair head 25a75a900e0453d30380450aabb086b648dced34 / tree 0c1c649fa9ea780ffa642293d31d1b5230b4cf33 received PASS_FOR_CLOSURE_COMMIT in independent review d3c40ec2e597749b4055d5c9778861e019877c39554be23362aee00e19fef065; the review authorizes only a terminal records-only closure followed by exact closure-head confirmation.",
+    "Fresh tests/test_contract_delta.py execution at 25a75a900e0453d30380450aabb086b648dced34 passed 15 tests in 9.45s; receipt SHA-256 393110f3847a26d5f37df3f1d99cbd735a1aae37a61f2282b29e563f2f6e5d4e.",
+    "The final closure commit cannot contain its own Git SHA. GitHub PR body/review is the external immutable location for the exact closure-head confirmation; a PASS requires no further source mutation."
+  ],
+  "operation_key": "leadership-persistence-sector-control-rph1-20260912-sol-001",
+  "pending": [
+    "one exact-final-closure-head read-only review must pass and be recorded in the GitHub PR body or review without another source mutation",
+    "a hosted archive/data-gate run remains unavailable before merge because the approved data-health workflow is main-only"
+  ],
+  "pr_number": 7095,
+  "procedure_identity": {
+    "historical_recorded_sha": "19b6111891ffd742ceec7c96f437a2a890847c92",
+    "loaded_sources": [
+      "docs/sol_skills/INDEX.md",
+      "docs/sol_skills/COLD_START.md",
+      "docs/sol_skills/REVIEW_RETURN.md",
+      "docs/sol_skills/RECONCILE_STATE.md",
+      "docs/sol_skills/CLOSEOUT.md",
+      "docs/sol_skills/COMMISSION_WAVE.md",
+      "docs/sol_skills/WORKER_AVENUE_ROUTING.md",
+      "docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md",
+      "docs/AGENT_DIALOGUE_SESSION_CLOSE_LAW.md"
+    ],
+    "protected_ref": "master",
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "sha": "8ba7deedde164c90298d3e88785d98e02fa5e2d2",
+    "skillpack_schema": "mastermind.sol_skillpack.v1",
+    "skillpack_version": "1.0.1"
+  },
+  "recorded_at": "2026-09-16T10:41:46Z",
+  "repaired_findings": [
+    "live Yahoo archive regeneration moved from gate: code to gate: data",
+    "source and output paths resolve against a canonical repository root",
+    "non-Datetime parquet indexes are rejected",
+    "timezone-aware labels preserve the stored local session date rather than converting through UTC",
+    "sector-signal-date observation units and counts are explicit",
+    "all six MACD phase samples disclose completed-bar and signal spans",
+    "leadership windows disclose anchors, N, sample standard deviation and recent-minus-all comparisons",
+    "the quality key truthfully names first eligible signal positions",
+    "direct formula, tie, endpoint, strict-JSON, source-normalization and disclosure tests were added"
+  ],
+  "repository": "mastermindx-market-intelligence/macro",
+  "review": {
+    "final_closure_head_verdict": "PENDING_AT_COMMIT",
+    "prior_reviewed_head": "c962235abf2c2b731c98693c472a116bc110e110",
+    "prior_verdict": "REPAIR_REQUIRED",
+    "reason": "The records-repair head passed independent review and authorizes this terminal records-only closure commit; the resulting closure head requires one final read-only confirmation recorded externally without another source mutation.",
+    "records_repair_review": {
+      "authority_inert": true,
+      "closure_authorization": "AUTHORIZED_RECORDS_ONLY_CLOSURE_THEN_FINAL_HEAD_REVIEW",
+      "parent_head": "27a966041272a9de6823a590e90a0c6fd7b5141d",
+      "pr_body_verdict": "PASS",
+      "review_sha256": "d3c40ec2e597749b4055d5c9778861e019877c39554be23362aee00e19fef065",
+      "reviewed_head": "25a75a900e0453d30380450aabb086b648dced34",
+      "reviewed_tree": "0c1c649fa9ea780ffa642293d31d1b5230b4cf33",
+      "reviewer": "Claude Sonnet 5 independent read-only reviewer",
+      "semantic_bytes_unchanged": true,
+      "verdict": "PASS_FOR_CLOSURE_COMMIT"
+    },
+    "review_reuse": "FULL_REREVIEW_REQUIRED",
+    "semantic_review": {
+      "recommendation": "ACCEPT_RESEARCH_AFTER_RECORDS_ONLY_REPAIR_AND_FINAL_HEAD_REVIEW",
+      "records_verdict": "REPAIR_REQUIRED",
+      "review_sha256": "fc81f7a4667340a11bf3f410291bc67165dfa5b378afc1e29475e08e7b44dafe",
+      "reviewed_head": "27a966041272a9de6823a590e90a0c6fd7b5141d",
+      "reviewed_tree": "213e92d606d26ca7c8078ff900870adfb48ff584",
+      "reviewer": "Claude Fable 5.1 independent read-only reviewer",
+      "semantic_verdict": "PASS"
+    }
+  },
+  "schema_version": "research.rotation_persistence.sector_control.verification.v1",
+  "source_identity": {
+    "common_rows": 2067,
+    "data_dir": "data/yahoo",
+    "excluded_rows": 6393,
+    "files": {
+      "SPY": {
+        "duplicate_dates": [],
+        "first_session": "1993-01-29",
+        "invalid_close_rows": 0,
+        "invalid_date_rows": 0,
+        "invalid_rows": 0,
+        "last_session": "2026-09-09",
+        "path": "data/yahoo/SPY.parquet",
+        "rows_read": 8460,
+        "rows_retained": 8460,
+        "sha256": "423a71276dad17b2f4be35e0fe934dff2bfd47736c0691abc62e0976679e825c"
+      },
+      "XLB": {
+        "duplicate_dates": [],
+        "first_session": "1998-12-22",
+        "invalid_close_rows": 0,
+        "invalid_date_rows": 0,
+        "invalid_rows": 0,
+        "last_session": "2026-09-09",
+        "path": "data/yahoo/XLB.parquet",
+        "rows_read": 6970,
+        "rows_retained": 6970,
+        "sha256": "d31128eee388692a1a4a7a0120e635de0e48cc6449e9c2af86446568ecdc714f"
+      },
+      "XLC": {
+        "duplicate_dates": [],
+        "first_session": "2018-06-19",
+        "invalid_close_rows": 0,
+        "invalid_date_rows": 0,
+        "invalid_rows": 0,
+        "last_session": "2026-09-09",
+        "path": "data/yahoo/XLC.parquet",
+        "rows_read": 2067,
+        "rows_retained": 2067,
+        "sha256": "90bc8326d58bcd50b55c7b8913daedb57c2244e644a45ee1d637c97dbe646970"
+      },
+      "XLE": {
+        "duplicate_dates": [],
+        "first_session": "1998-12-22",
+        "invalid_close_rows": 0,
+        "invalid_date_rows": 0,
+        "invalid_rows": 0,
+        "last_session": "2026-09-09",
+        "path": "data/yahoo/XLE.parquet",
+        "rows_read": 6970,
+        "rows_retained": 6970,
+        "sha256": "c43f05d11204bebe8970c6678862fcaf07b87926f4f08ce2c4680e64c4a0378e"
+      },
+      "XLF": {
+        "duplicate_dates": [],
+        "first_session": "1998-12-22",
+        "invalid_close_rows": 0,
+        "invalid_date_rows": 0,
+        "invalid_rows": 0,
+        "last_session": "2026-09-09",
+        "path": "data/yahoo/XLF.parquet",
+        "rows_read": 6970,
+        "rows_retained": 6970,
+        "sha256": "3905a914dd86b5181bdd4ed8342c519c31719713d42a0f4a1c0ffd4571ef5326"
+      },
+      "XLI": {
+        "duplicate_dates": [],
+        "first_session": "1998-12-22",
+        "invalid_close_rows": 0,
+        "invalid_date_rows": 0,
+        "invalid_rows": 0,
+        "last_session": "2026-09-09",
+        "path": "data/yahoo/XLI.parquet",
+        "rows_read": 6970,
+        "rows_retained": 6970,
+        "sha256": "a5cf4c415e6d0c8deca12befb9da9c4b2af5b1464088b2e47862601157db224c"
+      },
+      "XLK": {
+        "duplicate_dates": [],
+        "first_session": "1998-12-22",
+        "invalid_close_rows": 0,
+        "invalid_date_rows": 0,
+        "invalid_rows": 0,
+        "last_session": "2026-09-09",
+        "path": "data/yahoo/XLK.parquet",
+        "rows_read": 6970,
+        "rows_retained": 6970,
+        "sha256": "8da4daa8366597c83d735e77468ecfe18c0b41f5aff92cd0ce0f031ac7d95f75"
+      },
+      "XLP": {
+        "duplicate_dates": [],
+        "first_session": "1998-12-22",
+        "invalid_close_rows": 0,
+        "invalid_date_rows": 0,
+        "invalid_rows": 0,
+        "last_session": "2026-09-09",
+        "path": "data/yahoo/XLP.parquet",
+        "rows_read": 6970,
+        "rows_retained": 6970,
+        "sha256": "cfa37190159bf9c7c4ef6570132fea2d4ce57238148724b812861dea98122dd8"
+      },
+      "XLRE": {
+        "duplicate_dates": [],
+        "first_session": "2015-10-08",
+        "invalid_close_rows": 0,
+        "invalid_date_rows": 0,
+        "invalid_rows": 0,
+        "last_session": "2026-09-09",
+        "path": "data/yahoo/XLRE.parquet",
+        "rows_read": 2745,
+        "rows_retained": 2745,
+        "sha256": "d0334ac13853d298333914cc14843111bbc26f0ebf0a3d26d0063aeecee8f055"
+      },
+      "XLU": {
+        "duplicate_dates": [],
+        "first_session": "1998-12-22",
+        "invalid_close_rows": 0,
+        "invalid_date_rows": 0,
+        "invalid_rows": 0,
+        "last_session": "2026-09-09",
+        "path": "data/yahoo/XLU.parquet",
+        "rows_read": 6970,
+        "rows_retained": 6970,
+        "sha256": "8cfc34c8f65dc137f0063ebe65188e5355372c7506a13d26ea5007bb2cb59eb4"
+      },
+      "XLV": {
+        "duplicate_dates": [],
+        "first_session": "1998-12-22",
+        "invalid_close_rows": 0,
+        "invalid_date_rows": 0,
+        "invalid_rows": 0,
+        "last_session": "2026-09-09",
+        "path": "data/yahoo/XLV.parquet",
+        "rows_read": 6970,
+        "rows_retained": 6970,
+        "sha256": "a34d3b5af4cd9df43ad0c91ca9cd2882481560908978b7ec48d2d0764bb4e496"
+      },
+      "XLY": {
+        "duplicate_dates": [],
+        "first_session": "1998-12-22",
+        "invalid_close_rows": 0,
+        "invalid_date_rows": 0,
+        "invalid_rows": 0,
+        "last_session": "2026-09-09",
+        "path": "data/yahoo/XLY.parquet",
+        "rows_read": 6970,
+        "rows_retained": 6970,
+        "sha256": "f1b5a639f641e90547bbd7e69153e9fd59c4f16ebcae02b4d73443f68a5e85e2"
+      }
+    },
+    "first_session": "2018-06-19",
+    "last_session": "2026-09-09",
+    "source_revision": "8d198b42f6bff491a49b1f3467b56ca4bb673f80",
+    "union_rows": 8460
+  },
+  "source_subject": {
+    "base": "8d198b42f6bff491a49b1f3467b56ca4bb673f80",
+    "closure_head": "SELF_NOT_REPRESENTABLE_IN_OWN_CONTENT",
+    "closure_review_state": "PENDING_AT_COMMIT",
+    "implementation_head": "5c7bf21dad34ec68eaf5075a5563de7d5805cda0",
+    "implementation_tree": "8187488bcdc8d2b5aade7ea91cc79f7539e26fc0",
+    "preregistration_freeze": "0a80c56135fc5879cf4079fea55912041dfce534",
+    "record_assembly_parent": "5c7bf21dad34ec68eaf5075a5563de7d5805cda0",
+    "record_head": "SELF_NOT_REPRESENTABLE_IN_OWN_CONTENT",
+    "records_repair_head": "25a75a900e0453d30380450aabb086b648dced34",
+    "records_repair_review_sha256": "d3c40ec2e597749b4055d5c9778861e019877c39554be23362aee00e19fef065",
+    "records_repair_tree": "0c1c649fa9ea780ffa642293d31d1b5230b4cf33",
+    "review_classification": "SEMANTIC_PASS_RECORDS_REPAIR_PASS_CLOSURE_HEAD_REVIEW_REQUIRED",
+    "reviewed_record_head": "27a966041272a9de6823a590e90a0c6fd7b5141d",
+    "reviewed_record_tree": "213e92d606d26ca7c8078ff900870adfb48ff584"
+  }
+}
