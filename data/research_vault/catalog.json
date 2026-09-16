@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-16T04:24:32.098110+00:00",
-  "count": 2204,
+  "generated_at": "2026-09-16T04:54:33.319515+00:00",
+  "count": 2205,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -114,6 +114,27 @@
       "tickers": [],
       "top_pick": true,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-apyw7m8c4fp-146058",
+      "title": "Americas Banks Highlighting key debates on WFC's NII outlook",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T02:54:15Z",
+      "summary_points": [
+        "**WFC’s 2026 NII Target Feasibility**: $50bn 2026 NII target achievable with 4% avg.",
+        "AEA growth (vs.",
+        "8% 2H25), requiring 5% YoY NII growth in 2H26; asset growth offsets deposit cost pressures.",
+        "**NIM Stabilization & Rate Neutrality**: NIM stabilizes in 2H26 via asset growth (commercial/corporate deposits, loan growth outpacing core deposits); incremental Sept.",
+        "rate hike net-neutral for 2026/2027 NII (0.1% impact)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 20,
       "language": "en",
       "needs_metadata": false
     },
