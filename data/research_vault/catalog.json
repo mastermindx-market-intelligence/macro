@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-16T04:54:33.319515+00:00",
-  "count": 2205,
+  "generated_at": "2026-09-16T05:24:41.466590+00:00",
+  "count": 2206,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -654,6 +654,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 24,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-qby4cqmj9tc-9826a3",
+      "title": "JPM Delta One Flows",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T11:45:04Z",
+      "summary_points": [
+        "**Defensive Positioning Dominance**: Weak equity flows, $82B rates futures selling, credit ETF outflows, Korea 3M-high outflows signal persistent risk aversion; CTAs reducing equities/selling copper/US natgas/gold.",
+        "**Fixed Income Divergence**: 3M SOFR Long CTA (bullish) vs.",
+        "3M Euribor Short (bearish); China 10y/3M SOFR potential longs amid broad fixed income short positioning.",
+        "**EM Geopolitical Outflows**: Korea, China, EM Asia ETF outflows ($643M, $94M, $746M) driven by geopolitical tensions, requiring portfolio rebalancing vs.",
+        "US equity ETF dominance ($8.3B inflows)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 26,
       "language": "en",
       "needs_metadata": false
     },
