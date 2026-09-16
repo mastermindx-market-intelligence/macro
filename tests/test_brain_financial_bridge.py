@@ -377,3 +377,119 @@ def test_tool_metadata_defines_cash_signs_and_prevents_double_counting():
     assert 'positive use' in fields['working_capital_increase']['description']
     assert 'not the working-capital balance' in fields['working_capital_increase']['description']
     assert 'not verified facts' in tool['description']
+
+
+def test_scenario_tests_quantify_reversal_instead_of_only_describing_a_decline():
+    p=scenario(); p['prior'].update(eps=5,earnings_multiple=20)
+    p['current'].update(eps=6,earnings_multiple=15)
+    r=analyze(p)
+    assert 'scenario_tests' in r, 'No inspectable reversal tests are available'
+    tests=r['scenario_tests']
+    expected={'hold.operating_profit_margin_pct':'27.2727272727',
+              'hold.operating_profit_revenue':'120',
+              'zero.operating_cash_working_capital':'7.5',
+              'zero.cash_after_capex_working_capital':'2.5',
+              'hold.implied_price_multiple':'16.6666666667',
+              'sensitivity.operating_profit_per_margin_pp':'1.1',
+              'sensitivity.operating_profit_per_revenue_pct':'0.275',
+              'sensitivity.implied_price_per_multiple_turn':'6'}
+    for key,expected_value in expected.items():
+        assert Decimal(tests[key]['value'])==Decimal(expected_value),key
+        assert tests[key]['fixed_inputs'] and tests[key]['formula']
+        assert tests[key]['authority']=='conditional_test_only'
+    assert tests['hold.operating_profit_margin_pct']['varied_input']=='current.gross_margin_pct'
+    assert tests['hold.operating_profit_margin_pct']['target_ref']=='prior.operating_profit'
+    assert tests['hold.implied_price_multiple']['unit']=='multiple'
+
+
+def test_reversal_test_is_replayed_through_the_actual_calculation_owner():
+    p=scenario(); r=analyze(p)
+    assert 'scenario_tests' in r
+    tests=r['scenario_tests']
+    cases=[('hold.operating_profit_revenue','revenue','current.operating_profit','10'),
+           ('zero.operating_cash_working_capital','working_capital_increase','current.simplified_operating_cash','0'),
+           ('zero.cash_after_capex_working_capital','working_capital_increase','current.cash_after_capex','0')]
+    for case,field,result_key,expected in cases:
+        q=deepcopy(p); q['current'][field]=tests[case]['value']
+        assert value(analyze(q),result_key)==Decimal(expected)
+    q=deepcopy(p);q['current']['working_capital_increase']='3'
+    assert value(analyze(q),'current.cash_after_capex')<0
+    q['current']['working_capital_increase']='2'
+    assert value(analyze(q),'current.cash_after_capex')>0
+
+
+def test_untested_rivals_never_become_issuer_facts_or_a_house_signal():
+    p=scenario();p['prior'].update(eps=5,earnings_multiple=20);p['current'].update(eps=6,earnings_multiple=15)
+    r=analyze(p)
+    assert 'reasoning' in r, 'Calculator has no evidence-bound interpretation'
+    reasoning=r['reasoning']
+    assert reasoning['basis']=='conditional_arithmetic_not_causal_proof'
+    assert len(reasoning['findings'])==3
+    for finding in reasoning['findings']:
+        assert finding['supports'] and finding['reversal_tests']
+        assert all(ref in r['calculations'] for ref in finding['supports'])
+        assert all(ref in r['scenario_tests'] for ref in finding['reversal_tests'])
+        assert len(finding['rivals'])==2
+        assert finding['conclusion_type']=='supplied_scenario_implication'
+        for rival in finding['rivals']:
+            assert rival['status']=='untested'
+            assert rival['evidence_to_check'] and rival['would_weaken']
+            assert not any(key in rival for key in ('probability','score','confidence','rank'))
+    assert reasoning['evidence_retrieval_performed'] is False
+
+
+def test_no_supported_pattern_means_no_fabricated_narrative():
+    p={'basis':'supplied_scenario','currency':'USD','amount_scale':'units',
+       'prior':{'period_months':12},'current':{'period_months':12}}
+    r=analyze(p)
+    assert 'reasoning' in r
+    assert r['reasoning']['findings']==[]
+    assert all(c['value'] is None for c in r['scenario_tests'].values())
+    invalid=analyze({'portfolio':'PRIVATE'});assert invalid['status']=='invalid_request'
+    assert not invalid.get('reasoning') and not invalid.get('scenario_tests')
+
+
+def test_missing_adjustment_blocks_cash_threshold_without_imputing_zero():
+    p=scenario();del p['current']['cash_taxes']
+    r=analyze(p);assert 'scenario_tests' in r
+    for key in ('zero.operating_cash_working_capital','zero.cash_after_capex_working_capital'):
+        assert r['scenario_tests'][key]['value'] is None
+        assert r['scenario_tests'][key]['missing_inputs']==['current.cash_taxes']
+    assert r['scenario_tests']['hold.operating_profit_revenue']['value']=='120'
+
+
+def test_unrealistic_equality_threshold_is_not_reported_as_a_feasible_fix():
+    p=scenario();p['prior'].update(revenue=1000,gross_margin_pct=100,operating_expenses=0)
+    r=analyze(p);assert 'scenario_tests' in r
+    cell=r['scenario_tests']['hold.operating_profit_margin_pct']
+    assert Decimal(cell['value'])>100
+    assert cell['within_value_range'] is False
+    assert cell['interpretation']=='equality_boundary_not_forecast'
+
+
+@pytest.mark.parametrize('margin',[0,-10])
+def test_nonpositive_margin_does_not_create_a_revenue_repair_claim(margin):
+    p=scenario();p['current']['gross_margin_pct']=margin
+    r=analyze(p);assert 'scenario_tests' in r
+    cell=r['scenario_tests']['hold.operating_profit_revenue']
+    assert cell['value'] is None and cell['reason']=='positive_current_margin_required'
+
+
+def test_annual_price_threshold_can_be_calculated_without_a_current_multiple():
+    p=scenario();p['prior'].update(eps=5,earnings_multiple=20);p['current']['eps']=6
+    r=analyze(p);assert 'scenario_tests' in r
+    assert value(r,'current.implied_price') is None
+    assert r['scenario_tests']['hold.implied_price_multiple']['value']=='16.6666666667'
+    assert r['scenario_tests']['hold.implied_price_multiple']['missing_inputs']==[]
+    p['prior']['period_months']=3;p['current']['period_months']=3
+    r=analyze(p)
+    assert r['scenario_tests']['hold.implied_price_multiple']['value'] is None
+    assert r['scenario_tests']['sensitivity.implied_price_per_multiple_turn']['value'] is None
+
+
+def test_negative_margin_pattern_does_not_falsely_claim_margin_contracted():
+    p=scenario();p['prior']['gross_margin_pct']=-10;p['current']['gross_margin_pct']=-10
+    r=analyze(p);assert 'reasoning' in r
+    finding=next(f for f in r['reasoning']['findings'] if f['id']=='revenue_up_gross_profit_down')
+    assert 'margin contraction' not in finding['conclusion'].lower()
+    assert 'does not imply' in finding['conclusion']
