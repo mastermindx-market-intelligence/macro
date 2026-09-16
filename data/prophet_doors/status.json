@@ -1,21 +1,21 @@
 {
-  "appended": 2,
-  "asof": "2026-09-11",
+  "appended": 1,
+  "asof": "2026-09-14",
   "candidates": {
     "R": 0,
-    "T": 8,
+    "T": 3,
     "W": 4
   },
   "deduped": {
     "R": 0,
-    "T": 6,
+    "T": 2,
     "W": 4
   },
   "dry_run": false,
   "feature_source": {
     "enabled": true,
     "foresight": {
-      "asof": "2026-09-13",
+      "asof": "2026-09-14",
       "consulted": true,
       "n_keys": 27,
       "n_themes": 18,
@@ -32,21 +32,16 @@
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
       "themes_read": {
-        "Hardware": {
-          "theme_thrust_frac": 0.0889,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        },
-        "Telecommunications": {
-          "theme_thrust_frac": 0.0323,
+        "Energy Renewable": {
+          "theme_thrust_frac": 0.0227,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         }
       },
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 67,
-      "tickers_read": 82
+      "tickers_ok": 44,
+      "tickers_read": 59
     },
     "keys": [
       "relay_count_3d",
@@ -73,7 +68,7 @@
     },
     "turnover": {
       "consulted": true,
-      "last_session": "2026-09-11",
+      "last_session": "2026-09-14",
       "n_tickers": 1544,
       "ok": true,
       "reason": null,
@@ -108,8 +103,7 @@
   "flag_tickers": {
     "R": [],
     "T": [
-      "GLW",
-      "APH"
+      "BRK-B"
     ],
     "W": []
   },
@@ -119,11 +113,11 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-09-13 16:39:04",
-  "runtime_s": 139.3,
+  "run_utc": "2026-09-15 19:24:40",
+  "runtime_s": 104.5,
   "schema": "prophet_doors/v1",
   "theme_source": {
-    "age_days": 0,
+    "age_days": 3,
     "asof": "2026-09-11",
     "n_members": 185,
     "ok": true,
@@ -163,15 +157,15 @@
       "3B"
     ],
     "aligned": 4,
-    "asof_max": "2026-09-11",
+    "asof_max": "2026-09-14",
     "asof_mismatch": 0,
-    "asof_run": "2026-09-11",
+    "asof_run": "2026-09-14",
     "evaluated": 713,
     "fresh": 4,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 23.2,
+    "runtime_s": 20.2,
     "skipped": 4,
     "source": "baskets/membership.json",
     "state_turn": 83,
