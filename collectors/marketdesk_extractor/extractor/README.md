@@ -246,8 +246,11 @@ marketdesk run --since-hours 36
 `marketdesk trickle` is the **sole production puller**. MarketDesk caps PDF
 downloads to a rolling 24h window per account (~75; we configure 70) while the
 read/discovery API is uncapped, and ~200 papers/day are published — so a queue is
-unavoidable and *selection* is the whole game. `feed.sh` on the M1 is a
-**discovery trigger only**; it never downloads.
+unavoidable and *selection* is the whole game. The collector also owns the
+post-publication Research Vault ingest dispatch. The former standalone `feed.sh`
+launchd carrier is retired because newly spawned launchd jobs cannot reliably open
+the removable-volume SQLite database; the hourly GitHub workflow remains the
+correction backstop.
 
 ```bash
 marketdesk trickle              # run forever (launchd / KeepAlive)
@@ -265,6 +268,7 @@ What it does each tick:
 | **Cap bounce** | An over-cap HTML bounce cools the account down until its oldest in-window download ages out (self-calibrating). |
 | **Wide self-heal pass** | The periodic refresh is narrow (`NEW_WINDOW_HOURS + 24`), and healing only touches papers inside the window it walks. Every `TRICKLE_WIDE_DISCOVER_EVERY_SEC` (and always on the first refresh after start) the refresh instead walks `TRICKLE_WIDE_DISCOVER_HOURS` back with `TRICKLE_WIDE_HEAL_LIMIT` heals and resets `FAILED` rows to `DISCOVERED`. This replaces the manual wide `marketdesk discover`. |
 | **Dead-driver watchdog** | After 3 consecutive ticks where every download died on the Playwright transport ("Connection closed while reading from the driver"), that account's session is closed and re-opened; two consecutive failed re-opens `exit(1)` so launchd's `KeepAlive` restarts the process. Papers hit by a transport failure go back to `DISCOVERED`, never `FAILED`. |
+| **Ingest dispatch** | After one or more PDFs/sidecars are committed to the private vault, the same collector process dispatches `research-ingest.yml` and advances the existing watermark only after GitHub accepts the dispatch. Dispatch failure never kills the collector; hourly ingestion reconciles it. |
 
 ### Fail-closed external storage
 
@@ -447,8 +451,9 @@ Suggested downstream pipeline:
 
 Each COMPLETE paper can be republished as `<id>.pdf` + `<id>.json`
 (`research_vault.sidecar.v1`) into `research_inbox/` of the PRIVATE vault R2
-bucket, where the dashboard's hourly ingest consumes it (catalog + full-text
-search + the gated viewer).
+bucket. The collector immediately dispatches the canonical ingest workflow; the
+hourly run is the backstop. Ingest updates catalog + full-text search + the gated
+viewer.
 
 Config (`.env`): `VAULT_ENABLED=true`, `VAULT_R2_ACCOUNT_ID/_ACCESS_KEY_ID/_SECRET_ACCESS_KEY`
 (own Cloudflare account; blank = fall back to the main `R2_*`), `VAULT_R2_BUCKET`,

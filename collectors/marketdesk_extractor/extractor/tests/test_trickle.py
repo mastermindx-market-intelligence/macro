@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -570,3 +571,110 @@ def test_a_healthy_account_is_never_recycled(tmp_path, monkeypatch):
     )
     trickle._recycle_dead_sessions(cfg, states)
     assert calls == []
+
+# ---------------------------------------------------------------------------
+# Collector-owned Research Vault ingest dispatch
+# ---------------------------------------------------------------------------
+def test_dispatch_research_ingest_advances_watermark_after_success(tmp_path):
+    watermark = tmp_path / ".feed_vault_watermark"
+    watermark.write_text("2026-09-16T10:00:00+00:00\n")
+    calls = []
+
+    def run(command, **kwargs):
+        calls.append((command, kwargs))
+        return SimpleNamespace(returncode=0, stdout="workflow queued\n", stderr="")
+
+    ok = trickle._dispatch_research_ingest(
+        latest_vaulted_at="2026-09-16T20:34:05.176549+00:00",
+        published_count=3,
+        watermark_path=watermark,
+        runner=run,
+    )
+
+    assert ok is True
+    assert calls == [
+        (
+            [
+                "gh",
+                "workflow",
+                "run",
+                "research-ingest.yml",
+                "-R",
+                "mastermindx-market-intelligence/macro",
+            ],
+            {
+                "capture_output": True,
+                "text": True,
+                "check": False,
+                "timeout": 20.0,
+            },
+        )
+    ]
+    assert watermark.read_text().strip() == "2026-09-16T20:34:05.176549+00:00"
+
+
+def test_dispatch_research_ingest_failure_is_fail_soft_and_preserves_watermark(tmp_path):
+    watermark = tmp_path / ".feed_vault_watermark"
+    watermark.write_text("2026-09-16T10:00:00+00:00\n")
+
+    def run(_command, **_kwargs):
+        return SimpleNamespace(returncode=1, stdout="", stderr="dispatch denied")
+
+    ok = trickle._dispatch_research_ingest(
+        latest_vaulted_at="2026-09-16T20:34:05.176549+00:00",
+        published_count=1,
+        watermark_path=watermark,
+        runner=run,
+    )
+
+    assert ok is False
+    assert watermark.read_text().strip() == "2026-09-16T10:00:00+00:00"
+
+
+def test_offline_drain_dispatches_once_after_vault_publication(tmp_path, monkeypatch):
+    events = []
+    summary = SimpleNamespace(
+        published=2,
+        skipped=0,
+        latest_vaulted_at="2026-09-16T20:34:05.176549+00:00",
+    )
+    cfg = SimpleNamespace(vault_enabled=True)
+    conn = object()
+
+    monkeypatch.setattr(trickle, "upload_pending", lambda *_a, **_k: events.append("upload"))
+    monkeypatch.setattr(trickle, "publish_vault_pending", lambda *_a, **_k: summary)
+    monkeypatch.setattr(trickle, "prune_local", lambda *_a, **_k: events.append("prune"))
+    monkeypatch.setattr(
+        trickle,
+        "_dispatch_research_ingest",
+        lambda *, latest_vaulted_at, published_count, **_k: events.append(
+            ("dispatch", latest_vaulted_at, published_count)
+        ) or True,
+    )
+
+    trickle._drain_offline(cfg, conn)
+
+    assert events == [
+        "upload",
+        (
+            "dispatch",
+            "2026-09-16T20:34:05.176549+00:00",
+            2,
+        ),
+        "prune",
+    ]
+
+
+def test_offline_drain_does_not_dispatch_without_new_vault_publication(monkeypatch):
+    cfg = SimpleNamespace(vault_enabled=True)
+    summary = SimpleNamespace(published=0, skipped=0, latest_vaulted_at="")
+    monkeypatch.setattr(trickle, "upload_pending", lambda *_a, **_k: None)
+    monkeypatch.setattr(trickle, "publish_vault_pending", lambda *_a, **_k: summary)
+    monkeypatch.setattr(trickle, "prune_local", lambda *_a, **_k: None)
+    monkeypatch.setattr(
+        trickle,
+        "_dispatch_research_ingest",
+        lambda **_k: (_ for _ in ()).throw(AssertionError("dispatch must not run")),
+    )
+
+    trickle._drain_offline(cfg, object())

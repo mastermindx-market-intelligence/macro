@@ -16,10 +16,12 @@ INSTALLER_PATH = CANONICAL_ROOT / "tools" / "install_runtime.py"
 EXPECTED_PACKET_SHA256 = (
     "2019c38650493e4cfa40f7ed87c175a91ea939ca57d1f404ec73c5572c340e7a"
 )
-EXPECTED_MANIFEST_SHA256 = (
+EXPECTED_MANIFEST_SHA256 = "85581c72a868c8b759e793925d1932cbd5309794f98638379ce06a0faff85e03"
+EXPECTED_RECOVERY_MANIFEST_SHA256 = (
     "6209be070fbdfe8b8269bb62c0b6f466dac9b425ba1e9244b9b1bf7d983ba602"
 )
 EXPECTED_PAYLOAD_COUNT = 58
+EXPECTED_INSTALLED_FILE_COUNT = 56
 HISTORICAL_TEMPLATE_NON_GOAL = (
     "Recovered extractor/deploy/ai.marketdesk.* plists and "
     "extractor/docs/DEPLOY_MAC_STUDIO.md are historical lineage only; "
@@ -52,6 +54,7 @@ def test_canonical_packet_manifest_is_exact_and_complete() -> None:
     assert result["payload_count"] == EXPECTED_PAYLOAD_COUNT
     assert result["manifest_sha256"] == EXPECTED_MANIFEST_SHA256
     assert result["receipt_manifest_sha256"] == EXPECTED_MANIFEST_SHA256
+    assert result["recovery_manifest_sha256"] == EXPECTED_RECOVERY_MANIFEST_SHA256
     assert result["missing"] == []
     assert result["mismatched"] == []
     assert result["unexpected"] == []
@@ -96,11 +99,9 @@ def test_source_verifier_rejects_coordinated_manifest_and_receipt_rewrite(
     lines[matches[0]] = f"{payload_digest}  {relative}"
     manifest.write_text("\n".join(lines) + "\n")
 
-    receipt_path = copied_root / "IMPORT_RECEIPT.json"
+    receipt_path = copied_root / "RELEASE_RECEIPT.json"
     receipt = json.loads(receipt_path.read_text())
-    receipt["source_packet"]["manifest_sha256"] = hashlib.sha256(
-        manifest.read_bytes()
-    ).hexdigest()
+    receipt["manifest_sha256"] = hashlib.sha256(manifest.read_bytes()).hexdigest()
     receipt_path.write_text(json.dumps(receipt, indent=2) + "\n")
 
     result = installer.verify_source(copied_root)
@@ -134,7 +135,10 @@ def test_import_receipt_pins_provenance_and_non_goals() -> None:
     assert receipt["schema"] == "mastermind.marketdesk_extractor.import.v1"
     assert receipt["operation_key"] == "research-vault-source-lineage-r1-20260914-sol-001"
     assert receipt["source_packet"]["sha256"] == EXPECTED_PACKET_SHA256
-    assert receipt["source_packet"]["manifest_sha256"] == EXPECTED_MANIFEST_SHA256
+    assert receipt["source_packet"]["manifest"] == "RECOVERY_SHA256SUMS"
+    assert receipt["source_packet"]["manifest_sha256"] == EXPECTED_RECOVERY_MANIFEST_SHA256
+    assert receipt["import_commit"] == "31981dc66e9a37419b5b7a6aecfde28808785d03"
+    assert receipt["current_release_receipt"] == "RELEASE_RECEIPT.json"
     assert receipt["source_packet"]["payload_count"] == EXPECTED_PAYLOAD_COUNT
     assert receipt["canonical_root"] == "collectors/marketdesk_extractor"
     assert receipt["runtime_cutover_in_import_pr"] is False
@@ -148,18 +152,19 @@ def test_import_receipt_pins_provenance_and_non_goals() -> None:
 def test_canonical_readme_preserves_hold_and_activation_boundaries() -> None:
     readme = " ".join((CANONICAL_ROOT / "README.md").read_text().split())
     required_phrases = (
-        "Draft / HOLD-FOR-SOL",
-        "does not alter, restart, or cut over the live M1 runtime",
-        "recovered historical templates preserved for lineage only",
-        "The `ai.marketdesk.*` launchd namespace is superseded and must not be activated",
-        "The sole production launchd authority",
-        "Activation remains a separate gate",
+        "source-lineage import was accepted in Macro PR #7164",
+        "collector also owns the post-publication Research Vault ingest dispatch",
+        "hourly GitHub Actions workflow remains the correction backstop",
+        "RECOVERY_SHA256SUMS",
+        "RELEASE_RECEIPT.json",
+        "com.mastermindx.research-feed",
+        "superseded and must remain unloaded",
+        "sole production launchd authority",
+        "removes the retired feed script and feed plist",
         "one no-new-row cycle",
         "one later natural publication",
-        "feed bridge",
-        "public catalog",
+        "production API and browser result",
         "rollback",
-        "Run this offline import smoke before activation",
         "Destination overrides are for hermetic tests and rehearsals only",
     )
     for phrase in required_phrases:
@@ -215,7 +220,7 @@ def test_install_verify_and_rollback_are_deterministic(tmp_path: Path) -> None:
         launch_agents_dir=launch_agents,
         backup_dir=backup_dir,
     )
-    assert receipt["installed_files"] == EXPECTED_PAYLOAD_COUNT
+    assert receipt["installed_files"] == EXPECTED_INSTALLED_FILE_COUNT
     assert not (runtime_root / "src" / "stale.py").exists()
     assert (runtime_root / ".env").read_text() == "KEEP_SECRET=1\n"
     assert (runtime_root / ".venv" / "bin" / "python").read_text() == "keep venv\n"
@@ -229,7 +234,7 @@ def test_install_verify_and_rollback_are_deterministic(tmp_path: Path) -> None:
         launch_agents_dir=launch_agents,
     )
     assert readback["ok"] is True
-    assert readback["matched"] == EXPECTED_PAYLOAD_COUNT
+    assert readback["matched"] == EXPECTED_INSTALLED_FILE_COUNT
     assert readback["missing"] == []
     assert readback["mismatched"] == []
 
@@ -397,7 +402,8 @@ def test_verify_installed_rejects_executable_mode_drift(tmp_path: Path) -> None:
         launch_agents_dir=launch_agents,
         backup_dir=backup_dir,
     )
-    feed_script.chmod(0o600)
+    active_plist = launch_agents / "com.mastermindx.research-trickle.plist"
+    active_plist.chmod(0o644)
 
     readback = installer.verify_installed(
         source_root=CANONICAL_ROOT,
@@ -407,7 +413,7 @@ def test_verify_installed_rejects_executable_mode_drift(tmp_path: Path) -> None:
     )
 
     assert readback["ok"] is False
-    assert str(feed_script) in readback["mode_mismatched"]
+    assert str(active_plist) in readback["mode_mismatched"]
 
 
 def test_install_refuses_symlinked_runtime_root(tmp_path: Path) -> None:
@@ -610,3 +616,75 @@ def test_rollback_refuses_receipt_root_rewrite(tmp_path: Path) -> None:
         )
 
     assert (runtime_root / ".env").read_text() == "KEEP_SECRET=1\n"
+
+
+def test_release_receipt_preserves_recovery_anchor_and_current_manifest() -> None:
+    recovery_manifest = CANONICAL_ROOT / "RECOVERY_SHA256SUMS"
+    release_receipt_path = CANONICAL_ROOT / "RELEASE_RECEIPT.json"
+    import_receipt = json.loads((CANONICAL_ROOT / "IMPORT_RECEIPT.json").read_text())
+    release_receipt = json.loads(release_receipt_path.read_text())
+
+    assert hashlib.sha256(recovery_manifest.read_bytes()).hexdigest() == (
+        "6209be070fbdfe8b8269bb62c0b6f466dac9b425ba1e9244b9b1bf7d983ba602"
+    )
+    assert import_receipt["source_packet"]["manifest"] == "RECOVERY_SHA256SUMS"
+    assert import_receipt["source_packet"]["manifest_sha256"] == (
+        "6209be070fbdfe8b8269bb62c0b6f466dac9b425ba1e9244b9b1bf7d983ba602"
+    )
+    assert import_receipt["import_commit"] == (
+        "31981dc66e9a37419b5b7a6aecfde28808785d03"
+    )
+    assert release_receipt["schema"] == "mastermind.marketdesk_extractor.release.v1"
+    assert release_receipt["manifest"] == "SHA256SUMS"
+    assert release_receipt["payload_count"] == 58
+    assert release_receipt["recovery_manifest"] == "RECOVERY_SHA256SUMS"
+    assert release_receipt["recovery_manifest_sha256"] == (
+        "6209be070fbdfe8b8269bb62c0b6f466dac9b425ba1e9244b9b1bf7d983ba602"
+    )
+    assert release_receipt["manifest_sha256"] == hashlib.sha256(
+        (CANONICAL_ROOT / "SHA256SUMS").read_bytes()
+    ).hexdigest()
+
+
+def test_install_retires_separate_feed_carrier(tmp_path: Path) -> None:
+    installer = _load_installer()
+    runtime_root = tmp_path / "mastermind-research" / "marketdesk_paper_extractor"
+    feed_script = tmp_path / "mastermind-research" / "feed.sh"
+    launch_agents = tmp_path / "Library" / "LaunchAgents"
+    backup_dir = tmp_path / "backup"
+    _seed_runtime_state(runtime_root, feed_script, launch_agents)
+
+    receipt = installer.install(
+        source_root=CANONICAL_ROOT,
+        runtime_root=runtime_root,
+        feed_script=feed_script,
+        launch_agents_dir=launch_agents,
+        backup_dir=backup_dir,
+    )
+
+    assert receipt["retired"] == [
+        str(feed_script),
+        str(launch_agents / "com.mastermindx.research-feed.plist"),
+    ]
+    assert not feed_script.exists()
+    assert not (launch_agents / "com.mastermindx.research-feed.plist").exists()
+    assert (launch_agents / "com.mastermindx.research-trickle.plist").is_file()
+    readback = installer.verify_installed(
+        source_root=CANONICAL_ROOT,
+        runtime_root=runtime_root,
+        feed_script=feed_script,
+        launch_agents_dir=launch_agents,
+    )
+    assert readback["ok"] is True
+    assert readback["retired_present"] == []
+
+    installer.rollback(
+        backup_dir=backup_dir,
+        runtime_root=runtime_root,
+        feed_script=feed_script,
+        launch_agents_dir=launch_agents,
+    )
+    assert feed_script.read_text() == "old feed\n"
+    assert (
+        launch_agents / "com.mastermindx.research-feed.plist"
+    ).read_text() == "old feed plist\n"

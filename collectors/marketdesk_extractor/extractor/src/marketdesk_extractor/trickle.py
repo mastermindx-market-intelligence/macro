@@ -29,10 +29,13 @@ downloads NOTHING.
 """
 from __future__ import annotations
 
+import os
+import subprocess
 import sys
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
+from pathlib import Path
 from typing import Callable
 
 from . import allocator, db
@@ -56,6 +59,10 @@ log = get_logger("trickle")
 # Backstop only: the token-bucket pace in run_tick is the real rate governor;
 # this just caps a single tick's drain so nothing runs away.
 DOWNLOADS_PER_ACCOUNT_PER_TICK = 15
+
+RESEARCH_INGEST_REPOSITORY = "mastermindx-market-intelligence/macro"
+RESEARCH_INGEST_WORKFLOW = "research-ingest.yml"
+RESEARCH_INGEST_TIMEOUT_SECONDS = 20.0
 
 # ---------------------------------------------------------------------------
 # Dead-driver watchdog
@@ -228,6 +235,108 @@ def _classify(conn, blob_id: str, now: datetime, new_window_hours: int) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Research Vault ingest bridge — owned by the already-running collector
+# ---------------------------------------------------------------------------
+def _default_watermark_path() -> Path:
+    return Path.home() / "mastermind-research" / ".feed_vault_watermark"
+
+
+def _write_watermark_atomic(path: Path, value: str) -> None:
+    """Advance the legacy feed cursor without exposing a partial write."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    try:
+        temporary.write_text(value.rstrip() + "\n", encoding="utf-8")
+        os.replace(temporary, path)
+    finally:
+        try:
+            temporary.unlink(missing_ok=True)
+        except OSError:
+            pass
+
+
+def _dispatch_research_ingest(
+    *,
+    latest_vaulted_at: str,
+    published_count: int,
+    watermark_path: Path | None = None,
+    runner: Callable[..., object] | None = None,
+) -> bool:
+    """Dispatch the canonical ingest after a successful vault publication.
+
+    The collector already owns the external-volume SQLite connection that recorded
+    ``vaulted_at``. Dispatching here avoids a second launchd process reopening that
+    removable-volume database. Failure is fail-soft because the hourly GitHub
+    workflow remains the correction backstop; the collector must never die because
+    the transport is briefly unavailable.
+    """
+    latest = str(latest_vaulted_at or "").strip()
+    if published_count <= 0 or not latest:
+        return False
+
+    command = [
+        "gh",
+        "workflow",
+        "run",
+        RESEARCH_INGEST_WORKFLOW,
+        "-R",
+        RESEARCH_INGEST_REPOSITORY,
+    ]
+    run = runner or subprocess.run
+    try:
+        result = run(
+            command,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=RESEARCH_INGEST_TIMEOUT_SECONDS,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        log.warning(
+            "research ingest dispatch unavailable after %d vault publication(s): %s; "
+            "hourly workflow remains the backstop",
+            published_count,
+            exc,
+        )
+        return False
+
+    returncode = int(getattr(result, "returncode", 1))
+    if returncode != 0:
+        detail = str(getattr(result, "stderr", "") or "").strip()[-500:]
+        log.warning(
+            "research ingest dispatch failed rc=%d after %d vault publication(s)%s; "
+            "hourly workflow remains the backstop",
+            returncode,
+            published_count,
+            f": {detail}" if detail else "",
+        )
+        return False
+
+    cursor = Path(watermark_path) if watermark_path is not None else _default_watermark_path()
+    try:
+        _write_watermark_atomic(cursor, latest)
+    except OSError as exc:
+        # The workflow has already been accepted. Do not retry blindly; preserve the
+        # old cursor and let the next natural publication or hourly run reconcile.
+        log.warning(
+            "research ingest dispatched for %d vault publication(s), but watermark "
+            "advance to %s failed: %s",
+            published_count,
+            latest,
+            exc,
+        )
+        return True
+
+    log.info(
+        "research ingest dispatched after %d vault publication(s); watermark -> %s",
+        published_count,
+        latest,
+    )
+    return True
+
+
+# ---------------------------------------------------------------------------
 # Offline drain (upload -> vault -> prune) for a freshly downloaded paper
 # ---------------------------------------------------------------------------
 def _drain_offline(cfg: Config, conn) -> None:
@@ -244,10 +353,16 @@ def _drain_offline(cfg: Config, conn) -> None:
     except Exception as e:  # noqa: BLE001 - never let a drain error kill the loop
         log.warning("trickle drain: upload_pending failed: %s", e)
     if cfg.vault_enabled:
+        vault_summary = None
         try:
-            publish_vault_pending(cfg, conn)
+            vault_summary = publish_vault_pending(cfg, conn)
         except Exception as e:  # noqa: BLE001
             log.warning("trickle drain: publish_vault_pending failed: %s", e)
+        if vault_summary is not None and vault_summary.published > 0:
+            _dispatch_research_ingest(
+                latest_vaulted_at=vault_summary.latest_vaulted_at,
+                published_count=vault_summary.published,
+            )
         try:
             prune_local(cfg, conn, older_than_days=0, require_vault=True)
         except Exception as e:  # noqa: BLE001
