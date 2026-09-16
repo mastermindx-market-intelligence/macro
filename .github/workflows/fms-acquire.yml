@@ -32,19 +32,21 @@ on:
         type: string
 
 env:
+  FMS_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
   FMS_TARGET_REF: ${{ inputs.ref || github.event.repository.default_branch }}
 
 permissions:
   contents: write
 
-concurrency:
-  # Shares the government-revenue-live group so an acquisition can never race
-  # the serialized Government Revenue persist/publish cycle.
-  group: government-revenue-live
-  cancel-in-progress: false
-
 jobs:
   acquire:
+    # Release this lock before the called publisher takes the SAME lock.
+    # A workflow-level parent lock would deadlock its dependent publisher.
+    concurrency:
+      group: government-revenue-live
+      cancel-in-progress: false
+    outputs:
+      publish_default: ${{ steps.persist.outputs.publish_default }}
     runs-on: [self-hosted, macstudio-light]
     timeout-minutes: 30
     steps:
@@ -104,6 +106,13 @@ jobs:
           git commit -m "fms-acquire: official 36(b) notification acquisition $(date -u +%FT%H:%MZ)"
           git push origin "HEAD:$FMS_TARGET_REF"
           echo "projection_changed=true" >> "$GITHUB_OUTPUT"
+          # Only released main code committing main may request the main publisher.
+          # GITHUB_TOKEN pushes do not trigger its on:push subscription.
+          if [ "${FMS_DEFAULT_BRANCH:-}" = "main" ] && [ "$FMS_TARGET_REF" = "main" ] && [ "${GITHUB_REF:-}" = "refs/heads/main" ]; then
+            echo "publish_default=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "publish_default=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: record check outcome separately from notification freshness
         id: check_summary
@@ -121,5 +130,14 @@ jobs:
             printf 'Commit step: %s\n\n' "$PERSIST_OUTCOME"
             printf 'Projection files changed: %s\n\n' "$PROJECTION_CHANGED"
             printf 'This check does not advance source publication time or prove a new notification. Projection changes may include health or generation metadata.\n'
-            printf 'Site publication remains with the existing Government Revenue publisher.\n'
+            printf 'Site publication is a separate dependent job; acquisition success is not publication success.\n'
           } >> "$GITHUB_STEP_SUMMARY"
+
+  # Reuse the sole publisher, without another writer or dispatch permission.
+  # Implicit success() on needs prevents a failed acquisition from publishing.
+  publish:
+    needs: acquire
+    if: needs.acquire.outputs.publish_default == 'true'
+    uses: ./.github/workflows/government-revenue-live.yml
+    with:
+      projection_only: true

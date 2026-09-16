@@ -13,12 +13,18 @@ state_before: >
   with its real-data local proof preserved and twelve executor packs queued.
 changed:
   - path: .github/workflows/fms-acquire.yml
-    what: Daily default-branch check, preserved manual ref, literal validated target, and separate check-outcome summary.
+    what: Daily default-branch check, literal target, truthful outcome summary and default-only handoff to the existing publisher after releasing the acquisition lock.
   - path: tests/test_fms_notifications.py
-    what: Twelve cadence and actual-shell/local-Git tests in the existing CI-listed FMS suite.
+    what: Nineteen cadence/handoff and actual-shell/local-Git tests in the existing CI-listed FMS suite, with failed-push and branch-boundary refusals.
   - path: research/defense_intelligence/DEFENSE_FMS_DAILY_ACQUISITION_2026-09-16.md
     what: Current authority, source custody, test evidence, failure behavior and release/production acceptance.
 verified:
+  - claim: The dependent publisher connection preserves source and integration boundaries.
+    command: python3 -m pytest tests/test_fms_notifications.py; python3 -m pytest tests/test_fms_ui.py tests/test_dag_conformance.py tests/test_government_revenue_award_validator_wiring.py
+    result: 90 notification tests and 65 UI/DAG/wiring tests passed. Seven new handoff cases had first produced six failures and one pass on the prior source. These are local proofs, not live schedule acceptance.
+  - claim: The prior one-shot source refresh is settled and must not be repeated.
+    command: gh run view 35068764946; exact-main FMS source and site-twin readback at e729d0fd9d48868b49a1911d4098c689b3d373bd
+    result: Run succeeded; source commit bbebc67f6c2a89bfd2c924c5ab5a44f05329a0f3. Source grfms1-9f2bd12475512ed4e979c913 has 67 cases, generated September 16 at 07:29:57Z. Site grfms1-9e3919c4e74392ec5ff850a5 still has 66 cases, generated August 26. No end-to-end UI recovery is claimed.
   - claim: The full existing FMS suite passes with the cadence change.
     command: python3 -m pytest tests/test_fms_notifications.py -q --tb=short --basetemp=.pytest-local/full
     result: 83 passed in 9.15 seconds; exit 0. The preceding new-test run was 11 failed and one passed before implementation.
@@ -31,14 +37,14 @@ verified:
 unverified:
   - claim: The new daily schedule is released and naturally operating.
     what_would_verify: Exact-head review and concluded applicable CI, normal merge, then a real scheduled default-branch run and source/publisher readback.
-  - claim: A fresh one-shot acquisition or investor-facing publication has occurred in this continuation.
-    what_would_verify: A later same-carrier receipt naming the actual run, input revision, step outcomes, committed graph and served generation. No such effect is claimed at authoring.
+  - claim: The new dependent publisher job has executed on GitHub and the investor UI is current.
+    what_would_verify: Concluded release checks, normal merges in dependency order, a real FMS-to-publisher invocation, served-generation readback and signed-in browser proof.
 unresolved:
   - The candidate-publication repair remains on its own #7186 carrier; this change cannot make its queued tests pass.
   - Financial semantics and munitions program-role admission remain separate existing-owner dependencies.
 next_actions:
   - Validate and publish this exact source branch; do not create a replacement cadence branch.
-  - Reconcile the latest shared-group runs before any one-shot refresh of the already-released main acquisition workflow; submit once and bind the returned run.
+  - Do not repeat the settled source refresh 35068764946. Release and production-prove #7186 before accepting the same #7199 cadence and publisher handoff.
   - Accept the cadence only after ordinary release and an actual scheduled run; distinguish acquired input from site publication and signed-in UI proof.
   - Advance the existing munitions and typed-financial investor journey after the source boundary is dependable, without enabling unqualified trading authority.
 do_not_redo:
@@ -59,4 +65,8 @@ This is a capability checkpoint, not parent-program completion or runtime admiss
 
 The user journey is reliable foreign-sales context -> existing procurement desk -> company/theme research. Deterministic code owns collection, versions, explicit source stages and outcome reporting; no model interprets a notification into a funded sale. Daily time is 10:43 UTC. Manual branch selection remains explicit; all shell use is literal. Failure keeps old evidence and preserves error states. The summary records projection-file changes, not economic changes or inferred source freshness.
 
-A prospective manual refresh uses the already-released collector on main, not this candidate workflow. It is one separately reconciled invocation, not a retry of an unknown effect. A natural scheduled run must still be proven after merge. Source-read or push failure stops that invocation; do not bypass checks, broaden writes, or fabricate success. Independent investor research may continue safely while a source or release gate is held.
+The released-main manual refresh is now settled as run 35068764946; do not repeat it. The new dependent publisher has not executed and remains behind #7186 and this carrier's release gates. A natural scheduled run must still be proven after merge. Source-read or push failure stops that invocation; do not bypass checks, broaden writes, or fabricate success. Independent investor research may continue safely while a source or release gate is held.
+
+## Current publisher handoff
+
+Protected procedure was refreshed at `8ba7deedde164c90298d3e88785d98e02fa5e2d2`. The acquire job retains the existing shared lock, then releases it before the dependent Government Revenue publisher obtains that same lock. No new writer, dispatch permission, credential inheritance, or retry system exists. Only a completed default/main push from released main emits the positive handoff. The daily cadence remains 10:43 UTC. CI, source acquisition, dependent publication, served bytes and browser acceptance remain distinct.

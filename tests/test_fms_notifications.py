@@ -1721,7 +1721,7 @@ def test_fms_cadence_uses_daily_schedule_and_preserves_manual_dispatch():
 
 def test_fms_cadence_keeps_single_writer_and_existing_resource_limits():
     workflow = _cadence_workflow()
-    assert workflow["concurrency"] == {"group": "government-revenue-live", "cancel-in-progress": "false"}
+    assert workflow["jobs"]["acquire"]["concurrency"] == {"group": "government-revenue-live", "cancel-in-progress": "false"}
     assert workflow["permissions"] == {"contents": "write"}
     job = workflow["jobs"]["acquire"]
     assert job["runs-on"] == ["self-hosted", "macstudio-light"]
@@ -1768,7 +1768,7 @@ def test_fms_cadence_publishes_only_selected_literal_branch(tmp_path, branch):
     assert result.returncode == 0, result.stderr
     after = git("rev-parse", f"refs/heads/{branch}", cwd=origin)
     assert after != before
-    assert (tmp_path / "outputs").read_text().strip() == "projection_changed=true"
+    assert _fms_step_outputs(tmp_path)["projection_changed"] == "true"
     assert git("diff", "--name-only", before, after, cwd=checkout) == "data/government_revenue/fms_observations.jsonl"
 
 
@@ -1778,7 +1778,8 @@ def test_fms_cadence_unchanged_working_tree_does_not_create_a_commit(tmp_path):
     result = _run_cadence_step("persist", checkout, tmp_path)
     assert result.returncode == 0, result.stderr
     assert git("rev-parse", "refs/heads/main", cwd=origin) == before
-    assert (tmp_path / "outputs").read_text().strip() == "projection_changed=false"
+    assert _fms_step_outputs(tmp_path)["projection_changed"] == "false"
+    assert _fms_step_outputs(tmp_path).get("publish_default") != "true"
 
 
 def test_fms_cadence_refuses_unrelated_files_before_commit(tmp_path):
@@ -1811,3 +1812,62 @@ def test_fms_cadence_reports_step_outcome_without_fabricating_freshness(tmp_path
     assert f"Commit step: {persist}" in summary
     assert f"Projection files changed: {changed}" in summary
     assert "does not advance source publication time" in summary
+
+
+# GITHUB_TOKEN source pushes do not trigger the downstream on:push publisher.
+def _fms_step_outputs(tmp_path):
+    path = tmp_path / "outputs"
+    return dict(line.split("=", 1) for line in path.read_text().splitlines()) if path.exists() else {}
+
+
+def test_fms_publisher_handoff_reuses_existing_owner_without_parent_lock():
+    workflow = _cadence_workflow()
+    assert "concurrency" not in workflow, "a parent lock would deadlock the called publisher"
+    acquire = workflow["jobs"]["acquire"]
+    assert acquire["concurrency"] == {"group": "government-revenue-live", "cancel-in-progress": "false"}
+    assert acquire["outputs"]["publish_default"] == "${{ steps.persist.outputs.publish_default }}"
+    assert workflow["env"]["FMS_DEFAULT_BRANCH"] == "${{ github.event.repository.default_branch }}"
+    publish = workflow["jobs"]["publish"]
+    assert publish["needs"] == "acquire"
+    assert publish["if"] == "needs.acquire.outputs.publish_default == 'true'"
+    assert publish["uses"] == "./.github/workflows/government-revenue-live.yml"
+    assert publish["with"] == {"projection_only": "true"}
+    assert not any(key in publish for key in ("steps", "runs-on", "concurrency", "secrets"))
+    assert workflow["permissions"] == {"contents": "write"}
+    root = Path(__file__).resolve().parents[1]
+    import yaml
+    owner = yaml.load((root / ".github/workflows/government-revenue-live.yml").read_text(), Loader=yaml.BaseLoader)
+    assert owner["on"]["workflow_call"]["inputs"]["projection_only"]["type"] == "boolean"
+    assert owner["concurrency"] == acquire["concurrency"]
+    checkout = next(s for s in owner["jobs"]["refresh"]["steps"] if s.get("uses", "").startswith("actions/checkout@"))
+    assert checkout["with"]["ref"] == "main"
+
+
+@pytest.mark.parametrize("target,workflow_ref,default_branch,expected", [
+    ("main", "refs/heads/main", "main", "true"),
+    ("manual/fms;literal", "refs/heads/main", "main", "false"),
+    ("main", "refs/heads/unreleased", "main", "false"),
+    ("main", "refs/heads/main", "other", "false"),
+    ("main", "", "main", "false"),
+])
+def test_fms_publisher_handoff_requires_committed_production_ref(tmp_path, target, workflow_ref, default_branch, expected):
+    checkout, origin, git = _cadence_git_root(tmp_path, target)
+    (checkout / "data/government_revenue/fms_observations.jsonl").write_text('{"new":true}\n')
+    result = _run_cadence_step("persist", checkout, tmp_path, target,
+        GITHUB_REF=workflow_ref, FMS_DEFAULT_BRANCH=default_branch)
+    assert result.returncode == 0, result.stderr
+    outputs = _fms_step_outputs(tmp_path)
+    assert outputs.get("publish_default") == expected
+    assert outputs["projection_changed"] == "true"
+    assert git("rev-parse", f"refs/heads/{target}", cwd=origin) == git("rev-parse", "HEAD", cwd=checkout)
+
+
+def test_fms_publisher_handoff_does_not_publish_after_failed_push(tmp_path):
+    checkout, origin, git = _cadence_git_root(tmp_path)
+    hook = origin / "hooks/pre-receive"
+    hook.write_text("#!/bin/sh\nexit 1\n")
+    hook.chmod(0o700)
+    (checkout / "data/government_revenue/fms_observations.jsonl").write_text('{"new":true}\n')
+    result = _run_cadence_step("persist", checkout, tmp_path, GITHUB_REF="refs/heads/main", FMS_DEFAULT_BRANCH="main")
+    assert result.returncode != 0
+    assert _fms_step_outputs(tmp_path).get("publish_default") != "true"

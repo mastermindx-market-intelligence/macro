@@ -46,3 +46,28 @@ The command/notification stage, evidence known-at, publication date, graph gener
 Keep #7186 on its existing branch/head until its release gates and production proof clear. Keep the financial qualification and four-company journey with the existing Earnings/Company Intelligence and D5 owners. D5 v1 requires human admission of program/role records; do not relabel model research as a human review or automatically promote a proposed map. Optional source expansion must not replace the investor workflow.
 
 The next FMS action is to reconcile the actual latest source run, complete ordinary release of this same cadence carrier, and prove its first scheduled invocation. The next investment-intelligence action is the munitions program/company attribution and typed financial bridge, with primary-source scope and current expectations kept explicit. The Defense program remains open.
+
+## Publisher handoff amendment — same #7199 carrier
+
+Current procedure pin: Mastermind `8ba7deedde164c90298d3e88785d98e02fa5e2d2`, protected master, compatible Skillpack 1.0.1/bootstrap 1. INDEX, COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION, RECONCILE_STATE and CLOSEOUT were fetched at that pin and matched the previously read content. Sol retains the operation; direct work reason is PRINCIPAL_JUDGMENT for the producer/publisher and shared-lock boundary, then CRITICAL_PATH_SHORTCUT for the bounded change.
+
+The already-executed main refresh is settled: run 35068764946 succeeded and committed source bbebc67f6c2a89bfd2c924c5ab5a44f05329a0f3. Do not repeat it. Its source graph contains 67 cases, while the recorded site twin still contains 66. That is a missing source-to-consumer handoff, not proof that acquisition failed.
+
+The source workflow uses checkout's repository GITHUB_TOKEN. GitHub documents that pushes made with that token do not start another on:push workflow. The Government Revenue publisher also has an existing reusable workflow_call interface, already used by daily.yml with projection_only=true. Therefore a successful FMS push alone cannot be the continuation contract.
+
+The same FMS workflow now has a dependent `publish` job calling that EXISTING reusable publisher. It does not copy builder commands, write site files itself, create a dispatch queue, grant actions:write, inherit additional secrets, or add another publication owner. The publisher consumes current main, preserving its existing source validation, candidate corrections and commit policy.
+
+Only a successful push of main, from the released main workflow, when the repository default is still main, emits `publish_default=true`. A manual non-main target, candidate workflow ref, changed default branch, missing ref or failed push cannot request main publication. The dependent job's implicit success() additionally refuses execution after acquisition failure. A genuinely unchanged tree emits no positive handoff.
+
+The shared `government-revenue-live` lock moves from the caller workflow to its `acquire` job. The acquisition finishes and releases that same lock before the dependent reusable publisher obtains it. Keeping a workflow-level caller lock would deadlock the child; giving the child a different lock would violate serialization. No second lock domain or retry owner is introduced. GitHub's existing pending-run replacement semantics remain a limitation: a cancelled publication is not success, and must stay visible under the existing run lifecycle.
+
+New discriminating tests: six failures and one pass on the prior source. After the change the full notification suite passed 90 tests. The tests execute the actual persist shell against disposable local Git remotes, including rejected pushes, literal branch handling and positive/default-only handoff. They also pin the actual reusable-workflow target, projection-only input and non-overlapping lock lifecycle. These are source/fixture proofs, not a GitHub-hosted execution of the new dependency or a production browser proof.
+
+Release ordering remains explicit: #7186's candidate publication repair must be released and production-proven before this cadence/handoff can be accepted end-to-end. The source schedule is still unmerged, not armed by this document, and not proven by the earlier manual refresh. No new production acquisition or publisher dispatch occurred while building this amendment.
+
+Primary platform references, read September 16:
+- https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow
+- https://docs.github.com/en/actions/reference/workflows-and-actions/reusing-workflow-configurations
+- https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency
+
+Additional verification: 65 tests passed across `test_fms_ui.py`, `test_dag_conformance.py` and `test_government_revenue_award_validator_wiring.py` (eight dependency deprecation warnings). The initial combined run could not collect UI tests while site/ was absent; the existing sparse-worktree helper materialized site/ before this successful run. No test or guard was disabled. Current exact-main source/site readback at `e729d0fd9d48868b49a1911d4098c689b3d373bd` reconfirms the 67-versus-66-case gap; `.pytest-local/source-vs-publication-current.json` is its bounded receipt.
