@@ -1163,6 +1163,36 @@ def test_runner_service_seals_runtime_and_binds_host_admission() -> None:
     assert "process.env.MASTERMIND_CI_PROFILE" not in hook
 
 
+def test_pc_windows_boot_recovery_preserves_existing_runner_authority() -> None:
+    recovery = (
+        ROOT
+        / "ops"
+        / "runner-host"
+        / "pc"
+        / "windows"
+        / "Start-MastermindWslBootRecovery.ps1"
+    ).read_text(encoding="utf-8")
+    installer = (
+        ROOT
+        / "ops"
+        / "runner-host"
+        / "pc"
+        / "windows"
+        / "Install-MastermindWslBootRecovery.ps1"
+    ).read_text(encoding="utf-8")
+
+    # Windows only revives the existing per-user WSL VM. Runner registration,
+    # labels, job routing and listener restart policy remain inside GitHub/systemd.
+    assert "--distribution $Distribution --exec /bin/true" in recovery
+    assert "--list --running --quiet" in recovery
+    assert "Register-ScheduledTask" in installer
+    assert "New-ScheduledTaskTrigger -AtStartup" in installer
+    assert "-LogonType S4U" in installer
+    for forbidden in ("pc-ci-4", "ci-linux", "config.sh", "Runner.Listener"):
+        assert forbidden not in recovery
+        assert forbidden not in installer
+
+
 def test_resource_refusal_backoff_only_delays_an_unsafe_retry() -> None:
     sleeps: list[int] = []
     RESOURCE_GUARD.refusal_backoff([], 300, sleep=sleeps.append)

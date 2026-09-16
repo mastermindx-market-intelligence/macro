@@ -105,6 +105,34 @@ The Wave B candidate is 44 GiB / 16 CPUs / 8 GiB swap: 44 rather than 48 GiB lea
 resident services. Apply only after all Actions jobs drain, then prove mounts,
 Tailscale, storage, render, and runner recovery.
 
+## Windows reboot recovery law
+
+The PC/WSL runner lifecycle has two layers and they must not be collapsed. Windows is
+responsible only for starting the existing WSL distribution after a host boot; inside
+that guest, the already-installed systemd services remain the sole lifecycle authority
+for `pc-ci-1..3` and render. GitHub Actions remains the sole job scheduler. Windows boot
+recovery must never register a runner, add `ci-linux`, create `pc-ci-4`, or implement a
+second listener supervisor.
+
+WSL distributions are installed per Windows user, so the startup task must run under the
+exact Windows identity that owns the production distribution. The checked-in installer
+uses Task Scheduler `AtStartup` plus an S4U principal so no password is stored. Before
+installing, an elevated operator must pass the exact distribution name and the installer
+refuses if that distribution is not visible to the current identity. The recovery action
+retries boundedly, records only timestamps/status in `%ProgramData%\Mastermind`, and
+starts WSL with a no-op command. It does not touch runner registration or labels.
+
+Source:
+
+- `ops/runner-host/pc/windows/Start-MastermindWslBootRecovery.ps1`
+- `ops/runner-host/pc/windows/Install-MastermindWslBootRecovery.ps1`
+
+Host acceptance is stronger than source acceptance: after installation, perform one
+controlled Windows reboot and prove, without interactive login, that the named WSL distro
+becomes running, the exact pre-reboot `pc-ci-1..3` service identities return, GitHub reports
+those three runners online, and render identity/labels are unchanged. If any effect is
+ambiguous, stop and reconcile before retrying. `pc-ci-4` remains separately gated by C3R-B.
+
 ## M1 service and disk law
 
 Each owner LaunchAgent has `RunAtLoad=true`, `KeepAlive.SuccessfulExit=false`, and a
