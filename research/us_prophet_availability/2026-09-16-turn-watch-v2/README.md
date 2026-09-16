@@ -17,3 +17,11 @@ Git composition against main `44e1292182e65da921e4f19efb254ba0e27d2815` was conf
 The default remains v1; no production workflow or dataset-registry current-value is changed. The existing V4 authority must accept the protocol and explicitly coordinate registry/cutover on a genuinely new source session. Old v1 events and input receipts must not be rewritten. The Yahoo archive cadence problem is a distinct producer dependency and is not repaired by changing event evidence. A complete live recovery still requires genuinely current data, canonical nonwriting reconciliation, one acknowledged publication owner and authorized served-payload/browser proof.
 
 Reproduce: `python -m pytest -q tests/test_us_candidate_episode_intake.py tests/test_us_candidate_episode.py tests/test_us_candidate_episode_reconciler.py tests/test_us_candidate_episode_wiring.py tests/test_us_turn_watch.py`. Exact machine outcomes and hashes are in `verification.json`. Original tests/source semantics were recovered from the interrupted session; no already completed prototype work was recreated or passed off as new deployment.
+
+## Refused transition cannot leak a changed public deck
+
+The first published candidate still wrote the public deck before refusing an in-place upgrade, downgrade or backdated v2 transition. Three tests through the real builder failed on that source: the return code reported refusal, but the public file had changed.
+
+The transition check is now a single non-writing helper shared by builder preflight and the existing sidecar writer. Refusal happens before the public write; the writer independently rechecks before its own persistence. Successful v1 output and emission order are unchanged. This is not a new publication plane or a claim of cross-file crash atomicity.
+
+After the three intended RED cases, the five-suite battery passed **204 tests in 98.41s**. All three forbidden transitions preserve both public bytes and private input files. The exact code digests and observed results are in `refused-transition-proof.json`; the earlier 201-test/legacy-input receipts remain historical evidence of their recorded semantic head. The real reconciler/intake path used by the legacy-input replay has not changed in this follow-up.

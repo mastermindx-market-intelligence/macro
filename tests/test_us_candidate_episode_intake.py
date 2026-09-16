@@ -593,3 +593,31 @@ def test_v2_semantic_envelope_is_closed_even_with_a_recomputed_document_hash(tmp
     assert not batch.observations
     assert batch.source_receipts[0]["status"] == "degraded"
     assert batch.source_receipts[0]["reason"] == "MALFORMED_SOURCE"
+
+
+@pytest.mark.parametrize("case", ("upgrade", "downgrade", "backdate"))
+def test_rejected_schema_change_keeps_public_deck_unchanged(tmp_path, monkeypatch, case):
+    from scripts import build_turn_watch as builder
+
+    data, site = tmp_path / "data", tmp_path / "site"
+    _identity_spine(data)
+    artifact = {**_turn_artifact(), "runtime_seconds": 10.0, "coverage": {
+        "graded": 1, "triggered": 1, "deck": 1, "beyond_cap": 0,
+        "deck_by_trigger": {"dot_1d": 1}}}
+    monkeypatch.setattr(builder.config, "data_dir", lambda: data)
+    monkeypatch.setattr(builder.config, "site_dir", lambda: site)
+    monkeypatch.setattr(builder.turn_watch, "compute_deck_with_candidates",
+                        lambda *a, **k: (dict(artifact), [_turn_row()]))
+    first_args = ["--episode-input-schema", "v2"] if case == "downgrade" else []
+    assert builder.build(first_args) == 0
+    public = site / "turn_watch/turn_watch.json"
+    sidecar_root = data / "us_prophet_rank/episode_inputs/turn_watch"
+    public_before = public.read_bytes()
+    inputs_before = {p.name: p.read_bytes() for p in sidecar_root.glob("*.json")}
+    artifact["runtime_seconds"] = 11.0
+    if case == "backdate":
+        artifact["data_session"] = "2026-11-25"
+    blocked_args = [] if case == "downgrade" else ["--episode-input-schema", "v2"]
+    assert builder.build(blocked_args) == 1
+    assert public.read_bytes() == public_before, "a refused transition must not replace the public deck"
+    assert {p.name: p.read_bytes() for p in sidecar_root.glob("*.json")} == inputs_before

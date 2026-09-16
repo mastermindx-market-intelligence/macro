@@ -60,12 +60,11 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s  %(message)s")
 BUDGET_SECONDS = 600.0
 
 
-def write_candidate_episode_input(artifact: dict, rows: list[dict], data_root: Path, *,
-                                  input_schema: str = "prophet.candidate_episode_input.turn_watch/v1") -> Path:
-    """Atomically write the private, uncapped TURN WATCH intake sidecar.
+def _candidate_episode_input_path(artifact: dict, data_root: Path, input_schema: str) -> Path:
+    """One non-writing transition check, shared by builder preflight and writer.
 
-    The public document remains capped at ``site/turn_watch``.  This private Data OS input
-    carries the same already-computed rows and never asks the deck to recompute them.
+    A refused protocol change must not replace the public deck first. This is
+    not a cross-file crash-atomic publication mechanism or a new source owner.
     """
     if input_schema not in ("prophet.candidate_episode_input.turn_watch/v1",
                              "prophet.candidate_episode_input.turn_watch/v2"):
@@ -73,21 +72,7 @@ def write_candidate_episode_input(artifact: dict, rows: list[dict], data_root: P
     session = artifact.get("data_session")
     if not isinstance(session, str) or not session:
         raise ValueError("TURN WATCH data_session is required for candidate episode input")
-    known_at = session_window_et(session)[1].astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    artifact_sha = sha256(turn_watch.artifact_bytes(artifact)).hexdigest()
-    document = {
-        "schema": input_schema,
-        "data_session": session,
-        "known_at": known_at,
-        "selection_era": artifact.get("selection_era"),
-        "anchor_era": artifact.get("anchor_era"),
-        "trigger_registry": artifact.get("triggers"),
-        "source_artifact_sha256": "sha256:" + artifact_sha,
-        "rows": rows,
-    }
-    document["content_sha256"] = sha256(canonical_json(document).encode("utf-8")).hexdigest()
     out = Path(data_root) / "us_prophet_rank" / "episode_inputs" / "turn_watch" / f"{session}.json"
-    out.parent.mkdir(parents=True, exist_ok=True)
     if out.exists():
         previous = json.loads(out.read_bytes())
         if not isinstance(previous, dict) or previous.get("schema") != input_schema:
@@ -102,6 +87,32 @@ def write_candidate_episode_input(artifact: dict, rows: list[dict], data_root: P
             previous_sessions and current_session <= max(previous_sessions)
         ):
             raise ValueError("TURN WATCH source schema transition requires a new session")
+    return out
+
+
+def write_candidate_episode_input(artifact: dict, rows: list[dict], data_root: Path, *,
+                                  input_schema: str = "prophet.candidate_episode_input.turn_watch/v1") -> Path:
+    """Atomically write the private, uncapped TURN WATCH intake sidecar.
+
+    The public document remains capped at ``site/turn_watch``.  This private Data OS input
+    carries the same already-computed rows and never asks the deck to recompute them.
+    """
+    out = _candidate_episode_input_path(artifact, data_root, input_schema)
+    session = artifact["data_session"]
+    known_at = session_window_et(session)[1].astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    artifact_sha = sha256(turn_watch.artifact_bytes(artifact)).hexdigest()
+    document = {
+        "schema": input_schema,
+        "data_session": session,
+        "known_at": known_at,
+        "selection_era": artifact.get("selection_era"),
+        "anchor_era": artifact.get("anchor_era"),
+        "trigger_registry": artifact.get("triggers"),
+        "source_artifact_sha256": "sha256:" + artifact_sha,
+        "rows": rows,
+    }
+    document["content_sha256"] = sha256(canonical_json(document).encode("utf-8")).hexdigest()
+    out.parent.mkdir(parents=True, exist_ok=True)
     temporary = out.with_name(f".{out.name}.tmp")
     payload = canonical_json(document) + "\n"
     with temporary.open("w", encoding="utf-8") as handle:
@@ -136,11 +147,11 @@ def build(argv: list[str] | None = None) -> int:
         return 0
 
     try:
+        data_root = config.data_dir()
+        input_schema = "prophet.candidate_episode_input.turn_watch/" + args.episode_input_schema
+        _candidate_episode_input_path(artifact, data_root, input_schema)
         out = turn_watch.write_artifact(artifact, config.site_dir())
-        write_candidate_episode_input(
-            artifact, rows, config.data_dir(),
-            input_schema="prophet.candidate_episode_input.turn_watch/" + args.episode_input_schema,
-        )
+        write_candidate_episode_input(artifact, rows, data_root, input_schema=input_schema)
     except Exception as e:  # noqa: BLE001
         print(f"::error title=turn-watch::could not write the deck artifact ({e})",
               flush=True)
