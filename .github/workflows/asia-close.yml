@@ -336,6 +336,16 @@ jobs:
             done
             push_lost
           fi
+      # Binding owner for the public A-share treemap.  Before 2026-09-16 this
+      # lane refreshed china_search/closes.parquet but never rebuilt the heatmap;
+      # unrelated render lanes occasionally stamped a new generated_utc over an
+      # old session, so the public JSON stayed at 2026-09-09 after the source had
+      # recovered through 2026-09-15.  Build immediately from the post-rebase
+      # canonical close panel and fail the lane unless output/source/session agree.
+      - name: build + verify China A-share heatmap (binding session contract)
+        run: |
+          python -m scripts.build_market_heatmap --market china
+          python -m scripts.check_china_heatmap_freshness
       - name: timings band — build-china (W2)
         run: python3 scripts/nightly_timings.py mark --band build-china || echo "::warning::timings band mark failed (non-fatal)"
       - name: build china a-share dashboard (spine — serial head, every CN surface reads it)
@@ -839,6 +849,11 @@ jobs:
           # refuse stash/rebase wreckage (2026-08-01 d29e4dd44d: a conflicted
           # autostash apply was staged wholesale — 1,704 pages shipped markers)
           bash "${GITHUB_WORKSPACE:-.}/scripts/ci/strip_conflict_markers.sh"
+          # This step runs under if: always(); without a fresh-clock + parity
+          # guard, an upstream collection/build failure could still publish a
+          # stale payload that agrees with its equally stale source.  Binding:
+          # abort before broad staging unless source, JSON, and CN session agree.
+          python -m scripts.check_china_heatmap_freshness
           git add data/ site/
           # separate + tolerant: `git add site/ templates/` exits 128 when a pathspec
           # matches nothing, and this step runs under `-eo pipefail` — a missing
@@ -879,6 +894,12 @@ jobs:
             # the rebase (the next externalize_css prunes the orphan); on any other
             # conflict it exits nonzero, leaving the rebase for the abort+retry below.
             if { git pull --rebase --autostash -X theirs origin main || bash scripts/rebase_autoresolve_hashed_css.sh; } && push_autostash_ok; then
+              # The pushed tree is this post-rebase tree, not the one validated
+              # before the first commit.  Re-materialize the heatmap from the
+              # rebased canonical close panel and re-check it before any push so
+              # a racing render/data commit cannot restore the 2026-09-09 freeze.
+              python -m scripts.build_market_heatmap --market china
+              python -m scripts.check_china_heatmap_freshness
               # post-rebase template↔site re-sync (ui.template_site_sync): externalize_css
               # above lifts the plain-copy landing/chat pages' inline <style> to hashed files,
               # diverging site/index.html + site/chat.html from their templates — and this lane

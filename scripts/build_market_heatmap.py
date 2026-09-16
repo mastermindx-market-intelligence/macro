@@ -34,6 +34,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from engine import market_heatmap as hm  # noqa: E402
 from lib import config  # noqa: E402
+from scripts.check_china_heatmap_freshness import (  # noqa: E402
+    ChinaHeatmapFreshnessError,
+    validate_china_heatmap,
+)
 
 log = logging.getLogger("build_market_heatmap")
 
@@ -266,8 +270,20 @@ def _load_canada() -> tuple[pd.DataFrame, pd.DataFrame, dict, dict, dict]:
 _LOADERS = {"china": _load_china, "hk": _load_hk, "canada": _load_canada}
 
 
-def build(market: str, site: Path | None = None, *, generated_utc: str | None = None) -> dict:
-    """Assemble + write one market's heatmap JSON. Returns the payload."""
+def build(
+    market: str,
+    site: Path | None = None,
+    *,
+    generated_utc: str | None = None,
+    now: datetime | None = None,
+) -> dict:
+    """Assemble + write one market's heatmap JSON. Returns the payload.
+
+    China is validated against the completed mainland-session clock before the
+    output path is touched.  This prevents a generic render running from a stale
+    checkout from overwriting a newer production heatmap with an old session and
+    a deceptively fresh ``generated_utc`` timestamp.
+    """
     site = site or (config.ROOT / config.load()["storage"]["site_dir"])
     cons, closes, caps, weights, names_zh = _LOADERS[market]()
 
@@ -280,11 +296,55 @@ def build(market: str, site: Path | None = None, *, generated_utc: str | None = 
         generated_utc=generated_utc,
         board_breadth=_board_breadth(market),
     )
+    if market == "china":
+        # Binding pre-write fence: build_all() is invoked by generic render lanes
+        # whose checkout can predate the settled-close collector.  Never let one
+        # of those lanes replace a newer production JSON with stale tiles merely
+        # because it stamped a new generated_utc value.
+        validate_china_heatmap(payload, closes, now=now)
 
     outdir = site / "marketdata"
     outdir.mkdir(parents=True, exist_ok=True)
     out = outdir / f"{market}_heatmap.json"
-    out.write_text(json.dumps(payload, separators=(",", ":"), ensure_ascii=False))
+
+    # The asia push loop rebuilds after every rebase to repair a racing stale
+    # payload.  Do not manufacture a follow-up commit when the only difference
+    # is the wall-clock generation stamp; preserve the already-published stamp
+    # when every semantic field is identical.  A changed session/tile/contract
+    # still writes normally and receives the fresh generated_utc above.
+    if market == "china" and out.exists():
+        try:
+            existing = json.loads(out.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            existing = None
+        if isinstance(existing, dict):
+            try:
+                validate_china_heatmap(existing, closes, now=now)
+            except ChinaHeatmapFreshnessError as exc:
+                log.warning(
+                    "%s existing payload is not preservable (%s: %s) — rewriting",
+                    out.name,
+                    exc.title,
+                    exc.detail,
+                )
+            else:
+                existing_semantic = dict(existing)
+                payload_semantic = dict(payload)
+                existing_semantic.pop("generated_utc", None)
+                payload_semantic.pop("generated_utc", None)
+                if existing_semantic == payload_semantic:
+                    log.info(
+                        "%s unchanged for asof=%s — preserving generated_utc=%s",
+                        out.name,
+                        payload["asof"],
+                        existing.get("generated_utc"),
+                    )
+                    return existing
+
+    out.write_text(
+        json.dumps(payload, separators=(",", ":"), ensure_ascii=False),
+        encoding="utf-8",
+    )
     log.info("wrote %s — %d tiles, %d sectors, size=%s, asof=%s",
              out.name, payload["n_tiles"], len(payload["sectors"]),
              payload["size_basis"], payload["asof"])
