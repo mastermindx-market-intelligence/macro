@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-16T02:24:20.915126+00:00",
-  "count": 2198,
+  "generated_at": "2026-09-16T02:39:18.050920+00:00",
+  "count": 2199,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -100,6 +100,23 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-didbhvbmh6e-e180ec",
+      "title": "Economics Economic Update 15 09 2026",
+      "institution": "Commbank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T00:13:56Z",
+      "summary_points": [
+        "QLD Investment Momentum**: QLD ranks #1 in dwelling investment (+16.8% yr) and #2 in business investment (+9.0% yr), driving its top ranking despite household consumption weakness (#5) **NT Wage Cost Risk**: NT ranks #8 in wage price index (worst), signaling severe labor cost pressures critical for business profitability and portfolio allocation **SA Public Investment Anchor**: SA's public demand grew 5.6% annually (highest nationally), driven by 17.9% YoY public investment surge (non-dwelling construction +7.8%), offsetting private sector fragility **Brisbane Housing Affordability Crisis**: Brisbane ranks 2nd most expensive capital city (median dwellings doubled since 2020), with housing/total CPI inflation highest since Q4 2019, pressuring household spending and migration **WA Population Strain**: WA's population grew 14% since 2019 (double mainland peers), driven by overseas migration (-6.2% of growth), straining housing and per capita spending amid weak household consumption (2.4% yr, 2nd weakest nationally)"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 37,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-28hnibtwani-6afe79",
       "title": "Must C Public LatAm FINAL v2 CCM",
