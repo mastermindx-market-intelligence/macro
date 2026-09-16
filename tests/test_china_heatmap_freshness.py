@@ -383,6 +383,41 @@ def test_membership_denominator_allows_a_small_unpriced_tile_gap(
     assert "source_representation=96/96 (100.0%)" in line
 
 
+def test_membership_truth_rejects_a_large_silently_dropped_tile_subset(
+    tmp_path: Path, capsys,
+) -> None:
+    """A builder cannot make omissions invisible by shrinking ``n_tiles``.
+
+    The separate whole-board breadth feed can cover ~5,000 names, but the
+    binding heatmap universe is ``china_search/members.parquet``.  When that
+    curated universe contains 100 names, a payload with only 80 current tiles
+    is incomplete even though every rendered tile has a fresh close.
+    """
+    m = _checker()
+    members = [f"600{i:03d}.SS" for i in range(100)]
+    rendered = members[:80]
+    closes = tmp_path / "data" / "china_search" / "closes.parquet"
+    closes.parent.mkdir(parents=True)
+    pd.DataFrame(
+        [[11.0] * 100],
+        index=pd.to_datetime(["2026-09-15"]),
+        columns=members,
+    ).to_parquet(closes)
+    payload = _write_payload(tmp_path, asof="2026-09-15", tickers=rendered)
+    members_path = _write_members(tmp_path, members)
+
+    assert m.check_china_heatmap_freshness(
+        payload_path=payload,
+        closes_path=closes,
+        members_path=members_path,
+        now=NOW_DURING_2026_09_16_CN_SESSION,
+    ) == 3
+    line = capsys.readouterr().out
+    assert line.startswith("::error title=China heatmap source incomplete::")
+    assert "latest_session_coverage=80/100 (80.0%)" in line
+    assert "source_representation=80/100 (80.0%)" in line
+
+
 def test_builder_refuses_to_overwrite_with_a_stale_china_source(
     tmp_path: Path, monkeypatch,
 ) -> None:
