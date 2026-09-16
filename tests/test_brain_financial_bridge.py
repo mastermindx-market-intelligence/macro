@@ -178,3 +178,33 @@ def test_cli_rejects_malformed_duplicate_nonfinite_and_oversize_input(raw):
     r=json.loads(p.stdout)
     assert r['status']=='invalid_request' and r['calculations']=={}
     assert len(p.stdout)<1000
+
+
+def test_input_receipt_preserves_all_accepted_decimal_places():
+    p=scenario(); p['current']['revenue']='0.123456789123'
+    r=analyze(p)
+    assert r['inputs']['current.revenue']=='0.123456789123'
+
+
+def test_caller_decimal_traps_cannot_change_a_result():
+    from decimal import Inexact, Rounded, localcontext
+    expected=analyze(scenario())
+    with localcontext() as context:
+        context.prec=4
+        context.traps[Inexact]=True
+        context.traps[Rounded]=True
+        assert analyze(scenario())==expected
+
+
+def test_small_negative_cash_is_not_rounded_into_a_false_zero():
+    p=scenario()
+    p['current'].update(revenue='0.000000000001',gross_margin_pct=1,
+                        operating_expenses='0.000000000001',working_capital_increase=0,
+                        capital_expenditures=0)
+    r=analyze(p)
+    assert value(r,'current.operating_profit') < 0
+    assert value(r,'current.simplified_operating_cash') < 0
+    assert value(r,'current.cash_after_capex') < 0
+    for cell in r['calculations'].values():
+        if cell['value'] is not None:
+            assert isinstance(cell['rounded'],bool)
