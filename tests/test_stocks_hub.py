@@ -393,10 +393,13 @@ def test_pressure_band_warms_up_rather_than_failing():
         assert band["base"] is None and band["open"] == [] and band["resolved"] == []
 
 
-def test_pressure_band_falls_back_to_warmup_when_the_artifact_trails_the_page():
-    """A month-old event list beside today's boards is a lie of juxtaposition."""
-    assert _pp_band("2026-07-08")["mode"] == "live"    # 4 weekdays on
-    assert _pp_band("2026-07-10")["mode"] == "warmup"  # 6 weekdays on
+def test_pressure_band_discloses_delay_without_erasing_the_historical_record():
+    """A delayed evaluation is not a record that has never been built."""
+    for reference in ("2026-07-08", "2026-07-10"):
+        band = _pp_band(reference)
+        assert band["mode"] == "live" and band["stale"] is True
+        assert "Update delayed" in band["banner"]["en"]
+        assert band["base"] and band["resolved"]
     # No page session to compare against: show what we have rather than nothing.
     assert hub.pressure_band(_pp())["mode"] == "live"
 
@@ -547,8 +550,8 @@ def test_a_broad_selloff_day_leads_with_the_banner_and_demotes_the_rows():
     payload["day"]["banner"] = True
     band = hub.pressure_band(payload, board_asof="2026-07-02")
     assert band["banner"]["en"] == (
-        "Most of today's pressure is market-wide, not single-name.")
-    assert band["banner"]["zh"].startswith("今天的压力")
+        "Pressure was mostly market-wide, not single-name.")
+    assert band["banner"]["zh"].startswith("压力")
     assert "38" in band["banner"]["tip_en"]
     assert band["demoted"] is True
     assert _pp_band()["demoted"] is False, "no banner, no demotion"

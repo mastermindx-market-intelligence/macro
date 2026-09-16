@@ -1673,6 +1673,53 @@ def _bar_close(bar: Any) -> float | None:
         return None
 
 
+def refresh_pressure_watch(site: Path, *, now=None) -> int:
+    """Refresh only the existing band after its producer; no dossier or ledger work."""
+    from jinja2 import Environment, FileSystemLoader
+
+    target = site / "stocks" / "index.html"
+    try:
+        before = target.read_text(encoding="utf-8")
+        pattern = re.compile(r'<section id="pressure"[^>]*>.*?</section>', re.S)
+        matches = list(pattern.finditer(before))
+        if len(matches) != 1:
+            raise ValueError("expected exactly one existing Pressure Watch section")
+        env = Environment(loader=FileSystemLoader(str(TEMPLATES_DIR)), autoescape=True)
+        band = pressure_context(site, now=now)
+        rendered = env.get_template("_pressure_watch.html.j2").render(hub={"pressure": band}).strip()
+        replacements = list(pattern.finditer(rendered))
+        if len(replacements) != 1:
+            raise ValueError("canonical Pressure Watch template did not render one section")
+        match = matches[0]
+        updated = before[:match.start()] + replacements[0].group() + before[match.end():]
+        write_page(target, updated)
+        level = "warning" if band["stale"] else "notice"
+        print(f"::{level} title=price-pressure-page::evaluated={band['asof']} status={band['freshness_status']}", flush=True)
+        return 0
+    except Exception as exc:
+        print(f"::warning title=price-pressure-page::{type(exc).__name__}: {exc}", flush=True)
+        return 1
+
+
+def pressure_context(site: Path, *, linkable_tickers=None, now=None) -> dict:
+    """The single Pressure Watch source/date adapter used by both render modes."""
+    from engine import stocks_hub
+    from engine.price_pressure.freshness import expected_source_session
+    from lib.nyse_calendar import expected_last_session
+
+    now = now or datetime.now(timezone.utc)
+    data = site.parent / "data"
+    manifest = _load_json(data / "massive_stock_day" / "_manifest.json") or {}
+    source = manifest.get("latest_date") or (manifest.get("store") or {}).get("latest_date")
+    return stocks_hub.pressure_band(
+        _load_json(data / "price_pressure" / "latest.json"),
+        board_asof=expected_last_session(now).isoformat(),
+        expected_asof=expected_source_session(now).isoformat(),
+        source_asof=source,
+        linkable=linkable_tickers if linkable_tickers is not None else rendered_ticker_pages(site),
+    )
+
+
 def _build_hub_context(site: Path, rows: list[dict],
                        linkable_tickers: frozenset[str] | None = None) -> dict:
     """Assemble everything the /stocks/ market hub renders.
@@ -1745,11 +1792,7 @@ def _build_hub_context(site: Path, rows: list[dict],
             # dossier SHIP for this name (lib.pages.rendered_ticker_pages). Six
             # rows named a page that never rendered on every render through
             # 2026-08-22; the row stays, the anchor goes.
-            hub["pressure"] = _hub.pressure_band(
-                _load_json(site.parent / "data" / "price_pressure" / "latest.json"),
-                board_asof=board_asof,
-                linkable=linkable_tickers,
-            )
+            hub["pressure"] = pressure_context(site, linkable_tickers=linkable_tickers)
         except Exception as e:  # noqa: BLE001
             print(f"::warning title=stocks_hub::pressure band unavailable: {e}",
                   flush=True)
@@ -6333,7 +6376,16 @@ def main(argv: list[str] | None = None) -> int:
                         help="Comma-separated list of tickers to render (skips sitemap merge when used)")
     parser.add_argument("--manifest-out", default=None,
                         help="Optional JSON receipt listing ticker pages rendered in this invocation")
+    parser.add_argument("--pressure-only", action="store_true",
+                        help="Refresh the existing Pressure Watch section after its producer")
     args = parser.parse_args(argv)
+    if args.pressure_only:
+        if args.only or args.context_only or args.dump_context or args.sitemap_out or args.manifest_out:
+            parser.error("--pressure-only cannot be combined with dossier/sitemap modes")
+        target = Path(args.out) if args.out else SITE / "stocks"
+        if target.name != "stocks":
+            parser.error("--pressure-only --out must identify the stocks directory")
+        return refresh_pressure_watch(target.parent)
 
     out = Path(args.out) if args.out else (SITE / "stocks")
     sitemap_out = Path(args.sitemap_out) if args.sitemap_out else None
