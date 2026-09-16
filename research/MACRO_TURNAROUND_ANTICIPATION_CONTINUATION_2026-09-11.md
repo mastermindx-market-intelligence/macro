@@ -1,15 +1,17 @@
 # Macro Turnaround Anticipation — Source and Replay Continuation
 
-**Updated:** 2026-09-15
+**Updated:** 2026-09-16
 **Operation:** `anticipate-macro-turnarounds-continuation-20260909-sol-001`
 **Authority:** current Chairman continuation direction; Sol direct ownership
-**Protected Skillpack:** `mastermindx-market-intelligence/Mastermind@a9e6e1667abecdff500bced40c9816c1611c3dd7`
+**Protected Skillpack:** `mastermindx-market-intelligence/Mastermind@bf843961c0e1b5bd45fa481f0138c71f2a87d4e2`
 **Draft PR:** `mastermindx-market-intelligence/macro#7165`
-**Independent-review head:** `ef92df252e80618bba8fe7c42b1a8e86afaf9354`
-**Independent-review tree:** `a2ce3af050309ded804a066e08de0c2d4528865f`
+**Latest accepted independent-review head:** `64e76b8471989190a123dd837ccc34d1e415a95d`
+**Latest accepted independent-review tree:** `72f9b7a00c73ee1252e630168f1ee114089b8172`
 **Semantic repair commit:** `527e619c009ddf2034382f9704c92e5217ce1890`
 **Semantic repair tree:** `48db807c089efeb7b6496a9f03b2cb0943700441`
-**Latest protected `main` inspected:** `52f6ca950b55ee3a248a51c61dbe48079b3d6ac8`
+**Exact integrated source head:** `bd8f56c66d7d1ca2e124285874dfac0af9802a37`
+**Exact integrated source tree:** `91b4deb832b3d412689a2ada81c512d20a45e4c4`
+**Latest protected `main` inspected:** `90009cc588115a3f5b5e511844ba95e9ddbb4e2b`
 **Capability state:** **BUILT_NOT_PROVEN / RESEARCH_ONLY / PRODUCTION_INERT**
 
 ## Mission and outcome boundary
@@ -335,3 +337,85 @@ invalid mutation, changed real-replay bytes under unchanged inputs, independent
 review blocker, Source Continuity refusal, or binding hosted red. Do not create a
 replacement carrier, raise CI ceilings, rewrite history, auto-fail over an
 uncertain effect, or promote research scores while any gate remains open.
+
+
+## Superseding exact-head release checkpoint — 2026-09-16
+
+This section supersedes the earlier release coordinates while preserving their
+historical evidence. It does not strengthen the capability claim.
+
+### Immutable identities and review classification
+
+- Accepted independent rereview: head `64e76b8471989190a123dd837ccc34d1e415a95d`,
+  tree `72f9b7a00c73ee1252e630168f1ee114089b8172`, verdict `PASS`,
+  with no merge, Ready, deployment, production, or authority grant.
+- Exact integrated source head before this records-only closeout:
+  `bd8f56c66d7d1ca2e124285874dfac0af9802a37`, tree
+  `91b4deb832b3d412689a2ada81c512d20a45e4c4`.
+- The descendant adds the reviewer-requested nested/traversal fence tests, the
+  replay-root symlink fence repair, family-cap lower-bound tests, and one bounded
+  latest-base CI curation repair. Candidate-owned blobs therefore changed after
+  the accepted rereview: classification is **FULL_REREVIEW_REQUIRED**, not review
+  reuse.
+- At checkpoint capture, Draft PR `#7165` pointed to
+  `64e76b8471989190a123dd837ccc34d1e415a95d`; the publication step must verify
+  the new immutable remote head. No replacement PR or carrier exists.
+
+### Exact integrated proof
+
+Evidence root:
+`/Volumes/Mastermind/agent-evidence/macro-turnaround-release-20260916-sol/20260916T194011Z-exact-head-release-bd8f56c`
+
+- Five focused engine/replay/CLI suites: **259 passed**.
+- Exact executable import-pin module: **11 passed**.
+- CI ownership, declared closure, exclusive curation, fallback tier, and fanout
+  ceilings: **5 passed**; no ceiling was raised.
+- Python compile, AST compile, Git diff check: PASS.
+- Agent OS validation: **1,116 records, zero errors**; warnings are inherited.
+- Unrun census: exit 0; no new strictly dark Macro Turnaround suite.
+- Semantic CI plan: all **142 jobs** placed into 12 packs; plan SHA-256
+  `8002b139473e413e44dd0ada191a9be5c4e1682892fae27aa3b08c0d26a6e9ce`.
+- Expanded mutation campaign: **35/35 killed**, zero survivors, zero invalid
+  executions, bound to exact head `bd8f56c66d7d1ca2e124285874dfac0af9802a37`.
+
+### Current canonical replay proof
+
+Protected `main` was frozen at `90009cc588115a3f5b5e511844ba95e9ddbb4e2b`.
+Movement after the integrated parent changed only the canonical release-target
+manifest within the declared material set; engine, replay, CI, tests, and PPIFIS
+bytes remained unchanged. The replay was therefore regenerated rather than
+calling the old manifest-bound request current.
+
+- Manifest blob: `2524e4fcdf350bdf4a061a9f009a09ca02bd2274`.
+- Manifest SHA-256:
+  `6d64a7fb739c33bc5e7248ba72645905876160e740dfe8a361fd76c9e8be815d`.
+- PPIFIS blob: `42aab3b388c61e5c0e960a65cd883892870c13c1`.
+- PPIFIS SHA-256:
+  `616d4930b5c071e13b78a59aa7660577a7e9670af5b54fe3c7d424e0554e4592`.
+- Native Arrow/Pandas input: **19,828 rows**, **202 economic periods**,
+  **157 release cutoffs**.
+- Output SHA-256:
+  `d5542e10f3473844d0fa34a7e4223ae110d78e1982a36d041b0608eee28a945e`.
+- Replay hash:
+  `21d0bd36936b809973d63ac8c48585231baa92959e39c21dfef55c0e54a5ce63`.
+- Existing normalizer and strict-adapter semantics match on columns, rows, series,
+  period/release/end dates, values, and output-type markers.
+- An identical same-path rerun preserved bytes, digest, inode, and mtime. A
+  156-cutoff conflicting replacement exited 2 and left the artifact unchanged.
+- Forecast accuracy and historical production availability remain explicitly
+  false; calibrated forecast, ranking, gating, and trade authority remain false.
+
+### Exact remaining release sequence
+
+1. Commit these records as a docs-only descendant of the exact integrated source.
+2. Refresh the open-PR collision census, then push this same branch without force
+   and verify the remote ref and Draft PR head exactly.
+3. Obtain a fresh independent review of the new immutable head. Do not reuse the
+   `64e76b8` PASS across changed owned blobs.
+4. Run every binding hosted check to conclusion for that same head. Queued,
+   canceled, or old-head checks are not acceptance.
+5. Refresh protected Source Continuity. Any typed refusal remains a release block.
+6. Mark Ready or merge only after independent PASS, exact-head hosted green,
+   current-base material compatibility, no source collision, and accepted
+   continuity. Post-merge readback still yields only
+   `BUILT_NOT_PROVEN / RESEARCH_ONLY / PRODUCTION_INERT`.

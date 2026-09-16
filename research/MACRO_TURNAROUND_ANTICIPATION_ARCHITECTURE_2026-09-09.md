@@ -1,9 +1,9 @@
 # Macro Turnaround Anticipation — Product and Intelligence Architecture
 
-**Date:** 2026-09-11
+**Date:** 2026-09-16
 **Operation:** `anticipate-macro-turnarounds-continuation-20260909-sol-001`
-**Protected Skillpack:** `mastermindx-market-intelligence/Mastermind@a9e6e1667abecdff500bced40c9816c1611c3dd7`
-**Macro implementation base:** `d1d7273330df22014849d438160c0c393f4763a3`
+**Protected Skillpack:** `mastermindx-market-intelligence/Mastermind@bf843961c0e1b5bd45fa481f0138c71f2a87d4e2`
+**Exact integrated source head:** `bd8f56c66d7d1ca2e124285874dfac0af9802a37`
 **Capability state of this slice:** **BUILT_NOT_PROVEN / RESEARCH_ONLY / PRODUCTION_INERT**
 
 ## Outcome before code
@@ -203,3 +203,21 @@ rather than an inferred rule in this PR. Also, shared JSON/publication helpers
 remain implemented in the build-script module and imported by the replay engine;
 that layering cleanup must be a bounded follow-up if adopted, not a reason to
 create a duplicate publication or parsing plane here.
+
+
+## 20. Exact integrated evidence addendum — 2026-09-16
+
+The integrated source at `bd8f56c66d7d1ca2e124285874dfac0af9802a37`
+retains the architecture above and closes the accepted rereview's remaining
+path-fence regression gaps without widening authority. Exact local evidence is
+259 focused tests, 11 import-pin tests, 5 CI-contract tests, and 35/35 killed
+mutations. The current manifest-bound PPIFIS proof reconstructs 157 cutoffs from
+19,828 full-vintage rows, passes canonical-normalizer parity, preserves immutable
+idempotence, and refuses a conflicting replacement.
+
+This remains one inflation-series mechanics proof. Broad independent-family
+coverage, a frozen target/evaluation contract, calibrated forecast skill, live
+product workflow, production scheduling, and ranking/sizing/gating/trade authority
+remain unbuilt or rejected by design as stated in the ledger. Candidate-owned
+blobs changed after the accepted `64e76b8` rereview, so fresh exact-head review
+and hosted CI are release requirements rather than optional repetition.
