@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-16T07:39:50.302207+00:00",
-  "count": 2212,
+  "generated_at": "2026-09-16T07:54:53.048263+00:00",
+  "count": 2213,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -632,6 +632,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-mo2iutr0wqb-e23ac1",
+      "title": "GS Quinn Nasdaq Futures Also At Risk 15 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T12:47:27Z",
+      "summary_points": [
+        "**Non-Dealer AI Risk Exposure**: Non-Dealers net sold $7.1bn (Sept 1–8), with Hedge Funds ($10.5bn) driving selling offset by Asset Managers ($2.2bn); GS AI vs AI At Risk basket plunged 10.9%, signaling acute AI-centric positioning risk.",
+        "**Institutional Rotation Signal**: Nasdaq institutional longs peaked June 2026, then sharply declined July 2026, coinciding with GS AI vs AI At Risk drop, indicating risk-off rotation amid AI profitability concerns.",
+        "**Calendar Spread Mispricing Events**: Sharp Jan-Feb 2026 and July 2026 calendar spread mispricing spikes (11 bps threshold) signal tactical arbitrage opportunities in Nasdaq derivatives during volatility peaks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
