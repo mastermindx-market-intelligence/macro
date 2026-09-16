@@ -5,9 +5,12 @@ claim: >
   analysis was refused as outside scope on the deep route while the response
   reported deepseek-v4-pro, ok true, filtered false and degraded false.
 falsifier: >
-  Disprove the recorded observation by showing that the bound request or response
-  was not from the stated production route, or supersede the current capability
-  limitation with an exact-release before/after canary and blinded financial variants.
+  Inspect FIN-SCOPE-P1 in #7151 at
+  research/mastermind_ai_flagship/R2_RUNTIME_OBSERVATIONS_2026-09-14.json and its
+  bound request6e8e75fd6423488f940184d8b5c5d992. The observation is false if the
+  actual response did not refuse the supplied financial task or did not execute
+  on the stated production deep route. Exact-release before/after acceptance of
+  #7152 can supersede the current capability limitation, not erase the historical event.
 so_what: >
   Prioritize a narrow financial-scope and task-completion repair before assuming
   more context or a model replacement will solve the product's analytical weakness.
