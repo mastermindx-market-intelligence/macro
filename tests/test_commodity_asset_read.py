@@ -440,3 +440,25 @@ def test_finite_price_clock_is_preserved_without_directional_filter(price):
     result=attach_asset_reads([d],{"gold":frame},assets,{"assets":{"gold":["GC=F"]}})["gold"]
     assert result["price_asof"]=="2026-09-15"
     assert result["state"]=="positive" and result["exposure_pct"]==50
+
+
+
+def test_full_page_capture_wires_requested_width_and_overlay_check():
+    import inspect
+    from scripts.capture_commodity_asset_read_evidence import main
+    code=inspect.getsource(main)
+    assert '--full-page' in code
+    assert 'owner.assert_document_fits(document_geometry)' in code
+    assert 'document_geometry["viewport_width"] = width' in code
+    assert 'page.evaluate(owner._OVERLAY_PROBE.strip())' in code
+    assert code.index('owner.assert_document_fits(document_geometry)') < code.index('page.screenshot(full_page=True')
+
+
+def test_full_page_capture_discloses_fixture_limits_and_preserves_component_mode():
+    import inspect
+    from scripts.capture_commodity_asset_read_evidence import main
+    code=inspect.getsource(main)
+    assert 'touch=args.full_page and width==390' in code
+    assert 'section.screenshot(type="png")' in code
+    assert 'Whole-page synthetic fixture' in code
+    assert 'not production' in code

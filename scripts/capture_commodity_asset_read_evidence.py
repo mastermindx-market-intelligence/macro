@@ -60,6 +60,7 @@ def fixture_context(scenario="split"):
 def main(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir",type=Path,required=True)
+    parser.add_argument("--full-page",action="store_true",help="Capture the whole synthetic page with requested-viewport checks; requires R1")
     args=parser.parse_args(argv)
     output=args.output_dir.resolve()
     if output == ROOT or any(output == (ROOT/p).resolve() or (ROOT/p).resolve() in output.parents for p in ("data","site")):
@@ -83,7 +84,7 @@ def main(argv=None):
                     for viewport,(width,height) in owner.VIEWPORTS.items():
                         for locale in owner.LOCALES:
                             for theme in owner.THEMES:
-                                context,page=owner._new_page(browser,width=width,height=height,locale=locale,theme=theme)
+                                context,page=owner._new_page(browser,width=width,height=height,locale=locale,theme=theme,touch=args.full_page and width==390)
                                 context.route("**/*",lambda route:route.continue_() if route.request.url.startswith(f"http://127.0.0.1:{port}/") else route.abort())
                                 errors=[]
                                 page.on("pageerror",lambda error:errors.append(str(error)))
@@ -93,6 +94,11 @@ def main(argv=None):
                                     assert actual["theme"]==theme and actual["locale"]==locale
                                     geometry=page.locator(".asset-read-section").evaluate("e=>({left:e.getBoundingClientRect().left,right:e.getBoundingClientRect().right,viewport:innerWidth})")
                                     assert geometry["left"]>=0 and geometry["right"]<=width+1
+                                    document_geometry = None
+                                    if args.full_page:
+                                        document_geometry = page.evaluate("({width:innerWidth,scroll:document.documentElement.scrollWidth})")
+                                        document_geometry["viewport_width"] = width
+                                        owner.assert_document_fits(document_geometry)
                                     labels={}
                                     for asset in ("gold","silver","copper","oil"):
                                         card=page.locator(f'[data-asset-read="{asset}"]')
@@ -101,14 +107,24 @@ def main(argv=None):
                                         detail=page.locator(f'.dpanel[data-detpanel="{asset}"]')
                                         assert detail.is_visible()
                                         assert detail.locator(".asset-read-title").inner_text().strip()==labels[asset]
+                                        if args.full_page:
+                                            owner.assert_document_fits({**page.evaluate("({width:innerWidth,scroll:document.documentElement.scrollWidth})"),"viewport_width":width})
                                     section=page.locator(".asset-read-section")
-                                    section.scroll_into_view_if_needed()
-                                    png=section.screenshot(type="png")
+                                    overlay = page.evaluate(owner._OVERLAY_PROBE.strip()) or []
+                                    assert not overlay, "unexpected screenshot overlay"
+                                    if args.full_page:
+                                        page.locator('[data-asset-read="gold"] .asset-read-open').click()
+                                        page.evaluate("window.scrollTo(0,0)")
+                                        png=page.screenshot(full_page=True,animations="disabled")
+                                    else:
+                                        section.scroll_into_view_if_needed()
+                                        png=section.screenshot(type="png")
                                     filename,digest,pw_,ph_=owner.content_address_png(png,output)
                                     states.append({"viewport":viewport,"viewport_width":width,"viewport_height":height,
                                         "locale":locale,"theme":theme,"access":"anonymous","force_state":None,
                                         "captured":True,"file":filename,"sha256":digest,"bytes":len(png),"width":pw_,"height":ph_,
-                                        "applied_theme":theme,"applied_locale":locale,"overlay":[],"overlay_clean":True,
+                                        "applied_theme":theme,"applied_locale":locale,"overlay":overlay,"overlay_clean":True,
+                                        "document_geometry":document_geometry,
                                         "subject_geometry":geometry,"detail_clicks_verified":4,"page_errors":errors,"titles":labels})
                                     assert not errors
                                 finally:
@@ -121,14 +137,15 @@ def main(argv=None):
     finally:
         httpd.shutdown()
     manifest={"schema":"mastermind.p0_evidence.v2","generated_at":__import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat(),
-        "tool":{"module_ref":"scripts/capture_commodity_asset_read_evidence.py","version":"r2-asset-read-v1",
+        "tool":{"module_ref":"scripts/capture_commodity_asset_read_evidence.py","version":"r2-asset-read-v2",
                 "capture_method":"Existing commodity renderer and Chromium helper; local fixtures, no external requests; semantic button clicks, no text entry."},
         "target":{"kind":"fixture_site_dir","site_dir":str(fixture),"base_url":None,"resolved_sha_or_none":None,"resolved_gitdir_or_none":None,"resolved_sha_source":"record exact source or candidate digests beside this manifest"},
         "axes":{"viewports":{k:list(v) for k,v in owner.VIEWPORTS.items()},"locales":list(owner.LOCALES),"themes":list(owner.THEMES),"access":["anonymous"],"subjects":[p["subject"] for p in pages],"force_states":[]},
         "selection":{"mode":"explicit_subjects","subjects":[p["subject"] for p in pages]},"aliases":{},"excluded":[],
         "outcome":"captured","totals":{"pages":3,"states_attempted":24,"states_captured":24},"pages":pages,
-        "honesty":{"authority":"R2 component fixture evidence, not full-page or production acceptance",
-                   "page":"Synthetic model states and dated inputs. Existing commodity renderer stubs navigation and hydration. R1 remains an independent release prerequisite; full-page overflow not certified here.",
+        "honesty":{"authority":("Whole-page synthetic fixture, not production" if args.full_page else "R2 component fixture evidence, not full-page or production acceptance"),
+                   "full_page":args.full_page,
+                   "page":"Synthetic model states and dated inputs. Existing commodity renderer stubs navigation and hydration. R1 remains an independent release prerequisite. Full-page geometry is certified only when full_page is true; navigation and external hydration are never certified by this fixture.",
                    "new_entry_permission":None,"numerical_policy_changes":False}}
     (output/"manifest.json").write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+"\n")
     print("R2_CAPTURE 24 states; 96 summary-to-detail interactions verified",flush=True)
