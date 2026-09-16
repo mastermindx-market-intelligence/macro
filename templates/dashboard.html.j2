@@ -6714,8 +6714,11 @@ body.page-macro.mx4-grid .mx5-fed-policy-note strong{color:var(--ink-1,rgba(255,
 #dlg-risk .riskdlg-theme:last-child,#dlg-risk .riskdlg-rot > .riskdlg-fold{border-bottom:0;}
 #dlg-risk .riskdlg-tn{font:650 var(--fs-sm)/1.3 var(--font-ui);min-width:0;}
 #dlg-risk .riskdlg-tm{font:700 var(--fs-label)/1 var(--font-mono);font-variant-numeric:tabular-nums;color:var(--ink-3);flex:0 0 auto;}
-#dlg-risk .riskdlg-theme.up .riskdlg-tm{color:var(--ink-up,var(--up));}
-#dlg-risk .riskdlg-theme.down .riskdlg-tm{color:var(--ink-down,var(--down));}
+/* Rank is neutral; only the observed 5-session move carries direction colour.
+   --ink-up/--ink-down intentionally follow the site's locale convention:
+   EN = green up / red down; ZH = red up / green down. */
+#dlg-risk .riskdlg-rank-delta.up{color:var(--ink-up,var(--up));}
+#dlg-risk .riskdlg-rank-delta.down{color:var(--ink-down,var(--down));}
 #dlg-risk .riskdlg-ldr-caveat{font:500 var(--fs-sm)/1.45 var(--font-ui);color:var(--ink-3);margin:8px 0 4px;}
 #dlg-risk .riskdlg-fold > summary,
 #dlg-risk .riskdlg-method > summary{
@@ -13247,10 +13250,9 @@ html[data-theme="light"] :is(
             <details class="riskdlg-fold" id="riskdlg-themes-more">
               <summary>{{ t('View all 7 themes','查看全部 7 个主题') }}</summary>
             {% endif %}
-            {% set _rt_tone = 'up' if rt.heat in ['heating','hot'] else ('down' if rt.heat in ['cooling','broken'] else 'flat') %}
-            <a class="riskdlg-theme {{ _rt_tone }}{% if loop.index > 3 %} riskdlg-theme-more{% endif %}" href="basket/{{ rt.id }}.html">
+            <a class="riskdlg-theme{% if loop.index > 3 %} riskdlg-theme-more{% endif %}" href="basket/{{ rt.id }}.html">
               <span class="riskdlg-tn"><span class="l-en">{{ rt.short_name }}</span><span class="l-zh">{{ rt.short_name_zh or rt.short_name }}</span></span>
-              <span class="riskdlg-tm">#{{ rt.rank if rt.rank is not none else '—' }}{% if rt.rank_delta_5d is not none %} · {{ '▲' if rt.rank_delta_5d > 0 else ('▼' if rt.rank_delta_5d < 0 else '•') }}{{ rt.rank_delta_5d|abs }} 5d{% endif %}</span>
+              <span class="riskdlg-tm"><span class="riskdlg-rank">#{{ rt.rank if rt.rank is not none else '—' }}</span>{% if rt.rank_delta_5d is not none %}{% set _rt_delta_tone = 'up' if rt.rank_delta_5d > 0 else ('down' if rt.rank_delta_5d < 0 else 'flat') %}<span class="riskdlg-rank-delta {{ _rt_delta_tone }}"> · {{ '▲' if rt.rank_delta_5d > 0 else ('▼' if rt.rank_delta_5d < 0 else '•') }}{{ rt.rank_delta_5d|abs }} 5d</span>{% endif %}</span>
             </a>
             {% if loop.last and (_rot|length) > 3 %}
             </details>

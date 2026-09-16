@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-16T21:26:00.083301+00:00",
-  "count": 2250,
+  "generated_at": "2026-09-16T23:21:09.999889+00:00",
+  "count": 2258,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1324,6 +1324,85 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-fspqdjrmia5-240803",
+      "title": "China 70 city average primary property price decline narrowed further in August, with Tier 1 cities posting sequential gains",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T12:58:03Z",
+      "summary_points": [
+        "Primary Market Stabilization Signal: Primary market decline narrowed to -0.4% mom annualized (Aug) vs. 0.9% (July), with Tier-1 cities (Beijing leading) posting sequential gains, indicating nascent stabilization in high-demand segments.",
+        "Tier-1 Price Stabilization Outlook: Tier-1/Tier-2 prices expected to stabilize within 1-2 years (Shenzhen/Shanghai leading), despite ineffective mortgage policy extensions (30-40 years) failing to meaningfully boost demand.",
+        "Inventory Overhang & Weak Demand: Major cities' inventory months surged to 27.2 (Aug), driven by Tier-1 supply, while 30-city new home transactions remained below year-ago levels in early September.",
+        "Data Reliability Risk: Suspension of Beike, Guoxinda, and Zhuge price series (2023–2025) and Centaline 6-city data (last updated July 2026) creates critical gaps in real-time secondary market monitoring."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-mqwrnxikmcx-8a64e7",
+      "title": "GS Utilities Daily Italy Bill on revival of nuclear power in Senate Siemens Energy sign 2.6 GW reservation agreement in ...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T12:57:33Z",
+      "summary_points": [
+        "Italy's Nuclear Revival Bill: Policy shift reversing decades-long shutdowns, enabling new reactors by 2035; critical for European utilities' energy mix stability and regulatory landscape.",
+        "EU Electrification Acceleration: \"Hyper-electrification\" scenario projects 5% pa power demand growth (2026-35), €3.5tn investment; utilities like RWE/Orsted upgraded to Buy on balance sheet strength and capacity visibility.",
+        "Agentic AI Power Demand Tailwinds: Agentic AI (vs. chatbots) to increase datacenter energy needs by 25% (2030-35), driving incremental consumption and boosting utilities' renewables/FlexGen margins.",
+        "Power Demand Upgrade & P/E Target Increase: Goldman upgrades power demand growth (1-1.5% to 1.5-2% pa), supporting 9% 2025-30 EPS CAGR; target P/E for Electric Utilities raised to above mid-cycle (c."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-gtrts72xyja-125235",
+      "title": "UK—Pay Growth Slightly Firmer Than Expected but Payrolls Remain Weak",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T12:57:29Z",
+      "summary_points": [
+        "Labor Demand Weakness: Payroll contraction revised to -19k (vs. 13k flash) with August flash showing 26k drop, signaling persistent hiring weakness despite stable 4.9% unemployment.",
+        "Pay Growth Moderation: Three-month regular pay growth at 2.9% (above expectations) but month-on-month pace slowed to 0.32%, with industry shifts exerting 0.4pp downward annual drag.",
+        "BoE Target Alignment: Whole economy regular pay (3.5%) and total pay (3.9%) met expectations, aligning with BoE’s target-consistent rate despite composition adjustments."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-qwcpyz8ppmz-be1679",
+      "title": "Navigating China Internet eCommerce tracker Soft August online retail growth",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T12:57:22Z",
+      "summary_points": [
+        "China online retail growth moderation: Online retail growth slowed to +0.4% YoY (Aug) vs. consensus +0.8%, driven by weaker food/jewelry/cosmetics/auto segments, signaling cooling demand momentum.",
+        "Temu US GMV deceleration: US GMV growth moderated to +5% YoY (vs.",
+        "+24% in July) post-de-minimis exemption removal, with merchant decline (-4% mom Aug) indicating ecosystem fragility.",
+        "Meituan's profitability leadership: Leads daily orders (88M in 2025) with positive operating profit (20k RMB mn), outperforming Alibaba/JD (negative metrics), highlighting structural competitive advantage."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 18,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-mo2iutr0wqb-e23ac1",
       "title": "GS Quinn Nasdaq Futures Also At Risk 15 Sep 2026",
       "institution": "S&T",
@@ -1339,6 +1418,36 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-bf4nzspjbtp-9fb084",
+      "title": "GS Duttenhoefer Duttenhoefers Daily 15 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T12:46:44Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-duynrcod4xd-edfb9d",
+      "title": "GS Abbas GS US Daily Download 15 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T12:46:41Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
@@ -1676,6 +1785,43 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-mig1dgpeory-7642d2",
+      "title": "Tracking U.S. Supply Chain Congestion Sept 14",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T01:24:37Z",
+      "summary_points": [
+        "Congestion Scale: Index down 10% w/w to '2' (below peak '10'), aligning with pre-Covid fluidity; China-US transit times at 47 days (near pre-pandemic levels vs. 80+ peak) - Rail Intermodal Surge: West Coast Class 1 rail intermodal traffic +21% YoY (vs +7% last week), signaling heightened demand or supply strain despite persistent rail slowdowns (-1.9% to -2.0% YoY) - Tariff/Geopolitical Risk: Persistent supply chain pressures could keep congestion index in '1' territory (moderate) through 2026, impacting freight timing/demand - PMI Delivery Times: Expanded to 41.7 (+20.2% YoY), confirming rising congestion despite easing metrics, indicating downstream bottlenecks - Trucking Labor Shortage: Employee count 4.5% below pre-pandemic highs (YoY growth -1.5%), constraining logistics capacity - West Coast Dominance: Container ship backlog remains at 1 (vs East Coast at 2), with rail intermodal growth concentrated on West Coast corridors - Ocean Rate Divergence: China-US West Coast rates down 1% WoW but +250% YoY, reflecting mixed weekly performance with strong annual growth"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 15,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-w6tz4cnnfj0-c0e56c",
+      "title": "Trex Company Inc. (TREX) Global Consumer and Retail Conference 2026 — Key Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T01:24:32Z",
+      "summary_points": [
+        "Strategic Targets & Demand: $2bn revenue by 2030 (exceeding 2026 guide) driven by organic growth, M&A, contractor backlogs, entry-level product success, and low-rate mortgage-driven outdoor living trends.",
+        "Operational Efficiency Catalyst: Tech-driven automation (AI/ML) and Little Rock recycling capabilities offset depreciation headwinds, enhancing manufacturing efficiency and margins.",
+        "Key Risk to Valuation: Vulnerable to consumer confidence decline (impacting R&R spending), strategic delays, raw material cost pass-through issues, and key customer loss despite 35.7% upside to $61 target.",
+        "Growth & Margin Catalysts: Double-digit growth via rail dominance (7% market share), vertical integration (in-sourcing), and distribution realignment targeting $100+mn opportunity with FCF supporting capex decline and bolt-on M&A."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
