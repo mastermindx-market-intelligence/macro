@@ -307,7 +307,9 @@ next_action: >
   read DSC:CLAUDE-SUBSCRIPTION-HARNESS-IS-NOT-NATIVE-ANTHROPIC and re-run its four falsifier commands
   at the then-current protected master: the merged Claude subscription worker is a compatible-provider
   harness, the native path is PF1's and is NOT BUILT. Wave 1 ACP/HF1-B carriers #575/#579/#576 and
-  HF1-C/HF1-D carriers #578/#581/#583 have merged on protected bf843961 (all six merge commits are
+  HF1-C/HF1-D carriers #578/#581/#583 and the provider-fabric carrier #577 have merged on protected
+  bf843961 — ALL SEVEN Wave 1 carriers, see the corrected "Wave 1 open carriers" table below (all seven
+  merge commits are
   ancestors of it) — see the HF1 umbrella wave `next_action` for the per-PR sentences; merged is not
   proven for any of them. Re-read every head before acting on it. Accepted Macro CF1 remains
   dcdd939c45b23abce5ba04f95e330ac914a3904b. Any native H0 build or root action still belongs to the

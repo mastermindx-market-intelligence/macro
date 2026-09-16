@@ -40,8 +40,8 @@ alternatives:
 evidence:
   - "ext/sub.sh full sha256 BEFORE the repair: 67953b2a007ab57a6f0c74d98ac15b62ac78426d51b6dfb6fee1316cbc43b28a (computed via `shasum -a 256`)."
   - "ext/sub.sh full sha256 AFTER the repair: 8d79229797f30e7c8bd89178f3dc2cbc7bfafa2a0ccd05a89423903c4c19f999 (`shasum -a 256`)."
-  - "Repair record at orch/fabric/SUBSH_DENY_REPAIR.md (sha256[:12] f92a14fc5bc9): `STATE: REPAIRED 8d792297…` and `VERDICT: REPAIRED — relocation removed`."
-  - "Sol ruling 2026-09-15 2300Z, §(2), recorded at orch/fabric/SOL_RULINGS_2026-09-15_2300Z.md: 'preserve the originating permission boundary in the launcher — an unavailable shell must not become available by leaving the denied project.'"
+  - "Repair record at ~/.claude/projects/-Users-chriswong-Documents-Cluade-Macro-Dashboard/handoff_kits/meta-ceo-b-2026-09-08/orch/fabric/SUBSH_DENY_REPAIR.md (sha256[:12] f92a14fc5bc9): `STATE: REPAIRED 8d792297…` and `VERDICT: REPAIRED — relocation removed`."
+  - "Sol ruling 2026-09-15 2300Z, §(2), recorded at ~/.claude/projects/-Users-chriswong-Documents-Cluade-Macro-Dashboard/handoff_kits/meta-ceo-b-2026-09-08/orch/fabric/SOL_RULINGS_2026-09-15_2300Z.md: 'preserve the originating permission boundary in the launcher — an unavailable shell must not become available by leaving the denied project.'"
   - "Mastermind #661 (5ffa643d) removed the Mastermind blanket deny that had been the original justification for the stopgap; the stopgap has no remaining legitimate use."
 affects:
   - WS:EXECUTIVE-CAPACITY-FABRIC

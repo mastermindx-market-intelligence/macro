@@ -40,7 +40,7 @@ verified_by: >
   read for `MAX_VIEWERS = 2` and the explicit "is not history" framing; `git grep -nE
   'mcp\.|@router\.|@app\.(get|post).*visible_turn|@tool\(|FastAPI\(|http\.route' origin/master control_plane/`
   read for any out-of-process exposure. Verified by the seat on 2026-09-16 (sha256[:12]
-  `8c44a0671291`, orch/fabric/OS_INTAKE_OBSERVATION_CENSUS.md, line carrying `VERDICT: BOTH
+  `8c44a0671291`, ~/.claude/projects/-Users-chriswong-Documents-Cluade-Macro-Dashboard/handoff_kits/meta-ceo-b-2026-09-08/orch/fabric/OS_INTAKE_OBSERVATION_CENSUS.md, line carrying `VERDICT: BOTH
   PRODUCERS EXIST AND ARE UNCONTESTED AT 8ba7deed`). No MCP tool, service handler or HTTP route
   exposes the projection out-of-process at this pin.
 scope:

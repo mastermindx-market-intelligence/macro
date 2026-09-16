@@ -260,6 +260,14 @@ verified:
       state OPEN, isDraft true, headRefOid 853fcd2ac1b33a3c4cebb167789cf0c3a1ba82aa, no
       mergeCommit, title "[OCR-2C-B][DRAFT][HOLD] Native Claude Provider Control V2
       architecture" — exact.
+  - claim: "macro CI run 35087063111 for #7103 concluded CANCELLED on 2026-09-16T13:27:07Z at head efceb19082edaeedf803a224f33e93b9e0a9b49e. An account-level cancellation is not a red, and this run is superseded by #7103's B3 descendant head 464aa33c4e910ea819753b2f427efade635691dd in any case."
+    command: "gh api repos/mastermindx-market-intelligence/macro/actions/runs/35087063111 --jq '\"name=\\(.name) status=\\(.status) concl=\\(.conclusion) head=\\(.head_sha) updated=\\(.updated_at)\"'"
+    result: >
+      name=ci status=completed concl=cancelled head=efceb19082edaeedf803a224f33e93b9e0a9b49e
+      updated=2026-09-16T13:27:07Z. Probed directly by this session after an independent review
+      flagged that the do_not_redo row asserting this run's state rested on seat notes rather than
+      on a read. The probe agreed with the seat notes exactly, so the instruction is retained with
+      its own receipt instead of being deleted.
   - claim: "macro CI run 35045242410 for #7179 concluded cancelled on 2026-09-16T09:52:20Z at head 889174901bdaabba44a8f60f3179ff7bd32c8061."
     command: "gh api repos/mastermindx-market-intelligence/macro/actions/runs/35045242410"
     result: >
@@ -312,7 +320,7 @@ next_actions:
   - "Re-read every head named in this record at action time. Heads are pins taken on 2026-09-16 between 19:51Z and 20:1xZ under an active principal."
 do_not_redo:
   - "Never re-run the packet05 verifier without a NEW material source-continuity edge. The grant edge 1789588151 is SPENT, the typed refusal OUT_OF_SCOPE_DIRT is the final result, and the seat-owned p05-verify-… worktree stays INERT/UNCHANGED — do not remove it without Sol."
-  - "Never rerun macro #7179's cancelled run 35045242410 or macro #7103's ci 35087063111 into a saturated queue. Both are recorded as cancelled / do-not-rerun."
+  - "Never rerun macro #7179's run 35045242410 (ci, completed, conclusion cancelled, head 889174901bdaabba44a8f60f3179ff7bd32c8061, updated 2026-09-16T09:52:20Z) or macro #7103's run 35087063111 (ci, completed, conclusion cancelled, head efceb19082edaeedf803a224f33e93b9e0a9b49e, updated 2026-09-16T13:27:07Z) into a saturated queue. Both conclusions were read from the runs API by this session; an account-level cancellation is not a red, and #7103's run is superseded by its B3 descendant head in any case."
   - "Never remove the seat-owned p05-verify-… worktree without Sol. It is INERT, retained by name, and is the only verifiable handle on the spent grant."
   - "macro #7181 is MERGED at d7d8bdc6fb9f3548b90487cf51c274693f4e105a and TERMINAL (PASS / MERGE_RECEIPT_VERIFIED / TERMINAL_RELEASE_ACT). Never re-merge, re-verify or reopen the release child."
   - "The root Order-of-Attack item 'close #575/#579/#576 current-base release gates' is DONE / DO-NOT-REDO."
@@ -321,7 +329,7 @@ do_not_redo:
   - "Never patch, store or remove #677's `transaction_id`. It is receipt-local provenance/diagnostic identity; the equality test is the carrier."
   - "Never open a replacement writer, branch or PR for #653 or #677. Path B / SAME child are the only lawful shapes."
 danger_areas:
-  - "Merged is not proven. The three ACP/HF1-B merges and the three HF1-C/HF1-D merges establish provider-free ACP SDK / native-process boundaries and the provider-neutral broker seam. None proves a live provider route or a production heterogeneous workflow. Treat merged as a source receipt, never as a production receipt."
+  - "Merged is not proven. All SEVEN Wave 1 merges — #575, #579, #576 (ACP/HF1-B), #578, #581, #583 (HF1-C/HF1-D) and #577 (provider-fabric v2) — establish provider-free ACP SDK / native-process boundaries, the provider-neutral broker seam, the single plan-to-harness binding authority and the MiniMax/Alibaba realms on the Codex worker. None proves a live provider route or a production heterogeneous workflow. Treat merged as a source receipt, never as a production receipt."
   - "Heads move under an active principal. Re-read every SHA at action time; the pins here were taken on 2026-09-16 between 19:51Z and 20:1xZ."
   - "A review disposition (COMMENTED / PASS_AS_SOURCE / APPROVE) is never merge authority. #684's REVIEW'S OWN wording is PASS_AS_SOURCE / RELEASE_HOLD; the CONSUMING checkpoint comment consumed it as PASS_AS_SOURCE / RELEASE_BLOCKED_BY_ACTIVE_COLLISION. Record both wordings and the difference."
   - "Agent OS is a knowledge plane and gates nothing (invariant I1). Nothing in this record authorizes building, merging, releasing, routing, calling, arming or proving. The three live planes that own execution are unchanged."
@@ -433,7 +441,7 @@ date.
 | macro #7185 | OPEN / isDraft true @ `f26d93260096cfe8297468ae14de299e41719432`. Kit review R4 `APPROVE_AS_BUILT_NOT_PROVEN` at this head. Sol R4 `REQUEST_REPAIR` IN FLIGHT (review `5227609998`) on one generated receipt field. | In flight; identity not yet stable. Fold NO content from it. |
 | macro #7162 | OPEN / isDraft true @ `853fcd2ac1b33a3c4cebb167789cf0c3a1ba82aa`. | DRAFT/HOLD. B0 gate. |
 | Protected Mastermind master | `bf843961c0e1b5bd45fa481f0138c71f2a87d4e2`. | Verified exact; compare to `0fe8074f` (ancestor, ahead_by=5) and `8ba7deed` (ancestor, ahead_by=2). |
-| macro `origin/main` | `784bc6aec7c32e8f651c280978d5b5ab0aa366f4`. d7d8bdc6 IS an ancestor. | Fold base. |
+| macro `origin/main` AT FOLD BASE | `784bc6aec7c32e8f651c280978d5b5ab0aa366f4`; `d7d8bdc6` IS an ancestor of it. macro main advances continuously with nightly `data/` commits and had already moved to `e76c616721187b67f44be08992df38448aee3252` before this record was committed. | A BASE PIN, not current main. This change touches only `agentos/`, which the nightly data commits do not touch, so no rebase is implied. |
 
 ## §4 Wave 1 carriers now merged — all seven (ACP, HF1-B, HF1-C, HF1-D, provider-fabric v2)
 
@@ -489,8 +497,11 @@ head and a one-line ceiling; it folds NO content from them.
 
 This record merges, readies, labels, releases, reviews or approves nothing. It authorizes
 no provider, no host, no credential, no broker, no OAuth, no runtime act. It does not
-amend `mastermind.provider_capacity.v1`, the CF2-F source law, the Phase 1F-C placement
-snapshot or the H0 runbook. It does not widen the workstream into Wake, Slack dispatch,
+amend `mastermind.provider_capacity.v1`, the CF2-F source law (Mastermind PR #150, merge
+`e9cb5cbd745b36dc51f54bd83238ec38ef0c80c7`; wave CF2-F in
+`agentos/workstreams/WS-EXECUTIVE-CAPACITY-FABRIC.md`), the Phase 1F-C placement snapshot or the
+H0 runbook (wave CF2-H0 in the same workstream record, whose immutable repair release is
+`229aebce5e8d0c1c7372f5fead9c24516b027cc1`). It does not widen the workstream into Wake, Slack dispatch,
 Control Room, browser/devserver resources, host arming, merge/deploy authority or capital
 authority. It does not convert a records-only edit, a green check, a merged slice, a
 review disposition or a fixture corpus into native capacity, placement proof or production
