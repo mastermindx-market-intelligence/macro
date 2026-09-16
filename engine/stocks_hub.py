@@ -541,7 +541,6 @@ def directory(rows: Sequence[Mapping]) -> list[dict]:
 
 PW_MAX_OPEN = 6            # a band, not a feed
 PW_MAX_RESOLVED = 4
-PW_MAX_STALE_SESSIONS = 5  # weekdays between the artifact and the page's own bars
 
 _PW_MONTHS_EN = ("Jan", "Feb", "Mar", "Apr", "May", "Jun",
                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
@@ -580,13 +579,13 @@ _PW_FAMILY = {
 # the other, and one shared table would have to name it in machine terms.
 _PW_STATE = {
     "down": {
-        "SHOCK": ("new today", "今日新发生"),
+        "SHOCK": ("move recorded", "波动已记录"),
         "SLIDING": ("still falling", "仍在下探"),
         "HOLDING": ("holding", "暂时企稳"),
         "RETRACING": ("{p}% recovered", "已收复 {p}%"),
     },
     "up": {
-        "SHOCK": ("new today", "今日新发生"),
+        "SHOCK": ("move recorded", "波动已记录"),
         "EXTENDING": ("still climbing", "仍在走高"),
         "HOLDING": ("holding", "维持涨幅"),
         "FADING": ("{p}% unwound", "已回落 {p}%"),
@@ -666,34 +665,6 @@ def _pw_pc(v: float | None, *, dp: int = 1, signed: bool = False) -> str:
         return "—"
     s = f"{v * 100:+.{dp}f}%" if signed else f"{abs(v) * 100:.{dp}f}%"
     return s.replace("-", "−")
-
-
-def _pw_weekdays_between(a: str, b: str) -> int | None:
-    """Weekday count between two ISO dates — a session proxy with no clock.
-
-    Staleness is judged against the page's OWN bar session rather than the wall
-    clock so the function stays pure and so a band can never claim to be fresher
-    than the boards printed beside it. Holidays count as sessions, which errs
-    toward showing the warm-up state early — the safe direction.
-    """
-    from datetime import date as _date
-
-    try:
-        y1, m1, d1 = (int(x) for x in str(a).split("-"))
-        y2, m2, d2 = (int(x) for x in str(b).split("-"))
-        d_a, d_b = _date(y1, m1, d1), _date(y2, m2, d2)
-    except (ValueError, TypeError):
-        return None
-    if d_b <= d_a:
-        return 0
-    days = (d_b - d_a).days
-    full, rest = divmod(days, 7)
-    n = full * 5
-    wd = d_a.weekday()
-    for i in range(1, rest + 1):
-        if (wd + i) % 7 < 5:
-            n += 1
-    return n
 
 
 def _pw_recency_order(rows: Sequence[Mapping]) -> list[dict]:
@@ -1026,6 +997,7 @@ def _pw_href(ticker: str, linkable: frozenset[str] | None) -> str | None:
 
 
 def pressure_band(payload: Mapping | None, *, board_asof: str | None = None,
+                  source_asof: str | None = None, expected_asof: str | None = None,
                   linkable: frozenset[str] | None = None,
                   max_open: int = PW_MAX_OPEN,
                   max_resolved: int = PW_MAX_RESOLVED) -> dict:
@@ -1036,9 +1008,9 @@ def pressure_band(payload: Mapping | None, *, board_asof: str | None = None,
     the surface ships ahead of the engine that feeds it and an empty section is
     a design decision, not an error path.
 
-    `board_asof` is the session the rest of the page is printing. The band goes
-    back to warm-up when the artifact trails it by more than a working week, so
-    the band can never quietly present month-old events beside today's boards.
+    Source-aware freshness separates event identity from the completed evaluation.
+    The I/O edge supplies vendor-ready and market sessions; delayed records retain
+    their historical evidence and are never re-dated or called a first-time warm-up.
 
     `linkable` is the set of tickers that ship a `stocks/<TICKER>.html` dossier.
     A row for a name outside it keeps every word it carries and loses only its
@@ -1057,6 +1029,7 @@ def pressure_band(payload: Mapping | None, *, board_asof: str | None = None,
         "warm_zh": "记录仍在建立中 —— 暂无可展示的内容。",
         "stance_en": "Nothing to act on yet.", "stance_zh": "暂时无需操作。",
         "asof": None, "banner": None, "demoted": False,
+        "stale": True, "freshness_status": "unknown", "expires_utc": None,
         "base": None, "resolved": [], "open": [], "open_n": 0,
         "count_en": "most recent first", "count_zh": "按时间先后排列",
         "help": None, "gaps": [],
@@ -1067,11 +1040,11 @@ def pressure_band(payload: Mapping | None, *, board_asof: str | None = None,
     if not payload or not isinstance(payload, Mapping):
         return warm
 
-    asof = str(payload.get("asof") or "") or None
-    if asof and board_asof:
-        gap = _pw_weekdays_between(asof, str(board_asof))
-        if gap is not None and gap > PW_MAX_STALE_SESSIONS:
-            return warm
+    from engine.price_pressure.freshness import assess
+    freshness = assess(payload, source_asof=source_asof, expected_asof=expected_asof,
+                       board_asof=board_asof)
+    asof = freshness["evaluated_through"]
+    stale = freshness["stale"]
 
     base = _pw_base(payload.get("base_rates"))
     resolved_src = list(payload.get("recently_resolved") or [])
@@ -1082,11 +1055,11 @@ def pressure_band(payload: Mapping | None, *, board_asof: str | None = None,
     day = payload.get("day") or {}
     raw_banner = day.get("banner")
     banner = None
-    if raw_banner:
+    if raw_banner and not stale and (not day.get("asof") or day.get("asof") == asof):
         shock_n = _f(day.get("panel_shock_count"))
         tip_en = tip_zh = ""
         if shock_n:
-            tip_en = (f"{int(shock_n)} covered names took a move this size today, "
+            tip_en = (f"{int(shock_n)} covered names took a move this size in this session, "
                       "so the single-name reads below carry less weight than usual.")
             tip_zh = (f"今日有 {int(shock_n)} 只覆盖个股出现同等级别的波动，"
                       "因此下方的个股解读比平时更弱。")
@@ -1094,12 +1067,28 @@ def pressure_band(payload: Mapping | None, *, board_asof: str | None = None,
             banner = {"en": str(raw_banner["en"]),
                       "zh": str(raw_banner.get("zh") or raw_banner["en"]),
                       "tip_en": tip_en, "tip_zh": tip_zh}
-        else:
+        elif day.get("broad_selloff") is False:
+            banner = {"en": "Pressure was name-by-name, not market-wide.",
+                      "zh": "压力来自个股自身，而非大盘。",
+                      "tip_en": "", "tip_zh": ""}
+        elif day.get("broad_selloff") is True or raw_banner is True:
             banner = {
-                "en": "Most of today's pressure is market-wide, not single-name.",
-                "zh": "今天的压力多数来自大盘，而非个股自身。",
+                "en": "Pressure was mostly market-wide, not single-name.",
+                "zh": "压力多数来自大盘，而非个股自身。",
                 "tip_en": tip_en, "tip_zh": tip_zh,
             }
+
+    if stale:
+        banner = {"en": "Update delayed — showing the last completed record.",
+                  "zh": "更新延迟 — 以下为上次完成的记录。",
+                  "tip_en": (f"Evaluated: {asof or 'unknown'}. "
+                             f"Available source: {freshness['source_asof'] or 'unknown'}. "
+                             f"Expected source: {freshness['expected_asof'] or 'unknown'}."),
+                  "tip_zh": (f"已评估：{asof or '未知'}；可用数据：{freshness['source_asof'] or '未知'}；"
+                             f"应有数据：{freshness['expected_asof'] or '未知'}。")}
+    elif freshness["status"] == "awaiting_source":
+        banner = {"en": "Awaiting the next data file — latest available record shown.",
+                  "zh": "等待下一份数据 — 当前展示最新可用记录。", "tip_en": "", "tip_zh": ""}
 
     resolved: list[dict] = []
     for r in _pw_recency_order(resolved_src)[:max_resolved]:
@@ -1159,7 +1148,10 @@ def pressure_band(payload: Mapping | None, *, board_asof: str | None = None,
         "mode": "live",
         "asof": asof,
         "banner": banner,
-        "demoted": bool(banner),
+        "demoted": stale or (bool(banner) and (day.get("broad_selloff") is True or raw_banner is True)),
+        "stale": stale,
+        "freshness_status": freshness["status"],
+        "expires_utc": freshness["expires_utc"],
         "base": base,
         "resolved": resolved,
         "open": events,
@@ -1173,7 +1165,7 @@ def pressure_band(payload: Mapping | None, *, board_asof: str | None = None,
                      if len(open_src) > len(events) else "按时间先后排列"),
         "help": _pw_help(payload, payload.get("base_rates")),
         "gaps": gaps,
-        "stance_en": "Watch — don't chase.",
-        "stance_zh": "观察为主，不急于跟进。",
+        "stance_en": "Wait for the next update." if stale else "Watch — don't chase.",
+        "stance_zh": "等待下一次更新。" if stale else "观察为主，不急于跟进。",
         "warm_en": None, "warm_zh": None,
     }

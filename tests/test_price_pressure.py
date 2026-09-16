@@ -1527,3 +1527,27 @@ def test_up_side_terminal_slots_are_mirrored_not_renamed(tmp_path):
     assert labels["up"]["recovered"] == "GAVE_BACK"
     assert labels["down"]["accepted_lower"] == "ACCEPTED_LOWER"
     assert labels["up"]["accepted_lower"] == "KEPT"
+
+
+def test_quiet_session_evaluation_does_not_redate_events_or_replay_old_day_facts(tmp_path):
+    data_dir = tmp_path / "data"
+    data_dir.mkdir()
+    write_stores(data_dir)
+    pos = SESSIONS - 3
+    panel = build_panel_frames(default_returns(shock_pos=pos),
+                               volumes={"AAA": {pos: 5.0}})
+    prep = prep_from(panel, data_dir)
+    res = pp_pipeline.advance(prep, tmp_path, mode="backfill", write=False)
+    evaluated = res["stats"]["asof_session"]
+    artifact = pp_artifact.build(res["ledger"], root=tmp_path,
+                                 panel_names=prep["panel_names"],
+                                 panel_span=prep["panel_span"],
+                                 design=pp_detect.constants(),
+                                 evaluated_through=evaluated, allow_live_drivers=False)
+    assert artifact["asof"] == str(prep["sessions"][pos].date())
+    assert artifact["evaluated_through"] == evaluated
+    assert artifact["day"]["asof"] == evaluated
+    assert artifact["day"]["down_today"] == artifact["day"]["up_today"] == 0
+    assert artifact["day"]["banner"] is None
+    assert artifact["day"]["panel_shock_count"] is None
+    assert res["stats"]["write"]["written"] is False

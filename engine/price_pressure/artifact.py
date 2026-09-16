@@ -212,7 +212,8 @@ def _recently_resolved(ledger: pd.DataFrame,
 
 
 def _day_block(ledger: pd.DataFrame, root: Path, base_rates: dict | None,
-               gaps: list[str], *, allow_live_drivers: bool = True) -> dict:
+               gaps: list[str], *, allow_live_drivers: bool = True,
+               evaluated_through: str | None = None) -> dict:
     """Numeric day facts + the LIVE-only day-character banner (fail-open).
 
     The mechanical broad-selloff marker is ``panel_shock_count`` at or above its
@@ -225,9 +226,11 @@ def _day_block(ledger: pd.DataFrame, root: Path, base_rates: dict | None,
                  "spy_ret_z": None, "broad_selloff": None,
                  "broad_selloff_threshold": None, "character": None, "banner": None,
                  "down_today": 0, "up_today": 0}
-    if not ledger.empty:
-        day = pd.Timestamp(ledger["date"].max()).normalize()
-        rows = ledger[pd.to_datetime(ledger["date"]).dt.normalize() == day]
+    day = (pd.Timestamp(evaluated_through).normalize() if evaluated_through
+           else pd.Timestamp(ledger["date"].max()).normalize() if not ledger.empty else None)
+    if day is not None:
+        rows = (ledger[pd.to_datetime(ledger["date"]).dt.normalize() == day]
+                if not ledger.empty else ledger)
         out["asof"] = day.strftime("%Y-%m-%d")
         out["down_today"] = int((rows["side"] == "down").sum())
         out["up_today"] = int((rows["side"] == "up").sum())
@@ -278,13 +281,15 @@ def build(ledger: pd.DataFrame, *, root: Path, panel_names: int,
           base_rates: dict | None = None, sector_covered_share: float | None = None,
           basket_labels: dict | None = None,
           extra_gaps: list[str] | None = None,
-          allow_live_drivers: bool = True) -> dict:
+          allow_live_drivers: bool = True,
+          evaluated_through: str | None = None) -> dict:
     """Assemble ``price_pressure.v1``.  Never raises; degrades into ``gaps[]``."""
     gaps: list[str] = list(extra_gaps or [])
     payload: dict = {
         "schema": SCHEMA_LATEST,
         "engine_version": ENGINE_VERSION,
         "asof": None,
+        "evaluated_through": None,
         "generated_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "display_only": True,
         "authority": dict(AUTHORITY),
@@ -304,6 +309,14 @@ def build(ledger: pd.DataFrame, *, root: Path, panel_names: int,
         ledger = ledger if isinstance(ledger, pd.DataFrame) else pd.DataFrame()
         if not ledger.empty:
             payload["asof"] = pd.Timestamp(ledger["date"].max()).strftime("%Y-%m-%d")
+        if evaluated_through:
+            evaluated = pd.Timestamp(evaluated_through)
+            panel_end = pd.Timestamp(panel_span[1])
+            event = pd.Timestamp(payload["asof"]) if payload["asof"] else None
+            if evaluated == panel_end and (event is None or event <= evaluated):
+                payload["evaluated_through"] = evaluated.strftime("%Y-%m-%d")
+            else:
+                gaps.append("evaluation: date does not match the completed panel")
         n = max(len(ledger), 1)
         era_counts = (ledger["era"].astype(str).value_counts().to_dict()
                       if not ledger.empty else {})
@@ -331,7 +344,8 @@ def build(ledger: pd.DataFrame, *, root: Path, panel_names: int,
                           if not ledger.empty else 0),
         }
         payload["day"] = _day_block(ledger, Path(root), base_rates, gaps,
-                                    allow_live_drivers=allow_live_drivers)
+                                    allow_live_drivers=allow_live_drivers,
+                                    evaluated_through=payload["evaluated_through"])
         events, meta = _open_events(ledger, gaps, basket_labels)
         payload["open_events"] = events
         payload["open_events_meta"] = meta
@@ -349,6 +363,7 @@ def build(ledger: pd.DataFrame, *, root: Path, panel_names: int,
         else:
             gaps.append("base_rates: frozen tables absent — run the backfill")
     except Exception as exc:  # noqa: BLE001 — a display artifact never kills a lane
+        payload["evaluated_through"] = None
         log.debug("price_pressure: artifact build degraded (%s)", exc)
         gaps.append(f"artifact: build failed ({type(exc).__name__})")
     return payload

@@ -1824,10 +1824,10 @@ class TestPressureWatchBand:
         assert 'class="section-anchor"' in html
 
         for phrase in ("What usually happens", "Recently resolved",
-                       "Currently tracked"):
+                       "Tracked moves"):
             assert phrase in html, f"{phrase} missing"
         assert (html.index("What usually happens") < html.index("Recently resolved")
-                < html.index("Currently tracked")), "the band's strata are out of order"
+                < html.index("Tracked moves")), "the band's strata are out of order"
         # And the whole band still sits between the movers boards and the themes.
         assert html.index('id="today-movers"') < html.index('id="pressure"')
 
@@ -1838,7 +1838,7 @@ class TestPressureWatchBand:
         oldest event. If it ever renders first, something has started ranking.
         """
         html = self._render(self._band())
-        tracked = html[html.index("Currently tracked"):]
+        tracked = html[html.index("Tracked moves"):]
         order = re.findall(r'<span class="pw-t">([A-Z]+)</span>', tracked)
         assert order == ["CDE", "ARQT", "IONQ", "VKTX"]
 

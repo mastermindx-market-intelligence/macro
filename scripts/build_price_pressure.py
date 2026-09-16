@@ -141,6 +141,7 @@ def _nightly(args: argparse.Namespace) -> int:
             panel_span=prep["panel_span"], design=pp_detect.constants(),
             base_rates=frozen, sector_covered_share=prep["sector_covered_share"],
             basket_labels=prep.get("basket_labels"),
+            evaluated_through=res["stats"]["asof_session"],
         )
         out = pp_artifact.write(payload, data_dir)
     finally:

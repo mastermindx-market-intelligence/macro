@@ -1161,6 +1161,49 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "collectors/base.py"
+      - "collectors/fred.py"
+      - "engine/confluence_tiers.py"
+      - "engine/cross_asset.py"
+      - "engine/extension.py"
+      - "engine/grading.py"
+      - "engine/hysteresis.py"
+      - "engine/inputs.py"
+      - "engine/ledger_lane.py"
+      - "engine/market_drivers.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/price_pressure/__init__.py"
+      - "engine/price_pressure/artifact.py"
+      - "engine/price_pressure/backfill.py"
+      - "engine/price_pressure/base_rates.py"
+      - "engine/price_pressure/completion.py"
+      - "engine/price_pressure/context.py"
+      - "engine/price_pressure/detect.py"
+      - "engine/price_pressure/ledger.py"
+      - "engine/price_pressure/panel.py"
+      - "engine/price_pressure/pipeline.py"
+      - "engine/signal_gate.py"
+      - "engine/signal_quality.py"
+      - "engine/thetadata_store.py"
+      - "engine/trial_ledger.py"
+      - "engine/universe_history.py"
+      - "engine/validation.py"
+      - "research/DISLOCATION_RECOVERY_LOBE_MASTERPLAN_BY_FABLE.md"
+      - "scripts/__init__.py"
+      - "scripts/build_price_pressure.py"
+      - "scripts/publish_r2.py"
+      - "scripts/replay_standout_pipeline.py"
+      - "scripts/research_liquidity_shock_reversal.py"
+      - "site/factordata/basket_washout_state.json"
+      - "site/factordata/us_standouts.json"
+      - "tests/test_price_pressure.py"
+      - "tests/test_pressure_watch_freshness.py"
+      - "tests/test_pressure_watch_refresh.py"
+      - ".github/workflows/daily.yml"
+      - ".github/ci/legacy-jobs.yml"
+      - "engine/price_pressure/freshness.py"
+      - "templates/_pressure_watch.html.j2"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/__init__.py"
       - "engine/earnings_release/receipts.py"
@@ -1309,7 +1352,7 @@ jobs:
         #     import engine.cycles, so this job's line had never needed it. Missing it is a
         #     COLLECTION error (pytest exit 2), which fails the whole step rather than one
         #     test — measured on this PR's first run (ci-pack-11, job 96210580631).
-        run: pip install pytest pandas numpy markupsafe jinja2 pyyaml jsonschema
+        run: pip install pytest pandas numpy markupsafe jinja2 pyyaml jsonschema pyarrow
       - name: conviction profile honesty invariants + dossier reason codes
         run: python -m pytest tests/test_stock_score.py tests/test_stock_dossier.py -q
       # P1 unrun backfill 2026-08-19: tests/test_analyzer_i18n_percentile.py (#5980) was named
@@ -1381,6 +1424,12 @@ jobs:
           python -m pytest
           tests/test_valuation_scenario.py
           tests/test_valuation_assumptions.py -q
+      # Pressure Watch must be tested on code PRs, not only data-health runs.
+      - name: Pressure Watch producer, source freshness and same-run page consumption
+        run: >-
+          python -m pytest tests/test_price_pressure.py
+          tests/test_pressure_watch_freshness.py tests/test_pressure_watch_refresh.py -q
+
 
   chronicle-suite:
     if: ${{ false }}
