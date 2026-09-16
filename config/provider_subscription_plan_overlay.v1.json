@@ -106,7 +106,7 @@
       "products": {
         "supergrok": {
           "edition": "individual",
-          "telemetry": {"kind": "provider_usage_ui", "locator": "Settings > Usage"},
+          "telemetry": {"kind": "provider_usage_ui_and_cli", "locator": "Settings > Usage; Grok CLI ACP _x.ai/billing"},
           "official_references": ["https://docs.x.ai/grok/faq", "https://x.ai/pricing"],
           "tiers": {
             "lite": {"limits": [], "dynamic_limits": [{"horizon": "weekly", "window_type": "fixed", "metric": "provider_allocation", "scope": "supergrok_shared", "limit_source": "provider_reported", "reset_source": "provider_reported"}]},
