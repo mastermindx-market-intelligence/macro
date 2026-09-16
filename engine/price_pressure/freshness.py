@@ -9,7 +9,7 @@ from __future__ import annotations
 from datetime import date, datetime, time, timedelta, timezone
 from collections.abc import Mapping
 
-from lib.nyse_calendar import ET, last_session_on_or_before, sessions_between
+from lib.nyse_calendar import ET, is_session, last_session_on_or_before, sessions_between
 
 
 def _date(value: object) -> date | None:
@@ -51,13 +51,18 @@ def assess(payload: Mapping, *, source_asof: str | None = None,
               "event_asof": event.isoformat() if event else None,
               "source_asof": source.isoformat() if source else None,
               "expected_asof": expected.isoformat() if expected else None,
-              "expires_utc": next_source_due(evaluated) if evaluated else None}
-    if not evaluated or not expected:
+              "expires_utc": None}
+    if not evaluated or not expected or not is_session(evaluated):
         return result
     if ((source_asof is not None and source is None)
             or (expected_asof is not None and _date(expected_asof) is None)
             or (event and evaluated < event)
             or (expected_asof is not None and market and evaluated > market)):
+        return result
+    # Invalid/future input must be rejected before any deadline arithmetic.
+    try:
+        result["expires_utc"] = next_source_due(evaluated)
+    except (OverflowError, ValueError, IndexError):
         return result
     required = max(expected, source) if source else expected
     if evaluated < required:

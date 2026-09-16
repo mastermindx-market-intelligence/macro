@@ -181,3 +181,21 @@ def test_explicit_missing_evaluation_does_not_fall_back_to_event_date():
                     expected_asof="2026-09-14")
     assert result["status"] == "unknown"
     assert result["evaluated_through"] is None
+
+
+@pytest.mark.parametrize("field,stamp", [
+    ("expected_asof", "0001-01-01"),
+    ("expected_asof", "9999-12-31"),
+    ("source_asof", "2026-09-12"),
+    ("board_asof", "bad-date"),
+])
+def test_bad_reference_dates_remain_unknown_without_a_deadline(field, stamp):
+    from engine.price_pressure.freshness import assess
+    references = dict(expected_asof="2026-09-14", source_asof="2026-09-14",
+                      board_asof="2026-09-15")
+    references[field] = stamp
+    result = assess({"asof": "2026-09-14", "evaluated_through": "2026-09-14"},
+                    **references)
+    assert result["status"] == "unknown"
+    assert result["stale"] is True
+    assert result["expires_utc"] is None
