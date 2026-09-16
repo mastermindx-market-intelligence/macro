@@ -2936,7 +2936,7 @@ def _system_text(call: dict) -> str:
     return ""
 
 
-def test_chat_image_falls_back_to_text_instead_of_generic_unavailable(tmp_path):
+def test_chat_image_falls_back_to_text_instead_of_generic_unavailable(tmp_path, caplog):
     """A dead private vision host must not turn a previously answerable Fast turn into
     the generic outage bubble. The lane answers from text/context and explicitly owns
     that the screenshot itself could not be read."""
@@ -2950,9 +2950,10 @@ def test_chat_image_falls_back_to_text_instead_of_generic_unavailable(tmp_path):
     local = {
         "name": "ollama", "model": "qwen3.5:9b",
         "client": _RaiseThenClient(exc=OllamaProviderError(
-            "Ollama endpoint unavailable: name resolution failed"
+            "Ollama endpoint unavailable: http://private-tailnet-host.ts.net:11434?token=do-not-log"
         )),
     }
+    caplog.set_level(logging.WARNING, logger=gw.__name__)
 
     def _providers(lane, root_=None):
         return {
@@ -2983,9 +2984,11 @@ def test_chat_image_falls_back_to_text_instead_of_generic_unavailable(tmp_path):
     assert result["model"] == "deepseek-v4-pro"
     assert text_client.calls and not _request_contains_image(text_client.calls[0])
     assert "could not be read" in _system_text(text_client.calls[0]).lower()
+    assert "private-tailnet-host" not in caplog.text
+    assert "do-not-log" not in caplog.text
 
 
-def test_chat_stream_image_falls_back_to_text_without_degraded_bubble(tmp_path):
+def test_chat_stream_image_falls_back_to_text_without_degraded_bubble(tmp_path, caplog):
     """The streaming surface obeys the same continuity contract as chat()."""
     from engine.ollama_provider import OllamaProviderError
 
@@ -2997,9 +3000,10 @@ def test_chat_stream_image_falls_back_to_text_without_degraded_bubble(tmp_path):
     local = {
         "name": "ollama", "model": "qwen3.5:9b",
         "client": _RaiseThenClient(exc=OllamaProviderError(
-            "Ollama endpoint unavailable: name resolution failed"
+            "Ollama endpoint unavailable: http://private-tailnet-host.ts.net:11434?token=do-not-log"
         )),
     }
+    caplog.set_level(logging.WARNING, logger=gw.__name__)
 
     def _providers(lane, root_=None):
         return {
@@ -3032,6 +3036,8 @@ def test_chat_stream_image_falls_back_to_text_without_degraded_bubble(tmp_path):
     assert done["degraded"] is False
     assert text_client.calls and not _request_contains_image(text_client.calls[0])
     assert "could not be read" in _system_text(text_client.calls[0]).lower()
+    assert "private-tailnet-host" not in caplog.text
+    assert "do-not-log" not in caplog.text
 
 
 def test_ollama_provider_failure_is_failover_worthy():

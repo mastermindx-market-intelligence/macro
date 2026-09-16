@@ -5720,8 +5720,10 @@ def _create_failover(
                         labels, type(exc).__name__,
                     )
                 raise
-            log.warning("brain_gateway: provider %s create failed (%s) — failover to next",
-                        p.get("model"), str(exc)[:80])
+            log.warning(
+                "brain_gateway: provider %s create failed error=%s — failover to next",
+                p.get("model"), type(exc).__name__,
+            )
     if last:
         raise last
     raise RuntimeError("brain_gateway: no usable provider")
@@ -7204,8 +7206,10 @@ def _run_brain_loop_stream(
                 _mark_provider_dead_if_auth(_p, exc)
                 _pool_cool_for_exc(_p, exc)  # cool a rate-limited/dead key for the next turn
                 if _is_failover_error(exc) and _i < len(_cands) - 1:
-                    log.warning("brain_gateway: round provider %s failed (%s) — failover",
-                                _p.get("model"), str(exc)[:80])
+                    log.warning(
+                        "brain_gateway: round provider %s failed error=%s — failover",
+                        _p.get("model"), type(exc).__name__,
+                    )
                     continue
                 break
 
@@ -7241,8 +7245,10 @@ def _run_brain_loop_stream(
                     _cands, per_model_kwargs=_pmk, provider_out=_served_provider,
                     max_tokens=max_tokens,
                     system=system_param, tools=tools_param, messages=messages)
-                log.warning("brain_gateway: round streaming failed (%s) — blocking "
-                            "retry served the round", str(_round_err)[:120])
+                log.warning(
+                    "brain_gateway: round streaming failed error=%s — blocking retry served the round",
+                    type(_round_err).__name__,
+                )
             except Exception as exc:  # noqa: BLE001 — the degrade below owns it
                 _round_err = exc
                 resp = None
@@ -7250,7 +7256,10 @@ def _run_brain_loop_stream(
         if resp is None:
             # Every candidate failed this round (or the error was not failover-worthy) —
             # the same degrade _create_failover's raise used to produce.
-            log.warning("brain_gateway: stream tool-turn failed: %s", _round_err)
+            log.warning(
+                "brain_gateway: stream tool-turn failed error=%s",
+                type(_round_err).__name__,
+            )
             _timing_round(timing, _ms_since(_round_t0), _round_tools)
             if _emitted:      # never leave a half-written round under the degraded notice
                 yield _wipe_event()
@@ -7490,8 +7499,10 @@ def _run_brain_loop_stream(
                 _mark_provider_dead_if_auth(_p, exc)
                 _pool_cool_for_exc(_p, exc)  # cool a rate-limited/dead pool key for the next turn
                 if _is_failover_error(exc) and _i < len(_cands) - 1:
-                    log.warning("brain_gateway: stream provider %s failed (%s) — failover",
-                                _p.get("model"), str(exc)[:80])
+                    log.warning(
+                        "brain_gateway: stream provider %s failed error=%s — failover",
+                        _p.get("model"), type(exc).__name__,
+                    )
                     if _emitted:
                         # This candidate died MID-BODY after putting text on screen. The
                         # next one restarts from scratch, so wipe the draft first — an
@@ -7500,7 +7511,10 @@ def _run_brain_loop_stream(
                         yield _wipe_event()
                         _emitted = ""
                     continue
-                log.warning("brain_gateway: stream synthesis failed (%s) — fallback", exc)
+                log.warning(
+                    "brain_gateway: stream synthesis failed error=%s — fallback",
+                    type(exc).__name__,
+                )
                 full_answer = ""
                 for block in last_resp_content:
                     if getattr(block, "type", "") == "text":
@@ -9573,7 +9587,7 @@ def chat_stream(
             **stream_source_kwargs,
         )
     except Exception as exc:  # noqa: BLE001
-        log.warning("brain_gateway: stream loop failed (%s)", exc)
+        log.warning("brain_gateway: stream loop failed error=%s", type(exc).__name__)
         yield f"data: {json.dumps({'type': 'delta', 'text': _DEGRADED_USER_MSG})}\n\n"
         yield f"data: {json.dumps({'type': 'done', 'citations': [], 'quota': quota_info, 'usage': {}, 'filtered': False, 'degraded': True, 'is_context_only': True})}\n\n"
 
