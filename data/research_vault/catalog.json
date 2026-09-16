@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-16T02:09:30.372500+00:00",
-  "count": 2197,
+  "generated_at": "2026-09-16T02:24:20.915126+00:00",
+  "count": 2198,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -139,6 +139,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-hlh6q8259ev-dcffbd",
+      "title": "Daily Asia",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T00:01:57Z",
+      "summary_points": [
+        "**AI Capex Resilience**: Inference-driven compute demand sustains $1.2T capex forecast (+33% from $90B), overriding regulatory/alignment slowdowns; semiconductor earnings up 103% YoY.",
+        "**Regulatory Tailwinds**: US bipartisan AI rules, California auditor standards, and Trump's anti-slowdown stance signal continued US leadership, favoring incumbents and closing overseas competitor access.",
+        "**Monetization Growth**: Real-world AI adoption drives inference demand (vs.",
+        "training), evidenced by OpenRouter token volumes +176% and semiconductor earnings surge (103% this year)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
