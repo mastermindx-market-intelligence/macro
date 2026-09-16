@@ -493,3 +493,39 @@ def test_negative_margin_pattern_does_not_falsely_claim_margin_contracted():
     finding=next(f for f in r['reasoning']['findings'] if f['id']=='revenue_up_gross_profit_down')
     assert 'margin contraction' not in finding['conclusion'].lower()
     assert 'does not imply' in finding['conclusion']
+
+
+def test_reasoning_support_never_cites_an_unavailable_value_as_evidence():
+    p=scenario();del p['current']['capital_expenditures']
+    r=analyze(p)
+    assert value(r,'current.simplified_operating_cash')<0
+    assert value(r,'current.cash_after_capex') is None
+    for finding in r['reasoning']['findings']:
+        assert all(r['calculations'][key]['value'] is not None for key in finding['supports'])
+
+
+def test_actual_cli_explanation_shows_tests_rivals_and_no_retrieval_claim():
+    p=scenario();p['prior'].update(eps=5,earnings_multiple=20);p['current'].update(eps=6,earnings_multiple=15)
+    run=subprocess.run([sys.executable,'-m','scripts.analyze_financial_bridge','--explain'],
+                       cwd=ROOT,input=json.dumps(p),text=True,capture_output=True,timeout=15)
+    assert run.returncode==0,run.stdout
+    assert run.stderr==''
+    for phrase in ('Conditional financial analysis','27.2727272727','120','16.6666666667',
+                   'Untested rival','Evidence to check','Would weaken','No company evidence was retrieved',
+                   'caller-supplied, unverified','current.cash_after_capex: -5.5'):
+        assert phrase in run.stdout,phrase
+    assert len(run.stdout)<16000
+
+
+def test_explanation_does_not_hide_missing_inputs_or_emit_rejected_private_text():
+    p=scenario();del p['current']['cash_taxes']
+    run=subprocess.run([sys.executable,'-m','scripts.analyze_financial_bridge','--explain'],
+                       cwd=ROOT,input=json.dumps(p),text=True,capture_output=True,timeout=15)
+    assert run.returncode==0
+    assert 'current.cash_taxes' in run.stdout and 'unavailable' in run.stdout
+    p['portfolio']='PRIVATE_CUSTOMER_CONTENT'
+    run=subprocess.run([sys.executable,'-m','scripts.analyze_financial_bridge','--explain'],
+                       cwd=ROOT,input=json.dumps(p),text=True,capture_output=True,timeout=15)
+    assert run.returncode==2
+    assert json.loads(run.stdout)['status']=='invalid_request'
+    assert 'PRIVATE_CUSTOMER_CONTENT' not in run.stdout
