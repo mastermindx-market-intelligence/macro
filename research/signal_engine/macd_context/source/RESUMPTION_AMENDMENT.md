@@ -1,0 +1,22 @@
+# Cycle-aware MACD diagnostic — pre-outcome resumption amendment
+
+Current live Chairman continuation: 2026-09-15. This continues macd-context-cycle-attribution-20260915-c3, not a replacement study or production change.
+Skillpack e1f752a58df8f874efa12e30957d911627a0c4f8; Macro review 76a2c0c8573272ce582c1a42e5b27b199b605744. Compatible schema v1/version 1.0.1/bootstrap 1; COLD_START, ACTIVE_EXECUTION and RECONCILE_STATE loaded.
+Same carrier: Remote Desktop Commander, Mac Studio 3f5ce987-e3eb-40a3-af9f-4b0ae54919cc. Current native writes and Python analysis succeed. No settings, permissions, provider, encoding or device bypass was used. Prior PID 10117 is absent; original incomplete append was absent and has now been completed through the same native writer.
+Direct-work reason: PRINCIPAL_JUDGMENT plus LOWER_TOTAL_OVERHEAD for one bounded diagnostic; no worker, provider job, new queue or watcher is being claimed.
+Frozen equity panel: exactly 242 previously exposed names; every equity series ends 2025-12-31 and has no missing sessions inside its observed span. The longer SPY clock is only calendar/context support. Enforce both event and exit cutoff 2025-12-31. No 2026 equity outcome is read.
+The original outcome files and reproduce_study.py are immutable. Reuse their existing event table for parity rather than rerun or redefine the original study.
+
+## Declared comparisons, before any extension-market result
+Use the original ANALYSIS_PLAN.md: price/RSI input crossed with fast 12/26/9 recursive versus slow 14/60/5 adjusted recipes; 1D/2D/3D/1W; two 2D variants matching incumbent 3D per-session decay and nominal normalization history. These are 18 family/grain variants, not 18 independent experiments.
+Calendar horizons 5/10/15/21/42/63/126/252; native horizons 3/5/10/20; opposite-cross exit capped at 252. Print all declared policy results, eligible/mature/censored counts, gross and illustrative 10bp-per-side net returns, SPY excess, prior-126-session beta-adjusted excess and duration. Close-only path extrema for 21/63/native10/opposite exits.
+Compare the full cohort and the same cohort with 252-session follow-up. Print both indicator-native location and common price-fast location. Do not select a favorite horizon after viewing results.
+Original repair predicate: deep-negative native stock signal, negative/easing completed weekly stock histogram, and SPY below 200-session mean. Attribute by calendar year and causally defined stress spell (ends only after ten observed above/equal-MA sessions), without future regime labels.
+Next attribution is restricted to original 3D price-fast/RSI-slow context observations and already declared 21/63-session labels. Compare cross/noncross under date/spell weighting, trailing beta and pre-entry volatility/drawdown; no fitted stock selector or per-name winner lookup. Annual-cluster bootstrap plus leave-one-year-out and leave-one-stress-spell-out are descriptive uncertainty/sensitivity, not corrected promotion tests.
+No stops/targets, sector data, Elliott counts, opportunity-matched early/late policy, long-hold falsifier or portfolio simulator are invented here. Opposite-cross is a diagnostic exit only; it is not the accepted structural-hold exit.
+
+## Accounting and scientific scope
+The existing engine/trial_ledger.py and data/trial_ledger.jsonl remain sole canonical look-accounting owners. The local ledger contains 1,674 records and no matching MACD-context family. Prior first-look accounting is therefore unverified/unregistered, not silently reset to zero. Current protected source confirms canonical log_grid/log_declared_budget semantics.
+This amendment is a timestamped diagnostic declaration, not a competing ledger, accepted preregistration or untouched holdout. Formal owner reconciliation/publication remains required before promotion-bearing evaluation. No p-value, optimized Sharpe, validated win probability or superiority acceptance will be claimed from this look.
+TOI W3, Temporal Grain W1B, motivating WMT/silver/GDX chart packets, identity-scale derivation and per-name outcome audition remain held. No existing signal, rank, plan, availability, size or trade owner is modified.
+Acceptance for this bounded measurement: synthetic RED-to-GREEN; exact original 126,440-event population and 21/63 outcomes parity; declared cutoffs; every declared comparison saved with hashes; all limitations and exact next scientific action retained. Independent promotion review and prospective validation are still owed.
