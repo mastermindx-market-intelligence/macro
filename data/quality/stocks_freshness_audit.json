@@ -42,12 +42,12 @@
     {
      "name": "EA",
      "kind": "stale_live",
-     "detail": "last bar 2026-08-10 (36d stale)"
+     "detail": "last bar 2026-08-04 (42d stale)"
     }
    ]
   }
  ],
- "expected_session": "2026-09-14",
+ "expected_session": "2026-09-15",
  "threshold_calendar_days": 7,
  "totals": {
   "fresh": 243,
@@ -59,8 +59,8 @@
  "stale_live": [
   {
    "ticker": "EA",
-   "last_bar": "2026-08-10",
-   "lag_days": 36,
+   "last_bar": "2026-08-04",
+   "lag_days": 42,
    "in_union": false
   }
  ],
