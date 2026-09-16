@@ -3879,7 +3879,8 @@ def test_run_brain_loop_accepts_user_id_kwarg(tmp_path):
     client = _MockClient([tool_resp, text_resp])
     seen = {}
 
-    def _spy_dispatch(name, params, root_, tdd, thu, user_id="", internals_ok=False, chart_client="", mode="chat"):
+    def _spy_dispatch(name, params, root_, tdd, thu, user_id="", internals_ok=False,
+                      chart_client="", mode="chat"):
         seen["user_id"] = user_id
         seen["mode"] = mode
         return {"available": False, "note": "stub"}
