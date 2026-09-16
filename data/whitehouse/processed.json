@@ -1133,6 +1133,24 @@
       "at": "2026-09-15T21:26:06.761943+00:00",
       "activated": false,
       "importance": 25
+    },
+    "https://www.whitehouse.gov/?p=50361": {
+      "id": "wh-2026-09-16-national-pow-mia-recognition-day-2026",
+      "at": "2026-09-16T20:07:30.770697+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=50347": {
+      "id": "wh-2026-09-16-safer-stronger-built-in-america-president-trumps-record-in-north-carolina",
+      "at": "2026-09-16T20:07:32.357557+00:00",
+      "activated": false,
+      "importance": 25
+    },
+    "tw-2026-09-10-tga-build": {
+      "id": "tw-2026-09-10-tga-build",
+      "at": "2026-09-16T20:07:42.697321+00:00",
+      "activated": true,
+      "importance": 78
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."
