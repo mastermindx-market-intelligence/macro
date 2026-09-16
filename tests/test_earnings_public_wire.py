@@ -1897,11 +1897,13 @@ def test_public_wire_checkout_materializes_required_full_tree_without_blobless_l
     assert "filter" not in options
 
 
-def test_public_wire_retry_budget_covers_fresh_main_regeneration_and_private_containment() -> None:
-    """The 1,980s publication loop buys one full fresh-main regeneration.
+def test_public_wire_retry_budget_covers_consecutive_fresh_main_regenerations() -> None:
+    """The 2,400s loop must survive more than two consecutive ref races.
 
-    A ref-lock loss must buy one full rebuild from the winning main. Checkout is
-    bounded separately so it cannot consume the outer 40-minute job reserve.
+    Production run 35161404497 completed two full builds and private promotions,
+    then lost both pushes to ordinary main contention.  Four allowed attempts
+    preserve an initial try plus three bounded regenerations.  The audited
+    attempt ceiling, loop budget, and outer timeout retain explicit margins.
     """
     repo = Path(__file__).resolve().parents[1]
     workflow = yaml.safe_load(
@@ -1911,12 +1913,14 @@ def test_public_wire_retry_budget_covers_fresh_main_regeneration_and_private_con
     publish = next(step for step in job["steps"] if step.get("name") == "regenerate current wire from latest main and publish")
     run = publish["run"]
 
-    assert job["timeout-minutes"] == 40
-    assert "PUSH_BUDGET_SECS=1980" in run
-    assert "PUSH_MAX_ATTEMPTS=2" in run
-    assert run.index("PUSH_BUDGET_SECS=1980") < run.index('push_retry_init "earnings public wire"')
-    assert run.index("PUSH_MAX_ATTEMPTS=2") < run.index('push_retry_init "earnings public wire"')
-    assert 2 * 13 * 60 < 1980 < job["timeout-minutes"] * 60
+    audited_max_attempt_seconds = 9 * 60
+    assert job["timeout-minutes"] == 50
+    assert "PUSH_BUDGET_SECS=2400" in run
+    assert "PUSH_MAX_ATTEMPTS=4" in run
+    assert run.index("PUSH_BUDGET_SECS=2400") < run.index('push_retry_init "earnings public wire"')
+    assert run.index("PUSH_MAX_ATTEMPTS=4") < run.index('push_retry_init "earnings public wire"')
+    assert 4 * audited_max_attempt_seconds < 2400
+    assert 2400 + 10 * 60 == job["timeout-minutes"] * 60
     assert run.index("git reset --hard origin/main") < run.index(
         "python -m scripts.build_earnings_public_wire"
     )
