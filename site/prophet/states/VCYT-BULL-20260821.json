@@ -14,23 +14,23 @@
     "progress": 32.8,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 61.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.331,
+    "dist_to_stop_r": -0.644,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
     "horizon_pct_used": 57.8,
-    "p1": -0.8875,
-    "p2": -0.4438,
+    "p1": -1.0961,
+    "p2": -0.5481,
     "p3": null,
-    "move_r": -1.331,
+    "move_r": -1.644,
     "mfe_r": 1.804,
-    "mae_r": -1.331
+    "mae_r": -1.644
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Phase: between_t1_t2 \u2192 invalidated",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,7 +40,7 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 2.9399999999999977,
-  "_mae": -2.1700006103515648,
+  "_mae": -2.679998931884768,
   "_max_p1": 1.2024539877300602,
   "_first_trigger_ts": "2026-08-21",
   "_first_t1_ts": "2026-08-27",
