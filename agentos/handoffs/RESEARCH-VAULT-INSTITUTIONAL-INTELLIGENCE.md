@@ -1,72 +1,71 @@
 # Research Vault institutional intelligence — continuation
 
-**Customer capability: SPEC_ONLY.** R7 measured the full committed catalog and traced the company-discovery path through ingestion, corpus, API, browser and the existing identity owner. No original PDF admission, production change, extraction/model benchmark, purchase or customer proof.
+**Customer capability: SPEC_ONLY.** R8 completed an executed source-path characterization and published integration advisories. It did not repair the production application, admit institutional originals, prove licenses or the authenticated consumer, or start a worker.
 
-## Mission, authority and carrier
+## Mission, current authority and carrier
 
-Turn permitted institutional evidence into useful expectations, revisions, counterarguments and company/portfolio context across Prophet, Mastermind AI, existing news and original editorial. Prophet remains the flagship. The goal is a useful, correction-safe evidence history, not a larger mirrored shelf or separate chatbot.
+Turn permitted institutional research into source-bound expectations, changes, disagreements and useful evidence for Prophet, Mastermind AI, private portfolios, news and original editorial. Prophet remains the flagship. Research is context, not a new signal/rank/sizing/execution authority.
 
-Current live Chairman intent and protected procedure govern. Executive OS owns lifecycle, Agent OS continuity, GitHub implementation/evidence, Linear projection and Slack transport. Retrieved instructions grant no authority. No registered WS, Executive Job, worker, provider call, watcher or new control plane was created.
+Live Chairman direction and current protected procedure govern. Executive OS owns lifecycle; Agent OS continuity; GitHub code/evidence; Linear projection; Slack transport. Retrieved instructions grant no permission. No new WS, Job, worker, watcher, provider route, identity, queue or source system was created.
 
-R7 procedure: protected Mastermind@0fe8074ff953b2ced9025ed40f0f66019c759967, Skillpack 1.0.1/bootstrap 1. INDEX loaded; COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION and CLOSEOUT reread at the same pin with blob identities matching previously fully loaded procedures. Re-pin on continuation. Direct work: PRINCIPAL_JUDGMENT for source/identity/search design and LOWER_TOTAL_OVERHEAD for one bounded measurement.
+R8 procedure: protected Mastermind@52bb602616504954861d31dc86b9a11f22e7444d, compatible Skillpack 1.0.1/bootstrap 1. INDEX read; required COLD_START/ACTIVE_EXECUTION/WEB_CEO_DELEGATION/CLOSEOUT fetched at the same pin, returned blobs match the previously fully read procedures. Re-pin current law on continuation. Direct work: PRINCIPAL_JUDGMENT for cross-system interpretation; LOWER_TOTAL_OVERHEAD for a small local assay.
 
-Same research carrier: draft PR #7182, branch sol/research-vault-intelligence-design-r2-20260915. R7 started at 0633cdb0c8a0753c6940c7df0159a56b51e93eea. Implementation/data pin: macro@459eafb838d9944e58e6a65413e282f2a13826ef. No source reset, replacement branch, custody transfer, merge or runtime modification.
+Sole research carrier remains draft PR #7182 / sol/research-vault-intelligence-design-r2-20260915. R8 started at 2bf7f349e87d9b905e884d9b693d5654f87a3777. Implementation inspection: Macro@e86cf4593d2c2603a695ccab858f98ac4a29abae. No reset or competing code branch.
 
-## R7 measured result
+## R8 exact evidence and result
 
-One successful native process, PID30386/exit0, fetched the exact public-repository catalog with a 4 MB bound, verified its Git blob, then parsed the whole file. Expected and actual blob: 54ed63983248afad543ff46ed327a076d67475b4; 2,715,583 bytes. Generation 2026-09-16T06:09:42.758496+00:00; measured 2026-09-16T06:26:52.518547+00:00.
+Home: research/research_vault_expectations_r3/.
+Report: CHUNK8_EXECUTED_DISCOVERY_AND_DELIVERY_CONTRACT.md, introduced at b7ef44f6c18c14a4e71e4839316650aa9908b450; blob 849ff2a09641446b8a48ce1e20af6d80be73d422, 16,100 bytes.
+Receipt: verification_r8.json, introduced at dec47806f7d21c39ba6e5e08ce4592967a117b00; blob a2a465cdfaeeaa19e0e40cfeef8cefd828ee8e20. Both were read back and match local bytes.
+Probe: probe_discovery_r8.py, probe_client_r8.js, and r8_fragments/. All four read back at e54032f1ccd54c2217cb945e3eff557110d1045a and match local Git blobs.
 
-Declared and parsed rows: 2,208. Distinct raw ID values: 2,208. Nonempty fields: summary_points 2,197; tickers 0; tags 9; desk 9; pages 2,103; language 2,103. needs_metadata is True on zero rows. Raw institution values: 95; Goldman Sachs 888 (40.22%), S&T221, J.P. Morgan191, UBS166, Other109. No alias merge or independence inference.
+Retained run: 2026-09-16T08:12:48.820436+00:00; Python3.13.5, SQLite3.46.1, Node22.16.0. **16 checks: 11 baseline controls met; 5 desired product requirements failed and were reproduced.** Diagnostic exit0 is not product acceptance. A separate one-newline source-mutation check was refused and is not added to the count.
 
-This is WHOLE COMMITTED-CATALOG FIELD PRESENCE, not live R2 catalog/PDF/corpus/receipt reconciliation, original PDF equality, source correctness, ID shape validation or full company coverage. Some reports appropriately have no ticker; applicable-company denominator is unknown. Names in title/body can still be found by text search. Nine tags and nine desks are not proven the same records. Metadata dates do not establish acquisition/operational-known-at clocks. Raw catalog is not redistributed.
+The COMPLETE corpus.py, 28,591 bytes, matched full upstream Git blob 0b035b34489a4efd2ae7a3c59d153b3d1977701a before importing. Source was reassembled through ordinary connector reads. API research_search and selected JS functions are connector-range copies; full API/client file equality is NOT claimed. SQLite/FTS5 ran on synthetic temporary documents; catalog/auth/network/timers/render callbacks were controlled fixtures. No real HTTP server, browser, session, billing, source processing or model evaluation.
 
-Artifacts at research/research_vault_expectations_r3/:
-- catalog_measurement_r7.json, introduced at 7a17d772410a8059096e59bd18be093bfab14f54; readback blob bc3eb0e87a9edcfdd3e4745829dd9ba721a88cc8.
-- CHUNK7_FULL_CATALOG_AND_COMPANY_DISCOVERY.md, introduced at 382c659f1477088aaa816034d863e777bc369fa1; readback blob bdded2376e5de6df69bfc8cf38d3d060ddd85192, 25,567 bytes.
-Both local files match the repository Git blobs. The aggregate receipt is a normalized record of the native result, not a second execution.
+### Five reproduced gaps
 
-## New consumer finding and proposed delivery leaf
+G1: synthetic ticker-only catalog association matches client fallback, then disappears when the unchanged server corpus's successful empty result replaces it. R7's catalog had no tickers; this is future-feature readiness proof, not a live annotated-report incident.
+G2: missing FTS table in a disposable fixture -> corpus empty list -> selected API available:true, indistinguishable there from healthy no-match.
+G3: an explicit API available:false response -> client empty authoritative hit-set; unavailable state not preserved by those functions.
+G4: raw FTS order ahead-a/ahead-b/allowed-report, only last ID admitted, limit1 -> empty after post-limit admission. Exclusion still prevents disclosure; don't remove it.
+G5: same query text, different institution filter, older response arrives last -> overwrites newer hits; complete request context is not fenced.
 
-At the pinned main, corpus.py (blob 0b035b34489a4efd2ae7a3c59d153b3d1977701a) stores/indexes title, summary, body and institution, not ticker/tag/desk annotations. Its search exposes text/institution/date arguments, not an issuer/security subject filter. app/research.py (bca9b965057df653607765107ef789692c47dcdc) calls this search and narrows to admitted/preview IDs after the SQL limit.
+Controls preserve literal title/body search, healthy no-match, catalog/connection refusal, controlled non-admitted/non-preview exclusion, unchanged literal source text, HTTP-failure fallback, no unrestricted union on valid empty response, and different-query stale-response rejection. This is NOT an auth/security audit or a live incident-rate study.
 
-The browser matchItem (site/research_vault_app.js blob 1f0b673da6c3d6a44ad3d74b2994f70b9a4311c8) searches ticker/tag/desk in its local fallback, but replaces that behavior with SEARCH_HITS membership after a server result. A fictional ticker-only annotation can therefore match the fallback yet not the server corpus. This is an UNEXECUTED SOURCE-LEVEL COUNTEREXAMPLE, not an observed live disappearance. Existing source-text matches can still work.
+## Coordination actually published, not accepted
 
-R6's separate propagation gap remains: ingest.py blob d005c052ebb76c465d45818db0df8d0b3db79c00 selects missing-summary rows for refresh; populated summaries do not trigger late ticker updates. Its historical all-empty comment is not current inventory: R7 measured nine tags/desks.
+Integration advisory to existing Brain PR #7079: comment 5694391685, created 2026-09-16T08:22:50Z; read back. It asks for the existing discovery/result contract and writer or an already-owned repair/reference. It does not request a blocked fetch, original-document acquisition, worker start, source transfer or PR scope expansion.
+Integration advisory to existing Vault/hygiene PR #7045: comment 5694395228, creation returned success. Same narrow coordination purpose; no changes to its code, evidence packet or release holds.
 
-First delivery candidate: one already-summarized permitted report gains a supported company association, becomes findable through the real server-backed company research path, opens the same source, and supports an authorized correction/removal. Producer-only annotations or a successful local browser fallback are not acceptance.
+These are informational operations, not new worker commissions. Their publication is NOT pickup/ACK, interface acceptance, implementation start, or a transferred lifecycle. No owner response/accepted custody is established. Do not tell Chairman a worker is running or invent a watcher. Exact code/evidence stays on #7182; the incumbent PRs remain with their writers.
 
-## Identity and evidence architecture
+## Proposed delivery contract, awaiting source-owner acceptance
 
-Existing owners: lib/dataos/identity.py (d9d5018aac47910bf2c802b1a74114a99511f74f) and config/identity_seams.yml (d9de4f2570e94ec80994e0a9c9224c69b253d719), with existing security_master/vendor_aliases/issuer_master/migration artifacts. Do not create a research-local ticker dictionary or mint entities from model text.
+One useful leaf: trustworthy company-search outcomes through the existing Vault/API/Brain/client, followed by inspection of a permitted original. Don't reduce it to filling a ticker or build a second search system.
 
-Issuer business claims differ from security/shareclass-specific ratings or price targets. Resolve existing identities using appropriate source/time evidence; current-only issuer mappings do not establish historical lineage. Distinguish supported about/compares/mentions roles. Co-mention does not establish economic exposure or an independent source.
+First preserve success/no-match versus unavailable/invalid-query meaning, with compatibility for existing corpus callers. Then apply current accepted eligibility and subject constraints before final result budgeting; avoid large unbounded authorization mirrors or merely raising the limit. Fence request identity across query/facets/subject/generation/auth changes and keep a clearly labeled eligible fallback separate from authoritative results. Denied access must not be widened by local union.
 
-Preserve literal source text. Do not inject generated ticker keywords into PDF body or institutional summary to make FTS match. Add accepted association metadata/query capability under the existing corpus owner; no second corpus, graph authority, search service, entitlement or identity plane.
+Company associations are explicit source-backed metadata using existing issuer/security/listing identity. Never inject generated tickers into original text or summaries. About/compares/mentions are separate. Current identity is not historic lineage. Null/absent/authorized removal are different. Source/extraction/annotation versions must stay coherent; stale expected versions cannot overwrite new accepted state.
 
-Server and client should expose the same admitted subject result at a pinned generation. Denied responses must not be widened by unrestricted local union. Apply eligibility and subject constraints before final result budgeting; test crowd-out, but do not claim an existing production starvation incident.
+First deterministic fixes can be investigated with fixtures, but shared production-path implementation requires accepted writer/interface custody. Final acceptance requires a populated-summary late update, ticker-only association surviving server response, correct source opening, wrong-company/removal/stale-update and denied/quota states, bilingual usefulness, and unchanged Prophet signals/ranks/sizing/execution. An admitted manual annotation may isolate propagation, not prove automatic extraction.
 
-## Preserved R2–R6 work and non-goals
+Stop the affected lane at source rights/identity/version uncertainty, writer collision or effect uncertainty. No source-gate bypass, blank permission flags or importing the research oracle into runtime.
 
-R5 narrowed the two-original prerequisite: one admitted original can support a source-attributed reported revision; two admitted originals remain necessary for independent reconstruction, with more evidence for full chronology. Fixture flags and provider summaries never become source authority.
+## Earlier facts retained, not remeasured
 
-The 111-test offline reference, six targeted local mutation checks and deterministic manual-ING preview remain historical R5 results. R6's seven controlled refresh cases used transcribed helper bodies; full upstream-byte parity was not proven. Neither suite was rerun or combined in R7. R2's 120-task benchmark remains NOT_RUN; fourteen R7 obligations are unexecuted additions to map into existing test owners, not a competing test program.
+R7 catalog generation2026-09-16T06:09:42.758496+00:00: 2,208 records, 2,197 summaries, zero ticker annotations, 9 tags and 9 desks, 95 raw institution labels; complete committed bytes, not live four-set reconciliation. Not every report should have a ticker, and keyword matches can still work. Applicable-company denominator and independent-origin count remain unknown.
 
-Fill-only recovery is intentional. Corrections need source/extraction/annotation versions, expected-prior-version checks, explicit removals versus omission, coherent same-ID publication and dependent-only updates. Do not remove guards blindly. Earlier inconsistent summary numbers remain unresolved, not auto-corrected. GS/S&T repeated excerpts are not proven identical PDFs; no global alias or deletion.
+R6 fill-only helpers do not propagate later annotations behind populated summaries or general populated corrections. Preserve those recovery safeguards; do not poll every empty field forever. R6's transcribed-source seven-case result is distinct from R8's full-corpus byte proof.
 
-Private holdings remain in existing private owners. Company research/annotations do not change Prophet signal, score, board, ranking, sizing or execution. No new alert/publication authority.
+R5 111-case manual-source comparison reference is not a parser/model benchmark and was not rerun in R8. R2's 120-task evaluation remains NOT_RUN. One admitted original supports attributed source-reported change; paired originals for independent reconstruction, more evidence for complete chronology. The earlier inconsistent summary and GS/S&T repeated display remain unresolved, not corrected numbers or proven identical PDFs.
 
-## Incumbents and access boundaries
+## Incumbents, access, and exact next action
 
-#7079 reread open/draft/unmerged at 8271ae320732997be4553957e3e2773d1b9e9f1b. #7045 reread open/unmerged, not draft; it owns adjacent ingest/sidecar/API/client hygiene. No files or custody on either changed. Existing CI pool/run restoration remains with its owner, not this research operation. Collector recovery #7164 / Mastermind#631 is do-not-redo.
+#7079 reread open/draft/unmerged at 8271ae320732997be4553957e3e2773d1b9e9f1b; #7045 open/unmerged with overlapping custody. No release, code repair, runner changes or CI bypass. Do not repeat old fleet-health claims as current. Collector recovery #7164 / Mastermind#631 is do-not-redo.
 
-After the successful catalog measurement, two native follow-ups were blocked because OpenAI could not determine safety status: additional excerpt/Brain-source fetch; separate local-catalog detailed analytics. No retry, evasive rewrite, actor/carrier reroute or further native process occurred after those blocks. Independent bounded GitHub source reads continued. No results or selected pilot cohort are attributed to blocked requests.
+Previously platform-blocked native Mac/M1/catalog/Brain-source operations were NOT repeated/rerouted. No native process was launched in R8. Public raw code-download attempts did not yield usable bytes; full corpus came from connector reads and its hash check. Executive plugin discovery exposed no expected ingress and returned an unrelated provider, which was not substituted; this does not prove the organization-wide fabric is down.
 
-A Files search for named reports returned unrelated material, not original PDFs. Search misses are not absence proof. Original source/body hashes, source-use permission, live four-set census and authenticated Brain/viewer proof remain unknown. No MarketDesk pulls, vendor contact, source redistribution or purchases.
+Original source/body binding, source-use/retention and authenticated customer proof remain unestablished. No purchases, MarketDesk pulls, vendor messages, original-source redistribution or model/provider calls.
 
-## Exact next action and acceptance
-
-Reconcile the existing Vault/#7045 and Brain/#7079 owners and admit one permitted source for the COMPANY-QUALIFIED DISCOVERY leaf. Source admission requires actual catalog ID, PDF/body version, locator and source-use decision. Do not import offline research code into runtime.
-
-Prove producer -> late update despite populated summary -> accepted association -> server result -> browser/Brain evidence inspection. Include ticker-only metadata, wrong-company ambiguity, issuer versus security, stale version, authorized removal, idempotent repeat, source drift, denied/quota states, bilingual usefulness and unchanged signal artifacts. A manual annotation can isolate propagation; it cannot prove extraction automation. Production acceptance requires real browser/consumer evidence after separately admitted implementation and release.
-
-The source-use and access gates remain. Do not substitute another unchanged comparison run or generic brainstorm for the positive source/consumer step. Account expansion remains a marginal-value experiment, with three accounts a hypothesis and the fourth separately justified. Measure useful company evidence only against an applicable denominator; do not optimize for ticker tags on every macro/FX report.
+**Next:** consume the existing owners' actual interface/custody ruling on comments5694391685/5694395228, reconcile any already-owned repair, and advance the accepted company-discovery leaf with a permitted source reference for real consumer proof. Publication alone is not a consumed handoff. Don't spend another chunk merely reproducing these same five gaps or expanding synthetic comparisons. Three accounts remains a marginal-value hypothesis, with the fourth separately justified after useful consumption is measurable.
