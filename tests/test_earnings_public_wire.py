@@ -356,6 +356,7 @@ def test_http_fetch_exhausts_a_bounded_transport_retry_budget(
 ) -> None:
     url = f"{DEFAULT_SOURCE_BASE}/earnings_story_packets/objects/example.json"
     attempts = 0
+    sleeps: list[float] = []
 
     def _get(*_args, **_kwargs):
         nonlocal attempts
@@ -363,11 +364,15 @@ def test_http_fetch_exhausts_a_bounded_transport_retry_budget(
         raise wire_builder.requests.exceptions.SSLError("persistent EOF")
 
     monkeypatch.setattr(wire_builder.requests, "get", _get)
-    monkeypatch.setattr(wire_builder, "HTTP_FETCH_RETRY_BACKOFF_SECONDS", 0.0)
+    monkeypatch.setattr(wire_builder.time, "sleep", sleeps.append)
 
     with pytest.raises(PublicWireBuildError, match="persistent EOF"):
         wire_builder._http_fetch(url, timeout=5.0, max_bytes=1024)
     assert attempts == wire_builder.HTTP_FETCH_MAX_ATTEMPTS == 3
+    assert sleeps == [
+        wire_builder.HTTP_FETCH_RETRY_BACKOFF_SECONDS * attempt
+        for attempt in range(1, wire_builder.HTTP_FETCH_MAX_ATTEMPTS)
+    ]
 
 
 def test_http_fetch_does_not_retry_source_policy_failure(
@@ -398,6 +403,80 @@ def test_http_fetch_does_not_retry_source_policy_failure(
     monkeypatch.setattr(wire_builder.requests, "get", _get)
 
     with pytest.raises(PublicWireBuildError, match="redirected or changed origin"):
+        wire_builder._http_fetch(url, timeout=5.0, max_bytes=1024)
+    assert attempts == 1
+
+
+def test_http_fetch_does_not_retry_http_status_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    url = f"{DEFAULT_SOURCE_BASE}/earnings_story_packets/objects/example.json"
+    attempts = 0
+
+    class _ErrorResponse:
+        status_code = 503
+        is_redirect = False
+        headers: dict[str, str] = {}
+
+        def __init__(self) -> None:
+            self.url = url
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args) -> None:
+            return None
+
+        def raise_for_status(self) -> None:
+            raise wire_builder.requests.HTTPError("503 Server Error")
+
+    def _get(*_args, **_kwargs):
+        nonlocal attempts
+        attempts += 1
+        return _ErrorResponse()
+
+    monkeypatch.setattr(wire_builder.requests, "get", _get)
+
+    with pytest.raises(PublicWireBuildError, match="503 Server Error"):
+        wire_builder._http_fetch(url, timeout=5.0, max_bytes=1024)
+    assert attempts == 1
+
+
+def test_http_fetch_does_not_retry_streamed_byte_bound_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    url = f"{DEFAULT_SOURCE_BASE}/earnings_story_packets/objects/example.json"
+    attempts = 0
+
+    class _OversizeResponse:
+        status_code = 200
+        is_redirect = False
+        headers: dict[str, str] = {}
+
+        def __init__(self) -> None:
+            self.url = url
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args) -> None:
+            return None
+
+        def raise_for_status(self) -> None:
+            return None
+
+        def iter_content(self, *, chunk_size: int):
+            assert chunk_size == 65_536
+            yield b"x" * 1025
+
+    def _get(*_args, **_kwargs):
+        nonlocal attempts
+        attempts += 1
+        return _OversizeResponse()
+
+    monkeypatch.setattr(wire_builder.requests, "get", _get)
+
+    with pytest.raises(PublicWireBuildError, match="exceeds safe size bound"):
         wire_builder._http_fetch(url, timeout=5.0, max_bytes=1024)
     assert attempts == 1
 
