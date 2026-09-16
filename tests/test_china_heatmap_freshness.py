@@ -803,3 +803,19 @@ def test_ci_routes_checker_and_regression_suite_to_the_heatmap_owner() -> None:
     owner = legacy[owner_start:owner_end]
     assert '"scripts/check_china_heatmap_freshness.py"' in legacy
     assert "tests/test_china_heatmap_freshness.py" in owner
+
+
+def test_dag_declares_settled_heatmap_producer_and_checker() -> None:
+    """DAG authority must match the two new live Asia workflow modules."""
+    dag = (ROOT / "config" / "dag.yml").read_text(encoding="utf-8")
+    start = dag.index("- workflow: .github/workflows/asia-close.yml")
+    end = dag.index("\n  # ── engine-render.yml", start)
+    lane = dag[start:end]
+
+    build = lane.index("module: scripts.build_market_heatmap")
+    check = lane.index("module: scripts.check_china_heatmap_freshness")
+    spine = lane.index("module: scripts.build_china")
+
+    assert build < check < spine
+    assert lane.count("module: scripts.build_market_heatmap") == 1
+    assert lane.count("module: scripts.check_china_heatmap_freshness") == 1
