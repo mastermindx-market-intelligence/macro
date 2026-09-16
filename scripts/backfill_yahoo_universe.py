@@ -661,12 +661,17 @@ def _mark_attempt(state: dict, ticker: str, error: str, max_attempts: int,
 def run(cap: int = 400, batch_size: int = 20, sleep_s: float = 1.5,
         budget_s: float = 480.0, period: str = "max", max_attempts: int = 3,
         recent_days: int = 90, refresh_cap: int = 0, dry_run: bool = False,
-        today: date | None = None) -> dict:
+        today: date | None = None, refresh_all: bool = False) -> dict:
     """One bounded slice of the lane: the backfill phase, then the refresh phase.
 
-    The refresh phase only starts when the backfill queue UNDER-FILLED the cap, so
-    during the ~16 drain nights it never competes for the budget; once the queue is
-    empty it inherits the whole allowance. Both phases share one wall clock."""
+    By default refresh starts only when backfill under-fills the cap, retaining
+    the historical six-day cadence. Explicit refresh_all plans every eligible
+    unmaintained archive name even during backlog drain. It does not add time,
+    retry budgets or another writer: both phases still share the same clock.
+    Planning all names is not a claim that every response is current or succeeds.
+    """
+    if refresh_all and refresh_cap > 0:
+        raise ValueError("refresh_all cannot be combined with an explicit refresh_cap")
     t0 = time.monotonic()
     state = load_state()
     queue, census = needed_queue(state, today=today, recent_days=recent_days)
@@ -687,9 +692,12 @@ def run(cap: int = 400, batch_size: int = 20, sleep_s: float = 1.5,
     # The refresh plan is resolved BEFORE any fetch so --dry-run can print it and
     # so the cadence number in the notice describes tonight's actual intent.
     refresh_plan: list[str] = []
-    if len(plan) < cap:
+    if refresh_all:
+        report["refresh_scope"] = "all_unmaintained"
+    if len(plan) < cap or refresh_all:
         candidates, n_refreshable = refresh_candidates(state)
-        chosen = refresh_cap if refresh_cap > 0 else refresh_cap_for(n_refreshable)
+        chosen = (n_refreshable if refresh_all else
+                  refresh_cap if refresh_cap > 0 else refresh_cap_for(n_refreshable))
         refresh_plan = candidates[:max(0, chosen)]
         report["refreshable"] = n_refreshable
         report["refresh_cap"] = chosen
@@ -881,13 +889,16 @@ def main(argv: list[str] | None = None) -> int:
                          "0 (default) computes it from the cadence target — "
                          f"ceil(n/{REFRESH_TARGET_CADENCE_D}) clamped to "
                          f"[{REFRESH_CAP_MIN}, {REFRESH_CAP_MAX}]")
+    ap.add_argument("--refresh-all", action="store_true",
+                    help="plan every eligible unmaintained archive name within the same "
+                         "budget; preserves collector/parked exclusions; excludes --refresh-cap")
     ap.add_argument("--dry-run", action="store_true",
                     help="compute and print both plans; no network, no writes")
     a = ap.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s  %(message)s")
     run(cap=a.cap, batch_size=a.batch_size, sleep_s=a.sleep, budget_s=a.budget_s,
         period=a.period, max_attempts=a.max_attempts, recent_days=a.recent_days,
-        refresh_cap=a.refresh_cap, dry_run=a.dry_run)
+        refresh_cap=a.refresh_cap, dry_run=a.dry_run, refresh_all=a.refresh_all)
     # Always 0: this is an additive, non-fatal lane. A backfill that got nothing
     # tonight must never red the night's collect job — the ::notice/::warning
     # lines above carry the outcome.
