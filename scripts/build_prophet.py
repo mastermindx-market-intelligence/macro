@@ -49,6 +49,7 @@ is forbidden in site artifacts (enforced by check_validated_claims.py).
 from __future__ import annotations
 
 import argparse
+import copy
 import gzip
 import hashlib
 import json
@@ -2062,6 +2063,7 @@ def main() -> None:
     intake_stats: dict[str, Any] = {}
     new_plans = originate_plans(
         standouts_path=STANDOUTS_PATH,
+        standouts_doc=_standouts_doc,
         asof=asof,
         existing_ids=existing_ids,
         thetadata_store=thetadata_store,
@@ -2092,17 +2094,15 @@ def main() -> None:
     # original set already contains tonight's new ids and would suppress everything C0
     # tried to mirror. existing_plans itself is untouched.
     #
-    # The standouts artifact is loaded HERE and passed in-memory, so the arena provably
-    # slices the same world the live origination did rather than re-reading a file that
-    # another lane could have rewritten in between. C0's plan ids are checked against the
-    # live ids as the harness-validity pin.
+    # The exact source board was frozen once at the start of this build.  Arena gets an
+    # isolated deep copy of that object, so an ABA rewrite of the mutable product board
+    # cannot make the shadow harness slice different bytes than live origination.
+    # C0's plan ids are checked against the live ids as the harness-validity pin.
     try:
         from engine.prophet_arena import run_arena  # noqa: PLC0415
 
-        with STANDOUTS_PATH.open(encoding="utf-8") as _f:
-            _arena_standouts = json.load(_f)
         _arena_board = run_arena(
-            _arena_standouts,
+            copy.deepcopy(_standouts_doc),
             asof=asof,
             existing_ids=set(existing_plans.keys()),
             active_keys=active_keys,
@@ -2148,10 +2148,8 @@ def main() -> None:
     shadow_rows: list[dict] = []
     shadow_written = 0
     try:
-        with STANDOUTS_PATH.open(encoding="utf-8") as _f:
-            _shadow_standouts = json.load(_f)
         shadow_rows = legacy_shadow_rows(
-            _shadow_standouts,
+            copy.deepcopy(_standouts_doc),
             asof=asof,
             existing_ids=set(existing_plans.keys()),
             active_keys=active_keys,
@@ -2609,7 +2607,7 @@ def main() -> None:
         # under.  Stamped at the top level as well as on every plan so a reader (and a
         # later side-by-side) never has to infer the era from a date.
         "selection_era": SELECTION_ERA,
-        "gate_go": _read_standouts_gate_go(),
+        "gate_go": _read_standouts_gate_go(_standouts_doc),
         "plan_count": len(all_plans),
         # MISNOMER, deliberately preserved: `active_count` (and `plans[]`) count every
         # plan the management engine could state, INCLUDING forward-ledger-closed ones.
@@ -2892,8 +2890,10 @@ def main() -> None:
     return active_entries
 
 
-def _read_standouts_gate_go() -> bool:
-    """Read gate_go from standouts for the index."""
+def _read_standouts_gate_go(standouts_doc: dict[str, Any] | None = None) -> bool:
+    """Read ``gate_go`` from a supplied frozen board or the legacy path fallback."""
+    if isinstance(standouts_doc, dict):
+        return bool(standouts_doc.get("gate_go", False))
     try:
         with STANDOUTS_PATH.open(encoding="utf-8") as f:
             return bool(json.load(f).get("gate_go", False))

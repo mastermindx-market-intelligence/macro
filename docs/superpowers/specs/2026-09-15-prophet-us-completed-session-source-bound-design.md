@@ -63,6 +63,12 @@ The nightly's already-existing temporary source freeze verifies that:
 2. the temporary byte copy has the expected hash;
 3. decompressing the durable immutable snapshot recovers exactly those bytes.
 
+The parsed object from that one freeze is also the sole board input for live origination,
+Arena, the legacy shadow ledger, and the index's gate disclosure. Each consumer receives
+an isolated deep copy where mutation is possible. No production consumer re-opens the
+mutable live board after the freeze, so an ABA rewrite cannot produce plans from bytes
+that differ from the recorded snapshot even when the path ends with its original hash.
+
 This verification occurs before the zero-new-plan return, so an honestly empty origination night still preserves its exact source.
 
 ### Checkpoint and restore boundaries
@@ -79,7 +85,7 @@ The live `us_standouts.json` board remains outside Prophet checkpoint, R2 supers
 
 ## Failure and null behavior
 
-A missing or malformed observation timestamp does not authorize freshness. Date-only fallback applies only when the caller supplied no timestamp.
+A missing or malformed observation timestamp does not authorize freshness. Clock resolution first parses an exact date-only value; every other valid ISO datetime form, including lowercase `t`, uses timestamp semantics. Date-only fallback applies only to a true date-only input.
 
 An empty candidate night is valid. A non-empty eligible population with zero originations remains an acceptance alarm, not permission to weaken chronology or mixed-vintage gates.
 

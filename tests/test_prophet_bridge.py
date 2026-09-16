@@ -378,6 +378,59 @@ def test_preclose_board_uses_its_observation_clock_for_origination(tmp_path):
     assert plans[0]["price_basis_date"] == "2026-09-14"
 
 
+def test_lowercase_iso_time_separator_uses_timestamp_semantics(tmp_path):
+    standouts = _make_standouts(
+        gate_go=False,
+        buys=[_make_buy(
+            "AAPL", score=70, act_level=3, spot=150.0, anchor="2026-06-15"
+        )],
+    )
+    standouts["as_of"] = "2026-09-14"
+    standouts["staleness"].update({
+        "price_through": "2026-09-14",
+        "observed_at_utc": "2026-09-15t15:09:00+00:00",
+        "expected_session": "2026-09-14",
+    })
+    path = tmp_path / "us_standouts.json"
+    path.write_text(json.dumps(standouts), encoding="utf-8")
+
+    plans = originate_plans(
+        standouts_path=path,
+        asof="2026-09-15",
+        existing_ids=set(),
+        thetadata_store=None,
+    )
+
+    assert len(plans) == 1
+    assert plans[0]["price_basis_date"] == "2026-09-14"
+
+
+def test_origination_uses_supplied_frozen_board_without_rereading_path(tmp_path):
+    frozen = _make_standouts(
+        gate_go=False,
+        buys=[_make_buy(
+            "AAPL", score=70, act_level=3, spot=150.0, anchor="2026-07-02"
+        )],
+    )
+    path = tmp_path / "mutable-us-standouts.json"
+    path.write_text(json.dumps(_make_standouts(
+        gate_go=False,
+        buys=[_make_buy(
+            "MSFT", score=70, act_level=3, spot=410.0, anchor="2026-07-02"
+        )],
+    )), encoding="utf-8")
+
+    plans = originate_plans(
+        standouts_path=path,
+        standouts_doc=frozen,
+        asof="2026-07-02",
+        existing_ids=set(),
+        thetadata_store=None,
+    )
+
+    assert [plan["asset"] for plan in plans] == ["AAPL"]
+
+
 def test_tier_native_signal_dates_do_not_rekey_plan_identity(tmp_path):
     """T2 uses its own event close while the immutable ID keeps the formation anchor."""
     buy = _make_buy(
@@ -1204,6 +1257,20 @@ def test_source_snapshot_stale_pid_temp_cannot_block_publication(tmp_path, monke
     assert got_sha == sha
     assert gzip.decompress((tmp_path / rel).read_bytes()) == raw
     assert stale.read_bytes() == b"orphaned prior-run temp"
+
+
+def test_build_prophet_reuses_one_frozen_board_after_source_freeze():
+    import inspect
+    import scripts.build_prophet as bp
+
+    source = inspect.getsource(bp.main)
+    after_freeze = source[source.index("_freeze_origination_source_board"):]
+
+    assert "STANDOUTS_PATH.open" not in after_freeze
+    assert "standouts_doc=_standouts_doc" in after_freeze
+    assert "run_arena(\n            copy.deepcopy(_standouts_doc)" in after_freeze
+    assert "legacy_shadow_rows(\n            copy.deepcopy(_standouts_doc)" in after_freeze
+    assert '"gate_go": _read_standouts_gate_go(_standouts_doc)' in after_freeze
 
 
 def test_stale_frame_row_pauses_instructions_fresh_row_unchanged(tmp_path):
