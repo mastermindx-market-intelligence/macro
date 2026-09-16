@@ -80,6 +80,12 @@
       "name": "ci-manifest-validation",
       "result": "214 legacy jobs valid",
       "pid": 17803
+    },
+    {
+      "name": "agentos-after-handoff",
+      "command": "/opt/homebrew/bin/python3.12 scripts/agentos.py validate",
+      "result": "0 errors, 97 warnings; 1120 records",
+      "pid": 47321
     }
   ],
   "source_sha256": {
@@ -96,5 +102,81 @@
     "No source adoption from PR 7173 or 7022"
   ],
   "resumption_reconciliation": "Existing same-branch candidate, no matching remote PR and no active process with the worktree cwd; no interrupted edit retried.",
-  "review_route_status": "Mastermind_Executive is not exposed in current app discovery; directory search returned no Mastermind plugin. No reviewer admitted, no provider spawned, no handoff consumed."
+  "review_route_status": "Mastermind_Executive is not exposed in current app discovery; directory search returned no Mastermind plugin. No reviewer admitted, no provider spawned, no handoff consumed.",
+  "publication": {
+    "pr": 7190,
+    "implementation_commit": "3c0d457b1ca037233bd7f0bde3b953a145f1eba4",
+    "draft": true,
+    "auto_merge": null,
+    "merge_on_green": false,
+    "reviewer_assigned": false,
+    "slack_placement_notice": "blocked by OpenAI; safety status could not be determined; no delivery receipt",
+    "binding_ci": "in progress at checkpoint; run 35058425166",
+    "vercel_preview": "deployment rate limited; no plan upgrade or retry authorized",
+    "inactive_pilot_check": "ci-authority/codex/merge-queue-pilot rejected inactive_base_context; active ci-authority/main succeeded",
+    "production_acceptance": false
+  },
+  "virtual_integration": {
+    "candidate_commit": "3c0d457b1ca037233bd7f0bde3b953a145f1eba4",
+    "main_commit": "bb02c526c4809564338f2a7208e063dbe86bc476",
+    "virtual_tree": "fa4d91bf47f8f7ed9ab3e76725077ba9f4fe7e2a",
+    "conflict_free": true,
+    "material_paths": [
+      {
+        "path": "engine/signal_foundry/harness.py",
+        "candidate_blob": "b64f5f1a62074baca0466e7e4cbe7f10630a3b33",
+        "integrated_blob": "b64f5f1a62074baca0466e7e4cbe7f10630a3b33",
+        "unchanged": true
+      },
+      {
+        "path": "tests/test_sf_clock_repair.py",
+        "candidate_blob": "1617e71f66312def8b8e491e60407abfcebf263d",
+        "integrated_blob": "1617e71f66312def8b8e491e60407abfcebf263d",
+        "unchanged": true
+      },
+      {
+        "path": "engine/signal_foundry/spec.py",
+        "candidate_blob": "d94ff7ae9d34968f7e1641fd625be99dbb9e2614",
+        "integrated_blob": "d94ff7ae9d34968f7e1641fd625be99dbb9e2614",
+        "unchanged": true
+      },
+      {
+        "path": "engine/signal_foundry/transforms.py",
+        "candidate_blob": "b36588d6afaa5d1216a0f1fc2e6c79a0bbb9b634",
+        "integrated_blob": "b36588d6afaa5d1216a0f1fc2e6c79a0bbb9b634",
+        "unchanged": true
+      },
+      {
+        "path": "engine/signal_foundry/results.py",
+        "candidate_blob": "eb5e4343f9b2b0514ecc7016f313379c48129413",
+        "integrated_blob": "eb5e4343f9b2b0514ecc7016f313379c48129413",
+        "unchanged": true
+      },
+      {
+        "path": "engine/validation.py",
+        "candidate_blob": "e9bbe0e77ae571b62a9f5b8b8e4e7a950c035399",
+        "integrated_blob": "e9bbe0e77ae571b62a9f5b8b8e4e7a950c035399",
+        "unchanged": true
+      },
+      {
+        "path": "engine/trial_ledger.py",
+        "candidate_blob": "eb364fe9fa53f46d0455e194d3e3ccdbb5732778",
+        "integrated_blob": "eb364fe9fa53f46d0455e194d3e3ccdbb5732778",
+        "unchanged": true
+      },
+      {
+        "path": "config/signal_foundry.yml",
+        "candidate_blob": "fce74b57dc0865f06b7be854bbb7ebd96689f55a",
+        "integrated_blob": "fce74b57dc0865f06b7be854bbb7ebd96689f55a",
+        "unchanged": true
+      },
+      {
+        "path": ".github/ci/legacy-jobs.yml",
+        "candidate_blob": "72fc1df1e207073df77a0fb5cdcb544d556ee3c3",
+        "integrated_blob": "72fc1df1e207073df77a0fb5cdcb544d556ee3c3",
+        "unchanged": true
+      }
+    ],
+    "note": "Read-only virtual integration; no branch/index/checkout update, no live merge or deployment."
+  }
 }

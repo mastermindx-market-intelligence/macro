@@ -18,8 +18,9 @@ waves:
 - id: W1
   title: Target-price-clock evaluator correction
   status: in_progress
-  next_action: Publish the verified candidate, conclude CI and independent numerical
-    review, then obtain real-path production proof.
+  next_action: PR 7190 is published and held. Resolve an admitted independent numerical
+    reviewer and conclude binding CI; then source release/merge, followed by installed
+    research-only producer/consumer proof before acceptance.
 - id: W2
   title: Complete specification identity and benchmark semantics
   status: todo
@@ -41,9 +42,9 @@ waves:
   status: todo
   depends_on:
   - W4
-next_action: Review and publish the clock repair candidate on claude/signal-lab-clock-repair-20260915-sol-001;
-  do not enable discovery or alter historical results before review and production
-  proof.
+next_action: Reconcile PR 7190 at implementation commit 3c0d457b1ca037233bd7f0bde3b953a145f1eba4;
+  retain Draft/HOLD while independent review placement is unavailable and binding
+  CI is incomplete. No repeated publication or historical-result rewrite.
 owns_paths:
 - engine/signal_foundry/harness.py
 - tests/test_sf_clock_repair.py
@@ -74,3 +75,5 @@ landmines:
 # Signal Lab revamp
 
 Created under the current live Chairman commission after a current-pin scan of all 69 existing workstreams found no owner for Signal Lab/Foundry paths. Parent is the existing research-factory program, not a new program or runtime. Source custody remains with this branch; this organizational record is not evidence of an Executive Job, worker lease, review pickup, or production acceptance.
+
+Publication checkpoint: PR #7190 is the sole candidate. Native Git push and GitHub readback confirmed the implementation commit. No reviewer is assigned: Mastermind Executive is not exposed in current tool discovery, and the Slack organizational placement notice was blocked without a delivery receipt. Do not retry it through another carrier or portray placement as execution.
