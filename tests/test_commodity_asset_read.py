@@ -334,3 +334,87 @@ def test_asset_read_invariants_across_the_nominal_policy_grid():
             assert momentum=="bull" and day==three=="up" and timing=="TREND-FOLLOW"
         count+=1
     assert count==1458
+
+
+@pytest.mark.parametrize("value", [None, "", [], {}, True])
+def test_invalid_asset_name_returns_incomplete_without_exception(value):
+    result=build_asset_read(value,row(),view(),signal_asof="2026-09-15",
+                            price_asof="2026-09-15",reference_asof="2026-09-15",instrument="GC=F")
+    assert result["state"]=="incomplete"
+    assert result["new_entry_permission"] is None
+
+@pytest.mark.parametrize("field", ["risk_regime","momentum_state","ts_trend"])
+def test_nullable_enum_scalar_is_missing_not_an_exception(field):
+    import pandas as pd
+    values=row();values[field]=pd.NA
+    assert read(values)["state"]=="incomplete"
+
+@pytest.mark.parametrize("container", [True, 17, 2.5])
+def test_scalar_timeframe_container_is_incomplete_not_a_crash(container):
+    display=view();display["mtf_rows"]=container
+    assert read(display=display)["state"]=="incomplete"
+
+@pytest.mark.parametrize("bad_record", [None, True, "not a timeframe", 5])
+def test_corrupt_record_cannot_be_ignored_to_claim_alignment(bad_record):
+    display=view();display["mtf_rows"].append(bad_record)
+    assert read(display=display)["state"]=="incomplete"
+
+
+def test_cross_asset_identity_in_source_row_is_incomplete():
+    values=row();values["asset"]="silver"
+    assert read(values)["state"]=="incomplete"
+
+
+def test_cross_asset_identity_in_detail_is_incomplete():
+    display=view();display["name"]="silver"
+    assert read(display=display)["state"]=="incomplete"
+
+
+def test_huge_integer_exposure_does_not_escape_numeric_validation():
+    assert exposure_percent(10**400) is None
+
+
+def test_matching_optional_source_identities_preserve_values():
+    values=row();values["asset"]="gold";display=view();display["name"]="gold"
+    actual=read(values,display)
+    assert actual["state"]=="positive" and actual["exposure_pct"]==50
+
+
+@pytest.mark.parametrize("kind", ["nullable", "vector"])
+def test_nullable_or_vector_asset_names_stay_incomplete(kind):
+    import pandas as pd
+    import numpy as np
+    name=pd.NA if kind=="nullable" else np.array(["gold","silver"])
+    values=row();values["asset"]="gold";display=view();display["name"]="gold"
+    result=build_asset_read(name,values,display,signal_asof="2026-09-15",
+                            price_asof="2026-09-15",reference_asof="2026-09-15",instrument="GC=F")
+    assert result["state"]=="incomplete" and result["asset"] is None
+    json.dumps(result,allow_nan=False)
+
+
+def test_invalid_scalar_matrix_fails_closed_without_mutation():
+    import pandas as pd
+    import numpy as np
+    values=[None,True,False,0,1.5,"unknown",{},[],["up"],pd.NA,np.array(["up","down"])]
+    count=0
+    for target in ("name","risk_regime","momentum_state","ts_trend","mtf_rows",
+                   "frame_key","frame_trend","model_action","row_identity","view_identity"):
+        for value in values:
+            r=row();r["asset"]="gold";v=view();v["name"]="gold";name="gold"
+            if target=="name": name=value
+            elif target in ("risk_regime","momentum_state","ts_trend"):r[target]=value
+            elif target=="mtf_rows":v[target]=value
+            elif target=="frame_key":v["mtf_rows"][0]["key"]=value
+            elif target=="frame_trend":v["mtf_rows"][0]["trend"]=value
+            elif target=="model_action":v["conviction"]["action"]=value
+            elif target=="row_identity":r["asset"]=value
+            else:v["name"]=value
+            before=(repr(r),repr(v))
+            result=build_asset_read(name,r,v,signal_asof="2026-09-15",price_asof="2026-09-15",
+                                    reference_asof="2026-09-15",instrument="GC=F")
+            assert result["state"]=="incomplete", (target,type(value).__name__)
+            assert result["new_entry_permission"] is None
+            assert before==(repr(r),repr(v))
+            json.dumps(result,allow_nan=False)
+            count+=1
+    assert count==110

@@ -1,0 +1,19 @@
+{
+  "kind": "per-asset input qualification; no new trading authority",
+  "original_failures": "18 malformed cases failed; one matching-identity control passed",
+  "secondary_edge": "nullable/vector asset names found and repaired before identity comparison",
+  "final_result": "89 focused tests passed, including 110 invalid scalar combinations and existing 1458 nominal combinations",
+  "source_sha256": {
+    "scripts/commodity_asset_read.py": "39fae17b49be376959b4a45173946b44dd1d07028b0a16fd71ccfc372f0075e2",
+    "tests/test_commodity_asset_read.py": "cc19e1533835a003064d95072cc0ef209fc52caaabe7ab2f83df0785348668b0"
+  },
+  "log": "........................................................................ [ 80%]\n.................                                                        [100%]\n89 passed in 20.93s\n",
+  "same_carrier_reconciliation": "An initial final-line tool request was refused; source read proved no effect. The byte-identical same-carrier request was then accepted; its original result was recovered after a transient device disconnect. No alternate actor or host was used.",
+  "limits": [
+    "full combined suite and current-head CI remain required",
+    "no model weights, numerical allocation rules or indicator aggregation changed",
+    "shared markup refactor not included",
+    "separate 3456-case comparison request was tool-refused and has no result",
+    "production not proven"
+  ]
+}

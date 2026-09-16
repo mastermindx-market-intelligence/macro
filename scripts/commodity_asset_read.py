@@ -38,7 +38,11 @@ _REASONS = {
 def _number(value):
     if isinstance(value, bool) or not isinstance(value, Real):
         return None
-    return float(value) if math.isfinite(value) else None
+    try:
+        number = float(value)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    return number if math.isfinite(number) else None
 
 
 def exposure_percent(value):
@@ -69,18 +73,24 @@ def build_asset_read(name, row, display, *, signal_asof=None, price_asof=None,
     """
     row = row if isinstance(row, dict) else {}
     display = display if isinstance(display, dict) else {}
-    core = name in CORE
+    valid_name = isinstance(name, str) and bool(name.strip())
+    name = name if valid_name else None
+    core = valid_name and name in CORE
+    identity_mismatch = any(
+        key in source and (not isinstance(source[key], str) or source[key] != name)
+        for source, key in ((row, "asset"), (display, "name"), (display, "key"))
+    )
     conv = display.get("conviction")
     conv = conv if core and isinstance(conv, dict) else {}
     action = conv.get("action")
     action = action if isinstance(action, str) and action in _ACTIONS else None
     exposure = exposure_percent(row.get("alloc_optimal")) if core else None
     risk = row.get("risk_regime")
-    risk = risk if risk in ("low_risk", "high_risk") else None
+    risk = risk if isinstance(risk, str) and risk in ("low_risk", "high_risk") else None
     mom = row.get("momentum_state")
-    mom = mom if mom in ("bull", "bear", "neutral") else None
+    mom = mom if isinstance(mom, str) and mom in ("bull", "bear", "neutral") else None
     trend = row.get("ts_trend")
-    trend = trend if trend in ("up", "down", "flat") else None
+    trend = trend if isinstance(trend, str) and trend in ("up", "down", "flat") else None
     signal_day, price_day, reference_day = map(_date, (signal_asof, price_asof, reference_asof))
     symbol = instrument if isinstance(instrument, str) and instrument.strip() else None
     verdict = display.get("verdict")
@@ -88,10 +98,16 @@ def build_asset_read(name, row, display, *, signal_asof=None, price_asof=None,
     grade = grade if isinstance(grade, str) and grade in ("TREND-FOLLOW", "BUY-THE-DIP", "WAIT", "CAUTION", "AVOID", "DON'T CHASE") else None
     by_tf = {}
     duplicates = False
-    for item in display.get("mtf_rows") or []:
+    timeframe_source = display.get("mtf_rows")
+    malformed_frames = not isinstance(timeframe_source, (list, tuple))
+    for item in (() if malformed_frames else timeframe_source):
         if not isinstance(item, dict):
+            malformed_frames = True
             continue
         key = item.get("key")
+        if not isinstance(key, str):
+            malformed_frames = True
+            continue
         if key in ("D", "3D", "W"):
             duplicates |= key in by_tf
             by_tf[key] = item
@@ -99,9 +115,10 @@ def build_asset_read(name, row, display, *, signal_asof=None, price_asof=None,
     for key, en, zh in (("D", "Daily", "日线"), ("3D", "3-session", "三交易日"), ("W", "Weekly", "周线")):
         item = by_tf.get(key, {})
         value = item.get("trend")
-        value = value if value in ("up", "down", "flat") else None
+        value = value if isinstance(value, str) and value in ("up", "down", "flat") else None
         frames.append({"key":key, "label_en":en, "label_zh":zh, "trend":value})
-    missing = (grade is None or not symbol or not all((signal_day, price_day, reference_day)) or
+    missing = (not valid_name or identity_mismatch or malformed_frames or
+               grade is None or not symbol or not all((signal_day, price_day, reference_day)) or
                risk is None or mom is None or trend is None or duplicates or
                any(frame["trend"] is None for frame in frames) or
                (core and (exposure is None or action is None)))
@@ -147,7 +164,7 @@ def build_asset_read(name, row, display, *, signal_asof=None, price_asof=None,
         codes = ["aligned_context" if state == "positive" else "mixed_context"]
     en, zh, tone = _TITLES[state]
     return {
-        "schema":"mastermind.commodity_asset_read.v1", "asset":name,
+        "schema":"mastermind.commodity_asset_read.v1", "asset":name if valid_name else None,
         "instrument":symbol, "state":state, "quality":quality,
         "title_en":en, "title_zh":zh, "tone":tone,
         "reason_codes":codes,
