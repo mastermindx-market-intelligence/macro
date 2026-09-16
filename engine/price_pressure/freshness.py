@@ -44,21 +44,33 @@ def assess(payload: Mapping, *, source_asof: str | None = None,
     expected = _date(expected_asof or board_asof) or evaluated
     source = _date(source_asof)
     market = _date(board_asof)
-    if expected:
-        expected = last_session_on_or_before(expected)
     result = {"status": "unknown", "stale": True,
               "evaluated_through": evaluated.isoformat() if evaluated else None,
               "event_asof": event.isoformat() if event else None,
               "source_asof": source.isoformat() if source else None,
               "expected_asof": expected.isoformat() if expected else None,
               "expires_utc": None}
-    if not evaluated or not expected or not is_session(evaluated):
+    # Validate each supplied reference before normalizing calendar dates.
+    # Missing optional values are distinct from explicitly malformed values.
+    if not evaluated or not expected:
         return result
-    if ((source_asof is not None and source is None)
-            or (expected_asof is not None and _date(expected_asof) is None)
-            or (event and evaluated < event)
-            or (expected_asof is not None and market and evaluated > market)):
+    if any(raw is not None and parsed is None for raw, parsed in (
+            (source_asof, source), (expected_asof, _date(expected_asof)),
+            (board_asof, market), (payload.get("asof"), event))):
         return result
+    try:
+        if any(d is not None and not is_session(d) for d in (evaluated, event, source)):
+            return result
+        if expected_asof is not None and not is_session(expected):
+            return result
+        expected = last_session_on_or_before(expected)
+        market = last_session_on_or_before(market) if market else None
+    except (OverflowError, ValueError):
+        return result
+    if ((event and evaluated < event)
+            or (market and any(d and d > market for d in (evaluated, source, expected)))):
+        return result
+    result["expected_asof"] = expected.isoformat()
     # Invalid/future input must be rejected before any deadline arithmetic.
     try:
         result["expires_utc"] = next_source_due(evaluated)
