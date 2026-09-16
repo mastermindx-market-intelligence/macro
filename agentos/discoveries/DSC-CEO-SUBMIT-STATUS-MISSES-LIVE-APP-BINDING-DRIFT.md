@@ -30,3 +30,8 @@ The six fields are App peer UID, ingress peer UID, App transport armed state, Ap
 The patch extracts the existing comparison into one private pure helper reused by receipt creation and eligibility. It adds no receipt fields, UID literals, lock, registry, command or auth plane. Source patch SHA256 `4a7442470f928f9124740683c52f194230953b1eba5064de447cd15c470e9bca`;16-case test SHA256 `7610524a460a33b3170d18ff3ad3ae1ba1d0fdc322b26e8f3c1299374986ac1b`. Both are embedded in the exact review comment.
 
 The patch was tested only in a separately managed reviewer checkout, then original bytes were restored. No active writer branch, native host, provider or Executive Job was modified. Capability remains REVIEWER_REPAIR_ARTIFACT / BUILT_NOT_PROVEN until the existing writer integrates it and returns exact-head evidence. GitHub review publication is not proof of Fable consumption.
+
+
+## Resolved at the incorporated source head
+
+The historical claim above remains exact to its reviewed source. `be853f5ec7bb960b6a88854749d288ae15b78298` integrates the six-field comparison. Review comment5694808101 closes this specific finding:236tests passed, deleting only the new sink comparison produces12failures plus4passing controls, and restoring source returns16passes. Production sink wiring, receipt validation, worker-evidence and installed/live proof remain separate.

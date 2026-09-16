@@ -108,6 +108,43 @@ verified:
   result: Visible content identifies current677/W1-H3 and7181 work, a seat-transfer handoff document and
     a planned Claude8 continuation; no completed transfer or new-session identity was observed. A subsequent
     bounded semantic composer inspection was tool-blocked; no text was filled or submitted.
+- claim: The existing678 release is complete at protected source, not merely queued.
+  command: gh api pulls/678; gh api actions/runs/35056255618; git merge-base --is-ancestor0fe8074f8ba7deed;
+    compare both owned blobs at4e991587,0fe8074f,8ba7deed.
+  result: Merged2026-09-16T05:04:31Z as0fe8074ff953b2ced9025ed40f0f66019c759967; merge-group SUCCESS.
+    Module77a23ad9 and test8451ec82 are identical across all three points. Source closeout comment5694753566;
+    no second enqueue or deployment.
+- claim: The six-field App-binding blocker is incorporated and verified at677headbe853f5e.
+  command: Read exact9c06197b..be853f5e source delta; run four owning/composition/importer pytest suites;
+    remove only new sink-comparison in private reviewer source; run integrated16-case matrix; restore
+    and repeat.
+  result: 236passed/0errors/failures/skips; mutant12failures+4passing controls; restored16pass. Full JUnit3ad5d0d08cdd11610396f5440e41dbec2dd3c9bfc3cb99e679e1f2f89443ddf5.
+    Binding-finding closure comment5694808101. Author branch untouched; review workspace released REMOVED.
+- claim: The current7114 pack4 failure is an artifact-publication failure, not an unassigned offline-runner
+    claim.
+  command: gh api macro/check-runs/104613074354/annotations; gh api macro/actions/jobs/104613074354; read
+    current7114 checks.
+  result: 'pc-ci-2 ran the job; failure at upload-artifact FinalizeArtifact after5attempts receiving HTML
+    instead of JSON. Other packs completed. Logical-pack wrapper and receipt-write steps succeeded, but
+    the final red-result-surfacing step was skipped: this observation does NOT independently prove the
+    underlying logical pack passed.'
+- claim: The existing684 and688 reviews already identify their next repair owners; no duplicate review
+    or guard patch is needed.
+  command: gh api pulls/684/reviews and pulls/688/reviews.
+  result: 684review5220399095 requests changes atb3f758ce for blanket research/evidence JSON exemption
+    permitting runtime UID authority.688review5220216985 requests7semantic changes at836d852f; current
+    head4d181fda was not rereviewed here. The unused684 review checkout was released REMOVED without edits.
+- claim: The original and successor Fable windows provide scoped native succession/activity evidence.
+  command: Peekaboo exact-window read of PID69328/window99075 and PID11867/window139825 after permissions
+    and process identity checks.
+  result: Original seat reports its handoff toClaude8. Successor UI shows Meta-CEO B handoff project,
+    accepted be853f5e source, and ORCH-W1H3e continuation forR48/R50. This is native observed activity,
+    NOT an Executive Job/lease/START or exact-carrier transfer receipt.
+- claim: Earlier native-binding implementation and records objects are retrievable from GitHub metadata.
+  command: gh api macro/commits/07c3ce87b1ffb378177609026282ef4f57d76134 and commits/33dd4c16b8ccc4490f95f4156f147dbf8bcbdb1e.
+  result: 07c3 contains four source/test changes from0c95;33dd contains only evidence/handoff records
+    onabacaeb. Full combined patch bytes were not retrieved or integrated. The later exact-record read
+    was tool-blocked and not rerouted.
 unverified:
 - claim: Fable consumed the new GitHub review comments or prior Slack directives.
   what_would_verify: Exact current native-session/Slack-carrier consumption receipt from the existing
@@ -121,39 +158,48 @@ unverified:
   what_would_verify: A lawful later bounded fault experiment and exact remote patch read. The attempted
     calls were tool-blocked and yielded no such result; do not reroute a denial.
 unresolved:
-- 678 is queued once, not merged. Consume merge-group run35056255618 and exact PR queue/merge state; do
-  not enqueue again, bypass queue or invalidate running proof.
-- Standalone Source Continuity CLI remains AUTH_UNAVAILABLE in its ordinary configured environment. No
-  token was exported and no CHECKPOINT_VERIFIED/REMOTE_COMPLETE_VERIFIED is claimed. Same-owner Ready/queue
-  was separately adjudicated using authenticated GitHub source/CI evidence and canonical workspace custody;
-  no writer transfer occurred.
-- 677 c928caca has the16-case binding-drift defect. The tested patch is a review artifact only; incumbent
-  Fable/source writer must integrate and return exact-head evidence. No native consumption receipt yet.
-- 7114/7176 ci-linux packs cannot be assigned while their three existing organization runners are offline.
-  The observed WSL peer is also offline; further host qualification was tool-blocked. Restore through
-  the existing fleet owner, not by relabeling a Mac or bypassing CI.
-- 633 authorization registration remains reported EFFECT_UNKNOWN; production Personal Executive admission
-  and qualified-worker/exact-parent consumption remain unproven.
-- Slack tool remains unavailable. Source review comments and record commits are published evidence, not
-  an ACK/START/consumed continuation from Fable.
-- 'Respect the observed Fable wind-down: consume the existing677 review through incumbent/successor source
-  custody, not a new heavy commission or guessed new account. Native transfer/consumption remains unverified.'
+- 678source is merged and verified; installed/live recovery proof is not claimed. Its clean original source
+  workspace is PRESERVED_UNPUBLISHED because the squash merge/removed remote branch is not recognized
+  by the release helper. Exact merged blobs prove code recoverability; no force removal or new source
+  branch was used.
+- 677be853f5e closes the binding-drift finding only. The incumbent successor is handling its later sealed-receipt/worker-evidence
+  rulings; production sink integration, installed App admission and other review blockers are separate
+  and were not accepted here.
+- 7114pack4 has a known upload-artifact FinalizeArtifact failure. A bounded same-run/same-head single-job
+  retry request was platform-blocked before any process receipt; no rerun was accepted or claimed, and
+  no alternate actor/carrier is commissioned to bypass that refusal. Remaining logical pack/receipt state
+  must be recovered through the existing CI authority.
+- 7114source/CWD binding still requires incumbent custody and integration of the retained patch; source-object
+  metadata is recovered, not combined native-byte proof. Native-harness adoption and real provider/parent
+  capability remain unproven.
+- 684D8 JSON-exemption security repair stays with its existing writer;688resource-composition repair stays
+  with its existing writer/reviewer. Do not duplicate these already-reviewed tasks or infer new-head acceptance
+  from older reviews.
+- Two inspected native Fable sessions show first-launch format rejection and subsequent colon-label correction.
+  Root cause in current emitted bootstrap context is not independently established; qualify a registry-generated
+  exact commissioning example through the existing compiler/context owner instead of weakening the safety
+  guard.
+- 633authorization effect remains unresolved in its existing source record; no credential, new client
+  or submit was attempted. Slack remains unavailable here, and a requested current-source/native-control
+  observation was tool-blocked. No new native note was filled or sent in this recovery turn.
 next_actions:
-- 'Sol same source owner: consume678 merge-group result and protected merge readback; keep exact source4e991587
-  and existing queue entry. On success verify merged owned blobs and update source capability; deployment/provider
-  acceptance remains separately gated.'
-- 'Fable incumbent677 writer: consume comment5692061865, integrate the tested single-comparison repair
-  without losing newer edits, return the16-case status/CLI matrix and full current-base checks, then continue
-  actual receipt-gated App-to-sink integration.'
-- 'Existing fleet owner: reconcile the offline pc-ci-1/2/3 and WSL host through the established host-control
-  path. Do not change label eligibility, buy runners, rerun a running baseline or waive tests merely to
-  clear7114/7176.'
-- 'Existing7114 owner: preserve integratedCI correction7f68d90d and recover the already-tested but unintegrated
-  source/CWD binding patch; qualify the complete launch bundle rather than creating a second launcher.'
-- 'Existing633 owner: reconcile the same ambiguous authorization registration before any new effect; then
-  prove authenticated admission, qualified worker and exact-parent result consumption.'
-- 'Sol records owner: continue this same7176 branch only for material observations and normal CI/review;
-  do not mint another organizational parent.'
+- Do not redo678 or poll its completed merge group. Retain its protected-source closure and separately
+  qualify installation only through the existing runtime owner.
+- 'Incumbent677source/principal: consume binding closure5694808101, preservebe853f5e, and advance the
+  existing R48/R50 repair/review sequence. Do not reimplement the six-field helper or treat this targeted
+  closure as whole-PR release.'
+- 'Existing7114/CI owners: recover the actual logical pack result and artifact-publication receipt for35038403944/job104613074354.
+  Keep the failed job visible; no test waiver, full-run churn, runner relabel or workaround for the platform-refused
+  retry.'
+- 'Existing native-harness owner: reconcile the retained source/CWD binding patch and add a first-use
+  qualification using an exact registry-generated commission skeleton. A fresh orchestrator must form
+  one correct request without fixing header punctuation, while incomplete/contradictory commissions remain
+  refused.'
+- 'Existing684writer: close the runtime-consumed JSON identity bypass from review5220399095, preserve
+  benign evidence acceptance, and return exact-head tests/current-base review.688then consumes the accepted
+  guard and its own7semantic repair findings without another guard implementation.'
+- 'Sol records/source owner: retain this same7176carrier, validate and publish the material closure updates;
+  keep the full authenticated worker-to-parent production journey explicitly unproven.'
 do_not_redo:
 - Do not rerun the six native fixture cases or169 focused tests merely because unrelated protected source
   moves; requalify when relevant source or CLI binary changes.
@@ -167,6 +213,13 @@ do_not_redo:
 - Do not redo the integrated7114 CI repair or the protected675/667 releases.
 - 'Do not recreate678: actual source is remote at4e991587 on sol/router-vtp-generation-cleanup-20260916-sol-001;
   source release and installed proof are still separate.'
+- 678has merged as0fe8074f with source equality verified; queue submissions and implementation are finished.
+- 677binding drift is repaired atbe853f5e and its discriminating tests verified; do not return it to an
+  old-head repair state.
+- 684and688already have exact independent change requests; source bodies claiming no review are stale
+  navigation, not a reason to commission duplicate reviews.
+- The retired Claude3 seat is not the continuation target merely because its window is still open. Preserve
+  successor/root/source-custody checks; do not infer a runtime transfer from a UI label.
 danger_areas:
 - Exact full TurnKey cleanup versus reused bare native-turn ID; old cleanup must not erase the current
   projection or next prebind.
@@ -210,3 +263,14 @@ This section supersedes the earlier precautionary Draft/Ready hold and the earli
 PR677 was reviewed at c928caca, and its source/CLI falsely reported armed after six independent live-binding changes. The current reviewer repair passes166tests and the restored candidate reproduces12failures; the active writer has the exact correction in comment5692061865. This is the next admission defect to close before readiness claims, not another full-system rebuild.
 
 The Linux CI bottleneck is now specifically identified: three registered organization ci-linux runners are offline, and the matching WSL peer is offline. No label mistake or absence of registered capacity is inferred. Further host qualification was blocked, so no unreviewed fleet restart or alternate host was used.
+
+
+## Recovery execution checkpoint — 2026-09-16
+
+Studio Direct recovered with gateway generation `cdc-mu3up5t4-bd34a3fc` and working bounded shell/file access. Procedure was loaded atomically from protected `8ba7deedde164c90298d3e88785d98e02fa5e2d2`. This was not another ping-only turn: the pending source release was reconciled as merged, and the incorporated binding repair passed a fresh236-test campaign plus a discriminating remove/restore mutation.
+
+The exact closure references are Mastermind678/comment5694753566 and Mastermind677/comment5694808101. They prove SOURCE progress, not installation, real-provider inference, Executive dispatch or exact-parent production acceptance. No new source implementation was needed for these already-incorporated repairs.
+
+The native successor is visibly advancing the later incumbent677work, while existing684/688reviewers have already identified their next repairs. No duplicate writer or principal was started. The two temporary review workspaces in this turn were removed through mmx-workspace;678's original source workspace was preserved by the canonical owner rather than force-deleted.
+
+The usability finding remains part of the original outcome: both seats encountered avoidable commission-label rejection before correction. Fix the emitted/compiled first-use contract through its existing owner, not by accepting incomplete prompts or adding another dispatcher. A one-command tool surface is not seamless if its normal bootstrap still requires the orchestrator to reverse-engineer exact field punctuation.
