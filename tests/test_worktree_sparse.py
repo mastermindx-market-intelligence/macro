@@ -836,6 +836,7 @@ def test_hook_main_verifies_postcondition_after_read_tree_not_before(tmp_path, m
     postcondition check must fire strictly after `git read-tree -mu HEAD`,
     never before."""
     hook = _load_hook()
+    monkeypatch.setattr("scripts.worktree_storage.load_policy", lambda: None)
     donor = tmp_path / "donor"
     donor.mkdir()
     _git(donor, "init", "-q", "-b", "main")
