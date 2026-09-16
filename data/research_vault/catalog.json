@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-16T01:39:13.443502+00:00",
-  "count": 2196,
+  "generated_at": "2026-09-16T02:09:30.372500+00:00",
+  "count": 2197,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -38,6 +38,7 @@
     "Eastspring",
     "Fidelity",
     "Franklin",
+    "Franklin Templeton",
     "GMO",
     "Goldman Sachs",
     "Greed and Fear",
@@ -159,6 +160,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-0v22118chpw-d2e7f4",
+      "title": "The limit does not exist s curves parts 1 2",
+      "institution": "Franklin Templeton",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T23:50:24Z",
+      "summary_points": [
+        "**AI Adoption & Investment Surge**: Goldman Sachs Q2 2026 data shows 68% of S&P 500 companies referenced AI in earnings calls, with AI capex exceeding $1T annually—signaling dominant market penetration and accelerating capital allocation toward AI infrastructure.",
+        "**NVIDIA's H100/Blackwell Era**: H100 (2022) and Blackwell (2024) deliver 3x+ TFLOPS vs A100 via architectural innovations (Transformer Engines, FP8), defying Moore’s Law and enabling transformative compute scaling—critical for timing AI hardware infrastructure investments.",
+        "**Moore's Law Death ≠ Compute Stagnation**: Semiconductor scaling constraints (atomic physics, economics) are offset by system-level compute acceleration (e.g., AI factories), driving exponential growth beyond chip-level limits—key for avoiding misallocation in AI/ML infrastructure.",
+        "**S-Curve Deceleration as Market Signal**: Decelerating tech improvement rates (e.g., iPhone post-2017 plateau) precede adoption slowdowns, signaling reduced disruption and increased stability—essential for portfolio managers to adjust exposure during tech maturity phases."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 18,
       "language": "en",
       "needs_metadata": false
     },
