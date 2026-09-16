@@ -133,6 +133,16 @@ def test_theme_action_projection_call_seam_fails_open_on_unexpected_error(
     ) is None
 
 
+def test_production_builder_consumes_the_fail_open_seam() -> None:
+    source = (ROOT / "scripts/build_canada.py").read_text()
+
+    assert (
+        "from scripts.canada_theme_action_map import _safe_canada_theme_action_map"
+        in source
+    )
+    assert 'vm["theme_actions"] = _safe_canada_theme_action_map(setups, site)' in source
+
+
 @pytest.mark.parametrize(
     "members",
     [
