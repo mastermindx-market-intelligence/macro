@@ -513,6 +513,7 @@ def status() -> dict:
 
 
 _QUERY_TIMEOUT_S = 9
+_OVERVIEW_ALLTIME_TIMEOUT_S = 2.5
 
 # Whole-surface budget. Every panel here is a chain of round trips to the Supabase
 # Management API, and admin.mastermind-x.com is served THROUGH a CDN edge (see the
@@ -580,7 +581,7 @@ def _parallel(**thunks):
         return {name: fut.result() for name, fut in futures.items()}
 
 
-def _query(sql: str):
+def _query(sql: str, timeout_cap_s: float | None = None):
     pat = settings.supabase_pat()
     if not (pat and requests):
         return None
@@ -593,6 +594,8 @@ def _query(sql: str):
                 f"analytics query budget exhausted ({_REQUEST_BUDGET_S:.0f}s) — "
                 "narrow the time window and retry")
         timeout = max(1.0, min(float(_QUERY_TIMEOUT_S), remaining))
+    if timeout_cap_s is not None:
+        timeout = min(timeout, max(0.5, float(timeout_cap_s)))
     r = requests.post(
         f"{_API}/projects/{ref}/database/query",
         headers={"Authorization": f"Bearer {pat}", "Content-Type": "application/json"},
@@ -600,6 +603,14 @@ def _query(sql: str):
     if not (200 <= r.status_code < 300):   # the query endpoint answers 201 on success
         raise RuntimeError(f"HTTP {r.status_code}: {r.text[:200]}")
     return r.json()
+
+
+def _optional_query(sql: str, *, timeout_cap_s: float, default):
+    """Best-effort secondary metric. Core panel queries must still fail truthfully."""
+    try:
+        return _query(sql, timeout_cap_s=timeout_cap_s)
+    except Exception:  # noqa: BLE001 — secondary metric must not blank the whole panel
+        return default
 
 
 def _days(v, default: int = 7) -> int:
@@ -676,7 +687,7 @@ def overview(days=7, minutes=None, gap=None) -> dict:
         # one wave. This is the tab the console opens by default, and serially it was
         # the slowest surface in the console.
         r = _parallel(
-            win=lambda: (_query(_cte(include_ident=True) +
+            win=lambda: (_query(_cte(include_ident=True, bot_window=m) +
                 "select count(*)::int as events, "
                 f"{_CANON_VISITORS}, "
                 "count(*) filter (where e.type in ('pageview','route'))::int as pageviews, "
@@ -686,29 +697,33 @@ def overview(days=7, minutes=None, gap=None) -> dict:
                 f"where e.created_at > now() - interval '{m} minutes' {human}") or [{}])[0],
             # 'sessions' counts VISITS, not raw per-tab session_ids, so the headline agrees with
             # the Sessions tab (which stitches tabs/origins) instead of triple-counting a hop.
-            sessions=lambda: (_query(_cte(include_ident=True) +
+            sessions=lambda: (_query(_cte(include_ident=True, bot_window=m) +
                 f"select count(*) filter (where b = 1)::int as sessions from ("
                 f"  select {_visit_break(g)} as b from ("
                 "    select coalesce(i.uid, e.visitor_id) as canon, e.created_at, e.id "
                 "    from public.analytics_events e left join ident i on i.visitor_id = e.visitor_id "
                 f"    where e.visitor_id is not null and e.created_at > now() - interval '{m} minutes' "
                 f"    {human}) y) z") or [{}])[0].get("sessions"),
-            alltime=lambda: (_query(_cte(include_ident=True) +
+            # Exact all-time human count is useful context but not required to render the
+            # live-window dashboard. Keep it historically exact, but cap it tightly and
+            # degrade to an em dash instead of letting old history blank the entire pane.
+            alltime=lambda: (_optional_query(_cte(include_ident=True) +
                 f"select count(*)::int as events, {_CANON_VISITORS} "
                 "from public.analytics_events e left join ident i on i.visitor_id = e.visitor_id "
-                f"where {_not_excluded('e')} and {_not_a_bot('e')}") or [{}])[0],
+                f"where {_not_excluded('e')} and {_not_a_bot('e')}",
+                timeout_cap_s=_OVERVIEW_ALLTIME_TIMEOUT_S, default=[]) or [{}])[0],
             # Bots filtered out of the window (shown separately so detection is transparent).
-            bots=lambda: (_query(_cte() +
+            bots=lambda: (_query(_cte(bot_window=m) +
                 "select count(distinct e.visitor_id)::int as visitors, count(*)::int as events "
                 "from public.analytics_events e "
                 f"where e.created_at > now() - interval '{m} minutes' and {_not_excluded('e')} "
                 "and e.visitor_id in (select visitor_id from bots)") or [{}])[0],
-            by_site=lambda: _query(_cte(include_ident=True) +
+            by_site=lambda: _query(_cte(include_ident=True, bot_window=m) +
                 f"select e.site, count(*)::int as events, {_CANON_VISITORS} "
                 "from public.analytics_events e left join ident i on i.visitor_id = e.visitor_id "
                 f"where e.created_at > now() - interval '{m} minutes' {human} "
                 "group by e.site order by events desc, e.site") or [],
-            daily=lambda: _query(_cte(include_ident=True) +
+            daily=lambda: _query(_cte(include_ident=True, bot_window=m) +
                 f"select to_char({dt},'{fmt}') as day, "
                 f"{_CANON_VISITORS}, count(*)::int as events "
                 "from public.analytics_events e left join ident i on i.visitor_id = e.visitor_id "
