@@ -1,0 +1,879 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "generated_at": "2026-09-16T21:32:10.832647+00:00",
+  "tool": {
+    "module_ref": "scripts/capture_commodity_asset_read_evidence.py",
+    "version": "r2-asset-read-v1",
+    "capture_method": "Existing commodity renderer and Chromium helper; local fixtures, no external requests; semantic button clicks, no text entry.",
+    "module_sha256": "db67be579bf613ec70a790e228abfb069bb97968fd1b3ac3e24728a18981d038"
+  },
+  "target": {
+    "kind": "fixture_site_dir",
+    "site_dir": "/Volumes/Mastermind/agent-evidence/commodities-asset-read-r2-20260916-sol-001/browser-bf8d7256/fixture",
+    "base_url": null,
+    "resolved_sha_or_none": "bf8d72560134b103ae5e5ed1da6a26723e68df8c",
+    "resolved_gitdir_or_none": null,
+    "resolved_sha_source": "Retained same-run source archive revalidated against immutable GitHub blobs; 6895 materialized source files matched. No Git working tree implied."
+  },
+  "axes": {
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    },
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "access": [
+      "anonymous"
+    ],
+    "subjects": [
+      "r2-split",
+      "r2-incomplete",
+      "r2-lagging"
+    ],
+    "force_states": []
+  },
+  "selection": {
+    "mode": "explicit_subjects",
+    "subjects": [
+      "r2-split",
+      "r2-incomplete",
+      "r2-lagging"
+    ]
+  },
+  "aliases": {},
+  "excluded": [],
+  "outcome": "captured",
+  "totals": {
+    "pages": 3,
+    "states_attempted": 24,
+    "states_captured": 24
+  },
+  "pages": [
+    {
+      "page_id": "commodities.html#r2-split",
+      "route": "/split.html",
+      "registry_route": "/commodities.html",
+      "route_kind": "asset_read_fixture",
+      "subject": "r2-split",
+      "states": [
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "force_state": null,
+          "captured": true,
+          "file": "254ced54c1a3e44f.png",
+          "sha256": "254ced54c1a3e44f81a035031c4d4db8b8b7c3552361c49297f26f56a923bd60",
+          "bytes": 231144,
+          "width": 1140,
+          "height": 787,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "overlay": [],
+          "overlay_clean": true,
+          "subject_geometry": {
+            "left": 150,
+            "right": 1290,
+            "viewport": 1440
+          },
+          "detail_clicks_verified": 4,
+          "page_errors": [],
+          "titles": {
+            "gold": "Defensive model posture",
+            "silver": "Signals disagree",
+            "copper": "Tactical caution",
+            "oil": "Positive model posture"
+          }
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "en",
+          "theme": "light",
+          "access": "anonymous",
+          "force_state": null,
+          "captured": true,
+          "file": "f9e1089bf37a0d44.png",
+          "sha256": "f9e1089bf37a0d447ca7f3af82b4fc54dc2278162920e06c4580ad24585ff7e3",
+          "bytes": 212519,
+          "width": 1140,
+          "height": 787,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "overlay": [],
+          "overlay_clean": true,
+          "subject_geometry": {
+            "left": 150,
+            "right": 1290,
+            "viewport": 1440
+          },
+          "detail_clicks_verified": 4,
+          "page_errors": [],
+          "titles": {
+            "gold": "Defensive model posture",
+            "silver": "Signals disagree",
+            "copper": "Tactical caution",
+            "oil": "Positive model posture"
+          }
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "zh",
+          "theme": "dark",
+          "access": "anonymous",
+          "force_state": null,
+          "captured": true,
+          "file": "b5313207cc051b65.png",
+          "sha256": "b5313207cc051b653c40be0f4fef85d5724f8ce5cd74a3e7fc1d2046f76f264b",
+          "bytes": 205250,
+          "width": 1140,
+          "height": 750,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "overlay": [],
+          "overlay_clean": true,
+          "subject_geometry": {
+            "left": 150,
+            "right": 1290,
+            "viewport": 1440
+          },
+          "detail_clicks_verified": 4,
+          "page_errors": [],
+          "titles": {
+            "gold": "模型偏防御",
+            "silver": "信号存在分歧",
+            "copper": "短期需谨慎",
+            "oil": "模型偏正面"
+          }
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "zh",
+          "theme": "light",
+          "access": "anonymous",
+          "force_state": null,
+          "captured": true,
+          "file": "3e0e76642585618c.png",
+          "sha256": "3e0e76642585618c151983ae7f27fba224d891a008e4f696c948c39c10a4b207",
+          "bytes": 189268,
+          "width": 1140,
+          "height": 750,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "overlay": [],
+          "overlay_clean": true,
+          "subject_geometry": {
+            "left": 150,
+            "right": 1290,
+            "viewport": 1440
+          },
+          "detail_clicks_verified": 4,
+          "page_errors": [],
+          "titles": {
+            "gold": "模型偏防御",
+            "silver": "信号存在分歧",
+            "copper": "短期需谨慎",
+            "oil": "模型偏正面"
+          }
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "force_state": null,
+          "captured": true,
+          "file": "967d331493f147b8.png",
+          "sha256": "967d331493f147b8a09c4a74f13430784cc08175726c798ae0e780147eb33dad",
+          "bytes": 174233,
+          "width": 350,
+          "height": 1604,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "overlay": [],
+          "overlay_clean": true,
+          "subject_geometry": {
+            "left": 20,
+            "right": 370,
+            "viewport": 390
+          },
+          "detail_clicks_verified": 4,
+          "page_errors": [],
+          "titles": {
+            "gold": "Defensive model posture",
+            "silver": "Signals disagree",
+            "copper": "Tactical caution",
+            "oil": "Positive model posture"
+          }
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "en",
+          "theme": "light",
+          "access": "anonymous",
+          "force_state": null,
+          "captured": true,
+          "file": "e19e19aeb6cf696c.png",
+          "sha256": "e19e19aeb6cf696cb1bfa48a611d69e3c638d349692e43b0d20303cffccb6cc6",
+          "bytes": 161527,
+          "width": 350,
+          "height": 1604,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "overlay": [],
+          "overlay_clean": true,
+          "subject_geometry": {
+            "left": 20,
+            "right": 370,
+            "viewport": 390
+          },
+          "detail_clicks_verified": 4,
+          "page_errors": [],
+          "titles": {
+            "gold": "Defensive model posture",
+            "silver": "Signals disagree",
+            "copper": "Tactical caution",
+            "oil": "Positive model posture"
+          }
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "zh",
+          "theme": "dark",
+          "access": "anonymous",
+          "force_state": null,
+          "captured": true,
+          "file": "0d49bd844c6f4be9.png",
+          "sha256": "0d49bd844c6f4be9209c9ec98a64c528e60f3a9973882b99006c89acd4f445bb",
+          "bytes": 172892,
+          "width": 350,
+          "height": 1488,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "overlay": [],
+          "overlay_clean": true,
+          "subject_geometry": {
+            "left": 20,
+            "right": 370,
+            "viewport": 390
+          },
+          "detail_clicks_verified": 4,
+          "page_errors": [],
+          "titles": {
+            "gold": "模型偏防御",
+            "silver": "信号存在分歧",
+            "copper": "短期需谨慎",
+            "oil": "模型偏正面"
+          }
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "zh",
+          "theme": "light",
+          "access": "anonymous",
+          "force_state": null,
+          "captured": true,
+          "file": "f3265e73f6dc598e.png",
+          "sha256": "f3265e73f6dc598ee8eb5684c8dac7cc935431dd14d0feb96f12a7011413dc4a",
+          "bytes": 162937,
+          "width": 350,
+          "height": 1488,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "overlay": [],
+          "overlay_clean": true,
+          "subject_geometry": {
+            "left": 20,
+            "right": 370,
+            "viewport": 390
+          },
+          "detail_clicks_verified": 4,
+          "page_errors": [],
+          "titles": {
+            "gold": "模型偏防御",
+            "silver": "信号存在分歧",
+            "copper": "短期需谨慎",
+            "oil": "模型偏正面"
+          }
+        }
+      ],
+      "metrics": {},
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": []
+    },
+    {
+      "page_id": "commodities.html#r2-incomplete",
+      "route": "/incomplete.html",
+      "registry_route": "/commodities.html",
+      "route_kind": "asset_read_fixture",
+      "subject": "r2-incomplete",
+      "states": [
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "force_state": null,
+          "captured": true,
+          "file": "17a92ebeb2df9d11.png",
+          "sha256": "17a92ebeb2df9d1101314578d73d674ab3c8a77d2ce096cf9afbd460fcba673f",
+          "bytes": 230499,
+          "width": 1140,
+          "height": 787,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "overlay": [],
+          "overlay_clean": true,
+          "subject_geometry": {
+            "left": 150,
+            "right": 1290,
+            "viewport": 1440
+          },
+          "detail_clicks_verified": 4,
+          "page_errors": [],
+          "titles": {
+            "gold": "Evidence incomplete",
+            "silver": "Signals disagree",
+            "copper": "Tactical caution",
+            "oil": "Positive model posture"
+          }
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "en",
+          "theme": "light",
+          "access": "anonymous",
+          "force_state": null,
+          "captured": true,
+          "file": "dc2fc44a822fe0be.png",
+          "sha256": "dc2fc44a822fe0be789eab4c8e78eca30cfd43c545805cc1e5e153b9c85317ca",
+          "bytes": 212024,
+          "width": 1140,
+          "height": 787,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "overlay": [],
+          "overlay_clean": true,
+          "subject_geometry": {
+            "left": 150,
+            "right": 1290,
+            "viewport": 1440
+          },
+          "detail_clicks_verified": 4,
+          "page_errors": [],
+          "titles": {
+            "gold": "Evidence incomplete",
+            "silver": "Signals disagree",
+            "copper": "Tactical caution",
+            "oil": "Positive model posture"
+          }
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "zh",
+          "theme": "dark",
+          "access": "anonymous",
+          "force_state": null,
+          "captured": true,
+          "file": "f08b7d5de24177fe.png",
+          "sha256": "f08b7d5de24177fea3464e8889a84509cf7ae7a1c5ecc8ee56945af0a2510580",
+          "bytes": 205272,
+          "width": 1140,
+          "height": 750,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "overlay": [],
+          "overlay_clean": true,
+          "subject_geometry": {
+            "left": 150,
+            "right": 1290,
+            "viewport": 1440
+          },
+          "detail_clicks_verified": 4,
+          "page_errors": [],
+          "titles": {
+            "gold": "证据不完整",
+            "silver": "信号存在分歧",
+            "copper": "短期需谨慎",
+            "oil": "模型偏正面"
+          }
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "zh",
+          "theme": "light",
+          "access": "anonymous",
+          "force_state": null,
+          "captured": true,
+          "file": "8a016a9193831bbe.png",
+          "sha256": "8a016a9193831bbe1db09c3f67d00e8733454090e76e434d917ccc8cfc3b327c",
+          "bytes": 189508,
+          "width": 1140,
+          "height": 750,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "overlay": [],
+          "overlay_clean": true,
+          "subject_geometry": {
+            "left": 150,
+            "right": 1290,
+            "viewport": 1440
+          },
+          "detail_clicks_verified": 4,
+          "page_errors": [],
+          "titles": {
+            "gold": "证据不完整",
+            "silver": "信号存在分歧",
+            "copper": "短期需谨慎",
+            "oil": "模型偏正面"
+          }
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "force_state": null,
+          "captured": true,
+          "file": "e3b3af0852467f5c.png",
+          "sha256": "e3b3af0852467f5ca30d92163c8f0941a33dd44a1f729120464882faf53a8908",
+          "bytes": 172943,
+          "width": 350,
+          "height": 1584,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "overlay": [],
+          "overlay_clean": true,
+          "subject_geometry": {
+            "left": 20,
+            "right": 370,
+            "viewport": 390
+          },
+          "detail_clicks_verified": 4,
+          "page_errors": [],
+          "titles": {
+            "gold": "Evidence incomplete",
+            "silver": "Signals disagree",
+            "copper": "Tactical caution",
+            "oil": "Positive model posture"
+          }
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "en",
+          "theme": "light",
+          "access": "anonymous",
+          "force_state": null,
+          "captured": true,
+          "file": "7c26b3c0c9c7bf9f.png",
+          "sha256": "7c26b3c0c9c7bf9ff3cf50d19771d843e5e24ccc41f92eff7d80b48102c96817",
+          "bytes": 160538,
+          "width": 350,
+          "height": 1584,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "overlay": [],
+          "overlay_clean": true,
+          "subject_geometry": {
+            "left": 20,
+            "right": 370,
+            "viewport": 390
+          },
+          "detail_clicks_verified": 4,
+          "page_errors": [],
+          "titles": {
+            "gold": "Evidence incomplete",
+            "silver": "Signals disagree",
+            "copper": "Tactical caution",
+            "oil": "Positive model posture"
+          }
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "zh",
+          "theme": "dark",
+          "access": "anonymous",
+          "force_state": null,
+          "captured": true,
+          "file": "1cc46b11e8b8b1aa.png",
+          "sha256": "1cc46b11e8b8b1aa6c2df02e9222b4c1a46d39cf331c9fe0a7e5f2aab9e55049",
+          "bytes": 172819,
+          "width": 350,
+          "height": 1488,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "overlay": [],
+          "overlay_clean": true,
+          "subject_geometry": {
+            "left": 20,
+            "right": 370,
+            "viewport": 390
+          },
+          "detail_clicks_verified": 4,
+          "page_errors": [],
+          "titles": {
+            "gold": "证据不完整",
+            "silver": "信号存在分歧",
+            "copper": "短期需谨慎",
+            "oil": "模型偏正面"
+          }
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "zh",
+          "theme": "light",
+          "access": "anonymous",
+          "force_state": null,
+          "captured": true,
+          "file": "b147f1b754c9a03d.png",
+          "sha256": "b147f1b754c9a03dc8c0afaf87d59ff3e243b3479124178e0acaec56a5551eb1",
+          "bytes": 162883,
+          "width": 350,
+          "height": 1488,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "overlay": [],
+          "overlay_clean": true,
+          "subject_geometry": {
+            "left": 20,
+            "right": 370,
+            "viewport": 390
+          },
+          "detail_clicks_verified": 4,
+          "page_errors": [],
+          "titles": {
+            "gold": "证据不完整",
+            "silver": "信号存在分歧",
+            "copper": "短期需谨慎",
+            "oil": "模型偏正面"
+          }
+        }
+      ],
+      "metrics": {},
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": []
+    },
+    {
+      "page_id": "commodities.html#r2-lagging",
+      "route": "/lagging.html",
+      "registry_route": "/commodities.html",
+      "route_kind": "asset_read_fixture",
+      "subject": "r2-lagging",
+      "states": [
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "force_state": null,
+          "captured": true,
+          "file": "7cc62d67b7d006bc.png",
+          "sha256": "7cc62d67b7d006bc4aa5f927a3d684e091122f25a101a4d98f2f23d0d299bbf4",
+          "bytes": 234441,
+          "width": 1140,
+          "height": 787,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "overlay": [],
+          "overlay_clean": true,
+          "subject_geometry": {
+            "left": 150,
+            "right": 1290,
+            "viewport": 1440
+          },
+          "detail_clicks_verified": 4,
+          "page_errors": [],
+          "titles": {
+            "gold": "Older asset snapshot",
+            "silver": "Signals disagree",
+            "copper": "Tactical caution",
+            "oil": "Positive model posture"
+          }
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "en",
+          "theme": "light",
+          "access": "anonymous",
+          "force_state": null,
+          "captured": true,
+          "file": "401d195be98e206c.png",
+          "sha256": "401d195be98e206cf772edad55866892e973eb344e11895efecbba69c5bd01a8",
+          "bytes": 215730,
+          "width": 1140,
+          "height": 787,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "overlay": [],
+          "overlay_clean": true,
+          "subject_geometry": {
+            "left": 150,
+            "right": 1290,
+            "viewport": 1440
+          },
+          "detail_clicks_verified": 4,
+          "page_errors": [],
+          "titles": {
+            "gold": "Older asset snapshot",
+            "silver": "Signals disagree",
+            "copper": "Tactical caution",
+            "oil": "Positive model posture"
+          }
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "zh",
+          "theme": "dark",
+          "access": "anonymous",
+          "force_state": null,
+          "captured": true,
+          "file": "aca983b985f6f5e6.png",
+          "sha256": "aca983b985f6f5e6fcfe5bde6a78c41db3777196be3a0d88698a35c262d36993",
+          "bytes": 208261,
+          "width": 1140,
+          "height": 750,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "overlay": [],
+          "overlay_clean": true,
+          "subject_geometry": {
+            "left": 150,
+            "right": 1290,
+            "viewport": 1440
+          },
+          "detail_clicks_verified": 4,
+          "page_errors": [],
+          "titles": {
+            "gold": "品种快照较旧",
+            "silver": "信号存在分歧",
+            "copper": "短期需谨慎",
+            "oil": "模型偏正面"
+          }
+        },
+        {
+          "viewport": "desktop",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "locale": "zh",
+          "theme": "light",
+          "access": "anonymous",
+          "force_state": null,
+          "captured": true,
+          "file": "1fd8517185b08788.png",
+          "sha256": "1fd8517185b08788d88bcdf347b759cf13f9d6253e7fe121057fa4b565ff25ff",
+          "bytes": 192580,
+          "width": 1140,
+          "height": 750,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "overlay": [],
+          "overlay_clean": true,
+          "subject_geometry": {
+            "left": 150,
+            "right": 1290,
+            "viewport": 1440
+          },
+          "detail_clicks_verified": 4,
+          "page_errors": [],
+          "titles": {
+            "gold": "品种快照较旧",
+            "silver": "信号存在分歧",
+            "copper": "短期需谨慎",
+            "oil": "模型偏正面"
+          }
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "force_state": null,
+          "captured": true,
+          "file": "f3de1a350c58816d.png",
+          "sha256": "f3de1a350c58816db42446981ed4d9d2cd734427afd36b5859357467a12a5fa9",
+          "bytes": 179500,
+          "width": 350,
+          "height": 1647,
+          "applied_theme": "dark",
+          "applied_locale": "en",
+          "overlay": [],
+          "overlay_clean": true,
+          "subject_geometry": {
+            "left": 20,
+            "right": 370,
+            "viewport": 390
+          },
+          "detail_clicks_verified": 4,
+          "page_errors": [],
+          "titles": {
+            "gold": "Older asset snapshot",
+            "silver": "Signals disagree",
+            "copper": "Tactical caution",
+            "oil": "Positive model posture"
+          }
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "en",
+          "theme": "light",
+          "access": "anonymous",
+          "force_state": null,
+          "captured": true,
+          "file": "25b55b60b0e36bb5.png",
+          "sha256": "25b55b60b0e36bb5672aa30a48bebdf216d1e082ab5449b7a715ae3dd0658da2",
+          "bytes": 168405,
+          "width": 350,
+          "height": 1647,
+          "applied_theme": "light",
+          "applied_locale": "en",
+          "overlay": [],
+          "overlay_clean": true,
+          "subject_geometry": {
+            "left": 20,
+            "right": 370,
+            "viewport": 390
+          },
+          "detail_clicks_verified": 4,
+          "page_errors": [],
+          "titles": {
+            "gold": "Older asset snapshot",
+            "silver": "Signals disagree",
+            "copper": "Tactical caution",
+            "oil": "Positive model posture"
+          }
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "zh",
+          "theme": "dark",
+          "access": "anonymous",
+          "force_state": null,
+          "captured": true,
+          "file": "4680233ae2654c2f.png",
+          "sha256": "4680233ae2654c2f6676cbc30bea1735ff1ceea5c9a69831d910e0f59fa5ce0b",
+          "bytes": 176936,
+          "width": 350,
+          "height": 1509,
+          "applied_theme": "dark",
+          "applied_locale": "zh",
+          "overlay": [],
+          "overlay_clean": true,
+          "subject_geometry": {
+            "left": 20,
+            "right": 370,
+            "viewport": 390
+          },
+          "detail_clicks_verified": 4,
+          "page_errors": [],
+          "titles": {
+            "gold": "品种快照较旧",
+            "silver": "信号存在分歧",
+            "copper": "短期需谨慎",
+            "oil": "模型偏正面"
+          }
+        },
+        {
+          "viewport": "mobile",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "locale": "zh",
+          "theme": "light",
+          "access": "anonymous",
+          "force_state": null,
+          "captured": true,
+          "file": "3bb6b11b4b94a49c.png",
+          "sha256": "3bb6b11b4b94a49c8f8cf607ce7c1cc01b23d26935cecc6e8717a0cb6ce86796",
+          "bytes": 166857,
+          "width": 350,
+          "height": 1509,
+          "applied_theme": "light",
+          "applied_locale": "zh",
+          "overlay": [],
+          "overlay_clean": true,
+          "subject_geometry": {
+            "left": 20,
+            "right": 370,
+            "viewport": 390
+          },
+          "detail_clicks_verified": 4,
+          "page_errors": [],
+          "titles": {
+            "gold": "品种快照较旧",
+            "silver": "信号存在分歧",
+            "copper": "短期需谨慎",
+            "oil": "模型偏正面"
+          }
+        }
+      ],
+      "metrics": {},
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": []
+    }
+  ],
+  "honesty": {
+    "authority": "R2 component fixture evidence, not full-page or production acceptance",
+    "page": "Synthetic model states and dated inputs. Existing commodity renderer stubs navigation and hydration. R1 remains an independent release prerequisite; full-page overflow not certified here.",
+    "new_entry_permission": null,
+    "numerical_policy_changes": false,
+    "source_reconciliation": "Recovered after the host interruption; the original 24 images were not regenerated. Revalidated all 6895 materialized source blobs against immutable R2 head before binding this receipt."
+  }
+}

@@ -134,3 +134,31 @@ There are now 67 focused cases, including a 1,458-combination nominal policy gri
 The last ten-suite run before that additional grid case passed 334 tests with two
 existing warnings; the full integrated-source run is a separate receipt. No nominal
 matrix result settles the separately held malformed-input qualification.
+
+## Recovered integration and committed R2 component proof
+
+Protected procedure was re-pinned at Mastermind
+`5ee11ab1e993616f3568cfca4069cb21fa61fd8f` (compatible Skillpack 1.0.1).
+The interrupted exact R1/R2 source projection completed **403 tests**, zero
+failures and two existing NumPy warnings in 408.85 seconds. The original log and
+all six merged-file digests were recovered; no replacement test was launched.
+The precise pair remains R1 `9f6b536f` plus R2 `bf8d7256`, not current main.
+
+The original R2 component corpus is now preserved under
+`mockups/evidence/commodities-asset-read-r2/`. All 24 PNG hashes and 6895
+materialized source blobs matched the exact R2 source before binding the manifest.
+The existing evidence validator accepted the receipt and its full state matrix.
+The recorded 96 interactions are component-fixture proof, not full-page or hub
+browser proof. Pixel crops do not establish global viewport geometry.
+
+No semantic code was changed to preserve these results. Strict malformed-input
+qualification and the separately refused refinements remain held. A new combined
+full-builder fixture setup was tool-refused; the target was confirmed absent and
+that setup was not retried or moved to another carrier. Prior successful R2
+normal-builder/page/JSON/hub replay remains valid only within its stated limits.
+
+Next: finish allowed browser inspection and source qualification, obtain independent
+reviews and current-head checks, and then use the existing production publication
+path. Do not redo completed implementation, source-merging, tests or captures.
+No production acceptance, current market update or numerical-model admission follows
+from these evidence-only changes.
