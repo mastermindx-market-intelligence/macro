@@ -1,86 +1,87 @@
 # MACD context / cycle-aware research continuation — 2026-09-15
 
-## Mission and why it matters
+## Mission, user journey and why this matters
 
-Continue Chairman's existing research into price versus incumbent RSI-MACD, 2D/3D/weekly sampling, appropriate holding horizons, and the selected stock/market repair context. The user job is to receive Prophet opportunities with defensible entry timing, horizon, remaining opportunity and failure meaning; the machine job is to distinguish input/kernel effects, regime exposure, and genuine incremental selection or execution value. Do not shrink that ambition to an isolated crossover win-rate leaderboard.
+Continue Chairman's research into which price/RSI MACD conditions provide useful entries, at which horizons, with what failure and exit behavior. The user job is actionable Prophet/Terminal opportunities with defensible timing, remaining opportunity and risk, not a crossover leaderboard. The machine job is to separate indicator input, filter memory, grain, market repair exposure and incremental stock/policy value. The eventual journey is source-bound setup/context -> entry/add availability -> plan/holding/risk -> outcome/learning through existing owners. No new live journey was deployed in this wave.
 
-## Authority and current state
+## Authority and current capability
 
-Current live Chairman continuation authorizes research, not a live signal/rank/size/trade change. Protected Skillpack `Mastermind@e1f752a58df8f874efa12e30957d911627a0c4f8` was loaded atomically: INDEX, COLD_START, ACTIVE_EXECUTION, RECONCILE_STATE, CLOSEOUT. Schema v1, version 1.0.1, bootstrap 1. Macro source-review pin is `76a2c0c8573272ce582c1a42e5b27b199b605744`.
+Current live Chairman continuation authorizes research, not signal/rank/size/trade modification. Current protected Skillpack is Mastermind@4709b9483182c20153868dac164e1f621aac505c; INDEX, COLD_START, ACTIVE_EXECUTION, RECONCILE_STATE and CLOSEOUT were atomically loaded, compatible schema1/version1.0.1/bootstrap1. Macro main inspected is 52bd0cde0669cd8ea396dfbe692399261dd5cfe5.
 
-Executive OS owns lifecycle/admission, Agent OS organizational continuity, GitHub implementation/evidence, Linear projection and Slack transport. This handoff creates no new Job, workstream, worker, event, registry, identity or evaluator. No worker or reciprocal watcher was commissioned in this research turn. Direct work rationale: PRINCIPAL_JUDGMENT and LOWER_TOTAL_OVERHEAD for the bounded diagnostic.
+Executive OS owns lifecycle/admission; Agent OS continuity; GitHub implementation/evidence; Linear projection; Slack transport. This handoff creates no Job, workstream, worker, watcher, identity, signal, grader, registry or lifecycle. Direct work rationale: PRINCIPAL_JUDGMENT for measurement adjudication and LOWER_TOTAL_OVERHEAD for bounded review of existing outputs.
 
-Program capability state: **PARTIAL**. The local diagnostic code and two measured evidence runs exist; independent scientific acceptance, formal look accounting, realistic opportunity-matched trade policies and prospective validation remain owed. No production capability is claimed. This branch is records-only publication, not merged authority.
+Parent capability remains **PARTIAL**. Completed: deterministic exploratory replay, original repair attribution, same-cohort horizon/exit review, byte-verified publication of replay source/tests, and a tested retrospective-accounting patch proposal. Not completed: applied canonical look accounting, independent scientific review, new comparison uncertainty, owner-native matched-opportunity trade policies, prospective validation or production acceptance.
 
-## Exact operations and source custody
+## Carrier, PR and source custody
 
-Research operation: `macd-context-cycle-attribution-20260915-c3`, same carrier Remote Desktop Commander on Mac Studio `3f5ce987-e3eb-40a3-af9f-4b0ae54919cc`.
+Research operation remains macd-context-cycle-attribution-20260915-c3, Remote Desktop Commander on Mac Studio device 3f5ce987-e3eb-40a3-af9f-4b0ae54919cc. GitHub publication remains the separate macd-cycle-research-publication-20260915-c3 operation on existing draft PR7177 / branch sol/macd-cycle-research-20260915-c3. No replacement branch/PR was created; the PR is not merged or accepted as a trading-rule change.
 
-Evidence publication is a separate GitHub action `macd-cycle-research-publication-20260915-c3` on branch `sol/macd-cycle-research-20260915-c3`, based on `76a2c0c8573272ce582c1a42e5b27b199b605744`. Protocol publication commit: `60164f4c5f359ff0a26303b0a2af37422999d470`. Measured report commit: `0656f4bed7eb6aa3861b08bf6de181a05eeaf471`.
+Read first: research/signal_engine/macd_context/HORIZON_EXIT_REVIEW_2026-09-15.md (report introduced at aaab581ba2ae443d6ffe43d76c45d04eb23c0b6e); CYCLE_EXTENSION_RESULTS_2026-09-15.md retains the prior measured input/memory and repair-attribution results. The look inventory was published at 30f1f993c3aa038c0bb793488d544934b377e7f0.
 
-Read these first:
-- `research/signal_engine/macd_context/CYCLE_EXTENSION_PROTOCOL_2026-09-15.md`
-- `research/signal_engine/macd_context/CYCLE_EXTENSION_RESULTS_2026-09-15.md`
-- Local `cycle_extension_v2/CONTINUATION.md` for the final process/PR closeout delta.
+Original host source root: /Volumes/Mastermind/Mastermind/artifacts/macd-context-first-look-20260915-c3/.
+Extension root: that root plus cycle_extension_v2/.
+Completed replay: results_run_20260915_r1/receipt.json, 360571 overlapping observations /242 names /18 constructions /13 policies.
+Completed original-context attribution: repair_attribution_20260915_r1/receipt.json, 13288 observations.
+Current review: review_20260915_r1/review_receipt.json plus calendar_horizons.csv, native_and_state_exits.csv, common_cohort_references.csv, common_price_comparisons.csv, risk_diagnostics.csv, look_inventory.csv and trial_ledger_reconciliation.patch.
 
-Original frozen source root: `/Volumes/Mastermind/Mastermind/artifacts/macd-context-first-look-20260915-c3/`. Original script SHA256 `6354a5ab3b5276b1ccd74ce173cadce055364634ad5f80a38ab8e5bca8f9968d`. Its original Macro source pin is `7963e7eeb4d235642147f36a2ee00d658fffda93`.
+Original reproduction source SHA256: 6354a5ab3b5276b1ccd74ce173cadce055364634ad5f80a38ab8e5bca8f9968d.
+Expanded replay SHA256: 4ab075bf730b780e51d904f4f7301a964b259c6c3614d1033765f4e6d289a803; now published at research/signal_engine/macd_context/source/run_extension.py, Git blob4fe9e9abcafdef5f903db4df3c21dc5b834e36db, byte-identical to the measured local file.
+Original attribution source SHA256: acd8ce6bbb47011dc4ebc2a51b0d10dc495ecf4e6b41dc2ca62e87949708223b; its original context input SHA256 is 1c284e1a50bd922905333be65cb40ccb07d01d551d1c1886fe9ca60892901d07.
 
-Current local source artifacts under `cycle_extension_v2/`:
-- `run_extension.py`, SHA256 `4ab075bf730b780e51d904f4f7301a964b259c6c3614d1033765f4e6d289a803`.
-- `test_extension.py`: three synthetic tests passed after the missing-builder RED.
-- `RESUMPTION_AMENDMENT.md`: declared before the expanded market replay, not an accepted preregistration.
-- `results_run_20260915_r1/receipt.json`: PASS_RESEARCH_ONLY; 360,571 observations, 242 names; exact parity of all 126,440 original event identities/depth bins and 21/63-session outcomes. Process 92932 exited 0.
-- `run_repair_attribution.py`, SHA256 `acd8ce6bbb47011dc4ebc2a51b0d10dc495ecf4e6b41dc2ca62e87949708223b`.
-- `test_repair_attribution.py`: synthetic date/spell-weighting test passed after expected RED.
-- `repair_attribution_20260915_r1/receipt.json`: PASS_EXPLORATORY_ATTRIBUTION_ONLY, 13,288 original context observations; process 24707 exited 0. Original context input SHA256 `1c284e1a50bd922905333be65cb40ccb07d01d551d1c1886fe9ca60892901d07`.
+Published source/test_extension.py and source/RESUMPTION_AMENDMENT.md also match the corresponding local files byte-for-byte (Git blobs7498af691f5eb4d02fa23150856fdf6334512414 and6a9efa9fd529378ca7f3ea3b6e51c750a96c40e1). Full replay still requires the external frozen source files and original reproduction script; raw prices were not published. Run-time provenance pins inside the frozen code are intentionally historical, not current procedure.
 
-Both receipts include input/output digests. Raw price data and executable source currently remain on the host; their mere appearance in this handoff is not repository integration or independent review.
+## What became known in this continuation
 
-## Measured findings that must survive succession
+All eight existing expanded-output digests and the source digest matched. No replay was rerun. A fresh one-to-one join checked all126440 original events; original21/63 raw andSPY-excess outcome columns had maximum absolute difference0.0 under rtol0/atol1e-12. All non-null modeled entries follow their event date. Common252 summary has1404 rows and zero censored outcomes across its declared policies.
 
-At 21 sessions, deep-negative price-fast 2D is 60.82% positive; 2D with 3D-equivalent nominal memory is 65.62%; original 3D is 67.49%. Incumbent RSI-slow 2D is 59.90%, memory-matched 2D 58.76%, and 3D 59.14%. This supports a material memory contribution, not a universal faster-grain advantage or a causal decomposition.
+Own-deep common252 cohort: price3D positive frequency is67.28% at21 sessions and75.96% at252; priceweekly is52.67% and75.00%; RSI3D58.49% and74.51%; RSIweekly59.99% and72.24%. This fixes the cohort across horizons within a construction, not across constructions.
 
-Holding the fast recipe fixed, 3D price is 67.49% versus RSI14 58.48%; holding the slow recipe fixed, price is 63.13% versus RSI14 59.14%. Own-indicator depth bins and event populations differ. The input gap is not explained solely by recipe, but replacing the incumbent is not justified by these aggregates.
+The baseline rises too: all weekly price crosses are73.82% positive at252, versus75.00% for deep-negative. Deep weekly mean252 return27.05% versus18.44% all-cross is not risk/date matched. Deep RSI3D at252 is74.51% positive versus74.48% all-cross, whileSPY excess is2.95% versus4.78%. Do not sell high long-horizon base rates as selection certainty.
 
-The selected price-repair headline of 75.79% is 636 observations over 123 dates and 12 causal stress spells. Equal-date weighting is 70.06%; equal-spell weighting is 81.97%. RSI repair is 65.34% pooled but 69.76% equal-date. These are different estimands, not interchangeable probabilities or paired cross-family evidence.
+Equal native bars do not equal economic risk. Ten native bars give price1D58.84% positive over10 sessions,2D60.69% over20,3D66.54% over30,weekly56.68% over48. Median close-path adverse excursions are-2.17%,-3.31%,-3.99%,-7.13%, respectively; intraday risk is unmeasured.
 
-Within-family same-date comparisons show a composition warning: RSI cross-minus-context positive-rate difference changes from -4.58 pp pooled to +3.11 pp over 151 common dates. Price same-date positive-frequency difference is +4.06 pp over 122 dates, but its mean-return difference is approximately -0.046 pp. Stock/risk/sector/selection matching is still absent.
+Opposite-cross exit with252-session cap gives price3D51.74% positive,mean4.99%,SPY excess0.19%,median60 sessions; priceweekly48.66%,mean7.63%,excess-0.24%,median97.5 sessions. RSI3D47.84% andRSIweekly46.41% positive. Payoffs are asymmetric; neither win frequency nor mean gross return alone approves an exit.
 
-For price repair, 21-session mean gross return is 6.05% for crosses and 6.11% for context without a cross. The joint annual-cluster mean-return-difference interval includes zero; higher sign frequency did not establish incremental expected return. Removing 2020 leaves 71.93% positive and 4.29% mean gross return, so the context is not solely a 2020 artifact. The 2018 selected price cell was poor (18 observations, 27.78% positive, -4.93% mean return); preserve failure cases rather than optimizing them away.
+Weekly deep-price252 endpoint5th percentile is-28.81%, and average non-winner-19.33%. These are endpoint losses, not maximum drawdowns.252-session path adverse excursion is absent in saved outputs.
 
-## Scope and non-goals
+Under a common price-fast depth predicate at each grain, full-cohort3D price/RSI21-session positive rates are67.49%/60.67%, but63-session rates66.70%/66.12% and mean returns5.81%/5.82%.2D21-session rates are60.82%/61.00%. Common conditioning does not match events/dates/stocks/risks; no new superiority interval exists.
 
-No per-name best-of-grid, fitted stock selector, new live repair-state detector, Elliott outcome model, target/stop policy, new portfolio simulator or promotion is part of the completed pass. Price/RSI and memory-matched constructions remain research challengers.
+Prior repair findings remain: price repair75.79% pooled becomes70.06% equal-date; RSI65.34% becomes69.76%; within-family same-date RSI cross-minus-context is+3.11pp versus-4.58pp pooled. Price crosses did not establish an incremental mean-return advantage. Removing2020 leaves71.93% positive; preserve the poor2018 and relative-underperformance2015 cases rather than fitting them away.
 
-Long-Hold owns structural holding and deterministic falsifiers; B4 owns current entry/add Availability; existing plan and Portfolio/Risk owners retain their responsibilities. The opposite-cross exit is only a diagnostic, not authority to terminate a structural holding. B1 is accepted current U.S. identity within its scope, not a universal historical/global identity.
+## Look accounting: exact pending action, not registered research
 
-TOI W3, Temporal Grain W1B, protected WMT/silver/GDX chart packets and DNR:KILL-OUTCOME-AUDITION stay held. This research does not complete those waves or create a new parent program.
+Current-main TrialLedger code blobeb364fe9fa53f46d0455e194d3e3ccdbb5732778 and data/trial_ledger.jsonl blobda5647e6fc67697384813406874c436740017b23 matched the local copies. Canonical ledger has1674 rows and no MACD-context/cycle family.
 
-## Data, time, null and correction behavior
+look_inventory_2026-09-15.csv records23 summary tables and6235 generated cells:736 original,5267 extension,232 attribution. This is not an independent-test count. A temporary-copy dry run of unchanged canonical TrialLedger.log_declared_budget proposed a conservative scoped6235 floor under macd_context_cycle, preserved the original prefix, appended one row, and added zero rows on identical retry. Temporary copy removed; canonical ledger unchanged.
 
-All 242 equity series end 2025-12-31 with no missing internal market sessions; event and outcome cutoffs are explicit. Input panel is current-universe/survivorship-exposed and retrospectively adjusted, not historical-universe or vintage-clean confirmation. Completed native bars only. Earliest modeled entry is the next session close; native exits execute the session after the later completed bar. Out-of-range outcomes are censored, not losing trades. Unknown higher-timeframe state remains unknown. Close-only path extrema omit intraday adverse movement. Overlapping stocks/dates/policies are not independent samples.
+proposed_trial_ledger_reconciliation.patch (introduced fc47b24b953cbb0ecd8b59b305a10bca79fc7720) is an unapplied1080-byte append proposal against the exact current preimage. The evaluation owner must adjudicate family/count/completeness before applying through an accepted Macro writer. This is retrospective disclosure, not preregistration or a second ledger; it does not certify every undocumented historical look, multiple-testing significance, DSR or a customer probability.
 
-Past Prophet/shadow ledgers use different clocks, graders and correction eras. Do not pool them into one win rate, rewrite frozen outcomes, or fill historical field gaps with current values. Two shadow rankers may share a realized outcome only with identical populations and outcome semantics; differing 2D/3D fills require policy-specific owner-native outcomes.
+The current GitHub update_file action requires complete replacement of the approximately642KB file and exposes no patch/append operation. The attended workspace wrapper verified here targets Mastermind, not Macro. No shared Macro checkout was modified or wrapper repointed. Source/writer custody remains a real gate, not proof of completed registration.
 
-## Deterministic versus model method
+## Narrow failure reconciliation
 
-Both completed passes are deterministic pandas/numpy research calculations. Trailing beta, volatility and drawdown use information available at the signal close. Annual-cluster bootstrap uses 5,000 joint resamples over calendar years 2010–2025. Its intervals are descriptive after context selection and multiple looks, not multiplicity-adjusted acceptance. No LLM originates a signal, rank, probability, gate or trade.
+The previous horizon-inspection failure is superseded: current same-carrier bounded reads succeeded and those results are now reviewed. Do not report those tables as still inaccessible or rerun the replay to recreate them.
 
-A useful external mechanism prior is that reversal speed and persistence can vary differently with volatility and turnover (Dai et al., FAJ 2024 / NBER w30917). Panic-state prior-loser rebounds are another competing explanation (Daniel and Moskowitz, JFE 2016 / NBER w20439). These motivate source-qualified tests; neither proves causation in the current MACD sample. Elliott nesting requires timestamped real-time recognition and a generic causal-swing baseline before incremental claims.
+A NEW predeclared comparison-uncertainty module write was blocked by the platform; readback confirmed review_comparisons.py absent. Two synthetic test cases were observed RED because that implementation did not exist. No corresponding market comparison interval ran. Do not retry/re-encode/relocate/reimplement through a different carrier to bypass the denial. This narrow lane remains held; existing replay and original attribution are unaffected.
 
-## Failures and exact gates
+Existing verification rerun: process39545 exited0, with all3 extension tests and1 original-attribution test passing. Do not include the blocked module's2 RED tests in a claim that all research tests pass. This is local source verification, not repoCI or independent scientific acceptance.
 
-1. After the expanded replay completed, a combined tool call to inspect common-252 horizon curves, opposite-cross exits and common-price-depth tables was blocked by the platform. Those outputs exist but were not interpreted. Do not retry, re-encode, relocate, switch tools/carriers, or reconstruct those same requested results to bypass the denial. Resolve the specific gate lawfully. The later original repair attribution was a predeclared independent lane and read none of those blocked tables.
-2. Local canonical TrialLedger census: 1,674 entries, no matching MACD-context family. Prior/current look registration is unverified/outstanding. Do not call the local protocol preregistration or reset the research budget to zero. `engine/trial_ledger.py` / `data/trial_ledger.jsonl` remain sole owners; reconciliation and acceptance are required before promotion-bearing evaluation.
-3. Read-only git cat-file against `/Users/chriswong/Documents/Cluade/macro-main` timed out. No shared-root modifications were made. `/Users/chriswong/.local/bin/mmx-workspace` is configured for the Mastermind source repo; current research operation has no registered workspace there. Do not create a raw worktree or repoint the wrapper as a shortcut.
-4. Prior REPL PID 10117 was verified absent. Current analysis REPL was PID 59542; consult the final local closeout delta before assuming it remains alive. Do not touch another worker's process.
+Read-only review REPL wasPID5273. Consult the final local CONTINUATION.md delta for verified shutdown; never infer another process is this session's. No worker/watcher/background continuation was commissioned.
 
-## Implementation order, acceptance and production proof
+## Data/time/null/correction, deterministic method and non-goals
 
-First reconcile all already exposed first-look and extension configurations with the canonical TrialLedger/Evaluation owner and establish source/code custody for independent review. Clear the specific expanded-table inspection gate and review existing generated outputs; do not recompute known results merely because interpretation was interrupted.
+Equity events/outcomes are bounded by2025-12-31; the longer SPY calendar does not add2026 stock outcomes. Completed-bar context only; entries and native/opposite exits execute at the following session close. Out-of-range outcomes are censored, not losses; unknown states remain unknown. Common252 excludes immature events but not survivorship bias. Historical prices are retrospective adjustments and the universe is current/exposed, not vintage-clean or untouched confirmation. Costs are only an illustrative10bp per side. Close-path extremes are not intraday extremes.
 
-Then freeze the owner-native common-opportunity early-versus-confirmed policy, retaining early signals that never later confirm, with actual fills, exit rules, risk and costs. Before widening to mechanisms, qualify point-in-time sector, turnover/liquidity, identity, delisting and price-vintage sources. Predeclare mechanism-based horizon hypotheses and abstention rather than selecting per-name historical winners. Formal confirmation must remain separate from this exposed development panel.
+The method is deterministic pandas/numpy plus previously declared descriptive bootstraps; no model/LLM originates numeric probabilities or trade authority. Do not pool Prophet/shadow ledgers with different fills, price bases, field-start dates or correction eras. Different entry/exit policies need owner-native policy-specific outcomes.
 
-A later zero-authority prospective challenger may accrue only through existing candidate/episode, grader, shadow and evaluation owners. Promotion requires independent review, valid prospective evidence and a useful end-to-end consumer. Any user-facing hero indicator subsequently needs real production and browser proof across fresh, stale, unknown, contradictory and failed-repair states; that proof was not attempted here.
+Long-Hold owns structural holds/falsifiers, B4 current entry/add availability, existing plan andPortfolio/Risk their state, EvaluationOS/QLedger/owner-native ledgers outcomes. B1's currentUS scope is not universal historical/global identity. TOI W3, TemporalGrain W1B and motivatingWMT/silver/GDX chart packets remain held. DNR:KILL-OUTCOME-AUDITION is binding: no per-name winner tables, new score/event/identity/grader planes, regime classifier fitted to exposed failure years, or relabeled killed species.
 
-Stop at a genuine authority/platform/source gate or the explicitly accepted capability outcome. The exact next primary action is **canonical exposed-look/source-custody reconciliation and independent review of the generated evidence**, with the specific denied table-inspection lane still held. Do not replace the research frontier with a frontend build or a higher-looking win-rate claim.
+## Implementation order, acceptance and continuation
+
+Primary next action: the accepted Macro evaluation/source owner adjudicates and applies the staged retrospective-accounting append against a freshly verified canonical preimage, then independently reviews the published replay and horizon/exit report. A delivered handoff is not accepted review; no recipient pickup or runtime execution is claimed here. New comparison-code execution remains at its separate platform boundary.
+
+After those gates, freeze the owner-native common-opportunity early-versus-confirmed policy before new outcomes: keep early signals that never later confirm, actual fills, target/invalidation/timeout and ambiguity handling, costs and exposure. Qualify point-in-time sector, liquidity/turnover, historical universe, dead-name and price-vintage inputs before mechanism tests. Retain calendar/native/structural clocks and compare incremental payoff, risk and coverage, not maximum endpoint win rate.
+
+A later zero-authority challenger must accrue through existing signal/candidate/plan/grader/evaluation owners. Promotion requires independent review, prospective evidence and end-to-end consumer proof. A flagship UI needs real production/browser evidence across valid, stale, unknown, contradictory and failed-repair states. No such deployment was attempted.
+
+Stop at a genuine platform/source/authority gate or an explicitly accepted capability outcome. Current research remainsPARTIAL at the documented uncertainty-code and canonical-write/review boundaries. Completed replay, attribution, output review and verified source publication are do-not-redo. This update supersedes only the older blocked-horizon/host-only-source/unbounded-accounting-frontier statements; all prior scientific limitations and zero-authority laws remain controlling.
