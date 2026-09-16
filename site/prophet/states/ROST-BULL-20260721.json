@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ROST-BULL-20260721",
-  "asof": "2026-09-15",
+  "asof": "2026-09-16",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 39.3,
@@ -10,21 +10,21 @@
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 79.1,
+    "validity": 66.1,
     "progress": 0.0,
-    "pace": 15.3,
+    "pace": 14.0,
     "retention": 0.0,
     "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.84,
+    "dist_to_stop_r": 0.736,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 124.4,
-    "p1": -0.1064,
-    "p2": -0.0532,
+    "horizon_pct_used": 126.7,
+    "p1": -0.1762,
+    "p2": -0.0881,
     "p3": null,
-    "move_r": -0.16,
+    "move_r": -0.264,
     "mfe_r": 0.538,
     "mae_r": -0.292
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-07-25",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 56,
-  "tau": 1.2444
+  "days_elapsed": 57,
+  "tau": 1.2667
 }

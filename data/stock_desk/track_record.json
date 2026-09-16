@@ -1,23 +1,23 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-09-15",
-  "scored_total": 179,
-  "open": 64,
-  "unscored_neutral": 241,
+  "as_of": "2026-09-16",
+  "scored_total": 180,
+  "open": 70,
+  "unscored_neutral": 247,
   "overall": {
-    "n": 179,
+    "n": 180,
     "hits": 115,
-    "misses": 64,
-    "hit_rate": 0.642,
-    "dir_accuracy": 0.419
+    "misses": 65,
+    "hit_rate": 0.639,
+    "dir_accuracy": 0.417
   },
   "by_lean": {
     "constructive": {
-      "n": 107,
+      "n": 108,
       "hits": 61,
-      "misses": 46,
-      "hit_rate": 0.57,
-      "dir_accuracy": 0.308
+      "misses": 47,
+      "hit_rate": 0.565,
+      "dir_accuracy": 0.306
     },
     "neutral": {
       "n": 0,
@@ -43,11 +43,11 @@
   },
   "by_conviction": {
     "low": {
-      "n": 149,
+      "n": 150,
       "hits": 94,
-      "misses": 55,
-      "hit_rate": 0.631,
-      "dir_accuracy": 0.389
+      "misses": 56,
+      "hit_rate": 0.627,
+      "dir_accuracy": 0.387
     },
     "medium": {
       "n": 28,
@@ -64,8 +64,17 @@
       "dir_accuracy": 0.0
     }
   },
-  "calibration_note": "179 leans scored, hit-rate 0.642 (directional accuracy 0.419). Chance alone would land a hit-rate near 0.7511 (directional accuracy near 0.5075) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
+  "calibration_note": "180 leans scored, hit-rate 0.639 (directional accuracy 0.417). Chance alone would land a hit-rate near 0.7513 (directional accuracy near 0.5075) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
   "recent": [
+    {
+      "id": "2026-08-17-EQIX-20260818143708-1",
+      "ticker": "EQIX",
+      "lean": "constructive",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.0748,
+      "check_by": "2026-09-14"
+    },
     {
       "id": "2026-07-31-SHOO-20260807174121-4",
       "ticker": "SHOO",
@@ -164,15 +173,6 @@
       "outcome": "miss",
       "realized": -0.0614,
       "check_by": "2026-09-04"
-    },
-    {
-      "id": "2026-07-22-GM-4",
-      "ticker": "GM",
-      "lean": "constructive",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": 0.0096,
-      "check_by": "2026-09-02"
     }
   ]
 }

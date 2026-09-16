@@ -1,7 +1,7 @@
 {
   "schema": "china_market_state.v1",
   "as_of": "2026-09-15",
-  "generated_utc": "2026-09-15T12:58:57Z",
+  "generated_utc": "2026-09-15T21:57:10Z",
   "authority": {
     "tier": "context_only",
     "why": [
@@ -77,9 +77,9 @@
       "failed_up_seal_count": 4.0,
       "lianban_2plus": 0.0,
       "lianban_max": 1.0,
-      "universe_n": 1846.0,
-      "limit_up_breadth_pct": 0.4334,
-      "limit_down_breadth_pct": 0.0542
+      "universe_n": 1852.0,
+      "limit_up_breadth_pct": 0.432,
+      "limit_down_breadth_pct": 0.054
     },
     "name_summary": {
       "n_packets": 53,
@@ -161,49 +161,49 @@
     "ths_heat": {
       "as_of": "2026-09-15",
       "basket_count": 237,
-      "above_200d_pct": 47.7,
+      "above_200d_pct": 36.3,
       "hot_baskets": [
         {
-          "id": "ths_innovative_rx",
-          "ret_60d": 0.1993
-        },
-        {
-          "id": "thsc301146",
-          "ret_60d": 0.1639
-        },
-        {
           "id": "thsc300451",
-          "ret_60d": 0.1611
+          "ret_60d": 0.1315
         },
         {
           "id": "thsc301576",
-          "ret_60d": 0.1526
+          "ret_60d": 0.1112
         },
         {
-          "id": "thsc308822",
-          "ret_60d": 0.1504
+          "id": "ths_innovative_rx",
+          "ret_60d": 0.1108
+        },
+        {
+          "id": "thsc300106",
+          "ret_60d": 0.0785
+        },
+        {
+          "id": "thsc301146",
+          "ret_60d": 0.0775
         }
       ],
       "cold_baskets": [
         {
-          "id": "thsc300926",
-          "ret_60d": -0.2024
+          "id": "thsc302174",
+          "ret_60d": -0.2367
         },
         {
           "id": "thsc309120",
-          "ret_60d": -0.2045
-        },
-        {
-          "id": "thsc302174",
-          "ret_60d": -0.2098
+          "ret_60d": -0.2399
         },
         {
           "id": "thsc300795",
-          "ret_60d": -0.225
+          "ret_60d": -0.2542
         },
         {
-          "id": "thsc309030",
-          "ret_60d": -0.2279
+          "id": "thsc301797",
+          "ret_60d": -0.255
+        },
+        {
+          "id": "thsc308810",
+          "ret_60d": -0.2585
         }
       ]
     }
@@ -229,16 +229,16 @@
     ],
     "conditions": {
       "roro": {
-        "roro": -0.03,
-        "roro_raw": -0.03,
+        "roro": -0.027,
+        "roro_raw": -0.027,
         "roro_state": "neutral",
-        "china_roro_copper_gold": 1.093,
-        "china_roro_breadth": -0.871,
+        "china_roro_copper_gold": 1.145,
+        "china_roro_breadth": -0.926,
         "china_roro_southbound": -0.205,
         "china_roro_m1_m2": 0.086,
         "china_roro_turnover": -1.47,
         "china_roro_qvix": 0.503,
-        "china_roro_usdcnh": 1.228,
+        "china_roro_usdcnh": 1.261,
         "china_roro_margin": -0.432,
         "china_roro_ah_premium": -0.202,
         "legs": [
@@ -246,14 +246,14 @@
             "key": "copper_gold",
             "name_en": "Copper / Gold",
             "name_zh": "铜／金 比",
-            "value": 1.093,
+            "value": 1.145,
             "lean": "risk-on"
           },
           {
             "key": "breadth",
             "name_en": "Breadth (% > 50d)",
             "name_zh": "市场宽度（>50日）",
-            "value": -0.871,
+            "value": -0.926,
             "lean": "risk-off"
           },
           {
@@ -288,7 +288,7 @@
             "key": "usdcnh",
             "name_en": "Offshore yuan (20d)",
             "name_zh": "离岸人民币（20日）",
-            "value": 1.228,
+            "value": 1.261,
             "lean": "risk-on"
           },
           {
@@ -400,7 +400,7 @@
       "cn_10y": 1.6865,
       "cn_2y": 1.2439,
       "cn_slope_10_2": 0.4426000000000001,
-      "cn_us_10y_spread": null
+      "cn_us_10y_spread": -3.3135
     },
     "cgb_curve": {
       "as_of": "2026-09-09",
