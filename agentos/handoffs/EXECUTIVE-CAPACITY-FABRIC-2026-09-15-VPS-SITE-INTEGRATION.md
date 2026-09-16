@@ -83,6 +83,17 @@ verified:
     result: >
       Exit 0; 0 introduced, 0 inherited. This is local full contract-delta proof,
       not a claim that the new hosted PR checks have completed.
+  - claim: Independent review's missing PR-execution gate is reproduced and repaired.
+    command: >
+      tests/test_provider_workload_policy.py::test_workload_guard_executes_in_the_real_pull_request_code_packs;
+      complete provider-group command above with an outside-repository operation temp root.
+    result: >
+      Regression RED: 1 failed, 52 deselected (zero code-pack executions). After the
+      existing ruling-graph code-job step was added: 53 dedicated tests passed;
+      286 total provider tests passed in 7.60 seconds. Real loader/partitioner
+      selects the executable suite in a code pack; capability-broker stays data-gated.
+      Initial in-repository temp-root run hit two existing ledger location guards;
+      test isolation was corrected, never the product guard.
 unverified:
   - claim: The guard is merged, installed or enabled on the VPS.
     what_would_verify: >
@@ -159,3 +170,48 @@ program continues; this handoff does not STOP it or seize an active writer.
 The architecture and rollout details are in the committed spec and plan named in
 changed[]. The canonical source PR is unambiguously recoverable from the exact
 feature branch command in next_actions; its GitHub head/CI is the live evidence.
+
+
+## R7179-R1 continuation — same writer, source-only repair
+
+Recovered compatible Skillpack 1.0.1 from protected Mastermind
+7642aea155d2817219135b24246b55c1d7611c66. Current GitHub review is comment
+5690266059: REQUEST_CHANGES, B1 only. The previous 85a9d127 source checks did
+NOT execute this suite in the PR code gate. A gate-free inventory was insufficient.
+
+Repair adds an executable provider-free step to existing ruling-graph, after
+minimal deps; the adjacent final agent-routing step owned by #7114 is untouched.
+A real-loader/code-partitioner regression distinguishes this from nightly-only
+coverage. The existing capability-broker data job is not moved. Empty host-profile
+rollback semantics are explicit in the spec; no empty-to-legacy bypass was added.
+
+The original parent/carrier, consumer coordination and source writer are retained.
+No new principal, provider worker, credential ceremony or runtime effect is claimed.
+Fresh independent exact-head review and concluded hosted checks remain owed after
+publication of this repair. Runtime integration still depends on the incumbent
+Family-B/H0/P0/atomic-claim owners and explicitly qualified service admission.
+
+
+R2 integration evidence: full differential contract-delta against observed main
+7c3b2e19c0bffe8aca9a7bfa91e610c1ca3b7149 exited 0 with zero introduced and zero
+inherited findings. Actual scope inference selects the code job for changes to
+the policy module, llm_auth, manifest, or own test. Isolated data-gate / removed-step /
+commented-command mutants all remove code execution. No active manifest mutation
+was retained. Compile and diff checks passed; Agent OS validation: 0 errors,
+97 warnings. Native source/check publication and external review remain separate.
+
+Consumer coverage findings for the NEXT bounded adoption wave (not fixed here):
+- engine/master_brain.py:1698-1727 uses the shared builder for the DeepSeek lane,
+  but its pinned-custom-endpoint branch calls _client and constructs a descriptor
+  directly. This must not be advertised as covered by a builder-only floor.
+- engine/marketing/copy_auditor.py:142-174 and copy_critic.py:339-382 return cached
+  provider descriptors before calling the builder. Their cache identity does not
+  include the new workload policy. Policy-file reload at build time is therefore
+  NOT proof of immediate policy adoption by already-built long-lived consumers.
+- Mastermind brain/provider_waterfall.py still directly enumerates OAuth/native
+  candidates; the prior do-not-redo entry remains. Consumer rollout must prove
+  typed refusal, custom-path eligibility and cache retirement/adoption at the
+  real execution boundary, with no fallback to an unprofiled native path.
+- Active AI Brief scheduling repair Macro #7178 and Portfolio V3 Mastermind #673
+  retain their existing owners. Do not duplicate those producers or widen their
+  branches. Shared policy adoption must be a separately bounded coordinated wave.

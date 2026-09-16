@@ -4548,6 +4548,8 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pyyaml
+      - name: provider workload guard (no developer subscriptions in product inference)
+        run: python -m pytest tests/test_provider_workload_policy.py -q
       - name: build check (committed outputs match YAML regeneration byte-for-byte)
         run: python scripts/build_ruling_graph.py --check
       - name: conflict checker (hard fail on new FDR family or privacy boundary violations)

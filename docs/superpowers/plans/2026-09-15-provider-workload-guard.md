@@ -134,7 +134,9 @@ new module through llm_auth but their exclusive paths did not declare it.
 - [x] Compile checks and git diff --check passed again.
 - [x] Complete the existing full differential contract-delta script against the exact
   checked main base; keep its result distinct from hosted CI acceptance.
-- [ ] Publish the correction on the SAME PR and supersede the exact-head review binding.
+- [x] Publish the correction on the SAME PR and supersede the exact-head review binding.
+  Published as 85a9d127b6e9a9b9e07708f8912046f40051795f; independent R1 found the
+  separate gate-selection defect below.
 
 No runtime/provider code changed in this repair, no checks were weakened, no
 second CI workflow was created, and production activation remains held.
@@ -142,3 +144,43 @@ second CI workflow was created, and production activation remains held.
 Full contract-delta result against 52bd0cde0669cd8ea396dfbe692399261dd5cfe5:
 exit 0; 0 introduced, 0 inherited. The native checker created and cleaned its
 own sparse temporary base carrier; no active worker checkout was modified.
+
+
+## Independent review R7179-R1: pull-request execution repair
+
+Review: Macro #7179 comment 5690266059, bound to 85a9d127. Verdict was
+REQUEST_CHANGES for B1 only. The source policy passed all seven substantive
+criteria and reviewer mutants; the data-gated capability-broker job did not
+run in any PR code pack. The earlier paths-only repair did not fix this.
+
+- [x] Reproduce through the real gate loader/partitioner: zero code executions.
+- [x] Add a discriminating regression before changing CI: 1 failed, 52 deselected;
+  failure was the expected zero executable PR steps, not an import error.
+- [x] Add one lightweight pytest step to the existing code-gated ruling-graph job,
+  after minimal dependency installation. Do not modify its existing final routing
+  step (the incumbent #7114 writer owns that adjacent work).
+- [x] Preserve capability-broker as gate:data and retain its existing suite.
+- [x] Verify the dedicated suite: 53 passed. Complete provider group: 286 passed
+  in 7.60 seconds. Use an operation-specific temporary directory OUTSIDE the
+  repository: the first whole-group attempt used an in-repository temp directory
+  and correctly hit the existing AI_COSTS_STATE_ROOT guard in two ledger tests;
+  no product code was changed to weaken that guard.
+- [x] Complete differential contract-delta against current observed main
+  7c3b2e19c0bffe8aca9a7bfa91e610c1ca3b7149: exit 0, zero introduced and zero
+  inherited findings (209.54 seconds). Post-commit merge-tree proof remains separate.
+- [ ] Publish this exact repair, obtain fresh independent review, and conclude
+  the new head's hosted binding checks. Earlier-head review/checks are not release.
+
+This repair changes no provider behavior, credentials, running service, profile
+activation, model selection, budget or admission authority. Direct Sol execution
+is LOWER_TOTAL_OVERHEAD / CRITICAL_PATH_SHORTCUT on the retained writer; Fable
+continues principal integration and independent review coordination.
+
+
+Additional deterministic proof: real inferred scopes select ruling-graph when
+any of engine/provider_workload_policy.py, engine/llm_auth.py,
+config/provider_workloads.v1.json, or tests/test_provider_workload_policy.py
+changes. On isolated manifest copies, changing the job to gate:data, removing
+its step, or commenting out the pytest command each yields zero code executions;
+the original manifest remains unchanged. This tests executable reachability, not
+merely a string occurring somewhere in a gate-free manifest.

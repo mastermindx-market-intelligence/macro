@@ -154,6 +154,18 @@ before secret access; no eligible configured transport yields an empty provider 
 no automatic restoration of a forbidden rung. Existing callers retain their typed degraded
 response. Legacy callers and direct native bridges remain migration debt, explicitly.
 
+### Configuration rollback distinction
+
+An absent `MM_PROVIDER_WORKLOAD_PROFILE` leaves legacy behavior unchanged only
+when the consumer also has no workload profile. An explicitly empty value is
+invalid, not absent: `MM_PROVIDER_WORKLOAD_PROFILE=""` fails closed for callers
+on that host. To remove a deliberately applied host floor during an approved
+rollback, REMOVE the environment entry from the service configuration; do not
+set it to an empty string. Removing the host floor does not remove a caller's
+own profile. Consumers must surface typed refusals and must not catch them and
+retry through an unprofiled/native path. These are rollout instructions, not
+permission to change the running VPS configuration.
+
 ## 6. Integration order and proof obligations
 
 A. Deliver this additive opt-in guard with red/green tests and existing gateway regressions.

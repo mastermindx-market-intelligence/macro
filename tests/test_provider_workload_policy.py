@@ -333,3 +333,29 @@ def test_existing_curated_jobs_cover_the_new_shared_dependency(job_name):
     paths = jobs[job_name]["paths"]
     assert "engine/provider_workload_policy.py" in paths
     assert "config/**" in paths or "config/provider_workloads.v1.json" in paths
+
+
+def test_workload_guard_executes_in_the_real_pull_request_code_packs():
+    # R7179-R1: a gate-free inventory marked this suite RUN even though it
+    # existed only in the nightly data gate. Exercise the real gate loader
+    # and pack partitioner, and require an executable, unconditional step.
+    import shlex
+    from pathlib import Path
+    from scripts.run_ci_pack import load_legacy_jobs, partition_jobs
+
+    root = Path(__file__).resolve().parents[1]
+    manifest = root / ".github/ci/legacy-jobs.yml"
+    command = ["python", "-m", "pytest", "tests/test_provider_workload_policy.py", "-q"]
+    matches = []
+    for pack in partition_jobs(load_legacy_jobs(manifest, gate="code"), 12):
+        for job in pack:
+            for step in job.definition["steps"]:
+                if shlex.split(step.get("run", ""), comments=True) == command:
+                    matches.append((job, step))
+    assert len(matches) == 1, "workload guard must execute exactly once in PR code packs"
+    job, step = matches[0]
+    assert job.gate == "code"
+    assert "if" not in step
+    assert not step.get("continue-on-error", False)
+    assert next(j for j in load_legacy_jobs(manifest)
+                if j.job_id == "capability-broker").gate == "data"
