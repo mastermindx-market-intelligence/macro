@@ -25,7 +25,7 @@ This slice adds no router, quota ledger, account registry, credential store, wor
 
 ## Verified state
 
-Carrier: `sol/grok-build-subscription-usage-20260916`, stacked on the incumbent Provider Control usage owner `sol/opencode-go-subscription-usage` / Macro #7143 at `facf7074dbbe58a3a9ffef4eae0ca92c97031634`.
+Carrier: Macro PR #7213 (`sol/grok-build-subscription-usage-20260916`, head `9e2b78ef4f53f35c2f24c3096b8b0d55fd1d0bbf`), stacked on the incumbent Provider Control usage owner `sol/opencode-go-subscription-usage` / Macro #7143 at `facf7074dbbe58a3a9ffef4eae0ca92c97031634`.
 
 Added:
 
