@@ -74,3 +74,31 @@ runtime, queue, workstream, provider call or capital operation was created.
 DSC:COMMODITY-AND-FX-PRICE-SPINE-YAHOO-VENDOR-TERMS-ARE-RECORDED-ADVERSE still
 holds any widening of Yahoo-derived redistribution. The checkpoint JSON retains
 exact historic commits rather than duplicating the old transcript or red log.
+
+## September 16 continuation: recovered integration and stronger browser proof
+
+The interrupted R1/R2 test projection completed 403 tests with zero failures and
+two existing NumPy warnings. Its source pair is R1 9f6b536f plus R2 bf8d7256;
+this does not assert the current remote branches are merged. R2's 24 retained
+component images and 96 interactions are now committed at 2311f6de after all
+image hashes and 6895 materialized source blobs were checked against bf8d7256.
+
+A separate browser-proof bug was then reproduced: on mobile an overflowing
+page can expand innerWidth, so scrollWidth <= innerWidth falsely passes.
+The requested 390px R2-only archived page expanded to 518px EN / 425px ZH;
+it still lacked R1's page-layout prerequisite. R1 proof source 00e192d2 now
+compares layout and scroll widths with the capture job's requested width.
+150 tests and 32 fresh R1 fixture cells pass; four observed bad mobile pages
+are rejected and four desktop controls remain accepted. Product template and
+numerical model bytes did not change. The new requested-width corpus is under
+mockups/evidence/commodities-requested-viewport-r1/.
+
+Procedure pin for this continuation is Mastermind
+5ee11ab1e993616f3568cfca4069cb21fa61fd8f (Skillpack 1.0.1).
+The exact integration receipt lives on R2 in
+research/commodities/COMMODITIES_R1_R2_INTEGRATION_2026-09-16.json.
+R1's proof correction is research/commodities/COMMODITIES_REQUESTED_VIEWPORT_R1_2026-09-16.json.
+Current independent review, current-head CI and served product/data acceptance
+are still absent. The new combined full-builder fixture setup was tool-refused
+and was not retried. Strict-input and shared-markup refinements remain held.
+Do not redo the completed source, retained test run or component captures.
