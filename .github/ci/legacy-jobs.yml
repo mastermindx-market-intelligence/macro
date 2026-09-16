@@ -6911,6 +6911,7 @@ jobs:
   research-vault-source-lineage:
     if: ${{ false }}
     gate: code
+    scope: exclusive
     # PR-gating owner for the recovered standalone MarketDesk package and its
     # canonical import/install/rollback contract. The suite is hermetic: no
     # browser install, live network, launchd action, or Research Vault mutation.

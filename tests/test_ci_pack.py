@@ -3538,6 +3538,13 @@ CURATED_EXCLUSIVE = {
     "inline-js",
     "unrun-picks-boards",
     "intelligence-registry",
+    # 2026-09-16 latest-base integration repair: the recovered MarketDesk
+    # extractor job already declares its complete standalone package + lineage
+    # test closure. Opaque subprocess/filesystem inference otherwise adds every
+    # first-party root and selects it for unrelated templates/scripts/engine
+    # edits. Exclusivity removes only that fallback smear; the closure guard
+    # below proves all imported and executed files remain owned.
+    "research-vault-source-lineage",
     # Macro turnaround replay has an explicit narrow source/test closure.
     "macro-turnaround-research",
     # 2026-08-14 wave 2: the manifest grew 180→193 jobs and the new fallback
