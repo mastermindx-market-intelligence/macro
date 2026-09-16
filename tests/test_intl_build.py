@@ -292,6 +292,14 @@ def test_extra_market_context_attaches_china_radar_without_writing_ledgers(monke
     assert out["CN"]["display_state_en"] == "Quiet tape · risk alert"
 
 
+def test_builder_joins_extra_market_risk_before_world_verdict_compose():
+    builder = (ROOT / "scripts" / "build_intl.py").read_text(encoding="utf-8")
+
+    attach_pos = builder.index("_world_states = _attach_extra_market_risk_context(")
+    compose_pos = builder.index("perf = intl_performance.performance_panel(")
+    assert attach_pos < compose_pos
+
+
 def test_universe_ticker_conversion():
     assert _clean_local("8306") == "8306"                # JP code
     assert _clean_local("BP.") == "BP"                   # LSE trailing dot

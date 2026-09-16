@@ -214,6 +214,37 @@ def test_wr_all_healthy_is_risk_on():
     assert ra["coverage_pct"] == 100.0
 
 
+def test_wr_fast_rollover_blocks_green_even_without_stressed_states():
+    """The green label needs a positive fast tape, not only healthy long trends.
+
+    Every state stays `uptrend` and every index remains above its long averages,
+    but all ten markets roll over during the final 20 sessions.  The continuous
+    score remains high; the verdict must still refuse a false-green Risk-on.
+    """
+    idx = pd.bdate_range("2023-06-01", periods=400)
+
+    def _rollover(start: float) -> pd.Series:
+        lr = np.r_[np.full(380, np.log(1.0008)), np.full(20, np.log(0.9995))]
+        return pd.Series(start * np.exp(np.cumsum(lr)), index=idx)
+
+    closes = _wr_intl_frame()
+    for ticker in _INTL_SPECS:
+        closes[ticker] = _rollover(100.0)
+    extra = {"US": _rollover(4000.0), "CN": _rollover(3000.0),
+             "HK": _rollover(18000.0)}
+    states = {cc: {"state": "uptrend"} for cc in _ALL_CCS}
+
+    ra = P.risk_appetite(closes, extra_closes=extra, states=states)
+
+    assert ra is not None
+    assert ra["score"] >= 60
+    assert ra["stress_weight_pct"] == 0.0
+    assert ra["breakdown_share_pct"] == 0.0
+    assert ra["median_mom_20d"] < 0.0
+    assert ra["risk_on_confirmed"] is False
+    assert ra["label_en"] == "Split tape"
+
+
 def test_wr_stressed_weight_blocks_a_green_risk_on_label():
     """A high slow score cannot print Risk-on while a material share of the
     actual dial weight is already topping, breaking or carrying crash damage.
