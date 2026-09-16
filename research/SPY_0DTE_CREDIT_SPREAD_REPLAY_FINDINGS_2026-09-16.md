@@ -29,36 +29,23 @@ For verticals, package accounting is side-correct:
 
 Publicly reconstructed record: SPY 0DTE **755/753 bull put**, described as entered close to the open; the public result record says the spread was closed near `$0.02` and reports session P&L of approximately **+$1,067.36**. The frozen prereg decision clock nearest the disclosure is **09:35 ET**.
 
-### Executable replay
-
 At the 09:35 boundary, the first qualifying two-leg package forms within milliseconds and implies an executable credit of **$0.13**. That is inside the preregistered `$0.08–$0.15` credit band.
 
-Scanning the later session with executable close accounting finds **no synchronized $0.02-or-better debit by noon**. The best observed executable debit under the 1-second package fence improves approximately as follows:
+Scanning the later session with executable close accounting finds no synchronized `$0.02`-or-better debit by noon. Under the 1-second package fence the best executable debit progresses from roughly `$0.07` before 13:00, `$0.06` before 14:00, `$0.03` before 15:00, to the first `$0.02` close at approximately **15:54:41 ET**. The target event survives the entire preregistered synchrony grid.
 
-- before 13:00 ET: `$0.07`;
-- before 14:00 ET: `$0.06`;
-- before 15:00 ET: `$0.03`;
-- first `$0.02` executable close: approximately **15:54:41 ET**.
+If the trade used **127 vertical spreads**, `$0.13` entry, `$0.02` exit and approximately `$0.65` commission per contract-side:
 
-The target event survives the entire preregistered `0.1s / 1s / 5s / 10s` synchrony audit grid. This does not prove OPG's actual broker fill time; it proves that the public entry/exit price pair is feasible on the historical NBBO path under conservative leg-side accounting.
-
-### P&L / size triangulation
-
-If the disclosed trade used **127 vertical spreads**, `$0.13` entry credit, `$0.02` exit debit and approximately `$0.65` commission per contract-side:
-
-- gross spread capture = `127 × ($0.13 - $0.02) × 100 = $1,397.00`;
-- four contract-sides per round trip imply `$330.20` commission at `$0.65` each;
+- gross spread capture = `$1,397.00`;
+- modeled commission at `$0.65` on four contract-sides per spread = `$330.20`;
 - modeled net = **$1,066.80**;
 - residual versus reported **$1,067.36** = **$0.56**;
-- exact fee that reconciles the public P&L under 127 spreads is about **$0.6489 per contract-side**.
+- exact reconciling fee under 127 spreads = about **$0.6489 per contract-side**.
 
-This is strong evidence for the 127-spread / roughly-$0.65 fee hypothesis, but it is not an audited broker record.
+This is strong evidence for the integer-count / roughly-65-cent cost hypothesis, not an audited broker record.
 
 ## 4. Case B — 2026-09-03 SPY 764/762 bull put
 
 Public source locator: OPG Trading Service, `OPG Order Flow - Friday 9/4`. The recap states that the prior session used a SPY **764/762 bull put**, received **$10 net credit per spread**, closed roughly two hours into the trade, earned **$976.04**, and brought the reported running 36-session total to **$24,953.27**.
-
-### Entry-clock identification
 
 Historical executable NBBO sharply distinguishes the three preregistered clocks:
 
@@ -66,69 +53,113 @@ Historical executable NBBO sharply distinguishes the three preregistered clocks:
 - 09:45 ET: approximately `$0.05` credit;
 - 10:00 ET: approximately `$0.04` credit.
 
-Therefore the public `$0.10` entry is consistent with the frozen **09:35** clock and inconsistent with waiting until 09:45 or 10:00 under the same conservative package accounting. This independently strengthens 09:35 as the OPG-like entry clock for at least this public case.
+The public `$0.10` entry is therefore consistent with the frozen 09:35 clock and inconsistent with waiting until 09:45 or 10:00 under the same conservative package accounting.
 
-### Exit replay
+Starting from 09:35, the first executable package debit at or below `$0.02` appears at approximately **11:15:05 ET**, about 1 hour 40 minutes after entry, consistent with the public description of closing about two hours into the trade.
 
-Starting from 09:35, the first executable package debit at or below the preregistered `$0.02` target appears at approximately **11:15:05 ET**, about 1 hour 40 minutes after entry. The target is synchronized well inside the 0.1-second fence. This is consistent with the public description of closing about two hours into the trade; it does not prove the exact broker fill timestamp.
+At `$0.10 → $0.02`, gross capture is `$8` per spread. Under approximately `$0.65` per contract-side, **181 spreads** imply:
 
-### P&L / size triangulation
-
-At `$0.10 → $0.02`, gross capture is `$8` per spread before fees. Under approximately `$0.65` per contract-side, **181 spreads** imply:
-
-- gross spread capture = `181 × $8 = $1,448.00`;
-- modeled commission at `$0.65` × four sides × 181 = `$470.60`;
+- gross spread capture = `$1,448.00`;
+- modeled commission = `$470.60`;
 - modeled net = **$977.40**;
 - residual versus reported **$976.04** = **-$1.36**;
-- exact fee that reconciles the public P&L under 181 spreads is about **$0.6519 per contract-side**.
+- exact reconciling fee under 181 spreads = about **$0.6519 per contract-side**.
 
-The inferred fee independently agrees with Case A's `$0.6489` to within about three-tenths of one cent per contract-side. That repeated agreement makes the common ~$0.65 cost model materially more credible than the one-case result alone.
+The inferred fee independently agrees with Case A to within about three-tenths of one cent per contract-side.
 
-## 5. Cross-case sizing evidence
+## 5. Case C — 2026-08-24 SPY 759/757 bull put
 
-The two inferred integer sizes differ substantially — **181** versus **127** spreads — so a fixed-contract rule is already disfavored. More interestingly, the *gross captured P&L before commissions* is nearly constant:
+Public source locator: OPG Trading Service, `OPG Order Flow - Tuesday 8/25`. This is the strongest public execution disclosure found so far: Caleb states the trade was issued at **09:35 AM**, used a SPY **759/757 bull put**, received **$10 per spread**, was closed for **$2**, nearly two hours later, and produced about **$1,500** profit.
 
-| Case | Inferred spreads | Entry → exit | Gross capture |
-|---|---:|---:|---:|
-| 2026-09-03 764/762 BP | 181 | `$0.10 → $0.02` | `$1,448` |
-| 2026-09-15 755/753 BP | 127 | `$0.13 → $0.02` | `$1,397` |
+### Executable replay
 
-The gross captures differ by only about **3.6%**, despite a ~43% difference in contract count. This creates a new falsifiable sizing hypothesis:
+At exactly 09:35:00 the first conservative cross is `$0.09`, but the first synchronized package at the stated **$0.10** credit appears at approximately **09:35:00.264 ET**, only a few hundred milliseconds later. Within the first minute the conservative cross briefly reaches about `$0.11` as well. Thus the public `$0.10` fill is feasible inside the stated 09:35 entry minute without midpoint assumptions.
 
-> **H-SIZE-1 — target-capture sizing:** position count may be chosen approximately as a fixed target gross option-income capture divided by expected per-spread capture, rather than as a fixed number of spreads or a fixed fraction of structural max loss.
+The first synchronized executable `$0.02` debit appears at approximately **11:43:12.990 ET**, about 2 hours 8 minutes later, and survives even the strict 0.1-second synchrony fence. This closely matches the public timing description.
 
-A rough target near `$1.4k` gross capture fits both inspected cases. Two cases are not enough to accept it. It must survive at least three additional non-adjacent disclosed sessions before it can be frozen as a candidate sizing rule.
+### Reporting / size fork
 
-### Fixed-equity-risk hypothesis is not supported yet
+The public `$1,500` figure creates two materially different interpretations:
 
-For Case A, `$2` width and `$0.13` credit imply `$187` structural maximum loss per spread, or about **$23,749** at 127 spreads. Under the very restrictive assumption that the stated `$10,000` start plus reported cumulative net equals actual account equity with no cash flows, that would be about **60.5%** of inferred pre-session equity.
+- **Gross-P&L interpretation:** `$1,500 / $8 ≈ 187.5`, so roughly 188 spreads before transaction costs.
+- **Net-P&L interpretation under the repeated ~65-cent cost model:** nearest integer count is **278 spreads**. At 278 spreads, exact reconciliation to `$1,500` requires about **$0.6511 per contract-side**.
 
-For Case B, `$0.10` credit implies `$190` structural maximum loss per spread, or **$34,390** at 181 spreads. Applying the same restrictive account-equity assumptions to the reported running total would put structural max loss near or above inferred account equity. That inconsistency materially weakens any attempt to infer a stable account-risk percentage from the public running P&L.
+The second result is remarkable because its implied cost falls almost exactly between Case A (`$0.6489`) and Case B (`$0.6519`). Three independent public outcomes therefore admit integer spread counts whose implied fee is effectively the same ~65-cent value.
 
-Possible explanations include additional brokerage capital, deposits/withdrawals, buying-power conventions, different sizing economics, reporting differences or an incorrect inferred count. Therefore **no equity-risk sizing rule is accepted**. H-SIZE-1 currently explains the two observed integer sizes more parsimoniously, but remains only a hypothesis.
+However, 278 two-dollar spreads entered for `$0.10` carry approximately `$52,820` of structural maximum loss before fees. That conflicts with a literal reading of the public `$10,000` challenge-account path, whose reported equity would have been far smaller at this point absent additional capital or materially different buying-power treatment.
 
-## 6. What changed
+Therefore **the fee/count arithmetic is strong, while the capital interpretation is unresolved**. The study must not silently conclude that 278 spreads were actually held in the isolated challenge account until the source of the buying-power disagreement is explained.
 
-The two cases together materially strengthen the reconstructability thesis:
+## 6. Cross-case sizing evidence and falsifiers
 
-1. exact disclosed strikes map to real executable 0DTE quotes near the stated entry windows;
-2. Case B's stated `$0.10` credit independently pins its entry close to 09:35 rather than 09:45/10:00;
-3. executable spread paths reproduce the disclosed `$0.02` target timing plausibly in both cases;
-4. two independent P&L reconciliations converge on approximately **$0.65 per contract-side** fees;
-5. integer position size appears recoverable from public P&L with very small residuals;
-6. size varies inversely with captured cents in a way consistent with a roughly fixed gross-income target;
-7. the risk layer remains more uncertain than the entry/fee mechanics and could dominate the strategy's true left-tail behavior.
+The first two cases briefly suggested a roughly fixed `$1.4k` gross-capture target because they produced `$1,397` and `$1,448` of gross captured premium. **Case C falsifies that provisional rule** if its `$1,500` public profit is interpreted consistently with the later net-realized figures: 278 spreads at `$0.10 → $0.02` imply `$2,224` gross capture before fees.
+
+The current evidence therefore rejects or weakens several naive sizing explanations:
+
+- **fixed contract count:** contradicted by candidate counts 127 / 181 / 278;
+- **fixed ~$1.4k gross capture:** falsified by Case C under the common-cost interpretation;
+- **simple fixed percentage of inferred challenge-account equity:** not supported and creates buying-power contradictions;
+- **purely maximize contracts:** inconsistent with the large variation in candidate count and with the trader's stated conservative framing.
+
+The most defensible surviving hypothesis is broader:
+
+> **H-SIZE-2 — daily cashflow target conditioned by setup quality / buying power:** OPG appears to target a daily dollar-income band and vary spread count with the trade's available cents, perceived safety/quality and/or a capital base that is not fully represented by the public challenge-account narrative.
+
+This is directly supported by Caleb's repeated public description of a **$500–$1,000 daily goal** and his separate statement that he typically targets about **$10 credit per spread**. The observed wins commonly land in the several-hundred-to-low-thousand-dollar range. This hypothesis is intentionally wider than a fitted sizing formula and requires more exact-position evidence before becoming deterministic.
+
+### Material disagreement ledger — challenge capital
+
+Public sources say the experiment began by moving `$10,000` into a new account and later describe that account as growing from realized profits. At the same time, the three-case cost reconciliation can imply a spread count whose defined-risk collateral exceeds the equity implied by those same public totals.
+
+At least one assumption is therefore wrong or incomplete. Candidate explanations include:
+
+1. the newsletter's per-day profit is not consistently net of the same contract costs;
+2. the `$1,500` Case C figure is rounded/gross while later cent-precise figures are net;
+3. additional capital/buying power existed outside the stated challenge sleeve;
+4. the inferred count is wrong because the actual package execution improved materially over the conservative quote-cross path;
+5. another fee convention applies to one or more legs/orders;
+6. public reporting combines accounting conventions that are not broker-statement equivalent.
+
+The research must preserve this disagreement instead of choosing the explanation that makes the strategy look cleanest.
+
+## 7. Additional public process rules now recovered
+
+The archive adds several deterministic behavior constraints that matter for the future A1 baseline:
+
+- **09:35 is a real operational clock**, not merely a convenient backtest clock; Case C explicitly names it and Cases A/B independently fit it.
+- Caleb repeatedly states a **$500–$1,000 daily cashflow objective** and around **$10 credit per spread** as a typical target.
+- On flat opens he describes waiting for an **extreme move**: a drawdown can set up a bull put; a spike can set up a bear call.
+- On gap days he frequently attempts to place the spread beyond the already-extended move, seeking mean reversion, IV contraction and theta decay.
+- He explicitly **sat out a FOMC day** because the event removed his perceived edge, and separately delayed trading until after a scheduled Fed speech. This validates scheduled-event abstention as part of the reconstructed process rather than a backtest-only safety patch.
+- The documented loss case establishes that strong directional order flow can overwhelm gamma containment; avoiding/reducing those regimes is a primary research target.
+
+These are descriptive recovered rules, not validated alpha.
+
+## 8. What changed
+
+Three exact disclosures now show that:
+
+1. exact public strikes map to real executable 0DTE quotes near the stated entry windows;
+2. the stated `$0.10` entries on two cases are feasible essentially at 09:35;
+3. the stated `$0.02` exits occur on the historical NBBO path at timings consistent with the public recaps;
+4. three independent integer-count reconciliations cluster around an implied **~$0.65 per contract-side** cost convention;
+5. simple fixed-contract, fixed-gross-target and fixed-equity-risk sizing rules do not survive all three cases;
+6. public capital/account reporting is not yet internally sufficient to identify actual deployed buying power;
+7. risk-rule reconstruction remains at least as important as entry-rule reconstruction because the strategy's left tail can dominate many small wins.
 
 None of this establishes durable alpha. These are mechanism-identification results, not strategy validation.
 
-## 7. Exact next experiment
+## 9. Exact next experiment
 
-Recover at least **three more non-adjacent disclosed OPG sessions** containing date, direction, exact strikes, entry credit/window, exit price/target and reported session P&L. For every case:
+The next critical dependency is no longer “is 09:35 / `$0.10→$0.02` plausible?” — that is now strongly supported. It is to resolve **reporting convention + position size + risk budget** without contaminating the eventual holdout.
 
-1. independently replay executable NBBO under the fixed package-synchrony grid;
-2. infer nearest integer spread count across the frozen fee neighborhood centered on the now-repeated ~$0.65 observation;
-3. report residual rather than forcing an exact fit;
-4. compare competing sizing hypotheses: fixed contracts, fixed gross capture, fixed net target, fixed max-loss dollars, fixed percentage of inferred equity and volatility-scaled risk;
-5. reject a hypothesis if it requires case-specific tuning or does not survive the additional sessions.
+Recover additional exact-position evidence, prioritizing a disclosed **losing trade** and at least two more winning sessions with strikes/credit/P&L. For every case:
 
-Only after the sizing/exit mechanics are stable enough to freeze should the broad A0/A1 historical cohort be unblinded. Gamma remains held until A0/A1 are cost-correct and the parent prereg's incremental-value gate is reached.
+1. replay executable NBBO under the fixed package-synchrony grid;
+2. infer integer counts under both gross-P&L and net-P&L interpretations;
+3. compute the implied fee rather than presuming one convention;
+4. compute defined-risk collateral and compare it with every available contemporaneous capital statement;
+5. reject any interpretation that needs session-specific accounting tricks;
+6. preserve contradictions as missing evidence rather than forcing a clean sizing formula.
+
+In parallel, build the broad **A0/A1 coverage manifest only** — dates with eligible 09:35/09:45/10:00 SPY 0DTE quote coverage, underlying path and scheduled-event state — without yet unblinding strategy P&L across the final holdout. Gamma remains held until A0/A1 are cost-correct and the parent prereg's incremental-value gate is reached.
