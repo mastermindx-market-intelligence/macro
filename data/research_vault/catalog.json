@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-16T00:39:04.070097+00:00",
-  "count": 2193,
+  "generated_at": "2026-09-16T01:09:07.534796+00:00",
+  "count": 2194,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -159,6 +159,23 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-iszza3qasda-b5c59b",
+      "title": "GS Equities Color US EQUITIES COLOR COUNTDOWN TO FOMC 15 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T23:33:35Z",
+      "summary_points": [
+        "Fed Policy Shift**: Q3 CPI data confirms persistent inflation, delaying rate cuts to Q1 2025; bond yields surge 25bps on hawkish Fed pivot **Ukraine Conflict Escalation**: Russian strikes on Ukrainian energy infrastructure disrupt EU gas flows, triggering 12% price spike and rerouting LNG contracts **ETF Outflows**: $18B equity ETF net outflows in 72 hours, accelerating technicals in S&P 500 futures and widening volatility index (VIX) to 22.5"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 1,
       "language": "en",
       "needs_metadata": false
     },
