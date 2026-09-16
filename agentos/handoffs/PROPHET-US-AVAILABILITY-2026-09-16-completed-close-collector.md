@@ -114,3 +114,10 @@ No ranking, provider, retry, market-calendar, regional, Russell, workflow-dispat
 A partial batch may lawfully pass the existing 80% close floor while one name has no completed close. At exact preimage `1a64c60bd64c41568cb51bb69fe5093630094fe2`, that same accepted response still persisted the missing-close name's current-session High, Low, and Volume. The repaired source masks expected-session companion fields for exactly the names whose Close is absent or invalid before the attempt becomes accepted. Focused GREEN is 1 passed and the owner battery is `79 passed, 35 warnings in 34.48s`. Receipt: `research/us_prophet_availability/2026-09-16-completed-close/same-response-ohlcv-coherence-receipt.json`.
 
 This preserves valid partial coverage, prior history, other names, regional calendars, Russell, retries and ranking. Exact-head CI/security, independent review, merge/current-base integration and real source-to-browser production proof remain open.
+
+
+## Independent review repair — whole-field omission
+
+Independent verification comment `5696266993` correctly distinguished a missing cell from an omitted field. On preimage `664add61942e8cf7c678705ee5d6c60ee90e1ce6`, a whole omitted High/Low/Volume field never entered `_last_extras`, so its existing cache file retained the old current-session row. The same carrier now includes each existing US extras cache in persistence even when its fresh field is absent, then applies the requested-universe expected-session quarantine. Three REDs failed; the missing-field plus missing-cell controls are `6 passed`, and the owner battery is `82 passed, 38 warnings in 4.21s`. Receipt: `research/us_prophet_availability/2026-09-16-completed-close/whole-field-extra-omission-receipt.json`.
+
+The verifier retains re-review authority. Exact-head CI/security, accepted independent review, current-base integration, merge and full source-to-browser production proof remain required.

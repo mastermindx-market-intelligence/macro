@@ -68,3 +68,10 @@ The existing quarantine helper is now applied to cached extras before merge for 
 A valid partial batch can meet the 80% close floor while one requested name still lacks a completed close. At exact preimage `1a64c60bd64c41568cb51bb69fe5093630094fe2`, the same accepted response could nevertheless persist that name's current-session High, Low, and Volume, creating an independently current-looking OHLCV row without settlement. The RED fixture reproduced `EEE` with no completed close but current High `104.0` and companion extras.
 
 Before a provider attempt becomes accepted, the three US groups now mask expected-session High/Low/Volume for exactly the names whose Close is missing or invalid. Valid partial coverage, other names, all prior rows, regional calendars, Russell, retries, and ranking remain unchanged. Focused GREEN is **1 passed**; the four-suite owner battery is **79 passed**. Evidence: `same-response-ohlcv-coherence-receipt.json`.
+
+
+## Whole-field extra omission correction
+
+Independent verification comment `5696266993` found the omission branch the cell-level repair did not cover: when an otherwise healthy accepted response omits the entire High, Low, or Volume field, that key is absent from `_last_extras`, so the old current-session cache file was never visited and retained all requested values. Three REDs reproduced High `999.0`, Low `1.0`, and Volume `999999.0` surviving unchanged.
+
+For the US completed-session groups, persistence now considers every existing High/Low/Volume cache even when the fresh response omitted that field. The requested universe is quarantined on the expected-session row; prior history remains. The already-passing missing-cell controls remain GREEN. Focused result: **6 passed**; owner battery: **82 passed**. Evidence: `whole-field-extra-omission-receipt.json`.

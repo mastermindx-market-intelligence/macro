@@ -190,6 +190,32 @@ def test_cached_current_session_extra_cannot_fill_missing_fresh_extra(
     assert stored.loc["2026-09-14", "EEE"] == fresh_prior
 
 
+@pytest.mark.parametrize(
+    ("field", "cache_key", "cached_value"),
+    (("High", "high", 999.0), ("Low", "low", 1.0), ("Volume", "volume", 999999.0)),
+)
+def test_absent_completed_session_extra_quarantines_existing_current_cache(
+        tmp_path, monkeypatch, field, cache_key, cached_value):
+    """An omitted whole field cannot leave its old same-date cache row current."""
+    adapter = _adapter(tmp_path, monkeypatch)
+    adapter.cache_path.parent.mkdir(parents=True)
+    cached = pd.DataFrame(100.0, index=DATES, columns=SYMBOLS)
+    cached.loc[str(SESSION)] = cached_value
+    extra_path = adapter.cache_path.parent / f"_{cache_key}_cache.parquet"
+    cached.to_parquet(extra_path)
+
+    def download(tickers, **kwargs):
+        response = _response(tickers)
+        keep = response.columns.get_level_values(0) != field
+        return response.loc[:, keep]
+
+    monkeypatch.setattr(breadth.yf, "download", download)
+    adapter.fetch()
+    stored = pd.read_parquet(extra_path)
+    assert stored.loc[str(SESSION), SYMBOLS].isna().all()
+    assert (stored.loc["2026-09-14", SYMBOLS] == 100.0).all()
+
+
 def test_seam_repair_cannot_remove_completed_prices_before_persistence(tmp_path, monkeypatch):
     adapter = _adapter(tmp_path, monkeypatch)
     before = _seed_all_caches(adapter)

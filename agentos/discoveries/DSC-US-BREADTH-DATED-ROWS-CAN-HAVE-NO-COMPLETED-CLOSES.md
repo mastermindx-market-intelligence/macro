@@ -46,3 +46,6 @@ The settlement-finality rule also covers the accepted response's High, Low, and 
 
 
 A completed-session OHLCV row is coherent only when Close is valid for that name. The accepted 80% partial-coverage policy does not authorize High, Low, or Volume to publish independently for the missing-close remainder. Current source masks those same-response companion fields before acceptance. RED/GREEN evidence: `research/us_prophet_availability/2026-09-16-completed-close/same-response-ohlcv-coherence-receipt.json`.
+
+
+A whole omitted companion field is distinct from a missing cell. Because `_last_extras` contains only present fields, persistence must still visit each existing US High/Low/Volume cache and quarantine its expected-session requested-universe row when that field is absent. Review finding and RED/GREEN closure: `research/us_prophet_availability/2026-09-16-completed-close/whole-field-extra-omission-receipt.json`.
