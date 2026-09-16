@@ -15,9 +15,9 @@ so_what: >
   PR 7163 can be reviewed without rewriting historical evidence or bypassing
   failing bindings. CI, merge, canonical rendering and production proof remain
   distinct. Restore the existing offline pc-ci-1/2/3 host before release checks.
-kind: finding
+kind: runtime
 verified_at: 2026-09-16
-verified_by: Sol; current Chairman-directed US Prophet recovery
+verified_by: "Sol; #7163; scripts/verify_hk_sector_modal.cjs"
 scope:
   - WS:PROPHET-US-AVAILABILITY
   - templates/hk.html.j2
