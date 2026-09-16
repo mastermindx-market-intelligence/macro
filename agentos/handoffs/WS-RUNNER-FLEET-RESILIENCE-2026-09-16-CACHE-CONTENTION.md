@@ -137,6 +137,7 @@ danger_areas:
   - >
     The updater runs outside mastermind-ci.slice, so removing its own systemd resource bounds
     silently restores a shared physical-host failure domain even when runner receipts stay green.
+prs: [7222]
 discoveries:
   - "DSC:PC-CI-CACHE-FULL-ESTATE-SCAN-JAMS-TRUSTED-POOL"
 ---
