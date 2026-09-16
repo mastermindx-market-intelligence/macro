@@ -1,0 +1,100 @@
+{
+  "schema": "signal_lab_clock_repair.verification.v1",
+  "source_pin": "9579caf3f950f1a2e7b959a9b3b68d26e42e5d06",
+  "procedure_pin": "f590c068880dbb848bda90b80b73dbcb6688d6fc",
+  "capability_state": "BUILT_NOT_PROVEN",
+  "production_accepted": false,
+  "independent_review_complete": false,
+  "tests": [
+    {
+      "name": "original-gate-freeze",
+      "command": "/opt/homebrew/bin/python3.12 -m pytest tests/test_sf_harness.py::TestGateFrozen -q",
+      "result": "1 passed; shared-temp cleanup warnings, subsequent runs use task-private basetemp",
+      "pid": 83927
+    },
+    {
+      "name": "clock-regressions-red",
+      "command": "/opt/homebrew/bin/python3.12 -m pytest tests/test_sf_clock_repair.py --basetemp=.pytest_cache/sf-clock-red-002 -q --tb=line",
+      "result": "29 failed against unmodified evaluator",
+      "pid": 12860
+    },
+    {
+      "name": "clock-regressions-green",
+      "command": "/opt/homebrew/bin/python3.12 -m pytest tests/test_sf_clock_repair.py --basetemp=.pytest_cache/sf-clock-green-002 -q --tb=short",
+      "result": "29 passed before CI-enrollment and threshold-preservation cases were appended",
+      "pid": 65847
+    },
+    {
+      "name": "ci-enrollment-red",
+      "command": "/opt/homebrew/bin/python3.12 -m pytest tests/test_sf_clock_repair.py::test_clock_regressions_are_enrolled_with_the_existing_foundry_ci --basetemp=.pytest_cache/sf-clock-ci-red-001 -q --tb=short",
+      "result": "1 failed before manifest enrollment",
+      "pid": 80161
+    },
+    {
+      "name": "enrolled-numerical-suite",
+      "command": "/opt/homebrew/bin/python3.12 -m pytest tests/test_sf_harness.py tests/test_sf_clock_repair.py tests/test_sf_results.py tests/test_sf_spec.py tests/test_sf_transforms.py tests/test_sf_screen.py tests/test_sf_seeds.py --basetemp=.pytest_cache/sf-clock-enrolled-001 -q --tb=short",
+      "result": "122 passed in 14.59s",
+      "pid": 90213
+    },
+    {
+      "name": "resumed-source-suite",
+      "result": "127 passed in 17.12s",
+      "pid": 48705
+    },
+    {
+      "name": "single-return-stream-red",
+      "result": "1 failed: two evaluations rather than one",
+      "pid": 61869
+    },
+    {
+      "name": "single-return-stream-green-and-numerical-suite",
+      "result": "128 passed in 14.28s",
+      "pid": 68022
+    },
+    {
+      "name": "eight-isolated-mutants",
+      "result": "8/8 killed; original source bytes unchanged",
+      "pid": 80909
+    },
+    {
+      "name": "broad-compatibility",
+      "result": "234 passed, 10 failed; all ten failures reproduced using the original harness",
+      "pid": 92690
+    },
+    {
+      "name": "original-harness-attribution",
+      "result": "same 10 failure node IDs reproduced; not a whole-checkout baseline",
+      "pid": 14643
+    },
+    {
+      "name": "same-data-replay",
+      "result": "five original insufficient_power; repaired four era_specific and one null; zero pass candidates",
+      "pid": 74279
+    },
+    {
+      "name": "agentos-validation",
+      "result": "0 errors, 97 warnings",
+      "pid": 94512
+    },
+    {
+      "name": "ci-manifest-validation",
+      "result": "214 legacy jobs valid",
+      "pid": 17803
+    }
+  ],
+  "source_sha256": {
+    "engine/signal_foundry/harness.py": "75e527b078aaacd2eb9798a30163c7cb9aedd980a632152f5315a70955ca175c",
+    "tests/test_sf_clock_repair.py": "d459b17572249fb9e4542549b5eb7ea31a0fb3a7e5d1e4c6b03bcf99af9c9406",
+    "config/signal_foundry.yml": "6ce46b9dd9b8402b21700fc6608e6fe2c6963fcd97c2d2fe2a8b2ac6c89feee5",
+    ".github/ci/legacy-jobs.yml": "9beeb02aecb608d75cc3263251c1a4d4c4b1b464f02da169f51649c2243478f1"
+  },
+  "non_goals": [
+    "No new alpha claim",
+    "No Workspace Agent or Codex provider activation",
+    "No production or canonical research-data changes",
+    "No change to auto_loop or declared numeric thresholds",
+    "No source adoption from PR 7173 or 7022"
+  ],
+  "resumption_reconciliation": "Existing same-branch candidate, no matching remote PR and no active process with the worktree cwd; no interrupted edit retried.",
+  "review_route_status": "Mastermind_Executive is not exposed in current app discovery; directory search returned no Mastermind plugin. No reviewer admitted, no provider spawned, no handoff consumed."
+}

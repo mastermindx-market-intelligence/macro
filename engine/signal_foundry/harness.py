@@ -1,6 +1,6 @@
 """engine.signal_foundry.harness — frozen battery for the Signal Foundry.
 
-BATTERY_VERSION = "sf-battery-1"
+BATTERY_VERSION = "sf-battery-2-clock"
 
 This file is FROZEN (SF-R2): changes to the battery require a human-authored PR.
 The LLM emits declarative specs; it never modifies this ruler.
@@ -18,7 +18,7 @@ Battery stages:
 Thresholds (each marked with their causal_scout.py analogue):
   MIN_EFFECTIVE_MONTHS = 60  # 5 years in calendar months (history gate)
   MIN_N = 25                 # house power floor (mirrors causal_scout MIN_N)
-  HAC_LAGS_DEFAULT = None    # computed as max(4, horizon_d) per series
+  HAC_LAGS_DEFAULT = 4       # residual dependence after nonoverlapping price windows
   ERA_BREAK = 2010-01-01     # DT-R16 mandatory (mirrors causal_scout ERA_BREAK)
   N_BOOTSTRAP = 200          # DT-R14 (mirrors causal_scout N_BOOTSTRAP)
   N_SHIFT = 200              # DT-R14 time-shift placebo (mirrors causal_scout N_SHIFT)
@@ -48,7 +48,7 @@ from engine.validation import (
 from engine.signal_foundry.spec import construction_hash
 from engine.signal_foundry.transforms import apply_pipeline
 
-BATTERY_VERSION = "sf-battery-1"
+BATTERY_VERSION = "sf-battery-2-clock"
 
 # ---------------------------------------------------------------------------
 # Constants (each with a comment mapping to causal_scout where applicable)
@@ -138,14 +138,17 @@ def _build_feature(spec: dict, repo_root: Path) -> pd.Series:
 def _build_target(spec: dict, repo_root: Path, feature_index: pd.DatetimeIndex) -> pd.Series:
     """Build the forward-return target from spec.target with STRICT next-bar discipline.
 
-    Signal known at close t → exposure/outcome measured from t+1 (shift(1) on feature).
-    That is implemented in the alignment step of run_spec, not here.
+    A label at price timestamp t measures the next horizon_d target-price
+    increments. The legacy field name horizon_d means price bars, not calendar
+    days and not native feature observations. run_spec preserves its existing
+    one-native-observation feature lag; backtest_core applies next-price-bar
+    execution. Neither operation certifies source publication/vintage semantics.
 
-    Here we compute the raw forward metric over horizon_d calendar days:
+    Here we compute the raw forward metric over horizon_d target-price bars:
       excess_return  = fwd horizon return of target.path MINUS baseline fwd return
       absolute_return = fwd horizon return (log or simple)
-      drawdown_onset  = indicator: did price fall >=5% within horizon_d days?
-      forward_vol     = realized vol over next horizon_d days
+      drawdown_onset  = indicator: did price fall >=5% within horizon_d price bars?
+      forward_vol     = realized vol over next horizon_d price bars
     """
     target_spec = spec["target"]
     kind = target_spec["kind"]
@@ -264,6 +267,104 @@ def _compute_baseline_fwd(prices: pd.Series, baseline_name: str, horizon_d: int)
 # Statistics helpers
 # ---------------------------------------------------------------------------
 
+
+def _price_clock_positions(observed: pd.DatetimeIndex, prices: pd.DatetimeIndex,
+                           horizon_bars: int) -> np.ndarray:
+    """Validate fully matured label intervals on one explicit target price clock."""
+    from numbers import Integral
+    if isinstance(horizon_bars, bool) or not isinstance(horizon_bars, Integral) or horizon_bars < 1:
+        raise ValueError("horizon_bars must be a positive integer")
+    for label, index in (("observed", observed), ("price", prices)):
+        if (not isinstance(index, pd.DatetimeIndex) or index.hasnans
+                or not index.is_unique or not index.is_monotonic_increasing):
+            raise ValueError(f"{label} clock must contain unique increasing timestamps")
+    if observed.tz != prices.tz:
+        raise ValueError("observed and price clocks must use the same timezone")
+    positions = prices.get_indexer(observed)
+    if np.any(positions < 0):
+        raise ValueError("observation is absent from target price clock")
+    if np.any(positions + horizon_bars >= len(prices)):
+        raise ValueError("label horizon has not matured on target price clock")
+    return positions
+
+
+def _nonoverlap_price_windows(observed: pd.DatetimeIndex, prices: pd.DatetimeIndex,
+                              horizon_bars: int) -> np.ndarray:
+    """Return observation-row indices with disjoint price-return intervals.
+
+    Sharing an endpoint price is permitted; sharing a return increment is not.
+    This prevents label overlap, NOT all serial dependence or episode dependence.
+    """
+    positions = _price_clock_positions(observed, prices, horizon_bars)
+    selected: list[int] = []
+    next_start = -1
+    for row, start in enumerate(positions):
+        if start >= next_start:
+            selected.append(row)
+            next_start = int(start) + int(horizon_bars)
+    return np.asarray(selected, dtype=int)
+
+
+def _price_horizon_row_radius(observed: pd.DatetimeIndex, prices: pd.DatetimeIndex,
+                              horizon_bars: int) -> int:
+    """Conservative row radius: even the densest observed interval spans the horizon."""
+    positions = _price_clock_positions(observed, prices, horizon_bars)
+    if len(positions) == 0:
+        return 1
+    following = np.searchsorted(positions, positions + horizon_bars, side="left")
+    return max(1, int(np.max(following - np.arange(len(positions)))))
+
+
+def _negative_lag_price_clock_ic(feature: pd.Series, target: pd.Series,
+                                 price_index: pd.DatetimeIndex, horizon_bars: int) -> dict:
+    """Future-feature placebo at t+h target bars, not h native feature observations.
+
+    As-of matching uses only values timestamped at or before the future date;
+    dates beyond the last observed feature are not extrapolated.
+    """
+    positions = _price_clock_positions(feature.index, price_index, horizon_bars)
+    if len(feature) == 0:
+        return {}
+    future_dates = price_index.take(positions + horizon_bars)
+    usable = future_dates <= feature.index[-1]
+    source_dates = feature.index[usable]
+    future = feature.reindex(future_dates[usable], method="ffill").to_numpy(float)
+    original = feature.reindex(source_dates).to_numpy(float)
+    outcomes = target.reindex(source_dates).to_numpy(float)
+    finite = np.isfinite(future) & np.isfinite(original) & np.isfinite(outcomes)
+    if int(finite.sum()) < MIN_N:
+        return {}
+    neg_ic = float(spearmanr(future[finite], outcomes[finite])[0])
+    obs_ic = float(spearmanr(original[finite], outcomes[finite])[0])
+    return {"neg_lag_ic": round(neg_ic, 4), "obs_ic_same_window": round(obs_ic, 4),
+            "neg_dominates": bool(abs(neg_ic) >= abs(obs_ic)),
+            "n_pairs": int(finite.sum()), "clock": "target_price_bars",
+            "horizon_bars": int(horizon_bars)}
+
+
+def _price_clock_backtest_frame(feature: pd.Series, prices: pd.Series) -> pd.DataFrame:
+    """Hold source-native feature observations on the full target-price grid.
+
+    Preserve the caller's feature lags. Never backfill from a future feature,
+    never truncate intermediate price bars, and never extend beyond its last date.
+    """
+    for label, series in (("feature", feature), ("price", prices)):
+        if (not isinstance(series.index, pd.DatetimeIndex) or series.index.hasnans
+                or not series.index.is_unique or not series.index.is_monotonic_increasing):
+            raise ValueError(f"{label} clock must contain unique increasing timestamps")
+        if not np.isfinite(series.to_numpy(float)).all():
+            raise ValueError(f"{label} contains nonfinite values")
+    if feature.index.tz != prices.index.tz:
+        raise ValueError("feature and price clocks must use the same timezone")
+    if len(feature) == 0 or len(prices) == 0:
+        return pd.DataFrame(columns=["f", "p"])
+    if (prices <= 0).any():
+        raise ValueError("target prices must be positive")
+    bounded = prices.loc[feature.index[0]:feature.index[-1]]
+    held = feature.reindex(bounded.index, method="ffill")
+    return pd.DataFrame({"f": held, "p": bounded}).dropna()
+
+
 def _calendar_months(index: pd.DatetimeIndex) -> int:
     """Count distinct year-months in index (SF-R11, DT-R14)."""
     if len(index) == 0:
@@ -344,8 +445,12 @@ def _time_shift_placebo_ic(
     if min_shift is None:
         min_shift = max(1, n // 4)
     obs_ic, _ = _sr(feature, target)
+    # A rotation near n is a short reverse lag. Fence BOTH circular edges.
+    min_shift = max(1, int(min_shift))
+    if 2 * min_shift > n:
+        return {}
     rng = np.random.default_rng(seed)
-    shifts = rng.integers(min_shift, n, n_draws)
+    shifts = rng.integers(min_shift, n - min_shift + 1, n_draws)
     null_ics = np.empty(n_draws)
     for k, s in enumerate(shifts):
         f_shifted = np.roll(feature, int(s))
@@ -469,112 +574,66 @@ def _split_half_ic(
 # Backtest for single_series excess/absolute return specs
 # ---------------------------------------------------------------------------
 
-def _run_backtest(
-    spec: dict,
-    feature: pd.Series,
-    repo_root: Path,
-) -> dict:
-    """Long/flat backtest for single_series excess_return / absolute_return specs.
 
-    Implements strict next-bar discipline: alloc at t = sign(feature at t),
-    exposure begins t+1 via backtest_core's shift(1).
-
-    Returns a dict with {net_sharpe, gross_sharpe, cagr_net, cagr_gross,
-    holdout_sharpe, max_dd, cost_bps, baseline_name, years}.
-    Returns {} on failure.
-    """
+def _run_backtest(spec: dict, feature: pd.Series, repo_root: Path,
+                  *, raw_backtest: dict | None = None) -> dict:
+    """Cost-aware long/flat statistics on target bars, annualized by elapsed time."""
     try:
-        kind = spec["target"]["kind"]
-        if kind not in {"excess_return", "absolute_return"}:
+        if (spec["target"]["kind"] not in {"excess_return", "absolute_return"}
+                or spec.get("universe", "single_series") != "single_series"):
             return {}
-        if spec.get("universe", "single_series") != "single_series":
-            return {}
+        bt = raw_backtest if raw_backtest is not None else _run_backtest_raw(spec, feature, repo_root)
+        if not bt:
+            return {"error": "required target-price-clock return stream unavailable"}
+        # backtest_core's first zero is an initial condition, not a return period.
+        net, gross, hold = (bt[key].iloc[1:].dropna() for key in ("net", "gross", "hold"))
+        years = float(bt["years"])
+        ppy = float(bt["periods_per_year"])
 
-        baseline_name = spec.get("baseline", "buy_and_hold")
-        tgt_entry = {
-            "path": spec["target"]["path"],
-            "column": spec["target"].get("column", "Close"),
-        }
-        prices = _load_raw_price(tgt_entry, repo_root)
-
-        # Align feature and prices
-        aligned = pd.concat([feature.rename("f"), prices.rename("p")], axis=1).dropna()
-        if len(aligned) < 60:
-            return {}
-        f = aligned["f"]
-        p = aligned["p"]
-
-        # Long/flat allocation: +1 if feature > 0, else 0 (no shorting)
-        alloc = (f > 0).astype(float)
-
-        bt = backtest_core(p, alloc, cost_bps=COST_BPS)
-        net = bt["net"].dropna()
-        gross = bt["gross"].dropna()
-        hold = bt["hold"].dropna()
-
-        ppy = 252
         def _ann_sharpe(r: pd.Series) -> float:
-            r = r.dropna()
             sd = float(r.std(ddof=1))
             return float(r.mean() / sd * np.sqrt(ppy)) if sd > 0 else float("nan")
 
         def _cagr(r: pd.Series) -> float:
-            r = r.dropna()
-            if len(r) < 2:
-                return float("nan")
-            return float(np.prod(1 + r) ** (ppy / len(r)) - 1)
+            return float((1 + r).prod() ** (1.0 / years) - 1.0)
 
         def _maxdd(r: pd.Series) -> float:
-            eq = np.cumprod(1 + r.fillna(0).to_numpy(float))
-            peak = np.maximum.accumulate(eq)
-            return float(np.min(eq / peak - 1.0))
+            # Include starting equity so a loss on the first return is not hidden.
+            eq = np.concatenate(([1.0], np.cumprod(1 + r.to_numpy(float))))
+            return float(np.min(eq / np.maximum.accumulate(eq) - 1.0))
 
-        return {
-            "net_sharpe": round(_ann_sharpe(net), 3),
-            "gross_sharpe": round(_ann_sharpe(gross), 3),
-            "hold_sharpe": round(_ann_sharpe(hold), 3),
-            "cagr_net": round(_cagr(net), 4),
-            "cagr_gross": round(_cagr(gross), 4),
-            "max_dd": round(_maxdd(net), 4),
-            "cost_bps": COST_BPS,
-            "baseline": baseline_name,
-            "years": round(float(bt["years"]), 2),
-        }
+        return {"net_sharpe": round(_ann_sharpe(net), 3),
+                "gross_sharpe": round(_ann_sharpe(gross), 3),
+                "hold_sharpe": round(_ann_sharpe(hold), 3),
+                "cagr_net": round(_cagr(net), 4), "cagr_gross": round(_cagr(gross), 4),
+                "max_dd": round(_maxdd(net), 4), "cost_bps": COST_BPS,
+                "baseline": spec.get("baseline", "buy_and_hold"),
+                "years": round(years, 4), "clock": "target_price_bars",
+                "return_bars": bt["return_bars"], "periods_per_year": round(ppy, 4)}
     except Exception as exc:
         return {"error": str(exc)}
 
 
-def _run_backtest_raw(
-    spec: dict,
-    feature: pd.Series,
-    repo_root: Path,
-) -> dict | None:
-    """Return the raw backtest dict from backtest_core for DSR computation.
 
-    Unlike _run_backtest (which returns only summary statistics), this returns
-    the full backtest_core dict including the per-bar 'net' return Series.
-    Used by run_spec to obtain an actual strategy-return stream for DSR.
-    Returns None on any failure.
-    """
+def _run_backtest_raw(spec: dict, feature: pd.Series, repo_root: Path) -> dict | None:
+    """One target-price-clock execution path shared by reported returns and DSR."""
     try:
-        kind = spec["target"]["kind"]
-        if kind not in {"excess_return", "absolute_return"}:
+        if (spec["target"]["kind"] not in {"excess_return", "absolute_return"}
+                or spec.get("universe", "single_series") != "single_series"):
             return None
-        if spec.get("universe", "single_series") != "single_series":
+        entry = {"path": spec["target"]["path"],
+                 "column": spec["target"].get("column", "Close")}
+        prices = _load_raw_price(entry, repo_root)
+        frame = _price_clock_backtest_frame(feature, prices)
+        if len(frame) < 60:
             return None
-
-        tgt_entry = {
-            "path": spec["target"]["path"],
-            "column": spec["target"].get("column", "Close"),
-        }
-        prices = _load_raw_price(tgt_entry, repo_root)
-        aligned = pd.concat([feature.rename("f"), prices.rename("p")], axis=1).dropna()
-        if len(aligned) < 60:
+        years = (frame.index[-1] - frame.index[0]).total_seconds() / (365.25 * 86400)
+        if years <= 0:
             return None
-        f = aligned["f"]
-        p = aligned["p"]
-        alloc = (f > 0).astype(float)
-        return backtest_core(p, alloc, cost_bps=COST_BPS)
+        alloc = (frame["f"] > 0).astype(float)
+        bt = backtest_core(frame["p"], alloc, cost_bps=COST_BPS)
+        return dict(bt, years=years, clock="target_price_bars",
+                    return_bars=len(frame) - 1, periods_per_year=(len(frame) - 1) / years)
     except Exception:
         return None
 
@@ -679,14 +738,13 @@ def run_spec(
             ran_at, ledger_n,
         )
 
-    # Align feature and target with STRICT next-bar discipline:
-    # feature at t predicts target from t+1 onward.
-    # Implement by shifting feature forward by 1 (i.e., the feature value
-    # at t-1 aligns with the target outcome measured starting at t).
-    feature_lagged = feature.shift(1)  # feature known at t → target starts at t+1
+    # Preserve the existing conservative one-native-observation construction lag.
+    # For monthly inputs this is one monthly observation, NOT one trading day.
+    # This repair does not certify publication/vintage semantics for legacy data.
+    feature_lagged = feature.shift(1)
     aligned = pd.concat(
         [feature_lagged.rename("feature"), target.rename("target")],
-        axis=1,
+        axis=1, sort=True,
     ).dropna()
 
     if len(aligned) == 0:
@@ -727,16 +785,24 @@ def run_spec(
     # (c) Statistics
     # ------------------------------------------------------------------
     horizon_d = int(spec["target"]["horizon_d"])
-    hac_lags = _hac_lags_for_horizon(horizon_d)
+
+    # Labels span target-price bars, while observations may be weekly/monthly.
+    # Existing source-native construction lags remain unchanged by this repair.
+    entry = {"path": spec["target"]["path"],
+             "column": spec["target"].get("column", "Close")}
+    try:
+        price_index = _load_raw_price(entry, repo_root).index
+        selected = _nonoverlap_price_windows(aligned.index, price_index, horizon_d)
+        row_radius = _price_horizon_row_radius(aligned.index, price_index, horizon_d)
+    except (ValueError, KeyError, TypeError) as exc:
+        return _write_result(repo_root, spec, {"n_obs": n_obs}, {}, {}, "error",
+                             [f"invalid target-price clock: {exc}"], ran_at, ledger_n)
 
     # Full-sample Spearman IC
     full_ic = _spearman_ic(feat_series, tgt_series)
 
-    # HAC t-stat on IC series (non-overlapping subsampling)
-    # Use non-overlapping subsamples to correct for horizon overlap
-    sub_step = max(1, horizon_d)
-    feat_sub = feat_arr[::sub_step]
-    tgt_sub = tgt_arr[::sub_step]
+    # Disjoint label increments are not a claim of independent market episodes.
+    # Retain HAC for residual serial dependence on the selected-window sequence.
     # Build IC series day-by-day (rolling window of min_periods=21 for HAC input)
     # For HAC: compute cross-product z-score effect series, then NW on mean
     from engine.validation import newey_west_tstat as _nw
@@ -747,8 +813,8 @@ def run_spec(
             return np.zeros_like(a)
         return (a - float(np.mean(a))) / s
     effect = _zscore_arr(feat_arr) * _zscore_arr(tgt_arr)
-    effect_sub = effect[::sub_step]
-    hac_stat = _nw(effect_sub, lags=max(1, min(hac_lags, len(effect_sub) - 1)))
+    effect_sub = effect[selected]
+    hac_stat = _nw(effect_sub, lags=max(1, min(4, len(effect_sub) - 1)))
 
     # Split-half IC
     split_half = _split_half_ic(feat_series, tgt_series)
@@ -759,28 +825,53 @@ def run_spec(
     # Circular block bootstrap CI on IC
     block_ci = _circular_block_bootstrap_ic(
         feat_arr, tgt_arr, n_draws=N_BOOTSTRAP,
-        block_size=max(5, min(horizon_d, int(np.sqrt(n_obs)))),
+        block_size=max(5, row_radius, int(np.sqrt(n_obs))),
         seed=42,
     )
 
     # Time-shift placebo (DT-R14, mirrors causal_scout SHIFT_PCTILE_FLOOR=0.90)
     shift_plac = _time_shift_placebo_ic(
         feat_arr, tgt_arr, n_draws=N_SHIFT,
-        min_shift=max(1, horizon_d),  # shifts must be >= horizon to avoid contamination
+        min_shift=row_radius,  # both circular edges span >= horizon target bars
         seed=99,
     )
 
     # Negative-lag placebo (mirrors causal_scout negative-lag logic)
-    neg_plac = _negative_lag_placebo_ic(feat_arr, tgt_arr, horizon_d)
+    neg_plac = _negative_lag_price_clock_ic(feat_series, tgt_series, price_index, horizon_d)
 
     # ------------------------------------------------------------------
     # Backtest (for excess_return / absolute_return + single_series)
     # Run BEFORE DSR so the actual net-return series can feed the gate.
     # ------------------------------------------------------------------
+    # Compute ONE return stream: reporting and DSR must use the same snapshot.
+    requires_return_stream = (
+        spec.get("target", {}).get("kind") in {"excess_return", "absolute_return"}
+        and spec.get("universe", "single_series") == "single_series"
+    )
+    raw_backtest: dict | None = None
     try:
-        backtest_result = _run_backtest(spec, feat_series, repo_root)
+        if requires_return_stream:
+            raw_backtest = _run_backtest_raw(spec, feat_series, repo_root)
+            backtest_result = (
+                _run_backtest(spec, feat_series, repo_root, raw_backtest=raw_backtest)
+                if raw_backtest else {"error": "required return stream unavailable"}
+            )
+        else:
+            backtest_result = {}
     except Exception as exc:
         backtest_result = {"error": str(exc)}
+
+    # A broken backtest must not silently become a correlation-proxy DSR candidate.
+    if requires_return_stream and (not backtest_result or "error" in backtest_result):
+        return _write_result(
+            repo_root, spec,
+            {"n_obs": n_obs, "effective_months": eff_months,
+             "sampling": {"clock": "target_price_bars", "horizon_bars": horizon_d,
+                          "n_nonoverlap": len(selected), "independence_claimed": False}},
+            {}, backtest_result, "error",
+            ["required cost-aware target-price-clock backtest unavailable"],
+            ran_at, ledger_n,
+        )
 
     # ------------------------------------------------------------------
     # DSR gate (SF-R3): use honest multiple-testing N from ledger.
@@ -810,20 +901,18 @@ def run_spec(
     dsr_result: dict | None = None
     _dsr_series_label: str = ""
     if _use_backtest_for_dsr:
-        # Obtain the actual net-return series from a fresh backtest call
-        # (backtest_result only stores summary stats, not the per-bar returns).
+        # Reuse the exact stream summarized above; never replace a failed return
+        # statistic with a different estimand. Initial zero is not a return period.
         try:
-            _bt_raw = _run_backtest_raw(spec, feat_series, repo_root)
-            _net_rets = _bt_raw.get("net") if _bt_raw else None
-            if _net_rets is not None and len(_net_rets.dropna()) >= 10:
-                moments = ret_moments(_net_rets)
-                _dsr_series_label = "strategy_net_return"
-            else:
-                moments = ret_moments(pd.Series(effect_sub))
-                _dsr_series_label = "z_product_fallback"
-        except Exception:
-            moments = ret_moments(pd.Series(effect_sub))
-            _dsr_series_label = "z_product_fallback"
+            _net_rets = raw_backtest["net"].iloc[1:]
+            if not np.isfinite(_net_rets.to_numpy(float)).all():
+                raise ValueError("nonfinite cost-aware returns")
+            moments = ret_moments(_net_rets)
+            _dsr_series_label = "strategy_net_return"
+        except Exception as exc:
+            return _write_result(repo_root, spec, {"n_obs": n_obs}, {}, backtest_result,
+                                 "error", [f"required return moments unavailable: {exc}"],
+                                 ran_at, ledger_n)
     else:
         # Non-return spec or panel: z-product proxy (acknowledged PR-E deferral).
         moments = ret_moments(pd.Series(effect_sub))
@@ -842,6 +931,10 @@ def run_spec(
     stats = {
         "n_obs": n_obs,
         "effective_months": eff_months,
+        "sampling": {"clock": "target_price_bars", "horizon_bars": horizon_d,
+                     "n_nonoverlap": len(selected), "dependence_radius_rows": row_radius,
+                     "selector": "earliest_nonoverlap", "hac_lags": hac_stat.get("lags"),
+                     "independence_claimed": False},
         "full_ic": round(full_ic, 4) if full_ic == full_ic else None,
         "hac": hac_stat,
         "split_half": split_half,
@@ -873,6 +966,7 @@ def run_spec(
     verdict, reasons = _compute_verdict(
         spec_id, full_ic, hac_stat, block_ci, shift_plac, neg_plac,
         era, split_half, dsr_result, t_hac_gate, dsr_gate, n_obs,
+        n_nonoverlap=len(selected),
     )
 
     return _write_result(
@@ -894,15 +988,31 @@ def _compute_verdict(
     t_hac_gate: float,
     dsr_gate: float,
     n_obs: int,
+    *, n_nonoverlap: int | None = None,
 ) -> tuple[str, list[str]]:
     """Determine verdict from stats.  SF-R9 closed grammar."""
     reasons: list[str] = []
 
     t_hac = hac_stat.get("t") if hac_stat else None
 
-    # --- insufficient_power ---
-    if n_obs < MIN_N or t_hac is None:
-        return "insufficient_power", [f"n_obs={n_obs} < {MIN_N} or HAC t unavailable"]
+    # --- insufficient_power / unavailable evidence ---
+    def finite(value: Any) -> bool:
+        return (isinstance(value, (int, float, np.integer, np.floating))
+                and not isinstance(value, (bool, np.bool_)) and bool(np.isfinite(value)))
+
+    if n_obs < MIN_N or not finite(t_hac):
+        return "insufficient_power", [f"n_obs={n_obs}; need >= {MIN_N} and finite HAC t"]
+    if n_nonoverlap is not None and n_nonoverlap < MIN_N:
+        return "insufficient_power", [f"only {n_nonoverlap} nonoverlapping label windows; need >= {MIN_N}"]
+    required = {"IC": full_ic, "bootstrap lower": block_ci.get("ci_2p5"),
+                "bootstrap upper": block_ci.get("ci_97p5"),
+                "time-shift placebo": shift_plac.get("shift_pctile"),
+                "negative-lag placebo": neg_plac.get("neg_lag_ic"),
+                "matched observed IC": neg_plac.get("obs_ic_same_window"),
+                "DSR": (dsr_result or {}).get("dsr")}
+    missing = [name for name, value in required.items() if not finite(value)]
+    if missing:
+        return "insufficient_power", ["required finite evidence unavailable: " + ", ".join(missing)]
 
     # --- era_specific (sign flip across era break) ---
     if era.get("sign_flip"):
