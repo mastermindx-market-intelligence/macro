@@ -292,17 +292,28 @@ do_not_redo:
   - "Do not treat the merged Mastermind #581 (27a5d893ca28f7006c1007dffa51e677c9c7a4ab) as native Anthropic capacity or as PF1 progress, and never treat a #581 merge as native readiness (Sol R21)."
   - "Do not build a native Claude worker, adapter or carrier outside PF1. Native ownership is PF1 `claude-code` / `ClaudeCodeWorkerAdapter`; PF1-F0 custody is PR #455 and it stays held. A second native writer for one operation is the error, not a shortcut around a slow one."
   - "macro #7181 is MERGED at d7d8bdc6fb9f3548b90487cf51c274693f4e105a and TERMINAL (release child verdict exactly `PASS / MERGE_RECEIPT_VERIFIED / TERMINAL_RELEASE_ACT`). Never re-merge, re-verify or reopen the release child."
-  - "Never re-run the packet05 verifier without a NEW material source-continuity edge. The grant is SPENT, the typed refusal `OUT_OF_SCOPE_DIRT` is the final result, and the seat-owned p05-verify-… worktree stays INERT/UNCHANGED — do not remove it without Sol."
+  - "Never re-run the packet05 verifier without a NEW material source-continuity edge. The packet05 grant (Sol edge 1789565866, Mastermind #699) is SPENT and its ONE granted run returned `VERDICT: REFUSAL REMOTE_PROOF_CHANGED`, a repo-wide quiescence guard over every open PR and NOT a verdict on packet05's source; the seat-owned p05-verify-… worktree stays INERT/UNCHANGED — do not remove it without Sol. CORRECTED 2026-09-16: `OUT_OF_SCOPE_DIRT` and grant edge 1789588151 belong to the separate Mastermind #677 one-shot, not to packet05."
 next_action: >
   Fable principal integration, operation agent-fabric-end-to-end-fable-integration-20260913-sol-001.
-  Protected Mastermind master at this record repair is
+  Protected Mastermind master is now e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48 (procedure
+  mastermind.sol_skillpack.v1 1.0.1, re-read 2026-09-16T20:4xZ); the pin named immediately below was
+  protected at 20:0xZ and is an ancestor of it (compare ahead_by=1), so ancestor claims made against it
+  still hold. Protected Mastermind master at this record repair was
   bf843961c0e1b5bd45fa481f0138c71f2a87d4e2 (`gh api repos/mastermindx-market-intelligence/Mastermind/branches/master --jq .commit.sha`,
   2026-09-16), replacing the 7642aea155d2817219135b24246b55c1d7611c66 pin. Current carrier state is in
   agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-16-POST-7181-FOLD.md. Principal critical path is
   W1-H3 (Mastermind #677, OPEN/DRAFT at 09e53b30092400c501a508992bf942474d70d830, on the SAME
-  child/worktree/writer; Sol ACCEPTED R48/R50/R68/R76/R80; the Source Continuity `remote-complete`
-  one-shot GRANT was RUN ONCE and returned typed refusal `OUT_OF_SCOPE_DIRT` — grant SPENT, writer NOT
-  released, no retry without a NEW Sol grant) and H0 prestage attempt 2 on the existing runner. Before
+  child/worktree/writer; reviewDecision CHANGES_REQUESTED as re-read 2026-09-16T20:4xZ. Sol accepted the
+  R48/R50/R68/R76 semantic closure at this head (root ts 1789588151), but **R80 (ts 1789590510.060009,
+  durable contract comment 5704046553) is a REQUEST_REPAIR, not an acceptance** — disposition verbatim
+  `REQUEST_REPAIR / SAME CHILD+BRANCH+WRITER / EXACT FOUR-PATH CEILING / H4 NOT_STARTED` over
+  ops/executive_os/autonomy_control.py, tests/test_executive_autonomy_control.py,
+  scripts/executive_os_phase1c_control_wrapper.py and tests/test_executive_launchd_config.py. The
+  old-head `remote-complete` grant was WITHDRAWN BEFORE ACCEPTANCE; both typed results produced against
+  09e53b30 — the `OUT_OF_SCOPE_DIRT` refusal and the later `REMOTE_COMPLETE_VERIFIED`
+  (receipt_digest 3edb2976…, root ts 1789591021.847339) — are HISTORICAL EVIDENCE ONLY per Sol R81 and
+  release nothing. The no-retry rule is scoped to the OLD head 09e53b30 ONLY; R80 requires the canonical
+  remote-complete verifier on the NEW head once one exists) and H0 prestage attempt 2 on the existing runner. Before
   sizing, routing, promising or reporting native Anthropic Fable/Opus capacity anywhere in this fabric,
   read DSC:CLAUDE-SUBSCRIPTION-HARNESS-IS-NOT-NATIVE-ANTHROPIC and re-run its four falsifier commands
   at the then-current protected master: the merged Claude subscription worker is a compatible-provider
