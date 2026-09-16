@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/opt/homebrew/bin/python3.12",
+    "-m",
+    "pytest",
+    "tests/test_admin_js_no_undef.py",
+    "--basetemp=/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/signal-lab-followup-readiness-20260916-sol-001/followup-guard-fixture-001",
+    "-q",
+    "--tb=short"
+  ],
+  "exit_code": 0,
+  "result": "..                                                                       [100%]\n2 passed in 5.52s\n",
+  "note": "Prior hidden .pytest_cache fixture was ignored by ESLint; a non-hidden task-private fixture tests the real no-undef rule. Source code was not changed."
+}

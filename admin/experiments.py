@@ -15,6 +15,7 @@ import json
 from datetime import date, datetime, timezone
 
 from .paths import SITE
+from engine.experiment_followup import CONCLUDED, project_followup, followup_counts
 
 _REGISTRY = SITE / "marketdata" / "experiments.json"
 _PRIO = {"high": 0, "medium": 1, "low": 2}
@@ -27,7 +28,8 @@ _PRIO = {"high": 0, "medium": 1, "low": 2}
 _RENDER_KEYS = (
     "id", "name", "what", "source", "kind", "status", "cadence",
     "come_back_on", "next_step", "phase_hint", "state", "surfaced",
-    "days_until", "ready",
+    "days_until", "ready", "result_ready", "review_due", "attention_required",
+    "readiness_schema", "readiness_reason", "reader_status",
     # state provenance — the panel prints a "as of <date> (seed)" cue on any state line no
     # live reader produced, so a frozen hand-authored string never reads as this morning's truth
     "state_live", "state_as_of",
@@ -36,7 +38,7 @@ _RENDER_KEYS = (
 # Keep in step with engine/experiments_registry._DONE — the panel re-derives `ready` with
 # THIS set, so a status the engine considers concluded (gate_open, no_go) but the panel
 # does not re-flags daily forever (2026-08-26 audit: the no_go cortex hypotheses).
-_DONE = {"validated", "proven", "gate_open", "no_go"}
+_DONE = CONCLUDED
 # kinds that never auto-mature a result on their come-back date (a re-check prompt, not a result)
 _NO_AUTO_READY = {"parked_research"}
 
@@ -62,14 +64,8 @@ def _days_until(d) -> int | None:
 
 
 def _decorate(e: dict) -> dict:
-    """Add live days_until + a 'ready' flag (come-back date reached, or the registry already
-    computed results are in) so the timing stays current even if the JSON is a few days old."""
-    du = _days_until(e.get("come_back_on"))
-    ready = bool(e.get("ready")) or (
-        du is not None and du <= 0
-        and (e.get("status") or "") not in _DONE
-        and (e.get("kind") or "") not in _NO_AUTO_READY)
-    return {**e, "days_until": du, "ready": ready}
+    """Refresh reminder dates; scientific readiness must come from the producer."""
+    return project_followup(e, _today())
 
 
 def panel() -> dict:
@@ -77,16 +73,17 @@ def panel() -> dict:
     reg = _read_json(_REGISTRY)
     if not reg or not reg.get("experiments"):
         return {
-            "ok": False, "experiments": [], "ready_count": 0, "n": 0,
+            "ok": False, "experiments": [], **followup_counts([]), "n": 0,
             "reason": ("No experiments registry yet — the macro build emits "
                        "site/marketdata/experiments.json (engine.experiments_registry). "
                        "Run a build (or wait for the nightly) to populate it."),
         }
     exps = [_decorate(e) for e in reg.get("experiments") or []]
-    exps.sort(key=lambda e: (not e["ready"],
+    exps.sort(key=lambda e: (not e["result_ready"], not e["review_due"],
+                             e["readiness_reason"] == "closed",
                              e["days_until"] if e["days_until"] is not None else 9999,
                              _PRIO.get(e.get("priority"), 1)))
-    ready = [e for e in exps if e["ready"]]
+    counts = followup_counts(exps)
     # group counts by status for the header/overview
     by_status: dict[str, int] = {}
     for e in exps:
@@ -96,7 +93,7 @@ def panel() -> dict:
     slim = [{k: e[k] for k in _RENDER_KEYS if k in e} for e in exps]
     return {
         "ok": True, "as_of": reg.get("as_of"), "generated_at": reg.get("generated_at"),
-        "today": _today().isoformat(), "n": len(exps), "ready_count": len(ready),
+        "today": _today().isoformat(), "n": len(exps), **counts,
         "by_status": by_status, "experiments": slim, "note": reg.get("note"),
     }
 
@@ -106,18 +103,21 @@ def alert_summary() -> dict:
     have results ready to review, and the single soonest one still accruing."""
     p = panel()
     if not p.get("ok"):
-        return {"available": False, "ready_count": 0, "n": 0}
+        return {"available": False, **followup_counts([]), "n": 0}
     # "soonest" means soonest STILL AHEAD. `ready` already excludes concluded (_DONE) and
     # never-auto-mature (_NO_AUTO_READY) items, so a past-due one of those stays not-ready
     # with a negative days_until — and min() would pick the MOST overdue of them, which is
     # how the overview card came to read "next in -10d".
     upcoming = [e for e in p["experiments"]
-                if not e["ready"] and (e.get("days_until") or 0) > 0]
+                if not e["attention_required"] and e["readiness_reason"] != "closed"
+                and (e.get("days_until") or 0) > 0]
     soonest = min(upcoming, key=lambda e: e["days_until"]) if upcoming else None
     return {
-        "available": True, "ready_count": p["ready_count"], "n": p["n"],
+        "available": True, **followup_counts(p["experiments"]), "n": p["n"],
         "ready": [{"id": e["id"], "name": e["name"], "next_step": e.get("next_step"),
-                   "phase_hint": e.get("phase_hint")} for e in p["experiments"] if e["ready"]][:6],
+                   "phase_hint": e.get("phase_hint"), "result_ready": e["result_ready"],
+                   "review_due": e["review_due"]}
+                  for e in p["experiments"] if e["attention_required"]][:6],
         "soonest": ({"id": soonest["id"], "name": soonest["name"],
                      "days_until": soonest["days_until"],
                      "come_back_on": soonest.get("come_back_on")} if soonest else None),

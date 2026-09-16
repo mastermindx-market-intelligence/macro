@@ -1,0 +1,60 @@
+{
+  "source_sha256": {
+    "engine/experiment_followup.py": "60a5ca1948b18c01f302f21eca6d6ecd622165087433901dc9960426cac69f0c",
+    "engine/experiments_registry.py": "9e4e461f9373a97aa1e5b05f9a1f8d0131b63b4eb55fe33f46df75c71b7b088b",
+    "admin/experiments.py": "31227c5d9ada984ab12353b32f8226830ce68547ba6757f129268f4dccc2a64e"
+  },
+  "source_unchanged": true,
+  "cases": [
+    {
+      "fault": "calendar_creates_result",
+      "test": "test_due_seed_does_not_manufacture_results",
+      "exit_code": 1,
+      "caught": true,
+      "failed_tests": 1,
+      "log_sha256": "61c21708249af8f39a2ae5bd267c19fd42e38f6e1a8204e7d361deeadfe50a29"
+    },
+    {
+      "fault": "legacy_ready_trusted",
+      "test": "test_admin_does_not_trust_legacy_combined_ready",
+      "exit_code": 1,
+      "caught": true,
+      "failed_tests": 1,
+      "log_sha256": "b812b919a9ce763c746059715131365e2cdaf036d068135d9378c2a4b96c9e5b"
+    },
+    {
+      "fault": "closed_date_reopened",
+      "test": "test_concluded_records_do_not_reopen_on_a_calendar_date",
+      "exit_code": 1,
+      "caught": true,
+      "failed_tests": 9,
+      "log_sha256": "90eb146907056c6177f0bfafe599463bc14bab53505b2d0f3474565d7caf32e0"
+    },
+    {
+      "fault": "attention_double_counted",
+      "test": "test_admin_summary_counts_attention_once_and_exposes_both_reasons",
+      "exit_code": 1,
+      "caught": true,
+      "failed_tests": 1,
+      "log_sha256": "667800c85933efed2024c40056a6efc4a2aba6e9beaf7893807a0fca74bccfa0"
+    },
+    {
+      "fault": "qledger_truthy_string",
+      "test": "test_qledger_reader_does_not_convert_truthy_strings_to_readiness",
+      "exit_code": 1,
+      "caught": true,
+      "failed_tests": 3,
+      "log_sha256": "d9a419d4acc83ad90571e43de4d715fc3589276378469ef54997e19aff0da729"
+    },
+    {
+      "fault": "reader_truthy_string",
+      "test": "test_reader_readiness_must_be_a_boolean",
+      "exit_code": 1,
+      "caught": true,
+      "failed_tests": 3,
+      "log_sha256": "2f3f0c98e7e217758ff8d7724da917e3a1537fda81684bbea56afb4a6802440c"
+    }
+  ],
+  "all_caught": true,
+  "production_proven": false
+}

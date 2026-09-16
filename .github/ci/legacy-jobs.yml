@@ -6299,6 +6299,11 @@ jobs:
         run: pip install pytest requests pyyaml pandas numpy
       - name: admin live-runs snapshot tests
         run: python -m pytest tests/test_admin_live_runs.py -q
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: experiment follow-up producer, admin and notification contracts
+        run: python -m pytest tests/test_experiment_followup.py -q
 
   cbf-regime:
     if: ${{ false }}
