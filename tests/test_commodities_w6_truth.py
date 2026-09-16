@@ -1080,3 +1080,35 @@ def test_mobile_warning_layout_keeps_reasons_below_name_and_score():
     src=_tpl()
     assert '.brow .st { grid-column: 1 / -1; grid-row: 2;' in src
     assert '.brow .meter { grid-column: 2; grid-row: 1;' in src
+
+
+
+def test_capture_fixture_uses_current_descriptive_index_projection():
+    from scripts.capture_commodities_w6_evidence import fixture_vm
+    from scripts.build_commodities import _mtf_grade_plain
+    index = fixture_vm()["vm"]["index"]
+    assert (index["mtf_en"], index["mtf_zh"]) == _mtf_grade_plain("TREND-FOLLOW")
+
+
+def test_r1_incomplete_fixture_uses_real_safe_producer():
+    from scripts.capture_commodities_w6_evidence import fixture_vm
+    context = fixture_vm(scenario="r1-incomplete")
+    assert context["vm"]["stance"]["word_en"] == "Data incomplete"
+    assert context["vm"]["index"]["shock_state"] is None
+    assert "Synthetic" in context["as_of"]
+
+
+def test_r1_gold_fixture_computes_disagreement_instead_of_inventing_verdict():
+    from scripts.capture_commodities_w6_evidence import fixture_vm
+    context = fixture_vm(scenario="r1-gold-conflict")
+    gold = next(row for row in context["vm"]["detail"] if row["name"] == "gold")
+    assert gold["verdict"]["grade"] == "WAIT"
+    assert gold["verdict"]["short_sign"] == 1  # numeric policy remains unchanged
+    assert gold["verdict"]["per_tf"]["3D"] == "down"
+    assert gold["mtf_rows"][1]["trend"] == "down"
+
+
+def test_capture_rejects_unknown_r1_fixture_scenario():
+    from scripts.capture_commodities_w6_evidence import fixture_vm
+    with pytest.raises(ValueError):
+        fixture_vm(scenario="unrecognized")
