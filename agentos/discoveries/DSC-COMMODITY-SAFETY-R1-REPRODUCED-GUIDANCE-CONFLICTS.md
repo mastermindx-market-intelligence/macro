@@ -1,84 +1,76 @@
 ---
 key: COMMODITY-SAFETY-R1-REPRODUCED-GUIDANCE-CONFLICTS
 claim: >-
-  The commodity asset-first R1 repair exists as draft PR #7198. It removes blanket
-  sector imperatives and contradictory commodity timeframe entry wording while
-  preserving numerical allocation and conviction inputs. It is not deployed.
+  Commodity safety R1 is implemented on draft PR #7198 at semantic source
+  1c0e7f85388be15f102adf1a3e8a7156a1fe91f1. Nine relevant suites pass 336 tests;
+  32 synthetic browser cells pass theme, locale and document-fit checks.
+  Independent review, merge and production acceptance are not established.
 falsifier: >-
-  python3 -m pytest tests/test_commodities_w6_truth.py
-  tests/test_commodity_mtf_verdict_honesty.py -q must preserve the approved
-  descriptive and negative-case behavior. Acceptance additionally requires an
-  independent exact-head review and served browser evidence; passing tests alone
-  cannot falsify the not-deployed status.
+  Run python3 -m pytest tests/test_commodities_w6_truth.py
+  tests/test_commodity_mtf_verdict_honesty.py tests/test_commodities_ignition_copy.py
+  tests/test_commodity_signals.py tests/test_commodity_confluence.py tests/test_forex.py
+  tests/test_commodity_index.py tests/test_commodity_conviction.py tests/test_commodity_alerts.py
+  -q -p no:cacheprovider at the exact source; inspect #7198 and its committed
+  browser manifest. A later production claim requires served browser evidence.
 so_what: >-
-  Continue the existing R1 branch through its actual remaining tests, independent
-  review and release proof. Do not recreate the branch or promote this display
-  repair into numerical trading authority. Preserve the broader asset-first
-  matrix and coherent-publication program as unfinished work.
+  Resume this same PR/branch at review and release, not the old editing blocker.
+  Do not redo the completed guidance, mobile warning or fixture repairs. Do not
+  convert passing fixtures into production or numerical trading authority.
 kind: landmine
 verified_at: 2026-09-16
 verified_by: >-
-  #7198; python3 -m pytest tests/test_commodities_w6_truth.py
-  tests/test_commodity_mtf_verdict_honesty.py tests/test_commodities_ignition_copy.py
-  tests/test_commodity_signals.py tests/test_commodity_confluence.py tests/test_forex.py
-  -q -p no:cacheprovider at eadb5a771190e2e4c053875823b42bdfa00a7dc2:
-  263 passed, 4 failed, 1 skipped; all four failures were read-only snapshot
-  fixture directory PermissionError, not a claimed complete pass.
+  #7198; nine-suite python3 -m pytest result at
+  1c0e7f85388be15f102adf1a3e8a7156a1fe91f1: 336 passed, 0 failed, 2 existing
+  NumPy warnings in 38.46s; scripts/check_ui_visual_evidence.py exit 0;
+  scripts/check_design_system.py --mode enforce-added: 0 blocking findings;
+  mockups/evidence/commodities-asset-first-r1/manifest.json.
 scope: [macro, scripts/build_commodities.py, engine/commodity_mtf.py, templates/commodities.html.j2]
 confidence: verified
 ---
 
-# Commodity safety R1 — implemented candidate, not production acceptance
+# Commodity safety R1 — tested candidate, not production acceptance
 
 Operation: `commodities-asset-first-safety-r1-20260916-sol-001`.
 Branch: `claude/commodities-asset-first-safety-r1-20260916-sol-001`.
-PR: #7198, DRAFT / HOLD-FOR-SOL, no native auto-merge and no merge-on-green.
-Procedure pin: Mastermind `0fe8074ff953b2ced9025ed40f0f66019c759967`, Skillpack 1.0.1.
-Base: macro `bb02c526c4809564338f2a7208e063dbe86bc476`.
+PR: #7198, DRAFT / HOLD-FOR-SOL. No auto-merge or merge-on-green.
+Current procedure: Mastermind `8ba7deedde164c90298d3e88785d98e02fa5e2d2`, compatible Skillpack 1.0.1.
 
-## What changed
+## Delivered to the candidate
 
-The prior records-only blocked state is historical. The editing path recovered in
-this attended turn, and real code was committed at
-`eadb5a771190e2e4c053875823b42bdfa00a7dc2`. Sector breadth is descriptive; missing
-confluence and invalid counts remain incomplete; index-only warnings do not imply
-widespread constituent stress. Commodity MTF display guards preserve the numerical
-short/mid/long votes and FX alias behavior. Missing shock data cannot render Calm.
-The subsequent index-chip correction removes residual whole-index imperatives too.
+Whole-sector instructions are descriptive conditions; missing evidence stays
+incomplete. The index warning cannot imply constituent-wide stress. Commodity
+MTF wording respects bearish daily/3D evidence and does not automatically call
+pullbacks healthy or buyable. Numerical signs, weights and allocation rules and
+FX alias behavior remain unchanged. Price proxies are not measured inflation.
 
-The original red baseline was 4 passing / 32 failing focused cases. Boundary
-coverage now comprises 52 passing focused original-function/Jinja-fragment cases,
-including the index chip and numeric-policy preservation. This is not a full
-pytest result or a point-in-time backtest. The new cases live in the already
-registered W6 suite; no extra CI job was introduced.
+The old mobile screenshots were rejected: a 390px page scrolled to 517px in EN
+and 415px in ZH. Commit 8710b19b9a49e180f1fb8e24fe9c2017e3aba96a puts warning
+reasons below the name/score and makes capture reject page overflow.
+Commit 1c0e7f85388be15f102adf1a3e8a7156a1fe91f1 adds reproducible synthetic R1
+states to the existing capture owner, using actual producer functions.
 
-## Actual verification and outstanding obligations
+## Evidence and limits
 
-The six-suite native pytest run at eadb5a77 completed with 263 passes, four
-fixture-permission failures and one skip. Same-revision committed FRED/Yahoo/COT
-input groups were then materialized in the read-only verification archive, with
-no new vendor request and no production or source-checkout write. The requested
-repeat of that same six-suite run was blocked by the tool safety check; no repeat
-result is claimed. Do not redirect that blocked invocation to another carrier.
-Existing independently started GitHub CI remains the canonical CI owner.
+The nine-suite run has 336 passes and no failures. Two pre-existing NumPy divide
+warnings remain visible. The read-only source archive uses committed same-revision
+FRED/Yahoo/COT data; other declared store groups are explicitly empty fixtures.
+This is not complete live-data replay, backtest validation or production proof.
 
-The first PR fence identified missing runnable evidence tokens in this discovery's
-old verified_by/falsifier fields. This update supplies the actual command and PR
-reference; it does not weaken the validator or claim the current fence is green.
-The original code snapshot and all test evidence remain exact-revision artifacts,
-not a second writable workspace or source owner.
+The 32-cell corpus covers mixed/incomplete headlines, gold timeframe disagreement,
+and the risk board in both themes/locales and at 1440/390. Every cell fits its
+viewport. Fixture omissions remain disclosed in the manifest. No live-price,
+provider-session, navigation, entitlement or served-release proof is inferred.
 
-No independent review, merged release, or served browser acceptance exists yet.
-The render lane's known failures are the HK dead sector-ranking link (already
-owned by #7163) and an unparseable macro market-state verdict. Do not duplicate
-those repairs or remove the release guards. No new Executive Job, workstream,
-provider call, portfolio action, or numerical exposure change was created.
+## Next action and frozen boundaries
 
-## Exact continuation
+Obtain independent review of the exact semantic source and committed corpus;
+resolve applicable current-head CI/security and existing release failures; then
+verify the real served commodity page and its data. The known HK dead route
+already has #7163; do not duplicate it. No release guard may be weakened.
 
-Complete current-head validation and theme/locale/responsive fixture evidence;
-obtain independent review, reconcile the existing release blockers, and prove
-served production behavior before accepting R1. Then continue the approved
-asset-first decision matrix and coherent publication bundle, followed by separately
-validated numerical challengers. New Yahoo-derived exports or paid redistribution
-remain held by DSC:COMMODITY-AND-FX-PRICE-SPINE-YAHOO-VENDOR-TERMS-ARE-RECORDED-ADVERSE.
+After R1 acceptance, advance the approved asset decision matrix and coherent
+publication bundle, then independently validated numerical challengers. No new
+runtime, queue, workstream, provider call or capital operation was created.
+DSC:COMMODITY-AND-FX-PRICE-SPINE-YAHOO-VENDOR-TERMS-ARE-RECORDED-ADVERSE still
+holds any widening of Yahoo-derived redistribution. The checkpoint JSON retains
+exact historic commits rather than duplicating the old transcript or red log.
