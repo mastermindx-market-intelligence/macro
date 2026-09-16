@@ -977,7 +977,8 @@ def build_providers(
     ----------
     cfg:
         Brain config dict with standard keys:
-          provider_order    (list[str])  — Codex is auto-inserted unless disabled
+          workload_profile  (str)        — trusted purpose; server environment may narrow it
+          provider_order    (list[str])  — explicit in profiled mode; no implicit Codex
           oauth_token_env   (str)        — env-var for OAuth token
           api_key_env       (str)        — env-var for Anthropic API key
           deepseek_key_env  (str)        — env-var for DeepSeek key
@@ -1001,13 +1002,19 @@ def build_providers(
     extra_headers:
         Additional headers to attach to every client (merged with oauth beta).
     """
+    from engine.provider_workload_policy import HOST_PROFILE_ENV, decide_workload
+
+    # Trusted server purpose boundary: never discover credentials before this gate.
+    workload = decide_workload(cfg, host_profile=os.environ.get(HOST_PROFILE_ENV))
     from lib import config as _config
 
     OAUTH_BETA = "oauth-2025-04-20"
     DEEPSEEK_DEFAULT_BASE = "https://api.deepseek.com/anthropic"
 
-    configured_order = list(
-        cfg.get("provider_order") or ["oauth", "anthropic", "deepseek"]
+    configured_order = (
+        list(workload.allowed_order) if workload is not None else list(
+            cfg.get("provider_order") or ["oauth", "anthropic", "deepseek"]
+        )
     )
     opus = opus_model or cfg.get("opus_model", "claude-opus-4-8")
     ds_model = deepseek_model or cfg.get("deepseek_model", "deepseek-v4-pro")
@@ -1016,7 +1023,8 @@ def build_providers(
     # after the OAuth pool, before metered API providers. DeepSeek-only/Anthropic-
     # only lanes keep their existing order and receive Codex as the last resort.
     order = list(configured_order)
-    if "codex" not in order and cfg.get("codex_provider", True) is not False:
+    if (workload is None and "codex" not in order
+            and cfg.get("codex_provider", True) is not False):
         if "oauth" in order:
             order.insert(order.index("oauth") + 1, "codex")
         else:
@@ -1393,6 +1401,11 @@ def build_providers(
                 )
         except Exception as e:  # noqa: BLE001
             log.debug("llm_auth: provider cooldown ordering failed (%s)", e)
+
+    # Only this closed projection is safe to publish; descriptors also hold secrets.
+    if workload is not None:
+        for prov in out:
+            prov["workload_policy"] = workload.receipt()
 
     # Inject usage attribution metadata from cfg into every provider descriptor.
     # _capture_usage() reads these keys to populate the ai_costs ledger row.
