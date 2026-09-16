@@ -2934,6 +2934,114 @@ def test_chat_image_routes_to_private_ollama_when_remote_vision_is_unavailable(t
     assert captured["image_blocks"]
 
 
+def test_chat_image_uses_private_ollama_when_remote_lane_has_no_provider(tmp_path):
+    """A healthy private vision rung must work even when no remote/text descriptor builds."""
+    root = _make_temp_root()
+    local_client = _MockClient([_MockResponse([
+        _MockBlock("text", "The screenshot is readable.")
+    ], "end_turn")])
+    local = {
+        "name": "ollama", "model": "qwen3.5:9b", "client": local_client,
+        "vision_only": True,
+    }
+
+    with patch.dict("os.environ", {"SUPABASE_SERVICE_ROLE_KEY": "", "SUPABASE_URL": ""}):
+        with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+            with patch.object(gw, "_build_lane_providers", return_value=[]):
+                with patch.object(gw, "_build_local_vision_providers", return_value=[local]):
+                    with patch.object(gw, "_resolve_tier", return_value={
+                        "tier": "pro", "status": "active", "current_period_end": None,
+                    }):
+                        with patch.object(gw, "_get_allowance", return_value={
+                            "limit": 100, "remaining": 100, "period": "month",
+                        }):
+                            with patch.object(gw, "_ensure_thread", return_value=None):
+                                with patch("lib.ai_costs.record_usage", return_value=True):
+                                    result = gw.chat(
+                                        "read this screenshot", "user_local_only",
+                                        lane="fast", images=[_TINY_PNG_DATA_URI], root=root,
+                                    )
+
+    assert result["degraded"] is False
+    assert result["model"] == "qwen3.5:9b"
+    assert local_client.calls and _request_contains_image(local_client.calls[0])
+
+
+def test_chat_stream_image_uses_private_ollama_when_remote_lane_has_no_provider(tmp_path):
+    """The streaming entry point must not return its early no-provider outage bubble."""
+    root = _make_temp_root()
+    local_client = _MockClient([_MockResponse([
+        _MockBlock("text", "The screenshot is readable.")
+    ], "end_turn")])
+    local = {
+        "name": "ollama", "model": "qwen3.5:9b", "client": local_client,
+        "vision_only": True,
+    }
+
+    with patch.dict("os.environ", {"SUPABASE_SERVICE_ROLE_KEY": "", "SUPABASE_URL": ""}):
+        with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+            with patch.object(gw, "_build_lane_providers", return_value=[]):
+                with patch.object(gw, "_build_local_vision_providers", return_value=[local]):
+                    with patch.object(gw, "_resolve_tier", return_value={
+                        "tier": "pro", "status": "active", "current_period_end": None,
+                    }):
+                        with patch.object(gw, "_get_allowance", return_value={
+                            "limit": 100, "remaining": 100, "period": "month",
+                        }):
+                            with patch.object(gw, "_ensure_thread", return_value=None):
+                                with patch("lib.ai_costs.record_usage", return_value=True):
+                                    raw = list(gw.chat_stream(
+                                        "read this screenshot", "user_local_only_stream",
+                                        lane="fast", images=[_TINY_PNG_DATA_URI], root=root,
+                                    ))
+
+    events = [json.loads(line[6:]) for line in raw if line.startswith("data: ")]
+    body = "".join(e.get("text", "") for e in events if e.get("type") == "delta")
+    done = next(e for e in reversed(events) if e.get("type") == "done")
+    assert done["degraded"] is False
+    assert "screenshot is readable" in body.lower()
+    assert local_client.calls and _request_contains_image(local_client.calls[0])
+
+
+def test_research_image_never_delegates_to_private_local_model(tmp_path):
+    """The continuity rung is chat vision, not a substitute research authority."""
+    root = _make_temp_root()
+    local_client = _MockClient([_MockResponse([
+        _MockBlock("text", "local answer must not ship")
+    ], "end_turn")])
+    text_client = _MockClient([_MockResponse([
+        _MockBlock("text", "I could not read the image; here is the text-grounded research answer.")
+    ], "end_turn")])
+    local = {
+        "name": "ollama", "model": "qwen3.5:9b", "client": local_client,
+        "vision_only": True,
+    }
+    lane = [{"name": "deepseek", "model": "deepseek-v4-pro", "client": text_client}]
+
+    with patch.dict("os.environ", {"SUPABASE_SERVICE_ROLE_KEY": "", "SUPABASE_URL": ""}):
+        with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+            with patch.object(gw, "_build_lane_providers", return_value=lane):
+                with patch.object(gw, "_build_local_vision_providers", return_value=[local]):
+                    with patch.object(gw, "_resolve_tier", return_value={
+                        "tier": "pro", "status": "active", "current_period_end": None,
+                    }):
+                        with patch.object(gw, "_get_allowance", return_value={
+                            "limit": 100, "remaining": 100, "period": "month",
+                        }):
+                            with patch.object(gw, "_ensure_thread", return_value=None):
+                                with patch("lib.ai_costs.record_usage", return_value=True):
+                                    result = gw.chat(
+                                        "research the written thesis", "user_research_local_boundary",
+                                        mode="research", images=[_TINY_PNG_DATA_URI], root=root,
+                                    )
+
+    assert result["degraded"] is False
+    assert result["model"] == "deepseek-v4-pro"
+    assert local_client.calls == []
+    assert text_client.calls and not _request_contains_image(text_client.calls[0])
+    assert "could not be read" in _system_text(text_client.calls[0]).lower()
+
+
 def _request_contains_image(call: dict) -> bool:
     for message in call.get("messages") or []:
         content = message.get("content") if isinstance(message, dict) else None
@@ -3005,6 +3113,94 @@ def test_chat_image_falls_back_to_text_instead_of_generic_unavailable(tmp_path, 
     assert "could not be read" in _system_text(text_client.calls[0]).lower()
     assert "private-tailnet-host" not in caplog.text
     assert "do-not-log" not in caplog.text
+
+
+def test_chat_image_invalid_local_model_falls_back_to_honest_text(tmp_path):
+    """A stale/missing local model is provider config failure, not a fatal image request."""
+    from engine.ollama_provider import OllamaProviderError
+
+    root = _make_temp_root()
+    text_client = _MockClient([_MockResponse([
+        _MockBlock("text", "I could not read the screenshot, but the written question is answerable.")
+    ], "end_turn")])
+    local = {
+        "name": "ollama", "model": "missing-vision-model", "vision_only": True,
+        "client": _RaiseThenClient(exc=OllamaProviderError(
+            "Ollama HTTP 404: model 'missing-vision-model' not found"
+        )),
+    }
+
+    def _providers(lane, root_=None):
+        return {
+            "fast": [{"name": "deepseek", "client": text_client, "model": "deepseek-v4-pro"}],
+            "pro": [],
+        }[lane]
+
+    with patch.dict("os.environ", {"SUPABASE_SERVICE_ROLE_KEY": "", "SUPABASE_URL": ""}):
+        with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+            with patch.object(gw, "_build_lane_providers", side_effect=_providers):
+                with patch.object(gw, "_build_local_vision_providers", return_value=[local]):
+                    with patch.object(gw, "_resolve_tier", return_value={
+                        "tier": "pro", "status": "active", "current_period_end": None,
+                    }):
+                        with patch.object(gw, "_get_allowance", return_value={
+                            "limit": 100, "remaining": 100, "period": "month",
+                        }):
+                            with patch.object(gw, "_ensure_thread", return_value=None):
+                                with patch("lib.ai_costs.record_usage", return_value=True):
+                                    result = gw.chat(
+                                        "read this screenshot", "user_missing_local_model",
+                                        lane="fast", images=[_TINY_PNG_DATA_URI], root=root,
+                                    )
+
+    assert result["degraded"] is False
+    assert result["model"] == "deepseek-v4-pro"
+    assert text_client.calls and not _request_contains_image(text_client.calls[0])
+    assert "could not be read" in _system_text(text_client.calls[0]).lower()
+
+
+def test_chat_image_nonvision_local_model_falls_back_to_honest_text(tmp_path):
+    """An optional local model without vision capability must never black out the turn."""
+    from engine.ollama_provider import OllamaProviderError
+
+    root = _make_temp_root()
+    text_client = _MockClient([_MockResponse([
+        _MockBlock("text", "I could not read the screenshot, but I can answer from text.")
+    ], "end_turn")])
+    local = {
+        "name": "ollama", "model": "text-only-local", "vision_only": True,
+        "client": _RaiseThenClient(exc=OllamaProviderError(
+            "Ollama HTTP 400: this model does not support images"
+        )),
+    }
+
+    def _providers(lane, root_=None):
+        return {
+            "fast": [{"name": "deepseek", "client": text_client, "model": "deepseek-v4-pro"}],
+            "pro": [],
+        }[lane]
+
+    with patch.dict("os.environ", {"SUPABASE_SERVICE_ROLE_KEY": "", "SUPABASE_URL": ""}):
+        with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+            with patch.object(gw, "_build_lane_providers", side_effect=_providers):
+                with patch.object(gw, "_build_local_vision_providers", return_value=[local]):
+                    with patch.object(gw, "_resolve_tier", return_value={
+                        "tier": "pro", "status": "active", "current_period_end": None,
+                    }):
+                        with patch.object(gw, "_get_allowance", return_value={
+                            "limit": 100, "remaining": 100, "period": "month",
+                        }):
+                            with patch.object(gw, "_ensure_thread", return_value=None):
+                                with patch("lib.ai_costs.record_usage", return_value=True):
+                                    result = gw.chat(
+                                        "read this screenshot", "user_nonvision_local_model",
+                                        lane="fast", images=[_TINY_PNG_DATA_URI], root=root,
+                                    )
+
+    assert result["degraded"] is False
+    assert result["model"] == "deepseek-v4-pro"
+    assert text_client.calls and not _request_contains_image(text_client.calls[0])
+    assert "could not be read" in _system_text(text_client.calls[0]).lower()
 
 
 def test_chat_exhausted_vision_chain_redacts_private_exception_text(tmp_path, caplog):
@@ -3102,23 +3298,26 @@ def test_chat_stream_image_falls_back_to_text_without_degraded_bubble(tmp_path, 
     assert "do-not-log" not in caplog.text
 
 
-def test_ollama_transport_failure_is_failover_worthy_but_bad_request_is_not():
+def test_ollama_failures_are_provider_specific_and_failover_worthy():
     from engine.ollama_provider import OllamaProviderError
 
     assert gw._is_failover_error(OllamaProviderError(
         "Ollama endpoint unavailable: name resolution failed"
     ))
     assert gw._is_failover_error(OllamaProviderError("Ollama HTTP 429: overloaded"))
+    assert gw._is_failover_error(OllamaProviderError(
+        "Ollama HTTP 404: model 'missing-vision-model' not found"
+    ))
     # The public API accepts HTTPS image URLs, while the private Ollama adapter accepts
     # inline base64 only. That incompatibility is provider-specific: the next marked
     # text fallback removes the image and can still answer the written question.
     assert gw._is_failover_error(OllamaProviderError(
         "400 unsupported request feature: Ollama requires inline base64 images"
     ))
-    assert not gw._is_failover_error(OllamaProviderError(
+    assert gw._is_failover_error(OllamaProviderError(
         "400 unsupported request feature: empty image"
     ))
-    assert not gw._is_failover_error(OllamaProviderError("Ollama HTTP 422: bad payload"))
+    assert gw._is_failover_error(OllamaProviderError("Ollama HTTP 422: bad payload"))
 
 
 def test_chat_records_a_local_vision_answer_as_ollama_not_deepseek(tmp_path):
@@ -3201,6 +3400,8 @@ def test_chat_stream_records_a_local_vision_answer_as_ollama(tmp_path):
     done = next(e for e in reversed(events) if e.get("type") == "done")
     assert "_served_model" not in done["usage"]
     assert "_served_provider" not in done["usage"]
+    assert done["model"] == "qwen3.5:9b"
+    assert done["provider"] == "ollama"
     brain_row = next(
         call.kwargs for call in record.call_args_list
         if call.kwargs.get("stage") == "brain-stream"
@@ -3543,6 +3744,8 @@ def test_chat_stream_fails_over_to_fallback_on_dead_primary(tmp_path):
         done = next((e for e in parsed if e.get("type") == "done"), None)
         assert delta is not None and "Fallback served this" in delta.get("text", "")
         assert done is not None and done.get("degraded") is False
+        assert done["model"] == "claude-haiku-4-5"
+        assert done["provider"] == "anthropic"
     finally:
         llm_auth.clear_dead()
 

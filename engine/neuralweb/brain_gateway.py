@@ -5403,7 +5403,9 @@ def _vision_capable(providers: list[dict]) -> list[dict]:
     )
 
 
-def _vision_providers(lane: str, providers: list[dict], root: Path | None) -> list[dict]:
+def _vision_providers(
+    lane: str, providers: list[dict], root: Path | None, *, allow_local: bool = True,
+) -> list[dict]:
     """Image-turn chain: Codex -> Claude -> private Ollama -> honest text fallback.
 
     The attached Codex subscription remains first and Claude remains the frontier
@@ -5423,16 +5425,18 @@ def _vision_providers(lane: str, providers: list[dict], root: Path | None) -> li
         already = {id(p) for p in chain}
         chain = chain + [p for p in borrowed if id(p) not in already]
 
-    local = _build_local_vision_providers(root)
     identities = {
         (str(p.get("name") or ""), str(p.get("model") or ""), id(p.get("client")))
         for p in chain
     }
-    for p in local:
-        identity = (str(p.get("name") or ""), str(p.get("model") or ""), id(p.get("client")))
-        if identity not in identities:
-            chain.append(p)
-            identities.add(identity)
+    if allow_local:
+        for p in _build_local_vision_providers(root):
+            identity = (
+                str(p.get("name") or ""), str(p.get("model") or ""), id(p.get("client"))
+            )
+            if identity not in identities:
+                chain.append(p)
+                identities.add(identity)
 
     # Preserve the lane's original text capability as the final, HONEST fallback.
     # The copy is marked so call sites strip image blocks candidate-by-candidate;
@@ -5461,21 +5465,10 @@ def _is_retryable_provider_error(exc: Exception) -> bool:
     try:
         from engine.ollama_provider import OllamaProviderError  # noqa: PLC0415
         if isinstance(exc, OllamaProviderError):
-            # Transport/empty-response failures are provider-specific and may use the
-            # next rung. A typed 4xx payload defect normally fails identically everywhere
-            # and must surface, except for the adapter's explicit URL-image capability
-            # mismatch: the honest text fallback removes that unsupported image input.
-            detail = str(exc).strip()
-            match = re.match(r"^(?:Ollama HTTP )?(4\d\d)\b", detail)
-            if match:
-                code = int(match.group(1))
-                if code in {408, 429}:
-                    return True
-                # The public Brain API accepts HTTPS image URLs, but the private
-                # Ollama adapter accepts inline base64 only. This exact 400 is a
-                # provider capability mismatch: the marked text fallback removes
-                # the image and can still answer the user's written question.
-                return code == 400 and "requires inline base64 images" in detail.lower()
+            # The private Ollama rung is optional continuity. Any adapter/endpoint/model
+            # failure is provider-specific at this point: the next marked candidate gets
+            # a different request shape with image blocks removed and an explicit honesty
+            # instruction, so the generic "same bad request" premise does not apply.
             return True
     except Exception:  # noqa: BLE001
         pass
@@ -6999,9 +6992,16 @@ def _run_brain_loop_stream(
         if not isinstance(usage, dict):
             usage = {}
         usage["latency"] = timing
+        served_model = str(usage.get("_served_model") or "")
+        served_provider = str(usage.get("_served_provider") or "")
         public_usage = {k: v for k, v in usage.items() if not str(k).startswith("_")}
-        return "data: " + json.dumps({"type": "done", "route": timing["route"],
-                                      "usage": public_usage, **fields}) + "\n\n"
+        event = {"type": "done", "route": timing["route"],
+                 "usage": public_usage, **fields}
+        if served_model:
+            event["model"] = served_model
+        if served_provider:
+            event["provider"] = served_provider
+        return "data: " + json.dumps(event) + "\n\n"
 
     source_receipt_event = (
         "data: " + json.dumps({"type": "exact_source_receipt", **source_receipt}) + "\n\n"
@@ -8957,24 +8957,12 @@ def chat(
             "context_receipt": _ctx_receipt,
         }
 
-    # 4. Build providers
+    # 4. Build the ordinary lane. A valid image turn may still be served by the
+    # separately configured private vision rung when this list is empty, so the
+    # no-provider gate runs only after vision resolution.
     providers = _build_lane_providers(lane, root)
-    if not providers:
-        return {
-            "ok": True,
-            "reply": _degraded_reply(lane),
-            "citations": [],
-            "lane": lane,
-            "model": "degraded",
-            "thread_id": None,
-            "quota": quota_info,
-            "filtered": False,
-            "degraded": True,
-            "is_context_only": True,
-        }
-
-    client = providers[0].get("client")
-    model = providers[0].get("model") or "unknown"
+    client = providers[0].get("client") if providers else None
+    model = (providers[0].get("model") or "unknown") if providers else "unknown"
 
     # 4b. Vision (W6c): Pro-gated (operator decision) — Free/Trial answer text-only.
     # An image turn uses Codex, Claude, then private Ollama. If all image-capable
@@ -8988,13 +8976,29 @@ def chat(
         # in one sentence instead of silently answering a picture it never received.
         context = _mark_image_gated(context)
     if image_blocks:
-        vprovs = _vision_providers(lane, providers, root)
+        vprovs = _vision_providers(
+            lane, providers, root, allow_local=mode != "research",
+        )
         if vprovs:
             client = vprovs[0].get("client") or client
             model = vprovs[0].get("model") or model
             turn_providers = vprovs
         else:
             image_blocks = []
+
+    if not turn_providers:
+        return {
+            "ok": True,
+            "reply": _degraded_reply(lane),
+            "citations": [],
+            "lane": lane,
+            "model": "degraded",
+            "thread_id": None,
+            "quota": quota_info,
+            "filtered": False,
+            "degraded": True,
+            "is_context_only": True,
+        }
 
     # 5. Thread store (best-effort; degrade to stateless on failure)
     effective_thread_id: str | None = None
@@ -9447,17 +9451,12 @@ def chat_stream(
         )
         return
 
-    # 3. Providers
+    # 3. Build the ordinary lane. A valid image turn may still be served by the
+    # separately configured private vision rung when this list is empty, so the
+    # no-provider gate runs only after vision resolution.
     providers = _build_lane_providers(lane, root)
-    if not providers:
-        meta = {"type": "meta", "lane": lane, "model": "degraded", "thread_id": None, "quota": quota_info}
-        yield f"data: {json.dumps(meta)}\n\n"
-        yield f"data: {json.dumps({'type': 'delta', 'text': _DEGRADED_USER_MSG})}\n\n"
-        yield f"data: {json.dumps({'type': 'done', 'citations': [], 'quota': quota_info, 'usage': {}, 'filtered': False, 'degraded': True, 'is_context_only': True})}\n\n"
-        return
-
-    client = providers[0].get("client")
-    model = providers[0].get("model") or "unknown"
+    client = providers[0].get("client") if providers else None
+    model = (providers[0].get("model") or "unknown") if providers else "unknown"
 
     # 3b. Vision (W6c): Pro-gated (operator decision) — Free/Trial answer text-only.
     # Image turns use Codex, Claude, then private Ollama. An honest text-only tail may
@@ -9470,13 +9469,22 @@ def chat_stream(
         # W3: the DROP stands — the model is told, so the reply owns the gate in one sentence.
         context = _mark_image_gated(context)
     if image_blocks:
-        vprovs = _vision_providers(lane, providers, root)
+        vprovs = _vision_providers(
+            lane, providers, root, allow_local=mode != "research",
+        )
         if vprovs:
             client = vprovs[0].get("client") or client
             model = vprovs[0].get("model") or model
             turn_providers = vprovs
         else:
             image_blocks = []
+
+    if not turn_providers:
+        meta = {"type": "meta", "lane": lane, "model": "degraded", "thread_id": None, "quota": quota_info}
+        yield f"data: {json.dumps(meta)}\n\n"
+        yield f"data: {json.dumps({'type': 'delta', 'text': _DEGRADED_USER_MSG})}\n\n"
+        yield f"data: {json.dumps({'type': 'done', 'citations': [], 'quota': quota_info, 'usage': {}, 'filtered': False, 'degraded': True, 'is_context_only': True})}\n\n"
+        return
 
     # 4. Thread store — guests are STATELESS (no rows written; client history carries continuity).
     effective_thread_id: str | None = None
