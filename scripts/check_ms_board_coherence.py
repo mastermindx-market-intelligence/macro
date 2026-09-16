@@ -106,7 +106,9 @@ NOTE_CAPPED_GENERIC = "capped at mixed"
 
 _SECTION = re.compile(r'<section class="ms-verdict">(.*?)</section>', re.S)
 _WORD = re.compile(r'id="ms-word"><span class="l-en">([^<]*)</span>')
-_SCORE = re.compile(r'id="ms-score">(\d+)<')
+# Score provenance attributes are emitted by the dashboard; parse the visible
+# value with the same attribute-tolerant pattern as the path consistency check.
+_SCORE = re.compile(r'id="ms-score"[^>]*>(\d+)<')
 _TICK = re.compile(r'id="ms-tick" style="left:\s*([0-9.]+)%')
 _THESIS = re.compile(r'class="v-thesis"><span class="l-en">([^<]*)</span>')
 _OVERRIDE = re.compile(
@@ -119,7 +121,7 @@ _FLIP = re.compile(r'class="v-flip"><span class="l-en">([^<]*)</span>')
 # score / as-of stamps carry different attribute orders per page, so both are
 # matched attribute-first rather than by exact markup.
 _PATH_PTS = re.compile(r"<svg class=\"mx5-path-svg\"[^>]*?data-points='(.*?)'", re.S)
-_SCORE_ANY = re.compile(r'id="ms-score"[^>]*>(\d+)<')
+_SCORE_ANY = _SCORE
 _MEASURED_ANY = re.compile(r'id="ms-score"[^>]*data-measured-score="([0-9.]+)"')
 _ASOF_ANY = re.compile(r'id="(?:regime-asof|ms-date)"[^>]*>(\d{4}-\d{2}-\d{2})<')
 
@@ -356,6 +358,40 @@ FIX_INTL_FORCES_OK = _board(
 )
 
 
+def _score_provenance_selftest() -> int:
+    """Score attributes must not bypass or falsely fail the existing value checks."""
+    def with_provenance(board: str, measured: int = 61) -> str:
+        return board.replace('id="ms-score"', f'id="ms-score" data-measured-score="{measured}"', 1)
+
+    positive = _board("Risk-on", 61, "Risk-on — x.", "", "→ Mixed if x")
+    capped = with_provenance(_board("Mixed", 59, "Mixed / transition — x.",
+                                   NOTE_CAPPED, "→ Green if x"), 77)
+    capped += '<span id="ms-date">2026-09-15</span>'
+    points = json.dumps([{"d": "2026-09-15", "s": 77, "v": "Risk-on"}])
+    capped += '<svg class="mx5-path-svg" data-points=' + chr(39) + points + chr(39) + '></svg>'
+    cases = [
+        ("score provenance risk-on", with_provenance(positive), None),
+        ("score provenance capped measured blend", capped, None),
+        ("score provenance band mismatch", with_provenance(_board("Risk-on", 55, "Risk-on — x.", "", "")), "(a)"),
+        ("score provenance tick drift", with_provenance(_board("Mixed", 50, "Mixed / transition — x.", "", "", tick=80)), "(b)"),
+        ("score provenance wrong thesis", with_provenance(_board("Risk-on", 61, "Risk-off — x.", "", "")), "(c)"),
+        ("score provenance forced risk-off", with_provenance(_board("Risk-on", 61, "Risk-on — x.", NOTE_FORCES, "")), "(d)"),
+        ("score provenance capped mixed", with_provenance(_board("Risk-on", 61, "Risk-on — x.", NOTE_CAPPED, "")), "(e)"),
+        ("score provenance generic force", with_provenance(_board("Risk-on", 61, "Risk-on — x.", "Stress forced to Risk-off", "")), "(f)"),
+        ("score provenance generic cap", with_provenance(_board("Risk-on", 61, "Risk-on — x.", "Alert capped at Mixed", "")), "(f)"),
+        ("score provenance wrong flip", with_provenance(_board("Risk-on", 61, "Risk-on — x.", "", "→ Green if x")), "(g)"),
+        ("score provenance path mismatch", capped.replace('data-measured-score="77"', 'data-measured-score="76"'), "(h)"),
+    ]
+    failed = False
+    for label, markup, tag in cases:
+        violations = check_text(label, markup)
+        ok = not violations if tag is None else any(v.startswith(tag) for v in violations)
+        print(f"  {'PASS' if ok else 'FAIL'} {label}: expected {tag or 'coherent'}, got {violations}")
+        failed |= not ok
+    return int(failed)
+
+
+
 def _selftest() -> int:
     cases = [
         ("coherent mixed", FIX_COHERENT_MIXED, 0),
@@ -383,6 +419,7 @@ def _selftest() -> int:
         for g in got:
             print(f"      {g}")
         failed |= not ok
+    failed |= bool(_score_provenance_selftest())
     return 1 if failed else 0
 
 
