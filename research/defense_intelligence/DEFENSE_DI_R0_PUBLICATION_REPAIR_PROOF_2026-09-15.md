@@ -81,3 +81,26 @@ source snapshot; zero is not evidence of no LMT procurement. None of these rows
 has an issuer-attributed financial denominator. That missing economic bridge,
 not oil correlation or a larger contract count, remains the next intelligence
 capability after publication is recovered. No ranking/entry/size flags changed.
+
+## Later regression receipt
+
+The focused 154-test run concluded: 153 passed, one failed, seven live-vintage
+checks deselected. The remaining failure was an existing test-manifest gap:
+`fms_cases`, `program_ontology`, and `program_dossier` were not classified in the
+Prophet import-boundary test. They build/admit/compose evidence, not decorate
+already-selected Prophet plans, so all three are now on the forbidden source
+side. Three injected-edge tests first failed to detect them and now prove they
+cannot enter the annotation seam. No production module or permission changed.
+
+The seven cardinality cases were moved into the existing CI-listed
+`tests/test_government_revenue_candidates.py`; no unregistered test-only file or
+new CI control path remains. The final run of the complete Prophet-annotation
+suite plus those seven cases passed: 66 passed, one dependency deprecation
+warning, 7.75 seconds. This does not turn the earlier interrupted run or the
+seven deselected live-vintage checks into a claimed full-suite pass.
+
+Repair PR: #7186. The initial source revision was
+`9bf062655e659eb4f1656caca503622e4db4c3cc`; read the PR head for the later test
+classification revision. Keep it draft until applicable exact-head CI and
+review permit release. Production remains unproven; never manually replace its
+ledger with this local proof output or treat a skipped publisher as success.
