@@ -1,0 +1,18 @@
+{
+  "scope": "mechanical verification, not independent scientific review",
+  "score_test_count": 5,
+  "score_tests_exit_code": 0,
+  "score_test_process": 54754,
+  "tests_observed_red_before_implementation": true,
+  "replay_suite_passed": 187,
+  "trial_ledger_suite_passed": 23,
+  "distinct_final_tests": 215,
+  "library_arithmetic_crosscheck": "scipy.rankdata plus numpy.corrcoef against saved within-date results; no p-values",
+  "verified_date_correlations": 26,
+  "maximum_absolute_difference": 1.1102230246251565e-16,
+  "all_output_hashes_match": true,
+  "input_sha256": "366d94709ea8fef4ac91cc30cf4efd975b26e68a65766082e5ca8feb99aca6db",
+  "script_sha256": "61fe01a33e5dbac5ccf972b458f86bc68d4cdc59e8abcb147f12d000720aca84",
+  "preregistration_or_independent_acceptance_claim": false,
+  "pre_outcome_scope_ruling_commit": "903f9b56b0a39a5d88892a3cbef7daf2da2e37cd"
+}

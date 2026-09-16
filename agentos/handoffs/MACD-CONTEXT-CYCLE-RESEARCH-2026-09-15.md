@@ -1,3 +1,12 @@
+# Archive-only execution supplement — 2026-09-16
+
+The narrow scope amendment was published before outcome inspection at903f9b56b0a39a5d88892a3cbef7daf2da2e37cd: RECORDED_SCORE_DESCRIPTIVE_RULING_2026-09-16.md. It releases only the fixed archived-score description, not predictive or production use. Previous fixed-score-unexecuted clauses are superseded only for this exact audit.
+The audit source is source/recorded_score_audit.py under research/signal_engine/macd_context. Complete generated summaries, all date components, source/run receipt and mechanical verification are in recorded_score_description_20260916_r1/ under that same directory. Raw source data remain on the original host. The six configurations were logged before execution through the existing TrialLedger owner on this PR branch; default-main application and independent acceptance remain unclaimed.
+Five new synthetic tests pass, and a separate rankdata/corrcoef arithmetic cross-check matches all26 defined date correlations. This is verification, not an independent scientific review. The earlier narrative-report write refusal is superseded: RECORDED_SCORE_ARCHIVE_RESULT_2026-09-16.md now records all six negative descriptive associations and their limits. A fresh combined suite passed 215 tests (process67726); input, output, source, ruling and branch-accounting hashes all match. The denied real alpha diagnostic remains a separate held operation; no alternative replay was used.
+Remaining release gates: code CI and existing PR hold; independent scientific review/chronology/forward validation before any predictive interpretation, rank/entry/size/trade or probability change. Reuse the completed audit; do not tune/reverse its score or rerun to hunt a preferred result.
+
+---
+
 # 2026-09-16 recovery update — read before historical sections
 
 The new source of current execution truth is research/signal_engine/macd_context/RECOVERY_AND_REPLAY_REPAIR_2026-09-16.md plus ACCOUNTING_RECONCILIATION_2026-09-16.json. Existing study findings and scientific holds remain; this update supersedes only the old operational blocker/status clauses below.
