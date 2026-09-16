@@ -557,3 +557,60 @@ def test_random_equality_thresholds_reproduce_their_named_targets():
                 assert abs(value(rr,'current.operating_profit')-value(r,'prior.operating_profit'))<Decimal('0.00000001')
         q=deepcopy(p);q['current']['working_capital_increase']=r['scenario_tests']['zero.cash_after_capex_working_capital']['value']
         assert abs(value(analyze(q),'current.cash_after_capex'))<Decimal('0.00000001')
+
+
+# Actual Brain registration/dispatch integration (provider responses remain fixtures).
+def test_real_brain_registry_offers_exactly_one_calculator_in_chat(tmp_path,monkeypatch):
+    from engine.neuralweb import brain_gateway as gw
+    import inspect
+    assert 'calculate_financial_bridge' in gw._BRAIN_TOOLS
+    assert 'calculate_financial_bridge' in gw._BRAIN_ONLY_TOOLS
+    assert gw._BRAIN_INTERNALS_TOOLS==frozenset({'context_search','context_open'})
+    assert 'mode' in inspect.signature(gw._all_brain_tool_schemas).parameters
+    monkeypatch.setattr(gw,'_resolve_tier',lambda *a,**k:{'tier':'free','status':'none'})
+    offered=gw._all_brain_tool_schemas(tmp_path,mode='chat')
+    selected=[t for t in offered if t['name']=='calculate_financial_bridge']
+    assert selected==[importlib.import_module(MODULE).financial_bridge_tool_schema()]
+    assert not any(t['name'] in gw._BRAIN_INTERNALS_TOOLS for t in offered)
+
+
+def test_actual_brain_dispatch_calls_the_existing_calculator_without_extra_io(tmp_path,monkeypatch):
+    from engine.neuralweb import brain_gateway as gw
+    import socket
+    module=importlib.import_module(MODULE)
+    expected=module.analyze_financial_bridge(scenario())
+    calls=[]; original=module.analyze_financial_bridge
+    def invoke(p):
+        calls.append(deepcopy(p));return original(p)
+    def forbidden(*a,**k):raise AssertionError('unexpected data, network or entitlement access')
+    monkeypatch.setattr(module,'analyze_financial_bridge',invoke)
+    monkeypatch.setattr(socket,'socket',forbidden)
+    monkeypatch.setattr(gw,'_resolve_tier',forbidden)
+    result=gw._dispatch_brain_tool('calculate_financial_bridge',scenario(),tmp_path,tmp_path,'http://unused')
+    assert result==expected
+    assert calls==[scenario()]
+
+
+@pytest.mark.parametrize('mode',['research',' Research ','unknown',None])
+def test_calculator_is_not_offered_or_executed_outside_chat(tmp_path,monkeypatch,mode):
+    from engine.neuralweb import brain_gateway as gw
+    import inspect
+    assert 'mode' in inspect.signature(gw._all_brain_tool_schemas).parameters
+    assert 'mode' in inspect.signature(gw._dispatch_brain_tool).parameters
+    module=importlib.import_module(MODULE)
+    def forbidden(*a,**k):raise AssertionError('non-chat calculation ran')
+    monkeypatch.setattr(module,'analyze_financial_bridge',forbidden)
+    monkeypatch.setattr(gw,'_resolve_tier',lambda *a,**k:{'tier':'free','status':'none'})
+    assert not any(s['name']=='calculate_financial_bridge' for s in gw._all_brain_tool_schemas(tmp_path,mode=mode))
+    r=gw._dispatch_brain_tool('calculate_financial_bridge',scenario(),tmp_path,tmp_path,'http://unused',mode=mode)
+    assert r.get('error')
+    assert not r.get('calculations')
+
+
+def test_dispatch_rejects_forged_privileged_fields_without_echo(tmp_path):
+    from engine.neuralweb import brain_gateway as gw
+    p=scenario();p['user_id']='PRIVATE_ACCOUNT';p['provider']='PRIVATE_PROVIDER'
+    r=gw._dispatch_brain_tool('calculate_financial_bridge',p,tmp_path,tmp_path,'http://unused')
+    assert r.get('status')=='invalid_request'
+    assert not r.get('calculations')
+    assert 'PRIVATE_' not in json.dumps(r)
