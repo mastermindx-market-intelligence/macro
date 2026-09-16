@@ -51,8 +51,9 @@ changed:
       Durable state only, no completed wave rewritten. The workstream `next_action` is re-pinned
       from `7642aea155d2817219135b24246b55c1d7611c66` to the protected Mastermind master and
       pointed at the new handoff. That pin was written as
-      `bf843961c0e1b5bd45fa481f0138c71f2a87d4e2` at 19:5xZ and now carries the current
-      `e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48`. The HF1
+      `bf843961c0e1b5bd45fa481f0138c71f2a87d4e2` at 19:5xZ, then
+      `e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48` at 20:4xZ, and now carries the current
+      `4537f066775c73d305f82acf0643701f01f5e53c` (read 2026-09-16T22:55:39Z, §8.0). The HF1
       umbrella wave `next_action` now records that #575 (merge `91dbdf876f1f1ea10d24342b9d4ea49ba081bfcc`),
       #579 (merge `3a8cc8b007c4573bd01efd909bf6d0e786c71663`) and #576 (merge
       `cb95ae8bf76382df14d1017691e4ccc0b6356f7c`) are MERGED and ancestors of `bf843961`, in the
@@ -127,16 +128,19 @@ verified:
     result: >
       status=ahead, ahead_by=5, behind_by=0 — bf843961 is five commits ahead of 0fe8074f. The
       intake pin is an ancestor of bf843961, which was the protected master when this compare was
-      run at 2026-09-16T19:5xZ. bf843961 is NO LONGER the current protected master — that is
-      e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48 (see the claim above) — and bf843961 is an ancestor
-      of it, so the intake pin is an ancestor of the current protected master a fortiori.
+      run at 2026-09-16T19:5xZ. bf843961 is NO LONGER the current protected master; neither is
+      e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48, which succeeded it at 20:4xZ. The current protected
+      master is 4537f066775c73d305f82acf0643701f01f5e53c (read 2026-09-16T22:55:39Z, §8.0), and
+      bf843961 is an ancestor of it, so the intake pin is an ancestor of the current protected
+      master a fortiori.
   - claim: "Mastermind 8ba7deedde164c90298d3e88785d98e02fa5e2d2 sits between the intake pin 0fe8074f and bf843961 (the protected master at 2026-09-16T19:5xZ, since superseded by e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48): bf843961 is two commits ahead of 8ba7deed and five ahead of 0fe8074f, so 0fe8074f precedes 8ba7deed. The count two belongs to the 8ba7deed comparison, never to a 0fe8074f-to-8ba7deed distance, which this session did not measure."
     command: "gh api repos/mastermindx-market-intelligence/Mastermind/compare/8ba7deedde164c90298d3e88785d98e02fa5e2d2...bf843961c0e1b5bd45fa481f0138c71f2a87d4e2"
     result: >
       status=ahead, ahead_by=2, behind_by=0. Combined with the prior compare, the verified order
       is 0fe8074f -> 8ba7deed -> bf843961, and the protected master has since advanced one further
-      step to e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48, giving the full order
-      0fe8074f -> 8ba7deed -> bf843961 -> e8803ba3 (current).
+      step to e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48, and twice more after that (§8.0), giving the
+      full order 0fe8074f -> 8ba7deed -> bf843961 -> e8803ba3 -> 5ee11ab1 -> 4537f066, of which
+      4537f066775c73d305f82acf0643701f01f5e53c is current as read 2026-09-16T22:55:39Z.
   - claim: "Mastermind #679 is MERGED at head 0dfb720cdd3dc20b3b168efcb23e1d7ab66a8291 with merge commit f590c068880dbb848bda90b80b73dbcb6688d6fc."
     command: "gh pr view 679 -R mastermindx-market-intelligence/Mastermind --json state,headRefOid,mergeCommit,title"
     result: >
@@ -433,7 +437,7 @@ do_not_redo:
   - "Never re-run the #677 remote-complete verifier on the OLD head 09e53b30092400c501a508992bf942474d70d830. Sol R80 (comment 5704046553): 'do not run the verifier on this head', and a typed result from an already-started run 'cannot release or accept H3 and must not be retried'. This bar is HEAD-SCOPED, not a blanket no-retry: R80 REQUIRES the canonical remote-complete verifier on the NEW head once one exists, under the same child/branch/writer and with no new grant."
   - "Never patch, store or remove #677's `transaction_id`. It is receipt-local provenance/diagnostic identity; the equality test is the carrier."
   - "Never open a replacement writer, branch or PR for #677. For #653 the builder stop is now TERMINAL and the writer IS released, so the lawful next step is the named successor operation under its own placement, never an ad-hoc replacement PR on the same branch."
-  - "Do not redo host discovery by checking whether the service exists. The installed-host truth is already recorded: Executive control/relay launchd runs installed release 4c148709f52ff036d71dd212abd2688212d91ed0 (61 commits behind protected bf843961) and MCP runs 46bea20832a8f0d01559eb8bfb0e9b1406774956 (41 behind); production sockets exist; root-owned control.json and python-runtime.json are unreadable to the seat, which is a LEGITIMATE BOUNDARY and not a gap to route around."
+  - "Do not redo host discovery by checking whether the service exists. The installed-host truth is already recorded: Executive control/relay launchd runs installed release 4c148709f52ff036d71dd212abd2688212d91ed0 (61 commits behind the protected master AS IT STOOD AT bf843961 when measured 2026-09-16T20:2xZ) and MCP runs 46bea20832a8f0d01559eb8bfb0e9b1406774956 (41 behind the same pin); the protected master has advanced three times since (bf843961 -> e8803ba3 -> 5ee11ab1 -> 4537f066), so both distances are now LOWER BOUNDS and must be re-measured before use; production sockets exist; root-owned control.json and python-runtime.json are unreadable to the seat, which is a LEGITIMATE BOUNDARY and not a gap to route around."
 danger_areas:
   - "Merged is not proven. All SEVEN Wave 1 merges — #575, #579, #576 (ACP/HF1-B), #578, #581, #583 (HF1-C/HF1-D) and #577 (provider-fabric v2) — establish provider-free ACP SDK / native-process boundaries, the provider-neutral broker seam, the single plan-to-harness binding authority and the MiniMax/Alibaba realms on the Codex worker. None proves a live provider route or a production heterogeneous workflow. Treat merged as a source receipt, never as a production receipt."
   - "Heads move under an active principal. Re-read every SHA at action time; the pins here were taken on 2026-09-16 between 19:51Z and 20:1xZ."
@@ -484,8 +488,9 @@ The intake pin does NOT advance the record, does not supersede the seat-recorded
 `8ba7deed`, and must not be written as the new protected-master pin. The workstream's
 `next_action` pin moves from `7642aea155d2817219135b24246b55c1d7611c66` (the 2026-09-16
 record's pin) to the protected master. That pin was `bf843961c0e1b5bd45fa481f0138c71f2a87d4e2`
-when this section was first written at 19:5xZ and is now
-`e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48`; the `next_action` carries the current value.
+when this section was first written at 19:5xZ, then `e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48` at
+20:4xZ, and is now `4537f066775c73d305f82acf0643701f01f5e53c` (read 2026-09-16T22:55:39Z, §8.0);
+the `next_action` carries that current value.
 
 ## §2 The two #7181 intake comments, consumed
 
@@ -716,8 +721,9 @@ neither is now current.
   and no discoverable worker return. Classification `UNEXPECTED_BRANCH_MOVEMENT / RELEASE_BLOCKED /
   CURRENT_HEAD_UNACCEPTED`; effect `RECONCILIATION_AND_TRANSPORT_ONLY`. GitHub chronology: Ready
   21:14:26Z, added to merge queue 21:15:14Z, descendant committed 21:16:19Z, removed from merge queue
-  21:18:26Z, converted back to Draft 21:20:06Z. The edge states in terms: **"the earlier statement that
-  #705 remains queued behind #697 is stale."** Root NONTERMINAL.
+  21:18:26Z, converted back to Draft 21:20:06Z. The edge states in terms that any earlier description of
+  #705 as still sitting in the merge queue behind another carrier is STALE and must not be repeated;
+  #705 is OPEN/DRAFT and OUT of the merge queue. Root NONTERMINAL.
 - `1789594134.608459` — REVIEW RETURN on `be75d798`: `SEMANTIC_PASS_AT_EXISTING_CEILING /
   RELEASE_HOLD`. One commit, `+105/-17`, same single research file; it narrows rather than widens the
   claim. Retaining it is preferred to reverting. Release requires ALL of: current-head hosted `test`
