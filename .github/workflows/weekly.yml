@@ -51,24 +51,9 @@ jobs:
       # The library build (build_site) needs every S&P 1500 constituent close
       # matrix present. Weekly does not re-collect them, so restore from the
       # cache the daily run saved (caches are gitignored, not committed).
-      - name: restore breadth (S&P 500) close cache
-        uses: actions/cache@v4
-        with:
-          path: data/breadth/_closes_cache.parquet
-          key: breadth-closes-weekly-${{ github.run_id }}
-          restore-keys: breadth-closes-
-      - name: restore smallcap (S&P 600) close cache
-        uses: actions/cache@v4
-        with:
-          path: data/smallcap_breadth/_closes_cache.parquet
-          key: smallcap-closes-weekly-${{ github.run_id }}
-          restore-keys: smallcap-closes-
-      - name: restore midcap (S&P 400) close cache
-        uses: actions/cache@v4
-        with:
-          path: data/midcap_breadth/_closes_cache.parquet
-          key: midcap-closes-weekly-${{ github.run_id }}
-          restore-keys: midcap-closes-
+      # US Prophet: read the three Git-tracked US breadth panels from checkout.
+      # Only collect may seed those panels from Actions cache; a reader must
+      # not overwrite them. Gitignored Russell/other handoffs stay unchanged.
       # 2026-07-25: this step was missing — the weekly deep-dive stamped a 1,704-name
       # us_calls universe between 2,966-name nightly stamps (keep-FIRST PIT: permanent).
       # Every lane that restores the S&P trio for the library must restore Russell too.

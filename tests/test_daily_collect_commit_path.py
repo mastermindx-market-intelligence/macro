@@ -833,3 +833,62 @@ def test_gitignored_russell_cache_uses_the_collect_jobs_exact_same_run_key():
         "engine's Russell restore must remain exact-key-only; a prefix fallback may select "
         "a prior run and silently reintroduce stale source data"
     )
+
+
+# The 2026-09-15 recurrence crossed the old guard: restore-only rendering jobs
+# can publish stale DERIVED boards even when they never commit the raw panel.
+_US_COMMITTED_PRICE_PANELS = {
+    "data/breadth/_closes_cache.parquet": "breadth-closes-",
+    "data/smallcap_breadth/_closes_cache.parquet": "smallcap-closes-",
+    "data/midcap_breadth/_closes_cache.parquet": "midcap-closes-",
+}
+
+
+def _us_panel_cache_steps():
+    for workflow in sorted((ROOT / ".github/workflows").glob("*.yml")):
+        document = yaml.safe_load(workflow.read_text()) or {}
+        for job_name, job in (document.get("jobs") or {}).items():
+            for step in job.get("steps", []):
+                uses = str(step.get("uses") or "")
+                if not uses.startswith(("actions/cache@", "actions/cache/restore@")):
+                    continue
+                with_ = step.get("with") or {}
+                path = str(with_.get("path") or "").strip()
+                if path in _US_COMMITTED_PRICE_PANELS:
+                    yield workflow.name, job_name, step, path
+
+
+def test_all_readonly_us_panel_consumers_preserve_git_authority():
+    """A rendering job's lack of data/ staging does not make stale input safe."""
+    readers = [(workflow, job, step, path)
+               for workflow, job, step, path in _us_panel_cache_steps()
+               if (workflow, job) != ("daily.yml", "collect")]
+    required_workflows = {
+        "daily.yml", "closing-bell.yml", "earlyclose.yml", "engine-render.yml",
+        "render.yml", "weekly.yml", "special-sits-backfill.yml",
+    }
+    assert required_workflows <= {
+        p.name for p in (ROOT / ".github/workflows").glob("*.yml")
+    }, "a missing workflow is not proof of a repaired reader"
+    offenders = [f"{workflow}:{job}:{path}"
+                 for workflow, job, step, path in readers]
+    assert not offenders, (
+        "Read-only consumers overwrite committed US price panels with cached "
+        f"copies and publish stale derived boards: {offenders}. Read the Git "
+        "checkout directly. Even an exact cache key can restore an earlier "
+        "attempt's input on a same-run retry. Never restamp stale inputs or "
+        "remove the distinct gitignored Russell handoff."
+    )
+
+
+def test_daily_collector_keeps_us_panel_seed_cache_authority():
+    """The producer seed remains useful; consumers cannot impersonate it."""
+    seeds = {path: (step.get("with") or {}).get("restore-keys")
+             for workflow, job, step, path in _us_panel_cache_steps()
+             if (workflow, job) == ("daily.yml", "collect")}
+    assert seeds == _US_COMMITTED_PRICE_PANELS
+    for path in _US_COMMITTED_PRICE_PANELS:
+        assert _is_git_tracked(path), (
+            f"{path} changed data ownership; do not silently replace the reviewed "
+            "Git-authoritative reader policy with a cache fallback"
+        )

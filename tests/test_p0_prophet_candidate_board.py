@@ -31,6 +31,7 @@ scripts/build_site.py, exactly like tests/test_p_mp1_shell_repair_round.py.
 from __future__ import annotations
 
 import re
+import pytest
 import sys
 from pathlib import Path
 
@@ -219,7 +220,7 @@ def test_c1_no_escaped_b_tag_anywhere_in_the_rendered_document():
     assert "&lt;b&gt;" not in html, (
         "t()+|safe on a string already containing raw <b>/</b> double-escapes "
         "under autoescape — the fix writes the bilingual twin explicitly")
-    assert f"<b>{gate['total']}</b> screened tonight" in html
+    assert f"<b>{gate['total']}</b> screened" in html
 
 
 # ═══════════════════════════ C2 — census reconciliation ════════════════════
@@ -232,8 +233,8 @@ def test_c2_cand_total_equals_gate_total_not_inflated_by_the_ran_array():
         {"live": 22, "setting_up": 24, "ran": 5, "basing": 6, "blocked": 3},
         ran_extra=17)
     assert gate["total"] == 60
-    assert f"<b>{gate['total']}</b> screened tonight" in html
-    assert "<b>77</b> screened tonight" not in html
+    assert f"<b>{gate['total']}</b> screened" in html
+    assert "<b>77</b> screened" not in html
 
 
 def test_c2_five_shelves_sum_exactly_to_cand_total_no_residual_when_clean():
@@ -372,3 +373,26 @@ def test_e_no_js_assignment_impersonates_an_href_or_src_attribute():
         "comment spelling one followed by = and a quoted string, is enough to "
         "cause this."
     )
+
+
+@pytest.mark.parametrize("as_of", ("2026-09-11", "2026-09-15", None, "", "__missing__"))
+def test_candidate_heading_discloses_source_date_without_tonight_claim(as_of):
+    """A new shell/render timestamp must not freshen an old or undated screen."""
+    from bs4 import BeautifulSoup
+
+    su = {"buy": _stage_rows({"live": 1}), "ran": [], "eligible": 1}
+    if as_of != "__missing__":
+        su["as_of"] = as_of
+    html = _render_stocks({"us_standouts": su,
+                           "us_prophet_book": _prophet_book(plans=[])})
+    soup = BeautifulSoup(html, "html.parser")
+    section = soup.select_one("#us-candidates")
+    assert section is not None
+    heading = section.select_one(".mx-sec-total .l-en").get_text(" ", strip=True)
+    assert "1 screened" in heading
+    if as_of and as_of != "__missing__":
+        assert "as of " + as_of in heading
+    else:
+        assert "date unavailable" in heading
+    assert "tonight" not in section.get_text(" ", strip=True).lower()
+    assert "今晚" not in section.get_text(" ", strip=True)

@@ -468,24 +468,9 @@ jobs:
       # build_site's per-name analyze read constituent closes) and the intraday cache
       # (chart data). Restore-only — the nightly `collect` job produces/saves them; we
       # fall back via restore-keys to the most recent daily's cache.
-      - name: restore breadth (S&P 500) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/breadth/_closes_cache.parquet
-          key: breadth-closes-render-${{ github.run_id }}
-          restore-keys: breadth-closes-
-      - name: restore smallcap (S&P 600) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/smallcap_breadth/_closes_cache.parquet
-          key: smallcap-closes-render-${{ github.run_id }}
-          restore-keys: smallcap-closes-
-      - name: restore midcap (S&P 400) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/midcap_breadth/_closes_cache.parquet
-          key: midcap-closes-render-${{ github.run_id }}
-          restore-keys: midcap-closes-
+      # US Prophet: read the three Git-tracked US breadth panels from checkout.
+      # Only collect may seed those panels from Actions cache; a reader must
+      # not overwrite them. Gitignored Russell/other handoffs stay unchanged.
       - name: restore Russell 2000 breadth close cache
         uses: actions/cache@v4
         with:
