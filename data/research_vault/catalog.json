@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-16T07:59:28.146590+00:00",
-  "count": 2213,
+  "generated_at": "2026-09-16T08:24:55.876195+00:00",
+  "count": 2215,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -135,6 +135,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 20,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-okzc2widxyb-0e11ef",
+      "title": "Pool Corp. (POOL) Global Consumer and Retail Conference 2026 — Key Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T02:54:06Z",
+      "summary_points": [
+        "**Valuation/Rating**: Buy rating with $247 12m price target (43.8% upside from $171.76), based on 14.5x Q5-8 adj.",
+        "EBITDA forecast.",
+        "**Target-Closing Price Gap**: Goldman Sachs' $247 target exceeds closing price ($183.33) by 34.7%, widening from 17.8% gap (24-Apr-26), signaling potential upside or execution risk.",
+        "**Critical Risks**: Adverse weather, raw material cost pass-through failure, loss of key supplier relationships, and acquisition integration issues.",
+        "**Regional Dynamics**: Florida stabilizing, Texas weak, Northeast resilient; management prioritizes pricing optimization and operational excellence to drive share gains amid regional performance divergence."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
@@ -1012,6 +1033,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-gl7rps58m0f-20a988",
+      "title": "Bernstein 13 Sep 2026 U.S. Semiconductors and Semicap Equipment Can you put the AI genie back in the bottle",
+      "institution": "Bernstein",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T01:14:37Z",
+      "summary_points": [
+        "**US-China Tech Restrictions**: US bans advanced tech sales to China, cracks down on unauthorized distillation/model theft (e.g., Chinese labs using Claude distillation), with policies emphasizing RSI/safety fears as primary driver.",
+        "**AI Spending Resilience**: Inference/agent demand sustains compute spending despite \"pacing\" debate; Anthropic’s \"limiting ingredients\" focus (not halting training) implies minimal spending plan changes amid strained current demand.",
+        "**Semiconductor Targets**: AMD (AI CPU/GPU growth), NVDA (datacenter), AVGO (2026 AI trajectory) show strong price targets ($650/$400/$575) vs.",
+        "current pricing, with KLAC benefiting from GAA packaging and lower China replacement risk.",
+        "**Portfolio Position**: NVDA, AVGO, and semicap stocks remain preferred; safer AI adoption prioritized over \"SkyNet\" scenarios, with 3rd-party evaluations seen as constructive for long-term adoption."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
       "language": "en",
       "needs_metadata": false
     },
