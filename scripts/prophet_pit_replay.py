@@ -1097,6 +1097,17 @@ def build_alpha(vintage: Path, *, through: str, work: Path,
             + "\n  ".join(tail)
         )
     result = json.loads(out.read_text())
+    if not isinstance(result, dict):
+        raise PitReplayRefused("the residual-alpha rebuild returned an invalid result object")
+    if result.get("ok") is False:
+        # No output is an upstream computation/data failure, not proof of a bad date fence.
+        tail = proc.stderr.decode("utf-8", "replace").strip().splitlines()[-20:]
+        details = "\n  ".join(tail) or "<no upstream diagnostic>"
+        raise PitReplayRefused(
+            "the residual-alpha rebuild returned no alpha result; refusing before "
+            "date validation. No truncation cause is inferred. Upstream diagnostics:\n  "
+            + details
+        )
     as_of = str(result.get("as_of") or "")[:10]
     if as_of != through:
         raise PitReplayRefused(

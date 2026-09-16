@@ -1,3 +1,21 @@
+# 2026-09-16 recovery update — read before historical sections
+
+The new source of current execution truth is research/signal_engine/macd_context/RECOVERY_AND_REPLAY_REPAIR_2026-09-16.md plus ACCOUNTING_RECONCILIATION_2026-09-16.json. Existing study findings and scientific holds remain; this update supersedes only the old operational blocker/status clauses below.
+
+- Current Skillpack pin a78b8fe23d8e1ed129880ac47e97ebe96afa8aea; compatible INDEX and enrolled WEB_CEO_DELEGATION loaded with required companions.
+- Historical Git ancestry restored with one additive origin fetch. shallow=false; shared checkout HEAD20c950b081773cd5ecc04815275c28b32e49b879 unchanged. Existing resolve-only now passes for July17,2026, vintage ff745b1ab54256b0188688cc5815e6675e4edef5. Do not repeat the old history repair.
+- Existing external-SSD helper acquired our isolated PR7177 source workspace: /Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/pr-7177-e58499258369472e. It began at984a14537259626628dea5636bd5b7fe21f25958. No wrapper repoint or foreign worktree adoption.
+- Canonical TrialLedger owner appended seven records in that workspace, preserving all prior bytes; identical second call appends zero. Existing1674rows become1681. Family macd_context_cycle has a conservative minimum6502floor and six itemized NOT-YET-EXECUTED score configs. This is retrospective exposure accounting, not independent-test certification, accepted significance, complete exposure adjudication or default-main application before merge. Old6235patch not used.
+- Canonical --control dry run now reaches alpha pre-step but receives ok=false/as_of=null. No fidelity result, board or plan minted. Retained own harness tree: cycle_extension_v2/replay_debug_20260916_r2/vintage-ff745b1ab542. Root upstream cause remains unknown; a direct diagnostic was platform-blocked and must not be rerouted/re-encoded.
+- Bounded source repair distinguishes explicit upstream no-result/wrong result shape from genuine date mismatch; all rejection checks remain. Newfive regression tests plus existing replay suite187passed; canonical TrialLedger suite23passed. Initialtwo full-suite failures were missing exact committed fixtures in the sparse checkout, restored without changing tests or source-data content. Total210passed in final suites, not a repository-CI or scientific-acceptance claim.
+- Native GitHub Copilot request returned no demonstrated review assignment/result; lists remain empty. No independent reviewer, runtime Job, watcher or scientific acceptance claimed.
+- Fixed-score d21/H21 outcome read and all predictive promotion remain held. Original crossover/benchmark/contrast/context/preflight artifacts unchanged; no new return calculation or live trading modification.
+
+Exact next scientific action: after the named diagnostic platform boundary is cleared, diagnose the retained upstream alpha failure and rerun the existing fidelity control only after a material repair. Independent source/scientific review and required historical publication semantics remain gates. A source-only merge does not validate a MACD advantage or authorize rank/gate/size/trade changes.
+Publication: retain existing PR7177/sol/macd-cycle-research-20260915-c3; reconcile its new pushed head and checks, keep draft/hold until existing release gates pass. Own REPL2988 is an in-turn process only; exact shutdown will be recorded locally. No background continuation promise.
+
+---
+
 # MACD context research — current continuation
 
 Execution receipts September16,2026 UTC; continuation of the September15 program. Parent capability PARTIAL, exploratory, zero production/trade authority.
