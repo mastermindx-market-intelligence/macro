@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-16T03:54:27.724024+00:00",
-  "count": 2202,
+  "generated_at": "2026-09-16T04:09:28.822389+00:00",
+  "count": 2203,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -135,6 +135,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-knd1xcpxblx-4040da",
+      "title": "Global Markets Daily A Floor Under Foreign Flows Into US Credit",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T02:53:35Z",
+      "summary_points": [
+        "**Foreign Flows in US Credit**: 2026 YTD net foreign purchases of US corporate bonds at $251B (on pace to rival 2025’s $392B record), driven by Europe (52%), Asia (21%), and Caribbean (17%).",
+        "**Japanese Investor Structural Shift**: Japanese investors reducing IG/HY bond holdings (Exhibit 5), increasing CLOs/alternatives (Exhibit 6), with $382B USD exposure in IG bonds showing manageable decline amid tighter spreads.",
+        "**USD Credit Dominance & Demand Fundamentals**: Foreign demand remains resilient despite global yield rises due to market depth/scale; fundamentals (macro, corporate profits) outweigh hedging costs, limiting repatriation risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
