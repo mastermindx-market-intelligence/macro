@@ -31,7 +31,9 @@ changed:
       2026-09-16 record's §4, and a dated §7 addendum carrying the Sol edges that landed AFTER this
       record's first commit — #653's terminal builder stop and writer release, the installed-host
       generations and the frozen lawful chain, the WS:CHAIRMAN-CONTROL-ROOM intake decisions as a
-      cross-reference only, macro #7143, and #688's in-flight REQUEST_REPAIR. The addendum is
+      cross-reference only, macro #7143, and #688's REQUEST_REPAIR — recorded as in-flight when the
+      addendum was written at 20:2xZ, and since LANDED (live head 24cb642a, review R9 APPROVE /
+      BLOCKING 0), as §3 and §7 record. The addendum is
       appended rather than merged back into §3 so the order in which the organization learned these
       facts stays visible, and the two statements it supersedes (#653 isDraft false,
       branch_writer_released=false) are marked superseded rather than quietly edited away.
@@ -116,16 +118,21 @@ verified:
       "procedure-only"; the compare this session ran shows source files, so the observed file list is
       recorded here and that characterisation is deliberately not repeated. The earlier 20:0xZ reading of
       this same command returned bf843961 and is retained in the claim above.
-  - claim: "The intake comment pin 0fe8074ff953b2ced9025ed40f0f66019c759967 is an ANCESTOR of, i.e. OLDER than, the current pin bf843961c0e1b5bd45fa481f0138c71f2a87d4e2. It does NOT advance the record."
+  - claim: "The intake comment pin 0fe8074ff953b2ced9025ed40f0f66019c759967 is an ANCESTOR of, i.e. OLDER than, bf843961c0e1b5bd45fa481f0138c71f2a87d4e2. It does NOT advance the record. SCOPE: this compare was run at 2026-09-16T19:5xZ, when bf843961 was the protected master; the protected master has since moved to e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48 and bf843961 is now itself an ancestor of it, so the ancestry conclusion still holds and only the word CURRENT has moved off bf843961."
     command: "gh api repos/mastermindx-market-intelligence/Mastermind/compare/0fe8074ff953b2ced9025ed40f0f66019c759967...bf843961c0e1b5bd45fa481f0138c71f2a87d4e2"
     result: >
       status=ahead, ahead_by=5, behind_by=0 — bf843961 is five commits ahead of 0fe8074f. The
-      intake pin is an ancestor of the current pin.
-  - claim: "Mastermind 8ba7deedde164c90298d3e88785d98e02fa5e2d2 sits between the intake pin 0fe8074f and the current bf843961: bf843961 is two commits ahead of 8ba7deed and five ahead of 0fe8074f, so 0fe8074f precedes 8ba7deed. The count two belongs to the 8ba7deed comparison, never to a 0fe8074f-to-8ba7deed distance, which this session did not measure."
+      intake pin is an ancestor of bf843961, which was the protected master when this compare was
+      run at 2026-09-16T19:5xZ. bf843961 is NO LONGER the current protected master — that is
+      e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48 (see the claim above) — and bf843961 is an ancestor
+      of it, so the intake pin is an ancestor of the current protected master a fortiori.
+  - claim: "Mastermind 8ba7deedde164c90298d3e88785d98e02fa5e2d2 sits between the intake pin 0fe8074f and bf843961 (the protected master at 2026-09-16T19:5xZ, since superseded by e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48): bf843961 is two commits ahead of 8ba7deed and five ahead of 0fe8074f, so 0fe8074f precedes 8ba7deed. The count two belongs to the 8ba7deed comparison, never to a 0fe8074f-to-8ba7deed distance, which this session did not measure."
     command: "gh api repos/mastermindx-market-intelligence/Mastermind/compare/8ba7deedde164c90298d3e88785d98e02fa5e2d2...bf843961c0e1b5bd45fa481f0138c71f2a87d4e2"
     result: >
       status=ahead, ahead_by=2, behind_by=0. Combined with the prior compare, the verified order
-      is 0fe8074f -> 8ba7deed -> bf843961.
+      is 0fe8074f -> 8ba7deed -> bf843961, and the protected master has since advanced one further
+      step to e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48, giving the full order
+      0fe8074f -> 8ba7deed -> bf843961 -> e8803ba3 (current).
   - claim: "Mastermind #679 is MERGED at head 0dfb720cdd3dc20b3b168efcb23e1d7ab66a8291 with merge commit f590c068880dbb848bda90b80b73dbcb6688d6fc."
     command: "gh pr view 679 -R mastermindx-market-intelligence/Mastermind --json state,headRefOid,mergeCommit,title"
     result: >
@@ -163,7 +170,8 @@ verified:
     result: >
       Reading taken 2026-09-16T20:0xZ: state OPEN, isDraft true, head
       36920d88c77fb7a4d52f1e8ba9030603015f23ff, reviewDecision CHANGES_REQUESTED. SUPERSEDED by the
-      re-read at 2026-09-16T21:0xZ recorded later in this same list, which returned head
+      re-read of the same command at 2026-09-16T20:4xZ, recorded in this list under the claim
+      "Mastermind #688's live head is 24cb642a...", which returned head
       24cb642a4a1c4f8369793d6f5d946764137f7293 with an EMPTY reviewDecision. Treat 24cb642a as the
       live head. The inference drawn here — "its Sol REQUEST_REPAIR is in flight" — rested on the
       CHANGES_REQUESTED value and does NOT survive the re-read; do not carry it forward.
@@ -435,20 +443,27 @@ terminal release child and does not reopen it.
 
 ## §1 The protected-master pin order (and the intake pin that does not advance it)
 
-Protected Mastermind master at the time of this fold is
-`bf843961c0e1b5bd45fa481f0138c71f2a87d4e2`. The verified ancestry between the intake pin and
-the current pin is:
+Protected Mastermind master when this fold's ancestry compares were run (2026-09-16T19:5xZ) was
+`bf843961c0e1b5bd45fa481f0138c71f2a87d4e2`. **SUPERSEDED as the CURRENT pin:** the protected
+master has since advanced to `e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48` (re-read
+2026-09-16T20:4xZ), which is one commit ahead of `bf843961`. Every "ancestor of `bf843961`"
+statement in this record was measured against that 19:5xZ reading and remains TRUE as measured;
+because `bf843961` is itself an ancestor of `e8803ba3`, each such statement also holds against the
+current protected master by transitivity. The measured ancestry between the intake pin and
+`bf843961` is:
 
 - `0fe8074ff953b2ced9025ed40f0f66019c759967` -> `bf843961`: status=ahead, ahead_by=5, behind_by=0.
 - `8ba7deedde164c90298d3e88785d98e02fa5e2d2` -> `bf843961`: status=ahead, ahead_by=2, behind_by=0.
 
-Therefore the true order is `0fe8074f` (older) -> `8ba7deed` -> `bf843961` (current). The
-06:52Z intake comment's pin `0fe8074f` is an ANCESTOR of, i.e. OLDER than, the current pin.
+Therefore the true order is `0fe8074f` (older) -> `8ba7deed` -> `bf843961` -> `e8803ba3`
+(current, as at 2026-09-16T20:4xZ). The 06:52Z intake comment's pin `0fe8074f` is an ANCESTOR of,
+i.e. OLDER than, every one of them.
 The intake pin does NOT advance the record, does not supersede the seat-recorded pin
 `8ba7deed`, and must not be written as the new protected-master pin. The workstream's
 `next_action` pin moves from `7642aea155d2817219135b24246b55c1d7611c66` (the 2026-09-16
-record's pin) to `bf843961c0e1b5bd45fa481f0138c71f2a87d4e2` because the former is no longer
-the protected master.
+record's pin) to the protected master. That pin was `bf843961c0e1b5bd45fa481f0138c71f2a87d4e2`
+when this section was first written at 19:5xZ and is now
+`e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48`; the `next_action` carries the current value.
 
 ## §2 The two #7181 intake comments, consumed
 
@@ -471,8 +486,10 @@ The first intake comment (`5692075928`, 2026-09-16T04:32:53Z) names:
 
 The second intake comment (`5693291461`, 2026-09-16T06:52:10Z) names:
 
-- Mastermind master `0fe8074f` — VERIFIED to exist and to be an ancestor of current `bf843961`
-  (see §1).
+- Mastermind master `0fe8074f` — VERIFIED to exist and to be an ancestor of `bf843961`, the
+  protected master as read at 2026-09-16T19:5xZ. `bf843961` has since been SUPERSEDED as the
+  current protected master by `e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48`, of which it is an
+  ancestor; the conclusion is unchanged (see §1).
 - #632 merged as `e1f752a58df8f874efa12e30957d911627a0c4f8` — VERIFIED EXACT.
 - #679 merged as `f590c068880dbb848bda90b80b73dbcb6688d6fc` — VERIFIED EXACT.
 - #677 head `8bd1935c4f462cc52dde433483eece2eb15eff02` — SUPERSEDED by `09e53b30092400c501a508992bf942474d70d830`.
@@ -500,9 +517,7 @@ date.
 |---|---|---|
 | W1-H3 #677 (Mastermind) | OPEN / isDraft true / **reviewDecision CHANGES_REQUESTED** @ `09e53b30092400c501a508992bf942474d70d830` (re-read 2026-09-16T20:4xZ). Sol accepted the **R48/R50/R68/R76** semantic closure at this head at root ts `1789588151` — verdict `PASS_AS_BUILT_NOT_PROVEN / REVIEW_REUSE_ALLOWED / SOURCE_CONTINUITY_PENDING`. **R80 (ts `1789590510.060009`, durable contract comment `5704046553`, 2026-09-16T20:28:12Z) is NOT an acceptance: its disposition is verbatim `REQUEST_REPAIR / SAME CHILD+BRANCH+WRITER / EXACT FOUR-PATH CEILING / H4 NOT_STARTED`** over `ops/executive_os/autonomy_control.py`, `tests/test_executive_autonomy_control.py`, `scripts/executive_os_phase1c_control_wrapper.py` and `tests/test_executive_launchd_config.py`. W1H3_R12_REVIEW.md APPROVE / BLOCKING 0 remains true **of the old head only**. | DRAFT/HOLD, **repair outstanding**. The old-head `remote-complete` grant was **WITHDRAWN BEFORE ACCEPTANCE**; R80 says plainly "do not run the verifier on this head". The no-retry rule is scoped to the **OLD head `09e53b30` ONLY** — it is not a standing bar on #677. **R80 requires the canonical `remote-complete` verifier to be run on the NEW head once one exists.** `transaction_id` is receipt-local provenance only. |
 | #677 one-shot verifier history (old head only) | Two typed results were produced against `09e53b30`, both HISTORICAL: first the refusal `OUT_OF_SCOPE_DIRT` (grant spent, reported earlier this session), then a later `REMOTE_COMPLETE_VERIFIED` (receipt_digest `3edb2976…`, run 2026-09-16T20:25:51-20:27:29Z, reported at root ts `1789591021.847339`). | **HISTORICAL EVIDENCE ONLY** (Sol R81, ts `1789592347` item 1). Neither result releases or accepts H3, and neither may be retried on `09e53b30`. Both are retained with their timestamps rather than deleted, because they are what actually happened. |
-| W1-H1 #653 (Mastermind) | OPEN / isDraft **true** / reviewDecision CHANGES_REQUESTED @ `3b34b58bbca11bd4369c5eabfd895e3a60ab7353`. **Sol ACCEPTED / TERMINAL BUILDER STOP / `BRANCH_WRITER_RELEASED = true`** (root edge `1789589988.661569`; receipt comment `5703950669`, 2026-09-16T20:20:11Z). Operation `executive-mcp-complete-readpath-20260914-sol-001` CLOSED at `PARTIAL / SOURCE_BUILT_NOT_PROVEN / TERMINAL_BUILDER_STOP / BRANCH_WRITER_RELEASED / DRAFT+HOLD` with THREE repair blockers and NO RELEASE: a mid-read Macro TOCTOU; unsafe lazy-fetch / local Git helper execution; a pathname-shaped rather than startup-attested edge runtime. A valid `REMOTE_COMPLETE_VERIFIED` receipt EXISTS (`receipt_digest 9b2c00643ae5ff5da70568ee1af0f1a7fee9af07595830029cf42861317db8a9`, tree `804cc81f7753ea4b8a453ad124ffb5af8db411b9`, procedure pin `e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48`, `external_effect_state=RECONCILED_NO_OPEN_EFFECT`, `local_equals_remote=true`, zero unpushed/uncommitted/untracked in and out of scope). `WATCH_STOP_FAILED / SOURCE_HANDLE_UNAVAILABLE` recorded; old worktrees preserved READ-ONLY. | **This SUPERSEDES this record's own earlier rows** which said isDraft false and `branch_writer_released=false`; both were read at 19:5xZ and Sol's stop landed at 20:20Z. Successor operation `executive-mcp-readpath-hardening-r2-20260916-sol-001` is a CAPACITY PLACEMENT REQUEST (PREFERRED_AVENUE = CTO Sol), **WAITING_CAPACITY. **Superseding this record's earlier "pending placement, no child" wording: the successor
-child root NOW EXISTS** at `C0BSBM78V1N/1789590737.772949` with contract reply `1789590945.957289`, state
-WAITING_CAPACITY — a child that exists and is waiting for capacity, still NOT started. #653 stays OPEN/DRAFT/CHANGES_REQUESTED; #684 integrates AFTER #653; W1-H4 is NOT_STARTED until #677 is protected AND the #653 repair is accepted. |
+| W1-H1 #653 (Mastermind) | OPEN / isDraft **true** / reviewDecision CHANGES_REQUESTED @ `3b34b58bbca11bd4369c5eabfd895e3a60ab7353`. **Sol ACCEPTED / TERMINAL BUILDER STOP / `BRANCH_WRITER_RELEASED = true`** (root edge `1789589988.661569`; receipt comment `5703950669`, 2026-09-16T20:20:11Z). Operation `executive-mcp-complete-readpath-20260914-sol-001` CLOSED at `PARTIAL / SOURCE_BUILT_NOT_PROVEN / TERMINAL_BUILDER_STOP / BRANCH_WRITER_RELEASED / DRAFT+HOLD` with THREE repair blockers and NO RELEASE: a mid-read Macro TOCTOU; unsafe lazy-fetch / local Git helper execution; a pathname-shaped rather than startup-attested edge runtime. A valid `REMOTE_COMPLETE_VERIFIED` receipt EXISTS (`receipt_digest 9b2c00643ae5ff5da70568ee1af0f1a7fee9af07595830029cf42861317db8a9`, tree `804cc81f7753ea4b8a453ad124ffb5af8db411b9`, procedure pin `e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48`, `external_effect_state=RECONCILED_NO_OPEN_EFFECT`, `local_equals_remote=true`, zero unpushed/uncommitted/untracked in and out of scope). `WATCH_STOP_FAILED / SOURCE_HANDLE_UNAVAILABLE` recorded; old worktrees preserved READ-ONLY. | **This SUPERSEDES this record's own earlier rows** which said isDraft false and `branch_writer_released=false`; both were read at 19:5xZ and Sol's stop landed at 20:20Z. Successor operation `executive-mcp-readpath-hardening-r2-20260916-sol-001` is a CAPACITY PLACEMENT REQUEST (PREFERRED_AVENUE = CTO Sol), **WAITING_CAPACITY**. Superseding this record's earlier "pending placement, no child" wording: the successor child root **NOW EXISTS** at `C0BSBM78V1N/1789590737.772949` with contract reply `1789590945.957289`, state WAITING_CAPACITY — a child that exists and is waiting for capacity, still NOT started. #653 stays OPEN/DRAFT/CHANGES_REQUESTED; #684 integrates AFTER #653; W1-H4 is NOT_STARTED until #677 is protected AND the #653 repair is accepted. |
 | #684 (Mastermind) | OPEN / isDraft true @ `60981aecad60a0a8191cd19f3cb52a77e3d9f249`. Independent review `5221691756` (COMMENTED, 2026-09-16T10:51:32Z) — REVIEW'S OWN wording `PASS_AS_SOURCE / RELEASE_HOLD`; CONSUMING checkpoint comment `5703579105` (2026-09-16T19:49:35Z) consumed it as `PASS_AS_SOURCE / RELEASE_BLOCKED_BY_ACTIVE_COLLISION`. | COMMENTED is not APPROVED. Release order serialized `#653 -> #684 composition/re-review -> #688`. Durable checkpoint URL: https://github.com/mastermindx-market-intelligence/Mastermind/pull/684#issuecomment-5703579105 |
 | #688 (Mastermind) | OPEN / isDraft true @ **`24cb642a4a1c4f8369793d6f5d946764137f7293`** (Step-A repair; re-read 2026-09-16T20:4xZ, reviewDecision now EMPTY — the repair push cleared the earlier CHANGES_REQUESTED). Review **R9 APPROVE / BLOCKING 0**; REPAIR_RETURN at root ts `1789591767.054019`. Check-runs at this head, read once: `test` completed/**FAILURE**; CodeQL, Analyze python, Analyze javascript-typescript and Analyze actions all completed/success. That `test` failure is the **pre-existing D8 identity-literal guard owned by #684**, identical at the old head, so it is not a regression introduced by the Step-A repair. HISTORICAL: at head `36920d88c77fb7a4d52f1e8ba9030603015f23ff` the kit CAPCONTRACT_B_RECORD.md read REPAIRED and review R688_REVIEW_R8.md read APPROVE; both remain true of that head and are not retracted. | Release HOLD. Order **#653-successor -> #684 -> #688** (Sol R81 item 4). The #684-owned `test` failure must be cleared by its owner, not by this carrier. |
 | #699 (Mastermind, packet05) | OPEN / isDraft true @ `bdd124c4aa295dbb67f4ffd2f60ef2a9f7946128`. REJECTED_FOR_ACCEPTANCE. ONE granted verifier run returned `VERDICT: REFUSAL REMOTE_PROOF_CHANGED`; Sol consumed that refusal AS REFUSAL EVIDENCE ONLY — no retry, no writer release; grant SPENT. Seat-owned `p05-verify-…` worktree INERT/UNCHANGED. | PARKED/HOLD. Do not poll. A future attempt needs a NEW MATERIAL source-continuity edge. REMOTE_PROOF_CHANGED is a repo-wide quiescence guard over every open PR, NOT a verdict on packet05's source. |
@@ -600,7 +615,10 @@ comment `5703950669`, 2026-09-16T20:20:11Z). §3's row is corrected in place. Tw
 record made at 19:5xZ are now false and are marked as superseded rather than quietly edited away:
 `isDraft false` (it is now true) and `branch_writer_released=false` (it is now true). The successor
 operation `executive-mcp-readpath-hardening-r2-20260916-sol-001` is a CAPACITY PLACEMENT REQUEST,
-WAITING_CAPACITY / PRE_START — pending placement, NOT started.
+WAITING_CAPACITY / PRE_START. SUPERSEDING this paragraph's earlier "pending placement, NOT started"
+wording, which described the state before the child existed: the successor child root NOW EXISTS at
+`C0BSBM78V1N/1789590737.772949` with contract reply `1789590945.957289`. It is a child that exists
+and is waiting for capacity — still NOT started, and this record does not start it.
 
 **Installed-host truth and the frozen lawful chain.** The substrate is `PROVEN_LIVE` only at stale
 generations: control/relay launchd at `4c148709f52ff036d71dd212abd2688212d91ed0` (61 commits behind
