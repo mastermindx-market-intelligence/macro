@@ -2,8 +2,8 @@
 
 **Operation:** `public-site-figma-baseline-20260915-sol-001`  
 **Owner:** Sol  
-**Status:** `PARTIAL` — complete source-bound reference matrix and Figma execution assets; actual Figma file remains `NOT_BUILT`  
-**Current Skillpack:** `mastermindx-market-intelligence/Mastermind@7642aea155d2817219135b24246b55c1d7611c66`  
+**Status:** `PARTIAL` — canonical Figma carrier and page architecture exist; editable page reconstruction and proof remain unfinished
+**Current Skillpack:** `mastermindx-market-intelligence/Mastermind@bf843961c0e1b5bd45fa481f0138c71f2a87d4e2`
 **Frozen site source:** `mastermindx-market-intelligence/macro@15c01bd991f35d0bb2185ee1e608a05df0805803`  
 **Design branch:** `sol/public-site-figma-baseline-spec-20260915`  
 **Design-branch head before this checkpoint:** `ce52e8d50f621125f132d847b64c0677def59be3`
@@ -54,28 +54,83 @@ Important children:
 - `figma_20_prepare_import_targets.js`
 - `figma_21_finalize_import_targets.js`
 
-## Figma write reconciliation
+## Figma carrier reconciliation
 
-The Figma connector schema exposed write tools, but the first bounded `whoami` call returned a platform-level disabled-tool response. No create or edit call executed afterward. The previously attempted creates were reconciled as known no-effect. Therefore:
+A desktop-level read of Figma's own recent-file state and a direct open of the named file corrected the earlier no-file claim. The canonical carrier already exists:
 
-- no Figma file exists from this operation;
-- no Figma node or asset was modified;
-- there is no duplicate design carrier;
-- the expected file name remains `MastermindX Public Site — Current 1:1 + Revamp`;
-- the last known destination plan key is `team::1679263159873159004`, but it must be reverified before creation.
+- file name: `MastermindX Public Site — Current 1:1 + Revamp`;
+- file key: `sDuVPajwNnGLkZlWyun9wq`;
+- plan/user context: the authenticated Mastermind Professional workspace already used by this operation;
+- duplicate status: **one file**. Two recent-history entries pointed to the same `/file/sDuVPajwNnGLkZlWyun9wq` path and were not duplicate files.
+
+Direct window proof showed nine pages already present in this order:
+
+```text
+00 — Read Me & Acceptance
+01 — Foundations
+02 — Components
+10 — Current · Homepage
+11 — Current · Market Terminal
+12 — Current · Mastermind AI
+13 — Current · Market Dashboards
+20 — Motion & Interaction
+90 — Reference Captures
+```
+
+`99 — Revamp` is absent. The selected `00` canvas was blank and no visible top-level layers were present. Therefore the truthful carrier state is `PARTIAL`: file and page architecture exist, while native reconstruction, reference imports, overlays, acceptance content, motion proof and the locked Revamp gate remain unfinished.
+
+The prior connector create attempts remain reconciled as known no-effect. They did not create a second file. The stale statement “no Figma file exists” is superseded by the direct carrier evidence above.
+
+## Durable tooling added on 2026-09-16
+
+The branch contains a source-bound, reusable capture and native-connector import path rather than only one-off evidence scripts:
+
+- `capture_reference_matrix.py` verifies frozen source blobs before capture and defines the canonical 20 static + 16 motion jobs;
+- `reference_matrix.py` refuses missing, duplicate, console-error, dimension-mismatched or noncanonical evidence;
+- `build_import_plan.py` emits the ordered 36-target upload manifest plus idempotent Figma preparation/finalization scripts;
+- three focused test modules cover capture ordering, matrix sealing and import-plan generation.
+
+Fresh verification:
+
+```text
+SOURCE_VERIFIED local_head=e0e3fda2fa2a44d8d64c3f0a52b9d56c1de3653b frozen_source=15c01bd991f35d0bb2185ee1e608a05df0805803
+11 passed
+FIGMA_BASELINE_TOOLING_VERIFIED targets=36 js=2 source=verified
+REAL_CAPTURE_RUN_RESEALED static=20 motion=16 hashes_match=36
+```
+
+The tooling prepares deterministic inputs for the native ChatGPT Figma connector. It does not itself prove execution in Figma or visual fidelity. No production-site path changed.
+
+## Native ChatGPT Figma connector boundary
+
+Chairman direction is explicit: all Figma canvas reads and writes must use the native ChatGPT Figma connector. Figma Desktop, Remote Desktop UI automation and local development plugins are not valid execution carriers for this program.
+
+The current ChatGPT plugin state was checked directly:
+
+- Figma is installed and enabled in ChatGPT;
+- its app-specific permission is `Allow all actions`;
+- a native `whoami` call returned the typed platform response `The Figma tool has been disabled` before any Figma read or write;
+- therefore this conversation produced no Figma effect and must not retry through another carrier.
+
+The rejected local-development-plugin implementation and runbook were removed from the worktree and evidence root. Do not recreate them.
 
 ## Exact continuation sequence
 
-1. Load the then-current protected Sol Skillpack and record its exact SHA.
-2. Re-probe the actual Figma surface once with `whoami`; do not infer recovery from connector documentation.
-3. If healthy, create exactly one design file named `MastermindX Public Site — Current 1:1 + Revamp` in the reverified plan and record its file key.
-4. Execute the verified bootstrap, homepage-hero and product-hero scripts from the approved execution pack.
-5. Execute `figma_20_prepare_import_targets.js`; collect the 36 target node IDs in `figma_upload_order.json` order.
-6. Call Figma `upload_assets` with all 36 nodes using `FIT`; upload each exact local file to its corresponding signed URL.
-7. Execute `figma_21_finalize_import_targets.js`; it must refuse to lock unless every target has an image fill.
-8. Read metadata and screenshots from the actual file, then begin opacity-overlay review one page/state at a time.
-9. Build the remaining editable full-page sections. Do not mistake imported captures or hero slices for the accepted editable baseline.
-10. Keep `99 — Revamp` locked until the Current acceptance matrix passes.
+1. Use the native ChatGPT Figma connector only; do not use Figma Desktop, Mac UI automation or a local plugin.
+2. Reuse file key `sDuVPajwNnGLkZlWyun9wq`; **do not create another Figma file**.
+3. On a healthy connector surface, call `whoami`, then `get_metadata` on the existing file and reconcile authoritative page/node IDs.
+4. Use `use_figma` to add and lock `99 — Revamp`, then populate `00 — Read Me & Acceptance` and the shared foundations/components.
+5. Use `generate_figma_design` and/or `upload_assets` through the connector for the 20 source-bound static states and 16 motion references; never substitute a scaled desktop image for a mobile render.
+6. Build the four Current pages as native editable Figma structure and link hidden 50% reference overlays one state at a time.
+7. After each bounded wave, use connector metadata and screenshot reads to verify actual Figma state before advancing.
+8. Keep all redesign, copy changes and production code work closed until the Current acceptance matrix passes and the Chairman explicitly accepts it.
+
+## Current lane boundaries
+
+- This conversation's native Figma runtime is `PLATFORM_FAILURE / known no-effect` after the typed disabled response.
+- Repository and evidence preparation may use host tools, but no host tool may read or modify the Figma canvas.
+- The existing Figma carrier remains `PARTIAL`; no native connector proof has yet shown its current node-level state.
+- No design content, Figma asset, public-site source, deployment or production state was modified during this correction turn.
 
 ## Non-goals still in force
 

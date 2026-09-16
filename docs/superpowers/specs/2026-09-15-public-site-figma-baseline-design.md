@@ -1,6 +1,6 @@
 # MastermindX Public Site — Figma 1:1 Baseline and Revamp Design
 
-**Status:** Design approved in principle; written specification awaiting Chairman review  
+**Status:** Approved by Chairman on 2026-09-15; baseline construction authorized
 **Operation:** `public-site-figma-baseline-20260915-sol-001`  
 **Owner:** Sol  
 **Repository:** `mastermindx-market-intelligence/macro`  
