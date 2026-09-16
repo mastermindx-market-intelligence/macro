@@ -422,6 +422,72 @@ def test_builder_refuses_to_overwrite_with_a_stale_china_source(
     assert not (site / "marketdata" / "china_heatmap.json").exists()
 
 
+def test_generic_render_never_regresses_a_newer_existing_china_session(
+    tmp_path: Path, monkeypatch,
+) -> None:
+    """An inferior checkout cannot overwrite a newer already-published map.
+
+    Asia may legitimately publish a source session ahead of the pre-settle
+    exchange floor. A generic render whose checkout still ends one session
+    earlier must fail closed instead of treating the newer JSON as
+    "unverifiable" and rewriting it backward.
+    """
+    import pytest
+    from scripts import build_market_heatmap as builder
+
+    ticker = "600000.SS"
+    constituents = pd.DataFrame(
+        {"name": ["Bank A"], "sector": ["Financial Services"]},
+        index=pd.Index([ticker], name="ticker"),
+    )
+    closes_by_session = {
+        "2026-09-15": pd.DataFrame(
+            {ticker: [10.0, 10.2]},
+            index=pd.to_datetime(["2026-09-14", "2026-09-15"]),
+        ),
+        "2026-09-14": pd.DataFrame(
+            {ticker: [9.8, 10.0]},
+            index=pd.to_datetime(["2026-09-11", "2026-09-14"]),
+        ),
+    }
+    selected = {"session": "2026-09-15"}
+    monkeypatch.setitem(
+        builder._LOADERS,
+        "china",
+        lambda: (
+            constituents,
+            closes_by_session[selected["session"]],
+            {ticker: 1.0e12},
+            {},
+            {ticker: "银行甲"},
+        ),
+    )
+    monkeypatch.setattr(builder, "_board_breadth", lambda market: None)
+    site = tmp_path / "site"
+    output = site / "marketdata" / "china_heatmap.json"
+
+    newer = builder.build(
+        "china",
+        site=site,
+        generated_utc="2026-09-15 07:30",
+        now=datetime(2026, 9, 15, 10, 0, tzinfo=timezone.utc),
+    )
+    newer_bytes = output.read_bytes()
+    assert newer["asof"] == "2026-09-15"
+
+    selected["session"] = "2026-09-14"
+    with pytest.raises(RuntimeError, match="existing=2026-09-15.*candidate=2026-09-14"):
+        builder.build(
+            "china",
+            site=site,
+            generated_utc="2026-09-15 08:00",
+            now=datetime(2026, 9, 15, 8, 0, tzinfo=timezone.utc),
+        )
+
+    assert output.read_bytes() == newer_bytes
+    assert json.loads(output.read_text(encoding="utf-8"))["asof"] == "2026-09-15"
+
+
 def test_current_china_rebuild_does_not_churn_generated_timestamp(
     tmp_path: Path, monkeypatch,
 ) -> None:
@@ -456,16 +522,21 @@ def test_current_china_rebuild_does_not_churn_generated_timestamp(
         site=site,
         generated_utc="2026-09-16 04:00",
         now=NOW_DURING_2026_09_16_CN_SESSION,
+        render_page=True,
     )
     first_bytes = output.read_bytes()
+    page = site / "china_heatmap.html"
+    first_page_bytes = page.read_bytes()
     second = builder.build(
         "china",
         site=site,
         generated_utc="2026-09-16 05:00",
         now=NOW_DURING_2026_09_16_CN_SESSION,
+        render_page=True,
     )
 
     assert output.read_bytes() == first_bytes
+    assert page.read_bytes() == first_page_bytes
     assert first["generated_utc"] == second["generated_utc"] == "2026-09-16 04:00"
 
 
@@ -683,3 +754,17 @@ def test_generic_render_owner_reaches_the_guarded_builder() -> None:
     source = (ROOT / "scripts" / "build_site.py").read_text(encoding="utf-8")
     assert "from scripts.build_market_heatmap import build_all as build_market_heatmaps" in source
     assert "_hm_payloads = build_market_heatmaps(site, generated_utc=generated)" in source
+
+
+def test_ci_routes_checker_and_regression_suite_to_the_heatmap_owner() -> None:
+    """Checker-only and test-only edits must still select the owning CI pack."""
+    workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    legacy = (ROOT / ".github" / "ci" / "legacy-jobs.yml").read_text(encoding="utf-8")
+
+    assert '- "scripts/check_china_heatmap_freshness.py"' in workflow
+    assert '- "tests/test_china_heatmap_freshness.py"' in workflow
+    owner_start = legacy.index("  china-board-breadth:")
+    owner_end = legacy.index("\n  china-search-universe:", owner_start)
+    owner = legacy[owner_start:owner_end]
+    assert '"scripts/check_china_heatmap_freshness.py"' in legacy
+    assert "tests/test_china_heatmap_freshness.py" in owner

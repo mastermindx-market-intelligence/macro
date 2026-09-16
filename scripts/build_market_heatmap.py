@@ -24,7 +24,7 @@ import argparse
 import json
 import logging
 import sys
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 import numpy as np
@@ -277,6 +277,42 @@ def _normalise_now(now: datetime | None) -> datetime:
     return value.astimezone(timezone.utc)
 
 
+def _plausible_published_china_session(payload: object) -> str | None:
+    """Return ``asof`` for a structurally plausible published China payload.
+
+    This deliberately does not compare the payload with the caller's close
+    panel. A generic render can have an inferior checkout; using that checkout
+    to decide whether a newer on-disk publication is "valid" recreates the
+    exact backward-overwrite failure this lane is meant to prevent.
+    """
+    if not isinstance(payload, dict):
+        return None
+    if payload.get("market") != "china" or payload.get("source") != "daily-close":
+        return None
+    try:
+        session = date.fromisoformat(str(payload.get("asof") or "").strip()).isoformat()
+    except ValueError:
+        return None
+    tiles = payload.get("tiles")
+    n_tiles = payload.get("n_tiles")
+    if (
+        not isinstance(tiles, list)
+        or not tiles
+        or isinstance(n_tiles, bool)
+        or not isinstance(n_tiles, int)
+        or n_tiles != len(tiles)
+    ):
+        return None
+    tickers = [
+        str(tile.get("t") or "").strip()
+        for tile in tiles
+        if isinstance(tile, dict)
+    ]
+    if len(tickers) != len(tiles) or not all(tickers) or len(set(tickers)) != len(tickers):
+        return None
+    return session
+
+
 def render_standalone_page(
     market: str,
     payload: dict,
@@ -370,6 +406,16 @@ def build(
         except (OSError, json.JSONDecodeError):
             existing = None
         if isinstance(existing, dict):
+            existing_session = _plausible_published_china_session(existing)
+            candidate_session = str(payload.get("asof") or "").strip()
+            if existing_session is not None and existing_session > candidate_session:
+                # Monotonic publication fence.  Do not ask an inferior checkout
+                # to validate a session it cannot know; that turns "newer than
+                # me" into "invalid" and rewrites production backward.
+                raise ChinaHeatmapFreshnessError(
+                    "China heatmap regression refused",
+                    f"existing={existing_session} candidate={candidate_session}",
+                )
             try:
                 validate_china_heatmap(
                     existing,

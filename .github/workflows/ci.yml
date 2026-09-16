@@ -1163,15 +1163,18 @@ on:
       # merge with the only suite that pins them unrun.
       - "engine/china_news_intel.py"
       - "tests/test_china_news_intel_w2.py"
-      # Whole-board 涨跌家数: the heatmap card quotes a ~5,200-name count, and the
-      # engine gates the row against the map's own session. Both suites were
-      # previously named by NO job (#1253 wiring law) — test_market_heatmap.py
-      # included — so a regression in either would merge green.
+      # Whole-board 涨跌家数 + settled-close publication: the card quotes a
+      # ~5,200-name breadth count while the stock map is the curated current
+      # membership universe. All three suites must trigger together: collector,
+      # map contract, and the source/JSON/SSR/session publication fence. A
+      # checker-only or test-only edit must never leave its owner pack dark.
       - "collectors/china_board_breadth.py"
       - "tests/test_china_board_breadth.py"
       - "engine/market_heatmap.py"
       - "scripts/build_market_heatmap.py"
+      - "scripts/check_china_heatmap_freshness.py"
       - "tests/test_market_heatmap.py"
+      - "tests/test_china_heatmap_freshness.py"
       # china_heatmap's anonymous tier preview (SEO_SUPERCHARGE W2). The subject
       # files above already trigger, but the guard itself must too — a PR that
       # only weakens the test would otherwise reach main unchecked.
