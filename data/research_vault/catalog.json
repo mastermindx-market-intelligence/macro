@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-16T00:24:04.559956+00:00",
-  "count": 2192,
+  "generated_at": "2026-09-16T02:39:18.050920+00:00",
+  "count": 2199,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -38,6 +38,7 @@
     "Eastspring",
     "Fidelity",
     "Franklin",
+    "Franklin Templeton",
     "GMO",
     "Goldman Sachs",
     "Greed and Fear",
@@ -100,6 +101,85 @@
   ],
   "items": [
     {
+      "id": "marketdesk-didbhvbmh6e-e180ec",
+      "title": "Economics Economic Update 15 09 2026",
+      "institution": "Commbank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T00:13:56Z",
+      "summary_points": [
+        "QLD Investment Momentum**: QLD ranks #1 in dwelling investment (+16.8% yr) and #2 in business investment (+9.0% yr), driving its top ranking despite household consumption weakness (#5) **NT Wage Cost Risk**: NT ranks #8 in wage price index (worst), signaling severe labor cost pressures critical for business profitability and portfolio allocation **SA Public Investment Anchor**: SA's public demand grew 5.6% annually (highest nationally), driven by 17.9% YoY public investment surge (non-dwelling construction +7.8%), offsetting private sector fragility **Brisbane Housing Affordability Crisis**: Brisbane ranks 2nd most expensive capital city (median dwellings doubled since 2020), with housing/total CPI inflation highest since Q4 2019, pressuring household spending and migration **WA Population Strain**: WA's population grew 14% since 2019 (double mainland peers), driven by overseas migration (-6.2% of growth), straining housing and per capita spending amid weak household consumption (2.4% yr, 2nd weakest nationally)"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 37,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-28hnibtwani-6afe79",
+      "title": "Must C Public LatAm FINAL v2 CCM",
+      "institution": "Commbank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T00:13:34Z",
+      "summary_points": [
+        "**USD Weakness Catalyst**: Weak USD drives capital inflows, cheaper debt repayment, higher commodity prices, and reduced imported inflation, correlating with stronger LatAm GDP per capita convergence (inverse relationship).",
+        "**Commodity & Mineral Structural Edge**: High commodity prices (post-2000s supercycle) and LatAm’s dominance in critical minerals (lithium, copper, nickel) for AI/EV/energy transition provide permanent structural tailwinds beyond cyclical trends.",
+        "**Convergence Stagnation Risk**: LatAm’s GDP per capita as % of U.S.",
+        "stagnated at 26.4% (2024 vs 28% in 1990), trailing EM Asia by +20pp, with persistent non-convergence despite favorable conditions.",
+        "**Political & Fiscal Constraints**: Political rigidity, fiscal constraints, and security concerns threaten sustained growth, mirroring past crises (e.g., Volcker shock, 1994–2001 cascade)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 57,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-drr4pjejey5-a7911a",
+      "title": "Transformational Innovation Opportunities (TRIO)",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T00:03:10Z",
+      "summary_points": [
+        "**AstraZeneca pipeline shift**: SERENA-4 failure redirects focus to AVANZAR (Dato-DXd) as key catalyst; CAMBRIA studies critical for value.",
+        "**Stryker cyberattack impact**: Production delays in peripheral vascular/orthopedics drive medical device sector underperformance; recovery expected late 2023/2024.",
+        "**Pharma outperforms Medtech**: Longevity portfolio (Eli Lilly 12.21%, J&J 8.84%) shows Pharma outperformance vs Medtech since Q4 2025.",
+        "**Geopolitical sector risks**: Wuxi Biologics faces new sanctions risk; Viking Holdings exposed to macro downturn/terrorism events.",
+        "**SPL list dominance**: \"SPL - Equity Reverse Convertibles Tactical Opportunity List\" drives 8/9 company shifts between \"Most Preferred\" and \"Not Listed,\" signaling active tactical positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-hlh6q8259ev-dcffbd",
+      "title": "Daily Asia",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T00:01:57Z",
+      "summary_points": [
+        "**AI Capex Resilience**: Inference-driven compute demand sustains $1.2T capex forecast (+33% from $90B), overriding regulatory/alignment slowdowns; semiconductor earnings up 103% YoY.",
+        "**Regulatory Tailwinds**: US bipartisan AI rules, California auditor standards, and Trump's anti-slowdown stance signal continued US leadership, favoring incumbents and closing overseas competitor access.",
+        "**Monetization Growth**: Real-world AI adoption drives inference demand (vs.",
+        "training), evidenced by OpenRouter token volumes +176% and semiconductor earnings surge (103% this year)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-gi8p5ogu8ns-5babcf",
       "title": "Libertarians at the gate amv",
       "institution": "J.P. Morgan",
@@ -121,6 +201,47 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-0v22118chpw-d2e7f4",
+      "title": "The limit does not exist s curves parts 1 2",
+      "institution": "Franklin Templeton",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T23:50:24Z",
+      "summary_points": [
+        "**AI Adoption & Investment Surge**: Goldman Sachs Q2 2026 data shows 68% of S&P 500 companies referenced AI in earnings calls, with AI capex exceeding $1T annually—signaling dominant market penetration and accelerating capital allocation toward AI infrastructure.",
+        "**NVIDIA's H100/Blackwell Era**: H100 (2022) and Blackwell (2024) deliver 3x+ TFLOPS vs A100 via architectural innovations (Transformer Engines, FP8), defying Moore’s Law and enabling transformative compute scaling—critical for timing AI hardware infrastructure investments.",
+        "**Moore's Law Death ≠ Compute Stagnation**: Semiconductor scaling constraints (atomic physics, economics) are offset by system-level compute acceleration (e.g., AI factories), driving exponential growth beyond chip-level limits—key for avoiding misallocation in AI/ML infrastructure.",
+        "**S-Curve Deceleration as Market Signal**: Decelerating tech improvement rates (e.g., iPhone post-2017 plateau) precede adoption slowdowns, signaling reduced disruption and increased stability—essential for portfolio managers to adjust exposure during tech maturity phases."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 18,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-jstg8xhjlix-602841",
+      "title": "Geu 54 september",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-15T23:46:42Z",
+      "summary_points": [
+        "**Mistral's Sovereign AI Strategy**: $3.5bn Series D (largest EU VC raise, $24bn valuation) led by Samsung/Scaleup Europe Fund, targeting EU governments with sovereign AI stack (data control, open-weight models), countering US tech protectionism amid OpenAI/Anthropic’s $225bn funding.",
+        "**EU VC Capital Fragmentation**: 70-90% growth capital reliance on non-EU sources due to domestic insufficiency; conservative national asset caps and legislative fragmentation (AML/KYC, CSRD) drive costs and exit barriers.",
+        "**Solvency II Policy Shift**: Risk weight for long-term equity reduced to 22% from Jan 2027, altering institutional portfolio allocation dynamics and boosting EU capital deployment.",
+        "**US Geopolitical Catalyst**: US defense commitment reduction spurs $1.5bn defense VC (H1 2026) and Mistral’s $3.5bn raise, while US academic funding cuts threaten European tech talent retention.",
+        "**EU AI Funding Imbalance**: European venture funds lag US peers (8.6% vs 14.6% annual returns); AI funding concentrated in US hubs (Bay Area captured 50% of global AI VC in 2024)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 22,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-tw8rlb9jfob-2ea1cf",
       "title": "JPM US Market Intelligence Afternoon Briefing Sept 15",
       "institution": "J.P. Morgan",
@@ -138,6 +259,23 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-iszza3qasda-b5c59b",
+      "title": "GS Equities Color US EQUITIES COLOR COUNTDOWN TO FOMC 15 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T23:33:35Z",
+      "summary_points": [
+        "Fed Policy Shift**: Q3 CPI data confirms persistent inflation, delaying rate cuts to Q1 2025; bond yields surge 25bps on hawkish Fed pivot **Ukraine Conflict Escalation**: Russian strikes on Ukrainian energy infrastructure disrupt EU gas flows, triggering 12% price spike and rerouting LNG contracts **ETF Outflows**: $18B equity ETF net outflows in 72 hours, accelerating technicals in S&P 500 futures and widening volatility index (VIX) to 22.5"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 1,
       "language": "en",
       "needs_metadata": false
     },
