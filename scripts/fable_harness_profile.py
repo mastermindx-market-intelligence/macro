@@ -12,6 +12,7 @@ import ast
 import hashlib
 import json
 import re
+import stat
 import sys
 from pathlib import Path
 
@@ -24,6 +25,9 @@ CONTEXT = ".claude/hooks/agent_routing_context.py"
 SETTINGS = ".claude/settings.json"
 REGISTRY = ".claude/agent-routing.json"
 SCOUT = ".claude/agents/scout.md"
+COMPILER = "scripts/fable_harness_profile.py"
+SOURCE_PATHS = (GUARD, CONTEXT, SETTINGS, REGISTRY, SCOUT, COMPILER)
+BINDING_ENV = "MASTERMIND_NATIVE_PROFILE_BINDING"
 GUARD_COMMAND = 'python3 "$CLAUDE_PROJECT_DIR/.claude/hooks/model_routing_guard.py"'
 CONTEXT_COMMAND = 'python3 "$CLAUDE_PROJECT_DIR/.claude/hooks/agent_routing_context.py"'
 
@@ -49,7 +53,16 @@ def _read(root: Path, relative: str, hashes: dict[str, str]) -> str:
     path = (root / relative).resolve(strict=True)
     if not path.is_relative_to(root):
         raise ProfileError("profile input escapes the project root")
-    raw = path.read_bytes()
+    current = root
+    for component in Path(relative).parts:
+        current = current / component
+        if current.is_symlink():
+            raise ProfileError("profile source symlinks are not qualified")
+    metadata = path.stat()
+    if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1:
+        raise ProfileError("profile source must be a bounded regular single-link file")
+    with path.open("rb") as stream:
+        raw = stream.read(1_000_001)
     if len(raw) > 1_000_000:
         raise ProfileError("profile source is too large")
     hashes[relative] = hashlib.sha256(raw).hexdigest()
@@ -166,8 +179,9 @@ def compile_profile(project_root: Path, mode: str, declared_version: str) -> dic
     _one_hook(settings, "PreToolUse", ("Agent", "Task", "Workflow", "TeamCreate", "SendMessage", "Skill"), GUARD_COMMAND)
     _one_hook(settings, "SessionStart", ("startup", "resume", "compact"), CONTEXT_COMMAND)
     registry = _json(_read(root, REGISTRY, hashes))
-    census = registry.get("routes", {}).get("census", {})
-    if census.get("agent") != "scout" or census.get("model") != "sonnet":
+    routes = registry.get("routes", {})
+    census = routes.get("census", {}) if isinstance(routes, dict) else {}
+    if not isinstance(census, dict) or census.get("agent") != "scout" or census.get("model") != "sonnet":
         raise ProfileError("the existing census route has changed; no provider coercion is allowed")
 
     denied = ["Workflow", "TeamCreate", "SendMessage", "Skill"]
@@ -205,6 +219,13 @@ def compile_profile(project_root: Path, mode: str, declared_version: str) -> dic
     if mode == "native_leaf":
         fragment["env"].update({"CLAUDE_CODE_SUBAGENT_MODEL": "sonnet",
                                 "CLAUDE_CODE_SUBAGENT_MODEL_FORCE": "0"})
+    # Continuity observation only, never identity, permission, budget,
+    # signature, sandbox or Executive admission.
+    for relative in SOURCE_PATHS:
+        if relative not in hashes:
+            _read(root, relative, hashes)
+    binding = {"schema_version": 1, "mode": mode, "project_root": str(root), "files": hashes}
+    fragment["env"][BINDING_ENV] = json.dumps(binding, sort_keys=True, separators=(",", ":"))
     argv = ["--settings", json.dumps(fragment, separators=(",", ":"))]
     if agents:
         argv += ["--agents", json.dumps(agents, separators=(",", ":"))]
@@ -219,6 +240,8 @@ def compile_profile(project_root: Path, mode: str, declared_version: str) -> dic
         "agent_overrides": agents,
         "cli_arguments": argv,
         "source_sha256": hashes,
+        "required_launch_cwd": str(root),
+        "source_binding_sha256": hashlib.sha256(fragment["env"][BINDING_ENV].encode()).hexdigest(),
         "required_workspace_sources": {
             path: hashes[path] for path in (GUARD, CONTEXT, REGISTRY) + ((SCOUT,) if agents else ())
         },
@@ -241,6 +264,9 @@ def compile_profile(project_root: Path, mode: str, declared_version: str) -> dic
         ],
         "warnings": [
             "The declared version and source hashes are not runtime attestation.",
+            "Source binding detects drift only; it is not signed authority or an OS sandbox.",
+            "Use the bound launch directory; moving profiles across workspaces requires recompilation.",
+            "The binding is continuity observation only, not identity, permission, budget, signature, sandbox or admission.",
             "Zero native Fable children is the requested policy, not an observed served-model claim.",
             "Model-invoked Skill and native SendMessage are denied; native skill fidelity is not yet complete.",
             "No provider, account, credential, skill, MCP or permission grant is created.",
@@ -255,15 +281,99 @@ def compile_profile(project_root: Path, mode: str, declared_version: str) -> dic
     }
 
 
+def compose_native_arguments(project_root: Path, mode: str, declared_version: str,
+                             launch_cwd: Path, base_arguments: list[str],
+                             environment: dict[str, str] | None = None) -> dict:
+    """Produce a bounded argv plan for the existing adapter. Never execute it.
+
+    Accept a small native parent surface and add BOTH profile arguments
+    ourselves. Unknown flags, commands, positional prompts and arbitrary
+    settings are refused rather than allowing last-flag-wins to silently
+    weaken the profile. The adapter owns process creation, input delivery,
+    authentication and all lifecycle effects.
+    """
+    root = project_root.resolve(strict=True)
+    resolved_launch_cwd = launch_cwd.resolve(strict=True)
+    if resolved_launch_cwd != root:
+        raise ProfileError("launch directory does not contain the bound routing hooks")
+    if (not isinstance(base_arguments, list) or len(base_arguments) > 24
+            or any(not isinstance(arg, str) or not arg or len(arg) > 256
+                   or any(ord(char) < 32 for char in arg) for arg in base_arguments)):
+        raise ProfileError("native base arguments must be a bounded argv list")
+    enums = {
+        "--effort": {"low", "medium", "high", "xhigh", "max"},
+        "--output-format": {"text", "json", "stream-json"},
+    }
+    flags = {"--print", "--verbose", "--no-session-persistence"}
+    seen = set()
+    index = 0
+    while index < len(base_arguments):
+        option = base_arguments[index]
+        if option in seen:
+            raise ProfileError("duplicate native launch option")
+        seen.add(option)
+        if option in flags:
+            index += 1
+            continue
+        if option not in {*enums, "--model"} or index + 1 >= len(base_arguments):
+            raise ProfileError("unqualified native launch option")
+        value = base_arguments[index + 1]
+        if option == "--model":
+            if re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,95}", value) is None:
+                raise ProfileError("invalid requested parent model")
+        elif value not in enums[option]:
+            raise ProfileError("unqualified native option value")
+        index += 2
+    if "--model" not in seen:
+        raise ProfileError("parent model must be explicit; inherited model is not qualified")
+    if environment is not None:
+        if not isinstance(environment, dict):
+            raise ProfileError("native environment observation must be an object")
+        for key in ("CLAUDE_CODE_SIMPLE", "CLAUDE_CODE_BARE"):
+            if environment.get(key) not in (None, "", "0", "false"):
+                raise ProfileError("native environment disables required capabilities")
+        if environment.get(MODE_ENV) not in (None, mode):
+            raise ProfileError("conflicting ambient native profile")
+        for key in ("CLAUDE_CODE_SUBAGENT_MODEL", "CLAUDE_CODE_SUBAGENT_MODEL_FORCE"):
+            expected = "sonnet" if key.endswith("MODEL") else "0"
+            if mode == "native_leaf" and environment.get(key) not in (None, expected):
+                raise ProfileError("conflicting ambient native model override")
+    if (root / ".claude/settings.local.json").exists():
+        raise ProfileError("local settings require separate effective-settings qualification")
+    result = dict(compile_profile(root, mode, declared_version))
+    result["disposition"] = "NATIVE_ARGUMENTS_COMPOSED_NOT_ACTIVATED"
+    result["cli_arguments"] = [*base_arguments, *result["cli_arguments"]]
+    result["requested_parent_model"] = base_arguments[base_arguments.index("--model") + 1]
+    result["served_parent_model"] = None
+    result["environment_checked"] = environment is not None
+    result["qualification_required"] += [
+        "Existing adapter must use the complete argv, exact CWD and source-bound environment",
+        "Effective managed/user settings and native tool inventory remain unverified",
+    ]
+    return result
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--project-root", type=Path, default=Path(__file__).resolve().parents[1])
     parser.add_argument("--mode", choices=MODES, default="router_only")
     parser.add_argument("--claude-version", required=True,
                         help="Explicit declared version; this compiler does not run Claude")
+    parser.add_argument("--base-arguments-json", help="Compose data only; no process is started")
+    parser.add_argument("--launch-cwd", type=Path)
     args = parser.parse_args(argv)
     try:
-        result = compile_profile(args.project_root, args.mode, args.claude_version)
+        if args.base_arguments_json is not None:
+            if len(args.base_arguments_json) > 8192 or args.launch_cwd is None:
+                raise ProfileError("bounded arguments and an explicit launch CWD are required")
+            base = json.loads(args.base_arguments_json, object_pairs_hook=_unique,
+                              parse_constant=_bad_constant)
+            result = compose_native_arguments(args.project_root, args.mode, args.claude_version,
+                                              args.launch_cwd, base)
+        else:
+            if args.launch_cwd is not None:
+                raise ProfileError("launch CWD requires native argument composition")
+            result = compile_profile(args.project_root, args.mode, args.claude_version)
     except (ProfileError, OSError, ValueError, TypeError, AttributeError, KeyError, SyntaxError) as exc:
         # Do not emit arbitrary source content, hook payloads, or credentials on failure.
         print(json.dumps({"schema_version": SCHEMA, "disposition": "REFUSED",

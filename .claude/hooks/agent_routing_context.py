@@ -2,6 +2,7 @@
 """SessionStart context injector for the semantic agent-routing control plane."""
 from __future__ import annotations
 
+import importlib.util
 import json
 import os
 import re
@@ -61,6 +62,20 @@ def main() -> None:
         if mode not in {"router_only", "native_leaf"}:
             print("FABLE HARNESS INVALID: native delegation is refused. Repair the "
                   "launch profile; never fall back to an unprofiled session.")
+            return
+        # Reuse the existing guard's source check; context is not another policy owner.
+        try:
+            guard_path = Path(__file__).with_name("model_routing_guard.py")
+            spec = importlib.util.spec_from_file_location("_native_routing_guard", guard_path)
+            guard = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(guard)
+            payload = guard._read_profile_payload()
+            binding_error = guard.verify_native_source_binding(payload, mode)
+        except Exception:
+            binding_error = "HARNESS_BINDING_INVALID"
+        if binding_error:
+            print("FABLE HARNESS INVALID: source/workspace binding is not current. "
+                  "Do not delegate or fall back. Recompile through the source owner.")
             return
         print(
             "FABLE HARNESS / " + mode.upper() + ": This profile narrows older "

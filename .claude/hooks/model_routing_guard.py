@@ -10,9 +10,11 @@ validated as code, not direct Agent tool calls.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
+import stat
 import sys
 from pathlib import Path
 
@@ -22,6 +24,15 @@ NATIVE_PROFILE_SCHEMA_VERSION = 1
 NATIVE_PROFILE_ENV = "MASTERMIND_NATIVE_DELEGATION_MODE"
 NATIVE_PROFILE_MODES = ("router_only", "native_leaf")
 NATIVE_LEAF_ROUTE = ("census", "scout", "sonnet")
+NATIVE_BINDING_ENV = "MASTERMIND_NATIVE_PROFILE_BINDING"
+NATIVE_PROFILE_SOURCE_PATHS = (
+    ".claude/hooks/model_routing_guard.py",
+    ".claude/hooks/agent_routing_context.py",
+    ".claude/settings.json",
+    ".claude/agent-routing.json",
+    ".claude/agents/scout.md",
+    "scripts/fable_harness_profile.py",
+)
 MAX_PROFILE_INPUT_CHARS = 262144
 NATIVE_LAUNCH_TOOLS = frozenset({
     "Agent", "Task", "Workflow", "TeamCreate", "SendMessage", "Skill",
@@ -50,6 +61,66 @@ def _read_profile_payload() -> dict:
     if not isinstance(payload, dict):
         raise ValueError("hook input is not an object")
     return payload
+
+
+def verify_native_source_binding(payload: dict, mode: str) -> str | None:
+    """Check source/CWD continuity, not authority, identity, quota or a signature.
+
+    The existing host owner must protect the environment and source. A caller
+    who can rewrite both source and this observation can forge a new binding;
+    this check is not an OS sandbox or an Executive admission substitute.
+    """
+    raw = os.environ.get(NATIVE_BINDING_ENV)
+    if not isinstance(raw, str) or not raw or len(raw) > 8192:
+        return "HARNESS_BINDING_REQUIRED: compiled source/workspace binding is required."
+    try:
+        binding = json.loads(raw, object_pairs_hook=_unique_object,
+                             parse_constant=_reject_json_constant)
+        if (not isinstance(binding, dict)
+                or set(binding) != {"schema_version", "mode", "project_root", "files"}
+                or type(binding["schema_version"]) is not int
+                or binding["schema_version"] != 1
+                or binding["mode"] != mode
+                or not isinstance(binding["project_root"], str)
+                or not isinstance(binding["files"], dict)
+                or set(binding["files"]) != set(NATIVE_PROFILE_SOURCE_PATHS)):
+            raise ValueError("shape")
+        requested_root = Path(binding["project_root"])
+        if not requested_root.is_absolute():
+            raise ValueError("root")
+        root = requested_root.resolve(strict=True)
+        if requested_root != root or not root.is_dir():
+            raise ValueError("root")
+        project_dir = os.environ.get("CLAUDE_PROJECT_DIR")
+        payload_cwd = payload.get("cwd")
+        for observed in (payload_cwd, project_dir):
+            if (not isinstance(observed, str)
+                    or not Path(observed).is_absolute()
+                    or Path(observed).resolve(strict=True) != root):
+                return "HARNESS_WORKSPACE_MISMATCH: delegation must use the bound project."
+        if Path(__file__).resolve(strict=True) != root / ".claude/hooks/model_routing_guard.py":
+            return "HARNESS_SOURCE_MISMATCH: hook did not load from the bound source."
+        for relative in NATIVE_PROFILE_SOURCE_PATHS:
+            expected = binding["files"][relative]
+            if not isinstance(expected, str) or re.fullmatch(r"[0-9a-f]{64}", expected) is None:
+                raise ValueError("digest")
+            current = root
+            for component in Path(relative).parts:
+                current = current / component
+                if current.is_symlink():
+                    raise ValueError("symlink")
+            metadata = current.stat()
+            if (not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1
+                    or metadata.st_size > 1_000_000):
+                raise ValueError("file")
+            with current.open("rb") as stream:
+                raw_source = stream.read(1_000_001)
+            if (len(raw_source) > 1_000_000
+                    or hashlib.sha256(raw_source).hexdigest() != expected):
+                return "HARNESS_SOURCE_MISMATCH: compiled source changed; refresh through its owner."
+    except (OSError, ValueError, TypeError, KeyError, RecursionError):
+        return "HARNESS_BINDING_INVALID: source/workspace binding could not be verified."
+    return None
 
 
 def native_profile_refusal(payload: dict, mode: str) -> str | None:
@@ -138,6 +209,9 @@ def _load_registry() -> dict:
         data = json.load(f)
     if not isinstance(data.get("routes"), dict):
         raise ValueError("registry has no routes object")
+    for spec in data["routes"].values():
+        if not isinstance(spec, dict):
+            raise ValueError("registry route is not an object")
     return data
 
 
@@ -261,7 +335,7 @@ def _route_direct_spawn(ti: dict, tool: str, registry: dict) -> None:
 
     route = route_match.group(1).lower()
     spec = registry["routes"].get(route)
-    if not spec:
+    if not isinstance(spec, dict):
         _deny(
             f"Blocked: unknown ROUTE {route!r}. Allowed routes: "
             + ", ".join(sorted(registry["routes"]))
@@ -369,6 +443,10 @@ def main() -> None:
         refusal = native_profile_refusal(payload, mode)
         if refusal:
             _deny(refusal)
+        if payload.get("tool_name") in NATIVE_LAUNCH_TOOLS:
+            binding_refusal = verify_native_source_binding(payload, mode)
+            if binding_refusal:
+                _deny(binding_refusal)
 
     tool = str(payload.get("tool_name") or "")
     ti = payload.get("tool_input") or {}

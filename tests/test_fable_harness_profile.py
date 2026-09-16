@@ -1,6 +1,7 @@
 """Focused source-to-hook tests; these do not launch Claude or call providers."""
 import importlib.util
 import contextlib
+import hashlib
 import io
 import runpy
 from unittest import mock
@@ -25,11 +26,11 @@ ENV_KEY = "MASTERMIND_NATIVE_DELEGATION_MODE"
 def project(tmp_path):
     dest = tmp_path / "project"
     for name in (profile.GUARD, profile.CONTEXT, profile.SETTINGS,
-                 profile.REGISTRY, profile.SCOUT):
+                 profile.REGISTRY, profile.SCOUT, profile.COMPILER):
         target = dest / name
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(ROOT / name, target)
-    return dest
+    return dest.resolve()
 
 
 def census_payload(tool="Agent"):
@@ -61,7 +62,20 @@ def fable_payload(tool="Agent"):
     return payload
 
 
-def call_hook(project, mode, payload=None, raw=None, context=False, env_overrides=None):
+def binding_environment(project, mode, drift=False):
+    if not drift:
+        bundle = profile.compile_profile(project, mode, "2.1.219")
+        return {profile.BINDING_ENV: bundle["settings_fragment"]["env"][profile.BINDING_ENV]}
+    hashes = {path: hashlib.sha256((project / path).read_bytes()).hexdigest()
+              for path in profile.SOURCE_PATHS}
+    if drift:
+        hashes[profile.REGISTRY] = "0" * 64
+    binding = {"schema_version": 1, "mode": mode, "project_root": str(project), "files": hashes}
+    return {profile.BINDING_ENV: json.dumps(binding, sort_keys=True, separators=(",", ":"))}
+
+
+def call_hook(project, mode, payload=None, raw=None, context=False, env_overrides=None,
+              hook_path=None):
     env = os.environ.copy()
     env["CLAUDE_PROJECT_DIR"] = str(project)
     if mode is None:
@@ -76,18 +90,32 @@ def call_hook(project, mode, payload=None, raw=None, context=False, env_override
             env.pop(key, None)
         else:
             env[key] = value
+    if mode in profile.MODES and profile.BINDING_ENV not in (env_overrides or {}):
+        env.update(binding_environment(project, mode))
     # Exercise the actual script entrypoint in-process for the policy matrix.
     # Separate tests below retain subprocess checks of the generated profile.
     output = io.StringIO()
-    input_text = raw if raw is not None else json.dumps(payload or {})
-    with mock.patch.dict(os.environ, env, clear=True), \
-            mock.patch.object(sys, "stdin", io.StringIO(input_text)), \
-            contextlib.redirect_stdout(output):
-        try:
-            runpy.run_path(str(project / (profile.CONTEXT if context else profile.GUARD)),
-                           run_name="__main__")
-        except SystemExit as exc:
-            assert exc.code in (0, None)
+    if payload is None:
+        payload = {}
+    hook_payload = {**payload, "cwd": payload.get("cwd", str(project))}
+    input_text = raw if raw is not None else json.dumps(hook_payload)
+    previous_cwd = Path.cwd()
+    os.chdir(project)
+    try:
+        with mock.patch.dict(os.environ, env, clear=True), \
+                mock.patch.object(sys, "stdin", io.StringIO(input_text)), \
+                contextlib.redirect_stdout(output):
+            try:
+                script = hook_path or project / (profile.CONTEXT if context else profile.GUARD)
+                hook_spec = importlib.util.spec_from_file_location("_hook_under_test", script)
+                hook = importlib.util.module_from_spec(hook_spec)
+                hook_spec.loader.exec_module(hook)
+                if hasattr(hook, "main"):
+                    hook.main()
+            except SystemExit as exc:
+                assert exc.code in (0, None)
+    finally:
+        os.chdir(previous_cwd)
     return output.getvalue()
 
 
@@ -231,14 +259,25 @@ def test_original_route_contract_still_applies(project):
 
 
 def test_registry_failure_is_closed_in_profile(project):
+    env = binding_environment(project, "native_leaf")
     (project / profile.REGISTRY).write_text('{"routes": []}')
-    assert "fail-closed" in refusal(call_hook(project, "native_leaf", census_payload()))
+    raw = json.loads(env[profile.BINDING_ENV])
+    raw["files"][profile.REGISTRY] = hashlib.sha256(
+        (project / profile.REGISTRY).read_bytes()).hexdigest()
+    env[profile.BINDING_ENV] = json.dumps(raw, sort_keys=True, separators=(",", ":"))
+    assert "fail-closed" in refusal(call_hook(
+        project, "native_leaf", census_payload(), env_overrides=env))
 
 
 def test_unexpected_guard_error_is_closed_without_echoing_source(project):
+    env = binding_environment(project, "native_leaf")
     (project / profile.REGISTRY).write_text('{"routes": {"census": "SECRET_SENTINEL"}}')
-    out = call_hook(project, "native_leaf", census_payload())
-    assert "HARNESS_GUARD_ERROR" in refusal(out)
+    raw = json.loads(env[profile.BINDING_ENV])
+    raw["files"][profile.REGISTRY] = hashlib.sha256(
+        (project / profile.REGISTRY).read_bytes()).hexdigest()
+    env[profile.BINDING_ENV] = json.dumps(raw, sort_keys=True, separators=(",", ":"))
+    out = call_hook(project, "native_leaf", census_payload(), env_overrides=env)
+    assert "fail-closed" in refusal(out)
     assert "SECRET_SENTINEL" not in out
 
 
@@ -385,6 +424,136 @@ def test_compiled_guard_missing_source_is_blocking_exit_two(project, mode):
 
 def test_native_fixture_uses_compiled_argv_without_hook_injection():
     source = (ROOT / "tests/fable_native_cli_conformance.py").read_text()
-    assert '*profile["cli_arguments"]' in source
+    assert '*workspace_bundle["cli_arguments"]' in source
     assert 'json.dumps(settings)' not in source
     assert 'source_settings' not in source
+
+
+@pytest.mark.parametrize("mode", profile.MODES)
+def test_compiled_binding_is_complete_and_not_an_authority_grant(project, mode):
+    compiled = profile.compile_profile(project, mode, "2.1.239")
+    raw_binding = compiled["settings_fragment"]["env"][profile.BINDING_ENV]
+    binding = json.loads(raw_binding)
+    assert binding == {"schema_version": 1, "mode": mode,
+                       "project_root": str(project), "files": compiled["source_sha256"]}
+    assert set(binding["files"]) == set(profile.SOURCE_PATHS)
+    assert compiled["required_launch_cwd"] == str(project)
+    assert compiled["source_binding_sha256"] == hashlib.sha256(raw_binding.encode()).hexdigest()
+    assert compiled["launch_authorized"] is False
+
+
+@pytest.mark.parametrize("raw", [None, "", "{}", "null", "[1]", "x" * 8193,
+                                 '{"schema_version":1,"schema_version":1}',
+                                 '{"files":NaN}'])
+def test_native_leaf_refuses_missing_or_malformed_binding(project, raw):
+    result = call_hook(project, "native_leaf", census_payload(),
+                       env_overrides={profile.BINDING_ENV: raw})
+    reason = refusal(result)
+    if raw is None or raw == "" or len(raw) > 8192:
+        assert reason == ("HARNESS_BINDING_REQUIRED: "
+                          "compiled source/workspace binding is required.")
+    else:
+        assert reason == ("HARNESS_BINDING_INVALID: "
+                          "source/workspace binding could not be verified.")
+
+
+@pytest.mark.parametrize("field", ["cwd", "environment"])
+def test_source_binding_refuses_other_workspace(project, tmp_path, field):
+    other = tmp_path / "other"
+    other.mkdir()
+    payload = census_payload()
+    if field == "cwd":
+        payload = {**payload, "cwd": str(other)}
+    result = call_hook(project, "native_leaf", payload, env_overrides={
+        "CLAUDE_PROJECT_DIR": str(other) if field == "environment" else str(project)})
+    assert "HARNESS_WORKSPACE_MISMATCH" in refusal(result)
+
+
+def test_source_binding_refuses_wrong_hook_source_path(project, tmp_path):
+    other = tmp_path / "other-project"
+    source = other / profile.GUARD
+    source.parent.mkdir(parents=True)
+    source.write_bytes((project / profile.GUARD).read_bytes())
+    payload = {"cwd": str(project), **census_payload()}
+    assert "HARNESS_SOURCE_MISMATCH" in refusal(call_hook(
+        project, "native_leaf", payload, env_overrides={"CLAUDE_PROJECT_DIR": str(project)},
+        hook_path=other / profile.GUARD))
+
+
+def test_source_binding_refuses_changed_source(project):
+    env = binding_environment(project, "native_leaf")
+    target = project / profile.REGISTRY
+    target.write_text(target.read_text() + "\n")
+    assert "HARNESS_SOURCE_MISMATCH" in refusal(call_hook(
+        project, "native_leaf", census_payload(), env_overrides=env))
+
+
+def test_native_leaf_refuses_binding_with_wrong_top_level_fields(project):
+    env = binding_environment(project, "native_leaf")
+    binding = json.loads(env[profile.BINDING_ENV])
+    binding["extra"] = "forbidden"
+    result = call_hook(project, "native_leaf", census_payload(), env_overrides={
+        profile.BINDING_ENV: json.dumps(binding, sort_keys=True, separators=(",", ":"))})
+    assert refusal(result) == ("HARNESS_BINDING_INVALID: "
+                               "source/workspace binding could not be verified.")
+
+
+def test_source_binding_refuses_symlink(project):
+    target = project / profile.SCOUT
+    copied = project / "scout-copy"
+    target.rename(copied)
+    target.symlink_to(copied)
+    with pytest.raises(profile.ProfileError):
+        profile.compile_profile(project, "native_leaf", "2.1.239")
+
+
+def test_source_binding_refuses_oversize_source(project):
+    target = project / profile.SCOUT
+    original = target.read_bytes()
+    target.write_bytes(original + b" " * (1_000_001 - len(original)))
+    with pytest.raises(profile.ProfileError):
+        profile.compile_profile(project, "native_leaf", "2.1.239")
+
+
+def test_native_composer_is_data_only_and_appends_complete_profile(project):
+    plan = profile.compose_native_arguments(
+        project, "native_leaf", "2.1.239", project,
+        ["--model", "fable", "--print", "--output-format", "json"])
+    assert plan["disposition"] == "NATIVE_ARGUMENTS_COMPOSED_NOT_ACTIVATED"
+    assert plan["cli_arguments"][:5] == ["--model", "fable", "--print", "--output-format", "json"]
+    assert plan["cli_arguments"].count("--settings") == 1
+    assert plan["launch_authorized"] is False
+
+
+def test_native_composer_refuses_profile_override(project):
+    with pytest.raises(profile.ProfileError):
+        profile.compose_native_arguments(
+            project, "native_leaf", "2.1.239", project,
+            ["--model", "fable", "--settings", "{}"])
+
+
+def test_native_composer_refuses_local_settings_override(project):
+    (project / ".claude/settings.local.json").write_text("{}")
+    with pytest.raises(profile.ProfileError):
+        profile.compose_native_arguments(
+            project, "native_leaf", "2.1.239", project,
+            ["--model", "fable", "--print", "--output-format", "json"])
+
+
+def test_native_composer_refuses_cross_workspace_launch(project, tmp_path):
+    other = tmp_path / "other-launch-root"
+    other.mkdir()
+    with pytest.raises(profile.ProfileError):
+        profile.compose_native_arguments(
+            project, "native_leaf", "2.1.239", other,
+            ["--model", "fable", "--print", "--output-format", "json"])
+
+
+@pytest.mark.parametrize("arguments", [
+    ["--model", "fable", "--print", "--print"],
+    ["--model", "fable", "--unknown", "value"],
+])
+def test_native_composer_refuses_duplicate_or_unknown_options(project, arguments):
+    with pytest.raises(profile.ProfileError):
+        profile.compose_native_arguments(
+            project, "native_leaf", "2.1.239", project, arguments)

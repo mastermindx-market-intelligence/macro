@@ -15,7 +15,6 @@ import json
 import os
 from pathlib import Path
 import re
-import shutil
 import signal
 import subprocess
 import tempfile
@@ -230,25 +229,34 @@ def run_case(binary: Path, root: Path, profile: dict, case: str) -> dict:
         workspace = Path(tmp) / "workspace"
         home.mkdir(); workspace.mkdir()
         for relative in (".claude/hooks/model_routing_guard.py", ".claude/hooks/agent_routing_context.py",
-                         ".claude/agent-routing.json", ".claude/agents/scout.md"):
+                         ".claude/settings.json", ".claude/agent-routing.json", ".claude/agents/scout.md",
+                         "scripts/fable_harness_profile.py"):
             path = workspace / relative
             path.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(root / relative, path)
+            # copyfile may preserve APFS hardlink identity; the production fence
+            # requires ordinary single-link files in the disposable workspace.
+            path.write_bytes((root / relative).read_bytes())
         (workspace / "fixture.txt").write_text(VALUE + "\n")
-        # Use the compiler's actual argv without injecting missing hooks in the
-        # fixture. The isolated workspace deliberately has no settings.json, so
-        # ambient configuration cannot conceal a missing profile consumer.
+        # Compile against the exact disposable launch root after staging all six
+        # qualified sources; launch uses that workspace-local production profile.
         oracle = Oracle(case, workspace)
         server = ThreadingHTTPServer(("127.0.0.1", 0), handler_for(oracle))
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
-        args = [str(binary), "--setting-sources", "", *profile["cli_arguments"],
+        spec = importlib.util.spec_from_file_location(
+            "workspace_native_profile", workspace / "scripts/fable_harness_profile.py")
+        workspace_profile = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(workspace_profile)
+        workspace_bundle = workspace_profile.compile_profile(
+            workspace, profile["mode"], profile["declared_claude_version"])
+        args = [str(binary), "--setting-sources", "", *workspace_bundle["cli_arguments"],
                 "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}',
                 "--tools", "Read,Grep,Glob,Agent", "--allowedTools", "Read,Grep,Glob,Agent",
                 "--no-session-persistence", "--model", "sonnet", "--effort", "medium",
                 "--max-turns", "20" if case == "leaf_turn_limit" else "6", "--output-format", "json"]
         args += ["-p", ROOT_MARKER + " Run the fixed native conformance task. This is a deterministic local protocol fixture, not real model inference."]
-        env = isolated_environment(home, workspace, server.server_port, profile["settings_fragment"])
+        env = isolated_environment(home, workspace, server.server_port,
+                                   workspace_bundle["settings_fragment"])
         timed_out = False
         try:
             proc = subprocess.Popen(args, cwd=workspace, env=env, stdin=subprocess.DEVNULL,
@@ -295,7 +303,7 @@ def run_case(binary: Path, root: Path, profile: dict, case: str) -> dict:
         diagnostic = (out + b"\n" + err).decode("utf-8", errors="replace")[:2000]
         diagnostic = diagnostic.replace(str(home), "<fixture-home>").replace(str(workspace), "<fixture-workspace>")
         return {"case": case, "passed": bool(passed), "native_subagent_stats": stats,
-                "compiled_profile_sha256": profile_digest(profile), "returncode": proc.returncode,
+                "compiled_profile_sha256": profile_digest(workspace_bundle), "returncode": proc.returncode,
                 "timed_out": timed_out, "requests": oracle.records, "leaf_read_value": oracle.leaf_read,
                 "parent_consumed_result": oracle.parent_consumed, "stdout_bytes": len(out),
                 "startup_template_sha256": oracle.startup_template_sha256,
@@ -307,7 +315,7 @@ def run_case(binary: Path, root: Path, profile: dict, case: str) -> dict:
                 "driver_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
                 "fixture_hook_projection": False,
                 "cli_usage_is_synthetic": True,
-                "compiled_hooks_present": bool(profile["settings_fragment"].get("hooks")), "real_model_inference": False,
+                "compiled_hooks_present": bool(workspace_bundle["settings_fragment"].get("hooks")), "real_model_inference": False,
                 "production_adoption": False}
 
 
