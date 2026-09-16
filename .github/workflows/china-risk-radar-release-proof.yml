@@ -22,35 +22,114 @@ jobs:
     env:
       PRODUCT_HEAD: f09a4f078be714b1eb026d7a4178540f7a63b494
       PROOF_WORKFLOW_PATH: .github/workflows/china-risk-radar-release-proof.yml
+      PR_NUMBER: "7029"
+
     steps:
+      - name: Initialize immutable evidence directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          PROOF_DIR="${RUNNER_TEMP}/china-risk-radar-release-proof-${GITHUB_RUN_ID}"
+          mkdir -p "$PROOF_DIR"
+          {
+            echo "PROOF_DIR=$PROOF_DIR"
+          } >> "$GITHUB_ENV"
+          {
+            echo "run_id=${GITHUB_RUN_ID}"
+            echo "run_attempt=${GITHUB_RUN_ATTEMPT}"
+            echo "trigger_head=${GITHUB_SHA}"
+            echo "started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } > "$PROOF_DIR/run.txt"
+
       - name: Clear inherited sparse checkout
         if: runner.environment != 'github-hosted'
         shell: bash
         run: |
           if [ -d "${{ github.workspace }}/.git" ]; then
-            git -C "${{ github.workspace }}" sparse-checkout disable || echo "::warning title=sparse-clear::sparse-checkout disable failed — this workspace may still hold a partial tree"
+            git -C "${{ github.workspace }}" sparse-checkout disable ||
+              echo "::warning title=sparse-clear::sparse-checkout disable failed — workspace may still hold a partial tree"
             rc=0
             git -C "${{ github.workspace }}" config --unset-all core.sparseCheckout || rc=$?
             if [ "$rc" = 0 ]; then
-              echo "::notice title=sparse-clear::cleared an inherited core.sparseCheckout in this shared workspace"
+              echo "::notice title=sparse-clear::cleared inherited core.sparseCheckout"
             elif [ "$rc" != 5 ]; then
-              echo "::warning title=sparse-clear::core.sparseCheckout unset exited $rc — this workspace may still be sparse"
+              echo "::warning title=sparse-clear::core.sparseCheckout unset exited $rc"
             fi
           fi
 
-      - name: Checkout proof carrier
+      - name: Checkout proof carrier with bounded history
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 8
+          persist-credentials: false
 
-      - name: Freeze exact current integration candidate
+      - name: Freeze exact current GitHub merge candidate
         shell: bash
         run: |
           set -euo pipefail
+
           if [ "$(git config --bool core.sparseCheckout || true)" = "true" ]; then
             echo "sparse checkout remains active after checkout" >&2
             exit 1
           fi
+
+          PROOF_HEAD="$(git rev-parse HEAD)"
+          if [ "$PROOF_HEAD" != "$GITHUB_SHA" ]; then
+            echo "checked-out head $PROOF_HEAD does not equal trigger head $GITHUB_SHA" >&2
+            exit 1
+          fi
+
+          if ! git cat-file -e "${PRODUCT_HEAD}^{commit}" 2>/dev/null; then
+            git fetch --no-tags --depth=1 origin "$PRODUCT_HEAD"
+          fi
+          CHANGED="$(git diff --name-only "$PRODUCT_HEAD" "$PROOF_HEAD")"
+          if [ "$CHANGED" != "$PROOF_WORKFLOW_PATH" ]; then
+            echo "post-product branch movement is not workflow-only:" >&2
+            printf '%s\n' "$CHANGED" >&2
+            exit 1
+          fi
+
+          MERGE_REF="refs/remotes/origin/pr-${PR_NUMBER}-merge"
+          MAIN_REF="refs/remotes/origin/main"
+          READY=0
+          CANDIDATE_SHA=""
+          BASE_SHA=""
+          MERGED_HEAD=""
+
+          for attempt in 1 2 3 4 5 6; do
+            git update-ref -d "$MERGE_REF" 2>/dev/null || true
+            if git fetch --no-tags --force --depth=2 origin \
+              "+refs/pull/${PR_NUMBER}/merge:${MERGE_REF}"; then
+              git fetch --no-tags --force --depth=1 origin \
+                "+refs/heads/main:${MAIN_REF}"
+
+              CANDIDATE_SHA="$(git rev-parse "$MERGE_REF")"
+              PARENTS="$(git rev-list --parents -n 1 "$CANDIDATE_SHA")"
+              set -- $PARENTS
+              if [ "$#" -eq 3 ]; then
+                BASE_SHA="$2"
+                MERGED_HEAD="$3"
+                MAIN_SHA="$(git rev-parse "$MAIN_REF")"
+                if [ "$MERGED_HEAD" = "$PROOF_HEAD" ] && [ "$BASE_SHA" = "$MAIN_SHA" ]; then
+                  READY=1
+                  break
+                fi
+                echo "merge ref not current on attempt $attempt: base=$BASE_SHA main=$MAIN_SHA head=$MERGED_HEAD proof=$PROOF_HEAD" >&2
+              else
+                echo "merge ref is not a two-parent commit on attempt $attempt" >&2
+              fi
+            fi
+            sleep 5
+          done
+
+          if [ "$READY" -ne 1 ]; then
+            echo "could not freeze a GitHub merge ref matching both current main and exact proof head" >&2
+            exit 1
+          fi
+
+          CANDIDATE_TREE="$(git rev-parse "${CANDIDATE_SHA}^{tree}")"
+          git checkout --detach "$CANDIDATE_SHA"
+
           for path in \
             scripts/build_china.py \
             scripts/capture_page_evidence.py \
@@ -62,43 +141,27 @@ jobs:
             test -f "$path"
           done
 
-          PROOF_HEAD="$(git rev-parse HEAD)"
-          CHANGED="$(git diff --name-only "$PRODUCT_HEAD" "$PROOF_HEAD")"
-          test "$CHANGED" = "$PROOF_WORKFLOW_PATH"
-
-          git fetch --no-tags origin main
-          BASE_SHA="$(git rev-parse origin/main)"
-          git checkout --detach "$BASE_SHA"
-          git merge --no-commit --no-ff "$PROOF_HEAD"
-          TREE_SHA="$(git write-tree)"
-
-          export GIT_AUTHOR_NAME='China Risk Radar Release Proof'
-          export GIT_AUTHOR_EMAIL='noreply@mastermind-x.com'
-          export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
-          export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
-          CANDIDATE_SHA="$(printf 'Temporary exact-current-merge proof for PR #7029\n' | git commit-tree "$TREE_SHA" -p "$BASE_SHA" -p "$PROOF_HEAD")"
-          git reset --hard "$CANDIDATE_SHA"
-
-          PROOF_DIR="${RUNNER_TEMP}/china-risk-radar-release-proof-${GITHUB_RUN_ID}"
-          CANDIDATE_TREE="$TREE_SHA"
-          export PROOF_HEAD BASE_SHA CANDIDATE_TREE CANDIDATE_SHA PROOF_DIR
-          mkdir -p "$PROOF_DIR"
+          export PROOF_HEAD BASE_SHA MERGED_HEAD CANDIDATE_SHA CANDIDATE_TREE
           {
-            echo "PROOF_DIR=$PROOF_DIR"
             echo "PROOF_HEAD=$PROOF_HEAD"
             echo "BASE_SHA=$BASE_SHA"
-            echo "CANDIDATE_TREE=$CANDIDATE_TREE"
             echo "CANDIDATE_SHA=$CANDIDATE_SHA"
+            echo "CANDIDATE_TREE=$CANDIDATE_TREE"
           } >> "$GITHUB_ENV"
 
           python3 - <<'PY'
-          import json, os, pathlib
+          import json
+          import os
+          import pathlib
+
           out = pathlib.Path(os.environ["PROOF_DIR"])
           payload = {
+              "schema": "mastermind.china_risk_radar.release_proof.v1",
               "pr": 7029,
               "product_head": os.environ["PRODUCT_HEAD"],
               "proof_head": os.environ["PROOF_HEAD"],
               "base_sha": os.environ["BASE_SHA"],
+              "merged_head": os.environ["MERGED_HEAD"],
               "candidate_tree": os.environ["CANDIDATE_TREE"],
               "candidate_sha": os.environ["CANDIDATE_SHA"],
               "workflow_run_id": os.environ["GITHUB_RUN_ID"],
@@ -121,6 +184,43 @@ jobs:
           "$VENV/bin/python" -m pip install --quiet playwright
           "$VENV/bin/python" -m playwright install chromium
 
+      - name: Run exact-candidate recovery acceptance suites
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pytest -q \
+            tests/test_risk_radar_recovery.py \
+            tests/test_risk_radar_market_catalysts.py \
+            tests/test_risk_radar_recovery_audit.py \
+            tests/test_liquidity_plumbing.py \
+            tests/test_perception_contracts.py \
+            tests/test_us_audit_lane_gates.py \
+            tests/test_risk_radar_dlg_country_wiring.py \
+            tests/test_risk_radar_dlg_partial.py \
+            --junitxml "$PROOF_DIR/acceptance.xml" |
+            tee "$PROOF_DIR/acceptance.log"
+
+          python - <<'PY'
+          import json
+          import os
+          import pathlib
+          import xml.etree.ElementTree as ET
+
+          root = pathlib.Path(os.environ["PROOF_DIR"])
+          xml_root = ET.parse(root / "acceptance.xml").getroot()
+          suites = [xml_root] if xml_root.tag == "testsuite" else list(xml_root.findall("testsuite"))
+          receipt = {
+              "tests": sum(int(s.attrib.get("tests", 0)) for s in suites),
+              "failures": sum(int(s.attrib.get("failures", 0)) for s in suites),
+              "errors": sum(int(s.attrib.get("errors", 0)) for s in suites),
+              "skipped": sum(int(s.attrib.get("skipped", 0)) for s in suites),
+              "time_seconds": sum(float(s.attrib.get("time", 0.0)) for s in suites),
+          }
+          if receipt["failures"] or receipt["errors"]:
+              raise SystemExit(f"acceptance receipt is not green: {receipt}")
+          (root / "acceptance_receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
+          PY
+
       - name: Execute real China producer and prove a rewrite
         shell: bash
         run: |
@@ -130,6 +230,7 @@ jobs:
           fi
           rm -f site/china.html
           date -u +%Y-%m-%dT%H:%M:%SZ > "$PROOF_DIR/build_started_at.txt"
+
           set +e
           CHINA_FAST_RENDER=1 python -m scripts.build_china > "$PROOF_DIR/build_china.log" 2>&1
           RC=$?
@@ -140,7 +241,11 @@ jobs:
           cp site/china.html "$PROOF_DIR/china.rendered.html"
 
           python - <<'PY'
-          import hashlib, json, os, pathlib, re
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import re
 
           root = pathlib.Path(os.environ["PROOF_DIR"])
           log = (root / "build_china.log").read_text(errors="replace")
@@ -159,20 +264,30 @@ jobs:
           if "risk-radar" not in html.lower() and "Risk Radar" not in html:
               raise SystemExit("rendered China page lacks the Risk Radar surface")
 
-          unconfirmed = ("Recovery not confirmed" in html or
-                         "修复尚未确认" in html or
-                         "volatility veto unknown — turn not trusted" in html or
-                         "波动否决状态未知 — 转向暂不可信" in html)
+          forbidden_everywhere = [
+              "Begin scaling exposure back",
+              "回补敞口",
+              "risk easing on its own",
+              "风险自行回落",
+          ]
+          present = [value for value in forbidden_everywhere if value in html]
+          if present:
+              raise SystemExit(f"render contains unsupported or prescriptive recovery copy: {present}")
+
+          unconfirmed = (
+              "Recovery not confirmed" in html
+              or "修复尚未确认" in html
+              or "volatility veto unknown — turn not trusted" in html
+              or "波动否决状态未知 — 转向暂不可信" in html
+          )
           if unconfirmed:
-              forbidden = [
-                  "Begin scaling exposure back",
-                  "回补敞口",
+              forbidden_unconfirmed = [
                   'class="rrx-rec is-turn"',
                   'class="rrx-rec-tag"',
               ]
-              present = [value for value in forbidden if value in html]
+              present = [value for value in forbidden_unconfirmed if value in html]
               if present:
-                  raise SystemExit(f"unconfirmed render exposes turn/re-entry semantics: {present}")
+                  raise SystemExit(f"unconfirmed render exposes TURN styling: {present}")
               if "does not authorize exposure changes" not in html:
                   raise SystemExit("unconfirmed render lacks explicit no-authorization copy")
 
@@ -187,13 +302,13 @@ jobs:
               "render_bytes": rendered.stat().st_size,
               "render_lines": len(html.splitlines()),
               "prior_sha256": sha(before) if before.exists() else None,
-              "rewritten": True,
+              "producer_rewrote_output": True,
               "unconfirmed_surface_visible": unconfirmed,
           })
           (root / "render_receipt.json").write_text(json.dumps(metadata, indent=2) + "\n")
           PY
 
-      - name: Capture dark/light English/Chinese desktop/mobile proof
+      - name: Capture dark-light English-Chinese desktop-mobile proof
         shell: bash
         run: |
           set -euo pipefail
@@ -213,7 +328,10 @@ jobs:
             --emit-md "$PROOF_DIR/smells.md"
 
           python - <<'PY'
-          import hashlib, json, os, pathlib
+          import hashlib
+          import json
+          import os
+          import pathlib
 
           root = pathlib.Path(os.environ["PROOF_DIR"])
           manifest = json.loads((root / "manifest.json").read_text())
@@ -260,12 +378,26 @@ jobs:
               files.append(str(path.relative_to(root)))
 
           receipt = json.loads((root / "render_receipt.json").read_text())
+          receipt["acceptance"] = json.loads((root / "acceptance_receipt.json").read_text())
           receipt["browser_cells"] = len(states)
           receipt["browser_matrix"] = [list(cell) for cell in sorted(found)]
           receipt["browser_files"] = sorted(set(files))
           receipt["physical_screenshot_files"] = len(set(files))
           (root / "release_proof_receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
           PY
+
+      - name: Publish bounded release-proof receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat "$PROOF_DIR/release_proof_receipt.json"
+          {
+            echo "### China Risk Radar release proof"
+            echo
+            echo '```json'
+            cat "$PROOF_DIR/release_proof_receipt.json"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload immutable release-proof evidence
         if: always()
