@@ -28,7 +28,7 @@ def _verdict(per_tf: dict, long_sign: int, short_sign: int, monkeypatch) -> dict
     monkeypatch.setattr(cm, "_tf_sign", lambda tf: signs.get((tf or {}).get("_name"), 0))
 
     a = {
-        "mtf": {k: {"_name": k} for k in signs},
+        "mtf": {k: {"_name": k, "macd_pos": signs[k] > 0} for k in signs},
         # regime drives long_score; ladder state drives short_sign
         "ladder": {"regime": "bear" if long_sign < 0 else "bull",
                    "state": "DECLINE" if short_sign < 0 else "FRESH BUY"},
