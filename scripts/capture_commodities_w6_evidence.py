@@ -534,11 +534,14 @@ def assert_document_fits(geometry: dict) -> None:
     """Reject clipped/unknown browser evidence; one-pixel rounding is tolerated."""
     import math
     width, scroll = geometry.get("width"), geometry.get("scroll")
+    # A mobile browser can widen its layout viewport to fit overflowing content.
+    # Compare against the requested viewport, not that already-expanded width.
+    requested = geometry.get("viewport_width", width)
     if any(isinstance(v, bool) or not isinstance(v, (int, float))
-           or not math.isfinite(v) for v in (width, scroll)):
+           or not math.isfinite(v) for v in (width, scroll, requested)):
         raise ValueError("document geometry unavailable")
-    if width <= 0 or scroll < 0 or scroll > width + 1:
-        raise ValueError(f"document overflow: {scroll}px exceeds {width}px viewport")
+    if requested <= 0 or width <= 0 or scroll < 0 or abs(width - requested) > 1 or scroll > requested + 1:
+        raise ValueError(f"document viewport mismatch: layout={width}px, scroll={scroll}px, requested={requested}px")
 
 def _capture(scratch: Path, subjects: set[str] | None = None) -> dict:
     from scripts.capture_page_evidence import CaptureUnavailable, serve_site_dir
@@ -861,6 +864,7 @@ def _capture(scratch: Path, subjects: set[str] | None = None) -> dict:
                             job["_direct_clip"] = box
                     overlay = page.evaluate(_OVERLAY_PROBE.strip()) or []
                     geometry = page.evaluate("({width:innerWidth,scroll:document.documentElement.scrollWidth})")
+                    geometry["viewport_width"] = job["width"]
                     entry["document_geometry"] = geometry
                     assert_document_fits(geometry)
                     if job.get("_direct_clip"):

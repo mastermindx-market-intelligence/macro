@@ -1112,3 +1112,28 @@ def test_capture_rejects_unknown_r1_fixture_scenario():
     from scripts.capture_commodities_w6_evidence import fixture_vm
     with pytest.raises(ValueError):
         fixture_vm(scenario="unrecognized")
+
+
+@pytest.mark.parametrize("width", [518, 425, 1440])
+def test_document_fit_rejects_expanded_requested_viewport(width):
+    from scripts.capture_commodities_w6_evidence import assert_document_fits
+    with pytest.raises(ValueError, match="viewport"):
+        assert_document_fits({"width":width,"scroll":width,"viewport_width":390})
+
+@pytest.mark.parametrize("viewport", [None, True, 0, -1, float("nan"), float("inf")])
+def test_document_fit_rejects_invalid_requested_viewport(viewport):
+    from scripts.capture_commodities_w6_evidence import assert_document_fits
+    with pytest.raises(ValueError):
+        assert_document_fits({"width":390,"scroll":390,"viewport_width":viewport})
+
+@pytest.mark.parametrize("width,scroll,viewport", [(390,390,390),(391,391,390),(1440,1440,1440)])
+def test_document_fit_accepts_exact_requested_viewport(width,scroll,viewport):
+    from scripts.capture_commodities_w6_evidence import assert_document_fits
+    assert_document_fits({"width":width,"scroll":scroll,"viewport_width":viewport})
+
+
+def test_capture_binds_requested_viewport_before_geometry_gate():
+    from scripts.capture_commodities_w6_evidence import _capture
+    src=inspect.getsource(_capture)
+    assert 'geometry["viewport_width"] = job["width"]' in src
+    assert src.index('geometry["viewport_width"] = job["width"]') < src.index("assert_document_fits(geometry)")
