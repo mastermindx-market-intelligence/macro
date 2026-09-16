@@ -18,17 +18,17 @@
      tests/test_risk_state_live_copy_sync.py). These exist so an intraday band flip can
      never leave render-time "Risk-on" prose sitting next to a live Mixed gauge. */
   var HEADLINE = {
-    RISK_ON: ["Risk-on — the tape, breadth and cross-asset signals line up. Trend-following and adding on strength is supported.",
-              "风险偏好 — 价格、广度与跨资产信号一致。顺势交易与逢强加仓得到支持。"],
+    RISK_ON: ["Risk-on composite — the measured blend is supportive; broad participation needs separate confirmation.",
+              "偏多综合读数——实测综合指标提供支撑；广泛参与度仍需单独确认。"],
     MIXED: ["Mixed / transition — the signals disagree. Trade smaller, favour quality, take profits faster; don't position aggressively.",
             "混合 / 转换 — 信号分歧。缩小仓位、偏好质量、更快获利了结；勿激进布局。"],
     RISK_OFF: ["Risk-off — stress is elevated; defend capital first.",
                "避险 — 压力升高；优先防守。"]
   };
   var SUBLINE = {
-    RISK_ON: ["GREEN — Trend-following supported", "偏多 — 顺势而为受支撑"],
-    MIXED: ["YELLOW — Trade with caution", "谨慎操作"],
-    RISK_OFF: ["RED — Defend capital first", "优先保住本金"]
+    RISK_ON: ["Measured blend — not a probability", "实测综合读数——并非概率"],
+    MIXED: ["Measured blend — not a probability", "实测综合读数——并非概率"],
+    RISK_OFF: ["Measured blend — not a probability", "实测综合读数——并非概率"]
   };
   var ACTION = {
     RISK_ON: ["Follow the trend. Add on strength.", "顺势而为，强势中加仓。"],
@@ -246,8 +246,31 @@
     var sZh = document.createElement("span"); sZh.className = "l-zh"; sZh.textContent = zh;
     el.appendChild(sEn); el.appendChild(sZh);
   }
+  /* Copy is a downstream server projection, not a second browser risk model.
+     Old/partial feeds get a cautious scope label, never an invented all-clear. */
+  function presentationFor(disp) {
+    var p = disp.presentation;
+    var fields = ["label_en", "label_zh", "headline_en", "headline_zh", "subline_en", "subline_zh"];
+    if (p && p.schema === "market_read.presentation.v1" && p.authority === "presentation_only" &&
+        p.measured_verdict === disp.verdict && typeof p.qualified === "boolean" &&
+        (disp.score == null || p.score === disp.score) &&
+        fields.every(function (k) { return typeof p[k] === "string" && p[k].length > 0; })) return p;
+    var riskOn = disp.verdict === "RISK_ON";
+    var labels = {RISK_ON: ["Risk-on composite", "偏多综合读数"],
+                  MIXED: ["Mixed", "分歧"], RISK_OFF: ["Risk-off", "避险"]};
+    var label = labels[disp.verdict] || ["Unavailable", "不可用"];
+    var head = riskOn ? ["The composite is supportive; broad participation confirmation is unavailable.",
+                        "综合读数偏多，但广泛参与度的确认信息不可用。"] :
+                       (HEADLINE[disp.verdict] || ["Current readings are unavailable.", "当前读数不可用。"]);
+    var sub = SUBLINE[disp.verdict] || ["Readings unavailable", "读数不可用"];
+    return {qualified: riskOn, label_en: label[0], label_zh: label[1],
+            headline_en: head[0], headline_zh: head[1], subline_en: sub[0], subline_zh: sub[1],
+            action_en: riskOn ? "Review risk evidence" : null, action_zh: riskOn ? "查看风险证据" : null};
+  }
+
   function verdictBL(el, disp) {
-    setBL(el, disp.label_en || disp.verdict, disp.label_zh || disp.label_en || disp.verdict);
+    var p = presentationFor(disp);
+    setBL(el, p.label_en, p.label_zh);
   }
 
   /* macro.html — the Market State board */
@@ -275,12 +298,14 @@
         disp.verdict !== d.nightly.verdict) {
       var ntl = d.nightly;
       disp = { verdict: ntl.verdict, label_en: ntl.label_en, label_zh: ntl.label_zh,
-               color: ntl.color, score: disp.score, raw_score: disp.raw_score };
+               color: ntl.color, score: disp.score, raw_score: disp.raw_score,
+               presentation: ntl.presentation };
     }
     if (bakedLabelEn === null) {
       var b0 = document.querySelector(".mx5-verdict-word .l-en");
       bakedLabelEn = b0 ? b0.textContent.trim() : "";
     }
+    var read = presentationFor(disp);
     var arr = word.querySelector(".arr");
     verdictBL(word, disp);
     if (arr) word.appendChild(arr);
@@ -309,7 +334,10 @@
         if (bigSc) bigSc.textContent = disp.score;
         /* v5 verdict word next to big-score */
         var vw = document.querySelector(".mx5-verdict-word");
-        if (vw) setBL(vw, disp.label_en || disp.verdict, disp.label_zh || disp.label_en || disp.verdict);
+        if (vw) {
+          setBL(vw, read.label_en, read.label_zh);
+          vw.setAttribute("data-risk-qualified", read.qualified ? "true" : "false");
+        }
       }
     }
     /* VIS-04/COPY-02: also update progress fill width so bar matches live score */
@@ -323,12 +351,12 @@
     var col = COLOR[disp.verdict];
     if (col && HEADLINE[disp.verdict]) {
       var th = document.querySelector(".mx5-thesis");
-      if (th) setBL(th, HEADLINE[disp.verdict][0], HEADLINE[disp.verdict][1]);
+      if (th) setBL(th, read.headline_en, read.headline_zh);
       var sub = document.querySelector(".mx5-sub-line");
-      if (sub) setBL(sub, SUBLINE[disp.verdict][0], SUBLINE[disp.verdict][1]);
+      if (sub) setBL(sub, read.subline_en, read.subline_zh);
       var gsvgA = document.querySelector(".mx5-gauge-svg");
       if (gsvgA && disp.score != null)
-        gsvgA.setAttribute("aria-label", (disp.label_en || disp.verdict) + " — score " + disp.score);
+        gsvgA.setAttribute("aria-label", "Measured blend " + disp.score + "; " + read.label_en);
       /* gauge cluster color scope — big-score color/glow are CSS keyed off this class */
       var grow = document.querySelector(".mx5-sc-gauge-row");
       if (grow) {
@@ -356,12 +384,12 @@
       }
       /* What To Do primary row — concise action plus verdict/score context. */
       var wl = document.querySelector("[data-wtd-primary] .mx5-action-label");
-      if (wl && ACTION[disp.verdict])
-        setBL(wl, ACTION[disp.verdict][0], ACTION[disp.verdict][1]);
+      if (wl && read.action_en && read.action_zh) setBL(wl, read.action_en, read.action_zh);
+      else if (wl && ACTION[disp.verdict]) setBL(wl, ACTION[disp.verdict][0], ACTION[disp.verdict][1]);
       var ws = document.querySelector("[data-wtd-primary] .mx5-action-sub");
       if (ws && disp.score != null)
-        setBL(ws, (disp.label_en || disp.verdict) + " · " + disp.score + "/100",
-                  (disp.label_zh || disp.label_en || disp.verdict) + " · " + disp.score + "/100");
+        setBL(ws, read.label_en + " · " + disp.score + "/100",
+                  read.label_zh + " · " + disp.score + "/100");
       var wicon = document.querySelector("[data-wtd-primary] .mx5-action-icon");
       if (wicon) {
         wicon.classList.remove("mx5-ai-green", "mx5-ai-yellow", "mx5-ai-gray");

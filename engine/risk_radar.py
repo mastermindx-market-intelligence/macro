@@ -967,7 +967,13 @@ def compute(sigs: pd.DataFrame | None = None, calib: dict | None = None, asof=No
                        "n_legs_resolved": sum(1 for lg, _w in _reg
                                               if lg in sigrow.index and not pd.isna(sigrow.get(lg))),
                        "weight_coverage": _cov,
-                       "partial_composition": bool(_cov is not None and _cov < 1.0)})
+                       "partial_composition": bool(_cov is not None and _cov < 1.0),
+                       # Presentation only: the legacy arithmetic above is unchanged.
+                       # No eligible observation is NOT an observed zero-risk reading.
+                       "reading_state": ("UNAVAILABLE" if not _res_w else
+                                         "PARTIAL" if _cov is not None and _cov < 1 else "AVAILABLE"),
+                       "display_score": round(sc, 1) if _res_w else None,
+                       "display_band": band if _res_w else None})
 
     # DISPLAY-ONLY leg readings (VSB W6). These legs are excluded from every sub-score AND from
     # escalation eligibility, so a scare whose only RESOLVING leg is display_only now has no
@@ -1068,7 +1074,17 @@ def compute(sigs: pd.DataFrame | None = None, calib: dict | None = None, asof=No
     head_en, head_zh = _headline(state, dominant, hotA, prob)
     authority = _market_state_authority(state, bool(alert), scares, prob, calib)
     traj = trajectory(subs, calib)
-    deesc = _deescalation(dominant["scare"] if dominant else None, subs, traj, prob)
+    unavailable_scares = {s["scare"] for s in scares if s["reading_state"] == "UNAVAILABLE"}
+    if traj is not None and unavailable_scares:
+        # Keep the intensity, state and odds series intact. Only comparisons that
+        # falsely call a lost observation "fading"/"warm today" are removed.
+        drivers = traj.get("drivers") or {}
+        traj["drivers"] = {key: [d for d in drivers.get(key, [])
+                                      if d.get("key") not in unavailable_scares]
+                           for key in ("faded", "warm")}
+        traj["drivers"]["unavailable"] = sorted(unavailable_scares)
+    deesc = _deescalation(dominant["scare"] if dominant else None, subs, traj, prob,
+                         unavailable_scares=unavailable_scares)
 
     # cap_leadership is True from 'elevated'. THRESHOLD REVIEW (incident
     # synthesis.md §4 item 6, flagged NOT auto-decided): the opt-in knob below
@@ -1411,6 +1427,8 @@ def trajectory(subs: pd.DataFrame | None = None, calib: dict | None = None,
             drivers_faded = []
             drivers_warm = []
             for scare in subs.columns:
+                if pd.isna(subs[scare].iloc[-1]):
+                    continue  # yesterday's value cannot describe today's missing reading
                 sw = subs[scare].dropna().tail(window)
                 if len(sw) < 3:
                     continue
@@ -1443,7 +1461,8 @@ _RISK_OFF_SCARES = {"growth", "credit", "rates", "vol"}
 
 
 def _deescalation(dominant: str | None, subs: pd.DataFrame | None,
-                  traj: dict | None, prob: dict | None) -> dict:
+                  traj: dict | None, prob: dict | None, *,
+                  unavailable_scares: set[str] | None = None) -> dict:
     """ONE risk voice per page (2026-07-02 incident root-cause #10). Through the
     semis breakdown the de-escalation panel showed green 'risk receding' (the
     June vol scare fading) while this radar's own dominant growth scare sat at
@@ -1468,6 +1487,8 @@ def _deescalation(dominant: str | None, subs: pd.DataFrame | None,
         if subs is not None and not subs.empty:
             best_off = None
             for s in subs.columns:
+                if s in (unavailable_scares or set()) or pd.isna(subs[s].iloc[-1]):
+                    continue  # an older observation is not a current easing read
                 w = subs[s].dropna().tail(_TRAJ_WINDOW)
                 if len(w) < 10:
                     continue

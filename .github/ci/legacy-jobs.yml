@@ -3680,6 +3680,7 @@ jobs:
       - "lib/nyse_calendar.py"
       - "lib/options_context.py"
       - "lib/pages.py"
+      - "lib/risk_presentation.py"
       - "lib/seo.py"
       - "lib/site_assets.py"
       - "lib/store.py"
@@ -12500,6 +12501,12 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: Macro header — compact glance layer with on-demand detail
         run: python -m pytest tests/test_macro_header_compact.py -q
+      # Hermetic risk-reading presentation: original scores survive; no missing-input all-clear.
+      - name: Risk reading integrity and settled/live presentation parity
+        run: >
+          node --version && python -m pytest
+          tests/test_risk_presentation.py tests/test_risk_presentation_live.py
+          tests/test_risk_reading_integrity.py tests/test_risk_state_live_copy_sync.py -q
       - name: OKX retail chip — bilingual + the contrarian framing survives copy edits
         run: python -m pytest tests/test_okx_retail.py -q
       - name: CN risk-backdrop chip — renders, degrades, and stays out of macro mode

@@ -72,6 +72,7 @@ sys.path.insert(0, str(_ROOT))
 
 from engine import live_overlay, live_quotes, market_state, market_drivers, risk_radar  # noqa: E402
 from lib import config  # noqa: E402
+from lib.risk_presentation import market_read  # noqa: E402
 from lib import store as store_mod  # noqa: E402
 
 log = logging.getLogger("risk_state_build")
@@ -205,13 +206,14 @@ def _hy_oas_asof():
     return None
 
 
-def _verdict_block(ms: dict | None) -> dict:
+def _verdict_block(ms: dict | None, risk_envelope: dict | None = None) -> dict:
     if not ms:
         return {}
     return {
         "verdict": ms.get("verdict"), "score": ms.get("score"), "raw_score": ms.get("raw_score"),
         "color": ms.get("color"), "label_en": ms.get("label_en"), "label_zh": ms.get("label_zh"),
         "headline_en": ms.get("headline_en"), "headline_zh": ms.get("headline_zh"),
+        "presentation": market_read(ms, risk_envelope),
         "radar": {k: (ms.get("radar") or {}).get(k)
                   for k in ("state", "state_ungated", "top_score", "label_en", "label_zh",
                             "context_gate", "amp", "ceiling")},
@@ -246,6 +248,12 @@ def build(offline: bool = False) -> dict:
     rs_cfg = cfg.get("risk_state") or {}
     now = datetime.now(timezone.utc)
     site = config.ROOT / config.load()["storage"]["site_dir"]
+    # Downstream read only: the canonical envelope keeps its own settled clock.
+    # market_read rejects foreign, stale and differently keyed snapshots.
+    try:
+        risk_envelope = json.loads((site / "riskdata" / "risk_envelope.json").read_text())
+    except (OSError, ValueError):
+        risk_envelope = None
     out_dir = site / "live"
     out_path = out_dir / "risk_state.json"
 
@@ -302,7 +310,7 @@ def build(offline: bool = False) -> dict:
     finally:
         store_mod.read = _orig_read
 
-    live_blk = _verdict_block(live_ms)
+    live_blk = _verdict_block(live_ms, risk_envelope)
     # GD-3R1: the source event clock — the real source-market quote clock(s) behind
     # this tick's splice, never this builder's own wall clock. Bounded to exactly
     # the SPLICE members actually spliced; empty/None when nothing spliced.
@@ -317,7 +325,7 @@ def build(offline: bool = False) -> dict:
             "alert": live_radar.get("alert"),
             "conjunction": live_radar.get("conjunction"),
         })
-    nightly_blk = _verdict_block(nightly_ms)
+    nightly_blk = _verdict_block(nightly_ms, risk_envelope)
 
     # Incident auditability: the act-level cap prints "An act-level alert is firing —
     # capped at Mixed pending review" without recording WHICH alert fired. Stamp the
@@ -379,6 +387,12 @@ def build(offline: bool = False) -> dict:
         "band_changed": deb.get("band_changed", False),
         "pending": deb.get("pending"),
     }
+
+    # The displayed band can be debounced. Qualify that band using the same
+    # selected observations; never paste a different verdict's presentation.
+    selected_ms = live_ms if live_active else (nightly_ms or live_ms)
+    display["presentation"] = market_read(
+        dict(selected_ms or {}, verdict=disp_verdict, score=display["score"]), risk_envelope)
 
     out = {
         "schema": "risk_state.v1",

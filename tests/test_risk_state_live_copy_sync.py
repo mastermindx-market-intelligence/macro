@@ -54,12 +54,15 @@ def test_js_headlines_mirror_engine():
 
 
 def test_js_vocab_present_in_dashboard_template():
-    """SUBLINE / ACTION strings are baked inline in dashboard.html.j2 — every JS
-    mirror string must literally appear there (presence check; the template is
-    Jinja so a structural parse would be brittle)."""
+    """Check each mirror against its actual server-side owner. The dashboard
+    consumes the shared subline macro; action copy remains in the dashboard.
+    Runtime Jinja/Node parity is exercised by test_risk_presentation_live.py."""
     js = LIVE_JS.read_text(encoding="utf-8")
-    dash = DASH.read_text(encoding="utf-8")
+    dashboard = DASH.read_text(encoding="utf-8")
+    assert '{{ mr.subline(MS) }}' in dashboard
+    subline = (ROOT / "templates" / "_market_read.html.j2").read_text(encoding="utf-8")
     for name in ("SUBLINE", "ACTION"):
+        dash = subline if name == "SUBLINE" else dashboard
         for v, (en, zh) in _js_map(js, name).items():
             for s in (en, zh):
                 # accept the literal, the &mdash;-entity form, or (the template builds
@@ -70,7 +73,7 @@ def test_js_vocab_present_in_dashboard_template():
                     or s.replace(" — ", " &mdash; ") in dash
                     or all(part in dash for part in s.split(" — "))
                 )
-                assert ok, f"{name}[{v}] string not found in dashboard.html.j2: {s!r}"
+                assert ok, f"{name}[{v}] string not found in its server template owner: {s!r}"
 
 
 def test_paired_template_copy_identical():
