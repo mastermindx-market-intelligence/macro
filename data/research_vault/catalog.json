@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-16T10:58:59.213670+00:00",
-  "count": 2222,
+  "generated_at": "2026-09-16T13:11:17.062997+00:00",
+  "count": 2228,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -85,6 +85,84 @@
   ],
   "items": [
     {
+      "id": "marketdesk-9awtq84r2xs-52db07",
+      "title": "GS Blekos Marketcolour FOMC Consumer Snippets Saint Gobain CVC Trucks 16 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T11:42:54Z",
+      "summary_points": [
+        "EURO STOXX 50 Forecast: Bottom-up forecast upgraded to 194.7 (2027) and 218.3 (2028), +6 pts vs May—critical index data for positioning.",
+        "Market Flows: Simulated realized flows at -23,286 (negative) last week—critical short-term data for portfolio rebalancing.",
+        "Japan Defense Spending: Boosts defense stocks amid geopolitical risk; Crypto Clarity Act failed (49-50 Senate vote), requiring reintroduction.",
+        "FOMC & Sector Shifts: 25bp hike expected with no further hikes; US equities down (-45bps SPX), Europe weak (SXXP -30bps), asset managers sold $454mm in macro products."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-euoxuhdlwoh-21153d",
+      "title": "GS Johnstone GS TMT SPEC SALES EU Communacopia day 1 wrap Salesforce ramps on Nvidias open weight Nemotron AI trade stabilises 16 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T11:42:51Z",
+      "summary_points": [
+        "Oil Supply Geopolitics: WTI crude surged 4.4% to $105/bbl amid Middle East supply fears (Saudi/Libya/Houthi factors), directly impacting energy portfolios and inflation expectations.",
+        "FOMC Rate Hike Probability: 10-yr yields >5% with >90% odds of Fed rate hike at next meeting, pressuring US equities and driving macro risk positioning.",
+        "Enterprise AI Adoption Shift: Salesforce’s Koa model (Nvidia open-weight) signals enterprise AI moving toward task-specific, cheaper systems, contrasting with frontier model hype.",
+        "Vodafone Germany Earnings Risk: €1.1bn future earnings exposure from German JV legal uncertainty (ECJ ruling on 2023 price rises, final decision 2027), with no trend change in tough conditions.",
+        "Semiconductor Production Acceleration: Qualcomm accelerating Tesla A15 (2-nm) mass production; server market growth +91% Q2 (vs +24% Q1) driven by pricing/ASPs, signaling tech capex momentum."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-hvqiah0op2r-175974",
+      "title": "GS FOMC View The September FOMC Goldmans Take from Traders and Research 15 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T11:42:42Z",
+      "summary_points": [
+        "Fed's 25bp hike driven by market pricing, not fundamentals: Avoids further hikes due to inflation data and geopolitical risks (Iran war, tariffs) - Terminal rate raised to 3.25-3.5%: 2027 median rate could exceed 3.625% with two cuts (Sept/Dec vs June/Dec), neutral rate trajectory rising gradually - Neutral rate trajectory: Expected to rise to 3.25-3.5% over next year due to strong economy at higher rates and AI-driven equilibrium rate increases - Iran conflict as critical risk factor: Saudi pipeline shutdown (Iranian proxy attack) triggers oil price spikes, Houthi campaign disrupts flows, and escalates logistics risks - EURUSD volatility gap: Implied volatility (60 bps) exceeds realized (50 bps) pre-FOMC, signaling elevated market pricing of uncertainty and positioning risks - Fed tightening bar limits USD upside: High bar to tighten amid higher real yields restricts USD positive reaction to rate hikes despite market pricing - Geopolitical tensions drive oil volatility: Crude oil volatility shifts post-Saudi pipeline shutdown with put skew and short vol exit amid Houthi campaign disruptions"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-6ldabtbjpei-d16735",
+      "title": "Strategy Daily",
+      "institution": "Mizuho",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T10:37:04Z",
+      "summary_points": [
+        "USD: Oil/Geopolitics as Rate Catalysts: Brent crude >$100pb (bearish catalyst), Fed expected 100bp hikes next year, rates markets hostage to oil/geopolitics.",
+        "GBP: CPI & Energy-Driven Rate Outlook: CPI release critical for BoE, rising energy prices push markets to higher terminal rates.",
+        "USD: Oil Price Surge: Crude resuming ascent post-Iran diplomacy, directly impacting rate expectations.",
+        "GBP: Energy Shock Dominance: Energy-driven rate outlook overshadows muted labour data."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-mbf4d5iyijp-e8a60b",
       "title": "JPM US Market Intelligence | Morning Briefing Sept 16",
       "institution": "J.P. Morgan",
@@ -123,6 +201,48 @@
       "tickers": [],
       "top_pick": false,
       "pages": 24,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rpnf1jwrycw-b484c9",
+      "title": "JPM International Market Intelligence | Morning Briefing Sept 16",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T10:04:25Z",
+      "summary_points": [
+        "AI Compute Margins: Record semi/hardware margins, revenue per GPU hour up; Frontier vendors earn $20–40bn/GW from AI tokens (vs $10bn in 2025), with open/closed models coexisting.",
+        "FOMC Scenario Risks: \"Crush inflation\" scenario implies 15/10 bp yield jumps (1y1y/2y UST), signaling aggressive rate hikes as top fixed income risk factor.",
+        "Data Center Supply Gap: U.S.",
+        "demand exceeds supply 2023–2031, with 2031 gap at 48 GW (190 GW demand vs 142 GW supply), critical for capacity allocation.",
+        "Security Spending Acceleration: AI-driven security spend to grow to $430bn TAM over 3 years, necessity-driven adoption (steeper curve than cloud/mobile), confirmed by 2Q results."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 21,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-2xafnjoxula-046f32",
+      "title": "The Point for Europe Wednesday, 16 September 2026",
+      "institution": "Citi",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T10:00:22Z",
+      "summary_points": [
+        "Fed Rate Hike Risks: Citi expects Fed hikes this week, with restrictive policy compounding bond yield worries; global equities may wobble short-term but sustain if growth strong/inflation falling, implying stagflation risks but continued upside to mid-27.",
+        "NATO Defense Doctrine: NATO’s \"manoeuvre\" doctrine necessitates large-scale tank orders (e.g., Rheinmetall), driving defense stock rerating amid critical European ground force cohesion concerns.",
+        "AB-InBev Strategic Shift: CMD event prioritizes organic growth and capital returns (dividends/buybacks) over deleveraging, fueled by BEES platform monetization and high-margin US expansion, reframing stock as premier compounding play.",
+        "Commodities Physical Demand: Brent oil volatility (Saudi disruptions) offset by physical demand strength (Dated Brent >$130/bbl, Chinese crude imports), providing fundamental support despite geopolitical risks.",
+        "FX Flow Dynamics: GBP bearish into BoE due to budget uncertainty; USD net inflows (leveraged/real money) vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
       "language": "en",
       "needs_metadata": false
     },
