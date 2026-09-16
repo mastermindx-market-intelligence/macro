@@ -17,3 +17,14 @@ ProtectKernelModules=true
 ProtectControlGroups=true
 ReadWritePaths=/var/cache/mastermind-ci /run/lock
 UMask=0027
+
+# The cache is disposable acceleration and must always yield to CI and render.
+# The incremental validator normally stays below 300 MiB; these ceilings prevent
+# an accidental return to the former 14+ GiB full-estate scan from jamming the host.
+Nice=10
+IOSchedulingClass=idle
+IOSchedulingPriority=7
+CPUQuota=100%
+MemoryHigh=2G
+MemoryMax=4G
+TimeoutStartSec=5min
