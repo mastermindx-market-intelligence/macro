@@ -652,6 +652,30 @@ def test_incomplete_recipe_requires_each_absent_identity_field_to_be_named(tmp_p
     assert ChartRecipe.from_json(path).capture_status == "incomplete"
 
 
+def test_incomplete_recipe_can_inventory_unknown_extended_hours_state() -> None:
+    raw = complete_recipe_dict()
+    raw["capture_status"] = "incomplete"
+    raw["chart"]["extended_hours_enabled"] = None
+    raw["missing_fields"] = ["chart.extended_hours_enabled"]
+
+    recipe = ChartRecipe.from_dict(raw)
+
+    assert recipe.capture_status == "incomplete"
+    assert recipe.chart["extended_hours_enabled"] is None
+
+
+def test_incomplete_recipe_can_inventory_unknown_allowed_session_variants() -> None:
+    raw = complete_recipe_dict()
+    raw["capture_status"] = "incomplete"
+    raw["chart"]["allowed_session_variants"] = []
+    raw["missing_fields"] = ["chart.allowed_session_variants"]
+
+    recipe = ChartRecipe.from_dict(raw)
+
+    assert recipe.capture_status == "incomplete"
+    assert recipe.chart["allowed_session_variants"] == ()
+
+
 _INVENTORIED_RECIPE_FIELDS = (
     *(("instrument", key) for key in ("display_symbol", "tickerid", "main_tickerid", "asset_class", "exchange", "vendor_feed", "currency")),
     *(("chart", key) for key in ("timeframe_period", "named_session", "exchange_timezone", "chart_timezone", "price_adjustment", "dividend_adjustment", "back_adjustment", "settlement_as_close")),

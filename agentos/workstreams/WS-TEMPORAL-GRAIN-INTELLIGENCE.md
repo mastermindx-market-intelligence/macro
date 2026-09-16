@@ -9,7 +9,7 @@ objective: >
   usefulness-mechanism claims are tested only under a frozen localization/risk ruler, any surviving
   structure-to-kernel relationship passes an instrument-disjoint preregistered test, and every
   result remains zero-authority unless a later independent promotion passes.
-status: awaiting_ci
+status: active
 program: market-timing-intelligence
 repos: [macro]
 owner: ceo-sol
@@ -39,14 +39,15 @@ waves:
       then the adversarial review amendment.
   - id: W1A
     title: Exact WMT/silver recipe capture, TradingView parity and mechanical G/A/K/D artifact attack
-    status: awaiting_ci
+    status: in_progress
     pr: 6803
     depends_on: [W0]
     next_action: >
-      Keep PR #6803 DRAFT / HOLD-FOR-SOL while exact-head hosted CI and immutable review
-      run. The code and synthetic fixture are BUILT_NOT_PROVEN; exact WMT and silver
-      packets remain independently UNRESOLVED_DATA and external. Do not mark Ready,
-      merge, capture live charts, or begin W1B without a fresh same-carrier Sol ruling.
+      Keep PR #6803 DRAFT / HOLD-FOR-SOL while the incomplete-packet repair receives
+      exact-head hosted CI and immutable review. WMT 720-minute extended-hours and the
+      motivating silver 480-minute chart now have committed typed UNRESOLVED_DATA recipes;
+      neither has exact TradingView identity, export or lower-grain evidence. Do not mark
+      Ready, merge, recast either abstention as parity, or begin W1B.
   - id: W1B
     title: Separately preregistered localization and risk-utility mechanism diagnosis
     status: todo
@@ -109,11 +110,15 @@ artifacts:
   - agentos/handoffs/TEMPORAL-GRAIN-INTELLIGENCE-W1-R1.md
   - scripts/research/run_temporal_scale_artifact_attack.py
   - scripts/research/temporal_scale/artifact_attack.py
+  - research/signal_engine/temporal_scale/external_evidence/wmt_incomplete_recipe.json
+  - research/signal_engine/temporal_scale/external_evidence/silver_incomplete_recipe.json
+  - research/signal_engine/temporal_scale/external_evidence/verification.json
+  - agentos/handoffs/TEMPORAL-GRAIN-INTELLIGENCE-2026-09-16-EXTERNAL-EVIDENCE-GATE.md
 next_action: >
-  Complete exact-head hosted CI and immutable Sol review of DRAFT / HOLD-FOR-SOL PR #6803.
-  Treat the harness as BUILT_NOT_PROVEN and PRODUCTION_INERT: exact WMT and silver packets
-  remain independently UNRESOLVED_DATA, and W1B remains held until a fresh same-carrier
-  Sol CONTINUE after reviewing immutable W1A receipts.
+  Commit and normally push the bounded incomplete-packet repair on the existing PR #6803
+  carrier, obtain exact-head hosted CI and immutable review, and preserve Draft/HOLD. Then
+  replace each typed abstention only with a separately complete right-safe TradingView parent
+  recipe, export and lower-grain manifest. W1B remains held unless both exact packets survive.
 ---
 
 ## Scientific prior

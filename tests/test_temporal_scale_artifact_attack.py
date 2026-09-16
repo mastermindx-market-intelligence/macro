@@ -699,3 +699,36 @@ def test_cli_incomplete_recipe_is_unresolved_without_loading_csv(tmp_path: Path)
     assert result["mechanical_status"] == "UNRESOLVED_DATA"
     assert result["recipes"] == [raw["recipe_id"]]
     assert manifest["csv_loaded"] is False
+
+@pytest.mark.parametrize(
+    ("recipe_name", "recipe_id"),
+    (
+        ("wmt_incomplete_recipe.json", "wmt-720-extended-historical-gap-20260916"),
+        ("silver_incomplete_recipe.json", "silver-480-historical-gap-20260916"),
+    ),
+)
+def test_committed_motivating_gap_recipes_emit_typed_unresolved_without_csv(
+    tmp_path: Path, recipe_name: str, recipe_id: str,
+) -> None:
+    recipe_path = (
+        Path("research/signal_engine/temporal_scale/external_evidence") / recipe_name
+    )
+    output = tmp_path / recipe_name.removesuffix(".json")
+
+    completed = _run_cli(
+        "attack",
+        "--recipe", str(recipe_path),
+        "--csv", str(tmp_path / "does-not-exist.csv"),
+        "--output-dir", str(output),
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    result = json.loads((output / "artifact_attack_result.json").read_text(encoding="utf-8"))
+    manifest = json.loads((output / "run_manifest.json").read_text(encoding="utf-8"))
+    assert result["recipes"] == [recipe_id]
+    assert result["mechanical_status"] == "UNRESOLVED_DATA"
+    assert result["final_mechanism_classification"] is None
+    assert set(result["authority"].values()) == {False}
+    assert manifest["csv_loaded"] is False
+    assert manifest["network_used"] is False
+    assert manifest["production_ledger_used"] is False

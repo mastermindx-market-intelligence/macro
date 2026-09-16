@@ -288,7 +288,7 @@ def _missing_recipe_fields(raw: Mapping[str, Any]) -> set[str]:
     missing: set[str] = set()
     for section, keys in (
         ("instrument", ("display_symbol", "tickerid", "main_tickerid", "asset_class", "exchange", "vendor_feed", "currency")),
-        ("chart", ("timeframe_period", "named_session", "exchange_timezone", "chart_timezone", "price_adjustment", "dividend_adjustment", "back_adjustment", "settlement_as_close", *_CHART_TYPE_FLAGS)),
+        ("chart", ("timeframe_period", "named_session", "exchange_timezone", "chart_timezone", "extended_hours_enabled", "price_adjustment", "dividend_adjustment", "back_adjustment", "settlement_as_close", *_CHART_TYPE_FLAGS)),
         ("indicator", ("observed_indicator_family", "observed_indicator_title", "observed_indicator_source_kind", "observed_indicator_source_hash", "observed_indicator_inputs", "probe_indicator_family", "probe_source_git_blob_sha", "probe_inputs", "probe_rma_seed")),
         ("export", ("csv_filename", "csv_sha256", "row_count", "first_bar_open_ms", "last_bar_close_ms", "loaded_history_start_ms")),
         ("rights", ("use", "redistribution", "source_reference")),
@@ -299,6 +299,11 @@ def _missing_recipe_fields(raw: Mapping[str, Any]) -> set[str]:
             if value is None or (isinstance(value, str) and not value.strip()):
                 missing.add(f"{section}.{key}")
     chart = _mapping(raw["chart"], "chart")
+    allowed_session_variants = chart.get("allowed_session_variants")
+    if allowed_session_variants is None or (
+        isinstance(allowed_session_variants, (list, tuple)) and not allowed_session_variants
+    ):
+        missing.add("chart.allowed_session_variants")
     definitions = chart.get("session_definitions")
     named_session = chart.get("named_session")
     if isinstance(named_session, str) and named_session and (
@@ -444,10 +449,15 @@ class ChartRecipe:
             raise ContractError("chart.back_adjustment is unknown")
         if present(self.chart, "settlement_as_close") and self.chart["settlement_as_close"] not in {"on", "off", "not_applicable", "unknown"}:
             raise ContractError("chart.settlement_as_close is unknown")
-        _require_bool(self.chart["extended_hours_enabled"], "chart.extended_hours_enabled")
-        if not isinstance(self.chart["allowed_session_variants"], tuple) or not self.chart["allowed_session_variants"]:
+        extended_hours_enabled = self.chart["extended_hours_enabled"]
+        if extended_hours_enabled is not None:
+            _require_bool(extended_hours_enabled, "chart.extended_hours_enabled")
+        allowed_session_variants = self.chart["allowed_session_variants"]
+        if not isinstance(allowed_session_variants, tuple):
+            raise ContractError("chart.allowed_session_variants must be a list")
+        if not allowed_session_variants and self.capture_status == "complete":
             raise ContractError("chart.allowed_session_variants must be a nonempty list")
-        if not all(isinstance(item, str) and item.strip() for item in self.chart["allowed_session_variants"]):
+        if not all(isinstance(item, str) and item.strip() for item in allowed_session_variants):
             raise ContractError("chart.allowed_session_variants must contain nonempty literals")
         definitions = self.chart["session_definitions"]
         if not isinstance(definitions, Mapping):

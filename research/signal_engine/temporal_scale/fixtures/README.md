@@ -96,6 +96,24 @@ identity, session, roll, observed indicator math, rights, or export precision ca
 return an independently typed incomplete/`UNRESOLVED_DATA` packet for that chart rather than using
 another symbol, vendor, session, or product.
 
+## Current motivating-chart abstention packets
+
+The repository now carries two strict incomplete recipes under
+`research/signal_engine/temporal_scale/external_evidence/`:
+
+- `wmt_incomplete_recipe.json` records only the supported discovery anchors `WMT`, 720 minutes,
+  named `extended`, and `extended_hours_enabled=true`; every absent identity, session grammar,
+  adjustment, observed-indicator and export field is enumerated in `missing_fields`.
+- `silver_incomplete_recipe.json` records only the supported discovery anchors `silver` and 480
+  minutes. Product class, vendor/feed, contract or roll, session, extended-hours state, chart type,
+  adjustments, indicator provenance and export remain explicitly missing.
+
+Running `attack` against either recipe must return `UNRESOLVED_DATA:INCOMPLETE_RECIPE` without
+opening the named CSV, using the network, or writing the production TrialLedger. These files are
+typed abstentions, not TradingView parity evidence. Replace fields only from a separately authorized
+right-safe capture; never fill them from Yahoo, Polygon, Massive, another silver product or a guessed
+session. `external_evidence/verification.json` binds the recipe and local receipt hashes.
+
 ## Local W1A CLI
 
 The repository child does not perform the external capture. After a separate authorized capture
