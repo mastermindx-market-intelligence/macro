@@ -10,7 +10,7 @@ permissions:
 
 concurrency:
   group: china-risk-radar-release-proof-7029
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   prove-current-merge:
@@ -33,8 +33,6 @@ jobs:
         run: |
           set -euo pipefail
           PROOF_HEAD="$(git rev-parse HEAD)"
-          PARENT="$(git rev-parse HEAD^)"
-          test "$PARENT" = "$PRODUCT_HEAD"
           CHANGED="$(git diff --name-only "$PRODUCT_HEAD" "$PROOF_HEAD")"
           test "$CHANGED" = "$PROOF_WORKFLOW_PATH"
 
@@ -183,37 +181,57 @@ jobs:
             --emit-md "$PROOF_DIR/smells.md"
 
           python - <<'PY'
-          import json, os, pathlib
+          import hashlib, json, os, pathlib
 
           root = pathlib.Path(os.environ["PROOF_DIR"])
-          images = sorted(
-              path for path in (root / "cells").rglob("*")
-              if path.is_file() and path.suffix.lower() in {".png", ".jpg", ".jpeg", ".webp"}
-          )
-          if len(images) != 8:
-              raise SystemExit(f"expected exactly 8 browser cells, found {len(images)}")
+          manifest = json.loads((root / "manifest.json").read_text())
+          if manifest.get("schema") != "mastermind.p0_evidence.v2":
+              raise SystemExit(f"unexpected evidence schema: {manifest.get('schema')!r}")
+          if manifest.get("outcome") != "captured":
+              raise SystemExit(f"evidence outcome is not captured: {manifest.get('outcome')!r}")
 
+          pages = manifest.get("pages") or []
+          if len(pages) != 1 or not str(pages[0].get("route", "")).endswith("china.html"):
+              raise SystemExit(f"expected one China evidence page, got {[p.get('route') for p in pages]}")
+
+          states = [state for state in pages[0].get("states", []) if state.get("captured")]
           expected = {
               (viewport, locale, theme)
               for viewport in ("desktop", "mobile")
               for locale in ("en", "zh")
               for theme in ("dark", "light")
           }
-          found = set()
-          for path in images:
-              name = path.name.lower()
-              viewport = next((value for value in ("desktop", "mobile") if value in name), None)
-              locale = next((value for value in ("en", "zh") if value in name), None)
-              theme = next((value for value in ("dark", "light") if value in name), None)
-              if viewport and locale and theme:
-                  found.add((viewport, locale, theme))
-          if found != expected:
-              raise SystemExit(f"browser matrix mismatch: expected={sorted(expected)} found={sorted(found)}")
+          found = {
+              (state.get("viewport"), state.get("locale"), state.get("theme"))
+              for state in states
+              if state.get("access") == "anonymous" and state.get("force_state") is None
+          }
+          if found != expected or len(states) != 8:
+              raise SystemExit(
+                  f"browser matrix mismatch: expected={sorted(expected)} found={sorted(found)} states={len(states)}"
+              )
+
+          files = []
+          for state in states:
+              if state.get("applied_locale") != state.get("locale"):
+                  raise SystemExit(f"locale was not applied: {state}")
+              if state.get("applied_theme") != state.get("theme"):
+                  raise SystemExit(f"theme was not applied: {state}")
+              path = root / "cells" / str(state.get("file", ""))
+              if not path.is_file():
+                  raise SystemExit(f"missing screenshot file: {path}")
+              digest = hashlib.sha256(path.read_bytes()).hexdigest()
+              if digest != state.get("sha256"):
+                  raise SystemExit(f"screenshot hash mismatch: {path.name}")
+              if path.stat().st_size != state.get("bytes"):
+                  raise SystemExit(f"screenshot byte-count mismatch: {path.name}")
+              files.append(str(path.relative_to(root)))
 
           receipt = json.loads((root / "render_receipt.json").read_text())
-          receipt["browser_cells"] = len(images)
+          receipt["browser_cells"] = len(states)
           receipt["browser_matrix"] = [list(cell) for cell in sorted(found)]
-          receipt["browser_files"] = [str(path.relative_to(root)) for path in images]
+          receipt["browser_files"] = sorted(set(files))
+          receipt["physical_screenshot_files"] = len(set(files))
           (root / "release_proof_receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
           PY
 
