@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-16T17:48:17.957638+00:00",
-  "count": 2235,
+  "generated_at": "2026-09-16T20:34:24.953785+00:00",
+  "count": 2250,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -105,6 +105,46 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-ynxvgs1kneu-189a85",
+      "title": "JPM Market Intelligence | US Election Series Midterms: September 16, 2026",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T14:16:59Z",
+      "summary_points": [
+        "$500 Obamacare Refund Policy Shift: Direct fiscal intervention targeting ~1mm income-based subsidy losers (400% FPL/$60k+ ineligible), risking healthcare cost volatility and political backlash; critical for MCOs/hospitals amid affordability pressures.",
+        "US/IRAN Energy Disruption: Houthi attacks and Saudi pipeline strikes triggered 16.5% energy price surge ($106), threatening 8mm bpd LNG transit and supply chains; key inflationary risk for US states.",
+        "EPA Carbon Policy Shift: EPA blocking power plant emissions rules alters energy sector regulations, directly impacting carbon-intensive asset valuations and climate policy tailwinds.",
+        "Democratic Congress Trade Plays (51% Prob.): Strategic longs in ACA Exchange Levered (JPUSACA) and Low End Consumer Spend (JP1XLOCD) vs. shorts in Next Gen Defense (JP1XNDF), Capital Markets Exposed (JPUSCAPM), Energy Permitting (JPAMPERM), and CLARITY Act Exposed (JPUSCLAR) due to policy tailwinds/risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 28,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-nwcuk61rpmi-78758a",
+      "title": "DB CoTD: 15 in 70 years....",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T14:08:10Z",
+      "summary_points": [
+        "Current Cycle Projection: 15th Fed hiking cycle since 1950s projects 95bps tightening over 12 months, contrasting with historical median 313bps over 15 months.",
+        "Historical Underestimation Risk: Markets repeatedly underestimated cycle magnitude (2015, 2022), implying potential for higher-than-expected tightening absent a 1986-87-style shallow cycle.",
+        "Shallow Cycle Exception: 1986-87 cycle (137bps) remains the sole shallow exception, highlighting rarity of minimal tightening amid typical 313bps median.",
+        "Cycle Duration Context: 15-month median cycle duration underscores extended tightening period, with current trajectory diverging from historical norms."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-ndruwslrard-e5e2c2",
       "title": "UK Motor Pricing Tracker UK Motor Pricing decelerating with ONS data showing price declines in August",
       "institution": "Goldman Sachs",
@@ -144,6 +184,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-lbazvjrjusr-2ba3ea",
+      "title": "GS Utilities Daily Centrica and X energy advance UK Nuclear plans with Xe 100 reactor Design Review Nordex secures 91 MW ...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T11:48:16Z",
+      "summary_points": [
+        "UK Nuclear Regulatory Milestone: UK regulators accept X-energy’s Xe-100 reactor into GDA process, targeting 6GW nuclear capacity (10–20 stations), with Hartlepool as first project (3-year timeline), critical for baseload stability and regulatory progress.",
+        "Germany Windfall Tax Policy Risk: German finance ministry advocates windfall tax on excessive energy profits at EU meeting, no fuel discount, posing direct profitability risk to energy companies amid policy shifts.",
+        "UK Clean Energy Investment Mandate: 2040 clean energy transition mandates €511bn cumulative investment (€47bn/year), signaling sustained utility sector growth and structural opportunity for energy policy investors.",
+        "Europe Electrification Surge: \"Hyper-electrification\" scenario projects PowerGen investments tripling to €2tn by 2035, favoring utilities with strong balance sheets (e.g., RWE, Orsted) amid raised power demand assumptions (1.5-2% pa)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-1qndc7xrrut-41f42c",
       "title": "GS Early Morning Research Recap Ratings and Target Price Changes September 16, 2026 as of 5 30 AM ET",
       "institution": "Goldman Sachs",
@@ -161,6 +221,123 @@
       "tickers": [],
       "top_pick": false,
       "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-fjujopqzgmx-2da980",
+      "title": "Global Retail Global Consumer and Retail Conference 2026 — Day 2 Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T11:48:06Z",
+      "summary_points": [
+        "US Consumer Resilience: US outperforms Europe/Mexico; 68% of firms expect stable consumer health through H2 2026 amid pricing/mix discipline (GRGD, BOOT).",
+        "Margin Headwinds & AI: 30% anticipate margin headwinds vs. 39% AI efficiency gains; fuel/input cost volatility and tariff fears dominate 2027 margin outlook.",
+        "ThriftIQ Margin Lift: ThriftIQ drives ~100bps EBITDA margin expansion (58 stores live), standardizing price-value for 33k items/week, accelerating SVV’s high-teens margin target.",
+        "Capri Inventory Recovery: Michael Kors inventories down ~27% (50% less clearance), full-price sell-throughs improving, signaling brand health amid AUR growth."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 57,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-jqwzuxd4euh-e59c74",
+      "title": "Global Physical AI Framing the Forward Progress of Humanoids [Replay]",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T11:47:53Z",
+      "summary_points": [
+        "Market Size Projection: Goldman Sachs forecasts 890,000 global humanoid robot units by 2030 ($138B market opportunity), signaling massive scalability.",
+        "Adoption Velocity: 40% of robotics survey respondents anticipate general-purpose robotics automating ≥10% of workflows within 3-5 years, indicating rapid near-term enterprise uptake."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-bb5uihwdyoa-eb7d9c",
+      "title": "China SAFE data suggest increased FX inflows in August",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T11:47:39Z",
+      "summary_points": [
+        "Surge in Net FX Inflows: August net FX inflows reached $55bn (vs $7bn in July), driven by $62bn current account inflows offsetting $7bn portfolio outflows, signaling strong external demand.",
+        "Divergent Capital Flow Signals: Despite rising FX inflows, foreign investors net sold RMB bonds (Exhibit 3), creating tension between positive FX trends and negative bond market sentiment.",
+        "Robust External Financial Position: Banks’ net external assets hit $1.627tn (Exhibit 4), with commercial banks’ external assets up $55bn and official reserves rising $11bn, reflecting resilient external buffers."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-isdkcqp6qjv-c00a48",
+      "title": "Brazil Building Homebuilders After the Rally Analyzing Election Cycle Positioning",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T11:47:35Z",
+      "summary_points": [
+        "Election Cycle Catalyst: First-round Brazilian election in ~3 weeks; Cyrela trades at lowest NTM P/E (5.0) and widest earnings-yield spread (557) vs. 10-year yields in prior cycles, signaling valuation discount amid volatility.",
+        "Sector-Wide Valuation Divergence: Cyrela/Direcional at lowest NTM P/E (4.9–5.0) and highest earnings yield spreads (635–557) vs. peers; Tenda at 630 spread (vs. 2018’s 236) but limited historical data due to financial stress."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-dqvjhmsh87n-871b0e",
+      "title": "Victoria's Secret & Co. (VSXY) Global Consumer and Retail Conference 2026 — Key Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T11:47:31Z",
+      "summary_points": [
+        "Growth Catalysts: Lifestyle expansion, Beauty integration, China/Europe digital growth, and Fashion Show marketing drive customer acquisition and category momentum.",
+        "Key Risks: Tariffs impacting margins, intense US intimates market competition, and core US operational execution risks.",
+        "Growth Trajectory: Projected 20% revenue, 46% EBITDA, and 146% EPS growth by 2025E with $85.00 price target (17.1% upside).",
+        "Rating Distribution: 50% global Buy consensus (vs.",
+        "Hold 34%, Sell 16%) and 65% Investment Banking Buy confidence signal strong institutional conviction."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-awvbgezjvrw-648750",
+      "title": "Taiwan ABF Eternal Precision visit Order lead time extends to 2031, customers offering premium to secure supply",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T11:47:29Z",
+      "summary_points": [
+        "Extended Lead Times & Premium Demand: Lead times for high-end ABF equipment extended to 2031 (from 2028/29), with customers paying premiums to secure supply—signaling strong pricing power and demand strength versus 2020-22 cycle.",
+        "High-End Revenue Shift & Capacity Expansion: Product mix shifting to 59% high-end (2025 revenue), accelerating growth; Japan capacity to 28 units/month by mid-2027 (+50% from 18), new plant in 2029 (410 units/year), with 50%+ YoY revenue growth expected in 2026.",
+        "ABF Substrate Shortage & Supply Constraints: Shortage ratio to reach 14%/34%/51% in 2026/2027/2028; China ABF suppliers face limited new equipment access, reducing capacity expansion risk and supporting pricing power.",
+        "Critical Demand Risks: PC demand recovery speed and ABF substrate upgrading pace are key risks impacting revenue growth (e.g., 40%+ high-end ABF-driven revenue by 2027E).",
+        "Consistent Analyst Bullishness: Target prices for Kinsus, Unimicron, and NYPIC consistently exceed closing prices (e.g., Kinsus: 1,125 NTS target vs 698 NTS closing), with recent upward revisions signaling sustained upside potential."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
       "language": "en",
       "needs_metadata": false
     },
@@ -404,6 +581,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-s4vnrbwqhpe-fbcc29",
+      "title": "DB Early Morning Reid Macro Strategy",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T09:57:51Z",
+      "summary_points": [
+        "Fed Rate Hike Probability: 94% market pricing for today's hike (first since 2023), driven by sticky Aug CPI (+0.3%), hawkish Warsh comments, and strong labor data—critical for rates, equities, and risk assets.",
+        "Oil Supply Disruption & Yield Surge: Brent crude hits $108.75/bbl (highest since May) from Saudi/Libya output halts; 10yr Treasury yield breaches 5.00% (post-2007 high), fueling stagflation fears and bond market stress.",
+        "Risk Asset Sell-Off: S&P 500 at 6-week low, STOXX 600 at 3-month low amid energy-driven stagflation concerns; Bitcoin drops 4.06% on failed digital asset bill.",
+        "German ZEW & US Data: German ZEW current situation rebounds to 47.1 (vs -52.1 expected), signaling eurozone sentiment shift; US retail sales beat at 0.9% (vs -0.6% prev), housing index steady at 34.0."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-ifvweti4bl0-81ed6e",
       "title": "GS FOMC View The September FOMC Goldmans Take from Traders and Research 15 Sep 2026",
       "institution": "S&T",
@@ -595,6 +792,65 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ce0qkpblcew-a2ea4f",
+      "title": "Walmart Inc. (WMT) Global Consumer and Retail Conference 2026 — Key Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T02:53:00Z",
+      "summary_points": [
+        "Tariff-driven pricing strategy: $2.9B Q2 tariff refund enables price investments (rollbacks/cost offsets), driving strong share gains and positive price gaps; management plans to convert rollbacks into daily low prices.",
+        "Walmart eCommerce Momentum & Profitability: 24% Q2 growth (10th consecutive 20%+ quarter), 6th consecutive profitable quarter, most profitable e-commerce quarter ever; driven by assortment/price/experience focus, 96% US delivery coverage (3h/30m), and +DD comps from membership/marketplace.",
+        "Valuation Target & Upside: 12-month price target $132 (current $109.08, 21% upside) based on risk-reward framework with P/E multiples 160%/165%/170% for downside/base/upside."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ej1gaufktwz-165cca",
+      "title": "Genuine Parts Co. (GPC) Global Consumer and Retail Conference 2026 — Key Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T02:52:56Z",
+      "summary_points": [
+        "Fundamental Near-Term Profitability Risks: Soft automotive market, inflation-driven cost overruns, and stalled operational initiatives threaten near-term earnings (per Goldman Sachs analysis), directly contradicting bullish valuation assumptions.",
+        "Declining EPS Forecasts & Valuation Disconnect: EPS forecasts falling sharply ($2.15 → $1.86 by 3/27E) amid neutral rating ($135 target vs.",
+        "$133.21 close) signal deteriorating fundamentals despite persistent target price premiums.",
+        "Critical Coverage Status Risk: \"Not covered by current analyst\" designation poses immediate liquidity and sentiment risk, requiring urgent monitoring as coverage gaps can trigger reduced trading volume and market dislocation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-dkw4dnqi5ba-cbe4da",
+      "title": "Floor & Decor Holdings (FND) Global Consumer and Retail Conference 2026 — Key Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T02:52:54Z",
+      "summary_points": [
+        "Market Share & LVT Risk: Gaining share in tile (largest category) and wood (fastest-growing); LVT oversupply poses key margin risk, partially offset by tariff refunds.",
+        "Regional Expansion & Pro Strategy: Regional strength now spans West, East, South (Florida/Texas focus); Pro loyalty program testing (H2 2023), full launch 2027 to drive volume/wallet share.",
+        "Margin Drivers: Freight/supply chain costs pressuring COGS, offset by tariff refunds; Pro loyalty program expected to increase volume despite near-term margin pressure.",
+        "Valuation Risks: Neutral rating ($53 target, 14.9% upside); key downside: demand slowdown, Pro penetration failure, consumer shift to carpeting."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
@@ -1024,6 +1280,46 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-kxefjwk9qmk-13918c",
+      "title": "GS Housing Market Activity Scale Week of September 6 Scale is Flat Sequentially as Rates Hit a New 52 Week High, Offsetting...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T12:58:12Z",
+      "summary_points": [
+        "Rate Surge Suppresses Demand: Mortgage rates at 6.76% (52-week high, +41bps YoY) drive 19% YoY decline in total applications, 32% drop in refinancings, and 7% fall in purchase volumes, signaling active market contraction.",
+        "Housing Activity Neutral but Cooling: Scale flat at 4 (Hold level) despite 22% below long-term avg; median days on market moderating as sales growth (3%) offset by rate pressures, indicating subdued growth.",
+        "Price Divergence Signals Buyer Advantage: Median sale price up 2% YoY but median list price down 1.4% YoY; sale-to-list ratio at 98.7% (down YoY), reflecting buyer leverage amid cooling demand."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-2154grzixhr-463a3c",
+      "title": "China Better industrial production, sluggish investment, slower retail sales growth",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T12:58:07Z",
+      "summary_points": [
+        "GDP Forecast Downgrade: Q3 GDP growth revised down to 4.4% yoy (from 4.6%) and full-year 2026 to 4.5% yoy (from 4.6%), driven by weak FAI (-10.8% yoy) and retail sales (0.4% yoy), signaling deteriorating momentum.",
+        "Property Sector Crisis: Property investment plummeted -25.4% yoy in August, with all key metrics (floor space started, sales) declining since 2022, acting as a structural drag on growth.",
+        "Critical Data Misses: FAI (-10.8% yoy) and retail sales (0.4% yoy) missed expectations, while automobile sales contracted -18.5% yoy, highlighting consumption weakness.",
+        "Policy Stimulus Signal: State Council/MOF/NDRC indicate potential additional stimulus if growth slows further, targeting 4.5-5.0% full-year growth amid pressure.",
+        "Labor Market Stress: Youth unemployment rebounded to 17.9% in July, with nationwide unemployment rising to 5.3%, signaling potential consumer spending headwinds."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },
