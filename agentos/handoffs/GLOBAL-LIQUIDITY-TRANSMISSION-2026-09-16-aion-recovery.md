@@ -1,0 +1,133 @@
+---
+workstream: WS:GLOBAL-LIQUIDITY-TRANSMISSION
+session: claude/aion-liquidity-continuity-20260916-sol-001
+model: sol
+ended_because: ci_handoff
+mission: >
+  Preserve the Aion-informed upgrade frontier without confusing the accepted
+  liquidity producer, held research adapter, future-state forecasting, or the
+  separate Terminal options repair. Restore current organizational continuity.
+state_before: >
+  The workstream body still called Macro #6296 unmerged and awaiting producer
+  acceptance. Mastermind #124 had progressed to a pushed adapter/replay candidate,
+  but its latest hosted failure and unplaced review lived only in GitHub. The
+  options audit found an existing Exposure matrix and a selected-ticker defect.
+changed:
+  - path: agentos/workstreams/WS-GLOBAL-LIQUIDITY-TRANSMISSION.md
+    what: >
+      Reconciled accepted #6296 and in-progress but unaccepted #124, preserving
+      the whole-wave dependency graph and zero new execution or trading authority.
+  - path: agentos/handoffs/GLOBAL-LIQUIDITY-TRANSMISSION-2026-09-16-aion-recovery.md
+    what: >
+      Recorded exact source candidates, actual tests, platform-limited proof,
+      corrections, independent-review debt and the next actions in owning repos.
+verified:
+  - claim: W-LIQ.1 source repair is accepted and merged, not an unfinished rebuild.
+    command: >
+      GitHub get_pr_info macro #6296 and read issue comment 5539622225.
+    result: >
+      Repaired head 7fb785ee07b87abb14cfa6e6e35e481a1ccb6a24 merged September 4
+      as 38fd57a676de07c361040eea7d5e5127034063e1; no fresh live proof inferred.
+  - claim: The existing W-LIQ.3 carrier contains the adapter and deterministic replay repairs.
+    command: >
+      GitHub get_pr_info Mastermind #124 and native related pytest suite on
+      23f97360131d05123acc440da15780b0bb200e82.
+    result: >
+      Draft/unmerged; 292 related tests including 96 lab tests passed on Python
+      3.12.13. No new threshold, study, live publication or predictive authority.
+  - claim: Full hosted liquidity acceptance is not green.
+    command: >
+      GitHub Actions status for Mastermind runs 35046156905 and 35051016157.
+    result: >
+      Both concluded failure. Available annotations did not identify the cause;
+      raw-log read was blocked and not retried through another route.
+  - claim: A native full-test attempt produced diagnostic failures, not acceptance.
+    command: >
+      Owned isolated Python scripts/ci_pytest.py; bounded reading of
+      /tmp/w-liq3-full-isolated-20260916.log and its summary after interruption.
+    result: >
+      611 modules, no exclusions; 227 observed failures before deliberate SIGINT
+      of the verified owned pytest process. One trace failed strict same-device
+      ancestry under an external-volume fixture. This does not identify hosted
+      Linux causality. Security gates and dependencies were not weakened.
+  - claim: Terminal selected-ticker source repair is pushed on its separate carrier.
+    command: >
+      GitHub create_pull_request Terminal #592 after native commit/push and
+      source-bound tests at 27a759373b3feced2f313358cc0ef507155eca6b.
+    result: >
+      Draft PR #592 references issue #591. Twenty new cases failed before repair;
+      all 22 passed after it. Full Vitest passed 5434 tests in 327 files with 4
+      existing todo; tsc passed. Existing cold Exposure browser tests passed 8
+      with one pre-existing skip across desktop/tablet/mobile, zero retries.
+  - claim: The retired-matrix-flip diagnosis was corrected after producer tracing.
+    command: >
+      Read Macro engine/options_matrix.py at
+      9579caf3f950f1a2e7b959a9b3b68d26e42e5d06, lines 448-458 and 935-954;
+      read Terminal #591 correction comment 5691716246.
+    result: >
+      Current inspected matrix source uses the canonical raw-chain spot-grid
+      flip or null. The Terminal comment was stale; valid matrix fallback was
+      retained. The independently reproduced old-ticker response race remains.
+unverified:
+  - claim: Mastermind #124 has independent review and full exact-head CI acceptance.
+    what_would_verify: >
+      Resolve hosted failure through an approved read path, obtain an eligible
+      independent exact-head reviewer, and require full current-head checks.
+  - claim: Terminal #592 fully proves the reversed-response customer journey.
+    what_would_verify: >
+      Resolve the platform-limited mounted-proof capability without actor/tool
+      bypass; obtain actual component/browser race evidence, remaining light
+      and responsive proof, independent review, and exact-head hosted checks.
+  - claim: Either candidate is deployed and production-proven.
+    what_would_verify: >
+      After lawful acceptance, follow each existing release owner and prove
+      the real source-to-consumer customer path on the accepted release.
+  - claim: A future-liquidity forecast or options observation-time change feature exists.
+    what_would_verify: >
+      Separately scoped implementations and end-to-end evidence through existing
+      owners; neither adapter nor selected-root repair supplies those features.
+unresolved:
+  - Mastermind #124 remains draft with failed hosted CI and unplaced independent review.
+  - Terminal #592 remains draft; a mounted deferred-response test creation was blocked before effect and was not retried through another route.
+  - Terminal fixture screenshots cover dark EN desktop/mobile and dark ZH tablet; light and production proof are not established.
+  - Approved Executive submit/placement was not exposed to this Web session; no provider worker, review pickup or START is claimed.
+next_actions:
+  - Re-pin protected Sol Skillpack and exact #124/#592 heads; read only material changes and current checks.
+  - Resolve #124 hosted failure and exact-head independent review on its existing carrier; do not rebuild #6296.
+  - Resolve #592 remaining allowed verification/review gates on the existing branch, then lawfully release and production-prove the selected-ticker journey.
+  - After #124 acceptance, separately freeze the admitted reader and bounded research policy under #123 before any empirical run.
+  - Keep future-liquidity forecasting, matrix observation-time replay and level-change interpretation explicit as separate product capabilities; extend current owners.
+do_not_redo:
+  - Do not create another liquidity collector, research ledger, options matrix, gamma kernel, runtime, queue or Agent OS copy.
+  - Do not turn old source freshness or fixture dates into current live evidence.
+  - Do not weaken Executive filesystem/metadata gates to make native tests pass or attribute native failures to hosted CI without proof.
+  - Do not remove a valid current-method matrix flip based on obsolete Terminal commentary.
+  - Do not run an empirical search or grant Prophet authority from research infrastructure or source tests.
+danger_areas:
+  - 2023-2026 BTC/BABA hypothesis-origin observations are not an untouched holdout.
+  - A publisher timestamp, first-known time and source-age admission solve different problems.
+  - An order-dependent observation population corrupts later research even when indicators appear plausible.
+  - Native full-suite interruption and partial browser coverage must never be projected as full green acceptance.
+  - A posted review request or visibility message is not assigned or running work.
+---
+
+## Canonical carriers
+
+Mastermind control board #123 and PR #124 own liquidity implementation and sequence.
+PR #124 source is `23f97360131d05123acc440da15780b0bb200e82`; current diagnostic
+comment is 5692332264. Its owned native workspace is
+`/Volumes/Mastermind/agent-workspaces/web/w-liq3-adapter-recovery-20260915-sol-001`.
+
+Terminal issue #591 and draft PR #592 own the selected-ticker repair. Source is
+`27a759373b3feced2f313358cc0ef507155eca6b`; its committed
+`docs/AION_EXPOSURE_IDENTITY_REPAIR_2026-09-16.md` and verification JSON contain
+proof and limits. It is not a new liquidity wave or a transferred runtime lease.
+
+Slack C0BSBM78V1N / 1789529008.194759 is coordination visibility only, not a worker
+commission. No reciprocal worker/watcher cycle exists for these unplaced reviews.
+No background reasoning or provider process is claimed. Each CI run has its own
+GitHub identity; its actual status must be read rather than inferred from this file.
+
+Protected procedure for this reconciliation: Mastermind
+`f590c068880dbb848bda90b80b73dbcb6688d6fc`, compatible Skillpack 1.0.1/bootstrap 1.
+The added Web CEO companion does not confer admission, transfer or production authority.
