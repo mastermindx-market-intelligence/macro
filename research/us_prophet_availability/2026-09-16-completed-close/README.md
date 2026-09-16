@@ -21,3 +21,17 @@ The experiment runs the real adapters and real alpha builder against the real pr
 ## Release boundary
 
 Capability remains **BUILT_NOT_PROVEN** until exact-head CI/security and independent review, integration with #7180/#7187/#7163, and a real completed-session source → alpha → candidate/plan → published browser path. Source freshness is not candidate/plan freshness; a fixture, provider probe, successful job or merged PR cannot replace served-output proof. The natural nightly must be reconciled before any additional recovery dispatch.
+
+## Cross-session coordination and Boolean-price correction
+
+Current procedure pin: `Mastermind@8ba7deedde164c90298d3e88785d98e02fa5e2d2`. At the 09:11 UTC coordination read, our #7200 remained on `5f1bed28965db3cbf0ba88a72d409529b7ac85d4`; the peer deep-stock repair #7206 was on `6159410678619d148531ba3e2ecbb1ad7a537d04`. These repairs implement different producer boundaries. Their only shared changed path is `.github/ci/legacy-jobs.yml`. This session retains the S&P breadth carrier and nonmutating source-composition review; the peer retains its deep-stock carrier and already-named Russell continuation. No source-custody transfer or peer receipt is inferred.
+
+The targeted review reproduced an additional malformed-input defect in both helpers: Boolean True can be converted to price 1. Our completed-close count accepted Python and NumPy booleans; the peer helper rejected Python bool but accepted the NumPy/Pandas bool scalar. This is a newly found validation defect, not a proven cause of the original outage.
+
+Our same-carrier correction masks Python/NumPy booleans before numeric conversion. Five new assertions failed on the predecessor source; the full four-suite battery now passes **65 tests**. Ordinary integer/float price 1 remains valid. The actual fetch tests cover bool, object and nullable-boolean columns, consume the existing retry budget, and preserve every seeded cache byte on failure.
+
+The earlier real-provider receipt remains immutable historical evidence of source `2ecf3db94d131cf8c59fe685ce7d1aca2e3509c2`; it has NOT been relabeled as a new live run. `boolean-validation-compatibility.json` is fresh, read-only validation of those exact preserved real-input files under the corrected helper: the same 500/503, 599/602 and 400/400 valid closes remain accepted, with no provider calls or production writes. This is recorded-input compatibility, not another live collection, full-board proof or deployment.
+
+Peer correction handoff: on #7206, reject Python and NumPy boolean scalars before `float(value)` in `_has_completed_stock_close`; add dtype=bool/object/nullable-boolean regression and positive numeric-one controls. Preserve its separate 70% coverage rule and source retention. Do not copy our 80% panel floor into the deep-stock producer. This session does not edit the peer module or worktree.
+
+Other collision boundaries remain: #7187 has an incumbent local maintainer and must not be overwritten; #7060 independently changes `collectors/breadth.py`; #7163 has an existing #7018-first integration ruling and a stale HK byte-pin finding. Coordinate shared CI/renderer/collector hunks with their owners. The B3/B4 File Library plans are a separate downstream product-state proposal, not proof those modules are shipped.

@@ -20,6 +20,7 @@ import re
 import time
 from datetime import date
 
+import numpy as np
 import pandas as pd
 import yfinance as yf
 
@@ -304,7 +305,10 @@ def _completed_close_count(closes: pd.DataFrame, tickers: list[str], expected_se
             raise ValueError("duplicate daily price rows")
         if not match.any():
             return 0
-        values = pd.to_numeric(closes.loc[match].iloc[0].reindex(tickers), errors="coerce")
+        raw = closes.loc[match].iloc[0].reindex(tickers)
+        # bool is numerically coercible, but is never an observed market price.
+        raw = raw.mask(raw.map(lambda value: isinstance(value, (bool, np.bool_))))
+        values = pd.to_numeric(raw, errors="coerce")
         return int((values.gt(0) & values.lt(float("inf"))).sum())
     except (TypeError, ValueError) as exc:
         raise RuntimeError(f"completed session {expected_session} has ambiguous price rows") from exc

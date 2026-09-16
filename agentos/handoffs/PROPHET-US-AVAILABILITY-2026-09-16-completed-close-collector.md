@@ -64,3 +64,15 @@ discoveries: [DSC:US-BREADTH-DATED-ROWS-CAN-HAVE-NO-COMPLETED-CLOSES]
 Current live Chairman direction supplies the recovery scope. Protected procedure is Mastermind `0fe8074ff953b2ced9025ed40f0f66019c759967`. Executive OS owns lifecycle; Agent OS owns continuity; GitHub owns source/evidence; Slack is transport. This is direct bounded source work, not an unadmitted worker or a new runtime operation.
 
 Before modifying this branch, re-read its remote head and current activity. PR #7187 had a separate active incumbent editing the former session checkout; that checkout was left untouched. The three approved Linux CI runners were back online during this continuation, so old offline claims are historical, not the present blocker. Capability is BUILT_NOT_PROVEN.
+
+## 2026-09-16 cross-session coexistence boundary
+
+Chairman explicitly requested duplicate-work assessment and complementary lanes. Protected procedure was re-pinned to `Mastermind@8ba7deedde164c90298d3e88785d98e02fa5e2d2`; all required skill bodies were fetched and confirmed unchanged from the previously read pin. Canonical Macro main at the coordination read was `e729d0fd9d48868b49a1911d4098c689b3d373bd`.
+
+Retain this session on #7200 (breadth input validity). The other published recovery is #7206 / `sol/prophet-deep-stock-current-close-20260916`, head `6159410678619d148531ba3e2ecbb1ad7a537d04`; it owns preferred deep-stock histories and names Russell as its next dependency. Do not duplicate its Russell repair or edit `collectors/sector_holdings.py`. Only the CI manifest directly overlaps these two published repairs. #7060 additionally overlaps this collector file, so no cross-branch wholesale replacement is safe.
+
+New self-review repair: Boolean True was counted as a valid price. Five new checks failed before the local correction; 65 total tests now pass. The exact old provider-input file hashes remain intact and revalidation accepts the same observed valid-price counts. No provider request or production mutation was made for this correction. The peer has an independently reproduced NumPy-bool gap; give its owner the specific repair, not a replacement implementation. The evidence README and `boolean-validation-compatibility.json` contain the exact boundary.
+
+The existing #7187 maintainer has local head `0a076cedd8094e5425e782aca976820e93ed6e8e` while the observed remote still has `c21c9be04bbf983bc22f8e3fe6075339bbc9ebef`; leave that worktree untouched. #7163 is subject to the existing #7018-first ruling and a one-line HK byte-pin repair. These remain distinct owners, not additional assignments to this session.
+
+One acknowledged session must own the eventual combined production build/publish; Until that responsibility is confirmed, this session performs source verification only and issues no duplicate nightly/rescue/deploy. Sending a coordination packet is not acknowledgment or writer release. The unnamed peer chat's provider-session identity remains unverified; use exact PR/branch identity in the forwarded handoff.

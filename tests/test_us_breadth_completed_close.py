@@ -280,3 +280,30 @@ def test_existing_collector_health_consumer_reports_failure_not_success(tmp_path
     assert "completed session 2026-09-15" in result.error
     assert "0/5" in result.error
     assert {path: path.read_bytes() for path in before} == before
+
+
+@pytest.mark.parametrize("dtype", (bool, object, "boolean"))
+def test_boolean_close_never_counts_as_a_price(tmp_path, monkeypatch, dtype):
+    """Both built-in and pandas/NumPy Boolean price values remain invalid."""
+    adapter = _adapter(tmp_path, monkeypatch)
+    before = _seed_all_caches(adapter)
+    calls = []
+
+    def download(tickers, **kwargs):
+        calls.append(kwargs)
+        frame = _response(tickers)
+        for ticker in tickers:
+            frame[("Close", ticker)] = pd.Series([True, True, True], index=DATES, dtype=dtype)
+        return frame
+
+    monkeypatch.setattr(breadth.yf, "download", download)
+    with pytest.raises(RuntimeError, match="completed session"):
+        adapter.fetch()
+    assert len(calls) == adapter.ycfg["retries"]
+    assert {path: path.read_bytes() for path in before} == before
+
+
+@pytest.mark.parametrize("value, expected", ((True, 0), (np.bool_(True), 0), (False, 0), (1, 1), (1.0, 1), (101.25, 1)))
+def test_completed_close_rejects_boolean_without_rejecting_numeric_one(value, expected):
+    frame = pd.DataFrame({"AAA": pd.Series([value], index=[pd.Timestamp(SESSION)], dtype=object)})
+    assert breadth._completed_close_count(frame, ["AAA"], SESSION) == expected
