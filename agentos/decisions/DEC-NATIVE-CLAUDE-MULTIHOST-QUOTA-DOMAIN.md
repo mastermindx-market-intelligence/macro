@@ -11,10 +11,10 @@ answer: >
   provider-realm owner's `realm_generation`, keyed by `host_ref + capacity_capability_id`; no new
   `binding_generation` exists. Protected `CapacityOwnerFact.generation`, exposed by the subscription
   canary as `capacity_generation`, remains a canary Capacity/Model Router fact and is not provider
-  identity or the production CF2 claim contract. Production B5 joins Provider Capacity V2 with
-  provider-realm/readiness evidence at `(host_ref, capacity_capability_id)`, verifies both provider
-  capability and realm generations, and persists immutable evidence through the existing Executive
-  atomic claim/placement owner. Provider-domain quota/cooling applies to all current host realms only
+  identity or the production CF2 claim contract. Production B5 joins Provider Capacity V2 with boot-bound provider-realm/readiness evidence at
+  `(host_ref, capacity_capability_id)`, verifies provider and realm generations, then separately
+  consumes current FP1B host/boot/pool qualification plus fresh capacity/pressure evidence before the
+  existing Executive atomic claim/ResourceBroker BEGIN path. Provider-domain quota/cooling applies to all current host realms only
   when source scope proves it; host-local failures remain local. Host rows are never summed for quota.
 rationale: >
   Protected Mastermind already has separate provider-realm and canary-Capacity generations, and current
@@ -65,16 +65,18 @@ Family-B producer/consumer schemas use `capability_generation` for the Provider-
 domain and incumbent `realm_generation` for one host/principal/config enrollment. Existing canary
 `capacity_generation` keeps its current meaning and gains no production placement authority.
 
-Native V2 `realm_binding` carries `capability_generation`, `realm_generation` and the enrollment
-receipt. The earlier candidate `binding_generation` and `capacity_independence` fields are superseded.
+Native V2 `realm_binding` carries `capability_generation`, `boot_ref`, `realm_generation` and the enrollment
+receipt. `boot_ref` is readiness provenance only; ordinary reboot advances neither provider nor realm generation. The earlier candidate `binding_generation` and `capacity_independence` fields are superseded.
 
 B1 native provider-domain registration is secret-free under `shared-ai-provider-control`; the
 metabolism `capability_manifest.v1` secret-ref registry is not reused as an account/domain registry.
 
 B5 extends the existing CF2 source acquisition, `(host_ref, capacity_capability_id)` join, deterministic
-selection and atomic claim evidence with Provider Capacity V2 generation/realm provenance. It does not
-route production placement through `CapacityOwnerFact`. A versioned subscription canary admission may
-later bind the new provenance for a canary only if needed.
+selection and atomic claim evidence with Provider Capacity V2 generation/realm/boot provenance, while
+separately consuming incumbent FP1B evidence, requiring byte-exact `host_ref == host_id` and `boot_ref == boot_id`, current `capacity_pool_ref`/qualification, and fresh physical evidence. It does not
+route production placement through `CapacityOwnerFact`. Historical replay returns the provider and
+physical evidence accepted at the original claim without current provider or physical reread. A
+versioned subscription canary admission may later bind the new provenance for a canary only if needed.
 
 Provider Control retains evidence scope so provider-domain usage-limit can cool all replicas while a
 host-local binary/auth/transport/recovery defect cannot poison healthy replicas by default. No Claude

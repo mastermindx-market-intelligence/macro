@@ -14,9 +14,10 @@ answer: >
   `CapacityOwnerFact.generation` / subscription-canary `capacity_generation` remains a separate canary
   fact and is not provider identity or production placement authority. Native observations flow into
   Macro through a secret-free scoped source wire and Macro alone normalizes them into
-  `mastermind.provider_capacity.v2`, while v1 remains unchanged. Production B5 extends the accepted
-  CF2 Provider Capacity + realm-readiness `(host_ref, capacity_capability_id)` join and existing atomic
-  claim/replay evidence rather than creating a new placement bridge. Same provider-capability domain
+  `mastermind.provider_capacity.v2`, while v1 remains unchanged. Production B5 extends the accepted CF2 Provider Capacity + boot-bound realm-readiness
+  `(host_ref, capacity_capability_id)` join, separately consumes incumbent FP1B physical qualification
+  and fresh host evidence, and reuses existing atomic claim/ResourceBroker BEGIN/replay evidence rather
+  than creating a new placement or physical bridge. Same provider-capability domain
   across several hosts shares quota; host rows are never summed. First production auth remains the
   protected `/login` + dedicated OS principal/Keychain boundary; alternative auth/isolation needs a
   separate source-law requalification.
@@ -75,10 +76,12 @@ contract in Shared AI Provider Control, plus typed
 
 Provider-realm V2 reuses `realm_generation` and binds `capacity_capability_id + capability_generation`
 to host/principal/config custody. Provider Capacity V2 adds closed `realm_binding` containing
-`capability_generation`, `realm_generation` and enrollment receipt digest. The earlier
+`capability_generation`, `boot_ref`, `realm_generation` and enrollment receipt digest. `boot_ref` is
+readiness provenance only; reboot does not advance provider or realm enrollment generation. The earlier
 `binding_generation` and row-level `capacity_independence` proposals are rejected.
 
-B5 extends accepted CF2 acquisition/join/atomic-claim/replay evidence. Subscription-canary
+B5 extends accepted CF2 acquisition/join/atomic-claim/replay evidence and separately composes current
+FP1B evidence with byte-exact `host_ref == host_id` and `boot_ref == boot_id`, current `capacity_pool_ref`/qualification, plus fresh host-capacity/pressure evidence. Subscription-canary
 `CapacityOwnerFact` remains canary-only unless a separately versioned canary admission is later needed.
 
 The first real B6 realm uses protected native `/login` under a dedicated OS principal/Keychain and must

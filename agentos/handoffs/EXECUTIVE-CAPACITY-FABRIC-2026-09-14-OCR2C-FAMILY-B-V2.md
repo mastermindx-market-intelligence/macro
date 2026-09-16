@@ -38,6 +38,10 @@ changed:
     what: >
       Paired Mastermind primary design plus narrow amendments now preserve the same owner/generation,
       B5 CF2 claim path and protected first-production auth rules.
+  - path: agentos/decisions/DEC-NATIVE-CLAUDE-FAMILY-B-BOOT-CURRENTNESS-PHYSICAL-COMPOSITION.md
+    what: >
+      Corrects B3/B4 readiness to bind exact current boot_ref and makes B5 separately consume incumbent
+      FP1B host/boot/pool qualification plus fresh capacity/pressure evidence without a duplicate physical owner.
 verified:
   - claim: "Current protected Mastermind exposes distinct provider-realm and subscription-canary Capacity generations."
     command: "git show 8e25bb32601ef5f40a689da6d6f24149e79e31fa:control_plane/subscription_canary_admission.py && git show 8e25bb32601ef5f40a689da6d6f24149e79e31fa:ops/executive_os/provider_realm_facts.py && git show 8e25bb32601ef5f40a689da6d6f24149e79e31fa:ops/executive_os/capacity_owner_facts.py"
@@ -81,15 +85,16 @@ unverified:
       A separately accepted provider-safe relationship source; Family-B V2 intentionally makes no
       fleet-total numeric entitlement claim.
 unresolved:
-  - "Independent review placement remains pre-START on Slack carrier C0BSBM78V1N/1789456126.495979 because the canonical Executive ingress returns 401 and no lawful CTO Sol receiver has ACKed/STARTed."
+  - "Independent R2 review remains PRE_START on carrier C0BSBM78V1N/1789588297.647319. Replacement exact heads require fresh hosted/current-base gates after the boot-currentness correction; no reviewer has ACKed/STARTed."
   - "Exact B4 implementation decomposition of scoped provider health/cooling/quota normalization remains implementation work after B0 acceptance; architecture already fixes source scope and forbids a second normalizer."
 next_actions:
   - >
     Stop architecture churn. Run exact-head Macro fences/CI and Mastermind CI on the final records heads,
     repairing only deterministic candidate-owned failures.
   - >
-    Fresh-read and update the existing independent-review Slack carrier with the final exact heads and
-    current validation state; do not create another child or manually choose a numbered account.
+    Publish the boot-currentness/FP1B composition correction on the existing paired branches, run fresh
+    exact-head/current-base gates, then refresh the SAME R2 review carrier; do not create another child
+    or manually choose a numbered account.
   - >
     If the independent reviewer returns PASS and latest-base compatibility is clear, Sol may explicitly
     release/protect B0 and record `FAMILY_B_ARCHITECTURE_FROZEN`; only then commission B1.
@@ -112,6 +117,7 @@ danger_areas:
   - "Provider-domain usage-limit and realm-local auth/host failure require different propagation semantics."
   - "Historical replay must return accepted claim evidence without re-reading current provider capacity."
 exact_next_action: >
-  Validate final exact heads and obtain the already-originated independent paired architecture review;
-  do not start B1, provider registration, realm enrollment or any live Claude effect before B0 protection.
+  Reconcile the incumbent source writer, publish the boot-currentness/FP1B composition correction on
+  the existing paired branches, obtain fresh exact-head/current-base proof, then bind one independent
+  reviewer to the existing R2 operation. Do not start B1 or any live Claude effect before B0 protection.
 ---

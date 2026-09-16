@@ -14,7 +14,7 @@ answer: >
   capacity_identity_receipt_digest name is withdrawn. B4 observations are not caller input: extend
   the incumbent provider_capacity build_snapshot -> collect_current_observations source-owned seam
   with a fixed native-realm adapter that acquires the exact current B2/B3 owner fact, binds current
-  registration/realm/principal/custody/release/freshness evidence, and fails closed to unknown or
+  registration/realm/boot/principal/custody/release/freshness evidence, and fails closed to unknown or
   degraded on stale, forged, cross-host, unavailable or lower-quality input. A public digest proves
   content identity only. Create no account database, observation store, daemon, second normalizer,
   scheduler, claim plane or retry plane. This is records-only author repair; B0 remains HOLD and B1+
@@ -152,7 +152,7 @@ The producer is the composed Mastermind B2/B3 owner boundary. Before emission it
 ```text
 current capacity_capability_id + capability_generation
 current registration_receipt_digest
-current host_ref + realm_generation
+current host_ref + boot_ref + realm_generation
 enrollment_receipt_digest
 os_principal_ref + config_custody_ref
 preflight/source receipt identity
@@ -174,6 +174,8 @@ public-digest self-authentication refused
 caller-selected provider/host/realm/principal/custody/release refused
 registration/enrollment/preflight mismatch refused
 cross-host substitution refused
+missing/stale/wrong boot_ref and pre-reboot readiness refused
+Provider Capacity boot provenance cannot substitute for FP1B admission
 stale source/release refused or degraded
 producer unavailable -> unknown/degraded
 source-quality downgrade cannot become exact/domain-scoped

@@ -192,7 +192,7 @@ receipt_digest
 
 `config_custody_ref` is an opaque execution/config coordinate. Under current protected PF1/OCR-1 law it is **not** proof of macOS credential independence and cannot substitute for the dedicated OS-principal/Keychain boundary.
 
-A local realm repair may advance `realm_generation` without changing the provider domain. A provider-domain replacement may advance `capability_generation` and invalidate old realm enrollments without pretending every host independently changed provider identity.
+A local realm repair may advance `realm_generation` without changing the provider domain. A provider-domain replacement may advance `capability_generation` and invalidate old realm enrollments without pretending every host independently changed provider identity. An ordinary host reboot advances neither generation: B2 enrollment remains stable, while B3/B4 readiness becomes current only for the exact incumbent FP1B `boot_ref`.
 
 ## 8. Ruling E — native realm observation wire is source evidence, not Worker authority
 
@@ -203,6 +203,7 @@ schema = mastermind.provider_native_realm_observation/v1
 capacity_capability_id
 capability_generation
 host_ref
+boot_ref
 realm_generation
 enrollment_receipt_digest
 observed_at
@@ -237,7 +238,7 @@ last_provider_outcome = {
 source_receipt_digest
 ```
 
-The exact closed nested field vocabulary must reuse current V1 health/cooling/quota classes wherever semantics match; B4 may add only the scope/generation identity required by Family B.
+The exact closed nested field vocabulary must reuse current V1 health/cooling/quota classes wherever semantics match; B4 may add only the scope/generation/boot-provenance identity required by Family B.
 
 This wire is acquired only through Macro's fixed source-owned `build_snapshot() -> collect_current_observations()` adapter; it is not a public request body, V2 CLI payload, Worker/model output or caller-submitted JSON. `source_receipt_digest` is content-integrity evidence, not producer authentication. The wire cannot create a provider capability, rank workers, set another domain cooling, assert Executive completion or replace claim-time worker/realm readiness.
 
@@ -253,6 +254,7 @@ V2 retains the current top-level semantic model and existing slot fields, adding
 realm_binding = null
   | {
       capability_generation,
+      boot_ref,
       realm_generation,
       enrollment_receipt_digest
     }
@@ -281,6 +283,7 @@ Same provider-capability domain on several hosts:
 ```text
 quota evidence key = (capacity_capability_id, capability_generation)
 execution realm key = (host_ref, capacity_capability_id, realm_generation)
+current readiness provenance key = (host_ref, boot_ref, capacity_capability_id, realm_generation)
 ```
 
 Host rows are never summed to estimate entitlement.
@@ -300,20 +303,24 @@ B5 production flow is:
 ```text
 strict Provider Capacity V2 snapshot
         +
-current provider-realm V2 / realm-local readiness evidence
+current provider-realm V2 / boot-bound realm-local readiness evidence
+        +
+incumbent FP1B physical qualification + fresh host-capacity/pressure evidence
         |
         v
 immutable (host_ref, capacity_capability_id) join
 + exact capability_generation + realm_generation validation
++ byte-exact host_ref == host_id and boot_ref == boot_id
++ current capacity_pool_ref + qualification_revision validation
         |
         v
 strict Mastermind V2 consumer
 + deterministic ranking of already-lawful candidates
         |
         v
-existing Executive atomic claim
-+ immutable V2 capacity evidence
-+ historical replay without current provider re-read/rerank
+existing Executive atomic claim / ResourceBroker BEGIN path
++ separately bound provider V2 and FP1B physical evidence
++ historical replay without current provider/physical re-read or rerank
 ```
 
 The claim evidence successor must bind at minimum:
@@ -325,12 +332,16 @@ capacity_snapshot_generated_at / accepted freshness identity
 capacity_capability_id
 capability_generation
 host_ref
+boot_ref
 realm_generation
 enrollment/source receipt digest(s)
+current capacity_pool_ref + host_qualification_revision
+host-capacity snapshot digest/freshness + BEGIN pressure digest
+existing physical request/policy binding
 deterministic capacity reason codes / policy version already owned by CF2
 ```
 
-Use the existing event/placement/claim owner. No new capacity ledger, selection database or replay plane.
+Use the existing event/placement/claim and FP1B/ResourceBroker owners. Provider Capacity carries `boot_ref` only as readiness provenance; it never becomes physical admission authority. No new capacity ledger, physical qualification store, host sampler, selection database, receipt owner or replay plane.
 
 Current `CapacityOwnerFact.generation` / subscription-canary `capacity_generation` keeps its current canary semantics. If later native canary admission needs V2 provenance, version that canary admission explicitly.
 

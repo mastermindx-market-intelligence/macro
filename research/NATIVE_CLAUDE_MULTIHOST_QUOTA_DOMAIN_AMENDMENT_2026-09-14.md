@@ -103,6 +103,7 @@ capability_id = capacity_capability_id
 host_ref = opaque accepted host
 realm_binding = {
   capability_generation,
+  boot_ref,
   realm_generation,
   enrollment_receipt_digest
 }
@@ -119,7 +120,7 @@ Provider-domain evidence applies to all current host realms only when source sem
 - domain-wide provider account revocation/auth failure;
 - provider-wide health evidence.
 
-Realm/host evidence stays local to `(host_ref, capacity_capability_id, realm_generation)`:
+Realm enrollment evidence stays local to `(host_ref, capacity_capability_id, realm_generation)`; current readiness additionally binds exact incumbent FP1B `boot_ref`:
 
 - binary/install readiness;
 - local credential/auth readability;
@@ -133,7 +134,8 @@ Unknown scope stays unknown/degraded.
 
 ```text
 quota evidence key = (capacity_capability_id, capability_generation)
-execution key      = (host_ref, capacity_capability_id, realm_generation)
+execution realm key = (host_ref, capacity_capability_id, realm_generation)
+current readiness key = (host_ref, boot_ref, capacity_capability_id, realm_generation)
 ```
 
 Repeated domain evidence on several host rows is the same evidence domain. Consumers never sum host rows.
@@ -147,23 +149,27 @@ B5 target:
 ```text
 Provider Capacity V2 snapshot
         +
-provider-realm V2 / realm-local readiness
+provider-realm V2 / boot-bound realm-local readiness
+        +
+incumbent FP1B physical qualification + fresh host-capacity/pressure evidence
         |
         v
 immutable (host_ref, capacity_capability_id) join
 + independent capability_generation and realm_generation verification
++ exact host_ref == host_id and boot_ref == boot_id
++ current pool/qualification/freshness verification
         |
         v
 strict Mastermind V2 consumer
 + rank only already-lawful candidates
         |
         v
-existing Executive atomic claim
-+ immutable Provider Capacity V2 claim evidence
-+ historical replay without current re-ranking
+existing Executive atomic claim / ResourceBroker BEGIN path
++ separately bound provider V2 and FP1B physical evidence
++ historical replay without current provider/physical re-ranking
 ```
 
-The accepted claim evidence successor must bind at minimum the exact Provider Capacity V2 snapshot digest/version/freshness, selected `capacity_capability_id + capability_generation`, selected `host_ref + realm_generation`, deterministic reason codes and any existing source/realm receipt digests required for replay. It must enter through the current CF2 claim/placement evidence owner rather than a second ledger.
+The accepted claim evidence successor must bind at minimum the exact Provider Capacity V2 snapshot digest/version/freshness, selected `capacity_capability_id + capability_generation`, selected `host_ref + boot_ref + realm_generation`, deterministic reason codes and existing source/realm receipts. It must separately bind the incumbent FP1B request/result identities—current `capacity_pool_ref`, `host_qualification_revision`, host-capacity snapshot digest/freshness and BEGIN pressure digest—through the current CF2/physical claim owners rather than a second ledger or Family-B physical receipt.
 
 `CapacityOwnerFact` may remain useful to the current interactive subscription-canary admission. Its `capacity_generation` keeps its existing canary semantics. If a later B6/B7 canary must include Provider Capacity V2 provenance, evolve canary admission explicitly rather than pretending its fact generation is the provider-domain generation.
 
@@ -181,6 +187,10 @@ unknown scope
 ```
 
 Provider Control owns provider-scope normalization; the Claude adapter does not.
+
+## Boot-currentness and physical-authority consequence
+
+An ordinary reboot does not change provider or realm enrollment generation. Old-boot readiness becomes ineligible for new work. Provider Capacity's `boot_ref` is provenance only; B5 must separately consume current FP1B qualification and evidence before claim/BEGIN. Wrong boot/pool/qualification or stale physical evidence remains host-local and never becomes provider-domain cooling. Historical replay keeps the evidence accepted at the historical claim without current physical reread.
 
 ## Placement consequence
 
