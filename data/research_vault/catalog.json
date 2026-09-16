@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-16T00:24:04.559956+00:00",
-  "count": 2192,
+  "generated_at": "2026-09-16T00:39:04.070097+00:00",
+  "count": 2193,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -117,6 +117,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-jstg8xhjlix-602841",
+      "title": "Geu 54 september",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-15T23:46:42Z",
+      "summary_points": [
+        "**Mistral's Sovereign AI Strategy**: $3.5bn Series D (largest EU VC raise, $24bn valuation) led by Samsung/Scaleup Europe Fund, targeting EU governments with sovereign AI stack (data control, open-weight models), countering US tech protectionism amid OpenAI/Anthropic’s $225bn funding.",
+        "**EU VC Capital Fragmentation**: 70-90% growth capital reliance on non-EU sources due to domestic insufficiency; conservative national asset caps and legislative fragmentation (AML/KYC, CSRD) drive costs and exit barriers.",
+        "**Solvency II Policy Shift**: Risk weight for long-term equity reduced to 22% from Jan 2027, altering institutional portfolio allocation dynamics and boosting EU capital deployment.",
+        "**US Geopolitical Catalyst**: US defense commitment reduction spurs $1.5bn defense VC (H1 2026) and Mistral’s $3.5bn raise, while US academic funding cuts threaten European tech talent retention.",
+        "**EU AI Funding Imbalance**: European venture funds lag US peers (8.6% vs 14.6% annual returns); AI funding concentrated in US hubs (Bay Area captured 50% of global AI VC in 2024)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 22,
       "language": "en",
       "needs_metadata": false
     },
