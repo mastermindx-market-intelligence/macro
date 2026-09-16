@@ -564,10 +564,19 @@ def test_workflow_has_independent_reconciliation_and_manual_paths() -> None:
     assert "workflow_dispatch:" in src
     assert "schedule:" in src
     assert "push:" in src
-    assert "group: pipeline-sector-intelligence" in src
+    assert "pipeline-sector-intelligence" in src
     assert "cancel-in-progress: false" in src
     assert "python -m scripts.build_sector_intelligence" in src
     assert "python -m scripts.check_sector_intelligence_freshness --quiet" in src
+
+
+def test_own_publication_noop_cannot_supersede_a_real_pending_rebuild() -> None:
+    src = WORKFLOW.read_text(encoding="utf-8")
+    assert "pipeline-sector-intelligence-self-publish" in src
+    concurrency = src[src.index("concurrency:"):src.index("jobs:")]
+    assert "startsWith(github.event.head_commit.message, 'sector-intelligence: publish')" in concurrency
+    assert "pipeline-sector-intelligence" in concurrency
+    assert "cancel-in-progress: false" in concurrency
 
 
 def test_workflow_clears_inherited_sparse_checkout_before_checkout() -> None:

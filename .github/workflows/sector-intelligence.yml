@@ -35,7 +35,14 @@ permissions:
   contents: write
 
 concurrency:
-  group: pipeline-sector-intelligence
+  # GitHub keeps only one pending run per group. The loop-suppressed push from this
+  # workflow therefore needs a separate key or it can evict a real input-change run
+  # that arrived while the current build was publishing.
+  group: >-
+    ${{ github.event_name == 'push' &&
+        startsWith(github.event.head_commit.message, 'sector-intelligence: publish') &&
+        'pipeline-sector-intelligence-self-publish' ||
+        'pipeline-sector-intelligence' }}
   cancel-in-progress: false
 
 jobs:
