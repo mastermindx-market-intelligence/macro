@@ -17,7 +17,7 @@ jobs:
     if: >-
       github.repository == 'mastermindx-market-intelligence/macro' &&
       github.ref == 'refs/heads/claude/china-risk-recovery-safety-20260910-sol'
-    runs-on: [self-hosted, macstudio]
+    runs-on: [self-hosted, macstudio-light]
     timeout-minutes: 120
     env:
       PRODUCT_HEAD: f09a4f078be714b1eb026d7a4178540f7a63b494
@@ -50,12 +50,14 @@ jobs:
           git reset --hard "$CANDIDATE_SHA"
 
           PROOF_DIR="${RUNNER_TEMP}/china-risk-radar-release-proof-${GITHUB_RUN_ID}"
+          CANDIDATE_TREE="$TREE_SHA"
+          export PROOF_HEAD BASE_SHA CANDIDATE_TREE CANDIDATE_SHA PROOF_DIR
           mkdir -p "$PROOF_DIR"
           {
             echo "PROOF_DIR=$PROOF_DIR"
             echo "PROOF_HEAD=$PROOF_HEAD"
             echo "BASE_SHA=$BASE_SHA"
-            echo "CANDIDATE_TREE=$TREE_SHA"
+            echo "CANDIDATE_TREE=$CANDIDATE_TREE"
             echo "CANDIDATE_SHA=$CANDIDATE_SHA"
           } >> "$GITHUB_ENV"
 
@@ -240,6 +242,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: china-risk-radar-release-proof-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ env.PROOF_DIR }}
+          path: ${{ runner.temp }}/china-risk-radar-release-proof-${{ github.run_id }}
           if-no-files-found: error
           retention-days: 14
