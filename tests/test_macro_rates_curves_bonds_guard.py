@@ -100,9 +100,11 @@ def _finalize_like_render_lane(html: str) -> str:
     """The committed page is write_page plus the shared render-lane sweeps.
 
     build_bonds.main() only calls write_page. The committed site/bonds.html also
-    carries externalized CSS, ?v= stamps, defer, and the White House banner
-    tag. Replaying those three sweeps against the real site/ tree (hash source
-    only — no writes into site/) is what makes a rebuild comparable.
+    carries externalized CSS, ?v= stamps, defer, and — only when daily.yml wrote
+    it last — the White House banner tag. Replaying those three sweeps against
+    the real site/ tree (hash source only — no writes into site/) is what makes
+    a rebuild comparable; the banner is always injected here and
+    _overlay_committed_chrome reconciles it to the committed page's state.
     """
 
     def make_href(css: str, _index: int, _media: str | None) -> str | None:
@@ -127,16 +129,25 @@ def _overlay_committed_chrome(produced: str, committed: str) -> str:
     and whole-page identity is otherwise unattainable. The bonds body stays
     the rebuild's own bytes.
 
-    A rebuild that lacks a nav, footer or banner fails loudly — there is no
-    silent prepend/append fallback.
+    The White House banner is TWO-STATE chrome: daily.yml's last
+    page-mutating step runs scripts/inject_wh_banner.py, while render.yml
+    and engine-render.yml rewrite site/bonds.html from the template without
+    it, so the committed page carries 0 or 1 banner spans depending on which
+    lane wrote it last. Both states are chrome outside this packet: one
+    committed span is overlaid; none means the rebuild's own injected span
+    is stripped.
+
+    A rebuild that lacks a nav, a footer, or the banner span
+    _finalize_like_render_lane always injects fails loudly, as does a
+    committed page carrying two spans — there is no silent prepend/append
+    fallback.
     """
     nav = _NAV_RE.search(committed)
     footer = _FOOTER_RE.search(committed)
-    banner = _BANNER_RE.search(committed)
     assert nav is not None, "committed site/bonds.html has no <nav> span"
     assert footer is not None, "committed site/bonds.html has no <footer> span"
-    assert banner is not None, "committed site/bonds.html has no banner span"
-    assert len(_BANNER_RE.findall(committed)) == 1, (
+    n_committed = len(_BANNER_RE.findall(committed))
+    assert n_committed <= 1, (
         "committed site/bonds.html carries more than one banner span"
     )
     html = produced
@@ -144,11 +155,27 @@ def _overlay_committed_chrome(produced: str, committed: str) -> str:
     assert n == 1, "rebuild is missing a <nav> to overlay"
     html, n = _FOOTER_RE.subn(footer.group(0), html, count=1)
     assert n == 1, "rebuild is missing a <footer> to overlay"
-    html, n = _BANNER_RE.subn(banner.group(0), html, count=1)
-    assert n == 1, "rebuild is missing a banner to overlay"
-    assert len(_BANNER_RE.findall(html)) == 1, (
-        "the comparable page carries more than one banner span"
-    )
+    if n_committed == 1:
+        # daily.yml wrote the committed page last: overlay its banner span.
+        banner = _BANNER_RE.search(committed)
+        assert banner is not None
+        html, n = _BANNER_RE.subn(banner.group(0), html, count=1)
+        assert n == 1, "rebuild is missing a banner to overlay"
+        assert len(_BANNER_RE.findall(html)) == 1, (
+            "the comparable page carries more than one banner span"
+        )
+    else:
+        # render/engine-render wrote the committed page last: strip the span
+        # inject_text always adds in _finalize_like_render_lane (the template
+        # carries no data-whb marker, so its idempotent short-circuit never
+        # fires and exactly one tag plus its newline is inserted).
+        html, n = re.subn(
+            r'<script defer data-whb[^>]*>\s*</script>\n?', "", html, count=1
+        )
+        assert n == 1, "rebuild did not inject the banner it always injects"
+        assert len(_BANNER_RE.findall(html)) == 0, (
+            "the comparable page still carries a banner span"
+        )
     return html
 
 

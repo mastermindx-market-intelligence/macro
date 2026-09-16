@@ -1,21 +1,21 @@
 {
-  "appended": 3,
-  "asof": "2026-09-11",
+  "appended": 1,
+  "asof": "2026-09-15",
   "candidates": {
     "R": 0,
-    "T": 6,
-    "W": 4
+    "T": 1,
+    "W": 3
   },
   "deduped": {
     "R": 0,
-    "T": 4,
+    "T": 0,
     "W": 3
   },
   "dry_run": false,
   "feature_source": {
     "enabled": true,
     "foresight": {
-      "asof": "2026-09-12",
+      "asof": "2026-09-16",
       "consulted": true,
       "n_keys": 27,
       "n_themes": 18,
@@ -27,26 +27,21 @@
       "coil_min_sessions": 293,
       "consulted": true,
       "null_reasons": {
-        "ohlcv_absent": 16
+        "ohlcv_absent": 4
       },
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
       "themes_read": {
-        "Commodities Agriculture": {
-          "theme_thrust_frac": 0.0,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        },
-        "Hardware": {
-          "theme_thrust_frac": 0.0889,
+        "Social Media": {
+          "theme_thrust_frac": 0.0714,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         }
       },
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 63,
-      "tickers_read": 79
+      "tickers_ok": 14,
+      "tickers_read": 18
     },
     "keys": [
       "relay_count_3d",
@@ -66,14 +61,14 @@
     "relay": {
       "consulted": true,
       "high_lookback": 63,
-      "members_indexed": 185,
-      "n_covered": 1,
+      "members_indexed": 69,
+      "n_covered": 0,
       "reason": null,
       "window_sessions": 21
     },
     "turnover": {
       "consulted": true,
-      "last_session": "2026-09-11",
+      "last_session": "2026-09-15",
       "n_tickers": 1544,
       "ok": true,
       "reason": null,
@@ -83,14 +78,9 @@
   },
   "feature_source_w": {
     "atlas": {
-      "consulted": true,
-      "direction": "bull",
-      "grid": "W",
-      "horizon": "13w",
-      "n_asked": 1,
-      "n_covered": 1,
-      "reason": null,
-      "source": "engine.event_atlas.receipt"
+      "consulted": false,
+      "n_asked": 0,
+      "n_covered": 0
     },
     "enabled": true,
     "keys": [
@@ -113,12 +103,9 @@
   "flag_tickers": {
     "R": [],
     "T": [
-      "TEL",
-      "ANDE"
+      "APP"
     ],
-    "W": [
-      "LITE"
-    ]
+    "W": []
   },
   "n_universe": 1496,
   "overflow": {
@@ -126,41 +113,41 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-09-12 14:59:55",
-  "runtime_s": 100.8,
+  "run_utc": "2026-09-16 10:38:43",
+  "runtime_s": 248.8,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": 0,
-    "asof": "2026-09-11",
-    "n_members": 185,
+    "asof": "2026-09-15",
+    "n_members": 69,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 3.386,
+        "emerging_score": 2.862,
         "rank": 1,
-        "theme": "Semiconductors"
+        "theme": "Cybersecurity"
       },
       {
-        "emerging_score": 1.441,
+        "emerging_score": 2.059,
         "rank": 2,
-        "theme": "Telecommunications"
+        "theme": "Social Media"
       },
       {
-        "emerging_score": 1.405,
+        "emerging_score": 1.984,
         "rank": 3,
-        "theme": "Hardware"
+        "theme": "Biometrics"
       },
       {
-        "emerging_score": 1.277,
+        "emerging_score": 1.444,
         "rank": 4,
-        "theme": "Commodities Agriculture"
+        "theme": "Wearables"
       },
       {
-        "emerging_score": 1.127,
+        "emerging_score": 1.205,
         "rank": 5,
-        "theme": "Energy Renewable"
+        "theme": "Mega-Cap"
       }
     ]
   },
@@ -169,16 +156,16 @@
       "2B",
       "3B"
     ],
-    "aligned": 4,
-    "asof_max": "2026-09-11",
+    "aligned": 3,
+    "asof_max": "2026-09-15",
     "asof_mismatch": 0,
-    "asof_run": "2026-09-11",
+    "asof_run": "2026-09-15",
     "evaluated": 713,
     "fresh": 4,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 21.6,
+    "runtime_s": 55.8,
     "skipped": 4,
     "source": "baskets/membership.json",
     "state_turn": 83,

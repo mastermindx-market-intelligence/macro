@@ -1,55 +1,85 @@
 {
-  "ts": "2026-09-12T22:37:53+00:00",
-  "main_sha": "2c853d077485048e6121d9f4a7a5fcfa05a4a1e8",
+  "ts": "2026-09-16T18:32:17+00:00",
+  "main_sha": "d2d023f5ef929316e961bbfbfc49e2e1e452ec68",
   "red_required": [
+    {
+      "name": "ci-gate",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35126615306/job/104916304214"
+    },
+    {
+      "name": "enrich",
+      "conclusion": "cancelled",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35128825065/job/104904436384"
+    },
+    {
+      "name": "publish",
+      "conclusion": "cancelled",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35127148113/job/104899280031"
+    },
+    {
+      "name": "ci-pack-4",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35126615306/job/104897373063"
+    },
     {
       "name": "free-content-estate",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34717526182/job/103617317873"
-    },
-    {
-      "name": "tier-gate",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34717526182/job/103617317841"
-    },
-    {
-      "name": "workflow-yaml",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34717526182/job/103617317839"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35125505449/job/104893437292"
     },
     {
       "name": "engine-render-guards",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34717526182/job/103617317808"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35125505449/job/104893437020"
+    },
+    {
+      "name": "workflow-yaml",
+      "conclusion": "cancelled",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35125505449/job/104893436950"
+    },
+    {
+      "name": "data-base-shim",
+      "conclusion": "cancelled",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35125505449/job/104893436939"
+    },
+    {
+      "name": "tier-gate",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35125505449/job/104893436918"
     },
     {
       "name": "template-site-sync",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34717526182/job/103617317791"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35125505449/job/104893436907"
     },
     {
       "name": "font-ui-defined",
       "conclusion": "cancelled",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34717526182/job/103617317756"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35125505449/job/104893436873"
     },
     {
-      "name": "integration-baseline",
-      "conclusion": "failure",
+      "name": "contract-drift",
+      "conclusion": "cancelled",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/34716383790/job/103616179985"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35125505449/job/104893436566"
     }
   ],
   "green": false,
-  "consecutive_failures": 132,
+  "consecutive_failures": 144,
   "sensed_shas": [
-    "2c853d077485048e6121d9f4a7a5fcfa05a4a1e8",
-    "c78d5a4fd3662bf36092c547abcf0dec9d34691a"
+    "d2d023f5ef929316e961bbfbfc49e2e1e452ec68",
+    "fd8d9e14756cdf11e93aed27cf18a3bf42b0242b"
   ],
   "heartbeat_degraded": false
 }

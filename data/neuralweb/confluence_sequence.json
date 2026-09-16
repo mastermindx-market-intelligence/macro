@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.confluence_sequence.v1",
   "artifact_id": "confluence-sequence",
-  "asof": "2026-09-12",
+  "asof": "2026-09-16",
   "tier": "display",
   "is_context_only": true,
   "display_only": true,
@@ -641,8 +641,8 @@
       "persistence_streak": 0,
       "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-08-13",
-      "n_sessions_in_tape": 8,
+      "last_as_of": "2026-09-03",
+      "n_sessions_in_tape": 11,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -1354,10 +1354,10 @@
       "direction": 1,
       "horizon": "63.0",
       "persistence_streak": 0,
-      "strength_slope": null,
+      "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-06-29",
-      "n_sessions_in_tape": 1,
+      "last_as_of": "2026-07-02",
+      "n_sessions_in_tape": 2,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -1409,10 +1409,10 @@
       "direction": 1,
       "horizon": "21.0",
       "persistence_streak": 0,
-      "strength_slope": null,
+      "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-06-29",
-      "n_sessions_in_tape": 1,
+      "last_as_of": "2026-09-09",
+      "n_sessions_in_tape": 2,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -1420,10 +1420,10 @@
       "direction": 1,
       "horizon": "63.0",
       "persistence_streak": 0,
-      "strength_slope": null,
+      "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-06-29",
-      "n_sessions_in_tape": 1,
+      "last_as_of": "2026-09-09",
+      "n_sessions_in_tape": 2,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -1772,10 +1772,10 @@
       "direction": 1,
       "horizon": "5.0",
       "persistence_streak": 0,
-      "strength_slope": null,
+      "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-07-04",
-      "n_sessions_in_tape": 1,
+      "last_as_of": "2026-09-03",
+      "n_sessions_in_tape": 2,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -2687,8 +2687,8 @@
       "persistence_streak": 0,
       "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-08-31",
-      "n_sessions_in_tape": 10,
+      "last_as_of": "2026-09-03",
+      "n_sessions_in_tape": 11,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -2710,7 +2710,7 @@
       "strength_slope": 0.0,
       "state": "gone",
       "last_as_of": "2026-09-11",
-      "n_sessions_in_tape": 3,
+      "n_sessions_in_tape": 4,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -3534,8 +3534,8 @@
       "persistence_streak": 0,
       "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-08-31",
-      "n_sessions_in_tape": 17,
+      "last_as_of": "2026-09-03",
+      "n_sessions_in_tape": 18,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -3556,9 +3556,9 @@
       "persistence_streak": 0,
       "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-08-07",
-      "n_sessions_in_tape": 7,
-      "n_independent_confirming_latest": 3.0
+      "last_as_of": "2026-08-12",
+      "n_sessions_in_tape": 8,
+      "n_independent_confirming_latest": 2.0
     },
     {
       "subject": "PLD",
@@ -3787,8 +3787,8 @@
       "persistence_streak": 0,
       "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-08-31",
-      "n_sessions_in_tape": 13,
+      "last_as_of": "2026-09-14",
+      "n_sessions_in_tape": 14,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -3974,8 +3974,8 @@
       "persistence_streak": 0,
       "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-08-26",
-      "n_sessions_in_tape": 11,
+      "last_as_of": "2026-09-03",
+      "n_sessions_in_tape": 12,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -4777,8 +4777,8 @@
       "persistence_streak": 0,
       "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-08-05",
-      "n_sessions_in_tape": 7,
+      "last_as_of": "2026-08-12",
+      "n_sessions_in_tape": 8,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -5173,8 +5173,8 @@
       "persistence_streak": 0,
       "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-08-24",
-      "n_sessions_in_tape": 2,
+      "last_as_of": "2026-09-03",
+      "n_sessions_in_tape": 3,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -5710,10 +5710,10 @@
       "direction": -1,
       "horizon": "21.0",
       "persistence_streak": 0,
-      "strength_slope": null,
+      "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-08-07",
-      "n_sessions_in_tape": 1,
+      "last_as_of": "2026-08-12",
+      "n_sessions_in_tape": 2,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -5849,6 +5849,17 @@
       "n_independent_confirming_latest": 2.0
     },
     {
+      "subject": "GS",
+      "direction": 1,
+      "horizon": "21.0",
+      "persistence_streak": 0,
+      "strength_slope": null,
+      "state": "gone",
+      "last_as_of": "2026-08-12",
+      "n_sessions_in_tape": 1,
+      "n_independent_confirming_latest": 2.0
+    },
+    {
       "subject": "IRDM",
       "direction": 1,
       "horizon": "5.0",
@@ -5857,6 +5868,17 @@
       "state": "gone",
       "last_as_of": "2026-08-27",
       "n_sessions_in_tape": 9,
+      "n_independent_confirming_latest": 2.0
+    },
+    {
+      "subject": "IRDM",
+      "direction": 1,
+      "horizon": "21.0",
+      "persistence_streak": 0,
+      "strength_slope": null,
+      "state": "gone",
+      "last_as_of": "2026-08-12",
+      "n_sessions_in_tape": 1,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -5879,6 +5901,17 @@
       "state": "gone",
       "last_as_of": "2026-08-19",
       "n_sessions_in_tape": 3,
+      "n_independent_confirming_latest": 2.0
+    },
+    {
+      "subject": "PCOR",
+      "direction": -1,
+      "horizon": "21.0",
+      "persistence_streak": 0,
+      "strength_slope": null,
+      "state": "gone",
+      "last_as_of": "2026-08-12",
+      "n_sessions_in_tape": 1,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -5921,8 +5954,8 @@
       "persistence_streak": 0,
       "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-08-24",
-      "n_sessions_in_tape": 7,
+      "last_as_of": "2026-08-31",
+      "n_sessions_in_tape": 8,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -6460,8 +6493,8 @@
       "persistence_streak": 0,
       "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-08-27",
-      "n_sessions_in_tape": 8,
+      "last_as_of": "2026-08-31",
+      "n_sessions_in_tape": 10,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -6469,10 +6502,10 @@
       "direction": 1,
       "horizon": "5.0",
       "persistence_streak": 0,
-      "strength_slope": null,
+      "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-08-18",
-      "n_sessions_in_tape": 1,
+      "last_as_of": "2026-08-28",
+      "n_sessions_in_tape": 2,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -6751,6 +6784,17 @@
       "n_independent_confirming_latest": 2.0
     },
     {
+      "subject": "YUM",
+      "direction": 1,
+      "horizon": "5.0",
+      "persistence_streak": 0,
+      "strength_slope": null,
+      "state": "gone",
+      "last_as_of": "2026-08-21",
+      "n_sessions_in_tape": 1,
+      "n_independent_confirming_latest": 2.0
+    },
+    {
       "subject": "BALL",
       "direction": 1,
       "horizon": "5.0",
@@ -6911,8 +6955,8 @@
       "persistence_streak": 0,
       "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-08-27",
-      "n_sessions_in_tape": 2,
+      "last_as_of": "2026-08-28",
+      "n_sessions_in_tape": 3,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -6930,6 +6974,17 @@
       "subject": "HLT",
       "direction": 1,
       "horizon": "5.0",
+      "persistence_streak": 0,
+      "strength_slope": null,
+      "state": "gone",
+      "last_as_of": "2026-08-26",
+      "n_sessions_in_tape": 1,
+      "n_independent_confirming_latest": 2.0
+    },
+    {
+      "subject": "HLT",
+      "direction": 1,
+      "horizon": "10.0",
       "persistence_streak": 0,
       "strength_slope": null,
       "state": "gone",
@@ -6964,6 +7019,17 @@
       "direction": -1,
       "horizon": "5.0",
       "persistence_streak": 0,
+      "strength_slope": 0.0,
+      "state": "gone",
+      "last_as_of": "2026-09-03",
+      "n_sessions_in_tape": 3,
+      "n_independent_confirming_latest": 2.0
+    },
+    {
+      "subject": "KDP",
+      "direction": 1,
+      "horizon": "10.0",
+      "persistence_streak": 0,
       "strength_slope": null,
       "state": "gone",
       "last_as_of": "2026-08-26",
@@ -6993,9 +7059,31 @@
       "n_independent_confirming_latest": 2.0
     },
     {
+      "subject": "SPGI",
+      "direction": 1,
+      "horizon": "10.0",
+      "persistence_streak": 0,
+      "strength_slope": null,
+      "state": "gone",
+      "last_as_of": "2026-08-26",
+      "n_sessions_in_tape": 1,
+      "n_independent_confirming_latest": 2.0
+    },
+    {
       "subject": "WMB",
       "direction": 1,
       "horizon": "5.0",
+      "persistence_streak": 0,
+      "strength_slope": null,
+      "state": "gone",
+      "last_as_of": "2026-08-26",
+      "n_sessions_in_tape": 1,
+      "n_independent_confirming_latest": 2.0
+    },
+    {
+      "subject": "WMB",
+      "direction": 1,
+      "horizon": "10.0",
       "persistence_streak": 0,
       "strength_slope": null,
       "state": "gone",
@@ -7010,8 +7098,8 @@
       "persistence_streak": 0,
       "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-08-31",
-      "n_sessions_in_tape": 3,
+      "last_as_of": "2026-09-03",
+      "n_sessions_in_tape": 4,
       "n_independent_confirming_latest": 2.0
     },
     {
@@ -7084,6 +7172,17 @@
       "subject": "ADM",
       "direction": 1,
       "horizon": "63.0",
+      "persistence_streak": 0,
+      "strength_slope": null,
+      "state": "gone",
+      "last_as_of": "2026-08-31",
+      "n_sessions_in_tape": 1,
+      "n_independent_confirming_latest": 2.0
+    },
+    {
+      "subject": "BAH",
+      "direction": -1,
+      "horizon": "5.0",
       "persistence_streak": 0,
       "strength_slope": null,
       "state": "gone",
@@ -7213,6 +7312,28 @@
       "n_independent_confirming_latest": 2.0
     },
     {
+      "subject": "CMG",
+      "direction": 1,
+      "horizon": "5.0",
+      "persistence_streak": 0,
+      "strength_slope": null,
+      "state": "gone",
+      "last_as_of": "2026-09-03",
+      "n_sessions_in_tape": 1,
+      "n_independent_confirming_latest": 2.0
+    },
+    {
+      "subject": "COP",
+      "direction": -1,
+      "horizon": "5.0",
+      "persistence_streak": 0,
+      "strength_slope": null,
+      "state": "gone",
+      "last_as_of": "2026-09-03",
+      "n_sessions_in_tape": 1,
+      "n_independent_confirming_latest": 2.0
+    },
+    {
       "subject": "HSY",
       "direction": 1,
       "horizon": "63.0",
@@ -7230,16 +7351,16 @@
       "persistence_streak": 0,
       "strength_slope": 0.0,
       "state": "gone",
-      "last_as_of": "2026-09-11",
-      "n_sessions_in_tape": 21
+      "last_as_of": "2026-09-15",
+      "n_sessions_in_tape": 22
     },
     {
       "pair_id": "briefing-divergences",
-      "persistence_streak": 3,
+      "persistence_streak": 0,
       "strength_slope": 0.0,
-      "state": "stable",
-      "last_as_of": "2026-09-12",
-      "n_sessions_in_tape": 44
+      "state": "gone",
+      "last_as_of": "2026-09-14",
+      "n_sessions_in_tape": 46
     },
     {
       "pair_id": "regime_vector-vs-risk_radar",
@@ -7266,9 +7387,9 @@
       "n_sessions_in_tape": 1
     }
   ],
-  "n_tape_rows": 1694,
+  "n_tape_rows": 1732,
   "gaps": [],
   "produced_by": "engine/neuralweb/confluence_sequence.py",
-  "produced_at": "2026-09-12T10:29:07Z",
+  "produced_at": "2026-09-16T09:11:35Z",
   "authority_check": []
 }
