@@ -1,0 +1,34 @@
+---
+key: US-BREADTH-DATED-ROWS-CAN-HAVE-NO-COMPLETED-CLOSES
+claim: >
+  A successful breadth download can carry a completed-session date and populated
+  volume while every adjusted closing price on that row is absent. Historical
+  column coverage and a successful HTTP response do not prove current prices;
+  without semantic response validation the collector reports success and the
+  real alpha producer remains on the prior session.
+falsifier: >
+  Run python -m pytest tests/test_us_breadth_completed_close.py -q. The production
+  fetch and health-consumer regressions must reject or retry the observed
+  completed-row null shape, retain old cache bytes on exhaustion, and fail when
+  calendar, response, or post-seam validation is removed.
+so_what: >
+  Require real finite positive closes on the canonical completed NYSE session
+  inside the existing US batch retry and final persistence boundaries. Do not
+  fix this by restamping a date, changing ranks, ignoring invalid fields, or
+  inventing another collector, retry scheduler or freshness authority.
+kind: data
+verified_at: 2026-09-16
+verified_by: >
+  python -m pytest tests/test_us_breadth_completed_close.py tests/test_breadth_split_seam.py
+  tests/test_russell_breadth.py tests/test_universe_split_seam.py -q;
+  gh run view 35041133038 --repo mastermindx-market-intelligence/macro
+scope:
+  - WS:PROPHET-US-AVAILABILITY
+  - collectors/breadth.py
+  - scripts/build_site.py
+confidence: verified
+---
+
+Incident source: main `aad0aaf33810c881a2da398380930eb50a9cdeda`, collector write `6a930b613598`, collector job `104621037120`, engine job `104658157677`. Before: three September-15 price rows with zero current closes despite populated volume. The isolated repaired source recovered 500/503, 599/602 and 400/400 current closes; the real alpha consumer advanced to September 15. Exact source/input/output hashes and the narrower-than-production proof boundary live in `research/us_prophet_availability/2026-09-16-completed-close/live-source-receipt.json`.
+
+This extends the incident diagnosis; it does not supersede #7187’s reader-cache defect, #7180’s source-clock/provenance repair or #7163’s publication-link/evidence repair. None of those existing branch writers is replaced by this disjoint collector operation.

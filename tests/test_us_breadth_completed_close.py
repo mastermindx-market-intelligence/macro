@@ -265,3 +265,18 @@ def test_missing_close_field_never_enters_the_close_matrix_as_volume(tmp_path, m
     assert not isinstance(closes.columns, pd.MultiIndex)
     assert set(closes.columns) == set(SYMBOLS[:-1])
     assert "Volume" not in closes.columns
+
+
+def test_existing_collector_health_consumer_reports_failure_not_success(tmp_path, monkeypatch):
+    from collectors import base
+
+    adapter = _adapter(tmp_path, monkeypatch)
+    before = _seed_all_caches(adapter)
+    monkeypatch.setattr(base, "_breaker_state", lambda: {})
+    monkeypatch.setattr(breadth.yf, "download", lambda tickers, **kw: _response(tickers, current=np.nan))
+    monkeypatch.setattr(base.store, "upsert", lambda *a, **kw: pytest.fail("failed source must not publish aggregates"))
+    result = base.run_adapter(adapter, stale_after_days=3)
+    assert result.status == "failed"
+    assert "completed session 2026-09-15" in result.error
+    assert "0/5" in result.error
+    assert {path: path.read_bytes() for path in before} == before
