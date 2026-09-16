@@ -166,3 +166,13 @@ proof. A fresh Sol session should load this handoff, protected Skillpack, PR #71
 head/checks, and current main artifacts. Completed implementation and China proof are
 do-not-redo. The next modifying operation after #7180 acceptance is PR #7161 on its own
 carrier; EFFECT_UNKNOWN GitHub writes must be reconciled before any retry.
+
+## 2026-09-16 incident release maintenance
+
+Operation `prophet-us-availability-release-recovery-20260916-sol-001` continues the same PR #7180 under current Chairman direction. The implementation carrier is unchanged; maintenance runs in a separate detached workspace, not the original source checkout.
+
+The introduced hosted contract failure was an unregistered `tests/test_us_completed_session_panel.py`. It is now named in the existing `unrun-data-plane` stock-library freshness step in `.github/ci/legacy-jobs.yml`; no waiver or feature semantic change is used. The combined freshness suites passed 28 tests; the bounded release matrix passed 192 tests in 33.13 seconds; `check_contract_delta.py --base b5ea516d3741141bbcb5c42925b639489bc82a04` returned 0 introduced / 0 inherited. These are local results, not hosted or production acceptance.
+
+GitHub separately reports all existing org CI carriers pc-ci-1/2/3 offline. Their queued jobs require macro-home-canary / ci-linux; the authorized winpc-wsl SSH read timed out. Restore the existing approved host/listeners, not new labels, fallback runners or bypassed gates. Daily run 35041133038 was already collecting and was not canceled or duplicated.
+
+A cache-busted public HTTP read at 2026-09-16T02:56:37Z still exposed data-board-asof=2026-09-11 beneath a Sep-14 page title. PR #7163 remains the independent HK dead-link/browser-evidence release blocker. Complete same-head hosted checks and merge review, then require current completed-session inputs, exact immutable source provenance and visible production output. No live-recovery or workstream-completion claim is made here.
