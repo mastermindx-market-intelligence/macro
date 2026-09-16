@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "PAHC-BULL-20260629",
-  "asof": "2026-09-10",
+  "asof": "2026-09-16",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 47.7,
-  "raw_confidence": 46.0,
-  "delta_vs_base": -12.3,
+  "management_confidence": 44.2,
+  "raw_confidence": 40.0,
+  "delta_vs_base": -15.8,
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
     "validity": 100.0,
-    "progress": 37.8,
-    "pace": 14.0,
-    "retention": 54.7,
-    "overlay": 53.0
+    "progress": 27.1,
+    "pace": 6.0,
+    "retention": 35.0,
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.685,
-    "dist_to_t1_r": 0.815,
-    "dist_to_t2_r": 2.315,
-    "horizon_pct_used": 126.7,
-    "p1": 0.4566,
-    "p2": 0.2283,
+    "dist_to_stop_r": 1.439,
+    "dist_to_t1_r": 1.061,
+    "dist_to_t2_r": 2.561,
+    "horizon_pct_used": 140.0,
+    "p1": 0.2927,
+    "p2": 0.1463,
     "p3": null,
-    "move_r": 0.685,
+    "move_r": 0.439,
     "mfe_r": 1.253,
     "mae_r": -0.007
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-07-15",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 57,
-  "tau": 1.2667
+  "days_elapsed": 63,
+  "tau": 1.4
 }

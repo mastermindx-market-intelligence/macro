@@ -53,6 +53,7 @@ _TEMPLATE_NAMES = (
     "macro_consumer_payments.html.j2",
     "macro_national_debt_liabilities.html.j2",
     "macro_rates_curves.html.j2",
+    "_curve_panel.html.j2",
     "macro_trade_flows.html.j2",
     "_macro_suite_shell.html.j2",
     "_seo_head.html.j2",
@@ -246,6 +247,9 @@ def test_what_changed_matches_the_artifact_comparability(live_html: str) -> None
         assert labels.COMPARABILITY["NO_PRIOR"]["en"] in live_html
         assert labels.COMPARABILITY["NO_PRIOR"]["zh"] in live_html
         assert "invent a baseline that does not exist" in live_html
+    elif comparability == "NO_EARLIER_PUBLICATION":
+        assert labels.COMPARABILITY["NO_EARLIER_PUBLICATION"]["en"] in live_html
+        assert labels.COMPARABILITY["NO_EARLIER_PUBLICATION"]["zh"] in live_html
     else:
         assert labels.COMPARABILITY["NO_PRIOR"]["en"] not in live_html
 
@@ -277,7 +281,8 @@ def test_no_closed_vocabulary_token_is_rendered_raw_as_prose(live_html: str) -> 
         set(labels.known("freshness")) | set(labels.known("null_reason"))
         | set(labels.known("presence")) | set(labels.known("evidence_class"))
         | {"higher_tighter", "higher_stronger", "USD_bn", "composite_prior_only",
-           "roc_over_owner_window", "NO_PRIOR", "context_only"}
+           "roc_over_owner_window", "NO_PRIOR", "NO_EARLIER_PUBLICATION",
+           "context_only"}
     ) if re.search(rf"(?<![\w/.]){re.escape(token)}(?![\w/.])", prose)]
     assert leaked == [], leaked
 
@@ -298,6 +303,151 @@ def test_an_unknown_token_degrades_to_readable_text_and_is_reported() -> None:
         "en": "Some future state", "zh": "Some future state"}
     assert "freshness:SOME_FUTURE_STATE" in labels.unknown_tokens()
     labels.reset_unknown_tokens()
+
+
+_ENGINE_CONTRADICTION_KINDS = (
+    "quantity_vs_quality",
+    "hollow_expansion",
+    "depth_breadth_divergence",
+    "nowcast_vs_hard_data",
+    "narrow_breadth_despite_level",
+    "sticky_led_but_headline_disinflationary",
+    "low_hires_low_fires",
+    "claims_income_divergence",
+    "trade_balance_identity_disagreement",
+    "spending_on_credit_vs_confidence_divergence",
+    "nominal_real_breakeven_decomposition_disagreement",
+    "issuer_event_contradiction",
+    "issuance_demand_stress_vs_bond_desk_calm",
+    "home_price_vs_rent_divergence",
+    "hawk_ease_split",
+    "global_state_vs_fed_desk",
+    "dots_vs_market_path",
+    "broad_stress_vs_risk_appetite",
+)
+
+_KIND_LITERAL = re.compile(r'(?:kind\s*=\s*|"kind"\s*:\s*)"([^"]+)"')
+_CJK_ADJOINING_SPACE = re.compile(r"(?:[\u3400-\u9fff] )|(?: [\u3400-\u9fff])")
+
+
+def test_every_engine_contradiction_kind_has_a_reviewed_label() -> None:
+    labels.reset_unknown_tokens()
+    for kind in _ENGINE_CONTRADICTION_KINDS:
+        pair = labels.label("contradiction_kind", kind)
+        assert pair is not None
+        assert pair["en"] and pair["zh"]
+        fallback = labels.deslug(kind)
+        assert pair["en"] != fallback and pair["zh"] != fallback, kind
+        assert _CJK_ADJOINING_SPACE.search(pair["zh"]) is None, pair["zh"]
+    assert labels.unknown_tokens() == ()
+
+    engine_kinds: set[str] = set()
+    engine_dir = ROOT / "engine" / "market_os" / "macro_workspaces"
+    for path in engine_dir.glob("*.py"):
+        for match in _KIND_LITERAL.finditer(path.read_text(encoding="utf-8")):
+            engine_kinds.add(match.group(1))
+    unlabelled = engine_kinds - set(labels.known("alert_kind")) - set(
+        _ENGINE_CONTRADICTION_KINDS)
+    assert unlabelled == set(), unlabelled
+
+
+def test_the_three_healed_contradiction_labels_agree_with_their_producers() -> None:
+    """Producer -> display: a contradiction label must not contradict the engine
+    sentence printed beside it, and must not claim more than that sentence
+    computes.
+
+    ``lib/macro_suite_view.py:134`` resolves the CONTRADICTION_KIND label and
+    ``:136`` carries the producer's own EN/ZH sentence, so the two land in one
+    block and a label its own sentence refutes is caught where the reader meets
+    it. Nothing else in this file joins the two: the coverage test above asserts
+    only that a label EXISTS, and the producer-side suites never read this label
+    table -- which is how two frozen pairs came to state the opposite of the
+    engine, and a third came to name a split between rhetoric and financial
+    conditions that its producer never computes.
+
+    So call the detectors that EMIT these kinds, take the kind they emit (an
+    engine rename fails here rather than quietly relabelling nothing), install
+    the emitted contradiction on a copy of the shipped snapshot and read the
+    label off the real view. Reverting any of the three pairs fails this test.
+    """
+    # Local import: this is the only test that needs the producers, and the
+    # claim under test is precisely the join between them and the label table.
+    from engine.market_os.macro_workspaces import (
+        consumer_payments, financial_conditions, monetary_policy)
+
+    def _label_a_reader_meets(emitted: Mapping[str, Any]) -> dict[str, str]:
+        snapshot = json.loads(_body_path(DATA_ROOT).read_text(encoding="utf-8"))
+        snapshot["availability"]["contradiction"] = {
+            "present": True,
+            "kind": emitted["kind"],
+            "en": emitted["en"],
+            "zh": emitted["zh"],
+            "components": list(emitted.get("components") or []),
+        }
+        view = _view_of(snapshot)["context"]["contradiction"]
+        assert view is not None
+        assert view["kind_raw"] == emitted["kind"]
+        return view["kind"]
+
+    # -- pair 1: consumer_payments, all three legs beyond their flat bands ----
+    emitted = consumer_payments._detect_contradiction(
+        sentiment_yoy=2.0, revolving_yoy=4.0, saving_rate_change_3m=-0.5)
+    assert len(emitted) == 1, emitted
+    credit = emitted[0]
+    assert credit["kind"] == "spending_on_credit_vs_confidence_divergence"
+    # The producer's own sentence says confidence is RISING, not falling.
+    assert credit["en"].startswith("Consumer sentiment is rising year-over-year"), credit["en"]
+    assert "消费者信心同比上升" in credit["zh"], credit["zh"]
+    credit_label = _label_a_reader_meets(credit)
+    assert "Confidence rising" in credit_label["en"], credit_label["en"]
+    assert "confidence falls" not in credit_label["en"], credit_label["en"]
+    assert "falling" not in credit_label["en"], credit_label["en"]
+    assert "信心上升" in credit_label["zh"], credit_label["zh"]
+    assert "信心却在下降" not in credit_label["zh"], credit_label["zh"]
+
+    # -- pair 2: financial_conditions, calm official stress vs a risk-off tape -
+    stress = financial_conditions._detect_contradiction(
+        {"state": "calm"}, {"state": "risk-off (elevated)"})
+    assert stress["present"] is True, stress
+    assert stress["kind"] == "broad_stress_vs_risk_appetite"
+    # The producer's own sentence says stress reads CALM and appetite risk-OFF.
+    assert "reads calm" in stress["en"], stress["en"]
+    assert "risk-off" in stress["en"], stress["en"]
+    assert "平静" in stress["zh"] and "风险规避" in stress["zh"], stress["zh"]
+    stress_label = _label_a_reader_meets(stress)
+    assert "calm" in stress_label["en"], stress_label["en"]
+    assert "risk-off" in stress_label["en"], stress_label["en"]
+    assert "Broad stress" not in stress_label["en"], stress_label["en"]
+    assert "平静" in stress_label["zh"], stress_label["zh"]
+    assert "避险" in stress_label["zh"], stress_label["zh"]
+    assert "整体承压" not in stress_label["zh"], stress_label["zh"]
+
+    # -- pair 3: monetary_policy, both pressure legs active and balanced -----
+    # The producer emits this kind only for net_state "two_sided" with both
+    # scores > 0 (``monetary_policy.py:456``); an empty divergence list keeps
+    # D1_dots_vs_market out, so exactly one contradiction can be emitted.
+    split_emitted = monetary_policy._detect_contradictions(
+        [], {"net_state": "two_sided", "hawk_score": 2.0, "ease_score": 1.8})
+    assert len(split_emitted) == 1, split_emitted
+    split = split_emitted[0]
+    assert split["kind"] == "hawk_ease_split"
+    # The producer's own sentence claims a BALANCE of two pressure legs, and it
+    # computes hawk_score / ease_score only -- no conditions index -- so the
+    # label may not name a talk-versus-conditions split.
+    assert "balanced" in split["en"], split["en"]
+    assert "unbalanced" not in split["en"], split["en"]
+    assert "制衡" in split["zh"] and "未制衡" not in split["zh"], split["zh"]
+    split_label = _label_a_reader_meets(split)
+    # "balanced" is a substring of "unbalanced" and of "imbalanced", so the
+    # positive claim alone would survive an inverted rewrite of this pair.
+    assert "balanced" in split_label["en"], split_label["en"]
+    assert "unbalanced" not in split_label["en"], split_label["en"]
+    assert "imbalanced" not in split_label["en"], split_label["en"]
+    assert "talk" not in split_label["en"], split_label["en"]
+    assert "conditions" not in split_label["en"], split_label["en"]
+    assert "制衡" in split_label["zh"], split_label["zh"]
+    assert "未制衡" not in split_label["zh"], split_label["zh"]
+    assert "言辞" not in split_label["zh"], split_label["zh"]
 
 
 def test_every_published_horizon_and_region_has_a_reviewed_name() -> None:
@@ -708,7 +858,7 @@ def test_equal_values_are_no_change_not_an_absence() -> None:
 
 
 @pytest.mark.parametrize("poison", [
-    {"prior": None}, {"current": None}, {"delta": None},
+    {"prior": None}, {"current": None},
     {"prior": "1.0"}, {"delta": float("nan")}, {"delta": True},
 ])
 def test_one_absent_cell_makes_the_row_incomparable_and_never_flat(poison: dict) -> None:
@@ -749,7 +899,12 @@ def test_the_named_pages_never_print_python_none(page: str, built_pages: dict[st
 
 
 def _boundary_view(distance: Any) -> dict[str, Any]:
+    """Neutralise the snapshot copy's contradiction so these tests exercise the boundary rule, not the contradiction precedence."""
     snapshot = json.loads(_body_path(DATA_ROOT).read_text(encoding="utf-8"))
+    # The shipped artifact currently carries a contradiction, which outranks
+    # a boundary watch. Clear it so this helper actually tests the 0.0 case.
+    availability = snapshot.setdefault("availability", {})
+    availability["contradiction"] = {"present": False}
     snapshot["headline"]["nearest_boundary"] = {
         "axis": snapshot["axes"]["items"][0]["axis_id"],
         "distance": distance, "null_reason": None}

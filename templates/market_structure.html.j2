@@ -7,6 +7,33 @@
 {% macro t(en, zh='') -%}
 <span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
 {%- endmacro %}
+{# Ordinal suffix — extracted so the hero cannot regress to "1th"/"3th"/"21th". #}
+{% macro ord_n(n) -%}
+{%- set _pc = n|float|round|int -%}
+{%- set _ord = 'th' if (_pc % 100) in [11, 12, 13] else {1: 'st', 2: 'nd', 3: 'rd'}.get(_pc % 10, 'th') -%}
+{{- _pc -}}{{- _ord -}}
+{%- endmacro %}
+{# Empty-chip field names — name the key that changed, never a generic hole. #}
+{% macro field_en(key) -%}
+{%- if key == 'gamma_regime' -%}Dealer gamma regime
+{%- elif key == 'vc_state' -%}Vol-control funds
+{%- elif key == 'cta_state' -%}Trend-following funds
+{%- elif key == 'agreement' -%}Machine-money agreement
+{%- elif key == 'rv_cross_state' -%}Vol weather
+{%- elif key == 'cor1m_regime' -%}Stock-picker conditions
+{%- else -%}A structure field
+{%- endif -%}
+{%- endmacro %}
+{% macro field_zh(key) -%}
+{%- if key == 'gamma_regime' -%}庄家伽马机制
+{%- elif key == 'vc_state' -%}波动率控制基金
+{%- elif key == 'cta_state' -%}趋势跟踪基金
+{%- elif key == 'agreement' -%}机器资金共识
+{%- elif key == 'rv_cross_state' -%}波动率天气
+{%- elif key == 'cor1m_regime' -%}选股行情
+{%- else -%}一项结构字段
+{%- endif -%}
+{%- endmacro %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -96,6 +123,14 @@ html[data-lang="zh"] .stance-chip.caution{background:rgba(26,127,67,.14);color:v
 .sc-strip{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 20px}
 .sc-chip{padding:5px 13px;border-radius:999px;font-size:12px;font-weight:600;border:1px solid var(--line);background:var(--panel2);color:var(--tx)}
 .sc-chip.changed{border-color:var(--blue);background:color-mix(in srgb,var(--blue) 12%,transparent)}
+/* .sc-chip.empty — designed hole, never a wordless highlight (MPDS §9.12).
+   DARK: dashed hairline on graphite, no blue wash, no glow.
+   LIGHT: dashed hairline on the canvas (--bg, not the white card), no wash,
+   no shadow-as-emphasis. Shared: sentence + .empty-why; the .changed blue
+   is withheld. */
+.sc-chip.empty{display:flex;flex-direction:column;align-items:flex-start;gap:4px;border-style:dashed;background:transparent;color:var(--mut);font-weight:500;white-space:normal;max-width:42ch;line-height:1.45}
+.sc-chip.empty .empty-why{font-size:11px;color:var(--faint);font-weight:400;margin:0}
+html[data-theme="light"] .sc-chip.empty{background:var(--bg);box-shadow:none}
 /* ── regime chips ── */
 .rc{display:inline-block;padding:3px 10px;border-radius:7px;font-size:11.5px;font-weight:700;border:1px solid var(--line)}
 .rc.long{color:var(--ink-up, var(--up));border-color:var(--up);background:color-mix(in srgb,var(--up) 12%,transparent)}
@@ -104,6 +139,16 @@ html[data-lang="zh"] .stance-chip.caution{background:rgba(26,127,67,.14);color:v
 .rc.elevated,.rc.cutting{color:var(--ink-down, var(--dn));border-color:var(--dn);background:color-mix(in srgb,var(--dn) 12%,transparent)}
 .rc.normal,.rc.pausing{color:var(--mut)}
 .rc.stress{color:var(--ink-warn, var(--amb));border-color:var(--amb);background:color-mix(in srgb,var(--amb) 12%,transparent)}
+/* post-stack: consolidate */
+/* CTA 5-day flow grazing _CTA_NEAR_FLAT must not carry the same green/red
+   weight as a real add/cut (VC +16.5B).
+   DARK: muted wash on graphite, faded up/dn hairline, no glow.
+   LIGHT: paper chip on the canvas, cool hairline, muted ink, shadow-not-glow
+   so a grazing add never reads as a full call on white. */
+.rc.adding.near-flat{color:var(--mut);border-color:color-mix(in srgb,var(--up) 28%,var(--line));background:color-mix(in srgb,var(--up) 5%,transparent)}
+.rc.cutting.near-flat{color:var(--mut);border-color:color-mix(in srgb,var(--dn) 28%,var(--line));background:color-mix(in srgb,var(--dn) 5%,transparent)}
+html[data-theme="light"] .rc.adding.near-flat{color:var(--mut);border-color:color-mix(in srgb,var(--up) 22%,var(--line));background:var(--bg);box-shadow:0 1px 2px color-mix(in srgb,var(--tx) 8%,transparent)}
+html[data-theme="light"] .rc.cutting.near-flat{color:var(--mut);border-color:color-mix(in srgb,var(--dn) 22%,var(--line));background:var(--bg);box-shadow:0 1px 2px color-mix(in srgb,var(--tx) 8%,transparent)}
 /* ── agreement banner ── */
 .agree{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:12px;border:1px solid var(--line);background:var(--panel2);font-size:13px;font-weight:700;margin:12px 0}
 .agree.aligned_adding{border-color:var(--up);background:color-mix(in srgb,var(--up) 10%,transparent);color:var(--ink-up, var(--up))}
@@ -165,8 +210,42 @@ html[data-lang="zh"] .stance-chip.caution{background:rgba(26,127,67,.14);color:v
 /* ── warm-up ── */
 .warmup{padding:40px 24px;text-align:center;color:var(--faint);font-size:14px;border:1px dashed var(--line);border-radius:14px;margin:20px 0}
 .warmup b{display:block;font-size:17px;color:var(--mut);font-weight:700;margin-bottom:8px}
+.warmup .empty-why{display:block;font-size:12px;color:var(--faint);margin:8px auto 0;font-weight:400;max-width:52ch;line-height:1.5}
+/* ── watching band (folded into the hero — not a 7th L1) ──
+   DARK: inset instrument plate, 7% blue wash on graphite, hairline, no glow.
+   LIGHT: recessed well inside the white .glass card (var(--bg) ground + 8%
+   ink shadow), cool hairline — not a paper plate raised on the page canvas.
+   Shared: kicker + two conditions; mechanics live in the `?` tip. */
+.watch-band{margin-top:14px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-card);background:color-mix(in srgb,var(--blue) 7%,transparent)}
+html[data-theme="light"] .watch-band{background:var(--bg);box-shadow:0 1px 2px color-mix(in srgb,var(--tx) 8%,transparent)}
+.watch-k{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:0 0 4px}
+html[data-lang="zh"] .watch-k{letter-spacing:0;text-transform:none}
+.watch-kicker{font-size:12px;color:var(--mut);margin:0 0 8px;line-height:1.45}
+.watch-list{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.watch-list li{font-size:13px;line-height:1.45;color:var(--tx)}
+.watch-list li b{display:block;font-size:12px;color:var(--ink);margin-bottom:2px}
 /* ── responsive ── */
 @media(max-width:760px){.hero-state{font-size:22px}.glass{padding:18px}.panel{padding:16px}}
+/* post-stack: consolidate */
+/* §10-D mobile reduction: hero + chips + first driver panel in the first
+   swipe; remaining drivers collapse to a swipe strip with next-card peek
+   (86%). Cards share the tallest card's height (align-items:stretch); card
+   content stays top-anchored inside (.msp-driver justify-content:flex-start).
+   Strip scroll is the only horizontal motion; the page itself must not
+   scroll sideways in either language (§15).
+   .kpi-row / .vix-row already wrap — restated here so the reduction cannot
+   silently undo them. */
+@media(max-width:640px){
+  html,body{overflow-x:hidden}
+  .wrap{overflow-x:hidden;max-width:100%}
+  .msp-drivers{display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;gap:12px;align-items:stretch;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;padding-bottom:10px}
+  .msp-driver{flex:0 0 86%;scroll-snap-align:start;min-width:0;display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-card);padding:4px 12px 12px}
+  .msp-driver .sec-head{margin-top:8px}
+  .kpi-row,.vix-row{flex-wrap:wrap}
+  .watch-band{padding:8px 10px;margin-top:10px}
+  .watch-list li{font-size:12px}
+  html[data-theme="light"] .msp-driver .panel{box-shadow:0 1px 2px color-mix(in srgb,var(--tx) 8%,transparent)}
+}
 
 /* light: bloom off (DESIGN_DOCTRINE §5.8) — a coloured glow behind text is a jewel on graphite
      and a stain on white; dark keeps every one of these). */
@@ -190,6 +269,11 @@ html[data-theme="light"] :is(
 {% set vol = (msp.vol) if (msp is defined and msp is not none and msp.vol is not none) else none %}
 {% set wm = (msp.week_map) if (msp is defined and msp is not none and msp.week_map is defined and msp.week_map is not none) else none %}
 {% set sc = (msp.state_changes) if (msp is defined and msp is not none and msp.state_changes is not none) else none %}
+{% set _wn = (sys.flow_window_n|int) if (sys is not none and sys.flow_window_n is defined and sys.flow_window_n is not none) else 5 %}
+{% set _vc_wn = (vc.flow_window_n|int) if (vc is not none and vc.flow_window_n is defined and vc.flow_window_n is not none) else _wn %}
+{% set _cta_wn = (cta.flow_window_n|int) if (cta is not none and cta.flow_window_n is defined and cta.flow_window_n is not none) else _wn %}
+{% set _cta_near = (cta.cta_near_flat) if (cta is not none and cta.cta_near_flat is defined and cta.cta_near_flat) else false %}
+{% set _gex_n = (gamma.history|length) if (gamma is not none and gamma.history is defined and gamma.history is not none) else 0 %}
 
 <div class="aurora{% if gamma_regime == 'long' %} au-long{% elif gamma_regime == 'short' %} au-short{% endif %}">
   <div class="au-a3"></div>
@@ -215,10 +299,29 @@ html[data-theme="light"] :is(
 {% if sc is not none and sc_items is not none and sc_items | length > 0 %}
 <div class="sc-strip">
   {% for item in sc_items[:6] %}
-  <span class="sc-chip{% if item.from is not none and item.to is not none and item.from != item.to %} changed{% endif %}">
-    <span class="l-en">{{ item.label_en if item.label_en is not none else '' }}</span>
-    <span class="l-zh">{{ item.label_zh if item.label_zh is not none else (item.label_en if item.label_en is not none else '') }}</span>
+  {% set _en = item.note_en if item.note_en is not none and item.note_en else (item.label_en if item.label_en is not none and item.label_en else '') %}
+  {% set _zh = item.note_zh if item.note_zh is not none and item.note_zh else (item.label_zh if item.label_zh is not none and item.label_zh else _en) %}
+  {% set _changed = item.from is not none and item.to is not none and item.from != item.to %}
+  {% if _en or _zh %}
+  <span class="sc-chip{% if _changed %} changed{% endif %}">
+    <span class="l-en">{{ _en }}</span>
+    <span class="l-zh">{{ _zh if _zh else _en }}</span>
   </span>
+  {% else %}
+  <span class="sc-chip empty">
+    <span class="l-en">{{ field_en(item.key) }} changed — no readable note.</span>
+    <span class="l-zh">{{ field_zh(item.key) }}已变化 — 缺少可读说明。</span>
+    <span class="empty-why">
+      {% if item.from is not none or item.to is not none %}
+      <span class="l-en">The from/to states arrived without the sentence that names them ({{ item.from if item.from is not none else '—' }} → {{ item.to if item.to is not none else '—' }}), so this chip stays quiet instead of flashing blank.</span>
+      <span class="l-zh">已有起止状态（{{ item.from if item.from is not none else '—' }} → {{ item.to if item.to is not none else '—' }}），但缺少命名该变化的句子，因此本标签保持安静，避免闪出空白胶囊。</span>
+      {% else %}
+      <span class="l-en">A change was recorded without the sentence that names it, so this chip stays quiet instead of flashing blank.</span>
+      <span class="l-zh">记录到变化但缺少命名句子，因此本标签保持安静，避免闪出空白胶囊。</span>
+      {% endif %}
+    </span>
+  </span>
+  {% endif %}
   {% endfor %}
   {% if sc.vs_asof is not none %}<span class="sc-chip" style="color:var(--faint)">{{ t('vs', '对比') }} {{ sc.vs_asof }}</span>{% endif %}
 </div>
@@ -266,7 +369,7 @@ html[data-theme="light"] :is(
       <b>
         {{ t('about', '约') }} {{ '%.1f'|format(gamma.dist_to_flip_pct|float|abs) }}%
         {% if gamma.spot|float > gamma.gamma_flip|float %}{{ t('above', '高于') }}{% else %}{{ t('below', '低于') }}{% endif %}
-        {{ t('the flip level', '翻转点') }}
+        {{ t('the flip level (where dealer hedging switches from absorbing to amplifying)', '翻转点（做市商对冲从吸收转为放大的位置）') }}
       </b>
       <small>SPX {{ '%.0f'|format(gamma.spot|float) }} · {{ t('flip', '翻转点') }} {{ '%.0f'|format(gamma.gamma_flip|float) }}</small>
     </div>
@@ -280,53 +383,115 @@ html[data-theme="light"] :is(
     {% endif %}
     {% if gamma.net_gex_bn is not none %}
     <div class="hmeta">
-      <b>{% if gamma.net_gex_bn|float >= 0 %}+{% endif %}{{ '%.1f'|format(gamma.net_gex_bn|float) }}B{% if gamma.net_gex_pctile is not none %} <small>({{ '%.0f'|format(gamma.net_gex_pctile|float) }}th)</small>{% endif %}</b>
-      <span class="l-en">net dealer exposure</span><span class="l-zh">做市商净敞口</span>
+      <b>{% if gamma.net_gex_bn|float >= 0 %}+{% endif %}{{ '%.1f'|format(gamma.net_gex_bn|float) }}B</b>
+      <span class="l-en">net dealer exposure{% if gamma.net_gex_pctile is not none %} — {% if gamma.net_gex_pctile|float < 50 %}a lower-than-usual reading for this series{% else %}a higher-than-usual reading for this series{% endif %}{% endif %}</span>
+      <span class="l-zh">做市商净敞口{% if gamma.net_gex_pctile is not none %} — {% if gamma.net_gex_pctile|float < 50 %}为本序列偏低的读数{% else %}为本序列偏高的读数{% endif %}{% endif %}</span>
     </div>
     {% endif %}
   </div>
 
   <span class="help">?<span class="tip">
-    <span class="l-en"><b>How shock absorbers work</b><br>When dealer net GEX is positive (long gamma), they sold options and hedge by buying dips / selling rips — damping moves. When negative (short gamma), hedging requires buying rallies and selling dips — amplifying moves.<br><br>Net GEX today: {{ '%.1f'|format(gamma.net_gex_bn|float if gamma.net_gex_bn is not none else 0) }}B ({{ '%.0f'|format(gamma.net_gex_pctile|float if gamma.net_gex_pctile is not none else 0) }}th pctile since {{ gamma.series_start if gamma.series_start is not none else 'inception' }}).<br><br><em>Model estimate only — actual dealer books are unobservable. Reconstructed from the SPX options chain.</em></span>
-    <span class="l-zh"><b>缓冲机制原理</b><br>当做市商净GEX为正（多伽马）时，他们卖出期权，通过逢低买/逢高卖对冲——抑制波动。当GEX为负（空伽马）时，对冲需要追涨杀跌——放大波动。<br><br>当前净GEX：{{ '%.1f'|format(gamma.net_gex_bn|float if gamma.net_gex_bn is not none else 0) }}B（自{{ gamma.series_start if gamma.series_start is not none else '首日' }}以来{{ '%.0f'|format(gamma.net_gex_pctile|float if gamma.net_gex_pctile is not none else 0) }}百分位）。<br><br><em>仅为模型估算——做市商实际账簿不可观测，由标普500指数期权链重建。</em></span>
+    <span class="l-en"><b>How shock absorbers work</b><br>When dealer net GEX (gamma exposure — the options-book hedge that absorbs or amplifies moves) is positive (long gamma), they sold options and hedge by buying dips / selling rips — damping moves. When negative (short gamma), hedging requires buying rallies and selling dips — amplifying moves.<br><br>{% if gamma.net_gex_pctile is not none %}Net GEX today: {{ '%.1f'|format(gamma.net_gex_bn|float if gamma.net_gex_bn is not none else 0) }}B ({{ ord_n(gamma.net_gex_pctile) }} pctile since {{ gamma.series_start if gamma.series_start is not none else 'inception' }}{% if _gex_n > 0 %}, {{ _gex_n }} sessions{% endif %}).{% if _gex_n > 0 and _gex_n < 100 %} This is a short series — that percentile is a rank among {{ _gex_n }} readings, not years of history.{% endif %}{% else %}Net GEX today: {{ '%.1f'|format(gamma.net_gex_bn|float if gamma.net_gex_bn is not none else 0) }}B. The percentile rank isn't available for this snapshot — the exposure figure is the latest reading, without a rank against history.{% endif %}<br><br><em>Model estimate only — actual dealer books are unobservable. Reconstructed from the SPX options chain.</em></span>
+    <span class="l-zh"><b>缓冲机制原理</b><br>当做市商净GEX（伽马敞口——吸收或放大波动的期权账簿对冲）为正（多伽马）时，他们卖出期权，通过逢低买/逢高卖对冲——抑制波动。当GEX为负（空伽马）时，对冲需要追涨杀跌——放大波动。<br><br>{% if gamma.net_gex_pctile is not none %}当前净GEX：{{ '%.1f'|format(gamma.net_gex_bn|float if gamma.net_gex_bn is not none else 0) }}B（自{{ gamma.series_start if gamma.series_start is not none else '首日' }}以来{{ (gamma.net_gex_pctile|float|round|int) }}百分位{% if _gex_n > 0 %}，共 {{ _gex_n }} 个交易日{% endif %}）。{% if _gex_n > 0 and _gex_n < 100 %} 本序列较短——该百分位是 {{ _gex_n }} 次读数中的排名，并非多年历史。{% endif %}{% else %}当前净GEX：{{ '%.1f'|format(gamma.net_gex_bn|float if gamma.net_gex_bn is not none else 0) }}B。本次快照没有百分位读数——上方敞口是最新值，尚未对照历史排名。{% endif %}<br><br><em>仅为模型估算——做市商实际账簿不可观测，由标普500指数期权链重建。</em></span>
   </span></span>
+
+  {# P8 — Archetype-D watching band, folded into the hero (L1 stays 6).
+     Bind producer emissions only: gamma.gamma_flip, disp.cor1m_available,
+     disp.cor1m_pctile_2y / _lo / _hi. Do NOT infer availability from lo/hi
+     presence — the fail-open null dict still emits 20/80.
+     Projection-window vocabulary — never falsifier/refutation/证伪. #}
+  {% set _watch_flip = gamma.gamma_flip if gamma.gamma_flip is not none else none %}
+  {% set _watch_lo = disp.cor1m_pctile_lo if (disp is not none and disp.cor1m_pctile_lo is defined and disp.cor1m_pctile_lo is not none) else none %}
+  {% set _watch_hi = disp.cor1m_pctile_hi if (disp is not none and disp.cor1m_pctile_hi is defined and disp.cor1m_pctile_hi is not none) else none %}
+  {% set _watch_pct = disp.cor1m_pctile_2y if (disp is not none and disp.cor1m_pctile_2y is defined and disp.cor1m_pctile_2y is not none) else none %}
+  {% set _cor1m_avail = (disp.cor1m_available) if (disp is not none and disp.cor1m_available is defined and disp.cor1m_available) else false %}
+  {% if _watch_flip is not none or disp is not none %}
+  <div class="watch-band" id="watch-band">
+    <div class="watch-k">{{ t("What we're watching", '我们在看什么') }}</div>
+    <p class="watch-kicker">{{ t('Windows, not certainties — re-drawn nightly.', '窗口，并非定论 — 每晚重算。') }}</p>
+    <ul class="watch-list">
+      {% if _watch_flip is not none %}
+      <li>
+        <b>{{ t('Flip level', '翻转点') }} <span class="tnum">{{ '%.0f'|format(_watch_flip|float) }}</span></b>
+        {% if gamma.spot is not none %}
+        <span class="l-en">This shock-absorber read holds while SPX stays {% if gamma.spot|float > _watch_flip|float %}above{% else %}below{% endif %} {{ '%.0f'|format(_watch_flip|float) }}. A close through that level is the window where dealer hedging would switch.</span>
+        <span class="l-zh">标普500保持在 {{ '%.0f'|format(_watch_flip|float) }} {% if gamma.spot|float > _watch_flip|float %}之上{% else %}之下{% endif %} 时，当前缓冲读数成立。收盘穿过该水平，是做市商对冲可能切换的窗口。</span>
+        {% else %}
+        <span class="l-en">Dealer hedging would switch around {{ '%.0f'|format(_watch_flip|float) }} — a window, re-drawn with the nightly snapshot.</span>
+        <span class="l-zh">做市商对冲可能在 {{ '%.0f'|format(_watch_flip|float) }} 附近切换 — 这是窗口，随夜间快照重算。</span>
+        {% endif %}
+      </li>
+      {% endif %}
+      {% if disp is not none %}
+      <li>
+        <b>{{ t('Stock-picker window', '选股窗口') }}</b>
+        {% if _cor1m_avail and _watch_pct is not none and _watch_lo is not none and _watch_hi is not none %}
+          {% if _watch_pct|float <= _watch_lo|float %}
+        <span class="l-en">Stock-picker conditions hold while 1-month implied correlation stays at or below the {{ _watch_lo|int }}th percentile of the last two years — it is there now ({{ ord_n(_watch_pct) }}).</span>
+        <span class="l-zh">1个月隐含相关性维持在近两年{{ _watch_lo|int }}百分位及以下时，选股行情成立——当前正处该区间（第{{ _watch_pct|float|round|int }}百分位）。</span>
+          {% else %}
+        <span class="l-en">Stock-picker conditions would open if 1-month implied correlation falls to the {{ _watch_lo|int }}th percentile of the last two years — it is at the {{ ord_n(_watch_pct) }} now; at the {{ _watch_hi|int }}th and above, stocks move together.</span>
+        <span class="l-zh">若1个月隐含相关性回落至近两年{{ _watch_lo|int }}百分位，选股窗口才会打开——当前为第{{ _watch_pct|float|round|int }}百分位；升至{{ _watch_hi|int }}百分位及以上则个股同涨同跌。</span>
+          {% endif %}
+        {% else %}
+        <span class="l-en">Stock-picker read is being updated.</span>
+        <span class="l-zh">选股读数更新中。</span>
+        {% endif %}
+      </li>
+      {% endif %}
+    </ul>
+    <span class="help">?<span class="tip">
+      <span class="l-en">The flip is the reconstructed SPX level where dealer net gamma changes sign — hedging switches from absorbing dips to amplifying them. The stock-picker windows are the two-year percentiles the producer uses to classify 1-month implied correlation (a stock-picker's market vs stocks moving together). Neither is a forecast; both re-draw when the nightly snapshot lands.</span>
+      <span class="l-zh">翻转点是重建出的标普500水平，做市商净伽马在此变号——对冲从吸收回档转为放大波动。选股窗口是生产者用来划分1个月隐含相关性的两年百分位（选股行情对比个股同涨同跌）。两者都不是预测；夜间快照到达时重算。</span>
+    </span></span>
+  </div>
+  {% endif %}
 
   {# Missing-session disclosure. The options chain we rebuild this from is a live
      snapshot — a session we did not capture that evening can never be filled in,
      so the honest thing is to name the days the read skips rather than let the
-     line and the day-count quietly close over them. #}
-  {% if gamma.coverage and not gamma.coverage.complete %}
-  {% set _miss = (gamma.coverage.missing_recent or []) + (gamma.coverage.missing_in_regime or []) %}
-  {% set _miss = _miss | unique | list | sort %}
-  {% if _miss %}
-  {% set _shown = _miss[-5:] %}
-  {% set _more = _miss | length - _shown | length %}
+     line and the day-count quietly close over them. Merged with provenance into
+     ONE footnote (Law 4) — null sentence first, verbatim; provenance after a ·. #}
+  {% set _cov = gamma.coverage if (gamma.coverage and not gamma.coverage.complete) else none %}
+  {% set _miss = (((_cov.missing_recent or []) + (_cov.missing_in_regime or [])) | unique | list | sort) if _cov else [] %}
+  {% set _shown = _miss[-5:] if _miss else [] %}
+  {% set _more = (_miss | length - _shown | length) if _miss else 0 %}
+  {% set _has_null = _miss | length > 0 %}
+  {% set _has_prov = gamma.series_start is not none or (msp is defined and msp is not none and msp.asof is not none) %}
+  {% if _has_null or _has_prov %}
   <div class="sec-foot" style="margin-top:14px">
+    {% if _has_null %}
     <span class="l-en"><b>No chain reading for {{ _miss | length }} recent {{ 'session' if _miss|length == 1 else 'sessions' }}</b> ({{ _shown | join(', ') }}{% if _more > 0 %} and {{ _more }} earlier{% endif %}) — the options chain is a live snapshot, so a session we miss cannot be filled in later. Everything above skips those days.</span>
     <span class="l-zh"><b>近期有 {{ _miss | length }} 个交易日无期权链读数</b>（{{ _shown | join('、') }}{% if _more > 0 %} 及更早 {{ _more }} 日{% endif %}）— 期权链为实时快照，当日未采集便无法补录。以上所有读数均跳过这些日期。</span>
-  </div>
-  {% endif %}
-  {% endif %}
-
-  {% if gamma.series_start is not none or (msp is defined and msp is not none and msp.asof is not none) %}
-  <div class="sec-foot" style="margin-top:14px">
-    {% if gamma.series_start is not none %}{{ t('GEX series from', 'GEX数据自') }} {{ gamma.series_start }}{% endif %}
+    {% endif %}
+    {% if _has_null and _has_prov %} · {% endif %}
+    {% if _has_prov %}
+    {% if gamma.series_start is not none %}{{ t('Dealer-exposure (GEX) series from', '做市商敞口（GEX）数据自') }} {{ gamma.series_start }}{% endif %}
     {% if msp is defined and msp is not none and msp.asof is not none %} · {{ t('as of', '截至') }} {{ msp.asof }}{% endif %}
+    {% endif %}
   </div>
   {% endif %}
 </div>
 {% else %}
-<div class="warmup"><b><span class="l-en">Data warming up</span><span class="l-zh">数据预热中</span></b><span class="l-en">First nightly run hasn't completed yet.</span><span class="l-zh">首次夜间运行尚未完成。</span></div>
+<div class="warmup">
+  <b><span class="l-en">Shock-absorber reading isn't on this page yet.</span><span class="l-zh">缓冲机制读数尚未出现在本页。</span></b>
+  <span class="empty-why">
+    <span class="l-en">The dealer-gamma dataset (SPX options chain) hasn't arrived. Machine-money, stock-picker, vol-weather, and weekly-range panels still render when their own datasets are present.</span>
+    <span class="l-zh">做市商伽马数据集（标普500期权链）尚未到达。机器资金、选股行情、波动率天气与本周区间在各自数据到位时仍会显示。</span>
+  </span>
+</div>
 {% endif %}
 
+<div class="msp-drivers" id="msp-drivers">
 {# ────────────────────── PANEL 2 — GEX HISTORY ────────────────────── #}
+<section class="msp-driver" data-driver="gex">
 {% if gamma is not none and gamma.history is not none and gamma.history | length > 0 %}
 <div class="sec-head">
   <span class="eyebrow">2</span>
   <h2>{{ t('Dealer exposure history', '做市商敞口历史') }}</h2>
   <span class="help">?<span class="tip">
-    <span class="l-en">Net GEX bars (green = absorbing, red = amplifying). Grey/blue line: SPX vs daily gamma flip. Toggle the time window. Series from {{ gamma.series_start if gamma.series_start is not none else 'inception' }}.</span>
-    <span class="l-zh">净GEX柱状图（绿=吸收，红=放大）。灰/蓝线：标普500 vs 每日翻转点。可切换时间窗口。数据自{{ gamma.series_start if gamma.series_start is not none else '首日' }}起。</span>
+    <span class="l-en">Net GEX (dealer options exposure) bars (green = absorbing, red = amplifying). Grey/blue line: SPX against the daily flip level. Toggle the time window. Series from {{ gamma.series_start if gamma.series_start is not none else 'inception' }}.</span>
+    <span class="l-zh">净GEX（做市商期权敞口）柱状图（绿=吸收，红=放大）。灰/蓝线：标普500对照每日翻转点。可切换时间窗口。数据自{{ gamma.series_start if gamma.series_start is not none else '首日' }}起。</span>
   </span></span>
   <div class="range-btns" id="gex-range-btns" style="margin-left:auto">
     <button class="rbtn" data-range="21">1M</button>
@@ -339,13 +504,21 @@ html[data-theme="light"] :is(
 <div class="panel">
   <div class="chart-wrap" style="height:160px"><svg id="gex-chart" viewBox="0 0 800 160" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg></div>
   <div class="chart-wrap" style="height:110px;margin-top:6px"><svg id="spx-flip-chart" viewBox="0 0 800 110" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg></div>
-  <div class="sec-foot">{{ t('GEX bars coloured by dealer regime · SPX line vs gamma flip (amber dashed)', 'GEX柱图按做市商制度着色 · 标普500线 vs 伽马翻转点（琥珀色虚线）') }}{% if gamma.series_start is not none %} · {{ t('series from', '数据自') }} {{ gamma.series_start }}{% endif %}</div>
+  <div class="sec-foot">{{ t('GEX (dealer options exposure) bars coloured by dealer regime · SPX line against the flip level (amber dashed)', 'GEX（做市商期权敞口）柱图按做市商制度着色 · 标普500线对照翻转点（琥珀色虚线）') }}{% if gamma.series_start is not none %} · {{ t('series from', '数据自') }} {{ gamma.series_start }}{% endif %}</div>
 </div>
 {% else %}
-<div class="warmup"><b><span class="l-en">History warming up</span><span class="l-zh">历史数据预热中</span></b><span class="l-en">GEX history appears after the first nightly run.</span><span class="l-zh">首次夜间运行后显示。</span></div>
+<div class="warmup">
+  <b><span class="l-en">Dealer-exposure history isn't on this page yet.</span><span class="l-zh">做市商敞口历史尚未出现在本页。</span></b>
+  <span class="empty-why">
+    <span class="l-en">The GEX (dealer options exposure) history series is missing. The hero above still shows today's shock-absorber read when the latest snapshot is present.</span>
+    <span class="l-zh">GEX（做市商期权敞口）历史序列缺失。当最新快照到位时，上方主卡仍会显示当日缓冲机制读数。</span>
+  </span>
+</div>
 {% endif %}
+</section>
 
 {# ────────────────────── PANEL 3 — SYSTEMATIC FLOWS ────────────────────── #}
+<section class="msp-driver" data-driver="flows">
 <div class="sec-head">
   <span class="eyebrow">3</span>
   <h2>{{ t('Machine money flows', '机器资金动向') }}</h2>
@@ -368,13 +541,26 @@ html[data-theme="light"] :is(
 
 {% if sys is not none %}
 <div class="agree {{ agree if agree is not none else '' }}">
-  {% if agree == 'aligned_adding' %}<span class="l-en">Machine money: aligned · both adding</span><span class="l-zh">机器资金：一致 · 两路同步加仓</span>
-  {% elif agree == 'aligned_cutting' %}<span class="l-en">Machine money: aligned · both cutting</span><span class="l-zh">机器资金：一致 · 两路同步减仓</span>
-  {% elif agree == 'split' %}<span class="l-en">Machine money: split — signals disagree</span><span class="l-zh">机器资金：分歧 — 信号不一致</span>
-  {% elif agree == 'paused' %}<span class="l-en">Machine money: paused</span><span class="l-zh">机器资金：暂停</span>
+  {% if _wn > 0 %}
+  {% if agree == 'aligned_adding' %}<span class="l-en">Machine money: aligned · both adding over {{ _wn }} days</span><span class="l-zh">机器资金：一致 · 两路{{ _wn }}日同步加仓</span>
+  {% elif agree == 'aligned_cutting' %}<span class="l-en">Machine money: aligned · both cutting over {{ _wn }} days</span><span class="l-zh">机器资金：一致 · 两路{{ _wn }}日同步减仓</span>
+  {% elif agree == 'split' %}<span class="l-en">Machine money: split — signals disagree over {{ _wn }} days</span><span class="l-zh">机器资金：分歧 — {{ _wn }}日信号不一致</span>
+  {% elif agree == 'paused' %}<span class="l-en">Machine money: both paused over the last {{ _wn }} days</span><span class="l-zh">机器资金：两路近{{ _wn }}日均暂停</span>
   {% else %}<span class="l-en">Agreement: {{ agree if agree is not none else 'unknown' }}</span><span class="l-zh">共识：{{ agree if agree is not none else '未知' }}</span>
   {% endif %}
+  {% else %}
+  <span class="l-en">Machine money: window is being updated.</span><span class="l-zh">机器资金：窗口更新中。</span>
+  {% endif %}
 </div>
+{% if agree == 'aligned_adding' %}
+<span class="stance-chip watch"><span class="l-en">Watch — don't chase: machine buying is already in the price.</span><span class="l-zh">观望——勿追涨：机器买盘已在价格中。</span></span>
+{% elif agree == 'aligned_cutting' %}
+<span class="stance-chip watch"><span class="l-en">Watch — machine money is stepping back; don't lean against it.</span><span class="l-zh">观望——机器资金正在撤减，勿逆势加仓。</span></span>
+{% elif agree == 'paused' or agree == 'split' %}
+<span class="stance-chip neutral"><span class="l-en">Stand aside — machine flows aren't pushing either way.</span><span class="l-zh">暂不行动——机器资金没有明确方向。</span></span>
+{% else %}
+<span class="stance-chip watch"><span class="l-en">Watch — this read is being updated.</span><span class="l-zh">观望——该读数更新中。</span></span>
+{% endif %}
 
 <div class="grid-2" style="margin-bottom:16px">
   {# VC block #}
@@ -383,11 +569,11 @@ html[data-theme="light"] :is(
     {% if vc is not none %}
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap">
       {% if vc.alloc_bn is not none %}<div style="font-size:17px;font-weight:800;color:var(--ink)">${{ '%.0f'|format(vc.alloc_bn|float) }}B</div>{% endif %}
-      {% if vc.state is not none %}<span class="rc {{ vc.state }}">{% if vc.state=='adding' %}<span class="l-en">Adding</span><span class="l-zh">加仓中</span>{% elif vc.state=='cutting' %}<span class="l-en">Cutting</span><span class="l-zh">减仓中</span>{% else %}<span class="l-en">Pausing</span><span class="l-zh">暂停</span>{% endif %}</span>{% endif %}
+      {% if vc.state is not none %}<span class="rc {{ vc.state }}">{% if _vc_wn > 0 %}{% if vc.state=='adding' %}<span class="l-en">Adding over {{ _vc_wn }} days</span><span class="l-zh">{{ _vc_wn }}日加仓中</span>{% elif vc.state=='cutting' %}<span class="l-en">Cutting over {{ _vc_wn }} days</span><span class="l-zh">{{ _vc_wn }}日减仓中</span>{% else %}<span class="l-en">Pausing over {{ _vc_wn }} days</span><span class="l-zh">{{ _vc_wn }}日暂停</span>{% endif %}{% else %}<span class="l-en">window is being updated</span><span class="l-zh">窗口更新中</span>{% endif %}</span>{% endif %}
     </div>
     <div class="badge-stack">
       {% if vc.flow_1d_bn is not none %}<span class="badge {{ 'up' if vc.flow_1d_bn|float >= 0 else 'dn' }}">{% if vc.flow_1d_bn|float >= 0 %}▲{% else %}▼{% endif %} ${{ '%.1f'|format(vc.flow_1d_bn|float|abs) }}B {{ t('today', '今日') }}</span>{% endif %}
-      {% if vc.flow_5d_bn is not none %}<span class="badge {{ 'up' if vc.flow_5d_bn|float >= 0 else 'dn' }}">{% if vc.flow_5d_bn|float >= 0 %}▲{% else %}▼{% endif %} ${{ '%.1f'|format(vc.flow_5d_bn|float|abs) }}B {{ t('over 5 days', '5日累计') }}</span>{% endif %}
+      {% if vc.flow_5d_bn is not none %}<span class="badge {{ 'up' if vc.flow_5d_bn|float >= 0 else 'dn' }}">{% if vc.flow_5d_bn|float >= 0 %}▲{% else %}▼{% endif %} ${{ '%.1f'|format(vc.flow_5d_bn|float|abs) }}B {% if _vc_wn > 0 %}<span class="l-en">over {{ _vc_wn }} days</span><span class="l-zh">{{ _vc_wn }}日累计</span>{% else %}<span class="l-en">window is being updated</span><span class="l-zh">窗口更新中</span>{% endif %}</span>{% endif %}
     </div>
     {% if vc.alloc_frac is not none %}<div class="kpi-row" style="margin-top:10px"><div class="kpi"><b>{{ '%.0f'|format(vc.alloc_frac|float * 100) }}%</b>{{ t('of target allocation deployed', '目标仓位已部署') }}</div></div>{% endif %}
     {% else %}<span class="faint">{{ t('No data', '暂无数据') }}</span>{% endif %}
@@ -400,12 +586,13 @@ html[data-theme="light"] :is(
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap">
       {% if cta.score is not none %}<div style="font-size:17px;font-weight:800;color:var(--ink)">{% if cta.score|float >= 0 %}+{% endif %}{{ '%.2f'|format(cta.score|float) }} <small style="font-size:12px;font-weight:500;color:var(--faint)">{{ t('trend score', '趋势分数') }}</small></div>{% endif %}
       {% if cta.score is not none %}{% set _cs = cta.score|float %}<span class="rc {{ 'adding' if _cs > 0.15 else ('cutting' if _cs < -0.15 else 'pausing') }}">{% if _cs > 0.15 %}<span class="l-en">Positioned long</span><span class="l-zh">持多仓</span>{% elif _cs < -0.15 %}<span class="l-en">Positioned short</span><span class="l-zh">持空仓</span>{% else %}<span class="l-en">Near flat</span><span class="l-zh">接近空仓</span>{% endif %}</span>{% endif %}
-      {% if cta.state is not none %}<span class="rc {{ cta.state }}">{% if cta.state=='adding' %}<span class="l-en">adding exposure</span><span class="l-zh">加仓中</span>{% elif cta.state=='cutting' %}<span class="l-en">trimming exposure</span><span class="l-zh">减仓中</span>{% else %}<span class="l-en">holding steady</span><span class="l-zh">持稳</span>{% endif %}</span>{% endif %}
+      {% if cta.state is not none %}
+      <span class="rc {{ cta.state }}{% if _cta_near %} near-flat{% endif %}">{% if _cta_wn > 0 %}{% if cta.state=='adding' %}<span class="l-en">adding exposure over {{ _cta_wn }} days</span><span class="l-zh">{{ _cta_wn }}日加仓中</span>{% elif cta.state=='cutting' %}<span class="l-en">trimming exposure over {{ _cta_wn }} days</span><span class="l-zh">{{ _cta_wn }}日减仓中</span>{% else %}<span class="l-en">holding steady over {{ _cta_wn }} days</span><span class="l-zh">{{ _cta_wn }}日持稳</span>{% endif %}{% else %}<span class="l-en">window is being updated</span><span class="l-zh">窗口更新中</span>{% endif %}</span>{% endif %}
     </div>
     {% if cta.z is not none %}{% set _cz = cta.z|float %}<div style="font-size:12px;color:var(--mut);margin-bottom:6px">{% if _cz <= -0.3 %}<span class="l-en">Lighter than their 1-year norm ({{ '%.1f'|format(_cz) }})</span><span class="l-zh">仓位低于近一年常态（{{ '%.1f'|format(_cz) }}）</span>{% elif _cz >= 0.3 %}<span class="l-en">Heavier than their 1-year norm (+{{ '%.1f'|format(_cz) }})</span><span class="l-zh">仓位高于近一年常态（+{{ '%.1f'|format(_cz) }}）</span>{% else %}<span class="l-en">Near their 1-year norm</span><span class="l-zh">接近近一年常态</span>{% endif %}</div>{% endif %}
     <div class="badge-stack">
       {% if cta.flow_1d is not none %}<span class="badge {{ 'up' if cta.flow_1d|float >= 0 else 'dn' }}">{% if cta.flow_1d|float >= 0 %}▲{% else %}▼{% endif %} {{ '%.1f'|format(cta.flow_1d|float|abs) }} {{ t('today', '今日') }}</span>{% endif %}
-      {% if cta.flow_5d is not none %}<span class="badge {{ 'up' if cta.flow_5d|float >= 0 else 'dn' }}">{% if cta.flow_5d|float >= 0 %}▲{% else %}▼{% endif %} {{ '%.1f'|format(cta.flow_5d|float|abs) }} {{ t('over 5 days', '5日累计') }}</span>{% endif %}
+      {% if cta.flow_5d is not none %}<span class="badge {{ 'up' if cta.flow_5d|float >= 0 else 'dn' }}">{% if cta.flow_5d|float >= 0 %}▲{% else %}▼{% endif %} {{ '%.1f'|format(cta.flow_5d|float|abs) }} {% if _cta_wn > 0 %}<span class="l-en">over {{ _cta_wn }} days</span><span class="l-zh">{{ _cta_wn }}日累计</span>{% else %}<span class="l-en">window is being updated</span><span class="l-zh">窗口更新中</span>{% endif %}</span>{% endif %}
     </div>
     {% else %}<span class="faint">{{ t('No data', '暂无数据') }}</span>{% endif %}
   </div>
@@ -413,23 +600,31 @@ html[data-theme="light"] :is(
 
 {% if sys.history is not none and sys.history | length > 0 %}
 <div class="panel">
-  <div style="font-size:12px;color:var(--mut);margin-bottom:8px">{{ t('Vol-target fund exposure ($B) vs S&P 500 — toggle above to change window', '波动率目标基金敞口（十亿美元）vs 标普500 — 切换上方按钮调整窗口') }}</div>
+  <div style="font-size:12px;color:var(--mut);margin-bottom:8px">{{ t('Vol-target fund exposure ($B) against the S&P 500 — toggle above to change window', '波动率目标基金敞口（十亿美元）对照标普500 — 切换上方按钮调整窗口') }}</div>
   <div class="chart-wrap" style="height:160px"><svg id="sys-chart" viewBox="0 0 800 160" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg></div>
   <div class="sec-foot">{{ t('Blue line = vol-target fund exposure · grey line = S&P 500 · model estimates, not audited fund data', '蓝线=波动率目标基金敞口 · 灰线=标普500 · 模型估算，非审计基金数据') }}</div>
 </div>
 {% endif %}
 
 {% else %}
-<div class="warmup"><b><span class="l-en">Data warming up</span><span class="l-zh">数据预热中</span></b><span class="l-en">Systematic flows data will appear after the first nightly run.</span><span class="l-zh">首次夜间运行后显示。</span></div>
+<div class="warmup">
+  <b><span class="l-en">Machine-money flows aren't on this page yet.</span><span class="l-zh">机器资金动向尚未出现在本页。</span></b>
+  <span class="empty-why">
+    <span class="l-en">The vol-control and trend-following model series haven't arrived. Shock-absorber, stock-picker, vol-weather, and weekly-range panels still render from their own datasets.</span>
+    <span class="l-zh">波动率控制与趋势跟踪模型序列尚未到达。缓冲机制、选股行情、波动率天气与本周区间在各自数据到位时仍会显示。</span>
+  </span>
+</div>
 {% endif %}
+</section>
 
 {# ────────────────────── PANEL 4 — DISPERSION ────────────────────── #}
+<section class="msp-driver" data-driver="dispersion">
 <div class="sec-head">
   <span class="eyebrow">4</span>
   <h2>{{ t('Stock-picker conditions', '选股行情') }}</h2>
   <span class="help">?<span class="tip">
-    <span class="l-en"><b>What this measures</b><br>Implied correlation (COR1M): average pairwise correlation implied by SPX options vs single-stock options. Low = stocks moving on their own stories (stock-picker's market). High = one-market tape (macro dominates). Series from 2006. DSPX: CBOE dispersion index.</span>
-    <span class="l-zh"><b>指标说明</b><br>隐含相关性（COR1M）：标普指数期权与个股期权隐含的平均两两相关系数。低值=个股独立走势（选股行情）；高值=一体化走势（宏观主导）。数据自2006年。DSPX：CBOE离散度指数。</span>
+    <span class="l-en"><b>What this measures</b><br>1-month implied correlation (COR1M): average pairwise correlation implied by SPX options against single-stock options. Low = stocks moving on their own stories (stock-picker's market). High = one-market tape (macro dominates). Series from 2006.{% if disp is not none %}<br><br>{% if disp.cor1m_pctile_2y is not none %}2-year percentile: {{ ord_n(disp.cor1m_pctile_2y) }}. {% endif %}{% if disp.cor3m is not none %}3-month implied correlation: {{ '%.2f'|format(disp.cor3m|float) }}. {% endif %}{% if disp.dspx is not none %}CBOE dispersion index: {{ '%.1f'|format(disp.dspx|float) }}.{% endif %}{% endif %}</span>
+    <span class="l-zh"><b>指标说明</b><br>1个月隐含相关性（COR1M）：标普指数期权与个股期权隐含的平均两两相关系数。低值=个股独立走势（选股行情）；高值=一体化走势（宏观主导）。数据自2006年。{% if disp is not none %}<br><br>{% if disp.cor1m_pctile_2y is not none %}2年百分位：{{ ord_n(disp.cor1m_pctile_2y) }}。{% endif %}{% if disp.cor3m is not none %}3个月隐含相关性：{{ '%.2f'|format(disp.cor3m|float) }}。{% endif %}{% if disp.dspx is not none %}CBOE离散度指数：{{ '%.1f'|format(disp.dspx|float) }}。{% endif %}{% endif %}</span>
   </span></span>
   {% if disp is not none and disp.history is not none and disp.history | length > 0 %}
   <div class="range-btns" id="cor-range-btns" style="margin-left:auto">
@@ -453,48 +648,77 @@ html[data-theme="light"] :is(
     <p style="margin:0;font-size:13.5px;line-height:1.5;color:var(--tx);flex:1;min-width:200px">
       {% if disp.cor1m_regime == 'dispersion' %}<span class="l-en">A stock-picker's market — stocks moving on their own stories</span><span class="l-zh">选股行情 — 个股各自走势独立</span>
       {% elif disp.cor1m_regime == 'elevated' %}<span class="l-en">One-market tape — stocks moving together, macro dominates</span><span class="l-zh">一体化走势 — 个股同步涨跌，宏观叙事主导</span>
-      {% else %}<span class="l-en">Normal correlation — mix of macro and stock-specific moves</span><span class="l-zh">正常相关性 — 宏观与个股因素交织</span>{% endif %}
+      {% elif disp.cor1m_regime == 'normal' %}<span class="l-en">Normal correlation — mix of macro and stock-specific moves</span><span class="l-zh">正常相关性 — 宏观与个股因素交织</span>
+      {% else %}<span class="l-en">Stock-picker conditions are being updated.</span><span class="l-zh">选股行情读数更新中。</span>{% endif %}
     </p>
   </div>
+  {% if disp.cor1m_regime == 'dispersion' %}
+  <span class="stance-chip act"><span class="l-en">Get ready — conditions favour stock-picking over index bets.</span><span class="l-zh">做好准备——当前环境有利于选股而非指数操作。</span></span>
+  {% elif disp.cor1m_regime == 'elevated' %}
+  <span class="stance-chip neutral"><span class="l-en">Stand aside — stocks are moving together; picks add little.</span><span class="l-zh">暂不行动——个股同涨同跌，选股意义有限。</span></span>
+  {% elif disp.cor1m_regime == 'normal' %}
+  <span class="stance-chip watch"><span class="l-en">Watch — don't chase; conditions are middling.</span><span class="l-zh">观望——不追单，环境中性。</span></span>
+  {% else %}
+  <span class="stance-chip watch"><span class="l-en">Watch — this read is being updated.</span><span class="l-zh">观望——该读数更新中。</span></span>
+  {% endif %}
   <div class="kpi-row">
-    {% if disp.cor1m is not none %}<div class="kpi"><b>{{ '%.2f'|format(disp.cor1m|float) }}</b>{{ t('implied correlation (1M)', '隐含相关性（1个月）') }}</div>{% endif %}
-    {% if disp.cor1m_1y_delta is not none %}<div class="kpi"><b class="{{ 'up' if disp.cor1m_1y_delta|float < 0 else 'dn' }}">{% if disp.cor1m_1y_delta|float >= 0 %}+{% endif %}{{ '%.2f'|format(disp.cor1m_1y_delta|float) }}</b>{{ t('vs 1 year ago', '较一年前') }}</div>{% endif %}
-    {# Ordinal suffix, not a hardcoded "th" — the 3rd percentile was rendering "3th". #}
-    {% if disp.cor1m_pctile_2y is not none %}
-    {% set _pc = disp.cor1m_pctile_2y|float|round|int %}
-    {% set _ord = 'th' if (_pc % 100) in [11, 12, 13] else {1: 'st', 2: 'nd', 3: 'rd'}.get(_pc % 10, 'th') %}
-    <div class="kpi"><b>{{ _pc }}{{ _ord }}</b>{{ t('percentile (2-year)', '百分位（2年）') }}</div>
-    {% endif %}
-    {% if disp.cor3m is not none %}<div class="kpi"><b>{{ '%.2f'|format(disp.cor3m|float) }}</b>{{ t('3-month corr', '3个月相关性') }}</div>{% endif %}
-    {% if disp.dspx is not none %}<div class="kpi"><b>{{ '%.1f'|format(disp.dspx|float) }}</b>{{ t('CBOE dispersion', 'CBOE离散度') }}</div>{% endif %}
+    {% if disp.cor1m is not none %}<div class="kpi"><b>{{ '%.2f'|format(disp.cor1m|float) }}</b>
+      <span class="l-en">1-month implied correlation{% if disp.cor1m_regime == 'dispersion' %} — stocks are moving more on their own stories than usual{% elif disp.cor1m_regime == 'elevated' %} — stocks are moving together; index tape dominates{% elif disp.cor1m_regime == 'normal' %} — a mix of shared and stock-specific moves{% endif %}</span>
+      <span class="l-zh">1个月隐含相关性{% if disp.cor1m_regime == 'dispersion' %} — 个股比往常更按自身故事走动{% elif disp.cor1m_regime == 'elevated' %} — 个股同涨同跌，指数主导{% elif disp.cor1m_regime == 'normal' %} — 共性与个股因素交织{% endif %}</span>
+    </div>{% endif %}
+    {% if disp.cor1m_1y_delta is not none %}<div class="kpi"><b class="{{ 'up' if disp.cor1m_1y_delta|float < 0 else 'dn' }}">{% if disp.cor1m_1y_delta|float >= 0 %}+{% endif %}{{ '%.2f'|format(disp.cor1m_1y_delta|float) }}</b>
+      {% if disp.cor1m_1y_delta|float < 0 %}
+      <span class="l-en">against a year ago — lower, so more room for stock-picking (that's why this prints green)</span>
+      <span class="l-zh">较一年前 — 更低，选股空间更大（因此标为绿色）</span>
+      {% else %}
+      <span class="l-en">against a year ago — higher, so stocks are moving more together</span>
+      <span class="l-zh">较一年前 — 更高，个股更同步</span>
+      {% endif %}
+    </div>{% endif %}
   </div>
   {% if disp.history is not none and disp.history | length > 0 %}
   <div class="chart-wrap" style="height:130px;margin-top:12px"><svg id="cor-chart" viewBox="0 0 800 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg></div>
   {% endif %}
-  <div class="sec-foot">{{ t('COR1M area chart — dashed line = the dispersion threshold, the 20th percentile of the last two years · source: CBOE, series from 2006', 'COR1M面积图 — 虚线=离散阈值，即近两年第20百分位 · 来源：CBOE，数据自2006年起') }}</div>
+  <div class="sec-foot">{{ t('1-month implied correlation (COR1M) area chart — dashed line = the dispersion threshold, the 20th percentile of the last two years · source: CBOE, series from 2006', '1个月隐含相关性（COR1M）面积图 — 虚线=离散阈值，即近两年第20百分位 · 来源：CBOE，数据自2006年起') }}</div>
 </div>
 {% else %}
-<div class="warmup"><b><span class="l-en">Data warming up</span><span class="l-zh">数据预热中</span></b><span class="l-en">Correlation data will appear after the first nightly run.</span><span class="l-zh">首次夜间运行后显示。</span></div>
+<div class="warmup">
+  <b><span class="l-en">Stock-picker conditions aren't on this page yet.</span><span class="l-zh">选股行情尚未出现在本页。</span></b>
+  <span class="empty-why">
+    <span class="l-en">The 1-month implied-correlation dataset (COR1M) hasn't arrived. Shock-absorber, machine-money, vol-weather, and weekly-range panels still render from their own datasets.</span>
+    <span class="l-zh">1个月隐含相关性数据集（COR1M）尚未到达。缓冲机制、机器资金、波动率天气与本周区间在各自数据到位时仍会显示。</span>
+  </span>
+</div>
 {% endif %}
+</section>
 
 {# ────────────────────── PANEL 5 — VOL WEATHER ────────────────────── #}
+<section class="msp-driver" data-driver="vol">
 <div class="sec-head">
   <span class="eyebrow">5</span>
   <h2>{{ t('Vol weather', '波动率天气') }}</h2>
   <span class="help">?<span class="tip">
-    <span class="l-en">RV21: 1-month realized vol. RV63: 3-month. When RV21 &gt; RV63, fast vol above slow baseline = "stress building". VIX curve slope = M6 − M1 (positive = contango; negative = backwardation/stress). The whole-market vol read lives in the Options workspace's console — this panel is context only.</span>
-    <span class="l-zh">RV21：1个月已实现波动率。RV63：3个月版本。RV21&gt;RV63时，短期超长期=压力积累。VIX曲线斜率=M6−M1（正值=期货升水；负值=现货升水/压力）。整体波动率读数在期权工作台的控制台，本面板仅为参考。</span>
+    <span class="l-en">RV21: 1-month realized vol. RV63: 3-month. When RV21 &gt; RV63, fast vol above slow baseline = "stress building". VIX curve slope = six-month minus front-month future (M6 − M1; positive = later months cost more than the front / contango; negative = front costs more / backwardation, a stress tell). The whole-market vol read lives in the Options workspace's console — this panel is context only.</span>
+    <span class="l-zh">RV21：1个月已实现波动率。RV63：3个月版本。RV21&gt;RV63时，短期超长期=压力积累。VIX曲线斜率=六个月减近月期货（M6−M1；正值=远月贵于近月/升水；负值=近月更贵/现货升水，压力信号）。整体波动率读数在期权工作台的控制台，本面板仅为参考。</span>
   </span></span>
 </div>
 
 {% if vol is not none %}
+{% if vol.rv_cross_state == 'calm' %}
+<span class="stance-chip neutral"><span class="l-en">Stand aside — vol is calm; no hedge urgency.</span><span class="l-zh">暂不行动——波动率平静，无需急于对冲。</span></span>
+{% elif vol.rv_cross_state == 'stress' %}
+<span class="stance-chip caution"><span class="l-en">Protect gains — vol stress says trim risk, not add.</span><span class="l-zh">保住收益——波动率承压，宜减仓不宜加仓。</span></span>
+{% else %}
+<span class="stance-chip watch"><span class="l-en">Watch — this read is being updated.</span><span class="l-zh">观望——该读数更新中。</span></span>
+{% endif %}
 <div class="grid-2">
   <div class="panel">
     <div class="kick">{{ t('Realized vol crossover', '已实现波动率交叉') }}</div>
     {% if vol.rv_cross_state is not none %}
     <span class="rc {{ vol.rv_cross_state }}" style="margin-bottom:8px;display:inline-block">
       {% if vol.rv_cross_state == 'stress' %}<span class="l-en">Fast vol above slow — stress building</span><span class="l-zh">短期波动率超越长期 — 压力积累</span>
-      {% else %}<span class="l-en">Fast vol below slow — calming</span><span class="l-zh">短期波动率低于长期 — 趋于平静</span>{% endif %}
+      {% elif vol.rv_cross_state == 'calm' %}<span class="l-en">Fast vol below slow — calming</span><span class="l-zh">短期波动率低于长期 — 趋于平静</span>
+      {% else %}<span class="l-en">Vol weather is being updated.</span><span class="l-zh">波动率天气更新中。</span>{% endif %}
     </span>
     {% endif %}
     <div class="kpi-row">
@@ -505,7 +729,7 @@ html[data-theme="light"] :is(
   </div>
 
   <div class="panel">
-    <div class="kick">{{ t('VIX futures curve', 'VIX期货曲线') }}{% if vol.series_start_curve is not none %} <span style="font-size:10px;color:var(--faint)">· {{ t('from', '自') }} {{ vol.series_start_curve }}</span>{% endif %}</div>
+    <div class="kick">{{ t('VIX futures curve (M1 = front month … M6 = six-month)', 'VIX期货曲线（M1=近月 … M6=六个月）') }}{% if vol.series_start_curve is not none %} <span style="font-size:10px;color:var(--faint)">· {{ t('from', '自') }} {{ vol.series_start_curve }}</span>{% endif %}</div>
     {% if vol.vix_curve is not none and vol.vix_curve | length > 0 %}
     <div class="vix-row">
       {% for node in vol.vix_curve %}
@@ -521,8 +745,8 @@ html[data-theme="light"] :is(
     <div class="kpi-row" style="margin-top:10px">
       <div class="kpi">
         <b class="{{ 'up' if vol.vix_curve_slope|float >= 0 else 'dn' }}">{% if vol.vix_curve_slope|float >= 0 %}+{% endif %}{{ '%.1f'|format(vol.vix_curve_slope|float) }}</b>
-        {{ t('curve slope (M6−M1)', '曲线斜率（M6-M1）') }}
-        ({% if vol.vix_curve_slope|float >= 0 %}<span class="l-en">contango</span><span class="l-zh">期货升水</span>{% else %}<span class="l-en">backwardation</span><span class="l-zh">现货升水</span>{% endif %})
+        {{ t('curve slope (six-month minus front-month)', '曲线斜率（六个月减近月）') }}
+        ({% if vol.vix_curve_slope|float >= 0 %}<span class="l-en">later months cost more than the front (contango)</span><span class="l-zh">远月贵于近月（升水）</span>{% else %}<span class="l-en">front costs more than later months (backwardation)</span><span class="l-zh">近月贵于远月（现货升水）</span>{% endif %})
       </div>
     </div>
     {% endif %}
@@ -531,21 +755,30 @@ html[data-theme="light"] :is(
   </div>
 </div>
 {% else %}
-<div class="warmup"><b><span class="l-en">Data warming up</span><span class="l-zh">数据预热中</span></b><span class="l-en">Vol weather data will appear after the first nightly run.</span><span class="l-zh">首次夜间运行后显示。</span></div>
+<div class="warmup">
+  <b><span class="l-en">Vol weather isn't on this page yet.</span><span class="l-zh">波动率天气尚未出现在本页。</span></b>
+  <span class="empty-why">
+    <span class="l-en">The realized-vol and VIX-curve datasets haven't arrived. Shock-absorber, machine-money, stock-picker, and weekly-range panels still render from their own datasets.</span>
+    <span class="l-zh">已实现波动率与VIX曲线数据集尚未到达。缓冲机制、机器资金、选股行情与本周区间在各自数据到位时仍会显示。</span>
+  </span>
+</div>
 {% endif %}
+</section>
 
 {# ────────────────────── PANEL 6 — WEEK MAP ────────────────────── #}
+<section class="msp-driver" data-driver="week">
 <div class="sec-head">
   <span class="eyebrow">6</span>
   <h2>{{ t('Weekly range', '本周区间') }}</h2>
   <span class="help">?<span class="tip">
-    <span class="l-en">Where the week could reasonably land, measured from Friday's close and the volatility priced in at that close. ±1σ covers about 68% of outcomes, ±2σ about 95% — if vol behaves as priced. Gamma flip line: where the dealer regime changes. Locked at Friday's close, fixed through the week, resets each weekend. A model estimate, not a forecast or a boundary the market must respect.</span>
-    <span class="l-zh">从周五收盘价及当时定价的波动率推算，本周价格可能落在的区间。±1σ约覆盖68%的情形，±2σ约95% — 前提是波动率按定价兑现。伽马翻转线：做市商机制变化位置。周五收盘锁定，本周内保持不变，每周末重置。这是模型估算，既非预测，也非市场必须遵守的边界。</span>
+    <span class="l-en">Where the week could reasonably land, measured from Friday's close and the volatility priced in at that close. The typical range (±1σ) covers about 68% of outcomes, the wide range (±2σ) about 95% — if vol behaves as priced. Flip line: the level where dealer hedging switches from absorbing to amplifying. Locked at Friday's close, fixed through the week, resets each weekend. A model estimate, not a forecast or a boundary the market must respect.</span>
+    <span class="l-zh">从周五收盘价及当时定价的波动率推算，本周价格可能落在的区间。典型区间（±1σ）约覆盖68%的情形，宽区间（±2σ）约95% — 前提是波动率按定价兑现。翻转线：做市商对冲从吸收转为放大的位置。周五收盘锁定，本周内保持不变，每周末重置。这是模型估算，既非预测，也非市场必须遵守的边界。</span>
   </span></span>
 </div>
 
 {% if wm is not none and wm.locked_close is not none and wm.band_1sigma_lo is not none and wm.band_1sigma_hi is not none %}
 <div class="panel">
+  <span class="stance-chip watch"><span class="l-en">Watch — don't chase moves inside the expected band.</span><span class="l-zh">观望——预期区间内的波动不必追。</span></span>
   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px">
     <div><div class="kick">{{ t('Locked Friday close', '锁定周五收盘价') }}</div>
     <div style="font-size:22px;font-weight:800;color:var(--ink)">{{ '%.1f'|format(wm.locked_close|float) }}</div></div>
@@ -599,9 +832,9 @@ html[data-theme="light"] :is(
     </div>
   </div>
   <div class="kpi-row" style="margin-top:8px">
-    <div class="kpi"><b>{{ '%.0f'|format(lo1) }} – {{ '%.0f'|format(hi1) }}</b>{{ t('±1σ range (68%)', '±1σ区间（68%）') }}</div>
-    <div class="kpi"><b>{{ '%.0f'|format(pr_lo) }} – {{ '%.0f'|format(pr_hi) }}</b>{{ t('±2σ range (95%)', '±2σ区间（95%）') }}</div>
-    {% if wm_flip is not none %}<div class="kpi"><b class="amb">{{ '%.0f'|format(wm_flip|float) }}</b>{{ t('gamma flip', '伽马翻转位') }}</div>{% endif %}
+    <div class="kpi"><b>{{ '%.0f'|format(lo1) }} – {{ '%.0f'|format(hi1) }}</b>{{ t('typical range (±1σ, about 68% of weeks)', '典型区间（±1σ，约68%的周）') }}</div>
+    <div class="kpi"><b>{{ '%.0f'|format(pr_lo) }} – {{ '%.0f'|format(pr_hi) }}</b>{{ t('wide range (±2σ, about 95% of weeks)', '宽区间（±2σ，约95%的周）') }}</div>
+    {% if wm_flip is not none %}<div class="kpi"><b class="amb">{{ '%.0f'|format(wm_flip|float) }}</b>{{ t('flip level (dealer hedging switch)', '翻转点（做市商对冲切换）') }}</div>{% endif %}
   </div>
   {% endif %}
   <div class="sec-foot" style="margin-top:10px">
@@ -610,8 +843,16 @@ html[data-theme="light"] :is(
   </div>
 </div>
 {% else %}
-<div class="warmup"><b><span class="l-en">Week map warming up</span><span class="l-zh">周度图预热中</span></b><span class="l-en">The weekly expected-move bands appear after tonight's data run.</span><span class="l-zh">本周期权定价区间将在今晚数据更新后显示。</span></div>
+<div class="warmup">
+  <b><span class="l-en">This week's expected range isn't on this page yet.</span><span class="l-zh">本周预期区间尚未出现在本页。</span></b>
+  <span class="empty-why">
+    <span class="l-en">The Friday-locked implied-move band hasn't been computed. Shock-absorber, machine-money, stock-picker, and vol-weather panels still render from their own datasets.</span>
+    <span class="l-zh">周五锁定的隐含波动区间尚未计算。缓冲机制、机器资金、选股行情与波动率天气在各自数据到位时仍会显示。</span>
+  </span>
+</div>
 {% endif %}
+</section>
+</div>{# /msp-drivers #}
 
 {# ── Footer ── #}
 <div style="margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-size:11.5px;color:var(--faint)">

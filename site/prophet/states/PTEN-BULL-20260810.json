@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "PTEN-BULL-20260810",
-  "asof": "2026-09-10",
+  "asof": "2026-09-16",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 61.7,
-  "raw_confidence": 63.5,
-  "delta_vs_base": 1.7,
+  "management_confidence": 58.2,
+  "raw_confidence": 54.8,
+  "delta_vs_base": -1.8,
   "recommended_action": "hold",
-  "human_state": "On Track",
+  "human_state": "Needs Follow-Through",
   "components": {
     "validity": 100.0,
-    "progress": 39.3,
-    "pace": 46.4,
+    "progress": 26.1,
+    "pace": 25.6,
     "retention": 50.0,
-    "overlay": 59.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.721,
-    "dist_to_t1_r": 0.779,
-    "dist_to_t2_r": 2.279,
-    "horizon_pct_used": 68.9,
-    "p1": 0.4808,
-    "p2": 0.2404,
+    "dist_to_stop_r": 1.418,
+    "dist_to_t1_r": 1.082,
+    "dist_to_t2_r": 2.582,
+    "horizon_pct_used": 82.2,
+    "p1": 0.2788,
+    "p2": 0.1394,
     "p3": null,
-    "move_r": 0.721,
+    "move_r": 0.418,
     "mfe_r": 0.803,
     "mae_r": -0.033
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 31,
-  "tau": 0.6889
+  "days_elapsed": 37,
+  "tau": 0.8222
 }
