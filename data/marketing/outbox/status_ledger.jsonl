@@ -6623,3 +6623,10 @@
 {"id":"ob-2026-09-16-3742b81cae","from":"approved","to":"quarantined","at":"2026-09-16T17:58:02Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
 {"id":"ob-2026-09-16-be7cb63756","from":"approved","to":"posting","at":"2026-09-16T17:58:02Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-09-16-be7cb63756","from":"posting","to":"posted","at":"2026-09-16T17:58:03Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6aaad8ab6014e27136c96d3c","external_url":null,"at":"2026-09-16T17:57:55Z","booked_at":"2026-09-16T17:57:55Z"}}
+{"id":"ob-2026-09-16-4770f4d2fc","from":"queued","to":"approved","at":"2026-09-16T18:03:37Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-09-16-6dfcc1920a","from":"queued","to":"approved","at":"2026-09-16T18:03:37Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-09-16-76f3369b94","from":"queued","to":"approved","at":"2026-09-16T18:03:37Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-09-16-4770f4d2fc","from":"approved","to":"posting","at":"2026-09-16T18:03:44Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
+{"id":"ob-2026-09-16-4770f4d2fc","from":"posting","to":"posted","at":"2026-09-16T18:03:45Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6aaada01c19c71d2e2c6be6c","external_url":null,"at":"2026-09-16T18:03:37Z","booked_at":"2026-09-16T18:03:37Z"}}
+{"id":"ob-2026-09-16-6dfcc1920a","from":"approved","to":"quarantined","at":"2026-09-16T18:03:45Z","actor":"publisher","note":"fact fan-out: pct:breaking:JBHT:-12.9 is the LEAD fact of ob-2026-09-16-4770f4d2fc in the trailing 5 days","receipt":null}
+{"id":"ob-2026-09-16-76f3369b94","from":"approved","to":"quarantined","at":"2026-09-16T18:03:45Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
