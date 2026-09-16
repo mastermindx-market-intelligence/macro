@@ -1701,3 +1701,113 @@ class TestProductionAmendments6b:
         rc = live.stage_state(["--staged-dir", str(tmp_path / "capture")])
         assert rc == 1
         assert not (tmp_path / "capture" / live.STATE_STAGED_MANIFEST_NAME).exists()
+
+
+# Sol cadence continuation: one existing collector, one existing publisher.
+def _cadence_workflow():
+    import yaml
+    return yaml.load((Path(__file__).resolve().parents[1] / ".github/workflows/fms-acquire.yml").read_text(), Loader=yaml.BaseLoader)
+
+
+def test_fms_cadence_uses_daily_schedule_and_preserves_manual_dispatch():
+    workflow = _cadence_workflow()
+    assert workflow["on"]["schedule"] == [{"cron": "43 10 * * *"}]
+    assert workflow["on"]["workflow_dispatch"]["inputs"]["ref"]["required"] == "true"
+    assert workflow["env"]["FMS_TARGET_REF"] == "${{ inputs.ref || github.event.repository.default_branch }}"
+    steps = workflow["jobs"]["acquire"]["steps"]
+    checkout = next(step for step in steps if step.get("uses", "").startswith("actions/checkout@"))
+    assert checkout["with"]["ref"] == "${{ env.FMS_TARGET_REF }}"
+
+
+def test_fms_cadence_keeps_single_writer_and_existing_resource_limits():
+    workflow = _cadence_workflow()
+    assert workflow["concurrency"] == {"group": "government-revenue-live", "cancel-in-progress": "false"}
+    assert workflow["permissions"] == {"contents": "write"}
+    job = workflow["jobs"]["acquire"]
+    assert job["runs-on"] == ["self-hosted", "macstudio-light"]
+    assert job["timeout-minutes"] == "30"
+    commands = [step.get("run", "") for step in job["steps"]]
+    assert sum("python -m collectors.fms_notifications_live acquire" in cmd for cmd in commands) == 1
+    assert not any("build_government_revenue" in cmd or "site/" in cmd for cmd in commands)
+
+
+def _cadence_git_root(tmp_path, branch="main"):
+    import subprocess
+    origin, checkout = tmp_path / "origin.git", tmp_path / "checkout"
+    def git(*args, cwd=None):
+        return subprocess.run(["git", *args], cwd=cwd, check=True, capture_output=True, text=True).stdout.strip()
+    git("init", "--bare", str(origin))
+    git("clone", str(origin), str(checkout))
+    git("checkout", "-b", branch, cwd=checkout)
+    git("config", "user.name", "FMS test", cwd=checkout)
+    git("config", "user.email", "fms-test@example.invalid", cwd=checkout)
+    data = checkout / "data/government_revenue"
+    data.mkdir(parents=True)
+    for name in ("fms_collection_receipts.jsonl", "fms_observations.jsonl", "fms_projection_state.json", "fms_case_graph.json"):
+        (data / name).write_text("{}\n")
+    git("add", "data", cwd=checkout)
+    git("commit", "-m", "initial", cwd=checkout)
+    git("push", "origin", f"HEAD:{branch}", cwd=checkout)
+    return checkout, origin, git
+
+
+def _run_cadence_step(step_id, checkout, tmp_path, ref="main", **extra_env):
+    import os, subprocess
+    step = next(s for s in _cadence_workflow()["jobs"]["acquire"]["steps"] if s.get("id") == step_id)
+    env = dict(os.environ, FMS_TARGET_REF=ref, GITHUB_OUTPUT=str(tmp_path / "outputs"), GITHUB_STEP_SUMMARY=str(tmp_path / "summary"), **extra_env)
+    return subprocess.run(["bash", "-e", "-o", "pipefail", "-c", step["run"]], cwd=checkout, env=env, capture_output=True, text=True)
+
+
+@pytest.mark.parametrize("branch", ["main", "manual/fms;literal"])
+def test_fms_cadence_publishes_only_selected_literal_branch(tmp_path, branch):
+    checkout, origin, git = _cadence_git_root(tmp_path, branch)
+    assert _run_cadence_step("validate_target", checkout, tmp_path, branch).returncode == 0
+    before = git("rev-parse", "HEAD", cwd=checkout)
+    (checkout / "data/government_revenue/fms_observations.jsonl").write_text('{"new":true}\n')
+    result = _run_cadence_step("persist", checkout, tmp_path, branch)
+    assert result.returncode == 0, result.stderr
+    after = git("rev-parse", f"refs/heads/{branch}", cwd=origin)
+    assert after != before
+    assert (tmp_path / "outputs").read_text().strip() == "projection_changed=true"
+    assert git("diff", "--name-only", before, after, cwd=checkout) == "data/government_revenue/fms_observations.jsonl"
+
+
+def test_fms_cadence_unchanged_working_tree_does_not_create_a_commit(tmp_path):
+    checkout, origin, git = _cadence_git_root(tmp_path)
+    before = git("rev-parse", "HEAD", cwd=checkout)
+    result = _run_cadence_step("persist", checkout, tmp_path)
+    assert result.returncode == 0, result.stderr
+    assert git("rev-parse", "refs/heads/main", cwd=origin) == before
+    assert (tmp_path / "outputs").read_text().strip() == "projection_changed=false"
+
+
+def test_fms_cadence_refuses_unrelated_files_before_commit(tmp_path):
+    checkout, origin, git = _cadence_git_root(tmp_path)
+    before = git("rev-parse", "HEAD", cwd=checkout)
+    (checkout / "unrelated.txt").write_text("must not publish")
+    assert _run_cadence_step("persist", checkout, tmp_path).returncode != 0
+    assert git("rev-parse", "refs/heads/main", cwd=origin) == before
+
+
+@pytest.mark.parametrize("ref", ["", "bad ref", "../main", "main\nother"])
+def test_fms_cadence_refuses_invalid_target_before_acquisition(tmp_path, ref):
+    result = _run_cadence_step("validate_target", tmp_path, tmp_path, ref)
+    assert result.returncode != 0
+    steps = _cadence_workflow()["jobs"]["acquire"]["steps"]
+    ids = [s.get("id") for s in steps]
+    assert ids.index("validate_target") < ids.index("acquire_notifications")
+
+
+@pytest.mark.parametrize("acquisition,persist,changed", [("success", "success", "false"), ("failure", "skipped", "unknown")])
+def test_fms_cadence_reports_step_outcome_without_fabricating_freshness(tmp_path, acquisition, persist, changed):
+    steps = _cadence_workflow()["jobs"]["acquire"]["steps"]
+    report = next(s for s in steps if s.get("id") == "check_summary")
+    assert report["if"] == "always()"
+    result = _run_cadence_step("check_summary", tmp_path, tmp_path,
+        ACQUISITION_OUTCOME=acquisition, PERSIST_OUTCOME=persist, PROJECTION_CHANGED=changed)
+    assert result.returncode == 0, result.stderr
+    summary = (tmp_path / "summary").read_text()
+    assert f"Acquisition step: {acquisition}" in summary
+    assert f"Commit step: {persist}" in summary
+    assert f"Projection files changed: {changed}" in summary
+    assert "does not advance source publication time" in summary
