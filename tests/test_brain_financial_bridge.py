@@ -744,3 +744,21 @@ def test_financial_bridge_suite_is_owned_by_existing_premerge_gateway_job():
                 assert not step.get('continue-on-error')
                 assert not step.get('if')
     assert owners==['unrun-brain-gateway']
+
+
+def test_existing_progress_event_has_bilingual_safe_calculation_labels():
+    from engine.neuralweb import brain_gateway as gw
+    raw=gw._tool_event('calculate_financial_bridge',scenario())
+    event=json.loads(raw[6:])
+    assert event['name']=='calculate_financial_bridge'
+    assert event['label_en']=='Checking the financial assumptions'
+    assert event['label_zh']=='核算财务假设'
+    assert 'detail' not in event
+    assert 'gross_margin_pct' not in raw and 'operating_expenses' not in raw
+
+
+def test_nonchat_unknown_tool_disclosure_does_not_advertise_calculator(tmp_path,monkeypatch):
+    from engine.neuralweb import brain_gateway as gw
+    monkeypatch.setattr(gw,'_resolve_tier',lambda *a,**k:{'tier':'free','status':'none'})
+    result=gw._dispatch_brain_tool('nonexistent',{},tmp_path,tmp_path,'http://unused',mode='research')
+    assert 'calculate_financial_bridge' not in result.get('available_tools',[])
