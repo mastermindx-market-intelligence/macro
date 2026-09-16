@@ -50,14 +50,37 @@ days of lag. The source holds 12 Energy names among 150 historical runners; Ener
 is absent from the stricter cascade-eligible sector histogram. That does not prove
 absence from every current admission route or from the served product.
 
-## Continuation
+## Continuation updated 2026-09-16
 
-Research and bounded implementation contract:
+Existing organizational home remains `WS:PROPHET-US-ENTRY-TIMING`. No workstream
+status, runtime Job, source-writer identity or trading authority is created by this
+record. The original Packet0 research remains at
 `research/prophet_us_audit/ROTATION_PACKET0_CONTINUATION_2026-09-15.md`.
-Existing home: `WS:PROPHET-US-ENTRY-TIMING`. Do not create a duplicate workstream,
-change its status from this observation, or treat an owner note as runtime liveness.
 
-First next useful vertical: native full-input receipts -> additive diagnostic block
-in the existing producer -> existing Prophet admin machine/UI consumer -> production
-proof with unchanged strategy outputs. The offline prototype is not production code;
-no trading performance or model promotion is established. No worker was assigned.
+W1 is now implemented on existing PR7174 at immutable head
+`effdbd13cb78f2da3770733e85f64c93d395eb0d`: the existing `/api/prophet` endpoint and
+existing admin Prophet tab share a source-shaped read-only diagnostic adapter.
+Local source acceptance includes147 passing focused/inline-handler tests, real HTTP
+and actual browser navigation at desktop/mobile widths, explicit energy/control
+cases, source-byte invariance, and a separate completed GLM contract check with no
+reproducible defect. These are local integration and source-review results, not
+production or investment-performance proof. Final helper leases were read back as
+released; no watcher or autonomous continuation Job was armed.
+
+The controlling current evidence and qualifications are recorded in
+`research/prophet_us_audit/ROTATION_W1_SOURCE_ACCEPTANCE_HOLD_2026-09-16.md`.
+That record supersedes older WIP claims that fixtures remain red, browser proof is
+absent and final contract checking has not returned. It does not erase those
+historical observations. W1 remains `BUILT_NOT_PROVEN` and Draft/HOLD: trusted
+`ci-linux` executor packs are queued rather than executed, current-base/source-owner
+compatibility remains unproven, and authenticated production proof is blocked.
+Do not rerun the completed local repairs merely because a new session begins;
+reconcile material source/integration changes and the exact remaining release gates.
+
+W2's next bounded producer-to-existing-consumer contract is
+`research/prophet_us_audit/ROTATION_W2_CLOCK_AND_EPISODE_INTEGRATION_2026-09-16.md`.
+It reuses canonical candidate-episode identity, existing plan identity and private
+publication owners. A plan's reference-price/origination date and the public R2
+health receipt are not evidence of when the exact private plan was visible to the
+user. Missing exact linkage or publication clocks stay unknown. No W2 implementation
+or trading-authority promotion is established by that contract.
