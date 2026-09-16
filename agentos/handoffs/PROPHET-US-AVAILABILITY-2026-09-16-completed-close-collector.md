@@ -93,3 +93,10 @@ At exact preimage `e3c87afae3e42e79f615d3219092c8869305d4e6`, a new RED planted 
 The same carrier now masks the expected-session cache cells for requested US names before the historical merge. Only fresh response bytes may populate that row; prior rows and regional/Russell interfaces are untouched. The focused RED failed for the intended reason; the repaired four-suite run is `75 passed, 31 warnings in 19.12s`. Evidence is `research/us_prophet_availability/2026-09-16-completed-close/same-session-cache-quarantine-receipt.json`. No provider, production store, workflow, ranking, runner or publication effect occurred.
 
 The release boundary is unchanged: exact-head CI/security, independent review, current-base composition, accepted merge and real source-to-browser proof remain required. Do not duplicate #7206 or the separately owned CI-host work.
+
+
+## CI-manifest composition follow-through
+
+A current-head pairwise composition of #7200 and the separately owned #7206 returned a single conflict in `.github/ci/legacy-jobs.yml`. The implementations and tests are disjoint; both carriers had independently appended their job at EOF. The unchanged `us-breadth-completed-close` job is now positioned beside the existing breadth collector owner, with the file restored to one terminal newline. A fresh three-way merge returns zero, retains both `us-breadth-completed-close` and `us-deep-stock-completed-close`, parses as 216 jobs, and passes `run_ci_pack.py --validate-only` over the 142 legacy jobs. Receipt: `research/us_prophet_availability/2026-09-16-completed-close/ci-manifest-composition-receipt.json`.
+
+This is an integration-layout repair only. #7206 source, branch, review and Russell/deep-stock ownership were not modified. Exact committed-head merge-tree, CI/security and independent review remain open.
