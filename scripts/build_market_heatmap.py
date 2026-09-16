@@ -270,12 +270,56 @@ def _load_canada() -> tuple[pd.DataFrame, pd.DataFrame, dict, dict, dict]:
 _LOADERS = {"china": _load_china, "hk": _load_hk, "canada": _load_canada}
 
 
+def _normalise_now(now: datetime | None) -> datetime:
+    value = now or datetime.now(timezone.utc)
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=timezone.utc)
+    return value.astimezone(timezone.utc)
+
+
+def render_standalone_page(
+    market: str,
+    payload: dict,
+    *,
+    site: Path | None = None,
+) -> Path:
+    """Render the crawlable/fallback heatmap page from the exact tile payload."""
+    from jinja2 import Environment, FileSystemLoader
+
+    from engine import i18n
+    from lib.pages import write_page
+    from lib.seo import SITE_BASE, is_public_path
+
+    site = site or (config.ROOT / config.load()["storage"]["site_dir"])
+    env = Environment(
+        loader=FileSystemLoader(config.ROOT / "templates"),
+        autoescape=True,
+    )
+    env.filters["min"] = lambda seq: min(seq)
+    env.globals.update(td=i18n.td, tr=i18n.tr, zip=zip, SITE_BASE=SITE_BASE)
+    summary = hm.page_summary(payload)
+    out = site / f"{market}_heatmap.html"
+    write_page(
+        out,
+        env.get_template("market_heatmap.html.j2").render(
+            mk=hm.PAGE_META[market],
+            summary=summary,
+            gated=is_public_path(f"/{market}_heatmap.html"),
+            n_tiles=(summary or {}).get("n_tiles") or payload.get("n_tiles") or 0,
+            siblings=hm.sibling_markets(market),
+        ),
+    )
+    log.info("wrote %s (%.0f KB, ssr=%s)", out, out.stat().st_size / 1024, bool(summary))
+    return out
+
+
 def build(
     market: str,
     site: Path | None = None,
     *,
     generated_utc: str | None = None,
     now: datetime | None = None,
+    render_page: bool = False,
 ) -> dict:
     """Assemble + write one market's heatmap JSON. Returns the payload.
 
@@ -287,7 +331,8 @@ def build(
     site = site or (config.ROOT / config.load()["storage"]["site_dir"])
     cons, closes, caps, weights, names_zh = _LOADERS[market]()
 
-    generated_utc = generated_utc or datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
+    clock = _normalise_now(now)
+    generated_utc = generated_utc or clock.strftime("%Y-%m-%d %H:%M")
     payload = hm.build_market_heatmap(
         market, cons, closes,
         caps=caps or None,
@@ -301,7 +346,12 @@ def build(
         # whose checkout can predate the settled-close collector.  Never let one
         # of those lanes replace a newer production JSON with stale tiles merely
         # because it stamped a new generated_utc value.
-        validate_china_heatmap(payload, closes, now=now)
+        validate_china_heatmap(
+            payload,
+            closes,
+            now=clock,
+            expected_tickers={str(ticker) for ticker in cons.index},
+        )
 
     outdir = site / "marketdata"
     outdir.mkdir(parents=True, exist_ok=True)
@@ -312,6 +362,8 @@ def build(
     # is the wall-clock generation stamp; preserve the already-published stamp
     # when every semantic field is identical.  A changed session/tile/contract
     # still writes normally and receives the fresh generated_utc above.
+    result = payload
+    write_payload = True
     if market == "china" and out.exists():
         try:
             existing = json.loads(out.read_text(encoding="utf-8"))
@@ -319,7 +371,12 @@ def build(
             existing = None
         if isinstance(existing, dict):
             try:
-                validate_china_heatmap(existing, closes, now=now)
+                validate_china_heatmap(
+                    existing,
+                    closes,
+                    now=clock,
+                    expected_tickers={str(ticker) for ticker in cons.index},
+                )
             except ChinaHeatmapFreshnessError as exc:
                 log.warning(
                     "%s existing payload is not preservable (%s: %s) — rewriting",
@@ -339,37 +396,66 @@ def build(
                         payload["asof"],
                         existing.get("generated_utc"),
                     )
-                    return existing
+                    result = existing
+                    write_payload = False
 
-    out.write_text(
-        json.dumps(payload, separators=(",", ":"), ensure_ascii=False),
-        encoding="utf-8",
-    )
-    log.info("wrote %s — %d tiles, %d sectors, size=%s, asof=%s",
-             out.name, payload["n_tiles"], len(payload["sectors"]),
-             payload["size_basis"], payload["asof"])
-    return payload
+    if write_payload:
+        out.write_text(
+            json.dumps(payload, separators=(",", ":"), ensure_ascii=False),
+            encoding="utf-8",
+        )
+        log.info("wrote %s — %d tiles, %d sectors, size=%s, asof=%s",
+                 out.name, payload["n_tiles"], len(payload["sectors"]),
+                 payload["size_basis"], payload["asof"])
+    if render_page:
+        render_standalone_page(market, result, site=site)
+    return result
 
 
-def build_all(site: Path | None = None, *, generated_utc: str | None = None) -> dict[str, dict]:
+def build_all(
+    site: Path | None = None,
+    *,
+    generated_utc: str | None = None,
+    now: datetime | None = None,
+    render_pages: bool = False,
+) -> dict[str, dict]:
     out: dict[str, dict] = {}
+    clock = _normalise_now(now)
     for m in MARKETS:
         try:
-            out[m] = build(m, site, generated_utc=generated_utc)
+            out[m] = build(
+                m,
+                site,
+                generated_utc=generated_utc,
+                now=clock,
+                render_page=render_pages,
+            )
         except Exception as e:  # noqa: BLE001 — one market must never break the others / the site
             log.error("%s heatmap failed: %s", m, e)
     return out
+
+
+def _parse_now(raw: str | None) -> datetime | None:
+    if raw is None:
+        return None
+    return datetime.fromisoformat(raw.strip().replace("Z", "+00:00"))
 
 
 def main(argv: list[str] | None = None) -> int:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     ap = argparse.ArgumentParser(description="Build the CN/HK/CA sector heatmap feeds")
     ap.add_argument("--market", choices=MARKETS, help="build a single market (default: all)")
+    ap.add_argument("--render-page", action="store_true", help="also render standalone SSR page(s)")
+    ap.add_argument("--now", help="freeze the build/session clock (ISO-8601)")
     args = ap.parse_args(argv)
+    try:
+        now = _parse_now(args.now)
+    except ValueError as exc:
+        ap.error(f"invalid --now: {exc}")
     if args.market:
-        build(args.market)
+        build(args.market, now=now, render_page=args.render_page)
     else:
-        build_all()
+        build_all(now=now, render_pages=args.render_page)
     return 0
 
 

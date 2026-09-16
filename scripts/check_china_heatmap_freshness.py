@@ -7,15 +7,19 @@ The heatmap has two independent freshness boundaries:
    other and still look healthy.
 2. ``site/marketdata/china_heatmap.json`` must describe that exact source
    session and contain a coherent, non-empty China tile set.
+3. ``site/china_heatmap.html`` must carry an SSR summary for the same session,
+   because crawlers, no-JS clients, and failed JSON fetches keep that HTML.
 
-This checker is intentionally binding.  It is used both by the China heatmap
-builder (before any stale payload can overwrite the published artifact) and by
-``asia-close.yml`` immediately before broad staging/push.
+This checker is intentionally binding for the heatmap artifact.  The China
+builder invokes it before any stale payload can overwrite the published files;
+the Asia workflow records a heatmap-local failure and delays the red job result
+until unrelated CN/HK outputs have still had their publication opportunity.
 """
 from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
@@ -49,10 +53,12 @@ class ChinaHeatmapFreshnessState:
     payload_session: str
     tile_count: int
     latest_session_observations: int
+    latest_session_coverage_denominator: int
     latest_session_coverage: float
     latest_session_source_count: int
     latest_session_source_representation: float
     generated_utc: str
+    page_ssr_session: str | None = None
 
 
 def _normalise_now(now: datetime | None) -> datetime:
@@ -62,18 +68,36 @@ def _normalise_now(now: datetime | None) -> datetime:
     return value.astimezone(timezone.utc)
 
 
-def latest_nonempty_session(closes: pd.DataFrame) -> str:
-    """Return the newest close-panel row carrying at least one real observation."""
+def latest_nonempty_session(
+    closes: pd.DataFrame,
+    expected_tickers: set[str] | None = None,
+) -> str:
+    """Newest session carrying a real observation for the live China universe.
+
+    ``closes.parquet`` intentionally retains frozen-history columns.  A current
+    print on one retired/benchmark column must not make a stale live universe
+    look current, so callers with membership truth scope the session search to
+    those expected tickers.
+    """
     if not isinstance(closes, pd.DataFrame) or closes.empty:
         raise ChinaHeatmapFreshnessError(
             "China heatmap source unreadable",
             "china_search/closes.parquet is empty or is not a DataFrame",
         )
-    usable = closes.dropna(axis=0, how="all")
+    usable = closes
+    if expected_tickers is not None:
+        columns = [column for column in closes.columns if str(column) in expected_tickers]
+        if not columns:
+            raise ChinaHeatmapFreshnessError(
+                "China heatmap source unreadable",
+                "china_search/closes.parquet has no columns from current membership",
+            )
+        usable = closes.loc[:, columns]
+    usable = usable.apply(pd.to_numeric, errors="coerce").dropna(axis=0, how="all")
     if usable.empty:
         raise ChinaHeatmapFreshnessError(
             "China heatmap source unreadable",
-            "china_search/closes.parquet has no non-empty session rows",
+            "china_search/closes.parquet has no non-empty live-universe session rows",
         )
     index = pd.to_datetime(usable.index, errors="coerce")
     index = index[~pd.isna(index)]
@@ -96,6 +120,63 @@ def latest_session_observed_tickers(closes: pd.DataFrame, session: str) -> set[s
     numeric = rows.apply(pd.to_numeric, errors="coerce")
     observed = numeric.notna().any(axis=0)
     return {str(column) for column in observed.index[observed]}
+
+
+def expected_tickers_from_members(members: pd.DataFrame) -> set[str]:
+    """Read the live membership identity from its canonical table shape."""
+    if not isinstance(members, pd.DataFrame) or members.empty:
+        raise ChinaHeatmapFreshnessError(
+            "China heatmap membership unreadable",
+            "china_search/members.parquet is empty or is not a DataFrame",
+        )
+    if "ticker" in members.columns:
+        values = members["ticker"]
+    else:
+        values = pd.Series(members.index, index=members.index)
+    tickers = {str(value).strip() for value in values if str(value).strip()}
+    if not tickers:
+        raise ChinaHeatmapFreshnessError(
+            "China heatmap membership unreadable",
+            "china_search/members.parquet has no ticker identities",
+        )
+    return tickers
+
+
+def validate_china_heatmap_page(html: str, payload_session: str) -> str:
+    """Require the crawlable/fallback SSR summary to match the JSON session."""
+    if not isinstance(html, str) or not html.strip():
+        raise ChinaHeatmapFreshnessError(
+            "China heatmap page unreadable",
+            "site/china_heatmap.html is empty",
+        )
+    if not re.search(r"\bid=[\"']hm-ssr[\"']", html):
+        raise ChinaHeatmapFreshnessError(
+            "China heatmap page malformed",
+            "site/china_heatmap.html has no #hm-ssr summary",
+        )
+    if "marketdata/china_heatmap.json" not in html:
+        raise ChinaHeatmapFreshnessError(
+            "China heatmap page malformed",
+            "site/china_heatmap.html does not reference the China tile payload",
+        )
+    match = re.search(
+        r"class=[\"'][^\"']*\bhx-pulse-when\b[^\"']*[\"'][^>]*>\s*"
+        r"(\d{4}-\d{2}-\d{2})\s*</",
+        html,
+        flags=re.S,
+    )
+    if match is None:
+        raise ChinaHeatmapFreshnessError(
+            "China heatmap page malformed",
+            "site/china_heatmap.html has no parseable SSR session stamp",
+        )
+    page_session = _iso_date(match.group(1), label="page SSR session")
+    if page_session != payload_session:
+        raise ChinaHeatmapFreshnessError(
+            "China heatmap page stale",
+            f"page={page_session} payload={payload_session}",
+        )
+    return page_session
 
 
 def _generated_utc(value: Any, *, payload_session: str, now: datetime) -> str:
@@ -144,6 +225,8 @@ def validate_china_heatmap(
     closes: pd.DataFrame,
     *,
     now: datetime | None = None,
+    expected_tickers: set[str] | None = None,
+    page_html: str | None = None,
 ) -> ChinaHeatmapFreshnessState:
     """Validate source clock, payload/source parity, and the payload contract.
 
@@ -154,7 +237,7 @@ def validate_china_heatmap(
     """
     current = _normalise_now(now)
     expected = cn_calendar.expected_last_session(current).isoformat()
-    source = latest_nonempty_session(closes)
+    source = latest_nonempty_session(closes, expected_tickers)
     if source < expected:
         raise ChinaHeatmapFreshnessError(
             "China heatmap source stale",
@@ -217,15 +300,32 @@ def validate_china_heatmap(
             f"payload={payload_session} source={source} expected={expected}",
         )
 
+    tile_set = set(tile_tickers)
+    if expected_tickers is not None:
+        unexpected = sorted(tile_set - expected_tickers)
+        if unexpected:
+            raise ChinaHeatmapFreshnessError(
+                "China heatmap malformed",
+                "tiles outside current membership: " + ", ".join(unexpected[:12]),
+            )
+
     observed = latest_session_observed_tickers(closes, source)
-    observed_count = len(set(tile_tickers) & observed)
-    coverage = observed_count / n_tiles
+    if expected_tickers is not None:
+        observed &= expected_tickers
     source_count = len(observed)
     if source_count == 0:
         raise ChinaHeatmapFreshnessError(
             "China heatmap source unreadable",
             f"source session {source} has no numeric close observations",
         )
+    observed_count = len(tile_set & observed)
+    # ``expected_tickers`` is china_search/members.parquet: the curated heatmap
+    # universe (1,706 names in the 2026-09-15 incident), not the separate ~5,200
+    # whole-board breadth scope.  Membership is deliberately the denominator so
+    # a builder cannot make missing tiles disappear from its own quality bar by
+    # shrinking ``n_tiles``.  The explicit 5% budget covers suspensions/new names.
+    coverage_denominator = len(expected_tickers) if expected_tickers is not None else n_tiles
+    coverage = observed_count / coverage_denominator
     source_representation = observed_count / source_count
     if (
         coverage < MIN_LATEST_SESSION_COVERAGE
@@ -234,7 +334,7 @@ def validate_china_heatmap(
         raise ChinaHeatmapFreshnessError(
             "China heatmap source incomplete",
             "latest_session_coverage="
-            f"{observed_count}/{n_tiles} ({coverage:.1%}); "
+            f"{observed_count}/{coverage_denominator} ({coverage:.1%}); "
             "source_representation="
             f"{observed_count}/{source_count} ({source_representation:.1%}); "
             f"source={source}; minimum={MIN_LATEST_SESSION_COVERAGE:.0%}",
@@ -245,16 +345,23 @@ def validate_china_heatmap(
         payload_session=payload_session,
         now=current,
     )
+    page_ssr_session = (
+        validate_china_heatmap_page(page_html, payload_session)
+        if page_html is not None
+        else None
+    )
     return ChinaHeatmapFreshnessState(
         expected_session=expected,
         source_session=source,
         payload_session=payload_session,
         tile_count=n_tiles,
         latest_session_observations=observed_count,
+        latest_session_coverage_denominator=coverage_denominator,
         latest_session_coverage=coverage,
         latest_session_source_count=source_count,
         latest_session_source_representation=source_representation,
         generated_utc=generated_utc,
+        page_ssr_session=page_ssr_session,
     )
 
 
@@ -267,6 +374,15 @@ def _default_closes_path() -> Path:
     return config.data_dir() / "china_search" / "closes.parquet"
 
 
+def _default_members_path() -> Path:
+    return config.data_dir() / "china_search" / "members.parquet"
+
+
+def _default_page_path() -> Path:
+    site = config.ROOT / config.load()["storage"]["site_dir"]
+    return site / "china_heatmap.html"
+
+
 def _emit_error(title: str, detail: str) -> None:
     clean = " ".join(str(detail).splitlines())
     print(f"::error title={title}::{clean}", flush=True)
@@ -276,10 +392,14 @@ def check_china_heatmap_freshness(
     *,
     payload_path: str | Path | None = None,
     closes_path: str | Path | None = None,
+    members_path: str | Path | None = None,
+    page_path: str | Path | None = None,
     now: datetime | None = None,
 ) -> int:
     payload_file = Path(payload_path) if payload_path is not None else _default_payload_path()
     closes_file = Path(closes_path) if closes_path is not None else _default_closes_path()
+    members_file = Path(members_path) if members_path is not None else None
+    page_file = Path(page_path) if page_path is not None else None
 
     try:
         closes = pd.read_parquet(closes_file)
@@ -298,8 +418,39 @@ def check_china_heatmap_freshness(
         )
         return 3
 
+    expected_tickers: set[str] | None = None
+    if members_file is not None:
+        try:
+            expected_tickers = expected_tickers_from_members(pd.read_parquet(members_file))
+        except ChinaHeatmapFreshnessError as exc:
+            _emit_error(exc.title, exc.detail)
+            return 3
+        except Exception as exc:  # noqa: BLE001 — membership identity is binding when requested
+            _emit_error(
+                "China heatmap membership unreadable",
+                f"{members_file}: {type(exc).__name__}: {exc}",
+            )
+            return 3
+
+    page_html: str | None = None
+    if page_file is not None:
+        try:
+            page_html = page_file.read_text(encoding="utf-8")
+        except Exception as exc:  # noqa: BLE001 — stale/missing SSR must fail closed
+            _emit_error(
+                "China heatmap page unreadable",
+                f"{page_file}: {type(exc).__name__}: {exc}",
+            )
+            return 3
+
     try:
-        state = validate_china_heatmap(payload, closes, now=now)
+        state = validate_china_heatmap(
+            payload,
+            closes,
+            now=now,
+            expected_tickers=expected_tickers,
+            page_html=page_html,
+        )
     except ChinaHeatmapFreshnessError as exc:
         _emit_error(exc.title, exc.detail)
         return 3
@@ -311,16 +462,18 @@ def check_china_heatmap_freshness(
             f"payload=source={state.source_session}; "
             f"expected_completed={state.expected_session}"
         )
+    page = f"; page_ssr={state.page_ssr_session}" if state.page_ssr_session else ""
     print(
         "China heatmap freshness OK: "
         f"{sessions}; tiles={state.tile_count}; "
         "latest_session_coverage="
-        f"{state.latest_session_observations}/{state.tile_count} "
+        f"{state.latest_session_observations}/"
+        f"{state.latest_session_coverage_denominator} "
         f"({state.latest_session_coverage:.1%}); "
         "source_representation="
         f"{state.latest_session_observations}/{state.latest_session_source_count} "
         f"({state.latest_session_source_representation:.1%}); "
-        f"generated_utc={state.generated_utc}",
+        f"generated_utc={state.generated_utc}{page}",
         flush=True,
     )
     return 0
@@ -339,6 +492,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--payload", type=Path, help="override china_heatmap.json path")
     parser.add_argument("--closes", type=Path, help="override china_search closes parquet path")
+    parser.add_argument("--members", type=Path, help="override china_search members parquet path")
+    parser.add_argument("--page", type=Path, help="override china_heatmap.html path")
     parser.add_argument("--now", help="override current time (ISO-8601; tests/replay only)")
     args = parser.parse_args(argv)
     try:
@@ -348,6 +503,8 @@ def main(argv: list[str] | None = None) -> int:
     return check_china_heatmap_freshness(
         payload_path=args.payload,
         closes_path=args.closes,
+        members_path=args.members or _default_members_path(),
+        page_path=args.page or _default_page_path(),
         now=now,
     )
 

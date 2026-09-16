@@ -61,6 +61,28 @@ def _write_payload(
     return path
 
 
+def _write_members(tmp_path: Path, tickers: list[str]) -> Path:
+    path = tmp_path / "data" / "china_search" / "members.parquet"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(
+        {"name": [f"Name {i}" for i in range(len(tickers))]},
+        index=pd.Index(tickers, name="ticker"),
+    ).to_parquet(path)
+    return path
+
+
+def _write_page(tmp_path: Path, *, asof: str) -> Path:
+    path = tmp_path / "site" / "china_heatmap.html"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        '<div id="hm-ssr"><span class="hx-pulse-when">'
+        f"{asof}</span></div>"
+        '<div data-hm-maps="marketdata/china_heatmap.json"></div>',
+        encoding="utf-8",
+    )
+    return path
+
+
 def test_incident_replay_rejects_2026_09_09_payload_over_2026_09_15_source(
     tmp_path: Path, capsys,
 ) -> None:
@@ -92,6 +114,34 @@ def test_current_payload_and_current_source_pass(tmp_path: Path, capsys) -> None
     line = capsys.readouterr().out
     assert "China heatmap freshness OK" in line
     assert "payload=source=expected=2026-09-15" in line
+
+
+def test_settle_boundary_advances_the_required_mainland_session(
+    tmp_path: Path, capsys,
+) -> None:
+    """A long run must not carry yesterday across the 09:00 UTC settle edge."""
+    m = _checker()
+    closes = _write_closes(tmp_path, ["2026-09-15"])
+    payload = _write_payload(tmp_path, asof="2026-09-15")
+    before = datetime(2026, 9, 16, 8, 59, tzinfo=timezone.utc)
+    after = datetime(2026, 9, 16, 9, 1, tzinfo=timezone.utc)
+
+    assert m.check_china_heatmap_freshness(
+        payload_path=payload,
+        closes_path=closes,
+        now=before,
+    ) == 0
+    assert "expected=2026-09-15" in capsys.readouterr().out
+
+    assert m.check_china_heatmap_freshness(
+        payload_path=payload,
+        closes_path=closes,
+        now=after,
+    ) == 3
+    line = capsys.readouterr().out
+    assert line.startswith("::error title=China heatmap source stale::")
+    assert "source=2026-09-15" in line
+    assert "expected=2026-09-16" in line
 
 
 def test_matching_payload_cannot_launder_a_stale_source(tmp_path: Path, capsys) -> None:
@@ -135,6 +185,48 @@ def test_missing_or_malformed_payload_fails_closed(tmp_path: Path, capsys) -> No
         now=NOW_DURING_2026_09_16_CN_SESSION,
     ) == 3
     assert "China heatmap malformed" in capsys.readouterr().out
+
+
+def test_checker_rejects_a_stale_server_rendered_page(tmp_path: Path, capsys) -> None:
+    """No-JS, crawler, and failed-fetch users must not retain the prior session."""
+    m = _checker()
+    closes = _write_closes(tmp_path, ["2026-09-15"])
+    payload = _write_payload(tmp_path, asof="2026-09-15")
+    page = _write_page(tmp_path, asof="2026-09-09")
+
+    assert m.check_china_heatmap_freshness(
+        payload_path=payload,
+        closes_path=closes,
+        page_path=page,
+        now=NOW_DURING_2026_09_16_CN_SESSION,
+    ) == 3
+    line = capsys.readouterr().out
+    assert line.startswith("::error title=China heatmap page stale::")
+    assert "page=2026-09-09" in line
+    assert "payload=2026-09-15" in line
+
+
+def test_checker_requires_a_crawlable_ssr_summary(tmp_path: Path, capsys) -> None:
+    """A valid JSON may not leave no-JS and failed-fetch users on an empty shell."""
+    m = _checker()
+    closes = _write_closes(tmp_path, ["2026-09-15"])
+    payload = _write_payload(tmp_path, asof="2026-09-15")
+    page = tmp_path / "site" / "china_heatmap.html"
+    page.parent.mkdir(parents=True, exist_ok=True)
+    page.write_text(
+        '<div data-hm-maps="marketdata/china_heatmap.json"></div>',
+        encoding="utf-8",
+    )
+
+    assert m.check_china_heatmap_freshness(
+        payload_path=payload,
+        closes_path=closes,
+        page_path=page,
+        now=NOW_DURING_2026_09_16_CN_SESSION,
+    ) == 3
+    line = capsys.readouterr().out
+    assert line.startswith("::error title=China heatmap page malformed::")
+    assert "no #hm-ssr summary" in line
 
 
 def test_current_session_requires_broad_tile_coverage(tmp_path: Path, capsys) -> None:
@@ -210,6 +302,85 @@ def test_current_session_requires_broad_source_representation(
     line = capsys.readouterr().out
     assert line.startswith("::error title=China heatmap source incomplete::")
     assert "source_representation=1/20 (5.0%)" in line
+
+
+def test_membership_scope_ignores_current_extra_close_columns(
+    tmp_path: Path, capsys,
+) -> None:
+    """Retained or benchmark columns outside the live universe must not dilute coverage."""
+    m = _checker()
+    members = [f"600{i:03d}.SS" for i in range(20)]
+    extras = [f"900{i:03d}.SS" for i in range(20)]
+    closes = tmp_path / "data" / "china_search" / "closes.parquet"
+    closes.parent.mkdir(parents=True)
+    pd.DataFrame(
+        [[10.0] * (len(members) + len(extras))],
+        index=pd.to_datetime(["2026-09-15"]),
+        columns=members + extras,
+    ).to_parquet(closes)
+    payload = _write_payload(tmp_path, asof="2026-09-15", tickers=members)
+    members_path = _write_members(tmp_path, members)
+
+    assert m.check_china_heatmap_freshness(
+        payload_path=payload,
+        closes_path=closes,
+        members_path=members_path,
+        now=NOW_DURING_2026_09_16_CN_SESSION,
+    ) == 0
+    assert "source_representation=20/20 (100.0%)" in capsys.readouterr().out
+
+
+def test_routine_suspensions_fit_the_heatmap_only_coverage_budget(
+    tmp_path: Path, capsys,
+) -> None:
+    """A small routine suspension set stays publishable; a mostly stale row does not."""
+    m = _checker()
+    tickers = [f"600{i:03d}.SS" for i in range(100)]
+    closes = tmp_path / "data" / "china_search" / "closes.parquet"
+    closes.parent.mkdir(parents=True)
+    pd.DataFrame(
+        [[10.0] * 100, [11.0] * 96 + [float("nan")] * 4],
+        index=pd.to_datetime(["2026-09-14", "2026-09-15"]),
+        columns=tickers,
+    ).to_parquet(closes)
+    payload = _write_payload(tmp_path, asof="2026-09-15", tickers=tickers)
+    members_path = _write_members(tmp_path, tickers)
+
+    assert m.check_china_heatmap_freshness(
+        payload_path=payload,
+        closes_path=closes,
+        members_path=members_path,
+        now=NOW_DURING_2026_09_16_CN_SESSION,
+    ) == 0
+    assert "latest_session_coverage=96/100 (96.0%)" in capsys.readouterr().out
+
+
+def test_membership_denominator_allows_a_small_unpriced_tile_gap(
+    tmp_path: Path, capsys,
+) -> None:
+    """Membership is the truth set; up to the explicit 5% gap may lack tiles."""
+    m = _checker()
+    members = [f"600{i:03d}.SS" for i in range(100)]
+    rendered = members[:96]
+    closes = tmp_path / "data" / "china_search" / "closes.parquet"
+    closes.parent.mkdir(parents=True)
+    pd.DataFrame(
+        [[11.0] * 96 + [float("nan")] * 4],
+        index=pd.to_datetime(["2026-09-15"]),
+        columns=members,
+    ).to_parquet(closes)
+    payload = _write_payload(tmp_path, asof="2026-09-15", tickers=rendered)
+    members_path = _write_members(tmp_path, members)
+
+    assert m.check_china_heatmap_freshness(
+        payload_path=payload,
+        closes_path=closes,
+        members_path=members_path,
+        now=NOW_DURING_2026_09_16_CN_SESSION,
+    ) == 0
+    line = capsys.readouterr().out
+    assert "latest_session_coverage=96/100 (96.0%)" in line
+    assert "source_representation=96/96 (100.0%)" in line
 
 
 def test_builder_refuses_to_overwrite_with_a_stale_china_source(
@@ -342,7 +513,80 @@ def test_invalid_existing_generation_stamp_is_rewritten(
     assert json.loads(output.read_text(encoding="utf-8"))["generated_utc"] == "2026-09-16 04:30"
 
 
-def test_asia_lane_builds_heatmap_after_data_commit_before_china_consumers() -> None:
+def test_builder_renders_current_standalone_ssr_from_the_same_payload(
+    tmp_path: Path, monkeypatch, capsys,
+) -> None:
+    from scripts import build_market_heatmap as builder
+
+    ticker = "600000.SS"
+    closes = pd.DataFrame(
+        {ticker: [10.0, 10.2]},
+        index=pd.to_datetime(["2026-09-14", "2026-09-15"]),
+    )
+    constituents = pd.DataFrame(
+        {"name": ["Bank A"], "sector": ["Financial Services"]},
+        index=pd.Index([ticker], name="ticker"),
+    )
+    monkeypatch.setitem(
+        builder._LOADERS,
+        "china",
+        lambda: (constituents, closes, {ticker: 1.0e12}, {}, {ticker: "银行甲"}),
+    )
+    monkeypatch.setattr(builder, "_board_breadth", lambda market: None)
+    site = tmp_path / "site"
+
+    payload = builder.build(
+        "china",
+        site=site,
+        generated_utc="2026-09-16 04:00",
+        now=NOW_DURING_2026_09_16_CN_SESSION,
+        render_page=True,
+    )
+    page = site / "china_heatmap.html"
+    html = page.read_text(encoding="utf-8")
+    assert 'class="hx-pulse-when">2026-09-15</span>' in html
+    assert "marketdata/china_heatmap.json" in html
+
+    closes_path = tmp_path / "data" / "china_search" / "closes.parquet"
+    closes_path.parent.mkdir(parents=True, exist_ok=True)
+    closes.to_parquet(closes_path)
+    members_path = _write_members(tmp_path, [ticker])
+    m = _checker()
+    assert m.check_china_heatmap_freshness(
+        payload_path=site / "marketdata" / "china_heatmap.json",
+        closes_path=closes_path,
+        members_path=members_path,
+        page_path=page,
+        now=NOW_DURING_2026_09_16_CN_SESSION,
+    ) == 0
+    assert payload["asof"] == "2026-09-15"
+    assert "page_ssr=2026-09-15" in capsys.readouterr().out
+
+
+def test_build_all_forwards_one_frozen_now_to_every_market(monkeypatch, tmp_path: Path) -> None:
+    from scripts import build_market_heatmap as builder
+
+    seen: list[tuple[str, datetime | None]] = []
+
+    def fake_build(market, site=None, *, generated_utc=None, now=None, render_page=False):
+        seen.append((market, now))
+        return {"market": market}
+
+    monkeypatch.setattr(builder, "build", fake_build)
+    result = builder.build_all(
+        tmp_path,
+        generated_utc="2026-09-16 04:00",
+        now=NOW_DURING_2026_09_16_CN_SESSION,
+    )
+    assert seen == [
+        ("china", NOW_DURING_2026_09_16_CN_SESSION),
+        ("hk", NOW_DURING_2026_09_16_CN_SESSION),
+        ("canada", NOW_DURING_2026_09_16_CN_SESSION),
+    ]
+    assert set(result) == {"china", "hk", "canada"}
+
+
+def test_asia_lane_owns_heatmap_without_blocking_other_markets() -> None:
     workflow = WORKFLOW.read_text(encoding="utf-8")
     commit_data = workflow.index("name: commit collected asia data")
     heatmap = workflow.index("name: build + verify China A-share heatmap")
@@ -351,33 +595,32 @@ def test_asia_lane_builds_heatmap_after_data_commit_before_china_consumers() -> 
     block = workflow[heatmap:heatmap_end]
 
     assert commit_data < heatmap < heatmap_end < dashboard
-    build = "python -m scripts.build_market_heatmap --market china"
-    check = "python -m scripts.check_china_heatmap_freshness"
-    assert build in block
-    assert check in block
-    assert block.index(build) < block.index(check)
-    assert "continue-on-error" not in block
-    assert "|| true" not in block
+    assert "continue-on-error: true" in block
+    assert 'marker="$RUNNER_TEMP/china-heatmap-failed"' in block
+    assert 'heatmap_now="$(date -u +%Y-%m-%dT%H:%M:%SZ)"' in block
+    assert 'china-heatmap-now' not in block
+    assert '--market china --render-page --now "$heatmap_now"' in block
+    assert 'scripts.check_china_heatmap_freshness --now "$heatmap_now"' in block
+    assert 'touch "$marker"' in block
+    assert "git checkout HEAD -- site/marketdata/china_heatmap.json site/china_heatmap.html" in block
+    assert "exit 1" in block
 
 
-def test_always_commit_rechecks_heatmap_before_broad_staging() -> None:
-    """A failed/skipped upstream step must not be laundered by ``if: always()``."""
+def test_always_commit_stages_other_outputs_before_delayed_heatmap_failure() -> None:
     workflow = WORKFLOW.read_text(encoding="utf-8")
     start = workflow.index("name: commit engine outputs")
     end = workflow.index("name: publish CN/HK stores to R2", start)
     block = workflow[start:end]
-    guard = "python -m scripts.check_china_heatmap_freshness"
     stage = "git add data/ site/"
 
     assert "if: always()" in block
-    assert guard in block
-    assert block.index(guard) < block.index(stage)
-    guard_line = next(line for line in block.splitlines() if guard in line)
-    assert "||" not in guard_line
+    assert stage in block
+    assert "scripts.check_china_heatmap_freshness" not in block[:block.index(stage)]
+    assert "china-heatmap-failed" in block
+    assert "git checkout HEAD -- site/marketdata/china_heatmap.json site/china_heatmap.html" in block
 
 
-def test_post_rebase_tree_is_rebuilt_and_rechecked_before_push() -> None:
-    """The tree pushed after a race is the rebased tree, not the pre-commit tree."""
+def test_post_rebase_tree_resamples_the_session_clock_and_isolates_failure() -> None:
     workflow = WORKFLOW.read_text(encoding="utf-8")
     start = workflow.index("name: commit engine outputs")
     end = workflow.index("name: publish CN/HK stores to R2", start)
@@ -385,15 +628,35 @@ def test_post_rebase_tree_is_rebuilt_and_rechecked_before_push() -> None:
     rebase = block.index("git pull --rebase --autostash -X theirs origin main")
     push = block.index("if push_do", rebase)
     post_rebase = block[rebase:push]
-    build = "python -m scripts.build_market_heatmap --market china"
-    check = "python -m scripts.check_china_heatmap_freshness"
 
-    assert build in post_rebase
-    assert check in post_rebase
-    assert post_rebase.index(build) < post_rebase.index(check)
-    assert "|| true" not in next(
-        line for line in post_rebase.splitlines() if build in line
-    )
-    assert "|| true" not in next(
-        line for line in post_rebase.splitlines() if check in line
-    )
+    # A long run can cross the 09:00 UTC mainland-settle boundary.  Freeze one
+    # clock only for this build/check pair; never reuse the job-start clock.
+    assert 'heatmap_now="$(date -u +%Y-%m-%dT%H:%M:%SZ)"' in post_rebase
+    assert 'cat "$RUNNER_TEMP/china-heatmap-now"' not in post_rebase
+    assert '--market china --render-page --now "$heatmap_now"' in post_rebase
+    assert 'scripts.check_china_heatmap_freshness --now "$heatmap_now"' in post_rebase
+    assert 'rm -f "$RUNNER_TEMP/china-heatmap-failed"' in post_rebase
+    assert 'touch "$RUNNER_TEMP/china-heatmap-failed"' in post_rebase
+    assert "git checkout HEAD -- site/marketdata/china_heatmap.json site/china_heatmap.html" in post_rebase
+
+
+def test_heatmap_failure_turns_the_job_red_only_after_publish_tail() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    publish = workflow.index("name: publish CN/HK stores to R2")
+    failure = workflow.index("name: fail if China heatmap missed settled close", publish)
+    timings = workflow.index("name: timings ledger + 85% budget tripwire", failure)
+    end = workflow.index("\n  ths_rescrape:", timings)
+    block = workflow[failure:end]
+
+    # The failure is delayed until after the publication tail, while the final
+    # always-running timings step still records the failed night.
+    assert publish < failure < timings
+    assert "if: always()" in block
+    assert 'china-heatmap-failed' in block
+    assert "exit 1" in block
+
+
+def test_generic_render_owner_reaches_the_guarded_builder() -> None:
+    source = (ROOT / "scripts" / "build_site.py").read_text(encoding="utf-8")
+    assert "from scripts.build_market_heatmap import build_all as build_market_heatmaps" in source
+    assert "_hm_payloads = build_market_heatmaps(site, generated_utc=generated)" in source
