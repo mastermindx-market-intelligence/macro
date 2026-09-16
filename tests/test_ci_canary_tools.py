@@ -1181,12 +1181,20 @@ def test_pc_windows_boot_recovery_preserves_existing_runner_authority() -> None:
         / "Install-MastermindWslBootRecovery.ps1"
     ).read_text(encoding="utf-8")
 
-    # Windows only revives the existing per-user WSL VM. Runner registration,
-    # labels, job routing and listener restart policy remain inside GitHub/systemd.
-    assert "--distribution $Distribution --exec /bin/true" in recovery
-    assert "--list --running --quiet" in recovery
+    # Windows owns only WSL residency. Microsoft documents that systemd services
+    # do not keep a WSL instance alive, so a one-shot `/bin/true` wake is a false
+    # recovery: it can briefly revive listeners and then strand them again. The
+    # scheduled task must hold one inert foreground keepalive while GitHub/systemd
+    # retain runner registration, labels, routing, and listener restart authority.
+    assert "--exec /bin/sh -c $keepalive" in recovery
+    assert "while :; do sleep 3600; done" in recovery
+    assert "/bin/true" not in recovery
+    assert "exit 0" not in recovery
     assert "Register-ScheduledTask" in installer
     assert "New-ScheduledTaskTrigger -AtStartup" in installer
+    assert "New-ScheduledTaskTrigger -AtLogOn" in installer
+    assert "-ExecutionTimeLimit (New-TimeSpan -Seconds 0)" in installer
+    assert "-MultipleInstances IgnoreNew" in installer
     assert "-LogonType S4U" in installer
     for forbidden in ("pc-ci-4", "ci-linux", "config.sh", "Runner.Listener"):
         assert forbidden not in recovery

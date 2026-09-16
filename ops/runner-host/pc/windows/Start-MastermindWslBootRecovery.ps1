@@ -42,27 +42,20 @@ if ($Distribution -notin $installed) {
     throw "WSL distribution '$Distribution' is not visible to task principal '$([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)'. Visible distributions: $visible"
 }
 
+# systemd remains the runner/service lifecycle authority, but Microsoft documents
+# that systemd services do NOT keep a WSL instance alive.  Keep one inert foreground
+# process attached to the distro so Windows owns only VM residency.  If WSL exits or
+# crashes, wsl.exe returns and this wrapper retries; it never starts, stops, registers,
+# relabels, or otherwise manages a GitHub runner itself.
+$keepalive = 'while :; do sleep 3600; done'
 Write-RecoveryLog "boot-recovery start principal=$([System.Security.Principal.WindowsIdentity]::GetCurrent().Name) distribution=$Distribution"
 
 for ($attempt = 1; $attempt -le $Attempts; $attempt++) {
     try {
-        # This is intentionally the only mutation. Starting the existing WSL distro
-        # lets its already-installed systemd units remain the sole runner lifecycle
-        # authority; Windows does not start, stop, relabel, or register runners.
-        & $wsl --distribution $Distribution --exec /bin/true
-        if ($LASTEXITCODE -ne 0) {
-            throw "wsl.exe exited $LASTEXITCODE"
-        }
-
-        $running = @(& $wsl --list --running --quiet 2>$null) |
-            ForEach-Object { ($_ -replace "`0", '').Trim() } |
-            Where-Object { $_ }
-        if ($Distribution -notin $running) {
-            throw "distribution did not remain in the running census"
-        }
-
-        Write-RecoveryLog "boot-recovery healthy attempt=$attempt"
-        exit 0
+        Write-RecoveryLog "boot-recovery keepalive-launch attempt=$attempt"
+        & $wsl --distribution $Distribution --exec /bin/sh -c $keepalive
+        $exitCode = $LASTEXITCODE
+        throw "WSL keepalive exited unexpectedly code=$exitCode"
     }
     catch {
         Write-RecoveryLog "boot-recovery retry attempt=$attempt error=$($_.Exception.Message)"

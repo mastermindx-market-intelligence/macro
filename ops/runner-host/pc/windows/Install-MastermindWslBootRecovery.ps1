@@ -42,21 +42,29 @@ $quotedDistro = '"' + $Distribution.Replace('"', '""') + '"'
 $arguments = "-NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File $quotedScript -Distribution $quotedDistro"
 
 $action = New-ScheduledTaskAction -Execute $ps -Argument $arguments
-$trigger = New-ScheduledTaskTrigger -AtStartup
+$startupTrigger = New-ScheduledTaskTrigger -AtStartup
+$logonTrigger = New-ScheduledTaskTrigger -AtLogOn -User $identity.Name
 # WSL distributions are per-Windows-user. S4U preserves the owner identity without
-# storing a password and can run while that user is logged off. The action only
-# accesses local resources; network traffic belongs to services inside the WSL VM.
+# storing a password and can run while that user is logged off. AtLogOn is a second
+# trigger for machines where the per-user WSL registration is not yet usable at the
+# earliest startup edge. IgnoreNew prevents that trigger from spawning a duplicate
+# keepalive when the startup instance is already healthy.
 $taskPrincipal = New-ScheduledTaskPrincipal -UserId $identity.Name -LogonType S4U -RunLevel Highest
 $settings = New-ScheduledTaskSettingsSet `
     -StartWhenAvailable `
     -RestartCount 6 `
     -RestartInterval (New-TimeSpan -Minutes 1) `
-    -ExecutionTimeLimit (New-TimeSpan -Minutes 5) `
+    -ExecutionTimeLimit (New-TimeSpan -Seconds 0) `
+    -MultipleInstances IgnoreNew `
     -AllowStartIfOnBatteries `
     -DontStopIfGoingOnBatteries
 
-$task = New-ScheduledTask -Action $action -Trigger $trigger -Principal $taskPrincipal -Settings $settings `
-    -Description 'Starts the existing Mastermind WSL distro after Windows boot. Linux systemd remains runner lifecycle authority.'
+$task = New-ScheduledTask `
+    -Action $action `
+    -Trigger @($startupTrigger, $logonTrigger) `
+    -Principal $taskPrincipal `
+    -Settings $settings `
+    -Description 'Keeps the existing Mastermind WSL distro resident after Windows boot/logon. Linux systemd remains runner lifecycle authority.'
 
 if ($PSCmdlet.ShouldProcess("Task Scheduler/$TaskName", 'register WSL boot recovery')) {
     Register-ScheduledTask -TaskName $TaskName -InputObject $task -Force | Out-Null
