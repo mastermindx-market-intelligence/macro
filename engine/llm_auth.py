@@ -468,6 +468,11 @@ def make_call(
             _note(p, ok=True, t0=_t0)
             return text, reason, name
         except Exception as exc:  # noqa: BLE001
+            from engine.provider_workload_policy import ProviderWorkloadPolicyError
+            if isinstance(exc, ProviderWorkloadPolicyError):
+                # A policy refusal is not provider failure or retry authority.
+                # Stop before cooldown/usage accounting or a different rung.
+                raise
             _note(p, ok=False, t0=_t0,
                   error_class=_error_class(exc), detail=f"{type(exc).__name__}: {exc}")
             if _is_auth_error(exc):

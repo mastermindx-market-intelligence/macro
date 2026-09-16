@@ -28,10 +28,14 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 
 from lib import config
+from engine.provider_workload_policy import (
+    HOST_PROFILE_ENV, ProviderWorkloadPolicyError, WorkloadDecision, decide_workload,
+)
 from engine import desk_ledger as _ledger_law    # run-scoped ids + immutable appends (leaf util)
 from engine.catalyst_tone import _extract_json   # shared tolerant JSON parser (leaf util)
 
@@ -1539,10 +1543,16 @@ def _thesis_for(lens: str, cfg: dict) -> str:
 # a HARD guarantee: the same state JSON on the same day → identical brief, even
 # if the provider's temperature=0 isn't perfectly deterministic.
 # --------------------------------------------------------------------------- #
-def _mb_prompt_hash(model: str, system: str, user: str) -> str:
+def _mb_prompt_hash(model: str, system: str, user: str, *,
+                    workload: WorkloadDecision | None = None, cfg: dict | None = None) -> str:
     h = hashlib.sha256()
     for part in (model, system, user):
         h.update(part.encode("utf-8"))
+    if workload is not None:
+        # Keep legacy hashes byte-identical. A profiled cache is separate and
+        # follows policy AND configured served-model changes, not just llm_model.
+        h.update(b"\0brief-workload-v1\0")
+        h.update(_brief_workload_fingerprint(workload, cfg or {}).encode("ascii"))
     return h.hexdigest()
 
 
@@ -1659,6 +1669,76 @@ def _client(cfg: dict):
         return None
 
 
+def _brief_workload(cfg: dict) -> WorkloadDecision | None:
+    """Consume the shared policy before any client or reply-cache access.
+
+    Config is trusted server input. This is not service admission, entitlement,
+    quota reservation, credential synchronization, or a second router. Validate
+    ORIGINAL config before _ladder_cfg can supply legacy provider-order defaults.
+    """
+    decision = decide_workload(cfg, host_profile=os.environ.get(HOST_PROFILE_ENV))
+    if decision is not None:
+        if not decision.allowed_order:
+            raise ProviderWorkloadPolicyError("WORKLOAD_NO_ELIGIBLE_PROVIDER")
+        if not _is_deepseek_lane(cfg):
+            # Never silently change a pinned custom endpoint into a paid/default
+            # provider. It needs an explicit adapter qualification in the owner.
+            raise ProviderWorkloadPolicyError("WORKLOAD_CUSTOM_ENDPOINT_UNSUPPORTED")
+    return decision
+
+
+def _brief_workload_fingerprint(workload: WorkloadDecision, cfg: dict) -> str:
+    """Content identity for the existing cache/interval, not authority."""
+    routed = _ladder_cfg(cfg)
+    material = {"policy": workload.receipt(), "models": {
+        key: routed.get(key) for key in ("llm_model", "opus_model", "deepseek_model", "ollama_model")}}
+    return hashlib.sha256(json.dumps(
+        material, sort_keys=True, separators=(",", ":"), allow_nan=False
+    ).encode("utf-8")).hexdigest()
+
+
+def _brief_policy_failure(brief: dict, code: str) -> dict:
+    """Remove unpublishable model content; retain deterministic input dates."""
+    code = code.removeprefix("workload_policy:")
+    for key in ("raw_text", "summary", "regime_read", "rotation_check", "forward_read"):
+        brief[key] = None
+    for key in ("tldr", "conflicts", "transmission", "watch_items", "theses", "forward_watch"):
+        brief[key] = []
+    for key in ("zh", "style_flags", "cache_origin_provider", "workload_policy", "workload_fingerprint"):
+        brief.pop(key, None)
+    brief.update(served_by=None, model=None, confidence="low",
+                 degraded_reason="workload_policy:" + code, workload_refusal_code=code)
+    return brief
+
+
+def _profiled_brief_cache(cached: str, workload: WorkloadDecision) -> dict | None:
+    """Validate a profiled entry in the EXISTING reply cache; legacy stays text.
+
+    Cache bytes are not authority. A wrong/missing receipt, forbidden origin or
+    malformed envelope is a miss, never an exemption from current policy.
+    """
+    try:
+        entry = json.loads(cached)
+    except (ValueError, TypeError, RecursionError):
+        return None
+    if not isinstance(entry, dict) or set(entry) != {
+        "schema", "text", "provider", "model", "workload_policy"
+    }:
+        return None
+    if (entry["schema"] != "master_brief_cache.v1"
+            or entry["workload_policy"] != workload.receipt()
+            or entry["provider"] not in workload.allowed_order
+            or not isinstance(entry["text"], str) or not entry["text"]
+            or not isinstance(entry["model"], str) or not 1 <= len(entry["model"]) <= 256):
+        return None
+    return entry
+
+
+def _require_brief_workload_unchanged(cfg: dict, expected: WorkloadDecision | None) -> None:
+    if _brief_workload(cfg) != expected:
+        raise ProviderWorkloadPolicyError("WORKLOAD_POLICY_CHANGED")
+
+
 def _call_model(system: str, user: str, cfg: dict,
                  served: dict | None = None) -> tuple[str | None, str | None]:
     """Return (reply_text, degraded_reason). Never raises.
@@ -1695,10 +1775,22 @@ def _call_model(system: str, user: str, cfg: dict,
     """
     from engine import llm_auth
 
+    try:
+        workload = _brief_workload(cfg)
+    except ProviderWorkloadPolicyError as exc:
+        return None, "workload_policy:" + str(exc)
+
     if _is_deepseek_lane(cfg):
         lcfg = _ladder_cfg(cfg)
-        providers = llm_auth.build_providers(
-            lcfg, opus_model=lcfg["opus_model"], deepseek_model=lcfg["deepseek_model"])
+        try:
+            providers = llm_auth.build_providers(
+                lcfg, opus_model=lcfg["opus_model"], deepseek_model=lcfg["deepseek_model"])
+            if workload is not None and any(
+                provider.get("workload_policy") != workload.receipt() for provider in providers
+            ):
+                raise ProviderWorkloadPolicyError("WORKLOAD_POLICY_CHANGED")
+        except ProviderWorkloadPolicyError as exc:
+            return None, "workload_policy:" + str(exc)
         if not providers:
             return None, "no_client_or_key"
     else:
@@ -1733,6 +1825,9 @@ def _call_model(system: str, user: str, cfg: dict,
 
     def _make_do_call(_seed: int | None):
         def _do_call(_client, _model: str):
+            # make_call may advance to another provider after an auth failure;
+            # every actual invocation must still satisfy the same policy.
+            _require_brief_workload_unchanged(cfg, workload)
             kw: dict = {
                 "model": _model,
                 "max_tokens": max_tokens,
@@ -1745,6 +1840,10 @@ def _call_model(system: str, user: str, cfg: dict,
                     kw["seed"] = _seed
                 resp = _client.messages.create(**kw)
             except TypeError:
+                if workload is not None:
+                    # The SDK may have started the request before raising.
+                    # Preserve uncertainty; never guess by replaying without seed.
+                    raise ProviderWorkloadPolicyError("WORKLOAD_PROVIDER_EFFECT_UNKNOWN") from None
                 kw.pop("seed", None)
                 resp = _client.messages.create(**kw)
             sr = getattr(resp, "stop_reason", None)
@@ -1776,8 +1875,14 @@ def _call_model(system: str, user: str, cfg: dict,
     for attempt in range(max_attempts):
         seed = 0 if attempt == 0 else attempt   # primary deterministic; retries vary
         try:
+            _require_brief_workload_unchanged(cfg, workload)
             text, reason, provider_used = llm_auth.make_call(
                 providers, _make_do_call(seed), context="master_brain")
+            # An in-flight request cannot be undone. If policy changed while it
+            # ran, discard the return; do not replay, publish or cache it.
+            _require_brief_workload_unchanged(cfg, workload)
+        except ProviderWorkloadPolicyError as exc:
+            return None, "workload_policy:" + str(exc)
         except Exception as e:  # noqa: BLE001 — degrade, never raise
             log.warning("master_brain model call failed (%s)", e)
             return None, "llm_error"
@@ -1815,6 +1920,8 @@ def _call_model(system: str, user: str, cfg: dict,
     if text is not None and served is not None:
         try:  # telemetry only — never let this break a call that otherwise worked
             served["provider"] = provider_used
+            if workload is not None:
+                served["workload_policy"] = workload.receipt()
             # DISTINCT model ids, not distinct rungs. One provider NAME routinely
             # covers several rungs — the oauth pool contributes one per present
             # CLAUDE_CODE_OAUTH_TOKEN_n (up to seven) and Codex one per attached
@@ -1945,11 +2052,8 @@ def _collect_style_violations(parsed: dict) -> list[str]:
 # --------------------------------------------------------------------------- #
 # public: synthesize one brief
 # --------------------------------------------------------------------------- #
-def synthesize(state: dict, cfg: dict | None = None, lens: str = "macro", root=None) -> dict:
-    """Run the LLM synthesis over a gathered state for one LENS. Always returns a
-    brief record (degraded fields flagged); never raises."""
-    cfg = cfg or _cfg()
-    spec = LENSES.get(lens, LENSES["macro"])
+def _empty_brief(state: dict, cfg: dict, lens: str) -> dict:
+    """The existing Brief schema, also used for policy-refused runs."""
     brief = {
         "schema": "master_brief.v2", "lens": lens, "is_context_only": True,
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -1966,6 +2070,22 @@ def synthesize(state: dict, cfg: dict | None = None, lens: str = "macro", root=N
         "theses": [],    # macro-lens producer leans (always present → additive when absent)
         "raw_text": None, "degraded_reason": None, "disclaimer": DISCLAIMER_TEXT,
     }
+    return brief
+
+
+def synthesize(state: dict, cfg: dict | None = None, lens: str = "macro", root=None) -> dict:
+    """Run the LLM synthesis over a gathered state for one LENS. Always returns a
+    brief record (degraded fields flagged); never raises."""
+    cfg = cfg or _cfg()
+    spec = LENSES.get(lens, LENSES["macro"])
+    brief = _empty_brief(state, cfg, lens)
+    try:
+        workload = _brief_workload(cfg)
+    except ProviderWorkloadPolicyError as exc:
+        return _brief_policy_failure(brief, str(exc))
+    if workload is not None:
+        brief["workload_policy"] = workload.receipt()
+        brief["workload_fingerprint"] = _brief_workload_fingerprint(workload, cfg)
     system = spec["system"].format(thesis=_thesis_for(lens, cfg))
     user = ("Today's deterministic state (JSON). Synthesize per your "
             "instructions.\n<state>\n"
@@ -1977,8 +2097,19 @@ def synthesize(state: dict, cfg: dict | None = None, lens: str = "macro", root=N
     # hash — a cache hit therefore skips both the (paid) call AND the lint.
     # Root-awareness keeps fixture runs inside tmp roots (MM_DATA_GUARD).
     model = cfg.get("llm_model", "deepseek-v4-pro")
-    phash = _mb_prompt_hash(model, system, user)
+    phash = (_mb_prompt_hash(model, system, user) if workload is None else
+             _mb_prompt_hash(model, system, user, workload=workload, cfg=cfg))
     cached = _mb_reply_cache_get(phash, cfg, root)
+    try:
+        _require_brief_workload_unchanged(cfg, workload)
+    except ProviderWorkloadPolicyError as exc:
+        return _brief_policy_failure(brief, str(exc))
+    if workload is not None and cached is not None:
+        entry = _profiled_brief_cache(cached, workload)
+        cached = entry["text"] if entry else None
+        if entry:
+            brief["model"] = entry["model"]
+            brief["cache_origin_provider"] = entry["provider"]
     _cache_was_hit = cached is not None
     if _cache_was_hit:
         log.debug("master_brain: reply cache HIT (%s)", phash[:12])
@@ -1991,11 +2122,22 @@ def synthesize(state: dict, cfg: dict | None = None, lens: str = "macro", root=N
             reply, reason = _call_model(
                 system, user, {**cfg, "usage_stage": lens}, served=served)
         except TypeError:
+            if workload is not None:
+                # A TypeError does not prove EFFECT_NONE. Never repeat a
+                # profiled request merely to guess the callee's signature.
+                brief["degraded_reason"] = "llm_error"
+                return brief
             # Stub with the OLD 2-arg-plus-cfg signature (several tests monkeypatch
             # _call_model this way, e.g. `lambda system, user, cfg: (...)`) — tolerate
             # and retry without the new kwarg rather than breaking those callers.
             reply, reason = _call_model(system, user, {**cfg, "usage_stage": lens})
             served = {}
+        try:
+            _require_brief_workload_unchanged(cfg, workload)
+            if workload is not None and reply is not None and served.get("workload_policy") != workload.receipt():
+                raise ProviderWorkloadPolicyError("WORKLOAD_POLICY_CHANGED")
+        except ProviderWorkloadPolicyError as exc:
+            return _brief_policy_failure(brief, str(exc))
         if reply is not None:
             brief["served_by"] = served.get("provider")
             if served.get("model"):
@@ -2003,6 +2145,8 @@ def synthesize(state: dict, cfg: dict | None = None, lens: str = "macro", root=N
 
     brief["raw_text"] = reply
     if reply is None:
+        if str(reason or "").startswith("workload_policy:"):
+            return _brief_policy_failure(brief, reason)
         brief["degraded_reason"] = reason
         return brief
     parsed = _extract_json(reply)
@@ -2038,6 +2182,11 @@ def synthesize(state: dict, cfg: dict | None = None, lens: str = "macro", root=N
                 rw_reply, _rw_reason = _call_model(
                     rewrite_system, reply, {**cfg, "usage_stage": lens},
                     served=rw_served)
+                _require_brief_workload_unchanged(cfg, workload)
+                if workload is not None and rw_reply and rw_served.get("workload_policy") != workload.receipt():
+                    raise ProviderWorkloadPolicyError("WORKLOAD_POLICY_CHANGED")
+                if workload is not None and str(_rw_reason or "").startswith("workload_policy:"):
+                    return _brief_policy_failure(brief, _rw_reason)
                 if rw_reply:
                     rw_parsed = _extract_json(rw_reply)
                     if isinstance(rw_parsed, dict):
@@ -2055,7 +2204,15 @@ def synthesize(state: dict, cfg: dict | None = None, lens: str = "macro", root=N
             # Cache the FINAL post-lint text under the ORIGINAL prompt hash. On a
             # lint failure above we cache NOTHING (next run re-calls and re-lints)
             # — never a raw pre-lint reply that would dodge the lint on a hit.
-            _mb_reply_cache_put(phash, reply, cfg, root)
+            _require_brief_workload_unchanged(cfg, workload)
+            cached_text = reply if workload is None else json.dumps({
+                "schema": "master_brief_cache.v1", "text": reply,
+                "provider": brief["served_by"], "model": brief["model"],
+                "workload_policy": workload.receipt(),
+            }, sort_keys=True, separators=(",", ":"))
+            _mb_reply_cache_put(phash, cached_text, cfg, root)
+        except ProviderWorkloadPolicyError as exc:
+            return _brief_policy_failure(brief, str(exc))
         except Exception:  # noqa: BLE001 — degrade, never raise
             pass
 
@@ -2727,23 +2884,45 @@ def run(persist: bool = True, root: Path | None = None, force: bool = False,
         return None
     try:
         root = Path(root) if root else config.ROOT
+        run_workload = None
+        run_refusal = None
+        try:
+            run_workload = _brief_workload(cfg)
+        except ProviderWorkloadPolicyError as exc:
+            run_refusal = str(exc)
+        run_fingerprint = (_brief_workload_fingerprint(run_workload, cfg)
+                           if run_workload is not None else None)
         # Interval gate — only regenerate every N days (1..7). When the existing brief
         # is younger than the interval, skip the (paid) LLM call and KEEP the prior
         # brief live: the committed data/regime/<out> + site/<out> are left untouched
         # so the dashboard deploys the previous note verbatim. `force` (CLI/on-demand)
         # always bypasses the gate. Anchored off data/regime (the canonical write
         # target); a missing/unparseable generated_at falls through to regeneration.
-        if not force:
+        if not force and run_refusal is None:
             interval = _interval_for(lens, cfg)
             if interval > 1:
                 prev = _read_json(root / "data" / "regime" / spec["out"])
                 age = _brief_age_days(prev)
-                if age is not None and age < interval:
-                    log.info("master_brain: lens=%s brief is %.1fd old (< %dd interval) "
-                             "— skipping regen, keeping prior brief", lens, age, interval)
-                    return prev
+                reusable = run_workload is None
+                if run_workload is not None and isinstance(prev, dict):
+                    origin = (prev.get("cache_origin_provider") if prev.get("served_by") == "cache"
+                              else prev.get("served_by"))
+                    reusable = (not prev.get("degraded_reason")
+                                and prev.get("workload_policy") == run_workload.receipt()
+                                and prev.get("workload_fingerprint") == run_fingerprint
+                                and origin in run_workload.allowed_order)
+                if age is not None and age < interval and reusable:
+                    try:
+                        _require_brief_workload_unchanged(cfg, run_workload)
+                    except ProviderWorkloadPolicyError as exc:
+                        run_refusal = str(exc)
+                    else:
+                        log.info("master_brain: lens=%s brief is %.1fd old (< %dd interval) "
+                                 "— skipping regen, keeping prior brief", lens, age, interval)
+                        return prev
         state = spec["state_fn"](root)
-        brief = synthesize(state, cfg, lens=lens, root=root)
+        brief = (_brief_policy_failure(_empty_brief(state, cfg, lens), run_refusal)
+                 if run_refusal else synthesize(state, cfg, lens=lens, root=root))
         # ADB-R9: additive optional keys (schema: master_brief.v2)
         brief["nw_context_used"] = bool(state.get("neural_web"))
         _nw = state.get("neural_web") or {}
@@ -2759,6 +2938,14 @@ def run(persist: bool = True, root: Path | None = None, force: bool = False,
         except Exception:  # noqa: BLE001 — additive, never fatal
             brief["key_facts"] = []
         _translate_brief(brief, cfg, lens)    # attach brief['zh'] for the 中文 toggle
+        try:
+            if run_refusal:
+                raise ProviderWorkloadPolicyError(run_refusal)
+            _require_brief_workload_unchanged(cfg, run_workload)
+            if run_workload is not None and _brief_workload_fingerprint(run_workload, cfg) != run_fingerprint:
+                raise ProviderWorkloadPolicyError("WORKLOAD_POLICY_CHANGED")
+        except ProviderWorkloadPolicyError as exc:
+            _brief_policy_failure(brief, str(exc))
         if persist:
             try:
                 payload = json.dumps(brief, indent=2, default=str)
