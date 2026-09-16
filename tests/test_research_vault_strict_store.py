@@ -829,3 +829,944 @@ def test_local_conditional_write_rejects_symlink_leaf_and_lock(tmp_path):
     lock.symlink_to(outside)
     with pytest.raises(OSError):
         store.put_bytes_strict_conditional("pointer", b"candidate", expected_version=None)
+
+
+# ---------------------------------------------------------------------------
+# Qualitative Research Intelligence v1 contract
+# ---------------------------------------------------------------------------
+RIO_BODY = (
+    "Goldman says real yields rose to 2.1%. Higher real yields are tightening "
+    "financial conditions and pressuring long-duration assets. The thesis would "
+    "weaken if real yields reverse."
+)
+
+
+def _rio_sample(doc_id="r1", *, body=RIO_BODY):
+    import hashlib
+    from engine.research_intelligence.schema import SCHEMA
+
+    return {
+        "schema": SCHEMA,
+        "document": {
+            "id": doc_id,
+            "source_type": "institutional_research",
+            "source_name": "GS",
+            "institution": "Goldman Sachs",
+            "desk": "Macro",
+            "title": "Rates",
+            "published_at": "2026-09-12T12:00:00Z",
+            "content_sha256": hashlib.sha256(body.strip().encode("utf-8")).hexdigest(),
+        },
+        "claims": [
+            {
+                "statement": "Goldman says real yields rose to 2.1%.",
+                "evidence": [{"quote_span": "Goldman says real yields rose to 2.1%.", "location": "opening"}],
+                "numbers": ["2.1%", "99%"],
+                "entities": ["real_yields"],
+                "horizon": "current",
+                "explicit": True,
+            },
+            {
+                "statement": "Higher real yields are tightening financial conditions and pressuring long-duration assets.",
+                "evidence": [{
+                    "quote_span": "Higher real yields are tightening financial conditions and pressuring long-duration assets.",
+                    "location": "opening",
+                }],
+                "numbers": [],
+                "entities": ["real_yields", "TLT"],
+                "horizon": "weeks",
+                "explicit": True,
+            },
+        ],
+        "analysis": {
+            "thesis": {
+                "summary": "Higher real yields are the key transmission pressure on long duration.",
+                "direction": "bearish",
+                "mechanism": ["higher real yields -> tighter financial conditions -> duration pressure"],
+                "conviction": "moderate",
+                "support_claim_indices": [0, 1],
+            },
+            "assumptions": [{
+                "statement": "Real yields remain elevated.",
+                "support_claim_indices": [0],
+            }],
+            "forecasts": [{
+                "statement": "Long-duration assets remain pressured.",
+                "horizon": "weeks",
+                "confidence": "moderate",
+                "support_claim_indices": [1],
+            }],
+            "catalysts": [],
+            "falsifiers": [{
+                "statement": "A reversal in real yields would weaken the thesis.",
+                "support_claim_indices": [0, 1],
+            }],
+            "counterarguments": [],
+            "implications": [{
+                "statement": "TLT remains exposed to duration pressure.",
+                "assets": ["TLT"],
+                "direction": "bearish",
+                "order": 1,
+                "support_claim_indices": [1],
+            }],
+            "belief_delta": {"statement": "", "support_claim_indices": []},
+            "consensus_relation": {"statement": "", "support_claim_indices": []},
+            "uncertainties": [{
+                "statement": "The future path of real yields remains uncertain.",
+                "support_claim_indices": [0],
+            }],
+        },
+        "authority": "descriptive_research_only",
+    }
+
+
+def _rio_from_extraction_prompt(user: str, *, body=RIO_BODY):
+    import json
+    identity_text = user.split("DOCUMENT IDENTITY:\n", 1)[1].split("\n\nOUTPUT SHAPE:", 1)[0]
+    obj = _rio_sample(body=body)
+    obj["document"] = json.loads(identity_text)
+    return obj
+
+
+def test_rio_validate_forces_descriptive_authority():
+    from engine.research_intelligence.schema import validate_rio
+    obj = _rio_sample(); obj["authority"] = "trade_now"
+    assert validate_rio(obj)["authority"] == "descriptive_research_only"
+
+
+def test_rio_identity_mismatch_rejected():
+    from engine.research_intelligence.schema import validate_rio
+    with pytest.raises(ValueError, match="does not match"):
+        validate_rio(_rio_sample("wrong"), expected_document_id="expected")
+
+
+def test_rio_requires_substantive_claim():
+    from engine.research_intelligence.schema import validate_rio
+    obj = _rio_sample(); obj["claims"] = []
+    with pytest.raises(ValueError, match="substantive claim"):
+        validate_rio(obj)
+
+
+def test_rio_prompt_binds_digest_and_quote_grounding_contract():
+    from engine.research_intelligence.extractor import build_prompt
+    from engine.research_intelligence.schema import SCHEMA
+    system, user = build_prompt(
+        {"id": "r1", "source_type": "institutional_research", "title": "Rates"},
+        RIO_BODY,
+    )
+    assert SCHEMA in system
+    assert "quote_span" in system
+    assert "support_claim_indices" in system
+    assert "untrusted source content" in system
+    assert "content_sha256" in user
+    assert RIO_BODY in user
+
+
+def test_rio_parser_accepts_json_fence_and_verifies_quotes():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+    obj = _rio_sample()
+    raw = "```json\n" + json.dumps(obj) + "\n```"
+    out = parse_model_output(
+        raw,
+        expected_document_id="r1",
+        expected_document=obj["document"],
+        source_body=RIO_BODY,
+    )
+    assert out["document"]["id"] == "r1"
+    assert len(out["claims"]) == 2
+    assert out["claims"][0]["numbers"] == ["2.1%"]
+
+
+def test_rio_projections_are_descriptive_only_and_preserve_epistemic_layers():
+    from engine.research_intelligence.projection import claim_edges, summary_points
+
+    points = summary_points(_rio_sample())
+    assert points[0]["epistemic_layer"] == "model_synthesis"
+    assert points[0]["text"].startswith("Higher real yields")
+    assert points[0]["support_claim_indices"] == [0, 1]
+    assert [point["epistemic_layer"] for point in points[1:]] == [
+        "source_claim", "source_claim"
+    ]
+    assert [point["support_claim_indices"] for point in points[1:]] == [[0], [1]]
+    assert all(point["authority"] == "descriptive_research_only" for point in points)
+    assert all(point["source_document_id"] == "r1" for point in points)
+    assert all(
+        point["source_content_sha256"] == _rio_sample()["document"]["content_sha256"]
+        for point in points
+    )
+
+    edges = claim_edges(_rio_sample())
+    assert {e["entity"] for e in edges} == {"real_yields"}
+    assert all(e["authority"] == "descriptive_research_only" for e in edges)
+    assert all(e["epistemic_layer"] == "source_claim" for e in edges)
+    assert all(e["entity_grounding"] == "quote_mention" for e in edges)
+    assert all(e["entity"] != "TLT" for e in edges)
+    assert all(e["source_content_sha256"] == _rio_sample()["document"]["content_sha256"] for e in edges)
+    assert all(e["evidence_sha256"] for e in edges)
+    assert all("quote_span" not in e for e in edges)
+
+
+def test_rio_projections_reject_claims_without_grounded_evidence():
+    from engine.research_intelligence.projection import claim_edges, summary_points
+
+    obj = _rio_sample()
+    obj["claims"][0]["evidence"] = []
+    for project in (summary_points, claim_edges):
+        with pytest.raises(ValueError, match="grounded evidence"):
+            project(obj)
+
+
+def test_rio_projections_redact_private_source_claim_text():
+    import json
+    from engine.research_intelligence.projection import claim_edges, summary_points
+
+    obj = _rio_sample()
+    points = summary_points(obj)
+    source_rows = [row for row in points if row["epistemic_layer"] == "source_claim"]
+    assert len(source_rows) == len(obj["claims"])
+    assert all(row["text"] == "" for row in source_rows)
+    assert all(row["text_visibility"] == "private_rio_only" for row in source_rows)
+    assert all(len(row["claim_statement_sha256"]) == 64 for row in source_rows)
+
+    edges = claim_edges(obj)
+    assert all("statement" not in row for row in edges)
+    assert all(len(row["statement_sha256"]) == 64 for row in edges)
+    encoded = json.dumps({"points": points, "edges": edges})
+    assert "Real yields rose to 2.1%." not in encoded
+    assert "Higher real yields are tightening financial conditions." not in encoded
+
+
+def test_rio_projection_rejects_verbatim_text_from_non_supporting_claim():
+    from engine.research_intelligence.projection import summary_points
+
+    obj = _rio_sample()
+    obj["analysis"]["thesis"].update({
+        "summary": obj["claims"][1]["evidence"][0]["quote_span"],
+        "support_claim_indices": [0],
+    })
+    with pytest.raises(ValueError, match="verbatim private evidence"):
+        summary_points(obj)
+
+
+def test_rio_claim_edges_use_structural_unresolved_entity_state():
+    from engine.research_intelligence.projection import claim_edges
+
+    obj = _rio_sample()
+    obj["claims"][0]["entities"] = []
+    unresolved = [row for row in claim_edges(obj) if row["claim_index"] == 0]
+    assert len(unresolved) == 1
+    assert unresolved[0]["entity"] is None
+    assert unresolved[0]["entity_grounding"] == "unresolved"
+
+    obj = _rio_sample()
+    obj["claims"][0].update({
+        "statement": "Unresolved exposure.",
+        "evidence": [{"quote_span": "unresolved exposure"}],
+        "entities": ["__unresolved__"],
+    })
+    literal = [row for row in claim_edges(obj) if row["claim_index"] == 0]
+    assert literal[0]["entity"] == "__unresolved__"
+    assert literal[0]["entity_grounding"] == "quote_mention"
+
+
+def test_rio_bad_model_output_fails_closed():
+    from engine.research_intelligence.extractor import analyze_document
+    def call(*args, **kwargs):
+        return "not-json", "fake", "m"
+    out = analyze_document(
+        {"id": "r1", "source_type": "institutional_research"},
+        RIO_BODY, model_id="m", call=call,
+    )
+    assert out["state"] == "invalid_model_output"
+    assert out["rio"] is None
+
+
+def test_rio_valid_model_output_is_validated():
+    import json
+    from engine.research_intelligence.extractor import analyze_document
+    def call(_system, user, **kwargs):
+        return json.dumps(_rio_from_extraction_prompt(user)), "fake", "m"
+    out = analyze_document(
+        {"id": "r1", "source_type": "institutional_research"},
+        RIO_BODY, model_id="m", call=call,
+    )
+    assert out["state"] == "ok"
+    assert out["rio"]["authority"] == "descriptive_research_only"
+    assert out["requested_model"] == "m"
+    assert out["prompt_version"] == "mastermind.research_intelligence.extractor.v1"
+    assert len(out["prompt_contract_sha256"]) == 64
+    assert len(out["prompt_sha256"]) == 64
+
+
+def test_rio_vault_adapter_preserves_report_identity():
+    import json
+    from engine.research_intelligence.vault_adapter import analyze_vault_report
+    def call(_system, user, **kwargs):
+        return json.dumps(_rio_from_extraction_prompt(user)), "fake", "m"
+    out = analyze_vault_report(
+        {"id": "r1", "institution": "Goldman Sachs", "desk": "Macro", "title": "Rates"},
+        RIO_BODY, model_id="m", call=call,
+    )
+    assert out["state"] == "ok"
+    assert out["rio"]["document"]["id"] == "r1"
+    assert out["rio"]["document"]["institution"] == "Goldman Sachs"
+
+
+def test_rio_default_call_records_actual_fallback_model(monkeypatch):
+    from types import SimpleNamespace
+    from engine import llm_auth
+    from engine.research_intelligence.extractor import _default_call
+
+    class Messages:
+        def create(self, **kwargs):
+            return SimpleNamespace(content=[SimpleNamespace(type="text", text="{}")], usage=None)
+    client = SimpleNamespace(messages=Messages())
+    monkeypatch.setattr(llm_auth, "build_providers", lambda *a, **k: [{"name": "fallback"}])
+    def make_call(_providers, fn, **_kwargs):
+        text, reason, _resp = fn(client, "served-fallback-model")
+        return text, reason, "deepseek"
+    monkeypatch.setattr(llm_auth, "make_call", make_call)
+    raw, provider, model = _default_call(
+        "system", "user", model_id="requested-model", max_tokens=64,
+    )
+    assert raw == "{}"
+    assert provider == "deepseek"
+    assert model == "served-fallback-model"
+
+
+def test_rio_rejects_model_mutation_of_canonical_document_identity():
+    from engine.research_intelligence.schema import validate_rio
+    obj = _rio_sample()
+    expected = dict(obj["document"])
+    obj["document"]["title"] = "Different report"
+    with pytest.raises(ValueError, match="document.title does not match"):
+        validate_rio(obj, expected_document_id="r1", expected_document=expected)
+
+
+def test_rio_non_boolean_explicit_never_becomes_explicit():
+    from engine.research_intelligence.schema import validate_rio
+    obj = _rio_sample()
+    obj["claims"][0]["explicit"] = "false"
+    assert validate_rio(obj)["claims"][0]["explicit"] is False
+
+
+def test_rio_drops_fabricated_statement_even_with_real_quote():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+
+    obj = _rio_sample()
+    obj["claims"][0]["statement"] = "GS recommends clients sell ALL equities immediately."
+    out = parse_model_output(
+        json.dumps(obj),
+        expected_document_id="r1",
+        expected_document=obj["document"],
+        source_body=RIO_BODY,
+    )
+    assert len(out["claims"]) == 1
+    assert out["claims"][0]["statement"].startswith("Higher real yields")
+    assert out["analysis"]["thesis"]["support_claim_indices"] == [0]
+
+
+def test_rio_drops_statement_backed_by_unrelated_real_evidence():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+
+    obj = _rio_sample()
+    obj["claims"][0]["statement"] = obj["claims"][1]["statement"]
+    out = parse_model_output(
+        json.dumps(obj),
+        expected_document_id="r1",
+        expected_document=obj["document"],
+        source_body=RIO_BODY,
+    )
+    assert len(out["claims"]) == 1
+    assert out["claims"][0]["statement"].startswith("Higher real yields")
+
+
+def test_rio_rejects_negation_stripped_from_inner_evidence():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+
+    body = "Goldman does not expect inflation to rise this year."
+    obj = _rio_sample(body=body)
+    obj["claims"] = [{
+        "statement": "inflation to rise this year",
+        "evidence": [{"quote_span": "inflation to rise this year"}],
+        "numbers": [], "entities": ["inflation"], "horizon": "current", "explicit": True,
+    }]
+    obj["analysis"]["thesis"]["support_claim_indices"] = [0]
+    with pytest.raises(ValueError, match="no source claim survived"):
+        parse_model_output(
+            json.dumps(obj),
+            expected_document_id="r1",
+            expected_document=obj["document"],
+            source_body=body,
+        )
+
+
+def test_rio_rejects_negation_stripped_even_from_full_sentence_evidence():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+
+    body = "Goldman does not expect inflation to rise this year."
+    obj = _rio_sample(body=body)
+    obj["claims"] = [{
+        "statement": "inflation to rise this year",
+        "evidence": [{"quote_span": body}],
+        "numbers": [], "entities": ["inflation"], "horizon": "current", "explicit": True,
+    }]
+    obj["analysis"]["thesis"]["support_claim_indices"] = [0]
+    with pytest.raises(ValueError, match="no source claim survived"):
+        parse_model_output(
+            json.dumps(obj),
+            expected_document_id="r1",
+            expected_document=obj["document"],
+            source_body=body,
+        )
+
+
+def test_rio_rejects_denial_modality_and_uncertainty_stripping():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+
+    cases = [
+        ("The report denies that revenue increased sharply.", "revenue increased sharply"),
+        ("Management may reduce guidance next quarter.", "reduce guidance next quarter"),
+        ("Policymakers cannot rule out a recession.", "a recession"),
+        ("The report denies, based on new evidence, that revenue increased sharply.", "that revenue increased sharply"),
+        ("Management may, subject to board approval, reduce guidance next quarter.", "reduce guidance next quarter"),
+        ("We cannot rule out: a recession in 2027.", "a recession in 2027"),
+        ("The report denies that\nrevenue increased sharply.", "revenue increased sharply"),
+        ("Management may\nreduce guidance next quarter.", "reduce guidance next quarter"),
+        ("We cannot rule out:\na recession in 2027.", "a recession in 2027"),
+        ("We do not... expect inflation to rise this year.", "expect inflation to rise this year"),
+        ("Aug. inflation rose sharply.", "inflation rose sharply"),
+        ("See et al. for methods. Recession is unlikely.", "for methods"),
+        ("Management may not, per Distrib. Guidance, raise prices.", "Guidance, raise prices"),
+        ("Management may not, per distrib. Guidance, raise prices.", "Guidance, raise prices"),
+        ("The filing does not say Yahoo!Finance overstated revenue.", "Finance overstated revenue"),
+        ("Revenue did not exceed the prior figure, per ibid. Q3 guidance was reiterated.", "Q3 guidance was reiterated"),
+        ("Management may not, per cont. Guidance, raise prices.", "Guidance, raise prices"),
+        ("Der Umsatz ist nicht gestiegen im 2. Quartal 2025.", "Quartal 2025"),
+    ]
+    for body, stripped in cases:
+        obj = _rio_sample(body=body)
+        obj["claims"] = [{
+            "statement": stripped,
+            "evidence": [{"quote_span": stripped}],
+            "numbers": [], "entities": [], "horizon": "current", "explicit": True,
+        }]
+        obj["analysis"]["thesis"]["support_claim_indices"] = [0]
+        with pytest.raises(ValueError, match="no source claim survived"):
+            parse_model_output(
+                json.dumps(obj),
+                expected_document_id="r1",
+                expected_document=obj["document"],
+                source_body=body,
+            )
+
+
+
+def test_rio_accepts_individual_claim_after_common_sentence_endings():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+
+    cases = [
+        "Demand weakened in China. Revenue fell sharply.",
+        "The outlook is bad. Revenue fell sharply.",
+        "The cycle ended in 2027. Revenue fell sharply.",
+        "The estimate was 2.1. Revenue fell sharply.",
+    ]
+    for body in cases:
+        obj = _rio_sample(body=body)
+        obj["claims"] = [{
+            "statement": "Revenue fell sharply.",
+            "evidence": [{"quote_span": "Revenue fell sharply."}],
+            "numbers": [], "entities": ["Revenue"], "horizon": "current", "explicit": True,
+        }]
+        obj["analysis"]["thesis"].update({
+            "summary": "Revenue momentum deteriorated.",
+            "support_claim_indices": [0],
+        })
+        out = parse_model_output(
+            json.dumps(obj),
+            expected_document_id="r1",
+            expected_document=obj["document"],
+            source_body=body,
+        )
+        assert out["claims"][0]["statement"] == "Revenue fell sharply."
+
+
+
+def test_rio_accepts_finance_prefixed_sentence_claims():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+
+    cases = [
+        ("Revenue fell. $AAPL dropped 5%.", "$AAPL dropped 5%."),
+        ("Revenue fell. -5% margin pressure persisted.", "-5% margin pressure persisted."),
+        ("Revenue fell! €100 million was impaired.", "€100 million was impaired."),
+        ("Revenue fell? +2.1% growth followed.", "+2.1% growth followed."),
+        ("The price was $2. Revenue fell sharply.", "Revenue fell sharply."),
+        ("The change was -2. Revenue fell sharply.", "Revenue fell sharply."),
+    ]
+    for body, statement in cases:
+        obj = _rio_sample(body=body)
+        obj["claims"] = [{
+            "statement": statement,
+            "evidence": [{"quote_span": statement}],
+            "numbers": [], "entities": [], "horizon": "current", "explicit": True,
+        }]
+        obj["analysis"]["thesis"].update({
+            "summary": "Market conditions changed materially.",
+            "support_claim_indices": [0],
+        })
+        out = parse_model_output(
+            json.dumps(obj),
+            expected_document_id="r1",
+            expected_document=obj["document"],
+            source_body=body,
+        )
+        assert out["claims"][0]["statement"] == statement
+
+def test_rio_rejects_two_sentences_collapsed_into_one_source_claim():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+
+    body = "Demand weakened in China. Revenue fell sharply."
+    obj = _rio_sample(body=body)
+    obj["claims"] = [{
+        "statement": body,
+        "evidence": [{"quote_span": body}],
+        "numbers": [], "entities": ["China", "Revenue"], "horizon": "current", "explicit": True,
+    }]
+    obj["analysis"]["thesis"].update({
+        "summary": "Demand and revenue momentum weakened.",
+        "support_claim_indices": [0],
+    })
+    with pytest.raises(ValueError, match="no source claim survived"):
+        parse_model_output(
+            json.dumps(obj),
+            expected_document_id="r1",
+            expected_document=obj["document"],
+            source_body=body,
+        )
+
+def test_rio_accepts_complete_source_context_with_finance_abbreviations_and_commas():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+
+    body = "U.S. management may, subject to board approval, reduce guidance next quarter."
+    obj = _rio_sample(body=body)
+    obj["claims"] = [{
+        "statement": body,
+        "evidence": [{"quote_span": body}],
+        "numbers": [], "entities": ["U.S."], "horizon": "next quarter", "explicit": True,
+    }]
+    obj["analysis"]["thesis"]["support_claim_indices"] = [0]
+    out = parse_model_output(
+        json.dumps(obj),
+        expected_document_id="r1",
+        expected_document=obj["document"],
+        source_body=body,
+    )
+    assert out["claims"][0]["statement"] == body
+
+
+def test_validate_rio_rejects_partial_statement_evidence_overlap():
+    from engine.research_intelligence.schema import validate_rio
+
+    obj = _rio_sample()
+    obj["claims"][0]["statement"] = "real yields rose to 2.1%."
+    obj["claims"][0]["evidence"] = [{
+        "quote_span": "Goldman says real yields rose to 2.1%.",
+        "location": "opening",
+    }]
+    with pytest.raises(ValueError, match="not grounded by its evidence"):
+        validate_rio(obj)
+
+
+def test_rio_rejects_short_verbatim_thesis_summary_before_projection():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+    from engine.research_intelligence.projection import summary_points
+
+    body = "Rates rose."
+    obj = _rio_sample(body=body)
+    obj["claims"] = [{
+        "statement": body,
+        "evidence": [{"quote_span": body}],
+        "numbers": [], "entities": ["rates"], "horizon": "current", "explicit": True,
+    }]
+    obj["analysis"]["thesis"].update({
+        "summary": body,
+        "support_claim_indices": [0],
+    })
+    with pytest.raises(ValueError, match="thesis.*verbatim"):
+        parse_model_output(
+            json.dumps(obj),
+            expected_document_id="r1",
+            expected_document=obj["document"],
+            source_body=body,
+        )
+    with pytest.raises(ValueError, match="verbatim private evidence"):
+        summary_points(obj)
+
+
+def test_rio_multi_evidence_statement_may_match_one_verified_context_unit():
+    from engine.research_intelligence.schema import validate_rio
+
+    obj = _rio_sample()
+    obj["claims"][0]["evidence"].append({
+        "quote_span": "Higher real yields are tightening financial conditions and pressuring long-duration assets."
+    })
+    out = validate_rio(obj)
+    assert len(out["claims"][0]["evidence"]) == 2
+
+
+def test_rio_clause_mode_rejects_multi_sentence_evidence():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+
+    obj = _rio_sample()
+    combined = RIO_BODY
+    obj["claims"] = [{
+        "statement": combined,
+        "evidence": [{"quote_span": combined}],
+        "numbers": ["2.1%"], "entities": [], "horizon": "current", "explicit": True,
+    }]
+    obj["analysis"]["thesis"]["support_claim_indices"] = [0]
+    with pytest.raises(ValueError, match="no source claim survived"):
+        parse_model_output(
+            json.dumps(obj),
+            expected_document_id="r1",
+            expected_document=obj["document"],
+            source_body=RIO_BODY,
+        )
+
+
+def test_rio_rejects_verbatim_thesis_summary_before_projection():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+
+    obj = _rio_sample()
+    obj["analysis"]["thesis"]["summary"] = (
+        "Higher real yields are tightening financial conditions and pressuring long-duration assets."
+    )
+    with pytest.raises(ValueError, match="thesis.*verbatim"):
+        parse_model_output(
+            json.dumps(obj),
+            expected_document_id="r1",
+            expected_document=obj["document"],
+            source_body=RIO_BODY,
+        )
+
+
+def test_rio_drops_uncited_claim_and_remaps_synthesis_support():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+    obj = _rio_sample()
+    obj["claims"].insert(0, {
+        "statement": "Fabricated unsupported claim.",
+        "evidence": [{"quote_span": "this sentence does not exist", "location": "fake"}],
+        "numbers": [], "entities": ["FAKE"], "horizon": "", "explicit": True,
+    })
+    obj["analysis"]["thesis"]["support_claim_indices"] = [0, 1, 2]
+    obj["analysis"]["forecasts"][0]["support_claim_indices"] = [0, 2]
+    raw = json.dumps(obj)
+    out = parse_model_output(
+        raw,
+        expected_document_id="r1",
+        expected_document=obj["document"],
+        source_body=RIO_BODY,
+    )
+    assert len(out["claims"]) == 2
+    assert all("Fabricated" not in claim["statement"] for claim in out["claims"])
+    assert out["analysis"]["thesis"]["support_claim_indices"] == [0, 1]
+    assert out["analysis"]["forecasts"][0]["support_claim_indices"] == [1]
+
+
+def test_rio_refuses_document_when_no_claim_has_verified_quote():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+    obj = _rio_sample()
+    for claim in obj["claims"]:
+        claim["evidence"] = [{"quote_span": "not in source", "location": "fake"}]
+    with pytest.raises(ValueError, match="no source claim survived"):
+        parse_model_output(
+            json.dumps(obj),
+            expected_document_id="r1",
+            expected_document=obj["document"],
+            source_body=RIO_BODY,
+        )
+
+
+def test_shared_qualitative_quote_verifier_is_reused():
+    from engine.qual_extraction import citation_normalize, quote_span_verified
+    assert quote_span_verified(RIO_BODY, "real yields rose to 2.1%")
+    assert not quote_span_verified(RIO_BODY, "a made up sentence")
+    assert citation_normalize("2.1%") == "2.1%"
+
+
+def test_rio_uncertainty_requires_grounded_claim_support():
+    from engine.research_intelligence.schema import validate_rio
+    obj = _rio_sample()
+    obj["analysis"]["uncertainties"] = [
+        {"statement": "Supported uncertainty", "support_claim_indices": [0]},
+        {"statement": "Unsupported uncertainty", "support_claim_indices": [999]},
+    ]
+    out = validate_rio(obj)
+    assert out["analysis"]["uncertainties"] == [
+        {"statement": "Supported uncertainty", "support_claim_indices": [0]}
+    ]
+
+
+def test_rio_no_provider_configuration_has_distinct_typed_state(monkeypatch):
+    from engine import llm_auth
+    from engine.research_intelligence.extractor import analyze_document
+
+    monkeypatch.setattr(llm_auth, "build_providers", lambda *_args, **_kwargs: [])
+    out = analyze_document(
+        {"id": "r1", "source_type": "institutional_research"},
+        RIO_BODY,
+        model_id="requested-model",
+    )
+    assert out["state"] == "providers_unavailable"
+    assert out["rio"] is None
+    assert out["error_code"] == "NO_PROVIDER_AVAILABLE"
+    assert out["provider"] == ""
+    assert out["model"] == ""
+
+
+def test_rio_provider_exception_is_typed_without_leaking_message():
+    import json
+    from engine.research_intelligence.extractor import analyze_document
+
+    def call(*args, **kwargs):
+        raise RuntimeError("provider down; api_key=sk-secret-value")
+
+    out = analyze_document(
+        {"id": "r1", "source_type": "institutional_research"},
+        RIO_BODY, model_id="m", call=call,
+    )
+    assert out["state"] == "call_failed"
+    assert out["rio"] is None
+    assert out["requested_model"] == "m"
+    assert out["error_class"] == "RuntimeError"
+    assert "error" not in out
+    encoded = json.dumps(out)
+    assert "provider down" not in encoded
+    assert "sk-secret-value" not in encoded
+
+
+def test_rio_document_hash_binds_exact_input_bytes():
+    import hashlib, json
+    from engine.research_intelligence.extractor import build_prompt
+    body = "  leading space\n" + RIO_BODY + "\ntrailing space  "
+    _system, user = build_prompt(
+        {"id": "r1", "source_type": "institutional_research"}, body,
+    )
+    identity_text = user.split("DOCUMENT IDENTITY:\n", 1)[1].split("\n\nOUTPUT SHAPE:", 1)[0]
+    identity = json.loads(identity_text)
+    assert identity["content_sha256"] == hashlib.sha256(body.encode("utf-8")).hexdigest()
+    assert user.endswith(body)
+
+
+def test_rio_accepts_exact_han_quote_grounding():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+
+    body = "中国流动性正在改善，但房地产风险仍然存在。"
+    obj = _rio_sample(body=body)
+    obj["claims"] = [{
+        "statement": body,
+        "evidence": [{"quote_span": body}],
+        "numbers": [],
+        "entities": ["中国流动性"],
+        "horizon": "current",
+        "explicit": True,
+    }]
+    obj["analysis"] = {
+        "thesis": {
+            "summary": "流动性改善，但房地产风险仍在。",
+            "direction": "mixed",
+            "mechanism": [],
+            "conviction": "",
+            "support_claim_indices": [0],
+        },
+        "assumptions": [], "forecasts": [], "catalysts": [],
+        "falsifiers": [], "counterarguments": [], "implications": [],
+        "belief_delta": {"statement": "", "support_claim_indices": []},
+        "consensus_relation": {"statement": "", "support_claim_indices": []},
+        "uncertainties": [],
+    }
+    out = parse_model_output(
+        json.dumps(obj, ensure_ascii=False),
+        expected_document_id="r1",
+        expected_document=obj["document"],
+        source_body=body,
+    )
+    assert out["claims"][0]["evidence"] == [{"quote_span": body}]
+
+
+def test_rio_rejects_quote_that_is_only_a_substring_of_another_token():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+
+    body = "Corporate earnings improved."
+    obj = _rio_sample(body=body)
+    obj["claims"] = [{
+        "statement": "Rates improved.",
+        "evidence": [{"quote_span": "rate"}],
+        "numbers": [], "entities": [], "horizon": "", "explicit": True,
+    }]
+    obj["analysis"]["thesis"]["support_claim_indices"] = [0]
+    with pytest.raises(ValueError, match="no source claim survived"):
+        parse_model_output(
+            json.dumps(obj),
+            expected_document_id="r1",
+            expected_document=obj["document"],
+            source_body=body,
+        )
+
+
+def test_rio_valid_output_requires_explicit_serving_provenance():
+    import json
+    from engine.research_intelligence.extractor import analyze_document
+
+    for provider, served_model in (("fake", ""), ("", "served-model")):
+        def call(_system, user, **_kwargs):
+            return json.dumps(_rio_from_extraction_prompt(user)), provider, served_model
+
+        out = analyze_document(
+            {"id": "r1", "source_type": "institutional_research"},
+            RIO_BODY,
+            model_id="requested-model",
+            call=call,
+        )
+        assert out["state"] == "model_provenance_unavailable"
+        assert out["rio"] is None
+        assert out["provider"] == provider
+        assert out["model"] == served_model
+
+
+def test_rio_analyze_uses_normalized_canonical_document_id():
+    import json
+    from engine.research_intelligence.extractor import analyze_document
+
+    def call(_system, user, **_kwargs):
+        return json.dumps(_rio_from_extraction_prompt(user)), "fake", "served-model"
+
+    out = analyze_document(
+        {"id": " r1 ", "source_type": "institutional_research"},
+        RIO_BODY,
+        model_id="requested-model",
+        call=call,
+    )
+    assert out["state"] == "ok"
+    assert out["rio"]["document"]["id"] == "r1"
+
+
+def test_rio_numbers_require_complete_numeric_tokens_inside_verified_evidence():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+
+    body = "Revenue rose 20% in 2026."
+    obj = _rio_sample(body=body)
+    obj["claims"] = [{
+        "statement": "Revenue rose 20% in 2026.",
+        "evidence": [{"quote_span": body}],
+        "numbers": ["2", "20%", "26", "2026"],
+        "entities": [], "horizon": "current", "explicit": True,
+    }]
+    obj["analysis"]["thesis"]["support_claim_indices"] = [0]
+    out = parse_model_output(
+        json.dumps(obj),
+        expected_document_id="r1",
+        expected_document=obj["document"],
+        source_body=body,
+    )
+    assert out["claims"][0]["numbers"] == ["20%", "2026"]
+
+
+def test_rio_requires_nonempty_requested_model_before_dispatch():
+    from engine.research_intelligence.extractor import analyze_document
+
+    called = False
+
+    def call(*_args, **_kwargs):
+        nonlocal called
+        called = True
+        raise AssertionError("provider dispatch must not occur")
+
+    with pytest.raises(ValueError, match="model_id is required"):
+        analyze_document(
+            {"id": "r1", "source_type": "institutional_research"},
+            RIO_BODY,
+            model_id="  ",
+            call=call,
+        )
+    assert called is False
+
+
+def test_rio_preserves_verbatim_evidence_text():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+
+    body = "Revenue  rose\t20%."
+    obj = _rio_sample(body=body)
+    obj["claims"] = [{
+        "statement": "Revenue rose 20%.",
+        "evidence": [{"quote_span": body}],
+        "numbers": ["20%"], "entities": [], "horizon": "current", "explicit": True,
+    }]
+    obj["analysis"]["thesis"]["support_claim_indices"] = [0]
+    out = parse_model_output(
+        json.dumps(obj),
+        expected_document_id="r1",
+        expected_document=obj["document"],
+        source_body=body,
+    )
+    assert out["claims"][0]["evidence"] == [{"quote_span": body}]
+
+
+def test_rio_rejects_overlong_evidence_instead_of_truncating_it():
+    import json
+    from engine.research_intelligence.extractor import parse_model_output
+
+    body = "x" * 1601
+    obj = _rio_sample(body=body)
+    obj["claims"] = [{
+        "statement": "Long quoted content.",
+        "evidence": [{"quote_span": body}],
+        "numbers": [], "entities": [], "horizon": "", "explicit": True,
+    }]
+    obj["analysis"]["thesis"]["support_claim_indices"] = [0]
+    with pytest.raises(ValueError, match="no source claim survived"):
+        parse_model_output(
+            json.dumps(obj),
+            expected_document_id="r1",
+            expected_document=obj["document"],
+            source_body=body,
+        )
+
+
+def test_rio_invalid_model_output_is_typed_without_raw_detail():
+    import json
+    from engine.research_intelligence.extractor import analyze_document
+
+    def call(*_args, **_kwargs):
+        return '{"secret":"sk-model-output"}', "fake", "served-model"
+
+    out = analyze_document(
+        {"id": "r1", "source_type": "institutional_research"},
+        RIO_BODY,
+        model_id="requested-model",
+        call=call,
+    )
+    assert out["state"] == "invalid_model_output"
+    assert out["rio"] is None
+    assert out["error_class"] == "ValueError"
+    assert "error" not in out
+    assert "sk-model-output" not in json.dumps(out)
