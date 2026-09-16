@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-16T04:09:28.822389+00:00",
-  "count": 2203,
+  "generated_at": "2026-09-16T04:24:32.098110+00:00",
+  "count": 2204,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -154,6 +154,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-bbpjjx51pty-8a2f3e",
+      "title": "Dollar General Corp. (DG) Global Consumer and Retail Conference 2026 — Key Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T02:52:52Z",
+      "summary_points": [
+        "**Fuel-Driven Consumer Shifts**: Elevated fuel prices accelerate closer shopping, directly benefiting DG’s 21,000+ store footprint; lower-income shoppers increasingly stockpile at DG, with management citing value proposition and targeted marketing as key retention drivers.",
+        "**Pricing Power & Competitive Gaps**: DG maintains 20% price gap vs grocery, 30% vs drug, and 2-4% vs mass retailers; $1 assortment strategy leverages pricing power amid macroeconomic pressures, differentiating from competitors.",
+        "**Category Expansion & Delivery Growth**: $1 category expanded to 2,000+ items (+40% assortment), delivery pilot achieved 80% incrementality (1M new customers), and supply chain improvements (private fleet costs down 50%) drive margin expansion.",
+        "**Valuation & Key Risks**: Neutral rating with $141.00 12m target (13.1% upside from $124.70); key risks include e-commerce weakness, consumable mix pressure, and inflation, while upside hinges on store growth and supply chain margin gains."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
