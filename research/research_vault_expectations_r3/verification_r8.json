@@ -1,0 +1,236 @@
+{
+  "schema": "research.discovery_boundary_assay.r8",
+  "executed_at_utc": "2026-09-16T08:12:48.820436+00:00",
+  "source_commit": "e86cf4593d2c2603a695ccab858f98ac4a29abae",
+  "python": "3.13.5",
+  "sqlite": "3.46.1",
+  "node": "v22.16.0",
+  "source_verification": {
+    "corpus_full_git_blob": "0b035b34489a4efd2ae7a3c59d153b3d1977701a",
+    "corpus_full_blob_matches": true,
+    "api_client": "Connector-range copies; whole-file parity NOT claimed",
+    "api_expected_full_blob": "bca9b965057df653607765107ef789692c47dcdc",
+    "client_expected_full_blob": "1f0b673da6c3d6a44ad3d74b2994f70b9a4311c8"
+  },
+  "scope": "Actual pinned corpus on synthetic SQLite/FTS5; selected route/client functions with controlled auth/catalog/network/time/UI; no live service",
+  "counts": {
+    "cases": 16,
+    "controls": 11,
+    "controls_met": 11,
+    "product_gaps_reproduced": 5
+  },
+  "cases": [
+    {
+      "id": "R8-C1",
+      "class": "control",
+      "question": "Literal title retrieval works",
+      "expected": [
+        "literal"
+      ],
+      "actual": [
+        "literal"
+      ],
+      "requirement_met": true
+    },
+    {
+      "id": "R8-C10",
+      "class": "control",
+      "question": "Controlled non-Pro preview excludes non-preview result",
+      "expected": [],
+      "actual": [],
+      "requirement_met": true
+    },
+    {
+      "id": "R8-C11",
+      "class": "control",
+      "question": "Catalog unavailable refuses search",
+      "expected": false,
+      "actual": false,
+      "requirement_met": true
+    },
+    {
+      "id": "R8-C2",
+      "class": "control",
+      "question": "Literal body retrieval works",
+      "expected": [
+        "body-hit"
+      ],
+      "actual": [
+        "body-hit"
+      ],
+      "requirement_met": true
+    },
+    {
+      "id": "R8-C3",
+      "class": "control",
+      "question": "Healthy no-match is available and empty",
+      "expected": {
+        "items": [],
+        "count": 0,
+        "available": true
+      },
+      "actual": {
+        "items": [],
+        "count": 0,
+        "available": true
+      },
+      "requirement_met": true
+    },
+    {
+      "id": "R8-C4",
+      "class": "control",
+      "question": "Missing connection is marked unavailable",
+      "expected": false,
+      "actual": false,
+      "requirement_met": true
+    },
+    {
+      "id": "R8-C5",
+      "class": "control",
+      "question": "HTTP failure retains local fallback",
+      "expected": [
+        "literal"
+      ],
+      "actual": [
+        "literal"
+      ],
+      "requirement_met": true
+    },
+    {
+      "id": "R8-C6",
+      "class": "control",
+      "question": "Successful empty response does not widen through local union",
+      "expected": [],
+      "actual": [],
+      "requirement_met": true
+    },
+    {
+      "id": "R8-C7",
+      "class": "control",
+      "question": "Changed-query stale response is rejected",
+      "expected": [
+        "new"
+      ],
+      "actual": [
+        "new"
+      ],
+      "requirement_met": true
+    },
+    {
+      "id": "R8-C8",
+      "class": "control",
+      "question": "Metadata input does not mutate literal source columns",
+      "expected": {
+        "title": "Equipment outlook",
+        "summary": "",
+        "body": "Order trends stabilized."
+      },
+      "actual": {
+        "title": "Equipment outlook",
+        "summary": "",
+        "body": "Order trends stabilized."
+      },
+      "requirement_met": true
+    },
+    {
+      "id": "R8-C9",
+      "class": "control",
+      "question": "Non-admitted IDs remain undisclosed",
+      "expected": true,
+      "actual": true,
+      "requirement_met": true
+    },
+    {
+      "id": "R8-G1",
+      "class": "gap",
+      "question": "Ticker-only discovery survives successful server response",
+      "expected": [
+        "metadata-only"
+      ],
+      "actual": [],
+      "before": [
+        "metadata-only"
+      ],
+      "server": {
+        "items": [],
+        "count": 0,
+        "available": true
+      },
+      "requirement_met": false
+    },
+    {
+      "id": "R8-G2",
+      "class": "gap",
+      "question": "Missing FTS table must not be a valid empty search",
+      "expected": false,
+      "actual": true,
+      "requirement_met": false,
+      "response": {
+        "items": [],
+        "count": 0,
+        "available": true
+      }
+    },
+    {
+      "id": "R8-G3",
+      "class": "gap",
+      "question": "Unavailable response remains distinguishable from authoritative empty result",
+      "expected_search_hits_null": true,
+      "actual_search_hits_null": false,
+      "actual_visible": [],
+      "response": {
+        "items": [],
+        "count": 0,
+        "available": false
+      },
+      "requirement_met": false
+    },
+    {
+      "id": "R8-G4",
+      "class": "gap",
+      "question": "Catalog-eligible match survives final result limit",
+      "expected": [
+        "allowed-report"
+      ],
+      "actual": [],
+      "requirement_met": false,
+      "raw_order": [
+        "ahead-a",
+        "ahead-b",
+        "allowed-report"
+      ],
+      "response": {
+        "items": [],
+        "count": 0,
+        "available": true
+      }
+    },
+    {
+      "id": "R8-G5",
+      "class": "gap",
+      "question": "Late prior response cannot overwrite same-query/new-facet result",
+      "expected": [
+        "new"
+      ],
+      "actual": [],
+      "after_new_response": [
+        "new"
+      ],
+      "request_urls": [
+        "/api/research/search?q=ACMEQ&institution=DeskA",
+        "/api/research/search?q=ACMEQ&institution=DeskB"
+      ],
+      "requirement_met": false
+    }
+  ],
+  "production_repairs": 0,
+  "real_reports_processed": 0,
+  "browser_journeys": 0,
+  "artifacts": {
+    "pinned_corpus.py": "8d9f512391b9471529577b2a786dacd51cb8693ffda1578ee741b389c55b351a",
+    "r8_fragments/research_search.py.txt": "9ebfe8206419448fa4f0c2a8d514c12cad0b4bdca585cb2fae6425ebfc89038f",
+    "r8_fragments/search_client.js.txt": "5d26f2cbd23b8302d1040e5e030b389e34bcada4c72096fda55582b12abc3354",
+    "probe_client_r8.js": "975d60c9fa295e392982a4d6fe886d3467f34ef2a848d77188d8e9cf415d081c",
+    "probe_discovery_r8.py": "a89781d90a3fcc32851ac89f3caeb423fd0d1255195dd4dee3de313053ee1d11"
+  }
+}
