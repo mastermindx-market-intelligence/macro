@@ -1,0 +1,200 @@
+{
+  "operation": "commodities-asset-first-safety-r1-20260916-sol-001",
+  "status": "BLOCKED_NOT_IMPLEMENTED",
+  "repository": "mastermindx-market-intelligence/macro",
+  "base_sha": "bb02c526c4809564338f2a7208e063dbe86bc476",
+  "procedure_sha": "f590c068880dbb848bda90b80b73dbcb6688d6fc",
+  "branch": "claude/commodities-asset-first-safety-r1-20260916-sol-001",
+  "evidence_kind": "in-memory original-function and Jinja-fragment regression; not full pytest or production proof",
+  "red": {
+    "total": 36,
+    "passed": 4,
+    "failed": 32,
+    "failures": [
+      [
+        "test_screenshot_breadth_never_grants_sector_entry",
+        "()",
+        ""
+      ],
+      [
+        "test_partial_confluence_is_not_clearance",
+        "({},)",
+        ""
+      ],
+      [
+        "test_partial_confluence_is_not_clearance",
+        "({'members': []},)",
+        ""
+      ],
+      [
+        "test_partial_confluence_is_not_clearance",
+        "({'members': [{'name': 'gold', 'state': 'Neutral'}]},)",
+        ""
+      ],
+      [
+        "test_invalid_dispersion_is_unknown",
+        "(nan,)",
+        ""
+      ],
+      [
+        "test_invalid_dispersion_is_unknown",
+        "(inf,)",
+        ""
+      ],
+      [
+        "test_invalid_dispersion_is_unknown",
+        "(-1,)",
+        ""
+      ],
+      [
+        "test_invalid_breadth_is_incomplete",
+        "('n_members', 0)",
+        ""
+      ],
+      [
+        "test_invalid_breadth_is_incomplete",
+        "('n_members', True)",
+        ""
+      ],
+      [
+        "test_invalid_breadth_is_incomplete",
+        "('n_up_trend', 18)",
+        ""
+      ],
+      [
+        "test_invalid_breadth_is_incomplete",
+        "('n_bull_momentum', -1)",
+        ""
+      ],
+      [
+        "test_invalid_breadth_is_incomplete",
+        "('n_low_risk', None)",
+        ""
+      ],
+      [
+        "test_sector_labels_are_descriptions_not_instructions",
+        "('Neutral',)",
+        ""
+      ],
+      [
+        "test_sector_labels_are_descriptions_not_instructions",
+        "('Blowing off — extended',)",
+        ""
+      ],
+      [
+        "test_sector_labels_are_descriptions_not_instructions",
+        "('Extended — late cycle',)",
+        ""
+      ],
+      [
+        "test_sector_labels_are_descriptions_not_instructions",
+        "('Euphoric top — rolling over',)",
+        ""
+      ],
+      [
+        "test_sector_labels_are_descriptions_not_instructions",
+        "('Washout bottom forming',)",
+        ""
+      ],
+      [
+        "test_bearish_daily_three_day_never_becomes_aligned_or_buyable",
+        "('RALLY ON',)",
+        ""
+      ],
+      [
+        "test_bearish_daily_three_day_never_becomes_aligned_or_buyable",
+        "('FRESH BUY',)",
+        ""
+      ],
+      [
+        "test_bearish_daily_three_day_never_becomes_aligned_or_buyable",
+        "('TURN SIGNALED',)",
+        ""
+      ],
+      [
+        "test_bearish_daily_three_day_never_becomes_aligned_or_buyable",
+        "('DECLINE',)",
+        ""
+      ],
+      [
+        "test_missing_timeframe_cannot_claim_alignment",
+        "('D',)",
+        ""
+      ],
+      [
+        "test_missing_timeframe_cannot_claim_alignment",
+        "('3D',)",
+        ""
+      ],
+      [
+        "test_missing_timeframe_cannot_claim_alignment",
+        "('W',)",
+        ""
+      ],
+      [
+        "test_missing_timeframe_cannot_claim_alignment",
+        "('2W',)",
+        ""
+      ],
+      [
+        "test_missing_timeframe_cannot_claim_alignment",
+        "('ME',)",
+        ""
+      ],
+      [
+        "test_pullback_is_not_automatically_an_entry",
+        "()",
+        ""
+      ],
+      [
+        "test_missing_or_unknown_index_shock_is_not_calm",
+        "(None,)",
+        ""
+      ],
+      [
+        "test_missing_or_unknown_index_shock_is_not_calm",
+        "('unexpected',)",
+        ""
+      ],
+      [
+        "test_missing_or_unknown_index_shock_is_not_calm",
+        "('',)",
+        ""
+      ],
+      [
+        "test_missing_or_unknown_index_shock_is_not_calm",
+        "(False,)",
+        ""
+      ],
+      [
+        "test_price_proxy_does_not_claim_measured_stagflation",
+        "()",
+        ""
+      ]
+    ]
+  },
+  "source_sha256": {
+    "scripts/build_commodities.py": "4351b591fe9163775e58f1e13648c3c3be6cd15e1f366c2f61bb310b1a7b658d",
+    "engine/commodity_mtf.py": "0e0be00ec4224f00ad491aeaeef15a8129d00e508c28a6f1723157c27d781e88",
+    "templates/commodities.html.j2": "f47f3efc9850553ba356f5653d9d4f688777c28a2b28bb11b33a76f17b7dfd90"
+  },
+  "test_definition_sha256": "0f404503cb1f7d04d432acebf88217c0f040755a7f335fbc2694a470316a5cda",
+  "uncommitted_builder_draft_sha256": "ffde6faa3d29d343323f4bb203ceb85779554e8f78a4cc8a5ab1d48991706b7b",
+  "draft_review": "Not tested. Do not accept; index-only warnings must not imply widespread constituent overextension.",
+  "platform_gate": "OpenAI blocked a subsequent engine/template editing request. Same-process read confirmed neither changed. Do not retry through another tool, account or worker.",
+  "code_committed": false,
+  "production_modified": false,
+  "allocation_rules_changed": false,
+  "executive_job_created": false,
+  "release": {
+    "run_id": 35052977361,
+    "job_id": 104657373219,
+    "status": "completed",
+    "conclusion": "failure",
+    "failures": [
+      "hk_stocks.html links absent sector_ranking.html",
+      "macro.html market-state verdict word/score unparseable; restore from HEAD still incoherent"
+    ]
+  },
+  "next_action": "After the source-modification route is lawfully serviceable, resume this exact branch; finish the approved safety patch, run actual regression/compatibility suites, independent review, then reconcile and prove publication."
+}
