@@ -614,3 +614,133 @@ def test_dispatch_rejects_forged_privileged_fields_without_echo(tmp_path):
     assert r.get('status')=='invalid_request'
     assert not r.get('calculations')
     assert 'PRIVATE_' not in json.dumps(r)
+
+
+class _BridgeResponseClient:
+    """Scripted provider boundary; real registry, dispatcher and loops below."""
+    def __init__(self,payload):
+        self.payload=payload;self.messages=self;self.calls=[];self.tool_result=None
+    def create(self,**kwargs):
+        from tests.test_brain_gateway import _MockBlock,_MockResponse
+        self.calls.append(deepcopy(kwargs))
+        if len(self.calls)==1:
+            names=[s['name'] for s in kwargs.get('tools',[])]
+            assert names.count('calculate_financial_bridge')==1
+            return _MockResponse([_MockBlock('tool_use',name='calculate_financial_bridge',
+                                             input_=self.payload,id_='bridge-test')],'tool_use')
+        found=[]
+        for message in kwargs.get('messages',[]):
+            content=message.get('content')
+            if isinstance(content,list):
+                found.extend(block for block in content if isinstance(block,dict)
+                             and block.get('type')=='tool_result' and block.get('tool_use_id')=='bridge-test')
+        assert len(found)==1,'Real tool result did not reach the next provider round'
+        self.tool_result=json.loads(found[0]['content'])
+        assert self.tool_result['input_provenance']=='caller_supplied_unverified'
+        cells=self.tool_result['calculations']
+        op=cells['current.operating_profit']['value']
+        cash=cells['current.simplified_operating_cash']['value']
+        answer=f'Using the supplied assumptions, operating profit is {op}; operating cash is {cash if cash is not None else "unavailable"}. Prior operating cash is unknown. These calculations do not establish a cause or a price target.'
+        return _MockResponse([_MockBlock('text',answer)],'end_turn')
+    def stream(self,**kwargs):
+        from tests.test_brain_gateway import _ScriptedStreamCtx
+        return _ScriptedStreamCtx(self.create(**kwargs))
+
+
+@pytest.mark.parametrize('stream',[False,True])
+@pytest.mark.parametrize('missing_tax',[False,True])
+def test_real_chat_loops_deliver_calculation_to_next_round_and_final_output(tmp_path,monkeypatch,stream,missing_tax):
+    from engine.neuralweb import brain_gateway as gw
+    from tests.test_brain_gateway import _make_temp_root,_sse
+    import socket
+    payload=scenario()
+    if missing_tax:del payload['current']['cash_taxes']
+    client=_BridgeResponseClient(payload)
+    module=importlib.import_module(MODULE);original=module.analyze_financial_bridge;calls=[]
+    def calculate(p):calls.append(deepcopy(p));return original(p)
+    def no_network(*a,**k):raise AssertionError('offline integration used network')
+    monkeypatch.setattr(module,'analyze_financial_bridge',calculate)
+    monkeypatch.setattr(socket,'socket',no_network)
+    monkeypatch.setattr(gw,'_brain_quota_dir',lambda *a,**k:tmp_path/'quota')
+    monkeypatch.setattr(gw,'_build_lane_providers',lambda *a,**k:[{'name':'deepseek','model':'deepseek-chat','client':client}])
+    monkeypatch.setattr(gw,'_resolve_tier',lambda *a,**k:{'tier':'pro','status':'active','current_period_end':None})
+    monkeypatch.setattr(gw,'_ensure_thread',lambda *a,**k:None)
+    monkeypatch.setattr(gw,'_instant_route',lambda *a,**k:None)
+    monkeypatch.setattr('lib.ai_costs.record_usage',lambda **k:True)
+    monkeypatch.setattr('lib.ai_costs._write_ledger_path',lambda root=None:tmp_path/'costs.jsonl')
+    root=_make_temp_root()
+    question='Analyze this supplied financial scenario and explain profit versus cash.'
+    if stream:
+        events=_sse(list(gw.chat_stream(question,'u-fixture-bridge',lane='fast',root=root,mode='chat')))
+        assert events[0]['type']=='meta' and events[-1]['type']=='done'
+        rendered=''.join(e.get('text','') for e in events if e['type']=='delta')
+    else:
+        result=gw.chat(question,'u-fixture-bridge',lane='fast',root=root,mode='chat')
+        assert result.get('ok') is True,result
+        rendered=result.get('reply') or result.get('answer') or result.get('text') or ''
+    assert calls==[payload]
+    assert client.tool_result['calculations']['current.operating_profit']['value']=='7.5'
+    assert client.tool_result['calculations']['current.simplified_operating_cash']['value']==(None if missing_tax else '-0.5')
+    assert 'operating profit is 7.5' in rendered,rendered
+    assert ('operating cash is unavailable' if missing_tax else 'operating cash is -0.5') in rendered
+    assert 'supplied assumptions' in rendered
+
+
+class _ResearchCalculationAttemptClient(_BridgeResponseClient):
+    def create(self,**kwargs):
+        from tests.test_brain_gateway import _MockBlock,_MockResponse
+        self.calls.append(deepcopy(kwargs))
+        if len(self.calls)==1:
+            assert 'calculate_financial_bridge' not in [s['name'] for s in kwargs.get('tools',[])]
+            return _MockResponse([_MockBlock('tool_use',name='calculate_financial_bridge',
+                                             input_=self.payload,id_='bridge-denied')],'tool_use')
+        for message in kwargs.get('messages',[]):
+            if isinstance(message.get('content'),list):
+                for block in message['content']:
+                    if isinstance(block,dict) and block.get('type')=='tool_result' and block.get('tool_use_id')=='bridge-denied':
+                        self.tool_result=json.loads(block['content'])
+        assert self.tool_result and self.tool_result.get('error')
+        assert not self.tool_result.get('calculations')
+        return _MockResponse([_MockBlock('text','This mode did not run the requested calculation.')],'end_turn')
+
+
+@pytest.mark.parametrize('stream',[False,True])
+def test_real_research_loops_refuse_unoffered_calculator_even_when_provider_requests_it(tmp_path,monkeypatch,stream):
+    from engine.neuralweb import brain_gateway as gw
+    from tests.test_brain_gateway import _make_temp_root,_sse
+    import socket
+    client=_ResearchCalculationAttemptClient(scenario())
+    def forbidden(*a,**k):raise AssertionError('research attempted calculation or network')
+    monkeypatch.setattr(importlib.import_module(MODULE),'analyze_financial_bridge',forbidden)
+    monkeypatch.setattr(socket,'socket',forbidden)
+    monkeypatch.setattr(gw,'_brain_quota_dir',lambda *a,**k:tmp_path/'quota')
+    monkeypatch.setattr(gw,'_build_lane_providers',lambda *a,**k:[{'name':'deepseek','model':'deepseek-chat','client':client}])
+    monkeypatch.setattr(gw,'_resolve_tier',lambda *a,**k:{'tier':'pro','status':'active','current_period_end':None})
+    monkeypatch.setattr(gw,'_ensure_thread',lambda *a,**k:None)
+    monkeypatch.setattr(gw,'_instant_route',lambda *a,**k:None)
+    monkeypatch.setattr('lib.ai_costs.record_usage',lambda **k:True)
+    monkeypatch.setattr('lib.ai_costs._write_ledger_path',lambda root=None:tmp_path/'costs.jsonl')
+    root=_make_temp_root()
+    if stream:
+        events=_sse(list(gw.chat_stream('Read published research.','u-bridge-research',lane='pro',mode='research',root=root)))
+        assert events[-1]['type']=='done'
+    else:
+        result=gw.chat('Read published research.','u-bridge-research',lane='pro',mode='research',root=root)
+        assert result.get('ok') is True,result
+    assert client.tool_result and client.tool_result.get('error')
+    assert not client.tool_result.get('calculations')
+
+
+def test_financial_bridge_suite_is_owned_by_existing_premerge_gateway_job():
+    import shlex
+    import yaml
+    jobs=yaml.safe_load((ROOT/'.github/ci/legacy-jobs.yml').read_text())['jobs']
+    owners=[]
+    for name,job in jobs.items():
+        for step in job.get('steps',[]):
+            if 'tests/test_brain_financial_bridge.py' in shlex.split(step.get('run','')):
+                owners.append(name)
+                assert job.get('gate')=='code'
+                assert not step.get('continue-on-error')
+                assert not step.get('if')
+    assert owners==['unrun-brain-gateway']
