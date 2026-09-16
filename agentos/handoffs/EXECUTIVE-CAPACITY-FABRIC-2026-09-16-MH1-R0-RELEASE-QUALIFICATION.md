@@ -4,9 +4,9 @@ session: sol/mh1-r0-agentos-closeout-20260916
 model: sol
 ended_because: complete
 mission: >
-  Preserve the accepted MH1-R0 authenticated remote Worker Broker transport source result after
+  Preserve the accepted and source-protected MH1-R0 authenticated remote Worker Broker transport result after
   Mastermind PR #650 reached exact-head semantic PASS, current-base integration proof, strict hosted
-  CI and Source Continuity remote-complete verification. Keep the larger MH1/two-host capability
+  CI, Source Continuity remote-complete verification and mandatory merge-queue protection. Keep the larger MH1/two-host capability
   explicitly incomplete. This is a records-only continuation under the existing Capacity Fabric;
   it creates no Runtime, placement, provider, host, release or production authority.
 state_before: >
@@ -20,8 +20,8 @@ changed:
   - path: agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-16-MH1-R0-RELEASE-QUALIFICATION.md
     what: >
       Adds one collision-safe organizational continuation for MH1-R0: immutable source and CI receipts,
-      the honest BUILT_NOT_PROVEN ceiling, the #7181 shared-workstream collision, the next lawful
-      release/install/two-host proof sequence, and do-not-redo boundaries. No existing Agent OS record,
+      the honest BUILT_NOT_PROVEN ceiling, the #7181 shared-workstream collision, final merge-queue source
+      protection, the next lawful install/two-host proof sequence, and do-not-redo boundaries. No existing Agent OS record,
       generated view, implementation file, provider state, Runtime state or host state is modified.
 prs: []
 verified:
@@ -30,22 +30,23 @@ verified:
     result: >
       Remote main returned a780b16f53ceb05944fedf04d20b3735182aab52. The isolated branch was created
       from that exact commit; the target-path probe returned absent and the worktree started clean.
-  - claim: "Mastermind PR #650 is open Draft/HOLD at exact semantic head a4e9bfc0a9565c7005dafa8840f486b690c364be."
-    command: "gh pr view 650 -R mastermindx-market-intelligence/Mastermind --json state,isDraft,headRefOid,mergeable,files"
+  - claim: "Mastermind PR #650 source-protected exact semantic head a4e9bfc0a9565c7005dafa8840f486b690c364be through the mandatory merge queue."
+    command: "gh pr view 650 -R mastermindx-market-intelligence/Mastermind --json state,isDraft,headRefOid,mergedAt,mergeCommit"
     result: >
-      Open, Draft, mergeable, head a4e9bfc0a9565c7005dafa8840f486b690c364be, with exactly eight changed
-      transport/gateway/client/test paths. The PR body now states release qualification complete while
-      retaining Draft/HOLD and explicitly withholds Ready/merge/install/live claims.
-  - claim: "Current protected Mastermind master remained 0fe8074ff953b2ced9025ed40f0f66019c759967 through final qualification."
-    command: "gh api repos/mastermindx-market-intelligence/Mastermind/branches/master --jq '.commit.sha'"
+      GitHub reports MERGED at 2026-09-16T08:17:16Z. The accepted semantic head remains
+      a4e9bfc0a9565c7005dafa8840f486b690c364be and the protected merge commit is
+      8ba7deedde164c90298d3e88785d98e02fa5e2d2. Source protection does not imply installation or live proof.
+  - claim: "The pre-queue protected base was 0fe8074ff953b2ced9025ed40f0f66019c759967; required predecessors #682 and #683 then landed before MH1."
+    command: "gh api repos/mastermindx-market-intelligence/Mastermind/commits/52bb602616504954861d31dc86b9a11f22e7444d; gh api repos/mastermindx-market-intelligence/Mastermind/commits/a78b8fe23d8e1ed129880ac47e97ebe96afa8aea"
     result: >
-      Returned 0fe8074ff953b2ced9025ed40f0f66019c759967. Required branch-protection context is strict `test`.
-  - claim: "The current GitHub PR merge ref is the exact qualified current-base composition."
-    command: "gh api repos/mastermindx-market-intelligence/Mastermind/commits/e36085c4df89d6df8400ff19b46f741260c478e8"
+      #682 protected as 52bb602616504954861d31dc86b9a11f22e7444d on parent 0fe8074f; #683 protected as
+      a78b8fe23d8e1ed129880ac47e97ebe96afa8aea on parent 52bb6026. Queue precedence was preserved.
+  - claim: "GitHub regenerated and tested the exact MH1 merge-group composition after #682/#683."
+    command: "gh api repos/mastermindx-market-intelligence/Mastermind/git/matching-refs/heads/gh-readonly-queue/master/pr-650-; gh run view 35070938525 -R mastermindx-market-intelligence/Mastermind --json status,conclusion,headSha,jobs"
     result: >
-      Merge ref e36085c4df89d6df8400ff19b46f741260c478e8 has parents current master
-      0fe8074ff953b2ced9025ed40f0f66019c759967 plus semantic head a4e9bfc0a9565c7005dafa8840f486b690c364be
-      and tree 3e24f80952b41e63e7ecd1c3bcca9a50b755777b, matching the independently tested integration tree.
+      Queue ref bound merge-group commit 8ba7deedde164c90298d3e88785d98e02fa5e2d2 on parent
+      a78b8fe23d8e1ed129880ac47e97ebe96afa8aea, tree 1e3efbebb7be53dcb96e08d0f9f27aba66e8633c.
+      Merge-group run 35070938525 / job 104712020958 succeeded in 22m11s including the full repository test gate.
   - claim: "Independent exact-head semantic review accepted a4e9bfc0 with zero blockers."
     command: "cat /Volumes/Mastermind/agent-workspaces/audit/mh1-r0-host-ref-review-claude-a4e9bfc0.txt"
     result: >
@@ -71,23 +72,23 @@ verified:
       After SOL ACCEPTED / STOP on Slack carrier C0BSBM78V1N/1789528602.495779, canonical workspace
       release returned APPLIED / REMOVED at exact clean head a4e9bfc0 with recoverability
       HEAD_PUBLISHED_TO_ORIGIN_BRANCH. A BRANCH_WRITER_RELEASED receipt was posted in the same thread.
-  - claim: "The bounded R0 source core is BUILT_NOT_PROVEN, not an installed or live two-host capability."
-    command: "gh pr view 650 -R mastermindx-market-intelligence/Mastermind --json body,isDraft,state,mergedAt"
+  - claim: "The source-protected R0 core remains BUILT_NOT_PROVEN, not an installed or live two-host capability."
+    command: "gh api repos/mastermindx-market-intelligence/Mastermind/branches/master --jq '.commit.sha'; gh pr view 650 -R mastermindx-market-intelligence/Mastermind --json state,mergedAt,mergeCommit"
     result: >
-      The accepted ceiling is AUTHENTICATED REMOTE BROKER TRANSPORT CORE / PRODUCTION INERT / NOT INSTALLED.
-      No certificate enrollment, second-host worker execution, Capacity placement, provider call, deployment,
-      canary or live multi-host proof is claimed; PR #650 remains Draft and unmerged.
+      Protected master and #650 merge commit both resolve to 8ba7deedde164c90298d3e88785d98e02fa5e2d2.
+      The accepted ceiling remains AUTHENTICATED REMOTE BROKER TRANSPORT CORE / PRODUCTION INERT / NOT INSTALLED;
+      no certificate enrollment, second-host execution, Capacity placement, provider call, deployment, canary or live proof is claimed.
   - claim: "The shared Capacity Fabric workstream file has an incumbent concurrent writer and was not safe for this closeout to edit."
     command: "gh pr list -R mastermindx-market-intelligence/macro --state open --search 'EXECUTIVE-CAPACITY-FABRIC' --json number,title,body"
     result: >
       Open Macro PR #7181 explicitly edits agentos/workstreams/WS-EXECUTIVE-CAPACITY-FABRIC.md plus its own
       discovery/handoff. This closeout therefore uses one unique additive handoff and does not change the
       shared workstream file or ask #7181 to widen scope.
-  - claim: "The parent Workbench fleet integration ledger now records the MH1-R0 qualification."
-    command: "gh api repos/mastermindx-market-intelligence/Mastermind/issues/comments/5693315564"
+  - claim: "The parent Workbench fleet integration ledger records both qualification and final source protection."
+    command: "gh api repos/mastermindx-market-intelligence/Mastermind/issues/comments/5693315564; gh api repos/mastermindx-market-intelligence/Mastermind/issues/comments/5694343645"
     result: >
-      Mastermind issue #539 comment 5693315564 records the capability delta, exact proof, Draft/HOLD
-      boundary, next two-host vertical and separate Source Continuity tooling defect.
+      Issue #539 comment 5693315564 preserves pre-queue qualification; comment 5694343645 records protected
+      commit 8ba7deed, successful queue ordering/test, the unchanged BUILT_NOT_PROVEN ceiling and exact two-host continuation.
   - claim: "The Source Continuity clean-checkout false-dirt defect is preserved with its existing owner rather than duplicated."
     command: "gh api repos/mastermindx-market-intelligence/Mastermind/issues/comments/5693368038"
     result: >
@@ -107,10 +108,6 @@ verified:
       0 errors and 61 warnings. The warnings are existing store warnings; none is a schema/error finding
       on this new handoff.
 unverified:
-  - claim: "PR #650 is authorized to transition Ready or merge."
-    what_would_verify: >
-      A separate current authority edge that explicitly grants Ready/merge, followed by an action-time
-      re-read of protected master, exact PR head/merge ref, required checks, reviews/threads and effect state.
   - claim: "The R0 transport works for a real Executive operation on a second physical host."
     what_would_verify: >
       Lawful source protection, installation and enrollment on one authorized second host, then a bounded
@@ -121,13 +118,12 @@ unverified:
       The incumbent writer of Macro PR #7181 lands or releases the shared workstream file, then the current
       Capacity Fabric owner consumes this handoff and performs a fresh collision-safe workstream update.
 unresolved:
-  - "Which distinct authority edge will release PR #650 from Draft/HOLD for Ready/merge; current source qualification deliberately does not answer that."
-  - "Exact sequencing of the first real MH1 two-host canary relative to remaining HF1, CF2-I, Capacity and RuntimeBinding gates; R0 source progress does not erase those existing dependencies."
+  - "Exact admission and sequencing of the first real MH1 two-host canary relative to remaining HF1, CF2-I, Capacity and RuntimeBinding gates; source protection does not erase those existing dependencies."
   - "Whether the Source Continuity bytecode-hermeticity repair should be adapter-environment-only or include a stronger no-new-dirt postcondition; issue #446 owns that decision."
 next_actions:
-  - "Keep Mastermind PR #650 at exact head a4e9bfc0a9565c7005dafa8840f486b690c364be Draft/HOLD until a separate Ready/merge authority edge exists; do not create a replacement PR or ancestry-only semantic commit."
-  - "After Macro PR #7181 resolves its incumbent write on WS-EXECUTIVE-CAPACITY-FABRIC, consume this handoff and update MH1 organizational state to reflect an R0 BUILT_NOT_PROVEN source core while keeping the full multi-host capability incomplete."
-  - "After lawful Mastermind source protection, qualify one second authorized host and execute the bounded enrollment/certificate plus real remote Worker Broker canary through existing Executive, Capacity and RuntimeBinding owners."
+  - "COMPLETED_DO_NOT_REPEAT: Mastermind PR #650 source-protected through the mandatory merge queue as 8ba7deedde164c90298d3e88785d98e02fa5e2d2; do not reopen, replace, re-merge or reuse its quarantined original worktree."
+  - "After Macro PR #7181 resolves its incumbent write on WS-EXECUTIVE-CAPACITY-FABRIC, consume this handoff and update MH1 organizational state to reflect an R0 SOURCE_PROTECTED / BUILT_NOT_PROVEN core while keeping the full multi-host capability incomplete."
+  - "Fresh-reconcile HF1/CF2-I/Capacity/RuntimeBinding predecessors, then separately admit one second authorized host and execute the bounded enrollment/certificate plus real remote Worker Broker canary through existing owners."
   - "Route the Source Continuity self-bytecode defect through existing issue #446 as a separate bounded repair; preserve strict detection of genuine pre-existing ignored out-of-scope dirt."
 do_not_redo:
   - "Do not repeat semantic review, the 63-test host-ref campaign, latest-base proof runs 35058663570/35063981198, Source Continuity remote-complete, or the terminal repair-child writer release unless a material candidate/source/effect invalidator occurs."
@@ -135,7 +131,7 @@ do_not_redo:
   - "Do not edit WS-EXECUTIVE-CAPACITY-FABRIC while Macro PR #7181 is its incumbent concurrent writer, and do not widen #7181 to absorb this handoff."
   - "Do not create a remote scheduler, host queue, credential service, retry ledger or second Executive Runtime around MH1; extend the existing Worker Broker/Capacity/RuntimeBinding owners only."
 danger_areas:
-  - "Release-qualified source is not merged/protected source and is not production proof. PR #650 remains open Draft/HOLD; merge/install/live statements must preserve those distinctions."
+  - "Source-protected code is still not installation or production proof. Protected merge 8ba7deed is only the R0 transport core; install/certificate/host/canary/live statements must remain separate."
   - "Capacity `host_ref` is identity evidence, not an endpoint or credential. R0 authenticates transport separately; never derive host authority from hostname, IP or Tailscale reachability."
   - "A timeout/disconnect after remote write begins is EFFECT_UNKNOWN. The same Attempt stays pinned for reconciliation; never replay/fail over to another host/provider merely because transport disappeared."
   - "Provider credentials stay host-local. R0 must not become a credential-forwarding protocol, generic SSH/file proxy or alternate provider lifecycle."
@@ -144,6 +140,6 @@ danger_areas:
 
 # MH1-R0 continuation
 
-A fresh Sol should treat PR #650 as a fully qualified **source candidate** for the bounded authenticated remote Worker Broker transport core, not as a live multi-host system. The exact semantic head and all proof are frozen in this record and Mastermind issue #539.
+A fresh Sol should treat protected Mastermind commit `8ba7deedde164c90298d3e88785d98e02fa5e2d2` as the **source-protected** bounded authenticated remote Worker Broker transport core, not as a live multi-host system. The accepted semantic head remains `a4e9bfc0a9565c7005dafa8840f486b690c364be`; final queue proof and continuation are frozen here and in Mastermind issue #539.
 
-The immediate organizational constraint is collision, not missing evidence: Macro PR #7181 currently owns the shared Capacity Fabric workstream file. Consume this handoff after that writer clears; do not compete for the file. The immediate product constraint is separate release authority, then real host installation/enrollment and a two-host Executive canary under the existing owners.
+The organizational constraint is still collision: Macro PR #7181 owns the shared Capacity Fabric workstream file, so consume this handoff only after that writer clears. The product constraint has advanced from release authority to fresh predecessor/admission reconciliation for real host installation/enrollment and a two-host Executive canary under the existing owners.
