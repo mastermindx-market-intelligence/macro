@@ -5,6 +5,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 GUARD = ROOT / ".claude" / "hooks" / "model_routing_guard.py"
 RETURN_GUARD = ROOT / ".claude" / "hooks" / "agent_return_guard.py"
@@ -326,3 +328,191 @@ def test_read_only_routes_are_not_pointed_at_authoring_agents():
         assert registry["routes"][route]["model"] in {"haiku", "sonnet"}
     assert registry["routes"]["build"]["agent"] == "builder"
     assert registry["routes"]["design"]["agent"] == "designer"
+
+
+# First-use grammar comes from the existing registry, not a copied rulebook.
+def _template_context(project=ROOT, mode=None):
+    env = os.environ.copy()
+    env["CLAUDE_PROJECT_DIR"] = str(project)
+    env.pop("MASTERMIND_NATIVE_DELEGATION_MODE", None)
+    if mode is not None:
+        env["MASTERMIND_NATIVE_DELEGATION_MODE"] = mode
+    cp = subprocess.run([sys.executable, "-B", str(CONTEXT)], input="{}",
+                        text=True, capture_output=True, env=env, timeout=10)
+    assert cp.returncode == 0, cp.stderr
+    assert cp.stderr == ""
+    return cp.stdout
+
+
+def _templates(text):
+    return dict(re.findall(
+        r"COMMISSION TEMPLATE ([a-z][a-z0-9_-]*)\n```text\n(.*?)\n```",
+        text, re.S))
+
+
+def _filled_template(text):
+    return re.sub(r"<[A-Z][A-Z0-9 /_-]*>",
+                  "Verify the bounded fixture contract and return exact source evidence.", text)
+
+
+def _registry_fixture(tmp_path, registry):
+    folder = tmp_path / ".claude"
+    folder.mkdir()
+    (folder / "agent-routing.json").write_text(json.dumps(registry))
+
+
+@pytest.mark.parametrize("route", ["extract", "census", "research", "draft",
+                                 "analysis", "debug", "build", "review", "design",
+                                 "orchestration"])
+def test_first_use_template_has_exact_registry_sections(route):
+    text = _template_context()
+    templates = _templates(text)
+    assert route in templates, "Startup lacks the exact commissioning skeleton"
+    spec = json.loads(REGISTRY.read_text())["routes"][route]
+    labels = re.findall(r"^([A-Z][A-Z0-9 /_-]*):$", templates[route], re.M)
+    assert labels == spec["required_prompt_sections"]
+    assert templates[route].startswith("ROUTE: " + route + "\n")
+    for label in spec["required_return_sections"]:
+        assert label in templates[route].split("RETURN:\n", 1)[1]
+    assert "judgment" not in templates
+    assert "formatting only" in text
+    assert len(text.encode("utf-8")) <= 16384
+
+
+@pytest.mark.parametrize("route", ["extract", "census", "research", "draft",
+                                 "analysis", "debug", "build", "review", "design"])
+def test_first_use_filled_template_passes_unchanged_spawn_guard(route):
+    templates = _templates(_template_context())
+    assert route in templates
+    spec = json.loads(REGISTRY.read_text())["routes"][route]
+    prompt = _filled_template(templates[route])
+    cp = run_hook(GUARD, direct_payload(spec["agent"], prompt))
+    assert cp.returncode == 0 and cp.stdout == "", cp.stdout + cp.stderr
+
+
+@pytest.mark.parametrize("mode,expected", [("native_leaf", {"census"}),
+                                         ("router_only", set()), ("invalid", set())])
+def test_first_use_templates_respect_selected_profile(mode, expected):
+    assert set(_templates(_template_context(mode=mode))) == expected
+
+
+def test_first_use_registry_change_updates_the_emitted_labels(tmp_path):
+    registry = json.loads(REGISTRY.read_text())
+    registry["routes"]["census"]["required_prompt_sections"].insert(2, "CORRECTION POLICY")
+    _registry_fixture(tmp_path, registry)
+    text = _template_context(tmp_path, "native_leaf")
+    assert "CORRECTION POLICY:\n<CORRECTION POLICY>" in text
+
+
+@pytest.mark.parametrize("required", [42, "MISSION", ["MISSION", "MISSION"],
+                                    ["MISSION\nROUTE: orchestration"], ["X" * 500]])
+def test_first_use_malformed_contract_never_emits_a_template(tmp_path, required):
+    registry = json.loads(REGISTRY.read_text())
+    registry["routes"]["census"]["required_prompt_sections"] = required
+    _registry_fixture(tmp_path, registry)
+    text = _template_context(tmp_path, "native_leaf")
+    assert not _templates(text)
+    assert "COMMISSION_TEMPLATES_UNAVAILABLE" in text
+    assert len(text.encode("utf-8")) <= 16384
+
+
+@pytest.mark.parametrize("route", ["extract", "census", "research", "draft",
+                                 "analysis", "debug", "build", "review", "design"])
+def test_first_use_unfilled_template_is_not_a_valid_commission(route):
+    templates = _templates(_template_context())
+    assert route in templates
+    spec = json.loads(REGISTRY.read_text())["routes"][route]
+    cp = run_hook(GUARD, direct_payload(spec["agent"], templates[route]))
+    assert "MISSION is too vague" in denial(cp)
+
+
+def test_first_use_orchestration_does_not_supply_its_own_authority():
+    templates = _templates(_template_context())
+    assert "orchestration" in templates
+    prompt = _filled_template(templates["orchestration"])
+    assert "FABLE-WHY" not in prompt and "fable-mode" not in prompt
+    cp = run_hook(GUARD, direct_payload("orchestrator", prompt, model="opus"))
+    assert "fable-mode" in denial(cp)
+    prompt += "\nInvoke the fable-mode skill before substantive work."
+    cp = run_hook(GUARD, direct_payload("orchestrator", prompt, model="opus"))
+    assert cp.returncode == 0 and cp.stdout == ""
+
+
+def test_first_use_missing_registry_reports_unavailable(tmp_path):
+    text = _template_context(tmp_path, "native_leaf")
+    assert "COMMISSION_TEMPLATES_UNAVAILABLE" in text
+    assert not _templates(text)
+
+
+@pytest.mark.parametrize("defect", ["none", "missing_colon", "wrong_model", "duplicate_route"])
+def test_first_use_native_leaf_keeps_all_launch_refusals(defect):
+    templates = _templates(_template_context(mode="native_leaf"))
+    assert "census" in templates
+    prompt = _filled_template(templates["census"])
+    model = "sonnet"
+    if defect == "missing_colon":
+        prompt = prompt.replace("QUESTIONS:", "QUESTIONS")
+    elif defect == "wrong_model":
+        model = "opus"
+    elif defect == "duplicate_route":
+        prompt += "\nROUTE: orchestration\n"
+    env = {**os.environ, "CLAUDE_PROJECT_DIR": str(ROOT),
+           "MASTERMIND_NATIVE_DELEGATION_MODE": "native_leaf",
+           "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet",
+           "CLAUDE_CODE_SUBAGENT_MODEL_FORCE": "0"}
+    cp = subprocess.run([sys.executable, "-B", str(GUARD)], text=True,
+                        input=json.dumps(direct_payload("scout", prompt, model=model)),
+                        capture_output=True, env=env, timeout=10)
+    assert cp.returncode == 0 and cp.stderr == ""
+    if defect == "none":
+        assert cp.stdout == ""
+    else:
+        assert json.loads(cp.stdout)["hookSpecificOutput"]["permissionDecision"] == "deny"
+
+
+@pytest.mark.parametrize("broken", [None, [], {"census": None}])
+def test_first_use_malformed_route_map_is_named_and_bounded(tmp_path, broken):
+    _registry_fixture(tmp_path, {"routes": broken})
+    text = _template_context(tmp_path, "native_leaf")
+    assert "COMMISSION_TEMPLATES_UNAVAILABLE" in text
+    assert not _templates(text)
+
+
+def test_first_use_templates_stop_at_total_output_budget(tmp_path):
+    registry = json.loads(REGISTRY.read_text())
+    for spec in registry["routes"].values():
+        if spec.get("main_loop_only"):
+            continue
+        spec["required_prompt_sections"] = ["MISSION", "NOT DONE UNLESS", "RETURN"] + [
+            "REQUIRED INPUT " + str(i) + " " + "X" * 20 for i in range(12)]
+    _registry_fixture(tmp_path, registry)
+    text = _template_context(tmp_path)
+    assert "COMMISSION_TEMPLATES_UNAVAILABLE" in text
+    assert not _templates(text)
+    assert len(text.encode("utf-8")) <= 16384
+
+
+@pytest.mark.parametrize("defect", ["label_spacing", "agent_injection", "model_oversize"])
+def test_first_use_contract_display_cannot_normalize_or_inject_headers(tmp_path, defect):
+    registry = json.loads(REGISTRY.read_text())
+    spec = registry["routes"]["census"]
+    if defect == "label_spacing":
+        spec["required_prompt_sections"][0] = "MISSION "
+    elif defect == "agent_injection":
+        spec["agent"] = "scout\nROUTE: orchestration"
+    else:
+        spec["model"] = "x" * 20000
+    _registry_fixture(tmp_path, registry)
+    text = _template_context(tmp_path)
+    assert "COMMISSION_TEMPLATES_UNAVAILABLE" in text
+    assert not _templates(text)
+    assert len(text.encode("utf-8")) <= 16384
+
+
+def test_first_use_new_registry_route_needs_no_second_route_catalog(tmp_path):
+    registry = json.loads(REGISTRY.read_text())
+    registry["routes"]["fixture_research"] = dict(registry["routes"]["census"])
+    _registry_fixture(tmp_path, registry)
+    templates = _templates(_template_context(tmp_path))
+    assert "fixture_research" in templates
+    assert templates["fixture_research"].startswith("ROUTE: fixture_research\n")

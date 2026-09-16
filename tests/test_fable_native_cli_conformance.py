@@ -94,5 +94,61 @@ class OracleTests(unittest.TestCase):
         self.assertNotIn("AWS_ACCESS_KEY_ID", env)
 
 
+class StartupTemplateTests(unittest.TestCase):
+    TEMPLATE = ("COMMISSION TEMPLATE census\n```text\nROUTE: census\n"
+                "MISSION:\n<MISSION>\nQUESTIONS:\n<QUESTIONS>\n"
+                "CORRECTION POLICY:\n<CORRECTION POLICY>\n"
+                "RETURN:\nSTATUS / RESULT / EVIDENCE / GAPS / DEVIATIONS\n```")
+
+    def request(self, template):
+        return {"tools": [{"name": "Agent"}],
+                "messages": [{"role": "user", "content": C.ROOT_MARKER}],
+                "system": [{"type": "text", "text": template}]}
+
+    def test_first_commission_uses_delivered_grammar_not_canned_prompt(self):
+        oracle = C.Oracle("startup_template_result", Path("/fixture"))
+        response = oracle.respond(self.request(self.TEMPLATE))
+        prompt = response[0]["input"]["prompt"]
+        self.assertIn("CORRECTION POLICY:\n", prompt)
+        self.assertNotIn("<MISSION>", prompt)
+        self.assertIn(C.MARKER, prompt)
+
+    def test_missing_startup_template_cannot_fall_back_to_canned_grammar(self):
+        oracle = C.Oracle("startup_template_result", Path("/fixture"))
+        with self.assertRaises(ValueError):
+            oracle.respond(self.request("No startup template was delivered."))
+
+    def test_colon_negative_is_derived_from_the_delivered_template(self):
+        oracle = C.Oracle("startup_template_missing_section", Path("/fixture"))
+        prompt = oracle.respond(self.request(self.TEMPLATE))[0]["input"]["prompt"]
+        self.assertIn("\nQUESTIONS\n", prompt)
+        self.assertNotIn("\nQUESTIONS:\n", prompt)
+
+    def test_duplicate_startup_template_is_not_arbitrarily_selected(self):
+        oracle = C.Oracle("startup_template_result", Path("/fixture"))
+        with self.assertRaises(ValueError):
+            oracle.respond(self.request(self.TEMPLATE + "\n" + self.TEMPLATE))
+
+    def test_startup_context_in_assistant_message_is_available_to_parent(self):
+        oracle = C.Oracle("startup_template_result", Path("/fixture"))
+        request = self.request("")
+        request["messages"].append({"role": "assistant", "content": [
+            {"type": "text", "text": self.TEMPLATE}]})
+        prompt = oracle.respond(request)[0]["input"]["prompt"]
+        self.assertIn("CORRECTION POLICY:\n", prompt)
+
+    def test_tool_result_cannot_substitute_for_initial_startup_context(self):
+        oracle = C.Oracle("startup_template_result", Path("/fixture"))
+        request = self.request("")
+        request["messages"].append({"role": "user", "content": [
+            {"type": "tool_result", "content": self.TEMPLATE}]})
+        with self.assertRaises(ValueError):
+            oracle.respond(request)
+
+    def test_startup_template_cases_are_in_the_bounded_native_driver(self):
+        self.assertIn("startup_template_result", C.CASES)
+        self.assertIn("startup_template_missing_section", C.CASES)
+
+
 if __name__ == "__main__":
     unittest.main()

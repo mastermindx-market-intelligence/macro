@@ -4,7 +4,55 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from pathlib import Path
+
+
+def _section_labels(value: object) -> list[str]:
+    """Validate display grammar only; the existing spawn guard owns admission."""
+    if (not isinstance(value, list) or len(value) > 16
+            or any(not isinstance(s, str) or not re.fullmatch(
+                r"[A-Z][A-Z0-9 /_-]{1,48}", s) or s != " ".join(s.split())
+                   for s in value)
+            or len(set(value)) != len(value) or "ROUTE" in value):
+        raise ValueError("invalid section contract")
+    return value
+
+
+def _commission_templates(routes: object, order: list[str]) -> str:
+    if (not isinstance(routes, dict) or len(routes) > 32
+            or any(not isinstance(name, str) or not re.fullmatch(
+                r"[a-z][a-z0-9_-]{0,48}", name) for name in routes)):
+        raise ValueError("invalid route contract")
+    blocks = []
+    for route in order:
+        if route not in routes:
+            continue
+        spec = routes[route]
+        if not isinstance(spec, dict):
+            raise ValueError("invalid route contract")
+        if spec.get("main_loop_only"):
+            continue
+        if any(not isinstance(spec.get(field), str) or not re.fullmatch(
+                r"[A-Za-z0-9._-]{1,96}", spec[field]) for field in ("agent", "model")):
+            raise ValueError("invalid display identity")
+        sections = _section_labels(spec.get("required_prompt_sections"))
+        returns = _section_labels(spec.get("required_return_sections"))
+        if not sections or (returns and "RETURN" not in sections):
+            raise ValueError("incomplete section contract")
+        lines = ["ROUTE: " + route]
+        for label in sections:
+            value = " / ".join(returns) if label == "RETURN" and returns else "<" + label + ">"
+            lines.extend([label + ":", value])
+        blocks.append("COMMISSION TEMPLATE " + route + "\n```text\n"
+                      + "\n".join(lines) + "\n```")
+    text = "\n\n".join(blocks)
+    if not text or len(text.encode("utf-8")) > 8192:
+        raise ValueError("template context unavailable or oversized")
+    return ("Commission templates are formatting only, not admission or launch authority. "
+            "Copy only ONE block; replace every <SECTION> with task-specific content. "
+            "Keep the exact SECTION: labels. Orchestration still requires its existing "
+            "explicit-model and skill/audit gates.\n\n" + text)
 
 
 def main() -> None:
@@ -50,7 +98,12 @@ def main() -> None:
     path = project / ".claude" / "agent-routing.json"
     try:
         registry = json.loads(path.read_text(encoding="utf-8"))
-    except Exception:
+        routes = registry["routes"]
+        order = list(routes)  # The registry is the only route catalog.
+        templates = _commission_templates(routes, ["census"] if mode == "native_leaf" else order)
+    except (OSError, ValueError, TypeError, KeyError):
+        print("COMMISSION_TEMPLATES_UNAVAILABLE: routing contract is unreadable or invalid; "
+              "do not infer a launch. Restore the qualified source bundle.")
         return
 
     if mode == "native_leaf":
@@ -58,11 +111,9 @@ def main() -> None:
         print("Census commission fields: " + "/".join(spec.get("required_prompt_sections", []))
               + ". RETURN: STATUS/RESULT/EVIDENCE/GAPS/DEVIATIONS. "
               "Ask the parent for a governed worker when shell execution or writes are needed.")
+        print(templates)
         return
 
-    routes = registry.get("routes", {})
-    order = ["extract", "census", "research", "draft", "analysis", "debug",
-             "build", "review", "design", "judgment", "orchestration"]
     mappings = []
     contracts = []
     for route in order:
@@ -90,6 +141,7 @@ def main() -> None:
         "Every normal worker RETURN must request STATUS/RESULT/EVIDENCE/GAPS/DEVIATIONS. "
         "If the spawn guard rejects a call, fix the route/commission; never evade the guard."
     )
+    print(templates)
 
 
 if __name__ == "__main__":

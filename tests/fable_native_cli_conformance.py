@@ -14,6 +14,7 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import signal
 import subprocess
@@ -21,7 +22,8 @@ import tempfile
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-CASES = ("leaf_result", "ten_fable", "router_only", "premium_override", "incomplete_commission", "leaf_turn_limit")
+CASES = ("leaf_result", "ten_fable", "router_only", "premium_override", "incomplete_commission", "leaf_turn_limit",
+         "startup_template_result", "startup_template_missing_section")
 MARKER = "MMX_NATIVE_LEAF_FIXTURE_7114"
 ROOT_MARKER = "MMX_NATIVE_PARENT_FIXTURE_7114"
 VALUE = "MMX_FIXTURE_VALUE_63c17f"
@@ -61,6 +63,26 @@ def text_parts(value: object) -> str:
     return ""
 
 
+def startup_commission(text: str, *, missing_section: bool) -> tuple[str, str]:
+    """Consume the delivered grammar; never repair it or use the canned prompt."""
+    matches = re.findall(r"COMMISSION TEMPLATE census\n```text\n(.*?)\n```", text, re.S)
+    if len(matches) != 1 or len(matches[0].encode("utf-8")) > 8192:
+        raise ValueError("missing, ambiguous or oversized startup template")
+    template = matches[0]
+    if not template.startswith("ROUTE: census\n"):
+        raise ValueError("unexpected startup route")
+    prompt, replacements = re.subn(
+        r"<[A-Z][A-Z0-9 /_-]*>",
+        "Read fixture.txt using Read and return its exact value. " + MARKER, template)
+    if not replacements:
+        raise ValueError("startup template has no task-content slots")
+    if missing_section:
+        if "\nQUESTIONS:\n" not in prompt:
+            raise ValueError("missing-section negative has no matching label")
+        prompt = prompt.replace("\nQUESTIONS:\n", "\nQUESTIONS\n", 1)
+    return prompt, hashlib.sha256(template.encode()).hexdigest()
+
+
 def answer(blocks: list[dict], model: str, *, stream: bool) -> tuple[str, bytes]:
     stop = "tool_use" if any(b["type"] == "tool_use" for b in blocks) else "end_turn"
     message = {"id": "msg_fixture", "type": "message", "role": "assistant",
@@ -92,6 +114,8 @@ class Oracle:
         self.parent_consumed = False
         self.leaf_read = False
         self.started = False
+        self.startup_template_sha256: str | None = None
+        self.startup_commission_emissions = 0
 
     def respond(self, request: dict) -> list[dict]:
         if len(self.records) >= MAX_REQUESTS:
@@ -132,10 +156,24 @@ class Oracle:
                          "input": {"file_path": str(self.workspace / "fixture.txt")}}]
             return [{"type": "text", "text": "STATUS: PASS\nRESULT: " + VALUE + "\nEVIDENCE: fixture.txt\nGAPS: none\nDEVIATIONS: none" if self.leaf_read else "STATUS: FAIL\nRESULT: fixture read failed"}]
         if not self.started:
+            startup_prompt = None
+            if self.case in {"startup_template_result", "startup_template_missing_section"}:
+                # SessionStart context can be delivered in an assistant text block.
+                # Read direct text across roles, never a tool-result substitute.
+                startup_text = "\n".join(
+                    text_parts(b) for m in messages
+                    for b in (m.get("content") if isinstance(m.get("content"), list)
+                              else [{"type": "text", "text": m.get("content", "")}])
+                    if isinstance(b, dict) and b.get("type") == "text")
+                startup_prompt, self.startup_template_sha256 = startup_commission(
+                    startup_text + "\n" + text_parts(request.get("system")),
+                    missing_section=self.case == "startup_template_missing_section")
+                self.startup_commission_emissions += 1
             self.started = True
             count = 10 if self.case == "ten_fable" else 1
             return [{"type": "tool_use", "id": "toolu_agent_" + str(i), "name": "Agent",
-                     "input": {"description": "Bounded native fixture", "prompt": (fable_prompt() if count == 10 else
+                     "input": {"description": "Bounded native fixture", "prompt": (startup_prompt if startup_prompt is not None else
+                                          fable_prompt() if count == 10 else
                                           "ROUTE: census\nMISSION: Read the fixture and return its contents."
                                           if self.case == "incomplete_commission" else census_prompt()),
                                "subagent_type": "orchestrator" if count == 10 else "scout",
@@ -233,7 +271,7 @@ def run_case(binary: Path, root: Path, profile: dict, case: str) -> dict:
         leaf = [r for r in oracle.records if r["role"] == "leaf"]
         parents = [r for r in oracle.records if r["role"] == "parent"]
         passed = proc.returncode == 0 and not timed_out and bool(oracle.records)
-        if case == "leaf_result":
+        if case in {"leaf_result", "startup_template_result"}:
             passed = passed and oracle.leaf_read and oracle.parent_consumed and len(leaf) == 2 and stats["spawned"] == 1
             passed = passed and all(not ({"Bash", "Write", "Edit", "Agent", "Skill", "Workflow"} & set(r["tools"])) for r in leaf)
         elif case == "leaf_turn_limit":
@@ -248,8 +286,11 @@ def run_case(binary: Path, root: Path, profile: dict, case: str) -> dict:
                       and set(parents[-1]["tool_result_ids"]) == {"toolu_agent_" + str(i) for i in range(expected_errors)})
         if case == "premium_override":
             passed = passed and "NATIVE_MODEL_PIN_REQUIRED" in parents[-1]["denial_codes"]
-        if case == "incomplete_commission":
+        if case in {"incomplete_commission", "startup_template_missing_section"}:
             passed = passed and "Blocked ROUTE census" in parents[-1]["denial_codes"]
+        if case in {"startup_template_result", "startup_template_missing_section"}:
+            passed = (passed and bool(oracle.startup_template_sha256)
+                      and oracle.startup_commission_emissions == 1 and len(parents) == 2)
         passed = passed and b"NATIVE_FIXTURE_FINISHED" in out
         diagnostic = (out + b"\n" + err).decode("utf-8", errors="replace")[:2000]
         diagnostic = diagnostic.replace(str(home), "<fixture-home>").replace(str(workspace), "<fixture-workspace>")
@@ -257,6 +298,8 @@ def run_case(binary: Path, root: Path, profile: dict, case: str) -> dict:
                 "compiled_profile_sha256": profile_digest(profile), "returncode": proc.returncode,
                 "timed_out": timed_out, "requests": oracle.records, "leaf_read_value": oracle.leaf_read,
                 "parent_consumed_result": oracle.parent_consumed, "stdout_bytes": len(out),
+                "startup_template_sha256": oracle.startup_template_sha256,
+                "startup_commission_emissions": oracle.startup_commission_emissions,
                 "stderr_bytes": len(err), "stdout_sha256": hashlib.sha256(out).hexdigest(),
                 "stderr_sha256": hashlib.sha256(err).hexdigest(),
                 "completion_marker": b"NATIVE_FIXTURE_FINISHED" in out,
