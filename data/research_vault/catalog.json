@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-16T06:39:50.199945+00:00",
-  "count": 2209,
+  "generated_at": "2026-09-16T07:24:29.537109+00:00",
+  "count": 2212,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -636,6 +636,21 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-mlv2ap8xnzm-12c8c5",
+      "title": "GS Privorotsky GS Basics De Risking Solve Energy to Solve Rates Oil Inventories 15 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T12:46:40Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-rckazdgaw4p-bd3c31",
       "title": "Trading Catalysts Time for a Fed hike; and BofA Real Estate conference",
       "institution": "Bank of America",
@@ -1083,6 +1098,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-3ixzj0tddqv-df49ee",
+      "title": "BNZMO",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-15T00:23:01Z",
+      "summary_points": [
+        "**Oil price surge intensifies inflation risks**: Dubai Crude at $87.40 (17% above RBNZ’s $83.70 assumption), forcing RBNZ to reconsider rate hikes and exacerbating imported inflation pressure (NZD TWI at 65.4 vs 66.9 estimate).",
+        "**Trade deficit vulnerability**: Q2 BoP deficit at 3.6% of GDP; Middle East trade correction risks rising to 5.0% over 12 months, increasing current account fragility.",
+        "**Fed/BoE rate outlook & BoJ hike**: Market prices 85% Fed hike (post-Aug CPI), BoE holds at 3.75% (20% move odds), BoJ expected to hike to 1.25% (Friday) amid yen intervention costs and hawkish signals.",
+        "**NZD weakness & technicals**: NZD fell 1.1% vs USD (0.5815), 0.7% vs AUD (0.81); short-term resistance at 0.60, support at 0.5750; NZD/AUD downside risk below 0.8140 (13-year low).",
+        "**Critical catalysts**: Middle East tensions (oil prices), NZ domestic data (Q2 GDP, CPI), Fed rate hikes (beginning this week), and BoJ hike (Friday) dominate near-term volatility."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-eooqgs2imui-ac525a",
       "title": "We revise our forecast and expect a September hike after August CPI 2026 09 14",
       "institution": "SEB",
@@ -1264,6 +1300,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 24,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-vsdktdstcwr-1f577e",
+      "title": "S&P 500 Target Update Nudging up year end target to 7400, launching 12m target at",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-14T13:26:25Z",
+      "summary_points": [
+        "**S&P 500 Target Update**: Year-end target raised to 7400 (from 7100), 12m target at 7800; driven by Fair Value Model (35% weight) and Sell Side Indicator (15% weight), implying 3% downside from current levels.",
+        "**Bear Market Signposts**: 50% of bear market triggers active (down from 70% in May), reducing near-term bear market risk; median 12m returns +7% vs.",
+        "+12% since 1990.",
+        "**September-October Seasonality**: Historically weakest S&P 500 period (avg return -0.56%, avg correction -6.61%), signaling heightened seasonal risk for portfolio managers.",
+        "**Equity Risk Premium Compression**: Current ERP at 225bp (vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 21,
       "language": "en",
       "needs_metadata": false
     },
