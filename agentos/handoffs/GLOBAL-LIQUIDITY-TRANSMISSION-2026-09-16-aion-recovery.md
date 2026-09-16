@@ -68,16 +68,36 @@ verified:
       Current inspected matrix source uses the canonical raw-chain spot-grid
       flip or null. The Terminal comment was stale; valid matrix fallback was
       retained. The independently reproduced old-ticker response race remains.
+  - claim: Mounted and actual-browser selected-ticker regression proof now succeeds.
+    command: >
+      Native Vitest real GexDeskView mount; original-source and cleanup mutations;
+      Playwright exposure-state-identity.spec.ts with deferred HTTP responses;
+      full Vitest and tsc on the owned Terminal #592 carrier.
+    result: >
+      Twelve mounted cases pass; original base failed 8 of the first 10; cleanup
+      mutation failed its unmount case. Six real-browser cases pass at all three
+      viewports with zero retries, preserving QQQ after late SPY success/error.
+      Original base visibly rendered 760 instead of synthetic 701 and failed.
+      Restored code passed again. Full Vitest: 5446 passed, 4 todo; tsc passed.
+      All network numbers are synthetic; no production or predictive proof.
+  - claim: The liquidity hosted failing-test identity is now known, not its root cause.
+    command: >
+      Native bounded log read of job 104651188845 in run 35051016157;
+      Mastermind #124 comment 5694494810.
+    result: >
+      FAILED test_ceo_submit_armed_composition.py::test_d8_template_topology_and_protected_defaults,
+      assertion ['512', '611'] == []. Deeper trace/source read was blocked;
+      no security assertion, authority default or CI exclusion was changed.
 unverified:
   - claim: Mastermind #124 has independent review and full exact-head CI acceptance.
     what_would_verify: >
       Resolve hosted failure through an approved read path, obtain an eligible
       independent exact-head reviewer, and require full current-head checks.
-  - claim: Terminal #592 fully proves the reversed-response customer journey.
+  - claim: Terminal #592 has independent review and current-head integration acceptance.
     what_would_verify: >
-      Resolve the platform-limited mounted-proof capability without actor/tool
-      bypass; obtain actual component/browser race evidence, remaining light
-      and responsive proof, independent review, and exact-head hosted checks.
+      Review exact head 87969fb4aff5836410ffd166cc39289b562a41bc and consume its
+      current-head hosted checks. Mounted and real-browser race proof now pass;
+      neither fixture evidence nor absent Terminal light mode is production proof.
   - claim: Either candidate is deployed and production-proven.
     what_would_verify: >
       After lawful acceptance, follow each existing release owner and prove
@@ -88,8 +108,8 @@ unverified:
       owners; neither adapter nor selected-root repair supplies those features.
 unresolved:
   - Mastermind #124 remains draft with failed hosted CI and unplaced independent review.
-  - Terminal #592 remains draft; a mounted deferred-response test creation was blocked before effect and was not retried through another route.
-  - Terminal fixture screenshots cover dark EN desktop/mobile and dark ZH tablet; light and production proof are not established.
+  - Terminal #592 remains draft pending independent review and current-head CI; its mounted and real-browser race proof blockers are closed.
+  - Terminal fixture screenshots cover dark EN desktop/mobile and dark ZH tablet; the current Terminal has no light mode. Production proof remains owed.
   - Approved Executive submit/placement was not exposed to this Web session; no provider worker, review pickup or START is claimed.
 next_actions:
   - Re-pin protected Sol Skillpack and exact #124/#592 heads; read only material changes and current checks.
@@ -114,12 +134,13 @@ danger_areas:
 ## Canonical carriers
 
 Mastermind control board #123 and PR #124 own liquidity implementation and sequence.
-PR #124 source is `23f97360131d05123acc440da15780b0bb200e82`; current diagnostic
-comment is 5692332264. Its owned native workspace is
+PR #124 source is `23f97360131d05123acc440da15780b0bb200e82`; current hosted-failure
+identity comment is 5694494810 (earlier native diagnostic: 5692332264). Its owned native workspace is
 `/Volumes/Mastermind/agent-workspaces/web/w-liq3-adapter-recovery-20260915-sol-001`.
 
-Terminal issue #591 and draft PR #592 own the selected-ticker repair. Source is
-`27a759373b3feced2f313358cc0ef507155eca6b`; its committed
+Terminal issue #591 and draft PR #592 own the selected-ticker repair. Current head is
+`87969fb4aff5836410ffd166cc39289b562a41bc`; production TypeScript remains the
+27a759 semantic candidate, with later mounted/browser proof. Its committed
 `docs/AION_EXPOSURE_IDENTITY_REPAIR_2026-09-16.md` and verification JSON contain
 proof and limits. It is not a new liquidity wave or a transferred runtime lease.
 
@@ -131,3 +152,15 @@ GitHub identity; its actual status must be read rather than inferred from this f
 Protected procedure for this reconciliation: Mastermind
 `f590c068880dbb848bda90b80b73dbcb6688d6fc`, compatible Skillpack 1.0.1/bootstrap 1.
 The added Web CEO companion does not confer admission, transfer or production authority.
+
+## Latest supersession — 2026-09-16
+
+Mounted-proof and real-browser race blockers recorded earlier are now closed on
+Terminal #592; independent review, current-head CI and production release remain.
+Current procedure pin: Mastermind a78b8fe23d8e1ed129880ac47e97ebe96afa8aea.
+Observation-history design remains SPEC_ONLY on Mastermind #686 at 4b283f0245e1.
+Its source gate must honor DEC:AD-OPTIONS-CANONICAL-SOURCE-THETADATA: do not
+resurrect Polygon options entitlement or a generic new rights gate for already
+authorized ThetaData/EOD use. New redistribution outside that scope is distinct.
+The actual publication/correction identity and consumer integration still need
+architecture acceptance; this handoff creates no new archive or worker.
