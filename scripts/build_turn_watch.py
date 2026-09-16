@@ -60,19 +60,23 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s  %(message)s")
 BUDGET_SECONDS = 600.0
 
 
-def write_candidate_episode_input(artifact: dict, rows: list[dict], data_root: Path) -> Path:
+def write_candidate_episode_input(artifact: dict, rows: list[dict], data_root: Path, *,
+                                  input_schema: str = "prophet.candidate_episode_input.turn_watch/v1") -> Path:
     """Atomically write the private, uncapped TURN WATCH intake sidecar.
 
     The public document remains capped at ``site/turn_watch``.  This private Data OS input
     carries the same already-computed rows and never asks the deck to recompute them.
     """
+    if input_schema not in ("prophet.candidate_episode_input.turn_watch/v1",
+                             "prophet.candidate_episode_input.turn_watch/v2"):
+        raise ValueError("unsupported TURN WATCH input schema")
     session = artifact.get("data_session")
     if not isinstance(session, str) or not session:
         raise ValueError("TURN WATCH data_session is required for candidate episode input")
     known_at = session_window_et(session)[1].astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     artifact_sha = sha256(turn_watch.artifact_bytes(artifact)).hexdigest()
     document = {
-        "schema": "prophet.candidate_episode_input.turn_watch/v1",
+        "schema": input_schema,
         "data_session": session,
         "known_at": known_at,
         "selection_era": artifact.get("selection_era"),
@@ -84,6 +88,20 @@ def write_candidate_episode_input(artifact: dict, rows: list[dict], data_root: P
     document["content_sha256"] = sha256(canonical_json(document).encode("utf-8")).hexdigest()
     out = Path(data_root) / "us_prophet_rank" / "episode_inputs" / "turn_watch" / f"{session}.json"
     out.parent.mkdir(parents=True, exist_ok=True)
+    if out.exists():
+        previous = json.loads(out.read_bytes())
+        if not isinstance(previous, dict) or previous.get("schema") != input_schema:
+            raise ValueError("TURN WATCH source schema transition requires a new session")
+    if input_schema.endswith("/v2") and not out.exists():
+        from datetime import date as _date  # noqa: PLC0415
+
+        current_session = _date.fromisoformat(session)
+        previous_sessions = [_date.fromisoformat(p.stem)
+                             for p in out.parent.glob("????-??-??.json")]
+        if session != current_session.isoformat() or (
+            previous_sessions and current_session <= max(previous_sessions)
+        ):
+            raise ValueError("TURN WATCH source schema transition requires a new session")
     temporary = out.with_name(f".{out.name}.tmp")
     payload = canonical_json(document) + "\n"
     with temporary.open("w", encoding="utf-8") as handle:
@@ -100,6 +118,9 @@ def build(argv: list[str] | None = None) -> int:
                     help="deterministic alphabetical universe subset; disclosed in the "
                          "artifact as coverage.universe_limit")
     ap.add_argument("--cap", type=int, default=turn_watch.DECK_CAP)
+    ap.add_argument("--episode-input-schema", choices=("v1", "v2"), default="v1",
+                    help="explicit staged input protocol; v2 requires a new data session; "
+                         "default v1 preserves the deployed registry contract")
     args = ap.parse_args(argv)
 
     t0 = time.time()
@@ -116,7 +137,10 @@ def build(argv: list[str] | None = None) -> int:
 
     try:
         out = turn_watch.write_artifact(artifact, config.site_dir())
-        write_candidate_episode_input(artifact, rows, config.data_dir())
+        write_candidate_episode_input(
+            artifact, rows, config.data_dir(),
+            input_schema="prophet.candidate_episode_input.turn_watch/" + args.episode_input_schema,
+        )
     except Exception as e:  # noqa: BLE001
         print(f"::error title=turn-watch::could not write the deck artifact ({e})",
               flush=True)
