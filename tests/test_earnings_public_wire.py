@@ -304,6 +304,104 @@ def _article(tmp_path: Path) -> tuple[dict, dict, bytes, bytes]:
     return article, manifest, manifest_raw, packet_raw
 
 
+def test_http_fetch_retries_transient_tls_failure_within_the_same_read(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    url = f"{DEFAULT_SOURCE_BASE}/earnings_story_packets/objects/example.json"
+    body = b'{"ok":true}\n'
+    attempts = 0
+
+    class _Response:
+        status_code = 200
+        is_redirect = False
+        headers = {"Content-Length": str(len(body))}
+
+        def __init__(self) -> None:
+            self.url = url
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args) -> None:
+            return None
+
+        def raise_for_status(self) -> None:
+            return None
+
+        def iter_content(self, *, chunk_size: int):
+            assert chunk_size == 65_536
+            yield body
+
+    def _get(*_args, **_kwargs):
+        nonlocal attempts
+        attempts += 1
+        if attempts == 1:
+            raise wire_builder.requests.exceptions.SSLError("transient EOF")
+        return _Response()
+
+    monkeypatch.setattr(wire_builder.requests, "get", _get)
+    monkeypatch.setattr(
+        wire_builder,
+        "HTTP_FETCH_RETRY_BACKOFF_SECONDS",
+        0.0,
+        raising=False,
+    )
+
+    assert wire_builder._http_fetch(url, timeout=5.0, max_bytes=1024) == body
+    assert attempts == 2
+
+
+def test_http_fetch_exhausts_a_bounded_transport_retry_budget(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    url = f"{DEFAULT_SOURCE_BASE}/earnings_story_packets/objects/example.json"
+    attempts = 0
+
+    def _get(*_args, **_kwargs):
+        nonlocal attempts
+        attempts += 1
+        raise wire_builder.requests.exceptions.SSLError("persistent EOF")
+
+    monkeypatch.setattr(wire_builder.requests, "get", _get)
+    monkeypatch.setattr(wire_builder, "HTTP_FETCH_RETRY_BACKOFF_SECONDS", 0.0)
+
+    with pytest.raises(PublicWireBuildError, match="persistent EOF"):
+        wire_builder._http_fetch(url, timeout=5.0, max_bytes=1024)
+    assert attempts == wire_builder.HTTP_FETCH_MAX_ATTEMPTS == 3
+
+
+def test_http_fetch_does_not_retry_source_policy_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    url = f"{DEFAULT_SOURCE_BASE}/earnings_story_packets/objects/example.json"
+    attempts = 0
+
+    class _RedirectResponse:
+        status_code = 302
+        is_redirect = True
+        headers: dict[str, str] = {}
+
+        def __init__(self) -> None:
+            self.url = url
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args) -> None:
+            return None
+
+    def _get(*_args, **_kwargs):
+        nonlocal attempts
+        attempts += 1
+        return _RedirectResponse()
+
+    monkeypatch.setattr(wire_builder.requests, "get", _get)
+
+    with pytest.raises(PublicWireBuildError, match="redirected or changed origin"):
+        wire_builder._http_fetch(url, timeout=5.0, max_bytes=1024)
+    assert attempts == 1
+
+
 def test_public_wire_compiler_only_emits_exact_approved_evidence(tmp_path: Path) -> None:
     article, manifest, manifest_raw, _packet_raw = _article(tmp_path)
     verify_public_wire_article(article)
