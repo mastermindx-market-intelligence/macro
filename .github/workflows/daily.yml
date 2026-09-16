@@ -2383,7 +2383,6 @@ jobs:
             git diff --quiet "$PROPHET_CHECKPOINT_SHA" origin/main -- \
               data/prophet \
               data/prophet_arena \
-              site/factordata/us_standouts.json \
               site/prophet
           }
 
@@ -2492,8 +2491,7 @@ jobs:
               ["git", "merge-base", "--is-ancestor", checkpoint_sha, "origin/main"],
               [
                   "git", "diff", "--quiet", checkpoint_sha, "origin/main", "--",
-                  "data/prophet", "data/prophet_arena",
-                  "site/factordata/us_standouts.json", "site/prophet",
+                  "data/prophet", "data/prophet_arena", "site/prophet",
               ],
           )
           if any(subprocess.run(cmd, check=False).returncode for cmd in git_checks):
@@ -2642,7 +2640,6 @@ jobs:
           git fetch origin +refs/heads/main:refs/remotes/origin/main
           ACCEPTED_PROPHET_SHA="$(git rev-parse origin/main)"
           git checkout "$ACCEPTED_PROPHET_SHA" -- \
-            site/factordata/us_standouts.json \
             site/prophet \
             data/prophet \
             data/prophet_arena \
@@ -2654,15 +2651,14 @@ jobs:
           git clean -fd -- \
             site/prophet \
             data/prophet/origination_receipts \
+            data/prophet/origination_sources \
             data/prophet_arena \
             data/prophet_stage_shadow
           RESTORE_MISMATCH=false
           if ! git diff --cached --quiet "$ACCEPTED_PROPHET_SHA" -- \
-              site/factordata/us_standouts.json site/prophet \
-              data/prophet data/prophet_arena data/prophet_stage_shadow \
+              site/prophet data/prophet data/prophet_arena data/prophet_stage_shadow \
             || ! git diff --quiet -- \
-              site/factordata/us_standouts.json site/prophet \
-              data/prophet data/prophet_arena data/prophet_stage_shadow \
+              site/prophet data/prophet data/prophet_arena data/prophet_stage_shadow \
             || [ -n "$(git ls-files --others --exclude-standard -- data/prophet)" ]; then
             RESTORE_MISMATCH=true
           fi
@@ -2672,7 +2668,6 @@ jobs:
           # add plans/receipts/Arena ledgers that do not exist in HEAD, and an
           # earlier reset makes those accepted paths look deleted/untracked.
           git reset -q -- \
-            site/factordata/us_standouts.json \
             site/prophet \
             data/prophet \
             data/prophet_arena \

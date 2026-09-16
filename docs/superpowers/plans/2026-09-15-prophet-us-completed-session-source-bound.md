@@ -1,10 +1,10 @@
-# Prophet US Completed-Session and Source-Bound Publication Implementation Plan
+# Prophet US Completed-Session and Immutable-Source Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Restore valid pre-close US Prophet origination by scoring one completed-session panel and make the ranked board atomic with every derived Prophet publication.
+**Goal:** Restore valid pre-close US Prophet origination by scoring one completed-session panel and bind every Prophet index to immutable exact source bytes without taking ownership of the independently current customer board.
 
-**Architecture:** `build_site` captures one UTC observation timestamp and passes its completed-session cutoff into residual alpha and the stock-library producer. Live and Arena origination validate against that timestamp. The narrow checkpoint becomes the sole atomic publisher of `us_standouts.json` plus Prophet outputs, while R2, accepted-source restore, and the broad final commit enforce the same source/projection boundary.
+**Architecture:** `build_site` captures one UTC observation timestamp and passes its completed-session cutoff into residual alpha and the stock-library producer. Live and Arena origination validate against that timestamp. `scripts.build_prophet` writes a content-addressed source snapshot at `data/prophet/origination_sources/<raw_sha256>.json.gz`; the narrow checkpoint publishes that immutable provenance with Prophet outputs, while the live `us_standouts.json` board remains on its existing product publication paths.
 
 **Tech Stack:** Python 3.12, pandas, pytest, Bash, Git, GitHub Actions YAML.
 
@@ -12,14 +12,15 @@
 
 ## Global Constraints
 
-- Preserve the existing mixed-vintage refusal and all chronology fail-closed behavior.
+- Preserve the existing mixed-vintage refusal and chronology fail-closed behavior.
 - Preserve plan identity, ranking, admission, geometry, scoring weights, and trade authority.
-- Use `lib.nyse_calendar.expected_last_session` as the existing completed-session authority.
+- Use `lib.nyse_calendar.expected_last_session` as the completed-session authority.
 - Keep crypto on its continuous calendar and retain raw provisional reach in receipts.
+- Keep the live `site/factordata/us_standouts.json` board independently current.
 - Keep correction ledgers input-only and outside the output manifest.
+- Extend the existing `data/prophet` provenance plane; create no parallel authority.
 - Do not retry or mutate the cancelled China recovery operation in this plan.
-- One useful capability per PR: this plan owns the US producer and source-bound publication repair only.
-- Production acceptance requires a real nightly-path result after merge; tests and merge establish only `BUILT_NOT_PROVEN`.
+- Production acceptance requires a real nightly-path result after merge; tests establish only `BUILT_NOT_PROVEN`.
 
 ---
 
@@ -28,41 +29,33 @@
 **Files:**
 - Modify: `scripts/build_site.py`
 - Modify: `scripts/build_stock_library.py`
+- Modify: `engine/residual_alpha.py`
 - Test: `tests/test_us_completed_session_panel.py`
 
 **Interfaces:**
-- Produces: `_normalise_us_equity_universe(uni, now) -> (clipped, panel_reach, clock_receipt)`.
+- Produces: `_normalise_us_equity_universe(uni, observed_at_utc)` returning clipped rows plus raw and completed-session receipts.
 - Produces: `_clip_daily_to_completed_session(values, completed_session)`.
 - Consumes: `lib.nyse_calendar.expected_last_session(observed_at_utc)`.
-- [ ] **Step 1: Run the completed-session tests and preserve the observed RED/GREEN evidence**
+
+- [x] **Step 1: Write failing completed-session regressions**
+
+Cover pre-close provisional rows, genuine completed-session tears, crypto continuity, benchmark clipping, and one timestamp shared between residual alpha and the stock library.
+
+- [x] **Step 2: Normalize every equity input before scoring**
+
+Apply the completed-session cutoff to benchmark, universe close/high series, and per-name OHLC before extension, dispersion, lottery, technical, signal, entry, and ranking consumers. Exempt configured crypto tickers.
+
+- [x] **Step 3: Bind residual alpha and staleness to the same clock**
+
+Pass the completed session to residual alpha, pass the exact observation timestamp to the stock-library build, and write `observed_at_utc`, `expected_session`, and the normalization receipt into board staleness.
+
+- [x] **Step 4: Verify focused producer behavior**
 
 Run:
 ```bash
 python -m pytest -q tests/test_us_completed_session_panel.py
 ```
-Expected after implementation: all tests pass; before implementation the missing normalizer and clock wiring fail.
-
-- [ ] **Step 2: Normalize every equity input before scoring**
-
-Implement the minimal producer behavior:
-```python
-observed = now or datetime.now(timezone.utc)
-completed = nyse_calendar.expected_last_session(observed)
-clipped_close = close.loc[pd.to_datetime(close.index).normalize() <= pd.Timestamp(completed)]
-```
-Apply it to the benchmark, universe close/high series, and per-name OHLC before extension, dispersion, technical, signal, entry, and ranking consumers. Exempt configured crypto tickers.
-
-- [ ] **Step 3: Bind residual alpha and staleness to the same clock**
-
-Pass `asof=completed.isoformat()` to `build_alpha_data`, pass `now=observed` to the stock-library build, and write `observed_at_utc`, `expected_session`, and the completed-session normalization receipt into board staleness.
-
-- [ ] **Step 4: Re-run the focused producer tests**
-
-Run:
-```bash
-python -m pytest -q tests/test_us_completed_session_panel.py tests/test_csp_w5_board_staleness.py tests/test_extension.py
-```
-Expected: PASS, including genuine completed-session tear refusal.
+Expected: all scenarios pass, including genuine tear refusal.
 
 ### Task 2: Timestamp-aware live and Arena clocks
 
@@ -75,104 +68,123 @@ Expected: PASS, including genuine completed-session tear refusal.
 **Interfaces:**
 - Consumes: `staleness.observed_at_utc` from Task 1.
 - Produces: timestamp-aware `_resolve_origination_clocks` with date-only replay compatibility.
-- [ ] **Step 1: Preserve failing timestamp scenarios**
 
-Tests must distinguish:
+- [x] **Step 1: Write timestamp-discriminating tests**
+
+Pin:
 ```python
-preclose = "2026-09-15T15:09:00+00:00"  # accepts 2026-09-14
-postclose = "2026-09-15T22:00:00+00:00" # rejects 2026-09-14
+preclose = "2026-09-15T15:09:00+00:00"   # accepts 2026-09-14
+postclose = "2026-09-15T22:00:00+00:00"  # rejects 2026-09-14
 ```
-Live and Arena must return identical clock errors and plan IDs.
 
-- [ ] **Step 2: Implement timestamp-aware validation**
+- [x] **Step 2: Implement timestamp-aware validation**
 
-When `recorded_asof` includes a time, parse it and call `expected_last_session(observed)`. Otherwise retain `last_session_on_or_before(date)` for historical and fixture compatibility. Live and Arena both pass `staleness.observed_at_utc or asof`.
+When `recorded_asof` includes time, parse it and call `expected_last_session(observed)`. Otherwise retain `last_session_on_or_before(date)` for historical and fixture compatibility. Live and Arena pass `staleness.observed_at_utc or asof`.
 
-- [ ] **Step 3: Verify clock parity**
+- [x] **Step 3: Verify live/Arena parity**
 
 Run:
 ```bash
 python -m pytest -q tests/test_prophet_bridge.py tests/test_prophet_arena_clock_parity.py
 ```
-Expected: PASS with no live/Arena divergence.
+Expected: identical clocks, errors, and plan identities.
 
-### Task 3: Atomic source-board checkpoint
+### Task 3: Immutable source provenance
 
 **Files:**
+- Modify: `scripts/build_prophet.py`
 - Modify: `scripts/ci/daily_engine_prophet_nightly.sh`
 - Modify: `scripts/ci/daily_engine_prophet_checkpoint.sh`
 - Modify: `.github/workflows/daily.yml`
 - Modify: `scripts/ci/daily_engine_commit_outputs.sh`
+- Test: `tests/test_prophet_bridge.py`
 - Test: `tests/test_prophet_durable_checkpoint.py`
 
 **Interfaces:**
 - Consumes: exact frozen `site/factordata/us_standouts.json` bytes.
-- Produces: one delta manifest and guarded commit containing source board plus derived Prophet outputs.
+- Produces: `data/prophet/origination_sources/<sha256>.json.gz`.
+- Produces index fields: `source_board_sha256`, `source_board_snapshot_path`, `source_board_snapshot_encoding`.
+- Preserves: independently current live customer board.
 
-- [ ] **Step 1: Update workflow-contract tests before production scripts**
+- [x] **Step 1: Write red tests for the corrected ownership boundary**
 
-Update the stale split-R2 step names, add the unconditional tombstone as its own asserted step, and extend the source-bound test to require the board in checkpoint, R2, accepted-source, and broad-commit fences. Add the board to the accepted-source fixture.
+Tests must fail while the mutable board is Prophet-owned, while hash/path linkage is absent, and while accepted-source restore overwrites a fresher live board.
 
-- [ ] **Step 2: Verify RED is specific to missing source fences**
+- [x] **Step 2: Persist the exact source bytes content-addressably**
 
-Run:
-```bash
-python -m pytest -q tests/test_prophet_durable_checkpoint.py
-```
-Expected before production edits: failures name the absent board path in checkpoint and broad-commit proof blocks; stale step-name failures are gone.
-- [ ] **Step 3: Complete every source/projection fence**
+Implement `_freeze_origination_source_board` to:
+- refuse symlinks;
+- hash exact bytes with SHA-256;
+- gzip exact bytes with `mtime=0`, while keying identity on the uncompressed SHA-256;
+- write under `data/prophet/origination_sources/` using the raw SHA-256 as identity;
+- be idempotent for identical decompressed bytes, including cross-platform gzip-header variation;
+- fail closed on a collision;
+- return the parsed document, hash, and repository-relative path.
 
-Add `site/factordata/us_standouts.json` to:
+- [x] **Step 3: Bind the index and zero-origin path**
+
+Write the source hash/path into `site/prophet/index.json`. Extend both nightly snapshots with `data/prophet/origination_sources/*.json.gz`, and verify the durable snapshot before the no-new-plan return.
+
+- [x] **Step 4: Fence only immutable Prophet provenance**
+
+Add source snapshots to the checkpoint closed allowlist. Keep the mutable live board out of:
 ```text
 PROTECTED_PROPHET_PATHS
-checkpoint manifest case allowlist
-post-push current-main diff proof
-R2 shell and embedded-Python current-main proofs
+checkpoint manifest allowlist
+R2 supersession proofs
 accepted-source checkout/diff/reset
-final broad-commit checkout/reset refusal fence
+broad-engine safe restore/reset
 ```
-Do not broad-add or broad-clean `data/prophet`; preserve correction ledgers.
+Scoped broad cleanup removes uncheckpointed source snapshots but preserves correction ledgers.
 
-- [ ] **Step 4: Verify the atomic publication contract**
+- [x] **Step 5: Verify behavior and scripts**
 
 Run:
 ```bash
-python -m pytest -q tests/test_prophet_durable_checkpoint.py
+python -m pytest -q tests/test_prophet_bridge.py tests/test_prophet_durable_checkpoint.py
 bash -n scripts/ci/daily_engine_prophet_nightly.sh
 bash -n scripts/ci/daily_engine_prophet_checkpoint.sh
 bash -n scripts/ci/daily_engine_commit_outputs.sh
 python -c 'import yaml; yaml.safe_load(open(".github/workflows/daily.yml"))'
 ```
-Expected: all pass.
+Expected: exact-byte, zero-origin, collision, path-ownership, syntax, and YAML contracts pass.
 
-### Task 4: Regression, review, and immutable candidate
+### Task 4: Regression and immutable candidate
 
 **Files:**
-- Review all files changed by Tasks 1–3.
-- Create no unrelated refactor.
+- Review all Task 1–3 files and these design/plan documents.
+- Create no unrelated refactor or baseline-test repair.
 
-- [ ] **Step 1: Run the bounded regression suite**
+- [x] **Step 1: Run the bounded regression suite**
 
 Run:
 ```bash
-python -m pytest -q tests/test_us_completed_session_panel.py tests/test_prophet_bridge.py tests/test_prophet_arena_clock_parity.py tests/test_prophet_durable_checkpoint.py tests/test_csp_w5_board_staleness.py tests/test_extension.py tests/test_us_board_fail_closed_freshness.py tests/test_workflow_file_size.py
+python -m pytest -q   tests/test_us_completed_session_panel.py   tests/test_prophet_bridge.py   tests/test_prophet_arena_clock_parity.py   tests/test_prophet_durable_checkpoint.py   tests/test_prophet_r2_boundary.py   tests/test_prophet_plan_chronology_audit.py   tests/test_workflow_file_size.py
 ```
 
-- [ ] **Step 2: Inspect authority and collision boundaries**
+Run adjacent staleness/extension suites separately. Any failure outside the owned delta must be reproduced against the candidate parent or current `main` and recorded rather than silently repaired in this PR.
 
-Fetch current `origin/main`, compare movement against all owned paths, inspect PR #7161 without modifying it, and run an integrated merge-tree proof. Any owned-path or governing-source movement requires re-review before publishing.
+- [x] **Step 2: Inspect authority and collision boundaries**
 
-- [ ] **Step 3: Commit one bounded candidate**
+Fetch current `origin/main`, compare movement on every owned path, inspect PR #7161 without modifying it, and run a merge-tree proof. Owned-path movement requires re-review before publishing.
 
-Stage only the spec, plan, implementation, and discriminating tests. Commit with:
+- [x] **Step 3: Commit the bounded follow-up**
+
+Preserve the existing candidate commit and add one review correction commit:
 ```bash
-git commit -m "fix(prophet): score completed US sessions and bind source board"
+git commit -m "fix(prophet): preserve immutable source without owning live board"
 ```
 
-- [ ] **Step 4: Publish and prove the exact head**
+- [ ] **Step 4: Request independent code review**
 
-Push the existing branch, create or update its PR, confirm required CI/security checks on the exact head, and classify the capability `BUILT_NOT_PROVEN` until a real nightly run proves coherent source, non-mixed completed-session scoring, and lawful origination.
+Review against the approved outcome, source/projection integrity, product-board freshness, authority boundaries, and exact test evidence. Repair only substantiated findings.
 
-- [ ] **Step 5: Reconcile China separately**
+- [ ] **Step 5: Publish and prove the exact head**
 
-Read the cancelled run `35019907027`, current main China artifacts, R2 freshness, and landed commits. Never retry until the original carrier’s effects are known. Record the exact remaining China recovery action without mixing it into the US PR.
+Push the existing branch, create or update its PR, confirm required CI/security checks on the exact head, and classify the capability `BUILT_NOT_PROVEN` until a real nightly proves coherent scoring and lawful origination.
+
+### Task 5: Separate continuation after this PR
+
+- [ ] Reconcile the cancelled China run `35019907027` from main, run logs, store tips, and R2 effects before any retry.
+- [ ] Rebase or integrate PR #7161 as the separate rescue/acceptance cohort-truth slice.
+- [ ] After merge, observe a real US nightly and record whether valid candidates originate from a non-mixed completed-session board.

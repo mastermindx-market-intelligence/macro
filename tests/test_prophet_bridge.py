@@ -41,6 +41,8 @@ Coverage:
 """
 from __future__ import annotations
 
+import gzip
+import hashlib
 import json
 import math
 import sys
@@ -1124,6 +1126,13 @@ def test_index_json_has_required_keys(tmp_path):
         assert idx["source_unknown"] is False
         assert idx["source_basis"] == "panel_majority"
         assert idx["source_mixed_vintage"] is False
+        source_bytes = standouts_path.read_bytes()
+        source_sha = hashlib.sha256(source_bytes).hexdigest()
+        source_rel = f"data/prophet/origination_sources/{source_sha}.json.gz"
+        assert idx["source_board_sha256"] == source_sha
+        assert idx["source_board_snapshot_path"] == source_rel
+        assert idx["source_board_snapshot_encoding"] == "gzip"
+        assert gzip.decompress((tmp_path / source_rel).read_bytes()) == source_bytes
     finally:
         bp.STANDOUTS_PATH = orig_standouts
         bp.SITE_PROPHET = orig_site
@@ -1133,6 +1142,26 @@ def test_index_json_has_required_keys(tmp_path):
         bp.LEDGER_PATH = orig_ledger_path
         bp.LEDGER_DIR = orig_ledger_dir
         bp.write_showcase = orig_write_showcase
+
+
+def test_source_snapshot_is_idempotent_and_collision_safe(tmp_path, monkeypatch):
+    import scripts.build_prophet as bp
+
+    board = tmp_path / "site/factordata/us_standouts.json"
+    board.parent.mkdir(parents=True)
+    board.write_bytes(b'{"as_of":"2026-09-14","buy":[]}\n')
+    monkeypatch.setattr(bp, "STANDOUTS_PATH", board)
+    monkeypatch.setattr(bp, "LEDGER_DIR", tmp_path / "data/prophet")
+
+    first_doc, first_sha, first_rel = bp._freeze_origination_source_board()
+    second_doc, second_sha, second_rel = bp._freeze_origination_source_board()
+    assert first_doc == second_doc == {"as_of": "2026-09-14", "buy": []}
+    assert (first_sha, first_rel) == (second_sha, second_rel)
+
+    snapshot = tmp_path / first_rel
+    snapshot.write_bytes(gzip.compress(b'{"collision":true}\n', compresslevel=9, mtime=0))
+    with pytest.raises(RuntimeError, match="snapshot collision"):
+        bp._freeze_origination_source_board()
 
 
 def test_stale_frame_row_pauses_instructions_fresh_row_unchanged(tmp_path):

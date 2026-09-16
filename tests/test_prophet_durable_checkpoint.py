@@ -7,8 +7,11 @@ not rebase the engine's dirty working tree to get there.
 """
 from __future__ import annotations
 
+import gzip
+import hashlib
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -78,15 +81,18 @@ def _git(
     )
 
 
-def _write(repo: Path, relative: str, content: str) -> None:
+def _write(repo: Path, relative: str, content: str | bytes) -> None:
     path = repo / relative
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(content, encoding="utf-8")
+    if isinstance(content, bytes):
+        path.write_bytes(content)
+    else:
+        path.write_text(content, encoding="utf-8")
 
 
 def _accepted_source_fixture(
     tmp_path: Path,
-) -> tuple[Path, str, dict[str, str], tuple[str, ...]]:
+) -> tuple[Path, str, dict[str, str | bytes], tuple[str, ...]]:
     origin = tmp_path / "origin.git"
     runner = tmp_path / "runner"
     _git(tmp_path, "init", "--bare", str(origin))
@@ -110,11 +116,19 @@ def _accepted_source_fixture(
     _git(runner, "remote", "add", "origin", str(origin))
     _git(runner, "push", "-u", "origin", "main")
 
+    source_bytes = b'{"generation":"accepted-source-board"}\n'
+    source_sha = hashlib.sha256(source_bytes).hexdigest()
+    source_rel = f"data/prophet/origination_sources/{source_sha}.json.gz"
     accepted = {
-        "site/factordata/us_standouts.json": '{"generation":"accepted-board"}\n',
-        "site/prophet/index.json": '{"generation":"accepted"}\n',
+        "site/prophet/index.json": json.dumps({
+            "generation": "accepted",
+            "source_board_sha256": source_sha,
+            "source_board_snapshot_path": source_rel,
+            "source_board_snapshot_encoding": "gzip",
+        }, sort_keys=True) + "\n",
         "site/prophet/plans/NEW-BULL-20260808.json": '{"id":"NEW-BULL-20260808"}\n',
         "data/prophet/origination_receipts/run-2.json": '{"schema":"receipt/v1"}\n',
+        source_rel: gzip.compress(source_bytes, compresslevel=9, mtime=0),
         "data/prophet_arena/price_basis_trigger_v2/C0_champion_mirror.jsonl": (
             '{"plan_id":"NEW-BULL-20260808"}\n'
         ),
@@ -132,6 +146,11 @@ def _accepted_source_fixture(
         "data/prophet_arena/local-only.json",
     )
     _write(runner, "site/prophet/index.json", '{"generation":"dirty-build"}\n')
+    _write(
+        runner,
+        "site/factordata/us_standouts.json",
+        '{"generation":"fresh-product-board"}\n',
+    )
     for relative in local_only:
         _write(runner, relative, "local-only\n")
     return runner, accepted_sha, accepted, local_only
@@ -381,7 +400,13 @@ def test_accepted_source_restore_handles_new_paths_over_a_stale_head(
     assert "ready=true" in outputs
     assert f"accepted_sha={accepted_sha}" in outputs
     for relative, content in accepted.items():
-        assert (repo / relative).read_text(encoding="utf-8") == content
+        if isinstance(content, bytes):
+            assert (repo / relative).read_bytes() == content
+        else:
+            assert (repo / relative).read_text(encoding="utf-8") == content
+    assert (repo / "site/factordata/us_standouts.json").read_text(encoding="utf-8") == (
+        '{"generation":"fresh-product-board"}\n'
+    )
     for relative in local_only:
         assert not (repo / relative).exists()
     # Downstream readers get accepted bytes without staging them against the
@@ -438,48 +463,28 @@ def test_checkpoint_never_rebases_the_dirty_engine_worktree() -> None:
     assert checkpoint["timeout-minutes"] == 12
 
 
-def test_source_board_delta_is_measured_against_checkout_head(tmp_path: Path) -> None:
-    """The pre-built board must ride the narrow checkpoint with its projection.
+def test_zero_origin_night_checkpoints_exact_source_snapshot_not_live_board(
+    tmp_path: Path, monkeypatch
+) -> None:
+    import scripts.build_prophet as bp
 
-    ``build_site`` writes the board before the Prophet step begins, so a normal
-    before/after worktree snapshot sees no board change.  The publication
-    baseline must instead compare those frozen live bytes with checkout HEAD.
-    """
     repo = tmp_path / "repo"
-    repo.mkdir()
-    _git(repo, "init", "-b", "main")
-    _git(repo, "config", "user.name", "Prophet source-board test")
-    _git(repo, "config", "user.email", "prophet-source@example.invalid")
     board_rel = "site/factordata/us_standouts.json"
-    old_board = {
-        "as_of": "2026-09-11",
+    board = {
+        "as_of": "2026-09-14",
         "gate_go": False,
         "buy": [],
         "staleness": {
-            "price_through": "2026-09-11",
+            "price_through": "2026-09-14",
             "delayed": False,
             "unknown": False,
             "basis": "panel_majority",
             "inputs": {"panel": {"mixed_vintage": False}},
         },
     }
-    new_board = {
-        **old_board,
-        "as_of": "2026-09-14",
-        "staleness": {
-            **old_board["staleness"],
-            "price_through": "2026-09-14",
-            "observed_at_utc": "2026-09-15T15:09:00+00:00",
-            "expected_session": "2026-09-14",
-        },
-    }
-    _write(repo, board_rel, json.dumps(old_board, sort_keys=True) + "\n")
-    _git(repo, "add", board_rel)
-    _git(repo, "commit", "-m", "old source board")
-    _write(repo, board_rel, json.dumps(new_board, sort_keys=True) + "\n")
+    _write(repo, board_rel, json.dumps(board, sort_keys=True) + "\n")
+    (repo / "site/prophet/plans").mkdir(parents=True)
 
-    blocks = _python_heredocs(_step(PROPHET_STEP)["run"])
-    assert len(blocks) >= 3
     env = os.environ.copy()
     env.update({
         "GITHUB_WORKSPACE": str(repo),
@@ -489,44 +494,72 @@ def test_source_board_delta_is_measured_against_checkout_head(tmp_path: Path) ->
         "PROPHET_SOURCE_BLOB": str(tmp_path / "source-board.json"),
         "PYTHONPATH": str(ROOT),
     })
-    for source in (blocks[0], blocks[2]):
-        result = subprocess.run(
-            [sys.executable, "-c", source],
-            cwd=ROOT,
-            env=env,
-            check=False,
-            capture_output=True,
-            text=True,
-        )
-        assert result.returncode == 0, result.stdout + result.stderr
+    blocks = _python_heredocs(_step(PROPHET_STEP)["run"])
+    assert len(blocks) == 3
 
+    first = subprocess.run(
+        [sys.executable, "-c", blocks[0]],
+        cwd=ROOT, env=env, check=False, capture_output=True, text=True,
+    )
+    assert first.returncode == 0, first.stdout + first.stderr
+
+    monkeypatch.setattr(bp, "STANDOUTS_PATH", repo / board_rel)
+    monkeypatch.setattr(bp, "LEDGER_DIR", repo / "data/prophet")
+    _, source_sha, source_rel = bp._freeze_origination_source_board()
+    source_path = repo / source_rel
+    assert gzip.decompress(source_path.read_bytes()) == (repo / board_rel).read_bytes()
+
+    receipt = subprocess.run(
+        [sys.executable, "-c", blocks[1]],
+        cwd=ROOT, env=env, check=False, capture_output=True, text=True,
+    )
+    assert receipt.returncode == 0, receipt.stdout + receipt.stderr
+    assert not (repo / "data/prophet/origination_receipts").exists()
+
+    manifest = subprocess.run(
+        [sys.executable, "-c", blocks[2]],
+        cwd=ROOT, env=env, check=False, capture_output=True, text=True,
+    )
+    assert manifest.returncode == 0, manifest.stdout + manifest.stderr
     rows = [line.split("\t") for line in (tmp_path / "delta.tsv").read_text().splitlines()]
-    board_rows = [row for row in rows if row[0] == board_rel]
-    assert len(board_rows) == 1
-    _, before, after = board_rows[0]
-    assert before != "MISSING"
-    assert before != after
+    paths = [row[0] for row in rows]
+    assert source_rel == f"data/prophet/origination_sources/{source_sha}.json.gz"
+    assert paths == [source_rel]
+    assert board_rel not in paths
 
 
-def test_source_board_is_closed_inside_every_checkpoint_proof() -> None:
+def test_source_snapshot_not_live_board_is_closed_inside_every_checkpoint_proof() -> None:
     build_run = _step(PROPHET_STEP)["run"]
     checkpoint_run = _step(CHECKPOINT_STEP)["run"]
     publish_run = _step(R2_PUBLISH_STEP)["run"]
     accepted_run = _step(ACCEPTED_SOURCE_STEP)["run"]
     final_run = _step("commit engine outputs")["run"]
     board = "site/factordata/us_standouts.json"
+    source_dir = "data/prophet/origination_sources"
 
-    assert build_run.count(f'"{board}",') == 2
-    assert "before[board_rel] = head_fingerprint(board_rel)" in build_run
-    assert checkpoint_run.count(board) >= 3
-    assert board in checkpoint_run.split("PROTECTED_PROPHET_PATHS=(", 1)[1].split(")", 1)[0]
-    assert board in checkpoint_run.split('case "$rel" in', 1)[1].split("*)", 1)[0]
-    assert publish_run.count(board) >= 2
-    assert accepted_run.count(board) >= 3
+    exact_blocks = re.findall(r"exact = \{(.*?)\n\}", build_run, flags=re.S)
+    assert len(exact_blocks) == 2
+    assert all(board not in block for block in exact_blocks)
+    assert build_run.count(f'"{source_dir}": "*.json.gz"') == 2
+    assert "head_fingerprint" not in build_run
+
+    protected = checkpoint_run.split("PROTECTED_PROPHET_PATHS=(", 1)[1].split(")", 1)[0]
+    allowlist = checkpoint_run.split('case "$rel" in', 1)[1].split("*)", 1)[0]
+    assert board not in protected
+    assert board not in allowlist
+    assert f"{source_dir}/*.json.gz" in allowlist
+    assert board not in publish_run
+    assert board not in accepted_run
+
     safe_restore = final_run.split("if ! git checkout HEAD --", 1)[1].split("; then", 1)[0]
     reset_block = final_run.split("git reset -q --", 1)[1].split("git clean -fd --", 1)[0]
-    assert board in safe_restore
-    assert board in reset_block
+    assert board not in safe_restore
+    assert board not in reset_block
+    assert "data/prophet" in reset_block
+    clean_tail = final_run.split("git clean -fd --", 2)[2].split(
+        "# Re-exclude", 1
+    )[0]
+    assert source_dir in clean_tail
 
 
 def test_build_emits_a_hashed_closed_allowlist_delta_manifest() -> None:

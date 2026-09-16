@@ -49,6 +49,8 @@ is forbidden in site artifacts (enforced by check_validated_claims.py).
 from __future__ import annotations
 
 import argparse
+import gzip
+import hashlib
 import json
 import logging
 import math
@@ -121,6 +123,75 @@ STATES_DIR     = SITE_PROPHET / "states"
 INDEX_PATH     = SITE_PROPHET / "index.json"
 LEDGER_DIR     = _REPO / "data" / "prophet"
 LEDGER_PATH    = LEDGER_DIR / "ledger.jsonl"
+
+
+def _freeze_origination_source_board(
+    board_path: str | Path | None = None,
+) -> tuple[dict[str, Any], str, str]:
+    """Persist the exact board bytes under the existing Prophet provenance root.
+
+    ``us_standouts.json`` is a live product artifact with several lawful render
+    publishers, so it cannot itself be owned by the narrow Prophet checkpoint.
+    Prophet instead binds its index to this content-addressed immutable gzip copy.
+    The filename hashes the raw bytes; zero-mtime gzip bounds repository growth
+    while decompression recovers the exact source. Reusing the same raw bytes
+    is idempotent, and a hash-path collision fails closed.
+    """
+    path = Path(STANDOUTS_PATH if board_path is None else board_path)
+    if path.is_symlink():
+        raise RuntimeError(f"refusing symlinked Prophet source board: {path}")
+    raw = path.read_bytes()
+    doc = json.loads(raw)
+    if not isinstance(doc, dict):
+        raise RuntimeError(f"Prophet source board must be a JSON object: {path}")
+
+    sha256 = hashlib.sha256(raw).hexdigest()
+    compressed = gzip.compress(raw, compresslevel=9, mtime=0)
+    source_dir = LEDGER_DIR / "origination_sources"
+    source_dir.mkdir(parents=True, exist_ok=True)
+    snapshot = source_dir / f"{sha256}.json.gz"
+
+    def _read_snapshot_raw() -> bytes:
+        if snapshot.is_symlink():
+            raise RuntimeError(f"refusing symlinked Prophet source snapshot: {snapshot}")
+        try:
+            return gzip.decompress(snapshot.read_bytes())
+        except (OSError, EOFError) as exc:
+            raise RuntimeError(
+                f"Prophet source snapshot collision at {snapshot}: unreadable gzip payload"
+            ) from exc
+
+    if snapshot.exists():
+        if _read_snapshot_raw() != raw:
+            raise RuntimeError(
+                f"Prophet source snapshot collision at {snapshot}: raw bytes differ"
+            )
+    else:
+        temporary = source_dir / f".{sha256}.{os.getpid()}.tmp"
+        try:
+            with temporary.open("xb") as handle:
+                handle.write(compressed)
+                handle.flush()
+                os.fsync(handle.fileno())
+            try:
+                os.link(temporary, snapshot)
+            except FileExistsError:
+                if _read_snapshot_raw() != raw:
+                    raise RuntimeError(
+                        f"Prophet source snapshot collision at {snapshot}: concurrent raw bytes differ"
+                    )
+        finally:
+            temporary.unlink(missing_ok=True)
+
+    repo_root = LEDGER_DIR.parents[1]
+    try:
+        relative = snapshot.relative_to(repo_root).as_posix()
+    except ValueError as exc:
+        raise RuntimeError(
+            f"Prophet provenance root {source_dir} is outside repository root {repo_root}"
+        ) from exc
+    return doc, sha256, relative
+
 
 # R2_INDEX_KEY is GONE ON PURPOSE (DEC:B1-PROPHET-PUBLIC-SPLIT).  The full
 # Prophet plan book (site/prophet/index.json) is premium/private and must
@@ -1893,7 +1964,11 @@ def main() -> None:
 
     asof: str = args.date
     log.info("build_prophet: starting — asof=%s publish=%s", asof, args.publish)
-    _standouts_doc = _read_json(STANDOUTS_PATH) or {}
+    (
+        _standouts_doc,
+        source_board_sha256,
+        source_board_snapshot_path,
+    ) = _freeze_origination_source_board(STANDOUTS_PATH)
     _source_staleness = (
         _standouts_doc.get("staleness")
         if isinstance(_standouts_doc.get("staleness"), dict) else {}
@@ -2511,6 +2586,9 @@ def main() -> None:
         "source_unknown": source_unknown,
         "source_basis": source_basis,
         "source_mixed_vintage": source_mixed_vintage,
+        "source_board_sha256": source_board_sha256,
+        "source_board_snapshot_path": source_board_snapshot_path,
+        "source_board_snapshot_encoding": "gzip",
         "cadence": "nightly-EOD",
         "authority_tier": "display",
         # ANTICIPATION §6.2 A1 — the selection rule tonight's plans were originated

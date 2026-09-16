@@ -64,7 +64,6 @@ PROTECTED_PROPHET_PATHS=(
   data/prophet/ledger_corrections.jsonl
   data/prophet
   data/prophet_arena
-  site/factordata/us_standouts.json
   site/prophet
 )
 if ! git diff --quiet "$SOURCE_HEAD" origin/main -- \
@@ -82,12 +81,12 @@ while IFS=$'\t' read -r rel before_sha after_sha; do
       ;;
   esac
   case "$rel" in
-    site/factordata/us_standouts.json|\
     site/prophet/index.json|site/prophet/showcase.json|\
     site/prophet/board_read_sparks.json|\
     data/prophet/ledger.jsonl|data/prophet/ledger_quarantine.json|\
     data/prophet_arena/scoreboard.json|\
     data/prophet/origination_receipts/*.json|\
+    data/prophet/origination_sources/*.json.gz|\
     data/prophet/legacy_shadow/*/*.parquet|\
     data/prophet_arena/price_basis_trigger_v2/C0_champion_mirror.jsonl|\
     data/prophet_arena/price_basis_trigger_v2/C1_buy_soon_first.jsonl|\
@@ -192,7 +191,6 @@ while push_attempt; do
         || ! git diff --quiet "$CHECKPOINT_SHA" origin/main -- \
           data/prophet \
           data/prophet_arena \
-          site/factordata/us_standouts.json \
           site/prophet; then
         echo "::warning title=Prophet R2 arm superseded::origin/main advanced a Prophet publication or correction after checkpoint $CHECKPOINT_SHA; this older build will not write R2"
         exit 0

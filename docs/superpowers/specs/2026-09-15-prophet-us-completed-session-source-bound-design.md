@@ -1,56 +1,91 @@
-# Prophet US Completed-Session and Source-Bound Publication Design
+# Prophet US Completed-Session and Immutable-Source Design
 
-**Status:** Approved by Chairman in the active Sol session on 2026-09-15.
+**Status:** Chairman-approved outcome; architecture corrected during adversarial implementation review on 2026-09-15.
 
-**Outcome:** Restore lawful US Prophet origination on weekday pre-close runs without weakening mixed-vintage safety, and ensure the exact ranked board and every derived Prophet publication become durable atomically.
+**Outcome:** Restore lawful US Prophet origination on weekday pre-close runs without weakening mixed-vintage safety, and make every Prophet index recoverable to the exact ranked-board bytes it used without taking ownership of the independently current customer board.
 
 ## User and machine jobs
 
-The user must receive fresh Prophet plans when valid candidates exist, rather than a zero-pick surface caused by provisional daily bars or a publication-date clock error.
+The user must receive fresh Prophet plans when valid candidates exist, rather than a zero-pick surface caused by provisional daily bars or a publication-date clock error. The live US candidate board must also remain current across its existing daily, render, and closing-bell publishers.
 
-The machine must score one coherent completed-session US equity cross-section, preserve raw vendor reach for diagnostics, validate entry-price clocks against the actual observation instant, and publish the source board with its derived plans through one guarded checkpoint.
+The machine must score one coherent completed-session US equity cross-section, preserve raw vendor reach for diagnostics, validate entry-price clocks against the actual observation instant, and bind each Prophet publication to an immutable exact source snapshot.
 
 ## Confirmed failure chain
 
-On 2026-09-15 the US board combined 3,038 members ending on the completed 2026-09-14 session with 198 members already carrying provisional 2026-09-15 daily bars. Ranking happened before the existing mixed-vintage guard refused all eligible candidates.
+On 2026-09-15 the US board combined 3,038 members ending on the completed 2026-09-14 session with 198 members already carrying provisional 2026-09-15 daily bars. Ranking occurred before the existing mixed-vintage guard correctly refused all eligible candidates.
 
-A second defect treated the date-only publication stamp `2026-09-15` as though that session were already complete, rejecting the valid 2026-09-14 price basis during the 2026-09-15 trading day.
+A second defect treated the date-only publication stamp `2026-09-15` as though that session were already complete. During the 2026-09-15 trading day, that rejected the valid 2026-09-14 price basis.
 
-A third defect let the narrow Prophet checkpoint publish plans and `site/prophet/index.json` without publishing the exact `site/factordata/us_standouts.json` bytes they derived from. The later broad engine commit could also publish that board after the narrow checkpoint refused, recreating a split source/projection state.
+A third defect let `site/prophet/index.json` reach `main` while the exact source board used for that build remained runner-local. Production consequently carried a Prophet index whose `source_board_asof` was 2026-09-14 beside a canonical live board still stamped 2026-09-11.
 
 ## Architecture
 
-Capture one UTC observation timestamp at the start of the US board build. Derive one `expected_last_session(observed_at_utc)` and reuse it across residual alpha, benchmark context, the stock universe, per-name OHLC, signal and entry gauges, extension and dispersion reads, staleness, live origination, and Prophet Arena.
-US equities and equity-derived benchmarks are sliced to dates at or before that completed session before any scoring. Crypto remains on its continuous calendar. The receipt preserves the raw maximum date and the bounded names carrying provisional rows, so normalization changes the scoring authority without deleting evidence.
+### One completed-session scoring plane
+
+`build_site` captures one UTC observation timestamp and derives one `lib.nyse_calendar.expected_last_session(observed_at_utc)`. The same cutoff is passed into residual alpha and the stock-library producer.
+
+Before any US-equity ranking, extension, dispersion, lottery, technical, entry, or per-name scoring read, close/high/OHLC inputs are sliced to dates at or before that completed session. Crypto remains on its continuous calendar. Raw maximum dates and provisional-name counts remain in the receipt, so normalization changes scoring authority without deleting evidence.
 
 The existing mixed-vintage gate remains unchanged. After normalization it judges differences among completed session dates, so a genuinely torn Monday/Friday panel still fails closed.
 
-Live and Arena origination read `staleness.observed_at_utc` when present. Timestamp-aware validation uses `expected_last_session`; date-only historical fixtures and replay inputs retain the existing `last_session_on_or_before` fallback.
+### Observation-aware origination clocks
 
-## Source-bound publication
+Live and Arena origination read `staleness.observed_at_utc` when present. Timestamp-aware validation uses `expected_last_session(observed_at_utc)`. Date-only historical fixtures and replay inputs retain the existing `last_session_on_or_before(date)` compatibility path.
 
-The exact board file is part of the Prophet-owned delta even though `build_site` wrote it before the Prophet step. Its before-fingerprint therefore comes from checkout `HEAD`, while its after-fingerprint comes from the frozen working-tree bytes hashed into the origination source snapshot.
+Thus:
 
-`site/factordata/us_standouts.json` must participate in every checkpoint boundary:
+- Tuesday before the settlement cutoff accepts Monday as the price basis.
+- Tuesday after the settlement cutoff requires Tuesday.
+- Weekend publication accepts Friday.
+- A genuinely stale completed-session board remains refused.
 
-- the build-owned exact allowlist and delta manifest;
-- checkpoint protected-path race detection;
-- checkpoint manifest path allowlist and byte verification;
-- post-push current-main proof;
-- public-health R2 supersession proofs;
-- accepted-source restore for downstream derived ledgers;
-- final broad-engine safe restore and reset, so checkpoint refusal cannot be bypassed.
+### Immutable source provenance, not mutable-board ownership
 
-The narrow checkpoint remains the sole publisher for this board-plus-Prophet operation. Correction ledgers remain inputs and never enter the output manifest. Deletions, symlinks, same-path races, off-main dispatches, and changed source bytes remain fail-closed.
+`site/factordata/us_standouts.json` is a first-class product and machine-context artifact. Daily, render, closing-bell, engine-render, weekly, and early-close lanes lawfully refresh it. Prophet must not make that live file exclusive to its narrow checkpoint or restore an older accepted board over a newer customer board.
+
+Instead, `scripts.build_prophet` freezes the exact input bytes under the existing Prophet provenance root:
+
+```text
+data/prophet/origination_sources/<sha256>.json.gz
+```
+
+The snapshot is content-addressed, immutable, and gzip-compressed with `mtime=0`. Its filename is keyed by the SHA-256 of the uncompressed board bytes, so decompression recovers the exact source while avoiding roughly 450 MB/year of raw working-tree growth at the current board size; raw-byte identity also tolerates harmless gzip-header variation across runtimes. Reusing identical raw bytes is idempotent; a different payload at the same hash path is a fail-closed collision. `site/prophet/index.json` records:
+
+```text
+source_board_sha256
+source_board_snapshot_path
+source_board_snapshot_encoding = gzip
+```
+
+The nightly's already-existing temporary source freeze verifies that:
+
+1. the live board does not change across the build;
+2. the temporary byte copy has the expected hash;
+3. decompressing the durable immutable snapshot recovers exactly those bytes.
+
+This verification occurs before the zero-new-plan return, so an honestly empty origination night still preserves its exact source.
+
+### Checkpoint and restore boundaries
+
+The immutable snapshot, not the mutable live board, participates in the Prophet publication boundary:
+
+- both pre/post build-owned snapshots include `data/prophet/origination_sources/*.json.gz`;
+- the checkpoint's closed path allowlist accepts only those content-addressed JSON files;
+- `data/prophet` remains protected against races and supersession;
+- accepted-source restore carries current accepted Prophet plans, ledgers, Arena state, and source snapshots;
+- broad-engine refusal cleanup removes only uncheckpointed source snapshots while leaving correction ledgers untouched.
+
+The live `us_standouts.json` board remains outside Prophet checkpoint, R2 supersession, accepted-source restore, and broad-commit refusal ownership. Its existing product publishers remain intact.
 
 ## Failure and null behavior
 
-A missing or malformed observation timestamp does not authorize freshness. Existing date-only semantics remain available only where the caller supplied no timestamp.
+A missing or malformed observation timestamp does not authorize freshness. Date-only fallback applies only when the caller supplied no timestamp.
 
 An empty candidate night is valid. A non-empty eligible population with zero originations remains an acceptance alarm, not permission to weaken chronology or mixed-vintage gates.
-A failed narrow checkpoint leaves the prior accepted source and projection authoritative. Downstream shadow ledgers may run only after restoring both from current accepted `origin/main`.
 
-The public R2 payload remains the minimal health projection. The full plan book remains forbidden on public R2, and its unconditional tombstone remains a separate step.
+A source-byte drift, missing durable snapshot, symlink, hash-path collision, checkpoint race, or same-path conflict withholds the entire Prophet checkpoint. The prior accepted Prophet projection remains authoritative. The independently current customer board is never rolled back as a side effect.
+
+The public R2 payload remains the minimal health projection. The full plan book and immutable source snapshot remain private; the unconditional public-index tombstone remains separate.
 
 ## Non-goals
 
@@ -58,21 +93,24 @@ The public R2 payload remains the minimal health projection. The full plan book 
 - Do not create a new clock, event, publication, retry, or health authority.
 - Do not change Prophet admission, ranking, scoring weights, plan identity, geometry, or trade authority.
 - Do not use provisional same-day daily bars as completed-session evidence.
-- Do not combine the separate China recovery effect reconciliation into this US source-writing operation.
-- Do not replace PR #7161's market-session cohort repair; integrate or rebase that separate control-plane slice after this producer repair is accepted.
+- Do not make the live US board Prophet-exclusive or stale another product to prove provenance.
+- Do not combine China effect reconciliation into this US modifying carrier.
+- Do not replace PR #7161's market-session cohort repair; integrate that separate control-plane slice after this producer repair is accepted.
 
 ## Acceptance
 
-The implementation is accepted only when all of the following are true on one immutable candidate head:
+The implementation is accepted on one immutable candidate head only when:
 
 1. A pre-close Tuesday observation scores every US equity through Monday while retaining raw Tuesday reach.
 2. Crypto retains its continuous-calendar row.
-3. A genuine completed-session tear still reports `mixed_vintage=true` and remains blocked.
+3. A genuine completed-session tear still reports `mixed_vintage=true` and is refused.
 4. Pre-close Monday price basis validates; the same board after Tuesday settlement fails stale.
 5. Live origination and Arena use the same observation clock.
 6. Residual alpha and stock-library scoring use the same completed-session cutoff.
-7. The source board is in every narrow checkpoint, R2 supersession, accepted-source restore, and broad-commit refusal fence.
-8. Existing Prophet chronology, staleness, extension, workflow-contract, and checkpoint tests remain green.
-9. A real scheduled or bounded production-path run originates from a coherent current board, or truthfully reports no valid eligible candidates for reasons other than the repaired defects.
+7. The index hash/path resolves to byte-identical immutable source data.
+8. A zero-origin night still adds the immutable source snapshot to the checkpoint manifest.
+9. The live customer board is absent from Prophet checkpoint and accepted-source restore ownership.
+10. Existing Prophet chronology, staleness, extension, R2-boundary, workflow, and checkpoint contracts remain green, apart from independently reproduced baseline failures outside this delta.
+11. A real nightly-path run originates from a coherent current board, or truthfully reports no valid candidates for reasons other than the repaired defects.
 
-Merging the implementation establishes `BUILT_NOT_PROVEN`. Only an observed production run through the real nightly path can establish `PROVEN_LIVE`.
+Merging establishes `BUILT_NOT_PROVEN`. Only a real production nightly proves `PROVEN_LIVE`.
