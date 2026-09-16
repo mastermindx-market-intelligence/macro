@@ -8071,10 +8071,10 @@ html[data-theme="light"] :is(
           <span class="l-zh">{% if _mx5_hist_n > 0 and _mx5_hist_n < 60 %}近 {{ _mx5_hist_n }} 交易日走势{% else %}60 交易日走势{% endif %}</span>
         </span>
         {# The display path is ledger history plus the current settled measured endpoint
-           when the ledger has not accrued that session yet. "Through" is intentionally
-           provenance-neutral: it remains true for either a ledger row or the settled board. #}
+           when the ledger has not accrued that session yet. "Settled through" names the stable close explicitly and remains truthful
+           if risk_state_live.js later appends a provisional intraday point beyond it. #}
         {% set _ph_last_d = _mx5_hist[-1].asof if (_mx5_hist and _mx5_hist[-1].asof is defined and _mx5_hist[-1].asof and _mx5_hist[-1].asof | length >= 10) else none %}
-        <span class="mx5-path-meta">{% if _ph_last_d %}<span class="l-en">Measured blend &middot; through {{ _mx5_mos_en[_ph_last_d[5:7]|int] }} {{ _ph_last_d[8:10]|int }}</span><span class="l-zh">实测合成分 · 截至 {{ _ph_last_d[5:7]|int }}月{{ _ph_last_d[8:10]|int }}日</span>{% else %}<span class="l-en">Measured blend</span><span class="l-zh">实测合成分</span>{% endif %}</span>
+        <span class="mx5-path-meta">{% if _ph_last_d %}<span class="l-en">Measured blend &middot; settled through {{ _mx5_mos_en[_ph_last_d[5:7]|int] }} {{ _ph_last_d[8:10]|int }}</span><span class="l-zh">实测合成分 · 已结算至 {{ _ph_last_d[5:7]|int }}月{{ _ph_last_d[8:10]|int }}日</span>{% else %}<span class="l-en">Measured blend</span><span class="l-zh">实测合成分</span>{% endif %}</span>
       </div>
       {% if _mx5_hist %}
       {# ── Legit chart geometry (Order 1) ──────────────────────────────────
