@@ -4393,9 +4393,10 @@ def _ms_history_view(current: dict | None = None) -> list[dict] | None:
     disagree, the card ships two numbers for the same date: on 2026-07-31 the
     gauge baked 69 / Risk-on while the chart's endpoint baked 66, and the header's
     "last graded <date>" stamp disclosed nothing, because the two dates matched.
-    The DISPLAY endpoint therefore follows the measured blend on the board it sits next to;
-    the logged row on disk is left exactly as it was written. Legacy rows without raw_score
-    fall back to score."""
+    The DISPLAY endpoint therefore follows the measured blend on the board it sits next to.
+    If the settled board is newer than the ledger tail, it is appended to the display path so
+    the chart cannot stop on an older score. The logged rows on disk are left exactly as written.
+    Legacy rows without raw_score fall back to score."""
     try:
         p = config.data_dir() / "market_state" / "forward_log.jsonl"
         if not p.exists():
@@ -4422,12 +4423,19 @@ def _ms_history_view(current: dict | None = None) -> list[dict] | None:
         cur_score = (current or {}).get("raw_score")
         if cur_score is None:
             cur_score = (current or {}).get("score")
-        if cur_asof and cur_score is not None and cur_asof == out[-1]["asof"] \
-                and int(cur_score) != out[-1]["score"]:
-            log.info("ms_history: display endpoint %s %d -> %d (measured board blend; "
-                     "forward_log row untouched)",
-                     cur_asof, out[-1]["score"], int(cur_score))
-            out[-1] = {"asof": cur_asof, "score": int(cur_score)}
+        if cur_asof and cur_score is not None:
+            cur_score = int(cur_score)
+            last_asof = out[-1]["asof"]
+            if cur_asof == last_asof and cur_score != out[-1]["score"]:
+                log.info("ms_history: display endpoint %s %d -> %d (measured board blend; "
+                         "forward_log row untouched)",
+                         cur_asof, out[-1]["score"], cur_score)
+                out[-1] = {"asof": cur_asof, "score": cur_score}
+            elif cur_asof > last_asof:
+                log.info("ms_history: appending settled display endpoint %s=%d after ledger %s "
+                         "(forward_log untouched)", cur_asof, cur_score, last_asof)
+                out.append({"asof": cur_asof, "score": cur_score})
+                out = out[-60:]
         return out
     except Exception:  # noqa: BLE001 — additive, never fatal
         return None
