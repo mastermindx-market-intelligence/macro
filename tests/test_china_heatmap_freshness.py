@@ -637,7 +637,17 @@ def test_post_rebase_tree_resamples_the_session_clock_and_isolates_failure() -> 
     assert 'scripts.check_china_heatmap_freshness --now "$heatmap_now"' in post_rebase
     assert 'rm -f "$RUNNER_TEMP/china-heatmap-failed"' in post_rebase
     assert 'touch "$RUNNER_TEMP/china-heatmap-failed"' in post_rebase
-    assert "git checkout HEAD -- site/marketdata/china_heatmap.json site/china_heatmap.html" in post_rebase
+    # HEAD contains this run's engine commit and may already carry a heatmap that
+    # became stale while the long job crossed the settle boundary. Roll back to
+    # post-fetch origin/main and commit that compensation before any push.
+    restore = "git checkout origin/main -- site/marketdata/china_heatmap.json site/china_heatmap.html"
+    stage = "git add site/marketdata/china_heatmap.json site/china_heatmap.html"
+    compensate = 'git commit -m "render-heal: hold stale China heatmap at origin main"'
+    assert restore in post_rebase
+    assert stage in post_rebase
+    assert compensate in post_rebase
+    assert "git checkout HEAD -- site/marketdata/china_heatmap.json site/china_heatmap.html" not in post_rebase
+    assert post_rebase.index(restore) < post_rebase.index(stage) < post_rebase.index(compensate)
 
 
 def test_heatmap_failure_turns_the_job_red_only_after_publish_tail() -> None:

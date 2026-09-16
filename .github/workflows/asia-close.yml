@@ -912,16 +912,32 @@ jobs:
               # attempt: a long run can cross the 09:00 UTC mainland-settle edge,
               # and yesterday must not remain acceptable after that boundary.
               # Freeze the fresh value only across this JSON + SSR + verifier pair.
-              # On failure restore the committed pair, publish unrelated outputs,
-              # and let the terminal marker check turn the job red.
+              # On failure restore the post-fetch origin/main pair, publish unrelated
+              # outputs, and let the terminal marker check turn the job red.
               heatmap_now="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
               if python -m scripts.build_market_heatmap --market china --render-page --now "$heatmap_now" \
                  && python -m scripts.check_china_heatmap_freshness --now "$heatmap_now"; then
                 rm -f "$RUNNER_TEMP/china-heatmap-failed"
               else
                 touch "$RUNNER_TEMP/china-heatmap-failed"
-                git checkout HEAD -- site/marketdata/china_heatmap.json site/china_heatmap.html
-                echo "::warning title=China heatmap repair held::post-rebase heatmap failed its binding session contract; other CN/HK outputs continue and the job will fail after publish"
+                # HEAD is this run's engine commit and may already contain a map
+                # that was acceptable before, but stale after, the 09:00 UTC
+                # settle edge. Restore the post-fetch main pair, not HEAD, and
+                # commit the compensation before push: unrelated outputs survive
+                # while this run can never introduce a newly stale heatmap tree.
+                git checkout origin/main -- site/marketdata/china_heatmap.json site/china_heatmap.html
+                git add site/marketdata/china_heatmap.json site/china_heatmap.html
+                if ! git diff --cached --quiet -- site/marketdata/china_heatmap.json site/china_heatmap.html; then
+                  if ! push_staged_clean site/marketdata/china_heatmap.json site/china_heatmap.html; then
+                    echo "::error title=China heatmap rollback refused::origin/main heatmap pair failed the staged conflict-marker guard"
+                    exit 1
+                  fi
+                  git commit -m "render-heal: hold stale China heatmap at origin main" || {
+                    echo "::error title=China heatmap rollback failed::could not commit the compensating origin/main pair"
+                    exit 1
+                  }
+                fi
+                echo "::warning title=China heatmap repair held::post-rebase heatmap failed its binding session contract; origin/main heatmap bytes were restored, other CN/HK outputs continue, and the job will fail after publish"
               fi
               # post-rebase template↔site re-sync (ui.template_site_sync): externalize_css
               # above lifts the plain-copy landing/chat pages' inline <style> to hashed files,
