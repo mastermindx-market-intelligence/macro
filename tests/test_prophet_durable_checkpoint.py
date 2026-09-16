@@ -16,6 +16,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
 import yaml
 
 from scripts.workflow_run_source import resolve_run_source
@@ -526,6 +527,43 @@ def test_zero_origin_night_checkpoints_exact_source_snapshot_not_live_board(
     assert source_rel == f"data/prophet/origination_sources/{source_sha}.json.gz"
     assert paths == [source_rel]
     assert board_rel not in paths
+
+
+@pytest.mark.parametrize("source_state", ["missing", "malformed"])
+def test_nightly_missing_or_malformed_source_withholds_nonfatally(
+    tmp_path: Path, source_state: str
+) -> None:
+    repo = tmp_path / "repo"
+    (repo / "site/prophet/plans").mkdir(parents=True)
+    board = repo / "site/factordata/us_standouts.json"
+    if source_state == "malformed":
+        board.parent.mkdir(parents=True)
+        board.write_bytes(b'{"as_of":"2026-09-14"')
+
+    output = tmp_path / "github-output.txt"
+    env = os.environ.copy()
+    env.update({
+        "GITHUB_WORKSPACE": str(repo),
+        "RUNNER_TEMP": str(tmp_path),
+        "GITHUB_RUN_ID": "source-failure-test",
+        "GITHUB_RUN_ATTEMPT": "1",
+        "GITHUB_OUTPUT": str(output),
+        "PYTHONPATH": str(ROOT),
+    })
+    result = subprocess.run(
+        ["bash", str(ROOT / "scripts/ci/daily_engine_prophet_nightly.sh")],
+        cwd=ROOT,
+        env=env,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "succeeded=false" in output.read_text(encoding="utf-8")
+    assert "could not snapshot the closed Prophet output allowlist" in result.stdout
+    assert not (repo / "site/prophet/index.json").exists()
+    assert not (repo / "data/prophet/origination_sources").exists()
 
 
 def test_source_snapshot_not_live_board_is_closed_inside_every_checkpoint_proof() -> None:

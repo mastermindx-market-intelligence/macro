@@ -118,7 +118,8 @@ Implement `_freeze_origination_source_board` to:
 - gzip exact bytes with `mtime=0`, while keying identity on the uncompressed SHA-256;
 - write under `data/prophet/origination_sources/` using the raw SHA-256 as identity;
 - be idempotent for identical decompressed bytes, including cross-platform gzip-header variation;
-- fail closed on a collision;
+- fail closed with explicit domain errors on missing, unreadable, malformed, non-object, symlinked, or colliding inputs;
+- publish through a randomized same-directory temp file so stale PID-derived temp names cannot block a later run;
 - return the parsed document, hash, and repository-relative path.
 
 - [x] **Step 3: Bind the index and zero-origin path**
@@ -147,7 +148,7 @@ bash -n scripts/ci/daily_engine_prophet_checkpoint.sh
 bash -n scripts/ci/daily_engine_commit_outputs.sh
 python -c 'import yaml; yaml.safe_load(open(".github/workflows/daily.yml"))'
 ```
-Expected: exact-byte, zero-origin, collision, path-ownership, syntax, and YAML contracts pass.
+Expected: exact-byte, zero-origin, missing/malformed fail-closed, stale-temp recovery, collision, path-ownership, syntax, and YAML contracts pass.
 
 ### Task 4: Regression and immutable candidate
 

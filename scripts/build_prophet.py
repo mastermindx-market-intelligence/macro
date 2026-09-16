@@ -56,6 +56,7 @@ import logging
 import math
 import os
 import sys
+import tempfile
 from collections.abc import Iterable
 from datetime import date, datetime
 from pathlib import Path
@@ -140,8 +141,16 @@ def _freeze_origination_source_board(
     path = Path(STANDOUTS_PATH if board_path is None else board_path)
     if path.is_symlink():
         raise RuntimeError(f"refusing symlinked Prophet source board: {path}")
-    raw = path.read_bytes()
-    doc = json.loads(raw)
+    try:
+        raw = path.read_bytes()
+    except FileNotFoundError as exc:
+        raise RuntimeError(f"Prophet source board missing: {path}") from exc
+    except OSError as exc:
+        raise RuntimeError(f"Prophet source board unreadable: {path}: {exc}") from exc
+    try:
+        doc = json.loads(raw)
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise RuntimeError(f"Prophet source board is not valid JSON: {path}: {exc}") from exc
     if not isinstance(doc, dict):
         raise RuntimeError(f"Prophet source board must be a JSON object: {path}")
 
@@ -167,9 +176,13 @@ def _freeze_origination_source_board(
                 f"Prophet source snapshot collision at {snapshot}: raw bytes differ"
             )
     else:
-        temporary = source_dir / f".{sha256}.{os.getpid()}.tmp"
+        temporary: Path | None = None
         try:
-            with temporary.open("xb") as handle:
+            fd, temporary_name = tempfile.mkstemp(
+                prefix=f".{sha256}.", suffix=".tmp", dir=source_dir
+            )
+            temporary = Path(temporary_name)
+            with os.fdopen(fd, "wb") as handle:
                 handle.write(compressed)
                 handle.flush()
                 os.fsync(handle.fileno())
@@ -181,7 +194,8 @@ def _freeze_origination_source_board(
                         f"Prophet source snapshot collision at {snapshot}: concurrent raw bytes differ"
                     )
         finally:
-            temporary.unlink(missing_ok=True)
+            if temporary is not None:
+                temporary.unlink(missing_ok=True)
 
     repo_root = LEDGER_DIR.parents[1]
     try:

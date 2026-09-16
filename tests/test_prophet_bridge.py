@@ -45,6 +45,7 @@ import gzip
 import hashlib
 import json
 import math
+import os
 import sys
 from datetime import date, timedelta
 from pathlib import Path
@@ -1162,6 +1163,47 @@ def test_source_snapshot_is_idempotent_and_collision_safe(tmp_path, monkeypatch)
     snapshot.write_bytes(gzip.compress(b'{"collision":true}\n', compresslevel=9, mtime=0))
     with pytest.raises(RuntimeError, match="snapshot collision"):
         bp._freeze_origination_source_board()
+
+
+def test_source_snapshot_missing_or_malformed_board_fails_closed(tmp_path, monkeypatch):
+    import scripts.build_prophet as bp
+
+    ledger_dir = tmp_path / "data/prophet"
+    monkeypatch.setattr(bp, "LEDGER_DIR", ledger_dir)
+
+    missing = tmp_path / "site/factordata/missing.json"
+    with pytest.raises(RuntimeError, match="source board missing"):
+        bp._freeze_origination_source_board(missing)
+
+    malformed = tmp_path / "site/factordata/malformed.json"
+    malformed.parent.mkdir(parents=True, exist_ok=True)
+    malformed.write_bytes(b'{"as_of":"2026-09-14"')
+    with pytest.raises(RuntimeError, match="source board is not valid JSON"):
+        bp._freeze_origination_source_board(malformed)
+
+    assert not (ledger_dir / "origination_sources").exists()
+
+
+def test_source_snapshot_stale_pid_temp_cannot_block_publication(tmp_path, monkeypatch):
+    import scripts.build_prophet as bp
+
+    raw = b'{"as_of":"2026-09-14","buy":[]}\n'
+    board = tmp_path / "site/factordata/us_standouts.json"
+    board.parent.mkdir(parents=True)
+    board.write_bytes(raw)
+    ledger_dir = tmp_path / "data/prophet"
+    source_dir = ledger_dir / "origination_sources"
+    source_dir.mkdir(parents=True)
+    sha = hashlib.sha256(raw).hexdigest()
+    stale = source_dir / f".{sha}.{os.getpid()}.tmp"
+    stale.write_bytes(b"orphaned prior-run temp")
+
+    monkeypatch.setattr(bp, "LEDGER_DIR", ledger_dir)
+    _, got_sha, rel = bp._freeze_origination_source_board(board)
+
+    assert got_sha == sha
+    assert gzip.decompress((tmp_path / rel).read_bytes()) == raw
+    assert stale.read_bytes() == b"orphaned prior-run temp"
 
 
 def test_stale_frame_row_pauses_instructions_fresh_row_unchanged(tmp_path):

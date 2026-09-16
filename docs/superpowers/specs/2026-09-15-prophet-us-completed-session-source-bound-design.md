@@ -49,7 +49,7 @@ Instead, `scripts.build_prophet` freezes the exact input bytes under the existin
 data/prophet/origination_sources/<sha256>.json.gz
 ```
 
-The snapshot is content-addressed, immutable, and gzip-compressed with `mtime=0`. Its filename is keyed by the SHA-256 of the uncompressed board bytes, so decompression recovers the exact source while avoiding roughly 450 MB/year of raw working-tree growth at the current board size; raw-byte identity also tolerates harmless gzip-header variation across runtimes. Reusing identical raw bytes is idempotent; a different payload at the same hash path is a fail-closed collision. `site/prophet/index.json` records:
+The snapshot is content-addressed, immutable, and gzip-compressed with `mtime=0`. Its filename is keyed by the SHA-256 of the uncompressed board bytes, so decompression recovers the exact source while materially reducing raw working-tree growth; raw-byte identity also tolerates harmless gzip-header variation across runtimes. Reusing identical raw bytes is idempotent; a different payload at the same hash path is a fail-closed collision. `site/prophet/index.json` records:
 
 ```text
 source_board_sha256
@@ -83,7 +83,9 @@ A missing or malformed observation timestamp does not authorize freshness. Date-
 
 An empty candidate night is valid. A non-empty eligible population with zero originations remains an acceptance alarm, not permission to weaken chronology or mixed-vintage gates.
 
-A source-byte drift, missing durable snapshot, symlink, hash-path collision, checkpoint race, or same-path conflict withholds the entire Prophet checkpoint. The prior accepted Prophet projection remains authoritative. The independently current customer board is never rolled back as a side effect.
+A missing, unreadable, malformed, or non-object source board fails closed before origination; no degraded index may claim provenance without exact source bytes. The nightly preflight withholds the build non-fatally, and the prior accepted Prophet projection remains authoritative. Source-byte drift, a missing durable snapshot, symlink, hash-path collision, checkpoint race, or same-path conflict likewise withholds the entire checkpoint. The independently current customer board is never rolled back as a side effect.
+
+Snapshot publication uses a randomized temporary file in the provenance directory, `fsync`, and a hard link to the content-addressed final path. Orphaned PID-shaped temp files from prior killed processes therefore cannot block a later run.
 
 The public R2 payload remains the minimal health projection. The full plan book and immutable source snapshot remain private; the unconditional public-index tombstone remains separate.
 
