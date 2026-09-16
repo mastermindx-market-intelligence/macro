@@ -38,8 +38,9 @@ cross-checks every copy against the engine so they cannot drift):
       the chart's last data-point carries its own date. Other market boards may
       disclose an independent history clock, but macro.html must append its current
       settled measured score. When the last point's date equals the board's
-      as-of, the two are the same read and must carry the same number and the
-      same band. Added after the 2026-08-02 operator report: macro.html baked a
+      as-of, the endpoint must carry the board's embedded measured-blend score.
+      The displayed dial may legitimately differ when a disclosed policy cap binds.
+      Added after the 2026-08-02 operator report: macro.html baked a
       69 / Risk-on gauge beside a Jul 31 endpoint of 66, because the two come
       from artifacts with opposite write policies for one session —
       market_state_audit.log_snapshot is first-write-wins per as-of (a PIT
@@ -119,6 +120,7 @@ _FLIP = re.compile(r'class="v-flip"><span class="l-en">([^<]*)</span>')
 # matched attribute-first rather than by exact markup.
 _PATH_PTS = re.compile(r"<svg class=\"mx5-path-svg\"[^>]*?data-points='(.*?)'", re.S)
 _SCORE_ANY = re.compile(r'id="ms-score"[^>]*>(\d+)<')
+_MEASURED_ANY = re.compile(r'id="ms-score"[^>]*data-measured-score="([0-9.]+)"')
 _ASOF_ANY = re.compile(r'id="(?:regime-asof|ms-date)"[^>]*>(\d{4}-\d{2}-\d{2})<')
 
 
@@ -178,11 +180,13 @@ def check_path_endpoint(name: str, html: str) -> list[str]:
             )
         return v
     board = int(score_m.group(1))
-    if float(last.get("s")) != float(board):
+    measured_m = _MEASURED_ANY.search(html)
+    measured = float(measured_m.group(1)) if measured_m else float(board)
+    if float(last.get("s")) != measured:
         v.append(
-            f"(h) {name}: board and path endpoint both claim {asof_m.group(1)} but score"
-            f" {board} ({_band(board)}) vs {last['s']} ({_band(float(last['s']))}) —"
-            f" one session cannot have two scores"
+            f"(h) {name}: board and path endpoint both claim {asof_m.group(1)} but path"
+            f" score {last['s']} != settled measured blend {measured:g}"
+            f" (display score {board})"
         )
     return v
 
