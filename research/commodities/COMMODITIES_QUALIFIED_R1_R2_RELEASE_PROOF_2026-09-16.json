@@ -1,0 +1,34 @@
+{
+  "r1": "0b2493990358d44dee5b625176c5289eab9a04e4",
+  "r2": "306834682e15121c636db1091a1de8f242c3608e",
+  "base_receipt": "qualified-integration-final.json",
+  "overrides": [
+    {
+      "path": "scripts/capture_commodity_asset_read_evidence.py",
+      "source_commit": "306834682e15121c636db1091a1de8f242c3608e",
+      "blob_sha": "dd0f54e39a7d455ed4ae0d2a853987195cfbe067",
+      "sha256": "048cfb14282604e95200b6f0259eec1ff24153cce61816d2e7d5a795f77b85bd"
+    },
+    {
+      "path": "tests/test_commodity_asset_read.py",
+      "source_commit": "306834682e15121c636db1091a1de8f242c3608e",
+      "blob_sha": "e87af9e69fa9d799709fd8c8014945cf4d1fc1c4",
+      "sha256": "94279f73bc66fdeaa6472a03f291d42198da3507b6c720be50776ad9d6c7ed8e"
+    }
+  ],
+  "source_root": "isolated native proof archive; not a Git working tree",
+  "production_proven": false,
+  "result": "450 passed, 0 failed, 2 existing NumPy warnings",
+  "elapsed_seconds": 27.14,
+  "log": "........................................................................ [ 16%]\n........................................................................ [ 32%]\n........................................................................ [ 48%]\n........................................................................ [ 64%]\n........................................................................ [ 80%]\n........................................................................ [ 96%]\n..................                                                       [100%]\n=============================== warnings summary ===============================\ntests/test_forex.py::test_calibrate_pair_signs_inverted_and_normalizes\n  /opt/homebrew/lib/python3.14/site-packages/numpy/lib/_function_base_impl.py:3036: RuntimeWarning: invalid value encountered in divide\n    c /= stddev[:, None]\n\ntests/test_forex.py::test_calibrate_pair_signs_inverted_and_normalizes\n  /opt/homebrew/lib/python3.14/site-packages/numpy/lib/_function_base_impl.py:3037: RuntimeWarning: invalid value encountered in divide\n    c /= stddev[None, :]\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n450 passed, 2 warnings in 27.14s\n",
+  "log_sha256": "a9586ed1e7f1d14e4dddb3fff48106b37e6f91becc51b4627fe9a45a8d2118a1",
+  "browser_manifest": "mockups/evidence/commodities-qualified-r1-r2/manifest.json",
+  "browser_result": "24 whole-page fixtures, 96 card/detail selections; requested width, overlays, locale/theme and page errors verified",
+  "prior_invalid_run": "416-test run followed a failed setup assertion; rejected, not evidence for this source",
+  "limits": [
+    "exact source pair, not current main",
+    "independent review and current-head CI required",
+    "served page/data proof absent",
+    "no numerical model promotion"
+  ]
+}

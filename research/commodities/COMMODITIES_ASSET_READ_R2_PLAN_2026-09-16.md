@@ -1,5 +1,40 @@
 # Commodity asset-read R2 — implementation and acceptance
 
+## Current candidate qualification — supersedes earlier blocker notes below
+
+Semantic source 306834682e15121c636db1091a1de8f242c3608e completes the scoped malformed-input qualification:
+invalid identities/enums/timeframe containers and records, cross-asset identity,
+overflowing numeric inputs, and invalid price observations fail closed. Finite
+prices alone advance price_asof; valid finite zero/negative prices are preserved.
+No allocation model, indicator aggregation, score weight or source data is changed.
+
+101 focused tests pass, including the 110-invalid-input matrix, 1,458 nominal
+combinations, clock controls and capture wiring. The exact combination with R1
+0b249399 passes 450 tests with two existing NumPy warnings. Counts overlap.
+24 canonical whole-page fixture captures and 96 card/detail interactions pass in
+both themes/locales at requested desktop/mobile widths with overlay checks.
+The full-page mode is reproducible through the existing R2 capture script.
+
+The previous 403-test interruption was recovered. A later 416-test output was
+rejected because its setup failed; it is not acceptance evidence. The corrected
+448-test source pair passed, then the two capture-mode tests brought the final
+exact-source total to 450. No duplicate in-flight test or CI run was started.
+
+The initial tool-refused input guard refinements are no longer the active code
+frontier: the scoped changes were completed through the same source carrier and
+verified. Shared-markup refactoring remains omitted; shared data and user selection
+are already tested, so no second renderer is required to call that connection built.
+
+State: BUILT_NOT_PROVEN / DRAFT-HOLD. Independent review, applicable concluded CI,
+R1/#7215/#7163 release dependencies and actual served page/data verification remain.
+No numerical trading-edge improvement or current market recommendation is claimed.
+Evidence: COMMODITIES_QUALIFIED_R1_R2_RELEASE_PROOF_2026-09-16.json and
+mockups/evidence/commodities-qualified-r1-r2/. After this bounded release, advance
+the approved family-specific macro/read model and coherent publication work using
+existing owners; chart parity still requires the exact chart recipe.
+
+## Earlier implementation history
+
 Operation: `commodities-asset-read-r2-20260916-sol-001`. Parent: commodities-asset-first-safety-r1-20260916-sol-001 / #7198.
 Source pickup: `784bc6aec7c32e8f651c280978d5b5ab0aa366f4`. Protected procedure: Mastermind `bf843961c0e1b5bd45fa481f0138c71f2a87d4e2`, Skillpack 1.0.1.
 Current live Chairman direction authorizes advancing the next useful capability while CI is held.
