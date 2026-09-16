@@ -6907,6 +6907,52 @@ jobs:
       - name: research vault ingestion-spine + page unit tests
         run: python -m pytest tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py -q
 
+
+  research-vault-source-lineage:
+    if: ${{ false }}
+    gate: code
+    # PR-gating owner for the recovered standalone MarketDesk package and its
+    # canonical import/install/rollback contract. The suite is hermetic: no
+    # browser install, live network, launchd action, or Research Vault mutation.
+    paths:
+      - "collectors/marketdesk_extractor/**"
+      - "tests/test_marketdesk_extractor_lineage.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install recovered extractor test dependencies
+        run: pip install pytest boto3 "playwright>=1.45" "pydantic>=2.6" "python-dotenv>=1.0" "tenacity>=8.3"
+      - name: recovered MarketDesk extractor lineage tests
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1
+          PYTHONPATH=collectors/marketdesk_extractor/extractor/src
+          python -m pytest
+          tests/test_marketdesk_extractor_lineage.py
+          collectors/marketdesk_extractor/extractor/tests/test_allocator.py
+          collectors/marketdesk_extractor/extractor/tests/test_backlog.py
+          collectors/marketdesk_extractor/extractor/tests/test_cleanup.py
+          collectors/marketdesk_extractor/extractor/tests/test_db.py
+          collectors/marketdesk_extractor/extractor/tests/test_dedupe.py
+          collectors/marketdesk_extractor/extractor/tests/test_feed_probe.py
+          collectors/marketdesk_extractor/extractor/tests/test_feed_watcher.py
+          collectors/marketdesk_extractor/extractor/tests/test_filters.py
+          collectors/marketdesk_extractor/extractor/tests/test_manifest.py
+          collectors/marketdesk_extractor/extractor/tests/test_marketdesk_dating.py
+          collectors/marketdesk_extractor/extractor/tests/test_pipeline_integration.py
+          collectors/marketdesk_extractor/extractor/tests/test_publish_vault.py
+          collectors/marketdesk_extractor/extractor/tests/test_scoring.py
+          collectors/marketdesk_extractor/extractor/tests/test_self_heal.py
+          collectors/marketdesk_extractor/extractor/tests/test_session_expiry.py
+          collectors/marketdesk_extractor/extractor/tests/test_storage_guard.py
+          collectors/marketdesk_extractor/extractor/tests/test_trickle.py
+          collectors/marketdesk_extractor/extractor/tests/test_trickle_pacing.py
+          collectors/marketdesk_extractor/extractor/tests/test_upload_r2_key.py
+          collectors/marketdesk_extractor/extractor/tests/test_utils.py
+          -q -p no:cacheprovider
+
   research-vault-api:
     if: ${{ false }}
     gate: code
@@ -11982,8 +12028,21 @@ jobs:
       # is the first failure a reader sees rather than the copy guard failing for a
       # borrowed reason.  No dependency widened: probed at RUN time it loads only
       # pandas/numpy/pyarrow/pyyaml, all already on the install line above.
+      # W6 round-1 backfill 2026-09-13 (contract-delta, META-CEO B ruling W7-A
+      # W7A_7055_HEAL): tests/test_commodities_w6_truth.py rides this same step
+      # because the page = templates/commodities.html.j2 — the suite's primary
+      # subject — is already governed by the unrun-macro-panels job via
+      # scripts/build_commodities.py and test_commodity_mtf_verdict_honesty.py;
+      # tests/test_commodities_ignition_copy.py is the prior unrun backfill on
+      # the same producer. The new suite probes engine/commodity_confluence.py,
+      # engine/commodity_index.py, and templates/commodities.html.j2, all of
+      # which this step's install line (pandas / numpy / pyarrow / pyyaml /
+      # jinja2) already covers. Appended LAST so a W6 truth-blocker regression
+      # is the first failure a reader sees; a panel or calibration regression
+      # above remains the masking unit. No new job; paths widened below to
+      # cover the new suite's imports and its engine/template subjects.
       - name: commodities / forex / rates / news / policy panels and their calibration guards
-        run: python -m pytest tests/test_factor_universe_hold.py tests/test_build_dispersion_regime.py tests/test_build_factor_panel.py tests/test_commodity_mtf_verdict_honesty.py tests/test_congress_score.py tests/test_context_risk.py tests/test_cross_asset_context.py tests/test_crossasset_flows.py tests/test_financial_news.py tests/test_forex.py tests/test_forex_context_bus.py tests/test_news_event_ledger.py tests/test_phase_buildout.py tests/test_policy_lever.py tests/test_rates_command.py tests/test_yield_momentum.py tests/test_inputs_yield_curve.py tests/test_reflexivity_overlay.py tests/test_scorecard_incremental.py tests/test_us_sector_rotation_wiring.py tests/test_validation.py tests/test_whitehouse_build.py tests/test_commodities_ignition_copy.py tests/test_build_forex_stance.py -q
+        run: python -m pytest tests/test_factor_universe_hold.py tests/test_build_dispersion_regime.py tests/test_build_factor_panel.py tests/test_commodity_mtf_verdict_honesty.py tests/test_congress_score.py tests/test_context_risk.py tests/test_cross_asset_context.py tests/test_crossasset_flows.py tests/test_financial_news.py tests/test_forex.py tests/test_forex_context_bus.py tests/test_news_event_ledger.py tests/test_phase_buildout.py tests/test_policy_lever.py tests/test_rates_command.py tests/test_yield_momentum.py tests/test_inputs_yield_curve.py tests/test_reflexivity_overlay.py tests/test_scorecard_incremental.py tests/test_us_sector_rotation_wiring.py tests/test_validation.py tests/test_whitehouse_build.py tests/test_commodities_ignition_copy.py tests/test_commodities_w6_truth.py tests/test_build_forex_stance.py -q
       - name: A-F01-W4-1 bonds hub byte-preservation guard (T10)
         run: python -m pytest tests/test_macro_rates_curves_bonds_guard.py -q
     # T10 lives here (gate: data), not on ccw-w4-credit-desk (gate: code).
@@ -12014,10 +12073,15 @@ jobs:
       - "tests/test_validation.py"
       - "tests/test_whitehouse_build.py"
       - "tests/test_commodities_ignition_copy.py"
+      - "tests/test_commodities_w6_truth.py"
       - "tests/test_macro_rates_curves_bonds_guard.py"
       - "tests/test_build_forex_stance.py"
       - "scripts/build_bonds.py"
+      - "scripts/build_commodities.py"
       - "site/bonds.html"
+      - "engine/commodity_confluence.py"
+      - "engine/commodity_index.py"
+      - "templates/commodities.html.j2"
       - "templates/bonds.html.j2"
 
   unrun-market-plumbing:
