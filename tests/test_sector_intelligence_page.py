@@ -265,3 +265,137 @@ def test_nav_flyout_collapsed_to_two_entries() -> None:
     assert 'href="{{ NP }}sector_central.html#confluence"' in s
     assert 'href="{{ NP }}subsectors.html"' not in s, \
         "the old funnel exit LINK survived — it should be a routed #confluence view now"
+
+
+# ------------------------------------------------ semantic freshness contract
+
+import hashlib
+import json
+from datetime import datetime, timezone
+
+
+def _json_bytes(payload: dict) -> bytes:
+    return json.dumps(payload, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+
+
+def _write_sector_intelligence_generation(
+    root: Path,
+    *,
+    baskets_asof: str = "2026-09-14",
+    theme_asof: str | None = None,
+    action_asof: str | None = None,
+    sector_asof: str | None = None,
+    html_asof: str | None = None,
+    action_total: int = 1,
+    corrupt_baskets_hash: bool = False,
+) -> None:
+    site = root / "site"
+    for rel in ("basketdata", "sectordata", "premiumdata"):
+        (site / rel).mkdir(parents=True, exist_ok=True)
+    theme_asof = theme_asof or baskets_asof
+    sector_asof = sector_asof or baskets_asof
+    html_asof = html_asof or baskets_asof
+    baskets = {
+        "as_of": baskets_asof,
+        "theme_intel": {"as_of": theme_asof},
+        "baskets": [{"id": "theme-a"}],
+    }
+    baskets_path = site / "basketdata" / "baskets.json"
+    baskets_path.write_bytes(_json_bytes(baskets))
+    baskets_sha = hashlib.sha256(baskets_path.read_bytes()).hexdigest()
+    recorded_baskets_sha = "0" * 64 if corrupt_baskets_hash else baskets_sha
+
+    action = {
+        "schema": "sector_intelligence_action_board.v1",
+        "generated_utc": "2026-09-16T06:00:00Z",
+        "baskets_sha256": recorded_baskets_sha,
+        "action_board": {
+            "total": action_total,
+            "buy_now": ([{"ticker": "XLK"}] if action_total else []),
+        },
+    }
+    if action_asof is not None:
+        action["as_of"] = action_asof
+    action_path = site / "basketdata" / "action_board.json"
+    action_path.write_bytes(_json_bytes(action))
+    action_sha = hashlib.sha256(action_path.read_bytes()).hexdigest()
+
+    (site / "sectordata" / "sector_central.json").write_bytes(
+        _json_bytes({"as_of": sector_asof, "sectors": [{"ticker": "XLK"}]})
+    )
+    premium = {
+        "schema": "tier_payload.v1",
+        "page": "sector_central",
+        "as_of": sector_asof,
+        "baskets_sha256": baskets_sha,
+        "action_board_sha256": action_sha,
+    }
+    (site / "premiumdata" / "sector_central.json").write_bytes(_json_bytes(premium))
+    (site / "sector_central.html").write_text(
+        '<section class="rvx-hero" '
+        f'data-si-as-of="{html_asof}" '
+        f'data-si-baskets-sha256="{baskets_sha}" '
+        f'data-si-action-board-sha256="{action_sha}"></section>',
+        encoding="utf-8",
+    )
+
+
+def _evaluate_sector_intelligence(root: Path) -> dict:
+    from scripts.check_sector_intelligence_freshness import evaluate
+
+    return evaluate(
+        root,
+        now=datetime(2026, 9, 16, 6, tzinfo=timezone.utc),
+        max_sessions_behind=1,
+    )
+
+
+def test_semantic_freshness_accepts_one_session_lag(tmp_path: Path) -> None:
+    _write_sector_intelligence_generation(tmp_path, action_asof="2026-09-14")
+    report = _evaluate_sector_intelligence(tmp_path)
+    assert report["ok"] is True, report
+    assert report["facts"]["as_of"] == "2026-09-14"
+    assert report["facts"]["sessions_behind"] == 1
+
+
+def test_semantic_freshness_rejects_individually_fresh_vintage_split(
+    tmp_path: Path,
+) -> None:
+    _write_sector_intelligence_generation(
+        tmp_path,
+        action_asof="2026-09-14",
+        sector_asof="2026-09-15",
+        html_asof="2026-09-15",
+    )
+    report = _evaluate_sector_intelligence(tmp_path)
+    assert report["ok"] is False
+    assert any("VINTAGE SPLIT" in error for error in report["errors"]), report
+
+
+def test_semantic_freshness_rejects_unstamped_action_board(tmp_path: Path) -> None:
+    _write_sector_intelligence_generation(tmp_path, action_asof=None)
+    report = _evaluate_sector_intelligence(tmp_path)
+    assert report["ok"] is False
+    assert any("action_board.json" in error and "as_of" in error
+               for error in report["errors"]), report
+
+
+def test_semantic_freshness_rejects_source_hash_mismatch(tmp_path: Path) -> None:
+    _write_sector_intelligence_generation(
+        tmp_path,
+        action_asof="2026-09-14",
+        corrupt_baskets_hash=True,
+    )
+    report = _evaluate_sector_intelligence(tmp_path)
+    assert report["ok"] is False
+    assert any("baskets_sha256" in error for error in report["errors"]), report
+
+
+def test_semantic_freshness_rejects_empty_action_board(tmp_path: Path) -> None:
+    _write_sector_intelligence_generation(
+        tmp_path, action_asof="2026-09-14", action_total=0
+    )
+    report = _evaluate_sector_intelligence(tmp_path)
+    assert report["ok"] is False
+    assert any("action board is empty" in error.lower()
+               for error in report["errors"]), report
