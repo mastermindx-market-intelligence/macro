@@ -76,3 +76,11 @@ New self-review repair: Boolean True was counted as a valid price. Five new chec
 The existing #7187 maintainer has local head `0a076cedd8094e5425e782aca976820e93ed6e8e` while the observed remote still has `c21c9be04bbf983bc22f8e3fe6075339bbc9ebef`; leave that worktree untouched. #7163 is subject to the existing #7018-first ruling and a one-line HK byte-pin repair. These remain distinct owners, not additional assignments to this session.
 
 One acknowledged session must own the eventual combined production build/publish; Until that responsibility is confirmed, this session performs source verification only and issues no duplicate nightly/rescue/deploy. Sending a coordination packet is not acknowledgment or writer release. The unnamed peer chat's provider-session identity remains unverified; use exact PR/branch identity in the forwarded handoff.
+
+## Partial-coverage publication follow-through
+
+The next actual fetch/store check found the invalid minority could survive an otherwise valid 80% batch and reach the stored Close matrix. The source now shares exact-session validity between count and mask, masking invalid current cells before seam analysis and after seam repair before persistence. Existing history, valid numeric one, 80% breadth availability, regional/Russell interfaces and peer source custody remain unchanged. Seven regressions were red before repair; 74 tests are now green; removal of either masking boundary is detected separately.
+
+New evidence file: `research/us_prophet_availability/2026-09-16-completed-close/partial-price-publication-replay.json`. The recorded-matrix reconstruction is non-production and made no provider calls. Actual fetch/store health and current price values were recovered under the repaired source. Per-name and sector alpha values match, but a strict ordered-alpha assertion failed for two reordered top-list members; do not call it byte-identical, raw-provider-response, or full-board proof. No alpha-ranking rule was changed.
+
+Continue exact-head independent review and current-base compatibility on #7200, consume the peer's response on #7206, and preserve one-owner publication. There is still no peer ACK proving ownership agreement. Do not duplicate its Russell/full-library work or retry the unresolved natural nightly without canonical reconciliation.

@@ -307,3 +307,74 @@ def test_boolean_close_never_counts_as_a_price(tmp_path, monkeypatch, dtype):
 def test_completed_close_rejects_boolean_without_rejecting_numeric_one(value, expected):
     frame = pd.DataFrame({"AAA": pd.Series([value], index=[pd.Timestamp(SESSION)], dtype=object)})
     assert breadth._completed_close_count(frame, ["AAA"], SESSION) == expected
+
+
+@pytest.mark.parametrize("invalid", (True, np.bool_(True), np.inf, -np.inf, 0.0, -1.0))
+def test_partial_invalid_prices_do_not_reach_stored_or_computed_breadth(tmp_path, monkeypatch, invalid):
+    """The 80% coverage floor is not permission to persist the invalid remainder."""
+    adapter = _adapter(tmp_path, monkeypatch)
+    calls = []
+
+    def download(tickers, **kwargs):
+        calls.append(kwargs)
+        response = _response(tickers)
+        response[("Close", "EEE")] = response[("Close", "EEE")].astype(object)
+        response.loc[str(SESSION), ("Close", "EEE")] = invalid
+        return response
+
+    monkeypatch.setattr(breadth.yf, "download", download)
+    result = adapter.fetch()
+    assert len(calls) == 1, "four actual closes still meet the existing partial floor"
+    saved = pd.read_parquet(adapter.cache_path)
+    assert pd.isna(saved.loc[str(SESSION), "EEE"]), "invalid current price must remain a hole"
+    assert saved.loc["2026-09-14", "EEE"] == 101.0, "do not delete its valid history"
+    assert breadth._completed_close_count(saved, SYMBOLS, SESSION) == 4
+    assert result["breadth"].loc[str(SESSION), "n_members"] == 4
+
+
+def test_post_seam_invalid_minority_is_missing_not_a_published_price(tmp_path, monkeypatch):
+    adapter = _adapter(tmp_path, monkeypatch)
+    _seed_all_caches(adapter)
+    monkeypatch.setattr(breadth.yf, "download", lambda tickers, **kw: _response(tickers))
+
+    def changed_merge(fresh, cached):
+        merged = fresh.copy()
+        merged.loc[str(SESSION), "EEE"] = np.inf
+        return merged
+
+    monkeypatch.setattr(adapter, "_merge_refreshed", changed_merge)
+    result = adapter.fetch()
+    saved = pd.read_parquet(adapter.cache_path)
+    assert pd.isna(saved.loc[str(SESSION), "EEE"])
+    assert result["breadth"].loc[str(SESSION), "n_members"] == 4
+
+
+def test_invalid_current_prices_are_missing_before_split_seam_merge(tmp_path, monkeypatch):
+    adapter = _adapter(tmp_path, monkeypatch)
+    _seed_all_caches(adapter)
+
+    def download(tickers, **kwargs):
+        response = _response(tickers)
+        response[("Close", "EEE")] = response[("Close", "EEE")].astype(object)
+        response.loc[str(SESSION), ("Close", "EEE")] = True
+        return response
+
+    def merge(fresh, cached):
+        assert pd.isna(fresh.loc[str(SESSION), "EEE"]), "seam detection must not see a false price 1"
+        return fresh.combine_first(cached)
+
+    monkeypatch.setattr(breadth.yf, "download", download)
+    monkeypatch.setattr(adapter, "_merge_refreshed", merge)
+    adapter.fetch()
+    assert pd.isna(pd.read_parquet(adapter.cache_path).loc[str(SESSION), "EEE"])
+
+
+def test_current_price_mask_preserves_history_input_and_healthy_identity():
+    frame = pd.DataFrame({"AAA": [100.0, 101.0, 102.0], "BBB": [30.0, 31.0, -1.0]}, index=DATES)
+    before = frame.copy(deep=True)
+    cleaned = breadth._mask_invalid_completed_closes(frame, ["AAA", "BBB"], SESSION)
+    pd.testing.assert_frame_equal(frame, before)
+    pd.testing.assert_frame_equal(cleaned.iloc[:-1], before.iloc[:-1])
+    assert cleaned.loc[str(SESSION), "AAA"] == 102.0
+    assert pd.isna(cleaned.loc[str(SESSION), "BBB"])
+    assert breadth._mask_invalid_completed_closes(cleaned, ["AAA", "BBB"], SESSION) is cleaned

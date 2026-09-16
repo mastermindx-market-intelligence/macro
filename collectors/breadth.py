@@ -288,14 +288,10 @@ _COVERAGE_FLOOR = 0.8
 _US_CURRENT_SESSION_GROUPS = frozenset({"breadth", "smallcap_breadth", "midcap_breadth"})
 
 
-def _completed_close_count(closes: pd.DataFrame, tickers: list[str], expected_session: date) -> int:
-    """Count requested names with a finite positive close on the exact session.
-
-    Daily timestamps are market-local date labels. A later date, volume, or a
-    historical non-null column cannot substitute for this completed price row.
-    """
+def _completed_close_values(closes: pd.DataFrame, tickers: list[str], expected_session: date) -> pd.Series:
+    """One exact-session price-validity rule for coverage and persisted holes."""
     if closes.empty:
-        return 0
+        return pd.Series(index=tickers, dtype=float)
     try:
         dates = pd.DatetimeIndex(closes.index)
         if dates.tz is not None:
@@ -304,14 +300,41 @@ def _completed_close_count(closes: pd.DataFrame, tickers: list[str], expected_se
         if int(match.sum()) > 1:
             raise ValueError("duplicate daily price rows")
         if not match.any():
-            return 0
+            return pd.Series(index=tickers, dtype=float)
         raw = closes.loc[match].iloc[0].reindex(tickers)
         # bool is numerically coercible, but is never an observed market price.
         raw = raw.mask(raw.map(lambda value: isinstance(value, (bool, np.bool_))))
         values = pd.to_numeric(raw, errors="coerce")
-        return int((values.gt(0) & values.lt(float("inf"))).sum())
+        return values.where(values.gt(0) & values.lt(float("inf")))
     except (TypeError, ValueError) as exc:
         raise RuntimeError(f"completed session {expected_session} has ambiguous price rows") from exc
+
+
+def _completed_close_count(closes: pd.DataFrame, tickers: list[str], expected_session: date) -> int:
+    """Count actual current prices, never dates, Volume or historical coverage."""
+    return int(_completed_close_values(closes, tickers, expected_session).notna().sum())
+
+
+def _mask_invalid_completed_closes(closes: pd.DataFrame, tickers: list[str], expected_session: date) -> pd.DataFrame:
+    """Keep invalid current values missing when a valid partial universe passes.
+
+    Only the expected-session cells are masked. Keep prior history, input rows,
+    constituent identity and the accepted 80% availability policy unchanged.
+    """
+    values = _completed_close_values(closes, tickers, expected_session)
+    if values.name is None:
+        return closes
+    invalid = [ticker for ticker in tickers
+               if ticker in closes.columns and pd.isna(values[ticker])
+               and pd.notna(closes.loc[values.name, ticker])]
+    if not invalid:
+        return closes
+    masked = closes.copy()
+    for ticker in invalid:
+        # Series.mask preserves a missing cell even for an object/bool column;
+        # assigning NaN into a bool array in place can coerce it back to True.
+        masked[ticker] = masked[ticker].mask(masked.index == values.name)
+    return masked
 
 
 def _require_completed_closes(closes: pd.DataFrame, tickers: list[str], expected_session: date) -> int:
@@ -463,6 +486,7 @@ class BreadthAdapter(Adapter):
                             captured = {k: (v.to_frame(batch[0]) if isinstance(v, pd.Series) else v)
                                         for k, v in captured.items()}
                         count = _completed_close_count(closes, batch, expected_session)
+                        closes = _mask_invalid_completed_closes(closes, batch, expected_session)
                         if count > best_count:
                             best, best_count = (closes, captured), count
                         _require_completed_closes(closes, batch, expected_session)
@@ -602,6 +626,7 @@ class BreadthAdapter(Adapter):
         # A failed refresh leaves the accepted cache bytes intact and reports an
         # actual collector failure through the existing run-status path.
         if expected_session is not None:
+            closes = _mask_invalid_completed_closes(closes, tickers, expected_session)
             _require_completed_closes(closes, tickers, expected_session)
         self.cache_path.parent.mkdir(parents=True, exist_ok=True)
         if not full_history:
