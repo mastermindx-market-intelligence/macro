@@ -10,8 +10,8 @@ mission: >
   and this handoff.
 state_before: >
   The Agent OS store at #7181's merge d7d8bdc6 held 1118 records with the 2026-09-16 handoff's
-  Section 3 carrier table read at 2026-09-16T02:4xZ. By 2026-09-16T19:5xZ four of those rows
-  (#677, #653, #7114, #7103) had moved. The two intake comments on #7181 named pins (Mastermind
+  Section 3 carrier table read at 2026-09-16T02:4xZ. By 2026-09-16T19:5xZ two of those rows
+  (#677 and #7114) had moved, as had two carriers that table never listed (#653 and #7103). The two intake comments on #7181 named pins (Mastermind
   master `0fe8074f` and protected tree `093cb97d`, merge-group run `35053960645`, job
   `104660081938`) that nobody had verified. Three Wave 1 ACP/HF1-B carriers (#575, #579, #576),
   three HF1-C/HF1-D carriers (#578, #581, #583) and the provider-fabric carrier #577 had all
