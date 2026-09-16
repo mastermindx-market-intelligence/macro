@@ -160,11 +160,15 @@ verified:
       Control][DRAFT] Parse OpenCode Go subscription usage". Its clean composition with #7103 round 3
       and receipt comment 5703817298 are Sol/ChatGPT3 readings, not reads by this session.
   - claim: "Mastermind #653 is OPEN / isDraft TRUE / reviewDecision CHANGES_REQUESTED at head 3b34b58bbca11bd4369c5eabfd895e3a60ab7353, no merge commit. The intake comment's pin 959b37b329c44d81874dc23944746a5bd594e3b7 is SUPERSEDED. This SUPERSEDES an earlier reading in this same session, taken at 19:5xZ, which found isDraft FALSE: the PR was converted to draft when Sol issued the terminal builder stop at 20:20Z. Both readings are recorded so the change is visible rather than silently overwritten."
-    command: "gh pr view 653 -R mastermindx-market-intelligence/Mastermind --json state,isDraft,headRefOid,mergeCommit,title"
+    command: "gh pr view 653 -R mastermindx-market-intelligence/Mastermind --json state,isDraft,headRefOid,mergeCommit,reviewDecision,title"
     result: >
-      state OPEN, isDraft false, headRefOid 3b34b58bbca11bd4369c5eabfd895e3a60ab7353, no
-      mergeCommit, title "fix(executive-mcp): restore dependency-complete installed reads"
-      — exact.
+      CURRENT, read at 2026-09-16T20:2xZ: state OPEN, isDraft TRUE, headRefOid
+      3b34b58bbca11bd4369c5eabfd895e3a60ab7353, no mergeCommit, reviewDecision CHANGES_REQUESTED,
+      title "fix(executive-mcp): restore dependency-complete installed reads". Running the command
+      above reproduces exactly this. The earlier 19:5xZ reading of this same command returned
+      isDraft FALSE at the same head; that observation is retained in the claim above so the state
+      change stays visible, and is deliberately kept OUT of this `result` field so that what a
+      stranger reproduces always matches what the command returns now.
   - claim: "Mastermind #684 is OPEN / isDraft true at head 60981aecad60a0a8191cd19f3cb52a77e3d9f249, no merge commit."
     command: "gh pr view 684 -R mastermindx-market-intelligence/Mastermind --json state,isDraft,headRefOid,mergeCommit,title"
     result: >
