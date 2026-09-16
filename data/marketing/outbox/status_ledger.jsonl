@@ -6549,3 +6549,5 @@
 {"id":"ob-2026-09-16-508defc78b","from":"approved","to":"quarantined","at":"2026-09-16T12:13:24Z","actor":"publisher","note":"clock: dead_date_future_tense:will report:September 9","receipt":null}
 {"id":"ob-2026-09-16-55357a56dd","from":"approved","to":"posting","at":"2026-09-16T12:13:29Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-09-16-55357a56dd","from":"posting","to":"posted","at":"2026-09-16T12:13:30Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6aaa87e9d692772a83aaa031","external_url":null,"at":"2026-09-16T12:13:22Z","booked_at":"2026-09-16T12:13:22Z"}}
+{"id":"ob-2026-09-16-4b9741dbb4","from":"approved","to":"posting","at":"2026-09-16T15:24:56Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
+{"id":"ob-2026-09-16-4b9741dbb4","from":"posting","to":"posted","at":"2026-09-16T15:24:58Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6aaab4c91d1db8e1809e2e21","external_url":null,"at":"2026-09-16T15:24:55Z","booked_at":"2026-09-16T15:28:55Z"}}
