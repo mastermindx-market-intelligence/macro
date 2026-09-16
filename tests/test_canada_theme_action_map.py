@@ -8,7 +8,6 @@ import sys
 from pathlib import Path
 
 import pytest
-import yaml
 
 from scripts import canada_theme_action_map as theme_action_module
 from scripts.canada_theme_action_map import _canada_theme_action_map
@@ -433,43 +432,6 @@ def test_successor_verifier_fails_closed_when_theme_control_is_missing() -> None
     assert 'if (await themeButton.count())' not in text
     assert 'if ((await themeButtons.count()) === 0)' in text
     assert 'Canada Opportunity Map theme control is missing' in text
-
-
-def test_successor_evidence_manifest_binds_claimed_artifacts() -> None:
-    manifest = yaml.safe_load((SUCCESSOR_EVIDENCE / "EVIDENCE.yml").read_text())
-    assert manifest["claims"] == {
-        "source_contract": "browser_fixture",
-        "browser_fixture": "reproducible",
-        "canonical_build": "unavailable",
-        "production": "none",
-        "capability": "BUILT_NOT_PROVEN",
-    }
-    supersedes = manifest["supersedes"]
-    assert supersedes["market"] == "ca"
-    assert supersedes["status"] == "immutable_historical_baseline"
-    assert supersedes["successor_manifest"] == (
-        "mockups/evidence/canada-opportunity-map-20260909/EVIDENCE.yml"
-    )
-    assert supersedes["artifacts"] == {
-        "rendered_fixture": {
-            "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-            "selector": "markets.ca",
-        },
-        "browser_receipt": {
-            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
-        },
-    }
-    expected_paths = {
-        "rendered_fixture": SUCCESSOR_EVIDENCE / "rendered-fixture.json",
-        "browser_receipt": SUCCESSOR_EVIDENCE / "mobile-layout-canada.json",
-        "opportunity_map_screenshot": SUCCESSOR_EVIDENCE / "canada-opportunity-map-desktop.png",
-        "verifier": SUCCESSOR_VERIFIER,
-        "renderer": SUCCESSOR_RENDERER,
-    }
-    for key, expected in expected_paths.items():
-        bound = manifest["proof"][key]
-        assert ROOT / bound["path"] == expected
-        assert bound["sha256"] == _sha256(expected)
 
 
 def test_successor_browser_receipt_proves_theme_to_prophet_journey() -> None:

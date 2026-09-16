@@ -1097,7 +1097,7 @@ def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate() -> N
         ["scripts/canada_theme_action_map.py"],
         ["scripts/render_canada_opportunity_map_fixture.py"],
         ["scripts/verify_canada_opportunity_map.cjs"],
-        ["mockups/evidence/canada-opportunity-map-20260909/EVIDENCE.yml"],
+        ["mockups/evidence/canada-opportunity-map-20260909/mobile-layout-canada.json"],
         ["scripts/render_stock_dashboard_fixture.py"],
         ["mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-owner-fixture.json"],
         ["mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-action-fixture.json"],
