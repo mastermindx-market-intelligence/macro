@@ -96,6 +96,18 @@ def _env():
     return env
 
 
+def test_canada_builder_consumes_fail_open_theme_projection_seam() -> None:
+    source = (
+        Path(__file__).resolve().parent.parent / "scripts" / "build_canada.py"
+    ).read_text()
+
+    assert (
+        "from scripts.canada_theme_action_map import _safe_canada_theme_action_map"
+        in source
+    )
+    assert 'vm["theme_actions"] = _safe_canada_theme_action_map(setups, site)' in source
+
+
 def test_canada_macro_template_renders():
     # macro mode = the regime story; the standout names now live on the Stock Dashboard
     html = _env().get_template("canada.html.j2").render(**_vm(), mode="macro")
