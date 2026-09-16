@@ -1,0 +1,164 @@
+{
+  "kind": "historical_producer_log_metadata_only",
+  "job_id": 87936049727,
+  "run_id": 29589773634,
+  "raw_log_sha256": "25343df31807d5922f66bddf02df5c7f6674084b76d3570ee7265ee28b38832b",
+  "log_line_count": 31397,
+  "excerpt": [
+    {
+      "line": 99,
+      "text": "2026-07-17T16:22:25.8288470Z to do so with:"
+    },
+    {
+      "line": 100,
+      "text": "2026-07-17T16:22:25.8288560Z "
+    },
+    {
+      "line": 101,
+      "text": "2026-07-17T16:22:25.8288690Z  git branch <new-branch-name> ffa65b8d342"
+    },
+    {
+      "line": 102,
+      "text": "2026-07-17T16:22:25.8288830Z "
+    },
+    {
+      "line": 103,
+      "text": "2026-07-17T16:22:25.8305170Z Switched to a new branch 'main'"
+    },
+    {
+      "line": 104,
+      "text": "2026-07-17T16:22:25.8311120Z branch 'main' set up to track 'origin/main'."
+    },
+    {
+      "line": 105,
+      "text": "2026-07-17T16:22:25.8343570Z ##[endgroup]"
+    },
+    {
+      "line": 106,
+      "text": "2026-07-17T16:22:25.8435710Z [command]/opt/homebrew/bin/git log -1 --format=%H"
+    },
+    {
+      "line": 107,
+      "text": "2026-07-17T16:22:25.8499190Z 413d6e9038f2ac12ee231e6e067ef4d400fff2a3"
+    },
+    {
+      "line": 108,
+      "text": "2026-07-17T16:22:25.8629800Z ##[group]Run git pull origin main"
+    },
+    {
+      "line": 109,
+      "text": "2026-07-17T16:22:25.8630120Z git pull origin main"
+    },
+    {
+      "line": 110,
+      "text": "2026-07-17T16:22:25.8657520Z shell: /opt/homebrew/bin/bash -e {0}"
+    },
+    {
+      "line": 111,
+      "text": "2026-07-17T16:22:25.8657740Z ##[endgroup]"
+    },
+    {
+      "line": 112,
+      "text": "2026-07-17T16:22:26.5333780Z From https://github.com/chriswong6031-creator/macro"
+    },
+    {
+      "line": 113,
+      "text": "2026-07-17T16:22:26.5334190Z  * branch                    main       -> FETCH_HEAD"
+    },
+    {
+      "line": 114,
+      "text": "2026-07-17T16:22:26.5543440Z Already up to date."
+    },
+    {
+      "line": 115,
+      "text": "2026-07-17T16:22:26.5592770Z ##[group]Run VENV=\"$HOME/.cache/mm-venv-${RUNNER_NAME:-default}\""
+    },
+    {
+      "line": 116,
+      "text": "2026-07-17T16:22:26.5593220Z VENV=\"$HOME/.cache/mm-venv-${RUNNER_NAME:-default}\""
+    },
+    {
+      "line": 117,
+      "text": "2026-07-17T16:22:26.5593580Z [ -x \"$VENV/bin/python\" ] || /opt/homebrew/bin/python3.12 -m venv \"$VENV\""
+    },
+    {
+      "line": 118,
+      "text": "2026-07-17T16:22:26.5593940Z echo \"$VENV/bin\" >> \"$GITHUB_PATH\""
+    },
+    {
+      "line": 119,
+      "text": "2026-07-17T16:22:26.5594210Z \"$VENV/bin/python\" -m pip install --quiet --upgrade pip"
+    },
+    {
+      "line": 120,
+      "text": "2026-07-17T16:22:26.5615760Z shell: /opt/homebrew/bin/bash -e {0}"
+    },
+    {
+      "line": 121,
+      "text": "2026-07-17T16:22:26.5615980Z ##[endgroup]"
+    },
+    {
+      "line": 122,
+      "text": "2026-07-17T16:22:27.3971740Z ##[group]Run pip install -r requirements.txt"
+    },
+    {
+      "line": 123,
+      "text": "2026-07-17T16:22:27.3972020Z pip install -r requirements.txt"
+    },
+    {
+      "line": 124,
+      "text": "2026-07-17T16:22:27.3999120Z shell: /opt/homebrew/bin/bash -e {0}"
+    },
+    {
+      "line": 125,
+      "text": "2026-07-17T16:22:27.3999340Z ##[endgroup]"
+    },
+    {
+      "line": 229,
+      "text": "2026-07-17T16:23:06.2756550Z Cache restored from key: breadth-closes-engine-29542087837"
+    },
+    {
+      "line": 266,
+      "text": "2026-07-17T16:23:25.7793000Z Cache restored from key: smallcap-closes-engine-29542087837"
+    },
+    {
+      "line": 286,
+      "text": "2026-07-17T16:23:28.0396610Z Cache restored from key: midcap-closes-engine-29542087837"
+    },
+    {
+      "line": 305,
+      "text": "2026-07-17T16:23:29.6949870Z Cache restored from key: china-breadth-closes-29565416724"
+    },
+    {
+      "line": 324,
+      "text": "2026-07-17T16:23:31.1945810Z Cache restored from key: hk-breadth-closes-29565416724"
+    },
+    {
+      "line": 346,
+      "text": "2026-07-17T16:23:36.0574890Z Cache restored from key: intraday-29590275868"
+    },
+    {
+      "line": 379,
+      "text": "2026-07-17T16:24:45.3584020Z ##[group]regime engine (engine.run)"
+    },
+    {
+      "line": 27926,
+      "text": "2026-07-17T16:26:23.8868500Z ##[group]macro dashboard + US stocks (build_site)"
+    },
+    {
+      "line": 28674,
+      "text": "2026-07-17T17:03:51.0933700Z ##[group]buy board 2.0 shadow (build_stock_board_v2)"
+    },
+    {
+      "line": 29159,
+      "text": "2026-07-17T17:33:01.6624770Z ##[group]index vol-regime (build_vol_regime)  [7s, rc=0]"
+    },
+    {
+      "line": 31378,
+      "text": "2026-07-17T17:45:09.9906380Z    b8ec17579d5..f1f127e1ecb  main -> main"
+    }
+  ],
+  "per_security_inputs_read": false,
+  "retained_board_comparison": false,
+  "outcomes_computed": false
+}

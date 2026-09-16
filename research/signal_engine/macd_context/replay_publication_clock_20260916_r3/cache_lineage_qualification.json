@@ -1,0 +1,375 @@
+{
+  "kind": "bounded_cache_key_lineage_not_price_contents",
+  "repository": "mastermindx-market-intelligence/macro",
+  "runs": [
+    {
+      "run_id": 29542087837,
+      "created_at": "2026-07-16T23:24:15Z",
+      "event": "schedule",
+      "path": ".github/workflows/daily.yml",
+      "trigger_sha": "7c20ed15660996cf2247d55566d3e0fec6b9095d",
+      "jobs": [
+        {
+          "id": 87766254630,
+          "name": "collect",
+          "conclusion": "cancelled",
+          "started_at": "2026-07-16T23:24:19Z",
+          "completed_at": "2026-07-17T01:54:42Z",
+          "selected_steps": [
+            {
+              "name": "restore breadth close cache",
+              "conclusion": "success",
+              "started_at": "2026-07-16T23:24:29Z",
+              "completed_at": "2026-07-16T23:24:33Z"
+            },
+            {
+              "name": "restore smallcap (S&P 600) breadth close cache",
+              "conclusion": "success",
+              "started_at": "2026-07-16T23:24:33Z",
+              "completed_at": "2026-07-16T23:24:35Z"
+            },
+            {
+              "name": "restore midcap (S&P 400) breadth close cache",
+              "conclusion": "success",
+              "started_at": "2026-07-16T23:24:35Z",
+              "completed_at": "2026-07-16T23:24:38Z"
+            },
+            {
+              "name": "restore china breadth close cache",
+              "conclusion": "success",
+              "started_at": "2026-07-16T23:24:38Z",
+              "completed_at": "2026-07-16T23:24:41Z"
+            },
+            {
+              "name": "restore hk breadth close cache",
+              "conclusion": "success",
+              "started_at": "2026-07-16T23:24:41Z",
+              "completed_at": "2026-07-16T23:24:43Z"
+            },
+            {
+              "name": "run collectors (graceful degradation \u2014 never fails the build on one source)",
+              "conclusion": "success",
+              "started_at": "2026-07-16T23:25:15Z",
+              "completed_at": "2026-07-17T00:56:10Z"
+            },
+            {
+              "name": "commit data",
+              "conclusion": "cancelled",
+              "started_at": "2026-07-17T00:56:59Z",
+              "completed_at": "2026-07-17T01:54:31Z"
+            },
+            {
+              "name": "Post restore hk breadth close cache",
+              "conclusion": "skipped",
+              "started_at": "2026-07-17T01:54:31Z",
+              "completed_at": "2026-07-17T01:54:31Z"
+            },
+            {
+              "name": "Post restore china breadth close cache",
+              "conclusion": "skipped",
+              "started_at": "2026-07-17T01:54:31Z",
+              "completed_at": "2026-07-17T01:54:31Z"
+            },
+            {
+              "name": "Post restore midcap (S&P 400) breadth close cache",
+              "conclusion": "skipped",
+              "started_at": "2026-07-17T01:54:31Z",
+              "completed_at": "2026-07-17T01:54:31Z"
+            },
+            {
+              "name": "Post restore smallcap (S&P 600) breadth close cache",
+              "conclusion": "skipped",
+              "started_at": "2026-07-17T01:54:31Z",
+              "completed_at": "2026-07-17T01:54:31Z"
+            },
+            {
+              "name": "Post restore breadth close cache",
+              "conclusion": "skipped",
+              "started_at": "2026-07-17T01:54:31Z",
+              "completed_at": "2026-07-17T01:54:31Z"
+            }
+          ]
+        },
+        {
+          "id": 87786234813,
+          "name": "engine",
+          "conclusion": "success",
+          "started_at": "2026-07-17T01:54:45Z",
+          "completed_at": "2026-07-17T04:07:46Z",
+          "selected_steps": [
+            {
+              "name": "restore breadth close cache (stock search library needs constituent closes)",
+              "conclusion": "success",
+              "started_at": "2026-07-17T01:55:20Z",
+              "completed_at": "2026-07-17T01:55:22Z"
+            },
+            {
+              "name": "restore smallcap (S&P 600) breadth close cache (stock library needs constituent closes)",
+              "conclusion": "success",
+              "started_at": "2026-07-17T01:55:22Z",
+              "completed_at": "2026-07-17T01:55:24Z"
+            },
+            {
+              "name": "restore midcap (S&P 400) breadth close cache (stock library needs constituent closes)",
+              "conclusion": "success",
+              "started_at": "2026-07-17T01:55:24Z",
+              "completed_at": "2026-07-17T01:55:26Z"
+            },
+            {
+              "name": "restore hk breadth close cache (hk stock search library needs constituent closes)",
+              "conclusion": "success",
+              "started_at": "2026-07-17T01:55:26Z",
+              "completed_at": "2026-07-17T01:55:27Z"
+            },
+            {
+              "name": "Post restore hk breadth close cache (hk stock search library needs constituent closes)",
+              "conclusion": "success",
+              "started_at": "2026-07-17T04:07:35Z",
+              "completed_at": "2026-07-17T04:07:36Z"
+            },
+            {
+              "name": "Post restore midcap (S&P 400) breadth close cache (stock library needs constituent closes)",
+              "conclusion": "success",
+              "started_at": "2026-07-17T04:07:36Z",
+              "completed_at": "2026-07-17T04:07:38Z"
+            },
+            {
+              "name": "Post restore smallcap (S&P 600) breadth close cache (stock library needs constituent closes)",
+              "conclusion": "success",
+              "started_at": "2026-07-17T04:07:38Z",
+              "completed_at": "2026-07-17T04:07:40Z"
+            },
+            {
+              "name": "Post restore breadth close cache (stock search library needs constituent closes)",
+              "conclusion": "success",
+              "started_at": "2026-07-17T04:07:40Z",
+              "completed_at": "2026-07-17T04:07:41Z"
+            }
+          ],
+          "log_sha256": "4260ae52af6f94766b7075b9857207a12e96a03bda9387562176d9bbe2ece1fb",
+          "cache_key_excerpts": [
+            {
+              "line": 237,
+              "text": "2026-07-17T01:55:22.4165180Z Cache restored from key: breadth-closes-engine-29470063998"
+            },
+            {
+              "line": 260,
+              "text": "2026-07-17T01:55:24.3148110Z Cache restored from key: smallcap-closes-engine-29470063998"
+            },
+            {
+              "line": 282,
+              "text": "2026-07-17T01:55:26.2983300Z Cache restored from key: midcap-closes-engine-29470063998"
+            },
+            {
+              "line": 304,
+              "text": "2026-07-17T01:55:27.8926830Z Cache restored from key: hk-breadth-closes-29482596340"
+            },
+            {
+              "line": 38740,
+              "text": "2026-07-17T04:07:36.6870750Z Cache saved with key: hk-breadth-closes-engine-29542087837"
+            },
+            {
+              "line": 38748,
+              "text": "2026-07-17T04:07:38.4406740Z Cache saved with key: midcap-closes-engine-29542087837"
+            },
+            {
+              "line": 38756,
+              "text": "2026-07-17T04:07:40.2396160Z Cache saved with key: smallcap-closes-engine-29542087837"
+            },
+            {
+              "line": 38764,
+              "text": "2026-07-17T04:07:41.8548300Z Cache saved with key: breadth-closes-engine-29542087837"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "run_id": 29470063998,
+      "created_at": "2026-07-16T03:54:22Z",
+      "event": "workflow_dispatch",
+      "path": ".github/workflows/daily.yml",
+      "trigger_sha": "97ae63a9e3e6f4674873471af0fadcf5d675e680",
+      "jobs": [
+        {
+          "id": 87531291811,
+          "name": "collect",
+          "conclusion": "success",
+          "started_at": "2026-07-16T03:54:25Z",
+          "completed_at": "2026-07-16T05:40:43Z",
+          "selected_steps": [
+            {
+              "name": "restore breadth close cache",
+              "conclusion": "success",
+              "started_at": "2026-07-16T03:54:34Z",
+              "completed_at": "2026-07-16T03:54:36Z"
+            },
+            {
+              "name": "restore smallcap (S&P 600) breadth close cache",
+              "conclusion": "success",
+              "started_at": "2026-07-16T03:54:36Z",
+              "completed_at": "2026-07-16T03:54:38Z"
+            },
+            {
+              "name": "restore midcap (S&P 400) breadth close cache",
+              "conclusion": "success",
+              "started_at": "2026-07-16T03:54:38Z",
+              "completed_at": "2026-07-16T03:54:40Z"
+            },
+            {
+              "name": "restore china breadth close cache",
+              "conclusion": "success",
+              "started_at": "2026-07-16T03:54:40Z",
+              "completed_at": "2026-07-16T03:54:41Z"
+            },
+            {
+              "name": "restore hk breadth close cache",
+              "conclusion": "success",
+              "started_at": "2026-07-16T03:54:41Z",
+              "completed_at": "2026-07-16T03:54:42Z"
+            },
+            {
+              "name": "run collectors (graceful degradation \u2014 never fails the build on one source)",
+              "conclusion": "success",
+              "started_at": "2026-07-16T03:55:07Z",
+              "completed_at": "2026-07-16T05:37:23Z"
+            },
+            {
+              "name": "commit data",
+              "conclusion": "success",
+              "started_at": "2026-07-16T05:38:03Z",
+              "completed_at": "2026-07-16T05:39:30Z"
+            },
+            {
+              "name": "Post restore hk breadth close cache",
+              "conclusion": "success",
+              "started_at": "2026-07-16T05:40:24Z",
+              "completed_at": "2026-07-16T05:40:25Z"
+            },
+            {
+              "name": "Post restore china breadth close cache",
+              "conclusion": "success",
+              "started_at": "2026-07-16T05:40:25Z",
+              "completed_at": "2026-07-16T05:40:27Z"
+            },
+            {
+              "name": "Post restore midcap (S&P 400) breadth close cache",
+              "conclusion": "success",
+              "started_at": "2026-07-16T05:40:27Z",
+              "completed_at": "2026-07-16T05:40:29Z"
+            },
+            {
+              "name": "Post restore smallcap (S&P 600) breadth close cache",
+              "conclusion": "success",
+              "started_at": "2026-07-16T05:40:29Z",
+              "completed_at": "2026-07-16T05:40:31Z"
+            },
+            {
+              "name": "Post restore breadth close cache",
+              "conclusion": "success",
+              "started_at": "2026-07-16T05:40:31Z",
+              "completed_at": "2026-07-16T05:40:32Z"
+            }
+          ]
+        },
+        {
+          "id": 87544560056,
+          "name": "engine",
+          "conclusion": "success",
+          "started_at": "2026-07-16T05:40:45Z",
+          "completed_at": "2026-07-16T07:58:35Z",
+          "selected_steps": [
+            {
+              "name": "restore breadth close cache (stock search library needs constituent closes)",
+              "conclusion": "success",
+              "started_at": "2026-07-16T05:42:13Z",
+              "completed_at": "2026-07-16T05:42:15Z"
+            },
+            {
+              "name": "restore smallcap (S&P 600) breadth close cache (stock library needs constituent closes)",
+              "conclusion": "success",
+              "started_at": "2026-07-16T05:42:15Z",
+              "completed_at": "2026-07-16T05:42:17Z"
+            },
+            {
+              "name": "restore midcap (S&P 400) breadth close cache (stock library needs constituent closes)",
+              "conclusion": "success",
+              "started_at": "2026-07-16T05:42:17Z",
+              "completed_at": "2026-07-16T05:42:19Z"
+            },
+            {
+              "name": "restore hk breadth close cache (hk stock search library needs constituent closes)",
+              "conclusion": "success",
+              "started_at": "2026-07-16T05:42:19Z",
+              "completed_at": "2026-07-16T05:42:21Z"
+            },
+            {
+              "name": "Post restore hk breadth close cache (hk stock search library needs constituent closes)",
+              "conclusion": "success",
+              "started_at": "2026-07-16T07:58:24Z",
+              "completed_at": "2026-07-16T07:58:26Z"
+            },
+            {
+              "name": "Post restore midcap (S&P 400) breadth close cache (stock library needs constituent closes)",
+              "conclusion": "success",
+              "started_at": "2026-07-16T07:58:26Z",
+              "completed_at": "2026-07-16T07:58:28Z"
+            },
+            {
+              "name": "Post restore smallcap (S&P 600) breadth close cache (stock library needs constituent closes)",
+              "conclusion": "success",
+              "started_at": "2026-07-16T07:58:28Z",
+              "completed_at": "2026-07-16T07:58:30Z"
+            },
+            {
+              "name": "Post restore breadth close cache (stock search library needs constituent closes)",
+              "conclusion": "success",
+              "started_at": "2026-07-16T07:58:30Z",
+              "completed_at": "2026-07-16T07:58:31Z"
+            }
+          ],
+          "log_sha256": "55e5f60d9d4e30d80c736ed0b0884b50fe3a176ac1e9dd0760bb861addb6364b",
+          "cache_key_excerpts": [
+            {
+              "line": 415,
+              "text": "2026-07-16T05:42:15.6444220Z Cache restored from key: breadth-closes-29470063998"
+            },
+            {
+              "line": 438,
+              "text": "2026-07-16T05:42:17.8818770Z Cache restored from key: smallcap-closes-29470063998"
+            },
+            {
+              "line": 460,
+              "text": "2026-07-16T05:42:19.7463220Z Cache restored from key: midcap-closes-29470063998"
+            },
+            {
+              "line": 482,
+              "text": "2026-07-16T05:42:21.2137560Z Cache restored from key: hk-breadth-closes-29470063998"
+            },
+            {
+              "line": 39240,
+              "text": "2026-07-16T07:58:26.2289310Z Cache saved with key: hk-breadth-closes-engine-29470063998"
+            },
+            {
+              "line": 39248,
+              "text": "2026-07-16T07:58:28.1595390Z Cache saved with key: midcap-closes-engine-29470063998"
+            },
+            {
+              "line": 39256,
+              "text": "2026-07-16T07:58:30.0600730Z Cache saved with key: smallcap-closes-engine-29470063998"
+            },
+            {
+              "line": 39264,
+              "text": "2026-07-16T07:58:31.6477660Z Cache saved with key: breadth-closes-engine-29470063998"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "original_cache_bodies_recovered": false,
+  "contents_unchanged_between_restore_and_save_proven": false,
+  "per_security_input_census_executed": false,
+  "outcomes_computed": false,
+  "interpretation": "A new cache-save key is not evidence of a new successful collection or fresh closing prices."
+}

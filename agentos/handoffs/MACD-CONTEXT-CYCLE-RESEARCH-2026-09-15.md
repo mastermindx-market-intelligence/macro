@@ -5,8 +5,8 @@ model: sol
 ended_because: blocked
 mission: Repair the existing Prophet replay input/cache dependency used by the MACD study; no availability-wave closure
   or ownership transfer.
-state_before: Draft PR7177; interrupted local replay-input edits, stale handoff metadata, and failed historical control
-  fidelity.
+state_before: Replay-input repair published at b72178fa16db; independent review and full historical control held; contract-delta
+  subsequently identified two unwired test suites.
 changed:
 - path: scripts/prophet_pit_replay.py
   what: Restore pinned missing ticker inputs, repair control-to-replay tails, hash price bytes, and preserve restoration
@@ -15,6 +15,11 @@ changed:
   what: Twelve input/cache regression cases including two-stage execution and receipt consumption.
 - path: research/signal_engine/macd_context/REPLAY_INPUT_AND_CLOCK_RECOVERY_2026-09-16.md
   what: Record verified input repair and exact archived clock sensitivity without predictive or production promotion.
+- path: .github/ci/legacy-jobs.yml
+  what: Wire both new replay test suites into the existing prophet-anticipation-intake step; no new job, waiver or dependency.
+- path: research/signal_engine/macd_context/REFERENCE_PRODUCER_QUALIFICATION_2026-09-16.md
+  what: Bind original producer run, executed checkout, publication, source parity and environment/cache metadata; preserve
+    unrecovered input limits.
 verified:
 - claim: The exact final replay source passes 199 targeted tests.
   command: PYTHONDONTWRITEBYTECODE=1 MM_DATA_GUARD=1 python3 -m pytest tests/test_prophet_pit_replay_sparse_inputs.py
@@ -29,21 +34,33 @@ verified:
 - claim: Two archived functions change calendar-sensitive context on unchanged retained inputs.
   command: python3 research/signal_engine/macd_context/source/probe_historical_clock_dependencies.py
   result: 'PID26117: July dates stress0.0; September dates stress0.7 withfomc; input hashes unchanged.'
+- claim: The amended existing CI step passes 199 tests; the canonical differential contract check has zero findings.
+  command: YAML-extracted prophet-anticipation-intake replay step; scripts/check_contract_delta.py --base c359ed4403c9b8a8d097a8839c99448188618298
+  result: PID73442 exit0:199 passed; PID60217 exit0:0 introduced,0 inherited.
+- claim: Original publication is tied to job87936049727, executed checkout413d6e9038f2ac12ee231e6e067ef4d400fff2a3 and
+    publicationf1f127e1ecbd24cad018af190be4793b60eb6fcc.
+  command: gh api actions/runs/29589773634/jobs; checked original job log; git ls-tree over seven named paths at trigger/checkout/publication/replay
+    vintage
+  result: Job starts July17 16:22:16Z; final checkout logged16:22:25.849919Z; publication push17:45:09.990638Z; all seven
+    declared source paths match.
 unverified:
-- claim: Full historical board-control fidelity and original execution/publication/input clocks.
-  what_would_verify: Lawfully clear the blocked retained-board input census, qualify the existing owner inputs/clocks,
-    and rerun the same control without a waiver.
+- claim: Full historical board fidelity, exact customer availability and complete original transient input state.
+  what_would_verify: Recover immutable original caches/relevant per-build state through existing owners and qualify source/environment
+    clocks; after lawful clearance of the separate security-input census, rerun the same control without a waiver.
 - claim: Independent scientific acceptance and production/predictive improvement.
   what_would_verify: Independent source/scientific review, supported chronological tests and forward validation; no production
     claim follows from unit tests.
 unresolved:
-- The specific retained-board input census was platform-blocked; its output is absent.
-- Existing full control remains0.5769 agreement against0.85 floor.
-- PR remains draft/HOLD-FOR-SOL; no merge, default-main ledger application or trading authority.
+- Specific retained-board security-input census remains platform-blocked; no retry or reconstruction.
+- Original job identified; original cache bodies, per-build data state and customer-serving time remain unverified.
+- Full control remains0.5769 against0.85; independent source/scientific review and remote CI are not complete.
 next_actions:
-- Publish and reconcile the tested source/evidence on existing PR7177 without arming merge.
-- After lawful clearance of the specific comparison boundary, qualify historical input/source/publication clocks and
-  complete the same canonical control.
+- Reconcile this exact source/evidence publication on existing draft PR7177; consume independent source review and applicable
+  CI without arming merge.
+- Use existing Data OS/replay archive owners to qualify original cache objects and per-build state under recovered job/source
+  clocks; keep the separately denied security-input census held.
+- Only after required qualification and lawful gate clearance, rerun the SAME historical control under the declared source/time
+  contract.
 do_not_redo:
 - Completed crossover, factorial, repair, horizon/exit, five-benchmark, 48-contrast, recorded-context and archived-score
   studies absent an invalidator.
@@ -59,6 +76,19 @@ prs:
 decisions:
 - DEC:FORCE-MAJEURE-SESSIONS-ARE-BACKFILLED-BY-DEFAULT
 ---
+
+# Latest continuation — CI wiring and original producer evidence
+
+Recovery verified under protected Mastermind@5ee11ab1e993616f3568cfca4069cb21fa61fd8f: the prior interrupted save is reconciled by exact matches for all ten evidence files, the report and this handoff. Source/manifest bytes remain as tested; the exact CI step passed again (199 tests). Cache-key lineage now reaches the successful July16 collection run29470063998 via the later engine-only resave in run29542087837, whose collection job was cancelled. This does not prove cache-body identity or freshness. The additional archive-source inspection was platform-blocked and must not be retried through another tool. Read the appended recovery section of REFERENCE_PRODUCER_QUALIFICATION_2026-09-16.md and the updated verification receipt.
+
+Read `research/signal_engine/macd_context/REFERENCE_PRODUCER_QUALIFICATION_2026-09-16.md` and its `replay_publication_clock_20260916_r3/verification.json` first. This supersedes only the unwired-CI and wholly-unknown original producer clauses. Protected Skillpack is Mastermind@e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48. Same carrier, managed workspace and PR7177 remain; no worker/session/Job or live-trading authority was created by these changes.
+
+The source repair itself is unchanged. Both added tests are now in the existing replay CI step:199 tests pass, and the canonical differential contract checker concludes0 introduced/0 inherited. Producer job29589773634/87936049727 used checkout413d6e9038f2ac12ee231e6e067ef4d400fff2a3 and published f1f127e1ecbd24cad018af190be4793b60eb6fcc on July17, despite the board price stamp July15. Seven declared code paths match; cache restore keys and package versions are recovered but original transient input bodies and exact customer availability are not. Git publication is not full working-state capture.
+
+No full historical control, security-level input comparison, return calculation, fit or score inversion occurred. The denied comparison remains held; production, CI, source review and scientific acceptance stay distinct. Current native processes and publication/review dispositions belong to the exact evidence receipt/PR, not an inferred background promise. Preserve every prior completed study and hold.
+
+---
+
 
 ## Organizational scope of this handoff
 
