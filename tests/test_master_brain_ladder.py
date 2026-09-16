@@ -606,7 +606,8 @@ def test_brief_run_new_denial_replaces_prior_artifact(policy_boundary, monkeypat
     assert published["workload_refusal_code"] == "WORKLOAD_NO_ELIGIBLE_PROVIDER"
 
 
-def test_brief_run_rechecks_policy_after_translation(policy_boundary, monkeypatch, tmp_path):
+@pytest.mark.parametrize("persist", [True, False])
+def test_brief_run_rechecks_policy_after_translation(policy_boundary, monkeypatch, tmp_path, persist):
     events, path, document = policy_boundary
     cfg = _policy_cfg(); _policy_run(monkeypatch, tmp_path, cfg)
     def retire(brief, cfg, lens):
@@ -615,7 +616,7 @@ def test_brief_run_rechecks_policy_after_translation(policy_boundary, monkeypatc
         path.write_text(json.dumps(document))
         brief["zh"] = {"summary": "synthetic obsolete translation"}
     monkeypatch.setattr(mb, "_translate_brief", retire)
-    result = mb.run(root=tmp_path)
+    result = mb.run(persist=persist, root=tmp_path)
     assert result["raw_text"] is None and result["summary"] is None
     assert "zh" not in result and len(events["calls"]) == 1
     assert result["workload_refusal_code"]

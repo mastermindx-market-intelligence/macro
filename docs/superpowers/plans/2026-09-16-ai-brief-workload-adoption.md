@@ -87,3 +87,19 @@ reported base matches the captured revision. No gate or scope was weakened.
 Compile checks and git diff --check pass. Agent OS: 1118 records, zero errors,
 97 warnings. The composed provider/Brief regression remains 419 passing tests.
 No runtime, credential, provider, deployment or production proof is implied.
+
+
+## Same-writer composition repair
+
+The first W1 head 9069f63fcef117c34ca80f39223a238912213ceb composed cleanly with
+main 52380b870218b61865fb56458500cac00ce4932b (tree caa4300a6c81f1b6cd6bb320da99425c1474003a).
+The #7024 composition probe exposed two W1 source-position conflicts: adjacent
+stdlib imports and both consumers inserting immediately after translation.
+The writer moved only its own insertion points and preserves the regime writer.
+The finalization recheck now also has an explicit persist=False regression.
+Fresh complete provider/Brief regression: 420 passed in 15.81 seconds.
+
+The CI-manifest collision between #7024 and the W0 dependency also exists when
+composing #7024 with parent 889174901 alone. It is not created by W1 and remains
+with the incumbent integration owners; this branch does not edit that manifest.
+Current-head composition and full dependency recheck remain separate receipts.

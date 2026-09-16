@@ -28,9 +28,9 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
-import os
 from datetime import datetime, timezone
 from pathlib import Path
+import os
 
 from lib import config
 from engine.provider_workload_policy import (
@@ -1711,6 +1711,19 @@ def _brief_policy_failure(brief: dict, code: str) -> dict:
     return brief
 
 
+def _finalize_brief_workload(brief: dict, cfg: dict, expected: WorkloadDecision | None,
+                             refusal: str | None, fingerprint: str | None) -> None:
+    """Recheck after translation, before either publishing or returning the brief."""
+    try:
+        if refusal:
+            raise ProviderWorkloadPolicyError(refusal)
+        _require_brief_workload_unchanged(cfg, expected)
+        if expected is not None and _brief_workload_fingerprint(expected, cfg) != fingerprint:
+            raise ProviderWorkloadPolicyError("WORKLOAD_POLICY_CHANGED")
+    except ProviderWorkloadPolicyError as exc:
+        _brief_policy_failure(brief, str(exc))
+
+
 def _profiled_brief_cache(cached: str, workload: WorkloadDecision) -> dict | None:
     """Validate a profiled entry in the EXISTING reply cache; legacy stays text.
 
@@ -2938,15 +2951,8 @@ def run(persist: bool = True, root: Path | None = None, force: bool = False,
         except Exception:  # noqa: BLE001 — additive, never fatal
             brief["key_facts"] = []
         _translate_brief(brief, cfg, lens)    # attach brief['zh'] for the 中文 toggle
-        try:
-            if run_refusal:
-                raise ProviderWorkloadPolicyError(run_refusal)
-            _require_brief_workload_unchanged(cfg, run_workload)
-            if run_workload is not None and _brief_workload_fingerprint(run_workload, cfg) != run_fingerprint:
-                raise ProviderWorkloadPolicyError("WORKLOAD_POLICY_CHANGED")
-        except ProviderWorkloadPolicyError as exc:
-            _brief_policy_failure(brief, str(exc))
         if persist:
+            _finalize_brief_workload(brief, cfg, run_workload, run_refusal, run_fingerprint)
             try:
                 payload = json.dumps(brief, indent=2, default=str)
                 out = root / "data" / "regime" / spec["out"]
@@ -2957,6 +2963,8 @@ def run(persist: bool = True, root: Path | None = None, force: bool = False,
                     (site / spec["out"]).write_text(payload)
             except Exception as e:  # noqa: BLE001
                 log.warning("master_brief persist failed (lens=%s: %s)", lens, e)
+        else:
+            _finalize_brief_workload(brief, cfg, run_workload, run_refusal, run_fingerprint)
         if lens == "macro":                   # producer: append the brain's own leans (macro only)
             _append_ledger(brief, root)
         return brief
