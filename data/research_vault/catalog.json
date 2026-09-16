@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-16T13:11:17.062997+00:00",
-  "count": 2228,
+  "generated_at": "2026-09-16T17:48:17.957638+00:00",
+  "count": 2235,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -85,6 +85,122 @@
   ],
   "items": [
     {
+      "id": "marketdesk-x7lzosetxuq-f54284",
+      "title": "Hiking is the wrong choice",
+      "institution": "Std Chartered",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T14:58:18Z",
+      "summary_points": [
+        "FOMC Hold vs Hike Data Dependency: Hold expected Sept 16 due to insufficient hawkish votes (4+ needed), risking USD/long-end curve weakness; market prices 88% chance of 25bps hike by March, but delayed hike damages credibility amid Warsh’s hawkish rhetoric.",
+        "Tariff Inflation Ambiguity: Fed estimates tariffs add ~0.7% y/y to PCE, yet Powell’s reluctance to attribute inflation to tariffs creates two-sided outlook with lagging effects; supercore CPI shows steady disinflation but chained core CPI diverges from PCE.",
+        "Policy Credibility Risk: Jackson Hole comments warn market pricing (35bps hikes by March) could lead to policy errors; hold decision requires backward guidance justification, but Fed’s opposition to hike may confuse markets amid election proximity.",
+        "Voting Mechanics & Warsh Influence: Warsh’s hesitation to hike despite rhetoric (prefers hold until clearer disinflation) makes him pivotal; governors/Williams likely align, leaving Warsh to determine outcome with 6-6 tie avoided."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ndruwslrard-e5e2c2",
+      "title": "UK Motor Pricing Tracker UK Motor Pricing decelerating with ONS data showing price declines in August",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T11:48:25Z",
+      "summary_points": [
+        "Data Reliability Divergence: ONS shows motor insurance prices down 1.3% MoM (Aug) vs Defaqto showing +0.2% MoM for cheapest providers, critical for assessing market segmentation and data validity.",
+        "Margin Compression: Claims inflation (+3.6% wage-driven, +2.2% YoY) outpaces pricing declines (-0.6% MoM, +3% YoY), compressing margins as GSe claims index rises while motor prices fall.",
+        "Pricing Expectation Gap: Insurers (Admiral, Ageas) report high-single digit price hikes vs market mid-single digits; Sabre targets 10-15% over 2 years to offset hardening claims (mid-single digits) amid soft market conditions."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-tu03vxuifqd-cb632d",
+      "title": "Japan August Trade Crude Oil Import Prices Dip Temporarily, but Trade Balance in Deficit for 4 Months with Import Value Rem...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T11:48:19Z",
+      "summary_points": [
+        "Trade Deficit Widens Beyond Forecast: Deficit at -¥1.1tn (vs -¥1.0tn forecast), driven by import value surge +28.0% yoy (vs +26.1% consensus), with crude oil import prices dipping but overall import value remaining elevated.",
+        "Crude Oil Import Supply Disruption Risk: Middle East crude imports down 30.9% yoy, US imports up 603.5% yoy; high risk of price surges from Middle East supply disruption and market volatility.",
+        "Natural Gas Price Surge Impacts Energy Portfolios: Natural gas unit price up 38% yoy (¥2,425/mmbtu), US imports up 146.3% yoy, with LNG price convergence toward JMK highlighting acute supply chain stress.",
+        "Semiconductor Export Resilience Amid Geopolitics: Semiconductor-related export/import values surge; export volume to US rebounds +20% yoy (post-tariff recovery), while import value up 82.1% yoy reflecting tech sector strength."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-1qndc7xrrut-41f42c",
+      "title": "GS Early Morning Research Recap Ratings and Target Price Changes September 16, 2026 as of 5 30 AM ET",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T11:48:10Z",
+      "summary_points": [
+        "US Labor Share Decline: Goldman Sachs analysis on declining labor income share critical for wage dynamics, corporate profitability, and Fed policy sensitivity.",
+        "China Industrial Data Weakness: Further August industrial indicator deterioration signals supply chain risks, global commodity exposure, and economic slowdown.",
+        "Japan Defense Spending Policy: 3.5% GDP target under consideration, driving US-Japan strategic alignment and impacting defense/tech sector valuations.",
+        "Taiwan Semiconductor Supply Chain Risk: ABF order lead time extension to 2031 with premium pricing indicates prolonged constraints, affecting tech sector valuations and inventory planning.",
+        "China Policy Reversion: Shift in policy focus critical for China exposure assessment amid geopolitical and macroeconomic uncertainty."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-frxocynb2fp-a14cbd",
+      "title": "GS Abbas GS US Daily Download 16 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T11:43:00Z",
+      "summary_points": [
+        "VC Exits Collapse: $865bn peak (2021) collapsed to $115–$155bn (2022–2024), now projected at $2.18trn (2026), signaling fundamental capital allocation shift.",
+        "Geopolitical/Policy Shock: Saudi Arabia halting Yanbu shipments pushed WTI above $105/bbl; FOMC >90% rate hike odds pressured consumer sector and S&P500 breadth (344 names down).",
+        "US Credit Flows Shift: European investors dominate US credit (52%); Japan’s CLO/alternative asset focus and manageable IG/HY bond reductions reshape foreign investment dynamics."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-yyp1hltrhne-cb3df1",
+      "title": "GS Privorotsky GS Basics China Events Fed Priced Reductionist Rate View 16 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T11:42:58Z",
+      "summary_points": [
+        "Fed Policy Divergence: Market pricing 93% for 25bp hike vs. median dot likely one hike (10-8 majority); Core PCE constrained, oil at $150 key risk factor - Oil Price Risk: $150 oil price as critical macro risk factor impacting Fed trajectory and market volatility - China Diplomatic Leverage: Araghchi/Wang Yi talks and China’s Tehran/Washington leverage creating diplomatic pathway ahead of Trump-Xi summit, critical for sentiment"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-9awtq84r2xs-52db07",
       "title": "GS Blekos Marketcolour FOMC Consumer Snippets Saint Gobain CVC Trucks 16 Sep 2026",
       "institution": "S&T",
@@ -139,6 +255,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-8gntgltivfv-39dcf9",
+      "title": "JGB Strategy Weekly Sep 14",
+      "institution": "Mizuho",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T10:47:43Z",
+      "summary_points": [
+        "BOJ Tightening Pace: Market prices 25bp September hike; base case: one hike every six months (next March 2027), contingent on exchange rates and future hikes.",
+        "Fed-BOJ Policy Coordination: Fed unwinding rate hikes (no hikes 2024-2025) creates upward yen pressure, absorbing BOJ-driven downward yen pressure via narrowed JPY/USD spread (~5 yen).",
+        "Geopolitical Inflation Risk: Iran tensions may accelerate 2H 2026 inflation, forcing BOJ to hike to September; terminal rate of 2%+ overpriced as energy subsidies fade (2027 yields decline).",
+        "JGB Yield Curve Trajectory: Base case: 2y yield stable at ~1.70% until Jan-Mar 2027, then gradual decline; 10y/20y/30y yields flatten through 2027.",
+        "Critical Policy Dates: BOJ MPC (18-Sep, 30-Oct), JGB auctions (15-Sep, 29-Sep, 8-Oct), and enhanced liquidity auctions (25-Sep, 22-Oct) drive yield curve positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 21,
       "language": "en",
       "needs_metadata": false
     },
