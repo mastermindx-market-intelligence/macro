@@ -28,7 +28,12 @@ so_what: >
   history" framing as binding on every read seam built on top of this projection. The read-seam
   retention and viewer-budget choice are Sol's, not this record's. The secondary gap — frozen
   `DISPATCH_STATES` distinguishing RETURNED from DELIVERY_UNCONSUMED but carrying no
-  company-"accepted" token — is named here and is likewise a Sol decision.
+  company-"accepted" token — is now DECIDED and no longer open: no accepted token is added to the
+  frozen transport vocabulary; acceptance is a separate source-qualified facet owned elsewhere, and a
+  missing value renders `NOT_PROJECTED` (product decision recorded 2026-09-16 under
+  `WS:CHAIRMAN-CONTROL-ROOM`, cross-referenced from
+  `agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-16-POST-7181-FOLD.md` §7). The retention and
+  viewer-budget half remains Sol's.
 kind: architecture
 verified_at: 2026-09-16
 verified_by: >
