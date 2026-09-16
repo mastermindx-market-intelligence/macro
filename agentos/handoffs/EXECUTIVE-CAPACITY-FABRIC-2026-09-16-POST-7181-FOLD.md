@@ -167,10 +167,10 @@ verified:
       procedure pin e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48,
       external_effect_state=RECONCILED_NO_OPEN_EFFECT, local_equals_remote=true, and zero unpushed,
       uncommitted and untracked counts both in and out of scope. Read read-only; nothing acted on.
-  - claim: "SUPERSEDED OBSERVATION, recorded rather than deleted so the change is visible: at 2026-09-16T20:0xZ Mastermind #688 read reviewDecision CHANGES_REQUESTED at head 36920d88c77fb7a4d52f1e8ba9030603015f23ff. That is NO LONGER #688's live head."
+  - claim: "SUPERSEDED OBSERVATION, recorded rather than deleted so the change is visible: at 2026-09-16T20:2xZ Mastermind #688 read reviewDecision CHANGES_REQUESTED at head 36920d88c77fb7a4d52f1e8ba9030603015f23ff. That is NO LONGER #688's live head."
     command: "gh pr view 688 -R mastermindx-market-intelligence/Mastermind --json state,isDraft,headRefOid,reviewDecision"
     result: >
-      Reading taken 2026-09-16T20:0xZ: state OPEN, isDraft true, head
+      Reading taken 2026-09-16T20:2xZ: state OPEN, isDraft true, head
       36920d88c77fb7a4d52f1e8ba9030603015f23ff, reviewDecision CHANGES_REQUESTED. SUPERSEDED by the
       re-read of the same command at 2026-09-16T20:4xZ, recorded in this list under the claim
       "Mastermind #688's live head is 24cb642a...", which returned head
@@ -661,7 +661,7 @@ the native path, it does not make native capacity built.
 proves no runtime.
 
 **#688** carried a Sol `REQUEST_REPAIR` (Step-A typed semantics, SPEC_ONLY), and at
-2026-09-16T20:0xZ its `reviewDecision` read CHANGES_REQUESTED. SUPERSEDED: on the re-read at
+2026-09-16T20:2xZ its `reviewDecision` read CHANGES_REQUESTED. SUPERSEDED: on the re-read at
 2026-09-16T20:4xZ the `reviewDecision` is EMPTY — the repair push cleared it — so #688 has NO live
 CHANGES_REQUESTED. The earlier reading did not retract the kit record's APPROVE at head
 `36920d88…`; it superseded its release readiness. That repair has since LANDED: the live head is `24cb642a4a1c4f8369793d6f5d946764137f7293` with R9 APPROVE / BLOCKING 0, and release stays on HOLD behind the order **#653-successor -> #684 -> #688** (Sol R81 item 4).
