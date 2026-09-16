@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-16T11:54:23.015244+00:00",
+  "generated_at": "2026-09-16T15:38:08.625158+00:00",
   "grade_horizons": [
     5,
     21,
@@ -1689,7 +1689,7 @@
         },
         "radar": {
           "5": {
-            "n_obs": 4200,
+            "n_obs": 4201,
             "n_dates": 15,
             "hit_rate": 0.480626,
             "excess_mean": null,
@@ -1699,7 +1699,7 @@
             "state": "ACCRUING",
             "excess_mean_by_direction": {
               "-1": 0.000936,
-              "0": -0.015296,
+              "0": -0.015394,
               "1": -0.015977
             },
             "excess_directions": [
@@ -1920,7 +1920,7 @@
         },
         "radar": {
           "5": {
-            "n_obs": 4200,
+            "n_obs": 4201,
             "n_dates": 15,
             "hit_rate": 0.480626,
             "excess_mean": null,
@@ -1930,7 +1930,7 @@
             "state": "ACCRUING",
             "excess_mean_by_direction": {
               "-1": 0.000936,
-              "0": -0.015296,
+              "0": -0.015394,
               "1": -0.015977
             },
             "excess_directions": [
@@ -3001,21 +3001,21 @@
     }
   },
   "counts": {
-    "n_claims": 95936,
-    "n_grades": 135617,
+    "n_claims": 95938,
+    "n_grades": 135618,
     "n_placebo": 1198,
-    "n_rejected": 17,
+    "n_rejected": 19,
     "grades_by_fill_convention": {
       "asof_legacy": 2780,
-      "next_bar": 132837
+      "next_bar": 132838
     },
     "grades_by_clock_basis": {
       "legacy_calendar_unstamped": 84210,
-      "explicit_unit_v1:trading_days:US": 48232,
+      "explicit_unit_v1:trading_days:US": 48233,
       "explicit_unit_v1:calendar_days:US": 158,
       "explicit_unit_v1:trading_days:CN": 3017
     },
-    "n_claims_horizon_unit_declared": 49306,
+    "n_claims_horizon_unit_declared": 49308,
     "n_claims_unstamped_regime": 6673
   },
   "ladder_states": {
@@ -4618,7 +4618,7 @@
       }
     }
   },
-  "ladder_states_at": "2026-09-16T11:55:42.960684+00:00",
+  "ladder_states_at": "2026-09-16T15:39:26.251199+00:00",
   "promotion_readiness": {
     "altdata": {
       "5": {
@@ -6411,7 +6411,7 @@
         "excess_basis": "magnitude_only",
         "excess_mean_by_direction": {
           "-1": 0.000936,
-          "0": -0.015296,
+          "0": -0.015394,
           "1": -0.015977
         },
         "benchmark_baseline_hit_rate": null,
@@ -7444,5 +7444,5 @@
       }
     }
   },
-  "promotion_readiness_at": "2026-09-16T11:57:21.718990+00:00"
+  "promotion_readiness_at": "2026-09-16T15:41:01.930840+00:00"
 }
