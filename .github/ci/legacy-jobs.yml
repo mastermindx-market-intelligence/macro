@@ -1669,6 +1669,8 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # Shared llm_auth workload guard: retain transitive import coverage.
+      - "engine/provider_workload_policy.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -6997,6 +6999,8 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      # Shared llm_auth workload guard: retain transitive import coverage.
+      - "engine/provider_workload_policy.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -7607,6 +7611,8 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      # Shared llm_auth workload guard: retain transitive import coverage.
+      - "engine/provider_workload_policy.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -10900,6 +10906,8 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      # Shared llm_auth workload guard: retain transitive import coverage.
+      - "engine/provider_workload_policy.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -12938,6 +12946,8 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # Shared llm_auth workload guard: retain transitive import coverage.
+      - "engine/provider_workload_policy.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"

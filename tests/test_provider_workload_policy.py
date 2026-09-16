@@ -316,3 +316,20 @@ def test_json_integer_limit_is_a_typed_configuration_refusal(tmp_path):
     path.write_text('{"revision":' + "1" * 5000 + '}')
     with pytest.raises(ProviderWorkloadPolicyError, match="WORKLOAD_POLICY_JSON_INVALID"):
         load_policy(path)
+
+
+@pytest.mark.parametrize("job_name", [
+    "biocatalyst-history", "biocatalyst-serving", "flow-surface",
+    "unrun-government-revenue-grader", "unrun-picks-boards",
+])
+def test_existing_curated_jobs_cover_the_new_shared_dependency(job_name):
+    # The hosted contract-delta gate found these real transitive consumers of
+    # llm_auth. Keep their existing exclusive scopes additive, never bypassed.
+    from pathlib import Path
+    import yaml
+
+    root = Path(__file__).resolve().parents[1]
+    jobs = yaml.safe_load((root / ".github/ci/legacy-jobs.yml").read_text())["jobs"]
+    paths = jobs[job_name]["paths"]
+    assert "engine/provider_workload_policy.py" in paths
+    assert "config/**" in paths or "config/provider_workloads.v1.json" in paths

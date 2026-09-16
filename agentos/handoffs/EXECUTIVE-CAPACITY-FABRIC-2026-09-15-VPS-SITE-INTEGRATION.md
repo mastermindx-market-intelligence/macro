@@ -33,7 +33,9 @@ changed:
       Provider-free regression and adversarial coverage of purpose filtering,
       host-floor monotonicity, malformed policy, hot reload and closed receipts.
   - path: .github/ci/legacy-jobs.yml
-    what: Add the new tests to the existing LLM provider job; no new workflow.
+    what: >
+      Add the new tests to the existing LLM provider job and explicitly widen the
+      five contract-delta-identified transitive consumer scopes; no new workflow.
   - path: docs/superpowers/specs/2026-09-15-vps-site-fabric-integration.md
     what: >
       Owning architecture, credential/runtime separation, synchronization contract,
@@ -65,6 +67,22 @@ verified:
     result: >
       Initial clean base e9d469383c68aec55cf4c2723112fdf204f667cf, created by the
       reviewed native sparse helper. Feature branch is claude/vps-site-fabric-20260915-sol.
+  - claim: Hosted CI closure misses were reproduced and repaired without weakening gates.
+    command: >
+      MM_DATA_GUARD=1 python3 -m pytest tests/test_provider_workload_policy.py
+      -q --tb=short -k existing_curated; then the complete provider group above.
+    result: >
+      Five failed before the manifest repair. After adding the shared module to
+      five existing exclusive job scopes, the complete provider group passed
+      285 tests in 12.12 seconds. No provider/runtime implementation changed.
+  - claim: Full repository differential contract-delta passes after the scope repair.
+    command: >
+      CONTRACT_DELTA_TMP_ROOT=<operation-local-temp-root> MM_DATA_GUARD=1
+      python3 scripts/check_contract_delta.py
+      --base 52bd0cde0669cd8ea396dfbe692399261dd5cfe5
+    result: >
+      Exit 0; 0 introduced, 0 inherited. This is local full contract-delta proof,
+      not a claim that the new hosted PR checks have completed.
 unverified:
   - claim: The guard is merged, installed or enabled on the VPS.
     what_would_verify: >

@@ -113,9 +113,32 @@ Files: tests/test_provider_workload_policy.py and .github/ci/legacy-jobs.yml.
 
 - [x] Write an Agent OS handoff in the canonical Macro home, validate its schema and record
   the exact source-only proof and remaining consumer/native-runtime gaps.
-- [ ] Commit only the named files, push claude/vps-site-fabric-20260915-sol, and open a Draft
+- [x] Commit only the named files, push claude/vps-site-fabric-20260915-sol, and open a Draft
   PR with HOLD-FOR-SOL. No merge-on-green label and no native auto-merge.
-- [ ] Fresh-read the incumbent Fable thread after final evidence, then send the exact head,
+- [x] Fresh-read the incumbent Fable thread after final evidence, then send the exact head,
   PR and tests for independent review/composition. Delivery is not acknowledgement.
-- [ ] Keep production profile activation, credential changes and live canaries held until
+- [x] Keep production profile activation, credential changes and live canaries held until
   approved eligible providers, budgets, current runtime gates and rollback are proven.
+
+## Hosted CI return: shared dependency coverage repair
+
+The first published head 610df529ee32de1c3c712a796678bd886abe203e produced five
+new contract-delta closure findings: biocatalyst-history, biocatalyst-serving,
+flow-surface, unrun-government-revenue-grader and unrun-picks-boards reach the
+new module through llm_auth but their exclusive paths did not declare it.
+
+- [x] Reproduce with five discriminating manifest tests: five failed before repair.
+- [x] Add only engine/provider_workload_policy.py to those five existing job scopes.
+  All five already cover config/**. Assert every other manifest field unchanged.
+- [x] Rerun the full provider group: 285 passed in 12.12 seconds (52 new tests total).
+- [x] Compile checks and git diff --check passed again.
+- [x] Complete the existing full differential contract-delta script against the exact
+  checked main base; keep its result distinct from hosted CI acceptance.
+- [ ] Publish the correction on the SAME PR and supersede the exact-head review binding.
+
+No runtime/provider code changed in this repair, no checks were weakened, no
+second CI workflow was created, and production activation remains held.
+
+Full contract-delta result against 52bd0cde0669cd8ea396dfbe692399261dd5cfe5:
+exit 0; 0 introduced, 0 inherited. The native checker created and cleaned its
+own sparse temporary base carrier; no active worker checkout was modified.
