@@ -529,3 +529,31 @@ def test_explanation_does_not_hide_missing_inputs_or_emit_rejected_private_text(
     assert run.returncode==2
     assert json.loads(run.stdout)['status']=='invalid_request'
     assert 'PRIVATE_CUSTOMER_CONTENT' not in run.stdout
+
+
+def test_sensitivity_distinguishes_a_reference_base_from_an_input_held_fixed():
+    r=analyze(scenario())
+    cell=r['scenario_tests']['sensitivity.operating_profit_per_revenue_pct']
+    assert cell['varied_input']=='current.revenue'
+    assert 'current.revenue' not in cell['fixed_inputs']
+    assert cell['baseline_inputs']==['current.revenue']
+    assert cell['fixed_inputs']==['current.gross_margin_pct']
+
+
+def test_random_equality_thresholds_reproduce_their_named_targets():
+    import random
+    rng=random.Random(260917)
+    for _ in range(150):
+        p=scenario()
+        p['prior'].update(revenue=rng.randint(50,200),gross_margin_pct=rng.randint(20,70),operating_expenses=5)
+        p['current'].update(revenue=rng.randint(50,200),gross_margin_pct=rng.randint(20,70),operating_expenses=5)
+        r=analyze(p)
+        for key,field in (('hold.operating_profit_margin_pct','gross_margin_pct'),
+                          ('hold.operating_profit_revenue','revenue')):
+            cell=r['scenario_tests'][key]
+            if cell['within_value_range']:
+                q=deepcopy(p);q['current'][field]=cell['value']
+                rr=analyze(q)
+                assert abs(value(rr,'current.operating_profit')-value(r,'prior.operating_profit'))<Decimal('0.00000001')
+        q=deepcopy(p);q['current']['working_capital_increase']=r['scenario_tests']['zero.cash_after_capex_working_capital']['value']
+        assert abs(value(analyze(q),'current.cash_after_capex'))<Decimal('0.00000001')
