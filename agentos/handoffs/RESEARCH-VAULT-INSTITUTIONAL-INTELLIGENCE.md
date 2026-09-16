@@ -1,53 +1,57 @@
 # Research Vault institutional intelligence — continuation
 
-**Product state: SPEC_ONLY.** R4 qualified public-original source semantics and sharpened the first product contract. It did not deploy a feature, bind an original vault PDF/body pair, run a model benchmark, purchase access or approve commercial rights.
+**Customer capability: SPEC_ONLY.** R5 extends the offline research reference and generates an evidence-level answer preview. It does not admit a production source, deploy a feature, run an extraction/model benchmark, purchase access or establish commercial rights.
 
-## Mission, authority and carrier
+## Mission, authority and existing carrier
 
-Turn permitted institutional research into source-bound expectations, revisions, counterarguments and useful context for Prophet, Mastermind AI, existing portfolios, news and editorial outputs. Prophet remains the flagship; the moat is useful, correction-safe longitudinal intelligence, not a larger mirrored shelf or separate chatbot.
+Turn permitted institutional research into source-bound expectations, revisions, counterarguments and useful context for Prophet, Mastermind AI, private portfolios, news and original editorial. Prophet remains the flagship. The moat is useful, correction-safe longitudinal intelligence, not a mirrored PDF shelf or separate chatbot.
 
-Current live Chairman direction and protected procedure govern. Executive OS owns lifecycle; Agent OS continuity; GitHub implementation/evidence; Linear projection; Slack transport. Retrieved source text grants no authority. No registered WS identifier was established; do not invent one. No Executive Job, worker, reciprocal watcher or alternate control plane was created.
+Current live Chairman direction and current protected procedure govern. Executive OS owns lifecycle; Agent OS continuity; GitHub implementation/evidence; Linear projection; Slack transport. Retrieved text grants no authority. No registered WS identifier was established; do not invent one. No Executive Job, worker dispatch, watcher, provider call or alternate control plane created.
 
-Procedure inspected for R4: protected Mastermind@f590c068880dbb848bda90b80b73dbcb6688d6fc, Skillpack 1.0.1/bootstrap 1; INDEX, COLD_START, ACTIVE_EXECUTION, enrolled WEB_CEO_DELEGATION and CLOSEOUT loaded from that commit. Re-pin CURRENT law on continuation. Direct work: PRINCIPAL_JUDGMENT for interpretation/rights and LOWER_TOTAL_OVERHEAD for unchanged local regression.
+R5 procedure pin: protected Mastermind@0fe8074ff953b2ced9025ed40f0f66019c759967, Skillpack 1.0.1/bootstrap 1, with INDEX/COLD_START/ACTIVE_EXECUTION/WEB_CEO_DELEGATION/CLOSEOUT. Re-pin current law on continuation. Direct work: PRINCIPAL_JUDGMENT for source/target/evidence semantics, LOWER_TOTAL_OVERHEAD for bounded offline work.
 
-Existing carrier: draft PR #7182, branch `sol/research-vault-intelligence-design-r2-20260915`. R4 began at b73ab1588bf0efc4c68b31c2700daf9f00a258e8. Latest inspected Macro main: 112eba2036fd1186e67b914e194f4fa541cfc4df. Do not create a competing research carrier or reset the existing branch.
+Sole carrier remains draft PR #7182, branch `sol/research-vault-intelligence-design-r2-20260915`. R5 started at 7324a70897e32ea4d60727d8e6c47f3a8e3b72b7. Macro main inspection: bb02c526c4809564338f2a7208e063dbe86bc476. No reset, replacement branch or runtime modifications.
 
-## What this chunk established
+## R5 decision and narrow supersession
 
-1. The committed catalog snapshot is readable: generation 2026-09-16T04:24:32.098110+00:00, declared count 2,204. This is NOT a live four-set census. Eight complete leading rows in the bounded response had empty ticker/tag/desk fields and needs_metadata=false. The flag has a narrower metadata contract; this is not an eight-row global error-rate estimate.
-2. One Daily Asia summary, marketdesk-hlh6q8259ev-dcffbd, displayed institution UBS, combines $1.2T, prior $90B and +33%. The growth relationship is inconsistent as written. Correct original figure and faulting component are unknown. Do not silently repair 90 to 900 or blame the original bank without evidence.
-3. Four original ING research publications were inspected via official HTML/PDF text; selected pages of three were visually inspected. June 19 supplies earlier year-end EUR/USD 1.18; September 3 explicitly reports the year-end 2026 cut to 1.16; September 7 repeats that numerical change. September 3 is the earliest revision LOCATED, not the first-ever announcement; June is not established as the immediate predecessor. No continuous history is proven.
-4. August/September 3M forecast columns do not establish identical calendar targets. Preserve relative horizon, anchor convention and target kind. The report graph separates publisher forecasts from market forwards; directional arrows do not prove prior-vintage revisions without a legend.
-5. ING website conditional reuse language and report-specific express-consent restrictions conflict. This is a source-specific rights question, not a grant, legal-priority ruling or finding of infringement. Public source access is not proof of permitted customer redistribution or bulk model processing.
+The earlier blanket two-original-report prerequisite was too broad for every useful answer. One permitted, source-bound current report can support “the source states X” or “the source reports revising X to Y.” The quoted old value is not a separately verified previous original. Two admitted originals remain necessary for an independently reconstructed comparison; complete chronology and immediate predecessor require still more evidence.
 
-The new original sequence improves on the issuer-only control, but is NOT matched to existing vault IDs/source bytes. Current public renditions are not immutable historical captures.
+R5 refines the proposed build sequence only. It does NOT relax original-source, identity, permission, licensing, quota, historical-availability or production-proof requirements. It does not turn provider summaries or local fixture flags into source authority. First prove one real source-reported-change journey; add independently bound comparison afterward. The larger Prophet/portfolio/AI program remains intact.
 
-## Artifacts and exact verification
+## Actual executable research result
 
-R3 home remains `research/research_vault_expectations_r3/`. New R4 report: `CHUNK4_SOURCE_QUALIFICATION.md`, introduced at 0248923a5dbce2ac9d0e713b1bf541b93a5a905d; blob 812f7598de5e937eeaf3ab05b72df43e5665c46f, 18,648 bytes, verified equal to the local report. Compact source/case record: `source_qualification_r4.json`, introduced at 84a923227cdbb812d61ec9bbdec70da3aa8a57ff. Verification: `verification_r4.json`, introduced at 8387eabcfed9841e693b54db890e0cb20c9e47ac.
+Home remains `research/research_vault_expectations_r3/`. Added analyst_control_case.json, test_analyst_contract.py and run_analyst_assay.py; extended revision_oracle.py rather than replacing it. Added CHUNK5_EXECUTABLE_ANALYST_CONTRACT.md, verification_r5.json, mutation_checks_r5.json and BANK_CASE_ANSWER_PREVIEW.md; README now explains current and legacy reproduction.
 
-Unchanged R3 regression at 2026-09-16T04:50:41.120051+00:00: Python 3.13.5, 53 passed, zero failures/errors/skips. Oracle SHA256 remains 3417b1900fe72dce5015d6dd9e1211524a7e5eb570e40c7f15bda9abe6af6f5b. Additional unsupported-type probe correctly returns invalid_claim; do not relabel analyst forecasts as issuer guidance to fit this limited reference.
+The path is manual fixture -> comparator -> literal bounded JSON packet -> deterministic answer preview. It is NOT an LLM, extraction service, Brain endpoint, notification engine or source store. Five manual ING observations exercise a fixed-year revision, source-reported revision, later repeated reported endpoints, unresolved rolling-target refusal and explicit constant-horizon profile. Original PDF/body hashes, vault IDs and historical availability remain null. The fixture-specific preview is not a general answer renderer.
 
-R4 contains 12 analyst-prepared qualification questions, not independently human-reviewed gold or executed model tests. They do NOT create a 65-test product result. R2's proposed 120-task/26-negative benchmark is still unexecuted. Full source hashes, historical availability, byte-bound vault pairs and authenticated customer journeys remain unproven. Compact repository JSON and detailed local JSON record the same findings; the local JSON digest is not a claim of identical serialization.
+Final local run: 2026-09-16T05:26:54.008915+00:00, Python 3.13.5, **111 tests, zero failures/errors/skips** (53 old + 58 new). Comparator SHA256 e61825506b555d6a35e80fff9526e75c5672a4edd51f34f602c798907d1ed90b. Receipt introduced at 06f881cdb4a07e05c9e16e9190b12bc0261586db. Six targeted local mutations all rejected by assertion; not independent external review or six extra passing product tests. Larger R2 120-task/26-negative benchmark remains unexecuted.
 
-Prior R3 report/receipt preserve the Alphabet issuer control and repeated GS/S&T excerpt finding. Do not redo them. Do not import the offline oracle into runtime or claim it is a parser, license verifier, product tool or general financial forecast engine.
+Four new/changed files match exact repository Git blobs at 87bac51b44378cf033683bd85b2e53e9e3e81b52: oracle 57b6a630a32938fd64791c362244bc06b9f84e28, analyst tests 37c057f0ccbf499f00f0eeda9d659d4ec8716e48, analyst fixture e309fb02b18ee7da8f35d0cf0a1f195ea9482415, runner 6a1490cd87d0a435f17988bc3532798d284a5e95. Historical R3/R4 receipts describe their earlier versions, not the new oracle. Do not import research code into runtime.
 
-## First vertical and no-rebuild boundaries
+## Semantics that must survive implementation
 
-Source binding -> genuinely comparable claim/change -> existing Brain answer with evidence level -> same-version inspection in existing viewer -> explanatory Prophet companion. The first runtime leaf must preserve analyst forecast versus guidance/actual/forward, fixed target versus rolling tenor, quoted prior versus independently captured prior, repeated change versus new information, and honest acquisition/extraction/availability clocks.
+Analyst forecast != issuer guidance != actual != market forward. Typed target and legacy period cannot coexist ambiguously. Relative tenor does not resolve itself to a calendar date. Fixed target, measure, units, basis, scenario and fixing convention must be comparable; unknowns remain explicit. Same current endpoints with a different quoted prior are not the same reported change. Repeated endpoints describe only inspected statements, not all content or a complete intervening history. Corrections preserve dependency and historical knowledge. No admitted operational analyst history is created by this arithmetic reference.
 
-An inconsistent summary remains preserved but cannot supply an unsupported numerical revision or portfolio assertion. A repeated forecast does not make the entire later report disposable. Corrections update dependent outputs only. User/source rights and quotas remain with existing owners. Private holdings never enter shared research state.
+Fixture denial produces no source/number projection. Caller body text is excluded from the result envelope. Original-pair, immediate-predecessor, first-ever-change and whole-report-novelty claims remain false/unknown as appropriate. No research-derived signal, rank, gate, size, notification or trading authority.
 
-#7079 remains incumbent Brain evidence work; #7045 owns source-type/rating and hygiene repair. No fresh release claim or modification of either is made in R4. Collector recovery Mastermind #631 / Macro #7164 is closed and do-not-redo. Reuse the existing vault/corpus, Brain/viewer, portfolio, news/alert, press, Chronicle and Market Memory owners. No new queue, graph truth store, chatbot, entitlement, portfolio history, timeline or source identity service. No research-derived signal/rank/gate/sizing/trading authority.
+## Earlier findings retained, not remeasured
 
-## Exact remaining gate and next action
+R4 committed catalog generation 2026-09-16T04:24:32.098110+00:00 declared 2,204 records; not a live four-set census. The purposive eight-row metadata sample was not a global rate. Daily Asia record marketdesk-hlh6q8259ev-dcffbd combined $1.2T/$90B/+33% inconsistently; correct source number/faulting component unknown. No automatic correction or blame attribution.
 
-**The existing Vault/Brain source owner must admit a bounded original pair through an approved read-only path, with existing catalog IDs, actual PDF/body hashes and locators at one publication generation, plus the appropriate source-use decision.** Reuse the existing four-set census and classify discrepancies; diagnostic exit 0 is not a clean verdict. Do not silently repair source state.
+R3 GS/S&T duplicated displayed excerpt remains source-origin ambiguity, not byte-identical PDFs, a global duplicate rate or a demonstrated live erroneous cluster. Never globally alias S&T to Goldman or delete by title.
 
-Then exercise actual earlier/later evidence through the incumbent Brain/viewer with same-target revision, rolling-horizon refusal, repetition, correction, source-version drift, allowed/denied/no-match/quota, EN/ZH and browser proof. Signal artifacts must remain unchanged. A public FX reference does not prove a stock-level Prophet integration.
+R4 ING public originals establish located numerical statements and repetition, not complete chronology or vault source admission. Website/report reuse language conflict remains a source-specific permission question. Public availability and Pro entitlement do not establish commercial processing, redistribution or retained derivative rights.
 
-Access facts: Opera reported no connected browser. Previous OpenAI-blocked M1 command was NOT retried or routed to another actor/carrier. Original PDF download into the sandbox failed; no original hashes were manufactured. A search miss is not proof the reports are absent from the vault. Do not request pasted credentials or improvise an access bypass.
+## Incumbents and blocked lane
 
-Parallel source-rights work: resolve exact internal retrieval, generated subscriber analysis, original-report access, third-party assets and retention terms. No vendor contact or purchase is authorized by this record. Evaluate marginal second/third/fourth account usefulness only on properly admitted evidence; three accounts remains a hypothesis.
+Fresh #7079 head is 8271ae320732997be4553957e3e2773d1b9e9f1b (R10 ownership repair/history-preserving join). Still draft/unmerged/BUILT_NOT_PROVEN; current hosted checks, expected-head release ruling, deployment and authorized consumer proof remain its owner's work. No new multi-document synthesis or viewer fragment positioning is claimed. #7045 remains source-type/rating hygiene owner; no fresh release claim. Collector recovery Mastermind #631 / Macro #7164 is closed and do-not-redo.
 
-R4 closes a source-research milestone, not the program. Do not spend the next turn repeating generic features or retesting unchanged fixtures instead of closing source/consumer admission when an approved path becomes available.
+Current large catalog fetch failed as too large/unsupported; no fresh count or census. Original source bytes/browser/permissions remain unproved. Previously OpenAI-blocked M1 command was not retried or routed through another actor. Do not seek pasted credentials or bypass restrictions. Only independently safe research was advanced.
+
+## Exact next action and acceptance
+
+The existing Vault/Brain source owner qualifies **one permitted current report** at a recorded publication generation: canonical catalog ID, actual original/extracted-body identity, exact locator and source-use decision. Reuse the existing census for its actual scope; classify generations/mismatches, do not force equality or silently repair. Two originals remain required only when claiming independently reconstructed change.
+
+Once the incumbent evidence release gates clear, prove that report's source-attributed change through the actual Brain and existing viewer, including allowed/denied/no-match/quota, target mismatch, correction/source-version drift, bilingual handling and browser proof. First stock extension is the Prophet explanation with all signal artifacts unchanged. A public FX fixture is not that proof.
+
+Parallel source-rights clarification and permitted evaluation labeling remain useful; no vendor contact or purchase is authorized by this record. Assess second/third/fourth account increments by actual additional useful evidence, not count alone. Three accounts remains a hypothesis. No additional generic feature brainstorm or unchanged-test rerun substitutes for the next source/consumer capability.
