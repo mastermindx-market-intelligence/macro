@@ -46,6 +46,30 @@ verified:
     cleanup patch over current4c2d bytes and run125 existing+3new tests; restore source.
   result: Baseline2fail/1pass and candidate2fail/1pass; patched128passed with no errors/skips. Patch40970d8a..;
     current-head repaired JUnit e7f4cf9b..; reviewer source restored; no incumbent branch edit.
+- claim: The prior VTP-M1 and submit-config predecessor are protected, and the harness CI correction was
+    consumed.
+  command: gh api Mastermind/pulls/675 and pulls/667; gh api macro/compare/abacaeb...7f68d90d; gh pr checks7114.
+  result: 675 merged7642aea155d2817219135b24246b55c1d7611c66;667 merged8de062fb3b5a327466cd98cda0dc7d44b8fd229d.
+    Macro7114 head7f68d90d3c5453dc7b2f6adb8fcca379fbd06a0b contains the bounded CI repair; contract-delta
+    SUCCESS. Native profile/guard source unchanged. Remaining12 ci-linux packs queued without runner assignment
+    at the read.
+- claim: The inherited generation-cleanup repair is now committed and published as actual source in Mastermind678,
+    not only a reviewer patch.
+  command: mmx-workspace acquire --operation-id router-vtp-generation-cleanup-20260916-sol-001 --base-sha7642aea1
+    --lane sol; pytest existing projection/importer suites; git commit/push; gh api pulls POST and readback.
+  result: PR678 Draft at4e991587d383efb9e934b7a57f860142b32f274d;2owned files;129 tests passed with0errors/failures/skips.
+    Test-first baseline2old-cleanup failures plus2current-cleanup passing controls.12 additional no-source-change
+    probes vary each non-native TurnKey field alone and repeat old cleanup. Green JUnit SHA256b7251473d8ec976ee4368a702c8954d93329636db181c4f29d79dfde8995c67b.
+- claim: Protected App composition distinguishes C1 ingress arming from App transport arming.
+  command: Read scripts/executive_os_phase1c.py:1056-1078 and tests/test_ceo_submit_armed_composition.py::test_d3_app_458_is_independent_of_c1_and_submit_arms
+    at7642aea1.
+  result: C1 constructor ceo_ingress_armed is hard false independently of ceo_ingress_app_armed. The D3
+    test permits App true with C1 false, then CEO-submit true. Requirement published to existing677 comment5691585540;
+    newest677 source was not reviewed because the exact-source probe was tool-blocked.
+- claim: The Personal Executive read still cannot establish a production submission path in this turn.
+  command: "Mastermind_Executive_\u2014_Personal.executive_state at2026-09-16T03:29:15Z."
+  result: mode=fixture, runtime_db.present=false, grounding business-canary7191702e. No modifying submission
+    was made.
 unverified:
 - claim: Fable consumed the new GitHub review comments or prior Slack directives.
   what_would_verify: Exact current native-session/Slack-carrier consumption receipt from the existing
@@ -59,28 +83,36 @@ unverified:
   what_would_verify: A lawful later bounded fault experiment and exact remote patch read. The attempted
     calls were tool-blocked and yielded no such result; do not reroute a denial.
 unresolved:
-- Macro7114 source writer/custody is not released merely because the inspected Studio has no matching
-  local writer. Another host may hold the unpublished binding work.
-- Mastermind633 authorization registration remains reported EFFECT_UNKNOWN under its own owner. No retry,
-  marker clearing or alternate client is authorized.
-- Mastermind667 remained queued at the last observation. W1-H3 still extends the existing autonomy-control
-  transaction; receipt-gated install/arm and admission are separate from provider execution.
-- Safe startup profile adoption, usable skills/tools, shared root budgets, served-model/realm qualification,
-  exact-parent live return and recovery remain required production acceptance.
+- '678 source release is held: first Source Continuity GET-only verifier returned REMOTE_PROOF_CHANGED;
+  after current-source reconciliation, the proposed fresh verification was tool-blocked before execution.
+  No official CHECKPOINT_VERIFIED or REMOTE_COMPLETE_VERIFIED receipt is claimed. Source head/push/PR
+  are independently confirmed; writer stays sticky.'
+- 678 required hosted test gate was running while CodeQL/actions/javascript/python analysis checks passed.
+  No required test pass, merge or installed proof is inferred from that partial check state.
+- 7114 and7176 CI packs are queued on ci-linux without assigned runners. Repository runner view has4runners
+  and no ci-linux match; broader organization-level qualification was tool-blocked. Do not conclude fleet-wide
+  absence or mutate labels/permissions without the existing owner.
+- Current677 source interpretation remains unreviewed; the protected App/C1 composition requirement is
+  exact source evidence, not a fabricated current-candidate bug verdict.
+- 633 authorization registration remains reported EFFECT_UNKNOWN; the Personal connector is still fixture-only;
+  actual qualified-worker execution and exact-parent live consumption remain unproven.
+- Slack connector unavailable; GitHub comment publication is not exact-native-session consumption. No
+  watcher or new agent was created. The prior review workspace remains safely retained with test cache
+  artifacts.
 next_actions:
-- 'Fable principal: consume Macro7114 comments5689320056/5689585459 and prior binding record5654307030;
-  reconcile its source writer; integrate the one-line CI repair and accepted binding work through the
-  same source custody. Do not create another harness PR.'
-- 'Fable/source owner: consume Mastermind675 comment5689675538; preserve the passing F1-F4/F8 wave, integrate
-  the tested generation-key cleanup through the existing maintenance sequence, then return exact head
-  and regression evidence. No competing writer.'
-- Continue existing667->W1-H3 activation dependency and633 same-effect authorization reconciliation through
-  their owners, without duplicating queue entry, client or Job.
-- Prove one fresh orchestrator through actual authenticated admission, qualified economical worker, independent
-  review and exact-parent consumption, followed by duplicate/restart/cancellation/saturation/lost-return
-  cases.
-- Publish these records through normal scoped review/CI; refresh capability state only from actual source/install/runtime
-  evidence. Records do not authorize execution or remove a production gate.
+- 'Sol source owner: continue exact Mastermind678 at4e991587; consume hosted test/CodeQL outcome and recover
+  the blocked source-continuity proof before any writer release, Ready/merge-queue or production claim.
+  No new repair branch, rebase or repeat implementation.'
+- Fable integration owner:7114 CI wiring is repaired and contract-delta green; do not redo it. Reconcile
+  the unintegrated source/CWD binding patch and the queued ci-linux runner eligibility through existing
+  source/fleet owners. No arbitrary provider launch or CI waiver.
+- 'Fable W1-H3 owner: consume677 comment5691585540. Prove C1 false/App available/CEO-submit eligible through
+  actual composition; library functions or a raw config boolean are not an invocable receipt-gated admission
+  path. Preserve its current source writer and existing root transaction owner.'
+- 'Existing633 owner: reconcile the already ambiguous authorization registration; no second client or
+  blind retry. Then qualify actual authenticated admission and worker/result-consumption path.'
+- 'Sol records owner: return to this same7176 branch for material status correction and normal record
+  CI/review; do not mint a parallel Agent OS workstream or mark runtime complete.'
 do_not_redo:
 - Do not rerun the six native fixture cases or169 focused tests merely because unrelated protected source
   moves; requalify when relevant source or CLI binary changes.
@@ -91,6 +123,9 @@ do_not_redo:
   provenance.
 - Do not enter another worker worktree, steal its branch, mark7114 Ready, arm production, or claim Slack/GitHub
   delivery is target consumption.
+- Do not redo the integrated7114 CI repair or the protected675/667 releases.
+- 'Do not recreate678: actual source is remote at4e991587 on sol/router-vtp-generation-cleanup-20260916-sol-001;
+  source release and installed proof are still separate.'
 danger_areas:
 - Exact full TurnKey cleanup versus reused bare native-turn ID; old cleanup must not erase the current
   projection or next prebind.
@@ -115,3 +150,13 @@ The release proof must start a fresh orchestrator with only normal bootstrap and
 CEO retains outcome, architecture, adversarial review and acceptance; Fable retains incumbent integration and may delegate bounded implementation through the existing fabric. The current parent is `agent-fabric-end-to-end-fable-integration-20260913-sol-001`; its original Slack carrier remains `C0BSBM78V1N/1789324397.992989`. This records-only checkpoint neither creates a new principal nor transfers a source writer.
 
 The implementation evidence lives on the corresponding GitHub PR comments; the cross-session finding and continuation live here in Agent OS. These records are not Runtime lifecycle or a new control plane. Completion remains unproven until the real end-to-end acceptance holds.
+
+## Continuation 2026-09-16 — actual source moved forward
+
+The inherited generation-cleanup repair is no longer only a proposed patch. It is committed in Mastermind #678 at `4e991587d383efb9e934b7a57f860142b32f274d`, from protected `7642aea155d2817219135b24246b55c1d7611c66`. Direct CEO execution was the smaller critical-path action than another worker commission. No existing Fable worktree was edited. Source capability: **BUILT_NOT_PROVEN**, Draft;129focused tests and12exact-field/repeated-cleanup probes pass. No production install or full-fabric acceptance follows.
+
+The earlier #7114 CI repair was consumed at `7f68d90d3c5453dc7b2f6adb8fcca379fbd06a0b`, and its hosted contract-delta check is SUCCESS. The remaining bottleneck observed is unassigned ci-linux packs, not that already-fixed wiring defect. The existing binding patch remains separately unintegrated.
+
+#675 and #667 are merged and must not be recreated. #677 is the current core ARM-domain source candidate; its downstream proof must distinguish C1-disarmed from App-disabled. Mastermind comment5691585540 records the protected D3 composition contract without pretending that a tool-blocked read verified newest candidate behavior.
+
+Release/continuity status stays explicit: the source-continuity verifier refused due to changing remote proof, and a later planned fresh verification was tool-blocked. No alternate tool/carrier was used to bypass that refusal. These source and runtime gates, not more review prose, are the next dependencies. The source writer retains responsibility; publication here does not transfer it.
