@@ -47,8 +47,10 @@ changed:
   - path: agentos/workstreams/WS-EXECUTIVE-CAPACITY-FABRIC.md
     what: >
       Durable state only, no completed wave rewritten. The workstream `next_action` is re-pinned
-      from `7642aea155d2817219135b24246b55c1d7611c66` to
-      `bf843961c0e1b5bd45fa481f0138c71f2a87d4e2` and pointed at the new handoff. The HF1
+      from `7642aea155d2817219135b24246b55c1d7611c66` to the protected Mastermind master and
+      pointed at the new handoff. That pin was written as
+      `bf843961c0e1b5bd45fa481f0138c71f2a87d4e2` at 19:5xZ and now carries the current
+      `e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48`. The HF1
       umbrella wave `next_action` now records that #575 (merge `91dbdf876f1f1ea10d24342b9d4ea49ba081bfcc`),
       #579 (merge `3a8cc8b007c4573bd01efd909bf6d0e786c71663`) and #576 (merge
       `cb95ae8bf76382df14d1017691e4ccc0b6356f7c`) are MERGED and ancestors of `bf843961`, in the
@@ -658,6 +660,8 @@ the native path, it does not make native capacity built.
 **macro #7185's observer proof is consumed as EVIDENCE ONLY** — it accepts nothing, releases nothing and
 proves no runtime.
 
-**#688** now carries a Sol `REQUEST_REPAIR` (Step-A typed semantics, SPEC_ONLY) and its live
-`reviewDecision` is CHANGES_REQUESTED. That does not retract the kit record's APPROVE at head
-`36920d88…`; it supersedes its release readiness. That repair has since LANDED: the live head is `24cb642a4a1c4f8369793d6f5d946764137f7293` with R9 APPROVE / BLOCKING 0, and release stays on HOLD behind the order **#653-successor -> #684 -> #688** (Sol R81 item 4).
+**#688** carried a Sol `REQUEST_REPAIR` (Step-A typed semantics, SPEC_ONLY), and at
+2026-09-16T20:0xZ its `reviewDecision` read CHANGES_REQUESTED. SUPERSEDED: on the re-read at
+2026-09-16T20:4xZ the `reviewDecision` is EMPTY — the repair push cleared it — so #688 has NO live
+CHANGES_REQUESTED. The earlier reading did not retract the kit record's APPROVE at head
+`36920d88…`; it superseded its release readiness. That repair has since LANDED: the live head is `24cb642a4a1c4f8369793d6f5d946764137f7293` with R9 APPROVE / BLOCKING 0, and release stays on HOLD behind the order **#653-successor -> #684 -> #688** (Sol R81 item 4).
