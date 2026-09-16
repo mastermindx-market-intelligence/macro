@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-16T03:09:34.735633+00:00",
-  "count": 2200,
+  "generated_at": "2026-09-16T03:24:29.693452+00:00",
+  "count": 2201,
   "institutions": [
     "13F Summary",
     "ABN Amro",
@@ -100,6 +100,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-oigknaiqhfi-f22e87",
+      "title": "US Economics Analyst September FOMC Preview A Hike Without a Signal",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T02:54:03Z",
+      "summary_points": [
+        "**FOMC Terminal Rate**: Raised terminal rate to 3.25-3.5% (vs.",
+        "3-3.25%), expect two cuts in 2027 (Sep/Dec vs.",
+        "prior June/Dec), driven by fading one-time inflation factors and supply shocks.",
+        "**Inflation Drivers**: Core inflation overshoot due to supply shocks (tariffs, energy), not demand-driven overheating; no unanchored expectations risk amid historical context.",
+        "**Market Pricing Gap**: Goldman Sachs' probability-weighted Fed rate forecast less hawkish than market pricing (90% hike chance), indicating potential mispricing of rate hike risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-didbhvbmh6e-e180ec",
       "title": "Economics Economic Update 15 09 2026",
