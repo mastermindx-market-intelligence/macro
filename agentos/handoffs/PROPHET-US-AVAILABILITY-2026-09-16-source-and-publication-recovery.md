@@ -43,14 +43,13 @@ verified:
       tests/test_render_run_size_cap.py tests/test_workflow_file_size.py
       tests/test_chat_nav_sync.py
     result: >
-      76 passed in 29.53s after materializing the canonically omitted site tree;
-      implementation plus current-main composition was
-      529ce3c6b5c6ae41f12a2ee5b3119cda6725a570 before this records-only refresh.
+      76 passed in 32.23s on the final current-main composition
+      aad9ed4be170ec253995c2b40c632d46ee5f9f43 before this final records-only refresh.
   - claim: Records, workflow syntax, chat navigation and differential CI contracts are clean.
     command: >
       python scripts/agentos.py validate; parse all .github/workflows/*.yml and *.yaml
       with PyYAML; python -m scripts.sync_chat_nav; python scripts/check_contract_delta.py
-      --base de36a37a3a4738e5cd59db31345790002f2582db
+      --base e729d0fd9d48868b49a1911d4098c689b3d373bd
     result: >
       Agent OS reported 0 errors and 86 inherited warnings; 98 workflow files parsed;
       chat nav sync was OK; contract-delta reported 0 introduced and 0 inherited
@@ -73,9 +72,9 @@ unresolved:
     #7187 must not fabricate prices or treat its absence as a reader defect.
 next_actions:
   - >
-    History-preservingly join current main and push this repaired same carrier by normal
-    fast-forward. Consume the delivered exact-head checks and independent review. After
-    #7180 is accepted, recompose the two carriers on current main, then prove one real
+    Push this repaired, current-main-composed same carrier by normal fast-forward and
+    consume the delivered exact-head checks and independent review. After #7180 is
+    accepted, recompose the two carriers on current main, then prove one real
     completed-session source-to-browser journey before any Ready or merge decision.
 do_not_redo:
   - >
@@ -110,4 +109,4 @@ The earlier runner-offline observation is superseded. At final reconciliation, t
 
 A separate upstream input-integrity carrier is investigating why a completed-session row could contain populated volume but absent Close/High values while a collector still reported success. This reader-authority repair prevents stale cache overlays and discloses the source screen date; it does not fabricate missing closes, introduce a provider fallback, change rankings or claim that upstream panel production is healthy.
 
-Protected `main` movement after integration base `de36a37a3a4738e5cd59db31345790002f2582db` through `11485597cc53b3137346084aae4623cceed28a3f` is confined to research-vault catalog and Astra Fabric research packet paths. The same carrier must history-preservingly join current `main`, push by normal fast-forward, and consume exact-head CI/security and independent review. After #7180 is accepted, recompose the producer/provenance and reader-authority carriers, then require one real completed-session producer-to-served-board browser receipt before Ready, merge acceptance or `PROVEN_LIVE`. On an ambiguous push/deploy effect, reconcile the original carrier before any repeat. Completed source/evidence repairs must not be rebuilt from scratch.
+Protected `main` movement after integration base `de36a37a3a4738e5cd59db31345790002f2582db` through `e729d0fd9d48868b49a1911d4098c689b3d373bd` is confined to research-vault/Astra Fabric records and the independent seasonality program-watch implementation/tests. The same carrier has history-preservingly joined that current `main`; it must now push by normal fast-forward and consume exact-head CI/security and independent review. After #7180 is accepted, recompose the producer/provenance and reader-authority carriers, then require one real completed-session producer-to-served-board browser receipt before Ready, merge acceptance or `PROVEN_LIVE`. On an ambiguous push/deploy effect, reconcile the original carrier before any repeat. Completed source/evidence repairs must not be rebuilt from scratch.
