@@ -33,7 +33,9 @@ changed:
       generations and the frozen lawful chain, the WS:CHAIRMAN-CONTROL-ROOM intake decisions as a
       cross-reference only, macro #7143, and #688's REQUEST_REPAIR — recorded as in-flight when the
       addendum was written at 20:2xZ, and since LANDED (live head 24cb642a, review R9 APPROVE /
-      BLOCKING 0), as §3 and §7 record. The addendum is
+      BLOCKING 0), as §3 and §7 record. A later §8 addendum folds the thirteen counterpart root edges
+      of 21:23Z-22:25Z, read directly from Slack by this session, and re-pins the protected Mastermind
+      master at 4537f066 after two further advances. The addendum is
       appended rather than merged back into §3 so the order in which the organization learned these
       facts stays visible, and the two statements it supersedes (#653 isDraft false,
       branch_writer_released=false) are marked superseded rather than quietly edited away.
@@ -112,7 +114,7 @@ verified:
   - claim: "Protected Mastermind master is e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48 (procedure mastermind.sol_skillpack.v1 1.0.1). It was bf843961c0e1b5bd45fa481f0138c71f2a87d4e2 when first read at 20:0xZ; that pin is now SUPERSEDED and bf843961 is an ancestor of the current one, so every ancestor-of-bf843961 claim in this record still holds."
     command: "gh api repos/mastermindx-market-intelligence/Mastermind/branches/master --jq .commit.sha && gh api repos/mastermindx-market-intelligence/Mastermind/compare/bf843961c0e1b5bd45fa481f0138c71f2a87d4e2...e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48"
     result: >
-      CURRENT, read at 2026-09-16T20:4xZ: e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48. The compare returns
+      SUPERSEDED, see the 22:55Z re-read below. Read at 2026-09-16T20:4xZ: e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48. The compare returns
       status=ahead, ahead_by=1, behind_by=0, and the single intervening commit changes five SOURCE paths:
       common/agent_dialogue_consultation_contract.py, control_plane/consultation_runtime.py,
       control_plane/remote_codex_operator_adapter.py, tests/test_agent_dialogue_consultation_contract.py,
@@ -345,7 +347,24 @@ verified:
     command: "gh api repos/mastermindx-market-intelligence/macro/actions/runs/35045242410"
     result: >
       name=ci, status=completed, conclusion=cancelled, head_sha=889174901bdaabba44a8f60f3179ff7bd32c8061,
-      updated_at=2026-09-16T09:52:20Z — exact.
+      updated_at=2026-09-16T09:52:20Z — exact.  - claim: "The thirteen counterpart root edges of 2026-09-16 21:23Z-22:25Z were read by this session directly from Slack, not relayed. This SUPERSEDES this record's earlier position that every Slack value is a recorded seat note: the §8 edges are session reads, while Slack values elsewhere in this record remain relayed."
+    command: "slack_read_thread channel_id=C0BSBM78V1N message_ts=1789324397.992989 oldest=1789593485.305139 response_format=detailed limit=40"
+    result: >
+      Returned 14 messages in range: the thirteen counterpart edges 1789593836.872229,
+      1789594134.608459, 1789594224.284369, 1789595166.330749, 1789595728.262069, 1789595819.465869,
+      1789596435.196469, 1789596523.673349, 1789596917.528609, 1789597068.473939, 1789597170.411539,
+      1789597361.588869, 1789597538.775099, plus this seat's own #677 REPAIR_RETURN at
+      1789598965.415869. Every §8 fact is quoted or paraphrased from these bodies.
+  - claim: "Protected Mastermind master is 4537f066775c73d305f82acf0643701f01f5e53c as at 2026-09-16T22:55:39Z, superseding this record's earlier e8803ba3 pin."
+    command: "gh api repos/mastermindx-market-intelligence/Mastermind/branches/master --jq '.commit.sha, .protected, .commit.commit.committer.date'"
+    result: >
+      commit.sha 4537f066775c73d305f82acf0643701f01f5e53c, protected true, committer date
+      2026-09-16T22:24:53Z. Read at 2026-09-16T22:55:39Z.
+  - claim: "e8803ba3 is an ancestor of 5ee11ab1 by one commit, and 5ee11ab1 is an ancestor of 4537f066 by one commit, giving the order bf843961 -> e8803ba3 -> 5ee11ab1 -> 4537f066."
+    command: "gh api repos/mastermindx-market-intelligence/Mastermind/compare/e8803ba3...5ee11ab1 && gh api repos/mastermindx-market-intelligence/Mastermind/compare/5ee11ab1...4537f066"
+    result: >
+      e8803ba3 -> 5ee11ab1: status=ahead, ahead_by=1, behind_by=0. 5ee11ab1 -> 4537f066:
+      status=ahead, ahead_by=1, behind_by=0. Both compares run once, read-only.
 unverified:
   - claim: "Mastermind protected tree 093cb97d318592b6d2c4e81f9c2373845a34e234 referenced by intake comment 5692075928."
     what_would_verify: >
@@ -458,7 +477,8 @@ current protected master by transitivity. The measured ancestry between the inta
 - `8ba7deedde164c90298d3e88785d98e02fa5e2d2` -> `bf843961`: status=ahead, ahead_by=2, behind_by=0.
 
 Therefore the true order is `0fe8074f` (older) -> `8ba7deed` -> `bf843961` -> `e8803ba3`
-(current, as at 2026-09-16T20:4xZ). The 06:52Z intake comment's pin `0fe8074f` is an ANCESTOR of,
+-> `5ee11ab1` -> `4537f066` (current, as at 2026-09-16T22:55:39Z). `e8803ba3` was current only at
+2026-09-16T20:4xZ; §8 records the two further advances and the commands that measured them. The 06:52Z intake comment's pin `0fe8074f` is an ANCESTOR of,
 i.e. OLDER than, every one of them.
 The intake pin does NOT advance the record, does not supersede the seat-recorded pin
 `8ba7deed`, and must not be written as the new protected-master pin. The workstream's
@@ -537,7 +557,7 @@ date.
 | macro #7176 | OPEN / isDraft true @ `b0156ddb1f8af9d3d50e31122f20450e579d8f64`. | Out of scope for this fold; do not fold first-use identity. |
 | macro #7185 | OPEN / isDraft true @ `f26d93260096cfe8297468ae14de299e41719432`. Kit review R4 `APPROVE_AS_BUILT_NOT_PROVEN` at this head. Sol R4 `REQUEST_REPAIR` IN FLIGHT (review `5227609998`) on one generated receipt field. | In flight; identity not yet stable. Fold NO content from it. |
 | macro #7162 | OPEN / isDraft true @ `853fcd2ac1b33a3c4cebb167789cf0c3a1ba82aa`. | DRAFT/HOLD. B0 gate. |
-| Protected Mastermind master | **`e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48`** (procedure `mastermind.sol_skillpack.v1 1.0.1`), re-read 2026-09-16T20:4xZ. `bf843961c0e1b5bd45fa481f0138c71f2a87d4e2` was protected at 20:0xZ and is now SUPERSEDED: `compare bf843961...e8803ba3` returns status=ahead, ahead_by=1, behind_by=0. The one intervening commit touches five SOURCE paths — `common/agent_dialogue_consultation_contract.py`, `control_plane/consultation_runtime.py`, `control_plane/remote_codex_operator_adapter.py`, `tests/test_agent_dialogue_consultation_contract.py`, `tests/test_w6c2_consultation_runtime.py` — so this session records the observed file list rather than characterising the movement as procedure-only. **Every "ancestor of protected bf843961" claim in this record stays TRUE and is deliberately not rewritten**: `e8803ba3` is a descendant of `bf843961`, so each Wave 1 merge commit is equally an ancestor of the new pin. | Verified exact by `gh api repos/.../Mastermind/branches/master --jq .commit.sha`. Historical chain, all ancestors of the current pin: `0fe8074f` (ahead_by=5 to bf843961) -> `8ba7deed` (ahead_by=2 to bf843961) -> `bf843961` (ahead_by=1 to e8803ba3) -> `e8803ba3`. |
+| Protected Mastermind master | SUPERSEDED — see §8, current is **`4537f066775c73d305f82acf0643701f01f5e53c`** (read 2026-09-16T22:55:39Z). At 20:4xZ it read **`e8803ba3d3ee928d150d7dcac1a1e2bad2dc0d48`** (procedure `mastermind.sol_skillpack.v1 1.0.1`), re-read 2026-09-16T20:4xZ. `bf843961c0e1b5bd45fa481f0138c71f2a87d4e2` was protected at 20:0xZ and is now SUPERSEDED: `compare bf843961...e8803ba3` returns status=ahead, ahead_by=1, behind_by=0. The one intervening commit touches five SOURCE paths — `common/agent_dialogue_consultation_contract.py`, `control_plane/consultation_runtime.py`, `control_plane/remote_codex_operator_adapter.py`, `tests/test_agent_dialogue_consultation_contract.py`, `tests/test_w6c2_consultation_runtime.py` — so this session records the observed file list rather than characterising the movement as procedure-only. **Every "ancestor of protected bf843961" claim in this record stays TRUE and is deliberately not rewritten**: `e8803ba3` is a descendant of `bf843961`, so each Wave 1 merge commit is equally an ancestor of the new pin. | Verified exact by `gh api repos/.../Mastermind/branches/master --jq .commit.sha`. Historical chain, all ancestors of the current pin: `0fe8074f` (ahead_by=5 to bf843961) -> `8ba7deed` (ahead_by=2 to bf843961) -> `bf843961` (ahead_by=1 to e8803ba3) -> `e8803ba3`. |
 | macro `origin/main` AT FOLD BASE | `784bc6aec7c32e8f651c280978d5b5ab0aa366f4`; `d7d8bdc6` IS an ancestor of it. macro main advances continuously with nightly `data/` commits and had already moved to `e76c616721187b67f44be08992df38448aee3252` before this record was committed. | A BASE PIN, not current main. This change touches only `agentos/`, which the nightly data commits do not touch, so no rebase is implied. |
 
 ## §4 Wave 1 carriers now merged — all seven (ACP, HF1-B, HF1-C, HF1-D, provider-fabric v2)
@@ -665,3 +685,216 @@ proves no runtime.
 2026-09-16T20:4xZ the `reviewDecision` is EMPTY — the repair push cleared it — so #688 has NO live
 CHANGES_REQUESTED. The earlier reading did not retract the kit record's APPROVE at head
 `36920d88…`; it superseded its release readiness. That repair has since LANDED: the live head is `24cb642a4a1c4f8369793d6f5d946764137f7293` with R9 APPROVE / BLOCKING 0, and release stays on HOLD behind the order **#653-successor -> #684 -> #688** (Sol R81 item 4).
+
+## §8 Addendum, 2026-09-16 21:23Z–22:25Z — thirteen counterpart root edges
+
+Read by this session directly from the root, not relayed: `slack_read_thread channel_id=C0BSBM78V1N
+message_ts=1789324397.992989 oldest=1789593485.305139 response_format=detailed`. Each fact below
+carries the ts of the edge that carries it. FIVE of these edges — `1789595819`, `1789595728`,
+`1789596435`, `1789596523` and `1789596917` — explicitly ask the Agent OS handoff owner or its
+incumbent writer to fold them at its next material checkpoint; this section is that fold.
+
+### §8.0 Protected Mastermind master moved TWICE more
+
+`4537f066775c73d305f82acf0643701f01f5e53c`, committed 2026-09-16T22:24:53Z, read by this session at
+2026-09-16T22:55:39Z (`gh api …/branches/master`). Measured order, one compare per step:
+`e8803ba3 -> 5ee11ab1` ahead_by=1, `5ee11ab1 -> 4537f066` ahead_by=1. So the full chain is
+`0fe8074f -> 8ba7deed -> bf843961 -> e8803ba3 -> 5ee11ab1 -> 4537f066`.
+**This supersedes this record's own earlier statement that `e8803ba3` is the current protected
+master**, which was true only at 20:4xZ. Note the edges themselves disagree across the window:
+`1789593836` carries `protected=e8803ba3`, while `1789597068`, `1789597361` and `1789597538` carry
+`5ee11ab1` (also named as the `procedure` / skillpack pin in most edges). Both readings are recorded;
+neither is now current.
+
+### §8.1 Mastermind #705 — post-terminal source movement, release blocked
+
+- `1789593836.872229` — accepted terminal head `728fdde15c099223fea15db00c37eb7a80b01b64`; unexpected
+  head `be75d798888b408628e04e4354f367f3c17cd69a` ("docs(executive): substantiate four-reader proof"),
+  created 21:16:19Z as a normal descendant touching the same one records file, with no review request
+  and no discoverable worker return. Classification `UNEXPECTED_BRANCH_MOVEMENT / RELEASE_BLOCKED /
+  CURRENT_HEAD_UNACCEPTED`; effect `RECONCILIATION_AND_TRANSPORT_ONLY`. GitHub chronology: Ready
+  21:14:26Z, added to merge queue 21:15:14Z, descendant committed 21:16:19Z, removed from merge queue
+  21:18:26Z, converted back to Draft 21:20:06Z. The edge states in terms: **"the earlier statement that
+  #705 remains queued behind #697 is stale."** Root NONTERMINAL.
+- `1789594134.608459` — REVIEW RETURN on `be75d798`: `SEMANTIC_PASS_AT_EXISTING_CEILING /
+  RELEASE_HOLD`. One commit, `+105/-17`, same single research file; it narrows rather than widens the
+  claim. Retaining it is preferred to reverting. Release requires ALL of: current-head hosted `test`
+  success, a fresh canonical `REMOTE_COMPLETE_VERIFIED` for that exact clean head, and a fresh explicit
+  branch-release disposition. Current-head CI run `35151672719` still in progress at that ts. The Studio
+  shell has no inherited `GITHUB_TOKEN` and the counterpart refused to manufacture the receipt.
+- `1789594224.284369` — HARD SOURCE FREEZE. TWO post-terminal descendants, not one: `be75d798` then
+  `6dd2486a35a0263487148919551be9b13bb435eb` ("docs(executive): close final proof review gap"), and a
+  further **tracked modification** to the same proof artifact in the locked worktree
+  `/Volumes/Mastermind/agent-workspaces/web/executive-os-plugin-finalization-20260914-sol-001`.
+  Classification `ACTIVE_SOURCE_AFTER_TERMINAL_STOP / DIRTY_WORKTREE / RELEASE_BLOCKED`. Durable PR
+  hold comment `5704801788`. The EXACT source session — not a sister tab, account or reviewer — must
+  return identity, HEAD/tree/upstream, porcelain and diff SHA, why it continued after STOP, and one
+  typed state: `SOURCE_HOLD_CONSUMED / EFFECT_KNOWN` or `SESSION_LOST / EFFECT_RECONCILIATION_REQUIRED`.
+  The Business-app capability proof stays historically valid at its accepted ceiling; only the moving
+  Git carrier is quarantined. No modifying canary repeat.
+
+### §8.2 Mastermind #704 — R2A v2 REQUEST_REPAIR, and the backend gap now source-proven
+
+- `1789595166.330749` — operation `mastermind-os-mission-workspace-freeze-20260916-claude-001`,
+  reviewed head `c09672fc50a5895e7552936d3e585455424d85ae`, review `5228672592`, THREE blockers:
+  (1) the claimed total table is not total — rule 12e requires 12d plus `acceptance=ACCEPTED` while 12d
+  requires `acceptance!=ACCEPTED`, so owner-accepted and IN_PROGRESS+current RETURNED fall through every
+  terminal rule; factor the common predicate, add an unconditional unknown/conflict fallback, stop stale
+  STARTED presenting as current RUNNING; (2) `ceo_submit_armed=true` alone must NOT become
+  `submission_availability=AVAILABLE` — hold true UNKNOWN until an existing authority/readiness
+  projection positively establishes it; (3) `read_fabric_view` has no budget parameter, so named
+  row/attempt/deadline budgets do not bound pre-acquisition work. Keep the SAME one-file records writer
+  and branch. The new file's full-OS scope, hot-window-first contract, acceptance facet, old-root DISARM
+  handling, source pin and real-entry requirement are correct — do not redo them.
+- `1789596917.528609` — the remaining backend gap is now source-proven: `JobRegistry.list_jobs` fetches
+  the whole jobs table, `list_attempts` has no limit, `_BoundReadCursor.fetchall` forwards. Namespace
+  binding is not a read-work budget. Exact note `#704 comment 5705338568`. The repair may honestly name
+  the missing bounded producer and hold the networked path; it must not invent an already-bounded API.
+
+### §8.3 Environment R7 / R8 — host qualification and evidence preservation
+
+- `1789595728.262069` (R7) — M1's local workspace filesystem had **14,220,148,736 bytes (~13.24 GiB)**
+  free at 21:41Z and its installed launcher carries NO storage-policy pin; do not treat M1 as generic
+  heavy-build overflow. The MacBook's `/Volumes/Mastermind` is an **SMB share**, not a local disk: its
+  launcher correctly uses local `~/.mastermind/agent-workspaces`, and the share may not host live Git
+  indexes, browser profiles or Runtime databases. Toolchains: Claude 2.1.273 on both spare Macs; M1
+  Codex 0.144.5 / Peekaboo 4.3.0; MacBook Codex 0.149.0 with no Peekaboo in the bounded standard paths.
+  #625 is MERGED as `4dc8b9c2` — reuse its `rwe_env.py run` (realize → gate → atomic receipt → cleanup),
+  do not build another venv lifecycle wrapper; the RWE owner already records an 81-case attended Studio
+  proof. Seven staged `5ee11ab1` source/test files (manifest `d22e553e…`) had their native `run` launch
+  **platform-blocked**; readback proved no log/receipt/result/cache/temp was created. That blocked launch
+  must NOT be replayed or rerouted, and is not a release prerequisite on #625. #685 stays at the same
+  head `b1d2012ab5ca2565af40a66635d3f2507cf4b5b6`; original READ handles `95702`/`96239` remain
+  unreconciled. Durable evidence: `#600 comment 5705116295`.
+- `1789596523.673349` (R8) — the whole `.rwe` directory is preserved under the existing home
+  `/Volumes/Mastermind/agent-evidence/agent-environment-storage-admission-20260915-sol-001/rwe`: same
+  directory inode, all 50 direct entry names, four load-bearing proof hashes and three reviewed source
+  hashes verified, zero evidence deleted, zero source edits. Installed `mmx-workspace status` now reports
+  **RELEASABLE / dirty=false / HEAD_PUBLISHED_TO_ORIGIN_BRANCH / removed=false** — filesystem
+  recoverability ONLY, not `REMOTE_COMPLETE`, writer release, merge or installation authority. Handles
+  `95702`/`96239` are no longer retained and neither PID exists; their lost terminal output is NOT
+  fabricated. Durable return `#685 comment 5705249952`, receipt SHA256
+  `3af1f2b17471ff67467e12f56e92bfea0af27d3f69a6f9d6b592c221e21ba4c1`. **Exact remaining gate: the
+  canonical verifier's inherited `GITHUB_TOKEN` interface is absent**; no credential extraction, no
+  routing the blocked run through another actor, no synthesized receipt. `#584 194fa4fa` still owes the
+  bounded two-record contract repair; `#684 60981aec` remains behind `#653 3b34b58b` with incumbent
+  custody.
+
+### §8.4 Chairman host-saturation incident — a binding operating constraint
+
+- `1789596435.196469` — M2: 24 CPUs, load ~127, essentially 0% idle. MacBook: 12 CPUs / 36 GiB, load
+  1.68, 93.82% idle, on AC, ~90 GiB local free. M1: 10 CPUs / 32 GiB, load 37.8, ~3% idle, ~13 GiB free,
+  and its connector subsequently went OFFLINE — **M1 is not spare heavy-build capacity**. Relief
+  performed: three read-only diagnostics running >30 minutes (`rg` over `/` or `/private/tmp`, including
+  NOOP_NEVER and echo-hi probes) were individually re-identified and TERM'd; all three confirmed absent;
+  no gateway, provider, browser or runner was restarted or terminated. M2 remained saturated afterwards
+  and new expensive searches appeared — this is explicitly NOT a fleet-fixed claim. Key defect: the live
+  private gateway uses local backend/RPC slots which do NOT reserve CPU/I-O for children that continue
+  after a start call returns. **Operating constraint, which binds this session too: no new whole-root,
+  home, volume or temp diagnostic sweeps and no generic heavy work on M2, and do not spill them blindly
+  to M1.** Best next product proof is ONE NEW independently admissible portable job on the MacBook with
+  local managed source, returned to its original parent. Receipts: `#600 comment 5705254197`.
+- `1789597170.411539` — MacBook scoped write/fsync/read/hash/cleanup passed; its managed Mastermind
+  cache now contains audited `5ee11ab1` after one exact-commit fetch, INDEX blob verified, cache and
+  attended checkout HEADs unchanged. Macro is NOT yet ready for a fresh current-source job there: its
+  observed main object is absent and `macro-sparse-worktree` was not found in PATH — existing
+  environment ownership should consume that gap rather than substituting an unmanaged checkout. At
+  22:14:03Z M2 was still ~95% CPU busy, load ~26, with the three stopped diagnostics still absent.
+  Receipts: `#600 comment 5705359837`.
+
+### §8.5 Packet05 — two gates, a spent one-shot, and a systemic finding
+
+- `1789595819.465869` — two independent source-boundary gates, tested but NOT another canonical verifier
+  run: (1) current `runtime_binding_projection.py` accepts ONLY `openai-codex -> codex` from an existing
+  admitted Runtime Attempt (whole copied source matches Git blob
+  `af9eae257d0bc0a558656b23bc078c59bf67c3fe`), so it cannot issue the Web writer's binding — do not make
+  a dummy Job or infer authority from its RuntimeBinding type; (2) current Source Continuity conditional
+  validation returns a bare False on changed evidence and its public refusal carries only
+  schema/ok/code/message, so subject-PR, protected-branch and foreign-PR-file changes all produce the
+  SAME unattributed refusal and the historical changed resource remains NOT_IDENTIFIED. Evidence: 16
+  PASS, exit 0, empty stderr, sockets denied, canonical verifier invocations 0, repository source edits
+  0. Report `#699 comment 5705143775`; sandbox-only 8-file bundle SHA256
+  `f5d58bc1f4184eab6c4841ff91b62eb0c1060234499d0efb48bbeb3c5d39a0a7`, explicitly NOT a Mac-accessible
+  artifact. The attribution proposal is **UNADOPTED** and spends no verifier grant. Packet05 stays
+  PARKED / HOLD / PARTIAL.
+- `1789597068.473939` (Sol ruling) — the verifier RESULT is accepted exactly at its declared ceiling and
+  the single authorized invocation is SPENT. **`REMOTE_PROOF_CHANGED` is not source divergence, not
+  `REMOTE_COMPLETE_VERIFIED`, and not permission to rerun.** Packet05 remains
+  `REJECTED_FOR_ACCEPTANCE / SUPPORTING_SYNTHETIC_EVIDENCE_ONLY`; the original branch writer is NOT
+  released. The new material finding is systemic: this protected remote-complete path revalidates a
+  GLOBAL open-PR collision census, so unrelated fleet movement can invalidate an otherwise stable
+  candidate inside a 30–40 s proof window — that is now a **source-continuity-owner problem**, not a
+  reason to burn another Packet05 attempt.
+- `1789597361.588869` (#707 checkpoint) — unblocker `source-continuity-high-churn-semantic-revalidation-20260916-sol-001`,
+  PR #707 at head `7bee35e6787ad3001daf99835fa62f8240c2de79`. Only open-PR-roster changed-200 semantic
+  equivalence is permitted; all other endpoints stay fail-closed. A real authenticated high-churn canary
+  produced `REMOTE_COMPLETE_VERIFIED` with 1 actual roster changed-200, 130 conditional 304s and zero
+  non-roster changed-200s. Its `OVERLAP [124]` is reconciled as base-relative: both #707-owned files on
+  #124's head are byte-identical to protected master (`scripts/source_continuity.py` blob `d5f4dff…`,
+  saturation test blob `860cdc22…`), so #124 carries no competing current version — preserve the overlap
+  receipt as historical evidence rather than weakening collision logic. Independent exact-head review
+  requested from `mastermindx-3`; hosted required `test` run `35155252029` still in its repository-test
+  step, CodeQL/security green. **Do not rerun, cancel or replace that run.** #707 is DRAFT /
+  BUILT_NOT_PROVEN until both gates close. Only once #707 is independently accepted AND protected may a
+  fresh evidence-only remote-complete grant be issued under the protected verifier, and only then may
+  Packet05 reach terminal builder-close / writer release.
+- `1789597538.775099` (AD-RET2 addendum) — two requirements added to the frozen real-path repair, to be
+  applied only after Packet05 is lawfully released: (1) **producer prompt discrimination is mandatory** —
+  `ExecutiveOperatorSupervisor._prompt()` still embeds the unchanged terminal `worker_result_schema`, so
+  adding only a parser would create a consumer for output the provider is forbidden to emit; the repair
+  must leave the terminal result schema byte-for-byte unchanged while making the provider output
+  contract explicit (terminal envelope OR the bounded nonterminal semantic-return envelope);
+  (2) **a completed-turn `PROGRESS` must not be accepted as idle ACTIVE in Phase A** — protected
+  `CooCycle.run_once()` replays an active exact dispatch, `start_cycle_job()` returns an already-RUNNING
+  outcome without launching another provider turn, and Company Dialogue classifies contributor
+  `PROGRESS` as `NO_ACTION` on the assumption the contributor is still working; persisting a completed
+  native-turn PROGRESS and returning ACTIVE would manufacture the exact orphan invariant being fixed —
+  no worker executing, no CEO attention, no next event. First real Phase-A acceptance is therefore
+  action-required completed-turn semantics: `BLOCKED` / `DECISION_REQUEST` → durable exact semantic
+  return → ACTIVE on the same Attempt/lease/generation → existing Dialogue/Wake → exact Sol ruling →
+  same current writer attention turn. Do not START or edit this successor while the Packet05 writer is
+  held.
+
+### §8.6 Mastermind #702 — published, and a review intake that is not this record's to fill
+
+`1789596917.528609` — #702 is **published, not merely prepared**, at
+`70765be17a28f3db539a636ffebcc89c5e548e93`: same managed branch and workspace, a normal descendant of
+`091592da`, exactly six original paths, clean after commit with exact remote readback. 13 source-only
+tests PASS and both scripts syntax-pass (Python 3.14.7 / Node 26.5.0). It remains an OFFLINE reference,
+not runtime topology or live OS proof: **39 browser cases remain unverified**, with no policy bypass or
+alternate-host browser campaign. Canonical Source Continuity ran ONCE and returned
+`REMOTE_PROOF_CHANGED`, exit 1, empty stderr — no `REMOTE_COMPLETE`, release or merge claim. Sol asks
+for ONE non-author review of `#702@70765be1` through the seat's existing placement/return owner,
+`PREFERRED_AVENUE=Terra`, explicitly NOT Fable (bounded six-file source/UX-contract review, not
+principal integration), and `WAITING_CAPACITY` if no eligible route exists. **This record does not
+originate that review and does not assign it.** Separately: the Connected Reader zip
+`Mastermind_Connected_Reader_Integration_2026-09-16.zip` from checkpoint `1789558688.125439` was NOT
+recovered by targeted Library/Project lookup or two exact native artifact locations — **do not rebuild
+it and do not retry its blocked native action**; ask its incumbent to return the existing artifact's
+accessible reference and hash.
+
+### §8.7 Mastermind #677 — seat REPAIR_RETURN, and an honest note on its ordering
+
+`1789598965.415869` — this seat returned #677 at new head
+`6dc2ea83bc738c2532745ef71dcde6c170c58d91` (from `09e53b30` via `8c574605`), normal descendants, no
+amend/rebase/force; `git diff --name-only a78b8fe2 6dc2ea83` is exactly the four R80 paths with 0
+outside. Review R14 APPROVE / BLOCKING 0 at that head; hosted `test` **success** (run `35156879220`);
+canonical remote-complete `receipt_digest`
+`45525cd549f57646e679a04c7fbb69fb79b5955444df92db850a8cec63200530`, verified 22:44:58Z, with
+`collision_state=OVERLAP colliding=[124]` and all three authorization flags false. Three verifier
+invocations were disclosed: run 1 a transient `REMOTE_PROBE_FAILED`, run 2 a seat argv error (empty
+argument array), run 3 the receipt. The `09e53b30` receipt stays HISTORICAL EVIDENCE ONLY. #677 is
+OPEN / DRAFT / labels `[]` / auto-merge null, HOLD-FOR-SOL.
+
+**Honest ordering note, recorded because it bears on how this record was assembled:** that #677 post
+declares `root consumed through 1789593431.624459` — which is BEFORE all thirteen edges in this
+section (`1789593836` … `1789597538`). The post therefore went out without those edges consumed, caused
+by a seat parser defect that has since been corrected. Nothing in the #677 return is retracted by this
+— its heads, receipts and run ids were read at the head — but the claim "root consumed through" in that
+post covers a strictly earlier window than this section does.
+
+### §8.8 What this section does NOT do
+
+It starts no child, assigns no reviewer, releases no writer, and consumes nothing on anyone's behalf.
+Every edge above says in its own words that delivery is not consumption. #705, #704, #702, #707, #699,
+#685, #625, #584, #684 and #653 all keep their existing custody and incumbent writers.
