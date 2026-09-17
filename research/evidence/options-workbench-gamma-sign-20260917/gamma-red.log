@@ -1,0 +1,98 @@
+FFFF.....F                                                               [100%]
+=================================== FAILURES ===================================
+________ test_descending_crossing_uses_the_actual_local_sign[99.0-long] ________
+
+spot = 99.0, expected = 'long'
+
+    @pytest.mark.parametrize("spot,expected", [(99.0, "long"), (101.0, "short")])
+    def test_descending_crossing_uses_the_actual_local_sign(spot, expected):
+        c = chain()
+        grid, net, flips = gamma_profile(c, spot, DEFAULTS)
+        assert len(flips) == 1
+        assert (float(np.interp(spot, grid, net)) > 0) == (expected == "long")
+        flip, distance, regime = _gamma_flip(c, spot, DEFAULTS)
+        assert flip == min(flips, key=lambda value: abs(value - spot))
+        assert distance == round(100.0 * (spot - flip) / spot, 2)
+>       assert regime == expected
+E       AssertionError: assert 'short' == 'long'
+E
+E         - long
+E         + short
+
+tests/test_gex_regime_curve_sign.py:29: AssertionError
+_______ test_descending_crossing_uses_the_actual_local_sign[101.0-short] _______
+
+spot = 101.0, expected = 'short'
+
+    @pytest.mark.parametrize("spot,expected", [(99.0, "long"), (101.0, "short")])
+    def test_descending_crossing_uses_the_actual_local_sign(spot, expected):
+        c = chain()
+        grid, net, flips = gamma_profile(c, spot, DEFAULTS)
+        assert len(flips) == 1
+        assert (float(np.interp(spot, grid, net)) > 0) == (expected == "long")
+        flip, distance, regime = _gamma_flip(c, spot, DEFAULTS)
+        assert flip == min(flips, key=lambda value: abs(value - spot))
+        assert distance == round(100.0 * (spot - flip) / spot, 2)
+>       assert regime == expected
+E       AssertionError: assert 'long' == 'short'
+E
+E         - short
+E         + long
+
+tests/test_gex_regime_curve_sign.py:29: AssertionError
+___ test_real_compute_gex_payload_cannot_contradict_its_net_gamma[99.0-long] ___
+
+spot = 99.0, expected = 'long'
+
+    @pytest.mark.parametrize("spot,expected", [(99.0, "long"), (101.0, "short")])
+    def test_real_compute_gex_payload_cannot_contradict_its_net_gamma(spot, expected):
+        result = compute_gex(chain(), spot, symbol="SPY")
+        assert (result["net_gex_bn"] > 0) == (expected == "long")
+>       assert result["gamma_regime"] == expected
+E       AssertionError: assert 'short' == 'long'
+E
+E         - long
+E         + short
+
+tests/test_gex_regime_curve_sign.py:36: AssertionError
+__ test_real_compute_gex_payload_cannot_contradict_its_net_gamma[101.0-short] __
+
+spot = 101.0, expected = 'short'
+
+    @pytest.mark.parametrize("spot,expected", [(99.0, "long"), (101.0, "short")])
+    def test_real_compute_gex_payload_cannot_contradict_its_net_gamma(spot, expected):
+        result = compute_gex(chain(), spot, symbol="SPY")
+        assert (result["net_gex_bn"] > 0) == (expected == "long")
+>       assert result["gamma_regime"] == expected
+E       AssertionError: assert 'long' == 'short'
+E
+E         - short
+E         + long
+
+tests/test_gex_regime_curve_sign.py:36: AssertionError
+_________ test_multiple_crossings_are_not_assumed_to_share_orientation _________
+
+    def test_multiple_crossings_are_not_assumed_to_share_orientation():
+        c = pd.DataFrame({"K": np.repeat([94.,100.,106.],10),
+            "T": [0.01]*30,"iv":[0.15]*30,"oi":[100.]*30,
+            "is_call":[True]*10+[False]*10+[True]*10})
+        for spot in [95.,98.,100.,102.,105.]:
+            grid, net, flips = gamma_profile(c, spot, DEFAULTS)
+            assert len(flips) >= 2
+            expected = "long" if float(np.interp(spot,grid,net)) >= 0 else "short"
+>           assert _gamma_flip(c,spot,DEFAULTS)[2] == expected
+E           AssertionError: assert 'short' == 'long'
+E
+E             - long
+E             + short
+
+tests/test_gex_regime_curve_sign.py:66: AssertionError
+
+NOTE: sparse worktree — .agents, .warp, data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_gex_regime_curve_sign.py::test_descending_crossing_uses_the_actual_local_sign[99.0-long]
+FAILED tests/test_gex_regime_curve_sign.py::test_descending_crossing_uses_the_actual_local_sign[101.0-short]
+FAILED tests/test_gex_regime_curve_sign.py::test_real_compute_gex_payload_cannot_contradict_its_net_gamma[99.0-long]
+FAILED tests/test_gex_regime_curve_sign.py::test_real_compute_gex_payload_cannot_contradict_its_net_gamma[101.0-short]
+FAILED tests/test_gex_regime_curve_sign.py::test_multiple_crossings_are_not_assumed_to_share_orientation
+5 failed, 5 passed in 0.99s
