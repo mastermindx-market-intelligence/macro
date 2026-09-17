@@ -27,6 +27,8 @@ def payload(nearest_error=0.0):
                 "underlying_price": 600 + i * .01,
                 "implied_vol": iv - i * .001,
                 "iv_error": error,
+                "bid": 1.0,
+                "ask": 1.1,
             })
         groups.append({
             "contract": {
@@ -46,11 +48,11 @@ def test_atm_coverage_all_clocks_and_anchor():
     for prefix in ("09:35", "09:45", "10:00"):
         assert out[prefix + "_atm_iv_level"] is True
         assert out[prefix + "_atm_iv_change"] is True
-        assert out[prefix + "_anchor_minute"] == 0.0
+        assert out[prefix + "_anchor_minute"] == 1.0
 
 
 def test_invalid_exact_atm_is_missing_even_with_farther_valid_strike():
-    out = c.atm_coverage(payload(nearest_error=100.0), DATE)
+    out = c.atm_coverage(payload(nearest_error=c.a1.IV_ERROR_MAX + .0001), DATE)
     for prefix in ("09:35", "09:45", "10:00"):
         assert out[prefix + "_atm_iv_level"] is False
         assert out[prefix + "_atm_iv_change"] is False
@@ -76,3 +78,10 @@ def test_summary_keeps_partitions_and_errors_separate():
     summary = c.summarize(rows)
     assert summary["development"]["09:35_atm_iv_level_available"] == 1
     assert summary["validation"]["errors"] == 1
+
+
+def test_frozen_residual_boundary_remains_available():
+    out = c.atm_coverage(payload(nearest_error=c.a1.IV_ERROR_MAX), DATE)
+    for prefix in ("09:35", "09:45", "10:00"):
+        assert out[prefix + "_atm_iv_level"] is True
+        assert out[prefix + "_atm_iv_change"] is True
