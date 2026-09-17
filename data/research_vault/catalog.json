@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T19:36:05.563133+00:00",
-  "count": 2311,
+  "generated_at": "2026-09-17T20:06:07.704619+00:00",
+  "count": 2312,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -143,6 +143,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xa46sdqagup-a25f8e",
+      "title": "Ukraine NBU Hikes by 50bp As Expected, Delivers Balanced Guidance",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:37:34Z",
+      "summary_points": [
+        "NBU Rate Hike & Inflation Drivers: +50bp to 16.00% driven by oil price surges exceeding forecasts, with balanced guidance allowing flexibility for risk shifts.",
+        "Geopolitical Risk Balance: Russia war remains primary threat, but Black Sea agricultural exports may curb food inflation; Middle East tensions amplify oil-driven inflation risks.",
+        "Policy Response to Conflict: New business support measures + regulatory financing expansion; FX policy actively stabilizing Hryvnia amid inflation, targeting currency stability until inflation declines.",
+        "Monetary Policy Trigger: Potential easing if security deterioration causes significant slowdown in consumer demand/labor market, signaling conflict-sensitive policy tailoring."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
