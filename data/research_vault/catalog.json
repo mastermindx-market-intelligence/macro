@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T14:35:31.677483+00:00",
-  "count": 2296,
+  "generated_at": "2026-09-17T14:50:33.826739+00:00",
+  "count": 2297,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -181,6 +181,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-mqz685gmbyo-3965f0",
+      "title": "JPM Euro area data wrap",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T10:49:53Z",
+      "summary_points": [
+        "Energy-intensive manufacturing structural vulnerability: Euro area energy-intensive production (blue) consistently trails non-energy-intensive (orange) since 2020, with widening gap post-2022 signaling persistent industrial sector risks amid high energy costs and policy shifts.",
+        "ECB wage tracker inflation risk: ECB wage tracker projects 2.6% yoy gain in Q4 (rising to 2.8% by 2027), reflecting persistent energy price pressures and structural wage dynamics that could force tighter ECB policy.",
+        "Eurozone industrial fragmentation: Germany leads with 3.3% Q2 2026 industrial growth (q/q saar), while France, Italy, and Spain show negative growth (-1.0% to -1.1%), indicating deepening regional economic divergence critical for portfolio allocation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
