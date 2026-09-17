@@ -1664,6 +1664,8 @@ jobs:
       - "engine/entry_signal.py"
       - "engine/equity_alloc.py"
       - "engine/equity_factors.py"
+      - "engine/etf_board.py"
+      - "engine/etf_pulse.py"
       - "engine/event_calendar.py"
       - "engine/extension.py"
     # Wired 2026-08-02: neither suite was named by ANY run step, so #4297's caution
