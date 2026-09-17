@@ -321,41 +321,12 @@ push_exact_paths_replay_commit() {
 # A rebase left IN PROGRESS is the tell for a real conflict — that is the one case that
 # deserves the conflict remedy and the long backoff, so record it before aborting.
 push_abort_rebase() {
-  local gd="" state="" prior_class="${PUSH_FAIL_CLASS:-unknown}"
+  local gd=""
   gd=$(git rev-parse --git-dir 2>/dev/null) || gd=""
-  [ -n "$gd" ] || return 0
-  if [ -d "$gd/rebase-merge" ]; then
-    state="$gd/rebase-merge"
-  elif [ -d "$gd/rebase-apply" ]; then
-    state="$gd/rebase-apply"
-  else
-    return 0
-  fi
-
-  # A genuine stopped rebase is a semantic conflict.  If git can abort it,
-  # preserve the existing slow/conflict path exactly as before.
-  if git rebase --abort 2>/dev/null; then
+  if [ -n "$gd" ] && { [ -d "$gd/rebase-merge" ] || [ -d "$gd/rebase-apply" ]; }; then
     PUSH_FAIL_CLASS="rebase-conflict"
-    return 0
+    git rebase --abort 2>/dev/null || true
   fi
-
-  # 2026-09-17 production failure: a prior runner invocation left only an
-  # orphaned rebase-merge/autostash file.  There was no head-name/onto state for
-  # git to abort, so every subsequent publisher retried the same impossible
-  # rebase until its budget expired.  This is stale runner metadata, not a new
-  # source conflict.  Clear only that structurally impossible rebase-merge
-  # shape; never apply its old autostash into a later job.
-  if [ "$state" = "$gd/rebase-merge" ] \
-      && { [ ! -f "$state/head-name" ] || [ ! -f "$state/onto" ]; }; then
-    rm -rf -- "$state"
-    printf 'push-retry: cleared malformed stale rebase state %s\n' "$state" >&2
-    PUSH_FAIL_CLASS="$prior_class"
-    return 0
-  fi
-
-  # An unabortable state that still has the structural anchors of a real rebase
-  # is unknown/conflicted.  Leave it intact and fail closed.
-  PUSH_FAIL_CLASS="rebase-conflict"
   return 0
 }
 

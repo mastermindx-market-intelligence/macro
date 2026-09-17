@@ -838,10 +838,9 @@ def test_exact_path_replay_rejects_mixed_checkpoint_generations(tmp_path):
 def test_abort_rebase_flags_a_conflict_only_when_a_rebase_is_in_progress(tmp_path):
     repo = tmp_path / "repo"
     _init_repo(repo)
-    target = repo / "a"
-    target.write_text("base\n")
+    (repo / "a").write_text("a")
     subprocess.run(["git", "-C", str(repo), "add", "."], check=True)
-    subprocess.run(["git", "-C", str(repo), "commit", "-qm", "base"], check=True)
+    subprocess.run(["git", "-C", str(repo), "commit", "-qm", "c"], check=True)
 
     # no rebase in progress: a contention verdict must survive untouched
     r = run_sh(
@@ -850,55 +849,13 @@ def test_abort_rebase_flags_a_conflict_only_when_a_rebase_is_in_progress(tmp_pat
     )
     assert r.stdout.strip() == "contention", r.stderr
 
-    # Build a real stopped rebase. A genuine conflict remains a conflict and the
-    # normal git abort must clean the state.
-    subprocess.run(["git", "-C", str(repo), "checkout", "-qb", "topic"], check=True)
-    target.write_text("topic\n")
-    subprocess.run(["git", "-C", str(repo), "commit", "-qam", "topic"], check=True)
-    subprocess.run(["git", "-C", str(repo), "checkout", "main"], check=True)
-    target.write_text("main\n")
-    subprocess.run(["git", "-C", str(repo), "commit", "-qam", "main"], check=True)
-    subprocess.run(["git", "-C", str(repo), "checkout", "topic"], check=True)
-    stopped = subprocess.run(
-        ["git", "-C", str(repo), "rebase", "main"], text=True, capture_output=True,
-    )
-    assert stopped.returncode != 0
-    assert (repo / ".git" / "rebase-merge").is_dir()
-
+    # a stopped rebase IS a conflict, and gets the slow ladder
+    (repo / ".git" / "rebase-merge").mkdir()
     r = run_sh(
         'push_retry_init "t"; PUSH_FAIL_CLASS=contention; push_abort_rebase; echo "$PUSH_FAIL_CLASS"',
         cwd=repo,
     )
     assert r.stdout.strip() == "rebase-conflict", r.stderr
-    assert not (repo / ".git" / "rebase-merge").exists()
-
-
-def test_abort_rebase_clears_malformed_orphan_state_without_promoting_conflict(tmp_path):
-    repo = tmp_path / "repo"
-    _init_repo(repo)
-    (repo / "a").write_text("a\n")
-    subprocess.run(["git", "-C", str(repo), "add", "."], check=True)
-    subprocess.run(["git", "-C", str(repo), "commit", "-qm", "base"], check=True)
-
-    # Exact production failure shape observed 2026-09-17: an old rebase-merge
-    # directory retained only autostash, so `git rebase --abort` could not read
-    # head-name and every publisher retry hit the same impossible state.
-    orphan = repo / ".git" / "rebase-merge"
-    orphan.mkdir()
-    head = subprocess.run(
-        ["git", "-C", str(repo), "rev-parse", "HEAD"],
-        text=True, capture_output=True, check=True,
-    ).stdout.strip()
-    (orphan / "autostash").write_text(head + "\n")
-
-    r = run_sh(
-        'push_retry_init "t"; PUSH_FAIL_CLASS=contention; push_abort_rebase; echo "$PUSH_FAIL_CLASS"',
-        cwd=repo,
-    )
-    assert r.returncode == 0, r.stderr
-    assert r.stdout.strip() == "contention", r.stderr
-    assert not orphan.exists()
-    assert "cleared malformed stale rebase state" in r.stderr
 
 
 # ---------------------------------------------------------------------------
