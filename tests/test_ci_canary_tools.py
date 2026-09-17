@@ -1201,6 +1201,31 @@ def test_pc_windows_boot_recovery_preserves_existing_runner_authority() -> None:
         assert forbidden not in installer
 
 
+def test_pc_windows_boot_recovery_pins_highest_task_run_level() -> None:
+    installer = (
+        ROOT
+        / "ops"
+        / "runner-host"
+        / "pc"
+        / "windows"
+        / "Install-MastermindWslBootRecovery.ps1"
+    ).read_text(encoding="utf-8")
+    assert "-RunLevel Highest" in installer
+
+
+def test_pc_windows_boot_recovery_rejects_unsafe_distribution_names() -> None:
+    installer = (
+        ROOT
+        / "ops"
+        / "runner-host"
+        / "pc"
+        / "windows"
+        / "Install-MastermindWslBootRecovery.ps1"
+    ).read_text(encoding="utf-8")
+    assert "$Distribution -notmatch '^[A-Za-z0-9._ -]+$'" in installer
+    assert ".Replace('\"', '\"\"')" not in installer
+
+
 def test_resource_refusal_backoff_only_delays_an_unsafe_retry() -> None:
     sleeps: list[int] = []
     RESOURCE_GUARD.refusal_backoff([], 300, sleep=sleeps.append)

@@ -10,6 +10,13 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
+# This value is embedded in Task Scheduler's native command line. Keep the
+# accepted registration name deliberately narrow so quotes or control syntax
+# cannot alter unattended Highest/S4U argument boundaries.
+if ($Distribution -notmatch '^[A-Za-z0-9._ -]+$') {
+    throw "Refusing installation: WSL distribution '$Distribution' contains unsupported characters."
+}
+
 $identity = [System.Security.Principal.WindowsIdentity]::GetCurrent()
 $principal = New-Object System.Security.Principal.WindowsPrincipal($identity)
 if (-not $principal.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator)) {
@@ -38,7 +45,7 @@ if (-not (Test-Path -LiteralPath $ps)) {
     $ps = 'powershell.exe'
 }
 $quotedScript = '"' + $destination + '"'
-$quotedDistro = '"' + $Distribution.Replace('"', '""') + '"'
+$quotedDistro = '"' + $Distribution + '"'
 $arguments = "-NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File $quotedScript -Distribution $quotedDistro"
 
 $action = New-ScheduledTaskAction -Execute $ps -Argument $arguments
