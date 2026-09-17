@@ -136,13 +136,11 @@ def test_the_hub_uses_the_closed_registry_order_and_never_reorders_by_magnitude(
     positions = [grid.index(f'href="{page.output}"') for page in builder.SUITE_PAGES]
     assert positions == sorted(positions), "hub reordered the closed workspace order"
 
-    # MEMBERSHIP is the closed producer registry's — the hub can never advertise a
-    # workspace whose producer the registry does not carry. ORDER is the suite's
-    # own existing published order, which is NOT the registry's declaration order
-    # (`capital_structure` is a read-only census and the suite prints it after the
-    # cycle workspaces). Asserting one against the other's source is the whole
-    # point: the guarantee is "fixed and data-independent", not "alphabetised".
-    assert {p.workspace_id for p in builder.SUITE_PAGES} == set(producer_registry.WORKSPACE_IDS)
+    # Membership and order come from the same closed producer registry. The
+    # architecture freezes Capital Structure immediately after Growth; a second
+    # presentation order would let source order and user navigation silently drift.
+    suite_ids = tuple(p.workspace_id for p in builder.SUITE_PAGES)
+    assert suite_ids == producer_registry.built_ids()
 
 
 def test_the_hub_order_does_not_move_when_the_data_moves(tmp_path: Path) -> None:
