@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T12:05:14.009135+00:00",
-  "count": 2289,
+  "generated_at": "2026-09-17T12:35:13.993884+00:00",
+  "count": 2290,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -85,6 +85,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-dzoblfxbafq-603a09",
+      "title": "JPM Flows Liquidity",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T10:49:24Z",
+      "summary_points": [
+        "Tech Bond Yield Pressure: $260bn net tech bond issuance (2026) may add 10-15bp upward pressure on Global Agg yields, driven by hyperscalers.",
+        "US Bond Supply Shift: Corporate net supply forecast $1tr in 2026 (vs $615bn 2025), shifting duration risk toward Treasuries and pressuring yields.",
+        "Equity Flow Surge: Global equity fund flows at $1.355T annualized (Q26) vs $1.073T for bonds, signaling sustained equity preference over bonds.",
+        "EM Equity Leadership: EM leads global equity ETF inflows (Chart A5), with US and Japan trailing, reflecting strong EM equity appetite.",
+        "High-Yield Short Interest: HYG short interest exceeds LQD by ~40% (Jan-20 to Jan-26), increasing vulnerability to credit spread widening."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 31,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-g3bugkjjgib-77331c",
       "title": "JPM International Market Intelligence | Morning Briefing",
