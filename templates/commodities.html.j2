@@ -1064,6 +1064,13 @@ html[data-theme="light"] :is(
       <div class="asset-read-title {{ ar.tone or 'mut' }}">{{ t(ar.title_en or 'Evidence incomplete', ar.title_zh or '证据不完整') }}</div>
       <div class="asset-read-date">{{ t('Signal date','信号日期') }} {{ ar.signal_asof or '—' }} · {{ ar.instrument or '—' }}</div>
       {% if ar.reasons %}<p class="asset-read-reason">{{ t(ar.reasons[0].en, ar.reasons[0].zh) }}</p>{% endif %}
+  {% set evidence = ar.model_evidence|default({}) %}
+  <details class="asset-read-calibration faint" data-model-evidence="{{ evidence.status or 'unavailable' }}">
+    <summary>{{ t(evidence.label_en or 'Calibration evidence unavailable', evidence.label_zh or '校准证据暂缺') }}</summary>
+    <p>{{ t('Declared return horizons', '声明的收益期限') }}:
+      {% if evidence.horizons_bars %}{{ evidence.horizons_bars|join(' / ') }} {{ t('bars', '根K线') }}{% else %}{{ t('Unavailable', '暂无数据') }}{% endif %}.
+      {{ t(evidence.disclosure_en or 'Parameter-source evidence, not a win probability.', evidence.disclosure_zh or '仅说明参数来源，并非胜率。') }}</p>
+  </details>
       <p class="kick">{{ t('Confluence context — separate evidence', '共振背景——单独证据') }}</p>
       <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
         <span style="font-size:22px;font-weight:600">{{ t(d.action_en, d.action_zh) }}</span>

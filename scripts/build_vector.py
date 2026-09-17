@@ -1473,6 +1473,7 @@ def _commodity_asset_chips(commodities: dict | None) -> str:
     escaped because _bi itself intentionally accepts trusted HTML.
     """
     from html import escape
+    from scripts.commodity_asset_read import model_evidence_read
     source = commodities if isinstance(commodities, dict) else {}
     reads = source.get("asset_reads")
     reads = reads if isinstance(reads, dict) else {}
@@ -1493,6 +1494,9 @@ def _commodity_asset_chips(commodities: dict | None) -> str:
         stamp = stamp if isinstance(stamp, str) else ""
         text_en = en + ": " + title_en + (" · " + stamp if stamp else "")
         text_zh = zh + "：" + title_zh + (" · " + stamp if stamp else "")
+        evidence = model_evidence_read(asset, read.get("model_evidence"))
+        text_en += " · " + evidence["label_en"]
+        text_zh += " · " + evidence["label_zh"]
         chips.append('<span class="pill" data-commodity-asset="' + asset + '">'
                      + _bi(escape(text_en), escape(text_zh)) + '</span>')
     return '<div class="chips">' + "".join(chips) + '</div>'

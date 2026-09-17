@@ -13,13 +13,13 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from scripts import capture_commodities_w6_evidence as owner
-from scripts.commodity_asset_read import attach_asset_reads
+from scripts.commodity_asset_read import attach_asset_reads, calibration_evidence
 
 
 def fixture_context(scenario="split"):
     import pandas as pd
     from lib import config
-    if scenario not in ("split", "incomplete", "lagging"):
+    if scenario not in ("split", "incomplete", "lagging", "calibration"):
         raise ValueError("unknown asset-read fixture")
     context = owner.fixture_vm()
     context["as_of"] = "Synthetic R2 fixture"
@@ -52,6 +52,14 @@ def fixture_context(scenario="split"):
         d["verdict"] = {"grade":grade,"headline":"Synthetic timeframe assessment",
                         "headline_zh":"模拟周期判断"}
         assets[name]["conviction"] = {"action":action,"score":-30 if action=="SELL" else 30 if action=="BUY" else 0}
+    if scenario == "calibration":
+        # These are explicit fixture parameters, not measurements or fitted models.
+        for name, quality in (("gold", False), ("silver", True), ("copper", None), ("oil", None)):
+            calibration = {} if name == "copper" else {
+                "meta": {"horizons": [63,126]},
+                "assets": {name: {"weights": {"trend": 1.0}, "score_reliable": quality}},
+            }
+            assets[name]["conviction"]["calibration_evidence"] = calibration_evidence(name, calibration)
     context["vm"]["asset_reads"] = attach_asset_reads(
         context["vm"]["detail"],frames,context["assets"],config.load()["commodities"])
     return context
@@ -61,7 +69,9 @@ def main(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir",type=Path,required=True)
     parser.add_argument("--full-page",action="store_true",help="Capture the whole synthetic page with requested-viewport checks; requires R1")
+    parser.add_argument("--include-calibration",action="store_true",help="Also prove parameter-source disclosures with explicit synthetic calibration")
     args=parser.parse_args(argv)
+    scenarios=("split","incomplete","lagging") + (("calibration",) if args.include_calibration else ())
     output=args.output_dir.resolve()
     if output == ROOT or any(output == (ROOT/p).resolve() or (ROOT/p).resolve() in output.parents for p in ("data","site")):
         parser.error("evidence output must not target production data or site")
@@ -69,7 +79,7 @@ def main(argv=None):
     fixture=output/"fixture"
     fixture.mkdir()
     owner.write_fixture_site(fixture)
-    for scenario in ("split","incomplete","lagging"):
+    for scenario in scenarios:
         (fixture/(scenario+".html")).write_text(owner.render_page(fixture_context(scenario)))
     from scripts.capture_page_evidence import serve_site_dir
     from playwright.sync_api import sync_playwright
@@ -79,7 +89,7 @@ def main(argv=None):
         with sync_playwright() as pw:
             browser=pw.chromium.launch(headless=True)
             try:
-                for scenario in ("split","incomplete","lagging"):
+                for scenario in scenarios:
                     states=[]
                     for viewport,(width,height) in owner.VIEWPORTS.items():
                         for locale in owner.LOCALES:
@@ -100,13 +110,23 @@ def main(argv=None):
                                         document_geometry["viewport_width"] = width
                                         owner.assert_document_fits(document_geometry)
                                     labels={}
+                                    evidence_states={}
                                     for asset in ("gold","silver","copper","oil"):
                                         card=page.locator(f'[data-asset-read="{asset}"]')
                                         labels[asset]=card.locator(".asset-read-title").inner_text().strip()
+                                        card_evidence=card.locator("[data-model-evidence]")
+                                        evidence_states[asset]=card_evidence.get_attribute("data-model-evidence")
+                                        if scenario == "calibration":
+                                            card_evidence.locator("summary").click()
                                         card.locator(".asset-read-open").click()
                                         detail=page.locator(f'.dpanel[data-detpanel="{asset}"]')
                                         assert detail.is_visible()
                                         assert detail.locator(".asset-read-title").inner_text().strip()==labels[asset]
+                                        detail_evidence=detail.locator("[data-model-evidence]")
+                                        assert detail_evidence.get_attribute("data-model-evidence")==evidence_states[asset]
+                                        if scenario == "calibration":
+                                            detail_evidence.locator("summary").click()
+                                            assert detail_evidence.inner_text().strip()==card_evidence.inner_text().strip()
                                         if args.full_page:
                                             owner.assert_document_fits({**page.evaluate("({width:innerWidth,scroll:document.documentElement.scrollWidth})"),"viewport_width":width})
                                     section=page.locator(".asset-read-section")
@@ -125,7 +145,7 @@ def main(argv=None):
                                         "captured":True,"file":filename,"sha256":digest,"bytes":len(png),"width":pw_,"height":ph_,
                                         "applied_theme":theme,"applied_locale":locale,"overlay":overlay,"overlay_clean":True,
                                         "document_geometry":document_geometry,
-                                        "subject_geometry":geometry,"detail_clicks_verified":4,"page_errors":errors,"titles":labels})
+                                        "subject_geometry":geometry,"detail_clicks_verified":4,"calibration_details_verified":4,"model_evidence_statuses":evidence_states,"page_errors":errors,"titles":labels})
                                     assert not errors
                                 finally:
                                     context.close()
@@ -137,18 +157,19 @@ def main(argv=None):
     finally:
         httpd.shutdown()
     manifest={"schema":"mastermind.p0_evidence.v2","generated_at":__import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat(),
-        "tool":{"module_ref":"scripts/capture_commodity_asset_read_evidence.py","version":"r2-asset-read-v2",
+        "tool":{"module_ref":"scripts/capture_commodity_asset_read_evidence.py","version":"r2-asset-read-calibration-v3",
                 "capture_method":"Existing commodity renderer and Chromium helper; local fixtures, no external requests; semantic button clicks, no text entry."},
         "target":{"kind":"fixture_site_dir","site_dir":str(fixture),"base_url":None,"resolved_sha_or_none":None,"resolved_gitdir_or_none":None,"resolved_sha_source":"record exact source or candidate digests beside this manifest"},
         "axes":{"viewports":{k:list(v) for k,v in owner.VIEWPORTS.items()},"locales":list(owner.LOCALES),"themes":list(owner.THEMES),"access":["anonymous"],"subjects":[p["subject"] for p in pages],"force_states":[]},
         "selection":{"mode":"explicit_subjects","subjects":[p["subject"] for p in pages]},"aliases":{},"excluded":[],
-        "outcome":"captured","totals":{"pages":3,"states_attempted":24,"states_captured":24},"pages":pages,
+        "outcome":"captured","totals":{"pages":len(pages),"states_attempted":sum(len(p["states"]) for p in pages),"states_captured":sum(len(p["states"]) for p in pages)},"pages":pages,
         "honesty":{"authority":("Whole-page synthetic fixture, not production" if args.full_page else "R2 component fixture evidence, not full-page or production acceptance"),
-                   "full_page":args.full_page,
+                   "full_page":args.full_page,"synthetic_calibration_scenario":args.include_calibration,
                    "page":"Synthetic model states and dated inputs. Existing commodity renderer stubs navigation and hydration. R1 remains an independent release prerequisite. Full-page geometry is certified only when full_page is true; navigation and external hydration are never certified by this fixture.",
                    "new_entry_permission":None,"numerical_policy_changes":False}}
     (output/"manifest.json").write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+"\n")
-    print("R2_CAPTURE 24 states; 96 summary-to-detail interactions verified",flush=True)
+    count=sum(len(p["states"]) for p in pages)
+    print(f"R2_CAPTURE {count} states; {4*count} summary-to-detail and calibration identities verified",flush=True)
     return 0
 
 

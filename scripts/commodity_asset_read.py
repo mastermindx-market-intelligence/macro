@@ -64,6 +64,85 @@ def _date(value):
         return None
 
 
+
+_CALIBRATION_SCHEMA = "mastermind.commodity_calibration_evidence.v1"
+_CALIBRATION_LABELS = {
+    "defaults": ("Default parameters", "默认参数"),
+    "stored": ("Stored calibration", "已存校准参数"),
+    "weak": ("Stored calibration: weak", "已存校准：较弱"),
+    "unrated": ("Stored calibration: unrated", "已存校准：未评级"),
+    "unavailable": ("Calibration evidence unavailable", "校准证据暂缺"),
+}
+
+
+def _calibration_read(asset, status="unavailable", reliable=None, horizons=()):
+    """Canonical copy only; stored metadata never authors user-facing promises."""
+    en, zh = _CALIBRATION_LABELS[status]
+    bars = sorted({v for v in horizons if type(v) is int and v > 0})
+    return {
+        "schema": _CALIBRATION_SCHEMA, "asset": asset,
+        "status": status, "declared_reliable": reliable,
+        "horizons_bars": bars, "label_en": en, "label_zh": zh,
+        "disclosure_en": ("Parameter-source evidence, not a win probability. "
+                          "Declared historical horizons do not validate a current entry."),
+        "disclosure_zh": "仅说明参数来源，并非胜率；历史收益期限不代表当前入场已获验证。",
+    }
+
+
+def calibration_evidence(asset, calibration):
+    """Describe the exact object supplied to the existing scorer; do not score."""
+    if not isinstance(asset, str) or not asset.strip():
+        return _calibration_read(None)
+    if not isinstance(calibration, dict):
+        return _calibration_read(asset)
+    assets = calibration.get("assets", {})
+    if not isinstance(assets, dict):
+        return _calibration_read(asset)
+    asset_config = assets.get(asset, {})
+    if not isinstance(asset_config, dict):
+        return _calibration_read(asset)
+    weights = asset_config.get("weights")
+    if weights is None or (isinstance(weights, dict) and not weights):
+        return _calibration_read(asset, "defaults")
+    if not isinstance(weights, dict) or any(
+            not isinstance(k, str) or _number(v) is None for k, v in weights.items()):
+        return _calibration_read(asset)
+    if not any(v != 0 for v in weights.values()):
+        return _calibration_read(asset)
+    reliable = asset_config.get("score_reliable")
+    reliable = reliable if type(reliable) is bool else None
+    status = "stored" if reliable is True else "weak" if reliable is False else "unrated"
+    meta = calibration.get("meta")
+    horizons = meta.get("horizons", []) if isinstance(meta, dict) else []
+    horizons = horizons if isinstance(horizons, (list, tuple)) else []
+    return _calibration_read(asset, status, reliable, horizons)
+
+
+def model_evidence_read(asset, receipt):
+    """Qualify the asset-bound receipt and reconstruct labels without trusting copy."""
+    if not isinstance(asset, str) or not asset.strip():
+        return _calibration_read(None)
+    if not isinstance(receipt, dict):
+        return _calibration_read(asset)
+    schema = receipt.get("schema")
+    if not isinstance(schema, str) or schema != _CALIBRATION_SCHEMA:
+        return _calibration_read(asset)
+    identity = receipt.get("asset")
+    status = receipt.get("status")
+    if (not isinstance(identity, str) or identity != asset or
+            not isinstance(status, str) or status not in _CALIBRATION_LABELS):
+        return _calibration_read(asset)
+    reliable = receipt.get("declared_reliable")
+    expected = {"stored": True, "weak": False}.get(status)
+    if reliable is not expected:
+        return _calibration_read(asset)
+    horizons = receipt.get("horizons_bars", [])
+    if not isinstance(horizons, (list, tuple)):
+        return _calibration_read(asset)
+    if status in ("defaults", "unavailable"):
+        horizons = []
+    return _calibration_read(asset, status, reliable, horizons)
+
 def build_asset_read(name, row, display, *, signal_asof=None, price_asof=None,
                      reference_asof=None, instrument=None):
     """Reconcile descriptions without overriding any numerical model policy.
@@ -175,6 +254,7 @@ def build_asset_read(name, row, display, *, signal_asof=None, price_asof=None,
         "lag_calendar_days":lag, "allocation_applicable":core,
         "exposure_pct":exposure, "model_action":action,
         "model_score":_number(conv.get("score")),
+        "model_evidence":model_evidence_read(name if valid_name else None, conv.get("calibration_evidence")),
         "risk":risk, "momentum":mom, "structural_trend":trend,
         "raw_driver_score":_number(row.get("driver_score")),
         "timeframes":frames, "timing_grade":grade, "authority":"display_only", "new_entry_permission":None,

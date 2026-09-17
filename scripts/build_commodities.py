@@ -603,8 +603,15 @@ def asset_vm(asset: str, df: pd.DataFrame, calib: dict, drivers: dict | None = N
     # + shocks/alerts), every weight a MEASURED forward-return strength.
     if drivers is not None and extras is not None:
         from engine import commodity_conviction
+        from scripts.commodity_asset_read import calibration_evidence
+        # Resolve once so the displayed source is the same object used to score.
+        effective_calibration = (conv_calib if conv_calib is not None
+                                 else commodity_conviction.load_calibration())
         conv = commodity_conviction.conviction(asset, df, drivers, extras, mtf_a,
-                                               alert_tilt_val, conv_calib)
+                                               alert_tilt_val, effective_calibration)
+        if conv:
+            conv = dict(conv)
+            conv["calibration_evidence"] = calibration_evidence(asset, effective_calibration)
         vm["conviction"] = conv
     # --- technical arming block (Policy-Shock W1-B, display-only) -------------
     # Deterministic per-asset stoch + basing detector. Never feeds scoring.

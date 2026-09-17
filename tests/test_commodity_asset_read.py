@@ -462,3 +462,172 @@ def test_full_page_capture_discloses_fixture_limits_and_preserves_component_mode
     assert 'section.screenshot(type="png")' in code
     assert 'Whole-page synthetic fixture' in code
     assert 'not production' in code
+
+
+# Calibration is evidence about the parameter source, never win probability.
+def _calibration(asset="gold", reliable=True):
+    return {"meta":{"horizons":[63,126],"method":"split-half forward-return calibration"},
+            "assets":{asset:{"weights":{"trend":0.6,"real_rates":0.4},"score_reliable":reliable}}}
+
+
+def _calibration_evidence(value, asset="gold"):
+    from scripts import commodity_asset_read as projection
+    assert hasattr(projection, "calibration_evidence"), "parameter-source evidence is missing"
+    return projection.calibration_evidence(asset,value)
+
+
+def test_empty_calibration_is_not_reliable_by_default():
+    result=_calibration_evidence({})
+    assert result["status"]=="defaults"
+    assert result["declared_reliable"] is None
+    assert result["horizons_bars"]==[]
+
+
+@pytest.mark.parametrize("reliable,status",[(True,"stored"),(False,"weak"),(None,"unrated")])
+def test_calibration_discloses_declared_quality_without_promoting_it(reliable,status):
+    result=_calibration_evidence(_calibration(reliable=reliable))
+    assert result["status"]==status
+    assert result["horizons_bars"]==[63,126]
+    assert result["declared_reliable"] is reliable
+    assert "win probability" in result["disclosure_en"].lower()
+
+
+def test_calibration_never_borrows_another_assets_parameters():
+    assert _calibration_evidence(_calibration(asset="silver"))["status"]=="defaults"
+
+
+@pytest.mark.parametrize("bad",[True,[],"bad",17])
+def test_invalid_calibration_container_is_unavailable(bad):
+    assert _calibration_evidence(bad)["status"]=="unavailable"
+
+
+def test_calibration_horizons_are_declared_positive_integer_bars():
+    cal=_calibration();cal["meta"]["horizons"]=[True,63,"126",None,-1,0,float("inf"),126,63]
+    assert _calibration_evidence(cal)["horizons_bars"]==[63,126]
+
+
+def test_calibration_metadata_does_not_mutate_weights():
+    cal=_calibration();before=deepcopy(cal)
+    _calibration_evidence(cal)
+    assert cal==before
+
+
+def test_projection_carries_calibration_but_preserves_numerical_values():
+    d=view();d["conviction"]["reliable"]=True
+    d["conviction"]["calibration_evidence"]=_calibration_evidence({})
+    result=read(display=d)
+    assert result["model_evidence"]["status"]=="defaults"
+    assert result["model_score"]==30 and result["exposure_pct"]==50
+    assert result["model_action"]=="BUY" and result["new_entry_permission"] is None
+
+
+def test_projection_does_not_treat_old_reliable_flag_as_calibration_receipt():
+    d=view();d["conviction"]["reliable"]=True
+    result=read(display=d)
+    assert result["model_evidence"]["status"]=="unavailable"
+
+
+def test_projection_rejects_foreign_calibration_receipt():
+    d=view();d["conviction"]["calibration_evidence"]=_calibration_evidence(_calibration("silver"),"silver")
+    assert read(display=d)["model_evidence"]["status"]=="unavailable"
+
+
+def test_projection_does_not_forward_untrusted_calibration_copy():
+    d=view();e=_calibration_evidence(_calibration());e["label_en"]="Guaranteed winner"
+    d["conviction"]["calibration_evidence"]=e
+    assert "Guaranteed" not in read(display=d)["model_evidence"]["label_en"]
+
+
+def test_asset_vm_binds_the_same_calibration_used_by_score(monkeypatch):
+    from tests.test_commodity_signals import _price,_drivers
+    from engine import commodity_signals,commodity_conviction
+    from scripts import build_commodities as builder
+    px=_price(n=900);drivers=_drivers(px.index)
+    frame=commodity_signals.compute_asset({"asset":"gold","price":px,"drivers":drivers})
+    cal=_calibration();seen=[]
+    numeric={"score":12.25,"action":"BUY","confidence":0.53,"reliable":True}
+    def observe(*args):
+        seen.append(args[-1]);return dict(numeric)
+    monkeypatch.setattr(commodity_conviction,"conviction",observe)
+    result=builder.asset_vm("gold",frame,{"assets":{},"meta":{}},drivers,{},cal,None)
+    assert seen==[cal] and seen[0] is cal
+    assert result["conviction"]["calibration_evidence"]["status"]=="stored"
+    assert all(result["conviction"][key]==value for key,value in numeric.items())
+
+
+def test_asset_vm_resolves_missing_calibration_once(monkeypatch):
+    from tests.test_commodity_signals import _price,_drivers
+    from engine import commodity_signals,commodity_conviction
+    from scripts import build_commodities as builder
+    px=_price(n=900);drivers=_drivers(px.index)
+    frame=commodity_signals.compute_asset({"asset":"gold","price":px,"drivers":drivers})
+    calls=[];cal={}
+    monkeypatch.setattr(commodity_conviction,"load_calibration",lambda:(calls.append("load") or cal))
+    monkeypatch.setattr(commodity_conviction,"conviction",lambda *args:{"score":0,"action":"HOLD","confidence":0.5,"reliable":True})
+    result=builder.asset_vm("gold",frame,{"assets":{},"meta":{}},drivers,{},None,None)
+    assert calls==["load"]
+    assert result["conviction"]["calibration_evidence"]["status"]=="defaults"
+
+
+def test_card_and_detail_expose_calibration_as_separate_evidence():
+    from pathlib import Path
+    base=Path(__file__).resolve().parents[1]
+    for path in ("templates/_commodity_asset_read.html.j2","templates/commodities.html.j2"):
+        text=(base/path).read_text()
+        assert "data-model-evidence" in text and "horizons_bars" in text
+
+
+def test_hub_shows_parameter_origin_without_recomputing_score():
+    from scripts import build_vector as hub
+    d=view();d["conviction"]["calibration_evidence"]=_calibration_evidence({})
+    gold=read(display=d)
+    text=hub._commodity_asset_chips({"asset_reads":{"gold":gold}})
+    assert "Default parameters" in text
+    assert "Positive model posture" in text
+
+
+@pytest.mark.parametrize("kind", ["nullable", "vector", "bool", "string", "nan", "zero"])
+def test_malformed_calibration_weights_are_unavailable_not_assumed(kind):
+    import numpy as np
+    import pandas as pd
+    cal = _calibration()
+    values = {"nullable": pd.NA, "vector": np.array([1,2]), "bool": True,
+              "string": "0.6", "nan": {"trend": float("nan")}, "zero": {"trend":0}}
+    cal["assets"]["gold"]["weights"] = values[kind]
+    assert _calibration_evidence(cal)["status"] == "unavailable"
+
+
+def test_calibration_fixture_discloses_all_sources_without_changing_policy():
+    from scripts.capture_commodity_asset_read_evidence import fixture_context
+    base = fixture_context("split")["vm"]["asset_reads"]
+    actual = fixture_context("calibration")["vm"]["asset_reads"]
+    for asset,status in {"gold":"weak","silver":"stored","copper":"defaults","oil":"unrated"}.items():
+        assert actual[asset]["model_evidence"]["status"] == status
+        for field in ("state","exposure_pct","model_score","model_action","signal_asof","new_entry_permission"):
+            assert actual[asset][field] == base[asset][field]
+
+
+def test_capture_exercises_calibration_disclosure_and_detail_identity():
+    import inspect
+    from scripts.capture_commodity_asset_read_evidence import main
+    source = inspect.getsource(main)
+    assert '"--include-calibration"' in source
+    assert 'calibration_details_verified' in source
+    assert 'card_evidence.locator("summary").click()' in source
+    assert 'detail_evidence.get_attribute("data-model-evidence")' in source
+
+
+@pytest.mark.parametrize("target", ["schema", "asset", "argument"])
+@pytest.mark.parametrize("kind", ["nullable", "vector"])
+def test_model_evidence_qualifies_nonscalar_identity_before_comparing(target,kind):
+    import pandas as pd
+    import numpy as np
+    from scripts.commodity_asset_read import model_evidence_read
+    receipt = _calibration_evidence(_calibration())
+    value = pd.NA if kind == "nullable" else np.array(["gold","silver"])
+    asset = "gold"
+    if target == "argument": asset = value
+    else: receipt[target] = value
+    result = model_evidence_read(asset,receipt)
+    assert result["status"] == "unavailable"
+    json.dumps(result,allow_nan=False)

@@ -22,6 +22,13 @@
     {% for f in r.timeframes or [] %}<span class="pill">{{ t(f.label_en, f.label_zh) }} <b class="{{ 'dn' if f.trend == 'down' else 'up' if f.trend == 'up' else 'mut' }}">{{ t('Down','向下') if f.trend == 'down' else t('Up','向上') if f.trend == 'up' else t('Flat','走平') if f.trend == 'flat' else '—' }}</b></span>{% endfor %}
   </div>
   {% if r.reasons %}<p class="asset-read-reason">{{ t(r.reasons[0].en, r.reasons[0].zh) }}</p>{% else %}<p class="asset-read-reason">{{ t('Required evidence is unavailable. A rising index is not permission for this asset.', '必要证据缺失。指数上涨不代表此品种入场条件成立。') }}</p>{% endif %}
+  {% set evidence = r.model_evidence|default({}) %}
+  <details class="asset-read-calibration faint" data-model-evidence="{{ evidence.status or 'unavailable' }}">
+    <summary>{{ t(evidence.label_en or 'Calibration evidence unavailable', evidence.label_zh or '校准证据暂缺') }}</summary>
+    <p>{{ t('Declared return horizons', '声明的收益期限') }}:
+      {% if evidence.horizons_bars %}{{ evidence.horizons_bars|join(' / ') }} {{ t('bars', '根K线') }}{% else %}{{ t('Unavailable', '暂无数据') }}{% endif %}.
+      {{ t(evidence.disclosure_en or 'Parameter-source evidence, not a win probability.', evidence.disclosure_zh or '仅说明参数来源，并非胜率。') }}</p>
+  </details>
   <footer class="asset-read-date">
     {{ t('Signal date','信号日期') }} <time>{{ r.signal_asof or '—' }}</time>
     {% if r.quality == 'lagging' %}<span class="amb"> · {{ r.lag_calendar_days }} {{ t('calendar days behind page inputs','个自然日落后于页面输入') }}</span>{% endif %}
