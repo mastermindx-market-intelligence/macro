@@ -5,183 +5,186 @@ model: sol
 ended_because: blocked
 mission: >
   Own the Chairman-authorized HK and Canada Prophet recovery through useful
-  opportunity coverage, truthful entry/availability explanations, premium
-  regional UI, normal publication and real production acceptance. Preserve
-  existing authorities, source writers, runtime owners and delivery carriers.
+  opportunity coverage, truthful entry permission, coherent premium UI, normal
+  publication and production acceptance. Preserve existing source writers,
+  regional authorities, identity, grading, quote and runtime owners.
 state_before: >
-  The diagnosis was held in conversation attachments. Chairman explicitly
-  assigned Sol end-to-end CEO responsibility and suggested Studio Fabric
-  workers. Existing Canada/HK repair PRs were open; runtime readiness was unknown.
+  PR #7248 held the first recovery contract. #7018 had an unconsumed exact
+  manifest-scope repair request; #7163 was its successor. Product source was
+  unchanged and the verified Executive path was unarmed. The next turn needed
+  new proof or capability progress, not another reconstruction of old chats.
 changed:
-  - path: research/PROPHET_HK_CA_END_TO_END_RECOVERY_2026_09_17.md
+  - path: research/PROPHET_HK_CA_RECOVERY_R2_EVIDENCE_2026_09_17.md
     what: >
-      Publishes the mandate, outcome, first vertical boundaries, existing
-      release dependencies, source/entry/identity/quote invariants, dark/light
-      and EN/ZH design requirements, proof matrix and measured execution gaps.
+      Records native manifest proof, current Canada entry-copy witnesses and
+      executed #6996 tests, exact regional coverage counts, real anonymous
+      browser/HTTP evidence, a narrowly tested public-shell asset proposal,
+      existing infrastructure ownership and the remaining release frontier.
   - path: agentos/handoffs/PROPHET-HK-CA-REVAMP-2026-09-17-ceo-recovery.md
     what: >
-      Records the current continuation after Studio reconnection, scoped native
-      record validation, records PR publication and exact Canada-head delta
-      reconciliation. No application bytes or runtime state changed.
+      Replaces the prior continuation with the current R2 checkpoint without
+      changing the parent mission or projecting proposals as shipped code.
 verified:
-  - claim: Current protected procedure was atomically pinned and compatible.
+  - claim: Current protected procedure was pinned compatibly and read atomically.
     command: >
-      Read protected Mastermind branches/master and same-SHA INDEX, COLD_START,
-      ACTIVE_EXECUTION, WEB_CEO_DELEGATION, RECONCILE_STATE, COMMISSION_WAVE,
-      CLOSEOUT and applicable source-law companions.
+      Read Mastermind protected ref and same-SHA INDEX, COLD_START,
+      ACTIVE_EXECUTION, WEB_CEO_DELEGATION, RECONCILE_STATE, REVIEW_RETURN,
+      CLOSEOUT, WORKER_AVENUE_ROUTING and relevant source-law companions.
     result: >
-      Mastermind@6fc5c057e04114055f927ebd295edc779de86bca;
-      mastermind.sol_skillpack.v1 version 1.0.1 / bootstrap 1 compatible.
-  - claim: Existing regional parent and historical presentation closure were recovered.
+      Mastermind@42d210bc07a75234092ff5be71f6038ccacaa884;
+      mastermind.sol_skillpack.v1 version 1.0.1/bootstrap 1. Previously read
+      unchanged procedure/companion blobs were compared rather than rehydrated.
+  - claim: The #7018 dependency declaration is precisely repairable but remains unchanged.
     command: >
-      Read WS-PROPHET-HK-CA-REVAMP.md, the 2026-08-27 V3.8 final-acceptance
-      handoff and PROPHET_HK_CANADA_REVAMP_EXECUTION_PACKET_2026_08_18.md at
-      macro@0bcf8b028a014444a4ea75faec871d977a997903.
+      Fresh native GitHub branch read; execute the exact run_ci_pack.py
+      _glob_to_regex/_matches_any functions over the real manifest and one
+      in-memory proposed addition at f8779cbaf329266df3e1e4a573158b8b8af1c74b.
     result: >
-      Parent active; the historical Action != Leadership correction is a closed
-      narrow capability. Current mandate starts a new recovery interval under
-      the same programme, not a replacement owner or permission to redo it.
-  - claim: Existing Canada and HK release carriers remain unmerged and held.
+      Branch still f8779cba. scripts/canada_theme_action_map.py is uncovered;
+      adding it to conviction-profile paths changes false to true, preserves
+      all original paths and exclusive scope, and changes one of 213 jobs.
+      No source edit or passing new-head contract-delta is claimed. Existing
+      request 5710276501 remains the next source repair; #7163 is preserved.
+  - claim: #6996 fixes current artifact witnesses and its accepted review must not be reopened.
     command: >
-      Fresh GitHub metadata for #7018/#7163; #7018 comment 5707741332;
-      compare 36c6cccde3135742fb8a1ad9e0c06254cc48a87b to
-      f8779cbaf329266df3e1e4a573158b8b8af1c74b; inspect that commit's diff
-      and exact-head check runs.
+      Compare exact entry_signal.py blobs; parse September 15 Canada artifact
+      at macro@fdc881221cbf2029360da5481d62b0f558232caa; execute candidate
+      owning tests against main and candidate in immutable snapshot harness;
+      fresh-read existing comments and exact source branch before review COMMENT.
     result: >
-      #7018 is open/draft at f8779cbaf329266df3e1e4a573158b8b8af1c74b.
-      It is one commit after the older reviewed head: the only application
-      change is .ca-theme-action border-radius 10px to var(--r-card,12px);
-      other changes refresh fixture/browser receipts and screenshots. Trusted
-      executor run 35185804120 has queued checks. #7163 remains unmerged at
-      e2b5e7a58edc13cbad910c053ebe37d6e31399f2 and is the recorded successor.
-      No independent approval, HOLD release or source custody was fabricated.
-  - claim: The observed canonical Executive state forbids new submission.
+      DSG.TO, GIB-A.TO and TOU.TO have gated waiting status but opening copy.
+      Main gives 4 intended failures/20 passes in the bounded set; candidate
+      gives 24 passes, then full owning file plus actual Jinja dependencies
+      gives 26 passes/zero deselected. Current head remains
+      30da44be695d5b7b249d0180f3af6d21ed5bad09. Review COMMENT 5232731424
+      preserves prior accepted native semantic PASS and terminal reviewer STOP.
+      No authenticated Canadian hover, full-repository test or release is claimed.
+  - claim: Current source populations and existing supplemental HK coverage were counted.
     command: >
-      Read existing MMX/SOL_STATE_V1 in Slack C0BSGABKBFY, payload generated
-      2026-09-17T06:27:58Z. Use its generation time, not the original Slack date.
+      Parse complete hk_standouts.json and canada_standouts.json at immutable
+      macro@fdc881221cbf2029360da5481d62b0f558232caa; count lanes and exact
+      ticker unions, retaining the meaning of each producer denominator.
     result: >
-      do_not_submit=true; GROUNDING_UNAVAILABLE; UNARMED / AWAITING_CANARY;
-      generic mutations BLOCKED_AWAITING_CANARY; workers=0, attempts=0,
-      jobs=3 queued/0 running. Relay command transport NOT_INSTALLED;
-      state publisher READY; installed release
-      4c148709f52ff036d71dd212abd2688212d91ed0; state hash
-      167addfbd7da50a65b3b4052edeeebe0dbca6b23c6c3e71b1dbb5f3f4a20e5ec.
-  - claim: Studio source access recovered, but Macro workspace qualification remains unproven.
+      HK September 16: 156 source rows, 156 analyzed, zero exclusions at that
+      boundary, one eligible before demotions and one main row. Washout output
+      has 62 display-only rows: 16 ignition/46 washout, nine overlapping the
+      earlier 59-name lists, 112 distinct names across all lists including
+      history/risk. Canada September 15: 215 scored candidates, one aligned,
+      six near on the seven-row board, eight knife-warning watch rows.
+      These are not full-exchange counts, healthy-input proof, or 112 BUYs.
+  - claim: The anonymous production shell has an independently reproduced asset failure.
     command: >
-      Remote Desktop Commander device list, same-carrier output reconciliation
-      for read-only PID 95066, then read-only identity/installed-launcher help
-      and fixed-source binding probes, PIDs 53430/53742/54581.
+      Studio PID 88978: fresh isolated Chromium, actual public URLs, no
+      existing profile; capture DOM/screenshots. Follow with exact HTTP
+      checks of the required stylesheet/scripts and known shared-asset controls.
     result: >
-      Studio 3f5ce987-e3eb-40a3-af9f-4b0ae54919cc returned online; the old
-      read-only session 95066 no longer exists. Fresh shell execution succeeded
-      as chriswong on macOS 26.5. The installed ~/.local/bin/mmx-workspace
-      accepts operation/base/lane, and pins source repo
-      /Users/chriswong/Documents/GitHub/Mastermind and external workspace root
-      /Volumes/Mastermind/agent-workspaces. No Macro-specific custody receipt
-      was obtained; no launcher was rebound or bypassed. Source access recovery
-      does not arm Executive admission. The older disconnect is historical now.
-  - claim: The first published records passed the existing native handoff validator.
+      Both pages return 200; stock-dashboard.css including its actual version
+      query, hk-stock-v36.js and canada-stock-v36.js return 401 JSON.
+      theme.css and dashboard-icons.js return 200. Public controls are partly
+      unstyled. This is anonymous first-frame evidence, not authenticated
+      customer acceptance or a complete explanation of the supplied screenshots.
+  - claim: A narrow shell-asset proposal passes native parse and exact configuration-delta checks.
     command: >
-      Studio PID 58893 downloaded exact GitHub blobs into research scratch,
-      verified each Git blob hash, imported scripts/agentos.py from
-      0bcf8b028a014444a4ea75faec871d977a997903 and invoked its check_handoff
-      against the record at ad050a89d1b43651650636400c051b7877b78132.
+      Studio PID 57686, exit 0: Caddy adapt on before/proposal through the same
+      scratch input filename; compare adapted JSON and YAML; invoke the exact
+      existing serving-boundary alignment test from blob
+      d9964f66da90fb2f402b8b975b2ad677b92afd61.
     result: >
-      Exit 0, native_handoff_problems=[], both documents have no trailing
-      whitespace or conflict markers and terminate with a newline. Native
-      validator blob 671bb70de73c24784db891d67f60352b152829f4. This is scoped
-      record validation, not whole-repository validation or application tests.
-      The final updated-record verification belongs in the same PR receipt.
-  - claim: Records and dependency findings were published without starting duplicate work.
+      Proposal adds only three named presentation assets to public.exact and
+      four existing Caddy matchers, producing eight expanded path-list deltas.
+      All other adapted configuration and access policy are equal; no wildcard
+      or private-payload policy change. Both native alignment checks pass.
+      Patch SHA-256 472c5e5f9e0c160c65c07cd0fd4791fb6918dbbe8578c97264dcf392c2b510af.
+      Proposal is NOT applied to a source branch or server; security review,
+      full negative tests and normal publication remain required.
+  - claim: Execution/source-serviceability gates remain explicit and have existing owners.
     command: >
-      Native GitHub create branch/files/PR; read-back; Slack dependency report
-      in incumbent Fabric dialogue; GitHub continuation comment on #7018.
+      Read current MMX/SOL_STATE_V1 in C0BSGABKBFY, generation
+      2026-09-17T07:24:39Z; reconcile installed launcher binding, current
+      Source Continuity source and Mastermind issue #346 comment 5708496784;
+      fresh-read Mastermind PR #685.
     result: >
-      Records PR #7248 is Draft/HOLD, two record files only. Fabric dependency
-      delivery: C0BSBM78V1N / 1789626721.567219, normalized root
-      1789324397.992989. #7018 continuation comment 5710179636 narrows its
-      exact-head review boundary and preserves current source custody/HOLD.
-      Delivery is not pickup or action. No worker or new Executive Job started.
+      do_not_submit=true, GROUNDING_UNAVAILABLE, UNARMED/AWAITING_CANARY,
+      zero workers/attempts, three queued/zero running, command transport
+      NOT_INSTALLED; state hash b9e07b8a996e42d83ae8ed8919a5ba54970014a3f388bc277928120e9303131e.
+      Attended launcher is still Mastermind-bound; Macro acquisition is
+      unproven. Source Continuity declares a 256-PR ceiling versus 285 observed
+      open Macro PRs; no official refusal was fabricated. Existing #346 sequence
+      already covers #710, subject-PR amendment, #685 and Macro-300. #685 is
+      storage-policy enforcement, not proof of Macro repository selection.
 unverified:
-  - claim: New HK/Canada opportunity projection is implemented or live.
+  - claim: The product or proposed public-shell repair is implemented and production-proven.
     what_would_verify: >
-      Accepted exact application diff, concluded relevant tests/review, natural
-      publication, owner/DOM parity and entitled production browser matrix.
-  - claim: Fabric or a manual worker has accepted this product recovery.
+      Qualified source custody, exact accepted implementation, full relevant
+      tests/review, normal publication, public and entitled browser journeys,
+      private-payload negative tests and source/DOM/clock parity.
+  - claim: A new worker has accepted or started the recovery's implementation.
     what_would_verify: >
-      Fresh lawful admission/capacity/receiver binding and explicit pickup/start
-      under the existing owner, with the exact result and continuation path.
-  - claim: The installed attended-source route is qualified for Macro edits.
+      Current lawful admission/placement, concrete receiver binding and actual
+      pickup/START with an exact result path. No such worker was launched here.
+  - claim: #6996 has current formal source-continuity and integrated release proof.
     what_would_verify: >
-      Existing custody owner supplies a supported Macro-bound acquisition path
-      and an exact operation/repository receipt; never override the fixed
-      Mastermind launcher source or create an unmanaged checkout.
-  - claim: Current per-gate exclusion populations and deployed input health are known.
+      Current owning verifier receipt, source-writer release where required,
+      current-base integration and applicable concluded checks, explicit HOLD
+      adjudication and normal publication. Prior semantic PASS is already accepted.
+  - claim: Broad discovery or ranking changes improve outcomes.
     what_would_verify: >
-      Full owner-source funnel for each completed regional session, preserving
-      missing/stale/zero/limited distinctions and exact deployed provenance.
+      Existing shadow/discovery/grading owners supply comparable prospective
+      evidence. More rows and source-snapshot tests do not establish alpha.
 unresolved:
-  - >
-    Application recovery remains NOT_BUILT; records are not a product delta.
-    No application merge, deployment or production acceptance occurred.
-  - >
-    Executive admission remains blocked at its last verified generation.
-    Studio reconnection resolves shell transport only. Read fresh readiness
-    before any later submission; never assume recovered transport armed it.
-  - >
-    Incumbent PR writers/reviewers must be reconciled before colliding page
-    changes. Adjacent #7050, #6706 and #6996 remain separate scopes; #7237 and
-    global research #7218 are not transferred to this session.
+  - No application-source merge, deployment or repaired-user-journey acceptance occurred.
+  - The #7018 repair request has no observed source response; preserve its writer/carrier.
+  - The shell proposal is security-sensitive; no public-access change was authorized by its test alone.
+  - No supported Macro source-acquisition receipt or eligible Fabric receiver was established.
 next_actions:
   - >
-    Read current canonical runtime readiness. If do_not_submit remains true,
-    keep Fabric submission held with its existing acceptance/install owner.
-    Separately qualify Macro source custody through the existing owner; no
-    further product approval from Chairman is needed for the accepted scope.
+    Consume #7018's existing-source repair of conviction-profile paths and its
+    new exact-head contract-delta/CI evidence. Preserve request 5710276501 and
+    its current writer rather than sending duplicate assignments or retrying CI.
   - >
-    On #7018, consume independent exact-head review and concluded CI for
-    f8779cbaf329266df3e1e4a573158b8b8af1c74b or its reconciled successor;
-    explicitly rule on HOLD only after gates clear, then carry #7163 forward.
-    Preserve the existing source writer and do not repeat settled repairs.
+    For #6996, retain accepted semantic PASS and use the existing Source
+    Continuity/current-base/release path. Follow current Mastermind issue #346
+    sequencing; do not implement a competing Macro-300 verifier or repeat the
+    already settled text change and review.
   - >
-    Once an eligible execution/custody route exists, implement R1 HK coherent
-    opportunity coverage under the accompanying recovery contract, then R2
-    Canada. Use least-scarce qualified capacity and an exact return path.
+    When qualified Macro custody/placement and a fresh collision census exist,
+    implement the bounded public-shell repair through config/site_access.yml,
+    the four existing Caddy matchers and owning regression/negative tests.
+    Preferred avenue Terra; without a receiver retain WAITING_CAPACITY, not START.
   - >
-    Continue through normal publication and real browser proof; then record
-    natural-source coverage and learning evidence through existing owners.
+    Continue the main HK/Canada opportunity-composition and intelligence work
+    under the original contract through actual publication and browser proof.
+    Keep useful current coverage, historical evidence and entry permission distinct.
 do_not_redo:
-  - Do not redo Canada one-board/one-order truth repair or relabel historical eras.
-  - Do not remove HK's old reclaim veto again; HK_RECLAIM_VETO is already false.
-  - Do not rebuild leaders/ripening/watch organs, shadow stores, graders or identity.
-  - Do not treat zero score contribution as proof of missing feature input.
-  - Do not turn visible opportunities into BUYs or silently widen graded buy/watch.
-  - Do not swap HK featured and Canada first-five shortlist ownership.
-  - Do not retune shared US weights, create Canada Brain, or expand to TSXV here.
-  - Do not replay predecessor logs or poll unchanged held PRs to manufacture activity.
-  - Do not touch another worker's workspace/process or mint an unmanaged checkout.
-  - Do not synthesize canaries, rebind launcher roots, or bypass unarmed admission.
+  - Do not rehydrate predecessor chats or tool logs; read this checkpoint and exact referenced evidence.
+  - Do not redo Canada one-board truth, historical eras, or the closed V3.8 Action != Leadership wave.
+  - Do not remove HK's old 200-day reclaim veto again; it is already disabled.
+  - Do not rebuild existing discovery shelves, identity, shadow stores, graders, quotes or control planes.
+  - Do not treat 112 multi-list names as current actionable picks or manufacture a minimum BUY count.
+  - Do not call zero score contribution missing input, or a row stamp proof of every organ's freshness.
+  - Do not infer missing #6996 review from an empty API reviews list or reopen its terminal reviewer.
+  - Do not substitute the native matcher proposal for a passing new-head #7018 contract-delta run.
+  - Do not change verifier limits locally or treat synthetic source-continuity receipts as protected authority.
+  - Do not mistake Mastermind #685 storage qualification for a supported Macro workspace route.
+  - Do not move gated assets into public wildcard directories or broaden CSS/JS/JSON globs to evade review.
+  - Do not use anonymous first-frame evidence as authenticated desktop/mobile production acceptance.
+  - Do not override the installed source root, touch another writer's workspace, or spawn a raw provider.
 danger_areas:
-  - HK Brain consumes hk_standouts.json; display expansion must not become signal authority.
-  - Stage/card/featured counts do not establish entry permission.
-  - Fresh quotes must not imply a fresh analytical board.
-  - Stale PR-body hashes are not current-head review or production evidence.
-  - This records carrier is not a runtime, queue, job, worker or authority plane.
-prs: [7248, 7018, 7163, 6996, 7218, 7237]
+  - HK Brain consumes hk_standouts.json; display expansion must not become unreviewed signal authority.
+  - Entry copy, state, source age and quote freshness must agree without fabricated zeros or geometry.
+  - Default-deny payload policy must survive any reviewed presentation-asset promotion.
+  - Source Continuity, merge, publication and product acceptance remain distinct gates.
+prs: [7248, 7018, 7163, 6996]
 ---
 
-# CEO recovery continuation — parent remains active
+# Current continuation — recovery active, product not accepted
 
-Sol owns the product, architecture, integration decisions and final acceptance under the current Chairman directive. Existing code writers and runtime owners are not displaced.
+Principal and final product acceptance remain Sol under the current Chairman direction. No new source writer, Executive Job or lifecycle was created. The existing regional workstream and incumbent repair carriers remain authoritative.
 
-Contract: `research/PROPHET_HK_CA_END_TO_END_RECOVERY_2026_09_17.md`.
-Operation: `prophet-hk-ca-end-to-end-recovery-20260917-sol-001`.
-Canonical continuation carrier: **PR #7248**, branch `claude/prophet-hk-ca-ceo-recovery-20260917`.
+Start with `research/PROPHET_HK_CA_RECOVERY_R2_EVIDENCE_2026_09_17.md` for the new evidence and `research/PROPHET_HK_CA_END_TO_END_RECOVERY_2026_09_17.md` for the approved outcome/journey. Both are carried by PR #7248. The evidence memo names immutable source hashes, the real public observations, the exact limits of the native tests, and the proposed patch recipe.
 
-## Latest reconciliation supersedes the earlier transport snapshot only
+The user journey is still: find useful regional names, understand why they matter and what is actually permitted, inspect fresh evidence, and continue through the existing stock/Terminal workflow. Missing, stale, uncomputed, measured-zero and insufficient-comparison states remain distinct. Do not turn current monitoring coverage into entry permission or old refusal history into current discovery.
 
-The contract's section 6 records the earlier Studio disconnect. Studio has since reconnected and executed read-only validation successfully; it must not be reported as still offline based on that snapshot. Old PID 95066 was read-only and is gone, so there is no unknown worker launch to retry. The installed source-custody launcher was found, but its fixed repository is Mastermind, not a proven Macro acquisition route. Executive admission was independently observed unarmed; transport recovery is not admission recovery.
+This phase ends at a verified repair-preparation and release-reconciliation checkpoint, not completion. The next material source action is #7018's already-requested manifest change; #6996 has a separate release frontier, and the public-shell proposal may proceed independently once its own source/security gates are qualified. No additional Chairman product approval is needed for the original scope, but no required execution or access-policy gate is waived.
 
-Last verified modifying effects are native GitHub records publication and the two dependency/continuation messages. No application or worker-launch effect is uncertain. The small research-scratch validation receipt is at `/tmp/sol-hkca-ceo-20260917/records-validation/receipt.json` on the Studio, bound to the exact predecessor record head and native validator blob. It is evidence, not another state store.
-
-Recover this handoff, current protected procedure, current exact #7018/#7163 release state and fresh canonical readiness. Do not reconstruct the previous tool transcript. The next major delivery phase needs an eligible execution/source-custody route and release reconciliation, not another diagnosis or another request for Chairman product authorization.
+Studio scratch is `/tmp/sol-hkca-ceo-20260917/continuation-r2`. Immutable source refs and methods in the repository memo are the durable recovery basis; scratch is not another state plane. The old analysis REPL PID 13458 has no available tool session. Do not reconstruct it, reuse its PID blindly, or infer a source effect from its loss. All analysis source/proposal work was non-production and no modifying application effect is unknown.
