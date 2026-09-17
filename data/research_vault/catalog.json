@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T08:49:53.413603+00:00",
-  "count": 2279,
+  "generated_at": "2026-09-17T09:06:01.588912+00:00",
+  "count": 2280,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -744,6 +744,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-3d1aakvdjs0-3fbd51",
+      "title": "GS EUROPEAN EXPRESS BT CVC CTP Multi Industry Autos Macro Global Corporate Access",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T11:47:10Z",
+      "summary_points": [
+        "BT Fibre Monetisation: Structural c.2pp annual margin expansion (FY22-26) via fibre speed-upselling and slowing altntet build rates; consensus assumes 1pp p.a.",
+        "decline FY27-29.",
+        "CVC Fund X Target: €26bn Europe/Americas Fund X target size reaffirms medium-term FRE growth and fundraising strength despite limited earnings visibility.",
+        "NVIDIA 800VDC Adoption: Slower adoption (21% US, 17% Europe datacenter builds by 2030) driven by non-AI inference growth; non-AI datacenters dominate through 2023.",
+        "European OEMs in China: Chinese regulations (15th Five-Year Plan, capacity controls) create market orderliness but intensify local competition; Mercedes GLC launch (~1,500 units/month) signals positive demand."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
       "language": "en",
       "needs_metadata": false
     },
