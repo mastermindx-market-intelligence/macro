@@ -1242,6 +1242,7 @@ jobs:
       - "engine/sp500_heatmap.py"
       - "engine/stock_dossier.py"
       - "engine/stock_score.py"
+      - "engine/signal_evidence.py"
       - "engine/stock_view.py"
       - "engine/stocks_hub.py"
       - "engine/technicals.py"
