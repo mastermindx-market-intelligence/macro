@@ -1,7 +1,7 @@
 {
   "scope": "local real-input rendered page; not deployed or authenticated production proof",
   "template_sha256": "bef4a8553b146cffd414ea44f3b786e4ad0bc89d2cd8c2b0a73ea1ca957c08e5",
-  "observation_digest": "dac7aaad7a8ca9f5a7a5720ca57ff3218d16cb0ef52d74b389693b17e04a242f",
+  "observation_digest": "ebb09b98c654994a6d375c375ea73e0aa7260fc0efdd6e7d611448485d124a88",
   "states": [
     {
       "lang": "en",
@@ -17,7 +17,7 @@
       "script_errors": [],
       "section_width": 1340,
       "screenshot": "member-evidence-en-dark-1440.png",
-      "screenshot_sha256": "fd48db3e7cbf8db6d85da4040a1943d0cb1f263ec3c4b0f2b6f62d38fe118ee7"
+      "screenshot_sha256": "dcdbe66344d2cd57aaedceb8978ea330f5932034be781c3defab8cbce08b8143"
     },
     {
       "lang": "en",
@@ -117,7 +117,7 @@
       "script_errors": [],
       "section_width": 366,
       "screenshot": "member-evidence-zh-light-390.png",
-      "screenshot_sha256": "4bd270eb424d8b5d3614407b82a08be93848dafe234f36e5d241e1d3df7c6c00"
+      "screenshot_sha256": "1456941e57990fb061b607ed6e31683edf2103b94dec6a7cc79fd40ac69fc9b2"
     }
   ]
 }

@@ -1424,6 +1424,31 @@ def compute(data_root: Path | None = None) -> dict[str, Any]:
             basis="total_return_close",
             effective_at=as_of,
         ))
+        legacy_states = (
+            (
+                "group_pulse:legacy_activity_state",
+                "legacy_activity_state",
+                panel["active"],
+                panel["covered"],
+            ),
+            (
+                "group_pulse:legacy_trend_50_state",
+                "legacy_trend_50_state",
+                panel["above_ma50"],
+                panel["covered"] & panel["has_ma50"],
+            ),
+            (
+                "group_pulse:legacy_trend_200_state",
+                "legacy_trend_200_state",
+                panel["above_ma200"],
+                panel["covered"] & panel["has_ma200"],
+            ),
+        )
+        for source_ref, basis, values, eligible in legacy_states:
+            state = values.loc[[as_of]].astype("float64").where(eligible.loc[[as_of]])
+            source_receipts.append(_member_observations.normalized_frame_receipt(
+                state, source_ref=source_ref, basis=basis, effective_at=as_of,
+            ))
         source_receipts.append(_member_observations.normalized_frame_receipt(
             panel["rets"],
             source_ref="group_pulse:member_raw_return_panel",

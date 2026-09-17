@@ -17,6 +17,28 @@ GENERATED_AT = "2026-09-16T07:32:35+00:00"
 GROUP_ID = "test_group"
 
 
+def _contract_receipts(as_of: str, digest_char: str = "1") -> list[dict]:
+    bases = (
+        ("group_pulse:test-panel", "total_return_close"),
+        ("group_pulse:test-activity-state", "legacy_activity_state"),
+        ("group_pulse:test-trend-50-state", "legacy_trend_50_state"),
+        ("group_pulse:test-trend-200-state", "legacy_trend_200_state"),
+        ("group_pulse:test-raw-return", "raw_daily_change"),
+        ("group_pulse:test-relative-return", "benchmark_relative_daily_change"),
+    )
+    return [
+        {
+            "kind": "normalized_frame",
+            "source_ref": source_ref,
+            "sha256": str((int(digest_char) + index) % 10) * 64,
+            "bytes": 1234 + index,
+            "effective_at": as_of,
+            "basis": basis,
+        }
+        for index, (source_ref, basis) in enumerate(bases)
+    ]
+
+
 def _fixture() -> tuple[dict, list[dict], dict, list[dict]]:
     idx = pd.bdate_range(end=AS_OF, periods=220)
     closes = pd.DataFrame(
@@ -78,14 +100,7 @@ def _fixture() -> tuple[dict, list[dict], dict, list[dict]]:
             "activity_basis": {"ret_only": 1, "ret_and_volume": 0},
         },
     }
-    receipts = [{
-        "kind": "normalized_frame",
-        "source_ref": "group_pulse:test-panel",
-        "sha256": "1" * 64,
-        "bytes": 1234,
-        "effective_at": AS_OF,
-        "basis": "total_return_close",
-    }]
+    receipts = _contract_receipts(AS_OF, "1")
     return panel, members, legacy, receipts
 
 
@@ -148,6 +163,23 @@ def test_projection_is_deterministic_and_context_only():
     assert canonical_json_bytes(first) == canonical_json_bytes(second)
     assert first["schema"] == "group_member_observations.v1"
     assert first["authority"] == "context_only"
+
+
+def test_projector_refuses_missing_legacy_state_receipts():
+    panel, members, legacy, receipts = _fixture()
+    receipts = [row for row in receipts if row["basis"] != "legacy_activity_state"]
+    with pytest.raises(ContractError, match="legacy_activity_state"):
+        GMO.project_group_members(
+            group_id=GROUP_ID,
+            member_records=members,
+            panel=panel,
+            as_of=AS_OF,
+            covered_members=["A", "B"],
+            active_members=["A"],
+            legacy_pulse=legacy,
+            source_receipts=receipts,
+            generated_at=GENERATED_AT,
+        )
 
 
 def test_duplicate_catalogue_member_is_refused():
@@ -253,14 +285,7 @@ def _pulse_panel() -> tuple[dict, dict, pd.Timestamp, dict, list[dict]]:
         frames["daily"]["activity_n"].tolist(),
         frames["members_by_day"],
     )
-    receipts = [{
-        "kind": "normalized_frame",
-        "source_ref": "group_pulse:test-panel",
-        "sha256": "2" * 64,
-        "bytes": 4321,
-        "effective_at": AS_OF,
-        "basis": "total_return_close",
-    }]
+    receipts = _contract_receipts(AS_OF, "2")
     return panel, basket, as_of, frames, episodes, receipts
 
 
@@ -346,7 +371,26 @@ def test_compute_returns_companion_from_the_same_in_memory_panel(monkeypatch, tm
     assert result["member_observation_groups"][GROUP_ID]["legacy_pulse_digest"] is None
     assert result["source_receipts"][0]["kind"] == "normalized_frame"
     bases = {row["basis"] for row in result["source_receipts"]}
-    assert {"raw_daily_change", "benchmark_relative_daily_change"} <= bases
+    assert {
+        "raw_daily_change",
+        "benchmark_relative_daily_change",
+        "legacy_activity_state",
+        "legacy_trend_50_state",
+        "legacy_trend_200_state",
+    } <= bases
+    basis_by_ref = {row["source_ref"]: row["basis"] for row in result["source_receipts"]}
+    group = result["member_observation_groups"][GROUP_ID]
+    expected_basis = {
+        "legacy_activity": "legacy_activity_state",
+        "legacy_trend_50": "legacy_trend_50_state",
+        "legacy_trend_200": "legacy_trend_200_state",
+    }
+    for metric_id, basis in expected_basis.items():
+        refs = {
+            member["metrics"][metric_id]["source_ref"]
+            for member in group["members"].values()
+        }
+        assert {basis_by_ref[ref] for ref in refs} == {basis}
     assert any(row["kind"] == "raw_bytes" for row in result["source_receipts"])
     assert GP.validate_payload(result["payload"]) == []
 
@@ -509,11 +553,7 @@ def test_legacy_partial_warmup_is_not_a_strict_200_observation():
             "activity_basis": {"ret_only": 1, "ret_and_volume": 0},
         },
     }
-    receipts = [{
-        "kind": "normalized_frame", "source_ref": "group_pulse:test-panel",
-        "sha256": "3" * 64, "bytes": 999, "effective_at": AS_OF,
-        "basis": "total_return_close",
-    }]
+    receipts = _contract_receipts(AS_OF, "3")
     group = GMO.project_group_members(
         group_id=GROUP_ID, member_records=members, panel=panel, as_of=AS_OF,
         covered_members=["A", "B", "C"], active_members=["A"],
@@ -576,6 +616,17 @@ def test_source_receipts_bind_membership_and_metric_cells():
     forged = _rehash(forged)
     assert any("source receipt" in error.lower()
                for error in GMO.validate_member_bundle(forged))
+
+
+def test_closed_contract_rejects_metric_cell_bound_to_wrong_receipt_basis():
+    forged = _bundle()
+    receipts = forged["source"]["receipts"]
+    raw_ref = next(row["source_ref"] for row in receipts
+                   if row["basis"] == "raw_daily_change")
+    forged["groups"][GROUP_ID]["members"]["A"]["metrics"]["legacy_activity"]["source_ref"] = raw_ref
+    forged = _rehash(forged)
+    errors = GMO.validate_member_bundle(forged)
+    assert any("source receipt basis" in error.lower() for error in errors), errors
 
 
 def test_closed_contract_refuses_unknown_or_missing_metric_definitions():

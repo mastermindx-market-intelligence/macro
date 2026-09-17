@@ -68,10 +68,39 @@ def _write_generation(site: Path, member_keys=("A", "B", "C")) -> dict:
             "activity_basis": {"ret_only": 1, "ret_and_volume": 0},
         },
     }
-    receipts = [GMO.normalized_frame_receipt(
-        closes, source_ref="group_pulse:member_close_panel",
-        basis="total_return_close", effective_at=AS_OF,
-    )]
+    as_of_ts = pd.Timestamp(AS_OF)
+    legacy_activity_state = (panel["active"].loc[[as_of_ts]].astype("float64")
+                             .where(panel["covered"].loc[[as_of_ts]]))
+    legacy_trend_50_state = (panel["above_ma50"].loc[[as_of_ts]].astype("float64")
+                             .where((panel["covered"] & panel["has_ma50"]).loc[[as_of_ts]]))
+    legacy_trend_200_state = (panel["above_ma200"].loc[[as_of_ts]].astype("float64")
+                              .where((panel["covered"] & panel["has_ma200"]).loc[[as_of_ts]]))
+    receipts = [
+        GMO.normalized_frame_receipt(
+            closes, source_ref="group_pulse:member_close_panel",
+            basis="total_return_close", effective_at=AS_OF,
+        ),
+        GMO.normalized_frame_receipt(
+            legacy_activity_state, source_ref="group_pulse:legacy_activity_state",
+            basis="legacy_activity_state", effective_at=AS_OF,
+        ),
+        GMO.normalized_frame_receipt(
+            legacy_trend_50_state, source_ref="group_pulse:legacy_trend_50_state",
+            basis="legacy_trend_50_state", effective_at=AS_OF,
+        ),
+        GMO.normalized_frame_receipt(
+            legacy_trend_200_state, source_ref="group_pulse:legacy_trend_200_state",
+            basis="legacy_trend_200_state", effective_at=AS_OF,
+        ),
+        GMO.normalized_frame_receipt(
+            rets, source_ref="group_pulse:member_raw_return_panel",
+            basis="raw_daily_change", effective_at=AS_OF,
+        ),
+        GMO.normalized_frame_receipt(
+            panel["spy_adj"], source_ref="group_pulse:member_benchmark_relative_return_panel",
+            basis="benchmark_relative_daily_change", effective_at=AS_OF,
+        ),
+    ]
     group = GMO.project_group_members(
         group_id=GROUP_ID, member_records=members, panel=panel, as_of=AS_OF,
         covered_members=list(member_keys), active_members=[member_keys[0]],

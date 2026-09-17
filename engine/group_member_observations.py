@@ -67,6 +67,15 @@ _ESTIMABILITY_NULL_REASONS = {
     "unavailable_in_owner_projection": MissingReason.NO_COVERAGE.value,
 }
 _ESTIMABILITY_REASONS = frozenset(_ESTIMABILITY_NULL_REASONS)
+_METRIC_SOURCE_BASIS = {
+    "legacy_activity": "legacy_activity_state",
+    "legacy_trend_50": "legacy_trend_50_state",
+    "legacy_trend_200": "legacy_trend_200_state",
+    "strict_trend_50": "total_return_close",
+    "strict_trend_200": "total_return_close",
+    "raw_daily_change": "raw_daily_change",
+    "benchmark_relative_daily_change": "benchmark_relative_daily_change",
+}
 
 _METRIC_DEFS = {
     "legacy_activity": {
@@ -403,6 +412,16 @@ def project_group_members(*, group_id: str, member_records: Sequence[Mapping[str
                             price_receipt)
     membership_receipt = next((row for row in receipts
                                if row["basis"] == "curated_membership"), None)
+    legacy_state_basis = {
+        metric_id: _METRIC_SOURCE_BASIS[metric_id]
+        for metric_id in ("legacy_activity", "legacy_trend_50", "legacy_trend_200")
+    }
+    legacy_state_refs: dict[str, str] = {}
+    for metric_id, basis in legacy_state_basis.items():
+        receipt = next((row for row in receipts if row["basis"] == basis), None)
+        if receipt is None:
+            raise ContractError(f"source receipt basis unavailable: {basis}")
+        legacy_state_refs[metric_id] = receipt["source_ref"]
     if legacy_pulse.get("basket_id") != group_id:
         raise ContractError("legacy_pulse basket_id mismatch")
     if _date(legacy_pulse.get("as_of"), field="legacy_pulse.as_of") != effective_at:
@@ -476,7 +495,7 @@ def project_group_members(*, group_id: str, member_records: Sequence[Mapping[str
                 value=value,
                 recipe_id=definition["recipe_id"],
                 effective_at=effective_at,
-                source_ref=close_source_ref,
+                source_ref=legacy_state_refs[metric_id],
                 available=available,
                 required=required,
                 included=included,
@@ -958,6 +977,15 @@ def validate_member_bundle(bundle: Any) -> list[str]:
                             errors.append(
                                 f"{member_label}.metrics[{metric_id!r}]: "
                                 "referenced source receipt must be normalized_frame"
+                            )
+                        expected_basis = _METRIC_SOURCE_BASIS.get(metric_id)
+                        if (metric_id == "benchmark_relative_daily_change"
+                                and cell.get("estimability_reason") == "benchmark_unavailable"):
+                            expected_basis = "total_return_close"
+                        if receipt.get("basis") != expected_basis:
+                            errors.append(
+                                f"{member_label}.metrics[{metric_id!r}]: source receipt basis "
+                                f"mismatch ({receipt.get('basis')!r} != {expected_basis!r})"
                             )
                         receipt_effective = receipt.get("effective_at")
                         if (receipt_effective is None
