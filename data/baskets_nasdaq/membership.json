@@ -86,12 +86,12 @@
      "name": "Adobe Inc"
     },
     {
-     "ticker": "INTU",
-     "name": "Intuit Inc"
-    },
-    {
      "ticker": "DDOG",
      "name": "Datadog Inc"
+    },
+    {
+     "ticker": "INTU",
+     "name": "Intuit Inc"
     },
     {
      "ticker": "CDNS",
@@ -102,12 +102,12 @@
      "name": "Strategy Inc"
     },
     {
-     "ticker": "ADSK",
-     "name": "Autodesk Inc"
-    },
-    {
      "ticker": "WDAY",
      "name": "Workday Inc"
+    },
+    {
+     "ticker": "ADSK",
+     "name": "Autodesk Inc"
     },
     {
      "ticker": "PAYX",
@@ -214,11 +214,11 @@
    "sector": "Internet & Platforms",
    "members": [
     {
-     "ticker": "GOOG",
+     "ticker": "GOOGL",
      "name": "Alphabet Inc"
     },
     {
-     "ticker": "GOOGL",
+     "ticker": "GOOG",
      "name": "Alphabet Inc"
     },
     {
@@ -532,12 +532,12 @@
      "name": "Adobe Inc"
     },
     {
-     "ticker": "INTU",
-     "name": "Intuit Inc"
-    },
-    {
      "ticker": "DDOG",
      "name": "Datadog Inc"
+    },
+    {
+     "ticker": "INTU",
+     "name": "Intuit Inc"
     },
     {
      "ticker": "CDNS",
@@ -548,12 +548,12 @@
      "name": "Strategy Inc"
     },
     {
-     "ticker": "ADSK",
-     "name": "Autodesk Inc"
-    },
-    {
      "ticker": "WDAY",
      "name": "Workday Inc"
+    },
+    {
+     "ticker": "ADSK",
+     "name": "Autodesk Inc"
     },
     {
      "ticker": "PAYX",
@@ -618,11 +618,11 @@
    "name_zh": "互联网与平台",
    "members": [
     {
-     "ticker": "GOOG",
+     "ticker": "GOOGL",
      "name": "Alphabet Inc"
     },
     {
-     "ticker": "GOOGL",
+     "ticker": "GOOG",
      "name": "Alphabet Inc"
     },
     {
