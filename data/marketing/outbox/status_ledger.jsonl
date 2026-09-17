@@ -6743,3 +6743,7 @@
 {"id":"ob-2026-09-17-af3bdc8222","from":"approved","to":"posting","at":"2026-09-17T15:11:22Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-09-17-af3bdc8222","from":"posting","to":"posted","at":"2026-09-17T15:11:23Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6aac031a7755e2dcd6ac5e85","external_url":null,"at":"2026-09-17T15:10:59Z","booked_at":"2026-09-17T15:10:59Z"}}
 {"id":"ob-2026-09-17-b6b0ea4a5a","from":"approved","to":"quarantined","at":"2026-09-17T15:11:23Z","actor":"publisher","note":"clock: stale_session_claim:2026-09-11!=2026-09-17 (copy names Friday's tape)","receipt":null}
+{"id":"ob-2026-09-17-afe2c9a53b","from":"approved","to":"posting","at":"2026-09-17T15:30:52Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
+{"id":"ob-2026-09-17-afe2c9a53b","from":"posting","to":"posted","at":"2026-09-17T15:30:54Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6aac07adabcf72ab4cbcfb0c","external_url":null,"at":"2026-09-17T15:30:50Z","booked_at":"2026-09-17T15:30:50Z"}}
+{"id":"ob-2026-09-17-f0ec3f37c3","from":"approved","to":"posting","at":"2026-09-17T15:30:54Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
+{"id":"ob-2026-09-17-f0ec3f37c3","from":"posting","to":"posted","at":"2026-09-17T15:30:57Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6aac07b1ad21c8b15e0277eb","external_url":null,"at":"2026-09-17T15:30:50Z","booked_at":"2026-09-17T15:30:50Z"}}
