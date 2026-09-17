@@ -3288,6 +3288,112 @@ def test_episode_helper_publishes_bounded_session_outcome_parts_in_exact_scope(
     assert part.read_text() == '{"bounded_part":1}\n'
 
 
+def test_episode_helper_refuses_concurrent_unseen_session_outcome_part(
+    tmp_path: Path,
+) -> None:
+    repo = Path(__file__).resolve().parents[1]
+    helper = repo / "scripts/ci/options_signal_nightly.sh"
+    origin = tmp_path / "origin.git"
+    lane = tmp_path / "lane"
+    racer = tmp_path / "racer"
+    subprocess.run(
+        ["git", "init", "--bare", "-q", "--initial-branch=main", str(origin)],
+        check=True,
+    )
+    subprocess.run(["git", "init", "-q", "-b", "main", str(lane)], check=True)
+
+    def git(*args: str) -> str:
+        return subprocess.run(
+            ["git", *args], cwd=lane, text=True, capture_output=True, check=True
+        ).stdout.strip()
+
+    git("config", "user.name", "test")
+    git("config", "user.email", "test@example.invalid")
+    git("remote", "add", "origin", str(origin))
+    core = (
+        "data/options_signal_episode/checkpoint.json",
+        "data/options_signal_episode/episodes.jsonl",
+        "data/options_signal_episode/outcomes_h60.jsonl",
+        "data/options_signal_episode/outcomes_session.jsonl",
+        "data/options_signal_episode/campaigns.jsonl",
+    )
+    for path in core:
+        target = lane / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text('{"version":1}\n')
+    part1_rel = "data/options_signal_episode/outcomes_session_parts/part-000001.jsonl"
+    part1 = lane / part1_rel
+    part1.parent.mkdir(parents=True)
+    part1.write_text('{"bounded_part":1,"generation":1}\n')
+    git("add", *core, part1_rel)
+    git("commit", "-m", "baseline")
+    git("push", "-u", "origin", "main")
+    parent = git("rev-parse", "HEAD")
+
+    subprocess.run(["git", "clone", "-q", str(origin), str(racer)], check=True)
+    subprocess.run(["git", "config", "user.name", "racer"], cwd=racer, check=True)
+    subprocess.run(["git", "config", "user.email", "racer@example.invalid"], cwd=racer, check=True)
+
+    for path in core:
+        (lane / path).write_text('{"version":2}\n')
+    part1.write_text('{"bounded_part":1,"generation":2}\n')
+
+    wrapper = tmp_path / "run-concurrent-part-race.sh"
+    wrapper.write_text(
+        "#!/usr/bin/env bash\n"
+        "set -euo pipefail\n"
+        "oip_after_stage_snapshot() {\n"
+        "  local p=\"$RACER/data/options_signal_episode/outcomes_session_parts/part-000002.jsonl\"\n"
+        "  mkdir -p \"$(dirname \"$p\")\"\n"
+        "  printf '%s\\n' '{\"bounded_part\":2,\"from\":\"concurrent-run\"}' > \"$p\"\n"
+        "  git -C \"$RACER\" add -- data/options_signal_episode/outcomes_session_parts/part-000002.jsonl\n"
+        "  git -C \"$RACER\" commit -qm 'concurrent accepted part'\n"
+        "  git -C \"$RACER\" push -q origin HEAD:main\n"
+        "}\n"
+        "export OIP_NIGHTLY_SOURCE_ONLY=1\n"
+        f'. "{helper}"\n'
+        "publish_episode\n"
+    )
+    wrapper.chmod(0o755)
+    result = subprocess.run(
+        ["bash", str(wrapper)],
+        cwd=lane,
+        env={
+            **os.environ,
+            "GITHUB_WORKSPACE": str(repo),
+            "GITHUB_RUN_ID": "episode-concurrent-part-race",
+            "GITHUB_RUN_ATTEMPT": "1",
+            "RUNNER_TEMP": str(tmp_path),
+            "RACER": str(racer),
+        },
+        text=True, capture_output=True, check=False,
+    )
+    assert result.returncode != 0
+    diagnostics = result.stdout + result.stderr
+    assert "unseen session-outcome part" in diagnostics
+
+    remote_tip = subprocess.run(
+        ["git", "--git-dir", str(origin), "rev-parse", "main"],
+        text=True, capture_output=True, check=True,
+    ).stdout.strip()
+    assert remote_tip != parent
+    for path in core:
+        assert subprocess.run(
+            ["git", "--git-dir", str(origin), "show", f"main:{path}"],
+            text=True, capture_output=True, check=True,
+        ).stdout == '{"version":1}\n'
+    assert subprocess.run(
+        ["git", "--git-dir", str(origin), "show", f"main:{part1_rel}"],
+        text=True, capture_output=True, check=True,
+    ).stdout == '{"bounded_part":1,"generation":1}\n'
+    assert subprocess.run(
+        ["git", "--git-dir", str(origin), "show",
+         "main:data/options_signal_episode/outcomes_session_parts/part-000002.jsonl"],
+        text=True, capture_output=True, check=True,
+    ).stdout == '{"bounded_part":2,"from":"concurrent-run"}\n'
+    assert git("rev-parse", "HEAD") == parent
+
+
 @pytest.mark.parametrize(
     "refusal", ["foreign-staged", "owned-symlink", "owned-executable"]
 )
