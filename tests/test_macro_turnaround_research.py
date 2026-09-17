@@ -635,8 +635,8 @@ def test_immutable_publisher_binds_canonical_parent_before_guard_returns(
     content = b"immutable research artifact\n"
     original_assert = module._assert_research_output_path
 
-    def swap_after_guard(path: Path) -> None:
-        original_assert(path)
+    def swap_after_guard(path: Path, **kwargs: object) -> None:
+        original_assert(path, **kwargs)
         alias.unlink()
         alias.symlink_to(protected, target_is_directory=True)
 
@@ -645,6 +645,310 @@ def test_immutable_publisher_binds_canonical_parent_before_guard_returns(
 
     assert (allowed / "history.json").read_bytes() == content
     assert not (protected / "history.json").exists()
+
+
+def test_immutable_publisher_rejects_protection_root_replacement(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "turnaround_publisher_protection_root_swap", CLI
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    container = tmp_path / "container"
+    root = container / "root"
+    replacement = container / "replacement"
+    exchange = container / "exchange"
+    (root / "research" / "leaf").mkdir(parents=True)
+    (replacement / "research" / "leaf").mkdir(parents=True)
+    target = root / "research" / "leaf" / "history.json"
+    content = b"immutable research artifact\n"
+    original_assert = module._assert_research_output_path
+    swapped = False
+
+    def exchange_roots() -> None:
+        root.rename(exchange)
+        replacement.rename(root)
+        exchange.rename(replacement)
+
+    def alternating_guard(
+        path: Path, *, root: Path | None = None, **kwargs: object
+    ) -> None:
+        nonlocal swapped
+        if swapped:
+            exchange_roots()
+            swapped = False
+        original_assert(path, root=root, **kwargs)
+        exchange_roots()
+        swapped = True
+
+    monkeypatch.setattr(module, "_assert_research_output_path", alternating_guard)
+    try:
+        with pytest.raises(ValueError, match="root|parent|protected|canonical"):
+            module._publish_immutable(target, content, root=root)
+    finally:
+        if swapped:
+            exchange_roots()
+
+    assert not (root / "research" / "leaf" / "history.json").exists()
+    assert not (replacement / "research" / "leaf" / "history.json").exists()
+    assert not list((root / "research" / "leaf").glob(".*.tmp"))
+    assert not list((replacement / "research" / "leaf").glob(".*.tmp"))
+
+
+@pytest.mark.parametrize("parent_exists", [True, False])
+def test_immutable_publisher_rejects_protected_bound_parent_when_ancestor_alternates(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    parent_exists: bool,
+) -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "turnaround_publisher_ancestor_redirection", CLI
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    root = tmp_path / "root"
+    root.mkdir()
+    gateway = root / "research"
+    safe_storage = root / "research-safe"
+    protected = root / "data"
+    gateway.mkdir()
+    protected.mkdir()
+    if parent_exists:
+        (gateway / "leaf").mkdir()
+        (protected / "leaf").mkdir()
+    target = gateway / "leaf" / "history.json"
+    content = b"immutable research artifact\n"
+    original_assert = module._assert_research_output_path
+
+    def point_to_safe_tree() -> None:
+        if gateway.is_symlink():
+            gateway.unlink()
+            safe_storage.rename(gateway)
+
+    def point_to_protected_tree() -> None:
+        if not gateway.is_symlink():
+            gateway.rename(safe_storage)
+            gateway.symlink_to(protected, target_is_directory=True)
+
+    def alternating_guard(
+        path: Path, *, root: Path | None = None, **kwargs: object
+    ) -> None:
+        point_to_safe_tree()
+        original_assert(path, root=root, **kwargs)
+        point_to_protected_tree()
+
+    monkeypatch.setattr(module, "_assert_research_output_path", alternating_guard)
+
+    with pytest.raises(ValueError, match="parent|protected|canonical"):
+        module._publish_immutable(target, content, root=root)
+
+    assert not (protected / "leaf" / "history.json").exists()
+    assert not (safe_storage / "leaf" / "history.json").exists()
+    assert not list((protected / "leaf").glob(".*.tmp"))
+    assert not list((safe_storage / "leaf").glob(".*.tmp"))
+    if not parent_exists:
+        assert not (protected / "leaf").exists()
+
+
+def test_immutable_publisher_rejects_protected_directory_identity_swapped_into_path(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "turnaround_publisher_protected_identity_swap", CLI
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    root = tmp_path / "root"
+    research = root / "research"
+    protected = root / "data"
+    exchange = root / "exchange"
+    (research / "leaf").mkdir(parents=True)
+    (protected / "leaf").mkdir(parents=True)
+    target = research / "leaf" / "history.json"
+    content = b"immutable research artifact\n"
+    original_assert = module._assert_research_output_path
+    swapped = False
+
+    def exchange_names() -> None:
+        research.rename(exchange)
+        protected.rename(research)
+        exchange.rename(protected)
+
+    def alternating_guard(
+        path: Path, *, root: Path | None = None, **kwargs: object
+    ) -> None:
+        nonlocal swapped
+        if swapped:
+            exchange_names()
+            swapped = False
+        original_assert(path, root=root, **kwargs)
+        exchange_names()
+        swapped = True
+
+    monkeypatch.setattr(module, "_assert_research_output_path", alternating_guard)
+    try:
+        with pytest.raises(ValueError, match="parent|protected|canonical"):
+            module._publish_immutable(target, content, root=root)
+    finally:
+        if swapped:
+            exchange_names()
+
+    assert not (protected / "leaf" / "history.json").exists()
+    assert not (research / "leaf" / "history.json").exists()
+    assert not list((protected / "leaf").glob(".*.tmp"))
+    assert not list((research / "leaf").glob(".*.tmp"))
+
+
+def test_immutable_publisher_rejects_bound_parent_moved_under_protected_ancestor(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "turnaround_publisher_bound_parent_ancestor_swap", CLI
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    root = tmp_path / "root"
+    research = root / "research"
+    protected = root / "data"
+    exchange = root / "exchange"
+    (research / "leaf").mkdir(parents=True)
+    protected.mkdir()
+    target = research / "leaf" / "history.json"
+    content = b"immutable research artifact\n"
+    original_open_bound_parent = module._open_bound_parent
+    swapped = False
+
+    def move_bound_leaf_under_protected_ancestor() -> None:
+        nonlocal swapped
+        research.rename(exchange)
+        protected.rename(research)
+        (exchange / "leaf").rename(research / "leaf")
+        exchange.rename(protected)
+        swapped = True
+
+    def restore_original_names() -> None:
+        nonlocal swapped
+        if not swapped:
+            return
+        research.rename(exchange)
+        protected.rename(research)
+        exchange.rename(protected)
+        swapped = False
+
+    def open_then_move_parent(
+        directory: Path, **kwargs: object
+    ) -> tuple[int, tuple[int, int]]:
+        result = original_open_bound_parent(directory, **kwargs)
+        if directory == target.parent and not swapped:
+            move_bound_leaf_under_protected_ancestor()
+        return result
+
+    monkeypatch.setattr(module, "_open_bound_parent", open_then_move_parent)
+    try:
+        with pytest.raises(ValueError, match="parent|protected|canonical|ancestor"):
+            module._publish_immutable(target, content, root=root)
+    finally:
+        restore_original_names()
+
+    assert not (protected / "leaf" / "history.json").exists()
+    assert not (research / "leaf" / "history.json").exists()
+    assert not list((protected / "leaf").glob(".*.tmp"))
+    assert not list((research / "leaf").glob(".*.tmp"))
+
+
+def test_immutable_publisher_rejects_protected_directory_created_during_guard(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "turnaround_publisher_created_protected_identity", CLI
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    root = tmp_path / "root"
+    research = root / "research"
+    safe_storage = root / "research-safe"
+    protected = root / "data"
+    (research / "leaf").mkdir(parents=True)
+    target = research / "leaf" / "history.json"
+    content = b"immutable research artifact\n"
+    original_assert = module._assert_research_output_path
+    swapped = False
+
+    def restore_safe_names() -> None:
+        nonlocal swapped
+        if not swapped:
+            return
+        research.rename(protected)
+        safe_storage.rename(research)
+        swapped = False
+
+    def move_new_protected_directory_into_output_path() -> None:
+        nonlocal swapped
+        research.rename(safe_storage)
+        (protected / "leaf").mkdir(parents=True, exist_ok=True)
+        protected.rename(research)
+        swapped = True
+
+    def alternating_guard(
+        path: Path, *, root: Path | None = None, **kwargs: object
+    ) -> None:
+        restore_safe_names()
+        original_assert(path, root=root, **kwargs)
+        move_new_protected_directory_into_output_path()
+
+    monkeypatch.setattr(module, "_assert_research_output_path", alternating_guard)
+    try:
+        with pytest.raises(ValueError, match="parent|protected|canonical"):
+            module._publish_immutable(target, content, root=root)
+    finally:
+        restore_safe_names()
+
+    assert not (protected / "leaf" / "history.json").exists()
+    assert not (research / "leaf" / "history.json").exists()
+    assert not list((protected / "leaf").glob(".*.tmp"))
+    assert not list((research / "leaf").glob(".*.tmp"))
+
+
+def test_immutable_publisher_creates_missing_safe_parent_through_bound_chain(
+    tmp_path: Path,
+) -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "turnaround_publisher_bound_parent_creation", CLI
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    root = tmp_path / "root"
+    root.mkdir()
+    target = root / "research" / "nested" / "history.json"
+    content = b"immutable research artifact\n"
+
+    module._publish_immutable(target, content, root=root)
+
+    assert target.read_bytes() == content
+    assert not list(target.parent.glob(".*.tmp"))
 
 
 def test_immutable_publisher_fails_closed_without_descriptor_support(
@@ -697,10 +1001,10 @@ def test_immutable_publisher_refuses_replaced_resolved_parent(
     swapped = False
 
     def swap_resolved_parent_after_guard(
-        path: Path, *, root: Path | None = None
+        path: Path, *, root: Path | None = None, **kwargs: object
     ) -> None:
         nonlocal swapped
-        original_assert(path, root=root)
+        original_assert(path, root=root, **kwargs)
         if not swapped:
             allowed.rename(moved)
             allowed.symlink_to(protected, target_is_directory=True)
@@ -721,6 +1025,66 @@ def test_immutable_publisher_refuses_replaced_resolved_parent(
     assert not list(moved.glob(".*.tmp"))
     assert refusal is not None
     assert "parent" in str(refusal).lower()
+
+
+def test_immutable_publisher_rejects_bound_parent_moved_under_protected_after_staging(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "turnaround_publisher_protected_ancestor_after_stage", CLI
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    root = tmp_path / "root"
+    research = root / "research"
+    protected = root / "data"
+    exchange = root / "exchange"
+    (research / "leaf").mkdir(parents=True)
+    protected.mkdir()
+    target = research / "leaf" / "history.json"
+    content = b"immutable research artifact\n"
+    original_stage = module._write_temporary_at
+    swapped = False
+
+    def move_bound_leaf_under_protected_ancestor() -> None:
+        nonlocal swapped
+        research.rename(exchange)
+        protected.rename(research)
+        (exchange / "leaf").rename(research / "leaf")
+        exchange.rename(protected)
+        swapped = True
+
+    def restore_original_names() -> None:
+        nonlocal swapped
+        if not swapped:
+            return
+        research.rename(exchange)
+        protected.rename(research)
+        exchange.rename(protected)
+        swapped = False
+
+    def stage_then_move(
+        descriptor: int, name: str, body: bytes
+    ) -> str:
+        temporary = original_stage(descriptor, name, body)
+        move_bound_leaf_under_protected_ancestor()
+        return temporary
+
+    monkeypatch.setattr(module, "_write_temporary_at", stage_then_move)
+    try:
+        with pytest.raises(ValueError, match="parent|protected|canonical|ancestor"):
+            module._publish_immutable(target, content, root=root)
+    finally:
+        restore_original_names()
+
+    assert not (protected / "leaf" / "history.json").exists()
+    assert not (research / "leaf" / "history.json").exists()
+    assert not list((protected / "leaf").glob(".*.tmp"))
+    assert not list((research / "leaf").glob(".*.tmp"))
 
 
 def test_immutable_publisher_refuses_parent_replacement_after_staging(

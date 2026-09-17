@@ -55,14 +55,24 @@ _DESCRIPTOR_PUBLICATION_SUPPORTED = (
     and hasattr(os, "O_NOFOLLOW")
     and all(
         function in os.supports_dir_fd
-        for function in (os.open, os.stat, os.unlink, os.link)
+        for function in (os.open, os.stat, os.unlink, os.link, os.mkdir)
     )
     and os.stat in os.supports_follow_symlinks
     and os.link in os.supports_follow_symlinks
 )
 
 
-def _identity(value: os.stat_result) -> tuple[int, int]:
+_DirectoryIdentity = tuple[int, int]
+_ProtectedNameIdentities = dict[str, _DirectoryIdentity | None]
+_ProtectionState = tuple[
+    int,
+    Path,
+    _DirectoryIdentity,
+    _ProtectedNameIdentities,
+]
+
+
+def _identity(value: os.stat_result) -> _DirectoryIdentity:
     return value.st_dev, value.st_ino
 
 
@@ -73,16 +83,67 @@ def _require_descriptor_publication_support() -> None:
         )
 
 
-def _open_bound_parent(directory: Path) -> tuple[int, tuple[int, int]]:
+def _open_bound_parent(
+    directory: Path,
+    *,
+    forbidden_identities: frozenset[_DirectoryIdentity] = frozenset(),
+    create_missing: bool = True,
+) -> tuple[int, _DirectoryIdentity]:
     _require_descriptor_publication_support()
+    # The caller resolves and guards this path once. Re-resolving here would let
+    # a swapped ancestor redirect the descriptor walk after that guard returns.
+    frozen = directory
+    if not frozen.is_absolute() or not frozen.anchor:
+        raise ValueError("immutable output parent must be an absolute path")
     flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | getattr(os, "O_CLOEXEC", 0)
     try:
-        descriptor = os.open(directory, flags)
+        descriptor = os.open(frozen.anchor, flags)
     except OSError as error:
-        raise ValueError("could not bind immutable output parent directory") from error
+        raise ValueError("could not bind immutable output filesystem root") from error
     try:
+        for component in frozen.parts[1:]:
+            try:
+                child_descriptor = os.open(component, flags, dir_fd=descriptor)
+            except FileNotFoundError:
+                if not create_missing:
+                    raise ValueError(
+                        "immutable output parent component disappeared while binding"
+                    )
+                try:
+                    os.mkdir(component, 0o777, dir_fd=descriptor)
+                except FileExistsError:
+                    pass
+                except OSError as error:
+                    raise ValueError(
+                        "could not create immutable output parent directory safely"
+                    ) from error
+                try:
+                    child_descriptor = os.open(component, flags, dir_fd=descriptor)
+                except OSError as error:
+                    raise ValueError(
+                        "could not bind immutable output parent directory safely"
+                    ) from error
+            except OSError as error:
+                raise ValueError(
+                    "could not bind immutable output parent without following symbolic links"
+                ) from error
+            try:
+                child = os.fstat(child_descriptor)
+                if not stat.S_ISDIR(child.st_mode):
+                    raise ValueError(
+                        "immutable output parent component must be a directory"
+                    )
+                if _identity(child) in forbidden_identities:
+                    raise ValueError(
+                        "immutable output parent enters canonical protected directory"
+                    )
+            except BaseException:
+                os.close(child_descriptor)
+                raise
+            os.close(descriptor)
+            descriptor = child_descriptor
         opened = os.fstat(descriptor)
-        named = os.stat(directory, follow_symlinks=False)
+        named = os.stat(frozen, follow_symlinks=False)
         if (
             not stat.S_ISDIR(opened.st_mode)
             or not stat.S_ISDIR(named.st_mode)
@@ -95,8 +156,115 @@ def _open_bound_parent(directory: Path) -> tuple[int, tuple[int, int]]:
         raise
 
 
+def _bind_protected_directory_identities(
+    root: Path,
+) -> tuple[
+    tuple[int, ...],
+    frozenset[_DirectoryIdentity],
+    _ProtectionState,
+]:
+    try:
+        frozen_root = root.resolve(strict=True)
+    except (OSError, RuntimeError) as error:
+        raise ValueError("could not bind canonical protection root") from error
+    root_descriptor, _root_identity = _open_bound_parent(
+        frozen_root, create_missing=False
+    )
+    descriptors = [root_descriptor]
+    identities: set[_DirectoryIdentity] = set()
+    named_identities: _ProtectedNameIdentities = {}
+    flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | getattr(os, "O_CLOEXEC", 0)
+    try:
+        for name in ("data", "site"):
+            try:
+                descriptor = os.open(name, flags, dir_fd=root_descriptor)
+            except FileNotFoundError:
+                named_identities[name] = None
+                continue
+            except OSError as error:
+                raise ValueError(
+                    f"could not bind canonical protected directory: {name}"
+                ) from error
+            try:
+                opened = os.fstat(descriptor)
+                named = os.stat(name, dir_fd=root_descriptor, follow_symlinks=False)
+                if (
+                    not stat.S_ISDIR(opened.st_mode)
+                    or not stat.S_ISDIR(named.st_mode)
+                    or _identity(opened) != _identity(named)
+                ):
+                    raise ValueError(
+                        f"canonical protected directory changed while binding: {name}"
+                    )
+                identity = _identity(opened)
+                identities.add(identity)
+                named_identities[name] = identity
+                descriptors.append(descriptor)
+            except BaseException:
+                os.close(descriptor)
+                raise
+        return (
+            tuple(descriptors),
+            frozenset(identities),
+            (root_descriptor, frozen_root, _root_identity, named_identities),
+        )
+    except BaseException:
+        for descriptor in reversed(descriptors):
+            os.close(descriptor)
+        raise
+
+
+def _require_protected_directory_identities(
+    protection_state: _ProtectionState,
+) -> None:
+    (
+        root_descriptor,
+        root_path,
+        root_identity,
+        named_identities,
+    ) = protection_state
+    try:
+        opened_root = os.fstat(root_descriptor)
+        named_root = os.stat(root_path, follow_symlinks=False)
+    except OSError as error:
+        raise ValueError("canonical protection root changed during publication") from error
+    if (
+        not stat.S_ISDIR(opened_root.st_mode)
+        or not stat.S_ISDIR(named_root.st_mode)
+        or _identity(opened_root) != root_identity
+        or _identity(named_root) != root_identity
+    ):
+        raise ValueError("canonical protection root changed during publication")
+    for name, expected_identity in named_identities.items():
+        try:
+            named = os.stat(name, dir_fd=root_descriptor, follow_symlinks=False)
+        except FileNotFoundError:
+            if expected_identity is None:
+                continue
+            raise ValueError(
+                f"canonical protected directory disappeared during publication: {name}"
+            )
+        except OSError as error:
+            raise ValueError(
+                f"could not revalidate canonical protected directory: {name}"
+            ) from error
+        if expected_identity is None:
+            raise ValueError(
+                f"canonical protected directory appeared during publication: {name}"
+            )
+        if not stat.S_ISDIR(named.st_mode) or _identity(named) != expected_identity:
+            raise ValueError(
+                f"canonical protected directory changed during publication: {name}"
+            )
+
+
+def _close_descriptors(descriptors: tuple[int, ...]) -> None:
+    for descriptor in reversed(descriptors):
+        os.close(descriptor)
+
+
 def _require_bound_parent(
-    descriptor: int, directory: Path, identity: tuple[int, int]
+    descriptor: int, directory: Path, identity: _DirectoryIdentity
 ) -> None:
     try:
         opened = os.fstat(descriptor)
@@ -110,6 +278,17 @@ def _require_bound_parent(
         or _identity(named) != identity
     ):
         raise ValueError("immutable output parent changed during publication")
+
+
+def _require_publication_bindings(
+    descriptor: int,
+    directory: Path,
+    identity: _DirectoryIdentity,
+    protection_state: _ProtectionState,
+) -> None:
+    _require_protected_directory_identities(protection_state)
+    _require_bound_parent(descriptor, directory, identity)
+    _require_protected_directory_identities(protection_state)
 
 
 def _existing_matches_at(descriptor: int, name: str, content: bytes) -> bool:
@@ -172,7 +351,7 @@ def _existing_matches_at(descriptor: int, name: str, content: bytes) -> bool:
 
 def _regular_identity_at(
     descriptor: int, name: str, *, label: str
-) -> tuple[int, int]:
+) -> _DirectoryIdentity:
     try:
         value = os.stat(name, dir_fd=descriptor, follow_symlinks=False)
     except OSError as error:
@@ -183,7 +362,7 @@ def _regular_identity_at(
 
 
 def _remove_owned_output_at(
-    descriptor: int, name: str, identity: tuple[int, int]
+    descriptor: int, name: str, identity: _DirectoryIdentity
 ) -> None:
     try:
         current = os.stat(name, dir_fd=descriptor, follow_symlinks=False)
@@ -308,45 +487,98 @@ def _path_is_within_protected(output: Path, protected: Path) -> bool:
     return _filesystem_is_case_insensitive(protected_parent)
 
 
-def _assert_research_output_path(output: Path, *, root: Path | None = None) -> None:
+def _assert_research_output_path(
+    output: Path,
+    *,
+    root: Path | None = None,
+    protection_state: _ProtectionState | None = None,
+) -> None:
     """Keep research artifacts out of canonical data and generated product paths."""
+    if protection_state is not None:
+        _require_protected_directory_identities(protection_state)
     protected_root = ROOT if root is None else root
     for directory in ("data", "site"):
         if _path_is_within_protected(output, protected_root / directory):
             raise ValueError(
                 "output must remain outside canonical data/ and generated site/ paths"
             )
+    if protection_state is not None:
+        _require_protected_directory_identities(protection_state)
 
 
 def _publish_immutable(
     output: Path, content: bytes, *, root: Path | None = None
 ) -> None:
+    protected_root = ROOT if root is None else root
+    (
+        protection_descriptors,
+        protected_identities,
+        protection_state,
+    ) = _bind_protected_directory_identities(protected_root)
+    try:
+        _publish_immutable_with_protected_identities(
+            output,
+            content,
+            root=root,
+            protected_identities=protected_identities,
+            protection_state=protection_state,
+        )
+    finally:
+        _close_descriptors(protection_descriptors)
+
+
+def _publish_immutable_with_protected_identities(
+    output: Path,
+    content: bytes,
+    *,
+    root: Path | None,
+    protected_identities: frozenset[_DirectoryIdentity],
+    protection_state: _ProtectionState,
+) -> None:
     if output.is_symlink():
         raise ValueError("immutable output cannot be a symbolic link")
     destination = output.resolve(strict=False)
     if root is None:
-        _assert_research_output_path(destination)
+        _assert_research_output_path(
+            destination, protection_state=protection_state
+        )
     else:
-        _assert_research_output_path(destination, root=root)
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    parent_descriptor, parent_identity = _open_bound_parent(destination.parent)
+        _assert_research_output_path(
+            destination, root=root, protection_state=protection_state
+        )
+    parent_descriptor, parent_identity = _open_bound_parent(
+        destination.parent, forbidden_identities=protected_identities
+    )
     temporary_name: str | None = None
-    installed_identity: tuple[int, int] | None = None
+    installed_identity: _DirectoryIdentity | None = None
     try:
         try:
-            _require_bound_parent(
-                parent_descriptor, destination.parent, parent_identity
+            _require_publication_bindings(
+                parent_descriptor,
+                destination.parent,
+                parent_identity,
+                protection_state,
             )
             if root is None:
-                _assert_research_output_path(destination)
+                _assert_research_output_path(
+                    destination, protection_state=protection_state
+                )
             else:
-                _assert_research_output_path(destination, root=root)
-            _require_bound_parent(
-                parent_descriptor, destination.parent, parent_identity
+                _assert_research_output_path(
+                    destination, root=root, protection_state=protection_state
+                )
+            _require_publication_bindings(
+                parent_descriptor,
+                destination.parent,
+                parent_identity,
+                protection_state,
             )
             if _existing_matches_at(parent_descriptor, destination.name, content):
-                _require_bound_parent(
-                    parent_descriptor, destination.parent, parent_identity
+                _require_publication_bindings(
+                    parent_descriptor,
+                    destination.parent,
+                    parent_identity,
+                    protection_state,
                 )
                 return
             temporary_name = _write_temporary_at(
@@ -355,8 +587,11 @@ def _publish_immutable(
             temporary_identity = _regular_identity_at(
                 parent_descriptor, temporary_name, label="immutable output temporary file"
             )
-            _require_bound_parent(
-                parent_descriptor, destination.parent, parent_identity
+            _require_publication_bindings(
+                parent_descriptor,
+                destination.parent,
+                parent_identity,
+                protection_state,
             )
             try:
                 # The descriptor confines both names to the verified parent and
@@ -374,15 +609,21 @@ def _publish_immutable(
                     parent_descriptor, destination.name, content
                 ):
                     raise ValueError("immutable output changed during publication")
-            _require_bound_parent(
-                parent_descriptor, destination.parent, parent_identity
+            _require_publication_bindings(
+                parent_descriptor,
+                destination.parent,
+                parent_identity,
+                protection_state,
             )
             if not _existing_matches_at(
                 parent_descriptor, destination.name, content
             ):
                 raise ValueError("immutable output changed during publication")
-            _require_bound_parent(
-                parent_descriptor, destination.parent, parent_identity
+            _require_publication_bindings(
+                parent_descriptor,
+                destination.parent,
+                parent_identity,
+                protection_state,
             )
         except BaseException:
             if installed_identity is not None:
