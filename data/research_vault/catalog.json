@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T09:06:01.588912+00:00",
-  "count": 2280,
+  "generated_at": "2026-09-17T09:19:51.948679+00:00",
+  "count": 2281,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -842,6 +842,21 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-nnzxgjhlbvy-a59307",
+      "title": "GS Molavi Ruminations Macro Micro Markets 15 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T11:42:45Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
