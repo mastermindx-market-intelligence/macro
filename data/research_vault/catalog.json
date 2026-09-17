@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T13:35:24.171464+00:00",
-  "count": 2293,
+  "generated_at": "2026-09-17T13:53:45.048441+00:00",
+  "count": 2294,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -102,6 +102,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-suat3cwir8b-f9f479",
+      "title": "GS Blekos Marketcolour FOMC Sunbelt Up HF Colour 17 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T12:50:24Z",
+      "summary_points": [
+        "FOMC Policy Shift: Fed hikes rates to 3.75-4.00% (first since July 2023), no dissents; 1x hike expected in Oct 2026, no rate cuts in 2024, with \"elevated\" inflation noted but policy aligned to 2% target.",
+        "Market & Flow Dynamics: US equities down 45bps post-FOMC (SPX), 8/11 sectors negative; asset managers sold macro, bought tech; hedge funds bought tech/consumer discretionary; UK consumer basket highlighted amid gas prices, inflation, and labor softening.",
+        "Global Valuation Divergence: Industrials trade at 14.0x 12m P/E vs.",
+        "Tech at 12.7x, signaling significant valuation spread; EM Asia/North America show net selling, Europe low activity.",
+        "Cross-Regional Diversification: 6-month average pairwise correlations between STOXX 600, S&P 500, and MSCI Asia Pacific ex-Japan remain below 0.70, offering robust diversification benefits for risk mitigation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
