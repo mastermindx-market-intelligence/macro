@@ -161,3 +161,29 @@ cases. Log .pytest_cache/us-risk-owning-r3.log. Static compile, diff whitespace 
 paired JS byte equality also passed. These are candidate tests, not deployed proof.
 Next: preserve the candidate in Git, compose with the current material manifest and
 disjoint dashboard change, then current-base contract proof and canonical page render.
+
+## Continuation R5 — provenance repaired; publication candidate
+
+Recovered HEAD a838c0249ec450d86af103f7010f7210ba409c13; R3 source was already
+committed as 19293db7a2d1 and composed with main 0fa09ade. Do not redo either step.
+R4 uncommitted work additionally covered persisted freshness flags and distinguished
+capped scores from their original measured blend, including unknown originals and
+legacy feeds. R4 logs record discriminating RED then GREEN; source is retained.
+Fresh R5 validation: 314 passed, exit 0 across the exact 12 files in
+.pytest_cache/us-risk-owning-r5.log; paired JS equality and node syntax also pass.
+This test selection differs from R4's 320-case selection; neither is a full suite.
+
+Current main 27ec910d04fc81692cf9640347ac31fd3de40170 changes none of the owned
+source, manifest, renderer or named dependency paths since integrated main 0fa09ade.
+R3 contract result remains 0 introduced / 1 inherited (unrun-picks-boards: site/theme.css).
+Latest-base composition/hosted checks remain release requirements, not implied PASS.
+
+Canonical render R3 wrote the local macro page through the real builder. Its 61-point
+score survives; the envelope excludes the stale September 15 measured snapshot because
+expected_asof is September 16. The actual page correctly says Confirmation incomplete.
+This is an intended freshness boundary, NOT permission to fake a current Fragile read.
+Local browser capture was blocked before execution by the platform safety check;
+both intended output paths are absent. Do not route around or claim browser proof.
+Generated data/site byproducts are preserve-only and excluded from source staging.
+#6685 remains at 151e885 with no return after 5705732215; #7040 remains at c9a73e.
+Panel removal, composed browser proof, production publication and acceptance remain open.

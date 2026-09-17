@@ -50,7 +50,10 @@ def market_read(market_state, risk_envelope=None) -> dict:
     trend = components.get('trend', {})
     radar = _map(ms.get('radar'))
     warning = radar.get('is_warning') is True or radar.get('state') in ('watch', 'caution', 'elevated', 'risk-off')
+    freshness = _map(ms.get('freshness'))
     incomplete = bool(ms.get('stale_inputs') or ms.get('degraded_components')
+                      or freshness.get('stale') is True
+                      or freshness.get('any_input_stale') is True
                       or any(r.get('degraded') for r in rows))
     confirmed = bool(breadth.get('tone') == 'good' and trend.get('tone') == 'good'
                      and all(r.get('tone') == 'good' for r in rows)
@@ -89,15 +92,23 @@ def market_read(market_state, risk_envelope=None) -> dict:
             if weak_breadth:
                 headline_en += ' Breadth is weak.'
                 headline_zh += '广度偏弱。'
+    subline_en = ('Measured blend — read with caution' if qualified else
+                  'Measured blend — not a probability' if known else 'Readings unavailable')
+    subline_zh = ('实测综合读数——需谨慎解读' if qualified else
+                  '实测综合读数——并非概率' if known else '读数不可用')
+    if ms.get('capped') is True or ms.get('score_source') in (
+            'radar_ceiling', 'hard_force', 'verdict_cap'):
+        original = _number(ms.get('raw_score'))
+        subline_en = (f'Capped reading — measured blend {original:g}/100' if original is not None
+                      else 'Capped reading — original blend unavailable')
+        subline_zh = (f'封顶读数——实测综合读数 {original:g}/100' if original is not None
+                      else '封顶读数——原始综合读数不可用')
     return {
         'schema': 'market_read.presentation.v1', 'authority': 'presentation_only',
         'measured_verdict': verdict if known else None, 'score': _number(ms.get('score')),
         'qualified': qualified, 'label_en': label_en, 'label_zh': label_zh,
         'headline_en': headline_en, 'headline_zh': headline_zh,
-        'subline_en': ('Measured blend — read with caution' if qualified else
-                       'Measured blend — not a probability' if known else 'Readings unavailable'),
-        'subline_zh': ('实测综合读数——需谨慎解读' if qualified else
-                       '实测综合读数——并非概率' if known else '读数不可用'),
+        'subline_en': subline_en, 'subline_zh': subline_zh,
         'action_en': 'Review risk evidence' if qualified else None,
         'action_zh': '查看风险证据' if qualified else None,
         'hazard_stage': hazard, 'context_session': session if matching and hazard else None,

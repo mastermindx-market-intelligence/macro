@@ -124,6 +124,8 @@ def test_legacy_engine_risk_on_cannot_claim_breadth_agrees():
 @pytest.mark.parametrize('degraded', [
     {'stale_inputs': ['recession_risk']},
     {'degraded_components': ['liquidity']},
+    {'freshness': {'stale': True}},
+    {'freshness': {'any_input_stale': True}},
 ])
 def test_incomplete_evidence_cannot_claim_broad_confirmation(degraded):
     ms = sample(); ms['radar'] = {}
@@ -135,3 +137,22 @@ def test_incomplete_evidence_cannot_claim_broad_confirmation(degraded):
     assert out['label_en'] == 'Confirmation incomplete'
     assert 'inputs' in out['headline_en'].lower()
     assert out['score'] == ms['score'] and out['measured_verdict'] == ms['verdict']
+
+
+@pytest.mark.parametrize('source', ['radar_ceiling', 'hard_force', 'verdict_cap'])
+def test_a_capped_display_is_not_labelled_as_the_measured_blend(source):
+    ms = sample()
+    ms.update(verdict='MIXED', score=50, raw_score=61, capped=True, score_source=source)
+    out = view(ms)
+    assert out['score'] == 50 and out['measured_verdict'] == 'MIXED'
+    assert 'Capped' in out['subline_en']
+    assert '61' in out['subline_en'] and '封顶' in out['subline_zh']
+
+
+def test_cap_with_missing_original_blend_does_not_invent_a_measurement():
+    ms = sample()
+    ms.update(verdict='MIXED', score=50, raw_score=None, capped=True)
+    out = view(ms)
+    assert 'Capped' in out['subline_en']
+    assert 'unavailable' in out['subline_en']
+    assert '61' not in out['subline_en']

@@ -26,9 +26,9 @@
                "避险 — 压力升高；优先防守。"]
   };
   var SUBLINE = {
-    RISK_ON: ["Measured blend — not a probability", "实测综合读数——并非概率"],
-    MIXED: ["Measured blend — not a probability", "实测综合读数——并非概率"],
-    RISK_OFF: ["Measured blend — not a probability", "实测综合读数——并非概率"]
+    RISK_ON: ["Displayed score — not a probability", "显示分数——并非概率"],
+    MIXED: ["Displayed score — not a probability", "显示分数——并非概率"],
+    RISK_OFF: ["Displayed score — not a probability", "显示分数——并非概率"]
   };
   var ACTION = {
     RISK_ON: ["Follow the trend. Add on strength.", "顺势而为，强势中加仓。"],

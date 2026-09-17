@@ -7,8 +7,8 @@
 
 {% macro subline(ms) -%}
 {% set p = ms.get('presentation') or {} %}
-<span class="l-en">{{ p.get('subline_en') or 'Measured blend — not a probability' }}</span>
-<span class="l-zh">{{ p.get('subline_zh') or '实测综合读数——并非概率' }}</span>
+<span class="l-en">{{ p.get('subline_en') or 'Displayed score — not a probability' }}</span>
+<span class="l-zh">{{ p.get('subline_zh') or '显示分数——并非概率' }}</span>
 {%- endmacro %}
 
 {% macro headline(ms) -%}

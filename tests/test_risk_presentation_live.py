@@ -62,3 +62,9 @@ def test_legacy_subline_matches_actual_server_macro(verdict):
     result = _read(ms)
     assert result['subline_en'] in html
     assert result['subline_zh'] in html
+
+
+def test_legacy_capped_feed_does_not_call_its_displayed_limit_a_measurement():
+    result = _read({'verdict': 'MIXED', 'score': 50, 'raw_score': 61})
+    assert 'Measured blend' not in result['subline_en']
+    assert 'Displayed score' in result['subline_en']
