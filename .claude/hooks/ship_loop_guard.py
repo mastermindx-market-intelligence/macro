@@ -4314,6 +4314,16 @@ def _stop(root: Path, path: Path, payload: dict[str, Any]) -> None:
     # `last_assistant_message` therefore fails OPEN here. The declaration is an
     # explicit, auditable act by the session; no false positive is reachable, and
     # `_block`'s any-code ladder (10 consecutive / 15 total) keeps it from trapping.
+    #
+    # Ordering note for the hold adapter: this block sets `last_blocker` to
+    # `more_work_exists`, and `ship_loop_hold_wrapper._hold_probe` only considers an
+    # ordinary `claude/*` hold candidate while `last_blocker` is `unmerged`. So a
+    # lawfully held session that ALSO declares unfinished work gets this block instead
+    # of `HOLD-FOR-SOL WAITING` - which is the correct message, because by its own
+    # account the work is not done. It is self-healing rather than sticky: the next
+    # Stop without the declaration falls through to the ordinary chain, `last_blocker`
+    # becomes `unmerged` again, and the hold interception resumes. A `sol/*` authority
+    # branch is unaffected either way; the wrapper probes it before any delegation.
     declared = declared_session_end_state(str(payload.get("last_assistant_message") or ""))
     if declared in NON_TERMINAL_SESSION_END_STATES:
         _block(
