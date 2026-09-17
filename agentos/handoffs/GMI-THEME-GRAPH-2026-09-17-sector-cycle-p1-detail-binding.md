@@ -22,6 +22,10 @@ changed:
 - path: research/sector_cycle_revamp/evidence/P1_BENCHMARK_PAIR_2026-09-17
   what: Retain executable frozen-baseline legacy parity and real-input/controlled-page proof, JSON receipts
     and two inspected screenshots. No production dataset or publication is written.
+- path: templates/basket_detail.html.j2
+  what: 'Independent-review repair: same-roster stacked phone records expose full missingness reasons
+    without horizontal scrolling; retain semantic table roles/header associations. Light has neutral hairline,
+    white stat tiles and cool definition instead of dark accent treatment. History labels state available/minimum.'
 verified:
 - claim: Current source continuity was recovered without reconstruction or duplicate effects.
   command: gh pr view 7252; git rev-parse HEAD; git status --short; exact two-commit diff from 07409e9
@@ -59,6 +63,38 @@ verified:
   result: 'b81fd9e contract-delta and planning/admission jobs passed; all 12 execution packs were queued,
     not proven running. Impact delivered to the existing #6351 owner; no rerun, cancellation, new pool
     or capacity-owner takeover.'
+- claim: Actual independent native read-only review completed; its presentation findings were accepted
+    for repair.
+  command: Claude Code native reviewer ef35b9c5-78c0-4dbe-b89f-2528909b1ddd; source HEAD and tracked-status
+    checks before and after
+  result: PARTIAL with no new calculation blocker. ce16 source unchanged during review; exit0. Final response
+    and sanitized identity receipt retained; raw events/thinking not published. Child terminal at comment5720929262.
+    Profile maxTurns24 was not a proven main-session cap; native result reported37.
+- claim: Phone missingness display defect was reproduced and repaired without changing data or calculation
+    sources.
+  command: Node member-row regression; Chromium 390px reason/container bounding boxes; focused seven-suite
+    pytest command
+  result: 'Before: table720px versus client340px; Why at x432..745 beyond390px. After: table/client340px
+    and full reason inside row/container.289 focused tests pass. All engine, producer/consumer binding
+    and CI manifest blobs unchanged from ce16.'
+- claim: All eight real normal, real missing and controlled benchmark-gap states now have retained screenshots
+    and exact source receipts.
+  command: python3 research/sector_cycle_revamp/evidence/P1_BENCHMARK_PAIR_2026-09-17/verify_pages.py;
+    verify SHA256 receipt bindings
+  result: 49 real-input groups/pages;8 real normal +8 real CBRS missing +8 controlled benchmark-gap images;2
+    controlled positive states with paired raw+relative captures. Explicit fixture +25.0% versus+21.6pp
+    distinguishes subtraction. Real current relative data is unavailable and was not fabricated to satisfy
+    the test.
+- claim: Actual local size/timing is measured, not estimated.
+  command: perf_counter and stat inside existing verify_pages.py build
+  result: Companion2,602,710bytes;49 rendered pages14,334,238bytes;compute28.730s plusrender/validate1.912s.
+    One local run, not incremental overhead or production latency proof.
+- claim: Source-bound design and UI checks pass.
+  command: check_design_system.py --mode enforce-added --diff-file /tmp/mmx-sector-p1-responsive-review.diff;
+    check_ui_visual_evidence.py --diff-file same; check_runtime_style_injection.py; check_template_site_sync.py;
+    git diff --check
+  result: All exit0;zero new blocking design findings;98 paired assets checked. The earlier no-diff design
+    invocation and missing-diff UI refusal are not counted as proof.
 unverified:
 - claim: Fresh exact-head hosted execution and independent acceptance.
   what_would_verify: 'Reconcile the final pushed #7252 head, consume its concluded required checks and
@@ -84,6 +120,8 @@ unresolved:
   independent freshness repair.'
 - 'Research #7234 stays Draft/HOLD. The completed R5/R6 synthetic source is not present in the repository;
   do not rebuild it or pretend a conversation-only bundle is production source.'
+- 'Presentation repair is locally verified but still needs follow-up independent review and one same-branch
+  publication; queued CI, #7211 integration and deployed authenticated proof remain owed.'
 next_actions:
 - 'Reconcile the final #7252 remote head against code commit 13721803f7aec41735c9c3bda547c578d24f4561
   and this handoff. If already published, do not recommit or repush; consume exact-head hosted evidence
@@ -142,3 +180,9 @@ No independent review, #7211 integration, merged release, authenticated deployme
 programme is implied. No durable worker or reciprocal watcher is asserted. The earlier long handoff
 remains in git at b81fd9e; this current packet replaces stale pre-push actions rather than replaying its
 history. A new material return reopens only the corresponding bounded next action.
+
+## Native review and mobile repair continuation
+
+Protected procedure refreshed to Mastermind `8b231e8267f09cfb002ed3e87bec14906dce1720` (compatible1.0.1). Review child `sector-cycle-p1-native-independent-review-20260917-sol-001` is terminal; do not resume it. Its source verdict was sound with missing visual acceptance. The same original source carrier now repairs only mobile presentation and visual evidence. The next fresh review must cover that delta and the retained matrices, not redo source-math archaeology.
+
+Named treatments and geometry live in `research/sector_cycle_revamp/evidence/P1_MEMBER_UNITS_2026-09-17/DESIGN.md`. The current fresh local input generation withholds all AI Infrastructure relative readings because benchmark eligibility is absent; this is honest unavailable behavior, not forced display. Positive subtraction proof uses explicitly controlled fixtures. These are not production data freshness or predictive-performance claims.

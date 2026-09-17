@@ -589,3 +589,28 @@ console.log(JSON.stringify({
     assert "0.0" not in result["missing"] and "pp" not in result["missing"]
     assert "+3.0%" in result["raw"]
     assert "Above" in result["above"] and "Below" in result["below"]
+
+
+@needs_node
+def test_member_evidence_mobile_rows_keep_reason_and_history_labels(tmp_path):
+    site = tmp_path / "site"
+    _write_generation(site)
+    observation = BTD.member_observation_index(site, "us")[GROUP_ID]
+    result = _run_member_js(observation, r'''
+_moState.metric='strict_trend_200'; _moState.filter='unavailable';
+const before=JSON.stringify(OBS);
+const rows=moRowsHtml(OBS,_moState.metric);
+console.log(JSON.stringify({
+  html:rows.html, section:memberObservationSection(OBS),
+  visible:rows.visible, unchanged:before===JSON.stringify(OBS)
+}));
+''')
+    assert result["visible"] == 1 and result["unchanged"] is True
+    assert 'headers="mo-col-reason"' in result["html"]
+    assert 'headers="mo-col-history"' in result["html"]
+    assert 'class="mo-mobile-label"' in result["html"]
+    assert 'Not enough history' in result["html"]
+    assert 'role="row"' in result["html"] and 'role="cell"' in result["html"]
+    assert 'role="table"' in result["section"]
+    assert 'Available / minimum' in result["section"]
+    assert '可用 / 最低要求' in result["section"]

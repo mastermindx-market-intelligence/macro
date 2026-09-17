@@ -230,7 +230,12 @@
     background:var(--panel); overflow:hidden; }
   .mo-band::before { content:""; display:block; height:2px;
     background:linear-gradient(90deg,var(--info),color-mix(in srgb,var(--info) 15%,transparent)); }
+  /* Light is a paper workspace: neutral hairline and white data tiles, not the
+     dark surface's luminous accent edge. The method tile remains recessive. */
   html[data-theme="light"] .mo-band { box-shadow:var(--card-shadow); }
+  html[data-theme="light"] .mo-band::before { height:1px; background:var(--line); }
+  html[data-theme="light"] .mo-stat { background:var(--panel); }
+  html[data-theme="light"] .mo-stat.note { background:var(--panel2); }
   .mo-hd { display:flex; flex-wrap:wrap; align-items:flex-start; gap:8px 18px; padding:13px 16px 0; }
   .mo-hd-main { flex:1; min-width:240px; }
   .mo-eyebrow { font-size:10px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--info); }
@@ -251,7 +256,8 @@
   .mo-stat .v { margin-top:3px; font-size:14px; font-weight:700; font-variant-numeric:tabular-nums; }
   .mo-stat.note .v { font-size:11.5px; font-weight:500; line-height:1.45; }
   .mo-table-wrap { overflow:auto; max-height:430px; margin:11px 16px 0; border:1px solid var(--line); border-radius:var(--r-ctl,8px); }
-  .mo-table { min-width:720px; }
+  .mo-table { min-width:720px; width:100%; }
+  .mo-mobile-label { display:none; }
   .mo-table caption { text-align:left; padding:8px 10px; color:var(--muted); font-size:11px; background:var(--panel2); }
   .mo-table thead th { position:sticky; top:0; z-index:1; background:var(--panel2); cursor:default; }
   .mo-table td:first-child { font-weight:690; }
@@ -278,7 +284,25 @@
     .mo-controls { grid-template-columns:1fr; }
     .mo-summary { grid-template-columns:repeat(2,minmax(0,1fr)); }
     .mo-stat.note { grid-column:1/-1; }
-    .mo-table-wrap { margin-left:11px; margin-right:11px; max-height:390px; }
+    .mo-table-wrap { margin-left:11px; margin-right:11px; max-height:390px; overflow-x:hidden; }
+    /* One roster, stacked at phone width. Keep explicit table roles/headers so
+       visual layout never removes the relationship between a result and its why. */
+    .mo-table { display:block; min-width:0; }
+    .mo-table caption { display:block; white-space:normal; }
+    .mo-table thead { position:absolute; width:1px; height:1px; padding:0;
+      overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+    .mo-table tbody { display:block; }
+    .mo-table tbody tr { display:grid; grid-template-columns:minmax(0,1fr) auto;
+      border-bottom:1px solid var(--line); padding:var(--sp-2,8px) var(--sp-3,12px); }
+    .mo-table tbody tr:last-child { border-bottom:0; }
+    .mo-table tbody td { display:block; min-width:0; border:0; padding:3px 0;
+      white-space:normal; text-align:left; overflow-wrap:anywhere; }
+    .mo-table tbody td:nth-child(2) { text-align:right; padding-left:var(--sp-2,8px); }
+    .mo-table tbody td:nth-child(3),.mo-table tbody td.why,
+    .mo-table tbody td[colspan] { grid-column:1/-1; }
+    .mo-table tbody td.why { line-height:1.5; }
+    .mo-mobile-label { display:inline; color:var(--muted); font-size:var(--fs-micro,10px);
+      font-weight:600; margin-right:var(--sp-2,8px); }
     .mo-method { margin-left:11px; margin-right:11px; }
     .mo-method-grid { grid-template-columns:1fr; }
   }
@@ -1182,13 +1206,13 @@ function moRowsHtml(obs,metricId){
           : L('Included in this measurement denominator.','计入本项读数的分母。'))
       : moReason(cell);
     const ident=row.identity?`<div class="muted sm" title="${esc(row.identity)}">${L('identity receipted','身份已留据')}</div>`:'';
-    return `<tr data-state="${row.observed?'observed':'unavailable'}">
-      <td>${stkGR(row.symbol)}${ident}</td>
-      <td>${moCellValue(metricId,cell)}</td>
-      <td class="num">${coverage}</td>
-      <td class="why">${why}</td>
+    return `<tr role="row" data-state="${row.observed?'observed':'unavailable'}">
+      <td role="cell" headers="mo-col-member">${stkGR(row.symbol)}${ident}</td>
+      <td role="cell" headers="mo-col-result">${moCellValue(metricId,cell)}</td>
+      <td role="cell" headers="mo-col-history" class="num"><span class="mo-mobile-label">${L('Available / minimum','可用 / 最低要求')}</span>${coverage}</td>
+      <td role="cell" headers="mo-col-reason" class="why"><span class="mo-mobile-label">${L('Why','说明')}</span>${why}</td>
     </tr>`;
-  }).join(''):`<tr><td colspan="4" class="mo-empty">${L('No members match this display filter.','没有成分股符合当前显示筛选。')}</td></tr>`;
+  }).join(''):`<tr role="row"><td role="cell" colspan="4" class="mo-empty">${L('No members match this display filter.','没有成分股符合当前显示筛选。')}</td></tr>`;
   return {html:html,visible:rows.length,total:(group.member_keys||[]).length};
 }
 function moMetricNote(metricId){
@@ -1248,10 +1272,10 @@ function memberObservationSection(obs){
       <div class="mo-field"><label for="mo-filter">${L('Display filter','显示筛选')}</label><select id="mo-filter">${filters}</select></div>
     </div>
     <div class="mo-summary">${moSummaryHtml(obs,metricId)}</div>
-    <div class="mo-table-wrap"><table class="mo-table">
+    <div class="mo-table-wrap"><table class="mo-table" role="table">
       <caption><span id="mo-caption-label">${L(esc(label[0]),esc(label[1]))}</span> · <span id="mo-caption-count">${rows.visible}</span> ${L('shown','当前显示')}</caption>
-      <thead><tr><th>${L('Member','成分股')}</th><th>${L('Result','结果')}</th><th class="num">${L('History used','使用历史')}</th><th>${L('Why','说明')}</th></tr></thead>
-      <tbody id="mo-rows">${rows.html}</tbody>
+      <thead role="rowgroup"><tr role="row"><th id="mo-col-member" scope="col" role="columnheader">${L('Member','成分股')}</th><th id="mo-col-result" scope="col" role="columnheader">${L('Result','结果')}</th><th id="mo-col-history" scope="col" role="columnheader" class="num">${L('Available / minimum','可用 / 最低要求')}</th><th id="mo-col-reason" scope="col" role="columnheader">${L('Why','说明')}</th></tr></thead>
+      <tbody id="mo-rows" role="rowgroup">${rows.html}</tbody>
     </table></div>
     <details class="mo-method"><summary>${L('Method &amp; source receipts','方法与来源留据')}</summary>
       <div class="mo-method-grid">
