@@ -25,6 +25,12 @@ so_what: >
   operator/app-server path and its own embedded FINDING records that the WORK leg cannot complete
   hermetically for any provider, so the live-supervisor template is
   tests/test_executive_supervisor.py::test_run_once_persists_process_checkpoint_result_receipt_and_reopens.
+  Third, the seam is narrower than profile-less alone: the supervisor's complete-launch-attestation
+  gate is Codex-bound and fires on `effective_grant is not None` independently of its flag, so a
+  Claude worker is refused for any Job carrying an effective grant. The seam is profile-less AND
+  grant-less. Closing that from the PF1 side would mean claiming the Codex contract's schema
+  version, which is a provider-boundary violation; promoting `LaunchAttestation` to an HF1 common
+  type is HF1's decision, not PF1's.
 kind: architecture
 verified_at: 2026-09-17
 verified_by: >
@@ -32,7 +38,11 @@ verified_by: >
   :980-982, :1016 and :570-571; control_plane/executive_service.py:1998; control_plane/model_router.py:703;
   control_plane/claude_cli_protocol.py:557-558 and :742; control_plane/claude_worker.py:169-172 and :763;
   tests/test_executive_supervisor.py:354, :398, :430 and :627;
-  tests/test_w6b_native_round_trip.py embedded FINDING at lines 845-853.
+  tests/test_w6b_native_round_trip.py embedded FINDING at lines 845-853;
+  control_plane/executive_supervisor.py:85-92, :1051, :1061 and :1072-1075;
+  control_plane/codex_worker.py:255 and :2966; `grep -c "def launch_attestation"` returning 1 for
+  control_plane/codex_worker.py and 0 for control_plane/claude_worker.py;
+  tests/test_worker_execution_contract.py:702-712.
 scope:
   - mastermindx-market-intelligence/Mastermind
   - control_plane/**
@@ -76,3 +86,32 @@ derived from the sealed evidence file. The supervisor's per-Job schema requires 
 This is not a defect in either component. It is the fake-only effect ceiling doing its job: a
 Job-conformant result would have to come from a real model turn, and the real turn is what the
 dedicated-principal decision blocks.
+
+## Third constraint: the complete-launch-attestation gate is Codex-bound
+
+Measured after the integration proof landed, and it narrows the seam above.
+
+`executive_supervisor.py:1051` duck-types `getattr(self.adapter, "launch_attestation", None)`. When the
+adapter has no such method the supervisor substitutes a `legacy-partial` attestation (line 1061). Lines
+1072-1075 then refuse the launch unless the attestation's `schema_version` equals
+`_codex_worker_contract()[1]` — and `_codex_worker_contract` (lines 85-92) is a lazy import of
+`LAUNCH_ATTESTATION_SCHEMA_VERSION` from `control_plane.codex_worker`. So "a complete launch attestation"
+is *defined as* the Codex contract's schema version.
+
+`LaunchAttestation` is declared at `codex_worker.py:255` and does not appear in
+`control_plane/worker_execution_contract.py`: HF1 never promoted it to a common type.
+`ClaudeCodeWorkerAdapter` has no `launch_attestation` method, where `CodexWorkerAdapter` has one
+(`codex_worker.py:2966`, a one-line read of its own `_RunState`).
+
+Two consequences. The gate's condition is
+`self.require_complete_launch_attestation or effective_grant is not None`, so it fires for **any Job
+carrying an effective grant** whether or not the flag is set — which means the lawful seam is
+profile-less *and* grant-less, not profile-less alone. And the gap cannot be closed from the PF1 side:
+supplying a "complete" attestation would require the Claude adapter to claim the Codex contract's schema
+version, which is exactly the provider-boundary crossing HF1 exists to prevent. HF1's own law at
+`tests/test_worker_execution_contract.py:702-712` only guards names it has already promoted
+(`_MOVED_NAMES`), so the lazy import at lines 85-92 evades that law rather than satisfying it.
+
+The remedy is HF1's: promote `LaunchAttestation` and a provider-neutral attestation schema version into
+`worker_execution_contract.py`, then have each adapter attest under it. PF1 must not manufacture a pass
+here.

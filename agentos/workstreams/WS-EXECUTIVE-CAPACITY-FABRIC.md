@@ -196,6 +196,17 @@ waves:
       withholds. Spend the next effort on that authority question, not on more adapter or test work,
       and do not mirror tests/test_w6b_native_round_trip.py — it proves the PLAN leg and records in
       its own source that the work leg cannot complete hermetically for any provider.
+      A THIRD constraint narrows the seam further: the supervisor's complete-launch-attestation gate
+      (executive_supervisor.py:1072-1075) requires the CODEX contract's
+      LAUNCH_ATTESTATION_SCHEMA_VERSION, lazily imported at :85-92, and fires whenever a Job carries
+      an effective grant regardless of its flag — so the lawful seam is profile-less AND grant-less,
+      and no non-Codex worker can serve a Job with an effective grant. LaunchAttestation is still
+      codex_worker.py-local and absent from worker_execution_contract.py. PF1 must NOT close this by
+      claiming the Codex schema version; the remedy is an HF1 promotion of the type plus a
+      provider-neutral schema version. One integration proof does exist and is green on the adapter
+      branch at 5b461fb2 (tests/test_executive_claude_lifecycle_integration.py, 3 passed): the real
+      adapter drives the live supervisor through a real subprocess to measured JobStatus.FAILED /
+      AttemptStatus.FAILED on the result-content refusal, which is the designed outcome.
   - id: MH1
     title: Authenticated multi-host Executive worker transport
     status: todo

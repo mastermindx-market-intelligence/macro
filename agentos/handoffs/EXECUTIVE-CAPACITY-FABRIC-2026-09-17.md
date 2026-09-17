@@ -119,15 +119,47 @@ verified:
       refused VERSION_PROFILE_FIELD_DRIFT; an echoed-version attack refused FAKE_CONTROL_INVALID; init
       version drift refused VERSION_DRIFT. Deadline handling CLOSED, model provenance CLOSED, failure
       provenance PARTIAL and left open to the carrier owner.
+  - claim: >
+      A profile-less, grant-less Job does drive the real ClaudeCodeWorkerAdapter through the live
+      ExecutiveSupervisor: real launched subprocess, real pid and process_start_identity recorded,
+      correct event ordering, 0600 evidence files, and the measured result-content refusal as the
+      terminal outcome.
+    command: >
+      python3 -m pytest tests/test_executive_claude_lifecycle_integration.py -v (with ANTHROPIC_* and
+      CLAUDE_* scrubbed), on branch claude/ssd-pf1-native-claude-worker-adapter at commit 5b461fb2
+    result: >
+      3 passed. Measured terminal states JobStatus.FAILED and AttemptStatus.FAILED; measured refusal
+      reason "structured output missing required keys: ['schema_version', 'job_id', 'run_id',
+      'worker_id', 'status', 'summary', 'completed_steps', 'current_state', 'artifacts',
+      'next_actions', 'errors', 'validations']". Regression set green in the same scrubbed environment:
+      test_executive_claude_worker 26 passed 1 skipped, test_executive_supervisor 19 passed,
+      test_worker_adapter 1 passed, test_worker_execution_contract 13 passed. The claude-code
+      descriptor remained implemented=False.
+  - claim: >
+      The supervisor's complete-launch-attestation gate is Codex-bound and fires on any Job carrying an
+      effective grant independently of its flag, so the lawful seam is profile-less AND grant-less and
+      cannot be widened from the PF1 side.
+    command: >
+      sed -n '85,92p;1051,1075p' control_plane/executive_supervisor.py; grep -c "def
+      launch_attestation" control_plane/codex_worker.py control_plane/claude_worker.py; grep -n
+      "LaunchAttestation" control_plane/worker_execution_contract.py; sed -n '702,712p'
+      tests/test_worker_execution_contract.py
+    result: >
+      The gate requires the attestation schema_version to equal _codex_worker_contract()[1], which is
+      LAUNCH_ATTESTATION_SCHEMA_VERSION lazily imported from control_plane.codex_worker; the condition
+      is "require_complete_launch_attestation or effective_grant is not None". codex_worker.py has one
+      launch_attestation method and claude_worker.py has zero; LaunchAttestation is absent from
+      worker_execution_contract.py, so HF1 never promoted it; and HF1's no-codex-import law guards only
+      already-promoted _MOVED_NAMES, so the lazy import evades that law rather than satisfying it.
 unverified:
   - claim: >
-      That a profile-less Job actually drives the real ClaudeCodeWorkerAdapter through launch, process
-      recording, RUNNING, collection and terminal seal against the live supervisor.
+      That the ClaudeCodeWorkerAdapter can satisfy a supervisor configured with
+      require_complete_launch_attestation=True, or serve any Job carrying an effective grant.
     what_would_verify: >
-      The commissioned integration module tests/test_executive_claude_lifecycle_integration.py running
-      green with a scrubbed environment on branch claude/ssd-pf1-native-claude-worker-adapter. It was
-      in flight when this record was written; the expected terminal outcome is the measured
-      INVALID_RESULT refusal, not a completion.
+      It cannot today, and the fix is not PF1's to make. HF1 promoting LaunchAttestation and a
+      provider-neutral attestation schema version into control_plane/worker_execution_contract.py would
+      verify it; the integration test therefore leaves the flag at its default False and documents why
+      in its own supervisor-construction docstring.
   - claim: >
       That the failure-provenance PARTIAL finding on PR #455 is correct design rather than an omission.
     what_would_verify: >
@@ -146,6 +178,12 @@ unresolved:
   - >
     Because a Job-conformant result can only come from a real model turn, the result-content leg and the
     dedicated-principal decision are the same wall. No adapter or test work moves it.
+  - >
+    The lawful seam is narrower than profile-less alone. The supervisor's complete-launch-attestation
+    gate is keyed to the Codex contract's schema version and fires whenever a Job carries an effective
+    grant, so the seam is profile-less AND grant-less. Widening it requires HF1 to promote
+    LaunchAttestation to a provider-neutral common type; PF1 must not close it by claiming the Codex
+    schema version.
 next_actions:
   - >
     Await the holding authority's release decision on Mastermind PR #455. Do not arm it, mark it ready,
@@ -160,6 +198,11 @@ next_actions:
     control_plane/executive_agent_capabilities.py and the matching checks in executive_supervisor.py,
     executive_service.py and model_router.py. That is an architecture decision across four owners and is
     not a configuration edit.
+  - >
+    Put one bounded question to HF1's owner: whether LaunchAttestation and its schema version should be
+    promoted from control_plane/codex_worker.py into control_plane/worker_execution_contract.py with a
+    provider-neutral version, so a non-Codex adapter can attest completely and serve Jobs carrying an
+    effective grant. Until then no non-Codex worker can serve such a Job.
   - >
     Only after a dedicated native principal exists and a real turn is authorized, add the real-output
     path to the adapter's collect step so a Job-conformant result can be produced, then arm the
@@ -181,6 +224,11 @@ do_not_redo:
   - >
     Do not widen _EXECUTION_SURFACES, relax the supervisor's execution-surface check, or add a Claude
     capability profile to config/executive_agent_capabilities.json in order to make a test pass.
+  - >
+    Do not add a launch_attestation method to control_plane/claude_worker.py that claims the Codex
+    contract's LAUNCH_ATTESTATION_SCHEMA_VERSION, and do not import LaunchAttestation from
+    control_plane.codex_worker. That manufactures a pass at a real provider boundary. The remedy is an
+    HF1 promotion of the type and a provider-neutral schema version.
   - >
     Do not re-run or repair the PR #455 protocol repair. It was already implemented at head
     0a368935ece318c1b7f3301337f75d3a58d61006, which post-dates both the disposition and all three
