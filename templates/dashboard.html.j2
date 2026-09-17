@@ -17127,6 +17127,27 @@ html[data-theme="light"] :is(
       }
       var clearBtn = document.getElementById('us-life-clear');
       if (clearBtn) clearBtn.addEventListener('click', function () { setLife(null); });
+      /* A historical record can link to a newer episode in another lifecycle
+         cell. Delegate from the stable panel rather than the replaceable grid,
+         so entitled hydration and show-more do not strand the link. Select the
+         already-loaded target's published lifecycle before the browser performs
+         its native fragment jump. Modified clicks, missing/withheld targets and
+         malformed destinations remain untouched. */
+      box.addEventListener('click', function (e) {
+        if (e.defaultPrevented || (typeof e.button === 'number' && e.button !== 0) ||
+            e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        var link = e.target && e.target.closest ? e.target.closest('a.pv-newer') : null;
+        if (!link || !link.closest('#us-life-grid')) return;
+        var href = link.getAttribute('href') || '';
+        if (href.charAt(0) !== '#') return;
+        var targetId;
+        try { targetId = decodeURIComponent(href.slice(1)); } catch (err) { return; }
+        var target = document.getElementById(targetId);
+        if (!target || !target.closest || !target.closest('#us-life-grid')) return;
+        var targetLife = target.getAttribute('data-life');
+        if (!targetLife || VALID_LIFE.indexOf(targetLife) === -1) return;
+        setLife(targetLife);
+      });
       /* Initial state: query string wins outright. Only when it carries no
          `life` param do we fall back, ONCE, to an inbound legacy #life=
          fragment — read here and never again; the fragment is not re-read on

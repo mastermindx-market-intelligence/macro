@@ -9,6 +9,8 @@
   "inputs_unchanged": true,
   "external_requests_allowed": false,
   "pager_section_sha256": "8e7444cb2a87c032e1a5d1654a9eaf53b33935d5e907dc87a841e6b67c8b257f",
+  "lifecycle_script_sha256": "092cfb63946a6ef1500056e6246998974a34f33b3b5c7f0f7f226a40ff26331a",
+  "lifecycle_filter_css_sha256": "df79c297ff2b761e11631e513d0e74fb488b948061b3333ab445d0413e385a24",
   "cases": [
     {
       "width": 1440,
@@ -84,7 +86,7 @@
       "keyboard_link": true,
       "page_errors": [],
       "image": "record-dark-en-1440.png",
-      "image_sha256": "ae36e920376500a61f651f9c457b7284136ce403abb83a766b5914fc8999763e"
+      "image_sha256": "fc7403893cb1599cdb05c9e35f8601f84000bfcb7a82fb6c6b7c0a84a65dd701"
     },
     {
       "width": 1440,
@@ -160,7 +162,7 @@
       "keyboard_link": true,
       "page_errors": [],
       "image": "record-dark-zh-1440.png",
-      "image_sha256": "8c224ca130ce628880a4254d9e1e38ccdc60248dbc28e264f5590e18eafa7599"
+      "image_sha256": "f0f231f2ca09e1209d917698533e77815c2ea84fae627df92a983f5428af0bbe"
     },
     {
       "width": 1440,
@@ -236,7 +238,7 @@
       "keyboard_link": true,
       "page_errors": [],
       "image": "record-light-en-1440.png",
-      "image_sha256": "89a7852a338fef868539496a5da35880c93488d7c3e6512b285b4458c5fe1c96"
+      "image_sha256": "3a83f1158d054168a44d02f6e2f46464d962a19eed25f66629cbd3075caebe3c"
     },
     {
       "width": 1440,
@@ -312,7 +314,7 @@
       "keyboard_link": true,
       "page_errors": [],
       "image": "record-light-zh-1440.png",
-      "image_sha256": "c44fe6857385d575cd3d49b9a4209bd1e4211f36071478fae06f963b830ccc9b"
+      "image_sha256": "a3f4a0383a89e00e60f1a07aa442247224d239ed7b33c4a94c49a334ec830b3e"
     },
     {
       "width": 390,
@@ -388,7 +390,7 @@
       "keyboard_link": true,
       "page_errors": [],
       "image": "record-dark-en-390.png",
-      "image_sha256": "a5d55afd08fe023e5c9aeea1111aa5f7b3d2340414092fd23f3e4d02b6359cd2"
+      "image_sha256": "28b2b9ba5324c676948e1bb618be1aa90bcb9841e240ab2805a0ae740b885fde"
     },
     {
       "width": 390,
@@ -464,7 +466,7 @@
       "keyboard_link": true,
       "page_errors": [],
       "image": "record-dark-zh-390.png",
-      "image_sha256": "cf706768186ba12e52e8be6ff2ebac01fc43d8beaf97f6fa5425661b895695a8"
+      "image_sha256": "0d6dfc34533f0a146abac89a8138f8a010e324e921d4d45dbfe2695a90ac2e8b"
     },
     {
       "width": 390,
@@ -619,12 +621,30 @@
       "image_sha256": "d0fd4d1e6cf3dddf3ea89cb6865910eced714e689ba580b2a217bfab646b7fa4"
     }
   ],
+  "navigation_cases": [
+    {
+      "case": "filtered_beyond_first_page",
+      "target_visible": true,
+      "query_preserved": true,
+      "native_fragment": true,
+      "target_was_sm_hidden": true,
+      "page_errors": []
+    },
+    {
+      "case": "hydrated_keyboard_target",
+      "target_visible": true,
+      "query_preserved": true,
+      "native_fragment": true,
+      "delegated_after_grid_replacement": true,
+      "page_errors": []
+    }
+  ],
   "source_sha256": {
     "templates/_prophet_card.html.j2": "4f069ba91cd92138e66adca574eb551620d19689832b819dcd7d020637647589",
     "templates/_us_prophet_plan_cards.html.j2": "4835d85e7a5ac2a7f6a7225d9e9cf377304bc80630a8152dbd20ab8001eb3828",
     "templates/theme.css": "63df1679c57976ef2130022690fd31bbb23bf41982658b87a6117457fb02bdab",
     "templates/theme.js": "7e67de51aac47a1b3784d19a4d58a7f9c800be4bb74ae87f97bce8fed750afde",
-    "templates/dashboard.html.j2": "3ee6f2c4e41e92567694b38cdb314f763443dc9084355d722a1040c8e0ef189e",
+    "templates/dashboard.html.j2": "53ad405b20c0885549faba5432fe2768c79fb148aa78e1077fdbe37545a82e99",
     "scripts/build_site.py": "f588bc6a2ead5eb3db04cb1cbe879b199cd5f57ae265591059cc3c250af891b2",
     "engine/i18n.py": "486116b2c2640bf164724a03d9a8871efef7977fb3b5bd7e8d5956e8d3675b44"
   },
@@ -639,6 +659,6 @@
   },
   "real_pager_show_all": true,
   "status": "PASS_COMPONENT_NOT_PRODUCTION",
-  "capture_script_sha256": "6e0da2dd4d1d70ad0942a6489a5069b3363693c4b415905a0aae2ac3abc1576e",
-  "synthetic_fixture_sha256": "b9515825e0c2a12d9dfc36a2cf9173534052d76b79b8de2c0903bb566c1ac985"
+  "capture_script_sha256": "fa95e35b63e57a3fd587ce80093b61b8ea04b7ec284dbab33127635187690b85",
+  "synthetic_fixture_sha256": "1faa7828449bc6aadfcaaaa31d3e846343d7ab321315250a2a2cdef3be1e5e98"
 }

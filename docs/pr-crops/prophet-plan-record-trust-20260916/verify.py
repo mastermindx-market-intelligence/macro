@@ -82,9 +82,19 @@ def run() -> None:
     end_marker = "  window.initShowMore = initShowMore;"
     end = theme_js.index(end_marker, start) + len(end_marker)
     pager = theme_js[start:end]
+    life_css_start = dash.index('  #us-standouts[data-lifef="watch"]')
+    life_css_marker = '  #us-standouts[data-lifef] #us-life-grid + .sm-bar { display: none !important; }'
+    life_css_end = dash.index(life_css_marker, life_css_start) + len(life_css_marker)
+    life_css = dash[life_css_start:life_css_end]
+    life_marker = "P-MP1-SHELL §7 — the lifecycle ladder's filter + URL law"
+    life_script_start = dash.index("<script>", dash.index(life_marker)) + len("<script>")
+    life_script_end = dash.index("</script>", life_script_start)
+    life_script = dash[life_script_start:life_script_end]
+    navigation_css = css.replace("</style>", life_css + "</style>", 1)
 
-    def document(cards: str, theme: str, lang: str) -> str:
-        html = ('<!doctype html><html data-theme="' + theme + '" data-lang="' + lang + '"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' + css + '</head><body class="page-stocks"><main><h1>Tracked setups</h1><p>Component proof · synthetic screenshots · not production</p><div class="nbgrid" data-showmore-rows="3" id="record-grid">' + cards + '</div></main></body></html>')
+    def document(cards: str, theme: str, lang: str, *, lifecycle: bool = False) -> str:
+        selected_css = navigation_css if lifecycle else css
+        html = ('<!doctype html><html data-theme="' + theme + '" data-lang="' + lang + '"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' + selected_css + '</head><body class="page-stocks"><main><h1>Tracked setups</h1><p>Component proof · synthetic screenshots · not production</p><section id="us-standouts"><div class="nbgrid" data-showmore-rows="3" id="us-life-grid">' + cards + '</div></section></main></body></html>')
         # Preserve the rendered fixture while keeping committed evidence whitespace-clean.
         return "\n".join(line.rstrip() for line in html.splitlines()) + "\n"
 
@@ -97,7 +107,10 @@ def run() -> None:
         "attached_names_verified_without_candidates": len(expected_names),
         "newer_links": sum(bool(x.get("newer")) for x in episodes.values()),
         "inputs_unchanged": True, "external_requests_allowed": False,
-        "pager_section_sha256": digest(pager.encode()), "cases": [],
+        "pager_section_sha256": digest(pager.encode()),
+        "lifecycle_script_sha256": digest(life_script.encode()),
+        "lifecycle_filter_css_sha256": digest(life_css.encode()),
+        "cases": [], "navigation_cases": [],
         "source_sha256": {p: digest((ROOT / p).read_bytes()) for p in [
             "templates/_prophet_card.html.j2", "templates/_us_prophet_plan_cards.html.j2",
             "templates/theme.css", "templates/theme.js", "templates/dashboard.html.j2",
@@ -112,7 +125,7 @@ def run() -> None:
             page.route("**/*", lambda route: route.abort())
             page.set_content(document(real_html, "dark", "en"))
             page.add_script_tag(content=pager + "\ninitShowMore();")
-            real_dom = page.evaluate("""() => { const cards=[...document.querySelectorAll('.pvcard')];const ids=cards.map(x=>x.id);return {cards:cards.length,unique_ids:new Set(ids).size,grid_children:document.querySelector('#record-grid').children.length,record_markers:document.querySelectorAll('[data-record-only="1"]').length,action_badges:document.querySelectorAll('.pv-buy,.pv-wait,.pv-near,.pv-hold,.pv-avoid').length,pagination:document.querySelector('.sm-count .l-en').textContent}; }""")
+            real_dom = page.evaluate("""() => { const cards=[...document.querySelectorAll('.pvcard')];const ids=cards.map(x=>x.id);return {cards:cards.length,unique_ids:new Set(ids).size,grid_children:document.querySelector('#us-life-grid').children.length,record_markers:document.querySelectorAll('[data-record-only="1"]').length,action_badges:document.querySelectorAll('.pv-buy,.pv-wait,.pv-near,.pv-hold,.pv-avoid').length,pagination:document.querySelector('.sm-count .l-en').textContent}; }""")
             assert real_dom["cards"] == real_dom["unique_ids"] == real_dom["grid_children"] == len(real_rows), real_dom
             assert real_dom["record_markers"] == len(real_rows) and real_dom["action_badges"] == 0
             assert real_dom["pagination"].endswith("of " + str(len(real_rows)))
@@ -120,6 +133,94 @@ def run() -> None:
             page.locator(".sm-ghost").click()
             assert page.locator(".sm-count .l-en").inner_text() == f"Showing {len(real_rows)} of {len(real_rows)}"
             receipt["real_pager_show_all"] = True
+            page.close()
+
+            # Real page lifecycle script + filter CSS: a newer episode must become
+            # visible before native fragment navigation, even when show-more hid it.
+            nav_rows = []
+            for i in range(18):
+                row = copy.deepcopy(synthetic[1] if i == 17 else synthetic[3])
+                row["id"] = f"NAV-{i:02d}-BULL-20260812"
+                row["asset"] = f"NAV-{i:02d}"
+                row["lifecycle_state"] = "entered" if i == 17 else "ready"
+                row["closed"] = False
+                nav_rows.append(row)
+            nav_source = copy.deepcopy(synthetic[0])
+            nav_source["id"] = "NAV-SOURCE-BULL-20260812"
+            nav_source["asset"] = "NAV-SOURCE"
+            nav_source["lifecycle_state"] = "resolved"
+            nav_source["closed"] = True
+            nav_target = nav_rows[-1]
+            nav_all = [nav_source] + nav_rows
+            nav_episodes = {nav_source["id"]: {
+                "ep": 1, "eps": 2, "dopen_en": "Aug 12", "dopen_zh": "8月12日",
+                "newer": nav_target["id"],
+            }}
+            nav_html = template.render(items=nav_all, cand_map={}, trg_map={}, episode_map=nav_episodes)
+
+            def navigation_page(cards: str, url: str):
+                page = browser.new_page(viewport={"width": 390, "height": 900})
+                errors = []
+                page.on("pageerror", lambda err: errors.append(str(err)))
+                body = document(cards, "dark", "en", lifecycle=True)
+                page.route("**/*", lambda route: route.fulfill(
+                    status=200, body=body, content_type="text/html")
+                    if route.request.is_navigation_request() else route.abort())
+                page.goto(url)
+                page.add_script_tag(content=pager + "\ninitShowMore();\n" + life_script)
+                return page, errors
+
+            nav_url = "http://proof.invalid/us_stocks.html?foo=keep&life=resolved"
+            page, errors = navigation_page(nav_html, nav_url)
+            target_sel = "#pv-" + nav_target["id"]
+            assert page.locator(target_sel).count() == 1
+            assert page.locator(target_sel).evaluate("el => el.classList.contains('sm-hidden')")
+            assert not page.locator(target_sel).is_visible()
+            page.locator("#pv-" + nav_source["id"] + " a.pv-newer").click()
+            assert page.locator(target_sel).is_visible()
+            assert page.locator("#us-standouts").get_attribute("data-lifef") == "entered"
+            assert page.url == nav_url.replace("life=resolved", "life=entered") + "#pv-" + nav_target["id"]
+            assert not errors, errors
+            receipt["navigation_cases"].append({
+                "case": "filtered_beyond_first_page", "target_visible": True,
+                "query_preserved": "foo=keep" in page.url, "native_fragment": True,
+                "target_was_sm_hidden": True, "page_errors": errors,
+            })
+            page.close()
+
+            # The listener is delegated from #us-standouts, which survives the
+            # entitled grid replacement. Replace the grid after initialization,
+            # then verify keyboard activation reaches the newly hydrated target.
+            source_only = template.render(items=[nav_source], cand_map={}, trg_map={}, episode_map=nav_episodes)
+            target_only = template.render(items=[nav_target], cand_map={}, trg_map={}, episode_map={})
+            page, errors = navigation_page(source_only, nav_url)
+            page.evaluate("""(targetHtml) => {
+                const oldGrid = document.getElementById('us-life-grid');
+                const oldBar = oldGrid.nextElementSibling;
+                const fresh = document.createElement('div');
+                fresh.className = oldGrid.className;
+                fresh.id = 'us-life-grid';
+                fresh.setAttribute('data-showmore-rows', '3');
+                fresh.innerHTML = oldGrid.innerHTML + targetHtml;
+                oldGrid.replaceWith(fresh);
+                if (oldBar && oldBar.classList.contains('sm-bar')) oldBar.remove();
+                if (window.initShowMore) window.initShowMore();
+            }""", target_only)
+            target_sel = "#pv-" + nav_target["id"]
+            assert page.locator(target_sel).count() == 1
+            assert not page.locator(target_sel).is_visible()
+            newer = page.locator("#pv-" + nav_source["id"] + " a.pv-newer")
+            newer.focus()
+            newer.press("Enter")
+            assert page.locator(target_sel).is_visible()
+            assert page.locator("#us-standouts").get_attribute("data-lifef") == "entered"
+            assert page.url == nav_url.replace("life=resolved", "life=entered") + "#pv-" + nav_target["id"]
+            assert not errors, errors
+            receipt["navigation_cases"].append({
+                "case": "hydrated_keyboard_target", "target_visible": True,
+                "query_preserved": "foo=keep" in page.url, "native_fragment": True,
+                "delegated_after_grid_replacement": True, "page_errors": errors,
+            })
             page.close()
 
             for width in [1440, 390]:
@@ -173,7 +274,7 @@ def run() -> None:
     tmp.write_text(json.dumps(receipt, indent=2, ensure_ascii=False) + "\n")
     tmp.replace(OUT / "browser-receipt.json")
     print("REAL_DOM", json.dumps(receipt["real_dom"]), flush=True)
-    print("BROWSER_PROOF", len(receipt["cases"]), "PASS_COMPONENT_NOT_PRODUCTION", flush=True)
+    print("BROWSER_PROOF", len(receipt["cases"]), "VISUAL +", len(receipt["navigation_cases"]), "NAVIGATION PASS_COMPONENT_NOT_PRODUCTION", flush=True)
 
 
 if __name__ == "__main__":
