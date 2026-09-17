@@ -32,17 +32,22 @@ waves:
 - id: D0
   title: Existing-store qualification and causal cutoff consumer
   status: in_progress
-  next_action: 'Obtain independent exact-head review of Terminal #601 at 773b16f8e825ab4b39ce3c7a5fa5caf32868d55f.
-    Review operation terminal-tactical-d0-review-20260917-sol-001 is WAITING_CAPACITY / needs_placement
-    with preferred Terra; no reviewer START or receiver-specific watcher exists. GitHub required
-    Ingest/Quote checks passed; broader E2E was still running. No code release before independent
-    review and concluded applicable checks.'
+  next_action: 'Obtain independent review of Terminal #601 at c0f36cb16fadd190ad747fc47a28405d9ec0fca4,
+    including the new pre-open session-chain consumer. Same review operation terminal-tactical-d0-review-20260917-sol-001,
+    original carrier comment 5720570108, continuation evidence comment 5721724765. The installed Studio
+    Executive MCP is running but /mcp initialize returned HTTP 401 Authentication required; this chat
+    has no authenticated Executive action. No reviewer is assigned or STARTed. Author proof: 65 focused
+    passes, full Python 1144 passed/8 existing skips/1 existing warning. Require new-head hosted checks
+    and independent review before release; old-head CI does not approve these bytes.'
 - id: D1
   title: Current pilot history and finer-grain availability qualification
   status: todo
-  next_action: 'Use the existing data owner: reconcile Terminal #595 for freshness; separately qualify
-    whether an existing one-minute history/capture path can serve the pilot. Preserve the held INTC
-    live operation. Do not create another updater or infer vendor entitlement from static 404s.'
+  next_action: 'Preserve #595 as the current-history refresh owner. The existing Radar vendor_minutes.py
+    is a bounded per-name/session minute reader whose C3 persistence is derived 4H buckets, not a general
+    one-minute archive. Macro build_polygon_intraday normally accrues hourly data with file receipts;
+    Terminal backfill_intraday already has a 1m/40-day configuration. Source support is not publication/entitlement
+    proof. Use those existing owners, with exact data/writer gates, rather than create another collector.
+    Held INTC live operation remains unchanged.'
 - id: R1
   title: Registered price-first hypotheses, causal evaluation and controls
   status: todo
@@ -75,31 +80,35 @@ waves:
   depends_on:
   - V1
 landmines:
-- WS:LIVE-ENTRY-RADAR retains tactical event/evaluator ownership; this product-integration record
-  does not create another radar, replay engine, store or WebSocket plane.
+- WS:LIVE-ENTRY-RADAR retains tactical event/evaluator ownership; this product-integration record does
+  not create another radar, replay engine, store or WebSocket plane.
 - WS:TECHNICAL-OPPORTUNITY-INTELLIGENCE retains its incumbent higher-timeframe setup/remaining-opportunity
   work. No existing wave or source custody is taken over.
-- Setup Species and Evaluation OS remain the scientific owners. Context-only evidence is not rank,
-  sizing, gating, trade or options-expression authority.
+- Setup Species and Evaluation OS remain the scientific owners. Context-only evidence is not rank, sizing,
+  gating, trade or options-expression authority.
 - DSC:TERMINAL-TACTICAL-PILOT-HISTORY-QUALIFICATION distinguishes local-file absence, static publication,
   live freshness and historical availability.
-- 'Terminal #595 is the existing refresh carrier. Do not modify its source without current custody
-  reconciliation.'
+- 'Terminal #595 is the existing refresh carrier. Do not modify its source without current custody reconciliation.'
 do_not_redo:
-- 'The Chairman approved the price-first architecture and first milestone on 2026-09-17; Terminal
-  #598 comment 5720001976. Do not request that approval again.'
-- 'D0 implementation exists on Terminal #601 at 773b16f8e825ab4b39ce3c7a5fa5caf32868d55f; do not
-  create a replacement branch or rebuild the qualifier.'
-- Do not retry the predecessor blocked live INTC API inspection through another tool or transport.
-  Static non-INTC archival qualification is a separate completed operation.
+- 'The Chairman approved the price-first architecture and first milestone on 2026-09-17; Terminal #598
+  comment 5720001976. Do not request that approval again.'
+- 'D0 implementation exists on Terminal #601 at 773b16f8e825ab4b39ce3c7a5fa5caf32868d55f; do not create
+  a replacement branch or rebuild the qualifier.'
+- Do not retry the predecessor blocked live INTC API inspection through another tool or transport. Static
+  non-INTC archival qualification is a separate completed operation.
+- 'Session-chain qualification already exists at Terminal c0f36cb16fadd190ad747fc47a28405d9ec0fca4: 65
+  focused passes; exact original input hashes reused. Do not refetch/re-census the same archived files
+  or treat nominal-grid counts as strategy accuracy.'
 artifacts:
 - terminal:docs/research/TERMINAL_TACTICAL_D0_EVIDENCE_2026-09-17.md
 - terminal:docs/research/TERMINAL_TACTICAL_D0_CONTRACT.md
 - agentos/handoffs/TERMINAL-TACTICAL-INTELLIGENCE-2026-09-17-d0.md
-next_action: 'Clear the D0 independent-review placement boundary on existing Terminal #601 (comment
-  5720570108), then adjudicate that exact head. In parallel only after lawful source recovery, finish
-  the existing-owner scientific-registration contract. Freshness repair stays with #595; UI/shadow/options
-  waves remain behind their declared dependencies.'
+- terminal:docs/research/TERMINAL_TACTICAL_SESSION_CHAIN_EVIDENCE_2026-09-17.md
+next_action: 'Restore authenticated Mastermind Executive access for this conversation, then place the
+  same pending independent-review operation for #601 at its current exact head. The qualifier and session-chain
+  inventory are built and remotely preserved; do not rebuild them. #7262 retains organizational continuity,
+  #595 retains freshness repair, and the blocked R1 scientific-source read still requires a material recovery
+  before retry. No provider, capital, source-writer or release authority is widened.'
 ---
 
 This record coordinates the approved Terminal product integration. Existing tactical and scientific owners remain controlling; no live execution is inferred from this authored record.
