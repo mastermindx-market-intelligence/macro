@@ -24,9 +24,16 @@ changed:
 - path: tests/test_p_mp1_shell_ladder_error_state.py
   what: Replace obsolete unconditional-current copy pin with approved source-specific failure wording; preserve
     error/loading/Retry/touch contracts.
+- path: templates/dashboard.html.j2
+  what: Extend the existing lifecycle-filter script with a delegated same-grid newer-record journey. It selects
+    an already-loaded target's published lifecycle before native fragment navigation, survives entitled grid
+    replacement, preserves unrelated query parameters, and ignores modified/missing/withheld targets.
+- path: tests/test_p_mp1_shell_ladder_filter_css.py
+  what: Code-gated Node execution proves ordinary click/keyboard-compatible lifecycle selection, native fragment
+    preservation, unrelated query retention, and no effect for modified clicks or absent targets.
 - path: docs/pr-crops/prophet-plan-record-trust-20260916
-  what: Causal nested-link receipt, exact-consumer/shared-pager browser verifier, synthetic eight-case screenshots
-    and hashed source/evidence. No real premium plan rows stored in visual fixtures.
+  what: Causal nested-link receipt, exact-consumer/shared-pager browser verifier, synthetic eight-case screenshots,
+    two real lifecycle-navigation cases and hashed source/evidence. No real premium plan rows stored in visual fixtures.
 - path: docs/superpowers/plans/2026-09-16-prophet-plan-record-trust.md
   what: Approved scope, protected source, direct-judgment rationale, owner boundaries, ordered implementation,
     interruption reconciliation and exact parent continuation.
@@ -80,6 +87,37 @@ verified:
   command: python3 docs/pr-crops/prophet-plan-record-trust-20260916/verify.py
   result: Process18615 exit0;8theme/language/viewport cases passed;400cards/400uniqueIDs/400gridchildren/0actionbadges.
     Existing pager says Showing15of400. No production/source inputs mutated.
+- claim: Filtered newer-record navigation failed before and passes after the existing-owner repair.
+  command: python3 -m pytest tests/test_p_mp1_shell_ladder_filter_css.py -q -p no:cacheprovider; RED process
+    95825 on parent head, GREEN process 96821 after the bounded dashboard edit.
+  result: Parent failed exactly two tests because no delegated newer-record handler existed. Candidate passes 6/6;
+    target lifecycle is selected through setLife, unrelated query params survive, no preventDefault occurs, and
+    modified/missing-target clicks have no current-page effect.
+- claim: Full exact-source regression matrix is green after the navigation repair.
+  command: python3 -m pytest tests/test_p_mp1_shell_stance_projection.py tests/test_prophet_card_shared.py
+    tests/test_prophet_card_live_change.py tests/test_p_mp1_shell_nonus_byte_parity.py tests/test_p_mp1_shell_repair_round.py
+    tests/test_p_mp1_shell_ladder_error_state.py tests/test_p_mp1_shell_ladder_filter_css.py
+    tests/test_china_archetype_d_s1.py -q -p no:cacheprovider --basetemp=.pytest-tmp-plan-record-nav-matrix
+  result: Process 8553 exit 0; 199 passed in 40.17s. git diff --check emitted no finding.
+- claim: Actual Chromium proves the filtered, below-fold and post-hydration newer-record journeys.
+  command: python3 docs/pr-crops/prophet-plan-record-trust-20260916/verify.py; process 5198.
+  result: 8 visual cases plus 2 navigation cases passed. A sm-hidden entered target became visible from resolved;
+    a keyboard activation reached a target inserted after grid replacement; both preserved foo=keep and native
+    fragments. Real input remains 400 cards/400 ids/0 action badges. Receipt SHA256
+    9f235d19d3ae601e45a0b957f9763bc93b034b496ec9f854cc2e79281d87d26d.
+- claim: Current protected procedure is compatible for this continuation.
+  command: GitHub protected master read plus INDEX, COLD_START and ACTIVE_EXECUTION at exact commit
+    eec5324c5205e8bad206512e0a936898e50b2408.
+  result: Protected master=true; Skillpack schema/version 1.0.1/bootstrap1 compatible. Required procedure bytes
+    are unchanged from the preceding load; the new protected commit is a path-disjoint workbench repair.
+- claim: The navigation repair is published on the original carrier without replacement or force.
+  command: Normal git push after pre-push remote readback, followed by git ls-remote and gh pr view 7237.
+  result: Remote branch and Draft PR both read `ca1f0a0f30782276a9f6260b6e31501f21d1d59c`; prior remote was
+    `71c66811a60a388f7323a606380d868f9b2b91a3`. One fast-forward source effect, no new PR or carrier.
+- claim: The final source-contract differential is clean against current main.
+  command: python3 scripts/check_contract_delta.py --base origin/main; process 19182.
+  result: Exit 0 after 388.37 seconds; contract-delta 0 introduced / 0 inherited against
+    `12b655150582d9be39bfd2779b33338d154c565f`. The only pickup-base movement on the shared dashboard path is two unrelated macro-risk hunks.
 unverified:
 - claim: Binding all-green release and independent semantic acceptance.
   what_would_verify: Final exact-head applicable CI/security, inherited baseline disposition through its legitimate
@@ -95,23 +133,22 @@ unverified:
     states, and a subsequent ordinary scheduled update. Local source tests and fixtures cannot establish this.
 unresolved:
 - First source slice only; no deployment or completion of the parent consolidation.
-- Current source/CI/independent review must be reconciled on this same branch before release.
+- PR 7237 is Draft/HOLD. The navigation descendant still needs publication, independently admitted exact-head
+  review, concluded applicable CI/security, current-main composition and explicit Sol release.
 - 'The source recovery PRs #7180/#7187/#7200 are incumbent dependencies, not owned by this branch.'
 - An earlier platform-blocked composite builder/spark inspection remains blocked; it was not repeated through
   another tool. Full stock-library spark enrichment is still owed.
 - No Executive Job/provider worker/reviewer was created. Protected native scripts/ceo_intent.py was inspected
   and is queue-only; placement/execution gates must be recovered before any reviewer dispatch.
 next_actions:
-- Publish the same source branch using explicit files and create one Draft/HOLD PR. The PR readback, not this
-  prepublication snapshot, owns the published head.
-- Obtain independently admitted exact-head source/visual review and concluded applicable CI/security; no self-review-as-independent
-  or automatic merge.
-- After review and current-base compatibility, release this first trust capability through the ordinary publication
-  path; verify the actual entitled production browser.
-- Continue the approved Candidate-led workspace with Tracked setups and History, chart/detail connections and
-  reconciling populations; preserve all existing entry/rank/identity owners.
-- 'Integrate incumbent availability repairs #7180/#7187/#7200 and prove a subsequent ordinary scheduled update
-  without duplicate dispatch.'
+- Commit/push the record-only closure that binds semantic head, current-main comparison and contract-delta receipt;
+  read back final PR head without changing semantic source.
+- Request one eligible independent exact-head source/visual review. A request is not ACK/START or acceptance.
+- Consume concluded binding CI/security and current-main merge-tree evidence; repair only candidate-attributable reds.
+- On independent PASS plus green gates, Sol may lift HOLD and merge with expected-head semantics, then use the ordinary
+  publication owner and prove the actual entitled Candidate/Tracked/History journey in production.
+- After this trust slice is accepted, continue the approved Candidate-led workspace, chart/detail connections and
+  incumbent PRs 7180/7187/7200 freshness integration without merging data populations or duplicating owners.
 do_not_redo:
 - Do not recreate the worktree or repeat reconciled creation/site materialization; use the same branch and
   Studio.
@@ -155,3 +192,10 @@ The investor opens a tracked record and sees identity, model lifecycle, original
 Deterministic template projection only: no LLM synthesis, new score, threshold, rank, trading/portfolio call or provider data acquisition. Typed attached identity is used safely; malformed/null inputs cannot invent an actionable status. Zones, original scores, dates, episode ids and corrections remain immutable. Existing shell/premium split renders the same partial without expanding names across entitlements.
 
 Full current charts and the final Candidate/Tracked/History composition remain explicit parent requirements; this safe first slice is not permission to shrink the approved product. Continue one useful vertical at a time. Stop on unresolved source custody, platform denial, ambiguous effect or missing release gate. Context rotation transfers the same operation and unfinished parent mission; it is not completion.
+
+
+# R2 navigation checkpoint — semantic source published; review pending
+
+The current protected pin is `Mastermind@eec5324c5205e8bad206512e0a936898e50b2408`. The previous R2 browser blocker is now repaired on the same branch: the stable `#us-standouts` owner delegates newer-record activation, selects only an already-loaded same-grid target's published lifecycle through `setLife`, then leaves native fragment navigation untouched. This survives the page's entitled grid replacement and does not alter ranks, lifecycle derivation, entitlements or history.
+
+RED process 95825 failed two intended execution contracts on the published parent. GREEN process 96821 passed 6/6. Full process 8553 passed 199/199. Browser process 5198 passed 8 visual + 2 navigation cases, including a show-more-hidden target and a keyboard-activated post-hydration target. Production remains unproven; PR 7237 remains Draft/HOLD published semantic head `ca1f0a0f30782276a9f6260b6e31501f21d1d59c`, with independent review, binding checks, record closure and ordinary live proof still pending.

@@ -1,20 +1,22 @@
 {
   "base": "4f37209719d2ca5caf9fd3a37aca29fa363f351c",
   "browser_refresh": {
-    "cases_passed": 8,
+    "process": 5198,
     "exit_code": 0,
-    "process": 18615,
+    "visual_cases_passed": 8,
+    "navigation_cases_passed": 2,
     "real_dom": {
-      "action_badges": 0,
       "cards": 400,
+      "unique_ids": 400,
       "grid_children": 400,
-      "pagination": "Showing 15 of 400",
       "record_markers": 400,
-      "unique_ids": 400
+      "action_badges": 0,
+      "pagination": "Showing 15 of 400"
     },
-    "reason": "Generated evidence whitespace normalized by its existing verifier; product templates unchanged"
+    "receipt_sha256": "9f235d19d3ae601e45a0b957f9763bc93b034b496ec9f854cc2e79281d87d26d",
+    "scope": "component + real lifecycle script/filter/pager evidence; not authenticated production proof"
   },
-  "compared_main": "27ec910d04fc81692cf9640347ac31fd3de40170",
+  "compared_main": "12b655150582d9be39bfd2779b33338d154c565f",
   "compatibility_repair": {
     "accepted_migration_commit": "a8def4c24d584afe63f148c0d5ba6d8bf95ee506",
     "expected_sha256": "ba60c7daa09dffa6f6701a6676fb4526459ce92d78682e0a5a73e3d0f6e341c3",
@@ -22,9 +24,15 @@
     "red_process": 1554,
     "template_bytes_unchanged": true
   },
-  "git_publication": "PENDING",
+  "git_publication": {
+    "pr": 7237,
+    "published_parent_head": "71c66811a60a388f7323a606380d868f9b2b91a3",
+    "semantic_navigation_head": "ca1f0a0f30782276a9f6260b6e31501f21d1d59c",
+    "semantic_remote_readback": "ca1f0a0f30782276a9f6260b6e31501f21d1d59c",
+    "records_head": "PENDING_RECORD_COMMIT"
+  },
   "independent_review": "NOT_ASSIGNED",
-  "observed_at": "2026-09-17T00:24:05.192340+00:00",
+  "observed_at": "2026-09-17T03:59:36.289204+00:00",
   "operation": "prophet-plan-trust-20260916-sol-001",
   "prior_evidence": {
     "browser-receipt.json": "323c7360b16028625958983d88afcebd47ae81e2a3f61420f4666e87ca481cd6",
@@ -33,20 +41,39 @@
   },
   "production_acceptance": false,
   "schema": "prophet.plan_record_release_verification.v1",
-  "skillpack_commit": "4537f066775c73d305f82acf0643701f01f5e53c",
+  "skillpack_commit": "eec5324c5205e8bad206512e0a936898e50b2408",
   "source_sha256": {
     "templates/_prophet_card.html.j2": "4f069ba91cd92138e66adca574eb551620d19689832b819dcd7d020637647589",
     "templates/_us_prophet_plan_cards.html.j2": "4835d85e7a5ac2a7f6a7225d9e9cf377304bc80630a8152dbd20ab8001eb3828",
+    "templates/dashboard.html.j2": "53ad405b20c0885549faba5432fe2768c79fb148aa78e1077fdbe37545a82e99",
     "tests/test_p_mp1_shell_ladder_error_state.py": "a63604e7d311836b47c8bfda9209685e4345c22f3747deb0b3ee0abbd882cd0f",
+    "tests/test_p_mp1_shell_ladder_filter_css.py": "c1d1e469aa33723373068f9fec293f6146aec46468f59076ab2824829369f898",
     "tests/test_p_mp1_shell_nonus_byte_parity.py": "bebd70e5afaec943dfe3bd3c2b7ee81309c4d270c720d39f7841e94058da8fe2",
-    "tests/test_p_mp1_shell_stance_projection.py": "d842366447c11ffbba39823bbda2f0e1ade794838021133c8378e989252c42f6"
+    "tests/test_p_mp1_shell_stance_projection.py": "d842366447c11ffbba39823bbda2f0e1ade794838021133c8378e989252c42f6",
+    "docs/pr-crops/prophet-plan-record-trust-20260916/verify.py": "fa95e35b63e57a3fd587ce80093b61b8ea04b7ec284dbab33127635187690b85"
   },
   "tests": {
-    "command": "python3 -m pytest tests/test_p_mp1_shell_stance_projection.py tests/test_prophet_card_shared.py tests/test_prophet_card_live_change.py tests/test_p_mp1_shell_nonus_byte_parity.py tests/test_p_mp1_shell_repair_round.py tests/test_p_mp1_shell_ladder_error_state.py tests/test_china_archetype_d_s1.py -q -p no:cacheprovider --basetemp=.pytest-tmp-plan-record-publish-fullinputs",
+    "command": "python3 -m pytest tests/test_p_mp1_shell_stance_projection.py tests/test_prophet_card_shared.py tests/test_prophet_card_live_change.py tests/test_p_mp1_shell_nonus_byte_parity.py tests/test_p_mp1_shell_repair_round.py tests/test_p_mp1_shell_ladder_error_state.py tests/test_p_mp1_shell_ladder_filter_css.py tests/test_china_archetype_d_s1.py -q -p no:cacheprovider --basetemp=.pytest-tmp-plan-record-nav-matrix",
+    "process": 8553,
     "exit_code": 0,
-    "failed": 0,
-    "passed": 193,
-    "process": 8730,
-    "stdout_sha256": "50fc2628c4ca4b51fa74e7af1366929ec73fcbb17e09560f559fdfeb9e914f1f"
+    "passed": 199,
+    "failed": 0
+  },
+  "red_green": {
+    "red_process": 95825,
+    "red_failures": 2,
+    "red_reason": "delegated newer-record handler absent on published parent",
+    "green_process": 96821,
+    "green_passed": 6,
+    "green_failed": 0
+  },
+  "current_capability": "BUILT_NOT_PROVEN",
+  "contract_delta": {
+    "base": "12b655150582d9be39bfd2779b33338d154c565f",
+    "process": 19182,
+    "exit_code": 0,
+    "introduced": 0,
+    "inherited": 0,
+    "runtime_seconds": 388.37
   }
 }
