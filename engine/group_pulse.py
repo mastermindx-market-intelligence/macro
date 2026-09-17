@@ -962,7 +962,8 @@ def basket_pulse(basket_id: str, basket: dict, panel: dict, as_of: pd.Timestamp,
                  bench_ok: bool = True,
                  member_observation_out: dict[str, dict] | None = None,
                  source_receipts: Sequence[dict[str, Any]] | None = None,
-                 member_observation_errors: list[str] | None = None) -> dict | None:
+                 member_observation_errors: list[str] | None = None,
+                 member_benchmark_ok: bool | None = None) -> dict | None:
     """One `group_pulse.v1` object.  Returns None when the basket has no live member."""
     members, present = frames["members"], frames["present"]
     mask, daily = frames["mask"], frames["daily"]
@@ -1044,7 +1045,8 @@ def basket_pulse(basket_id: str, basket: dict, panel: dict, as_of: pd.Timestamp,
                 legacy_pulse=legacy_obj,
                 source_receipts=source_receipts,
                 generated_at=generated_at,
-                benchmark_available=bench_ok,
+                benchmark_available=(bench_ok if member_benchmark_ok is None
+                                     else member_benchmark_ok),
             )
         except Exception as exc:  # noqa: BLE001 - broad lanes retain the legacy read
             if member_observation_errors is None:
@@ -1414,6 +1416,14 @@ def compute(data_root: Path | None = None) -> dict[str, Any]:
 
     panel = build_member_panel(closes, volumes, bench)
     as_of = panel["index"].max()
+    # The legacy panel intentionally retains its established benchmark fill rules.
+    # P1's measured daily comparison needs two ACTUAL valid closes on the same
+    # owner-panel rows as the member return. Never promote a filled/stale benchmark
+    # or a mismatched multi-session move into an observed member-relative reading.
+    member_benchmark_ok = False
+    if bench_ok and len(panel["index"]) >= 2:
+        pair = bench.reindex(panel["index"][-2:]).to_numpy(dtype="float64")
+        member_benchmark_ok = bool(np.isfinite(pair).all() and (pair > 0).all())
     source_receipts: list[dict[str, Any]] = []
     try:
         from engine import group_member_observations as _member_observations
@@ -1455,7 +1465,7 @@ def compute(data_root: Path | None = None) -> dict[str, Any]:
             basis="raw_daily_change",
             effective_at=as_of,
         ))
-        if bench_ok:
+        if member_benchmark_ok:
             source_receipts.append(_member_observations.normalized_frame_receipt(
                 panel["spy_adj"],
                 source_ref="group_pulse:member_benchmark_relative_return_panel",
@@ -1469,7 +1479,7 @@ def compute(data_root: Path | None = None) -> dict[str, Any]:
                 basis="reported_volume",
                 effective_at=as_of,
             ))
-        if bench_ok:
+        if bench_ok and not bench.loc[:as_of].empty:
             source_receipts.append(_member_observations.normalized_frame_receipt(
                 bench.loc[:as_of],
                 source_ref="group_pulse:benchmark:SPY",
@@ -1508,6 +1518,7 @@ def compute(data_root: Path | None = None) -> dict[str, Any]:
                                         if capture_enabled else None),
                 source_receipts=source_receipts,
                 member_observation_errors=capture_errors,
+                member_benchmark_ok=member_benchmark_ok,
             )
         except Exception as e:  # noqa: BLE001 — one bad basket never sinks the sweep
             print(f"::warning title=group-pulse::basket {bid} failed ({e}) — it is "

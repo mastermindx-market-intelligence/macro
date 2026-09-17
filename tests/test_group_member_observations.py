@@ -813,3 +813,116 @@ def test_closed_contract_requires_nonempty_receipts_and_frame_backed_cells():
     forged = _rehash(forged)
     assert any("normalized_frame" in error.lower()
                for error in GMO.validate_member_bundle(forged))
+
+
+def _compute_with_observed_benchmark(monkeypatch, tmp_path, case):
+    panel, basket, _, _, _, _ = _pulse_panel()
+    closes = panel["closes"]
+    volumes = pd.DataFrame(1_000_000.0, index=closes.index, columns=closes.columns)
+    benchmark = closes.mean(axis=1)
+    if case == "current_missing":
+        benchmark = benchmark.drop(benchmark.index[-1])
+    elif case == "previous_missing":
+        benchmark = benchmark.drop(benchmark.index[-2])
+    elif case == "stale_tail":
+        benchmark = benchmark.iloc[:-3]
+    elif case == "future_only":
+        benchmark.index = benchmark.index + pd.Timedelta(days=1000)
+    elif case == "older_gap":
+        benchmark = benchmark.drop(benchmark.index[-10])
+    elif case == "flat_benchmark":
+        benchmark[:] = 100.0
+    elif case == "zero_relative":
+        benchmark = closes["A"].copy()
+    elif case == "future_extension":
+        benchmark.loc[benchmark.index[-1] + pd.Timedelta(days=1)] = 900_000.0
+    elif case != "complete":
+        pos, kind = case.split("_", 1)
+        value = {"nan": np.nan, "zero": 0.0, "negative": -100.0, "infinite": np.inf}[kind]
+        benchmark.iloc[-1 if pos == "current" else -2] = value
+
+    def membership(_root, receipt_out=None):
+        if receipt_out is not None:
+            receipt_out.append(GMO.raw_bytes_receipt(
+                b'{"version":"2026-08-07","baskets":{}}\n',
+                source_ref="data/baskets/membership.json",
+                basis="curated_membership", effective_at="2026-08-07",
+            ))
+        return {GROUP_ID: basket}
+
+    monkeypatch.setattr(GP, "load_membership", membership)
+    monkeypatch.setattr(GP, "load_member_tape", lambda _t, _r: (closes, volumes, []))
+    monkeypatch.setattr(GP, "load_benchmark", lambda _root: benchmark)
+    monkeypatch.setattr(GP, "member_washouts", lambda f: {key: None for key in f.columns})
+    monkeypatch.setattr(GP, "member_stages", lambda f, _v, _b: {key: 2 for key in f.columns})
+    result = GP.compute(tmp_path)
+    return result, closes, volumes, benchmark, basket
+
+
+@pytest.mark.parametrize("case", [
+    "current_missing", "previous_missing", "stale_tail", "future_only",
+    "current_nan", "previous_nan", "current_zero", "previous_zero",
+    "current_negative", "previous_negative", "current_infinite", "previous_infinite",
+])
+def test_compute_withholds_unobserved_benchmark_pair_without_changing_legacy(monkeypatch, tmp_path, case):
+    result, closes, volumes, benchmark, basket = _compute_with_observed_benchmark(
+        monkeypatch, tmp_path, case,
+    )
+    assert result["member_observation_errors"] == []
+    group = result["member_observation_groups"][GROUP_ID]
+    for key in group["member_keys"]:
+        relative = group["members"][key]["metrics"]["benchmark_relative_daily_change"]
+        raw = group["members"][key]["metrics"]["raw_daily_change"]
+        assert relative["value"] is None, (case, key, relative)
+        assert relative["null_reason"] == "NO_COVERAGE"
+        assert relative["estimability_reason"] == "benchmark_unavailable"
+        actual_raw = closes.pct_change(fill_method=None).loc[pd.Timestamp(result["as_of"]), key]
+        if np.isfinite(actual_raw):
+            assert raw["value"] == pytest.approx(actual_raw)
+            assert raw["null_reason"] == "OK"
+    assert "benchmark_relative_daily_change" not in {
+        row["basis"] for row in result["source_receipts"]
+    }
+    pulse_bytes = GP.site_payload_bytes(result["payload"])
+    bundle = GMO.assemble_member_bundle(
+        groups=result["member_observation_groups"], as_of=result["as_of"],
+        generated_at=result["payload"][GROUP_ID]["generated_at"],
+        source_receipts=result["source_receipts"], legacy_pulse_bytes=pulse_bytes,
+    )
+    assert GMO.validate_member_bundle(bundle) == []
+    # Strict companion eligibility must not be passed as legacy bench_ok. Compare
+    # against the real no-capture legacy invocation with its original tape gate.
+    original_panel = GP.build_member_panel(closes, volumes, benchmark)
+    as_of = original_panel["index"].max()
+    frames = GP.basket_frames(basket, original_panel, as_of)
+    episodes = GP.episodes_from_series(
+        GROUP_ID, list(frames["daily"].index),
+        frames["daily"]["activity_share"].tolist(), frames["daily"]["activity_n"].tolist(),
+        frames["members_by_day"],
+    )
+    legacy = GP.basket_pulse(
+        GROUP_ID, basket, original_panel, as_of,
+        {key: None for key in closes.columns}, {key: 2 for key in closes.columns},
+        result["payload"][GROUP_ID]["generated_at"], frames, episodes,
+        stage_source_ok=True, bench_ok=True,
+    )
+    assert pulse_bytes == GP.site_payload_bytes({GROUP_ID: legacy})
+
+
+@pytest.mark.parametrize("case", ["complete", "older_gap", "flat_benchmark", "zero_relative", "future_extension"])
+def test_compute_accepts_exact_observed_benchmark_pair_and_ignores_unrelated_rows(monkeypatch, tmp_path, case):
+    result, closes, _volumes, benchmark, _basket = _compute_with_observed_benchmark(
+        monkeypatch, tmp_path, case,
+    )
+    assert result["member_observation_errors"] == []
+    group = result["member_observation_groups"][GROUP_ID]
+    current, previous = closes.index[-1], closes.index[-2]
+    bench_return = float(benchmark.loc[current] / benchmark.loc[previous] - 1.0)
+    for key in group["member_keys"]:
+        raw = group["members"][key]["metrics"]["raw_daily_change"]
+        relative = group["members"][key]["metrics"]["benchmark_relative_daily_change"]
+        if raw["value"] is not None:
+            assert relative["value"] == pytest.approx(raw["value"] - bench_return)
+            assert relative["null_reason"] == "OK"
+    if case == "zero_relative":
+        assert group["members"]["A"]["metrics"]["benchmark_relative_daily_change"]["value"] == 0.0
