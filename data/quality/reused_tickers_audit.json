@@ -1,5 +1,5 @@
 {
- "asof": "2026-09-16",
+ "asof": "2026-09-17",
  "audit": "stocks",
  "config": {
   "price_max_gap_days": 4,
@@ -37,7 +37,7 @@
     {
      "name": "ECHO",
      "kind": "zombie",
-     "detail": "dead-registry name advancing 1758d past its 2021-11-22 registry bar; overlap corr -0.139"
+     "detail": "dead-registry name advancing 1759d past its 2021-11-22 registry bar; overlap corr -0.139"
     }
    ]
   },
@@ -785,8 +785,8 @@
     {
      "ticker": "ECHO",
      "registry_last": "2021-11-22",
-     "store_tip": "2026-09-15",
-     "days_past_death": 1758,
+     "store_tip": "2026-09-16",
+     "days_past_death": 1759,
      "overlap": {
       "n_overlap": 99,
       "ret_corr_full": -0.0318,
@@ -1031,8 +1031,8 @@
     {
      "ticker": "BBBY",
      "registry_last": "2023-05-19",
-     "store_tip": "2026-09-15",
-     "days_past_death": 1215,
+     "store_tip": "2026-09-16",
+     "days_past_death": 1216,
      "overlap": {
       "n_overlap": 2362,
       "ret_corr_full": 0.9305,
