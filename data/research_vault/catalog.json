@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T21:51:28.366860+00:00",
-  "count": 2317,
+  "generated_at": "2026-09-17T22:06:24.490341+00:00",
+  "count": 2318,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -123,6 +123,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 29,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-vby8jjpvg7b-d3855b",
+      "title": "Taiwan CBC on Hold as Expected on Benign Inflation Outlook",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:39:35Z",
+      "summary_points": [
+        "Taiwan CBC Policy & Housing Shifts: CBC raised LTV to 70% (2nd hike YTD), housing market cooling (real estate loans share down to 34.4%), inflation expected >2% through 2027 despite moderation next year.",
+        "Inflation & Geopolitical Risks: Headline CPI at 2.03% (vs 1.91% forecast), inflation >2% persisting through 2027; geopolitical risks (Middle East, US trade policies) and Fed rate hikes exacerbate TWD weakness.",
+        "Capital Flows & Policy Differentiation: Capital outflows driven by foreign investors diversifying post-equity rally (not rate differentials); CBC maintains \"slightly tight\" stance via quantity tools (LTV hikes), not rate changes.",
+        "Commodity Inflation Impact: Global commodity price surges accelerating inflation, increasing portfolio risk exposure amid persistent domestic inflation trends."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
