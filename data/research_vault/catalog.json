@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T08:34:52.348964+00:00",
-  "count": 2269,
+  "generated_at": "2026-09-17T08:49:53.413603+00:00",
+  "count": 2279,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -79,11 +79,32 @@
     "WGC",
     "Westpac",
     "William Blair",
+    "Wolfe Research",
     "World Gold Council",
     "ZKB",
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-udwrjbja6rb-b99edf",
+      "title": "Problems in Houston",
+      "institution": "Canaccord",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T02:25:52Z",
+      "summary_points": [
+        "Houston Operational Crisis: Revenue slashed $3B→$2.4B due to welding automation failures, labor shortages, and bottlenecks ($450M top-line hit), with production capacity reduced to 3 units/day (vs 11), shifting $190M bottom-line impact to 2027.",
+        "FY2026 Guidance Cut: Revenue reduced to $2.4B (vs $3B), EBITDA to -$200M (vs $100M); 80% revenue loss from U.S.",
+        "production delays, 2/3 EBITDA decline from penalties and missed milestones.",
+        "Target Price Reduction: BUY rating retained but target slashed to $15 (from $24), reflecting 17x 2028E non-GAAP EPS ($0.83 vs $1.20) amid persistent operational friction."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-qoewpbn7rg0-0509eb",
       "title": "Pace",
@@ -125,6 +146,47 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-spw9wm1vpru-419199",
+      "title": "Amazon delivers",
+      "institution": "Canaccord",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T02:25:33Z",
+      "summary_points": [
+        "Amazon Deal Scale: $8B potential order volume (2027-2028), $2.4B initial deliveries, firm backlog, and $1.6B data center backlog (2026 earnings call) driving revenue targets of >$3B by 2028.",
+        "Target Price Re-rating: BUY maintained, target raised to $375 (from $275) on 2028 EPS $17.05 (vs.",
+        "$13.54) and 22x forward P/E (vs. 20x), justified by Amazon deal and residential demand.",
+        "Revenue & Margin Expansion: Net sales to grow from $4.94B (2026E) to $9.74B (2030E), gross profit $1.89B to $3.80B, with stable 39% gross margin and 21-22% EBITDA margin supporting 25% CAGR operating income growth."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-dspexrpttyq-e99b46",
+      "title": "China in Transition China's great Go Global expansion From peripheral to core Sept 14, 2026",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T02:00:56Z",
+      "summary_points": [
+        "Market Share Projection: Chinese firms' ex-China market share to rise from 18% (2026) to 31% by 2035, driven by 80% TAM growth; 70%+ sectors expanding in emerging markets (24% share, 15x faster growth than organic).",
+        "Valuation Disconnect: Capital markets penalize share loss but ignore incumbent market cap declines; Chinese firms' market cap gains (400% avg) exceed ex-China peers (300% for <200% revenue growth), masking share shifts.",
+        "Sector-Specific Disruption: Roborock/Ecovacs' LiDAR tech eroded iRobot's ex-China share (44%→15%, 2017-2025), triggering 99% market cap decline and bankruptcy; Daikin maintains 22% HVAC share amid Chinese competition (Midea 11.4%).",
+        "Pricing Dynamics: Chinese firms enter with 30% price discounts (unchanged), achieve 90%+ price appreciation by 2025, and drive revenue growth (10x vs ex-China peers), but RVCs/autos face deflation risk amid demand downturns.",
+        "Latecomer Opportunity: Robotaxis and surgical robots (latecomers) outperform early achievers (autos, RVCs) due to less mature competition; autos (Europe) and RVCs vulnerable to market share loss and revenue contraction."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 71,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-8omyzzmvnmq-fadb3c",
       "title": "Prime Insights and Analytics Chart Pack September 2026 Marquee",
       "institution": "Prime",
@@ -142,6 +204,48 @@
       "tickers": [],
       "top_pick": false,
       "pages": 26,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-1rx0cy8fqqi-fee587",
+      "title": "Wolfe Research Meta Muse and Instinct Product Deep Dive + Contribution To META + Benefits Risks",
+      "institution": "Wolfe Research",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T01:38:25Z",
+      "summary_points": [
+        "Meta's Agent Revenue Potential: $30B-$50B opportunity via subscriptions (5% of 3B users at $20/month) and take rates (5% eCom penetration + 3-5% rate), leveraging Meta’s 3B+ user base and data advantages to offset trust risks vs.",
+        "Google.",
+        "Structural Moat Advantage: Meta’s 3B global users and integrated services (e.g., social commerce, data) create a defensible moat, mitigating agent-driven revenue risks (ad loss, take rate pressure) for e-commerce/logistics sectors.",
+        "Sector-Wide Momentum: 7/10 key players (Amazon, Chewy, DoorDash, Meta, Shopify, Uber) rated Outperform with aggressive price targets, signaling strong near-term growth in delivery, marketplaces, and social commerce.",
+        "Competitive Edge & Risk Assessment: Meta’s first-mover agent launch (Muse, Sept 2026) with U.S."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 18,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xocchdticsi-edb564",
+      "title": "Wolfe Research A Brief History of the End of the World",
+      "institution": "Wolfe Research",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T01:38:21Z",
+      "summary_points": [
+        "Escalating AI Risk Framework: Three AI risk tiers (harmful use, unintended actions, loss of control) with historical parallels (Atomic Bomb, Y2K, LHC), but current ambiguity and China’s tech edge create unique challenges; private sector (OpenAI/Anthropic) as primary risk manager amid slow U.S.",
+        "policy action.",
+        "Policy-Geopolitical Divergence: U.S.",
+        "regulatory inertia vs.",
+        "China’s competing tech objectives; private safety commitments critical, but pacing frontier development without losing edge is a key flow risk amid geopolitical competition."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
@@ -204,6 +308,86 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-hat4x6zcmwo-8e99c4",
+      "title": "In Credit 14 09 2026",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-17T00:37:02Z",
+      "summary_points": [
+        "No return to near-zero rates: Structural inflation drivers (aging populations, supply-chain shifts, geopolitical uncertainty), G7 fiscal spending (defense/infrastructure/energy), and central bank caution post-2021-23 make ultra-low rates an exception, not a benchmark.",
+        "Global Govt Bonds Selloff: G7 yields at 2000 highs driven by US CPI surprise (core +0.3% MoM), Fed/ECB hawkishness (Fed 86% hike prob, ECB +25bps), and oil surge above $100 amid Middle East tensions.",
+        "UK/Gilts Market Volatility: 30-yr gilts at 1998 high (5.82%), UK fiscal headroom reduced to £12bn, deficit surprise, and political risk (Budget Oct 28) elevate term premia for long-dated gilts."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-jiygtqokz2z-5087e2",
+      "title": "Equity Beat September 2026",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-17T00:36:47Z",
+      "summary_points": [
+        "Experiential Shift Data: U.S.",
+        "PCE shows recreation/travel now exceeds nesting/home spending (Chart 1), validated by rising passport numbers (Chart 2), signaling a structural consumer shift toward experiences.",
+        "Hotel Sector Divergence: Premium brands (Hilton, Marriott) outperform value peers (Choice, Wyndham) since 2021 due to resilient RevPAR and affluent traveler demand, not just cyclical trends.",
+        "Experience Enablers Momentum: Apple, Garmin, Ferrari lead stock performance since 2021 as \"experience enablers,\" while possession-based stocks risk value traps amid secular demand shift.",
+        "Critical Risk Factor: Geopolitical trends (e.g., passport growth) reinforce experiential demand, but housing turnover indicators (new listings, mortgage apps) remain essential for functional possession stocks' recovery."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-cl12wtwcfyd-7fe6ca",
+      "title": "Why the uk is a great destination for infrastructure investment and why now. dalmore infrstructure series",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-17T00:36:22Z",
+      "summary_points": [
+        "Pension Capital Mobilization: Mansion House Accord (2025) mandates 17 UK DC providers to allocate 10% of default funds to private markets by 2030 (€50bn total, €25bn to UK assets), reinforced by Pension Schemes Act 2026 requiring £25bn+ multi-employer DC funds for UK infrastructure.",
+        "Valuation Dislocation: Listed UK infrastructure trusts trade at steep discounts to NAV (e.g., Gresham House Energy Storage at -58%), with sector-wide inability to raise equity since 2022, signaling severe underpricing amid £530B+ private capital need for infrastructure pipeline.",
+        "Inflation/Currency Hedge: UK infrastructure revenues tied to UK inflation indices directly offset inflation erosion of pension savings, while sterling income aligns with sterling retirement spending—eliminating currency risk for overseas allocators.",
+        "Structural Capital Flow: Brexit-driven capital flight created £72.5bn Infrastructure Strategy and domestic pension capital surge (tens of billions), with UK infrastructure underweighted in global portfolios despite proven market stability and political safety (no expropriation).",
+        "Funding Gap & Demand: £50B/year required by 2030 for net-zero transition (Climate Change Committee), with £725B+ in Infrastructure Strategy funding; £530B pipeline needs private capital, creating large investment opportunities amid pension reforms targeting 10% infrastructure allocation by 2030 (vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ia9tkr4rccu-ea812b",
+      "title": "Smb acquiring the platform takeover",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-17T00:12:03Z",
+      "summary_points": [
+        "Structural Shift to Platform Dominance: Software platforms will capture 60–70% of SMB acquiring volume by 2030, displacing traditional acquirers; banks face 18–24 month window to adapt or become commodity infrastructure providers, with SMBs generating $3.5T–$4T gross payment volume and $20B–$23B in acquiring revenue (70% of total US acquiring revenue).",
+        "Value Reconfiguration Beyond Transactions: Transaction processing (commodity, basis points) is eclipsed by bundled services (lending, analytics, loyalty) generating revenue multiples higher; platforms monetize merchant lifecycle ownership (onboarding, growth) versus legacy infrastructure.",
+        "Critical SMB Revenue Concentration: SMBs represent 70% of acquiring revenue and 25–35% of total US acquiring volume; platform takeovers accelerate via embedded payments, AI-driven onboarding, and subscription pricing, eroding traditional acquirer margins."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-6sjud1mvyti-cdf6d6",
       "title": "JPM US Market Intelligence Afternoon Briefing Sept 16",
       "institution": "J.P. Morgan",
@@ -262,6 +446,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 36,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-7u1ygeugmol-5b9eb9",
+      "title": "Siag AI conscious asset allocation portfolio construction in a capital investment boom",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T23:52:11Z",
+      "summary_points": [
+        "Subsidy-Driven Overinvestment Risk: Profitable firms subsidizing AI build-out via debt/equity issuance creates double-edged risk—insulating boom from failures but risking sustained overinvestment beyond adequate returns, critical for portfolio construction.",
+        "Geopolitical Concentration & Competitive Dynamics: AI capital investment heavily concentrated in U.S.",
+        "(core models, hyperscalers), with China emerging as parallel ecosystem challenging U.S.",
+        "dominance, altering market dynamics and risk profiles.",
+        "AI Capex Scenarios: J.P."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 58,
       "language": "en",
       "needs_metadata": false
     },
