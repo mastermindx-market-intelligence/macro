@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T22:51:28.084885+00:00",
-  "count": 2320,
+  "generated_at": "2026-09-17T23:06:34.967873+00:00",
+  "count": 2321,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -223,6 +223,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-lluvzcu5woo-e7ec3e",
+      "title": "Global Markets Daily High Energy Carrying Returns in EM Frontier — KZT and NGN Stocktake",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:38:18Z",
+      "summary_points": [
+        "KZT/NGN Oil-Driven Carry: KZT offers elevated 12m nominal FX carry (vs EM peers) and real yields of 3.5-4% (NDF-implied 15-16%), supported by expected 125bp rate cut; NGN driven by >20% OMO yields, falling inflation, and reserve accumulation.",
+        "Frontier Carry Trade Recommendation: Long TRY, NGN, KZT vs USD with 12% total return target (up from 10%), tightening stops to 7%, leveraging high nominal FX carry vs EM HY and oil-driven spot returns.",
+        "KZT Oil Beta Vulnerability: Rising rolling six-month oil beta (Exhibit 7) exposes KZT to oil price deescalation (e.g., Iran war), despite defensive traits against global market volatility.",
+        "NGN Undervaluation & Carry: NGN spot upside potential via undervaluation (GSDEER model), central bank reserve accumulation, and ex-ante real rates >5% (near 2015 highs) from high OMO yields.",
+        "Revised NGN Forecast: USD/NGN 3m/6m forecasts raised to 1,300/1,275 (vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
       "language": "en",
       "needs_metadata": false
     },
