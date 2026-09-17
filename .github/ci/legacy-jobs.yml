@@ -4603,7 +4603,7 @@ jobs:
       - name: install minimal test dependencies
         run: pip install pytest pandas numpy pyarrow pyyaml scipy
       - name: all hermetic Signal Foundry regressions
-        run: python -m pytest tests/test_sf_*.py -q
+        run: python -m pytest tests/test_sf_benchmark_labels.py tests/test_sf_*.py -q
 
   causal-factory:
     if: ${{ false }}
