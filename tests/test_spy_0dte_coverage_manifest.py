@@ -177,3 +177,71 @@ def test_candidate_object_contains_no_outcome_or_gamma_fields():
     candidate = coverage.eligible_candidates(payload, date, "09:35:00.000")[0]
     forbidden = ("gamma", "gex", "pnl", "profit", "stop", "outcome", "label", "exit")
     assert not any(any(token in key.lower() for token in forbidden) for key in candidate)
+
+
+def test_tick_window_candidate_can_enter_after_boundary_without_five_minute_snapshot_bias():
+    date = "2025-07-01"
+    t0 = date + "T09:35:00.000"
+    payload = {"response": [
+        group("PUT", 600, [
+            row(date + "T09:34:59.800", .17, .18),
+            row(date + "T09:35:00.264", .20, .21),
+        ], date),
+        group("PUT", 598, [row(date + "T09:34:59.900", .09, .10)], date),
+    ]}
+    out = coverage.eligible_candidates_from_tick_window(payload, date, "09:35:00.000")
+    assert len(out) == 1
+    assert abs(out[0]["entry_credit"] - .10) < 1e-12
+    assert abs(out[0]["entry_delay_seconds"] - .264) < 1e-12
+    assert out[0]["entry_timestamp"].endswith("09:35:00.264")
+
+
+def test_tick_window_can_seed_fresh_predecision_nbbo_at_exact_decision():
+    date = "2025-07-01"
+    payload = {"response": [
+        group("PUT", 600, [row(date + "T09:34:59.800", .20, .21)], date),
+        group("PUT", 598, [row(date + "T09:34:59.900", .09, .10)], date),
+    ]}
+    out = coverage.eligible_candidates_from_tick_window(payload, date, "09:35:00.000")
+    assert len(out) == 1
+    assert out[0]["entry_delay_seconds"] == 0
+    assert abs(out[0]["entry_leg_age_seconds"] - .2) < 1e-12
+
+
+def test_tick_window_rejects_credit_crossing_after_one_second():
+    date = "2025-07-01"
+    payload = {"response": [
+        group("PUT", 600, [
+            row(date + "T09:34:59.800", .17, .18),
+            row(date + "T09:35:01.200", .20, .21),
+        ], date),
+        group("PUT", 598, [row(date + "T09:34:59.900", .09, .10)], date),
+    ]}
+    assert coverage.eligible_candidates_from_tick_window(
+        payload, date, "09:35:00.000"
+    ) == []
+
+
+def test_tick_window_new_invalidating_state_prevents_phantom_band_crossing():
+    date = "2025-07-01"
+    payload = {"response": [
+        group("PUT", 600, [
+            row(date + "T09:34:59.800", .20, .21),
+            row(date + "T09:35:00.100", 0, .21, bid_size=0, bid_exchange=0, condition=0),
+        ], date),
+        group("PUT", 598, [row(date + "T09:35:00.200", .09, .10)], date),
+    ]}
+    assert coverage.eligible_candidates_from_tick_window(
+        payload, date, "09:35:00.000"
+    ) == []
+
+
+def test_tick_candidate_object_stays_preoutcome_and_gammaless():
+    date = "2025-07-01"
+    payload = {"response": [
+        group("PUT", 600, [row(date + "T09:35:00.000", .20, .21)], date),
+        group("PUT", 598, [row(date + "T09:35:00.000", .09, .10)], date),
+    ]}
+    candidate = coverage.eligible_candidates_from_tick_window(payload, date, "09:35:00.000")[0]
+    forbidden = ("gamma", "gex", "pnl", "profit", "stop", "outcome", "label", "exit")
+    assert not any(any(token in key.lower() for token in forbidden) for key in candidate)

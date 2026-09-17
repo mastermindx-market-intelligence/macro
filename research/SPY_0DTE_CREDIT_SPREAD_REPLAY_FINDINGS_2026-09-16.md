@@ -5,6 +5,8 @@
 **Parent prereg:** `research/SPY_0DTE_CREDIT_SPREAD_FORENSIC_PREREG_2026-09-16.md`  
 **Replay helper:** `scripts/research/spy_0dte_credit_spread_replay.py`
 
+> **2026-09-17 source-law revalidation notice:** before any broad A0/A1 outcome unblinding, the package state machine was hardened so every newer NBBO row—including zero/non-firm/crossed states—invalidates an older executable side, equal-timestamp leg updates are applied together, and economic entry discovery uses the exact decision ±1 second tick window rather than a boundary snapshot. The numerical forensic cases below were produced before that hardening. They remain quarantined historical observations and **must be rerun under the current helper before their exact entry/exit times or reconciliation residuals are cited as current proof**. No parameter or statistical result may rely on the pre-hardening numbers.
+
 ## 1. Why this record exists
 
 These bounded real-path replays test whether publicly disclosed Caleb Gregory / OPG SPY 0DTE spreads can be reconciled against historical executable NBBO rather than midpoint or end-of-day marks. Every inspected case is **development/forensic evidence** and is permanently ineligible for the final untouched holdout.

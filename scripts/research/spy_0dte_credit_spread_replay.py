@@ -109,8 +109,6 @@ def _parsed_quotes(payload: Any, contract: Contract) -> list[Quote]:
             bid_cond, ask_cond = int(raw["bid_condition"]), int(raw["ask_condition"])
         except (KeyError, TypeError, ValueError) as exc:
             raise ReplayError("Theta quote row fields are malformed") from exc
-        if bid < 0 or ask < 0 or (bid > 0 and ask > 0 and ask < bid):
-            continue
         out.append(
             Quote(
                 ts,
@@ -128,7 +126,17 @@ def _parsed_quotes(payload: Any, contract: Contract) -> list[Quote]:
     return out
 
 
+def _quote_state_valid(quote: Quote) -> bool:
+    return (
+        quote.bid >= 0
+        and quote.ask >= 0
+        and not (quote.bid > 0 and quote.ask > 0 and quote.ask < quote.bid)
+    )
+
+
 def _positive_firm_side(quote: Quote, side: str) -> bool:
+    if not _quote_state_valid(quote):
+        return False
     if side == "bid":
         return (
             quote.bid > 0
@@ -144,6 +152,21 @@ def _positive_firm_side(quote: Quote, side: str) -> bool:
             and quote.ask_exchange in KNOWN_THETA_EXCHANGES
         )
     raise ReplayError("side must be bid or ask")
+
+
+def source_quotes(payload: Any, contract: Contract) -> list[Quote]:
+    """Return every structurally parsed source quote, including invalidating states."""
+    return _parsed_quotes(payload, contract)
+
+
+def exit_side_executable(quote: Quote, role: str) -> bool:
+    if role == "short":
+        return _positive_firm_side(quote, "ask")
+    if role == "long":
+        return _positive_firm_side(quote, "bid") or (
+            quote.bid == 0 and _positive_firm_side(quote, "ask")
+        )
+    raise ReplayError("role must be short or long")
 
 
 def qualifying_quotes(
@@ -171,17 +194,124 @@ def qualifying_exit_quotes(
     """
     if role not in {"short", "long"}:
         raise ReplayError("role must be short or long")
-    out: list[Quote] = []
-    for quote in _parsed_quotes(payload, contract):
-        if role == "short":
-            if _positive_firm_side(quote, "ask"):
-                out.append(quote)
+    return [
+        quote for quote in _parsed_quotes(payload, contract)
+        if exit_side_executable(quote, role)
+    ]
+
+
+def _package_from_state(
+    now: datetime,
+    short_quote: Quote,
+    long_quote: Quote,
+    *,
+    action: str,
+    max_leg_age_seconds: Decimal,
+) -> PackageQuote | None:
+    age = Decimal(
+        str(
+            max(
+                (now - short_quote.timestamp).total_seconds(),
+                (now - long_quote.timestamp).total_seconds(),
+            )
+        )
+    )
+    if age < 0 or age > max_leg_age_seconds:
+        return None
+    if action == "entry":
+        if not (
+            _positive_firm_side(short_quote, "bid")
+            and _positive_firm_side(long_quote, "ask")
+        ):
+            return None
+        value = short_quote.bid - long_quote.ask
+        if value <= 0:
+            return None
+        long_zero = False
+    elif action == "exit":
+        if not _positive_firm_side(short_quote, "ask"):
+            return None
+        long_zero = (
+            long_quote.bid == 0 and _positive_firm_side(long_quote, "ask")
+        )
+        if not (_positive_firm_side(long_quote, "bid") or long_zero):
+            return None
+        value = short_quote.ask - long_quote.bid
+        if value < 0:
+            return None
+    else:
+        raise ReplayError("action must be entry or exit")
+    return PackageQuote(
+        now,
+        short_quote.timestamp,
+        long_quote.timestamp,
+        age,
+        value,
+        long_zero,
+    )
+
+
+def package_quotes(
+    short_quotes: Sequence[Quote],
+    long_quotes: Sequence[Quote],
+    *,
+    action: str,
+    max_leg_age_seconds: Decimal,
+    start_at: datetime | None = None,
+    end_at: datetime | None = None,
+) -> list[PackageQuote]:
+    """Return causal executable package states from full source quote streams.
+
+    Every source row updates current state, including zero/non-firm/crossed rows,
+    so a stale previously firm side cannot survive a newer invalidating quote.
+    Equal-timestamp leg updates are applied together before package evaluation.
+    When ``start_at`` is supplied, all prior rows seed state and one package is
+    evaluated exactly at that timestamp before later events are processed.
+    """
+    if action not in {"entry", "exit"}:
+        raise ReplayError("action must be entry or exit")
+    if end_at is not None and start_at is not None and end_at < start_at:
+        raise ReplayError("package end precedes start")
+    events = sorted(
+        [(q.timestamp, 0, q) for q in short_quotes]
+        + [(q.timestamp, 1, q) for q in long_quotes],
+        key=lambda row: (row[0], row[1]),
+    )
+    latest: dict[int, Quote] = {}
+    out: list[PackageQuote] = []
+    index = 0
+
+    def apply_timestamp(timestamp: datetime) -> None:
+        nonlocal index
+        while index < len(events) and events[index][0] == timestamp:
+            _, leg, quote = events[index]
+            latest[leg] = quote
+            index += 1
+
+    def maybe_emit(now: datetime) -> None:
+        if len(latest) != 2:
+            return
+        package = _package_from_state(
+            now, latest[0], latest[1],
+            action=action, max_leg_age_seconds=max_leg_age_seconds,
+        )
+        if package is not None:
+            out.append(package)
+
+    if start_at is not None:
+        while index < len(events) and events[index][0] <= start_at:
+            apply_timestamp(events[index][0])
+        maybe_emit(start_at)
+
+    while index < len(events):
+        now = events[index][0]
+        if start_at is not None and now <= start_at:
+            apply_timestamp(now)
             continue
-        if _positive_firm_side(quote, "bid"):
-            out.append(quote)
-            continue
-        if quote.bid == 0 and _positive_firm_side(quote, "ask"):
-            out.append(quote)
+        if end_at is not None and now > end_at:
+            break
+        apply_timestamp(now)
+        maybe_emit(now)
     return out
 
 
@@ -192,50 +322,12 @@ def first_package_quote(
     action: str,
     max_leg_age_seconds: Decimal,
 ) -> PackageQuote | None:
-    """Return first causal package-ready NBBO from two asynchronous quote streams.
-
-    ``entry`` sells the short at bid and buys the long at ask (credit).
-    ``exit`` buys the short at ask and sells the long at bid (debit).
-    """
-    if action not in {"entry", "exit"}:
-        raise ReplayError("action must be entry or exit")
-    events = sorted(
-        [(q.timestamp, 0, q) for q in short_quotes]
-        + [(q.timestamp, 1, q) for q in long_quotes],
-        key=lambda row: (row[0], row[1]),
+    """Return the first executable package from full source quote streams."""
+    packages = package_quotes(
+        short_quotes, long_quotes, action=action,
+        max_leg_age_seconds=max_leg_age_seconds,
     )
-    latest: dict[int, Quote] = {}
-    for now, leg, quote in events:
-        latest[leg] = quote
-        if len(latest) != 2:
-            continue
-        short_quote, long_quote = latest[0], latest[1]
-        age = Decimal(
-            str(
-                max(
-                    (now - short_quote.timestamp).total_seconds(),
-                    (now - long_quote.timestamp).total_seconds(),
-                )
-            )
-        )
-        if age > max_leg_age_seconds:
-            continue
-        value = (
-            short_quote.bid - long_quote.ask
-            if action == "entry"
-            else short_quote.ask - long_quote.bid
-        )
-        if value <= 0:
-            continue
-        return PackageQuote(
-            now,
-            short_quote.timestamp,
-            long_quote.timestamp,
-            age,
-            value,
-            action == "exit" and long_quote.bid == 0,
-        )
-    return None
+    return packages[0] if packages else None
 
 
 def first_target_debit(
@@ -245,37 +337,12 @@ def first_target_debit(
     target_debit: Decimal,
     max_leg_age_seconds: Decimal,
 ) -> PackageQuote | None:
-    events = sorted(
-        [(q.timestamp, 0, q) for q in short_quotes]
-        + [(q.timestamp, 1, q) for q in long_quotes],
-        key=lambda row: (row[0], row[1]),
-    )
-    latest: dict[int, Quote] = {}
-    for now, leg, quote in events:
-        latest[leg] = quote
-        if len(latest) != 2:
-            continue
-        short_quote, long_quote = latest[0], latest[1]
-        age = Decimal(
-            str(
-                max(
-                    (now - short_quote.timestamp).total_seconds(),
-                    (now - long_quote.timestamp).total_seconds(),
-                )
-            )
-        )
-        if age > max_leg_age_seconds:
-            continue
-        debit = short_quote.ask - long_quote.bid
-        if debit >= 0 and debit <= target_debit:
-            return PackageQuote(
-                now,
-                short_quote.timestamp,
-                long_quote.timestamp,
-                age,
-                debit,
-                long_quote.bid == 0,
-            )
+    for package in package_quotes(
+        short_quotes, long_quotes, action="exit",
+        max_leg_age_seconds=max_leg_age_seconds,
+    ):
+        if package.value <= target_debit:
+            return package
     return None
 
 

@@ -42,6 +42,9 @@ def candidate():
         "short_right": "C",
         "short_strike": 389.0,
         "long_strike": 391.0,
+        "entry_timestamp": "2023-01-03T09:35:00.050",
+        "entry_delay_seconds": 0.05,
+        "entry_leg_age_seconds": 0.05,
     }
 
 
@@ -128,14 +131,17 @@ def test_primary_time_close_freshness_is_separate_from_one_second_leg_synchrony(
     assert out["primary_time_close_ready"] is True
 
 
-def test_primary_entry_boundary_requires_package_within_one_second():
+def test_primary_entry_boundary_comes_from_exact_tick_candidate_evidence():
+    bad_candidate = candidate()
+    bad_candidate["entry_delay_seconds"] = 1.2
     short_payload = group("call", 389.0, [row("2023-01-03T09:35:00.000", .04, .05)])
-    long_payload = group("call", 391.0, [row("2023-01-03T09:35:01.200", .01, .02)])
+    long_payload = group("call", 391.0, [row("2023-01-03T09:35:00.050", .01, .02)])
     out = coverage.candidate_path_availability(
-        candidate(), short_payload, long_payload, end_clock="09:35:01.200"
+        bad_candidate, short_payload, long_payload, end_clock="09:35:00.050"
     )
-    assert out["synchrony"]["5"]["ready_events"] == 1
     assert out["primary_entry_ready"] is False
+
+
 
 
 def test_close_path_refuses_unfrozen_clock():
@@ -169,6 +175,7 @@ def test_summary_stays_coverage_only():
         "date": "2023-01-03",
         "partition": "development",
         "entry_error": None,
+        "entry_window_errors": {},
         "entry_coverage": {"09:35:00.000": {
             "valid_two_sided": 4, "bull_credit_band": 1, "bear_credit_band": 0
         }},
@@ -222,6 +229,7 @@ def test_minute_presence_summary_cannot_claim_tick_synchrony_or_economics():
         "date": "2023-01-03",
         "partition": "development",
         "entry_error": None,
+        "entry_window_errors": {},
         "entry_coverage": {"09:35:00.000": {
             "valid_two_sided": 4, "bull_credit_band": 1, "bear_credit_band": 1
         }},
@@ -256,9 +264,10 @@ def test_close_path_mode_is_closed():
         raise AssertionError("unfrozen close-path mode accepted")
 
 
-def test_audit_day_reuses_entry_snapshot_for_coverage_and_candidates(monkeypatch):
+def test_audit_day_keeps_boundary_snapshot_diagnostic_but_uses_exact_tick_candidates(monkeypatch):
     ep = {"response": []}
     monkeypatch.setattr(coverage, "_fetch_entry_payload", lambda *args: ep)
+    monkeypatch.setattr(coverage, "_fetch_entry_window_payload", lambda *args: {"response": []})
     clock_state = {
         "contracts": 8, "valid_two_sided": 6,
         "bull_credit_band": 1, "bear_credit_band": 1,
@@ -266,11 +275,36 @@ def test_audit_day_reuses_entry_snapshot_for_coverage_and_candidates(monkeypatch
     monkeypatch.setattr(coverage.entry, "option_clock_coverage", lambda payload, date: {
         clock: dict(clock_state) for clock in coverage.entry.CLOCKS
     })
-    monkeypatch.setattr(coverage.entry, "eligible_candidates", lambda payload, date, clock: [])
+    exact = candidate()
+    monkeypatch.setattr(
+        coverage.entry, "eligible_candidates_from_tick_window",
+        lambda payload, date, clock: [dict(exact, decision_clock=clock)] if clock == "09:35:00.000" else [],
+    )
+    monkeypatch.setattr(coverage, "_fetch_contract_path", lambda *args, **kwargs: {"response": []})
     out = coverage.audit_day("http://127.0.0.1:25503/v3", "2023-01-03", 1, mode="minute_presence")
     assert out["entry_error"] is None
-    assert out["candidate_paths"] == []
+    assert out["entry_window_errors"] == {}
     assert out["entry_coverage"]["09:35:00.000"] == clock_state
+    assert len(out["candidate_paths"]) == 1
+
+
+def test_boundary_snapshot_failure_does_not_erase_exact_tick_candidate_universe(monkeypatch):
+    def bad_snapshot(*args):
+        raise TimeoutError
+    monkeypatch.setattr(coverage, "_fetch_entry_payload", bad_snapshot)
+    monkeypatch.setattr(coverage, "_fetch_entry_window_payload", lambda *args: {"response": []})
+    exact = candidate()
+    monkeypatch.setattr(
+        coverage.entry, "eligible_candidates_from_tick_window",
+        lambda payload, date, clock: [dict(exact, decision_clock=clock)] if clock == "09:35:00.000" else [],
+    )
+    monkeypatch.setattr(coverage, "_fetch_contract_path", lambda *args, **kwargs: {"response": []})
+    out = coverage.audit_day("http://127.0.0.1:25503/v3", "2023-01-03", 1, mode="minute_presence")
+    assert out["entry_error"] == "TimeoutError"
+    assert out["entry_coverage"] is None
+    assert len(out["candidate_paths"]) == 1
+
+
 
 
 def test_minute_presence_receipt_does_not_advertise_tick_grid(monkeypatch):

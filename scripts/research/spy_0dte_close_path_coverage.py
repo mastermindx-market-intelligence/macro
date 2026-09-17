@@ -150,32 +150,17 @@ def _ready_summary(
     end_at: datetime,
     max_leg_age_seconds: Decimal,
 ) -> dict[str, Any]:
-    events = sorted(
-        [(q.timestamp, 0, q) for q in short_rows]
-        + [(q.timestamp, 1, q) for q in long_rows],
-        key=lambda row: (row[0], row[1]),
+    packages = replay.package_quotes(
+        short_rows, long_rows, action="exit",
+        max_leg_age_seconds=max_leg_age_seconds,
+        start_at=decision_at, end_at=end_at,
     )
-    latest: dict[int, replay.Quote] = {}
-    ready_by_time: dict[datetime, str] = {}
-    for now, leg, quote in events:
-        if now < decision_at or now > end_at:
-            continue
-        latest[leg] = quote
-        if len(latest) != 2:
-            continue
-        short_quote, long_quote = latest[0], latest[1]
-        age = Decimal(
-            str(
-                max(
-                    (now - short_quote.timestamp).total_seconds(),
-                    (now - long_quote.timestamp).total_seconds(),
-                )
-            )
+    ready_by_time = {
+        package.timestamp: (
+            "zero_bid_carry" if package.long_liquidation_zero else "normal"
         )
-        if age > max_leg_age_seconds:
-            continue
-        ready_by_time[now] = "zero_bid_carry" if long_quote.bid == 0 else "normal"
-
+        for package in packages
+    }
     stamps = sorted(ready_by_time)
     gaps = [
         (later - earlier).total_seconds()
@@ -219,14 +204,17 @@ def candidate_path_availability(
 
     short_contract = _contract(candidate, "short")
     long_contract = _contract(candidate, "long")
-    short_rows = replay.qualifying_exit_quotes(
-        short_payload, short_contract, role="short"
-    )
-    long_rows = replay.qualifying_exit_quotes(
-        long_payload, long_contract, role="long"
-    )
-    short_rows = [q for q in short_rows if decision_at <= q.timestamp <= end_at]
-    long_rows = [q for q in long_rows if decision_at <= q.timestamp <= end_at]
+    # Keep every structurally parsed source row so newer invalid NBBO states
+    # immediately invalidate older firm sides. Pre-decision rows seed the exact
+    # decision state; no pre-decision package is emitted.
+    short_rows = [
+        q for q in replay.source_quotes(short_payload, short_contract)
+        if q.timestamp <= end_at
+    ]
+    long_rows = [
+        q for q in replay.source_quotes(long_payload, long_contract)
+        if q.timestamp <= end_at
+    ]
 
     synchrony = {
         str(limit): _ready_summary(
@@ -239,11 +227,16 @@ def candidate_path_availability(
         for limit in replay.SYNCHRONY_GRID_SECONDS
     }
     primary = synchrony[str(PRIMARY_LEG_SYNCHRONY_SECONDS)]
-    decision_lag = primary["decision_lag_seconds"]
     end_lag = primary["end_lag_seconds"]
+    try:
+        entry_delay = float(candidate["entry_delay_seconds"])
+        entry_leg_age = float(candidate["entry_leg_age_seconds"])
+        entry_timestamp = str(candidate["entry_timestamp"])
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ClosePathCoverageError("exact tick entry evidence is missing") from exc
     primary_entry_ready = (
-        decision_lag is not None
-        and 0 <= float(decision_lag) <= ENTRY_MAX_LAG_SECONDS
+        0 <= entry_delay <= ENTRY_MAX_LAG_SECONDS
+        and 0 <= entry_leg_age <= float(PRIMARY_LEG_SYNCHRONY_SECONDS)
     )
     # Time-close freshness is deliberately separate from leg synchrony: the
     # package must first satisfy the 1s leg fence, then that package may be up
@@ -259,9 +252,21 @@ def candidate_path_availability(
         "short_right": str(candidate.get("short_right", "")),
         "short_strike": float(candidate["short_strike"]),
         "long_strike": float(candidate["long_strike"]),
-        "short_exit_rows": len(short_rows),
-        "long_exit_rows": len(long_rows),
-        "long_zero_bid_rows": sum(q.bid == 0 for q in long_rows),
+        "short_exit_rows": sum(
+            replay.exit_side_executable(q, "short")
+            for q in short_rows if decision_at <= q.timestamp <= end_at
+        ),
+        "long_exit_rows": sum(
+            replay.exit_side_executable(q, "long")
+            for q in long_rows if decision_at <= q.timestamp <= end_at
+        ),
+        "long_zero_bid_rows": sum(
+            replay.exit_side_executable(q, "long") and q.bid == 0
+            for q in long_rows if decision_at <= q.timestamp <= end_at
+        ),
+        "entry_timestamp": entry_timestamp,
+        "entry_delay_seconds": entry_delay,
+        "entry_leg_age_seconds": entry_leg_age,
         "primary_leg_synchrony_seconds": float(PRIMARY_LEG_SYNCHRONY_SECONDS),
         "primary_entry_max_lag_seconds": ENTRY_MAX_LAG_SECONDS,
         "primary_time_close_max_package_age_seconds": TIME_CLOSE_MAX_PACKAGE_AGE_SECONDS,
@@ -291,6 +296,32 @@ def _fetch_entry_payload(base_url: str, session_date: str, timeout: int) -> Any:
     )
 
 
+def _fetch_entry_window_payload(
+    base_url: str, session_date: str, clock: str, timeout: int
+) -> Any:
+    if clock not in entry.CLOCKS:
+        raise ClosePathCoverageError("entry window clock is not frozen")
+    decision = _clock_dt(session_date, clock)
+    start = (decision - timedelta(seconds=1)).strftime("%H:%M:%S.%f")[:-3]
+    end = (decision + timedelta(seconds=1)).strftime("%H:%M:%S.%f")[:-3]
+    ymd = session_date.replace("-", "")
+    return entry._fetch_json(
+        base_url,
+        "/option/history/quote",
+        {
+            "symbol": "SPY",
+            "expiration": ymd,
+            "date": ymd,
+            "start_time": start,
+            "end_time": end,
+            "interval": "tick",
+            "right": "both",
+            "format": "json",
+        },
+        timeout,
+    )
+
+
 def _fetch_contract_path(
     base_url: str, contract: replay.Contract, timeout: int, *, interval: str = "tick"
 ) -> Any:
@@ -306,7 +337,11 @@ def _fetch_contract_path(
             "strike": f"{contract.strike:.3f}",
             "right": contract.right,
             "date": ymd,
-            "start_time": entry.CLOCKS[0],
+            "start_time": (
+                (_clock_dt(contract.expiration, entry.CLOCKS[0]) - timedelta(seconds=1))
+                .strftime("%H:%M:%S.%f")[:-3]
+                if interval == "tick" else entry.CLOCKS[0]
+            ),
             "end_time": END_CLOCK,
             "interval": interval,
             "format": "json",
@@ -323,19 +358,27 @@ def audit_day(
     try:
         entry_payload = _fetch_entry_payload(base_url, session_date, timeout)
         entry_coverage = entry.option_clock_coverage(entry_payload, session_date)
-        candidates = [
-            candidate
-            for clock in entry.CLOCKS
-            for candidate in entry.eligible_candidates(entry_payload, session_date, clock)
-        ]
+        entry_error = None
     except Exception as exc:
-        return {
-            "date": session_date,
-            "partition": entry.partition_for_date(session_date),
-            "entry_error": type(exc).__name__,
-            "entry_coverage": None,
-            "candidate_paths": [],
-        }
+        # Boundary snapshots are a cheap diagnostic only. They never define the
+        # economic candidate universe after Amendment 4's exact 1s entry law.
+        entry_coverage = None
+        entry_error = type(exc).__name__
+
+    candidates: list[dict[str, Any]] = []
+    entry_window_errors: dict[str, str] = {}
+    for clock in entry.CLOCKS:
+        try:
+            tick_payload = _fetch_entry_window_payload(
+                base_url, session_date, clock, timeout
+            )
+            candidates.extend(
+                entry.eligible_candidates_from_tick_window(
+                    tick_payload, session_date, clock
+                )
+            )
+        except Exception as exc:
+            entry_window_errors[clock] = type(exc).__name__
 
     unique_contracts: dict[tuple[str, str], replay.Contract] = {}
     for candidate in candidates:
@@ -392,8 +435,9 @@ def audit_day(
     return {
         "date": session_date,
         "partition": entry.partition_for_date(session_date),
-        "entry_error": None,
+        "entry_error": entry_error,
         "entry_coverage": entry_coverage,
+        "entry_window_errors": entry_window_errors,
         "candidate_paths": paths,
     }
 
@@ -416,6 +460,10 @@ def summarize(
                 for row in part_rows if not row.get("entry_error")
             ]
             entry_summary = {
+                "entry_window_errors": sum(
+                    clock in (row.get("entry_window_errors") or {})
+                    for row in part_rows
+                ),
                 "sessions_any_valid_contract": sum(
                     int(q.get("valid_two_sided", 0)) > 0 for q in entry_states
                 ),
@@ -478,6 +526,9 @@ def summarize(
         summary[partition] = {
             "sessions": len(part_rows),
             "entry_errors": sum(bool(row.get("entry_error")) for row in part_rows),
+            "entry_window_error_sessions": sum(
+                bool(row.get("entry_window_errors")) for row in part_rows
+            ),
             "by_clock": by_clock,
         }
     return summary

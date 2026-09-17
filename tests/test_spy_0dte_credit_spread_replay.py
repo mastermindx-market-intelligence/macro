@@ -188,3 +188,60 @@ def test_exit_zero_bid_requires_source_present_firm_long_ask():
         }]
     }
     assert REPLAY.qualifying_exit_quotes(payload, contract, role="long") == []
+
+
+def test_new_invalidating_quote_clears_previously_firm_entry_side():
+    t = datetime(2026, 9, 15, 9, 35)
+    short = [
+        _quote(t, ".20", ".21"),
+        REPLAY.Quote(t + timedelta(milliseconds=500), Decimal("0"), Decimal(".21"), 0, 100, 0, 65, 0, 50),
+    ]
+    long = [_quote(t + timedelta(milliseconds=600), ".09", ".10")]
+    assert REPLAY.first_package_quote(
+        short, long, action="entry", max_leg_age_seconds=Decimal("1")
+    ) is None
+
+
+def test_new_invalidating_quote_clears_previously_firm_exit_side():
+    t = datetime(2026, 9, 15, 15, 0)
+    short = [
+        _quote(t, ".01", ".02"),
+        REPLAY.Quote(t + timedelta(milliseconds=500), Decimal(".01"), Decimal("0"), 100, 0, 6, 0, 50, 0),
+    ]
+    long = [_quote(t + timedelta(milliseconds=600), ".01", ".02")]
+    assert REPLAY.first_package_quote(
+        short, long, action="exit", max_leg_age_seconds=Decimal("1")
+    ) is None
+
+
+def test_zero_debit_exit_is_executable_not_dropped():
+    t = datetime(2026, 9, 15, 15, 0)
+    short = [_quote(t, ".00", ".01")]
+    long = [_quote(t, ".01", ".02")]
+    package = REPLAY.first_package_quote(
+        short, long, action="exit", max_leg_age_seconds=Decimal("1")
+    )
+    assert package is not None and package.value == Decimal("0")
+
+
+def test_start_at_seeds_predecision_state_without_using_future_rows():
+    t = datetime(2026, 9, 15, 9, 35)
+    short = [_quote(t - timedelta(milliseconds=200), ".20", ".21")]
+    long = [_quote(t - timedelta(milliseconds=100), ".09", ".10")]
+    packages = REPLAY.package_quotes(
+        short, long, action="entry", max_leg_age_seconds=Decimal("1"),
+        start_at=t, end_at=t + timedelta(seconds=1),
+    )
+    assert len(packages) == 1
+    assert packages[0].timestamp == t
+    assert packages[0].value == Decimal(".10")
+
+
+def test_equal_timestamp_leg_updates_are_applied_before_evaluation():
+    t = datetime(2026, 9, 15, 9, 35)
+    short = [_quote(t, ".20", ".21")]
+    long = [_quote(t, ".09", ".10")]
+    packages = REPLAY.package_quotes(
+        short, long, action="entry", max_leg_age_seconds=Decimal("1")
+    )
+    assert len(packages) == 1 and packages[0].value == Decimal(".10")

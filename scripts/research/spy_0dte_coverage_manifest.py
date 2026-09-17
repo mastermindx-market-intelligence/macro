@@ -13,6 +13,8 @@ import json
 import urllib.parse
 import urllib.request
 from collections import defaultdict
+from datetime import datetime, timedelta
+from decimal import Decimal
 from typing import Any, Mapping
 
 import spy_0dte_credit_spread_replay as replay
@@ -28,6 +30,9 @@ CREDIT_LOW = 0.08
 CREDIT_HIGH = 0.15
 STRIKE_RANGE = 30
 MAX_WORKERS = 4
+ENTRY_LOOKBACK_SECONDS = Decimal("1")
+ENTRY_WINDOW_SECONDS = Decimal("1")
+ENTRY_SYNCHRONY_SECONDS = Decimal("1")
 
 
 class CoverageError(ValueError):
@@ -144,6 +149,96 @@ def _eligible_candidates_from_quotes(
                 "long_ask_condition": int(long_row["ask_condition"]),
             }
         )
+    return candidates
+
+
+def _tick_quotes_by_contract(
+    payload: Any, session_date: str
+) -> dict[tuple[str, float], list[replay.Quote]]:
+    out: dict[tuple[str, float], list[replay.Quote]] = {}
+    for group_payload in _response(payload):
+        if not isinstance(group_payload, Mapping) or set(group_payload) != {"contract", "data"}:
+            raise CoverageError("tick entry contract group fields are not exact")
+        identity = group_payload["contract"]
+        if not isinstance(identity, Mapping):
+            raise CoverageError("tick entry contract identity is malformed")
+        if str(identity.get("symbol", "")).upper() != "SPY":
+            raise CoverageError("tick entry response contains a non-SPY contract")
+        if str(identity.get("expiration")) != session_date:
+            raise CoverageError("tick entry response contains a non-0DTE contract")
+        right = str(identity.get("right", "")).upper()[:1]
+        if right not in {"C", "P"}:
+            raise CoverageError("tick entry response right is malformed")
+        try:
+            strike = round(float(identity["strike"]), 3)
+        except (KeyError, TypeError, ValueError) as exc:
+            raise CoverageError("tick entry response strike is malformed") from exc
+        key = (right, strike)
+        if key in out:
+            raise CoverageError("duplicate tick entry contract group")
+        contract = replay.Contract(
+            "SPY", session_date, Decimal(str(strike)),
+            "call" if right == "C" else "put",
+        )
+        out[key] = replay.source_quotes({"response": [group_payload]}, contract)
+    return out
+
+
+def eligible_candidates_from_tick_window(
+    payload: Any, session_date: str, clock: str
+) -> list[dict[str, Any]]:
+    """First executable credit-band crossing within the frozen 1s entry window.
+
+    The payload must include enough pre-decision ticks to seed current NBBO state.
+    Every source row updates state; no invalidated quote may be carried forward.
+    """
+    if clock not in CLOCKS:
+        raise CoverageError("decision clock is not frozen")
+    decision_at = datetime.fromisoformat(f"{session_date}T{clock}")
+    end_at = decision_at + timedelta(seconds=float(ENTRY_WINDOW_SECONDS))
+    quotes = _tick_quotes_by_contract(payload, session_date)
+    candidates: list[dict[str, Any]] = []
+    for right, strike in sorted(quotes, key=lambda item: (item[0] != "P", item[1])):
+        long_strike = round(strike - 2.0, 3) if right == "P" else round(strike + 2.0, 3)
+        long_rows = quotes.get((right, long_strike))
+        if long_rows is None:
+            continue
+        packages = replay.package_quotes(
+            quotes[(right, strike)], long_rows,
+            action="entry",
+            max_leg_age_seconds=ENTRY_SYNCHRONY_SECONDS,
+            start_at=decision_at,
+            end_at=end_at,
+        )
+        package = next(
+            (
+                item for item in packages
+                if Decimal(str(CREDIT_LOW)) - Decimal("1e-9")
+                <= item.value
+                <= Decimal(str(CREDIT_HIGH)) + Decimal("1e-9")
+            ),
+            None,
+        )
+        if package is None:
+            continue
+        credit = float(package.value)
+        width = 2.0
+        candidates.append({
+            "session_date": session_date,
+            "decision_clock": clock,
+            "decision_timestamp": f"{session_date}T{clock}",
+            "entry_timestamp": package.timestamp.isoformat(timespec="milliseconds"),
+            "entry_delay_seconds": (package.timestamp - decision_at).total_seconds(),
+            "entry_leg_age_seconds": float(package.leg_age_seconds),
+            "family": "bull_put" if right == "P" else "bear_call",
+            "short_right": right,
+            "short_strike": strike,
+            "long_strike": long_strike,
+            "width": width,
+            "entry_credit": credit,
+            "max_loss_per_spread": (width - credit) * 100.0,
+            "reward_risk": credit / (width - credit),
+        })
     return candidates
 
 
