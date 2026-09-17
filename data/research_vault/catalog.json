@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T17:20:52.140644+00:00",
-  "count": 2304,
+  "generated_at": "2026-09-17T17:35:55.610831+00:00",
+  "count": 2305,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -86,6 +86,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-t1t3iaqzdf9-7508b7",
+      "title": "DB Sept FOMC recap Removing a dose of accommodation helps the inflation go down",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T16:19:56Z",
+      "summary_points": [
+        "Fed's tightening trajectory: 25bp hike confirmed, 50-75bps expected in 2023 (Dec/March), dot plot at 3.2% long-run rate; hinges on labor/growth strength and inflation trends, with Oct hike risk or dovish shift if data softens.",
+        "Policy shift framing: FOMC removes \"supply shock\" reference, frames hike as \"supporting\" 2% target—hawkish signal but data-dependent; risks include softer inflation/labor market altering path.",
+        "Rate hike drivers: Labor market strength, persistent inflation not trending to target, and geopolitical risks cited as primary catalysts; Fed prioritizes trends over data points, signaling higher neutral rate expectations.",
+        "Long-term rate pressures: AI-linked capex surge, geopolitical commodity risks, and sustained economic strength driving structural upward pressure on long-term rates."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-8sgkawq1mrk-c28eaf",
       "title": "DB CotD Groundhog Month Sept 15",
