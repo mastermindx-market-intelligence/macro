@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-16T23:21:09.999889+00:00",
-  "count": 2258,
+  "generated_at": "2026-09-17T02:11:09.853034+00:00",
+  "count": 2266,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -84,6 +84,126 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-gwetpnjg75e-a4b97d",
+      "title": "AeroVironment Inc",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T01:36:55Z",
+      "summary_points": [
+        "Strong Q1 Results & Defense Growth Catalyst: Revenue ($480.5m, +6.3% vs. consensus), EBITDA ($53.4m, +36.6%), and FY27 guidance reiterated; funded backlog up 37% YoY (defense sector) drives margin expansion potential.",
+        "Cash Flow Mismatch & Valuation Risk: 140.9% revenue growth contrasts with negative FCF yield (-1.3%) and cash flow from operations ($78.4M) below net income ($265.1M); high P/E (78.2) and EV/EBITDA (45.2) mask cash flow vulnerabilities.",
+        "Revised Guidance & Critical Execution Risks: FY27 revenue revised down to $2.13–$2.23bn (vs. prior $2.192–$2.551bn); price target cut to $285 (from $326); key risks include unfulfilled large program awards and BlueHalo integration."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-vkcvjlergmo-d293aa",
+      "title": "GS Stankard GS Vol Views 16 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T00:57:04Z",
+      "summary_points": [
+        "Volatility & AI Risk: Realized volatility near 10-year average (GSTMTMOM 6m: 87.96, SPX: 46.84); AI \"speed bumps\" driving violent moves (GSPUARTI: -9.96%, -2.2 std dev), signaling near-term risk.",
+        "SPX Skew Divergence: 1m skew %ile at 99.9 (vs 12m at 99.9) indicating extreme short-term volatility expectations and momentum regime shift.",
+        "Monetary Policy & Flows: Implied move through Friday at 1.15%; mixed flows with modestly defensive tilt, reflecting near-term policy sensitivity.",
+        "AI/Consumer Flow Shift: Restructuring of AI bullish positions + renewed stock replacement trades amid vol normalization, coupled with consumer resilience driving volatile price action."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-2dy1fx0dslg-efd139",
+      "title": "GS Equities Color US EQUITIES COLOR HIKE 16 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T00:56:41Z",
+      "summary_points": [
+        "Fed Policy Shift: Hawkish 25bps hike to 3.75%-4.00% with confirmed 2026 hikes and no 2027 cuts, triggering S&P -45bps and market segmentation.",
+        "AI Quality vs Speculative Split: Momentum shift to AI quality (Data Centers +1.28%, AI Semis +89bps) versus speculative AI (Software At Risk -1.83%).",
+        "Iran War Geopolitical Risk: Escalating Iran conflict remains critical risk factor impacting energy dynamics and market flows."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-6sjud1mvyti-cdf6d6",
+      "title": "JPM US Market Intelligence Afternoon Briefing Sept 16",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T00:10:23Z",
+      "summary_points": [
+        "Fed's Hawkish Dot Shift & Market Impact: 16/18 committee members project ≥1 hike in 2024 (dots confirm 1x FY26 hike, zero FY27), triggering immediate market repricing (SPX -0.4%, Financials lagging); Fed’s \"constructive economy\" outlook and u-rate revision below NAIRU fuel USD strength (+70bp).",
+        "USD Bullish Momentum & Yield Risk: 2s30s flattening (8bp) and Fed’s hawkish tone (no dissents, clustered '26 dots) drive USD gains; 10Y yield nearing 4.99% cycle high with historical 2z yield moves (50-55bp) preceding S&P 500 drops (-1.66%).",
+        "Demand-Overheating Narrative Shift: Committee hints at growing demand-led overheating risk (replacing supply shock focus), signaling policy tightening despite prior inflation drivers; critical for rate hike expectations beyond current forecasts.",
+        "Key Risk Factor: Yield-Equity Correlation: Bond volatility (2z yield moves) outweighs yield levels as headwind; historical data shows >2z moves correlate with negative equity returns (S&P 500 -1.66%), per Craig Cohen analysis."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-dumk753cf2w-385ca6",
+      "title": "Bond markets",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T00:06:12Z",
+      "summary_points": [
+        "Geopolitical Risk & Oil: Middle East tensions pushed oil above $100/bbl, driving government yield spikes despite resilient credit spreads in corporate bonds.",
+        "Yield Curve Dynamics: Corporate bond underperformance stems from rising government yields (not credit spreads), with ECB hawkish rate hike and weak US Treasury buyback amplifying pressure.",
+        "Key Issuer Upgrades: Freeport-McMoRan upgraded to \"Improving\" (strong copper/gold fundamentals), Renault outlook revised to Stable, and Danish banks (Nykredit, Danske) saw rating lifts on robust Q2 results.",
+        "Defensive Allocation Focus: Prioritize A-/BBB-rated utilities, telecom, energy, and industrial issuers (BASF, Canadian banks) with strong balance sheets amid rate volatility.",
+        "Critical Risk Exposure: Coty’s rating downgrade (Stable→Deteriorating) signals consumer discretionary vulnerability; VW’s restructuring execution risk maintains UBS \"Deteriorating\" outlook despite profit targets."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 35,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-qni6us9px2x-17d8df",
+      "title": "GPS The World Rewired",
+      "institution": "Citi",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T23:52:37Z",
+      "summary_points": [
+        "Global Supply Chain Pressure: Index at highest since 2021-22 due to US tariffs and Iran conflict, with Brent oil at $90/barrel and Strait of Hormuz closure driving supply chain stress and margin pressure.",
+        "FDI Regional Divergence: Global FDI at $1.62T (2025), but Europe +39% vs.",
+        "Africa -26% and North America -2%, signaling uneven capital allocation and policy-driven shifts.",
+        "China Auto Export Pivot: North America’s share of China auto exports fell to ~13% (2026), while Africa rose to 15%, reflecting strategic shift to politically stable, high-price-sensitivity markets.",
+        "Asia Supply Chain Dominance: Healthcare (Asia: 77% of payment flows) and Technology (Asia: 60%) sectors show structural integration, demanding portfolio adjustments for high-value supply chains."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 36,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-x7lzosetxuq-f54284",
       "title": "Hiking is the wrong choice",
@@ -259,6 +379,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xndi46tpnve-822273",
+      "title": "Dividend Swap Monitor European dividends supported by strong earnings but upside increasingly limited",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T11:47:45Z",
+      "summary_points": [
+        "Dividend Risk Premia Anchored to Credit Spreads: EURO STOXX 50 dividend risk premia remain tied to credit spreads, showing no reaction to widening French sovereign spreads (OATs), indicating geopolitical/political events have limited impact on dividend valuation.",
+        "Sector Divergence in Dividend Growth: Tech (ASML, SAP) shows strong 2027 implied DPS growth (61%, 20%), while Auto (Stellantis, Bayerische) faces sharp declines (-35%, -34%), highlighting capital reallocation risks and sector-specific volatility.",
+        "FTSE 100 FX and Growth Mismatch: 43-46% of FTSE 100 dividends are USD-denominated, creating FX uncertainty; market pricing overestimates growth (3.6% CAGR by 2033 vs. current 0.3% base case), masking near-term downside.",
+        "EURO STOXX 50 Dividend Sustainability Risk: Implied dividend CAGR turns negative from 2028-2034 (e.g., -1.5% in 2028), with banks’ CAGR declining to negative post-2028, signaling potential dividend cuts."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
       "language": "en",
       "needs_metadata": false
     },
@@ -1920,6 +2060,23 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-zxhqnetqnxt-a1f951",
+      "title": "How can investors find income",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T00:35:18Z",
+      "summary_points": [
+        "Fed Path: 2026 rate hikes (2x25bps) target 4.00-4.25%; 2-yr yields to 4.25% (June 2027), 10-yr to 4.5% - Geopolitical Risk Mitigation: Avoid single-segment exposure; prioritize EM credit, high yield, structured strategies for diversified income"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
