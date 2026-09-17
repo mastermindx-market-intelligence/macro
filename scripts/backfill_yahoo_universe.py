@@ -692,8 +692,15 @@ def run(cap: int = 400, batch_size: int = 20, sleep_s: float = 1.5,
     # The refresh plan is resolved BEFORE any fetch so --dry-run can print it and
     # so the cadence number in the notice describes tonight's actual intent.
     refresh_plan: list[str] = []
+    refresh_session = None
     if refresh_all:
-        report["refresh_scope"] = "all_unmaintained"
+        from lib.nyse_calendar import expected_last_session  # noqa: PLC0415
+
+        refresh_session = expected_last_session()
+        report.update(refresh_scope="all_unmaintained",
+                      refresh_expected_session=refresh_session.isoformat(),
+                      refresh_attempted=0, refresh_current_returned=0,
+                      refresh_noncurrent_returned=0, refresh_unattempted=0)
     if len(plan) < cap or refresh_all:
         candidates, n_refreshable = refresh_candidates(state)
         chosen = (n_refreshable if refresh_all else
@@ -704,6 +711,8 @@ def run(cap: int = 400, batch_size: int = 20, sleep_s: float = 1.5,
         report["refresh_planned"] = len(refresh_plan)
         report["refresh_cadence_d"] = cadence_days(n_refreshable, chosen)
         report["refresh_ran"] = bool(refresh_plan)
+    if refresh_all:
+        report["refresh_unattempted"] = len(refresh_plan)
 
     if dry_run:
         report["plan_sample"] = [t for t, _ in plan[:20]]
@@ -732,6 +741,9 @@ def run(cap: int = 400, batch_size: int = 20, sleep_s: float = 1.5,
                 return
             batch = tickers[i:i + max(1, batch_size)]
             symbols = {t: vendor_symbol(t) for t in batch}
+            if refresh_all and phase == "refresh":
+                report["refresh_attempted"] += len(batch)
+                report["refresh_unattempted"] -= len(batch)
             try:
                 df = download_batch(sorted(set(symbols.values())), period)
             except Exception as e:  # noqa: BLE001 — transport failure is not symbol evidence
@@ -790,6 +802,17 @@ def run(cap: int = 400, batch_size: int = 20, sleep_s: float = 1.5,
                 if phase == "refresh":
                     entry["refreshed"] = today_iso
                     report["refreshed"] += 1
+                    if refresh_all:
+                        # Judge the accepted RESPONSE, never a same-date price
+                        # retained by the canonical history-preserving upsert.
+                        current = False
+                        key = pd.Timestamp(refresh_session)
+                        if key in frame.index:
+                            prices = frame.loc[key, ["close", "close_price"]]
+                            current = bool(prices.gt(0).all() and prices.lt(float("inf")).all())
+                        field = ("refresh_current_returned" if current
+                                 else "refresh_noncurrent_returned")
+                        report[field] += 1
                 else:
                     report["written"] += 1
                 state["done"][ticker] = entry

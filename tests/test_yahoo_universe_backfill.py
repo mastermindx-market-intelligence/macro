@@ -972,3 +972,48 @@ def test_daily_consumer_requests_the_whole_archive_without_a_second_writer_or_bu
     assert tokens[tokens.index("--budget-s") + 1] == "480"
     assert "--period" not in tokens, "keep the existing full-history adjustment basis"
     assert "|| echo" in command, "retain graceful degradation rather than hiding source failure"
+
+
+def test_refresh_all_does_not_report_a_stored_old_frame_as_current(tree, monkeypatch):
+    from lib import nyse_calendar
+    raw = _daily_archive_seed(tree, monkeypatch, ("AAA", "BBB"))
+    completed = raw.index[-1].date()
+    monkeypatch.setattr(nyse_calendar, "expected_last_session", lambda: completed)
+    _stub_download(monkeypatch, {"*": _yf_response({"AAA": raw, "BBB": raw.iloc[:-1]})})
+    report = bf.run(cap=1, sleep_s=0, refresh_all=True)
+    assert report["refreshed"] == 2, "storage success keeps its existing meaning"
+    assert report["refresh_expected_session"] == completed.isoformat()
+    assert report["refresh_current_returned"] == 1
+    assert report["refresh_noncurrent_returned"] == 1
+    assert report["refresh_attempted"] == 2 and report["refresh_unattempted"] == 0
+    # BBB's prior same-date value remains in the historical archive, but cannot
+    # count as a freshly returned observation in this attempt's receipt.
+    assert pd.Timestamp(completed) in store.read("yahoo", "BBB").index
+
+
+def test_refresh_all_budget_discloses_names_not_attempted(tree, monkeypatch):
+    from lib import nyse_calendar
+    raw = _daily_archive_seed(tree, monkeypatch, ("AAA", "BBB"))
+    monkeypatch.setattr(nyse_calendar, "expected_last_session", lambda: raw.index[-1].date())
+    now = {"t": 0}
+    monkeypatch.setattr(bf.time, "monotonic", lambda: now["t"])
+    monkeypatch.setattr(bf.time, "sleep", lambda _: None)
+    def download(symbols, period):
+        now["t"] = 11
+        return _yf_response({ticker: raw for ticker in symbols})
+    monkeypatch.setattr(bf, "download_batch", download)
+    report = bf.run(cap=1, batch_size=1, sleep_s=0, budget_s=10, refresh_all=True)
+    assert report["refresh_planned"] == 2
+    assert report["refresh_attempted"] == report["refresh_current_returned"] == 1
+    assert report["refresh_unattempted"] == 1
+    assert report["budget_exhausted"] is True
+
+
+def test_refresh_all_transport_failure_counts_the_request_not_current_data(tree, monkeypatch):
+    _daily_archive_seed(tree, monkeypatch, ("AAA", "BBB"))
+    _stub_download(monkeypatch, {"*": ConnectionError("provider unavailable")})
+    report = bf.run(cap=1, batch_size=2, sleep_s=0, refresh_all=True)
+    assert report["batch_errors"] == 1
+    assert report["refresh_attempted"] == 2 and report["refresh_unattempted"] == 0
+    assert report["refreshed"] == report["refresh_current_returned"] == 0
+    assert report["attempted"] == 0, "legacy processed-row counter retains its meaning"
