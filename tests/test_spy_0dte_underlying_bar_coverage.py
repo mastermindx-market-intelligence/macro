@@ -11,7 +11,7 @@ DATE = "2023-01-03"
 def payload(missing=()):
     rows = []
     missing = set(missing)
-    for i in range(30):
+    for i in range(385):
         h = 9 + (30 + i) // 60; m = (30 + i) % 60
         clock = f"{h:02d}:{m:02d}:00.000"
         if clock in missing:
@@ -31,6 +31,10 @@ def test_complete_opening_window_is_complete_at_all_frozen_clocks():
     assert out["09:45:00.000"]["present_completed_bars"] == 15
     assert out["10:00:00.000"]["present_completed_bars"] == 30
     assert all(out[clock]["complete"] for clock in c.a1.DECISION_CLOCKS)
+    assert out["09:35:00.000"]["structural_expected_bars"] == 380
+    assert out["09:45:00.000"]["structural_expected_bars"] == 370
+    assert out["10:00:00.000"]["structural_expected_bars"] == 355
+    assert all(out[clock]["structural_path_complete"] for clock in c.a1.DECISION_CLOCKS)
 
 
 def test_missing_0937_does_not_contaminate_0935_but_fails_later_windows_closed():
@@ -39,6 +43,13 @@ def test_missing_0937_does_not_contaminate_0935_but_fails_later_windows_closed()
     assert out["09:45:00.000"]["complete"] is False
     assert out["09:45:00.000"]["first_missing"] == "09:37:00.000"
     assert out["10:00:00.000"]["complete"] is False
+
+
+def test_missing_midday_bar_preserves_opening_features_but_blocks_structural_path():
+    out = c.bar_clock_coverage(payload({"12:00:00.000"}), DATE)
+    assert all(out[clock]["complete"] for clock in c.a1.DECISION_CLOCKS)
+    assert all(not out[clock]["structural_path_complete"] for clock in c.a1.DECISION_CLOCKS)
+    assert out["09:35:00.000"]["structural_first_missing"] == "12:00:00.000"
 
 
 def test_summary_preserves_partitions_and_errors():
@@ -50,6 +61,7 @@ def test_summary_preserves_partitions_and_errors():
     out = c.summarize(rows)
     assert out["development"]["09:35_complete"] == 1
     assert out["development"]["10:00_complete"] == 1
+    assert out["development"]["09:35_structural_path_complete"] == 1
     assert out["validation"]["errors"] == 1
 
 

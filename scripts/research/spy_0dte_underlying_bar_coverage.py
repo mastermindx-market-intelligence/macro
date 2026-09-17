@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Coverage-only audit for causal SPY opening OHLCV/VWAP bars.
+"""Coverage-only audit for causal SPY opening and structural-stop bars.
 
 Research only. Reads the incumbent ThetaData v3 Terminal consolidated UTP/CTA
 one-minute stock OHLC feed and emits only derived source-availability metadata.
@@ -17,7 +17,8 @@ import spy_0dte_a1_features as a1
 import spy_0dte_coverage_manifest as panel
 
 START_CLOCK = "09:30:00.000"
-END_CLOCK = "09:59:00.000"  # 10:00 decision may see only completed 09:30..09:59 bars.
+OPENING_END_CLOCK = "09:59:00.000"  # 10:00 decision sees completed 09:30..09:59.
+STRUCTURAL_END_CLOCK = "15:54:00.000"  # 15:55 is the exact time-close boundary.
 MAX_WORKERS = 4
 DECISION_MINUTES = {
     "09:35:00.000": 5,
@@ -36,6 +37,16 @@ def bar_clock_coverage(payload: Any, session_date: str) -> dict[str, Any]:
     for clock, minutes in DECISION_MINUTES.items():
         required = [a1._clock_at("2000-01-01", minute) for minute in range(minutes)]
         missing = [bar_clock for bar_clock in required if bar_clock not in bars]
+        # After entry, a structural stop can react only after a one-minute bar
+        # completes. The final eligible breach bar opens 15:54 and completes at
+        # the preregistered 15:55 time-close boundary.
+        structural_required = [
+            a1._clock_at("2000-01-01", minute)
+            for minute in range(minutes, 385)
+        ]
+        structural_missing = [
+            bar_clock for bar_clock in structural_required if bar_clock not in bars
+        ]
         out[clock] = {
             "expected_completed_bars": minutes,
             "present_completed_bars": minutes - len(missing),
@@ -44,6 +55,11 @@ def bar_clock_coverage(payload: Any, session_date: str) -> dict[str, Any]:
             "last_missing": missing[-1] if missing else None,
             "open_available": a1.OPEN_CLOCK in bars,
             "decision_price_available": required[-1] in bars,
+            "structural_expected_bars": len(structural_required),
+            "structural_present_bars": len(structural_required) - len(structural_missing),
+            "structural_path_complete": not structural_missing,
+            "structural_first_missing": structural_missing[0] if structural_missing else None,
+            "structural_last_missing": structural_missing[-1] if structural_missing else None,
         }
     return out
 
@@ -58,7 +74,7 @@ def _fetch_day(base_url: str, session_date: str, timeout: int) -> Any:
             "date": ymd,
             "interval": "1m",
             "start_time": START_CLOCK,
-            "end_time": END_CLOCK,
+            "end_time": STRUCTURAL_END_CLOCK,
             "venue": "utp_cta",
             "format": "json",
         },
@@ -99,6 +115,9 @@ def summarize(rows: list[Mapping[str, Any]]) -> dict[str, Any]:
             part[f"{prefix}_decision_price_available"] = sum(
                 bool(state.get("decision_price_available")) for state in valid
             )
+            part[f"{prefix}_structural_path_complete"] = sum(
+                bool(state.get("structural_path_complete")) for state in valid
+            )
         summary[partition] = part
     return summary
 
@@ -125,13 +144,23 @@ def run_live(base_url: str, timeout: int, max_workers: int) -> dict[str, Any]:
         "source": "ThetaData_v3_stock_history_ohlc",
         "venue": "utp_cta",
         "interval": "1m",
-        "bar_window": [START_CLOCK, END_CLOCK],
+        "bar_window": [START_CLOCK, STRUCTURAL_END_CLOCK],
+        "opening_window_end": OPENING_END_CLOCK,
+        "structural_window_end": STRUCTURAL_END_CLOCK,
         "panel_dates": dates,
         "errors": {row["date"]: row["error"] for row in rows if row.get("error")},
         "missing": {
             clock[:5]: [
                 row["date"] for row in rows
                 if not row.get("error") and not (row.get(clock) or {}).get("complete")
+            ]
+            for clock in a1.DECISION_CLOCKS
+        },
+        "missing_structural": {
+            clock[:5]: [
+                row["date"] for row in rows
+                if not row.get("error")
+                and not (row.get(clock) or {}).get("structural_path_complete")
             ]
             for clock in a1.DECISION_CLOCKS
         },

@@ -66,6 +66,8 @@ def test_tick_path_reports_synchrony_and_zero_bid_without_economics():
     assert fast["decision_boundary_ready"] is True
     assert fast["end_boundary_ready"] is True
     assert out["long_zero_bid_rows"] == 2
+    assert out["primary_entry_ready"] is True
+    assert out["primary_time_close_ready"] is True
     forbidden = ("debit", "pnl", "profit", "outcome", "label", "target", "stop")
     assert not any(any(token in key.lower() for token in forbidden) for key in out)
 
@@ -108,6 +110,34 @@ def test_ready_summary_reports_end_boundary_without_values():
     assert out["end_boundary_ready"] is True
 
 
+def test_primary_time_close_freshness_is_separate_from_one_second_leg_synchrony():
+    short_payload = group("call", 389.0, [
+        row("2023-01-03T09:35:00.000", .04, .05),
+        row("2023-01-03T15:54:56.900", .04, .05),
+    ])
+    long_payload = group("call", 391.0, [
+        row("2023-01-03T09:35:00.050", .01, .02),
+        row("2023-01-03T15:54:57.000", .01, .02),
+    ])
+    out = coverage.candidate_path_availability(
+        candidate(), short_payload, long_payload, end_clock="15:55:00.000"
+    )
+    primary = out["synchrony"]["1"]
+    assert primary["end_lag_seconds"] == 3.0
+    assert primary["end_boundary_ready"] is False
+    assert out["primary_time_close_ready"] is True
+
+
+def test_primary_entry_boundary_requires_package_within_one_second():
+    short_payload = group("call", 389.0, [row("2023-01-03T09:35:00.000", .04, .05)])
+    long_payload = group("call", 391.0, [row("2023-01-03T09:35:01.200", .01, .02)])
+    out = coverage.candidate_path_availability(
+        candidate(), short_payload, long_payload, end_clock="09:35:01.200"
+    )
+    assert out["synchrony"]["5"]["ready_events"] == 1
+    assert out["primary_entry_ready"] is False
+
+
 def test_close_path_refuses_unfrozen_clock():
     bad = candidate()
     bad["decision_clock"] = "09:40:00.000"
@@ -142,12 +172,20 @@ def test_summary_stays_coverage_only():
         "entry_coverage": {"09:35:00.000": {
             "valid_two_sided": 4, "bull_credit_band": 1, "bear_credit_band": 0
         }},
-        "candidate_paths": [{"decision_clock": "09:35:00.000", "synchrony": sync}],
+        "candidate_paths": [{
+            "decision_clock": "09:35:00.000",
+            "synchrony": sync,
+            "primary_entry_ready": True,
+            "primary_time_close_ready": True,
+        }],
     }]
     out = coverage.summarize(rows)
     clock = out["development"]["by_clock"]["09:35:00.000"]
     assert clock["candidate_paths"] == 1
     assert clock["grid"]["1"]["end_boundary_ready"] == 1
+    assert clock["primary_entry_ready"] == 1
+    assert clock["primary_time_close_ready"] == 1
+    assert clock["time_close_max_package_age_seconds"] == 5.0
     assert clock["sessions_any_valid_contract"] == 1
     assert clock["sessions_bull_credit_band"] == 1
     assert clock["sessions_bear_credit_band"] == 0

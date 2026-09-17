@@ -31,6 +31,9 @@ class ClosePathCoverageError(ValueError):
 
 
 MODES = ("tick_synchrony", "minute_presence")
+PRIMARY_LEG_SYNCHRONY_SECONDS = Decimal("1")
+ENTRY_MAX_LAG_SECONDS = 1.0
+TIME_CLOSE_MAX_PACKAGE_AGE_SECONDS = 5.0
 
 
 def _clock_dt(session_date: str, clock: str) -> datetime:
@@ -235,6 +238,20 @@ def candidate_path_availability(
         )
         for limit in replay.SYNCHRONY_GRID_SECONDS
     }
+    primary = synchrony[str(PRIMARY_LEG_SYNCHRONY_SECONDS)]
+    decision_lag = primary["decision_lag_seconds"]
+    end_lag = primary["end_lag_seconds"]
+    primary_entry_ready = (
+        decision_lag is not None
+        and 0 <= float(decision_lag) <= ENTRY_MAX_LAG_SECONDS
+    )
+    # Time-close freshness is deliberately separate from leg synchrony: the
+    # package must first satisfy the 1s leg fence, then that package may be up
+    # to 5s old at the exact 15:55 boundary.
+    primary_time_close_ready = (
+        end_lag is not None
+        and 0 <= float(end_lag) <= TIME_CLOSE_MAX_PACKAGE_AGE_SECONDS
+    )
     return {
         "session_date": session_date,
         "decision_clock": decision_clock,
@@ -245,6 +262,11 @@ def candidate_path_availability(
         "short_exit_rows": len(short_rows),
         "long_exit_rows": len(long_rows),
         "long_zero_bid_rows": sum(q.bid == 0 for q in long_rows),
+        "primary_leg_synchrony_seconds": float(PRIMARY_LEG_SYNCHRONY_SECONDS),
+        "primary_entry_max_lag_seconds": ENTRY_MAX_LAG_SECONDS,
+        "primary_time_close_max_package_age_seconds": TIME_CLOSE_MAX_PACKAGE_AGE_SECONDS,
+        "primary_entry_ready": primary_entry_ready,
+        "primary_time_close_ready": primary_time_close_ready,
         "synchrony": synchrony,
     }
 
@@ -442,6 +464,15 @@ def summarize(
                 **entry_summary,
                 "candidate_paths": len(clock_paths),
                 "source_errors": len(clock_paths) - len(valid),
+                "primary_entry_ready": sum(
+                    bool(p.get("primary_entry_ready")) for p in valid
+                ),
+                "primary_time_close_ready": sum(
+                    bool(p.get("primary_time_close_ready")) for p in valid
+                ),
+                "primary_leg_synchrony_seconds": float(PRIMARY_LEG_SYNCHRONY_SECONDS),
+                "entry_max_lag_seconds": ENTRY_MAX_LAG_SECONDS,
+                "time_close_max_package_age_seconds": TIME_CLOSE_MAX_PACKAGE_AGE_SECONDS,
                 "grid": grid_summary,
             }
         summary[partition] = {
