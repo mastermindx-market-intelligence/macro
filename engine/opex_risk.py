@@ -476,6 +476,8 @@ def snapshot(
             "window_phase": {},
             "glance_en": "OPEX risk read unavailable — surface data absent.",
             "glance_zh": "OPEX风险读取不可用 — 数据缺失。",
+            "drivers_en": "OPEX positioning read unavailable — surface data absent.",
+            "drivers_zh": "OPEX持仓读取不可用 — 数据缺失。",
             "doctrine": _DOCTRINE,
             "dealer_sign_passport": _DEALER_SIGN_PASSPORT,
             "vanna_symmetry_caveat": _VANNA_SYMMETRY_CAVEAT,
@@ -559,6 +561,10 @@ def _snapshot_inner(
         gamma_regime_ctx, states,
     )
 
+    drivers_en, drivers_zh = _make_driver_read(
+        level, n_hot, n_applicable, states,
+    )
+
     return {
         "schema": "opex_risk.v1",
         "asof": str(date.today()),
@@ -570,6 +576,8 @@ def _snapshot_inner(
         "window_phase": wp,
         "glance_en": glance_en,
         "glance_zh": glance_zh,
+        "drivers_en": drivers_en,
+        "drivers_zh": drivers_zh,
         "doctrine": _DOCTRINE,
         "dealer_sign_passport": _DEALER_SIGN_PASSPORT,
         "vanna_symmetry_caveat": _VANNA_SYMMETRY_CAVEAT,
@@ -577,43 +585,24 @@ def _snapshot_inner(
     }
 
 
-def _make_glance(
+def _make_driver_read(
     level: str,
-    phase: str,
-    td_to: int | None,
-    is_quad: bool,
     n_hot: int,
     n_applicable: int,
-    gamma_ctx: dict | None,
     states: dict,
 ) -> tuple[str, str]:
-    """Compose the Tier-1 stance sentence.
+    """Compose phase-free current positioning context for a dated event row.
 
-    Design Doctrine Laws 1-3:
-      - MUST carry a stance verb (Watch / Hold / Ease off)
-      - Plain words only — no internal state names exposed
-      - Technicals go to hover / Tier-2 (not here)
+    The OPEX calendar owns the event date. This read owns only the current
+    dealer/positioning state, so it deliberately contains no historical
+    window-phase prefix that could describe a future expiry as "Mid-cycle".
     """
-    # Phase word
-    phase_words = {
-        "opex_week": "Expiration week",
-        "post_opex": "Post-expiration window",
-        "mid_cycle": "Mid-cycle",
-    }
-    phase_en = phase_words.get(phase, "Options cycle")
-    quad_tag = " (quad-witching)" if is_quad else ""
-    td_tag = f" — {td_to}d to expiry" if td_to is not None else ""
-
-    # Availability note
     if n_applicable == 0:
-        avail_en = "Surface data building — readings pending."
-        avail_zh = "数据积累中，信号待定。"
         return (
-            f"{phase_en}{quad_tag}{td_tag}. {avail_en} Watch, don't chase.",
-            f"{phase_en}{quad_tag}{td_tag}。{avail_zh}观望，不追涨。",
+            "Surface data building — readings pending. Watch, don't chase.",
+            "数据积累中，信号待定。观望，不追涨。",
         )
 
-    # Stance verb by level
     stance_map = {
         "quiet": ("Low dealer pressure — hold positions, stay patient.", "低经销商压力 — 持仓，保持耐心。"),
         "elevated": ("Dealer load rising — watch for sticky tape. Watch, don't chase.", "经销商负载上升 — 注意粘性价格行为。观望，不追涨。"),
@@ -621,10 +610,7 @@ def _make_glance(
     }
     stance_en, stance_zh = stance_map.get(level, stance_map["quiet"])
 
-    # Context chips
     chips_en, chips_zh = [], []
-    # Plain words only at Tier-1 (Design Doctrine) — the internal state names
-    # (vanna_relief, dealer_load_extreme, ...) stay in the Tier-2 state stack.
     if states.get("pin_proximity"):
         chips_en.append("price may stick near big strikes")
         chips_zh.append("价格或被大额行权价吸住")
@@ -643,11 +629,40 @@ def _make_glance(
 
     chip_str_en = (", ".join(chips_en) + ". ") if chips_en else ""
     chip_str_zh = ("，".join(chips_zh) + "。") if chips_zh else ""
+    avail_note_en = f" ({n_hot}/{n_applicable} signals active)"
+    avail_note_zh = f"（{n_hot}/{n_applicable}项信号激活）"
+    return (
+        f"{chip_str_en}{stance_en}{avail_note_en}",
+        f"{chip_str_zh}{stance_zh}{avail_note_zh}",
+    )
 
-    avail_note = f" ({n_hot}/{n_applicable} signals active)" if n_applicable > 0 else ""
-    en = f"{phase_en}{quad_tag}{td_tag}. {chip_str_en}{stance_en}{avail_note}"
-    zh = f"{phase_en}{quad_tag}{td_tag}。{chip_str_zh}{stance_zh}（{n_hot}/{n_applicable}项信号激活）"
-    return en, zh
+
+def _make_glance(
+    level: str,
+    phase: str,
+    td_to: int | None,
+    is_quad: bool,
+    n_hot: int,
+    n_applicable: int,
+    gamma_ctx: dict | None,
+    states: dict,
+) -> tuple[str, str]:
+    """Compose the current OPEX-cycle glance plus phase-free positioning read."""
+    phase_words = {
+        "opex_week": "Expiration week",
+        "post_opex": "Post-expiration window",
+        "mid_cycle": "Mid-cycle",
+    }
+    phase_en = phase_words.get(phase, "Options cycle")
+    quad_tag = " (quad-witching)" if is_quad else ""
+    td_tag = f" — {td_to}d to expiry" if td_to is not None else ""
+    drivers_en, drivers_zh = _make_driver_read(
+        level, n_hot, n_applicable, states,
+    )
+    return (
+        f"{phase_en}{quad_tag}{td_tag}. {drivers_en}",
+        f"{phase_en}{quad_tag}{td_tag}。{drivers_zh}",
+    )
 
 
 # ── Standing-law strings ───────────────────────────────────────────────────────
