@@ -1,0 +1,3225 @@
+{
+  "observed_at": "2026-09-10T00:50:08.269268+00:00",
+  "base_url": "http://127.0.0.1:57433",
+  "scope": "anonymous layout only; no account or revenue result",
+  "passed": true,
+  "cases": [
+    {
+      "width": 320,
+      "document": 320,
+      "lang": "en",
+      "theme": null,
+      "links": [
+        {
+          "text": "Market Terminal",
+          "href": "products/market-terminal.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "Mastermind AI",
+          "href": "products/mastermind-ai.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "Market Intelligence",
+          "href": "products/market-dashboards.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "Plans & pricing",
+          "href": "plans.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "Institutional research",
+          "href": "research_vault.html",
+          "x": 170,
+          "right": 300
+        },
+        {
+          "text": "Stock dossiers",
+          "href": "stocks/index.html",
+          "x": 170,
+          "right": 300
+        },
+        {
+          "text": "About the research",
+          "href": "about-research.html",
+          "x": 170,
+          "right": 300
+        },
+        {
+          "text": "Tools",
+          "href": "tools/index.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "Learn",
+          "href": "learn/index.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "Blog",
+          "href": "blog/index.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "Support",
+          "href": "support.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "About MastermindX",
+          "href": "about.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "Privacy",
+          "href": "privacy.html",
+          "x": 170,
+          "right": 300
+        },
+        {
+          "text": "Terms",
+          "href": "terms.html",
+          "x": 170,
+          "right": 300
+        },
+        {
+          "text": "Disclaimer",
+          "href": "disclaimer.html",
+          "x": 170,
+          "right": 300
+        },
+        {
+          "text": "Privacy",
+          "href": "privacy.html",
+          "x": 20,
+          "right": 62
+        },
+        {
+          "text": "Terms",
+          "href": "terms.html",
+          "x": 72.21875,
+          "right": 107.578125
+        },
+        {
+          "text": "Disclaimer",
+          "href": "disclaimer.html",
+          "x": 117.796875,
+          "right": 177.140625
+        }
+      ],
+      "labels": [
+        {
+          "text": "DAY 3 · STILL EARLY",
+          "width": 130.921875,
+          "scroll": 131,
+          "right": 270
+        },
+        {
+          "text": "CONFIRMED FRI",
+          "width": 94.640625,
+          "scroll": 95,
+          "right": 270
+        }
+      ],
+      "locale_requested": "en",
+      "theme_requested": "light",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 360,
+      "document": 360,
+      "lang": "en",
+      "theme": null,
+      "links": [
+        {
+          "text": "Market Terminal",
+          "href": "products/market-terminal.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "Mastermind AI",
+          "href": "products/mastermind-ai.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "Market Intelligence",
+          "href": "products/market-dashboards.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "Plans & pricing",
+          "href": "plans.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "Institutional research",
+          "href": "research_vault.html",
+          "x": 190,
+          "right": 340
+        },
+        {
+          "text": "Stock dossiers",
+          "href": "stocks/index.html",
+          "x": 190,
+          "right": 340
+        },
+        {
+          "text": "About the research",
+          "href": "about-research.html",
+          "x": 190,
+          "right": 340
+        },
+        {
+          "text": "Tools",
+          "href": "tools/index.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "Learn",
+          "href": "learn/index.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "Blog",
+          "href": "blog/index.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "Support",
+          "href": "support.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "About MastermindX",
+          "href": "about.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "Privacy",
+          "href": "privacy.html",
+          "x": 190,
+          "right": 340
+        },
+        {
+          "text": "Terms",
+          "href": "terms.html",
+          "x": 190,
+          "right": 340
+        },
+        {
+          "text": "Disclaimer",
+          "href": "disclaimer.html",
+          "x": 190,
+          "right": 340
+        },
+        {
+          "text": "Privacy",
+          "href": "privacy.html",
+          "x": 20,
+          "right": 62
+        },
+        {
+          "text": "Terms",
+          "href": "terms.html",
+          "x": 72.21875,
+          "right": 107.578125
+        },
+        {
+          "text": "Disclaimer",
+          "href": "disclaimer.html",
+          "x": 117.796875,
+          "right": 177.140625
+        }
+      ],
+      "labels": [
+        {
+          "text": "DAY 3 · STILL EARLY",
+          "width": 130.921875,
+          "scroll": 131,
+          "right": 310
+        },
+        {
+          "text": "CONFIRMED FRI",
+          "width": 94.640625,
+          "scroll": 95,
+          "right": 310
+        }
+      ],
+      "locale_requested": "en",
+      "theme_requested": "light",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 390,
+      "document": 390,
+      "lang": "en",
+      "theme": null,
+      "links": [
+        {
+          "text": "Market Terminal",
+          "href": "products/market-terminal.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "Mastermind AI",
+          "href": "products/mastermind-ai.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "Market Intelligence",
+          "href": "products/market-dashboards.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "Plans & pricing",
+          "href": "plans.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "Institutional research",
+          "href": "research_vault.html",
+          "x": 205,
+          "right": 370
+        },
+        {
+          "text": "Stock dossiers",
+          "href": "stocks/index.html",
+          "x": 205,
+          "right": 370
+        },
+        {
+          "text": "About the research",
+          "href": "about-research.html",
+          "x": 205,
+          "right": 370
+        },
+        {
+          "text": "Tools",
+          "href": "tools/index.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "Learn",
+          "href": "learn/index.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "Blog",
+          "href": "blog/index.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "Support",
+          "href": "support.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "About MastermindX",
+          "href": "about.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "Privacy",
+          "href": "privacy.html",
+          "x": 205,
+          "right": 370
+        },
+        {
+          "text": "Terms",
+          "href": "terms.html",
+          "x": 205,
+          "right": 370
+        },
+        {
+          "text": "Disclaimer",
+          "href": "disclaimer.html",
+          "x": 205,
+          "right": 370
+        },
+        {
+          "text": "Privacy",
+          "href": "privacy.html",
+          "x": 20,
+          "right": 62
+        },
+        {
+          "text": "Terms",
+          "href": "terms.html",
+          "x": 72.21875,
+          "right": 107.578125
+        },
+        {
+          "text": "Disclaimer",
+          "href": "disclaimer.html",
+          "x": 117.796875,
+          "right": 177.140625
+        }
+      ],
+      "labels": [
+        {
+          "text": "DAY 3 · STILL EARLY",
+          "width": 130.921875,
+          "scroll": 131,
+          "right": 340
+        },
+        {
+          "text": "CONFIRMED FRI",
+          "width": 94.640625,
+          "scroll": 95,
+          "right": 340
+        }
+      ],
+      "locale_requested": "en",
+      "theme_requested": "light",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 430,
+      "document": 430,
+      "lang": "en",
+      "theme": null,
+      "links": [
+        {
+          "text": "Market Terminal",
+          "href": "products/market-terminal.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "Mastermind AI",
+          "href": "products/mastermind-ai.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "Market Intelligence",
+          "href": "products/market-dashboards.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "Plans & pricing",
+          "href": "plans.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "Institutional research",
+          "href": "research_vault.html",
+          "x": 225,
+          "right": 410
+        },
+        {
+          "text": "Stock dossiers",
+          "href": "stocks/index.html",
+          "x": 225,
+          "right": 410
+        },
+        {
+          "text": "About the research",
+          "href": "about-research.html",
+          "x": 225,
+          "right": 410
+        },
+        {
+          "text": "Tools",
+          "href": "tools/index.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "Learn",
+          "href": "learn/index.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "Blog",
+          "href": "blog/index.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "Support",
+          "href": "support.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "About MastermindX",
+          "href": "about.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "Privacy",
+          "href": "privacy.html",
+          "x": 225,
+          "right": 410
+        },
+        {
+          "text": "Terms",
+          "href": "terms.html",
+          "x": 225,
+          "right": 410
+        },
+        {
+          "text": "Disclaimer",
+          "href": "disclaimer.html",
+          "x": 225,
+          "right": 410
+        },
+        {
+          "text": "Privacy",
+          "href": "privacy.html",
+          "x": 20,
+          "right": 62
+        },
+        {
+          "text": "Terms",
+          "href": "terms.html",
+          "x": 72.21875,
+          "right": 107.578125
+        },
+        {
+          "text": "Disclaimer",
+          "href": "disclaimer.html",
+          "x": 117.796875,
+          "right": 177.140625
+        }
+      ],
+      "labels": [
+        {
+          "text": "DAY 3 · STILL EARLY",
+          "width": 130.921875,
+          "scroll": 131,
+          "right": 380
+        },
+        {
+          "text": "CONFIRMED FRI",
+          "width": 94.640625,
+          "scroll": 95,
+          "right": 380
+        }
+      ],
+      "locale_requested": "en",
+      "theme_requested": "light",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 768,
+      "document": 768,
+      "lang": "en",
+      "theme": null,
+      "links": [
+        {
+          "text": "Market Terminal",
+          "href": "products/market-terminal.html",
+          "x": 34.546875,
+          "right": 151.59375
+        },
+        {
+          "text": "Mastermind AI",
+          "href": "products/mastermind-ai.html",
+          "x": 34.546875,
+          "right": 151.59375
+        },
+        {
+          "text": "Market Intelligence",
+          "href": "products/market-dashboards.html",
+          "x": 34.546875,
+          "right": 151.59375
+        },
+        {
+          "text": "Plans & pricing",
+          "href": "plans.html",
+          "x": 34.546875,
+          "right": 151.59375
+        },
+        {
+          "text": "Institutional research",
+          "href": "research_vault.html",
+          "x": 197.671875,
+          "right": 325.953125
+        },
+        {
+          "text": "Stock dossiers",
+          "href": "stocks/index.html",
+          "x": 197.671875,
+          "right": 325.953125
+        },
+        {
+          "text": "About the research",
+          "href": "about-research.html",
+          "x": 197.671875,
+          "right": 325.953125
+        },
+        {
+          "text": "Tools",
+          "href": "tools/index.html",
+          "x": 372.03125,
+          "right": 494.109375
+        },
+        {
+          "text": "Learn",
+          "href": "learn/index.html",
+          "x": 372.03125,
+          "right": 494.109375
+        },
+        {
+          "text": "Blog",
+          "href": "blog/index.html",
+          "x": 372.03125,
+          "right": 494.109375
+        },
+        {
+          "text": "Support",
+          "href": "support.html",
+          "x": 372.03125,
+          "right": 494.109375
+        },
+        {
+          "text": "About MastermindX",
+          "href": "about.html",
+          "x": 372.03125,
+          "right": 494.109375
+        },
+        {
+          "text": "Privacy",
+          "href": "privacy.html",
+          "x": 540.1875,
+          "right": 604.46875
+        },
+        {
+          "text": "Terms",
+          "href": "terms.html",
+          "x": 540.1875,
+          "right": 604.46875
+        },
+        {
+          "text": "Disclaimer",
+          "href": "disclaimer.html",
+          "x": 540.1875,
+          "right": 604.46875
+        },
+        {
+          "text": "Privacy",
+          "href": "privacy.html",
+          "x": 576.3125,
+          "right": 618.3125
+        },
+        {
+          "text": "Terms",
+          "href": "terms.html",
+          "x": 628.53125,
+          "right": 663.890625
+        },
+        {
+          "text": "Disclaimer",
+          "href": "disclaimer.html",
+          "x": 674.109375,
+          "right": 733.453125
+        }
+      ],
+      "labels": [
+        {
+          "text": "DAY 3 · STILL EARLY",
+          "width": 130.921875,
+          "scroll": 131,
+          "right": 700.453125
+        },
+        {
+          "text": "CONFIRMED FRI",
+          "width": 94.640625,
+          "scroll": 95,
+          "right": 700.453125
+        }
+      ],
+      "locale_requested": "en",
+      "theme_requested": "light",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 1440,
+      "document": 1440,
+      "lang": "en",
+      "theme": null,
+      "links": [
+        {
+          "text": "Market Terminal",
+          "href": "products/market-terminal.html",
+          "x": 616.3125,
+          "right": 733.359375
+        },
+        {
+          "text": "Mastermind AI",
+          "href": "products/mastermind-ai.html",
+          "x": 616.3125,
+          "right": 733.359375
+        },
+        {
+          "text": "Market Intelligence",
+          "href": "products/market-dashboards.html",
+          "x": 616.3125,
+          "right": 733.359375
+        },
+        {
+          "text": "Plans & pricing",
+          "href": "plans.html",
+          "x": 616.3125,
+          "right": 733.359375
+        },
+        {
+          "text": "Institutional research",
+          "href": "research_vault.html",
+          "x": 817.359375,
+          "right": 945.640625
+        },
+        {
+          "text": "Stock dossiers",
+          "href": "stocks/index.html",
+          "x": 817.359375,
+          "right": 945.640625
+        },
+        {
+          "text": "About the research",
+          "href": "about-research.html",
+          "x": 817.359375,
+          "right": 945.640625
+        },
+        {
+          "text": "Tools",
+          "href": "tools/index.html",
+          "x": 1029.640625,
+          "right": 1151.71875
+        },
+        {
+          "text": "Learn",
+          "href": "learn/index.html",
+          "x": 1029.640625,
+          "right": 1151.71875
+        },
+        {
+          "text": "Blog",
+          "href": "blog/index.html",
+          "x": 1029.640625,
+          "right": 1151.71875
+        },
+        {
+          "text": "Support",
+          "href": "support.html",
+          "x": 1029.640625,
+          "right": 1151.71875
+        },
+        {
+          "text": "About MastermindX",
+          "href": "about.html",
+          "x": 1029.640625,
+          "right": 1151.71875
+        },
+        {
+          "text": "Privacy",
+          "href": "privacy.html",
+          "x": 1235.71875,
+          "right": 1300
+        },
+        {
+          "text": "Terms",
+          "href": "terms.html",
+          "x": 1235.71875,
+          "right": 1300
+        },
+        {
+          "text": "Disclaimer",
+          "href": "disclaimer.html",
+          "x": 1235.71875,
+          "right": 1300
+        },
+        {
+          "text": "Privacy",
+          "href": "privacy.html",
+          "x": 1142.859375,
+          "right": 1184.859375
+        },
+        {
+          "text": "Terms",
+          "href": "terms.html",
+          "x": 1195.078125,
+          "right": 1230.4375
+        },
+        {
+          "text": "Disclaimer",
+          "href": "disclaimer.html",
+          "x": 1240.65625,
+          "right": 1300
+        }
+      ],
+      "labels": [
+        {
+          "text": "DAY 3 · STILL EARLY",
+          "width": 130.921875,
+          "scroll": 131,
+          "right": 742.671875
+        },
+        {
+          "text": "CONFIRMED FRI",
+          "width": 94.640625,
+          "scroll": 95,
+          "right": 742.671875
+        }
+      ],
+      "locale_requested": "en",
+      "theme_requested": "light",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 320,
+      "document": 320,
+      "lang": "en",
+      "theme": null,
+      "links": [
+        {
+          "text": "Market Terminal",
+          "href": "products/market-terminal.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "Mastermind AI",
+          "href": "products/mastermind-ai.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "Market Intelligence",
+          "href": "products/market-dashboards.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "Plans & pricing",
+          "href": "plans.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "Institutional research",
+          "href": "research_vault.html",
+          "x": 170,
+          "right": 300
+        },
+        {
+          "text": "Stock dossiers",
+          "href": "stocks/index.html",
+          "x": 170,
+          "right": 300
+        },
+        {
+          "text": "About the research",
+          "href": "about-research.html",
+          "x": 170,
+          "right": 300
+        },
+        {
+          "text": "Tools",
+          "href": "tools/index.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "Learn",
+          "href": "learn/index.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "Blog",
+          "href": "blog/index.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "Support",
+          "href": "support.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "About MastermindX",
+          "href": "about.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "Privacy",
+          "href": "privacy.html",
+          "x": 170,
+          "right": 300
+        },
+        {
+          "text": "Terms",
+          "href": "terms.html",
+          "x": 170,
+          "right": 300
+        },
+        {
+          "text": "Disclaimer",
+          "href": "disclaimer.html",
+          "x": 170,
+          "right": 300
+        },
+        {
+          "text": "Privacy",
+          "href": "privacy.html",
+          "x": 20,
+          "right": 62
+        },
+        {
+          "text": "Terms",
+          "href": "terms.html",
+          "x": 72.21875,
+          "right": 107.578125
+        },
+        {
+          "text": "Disclaimer",
+          "href": "disclaimer.html",
+          "x": 117.796875,
+          "right": 177.140625
+        }
+      ],
+      "labels": [
+        {
+          "text": "DAY 3 · STILL EARLY",
+          "width": 130.921875,
+          "scroll": 131,
+          "right": 270
+        },
+        {
+          "text": "CONFIRMED FRI",
+          "width": 94.640625,
+          "scroll": 95,
+          "right": 270
+        }
+      ],
+      "locale_requested": "en",
+      "theme_requested": "dark",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 360,
+      "document": 360,
+      "lang": "en",
+      "theme": null,
+      "links": [
+        {
+          "text": "Market Terminal",
+          "href": "products/market-terminal.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "Mastermind AI",
+          "href": "products/mastermind-ai.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "Market Intelligence",
+          "href": "products/market-dashboards.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "Plans & pricing",
+          "href": "plans.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "Institutional research",
+          "href": "research_vault.html",
+          "x": 190,
+          "right": 340
+        },
+        {
+          "text": "Stock dossiers",
+          "href": "stocks/index.html",
+          "x": 190,
+          "right": 340
+        },
+        {
+          "text": "About the research",
+          "href": "about-research.html",
+          "x": 190,
+          "right": 340
+        },
+        {
+          "text": "Tools",
+          "href": "tools/index.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "Learn",
+          "href": "learn/index.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "Blog",
+          "href": "blog/index.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "Support",
+          "href": "support.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "About MastermindX",
+          "href": "about.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "Privacy",
+          "href": "privacy.html",
+          "x": 190,
+          "right": 340
+        },
+        {
+          "text": "Terms",
+          "href": "terms.html",
+          "x": 190,
+          "right": 340
+        },
+        {
+          "text": "Disclaimer",
+          "href": "disclaimer.html",
+          "x": 190,
+          "right": 340
+        },
+        {
+          "text": "Privacy",
+          "href": "privacy.html",
+          "x": 20,
+          "right": 62
+        },
+        {
+          "text": "Terms",
+          "href": "terms.html",
+          "x": 72.21875,
+          "right": 107.578125
+        },
+        {
+          "text": "Disclaimer",
+          "href": "disclaimer.html",
+          "x": 117.796875,
+          "right": 177.140625
+        }
+      ],
+      "labels": [
+        {
+          "text": "DAY 3 · STILL EARLY",
+          "width": 130.921875,
+          "scroll": 131,
+          "right": 310
+        },
+        {
+          "text": "CONFIRMED FRI",
+          "width": 94.640625,
+          "scroll": 95,
+          "right": 310
+        }
+      ],
+      "locale_requested": "en",
+      "theme_requested": "dark",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 390,
+      "document": 390,
+      "lang": "en",
+      "theme": null,
+      "links": [
+        {
+          "text": "Market Terminal",
+          "href": "products/market-terminal.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "Mastermind AI",
+          "href": "products/mastermind-ai.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "Market Intelligence",
+          "href": "products/market-dashboards.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "Plans & pricing",
+          "href": "plans.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "Institutional research",
+          "href": "research_vault.html",
+          "x": 205,
+          "right": 370
+        },
+        {
+          "text": "Stock dossiers",
+          "href": "stocks/index.html",
+          "x": 205,
+          "right": 370
+        },
+        {
+          "text": "About the research",
+          "href": "about-research.html",
+          "x": 205,
+          "right": 370
+        },
+        {
+          "text": "Tools",
+          "href": "tools/index.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "Learn",
+          "href": "learn/index.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "Blog",
+          "href": "blog/index.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "Support",
+          "href": "support.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "About MastermindX",
+          "href": "about.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "Privacy",
+          "href": "privacy.html",
+          "x": 205,
+          "right": 370
+        },
+        {
+          "text": "Terms",
+          "href": "terms.html",
+          "x": 205,
+          "right": 370
+        },
+        {
+          "text": "Disclaimer",
+          "href": "disclaimer.html",
+          "x": 205,
+          "right": 370
+        },
+        {
+          "text": "Privacy",
+          "href": "privacy.html",
+          "x": 20,
+          "right": 62
+        },
+        {
+          "text": "Terms",
+          "href": "terms.html",
+          "x": 72.21875,
+          "right": 107.578125
+        },
+        {
+          "text": "Disclaimer",
+          "href": "disclaimer.html",
+          "x": 117.796875,
+          "right": 177.140625
+        }
+      ],
+      "labels": [
+        {
+          "text": "DAY 3 · STILL EARLY",
+          "width": 130.921875,
+          "scroll": 131,
+          "right": 340
+        },
+        {
+          "text": "CONFIRMED FRI",
+          "width": 94.640625,
+          "scroll": 95,
+          "right": 340
+        }
+      ],
+      "locale_requested": "en",
+      "theme_requested": "dark",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 430,
+      "document": 430,
+      "lang": "en",
+      "theme": null,
+      "links": [
+        {
+          "text": "Market Terminal",
+          "href": "products/market-terminal.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "Mastermind AI",
+          "href": "products/mastermind-ai.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "Market Intelligence",
+          "href": "products/market-dashboards.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "Plans & pricing",
+          "href": "plans.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "Institutional research",
+          "href": "research_vault.html",
+          "x": 225,
+          "right": 410
+        },
+        {
+          "text": "Stock dossiers",
+          "href": "stocks/index.html",
+          "x": 225,
+          "right": 410
+        },
+        {
+          "text": "About the research",
+          "href": "about-research.html",
+          "x": 225,
+          "right": 410
+        },
+        {
+          "text": "Tools",
+          "href": "tools/index.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "Learn",
+          "href": "learn/index.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "Blog",
+          "href": "blog/index.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "Support",
+          "href": "support.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "About MastermindX",
+          "href": "about.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "Privacy",
+          "href": "privacy.html",
+          "x": 225,
+          "right": 410
+        },
+        {
+          "text": "Terms",
+          "href": "terms.html",
+          "x": 225,
+          "right": 410
+        },
+        {
+          "text": "Disclaimer",
+          "href": "disclaimer.html",
+          "x": 225,
+          "right": 410
+        },
+        {
+          "text": "Privacy",
+          "href": "privacy.html",
+          "x": 20,
+          "right": 62
+        },
+        {
+          "text": "Terms",
+          "href": "terms.html",
+          "x": 72.21875,
+          "right": 107.578125
+        },
+        {
+          "text": "Disclaimer",
+          "href": "disclaimer.html",
+          "x": 117.796875,
+          "right": 177.140625
+        }
+      ],
+      "labels": [
+        {
+          "text": "DAY 3 · STILL EARLY",
+          "width": 130.921875,
+          "scroll": 131,
+          "right": 380
+        },
+        {
+          "text": "CONFIRMED FRI",
+          "width": 94.640625,
+          "scroll": 95,
+          "right": 380
+        }
+      ],
+      "locale_requested": "en",
+      "theme_requested": "dark",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 768,
+      "document": 768,
+      "lang": "en",
+      "theme": null,
+      "links": [
+        {
+          "text": "Market Terminal",
+          "href": "products/market-terminal.html",
+          "x": 34.546875,
+          "right": 151.59375
+        },
+        {
+          "text": "Mastermind AI",
+          "href": "products/mastermind-ai.html",
+          "x": 34.546875,
+          "right": 151.59375
+        },
+        {
+          "text": "Market Intelligence",
+          "href": "products/market-dashboards.html",
+          "x": 34.546875,
+          "right": 151.59375
+        },
+        {
+          "text": "Plans & pricing",
+          "href": "plans.html",
+          "x": 34.546875,
+          "right": 151.59375
+        },
+        {
+          "text": "Institutional research",
+          "href": "research_vault.html",
+          "x": 197.671875,
+          "right": 325.953125
+        },
+        {
+          "text": "Stock dossiers",
+          "href": "stocks/index.html",
+          "x": 197.671875,
+          "right": 325.953125
+        },
+        {
+          "text": "About the research",
+          "href": "about-research.html",
+          "x": 197.671875,
+          "right": 325.953125
+        },
+        {
+          "text": "Tools",
+          "href": "tools/index.html",
+          "x": 372.03125,
+          "right": 494.109375
+        },
+        {
+          "text": "Learn",
+          "href": "learn/index.html",
+          "x": 372.03125,
+          "right": 494.109375
+        },
+        {
+          "text": "Blog",
+          "href": "blog/index.html",
+          "x": 372.03125,
+          "right": 494.109375
+        },
+        {
+          "text": "Support",
+          "href": "support.html",
+          "x": 372.03125,
+          "right": 494.109375
+        },
+        {
+          "text": "About MastermindX",
+          "href": "about.html",
+          "x": 372.03125,
+          "right": 494.109375
+        },
+        {
+          "text": "Privacy",
+          "href": "privacy.html",
+          "x": 540.1875,
+          "right": 604.46875
+        },
+        {
+          "text": "Terms",
+          "href": "terms.html",
+          "x": 540.1875,
+          "right": 604.46875
+        },
+        {
+          "text": "Disclaimer",
+          "href": "disclaimer.html",
+          "x": 540.1875,
+          "right": 604.46875
+        },
+        {
+          "text": "Privacy",
+          "href": "privacy.html",
+          "x": 576.3125,
+          "right": 618.3125
+        },
+        {
+          "text": "Terms",
+          "href": "terms.html",
+          "x": 628.53125,
+          "right": 663.890625
+        },
+        {
+          "text": "Disclaimer",
+          "href": "disclaimer.html",
+          "x": 674.109375,
+          "right": 733.453125
+        }
+      ],
+      "labels": [
+        {
+          "text": "DAY 3 · STILL EARLY",
+          "width": 130.921875,
+          "scroll": 131,
+          "right": 700.453125
+        },
+        {
+          "text": "CONFIRMED FRI",
+          "width": 94.640625,
+          "scroll": 95,
+          "right": 700.453125
+        }
+      ],
+      "locale_requested": "en",
+      "theme_requested": "dark",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 1440,
+      "document": 1440,
+      "lang": "en",
+      "theme": null,
+      "links": [
+        {
+          "text": "Market Terminal",
+          "href": "products/market-terminal.html",
+          "x": 616.3125,
+          "right": 733.359375
+        },
+        {
+          "text": "Mastermind AI",
+          "href": "products/mastermind-ai.html",
+          "x": 616.3125,
+          "right": 733.359375
+        },
+        {
+          "text": "Market Intelligence",
+          "href": "products/market-dashboards.html",
+          "x": 616.3125,
+          "right": 733.359375
+        },
+        {
+          "text": "Plans & pricing",
+          "href": "plans.html",
+          "x": 616.3125,
+          "right": 733.359375
+        },
+        {
+          "text": "Institutional research",
+          "href": "research_vault.html",
+          "x": 817.359375,
+          "right": 945.640625
+        },
+        {
+          "text": "Stock dossiers",
+          "href": "stocks/index.html",
+          "x": 817.359375,
+          "right": 945.640625
+        },
+        {
+          "text": "About the research",
+          "href": "about-research.html",
+          "x": 817.359375,
+          "right": 945.640625
+        },
+        {
+          "text": "Tools",
+          "href": "tools/index.html",
+          "x": 1029.640625,
+          "right": 1151.71875
+        },
+        {
+          "text": "Learn",
+          "href": "learn/index.html",
+          "x": 1029.640625,
+          "right": 1151.71875
+        },
+        {
+          "text": "Blog",
+          "href": "blog/index.html",
+          "x": 1029.640625,
+          "right": 1151.71875
+        },
+        {
+          "text": "Support",
+          "href": "support.html",
+          "x": 1029.640625,
+          "right": 1151.71875
+        },
+        {
+          "text": "About MastermindX",
+          "href": "about.html",
+          "x": 1029.640625,
+          "right": 1151.71875
+        },
+        {
+          "text": "Privacy",
+          "href": "privacy.html",
+          "x": 1235.71875,
+          "right": 1300
+        },
+        {
+          "text": "Terms",
+          "href": "terms.html",
+          "x": 1235.71875,
+          "right": 1300
+        },
+        {
+          "text": "Disclaimer",
+          "href": "disclaimer.html",
+          "x": 1235.71875,
+          "right": 1300
+        },
+        {
+          "text": "Privacy",
+          "href": "privacy.html",
+          "x": 1142.859375,
+          "right": 1184.859375
+        },
+        {
+          "text": "Terms",
+          "href": "terms.html",
+          "x": 1195.078125,
+          "right": 1230.4375
+        },
+        {
+          "text": "Disclaimer",
+          "href": "disclaimer.html",
+          "x": 1240.65625,
+          "right": 1300
+        }
+      ],
+      "labels": [
+        {
+          "text": "DAY 3 · STILL EARLY",
+          "width": 130.921875,
+          "scroll": 131,
+          "right": 742.671875
+        },
+        {
+          "text": "CONFIRMED FRI",
+          "width": 94.640625,
+          "scroll": 95,
+          "right": 742.671875
+        }
+      ],
+      "locale_requested": "en",
+      "theme_requested": "dark",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 320,
+      "document": 320,
+      "lang": "zh",
+      "theme": null,
+      "links": [
+        {
+          "text": "Market Terminal",
+          "href": "products/market-terminal.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "Mastermind AI",
+          "href": "products/mastermind-ai.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "市场情报",
+          "href": "products/market-dashboards.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "方案与定价",
+          "href": "plans.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "机构研报",
+          "href": "research_vault.html",
+          "x": 170,
+          "right": 300
+        },
+        {
+          "text": "股票档案",
+          "href": "stocks/index.html",
+          "x": 170,
+          "right": 300
+        },
+        {
+          "text": "关于研究",
+          "href": "about-research.html",
+          "x": 170,
+          "right": 300
+        },
+        {
+          "text": "工具",
+          "href": "tools/index.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "学习",
+          "href": "learn/index.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "博客",
+          "href": "blog/index.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "支持",
+          "href": "support.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "关于 MastermindX",
+          "href": "about.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "隐私政策",
+          "href": "privacy.html",
+          "x": 170,
+          "right": 300
+        },
+        {
+          "text": "服务条款",
+          "href": "terms.html",
+          "x": 170,
+          "right": 300
+        },
+        {
+          "text": "免责声明",
+          "href": "disclaimer.html",
+          "x": 170,
+          "right": 300
+        },
+        {
+          "text": "隐私政策",
+          "href": "privacy.html",
+          "x": 20,
+          "right": 69.015625
+        },
+        {
+          "text": "服务条款",
+          "href": "terms.html",
+          "x": 79.234375,
+          "right": 128.25
+        },
+        {
+          "text": "免责声明",
+          "href": "disclaimer.html",
+          "x": 138.46875,
+          "right": 187.484375
+        }
+      ],
+      "labels": [
+        {
+          "text": "第3天 · 仍属早期",
+          "width": 97.984375,
+          "scroll": 98,
+          "right": 270
+        },
+        {
+          "text": "周五已确认",
+          "width": 64.15625,
+          "scroll": 64,
+          "right": 270
+        }
+      ],
+      "locale_requested": "zh",
+      "theme_requested": "light",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 360,
+      "document": 360,
+      "lang": "zh",
+      "theme": null,
+      "links": [
+        {
+          "text": "Market Terminal",
+          "href": "products/market-terminal.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "Mastermind AI",
+          "href": "products/mastermind-ai.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "市场情报",
+          "href": "products/market-dashboards.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "方案与定价",
+          "href": "plans.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "机构研报",
+          "href": "research_vault.html",
+          "x": 190,
+          "right": 340
+        },
+        {
+          "text": "股票档案",
+          "href": "stocks/index.html",
+          "x": 190,
+          "right": 340
+        },
+        {
+          "text": "关于研究",
+          "href": "about-research.html",
+          "x": 190,
+          "right": 340
+        },
+        {
+          "text": "工具",
+          "href": "tools/index.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "学习",
+          "href": "learn/index.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "博客",
+          "href": "blog/index.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "支持",
+          "href": "support.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "关于 MastermindX",
+          "href": "about.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "隐私政策",
+          "href": "privacy.html",
+          "x": 190,
+          "right": 340
+        },
+        {
+          "text": "服务条款",
+          "href": "terms.html",
+          "x": 190,
+          "right": 340
+        },
+        {
+          "text": "免责声明",
+          "href": "disclaimer.html",
+          "x": 190,
+          "right": 340
+        },
+        {
+          "text": "隐私政策",
+          "href": "privacy.html",
+          "x": 20,
+          "right": 69.015625
+        },
+        {
+          "text": "服务条款",
+          "href": "terms.html",
+          "x": 79.234375,
+          "right": 128.25
+        },
+        {
+          "text": "免责声明",
+          "href": "disclaimer.html",
+          "x": 138.46875,
+          "right": 187.484375
+        }
+      ],
+      "labels": [
+        {
+          "text": "第3天 · 仍属早期",
+          "width": 97.984375,
+          "scroll": 98,
+          "right": 310
+        },
+        {
+          "text": "周五已确认",
+          "width": 64.15625,
+          "scroll": 64,
+          "right": 310
+        }
+      ],
+      "locale_requested": "zh",
+      "theme_requested": "light",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 390,
+      "document": 390,
+      "lang": "zh",
+      "theme": null,
+      "links": [
+        {
+          "text": "Market Terminal",
+          "href": "products/market-terminal.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "Mastermind AI",
+          "href": "products/mastermind-ai.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "市场情报",
+          "href": "products/market-dashboards.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "方案与定价",
+          "href": "plans.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "机构研报",
+          "href": "research_vault.html",
+          "x": 205,
+          "right": 370
+        },
+        {
+          "text": "股票档案",
+          "href": "stocks/index.html",
+          "x": 205,
+          "right": 370
+        },
+        {
+          "text": "关于研究",
+          "href": "about-research.html",
+          "x": 205,
+          "right": 370
+        },
+        {
+          "text": "工具",
+          "href": "tools/index.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "学习",
+          "href": "learn/index.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "博客",
+          "href": "blog/index.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "支持",
+          "href": "support.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "关于 MastermindX",
+          "href": "about.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "隐私政策",
+          "href": "privacy.html",
+          "x": 205,
+          "right": 370
+        },
+        {
+          "text": "服务条款",
+          "href": "terms.html",
+          "x": 205,
+          "right": 370
+        },
+        {
+          "text": "免责声明",
+          "href": "disclaimer.html",
+          "x": 205,
+          "right": 370
+        },
+        {
+          "text": "隐私政策",
+          "href": "privacy.html",
+          "x": 20,
+          "right": 69.015625
+        },
+        {
+          "text": "服务条款",
+          "href": "terms.html",
+          "x": 79.234375,
+          "right": 128.25
+        },
+        {
+          "text": "免责声明",
+          "href": "disclaimer.html",
+          "x": 138.46875,
+          "right": 187.484375
+        }
+      ],
+      "labels": [
+        {
+          "text": "第3天 · 仍属早期",
+          "width": 97.984375,
+          "scroll": 98,
+          "right": 340
+        },
+        {
+          "text": "周五已确认",
+          "width": 64.15625,
+          "scroll": 64,
+          "right": 340
+        }
+      ],
+      "locale_requested": "zh",
+      "theme_requested": "light",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 430,
+      "document": 430,
+      "lang": "zh",
+      "theme": null,
+      "links": [
+        {
+          "text": "Market Terminal",
+          "href": "products/market-terminal.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "Mastermind AI",
+          "href": "products/mastermind-ai.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "市场情报",
+          "href": "products/market-dashboards.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "方案与定价",
+          "href": "plans.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "机构研报",
+          "href": "research_vault.html",
+          "x": 225,
+          "right": 410
+        },
+        {
+          "text": "股票档案",
+          "href": "stocks/index.html",
+          "x": 225,
+          "right": 410
+        },
+        {
+          "text": "关于研究",
+          "href": "about-research.html",
+          "x": 225,
+          "right": 410
+        },
+        {
+          "text": "工具",
+          "href": "tools/index.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "学习",
+          "href": "learn/index.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "博客",
+          "href": "blog/index.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "支持",
+          "href": "support.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "关于 MastermindX",
+          "href": "about.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "隐私政策",
+          "href": "privacy.html",
+          "x": 225,
+          "right": 410
+        },
+        {
+          "text": "服务条款",
+          "href": "terms.html",
+          "x": 225,
+          "right": 410
+        },
+        {
+          "text": "免责声明",
+          "href": "disclaimer.html",
+          "x": 225,
+          "right": 410
+        },
+        {
+          "text": "隐私政策",
+          "href": "privacy.html",
+          "x": 20,
+          "right": 69.015625
+        },
+        {
+          "text": "服务条款",
+          "href": "terms.html",
+          "x": 79.234375,
+          "right": 128.25
+        },
+        {
+          "text": "免责声明",
+          "href": "disclaimer.html",
+          "x": 138.46875,
+          "right": 187.484375
+        }
+      ],
+      "labels": [
+        {
+          "text": "第3天 · 仍属早期",
+          "width": 97.984375,
+          "scroll": 98,
+          "right": 380
+        },
+        {
+          "text": "周五已确认",
+          "width": 64.15625,
+          "scroll": 64,
+          "right": 380
+        }
+      ],
+      "locale_requested": "zh",
+      "theme_requested": "light",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 768,
+      "document": 768,
+      "lang": "zh",
+      "theme": null,
+      "links": [
+        {
+          "text": "Market Terminal",
+          "href": "products/market-terminal.html",
+          "x": 277.984375,
+          "right": 377.1875
+        },
+        {
+          "text": "Mastermind AI",
+          "href": "products/mastermind-ai.html",
+          "x": 277.984375,
+          "right": 377.1875
+        },
+        {
+          "text": "市场情报",
+          "href": "products/market-dashboards.html",
+          "x": 277.984375,
+          "right": 377.1875
+        },
+        {
+          "text": "方案与定价",
+          "href": "plans.html",
+          "x": 277.984375,
+          "right": 377.1875
+        },
+        {
+          "text": "机构研报",
+          "href": "research_vault.html",
+          "x": 423.265625,
+          "right": 476.3125
+        },
+        {
+          "text": "股票档案",
+          "href": "stocks/index.html",
+          "x": 423.265625,
+          "right": 476.3125
+        },
+        {
+          "text": "关于研究",
+          "href": "about-research.html",
+          "x": 423.265625,
+          "right": 476.3125
+        },
+        {
+          "text": "工具",
+          "href": "tools/index.html",
+          "x": 522.390625,
+          "right": 634.328125
+        },
+        {
+          "text": "学习",
+          "href": "learn/index.html",
+          "x": 522.390625,
+          "right": 634.328125
+        },
+        {
+          "text": "博客",
+          "href": "blog/index.html",
+          "x": 522.390625,
+          "right": 634.328125
+        },
+        {
+          "text": "支持",
+          "href": "support.html",
+          "x": 522.390625,
+          "right": 634.328125
+        },
+        {
+          "text": "关于 MastermindX",
+          "href": "about.html",
+          "x": 522.390625,
+          "right": 634.328125
+        },
+        {
+          "text": "隐私政策",
+          "href": "privacy.html",
+          "x": 680.40625,
+          "right": 733.453125
+        },
+        {
+          "text": "服务条款",
+          "href": "terms.html",
+          "x": 680.40625,
+          "right": 733.453125
+        },
+        {
+          "text": "免责声明",
+          "href": "disclaimer.html",
+          "x": 680.40625,
+          "right": 733.453125
+        },
+        {
+          "text": "隐私政策",
+          "href": "privacy.html",
+          "x": 565.96875,
+          "right": 614.984375
+        },
+        {
+          "text": "服务条款",
+          "href": "terms.html",
+          "x": 625.203125,
+          "right": 674.21875
+        },
+        {
+          "text": "免责声明",
+          "href": "disclaimer.html",
+          "x": 684.4375,
+          "right": 733.453125
+        }
+      ],
+      "labels": [
+        {
+          "text": "第3天 · 仍属早期",
+          "width": 97.984375,
+          "scroll": 98,
+          "right": 700.453125
+        },
+        {
+          "text": "周五已确认",
+          "width": 64.15625,
+          "scroll": 64,
+          "right": 700.453125
+        }
+      ],
+      "locale_requested": "zh",
+      "theme_requested": "light",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 1440,
+      "document": 1440,
+      "lang": "zh",
+      "theme": null,
+      "links": [
+        {
+          "text": "Market Terminal",
+          "href": "products/market-terminal.html",
+          "x": 730.765625,
+          "right": 829.96875
+        },
+        {
+          "text": "Mastermind AI",
+          "href": "products/mastermind-ai.html",
+          "x": 730.765625,
+          "right": 829.96875
+        },
+        {
+          "text": "市场情报",
+          "href": "products/market-dashboards.html",
+          "x": 730.765625,
+          "right": 829.96875
+        },
+        {
+          "text": "方案与定价",
+          "href": "plans.html",
+          "x": 730.765625,
+          "right": 829.96875
+        },
+        {
+          "text": "机构研报",
+          "href": "research_vault.html",
+          "x": 913.96875,
+          "right": 967.015625
+        },
+        {
+          "text": "股票档案",
+          "href": "stocks/index.html",
+          "x": 913.96875,
+          "right": 967.015625
+        },
+        {
+          "text": "关于研究",
+          "href": "about-research.html",
+          "x": 913.96875,
+          "right": 967.015625
+        },
+        {
+          "text": "工具",
+          "href": "tools/index.html",
+          "x": 1051.015625,
+          "right": 1162.953125
+        },
+        {
+          "text": "学习",
+          "href": "learn/index.html",
+          "x": 1051.015625,
+          "right": 1162.953125
+        },
+        {
+          "text": "博客",
+          "href": "blog/index.html",
+          "x": 1051.015625,
+          "right": 1162.953125
+        },
+        {
+          "text": "支持",
+          "href": "support.html",
+          "x": 1051.015625,
+          "right": 1162.953125
+        },
+        {
+          "text": "关于 MastermindX",
+          "href": "about.html",
+          "x": 1051.015625,
+          "right": 1162.953125
+        },
+        {
+          "text": "隐私政策",
+          "href": "privacy.html",
+          "x": 1246.953125,
+          "right": 1300
+        },
+        {
+          "text": "服务条款",
+          "href": "terms.html",
+          "x": 1246.953125,
+          "right": 1300
+        },
+        {
+          "text": "免责声明",
+          "href": "disclaimer.html",
+          "x": 1246.953125,
+          "right": 1300
+        },
+        {
+          "text": "隐私政策",
+          "href": "privacy.html",
+          "x": 1132.515625,
+          "right": 1181.53125
+        },
+        {
+          "text": "服务条款",
+          "href": "terms.html",
+          "x": 1191.75,
+          "right": 1240.765625
+        },
+        {
+          "text": "免责声明",
+          "href": "disclaimer.html",
+          "x": 1250.984375,
+          "right": 1300
+        }
+      ],
+      "labels": [
+        {
+          "text": "第3天 · 仍属早期",
+          "width": 97.984375,
+          "scroll": 98,
+          "right": 742.671875
+        },
+        {
+          "text": "周五已确认",
+          "width": 64.15625,
+          "scroll": 64,
+          "right": 742.671875
+        }
+      ],
+      "locale_requested": "zh",
+      "theme_requested": "light",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 320,
+      "document": 320,
+      "lang": "zh",
+      "theme": null,
+      "links": [
+        {
+          "text": "Market Terminal",
+          "href": "products/market-terminal.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "Mastermind AI",
+          "href": "products/mastermind-ai.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "市场情报",
+          "href": "products/market-dashboards.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "方案与定价",
+          "href": "plans.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "机构研报",
+          "href": "research_vault.html",
+          "x": 170,
+          "right": 300
+        },
+        {
+          "text": "股票档案",
+          "href": "stocks/index.html",
+          "x": 170,
+          "right": 300
+        },
+        {
+          "text": "关于研究",
+          "href": "about-research.html",
+          "x": 170,
+          "right": 300
+        },
+        {
+          "text": "工具",
+          "href": "tools/index.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "学习",
+          "href": "learn/index.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "博客",
+          "href": "blog/index.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "支持",
+          "href": "support.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "关于 MastermindX",
+          "href": "about.html",
+          "x": 20,
+          "right": 150
+        },
+        {
+          "text": "隐私政策",
+          "href": "privacy.html",
+          "x": 170,
+          "right": 300
+        },
+        {
+          "text": "服务条款",
+          "href": "terms.html",
+          "x": 170,
+          "right": 300
+        },
+        {
+          "text": "免责声明",
+          "href": "disclaimer.html",
+          "x": 170,
+          "right": 300
+        },
+        {
+          "text": "隐私政策",
+          "href": "privacy.html",
+          "x": 20,
+          "right": 69.015625
+        },
+        {
+          "text": "服务条款",
+          "href": "terms.html",
+          "x": 79.234375,
+          "right": 128.25
+        },
+        {
+          "text": "免责声明",
+          "href": "disclaimer.html",
+          "x": 138.46875,
+          "right": 187.484375
+        }
+      ],
+      "labels": [
+        {
+          "text": "第3天 · 仍属早期",
+          "width": 97.984375,
+          "scroll": 98,
+          "right": 270
+        },
+        {
+          "text": "周五已确认",
+          "width": 64.15625,
+          "scroll": 64,
+          "right": 270
+        }
+      ],
+      "locale_requested": "zh",
+      "theme_requested": "dark",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 360,
+      "document": 360,
+      "lang": "zh",
+      "theme": null,
+      "links": [
+        {
+          "text": "Market Terminal",
+          "href": "products/market-terminal.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "Mastermind AI",
+          "href": "products/mastermind-ai.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "市场情报",
+          "href": "products/market-dashboards.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "方案与定价",
+          "href": "plans.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "机构研报",
+          "href": "research_vault.html",
+          "x": 190,
+          "right": 340
+        },
+        {
+          "text": "股票档案",
+          "href": "stocks/index.html",
+          "x": 190,
+          "right": 340
+        },
+        {
+          "text": "关于研究",
+          "href": "about-research.html",
+          "x": 190,
+          "right": 340
+        },
+        {
+          "text": "工具",
+          "href": "tools/index.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "学习",
+          "href": "learn/index.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "博客",
+          "href": "blog/index.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "支持",
+          "href": "support.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "关于 MastermindX",
+          "href": "about.html",
+          "x": 20,
+          "right": 170
+        },
+        {
+          "text": "隐私政策",
+          "href": "privacy.html",
+          "x": 190,
+          "right": 340
+        },
+        {
+          "text": "服务条款",
+          "href": "terms.html",
+          "x": 190,
+          "right": 340
+        },
+        {
+          "text": "免责声明",
+          "href": "disclaimer.html",
+          "x": 190,
+          "right": 340
+        },
+        {
+          "text": "隐私政策",
+          "href": "privacy.html",
+          "x": 20,
+          "right": 69.015625
+        },
+        {
+          "text": "服务条款",
+          "href": "terms.html",
+          "x": 79.234375,
+          "right": 128.25
+        },
+        {
+          "text": "免责声明",
+          "href": "disclaimer.html",
+          "x": 138.46875,
+          "right": 187.484375
+        }
+      ],
+      "labels": [
+        {
+          "text": "第3天 · 仍属早期",
+          "width": 97.984375,
+          "scroll": 98,
+          "right": 310
+        },
+        {
+          "text": "周五已确认",
+          "width": 64.15625,
+          "scroll": 64,
+          "right": 310
+        }
+      ],
+      "locale_requested": "zh",
+      "theme_requested": "dark",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 390,
+      "document": 390,
+      "lang": "zh",
+      "theme": null,
+      "links": [
+        {
+          "text": "Market Terminal",
+          "href": "products/market-terminal.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "Mastermind AI",
+          "href": "products/mastermind-ai.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "市场情报",
+          "href": "products/market-dashboards.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "方案与定价",
+          "href": "plans.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "机构研报",
+          "href": "research_vault.html",
+          "x": 205,
+          "right": 370
+        },
+        {
+          "text": "股票档案",
+          "href": "stocks/index.html",
+          "x": 205,
+          "right": 370
+        },
+        {
+          "text": "关于研究",
+          "href": "about-research.html",
+          "x": 205,
+          "right": 370
+        },
+        {
+          "text": "工具",
+          "href": "tools/index.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "学习",
+          "href": "learn/index.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "博客",
+          "href": "blog/index.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "支持",
+          "href": "support.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "关于 MastermindX",
+          "href": "about.html",
+          "x": 20,
+          "right": 185
+        },
+        {
+          "text": "隐私政策",
+          "href": "privacy.html",
+          "x": 205,
+          "right": 370
+        },
+        {
+          "text": "服务条款",
+          "href": "terms.html",
+          "x": 205,
+          "right": 370
+        },
+        {
+          "text": "免责声明",
+          "href": "disclaimer.html",
+          "x": 205,
+          "right": 370
+        },
+        {
+          "text": "隐私政策",
+          "href": "privacy.html",
+          "x": 20,
+          "right": 69.015625
+        },
+        {
+          "text": "服务条款",
+          "href": "terms.html",
+          "x": 79.234375,
+          "right": 128.25
+        },
+        {
+          "text": "免责声明",
+          "href": "disclaimer.html",
+          "x": 138.46875,
+          "right": 187.484375
+        }
+      ],
+      "labels": [
+        {
+          "text": "第3天 · 仍属早期",
+          "width": 97.984375,
+          "scroll": 98,
+          "right": 340
+        },
+        {
+          "text": "周五已确认",
+          "width": 64.15625,
+          "scroll": 64,
+          "right": 340
+        }
+      ],
+      "locale_requested": "zh",
+      "theme_requested": "dark",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 430,
+      "document": 430,
+      "lang": "zh",
+      "theme": null,
+      "links": [
+        {
+          "text": "Market Terminal",
+          "href": "products/market-terminal.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "Mastermind AI",
+          "href": "products/mastermind-ai.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "市场情报",
+          "href": "products/market-dashboards.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "方案与定价",
+          "href": "plans.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "机构研报",
+          "href": "research_vault.html",
+          "x": 225,
+          "right": 410
+        },
+        {
+          "text": "股票档案",
+          "href": "stocks/index.html",
+          "x": 225,
+          "right": 410
+        },
+        {
+          "text": "关于研究",
+          "href": "about-research.html",
+          "x": 225,
+          "right": 410
+        },
+        {
+          "text": "工具",
+          "href": "tools/index.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "学习",
+          "href": "learn/index.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "博客",
+          "href": "blog/index.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "支持",
+          "href": "support.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "关于 MastermindX",
+          "href": "about.html",
+          "x": 20,
+          "right": 205
+        },
+        {
+          "text": "隐私政策",
+          "href": "privacy.html",
+          "x": 225,
+          "right": 410
+        },
+        {
+          "text": "服务条款",
+          "href": "terms.html",
+          "x": 225,
+          "right": 410
+        },
+        {
+          "text": "免责声明",
+          "href": "disclaimer.html",
+          "x": 225,
+          "right": 410
+        },
+        {
+          "text": "隐私政策",
+          "href": "privacy.html",
+          "x": 20,
+          "right": 69.015625
+        },
+        {
+          "text": "服务条款",
+          "href": "terms.html",
+          "x": 79.234375,
+          "right": 128.25
+        },
+        {
+          "text": "免责声明",
+          "href": "disclaimer.html",
+          "x": 138.46875,
+          "right": 187.484375
+        }
+      ],
+      "labels": [
+        {
+          "text": "第3天 · 仍属早期",
+          "width": 97.984375,
+          "scroll": 98,
+          "right": 380
+        },
+        {
+          "text": "周五已确认",
+          "width": 64.15625,
+          "scroll": 64,
+          "right": 380
+        }
+      ],
+      "locale_requested": "zh",
+      "theme_requested": "dark",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 768,
+      "document": 768,
+      "lang": "zh",
+      "theme": null,
+      "links": [
+        {
+          "text": "Market Terminal",
+          "href": "products/market-terminal.html",
+          "x": 277.984375,
+          "right": 377.1875
+        },
+        {
+          "text": "Mastermind AI",
+          "href": "products/mastermind-ai.html",
+          "x": 277.984375,
+          "right": 377.1875
+        },
+        {
+          "text": "市场情报",
+          "href": "products/market-dashboards.html",
+          "x": 277.984375,
+          "right": 377.1875
+        },
+        {
+          "text": "方案与定价",
+          "href": "plans.html",
+          "x": 277.984375,
+          "right": 377.1875
+        },
+        {
+          "text": "机构研报",
+          "href": "research_vault.html",
+          "x": 423.265625,
+          "right": 476.3125
+        },
+        {
+          "text": "股票档案",
+          "href": "stocks/index.html",
+          "x": 423.265625,
+          "right": 476.3125
+        },
+        {
+          "text": "关于研究",
+          "href": "about-research.html",
+          "x": 423.265625,
+          "right": 476.3125
+        },
+        {
+          "text": "工具",
+          "href": "tools/index.html",
+          "x": 522.390625,
+          "right": 634.328125
+        },
+        {
+          "text": "学习",
+          "href": "learn/index.html",
+          "x": 522.390625,
+          "right": 634.328125
+        },
+        {
+          "text": "博客",
+          "href": "blog/index.html",
+          "x": 522.390625,
+          "right": 634.328125
+        },
+        {
+          "text": "支持",
+          "href": "support.html",
+          "x": 522.390625,
+          "right": 634.328125
+        },
+        {
+          "text": "关于 MastermindX",
+          "href": "about.html",
+          "x": 522.390625,
+          "right": 634.328125
+        },
+        {
+          "text": "隐私政策",
+          "href": "privacy.html",
+          "x": 680.40625,
+          "right": 733.453125
+        },
+        {
+          "text": "服务条款",
+          "href": "terms.html",
+          "x": 680.40625,
+          "right": 733.453125
+        },
+        {
+          "text": "免责声明",
+          "href": "disclaimer.html",
+          "x": 680.40625,
+          "right": 733.453125
+        },
+        {
+          "text": "隐私政策",
+          "href": "privacy.html",
+          "x": 565.96875,
+          "right": 614.984375
+        },
+        {
+          "text": "服务条款",
+          "href": "terms.html",
+          "x": 625.203125,
+          "right": 674.21875
+        },
+        {
+          "text": "免责声明",
+          "href": "disclaimer.html",
+          "x": 684.4375,
+          "right": 733.453125
+        }
+      ],
+      "labels": [
+        {
+          "text": "第3天 · 仍属早期",
+          "width": 97.984375,
+          "scroll": 98,
+          "right": 700.453125
+        },
+        {
+          "text": "周五已确认",
+          "width": 64.15625,
+          "scroll": 64,
+          "right": 700.453125
+        }
+      ],
+      "locale_requested": "zh",
+      "theme_requested": "dark",
+      "errors": [],
+      "passed": true
+    },
+    {
+      "width": 1440,
+      "document": 1440,
+      "lang": "zh",
+      "theme": null,
+      "links": [
+        {
+          "text": "Market Terminal",
+          "href": "products/market-terminal.html",
+          "x": 730.765625,
+          "right": 829.96875
+        },
+        {
+          "text": "Mastermind AI",
+          "href": "products/mastermind-ai.html",
+          "x": 730.765625,
+          "right": 829.96875
+        },
+        {
+          "text": "市场情报",
+          "href": "products/market-dashboards.html",
+          "x": 730.765625,
+          "right": 829.96875
+        },
+        {
+          "text": "方案与定价",
+          "href": "plans.html",
+          "x": 730.765625,
+          "right": 829.96875
+        },
+        {
+          "text": "机构研报",
+          "href": "research_vault.html",
+          "x": 913.96875,
+          "right": 967.015625
+        },
+        {
+          "text": "股票档案",
+          "href": "stocks/index.html",
+          "x": 913.96875,
+          "right": 967.015625
+        },
+        {
+          "text": "关于研究",
+          "href": "about-research.html",
+          "x": 913.96875,
+          "right": 967.015625
+        },
+        {
+          "text": "工具",
+          "href": "tools/index.html",
+          "x": 1051.015625,
+          "right": 1162.953125
+        },
+        {
+          "text": "学习",
+          "href": "learn/index.html",
+          "x": 1051.015625,
+          "right": 1162.953125
+        },
+        {
+          "text": "博客",
+          "href": "blog/index.html",
+          "x": 1051.015625,
+          "right": 1162.953125
+        },
+        {
+          "text": "支持",
+          "href": "support.html",
+          "x": 1051.015625,
+          "right": 1162.953125
+        },
+        {
+          "text": "关于 MastermindX",
+          "href": "about.html",
+          "x": 1051.015625,
+          "right": 1162.953125
+        },
+        {
+          "text": "隐私政策",
+          "href": "privacy.html",
+          "x": 1246.953125,
+          "right": 1300
+        },
+        {
+          "text": "服务条款",
+          "href": "terms.html",
+          "x": 1246.953125,
+          "right": 1300
+        },
+        {
+          "text": "免责声明",
+          "href": "disclaimer.html",
+          "x": 1246.953125,
+          "right": 1300
+        },
+        {
+          "text": "隐私政策",
+          "href": "privacy.html",
+          "x": 1132.515625,
+          "right": 1181.53125
+        },
+        {
+          "text": "服务条款",
+          "href": "terms.html",
+          "x": 1191.75,
+          "right": 1240.765625
+        },
+        {
+          "text": "免责声明",
+          "href": "disclaimer.html",
+          "x": 1250.984375,
+          "right": 1300
+        }
+      ],
+      "labels": [
+        {
+          "text": "第3天 · 仍属早期",
+          "width": 97.984375,
+          "scroll": 98,
+          "right": 742.671875
+        },
+        {
+          "text": "周五已确认",
+          "width": 64.15625,
+          "scroll": 64,
+          "right": 742.671875
+        }
+      ],
+      "locale_requested": "zh",
+      "theme_requested": "dark",
+      "errors": [],
+      "passed": true
+    }
+  ],
+  "failures": []
+}
