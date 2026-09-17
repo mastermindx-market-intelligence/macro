@@ -1,17 +1,10 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-09-15T18:11:53.585594+00:00",
-  "posts_seen": 6,
-  "seen_total": 188,
-  "evaluated": 1,
+  "as_of": "2026-09-17T01:24:40.718569+00:00",
+  "posts_seen": 14,
+  "seen_total": 198,
+  "evaluated": 0,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": [
-    {
-      "id": "wh-2026-09-15-president-trump-promised-to-make-memphis-safe-again-one-year-later-the-numbers-p",
-      "importance": 15,
-      "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    }
-  ]
+  "gate_scores": []
 }
