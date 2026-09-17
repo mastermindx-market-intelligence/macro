@@ -615,6 +615,38 @@ def test_cli_refuses_output_symlinks(tmp_path: Path) -> None:
     assert destination.read_text(encoding="utf-8") == "unrelated data"
 
 
+def test_immutable_publisher_binds_canonical_parent_before_guard_returns(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("turnaround_publisher_path_binding", CLI)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    allowed = tmp_path / "allowed"
+    protected = tmp_path / "protected"
+    allowed.mkdir()
+    protected.mkdir()
+    alias = tmp_path / "alias"
+    alias.symlink_to(allowed, target_is_directory=True)
+    target = alias / "history.json"
+    content = b"immutable research artifact\n"
+    original_assert = module._assert_research_output_path
+
+    def swap_after_guard(path: Path) -> None:
+        original_assert(path)
+        alias.unlink()
+        alias.symlink_to(protected, target_is_directory=True)
+
+    monkeypatch.setattr(module, "_assert_research_output_path", swap_after_guard)
+    module._publish_immutable(target, content)
+
+    assert (allowed / "history.json").read_bytes() == content
+    assert not (protected / "history.json").exists()
+
+
 def test_cli_concurrent_different_publications_have_one_winner(tmp_path: Path) -> None:
     target = tmp_path / "history.json"
     sources = []
@@ -859,6 +891,87 @@ def test_build_cli_fence_normalizes_nested_and_parent_traversal_paths(
     assert module.main(["--input", str(source), "--output", str(output)]) == 2
     assert not canonical.exists()
     assert not canonical.parent.exists()
+
+
+@pytest.mark.parametrize(("canonical_name", "alias_name"), [("data", "DATA"), ("site", "SITE")])
+def test_build_cli_refuses_case_insensitive_alias_before_input_ingestion(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    canonical_name: str,
+    alias_name: str,
+) -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        f"turnaround_cli_case_alias_{canonical_name}", CLI
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    root = tmp_path / "source"
+    root.mkdir()
+    (root / canonical_name).mkdir()
+    monkeypatch.setattr(module, "ROOT", root)
+    real_samefile = module.os.path.samefile
+
+    def case_insensitive_samefile(left: object, right: object) -> bool:
+        if str(Path(left).absolute()).casefold() == str(Path(right).absolute()).casefold():
+            return True
+        return real_samefile(left, right)
+
+    monkeypatch.setattr(module.os.path, "samefile", case_insensitive_samefile)
+    source = tmp_path / "input.json"
+    source.write_text(json.dumps(cli_payload()), encoding="utf-8")
+    output = root / alias_name / "nested" / "turnaround.json"
+
+    def forbidden_loads(*args: object, **kwargs: object) -> object:
+        raise AssertionError("protected alias must fail before input ingestion")
+
+    monkeypatch.setattr(module.json, "loads", forbidden_loads)
+    assert module.main(["--input", str(source), "--output", str(output)]) == 2
+    assert not output.exists()
+    assert not (root / canonical_name / "nested" / "turnaround.json").exists()
+
+
+def test_case_variant_remains_allowed_when_volume_is_case_sensitive(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("turnaround_case_sensitive_control", CLI)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    root = tmp_path / "source"
+    root.mkdir()
+    monkeypatch.setattr(module, "_filesystem_is_case_insensitive", lambda _path: False)
+
+    assert not module._path_is_within_protected(
+        root / "DATA" / "history.json", root / "data"
+    )
+
+
+def test_absent_site_alias_is_protected_on_real_case_insensitive_volume(
+    tmp_path: Path,
+) -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("turnaround_real_case_alias", CLI)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    root = tmp_path / "source"
+    root.mkdir()
+    probe = root / "CaseProbe"
+    probe.mkdir()
+    alias = root / "caseProbe"
+    if not alias.exists() or not alias.samefile(probe):
+        pytest.skip("filesystem is case-sensitive")
+
+    assert not (root / "site").exists()
+    assert module._path_is_within_protected(
+        root / "SITE" / "nested" / "history.json", root / "site"
+    )
 
 
 @pytest.mark.parametrize("cap", [-0.1, 0.0, 0.5000001, 0.75, 1.0])

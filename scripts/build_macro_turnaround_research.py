@@ -62,26 +62,92 @@ def _existing_matches(output: Path, content: bytes) -> bool:
     return True
 
 
-def _assert_research_output_path(output: Path) -> None:
+def _same_filesystem_object(left: Path, right: Path) -> bool:
+    try:
+        return os.path.samefile(left, right)
+    except (FileNotFoundError, NotADirectoryError):
+        return False
+    except OSError as error:
+        raise ValueError("could not establish output-path filesystem identity") from error
+
+
+def _relative_parts_from_identity(path: Path, ancestor: Path) -> tuple[str, ...] | None:
+    current = path.resolve(strict=False)
+    anchor = ancestor.resolve(strict=False)
+    suffix: list[str] = []
+    while True:
+        if _same_filesystem_object(current, anchor):
+            return tuple(reversed(suffix))
+        if current.parent == current:
+            return None
+        suffix.append(current.name)
+        current = current.parent
+
+
+def _alternate_ascii_case(name: str) -> str | None:
+    for index, character in enumerate(name):
+        if "a" <= character <= "z" or "A" <= character <= "Z":
+            return name[:index] + character.swapcase() + name[index + 1 :]
+    return None
+
+
+def _filesystem_is_case_insensitive(existing_path: Path) -> bool:
+    current = existing_path.resolve(strict=True)
+    while current.parent != current:
+        alternate_name = _alternate_ascii_case(current.name)
+        if alternate_name is not None:
+            return _same_filesystem_object(current, current.parent / alternate_name)
+        current = current.parent
+    raise ValueError("could not establish output-path filesystem case semantics")
+
+
+def _path_is_within_protected(output: Path, protected: Path) -> bool:
+    destination = output.resolve(strict=False)
+    protected_resolved = protected.resolve(strict=False)
+    if destination == protected_resolved or protected_resolved in destination.parents:
+        return True
+    if _relative_parts_from_identity(destination, protected_resolved) is not None:
+        return True
+
+    protected_parent = protected.parent.resolve(strict=True)
+    relative = _relative_parts_from_identity(destination, protected_parent)
+    if relative is None or not relative:
+        return False
+    first_component = relative[0]
+    if first_component == protected.name:
+        return True
+    if first_component.casefold() != protected.name.casefold():
+        return False
+    return _filesystem_is_case_insensitive(protected_parent)
+
+
+def _assert_research_output_path(output: Path, *, root: Path | None = None) -> None:
     """Keep research artifacts out of canonical data and generated product paths."""
-    resolved = output.resolve(strict=False)
-    for protected in (ROOT / "data", ROOT / "site"):
-        protected_resolved = protected.resolve(strict=False)
-        if resolved == protected_resolved or protected_resolved in resolved.parents:
+    protected_root = ROOT if root is None else root
+    for directory in ("data", "site"):
+        if _path_is_within_protected(output, protected_root / directory):
             raise ValueError(
                 "output must remain outside canonical data/ and generated site/ paths"
             )
 
 
-def _publish_immutable(output: Path, content: bytes) -> None:
-    _assert_research_output_path(output)
-    if _existing_matches(output, content):
+def _publish_immutable(
+    output: Path, content: bytes, *, root: Path | None = None
+) -> None:
+    if output.is_symlink():
+        raise ValueError("immutable output cannot be a symbolic link")
+    destination = output.resolve(strict=False)
+    if root is None:
+        _assert_research_output_path(destination)
+    else:
+        _assert_research_output_path(destination, root=root)
+    if _existing_matches(destination, content):
         return
-    output.parent.mkdir(parents=True, exist_ok=True)
+    destination.parent.mkdir(parents=True, exist_ok=True)
     temporary: Path | None = None
     try:
         with tempfile.NamedTemporaryFile(
-            mode="wb", dir=output.parent, prefix=f".{output.name}.", suffix=".tmp", delete=False,
+            mode="wb", dir=destination.parent, prefix=f".{destination.name}.", suffix=".tmp", delete=False,
         ) as handle:
             temporary = Path(handle.name)
             handle.write(content)
@@ -90,9 +156,9 @@ def _publish_immutable(output: Path, content: bytes) -> None:
         try:
             # Unlike replace()/rename(), link() cannot replace a winner from
             # another process. Readers only see the fully serialized artifact.
-            os.link(temporary, output)
+            os.link(temporary, destination)
         except FileExistsError:
-            if not _existing_matches(output, content):
+            if not _existing_matches(destination, content):
                 raise ValueError("immutable output changed during publication")
     finally:
         if temporary is not None:
@@ -102,6 +168,9 @@ def _publish_immutable(output: Path, content: bytes) -> None:
 def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     try:
+        if args.output.is_symlink():
+            raise ValueError("immutable output cannot be a symbolic link")
+        _assert_research_output_path(args.output)
         if args.input.resolve() == args.output.resolve():
             raise ValueError("input and output paths must be distinct")
         payload = json.loads(

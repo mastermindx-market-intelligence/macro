@@ -16,7 +16,9 @@ sys.path.insert(0,str(_ROOT))
 ROOT=_ROOT
 from engine.macro_turnaround import TurnaroundConfig
 from engine.macro_turnaround_replay import SeriesBinding, load_panel, replay
-from scripts.build_macro_turnaround_research import _unique_object, _reject_constant, _publish_immutable
+from scripts.build_macro_turnaround_research import (
+    _assert_research_output_path, _publish_immutable, _reject_constant, _unique_object,
+)
 
 
 def main(argv:list[str]|None=None)->int:
@@ -26,10 +28,10 @@ def main(argv:list[str]|None=None)->int:
     parser.add_argument('--output',type=Path,required=True)
     args=parser.parse_args(argv)
     try:
+        if args.output.is_symlink():raise ValueError('immutable output cannot be a symbolic link')
         output=args.output.resolve();root=args.root.resolve()
         if output==args.input.resolve():raise ValueError('input and output paths must be distinct')
-        if any(output.is_relative_to((root/p).resolve(strict=False)) for p in ('data','site')):
-            raise ValueError('research replay cannot write source data or generated product paths')
+        _assert_research_output_path(output,root=root)
         request=json.loads(args.input.read_text(encoding='utf-8'),object_pairs_hook=_unique_object,parse_constant=_reject_constant)
         fields={'schema','manifest_sha256','bindings','cutoffs','domain','config'}
         if not isinstance(request,dict) or set(request)!=fields or request['schema']!='macro.turnaround_replay_request.v1':
@@ -42,7 +44,10 @@ def main(argv:list[str]|None=None)->int:
         panel=load_panel(root,bindings,request['manifest_sha256'])
         report=replay(panel,bindings,request['cutoffs'],domain=request['domain'],config=config)
         content=(json.dumps(report,sort_keys=True,indent=2,allow_nan=False)+'\n').encode('utf-8')
-        _publish_immutable(args.output,content)
+        if args.output.resolve()!=output:
+            raise ValueError('output path changed during replay')
+        _assert_research_output_path(output,root=root)
+        _publish_immutable(output,content,root=root)
     except (OSError,TypeError,ValueError) as exc:
         print(f'replay_macro_turnaround: ERROR — {exc}',file=sys.stderr)
         return 2

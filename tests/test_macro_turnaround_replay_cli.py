@@ -63,6 +63,53 @@ def test_cli_refuses_symlinked_root_data_destination_before_ingestion(tmp_path,m
     assert not out.exists()
 
 
+@pytest.mark.parametrize(("canonical_name", "alias_name"), [("data", "DATA"), ("site", "SITE")])
+def test_cli_refuses_case_insensitive_alias_before_source_ingestion(
+    tmp_path, monkeypatch, canonical_name, alias_name
+):
+    import os
+
+    c=cli();root=tmp_path/'source';root.mkdir();(root/canonical_name).mkdir()
+    req=tmp_path/'request.json';request(req,'0'*64)
+    out=root/alias_name/'nested'/'turns.json'
+    real_samefile=os.path.samefile
+    def case_insensitive_samefile(left,right):
+        if str(Path(left).absolute()).casefold()==str(Path(right).absolute()).casefold():
+            return True
+        return real_samefile(left,right)
+    monkeypatch.setattr(os.path,'samefile',case_insensitive_samefile)
+    def forbidden_loader(*args,**kw):
+        raise AssertionError('protected alias must fail before source ingestion')
+    monkeypatch.setattr(c,'load_panel',forbidden_loader)
+    assert c.main(['--root',str(root),'--input',str(req),'--output',str(out)])==2
+    assert not out.exists()
+    assert not (root/canonical_name/'nested'/'turns.json').exists()
+
+
+def test_cli_refuses_destination_alias_change_after_preflight(tmp_path,monkeypatch):
+    c=cli();root=tmp_path/'source';protected=root/'data';protected.mkdir(parents=True)
+    outside=tmp_path/'outside';outside.mkdir();alias=tmp_path/'alias';alias.symlink_to(outside,target_is_directory=True)
+    req=tmp_path/'request.json';request(req,'0'*64);out=alias/'turns.json'
+    def swap_then_load(*args,**kw):
+        alias.unlink();alias.symlink_to(protected,target_is_directory=True);return object()
+    monkeypatch.setattr(c,'load_panel',swap_then_load)
+    monkeypatch.setattr(c,'replay',lambda *args,**kw:{'rows':[]})
+    assert c.main(['--root',str(root),'--input',str(req),'--output',str(out)])==2
+    assert not (protected/'turns.json').exists()
+    assert not (outside/'turns.json').exists()
+
+
+def test_cli_refuses_protected_root_change_after_preflight(tmp_path,monkeypatch):
+    c=cli();root=tmp_path/'source';protected=root/'data';protected.mkdir(parents=True)
+    outside=tmp_path/'outside';outside.mkdir();req=tmp_path/'request.json';request(req,'0'*64);out=outside/'turns.json'
+    def swap_then_load(*args,**kw):
+        protected.rmdir();protected.symlink_to(outside,target_is_directory=True);return object()
+    monkeypatch.setattr(c,'load_panel',swap_then_load)
+    monkeypatch.setattr(c,'replay',lambda *args,**kw:{'rows':[]})
+    assert c.main(['--root',str(root),'--input',str(req),'--output',str(out)])==2
+    assert not out.exists()
+
+
 def test_no_parser_fallback_when_arrow_is_absent(tmp_path,monkeypatch,capsys):
     c=cli();m=api();root=tmp_path/'source';mp,p,h,df=source_tree(root);req=tmp_path/'request.json';request(req,h);out=tmp_path/'out.json'
     def missing(*args,**kw):raise ImportError('No Arrow installed')
