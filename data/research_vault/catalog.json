@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T23:12:45.638000+00:00",
-  "count": 2321,
+  "generated_at": "2026-09-17T23:21:35.186689+00:00",
+  "count": 2322,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -223,6 +223,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ovgkpymjj2u-86125b",
+      "title": "Oil Comment Recommending Gasoline High Diesel Prices Cause High Gasoline Prices",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:38:35Z",
+      "summary_points": [
+        "Diesel Supply Disruption Trigger: European Gasoil prices hit all-time highs due to East-West pipeline disruptions, forcing refiners to prioritize diesel (29.6% yield) over gasoline (54.9% yield), tightening gasoline supply.",
+        "Gasoline Inventory & Naphtha Data: OECD gasoline stocks down sharply vs seasonal norm; global naphtha exports down 30% YoY, pushing US octane $3/bbl above seasonal norms (critical flow/fundamental data).",
+        "Geopolitical Hedge Imperative: Outright European summer gasoline (EBOB Jun27) preferred over margins for Middle East escalation risk, as crude rallies would overprice infrastructure risks.",
+        "Gasoline Demand Shock: Global gasoline exports down 24% YoY (vs diesel -20%, crude -6%), signaling severe demand imbalance with gasoline facing steeper decline than crude/diesel."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
