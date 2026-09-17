@@ -125,7 +125,8 @@ def _valid_iv(value: Any, error: Any) -> float | None:
 def _atm_iv_at_clock(
     payload: Any, session_date: str, clock: str, underlying_price: float
 ) -> float | None:
-    by_strike: dict[float, dict[str, float]] = {}
+    all_strikes: set[float] = set()
+    valid_by_strike: dict[float, dict[str, float]] = {}
     for group in _response(payload):
         contract, data = group.get("contract"), group.get("data")
         if not isinstance(contract, Mapping) or not isinstance(data, list):
@@ -139,6 +140,7 @@ def _atm_iv_at_clock(
             strike = round(float(contract.get("strike")), 3)
         except (TypeError, ValueError):
             continue
+        all_strikes.add(strike)
         for row in data:
             if not isinstance(row, Mapping):
                 continue
@@ -147,14 +149,14 @@ def _atm_iv_at_clock(
             iv = _valid_iv(row.get("implied_vol"), row.get("iv_error"))
             if iv is None:
                 continue
-            prior = by_strike.setdefault(strike, {}).get(right)
+            prior = valid_by_strike.setdefault(strike, {}).get(right)
             if prior is not None and abs(prior - iv) > 1e-12:
                 raise FeatureError("conflicting IV rows for one contract/clock")
-            by_strike[strike][right] = iv
-    if not by_strike:
+            valid_by_strike[strike][right] = iv
+    if not all_strikes:
         return None
-    chosen = min(by_strike, key=lambda strike: (abs(strike - underlying_price), strike))
-    values = list(by_strike[chosen].values())
+    chosen = min(all_strikes, key=lambda strike: (abs(strike - underlying_price), strike))
+    values = list(valid_by_strike.get(chosen, {}).values())
     return sum(values) / len(values) if values else None
 
 
