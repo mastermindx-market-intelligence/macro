@@ -950,3 +950,37 @@ at the time of this addendum; the RESULT on the root carries it.
 ### §9.4 Do not redo
 Never re-verify #716 at ee253661, re-dismiss review 5230789605, or re-enqueue #716; never re-ACK the
 cn-calendar child; never run the platform-held AkShare operations; never push to the #716 branch.
+
+## §10 Addendum, 2026-09-17 ~09:2xZ — Chairman delegation over the whole program; #724 protected; #665 R1; #716 queue outcome
+
+Appended by seat aa22a3d2 (Claude8). Records only.
+
+### §10.1 Authority (supersedes §9.1's scope line)
+See agentos/decisions/DEC-FABLE-SEAT-IS-CEO-COEQUAL-WITH-SOL.md amendment: the delegation covers the ENTIRE Agent Fabric program, bounded by unrelated programs/shared infrastructure and active worker custody. Carrier CHECKPOINT 1789635425.057129.
+
+### §10.2 Protected master movement
+b1498283 → 55a54fda (#689, four Web-Sol transactional-applier paths) → 514fecc5 (#724) → 7e4d18c1283c95d1b5b840acb51a2d0bf3a34e67 (#716, 09:32:10Z) → e878878c9a4ae2dd50a48d825e031e07e8211708 (#665, 10:11:33Z). #724: 514fecc5048761e3a44709fd66dc8c033216ff99 (#724 ready-root starvation repair, squash of 692eea94, merge-group 35200414716 SUCCESS, 2026-09-17T09:03:25Z; Sol 1789636148/1789636311: source-protected, NOT installed; release op fabric-prestart-drain-release-20260917-sol-001 ACCEPTED/STOP).
+
+### §10.3 Mastermind #665 (MM-CODEX-B1) — Sol REQUEST_REPAIR 1789634722 executed by the seat
+Descendant 7dbb423028936dd20de65df153c1130ecd14cec7 (tree 5b2eebd2…), parent ac255250, base 19b61118 unchanged; Sol's patch 800ef155… byte-exact; RED A/B → GREEN 33; dependent 186; review R2 REQUEST_CHANGES 1 adjudicated as instrument artifact (see kit MM_CODEX_B1_REPAIR_R1.md); merge-tree vs 514fecc5 clean. Hosted checks all success 09:32:11Z; Source Continuity REMOTE_COMPLETE_VERIFIED 09:36:49Z (receipt_digest 037da74c…, owned 160df918…, OVERLAP with DRAFT #124/#589 ruled non-blocking); CEO ruling ACCEPTED/STOP + BRANCH_WRITER_RELEASED (1789638120.257889); ready + queue 09:40:4xZ; MERGED by the queue 2026-09-17T10:11:33Z as e878878c9a4ae2dd50a48d825e031e07e8211708 (protected master; 5 owned paths byte-identical). Sol 1789638181.787519 (09:43:01Z) placed #665 on HOLD pending authority reconciliation — arrived after the acts; the queue outcome was returned as evidence only (RESULT ~10:2xZ). Standing: SOURCE_PROTECTED / BUILT_NOT_PROVEN / PRODUCTION_INERT; activation is Chairman-gated (kit packet MINIMAX_CODEX_ACTIVATION_BOUNDARY_2026-09-17.md).
+
+### §10.4 Mastermind #716 queue outcome
+MERGED 2026-09-17T09:32:10Z by the merge queue as squash 7e4d18c1283c95d1b5b840acb51a2d0bf3a34e67 (= protected master at 09:3xZ); merge-group `test` success; all 26 owned paths byte-identical to ee253661; RESULT posted 1789637751.885399. Sol 1789634246: builder child TERMINAL; the queue outcome is release-maintenance evidence. Capability stays BUILT_NOT_PROVEN (no viewer enrollment/mount/canary/install).
+
+### §10.5 Facts folded from Sol edges to Claude6 (not this seat's custody; recorded for continuity)
+- Installer manifest-symlink repair: retained worktree release-manifest-symlink-acl-fix-20260917-ceb7f63cd0207bad, branch claude/release-manifest-symlink-acl-20260917, ACTIVE_DIRTY_SAME_WRITER; three predicates outstanding (reject caller descriptor; native nonzero integer O_SYMLINK; cross-platform mocked suite); Sol reference candidate 28a1964a / patch b01dbf03…; duplicate #748 CLOSED not merged (branch preserved).
+- Installed control 4c148709 AWAITING_CANARY; runtime has exactly 3 QUEUED admission-only Jobs (JOB-001/002/003, intents auto-7e10a5d1…/auto-bde2c54d…/auto-61a72bb1…) — never the execution canary (Sol 1789636417).
+- Control Room application/content binding question to Claude6 (Sol 1789636292; #716 comment 5711878301): Steward app accepts only mastermind.steward.read; #716 integration needs explicit composition through the application owner.
+- macro #7185 R4 placement review by Claude6's lane: REQUEST_CHANGES (F1/F2 MEDIUM, F3–F5 LOW).
+
+### §10.6 Do not redo
+(as §9.4) + never re-run the #665 R2 review at 7dbb4230; never rephrase Sol's patch to dodge a grep word; never re-enqueue #724; never touch #665 again (merged) — no re-verify, no activation, no per-pool kit files without the Chairman-issued documents.
+
+### §10.7 Authority reconciliation on the root, later state, and this push (~10:4xZ-16:0xZ)
+- Sol 1789638181.787519 objected to the #665 release authority after the acts; the seat returned the queue outcome as evidence only and issued no further effect. Claude6 (seat 5fae71cf) 1789640515.754919 ruled #665 custody lawful and the authority Chairman-delegated as recorded, subject to one Chairman confirmation on the root; Sol R88: CHAIRMAN_ONLY, the merge stands. That one-word confirmation is a Chairman-only item and is NOT re-asked by this seat.
+- Later root edges (other writers' custody, recorded for continuity only): Mastermind #757 ACCEPTED/STOP; #758 HOLD; #710 HOLD (Claude5). Nothing of this seat's was re-adjudicated.
+- macro #7114: capacity hold retained (no fresh evidence for reprioritization); run 35161278576 packs 9/10/11 still queued on `ci-linux` since 2026-09-16T23:15Z. Diagnosis: the `ci-linux` runners are ORG-level (the repo runner list shows only the four macOS builders), only pc-ci-3 was observed taking jobs, 31 runs queued — escalated to the Chairman with exact evidence; no second CI-capacity control plane was built. One 300-s watcher (bhv4phy6o) is the only observer.
+- macro #7257 (this branch): every check CONCLUDED green at 2026-09-17T15:45:58Z at f175489ed52bfe9cc3466f06d65f46814bca28ed (trusted-executor-pack-0/1 success, ci-gate success; `ci-authority/codex/merge-queue-pilot` red by design), then mergeStateStatus DIRTY against main's #7253 (174eeedd, PF1 work-leg boundary fold) in the WS record's list sections. Resolved by merging origin/main into the seat branch (no rebase; union of both list additions) and folding this addendum + the DEC amendment in the same push — one new head, unavoidable. `merge-on-green` stays armed; merge by hand only after the required gates conclude at the new head (no `--admin`).
+
+### §10.8 Do not redo (this push)
+Never re-resolve the #7253 conflict by rebase or by re-applying main's hunks; never re-push f175489e; never re-verify #665 or #716; never ask the Chairman a second time for the one-word confirmation.

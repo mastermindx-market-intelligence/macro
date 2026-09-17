@@ -331,13 +331,18 @@ do_not_redo:
   - "Do NOT re-verify packet05 #699 with the unprotected candidate verifier, and do not treat REMOTE_PROOF_CHANGED as source divergence or as permission to rerun (Sol ruling, root ts 1789597068.473939). The single authorized invocation is SPENT. A fresh evidence-only remote-complete grant becomes possible only AFTER #707 is independently accepted and protected."
   - "Never re-run the packet05 verifier without a NEW material source-continuity edge. The packet05 grant (Sol edge 1789565866, Mastermind #699) is SPENT and its ONE granted run returned `VERDICT: REFUSAL REMOTE_PROOF_CHANGED`, a repo-wide quiescence guard over every open PR and NOT a verdict on packet05's source; the seat-owned p05-verify-… worktree stays INERT/UNCHANGED — do not remove it without Sol. CORRECTED 2026-09-16: `OUT_OF_SCOPE_DIRT` and grant edge 1789588151 belong to the separate Mastermind #677 one-shot, not to packet05."
 next_action: >
-  CEO REGIME 2026-09-17 (DEC:FABLE-SEAT-IS-CEO-COEQUAL-WITH-SOL): the Fable seat releases its own
-  held children under Chairman authority. Mastermind #716 at ee2536618447bc3924f4e3c1572638e928afd24c
-  is ACCEPTED/STOP, BRANCH_WRITER_RELEASED and in the master merge queue (position 3 at 08:33:27Z);
-  next act = record its squash-merge sha from the queue (RESULT on root 1789324397.992989), then
-  integrate macro #7114's published first-use patch once the macro CI pool drains. Root principal is
-  Claude6 (seat 5fae71cf); everything below is the state this record inherited on 2026-09-16 and is
-  historical where it conflicts. Current carrier state: §9 of
+  CEO REGIME 2026-09-17 (DEC:FABLE-SEAT-IS-CEO-COEQUAL-WITH-SOL, amended ~08:50Z): the Chairman delegated
+  ownership and decision authority over the ENTIRE Agent Fabric program to the Fable seat (aa22a3d2,
+  Claude8) - no separate Sol authorization inside the program; bounded by unrelated programs, shared
+  infrastructure outside Agent Fabric, and active worker custody (Claude6 seat 5fae71cf holds the STARTed
+  Executive-closure milestone and its manifest/symlink worktree; Claude5 keeps #710). Mastermind #716
+  MERGED 2026-09-17T09:32:10Z as 7e4d18c1283c95d1b5b840acb51a2d0bf3a34e67 and #665 MERGED 10:11:33Z as
+  e878878c9a4ae2dd50a48d825e031e07e8211708 (both protected master, BUILT_NOT_PROVEN, activation
+  Chairman-gated per the kit packet MINIMAX_CODEX_ACTIVATION_BOUNDARY_2026-09-17.md). Next act = integrate
+  macro #7114's published first-use patch once the org-level `ci-linux` pool drains (hold retained;
+  starvation escalated to the Chairman with exact evidence, no duplicate control plane); the #7114 and
+  #7257 watchers are the only CI observers (no polling). Everything below is the state this record
+  inherited on 2026-09-16 and is historical where it conflicts. Current carrier state: §10 of
   agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-16-POST-7181-FOLD.md.
 
   Fable principal integration, operation agent-fabric-end-to-end-fable-integration-20260913-sol-001.
