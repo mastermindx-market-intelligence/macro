@@ -4,7 +4,7 @@
  "index": "Russell-2000",
  "benchmark": "IWM",
  "benchmark_label": "Russell-2000 (IWM)",
- "as_of": "2026-09-16",
+ "as_of": "2026-09-17",
  "source": "finviz idx_rut (1889 names); sub-industry subsectors + sector amalgamations",
  "subsectors": {
   "advertising-agencies": {
@@ -110,12 +110,12 @@
      "name": "Cadre Holdings Inc"
     },
     {
-     "ticker": "RCAT",
-     "name": "Red Cat Holdings Inc"
-    },
-    {
      "ticker": "NPK",
      "name": "National Presto Industries Inc"
+    },
+    {
+     "ticker": "RCAT",
+     "name": "Red Cat Holdings Inc"
     },
     {
      "ticker": "SATL",
@@ -284,12 +284,12 @@
      "name": "Genesco Inc"
     },
     {
-     "ticker": "SHOE",
-     "name": "Shoe Station Group Inc"
-    },
-    {
      "ticker": "JILL",
      "name": "J.Jill Inc"
+    },
+    {
+     "ticker": "SHOE",
+     "name": "Shoe Station Group Inc"
     },
     {
      "ticker": "LE",
@@ -354,16 +354,16 @@
      "name": "Patria Investments Ltd"
     },
     {
+     "ticker": "RPC",
+     "name": "Ridgepost Capital Inc"
+    },
+    {
      "ticker": "VRTS",
      "name": "Virtus Investment Partners Inc"
     },
     {
      "ticker": "BUR",
      "name": "Burford Capital Limited"
-    },
-    {
-     "ticker": "RPC",
-     "name": "Ridgepost Capital Inc"
     },
     {
      "ticker": "TIPT",
@@ -458,12 +458,12 @@
      "name": "Dana Inc"
     },
     {
-     "ticker": "AAP",
-     "name": "Advance Auto Parts Inc"
-    },
-    {
      "ticker": "VC",
      "name": "Visteon Corp"
+    },
+    {
+     "ticker": "AAP",
+     "name": "Advance Auto Parts Inc"
     },
     {
      "ticker": "PHIN",
@@ -474,12 +474,12 @@
      "name": "Goodyear Tire & Rubber Co"
     },
     {
-     "ticker": "ADNT",
-     "name": "Adient plc"
-    },
-    {
      "ticker": "DCH",
      "name": "Dauch Corp"
+    },
+    {
+     "ticker": "ADNT",
+     "name": "Adient plc"
     },
     {
      "ticker": "XPEL",
@@ -534,12 +534,12 @@
      "name": "SES AI Corp"
     },
     {
-     "ticker": "MPAA",
-     "name": "Motorcar Parts of America Inc"
-    },
-    {
      "ticker": "SRI",
      "name": "Stoneridge Inc"
+    },
+    {
+     "ticker": "MPAA",
+     "name": "Motorcar Parts of America Inc"
     },
     {
      "ticker": "CVGI",
@@ -580,6 +580,10 @@
      "name": "Glacier Bancorp Inc"
     },
     {
+     "ticker": "ABCB",
+     "name": "Ameris Bancorp"
+    },
+    {
      "ticker": "ASB",
      "name": "Associated Banc-Corp"
     },
@@ -588,16 +592,12 @@
      "name": "Atlantic Union Bankshares Corp"
     },
     {
-     "ticker": "ABCB",
-     "name": "Ameris Bancorp"
+     "ticker": "AX",
+     "name": "Axos Financial Inc"
     },
     {
      "ticker": "FLG",
      "name": "Flagstar Bank NA"
-    },
-    {
-     "ticker": "AX",
-     "name": "Axos Financial Inc"
     },
     {
      "ticker": "EBC",
@@ -620,20 +620,20 @@
      "name": "International Bancshares Corp"
     },
     {
-     "ticker": "UCB",
-     "name": "United Community Banks Inc"
-    },
-    {
      "ticker": "FBP",
      "name": "First Bancorp PR"
     },
     {
-     "ticker": "TCBI",
-     "name": "Texas Capital Bancshares Inc"
+     "ticker": "UCB",
+     "name": "United Community Banks Inc"
     },
     {
      "ticker": "CATY",
      "name": "Cathay General Bancorp"
+    },
+    {
+     "ticker": "TCBI",
+     "name": "Texas Capital Bancshares Inc"
     },
     {
      "ticker": "WSFS",
@@ -652,20 +652,20 @@
      "name": "Wesbanco Inc"
     },
     {
-     "ticker": "BANF",
-     "name": "Bancfirst Corp"
-    },
-    {
      "ticker": "RNST",
      "name": "Renasant Corp"
     },
     {
-     "ticker": "FIBK",
-     "name": "First Interstate BancSystem Inc"
+     "ticker": "BANF",
+     "name": "Bancfirst Corp"
     },
     {
      "ticker": "MCHB",
      "name": "Mechanics Bancorp"
+    },
+    {
+     "ticker": "FIBK",
+     "name": "First Interstate BancSystem Inc"
     },
     {
      "ticker": "NIC",
@@ -684,16 +684,16 @@
      "name": "Park National Corp"
     },
     {
+     "ticker": "CBU",
+     "name": "Community Financial System Inc"
+    },
+    {
      "ticker": "SFNC",
      "name": "Simmons First National Corp"
     },
     {
      "ticker": "SBCF",
      "name": "Seacoast Banking Corp Of Florida"
-    },
-    {
-     "ticker": "CBU",
-     "name": "Community Financial System Inc"
     },
     {
      "ticker": "BKU",
@@ -732,16 +732,16 @@
      "name": "Customers Bancorp Inc"
     },
     {
+     "ticker": "BBT",
+     "name": "Beacon Financial Corp"
+    },
+    {
      "ticker": "BANR",
      "name": "Banner Corp"
     },
     {
      "ticker": "FBNC",
      "name": "First Bancorp"
-    },
-    {
-     "ticker": "BBT",
-     "name": "Beacon Financial Corp"
     },
     {
      "ticker": "FRME",
@@ -764,12 +764,12 @@
      "name": "Merchants Bancorp"
     },
     {
-     "ticker": "EFSC",
-     "name": "Enterprise Financial Services Corp"
-    },
-    {
      "ticker": "NWBI",
      "name": "Northwest Bancshares Inc"
+    },
+    {
+     "ticker": "EFSC",
+     "name": "Enterprise Financial Services Corp"
     },
     {
      "ticker": "OFG",
@@ -832,12 +832,12 @@
      "name": "Firstsun Capital Bancorp"
     },
     {
-     "ticker": "BY",
-     "name": "Byline Bancorp Inc"
-    },
-    {
      "ticker": "TCBK",
      "name": "Trico Bancshares"
+    },
+    {
+     "ticker": "BY",
+     "name": "Byline Bancorp Inc"
     },
     {
      "ticker": "BFC",
@@ -884,24 +884,24 @@
      "name": "Peoples Bancorp Inc (Marietta, OH)"
     },
     {
-     "ticker": "TMP",
-     "name": "Tompkins Financial Corp"
-    },
-    {
      "ticker": "PFBC",
      "name": "Preferred Bank (Los Angeles, CA)"
+    },
+    {
+     "ticker": "TMP",
+     "name": "Tompkins Financial Corp"
     },
     {
      "ticker": "AMAL",
      "name": "Amalgamated Financial Corp"
     },
     {
-     "ticker": "WABC",
-     "name": "Westamerica Bancorporation"
-    },
-    {
      "ticker": "CTBI",
      "name": "Community Trust Bancorp Inc"
+    },
+    {
+     "ticker": "WABC",
+     "name": "Westamerica Bancorporation"
     },
     {
      "ticker": "FMBH",
@@ -952,16 +952,16 @@
      "name": "Mercantile Bank Corp"
     },
     {
-     "ticker": "EQBK",
-     "name": "Equity Bancshares Inc"
-    },
-    {
      "ticker": "BFST",
      "name": "Business First Bancshares Inc"
     },
     {
      "ticker": "CCNE",
      "name": "CNB Financial Corp (PA)"
+    },
+    {
+     "ticker": "EQBK",
+     "name": "Equity Bancshares Inc"
     },
     {
      "ticker": "MCBS",
@@ -976,20 +976,20 @@
      "name": "Trustco Bank Corp"
     },
     {
-     "ticker": "CAC",
-     "name": "Camden National Corp"
-    },
-    {
      "ticker": "CPF",
      "name": "Central Pacific Financial Corp"
     },
     {
-     "ticker": "SBSI",
-     "name": "Southside Bancshares Inc"
+     "ticker": "CAC",
+     "name": "Camden National Corp"
     },
     {
      "ticker": "HAFC",
      "name": "Hanmi Financial Corp"
+    },
+    {
+     "ticker": "SBSI",
+     "name": "Southside Bancshares Inc"
     },
     {
      "ticker": "MPB",
@@ -1016,24 +1016,24 @@
      "name": "Great Southern Bancorp Inc"
     },
     {
-     "ticker": "CCBG",
-     "name": "Capital City Bank Group Inc"
-    },
-    {
      "ticker": "EGBN",
      "name": "Eagle Bancorp Inc (MD)"
+    },
+    {
+     "ticker": "CCBG",
+     "name": "Capital City Bank Group Inc"
     },
     {
      "ticker": "ORRF",
      "name": "Orrstown Financial Services Inc"
     },
     {
-     "ticker": "SPFI",
-     "name": "South Plains Financial Inc"
-    },
-    {
      "ticker": "ALRS",
      "name": "Alerus Financial Corp"
+    },
+    {
+     "ticker": "SPFI",
+     "name": "South Plains Financial Inc"
     },
     {
      "ticker": "IBCP",
@@ -1064,16 +1064,12 @@
      "name": "Washington Trust Bancorp Inc"
     },
     {
-     "ticker": "AROW",
-     "name": "Arrow Financial Corp"
-    },
-    {
      "ticker": "PFIS",
      "name": "Peoples Financial Services Corp"
     },
     {
-     "ticker": "CCB",
-     "name": "Coastal Financial Corp"
+     "ticker": "AROW",
+     "name": "Arrow Financial Corp"
     },
     {
      "ticker": "CWBC",
@@ -1082,6 +1078,10 @@
     {
      "ticker": "BCAL",
      "name": "California Bancorp"
+    },
+    {
+     "ticker": "CCB",
+     "name": "Coastal Financial Corp"
     },
     {
      "ticker": "MSBI",
@@ -1100,12 +1100,12 @@
      "name": "Red River Bancshares Inc"
     },
     {
-     "ticker": "HIFS",
-     "name": "Hingham Institution For Savings"
-    },
-    {
      "ticker": "ACNB",
      "name": "ACNB Corp"
+    },
+    {
+     "ticker": "HIFS",
+     "name": "Hingham Institution For Savings"
     },
     {
      "ticker": "KRNY",
@@ -1124,16 +1124,16 @@
      "name": "Unity Bancorp Inc"
     },
     {
-     "ticker": "SFST",
-     "name": "Southern First Bancshares Inc"
-    },
-    {
      "ticker": "CBNK",
      "name": "Capital Bancorp Inc"
     },
     {
      "ticker": "BWB",
      "name": "Bridgewater Bancshares Inc"
+    },
+    {
+     "ticker": "SFST",
+     "name": "Southern First Bancshares Inc"
     },
     {
      "ticker": "NPB",
@@ -1176,12 +1176,12 @@
      "name": "Choiceone Financial Services Inc"
     },
     {
-     "ticker": "FMAO",
-     "name": "Farmers & Merchants Bancorp Inc"
-    },
-    {
      "ticker": "PDLB",
      "name": "Ponce Financial Group Inc"
+    },
+    {
+     "ticker": "FMAO",
+     "name": "Farmers & Merchants Bancorp Inc"
     },
     {
      "ticker": "CZNC",
@@ -1192,14 +1192,6 @@
      "name": "Commercial Bancgroup Inc"
     },
     {
-     "ticker": "BMRC",
-     "name": "Bank of Marin Bancorp"
-    },
-    {
-     "ticker": "CBAN",
-     "name": "Colony Bankcorp Inc"
-    },
-    {
      "ticker": "RBB",
      "name": "RBB Bancorp"
     },
@@ -1208,12 +1200,20 @@
      "name": "Pioneer Bancorp Inc"
     },
     {
-     "ticker": "FRBA",
-     "name": "First Bank (NJ)"
+     "ticker": "BMRC",
+     "name": "Bank of Marin Bancorp"
+    },
+    {
+     "ticker": "CBAN",
+     "name": "Colony Bankcorp Inc"
     },
     {
      "ticker": "AVBC",
      "name": "Avidia Bancorp Inc"
+    },
+    {
+     "ticker": "FRBA",
+     "name": "First Bank (NJ)"
     },
     {
      "ticker": "PLBC",
@@ -1228,16 +1228,16 @@
      "name": "Investar Holding Corp"
     },
     {
-     "ticker": "MVBF",
-     "name": "MVB Financial Corp"
-    },
-    {
      "ticker": "PKBK",
      "name": "Parke Bancorp Inc"
     },
     {
      "ticker": "CHMG",
      "name": "Chemung Financial Corp"
+    },
+    {
+     "ticker": "MVBF",
+     "name": "MVB Financial Corp"
     },
     {
      "ticker": "FNLC",
@@ -1260,40 +1260,40 @@
      "name": "Norwood Financial Corp"
     },
     {
-     "ticker": "WSBF",
-     "name": "Waterstone Financial Inc"
-    },
-    {
      "ticker": "NECB",
      "name": "NorthEast Community Bancorp Inc"
+    },
+    {
+     "ticker": "WSBF",
+     "name": "Waterstone Financial Inc"
     },
     {
      "ticker": "TSBK",
      "name": "Timberland Bancorp Inc"
     },
     {
-     "ticker": "BRBS",
-     "name": "Blue Ridge Bankshares Inc (VA)"
-    },
-    {
      "ticker": "FSBW",
      "name": "FS Bancorp Inc"
     },
     {
-     "ticker": "NEWT",
-     "name": "NewtekOne Inc"
+     "ticker": "BRBS",
+     "name": "Blue Ridge Bankshares Inc (VA)"
     },
     {
      "ticker": "AVBH",
      "name": "Avidbank Holdings Inc"
     },
     {
-     "ticker": "FVCB",
-     "name": "FVCBankcorp Inc"
+     "ticker": "NEWT",
+     "name": "NewtekOne Inc"
     },
     {
      "ticker": "BCML",
      "name": "BayCom Corp"
+    },
+    {
+     "ticker": "FVCB",
+     "name": "FVCBankcorp Inc"
     },
     {
      "ticker": "JMSB",
@@ -1336,6 +1336,10 @@
      "name": "Oak Valley Bancorp"
     },
     {
+     "ticker": "FRAF",
+     "name": "Franklin Financial Services Corp"
+    },
+    {
      "ticker": "GBFH",
      "name": "GBank Financial Holdings Inc"
     },
@@ -1344,20 +1348,16 @@
      "name": "Ames National Corp"
     },
     {
-     "ticker": "FRAF",
-     "name": "Franklin Financial Services Corp"
-    },
-    {
      "ticker": "FNRN",
      "name": "First Northern Community Bancorp"
     },
     {
-     "ticker": "FXNC",
-     "name": "First National Corp (Strasburg, VA)"
-    },
-    {
      "ticker": "FUNC",
      "name": "First United Corp"
+    },
+    {
+     "ticker": "FXNC",
+     "name": "First National Corp (Strasburg, VA)"
     },
     {
      "ticker": "WNEB",
@@ -1372,32 +1372,32 @@
      "name": "National Bankshares Inc"
     },
     {
-     "ticker": "HWBK",
-     "name": "Hawthorn Bancshares Inc"
-    },
-    {
      "ticker": "RMBI",
      "name": "Richmond Mutual Bancorporation Inc"
     },
     {
-     "ticker": "VABK",
-     "name": "Virginia National Bankshares Corp"
+     "ticker": "HWBK",
+     "name": "Hawthorn Bancshares Inc"
     },
     {
      "ticker": "FBLA",
      "name": "FB Bancorp Inc"
     },
     {
+     "ticker": "VABK",
+     "name": "Virginia National Bankshares Corp"
+    },
+    {
      "ticker": "EFSI",
      "name": "Eagle Financial Services Inc"
     },
     {
-     "ticker": "INBK",
-     "name": "First Internet Bancorp"
-    },
-    {
      "ticker": "PEBK",
      "name": "Peoples Bancorp Of North Carolina Inc"
+    },
+    {
+     "ticker": "INBK",
+     "name": "First Internet Bancorp"
     },
     {
      "ticker": "MRBK",
@@ -1436,32 +1436,32 @@
      "name": "Landmark Bancorp Inc"
     },
     {
-     "ticker": "HNVR",
-     "name": "Hanover Bancorp Inc"
-    },
-    {
      "ticker": "CBFV",
      "name": "CB Financial Services Inc"
+    },
+    {
+     "ticker": "HNVR",
+     "name": "Hanover Bancorp Inc"
     },
     {
      "ticker": "ECBK",
      "name": "ECB Bancorp Inc"
     },
     {
-     "ticker": "MNSB",
-     "name": "MainStreet Bancshares Inc"
+     "ticker": "FINW",
+     "name": "FinWise Bancorp"
     },
     {
-     "ticker": "EBMT",
-     "name": "Eagle Bancorp Montana Inc"
+     "ticker": "MNSB",
+     "name": "MainStreet Bancshares Inc"
     },
     {
      "ticker": "BVFL",
      "name": "BV Financial Inc"
     },
     {
-     "ticker": "FINW",
-     "name": "FinWise Bancorp"
+     "ticker": "EBMT",
+     "name": "Eagle Bancorp Montana Inc"
     },
     {
      "ticker": "BCBP",
@@ -1486,12 +1486,12 @@
      "name": "Krystal Biotech Inc"
     },
     {
-     "ticker": "CYTK",
-     "name": "Cytokinetics Inc"
-    },
-    {
      "ticker": "KYMR",
      "name": "Kymera Therapeutics Inc"
+    },
+    {
+     "ticker": "CYTK",
+     "name": "Cytokinetics Inc"
     },
     {
      "ticker": "TWST",
@@ -1510,12 +1510,12 @@
      "name": "Praxis Precision Medicines Inc"
     },
     {
-     "ticker": "IBRX",
-     "name": "ImmunityBio Inc"
-    },
-    {
      "ticker": "TGTX",
      "name": "TG Therapeutics Inc"
+    },
+    {
+     "ticker": "IBRX",
+     "name": "ImmunityBio Inc"
     },
     {
      "ticker": "SYRE",
@@ -1562,10 +1562,6 @@
      "name": "PTC Therapeutics Inc"
     },
     {
-     "ticker": "ERAS",
-     "name": "Erasca Inc"
-    },
-    {
      "ticker": "XENE",
      "name": "Xenon Pharmaceuticals Inc"
     },
@@ -1574,12 +1570,16 @@
      "name": "Ligand Pharmaceuticals Inc"
     },
     {
-     "ticker": "CRSP",
-     "name": "CRISPR Therapeutics AG"
+     "ticker": "ERAS",
+     "name": "Erasca Inc"
     },
     {
      "ticker": "DFTX",
      "name": "Definium Therapeutics Inc"
+    },
+    {
+     "ticker": "CRSP",
+     "name": "CRISPR Therapeutics AG"
     },
     {
      "ticker": "EWTX",
@@ -1606,16 +1606,20 @@
      "name": "Tango Therapeutics Inc"
     },
     {
-     "ticker": "ELVN",
-     "name": "Enliven Therapeutics Inc"
-    },
-    {
      "ticker": "IDYA",
      "name": "Ideaya Biosciences Inc"
     },
     {
+     "ticker": "ELVN",
+     "name": "Enliven Therapeutics Inc"
+    },
+    {
      "ticker": "TARS",
      "name": "Tarsus Pharmaceuticals Inc"
+    },
+    {
+     "ticker": "ARQT",
+     "name": "Arcutis Biotherapeutics Inc"
     },
     {
      "ticker": "DYN",
@@ -1630,10 +1634,6 @@
      "name": "Arcus Biosciences Inc"
     },
     {
-     "ticker": "ARQT",
-     "name": "Arcutis Biotherapeutics Inc"
-    },
-    {
      "ticker": "CLDX",
      "name": "Celldex Therapeutics Inc"
     },
@@ -1646,6 +1646,10 @@
      "name": "Immunome Inc"
     },
     {
+     "ticker": "PGEN",
+     "name": "Precigen Inc"
+    },
+    {
      "ticker": "IRON",
      "name": "Disc Medicine Inc"
     },
@@ -1654,8 +1658,8 @@
      "name": "Nurix Therapeutics Inc"
     },
     {
-     "ticker": "PGEN",
-     "name": "Precigen Inc"
+     "ticker": "VRDN",
+     "name": "Viridian Therapeutics Inc"
     },
     {
      "ticker": "HRMY",
@@ -1666,10 +1670,6 @@
      "name": "Mineralys Therapeutics Inc"
     },
     {
-     "ticker": "VRDN",
-     "name": "Viridian Therapeutics Inc"
-    },
-    {
      "ticker": "BEAM",
      "name": "Beam Therapeutics Inc"
     },
@@ -1678,64 +1678,64 @@
      "name": "SELLAS Life Sciences Group Inc"
     },
     {
-     "ticker": "VERA",
-     "name": "Vera Therapeutics Inc"
-    },
-    {
      "ticker": "NKTR",
      "name": "Nektar Therapeutics"
     },
     {
-     "ticker": "OCUL",
-     "name": "Ocular Therapeutix Inc"
-    },
-    {
-     "ticker": "PVLA",
-     "name": "Palvella Therapeutics Inc"
+     "ticker": "VERA",
+     "name": "Vera Therapeutics Inc"
     },
     {
      "ticker": "AUPH",
      "name": "Aurinia Pharmaceuticals Inc"
     },
     {
-     "ticker": "TRVI",
-     "name": "Trevi Therapeutics Inc"
+     "ticker": "PVLA",
+     "name": "Palvella Therapeutics Inc"
     },
     {
-     "ticker": "SRPT",
-     "name": "Sarepta Therapeutics Inc"
+     "ticker": "OCUL",
+     "name": "Ocular Therapeutix Inc"
+    },
+    {
+     "ticker": "TRVI",
+     "name": "Trevi Therapeutics Inc"
     },
     {
      "ticker": "URGN",
      "name": "UroGen Pharma Ltd"
     },
     {
-     "ticker": "VCEL",
-     "name": "Vericel Corp"
-    },
-    {
      "ticker": "ZBIO",
      "name": "Zenas Biopharma Inc"
     },
     {
-     "ticker": "RAPP",
-     "name": "Rapport Therapeutics Inc"
+     "ticker": "SRPT",
+     "name": "Sarepta Therapeutics Inc"
     },
     {
      "ticker": "KOD",
      "name": "Kodiak Sciences Inc"
     },
     {
+     "ticker": "VCEL",
+     "name": "Vericel Corp"
+    },
+    {
      "ticker": "NUVB",
      "name": "Nuvation Bio Inc"
     },
     {
-     "ticker": "AGIO",
-     "name": "Agios Pharmaceuticals Inc"
-    },
-    {
      "ticker": "ADMA",
      "name": "Adma Biologics Inc"
+    },
+    {
+     "ticker": "RAPP",
+     "name": "Rapport Therapeutics Inc"
+    },
+    {
+     "ticker": "AGIO",
+     "name": "Agios Pharmaceuticals Inc"
     },
     {
      "ticker": "FTRE",
@@ -1750,16 +1750,20 @@
      "name": "Biohaven Ltd"
     },
     {
-     "ticker": "SEPN",
-     "name": "Septerna Inc"
-    },
-    {
      "ticker": "STOK",
      "name": "Stoke Therapeutics Inc"
     },
     {
+     "ticker": "SEPN",
+     "name": "Septerna Inc"
+    },
+    {
      "ticker": "MRVI",
      "name": "Maravai LifeSciences Holdings Inc"
+    },
+    {
+     "ticker": "VIR",
+     "name": "Vir Biotechnology Inc"
     },
     {
      "ticker": "XNCR",
@@ -1770,28 +1774,24 @@
      "name": "Recursion Pharmaceuticals Inc"
     },
     {
-     "ticker": "VIR",
-     "name": "Vir Biotechnology Inc"
-    },
-    {
      "ticker": "TSHA",
      "name": "Taysha Gene Therapies Inc"
-    },
-    {
-     "ticker": "NTLA",
-     "name": "Intellia Therapeutics Inc"
     },
     {
      "ticker": "ANAB",
      "name": "AnaptysBio Inc"
     },
     {
-     "ticker": "SNDX",
-     "name": "Syndax Pharmaceuticals Inc"
+     "ticker": "NTLA",
+     "name": "Intellia Therapeutics Inc"
     },
     {
      "ticker": "NVAX",
      "name": "Novavax Inc"
+    },
+    {
+     "ticker": "SNDX",
+     "name": "Syndax Pharmaceuticals Inc"
     },
     {
      "ticker": "INVA",
@@ -1806,12 +1806,12 @@
      "name": "Inhibrx Biosciences Inc"
     },
     {
-     "ticker": "TYRA",
-     "name": "Tyra Biosciences Inc"
-    },
-    {
      "ticker": "BCAX",
      "name": "Bicara Therapeutics Inc"
+    },
+    {
+     "ticker": "TYRA",
+     "name": "Tyra Biosciences Inc"
     },
     {
      "ticker": "ABSI",
@@ -1842,24 +1842,24 @@
      "name": "Vor Biopharma Inc"
     },
     {
-     "ticker": "OMER",
-     "name": "Omeros Corp"
-    },
-    {
      "ticker": "RARE",
      "name": "Ultragenyx Pharmaceutical Inc"
+    },
+    {
+     "ticker": "OMER",
+     "name": "Omeros Corp"
     },
     {
      "ticker": "MGTX",
      "name": "MeiraGTx Holdings plc"
     },
     {
-     "ticker": "ANRO",
-     "name": "Alto Neuroscience Inc"
-    },
-    {
      "ticker": "REPL",
      "name": "Replimune Group Inc"
+    },
+    {
+     "ticker": "ANRO",
+     "name": "Alto Neuroscience Inc"
     },
     {
      "ticker": "MNKD",
@@ -1870,16 +1870,16 @@
      "name": "Monte Rosa Therapeutics Inc"
     },
     {
+     "ticker": "ALMS",
+     "name": "Alumis Inc"
+    },
+    {
      "ticker": "JBIO",
      "name": "Jade Biosciences Inc"
     },
     {
      "ticker": "SVRA",
      "name": "Savara Inc"
-    },
-    {
-     "ticker": "ALMS",
-     "name": "Alumis Inc"
     },
     {
      "ticker": "CRVS",
@@ -1898,16 +1898,16 @@
      "name": "Janux Therapeutics Inc"
     },
     {
-     "ticker": "SANA",
-     "name": "Sana Biotechnology Inc"
+     "ticker": "SLDB",
+     "name": "Solid Biosciences Inc"
     },
     {
      "ticker": "LXRX",
      "name": "Lexicon Pharmaceuticals Inc"
     },
     {
-     "ticker": "SLDB",
-     "name": "Solid Biosciences Inc"
+     "ticker": "AVTX",
+     "name": "Avalo Therapeutics Inc"
     },
     {
      "ticker": "WVE",
@@ -1918,16 +1918,12 @@
      "name": "Theravance Biopharma Inc"
     },
     {
+     "ticker": "SANA",
+     "name": "Sana Biotechnology Inc"
+    },
+    {
      "ticker": "IMMX",
      "name": "Immix Biopharma Inc"
-    },
-    {
-     "ticker": "AVTX",
-     "name": "Avalo Therapeutics Inc"
-    },
-    {
-     "ticker": "CADL",
-     "name": "Candel Therapeutics Inc"
     },
     {
      "ticker": "OLMA",
@@ -1936,6 +1932,10 @@
     {
      "ticker": "ARDX",
      "name": "Ardelyx Inc"
+    },
+    {
+     "ticker": "CADL",
+     "name": "Candel Therapeutics Inc"
     },
     {
      "ticker": "RIGL",
@@ -1950,12 +1950,12 @@
      "name": "Climb Bio Inc"
     },
     {
-     "ticker": "DSGN",
-     "name": "Design Therapeutics Inc"
-    },
-    {
      "ticker": "ACRS",
      "name": "Aclaris Therapeutics Inc"
+    },
+    {
+     "ticker": "DSGN",
+     "name": "Design Therapeutics Inc"
     },
     {
      "ticker": "ACHV",
@@ -1970,24 +1970,20 @@
      "name": "Annexon Inc"
     },
     {
-     "ticker": "AURA",
-     "name": "Aura Biosciences Inc"
+     "ticker": "NVCT",
+     "name": "Nuvectis Pharma Inc"
     },
     {
      "ticker": "GYRE",
      "name": "Gyre Therapeutics Inc"
     },
     {
-     "ticker": "NVCT",
-     "name": "Nuvectis Pharma Inc"
-    },
-    {
-     "ticker": "MNPR",
-     "name": "Monopar Therapeutics Inc"
-    },
-    {
      "ticker": "ZVRA",
      "name": "Zevra Therapeutics Inc"
+    },
+    {
+     "ticker": "AURA",
+     "name": "Aura Biosciences Inc"
     },
     {
      "ticker": "NGNE",
@@ -1998,20 +1994,20 @@
      "name": "Mimedx Group Inc"
     },
     {
-     "ticker": "CBIO",
-     "name": "Crescent Biopharma Inc"
+     "ticker": "MNPR",
+     "name": "Monopar Therapeutics Inc"
     },
     {
      "ticker": "VSTM",
      "name": "Verastem Inc"
     },
     {
-     "ticker": "PHAT",
-     "name": "Phathom Pharmaceuticals Inc"
-    },
-    {
      "ticker": "SGMT",
      "name": "Sagimet Biosciences Inc"
+    },
+    {
+     "ticker": "CBIO",
+     "name": "Crescent Biopharma Inc"
     },
     {
      "ticker": "OABI",
@@ -2022,28 +2018,36 @@
      "name": "Altimmune Inc"
     },
     {
-     "ticker": "MPLT",
-     "name": "MapLight Therapeutics Inc"
-    },
-    {
-     "ticker": "CTMX",
-     "name": "CytomX Therapeutics Inc"
+     "ticker": "PHAT",
+     "name": "Phathom Pharmaceuticals Inc"
     },
     {
      "ticker": "CRMD",
      "name": "CorMedix Inc"
     },
     {
+     "ticker": "CTMX",
+     "name": "CytomX Therapeutics Inc"
+    },
+    {
+     "ticker": "MPLT",
+     "name": "MapLight Therapeutics Inc"
+    },
+    {
      "ticker": "STTK",
      "name": "Shattuck Labs Inc"
+    },
+    {
+     "ticker": "ALLO",
+     "name": "Allogene Therapeutics Inc"
     },
     {
      "ticker": "DRUG",
      "name": "Bright Minds Biosciences Inc"
     },
     {
-     "ticker": "ALLO",
-     "name": "Allogene Therapeutics Inc"
+     "ticker": "PROK",
+     "name": "ProKidney Corp"
     },
     {
      "ticker": "TECX",
@@ -2054,44 +2058,36 @@
      "name": "Prime Medicine Inc"
     },
     {
-     "ticker": "PROK",
-     "name": "ProKidney Corp"
-    },
-    {
-     "ticker": "CTNM",
-     "name": "Contineum Therapeutics Inc"
-    },
-    {
-     "ticker": "OVID",
-     "name": "Ovid Therapeutics Inc"
-    },
-    {
      "ticker": "ARVN",
      "name": "Arvinas Inc"
-    },
-    {
-     "ticker": "ASMB",
-     "name": "Assembly Biosciences Inc"
     },
     {
      "ticker": "RGNX",
      "name": "Regenxbio Inc"
     },
     {
-     "ticker": "CAPR",
-     "name": "Capricor Therapeutics Inc"
+     "ticker": "OVID",
+     "name": "Ovid Therapeutics Inc"
     },
     {
-     "ticker": "DNA",
-     "name": "Ginkgo Bioworks Holdings Inc"
+     "ticker": "ASMB",
+     "name": "Assembly Biosciences Inc"
+    },
+    {
+     "ticker": "CTNM",
+     "name": "Contineum Therapeutics Inc"
+    },
+    {
+     "ticker": "CAPR",
+     "name": "Capricor Therapeutics Inc"
     },
     {
      "ticker": "PBYI",
      "name": "Puma Biotechnology Inc"
     },
     {
-     "ticker": "ZURA",
-     "name": "Zura Bio Ltd"
+     "ticker": "DNA",
+     "name": "Ginkgo Bioworks Holdings Inc"
     },
     {
      "ticker": "IRD",
@@ -2106,16 +2102,32 @@
      "name": "Arcturus Therapeutics Holdings Inc"
     },
     {
+     "ticker": "ZURA",
+     "name": "Zura Bio Ltd"
+    },
+    {
      "ticker": "KYTX",
      "name": "Kyverna Therapeutics Inc"
+    },
+    {
+     "ticker": "CCCC",
+     "name": "C4 Therapeutics Inc"
+    },
+    {
+     "ticker": "PRTA",
+     "name": "Prothena Corp Plc"
     },
     {
      "ticker": "CABA",
      "name": "Cabaletta Bio Inc"
     },
     {
-     "ticker": "CCCC",
-     "name": "C4 Therapeutics Inc"
+     "ticker": "ARTV",
+     "name": "Artiva Biotherapeutics Inc"
+    },
+    {
+     "ticker": "EDIT",
+     "name": "Editas Medicine Inc"
     },
     {
      "ticker": "SPRY",
@@ -2126,64 +2138,48 @@
      "name": "Atea Pharmaceuticals Inc"
     },
     {
-     "ticker": "ARTV",
-     "name": "Artiva Biotherapeutics Inc"
-    },
-    {
-     "ticker": "PRTA",
-     "name": "Prothena Corp Plc"
-    },
-    {
-     "ticker": "EDIT",
-     "name": "Editas Medicine Inc"
-    },
-    {
      "ticker": "LRMR",
      "name": "Larimar Therapeutics Inc"
-    },
-    {
-     "ticker": "RZLT",
-     "name": "Rezolute Inc"
     },
     {
      "ticker": "BNTC",
      "name": "Benitec Biopharma Inc"
     },
     {
+     "ticker": "RZLT",
+     "name": "Rezolute Inc"
+    },
+    {
      "ticker": "RCKT",
      "name": "Rocket Pharmaceuticals Inc"
-    },
-    {
-     "ticker": "OBIO",
-     "name": "Orchestra BioMed Holdings Inc"
-    },
-    {
-     "ticker": "ENTA",
-     "name": "Enanta Pharmaceuticals Inc"
-    },
-    {
-     "ticker": "FENC",
-     "name": "Fennec Pharmaceuticals Inc"
     },
     {
      "ticker": "GALT",
      "name": "Galectin Therapeutics Inc"
     },
     {
+     "ticker": "FENC",
+     "name": "Fennec Pharmaceuticals Inc"
+    },
+    {
+     "ticker": "ENTA",
+     "name": "Enanta Pharmaceuticals Inc"
+    },
+    {
+     "ticker": "OBIO",
+     "name": "Orchestra BioMed Holdings Inc"
+    },
+    {
      "ticker": "DMAC",
      "name": "DiaMedica Therapeutics Inc"
     },
     {
-     "ticker": "IPSC",
-     "name": "Century Therapeutics Inc"
+     "ticker": "PRLD",
+     "name": "Prelude Therapeutics Inc"
     },
     {
      "ticker": "XFOR",
      "name": "X4 Pharmaceuticals Inc"
-    },
-    {
-     "ticker": "PRLD",
-     "name": "Prelude Therapeutics Inc"
     },
     {
      "ticker": "LXEO",
@@ -2194,12 +2190,16 @@
      "name": "Ocugen Inc"
     },
     {
+     "ticker": "IPSC",
+     "name": "Century Therapeutics Inc"
+    },
+    {
      "ticker": "CMPX",
      "name": "Compass Therapeutics Inc"
     },
     {
-     "ticker": "PALI",
-     "name": "Palisade Bio Inc"
+     "ticker": "AGEN",
+     "name": "Agenus Inc"
     },
     {
      "ticker": "IKT",
@@ -2208,14 +2208,6 @@
     {
      "ticker": "SION",
      "name": "Sionna Therapeutics Inc"
-    },
-    {
-     "ticker": "AGEN",
-     "name": "Agenus Inc"
-    },
-    {
-     "ticker": "EYPT",
-     "name": "EyePoint Inc"
     },
     {
      "ticker": "SABS",
@@ -2230,12 +2222,20 @@
      "name": "Vanda Pharmaceuticals Inc"
     },
     {
-     "ticker": "UPB",
-     "name": "Upstream Bio Inc"
+     "ticker": "EYPT",
+     "name": "EyePoint Inc"
+    },
+    {
+     "ticker": "PALI",
+     "name": "Palisade Bio Inc"
     },
     {
      "ticker": "ZNTL",
      "name": "Zentalis Pharmaceuticals Inc"
+    },
+    {
+     "ticker": "UPB",
+     "name": "Upstream Bio Inc"
     },
     {
      "ticker": "FULC",
@@ -2250,10 +2250,6 @@
      "name": "Lineage Cell Therapeutics Inc"
     },
     {
-     "ticker": "STRO",
-     "name": "Sutro Biopharma Inc"
-    },
-    {
      "ticker": "TRDA",
      "name": "Entrada Therapeutics Inc"
     },
@@ -2262,52 +2258,44 @@
      "name": "Lyell Immunopharma Inc"
     },
     {
-     "ticker": "CAMP",
-     "name": "CAMP4 Therapeutics Corp"
-    },
-    {
-     "ticker": "ALXO",
-     "name": "Alx Oncology Holdings Inc"
-    },
-    {
      "ticker": "MGNX",
      "name": "Macrogenics Inc"
+    },
+    {
+     "ticker": "STRO",
+     "name": "Sutro Biopharma Inc"
     },
     {
      "ticker": "FHTX",
      "name": "Foghorn Therapeutics Inc"
     },
     {
-     "ticker": "IVVD",
-     "name": "Invivyd Inc"
+     "ticker": "ALXO",
+     "name": "Alx Oncology Holdings Inc"
+    },
+    {
+     "ticker": "CAMP",
+     "name": "CAMP4 Therapeutics Corp"
     },
     {
      "ticker": "RNAC",
      "name": "Cartesian Therapeutics Inc"
     },
     {
-     "ticker": "GLSI",
-     "name": "Greenwich LifeSciences Inc"
+     "ticker": "IVVD",
+     "name": "Invivyd Inc"
     },
     {
      "ticker": "WHWK",
      "name": "Whitehawk Therapeutics Inc"
     },
     {
+     "ticker": "GLSI",
+     "name": "Greenwich LifeSciences Inc"
+    },
+    {
      "ticker": "AVXL",
      "name": "Anavex Life Sciences Corp"
-    },
-    {
-     "ticker": "TARA",
-     "name": "Protara Therapeutics Inc"
-    },
-    {
-     "ticker": "ALEC",
-     "name": "Alector Inc"
-    },
-    {
-     "ticker": "KROS",
-     "name": "Keros Therapeutics Inc"
     },
     {
      "ticker": "ELDN",
@@ -2318,36 +2306,48 @@
      "name": "Protalix BioTherapeutics Inc"
     },
     {
-     "ticker": "ABOS",
-     "name": "Acumen Pharmaceuticals Inc"
+     "ticker": "ALEC",
+     "name": "Alector Inc"
+    },
+    {
+     "ticker": "TARA",
+     "name": "Protara Therapeutics Inc"
+    },
+    {
+     "ticker": "KROS",
+     "name": "Keros Therapeutics Inc"
     },
     {
      "ticker": "NKTX",
      "name": "Nkarta Inc"
     },
     {
-     "ticker": "SRZN",
-     "name": "Surrozen Inc"
-    },
-    {
-     "ticker": "ANTX",
-     "name": "AN2 Therapeutics Inc"
+     "ticker": "KRRO",
+     "name": "Korro Bio Inc"
     },
     {
      "ticker": "TNXP",
      "name": "Tonix Pharmaceuticals Holding Corp"
     },
     {
-     "ticker": "KRRO",
-     "name": "Korro Bio Inc"
+     "ticker": "ANTX",
+     "name": "AN2 Therapeutics Inc"
     },
     {
-     "ticker": "CHRS",
-     "name": "Coherus Oncology Inc"
+     "ticker": "SRZN",
+     "name": "Surrozen Inc"
     },
     {
      "ticker": "ORMP",
      "name": "Oramed Pharmaceuticals Inc"
+    },
+    {
+     "ticker": "ABOS",
+     "name": "Acumen Pharmaceuticals Inc"
+    },
+    {
+     "ticker": "CHRS",
+     "name": "Coherus Oncology Inc"
     },
     {
      "ticker": "VYGR",
@@ -2358,12 +2358,12 @@
      "name": "Precision Biosciences Inc"
     },
     {
-     "ticker": "NERV",
-     "name": "Minerva Neurosciences Inc"
-    },
-    {
      "ticker": "MDWD",
      "name": "MediWound Ltd"
+    },
+    {
+     "ticker": "NERV",
+     "name": "Minerva Neurosciences Inc"
     },
     {
      "ticker": "CNTN",
@@ -2378,12 +2378,12 @@
      "name": "Armata Pharmaceuticals Inc"
     },
     {
-     "ticker": "NMRA",
-     "name": "Neumora Therapeutics Inc"
-    },
-    {
      "ticker": "CDXS",
      "name": "Codexis Inc"
+    },
+    {
+     "ticker": "NMRA",
+     "name": "Neumora Therapeutics Inc"
     },
     {
      "ticker": "CRBP",
@@ -2394,12 +2394,12 @@
      "name": "Caribou Biosciences Inc"
     },
     {
-     "ticker": "LENZ",
-     "name": "LENZ Therapeutics Inc"
-    },
-    {
      "ticker": "UNCY",
      "name": "Unicycive Therapeutics Inc"
+    },
+    {
+     "ticker": "LENZ",
+     "name": "LENZ Therapeutics Inc"
     },
     {
      "ticker": "NAUT",
@@ -2570,12 +2570,12 @@
      "name": "BGC Group Inc"
     },
     {
-     "ticker": "PIPR",
-     "name": "Piper Sandler Co's"
-    },
-    {
      "ticker": "MRX",
      "name": "Marex Group Ltd"
+    },
+    {
+     "ticker": "PIPR",
+     "name": "Piper Sandler Co's"
     },
     {
      "ticker": "MC",
@@ -2884,12 +2884,12 @@
      "name": "World Acceptance Corp"
     },
     {
-     "ticker": "PRAA",
-     "name": "PRA Group Inc"
-    },
-    {
      "ticker": "GDOT",
      "name": "Green Dot Corp"
+    },
+    {
+     "ticker": "PRAA",
+     "name": "PRA Group Inc"
     },
     {
      "ticker": "OPFI",
@@ -3200,12 +3200,12 @@
      "name": "Amprius Technologies Inc"
     },
     {
-     "ticker": "TE",
-     "name": "T1 Energy Inc"
-    },
-    {
      "ticker": "FCEL",
      "name": "Fuelcell Energy Inc"
+    },
+    {
+     "ticker": "TE",
+     "name": "T1 Energy Inc"
     },
     {
      "ticker": "HYLN",
@@ -3560,12 +3560,12 @@
      "name": "Rocky Brands Inc"
     },
     {
-     "ticker": "DBI",
-     "name": "Designer Brands Inc"
-    },
-    {
      "ticker": "FOSL",
      "name": "Fossil Group Inc"
+    },
+    {
+     "ticker": "DBI",
+     "name": "Designer Brands Inc"
     }
    ]
   },
@@ -3786,12 +3786,12 @@
      "name": "Phreesia Inc"
     },
     {
-     "ticker": "CTEV",
-     "name": "Claritev Corp"
-    },
-    {
      "ticker": "WEAV",
      "name": "Weave Communications Inc"
+    },
+    {
+     "ticker": "CTEV",
+     "name": "Claritev Corp"
     },
     {
      "ticker": "NRC",
@@ -3878,16 +3878,16 @@
      "name": "Xometry Inc"
     },
     {
-     "ticker": "DNOW",
-     "name": "Dnow Inc"
+     "ticker": "DXPE",
+     "name": "DXP Enterprises Inc"
     },
     {
      "ticker": "REZI",
      "name": "Resideo Technologies Inc"
     },
     {
-     "ticker": "DXPE",
-     "name": "DXP Enterprises Inc"
+     "ticker": "DNOW",
+     "name": "Dnow Inc"
     },
     {
      "ticker": "DSGR",
@@ -3932,12 +3932,12 @@
      "name": "Keel Infrastructure Corp"
     },
     {
-     "ticker": "DXC",
-     "name": "DXC Technology Co"
-    },
-    {
      "ticker": "INOD",
      "name": "Innodata Inc"
+    },
+    {
+     "ticker": "DXC",
+     "name": "DXC Technology Co"
     },
     {
      "ticker": "CNXC",
@@ -4076,12 +4076,12 @@
      "name": "HCI Group Inc"
     },
     {
-     "ticker": "STC",
-     "name": "Stewart Information Services Corp"
-    },
-    {
      "ticker": "HMN",
      "name": "Horace Mann Educators Corp"
+    },
+    {
+     "ticker": "STC",
+     "name": "Stewart Information Services Corp"
     },
     {
      "ticker": "PRCH",
@@ -4526,12 +4526,12 @@
      "name": "Concentra Group Holdings Parent Inc"
     },
     {
-     "ticker": "NHC",
-     "name": "National Healthcare Corp"
-    },
-    {
      "ticker": "OPCH",
      "name": "Option Care Health Inc"
+    },
+    {
+     "ticker": "NHC",
+     "name": "National Healthcare Corp"
     },
     {
      "ticker": "AVAH",
@@ -4574,16 +4574,16 @@
      "name": "Agilon Health Inc"
     },
     {
+     "ticker": "ARDT",
+     "name": "Ardent Health Inc"
+    },
+    {
      "ticker": "HCSG",
      "name": "Healthcare Services Group Inc"
     },
     {
      "ticker": "NUTX",
      "name": "Nutex Health Inc"
-    },
-    {
-     "ticker": "ARDT",
-     "name": "Ardent Health Inc"
     },
     {
      "ticker": "INNV",
@@ -4700,12 +4700,12 @@
      "name": "Tandem Diabetes Care Inc"
     },
     {
-     "ticker": "PRCT",
-     "name": "Procept BioRobotics Corp"
-    },
-    {
      "ticker": "BVS",
      "name": "Bioventus Inc"
+    },
+    {
+     "ticker": "PRCT",
+     "name": "Procept BioRobotics Corp"
     },
     {
      "ticker": "ENOV",
@@ -4716,12 +4716,12 @@
      "name": "Iradimed Corp"
     },
     {
-     "ticker": "CBLL",
-     "name": "Ceribell Inc"
-    },
-    {
      "ticker": "BBNX",
      "name": "Beta Bionics Inc"
+    },
+    {
+     "ticker": "CBLL",
+     "name": "Ceribell Inc"
     },
     {
      "ticker": "SIBN",
@@ -4756,20 +4756,20 @@
      "name": "Delcath Systems Inc"
     },
     {
-     "ticker": "TCMD",
-     "name": "Tactile Systems Technology Inc"
-    },
-    {
      "ticker": "CERS",
      "name": "Cerus Corp"
     },
     {
-     "ticker": "SENS",
-     "name": "Senseonics Holdings Inc"
+     "ticker": "TCMD",
+     "name": "Tactile Systems Technology Inc"
     },
     {
      "ticker": "NPCE",
      "name": "NeuroPace Inc"
+    },
+    {
+     "ticker": "SENS",
+     "name": "Senseonics Holdings Inc"
     },
     {
      "ticker": "SGHT",
@@ -4800,16 +4800,16 @@
      "name": "Viemed Healthcare Inc"
     },
     {
-     "ticker": "CV",
-     "name": "CapsoVision Inc"
-    },
-    {
      "ticker": "CATX",
      "name": "Perspective Therapeutics Inc"
     },
     {
      "ticker": "TLSI",
      "name": "TriSalus Life Sciences Inc"
+    },
+    {
+     "ticker": "CV",
+     "name": "CapsoVision Inc"
     },
     {
      "ticker": "INFU",
@@ -4828,12 +4828,12 @@
      "name": "Lucid Diagnostics Inc"
     },
     {
-     "ticker": "INGN",
-     "name": "Inogen Inc"
-    },
-    {
      "ticker": "QTRX",
      "name": "Quanterix Corp"
+    },
+    {
+     "ticker": "INGN",
+     "name": "Inogen Inc"
     },
     {
      "ticker": "HYPR",
@@ -4862,12 +4862,12 @@
      "name": "Pulse Biosciences Inc"
     },
     {
-     "ticker": "WRBY",
-     "name": "Warby Parker Inc"
-    },
-    {
      "ticker": "ATRC",
      "name": "Atricure Inc"
+    },
+    {
+     "ticker": "WRBY",
+     "name": "Warby Parker Inc"
     },
     {
      "ticker": "XRAY",
@@ -4882,12 +4882,12 @@
      "name": "Biolife Solutions Inc"
     },
     {
-     "ticker": "KMTS",
-     "name": "Kestra Medical Technologies Ltd"
-    },
-    {
      "ticker": "AZTA",
      "name": "Azenta Inc"
+    },
+    {
+     "ticker": "KMTS",
+     "name": "Kestra Medical Technologies Ltd"
     },
     {
      "ticker": "STAA",
@@ -5074,12 +5074,12 @@
      "name": "Comstock Resources Inc"
     },
     {
-     "ticker": "GPOR",
-     "name": "Gulfport Energy Corp"
-    },
-    {
      "ticker": "TALO",
      "name": "Talos Energy Inc"
+    },
+    {
+     "ticker": "GPOR",
+     "name": "Gulfport Energy Corp"
     },
     {
      "ticker": "NOG",
@@ -5164,12 +5164,12 @@
      "name": "Kodiak Gas Services Inc"
     },
     {
-     "ticker": "WHD",
-     "name": "Cactus Inc"
-    },
-    {
      "ticker": "AROC",
      "name": "Archrock Inc"
+    },
+    {
+     "ticker": "WHD",
+     "name": "Cactus Inc"
     },
     {
      "ticker": "SEI",
@@ -5200,16 +5200,16 @@
      "name": "Innovex International Inc"
     },
     {
-     "ticker": "XPRO",
-     "name": "Expro Ltd"
-    },
-    {
      "ticker": "NEXT",
      "name": "NextDecade Corp"
     },
     {
      "ticker": "FLOC",
      "name": "Flowco Holdings Inc"
+    },
+    {
+     "ticker": "XPRO",
+     "name": "Expro Ltd"
     },
     {
      "ticker": "AESI",
@@ -5232,12 +5232,12 @@
      "name": "Flotek Industries Inc"
     },
     {
-     "ticker": "TTI",
-     "name": "Tetra Technologies Inc"
-    },
-    {
      "ticker": "FET",
      "name": "Forum Energy Technologies Inc"
+    },
+    {
+     "ticker": "TTI",
+     "name": "Tetra Technologies Inc"
     },
     {
      "ticker": "ACDC",
@@ -5428,12 +5428,12 @@
      "name": "Flowers Foods Inc"
     },
     {
-     "ticker": "HLF",
-     "name": "Herbalife Ltd"
-    },
-    {
      "ticker": "SENEA",
      "name": "Seneca Foods Corp"
+    },
+    {
+     "ticker": "HLF",
+     "name": "Herbalife Ltd"
     },
     {
      "ticker": "BRBR",
@@ -5960,12 +5960,12 @@
      "name": "InvenTrust Properties Corp"
     },
     {
-     "ticker": "NTST",
-     "name": "Netstreit Corp"
-    },
-    {
      "ticker": "GTY",
      "name": "Getty Realty Corp"
+    },
+    {
+     "ticker": "NTST",
+     "name": "Netstreit Corp"
     },
     {
      "ticker": "CBL",
@@ -6034,12 +6034,12 @@
      "name": "Transcontinental Realty Investors Inc"
     },
     {
-     "ticker": "SEG",
-     "name": "Seaport Entertainment Group Inc"
-    },
-    {
      "ticker": "MLP",
      "name": "Maui Land & Pineapple Co Inc"
+    },
+    {
+     "ticker": "SEG",
+     "name": "Seaport Entertainment Group Inc"
     },
     {
      "ticker": "ARL",
@@ -6256,12 +6256,12 @@
      "name": "Bloomin Brands Inc"
     },
     {
-     "ticker": "CNNE",
-     "name": "Cannae Holdings Inc"
-    },
-    {
      "ticker": "PZZA",
      "name": "Papa John's International Inc"
+    },
+    {
+     "ticker": "CNNE",
+     "name": "Cannae Holdings Inc"
     },
     {
      "ticker": "FWRG",
@@ -6280,12 +6280,12 @@
      "name": "Nathan's Famous Inc"
     },
     {
-     "ticker": "BRCB",
-     "name": "Black Rock Coffee Bar Inc"
-    },
-    {
      "ticker": "DIN",
      "name": "Dine Brands Global Inc"
+    },
+    {
+     "ticker": "BRCB",
+     "name": "Black Rock Coffee Bar Inc"
     },
     {
      "ticker": "PTLO",
@@ -6382,12 +6382,12 @@
      "name": "ACM Research Inc"
     },
     {
-     "ticker": "KLIC",
-     "name": "Kulicke & Soffa Industries Inc"
-    },
-    {
      "ticker": "AXTI",
      "name": "AXT Inc"
+    },
+    {
+     "ticker": "KLIC",
+     "name": "Kulicke & Soffa Industries Inc"
     },
     {
      "ticker": "ACLS",
@@ -6574,12 +6574,12 @@
      "name": "NCR Atleos Corp"
     },
     {
-     "ticker": "LIF",
-     "name": "Life360 Inc"
-    },
-    {
      "ticker": "FRSH",
      "name": "Freshworks Inc"
+    },
+    {
+     "ticker": "LIF",
+     "name": "Life360 Inc"
     },
     {
      "ticker": "BTDR",
@@ -6594,24 +6594,24 @@
      "name": "SPS Commerce Inc"
     },
     {
-     "ticker": "BRZE",
-     "name": "Braze Inc"
-    },
-    {
      "ticker": "INTA",
      "name": "Intapp Inc"
+    },
+    {
+     "ticker": "BRZE",
+     "name": "Braze Inc"
     },
     {
      "ticker": "ADEA",
      "name": "Adeia Inc"
     },
     {
-     "ticker": "GRND",
-     "name": "Grindr Inc"
-    },
-    {
      "ticker": "ALRM",
      "name": "Alarm.com Holdings Inc"
+    },
+    {
+     "ticker": "GRND",
+     "name": "Grindr Inc"
     },
     {
      "ticker": "SOUN",
@@ -6626,12 +6626,12 @@
      "name": "Ncino Inc"
     },
     {
-     "ticker": "DBD",
-     "name": "Diebold Nixdorf Inc"
-    },
-    {
      "ticker": "ASAN",
      "name": "Asana Inc"
+    },
+    {
+     "ticker": "DBD",
+     "name": "Diebold Nixdorf Inc"
     },
     {
      "ticker": "VIA",
@@ -6654,12 +6654,12 @@
      "name": "PDF Solutions Inc"
     },
     {
-     "ticker": "BL",
-     "name": "BlackLine Inc"
-    },
-    {
      "ticker": "AMPL",
      "name": "Amplitude Inc"
+    },
+    {
+     "ticker": "BL",
+     "name": "BlackLine Inc"
     },
     {
      "ticker": "EVCM",
@@ -6718,12 +6718,12 @@
      "name": "PubMatic Inc"
     },
     {
-     "ticker": "PAR",
-     "name": "Par Technology Corp"
-    },
-    {
      "ticker": "SPT",
      "name": "Sprout Social Inc"
+    },
+    {
+     "ticker": "PAR",
+     "name": "Par Technology Corp"
     },
     {
      "ticker": "OOMA",
@@ -6778,12 +6778,12 @@
      "name": "Immersion Corp"
     },
     {
-     "ticker": "SMRT",
-     "name": "SmartRent Inc"
-    },
-    {
      "ticker": "SVCO",
      "name": "Silvaco Group Inc"
+    },
+    {
+     "ticker": "SMRT",
+     "name": "SmartRent Inc"
     },
     {
      "ticker": "KLTR",
@@ -6810,12 +6810,12 @@
      "name": "Roadzen Inc"
     },
     {
-     "ticker": "BZAI",
-     "name": "Blaize Holdings Inc"
-    },
-    {
      "ticker": "THRY",
      "name": "Thryv Holdings Inc"
+    },
+    {
+     "ticker": "BZAI",
+     "name": "Blaize Holdings Inc"
     },
     {
      "ticker": "IDN",
@@ -6852,12 +6852,12 @@
      "name": "Box Inc"
     },
     {
-     "ticker": "PAY",
-     "name": "Paymentus Holdings Inc"
-    },
-    {
      "ticker": "RELY",
      "name": "Remitly Global Inc"
+    },
+    {
+     "ticker": "PAY",
+     "name": "Paymentus Holdings Inc"
     },
     {
      "ticker": "DLO",
@@ -7088,20 +7088,20 @@
      "name": "Maximus Inc"
     },
     {
-     "ticker": "ABM",
-     "name": "ABM Industries Inc"
-    },
-    {
      "ticker": "CBZ",
      "name": "Cbiz Inc"
     },
     {
-     "ticker": "TIC",
-     "name": "TIC Solutions Inc"
+     "ticker": "ABM",
+     "name": "ABM Industries Inc"
     },
     {
      "ticker": "CMPR",
      "name": "Cimpress plc"
+    },
+    {
+     "ticker": "TIC",
+     "name": "TIC Solutions Inc"
     },
     {
      "ticker": "TH",
@@ -7190,12 +7190,12 @@
      "name": "Quaker Houghton"
     },
     {
-     "ticker": "WDFC",
-     "name": "WD-40 Co"
-    },
-    {
      "ticker": "HWKN",
      "name": "Hawkins Inc"
+    },
+    {
+     "ticker": "WDFC",
+     "name": "WD-40 Co"
     },
     {
      "ticker": "NGVT",
@@ -7254,12 +7254,12 @@
      "name": "Gevo Inc"
     },
     {
-     "ticker": "MNTK",
-     "name": "Montauk Renewables Inc"
-    },
-    {
      "ticker": "OEC",
      "name": "Orion S.A"
+    },
+    {
+     "ticker": "MNTK",
+     "name": "Montauk Renewables Inc"
     },
     {
      "ticker": "ALTO",
@@ -7308,12 +7308,12 @@
      "name": "Mirion Technologies Inc"
     },
     {
-     "ticker": "MWA",
-     "name": "Mueller Water Products Inc"
-    },
-    {
      "ticker": "SMR",
      "name": "NuScale Power Corp"
+    },
+    {
+     "ticker": "MWA",
+     "name": "Mueller Water Products Inc"
     },
     {
      "ticker": "KAI",
@@ -7518,11 +7518,11 @@
      "name": "IDT Corp"
     },
     {
-     "ticker": "LILA",
+     "ticker": "LILAK",
      "name": "Liberty Latin America Ltd"
     },
     {
-     "ticker": "LILAK",
+     "ticker": "LILA",
      "name": "Liberty Latin America Ltd"
     },
     {
@@ -7530,11 +7530,11 @@
      "name": "Anterix Inc"
     },
     {
-     "ticker": "GLIBA",
+     "ticker": "GLIBK",
      "name": "Liberty Capital Corp"
     },
     {
-     "ticker": "GLIBK",
+     "ticker": "GLIBA",
      "name": "Liberty Capital Corp"
     },
     {
@@ -7542,12 +7542,12 @@
      "name": "Shenandoah Telecommunications Co"
     },
     {
-     "ticker": "CCOI",
-     "name": "Cogent Communications Holdings Inc"
-    },
-    {
      "ticker": "ATNI",
      "name": "ATN International Inc"
+    },
+    {
+     "ticker": "CCOI",
+     "name": "Cogent Communications Holdings Inc"
     },
     {
      "ticker": "OPTU",
@@ -7802,12 +7802,12 @@
      "name": "Balchem Corp"
     },
     {
-     "ticker": "MTRN",
-     "name": "Materion Corp"
-    },
-    {
      "ticker": "PRM",
      "name": "Perimeter Solutions Inc"
+    },
+    {
+     "ticker": "MTRN",
+     "name": "Materion Corp"
     },
     {
      "ticker": "CLMT",
@@ -7870,16 +7870,16 @@
      "name": "Boise Cascade Co"
     },
     {
+     "ticker": "HWKN",
+     "name": "Hawkins Inc"
+    },
+    {
      "ticker": "TTAM",
      "name": "Titan America SA"
     },
     {
      "ticker": "WDFC",
      "name": "WD-40 Co"
-    },
-    {
-     "ticker": "HWKN",
-     "name": "Hawkins Inc"
     },
     {
      "ticker": "KALU",
@@ -7930,16 +7930,16 @@
      "name": "Sylvamo Corp"
     },
     {
+     "ticker": "REX",
+     "name": "REX American Resources Corp"
+    },
+    {
      "ticker": "SCL",
      "name": "Stepan Co"
     },
     {
      "ticker": "FMC",
      "name": "FMC Corp"
-    },
-    {
-     "ticker": "REX",
-     "name": "REX American Resources Corp"
     },
     {
      "ticker": "ELE",
@@ -7970,12 +7970,12 @@
      "name": "NWPX Infrastructure Inc"
     },
     {
-     "ticker": "KRO",
-     "name": "Kronos Worldwide Inc"
-    },
-    {
      "ticker": "CRML",
      "name": "Critical Metals Corp"
+    },
+    {
+     "ticker": "KRO",
+     "name": "Kronos Worldwide Inc"
     },
     {
      "ticker": "KOP",
@@ -7986,12 +7986,12 @@
      "name": "SunCoke Energy Inc"
     },
     {
-     "ticker": "MTUS",
-     "name": "Metallus Inc"
-    },
-    {
      "ticker": "GSM",
      "name": "Ferroglobe Plc"
+    },
+    {
+     "ticker": "MTUS",
+     "name": "Metallus Inc"
     },
     {
      "ticker": "LXU",
@@ -8034,36 +8034,36 @@
      "name": "Rayonier Advanced Materials Inc"
     },
     {
-     "ticker": "NB",
-     "name": "NioCorp Developments Ltd"
-    },
-    {
      "ticker": "IPI",
      "name": "Intrepid Potash Inc"
     },
     {
-     "ticker": "GORO",
-     "name": "Goldgroup Mining Inc"
-    },
-    {
-     "ticker": "VHI",
-     "name": "Valhi Inc"
+     "ticker": "NB",
+     "name": "NioCorp Developments Ltd"
     },
     {
      "ticker": "ASPI",
      "name": "ASP Isotopes Inc"
     },
     {
+     "ticker": "GORO",
+     "name": "Goldgroup Mining Inc"
+    },
+    {
      "ticker": "CMCL",
      "name": "Caledonia Mining Corp Plc"
     },
     {
-     "ticker": "IDR",
-     "name": "Idaho Strategic Resources Inc"
+     "ticker": "VHI",
+     "name": "Valhi Inc"
     },
     {
      "ticker": "ASIX",
      "name": "AdvanSix Inc"
+    },
+    {
+     "ticker": "IDR",
+     "name": "Idaho Strategic Resources Inc"
     },
     {
      "ticker": "ASPN",
@@ -8082,24 +8082,24 @@
      "name": "Clearwater Paper Corp"
     },
     {
-     "ticker": "MNTK",
-     "name": "Montauk Renewables Inc"
+     "ticker": "LZM",
+     "name": "Lifezone Metals Ltd"
     },
     {
      "ticker": "OEC",
      "name": "Orion S.A"
     },
     {
-     "ticker": "LZM",
-     "name": "Lifezone Metals Ltd"
-    },
-    {
-     "ticker": "ALTO",
-     "name": "Alto Ingredients Inc"
+     "ticker": "MNTK",
+     "name": "Montauk Renewables Inc"
     },
     {
      "ticker": "VGZ",
      "name": "Vista Gold Corp"
+    },
+    {
+     "ticker": "ALTO",
+     "name": "Alto Ingredients Inc"
     },
     {
      "ticker": "FRD",
@@ -8224,11 +8224,11 @@
      "name": "IDT Corp"
     },
     {
-     "ticker": "LILA",
+     "ticker": "LILAK",
      "name": "Liberty Latin America Ltd"
     },
     {
-     "ticker": "LILAK",
+     "ticker": "LILA",
      "name": "Liberty Latin America Ltd"
     },
     {
@@ -8272,32 +8272,32 @@
      "name": "Sinclair Inc"
     },
     {
-     "ticker": "GLIBA",
-     "name": "Liberty Capital Corp"
-    },
-    {
      "ticker": "GLIBK",
      "name": "Liberty Capital Corp"
     },
     {
-     "ticker": "TDAY",
-     "name": "USA TODAY Co Inc"
+     "ticker": "GLIBA",
+     "name": "Liberty Capital Corp"
     },
     {
      "ticker": "NXDR",
      "name": "Nextdoor Holdings Inc"
     },
     {
+     "ticker": "TDAY",
+     "name": "USA TODAY Co Inc"
+    },
+    {
      "ticker": "PLTK",
      "name": "Playtika Holding Corp"
     },
     {
-     "ticker": "EVER",
-     "name": "EverQuote Inc"
-    },
-    {
      "ticker": "MCS",
      "name": "Marcus Corp"
+    },
+    {
+     "ticker": "EVER",
+     "name": "EverQuote Inc"
     },
     {
      "ticker": "GRPN",
@@ -8320,12 +8320,12 @@
      "name": "Shenandoah Telecommunications Co"
     },
     {
-     "ticker": "CARS",
-     "name": "Cars.com"
-    },
-    {
      "ticker": "RSVR",
      "name": "Reservoir Media Inc"
+    },
+    {
+     "ticker": "CARS",
+     "name": "Cars.com"
     },
     {
      "ticker": "NRDS",
@@ -8336,16 +8336,12 @@
      "name": "Nexxen International Ltd"
     },
     {
-     "ticker": "GTN",
-     "name": "Gray Media Inc"
-    },
-    {
      "ticker": "AMCX",
      "name": "AMC Global Media Inc"
     },
     {
-     "ticker": "CCOI",
-     "name": "Cogent Communications Holdings Inc"
+     "ticker": "GTN",
+     "name": "Gray Media Inc"
     },
     {
      "ticker": "ATNI",
@@ -8356,12 +8352,16 @@
      "name": "Starz Entertainment Corp"
     },
     {
-     "ticker": "IHRT",
-     "name": "iHeartMedia Inc"
+     "ticker": "CCOI",
+     "name": "Cogent Communications Holdings Inc"
     },
     {
      "ticker": "ADV",
      "name": "Advantage Solutions Inc"
+    },
+    {
+     "ticker": "IHRT",
+     "name": "iHeartMedia Inc"
     },
     {
      "ticker": "BMBL",
@@ -8490,12 +8490,12 @@
      "name": "Garrett Motion Inc"
     },
     {
-     "ticker": "GOLF",
-     "name": "Acushnet Holdings Corp"
-    },
-    {
      "ticker": "CAKE",
      "name": "Cheesecake Factory Inc"
+    },
+    {
+     "ticker": "GOLF",
+     "name": "Acushnet Holdings Corp"
     },
     {
      "ticker": "SKY",
@@ -8526,12 +8526,12 @@
      "name": "Signet Jewelers Ltd"
     },
     {
-     "ticker": "BOOT",
-     "name": "Boot Barn Holdings Inc"
-    },
-    {
      "ticker": "KTB",
      "name": "Kontoor Brands Inc"
+    },
+    {
+     "ticker": "BOOT",
+     "name": "Boot Barn Holdings Inc"
     },
     {
      "ticker": "DORM",
@@ -8550,24 +8550,24 @@
      "name": "Asbury Automotive Group Inc"
     },
     {
-     "ticker": "PTRN",
-     "name": "Pattern Group Inc"
-    },
-    {
      "ticker": "VAC",
      "name": "Marriott Vacations Worldwide Corp"
+    },
+    {
+     "ticker": "PTRN",
+     "name": "Pattern Group Inc"
     },
     {
      "ticker": "HNI",
      "name": "HNI Corp"
     },
     {
-     "ticker": "PII",
-     "name": "Polaris Inc"
-    },
-    {
      "ticker": "DAN",
      "name": "Dana Inc"
+    },
+    {
+     "ticker": "PII",
+     "name": "Polaris Inc"
     },
     {
      "ticker": "GPI",
@@ -8594,24 +8594,24 @@
      "name": "Green Brick Partners Inc"
     },
     {
-     "ticker": "HOG",
-     "name": "Harley-Davidson Inc"
-    },
-    {
      "ticker": "AMBP",
      "name": "Ardagh Metal Packaging SA"
+    },
+    {
+     "ticker": "HOG",
+     "name": "Harley-Davidson Inc"
     },
     {
      "ticker": "CALY",
      "name": "Callaway Golf Co"
     },
     {
-     "ticker": "AAP",
-     "name": "Advance Auto Parts Inc"
-    },
-    {
      "ticker": "VC",
      "name": "Visteon Corp"
+    },
+    {
+     "ticker": "AAP",
+     "name": "Advance Auto Parts Inc"
     },
     {
      "ticker": "AEO",
@@ -8642,44 +8642,44 @@
      "name": "PHINIA Inc"
     },
     {
-     "ticker": "OSW",
-     "name": "OneSpaWorld Holdings Limited"
-    },
-    {
      "ticker": "MCRI",
      "name": "Monarch Casino & Resort Inc"
+    },
+    {
+     "ticker": "OSW",
+     "name": "OneSpaWorld Holdings Limited"
     },
     {
      "ticker": "FIGS",
      "name": "Figs Inc"
     },
     {
-     "ticker": "LCII",
-     "name": "LCI Industries"
-    },
-    {
      "ticker": "UA",
      "name": "Under Armour Inc"
     },
     {
-     "ticker": "UAA",
-     "name": "Under Armour Inc"
+     "ticker": "LCII",
+     "name": "LCI Industries"
     },
     {
      "ticker": "PTON",
      "name": "Peloton Interactive Inc"
     },
     {
+     "ticker": "UAA",
+     "name": "Under Armour Inc"
+    },
+    {
      "ticker": "BKE",
      "name": "Buckle Inc"
     },
     {
-     "ticker": "DRVN",
-     "name": "Driven Brands Holdings Inc"
-    },
-    {
      "ticker": "TILE",
      "name": "Interface Inc"
+    },
+    {
+     "ticker": "DRVN",
+     "name": "Driven Brands Holdings Inc"
     },
     {
      "ticker": "BRSL",
@@ -8710,20 +8710,20 @@
      "name": "United Parks & Resorts Inc"
     },
     {
-     "ticker": "WWW",
-     "name": "Wolverine World Wide Inc"
-    },
-    {
      "ticker": "LCID",
      "name": "Lucid Group Inc"
     },
     {
-     "ticker": "GT",
-     "name": "Goodyear Tire & Rubber Co"
+     "ticker": "WWW",
+     "name": "Wolverine World Wide Inc"
     },
     {
      "ticker": "SBH",
      "name": "Sally Beauty Holdings Inc"
+    },
+    {
+     "ticker": "GT",
+     "name": "Goodyear Tire & Rubber Co"
     },
     {
      "ticker": "RVLV",
@@ -8734,32 +8734,32 @@
      "name": "MillerKnoll Inc"
     },
     {
-     "ticker": "ADNT",
-     "name": "Adient plc"
-    },
-    {
      "ticker": "DCH",
      "name": "Dauch Corp"
+    },
+    {
+     "ticker": "ADNT",
+     "name": "Adient plc"
     },
     {
      "ticker": "SVV",
      "name": "Savers Value Village Inc"
     },
     {
-     "ticker": "MBC",
-     "name": "MasterBrand Inc"
-    },
-    {
      "ticker": "TRS",
      "name": "Trimas Corp"
     },
     {
-     "ticker": "WEN",
-     "name": "Wendy's Co"
-    },
-    {
      "ticker": "LQDT",
      "name": "Liquidity Services Inc"
+    },
+    {
+     "ticker": "MBC",
+     "name": "MasterBrand Inc"
+    },
+    {
+     "ticker": "WEN",
+     "name": "Wendy's Co"
     },
     {
      "ticker": "PRSU",
@@ -8770,16 +8770,16 @@
      "name": "National Vision Holdings Inc"
     },
     {
+     "ticker": "BJRI",
+     "name": "BJ's Restaurant Inc"
+    },
+    {
      "ticker": "FUN",
      "name": "Six Flags Entertainment Corp"
     },
     {
      "ticker": "XPEL",
      "name": "XPEL Inc"
-    },
-    {
-     "ticker": "BJRI",
-     "name": "BJ's Restaurant Inc"
     },
     {
      "ticker": "GIII",
@@ -8790,10 +8790,6 @@
      "name": "La-Z-Boy Inc"
     },
     {
-     "ticker": "LGIH",
-     "name": "LGI Homes Inc"
-    },
-    {
      "ticker": "THRM",
      "name": "Gentherm Inc"
     },
@@ -8802,16 +8798,20 @@
      "name": "Marinemax Inc"
     },
     {
-     "ticker": "REAL",
-     "name": "Therealreal Inc"
-    },
-    {
      "ticker": "MYE",
      "name": "Myers Industries Inc"
     },
     {
+     "ticker": "REAL",
+     "name": "Therealreal Inc"
+    },
+    {
      "ticker": "BH",
      "name": "Biglari Holdings Inc"
+    },
+    {
+     "ticker": "LGIH",
+     "name": "LGI Homes Inc"
     },
     {
      "ticker": "DFH",
@@ -8826,20 +8826,20 @@
      "name": "Winmark Corp"
     },
     {
-     "ticker": "ARHS",
-     "name": "Arhaus Inc"
-    },
-    {
      "ticker": "TRIP",
      "name": "TripAdvisor Inc"
     },
     {
-     "ticker": "CBRL",
-     "name": "Cracker Barrel Old Country Store Inc"
+     "ticker": "ARHS",
+     "name": "Arhaus Inc"
     },
     {
      "ticker": "KRT",
      "name": "Karat Packaging Inc"
+    },
+    {
+     "ticker": "CBRL",
+     "name": "Cracker Barrel Old Country Store Inc"
     },
     {
      "ticker": "OI",
@@ -8874,10 +8874,6 @@
      "name": "Winnebago Industries Inc"
     },
     {
-     "ticker": "WOOF",
-     "name": "Petco Health and Wellness Co Inc"
-    },
-    {
      "ticker": "BLMN",
      "name": "Bloomin Brands Inc"
     },
@@ -8886,16 +8882,20 @@
      "name": "Tron Inc"
     },
     {
+     "ticker": "WOOF",
+     "name": "Petco Health and Wellness Co Inc"
+    },
+    {
      "ticker": "HOV",
      "name": "Hovnanian Enterprises Inc"
     },
     {
-     "ticker": "CNNE",
-     "name": "Cannae Holdings Inc"
-    },
-    {
      "ticker": "PZZA",
      "name": "Papa John's International Inc"
+    },
+    {
+     "ticker": "CNNE",
+     "name": "Cannae Holdings Inc"
     },
     {
      "ticker": "LEGH",
@@ -8926,16 +8926,16 @@
      "name": "Ethan Allen Interiors Inc"
     },
     {
+     "ticker": "BALY",
+     "name": "Ballys Corp"
+    },
+    {
      "ticker": "MOV",
      "name": "Movado Group Inc"
     },
     {
      "ticker": "CSV",
      "name": "Carriage Services Inc"
-    },
-    {
-     "ticker": "BALY",
-     "name": "Ballys Corp"
     },
     {
      "ticker": "ARKO",
@@ -8958,36 +8958,36 @@
      "name": "Johnson Outdoors Inc"
     },
     {
-     "ticker": "EVGO",
-     "name": "EVgo Inc"
+     "ticker": "LOCO",
+     "name": "El Pollo Loco Holdings Inc"
     },
     {
      "ticker": "OXM",
      "name": "Oxford Industries Inc"
     },
     {
-     "ticker": "LOCO",
-     "name": "El Pollo Loco Holdings Inc"
+     "ticker": "EVGO",
+     "name": "EVgo Inc"
     },
     {
      "ticker": "KRUS",
      "name": "Kura Sushi USA Inc"
     },
     {
-     "ticker": "CAL",
-     "name": "Caleres Inc"
-    },
-    {
      "ticker": "HVT",
      "name": "Haverty Furniture Cos. Inc"
     },
     {
-     "ticker": "HBB",
-     "name": "Hamilton Beach Brands Holding Co"
-    },
-    {
      "ticker": "WEYS",
      "name": "Weyco Group Inc"
+    },
+    {
+     "ticker": "CAL",
+     "name": "Caleres Inc"
+    },
+    {
+     "ticker": "HBB",
+     "name": "Hamilton Beach Brands Holding Co"
     },
     {
      "ticker": "CPS",
@@ -8998,52 +8998,60 @@
      "name": "Nathan's Famous Inc"
     },
     {
-     "ticker": "MNRO",
-     "name": "Monro Inc"
-    },
-    {
      "ticker": "SFIX",
      "name": "Stitch Fix Inc"
     },
     {
-     "ticker": "GCO",
-     "name": "Genesco Inc"
+     "ticker": "MNRO",
+     "name": "Monro Inc"
     },
     {
      "ticker": "BNED",
      "name": "Barnes & Noble Education Inc"
     },
     {
-     "ticker": "SHOE",
-     "name": "Shoe Station Group Inc"
-    },
-    {
-     "ticker": "BRCB",
-     "name": "Black Rock Coffee Bar Inc"
+     "ticker": "GCO",
+     "name": "Genesco Inc"
     },
     {
      "ticker": "JILL",
      "name": "J.Jill Inc"
     },
     {
-     "ticker": "CVEO",
-     "name": "Civeo Corp"
+     "ticker": "SHOE",
+     "name": "Shoe Station Group Inc"
     },
     {
      "ticker": "DIN",
      "name": "Dine Brands Global Inc"
     },
     {
-     "ticker": "ELA",
-     "name": "Envela Corp"
+     "ticker": "CVEO",
+     "name": "Civeo Corp"
+    },
+    {
+     "ticker": "BRCB",
+     "name": "Black Rock Coffee Bar Inc"
     },
     {
      "ticker": "FLXS",
      "name": "Flexsteel Industries Inc"
     },
     {
+     "ticker": "ELA",
+     "name": "Envela Corp"
+    },
+    {
      "ticker": "PACK",
      "name": "Ranpak Holdings Corp"
+    },
+    {
+     "ticker": "BBW",
+     "name": "Build A Bear Workshop Inc"
+    },
+    {
+     "ticker": "RCKY",
+     "name": "Rocky Brands Inc"
     },
     {
      "ticker": "TDUP",
@@ -9058,12 +9066,8 @@
      "name": "Holley Inc"
     },
     {
-     "ticker": "BBW",
-     "name": "Build A Bear Workshop Inc"
-    },
-    {
-     "ticker": "RCKY",
-     "name": "Rocky Brands Inc"
+     "ticker": "FOSL",
+     "name": "Fossil Group Inc"
     },
     {
      "ticker": "DBI",
@@ -9072,10 +9076,6 @@
     {
      "ticker": "LE",
      "name": "Lands' End Inc"
-    },
-    {
-     "ticker": "FOSL",
-     "name": "Fossil Group Inc"
     },
     {
      "ticker": "FNKO",
@@ -9114,20 +9114,20 @@
      "name": "Microvast Holdings Inc"
     },
     {
-     "ticker": "CURV",
-     "name": "Torrid Holdings Inc"
+     "ticker": "RDNW",
+     "name": "RideNow Group Inc"
     },
     {
      "ticker": "SES",
      "name": "SES AI Corp"
     },
     {
-     "ticker": "RICK",
-     "name": "RCI Hospitality Holdings Inc"
+     "ticker": "CURV",
+     "name": "Torrid Holdings Inc"
     },
     {
-     "ticker": "RDNW",
-     "name": "RideNow Group Inc"
+     "ticker": "RICK",
+     "name": "RCI Hospitality Holdings Inc"
     },
     {
      "ticker": "LOVE",
@@ -9138,12 +9138,12 @@
      "name": "Zumiez Inc"
     },
     {
-     "ticker": "MPAA",
-     "name": "Motorcar Parts of America Inc"
-    },
-    {
      "ticker": "SRI",
      "name": "Stoneridge Inc"
+    },
+    {
+     "ticker": "MPAA",
+     "name": "Motorcar Parts of America Inc"
     },
     {
      "ticker": "SGC",
@@ -9154,12 +9154,12 @@
      "name": "Lifetime Brands Inc"
     },
     {
-     "ticker": "FLWS",
-     "name": "1-800 Flowers.com Inc"
-    },
-    {
      "ticker": "XPOF",
      "name": "Xponential Fitness Inc"
+    },
+    {
+     "ticker": "FLWS",
+     "name": "1-800 Flowers.com Inc"
     },
     {
      "ticker": "ONEW",
@@ -9240,12 +9240,12 @@
      "name": "McGraw Hill Inc"
     },
     {
-     "ticker": "NWL",
-     "name": "Newell Brands Inc"
-    },
-    {
      "ticker": "ANDE",
      "name": "Andersons Inc"
+    },
+    {
+     "ticker": "NWL",
+     "name": "Newell Brands Inc"
     },
     {
      "ticker": "COTY",
@@ -9308,6 +9308,10 @@
      "name": "Flowers Foods Inc"
     },
     {
+     "ticker": "SENEA",
+     "name": "Seneca Foods Corp"
+    },
+    {
      "ticker": "DOLE",
      "name": "Dole plc"
     },
@@ -9316,20 +9320,16 @@
      "name": "Herbalife Ltd"
     },
     {
-     "ticker": "SENEA",
-     "name": "Seneca Foods Corp"
-    },
-    {
      "ticker": "EPC",
      "name": "Edgewell Personal Care Co"
     },
     {
-     "ticker": "GO",
-     "name": "Grocery Outlet Holding Corp"
-    },
-    {
      "ticker": "UTI",
      "name": "Universal Technical Institute Inc"
+    },
+    {
+     "ticker": "GO",
+     "name": "Grocery Outlet Holding Corp"
     },
     {
      "ticker": "UVV",
@@ -9436,20 +9436,20 @@
      "name": "BRC Inc"
     },
     {
-     "ticker": "NAGE",
-     "name": "Niagen Bioscience Inc"
-    },
-    {
      "ticker": "ACU",
      "name": "Acme United Corp"
     },
     {
-     "ticker": "LMNR",
-     "name": "Limoneira Co"
+     "ticker": "NAGE",
+     "name": "Niagen Bioscience Inc"
     },
     {
      "ticker": "NATR",
      "name": "Nature's Sunshine Products Inc"
+    },
+    {
+     "ticker": "LMNR",
+     "name": "Limoneira Co"
     },
     {
      "ticker": "NUS",
@@ -9470,24 +9470,24 @@
      "name": "SM Energy Co"
     },
     {
-     "ticker": "KNTK",
-     "name": "Kinetik Holdings Inc"
-    },
-    {
      "ticker": "PBF",
      "name": "PBF Energy Inc"
+    },
+    {
+     "ticker": "KNTK",
+     "name": "Kinetik Holdings Inc"
     },
     {
      "ticker": "NE",
      "name": "Noble Corp Plc"
     },
     {
-     "ticker": "MGY",
-     "name": "Magnolia Oil & Gas Corp"
-    },
-    {
      "ticker": "RIG",
      "name": "Transocean Ltd"
+    },
+    {
+     "ticker": "MGY",
+     "name": "Magnolia Oil & Gas Corp"
     },
     {
      "ticker": "KGS",
@@ -9502,16 +9502,16 @@
      "name": "Murphy Oil Corp"
     },
     {
+     "ticker": "AROC",
+     "name": "Archrock Inc"
+    },
+    {
      "ticker": "INSW",
      "name": "International Seaways Inc"
     },
     {
      "ticker": "WHD",
      "name": "Cactus Inc"
-    },
-    {
-     "ticker": "AROC",
-     "name": "Archrock Inc"
     },
     {
      "ticker": "CVI",
@@ -9522,10 +9522,6 @@
      "name": "Golar Lng"
     },
     {
-     "ticker": "SEI",
-     "name": "Solaris Energy Infrastructure Inc"
-    },
-    {
      "ticker": "CNX",
      "name": "CNX Resources Corp"
     },
@@ -9534,16 +9530,20 @@
      "name": "Uranium Energy Corp"
     },
     {
+     "ticker": "SEI",
+     "name": "Solaris Energy Infrastructure Inc"
+    },
+    {
+     "ticker": "DK",
+     "name": "Delek US Holdings Inc"
+    },
+    {
      "ticker": "CRC",
      "name": "California Resources Corp"
     },
     {
      "ticker": "CRGY",
      "name": "Crescent Energy Co"
-    },
-    {
-     "ticker": "DK",
-     "name": "Delek US Holdings Inc"
     },
     {
      "ticker": "CNR",
@@ -9566,16 +9566,16 @@
      "name": "Scorpio Tankers Inc"
     },
     {
-     "ticker": "HP",
-     "name": "Helmerich & Payne Inc"
+     "ticker": "EE",
+     "name": "Excelerate Energy Inc"
     },
     {
      "ticker": "PARR",
      "name": "Par Pacific Holdings Inc"
     },
     {
-     "ticker": "EE",
-     "name": "Excelerate Energy Inc"
+     "ticker": "HP",
+     "name": "Helmerich & Payne Inc"
     },
     {
      "ticker": "CRK",
@@ -9610,12 +9610,12 @@
      "name": "Seadrill Ltd"
     },
     {
-     "ticker": "GPOR",
-     "name": "Gulfport Energy Corp"
-    },
-    {
      "ticker": "TALO",
      "name": "Talos Energy Inc"
+    },
+    {
+     "ticker": "GPOR",
+     "name": "Gulfport Energy Corp"
     },
     {
      "ticker": "LEU",
@@ -9642,16 +9642,16 @@
      "name": "Innovex International Inc"
     },
     {
-     "ticker": "XPRO",
-     "name": "Expro Ltd"
-    },
-    {
      "ticker": "NEXT",
      "name": "NextDecade Corp"
     },
     {
      "ticker": "FLOC",
      "name": "Flowco Holdings Inc"
+    },
+    {
+     "ticker": "XPRO",
+     "name": "Expro Ltd"
     },
     {
      "ticker": "WKC",
@@ -9666,12 +9666,12 @@
      "name": "Kosmos Energy Ltd"
     },
     {
-     "ticker": "NAT",
-     "name": "Nordic American Tankers Ltd"
-    },
-    {
      "ticker": "AESI",
      "name": "Atlas Energy Solutions Inc"
+    },
+    {
+     "ticker": "NAT",
+     "name": "Nordic American Tankers Ltd"
     },
     {
      "ticker": "NVGS",
@@ -9686,6 +9686,10 @@
      "name": "Borr Drilling Ltd"
     },
     {
+     "ticker": "NBR",
+     "name": "Nabors Industries Ltd"
+    },
+    {
      "ticker": "TK",
      "name": "Teekay Corp Ltd"
     },
@@ -9698,32 +9702,32 @@
      "name": "Bristow Group Inc"
     },
     {
-     "ticker": "NBR",
-     "name": "Nabors Industries Ltd"
-    },
-    {
      "ticker": "DEC",
      "name": "Diversified Energy Co"
-    },
-    {
-     "ticker": "HPK",
-     "name": "HighPeak Energy Inc"
     },
     {
      "ticker": "FTK",
      "name": "Flotek Industries Inc"
     },
     {
+     "ticker": "HPK",
+     "name": "HighPeak Energy Inc"
+    },
+    {
      "ticker": "REPX",
      "name": "Riley Exploration Permian Inc"
+    },
+    {
+     "ticker": "FET",
+     "name": "Forum Energy Technologies Inc"
     },
     {
      "ticker": "TTI",
      "name": "Tetra Technologies Inc"
     },
     {
-     "ticker": "FET",
-     "name": "Forum Energy Technologies Inc"
+     "ticker": "ACDC",
+     "name": "ProFrac Holding Corp"
     },
     {
      "ticker": "SOC",
@@ -9732,10 +9736,6 @@
     {
      "ticker": "INR",
      "name": "Infinity Natural Resources Inc"
-    },
-    {
-     "ticker": "ACDC",
-     "name": "ProFrac Holding Corp"
     },
     {
      "ticker": "VTS",
@@ -9758,12 +9758,12 @@
      "name": "W & T Offshore Inc"
     },
     {
-     "ticker": "CLB",
-     "name": "Core Laboratories Inc"
-    },
-    {
      "ticker": "SD",
      "name": "Sandridge Energy Inc"
+    },
+    {
+     "ticker": "CLB",
+     "name": "Core Laboratories Inc"
     },
     {
      "ticker": "OIS",
@@ -9778,12 +9778,12 @@
      "name": "Natural Gas Services Group Inc"
     },
     {
-     "ticker": "RNGR",
-     "name": "Ranger Energy Services Inc"
-    },
-    {
      "ticker": "REI",
      "name": "Ring Energy Inc"
+    },
+    {
+     "ticker": "RNGR",
+     "name": "Ranger Energy Services Inc"
     },
     {
      "ticker": "CLNE",
@@ -9802,24 +9802,24 @@
      "name": "Kolibri Global Energy Inc"
     },
     {
-     "ticker": "PED",
-     "name": "PEDEVCO Corp"
-    },
-    {
      "ticker": "SND",
      "name": "Smart Sand Inc"
+    },
+    {
+     "ticker": "PED",
+     "name": "PEDEVCO Corp"
     },
     {
      "ticker": "AMPY",
      "name": "Amplify Energy Corp"
     },
     {
-     "ticker": "EU",
-     "name": "enCore Energy Corp"
-    },
-    {
      "ticker": "EPSN",
      "name": "Epsilon Energy Ltd"
+    },
+    {
+     "ticker": "EU",
+     "name": "enCore Energy Corp"
     },
     {
      "ticker": "EPM",
@@ -9844,12 +9844,12 @@
      "name": "Old National Bancorp"
     },
     {
-     "ticker": "JXN",
-     "name": "Jackson Financial Inc"
-    },
-    {
      "ticker": "FCFS",
      "name": "FirstCash Holdings Inc"
+    },
+    {
+     "ticker": "JXN",
+     "name": "Jackson Financial Inc"
     },
     {
      "ticker": "SNEX",
@@ -9888,16 +9888,24 @@
      "name": "Home Bancshares Inc"
     },
     {
-     "ticker": "STEP",
-     "name": "StepStone Group Inc"
-    },
-    {
      "ticker": "GBCI",
      "name": "Glacier Bancorp Inc"
     },
     {
+     "ticker": "STEP",
+     "name": "StepStone Group Inc"
+    },
+    {
      "ticker": "BGC",
      "name": "BGC Group Inc"
+    },
+    {
+     "ticker": "MCY",
+     "name": "Mercury General Corp"
+    },
+    {
+     "ticker": "ABCB",
+     "name": "Ameris Bancorp"
     },
     {
      "ticker": "ASB",
@@ -9908,18 +9916,6 @@
      "name": "Atlantic Union Bankshares Corp"
     },
     {
-     "ticker": "ABCB",
-     "name": "Ameris Bancorp"
-    },
-    {
-     "ticker": "MCY",
-     "name": "Mercury General Corp"
-    },
-    {
-     "ticker": "FLG",
-     "name": "Flagstar Bank NA"
-    },
-    {
      "ticker": "SIGI",
      "name": "Selective Insurance Group Inc"
     },
@@ -9928,16 +9924,20 @@
      "name": "Axos Financial Inc"
     },
     {
+     "ticker": "FLG",
+     "name": "Flagstar Bank NA"
+    },
+    {
+     "ticker": "MRX",
+     "name": "Marex Group Ltd"
+    },
+    {
      "ticker": "CNO",
      "name": "CNO Financial Group Inc"
     },
     {
      "ticker": "PIPR",
      "name": "Piper Sandler Co's"
-    },
-    {
-     "ticker": "MRX",
-     "name": "Marex Group Ltd"
     },
     {
      "ticker": "EBC",
@@ -9960,12 +9960,12 @@
      "name": "Radian Group Inc"
     },
     {
-     "ticker": "SFBS",
-     "name": "ServisFirst Bancshares Inc"
-    },
-    {
      "ticker": "NNI",
      "name": "Nelnet Inc"
+    },
+    {
+     "ticker": "SFBS",
+     "name": "ServisFirst Bancshares Inc"
     },
     {
      "ticker": "FULT",
@@ -9980,10 +9980,6 @@
      "name": "International Bancshares Corp"
     },
     {
-     "ticker": "MARA",
-     "name": "MARA Holdings Inc"
-    },
-    {
      "ticker": "ARX",
      "name": "Accelerant Holdings"
     },
@@ -9992,28 +9988,32 @@
      "name": "Enova International Inc"
     },
     {
-     "ticker": "UCB",
-     "name": "United Community Banks Inc"
+     "ticker": "MARA",
+     "name": "MARA Holdings Inc"
     },
     {
      "ticker": "FBP",
      "name": "First Bancorp PR"
     },
     {
-     "ticker": "TCBI",
-     "name": "Texas Capital Bancshares Inc"
+     "ticker": "UCB",
+     "name": "United Community Banks Inc"
     },
     {
      "ticker": "NP",
      "name": "Neptune Insurance Holdings Inc"
     },
     {
+     "ticker": "BFH",
+     "name": "Bread Financial Holdings Inc"
+    },
+    {
      "ticker": "CATY",
      "name": "Cathay General Bancorp"
     },
     {
-     "ticker": "BFH",
-     "name": "Bread Financial Holdings Inc"
+     "ticker": "TCBI",
+     "name": "Texas Capital Bancshares Inc"
     },
     {
      "ticker": "WSFS",
@@ -10024,16 +10024,24 @@
      "name": "CVB Financial Corp"
     },
     {
-     "ticker": "PJT",
-     "name": "PJT Partners Inc"
-    },
-    {
      "ticker": "SEZL",
      "name": "Sezzle Inc"
     },
     {
      "ticker": "INDB",
      "name": "Independent Bank Corp"
+    },
+    {
+     "ticker": "PJT",
+     "name": "PJT Partners Inc"
+    },
+    {
+     "ticker": "GNW",
+     "name": "Genworth Financial Inc"
+    },
+    {
+     "ticker": "WSBC",
+     "name": "Wesbanco Inc"
     },
     {
      "ticker": "MIAX",
@@ -10044,44 +10052,40 @@
      "name": "Lemonade Inc"
     },
     {
-     "ticker": "WSBC",
-     "name": "Wesbanco Inc"
-    },
-    {
-     "ticker": "GNW",
-     "name": "Genworth Financial Inc"
-    },
-    {
-     "ticker": "BANF",
-     "name": "Bancfirst Corp"
-    },
-    {
-     "ticker": "CNS",
-     "name": "Cohen & Steers Inc"
+     "ticker": "PLMR",
+     "name": "Palomar Holdings Inc"
     },
     {
      "ticker": "RNST",
      "name": "Renasant Corp"
     },
     {
-     "ticker": "PLMR",
-     "name": "Palomar Holdings Inc"
+     "ticker": "CNS",
+     "name": "Cohen & Steers Inc"
+    },
+    {
+     "ticker": "BANF",
+     "name": "Bancfirst Corp"
     },
     {
      "ticker": "CRVL",
      "name": "Corvel Corp"
     },
     {
-     "ticker": "FIBK",
-     "name": "First Interstate BancSystem Inc"
-    },
-    {
      "ticker": "MCHB",
      "name": "Mechanics Bancorp"
     },
     {
+     "ticker": "FIBK",
+     "name": "First Interstate BancSystem Inc"
+    },
+    {
      "ticker": "NIC",
      "name": "Nicolet Bankshares Inc"
+    },
+    {
+     "ticker": "HG",
+     "name": "Hamilton Insurance Group Ltd"
     },
     {
      "ticker": "PFSI",
@@ -10092,24 +10096,24 @@
      "name": "Townebank Portsmouth VA"
     },
     {
-     "ticker": "HG",
-     "name": "Hamilton Insurance Group Ltd"
-    },
-    {
      "ticker": "FFBC",
      "name": "First Financial Bancorp"
     },
     {
-     "ticker": "PRK",
-     "name": "Park National Corp"
+     "ticker": "LION",
+     "name": "Lionsgate Studios Corp"
     },
     {
      "ticker": "WT",
      "name": "WisdomTree Inc"
     },
     {
-     "ticker": "LION",
-     "name": "Lionsgate Studios Corp"
+     "ticker": "PRK",
+     "name": "Park National Corp"
+    },
+    {
+     "ticker": "CBU",
+     "name": "Community Financial System Inc"
     },
     {
      "ticker": "SFNC",
@@ -10122,10 +10126,6 @@
     {
      "ticker": "SBCF",
      "name": "Seacoast Banking Corp Of Florida"
-    },
-    {
-     "ticker": "CBU",
-     "name": "Community Financial System Inc"
     },
     {
      "ticker": "NMIH",
@@ -10144,20 +10144,20 @@
      "name": "Columbia Financial Inc"
     },
     {
-     "ticker": "SLDE",
-     "name": "Slide Insurance Holdings Inc"
-    },
-    {
-     "ticker": "PFS",
-     "name": "Provident Financial Services Inc"
+     "ticker": "DBRG",
+     "name": "DigitalBridge Group Inc"
     },
     {
      "ticker": "FG",
      "name": "F&G Annuities & Life Inc"
     },
     {
-     "ticker": "DBRG",
-     "name": "DigitalBridge Group Inc"
+     "ticker": "PFS",
+     "name": "Provident Financial Services Inc"
+    },
+    {
+     "ticker": "SLDE",
+     "name": "Slide Insurance Holdings Inc"
     },
     {
      "ticker": "APAM",
@@ -10192,16 +10192,16 @@
      "name": "Customers Bancorp Inc"
     },
     {
+     "ticker": "BBT",
+     "name": "Beacon Financial Corp"
+    },
+    {
      "ticker": "BANR",
      "name": "Banner Corp"
     },
     {
      "ticker": "FBNC",
      "name": "First Bancorp"
-    },
-    {
-     "ticker": "BBT",
-     "name": "Beacon Financial Corp"
     },
     {
      "ticker": "FRME",
@@ -10224,16 +10224,20 @@
      "name": "Stock Yards Bancorp Inc"
     },
     {
-     "ticker": "UPST",
-     "name": "Upstart Holdings Inc"
-    },
-    {
      "ticker": "WAFD",
      "name": "WaFd Inc"
     },
     {
      "ticker": "MBIN",
      "name": "Merchants Bancorp"
+    },
+    {
+     "ticker": "UPST",
+     "name": "Upstart Holdings Inc"
+    },
+    {
+     "ticker": "HCI",
+     "name": "HCI Group Inc"
     },
     {
      "ticker": "AGM",
@@ -10244,16 +10248,12 @@
      "name": "Bank of N T Butterfield & Son Ltd"
     },
     {
-     "ticker": "HCI",
-     "name": "HCI Group Inc"
+     "ticker": "NWBI",
+     "name": "Northwest Bancshares Inc"
     },
     {
      "ticker": "EFSC",
      "name": "Enterprise Financial Services Corp"
-    },
-    {
-     "ticker": "NWBI",
-     "name": "Northwest Bancshares Inc"
     },
     {
      "ticker": "HTH",
@@ -10272,10 +10272,6 @@
      "name": "Encore Capital Group Inc"
     },
     {
-     "ticker": "GSHD",
-     "name": "Goosehead Insurance Inc"
-    },
-    {
      "ticker": "SRCE",
      "name": "1st Source Corp"
     },
@@ -10284,20 +10280,24 @@
      "name": "Bancorp Inc"
     },
     {
-     "ticker": "PLGO",
-     "name": "Pelagos Insurance Capital Ltd"
-    },
-    {
      "ticker": "CHCO",
      "name": "City Holding Co"
     },
     {
-     "ticker": "STC",
-     "name": "Stewart Information Services Corp"
+     "ticker": "GSHD",
+     "name": "Goosehead Insurance Inc"
     },
     {
      "ticker": "HMN",
      "name": "Horace Mann Educators Corp"
+    },
+    {
+     "ticker": "PLGO",
+     "name": "Pelagos Insurance Capital Ltd"
+    },
+    {
+     "ticker": "STC",
+     "name": "Stewart Information Services Corp"
     },
     {
      "ticker": "BLX",
@@ -10340,20 +10340,20 @@
      "name": "S & T Bancorp Inc"
     },
     {
-     "ticker": "FSUN",
-     "name": "Firstsun Capital Bancorp"
-    },
-    {
      "ticker": "SBET",
      "name": "Sharplink Inc"
     },
     {
-     "ticker": "BY",
-     "name": "Byline Bancorp Inc"
+     "ticker": "FSUN",
+     "name": "Firstsun Capital Bancorp"
     },
     {
      "ticker": "TCBK",
      "name": "Trico Bancshares"
+    },
+    {
+     "ticker": "BY",
+     "name": "Byline Bancorp Inc"
     },
     {
      "ticker": "BFC",
@@ -10372,12 +10372,12 @@
      "name": "Republic Bancorp Inc (KY)"
     },
     {
-     "ticker": "PAX",
-     "name": "Patria Investments Ltd"
-    },
-    {
      "ticker": "CASH",
      "name": "Pathward Financial Inc"
+    },
+    {
+     "ticker": "PAX",
+     "name": "Patria Investments Ltd"
     },
     {
      "ticker": "KMPR",
@@ -10388,12 +10388,12 @@
      "name": "ConnectOne Bancorp Inc"
     },
     {
-     "ticker": "TFIN",
-     "name": "Triumph Financial Inc"
-    },
-    {
      "ticker": "SAFT",
      "name": "Safety Insurance Group Inc"
+    },
+    {
+     "ticker": "TFIN",
+     "name": "Triumph Financial Inc"
     },
     {
      "ticker": "LKFN",
@@ -10408,48 +10408,48 @@
      "name": "Burke & Herbert Financial Services Corp"
     },
     {
-     "ticker": "ATLC",
-     "name": "Atlanticus Holdings Corp"
-    },
-    {
      "ticker": "PEBO",
      "name": "Peoples Bancorp Inc (Marietta, OH)"
-    },
-    {
-     "ticker": "TMP",
-     "name": "Tompkins Financial Corp"
     },
     {
      "ticker": "PFBC",
      "name": "Preferred Bank (Los Angeles, CA)"
     },
     {
-     "ticker": "AMAL",
-     "name": "Amalgamated Financial Corp"
+     "ticker": "ATLC",
+     "name": "Atlanticus Holdings Corp"
     },
     {
      "ticker": "UFCS",
      "name": "United Fire Group Inc"
     },
     {
-     "ticker": "WABC",
-     "name": "Westamerica Bancorporation"
+     "ticker": "TMP",
+     "name": "Tompkins Financial Corp"
+    },
+    {
+     "ticker": "AMAL",
+     "name": "Amalgamated Financial Corp"
     },
     {
      "ticker": "CTBI",
      "name": "Community Trust Bancorp Inc"
     },
     {
+     "ticker": "WABC",
+     "name": "Westamerica Bancorporation"
+    },
+    {
      "ticker": "GOLD",
      "name": "Gold.com Inc"
     },
     {
-     "ticker": "WD",
-     "name": "Walker & Dunlop Inc"
-    },
-    {
      "ticker": "ASIC",
      "name": "Ategrity Specialty Insurance Company Holdings"
+    },
+    {
+     "ticker": "WD",
+     "name": "Walker & Dunlop Inc"
     },
     {
      "ticker": "FMBH",
@@ -10460,20 +10460,20 @@
      "name": "HBT Financial Inc"
     },
     {
-     "ticker": "PWP",
-     "name": "Perella Weinberg Partners"
-    },
-    {
      "ticker": "OSBC",
      "name": "Old Second Bancorporation Inc"
     },
     {
-     "ticker": "THFF",
-     "name": "First Financial Corp"
+     "ticker": "PWP",
+     "name": "Perella Weinberg Partners"
     },
     {
      "ticker": "UVE",
      "name": "Universal Insurance Holdings Inc"
+    },
+    {
+     "ticker": "THFF",
+     "name": "First Financial Corp"
     },
     {
      "ticker": "JCAP",
@@ -10488,16 +10488,20 @@
      "name": "Amerant Bancorp Inc"
     },
     {
-     "ticker": "TRUP",
-     "name": "Trupanion Inc"
-    },
-    {
      "ticker": "HFWA",
      "name": "Heritage Financial Corp"
     },
     {
      "ticker": "NBN",
      "name": "Northeast Bank"
+    },
+    {
+     "ticker": "TRUP",
+     "name": "Trupanion Inc"
+    },
+    {
+     "ticker": "BOW",
+     "name": "Bowhead Specialty Holdings Inc"
     },
     {
      "ticker": "CFFN",
@@ -10512,10 +10516,6 @@
      "name": "Metropolitan Bank Holding Corp"
     },
     {
-     "ticker": "BOW",
-     "name": "Bowhead Specialty Holdings Inc"
-    },
-    {
      "ticker": "MBWM",
      "name": "Mercantile Bank Corp"
     },
@@ -10524,16 +10524,16 @@
      "name": "Heritage Insurance Holdings Inc"
     },
     {
-     "ticker": "EQBK",
-     "name": "Equity Bancshares Inc"
-    },
-    {
      "ticker": "BFST",
      "name": "Business First Bancshares Inc"
     },
     {
      "ticker": "CCNE",
      "name": "CNB Financial Corp (PA)"
+    },
+    {
+     "ticker": "EQBK",
+     "name": "Equity Bancshares Inc"
     },
     {
      "ticker": "MCBS",
@@ -10548,24 +10548,20 @@
      "name": "Trustco Bank Corp"
     },
     {
-     "ticker": "CAC",
-     "name": "Camden National Corp"
-    },
-    {
      "ticker": "CPF",
      "name": "Central Pacific Financial Corp"
     },
     {
-     "ticker": "SBSI",
-     "name": "Southside Bancshares Inc"
+     "ticker": "CAC",
+     "name": "Camden National Corp"
     },
     {
      "ticker": "HAFC",
      "name": "Hanmi Financial Corp"
     },
     {
-     "ticker": "NAVI",
-     "name": "Navient Corp"
+     "ticker": "SBSI",
+     "name": "Southside Bancshares Inc"
     },
     {
      "ticker": "MPB",
@@ -10580,24 +10576,20 @@
      "name": "NB Bancorp Inc"
     },
     {
+     "ticker": "NAVI",
+     "name": "Navient Corp"
+    },
+    {
      "ticker": "ABX",
      "name": "Abacus Global Management Inc"
-    },
-    {
-     "ticker": "VRTS",
-     "name": "Virtus Investment Partners Inc"
-    },
-    {
-     "ticker": "FCBC",
-     "name": "First Community Bankshares Inc"
     },
     {
      "ticker": "EIG",
      "name": "Employers Holdings Inc"
     },
     {
-     "ticker": "BUR",
-     "name": "Burford Capital Limited"
+     "ticker": "FCBC",
+     "name": "First Community Bankshares Inc"
     },
     {
      "ticker": "SMBK",
@@ -10608,20 +10600,28 @@
      "name": "Ridgepost Capital Inc"
     },
     {
-     "ticker": "GSBC",
-     "name": "Great Southern Bancorp Inc"
-    },
-    {
-     "ticker": "CCBG",
-     "name": "Capital City Bank Group Inc"
+     "ticker": "VRTS",
+     "name": "Virtus Investment Partners Inc"
     },
     {
      "ticker": "WRLD",
      "name": "World Acceptance Corp"
     },
     {
+     "ticker": "GSBC",
+     "name": "Great Southern Bancorp Inc"
+    },
+    {
      "ticker": "EGBN",
      "name": "Eagle Bancorp Inc (MD)"
+    },
+    {
+     "ticker": "CCBG",
+     "name": "Capital City Bank Group Inc"
+    },
+    {
+     "ticker": "BUR",
+     "name": "Burford Capital Limited"
     },
     {
      "ticker": "HIPO",
@@ -10632,20 +10632,20 @@
      "name": "Orrstown Financial Services Inc"
     },
     {
-     "ticker": "SPFI",
-     "name": "South Plains Financial Inc"
-    },
-    {
      "ticker": "ALRS",
      "name": "Alerus Financial Corp"
     },
     {
-     "ticker": "IBCP",
-     "name": "Independent Bank Corp (Ionia, MI)"
+     "ticker": "SPFI",
+     "name": "South Plains Financial Inc"
     },
     {
      "ticker": "ROOT",
      "name": "Root Inc"
+    },
+    {
+     "ticker": "IBCP",
+     "name": "Independent Bank Corp (Ionia, MI)"
     },
     {
      "ticker": "SMBC",
@@ -10668,32 +10668,28 @@
      "name": "Shore Bancshares Inc"
     },
     {
-     "ticker": "WASH",
-     "name": "Washington Trust Bancorp Inc"
+     "ticker": "GDOT",
+     "name": "Green Dot Corp"
     },
     {
      "ticker": "PRAA",
      "name": "PRA Group Inc"
     },
     {
-     "ticker": "GDOT",
-     "name": "Green Dot Corp"
+     "ticker": "WASH",
+     "name": "Washington Trust Bancorp Inc"
     },
     {
      "ticker": "DGICA",
      "name": "Donegal Group Inc"
     },
     {
-     "ticker": "AROW",
-     "name": "Arrow Financial Corp"
-    },
-    {
      "ticker": "PFIS",
      "name": "Peoples Financial Services Corp"
     },
     {
-     "ticker": "CCB",
-     "name": "Coastal Financial Corp"
+     "ticker": "AROW",
+     "name": "Arrow Financial Corp"
     },
     {
      "ticker": "CWBC",
@@ -10702,6 +10698,10 @@
     {
      "ticker": "BCAL",
      "name": "California Bancorp"
+    },
+    {
+     "ticker": "CCB",
+     "name": "Coastal Financial Corp"
     },
     {
      "ticker": "MSBI",
@@ -10716,20 +10716,20 @@
      "name": "Bar Harbor Bankshares Inc"
     },
     {
-     "ticker": "VEL",
-     "name": "Velocity Financial Inc"
-    },
-    {
      "ticker": "RRBI",
      "name": "Red River Bancshares Inc"
+    },
+    {
+     "ticker": "ACNB",
+     "name": "ACNB Corp"
     },
     {
      "ticker": "HIFS",
      "name": "Hingham Institution For Savings"
     },
     {
-     "ticker": "ACNB",
-     "name": "ACNB Corp"
+     "ticker": "VEL",
+     "name": "Velocity Financial Inc"
     },
     {
      "ticker": "TIPT",
@@ -10744,20 +10744,16 @@
      "name": "Greene County Bancorp Inc"
     },
     {
-     "ticker": "OPFI",
-     "name": "OppFi Inc"
-    },
-    {
      "ticker": "FBIZ",
      "name": "First Business Financial Services Inc"
     },
     {
-     "ticker": "UNTY",
-     "name": "Unity Bancorp Inc"
+     "ticker": "OPFI",
+     "name": "OppFi Inc"
     },
     {
-     "ticker": "SFST",
-     "name": "Southern First Bancshares Inc"
+     "ticker": "UNTY",
+     "name": "Unity Bancorp Inc"
     },
     {
      "ticker": "CBNK",
@@ -10768,12 +10764,16 @@
      "name": "Bridgewater Bancshares Inc"
     },
     {
-     "ticker": "NPB",
-     "name": "Northpointe Bancshares Inc"
+     "ticker": "SFST",
+     "name": "Southern First Bancshares Inc"
     },
     {
      "ticker": "CRD-A",
      "name": "Crawford & Co"
+    },
+    {
+     "ticker": "NPB",
+     "name": "Northpointe Bancshares Inc"
     },
     {
      "ticker": "NRIM",
@@ -10804,20 +10804,20 @@
      "name": "Sierra Bancorp"
     },
     {
-     "ticker": "BTBT",
-     "name": "Bit Digital Inc"
-    },
-    {
      "ticker": "BSVN",
      "name": "Bank7 Corp"
     },
     {
-     "ticker": "AII",
-     "name": "American Integrity Insurance Group Inc"
+     "ticker": "BTBT",
+     "name": "Bit Digital Inc"
     },
     {
      "ticker": "OBT",
      "name": "Orange County Bancorp Inc"
+    },
+    {
+     "ticker": "AII",
+     "name": "American Integrity Insurance Group Inc"
     },
     {
      "ticker": "WTBA",
@@ -10828,20 +10828,20 @@
      "name": "Choiceone Financial Services Inc"
     },
     {
-     "ticker": "ALTI",
-     "name": "AlTi Global Inc"
-    },
-    {
-     "ticker": "FMAO",
-     "name": "Farmers & Merchants Bancorp Inc"
-    },
-    {
      "ticker": "PDLB",
      "name": "Ponce Financial Group Inc"
     },
     {
      "ticker": "GLRE",
      "name": "Greenlight Capital Re Ltd"
+    },
+    {
+     "ticker": "ALTI",
+     "name": "AlTi Global Inc"
+    },
+    {
+     "ticker": "FMAO",
+     "name": "Farmers & Merchants Bancorp Inc"
     },
     {
      "ticker": "CZNC",
@@ -10856,14 +10856,6 @@
      "name": "Commercial Bancgroup Inc"
     },
     {
-     "ticker": "BMRC",
-     "name": "Bank of Marin Bancorp"
-    },
-    {
-     "ticker": "CBAN",
-     "name": "Colony Bankcorp Inc"
-    },
-    {
      "ticker": "RBB",
      "name": "RBB Bancorp"
     },
@@ -10872,24 +10864,32 @@
      "name": "Pioneer Bancorp Inc"
     },
     {
-     "ticker": "FRBA",
-     "name": "First Bank (NJ)"
+     "ticker": "BMRC",
+     "name": "Bank of Marin Bancorp"
     },
     {
-     "ticker": "ACIC",
-     "name": "American Coastal Insurance Corp"
+     "ticker": "CBAN",
+     "name": "Colony Bankcorp Inc"
     },
     {
      "ticker": "AVBC",
      "name": "Avidia Bancorp Inc"
     },
     {
-     "ticker": "PLBC",
-     "name": "Plumas Bancorp"
+     "ticker": "ACIC",
+     "name": "American Coastal Insurance Corp"
+    },
+    {
+     "ticker": "FRBA",
+     "name": "First Bank (NJ)"
     },
     {
      "ticker": "FWDI",
      "name": "Forward Industries Inc"
+    },
+    {
+     "ticker": "PLBC",
+     "name": "Plumas Bancorp"
     },
     {
      "ticker": "USCB",
@@ -10900,16 +10900,16 @@
      "name": "Investar Holding Corp"
     },
     {
-     "ticker": "MVBF",
-     "name": "MVB Financial Corp"
-    },
-    {
      "ticker": "PKBK",
      "name": "Parke Bancorp Inc"
     },
     {
      "ticker": "CHMG",
      "name": "Chemung Financial Corp"
+    },
+    {
+     "ticker": "MVBF",
+     "name": "MVB Financial Corp"
     },
     {
      "ticker": "FNLC",
@@ -10932,20 +10932,20 @@
      "name": "Norwood Financial Corp"
     },
     {
-     "ticker": "WSBF",
-     "name": "Waterstone Financial Inc"
-    },
-    {
      "ticker": "NECB",
      "name": "NorthEast Community Bancorp Inc"
     },
     {
-     "ticker": "FOA",
-     "name": "Finance of America Companies Inc"
+     "ticker": "WSBF",
+     "name": "Waterstone Financial Inc"
     },
     {
      "ticker": "TREE",
      "name": "LendingTree Inc"
+    },
+    {
+     "ticker": "FOA",
+     "name": "Finance of America Companies Inc"
     },
     {
      "ticker": "VALU",
@@ -10960,28 +10960,28 @@
      "name": "Oportun Financial Corp"
     },
     {
-     "ticker": "BRBS",
-     "name": "Blue Ridge Bankshares Inc (VA)"
-    },
-    {
      "ticker": "FSBW",
      "name": "FS Bancorp Inc"
     },
     {
-     "ticker": "NEWT",
-     "name": "NewtekOne Inc"
+     "ticker": "BRBS",
+     "name": "Blue Ridge Bankshares Inc (VA)"
     },
     {
      "ticker": "AVBH",
      "name": "Avidbank Holdings Inc"
     },
     {
-     "ticker": "FVCB",
-     "name": "FVCBankcorp Inc"
+     "ticker": "NEWT",
+     "name": "NewtekOne Inc"
     },
     {
      "ticker": "BCML",
      "name": "BayCom Corp"
+    },
+    {
+     "ticker": "FVCB",
+     "name": "FVCBankcorp Inc"
     },
     {
      "ticker": "JMSB",
@@ -10992,6 +10992,10 @@
      "name": "CoastalSouth Bancshares Inc"
     },
     {
+     "ticker": "CD",
+     "name": "Chaince Digital Holdings Inc"
+    },
+    {
      "ticker": "FDBC",
      "name": "Fidelity D&D Bancorp Inc"
     },
@@ -11000,28 +11004,24 @@
      "name": "First Community Corp"
     },
     {
-     "ticker": "CD",
-     "name": "Chaince Digital Holdings Inc"
+     "ticker": "NODK",
+     "name": "NI Holdings Inc"
     },
     {
      "ticker": "CFFI",
      "name": "C & F Financial Corp"
     },
     {
-     "ticker": "NODK",
-     "name": "NI Holdings Inc"
-    },
-    {
      "ticker": "CBNA",
      "name": "Chain Bridge Bancorp Inc"
     },
     {
-     "ticker": "MYFW",
-     "name": "First Western Financial Inc"
-    },
-    {
      "ticker": "RM",
      "name": "Regional Management Corp"
+    },
+    {
+     "ticker": "MYFW",
+     "name": "First Western Financial Inc"
     },
     {
      "ticker": "BPRN",
@@ -11036,6 +11036,10 @@
      "name": "Oak Valley Bancorp"
     },
     {
+     "ticker": "FRAF",
+     "name": "Franklin Financial Services Corp"
+    },
+    {
      "ticker": "ONIT",
      "name": "Onity Group Inc"
     },
@@ -11048,40 +11052,36 @@
      "name": "Ames National Corp"
     },
     {
-     "ticker": "FRAF",
-     "name": "Franklin Financial Services Corp"
-    },
-    {
-     "ticker": "KWY",
-     "name": "Kingsway Corp"
-    },
-    {
      "ticker": "FNRN",
      "name": "First Northern Community Bancorp"
-    },
-    {
-     "ticker": "FXNC",
-     "name": "First National Corp (Strasburg, VA)"
-    },
-    {
-     "ticker": "FUNC",
-     "name": "First United Corp"
-    },
-    {
-     "ticker": "MKTW",
-     "name": "Marketwise Inc"
     },
     {
      "ticker": "KINS",
      "name": "Kingstone Cos. Inc"
     },
     {
-     "ticker": "SLNH",
-     "name": "Soluna Holdings Inc"
+     "ticker": "FUNC",
+     "name": "First United Corp"
+    },
+    {
+     "ticker": "KWY",
+     "name": "Kingsway Corp"
+    },
+    {
+     "ticker": "MKTW",
+     "name": "Marketwise Inc"
+    },
+    {
+     "ticker": "FXNC",
+     "name": "First National Corp (Strasburg, VA)"
     },
     {
      "ticker": "WNEB",
      "name": "Western New England Bancorp Inc"
+    },
+    {
+     "ticker": "SLNH",
+     "name": "Soluna Holdings Inc"
     },
     {
      "ticker": "PMTS",
@@ -11100,28 +11100,24 @@
      "name": "National Bankshares Inc"
     },
     {
-     "ticker": "HWBK",
-     "name": "Hawthorn Bancshares Inc"
-    },
-    {
      "ticker": "RMBI",
      "name": "Richmond Mutual Bancorporation Inc"
     },
     {
-     "ticker": "VABK",
-     "name": "Virginia National Bankshares Corp"
+     "ticker": "HWBK",
+     "name": "Hawthorn Bancshares Inc"
     },
     {
      "ticker": "FBLA",
      "name": "FB Bancorp Inc"
     },
     {
-     "ticker": "EFSI",
-     "name": "Eagle Financial Services Inc"
+     "ticker": "VABK",
+     "name": "Virginia National Bankshares Corp"
     },
     {
-     "ticker": "INBK",
-     "name": "First Internet Bancorp"
+     "ticker": "EFSI",
+     "name": "Eagle Financial Services Inc"
     },
     {
      "ticker": "RILY",
@@ -11130,6 +11126,10 @@
     {
      "ticker": "PEBK",
      "name": "Peoples Bancorp Of North Carolina Inc"
+    },
+    {
+     "ticker": "INBK",
+     "name": "First Internet Bancorp"
     },
     {
      "ticker": "LDI",
@@ -11144,12 +11144,12 @@
      "name": "Better Home & Finance Holding Co"
     },
     {
-     "ticker": "MRBK",
-     "name": "Meridian Corp"
-    },
-    {
      "ticker": "MBI",
      "name": "MBIA Inc"
+    },
+    {
+     "ticker": "MRBK",
+     "name": "Meridian Corp"
     },
     {
      "ticker": "OPBK",
@@ -11192,44 +11192,44 @@
      "name": "Landmark Bancorp Inc"
     },
     {
-     "ticker": "HNVR",
-     "name": "Hanover Bancorp Inc"
-    },
-    {
      "ticker": "CBFV",
      "name": "CB Financial Services Inc"
+    },
+    {
+     "ticker": "HNVR",
+     "name": "Hanover Bancorp Inc"
     },
     {
      "ticker": "ECBK",
      "name": "ECB Bancorp Inc"
     },
     {
-     "ticker": "MNSB",
-     "name": "MainStreet Bancshares Inc"
-    },
-    {
-     "ticker": "JRVR",
-     "name": "James River Group Holdings Inc"
+     "ticker": "FINW",
+     "name": "FinWise Bancorp"
     },
     {
      "ticker": "CIA",
      "name": "Citizens Inc"
     },
     {
-     "ticker": "EBMT",
-     "name": "Eagle Bancorp Montana Inc"
+     "ticker": "JRVR",
+     "name": "James River Group Holdings Inc"
+    },
+    {
+     "ticker": "MNSB",
+     "name": "MainStreet Bancshares Inc"
     },
     {
      "ticker": "BVFL",
      "name": "BV Financial Inc"
     },
     {
-     "ticker": "FINW",
-     "name": "FinWise Bancorp"
-    },
-    {
      "ticker": "WHG",
      "name": "Westwood Holdings Group Inc"
+    },
+    {
+     "ticker": "EBMT",
+     "name": "Eagle Bancorp Montana Inc"
     },
     {
      "ticker": "BCBP",
@@ -11266,28 +11266,28 @@
      "name": "BrightSpring Health Services Inc"
     },
     {
-     "ticker": "KRYS",
-     "name": "Krystal Biotech Inc"
-    },
-    {
-     "ticker": "GKOS",
-     "name": "Glaukos Corp"
-    },
-    {
      "ticker": "OSCR",
      "name": "Oscar Health Inc"
     },
     {
-     "ticker": "TXG",
-     "name": "10x Genomics Inc"
+     "ticker": "KRYS",
+     "name": "Krystal Biotech Inc"
+    },
+    {
+     "ticker": "KYMR",
+     "name": "Kymera Therapeutics Inc"
     },
     {
      "ticker": "CYTK",
      "name": "Cytokinetics Inc"
     },
     {
-     "ticker": "KYMR",
-     "name": "Kymera Therapeutics Inc"
+     "ticker": "GKOS",
+     "name": "Glaukos Corp"
+    },
+    {
+     "ticker": "TXG",
+     "name": "10x Genomics Inc"
     },
     {
      "ticker": "TWST",
@@ -11306,32 +11306,32 @@
      "name": "Praxis Precision Medicines Inc"
     },
     {
-     "ticker": "IBRX",
-     "name": "ImmunityBio Inc"
-    },
-    {
      "ticker": "TGTX",
      "name": "TG Therapeutics Inc"
     },
     {
-     "ticker": "HQY",
-     "name": "Healthequity Inc"
+     "ticker": "IBRX",
+     "name": "ImmunityBio Inc"
     },
     {
      "ticker": "SYRE",
      "name": "Spyre Therapeutics Inc"
     },
     {
+     "ticker": "HQY",
+     "name": "Healthequity Inc"
+    },
+    {
      "ticker": "ALKS",
      "name": "Alkermes plc"
     },
     {
-     "ticker": "IMVT",
-     "name": "Immunovant Inc"
-    },
-    {
      "ticker": "HNGE",
      "name": "Hinge Health Inc"
+    },
+    {
+     "ticker": "IMVT",
+     "name": "Immunovant Inc"
     },
     {
      "ticker": "PACS",
@@ -11342,16 +11342,16 @@
      "name": "Rhythm Pharmaceuticals Inc"
     },
     {
+     "ticker": "CGON",
+     "name": "Cg Oncology Inc"
+    },
+    {
      "ticker": "LNTH",
      "name": "Lantheus Holdings Inc"
     },
     {
      "ticker": "HIMS",
      "name": "Hims & Hers Health Inc"
-    },
-    {
-     "ticker": "CGON",
-     "name": "Cg Oncology Inc"
     },
     {
      "ticker": "MIRM",
@@ -11362,24 +11362,28 @@
      "name": "Oruka Therapeutics Inc"
     },
     {
-     "ticker": "RDNT",
-     "name": "Radnet Inc"
-    },
-    {
      "ticker": "LQDA",
      "name": "Liquidia Corp"
-    },
-    {
-     "ticker": "SRRK",
-     "name": "Scholar Rock Holding Corp"
     },
     {
      "ticker": "KNSA",
      "name": "Kiniksa Pharmaceuticals International Plc"
     },
     {
+     "ticker": "SRRK",
+     "name": "Scholar Rock Holding Corp"
+    },
+    {
      "ticker": "TVTX",
      "name": "Travere Therapeutics Inc"
+    },
+    {
+     "ticker": "RDNT",
+     "name": "Radnet Inc"
+    },
+    {
+     "ticker": "AMRX",
+     "name": "Amneal Pharmaceuticals Inc"
     },
     {
      "ticker": "DNTH",
@@ -11394,44 +11398,40 @@
      "name": "PTC Therapeutics Inc"
     },
     {
-     "ticker": "ERAS",
-     "name": "Erasca Inc"
-    },
-    {
      "ticker": "XENE",
      "name": "Xenon Pharmaceuticals Inc"
-    },
-    {
-     "ticker": "AMRX",
-     "name": "Amneal Pharmaceuticals Inc"
     },
     {
      "ticker": "LGND",
      "name": "Ligand Pharmaceuticals Inc"
     },
     {
+     "ticker": "ERAS",
+     "name": "Erasca Inc"
+    },
+    {
      "ticker": "MMSI",
      "name": "Merit Medical Systems Inc"
-    },
-    {
-     "ticker": "CRSP",
-     "name": "CRISPR Therapeutics AG"
-    },
-    {
-     "ticker": "DFTX",
-     "name": "Definium Therapeutics Inc"
-    },
-    {
-     "ticker": "LFST",
-     "name": "LifeStance Health Group Inc"
     },
     {
      "ticker": "WAY",
      "name": "Waystar Holding Corp"
     },
     {
+     "ticker": "DFTX",
+     "name": "Definium Therapeutics Inc"
+    },
+    {
+     "ticker": "CRSP",
+     "name": "CRISPR Therapeutics AG"
+    },
+    {
      "ticker": "EWTX",
      "name": "Edgewise Therapeutics Inc"
+    },
+    {
+     "ticker": "LFST",
+     "name": "LifeStance Health Group Inc"
     },
     {
      "ticker": "HAE",
@@ -11450,20 +11450,20 @@
      "name": "Iovance Biotherapeutics Inc"
     },
     {
-     "ticker": "LIVN",
-     "name": "LivaNova PLC"
-    },
-    {
      "ticker": "ADPT",
      "name": "Adaptive Biotechnologies Corp"
     },
     {
-     "ticker": "HTFL",
-     "name": "Heartflow Inc"
+     "ticker": "LIVN",
+     "name": "LivaNova PLC"
     },
     {
      "ticker": "ITGR",
      "name": "Integer Holdings Corp"
+    },
+    {
+     "ticker": "HTFL",
+     "name": "Heartflow Inc"
     },
     {
      "ticker": "RLAY",
@@ -11474,6 +11474,10 @@
      "name": "Amylyx Pharmaceuticals Inc"
     },
     {
+     "ticker": "INDV",
+     "name": "Indivior Pharmaceuticals Inc"
+    },
+    {
      "ticker": "CELC",
      "name": "Celcuity Inc"
     },
@@ -11482,36 +11486,32 @@
      "name": "Tango Therapeutics Inc"
     },
     {
-     "ticker": "INDV",
-     "name": "Indivior Pharmaceuticals Inc"
-    },
-    {
      "ticker": "ICUI",
      "name": "ICU Medical Inc"
-    },
-    {
-     "ticker": "ELVN",
-     "name": "Enliven Therapeutics Inc"
     },
     {
      "ticker": "IRTC",
      "name": "iRhythm Holdings Inc"
     },
     {
-     "ticker": "IDYA",
-     "name": "Ideaya Biosciences Inc"
-    },
-    {
-     "ticker": "NHC",
-     "name": "National Healthcare Corp"
-    },
-    {
      "ticker": "OPCH",
      "name": "Option Care Health Inc"
     },
     {
+     "ticker": "IDYA",
+     "name": "Ideaya Biosciences Inc"
+    },
+    {
+     "ticker": "ELVN",
+     "name": "Enliven Therapeutics Inc"
+    },
+    {
      "ticker": "PLSE",
      "name": "Pulse Biosciences Inc"
+    },
+    {
+     "ticker": "NHC",
+     "name": "National Healthcare Corp"
     },
     {
      "ticker": "TARS",
@@ -11520,6 +11520,10 @@
     {
      "ticker": "GRAL",
      "name": "GRAIL Inc"
+    },
+    {
+     "ticker": "ARQT",
+     "name": "Arcutis Biotherapeutics Inc"
     },
     {
      "ticker": "DYN",
@@ -11534,44 +11538,40 @@
      "name": "Arcus Biosciences Inc"
     },
     {
-     "ticker": "VCYT",
-     "name": "Veracyte Inc"
-    },
-    {
      "ticker": "AVAH",
      "name": "Aveanna Healthcare Holdings Inc"
     },
     {
-     "ticker": "ARQT",
-     "name": "Arcutis Biotherapeutics Inc"
-    },
-    {
-     "ticker": "TMDX",
-     "name": "Transmedics Group Inc"
+     "ticker": "VCYT",
+     "name": "Veracyte Inc"
     },
     {
      "ticker": "CLDX",
      "name": "Celldex Therapeutics Inc"
     },
     {
-     "ticker": "WRBY",
-     "name": "Warby Parker Inc"
-    },
-    {
-     "ticker": "WGS",
-     "name": "GeneDx Holdings Corp"
-    },
-    {
-     "ticker": "GRDN",
-     "name": "Guardian Pharmacy Services Inc"
+     "ticker": "TMDX",
+     "name": "Transmedics Group Inc"
     },
     {
      "ticker": "MBX",
      "name": "MBX Biosciences Inc"
     },
     {
+     "ticker": "GRDN",
+     "name": "Guardian Pharmacy Services Inc"
+    },
+    {
      "ticker": "ATRC",
      "name": "Atricure Inc"
+    },
+    {
+     "ticker": "WGS",
+     "name": "GeneDx Holdings Corp"
+    },
+    {
+     "ticker": "WRBY",
+     "name": "Warby Parker Inc"
     },
     {
      "ticker": "BKD",
@@ -11586,12 +11586,16 @@
      "name": "Neogen Corp"
     },
     {
+     "ticker": "AXGN",
+     "name": "Axogen Inc"
+    },
+    {
      "ticker": "IMNM",
      "name": "Immunome Inc"
     },
     {
-     "ticker": "AXGN",
-     "name": "Axogen Inc"
+     "ticker": "PGEN",
+     "name": "Precigen Inc"
     },
     {
      "ticker": "IRON",
@@ -11610,8 +11614,8 @@
      "name": "Privia Health Group Inc"
     },
     {
-     "ticker": "PGEN",
-     "name": "Precigen Inc"
+     "ticker": "VRDN",
+     "name": "Viridian Therapeutics Inc"
     },
     {
      "ticker": "HRMY",
@@ -11622,40 +11626,36 @@
      "name": "Mineralys Therapeutics Inc"
     },
     {
-     "ticker": "CLOV",
-     "name": "Clover Health Investments Corp"
-    },
-    {
-     "ticker": "VRDN",
-     "name": "Viridian Therapeutics Inc"
-    },
-    {
      "ticker": "NEO",
      "name": "Neogenomics Inc"
     },
     {
-     "ticker": "BEAM",
-     "name": "Beam Therapeutics Inc"
+     "ticker": "CLOV",
+     "name": "Clover Health Investments Corp"
     },
     {
      "ticker": "SUPN",
      "name": "Supernus Pharmaceuticals Inc"
     },
     {
-     "ticker": "SLS",
-     "name": "SELLAS Life Sciences Group Inc"
+     "ticker": "BEAM",
+     "name": "Beam Therapeutics Inc"
     },
     {
-     "ticker": "VERA",
-     "name": "Vera Therapeutics Inc"
+     "ticker": "SLS",
+     "name": "SELLAS Life Sciences Group Inc"
     },
     {
      "ticker": "NKTR",
      "name": "Nektar Therapeutics"
     },
     {
-     "ticker": "OCUL",
-     "name": "Ocular Therapeutix Inc"
+     "ticker": "VERA",
+     "name": "Vera Therapeutics Inc"
+    },
+    {
+     "ticker": "AUPH",
+     "name": "Aurinia Pharmaceuticals Inc"
     },
     {
      "ticker": "PBH",
@@ -11670,64 +11670,56 @@
      "name": "Palvella Therapeutics Inc"
     },
     {
-     "ticker": "AUPH",
-     "name": "Aurinia Pharmaceuticals Inc"
+     "ticker": "OCUL",
+     "name": "Ocular Therapeutix Inc"
     },
     {
      "ticker": "UFPT",
      "name": "UFP Technologies Inc"
     },
     {
+     "ticker": "BCRX",
+     "name": "Biocryst Pharmaceuticals Inc"
+    },
+    {
      "ticker": "TRVI",
      "name": "Trevi Therapeutics Inc"
-    },
-    {
-     "ticker": "MD",
-     "name": "Pediatrix Medical Group Inc"
-    },
-    {
-     "ticker": "ESTA",
-     "name": "Establishment Labs Holdings Inc"
-    },
-    {
-     "ticker": "INSP",
-     "name": "Inspire Medical Systems Inc"
-    },
-    {
-     "ticker": "SRPT",
-     "name": "Sarepta Therapeutics Inc"
-    },
-    {
-     "ticker": "PGNY",
-     "name": "Progyny Inc"
     },
     {
      "ticker": "URGN",
      "name": "UroGen Pharma Ltd"
     },
     {
-     "ticker": "BCRX",
-     "name": "Biocryst Pharmaceuticals Inc"
+     "ticker": "ESTA",
+     "name": "Establishment Labs Holdings Inc"
     },
     {
-     "ticker": "VCEL",
-     "name": "Vericel Corp"
+     "ticker": "MD",
+     "name": "Pediatrix Medical Group Inc"
     },
     {
      "ticker": "ZBIO",
      "name": "Zenas Biopharma Inc"
     },
     {
-     "ticker": "RAPP",
-     "name": "Rapport Therapeutics Inc"
+     "ticker": "INSP",
+     "name": "Inspire Medical Systems Inc"
     },
     {
-     "ticker": "BFLY",
-     "name": "Butterfly Network Inc"
+     "ticker": "PGNY",
+     "name": "Progyny Inc"
+    },
+    {
+     "ticker": "SRPT",
+     "name": "Sarepta Therapeutics Inc"
     },
     {
      "ticker": "KOD",
      "name": "Kodiak Sciences Inc"
+    },
+    {
+     "ticker": "VCEL",
+     "name": "Vericel Corp"
     },
     {
      "ticker": "NUVB",
@@ -11738,24 +11730,20 @@
      "name": "DENTSPLY Sirona Inc"
     },
     {
-     "ticker": "AGIO",
-     "name": "Agios Pharmaceuticals Inc"
-    },
-    {
      "ticker": "ADMA",
      "name": "Adma Biologics Inc"
     },
     {
-     "ticker": "ALHC",
-     "name": "Alignment Healthcare Inc"
+     "ticker": "RAPP",
+     "name": "Rapport Therapeutics Inc"
     },
     {
-     "ticker": "SNDA",
-     "name": "Sonida Senior Living Inc"
+     "ticker": "AGIO",
+     "name": "Agios Pharmaceuticals Inc"
     },
     {
-     "ticker": "ASTH",
-     "name": "Astrana Health Inc"
+     "ticker": "BFLY",
+     "name": "Butterfly Network Inc"
     },
     {
      "ticker": "FTRE",
@@ -11766,12 +11754,24 @@
      "name": "NovoCure Ltd"
     },
     {
+     "ticker": "SNDA",
+     "name": "Sonida Senior Living Inc"
+    },
+    {
      "ticker": "PRGO",
      "name": "Perrigo Company plc"
     },
     {
      "ticker": "ZYME",
      "name": "Zymeworks BC Inc"
+    },
+    {
+     "ticker": "ASTH",
+     "name": "Astrana Health Inc"
+    },
+    {
+     "ticker": "LMAT",
+     "name": "Lemaitre Vascular Inc"
     },
     {
      "ticker": "BHVN",
@@ -11782,8 +11782,12 @@
      "name": "Surgery Partners Inc"
     },
     {
-     "ticker": "LMAT",
-     "name": "Lemaitre Vascular Inc"
+     "ticker": "ALHC",
+     "name": "Alignment Healthcare Inc"
+    },
+    {
+     "ticker": "STOK",
+     "name": "Stoke Therapeutics Inc"
     },
     {
      "ticker": "SDGR",
@@ -11794,12 +11798,12 @@
      "name": "Septerna Inc"
     },
     {
-     "ticker": "STOK",
-     "name": "Stoke Therapeutics Inc"
-    },
-    {
      "ticker": "MRVI",
      "name": "Maravai LifeSciences Holdings Inc"
+    },
+    {
+     "ticker": "VIR",
+     "name": "Vir Biotechnology Inc"
     },
     {
      "ticker": "BLFS",
@@ -11810,32 +11814,24 @@
      "name": "Xencor Inc"
     },
     {
-     "ticker": "RXRX",
-     "name": "Recursion Pharmaceuticals Inc"
-    },
-    {
-     "ticker": "VIR",
-     "name": "Vir Biotechnology Inc"
-    },
-    {
      "ticker": "PSNL",
      "name": "Personalis Inc"
+    },
+    {
+     "ticker": "RXRX",
+     "name": "Recursion Pharmaceuticals Inc"
     },
     {
      "ticker": "ANIP",
      "name": "ANI Pharmaceuticals Inc"
     },
     {
-     "ticker": "ATEC",
-     "name": "Alphatec Holdings Inc"
-    },
-    {
      "ticker": "TSHA",
      "name": "Taysha Gene Therapies Inc"
     },
     {
-     "ticker": "NTLA",
-     "name": "Intellia Therapeutics Inc"
+     "ticker": "ATEC",
+     "name": "Alphatec Holdings Inc"
     },
     {
      "ticker": "ANAB",
@@ -11846,12 +11842,16 @@
      "name": "Eton Pharmaceuticals Inc"
     },
     {
-     "ticker": "SNDX",
-     "name": "Syndax Pharmaceuticals Inc"
+     "ticker": "NTLA",
+     "name": "Intellia Therapeutics Inc"
     },
     {
      "ticker": "NVAX",
      "name": "Novavax Inc"
+    },
+    {
+     "ticker": "SNDX",
+     "name": "Syndax Pharmaceuticals Inc"
     },
     {
      "ticker": "INVA",
@@ -11860,6 +11860,10 @@
     {
      "ticker": "AGL",
      "name": "Agilon Health Inc"
+    },
+    {
+     "ticker": "ARDT",
+     "name": "Ardent Health Inc"
     },
     {
      "ticker": "DMRA",
@@ -11878,48 +11882,44 @@
      "name": "Nutex Health Inc"
     },
     {
-     "ticker": "ARDT",
-     "name": "Ardent Health Inc"
+     "ticker": "INNV",
+     "name": "InnovAge Holding Corp"
     },
     {
      "ticker": "OMCL",
      "name": "Omnicell Inc"
     },
     {
-     "ticker": "TYRA",
-     "name": "Tyra Biosciences Inc"
+     "ticker": "PNTG",
+     "name": "Pennant Group Inc"
     },
     {
      "ticker": "BCAX",
      "name": "Bicara Therapeutics Inc"
     },
     {
-     "ticker": "KMTS",
-     "name": "Kestra Medical Technologies Ltd"
-    },
-    {
      "ticker": "AZTA",
      "name": "Azenta Inc"
     },
     {
-     "ticker": "INNV",
-     "name": "InnovAge Holding Corp"
+     "ticker": "TYRA",
+     "name": "Tyra Biosciences Inc"
+    },
+    {
+     "ticker": "KMTS",
+     "name": "Kestra Medical Technologies Ltd"
     },
     {
      "ticker": "PAHC",
      "name": "Phibro Animal Health Corp"
     },
     {
-     "ticker": "CNMD",
-     "name": "Conmed Corp"
-    },
-    {
-     "ticker": "PNTG",
-     "name": "Pennant Group Inc"
-    },
-    {
      "ticker": "XERS",
      "name": "Xeris Biopharma Holdings Inc"
+    },
+    {
+     "ticker": "CNMD",
+     "name": "Conmed Corp"
     },
     {
      "ticker": "ABSI",
@@ -11930,12 +11930,12 @@
      "name": "LB Pharmaceuticals Inc"
     },
     {
-     "ticker": "AMN",
-     "name": "AMN Healthcare Services Inc"
-    },
-    {
      "ticker": "AVBP",
      "name": "ArriVent BioPharma Inc"
+    },
+    {
+     "ticker": "AMN",
+     "name": "AMN Healthcare Services Inc"
     },
     {
      "ticker": "CGEM",
@@ -11958,12 +11958,16 @@
      "name": "Harrow Inc"
     },
     {
+     "ticker": "RARE",
+     "name": "Ultragenyx Pharmaceutical Inc"
+    },
+    {
      "ticker": "OMER",
      "name": "Omeros Corp"
     },
     {
-     "ticker": "RARE",
-     "name": "Ultragenyx Pharmaceutical Inc"
+     "ticker": "IART",
+     "name": "Integra Lifesciences Holdings Corp"
     },
     {
      "ticker": "CERT",
@@ -11974,28 +11978,12 @@
      "name": "U.S. Physical Therapy Inc"
     },
     {
-     "ticker": "IART",
-     "name": "Integra Lifesciences Holdings Corp"
-    },
-    {
-     "ticker": "AORT",
-     "name": "Artivion Inc"
-    },
-    {
      "ticker": "MGTX",
      "name": "MeiraGTx Holdings plc"
     },
     {
-     "ticker": "OPK",
-     "name": "Opko Health Inc"
-    },
-    {
-     "ticker": "ANRO",
-     "name": "Alto Neuroscience Inc"
-    },
-    {
-     "ticker": "OMDA",
-     "name": "Omada Health Inc"
+     "ticker": "AORT",
+     "name": "Artivion Inc"
     },
     {
      "ticker": "REPL",
@@ -12004,6 +11992,18 @@
     {
      "ticker": "TNDM",
      "name": "Tandem Diabetes Care Inc"
+    },
+    {
+     "ticker": "OMDA",
+     "name": "Omada Health Inc"
+    },
+    {
+     "ticker": "OPK",
+     "name": "Opko Health Inc"
+    },
+    {
+     "ticker": "ANRO",
+     "name": "Alto Neuroscience Inc"
     },
     {
      "ticker": "TDOC",
@@ -12018,20 +12018,32 @@
      "name": "Staar Surgical Co"
     },
     {
-     "ticker": "PRCT",
-     "name": "Procept BioRobotics Corp"
-    },
-    {
      "ticker": "BVS",
      "name": "Bioventus Inc"
+    },
+    {
+     "ticker": "PRCT",
+     "name": "Procept BioRobotics Corp"
     },
     {
      "ticker": "CSTL",
      "name": "Castle Biosciences Inc"
     },
     {
+     "ticker": "ENOV",
+     "name": "Enovis Corp"
+    },
+    {
      "ticker": "GLUE",
      "name": "Monte Rosa Therapeutics Inc"
+    },
+    {
+     "ticker": "ALMS",
+     "name": "Alumis Inc"
+    },
+    {
+     "ticker": "IRMD",
+     "name": "Iradimed Corp"
     },
     {
      "ticker": "JBIO",
@@ -12042,20 +12054,8 @@
      "name": "Savara Inc"
     },
     {
-     "ticker": "ALMS",
-     "name": "Alumis Inc"
-    },
-    {
      "ticker": "CRVS",
      "name": "Corvus Pharmaceuticals Inc"
-    },
-    {
-     "ticker": "ENOV",
-     "name": "Enovis Corp"
-    },
-    {
-     "ticker": "IRMD",
-     "name": "Iradimed Corp"
     },
     {
      "ticker": "AMPH",
@@ -12064,6 +12064,10 @@
     {
      "ticker": "ABUS",
      "name": "Arbutus Biopharma Corp"
+    },
+    {
+     "ticker": "BBNX",
+     "name": "Beta Bionics Inc"
     },
     {
      "ticker": "KURA",
@@ -12082,20 +12086,16 @@
      "name": "Ceribell Inc"
     },
     {
-     "ticker": "SANA",
-     "name": "Sana Biotechnology Inc"
-    },
-    {
-     "ticker": "BBNX",
-     "name": "Beta Bionics Inc"
+     "ticker": "SLDB",
+     "name": "Solid Biosciences Inc"
     },
     {
      "ticker": "LXRX",
      "name": "Lexicon Pharmaceuticals Inc"
     },
     {
-     "ticker": "SLDB",
-     "name": "Solid Biosciences Inc"
+     "ticker": "AVTX",
+     "name": "Avalo Therapeutics Inc"
     },
     {
      "ticker": "WVE",
@@ -12106,20 +12106,16 @@
      "name": "Theravance Biopharma Inc"
     },
     {
-     "ticker": "IMMX",
-     "name": "Immix Biopharma Inc"
-    },
-    {
-     "ticker": "AVTX",
-     "name": "Avalo Therapeutics Inc"
+     "ticker": "SANA",
+     "name": "Sana Biotechnology Inc"
     },
     {
      "ticker": "HSTM",
      "name": "Healthstream Inc"
     },
     {
-     "ticker": "CADL",
-     "name": "Candel Therapeutics Inc"
+     "ticker": "IMMX",
+     "name": "Immix Biopharma Inc"
     },
     {
      "ticker": "OLMA",
@@ -12130,36 +12126,40 @@
      "name": "Ardelyx Inc"
     },
     {
-     "ticker": "SIBN",
-     "name": "SI-BONE Inc"
+     "ticker": "CADL",
+     "name": "Candel Therapeutics Inc"
     },
     {
      "ticker": "RIGL",
      "name": "Rigel Pharmaceuticals"
     },
     {
-     "ticker": "GERN",
-     "name": "Geron Corp"
+     "ticker": "SIBN",
+     "name": "SI-BONE Inc"
     },
     {
-     "ticker": "CLYM",
-     "name": "Climb Bio Inc"
+     "ticker": "GERN",
+     "name": "Geron Corp"
     },
     {
      "ticker": "AVR",
      "name": "Anteris Technologies Global Corp"
     },
     {
+     "ticker": "CLYM",
+     "name": "Climb Bio Inc"
+    },
+    {
      "ticker": "AHCO",
      "name": "AdaptHealth Corp"
     },
     {
-     "ticker": "DSGN",
-     "name": "Design Therapeutics Inc"
-    },
-    {
      "ticker": "ACRS",
      "name": "Aclaris Therapeutics Inc"
+    },
+    {
+     "ticker": "DSGN",
+     "name": "Design Therapeutics Inc"
     },
     {
      "ticker": "VREX",
@@ -12174,36 +12174,32 @@
      "name": "4D Molecular Therapeutics Inc"
     },
     {
-     "ticker": "QDEL",
-     "name": "QuidelOrtho Corp"
-    },
-    {
      "ticker": "ANNX",
      "name": "Annexon Inc"
     },
     {
-     "ticker": "AURA",
-     "name": "Aura Biosciences Inc"
-    },
-    {
-     "ticker": "GYRE",
-     "name": "Gyre Therapeutics Inc"
-    },
-    {
-     "ticker": "NVCT",
-     "name": "Nuvectis Pharma Inc"
+     "ticker": "QDEL",
+     "name": "QuidelOrtho Corp"
     },
     {
      "ticker": "COLL",
      "name": "Collegium Pharmaceutical Inc"
     },
     {
-     "ticker": "MNPR",
-     "name": "Monopar Therapeutics Inc"
+     "ticker": "NVCT",
+     "name": "Nuvectis Pharma Inc"
+    },
+    {
+     "ticker": "GYRE",
+     "name": "Gyre Therapeutics Inc"
     },
     {
      "ticker": "ZVRA",
      "name": "Zevra Therapeutics Inc"
+    },
+    {
+     "ticker": "AURA",
+     "name": "Aura Biosciences Inc"
     },
     {
      "ticker": "NGNE",
@@ -12214,24 +12210,16 @@
      "name": "Mimedx Group Inc"
     },
     {
-     "ticker": "CBIO",
-     "name": "Crescent Biopharma Inc"
-    },
-    {
      "ticker": "IRWD",
      "name": "Ironwood Pharmaceuticals Inc"
     },
     {
+     "ticker": "MNPR",
+     "name": "Monopar Therapeutics Inc"
+    },
+    {
      "ticker": "VSTM",
      "name": "Verastem Inc"
-    },
-    {
-     "ticker": "PHAT",
-     "name": "Phathom Pharmaceuticals Inc"
-    },
-    {
-     "ticker": "ANGO",
-     "name": "Angiodynamic Inc"
     },
     {
      "ticker": "STLN",
@@ -12242,68 +12230,84 @@
      "name": "Sagimet Biosciences Inc"
     },
     {
-     "ticker": "OABI",
-     "name": "OmniAb Inc"
+     "ticker": "CTKB",
+     "name": "Cytek BioSciences Inc"
+    },
+    {
+     "ticker": "ANGO",
+     "name": "Angiodynamic Inc"
+    },
+    {
+     "ticker": "CBIO",
+     "name": "Crescent Biopharma Inc"
     },
     {
      "ticker": "PHR",
      "name": "Phreesia Inc"
     },
     {
+     "ticker": "OABI",
+     "name": "OmniAb Inc"
+    },
+    {
      "ticker": "ALT",
      "name": "Altimmune Inc"
     },
     {
-     "ticker": "MPLT",
-     "name": "MapLight Therapeutics Inc"
-    },
-    {
-     "ticker": "CTKB",
-     "name": "Cytek BioSciences Inc"
-    },
-    {
-     "ticker": "AQST",
-     "name": "Aquestive Therapeutics Inc"
-    },
-    {
-     "ticker": "CTMX",
-     "name": "CytomX Therapeutics Inc"
+     "ticker": "PHAT",
+     "name": "Phathom Pharmaceuticals Inc"
     },
     {
      "ticker": "CRMD",
      "name": "CorMedix Inc"
     },
     {
-     "ticker": "STTK",
-     "name": "Shattuck Labs Inc"
+     "ticker": "AQST",
+     "name": "Aquestive Therapeutics Inc"
     },
     {
      "ticker": "KIDS",
      "name": "OrthoPediatrics corp"
     },
     {
-     "ticker": "CTEV",
-     "name": "Claritev Corp"
+     "ticker": "CTMX",
+     "name": "CytomX Therapeutics Inc"
     },
     {
-     "ticker": "DRUG",
-     "name": "Bright Minds Biosciences Inc"
-    },
-    {
-     "ticker": "ALLO",
-     "name": "Allogene Therapeutics Inc"
+     "ticker": "MPLT",
+     "name": "MapLight Therapeutics Inc"
     },
     {
      "ticker": "FLGT",
      "name": "Fulgent Genetics Inc"
     },
     {
+     "ticker": "STTK",
+     "name": "Shattuck Labs Inc"
+    },
+    {
      "ticker": "WEAV",
      "name": "Weave Communications Inc"
     },
     {
+     "ticker": "ALLO",
+     "name": "Allogene Therapeutics Inc"
+    },
+    {
+     "ticker": "DRUG",
+     "name": "Bright Minds Biosciences Inc"
+    },
+    {
+     "ticker": "CTEV",
+     "name": "Claritev Corp"
+    },
+    {
      "ticker": "DCTH",
      "name": "Delcath Systems Inc"
+    },
+    {
+     "ticker": "PROK",
+     "name": "ProKidney Corp"
     },
     {
      "ticker": "TECX",
@@ -12314,24 +12318,8 @@
      "name": "Prime Medicine Inc"
     },
     {
-     "ticker": "PROK",
-     "name": "ProKidney Corp"
-    },
-    {
-     "ticker": "CTNM",
-     "name": "Contineum Therapeutics Inc"
-    },
-    {
-     "ticker": "OVID",
-     "name": "Ovid Therapeutics Inc"
-    },
-    {
      "ticker": "ARVN",
      "name": "Arvinas Inc"
-    },
-    {
-     "ticker": "ASMB",
-     "name": "Assembly Biosciences Inc"
     },
     {
      "ticker": "EOLS",
@@ -12342,44 +12330,52 @@
      "name": "Regenxbio Inc"
     },
     {
-     "ticker": "TCMD",
-     "name": "Tactile Systems Technology Inc"
+     "ticker": "OVID",
+     "name": "Ovid Therapeutics Inc"
+    },
+    {
+     "ticker": "ASMB",
+     "name": "Assembly Biosciences Inc"
+    },
+    {
+     "ticker": "CTNM",
+     "name": "Contineum Therapeutics Inc"
     },
     {
      "ticker": "CERS",
      "name": "Cerus Corp"
     },
     {
+     "ticker": "TCMD",
+     "name": "Tactile Systems Technology Inc"
+    },
+    {
      "ticker": "CAPR",
      "name": "Capricor Therapeutics Inc"
-    },
-    {
-     "ticker": "SENS",
-     "name": "Senseonics Holdings Inc"
-    },
-    {
-     "ticker": "NPCE",
-     "name": "NeuroPace Inc"
     },
     {
      "ticker": "NRC",
      "name": "NRC Health"
     },
     {
-     "ticker": "DNA",
-     "name": "Ginkgo Bioworks Holdings Inc"
-    },
-    {
      "ticker": "PBYI",
      "name": "Puma Biotechnology Inc"
     },
     {
-     "ticker": "SRTA",
-     "name": "Strata Critical Medical Inc"
+     "ticker": "NPCE",
+     "name": "NeuroPace Inc"
     },
     {
-     "ticker": "ZURA",
-     "name": "Zura Bio Ltd"
+     "ticker": "SENS",
+     "name": "Senseonics Holdings Inc"
+    },
+    {
+     "ticker": "DNA",
+     "name": "Ginkgo Bioworks Holdings Inc"
+    },
+    {
+     "ticker": "SRTA",
+     "name": "Strata Critical Medical Inc"
     },
     {
      "ticker": "IRD",
@@ -12390,40 +12386,36 @@
      "name": "Relmada Therapeutics Inc"
     },
     {
+     "ticker": "SGHT",
+     "name": "Sight Sciences Inc"
+    },
+    {
      "ticker": "ARCT",
      "name": "Arcturus Therapeutics Holdings Inc"
     },
     {
-     "ticker": "SGHT",
-     "name": "Sight Sciences Inc"
+     "ticker": "ZURA",
+     "name": "Zura Bio Ltd"
     },
     {
      "ticker": "KYTX",
      "name": "Kyverna Therapeutics Inc"
     },
     {
-     "ticker": "CABA",
-     "name": "Cabaletta Bio Inc"
+     "ticker": "CCCC",
+     "name": "C4 Therapeutics Inc"
+    },
+    {
+     "ticker": "PRTA",
+     "name": "Prothena Corp Plc"
     },
     {
      "ticker": "EVH",
      "name": "Evolent Health Inc"
     },
     {
-     "ticker": "CCCC",
-     "name": "C4 Therapeutics Inc"
-    },
-    {
-     "ticker": "SPRY",
-     "name": "ARS Pharmaceuticals Inc"
-    },
-    {
-     "ticker": "AVIR",
-     "name": "Atea Pharmaceuticals Inc"
-    },
-    {
-     "ticker": "PACB",
-     "name": "Pacific Biosciences of California Inc"
+     "ticker": "CABA",
+     "name": "Cabaletta Bio Inc"
     },
     {
      "ticker": "ARTV",
@@ -12434,20 +12426,28 @@
      "name": "Community Health Systems Inc"
     },
     {
-     "ticker": "PRTA",
-     "name": "Prothena Corp Plc"
-    },
-    {
      "ticker": "CARL",
      "name": "Carlsmed Inc"
     },
     {
-     "ticker": "MASS",
-     "name": "908 Devices Inc"
+     "ticker": "PACB",
+     "name": "Pacific Biosciences of California Inc"
     },
     {
      "ticker": "EDIT",
      "name": "Editas Medicine Inc"
+    },
+    {
+     "ticker": "SPRY",
+     "name": "ARS Pharmaceuticals Inc"
+    },
+    {
+     "ticker": "AVIR",
+     "name": "Atea Pharmaceuticals Inc"
+    },
+    {
+     "ticker": "MASS",
+     "name": "908 Devices Inc"
     },
     {
      "ticker": "CLPT",
@@ -12458,72 +12458,72 @@
      "name": "Larimar Therapeutics Inc"
     },
     {
-     "ticker": "RZLT",
-     "name": "Rezolute Inc"
-    },
-    {
      "ticker": "BNTC",
      "name": "Benitec Biopharma Inc"
+    },
+    {
+     "ticker": "RZLT",
+     "name": "Rezolute Inc"
     },
     {
      "ticker": "RCKT",
      "name": "Rocket Pharmaceuticals Inc"
     },
     {
-     "ticker": "SI",
-     "name": "Shoulder Innovations Inc"
-    },
-    {
      "ticker": "TKNO",
      "name": "Alpha Teknova Inc"
-    },
-    {
-     "ticker": "OBIO",
-     "name": "Orchestra BioMed Holdings Inc"
-    },
-    {
-     "ticker": "ENTA",
-     "name": "Enanta Pharmaceuticals Inc"
-    },
-    {
-     "ticker": "FENC",
-     "name": "Fennec Pharmaceuticals Inc"
     },
     {
      "ticker": "SLP",
      "name": "Simulations Plus Inc"
     },
     {
+     "ticker": "SI",
+     "name": "Shoulder Innovations Inc"
+    },
+    {
      "ticker": "GALT",
      "name": "Galectin Therapeutics Inc"
+    },
+    {
+     "ticker": "FENC",
+     "name": "Fennec Pharmaceuticals Inc"
+    },
+    {
+     "ticker": "ENTA",
+     "name": "Enanta Pharmaceuticals Inc"
     },
     {
      "ticker": "MYGN",
      "name": "Myriad Genetics Inc"
     },
     {
-     "ticker": "BIOA",
-     "name": "BioAge Labs Inc"
-    },
-    {
      "ticker": "OFIX",
      "name": "Orthofix Medical Inc"
+    },
+    {
+     "ticker": "OBIO",
+     "name": "Orchestra BioMed Holdings Inc"
     },
     {
      "ticker": "DMAC",
      "name": "DiaMedica Therapeutics Inc"
     },
     {
-     "ticker": "IPSC",
-     "name": "Century Therapeutics Inc"
+     "ticker": "PRLD",
+     "name": "Prelude Therapeutics Inc"
+    },
+    {
+     "ticker": "BIOA",
+     "name": "BioAge Labs Inc"
     },
     {
      "ticker": "XFOR",
      "name": "X4 Pharmaceuticals Inc"
     },
     {
-     "ticker": "PRLD",
-     "name": "Prelude Therapeutics Inc"
+     "ticker": "EBS",
+     "name": "Emergent Biosolutions Inc"
     },
     {
      "ticker": "LXEO",
@@ -12534,20 +12534,24 @@
      "name": "Viemed Healthcare Inc"
     },
     {
-     "ticker": "EBS",
-     "name": "Emergent Biosolutions Inc"
-    },
-    {
      "ticker": "OCGN",
      "name": "Ocugen Inc"
+    },
+    {
+     "ticker": "IPSC",
+     "name": "Century Therapeutics Inc"
     },
     {
      "ticker": "CMPX",
      "name": "Compass Therapeutics Inc"
     },
     {
-     "ticker": "PALI",
-     "name": "Palisade Bio Inc"
+     "ticker": "AGEN",
+     "name": "Agenus Inc"
+    },
+    {
+     "ticker": "SMTI",
+     "name": "Sanara MedTech Inc"
     },
     {
      "ticker": "IKT",
@@ -12558,12 +12562,24 @@
      "name": "Sionna Therapeutics Inc"
     },
     {
-     "ticker": "SMTI",
-     "name": "Sanara MedTech Inc"
+     "ticker": "SABS",
+     "name": "SAB Biotherapeutics Inc"
     },
     {
-     "ticker": "AGEN",
-     "name": "Agenus Inc"
+     "ticker": "CATX",
+     "name": "Perspective Therapeutics Inc"
+    },
+    {
+     "ticker": "ABEO",
+     "name": "Abeona Therapeutics Inc"
+    },
+    {
+     "ticker": "TLSI",
+     "name": "TriSalus Life Sciences Inc"
+    },
+    {
+     "ticker": "VNDA",
+     "name": "Vanda Pharmaceuticals Inc"
     },
     {
      "ticker": "CV",
@@ -12574,32 +12590,16 @@
      "name": "EyePoint Inc"
     },
     {
-     "ticker": "SABS",
-     "name": "SAB Biotherapeutics Inc"
-    },
-    {
-     "ticker": "ABEO",
-     "name": "Abeona Therapeutics Inc"
-    },
-    {
-     "ticker": "VNDA",
-     "name": "Vanda Pharmaceuticals Inc"
-    },
-    {
-     "ticker": "CATX",
-     "name": "Perspective Therapeutics Inc"
-    },
-    {
-     "ticker": "UPB",
-     "name": "Upstream Bio Inc"
-    },
-    {
-     "ticker": "TLSI",
-     "name": "TriSalus Life Sciences Inc"
+     "ticker": "PALI",
+     "name": "Palisade Bio Inc"
     },
     {
      "ticker": "ZNTL",
      "name": "Zentalis Pharmaceuticals Inc"
+    },
+    {
+     "ticker": "UPB",
+     "name": "Upstream Bio Inc"
     },
     {
      "ticker": "EMBC",
@@ -12622,10 +12622,6 @@
      "name": "Lineage Cell Therapeutics Inc"
     },
     {
-     "ticker": "STRO",
-     "name": "Sutro Biopharma Inc"
-    },
-    {
      "ticker": "TRDA",
      "name": "Entrada Therapeutics Inc"
     },
@@ -12634,16 +12630,12 @@
      "name": "Lyell Immunopharma Inc"
     },
     {
-     "ticker": "CAMP",
-     "name": "CAMP4 Therapeutics Corp"
-    },
-    {
-     "ticker": "ALXO",
-     "name": "Alx Oncology Holdings Inc"
-    },
-    {
      "ticker": "MGNX",
      "name": "Macrogenics Inc"
+    },
+    {
+     "ticker": "STRO",
+     "name": "Sutro Biopharma Inc"
     },
     {
      "ticker": "AKBA",
@@ -12658,8 +12650,12 @@
      "name": "Foghorn Therapeutics Inc"
     },
     {
-     "ticker": "IVVD",
-     "name": "Invivyd Inc"
+     "ticker": "ALXO",
+     "name": "Alx Oncology Holdings Inc"
+    },
+    {
+     "ticker": "CAMP",
+     "name": "CAMP4 Therapeutics Corp"
     },
     {
      "ticker": "OSUR",
@@ -12670,48 +12666,44 @@
      "name": "Cartesian Therapeutics Inc"
     },
     {
-     "ticker": "UTMD",
-     "name": "Utah Medical Products Inc"
+     "ticker": "IVVD",
+     "name": "Invivyd Inc"
     },
     {
-     "ticker": "GLSI",
-     "name": "Greenwich LifeSciences Inc"
+     "ticker": "UTMD",
+     "name": "Utah Medical Products Inc"
     },
     {
      "ticker": "WHWK",
      "name": "Whitehawk Therapeutics Inc"
     },
     {
-     "ticker": "RXST",
-     "name": "RxSight Inc"
-    },
-    {
      "ticker": "PDEX",
      "name": "Pro-Dex Inc"
     },
     {
-     "ticker": "AVXL",
-     "name": "Anavex Life Sciences Corp"
+     "ticker": "GLSI",
+     "name": "Greenwich LifeSciences Inc"
     },
     {
-     "ticker": "TARA",
-     "name": "Protara Therapeutics Inc"
+     "ticker": "RXST",
+     "name": "RxSight Inc"
     },
     {
      "ticker": "SPOK",
      "name": "Spok Holdings Inc"
     },
     {
+     "ticker": "SIGA",
+     "name": "SIGA Technologies Inc"
+    },
+    {
+     "ticker": "AVXL",
+     "name": "Anavex Life Sciences Corp"
+    },
+    {
      "ticker": "ELMD",
      "name": "Electromed Inc"
-    },
-    {
-     "ticker": "ALEC",
-     "name": "Alector Inc"
-    },
-    {
-     "ticker": "KROS",
-     "name": "Keros Therapeutics Inc"
     },
     {
      "ticker": "ELDN",
@@ -12722,40 +12714,48 @@
      "name": "Protalix BioTherapeutics Inc"
     },
     {
-     "ticker": "SIGA",
-     "name": "SIGA Technologies Inc"
+     "ticker": "ALEC",
+     "name": "Alector Inc"
     },
     {
-     "ticker": "ABOS",
-     "name": "Acumen Pharmaceuticals Inc"
+     "ticker": "TARA",
+     "name": "Protara Therapeutics Inc"
+    },
+    {
+     "ticker": "KROS",
+     "name": "Keros Therapeutics Inc"
     },
     {
      "ticker": "NKTX",
      "name": "Nkarta Inc"
     },
     {
-     "ticker": "SRZN",
-     "name": "Surrozen Inc"
-    },
-    {
-     "ticker": "ANTX",
-     "name": "AN2 Therapeutics Inc"
+     "ticker": "KRRO",
+     "name": "Korro Bio Inc"
     },
     {
      "ticker": "TNXP",
      "name": "Tonix Pharmaceuticals Holding Corp"
     },
     {
-     "ticker": "KRRO",
-     "name": "Korro Bio Inc"
+     "ticker": "ANTX",
+     "name": "AN2 Therapeutics Inc"
     },
     {
-     "ticker": "CHRS",
-     "name": "Coherus Oncology Inc"
+     "ticker": "SRZN",
+     "name": "Surrozen Inc"
     },
     {
      "ticker": "ORMP",
      "name": "Oramed Pharmaceuticals Inc"
+    },
+    {
+     "ticker": "ABOS",
+     "name": "Acumen Pharmaceuticals Inc"
+    },
+    {
+     "ticker": "CHRS",
+     "name": "Coherus Oncology Inc"
     },
     {
      "ticker": "VYGR",
@@ -12770,10 +12770,6 @@
      "name": "Organogenesis Holdings Inc"
     },
     {
-     "ticker": "NERV",
-     "name": "Minerva Neurosciences Inc"
-    },
-    {
      "ticker": "MDWD",
      "name": "MediWound Ltd"
     },
@@ -12782,20 +12778,20 @@
      "name": "Lucid Diagnostics Inc"
     },
     {
-     "ticker": "CNTN",
-     "name": "Canton Strategic Holdings Inc"
+     "ticker": "NERV",
+     "name": "Minerva Neurosciences Inc"
     },
     {
-     "ticker": "SPRB",
-     "name": "Spruce Biosciences Inc"
+     "ticker": "CNTN",
+     "name": "Canton Strategic Holdings Inc"
     },
     {
      "ticker": "LFCR",
      "name": "Lifecore Biomedical Inc"
     },
     {
-     "ticker": "ARMP",
-     "name": "Armata Pharmaceuticals Inc"
+     "ticker": "SPRB",
+     "name": "Spruce Biosciences Inc"
     },
     {
      "ticker": "LFMD",
@@ -12806,48 +12802,52 @@
      "name": "Airsculpt Technologies Inc"
     },
     {
-     "ticker": "NMRA",
-     "name": "Neumora Therapeutics Inc"
-    },
-    {
-     "ticker": "CDXS",
-     "name": "Codexis Inc"
+     "ticker": "ARMP",
+     "name": "Armata Pharmaceuticals Inc"
     },
     {
      "ticker": "KRMD",
      "name": "KORU Medical Systems Inc"
     },
     {
+     "ticker": "CDXS",
+     "name": "Codexis Inc"
+    },
+    {
+     "ticker": "NMRA",
+     "name": "Neumora Therapeutics Inc"
+    },
+    {
      "ticker": "CRBP",
      "name": "Corbus Pharmaceuticals Holdings Inc"
-    },
-    {
-     "ticker": "CRBU",
-     "name": "Caribou Biosciences Inc"
-    },
-    {
-     "ticker": "STXS",
-     "name": "Stereotaxis Inc"
-    },
-    {
-     "ticker": "INGN",
-     "name": "Inogen Inc"
     },
     {
      "ticker": "QTRX",
      "name": "Quanterix Corp"
     },
     {
+     "ticker": "INGN",
+     "name": "Inogen Inc"
+    },
+    {
      "ticker": "ADCT",
      "name": "Adc Therapeutics SA"
     },
     {
-     "ticker": "LENZ",
-     "name": "LENZ Therapeutics Inc"
+     "ticker": "CRBU",
+     "name": "Caribou Biosciences Inc"
     },
     {
      "ticker": "UNCY",
      "name": "Unicycive Therapeutics Inc"
+    },
+    {
+     "ticker": "STXS",
+     "name": "Stereotaxis Inc"
+    },
+    {
+     "ticker": "LENZ",
+     "name": "LENZ Therapeutics Inc"
     },
     {
      "ticker": "NAUT",
@@ -12862,20 +12862,20 @@
      "name": "Black Diamond Therapeutics Inc"
     },
     {
-     "ticker": "CNTB",
-     "name": "Connect Biopharma Holdings Ltd"
+     "ticker": "ACH",
+     "name": "Accendra Health Inc"
     },
     {
      "ticker": "HYPR",
      "name": "Hyperfine Inc"
     },
     {
-     "ticker": "ACH",
-     "name": "Accendra Health Inc"
-    },
-    {
      "ticker": "CVRX",
      "name": "CVRx Inc"
+    },
+    {
+     "ticker": "CNTB",
+     "name": "Connect Biopharma Holdings Ltd"
     },
     {
      "ticker": "TENX",
@@ -12920,12 +12920,12 @@
      "name": "Arcosa Inc"
     },
     {
-     "ticker": "MATX",
-     "name": "Matson Inc"
-    },
-    {
      "ticker": "FLR",
      "name": "Fluor Corp"
+    },
+    {
+     "ticker": "MATX",
+     "name": "Matson Inc"
     },
     {
      "ticker": "FSS",
@@ -12972,16 +12972,16 @@
      "name": "Construction Partners Inc"
     },
     {
-     "ticker": "BBUC",
-     "name": "Brookfield Business Corp"
+     "ticker": "XMTR",
+     "name": "Xometry Inc"
     },
     {
      "ticker": "MRCY",
      "name": "Mercury Systems Inc"
     },
     {
-     "ticker": "XMTR",
-     "name": "Xometry Inc"
+     "ticker": "BBUC",
+     "name": "Brookfield Business Corp"
     },
     {
      "ticker": "VSEC",
@@ -13020,12 +13020,12 @@
      "name": "Brink's Co"
     },
     {
-     "ticker": "FELE",
-     "name": "Franklin Electric Co Inc"
-    },
-    {
      "ticker": "MYRG",
      "name": "MYR Group Inc"
+    },
+    {
+     "ticker": "FELE",
+     "name": "Franklin Electric Co Inc"
     },
     {
      "ticker": "GFF",
@@ -13040,32 +13040,36 @@
      "name": "Geo Group Inc"
     },
     {
-     "ticker": "ACHR",
-     "name": "Archer Aviation Inc"
-    },
-    {
      "ticker": "CECO",
      "name": "Ceco Environmental Corp"
     },
     {
-     "ticker": "MIR",
-     "name": "Mirion Technologies Inc"
+     "ticker": "ACHR",
+     "name": "Archer Aviation Inc"
     },
     {
      "ticker": "AZZ",
      "name": "AZZ Inc"
     },
     {
+     "ticker": "MIR",
+     "name": "Mirion Technologies Inc"
+    },
+    {
      "ticker": "SKYW",
      "name": "Skywest Inc"
+    },
+    {
+     "ticker": "OTTR",
+     "name": "Otter Tail Corp"
     },
     {
      "ticker": "FA",
      "name": "First Advantage Corp"
     },
     {
-     "ticker": "OTTR",
-     "name": "Otter Tail Corp"
+     "ticker": "SMR",
+     "name": "NuScale Power Corp"
     },
     {
      "ticker": "MWA",
@@ -13074,10 +13078,6 @@
     {
      "ticker": "GPGI",
      "name": "GPGI Inc"
-    },
-    {
-     "ticker": "SMR",
-     "name": "NuScale Power Corp"
     },
     {
      "ticker": "CXW",
@@ -13100,12 +13100,12 @@
      "name": "Kadant Inc"
     },
     {
-     "ticker": "SXI",
-     "name": "Standex International Corp"
-    },
-    {
      "ticker": "LUNR",
      "name": "Intuitive Machines Inc"
+    },
+    {
+     "ticker": "SXI",
+     "name": "Standex International Corp"
     },
     {
      "ticker": "TNET",
@@ -13120,16 +13120,12 @@
      "name": "Maximus Inc"
     },
     {
-     "ticker": "ABM",
-     "name": "ABM Industries Inc"
-    },
-    {
      "ticker": "CBZ",
      "name": "Cbiz Inc"
     },
     {
-     "ticker": "ATRO",
-     "name": "Astronics Corp"
+     "ticker": "ABM",
+     "name": "ABM Industries Inc"
     },
     {
      "ticker": "ARCB",
@@ -13140,16 +13136,20 @@
      "name": "Worthington Enterprises Inc"
     },
     {
-     "ticker": "DNOW",
-     "name": "Dnow Inc"
+     "ticker": "ATRO",
+     "name": "Astronics Corp"
+    },
+    {
+     "ticker": "DXPE",
+     "name": "DXP Enterprises Inc"
     },
     {
      "ticker": "REZI",
      "name": "Resideo Technologies Inc"
     },
     {
-     "ticker": "DXPE",
-     "name": "DXP Enterprises Inc"
+     "ticker": "DNOW",
+     "name": "Dnow Inc"
     },
     {
      "ticker": "PLUG",
@@ -13164,12 +13164,12 @@
      "name": "McGrath Rentcorp"
     },
     {
-     "ticker": "MAN",
-     "name": "ManpowerGroup"
-    },
-    {
      "ticker": "RDW",
      "name": "Redwire Corp"
+    },
+    {
+     "ticker": "MAN",
+     "name": "ManpowerGroup"
     },
     {
      "ticker": "DCO",
@@ -13188,12 +13188,12 @@
      "name": "V2X Inc"
     },
     {
-     "ticker": "TRN",
-     "name": "Trinity Industries Inc"
-    },
-    {
      "ticker": "KMT",
      "name": "Kennametal Inc"
+    },
+    {
+     "ticker": "TRN",
+     "name": "Trinity Industries Inc"
     },
     {
      "ticker": "HLIO",
@@ -13204,12 +13204,12 @@
      "name": "Allegiant Travel"
     },
     {
-     "ticker": "WERN",
-     "name": "Werner Enterprises Inc"
-    },
-    {
      "ticker": "VOYG",
      "name": "Voyager Technologies Inc"
+    },
+    {
+     "ticker": "WERN",
+     "name": "Werner Enterprises Inc"
     },
     {
      "ticker": "CTOS",
@@ -13220,64 +13220,64 @@
      "name": "Alamo Group Inc"
     },
     {
-     "ticker": "SFL",
-     "name": "SFL Corp Ltd"
-    },
-    {
-     "ticker": "TIC",
-     "name": "TIC Solutions Inc"
-    },
-    {
-     "ticker": "CMPR",
-     "name": "Cimpress plc"
-    },
-    {
      "ticker": "HUBG",
      "name": "Hub Group Inc"
     },
     {
-     "ticker": "PLPC",
-     "name": "Preformed Line Products Co"
+     "ticker": "SFL",
+     "name": "SFL Corp Ltd"
     },
     {
      "ticker": "PRLB",
      "name": "Proto Labs Inc"
     },
     {
-     "ticker": "BLBD",
-     "name": "Blue Bird Corp"
+     "ticker": "CMPR",
+     "name": "Cimpress plc"
     },
     {
      "ticker": "NSP",
      "name": "Insperity Inc"
     },
     {
-     "ticker": "TH",
-     "name": "Target Hospitality Corp"
+     "ticker": "BLBD",
+     "name": "Blue Bird Corp"
+    },
+    {
+     "ticker": "PLPC",
+     "name": "Preformed Line Products Co"
+    },
+    {
+     "ticker": "TIC",
+     "name": "TIC Solutions Inc"
     },
     {
      "ticker": "GRC",
      "name": "Gorman-Rupp Co"
     },
     {
-     "ticker": "CMRE",
-     "name": "Costamare Inc"
+     "ticker": "TH",
+     "name": "Target Hospitality Corp"
     },
     {
      "ticker": "EPAC",
      "name": "Enerpac Tool Group Corp"
     },
     {
+     "ticker": "CMRE",
+     "name": "Costamare Inc"
+    },
+    {
      "ticker": "VSTS",
      "name": "Vestis Corp"
     },
     {
-     "ticker": "JBLU",
-     "name": "Jetblue Airways Corp"
-    },
-    {
      "ticker": "HOS",
      "name": "Hornbeck Offshore Services Inc"
+    },
+    {
+     "ticker": "JBLU",
+     "name": "Jetblue Airways Corp"
     },
     {
      "ticker": "DSGR",
@@ -13296,10 +13296,6 @@
      "name": "Arlo Technologies Inc"
     },
     {
-     "ticker": "PRG",
-     "name": "PROG Holdings Inc"
-    },
-    {
      "ticker": "EOSE",
      "name": "Eos Energy Enterprises Inc"
     },
@@ -13312,52 +13308,56 @@
      "name": "Hillman Solutions Corp"
     },
     {
-     "ticker": "AMSC",
-     "name": "American Superconductor Corp"
+     "ticker": "PRG",
+     "name": "PROG Holdings Inc"
     },
     {
-     "ticker": "ROCK",
-     "name": "Gibraltar Industries Inc"
+     "ticker": "AMSC",
+     "name": "American Superconductor Corp"
     },
     {
      "ticker": "AMPX",
      "name": "Amprius Technologies Inc"
     },
     {
-     "ticker": "GBX",
-     "name": "Greenbrier Cos. Inc"
+     "ticker": "ROCK",
+     "name": "Gibraltar Industries Inc"
     },
     {
-     "ticker": "ULCC",
-     "name": "Frontier Group Holdings Inc"
+     "ticker": "GBX",
+     "name": "Greenbrier Cos. Inc"
     },
     {
      "ticker": "NSSC",
      "name": "NAPCO Security Technologies Inc"
     },
     {
-     "ticker": "RYZ",
-     "name": "Ryerson Holding Corp"
+     "ticker": "ULCC",
+     "name": "Frontier Group Holdings Inc"
     },
     {
-     "ticker": "TE",
-     "name": "T1 Energy Inc"
+     "ticker": "RYZ",
+     "name": "Ryerson Holding Corp"
     },
     {
      "ticker": "FCEL",
      "name": "Fuelcell Energy Inc"
     },
     {
-     "ticker": "GNK",
-     "name": "Genco Shipping & Trading Limited"
-    },
-    {
      "ticker": "AMRC",
      "name": "Ameresco Inc"
     },
     {
+     "ticker": "GNK",
+     "name": "Genco Shipping & Trading Limited"
+    },
+    {
      "ticker": "LNN",
      "name": "Lindsay Corp"
+    },
+    {
+     "ticker": "TE",
+     "name": "T1 Energy Inc"
     },
     {
      "ticker": "WLDN",
@@ -13368,52 +13368,52 @@
      "name": "Willis Lease Finance Corp"
     },
     {
-     "ticker": "CDRE",
-     "name": "Cadre Holdings Inc"
-    },
-    {
      "ticker": "TNC",
      "name": "Tennant Co"
     },
     {
-     "ticker": "PCT",
-     "name": "PureCycle Technologies Inc"
-    },
-    {
-     "ticker": "RCAT",
-     "name": "Red Cat Holdings Inc"
+     "ticker": "CDRE",
+     "name": "Cadre Holdings Inc"
     },
     {
      "ticker": "MRTN",
      "name": "Marten Transport Ltd"
     },
     {
-     "ticker": "NPKI",
-     "name": "NPK International Inc"
+     "ticker": "PCT",
+     "name": "PureCycle Technologies Inc"
     },
     {
-     "ticker": "DLX",
-     "name": "Deluxe Corp"
+     "ticker": "NPKI",
+     "name": "NPK International Inc"
     },
     {
      "ticker": "NPK",
      "name": "National Presto Industries Inc"
     },
     {
+     "ticker": "DLX",
+     "name": "Deluxe Corp"
+    },
+    {
+     "ticker": "RCAT",
+     "name": "Red Cat Holdings Inc"
+    },
+    {
      "ticker": "LZ",
      "name": "LegalZoom.com Inc"
     },
     {
-     "ticker": "BW",
-     "name": "Babcock & Wilcox Enterprises Inc"
+     "ticker": "CRAI",
+     "name": "CRA International Inc"
     },
     {
      "ticker": "BV",
      "name": "BrightView Holdings Inc"
     },
     {
-     "ticker": "CRAI",
-     "name": "CRA International Inc"
+     "ticker": "BW",
+     "name": "Babcock & Wilcox Enterprises Inc"
     },
     {
      "ticker": "GHM",
@@ -13424,12 +13424,12 @@
      "name": "Quanex Building Products Corp"
     },
     {
-     "ticker": "RHLD",
-     "name": "Resolute Holdings Management Inc"
-    },
-    {
      "ticker": "ASTE",
      "name": "Astec Industries Inc"
+    },
+    {
+     "ticker": "RHLD",
+     "name": "Resolute Holdings Management Inc"
     },
     {
      "ticker": "KFRC",
@@ -13440,12 +13440,12 @@
      "name": "Power Solutions International Inc"
     },
     {
-     "ticker": "HTLD",
-     "name": "Heartland Express Inc"
-    },
-    {
      "ticker": "KODK",
      "name": "Eastman Kodak Co"
+    },
+    {
+     "ticker": "HTLD",
+     "name": "Heartland Express Inc"
     },
     {
      "ticker": "EVLV",
@@ -13456,12 +13456,12 @@
      "name": "Safe Bulkers Inc"
     },
     {
-     "ticker": "CVLG",
-     "name": "Covenant Logistics Group Inc"
-    },
-    {
      "ticker": "BKSY",
      "name": "BlackSky Technology Inc"
+    },
+    {
+     "ticker": "CVLG",
+     "name": "Covenant Logistics Group Inc"
     },
     {
      "ticker": "HSHP",
@@ -13472,56 +13472,52 @@
      "name": "Falcon's Beyond Global Inc"
     },
     {
-     "ticker": "CYRX",
-     "name": "CryoPort Inc"
-    },
-    {
      "ticker": "NNE",
      "name": "Nano Nuclear Energy Inc"
     },
     {
-     "ticker": "CODI",
-     "name": "Compass Diversified Holdings"
-    },
-    {
-     "ticker": "RJET",
-     "name": "Republic Airways Holdings Inc"
+     "ticker": "CYRX",
+     "name": "CryoPort Inc"
     },
     {
      "ticker": "BBSI",
      "name": "Barrett Business Services Inc"
     },
     {
-     "ticker": "APOG",
-     "name": "Apogee Enterprises Inc"
+     "ticker": "RJET",
+     "name": "Republic Airways Holdings Inc"
     },
     {
-     "ticker": "ASC",
-     "name": "Ardmore Shipping Corp"
+     "ticker": "CODI",
+     "name": "Compass Diversified Holdings"
+    },
+    {
+     "ticker": "APOG",
+     "name": "Apogee Enterprises Inc"
     },
     {
      "ticker": "TRNS",
      "name": "Transcat Inc"
     },
     {
-     "ticker": "SATL",
-     "name": "Satellogic Inc"
+     "ticker": "ASC",
+     "name": "Ardmore Shipping Corp"
     },
     {
-     "ticker": "SWIM",
-     "name": "Latham Group Inc"
+     "ticker": "SATL",
+     "name": "Satellogic Inc"
     },
     {
      "ticker": "MTW",
      "name": "Manitowoc Co Inc"
     },
     {
-     "ticker": "BWMN",
-     "name": "Bowman Consulting Group Ltd"
+     "ticker": "SWIM",
+     "name": "Latham Group Inc"
     },
     {
-     "ticker": "EVEX",
-     "name": "Eve Holding Inc"
+     "ticker": "BWMN",
+     "name": "Bowman Consulting Group Ltd"
     },
     {
      "ticker": "CASS",
@@ -13530,6 +13526,10 @@
     {
      "ticker": "HYLN",
      "name": "Hyliion Holdings Corp"
+    },
+    {
+     "ticker": "EVEX",
+     "name": "Eve Holding Inc"
     },
     {
      "ticker": "PKE",
@@ -13548,28 +13548,32 @@
      "name": "Enovix Corp"
     },
     {
-     "ticker": "ONT",
-     "name": "Onterris Inc"
-    },
-    {
      "ticker": "LMB",
      "name": "Limbach Holdings Inc"
-    },
-    {
-     "ticker": "MG",
-     "name": "Mistras Group Inc"
     },
     {
      "ticker": "MATW",
      "name": "Matthews International Corp"
     },
     {
-     "ticker": "JBI",
-     "name": "Janus International Group Inc"
+     "ticker": "MG",
+     "name": "Mistras Group Inc"
+    },
+    {
+     "ticker": "ONT",
+     "name": "Onterris Inc"
     },
     {
      "ticker": "HY",
      "name": "Hyster Yale Inc"
+    },
+    {
+     "ticker": "JBI",
+     "name": "Janus International Group Inc"
+    },
+    {
+     "ticker": "KE",
+     "name": "Kimball Electronics Inc"
     },
     {
      "ticker": "BXC",
@@ -13586,10 +13590,6 @@
     {
      "ticker": "SWBI",
      "name": "Smith & Wesson Brands Inc"
-    },
-    {
-     "ticker": "KE",
-     "name": "Kimball Electronics Inc"
     },
     {
      "ticker": "KELYA",
@@ -13620,68 +13620,68 @@
      "name": "Concrete Pumping Holdings Inc"
     },
     {
-     "ticker": "QUAD",
-     "name": "Quad/Graphics Inc"
+     "ticker": "ULH",
+     "name": "Universal Logistics Holdings Inc"
     },
     {
-     "ticker": "WNC",
-     "name": "Wabash National Corp"
+     "ticker": "QUAD",
+     "name": "Quad/Graphics Inc"
     },
     {
      "ticker": "TATT",
      "name": "TAT Technologies Ltd"
     },
     {
-     "ticker": "ULH",
-     "name": "Universal Logistics Holdings Inc"
-    },
-    {
-     "ticker": "CMCO",
-     "name": "Columbus Mckinnon Corp"
+     "ticker": "WNC",
+     "name": "Wabash National Corp"
     },
     {
      "ticker": "SPIR",
      "name": "Spire Global Inc"
     },
     {
-     "ticker": "SBC",
-     "name": "SBC Medical Group Holdings Inc"
-    },
-    {
-     "ticker": "XRX",
-     "name": "Xerox Holdings Corp"
+     "ticker": "CMCO",
+     "name": "Columbus Mckinnon Corp"
     },
     {
      "ticker": "LXFR",
      "name": "Luxfer Holdings PLC"
     },
     {
+     "ticker": "SBC",
+     "name": "SBC Medical Group Holdings Inc"
+    },
+    {
      "ticker": "TWI",
      "name": "Titan International Inc"
     },
     {
-     "ticker": "SPCE",
-     "name": "Virgin Galactic Holdings Inc"
+     "ticker": "XRX",
+     "name": "Xerox Holdings Corp"
     },
     {
      "ticker": "CIX",
      "name": "Compx International Inc"
     },
     {
-     "ticker": "MEC",
-     "name": "Mayville Engineering Company Inc"
+     "ticker": "SPCE",
+     "name": "Virgin Galactic Holdings Inc"
     },
     {
      "ticker": "ACTG",
      "name": "Acacia Research Corp"
     },
     {
-     "ticker": "RLGT",
-     "name": "Radiant Logistics Inc"
+     "ticker": "MEC",
+     "name": "Mayville Engineering Company Inc"
     },
     {
      "ticker": "TRC",
      "name": "Tejon Ranch Co"
+    },
+    {
+     "ticker": "RLGT",
+     "name": "Radiant Logistics Inc"
     },
     {
      "ticker": "BOC",
@@ -13692,12 +13692,12 @@
      "name": "NET Power Inc"
     },
     {
-     "ticker": "ACCO",
-     "name": "Acco Brands Corp"
-    },
-    {
      "ticker": "FSTR",
      "name": "L.B. Foster Co"
+    },
+    {
+     "ticker": "ACCO",
+     "name": "Acco Brands Corp"
     },
     {
      "ticker": "PESI",
@@ -13732,12 +13732,12 @@
      "name": "FTAI Infrastructure Inc"
     },
     {
-     "ticker": "IA",
-     "name": "Innovative Solutions And Support Inc"
-    },
-    {
      "ticker": "OPAL",
      "name": "OPAL Fuels Inc"
+    },
+    {
+     "ticker": "IA",
+     "name": "Innovative Solutions And Support Inc"
     },
     {
      "ticker": "ABAT",
@@ -13752,16 +13752,16 @@
      "name": "AirJoule Technologies Corp"
     },
     {
+     "ticker": "MTRX",
+     "name": "Matrix Service Co"
+    },
+    {
      "ticker": "RCMT",
      "name": "RCM Technologies Inc"
     },
     {
      "ticker": "TBI",
      "name": "TrueBlue Inc"
-    },
-    {
-     "ticker": "MTRX",
-     "name": "Matrix Service Co"
     },
     {
      "ticker": "OFLX",
@@ -13784,12 +13784,12 @@
      "name": "Gencor Industries Inc"
     },
     {
-     "ticker": "POWW",
-     "name": "Outdoor Holding Co"
-    },
-    {
      "ticker": "PPIH",
      "name": "Perma-Pipe International Holdings Inc"
+    },
+    {
+     "ticker": "POWW",
+     "name": "Outdoor Holding Co"
     },
     {
      "ticker": "LTBR",
@@ -13812,36 +13812,36 @@
      "name": "AIRO Group Holdings Inc"
     },
     {
-     "ticker": "AREC",
-     "name": "American Resources Corp"
-    },
-    {
      "ticker": "EVI",
      "name": "EVI Industries Inc"
-    },
-    {
-     "ticker": "ESOA",
-     "name": "Energy Services of America Corp"
     },
     {
      "ticker": "EAF",
      "name": "GrafTech International Ltd"
     },
     {
+     "ticker": "AREC",
+     "name": "American Resources Corp"
+    },
+    {
+     "ticker": "ESOA",
+     "name": "Energy Services of America Corp"
+    },
+    {
      "ticker": "SIDU",
      "name": "Sidus Space Inc"
     },
     {
-     "ticker": "ESP",
-     "name": "Espey Manufacturing & Electronics Corp"
+     "ticker": "TAYD",
+     "name": "Taylor Devices Inc"
     },
     {
      "ticker": "ALTG",
      "name": "Alta Equipment Group Inc"
     },
     {
-     "ticker": "TAYD",
-     "name": "Taylor Devices Inc"
+     "ticker": "ESP",
+     "name": "Espey Manufacturing & Electronics Corp"
     },
     {
      "ticker": "AP",
@@ -13856,12 +13856,12 @@
      "name": "Proficient Auto Logistics Inc"
     },
     {
-     "ticker": "UP",
-     "name": "Wheels Up Experience Inc"
-    },
-    {
      "ticker": "FLYX",
      "name": "flyExclusive Inc"
+    },
+    {
+     "ticker": "UP",
+     "name": "Wheels Up Experience Inc"
     },
     {
      "ticker": "VATE",
@@ -13914,12 +13914,12 @@
      "name": "Phillips Edison & Company Inc"
     },
     {
-     "ticker": "SBRA",
-     "name": "Sabra Healthcare REIT Inc"
-    },
-    {
      "ticker": "KRG",
      "name": "Kite Realty Group Trust"
+    },
+    {
+     "ticker": "SBRA",
+     "name": "Sabra Healthcare REIT Inc"
     },
     {
      "ticker": "OUT",
@@ -13966,12 +13966,12 @@
      "name": "Curbline Properties Corp"
     },
     {
-     "ticker": "PK",
-     "name": "Park Hotels & Resorts Inc"
-    },
-    {
      "ticker": "DX",
      "name": "Dynex Capital Inc"
+    },
+    {
+     "ticker": "PK",
+     "name": "Park Hotels & Resorts Inc"
     },
     {
      "ticker": "CWK",
@@ -13986,32 +13986,32 @@
      "name": "Urban Edge Properties"
     },
     {
-     "ticker": "FCPT",
-     "name": "Four Corners Property Trust Inc"
-    },
-    {
      "ticker": "NMRK",
      "name": "Newmark Group Inc"
     },
     {
-     "ticker": "OPEN",
-     "name": "Opendoor Technologies Inc"
+     "ticker": "FCPT",
+     "name": "Four Corners Property Trust Inc"
     },
     {
      "ticker": "DRH",
      "name": "Diamondrock Hospitality Co"
     },
     {
+     "ticker": "OPEN",
+     "name": "Opendoor Technologies Inc"
+    },
+    {
      "ticker": "IVT",
      "name": "InvenTrust Properties Corp"
     },
     {
-     "ticker": "UNIT",
-     "name": "Uniti Group Inc"
-    },
-    {
      "ticker": "LTC",
      "name": "LTC Properties Inc"
+    },
+    {
+     "ticker": "UNIT",
+     "name": "Uniti Group Inc"
     },
     {
      "ticker": "BXMT",
@@ -14034,8 +14034,8 @@
      "name": "Pebblebrook Hotel Trust"
     },
     {
-     "ticker": "NTST",
-     "name": "Netstreit Corp"
+     "ticker": "DHC",
+     "name": "Diversified Healthcare Trust"
     },
     {
      "ticker": "SMA",
@@ -14046,16 +14046,16 @@
      "name": "Getty Realty Corp"
     },
     {
-     "ticker": "DHC",
-     "name": "Diversified Healthcare Trust"
-    },
-    {
-     "ticker": "CCS",
-     "name": "Century Communities Inc"
+     "ticker": "NTST",
+     "name": "Netstreit Corp"
     },
     {
      "ticker": "DEI",
      "name": "Douglas Emmett Inc"
+    },
+    {
+     "ticker": "CCS",
+     "name": "Century Communities Inc"
     },
     {
      "ticker": "RLJ",
@@ -14138,12 +14138,12 @@
      "name": "MFA Financial Inc"
     },
     {
-     "ticker": "JBGS",
-     "name": "JBG SMITH Properties"
-    },
-    {
      "ticker": "ABR",
      "name": "Arbor Realty Trust Inc"
+    },
+    {
+     "ticker": "JBGS",
+     "name": "JBG SMITH Properties"
     },
     {
      "ticker": "ARI",
@@ -14158,16 +14158,16 @@
      "name": "Adamas Trust Inc"
     },
     {
+     "ticker": "CTO",
+     "name": "CTO Realty Growth Inc"
+    },
+    {
      "ticker": "PMT",
      "name": "Pennymac Mortgage Investment Trust"
     },
     {
      "ticker": "STRW",
      "name": "Strawberry Fields Reit Inc"
-    },
-    {
-     "ticker": "CTO",
-     "name": "CTO Realty Growth Inc"
     },
     {
      "ticker": "BFS",
@@ -14190,12 +14190,12 @@
      "name": "AGNT Inc"
     },
     {
-     "ticker": "HPP",
-     "name": "Hudson Pacific Properties Inc"
-    },
-    {
      "ticker": "FBRT",
      "name": "Franklin BSP Realty Trust Inc"
+    },
+    {
+     "ticker": "HPP",
+     "name": "Hudson Pacific Properties Inc"
     },
     {
      "ticker": "GOOD",
@@ -14266,12 +14266,12 @@
      "name": "Real REMAX Group Inc"
     },
     {
-     "ticker": "FRPH",
-     "name": "FRP Holdings Inc"
-    },
-    {
      "ticker": "KREF",
      "name": "KKR Real Estate Finance Trust Inc"
+    },
+    {
+     "ticker": "FRPH",
+     "name": "FRP Holdings Inc"
     },
     {
      "ticker": "LAND",
@@ -14286,16 +14286,16 @@
      "name": "Apartment Investment & Management Co"
     },
     {
-     "ticker": "SEG",
-     "name": "Seaport Entertainment Group Inc"
-    },
-    {
      "ticker": "PINE",
      "name": "Alpine Income Property Trust Inc"
     },
     {
      "ticker": "MLP",
      "name": "Maui Land & Pineapple Co Inc"
+    },
+    {
+     "ticker": "SEG",
+     "name": "Seaport Entertainment Group Inc"
     },
     {
      "ticker": "NREF",
@@ -14310,12 +14310,12 @@
      "name": "Chicago Atlantic Real Estate Finance Inc"
     },
     {
-     "ticker": "RC",
-     "name": "Ready Capital Corp"
-    },
-    {
      "ticker": "BRT",
      "name": "BRT Apartments Corp"
+    },
+    {
+     "ticker": "RC",
+     "name": "Ready Capital Corp"
     },
     {
      "ticker": "ARL",
@@ -14408,16 +14408,16 @@
      "name": "Esco Technologies Inc"
     },
     {
-     "ticker": "MXL",
-     "name": "MaxLinear Inc"
-    },
-    {
      "ticker": "PLXS",
      "name": "Plexus Corp"
     },
     {
      "ticker": "QLYS",
      "name": "Qualys Inc"
+    },
+    {
+     "ticker": "MXL",
+     "name": "MaxLinear Inc"
     },
     {
      "ticker": "QBTS",
@@ -14436,20 +14436,20 @@
      "name": "ServiceTitan Inc"
     },
     {
-     "ticker": "CORZ",
-     "name": "Core Scientific Inc"
-    },
-    {
-     "ticker": "VRNS",
-     "name": "Varonis Systems Inc"
-    },
-    {
      "ticker": "YOU",
      "name": "Clear Secure Inc"
     },
     {
      "ticker": "PI",
      "name": "Impinj Inc"
+    },
+    {
+     "ticker": "CORZ",
+     "name": "Core Scientific Inc"
+    },
+    {
+     "ticker": "VRNS",
+     "name": "Varonis Systems Inc"
     },
     {
      "ticker": "ACIW",
@@ -14464,6 +14464,10 @@
      "name": "Rigetti Computing Inc"
     },
     {
+     "ticker": "NSIT",
+     "name": "Insight Enterprises Inc"
+    },
+    {
      "ticker": "VSH",
      "name": "Vishay Intertechnology Inc"
     },
@@ -14472,20 +14476,16 @@
      "name": "Box Inc"
     },
     {
+     "ticker": "RELY",
+     "name": "Remitly Global Inc"
+    },
+    {
      "ticker": "DAVE",
      "name": "Dave Inc"
     },
     {
-     "ticker": "NSIT",
-     "name": "Insight Enterprises Inc"
-    },
-    {
      "ticker": "PAY",
      "name": "Paymentus Holdings Inc"
-    },
-    {
-     "ticker": "RELY",
-     "name": "Remitly Global Inc"
     },
     {
      "ticker": "ACMR",
@@ -14496,28 +14496,24 @@
      "name": "Belden Inc"
     },
     {
-     "ticker": "BULL",
-     "name": "Webull Corp"
+     "ticker": "AXTI",
+     "name": "AXT Inc"
     },
     {
      "ticker": "KLIC",
      "name": "Kulicke & Soffa Industries Inc"
     },
     {
-     "ticker": "AXTI",
-     "name": "AXT Inc"
+     "ticker": "ONDS",
+     "name": "Ondas Inc"
     },
     {
      "ticker": "DIOD",
      "name": "Diodes Inc"
     },
     {
-     "ticker": "ONDS",
-     "name": "Ondas Inc"
-    },
-    {
-     "ticker": "WK",
-     "name": "Workiva Inc"
+     "ticker": "BULL",
+     "name": "Webull Corp"
     },
     {
      "ticker": "DLO",
@@ -14532,12 +14528,12 @@
      "name": "Tenable Holdings Inc"
     },
     {
-     "ticker": "FSLY",
-     "name": "Fastly Inc"
+     "ticker": "WK",
+     "name": "Workiva Inc"
     },
     {
-     "ticker": "SYNA",
-     "name": "Synaptics Inc"
+     "ticker": "FSLY",
+     "name": "Fastly Inc"
     },
     {
      "ticker": "QTWO",
@@ -14548,8 +14544,16 @@
      "name": "Badger Meter Inc"
     },
     {
+     "ticker": "SYNA",
+     "name": "Synaptics Inc"
+    },
+    {
      "ticker": "NATL",
      "name": "NCR Atleos Corp"
+    },
+    {
+     "ticker": "FRSH",
+     "name": "Freshworks Inc"
     },
     {
      "ticker": "LIF",
@@ -14560,20 +14564,16 @@
      "name": "Bel Fuse Inc"
     },
     {
-     "ticker": "ACLS",
-     "name": "Axcelis Technologies Inc"
-    },
-    {
      "ticker": "BELFA",
      "name": "Bel Fuse Inc"
     },
     {
-     "ticker": "FRSH",
-     "name": "Freshworks Inc"
-    },
-    {
      "ticker": "OSIS",
      "name": "OSI Systems Inc"
+    },
+    {
+     "ticker": "ACLS",
+     "name": "Axcelis Technologies Inc"
     },
     {
      "ticker": "UCTT",
@@ -14600,28 +14600,24 @@
      "name": "Extreme Networks Inc"
     },
     {
-     "ticker": "BRZE",
-     "name": "Braze Inc"
-    },
-    {
      "ticker": "AVPT",
      "name": "AvePoint Inc"
-    },
-    {
-     "ticker": "AMBA",
-     "name": "Ambarella Inc"
-    },
-    {
-     "ticker": "NVTS",
-     "name": "Navitas Semiconductor Corp"
     },
     {
      "ticker": "INTA",
      "name": "Intapp Inc"
     },
     {
+     "ticker": "BRZE",
+     "name": "Braze Inc"
+    },
+    {
      "ticker": "NTCT",
      "name": "Netscout Systems Inc"
+    },
+    {
+     "ticker": "AMBA",
+     "name": "Ambarella Inc"
     },
     {
      "ticker": "ADEA",
@@ -14632,8 +14628,8 @@
      "name": "Aehr Test Systems"
     },
     {
-     "ticker": "GRND",
-     "name": "Grindr Inc"
+     "ticker": "NVTS",
+     "name": "Navitas Semiconductor Corp"
     },
     {
      "ticker": "ALRM",
@@ -14644,36 +14640,40 @@
      "name": "Teradata Corp"
     },
     {
-     "ticker": "POWI",
-     "name": "Power Integrations Inc"
-    },
-    {
-     "ticker": "SOUN",
-     "name": "SoundHound AI Inc"
-    },
-    {
-     "ticker": "BHE",
-     "name": "Benchmark Electronics Inc"
+     "ticker": "GRND",
+     "name": "Grindr Inc"
     },
     {
      "ticker": "APPN",
      "name": "Appian Corp"
     },
     {
+     "ticker": "SOUN",
+     "name": "SoundHound AI Inc"
+    },
+    {
      "ticker": "DGII",
      "name": "Digi International Inc"
+    },
+    {
+     "ticker": "POWI",
+     "name": "Power Integrations Inc"
+    },
+    {
+     "ticker": "BHE",
+     "name": "Benchmark Electronics Inc"
     },
     {
      "ticker": "PAGS",
      "name": "PagSeguro Digital Ltd"
     },
     {
-     "ticker": "VECO",
-     "name": "Veeco Instruments Inc"
-    },
-    {
      "ticker": "FIVN",
      "name": "Five9 Inc"
+    },
+    {
+     "ticker": "VECO",
+     "name": "Veeco Instruments Inc"
     },
     {
      "ticker": "NN",
@@ -14688,20 +14688,24 @@
      "name": "Ouster Inc"
     },
     {
-     "ticker": "PLUS",
-     "name": "ePlus Inc"
+     "ticker": "COHU",
+     "name": "Cohu Inc"
     },
     {
      "ticker": "PAYO",
      "name": "Payoneer Global Inc"
     },
     {
-     "ticker": "COHU",
-     "name": "Cohu Inc"
+     "ticker": "PLUS",
+     "name": "ePlus Inc"
     },
     {
      "ticker": "STNE",
      "name": "StoneCo Ltd"
+    },
+    {
+     "ticker": "RAMP",
+     "name": "LiveRamp Holdings Inc"
     },
     {
      "ticker": "ROG",
@@ -14712,20 +14716,12 @@
      "name": "Ncino Inc"
     },
     {
-     "ticker": "RAMP",
-     "name": "LiveRamp Holdings Inc"
-    },
-    {
      "ticker": "CALX",
      "name": "Calix Inc"
     },
     {
      "ticker": "LASR",
      "name": "nLIGHT Inc"
-    },
-    {
-     "ticker": "DBD",
-     "name": "Diebold Nixdorf Inc"
     },
     {
      "ticker": "ASAN",
@@ -14736,16 +14732,20 @@
      "name": "PC Connection Inc"
     },
     {
+     "ticker": "DBD",
+     "name": "Diebold Nixdorf Inc"
+    },
+    {
      "ticker": "FLYW",
      "name": "Flywire Corp"
     },
     {
-     "ticker": "KEEL",
-     "name": "Keel Infrastructure Corp"
-    },
-    {
      "ticker": "VIA",
      "name": "Via Transportation Inc"
+    },
+    {
+     "ticker": "KEEL",
+     "name": "Keel Infrastructure Corp"
     },
     {
      "ticker": "VERX",
@@ -14756,12 +14756,12 @@
      "name": "Alkami Technology Inc"
     },
     {
-     "ticker": "RUN",
-     "name": "Sunrun Inc"
-    },
-    {
      "ticker": "BLKB",
      "name": "Blackbaud Inc"
+    },
+    {
+     "ticker": "RUN",
+     "name": "Sunrun Inc"
     },
     {
      "ticker": "ATEN",
@@ -14772,32 +14772,32 @@
      "name": "Ichor Holdings Ltd"
     },
     {
-     "ticker": "DXC",
-     "name": "DXC Technology Co"
-    },
-    {
-     "ticker": "GCT",
-     "name": "GigaCloud Technology Inc"
-    },
-    {
      "ticker": "INOD",
      "name": "Innodata Inc"
+    },
+    {
+     "ticker": "DXC",
+     "name": "DXC Technology Co"
     },
     {
      "ticker": "SONO",
      "name": "Sonos Inc"
     },
     {
+     "ticker": "GCT",
+     "name": "GigaCloud Technology Inc"
+    },
+    {
      "ticker": "QUBT",
      "name": "Quantum Computing Inc"
     },
     {
-     "ticker": "PDFS",
-     "name": "PDF Solutions Inc"
-    },
-    {
      "ticker": "CNXC",
      "name": "Concentrix Corp"
+    },
+    {
+     "ticker": "PDFS",
+     "name": "PDF Solutions Inc"
     },
     {
      "ticker": "PRGS",
@@ -14812,6 +14812,10 @@
      "name": "Evertec Inc"
     },
     {
+     "ticker": "AMPL",
+     "name": "Amplitude Inc"
+    },
+    {
      "ticker": "GLOB",
      "name": "Globant SA"
     },
@@ -14824,16 +14828,12 @@
      "name": "BlackLine Inc"
     },
     {
-     "ticker": "CTS",
-     "name": "CTS Corp"
-    },
-    {
-     "ticker": "AMPL",
-     "name": "Amplitude Inc"
-    },
-    {
      "ticker": "PLAB",
      "name": "Photronics Inc"
+    },
+    {
+     "ticker": "CTS",
+     "name": "CTS Corp"
     },
     {
      "ticker": "ALNT",
@@ -14864,28 +14864,28 @@
      "name": "Everforth Inc"
     },
     {
-     "ticker": "BBAI",
-     "name": "BigBear.ai Holdings Inc"
-    },
-    {
      "ticker": "APPS",
      "name": "Digital Turbine Inc"
     },
     {
-     "ticker": "WOLF",
-     "name": "Wolfspeed Inc"
+     "ticker": "BBAI",
+     "name": "BigBear.ai Holdings Inc"
     },
     {
      "ticker": "CXM",
      "name": "Sprinklr Inc"
     },
     {
-     "ticker": "HLIT",
-     "name": "Harmonic Inc"
+     "ticker": "WOLF",
+     "name": "Wolfspeed Inc"
     },
     {
      "ticker": "RDVT",
      "name": "Red Violet Inc"
+    },
+    {
+     "ticker": "HLIT",
+     "name": "Harmonic Inc"
     },
     {
      "ticker": "CLVT",
@@ -14908,12 +14908,12 @@
      "name": "Shoals Technologies Group Inc"
     },
     {
-     "ticker": "SCSC",
-     "name": "Scansource Inc"
-    },
-    {
      "ticker": "PD",
      "name": "Pagerduty Inc"
+    },
+    {
+     "ticker": "SCSC",
+     "name": "Scansource Inc"
     },
     {
      "ticker": "UMAC",
@@ -14928,12 +14928,12 @@
      "name": "Arteris Inc"
     },
     {
-     "ticker": "VYX",
-     "name": "NCR Voyix Corp"
-    },
-    {
      "ticker": "AEVA",
      "name": "Aeva Technologies Inc"
+    },
+    {
+     "ticker": "VYX",
+     "name": "NCR Voyix Corp"
     },
     {
      "ticker": "IBTA",
@@ -14944,12 +14944,12 @@
      "name": "Frequency Electronics Inc"
     },
     {
-     "ticker": "DJCO",
-     "name": "Daily Journal Corp"
-    },
-    {
      "ticker": "SABR",
      "name": "Sabre Corp"
+    },
+    {
+     "ticker": "DJCO",
+     "name": "Daily Journal Corp"
     },
     {
      "ticker": "RXT",
@@ -14960,28 +14960,24 @@
      "name": "MNTN Inc"
     },
     {
-     "ticker": "RPD",
-     "name": "Rapid7 Inc"
-    },
-    {
      "ticker": "DAKT",
      "name": "Daktronics Inc"
+    },
+    {
+     "ticker": "RPD",
+     "name": "Rapid7 Inc"
     },
     {
      "ticker": "DSP",
      "name": "Viant Technology Inc"
     },
     {
-     "ticker": "BLZE",
-     "name": "Backblaze Inc"
-    },
-    {
      "ticker": "VPG",
      "name": "Vishay Precision Group Inc"
     },
     {
-     "ticker": "CSIQ",
-     "name": "Canadian Solar Inc"
+     "ticker": "BLZE",
+     "name": "Backblaze Inc"
     },
     {
      "ticker": "KOPN",
@@ -14996,6 +14992,10 @@
      "name": "Ceva Inc"
     },
     {
+     "ticker": "CSIQ",
+     "name": "Canadian Solar Inc"
+    },
+    {
      "ticker": "PUBM",
      "name": "PubMatic Inc"
     },
@@ -15004,48 +15004,40 @@
      "name": "LSI Industries Inc"
     },
     {
-     "ticker": "NABL",
-     "name": "N-able Inc"
-    },
-    {
      "ticker": "AOSL",
      "name": "Alpha & Omega Semiconductor Ltd"
     },
     {
-     "ticker": "INDI",
-     "name": "Indie Semiconductor Inc"
+     "ticker": "NABL",
+     "name": "N-able Inc"
     },
     {
      "ticker": "MLAB",
      "name": "Mesa Laboratories Inc"
     },
     {
-     "ticker": "WYFI",
-     "name": "Whitefiber Inc"
-    },
-    {
-     "ticker": "PAR",
-     "name": "Par Technology Corp"
-    },
-    {
-     "ticker": "CCSI",
-     "name": "Consensus Cloud Solutions Inc"
-    },
-    {
-     "ticker": "PAYS",
-     "name": "PaySign Inc"
+     "ticker": "INDI",
+     "name": "Indie Semiconductor Inc"
     },
     {
      "ticker": "SPT",
      "name": "Sprout Social Inc"
     },
     {
-     "ticker": "ARRY",
-     "name": "Array Technologies Inc"
+     "ticker": "CCSI",
+     "name": "Consensus Cloud Solutions Inc"
     },
     {
-     "ticker": "GDYN",
-     "name": "Grid Dynamics Holdings Inc"
+     "ticker": "WYFI",
+     "name": "Whitefiber Inc"
+    },
+    {
+     "ticker": "PAYS",
+     "name": "PaySign Inc"
+    },
+    {
+     "ticker": "PAR",
+     "name": "Par Technology Corp"
     },
     {
      "ticker": "OSPN",
@@ -15054,6 +15046,14 @@
     {
      "ticker": "LPTH",
      "name": "Lightpath Technologies Inc"
+    },
+    {
+     "ticker": "GDYN",
+     "name": "Grid Dynamics Holdings Inc"
+    },
+    {
+     "ticker": "ARRY",
+     "name": "Array Technologies Inc"
     },
     {
      "ticker": "YEXT",
@@ -15076,20 +15076,20 @@
      "name": "New Era Energy & Digital Inc"
     },
     {
-     "ticker": "CLMB",
-     "name": "Climb Global Solutions Inc"
-    },
-    {
-     "ticker": "DDD",
-     "name": "3D Systems Corp"
-    },
-    {
      "ticker": "VRRM",
      "name": "Verra Mobility Corp"
     },
     {
      "ticker": "IBEX",
      "name": "IBEX Ltd"
+    },
+    {
+     "ticker": "CLMB",
+     "name": "Climb Global Solutions Inc"
+    },
+    {
+     "ticker": "DDD",
+     "name": "3D Systems Corp"
     },
     {
      "ticker": "PRTH",
@@ -15108,16 +15108,16 @@
      "name": "Rimini Street Inc"
     },
     {
-     "ticker": "IMXI",
-     "name": "International Money Express Inc"
+     "ticker": "CLFD",
+     "name": "Clearfield Inc"
     },
     {
      "ticker": "AIOT",
      "name": "PowerFleet Inc"
     },
     {
-     "ticker": "CLFD",
-     "name": "Clearfield Inc"
+     "ticker": "IMXI",
+     "name": "International Money Express Inc"
     },
     {
      "ticker": "IIIV",
@@ -15132,12 +15132,12 @@
      "name": "Everspin Technologies Inc"
     },
     {
-     "ticker": "MPTI",
-     "name": "M-tron Industries Inc"
-    },
-    {
      "ticker": "RPAY",
      "name": "Repay Holdings Corp"
+    },
+    {
+     "ticker": "MPTI",
+     "name": "M-tron Industries Inc"
     },
     {
      "ticker": "PSFE",
@@ -15148,12 +15148,12 @@
      "name": "Bakkt Inc"
     },
     {
-     "ticker": "BLND",
-     "name": "Blend Labs Inc"
-    },
-    {
      "ticker": "VELO",
      "name": "Velo3D Inc"
+    },
+    {
+     "ticker": "BLND",
+     "name": "Blend Labs Inc"
     },
     {
      "ticker": "TLS",
@@ -15168,28 +15168,28 @@
      "name": "Commerce.com Inc"
     },
     {
-     "ticker": "PDYN",
-     "name": "Palladyne AI Corp"
-    },
-    {
      "ticker": "TTGT",
      "name": "Techtarget Inc"
     },
     {
-     "ticker": "LAW",
-     "name": "CS Disco Inc"
-    },
-    {
-     "ticker": "XPER",
-     "name": "Xperi Inc"
+     "ticker": "PDYN",
+     "name": "Palladyne AI Corp"
     },
     {
      "ticker": "HCKT",
      "name": "Hackett Group Inc"
     },
     {
+     "ticker": "LAW",
+     "name": "CS Disco Inc"
+    },
+    {
      "ticker": "BKTI",
      "name": "BK Technologies Corp"
+    },
+    {
+     "ticker": "XPER",
+     "name": "Xperi Inc"
     },
     {
      "ticker": "DUOT",
@@ -15204,6 +15204,10 @@
      "name": "Aeluma Inc"
     },
     {
+     "ticker": "AVNW",
+     "name": "Aviat Networks Inc"
+    },
+    {
      "ticker": "OPTX",
      "name": "Syntec Optics Holdings Inc"
     },
@@ -15212,28 +15216,24 @@
      "name": "Information Services Group Inc"
     },
     {
-     "ticker": "AVNW",
-     "name": "Aviat Networks Inc"
+     "ticker": "LTRX",
+     "name": "Lantronix Inc"
     },
     {
      "ticker": "CNDT",
      "name": "Conduent Inc"
     },
     {
-     "ticker": "LTRX",
-     "name": "Lantronix Inc"
-    },
-    {
      "ticker": "ASUR",
      "name": "Asure Software Inc"
     },
     {
-     "ticker": "RELL",
-     "name": "Richardson Electronics Ltd"
-    },
-    {
      "ticker": "ASYS",
      "name": "Amtech Systems Inc"
+    },
+    {
+     "ticker": "RELL",
+     "name": "Richardson Electronics Ltd"
     },
     {
      "ticker": "GPRO",
@@ -15248,16 +15248,16 @@
      "name": "TSS Inc"
     },
     {
-     "ticker": "SMRT",
-     "name": "SmartRent Inc"
-    },
-    {
      "ticker": "TBCH",
      "name": "Turtle Beach Corp"
     },
     {
      "ticker": "SVCO",
      "name": "Silvaco Group Inc"
+    },
+    {
+     "ticker": "SMRT",
+     "name": "SmartRent Inc"
     },
     {
      "ticker": "VUZI",
@@ -15300,12 +15300,12 @@
      "name": "ReposiTrak Inc"
     },
     {
-     "ticker": "INTT",
-     "name": "Intest Corp"
-    },
-    {
      "ticker": "EGAN",
      "name": "eGain Corp"
+    },
+    {
+     "ticker": "INTT",
+     "name": "Intest Corp"
     },
     {
      "ticker": "ZENA",
@@ -15332,12 +15332,12 @@
      "name": "Roadzen Inc"
     },
     {
-     "ticker": "BZAI",
-     "name": "Blaize Holdings Inc"
-    },
-    {
      "ticker": "THRY",
      "name": "Thryv Holdings Inc"
+    },
+    {
+     "ticker": "BZAI",
+     "name": "Blaize Holdings Inc"
     },
     {
      "ticker": "TYGO",
