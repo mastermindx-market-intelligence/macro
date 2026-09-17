@@ -138,3 +138,53 @@ def test_payload_identity_and_side_quality():
     rows = REPLAY.qualifying_quotes(payload, contract, needed_side="bid")
     assert len(rows) == 1
     assert rows[0].bid == Decimal(".27")
+
+
+def test_exit_long_zero_bid_is_source_present_conservative_carry_only():
+    contract = REPLAY.Contract("SPY", "2023-01-03", Decimal("391"), "call")
+    payload = {
+        "response": [{
+            "contract": {
+                "symbol": "SPY", "expiration": "2023-01-03",
+                "strike": 391.0, "right": "call",
+            },
+            "data": [{
+                "timestamp": "2023-01-03T11:12:00.000",
+                "bid": 0.0, "ask": 0.01,
+                "bid_size": 0, "ask_size": 12,
+                "bid_exchange": 0, "ask_exchange": 6,
+                "bid_condition": 0, "ask_condition": 50,
+            }],
+        }]
+    }
+    assert REPLAY.qualifying_quotes(payload, contract, needed_side="bid") == []
+    long_exit = REPLAY.qualifying_exit_quotes(payload, contract, role="long")
+    assert len(long_exit) == 1 and long_exit[0].bid == Decimal("0")
+
+    timestamp = datetime(2023, 1, 3, 11, 12)
+    short = [_quote(timestamp, ".04", ".05")]
+    package = REPLAY.first_package_quote(
+        short, long_exit, action="exit", max_leg_age_seconds=Decimal("1")
+    )
+    assert package.value == Decimal(".05")
+    assert package.long_liquidation_zero is True
+
+
+def test_exit_zero_bid_requires_source_present_firm_long_ask():
+    contract = REPLAY.Contract("SPY", "2023-01-03", Decimal("391"), "call")
+    payload = {
+        "response": [{
+            "contract": {
+                "symbol": "SPY", "expiration": "2023-01-03",
+                "strike": 391.0, "right": "call",
+            },
+            "data": [{
+                "timestamp": "2023-01-03T11:12:00.000",
+                "bid": 0.0, "ask": 0.01,
+                "bid_size": 0, "ask_size": 0,
+                "bid_exchange": 0, "ask_exchange": 6,
+                "bid_condition": 0, "ask_condition": 50,
+            }],
+        }]
+    }
+    assert REPLAY.qualifying_exit_quotes(payload, contract, role="long") == []

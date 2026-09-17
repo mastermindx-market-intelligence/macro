@@ -53,6 +53,7 @@ class PackageQuote:
     long_quote_at: datetime
     leg_age_seconds: Decimal
     value: Decimal
+    long_liquidation_zero: bool = False
 
 
 def _decimal(value: Any, label: str) -> Decimal:
@@ -94,11 +95,7 @@ def _source_rows(payload: Any, contract: Contract) -> list[Mapping[str, Any]]:
     return rows
 
 
-def qualifying_quotes(
-    payload: Any, contract: Contract, *, needed_side: str
-) -> list[Quote]:
-    if needed_side not in {"bid", "ask"}:
-        raise ReplayError("needed_side must be bid or ask")
+def _parsed_quotes(payload: Any, contract: Contract) -> list[Quote]:
     out: list[Quote] = []
     for raw in _source_rows(payload, contract):
         if not isinstance(raw, Mapping):
@@ -114,22 +111,6 @@ def qualifying_quotes(
             raise ReplayError("Theta quote row fields are malformed") from exc
         if bid < 0 or ask < 0 or (bid > 0 and ask > 0 and ask < bid):
             continue
-        bid_ok = (
-            bid > 0
-            and bid_size > 0
-            and bid_cond in FIRM_OPRA_QUOTE_CONDITIONS
-            and bid_ex in KNOWN_THETA_EXCHANGES
-        )
-        ask_ok = (
-            ask > 0
-            and ask_size > 0
-            and ask_cond in FIRM_OPRA_QUOTE_CONDITIONS
-            and ask_ex in KNOWN_THETA_EXCHANGES
-        )
-        if (needed_side == "bid" and not bid_ok) or (
-            needed_side == "ask" and not ask_ok
-        ):
-            continue
         out.append(
             Quote(
                 ts,
@@ -144,6 +125,63 @@ def qualifying_quotes(
             )
         )
     out.sort(key=lambda quote: quote.timestamp)
+    return out
+
+
+def _positive_firm_side(quote: Quote, side: str) -> bool:
+    if side == "bid":
+        return (
+            quote.bid > 0
+            and quote.bid_size > 0
+            and quote.bid_condition in FIRM_OPRA_QUOTE_CONDITIONS
+            and quote.bid_exchange in KNOWN_THETA_EXCHANGES
+        )
+    if side == "ask":
+        return (
+            quote.ask > 0
+            and quote.ask_size > 0
+            and quote.ask_condition in FIRM_OPRA_QUOTE_CONDITIONS
+            and quote.ask_exchange in KNOWN_THETA_EXCHANGES
+        )
+    raise ReplayError("side must be bid or ask")
+
+
+def qualifying_quotes(
+    payload: Any, contract: Contract, *, needed_side: str
+) -> list[Quote]:
+    if needed_side not in {"bid", "ask"}:
+        raise ReplayError("needed_side must be bid or ask")
+    return [
+        quote
+        for quote in _parsed_quotes(payload, contract)
+        if _positive_firm_side(quote, needed_side)
+    ]
+
+
+def qualifying_exit_quotes(
+    payload: Any, contract: Contract, *, role: str
+) -> list[Quote]:
+    """Return source-present executable exit rows without imputing a long bid.
+
+    A short leg still requires a positive firm ask. A long leg normally requires
+    a positive firm bid. If the source row instead carries an exact zero bid but
+    a positive firm ask, the row is admitted only for conservative short-only
+    close accounting: the long receives zero liquidation credit and remains
+    residual positive optionality. Missing/malformed rows never become zero.
+    """
+    if role not in {"short", "long"}:
+        raise ReplayError("role must be short or long")
+    out: list[Quote] = []
+    for quote in _parsed_quotes(payload, contract):
+        if role == "short":
+            if _positive_firm_side(quote, "ask"):
+                out.append(quote)
+            continue
+        if _positive_firm_side(quote, "bid"):
+            out.append(quote)
+            continue
+        if quote.bid == 0 and _positive_firm_side(quote, "ask"):
+            out.append(quote)
     return out
 
 
@@ -190,7 +228,12 @@ def first_package_quote(
         if value <= 0:
             continue
         return PackageQuote(
-            now, short_quote.timestamp, long_quote.timestamp, age, value
+            now,
+            short_quote.timestamp,
+            long_quote.timestamp,
+            age,
+            value,
+            action == "exit" and long_quote.bid == 0,
         )
     return None
 
@@ -226,7 +269,12 @@ def first_target_debit(
         debit = short_quote.ask - long_quote.bid
         if debit >= 0 and debit <= target_debit:
             return PackageQuote(
-                now, short_quote.timestamp, long_quote.timestamp, age, debit
+                now,
+                short_quote.timestamp,
+                long_quote.timestamp,
+                age,
+                debit,
+                long_quote.bid == 0,
             )
     return None
 
