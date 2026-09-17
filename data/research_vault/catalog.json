@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T11:05:02.737615+00:00",
-  "count": 2286,
+  "generated_at": "2026-09-17T11:20:10.331997+00:00",
+  "count": 2287,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -102,6 +102,27 @@
       "tickers": [],
       "top_pick": true,
       "pages": 19,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-yisfnkw53ht-c99833",
+      "title": "JPM Europe Equity Research | Today’s Morning Meeting",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T10:39:12Z",
+      "summary_points": [
+        "Sodexo Upgrade: Fundamentals-driven OW upgrade (€68 PT, 20% upside) on turnaround momentum (8x vs 7x post-H1), FY27 earnings break, and Meta award; trading at meaningful discount to peers with no re-rating risk.",
+        "Greek Banks Growth Story: 12% EPS CAGR (2025-2028), 8-10% loan growth, double-digit expansion; system-level discount closed but still trades at ~10% discount; Eurobank/Piraeus preferred.",
+        "Carbon Counts 2026: EU Parliament removes CBAM safeguard clause, broadening downstream scope—critical policy shift impacting trade dynamics and ESG portfolio positioning.",
+        "EU Earnings Outlook: H2'26 reporting period critical for earnings expectations assessment, driving European equity valuations; Europe/North America momentum signals robust second-half earnings season.",
+        "Valuation Concerns & Selective Upgrades: JPMorgan flags multiples as expensive amid mid-term uncertainty but upgrades Diploma PLC (OW) and Safran (PT raised), reiterates Novonesis as top pick."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
       "language": "en",
       "needs_metadata": false
     },
