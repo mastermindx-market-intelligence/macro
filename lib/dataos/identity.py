@@ -945,6 +945,33 @@ class IssuerMaster:
             )
         return ciks[0]
 
+    def issuers_for_cik(self, cik: object) -> tuple[str, ...]:
+        """Every CURRENT existing issuer evidenced with ``cik``.
+
+        This is the reverse of :meth:`cik_of_issuer`, not a new allocator or a
+        historical identity lookup. Only active security rows participate in
+        ``_ciks_by_issuer``. A CIK conflict on an issuer that actually matches
+        the requested CIK is refused through ``cik_of_issuer``; an unrelated
+        conflicting issuer is not consulted and therefore cannot poison this
+        bounded reverse query.
+        """
+        normalized = _normalize_issuer_cik(cik)
+        if normalized is None:
+            return ()
+        candidates = tuple(sorted(
+            issuer_id_
+            for issuer_id_, ciks in self._ciks_by_issuer.items()
+            if normalized in ciks
+        ))
+        resolved: list[str] = []
+        for issuer_id_ in candidates:
+            # Reuse the canonical forward read so a matching issuer with
+            # contradictory active CIK evidence fails closed instead of being
+            # accepted merely because one row happened to match.
+            if self.cik_of_issuer(issuer_id_) == normalized:
+                resolved.append(issuer_id_)
+        return tuple(resolved)
+
     def listing_key_of_security(self, security_id: str) -> str | None:
         """This security's CURRENT listing key as evidenced by the master, or None.
 
