@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T15:35:38.306063+00:00",
-  "count": 2299,
+  "generated_at": "2026-09-17T15:50:41.179937+00:00",
+  "count": 2300,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1274,6 +1274,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 21,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-sdqszwyybp3-a00775",
+      "title": "UK & EUROPEAN RESEARCH AT A GLANCE",
+      "institution": "RBC",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T10:00:52Z",
+      "summary_points": [
+        "Metal Moves: Gold (-5% avg 2026/27), silver (-8%) price forecasts; copper maintained at $6.00/lb; long-term gold unchanged at $4,000/oz.",
+        "Norsk Hydro Downgrade: Sector Perform (prev Outperform), PT $100 (↓$120); aluminum market shift (400kt deficit → 1Mtpa surplus by 2027) reduces FY26-28 EBITDA (-15%) and NAVPS (-11%).",
+        "Porsche Target Cut: PT €40 (↓€45) due to China weakness; critical geopolitical risk factor impacting automotive sector exposure.",
+        "Metal Moves Revisions: Base metals, European mining, precious metals outlook revised via updated commodity price assumptions (detailed in global mining update)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
