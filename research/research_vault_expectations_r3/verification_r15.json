@@ -1,0 +1,57 @@
+{
+  "schema": "research.integration_design_and_public_control.r15",
+  "status": "PUBLIC_CONTROL_VERIFIED_GATEWAY_ADOPTION_HELD",
+  "executed_at_utc": "2026-09-17T05:05:39.785660+00:00",
+  "python": "3.13.5",
+  "procedure_commit": "7e8b5751b1c381818ee9666c9582699f06173c59",
+  "main_pin": "12b655150582d9be39bfd2779b33338d154c565f",
+  "research_start_head": "fd890e41ef905d5f4595bff1a56e1c0683908de4",
+  "recovered_r14_receipt": "24 historical native cases, not rerun",
+  "r14_held_additional_cases": 8,
+  "r14_held_cases_executed": false,
+  "new_checks": {
+    "total": 16,
+    "failures": 0,
+    "errors": 0
+  },
+  "initial_scaffold": {
+    "cases": 16,
+    "errors": 16,
+    "meaning": "Unimplemented public-case reference; not production bugs"
+  },
+  "new_control": {
+    "sources": 5,
+    "issuer_families": 3,
+    "assistant_entered_numerical_facts": 26,
+    "explicit_cash_reconciliations": 5,
+    "comparison_kinds": [
+      "measurement_basis_changed",
+      "lower_bound_raised"
+    ],
+    "mixed_FCF_total": "not_comparable"
+  },
+  "draft_answer_tasks": {
+    "count": 12,
+    "independently_adjudicated": false,
+    "model_scored": false
+  },
+  "curated_input_sha256": "a1bfdad5700b51a3ec0a9d392e80e0293eebc0d0e67db7da4752d4064a25a60c",
+  "original_publisher_bytes_fingerprinted": false,
+  "gateway_design": "Existing search_research; proposed evidence_scope catalog/default or source_text; server-constructed fresh private source guard per admitted read; existing one final debit",
+  "owner_adoption_or_runtime_authorization": false,
+  "gateway_run": false,
+  "native_calls": 0,
+  "institutional_original_admitted": false,
+  "new_permission_ledger_or_service": false,
+  "model_benchmark_run": false,
+  "production_modified": false,
+  "subscriptions_purchased": 0,
+  "vendor_outreach": false,
+  "interpretation": "Declared-basis arithmetic and controlled input validation, not automated extraction, investment performance, source permission or product acceptance",
+  "file_sha256": {
+    "capex_evidence.json": "a1bfdad5700b51a3ec0a9d392e80e0293eebc0d0e67db7da4752d4064a25a60c",
+    "validate_case.py": "fe94751ae0f28cce6e802eaf13d08aff4a7be0aaed56a14e683365ebe7428d2c",
+    "test_capex_case.py": "0d79a62753467848ee056e8d9ee1918938d8712b61e62028d11e7ea08ec0d6c1",
+    "canonical_results.json": "f3f6f3afc041c4221380dc6a95e8b316cce98350fbac10615aa4041294df9713"
+  }
+}
