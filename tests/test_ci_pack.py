@@ -3779,6 +3779,19 @@ def test_d5_route_closure_keeps_affected_curated_jobs_selecting_dependencies() -
             assert match and match[1] == "declared", (job_id, dependency, match)
 
 
+def test_unrun_picks_boards_owns_macro_risk_dialog_locale_token_source() -> None:
+    """The risk-dialog suite reads the shipped token source, so its job owns it."""
+    jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST)}
+    job = jobs["unrun-picks-boards"]
+
+    assert job.exclusive is True
+    assert "site/theme.css" in job.paths
+    selected, reason = PACK.select_jobs([job], ["site/theme.css"])
+    assert [item.job_id for item in selected] == [job.job_id], reason
+    match = PACK._job_diff_match(job, ["site/theme.css"])
+    assert match and match[1] == "declared", match
+
+
 def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
     """Every job the curation stops selecting was selected by smear, not evidence.
 
