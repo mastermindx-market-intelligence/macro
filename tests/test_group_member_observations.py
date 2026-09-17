@@ -576,3 +576,135 @@ def test_source_receipts_bind_membership_and_metric_cells():
     forged = _rehash(forged)
     assert any("source receipt" in error.lower()
                for error in GMO.validate_member_bundle(forged))
+
+
+def test_closed_contract_refuses_unknown_or_missing_metric_definitions():
+    forged = _bundle()
+    group = forged["groups"][GROUP_ID]
+    sample = deepcopy(group["metrics"]["raw_daily_change"])
+    sample["recipe_id"] = "forged.buy_signal.v1"
+    group["metrics"]["buy_signal"] = sample
+    for member in group["members"].values():
+        cell = deepcopy(member["metrics"]["raw_daily_change"])
+        cell["recipe_id"] = "forged.buy_signal.v1"
+        member["metrics"]["buy_signal"] = cell
+    group["coverage_details"]["metrics"]["buy_signal"] = deepcopy(
+        group["coverage_details"]["metrics"]["raw_daily_change"]
+    )
+    forged = _rehash(forged)
+    assert any("metric set" in error.lower()
+               for error in GMO.validate_member_bundle(forged))
+
+    forged = _bundle()
+    group = forged["groups"][GROUP_ID]
+    group["metrics"].pop("strict_trend_200")
+    group["coverage_details"]["metrics"].pop("strict_trend_200")
+    for member in group["members"].values():
+        member["metrics"].pop("strict_trend_200")
+    forged = _rehash(forged)
+    assert any("metric set" in error.lower()
+               for error in GMO.validate_member_bundle(forged))
+
+
+def test_closed_contract_refuses_metric_definition_drift_and_ambiguous_receipts():
+    forged = _bundle()
+    metric = forged["groups"][GROUP_ID]["metrics"]["strict_trend_200"]
+    metric["minimum_observations"] = 100
+    forged = _rehash(forged)
+    assert any("definition" in error.lower()
+               for error in GMO.validate_member_bundle(forged))
+
+    forged = _bundle()
+    receipt = deepcopy(forged["source"]["receipts"][0])
+    receipt["sha256"] = "e" * 64
+    forged["source"]["receipts"].append(receipt)
+    forged = _rehash(forged)
+    assert any("duplicate source_ref" in error.lower()
+               for error in GMO.validate_member_bundle(forged))
+
+
+def test_closed_contract_binds_member_cells_to_aggregate_and_effective_date():
+    forged = _bundle()
+    group = forged["groups"][GROUP_ID]
+    cell = group["members"]["A"]["metrics"]["legacy_activity"]
+    cell["value"] = False
+    forged = _rehash(forged)
+    assert any("numerator membership" in error.lower()
+               for error in GMO.validate_member_bundle(forged))
+
+    forged = _bundle()
+    group = forged["groups"][GROUP_ID]
+    cell = group["members"]["A"]["metrics"]["legacy_activity"]
+    cell["value"] = None
+    cell["null_reason"] = "NO_COVERAGE"
+    cell["estimability_reason"] = "unavailable_in_owner_projection"
+    forged = _rehash(forged)
+    assert any("included cell" in error.lower()
+               for error in GMO.validate_member_bundle(forged))
+
+    forged = _bundle()
+    forged["groups"][GROUP_ID]["members"]["A"]["metrics"]["raw_daily_change"]["effective_at"] = "2026-09-14"
+    forged = _rehash(forged)
+    assert any("effective_at must equal" in error.lower()
+               for error in GMO.validate_member_bundle(forged))
+
+
+def test_closed_contract_validates_member_identity_fields_and_deterministic_sets():
+    forged = _bundle()
+    forged["groups"][GROUP_ID]["members"]["A"]["source_symbol"] = ""
+    forged = _rehash(forged)
+    assert any("source_symbol" in error
+               for error in GMO.validate_member_bundle(forged))
+
+    forged = _bundle()
+    metric = forged["groups"][GROUP_ID]["metrics"]["legacy_activity"]
+    metric["observed_member_keys"] = list(reversed(metric["observed_member_keys"]))
+    metric["cohort_digest"] = GMO.canonical_json_sha256(metric["observed_member_keys"])
+    forged = _rehash(forged)
+    assert any("observed_member_keys must be deterministic" in error
+               for error in GMO.validate_member_bundle(forged))
+
+
+def test_closed_contract_validates_estimability_and_observation_counts():
+    forged = _bundle()
+    cell = forged["groups"][GROUP_ID]["members"]["C"]["metrics"]["strict_trend_200"]
+    cell["estimability_reason"] = "made_up_reason"
+    forged = _rehash(forged)
+    assert any("estimability_reason" in error
+               for error in GMO.validate_member_bundle(forged))
+
+    forged = _bundle()
+    cell = forged["groups"][GROUP_ID]["members"]["A"]["metrics"]["legacy_activity"]
+    cell["estimability_reason"] = "unavailable_in_owner_projection"
+    forged = _rehash(forged)
+    assert any("observed cell cannot carry" in error.lower()
+               for error in GMO.validate_member_bundle(forged))
+
+    forged = _bundle()
+    cell = forged["groups"][GROUP_ID]["members"]["A"]["metrics"]["strict_trend_50"]
+    cell["observations_required"] = 49
+    forged = _rehash(forged)
+    assert any("observations_required" in error
+               for error in GMO.validate_member_bundle(forged))
+
+    forged = _bundle()
+    cell = forged["groups"][GROUP_ID]["members"]["A"]["metrics"]["strict_trend_50"]
+    cell["observations_available"] = 51
+    forged = _rehash(forged)
+    assert any("observations_available exceeds" in error
+               for error in GMO.validate_member_bundle(forged))
+
+
+def test_closed_contract_binds_excluded_member_details_to_member_cells():
+    forged = _bundle()
+    excluded = forged["groups"][GROUP_ID]["metrics"]["strict_trend_200"]["excluded_members"]
+    assert excluded
+    original_reason = excluded[0]["estimability_reason"]
+    excluded[0]["estimability_reason"] = (
+        "benchmark_unavailable"
+        if original_reason != "benchmark_unavailable"
+        else "unavailable_in_owner_projection"
+    )
+    forged = _rehash(forged)
+    assert any("excluded member detail mismatch" in error.lower()
+               for error in GMO.validate_member_bundle(forged))

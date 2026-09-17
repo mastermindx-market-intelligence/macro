@@ -59,6 +59,13 @@ _METRIC_KEYS = frozenset({
 _EXCLUDED_KEYS = frozenset({"member_key", "null_reason", "estimability_reason"})
 _COVERAGE_KEYS = frozenset({"catalogue_member_count", "metrics"})
 _COVERAGE_METRIC_KEYS = frozenset({"observed", "excluded"})
+_ESTIMABILITY_REASONS = frozenset({
+    "missing_effective_observation",
+    "insufficient_lookback",
+    "excluded_from_legacy_activity_cohort",
+    "benchmark_unavailable",
+    "unavailable_in_owner_projection",
+})
 
 _METRIC_DEFS = {
     "legacy_activity": {
@@ -229,6 +236,7 @@ def _activity_observations(panel: Mapping[str, Any], as_of: pd.Timestamp,
 
 def _normalise_receipts(receipts: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
+    seen_source_refs: set[str] = set()
     for index, raw in enumerate(receipts):
         if not isinstance(raw, Mapping) or set(raw) != _RECEIPT_KEYS:
             raise ContractError(f"source_receipts[{index}] fields mismatch")
@@ -241,6 +249,11 @@ def _normalise_receipts(receipts: Sequence[Mapping[str, Any]]) -> list[dict[str,
         byte_count = raw.get("bytes")
         if not isinstance(source_ref, str) or not source_ref:
             raise ContractError(f"source_receipts[{index}].source_ref invalid")
+        if source_ref in seen_source_refs:
+            raise ContractError(
+                f"source_receipts[{index}].source_ref duplicate source_ref: {source_ref}"
+            )
+        seen_source_refs.add(source_ref)
         if not isinstance(basis, str) or not basis:
             raise ContractError(f"source_receipts[{index}].basis invalid")
         if not isinstance(digest, str) or not _SHA_RE.fullmatch(digest):
@@ -633,27 +646,58 @@ def _validate_cell(cell: Any, *, label: str, metric: Mapping[str, Any],
     allowed_reasons = {item.value for item in MissingReason}
     if reason not in allowed_reasons:
         errors.append(f"{label}.null_reason invalid")
-    if value is None and reason == MissingReason.OK.value:
-        errors.append(f"{label}: null value cannot have OK null_reason")
-    if value is not None and reason != MissingReason.OK.value:
-        errors.append(f"{label}: observed value must have OK null_reason")
+    estimability_reason = cell.get("estimability_reason")
+    if value is None:
+        if reason == MissingReason.OK.value:
+            errors.append(f"{label}: null value cannot have OK null_reason")
+        if estimability_reason not in _ESTIMABILITY_REASONS:
+            errors.append(f"{label}.estimability_reason invalid")
+    else:
+        if reason != MissingReason.OK.value:
+            errors.append(f"{label}: observed value must have OK null_reason")
+        if estimability_reason is not None:
+            errors.append(f"{label}: observed cell cannot carry estimability_reason")
     if cell.get("recipe_id") != metric.get("recipe_id"):
         errors.append(f"{label}: recipe mismatch")
     try:
         effective = parse_date(cell.get("effective_at"), field=f"{label}.effective_at")
-        if effective > as_of:
-            errors.append(f"{label}: future effective_at")
+        if effective != as_of:
+            direction = "future " if effective > as_of else "stale "
+            errors.append(
+                f"{label}: {direction}effective_at must equal bundle.as_of "
+                f"({effective.isoformat()} != {as_of.isoformat()})"
+            )
     except ContractError as exc:
         errors.append(str(exc))
+    valid_counts = True
     for key in ("observations_available", "observations_required"):
         number = cell.get(key)
         if not isinstance(number, int) or isinstance(number, bool) or number < 0:
             errors.append(f"{label}.{key} invalid")
+            valid_counts = False
+    if valid_counts:
+        available = cell["observations_available"]
+        required = cell["observations_required"]
+        if required != metric.get("minimum_observations"):
+            errors.append(f"{label}.observations_required disagrees with metric definition")
+        window = metric.get("window")
+        if isinstance(window, int) and available > window:
+            errors.append(f"{label}.observations_available exceeds metric window")
     included = cell.get("included_in_aggregate")
     if not isinstance(included, bool):
         errors.append(f"{label}.included_in_aggregate invalid")
-    elif included != (member_key in (metric.get("observed_member_keys") or [])):
-        errors.append(f"{label}: aggregate inclusion mismatch")
+    else:
+        expected_inclusion = member_key in (metric.get("observed_member_keys") or [])
+        if included != expected_inclusion:
+            errors.append(f"{label}: aggregate inclusion mismatch")
+        if included and value is None:
+            errors.append(f"{label}: included cell must carry an observed value")
+        if not included and value is not None:
+            errors.append(f"{label}: excluded cell cannot carry an observed value")
+        if value_type == "boolean" and included:
+            expected_true = member_key in (metric.get("numerator_member_keys") or [])
+            if value is not expected_true:
+                errors.append(f"{label}: boolean value disagrees with numerator membership")
 
 
 def _validate_metric(metric: Any, *, label: str, member_keys: list[str],
@@ -665,12 +709,20 @@ def _validate_metric(metric: Any, *, label: str, member_keys: list[str],
     observed = metric.get("observed_member_keys")
     numerator_keys = metric.get("numerator_member_keys")
     excluded = metric.get("excluded_members")
-    if not isinstance(observed, list) or len(observed) != len(set(observed)):
+    if (not isinstance(observed, list)
+            or not all(isinstance(key, str) and key for key in observed)
+            or len(observed) != len(set(observed))):
         errors.append(f"{label}: observed_member_keys invalid")
         observed = []
-    if not isinstance(numerator_keys, list) or len(numerator_keys) != len(set(numerator_keys)):
+    elif observed != sorted(observed):
+        errors.append(f"{label}: observed_member_keys must be deterministic")
+    if (not isinstance(numerator_keys, list)
+            or not all(isinstance(key, str) and key for key in numerator_keys)
+            or len(numerator_keys) != len(set(numerator_keys))):
         errors.append(f"{label}: numerator_member_keys invalid")
         numerator_keys = []
+    elif numerator_keys != sorted(numerator_keys):
+        errors.append(f"{label}: numerator_member_keys must be deterministic")
     if not set(observed).issubset(set(member_keys)):
         errors.append(f"{label}: observed contains unknown member")
     if not set(numerator_keys).issubset(set(observed)):
@@ -690,8 +742,12 @@ def _validate_metric(metric: Any, *, label: str, member_keys: list[str],
             excluded_keys.append(key)
         if row.get("null_reason") not in {item.value for item in MissingReason} - {MissingReason.OK.value}:
             errors.append(f"{row_label}.null_reason invalid")
+        if row.get("estimability_reason") not in _ESTIMABILITY_REASONS:
+            errors.append(f"{row_label}.estimability_reason invalid")
     if len(excluded_keys) != len(set(excluded_keys)):
         errors.append(f"{label}: duplicate excluded member")
+    elif excluded_keys != sorted(excluded_keys):
+        errors.append(f"{label}: excluded_members must be deterministic")
     if set(observed) | set(excluded_keys) != set(member_keys) or set(observed) & set(excluded_keys):
         errors.append(f"{label}: observed/excluded partition mismatch")
     denominator = metric.get("denominator")
@@ -806,10 +862,12 @@ def validate_member_bundle(bundle: Any) -> list[str]:
         member_keys = group.get("member_keys")
         members = group.get("members")
         metrics = group.get("metrics")
-        if not isinstance(member_keys, list) or len(member_keys) != len(set(member_keys)):
+        if (not isinstance(member_keys, list)
+                or not all(isinstance(key, str) and key for key in member_keys)
+                or len(member_keys) != len(set(member_keys))):
             errors.append(f"{label}: member_keys invalid")
             member_keys = []
-        if member_keys != sorted(member_keys):
+        elif member_keys != sorted(member_keys):
             errors.append(f"{label}: member_keys must be deterministic")
         if group.get("member_count") != len(member_keys):
             errors.append(f"{label}: member_count mismatch")
@@ -832,9 +890,23 @@ def validate_member_bundle(bundle: Any) -> list[str]:
         if not isinstance(metrics, Mapping) or not metrics:
             errors.append(f"{label}: metrics invalid")
             metrics = {}
+        if set(metrics) != set(_METRIC_DEFS):
+            errors.append(
+                f"{label}: metric set mismatch; expected {sorted(_METRIC_DEFS)}, "
+                f"got {sorted(metrics)}"
+            )
         for metric_id, metric in metrics.items():
-            _validate_metric(metric, label=f"{label}.metrics[{metric_id!r}]",
+            metric_label = f"{label}.metrics[{metric_id!r}]"
+            _validate_metric(metric, label=metric_label,
                              member_keys=member_keys, errors=errors)
+            expected_definition = _METRIC_DEFS.get(metric_id)
+            if expected_definition is not None and isinstance(metric, Mapping):
+                for field, expected in expected_definition.items():
+                    if metric.get(field) != expected:
+                        errors.append(
+                            f"{metric_label}: definition mismatch for {field}; "
+                            f"expected {expected!r}, got {metric.get(field)!r}"
+                        )
         for member_key, member in members.items():
             member_label = f"{label}.members[{member_key!r}]"
             if not isinstance(member, Mapping):
@@ -843,6 +915,13 @@ def validate_member_bundle(bundle: Any) -> list[str]:
             _unknown_keys(member, _MEMBER_KEYS, member_label, errors)
             if member.get("member_key") != member_key:
                 errors.append(f"{member_label}: member_key mismatch")
+            source_symbol = member.get("source_symbol")
+            if not isinstance(source_symbol, str) or not source_symbol:
+                errors.append(f"{member_label}.source_symbol invalid")
+            identity_ref = member.get("identity_ref")
+            if identity_ref is not None and (
+                    not isinstance(identity_ref, str) or not identity_ref):
+                errors.append(f"{member_label}.identity_ref invalid")
             cells = member.get("metrics")
             if not isinstance(cells, Mapping) or set(cells) != set(metrics):
                 errors.append(f"{member_label}: metric cells mismatch")
@@ -855,6 +934,25 @@ def validate_member_bundle(bundle: Any) -> list[str]:
                 _validate_cell(cell, label=f"{member_label}.metrics[{metric_id!r}]",
                                metric=metrics[metric_id], member_key=member_key,
                                as_of=as_of, errors=errors)
+        if isinstance(members, Mapping) and set(members) == set(member_keys):
+            for metric_id, metric in metrics.items():
+                if not isinstance(metric, Mapping):
+                    continue
+                expected_excluded = []
+                for member_key in member_keys:
+                    member = members.get(member_key)
+                    cells = member.get("metrics") if isinstance(member, Mapping) else None
+                    cell = cells.get(metric_id) if isinstance(cells, Mapping) else None
+                    if isinstance(cell, Mapping) and cell.get("included_in_aggregate") is False:
+                        expected_excluded.append({
+                            "member_key": member_key,
+                            "null_reason": cell.get("null_reason"),
+                            "estimability_reason": cell.get("estimability_reason"),
+                        })
+                if metric.get("excluded_members") != expected_excluded:
+                    errors.append(
+                        f"{label}.metrics[{metric_id!r}]: excluded member detail mismatch"
+                    )
         coverage = group.get("coverage_details")
         if not isinstance(coverage, Mapping):
             errors.append(f"{label}.coverage_details invalid")
