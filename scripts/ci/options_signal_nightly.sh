@@ -27,13 +27,16 @@ REPO_ROOT="${GITHUB_WORKSPACE:-$(git rev-parse --show-toplevel)}"
 # shellcheck source=scripts/ci/push_retry.sh
 . "$REPO_ROOT/scripts/ci/push_retry.sh"
 
-readonly -a OIP_EPISODE_PATHS=(
+readonly -a OIP_EPISODE_CORE_PATHS=(
   data/options_signal_episode/checkpoint.json
   data/options_signal_episode/episodes.jsonl
   data/options_signal_episode/outcomes_h60.jsonl
   data/options_signal_episode/outcomes_session.jsonl
   data/options_signal_episode/campaigns.jsonl
 )
+# Populated immediately before each episode publication from the frozen core plus
+# contiguous physical extensions of the one logical session-outcome ledger.
+OIP_EPISODE_PATHS=()
 readonly -a OIP_CAMPAIGN_PATHS=(
   data/options_signal_campaign/campaigns.jsonl
   data/options_signal_campaign/outcomes.jsonl
@@ -43,6 +46,36 @@ readonly -a OIP_NARROW_ROOTS=(
   data/options_signal_episode
   data/options_signal_campaign
 )
+
+
+oip_collect_episode_paths() {
+  local parts_dir="data/options_signal_episode/outcomes_session_parts"
+  local entry name expected next=1
+  local -a entries=()
+  OIP_EPISODE_PATHS=("${OIP_EPISODE_CORE_PATHS[@]}")
+  [ -e "$parts_dir" ] || return 0
+  if [ -L "$parts_dir" ] || [ ! -d "$parts_dir" ]; then
+    echo "::error title=options PIT checkpoint parts rejected::$parts_dir is not a regular directory" >&2
+    return 1
+  fi
+  shopt -s nullglob dotglob
+  entries=("$parts_dir"/*)
+  shopt -u nullglob dotglob
+  for entry in "${entries[@]}"; do
+    name=${entry##*/}
+    expected=$(printf 'part-%06d.jsonl' "$next")
+    if [ "$name" != "$expected" ]; then
+      echo "::error title=options PIT checkpoint parts rejected::expected $expected, found $name" >&2
+      return 1
+    fi
+    if [ -L "$entry" ] || [ ! -f "$entry" ]; then
+      echo "::error title=options PIT checkpoint parts rejected::$entry is not a regular file" >&2
+      return 1
+    fi
+    OIP_EPISODE_PATHS+=("$entry")
+    next=$((next + 1))
+  done
+}
 
 oip_require_main_branch() {
   local symbolic=""
@@ -261,6 +294,7 @@ publish_episode() {
   oip_require_main_branch
 
   oip_require_clean_index "options PIT checkpoint"
+  oip_collect_episode_paths
   oip_require_regular_files "options PIT checkpoint" "${OIP_EPISODE_PATHS[@]}"
   git add -- "${OIP_EPISODE_PATHS[@]}"
   if git diff --cached --quiet; then

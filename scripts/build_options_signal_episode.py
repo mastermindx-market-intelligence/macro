@@ -53,6 +53,7 @@ from engine.options_signal_episode import (
     derive_session_outcome,
     episode_from_live_event,
     load_jsonl,
+    load_session_outcomes,
     normalize_price_bars,
     validate_episode,
     validate_outcome,
@@ -709,7 +710,7 @@ def run(
         outcome_keys.add(semantic_key)
         resolved_episodes.add(row["episode_id"])
 
-    existing_session_outcomes = load_jsonl(session_outcome_path)
+    existing_session_outcomes = load_session_outcomes(session_outcome_path)
     resolved_session_keys: set[tuple[str, str]] = set()
     session_outcome_ids: set[str] = set()
     for row in existing_session_outcomes:

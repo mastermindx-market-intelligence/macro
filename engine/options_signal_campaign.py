@@ -31,6 +31,7 @@ from jsonschema import Draft202012Validator, FormatChecker
 from engine.ledger_lane import nightly_advance_enabled
 from engine.options_signal_episode_contract import (
     EpisodeSourceContractError,
+    session_outcome_logical_bytes as _session_outcome_logical_bytes,
     validate_episode_pit,
     validate_h60_outcome_join,
     validate_session_outcome_join,
@@ -230,6 +231,15 @@ def _snapshot_from_raw(path: Path, label: str, raw: bytes) -> LedgerSnapshot:
 
 
 def load_ledger(path: Path, label: str) -> LedgerSnapshot:
+    if label == SESSION_PATH:
+        # Physical rollover is storage-only. Reconstruct the exact historical
+        # byte stream through the shared frozen source contract — never by
+        # importing the mutable episode-writer implementation.
+        try:
+            raw = _session_outcome_logical_bytes(path)
+        except EpisodeSourceContractError as exc:
+            raise CampaignContractError(str(exc)) from exc
+        return _snapshot_from_raw(path, label, raw)
     if not path.exists():
         return LedgerSnapshot(path, label, (), b"")
     if path.is_symlink() or not path.is_file():

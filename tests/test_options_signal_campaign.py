@@ -174,6 +174,32 @@ def _read_jsonl(path: Path) -> list[dict]:
     return [json.loads(line) for line in path.read_text().splitlines()]
 
 
+def test_session_outcome_parts_are_one_campaign_prefix_with_global_ordinals(
+    tmp_path: Path,
+) -> None:
+    base = tmp_path / campaign_engine.SESSION_PATH
+    base.parent.mkdir(parents=True, exist_ok=True)
+    rows = [copy.deepcopy(BASE_SESSION) for _ in range(3)]
+    for index, row in enumerate(rows, start=1):
+        row["outcome_id"] = f"fixture-outcome-{index}"
+        row["episode_id"] = f"fixture-episode-{index}"
+    encoded = [canonical_bytes(row) + b"\n" for row in rows]
+    base.write_bytes(encoded[0])
+    parts = base.parent / "outcomes_session_parts"
+    parts.mkdir()
+    (parts / "part-000001.jsonl").write_bytes(encoded[1])
+    (parts / "part-000002.jsonl").write_bytes(encoded[2])
+
+    snapshot = campaign_engine.load_ledger(base, campaign_engine.SESSION_PATH)
+    assert snapshot.raw == b"".join(encoded)
+    assert [item.ordinal for item in snapshot.rows] == [1, 2, 3]
+    assert [item.raw for item in snapshot.rows] == [item[:-1] for item in encoded]
+    receipt = campaign_engine._receipt(snapshot)
+    assert receipt["path"] == campaign_engine.SESSION_PATH
+    assert receipt["records"] == 3
+    assert receipt["prefix_sha256"] == hashlib.sha256(b"".join(encoded)).hexdigest()
+
+
 def test_census_keeps_singletons_exact_contracts_stable_and_zero_authority(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

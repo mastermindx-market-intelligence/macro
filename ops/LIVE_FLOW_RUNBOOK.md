@@ -123,6 +123,15 @@ after the session digest. It is the sole advancer of these committed artifacts:
   session offset from the episode session; the exit is the declared target-session
   close under `nyse_session_window_recurring_schedule/v1` (including modeled
   recurring early closes), not a fabricated bar open;
+  This remains the one canonical logical ledger and the base file is its immutable
+  historical byte prefix. When that base has reached the physical Git blob budget,
+  the same sole writer appends later canonical row bytes to contiguous
+  `data/options_signal_episode/outcomes_session_parts/part-NNNNNN.jsonl` files,
+  each capped at 48 MiB. Readers reconstruct `base + part-000001 + ...` byte-for-byte
+  under the original logical path label, so global row ordinals, prefix SHA-256
+  receipts, semantic `(episode_id,horizon)` identity, and campaign checkpoints do
+  not change. Gaps, unexpected entries, symlinks, torn parts, or an oversized new
+  row fail closed; this is physical rollover, not a second outcome store;
 - `data/options_signal_episode/checkpoint.json` — per-session record count and
   canonical-record append-prefix SHA-256 (not the raw-byte publication digest).
 
