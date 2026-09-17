@@ -1,0 +1,17 @@
+{
+  "kind": "typed asset evidence and finite-price observation clock qualification",
+  "focused_result": "99 passed, zero failures",
+  "log": "........................................................................ [ 72%]\n...........................                                              [100%]\n99 passed in 36.23s\n",
+  "cases": "110 invalid scalar combinations, 1458 existing nominal policy combinations; explicit finite/nonfinite observation-clock controls",
+  "observation_clock": "The existing dropna accepted infinities, booleans and numeric text as dated prices. The shared finite-number reader now filters these before choosing price_asof; valid finite zero/negative/positive controls remain unchanged.",
+  "model_authority": "display_only; new_entry_permission remains null; no model weights, allocation rules, indicator aggregation or source market observations changed",
+  "source_sha256": {
+    "scripts/commodity_asset_read.py": "7e23a74ef2b1d85cff7576c98ebfb343ae468dde2069b00fab7a233d8521ef70",
+    "tests/test_commodity_asset_read.py": "08f0a320c0f852ea7ffcd618a44980642c5f418eaab4346ffed65206fa4b5e23"
+  },
+  "limits": [
+    "current combined integration still to reconcile",
+    "independent review and applicable current-head CI remain required",
+    "not production proof"
+  ]
+}

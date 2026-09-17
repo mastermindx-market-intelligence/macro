@@ -1,0 +1,55 @@
+{
+  "r1": "9f6b536f3a720b9c249d5d6dd24018b630869200",
+  "r2": "bf8d72560134b103ae5e5ed1da6a26723e68df8c",
+  "common": "bb02c526c4809564338f2a7208e063dbe86bc476",
+  "kind": "exact-source integrated test projection, not source branch or production",
+  "files": [
+    {
+      "path": "engine/commodity_mtf.py",
+      "r1_blob": "231e5ea03ba672af7a474cfc504b42b97cc31298",
+      "r2_blob": "782a341c1456dd6218a4ad12f4582e01d1b00bfe",
+      "merged_sha256": "fe37a45c7d9c785775727c7bc88b426d83f0894bf15936bd981edd3dc32fc8c4"
+    },
+    {
+      "path": "scripts/build_commodities.py",
+      "r1_blob": "2ec7fd8b631f46a93aeb740b950bb3ead8a7854e",
+      "r2_blob": "c9417933e710b68b5a2885c26212015ca356e475",
+      "merged_sha256": "1c72fecf62e67dc7a96d402c53f1804f4e1a18f32a055e9f7556d5aaac062c9a"
+    },
+    {
+      "path": "scripts/capture_commodities_w6_evidence.py",
+      "r1_blob": "8799e10cbd965607a4f3d9e82fa29d962f0b7d36",
+      "r2_blob": "d1b78dbd46168488f639539390a5f93d755a7e67",
+      "merged_sha256": "33831f996c4b5c8521f5b762deea5d946c383e47b61ceaa470f90df9dd4893cf"
+    },
+    {
+      "path": "templates/commodities.html.j2",
+      "r1_blob": "25d3ded9f42282ffd6524fb0f30ec47a9b44a168",
+      "r2_blob": "12b95e428720f62e7f6d53b3dbf5a66723a0d98c",
+      "merged_sha256": "cf9af64beff10f073daab5503fb196dba76661907e5bf126466ddd48134d74da"
+    },
+    {
+      "path": "tests/test_commodities_w6_truth.py",
+      "r1_blob": "771dc3bf46e16260cae161246977a137e464a412",
+      "r2_blob": "fc178a58fee394aae476b32bb2c957fd8cc414ce",
+      "merged_sha256": "d0c7074491fca1caed8d98e32b26823d2913eec8669004fb458ec9107fdad4da"
+    },
+    {
+      "path": "tests/test_commodity_mtf_verdict_honesty.py",
+      "r1_blob": "bd10f391289f228c5e9f748c158ab3317b2e6333",
+      "r2_blob": "6abbe5c99b4f8ba0b70e75980abc3bfc0b9fa1be",
+      "merged_sha256": "ea2526a071f3a8132229ba47d3b558419378fba044e1e35246efa4081a53a0d1"
+    }
+  ],
+  "verification": "interrupted run result recovered without repeating the test",
+  "pytest_result": "403 passed, 0 failed, 2 existing NumPy warnings",
+  "elapsed_seconds": 408.85,
+  "log_sha256": "d491f54b9b52468829a26ee7ca6a233b112d10c8c6419e9bcaf137b415ce97bc",
+  "log": "........................................................................ [ 17%]\n........................................................................ [ 35%]\n........................................................................ [ 53%]\n........................................................................ [ 71%]\n........................................................................ [ 89%]\n...........................................                              [100%]\n=============================== warnings summary ===============================\ntests/test_forex.py::test_calibrate_pair_signs_inverted_and_normalizes\n  /opt/homebrew/lib/python3.14/site-packages/numpy/lib/_function_base_impl.py:3036: RuntimeWarning: invalid value encountered in divide\n    c /= stddev[:, None]\n\ntests/test_forex.py::test_calibrate_pair_signs_inverted_and_normalizes\n  /opt/homebrew/lib/python3.14/site-packages/numpy/lib/_function_base_impl.py:3037: RuntimeWarning: invalid value encountered in divide\n    c /= stddev[None, :]\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n403 passed, 2 warnings in 408.85s (0:06:48)\n",
+  "production_proven": false,
+  "limits": [
+    "synthetic/read-only archived-data suite inputs",
+    "not a GitHub merge or main acceptance",
+    "no new full-builder R1/R2 fixture: setup request was tool-refused and not retried"
+  ]
+}

@@ -1,0 +1,146 @@
+{
+  "kind": "actual live.js with synthetic intercepted quote responses and decode instrumentation",
+  "source": "bf8d72560134b103ae5e5ed1da6a26723e68df8c",
+  "live_js_sha256": "f7bdf7cce1606c07d806408b7feb8b134c99e838acc3ee887bf5e1a15a9f4478",
+  "fixture_html_sha256": "c692e05587b67e7e45585c78ff5b6d1de8999332c3463e43207988fb23bf75a7",
+  "supersedes": "v1 had Playwright Response.finished cleanup warnings; no product change was made",
+  "production_proven": false,
+  "rows": [
+    {
+      "width": 1440,
+      "locale": "en",
+      "theme": "dark",
+      "decoded_quote_packets": 3,
+      "model_dom_sha256": "c35c9412e7071de1a02c5fd13d7e42723597cd0d6a3c0e9eddfed6e7777c30b6",
+      "signal_dates": [
+        "2026-09-15",
+        "2026-09-15",
+        "2026-09-15",
+        "2026-09-15"
+      ],
+      "fresh_and_stale_quotes_preserve_model": true,
+      "stale_quote_labeled": true,
+      "out_of_order_quote_rejected": true,
+      "page_errors": []
+    },
+    {
+      "width": 1440,
+      "locale": "en",
+      "theme": "light",
+      "decoded_quote_packets": 3,
+      "model_dom_sha256": "c35c9412e7071de1a02c5fd13d7e42723597cd0d6a3c0e9eddfed6e7777c30b6",
+      "signal_dates": [
+        "2026-09-15",
+        "2026-09-15",
+        "2026-09-15",
+        "2026-09-15"
+      ],
+      "fresh_and_stale_quotes_preserve_model": true,
+      "stale_quote_labeled": true,
+      "out_of_order_quote_rejected": true,
+      "page_errors": []
+    },
+    {
+      "width": 1440,
+      "locale": "zh",
+      "theme": "dark",
+      "decoded_quote_packets": 3,
+      "model_dom_sha256": "c35c9412e7071de1a02c5fd13d7e42723597cd0d6a3c0e9eddfed6e7777c30b6",
+      "signal_dates": [
+        "2026-09-15",
+        "2026-09-15",
+        "2026-09-15",
+        "2026-09-15"
+      ],
+      "fresh_and_stale_quotes_preserve_model": true,
+      "stale_quote_labeled": true,
+      "out_of_order_quote_rejected": true,
+      "page_errors": []
+    },
+    {
+      "width": 1440,
+      "locale": "zh",
+      "theme": "light",
+      "decoded_quote_packets": 3,
+      "model_dom_sha256": "c35c9412e7071de1a02c5fd13d7e42723597cd0d6a3c0e9eddfed6e7777c30b6",
+      "signal_dates": [
+        "2026-09-15",
+        "2026-09-15",
+        "2026-09-15",
+        "2026-09-15"
+      ],
+      "fresh_and_stale_quotes_preserve_model": true,
+      "stale_quote_labeled": true,
+      "out_of_order_quote_rejected": true,
+      "page_errors": []
+    },
+    {
+      "width": 390,
+      "locale": "en",
+      "theme": "dark",
+      "decoded_quote_packets": 3,
+      "model_dom_sha256": "c35c9412e7071de1a02c5fd13d7e42723597cd0d6a3c0e9eddfed6e7777c30b6",
+      "signal_dates": [
+        "2026-09-15",
+        "2026-09-15",
+        "2026-09-15",
+        "2026-09-15"
+      ],
+      "fresh_and_stale_quotes_preserve_model": true,
+      "stale_quote_labeled": true,
+      "out_of_order_quote_rejected": true,
+      "page_errors": []
+    },
+    {
+      "width": 390,
+      "locale": "en",
+      "theme": "light",
+      "decoded_quote_packets": 3,
+      "model_dom_sha256": "c35c9412e7071de1a02c5fd13d7e42723597cd0d6a3c0e9eddfed6e7777c30b6",
+      "signal_dates": [
+        "2026-09-15",
+        "2026-09-15",
+        "2026-09-15",
+        "2026-09-15"
+      ],
+      "fresh_and_stale_quotes_preserve_model": true,
+      "stale_quote_labeled": true,
+      "out_of_order_quote_rejected": true,
+      "page_errors": []
+    },
+    {
+      "width": 390,
+      "locale": "zh",
+      "theme": "dark",
+      "decoded_quote_packets": 3,
+      "model_dom_sha256": "c35c9412e7071de1a02c5fd13d7e42723597cd0d6a3c0e9eddfed6e7777c30b6",
+      "signal_dates": [
+        "2026-09-15",
+        "2026-09-15",
+        "2026-09-15",
+        "2026-09-15"
+      ],
+      "fresh_and_stale_quotes_preserve_model": true,
+      "stale_quote_labeled": true,
+      "out_of_order_quote_rejected": true,
+      "page_errors": []
+    },
+    {
+      "width": 390,
+      "locale": "zh",
+      "theme": "light",
+      "decoded_quote_packets": 3,
+      "model_dom_sha256": "c35c9412e7071de1a02c5fd13d7e42723597cd0d6a3c0e9eddfed6e7777c30b6",
+      "signal_dates": [
+        "2026-09-15",
+        "2026-09-15",
+        "2026-09-15",
+        "2026-09-15"
+      ],
+      "fresh_and_stale_quotes_preserve_model": true,
+      "stale_quote_labeled": true,
+      "out_of_order_quote_rejected": true,
+      "page_errors": []
+    }
+  ]
+}

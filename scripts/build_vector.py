@@ -1465,6 +1465,43 @@ def _intl_state() -> dict:
         return {"label": "—", "date": "", "risk": "", "present": (site / "intl.html").exists()}
 
 
+def _commodity_asset_chips(commodities: dict | None) -> str:
+    """Render the existing asset-read projection, never a new sector trade call.
+
+    The hub is a consumer of the commodity page's dated evidence. Legacy favored
+    lists are not a fallback when that evidence is absent. All dynamic text is
+    escaped because _bi itself intentionally accepts trusted HTML.
+    """
+    from html import escape
+    from scripts.commodity_asset_read import model_evidence_read
+    source = commodities if isinstance(commodities, dict) else {}
+    reads = source.get("asset_reads")
+    reads = reads if isinstance(reads, dict) else {}
+    chips = []
+    for asset, en, zh in (("gold", "Gold", "黄金"), ("silver", "Silver", "白银"),
+                          ("copper", "Copper", "铜"), ("oil", "Oil", "原油")):
+        read = reads.get(asset)
+        valid = (isinstance(read, dict)
+                 and read.get("schema") == "mastermind.commodity_asset_read.v1"
+                 and read.get("asset") == asset
+                 and read.get("authority") == "display_only"
+                 and read.get("new_entry_permission") is None)
+        read = read if valid else {}
+        title_en, title_zh = read.get("title_en"), read.get("title_zh")
+        title_en = title_en if isinstance(title_en, str) and title_en else "Evidence unavailable"
+        title_zh = title_zh if isinstance(title_zh, str) and title_zh else "证据暂缺"
+        stamp = read.get("signal_asof")
+        stamp = stamp if isinstance(stamp, str) else ""
+        text_en = en + ": " + title_en + (" · " + stamp if stamp else "")
+        text_zh = zh + "：" + title_zh + (" · " + stamp if stamp else "")
+        evidence = model_evidence_read(asset, read.get("model_evidence"))
+        text_en += " · " + evidence["label_en"]
+        text_zh += " · " + evidence["label_zh"]
+        chips.append('<span class="pill" data-commodity-asset="' + asset + '">'
+                     + _bi(escape(text_en), escape(text_zh)) + '</span>')
+    return '<div class="chips">' + "".join(chips) + '</div>'
+
+
 def _commodities_state() -> dict:
     """Commodity-complex regime for the hub card (written by build_commodities,
     which runs before build_vector). `present` gates the card so the hub still
@@ -1474,9 +1511,10 @@ def _commodities_state() -> dict:
         d = json.loads((config.data_dir() / "commodity" / "latest.json").read_text())
         return {"label": d.get("regime", "—"), "date": d.get("date", ""),
                 "favored": d.get("favored", []),
+                "asset_reads": d.get("asset_reads") if isinstance(d.get("asset_reads"), dict) else {},
                 "present": (site / "commodities.html").exists()}
     except Exception:
-        return {"label": "—", "date": "", "favored": [],
+        return {"label": "—", "date": "", "favored": [], "asset_reads": {},
                 "present": (site / "commodities.html").exists()}
 
 
@@ -3078,8 +3116,7 @@ def _g_vectors(vm, commodities, forex, bonds, crossasset, etf, strategies, watch
     com_label = (commodities or {}).get("label", "—")
     com_q = _GQUAD_CLS.get(com_label, "")   # tint the pill by regime quadrant (was a no-op guard)
     # zh users previously saw the English regime word ("Goldilocks") — translate it
-    com = ('<div class="chips"><span class="pill ' + com_q + '">' + _bi(com_label, _GQUAD_ZH.get(com_label, com_label))
-           + '</span>' + ('<span class="pill">' + _bi("Favored: " + fav, "偏好：" + fav) + '</span>' if fav else "") + '</div>')
+    com = _commodity_asset_chips(commodities)
     _FX_LABEL_ZH = {
         "US growth premium": "美元增长溢价",
         "risk-on": "风险偏好",

@@ -562,6 +562,26 @@ html[data-theme="light"] :is(
   .big-stance.t-act,
   .big-stance.t-selective
 ) { text-shadow:none; }
+
+/* R2 asset evidence: same semantic structure; existing panel material owns both themes. */
+.asset-read-section { margin: 18px 0; }
+.asset-read-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; }
+.asset-read-card { min-width: 0; padding: 18px; }
+.asset-read-heading { display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px; }
+.asset-read-heading strong { font-size:16px; }
+.asset-read-title { font-size:22px; line-height:1.25; margin:12px 0; overflow-wrap:anywhere; }
+.asset-read-facts { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.asset-read-facts div { display:flex; flex-direction:column; gap:3px; min-width:0; }
+.asset-read-facts strong { font-size:15px; overflow-wrap:anywhere; }
+.asset-read-timeframes { display:flex; flex-wrap:wrap; gap:6px; margin-top:14px; }
+.asset-read-reason,.asset-read-disclosure,.asset-read-method { line-height:1.5; }
+.asset-read-reason { color:var(--mut); font-size:13px; margin:12px 0; }
+.asset-read-disclosure { color:var(--mut); font-size:13px; max-width:95ch; }
+.asset-read-method { font-size:12px; margin-top:10px; }
+.asset-read-date { display:flex; align-items:center; flex-wrap:wrap; gap:4px; font-size:12px; color:var(--mut); }
+.asset-read-open { margin-left:auto; white-space:normal; }
+@media(max-width:640px) { .asset-read-grid { grid-template-columns: minmax(0,1fr); } .asset-read-title { font-size:21px; } }
+
 </style>
 {% include "_state_inks.html.j2" %}
 {% include "_vector_polish.html.j2" %}
@@ -705,6 +725,8 @@ html[data-theme="light"] :is(
     {% endif %}
   </div>
 </div>
+
+{% include "_commodity_asset_read.html.j2" %}
 
 <!-- ========================= KPI RAIL ========================= -->
 <div class="kpi-rail" style="margin-bottom:14px">
@@ -1037,7 +1059,19 @@ html[data-theme="light"] :is(
   <div class="det">
     <!-- left: confluence call + cycle clock -->
     <div class="panel">
-      <p class="kick">{{ t('What to do now', '当前该怎么做') }}</p>
+      <p class="kick">{{ t('Asset-level read', '品种判断') }}</p>
+      {% set ar = d.asset_read|default({}) %}
+      <div class="asset-read-title {{ ar.tone or 'mut' }}">{{ t(ar.title_en or 'Evidence incomplete', ar.title_zh or '证据不完整') }}</div>
+      <div class="asset-read-date">{{ t('Signal date','信号日期') }} {{ ar.signal_asof or '—' }} · {{ ar.instrument or '—' }}</div>
+      {% if ar.reasons %}<p class="asset-read-reason">{{ t(ar.reasons[0].en, ar.reasons[0].zh) }}</p>{% endif %}
+  {% set evidence = ar.model_evidence|default({}) %}
+  <details class="asset-read-calibration faint" data-model-evidence="{{ evidence.status or 'unavailable' }}">
+    <summary>{{ t(evidence.label_en or 'Calibration evidence unavailable', evidence.label_zh or '校准证据暂缺') }}</summary>
+    <p>{{ t('Declared return horizons', '声明的收益期限') }}:
+      {% if evidence.horizons_bars %}{{ evidence.horizons_bars|join(' / ') }} {{ t('bars', '根K线') }}{% else %}{{ t('Unavailable', '暂无数据') }}{% endif %}.
+      {{ t(evidence.disclosure_en or 'Parameter-source evidence, not a win probability.', evidence.disclosure_zh or '仅说明参数来源，并非胜率。') }}</p>
+  </details>
+      <p class="kick">{{ t('Confluence context — separate evidence', '共振背景——单独证据') }}</p>
       <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
         <span style="font-size:22px;font-weight:600">{{ t(d.action_en, d.action_zh) }}</span>
         {% if d.top_score is not none and (d.top_score or 0) >= 30 %}
@@ -1358,6 +1392,10 @@ html[data-theme="light"] :is(
     tabs.forEach(function(x){x.classList.remove('active')}); b.classList.add('active');
     var k=b.dataset.det;
     panels.forEach(function(p){ p.hidden = p.dataset.detpanel!==k; });
+    if(b.classList.contains('asset-read-open')){
+      var target=[].slice.call(panels).find(function(p){return p.dataset.detpanel===k;});
+      if(target) target.scrollIntoView({block:'start'});
+    }
   });});
 })();
 

@@ -517,7 +517,9 @@ def asset_vm(asset: str, df: pd.DataFrame, calib: dict, drivers: dict | None = N
         verdicts["risk_index"] = cal_a["risk_drawdown"].get("verdict", "")
     score = cal_a.get("allocation", {}).get("optimal") or backtest(close, df["alloc_optimal"])
 
-    alloc_pct = int(round(100 * (last.get("alloc_optimal") or 0)))
+    from scripts.commodity_asset_read import exposure_percent
+    allocation_read = exposure_percent(last.get("alloc_optimal"))
+    alloc_pct = int(round(allocation_read)) if allocation_read is not None else None
     risk_on = last.get("risk_regime") == "low_risk"
     vm = {
         "key": asset, "label": META[asset]["label"], "zh": META[asset]["zh"],
@@ -601,8 +603,15 @@ def asset_vm(asset: str, df: pd.DataFrame, calib: dict, drivers: dict | None = N
     # + shocks/alerts), every weight a MEASURED forward-return strength.
     if drivers is not None and extras is not None:
         from engine import commodity_conviction
+        from scripts.commodity_asset_read import calibration_evidence
+        # Resolve once so the displayed source is the same object used to score.
+        effective_calibration = (conv_calib if conv_calib is not None
+                                 else commodity_conviction.load_calibration())
         conv = commodity_conviction.conviction(asset, df, drivers, extras, mtf_a,
-                                               alert_tilt_val, conv_calib)
+                                               alert_tilt_val, effective_calibration)
+        if conv:
+            conv = dict(conv)
+            conv["calibration_evidence"] = calibration_evidence(asset, effective_calibration)
         vm["conviction"] = conv
     # --- technical arming block (Policy-Shock W1-B, display-only) -------------
     # Deterministic per-asset stoch + basing detector. Never feeds scoring.
@@ -1432,8 +1441,12 @@ def _build_sector_vm_inner(
             entry["conviction"] = conviction
         detail.append(entry)
 
+    from scripts.commodity_asset_read import attach_asset_reads
+    asset_reads = attach_asset_reads(detail, member_results, assets, cfg_com)
+
     return {
         "stance":         stance,
+        "asset_reads":    asset_reads,
         "breadth":        breadth_vm,
         "index":          index_vm,
         "cycle_summary":  cycle_summary,
@@ -1679,6 +1692,8 @@ def main() -> int:
                                     "action": (a.get("conviction") or {}).get("action"),
                                     "conviction": (a.get("conviction") or {}).get("score")}
                          for a in assets}}
+    # Same objects as page cards/detail; no parallel decision store.
+    latest["asset_reads"] = vm.get("asset_reads", {})
     # ratios block: copper_gold and gold_silver — reuse series already computed
     # by complex_vm (cx already holds live gsr and copper_gold scalar values,
     # but we need 20d pct-change; read from the underlying results frames directly).

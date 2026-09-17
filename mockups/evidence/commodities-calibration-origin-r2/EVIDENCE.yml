@@ -1,0 +1,6 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/commodities.html.j2
+  - templates/_commodity_asset_read.html.j2
+  - scripts/build_vector.py
+manifest: mockups/evidence/commodities-calibration-origin-r2/manifest.json
