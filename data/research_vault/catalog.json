@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T15:50:41.179937+00:00",
-  "count": 2300,
+  "generated_at": "2026-09-17T16:20:45.309146+00:00",
+  "count": 2301,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -661,6 +661,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-slgvuw8dz0x-c6c139",
+      "title": "Asia FX Talk FOMC decision looms as oil and US yields stay elevated",
+      "institution": "MUFG",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T00:33:01Z",
+      "summary_points": [
+        "FOMC Yield Dynamics: US 10y yield at 5.00% (up 80bps ytd), markets price >90% chance of 25bps hike with two hikes by year-end amid persistent inflation (Brent >$100/bbl, gas >$4/gallon).",
+        "Geopolitical Policy Risks: Middle East tensions (Saudi infrastructure attacks, transport disruptions) threaten oil supply, amplifying inflation and straining US debt/interest-sensitive sectors.",
+        "THB Downside Risk: Thailand’s vulnerability to baht depreciation heightened by heavy oil import reliance, rising costs, deteriorating trade terms, and weak portfolio flows amid sustained high oil prices."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
