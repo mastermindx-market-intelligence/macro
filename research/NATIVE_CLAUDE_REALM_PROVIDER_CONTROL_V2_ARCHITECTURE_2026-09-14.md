@@ -122,7 +122,13 @@ Closed top level:
 }
 ```
 
-Closed capability row:
+Closed capability row contract:
+
+```text
+registration_state = registered | revoked
+```
+
+Concrete registered row:
 
 ```json
 {
@@ -132,11 +138,11 @@ Closed capability row:
   "billing_mode": "subscription",
   "credential_kind": "attached_login",
   "execution_surface": "native_cli",
-  "registration_state": "registered | revoked"
+  "registration_state": "registered"
 }
 ```
 
-Exactly one current row exists for each previously registered `capacity_capability_id`. A revoked row is retained as the terminal current-state tombstone for that generation; row disappearance is not revocation.
+Exactly one current row exists for each previously registered `capacity_capability_id`. A revoked row uses the same closed shape with `registration_state = revoked` and is retained as the terminal current-state tombstone for that generation; row disappearance is not revocation.
 
 ```text
 never registered -> registered(g)
