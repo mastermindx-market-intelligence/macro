@@ -270,9 +270,17 @@ def check_base_effect_pit() -> dict:
 # --------------------------------------------------------------------------- #
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--accrue", action="store_true",
-                    help="append today's causal-HMM forward call before grading")
+    mode = ap.add_mutually_exclusive_group()
+    mode.add_argument("--accrue", action="store_true",
+                      help="append today's causal-HMM forward call before grading")
+    mode.add_argument("--inspect-hmm-asof", metavar="YYYY-MM-DD",
+                      help="read one recorded HMM prediction; never mature, fit, or write")
     args = ap.parse_args()
+    if args.inspect_hmm_asof is not None:
+        from engine.regime_one import read_hmm_issuance
+        result = read_hmm_issuance(args.inspect_hmm_asof)
+        print(json.dumps(result, indent=2, allow_nan=False))
+        return 0 if result["recorded_prediction"] is not None else 1
 
     hist = _axis_scores()
     if hist is None:
