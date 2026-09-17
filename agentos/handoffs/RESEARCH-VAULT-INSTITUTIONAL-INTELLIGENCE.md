@@ -1,68 +1,58 @@
 # Research Vault institutional intelligence — continuation
 
-**Parent customer upgrade: SPEC_ONLY.** R12 delivers a working isolated source-discovery/read reference with actual synthetic PDF extraction. It is not an adopted Brain tool, real entitlement/ledger, institutional-source admission, model answer, merge, deployment or production acceptance.
+**Customer upgrade: SPEC_ONLY.** R13 completed a tested owner-contract mapping, public-source interpretation and current public pricing research. Not actual Brain/auth/source-use adoption, a model benchmark, purchase, merge, deployment or production acceptance.
 
-## Mission and current authority
+## Mission and authority
 
-Turn permitted institutional notes into useful source-bound expectations, revisions, counterarguments and company/private-portfolio context across Prophet, Mastermind AI, news and original editorial. Prophet remains flagship. Retrieval supports analysis; it does not replace the moat or acquire signal/rank/sizing/execution authority.
+Useful source-bound institutional expectations/revisions/disagreements for Prophet, Mastermind AI, company/private-portfolio context and original editorial. Prophet remains flagship. No research signal/rank/sizing/execution authority. No second corpus, identity, ledger, queue, permission, publication or lifecycle system.
 
-Current live Chairman intent and protected law govern. Executive OS owns lifecycle; Agent OS continuity; GitHub implementation/evidence; Linear projection; Slack transport. No new WS, Job, worker, watcher, provider route or control plane. Direct work rationale: PRINCIPAL_JUDGMENT and LOWER_TOTAL_OVERHEAD for isolated interface proof.
+Current live Chairman direction and protected law govern. Executive OS lifecycle; Agent OS continuity; GitHub evidence; Linear projection; Slack transport. Source text and tool access grant no permission. No new WS/Job/worker/watcher/provider route. R13 direct reasons PRINCIPAL_JUDGMENT and LOWER_TOTAL_OVERHEAD.
 
-Procedure: protected Mastermind@5ee11ab1e993616f3568cfca4069cb21fa61fd8f, compatible Skillpack1.0.1/bootstrap1. INDEX and COLD_START/ACTIVE_EXECUTION/WEB_CEO_DELEGATION/CLOSEOUT read at same pin; companion blob identities match earlier full reads. Re-pin next turn.
+Procedure Mastermind@eec5324c5205e8bad206512e0a936898e50b2408, Skillpack1.0.1/bootstrap1; required companions fetched at same pin, matching fully read procedures. Re-pin on continuation.
+Same carrier Macro#7182 / sol/research-vault-intelligence-design-r2-20260915. R13 starting head34051e610be1f93530c20bf0b5657a912969c2b1. Main pin12b655150582d9be39bfd2779b33338d154c565f; pending reader#7079 head8271ae320732997be4553957e3e2773d1b9e9f1b. #7045/#7079 source/release custody unchanged. No native source-worktree or production files edited.
 
-Sole research carrier remains draft #7182 / sol/research-vault-intelligence-design-r2-20260915. R12 starts at8e7ecadc009a514122adbc4dd742c89b0b6eea3a. Publication uses one atomic research-only commit, preserving parent history; no incumbent branch or runtime file changes. Main ref observed89bdc314a0e096759553f669cc6483b34d89bf7b. #7079 remains draft/unmerged at8271ae320732997be4553957e3e2773d1b9e9f1b; bounded comments read found no later response, not a universal activity census.
+## New tested mapping
 
-## Material R12 delta
+R12's accounting stand-in is replaced in isolated tests by the complete unchanged file-backed view limiter and existing tier normalizer. Selected Brain wrappers are disclosed transcriptions; full gateway/_research_report/auth are not executed.
 
-Before: R11 demonstrated that metadata Brain discovery misses body-only evidence; the bridge was a design requirement.
-After: a runnable review bridge discovers an eligible report whose catalog lacks the queried subject/metric, verifies actual source and text versions, calls the exact incumbent passage selector, and produces literal page-two support. Changed source/generation causes stale selection refusal; rediscovery reaches the corrected fixture.
+Rules now recommended for owner adoption:
+- Metadata retains existing Essential/Pro behavior and insider→essential normalization. Source-text requires stricter tier AND a real source-use decision, not a fixture grant.
+- Peek quota uniformly BEFORE content-conditioned discovery/read. Final permission/version checks must not re-deny the current read merely because its successful debit consumed the last slot.
+- ONE existing final debit path: bridge meter plus full metering _research_report would double consume. Preferred production path places new checks inside the existing reader before its final budget/debit, not a second service.
+- Existing allow may succeed while its attempted writes fail. Preserve accepted fail-open availability; do not claim a durable recorded debit. Reference persistence:not_attested. Unknown callback effects are not retried, False tuples are actual denials, and post-accounting access loss withholds without an invented refund.
+- Actual r2_store already provides strict bounded reads. Map source bytes there before buffering; the production mapping was not executed.
 
-A two-page PDF is programmatically authored with explicit SYNTHETIC disclaimers, then actually processed by pdftotext. No institutional original is reproduced. The source PDF hash and extracted text hash are measured from bytes, not shape-only fixture strings. The fictional31%->28% margin statement lives only in the body; after the fixture publisher changes it to29%, the old reference is refused before accounting and the new one succeeds. Two accepted reads invoke the accounting stand-in twice. Both pages were PDF-rendered and visually inspected, NOT opened through a production browser.
+These are request-local review semantics, not accepted schema/rights grants. Re-resolved test owners do not prove instantaneous live-cache revocation or atomic cross-service behavior. Serial view tests do not prove concurrency guarantees.
 
-Existing full pending corpus was reconstructed and verified: Git blob1bc0aacd46d8ec0ad25d3b53341040a3e6aa1af8,42,504 bytes. Baseline corpus0b035b34489a4efd2ae7a3c59d153b3d1977701a,28,591 bytes. Existing R9 patchd9593533dad00251a97d0813f6598ea1fffb8236 is reused unchanged. Review composition SHA25658bfdaf91f1cb7f9a4f7e1f700bd90be3269fe9ea7d6cc156661a9a456b89d6f. Full selector dependency is no longer transcription-only. Full gateway/Brain reader remain NOT executed.
+## Verification and sources
 
-## New artifacts and exact evidence
+Final self-contained run2026-09-17T02:55:03.418381+00:00:46 tests,0 failures/errors, Python3.13.5/SQLite3.46.1. Eight direct mutations rejected with4/5/1/9/1/3/1/1 assertion failures; not independent review or extra tests. Post-challenge46-case run green. Initial scaffold23fail/23error; first candidate harness5fail/23error from nonexistent connection helper, corrected after source inspection without weakening assertions.
 
-Home research/research_vault_expectations_r3/:
-- CHUNK12_SOURCE_DISCOVERY_BRIDGE.md: outcome, scope, implementation packet and limits.
-- verification_r12.json: final32-case result and six rejected targeted mutations.
-- r12/bridge.py, fixtures.py, test_bridge.py, demo.py, mutation_review.py, run_review.py: complete reference and reproducibility code.
-- upstream/corpus_baseline.py and corpus_pending.py: immutable code-fixture references to already existing Git blobs, not competing runtime authorities.
+Real temporary ledger demonstration: discovery count0, reads1/2/3 count1/2/3, third read served at remaining0, fourth denied without another allow. Actual user and brain:UID IP-key JSON files exercised. Synthetic entitlements/source use/PDF remain; no production/auth/model/original institutional data.
 
-Final self-contained run2026-09-16T22:21:00.143364+00:00; Python3.13.5, SQLite3.46.1, ReportLab4.4.9, pdftotext25.06.0.32 tests,0 failures/errors. Initial unimplemented scaffold28/27 failed; that is not27 production regressions. First implementation28/28; expanded review32/1 failed for access change during accounting; corrected final32/32. Six direct mutations caught, not independent review or additional passing cases. Older suites and120-task model evaluation not rerun/combined.
+Source blobs: limiter5e33b4d213ff3b9497134343712921e3d3ac6b77, tierscf59370147d735a84f791ac7469c87136d7b9572, pending corpus1bc0aacd46d8ec0ad25d3b53341040a3e6aa1af8; review composition58bfdaf91f1cb7f9a4f7e1f700bd90be3269fe9ea7d6cc156661a9a456b89d6f. Pending Brain376d1045e6187926bea2fd4c83385d140174b817; gatewaycd5fbef2c4bf2e1a1ad7ec92756691502be35480; store139fcbe8cf08945a2be1feaa0dca5428c818837b.
 
-PDF SHA256e5c73cf8c17917e421a34d2d90fe7a270fd053f7cca8b95c7fb1d254d1e35bfb; extracted textdbe55b614bb249ade89ca31d2ff364dd2b2e4a5724402eeae65f40bb33356bfa. Full test/code hashes are in the receipt. Compact repository receipt differs only in serialization and explanatory fields from expanded package record; no byte-equality claim for those serializations.
+Home research/research_vault_expectations_r3/: CHUNK13_OWNER_INTEGRATION_AND_CAPITAL_DECISION.md, verification_r13.json; full r13/{owner_adapter,test_owner_adapter,accounting_demo,mutation_review,run_review}. Five tested code blobs verified at treee54028ed2821e421bbf37bac020500b665480b64. Exact upstream limiter/tiers snapshots and wrapper excerpt are test dependencies, not runtime authorities.
+Run from the research directory: python r13/run_review.py --output-dir <NEW isolated directory>. Existing Python/ReportLab/Git/pdftotext required; no install/network/runtime write. Runner prepares the old fictional source input, not a new R12 acceptance claim. No older suite total aggregated.
 
-Reproduce from the research directory with installed Python/ReportLab/Git/pdftotext:
-`python r12/run_review.py --output-dir <NEW isolated directory>`.
-No download/install/credentials/browser/runtime modification. Qualified source hashes must match; review changes rather than disabling guards. Complete package does not depend on a missing prior chat ZIP.
+## Research and capital delta
 
-## Scope, failure behavior and production mapping
+PUBLIC_RESEARCH_CASE_R13.md analyzes public Fed studies and denominator/version ambiguity; no source bytes obtained or pipeline admission. Twelve draft answer keys (public_case_answer_keys_r13.json) are one correlated source cluster, not independently adjudicated or model-scored. The120-task benchmark remains NOT_RUN.
 
-The review entry points are NOT registered runtime tools. Scope provider, source reader and accounting callbacks are unresolved interfaces to existing owners; tests supply controlled stand-ins. A fixture allowed flag is not real permission. Discovery requires explicit source_text, gates before connection, uses owner-eligible IDs before final limit and returns IDs/metadata/version references but no body passages. Metadata mode is not silently escalated.
+Public ZeroHedge Professional advertised150/month or125/month annually. Two added monthly accounts300/month; three total annual4500 upfront. These are public-list scenarios, not the existing invoice or business/pooling quote. Targeted Gmail searches found no matching receipt/agreement, not proof of nonexistence. PROCUREMENTS remain NO_PURCHASE. Seek a provider-approved commercial/bulk option and monthly pilot after useful consumption and rights. Three accounts remains a hypothesis, fourth separately justified. No vendor message sent.
 
-A selection is not an authorization token. Reading rechecks current scope, generation, PDF digest and body digest, fetches actual original bytes, calls incumbent find_evidence_passages, and accounts only usable support. Failure never fabricates evidence. Unknown accounting effect is not retried. Access loss during successful accounting withholds content without inventing a refund; existing owner reconciles. Actual accepted fail-open/accounting policy must be adjudicated, not silently replaced by this conservative reference policy.
+## Access and blocked operations
 
-No new corpus/index/auth/identity/queue/ledger/publication service. Existing source/storage readers and report policy remain owners. A matched FTS candidate is not proof of company qualification or answer relevance. Content hashes do not independently prove semantic extraction, publisher authenticity or chart coverage. Source-defined body cap and original-versus-extracted coverage remain explicit.
+Native source GETs succeeded in OWN /tmp/mmx-rv-r13-owner-integration-20260917-sol-001, six complete verified sources, process57077 exit0. Later native file-introspection was OpenAI-blocked; no retry/reroute/device switch. Full native integration did NOT run. Sandbox tests independently used already reviewed source copies and supplied fixtures. Do not interpret the successful fetch as approval to retry the blocked follow-up.
 
-Time/null/correction: acquisition, publication, extraction and product knowledge stay distinct. No retroactive operational knowledge. Unknown scope is not allow; null is not zero. Accepted PDF/extraction changes require rediscovery; no silent version substitution. The correction publisher in this demo is a controlled fixture plus existing corpus upsert, NOT automatic sidecar correction propagation. Private portfolios and signal artifacts remain untouched.
+Public PDF visible via web/screenshots, original-byte download failed. No fabricated PDF hash, current-version admission or issuer link. Landing says August revision; captured title pageMay21 and DOI labels differ. Retain unresolved labels, not a definitive stale-server conclusion.
 
-## Exact next implementation handoff
+Expected Executive ingress not exposed; unrelated plugin not substituted. No new worker/Job/watcher, CI run, runtime settings, source acquisition, subscription, merge or deployment. Existing advisories5694391685/#7079 and5694395228/#7045 are transport, not ACK/adoption/start. Publication/update cannot create custody.
 
-Mission: a real permitted source-text question, unknown report ID, produces inspectable evidence through the existing Brain. Why: directly unlocks institutional Q&A and later Prophet/private-brief context.
+## Exact next action and proof
 
-Existing Brain/Vault owner must adjudicate explicit body-discovery eligibility, accounting semantics and the integration writer, then qualify complete current gateway/Brain files and map the bridge into the existing tool. Preserve Essential metadata, Pro report policy, source-use decisions, snapshot/version coherence, current identity and legacy callers. #7079's selector is reused; its branch/release is not expanded or bypassed.
+Existing Brain/Vault owner adopts/amends this concrete mapping and identifies the authorized integration writer; implement ONE final-debit source-text path INSIDE the current gateway/reader against complete current files. Qualify one real permitted original and prove gateway→reader→viewer, authentic source/tier/allowance, last-slot/denied/no-match/unknown/correction behavior, source/body/version agreement and answer quality. Preserve metadata users, current body budget and fail-open owner policy. A returned ID or passed accounting test is not that proof.
 
-Order: interface/writer acceptance -> full-source integration -> existing suites and staging negative paths -> one permitted institutional original/extraction -> actual gateway/reader/viewer proof -> answer-quality evaluation and company associations/corrections. Do not call a local fixture the authentic customer journey.
+Data/time/null: original authoring/acquisition/extraction/product clocks stay separate; unknown not zero; no later-extraction lookahead. Corrections remove wrong relevance and update only dependent content through existing owners. Private portfolios stay private. Company qualification, bounded bilingual reformulation and definition-aware comparison remain useful follow-ons. No new identity/signal or generic beneficiary graph.
 
-Acceptance: body-only evidence found; no unauthorized body-conditioned IDs/snippets; eligibility before result budget; failed vs healthy-empty; version-bound source open; real metering/denial; correction/removal; existing metadata compatibility; proper company/language coverage; unchanged Prophet signal/rank/sizing/execution. Source rights and original/body binding are mandatory for the real pilot.
-
-Stop on source/use-right uncertainty, writer collision, version mismatch, runtime/admission failure or effect uncertainty. No actor/carrier bypass, new subscription or model provider. No runtime assignment is made by this handoff.
-
-## Held lanes and do-not-redo
-
-One sandbox raw-source GET failed DNS; permitted connector reads and exact hash reconstruction succeeded. Previously blocked native and admin-browser actions were not retried/rerouted. No native host, model/provider call, vendor message, purchase, new MarketDesk pull, CI dispatch, worker/Job/watch, merge or deployment. Source owner acknowledgment and production readiness remain unestablished.
-
-Keep R9/R10 page repair and R11 actual-caller findings; do not treat page repair as Brain completion. Collector recovery#7164/Mastermind#631 and fleet work remain do-not-redo. R7 inventory is a dated snapshot, not current measurement. Missing field recovery is not correction propagation. One original supports attributed revision; independent reconstruction needs two bound originals. Three accounts remains a marginal-value hypothesis, not an order.
-
-The R12 local proof step is complete. The next milestone is adopting this narrow bridge with authentic owner interfaces and a permitted real source—not repeating the same synthetic demonstration or another general architecture pass.
+Stop affected lane for rights/source uncertainty, writer collision, runtime/platform or effect-unknown boundary. Parent remains unfinished at this verified research-phase checkpoint; no background execution. Do not replay R8–R12 archaeology or unchanged synthetic demo. Collector recovery#7164/Mastermind#631 and fleet work are do-not-redo. The immediate acceptance gap is real owner integration and a permitted original, not another counter stand-in.
