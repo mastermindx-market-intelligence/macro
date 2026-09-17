@@ -101,8 +101,24 @@
   // ---- tiny utilities -----------------------------------------------------
   function nowISO() { return new Date().toISOString(); }
   function debounce(fn, ms) {
-    var h; return function () { var a = arguments, t = this;
-      clearTimeout(h); h = setTimeout(function () { fn.apply(t, a); }, ms); };
+    var h = null, a = null, t = null;
+    function run() {
+      var callArgs = a, callThis = t;
+      h = null; a = null; t = null;
+      fn.apply(callThis, callArgs);
+    }
+    function wrapped() {
+      a = arguments; t = this;
+      clearTimeout(h); h = setTimeout(run, ms);
+    }
+    // A binding change is a durability boundary, not permission to retarget a
+    // delayed callback. Callers that own such a boundary can synchronously finish
+    // the latest invocation while its original state is still current.
+    wrapped.flush = function () {
+      if (h === null) return false;
+      clearTimeout(h); run(); return true;
+    };
+    return wrapped;
   }
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -2146,6 +2162,11 @@
        it does NOT carry the previous list's blob across, which under a full-membership
        diff push would be a wipe of the list being switched to. */
     bindList: function (id, name) {
+      /* A pending local write belongs to the binding that produced it. Finish it
+         before changing either `listId` or `blob`; otherwise the debounced callback
+         observes the destination list and silently drops (or misroutes) the source
+         list's edit. This also preserves the intentional same-id cache re-read. */
+      persist.flush();
       var nextId = id || null;
       listId = nextId;
       listName = nextId ? (resolveListName(nextId, name) || '') : '';
