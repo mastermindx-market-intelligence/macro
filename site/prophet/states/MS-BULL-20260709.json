@@ -13,20 +13,20 @@
     "validity": 0.0,
     "progress": 0.0,
     "pace": 0.0,
-    "retention": 30.3,
+    "retention": 29.4,
     "overlay": 47.0
   },
   "geometry": {
-    "dist_to_stop_r": -1.877,
+    "dist_to_stop_r": -2.007,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
     "horizon_pct_used": 153.3,
-    "p1": -1.9179,
-    "p2": -0.959,
+    "p1": -2.0047,
+    "p2": -1.0023,
     "p3": null,
-    "move_r": -2.877,
+    "move_r": -3.007,
     "mfe_r": 0.0,
-    "mae_r": -2.877
+    "mae_r": -3.007
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,7 +40,7 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.0,
-  "_mae": -19.680001831054682,
+  "_mae": -20.57000122070312,
   "_max_p1": 0.0,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,

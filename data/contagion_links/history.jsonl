@@ -324,3 +324,14 @@
 {"asof":"2026-09-16","data_session":"2026-09-16","session_source":"bench","market":"au","p_raw":0.3801,"pct":0.8492,"level":"moderate","top_exporter":"jp"}
 {"asof":"2026-09-15","data_session":"2026-09-15","session_source":"bench","market":"gb","p_raw":0.4184,"pct":0.8988,"level":"moderate","top_exporter":"au"}
 {"asof":"2026-09-15","data_session":"2026-09-15","session_source":"bench","market":"ez","p_raw":0.3652,"pct":0.8512,"level":"moderate","top_exporter":"jp"}
+{"asof":"2026-09-16","data_session":"2026-09-16","session_source":"bench","market":"us","p_raw":0.3462,"pct":0.9167,"level":"high","top_exporter":"ca"}
+{"asof":"2026-09-16","data_session":"2026-09-16","session_source":"bench","market":"cn","p_raw":0.3319,"pct":0.873,"level":"moderate","top_exporter":"hk"}
+{"asof":"2026-09-16","data_session":"2026-09-16","session_source":"bench","market":"hk","p_raw":0.3082,"pct":0.9028,"level":"high","top_exporter":"au"}
+{"asof":"2026-09-16","data_session":"2026-09-16","session_source":"bench","market":"ca","p_raw":0.3338,"pct":0.9107,"level":"high","top_exporter":"au"}
+{"asof":"2026-09-17","data_session":"2026-09-17","session_source":"bench","market":"kr","p_raw":0.2991,"pct":0.8988,"level":"moderate","top_exporter":"jp"}
+{"asof":"2026-09-17","data_session":"2026-09-17","session_source":"bench","market":"jp","p_raw":0.3332,"pct":0.881,"level":"moderate","top_exporter":"kr"}
+{"asof":"2026-09-17","data_session":"2026-09-17","session_source":"bench","market":"tw","p_raw":0.3753,"pct":0.9127,"level":"high","top_exporter":"kr"}
+{"asof":"2026-09-16","data_session":"2026-09-16","session_source":"bench","market":"in","p_raw":0.3212,"pct":0.9067,"level":"high","top_exporter":"au"}
+{"asof":"2026-09-17","data_session":"2026-09-17","session_source":"bench","market":"au","p_raw":0.3143,"pct":0.9048,"level":"high","top_exporter":"jp"}
+{"asof":"2026-09-16","data_session":"2026-09-16","session_source":"bench","market":"gb","p_raw":0.3632,"pct":0.9246,"level":"high","top_exporter":"au"}
+{"asof":"2026-09-16","data_session":"2026-09-16","session_source":"bench","market":"ez","p_raw":0.3163,"pct":0.8968,"level":"moderate","top_exporter":"jp"}

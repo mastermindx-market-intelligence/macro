@@ -1,7 +1,7 @@
 {
   "schema": "influence.graph.v1",
   "as_of": "2026-06-19",
-  "generated_utc": "2026-09-16T09:12:57.665909+00:00",
+  "generated_utc": "2026-09-17T09:26:02.346219+00:00",
   "note": "Curated multi-actor influence graph: important people and the investable names/themes they are affiliated with (control, holdings, public advocacy, partnerships). Public-record only. provenance = FACT (filing/widely-reported structural fact) | DISCLOSED (self-reported trade/holding) | INFERRED (analytical link). The LLM extractor grows candidate edges; a human promotes them here.",
   "n_actors": 22,
   "n_entities": 19,
@@ -847,12 +847,11 @@
       ],
       "n_actors": 4,
       "alt_corroborated": true,
-      "alt_score": 4,
-      "alt_weighted": 1.6,
+      "alt_score": 3,
+      "alt_weighted": 1.05,
       "alt_channels": [
         "affiliation",
         "analyst_upgrade_cluster",
-        "material_8k",
         "special_situation"
       ],
       "top_holder": {
@@ -1091,12 +1090,13 @@
       ],
       "n_actors": 2,
       "alt_corroborated": true,
-      "alt_score": 3,
-      "alt_weighted": 1.2,
+      "alt_score": 4,
+      "alt_weighted": 1.55,
       "alt_channels": [
         "affiliation",
         "app_demand",
-        "github_momentum"
+        "github_momentum",
+        "hf_model_momentum"
       ],
       "top_holder": {
         "owner": "VANGUARD GROUP INC",
@@ -1124,13 +1124,12 @@
       ],
       "n_actors": 2,
       "alt_corroborated": true,
-      "alt_score": 7,
-      "alt_weighted": 2.4,
+      "alt_score": 6,
+      "alt_weighted": 2.55,
       "alt_channels": [
         "affiliation",
         "analyst_upgrade_cluster",
-        "github_momentum",
-        "gov_contract",
+        "gov_contract_accel",
         "retail_buzz",
         "stocktwits_bull",
         "trump"
@@ -1324,27 +1323,6 @@
       }
     },
     {
-      "ticker": "KO",
-      "actors": [
-        {
-          "actor": "Warren Buffett",
-          "kind": "fund",
-          "rel": "AFFILIATES_WITH",
-          "provenance": "DISCLOSED",
-          "qualitative": true
-        }
-      ],
-      "n_actors": 1,
-      "alt_corroborated": true,
-      "alt_score": 2,
-      "alt_weighted": 0.75,
-      "alt_channels": [
-        "affiliation",
-        "cnbc_pick"
-      ],
-      "top_holder": null
-    },
-    {
       "ticker": "BAC",
       "actors": [
         {
@@ -1394,6 +1372,31 @@
         "owner": "VOYA INVESTMENT MANAGEMENT LLC",
         "title": "Institution",
         "shares": 198470000
+      }
+    },
+    {
+      "ticker": "COIN",
+      "actors": [
+        {
+          "actor": "Cathie Wood",
+          "kind": "fund",
+          "rel": "AFFILIATES_WITH",
+          "provenance": "DISCLOSED",
+          "qualitative": true
+        }
+      ],
+      "n_actors": 1,
+      "alt_corroborated": true,
+      "alt_score": 2,
+      "alt_weighted": 0.65,
+      "alt_channels": [
+        "affiliation",
+        "stocktwits_bull"
+      ],
+      "top_holder": {
+        "owner": "LINDEN ADVISORS LP",
+        "title": "Institution",
+        "shares": 384176000
       }
     },
     {
@@ -1587,6 +1590,26 @@
       "top_holder": null
     },
     {
+      "ticker": "KO",
+      "actors": [
+        {
+          "actor": "Warren Buffett",
+          "kind": "fund",
+          "rel": "AFFILIATES_WITH",
+          "provenance": "DISCLOSED",
+          "qualitative": true
+        }
+      ],
+      "n_actors": 1,
+      "alt_corroborated": false,
+      "alt_score": 1,
+      "alt_weighted": 0.5,
+      "alt_channels": [
+        "affiliation"
+      ],
+      "top_holder": null
+    },
+    {
       "ticker": "CVI",
       "actors": [
         {
@@ -1605,30 +1628,6 @@
         "affiliation"
       ],
       "top_holder": null
-    },
-    {
-      "ticker": "COIN",
-      "actors": [
-        {
-          "actor": "Cathie Wood",
-          "kind": "fund",
-          "rel": "AFFILIATES_WITH",
-          "provenance": "DISCLOSED",
-          "qualitative": true
-        }
-      ],
-      "n_actors": 1,
-      "alt_corroborated": false,
-      "alt_score": 1,
-      "alt_weighted": 0.5,
-      "alt_channels": [
-        "affiliation"
-      ],
-      "top_holder": {
-        "owner": "LINDEN ADVISORS LP",
-        "title": "Institution",
-        "shares": 384176000
-      }
     },
     {
       "ticker": "MOH",

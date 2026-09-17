@@ -1,60 +1,50 @@
 {
   "_debounce": {
-    "label": {
-      "intl_japan": {
-        "bucket": "2026-09-16",
-        "count": 1,
-        "from": "neutral"
-      }
-    },
+    "label": {},
     "lead": {
-      "displayed": "intl_energy",
-      "pending": {
-        "bucket": "2026-09-16",
-        "count": 1,
-        "tid": "intl_banks"
-      }
+      "displayed": "intl_banks",
+      "pending": null
     },
     "reco": {}
   },
   "intl_banks": {
-    "label": "emerging",
+    "label": "dominant",
     "name": "Global Banks",
     "name_zh": "\u5168\u7403\u94f6\u884c",
     "rank": 1,
-    "reco": "enter",
-    "score": 60
+    "reco": "accumulate",
+    "score": 62
   },
   "intl_japan": {
-    "label": "emerging",
+    "label": "neutral",
     "name": "Japan Inc.",
     "name_zh": "\u65e5\u672c\u4f01\u4e1a",
-    "rank": 2,
-    "reco": "enter",
-    "score": 55
+    "rank": 4,
+    "reco": "hold",
+    "score": 54
   },
   "intl_korea": {
     "label": "neutral",
     "name": "Korea Tech & Industry",
     "name_zh": "\u97e9\u56fd\u79d1\u6280\u4e0e\u5de5\u4e1a",
-    "rank": 4,
+    "rank": 5,
     "reco": "hold",
-    "score": 50
+    "score": 48
   },
   "intl_semis": {
     "label": "neutral",
     "name": "Global Semiconductors",
     "name_zh": "\u5168\u7403\u534a\u5bfc\u4f53",
-    "rank": 5,
+    "rank": 2,
     "reco": "hold",
-    "score": 49
+    "score": 54
   },
   "intl_tech_hw": {
-    "label": "deteriorating",
+    "label": "neutral",
     "name": "Tech Hardware & Components",
     "name_zh": "\u79d1\u6280\u786c\u4ef6\u4e0e\u96f6\u90e8\u4ef6",
     "rank": 3,
-    "reco": "avoid",
-    "score": 50
+    "reco": "hold",
+    "score": 54
   }
 }
