@@ -396,3 +396,77 @@ def test_candidate_heading_discloses_source_date_without_tonight_claim(as_of):
         assert "date unavailable" in heading
     assert "tonight" not in section.get_text(" ", strip=True).lower()
     assert "今晚" not in section.get_text(" ", strip=True)
+
+
+def _dated_gated_candidate_and_plan_page(as_of, *, first_resolved=False):
+    """Exercise actual tier splitters; dates, counts and hidden identities stay separate."""
+    from copy import deepcopy
+    from tests.test_dashboard_template_render import _prophet_plan
+
+    source = {"buy": _stage_rows({"live": 5}), "ran": [], "eligible": 5}
+    if as_of != "__missing__":
+        source["as_of"] = as_of
+    plans = [_prophet_plan(id=f"PLAN{i}-BULL-20260701", asset=f"PLAN{i}",
+                           lifecycle_state="resolved" if first_resolved and i == 0 else "ready")
+             for i in range(5)]
+    book = _prophet_book(plans=plans, source_asof="2026-07-04")
+    original_source, original_book = deepcopy(source), deepcopy(book)
+    shell, gate, locked = bs._split_us_board(source, 3, gated=True)
+    plan_shell, life_gate, locked_plans = bs._split_us_prophet_board(book, 3, gated=True)
+    context = bs._us_life_repair_context(
+        {"us_standouts": source, "us_prophet_book": book}, plan_shell, life_gate, preview_rows=3)
+    html = _render_stocks({"us_standouts": shell, "gate": gate,
+                           "us_prophet_book": plan_shell, "life_gate": life_gate, **context})
+    assert source == original_source and book == original_book
+    assert gate["preview"] + gate["locked"] == gate["total"] == 5
+    assert life_gate["preview"] + life_gate["locked"] == life_gate["total"] == 5
+    assert len(locked) == len(locked_plans) == 2
+    return html, gate, life_gate, context
+
+
+@pytest.mark.parametrize("as_of", ("2026-09-11", "2026-09-16", None, "", "__missing__"))
+def test_gated_candidate_journey_never_borrows_freshness(as_of):
+    from bs4 import BeautifulSoup
+
+    html, gate, _, _ = _dated_gated_candidate_and_plan_page(as_of)
+    soup = BeautifulSoup(html, "html.parser")
+    section = soup.select_one("#us-candidates")
+    wall = section.select_one(".us-tier-wall")
+    assert wall is not None
+    toggle = soup.select_one("#us-src-toggle")
+    assert toggle is not None
+    visible_and_tooltip = (section.get_text(" ", strip=True) + " "
+                           + toggle["data-tip-en"] + " " + toggle["data-tip-zh"])
+    assert "tonight" not in visible_and_tooltip.lower()
+    assert "今晚" not in visible_and_tooltip
+    assert str(gate["locked"]) in wall.select_one(".us-tw-h .l-en").get_text()
+    assert str(gate["locked"]) in wall.select_one(".us-tw-h .l-zh").get_text()
+    assert len(section.select("#us-cand-grid a[data-ticker]")) == gate["preview"]
+    assert not section.select('#us-cand-grid [data-ticker="CAND3"], #us-cand-grid [data-ticker="CAND4"]')
+    heading = section.select_one(".mx-sec-total .l-en").get_text(" ", strip=True)
+    if as_of and as_of != "__missing__":
+        assert "as of " + as_of in heading
+    else:
+        assert "date unavailable" in heading
+
+
+@pytest.mark.parametrize("as_of", ("2026-09-11", "2026-09-16", None, "", "__missing__"))
+@pytest.mark.parametrize("first_resolved", (False, True))
+def test_historical_plan_wall_does_not_borrow_candidate_date(as_of, first_resolved):
+    from bs4 import BeautifulSoup
+
+    html, _, gate, context = _dated_gated_candidate_and_plan_page(as_of, first_resolved=first_resolved)
+    soup = BeautifulSoup(html, "html.parser")
+    wall = soup.select_one("#us-life-wall")
+    assert wall is not None
+    text = wall.get_text(" ", strip=True)
+    assert "tonight" not in text.lower() and "今晚" not in text
+    assert "2026-09-11" not in text and "2026-09-16" not in text
+    assert "2 more plan rows" in text if not first_resolved else "3 more plan rows" in text
+    visible = context["life_gate_visible_preview"]
+    locked = context["life_gate_visible_locked"]
+    assert visible + locked == gate["total"] == 5
+    assert visible == (2 if first_resolved else 3)
+    assert f"first {visible} of 5 plan rows" in text
+    assert len(soup.select("#us-life-grid a[data-ticker]")) == 3
+    assert not soup.select('#us-life-grid [data-ticker="PLAN3"], #us-life-grid [data-ticker="PLAN4"]')
