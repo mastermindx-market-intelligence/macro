@@ -187,3 +187,18 @@ both intended output paths are absent. Do not route around or claim browser proo
 Generated data/site byproducts are preserve-only and excluded from source staging.
 #6685 remains at 151e885 with no return after 5705732215; #7040 remains at c9a73e.
 Panel removal, composed browser proof, production publication and acceptance remain open.
+
+## Continuation R6 — published carrier and final semantic repair
+
+Source candidate c189320c6b946ae314908f20b842283ff75bb342 is pushed on the
+original branch and published as Draft/HOLD PR #7236. No source custody was moved.
+Its current-base merge-tree is 0ba6e50f1d3dbe183dbcb3daf48157a4f1a28759.
+Self-review found two additional wording defects, reproduced by four failing cases:
+missing auxiliary inputs hid an observed breadth warning, and a capped Risk-off
+headline falsely attributed that state to the original still-supportive blend.
+The five-line formatter repair preserves weak breadth in incomplete-data copy and
+names the risk constraint separately from the underlying blend. No score/authority
+change. Fresh focused GREEN: 51 passed. Fresh 12-file owning GREEN: 318 passed,
+exit 0. Source hashes and commands: US_RISK_PRESENTATION_R6_EVIDENCE_2026-09-16.json.
+Resume from agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-09-16-US-BREADTH.md
+and #7236's current head, not the original chat audit. The parent remains active.

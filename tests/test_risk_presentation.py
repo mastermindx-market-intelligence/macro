@@ -156,3 +156,28 @@ def test_cap_with_missing_original_blend_does_not_invent_a_measurement():
     assert 'Capped' in out['subline_en']
     assert 'unavailable' in out['subline_en']
     assert '61' not in out['subline_en']
+
+
+def test_incomplete_auxiliary_inputs_do_not_erase_observed_breadth_damage():
+    ms = sample(); ms['stale_inputs'] = ['recession_risk']
+    original = deepcopy(ms)
+    out = view(ms)
+    assert out['label_en'] == 'Confirmation incomplete'
+    assert 'breadth is weak' in out['headline_en'].lower()
+    assert 'inputs' in out['headline_en'].lower()
+    assert '广度偏弱' in out['headline_zh']
+    assert out['score'] == 61 and out['breadth_score'] == 14
+    assert ms == original
+
+
+@pytest.mark.parametrize('source', ['radar_ceiling', 'hard_force', 'verdict_cap'])
+def test_capped_headline_does_not_claim_the_original_blend_is_risk_off(source):
+    ms = sample()
+    ms.update(verdict='RISK_OFF', score=30, raw_score=61, capped=True, score_source=source)
+    original = deepcopy(ms)
+    out = view(ms)
+    assert out['label_en'] == 'Risk-off' and out['score'] == 30
+    assert 'measured blend indicates risk-off' not in out['headline_en'].lower()
+    assert '实测综合读数显示避险状态' not in out['headline_zh']
+    assert 'constraint' in out['headline_en'].lower() and '约束' in out['headline_zh']
+    assert '61' in out['subline_en'] and ms == original

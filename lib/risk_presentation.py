@@ -83,6 +83,9 @@ def market_read(market_state, risk_envelope=None) -> dict:
             headline_en, headline_zh = (
                 'Some inputs are stale or incomplete; broad confirmation is unavailable.',
                 '部分输入已过期或不完整，无法确认广泛支撑。')
+            if weak_breadth:
+                headline_en = 'Breadth is weak; some inputs are stale or incomplete.'
+                headline_zh = '广度偏弱；部分输入已过期或不完整。'
         if hazard in ('FRAGILE', 'TRANSMITTING', 'BREAKDOWN'):
             label_en, label_zh = {'FRAGILE': ('Fragile', '脆弱'),
                                   'TRANSMITTING': ('Damage spreading', '损伤扩散'),
@@ -99,6 +102,8 @@ def market_read(market_state, risk_envelope=None) -> dict:
     if ms.get('capped') is True or ms.get('score_source') in (
             'radar_ceiling', 'hard_force', 'verdict_cap'):
         original = _number(ms.get('raw_score'))
+        headline_en = 'A risk constraint caps the score; the underlying blend is separate.'
+        headline_zh = '风险约束限制显示分数；原始综合读数单独保留。'
         subline_en = (f'Capped reading — measured blend {original:g}/100' if original is not None
                       else 'Capped reading — original blend unavailable')
         subline_zh = (f'封顶读数——实测综合读数 {original:g}/100' if original is not None
