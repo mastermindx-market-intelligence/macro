@@ -138,15 +138,17 @@ unresolved:
   - Policy fingerprints do not synchronize credentials or establish atomic distributed revocation.
 next_actions:
   - >
-    Publish this verified same-writer R4 repair and bind its immutable source hashes
-    to the 447-test campaign, 40 recovered SDK scenario executions and fixture images.
+    R4 code is published at f26d9326 and its one-leaf rendered-receipt repair at
+    45eea016. Obtain one current exact-head independent review through the incumbent
+    integration owner; do not reuse the older R3 review as R4 acceptance.
   - >
-    Independent R3 review5695421722 and W2 review5695441623 have been consumed on
-    their exact unchanged targets. The changed R4 semantic head requires fresh
-    exact-head review through the existing integration owner; retain this writer.
+    Before any further local author work, reconcile the Studio checkout after its
+    connector returns. Current local dirt/HEAD is unknown, not clean. Preserve dirt;
+    only a verified clean ancestor may fast-forward to the exact GitHub source.
   - >
-    Source release waits parent #7179 protection and ordinary release gates. Real
-    VPS adoption, qualified inference and result consumption remain separate proof.
+    Source release waits parent #7179 and concluded ordinary gates. Do not fix the
+    separate CI-pack programme. Actual VPS admission, capacity reservation, useful
+    result consumption and browser/rollback proof remain required.
 do_not_redo:
   - Do not rebuild the policy engine, cache store, scheduler, account/quota database or Executive admission.
   - Do not activate profiles, call providers, rotate/copy credentials or spend from this source receipt.
@@ -161,6 +163,32 @@ danger_areas:
 decisions:
   - DEC:EXECUTIVE-CAPACITY-FABRIC-OWNERSHIP-AND-CONTRACT
 ---
+
+## Current receipt correction — 2026-09-17
+
+Procedure: protected Mastermind 6fc5c057e04114055f927ebd295edc779de86bca;
+compatible same-pin Skillpack1.0.1 and companion laws. Same source operation/writer.
+
+R4 semantic source f26d93260096cfe8297468ae14de299e41719432 is unchanged.
+Receipt repair 45eea0162f68b7d2b54ac10c995366890bca728e changes one leaf only:
+mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json,
+markets.hk.inputs[4].sha256, now bound to the current shared Brief notice.
+Two actual recipe runs are byte-identical; Canada and all six rendered-output
+hashes are unchanged. Existing exact recipe test: 1 failed before, 1 passed after.
+Test assertions, runtime code, model configuration and CI files are unchanged.
+
+Proof used a 25-file exact-commit source export and disposable Python3.12/Jinja3.1.6
+environment on the MacBook. It is not an author worktree, production rendering,
+new worker or source-ownership transfer. Studio access is offline and untouched.
+Publication used this same GitHub branch: pinned f26d9326 parent, verified one-file
+diff, nonforced ref update and exact post-write readback. No uncertain write retry.
+
+The 447-test and 40-SDK-scenario evidence remains historical at f26d9326;
+it was not rerun here. Runtime byte identity preserves that evidence, not release
+acceptance. New receipt SHA256: 1254ed063bdf9163184932408c50ceb371c736ccaa9f1d6ee4bc874e19b63457.
+R4 independent review, parent release and real VPS proof remain open. No live
+provider call, credential change, configuration activation, Job or service effect.
+
 
 ## Historical R3 checkpoint — timeout repaired; generic response loss not yet covered
 
