@@ -120,7 +120,7 @@ def split_actnow(action_board: dict | None, preview: int, *, gated: bool = True)
         if key == "hold":
             hold_shown = len(shown)
         if len(rows) > len(shown):
-            locked.append({"lane": dest, "rows": rows[len(shown):], "wrap": wrap})
+            locked.append({"lane": dest, "key": key, "rows": rows[len(shown):], "wrap": wrap})
     if not locked:
         return None, []
     n_locked = sum(len(L["rows"]) for L in locked)
@@ -156,7 +156,8 @@ def write_payload(env, site: Path, pgate: dict | None, locked: list[dict],
         try:
             payload["actnow_html"] = env.get_template(
                 "_us_act_now_board.html.j2").render(
-                    action_board=action_board, ab_locked=locked)
+                    action_board=action_board, ab_locked=locked,
+                    ab_host="sector_central")
         except Exception as e:  # noqa: BLE001 — a payload must not abort the build
             log.error("sector_central: locked act-now render failed (%s)", e)
             payload["actnow_html"] = ""
@@ -260,6 +261,29 @@ def _fmt_money_mn(v: float | None) -> str:
     return f"{sign}${a:.0f}M"
 
 
+#: ZH names already shipping on this page (seed_us_sector_baskets / rotation map).
+_SECTOR_ZH = {
+    "XLB": "材料", "XLC": "通信服务", "XLE": "能源", "XLF": "金融",
+    "XLI": "工业", "XLK": "信息技术", "XLP": "必需消费", "XLRE": "房地产",
+    "XLU": "公用事业", "XLV": "医疗保健", "XLY": "非必需消费",
+}
+
+
+def _flow_cell_html(v: float | None, maxabs: float, *, tint: bool) -> str:
+    """One heatmap cell. `tint=False` is the Net row (SEAT RULING 1 / D1)."""
+    if v is None:
+        return "<td class='scf-c muted'>—</td>"
+    cls = "pos" if v >= 0 else "neg"
+    inten = min(1.0, abs(v) / maxabs) if maxabs else 0.0
+    var = "--up" if v >= 0 else "--down"
+    bg = ""
+    if tint and inten > 0.02:
+        bg = (f"background:color-mix(in srgb, var({var}) "
+              f"{6 + inten * 46:.0f}%, transparent)")
+    style = f" style='{bg}'" if bg else ""
+    return f"<td class='scf-c {cls}'{style}>{_fmt_money_mn(v)}</td>"
+
+
 def _flows_section_html() -> str | None:
     """Server-rendered 'Where sector-ETF money is flowing' board: a multi-window
     (1D/3D/1W/2W/1M) flow heatmap across the 11 sector SPDRs, sorted by the widest
@@ -281,28 +305,21 @@ def _flows_section_html() -> str | None:
     widest = labels[-1]
     rows = sorted(rows, key=lambda r: -(r["vals"].get(widest) or 0.0))
 
-    def cell(v: float | None, lbl: str) -> str:
-        if v is None:
-            return "<td class='scf-c muted'>—</td>"
-        cls = "pos" if v >= 0 else "neg"
-        m = maxabs.get(lbl) or 0.0
-        inten = min(1.0, abs(v) / m) if m else 0.0
-        var = "--up" if v >= 0 else "--down"
-        bg = (f"background:color-mix(in srgb, var({var}) "
-              f"{6 + inten * 46:.0f}%, transparent)") if inten > 0.02 else ""
-        return f"<td class='scf-c {cls}' style='{bg}'>{_fmt_money_mn(v)}</td>"
+    def cell(v: float | None, lbl: str, *, tint: bool = True) -> str:
+        return _flow_cell_html(v, maxabs.get(lbl) or 0.0, tint=tint)
 
     head = "<th class='scf-s'>" + str(t("sector", "板块")) + "</th>" + "".join(
         f"<th class='scf-c'>{lbl}</th>" for lbl in labels)
     body = []
     for r in rows:
-        name = SECTOR_NAMES.get(r["ticker"], r["ticker"])
+        name_en = SECTOR_NAMES.get(r["ticker"], r["ticker"])
+        name_zh = _SECTOR_ZH.get(r["ticker"], name_en)
         label = (f"<b>{r['ticker']}</b> <span class='muted'>"
-                 f"{t(name, name)}</span>")
+                 f"{t(name_en, name_zh)}</span>")
         body.append("<tr><td class='scf-s'>" + label + "</td>"
                     + "".join(cell(r["vals"].get(lbl), lbl) for lbl in labels)
                     + "</tr>")
-    net_cells = "".join(cell(net.get(lbl), lbl) for lbl in labels)
+    net_cells = "".join(cell(net.get(lbl), lbl, tint=False) for lbl in labels)
     body.append("<tr class='scf-net'><td class='scf-s'><b>"
                 + str(t("Net · 11 sector ETFs", "净额 · 11 个板块 ETF"))
                 + "</b></td>" + net_cells + "</tr>")
@@ -310,11 +327,10 @@ def _flows_section_html() -> str | None:
         f"As of {data['asof']} · net creation/redemption flow (ΔShares × NAV) "
         f"summed over each window · positive = money in. Windows cap at the "
         f"{data['depth']} trading days collected so far (history builds from "
-        f"June 2026), so the wider windows can coincide until more accrues. "
-        f"Display-only.",
+        f"June 2026), so the wider windows can coincide until more accrues.",
         f"截至 {data['asof']} · 各时间窗内份额申购／赎回净额（份额变动 × 资产净值）"
         f"求和 · 正值 = 资金流入。各窗口取目前已采集的 {data['depth']} 个交易日"
-        f"（历史自 2026 年 6 月起累积），故在数据充足前较宽的窗口可能重合。仅作展示。")
+        f"（历史自 2026 年 6 月起累积），故在数据充足前较宽的窗口可能重合。")
     return (
         "<div class='scc-section-h' id='sc-flows'>"
         "<h2><span class='l-en'>Where sector-ETF money is flowing</span>"
@@ -400,12 +416,17 @@ def main() -> int:
     # the display half that #4642 dropped when it transplanted the us_stocks board over
     # sector_central's own five lanes; the engine and builder halves never stopped.
     _bottoming = None
+    _mc = None
+    _baskets_as_of = None
     try:
         _bk_p = site / "basketdata" / "baskets.json"
         if _bk_p.exists():
             _bk = json.loads(_bk_p.read_text(encoding="utf-8")) or {}
+            _baskets_as_of = _bk.get("as_of") or None
+            _ti = _bk.get("theme_intel") or {}
+            _mc = _ti.get("market_concentration") or None
             _bottoming = build_bottoming_context(
-                ((_bk.get("theme_intel") or {}).get("act_now")), _action_board
+                _ti.get("act_now"), _action_board
             )
             if _bottoming is not None:
                 log.info(
@@ -450,6 +471,8 @@ def main() -> int:
             flow=ctx.get("flow"),
             basket_member_syms=ctx.get("basket_member_syms") or [],
             action_board=_action_board,
+            market_concentration=_mc,
+            baskets_as_of=_baskets_as_of,
             generated_utc=ctx.get("generated_utc") or data.get("as_of") or "")
         write_page(site / "sector_central.html", html, encoding="utf-8")
     except Exception as e:  # noqa: BLE001 — a template error must NOT abort the daily engine job
