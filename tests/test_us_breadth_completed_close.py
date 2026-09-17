@@ -37,6 +37,10 @@ def _adapter(tmp_path, monkeypatch, *, name="breadth", batch_size=5, retries=2):
     # These five synthetic names exercise the full price path, not Wikipedia's 400-name floor.
     monkeypatch.setattr(adapter, "constituents_checked", lambda frame: frame)
     monkeypatch.setattr(nyse_calendar, "expected_last_session", lambda now=None: SESSION)
+    # The same fixed input session must keep exercising the tail/seam path after
+    # the calendar advances; otherwise a 14-day cache-age branch hides the case.
+    monkeypatch.setattr(pd.Timestamp, "utcnow", staticmethod(
+        lambda: pd.Timestamp("2026-09-16T12:00:00Z")))
     monkeypatch.setattr(breadth.time, "sleep", lambda _seconds: None)
     return adapter
 
@@ -221,7 +225,7 @@ def test_seam_repair_cannot_remove_completed_prices_before_persistence(tmp_path,
     before = _seed_all_caches(adapter)
     monkeypatch.setattr(breadth.yf, "download", lambda tickers, **kw: _response(tickers))
 
-    def torn_merge(fresh, cached):
+    def torn_merge(fresh, cached, **kwargs):
         changed = fresh.copy()
         changed.loc[str(SESSION)] = np.nan
         return changed
@@ -429,7 +433,7 @@ def test_post_seam_invalid_minority_is_missing_not_a_published_price(tmp_path, m
     _seed_all_caches(adapter)
     monkeypatch.setattr(breadth.yf, "download", lambda tickers, **kw: _response(tickers))
 
-    def changed_merge(fresh, cached):
+    def changed_merge(fresh, cached, **kwargs):
         merged = fresh.copy()
         merged.loc[str(SESSION), "EEE"] = np.inf
         return merged
@@ -451,7 +455,7 @@ def test_invalid_current_prices_are_missing_before_split_seam_merge(tmp_path, mo
         response.loc[str(SESSION), ("Close", "EEE")] = True
         return response
 
-    def merge(fresh, cached):
+    def merge(fresh, cached, **kwargs):
         assert pd.isna(fresh.loc[str(SESSION), "EEE"]), "seam detection must not see a false price 1"
         return fresh.combine_first(cached)
 
@@ -470,3 +474,165 @@ def test_current_price_mask_preserves_history_input_and_healthy_identity():
     assert cleaned.loc[str(SESSION), "AAA"] == 102.0
     assert pd.isna(cleaned.loc[str(SESSION), "BBB"])
     assert breadth._mask_invalid_completed_closes(cleaned, ["AAA", "BBB"], SESSION) is cleaned
+
+
+# Real detector + fetch regressions for review 5233152327 / request 5711674324.
+def _seed_seam_caches(adapter):
+    adapter.cache_path.parent.mkdir(parents=True)
+    dates = pd.to_datetime(["2026-09-10", "2026-09-11", "2026-09-14", "2026-09-15"])
+    cached = pd.DataFrame(100.0, index=dates, columns=SYMBOLS)
+    cached["EEE"] = 200.0
+    files = {}
+    for kind in ("closes", "high", "low", "volume"):
+        path = adapter.cache_path.parent / f"_{kind}_cache.parquet"
+        cached.to_parquet(path)
+        files[path] = path.read_bytes()
+    return files
+
+
+def _seam_response(tickers, mode):
+    frame = _response(tickers)
+    if mode == "current_close_missing":
+        frame.loc[str(SESSION), ("Close", "EEE")] = np.nan
+        for field, value in (("High", 160.0), ("Low", 80.0), ("Volume", 900.0)):
+            frame.loc[str(SESSION), (field, "EEE")] = value
+        return frame
+    for field in ("Open", "Close", "High", "Low"):
+        frame[field] = frame[field] * 0.5
+    if mode.endswith("_field_missing"):
+        absent = mode.split("_", 1)[0].title()
+        return frame.loc[:, frame.columns.get_level_values(0) != absent]
+    if mode == "high_cell_missing":
+        frame.loc[str(SESSION), ("High", "EEE")] = np.nan
+    return frame
+
+
+@pytest.mark.parametrize("name", ("breadth", "smallcap_breadth", "midcap_breadth"))
+@pytest.mark.parametrize("mode", ("current_close_missing", "high_field_missing",
+                                  "low_field_missing", "volume_field_missing", "high_cell_missing"))
+def test_seam_incomplete_replacement_refuses_before_any_cache_write(tmp_path, monkeypatch, name, mode):
+    adapter = _adapter(tmp_path, monkeypatch, name=name)
+    before = _seed_seam_caches(adapter)
+    calls = []
+
+    def download(tickers, **kw):
+        calls.append((list(tickers), kw["period"]))
+        return _seam_response(tickers, mode) if tickers == ["EEE"] else _response(tickers)
+
+    monkeypatch.setattr(breadth.yf, "download", download)
+    with pytest.raises(RuntimeError, match="seam"):
+        adapter.fetch()
+    assert calls[0] == (SYMBOLS, "1mo")
+    assert calls[1:] == [(["EEE"], "2y")] * (2 if mode == "current_close_missing" else 1)
+    assert {path: path.read_bytes() for path in before} == before
+    assert not (adapter.cache_path.parent / "constituents.parquet").exists()
+
+
+@pytest.mark.parametrize("name", ("breadth", "smallcap_breadth", "midcap_breadth"))
+def test_seam_coherent_replacement_keeps_all_fields_on_selected_basis(tmp_path, monkeypatch, name):
+    adapter = _adapter(tmp_path, monkeypatch, name=name)
+    _seed_seam_caches(adapter)
+    calls = []
+    clock_calls = []
+    monkeypatch.setattr(nyse_calendar, "expected_last_session", lambda now=None: clock_calls.append(now) or SESSION)
+
+    def download(tickers, **kw):
+        calls.append((list(tickers), kw["period"]))
+        return _seam_response(tickers, "coherent") if tickers == ["EEE"] else _response(tickers)
+
+    monkeypatch.setattr(breadth.yf, "download", download)
+    adapter.fetch()
+    assert calls == [(SYMBOLS, "1mo"), (["EEE"], "2y")]
+    assert len(clock_calls) == 1
+    expected = {"closes": 51.5, "high": 52.0, "low": 50.5, "volume": 700.0}
+    for kind, value in expected.items():
+        stored = pd.read_parquet(adapter.cache_path.parent / f"_{kind}_cache.parquet")
+        assert stored.loc[str(SESSION), "EEE"] == value
+        assert pd.Timestamp("2026-09-10") in stored.index
+    assert pd.read_parquet(adapter.cache_path).loc[str(SESSION), "AAA"] == 103.0
+
+
+def test_post_seam_selection_masks_extras_for_a_missing_current_close(tmp_path, monkeypatch):
+    adapter = _adapter(tmp_path, monkeypatch)
+    _seed_all_caches(adapter)
+    monkeypatch.setattr(breadth.yf, "download", lambda tickers, **kw: _response(tickers))
+
+    def final_selection(fresh, cached, **kwargs):
+        result = fresh.combine_first(cached)
+        result.loc[str(SESSION), "EEE"] = np.nan
+        return result
+
+    monkeypatch.setattr(adapter, "_merge_refreshed", final_selection)
+    adapter.fetch()
+    for kind in ("closes", "high", "low", "volume"):
+        values = pd.read_parquet(adapter.cache_path.parent / f"_{kind}_cache.parquet")
+        assert pd.isna(values.loc[str(SESSION), "EEE"]), kind
+        assert values.loc[str(SESSION), "AAA"] > 0
+
+
+@pytest.mark.parametrize("current_names, succeeds", ((4, True), (3, False)))
+def test_seam_replacement_keeps_eighty_percent_policy_and_null_companions(tmp_path, monkeypatch, current_names, succeeds):
+    adapter = _adapter(tmp_path, monkeypatch)
+    before = _seed_seam_caches(adapter)
+    for path in before:
+        frame = pd.read_parquet(path)
+        frame.loc[:, :] = 200.0  # the REAL seam detector must select all five names
+        frame.to_parquet(path)
+    before = {path: path.read_bytes() for path in before}
+    calls = []
+
+    def download(tickers, **kw):
+        calls.append((list(tickers), kw["period"]))
+        result = _response(tickers)
+        if kw["period"] != "1mo":
+            for field in ("Open", "Close", "High", "Low"):
+                result[field] = result[field] * 0.5
+            for ticker in SYMBOLS[current_names:]:
+                result.loc[str(SESSION), ("Close", ticker)] = np.nan
+        return result
+
+    monkeypatch.setattr(breadth.yf, "download", download)
+    if not succeeds:
+        with pytest.raises(RuntimeError, match="seam"):
+            adapter.fetch()
+        assert len(calls) == 1 + adapter.ycfg["retries"]
+        assert {path: path.read_bytes() for path in before} == before
+        return
+    adapter.fetch()
+    assert calls == [(SYMBOLS, "1mo"), (SYMBOLS, "2y")]
+    for kind in ("closes", "high", "low", "volume"):
+        values = pd.read_parquet(adapter.cache_path.parent / f"_{kind}_cache.parquet")
+        assert values.loc[str(SESSION)].notna().sum() == current_names
+        assert pd.isna(values.loc[str(SESSION), "EEE"])
+
+
+def test_seam_new_companion_field_is_grafted_when_not_in_initial_response(tmp_path, monkeypatch):
+    adapter = _adapter(tmp_path, monkeypatch)
+    _seed_seam_caches(adapter)
+
+    def download(tickers, **kw):
+        frame = _seam_response(tickers, "coherent") if tickers == ["EEE"] else _response(tickers)
+        if kw["period"] == "1mo":
+            frame = frame.loc[:, frame.columns.get_level_values(0) != "High"]
+        return frame
+
+    monkeypatch.setattr(breadth.yf, "download", download)
+    adapter.fetch()
+    high = pd.read_parquet(adapter.cache_path.parent / "_high_cache.parquet")
+    assert high.loc[str(SESSION), "EEE"] == 52.0
+    assert pd.isna(high.loc[str(SESSION), "AAA"])
+
+
+def test_seam_refusal_reaches_existing_collector_health_without_publishing(tmp_path, monkeypatch):
+    from collectors import base
+
+    adapter = _adapter(tmp_path, monkeypatch)
+    before = _seed_seam_caches(adapter)
+    monkeypatch.setattr(base, "_breaker_state", lambda: {})
+    monkeypatch.setattr(base.store, "upsert", lambda *a, **kw: pytest.fail("incoherent seam cannot publish aggregates"))
+    monkeypatch.setattr(breadth.yf, "download", lambda tickers, **kw:
+                        _seam_response(tickers, "high_field_missing") if tickers == ["EEE"] else _response(tickers))
+    result = base.run_adapter(adapter, stale_after_days=3)
+    assert result.status == "failed"
+    assert "seam repair omitted high for EEE" in result.error
+    assert {path: path.read_bytes() for path in before} == before

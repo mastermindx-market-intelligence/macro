@@ -568,7 +568,8 @@ class BreadthAdapter(Adapter):
         self._last_extras = {k: _wide(v) for k, v in extras.items() if v}
         return closes
 
-    def _merge_refreshed(self, fresh: pd.DataFrame, cached: pd.DataFrame) -> pd.DataFrame:
+    def _merge_refreshed(self, fresh: pd.DataFrame, cached: pd.DataFrame, *,
+                         expected_session: date | None = None) -> pd.DataFrame:
         """``fresh.combine_first(cached)`` + split-seam repair (see module comment).
 
         Flagged tickers get their FULL live window re-downloaded (one batched
@@ -577,9 +578,10 @@ class BreadthAdapter(Adapter):
         genuine ±40% news day (the re-pull returns identical data). The
         re-pulled tickers' OHLCV extras are grafted over the fresh-window
         extras so the _high/_low/_volume caches heal on the same run. If the
-        re-pull fails the poisoned columns are LEFT IN PLACE (loud warning):
-        the scan re-flags them next run, whereas truncating them would erase
-        the evidence and silently orphan the seam in the extras caches."""
+        re-pull fails the legacy/non-US path leaves the seam visible for retry.
+        A completed-session US refresh instead refuses before cache writes: an
+        incomplete repair must not publish corrected Close beside old-basis
+        extras. The caller retains its previous cache bytes for the next run."""
         merged = fresh.combine_first(cached)
         bad = seam_suspects(fresh, cached, merged)
         if not bad:
@@ -590,21 +592,62 @@ class BreadthAdapter(Adapter):
                     self.name, len(bad), bad[:12])
         fresh_extras = getattr(self, "_last_extras", {}) or {}
         try:
-            repull = self._download_closes(bad, f"{max(1, days // 365 + 1)}y")
-        except Exception as e:  # noqa: BLE001 — repair must never kill the run
+            download_kwargs = ({"expected_session": expected_session}
+                               if expected_session is not None else {})
+            repull = self._download_closes(bad, f"{max(1, days // 365 + 1)}y",
+                                          **download_kwargs)
+        except Exception as e:  # noqa: BLE001 — keep legacy fail-soft behavior
+            self._last_extras = fresh_extras
+            if expected_session is not None:
+                raise RuntimeError(
+                    f"completed session {expected_session} seam repair unavailable; "
+                    "previous cache preserved"
+                ) from e
             log.warning("%s: seam re-pull failed (%s) — cache kept as-is; the seam "
                         "scan retries next run", self.name, e)
-            self._last_extras = fresh_extras
             return merged
         repull_extras = getattr(self, "_last_extras", {}) or {}
         self._last_extras = fresh_extras
         healed = [t for t in bad if t in repull.columns and repull[t].notna().any()]
+        extra_keys = set(fresh_extras)
+        if expected_session is not None:
+            if set(bad) - set(healed):
+                raise RuntimeError("seam repair omitted affected price histories; previous cache preserved")
+            extra_keys.update(repull_extras)
+            extra_keys.update(key for key in ("high", "low", "volume")
+                              if (self.cache_path.parent / f"_{key}_cache.parquet").exists())
+            # A full-window repair changes basis. Any existing companion value
+            # beside a selected replacement Close must be supplied by that same
+            # replacement, not inherited by combine_first from an earlier basis.
+            # Refuse before writes rather than erase history or invent a field.
+            for key in sorted(extra_keys):
+                prior = fresh_extras.get(key)
+                path = self.cache_path.parent / f"_{key}_cache.parquet"
+                if path.exists():
+                    old_extra = pd.read_parquet(path)
+                    prior = old_extra if prior is None else prior.combine_first(old_extra)
+                replacement = repull_extras.get(key)
+                if prior is None:
+                    continue
+                for ticker in healed:
+                    if ticker not in prior.columns:
+                        continue
+                    required = prior[ticker].notna() & repull[ticker].reindex(prior.index).notna()
+                    available = (replacement[ticker].reindex(prior.index).notna()
+                                 if replacement is not None and ticker in replacement.columns
+                                 else pd.Series(False, index=prior.index))
+                    if (required & ~available).any():
+                        raise RuntimeError(
+                            f"seam repair omitted {key} for {ticker} on replaced price rows; "
+                            "previous cache preserved"
+                        )
         for t in healed:
             merged[t] = repull[t].reindex(merged.index)
         if missed := sorted(set(bad) - set(healed)):
             log.warning("%s: seam re-pull returned no data for %s — kept as-is, "
                         "retried next run", self.name, missed[:12])
-        for k, w in list(fresh_extras.items()):
+        for k in sorted(extra_keys):
+            w = fresh_extras.get(k)
             rw = repull_extras.get(k)
             # NOT filtered by `t in w.columns` (2026-08-06 split-basis incident): w is the
             # FRESH 1mo window, and a healed ticker missing from it — yfinance returned no
@@ -620,6 +663,8 @@ class BreadthAdapter(Adapter):
             # union index: the grafted column must span the extras CACHE's rows,
             # not just the 1mo fresh window, so combine_first in fetch() overrides
             # the poisoned cached rows instead of keeping them
+            if w is None:
+                w = pd.DataFrame(index=fresh.index)
             w = w.reindex(w.index.union(rw.index)).sort_index()
             for t in cols:
                 w[t] = rw[t].reindex(w.index)
@@ -650,7 +695,7 @@ class BreadthAdapter(Adapter):
                         _without_cached_completed_session(cached, tickers, expected_session)
                         if expected_session is not None else cached
                     )
-                    closes = self._merge_refreshed(fresh, cached_for_merge)
+                    closes = self._merge_refreshed(fresh, cached_for_merge, **download_kwargs)
             if closes is None:
                 days = self.cfg["lookback_days_live"]
                 closes = self._download_closes(tickers, f"{max(1, days // 365 + 1)}y", **download_kwargs)
@@ -679,6 +724,8 @@ class BreadthAdapter(Adapter):
         if expected_session is not None:
             closes = _mask_invalid_completed_closes(closes, tickers, expected_session)
             _require_completed_closes(closes, tickers, expected_session)
+            self._last_extras = _mask_completed_extras_without_close(
+                dict(getattr(self, "_last_extras", {}) or {}), closes, tickers, expected_session)
         self.cache_path.parent.mkdir(parents=True, exist_ok=True)
         if not full_history:
             closes.to_parquet(self.cache_path)
