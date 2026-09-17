@@ -18,6 +18,7 @@ import logging
 import time
 from datetime import date, datetime
 
+import numpy as np
 import pandas as pd
 
 from collectors.base import Adapter
@@ -304,7 +305,7 @@ def _has_completed_stock_close(close: pd.Series, session) -> bool:
         if int(selected.sum()) != 1:
             return False
         value = close.loc[selected].iloc[0]
-        if isinstance(value, (bool, type(pd.NA))):
+        if isinstance(value, (bool, np.bool_, type(pd.NA))):
             return False
         value = float(value)
         return 0 < value < float("inf")

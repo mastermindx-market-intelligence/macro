@@ -14,3 +14,12 @@ The real existing `run_adapter(StockPriceAdapter())` was run against an isolated
 The earlier full composed board probe used #7180/#7200/#7187 source and actual full data, including the running engine's read-only Russell cache snapshot. It analysed 3,042 names but timed out in later enrichment after 1,200 seconds; it did not emit a completed new board receipt. Its extension guard correctly fell back one session because current-row coverage was only 42.1%. Further inspection showed Russell only 21/1,943 current constituent closes, with 1,922 still on September 14. That distinct producer dependency remains unresolved; this deep-stock repair does not claim to fix it.
 
 Production is not restored by this PR. Required before acceptance: independent exact-head review, hosted/security checks, current-base composition with the existing source repairs, full current source universe, canonical publication and a real served browser/premium-payload receipt. Never retry over natural run 35041133038 or rewrite any incumbent worktree.
+
+
+## NumPy/Pandas Boolean completed-close repair
+
+Cross-source review found the completed-close helper rejected Python `bool` but not the NumPy Boolean scalar returned by pandas boolean columns. `float(np.bool_(True)) == 1.0`, so a malformed Boolean source cell could be accepted as a positive finite price. This is a validator correctness defect; it is **not** evidence that Boolean prices caused the original production outage.
+
+The same carrier now rejects both Python and NumPy Boolean scalars before numeric coercion. Ordinary integer/float price `1` remains valid. Three real fetch-path cases (native bool, object, nullable-boolean dtypes) plus direct scalar controls were RED on the prior head; the focused repaired set is 9 passed. The complete existing deep-stock/retention/basis/delisting battery is **111 passed, 1 existing skip**. A forbidden mutation removing the NumPy guard returns 3 failed / 6 passed in the focused set; restoring the source returns 9 passed. No provider request, store write, ranking rule, calendar, retry budget or source-selection change is introduced by this correction.
+
+The prior real-provider receipt remains historical proof for the previous exact source and is not re-stamped. Final acceptance still requires new-head hosted checks, independent review, current-base integration and one real integrated source-to-served-board proof.

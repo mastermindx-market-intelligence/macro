@@ -51,3 +51,12 @@ prs: [7180, 7187, 7200, 7163]
 Protected procedure pin: Mastermind a78b8fe23d8e1ed129880ac47e97ebe96afa8aea. Source base: macro 11485597cc53b3137346084aae4623cceed28a3f. Final semantic source: a060c17888da329bd3bd1bd5ba32d33d76ea015f. The live provider receipt binds this exact unchanged collector source.
 
 Executive OS owns lifecycle, Agent OS continuity, GitHub implementation and Slack transport. Current user continuation is scoped intent, not a gate waiver. This work did not originate or dispatch an Executive Job, mutate production stores, terminate a production run, or claim an independent review. Capability: BUILT_NOT_PROVEN.
+
+
+## 2026-09-17 Boolean-scalar continuation
+
+Chairman continuation re-entered the existing `prophet-deep-stock-current-close-recovery-20260916-sol-001` carrier after reconciling exact local/remote head `6159410678619d148531ba3e2ecbb1ad7a537d04`, a clean checkout, no Git locks and no process cwd owner. Protected procedure pin for this continuation is `Mastermind@b731149296a9d837d426730813f68d5acc6133ac`.
+
+The outstanding NumPy-Boolean finding is repaired on this same branch: `_has_completed_stock_close` now rejects `np.bool_` alongside Python `bool` and `pd.NA`. The new regression is red on the predecessor (3 focused failures), green after repair (9 focused passes), and detects removal of the guard (3 failures). Existing four-suite source-owner verification is **111 passed / 1 pre-existing skip**. Numeric 1 remains accepted.
+
+This correction does not change the unresolved Russell/full-universe dependency or claim that the deep-stock source is deployed. Preserve the previously captured real-provider receipt as evidence of its original exact source. Continue same-head hosted CI, independent review, current-base source composition and the existing Russell/source boundary without creating a competing provider or publication path.

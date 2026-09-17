@@ -54,6 +54,28 @@ def test_historical_or_invalid_prices_fail_current_session(tmp_path,monkeypatch,
     assert len(calls)==2
 
 
+@pytest.mark.parametrize("dtype", [bool, object, "boolean"])
+def test_boolean_completed_close_is_never_a_price(tmp_path, monkeypatch, dtype):
+    """A bool scalar is numerically coercible to 1 but is not a market price."""
+    a=adapter(tmp_path,monkeypatch);calls=[]
+    def download(names,**kw):
+        calls.append(names)
+        frame=response(names)
+        for name in names:
+            frame[(name,"Close")]=pd.Series([True,True,True],index=DATES,dtype=dtype)
+        return frame
+    monkeypatch.setattr(yf,"download",download)
+    with pytest.raises(RuntimeError,match="completed session"):
+        a.fetch()
+    assert len(calls)==a.ycfg["retries"]
+
+
+@pytest.mark.parametrize("value,expected",[(True,False),(np.bool_(True),False),(False,False),(1,True),(1.0,True),(101.25,True)])
+def test_completed_close_scalar_type_distinguishes_boolean_from_numeric_one(value, expected):
+    series=pd.Series([value],index=[pd.Timestamp(SESSION)],dtype=object)
+    assert sh._has_completed_stock_close(series,SESSION) is expected
+
+
 def test_seventy_percent_current_coverage_preserves_partial_universe(tmp_path,monkeypatch):
     a=adapter(tmp_path,monkeypatch,batch_size=1);calls=[]
     def download(names,**kw):
