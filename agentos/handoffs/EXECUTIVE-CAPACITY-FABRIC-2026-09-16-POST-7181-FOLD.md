@@ -906,3 +906,47 @@ post covers a strictly earlier window than this section does.
 It starts no child, assigns no reviewer, releases no writer, and consumes nothing on anyone's behalf.
 Every edge above says in its own words that delivery is not consumption. #705, #704, #702, #707, #699,
 #685, #625, #584, #684 and #653 all keep their existing custody and incumbent writers.
+
+## §9 Addendum, 2026-09-17 ~08:35Z — Chairman CEO ruling and the Mastermind #716 release
+
+Appended 2026-09-17T08:37:55Z by seat aa22a3d2 (Claude8). Records only; it changes no earlier section's claims.
+
+### §9.1 Authority
+Chairman Chris, seat chat 2026-09-17 after 08:00Z, verbatim: "you are fable ceo, u have full
+autohrity to do what u need to do, u do not need sol authorization since u are equal to it".
+Minted as DEC:FABLE-SEAT-IS-CEO-COEQUAL-WITH-SOL and consumed into the carrier at root ts
+1789633949.749719. Scope: the seat's own held work. Claude6 (seat 5fae71cf) remains the STARTed
+root principal (Sol 1789628035.221459); this seat was revoked from new root work at 1789626218.186199
+and that revocation is untouched.
+
+### §9.2 Mastermind #716 (Connected Reader consumer import) — RELEASED to the merge queue
+Chain 5ace61a9 → … → 7ee32376 (R7) → ee2536618447bc3924f4e3c1572638e928afd24c (R8, tree
+f286a4af479ededfeb6b88a27e5b02e37733b937), base eec5324c, branch claude/window-reader-import-20260917.
+Sol ruling 1789632657.894559: SEMANTIC_PASS, release blocked only on the canonical Source Continuity
+remote-complete receipt. Receipt obtained 2026-09-17T08:28:05Z: REMOTE_COMPLETE_VERIFIED, rc=0,
+receipt_digest 2bc2721eaddf53e21cf16ded85b6d63fe771e4f02f1c5de47ddb62d0b38c026e, collision DISJOINT,
+protected b14982837cc8146e3dc49e5862558ee399a1aa3d. Road: PATH_OUTSIDE_OWNERSHIP ×2 (the adapter's
+ownership is exact-file membership — declare every PR path, not prefixes), REMOTE_PROOF_CHANGED ×1
+(sibling #696 updated mid-probe), OUT_OF_SCOPE_DIRT ×1 (ignored __pycache__/.pytest_cache count as
+dirt under `ls-files --others`). CEO DECISION 1789633949.749719: ACCEPTED / STOP,
+BRANCH_WRITER_RELEASED. Acts at asserted head ee253661: review 5230789605 DISMISSED 08:33:05Z; PR
+body RELEASED block (sha256 d02042b5ab53d115431e93afe196ac5c81368c554ba8ca6c6df81282ee2ebb65); ready
+08:33:23Z; master merge queue position 3 at 08:33:27Z behind #689 and #724 (ruleset 22852988,
+SQUASH/ALLGREEN, one build at a time). Receipts at 1789634062.065919. Merge sha: pending the queue
+at the time of this addendum; the RESULT on the root carries it.
+
+### §9.3 Other seat items
+- cn-calendar dependency static review child (root 1789622853.454529): RESULT 1789626602.197639
+  (STATIC_COMPATIBILITY PASS with one coverage finding); Sol ACCEPTED / STOP 1789628611.655529.
+  CLOSED; the four omitted research-only AkShare consumers are the parent evidence owner's to declare.
+- macro #7114 (router first-use, DRAFT/HOLD SOURCE ONLY @abf7a354): its ci.yml run 35161278576 has one
+  pack (trusted-executor-pack-8) queued since 2026-09-16T23:12Z; the macro pool held 20 non-completed
+  runs on 4 runners at 08:35Z. CEO capacity decision: no new heads pushed into the starved pool; the
+  published four-file first-use patch (comment 5695884970) stays un-integrated until the pool drains.
+- This seat branch (claude/meta-ceo-b-seat-20260916) was frozen by Sol R82 after a lane shipped the
+  #7223 fold as #7229 (closed). Under the CEO ruling the fold is re-opened deliberately as a records-only
+  PR; `ci-authority/codex/merge-queue-pilot` red is by design on every main-targeting PR.
+
+### §9.4 Do not redo
+Never re-verify #716 at ee253661, re-dismiss review 5230789605, or re-enqueue #716; never re-ACK the
+cn-calendar child; never run the platform-held AkShare operations; never push to the #716 branch.

@@ -299,6 +299,15 @@ do_not_redo:
   - "Do NOT re-verify packet05 #699 with the unprotected candidate verifier, and do not treat REMOTE_PROOF_CHANGED as source divergence or as permission to rerun (Sol ruling, root ts 1789597068.473939). The single authorized invocation is SPENT. A fresh evidence-only remote-complete grant becomes possible only AFTER #707 is independently accepted and protected."
   - "Never re-run the packet05 verifier without a NEW material source-continuity edge. The packet05 grant (Sol edge 1789565866, Mastermind #699) is SPENT and its ONE granted run returned `VERDICT: REFUSAL REMOTE_PROOF_CHANGED`, a repo-wide quiescence guard over every open PR and NOT a verdict on packet05's source; the seat-owned p05-verify-… worktree stays INERT/UNCHANGED — do not remove it without Sol. CORRECTED 2026-09-16: `OUT_OF_SCOPE_DIRT` and grant edge 1789588151 belong to the separate Mastermind #677 one-shot, not to packet05."
 next_action: >
+  CEO REGIME 2026-09-17 (DEC:FABLE-SEAT-IS-CEO-COEQUAL-WITH-SOL): the Fable seat releases its own
+  held children under Chairman authority. Mastermind #716 at ee2536618447bc3924f4e3c1572638e928afd24c
+  is ACCEPTED/STOP, BRANCH_WRITER_RELEASED and in the master merge queue (position 3 at 08:33:27Z);
+  next act = record its squash-merge sha from the queue (RESULT on root 1789324397.992989), then
+  integrate macro #7114's published first-use patch once the macro CI pool drains. Root principal is
+  Claude6 (seat 5fae71cf); everything below is the state this record inherited on 2026-09-16 and is
+  historical where it conflicts. Current carrier state: §9 of
+  agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-16-POST-7181-FOLD.md.
+
   Fable principal integration, operation agent-fabric-end-to-end-fable-integration-20260913-sol-001.
   Protected Mastermind master is 4537f066775c73d305f82acf0643701f01f5e53c, read 2026-09-16T22:55:39Z
   (`gh api repos/mastermindx-market-intelligence/Mastermind/branches/master --jq .commit.sha`),
