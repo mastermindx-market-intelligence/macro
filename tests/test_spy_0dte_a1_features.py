@@ -17,6 +17,8 @@ def payload(
     call_iv_decision=.26,
     iv_error=0.0,
     decision="09:45:00.000",
+    bid=1.0,
+    ask=1.1,
 ):
     if prices is None:
         prices = {}
@@ -39,6 +41,8 @@ def payload(
                 "underlying_price": px,
                 "implied_vol": iv,
                 "iv_error": iv_error,
+                "bid": bid,
+                "ask": ask,
             })
         return rows
 
@@ -62,12 +66,13 @@ def fixture():
     return {"events": {"2025": {"CPI": [DATE], "PPI": [], "NFP": [], "FOMC": []}}}
 
 
-def build(p, clock="09:45:00.000"):
+def build(p, clock="09:45:00.000", prior_close=None):
     return f.build_a1_features(
         session_date=DATE,
         decision_clock=clock,
-        greeks_payload=p,
+        iv_payload=p,
         event_fixture=fixture(),
+        prior_close=prior_close,
     )
 
 
@@ -106,7 +111,7 @@ def test_realized_vol_nulls_if_any_required_minute_missing():
     assert features["realized_vol_open_to_decision"] is None
 
 
-def test_atm_iv_averages_call_put_and_uses_first_valid_anchor():
+def test_atm_iv_averages_call_put_and_uses_first_strictly_post_open_anchor():
     features = build(payload(
         put_iv_open=.30,
         call_iv_open=.32,
@@ -115,15 +120,29 @@ def test_atm_iv_averages_call_put_and_uses_first_valid_anchor():
         decision="09:45:00.000",
     ))
     assert math.isclose(features["atm_iv_level"], .25)
-    assert math.isclose(features["atm_iv_change_from_first_valid"], -.06)
-    assert features["atm_iv_anchor_minutes_from_open"] == 0
+    assert math.isclose(features["atm_iv_change_from_first_valid"], .04)
+    assert features["atm_iv_anchor_minutes_from_open"] == 1
 
 
-def test_bad_iv_fails_closed_to_null():
-    bad = build(payload(iv_error=100.0, decision="09:45:00.000"))
+def test_small_solver_residual_and_frozen_boundary_are_valid():
+    small = build(payload(iv_error=.0002, decision="09:45:00.000"))
+    edge = build(payload(iv_error=f.IV_ERROR_MAX, decision="09:45:00.000"))
+    assert small["atm_iv_level"] is not None
+    assert edge["atm_iv_level"] is not None
+
+
+def test_solver_residual_above_frozen_limit_fails_closed_to_null():
+    bad = build(payload(iv_error=f.IV_ERROR_MAX + .0001, decision="09:45:00.000"))
     assert bad["atm_iv_level"] is None
     assert bad["atm_iv_change_from_first_valid"] is None
     assert bad["atm_iv_anchor_minutes_from_open"] is None
+    catastrophic = build(payload(iv_error=100.0, decision="09:45:00.000"))
+    assert catastrophic["atm_iv_level"] is None
+
+
+def test_invalid_nbbo_fails_iv_closed():
+    bad = build(payload(bid=0.0, ask=1.1, decision="09:45:00.000"))
+    assert bad["atm_iv_level"] is None
 
 
 def test_future_underlying_timestamp_refuses():
@@ -148,10 +167,38 @@ def test_cross_contract_underlying_disagreement_refuses():
         raise AssertionError("cross-contract disagreement accepted")
 
 
-def test_events_gap_null_and_no_forbidden_fields():
-    features = build(payload(decision="09:35:00.000"), "09:35:00.000")
+def test_gamma_bearing_source_payload_refuses():
+    p = payload(decision="09:35:00.000")
+    p["response"][0]["data"][0]["gamma"] = .01
+    try:
+        f.collapse_underlying_prices(p, DATE)
+    except f.FeatureError as exc:
+        assert "gamma" in str(exc).lower()
+    else:
+        raise AssertionError("gamma-bearing A1 payload accepted")
+
+
+def test_gap_uses_explicit_prior_session_raw_close():
+    features = build(payload(decision="09:35:00.000"), "09:35:00.000", prior_close=599.0)
+    expected = 600.0 / 599.0 - 1.0
+    assert math.isclose(features["gap_return"], expected)
+    assert features["gap_direction"] == 1
+
+
+def test_missing_gap_stays_null_and_corrupt_close_refuses():
+    missing = build(payload(decision="09:35:00.000"), "09:35:00.000")
+    assert missing["gap_return"] is None and missing["gap_direction"] is None
+    try:
+        build(payload(decision="09:35:00.000"), "09:35:00.000", prior_close=-1)
+    except f.FeatureError as exc:
+        assert "prior close" in str(exc)
+    else:
+        raise AssertionError("corrupt prior close accepted")
+
+
+def test_events_and_no_forbidden_fields():
+    features = build(payload(decision="09:35:00.000"), "09:35:00.000", prior_close=599.0)
     assert features["event_cpi"] == 1 and features["event_high_impact_any"] == 1
-    assert features["gap_return"] is None and features["gap_direction"] is None
     forbidden = ("gamma", "gex", "pnl", "profit", "stop", "outcome", "label")
     assert not any(any(token in key.lower() for token in forbidden) for key in features)
 
@@ -161,7 +208,17 @@ def test_invalid_nearest_strike_does_not_fall_through_to_farther_valid_iv():
     for group in p["response"][:2]:
         for row in group["data"]:
             if row["timestamp"].endswith("09:45:00.000"):
-                row["iv_error"] = 100.0
+                row["iv_error"] = f.IV_ERROR_MAX + .0001
+    features = build(p)
+    assert features["atm_iv_level"] is None
+    assert features["atm_iv_change_from_first_valid"] is None
+
+
+def test_one_sided_exact_atm_iv_fails_closed():
+    p = payload(decision="09:45:00.000")
+    for row in p["response"][0]["data"]:
+        if row["timestamp"].endswith("09:45:00.000"):
+            row["iv_error"] = f.IV_ERROR_MAX + .0001
     features = build(p)
     assert features["atm_iv_level"] is None
     assert features["atm_iv_change_from_first_valid"] is None
