@@ -4,8 +4,8 @@ import importlib
 import pytest
 from fastapi import FastAPI, HTTPException
 from fastapi.testclient import TestClient
-from test_prophet_lab import _build_d5, _d5_master, _d5_workspace, _d5_revisions
-from test_prophet_lab_api import _d5_snapshot, _d5_master as _api_master, _D5_EPISODE_ID
+from tests.test_prophet_lab import _build_d5, _d5_master, _d5_workspace, _d5_revisions
+from tests.test_prophet_lab_api import _d5_snapshot, _d5_master as _api_master, _D5_EPISODE_ID
 from engine.prophet_lab.intelligence_vector import IntelligenceVectorContractError
 import app.prophet_lab as api
 
@@ -267,7 +267,7 @@ def test_real_native_producer_through_http_covered_and_corrected(client,monkeypa
         assert "108,000,000,000" not in response.text
 
 def test_complete_native_source_validator_is_used_for_readdressed_poison():
-    from test_prophet_lab import _readdress_d5
+    from tests.test_prophet_lab import _readdress_d5
     payload=_build_d5();payload["authority"]["can_gate"]=True
     _readdress_d5(payload)
     with pytest.raises(IntelligenceVectorContractError):
@@ -287,3 +287,145 @@ def test_native_earnings_view_exists():
 
 def test_existing_private_router_exposes_research_view():
     assert any(route.path.endswith("/research-view") for route in api.router.routes)
+
+
+# Exact episode discovery uses the existing B1 snapshot, never a ticker join.
+def test_episode_directory_links_native_view_at_exact_generation(client, monkeypatch):
+    c, _ = client
+    calls = []
+    def load(_root):
+        calls.append("b1")
+        return _d5_snapshot()
+    monkeypatch.setattr(api, "load_candidate_episode_store_snapshot", load)
+    response = c.get("/api/prophet/lab/v1/episodes")
+    assert response.status_code == 200
+    private(response)
+    data = response.json()
+    assert calls == ["b1"]
+    assert data["population_completeness"] == "NOT_ASSERTED"
+    assert data["selection"]["total_episodes"] == 1
+    assert not any(data["authority"].values())
+    row = data["episodes"][0]
+    assert row["episode_ref"]["episode_id"] == _D5_EPISODE_ID
+    assert row["episode_ref"]["generation_id"] == data["generation_id"]
+    detail = c.get(row["research_view_url"])
+    assert detail.status_code == 200
+    assert detail.json()["episode_ref"] == row["episode_ref"]
+
+
+def test_episode_directory_never_reads_earnings_or_filters_by_coverage(client, monkeypatch):
+    c, _ = client
+    monkeypatch.setattr(api, "build_earnings_intelligence_vector", lambda **kw: pytest.fail("directory read earnings"))
+    response = c.get("/api/prophet/lab/v1/episodes", params={"q": "aapl"})
+    assert response.status_code == 200
+    assert len(response.json()["episodes"]) == 1
+
+
+@pytest.mark.parametrize("params", [
+    {"limit": "0"}, {"limit": "101"}, {"limit": "true"}, {"limit": "1.0"},
+    {"offset": "-1"}, {"offset": "1000001"}, {"offset": "1"},
+    {"q": "x" * 81}, {"q": "AAPL\n"}, {"expected_generation": "bad"},
+])
+def test_episode_directory_invalid_options_are_private_before_read(client, monkeypatch, params):
+    c, _ = client
+    reads = []
+    def load(_):
+        reads.append("B1")
+        return _d5_snapshot()
+    monkeypatch.setattr(api, "load_candidate_episode_store_snapshot", load)
+    response = c.get("/api/prophet/lab/v1/episodes", params=params)
+    assert response.status_code == 400
+    private(response)
+    assert reads == []
+
+
+@pytest.mark.parametrize("code", [401, 403])
+def test_episode_directory_auth_denies_before_b1(client, monkeypatch, code):
+    c, app = client
+    def denied():
+        raise HTTPException(code, "denied", headers=api._PRIVATE_HEADERS)
+    app.dependency_overrides[api.require_site_full_user] = denied
+    monkeypatch.setattr(api, "load_candidate_episode_store_snapshot", lambda _: pytest.fail("auth failure read B1"))
+    response = c.get("/api/prophet/lab/v1/episodes")
+    assert response.status_code == code
+    private(response)
+
+
+def test_episode_directory_kill_switch_denies_before_b1(client, monkeypatch):
+    c, _ = client
+    monkeypatch.setenv("PROPHET_LAB_DISABLED", "1")
+    monkeypatch.setattr(api, "load_candidate_episode_store_snapshot", lambda _: pytest.fail("disabled read B1"))
+    response = c.get("/api/prophet/lab/v1/episodes")
+    assert response.status_code == 503
+    private(response)
+
+
+def test_episode_directory_corrupt_source_is_not_empty_success(client, monkeypatch):
+    c, _ = client
+    def broken(_):
+        raise ValueError("PRIVATE PATH MUST NOT LEAK")
+    monkeypatch.setattr(api, "load_candidate_episode_store_snapshot", broken)
+    response = c.get("/api/prophet/lab/v1/episodes")
+    assert response.status_code == 503
+    private(response)
+    assert "PRIVATE" not in response.text
+
+
+def test_episode_directory_empty_and_unmatched_are_honest(client, monkeypatch):
+    c, _ = client
+    unmatched = c.get("/api/prophet/lab/v1/episodes", params={"q": "does-not-exist"})
+    assert unmatched.status_code == 200
+    assert unmatched.json()["selection"]["total_matches"] == 0
+    assert unmatched.json()["selection"]["total_episodes"] == 1
+    monkeypatch.setattr(api, "load_candidate_episode_store_snapshot", lambda _: _d5_snapshot(episodes=()))
+    response = c.get("/api/prophet/lab/v1/episodes")
+    assert response.status_code == 200
+    assert response.json()["episodes"] == []
+    assert response.json()["selection"]["next_offset"] is None
+
+
+def test_episode_directory_keeps_distinct_same_security_episodes(client, monkeypatch):
+    c, _ = client
+    first = deepcopy(_d5_snapshot().generation.episodes[0])
+    second = deepcopy(first)
+    second["identity_epoch"] = "epoch_1"
+    second["episode_id"] = second["episode_id"].replace(":epoch_0:", ":epoch_1:")
+    second["episode_state"] = "EXPIRED"
+    original = deepcopy((first, second))
+    snapshot = _d5_snapshot(episodes=(first, second))
+    monkeypatch.setattr(api, "load_candidate_episode_store_snapshot", lambda _: snapshot)
+    one = c.get("/api/prophet/lab/v1/episodes", params={"q": "AAPL", "limit": "1"}).json()
+    assert one["selection"]["total_matches"] == 2
+    assert one["selection"]["next_offset"] == 1
+    two_response = c.get("/api/prophet/lab/v1/episodes", params={"q": "AAPL", "limit": "1", "offset": "1", "expected_generation": one["generation_id"]})
+    assert two_response.status_code == 200
+    two = two_response.json()
+    assert one["episodes"][0]["episode_ref"] != two["episodes"][0]["episode_ref"]
+    assert two["selection"]["next_offset"] is None
+    assert snapshot.generation.episodes == original
+    assert "EXPIRED" in {one["episodes"][0]["episode_state"], two["episodes"][0]["episode_state"]}
+
+
+@pytest.mark.parametrize("route", ["directory", "view"])
+def test_episode_generation_pin_refuses_changed_evidence(client, route):
+    c, _ = client
+    path = "/api/prophet/lab/v1/episodes" if route == "directory" else url()
+    response = c.get(path, params={"expected_generation": "peg:" + "b" * 64})
+    assert response.status_code == 409
+    private(response)
+    assert response.json()["error"] == "prophet_episode_generation_changed"
+    assert "episodes" not in response.json()
+    assert "metrics" not in response.json()
+
+
+def test_episode_view_invalid_generation_pin_refuses_before_read(client, monkeypatch):
+    c, _ = client
+    reads = []
+    def load(_):
+        reads.append("B1")
+        return _d5_snapshot()
+    monkeypatch.setattr(api, "load_candidate_episode_store_snapshot", load)
+    response = c.get(url(), params={"expected_generation": "../foreign"})
+    assert response.status_code == 400
+    private(response)
+    assert reads == []

@@ -378,10 +378,14 @@ def episode_research_view_v1(
     episode_id: str,
     format: str = "json",
     language: str = "en",
+    expected_generation: str | None = None,
     _user: dict = Depends(require_site_full_user),
 ) -> Response:
     """Present the incumbent D5 read; preserve auth, kill switch and errors."""
-    if format not in {"json", "html"} or language not in {"en", "zh"}:
+    from engine.prophet_lab.episode_directory import valid_generation_pin
+
+    if (format not in {"json", "html"} or language not in {"en", "zh"}
+            or not valid_generation_pin(expected_generation)):
         return _response({"error": "prophet_research_view_options_invalid"}, status_code=400)
     source = episode_intelligence_v1(episode_id, _user=_user)
     if source.status_code != 200:
@@ -394,6 +398,9 @@ def episode_research_view_v1(
             STYLE, build_earnings_view, render_earnings_fragment,
         )
         payload = json.loads(source.body)
+        if (expected_generation is not None and
+                payload["episode_ref"]["generation_id"] != expected_generation):
+            return _response({"error": "prophet_episode_generation_changed"}, status_code=409)
         if format == "json":
             return _response(build_earnings_view(payload, language=language))
         style_hash = b64encode(sha256(STYLE.encode("utf-8")).digest()).decode("ascii")
@@ -408,3 +415,33 @@ def episode_research_view_v1(
         log.warning("prophet_lab research view failed (%s)", type(exc).__name__)
         return _response({"error": "prophet_research_view_unavailable",
                           "detail": "Research view temporarily unavailable"}, status_code=503)
+
+
+@router.get("/api/prophet/lab/v1/episodes")
+def episode_directory_v1(
+    q: str = "", limit: str = "25", offset: str = "0",
+    expected_generation: str | None = None,
+    _user: dict = Depends(require_site_full_user),
+) -> JSONResponse:
+    """Discover exact B1 episode links without reading or selecting earnings."""
+    from engine.prophet_lab.episode_directory import (
+        build_episode_directory, parse_directory_options,
+    )
+
+    try:
+        query, size, start = parse_directory_options(q, limit, offset, expected_generation)
+    except ValueError:
+        return _response({"error": "prophet_episode_directory_options_invalid"}, status_code=400)
+    if _kill_switch_active():
+        return _response({"error": "prophet_lab_disabled"}, status_code=503)
+    try:
+        root = _env_path("PROPHET_LAB_EPISODE_STORE_ROOT", _CANDIDATE_EPISODE_STORE_ROOT)
+        if root is None:
+            raise IntelligenceVectorContractError("B1 read root unavailable")
+        snapshot = load_candidate_episode_store_snapshot(root)
+        if expected_generation is not None and snapshot.generation_id != expected_generation:
+            return _response({"error": "prophet_episode_generation_changed"}, status_code=409)
+        return _response(build_episode_directory(snapshot, query=query, limit=size, offset=start))
+    except Exception as exc:
+        log.warning("prophet_lab episode directory failed (%s)", type(exc).__name__)
+        return _response({"error": "prophet_episode_directory_unavailable"}, status_code=503)
