@@ -2,231 +2,143 @@
 workstream: WS:GMI-THEME-GRAPH
 session: claude/sector-cycle-p1-member-observation-20260917-sol
 model: sol
-ended_because: ci_handoff
-mission: 'Continue the existing Finviz/Sector/Theme/Cycle Intelligence programme. Close the P1 actual-detail-consumer
-  publication gap without rebuilding the prior research, expanding trade authority, or taking over publication
-  PR #7211.'
-state_before: 'P1 implementation PR #7252 was remotely backed up at 158909ba3753e7b9550cfb3aa9350b94400fde9d.
-  Its validator accepted empty or wrong-group pages carrying matching digest metadata. Prior local-only
-  handoff source-publication claims were stale.'
+ended_because: blocked
+mission: Deliver the existing Chairman-commissioned Finviz/Sector/Theme/Cycle Intelligence programme through
+  existing GMI, Group Pulse and publication owners. P1 complete-member evidence is the current prerequisite,
+  not the finished shared Matrix/Clusters/Bubbles, economic/regime or Prophet outcome.
+state_before: 'Recovered remote and clean original local #7252 at b81fd9e424a14386645a744af1872d85b6df91f5.
+  The later exact-state receipts were already implemented and published. The remaining P1 daily comparison
+  accepted filled, stale, mismatched-period or invalid benchmark observations as measured relative performance.'
 changed:
-- path: engine/group_member_observations.py
-  what: Require each member metric cell to bind to the metric-specific normalized-frame receipt basis.
-    Legacy activity and legacy 50/200 breadth can no longer cite the close panel as though it alone
-    proved the volume/benchmark/eligibility-derived state. Missing legacy-state receipts refuse the
-    companion before publication.
 - path: engine/group_pulse.py
-  what: Emit deterministic one-session normalized receipts for the exact legacy activity, legacy 50-day
-    and legacy 200-day member states from the same in-memory invocation. Eligibility is encoded as null,
-    while observed false and true remain distinct. No legacy pulse value or action input changes.
-- path: scripts/check_group_member_observations.py
-  what: Parse the actual body and the existing template-owned inline DETAIL JSON literal; reject ambiguous/missing
-    payloads; bind basket identity and every embedded member observation, metric, null and source field
-    to the valid companion. Preserve direct hashing of original pulse wire bytes.
-- path: tests/test_theme_detail_member_observations.py
-  what: Replace metadata-only positive fixtures with actual consumer payloads. Add changed/null/type/cohort/source/HTML
-    ambiguity regressions and validate the real full Jinja-rendered page. No UI or scoring source changed.
-- path: .github/ci/legacy-jobs.yml
-  what: Wire the two new P1 suites into the existing group-pulse and group-read-surface jobs, add Jinja2/pyarrow
-    to the latter dependencies, and widen two existing exclusive import closures for the projector and
-    canonical Data OS null module. No new jobs, waiver, runner, gate or job-if change.
-- path: templates/basket_detail.html.j2
-  what: Correct arithmetic member-minus-benchmark daily differences to percentage-point display (pp /
-    个百分点), with a matching bilingual label and definition. Raw returns keep percent display; no source
-    value, recipe, aggregation or trade input changes.
-- path: research/sector_cycle_revamp/evidence/P1_MEMBER_UNITS_2026-09-17/
-  what: Retain the executed eight-state local Chromium harness, hashed JSON receipt and two inspected
-    screenshots. These are local real-input page evidence, not production or authentication acceptance.
+  what: Require finite positive actual benchmark closes on the same two owner-panel rows as the current
+    member daily return for P1 relative evidence. Preserve the legacy panel, pulse and action behavior;
+    withhold only the new relative observation, retain raw return, and do not let a future-only benchmark
+    suppress all current member evidence.
+- path: tests/test_group_member_observations.py
+  what: Add 12 refusal cases and five valid controls, including missing current/prior rows, stale/future-only
+    data, nonfinite/nonpositive prices, older unrelated gaps, a flat benchmark, meaningful zero outperformance,
+    and future-row irrelevance.
+- path: research/sector_cycle_revamp/evidence/P1_BENCHMARK_PAIR_2026-09-17
+  what: Retain executable frozen-baseline legacy parity and real-input/controlled-page proof, JSON receipts
+    and two inspected screenshots. No production dataset or publication is written.
 verified:
-- claim: The original local worktree and remote pre-repair carrier were reconciled without reconstruction.
-  command: 'git rev-parse HEAD; git status --short --untracked-files=no; GitHub PR #7252 metadata; bounded
-    lsof cwd census'
-  result: Same branch at 158909ba3753e7b9550cfb3aa9350b94400fde9d, clean before repair. Only current read
-    probes occupied the exact worktree at custody inspection. Code repair committed as 317cab20b3971ba318829e6140aca2adeedd3639.
-- claim: The publication false-green was reproduced and discriminating tests failed before each repair.
-  command: python3 -m pytest -q tests/test_theme_detail_member_observations.py -k "embedded_payload_drift
-    or unambiguous_real_body_payload" --tb=short
-  result: 'First RED: 17 failed, 1 passed on the unmodified validator. Additional commented-payload test
-    subsequently failed before anchoring parsing to the owned script declaration.'
-- claim: Focused producer, consumer, semantics and surface regression tests pass after the repair.
-  command: python3 -m pytest -q tests/test_theme_detail_member_observations.py tests/test_group_member_observations.py
-    tests/test_group_pulse_contract.py tests/test_group_pulse_episodes.py tests/test_group_pulse_tripwire.py
-    tests/test_group_read_surface.py tests/test_theme_detail_cycles.py --tb=short
-  result: 265 passed in 24.20s; process exit 0.
-- claim: The strengthened validator accepts the existing local 49-group rendered generation.
-  command: python3 scripts/check_group_member_observations.py --site-root /tmp/mmx-sector-p1-proof/site
-  result: 49 groups, exit 0. Pulse c823cc37baf3f94709c80ee1387abee18149d188c64c05bf5eb09c560eb8d154; projection
-    dac7aaad7a8ca9f5a7a5720ca57ff3218d16cb0ef52d74b389693b17e04a242f. Local rendered-output binding proof,
-    not deployed or newly reacquired market-data proof.
-- claim: Only the intended two source/test paths changed in the code commit.
-  command: git diff --check; git diff --cached --name-only; git commit; git status --short --untracked-files=no
-  result: Formatting clean, exact two-file stage, code commit 317cab20b3971ba318829e6140aca2adeedd3639,
-    tracked working state clean before this continuity record.
-- claim: The first consumer-binding repair and continuity were pushed once and remotely reconciled on
-    the original PR.
-  command: 'git push --porcelain origin HEAD:refs/heads/claude/sector-cycle-p1-member-observation-20260917-sol;
-    GitHub get_pr_info #7252'
-  result: Push exit 0; exact remote head 696ea76b67780de1c256061105d54f42f4179749, open/Draft/unmerged.
-- claim: The new CI failure was a P1-owned coverage defect, not inferred shared runner failure.
-  command: GitHub fetch_workflow_job_logs job 105145436228 in run 35204042317
-  result: 'Hosted contract-delta failed with six introduced and zero inherited findings: four missing
-    path entries across conviction-profile/unrun-picks-boards and two suites not named by any run step.'
-- claim: All six introduced CI coverage defects are closed without bypass.
-  command: python3 scripts/check_contract_delta.py --base eef4e872f287c266e43247426d286ebc85af499f; git
-    diff --check
-  result: 'Exit 0: 0 introduced, 1 inherited (unrun-picks-boards site/theme.css pre-existing notice).
-    The canonical checker completed normally in the original worktree; the inherited notice is not waived
-    or represented as repaired.'
-- claim: Both exact revised CI-owner test commands execute successfully.
-  command: python -m pytest tests/test_group_pulse_contract.py tests/test_group_pulse_episodes.py tests/test_group_pulse_tripwire.py
-    tests/test_group_member_observations.py -q -rs; python -m pytest tests/test_group_read_surface.py
-    tests/test_theme_detail_member_observations.py -q -rs
-  result: 197 producer tests and 67 interface tests passed, each command exit 0. These are the actual
-    commands parsed from the amended existing job declarations.
-- claim: The manifest edit is bounded to four existing job entries with compatible inspected main entries.
-  command: Compare YAML dictionaries before/after and against origin/main 19192ac322130740515ac580c0690681d881a736
-    using GIT_NO_LAZY_FETCH=1
-  result: All four relevant main job dictionaries matched before the repair. Only those four changed,
-    two exclusively by the required path additions; job set, gates and if flags preserved.
-- claim: The independent publication owner received the exact integration contract.
-  command: 'GitHub add_comment_to_issue #7211'
-  result: 'Comment 5711957268 delivered. It keeps #7211 independent freshness release unblocked and specifies
-    strict current-run, embedded-data validation and source-trigger obligations. No pickup, review acceptance
-    or execution inferred.'
-- claim: The arithmetic benchmark-relative unit defect was reproduced and rejected before repair.
-  command: Read engine/group_pulse.py arithmetic rets.sub(bench_ret); run shipped member-evidence JS;
-    pytest -k "relative_change_uses_percentage_points or relative_units_do_not"
-  result: Original UI printed an arithmetic 0.01 return difference as +1.0%. The three positive/negative/zero
-    discriminators failed, then passed after pp/个百分点 display repair. Raw percent, boolean and missing-value
-    behavior remains unchanged.
-- claim: All focused tests pass after the actual visible unit repair.
-  command: python3 -m pytest -q tests/test_theme_detail_member_observations.py tests/test_group_member_observations.py
-    tests/test_group_pulse_contract.py tests/test_group_pulse_episodes.py tests/test_group_pulse_tripwire.py
-    tests/test_group_read_surface.py tests/test_theme_detail_cycles.py --tb=short
-  result: 269 passed in 8.11s, exit 0. This supersedes the 265-test count for the latest source; the prior
-    results remain historical.
-- claim: All 49 existing real-input detail pages render and bind under the corrected template.
-  command: python3 /tmp/mmx_p1_build_all_pages.py; python3 scripts/check_group_member_observations.py
-    --site-root /tmp/mmx-sector-p1-proof/site
-  result: 49 rendered pages, coherent 49-group validator exit 0; observation projection dac7aaad7a8ca9f5a7a5720ca57ff3218d16cb0ef52d74b389693b17e04a242f.
-    The input generation is existing committed/local evidence, not newly acquired data.
-- claim: The shipped corrected page passes the eight-state browser measurement and missingness matrix.
-  command: python3 -u /tmp/mmx_sector_p1_units_browser.py (exact executed harness retained at research/sector_cycle_revamp/evidence/P1_MEMBER_UNITS_2026-09-17/verify_browser.py)
-  result: 8/8 English/Chinese x dark/light x 1440/390 states. Raw values use %, arithmetic relative values
-    use pp or 个百分点. All 24 catalogue members retained, strict-200 23 observed plus CBRS unavailable, search/filter
-    leave source JSON unchanged, no script errors, section widths 1340/366. Both desktop-dark English
-    and mobile-light Chinese screenshots were inspected. Template SHA-256 bef4a8553b146cffd414ea44f3b786e4ad0bc89d2cd8c2b0a73ea1ca957c08e5.
-    Normal local Playwright/Chromium completed without alternate-profile/security-policy bypass.
-- claim: Adversarial source review found and closed a provenance blocker before requesting approval.
-  command: Inspect project_group_members source_ref selection; add RED tests for missing legacy-state
-    receipts and a valid normalized receipt carrying the wrong metric basis; implement only after both
-    failure modes were observed.
-  result: The old candidate allowed legacy activity/trend cells to cite total_return_close. Source repair
-    b0a3fa2e6e195d99fafcd226c4902bef88456d91 emits exact derived-state receipts, requires them at
-    projection, and rejects wrong-basis cell bindings in the closed validator.
-- claim: Latest source-bound producer, consumer, semantics and surface suite is green.
-  command: python3 -m pytest -q tests/test_theme_detail_member_observations.py tests/test_group_member_observations.py
-    tests/test_group_pulse_contract.py tests/test_group_pulse_episodes.py tests/test_group_pulse_tripwire.py
-    tests/test_group_read_surface.py tests/test_theme_detail_cycles.py --tb=short
-  result: 271 passed in 7.49s, exit 0. Exact existing CI-owner commands separately passed 199 producer
-    and 71 interface tests.
-- claim: Current real-input generation binds the exact state receipts and all existing detail consumers.
-  command: python3 /tmp/mmx_p1_real_proof.py; python3 /tmp/mmx_p1_build_all_pages.py; python3
-    scripts/check_group_member_observations.py --site-root /tmp/mmx-sector-p1-proof/site
-  result: 49 pages and 49 groups coherent; AI Infrastructure kept 24 catalogue members, 23 strict-200
-    observations and CBRS unavailable. Pulse 0b85839b219e461cfaae38f0ead6f409978e3b06b7c3e434bab005855dbf854a;
-    projection ebb09b98c654994a6d375c375ea73e0aa7260fc0efdd6e7d611448485d124a88. The three
-    legacy metrics each cite only their exact state receipt.
-- claim: Browser and repository qualification were rerun after source binding changed.
-  command: research/sector_cycle_revamp/evidence/P1_MEMBER_UNITS_2026-09-17/verify_browser.py; compileall;
-    diff check; template/design/runtime/UI guards; check_contract_delta.py --base 8b688809239d760be0cdcf8cd64f0d6f7ee05316
-  result: 8/8 EN/ZH x dark/light x desktop/mobile browser states, zero script errors and unchanged analytical
-    data under search/filter. Contract delta 0 introduced / 1 inherited; all local guards exit 0. Receipt
-    and two screenshots were refreshed to projection ebb09b98c654994a6d375c375ea73e0aa7260fc0efdd6e7d611448485d124a88.
-- claim: Protected procedure and moving-base compatibility were refreshed before modifying the returned candidate.
-  command: Mastermind protected master aacf3df5a47ca37ce71cd47a3bd7caea81ad4cd2; compare merge-base
-    8b688809239d760be0cdcf8cd64f0d6f7ee05316 to current origin/main 07fc7d77bf844434ad8688af34c46cd5a60d48d3.
-  result: Skillpack v1.0.1 compatible. No candidate-owned path collision or relevant dependency movement;
-    no ancestry-only merge/rebase was performed merely to erase behind_by.
+- claim: Current source continuity was recovered without reconstruction or duplicate effects.
+  command: gh pr view 7252; git rev-parse HEAD; git status --short; exact two-commit diff from 07409e9
+    to b81fd9e; bounded cwd census
+  result: b81fd9e424a14386645a744af1872d85b6df91f5 matched remotely and locally, clean; no other process
+    occupied the exact worktree. b0a3fa2e6e195d99fafcd226c4902bef88456d91 exact-state receipt repair is
+    do-not-redo.
+- claim: Benchmark-gap behavior failed before the bounded repair and passed afterward.
+  command: python3 -m pytest -q tests/test_group_member_observations.py -k "unobserved_benchmark_pair
+    or exact_observed_benchmark_pair" --tb=short
+  result: 'RED: 12 failed, 5 passed. Final focused producer/consumer regression run: 288 passed in 9.26s,
+    exit 0; includes all existing P1 and Group Reads tests.'
+- claim: The entire legacy wire output is unchanged on every controlled refusal case.
+  command: python3 research/sector_cycle_revamp/evidence/P1_BENCHMARK_PAIR_2026-09-17/verify_legacy_parity.py
+  result: 12/12 byte-identical legacy payloads against b81fd9e with a frozen clock. Raw member returns
+    remain observed and relative cells report benchmark_unavailable. Candidate engine SHA-256 f27700a287f4c70c762a49f10d802fab56eb734c227890f1afbf85a67560d133.
+- claim: The real input generation and controlled missing-benchmark consumer path work.
+  command: python3 -u research/sector_cycle_revamp/evidence/P1_BENCHMARK_PAIR_2026-09-17/verify_pages.py
+  result: 49 real-input groups/pages validated, as_of 2026-09-16, projection 4949ab4540608bfb11f14fc72b08eb76b5b8ae7c613167fe67d3ff6431bd3e13.
+    Separately, 8/8 controlled EN/ZH x dark/light x 1440/390 browser states retain raw values and withhold
+    all six relative values, with zero page-script errors. Both retained screenshots inspected. Not deployed/authenticated
+    production or predictive proof.
+- claim: The canonical differential CI contract remains satisfied.
+  command: python3 scripts/check_contract_delta.py --base eef4e872f287c266e43247426d286ebc85af499f
+  result: 'Exit 0 in 242.61s: 0 introduced, 1 inherited notice for unrun-picks-boards / site/theme.css.
+    No waiver, job, runner, gate or fanout change.'
+- claim: The code and exact evidence are committed on the original carrier.
+  command: git diff --check; compileall; exact source/evidence digest checks; explicit-path git add; git
+    commit
+  result: Code commit 13721803f7aec41735c9c3bda547c578d24f4561. Only engine/group_pulse.py, its existing
+    test suite, and the six benchmark-pair evidence files entered the source commit. Tracked state clean
+    before this handoff update.
+- claim: The actual shared CI wait was escalated to its existing owner.
+  command: 'Read WS:CI-MERGE-CONTROL-PLANE; gh run view 35258446644; GitHub issue #6351 comment 5720123608'
+  result: 'b81fd9e contract-delta and planning/admission jobs passed; all 12 execution packs were queued,
+    not proven running. Impact delivered to the existing #6351 owner; no rerun, cancellation, new pool
+    or capacity-owner takeover.'
 unverified:
-- claim: Revised-head remote CI, independent review, merge and production acceptance.
-  what_would_verify: Push this same branch once, verify remote expected head, obtain required exact-head
-    concluded checks and independent review, then release through existing owners and verify deployed
-    authenticated group evidence.
-- claim: Strict current-invocation and publication integration.
-  what_would_verify: 'The #7211 owner consumes the exact group_pulse.run result inside build_baskets,
-    fails on current_run_errors in the focused path, adds the companion validator and trigger/preflight
-    coverage, and proves matching stale files cannot survive a failed current invocation.'
-- claim: Full shared Atlas, broader taxonomy/lower-cap coverage, economic/regime intelligence and earned
-    Prophet contribution.
-  what_would_verify: Continue the real compact-view adapter and existing-owner catalogue/rights/evaluation
-    waves after their actual input and acceptance gates; no inference from P1 tests.
+- claim: Fresh exact-head hosted execution and independent acceptance.
+  what_would_verify: 'Reconcile the final pushed #7252 head, consume its concluded required checks and
+    obtain an independent exact-head review. Earlier passed anchors, queued packs and unconsumed review
+    requests do not satisfy those gates.'
+- claim: Strict current-invocation publication integration and deployed authenticated journey.
+  what_would_verify: 'The incumbent #7211 owner consumes integration contract comment 5711957268: check
+    the actual Group Pulse run result, validate actual embedded detail data and source triggers/preflight,
+    then prove stale matching artifacts cannot publish after a failed invocation. Verify the deployed
+    group/member/company/return path after accepted release.'
+- claim: Shared real Matrix/Clusters/Bubbles, broader catalogue/rights coverage, economics/regime intelligence
+    and earned Prophet contribution.
+  what_would_verify: Continue the existing R6/owner-governed waves after accepted P1; no synthetic prototype,
+    measured-context display or provenance-only result proves these capabilities.
 unresolved:
-- 'PR #7211 remains a separate publication source owner; inspected head 9b01c9bcae2b12f23ab0a2ab3a5054f81dcade02.
-  Do not edit or replace that carrier without custody reconciliation.'
-- Source-receipt hardening commit b0a3fa2e6e195d99fafcd226c4902bef88456d91 is locally verified on the
-  original carrier. It still needs one ordinary push plus fresh exact-head hosted proof and independent
-  review; no predecessor CI or browser receipt substitutes for those gates.
-- No worker, Executive Job or reciprocal watcher was started by this continuation. A PR comment is not
-  receiver consumption.
-- 'Research PR #7234 remains Draft/HOLD and is not the implementation. Its older local-only source handoff
-  is superseded only for the now-existing remote #7252 carrier.'
+- Independent review of the current source is not accepted; b81fd9e review request 5719243776 is unconsumed
+  and becomes superseded for semantic acceptance by this benchmark repair. No reviewer/worker/Executive
+  Job START is claimed.
+- 'Shared CI execution remains an external owner dependency under #6351. Actual queued state is not RUNNING,
+  even when a startedAt field contains the enqueue timestamp.'
+- 'Publication #7211 remains separately owned at inspected 9b01c9bcae2b12f23ab0a2ab3a5054f81dcade02; its
+  new review request 5719927633 is not review approval or P1 integration. Do not take over or block its
+  independent freshness repair.'
+- 'Research #7234 stays Draft/HOLD. The completed R5/R6 synthetic source is not present in the repository;
+  do not rebuild it or pretend a conversation-only bundle is production source.'
 next_actions:
-- Commit this continuity update, push the original branch once, reconcile the exact remote head, and
-  consume fresh hosted checks. Request independent exact-head review only after the carrier is frozen;
-  do not rerun unchanged predecessor jobs or mark Ready/merge/deploy.
-- 'Reconcile pickup and implementation of integration contract #7211 comment 5711957268 with its incumbent
-  source owner; delivery alone does not satisfy that edge.'
-- Complete required exact-head independent review and real-path release proof; keep Draft/BUILT_NOT_PROVEN
-  until actual gates clear. Preserve separate observation and decision-family dates.
-- Advance the compact real shared-view consumer and coverage work under R6 semantics without reconstructing
-  its missing conversation-only prototype or duplicating membership/price/identity/publication owners.
+- 'Reconcile the final #7252 remote head against code commit 13721803f7aec41735c9c3bda547c578d24f4561
+  and this handoff. If already published, do not recommit or repush; consume exact-head hosted evidence
+  and independent review.'
+- Resolve required review through the existing admitted placement/review owner; retain Draft and no merge/deploy
+  while that evidence is absent.
+- 'Obtain the incumbent #7211 integration and real production proof. Current-run success must precede
+  publication; observation dates stay separate from the decision-family common date.'
+- After P1 acceptance, continue the shared compact real-read views and the original broader intelligence/coverage
+  programme; no parent completion is claimed here.
 do_not_redo:
-- R1-R6 competitor/taxonomy/footer research, R4 historical 49-group replay, R5/R6 synthetic reference
+- R1-R6 competitor/taxonomy/footer archaeology, R4 historical replay, R5/R6 synthetic geometry/reference
   engine.
-- 'Reconstructing or replacing the original #7252 branch/worktree; repeating the already-closed GitHub-authentication
-  blocker.'
-- Replacing legacy action/scoring members with the larger inspection roster; turning display filters into
-  analytical rescope.
-- Building another scheduler, publisher, memory, identity, ThemeState or transmission authority.
+- Original carrier publication/authentication recovery; metadata-to-actual-DETAIL binding repair 317cab20b3971ba318829e6140aca2adeedd3639;
+  CI ownership repair 1ae7932c3c255bd5cc26ded690dc28f8a08a67a4.
+- Percentage-point display correction 07409e922249f0450c83cdc2e30019a1e7e16f04; exact state receipts b0a3fa2e6e195d99fafcd226c4902bef88456d91;
+  benchmark-pair repair 13721803f7aec41735c9c3bda547c578d24f4561.
+- No replacement branch, unmanaged worktree, new publisher/queue/identity/state/retry plane, legacy action-roster
+  expansion, or display-filter analytical rescope.
 danger_areas:
-- Hash-matching old disk files are not a successful current Group Pulse invocation.
-- A page metadata receipt is not proof of its actual embedded consumer data; preserve these regressions.
-- The validator binds JSON data, not arbitrary JavaScript execution or visual acceptance; browser proof
-  remains separate.
-- No new Finviz/THS emission rights, economic-causality claim, or Prophet rank/size/gate authority is
-  granted.
-- Local passing tests are insufficient when their suites are absent from canonical CI. Preserve explicit
-  existing-job ownership and import-closure coverage.
+- Legacy benchmark forward-fill/fallback formulas deliberately remain unchanged. This repair applies only
+  to the P1 measured-relative companion; any legacy formula/disclosure change needs its own accepted owner
+  decision.
+- Matching old artifacts do not prove the current invocation succeeded. HTML metadata alone does not prove
+  its embedded member payload.
+- Keep valid zero and false distinct from unavailable; preserve finite/positive observed-pair eligibility,
+  exact periods, source receipt basis and original-wire binding.
+- Real-input local output and deliberately controlled benchmark-gap fixtures are different evidence classes.
+  Neither is deployed acceptance, new market-data rights or Prophet ranking/sizing/gating authority.
 prs:
 - 7252
 - 7211
 - 7234
 ---
 
-## Continuation boundary
+## Authority and exact carrier
 
-This is a source-repair checkpoint, not programme completion or an execution receipt. Current Chairman intent is the resumed Investigate Finviz Matrix Integration programme. Protected procedure was refreshed from Mastermind `aacf3df5a47ca37ce71cd47a3bd7caea81ad4cd2`, Skillpack 1.0.1.
+Current live Chairman intent is to continue Investigate Finviz Matrix Integration. Protected Mastermind
+`aacf3df5a47ca37ce71cd47a3bd7caea81ad4cd2` supplies compatible Skillpack 1.0.1; all required procedure
+blobs were byte-identical to the previously loaded protected revision. The original Macro branch and
+worktree remain `claude/sector-cycle-p1-member-observation-20260917-sol` and
+`/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/sector-cycle-p1-member-observation-20260917-sol`.
+Operation remains `sector-cycle-p1-detail-binding-repair-20260917-sol-001`.
 
-Operation: `sector-cycle-p1-detail-binding-repair-20260917-sol-001`. Original source carrier: PR #7252, branch `claude/sector-cycle-p1-member-observation-20260917-sol`, worktree `/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/sector-cycle-p1-member-observation-20260917-sol`. Direct principal work reason: PRINCIPAL_JUDGMENT / CRITICAL_PATH_SHORTCUT. Self-review is not independent review.
+Direct principal reason: PRINCIPAL_JUDGMENT / CRITICAL_PATH_SHORTCUT. No eligible independent worker
+was established by the current tool surface; this does not claim the Executive fabric is globally down.
+The installed mmx-workspace launcher is fixed to the Mastermind repository, not this original Macro
+carrier; its status lookup returned NOT_APPLIED/unregistered. No host configuration, source selector,
+workspace registration, clone or worktree was changed. Existing Macro source custody was preserved.
 
-The user journey remains Sector Intelligence hub -> group -> complete measured/unavailable roster -> company context -> return with scope preserved. Null, false and zero retain distinct meanings. The larger programme still owes the real Matrix/Clusters/Bubbles experience and separately governed economic/regime and Prophet work. A source or identity conflict freezes its exact lane; no unknown effect may be retried on another carrier.
+## Current boundary
 
-## CI closure continuation
-
-The consumer-binding source remains `317cab20b3971ba318829e6140aca2adeedd3639`; remote predecessor `696ea76b67780de1c256061105d54f42f4179749` holds that repair and the initial handoff. This update records the distinct CI-integration defect and its bounded same-carrier repair. The parent programme remains ACTIVE and no production outcome, independent approval or worker start is asserted.
-
-## Actual-unit consumer correction
-
-A further real-path mismatch was found: the Group Pulse arithmetic daily difference was printed as a percentage return. The P1 formatter now uses percentage points and preserves raw-return percent, null and boolean behavior. The source engine and closed JSON contract are unchanged. Eight current local browser states and two inspected screenshots are retained under `research/sector_cycle_revamp/evidence/P1_MEMBER_UNITS_2026-09-17/`; they do not establish deployed/authenticated production proof. P2 shared Atlas adaptation remains after the accepted real P1 read model under R6, not a reason to rebuild the finished synthetic reference.
-
-## Exact state-receipt correction
-
-The returned candidate's claim of exact source binding was too strong for three legacy metrics: each cell
-pointed at `total_return_close`, although activity can depend on benchmark-adjusted movement and reported
-volume, and legacy trend eligibility also depends on the current covered cohort. The same Group Pulse
-invocation now emits the exact current member-state frames as receipts and the projector refuses to create
-a companion without them. The closed validator enforces metric-to-receipt basis, so a well-formed but
-semantically unrelated normalized frame no longer passes. This is provenance hardening for existing
-context-only observations, not a formula, rank, recommendation, publication, source-rights or trade-authority
-change. The parent programme remains active and P1 remains `BUILT_NOT_PROVEN`.
+P1 remains BUILT_NOT_PROVEN. The source repair and local negative/positive consumer evidence are
+complete; remote publication and any later gate outcomes must be read from the exact PR/check owner.
+No independent review, #7211 integration, merged release, authenticated deployment or complete parent
+programme is implied. No durable worker or reciprocal watcher is asserted. The earlier long handoff
+remains in git at b81fd9e; this current packet replaces stale pre-push actions rather than replaying its
+history. A new material return reopens only the corresponding bounded next action.
