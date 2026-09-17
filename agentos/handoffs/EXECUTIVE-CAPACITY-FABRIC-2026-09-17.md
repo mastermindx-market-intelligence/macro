@@ -13,12 +13,14 @@ state_before: >
   with a clean worktree, holding PR #7223 (OPEN / DRAFT / HOLD-FOR-SOL, title "agentos: post-#7181 fabric
   fold (stable items) — HOLD-FOR-SOL"). WS:EXECUTIVE-CAPACITY-FABRIC carried status `active` and a
   next_action pinned to protected Mastermind master 4537f066775c73d305f82acf0643701f01f5e53c, both of which
-  the 2026-09-16 fold had written. Two Mastermind children had terminated today with Sol adjudications that
-  existed only inside their own sessions: #757 at f079f1ee14003dbcc12cfe7154c90c713eac3373 (ACCEPTED/STOP at
-  edge 1789648278.066969, DRAFT-HOLD, BUILT_NOT_PROVEN) and #758 at
+  the 2026-09-16 fold had written. Two Mastermind children carried Sol adjudications that existed only
+  inside their own sessions, and the fold did NOT describe them both as terminated: #757 at
+  f079f1ee14003dbcc12cfe7154c90c713eac3373 was terminal (ACCEPTED/STOP at edge 1789648278.066969,
+  DRAFT-HOLD, BUILT_NOT_PROVEN) while #758 at
   55800d57f42f73a6c093e1432da16b78e3d2ab83 (RESULT/HOLD posted at edge 1789649544.225129, awaiting Sol's
-  ruling). No Agent OS record mentioned either child, the installer manifest regression, or the kit-lane gate
-  limit.
+  ruling) was not. #758's later accepted terminal state — REMOTE_COMPLETE_VERIFIED, BRANCH_WRITER_RELEASED
+  at that head, still unmerged — is recorded in the currentness section of this file. No Agent OS record
+  mentioned either child, the installer manifest regression, or the kit-lane gate limit.
 changed:
   - path: agentos/discoveries/DSC-INSTALLER-MANIFEST-REFUSES-TRACKED-SYMLINKS-SINCE-583.md
     what: >
@@ -26,8 +28,9 @@ changed:
       tracked symlink `vendor/macro`, because the manifest walk asks the shared macOS ACL observer
       path-only and the observer opens with `O_NOFOLLOW` and refuses non-file/non-directory objects. Carries
       both admission gates: the falsifier is a protected-master manifest CREATE succeeding with
-      `vendor/macro` present, and the so_what keeps the installed control/relay on healthy release 4c148709
-      (AWAITING_CANARY, armed=false) unrestarted until #757 lands.
+      `vendor/macro` present, and the so_what keeps the installed control/relay unrestarted — at fold time
+      they ran prior generation 4c148709 (AWAITING_CANARY, armed=false), which this fabric never
+      health-verified and which must never be called healthy or current — until #757's repair landed.
   - path: agentos/decisions/DEC-SYMLINK-ACL-OBSERVATION-IS-MANIFEST-ONLY-OPT-IN.md
     what: >
       New decision: the Sol-amended symlink ACL observation contract. Default path-only `has_macos_acl`
@@ -72,6 +75,47 @@ changed:
       detail it deliberately does not restate. The record's `decisions`/`discoveries` arrays were NOT
       extended: the fold's edit scope permitted only `status`/`next_action`, so the machine edges live in
       this handoff's own `decisions`/`discoveries` arrays.
+      SUPERSEDED IN PART by the currentness repair recorded next: the fold-time `next_action` text is
+      preserved as the state read at the fold commit 12838af9, the same field now carries the post-21:20Z
+      accepted state, and the "arrays NOT extended" note no longer holds — the repair added two machine
+      edges to `discoveries`.
+  - path: agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-17.md
+    what: >
+      CURRENTNESS REPAIR (2026-09-17, Sol ruling edge 1789680829.787409) on top of the fold commit: the
+      `unverified`, `unresolved`, `next_actions`, `do_not_redo` and `discoveries` fields now carry the
+      accepted state, and the body gains a dated "Currentness — 2026-09-17 21:20Z UTC" section plus
+      "Intake deltas". Every earlier statement in this file is preserved as historical at its own read
+      time and marked as such; nothing was silently rewritten into present truth. Fixes the three findings
+      of the independent review at the fold commit: the "two terminated source children" claim (now
+      grounded per child), the "install on Sol's maintenance merge" phrasing (an install needs its own
+      authorization; this one was separately authorized and performed at 21:20Z), and the ungrounded
+      "healthy 4c148709" wording (removed everywhere).
+  - path: agentos/workstreams/WS-EXECUTIVE-CAPACITY-FABRIC.md
+    what: >
+      Currentness repair of the `next_action` field (the wave-boundary pointer the fold wrote) plus the two
+      new machine edges in `discoveries`. Protected master re-pins to b731149296a9d837d426730813f68d5acc6133ac;
+      #757 is recorded as MERGED at 8b231e82; #758 as VERIFIED/BRANCH_WRITER_RELEASED and awaiting its own
+      merge; the installed state as accepted UNARMED/STOPPED; the next gate as HUMAN_AUTH /
+      CREDENTIAL_READINESS. The fold-time text of the field is superseded, not deleted — it stays in the
+      fold commit and is quoted in this handoff's historical section.
+  - path: agentos/discoveries/DSC-INSTALLER-MANIFEST-REFUSES-TRACKED-SYMLINKS-SINCE-583.md
+    what: >
+      Currentness repair: the `so_what` now states the current accepted installed state and keeps the
+      pre-merge blocked state as historical, the `claim` names the pin it was observed at (`e878878c`,
+      before the repair merged as `8b231e82`), and the body's "Blast radius" drops the ungrounded "healthy
+      4c148709" wording and gains the dated currentness section.
+  - path: agentos/discoveries/DSC-EXECUTIVE-INSTALL-DOES-NOT-OWN-THE-C1-RELAY-PLIST.md
+    what: >
+      New discovery with both admission gates: an install writes the control/worker.codex/backup plists to
+      the installed generation but never the C1 sol-state-relay plist, whose generation is separately owned
+      by `prepare-c1-sol-state-relay.sh` — so there is no single "installed generation" (control `8b231e82`,
+      C1 relay `4c148709`, MCP `46bea208`).
+  - path: agentos/discoveries/DSC-ROOT-CONTEXT-GIT-ON-A-LINKED-WORKTREE-NEEDS-A-PROCESS-LOCAL-SAFE-DIRECTORY.md
+    what: >
+      New discovery with both admission gates: a root-context installer `git` read on the linked SSD
+      worktree is refused by the dubious-ownership source-policy gate before any install action, and the
+      repair is a process-local `GIT_CONFIG_COUNT` safe.directory tuple, never a global-config mutation; a
+      pre-action refusal means the interrupted attempt is "no install occurred", not a partial install.
 verified:
   - claim: "Preflight: the session worktree was on the expected carrier commit, on the expected branch, with an empty porcelain status."
     command: "git rev-parse HEAD; git rev-parse --abbrev-ref HEAD; git status --porcelain"
@@ -112,22 +156,37 @@ unverified:
     what_would_verify: "`gh api repos/mastermindx-market-intelligence/Mastermind/actions/runs/<id>` for each run, and the child sessions' kit receipts for the patch and review records."
   - claim: "The kit-lane failure facts: 17 collection errors from the lane venv, a lane-cap kill at 18% / 1471 s, a silently-dead writer lane, and the dangling `vendor/macro` inside the lane."
     what_would_verify: "Run `python3 scripts/ci_pytest.py` in a kit worker lane on the Mac Studio and read the exit code, elapsed wall time, and the missing-distribution list; or inspect the lane's preserved log if it survives."
-  - claim: "The installed control/relay release 4c148709 is AWAITING_CANARY with armed=false, and it is healthy."
-    what_would_verify: "Read the installed host's release pointer and armed state as root. This fold touched no host and ran no service command."
+  - claim: "Mastermind protected master is b731149296a9d837d426730813f68d5acc6133ac, and the movement from 8b231e8267f09cfb002ed3e87bec14906dce1720 to it is ONE commit touching only integrations/mastermind_company_mcp/consultation.py and tests/test_company_consultation_mcp.py — no Executive install, ops, config, relay or credential source moved."
+    what_would_verify: "`git ls-remote https://github.com/mastermindx-market-intelligence/Mastermind refs/heads/master` and `gh api repos/mastermindx-market-intelligence/Mastermind/compare/8b231e8267f09cfb002ed3e87bec14906dce1720...b731149296a9d837d426730813f68d5acc6133ac --jq '{status, ahead_by, files: [.files[].filename]}'`. Carried from Sol ruling edge 1789680829.787409; this records-only fold ran no network read."
+  - claim: "Mastermind #757 (installer manifest symlink-ACL repair) MERGED to protected as mergeCommit 8b231e8267f09cfb002ed3e87bec14906dce1720, parent aacf3df5, 2026-09-17 19:54:58Z, after Sol ACCEPTED/STOP — the ONLY source child with an ACCEPTED/STOP terminal."
+    what_would_verify: "`gh pr view 757 -R mastermindx-market-intelligence/Mastermind --json state,isDraft,headRefOid,mergeCommit,mergedAt`."
+  - claim: "Mastermind #758's corrected Source Continuity verdict REMOTE_COMPLETE_VERIFIED (receipt_digest bf95eba81b4c1f469227a33bf176b04314bb6e826e700fcba2a8a61a98617a4a) was ACCEPTED, the exact child source (the SSD worktree) was REMOVED, and BRANCH_WRITER_RELEASED is at head 55800d57f42f73a6c093e1432da16b78e3d2ab83 (root edge 1789680353.465089, accepted 1789680603.345609). A separate Sol release-maintenance operation marked #758 Ready and submitted that exact head to the protected Mastermind merge queue, observed at position 1 — PR NOT YET MERGED."
+    what_would_verify: "`gh pr view 758 -R mastermindx-market-intelligence/Mastermind --json state,isDraft,headRefOid,mergeCommit,mergedAt`, plus the Source Continuity receipt surface for receipt_digest bf95eba8… . Do not claim protected source for #758 until an actual merge receipt exists; this fold ran no remote read."
+  - claim: "The Executive OS install ceremony COMPLETED SUCCESSFULLY on 2026-09-17 21:20–21:21Z for installed generation 8b231e8267f09cfb002ed3e87bec14906dce1720 (installer rc=0; release manifest sha256 ec7231b0b826d2e6c829036b92ea59f6f6eee061fb95905007b5fdea20ff90e1; tree a6f21af86dbc018621c04126ae7e6579899aafaf with 2303 entries, verify ok; installed control.json sha256 1676d78dce2715d54d64cbc73dd3b9c6c7d426da3270edf95d85795423a6b4f3), and Sol ACCEPTED the state as UNARMED / STOPPED."
+    what_would_verify: "Read the installer receipt and the installed control.json on the host as root, or read Sol's ruling at edge 1789680829.787409. Carried from that ruling: this records-only fold ran no installer and no host command."
+  - claim: "Before that install, the installed control/relay ran prior generation 4c148709 in state AWAITING_CANARY with armed=false."
+    what_would_verify: "Read the pre-install release pointer and armed state as root, or the fold-time child receipts. This fold verified neither, and 4c148709 was never a health verdict: it is the PRIOR generation, whose release directory remains on disk, intact."
   - claim: "The carried-over state of the other waves (W1-H3 #677 head and its R80/R14 chain, CF2-H0 carrier-proof requirements, OCR-2C Family A/B state, PF1 and the MH1 holders)."
     what_would_verify: "Re-read the 2026-09-16 POST-7181 fold and this record's per-wave next_action entries, then re-read each live head with `gh pr view <n> -R mastermindx-market-intelligence/Mastermind --json state,isDraft,headRefOid` before acting."
 unresolved:
-  - "Sol's ruling on the #758 RESULT/HOLD (edge 1789649544.225129) has not been consumed; #758 stays DRAFT/HOLD-FOR-SOL."
-  - "Mastermind #757 awaits Sol's maintenance-only merge; the post-fix install ceremony is NOT authorized before that merge, and no install retry is permitted."
-  - "Gate B / arm still wait on the Chairman-owned CREDENTIAL_EXPIRES_AT as a readiness input; it must never be guessed or inspected."
+  - "Mastermind #758 is Ready and sits in the protected merge queue (observed position 1) but is NOT MERGED; no protected source may be claimed until an actual merge receipt exists."
+  - "The services are UNARMED / STOPPED by Sol's option-B ruling: a relight is NOT 'pending', and no credential, provider or ARM effect has occurred. The installed generation 8b231e82 is installed but not running."
+  - "The installed plist generations are not one vector: control/worker.codex/backup = 8b231e82, C1 sol-state-relay = 4c148709 (separately owned), MCP = 46bea208. See DSC:EXECUTIVE-INSTALL-DOES-NOT-OWN-THE-C1-RELAY-PLIST."
+  - "HUMAN_AUTH / CREDENTIAL_READINESS is the next gate: provision-worker-auth.sh --verify-ready needs a reviewed credential kind, a company-workspace admin attestation class and the Chairman-owned CREDENTIAL_EXPIRES_AT; it must never be guessed or inspected."
+  - "PF1 stays NONTERMINAL: the provider refused before commands/items/messages on account capacity, source custody is retained at J 545b91768517a00b55fb0ecb95576f32befda1cb, and no retry or failover is permitted before fresh post-reset capacity evidence."
+  - "No recovered Mastermind Steward asdk_app identity exists, so viewer-client registration and authenticated browser-host binding remain HUMAN_AUTH; the absence of an identity is NOT permission to create a duplicate app, deployment or auth plane."
   - "The Reader static fence remains blind to package-form and `importlib` imports (pre-existing, neither widened nor repaired by #758)."
 next_actions:
-  - "Consume Sol's ruling on the #758 RESULT/HOLD directly, without re-running or re-posting anything on that carrier."
-  - "On Sol's maintenance merge of #757, run the staged post-fix install ceremony on the NEW protected SHA as a separately reported effect, with its own receipt — not as a continuation of the source child."
-  - "Leave Gate B and the arm step waiting on CREDENTIAL_EXPIRES_AT; do not restart release 4c148709 (AWAITING_CANARY, armed=false) to test anything."
+  - "Re-read protected master and the #758 merge state before claiming anything about #758's source; do not re-run its verifier, re-post its receipts, or re-create its released child source."
+  - "Do NOT re-run the install ceremony. It is no longer gated on #757 (which merged as 8b231e82): it was authorized by its own root edges 1789675323.742409 and 1789679576.748139 and performed at 2026-09-17 21:20Z, and its state is ACCEPTED UNARMED / STOPPED. A source merge is never an install authorization, and a future install or relight needs a fresh authorization of its own."
+  - "Hold Gate B and the arm step at HUMAN_AUTH / CREDENTIAL_READINESS (reviewed credential kind, company-workspace admin attestation class, Chairman-owned CREDENTIAL_EXPIRES_AT) and leave the services stopped. Do not restart the installed control/relay to test anything."
   - "Re-read the carrier branch and this handoff before every act or post, since the seat pushes this branch after a freshness read and the parent commit may already be superseded."
 do_not_redo:
-  - "Never restart the healthy 4c148709 control/relay, and never run an install retry or ceremony before Sol's maintenance merge of #757."
+  - "Never restart the installed Executive control/relay: Sol ruled option B (keep services stopped) and the accepted installed state is UNARMED / STOPPED for generation 8b231e82. A relight is not 'pending' — it needs a fresh authorization."
+  - "Never call 4c148709 healthy or current: it is the PRIOR generation, its release directory remains on disk intact, and this fabric never health-verified it. A restart is not a repair."
+  - "Never treat a source merge as an install authorization, and never re-run the 21:20Z install: that ceremony was separately authorized by root edges 1789675323.742409 and 1789679576.748139 on 2026-09-17."
+  - "Do not redo the symlink-ACL repair or re-open Mastermind #757: it is MERGED as 8b231e82, and its source child is the only one with an ACCEPTED/STOP terminal."
+  - "Never repair a root-context git dubious-ownership refusal with a global `safe.directory` write; use the process-local GIT_CONFIG_COUNT tuple (see DSC:ROOT-CONTEXT-GIT-ON-A-LINKED-WORKTREE-NEEDS-A-PROCESS-LOCAL-SAFE-DIRECTORY)."
   - "`CREDENTIAL_EXPIRES_AT` is a Chairman-owned readiness input: never guess it, never inspect credentials to derive it."
   - "JOB-001 / JOB-002 / JOB-003 are admission-only and are never the execution canary."
   - "#665 release authority is CHAIRMAN_ONLY."
@@ -150,6 +209,8 @@ decisions:
 discoveries:
   - DSC:INSTALLER-MANIFEST-REFUSES-TRACKED-SYMLINKS-SINCE-583
   - DSC:FULL-MASTERMIND-GATE-CANNOT-RUN-INSIDE-A-KIT-LANE
+  - DSC:EXECUTIVE-INSTALL-DOES-NOT-OWN-THE-C1-RELAY-PLIST
+  - DSC:ROOT-CONTEXT-GIT-ON-A-LINKED-WORKTREE-NEEDS-A-PROCESS-LOCAL-SAFE-DIRECTORY
 ---
 
 ## What this fold is
@@ -159,7 +220,7 @@ Records only. One descendant commit on the existing carrier branch
 #7223 (OPEN / DRAFT / HOLD-FOR-SOL). No push, no PR edit, no label, no GitHub or Slack write, no install
 ceremony, no host change, no other worktree touched. The seat pushes after a carrier freshness read.
 
-## The four records
+## The four folded records (two further discoveries were added by the currentness repair)
 
 | Record | One line |
 |---|---|
@@ -168,25 +229,135 @@ ceremony, no host change, no other worktree touched. The seat pushes after a car
 | `DEC:READER-FENCE-EXCEPTION-IS-AN-EXACT-IMPORTER-MODULE-MAP` | The Reader static fence gains an exact importer->module map for two named importer files, each permitted `owner_read_resource` only. |
 | `DSC:FULL-MASTERMIND-GATE-CANNOT-RUN-INSIDE-A-KIT-LANE` | A kit worker lane cannot run the full Mastermind gate; lanes report focused evidence and let the hosted required `test` check be the real verifier. |
 
-## Carrier and program state at this fold
+## Carrier and program state at this fold — HISTORICAL SNAPSHOT (as read at 12838af9, before 2026-09-17 19:54:58Z)
 
-- Protected Mastermind master: `e878878c9a4ae2dd50a48d825e031e07e8211708`, read 2026-09-17.
-- Mastermind #757 (symlink ACL repair): OPEN / DRAFT / HOLD-FOR-SOL at
+Every line below was true as of the fold commit and is preserved unchanged in meaning; each is superseded
+by the "Currentness" section that follows. Read them as history, never as present truth.
+
+- Protected Mastermind master was `e878878c9a4ae2dd50a48d825e031e07e8211708`, read 2026-09-17 earlier that
+  day.
+- Mastermind #757 (symlink ACL repair) was OPEN / DRAFT / HOLD-FOR-SOL at
   `f079f1ee14003dbcc12cfe7154c90c713eac3373`, Sol ACCEPTED/STOP at edge `1789648278.066969`,
-  BUILT_NOT_PROVEN, merge is a Sol maintenance-only act.
-- Mastermind #758 (Reader fence exception): OPEN / DRAFT / HOLD-FOR-SOL at
+  BUILT_NOT_PROVEN, with the merge a Sol maintenance-only act.
+- Mastermind #758 (Reader fence exception) was OPEN / DRAFT / HOLD-FOR-SOL at
   `55800d57f42f73a6c093e1432da16b78e3d2ab83`, Sol scope ruling edge `1789644750.659619`, RESULT/HOLD posted
   at edge `1789649544.225129`, awaiting Sol's ruling.
-- Installed control/relay: release `4c148709`, AWAITING_CANARY, `armed=false` — healthy and NOT to be
-  restarted.
-- Posting discipline: the root edges `1789644071.495499` (#758 scope request), `1789645665.697889` (#757
-  candidate return) and `1789649544.225129` (#758 RESULT/HOLD) are already posted and must never be
-  repeated.
+- The installed control/relay ran release `4c148709`, AWAITING_CANARY, `armed=false`, and NOT to be
+  restarted. The fold also wrote "healthy" here; that word was never backed by a health read, is removed
+  as an ungrounded claim, and `4c148709` is to be called the PRIOR generation, never "healthy" or
+  "current".
+- Posting discipline (still in force): the root edges `1789644071.495499` (#758 scope request),
+  `1789645665.697889` (#757 candidate return) and `1789649544.225129` (#758 RESULT/HOLD) are already posted
+  and must never be repeated.
+
+Fold-time machine fields this currentness repair supersedes, quoted so nothing is lost: `unresolved` said
+"Sol's ruling on the #758 RESULT/HOLD (edge 1789649544.225129) has not been consumed", "Mastermind #757
+awaits Sol's maintenance-only merge; the post-fix install ceremony is NOT authorized before that merge",
+and "Gate B / arm still wait on the Chairman-owned CREDENTIAL_EXPIRES_AT"; `next_actions` said to consume
+the #758 ruling and to "run the staged post-fix install ceremony" on the #757 merge; `do_not_redo` said
+"Never restart the healthy 4c148709 control/relay, and never run an install retry or ceremony before
+Sol's maintenance merge of #757."
+
+## Currentness — 2026-09-17 21:20Z UTC (Sol ruling edge 1789680829.787409)
+
+Accepted facts after the fold commit. The values are carried from that Sol ruling and from the install
+receipt it quotes; this records-only fold ran no host, installer, provider or network command of its own.
+
+### Protected source
+
+- Mastermind protected master is `b731149296a9d837d426730813f68d5acc6133ac`. The movement
+  `8b231e82` -> `b7311492` is ONE commit touching only
+  `integrations/mastermind_company_mcp/consultation.py` and `tests/test_company_consultation_mcp.py`; no
+  Executive install, ops, config, relay or credential source moved.
+- **#757 is MERGED** to protected as mergeCommit `8b231e82`, parent `aacf3df5`, 2026-09-17 19:54:58Z,
+  after Sol ACCEPTED/STOP. It is the ONLY source child with an ACCEPTED/STOP terminal.
+- **#758 is NOT merged.** Its corrected Source Continuity verdict REMOTE_COMPLETE_VERIFIED
+  (receipt_digest `bf95eba81b4c1f469227a33bf176b04314bb6e826e700fcba2a8a61a98617a4a`) was ACCEPTED, its
+  exact child source (the SSD worktree) was removed, and BRANCH_WRITER_RELEASED stands at head
+  `55800d57f42f73a6c093e1432da16b78e3d2ab83` (root edge `1789680353.465089`, accepted
+  `1789680603.345609`). A separate Sol release-maintenance operation marked #758 Ready and submitted that
+  exact head to the protected Mastermind merge queue, observed at position 1. Do not claim protected
+  source for #758 until an actual merge receipt exists.
+- #758's collision with #124: the two nominal overlaps
+  (`integrations/mastermind_steward_app/app.py`, `tests/test_mastermind_steward_app_asgi.py`) resolved as
+  changed-path false positives — #124's blobs equal protected master, and #758 alone carries the feature
+  deltas.
+- Completed substrate `#575` / `#579` / `#576` / `#578` / `#581` / `#583` is MERGED and DO_NOT_REDO; any
+  OPEN/DRAFT snapshot of those PRs is historical, not current.
+
+### Installed Executive state (Sol option B)
+
+- The canonical install ceremony COMPLETED SUCCESSFULLY for installed generation
+  `8b231e8267f09cfb002ed3e87bec14906dce1720` on 2026-09-17 21:20–21:21Z: installer rc=0, release manifest
+  sha256 `ec7231b0b826d2e6c829036b92ea59f6f6eee061fb95905007b5fdea20ff90e1`, tree
+  `a6f21af86dbc018621c04126ae7e6579899aafaf`, 2303 entries, verify ok; installed `control.json` sha256
+  `1676d78dce2715d54d64cbc73dd3b9c6c7d426da3270edf95d85795423a6b4f3`.
+- Sol ACCEPTED that state as **UNARMED / STOPPED** and ruled option B: keep the services stopped. Do not
+  call a relight "pending", and do not call `4c148709` "healthy" or "current" — it is the prior
+  generation and its release directory remains on disk, intact.
+- Installed plist generations are not one vector: `control` / `worker.codex` / `backup` = `8b231e82`; the
+  C1 `sol-state-relay` plist is a separately owned generation recorded at `4c148709` (`install.sh` never
+  writes it; `prepare-c1-sol-state-relay.sh` owns it) — see
+  `DSC:EXECUTIVE-INSTALL-DOES-NOT-OWN-THE-C1-RELAY-PLIST`; MCP = `46bea208`.
+- The install was authorized by its OWN root edges `1789675323.742409` and `1789679576.748139` — not by
+  the #757 merge — and was performed 2026-09-17 21:20Z. A source merge is never an install authorization.
+- A first attempt at 21:02Z was REFUSED at the installer's root-context source-policy gate (git
+  dubious-ownership on the new SSD checkout) BEFORE any install action, and its control/relay restart was
+  reconciled to the unchanged `4c148709` baseline. The corrected attempt used a process-local
+  `GIT_CONFIG_COUNT` safe.directory tuple with no global-config mutation — see
+  `DSC:ROOT-CONTEXT-GIT-ON-A-LINKED-WORKTREE-NEEDS-A-PROCESS-LOCAL-SAFE-DIRECTORY`.
+- Next gate: HUMAN_AUTH / CREDENTIAL_READINESS — `provision-worker-auth.sh --verify-ready` needs a
+  reviewed credential kind, a company-workspace admin attestation class and the Chairman-owned
+  `CREDENTIAL_EXPIRES_AT`. NO credential, provider or ARM effect has occurred.
+
+### Steward, browser and PF1
+
+- Steward/browser: the Business workspace is visible; no Mastermind Steward `asdk_app` identity has been
+  recovered, so the production Executive app remains `plugin_asdk_app_6aa89de1c45c81918b192d0a18dcfc15`.
+  The Auth0 tenant admin is at login, so viewer-client registration remains HUMAN_AUTH. That absence is
+  NOT permission to create a duplicate app, deployment or auth plane. Sol's browser-host ruling
+  (Mastermind #758 comment 5720809880) is a same-origin Steward-hosted shell plus a distinct viewer public
+  OAuth client, where `X-CCR-Token` is a CSRF nonce and not viewer authentication.
+- PF1: the exact retained root was addressed and the provider refused BEFORE commands/items/messages on
+  account capacity. Source custody is retained at J `545b91768517a00b55fb0ecb95576f32befda1cb`; there is
+  no retry or failover before fresh post-reset capacity evidence, the operation stays nonterminal, and no
+  other harness may be presented as satisfying native Anthropic PF1.
+
+## Intake deltas folded at this currentness repair
+
+Both are intake comments on PR #7223; neither authorized a source fold, a release or a new lane.
+
+- **Comment 5720334260** (Control Room stable-delta intake, product `WS:CHAIRMAN-CONTROL-ROOM`): at that
+  observation protected Mastermind was `aacf3df5`, and #758's head `55800d57` carried independent Sol
+  APPROVED review `5240673652` (exact head, 2026-09-17T19:45:57Z) — source-only, explicitly
+  BUILT_NOT_PROVEN / NOT_INSTALLED / RELEASE_HOLD, and NOT a writer release. The integration tree
+  `1a2275a014336ce37af1f31ca93dbb7e0a8f2c68` passed 196 tests with zero failures, errors or skips (proof
+  sha256 `92919f8bbb37863ad578f3d25137260852f89e8ae8b24500367a3d5d50be2809`), which replaces neither
+  hosted CI nor production proof. It also recorded: #537's runtime-root repair waits on #710 and its own
+  semantic-revalidation successor and must not be redone; #710 keeps its existing mastermindx-2/3 reviewer
+  lanes and gets no third reviewer; #733 stays a retained candidate; #716 stays terminal/protected. The
+  browser/enrollment/broker/exactly-once terminal-consumption chain remained NOT PROVEN there — and still
+  is.
+- **Comment 5720669549** (Control Room continuation delta): protected Mastermind had advanced to
+  `8b231e82` and #758 was still OPEN/DRAFT at `55800d57`. Sol comment 5720582749 (root `1789675919.455609`)
+  replaced literal-master pin authorization for the ONE corrected verifier invocation with bounded
+  material-source compatibility, requiring the owner to prove the invocation was NEVER_STARTED before any
+  reuse — a question this fold's accepted REMOTE_COMPLETE_VERIFIED + BRANCH_WRITER_RELEASED state now
+  answers for that carrier, so nothing on it may be re-run. It also recorded: the #508 bounded
+  `observe_root_lanes` reuse candidate stays OPEN/DRAFT at `3b0e97e7` and does not close the G8
+  fabric-view gaps; the public reconciliation root `C0BSBM78V1N/1788732392.828139` reports the earlier
+  private maintenance slot COMPLETE/SPENT with no resolved successor, and one exact read of
+  `D0BTAKPHX8S/1788689346.571769` returned `channel_not_found` with no retry or private-search expansion
+  (access/custody reconciliation debt, not a reader assignment); and the local `X-CCR-Token` is a
+  browser-origin/CSRF nonce supplied by an unauthenticated GET, never viewer authentication. Parent and
+  product remain PARTIAL / NONTERMINAL.
 
 ## Boundaries this fold does not cross
 
 - It makes no claim about production, live traffic, browser binding, enrollment, grants or #714 activation.
-- It does not authorize an install ceremony, a release, a restart, or an arm.
+- The fold itself authorized no install ceremony, release, restart or arm. The later 21:20Z install was
+  authorized by its own root edges (`1789675323.742409`, `1789679576.748139`) and is accepted as
+  UNARMED / STOPPED; this record still authorizes neither a relight nor an arm.
 - It does not restate or re-adjudicate the waves carried by the 2026-09-16 POST-7181 fold; it re-pins only
   the workstream's own status and next action and defers per-carrier detail to that handoff and the record
   body.

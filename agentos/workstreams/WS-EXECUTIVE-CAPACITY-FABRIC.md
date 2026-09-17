@@ -219,6 +219,8 @@ decisions:
 discoveries:
   - DSC:CLAUDE-SUBSCRIPTION-HARNESS-IS-NOT-NATIVE-ANTHROPIC
   - DSC:VISIBLE-TURN-PROJECTION-IS-THE-EXISTING-READ-SEAM
+  - DSC:EXECUTIVE-INSTALL-DOES-NOT-OWN-THE-C1-RELAY-PLIST
+  - DSC:ROOT-CONTEXT-GIT-ON-A-LINKED-WORKTREE-NEEDS-A-PROCESS-LOCAL-SAFE-DIRECTORY
 artifacts:
   - agentos/decisions/DEC-EXECUTIVE-CAPACITY-FABRIC-OWNERSHIP-AND-CONTRACT.md
   - agentos/decisions/DEC-AUTONOMY-V1-DISPATCH-DIALOGUE-RUNTIME-SEPARATION.md
@@ -300,25 +302,52 @@ do_not_redo:
   - "Never re-run the packet05 verifier without a NEW material source-continuity edge. The packet05 grant (Sol edge 1789565866, Mastermind #699) is SPENT and its ONE granted run returned `VERDICT: REFUSAL REMOTE_PROOF_CHANGED`, a repo-wide quiescence guard over every open PR and NOT a verdict on packet05's source; the seat-owned p05-verify-… worktree stays INERT/UNCHANGED — do not remove it without Sol. CORRECTED 2026-09-16: `OUT_OF_SCOPE_DIRT` and grant edge 1789588151 belong to the separate Mastermind #677 one-shot, not to packet05."
 next_action: >
   Fable principal integration, operation agent-fabric-end-to-end-fable-integration-20260913-sol-001.
-  Protected Mastermind master is e878878c9a4ae2dd50a48d825e031e07e8211708, read 2026-09-17 with
-  `git ls-remote https://github.com/mastermindx-market-intelligence/Mastermind refs/heads/master`, and
-  measured from the previous pin with
-  `gh api repos/mastermindx-market-intelligence/Mastermind/compare/4537f066775c73d305f82acf0643701f01f5e53c...e878878c9a4ae2dd50a48d825e031e07e8211708`
-  -> status ahead, ahead_by 11, behind_by 0; it replaces the 4537f066775c73d305f82acf0643701f01f5e53c pin
-  the 2026-09-16 fold left. CURRENT ACT at this 2026-09-17 wave boundary: consume Sol's ruling on the
-  Mastermind #758 RESULT/HOLD, and on Sol's maintenance-only merge of Mastermind #757 run the staged
-  post-fix install ceremony on the new protected SHA as a separately reported effect. Nothing else is
-  released. Two Sol-adjudicated source children terminated today and their durable facts are now folded as
-  DEC:SYMLINK-ACL-OBSERVATION-IS-MANIFEST-ONLY-OPT-IN,
+  CURRENTNESS REPAIR 2026-09-17 (Sol ruling edge 1789680829.787409) — this supersedes the e878878c pinned
+  text the earlier 2026-09-17 fold wrote; that text is preserved as history in commit 12838af9 and quoted
+  in agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-17.md. Protected Mastermind master is now
+  b731149296a9d837d426730813f68d5acc6133ac, and the movement 8b231e82 -> b7311492 is ONE commit touching
+  only integrations/mastermind_company_mcp/consultation.py and tests/test_company_consultation_mcp.py — no
+  Executive install, ops, config, relay or credential source moved
+  (`gh api repos/mastermindx-market-intelligence/Mastermind/compare/8b231e8267f09cfb002ed3e87bec14906dce1720...b731149296a9d837d426730813f68d5acc6133ac`).
+  SOURCE CHILDREN, grounded per child: Mastermind #757 (installer manifest symlink-ACL repair) is MERGED
+  to protected as mergeCommit 8b231e82, parent aacf3df5, 2026-09-17 19:54:58Z, after Sol ACCEPTED/STOP —
+  the ONLY source child with an ACCEPTED/STOP terminal. Mastermind #758 (Reader fence exception) is NOT
+  merged: its corrected Source Continuity verdict REMOTE_COMPLETE_VERIFIED (receipt_digest
+  bf95eba81b4c1f469227a33bf176b04314bb6e826e700fcba2a8a61a98617a4a) was ACCEPTED, its exact child source
+  (the SSD worktree) was removed, and BRANCH_WRITER_RELEASED stands at head
+  55800d57f42f73a6c093e1432da16b78e3d2ab83 (root edge 1789680353.465089, accepted 1789680603.345609);
+  a separate Sol release-maintenance operation marked it Ready and submitted that exact head to the
+  protected merge queue, observed at position 1 — do not claim protected source for it until an actual
+  merge receipt exists. INSTALLED STATE: the canonical install ceremony COMPLETED SUCCESSFULLY on
+  2026-09-17 21:20–21:21Z for installed generation 8b231e8267f09cfb002ed3e87bec14906dce1720 (rc=0; release
+  manifest sha256 ec7231b0b826d2e6c829036b92ea59f6f6eee061fb95905007b5fdea20ff90e1; tree
+  a6f21af86dbc018621c04126ae7e6579899aafaf, 2303 entries, verify ok; installed control.json sha256
+  1676d78dce2715d54d64cbc73dd3b9c6c7d426da3270edf95d85795423a6b4f3), authorized by its OWN root edges
+  1789675323.742409 and 1789679576.748139 — a source merge is never an install authorization. Sol ACCEPTED
+  that state as UNARMED / STOPPED and ruled option B (services stay stopped): do not call a relight
+  "pending", do not call 4c148709 "healthy" or "current" (it is the PRIOR generation, its release
+  directory intact on disk), and do not restart the installed control/relay. Plist generations are not one
+  vector — control/worker.codex/backup = 8b231e82, the separately owned C1 sol-state-relay = 4c148709, MCP
+  = 46bea208 (DSC:EXECUTIVE-INSTALL-DOES-NOT-OWN-THE-C1-RELAY-PLIST). The installer source gate that
+  blocked the lane until 19:54:58Z is CLEARED by the #757 merge; the 21:02Z refusal was a root-context git
+  dubious-ownership source-policy gate that fired BEFORE any install action and is repaired
+  process-locally, never with a global safe.directory write
+  (DSC:ROOT-CONTEXT-GIT-ON-A-LINKED-WORKTREE-NEEDS-A-PROCESS-LOCAL-SAFE-DIRECTORY). NEXT GATE:
+  HUMAN_AUTH / CREDENTIAL_READINESS — provision-worker-auth.sh --verify-ready needs a reviewed credential
+  kind, a company-workspace admin attestation class and the Chairman-owned CREDENTIAL_EXPIRES_AT; no
+  credential, provider or ARM effect has occurred, and the absence of a recovered Steward asdk_app
+  identity is NOT permission to create a duplicate app, deployment or auth plane. The durable facts of
+  both children are folded as DEC:SYMLINK-ACL-OBSERVATION-IS-MANIFEST-ONLY-OPT-IN,
   DEC:READER-FENCE-EXCEPTION-IS-AN-EXACT-IMPORTER-MODULE-MAP,
-  DSC:INSTALLER-MANIFEST-REFUSES-TRACKED-SYMLINKS-SINCE-583 and
-  DSC:FULL-MASTERMIND-GATE-CANNOT-RUN-INSIDE-A-KIT-LANE, with current state and receipts in
-  agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-17.md. The installer lane is BLOCKED at its source
-  gate: no Executive OS release containing `vendor/macro` passes manifest CREATE until #757 lands, so the
-  installed control/relay stay on the healthy release 4c148709 (AWAITING_CANARY, armed=false) and must NOT
-  be restarted; Gate B and the arm step still wait on the Chairman-owned CREDENTIAL_EXPIRES_AT. Per-carrier
-  detail that this update does not restate — the W1-H3 #677 R80/R14 chain, the Wave 1 merged-carrier table,
-  the CF2-H0 carrier-proof rules and the OCR-2C family state — stays in
+  DSC:INSTALLER-MANIFEST-REFUSES-TRACKED-SYMLINKS-SINCE-583,
+  DSC:FULL-MASTERMIND-GATE-CANNOT-RUN-INSIDE-A-KIT-LANE,
+  DSC:EXECUTIVE-INSTALL-DOES-NOT-OWN-THE-C1-RELAY-PLIST and
+  DSC:ROOT-CONTEXT-GIT-ON-A-LINKED-WORKTREE-NEEDS-A-PROCESS-LOCAL-SAFE-DIRECTORY, with state and receipts
+  in agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-17.md. Completed substrate #575/#579/#576/#578/#581/#583
+  is MERGED and DO_NOT_REDO — any OPEN/DRAFT snapshot of those PRs is historical. PF1 stays NONTERMINAL
+  (custody J 545b91768517a00b55fb0ecb95576f32befda1cb, no retry before fresh post-reset capacity evidence).
+  Per-carrier detail that this update does not restate — the W1-H3 #677 R80/R14 chain, the Wave 1
+  merged-carrier table, the CF2-H0 carrier-proof rules and the OCR-2C family state — stays in
   agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-16-POST-7181-FOLD.md, in this record's body, and in
   each wave's own next_action entry. Before sizing, routing, promising or reporting native Anthropic
   Fable/Opus capacity anywhere in this fabric, read DSC:CLAUDE-SUBSCRIPTION-HARNESS-IS-NOT-NATIVE-ANTHROPIC
