@@ -1,37 +1,64 @@
 {
   "base": "4f37209719d2ca5caf9fd3a37aca29fa363f351c",
   "browser_refresh": {
-    "process": 38971,
-    "exit_code": 0,
-    "runs": 2,
+    "browser_version": "151.0.7922.34",
     "byte_identical_repeat": true,
-    "visual_cases_passed": 8,
+    "exit_code": 0,
     "navigation_cases_passed": 2,
-    "pager_cases_passed": 1,
-    "real_dom": {
-      "cards": 400,
-      "unique_ids": 400,
-      "grid_children": 400,
-      "record_markers": 400,
-      "action_badges": 0,
-      "resolved_records": 134,
-      "default_population": 266,
-      "visible_unresolved": 15,
-      "hidden_resolved": 134,
-      "pagination": "Showing 15 of 266"
-    },
     "pager_case": {
       "case": "real_input_default_live_population",
-      "dom_records_preserved": 400,
       "default_population": 266,
-      "resolved_history": 134,
+      "dom_records_preserved": 400,
       "initial_visible": 15,
-      "show_all_visible": 266,
+      "page_errors": [],
       "resolved_filter_visible": 134,
-      "page_errors": []
+      "resolved_history": 134,
+      "show_all_visible": 266
     },
-    "receipt_sha256": "b4bfb2bca13127954154aa140a0c88ff7ae1afcf6544125ba36ccd0d2467154f",
-    "scope": "component + real-input lifecycle/filter/pager evidence; not authenticated production proof"
+    "pager_cases_passed": 1,
+    "process": 99247,
+    "real_dom": {
+      "action_badges": 0,
+      "cards": 400,
+      "default_population": 266,
+      "grid_children": 400,
+      "hidden_resolved": 134,
+      "pagination": "Showing 15 of 266",
+      "record_markers": 400,
+      "resolved_records": 134,
+      "unique_ids": 400,
+      "visible_unresolved": 15
+    },
+    "receipt_sha256": "75131dee455570729ae757cf0530067de90803a2d494f7a6be94831310b8ebcf",
+    "repeat_process": 4227,
+    "runs": 2,
+    "scope": "component + real-input lifecycle/filter/pager evidence; not authenticated production proof",
+    "screenshots_changed": false,
+    "visual_cases_passed": 8
+  },
+  "ci_state": {
+    "failed_packs": {
+      "1": "introduced radius-literal finding repaired in r6 semantic head"
+    },
+    "passed_packs": [
+      0,
+      2,
+      3,
+      4,
+      5
+    ],
+    "prior_exact_head": "fa1d53a5bf716c9cb350d7b663e510551755fff7",
+    "queued_packs": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "r6_exact_descendant_ci": "REQUIRED_AFTER_PUBLICATION",
+    "run": 35186287994,
+    "vercel_quota_context": "NOT_WAIVED"
   },
   "compared_main": "5269a38f383d466f03cf1d7599d12de70118acad",
   "compatibility_repair": {
@@ -41,121 +68,253 @@
     "red_process": 1554,
     "template_bytes_unchanged": true
   },
+  "contract_delta": {
+    "base": "12b655150582d9be39bfd2779b33338d154c565f",
+    "exit_code": 0,
+    "inherited": 0,
+    "introduced": 0,
+    "process": 19182,
+    "runtime_seconds": 388.37
+  },
+  "contract_delta_r6": {
+    "prior_fa1d_run": 35186287994,
+    "prior_result": "0 introduced / 0 inherited",
+    "prior_result_not_promoted_to_r6": true,
+    "status": "EXACT_DESCENDANT_HOSTED_CI_REQUIRED_AFTER_PUBLICATION"
+  },
+  "current_capability": "BUILT_NOT_PROVEN",
+  "current_main_integration": {
+    "browser": {
+      "browser_version": "151.0.7922.34",
+      "log_sha256": "ad4b09cd72e5db5632c1d31158970109debbdb533f463de11e5fe2018fc92f66",
+      "navigation_cases": [
+        {
+          "case": "filtered_beyond_first_page",
+          "native_fragment": true,
+          "page_errors": [],
+          "query_preserved": true,
+          "target_visible": true,
+          "target_was_sm_hidden": true
+        },
+        {
+          "case": "hydrated_keyboard_target",
+          "delegated_after_grid_replacement": true,
+          "native_fragment": true,
+          "page_errors": [],
+          "query_preserved": true,
+          "target_visible": true
+        }
+      ],
+      "pager_cases": [
+        {
+          "case": "real_input_default_live_population",
+          "default_population": 260,
+          "dom_records_preserved": 400,
+          "initial_visible": 15,
+          "page_errors": [],
+          "resolved_filter_visible": 140,
+          "resolved_history": 140,
+          "show_all_visible": 260
+        }
+      ],
+      "real_dom": {
+        "action_badges": 0,
+        "cards": 400,
+        "default_population": 260,
+        "grid_children": 400,
+        "hidden_resolved": 140,
+        "pagination": "Showing 15 of 260",
+        "record_markers": 400,
+        "resolved_records": 140,
+        "unique_ids": 400,
+        "visible_unresolved": 15
+      },
+      "receipt_sha256": "fe584d6e148b6c6f9f71b390e97dd3e118dc2612c1b671122dc4d9746e566088",
+      "status": "PASS_COMPONENT_NOT_PRODUCTION",
+      "visual_cases": 8
+    },
+    "capability": "BUILT_NOT_PROVEN",
+    "integration_commit": "5478579a3f7cc5547a4d20571c2a1b628d8f8efb",
+    "merge_tree": "9b7bcb354776d8ad45bf8c04c9cde4b6240847b3",
+    "path_overlap": [],
+    "production_acceptance": false,
+    "protected_main": "16808834c465657194180c89b0d0cdda8f7c9385",
+    "schema": "prophet.plan_record.current_main_integration.v3",
+    "source_head": "c7b5b8465e907d1b17f9e72cc81c107d5d78fcde",
+    "tests": {
+      "failed": 0,
+      "log_sha256": "dfcde79d851ec24844d1c15a3ae7583af32bf7163d08aa6f45c22b0b0b43dc63",
+      "passed": 219
+    }
+  },
+  "final_verification": {
+    "branch_browser_receipt_sha256": "75131dee455570729ae757cf0530067de90803a2d494f7a6be94831310b8ebcf",
+    "browser_navigation_cases_passed": 2,
+    "browser_pager_cases_passed": 1,
+    "browser_visual_cases_passed": 8,
+    "current_main_browser_receipt_sha256": "fe584d6e148b6c6f9f71b390e97dd3e118dc2612c1b671122dc4d9746e566088",
+    "current_main_tests_failed": 0,
+    "current_main_tests_passed": 219,
+    "design_forward_blocking": 0,
+    "design_governance_unit_tests_passed": 173,
+    "diff_check_clean": true,
+    "production_effect": false,
+    "semantic_head": "c7b5b8465e907d1b17f9e72cc81c107d5d78fcde",
+    "source_tests_failed": 0,
+    "source_tests_passed": 219
+  },
   "git_publication": {
+    "automatic_merge_authorized": false,
+    "draft_hold": true,
     "pr": 7237,
-    "published_parent_head": "71c66811a60a388f7323a606380d868f9b2b91a3",
-    "semantic_navigation_head": "ca1f0a0f30782276a9f6260b6e31501f21d1d59c",
-    "semantic_remote_readback": "ca1f0a0f30782276a9f6260b6e31501f21d1d59c",
-    "records_head": "5638b23ed1aa8ae3c8ce2ad51d5acd0be022cf69",
-    "pager_parent_head": "5638b23ed1aa8ae3c8ce2ad51d5acd0be022cf69",
-    "pager_descendant_status": "UNPUBLISHED_WORKTREE_AT_CAPTURE"
+    "r6_record_head": "PENDING_RECORD_COMMIT_AT_CAPTURE",
+    "r6_semantic_head": "c7b5b8465e907d1b17f9e72cc81c107d5d78fcde",
+    "remote_before_r6": "fa1d53a5bf716c9cb350d7b663e510551755fff7",
+    "status": "LOCAL_SEMANTIC_DESCENDANT_UNPUSHED_AT_CAPTURE"
   },
   "independent_review": "NOT_ASSIGNED",
-  "observed_at": "2026-09-17T05:32:06.950731+00:00",
+  "main_composition": {
+    "browser_real_dom": {
+      "action_badges": 0,
+      "cards": 400,
+      "default_population": 260,
+      "grid_children": 400,
+      "hidden_resolved": 140,
+      "pagination": "Showing 15 of 260",
+      "record_markers": 400,
+      "resolved_records": 140,
+      "unique_ids": 400,
+      "visible_unresolved": 15
+    },
+    "browser_receipt_sha256": "fe584d6e148b6c6f9f71b390e97dd3e118dc2612c1b671122dc4d9746e566088",
+    "classification": "CONFLICT_FREE_CURRENT_DATA_PROOF",
+    "evidence_dir": "/Volumes/Mastermind/agent-evidence/prophet-plan-trust-r6-current-main-168088-20260917-sol-001",
+    "integration_commit": "5478579a3f7cc5547a4d20571c2a1b628d8f8efb",
+    "merge_tree": "9b7bcb354776d8ad45bf8c04c9cde4b6240847b3",
+    "owned_path_movement": [],
+    "production_effect": false,
+    "protected_main": "16808834c465657194180c89b0d0cdda8f7c9385",
+    "source_head": "c7b5b8465e907d1b17f9e72cc81c107d5d78fcde",
+    "tests_failed": 0,
+    "tests_passed": 219
+  },
+  "observed_at": "2026-09-17T19:32:17.050612+00:00",
   "operation": "prophet-plan-trust-20260916-sol-001",
+  "pager_contract_delta": {
+    "prior_r2_contract_delta_preserved_above": true,
+    "status": "NOT_RUN_ON_UNPUBLISHED_PAGER_WORKTREE"
+  },
+  "pager_red_green": {
+    "green_exit_code": 0,
+    "green_failed": 0,
+    "green_log": "/tmp/prophet-plan-record-count-green-20260917.log",
+    "green_passed": 2,
+    "green_process": 4280,
+    "red_exit_code": 1,
+    "red_failed": 1,
+    "red_log": "/tmp/prophet-plan-record-count-red-recovery-20260917.log",
+    "red_passed": 1,
+    "red_process": 98291,
+    "red_reason": "resolved history consumed default pager slots; visible unresolved was 12 instead of 15"
+  },
   "prior_evidence": {
     "browser-receipt.json": "323c7360b16028625958983d88afcebd47ae81e2a3f61420f4666e87ca481cd6",
     "mutation-receipt.json": "57afb24a2a72620d3d9f34b0d72c625cc875e5208c6e05f79b9febcfea925522",
     "nested-link-before.json": "86d635662d33aa35212af30b02b52e0bf6f05c54d95bfbc8aa33e0bd5ab1aa3d"
   },
   "production_acceptance": false,
+  "r6_design_governance_repair": {
+    "design_governance": {
+      "exit_code": 0,
+      "forward_blocking": 0,
+      "log": "/tmp/prophet-plan-r6-design-governance.log",
+      "process": 2704,
+      "runtime_style_guard": "PASS",
+      "unit_tests_passed": 173,
+      "visual_evidence_gate": "PASS"
+    },
+    "design_red": {
+      "blocking": 1,
+      "exit_code": 1,
+      "log": "/tmp/prophet-plan-r6-design-red.log",
+      "process": 91382
+    },
+    "finding": "templates/_prophet_card.html.j2:597 [radius-literal] border-radius: inherit",
+    "full_matrix": {
+      "exit_code": 0,
+      "failed": 0,
+      "log": "/tmp/prophet-plan-r6-full-matrix.log",
+      "passed": 219,
+      "process": 95634
+    },
+    "green": {
+      "design_blocking": 0,
+      "design_log": "/tmp/prophet-plan-r6-design-green.log",
+      "exit_code": 0,
+      "passed": 2,
+      "process": 93951,
+      "test_log": "/tmp/prophet-plan-r6-radius-green.log"
+    },
+    "red": {
+      "exit_code": 1,
+      "failed": 1,
+      "log": "/tmp/prophet-plan-r6-radius-red.log",
+      "process": 89726
+    },
+    "repair": "Preserve position:absolute, inset:0 and z-index:4 while replacing only inherit with var(--r-card,12px).",
+    "root_cause": "The new full-card historical stock-link overlay used an inline inherited radius instead of the house radius token required by the forward-only design ratchet.",
+    "triggering_job": 105090491994,
+    "triggering_pack": 1,
+    "triggering_run": 35186287994
+  },
+  "red_green": {
+    "green_failed": 0,
+    "green_passed": 6,
+    "green_process": 96821,
+    "red_failures": 2,
+    "red_process": 95825,
+    "red_reason": "delegated newer-record handler absent on published parent"
+  },
+  "release_gates": {
+    "authenticated_production_browser_required": true,
+    "automatic_merge_authorized": false,
+    "current_main_merge_composition_required": true,
+    "draft_hold": true,
+    "exact_descendant_ci_security_required": true,
+    "independent_review_required": true,
+    "subsequent_ordinary_scheduled_update_required": true
+  },
+  "review_state": {
+    "dialogue_edge": "NOT_WATCHER_ENABLED",
+    "formal_github_reviews": 0,
+    "independent_review": "NOT_STARTED",
+    "next_review": "REQUIRE_NEW_EXACT_HEAD_PICKUP_ACK_START_AND_RETURN_AFTER_PUBLICATION",
+    "prior_commission_disposition": "STALE_ON_R6_DESCENDANT; DELIVERY_UNCONSUMED / PRE_START",
+    "prior_commission_head": "fa1d53a5bf716c9cb350d7b663e510551755fff7"
+  },
   "schema": "prophet.plan_record_release_verification.v1",
-  "skillpack_commit": "eee809949ee79c0ea1ef922ce74c110b1bb1dddf",
+  "skillpack_commit": "aacf3df5a47ca37ce71cd47a3bd7caea81ad4cd2",
   "source_sha256": {
-    "templates/_prophet_card.html.j2": "4f069ba91cd92138e66adca574eb551620d19689832b819dcd7d020637647589",
+    "docs/pr-crops/prophet-plan-record-trust-20260916/browser-receipt.json": "75131dee455570729ae757cf0530067de90803a2d494f7a6be94831310b8ebcf",
+    "docs/pr-crops/prophet-plan-record-trust-20260916/synthetic-fixture.html": "8cbf9a5c9e3eef73a6dfd0d03c5f84efa06aeea95002b0d27cd2bef32e6422dd",
+    "docs/pr-crops/prophet-plan-record-trust-20260916/verify.py": "8e88f32cd13930d8032e80d04589fc0da23d702fa7cd246f4bf076f44ec36ab0",
+    "site/theme.js": "3ee041b0f2731bd42c64a0bcff7b0bcb07a3f3607b410bf865db7c6ed089c246",
+    "templates/_prophet_card.html.j2": "d40b422f716b29eaa5698fddd0d36336ed4092e6f222d7ad75ace415237a4e8e",
     "templates/_us_prophet_plan_cards.html.j2": "4835d85e7a5ac2a7f6a7225d9e9cf377304bc80630a8152dbd20ab8001eb3828",
     "templates/dashboard.html.j2": "af81e49495b901c915d682121d1fd626bff562e45a45543f382b51878be58a72",
+    "templates/theme.js": "d4ef9d80813724242b7fa9d56b75d235930e658dbc418fe430331425249d74ee",
+    "tests/test_p0_prophet_candidate_board.py": "9ef03c65b2fd0d43a87cca726d43ff0e1f68b42055e92788fcc6e2dc119dd169",
     "tests/test_p_mp1_shell_ladder_error_state.py": "a63604e7d311836b47c8bfda9209685e4345c22f3747deb0b3ee0abbd882cd0f",
     "tests/test_p_mp1_shell_ladder_filter_css.py": "c1d1e469aa33723373068f9fec293f6146aec46468f59076ab2824829369f898",
     "tests/test_p_mp1_shell_nonus_byte_parity.py": "bebd70e5afaec943dfe3bd3c2b7ee81309c4d270c720d39f7841e94058da8fe2",
-    "tests/test_p_mp1_shell_stance_projection.py": "d842366447c11ffbba39823bbda2f0e1ade794838021133c8378e989252c42f6",
-    "docs/pr-crops/prophet-plan-record-trust-20260916/verify.py": "8e88f32cd13930d8032e80d04589fc0da23d702fa7cd246f4bf076f44ec36ab0",
-    "templates/theme.js": "d4ef9d80813724242b7fa9d56b75d235930e658dbc418fe430331425249d74ee",
-    "site/theme.js": "3ee041b0f2731bd42c64a0bcff7b0bcb07a3f3607b410bf865db7c6ed089c246",
-    "tests/test_p0_prophet_candidate_board.py": "9ef03c65b2fd0d43a87cca726d43ff0e1f68b42055e92788fcc6e2dc119dd169",
-    "docs/pr-crops/prophet-plan-record-trust-20260916/browser-receipt.json": "b4bfb2bca13127954154aa140a0c88ff7ae1afcf6544125ba36ccd0d2467154f"
+    "tests/test_p_mp1_shell_stance_projection.py": "17b788bab641258caf048a1a74661aec0144a728916e6fd4667272a94af527c6"
   },
   "tests": {
-    "command": "python3 -m pytest tests/test_p0_prophet_candidate_board.py tests/test_p_mp1_shell_stance_projection.py tests/test_prophet_card_shared.py tests/test_prophet_card_live_change.py tests/test_p_mp1_shell_nonus_byte_parity.py tests/test_p_mp1_shell_repair_round.py tests/test_p_mp1_shell_ladder_error_state.py tests/test_china_archetype_d_s1.py tests/test_p_mp1_shell_ladder_filter_css.py -q -p no:cacheprovider --basetemp=/tmp/prophet-plan-trust-r2-plus-pager-focused-20260917",
-    "process": 5749,
+    "command": "python3 -m pytest tests/test_p0_prophet_candidate_board.py tests/test_p_mp1_shell_stance_projection.py tests/test_prophet_card_shared.py tests/test_prophet_card_live_change.py tests/test_p_mp1_shell_nonus_byte_parity.py tests/test_p_mp1_shell_repair_round.py tests/test_p_mp1_shell_ladder_error_state.py tests/test_p_mp1_shell_ladder_filter_css.py tests/test_china_archetype_d_s1.py -q -p no:cacheprovider --basetemp=/tmp/prophet-plan-r6-full-matrix-pytest",
     "exit_code": 0,
-    "passed": 218,
     "failed": 0,
-    "log": "/tmp/prophet-plan-trust-r2-plus-pager-focused-20260917.log"
-  },
-  "red_green": {
-    "red_process": 95825,
-    "red_failures": 2,
-    "red_reason": "delegated newer-record handler absent on published parent",
-    "green_process": 96821,
-    "green_passed": 6,
-    "green_failed": 0
-  },
-  "current_capability": "BUILT_NOT_PROVEN",
-  "contract_delta": {
-    "base": "12b655150582d9be39bfd2779b33338d154c565f",
-    "process": 19182,
-    "exit_code": 0,
-    "introduced": 0,
-    "inherited": 0,
-    "runtime_seconds": 388.37
-  },
-  "pager_red_green": {
-    "red_process": 98291,
-    "red_exit_code": 1,
-    "red_passed": 1,
-    "red_failed": 1,
-    "red_reason": "resolved history consumed default pager slots; visible unresolved was 12 instead of 15",
-    "red_log": "/tmp/prophet-plan-record-count-red-recovery-20260917.log",
-    "green_process": 4280,
-    "green_exit_code": 0,
-    "green_passed": 2,
-    "green_failed": 0,
-    "green_log": "/tmp/prophet-plan-record-count-green-20260917.log"
-  },
-  "main_composition": {
-    "protected_main": "5269a38f383d466f03cf1d7599d12de70118acad",
-    "merge_base": "4f37209719d2ca5caf9fd3a37aca29fa363f351c",
-    "owned_path_movement": [
-      "templates/dashboard.html.j2"
-    ],
-    "movement_commit": "8b335abb3e6d9b86e49d1754ee31a46141a3d3c8",
-    "classification": "BOUNDED_NONOVERLAP_OBSERVED_MERGE_PROOF_PENDING_DESCENDANT",
-    "reason": "main movement is confined to risk-dialog rank-momentum CSS/markup; pager/lifecycle seams are at separate dashboard hunks"
-  },
-  "review_state": {
-    "independent_review": "NOT_ASSIGNED",
-    "semantic_review": "FULL_REREVIEW_REQUIRED_ON_PAGER_DESCENDANT",
-    "dialogue_edge": "NOT_WATCHER_ENABLED"
-  },
-  "release_gates": {
-    "draft_hold": true,
-    "independent_review_required": true,
-    "exact_descendant_ci_security_required": true,
-    "current_main_merge_composition_required": true,
-    "authenticated_production_browser_required": true,
-    "subsequent_ordinary_scheduled_update_required": true,
-    "automatic_merge_authorized": false
-  },
-  "pager_contract_delta": {
-    "status": "NOT_RUN_ON_UNPUBLISHED_PAGER_WORKTREE",
-    "prior_r2_contract_delta_preserved_above": true
-  },
-  "final_verification": {
-    "process": 57065,
-    "exit_code": 0,
-    "tests_passed": 218,
-    "tests_failed": 0,
-    "test_log": "/tmp/prophet-plan-record-r3-final-tests-20260917.log",
-    "node_checks_passed": 2,
-    "template_site_sync_pairs": 98,
-    "visual_cases_passed": 8,
-    "navigation_cases_passed": 2,
-    "pager_cases_passed": 1,
-    "browser_log": "/tmp/prophet-plan-record-r3-final-browser-20260917.log",
-    "browser_receipt_sha256": "b4bfb2bca13127954154aa140a0c88ff7ae1afcf6544125ba36ccd0d2467154f",
-    "release_json_valid": true,
-    "diff_check_clean": true,
-    "production_effect": false
+    "log": "/tmp/prophet-plan-r6-full-matrix.log",
+    "passed": 219,
+    "process": 95634
   }
 }
