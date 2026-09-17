@@ -1257,6 +1257,11 @@ jobs:
       - "lib/seo.py"
       - "lib/store.py"
       - "scripts/build_ticker_pages.py"
+      # #7018 full-tree closure widening: build_canada extracted its descriptive
+      # theme projection into this module. Because `scope: exclusive` replaces
+      # inference, declare the exact dependency; sparse checkouts can otherwise
+      # under-enumerate this edge and report a false local green.
+      - "scripts/canada_theme_action_map.py"
       - "scripts/check_stock_dossier_integrity.py"
       - "scripts/sparse_guard.py"
       - "scripts/worktree_sparse.py"

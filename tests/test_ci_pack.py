@@ -3717,6 +3717,25 @@ def test_curated_exclusive_scopes_cover_their_own_import_closure() -> None:
     )
 
 
+def test_conviction_profile_declares_canada_theme_action_map_dependency() -> None:
+    """The curated dossier job must own the extracted Canada theme helper.
+
+    Full-tree contract-delta reaches this module through the job's existing
+    import closure. Sparse worktrees can under-enumerate that edge, so pin the
+    exact declaration and selector behavior independently.
+    """
+    jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST)}
+    job = jobs["conviction-profile"]
+    dependency = "scripts/canada_theme_action_map.py"
+
+    assert job.exclusive is True
+    assert dependency in job.paths
+    selected, reason = PACK.select_jobs([job], [dependency])
+    assert [item.job_id for item in selected] == [job.job_id], reason
+    match = PACK._job_diff_match(job, [dependency])
+    assert match and match[1] == "declared", match
+
+
 def test_d5_route_closure_keeps_affected_curated_jobs_selecting_dependencies() -> None:
     """D5's Prophet Lab route closure must not become a five-job false green.
 
