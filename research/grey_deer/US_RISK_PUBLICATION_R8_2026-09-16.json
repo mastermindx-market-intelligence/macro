@@ -1,0 +1,39 @@
+{
+  "utc": "2026-09-17T03:24:38.431664+00:00",
+  "pr": 7236,
+  "procedure_pin": "eec5324c5205e8bad206512e0a936898e50b2408",
+  "source_parent": "18b3ecc629415669e42b0ae096d96b709cfa5810",
+  "status": "BUILT_NOT_PROVEN",
+  "source_sha256": {
+    "lib/risk_presentation.py": "91568fe22dea99133206f8d871c7ab2336d34adb86806383f37eed1521789273",
+    "engine/market_state.py": "52d9b00971addf148fb787ab131cfca48cbd9744ee6d857d1e9547ed394a1754",
+    "engine/risk_radar.py": "4bbe6d9e32f26f7695723bde20753be786a0133cfa28295f02b666bc725abafc",
+    "templates/dashboard.html.j2": "d38b9576663a82e9786b0e0792a421e1bff1296475ec85d4df71ac5ef7ed73f0",
+    "templates/_market_read.html.j2": "d4c76cd7cec6ea05f4dfcd0a1449c8a368c3d8c42a6e9bfdac8bf5e2c83ee796",
+    "templates/risk_state_live.js": "946f0d51ac7564909f1fa77123c5820d7f5531d3cfa8880e9a6c9563455f2f76",
+    "site/risk_state_live.js": "946f0d51ac7564909f1fa77123c5820d7f5531d3cfa8880e9a6c9563455f2f76",
+    "tests/test_risk_presentation.py": "2568ebc70a21f5301b91f2299a7e729b5c8dd4e662f73f0e65dab6c5eb2687bb",
+    "tests/test_risk_presentation_live.py": "e41eef9508503872fe30cce86993e430e4b2ddc12d67ee1a2d5e84f7b1d0c544"
+  },
+  "r7_semantics_unchanged": true,
+  "recovered_blockers": [
+    "original orphan index lock preserved by same-directory rename with unchanged index hash",
+    "canonical EVIDENCE.yml created and directly validated with all eight existing screenshot cells"
+  ],
+  "owning_tests": {
+    "result": "323 passed",
+    "exit_code": 0,
+    "log_sha256": "a3025e9ce3142d07e298eb15e4c810e6661b2db11b3ba5a2a3ca178929b4681d"
+  },
+  "visual_receipt": "mockups/refs/us-risk-integrity/EVIDENCE.yml",
+  "visual_receipt_validation_errors": [],
+  "base": "12b655150582d9be39bfd2779b33338d154c565f",
+  "contract_proof_reused": "R7; exact base and product/dependency paths unchanged",
+  "production_proof": false,
+  "remaining": [
+    "publish exact tested candidate and evidence to existing PR",
+    "independent review",
+    "current-head hosted checks",
+    "incumbent #6685 return and integrated production proof"
+  ]
+}

@@ -181,3 +181,24 @@ def test_capped_headline_does_not_claim_the_original_blend_is_risk_off(source):
     assert '实测综合读数显示避险状态' not in out['headline_zh']
     assert 'constraint' in out['headline_en'].lower() and '约束' in out['headline_zh']
     assert '61' in out['subline_en'] and ms == original
+
+
+@pytest.mark.parametrize('capped', [False, True])
+def test_server_accessible_gauge_carries_qualification_and_provenance(capped):
+    from pathlib import Path
+    from jinja2 import Environment, FileSystemLoader
+    root = Path(__file__).resolve().parents[1]
+    ms = sample()
+    if capped:
+        ms.update(verdict='MIXED', score=50, raw_score=61, capped=True,
+                  score_source='radar_ceiling')
+    ms['presentation'] = view(ms, None if capped else envelope())
+    env = Environment(loader=FileSystemLoader(root/'templates'), autoescape=True)
+    text = env.from_string('{% import "_market_read.html.j2" as mr %}{{ mr.aria(ms) }}').render(ms=ms)
+    assert 'Displayed score' in text and str(ms['score']) in text
+    assert ms['presentation']['label_en'] in text
+    assert ms['presentation']['label_zh'] in text
+    if capped:
+        assert 'Capped' in text and '61' in text
+    else:
+        assert 'Fragile' in text

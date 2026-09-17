@@ -23,3 +23,14 @@
 <span class="l-zh">{{ ms.get('headline_zh') or '请查看现有市场证据。' }}</span>
 {% endif %}
 {%- endmacro %}
+
+{# Plain accessible text uses the same qualification/provenance as visible copy. #}
+{% macro aria(ms) -%}
+{% set p = ms.get('presentation') or {} -%}
+Displayed score {{ ms.get('score') if ms.get('score') is not none else '—' }};
+{{ p.get('label_en') or ('Risk-on composite' if ms.get('verdict') == 'RISK_ON' else ms.get('label_en', 'Unavailable')) }}.
+{{ p.get('subline_en') or 'Displayed score — not a probability' }}.
+显示分数 {{ ms.get('score') if ms.get('score') is not none else '—' }}；
+{{ p.get('label_zh') or ('偏多综合读数' if ms.get('verdict') == 'RISK_ON' else ms.get('label_zh', '不可用')) }}。
+{{ p.get('subline_zh') or '显示分数——并非概率' }}。
+{%- endmacro %}

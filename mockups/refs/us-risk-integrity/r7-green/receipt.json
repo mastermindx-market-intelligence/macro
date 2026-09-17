@@ -1,0 +1,263 @@
+{
+  "status": "PASS",
+  "utc": "2026-09-17T02:41:34.025765+00:00",
+  "source_head": "18b3ecc629415669e42b0ae096d96b709cfa5810",
+  "page_sha256": "39643e2d72ff86bb13e59e412191adea9055b7c2a99c5b920e07e2cab9f37476",
+  "production_proof": false,
+  "full_program_acceptance": false,
+  "external_requests_blocked": true,
+  "fixture_live_ticks": true,
+  "body_character_keystrokes": 0,
+  "tab_discovery": 0,
+  "cases": [
+    {
+      "case": "1440-dark-en",
+      "kind": "canonical_local_render",
+      "errors": [],
+      "label": "Confirmation incomplete",
+      "score": "61",
+      "headline": "Breadth is weak; some inputs are stale or incomplete.",
+      "old_panel_count": 1,
+      "geometry": {
+        "x": 279,
+        "y": 238.890625,
+        "width": 142.390625,
+        "height": 55.09375
+      },
+      "panel_geometry": {
+        "x": 41,
+        "y": 103,
+        "width": 407.390625,
+        "height": 384.5
+      },
+      "settled_aria": "Displayed score 61;\nConfirmation incomplete.\nMeasured blend — read with caution.\n显示分数 61；\n确认不完整。\n实测综合读数——需谨慎解读。",
+      "label_color": "rgb(224, 160, 48)",
+      "score_color": "color(srgb 0.270588 0.721569 0.45098)",
+      "same_verdict_flip": {
+        "before": "",
+        "after": ""
+      },
+      "fixture_capped_subline": "Capped reading — measured blend 61/100",
+      "fixture_capped_aria": "Displayed score 50; Mixed. Capped reading — measured blend 61/100. 显示分数 50；分歧。封顶读数——实测综合读数 61/100"
+    },
+    {
+      "case": "1440-dark-zh",
+      "kind": "canonical_local_render",
+      "errors": [],
+      "label": "确认不完整",
+      "score": "61",
+      "headline": "广度偏弱；部分输入已过期或不完整。",
+      "old_panel_count": 1,
+      "geometry": {
+        "x": 279,
+        "y": 239.875,
+        "width": 95,
+        "height": 27.546875
+      },
+      "panel_geometry": {
+        "x": 41,
+        "y": 103,
+        "width": 407.390625,
+        "height": 360.9375
+      },
+      "settled_aria": "Displayed score 61;\nConfirmation incomplete.\nMeasured blend — read with caution.\n显示分数 61；\n确认不完整。\n实测综合读数——需谨慎解读。",
+      "label_color": "rgb(224, 160, 48)",
+      "score_color": "color(srgb 0.878431 0.392157 0.392157)",
+      "same_verdict_flip": {
+        "before": "",
+        "after": ""
+      },
+      "fixture_capped_subline": "封顶读数——实测综合读数 61/100",
+      "fixture_capped_aria": "Displayed score 50; Mixed. Capped reading — measured blend 61/100. 显示分数 50；分歧。封顶读数——实测综合读数 61/100"
+    },
+    {
+      "case": "1440-light-en",
+      "kind": "canonical_local_render",
+      "errors": [],
+      "label": "Confirmation incomplete",
+      "score": "61",
+      "headline": "Breadth is weak; some inputs are stale or incomplete.",
+      "old_panel_count": 1,
+      "geometry": {
+        "x": 279,
+        "y": 238.890625,
+        "width": 142.390625,
+        "height": 55.09375
+      },
+      "panel_geometry": {
+        "x": 41,
+        "y": 103,
+        "width": 407.390625,
+        "height": 384.5
+      },
+      "settled_aria": "Displayed score 61;\nConfirmation incomplete.\nMeasured blend — read with caution.\n显示分数 61；\n确认不完整。\n实测综合读数——需谨慎解读。",
+      "label_color": "rgb(185, 121, 26)",
+      "score_color": "color(srgb 0.143922 0.459373 0.325882)",
+      "same_verdict_flip": {
+        "before": "",
+        "after": ""
+      },
+      "fixture_capped_subline": "Capped reading — measured blend 61/100",
+      "fixture_capped_aria": "Displayed score 50; Mixed. Capped reading — measured blend 61/100. 显示分数 50；分歧。封顶读数——实测综合读数 61/100"
+    },
+    {
+      "case": "1440-light-zh",
+      "kind": "canonical_local_render",
+      "errors": [],
+      "label": "确认不完整",
+      "score": "61",
+      "headline": "广度偏弱；部分输入已过期或不完整。",
+      "old_panel_count": 1,
+      "geometry": {
+        "x": 279,
+        "y": 239.875,
+        "width": 95,
+        "height": 27.546875
+      },
+      "panel_geometry": {
+        "x": 41,
+        "y": 103,
+        "width": 407.390625,
+        "height": 360.9375
+      },
+      "settled_aria": "Displayed score 61;\nConfirmation incomplete.\nMeasured blend — read with caution.\n显示分数 61；\n确认不完整。\n实测综合读数——需谨慎解读。",
+      "label_color": "rgb(185, 121, 26)",
+      "score_color": "color(srgb 0.710745 0.246588 0.26102)",
+      "same_verdict_flip": {
+        "before": "",
+        "after": ""
+      },
+      "fixture_capped_subline": "封顶读数——实测综合读数 61/100",
+      "fixture_capped_aria": "Displayed score 50; Mixed. Capped reading — measured blend 61/100. 显示分数 50；分歧。封顶读数——实测综合读数 61/100"
+    },
+    {
+      "case": "390-dark-en",
+      "kind": "canonical_local_render",
+      "errors": [],
+      "label": "Confirmation incomplete",
+      "score": "61",
+      "headline": "Breadth is weak; some inputs are stale or incomplete.",
+      "old_panel_count": 1,
+      "geometry": {
+        "x": 182.609375,
+        "y": 213.90625,
+        "width": 154.4375,
+        "height": 18.84375
+      },
+      "panel_geometry": {
+        "x": 19,
+        "y": 143,
+        "width": 352,
+        "height": 325.9375
+      },
+      "settled_aria": "Displayed score 61;\nConfirmation incomplete.\nMeasured blend — read with caution.\n显示分数 61；\n确认不完整。\n实测综合读数——需谨慎解读。",
+      "label_color": "rgb(224, 160, 48)",
+      "score_color": "color(srgb 0.270588 0.721569 0.45098)",
+      "same_verdict_flip": {
+        "before": "",
+        "after": ""
+      },
+      "fixture_capped_subline": "Capped reading — measured blend 61/100",
+      "fixture_capped_aria": "Displayed score 50; Mixed. Capped reading — measured blend 61/100. 显示分数 50；分歧。封顶读数——实测综合读数 61/100"
+    },
+    {
+      "case": "390-dark-zh",
+      "kind": "canonical_local_render",
+      "errors": [],
+      "label": "确认不完整",
+      "score": "61",
+      "headline": "广度偏弱；部分输入已过期或不完整。",
+      "old_panel_count": 1,
+      "geometry": {
+        "x": 182.609375,
+        "y": 213.90625,
+        "width": 65,
+        "height": 18.84375
+      },
+      "panel_geometry": {
+        "x": 19,
+        "y": 143,
+        "width": 352,
+        "height": 318
+      },
+      "settled_aria": "Displayed score 61;\nConfirmation incomplete.\nMeasured blend — read with caution.\n显示分数 61；\n确认不完整。\n实测综合读数——需谨慎解读。",
+      "label_color": "rgb(224, 160, 48)",
+      "score_color": "color(srgb 0.878431 0.392157 0.392157)",
+      "same_verdict_flip": {
+        "before": "",
+        "after": ""
+      },
+      "fixture_capped_subline": "封顶读数——实测综合读数 61/100",
+      "fixture_capped_aria": "Displayed score 50; Mixed. Capped reading — measured blend 61/100. 显示分数 50；分歧。封顶读数——实测综合读数 61/100"
+    },
+    {
+      "case": "390-light-en",
+      "kind": "canonical_local_render",
+      "errors": [],
+      "label": "Confirmation incomplete",
+      "score": "61",
+      "headline": "Breadth is weak; some inputs are stale or incomplete.",
+      "old_panel_count": 1,
+      "geometry": {
+        "x": 182.609375,
+        "y": 213.90625,
+        "width": 154.4375,
+        "height": 18.84375
+      },
+      "panel_geometry": {
+        "x": 19,
+        "y": 143,
+        "width": 352,
+        "height": 325.9375
+      },
+      "settled_aria": "Displayed score 61;\nConfirmation incomplete.\nMeasured blend — read with caution.\n显示分数 61；\n确认不完整。\n实测综合读数——需谨慎解读。",
+      "label_color": "rgb(185, 121, 26)",
+      "score_color": "color(srgb 0.143922 0.459373 0.325882)",
+      "same_verdict_flip": {
+        "before": "",
+        "after": ""
+      },
+      "fixture_capped_subline": "Capped reading — measured blend 61/100",
+      "fixture_capped_aria": "Displayed score 50; Mixed. Capped reading — measured blend 61/100. 显示分数 50；分歧。封顶读数——实测综合读数 61/100"
+    },
+    {
+      "case": "390-light-zh",
+      "kind": "canonical_local_render",
+      "errors": [],
+      "label": "确认不完整",
+      "score": "61",
+      "headline": "广度偏弱；部分输入已过期或不完整。",
+      "old_panel_count": 1,
+      "geometry": {
+        "x": 182.609375,
+        "y": 213.90625,
+        "width": 65,
+        "height": 18.84375
+      },
+      "panel_geometry": {
+        "x": 19,
+        "y": 143,
+        "width": 352,
+        "height": 318
+      },
+      "settled_aria": "Displayed score 61;\nConfirmation incomplete.\nMeasured blend — read with caution.\n显示分数 61；\n确认不完整。\n实测综合读数——需谨慎解读。",
+      "label_color": "rgb(185, 121, 26)",
+      "score_color": "color(srgb 0.710745 0.246588 0.26102)",
+      "same_verdict_flip": {
+        "before": "",
+        "after": ""
+      },
+      "fixture_capped_subline": "封顶读数——实测综合读数 61/100",
+      "fixture_capped_aria": "Displayed score 50; Mixed. Capped reading — measured blend 61/100. 显示分数 50；分歧。封顶读数——实测综合读数 61/100"
+    }
+  ],
+  "failures": [],
+  "source_sha256": {
+    "lib/risk_presentation.py": "91568fe22dea99133206f8d871c7ab2336d34adb86806383f37eed1521789273",
+    "templates/dashboard.html.j2": "d38b9576663a82e9786b0e0792a421e1bff1296475ec85d4df71ac5ef7ed73f0",
+    "templates/_market_read.html.j2": "d4c76cd7cec6ea05f4dfcd0a1449c8a368c3d8c42a6e9bfdac8bf5e2c83ee796",
+    "templates/risk_state_live.js": "946f0d51ac7564909f1fa77123c5820d7f5531d3cfa8880e9a6c9563455f2f76",
+    "site/risk_state_live.js": "946f0d51ac7564909f1fa77123c5820d7f5531d3cfa8880e9a6c9563455f2f76"
+  },
+  "render_basis": "unchanged real VM; canonical renderer/writer; byte-equivalence to full builder established before frontend-only repair"
+}

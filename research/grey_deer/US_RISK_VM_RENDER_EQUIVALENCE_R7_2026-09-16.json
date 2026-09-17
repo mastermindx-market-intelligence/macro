@@ -1,0 +1,7 @@
+{
+  "same_bytes_as_full_builder": true,
+  "replay_sha256": "f25e9c4216563a6d30dbd07d5071de3a0c5f5256e843ce0369c9740815cd9d83",
+  "canonical_sha256": "f25e9c4216563a6d30dbd07d5071de3a0c5f5256e843ce0369c9740815cd9d83",
+  "vm_sha256": "d38ceb6950185a0fa24b31033f4171f95babbf7f6f5cb3821b0136bccb43bd82",
+  "production_proof": false
+}

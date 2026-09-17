@@ -68,3 +68,47 @@ def test_legacy_capped_feed_does_not_call_its_displayed_limit_a_measurement():
     result = _read({'verdict': 'MIXED', 'score': 50, 'raw_score': 61})
     assert 'Measured blend' not in result['subline_en']
     assert 'Displayed score' in result['subline_en']
+
+
+def _patched_dom(display, *, baked_verdict='RISK_ON'):
+    """Reuse the existing DOM fixture and execute the real patchMacro function."""
+    from tests.test_risk_state_live_session_floor import DOM_STUB
+    if not shutil.which('node'):
+        pytest.skip('node unavailable; actual live-DOM proof not obtained')
+    setup = '''
+reg('#ms-word', new El('ms-word'));
+reg('#regime-asof', new El('', '', '2026-09-15'));
+var vw = reg('.mx5-verdict-word', new El());
+reg('.mx5-verdict-word .l-en', new El('', '', 'Confirmation incomplete'));
+var gauge = reg('.mx5-gauge-svg', new El());
+var flip = reg('.mx5-flip', new El()); flip.style.display = '';
+'''
+    setup += 'vw.setAttribute("data-baked-verdict",'+json.dumps(baked_verdict)+');\n'
+    feed = {'display':display, 'nightly':display, 'nightly_asof':'2026-09-15',
+            'built':'2026-09-15 23:59:00 UTC', 'live_active':False}
+    source = (ROOT / 'templates/risk_state_live.js').read_text()
+    source = source[:source.index('  if (document.readyState')]
+    source += '\npatchMacro('+json.dumps(feed)+');})();'
+    program = DOM_STUB + setup + source
+    program += '\nconsole.log(JSON.stringify({aria:gauge.getAttribute("aria-label"),flip:flip.style.display}));'
+    result = subprocess.run(['node','-e',program],capture_output=True,text=True,check=True)
+    return json.loads(result.stdout)
+
+
+def test_actual_live_gauge_accessibility_retains_cap_provenance():
+    ms = {'verdict':'MIXED','label_en':'Mixed','score':50,'raw_score':61,
+          'capped':True,'score_source':'radar_ceiling'}
+    ms['presentation'] = market_read(ms)
+    result = _patched_dom(ms)
+    assert 'Measured blend 50' not in result['aria']
+    assert '50' in result['aria'] and '61' in result['aria']
+    assert 'Capped' in result['aria']
+
+
+@pytest.mark.parametrize('verdict,expected', [('RISK_ON',''), ('MIXED','none')])
+def test_live_flip_explanation_compares_measured_verdict_not_qualified_word(verdict, expected):
+    ms = {'verdict':verdict,'label_en':'Risk-on' if verdict=='RISK_ON' else 'Mixed',
+          'score':61 if verdict=='RISK_ON' else 50,'components':[],
+          'freshness':{'stale':True}}
+    ms['presentation'] = market_read(ms)
+    assert _patched_dom(ms)['flip'] == expected

@@ -2,11 +2,11 @@
 workstream: WS:GREY-DEER-RISK-INTELLIGENCE
 session: claude/ssd-us-risk-breadth-integrity-20260916-sol-9a09b2c2fa2f1eb8
 model: sol
-ended_because: context_budget
+ended_because: blocked
 mission: Make the existing US score and Risk Radar truthful across settled/live readings;
   integrate Grey Deer without a standalone oversized panel.
-state_before: Uncommitted recovered risk interpretation candidate; stale-input repair
-  and data checkout were previously blocked.
+state_before: R7 was tested locally but blocked from publication by a worktree index
+  lock and missing visual receipt.
 changed:
 - path: lib/risk_presentation.py
   what: Freshness-qualified shared interpretation, retained observed breadth damage,
@@ -36,6 +36,26 @@ verified:
     gh pr create --draft
   result: 'PR #7236 created at c189320c6b946ae314908f20b842283ff75bb342; R6 is a subsequent
     same-branch repair.'
+- claim: R7 actual DOM/browser repair and targeted owning regression
+  command: python3 research/grey_deer/US_RISK_BROWSER_PROOF_2026-09-16.py r7-green;
+    PYTHONDONTWRITEBYTECODE=1 python3 -m pytest -q tests/test_risk_presentation.py
+    tests/test_risk_presentation_live.py tests/test_risk_reading_integrity.py tests/test_risk_state_live_copy_sync.py
+    tests/test_risk_radar.py tests/test_risk_radar_recovery.py tests/test_risk_radar_audit.py
+    tests/test_risk_radar_scorecard.py tests/test_risk_radar_dlg_country_wiring.py
+    tests/test_risk_radar_dlg_partial.py tests/test_risk_state_live_session_floor.py
+    tests/test_market_state_persist_freshness.py --basetemp=<unique worktree-owned
+    path> --tb=short
+  result: 8/8 functional browser cases PASS; 323 tests passed; canonical capture tool
+    separately captured 8/8 states; not production acceptance.
+- claim: R7 current-base differential contract check
+  command: python3 scripts/check_contract_delta.py --base 12b655150582d9be39bfd2779b33338d154c565f
+  result: 0 introduced, 1 inherited (unrun-picks-boards site/theme.css), exit 0; original
+    process completed, no duplicate.
+- claim: R8 original-carrier publication blockers reconciled with unchanged R7 source
+  command: same-worktree inode/holder-checked lock rename; validate_receipt_shape
+    + validate_manifest_evidence on EVIDENCE.yml; 12-file pytest run with unique basetemp
+  result: Original lock preserved; index hash unchanged; exact visual receipt has
+    zero errors; source SHA256 matches R7; 323 passed, exit 0.
 unverified:
 - claim: Composed visual and production acceptance
   what_would_verify: Approved browser proof on composed canonical page plus actual
@@ -44,17 +64,19 @@ unverified:
   what_would_verify: Same-carrier receiver return after comment 5705732215, exact-head
     owning tests and current continuity/check gates.
 unresolved:
-- '#7236 remains Draft/HOLD-FOR-SOL; current hosted checks and independent review
+- '#7236 remains Draft/HOLD-FOR-SOL; independent review and current-head hosted checks
   are owed.'
-- '#6685 remains at 151e885; no opposite-side return after 5705732215 was observed.'
-- Local browser action was platform-blocked before execution; do not bypass it through
-  another tool/device.
+- '#6685 remains at 151e885; no opposite-side return after 5705732215 observed.'
+- R8 publication/readback must be reconciled before claiming remote-complete; production
+  remains unproven.
 next_actions:
-- 'Read current #7236 head and checks; preserve R6 semantic hashes and repair only
-  introduced failures.'
-- 'Consume the existing #6685 return on its original carrier before composing the
-  compact public explanation with the score/Radar repair.'
-- Canonical render, browser matrix and production proof before Sol release and acceptance.
+- 'Reconcile #7236 current head and exact R8 source/evidence publication; never restage
+  generated local data or macro.html.'
+- Obtain independent review and current-head checks; preserve existing hold.
+- 'Consume the #6685 incumbent return on its exact carrier and compose the compact
+  public risk journey.'
+- Canonical composed rendering and real production proof are required before parent
+  acceptance.
 do_not_redo:
 - Do not repeat the original score/RSP audit or the solved data materialization/freshness
   repair.
@@ -62,6 +84,8 @@ do_not_redo:
   or modal controller.
 - 'Do not recreate or take over #6685/#7040; preserve their source custody and prior
   accepted work.'
+- R8 clears the old index-lock and visual-receipt blockers; do not repeat recovery
+  or recapture unchanged eight-state evidence.
 danger_areas:
 - Generated local data/site render byproducts remain preserve-only and excluded from
   source commits.

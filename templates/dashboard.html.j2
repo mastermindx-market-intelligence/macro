@@ -4550,7 +4550,9 @@ body.page-macro.mx4-grid #mx5-score-numeral  { fill: var(--mx5-gauge, #f59e0b); 
    while yellow/red were coloured.) */
 
 /* Interpretation is severity ink; the unmodified measured score keeps direction ink. */
-body.page-macro .mx5-verdict-word[data-risk-qualified="true"] { color: var(--warn); }
+body.page-macro.mx4-grid .mx5-verdict-word[data-risk-qualified="true"] {
+  color: var(--warn); white-space: normal; overflow-wrap: anywhere; max-width: 100%;
+}
 /* Thesis + flip */
 body.page-macro.mx4-grid .mx5-thesis{
   font-size:13px;font-weight:450;line-height:1.55;
@@ -7616,7 +7618,7 @@ html[data-theme="light"] :is(
       <div class="mx5-sc-gauge-row {{ _mx5_sc_cls }}">
         {# Compact semicircle gauge; data-* attrs for risk_state_live.js patchMacro #}
         <svg class="mx5-gauge-svg" viewBox="0 -4 140 101" fill="none"
-             aria-label="{{ MS.label_en }} — score {{ _mx5_score }}{% if _mx5_ghost %}; capped from six-signal blend {{ _mx5_raw }}{% endif %}"
+             aria-label="{{ mr.aria(MS) }}"
              data-gauge-arc-len="{{ _mx5_arc_len }}"
              data-gauge-radius="56"
              data-gauge-cx="70" data-gauge-cy="75">
@@ -7672,7 +7674,7 @@ html[data-theme="light"] :is(
         <div>
           <div class="mx5-score-line">
             <span class="mx5-big-score">{{ _mx5_score }}</span>
-            <span class="mx5-verdict-word" data-risk-qualified="{{ 'true' if (MS.get('presentation') or {}).get('qualified') else 'false' }}">{{ mr.word(MS) }}</span>
+            <span class="mx5-verdict-word" data-baked-verdict="{{ MS.verdict }}" data-risk-qualified="{{ 'true' if (MS.get('presentation') or {}).get('qualified') else 'false' }}">{{ mr.word(MS) }}</span>
           </div>
           <div class="mx5-sub-line">
             {{ mr.subline(MS) }}

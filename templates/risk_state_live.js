@@ -54,6 +54,7 @@
   /* verdict word baked into the page at render time — captured on the first patch,
      BEFORE any live overwrite, so we can tell when the live band has moved off it. */
   var bakedLabelEn = null;
+  var bakedVerdict = null;
 
   /* ── Feed-behind-the-render floor ──────────────────────────────────────────
      The page is rendered from the nightly read; risk_state.json is a SEPARATE
@@ -304,6 +305,8 @@
     if (bakedLabelEn === null) {
       var b0 = document.querySelector(".mx5-verdict-word .l-en");
       bakedLabelEn = b0 ? b0.textContent.trim() : "";
+      var bakedWord = document.querySelector(".mx5-verdict-word");
+      bakedVerdict = bakedWord ? bakedWord.getAttribute("data-baked-verdict") : null;
     }
     var read = presentationFor(disp);
     var arr = word.querySelector(".arr");
@@ -356,7 +359,7 @@
       if (sub) setBL(sub, read.subline_en, read.subline_zh);
       var gsvgA = document.querySelector(".mx5-gauge-svg");
       if (gsvgA && disp.score != null)
-        gsvgA.setAttribute("aria-label", "Measured blend " + disp.score + "; " + read.label_en);
+        gsvgA.setAttribute("aria-label", "Displayed score " + disp.score + "; " + read.label_en + ". " + read.subline_en + ". 显示分数 " + disp.score + "；" + read.label_zh + "。" + read.subline_zh);
       /* gauge cluster color scope — big-score color/glow are CSS keyed off this class */
       var grow = document.querySelector(".mx5-sc-gauge-row");
       if (grow) {
@@ -400,8 +403,9 @@
       /* the flip-condition line belongs to the BAKED verdict — its trigger prose is
          stale (or already met) once the live band moves off it, so hide it then. */
       var flip = document.querySelector(".mx5-flip");
-      if (flip && bakedLabelEn)
-        flip.style.display = ((disp.label_en || "") === bakedLabelEn) ? "" : "none";
+      if (flip && (bakedVerdict || bakedLabelEn))
+        flip.style.display = (bakedVerdict ? disp.verdict === bakedVerdict :
+                              (disp.label_en || "") === bakedLabelEn) ? "" : "none";
       /* regime pill (quad name) tracks the market-state color too (operator order
          2026-07-13): amber when Mixed, red when Risk-off, default green accent. */
       var rpill = document.querySelector(".mx5-regime-pill");
