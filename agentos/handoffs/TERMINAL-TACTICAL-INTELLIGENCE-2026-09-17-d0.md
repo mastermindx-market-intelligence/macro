@@ -37,6 +37,12 @@ verified:
 - claim: The data owner received the initial downstream evidence without source takeover.
   command: 'GitHub.add_comment_to_issue on Terminal #595'
   result: Comment 5720223535; existing head ba7c48cf58b2a04deb5b566655e8e61721caca3b left unchanged.
+- claim: The review and data/research boundaries are explicitly distinguished rather than portrayed
+    as running workers.
+  command: 'GitHub comment 5720570108 on Terminal #601; gh pr checks 601 --required; inactive-context
+    check 105361215261 output; same-carrier tool result for blocked R1 read.'
+  result: Independent review has no assigned receiver; two required Terminal checks passed; inactive
+    Macro pilot context does not authorize merge; R1 read had no execution result.
 unverified:
 - claim: D0 has independent source approval, all required checks, merge or production release.
   what_would_verify: Read and adjudicate exact-head independent review and concluded required checks,
@@ -52,19 +58,33 @@ decisions:
 discoveries:
 - DSC:TERMINAL-TACTICAL-PILOT-HISTORY-QUALIFICATION
 unresolved:
-- 'Terminal #601 release gates remain distinct from D0 local proof.'
-- 'Terminal #595 remains a separate source/production dependency; its existing-only refresh does
-  not create new 1m histories.'
-- No model worker was assigned or proven STARTed. The Web session is not a background daemon.
+- 'Terminal #601 independent review is WAITING_CAPACITY / needs_placement (preferred Terra), operation
+  terminal-tactical-d0-review-20260917-sol-001, exact carrier comment 5720570108. No eligible concrete
+  receiver was exposed or bound; do not advertise an unbound worker commission or ask the Chairman
+  for account placement.'
+- Terminal required Ingest + signal-layer and Quote Hub checks passed at the latest read; broader
+  E2E had not fully concluded. Vercel preview failures explicitly report build rate limit / retry
+  in 24 hours and are not the two required checks; no retry or subscription upgrade was performed.
+- 'Macro records #7262 remains in its existing GitHub validation/merge-on-green flow. The red codex/merge-queue-pilot
+  context reports inactive_base_context while active main authority passed; do not treat that inactive
+  context as a source regression or bypass pending active checks.'
+- The first R1 measurement/registry/de-scope source read was platform-blocked before execution. That
+  read is held; no alternate transport or reconstructed stale procedure substitutes for it.
+- 'Terminal #595 remains the independent current-history repair; its existing-only mode does not
+  create one-minute histories.'
+- No worker is STARTed and no receiver-specific watcher is armed. The Web session is not a daemon.
+  GitHub run/check artifacts are the canonical return for the actual CI execution.
 next_actions:
-- 'Re-pin current protected Skillpack and read exact #601 head/check/review state; do not recreate
-  D0.'
-- 'Reconcile #595 owner/release and independently qualify one-minute history/capture without adding
-  a second writer.'
-- Freeze the price-first experiments through existing Setup Species/Evaluation ownership; keep exposed
-  corrected history and untouched forward evidence separate.
-- Advance existing-Radar shadow and Terminal integration only inside current custody and evidence
-  gates.
+- 'Recover exact #601 source/review/check state and the same pending review operation; obtain lawful
+  placement for an independent reviewer without rebinding or duplicating started work.'
+- 'Reconcile current #7262 merge/check state before modifying this organizational carrier; the nine
+  new validation warnings are expected prefix paths or Terminal paths absent from the validator sibling
+  checkout, not malformed records.'
+- After a material recovery invalidator, recover the blocked R1 canonical scientific source through
+  its lawful path; do not retry through another tool on the unchanged denial.
+- 'Use #595 current owner/release evidence to establish refreshed pilot files, and separately qualify
+  existing finer-grain data. Only then proceed through registered experiments, existing-Radar shadow
+  integration and Terminal proof.'
 do_not_redo:
 - 'The Chairman approved the price-first architecture and first milestone on 2026-09-17; Terminal
   #598 comment 5720001976. Do not request that approval again.'
@@ -76,6 +96,8 @@ do_not_redo:
   them.
 - Do not use whole-file diagnostic hashes or future-window inventory as model features; only the
   named pure cutoff view is causal.
+- Do not rerun generic workstream archaeology or the full Macro suite in this sparse records checkout;
+  targeted validation and compile-context recovery already passed.
 danger_areas:
 - INTC remained unqueried in the static pilot, not absent from the vendor universe.
 - Nominal occupancy is not trade completeness; early-close post-market and hourly boundary-straddles
@@ -99,3 +121,6 @@ DEC:TERMINAL-TACTICAL-PRICE-FIRST-APPROVAL records present Chairman intent and o
 
 ## §4 Not in scope — do not adopt
 No new strategic program, event store, replay authority, scientific registry, provider, automated trade, capital allocation or independent updater. No transfer of #595, Live Entry Radar, TOI or Options program custody. A checkpoint is not parent completion.
+
+## Current continuation boundary
+Local D0 implementation and the static-input census are complete and must not be repeated. Release awaits independent review; new scientific registration awaits recovery of the blocked source read. Existing data repair and downstream product dependencies are separately held, not abandoned. No future automatic CEO action or worker execution is implied by the GitHub check runs.

@@ -32,9 +32,11 @@ waves:
 - id: D0
   title: Existing-store qualification and causal cutoff consumer
   status: in_progress
-  next_action: 'Review and release Terminal PR #601 at 773b16f8e825ab4b39ce3c7a5fa5caf32868d55f through
-    its existing gates. Local archival-input proof and 46 focused tests exist; no production or parent
-    completion is asserted.'
+  next_action: 'Obtain independent exact-head review of Terminal #601 at 773b16f8e825ab4b39ce3c7a5fa5caf32868d55f.
+    Review operation terminal-tactical-d0-review-20260917-sol-001 is WAITING_CAPACITY / needs_placement
+    with preferred Terra; no reviewer START or receiver-specific watcher exists. GitHub required
+    Ingest/Quote checks passed; broader E2E was still running. No code release before independent
+    review and concluded applicable checks.'
 - id: D1
   title: Current pilot history and finer-grain availability qualification
   status: todo
@@ -46,10 +48,11 @@ waves:
   status: todo
   depends_on:
   - D0
-  next_action: 'Freeze experiments in the existing Setup Species/Evaluation ownership: extended-hours
-    persistence after weakness, exhaustion/reclaim versus continuation controls, then remaining-session
-    and one-to-three-day outcomes. Use corrected history only with explicit limitations; admission
-    and promotion remain separate.'
+  next_action: The next bounded source read of Setup Species measurement/registry/de-scope and research-home
+    contracts was blocked by the platform before execution. Preserve that exact no-effect source-read
+    boundary, with no alternate-tool retry. Resume registration only after a material connection/permission
+    recovery and current canonical source access. No TTI strategy outcomes were computed or scientific
+    trial budget consumed.
 - id: I1
   title: Existing Radar-owned shadow opportunity integration
   status: todo
@@ -93,9 +96,10 @@ artifacts:
 - terminal:docs/research/TERMINAL_TACTICAL_D0_EVIDENCE_2026-09-17.md
 - terminal:docs/research/TERMINAL_TACTICAL_D0_CONTRACT.md
 - agentos/handoffs/TERMINAL-TACTICAL-INTELLIGENCE-2026-09-17-d0.md
-next_action: 'Adjudicate the exact D0 candidate in Terminal #601 after independent review and required
-  checks; use its measured gaps to advance existing-owner data qualification. Preserve #598 as the
-  product carrier and do not claim live scanning or a proven strategy.'
+next_action: 'Clear the D0 independent-review placement boundary on existing Terminal #601 (comment
+  5720570108), then adjudicate that exact head. In parallel only after lawful source recovery, finish
+  the existing-owner scientific-registration contract. Freshness repair stays with #595; UI/shadow/options
+  waves remain behind their declared dependencies.'
 ---
 
 This record coordinates the approved Terminal product integration. Existing tactical and scientific owners remain controlling; no live execution is inferred from this authored record.
