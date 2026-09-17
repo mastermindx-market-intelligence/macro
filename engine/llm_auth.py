@@ -468,6 +468,26 @@ def make_call(
             _note(p, ok=True, t0=_t0)
             return text, reason, name
         except Exception as exc:  # noqa: BLE001
+            from engine.provider_workload_policy import ProviderWorkloadPolicyError
+            if isinstance(exc, ProviderWorkloadPolicyError):
+                # A policy refusal is not provider failure or retry authority.
+                # Stop before cooldown/usage accounting or a different rung.
+                raise
+            if p.get("workload_policy") is not None:
+                # A missing response does not prove the provider did no work.
+                # Only a concrete SDK auth/quota rejection authorizes this
+                # existing waterfall to advance; exception prose is not proof.
+                try:
+                    from anthropic import APIStatusError  # noqa: PLC0415
+                    code = getattr(exc, "status_code", None)
+                    response_code = getattr(getattr(exc, "response", None), "status_code", None)
+                    rejected = (isinstance(exc, APIStatusError)
+                                and type(code) is int and code in (401, 403, 429)
+                                and type(response_code) is int and response_code == code)
+                except Exception:  # absent/stubbed SDK is not retry authority
+                    rejected = False
+                if not rejected:
+                    raise ProviderWorkloadPolicyError("WORKLOAD_PROVIDER_EFFECT_UNKNOWN") from None
             _note(p, ok=False, t0=_t0,
                   error_class=_error_class(exc), detail=f"{type(exc).__name__}: {exc}")
             if _is_auth_error(exc):
@@ -672,9 +692,13 @@ def _client_tuning_kwargs(cfg: dict) -> dict:
             log.warning("llm_auth: client_timeout_s=%r is not a number — SDK default kept", timeout_s)
         else:
             try:
-                import httpx  # noqa: PLC0415
-                out["timeout"] = httpx.Timeout(secs, connect=5.0)
-            except Exception:  # noqa: BLE001 — httpx absent/stubbed: a plain float is accepted too
+                try:
+                    # Use the installed SDK's transport type across 0.x/1.x.
+                    from anthropic import Timeout  # noqa: PLC0415
+                except ImportError:
+                    from httpx import Timeout  # noqa: PLC0415
+                out["timeout"] = Timeout(secs, connect=5.0)
+            except Exception:  # noqa: BLE001 — absent/stubbed SDK: a plain float is accepted too
                 out["timeout"] = secs
     return out
 
@@ -977,7 +1001,8 @@ def build_providers(
     ----------
     cfg:
         Brain config dict with standard keys:
-          provider_order    (list[str])  — Codex is auto-inserted unless disabled
+          workload_profile  (str)        — trusted purpose; server environment may narrow it
+          provider_order    (list[str])  — explicit in profiled mode; no implicit Codex
           oauth_token_env   (str)        — env-var for OAuth token
           api_key_env       (str)        — env-var for Anthropic API key
           deepseek_key_env  (str)        — env-var for DeepSeek key
@@ -1001,13 +1026,19 @@ def build_providers(
     extra_headers:
         Additional headers to attach to every client (merged with oauth beta).
     """
+    from engine.provider_workload_policy import HOST_PROFILE_ENV, decide_workload
+
+    # Trusted server purpose boundary: never discover credentials before this gate.
+    workload = decide_workload(cfg, host_profile=os.environ.get(HOST_PROFILE_ENV))
     from lib import config as _config
 
     OAUTH_BETA = "oauth-2025-04-20"
     DEEPSEEK_DEFAULT_BASE = "https://api.deepseek.com/anthropic"
 
-    configured_order = list(
-        cfg.get("provider_order") or ["oauth", "anthropic", "deepseek"]
+    configured_order = (
+        list(workload.allowed_order) if workload is not None else list(
+            cfg.get("provider_order") or ["oauth", "anthropic", "deepseek"]
+        )
     )
     opus = opus_model or cfg.get("opus_model", "claude-opus-4-8")
     ds_model = deepseek_model or cfg.get("deepseek_model", "deepseek-v4-pro")
@@ -1016,7 +1047,8 @@ def build_providers(
     # after the OAuth pool, before metered API providers. DeepSeek-only/Anthropic-
     # only lanes keep their existing order and receive Codex as the last resort.
     order = list(configured_order)
-    if "codex" not in order and cfg.get("codex_provider", True) is not False:
+    if (workload is None and "codex" not in order
+            and cfg.get("codex_provider", True) is not False):
         if "oauth" in order:
             order.insert(order.index("oauth") + 1, "codex")
         else:
@@ -1030,6 +1062,10 @@ def build_providers(
             codex_source_model = ds_model
     # Latency guards for every client built below — {} unless the caller's cfg opts in.
     tuning = _client_tuning_kwargs(cfg)
+    if workload is not None:
+        # The shared call owner classifies refusal versus uncertain effect.
+        # SDK-internal retries would replay before that owner can reconcile.
+        tuning["max_retries"] = 0
 
     def _mk_oauth_provider(env: str, cap_id: str | None = None) -> dict | None:
         """Build one oauth provider descriptor from an env-var NAME, or None."""
@@ -1393,6 +1429,11 @@ def build_providers(
                 )
         except Exception as e:  # noqa: BLE001
             log.debug("llm_auth: provider cooldown ordering failed (%s)", e)
+
+    # Only this closed projection is safe to publish; descriptors also hold secrets.
+    if workload is not None:
+        for prov in out:
+            prov["workload_policy"] = workload.receipt()
 
     # Inject usage attribution metadata from cfg into every provider descriptor.
     # _capture_usage() reads these keys to populate the ai_costs ledger row.
