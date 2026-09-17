@@ -207,17 +207,45 @@ def _backoff_samples(cls: str, attempt: int, n: int = 30) -> list[int]:
     return [int(l.split()[1]) for l in r.stdout.splitlines() if l.startswith("SLEPT")]
 
 
-def test_contention_backs_off_faster_than_a_real_conflict():
-    """The core policy split: a lost ref race wants to retry INTO main's next gap; a
-    conflict wants main to settle first.
+def _backoff_complete_jitter_cycle(cls: str, attempt: int, period: int) -> list[int]:
+    """Exercise every residue in the declared jitter support, not a lucky sample.
 
-    Compared on the mean, not the extremes — the ladders are fully jittered, so their
-    ranges are allowed to overlap at the tails. What must hold is that spending ten
-    attempts on contention is far cheaper in wall-clock than spending ten on conflicts.
+    RANDOM is made an ordinary variable only in this disposable test subprocess.
+    The production policy is sourced unmodified. A fixed test clock prevents the
+    independent deadline cap from censoring the distribution under test.
     """
-    for attempt in (1, 3, 5, 8):
-        contention = _backoff_samples("contention", attempt, n=60)
-        conflict = _backoff_samples("rebase-conflict", attempt, n=60)
+    r = run_sh(
+        f"""
+        sleep() {{ echo "SLEPT $1"; }}
+        date() {{ echo 100; }}
+        unset RANDOM
+        for ((draw=0; draw<{period}; draw++)); do
+          RANDOM=$draw
+          push_retry_init "complete-jitter-cycle"
+          PUSH_ATTEMPT={attempt}
+          PUSH_FAIL_CLASS={cls}
+          push_backoff
+        done
+        """
+    )
+    assert r.returncode == 0, r.stderr
+    samples = [int(line.split()[1]) for line in r.stdout.splitlines() if line.startswith("SLEPT")]
+    assert len(samples) == period, r.stdout
+    return samples
+
+
+def test_contention_backs_off_faster_than_a_real_conflict():
+    """Compare complete jitter-support means; runtime jitter remains enabled.
+
+    Sixty independent random samples can violate this expectation inequality on
+    a correct policy (actual Bash seeds 57/7976 give sums 308/462 at attempt 1).
+    Enumerating the complete residues makes the same 1.5x policy test decisive
+    without retrying until green or weakening its threshold. The support sizes
+    below pin the intended uncapped/capped ladders; endpoint tests verify them.
+    """
+    for attempt, contention_period, conflict_period in ((1, 6, 9), (3, 12, 25), (5, 18, 41), (8, 21, 61)):
+        contention = _backoff_complete_jitter_cycle("contention", attempt, contention_period)
+        conflict = _backoff_complete_jitter_cycle("rebase-conflict", attempt, conflict_period)
         mean_c = sum(contention) / len(contention)
         mean_x = sum(conflict) / len(conflict)
         assert mean_c * 1.5 < mean_x, (
@@ -1871,3 +1899,23 @@ def test_backfill_lane_block_fails_the_job_when_the_push_never_lands(tmp_path):
     assert r.returncode == 1, f"a backfill that published nothing concluded green:\n{combined}"
     assert "::error title=backfill NOT pushed" in combined
     assert "data/symbol_directory" not in _git_output(bare, "show", "--stat", "main")
+
+
+@pytest.mark.parametrize("kind,attempt,period,lo,hi", [
+    ("contention", 1, 6, 2, 7), ("rebase-conflict", 1, 9, 4, 12),
+    ("contention", 3, 12, 5, 16), ("rebase-conflict", 3, 25, 12, 36),
+    ("contention", 5, 18, 8, 25), ("rebase-conflict", 5, 41, 20, 60),
+    ("contention", 8, 21, 10, 30), ("rebase-conflict", 8, 61, 30, 90),
+])
+def test_complete_jitter_cycle_covers_policy_support(kind, attempt, period, lo, hi):
+    assert "_backoff_complete_jitter_cycle" in globals(), "exact jitter-domain proof is absent"
+    samples = _backoff_complete_jitter_cycle(kind, attempt, period)
+    assert samples == list(range(lo, hi + 1))
+    assert len(samples) == period
+
+
+def test_complete_jitter_cycle_is_reproducible_without_disabling_runtime_jitter():
+    assert "_backoff_complete_jitter_cycle" in globals(), "exact jitter-domain proof is absent"
+    first = _backoff_complete_jitter_cycle("contention", 1, 6)
+    assert first == _backoff_complete_jitter_cycle("contention", 1, 6)
+    assert len(set(first)) == 6
