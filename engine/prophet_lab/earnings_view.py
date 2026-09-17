@@ -32,6 +32,7 @@ COPY = {
 'scope':'Current event discovery and current registrant identity only. This is not a complete historical event set.',
 'authority':'All source and view authorities remain false. No ranking, sizing, entry change or order is produced.',
 'integrity':'The native D5 contract is checked. Hash consistency does not independently authenticate a supplied file.',
+'guidance_absent':'Guidance not supplied','absent_note':'The source marks guidance absent; retained bounds are not an active outlook.','guidance_withdrawn':'Guidance withdrawn','withdrawn_note':'The earlier numeric bounds remain in the receipt; they are not current guidance.',
 'guidance_status':'Guidance status','missing_bound':'not supplied','million_usd':'USD million',
 'COVERED':'Evidence supplied','PARTIAL':'Partial evidence','NOT_COVERED':'Not covered','UNKNOWN':'Unknown',
 'introduced':'introduced','reiterated':'reiterated','raised':'raised','cut_status':'cut','withdrawn':'withdrawn','absent':'absent'},
@@ -59,6 +60,7 @@ COPY = {
 'scope':'仅发现当前事件并匹配当前注册主体，不代表完整的历史事件集合。',
 'authority':'来源与视图的所有权限均保持关闭：不排名、不定仓、不改变开仓状态，也不生成订单。',
 'integrity':'已执行原有 D5 数据规范检查；哈希一致本身不能证明外部文件的真实性。',
+'guidance_absent':'未提供指引','absent_note':'来源将指引标记为缺失；保留的范围不代表有效预期。','guidance_withdrawn':'指引已撤回','withdrawn_note':'历史数值范围保留在来源记录中，不代表当前指引。',
 'guidance_status':'指引状态','missing_bound':'未提供','million_usd':'百万美元',
 'COVERED':'已提供证据','PARTIAL':'部分证据','NOT_COVERED':'未覆盖','UNKNOWN':'未知',
 'introduced':'首次发布','reiterated':'维持','raised':'上调','cut_status':'下调','withdrawn':'撤回','absent':'缺失'}
@@ -96,6 +98,7 @@ def build_earnings_view(vector, *, language='en'):
             'availability':deepcopy(source['decision_cut']['tradable_at']),'hold':{'state':'NOT_SUPPLIED','horizon_role':'hold_thesis'}}
     for key in ['coverage','rights','freshness','identity_state','point_in_time','correction','source_refs','owner_lane_dispositions','owner_warnings']:
         result[key]=deepcopy(family[key])
+    result['presentation'] = _presentation(result, text)
     return result
 
 # Exact DS V1 section 2.2 fallback scales where shared spacing/radius tokens
@@ -125,13 +128,50 @@ html[data-theme="light"] .plab-evidence .pe-card{box-shadow:var(--card-shadow);b
 def _h(value): return escape(str(value),quote=True)
 def _num(value,text): return text['missing_bound'] if value is None else format(value,',.6f').rstrip('0').rstrip('.')
 
+def _presentation(view, text):
+    """One source of wording and number formatting for both native consumers."""
+    for metric in view['metrics']:
+        value = metric['value']
+        if isinstance(value, dict):
+            display = f"{_num(value['low'], text)} – {_num(value['high'], text)}%"
+        elif metric['units'] == 'USD':
+            display = '$' + _num(value, text)
+        else:
+            display = _num(value, text) + ' ' + text['million_usd']
+        metric['display_value'] = display
+        status = metric['guidance_status']
+        metric['guidance_status_label'] = text['cut_status' if status == 'cut' else status] if status else None
+        if status in {'withdrawn', 'absent'}:
+            metric['display_value'] = text['guidance_' + status]
+            metric['note'] = text[status + '_note']
+    correction = view['correction']
+    correction_note = (text['corrected'] if correction['current_state'] == 'CORRECTED'
+                       else text['later_unknown'] if correction['later_revision_state'] == 'OBSERVED_UNPROJECTABLE'
+                       else text['no_correction'])
+    comparisons = []
+    if view['comparison']:
+        for key in ['prior', 'consensus']:
+            note = text['unlicensed'] if view['comparison'][key].get('reason') == 'consensus_unlicensed' else text['unavailable']
+            comparisons.append({'label': text[key], 'note': note})
+    return {
+        'title': text['title'], 'subtitle': text['subtitle'], 'cut_label': text['cut'],
+        'coverage_label': text.get(view['coverage']['state'], text['UNKNOWN']),
+        'guidance_status_label': text['guidance_status'],
+        'comparison_title': text['comparison'], 'comparisons': comparisons, 'no_comparison': text['no_delta'],
+        'separate_title': text['separate'],
+        'separate': [{'label': text[k], 'note': text[k + '_note']} for k in ['expectations', 'entry', 'hold']],
+        'correction_title': text['corrections'], 'correction_note': correction_note,
+        'lineage_title': text['lineage'], 'scope_title': text['scope_title'],
+        'scope_notes': [text[k] for k in ['freshness', 'scope', 'authority', 'integrity']],
+        'empty_title': text['empty'], 'empty_note': text['empty_note'],
+    }
+
+
 def render_earnings_fragment(vector, *, language='en'):
     v=build_earnings_view(vector,language=language); t=COPY[language]; cards=[]
     for m in v['metrics']:
-        value=m['value']
-        if isinstance(value,dict): display=f"{_num(value['low'],t)} – {_num(value['high'],t)}%"
-        else: display=('$'+_num(value,t)) if m['units']=='USD' else (_num(value,t)+' '+t['million_usd'])
-        status=m['guidance_status']; label=t['cut_status' if status=='cut' else status] if status else ''
+        display=m['display_value']
+        status=m['guidance_status']; label=m['guidance_status_label'] or ''
         status_html=f"<p class='pe-muted'>{_h(t['guidance_status'])}: {_h(label)}</p>" if status else ''
         cards.append(f"<section class='pe-card'><div class='pe-label'>{_h(m['label'])}</div><p class='pe-value'>{_h(display)}</p>{status_html}<p class='pe-muted'>{_h(m['note'])}</p></section>")
     metrics='<div class="pe-grid">'+''.join(cards)+'</div>' if cards else f"<section class='pe-card'><h3>{_h(t['empty'])}</h3><p>{_h(t['empty_note'])}</p></section>"
@@ -144,7 +184,7 @@ def render_earnings_fragment(vector, *, language='en'):
     separate=''.join(f"<div class='pe-row'><strong>{_h(t[k])}</strong><span>{_h(t[k+'_note'])}</span></div>" for k in ['expectations','entry','hold'])
     correction=v['correction']
     correction_text=t['corrected'] if correction['current_state']=='CORRECTED' else t['later_unknown'] if correction['later_revision_state']=='OBSERVED_UNPROJECTABLE' else t['no_correction']
-    keys=['source_projection_id','episode_ref','decision_cut','coverage','rights','freshness','point_in_time','correction','source_refs','owner_lane_dispositions','owner_warnings','assembly_receipt','authority']
+    keys=['metrics','source_projection_id','episode_ref','decision_cut','coverage','rights','freshness','point_in_time','correction','source_refs','owner_lane_dispositions','owner_warnings','assembly_receipt','authority']
     receipt=_h(json.dumps({k:v[k] for k in keys},ensure_ascii=False,indent=2,allow_nan=False))
     badge=t.get(v['coverage']['state'],t['UNKNOWN'])
     return (f'<style>{STYLE}</style><article class="plab-evidence" lang="{language}" data-source-projection="{_h(v["source_projection_id"])}">'

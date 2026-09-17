@@ -429,3 +429,65 @@ def test_episode_view_invalid_generation_pin_refuses_before_read(client, monkeyp
     assert response.status_code == 400
     private(response)
     assert reads == []
+
+
+def test_native_presentation_is_shared_without_changing_source_facts():
+    payload=_build_d5(); before=deepcopy(payload)
+    view=view_module().build_earnings_view(payload)
+    assert view['metrics'][0]['display_value']=='$109,417,000,000'
+    assert view['metrics'][1]['display_value']=='9 – 11%'
+    assert view['presentation']['title']=='Earnings evidence'
+    assert 'Not connected' in view['presentation']['separate'][0]['note']
+    assert payload==before and not any(view['authority'].values())
+
+@pytest.mark.parametrize('language',['en','zh'])
+def test_shared_presentation_keeps_decision_time_values_after_correction(language):
+    payload=corrected_payload();view=view_module().build_earnings_view(payload,language=language)
+    assert view['metrics'][0]['display_value']=='$109,417,000,000'
+    assert view['presentation']['correction_note'] in view_module().render_earnings_fragment(payload,language=language)
+    assert view['presentation']['comparisons'][1]['note']
+
+@pytest.mark.parametrize('language',['en','zh'])
+def test_withdrawn_guidance_is_not_presented_as_current_growth_range(language):
+    workspace=_d5_workspace();workspace['guidance'][0]['status']='withdrawn'
+    payload=_build_d5(read_revisions=lambda _: _d5_revisions(workspace=workspace))
+    view=view_module().build_earnings_view(payload,language=language)
+    metric=next(m for m in view['metrics'] if m['native_metric_id']=='guidance:revenue_yoy_pct')
+    assert metric['value']=={'low':9.0,'high':11.0}
+    assert metric['display_value']==('Guidance withdrawn' if language=='en' else '指引已撤回')
+    html=view_module().render_earnings_fragment(payload,language=language)
+    assert '9 – 11%' not in html
+
+
+@pytest.mark.parametrize('status',['introduced','reiterated','raised','cut'])
+@pytest.mark.parametrize('language',['en','zh'])
+def test_nonwithdrawn_guidance_keeps_original_numeric_display(status,language):
+    workspace=_d5_workspace();workspace['guidance'][0]['status']=status
+    payload=_build_d5(read_revisions=lambda _: _d5_revisions(workspace=workspace))
+    before=deepcopy(payload);view=view_module().build_earnings_view(payload,language=language)
+    metric=next(m for m in view['metrics'] if m['native_metric_id']=='guidance:revenue_yoy_pct')
+    assert metric['display_value']=='9 – 11%'
+    assert metric['value']=={'low':9.0,'high':11.0}
+    assert metric['guidance_status_label']
+    assert payload==before and not any(view['authority'].values())
+
+
+def test_withdrawn_guidance_keeps_old_bounds_in_receipt_not_headline():
+    workspace=_d5_workspace();workspace['guidance'][0]['status']='withdrawn'
+    payload=_build_d5(read_revisions=lambda _: _d5_revisions(workspace=workspace))
+    before=deepcopy(payload);html=view_module().render_earnings_fragment(payload)
+    assert 'Guidance withdrawn' in html
+    before_receipt,receipt=html.split('<pre>',1)
+    assert '9 – 11%' not in before_receipt
+    assert '&quot;low&quot;: 9.0' in receipt and '&quot;high&quot;: 11.0' in receipt
+    assert payload==before
+
+@pytest.mark.parametrize('language',['en','zh'])
+def test_absent_guidance_never_becomes_an_active_numeric_outlook(language):
+    workspace=_d5_workspace();workspace['guidance'][0]['status']='absent'
+    payload=_build_d5(read_revisions=lambda _: _d5_revisions(workspace=workspace))
+    view=view_module().build_earnings_view(payload,language=language)
+    metric=next(m for m in view['metrics'] if m['native_metric_id']=='guidance:revenue_yoy_pct')
+    assert metric['display_value']==('Guidance not supplied' if language=='en' else '未提供指引')
+    assert metric['value']=={'low':9.0,'high':11.0}
+    assert '9 – 11%' not in view_module().render_earnings_fragment(payload,language=language)
