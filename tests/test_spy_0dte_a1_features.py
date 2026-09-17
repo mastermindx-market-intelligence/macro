@@ -11,8 +11,10 @@ DATE = "2025-07-01"
 
 def payload(
     prices=None,
-    iv_open=0.30,
-    iv_decision=0.25,
+    put_iv_open=.30,
+    call_iv_open=.32,
+    put_iv_decision=.24,
+    call_iv_decision=.26,
     iv_error=0.0,
     decision="09:45:00.000",
 ):
@@ -21,45 +23,39 @@ def payload(
         for i in range(31):
             h = 9 + (30 + i) // 60
             m = (30 + i) % 60
-            prices[f"{h:02d}:{m:02d}:00.000"] = 100 + i * 0.1
-    rows = []
-    for clock, px in prices.items():
-        iv = 0.2
-        if clock == "09:30:00.000":
-            iv = iv_open
-        if clock == decision:
-            iv = iv_decision
-        rows.append(
-            {
+            prices[f"{h:02d}:{m:02d}:00.000"] = 600 + i * .01
+
+    def rows_for(right):
+        rows = []
+        for clock, px in prices.items():
+            iv = .20 if right == "PUT" else .22
+            if clock == "09:30:00.000":
+                iv = put_iv_open if right == "PUT" else call_iv_open
+            if clock == decision:
+                iv = put_iv_decision if right == "PUT" else call_iv_decision
+            rows.append({
                 "timestamp": DATE + "T" + clock,
                 "underlying_timestamp": DATE + "T" + clock,
                 "underlying_price": px,
                 "implied_vol": iv,
                 "iv_error": iv_error,
-            }
-        )
-    return {
-        "response": [
-            {
-                "contract": {
-                    "symbol": "SPY",
-                    "expiration": DATE,
-                    "strike": 600.0,
-                    "right": "PUT",
-                },
-                "data": rows,
-            },
-            {
-                "contract": {
-                    "symbol": "SPY",
-                    "expiration": DATE,
-                    "strike": 602.0,
-                    "right": "CALL",
-                },
-                "data": [dict(row) for row in rows],
-            },
-        ]
-    }
+            })
+        return rows
+
+    return {"response": [
+        {
+            "contract": {"symbol": "SPY", "expiration": DATE, "strike": 600.0, "right": "PUT"},
+            "data": rows_for("PUT"),
+        },
+        {
+            "contract": {"symbol": "SPY", "expiration": DATE, "strike": 600.0, "right": "CALL"},
+            "data": rows_for("CALL"),
+        },
+        {
+            "contract": {"symbol": "SPY", "expiration": DATE, "strike": 602.0, "right": "CALL"},
+            "data": [dict(row, implied_vol=.80) for row in rows_for("CALL")],
+        },
+    ]}
 
 
 def fixture():
@@ -71,8 +67,6 @@ def build(p, clock="09:45:00.000"):
         session_date=DATE,
         decision_clock=clock,
         greeks_payload=p,
-        short_right="P",
-        short_strike=600,
         event_fixture=fixture(),
     )
 
@@ -87,8 +81,8 @@ def test_0935_cannot_see_15m_or_30m():
 
 def test_0945_sees_first_5_and_15_but_not_30():
     features = build(payload(decision="09:45:00.000"))
-    assert math.isclose(features["first_5m_return"], 100.5 / 100 - 1)
-    assert math.isclose(features["first_15m_return"], 101.5 / 100 - 1)
+    assert math.isclose(features["first_5m_return"], 600.05 / 600 - 1)
+    assert math.isclose(features["first_15m_return"], 600.15 / 600 - 1)
     assert features["first_30m_return"] is None
     assert features["realized_vol_open_to_decision"] is not None
 
@@ -106,19 +100,30 @@ def test_realized_vol_nulls_if_any_required_minute_missing():
         m = (30 + i) % 60
         if i == 7:
             continue
-        prices[f"{h:02d}:{m:02d}:00.000"] = 100 + i * 0.1
+        prices[f"{h:02d}:{m:02d}:00.000"] = 600 + i * .01
     features = build(payload(prices=prices, decision="09:45:00.000"))
     assert features["first_15m_return"] is not None
     assert features["realized_vol_open_to_decision"] is None
 
 
-def test_exact_short_iv_and_bad_iv_fail_closed_to_null():
-    features = build(payload(iv_open=0.30, iv_decision=0.25))
-    assert features["short_iv_level"] == 0.25
-    assert math.isclose(features["short_iv_change_from_open"], -0.05)
-    bad = build(payload(iv_error=100.0))
-    assert bad["short_iv_level"] is None
-    assert bad["short_iv_change_from_open"] is None
+def test_atm_iv_averages_call_put_and_uses_first_valid_anchor():
+    features = build(payload(
+        put_iv_open=.30,
+        call_iv_open=.32,
+        put_iv_decision=.24,
+        call_iv_decision=.26,
+        decision="09:45:00.000",
+    ))
+    assert math.isclose(features["atm_iv_level"], .25)
+    assert math.isclose(features["atm_iv_change_from_first_valid"], -.06)
+    assert features["atm_iv_anchor_minutes_from_open"] == 0
+
+
+def test_bad_iv_fails_closed_to_null():
+    bad = build(payload(iv_error=100.0, decision="09:45:00.000"))
+    assert bad["atm_iv_level"] is None
+    assert bad["atm_iv_change_from_first_valid"] is None
+    assert bad["atm_iv_anchor_minutes_from_open"] is None
 
 
 def test_future_underlying_timestamp_refuses():
@@ -134,7 +139,7 @@ def test_future_underlying_timestamp_refuses():
 
 def test_cross_contract_underlying_disagreement_refuses():
     p = payload(decision="09:35:00.000")
-    p["response"][1]["data"][0]["underlying_price"] += 0.01
+    p["response"][1]["data"][0]["underlying_price"] += .01
     try:
         f.collapse_underlying_prices(p, DATE)
     except f.FeatureError as exc:
