@@ -233,3 +233,23 @@ def test_audit_day_reuses_entry_snapshot_for_coverage_and_candidates(monkeypatch
     assert out["entry_error"] is None
     assert out["candidate_paths"] == []
     assert out["entry_coverage"]["09:35:00.000"] == clock_state
+
+
+def test_minute_presence_receipt_does_not_advertise_tick_grid(monkeypatch):
+    monkeypatch.setattr(coverage.entry, "_list_dates", lambda *args: ([], []))
+    out = coverage.run_live(
+        "http://127.0.0.1:25503/v3", 1, 1,
+        "2023-01-03", "2023-01-03", "minute_presence",
+    )
+    assert out["mode"] == "minute_presence"
+    assert out["interval"] == "1m"
+    assert out["synchrony_grid_seconds"] == []
+
+
+def test_tick_receipt_advertises_only_frozen_synchrony_grid(monkeypatch):
+    monkeypatch.setattr(coverage.entry, "_list_dates", lambda *args: ([], []))
+    out = coverage.run_live(
+        "http://127.0.0.1:25503/v3", 1, 1,
+        "2023-01-03", "2023-01-03", "tick_synchrony",
+    )
+    assert out["synchrony_grid_seconds"] == ["0.1", "1", "5", "10"]

@@ -481,7 +481,10 @@ def run_live(
         "status": "coverage_only_no_economic_values",
         "mode": mode,
         "interval": "tick" if mode == "tick_synchrony" else "1m",
-        "synchrony_grid_seconds": [str(v) for v in replay.SYNCHRONY_GRID_SECONDS],
+        "synchrony_grid_seconds": (
+            [str(v) for v in replay.SYNCHRONY_GRID_SECONDS]
+            if mode == "tick_synchrony" else []
+        ),
         "start_date": start_date,
         "end_date": end_date,
         "rows": rows,
