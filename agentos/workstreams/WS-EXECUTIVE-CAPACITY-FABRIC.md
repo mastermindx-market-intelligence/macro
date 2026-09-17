@@ -7,7 +7,7 @@ objective: >
   native quota/cooling truth, choose among already-eligible workers deterministically, prefer
   subscription/local capacity where policy permits, preserve frontier reserves, and continue
   safely across quota exhaustion without creating duplicate execution or another lifecycle plane.
-status: active
+status: awaiting_review
 program: shared-ai-provider-control
 p0: EXECUTIVE_OS
 repos: [macro, mastermind]
@@ -300,47 +300,30 @@ do_not_redo:
   - "Never re-run the packet05 verifier without a NEW material source-continuity edge. The packet05 grant (Sol edge 1789565866, Mastermind #699) is SPENT and its ONE granted run returned `VERDICT: REFUSAL REMOTE_PROOF_CHANGED`, a repo-wide quiescence guard over every open PR and NOT a verdict on packet05's source; the seat-owned p05-verify-… worktree stays INERT/UNCHANGED — do not remove it without Sol. CORRECTED 2026-09-16: `OUT_OF_SCOPE_DIRT` and grant edge 1789588151 belong to the separate Mastermind #677 one-shot, not to packet05."
 next_action: >
   Fable principal integration, operation agent-fabric-end-to-end-fable-integration-20260913-sol-001.
-  Protected Mastermind master is 4537f066775c73d305f82acf0643701f01f5e53c, read 2026-09-16T22:55:39Z
-  (`gh api repos/mastermindx-market-intelligence/Mastermind/branches/master --jq .commit.sha`),
-  replacing the 7642aea155d2817219135b24246b55c1d7611c66 pin this record inherited. It moved twice more
-  during this session: the verified order is 0fe8074f -> 8ba7deed -> bf843961 -> e8803ba3 -> 5ee11ab1 ->
-  4537f066, each step measured by compare (see §8 of the handoff). Earlier pins in this record are
-  timestamped where they were read and every "ancestor of <older pin>" measurement still holds against
-  4537f066 by transitivity. Current carrier state is in
-  agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-16-POST-7181-FOLD.md. Principal critical path is
-  W1-H3 (Mastermind #677, OPEN/DRAFT on the SAME child/worktree/writer; head is now
-  6dc2ea83bc738c2532745ef71dcde6c170c58d91 after the R80 four-path repair — SUPERSEDING the
-  09e53b30092400c501a508992bf942474d70d830 head and its 20:4xZ CHANGES_REQUESTED reading, both of which
-  are historical. Seat REPAIR_RETURN at root ts 1789598965.415869: R14 APPROVE / BLOCKING 0, hosted
-  `test` success (run 35156879220), canonical remote-complete receipt_digest
-  45525cd549f57646e679a04c7fbb69fb79b5955444df92db850a8cec63200530 on the third invocation, HOLD-FOR-SOL
-  and awaiting Sol's ruling. Sol accepted the
-  R48/R50/R68/R76 semantic closure at the OLD head 09e53b30, NOT at the current 6dc2ea83 (root ts 1789588151), but **R80 (ts 1789590510.060009,
-  durable contract comment 5704046553) is a REQUEST_REPAIR, not an acceptance** — disposition verbatim
-  `REQUEST_REPAIR / SAME CHILD+BRANCH+WRITER / EXACT FOUR-PATH CEILING / H4 NOT_STARTED` over
-  ops/executive_os/autonomy_control.py, tests/test_executive_autonomy_control.py,
-  scripts/executive_os_phase1c_control_wrapper.py and tests/test_executive_launchd_config.py. The
-  old-head `remote-complete` grant was WITHDRAWN BEFORE ACCEPTANCE; both typed results produced against
-  09e53b30 — the `OUT_OF_SCOPE_DIRT` refusal and the later `REMOTE_COMPLETE_VERIFIED`
-  (receipt_digest 3edb2976…, root ts 1789591021.847339) — are HISTORICAL EVIDENCE ONLY per Sol R81 and
-  release nothing. The no-retry rule is scoped to the OLD head 09e53b30 ONLY; R80 requires the canonical
-  remote-complete verifier on the NEW head, which is DONE at 6dc2ea83 — receipt_digest 45525cd5…, verified 22:44:58Z) and H0 prestage attempt 2 on the existing runner. Before
-  sizing, routing, promising or reporting native Anthropic Fable/Opus capacity anywhere in this fabric,
-  read DSC:CLAUDE-SUBSCRIPTION-HARNESS-IS-NOT-NATIVE-ANTHROPIC and re-run its four falsifier commands
-  at the then-current protected master: the merged Claude subscription worker is a compatible-provider
-  harness, the native path is PF1's and is NOT BUILT. Wave 1 ACP/HF1-B carriers #575/#579/#576 and
-  HF1-C/HF1-D carriers #578/#581/#583 and the provider-fabric carrier #577 have merged on the protected
-  master as it stood at bf843961 (and therefore on its descendants e8803ba3 / 5ee11ab1 / 4537f066)
-  — ALL SEVEN Wave 1 carriers, see the corrected "Wave 1 open carriers" table below (all seven
-  merge commits are
-  ancestors of it) — see the HF1 umbrella wave `next_action` for the per-PR sentences; merged is not
-  proven for any of them. Re-read every head before acting on it. Accepted Macro CF1 remains
-  dcdd939c45b23abce5ba04f95e330ac914a3904b. Any native H0 build or root action still belongs to the
-  CF2-H0 wave: re-pin CURRENT protected Mastermind, keep the immutable repair release
-  229aebce5e8d0c1c7372f5fead9c24516b027cc1, and require repair ancestry plus exact mode/blob equality
-  for all five authenticated H0 paths before treating a pin as CARRIER_COMMIT_SHA. OCR-1 Task 4 and
-  OCR-3 Task 1 may proceed separately on their own lawful carriers; OCR-2C Family B remains a separate
-  architecture gate.
+  Protected Mastermind master is e878878c9a4ae2dd50a48d825e031e07e8211708, read 2026-09-17 with
+  `git ls-remote https://github.com/mastermindx-market-intelligence/Mastermind refs/heads/master`, and
+  measured from the previous pin with
+  `gh api repos/mastermindx-market-intelligence/Mastermind/compare/4537f066775c73d305f82acf0643701f01f5e53c...e878878c9a4ae2dd50a48d825e031e07e8211708`
+  -> status ahead, ahead_by 11, behind_by 0; it replaces the 4537f066775c73d305f82acf0643701f01f5e53c pin
+  the 2026-09-16 fold left. CURRENT ACT at this 2026-09-17 wave boundary: consume Sol's ruling on the
+  Mastermind #758 RESULT/HOLD, and on Sol's maintenance-only merge of Mastermind #757 run the staged
+  post-fix install ceremony on the new protected SHA as a separately reported effect. Nothing else is
+  released. Two Sol-adjudicated source children terminated today and their durable facts are now folded as
+  DEC:SYMLINK-ACL-OBSERVATION-IS-MANIFEST-ONLY-OPT-IN,
+  DEC:READER-FENCE-EXCEPTION-IS-AN-EXACT-IMPORTER-MODULE-MAP,
+  DSC:INSTALLER-MANIFEST-REFUSES-TRACKED-SYMLINKS-SINCE-583 and
+  DSC:FULL-MASTERMIND-GATE-CANNOT-RUN-INSIDE-A-KIT-LANE, with current state and receipts in
+  agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-17.md. The installer lane is BLOCKED at its source
+  gate: no Executive OS release containing `vendor/macro` passes manifest CREATE until #757 lands, so the
+  installed control/relay stay on the healthy release 4c148709 (AWAITING_CANARY, armed=false) and must NOT
+  be restarted; Gate B and the arm step still wait on the Chairman-owned CREDENTIAL_EXPIRES_AT. Per-carrier
+  detail that this update does not restate — the W1-H3 #677 R80/R14 chain, the Wave 1 merged-carrier table,
+  the CF2-H0 carrier-proof rules and the OCR-2C family state — stays in
+  agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-16-POST-7181-FOLD.md, in this record's body, and in
+  each wave's own next_action entry. Before sizing, routing, promising or reporting native Anthropic
+  Fable/Opus capacity anywhere in this fabric, read DSC:CLAUDE-SUBSCRIPTION-HARNESS-IS-NOT-NATIVE-ANTHROPIC
+  and re-run its four falsifier commands at the then-current protected master: the merged Claude
+  subscription worker is a compatible-provider harness, the native path is PF1's and is NOT BUILT.
 ---
 
 ## Capability state
