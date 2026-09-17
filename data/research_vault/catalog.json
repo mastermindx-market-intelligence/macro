@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T22:21:29.792132+00:00",
-  "count": 2319,
+  "generated_at": "2026-09-17T22:51:28.084885+00:00",
+  "count": 2320,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -163,6 +163,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rtdnhbohi41-410b5d",
+      "title": "Asia Pacific Portfolio Strategy Asian equity market daily update",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:39:16Z",
+      "summary_points": [
+        "Valuation Disparity: Taiwan (iPE 18.1) and India (iPE 19.4) show elevated valuations vs.",
+        "Hong Kong (iPB 1.2) and MXCN (iPB 1.3), with GS targeting 29% MXAPJ upside—signaling overvaluation in high-iPE markets amid potential capital reallocation to low-iPB regions.",
+        "FII Outflows vs.",
+        "DII Inflows: FII outflows dominate EM Asia ex-China (e.g., Taiwan: -42.8B USD YTD 2025), while DII inflows surge (Asia total: +121.3B USD YTD 2025), creating divergence and signaling market resilience despite foreign capital withdrawal.",
+        "Korea Concentration Risk: Korea (21% MXAPJ weight) drives 74% of MXAPJ’s Info Tech exposure (+145% YTD), amplifying volatility from tech policy shifts; MXAPJ’s high correlation with Korea (75%) and China A (60%) magnifies regional shock vulnerability."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
       "language": "en",
       "needs_metadata": false
     },
