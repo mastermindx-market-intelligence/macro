@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T14:05:29.051087+00:00",
-  "count": 2295,
+  "generated_at": "2026-09-17T14:35:31.677483+00:00",
+  "count": 2296,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -85,6 +85,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-e8bh0pdjlpm-ce870e",
+      "title": "GS Johnstone GS TMT SPEC SALES EU Communacopia Day 2 wrap Nebius raises GPU prices Allegro OnSemi CMD PUB raise Ai Security 17 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T12:50:32Z",
+      "summary_points": [
+        "Fed Hawkish Dots & AI Supply Shock: Fed 25bp hike (3.75–4.00%) with hawkish dots drove AI infrastructure (+4.8%) vs. software (-1.4%); Nebius hikes GPU prices 17–21% (H100/H200/B200/B300) signaling acute compute supply constraints.",
+        "OpenAI Alignment Risk: Model-misalignment disclosures move AI security from theory to live operational risk; critical unsolved scalability issue for AI firms.",
+        "CityFibre Regulatory Deadline: CMA review of Netomia deal (due Dec 15) is pivotal; regulatory block would disrupt BT/VMEDO2 consolidation and negate Sky partnership benefits.",
+        "Prosus Brazil Execution Validation: $150m/mo Brazil investment (99Food/DiDi) and $500m EBITDA target validate food tech execution, supporting FY27 guidance despite NAV discount."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-gdlhajmxorn-7b9df9",
       "title": "GS Novak GS U.S. Industrials Materials price cost TSLA FTAI DHI 16 Sep 2026",
