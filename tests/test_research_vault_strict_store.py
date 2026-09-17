@@ -2620,3 +2620,38 @@ def test_research_intelligence_cli_rejects_nonfinite_json_before_io(tmp_path):
     assert result.returncode == 2
     assert json.loads(result.stderr)["code"] == "analysis_input_invalid"
     assert list(store_dir.rglob("*.json")) == []
+
+
+def test_research_intelligence_cli_rejects_invalid_input_before_store_construction(
+    tmp_path, monkeypatch, capsys
+):
+    import scripts.research_intelligence_store as cli
+
+    analysis_path = tmp_path / "analysis.json"
+    body_path = tmp_path / "report.md"
+    raw = json.dumps(_analysis(), ensure_ascii=False)
+    analysis_path.write_text(raw[:-1] + ',"state":"ok"}', encoding="utf-8")
+    body_path.write_text(BODY, encoding="utf-8")
+    store_calls = []
+
+    def forbidden_store(*_args, **_kwargs):
+        store_calls.append(True)
+        raise AssertionError("invalid input must fail before store construction")
+
+    monkeypatch.setattr(cli, "build_store", forbidden_store)
+    result = cli.main(
+        [
+            "--local",
+            str(tmp_path / "store"),
+            "put",
+            "--analysis",
+            str(analysis_path),
+            "--source-body",
+            str(body_path),
+        ]
+    )
+
+    assert result == 2
+    assert store_calls == []
+    assert json.loads(capsys.readouterr().err)["code"] == "analysis_input_invalid"
+    assert not (tmp_path / "store").exists()

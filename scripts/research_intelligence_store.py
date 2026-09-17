@@ -157,11 +157,17 @@ def _load_source_body(path_text: str) -> str:
         ) from exc
 
 
-def _put(args: argparse.Namespace, store: StrictConditionalWriteStore) -> int:
+def _put(
+    args: argparse.Namespace,
+    store: StrictConditionalWriteStore,
+    *,
+    analysis: dict[str, Any],
+    source_body: str,
+) -> int:
     receipt = persist_analysis(
         store,
-        _load_json_object(args.analysis),
-        source_body=_load_source_body(args.source_body),
+        analysis,
+        source_body=source_body,
         expected_current_artifact_sha256=args.expected_current_artifact_sha256,
     )
     _emit(receipt.to_dict())
@@ -213,9 +219,17 @@ def _show(args: argparse.Namespace, store: StrictConditionalWriteStore) -> int:
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     try:
-        store = _active_store(args.local)
         if args.command == "put":
-            return _put(args, store)
+            analysis = _load_json_object(args.analysis)
+            source_body = _load_source_body(args.source_body)
+            store = _active_store(args.local)
+            return _put(
+                args,
+                store,
+                analysis=analysis,
+                source_body=source_body,
+            )
+        store = _active_store(args.local)
         return _show(args, store)
     except ResearchIntelligenceStoreError as exc:
         _emit(
