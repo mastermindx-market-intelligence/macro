@@ -1,80 +1,80 @@
 {
   "schema": "index_leadership.track_record.v1",
-  "as_of": "2026-09-11",
-  "generated_at": "2026-09-16T06:57:49.126193+00:00",
+  "as_of": "2026-09-15",
+  "generated_at": "2026-09-17T07:07:13.590336+00:00",
   "is_context_only": true,
-  "n_snapshots": 714,
-  "n_days": 25,
+  "n_snapshots": 752,
+  "n_days": 26,
   "horizons": {
     "5": {
-      "n_matured": 616,
+      "n_matured": 686,
       "by_stage": {
         "running": {
-          "n": 544,
-          "mean_fwd_rel": -0.0048,
-          "hit_rate": 0.452
+          "n": 613,
+          "mean_fwd_rel": -0.0057,
+          "hit_rate": 0.44
         },
         "coiling": {
-          "n": 35,
-          "mean_fwd_rel": -0.0005,
-          "hit_rate": 0.514
+          "n": 36,
+          "mean_fwd_rel": -0.001,
+          "hit_rate": 0.5
         },
         "coiling_primed": {
           "n": 37,
-          "mean_fwd_rel": 0.0115,
+          "mean_fwd_rel": 0.0119,
           "hit_rate": 0.595
         }
       },
-      "running_ic": -0.0471,
-      "running_ic_t_hac": -0.501,
+      "running_ic": -0.0637,
+      "running_ic_t_hac": -0.745,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "10": {
-      "n_matured": 549,
+      "n_matured": 616,
       "by_stage": {
         "running": {
-          "n": 484,
-          "mean_fwd_rel": -0.0078,
-          "hit_rate": 0.43
+          "n": 544,
+          "mean_fwd_rel": -0.0084,
+          "hit_rate": 0.415
         },
         "coiling": {
-          "n": 33,
-          "mean_fwd_rel": -0.0026,
-          "hit_rate": 0.455
+          "n": 35,
+          "mean_fwd_rel": -0.0054,
+          "hit_rate": 0.429
         },
         "coiling_primed": {
-          "n": 32,
-          "mean_fwd_rel": 0.0232,
-          "hit_rate": 0.562
+          "n": 37,
+          "mean_fwd_rel": 0.0163,
+          "hit_rate": 0.514
         }
       },
-      "running_ic": -0.0907,
-      "running_ic_t_hac": -0.967,
+      "running_ic": -0.0731,
+      "running_ic_t_hac": -0.981,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "21": {
-      "n_matured": 409,
+      "n_matured": 468,
       "by_stage": {
         "running": {
-          "n": 363,
-          "mean_fwd_rel": -0.0109,
-          "hit_rate": 0.438
+          "n": 413,
+          "mean_fwd_rel": -0.0157,
+          "hit_rate": 0.392
         },
         "coiling": {
-          "n": 20,
-          "mean_fwd_rel": -0.0092,
-          "hit_rate": 0.5
+          "n": 26,
+          "mean_fwd_rel": -0.0118,
+          "hit_rate": 0.423
         },
         "coiling_primed": {
-          "n": 26,
-          "mean_fwd_rel": 0.035,
-          "hit_rate": 0.692
+          "n": 29,
+          "mean_fwd_rel": 0.0311,
+          "hit_rate": 0.69
         }
       },
-      "running_ic": 0.0185,
-      "running_ic_t_hac": 0.184,
+      "running_ic": -0.007,
+      "running_ic_t_hac": -0.099,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -83,12 +83,12 @@
       "by_stage": {
         "running": {
           "n": 26,
-          "mean_fwd_rel": -0.0465,
+          "mean_fwd_rel": -0.0463,
           "hit_rate": 0.346
         },
         "coiling": {
           "n": 7,
-          "mean_fwd_rel": -0.0826,
+          "mean_fwd_rel": -0.0806,
           "hit_rate": 0.286
         }
       },
@@ -111,67 +111,67 @@
   "note": "Accruing forward observations; no horizon clears the Newey-West significance bar yet. Early numbers are provisional, context-only.",
   "recent_misses": [
     {
-      "date": "2026-08-21",
-      "id": "russell:leisure",
-      "name": "Leisure",
-      "stage": "coiling_primed",
-      "fwd_rel": -0.1288,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-21",
+      "date": "2026-08-25",
       "id": "russell:other-industrial-metals-mining",
       "name": "Other Industrial Metals & Mining",
       "stage": "running",
-      "fwd_rel": -0.1081,
+      "fwd_rel": -0.1356,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-21",
-      "id": "russell:restaurants",
-      "name": "Restaurants",
+      "date": "2026-08-25",
+      "id": "russell:waste-management",
+      "name": "Waste Management",
       "stage": "running",
-      "fwd_rel": -0.1041,
+      "fwd_rel": -0.1274,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-21",
-      "id": "russell:real-estate-services",
-      "name": "Real Estate Services",
-      "stage": "running",
-      "fwd_rel": -0.1028,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-21",
-      "id": "subsectors:packaged-foods",
-      "name": "Packaged Foods",
-      "stage": "running",
-      "fwd_rel": -0.0783,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-21",
-      "id": "nasdaq:software-application",
-      "name": "Software - Application",
-      "stage": "running",
-      "fwd_rel": -0.0709,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-21",
-      "id": "nasdaq:specialty-business-services",
-      "name": "Specialty Business Services",
-      "stage": "running",
-      "fwd_rel": -0.0709,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-21",
+      "date": "2026-08-25",
       "id": "baskets:gold-miners",
       "name": "Gold Miners",
       "stage": "running",
-      "fwd_rel": -0.0673,
+      "fwd_rel": -0.1183,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-08-25",
+      "id": "russell:other-precious-metals-mining",
+      "name": "Other Precious Metals & Mining",
+      "stage": "running",
+      "fwd_rel": -0.1072,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-08-25",
+      "id": "russell:residential-construction",
+      "name": "Residential Construction",
+      "stage": "running",
+      "fwd_rel": -0.0927,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-08-25",
+      "id": "subsectors:restaurants",
+      "name": "Restaurants",
+      "stage": "running",
+      "fwd_rel": -0.0652,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-08-25",
+      "id": "subsectors:household-personal-products",
+      "name": "Household & Personal Products",
+      "stage": "running",
+      "fwd_rel": -0.0646,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-08-25",
+      "id": "subsectors:biotechnology",
+      "name": "Biotechnology",
+      "stage": "running",
+      "fwd_rel": -0.0576,
       "horizon_d": 21
     }
   ],

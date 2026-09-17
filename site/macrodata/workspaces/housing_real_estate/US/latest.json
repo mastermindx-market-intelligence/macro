@@ -152,7 +152,7 @@
         },
         "null_reason": null,
         "required": false,
-        "source_asof": "2026-07-31",
+        "source_asof": "2026-08-31",
         "status": "PRESENT"
       }
     ],
@@ -201,10 +201,13 @@
     "status": "PRESENT"
   },
   "corrections": {
-    "changed_fingerprints": [],
-    "correction_state": "none",
-    "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "housing_real_estate-US-7aa3d082cd434971"
+    "changed_fingerprints": [
+      "national_rent_zori_level:national_rent_zori_level:08e7c972ff293143",
+      "national_rent_zori_yoy:national_rent_zori_yoy:4464a253e2ba68d2"
+    ],
+    "correction_state": "superseded",
+    "note": "Same reference period as the predecessor print, but one or more owner-native metrics changed value: this print supersedes the prior one as a revision.",
+    "predecessor_generation_id": "housing_real_estate-US-4e30742fd59a0f60"
   },
   "drivers": {
     "balance_sheet": [
@@ -267,7 +270,7 @@
       {
         "coverage_state": "PRESENT",
         "driver_id": "national_rent_zori_yoy",
-        "impact_magnitude": 2.3121,
+        "impact_magnitude": 2.4845,
         "impact_sign": 1,
         "label": {
           "en": "National rent index YoY",
@@ -276,7 +279,7 @@
         "note": "bucket reuse: see housing_starts_yoy's note",
         "owner_field": "zori.national.zori",
         "unit": "percent",
-        "value": 2.3121
+        "value": 2.4845
       }
     ],
     "rate_side": [
@@ -311,11 +314,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-09-16T05:43:51Z",
+    "built_at": "2026-09-17T05:36:03Z",
     "calculation_as_of": "2026-09-10",
-    "code_version": "8110f934029c142571927f5214ac12e1fc242508",
-    "content_sha256": "4e30742fd59a0f609115545415c3ac16c00364d274d770ba029bd1a9f137cdc8",
-    "generation_id": "housing_real_estate-US-4e30742fd59a0f60",
+    "code_version": "100968c016a7d3e40b6adb3fee4eb4becb72f3d4",
+    "content_sha256": "0528b818317cd23b85a7812475ceb41bf76ad47edcd637513911f86aae5c3819",
+    "generation_id": "housing_real_estate-US-0528b818317cd23b",
     "producer": "engine.market_os.macro_workspaces.housing",
     "rendered_at": null
   },
@@ -473,8 +476,8 @@
         "horizon": "current",
         "implication_id": "rent_read",
         "text": {
-          "en": "The national ZORI rent index (Zillow) reads +2.3% year-over-year.",
-          "zh": "全国ZORI租金指数（Zillow）同比读数为+2.3%。"
+          "en": "The national ZORI rent index (Zillow) reads +2.5% year-over-year.",
+          "zh": "全国ZORI租金指数（Zillow）同比读数为+2.5%。"
         },
         "trace_ref": "data/zori/national.parquet"
       },
@@ -935,7 +938,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-07-31",
+        "calculation_as_of": "2026-08-31",
         "collected_at": null,
         "coverage": null,
         "definition_id": "zori.national.zori",
@@ -946,10 +949,10 @@
         "metric_id": "national_rent_zori_level",
         "model_version": "housing_real_estate.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-07-31",
+        "observed_at": "2026-08-31",
         "owner_ref": "data/zori/national.parquet",
         "reference_id": "mastermind.market_reference/v1#national_rent_zori_level",
-        "reference_period": "2026-07-31",
+        "reference_period": "2026-08-31",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -964,14 +967,14 @@
           "value": null
         },
         "unit": "usd_per_month",
-        "value": 1962.188013617572,
+        "value": 1947.9675371292133,
         "value_type": "number"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "yoy_pct_change",
-        "calculation_as_of": "2026-07-31",
+        "calculation_as_of": "2026-08-31",
         "collected_at": null,
         "coverage": null,
         "definition_id": "zori.national.zori",
@@ -982,10 +985,10 @@
         "metric_id": "national_rent_zori_yoy",
         "model_version": "housing_real_estate.compose.v1",
         "null_reason": "INSUFFICIENT_HISTORY",
-        "observed_at": "2026-07-31",
+        "observed_at": "2026-08-31",
         "owner_ref": "data/zori/national.parquet",
         "reference_id": "mastermind.market_reference/v1#national_rent_zori_yoy",
-        "reference_period": "2026-07-31",
+        "reference_period": "2026-08-31",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1000,7 +1003,7 @@
           "value": null
         },
         "unit": "percent",
-        "value": 2.3121,
+        "value": 2.4845,
         "value_type": "percent"
       },
       {
@@ -2153,7 +2156,7 @@
         },
         "owner_ref": "scripts.collect_zori",
         "provider": "Zillow Research",
-        "reference_period": "2026-07-31",
+        "reference_period": "2026-08-31",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
