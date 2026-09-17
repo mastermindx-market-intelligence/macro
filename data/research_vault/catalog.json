@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T12:50:18.148012+00:00",
-  "count": 2291,
+  "generated_at": "2026-09-17T13:05:20.133601+00:00",
+  "count": 2292,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -85,6 +85,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-gv9xt03wk3a-409751",
+      "title": "GS Abbas GS US Daily Download 17 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T12:50:22Z",
+      "summary_points": [
+        "FOMC Hawkishness & Rate Outlook: Fed raised rates 25bp to 3.75-4%, median neutral rate up to 3.25%, 25bp hike expected in October (vs.",
+        "Sept-only prior), terminal rate unchanged at 3.25-3.5% (policy/risk factor).",
+        "Chevron Strategic Advantages: High-potential exploration in key regions, strong project security via global relationships, tech deployment in shale/tight, cost discipline for volatility resilience (fundamentals/flows).",
+        "Forgent Power Solutions: Raised FY27 growth guide +94% organic (vs consensus), $3.02bn backlog (90% of FY2027 revenue), AI lab order with 1GW+ campus potential (data/flows).",
+        "Geopolitical & AI Sector Shifts: Iran War risk, oil down 3%, AI sector bifurcated (Data Centers/AI Semis up vs Software At Risk/AI-Productivity down) (risk factors)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-z0bk8qird57-6e5ad5",
       "title": "JPM on Fed",
