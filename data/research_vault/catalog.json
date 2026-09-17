@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T15:20:38.020044+00:00",
-  "count": 2298,
+  "generated_at": "2026-09-17T15:35:38.306063+00:00",
+  "count": 2299,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -538,6 +538,24 @@
         "Strong Q1 Results & Defense Growth Catalyst: Revenue ($480.5m, +6.3% vs. consensus), EBITDA ($53.4m, +36.6%), and FY27 guidance reiterated; funded backlog up 37% YoY (defense sector) drives margin expansion potential.",
         "Cash Flow Mismatch & Valuation Risk: 140.9% revenue growth contrasts with negative FCF yield (-1.3%) and cash flow from operations ($78.4M) below net income ($265.1M); high P/E (78.2) and EV/EBITDA (45.2) mask cash flow vulnerabilities.",
         "Revised Guidance & Critical Execution Risks: FY27 revenue revised down to $2.13–$2.23bn (vs. prior $2.192–$2.551bn); price target cut to $285 (from $326); key risks include unfulfilled large program awards and BlueHalo integration."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-nz9kwyey2oj-497e61",
+      "title": "US Daily September FOMC Recap Hawkish Dots Show Two Hike Baseline",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T01:36:50Z",
+      "summary_points": [
+        "FOMC Hike Timeline: 16-2 majority for ≥1 more hike; expect second 25bp hike in Oct (vs.",
+        "Sept-only view), terminal rate unchanged at 3.25-3.5% with added Oct hike + March 2028 cut - Core PCE Forecast Gap: Goldman’s 2026 Q4/Q4 core PCE forecast (3.2%) below FOMC median (3.4%); methodological revisions may reduce YoY inflation by 0.2pp, creating ambiguity - Policy Communication Impact: \"Removed a dose of accommodation\" comment triggered sharp yield spikes, signaling hawkish stance; market pricing (51% Oct hike) diverges from Fed’s less hawkish median dot - Neutral Rate Shift: Median neutral rate jumped to 3.25% (vs. 06%), confirming structural hawkishness beyond near-term hikes, with no dissent on rate increases - Inflation Revision Risk: Methodological changes to inflation metrics could lower core PCE by 0.2pp, but FOMC participant adoption uncertainty affects policy timing clarity"
       ],
       "tags": [],
       "tickers": [],
