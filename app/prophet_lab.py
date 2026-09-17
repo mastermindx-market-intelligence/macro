@@ -371,3 +371,40 @@ def hub_prophet(request: Request) -> Response:
 
 
 __all__ = ["router", "require_site_full_user"]
+
+
+@router.get("/api/prophet/lab/v1/episodes/{episode_id}/research-view")
+def episode_research_view_v1(
+    episode_id: str,
+    format: str = "json",
+    language: str = "en",
+    _user: dict = Depends(require_site_full_user),
+) -> Response:
+    """Present the incumbent D5 read; preserve auth, kill switch and errors."""
+    if format not in {"json", "html"} or language not in {"en", "zh"}:
+        return _response({"error": "prophet_research_view_options_invalid"}, status_code=400)
+    source = episode_intelligence_v1(episode_id, _user=_user)
+    if source.status_code != 200:
+        return source
+    try:
+        import json
+        from hashlib import sha256
+        from base64 import b64encode
+        from engine.prophet_lab.earnings_view import (
+            STYLE, build_earnings_view, render_earnings_fragment,
+        )
+        payload = json.loads(source.body)
+        if format == "json":
+            return _response(build_earnings_view(payload, language=language))
+        style_hash = b64encode(sha256(STYLE.encode("utf-8")).digest()).decode("ascii")
+        headers = dict(_PRIVATE_HEADERS)
+        headers["Content-Security-Policy"] = (
+            "default-src 'none'; script-src 'none'; base-uri 'none'; form-action 'none'; "
+            "frame-ancestors 'self'; style-src 'sha256-" + style_hash + "'"
+        )
+        return Response(render_earnings_fragment(payload, language=language),
+                        media_type="text/html", headers=headers)
+    except Exception as exc:
+        log.warning("prophet_lab research view failed (%s)", type(exc).__name__)
+        return _response({"error": "prophet_research_view_unavailable",
+                          "detail": "Research view temporarily unavailable"}, status_code=503)
