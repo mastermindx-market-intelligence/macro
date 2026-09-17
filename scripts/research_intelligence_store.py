@@ -88,6 +88,19 @@ def _active_store(local_dir: str | None) -> StrictConditionalWriteStore:
     return store
 
 
+def _reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate JSON key: {key}")
+        result[key] = value
+    return result
+
+
+def _reject_json_constant(token: str) -> Any:
+    raise ValueError(f"invalid JSON constant: {token}")
+
+
 def _load_json_object(path_text: str) -> dict[str, Any]:
     path = Path(path_text).expanduser()
     try:
@@ -103,8 +116,12 @@ def _load_json_object(path_text: str) -> dict[str, Any]:
             "analysis input file exceeds the operator boundary",
         )
     try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        value = json.loads(
+            path.read_text(encoding="utf-8"),
+            object_pairs_hook=_reject_duplicate_keys,
+            parse_constant=_reject_json_constant,
+        )
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
         raise ResearchIntelligenceStoreError(
             "analysis_input_invalid",
             "analysis input file is not a JSON object",

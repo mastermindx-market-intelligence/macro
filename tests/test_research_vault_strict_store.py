@@ -2552,3 +2552,71 @@ def test_pointer_lost_reply_then_different_winner_stays_effect_unknown(tmp_path)
 
     assert unknown.value.code == "pointer_effect_unknown"
     assert store.candidate_pointer_writes == 1
+
+
+def test_research_intelligence_cli_rejects_duplicate_analysis_keys_before_io(tmp_path):
+    store_dir = tmp_path / "store"
+    analysis_path = tmp_path / "analysis.json"
+    body_path = tmp_path / "report.md"
+    raw = json.dumps(_analysis(), ensure_ascii=False)
+    analysis_path.write_text(raw[:-1] + ',"state":"ok"}', encoding="utf-8")
+    body_path.write_text(BODY, encoding="utf-8")
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "scripts.research_intelligence_store",
+            "--local",
+            str(store_dir),
+            "put",
+            "--analysis",
+            str(analysis_path),
+            "--source-body",
+            str(body_path),
+        ],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert json.loads(result.stderr)["code"] == "analysis_input_invalid"
+    assert list(store_dir.rglob("*.json")) == []
+
+
+def test_research_intelligence_cli_rejects_nonfinite_json_before_io(tmp_path):
+    store_dir = tmp_path / "store"
+    analysis_path = tmp_path / "analysis.json"
+    body_path = tmp_path / "report.md"
+    raw = json.dumps(_analysis(), ensure_ascii=False)
+    prompt_sha = _analysis()["prompt_sha256"]
+    analysis_path.write_text(
+        raw.replace(f'"prompt_sha256": "{prompt_sha}"', '"prompt_sha256": NaN'),
+        encoding="utf-8",
+    )
+    body_path.write_text(BODY, encoding="utf-8")
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "scripts.research_intelligence_store",
+            "--local",
+            str(store_dir),
+            "put",
+            "--analysis",
+            str(analysis_path),
+            "--source-body",
+            str(body_path),
+        ],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert json.loads(result.stderr)["code"] == "analysis_input_invalid"
+    assert list(store_dir.rglob("*.json")) == []
