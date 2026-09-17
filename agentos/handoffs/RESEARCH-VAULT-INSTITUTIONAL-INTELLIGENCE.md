@@ -1,55 +1,68 @@
 # Research Vault institutional intelligence — continuation
 
-**Parent upgrade: SPEC_ONLY. R18 is a product/integration and acquisition decision packet, not runtime adoption.** R14 review, R16 source qualification and R17 code-publication holds remain. No blocked code/test/diagnostic was repeated, copied into a new implementation, or routed to another actor.
+**Parent customer upgrade: SPEC_ONLY. R19 is source/publication/measurement qualification, not production repair.** R14 review, R16 source qualification and R17 code-publication holds remain. No held operation was retried or routed elsewhere.
 
-## Mission and authority
+## Mission, authority and carrier
 
-Turn permitted institutional evidence into useful company/Prophet explanations, Mastermind AI answers, private briefs and original editorial. The key user job is to understand what changed, its financial meaning, supported counterevidence and the next observation without knowing the right PDF. No research-derived signal/rank/sizing/execution authority. Do not build duplicate source, corpus, identity, financial calculator, ledger, queue, permission or publication owners.
+Make permitted institutional evidence useful in company/Prophet explanations, Mastermind AI, private briefs and original editorial. A useful answer identifies what changed, its supported meaning, the disputed assumptions and inspectable evidence. No research-derived signal/rank/sizing/execution authority. Source-stated, extracted, verified, calculated and assumed inputs remain distinct.
 
-Current live Chairman intent and current protected source law govern. Executive OS owns lifecycle, Agent OS continuity, GitHub implementation/evidence, Slack transport. No new WS/Job/worker/watcher/provider was created or assigned.
+Current live Chairman intent plus fresh protected source law govern. Executive OS owns lifecycle; Agent OS continuity; GitHub source/evidence; Slack transport. Existing source/identity/allowance/publication/analytics/financial-calculation owners remain sole authorities. No new Job, WS, worker, watcher or provider route.
 
-R18 procedure: protected Mastermind@42d210bc07a75234092ff5be71f6038ccacaa884; INDEX/COLD_START/ACTIVE_EXECUTION/WEB_CEO_DELEGATION/RECONCILE_STATE/CLOSEOUT read at one compatible Skillpack1.0.1/bootstrap1 pin. Compact companion reads match the full immutable bodies already available. Re-pin on continuation. Direct work: PRINCIPAL_JUDGMENT for cross-program integration and acquisition economics; LOWER_TOTAL_OVERHEAD for bounded source/ruling verification.
+R19 procedure: Mastermind@42d210bc07a75234092ff5be71f6038ccacaa884, compatible Skillpack1.0.1/bootstrap1; required companions were read at one pin, with compact reads matching previously loaded immutable bodies. Re-pin on continuation. Direct reasons PRINCIPAL_JUDGMENT and LOWER_TOTAL_OVERHEAD.
 
-Same carrier: draft Macro#7182, branch sol/research-vault-intelligence-design-r2-20260915. Recovery head df4f0342735f57d75f7d5e231471151bc6f03791. The PR body still described R16 at66875c673cc95eedb53eb02f7de3af1561c49eed; actual handoff already contained R17. Main observed eef4e872f287c266e43247426d286ebc85af499f. No reset/rebase/incumbent runtime changes.
+Same source carrier: draft Macro#7182 / sol/research-vault-intelligence-design-r2-20260915. Start f382ad9b9b78caa3dfaf91530b52ad2671a3d6ac, rechecked unchanged before publication. Main inspection e4a154c6390de8ac6fb88b586e9fd399dba557c6.
 
-## New source findings
+## Material correction to prior state
 
-#7079 is still open/draft/unmerged at8271ae320732997be4553957e3e2773d1b9e9f1b. A fresh exact-head run read shows CI35056156631 COMPLETED/CANCELLED and fences35056156470 COMPLETED/SUCCESS. Do not keep projecting that CI as queued or infer a release pass. Existing CI/release owners decide a lawful fresh proof action; this turn did not retry/cancel/create any run.
+#7045 is CLOSED/MERGED, not an open collision: merged2026-09-16T09:53:06Z, commit c37c4e37b20ada935f32516a2a31428d558430c3, head3f65e5621a3d130b32fed51583a92bc6c2b5a1bb. Retire stale open-PR references and do not redo its desk-type/summary hygiene. This is not new deployment/browser proof.
 
-Existing flagship draft workstream at #7151 head7a02e374ac6042cb66e101ef594719b17bbf9271 explicitly owns financial-bridge work. It reports last confirmed implementation444c83f747571a6385e603d06adeb6186c647871 plus unpublished changes and independent tool/reconciliation holds. This is read organizational evidence, not native revalidation. Do not copy its unpublished code or build a rival calculator. The Vault's missing contribution is verified, dimensionally qualified inputs and useful interpretation through that existing owner.
+#7079 remains OPEN/DRAFT/unmerged at8271ae320732997be4553957e3e2773d1b9e9f1b. R18's exact-run cancellation remains historical evidence, not a release pass; no new CI action. Bounded #7079/#7151 comment reads after07:47:19Z returned no response. Publication is not owner ACK/adoption/assignment.
 
-Bounded Slack searches located older #7079 reviewer transport, not a current adoption ruling. No old child/thread was reused for a new commission. A bounded #7151 comment read for September17 returned none; it is not an all-channel census or proof of owner inactivity.
+## New R19 evidence
 
-## R18 product and capital decisions
+Canonical report: research/research_vault_expectations_r3/CHUNK19_AUDIENCE_AND_MEASURED_USE.md, blob be3ee41bdb3eb49c5729a102152f90068e9ade94 matched the local report. Exact observations: r19/characterization.json.
 
-Proposal home: research/research_vault_expectations_r3/CHUNK18_EVIDENCE_TO_ECONOMICS_AND_RELEASE.md. Subscription-only sensitivity: economics_r18.json. These are new business/integration records, not a surrogate for publishing blocked R17 code. The expanded conversation report differs in serialization and explanation; no identical-byte claim.
+Current excerpt.py (b6180d72cb8baff59b99ba22d8aa92958d747b97) prepares public first-page excerpts, cap4200 characters, normally2 extracted pages, sparse opening up to4. The report template (3aaa039a3822a3940fef8a9f3f88d4d16ea8ace1) displays them before the Pro CTA and labels them verbatim. Source behavior, not confirmed current live-origin serving or a legal infringement finding.
 
-First release: one real permitted company question through existing Brain→source reader→useful answer→matching source inspection. Then evidence-qualified inputs into incumbent financial calculation, company-change brief, and private/rights-cleared distribution. Complete world coverage, a general graph, long-history chronology and a newly trained model are not prerequisites for every simple source-backed answer. Questions requiring missing capabilities remain incomplete; a narrow release does not complete the whole program.
+Selected-operation diagnostics, fictional data only:
+- Plain120000000 and a space-separated2025 2026 2027 sequence are removed by phone-like redaction; comma-separated amount, ISO date and year range survive; a fictional phone is removed as intended.
+- Starting100 report pages: incoming80 leaves80; incoming60 updates excerpts to60 but leaves100 files; incoming40 preserves100 excerpts/files; empty catalog preserves100. Index page included. Anti-collapse/prune safeguards are intentional; do not remove them blindly.
+- Existing activation stage sets count independently. A view in sessionA and action in sessionB gives ratio1.0 despite zero overlap. Reverse-order and forward-order single sessions have the same totals. Not measured customer conversion.
 
-Every numeric input retains subject/security/scope, metric basis, period, units/currency, actual/forecast/scenario role, literal evidence and versions. Source-stated/extracted/verified/calculated/assumed are distinct. Correct arithmetic never upgrades uncertain inputs. Preserve range, basis-change, period and tax distinctions from earlier controls. No repeated R15 extraction/tests.
+Method: manually transcribed selected operations, comments/logging omitted; temporary files, synthetic rows and Python. No whole-module import or complete-file local byte parity. No production tests/fixes, real withdrawal, model evaluation or observed incident rate. No old suite rerun.
 
-Brief output: what changed; why it matters; compatible numerical support; actual disagreement/coverage limitation; next discriminating observation. Reuse accepted evidence across consumers; do not count one result's three surfaces as three independent customer benefits. Private holdings/prompts do not enter shared research state. Proposed monitors remain unarmed until their existing grants/confirmation.
+## Audience and correction decisions
 
-Acquisition evaluates task requirements and complementary evidence bundles, not document volume or prestige. A predecessor/current pair can close a revision question jointly. Preserve single-note attributed claims versus independently reconstructed chronology. Keep baseline/expanded corpus crossed with existing/improved processing; freeze tasks and minimum worthwhile improvement before observing the expansion outcome. Use existing evaluation/analytics owners, not another scoring store. No investment-authority promotion.
+Acquisition, internal analysis, subscriber generated answer, original-PDF access, public excerpt and original editorial are separate use configurations. A requested scope or product tier does not grant upstream rights. New acquisition must not automatically expand public disclosure. Map decisions through existing source-use/publication owners, not a second permission ledger.
 
-Public signup was reread September17: Professional150/month or125/month billed annually. No new private invoice or commercial/pooling grant. One/two/three added monthly accounts cost150/300/450; using Chairman's75 customer-price assumption and illustrative70% contribution gives3/6/9 rounded customer contributions, excluding processing/serving/review/tax/acquisition/churn. Annual1500/account equals ten monthly payments. Recommend one approved monthly marginal pilot first, not an automatic three/four-account or annual order.
+Preserve literal source/extraction evidence; cleaned public text is not an authoritative numerical operand. Contact redaction needs contextual support; labels must match transformation. Do not restore contact details indiscriminately or rewrite originals.
 
-The report includes UNSENT vendor inquiry wording for separate internal, generated-subscriber and original-redistribution configurations. No vendor contact, purchase, new MarketDesk pull or account change. MarketDesk/contact web opens did not yield content; unrelated similarly named products excluded.
+Missing/degraded inventory differs from an explicit authorised withdrawal. Preserve anti-collapse safeguards for unknown failures. An accepted withdrawal must identify document/version/audience/purpose, reach known static URLs and applicable derived outputs, and prevent unintended reintroduction through existing owners. Delisting/sitemap removal is not proof of unpublishing. Do not promise erasure of external caches or Git history without actual control and agreed retention.
 
-## Preserved holds and exact source continuity
+## Measurement owner and access
 
-R14: full-reader24-case historical pass; eight extra tests remain blocked/NOT_RUN. Fresh guard per admitted read is a source-derived requirement, not passing cross-request/concurrent proof. No R14 rerun or new mutation result.
+PostHog schema read returned only reference events marked unseen in30 days and no custom research events. This is NOT zero product use/customers.
 
-R16: captured original remains in /private/tmp/mmx-rv-r16-public-source-a021qgk3 on Studio3f5ce987-e3eb-40a3-af9f-4b0ae54919cc. SHA256f6a3bbf9178d2b9994cbaefcc356bd17fd5828a46f5e86a7021ed41765bd3c0a;921134 bytes. Extracted155368 characters/hashc8324bfff29101939480804917ab5160b57622d204b91ab62d8f418a77a024fd. SQL6747/4.34% interpretation remains WITHDRAWN_UNQUALIFIED. Page/storage follow-up remains blocked, not rerun or redownloaded.
+Existing first-party owner admin/analytics_first_party.py (e7a3dc56435725bf77d5fa09758ade3abe895c9b) reads Supabase analytics_events/search_events and carries exclusions, bots and visit/identity definitions. Reuse it. activation_funnel_report.py (86801a212365f8f21e4b0ab24ea336709e74983b) has independent stage counts, not verified ordered progression.
 
-R17: local tail-retention candidate historical33-case pass, NOT published. Prior create_blob block was reconciled by same-carrier404/no branch effect; no code publication was resubmitted. Tested local code identities remain in the R17 handoff atdf4f034. Its named report/package were not found in this turn's mounted top-level files; no file path or new execution was invented. R18 never imports, executes or publishes that code.
+Supabase connector was available/not installed; connection suggestion displayed. No authenticated Supabase access or live records obtained. Next permitted read is aggregate usage with actual schema, explicit window/timezone and existing exclusion/identity rules. Do not request credentials, dump personal event histories, invent event names or create a new analytics destination.
 
-## Acceptance, next action and semantic boundary
+Counts, ordered conversions, later return use, supported task completion and payment are distinct. Source clicks or delivered answers alone are not usefulness. Preserve null denominators and late-data cutoffs. Proposed additions belong to existing telemetry/answer-evaluation owners.
 
-Next primary action: one consolidated decision by the existing Brain/Vault/flagship principals accepting/amending the first real-source leaf, naming its current source writer and lawful review/release route, and specifying the applicable source-use configuration. It does not instruct another actor to bypass blocked work. Then implement that one accepted vertical; do not add another independent demo or leave the same adoption question indefinitely unanswered.
+## User journey, ordered work and proof
 
-Acceptance: real permitted evidence absent from metadata discovered; matching support/qualifiers preserved; genuine access/one debit/last-slot/denied/no-match/correction behavior; verified operands or explicit assumptions; useful final answer; matching original inspection; no signal changes/private leakage; measured quality and cost. A correct tool call, graph edge, code/test total or friendly user reaction alone is not acceptance.
+First release remains one allowed company question -> existing Brain source discovery -> single-debit reader -> useful supported answer -> same-source inspection. R15 catalog/default versus source_text request scope and fresh private guard per admitted read remain; a selection is not permission.
 
-Stop affected lanes on current platform block, rights uncertainty, source/version mismatch, custody conflict or unknown effect. No workaround through another tool/actor. Preserve authored/acquired/extracted/product clocks and current retention/correction rules. Existing #7045/#7079 and financial-bridge custody remains unchanged.
+Order: existing owner adjudicates source-use/audience and writer; qualify current integrated code; prove faithful literal evidence and any relevant public projection; complete original review/release gates and actual Brain/viewer journey; then measure baseline and one separately permitted acquisition increment. Aggregate analytics preparation is independent but requires its actual connection.
 
-R18 completed a design/dependency convergence phase and transparent subscription arithmetic. No new product tests, model benchmarks, real source readers, native host calls, gateway runs, CI actions, merges or deployments. Parent remains active/unaccepted. Completed collector recovery#7164/Mastermind#631 and fleet work are do-not-redo. Do not reconstruct the whole predecessor transcript; read this handoff, the R18 decision, fresh carrier state and exact evidence for the next action.
+Acceptance: current source/tier decisions; source/version/locator coherence; source values and qualifications survive presentation; no unauthorized public/body output; missing inventory is not destructive withdrawal; accepted withdrawal reaches known URLs and cannot be unintentionally reintroduced; actual consumer, accounting/last-slot/denied/no-match/correction states; ordered measurement and privacy/exclusions; unchanged Prophet artifacts. Not satisfied by these selected synthetic operations.
+
+Null/time/correction: unknown is not zero/absence/allow. Preserve publication/acquisition/extraction/product clocks and dependent-only correction; no retrospective knowledge. Private portfolios remain private.
+
+## Original holds and do-not-redo
+
+R14's8 extra reader cases remain blocked/NOT_RUN. R16's stored-length/control-character/physical-page follow-up remains blocked;6747/4.34% is withdrawn, not a storage result. Captured original remains in its existing owned native path, not reacquired. R17's tail-extension code publication remains blocked/local; no reproduction/upload under a different filename/actor/tool. Earlier test counts and R18 economics are historical, not fresh outcomes.
+
+This phase made no native host call, original acquisition, vendor message, subscription, model run, CI dispatch, worker/Job/watch, runtime edit, merge or deployment. Exact public-page/MarketDesk web reads were refused and not repeated. Container gateway failure was infrastructure; independent permitted Python diagnostics ran. Supabase connection remains an actual access gate. Collector recovery#7164/Mastermind#631 and fleet work stay do-not-redo.
+
+Primary next action: existing Brain/source/publication owners qualify the allowed audience and faithful evidence for the first company-answer journey, preserving original holds. Independently, after the Supabase connection is authorised, retrieve only the existing first-party aggregate baseline needed to judge usefulness. Do not substitute another prototype or raw event count for customer acceptance.
