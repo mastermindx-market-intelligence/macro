@@ -13,10 +13,12 @@ import math
 import re
 from typing import Any, Mapping, Sequence
 
+import numpy as np
 import pandas as pd
 
 from engine.company_intelligence.contracts import (
     ContractError,
+    canonical_json_bytes,
     canonical_json_sha256,
     iso_timestamp,
     parse_date,
@@ -49,9 +51,10 @@ _CELL_KEYS = frozenset({
 })
 _METRIC_KEYS = frozenset({
     "recipe_id", "unit", "basis", "benchmark_ref", "window",
-    "minimum_observations", "membership_digest", "observed_member_keys",
-    "excluded_members", "numerator_member_keys", "numerator", "denominator",
-    "value", "null_reason", "cohort_digest",
+    "minimum_observations", "aggregation", "value_type",
+    "membership_digest", "observed_member_keys", "excluded_members",
+    "numerator_member_keys", "numerator", "denominator", "value",
+    "null_reason", "cohort_digest",
 })
 _EXCLUDED_KEYS = frozenset({"member_key", "null_reason", "estimability_reason"})
 _COVERAGE_KEYS = frozenset({"catalogue_member_count", "metrics"})
@@ -60,27 +63,45 @@ _COVERAGE_METRIC_KEYS = frozenset({"observed", "excluded"})
 _METRIC_DEFS = {
     "legacy_activity": {
         "recipe_id": "group_pulse.legacy_activity.v1",
-        "unit": "fraction",
-        "basis": "absolute_spy_adjusted_activity",
-        "benchmark_ref": "SPY",
-        "window": 63,
-        "minimum_observations": 63,
+        "unit": "fraction", "basis": "absolute_spy_adjusted_activity",
+        "benchmark_ref": "SPY", "window": 63, "minimum_observations": 63,
+        "aggregation": "share_true", "value_type": "boolean",
     },
     "legacy_trend_50": {
         "recipe_id": "group_pulse.legacy_trend_50.v1",
-        "unit": "fraction",
-        "basis": "activity_conditioned_total_return_close",
-        "benchmark_ref": None,
-        "window": 50,
-        "minimum_observations": 25,
+        "unit": "fraction", "basis": "activity_conditioned_total_return_close",
+        "benchmark_ref": None, "window": 50, "minimum_observations": 25,
+        "aggregation": "share_true", "value_type": "boolean",
     },
     "legacy_trend_200": {
         "recipe_id": "group_pulse.legacy_trend_200.v1",
-        "unit": "fraction",
-        "basis": "activity_conditioned_total_return_close",
-        "benchmark_ref": None,
-        "window": 200,
-        "minimum_observations": 100,
+        "unit": "fraction", "basis": "activity_conditioned_total_return_close",
+        "benchmark_ref": None, "window": 200, "minimum_observations": 100,
+        "aggregation": "share_true", "value_type": "boolean",
+    },
+    "strict_trend_50": {
+        "recipe_id": "group_pulse.strict_price_trend_50.v1",
+        "unit": "fraction", "basis": "price_only_total_return_close",
+        "benchmark_ref": None, "window": 50, "minimum_observations": 50,
+        "aggregation": "share_true", "value_type": "boolean",
+    },
+    "strict_trend_200": {
+        "recipe_id": "group_pulse.strict_price_trend_200.v1",
+        "unit": "fraction", "basis": "price_only_total_return_close",
+        "benchmark_ref": None, "window": 200, "minimum_observations": 200,
+        "aggregation": "share_true", "value_type": "boolean",
+    },
+    "raw_daily_change": {
+        "recipe_id": "group_pulse.raw_daily_change.v1",
+        "unit": "decimal_return", "basis": "total_return_close_raw_change",
+        "benchmark_ref": None, "window": 1, "minimum_observations": 1,
+        "aggregation": "none", "value_type": "number",
+    },
+    "benchmark_relative_daily_change": {
+        "recipe_id": "group_pulse.benchmark_relative_daily_change.v1",
+        "unit": "decimal_return", "basis": "benchmark_relative_daily_change",
+        "benchmark_ref": "SPY", "window": 1, "minimum_observations": 1,
+        "aggregation": "none", "value_type": "number",
     },
 }
 
@@ -91,8 +112,73 @@ def projection_digest(bundle: Mapping[str, Any]) -> str:
     return canonical_json_sha256(unsigned)
 
 
+def raw_bytes_receipt(raw: bytes, *, source_ref: str, basis: str,
+                      effective_at: object | None) -> dict[str, Any]:
+    """Receipt the exact immutable bytes handed to a parser."""
+    if not isinstance(raw, bytes):
+        raise ContractError("raw receipt input must be bytes")
+    if not isinstance(source_ref, str) or not source_ref:
+        raise ContractError("raw receipt source_ref invalid")
+    if not isinstance(basis, str) or not basis:
+        raise ContractError("raw receipt basis invalid")
+    effective = None if effective_at is None else _date(effective_at, field="effective_at")
+    return {
+        "kind": "raw_bytes",
+        "source_ref": source_ref,
+        "sha256": sha256(raw).hexdigest(),
+        "bytes": len(raw),
+        "effective_at": effective,
+        "basis": basis,
+    }
+
+
 def _date(value: object, *, field: str) -> str:
     return parse_date(value, field=field).isoformat()
+
+
+def normalized_frame_receipt(frame: pd.DataFrame | pd.Series, *, source_ref: str,
+                             basis: str, effective_at: object | None) -> dict[str, Any]:
+    """Receipt one normalized numeric frame without rereading its mutable source."""
+    if isinstance(frame, pd.Series):
+        value = frame.to_frame(name=str(frame.name or "value"))
+    elif isinstance(frame, pd.DataFrame):
+        value = frame.copy()
+    else:
+        raise ContractError("normalized frame receipt requires a Series or DataFrame")
+    if value.empty or value.index.has_duplicates or value.columns.has_duplicates:
+        raise ContractError("normalized frame receipt requires non-empty unique axes")
+    value.columns = [str(column) for column in value.columns]
+    columns = sorted(value.columns)
+    value = value.sort_index().reindex(columns=columns)
+    try:
+        numeric = value.astype("float64")
+    except (TypeError, ValueError) as exc:
+        raise ContractError("normalized frame receipt requires numeric values") from exc
+    metadata = {
+        "columns": columns,
+        "index": [str(item) for item in numeric.index],
+        "shape": [int(numeric.shape[0]), int(numeric.shape[1])],
+        "dtype": "float64-le",
+    }
+    header = canonical_json_bytes(metadata)
+    digest = sha256()
+    digest.update(header)
+    byte_count = len(header)
+    for column in columns:
+        array = numeric[column].to_numpy(dtype="<f8", copy=True)
+        array[np.isnan(array)] = np.nan
+        raw = array.tobytes(order="C")
+        digest.update(raw)
+        byte_count += len(raw)
+    effective = None if effective_at is None else _date(effective_at, field="effective_at")
+    return {
+        "kind": "normalized_frame",
+        "source_ref": source_ref,
+        "sha256": digest.hexdigest(),
+        "bytes": byte_count,
+        "effective_at": effective,
+        "basis": basis,
+    }
 
 
 def _timestamp(value: object, *, field: str) -> str:
@@ -161,7 +247,9 @@ def _normalise_receipts(receipts: Sequence[Mapping[str, Any]]) -> list[dict[str,
             raise ContractError(f"source_receipts[{index}].sha256 invalid")
         if not isinstance(byte_count, int) or isinstance(byte_count, bool) or byte_count < 0:
             raise ContractError(f"source_receipts[{index}].bytes invalid")
-        effective_at = _date(raw.get("effective_at"), field=f"source_receipts[{index}].effective_at")
+        raw_effective = raw.get("effective_at")
+        effective_at = (None if raw_effective is None else
+                        _date(raw_effective, field=f"source_receipts[{index}].effective_at"))
         out.append({
             "kind": kind,
             "source_ref": source_ref,
@@ -189,7 +277,7 @@ def _missing_detail(panel: Mapping[str, Any], as_of: pd.Timestamp, member: str,
     return MissingReason.NO_COVERAGE.value, "unavailable_in_owner_projection"
 
 
-def _metric_cell(*, value: bool | None, recipe_id: str, effective_at: str,
+def _metric_cell(*, value: bool | float | None, recipe_id: str, effective_at: str,
                  source_ref: str, available: int, required: int,
                  included: bool, missing: tuple[str, str | None]) -> dict[str, Any]:
     null_reason, estimability_reason = missing
@@ -212,7 +300,6 @@ def _metric_cell(*, value: bool | None, recipe_id: str, effective_at: str,
 def _aggregate(*, metric_id: str, member_keys: list[str], cells: Mapping[str, dict]) -> dict[str, Any]:
     definition = _METRIC_DEFS[metric_id]
     observed = [key for key in member_keys if cells[key]["included_in_aggregate"]]
-    numerator_keys = [key for key in observed if cells[key]["value"] is True]
     excluded = [
         {
             "member_key": key,
@@ -222,8 +309,17 @@ def _aggregate(*, metric_id: str, member_keys: list[str], cells: Mapping[str, di
         for key in member_keys if key not in observed
     ]
     denominator = len(observed)
-    numerator = len(numerator_keys)
-    value = None if denominator == 0 else numerator / denominator
+    if definition["aggregation"] == "share_true":
+        numerator_keys = [key for key in observed if cells[key]["value"] is True]
+        numerator: int | None = len(numerator_keys)
+        value: float | None = None if denominator == 0 else numerator / denominator
+        null_reason = (MissingReason.OK.value if value is not None
+                       else MissingReason.NO_COVERAGE.value)
+    else:
+        numerator_keys = []
+        numerator = None
+        value = None
+        null_reason = MissingReason.NOT_APPLICABLE.value
     return {
         **definition,
         "membership_digest": canonical_json_sha256(member_keys),
@@ -233,8 +329,7 @@ def _aggregate(*, metric_id: str, member_keys: list[str], cells: Mapping[str, di
         "numerator": numerator,
         "denominator": denominator,
         "value": value,
-        "null_reason": (MissingReason.OK.value if value is not None
-                        else MissingReason.NO_COVERAGE.value),
+        "null_reason": null_reason,
         "cohort_digest": canonical_json_sha256(observed),
     }
 
@@ -275,14 +370,25 @@ def project_group_members(*, group_id: str, member_records: Sequence[Mapping[str
                           covered_members: Sequence[str], active_members: Sequence[str],
                           legacy_pulse: Mapping[str, Any],
                           source_receipts: Sequence[Mapping[str, Any]],
-                          generated_at: object) -> dict[str, Any]:
+                          generated_at: object,
+                          benchmark_available: bool = True) -> dict[str, Any]:
     """Project one group from intermediates already computed by Group Pulse."""
     if not isinstance(group_id, str) or not group_id:
         raise ContractError("group_id invalid")
     effective_at = _date(as_of, field="as_of")
     generated = _timestamp(generated_at, field="generated_at")
     receipts = _normalise_receipts(source_receipts)
-    source_ref = receipts[0]["source_ref"]
+    price_receipt = next((row for row in receipts
+                          if row["kind"] == "normalized_frame"
+                          and "close" in row["basis"]), receipts[0])
+    close_source_ref = price_receipt["source_ref"]
+    raw_return_receipt = next((row for row in receipts
+                               if row["basis"] == "raw_daily_change"), price_receipt)
+    relative_receipt = next((row for row in receipts
+                             if row["basis"] == "benchmark_relative_daily_change"),
+                            price_receipt)
+    membership_receipt = next((row for row in receipts
+                               if row["basis"] == "curated_membership"), None)
     if legacy_pulse.get("basket_id") != group_id:
         raise ContractError("legacy_pulse basket_id mismatch")
     if _date(legacy_pulse.get("as_of"), field="legacy_pulse.as_of") != effective_at:
@@ -320,10 +426,12 @@ def project_group_members(*, group_id: str, member_records: Sequence[Mapping[str
 
     as_of_ts = pd.Timestamp(effective_at)
     metric_cells: dict[str, dict[str, dict[str, Any]]] = {}
-    metric_sets: dict[str, tuple[list[str], list[str]]] = {
+
+    legacy_sets: dict[str, tuple[list[str], list[str]]] = {
         "legacy_activity": (covered, active),
     }
-    for metric_id, suffix in (("legacy_trend_50", "50"), ("legacy_trend_200", "200")):
+    for metric_id, suffix in (("legacy_trend_50", "50"),
+                              ("legacy_trend_200", "200")):
         observed = [
             key for key in covered
             if bool(_frame_value(panel.get(f"has_ma{suffix}"), as_of_ts, key))
@@ -332,9 +440,9 @@ def project_group_members(*, group_id: str, member_records: Sequence[Mapping[str
             key for key in observed
             if bool(_frame_value(panel.get(f"above_ma{suffix}"), as_of_ts, key))
         ]
-        metric_sets[metric_id] = (observed, numerator)
+        legacy_sets[metric_id] = (observed, numerator)
 
-    for metric_id, (observed, numerator) in metric_sets.items():
+    for metric_id, (observed, numerator) in legacy_sets.items():
         definition = _METRIC_DEFS[metric_id]
         required = int(definition["minimum_observations"])
         window = int(definition["window"])
@@ -346,16 +454,80 @@ def project_group_members(*, group_id: str, member_records: Sequence[Mapping[str
                          if metric_id == "legacy_activity"
                          else _available_closes(panel, as_of_ts, key, window))
             missing = _missing_detail(
-                panel, as_of_ts, key, observed=included, required=(63 if metric_id == "legacy_activity" else required),
+                panel, as_of_ts, key, observed=included,
+                required=(63 if metric_id == "legacy_activity" else required),
                 legacy_conditioned=metric_id != "legacy_activity",
             )
             cells[key] = _metric_cell(
                 value=value,
                 recipe_id=definition["recipe_id"],
                 effective_at=effective_at,
-                source_ref=source_ref,
+                source_ref=close_source_ref,
                 available=available,
                 required=required,
+                included=included,
+                missing=missing,
+            )
+            normalised_members[key]["metrics"][metric_id] = deepcopy(cells[key])
+        metric_cells[metric_id] = cells
+
+    for metric_id, window in (("strict_trend_50", 50),
+                              ("strict_trend_200", 200)):
+        definition = _METRIC_DEFS[metric_id]
+        cells = {}
+        for key in member_keys:
+            available = _available_closes(panel, as_of_ts, key, window)
+            included = available == window and _valid_close(
+                _frame_value(panel.get("closes"), as_of_ts, key)
+            )
+            value: bool | None = None
+            if included:
+                series = panel["closes"].loc[:as_of_ts, key].tail(window).astype("float64")
+                value = bool(float(series.iloc[-1]) > float(series.mean()))
+            missing = _missing_detail(
+                panel, as_of_ts, key, observed=included,
+                required=window, legacy_conditioned=False,
+            )
+            cells[key] = _metric_cell(
+                value=value,
+                recipe_id=definition["recipe_id"],
+                effective_at=effective_at,
+                source_ref=close_source_ref,
+                available=available,
+                required=window,
+                included=included,
+                missing=missing,
+            )
+            normalised_members[key]["metrics"][metric_id] = deepcopy(cells[key])
+        metric_cells[metric_id] = cells
+
+    point_specs = (
+        ("raw_daily_change", "rets", raw_return_receipt["source_ref"], False),
+        ("benchmark_relative_daily_change", "spy_adj",
+         relative_receipt["source_ref"], True),
+    )
+    for metric_id, frame_key, metric_source_ref, needs_benchmark in point_specs:
+        definition = _METRIC_DEFS[metric_id]
+        cells = {}
+        for key in member_keys:
+            raw_value = _frame_value(panel.get(frame_key), as_of_ts, key)
+            included = _finite(raw_value) and (benchmark_available or not needs_benchmark)
+            value = float(raw_value) if included else None
+            if needs_benchmark and not benchmark_available:
+                missing = (MissingReason.NO_COVERAGE.value, "benchmark_unavailable")
+            elif not _finite(raw_value):
+                missing = (MissingReason.NO_COVERAGE.value,
+                           "missing_effective_observation")
+            else:
+                missing = (MissingReason.NO_COVERAGE.value,
+                           "unavailable_in_owner_projection")
+            cells[key] = _metric_cell(
+                value=value,
+                recipe_id=definition["recipe_id"],
+                effective_at=effective_at,
+                source_ref=metric_source_ref,
+                available=(1 if _finite(raw_value) else 0),
+                required=1,
                 included=included,
                 missing=missing,
             )
@@ -366,15 +538,19 @@ def project_group_members(*, group_id: str, member_records: Sequence[Mapping[str
         metric_id: _aggregate(metric_id=metric_id, member_keys=member_keys, cells=cells)
         for metric_id, cells in metric_cells.items()
     }
-    for metric_id, aggregate in metrics.items():
-        _assert_legacy_match(metric_id, aggregate, legacy_pulse)
+    for metric_id in legacy_sets:
+        _assert_legacy_match(metric_id, metrics[metric_id], legacy_pulse)
 
     membership_digest = canonical_json_sha256(member_keys)
+    source_membership_ref = (membership_receipt["source_ref"] if membership_receipt
+                             else f"group_pulse:membership:{group_id}")
+    source_membership_digest = (membership_receipt["sha256"] if membership_receipt
+                                else membership_digest)
     return {
         "group_id": group_id,
         "group_kind": GROUP_KIND,
-        "source_membership_ref": f"group_pulse:membership:{group_id}",
-        "source_membership_digest": membership_digest,
+        "source_membership_ref": source_membership_ref,
+        "source_membership_digest": source_membership_digest,
         "member_count": len(member_keys),
         "member_keys": member_keys,
         "members": normalised_members,
@@ -444,8 +620,15 @@ def _validate_cell(cell: Any, *, label: str, metric: Mapping[str, Any],
         return
     _unknown_keys(cell, _CELL_KEYS, label, errors)
     value = cell.get("value")
-    if value is not None and not isinstance(value, bool) and not _finite(value):
-        errors.append(f"{label}.value must be finite, boolean, or null")
+    value_type = metric.get("value_type")
+    if value_type == "boolean":
+        if value is not None and not isinstance(value, bool):
+            errors.append(f"{label}.value must be boolean or null")
+    elif value_type == "number":
+        if value is not None and not _finite(value):
+            errors.append(f"{label}.value must be a finite number or null")
+    else:
+        errors.append(f"{label}: parent metric value_type invalid")
     reason = cell.get("null_reason")
     allowed_reasons = {item.value for item in MissingReason}
     if reason not in allowed_reasons:
@@ -515,17 +698,40 @@ def _validate_metric(metric: Any, *, label: str, member_keys: list[str],
     numerator = metric.get("numerator")
     if denominator != len(observed):
         errors.append(f"{label}: denominator does not match observed members")
-    if numerator != len(numerator_keys):
-        errors.append(f"{label}: numerator does not match numerator members")
+    aggregation = metric.get("aggregation")
+    value_type = metric.get("value_type")
+    if aggregation not in {"share_true", "none"}:
+        errors.append(f"{label}.aggregation invalid")
+    if value_type not in {"boolean", "number"}:
+        errors.append(f"{label}.value_type invalid")
     value = metric.get("value")
-    if value is not None and not _finite(value):
-        errors.append(f"{label}.value must be finite or null")
-    expected = None if not observed else len(numerator_keys) / len(observed)
-    if value is None:
-        if expected is not None:
-            errors.append(f"{label}: value missing despite nonzero denominator")
-    elif expected is None or not math.isclose(float(value), expected, rel_tol=0.0, abs_tol=1e-12):
-        errors.append(f"{label}: value disagrees with numerator/denominator")
+    null_reason = metric.get("null_reason")
+    if aggregation == "share_true":
+        if value_type != "boolean":
+            errors.append(f"{label}: share_true requires boolean member values")
+        if numerator != len(numerator_keys):
+            errors.append(f"{label}: numerator does not match numerator members")
+        if value is not None and not _finite(value):
+            errors.append(f"{label}.value must be finite or null")
+        expected = None if not observed else len(numerator_keys) / len(observed)
+        if value is None:
+            if expected is not None:
+                errors.append(f"{label}: value missing despite nonzero denominator")
+            if null_reason != MissingReason.NO_COVERAGE.value:
+                errors.append(f"{label}: empty aggregate must disclose NO_COVERAGE")
+        else:
+            if expected is None or not math.isclose(
+                    float(value), expected, rel_tol=0.0, abs_tol=1e-12):
+                errors.append(f"{label}: value disagrees with numerator/denominator")
+            if null_reason != MissingReason.OK.value:
+                errors.append(f"{label}: observed aggregate must have OK null_reason")
+    elif aggregation == "none":
+        if numerator is not None or numerator_keys:
+            errors.append(f"{label}: non-aggregate metric cannot carry a numerator")
+        if value is not None:
+            errors.append(f"{label}: non-aggregate metric cannot carry an aggregate value")
+        if null_reason != MissingReason.NOT_APPLICABLE.value:
+            errors.append(f"{label}: non-aggregate metric must disclose NOT_APPLICABLE")
     if metric.get("membership_digest") != canonical_json_sha256(member_keys):
         errors.append(f"{label}: membership digest mismatch")
     if metric.get("cohort_digest") != canonical_json_sha256(observed):
@@ -600,8 +806,9 @@ def validate_member_bundle(bundle: Any) -> list[str]:
             errors.append(f"{label}: member_keys must be deterministic")
         if group.get("member_count") != len(member_keys):
             errors.append(f"{label}: member_count mismatch")
-        if group.get("source_membership_digest") != canonical_json_sha256(member_keys):
-            errors.append(f"{label}: source membership digest mismatch")
+        membership_digest = group.get("source_membership_digest")
+        if not isinstance(membership_digest, str) or not _SHA_RE.fullmatch(membership_digest):
+            errors.append(f"{label}: source membership digest invalid")
         if group.get("legacy_pulse_digest") != legacy_digest:
             errors.append(f"{label}: legacy pulse digest mismatch")
         if not isinstance(members, Mapping) or set(members) != set(member_keys):
