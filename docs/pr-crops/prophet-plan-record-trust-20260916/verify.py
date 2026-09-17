@@ -92,9 +92,17 @@ def run() -> None:
     life_script = dash[life_script_start:life_script_end]
     navigation_css = css.replace("</style>", life_css + "</style>", 1)
 
-    def document(cards: str, theme: str, lang: str, *, lifecycle: bool = False) -> str:
+    def document(
+        cards: str,
+        theme: str,
+        lang: str,
+        *,
+        lifecycle: bool = False,
+        exclude_resolved: bool = False,
+    ) -> str:
         selected_css = navigation_css if lifecycle else css
-        html = ('<!doctype html><html data-theme="' + theme + '" data-lang="' + lang + '"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' + selected_css + '</head><body class="page-stocks"><main><h1>Tracked setups</h1><p>Component proof · synthetic screenshots · not production</p><section id="us-standouts"><div class="nbgrid" data-showmore-rows="3" id="us-life-grid">' + cards + '</div></section></main></body></html>')
+        pager_exclusion = ' data-showmore-exclude-life="resolved"' if exclude_resolved else ''
+        html = ('<!doctype html><html data-theme="' + theme + '" data-lang="' + lang + '"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' + selected_css + '</head><body class="page-stocks"><main><h1>Tracked setups</h1><p>Component proof · synthetic screenshots · not production</p><section id="us-standouts"><div class="nbgrid" data-showmore-rows="3"' + pager_exclusion + ' id="us-life-grid">' + cards + '</div></section></main></body></html>')
         # Preserve the rendered fixture while keeping committed evidence whitespace-clean.
         return "\n".join(line.rstrip() for line in html.splitlines()) + "\n"
 
@@ -110,7 +118,7 @@ def run() -> None:
         "pager_section_sha256": digest(pager.encode()),
         "lifecycle_script_sha256": digest(life_script.encode()),
         "lifecycle_filter_css_sha256": digest(life_css.encode()),
-        "cases": [], "navigation_cases": [],
+        "cases": [], "navigation_cases": [], "pager_cases": [],
         "source_sha256": {p: digest((ROOT / p).read_bytes()) for p in [
             "templates/_prophet_card.html.j2", "templates/_us_prophet_plan_cards.html.j2",
             "templates/theme.css", "templates/theme.js", "templates/dashboard.html.j2",
@@ -122,17 +130,67 @@ def run() -> None:
         try:
             receipt["browser_version"] = browser.version
             page = browser.new_page(viewport={"width": 1440, "height": 1000})
+            real_errors = []
+            page.on("pageerror", lambda err: real_errors.append(str(err)))
             page.route("**/*", lambda route: route.abort())
-            page.set_content(document(real_html, "dark", "en"))
+            page.set_content(document(real_html, "dark", "en", lifecycle=True, exclude_resolved=True))
             page.add_script_tag(content=pager + "\ninitShowMore();")
-            real_dom = page.evaluate("""() => { const cards=[...document.querySelectorAll('.pvcard')];const ids=cards.map(x=>x.id);return {cards:cards.length,unique_ids:new Set(ids).size,grid_children:document.querySelector('#us-life-grid').children.length,record_markers:document.querySelectorAll('[data-record-only="1"]').length,action_badges:document.querySelectorAll('.pv-buy,.pv-wait,.pv-near,.pv-hold,.pv-avoid').length,pagination:document.querySelector('.sm-count .l-en').textContent}; }""")
+            real_dom = page.evaluate("""() => {
+                const cards = [...document.querySelectorAll('.pvcard')];
+                const ids = cards.map(x => x.id);
+                const unresolved = cards.filter(x => x.getAttribute('data-life') !== 'resolved');
+                const resolved = cards.filter(x => x.getAttribute('data-life') === 'resolved');
+                return {
+                    cards: cards.length,
+                    unique_ids: new Set(ids).size,
+                    grid_children: document.querySelector('#us-life-grid').children.length,
+                    record_markers: document.querySelectorAll('[data-record-only="1"]').length,
+                    action_badges: document.querySelectorAll('.pv-buy,.pv-wait,.pv-near,.pv-hold,.pv-avoid').length,
+                    resolved_records: resolved.length,
+                    default_population: unresolved.length,
+                    visible_unresolved: unresolved.filter(x => !x.classList.contains('sm-hidden')).length,
+                    hidden_resolved: resolved.filter(x => x.classList.contains('sm-hidden')).length,
+                    pagination: document.querySelector('.sm-count .l-en').textContent,
+                };
+            }""")
             assert real_dom["cards"] == real_dom["unique_ids"] == real_dom["grid_children"] == len(real_rows), real_dom
             assert real_dom["record_markers"] == len(real_rows) and real_dom["action_badges"] == 0
-            assert real_dom["pagination"].endswith("of " + str(len(real_rows)))
+            assert real_dom["default_population"] + real_dom["resolved_records"] == len(real_rows), real_dom
+            assert real_dom["resolved_records"] > 0 and real_dom["hidden_resolved"] == real_dom["resolved_records"], real_dom
+            assert real_dom["visible_unresolved"] == min(15, real_dom["default_population"]), real_dom
+            assert real_dom["pagination"] == f"Showing {real_dom['visible_unresolved']} of {real_dom['default_population']}", real_dom
             receipt["real_dom"] = real_dom
             page.locator(".sm-ghost").click()
-            assert page.locator(".sm-count .l-en").inner_text() == f"Showing {len(real_rows)} of {len(real_rows)}"
+            show_all = page.evaluate("""() => {
+                const cards = [...document.querySelectorAll('.pvcard')];
+                const unresolved = cards.filter(x => x.getAttribute('data-life') !== 'resolved');
+                const resolved = cards.filter(x => x.getAttribute('data-life') === 'resolved');
+                return {
+                    visible_unresolved: unresolved.filter(x => !x.classList.contains('sm-hidden')).length,
+                    hidden_resolved: resolved.filter(x => x.classList.contains('sm-hidden')).length,
+                    pagination: document.querySelector('.sm-count .l-en').textContent,
+                };
+            }""")
+            assert show_all["visible_unresolved"] == real_dom["default_population"], show_all
+            assert show_all["hidden_resolved"] == real_dom["resolved_records"], show_all
+            assert show_all["pagination"] == f"Showing {real_dom['default_population']} of {real_dom['default_population']}", show_all
+            page.locator("#us-standouts").evaluate("el => el.setAttribute('data-lifef', 'resolved')")
+            resolved_visible = page.locator('#us-life-grid > [data-life="resolved"]').evaluate_all(
+                "els => els.filter(el => getComputedStyle(el).display !== 'none').length"
+            )
+            assert resolved_visible == real_dom["resolved_records"], (resolved_visible, real_dom)
+            assert not real_errors, real_errors
             receipt["real_pager_show_all"] = True
+            receipt["pager_cases"].append({
+                "case": "real_input_default_live_population",
+                "dom_records_preserved": real_dom["cards"],
+                "default_population": real_dom["default_population"],
+                "resolved_history": real_dom["resolved_records"],
+                "initial_visible": real_dom["visible_unresolved"],
+                "show_all_visible": show_all["visible_unresolved"],
+                "resolved_filter_visible": resolved_visible,
+                "page_errors": real_errors,
+            })
             page.close()
 
             # Real page lifecycle script + filter CSS: a newer episode must become
@@ -162,7 +220,7 @@ def run() -> None:
                 page = browser.new_page(viewport={"width": 390, "height": 900})
                 errors = []
                 page.on("pageerror", lambda err: errors.append(str(err)))
-                body = document(cards, "dark", "en", lifecycle=True)
+                body = document(cards, "dark", "en", lifecycle=True, exclude_resolved=True)
                 page.route("**/*", lambda route: route.fulfill(
                     status=200, body=body, content_type="text/html")
                     if route.request.is_navigation_request() else route.abort())
@@ -201,6 +259,7 @@ def run() -> None:
                 fresh.className = oldGrid.className;
                 fresh.id = 'us-life-grid';
                 fresh.setAttribute('data-showmore-rows', '3');
+                fresh.setAttribute('data-showmore-exclude-life', 'resolved');
                 fresh.innerHTML = oldGrid.innerHTML + targetHtml;
                 oldGrid.replaceWith(fresh);
                 if (oldBar && oldBar.classList.contains('sm-bar')) oldBar.remove();
@@ -231,6 +290,11 @@ def run() -> None:
                         errors = []
                         page.on("pageerror", lambda err: errors.append(str(err)))
                         page.set_content(document(fixture_cards, theme, lang))
+                        # Stabilize visual evidence: the component owns hover/focus
+                        # transitions, but screenshots are contract artifacts rather
+                        # than animation-frame samples.
+                        page.add_style_tag(content="*,*::before,*::after{animation:none!important;transition:none!important}")
+                        page.evaluate("document.fonts ? document.fonts.ready : Promise.resolve()")
                         page.add_script_tag(content=pager + "\ninitShowMore();")
                         assert page.locator(f".pv-chip .l-{lang}").first.is_visible()
                         hidden_lang = "en" if lang == "zh" else "zh"
@@ -256,7 +320,20 @@ def run() -> None:
                         assert page.evaluate("window.__href") == "stock.html#DEMO-A"
                         assert not errors, errors
                         image = f"record-{theme}-{lang}-{width}.png"
-                        page.screenshot(path=str(OUT / image), full_page=True)
+                        page.mouse.move(width - 1, 1099)
+                        page.evaluate("document.activeElement && document.activeElement.blur()")
+                        page.wait_for_timeout(50)
+                        # First capture warms first-use system glyph rasterization
+                        # (notably the wide Chinese case); only the second capture
+                        # becomes durable evidence.
+                        page.screenshot(full_page=True, animations="disabled", caret="hide")
+                        page.wait_for_timeout(50)
+                        page.screenshot(
+                            path=str(OUT / image),
+                            full_page=True,
+                            animations="disabled",
+                            caret="hide",
+                        )
                         receipt["cases"].append({"width": width, "theme": theme, "language": lang,
                             "geometry": geometry, "stock_link": True, "newer_link": True,
                             "keyboard_link": True, "page_errors": errors,
@@ -274,6 +351,7 @@ def run() -> None:
     tmp.write_text(json.dumps(receipt, indent=2, ensure_ascii=False) + "\n")
     tmp.replace(OUT / "browser-receipt.json")
     print("REAL_DOM", json.dumps(receipt["real_dom"]), flush=True)
+    print("PAGER_PROOF", len(receipt["pager_cases"]), "DEFAULT-LIVE PASS_COMPONENT_NOT_PRODUCTION", flush=True)
     print("BROWSER_PROOF", len(receipt["cases"]), "VISUAL +", len(receipt["navigation_cases"]), "NAVIGATION PASS_COMPONENT_NOT_PRODUCTION", flush=True)
 
 

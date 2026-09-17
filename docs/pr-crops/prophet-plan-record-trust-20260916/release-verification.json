@@ -1,22 +1,39 @@
 {
   "base": "4f37209719d2ca5caf9fd3a37aca29fa363f351c",
   "browser_refresh": {
-    "process": 5198,
+    "process": 38971,
     "exit_code": 0,
+    "runs": 2,
+    "byte_identical_repeat": true,
     "visual_cases_passed": 8,
     "navigation_cases_passed": 2,
+    "pager_cases_passed": 1,
     "real_dom": {
       "cards": 400,
       "unique_ids": 400,
       "grid_children": 400,
       "record_markers": 400,
       "action_badges": 0,
-      "pagination": "Showing 15 of 400"
+      "resolved_records": 134,
+      "default_population": 266,
+      "visible_unresolved": 15,
+      "hidden_resolved": 134,
+      "pagination": "Showing 15 of 266"
     },
-    "receipt_sha256": "9f235d19d3ae601e45a0b957f9763bc93b034b496ec9f854cc2e79281d87d26d",
-    "scope": "component + real lifecycle script/filter/pager evidence; not authenticated production proof"
+    "pager_case": {
+      "case": "real_input_default_live_population",
+      "dom_records_preserved": 400,
+      "default_population": 266,
+      "resolved_history": 134,
+      "initial_visible": 15,
+      "show_all_visible": 266,
+      "resolved_filter_visible": 134,
+      "page_errors": []
+    },
+    "receipt_sha256": "b4bfb2bca13127954154aa140a0c88ff7ae1afcf6544125ba36ccd0d2467154f",
+    "scope": "component + real-input lifecycle/filter/pager evidence; not authenticated production proof"
   },
-  "compared_main": "12b655150582d9be39bfd2779b33338d154c565f",
+  "compared_main": "5269a38f383d466f03cf1d7599d12de70118acad",
   "compatibility_repair": {
     "accepted_migration_commit": "a8def4c24d584afe63f148c0d5ba6d8bf95ee506",
     "expected_sha256": "ba60c7daa09dffa6f6701a6676fb4526459ce92d78682e0a5a73e3d0f6e341c3",
@@ -29,10 +46,12 @@
     "published_parent_head": "71c66811a60a388f7323a606380d868f9b2b91a3",
     "semantic_navigation_head": "ca1f0a0f30782276a9f6260b6e31501f21d1d59c",
     "semantic_remote_readback": "ca1f0a0f30782276a9f6260b6e31501f21d1d59c",
-    "records_head": "PENDING_RECORD_COMMIT"
+    "records_head": "5638b23ed1aa8ae3c8ce2ad51d5acd0be022cf69",
+    "pager_parent_head": "5638b23ed1aa8ae3c8ce2ad51d5acd0be022cf69",
+    "pager_descendant_status": "UNPUBLISHED_WORKTREE_AT_CAPTURE"
   },
   "independent_review": "NOT_ASSIGNED",
-  "observed_at": "2026-09-17T03:59:36.289204+00:00",
+  "observed_at": "2026-09-17T05:32:06.950731+00:00",
   "operation": "prophet-plan-trust-20260916-sol-001",
   "prior_evidence": {
     "browser-receipt.json": "323c7360b16028625958983d88afcebd47ae81e2a3f61420f4666e87ca481cd6",
@@ -41,23 +60,28 @@
   },
   "production_acceptance": false,
   "schema": "prophet.plan_record_release_verification.v1",
-  "skillpack_commit": "eec5324c5205e8bad206512e0a936898e50b2408",
+  "skillpack_commit": "eee809949ee79c0ea1ef922ce74c110b1bb1dddf",
   "source_sha256": {
     "templates/_prophet_card.html.j2": "4f069ba91cd92138e66adca574eb551620d19689832b819dcd7d020637647589",
     "templates/_us_prophet_plan_cards.html.j2": "4835d85e7a5ac2a7f6a7225d9e9cf377304bc80630a8152dbd20ab8001eb3828",
-    "templates/dashboard.html.j2": "53ad405b20c0885549faba5432fe2768c79fb148aa78e1077fdbe37545a82e99",
+    "templates/dashboard.html.j2": "af81e49495b901c915d682121d1fd626bff562e45a45543f382b51878be58a72",
     "tests/test_p_mp1_shell_ladder_error_state.py": "a63604e7d311836b47c8bfda9209685e4345c22f3747deb0b3ee0abbd882cd0f",
     "tests/test_p_mp1_shell_ladder_filter_css.py": "c1d1e469aa33723373068f9fec293f6146aec46468f59076ab2824829369f898",
     "tests/test_p_mp1_shell_nonus_byte_parity.py": "bebd70e5afaec943dfe3bd3c2b7ee81309c4d270c720d39f7841e94058da8fe2",
     "tests/test_p_mp1_shell_stance_projection.py": "d842366447c11ffbba39823bbda2f0e1ade794838021133c8378e989252c42f6",
-    "docs/pr-crops/prophet-plan-record-trust-20260916/verify.py": "fa95e35b63e57a3fd587ce80093b61b8ea04b7ec284dbab33127635187690b85"
+    "docs/pr-crops/prophet-plan-record-trust-20260916/verify.py": "8e88f32cd13930d8032e80d04589fc0da23d702fa7cd246f4bf076f44ec36ab0",
+    "templates/theme.js": "d4ef9d80813724242b7fa9d56b75d235930e658dbc418fe430331425249d74ee",
+    "site/theme.js": "3ee041b0f2731bd42c64a0bcff7b0bcb07a3f3607b410bf865db7c6ed089c246",
+    "tests/test_p0_prophet_candidate_board.py": "9ef03c65b2fd0d43a87cca726d43ff0e1f68b42055e92788fcc6e2dc119dd169",
+    "docs/pr-crops/prophet-plan-record-trust-20260916/browser-receipt.json": "b4bfb2bca13127954154aa140a0c88ff7ae1afcf6544125ba36ccd0d2467154f"
   },
   "tests": {
-    "command": "python3 -m pytest tests/test_p_mp1_shell_stance_projection.py tests/test_prophet_card_shared.py tests/test_prophet_card_live_change.py tests/test_p_mp1_shell_nonus_byte_parity.py tests/test_p_mp1_shell_repair_round.py tests/test_p_mp1_shell_ladder_error_state.py tests/test_p_mp1_shell_ladder_filter_css.py tests/test_china_archetype_d_s1.py -q -p no:cacheprovider --basetemp=.pytest-tmp-plan-record-nav-matrix",
-    "process": 8553,
+    "command": "python3 -m pytest tests/test_p0_prophet_candidate_board.py tests/test_p_mp1_shell_stance_projection.py tests/test_prophet_card_shared.py tests/test_prophet_card_live_change.py tests/test_p_mp1_shell_nonus_byte_parity.py tests/test_p_mp1_shell_repair_round.py tests/test_p_mp1_shell_ladder_error_state.py tests/test_china_archetype_d_s1.py tests/test_p_mp1_shell_ladder_filter_css.py -q -p no:cacheprovider --basetemp=/tmp/prophet-plan-trust-r2-plus-pager-focused-20260917",
+    "process": 5749,
     "exit_code": 0,
-    "passed": 199,
-    "failed": 0
+    "passed": 218,
+    "failed": 0,
+    "log": "/tmp/prophet-plan-trust-r2-plus-pager-focused-20260917.log"
   },
   "red_green": {
     "red_process": 95825,
@@ -75,5 +99,63 @@
     "introduced": 0,
     "inherited": 0,
     "runtime_seconds": 388.37
+  },
+  "pager_red_green": {
+    "red_process": 98291,
+    "red_exit_code": 1,
+    "red_passed": 1,
+    "red_failed": 1,
+    "red_reason": "resolved history consumed default pager slots; visible unresolved was 12 instead of 15",
+    "red_log": "/tmp/prophet-plan-record-count-red-recovery-20260917.log",
+    "green_process": 4280,
+    "green_exit_code": 0,
+    "green_passed": 2,
+    "green_failed": 0,
+    "green_log": "/tmp/prophet-plan-record-count-green-20260917.log"
+  },
+  "main_composition": {
+    "protected_main": "5269a38f383d466f03cf1d7599d12de70118acad",
+    "merge_base": "4f37209719d2ca5caf9fd3a37aca29fa363f351c",
+    "owned_path_movement": [
+      "templates/dashboard.html.j2"
+    ],
+    "movement_commit": "8b335abb3e6d9b86e49d1754ee31a46141a3d3c8",
+    "classification": "BOUNDED_NONOVERLAP_OBSERVED_MERGE_PROOF_PENDING_DESCENDANT",
+    "reason": "main movement is confined to risk-dialog rank-momentum CSS/markup; pager/lifecycle seams are at separate dashboard hunks"
+  },
+  "review_state": {
+    "independent_review": "NOT_ASSIGNED",
+    "semantic_review": "FULL_REREVIEW_REQUIRED_ON_PAGER_DESCENDANT",
+    "dialogue_edge": "NOT_WATCHER_ENABLED"
+  },
+  "release_gates": {
+    "draft_hold": true,
+    "independent_review_required": true,
+    "exact_descendant_ci_security_required": true,
+    "current_main_merge_composition_required": true,
+    "authenticated_production_browser_required": true,
+    "subsequent_ordinary_scheduled_update_required": true,
+    "automatic_merge_authorized": false
+  },
+  "pager_contract_delta": {
+    "status": "NOT_RUN_ON_UNPUBLISHED_PAGER_WORKTREE",
+    "prior_r2_contract_delta_preserved_above": true
+  },
+  "final_verification": {
+    "process": 57065,
+    "exit_code": 0,
+    "tests_passed": 218,
+    "tests_failed": 0,
+    "test_log": "/tmp/prophet-plan-record-r3-final-tests-20260917.log",
+    "node_checks_passed": 2,
+    "template_site_sync_pairs": 98,
+    "visual_cases_passed": 8,
+    "navigation_cases_passed": 2,
+    "pager_cases_passed": 1,
+    "browser_log": "/tmp/prophet-plan-record-r3-final-browser-20260917.log",
+    "browser_receipt_sha256": "b4bfb2bca13127954154aa140a0c88ff7ae1afcf6544125ba36ccd0d2467154f",
+    "release_json_valid": true,
+    "diff_check_clean": true,
+    "production_effect": false
   }
 }

@@ -16468,7 +16468,7 @@ html[data-theme="light"] :is(
         <div class="mx-empty-why">{{ t('No qualifying rows today · refreshes after the next close', '今日无符合条件的条目 · 下一收盘后刷新') }}</div>
       </div>
       {%- else %}
-      <div class="nbgrid" data-showmore-rows="3" id="us-life-grid" data-mp1-grid="1">
+      <div class="nbgrid" data-showmore-rows="3" data-showmore-exclude-life="resolved" id="us-life-grid" data-mp1-grid="1">
       {%- with items=_upb.plans, cand_map=_cand_map, trg_map=_plan_trg_map, episode_map=(us_prophet_episodes or {}) %}{% include "_us_prophet_plan_cards.html.j2" %}{% endwith -%}
       </div>{# end #us-life-grid #}
       {#- Repair round 2, finding R1+R3 (COMMISSIONING ADJUDICATION, replaces
@@ -20174,6 +20174,7 @@ if (document.readyState === 'loading') {
       freshLifeGrid.className = lifeGrid.className;
       freshLifeGrid.id = 'us-life-grid';
       freshLifeGrid.setAttribute('data-showmore-rows', '3');
+      freshLifeGrid.setAttribute('data-showmore-exclude-life', 'resolved');
       freshLifeGrid.setAttribute('data-mp1-grid', '1');
       freshLifeGrid.innerHTML = lifeGrid.innerHTML + payload.plan_cards_html;
       lifeGrid.parentNode.insertBefore(freshLifeGrid, lifeGrid);
