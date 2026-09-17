@@ -283,6 +283,90 @@ def test_hub_feed_heals_baked_half_translated_rows(monkeypatch, isolated_hub_sib
         + "\n".join(bad))
 
 
+def test_transition_rebuild_is_content_aware() -> None:
+    """Historical leaked state enums heal, but richer current authored Chinese survives."""
+    leaked = "转换状态 WEAKENING -> TRANSITIONING（3 个预警激活）"
+    rich = (
+        "转换状态 走弱 -> 转换中（3 个预警激活）；"
+        "新增：市场广度/价格背离；解除：信用/股票背离"
+    )
+
+    assert _zh_needs_rebuild("transition_state_change", leaked)
+    assert not _zh_needs_rebuild("transition_state_change", rich)
+
+
+def test_transition_rebuild_tracks_emitter_state_vocabulary(monkeypatch) -> None:
+    """A newly translated transition state automatically joins backlog-heal detection."""
+    monkeypatch.setattr(
+        alerts, "_TS_PLAIN_ZH", {**alerts._TS_PLAIN_ZH, "FUTURE_STATE": "未来状态"}
+    )
+
+    assert _zh_needs_rebuild(
+        "transition_state_change",
+        "转换状态 FUTURE_STATE -> FUTURE_STATE（3 个预警激活）",
+    )
+
+
+def test_hub_feed_preserves_rich_transition_chinese(
+    monkeypatch, isolated_hub_sibling_feeds
+) -> None:
+    """The backlog healer must not erase emitter-authored added/cleared attribution."""
+    import scripts.build_vector as bv
+
+    rich = (
+        "转换状态 走弱 -> 转换中（3 个预警激活）；"
+        "新增：市场广度/价格背离；解除：信用/股票背离"
+    )
+    rows = pd.DataFrame([{
+        "date": "2026-09-10", "rule": "transition_state_change", "severity": "act",
+        "message": ("Transition state WEAKENING -> TRANSITIONING (3 flags active); "
+                    "added: breadth/price divergence; cleared: credit/equity divergence"),
+        "message_zh": rich,
+    }])
+    monkeypatch.setattr(bv.pd, "read_parquet", lambda *a, **k: rows)
+
+    feed = [i for i in bv.home_alert_feed() if i["source"] == "macro"]
+
+    assert len(feed) == 1
+    assert feed[0]["detail_zh"] == rich
+    assert "新增：市场广度/价格背离" in feed[0]["detail_zh"]
+    assert "解除：信用/股票背离" in feed[0]["detail_zh"]
+
+
+def test_alerts_centre_preserves_rich_transition_chinese(monkeypatch, tmp_path):
+    """The Alerts Centre consumes the persisted bilingual transition explanation."""
+    from engine import alert_triage as at
+
+    data_dir = tmp_path / "data"
+    log_path = data_dir / "alerts" / "alerts_log.parquet"
+    log_path.parent.mkdir(parents=True)
+    rich_zh = (
+        "转换状态 走弱 -> 转换中（3 个预警激活）；"
+        "新增：市场广度/价格背离；解除：信用/股票背离"
+    )
+    today = pd.Timestamp("2026-09-10").date()
+    pd.DataFrame([{
+        "date": today.isoformat(),
+        "rule": "transition_state_change",
+        "severity": "act",
+        "message": (
+            "Transition state WEAKENING -> TRANSITIONING (3 flags active); "
+            "added: breadth/price divergence; cleared: credit/equity divergence"
+        ),
+        "message_zh": rich_zh,
+    }]).to_parquet(log_path)
+    monkeypatch.setattr(at.config, "data_dir", lambda: data_dir)
+
+    result = at._macro_raw(today, today - pd.Timedelta(days=30))
+
+    assert result["state"] == at.READ_OK
+    assert len(result["events"]) == 1
+    event = result["events"][0]
+    assert "新增：市场广度/价格背离" in event["detail_zh"]
+    assert "解除：信用/股票背离" in event["detail_zh"]
+    assert "WEAKENING" not in event["detail_zh"]
+
+
 def test_baked_log_rows_still_render_chinese():
     """The real shipped log, so a row shape the translator cannot parse is caught."""
     pytest.importorskip("pyarrow")
