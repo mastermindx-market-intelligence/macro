@@ -341,8 +341,8 @@ def _verify_source_and_receipt(
             "source_body_too_large",
             "source body exceeds the W2 verification boundary",
         )
-    analyzed_body = source_body.strip()
-    body_bytes = analyzed_body.encode("utf-8")
+    analyzed_body = source_body
+    body_bytes = raw_body_bytes
     prompt_document = receipt["document"]
     source_sha256 = _sha256_bytes(body_bytes)
     if (

@@ -2414,16 +2414,53 @@ def test_artifact_preserves_exact_prompt_identity_while_rio_stays_normalized(tmp
     assert stored.rio["document"]["source_name"] == "GS Global"
 
 
-def test_artifact_store_reuses_w1_analyzed_body_normalization(tmp_path):
-    from engine.research_intelligence.store import persist_analysis
+def test_artifact_store_requires_exact_w1_analyzed_body_bytes(tmp_path):
+    from engine.research_intelligence.store import (
+        ResearchIntelligenceInvalid,
+        persist_analysis,
+    )
 
     padded_body = f"\n  {BODY}  \n"
-    receipt = persist_analysis(
-        LocalStore(tmp_path / "store"),
-        _analysis(body=BODY),
-        source_body=padded_body,
+    with pytest.raises(ResearchIntelligenceInvalid) as mismatch:
+        persist_analysis(
+            LocalStore(tmp_path / "store"),
+            _analysis(body=BODY),
+            source_body=padded_body,
+        )
+    assert mismatch.value.code == "source_body_mismatch"
+
+
+def test_vault_adapter_preserves_exact_source_bytes_through_persistence(tmp_path):
+    from engine.research_intelligence.store import load_latest_research_intelligence
+    from engine.research_intelligence.vault_adapter import (
+        analyze_and_persist_vault_report,
     )
-    assert receipt.source_content_sha256 == _sha(BODY)
+
+    body = f"\n  {BODY}  \n"
+    store = LocalStore(tmp_path / "store")
+
+    def good_call(_system, user, **_kwargs):
+        return json.dumps(_rio_from_prompt(user)), "fake-provider", "served-model"
+
+    result = analyze_and_persist_vault_report(
+        {
+            "id": "vault/desk/exact-bytes",
+            "institution": "Example Bank",
+            "title": "Exact bytes",
+        },
+        body,
+        model_id="requested-model",
+        store=store,
+        call=good_call,
+    )
+    assert result["state"] == "ok"
+    assert result["persistence"]["state"] == "created"
+
+    stored = load_latest_research_intelligence(store, "vault/desk/exact-bytes")
+    assert stored is not None
+    assert stored.source_content_sha256 == _sha(body)
+    assert stored.rio["document"]["content_sha256"] == _sha(body)
+
 
 def test_artifact_lost_reply_and_unavailable_status_stays_effect_unknown(tmp_path):
     from engine.research_intelligence.store import (
