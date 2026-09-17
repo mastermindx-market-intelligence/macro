@@ -122,3 +122,58 @@ def test_summary_is_availability_only():
         for part in summary.values()
         for key in part
     )
+
+
+def test_candidate_universe_preserves_executable_sides_and_payoff():
+    date = "2025-07-01"
+    clock = date + "T09:35:00.000"
+    payload = {"response": [
+        group("PUT", 600, [row(clock, 0.23, 0.24)], date),
+        group("PUT", 598, [row(clock, 0.10, 0.11)], date),
+        group("CALL", 610, [row(clock, 0.24, 0.25)], date),
+        group("CALL", 612, [row(clock, 0.11, 0.12)], date),
+    ]}
+    out = coverage.eligible_candidates(payload, date, "09:35:00.000")
+    assert [candidate["family"] for candidate in out] == ["bull_put", "bear_call"]
+    bull, bear = out
+    assert bull["short_strike"] == 600 and bull["long_strike"] == 598
+    assert abs(bull["entry_credit"] - 0.12) < 1e-12
+    assert abs(bull["max_loss_per_spread"] - 188.0) < 1e-9
+    assert abs(bull["reward_risk"] - (0.12 / 1.88)) < 1e-12
+    assert bull["short_bid"] == 0.23 and bull["long_ask"] == 0.11
+    assert bear["short_strike"] == 610 and bear["long_strike"] == 612
+
+
+def test_candidate_credit_band_edges_are_inclusive():
+    date = "2025-07-01"
+    clock = date + "T09:35:00.000"
+    payload = {"response": [
+        group("PUT", 600, [row(clock, 0.20, 0.21)], date),
+        group("PUT", 598, [row(clock, 0.11, 0.12)], date),
+        group("CALL", 610, [row(clock, 0.27, 0.28)], date),
+        group("CALL", 612, [row(clock, 0.11, 0.12)], date),
+    ]}
+    out = coverage.eligible_candidates(payload, date, "09:35:00.000")
+    credits = sorted(round(candidate["entry_credit"], 8) for candidate in out)
+    assert credits == [0.08, 0.15]
+
+
+def test_candidate_universe_refuses_unfrozen_clock():
+    try:
+        coverage.eligible_candidates({"response": []}, "2025-07-01", "09:40:00.000")
+    except coverage.CoverageError as exc:
+        assert "clock" in str(exc)
+    else:
+        raise AssertionError("unfrozen decision clock accepted")
+
+
+def test_candidate_object_contains_no_outcome_or_gamma_fields():
+    date = "2025-07-01"
+    clock = date + "T09:35:00.000"
+    payload = {"response": [
+        group("PUT", 600, [row(clock, 0.23, 0.24)], date),
+        group("PUT", 598, [row(clock, 0.10, 0.11)], date),
+    ]}
+    candidate = coverage.eligible_candidates(payload, date, "09:35:00.000")[0]
+    forbidden = ("gamma", "gex", "pnl", "profit", "stop", "outcome", "label", "exit")
+    assert not any(any(token in key.lower() for token in forbidden) for key in candidate)
