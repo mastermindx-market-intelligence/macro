@@ -111,68 +111,86 @@ def price_features(prices: Mapping[str, float], decision_clock: str) -> dict[str
     return out
 
 
-def iv_features_for_contract(
-    payload: Any,
-    session_date: str,
-    *,
-    right: str,
-    strike: float,
-    decision_clock: str,
-) -> dict[str, float | None]:
-    """IV level/change for the exact mechanically-selected short contract.
+def _valid_iv(value: Any, error: Any) -> float | None:
+    iv = _finite_positive(value)
+    try:
+        iv_error = float(error)
+    except (TypeError, ValueError):
+        return None
+    if iv is None or not math.isfinite(iv_error) or iv_error != 0.0:
+        return None
+    return iv
 
-    Valid IV is strictly finite, positive, and ``iv_error == 0``. No interpolation,
-    nearest-strike substitution, or cross-contract fill is allowed.
-    """
-    if decision_clock not in DECISION_CLOCKS:
-        raise FeatureError("decision clock is not frozen")
-    normalized_right = right.upper()[0]
-    if normalized_right not in {"C", "P"}:
-        raise FeatureError("right is malformed")
-    wanted = round(float(strike), 3)
-    values: dict[str, float] = {}
-    found_contract = False
+
+def _atm_iv_at_clock(
+    payload: Any, session_date: str, clock: str, underlying_price: float
+) -> float | None:
+    by_strike: dict[float, dict[str, float]] = {}
     for group in _response(payload):
         contract, data = group.get("contract"), group.get("data")
         if not isinstance(contract, Mapping) or not isinstance(data, list):
             raise FeatureError("Greeks contract group is malformed")
-        source_right = str(contract.get("right", "")).upper()[:1]
-        try:
-            source_strike = round(float(contract.get("strike")), 3)
-        except (TypeError, ValueError):
-            continue
         if str(contract.get("symbol", "")).upper() != "SPY" or str(contract.get("expiration")) != session_date:
             continue
-        if source_right != normalized_right or source_strike != wanted:
+        right = str(contract.get("right", "")).upper()[:1]
+        if right not in {"C", "P"}:
             continue
-        found_contract = True
+        try:
+            strike = round(float(contract.get("strike")), 3)
+        except (TypeError, ValueError):
+            continue
         for row in data:
             if not isinstance(row, Mapping):
                 continue
-            timestamp = str(row.get("timestamp", ""))
-            if not timestamp.startswith(session_date + "T"):
+            if str(row.get("timestamp", "")) != session_date + "T" + clock:
                 continue
-            clock = timestamp.split("T", 1)[1]
-            if clock not in {OPEN_CLOCK, decision_clock}:
+            iv = _valid_iv(row.get("implied_vol"), row.get("iv_error"))
+            if iv is None:
                 continue
-            iv = _finite_positive(row.get("implied_vol"))
-            try:
-                iv_error = float(row.get("iv_error"))
-            except (TypeError, ValueError):
-                continue
-            if iv is None or not math.isfinite(iv_error) or iv_error != 0.0:
-                continue
-            previous = values.get(clock)
-            if previous is not None and abs(previous - iv) > 1e-12:
-                raise FeatureError("conflicting IV rows for exact contract/clock")
-            values[clock] = iv
-    if not found_contract:
-        return {"short_iv_level": None, "short_iv_change_from_open": None}
-    level = values.get(decision_clock)
-    opening = values.get(OPEN_CLOCK)
+            prior = by_strike.setdefault(strike, {}).get(right)
+            if prior is not None and abs(prior - iv) > 1e-12:
+                raise FeatureError("conflicting IV rows for one contract/clock")
+            by_strike[strike][right] = iv
+    if not by_strike:
+        return None
+    chosen = min(by_strike, key=lambda strike: (abs(strike - underlying_price), strike))
+    values = list(by_strike[chosen].values())
+    return sum(values) / len(values) if values else None
+
+
+def atm_iv_features(
+    payload: Any, session_date: str, *, decision_clock: str, prices: Mapping[str, float]
+) -> dict[str, float | None]:
+    """Frozen PIT same-day ATM IV level and change from first valid post-open IV.
+
+    At each minute the chosen strike is nearest to contemporaneous spot; ties prefer
+    the lower strike. Valid call/put IVs at that strike are averaged. The change
+    anchor is the first valid minute from 09:30 through the decision clock.
+    """
+    if decision_clock not in DECISION_CLOCKS:
+        raise FeatureError("decision clock is not frozen")
+    decision_minutes = {"09:35:00.000": 5, "09:45:00.000": 15, "10:00:00.000": 30}[decision_clock]
+    observations: list[tuple[int, float]] = []
+    for minute in range(decision_minutes + 1):
+        clock = _clock_at("2000-01-01", minute)
+        spot = _finite_positive(prices.get(clock))
+        if spot is None:
+            continue
+        iv = _atm_iv_at_clock(payload, session_date, clock, spot)
+        if iv is not None:
+            observations.append((minute, iv))
+    level = next((iv for minute, iv in observations if minute == decision_minutes), None)
+    if not observations or level is None:
+        return {
+            "atm_iv_level": level,
+            "atm_iv_change_from_first_valid": None,
+            "atm_iv_anchor_minutes_from_open": None,
+        }
+    anchor_minute, anchor_iv = observations[0]
     return {
-        "short_iv_level": level,
-        "short_iv_change_from_open": None if level is None or opening is None else level - opening,
+        "atm_iv_level": level,
+        "atm_iv_change_from_first_valid": level - anchor_iv,
+        "atm_iv_anchor_minutes_from_open": float(anchor_minute),
     }
 
 
@@ -197,8 +215,6 @@ def build_a1_features(
     session_date: str,
     decision_clock: str,
     greeks_payload: Any,
-    short_right: str,
-    short_strike: float,
     event_fixture: Mapping[str, Any],
 ) -> dict[str, Any]:
     prices = collapse_underlying_prices(greeks_payload, session_date)
@@ -206,12 +222,11 @@ def build_a1_features(
         "session_date": session_date,
         "decision_clock": decision_clock,
         **price_features(prices, decision_clock),
-        **iv_features_for_contract(
+        **atm_iv_features(
             greeks_payload,
             session_date,
-            right=short_right,
-            strike=short_strike,
             decision_clock=decision_clock,
+            prices=prices,
         ),
         **event_features(session_date, event_fixture),
         # Parent prereg includes gap, but no lawful previous-close source is admitted yet.
