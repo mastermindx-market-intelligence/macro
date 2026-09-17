@@ -1,0 +1,167 @@
+{
+  "source_commit": "27ec910d04fc81692cf9640347ac31fd3de40170",
+  "artifact": "data/signal_foundry/candidates.jsonl",
+  "artifact_sha256": "543a4bd9eec83c525ab813f47dd0d389c2837f8cf133832c4bb0bacb662270c8",
+  "candidate_count": 22,
+  "unique_v2_constructions": 22,
+  "opaque_legacy_rows": 0,
+  "synthetic_source_dimension_changes_distinguished": 88,
+  "original_rows_unchanged": true,
+  "per_candidate": [
+    {
+      "id": "SF-0001",
+      "old_hash": "eb48c97f24f0dfdf0683",
+      "v1_reproduced": true,
+      "v2_hash": "8f98aaf1a5d822f587a0",
+      "same_definition_still_seen": true
+    },
+    {
+      "id": "SF-0002",
+      "old_hash": "d8c2c06e888b7a5bf244",
+      "v1_reproduced": true,
+      "v2_hash": "4f937c39a789eaffbb2c",
+      "same_definition_still_seen": true
+    },
+    {
+      "id": "SF-0003",
+      "old_hash": "b055f8a8b6eac6a5f8ee",
+      "v1_reproduced": true,
+      "v2_hash": "d639f9a46aeca9880d34",
+      "same_definition_still_seen": true
+    },
+    {
+      "id": "SF-0004",
+      "old_hash": "17a90516431cfd688ae3",
+      "v1_reproduced": true,
+      "v2_hash": "611ce3b7316bf2f44287",
+      "same_definition_still_seen": true
+    },
+    {
+      "id": "SF-0005",
+      "old_hash": "ee758fe9c35bb8bf8324",
+      "v1_reproduced": true,
+      "v2_hash": "563447a4e6c656f03bfc",
+      "same_definition_still_seen": true
+    },
+    {
+      "id": "SF-0006",
+      "old_hash": "9f1be46ae6def56712fa",
+      "v1_reproduced": true,
+      "v2_hash": "074019eb2b91a686a0d1",
+      "same_definition_still_seen": true
+    },
+    {
+      "id": "SF-0007",
+      "old_hash": "303fe6075de8e816cda5",
+      "v1_reproduced": true,
+      "v2_hash": "4d0eafb67261c2e6e3bb",
+      "same_definition_still_seen": true
+    },
+    {
+      "id": "SF-0008",
+      "old_hash": "e91a9126055e4bac9934",
+      "v1_reproduced": true,
+      "v2_hash": "81ee7d93c1f13e5b76aa",
+      "same_definition_still_seen": true
+    },
+    {
+      "id": "SF-0009",
+      "old_hash": "22b41cef3d5b62c0300e",
+      "v1_reproduced": true,
+      "v2_hash": "d31f02288ee771f73e71",
+      "same_definition_still_seen": true
+    },
+    {
+      "id": "SF-0010",
+      "old_hash": "22b41cef3d5b62c0300e",
+      "v1_reproduced": true,
+      "v2_hash": "db36b07645781019cf53",
+      "same_definition_still_seen": true
+    },
+    {
+      "id": "SF-0011",
+      "old_hash": "397bf6a173785d4ba9ec",
+      "v1_reproduced": true,
+      "v2_hash": "9be2da94095b8d5b5d4e",
+      "same_definition_still_seen": true
+    },
+    {
+      "id": "SF-0012",
+      "old_hash": "add74f4d8d2ae4166b96",
+      "v1_reproduced": true,
+      "v2_hash": "91b7a075d93b4390a8c2",
+      "same_definition_still_seen": true
+    },
+    {
+      "id": "SF-0013",
+      "old_hash": "f6080e45fadf478077d7",
+      "v1_reproduced": true,
+      "v2_hash": "1bc6679cd6c8465cfaa4",
+      "same_definition_still_seen": true
+    },
+    {
+      "id": "SF-0014",
+      "old_hash": "e05dfd6220dfbd6a6746",
+      "v1_reproduced": true,
+      "v2_hash": "cc70650e932ce7cb3f89",
+      "same_definition_still_seen": true
+    },
+    {
+      "id": "SF-0015",
+      "old_hash": "798e984aede3d529225d",
+      "v1_reproduced": true,
+      "v2_hash": "75176ab961787345af62",
+      "same_definition_still_seen": true
+    },
+    {
+      "id": "SF-0016",
+      "old_hash": "c3783a00f524e0cbd889",
+      "v1_reproduced": true,
+      "v2_hash": "7292833b3203140277d5",
+      "same_definition_still_seen": true
+    },
+    {
+      "id": "SF-0017",
+      "old_hash": "f478016a264ba83f3746",
+      "v1_reproduced": true,
+      "v2_hash": "592c9cf1fee0224e134b",
+      "same_definition_still_seen": true
+    },
+    {
+      "id": "SF-0018",
+      "old_hash": "d3692e04f81bfd75a803",
+      "v1_reproduced": true,
+      "v2_hash": "e4310692db7f704207fc",
+      "same_definition_still_seen": true
+    },
+    {
+      "id": "SF-0019",
+      "old_hash": "18bd1513c04fd4adf735",
+      "v1_reproduced": true,
+      "v2_hash": "8b716eb8a9855b63463c",
+      "same_definition_still_seen": true
+    },
+    {
+      "id": "SF-0020",
+      "old_hash": "d9407c51587284457ac8",
+      "v1_reproduced": true,
+      "v2_hash": "833bf1955dc086aaea1c",
+      "same_definition_still_seen": true
+    },
+    {
+      "id": "SF-0021",
+      "old_hash": "d937d4c0e1a0c218133c",
+      "v1_reproduced": true,
+      "v2_hash": "626fcce398eb3e73db92",
+      "same_definition_still_seen": true
+    },
+    {
+      "id": "SF-0022",
+      "old_hash": "ea3291aa18938d3b4e04",
+      "v1_reproduced": true,
+      "v2_hash": "9a4026454e0598b39d2b",
+      "same_definition_still_seen": true
+    }
+  ],
+  "qualification": "Read-only identity projection; no market evaluation, changed trial count or production candidate filed."
+}
