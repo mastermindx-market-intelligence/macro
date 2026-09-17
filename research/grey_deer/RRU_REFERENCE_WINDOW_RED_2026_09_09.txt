@@ -1,0 +1,256 @@
+test_au_all_null (__main__.ReferenceWindowTests.test_au_all_null) ... FAIL
+test_au_member (__main__.ReferenceWindowTests.test_au_member) ... FAIL
+test_au_outside (__main__.ReferenceWindowTests.test_au_outside) ... ok
+test_ca_all_null (__main__.ReferenceWindowTests.test_ca_all_null) ... FAIL
+test_ca_member (__main__.ReferenceWindowTests.test_ca_member) ... FAIL
+test_ca_outside (__main__.ReferenceWindowTests.test_ca_outside) ... ok
+test_cn_all_null (__main__.ReferenceWindowTests.test_cn_all_null) ... FAIL
+test_cn_member (__main__.ReferenceWindowTests.test_cn_member) ... FAIL
+test_cn_outside (__main__.ReferenceWindowTests.test_cn_outside) ... ok
+test_ez_all_null (__main__.ReferenceWindowTests.test_ez_all_null) ... FAIL
+test_ez_member (__main__.ReferenceWindowTests.test_ez_member) ... FAIL
+test_ez_outside (__main__.ReferenceWindowTests.test_ez_outside) ... ok
+test_gb_all_null (__main__.ReferenceWindowTests.test_gb_all_null) ... FAIL
+test_gb_member (__main__.ReferenceWindowTests.test_gb_member) ... FAIL
+test_gb_outside (__main__.ReferenceWindowTests.test_gb_outside) ... ok
+test_hk_all_null (__main__.ReferenceWindowTests.test_hk_all_null) ... FAIL
+test_hk_member (__main__.ReferenceWindowTests.test_hk_member) ... FAIL
+test_hk_outside (__main__.ReferenceWindowTests.test_hk_outside) ... ok
+test_in_all_null (__main__.ReferenceWindowTests.test_in_all_null) ... FAIL
+test_in_member (__main__.ReferenceWindowTests.test_in_member) ... FAIL
+test_in_outside (__main__.ReferenceWindowTests.test_in_outside) ... ok
+test_jp_all_null (__main__.ReferenceWindowTests.test_jp_all_null) ... FAIL
+test_jp_member (__main__.ReferenceWindowTests.test_jp_member) ... FAIL
+test_jp_outside (__main__.ReferenceWindowTests.test_jp_outside) ... ok
+test_kr_all_null (__main__.ReferenceWindowTests.test_kr_all_null) ... FAIL
+test_kr_member (__main__.ReferenceWindowTests.test_kr_member) ... FAIL
+test_kr_outside (__main__.ReferenceWindowTests.test_kr_outside) ... ok
+test_tw_all_null (__main__.ReferenceWindowTests.test_tw_all_null) ... FAIL
+test_tw_member (__main__.ReferenceWindowTests.test_tw_member) ... FAIL
+test_tw_outside (__main__.ReferenceWindowTests.test_tw_outside) ... ok
+
+======================================================================
+FAIL: test_au_all_null (__main__.ReferenceWindowTests.test_au_all_null)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_REFERENCE_WINDOW_TESTS_2026_09_09.py", line 32, in test
+    self.assertEqual(q['comparison_comparable'], case == 'outside',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        'Latest-30 completeness does not establish the ranks reference composition')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False : Latest-30 completeness does not establish the ranks reference composition
+
+======================================================================
+FAIL: test_au_member (__main__.ReferenceWindowTests.test_au_member)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_REFERENCE_WINDOW_TESTS_2026_09_09.py", line 32, in test
+    self.assertEqual(q['comparison_comparable'], case == 'outside',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        'Latest-30 completeness does not establish the ranks reference composition')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False : Latest-30 completeness does not establish the ranks reference composition
+
+======================================================================
+FAIL: test_ca_all_null (__main__.ReferenceWindowTests.test_ca_all_null)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_REFERENCE_WINDOW_TESTS_2026_09_09.py", line 32, in test
+    self.assertEqual(q['comparison_comparable'], case == 'outside',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        'Latest-30 completeness does not establish the ranks reference composition')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False : Latest-30 completeness does not establish the ranks reference composition
+
+======================================================================
+FAIL: test_ca_member (__main__.ReferenceWindowTests.test_ca_member)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_REFERENCE_WINDOW_TESTS_2026_09_09.py", line 32, in test
+    self.assertEqual(q['comparison_comparable'], case == 'outside',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        'Latest-30 completeness does not establish the ranks reference composition')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False : Latest-30 completeness does not establish the ranks reference composition
+
+======================================================================
+FAIL: test_cn_all_null (__main__.ReferenceWindowTests.test_cn_all_null)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_REFERENCE_WINDOW_TESTS_2026_09_09.py", line 32, in test
+    self.assertEqual(q['comparison_comparable'], case == 'outside',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        'Latest-30 completeness does not establish the ranks reference composition')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False : Latest-30 completeness does not establish the ranks reference composition
+
+======================================================================
+FAIL: test_cn_member (__main__.ReferenceWindowTests.test_cn_member)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_REFERENCE_WINDOW_TESTS_2026_09_09.py", line 32, in test
+    self.assertEqual(q['comparison_comparable'], case == 'outside',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        'Latest-30 completeness does not establish the ranks reference composition')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False : Latest-30 completeness does not establish the ranks reference composition
+
+======================================================================
+FAIL: test_ez_all_null (__main__.ReferenceWindowTests.test_ez_all_null)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_REFERENCE_WINDOW_TESTS_2026_09_09.py", line 32, in test
+    self.assertEqual(q['comparison_comparable'], case == 'outside',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        'Latest-30 completeness does not establish the ranks reference composition')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False : Latest-30 completeness does not establish the ranks reference composition
+
+======================================================================
+FAIL: test_ez_member (__main__.ReferenceWindowTests.test_ez_member)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_REFERENCE_WINDOW_TESTS_2026_09_09.py", line 32, in test
+    self.assertEqual(q['comparison_comparable'], case == 'outside',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        'Latest-30 completeness does not establish the ranks reference composition')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False : Latest-30 completeness does not establish the ranks reference composition
+
+======================================================================
+FAIL: test_gb_all_null (__main__.ReferenceWindowTests.test_gb_all_null)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_REFERENCE_WINDOW_TESTS_2026_09_09.py", line 32, in test
+    self.assertEqual(q['comparison_comparable'], case == 'outside',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        'Latest-30 completeness does not establish the ranks reference composition')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False : Latest-30 completeness does not establish the ranks reference composition
+
+======================================================================
+FAIL: test_gb_member (__main__.ReferenceWindowTests.test_gb_member)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_REFERENCE_WINDOW_TESTS_2026_09_09.py", line 32, in test
+    self.assertEqual(q['comparison_comparable'], case == 'outside',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        'Latest-30 completeness does not establish the ranks reference composition')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False : Latest-30 completeness does not establish the ranks reference composition
+
+======================================================================
+FAIL: test_hk_all_null (__main__.ReferenceWindowTests.test_hk_all_null)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_REFERENCE_WINDOW_TESTS_2026_09_09.py", line 32, in test
+    self.assertEqual(q['comparison_comparable'], case == 'outside',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        'Latest-30 completeness does not establish the ranks reference composition')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False : Latest-30 completeness does not establish the ranks reference composition
+
+======================================================================
+FAIL: test_hk_member (__main__.ReferenceWindowTests.test_hk_member)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_REFERENCE_WINDOW_TESTS_2026_09_09.py", line 32, in test
+    self.assertEqual(q['comparison_comparable'], case == 'outside',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        'Latest-30 completeness does not establish the ranks reference composition')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False : Latest-30 completeness does not establish the ranks reference composition
+
+======================================================================
+FAIL: test_in_all_null (__main__.ReferenceWindowTests.test_in_all_null)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_REFERENCE_WINDOW_TESTS_2026_09_09.py", line 32, in test
+    self.assertEqual(q['comparison_comparable'], case == 'outside',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        'Latest-30 completeness does not establish the ranks reference composition')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False : Latest-30 completeness does not establish the ranks reference composition
+
+======================================================================
+FAIL: test_in_member (__main__.ReferenceWindowTests.test_in_member)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_REFERENCE_WINDOW_TESTS_2026_09_09.py", line 32, in test
+    self.assertEqual(q['comparison_comparable'], case == 'outside',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        'Latest-30 completeness does not establish the ranks reference composition')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False : Latest-30 completeness does not establish the ranks reference composition
+
+======================================================================
+FAIL: test_jp_all_null (__main__.ReferenceWindowTests.test_jp_all_null)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_REFERENCE_WINDOW_TESTS_2026_09_09.py", line 32, in test
+    self.assertEqual(q['comparison_comparable'], case == 'outside',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        'Latest-30 completeness does not establish the ranks reference composition')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False : Latest-30 completeness does not establish the ranks reference composition
+
+======================================================================
+FAIL: test_jp_member (__main__.ReferenceWindowTests.test_jp_member)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_REFERENCE_WINDOW_TESTS_2026_09_09.py", line 32, in test
+    self.assertEqual(q['comparison_comparable'], case == 'outside',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        'Latest-30 completeness does not establish the ranks reference composition')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False : Latest-30 completeness does not establish the ranks reference composition
+
+======================================================================
+FAIL: test_kr_all_null (__main__.ReferenceWindowTests.test_kr_all_null)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_REFERENCE_WINDOW_TESTS_2026_09_09.py", line 32, in test
+    self.assertEqual(q['comparison_comparable'], case == 'outside',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        'Latest-30 completeness does not establish the ranks reference composition')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False : Latest-30 completeness does not establish the ranks reference composition
+
+======================================================================
+FAIL: test_kr_member (__main__.ReferenceWindowTests.test_kr_member)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_REFERENCE_WINDOW_TESTS_2026_09_09.py", line 32, in test
+    self.assertEqual(q['comparison_comparable'], case == 'outside',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        'Latest-30 completeness does not establish the ranks reference composition')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False : Latest-30 completeness does not establish the ranks reference composition
+
+======================================================================
+FAIL: test_tw_all_null (__main__.ReferenceWindowTests.test_tw_all_null)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_REFERENCE_WINDOW_TESTS_2026_09_09.py", line 32, in test
+    self.assertEqual(q['comparison_comparable'], case == 'outside',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        'Latest-30 completeness does not establish the ranks reference composition')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False : Latest-30 completeness does not establish the ranks reference composition
+
+======================================================================
+FAIL: test_tw_member (__main__.ReferenceWindowTests.test_tw_member)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_REFERENCE_WINDOW_TESTS_2026_09_09.py", line 32, in test
+    self.assertEqual(q['comparison_comparable'], case == 'outside',
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        'Latest-30 completeness does not establish the ranks reference composition')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True != False : Latest-30 completeness does not establish the ranks reference composition
+
+----------------------------------------------------------------------
+Ran 30 tests in 0.333s
+
+FAILED (failures=20)
+{"tests": 30, "failures": 20, "errors": 0, "source_unchanged": true, "synthetic_only": true, "cases": [{"market": "au", "case": "all_null", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}, {"market": "au", "case": "member", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}, {"market": "au", "case": "outside", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}, {"market": "ca", "case": "all_null", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}, {"market": "ca", "case": "member", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}, {"market": "ca", "case": "outside", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}, {"market": "cn", "case": "all_null", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}, {"market": "cn", "case": "member", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}, {"market": "cn", "case": "outside", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}, {"market": "ez", "case": "all_null", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}, {"market": "ez", "case": "member", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}, {"market": "ez", "case": "outside", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}, {"market": "gb", "case": "all_null", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}, {"market": "gb", "case": "member", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}, {"market": "gb", "case": "outside", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}, {"market": "hk", "case": "all_null", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}, {"market": "hk", "case": "member", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}, {"market": "hk", "case": "outside", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}, {"market": "in", "case": "all_null", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}, {"market": "in", "case": "member", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}, {"market": "in", "case": "outside", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}, {"market": "jp", "case": "all_null", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}, {"market": "jp", "case": "member", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}, {"market": "jp", "case": "outside", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}, {"market": "kr", "case": "all_null", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}, {"market": "kr", "case": "member", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}, {"market": "kr", "case": "outside", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}, {"market": "tw", "case": "all_null", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}, {"market": "tw", "case": "member", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}, {"market": "tw", "case": "outside", "comparison_comparable": true, "recent_incomplete": 0, "reference_sessions": null, "reference_incomplete": null}]}
