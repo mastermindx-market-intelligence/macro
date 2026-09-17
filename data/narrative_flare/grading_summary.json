@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-16T15:57:43.108593+00:00",
+  "generated_at": "2026-09-17T04:42:34.011717+00:00",
   "families": {
     "narrative_source_call": {
       "n_claims": 335,
@@ -32,7 +32,7 @@
     }
   },
   "source_registry_n": 2,
-  "source_registry_total_calls": 11049,
+  "source_registry_total_calls": 11378,
   "authority": {
     "tier": "display",
     "may_rank": false,
