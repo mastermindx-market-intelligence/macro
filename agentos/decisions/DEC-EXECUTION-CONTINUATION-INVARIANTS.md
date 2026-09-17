@@ -114,6 +114,11 @@ falls.
 
 ## The binding clauses, verbatim
 
+This law does not weaken the ordinary ship chain: both bind, and neither releases the
+other. A blocked lane is a reason to keep working other lanes, never a reason to leave
+an unmerged pull request; `merge-on-green`, `PARKED / HOLD-FOR-SOL`, the escape
+ladders and the model-routing law are all untouched.
+
 These are the exact sentences the law surfaces carry, and
 `tests/test_execution_continuation_law.py` pins each of them on every surface. A
 paraphrase on one surface and not another is how a fleet ends up with two rules.

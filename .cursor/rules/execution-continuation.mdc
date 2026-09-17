@@ -5,8 +5,11 @@ alwaysApply: true
 
 # Execution continuation law
 
-A blocked lane is not a finished mission. This rule governs when a session may stop.
-It does not weaken the ordinary commit -> push -> PR -> CI -> merge -> live contract.
+A blocked lane is not a finished mission. This rule governs when a session may STOP; the
+ordinary commit -> push -> PR -> CI -> merge -> live contract governs what the ship
+chain owes once a session produces a commit. This law does not weaken the ordinary ship
+chain: both bind, and neither releases the other. A blocked lane is a reason to keep
+working other lanes, never a reason to leave an unmerged pull request.
 This law promotes no worker to principal, widens no credential, and changes no
 provider permission.
 

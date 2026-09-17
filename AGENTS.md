@@ -403,8 +403,10 @@ are in where work happens and how large the context is.
 ## Execution continuation law
 
 A blocked lane is not a finished mission. This section governs when a session may
-stop; the "Definition of done" section below governs what the ship chain owes once a
-session produces a commit. Both bind, and neither releases the other.
+STOP; the "Definition of done" section below governs what the ship chain owes once a
+session produces a commit. This law does not weaken the ordinary ship chain: both bind,
+and neither releases the other. A blocked lane is a reason to keep working other lanes,
+never a reason to leave an unmerged pull request.
 
 ### Authority model — restated here, duplicated nowhere
 

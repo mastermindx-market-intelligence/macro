@@ -618,6 +618,21 @@ def test_accepted_work_is_not_redone_without_a_material_invalidator():
     _on_every_surface("lost transcript", "absent memory")
 
 
+def test_the_continuation_law_never_reads_as_a_release_from_the_ship_chain():
+    """LAW (two-sided), and the likeliest way a future edit breaks this.
+
+    "A blocked lane is not a finished mission" is one paraphrase away from "a blocked
+    lane lets me stop", which would hand every session a release from the unmerged
+    contract the project owner restored by hand on 2026-08-12. The two laws compose;
+    neither releases the other, and every surface has to say so.
+    """
+    _on_every_surface(
+        "This law does not weaken the ordinary ship chain: both bind, and neither "
+        "releases the other.",
+        "never a reason to leave an unmerged pull request",
+    )
+
+
 def test_the_law_creates_no_second_control_plane():
     """The non-goal, pinned. Every surface must say what it does not create.
 
