@@ -40,24 +40,24 @@
      "name": "Texas Instruments Inc"
     },
     {
-     "ticker": "QCOM",
-     "name": "Qualcomm Inc"
-    },
-    {
      "ticker": "MRVL",
      "name": "Marvell Technology Inc"
+    },
+    {
+     "ticker": "QCOM",
+     "name": "Qualcomm Inc"
     },
     {
      "ticker": "ADI",
      "name": "Analog Devices Inc"
     },
     {
-     "ticker": "NXPI",
-     "name": "NXP Semiconductors NV"
-    },
-    {
      "ticker": "MPWR",
      "name": "Monolithic Power System Inc"
+    },
+    {
+     "ticker": "NXPI",
+     "name": "NXP Semiconductors NV"
     },
     {
      "ticker": "ALAB",
@@ -398,24 +398,24 @@
      "name": "Texas Instruments Inc"
     },
     {
-     "ticker": "QCOM",
-     "name": "Qualcomm Inc"
-    },
-    {
      "ticker": "MRVL",
      "name": "Marvell Technology Inc"
+    },
+    {
+     "ticker": "QCOM",
+     "name": "Qualcomm Inc"
     },
     {
      "ticker": "ADI",
      "name": "Analog Devices Inc"
     },
     {
-     "ticker": "NXPI",
-     "name": "NXP Semiconductors NV"
-    },
-    {
      "ticker": "MPWR",
      "name": "Monolithic Power System Inc"
+    },
+    {
+     "ticker": "NXPI",
+     "name": "NXP Semiconductors NV"
     },
     {
      "ticker": "ALAB",

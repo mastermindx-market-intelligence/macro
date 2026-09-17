@@ -14,18 +14,18 @@
     "progress": 100.0,
     "pace": 100.0,
     "retention": 100.0,
-    "overlay": 67.0
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 6.5,
-    "dist_to_t1_r": -6.0,
-    "dist_to_t2_r": -4.5,
+    "dist_to_stop_r": 8.71,
+    "dist_to_t1_r": -8.21,
+    "dist_to_t2_r": -6.71,
     "horizon_pct_used": 57.8,
-    "p1": 5.0,
-    "p2": 2.5,
+    "p1": 6.4731,
+    "p2": 3.2366,
     "p3": null,
-    "move_r": 7.5,
-    "mfe_r": 7.5,
+    "move_r": 9.71,
+    "mfe_r": 9.71,
     "mae_r": 0.0
   },
   "rr_ratio": null,
@@ -39,9 +39,9 @@
     "recommended_action": "display \u2014 narrate, not authoritative order",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
-  "_mfe": 4.649996337890627,
+  "_mfe": 6.0199990844726585,
   "_mae": 0.0,
-  "_max_p1": 4.999996062247949,
+  "_max_p1": 6.473117295131844,
   "_first_trigger_ts": "2026-08-21",
   "_first_t1_ts": "2026-08-24",
   "_first_t2_ts": "2026-08-25",

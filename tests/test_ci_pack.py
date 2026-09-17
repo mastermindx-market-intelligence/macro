@@ -3651,6 +3651,14 @@ CURATED_EXCLUSIVE = {
     # Exclusivity drops only those three opaque fallback roots while retaining
     # every executable, template, fixture, receipt, and helper input it owns.
     "stock-dashboard-first-frame",
+    # 2026-09-16 main-red repair. #7164 created a deliberately bounded,
+    # hermetic PR owner for one recovered package and its root lineage test,
+    # and declared both exact path surfaces — but omitted `scope: exclusive`.
+    # Inference therefore unioned opaque package-test edges into whole-tree
+    # fallback breadth and made this job a third unscoped always-on selector
+    # for templates/index.html (133 > 132). Curate the stated owner boundary;
+    # do not fund that unrelated match by raising the packing ceiling.
+    "research-vault-source-lineage",
 }
 
 
@@ -3668,6 +3676,19 @@ def test_the_curated_exclusive_set_is_actually_declared() -> None:
     """The set this file pins must be the set the manifest declares."""
     declared = {job.job_id for job in PACK.load_legacy_jobs(MANIFEST) if job.exclusive}
     assert declared == CURATED_EXCLUSIVE, sorted(declared ^ CURATED_EXCLUSIVE)
+
+
+def test_research_vault_source_lineage_is_curated_to_its_recovered_package() -> None:
+    """The recovered MarketDesk owner must not become a whole-tree CI rider."""
+    manifest = _yaml(MANIFEST)
+    job = manifest["jobs"]["research-vault-source-lineage"]
+
+    assert job["gate"] == "code"
+    assert job["scope"] == "exclusive"
+    assert set(job["paths"]) == {
+        "collectors/marketdesk_extractor/**",
+        "tests/test_marketdesk_extractor_lineage.py",
+    }
 
 
 def test_curated_exclusive_scopes_cover_their_own_import_closure() -> None:
