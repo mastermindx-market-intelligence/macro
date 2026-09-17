@@ -1,6 +1,6 @@
 {
   "scope": "real official API capture -> calendar adapter -> full production template -> extracted real event component + actual selector/renderer in local browser; surrounding VM synthetic; full app authentication NOT bypassed; NOT deployed/authenticated production acceptance",
-  "generated_at_utc": "2026-09-17T23:51:03.016090+00:00",
+  "generated_at_utc": "2026-09-17T23:54:04.792173+00:00",
   "source": {
     "observed_at_utc": "2026-09-17T23:23:17.293106+00:00",
     "url": "https://www.treasurydirect.gov/TA_WS/securities/upcoming?format=json",
@@ -8,7 +8,7 @@
     "sha256": "d171085597cfc49d99ccc12590e78481854228d927532f85a14c0969f6ae3c7a",
     "rows": 7
   },
-  "html_sha256": "4c8e73b6556f62bb9df1b21b055089b832a404586560cb717b09c1f7441b2033",
+  "html_sha256": "093330cc53462f435badd9a1ff147b57727f47fba2098c67f863028adcb32d6a",
   "source_file_hashes": {
     "engine/event_calendar.py": "26feb9a98c5636c8b63a2637bf2a0b44176b7b8c0c2ed2b5a4815937a8c40ad8",
     "engine/calendar_event_context.py": "e32499c3fa4c29fb0fe4412f4301066ad07d248e624b0354feaca5df0e9f6029",
@@ -46,7 +46,7 @@
       "theme": "light",
       "lang": "en",
       "file": "1440-light-en.png",
-      "sha256": "e3170101886672231ad634229dd178cf11023738aa2a7ef062f020857e20ab16",
+      "sha256": "dd12a2eb38d96b4ab1e8c231b45a5de0759394b03fbfb2a9f6f93aa66a0806fa",
       "cards": 2,
       "bounds": {
         "w": 926,
@@ -58,7 +58,7 @@
       "theme": "light",
       "lang": "zh",
       "file": "1440-light-zh.png",
-      "sha256": "2eab37a4d93754b57a0c65a5fd785fb2201606f21176cd455ec985fa4b3a8e9d",
+      "sha256": "3d766362f9b8b8bbdbeced67db59ba319f112dcd4f0ff72f8a06a20c607bcdf7",
       "cards": 2,
       "bounds": {
         "w": 926,
@@ -94,7 +94,7 @@
       "theme": "light",
       "lang": "en",
       "file": "390-light-en.png",
-      "sha256": "2909d73fb45f2e5f2b4139ba99b4ccdeb6ac22796de04bcffb1ad5dc23fe4ed8",
+      "sha256": "0264057886d0a1afab913d62784c6acfbe6952f878f5ab60d42475cc7ec31818",
       "cards": 2,
       "bounds": {
         "w": 328,

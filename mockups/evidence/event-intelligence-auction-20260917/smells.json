@@ -1,6 +1,6 @@
 {
   "disclaimer": "Heuristics identify review targets; they do not determine that a page is bad.",
-  "generated_at": "2026-09-17T23:51:03Z",
+  "generated_at": "2026-09-17T23:54:07Z",
   "metric_notes": {
     "asof_present": "approximate contract probe (selector OR case-insensitive text pattern); absence is a prompt to look, not a verdict",
     "console_error_count": "distinct console 'error' texts across every state of the page the driver attempted, captured or not — a state that failed to load is often the one carrying the evidence",
@@ -19,18 +19,18 @@
         "asof_present": false,
         "by_viewport": {
           "desktop": {
-            "document_height_px": 978,
+            "document_height_px": 1008,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           },
           "mobile": {
-            "document_height_px": 1052,
+            "document_height_px": 1100,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           }
         },
         "console_error_count": 1,
-        "document_height_px": 978,
+        "document_height_px": 1008,
         "duplicate_heading_texts": [],
         "elements_wider_than_viewport": 0,
         "heading_counts": {
@@ -50,7 +50,7 @@
           "viewport": "desktop"
         },
         "panel_count": 2,
-        "payload_bytes_total": 555823,
+        "payload_bytes_total": 168022,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 3,
@@ -59,7 +59,7 @@
         "source_present": false,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 138
+        "visible_word_count": 154
       },
       "page_id": "event-context-proof.html",
       "route": "/event-context-proof.html"
@@ -72,7 +72,7 @@
     "resolved_gitdir_or_none": null,
     "resolved_sha_or_none": null,
     "resolved_sha_source": "no git directory was found at or above --site-dir; nothing resolved",
-    "site_dir": "/private/tmp/mmx-event-intelligence-proof-reviewed/canonical-page"
+    "site_dir": "/private/tmp/mmx-event-intelligence-proof-final-utf8/canonical-page"
   },
   "tool": {
     "module_ref": "scripts/capture_page_evidence.py",

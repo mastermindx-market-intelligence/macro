@@ -43,7 +43,7 @@ function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){retur
 function openModal(){throw new Error('No forecast was supplied to this component proof');}
 function renderCard(){throw new Error('No forecast was supplied to this component proof');}
 """
-html='<html data-theme="dark" data-lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/theme.css">'+''.join(str(x) for x in soup.find_all('style'))+'</head><body>'+str(dialog)+str(soup.find(id='calendar-event-context-data'))+'<script>'+(ROOT/'templates/calendar_event_context.js').read_text()+'</script><script>'+glue+selector+'\nwireCalendarCards();</script></body></html>'
+html='<html data-theme="dark" data-lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/theme.css">'+''.join(str(x) for x in soup.find_all('style'))+'</head><body>'+str(dialog)+str(soup.find(id='calendar-event-context-data'))+'<script>'+(ROOT/'templates/calendar_event_context.js').read_text()+'</script><script>'+glue+selector+'\nwireCalendarCards();</script></body></html>'
 (OUT/'component.html').write_text(html)
 BASE=ROOT/'templates'
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -125,7 +125,7 @@ stage=Soup(page_html,'html.parser')
 panel=stage.find(id='rr-inline')
 data=stage.find(id='calendar-event-context-data')
 style=''.join(str(x) for x in stage.find_all('style'))
-page_html='<html><head><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/theme.css">'+style+'</head><body><main style="max-width:980px;margin:24px auto;padding:16px">'+str(panel)+'</main>'+str(data)+'<script>'+(ROOT/'templates/calendar_event_context.js').read_text()+"</script><script>document.getElementById('rr-inline-date').textContent='2026-09-23';document.getElementById('rr-inline-body').innerHTML=window.MMXCalendarEventContext.renderDate('2026-09-23');</script></body></html>"
+page_html='<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/theme.css">'+style+'</head><body><main style="max-width:980px;margin:24px auto;padding:16px">'+str(panel)+'</main>'+str(data)+'<script>'+(ROOT/'templates/calendar_event_context.js').read_text()+'</script><script>'+glue+selector+"selectInlineDate('2026-09-23',null,true);</script></body></html>"
 (capture_site/'event-context-proof.html').write_text(page_html)
 shutil.copy2(ROOT/'templates/theme.css',capture_site/'theme.css')
 evidence=OUT/'canonical-evidence';evidence.mkdir(exist_ok=True)
