@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T21:51:28.366860+00:00",
-  "count": 2317,
+  "generated_at": "2026-09-17T22:21:29.792132+00:00",
+  "count": 2319,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -123,6 +123,46 @@
       "tickers": [],
       "top_pick": false,
       "pages": 29,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-vby8jjpvg7b-d3855b",
+      "title": "Taiwan CBC on Hold as Expected on Benign Inflation Outlook",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:39:35Z",
+      "summary_points": [
+        "Taiwan CBC Policy & Housing Shifts: CBC raised LTV to 70% (2nd hike YTD), housing market cooling (real estate loans share down to 34.4%), inflation expected >2% through 2027 despite moderation next year.",
+        "Inflation & Geopolitical Risks: Headline CPI at 2.03% (vs 1.91% forecast), inflation >2% persisting through 2027; geopolitical risks (Middle East, US trade policies) and Fed rate hikes exacerbate TWD weakness.",
+        "Capital Flows & Policy Differentiation: Capital outflows driven by foreign investors diversifying post-equity rally (not rate differentials); CBC maintains \"slightly tight\" stance via quantity tools (LTV hikes), not rate changes.",
+        "Commodity Inflation Impact: Global commodity price surges accelerating inflation, increasing portfolio risk exposure amid persistent domestic inflation trends."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-lugymrlp9fr-cb908c",
+      "title": "Euro Area Final Inflation Details Show Easing Underlying Momentum but Energy Pressures Push Headline Higher",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:39:25Z",
+      "summary_points": [
+        "Revised Inflation Peak: Headline inflation revised down to 3.25% (from 3.26%), but energy pressures push peak to 3.8% in 2026Q4 (vs prior 3.6%), with core inflation firming at 2.40% (peaking at 2.7% in 2027Q1).",
+        "Services as Primary Driver: Services inflation contribution rose to 1.43pp (hospitality), exceeding historical averages, and remains the key inflation driver with core services peaking at 2.7% in 2027Q1.",
+        "Critical Data Release: Eurostat’s September flash HICP (Oct 2) is pivotal for validating near-term trends and informing positioning ahead of Q4 energy volatility.",
+        "Energy Component Upgrade: Energy contribution upgraded by 2pp to 18% for Q4, with peak energy inflation at 1.19pp (Aug), persisting risks from rising refined product prices and forward energy costs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
