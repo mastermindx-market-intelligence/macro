@@ -1,0 +1,498 @@
+{
+  "r1": "0b2493990358d44dee5b625176c5289eab9a04e4",
+  "r2_parent": "5872527400d5e30e89a2c7393585ec1d837ad083",
+  "common": "bb02c526c4809564338f2a7208e063dbe86bc476",
+  "files": [
+    {
+      "path": "scripts/commodity_asset_read.py",
+      "publication_sha256": "4d0025c25c29b3d3eff8c42d3fa9a68f6ac7e9004d8f52a9e909c74243574ba1",
+      "tested_integration_sha256": "4d0025c25c29b3d3eff8c42d3fa9a68f6ac7e9004d8f52a9e909c74243574ba1",
+      "exact_r1_plus_r2_equals_tested_source": true
+    },
+    {
+      "path": "scripts/build_commodities.py",
+      "publication_sha256": "b97a2317a3187f0686055bb6fb9ce23ecb6df6b52a3743b91d441e4a423abaa0",
+      "tested_integration_sha256": "c596ccbaa73a038b0ba515088af802fe60fb94972be94f060b45821086d6a8f5",
+      "exact_r1_plus_r2_equals_tested_source": true
+    },
+    {
+      "path": "scripts/build_vector.py",
+      "publication_sha256": "4a4fa8c4c809c45ca65c6dedfae735e3387f680d52939c1a205199e28b4480bc",
+      "tested_integration_sha256": "4a4fa8c4c809c45ca65c6dedfae735e3387f680d52939c1a205199e28b4480bc",
+      "exact_r1_plus_r2_equals_tested_source": true
+    },
+    {
+      "path": "templates/_commodity_asset_read.html.j2",
+      "publication_sha256": "ff62a30a4dad392bfcacc5f2d28519fe7f04fce7990e7c7fa4c6412739be8d5b",
+      "tested_integration_sha256": "ff62a30a4dad392bfcacc5f2d28519fe7f04fce7990e7c7fa4c6412739be8d5b",
+      "exact_r1_plus_r2_equals_tested_source": true
+    },
+    {
+      "path": "templates/commodities.html.j2",
+      "publication_sha256": "7ee4764077f259d64783e4484361213d8c3568cc410a6eac414427438b66ea9a",
+      "tested_integration_sha256": "4e30d0d57fef635f48b558d9648752e05efe599e2178c4f033e1c38caebf6fa4",
+      "exact_r1_plus_r2_equals_tested_source": true
+    },
+    {
+      "path": "tests/test_commodity_asset_read.py",
+      "publication_sha256": "6ed558928c3904a95a426f38b904f6687fe9a491698d455a50221a822f60a0d6",
+      "tested_integration_sha256": "6ed558928c3904a95a426f38b904f6687fe9a491698d455a50221a822f60a0d6",
+      "exact_r1_plus_r2_equals_tested_source": true
+    },
+    {
+      "path": "scripts/capture_commodity_asset_read_evidence.py",
+      "publication_sha256": "4de133ac7389efcd9e3620a5d8206d9540438e808872c6a94e0b17c5bd002036",
+      "tested_integration_sha256": "4de133ac7389efcd9e3620a5d8206d9540438e808872c6a94e0b17c5bd002036",
+      "exact_r1_plus_r2_equals_tested_source": true
+    }
+  ],
+  "r1_source_kept_separate": true,
+  "note": "One two-space Jinja insertion mismatch was corrected in publication staging; final source composition is byte-identical to the tested integration.",
+  "semantic_source": "b5b38cc0b2aa78778cb00e85c25f278b3100fc59",
+  "evidence_scope": "candidate not production",
+  "tests": "483 passed, 2 existing NumPy warnings",
+  "test_log": "........................................................................ [ 14%]\n........................................................................ [ 29%]\n........................................................................ [ 44%]\n........................................................................ [ 59%]\n........................................................................ [ 74%]\n........................................................................ [ 89%]\n...................................................                      [100%]\n=============================== warnings summary ===============================\ntests/test_forex.py::test_calibrate_pair_signs_inverted_and_normalizes\n  /opt/homebrew/lib/python3.14/site-packages/numpy/lib/_function_base_impl.py:3036: RuntimeWarning: invalid value encountered in divide\n    c /= stddev[:, None]\n\ntests/test_forex.py::test_calibrate_pair_signs_inverted_and_normalizes\n  /opt/homebrew/lib/python3.14/site-packages/numpy/lib/_function_base_impl.py:3037: RuntimeWarning: invalid value encountered in divide\n    c /= stddev[None, :]\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n483 passed, 2 warnings in 42.81s\n",
+  "test_log_sha256": "a56a17e5772de4f1b36152ddf426a1715e33127001c97df6b8e9dcaff03a5e16",
+  "mutation_proof": {
+    "cases": [
+      {
+        "mutation": "defaults_claim_stored",
+        "detected": true,
+        "returncode": 1,
+        "test": "test_empty_calibration_is_not_reliable_by_default"
+      },
+      {
+        "mutation": "foreign_receipt_accepted",
+        "detected": true,
+        "returncode": 1,
+        "test": "test_projection_rejects_foreign_calibration_receipt"
+      },
+      {
+        "mutation": "metadata_changes_score",
+        "detected": true,
+        "returncode": 1,
+        "test": "test_asset_vm_binds_the_same_calibration_used_by_score"
+      },
+      {
+        "mutation": "double_calibration_load",
+        "detected": true,
+        "returncode": 1,
+        "test": "test_asset_vm_resolves_missing_calibration_once"
+      },
+      {
+        "mutation": "hub_drops_origin",
+        "detected": true,
+        "returncode": 1,
+        "test": "test_hub_shows_parameter_origin_without_recomputing_score"
+      }
+    ],
+    "source_files_unmodified": true
+  },
+  "numerical_parity": {
+    "kind": "before/after actual asset_vm with identical hashed archived inputs",
+    "baseline_r1": "0b2493990358d44dee5b625176c5289eab9a04e4",
+    "baseline_r2": "306834682e15121c636db1091a1de8f242c3608e",
+    "cases": 8,
+    "all_original_conviction_fields_identical": true,
+    "input_digests_equal": true,
+    "source_files_sha256": {
+      "scripts/commodity_asset_read.py": "4d0025c25c29b3d3eff8c42d3fa9a68f6ac7e9004d8f52a9e909c74243574ba1",
+      "scripts/build_commodities.py": "c596ccbaa73a038b0ba515088af802fe60fb94972be94f060b45821086d6a8f5",
+      "scripts/build_vector.py": "4a4fa8c4c809c45ca65c6dedfae735e3387f680d52939c1a205199e28b4480bc",
+      "templates/_commodity_asset_read.html.j2": "ff62a30a4dad392bfcacc5f2d28519fe7f04fce7990e7c7fa4c6412739be8d5b",
+      "templates/commodities.html.j2": "4e30d0d57fef635f48b558d9648752e05efe599e2178c4f033e1c38caebf6fa4",
+      "tests/test_commodity_asset_read.py": "6ed558928c3904a95a426f38b904f6687fe9a491698d455a50221a822f60a0d6",
+      "scripts/capture_commodity_asset_read_evidence.py": "4de133ac7389efcd9e3620a5d8206d9540438e808872c6a94e0b17c5bd002036"
+    },
+    "calibration_sha256": "c8207cc79f703f5dcf2eb5a54bf084c8dc39e1548918b53a781996ba216ced41",
+    "rows": [
+      {
+        "asset": "gold",
+        "parameters": "defaults",
+        "input_asof": "2026-09-15 00:00:00",
+        "input_sha256": "5b457233d8a63e4e4fe3f0c42757c4a34e2b71494df7f7b4d174b238469f810c",
+        "input_sources": {
+          "drivers": {
+            "breakeven10": "bf38359158d527523645a98677baf56c3ba5c904112980cf53eb7b7976c1b435",
+            "breakeven5y5y": "740429909068401afbb0704406cb564a101228106bff4ec8bc1f2fdd368b118f",
+            "broad_dollar": "7be3442842a1b5c7e98a62b404afc3fa54555645368ca882d6a00c3910ef9f93",
+            "dxy": "c23faf3186e11df9e238fe6f30c996f70407bbca6bc6d0abdca9a53eb073cc3f",
+            "fed_balance": "209332f3641ac1603107c22dc573c5087347f32d659f49c79c598c66b8712649",
+            "indpro": "379a9447133c4911bf1cde34f11d79c521c2d593a2d03237be984df30710cb49",
+            "real_yield": "98283362600d5a76aed5af777e3558a22b71a3f47bbcc00b9a6c043e62e6440c",
+            "us10y": "4b0c390b3dfa1ad3f75498a0642f8d3a013dda5dc2409d20624e6a49bcbe2283",
+            "us2y": "57c0b4fd6ec1ab7c07be1a4e31cb8b441412e1efd754268f4ffbde745dede5ab",
+            "vix": "9003221f084685df087c7723122caf2a35e3a5f42b33d3fc78b54aa359420a23"
+          },
+          "extras": {
+            "curve_2s10s": "e35b1a69f9a56c59f1e873c175060b605232789bb37058b91357ea01dd0595d2",
+            "dollar_cot": "a092c72de07c22b1a91c78716ac6e87893b0225f670e8e00fe66ebb10d04ee45",
+            "dxy": "1554a8a087dd39e07dcdd1538e1c025eb93acd5d02754271fee57c3434151263",
+            "fed_balance": "209332f3641ac1603107c22dc573c5087347f32d659f49c79c598c66b8712649",
+            "fed_funds_fut": "05089133668921365869a5247bdedab7996539160b311653c0ef1d70b96b5c82",
+            "hy_oas": "ce1311962f8c42a9d1e43631bd3c044b240387d31a18195d5698457655867a4f",
+            "m2": "38002b61155c336d8414360359bb0e0b39f7328fe61616a011be16bfa48fe617",
+            "move": "1abdc1f33d380868bf9c973249e0af7693637781b62ab2bb94fbfbfa8c27a89a",
+            "net_liquidity": "ea399d1d12822419796fedb77d35a06945817b737f7678a3c486903721407be0",
+            "rrp": "a7c0529f699dcab63598a96b76ebef8ec4389f0202c033732d0473f69d87aa17",
+            "vix": "9003221f084685df087c7723122caf2a35e3a5f42b33d3fc78b54aa359420a23"
+          }
+        },
+        "exposure_pct": 0,
+        "origin": {
+          "schema": "mastermind.commodity_calibration_evidence.v1",
+          "asset": "gold",
+          "status": "defaults",
+          "declared_reliable": null,
+          "horizons_bars": [],
+          "label_en": "Default parameters",
+          "label_zh": "默认参数",
+          "disclosure_en": "Parameter-source evidence, not a win probability. Declared historical horizons do not validate a current entry.",
+          "disclosure_zh": "仅说明参数来源，并非胜率；历史收益期限不代表当前入场已获验证。"
+        }
+      },
+      {
+        "asset": "gold",
+        "parameters": "stored",
+        "input_asof": "2026-09-15 00:00:00",
+        "input_sha256": "5b457233d8a63e4e4fe3f0c42757c4a34e2b71494df7f7b4d174b238469f810c",
+        "input_sources": {
+          "drivers": {
+            "breakeven10": "bf38359158d527523645a98677baf56c3ba5c904112980cf53eb7b7976c1b435",
+            "breakeven5y5y": "740429909068401afbb0704406cb564a101228106bff4ec8bc1f2fdd368b118f",
+            "broad_dollar": "7be3442842a1b5c7e98a62b404afc3fa54555645368ca882d6a00c3910ef9f93",
+            "dxy": "c23faf3186e11df9e238fe6f30c996f70407bbca6bc6d0abdca9a53eb073cc3f",
+            "fed_balance": "209332f3641ac1603107c22dc573c5087347f32d659f49c79c598c66b8712649",
+            "indpro": "379a9447133c4911bf1cde34f11d79c521c2d593a2d03237be984df30710cb49",
+            "real_yield": "98283362600d5a76aed5af777e3558a22b71a3f47bbcc00b9a6c043e62e6440c",
+            "us10y": "4b0c390b3dfa1ad3f75498a0642f8d3a013dda5dc2409d20624e6a49bcbe2283",
+            "us2y": "57c0b4fd6ec1ab7c07be1a4e31cb8b441412e1efd754268f4ffbde745dede5ab",
+            "vix": "9003221f084685df087c7723122caf2a35e3a5f42b33d3fc78b54aa359420a23"
+          },
+          "extras": {
+            "curve_2s10s": "e35b1a69f9a56c59f1e873c175060b605232789bb37058b91357ea01dd0595d2",
+            "dollar_cot": "a092c72de07c22b1a91c78716ac6e87893b0225f670e8e00fe66ebb10d04ee45",
+            "dxy": "1554a8a087dd39e07dcdd1538e1c025eb93acd5d02754271fee57c3434151263",
+            "fed_balance": "209332f3641ac1603107c22dc573c5087347f32d659f49c79c598c66b8712649",
+            "fed_funds_fut": "05089133668921365869a5247bdedab7996539160b311653c0ef1d70b96b5c82",
+            "hy_oas": "ce1311962f8c42a9d1e43631bd3c044b240387d31a18195d5698457655867a4f",
+            "m2": "38002b61155c336d8414360359bb0e0b39f7328fe61616a011be16bfa48fe617",
+            "move": "1abdc1f33d380868bf9c973249e0af7693637781b62ab2bb94fbfbfa8c27a89a",
+            "net_liquidity": "ea399d1d12822419796fedb77d35a06945817b737f7678a3c486903721407be0",
+            "rrp": "a7c0529f699dcab63598a96b76ebef8ec4389f0202c033732d0473f69d87aa17",
+            "vix": "9003221f084685df087c7723122caf2a35e3a5f42b33d3fc78b54aa359420a23"
+          }
+        },
+        "exposure_pct": 0,
+        "origin": {
+          "schema": "mastermind.commodity_calibration_evidence.v1",
+          "asset": "gold",
+          "status": "stored",
+          "declared_reliable": true,
+          "horizons_bars": [
+            63,
+            126
+          ],
+          "label_en": "Stored calibration",
+          "label_zh": "已存校准参数",
+          "disclosure_en": "Parameter-source evidence, not a win probability. Declared historical horizons do not validate a current entry.",
+          "disclosure_zh": "仅说明参数来源，并非胜率；历史收益期限不代表当前入场已获验证。"
+        }
+      },
+      {
+        "asset": "silver",
+        "parameters": "defaults",
+        "input_asof": "2026-09-15 00:00:00",
+        "input_sha256": "c3b462b4bf495249136ca60a6b61192c1c0a9581e65d4eaf58b4d6293695b78c",
+        "input_sources": {
+          "drivers": {
+            "breakeven10": "bf38359158d527523645a98677baf56c3ba5c904112980cf53eb7b7976c1b435",
+            "breakeven5y5y": "740429909068401afbb0704406cb564a101228106bff4ec8bc1f2fdd368b118f",
+            "broad_dollar": "7be3442842a1b5c7e98a62b404afc3fa54555645368ca882d6a00c3910ef9f93",
+            "dxy": "c23faf3186e11df9e238fe6f30c996f70407bbca6bc6d0abdca9a53eb073cc3f",
+            "fed_balance": "209332f3641ac1603107c22dc573c5087347f32d659f49c79c598c66b8712649",
+            "indpro": "379a9447133c4911bf1cde34f11d79c521c2d593a2d03237be984df30710cb49",
+            "real_yield": "98283362600d5a76aed5af777e3558a22b71a3f47bbcc00b9a6c043e62e6440c",
+            "us10y": "4b0c390b3dfa1ad3f75498a0642f8d3a013dda5dc2409d20624e6a49bcbe2283",
+            "us2y": "57c0b4fd6ec1ab7c07be1a4e31cb8b441412e1efd754268f4ffbde745dede5ab",
+            "vix": "9003221f084685df087c7723122caf2a35e3a5f42b33d3fc78b54aa359420a23"
+          },
+          "extras": {
+            "curve_2s10s": "e35b1a69f9a56c59f1e873c175060b605232789bb37058b91357ea01dd0595d2",
+            "dollar_cot": "a092c72de07c22b1a91c78716ac6e87893b0225f670e8e00fe66ebb10d04ee45",
+            "dxy": "1554a8a087dd39e07dcdd1538e1c025eb93acd5d02754271fee57c3434151263",
+            "fed_balance": "209332f3641ac1603107c22dc573c5087347f32d659f49c79c598c66b8712649",
+            "fed_funds_fut": "05089133668921365869a5247bdedab7996539160b311653c0ef1d70b96b5c82",
+            "hy_oas": "ce1311962f8c42a9d1e43631bd3c044b240387d31a18195d5698457655867a4f",
+            "m2": "38002b61155c336d8414360359bb0e0b39f7328fe61616a011be16bfa48fe617",
+            "move": "1abdc1f33d380868bf9c973249e0af7693637781b62ab2bb94fbfbfa8c27a89a",
+            "net_liquidity": "ea399d1d12822419796fedb77d35a06945817b737f7678a3c486903721407be0",
+            "rrp": "a7c0529f699dcab63598a96b76ebef8ec4389f0202c033732d0473f69d87aa17",
+            "vix": "9003221f084685df087c7723122caf2a35e3a5f42b33d3fc78b54aa359420a23"
+          }
+        },
+        "exposure_pct": 0,
+        "origin": {
+          "schema": "mastermind.commodity_calibration_evidence.v1",
+          "asset": "silver",
+          "status": "defaults",
+          "declared_reliable": null,
+          "horizons_bars": [],
+          "label_en": "Default parameters",
+          "label_zh": "默认参数",
+          "disclosure_en": "Parameter-source evidence, not a win probability. Declared historical horizons do not validate a current entry.",
+          "disclosure_zh": "仅说明参数来源，并非胜率；历史收益期限不代表当前入场已获验证。"
+        }
+      },
+      {
+        "asset": "silver",
+        "parameters": "stored",
+        "input_asof": "2026-09-15 00:00:00",
+        "input_sha256": "c3b462b4bf495249136ca60a6b61192c1c0a9581e65d4eaf58b4d6293695b78c",
+        "input_sources": {
+          "drivers": {
+            "breakeven10": "bf38359158d527523645a98677baf56c3ba5c904112980cf53eb7b7976c1b435",
+            "breakeven5y5y": "740429909068401afbb0704406cb564a101228106bff4ec8bc1f2fdd368b118f",
+            "broad_dollar": "7be3442842a1b5c7e98a62b404afc3fa54555645368ca882d6a00c3910ef9f93",
+            "dxy": "c23faf3186e11df9e238fe6f30c996f70407bbca6bc6d0abdca9a53eb073cc3f",
+            "fed_balance": "209332f3641ac1603107c22dc573c5087347f32d659f49c79c598c66b8712649",
+            "indpro": "379a9447133c4911bf1cde34f11d79c521c2d593a2d03237be984df30710cb49",
+            "real_yield": "98283362600d5a76aed5af777e3558a22b71a3f47bbcc00b9a6c043e62e6440c",
+            "us10y": "4b0c390b3dfa1ad3f75498a0642f8d3a013dda5dc2409d20624e6a49bcbe2283",
+            "us2y": "57c0b4fd6ec1ab7c07be1a4e31cb8b441412e1efd754268f4ffbde745dede5ab",
+            "vix": "9003221f084685df087c7723122caf2a35e3a5f42b33d3fc78b54aa359420a23"
+          },
+          "extras": {
+            "curve_2s10s": "e35b1a69f9a56c59f1e873c175060b605232789bb37058b91357ea01dd0595d2",
+            "dollar_cot": "a092c72de07c22b1a91c78716ac6e87893b0225f670e8e00fe66ebb10d04ee45",
+            "dxy": "1554a8a087dd39e07dcdd1538e1c025eb93acd5d02754271fee57c3434151263",
+            "fed_balance": "209332f3641ac1603107c22dc573c5087347f32d659f49c79c598c66b8712649",
+            "fed_funds_fut": "05089133668921365869a5247bdedab7996539160b311653c0ef1d70b96b5c82",
+            "hy_oas": "ce1311962f8c42a9d1e43631bd3c044b240387d31a18195d5698457655867a4f",
+            "m2": "38002b61155c336d8414360359bb0e0b39f7328fe61616a011be16bfa48fe617",
+            "move": "1abdc1f33d380868bf9c973249e0af7693637781b62ab2bb94fbfbfa8c27a89a",
+            "net_liquidity": "ea399d1d12822419796fedb77d35a06945817b737f7678a3c486903721407be0",
+            "rrp": "a7c0529f699dcab63598a96b76ebef8ec4389f0202c033732d0473f69d87aa17",
+            "vix": "9003221f084685df087c7723122caf2a35e3a5f42b33d3fc78b54aa359420a23"
+          }
+        },
+        "exposure_pct": 0,
+        "origin": {
+          "schema": "mastermind.commodity_calibration_evidence.v1",
+          "asset": "silver",
+          "status": "stored",
+          "declared_reliable": true,
+          "horizons_bars": [
+            63,
+            126
+          ],
+          "label_en": "Stored calibration",
+          "label_zh": "已存校准参数",
+          "disclosure_en": "Parameter-source evidence, not a win probability. Declared historical horizons do not validate a current entry.",
+          "disclosure_zh": "仅说明参数来源，并非胜率；历史收益期限不代表当前入场已获验证。"
+        }
+      },
+      {
+        "asset": "copper",
+        "parameters": "defaults",
+        "input_asof": "2026-09-15 00:00:00",
+        "input_sha256": "3aa7025e9ddeea222644b2839ecf265c3403d1962a152d78eab5bc85086803e9",
+        "input_sources": {
+          "drivers": {
+            "breakeven10": "bf38359158d527523645a98677baf56c3ba5c904112980cf53eb7b7976c1b435",
+            "breakeven5y5y": "740429909068401afbb0704406cb564a101228106bff4ec8bc1f2fdd368b118f",
+            "broad_dollar": "7be3442842a1b5c7e98a62b404afc3fa54555645368ca882d6a00c3910ef9f93",
+            "dxy": "c23faf3186e11df9e238fe6f30c996f70407bbca6bc6d0abdca9a53eb073cc3f",
+            "fed_balance": "209332f3641ac1603107c22dc573c5087347f32d659f49c79c598c66b8712649",
+            "indpro": "379a9447133c4911bf1cde34f11d79c521c2d593a2d03237be984df30710cb49",
+            "real_yield": "98283362600d5a76aed5af777e3558a22b71a3f47bbcc00b9a6c043e62e6440c",
+            "us10y": "4b0c390b3dfa1ad3f75498a0642f8d3a013dda5dc2409d20624e6a49bcbe2283",
+            "us2y": "57c0b4fd6ec1ab7c07be1a4e31cb8b441412e1efd754268f4ffbde745dede5ab",
+            "vix": "9003221f084685df087c7723122caf2a35e3a5f42b33d3fc78b54aa359420a23"
+          },
+          "extras": {
+            "curve_2s10s": "e35b1a69f9a56c59f1e873c175060b605232789bb37058b91357ea01dd0595d2",
+            "dollar_cot": "a092c72de07c22b1a91c78716ac6e87893b0225f670e8e00fe66ebb10d04ee45",
+            "dxy": "1554a8a087dd39e07dcdd1538e1c025eb93acd5d02754271fee57c3434151263",
+            "fed_balance": "209332f3641ac1603107c22dc573c5087347f32d659f49c79c598c66b8712649",
+            "fed_funds_fut": "05089133668921365869a5247bdedab7996539160b311653c0ef1d70b96b5c82",
+            "hy_oas": "ce1311962f8c42a9d1e43631bd3c044b240387d31a18195d5698457655867a4f",
+            "m2": "38002b61155c336d8414360359bb0e0b39f7328fe61616a011be16bfa48fe617",
+            "move": "1abdc1f33d380868bf9c973249e0af7693637781b62ab2bb94fbfbfa8c27a89a",
+            "net_liquidity": "ea399d1d12822419796fedb77d35a06945817b737f7678a3c486903721407be0",
+            "rrp": "a7c0529f699dcab63598a96b76ebef8ec4389f0202c033732d0473f69d87aa17",
+            "vix": "9003221f084685df087c7723122caf2a35e3a5f42b33d3fc78b54aa359420a23"
+          }
+        },
+        "exposure_pct": 50,
+        "origin": {
+          "schema": "mastermind.commodity_calibration_evidence.v1",
+          "asset": "copper",
+          "status": "defaults",
+          "declared_reliable": null,
+          "horizons_bars": [],
+          "label_en": "Default parameters",
+          "label_zh": "默认参数",
+          "disclosure_en": "Parameter-source evidence, not a win probability. Declared historical horizons do not validate a current entry.",
+          "disclosure_zh": "仅说明参数来源，并非胜率；历史收益期限不代表当前入场已获验证。"
+        }
+      },
+      {
+        "asset": "copper",
+        "parameters": "stored",
+        "input_asof": "2026-09-15 00:00:00",
+        "input_sha256": "3aa7025e9ddeea222644b2839ecf265c3403d1962a152d78eab5bc85086803e9",
+        "input_sources": {
+          "drivers": {
+            "breakeven10": "bf38359158d527523645a98677baf56c3ba5c904112980cf53eb7b7976c1b435",
+            "breakeven5y5y": "740429909068401afbb0704406cb564a101228106bff4ec8bc1f2fdd368b118f",
+            "broad_dollar": "7be3442842a1b5c7e98a62b404afc3fa54555645368ca882d6a00c3910ef9f93",
+            "dxy": "c23faf3186e11df9e238fe6f30c996f70407bbca6bc6d0abdca9a53eb073cc3f",
+            "fed_balance": "209332f3641ac1603107c22dc573c5087347f32d659f49c79c598c66b8712649",
+            "indpro": "379a9447133c4911bf1cde34f11d79c521c2d593a2d03237be984df30710cb49",
+            "real_yield": "98283362600d5a76aed5af777e3558a22b71a3f47bbcc00b9a6c043e62e6440c",
+            "us10y": "4b0c390b3dfa1ad3f75498a0642f8d3a013dda5dc2409d20624e6a49bcbe2283",
+            "us2y": "57c0b4fd6ec1ab7c07be1a4e31cb8b441412e1efd754268f4ffbde745dede5ab",
+            "vix": "9003221f084685df087c7723122caf2a35e3a5f42b33d3fc78b54aa359420a23"
+          },
+          "extras": {
+            "curve_2s10s": "e35b1a69f9a56c59f1e873c175060b605232789bb37058b91357ea01dd0595d2",
+            "dollar_cot": "a092c72de07c22b1a91c78716ac6e87893b0225f670e8e00fe66ebb10d04ee45",
+            "dxy": "1554a8a087dd39e07dcdd1538e1c025eb93acd5d02754271fee57c3434151263",
+            "fed_balance": "209332f3641ac1603107c22dc573c5087347f32d659f49c79c598c66b8712649",
+            "fed_funds_fut": "05089133668921365869a5247bdedab7996539160b311653c0ef1d70b96b5c82",
+            "hy_oas": "ce1311962f8c42a9d1e43631bd3c044b240387d31a18195d5698457655867a4f",
+            "m2": "38002b61155c336d8414360359bb0e0b39f7328fe61616a011be16bfa48fe617",
+            "move": "1abdc1f33d380868bf9c973249e0af7693637781b62ab2bb94fbfbfa8c27a89a",
+            "net_liquidity": "ea399d1d12822419796fedb77d35a06945817b737f7678a3c486903721407be0",
+            "rrp": "a7c0529f699dcab63598a96b76ebef8ec4389f0202c033732d0473f69d87aa17",
+            "vix": "9003221f084685df087c7723122caf2a35e3a5f42b33d3fc78b54aa359420a23"
+          }
+        },
+        "exposure_pct": 50,
+        "origin": {
+          "schema": "mastermind.commodity_calibration_evidence.v1",
+          "asset": "copper",
+          "status": "weak",
+          "declared_reliable": false,
+          "horizons_bars": [
+            63,
+            126
+          ],
+          "label_en": "Stored calibration: weak",
+          "label_zh": "已存校准：较弱",
+          "disclosure_en": "Parameter-source evidence, not a win probability. Declared historical horizons do not validate a current entry.",
+          "disclosure_zh": "仅说明参数来源，并非胜率；历史收益期限不代表当前入场已获验证。"
+        }
+      },
+      {
+        "asset": "oil",
+        "parameters": "defaults",
+        "input_asof": "2026-09-15 00:00:00",
+        "input_sha256": "ec3367f9aae17761665ef83b32c3d3f854a3b56e37ff514e54ece1fd7ba1ae93",
+        "input_sources": {
+          "drivers": {
+            "breakeven10": "bf38359158d527523645a98677baf56c3ba5c904112980cf53eb7b7976c1b435",
+            "breakeven5y5y": "740429909068401afbb0704406cb564a101228106bff4ec8bc1f2fdd368b118f",
+            "broad_dollar": "7be3442842a1b5c7e98a62b404afc3fa54555645368ca882d6a00c3910ef9f93",
+            "dxy": "c23faf3186e11df9e238fe6f30c996f70407bbca6bc6d0abdca9a53eb073cc3f",
+            "fed_balance": "209332f3641ac1603107c22dc573c5087347f32d659f49c79c598c66b8712649",
+            "indpro": "379a9447133c4911bf1cde34f11d79c521c2d593a2d03237be984df30710cb49",
+            "real_yield": "98283362600d5a76aed5af777e3558a22b71a3f47bbcc00b9a6c043e62e6440c",
+            "us10y": "4b0c390b3dfa1ad3f75498a0642f8d3a013dda5dc2409d20624e6a49bcbe2283",
+            "us2y": "57c0b4fd6ec1ab7c07be1a4e31cb8b441412e1efd754268f4ffbde745dede5ab",
+            "vix": "9003221f084685df087c7723122caf2a35e3a5f42b33d3fc78b54aa359420a23"
+          },
+          "extras": {
+            "curve_2s10s": "e35b1a69f9a56c59f1e873c175060b605232789bb37058b91357ea01dd0595d2",
+            "dollar_cot": "a092c72de07c22b1a91c78716ac6e87893b0225f670e8e00fe66ebb10d04ee45",
+            "dxy": "1554a8a087dd39e07dcdd1538e1c025eb93acd5d02754271fee57c3434151263",
+            "fed_balance": "209332f3641ac1603107c22dc573c5087347f32d659f49c79c598c66b8712649",
+            "fed_funds_fut": "05089133668921365869a5247bdedab7996539160b311653c0ef1d70b96b5c82",
+            "hy_oas": "ce1311962f8c42a9d1e43631bd3c044b240387d31a18195d5698457655867a4f",
+            "m2": "38002b61155c336d8414360359bb0e0b39f7328fe61616a011be16bfa48fe617",
+            "move": "1abdc1f33d380868bf9c973249e0af7693637781b62ab2bb94fbfbfa8c27a89a",
+            "net_liquidity": "ea399d1d12822419796fedb77d35a06945817b737f7678a3c486903721407be0",
+            "rrp": "a7c0529f699dcab63598a96b76ebef8ec4389f0202c033732d0473f69d87aa17",
+            "vix": "9003221f084685df087c7723122caf2a35e3a5f42b33d3fc78b54aa359420a23"
+          }
+        },
+        "exposure_pct": 100,
+        "origin": {
+          "schema": "mastermind.commodity_calibration_evidence.v1",
+          "asset": "oil",
+          "status": "defaults",
+          "declared_reliable": null,
+          "horizons_bars": [],
+          "label_en": "Default parameters",
+          "label_zh": "默认参数",
+          "disclosure_en": "Parameter-source evidence, not a win probability. Declared historical horizons do not validate a current entry.",
+          "disclosure_zh": "仅说明参数来源，并非胜率；历史收益期限不代表当前入场已获验证。"
+        }
+      },
+      {
+        "asset": "oil",
+        "parameters": "stored",
+        "input_asof": "2026-09-15 00:00:00",
+        "input_sha256": "ec3367f9aae17761665ef83b32c3d3f854a3b56e37ff514e54ece1fd7ba1ae93",
+        "input_sources": {
+          "drivers": {
+            "breakeven10": "bf38359158d527523645a98677baf56c3ba5c904112980cf53eb7b7976c1b435",
+            "breakeven5y5y": "740429909068401afbb0704406cb564a101228106bff4ec8bc1f2fdd368b118f",
+            "broad_dollar": "7be3442842a1b5c7e98a62b404afc3fa54555645368ca882d6a00c3910ef9f93",
+            "dxy": "c23faf3186e11df9e238fe6f30c996f70407bbca6bc6d0abdca9a53eb073cc3f",
+            "fed_balance": "209332f3641ac1603107c22dc573c5087347f32d659f49c79c598c66b8712649",
+            "indpro": "379a9447133c4911bf1cde34f11d79c521c2d593a2d03237be984df30710cb49",
+            "real_yield": "98283362600d5a76aed5af777e3558a22b71a3f47bbcc00b9a6c043e62e6440c",
+            "us10y": "4b0c390b3dfa1ad3f75498a0642f8d3a013dda5dc2409d20624e6a49bcbe2283",
+            "us2y": "57c0b4fd6ec1ab7c07be1a4e31cb8b441412e1efd754268f4ffbde745dede5ab",
+            "vix": "9003221f084685df087c7723122caf2a35e3a5f42b33d3fc78b54aa359420a23"
+          },
+          "extras": {
+            "curve_2s10s": "e35b1a69f9a56c59f1e873c175060b605232789bb37058b91357ea01dd0595d2",
+            "dollar_cot": "a092c72de07c22b1a91c78716ac6e87893b0225f670e8e00fe66ebb10d04ee45",
+            "dxy": "1554a8a087dd39e07dcdd1538e1c025eb93acd5d02754271fee57c3434151263",
+            "fed_balance": "209332f3641ac1603107c22dc573c5087347f32d659f49c79c598c66b8712649",
+            "fed_funds_fut": "05089133668921365869a5247bdedab7996539160b311653c0ef1d70b96b5c82",
+            "hy_oas": "ce1311962f8c42a9d1e43631bd3c044b240387d31a18195d5698457655867a4f",
+            "m2": "38002b61155c336d8414360359bb0e0b39f7328fe61616a011be16bfa48fe617",
+            "move": "1abdc1f33d380868bf9c973249e0af7693637781b62ab2bb94fbfbfa8c27a89a",
+            "net_liquidity": "ea399d1d12822419796fedb77d35a06945817b737f7678a3c486903721407be0",
+            "rrp": "a7c0529f699dcab63598a96b76ebef8ec4389f0202c033732d0473f69d87aa17",
+            "vix": "9003221f084685df087c7723122caf2a35e3a5f42b33d3fc78b54aa359420a23"
+          }
+        },
+        "exposure_pct": 100,
+        "origin": {
+          "schema": "mastermind.commodity_calibration_evidence.v1",
+          "asset": "oil",
+          "status": "weak",
+          "declared_reliable": false,
+          "horizons_bars": [
+            63,
+            126
+          ],
+          "label_en": "Stored calibration: weak",
+          "label_zh": "已存校准：较弱",
+          "disclosure_en": "Parameter-source evidence, not a win probability. Declared historical horizons do not validate a current entry.",
+          "disclosure_zh": "仅说明参数来源，并非胜率；历史收益期限不代表当前入场已获验证。"
+        }
+      }
+    ],
+    "production_proof": false,
+    "limits": [
+      "archived September 15 inputs, not current quotes",
+      "no alert tilt in either arm",
+      "not performance validation"
+    ]
+  },
+  "browser": {
+    "manifest": "mockups/evidence/commodities-calibration-origin-r2/manifest.json",
+    "commodity_states": 32,
+    "hub_component_states": 8,
+    "commodity_asset_selections": 128,
+    "calibration_identities": 128,
+    "hub_navigation_journeys": 8
+  },
+  "production_proven": false
+}

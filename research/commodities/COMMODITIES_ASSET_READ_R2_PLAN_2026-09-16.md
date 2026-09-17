@@ -1,3 +1,5 @@
+> Current candidate update: calibration-origin disclosure is implemented at `b5b38cc0b2aa78778cb00e85c25f278b3100fc59`. The scoped input qualification, same-object parameter binding, and 483-test / 40-state proof supersede historical missing/refused implementation statements below. Release remains DRAFT/HOLD and not production-proven. See COMMODITIES_CALIBRATION_ORIGIN_2026-09-17.md and its proof JSON.
+
 # Commodity asset-read R2 — implementation and acceptance
 
 ## Current candidate qualification — supersedes earlier blocker notes below
