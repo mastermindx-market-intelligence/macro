@@ -13,3 +13,9 @@ Eight cases use the actual dashboard template and its unchanged shared dark/ligh
 ## Release
 
 Current Chairman continuation and Mastermind `aacf3df5a47ca37ce71cd47a3bd7caea81ad4cd2` govern this bounded same-operation amendment. #7254 remains DRAFT/HOLD. Exact-head CI, genuine independent full-PR review, integration, canonical publication and actual browser/payload proof remain distinct. This source change does not authorize any of them or complete the parent US availability recovery.
+
+## Returned-source integration
+
+After the copy correction, the existing repaired breadth/geometry/clock sources combine without manual conflict into `c748468aebd81340a241b97035f67327d9f9a5f7`. **518 tests across eleven suites passed**, with 6,447 Python source files unchanged. Current-main source composition is recorded separately; neither creates a production release. The existing visual-evidence checker returns0 for the exact amendment diff.
+
+To reproduce visual evidence, use the existing `tests.test_prophet_whynot_receipts._page` helper with the actual preserved `refusal_receipts` result identified in `recorded-receipt-comparison.json`, save it as `receipt-page-fixture.html` next to a copy of `verify_receipt_page.mjs`, and set that verifier’s template/Playwright paths to the corresponding installed review environment. Its fixture changes only static locale/theme attributes, leaves page JavaScript disabled, and serves shared CSS locally. Do not reuse a real account, bypass a tier gate, or describe the resulting fixture as production.
