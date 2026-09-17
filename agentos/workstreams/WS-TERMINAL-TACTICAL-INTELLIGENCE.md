@@ -26,9 +26,11 @@ owns_paths:
 - terminal:docs/research/TERMINAL_TACTICAL_
 decisions:
 - DEC:TERMINAL-TACTICAL-PRICE-FIRST-APPROVAL
+- DEC:TERMINAL-TACTICAL-R1A-DISPOSITION
 discoveries:
 - DSC:TERMINAL-TACTICAL-PILOT-HISTORY-QUALIFICATION
 - DSC:TERMINAL-INTRADAY-REFRESH-FAILURE-MASKING
+- DSC:TERMINAL-TACTICAL-R1A-EXTENDED-SESSION-RESULT
 waves:
 - id: D0
   title: Existing-store qualification and causal cutoff consumer
@@ -49,12 +51,7 @@ waves:
   status: in_progress
   depends_on:
   - D0
-  next_action: 'Macro #7270 at 5d950c85cd0c8e3a393e555433bf94fd3ee395a7 preserves the seven-arm/84-cell proposed
-    study, exhaustion-versus-continuation design and test contract. DESIGN_ONLY: trial registration and implementation
-    writes were platform-refused, same-carrier inspection found ledger unchanged and module/receipt absent, and
-    no outcomes ran. Resume those exact operations only after a material platform/permission recovery; do not route
-    around them. Current science-owner reads succeeded and resolved daily/intraday interface limits; do not repeat
-    a blanket scientific-source-unavailable claim.'
+  next_action: 'Macro #7270 now carries the registered/implemented R1-A result at remote head a1be5ee08294196e0f2c84d5a93778c17a7901df. The frozen 84-cell grid was registered before outcomes; canonical aggregate SHA256 is 5c75a38d3f5acc61ad5e79fcec2f26af37a6f62da0ed449c4b1533b5cc35ff0b. No arm is promoted. Keep #7270 draft until current-head review/hosted checks; after source acceptance, open a separate R1-B carrier for the already-specified exhaustion/reclaim-versus-continuation experiment. No R1-A threshold rescue.'
 - id: I1
   title: Existing Radar-owned shadow opportunity integration
   status: todo
@@ -98,8 +95,7 @@ do_not_redo:
   as strategy accuracy.'
 - 'Current Chairman correction: Executive is unfinished. Terminal #598 comment 5721925192 supersedes the prior user-reconnect
   prerequisite. Do not repeat Executive authentication probes or ask for design approval.'
-- 'Macro #7270 contains the R1 design at 5d950c85cd0c8e3a393e555433bf94fd3ee395a7. The 84-cell grid is proposed,
-  not registered or executed; no performance result exists.'
+- 'R1-A registration, implementation and corrected-history result are already on Macro #7270. Do not rerun the unchanged 84-cell grid or relax its thresholds after seeing outcomes; consume TTI_R1A_REPORT.md and DEC:TERMINAL-TACTICAL-R1A-DISPOSITION.'
 artifacts:
 - terminal:docs/research/TERMINAL_TACTICAL_D0_EVIDENCE_2026-09-17.md
 - terminal:docs/research/TERMINAL_TACTICAL_D0_CONTRACT.md
@@ -107,10 +103,10 @@ artifacts:
 - terminal:docs/research/TERMINAL_TACTICAL_SESSION_CHAIN_EVIDENCE_2026-09-17.md
 - research/species/tti_r1/STATUS.md
 - research/species/TTI_R1A_PREREG.md
-next_action: 'Advance the existing TTI research and data/release lanes, not Executive installation. #7270 is the
-  exact proposed study/implementation frontier after source-write recovery; #595 has a concrete repair request;
-  #601 still owes actual independent review. Preserve approved scope and do-not-redo D0. No active worker, autonomous
-  scan or empirical edge is claimed.'
+- research/species/TTI_R1A_REPORT.md
+- research/species/tti_r1/RESULT.json
+- research/species/tti_r1/REGISTRATION_RECEIPT.json
+next_action: 'Advance #7270 through current-head review/CI without promoting its null/tiny-N arms. Then start the separate R1-B exhaustion/reclaim-versus-continuation experiment already frozen at design level. In parallel, consume #595 repair evidence and #601 independent review when those existing carriers move. No Executive installation prerequisite, active worker, live scan or validated edge is claimed.'
 ---
 
 This record coordinates the approved Terminal product integration. Existing tactical and scientific owners remain controlling; no live execution is inferred from this authored record.
