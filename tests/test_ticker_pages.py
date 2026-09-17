@@ -16,8 +16,10 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 import sys
 from datetime import date, timedelta
+from hashlib import sha256
 from pathlib import Path
 
 import pytest
@@ -1509,6 +1511,7 @@ class TestTemplateRender:
         js = (_REPO / "site" / "assets" / "js" / "company-intelligence-dossier.js").read_text(encoding="utf-8")
 
         assert "earnings.public_wire_routes/v1" in js
+        assert "earnings.public_wire_routes/v2" in js
         assert "routes.events" in js
         assert "event_id" in js and "transcript_id" in js
         assert "history.hidden = events.length <= 1" in js
@@ -1525,6 +1528,25 @@ class TestTemplateRender:
         assert "?limit=8" not in js
         assert "source.kind === 'transcript' && source.status === 'present'" in js
         assert "typeof source.url" not in js
+
+    def test_company_intelligence_asset_stamp_matches_body_everywhere(self):
+        """Immutable browser URLs must change whenever the dossier asset changes."""
+        asset = _REPO / "site" / "assets" / "js" / "company-intelligence-dossier.js"
+        expected = f"company-intelligence-dossier.js?v={sha256(asset.read_bytes()).hexdigest()[:8]}"
+        template = (_REPO / "templates" / "ticker.html.j2").read_text(encoding="utf-8")
+        assert expected in template, "ticker template does not carry the dossier asset body hash"
+
+        result = subprocess.run(
+            ["git", "grep", "-n", "company-intelligence-dossier.js?v=", "--", "site/stocks"],
+            cwd=_REPO,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        references = [line for line in result.stdout.splitlines() if line]
+        assert references, "no committed ticker page references the dossier asset"
+        stale = [line for line in references if expected not in line]
+        assert not stale, f"stale immutable dossier asset URLs remain: {stale[:5]}"
 
     def test_ticker_template_no_validated_word(self):
         """The word 'validated' must not appear in rendered output."""

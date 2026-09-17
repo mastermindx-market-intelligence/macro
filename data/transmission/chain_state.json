@@ -1,7 +1,7 @@
 {
   "schema": "transmission_chains.v1",
-  "asof": "2026-09-04",
-  "built": "2026-09-06 06:14 UTC",
+  "asof": "2026-09-15",
+  "built": "2026-09-16 07:32 UTC",
   "chains": [
     {
       "chain": "credit_spreads_refinancing",
@@ -37,10 +37,10 @@
               "vs": "SPY",
               "metric": "rs_pp",
               "window": 63,
-              "value": 0.654,
+              "value": -3.569,
               "op": "lt",
               "threshold": 0,
-              "passed": false
+              "passed": true
             }
           ],
           "base_rate": {
@@ -61,7 +61,7 @@
               "series": "HYG/LQD",
               "metric": "ratio_ret_pct",
               "window": 22,
-              "value": 0.865,
+              "value": 0.499,
               "op": "lt",
               "threshold": -2.0,
               "passed": false
@@ -71,17 +71,17 @@
         {
           "id": "refi_cohort_derate",
           "resolved": true,
-          "confirmed": false,
+          "confirmed": true,
           "receipts": [
             {
               "series": "IWM",
               "vs": "SPY",
               "metric": "rs_pp",
               "window": 63,
-              "value": 0.654,
+              "value": -3.569,
               "op": "lt",
               "threshold": 0,
-              "passed": false
+              "passed": true
             }
           ]
         }
@@ -170,7 +170,7 @@
               "path": "transmission.usd_dir",
               "op": "eq",
               "threshold": "strengthening",
-              "value": "flat",
+              "value": "weakening",
               "passed": false
             },
             {
@@ -211,7 +211,7 @@
               "vs": "SPY",
               "metric": "rs_pp",
               "window": 63,
-              "value": -0.667,
+              "value": -2.62,
               "op": "lt",
               "threshold": 0,
               "passed": true
@@ -242,7 +242,7 @@
               "path": "dollar_desk.usd_pos_pctile",
               "op": "gte",
               "threshold": 60,
-              "value": 76.0,
+              "value": 75.0,
               "passed": true
             }
           ]
@@ -256,7 +256,7 @@
               "path": "transmission.usd_dir",
               "op": "eq",
               "threshold": "strengthening",
-              "value": "flat",
+              "value": "weakening",
               "passed": false
             },
             {
@@ -285,7 +285,7 @@
               "vs": "SPY",
               "metric": "rs_pp",
               "window": 63,
-              "value": -0.667,
+              "value": -2.62,
               "op": "lt",
               "threshold": 0,
               "passed": true
@@ -350,14 +350,14 @@
           "note": "descriptive forward excess return of the terminal cohort proxy at terminal-node firings — NOT a forecast, NOT a signal (display-only).",
           "horizons": {
             "21d": {
-              "mean_excess_pct": -0.177,
-              "median_excess_pct": -0.561,
-              "n": 3137
+              "mean_excess_pct": -0.175,
+              "median_excess_pct": -0.57,
+              "n": 3141
             },
             "63d": {
-              "mean_excess_pct": -1.151,
-              "median_excess_pct": -1.939,
-              "n": 3095
+              "mean_excess_pct": -1.14,
+              "median_excess_pct": -1.98,
+              "n": 3099
             }
           }
         }
@@ -373,15 +373,15 @@
         "en": "Oil shock → inflation → yields → long-duration de-rate",
         "zh": "油价冲击 → 通胀 → 收益率 → 长久期估值下修"
       },
-      "state": "dormant",
+      "state": "failed",
       "state_label": {
-        "en": "Dormant",
-        "zh": "休眠"
+        "en": "Halted",
+        "zh": "已中止"
       },
       "hop": 0,
       "n_hops": 3,
       "armable": true,
-      "episode_id": null,
+      "episode_id": "oil_inflation_duration_derate@r2:2026-09-08",
       "hops": [
         {
           "id": "oil_shock->breakeven_rise",
@@ -398,7 +398,7 @@
               "series": "T10YIE",
               "metric": "ret_bp",
               "window": 22,
-              "value": 13.0,
+              "value": 14.0,
               "op": "gt",
               "threshold": 15,
               "passed": false
@@ -442,8 +442,8 @@
               "path": "state.rates.real_10y_chg_63d_bp",
               "op": "gt",
               "threshold": 30,
-              "value": 22.0,
-              "passed": false
+              "value": 39.0,
+              "passed": true
             }
           ],
           "base_rate": {
@@ -482,7 +482,7 @@
               "vs": "SPY",
               "metric": "rs_pp",
               "window": 63,
-              "value": -2.611,
+              "value": -5.797,
               "op": "lt",
               "threshold": 0,
               "passed": true
@@ -500,21 +500,21 @@
         {
           "id": "oil_shock",
           "resolved": true,
-          "confirmed": false,
+          "confirmed": true,
           "receipts": [
             {
               "series": "CL=F",
               "metric": "ret_pct",
               "window": 60,
-              "value": 20.909,
+              "value": 52.224,
               "op": "gt",
               "threshold": 25,
-              "passed": false
+              "passed": true
             },
             {
               "series": "CL=F",
               "metric": "ma50_slope5",
-              "value": 2.0694,
+              "value": 2.319,
               "op": "gt",
               "threshold": 0,
               "passed": true
@@ -530,7 +530,7 @@
               "series": "T10YIE",
               "metric": "ret_bp",
               "window": 22,
-              "value": 13.0,
+              "value": 14.0,
               "op": "gt",
               "threshold": 15,
               "passed": false
@@ -540,7 +540,7 @@
         {
           "id": "yield_rise",
           "resolved": true,
-          "confirmed": false,
+          "confirmed": true,
           "receipts": [
             {
               "path": "state.rates.direction",
@@ -553,8 +553,8 @@
               "path": "state.rates.real_10y_chg_63d_bp",
               "op": "gt",
               "threshold": 30,
-              "value": 22.0,
-              "passed": false
+              "value": 39.0,
+              "passed": true
             }
           ]
         },
@@ -568,7 +568,7 @@
               "vs": "SPY",
               "metric": "rs_pp",
               "window": 63,
-              "value": -2.611,
+              "value": -5.797,
               "op": "lt",
               "threshold": 0,
               "passed": true
@@ -576,7 +576,22 @@
           ]
         }
       ],
-      "falsifier_fired": null,
+      "falsifier_fired": {
+        "index": 1,
+        "note": "yield_rise with long-duration cohort RS>0 over 120d — the derating leg is falsified",
+        "receipts": [
+          {
+            "series": "QQQ",
+            "vs": "SPY",
+            "metric": "rs_pp",
+            "window": 120,
+            "value": 4.823,
+            "op": "gt",
+            "threshold": 0,
+            "passed": true
+          }
+        ]
+      },
       "base_rates": {
         "asof": null,
         "n_floor": 8,
@@ -676,12 +691,12 @@
           "note": "descriptive forward excess return of the terminal cohort proxy at terminal-node firings — NOT a forecast, NOT a signal (display-only).",
           "horizons": {
             "21d": {
-              "mean_excess_pct": -0.023,
-              "median_excess_pct": 0.18,
-              "n": 2690
+              "mean_excess_pct": -0.022,
+              "median_excess_pct": 0.181,
+              "n": 2694
             },
             "63d": {
-              "mean_excess_pct": 0.494,
+              "mean_excess_pct": 0.496,
               "median_excess_pct": 1.248,
               "n": 2682
             }
@@ -724,15 +739,15 @@
               "series": "T10YIE",
               "metric": "ret_bp",
               "window": 22,
-              "value": 13.0,
+              "value": 14.0,
               "op": "lt",
               "threshold": -12,
               "passed": false
             }
           ],
           "base_rate": {
-            "p_confirm": 0.7333,
-            "n": 105,
+            "p_confirm": 0.7264,
+            "n": 106,
             "regime_split": "available",
             "per_regime": {
               "growth_accelerating": {
@@ -740,8 +755,8 @@
                 "n": 44
               },
               "growth_steady_or_slowing": {
-                "p": 0.7869,
-                "n": 61
+                "p": 0.7742,
+                "n": 62
               }
             }
           }
@@ -761,20 +776,20 @@
               "series": "DFII10",
               "metric": "ret_bp",
               "window": 22,
-              "value": 2.0,
+              "value": 18.0,
               "op": "lt",
               "threshold": -12,
               "passed": false
             }
           ],
           "base_rate": {
-            "p_confirm": 0.9704,
-            "n": 169,
+            "p_confirm": 0.9591,
+            "n": 171,
             "regime_split": "available",
             "per_regime": {
               "inflation_down_or_flat": {
-                "p": 0.9744,
-                "n": 156
+                "p": 0.962,
+                "n": 158
               },
               "inflation_up": {
                 "p": 0.9231,
@@ -799,7 +814,7 @@
               "vs": "SPY",
               "metric": "rs_pp",
               "window": 63,
-              "value": -2.611,
+              "value": -5.797,
               "op": "gt",
               "threshold": 0,
               "passed": false
@@ -823,7 +838,7 @@
               "series": "CL=F",
               "metric": "ret_pct",
               "window": 20,
-              "value": 9.952,
+              "value": 23.162,
               "op": "lt",
               "threshold": -12,
               "passed": false
@@ -832,7 +847,7 @@
               "series": "CL=F",
               "metric": "ret_pct",
               "window": 60,
-              "value": 20.909,
+              "value": 52.224,
               "op": "lt",
               "threshold": -18,
               "passed": false
@@ -840,7 +855,7 @@
             {
               "series": "CL=F",
               "metric": "ma50_slope5",
-              "value": 2.0694,
+              "value": 2.319,
               "op": "lt",
               "threshold": 0,
               "passed": false
@@ -856,7 +871,7 @@
               "series": "T10YIE",
               "metric": "ret_bp",
               "window": 22,
-              "value": 13.0,
+              "value": 14.0,
               "op": "lt",
               "threshold": -12,
               "passed": false
@@ -872,7 +887,7 @@
               "series": "DFII10",
               "metric": "ret_bp",
               "window": 22,
-              "value": 2.0,
+              "value": 18.0,
               "op": "lt",
               "threshold": -12,
               "passed": false
@@ -889,7 +904,7 @@
               "vs": "SPY",
               "metric": "rs_pp",
               "window": 63,
-              "value": -2.611,
+              "value": -5.797,
               "op": "gt",
               "threshold": 0,
               "passed": false
@@ -915,22 +930,22 @@
               "from": "series:yahoo",
               "to": "series:fred"
             },
-            "p_confirm": 0.7333,
-            "n": 105,
+            "p_confirm": 0.7264,
+            "n": 106,
             "per_regime": {
               "growth_accelerating": {
                 "p": 0.6591,
                 "n": 44
               },
               "growth_steady_or_slowing": {
-                "p": 0.7869,
-                "n": 61
+                "p": 0.7742,
+                "n": 62
               }
             },
             "regime_split": "available",
             "span": {
               "first": "2000-12-07",
-              "last": "2026-06-11"
+              "last": "2026-07-10"
             },
             "regime_scheme": "growth_accel"
           },
@@ -945,12 +960,12 @@
               "from": "series:fred",
               "to": "series:fred"
             },
-            "p_confirm": 0.9704,
-            "n": 169,
+            "p_confirm": 0.9591,
+            "n": 171,
             "per_regime": {
               "inflation_down_or_flat": {
-                "p": 0.9744,
-                "n": 156
+                "p": 0.962,
+                "n": 158
               },
               "inflation_up": {
                 "p": 0.9231,
@@ -960,7 +975,7 @@
             "regime_split": "available",
             "span": {
               "first": "2003-03-24",
-              "last": "2026-06-04"
+              "last": "2026-06-11"
             },
             "regime_scheme": "inflation_regime"
           },
@@ -998,9 +1013,9 @@
               "n": 4142
             },
             "63d": {
-              "mean_excess_pct": 1.187,
-              "median_excess_pct": 0.994,
-              "n": 4108
+              "mean_excess_pct": 1.183,
+              "median_excess_pct": 0.987,
+              "n": 4112
             }
           }
         }
@@ -1041,7 +1056,7 @@
               "series": "DFII10",
               "metric": "ret_bp",
               "window": 22,
-              "value": 2.0,
+              "value": 18.0,
               "op": "lt",
               "threshold": -12,
               "passed": false
@@ -1078,10 +1093,10 @@
               "series": "BTC-USD",
               "metric": "ret_pct",
               "window": 22,
-              "value": 26.655,
+              "value": -3.479,
               "op": "gt",
               "threshold": 10,
-              "passed": true
+              "passed": false
             }
           ],
           "base_rate": {
@@ -1115,7 +1130,7 @@
               "path": "state.rates.real_10y_pctile",
               "op": "gte",
               "threshold": 0.9,
-              "value": 0.98,
+              "value": 1.0,
               "passed": true
             },
             {
@@ -1136,7 +1151,7 @@
               "series": "DFII10",
               "metric": "ret_bp",
               "window": 22,
-              "value": 2.0,
+              "value": 18.0,
               "op": "lt",
               "threshold": -12,
               "passed": false
@@ -1146,16 +1161,16 @@
         {
           "id": "btc_bid",
           "resolved": true,
-          "confirmed": true,
+          "confirmed": false,
           "receipts": [
             {
               "series": "BTC-USD",
               "metric": "ret_pct",
               "window": 22,
-              "value": 26.655,
+              "value": -3.479,
               "op": "gt",
               "threshold": 10,
-              "passed": true
+              "passed": false
             }
           ]
         }
@@ -1261,7 +1276,7 @@
             "series": "DFII10",
             "metric": "ret_bp",
             "window": 63,
-            "value": 31.0,
+            "value": 43.0,
             "op": "gt",
             "threshold": 15,
             "passed": true
@@ -1270,7 +1285,7 @@
             "series": "DFII10",
             "metric": "off_high_bp",
             "window": 10,
-            "value": 3.0,
+            "value": 0.0,
             "op": "lt",
             "threshold": 4,
             "passed": true
@@ -1311,7 +1326,7 @@
               "series": "DFII10",
               "metric": "ret_bp",
               "window": 22,
-              "value": 2.0,
+              "value": 18.0,
               "op": "lt",
               "threshold": -12,
               "passed": false
@@ -1348,7 +1363,7 @@
               "series": "GC=F",
               "metric": "ret_pct",
               "window": 22,
-              "value": 0.675,
+              "value": -6.775,
               "op": "gt",
               "threshold": 4,
               "passed": false
@@ -1381,7 +1396,7 @@
               "path": "state.rates.real_10y_pctile",
               "op": "gte",
               "threshold": 0.9,
-              "value": 0.98,
+              "value": 1.0,
               "passed": true
             },
             {
@@ -1402,7 +1417,7 @@
               "series": "DFII10",
               "metric": "ret_bp",
               "window": 22,
-              "value": 2.0,
+              "value": 18.0,
               "op": "lt",
               "threshold": -12,
               "passed": false
@@ -1418,7 +1433,7 @@
               "series": "GC=F",
               "metric": "ret_pct",
               "window": 22,
-              "value": 0.675,
+              "value": -6.775,
               "op": "gt",
               "threshold": 4,
               "passed": false
@@ -1501,9 +1516,9 @@
           "note": "descriptive forward excess return of the terminal cohort proxy at terminal-node firings — NOT a forecast, NOT a signal (display-only).",
           "horizons": {
             "21d": {
-              "mean_excess_pct": -0.104,
-              "median_excess_pct": -0.677,
-              "n": 1691
+              "mean_excess_pct": -0.1,
+              "median_excess_pct": -0.654,
+              "n": 1695
             },
             "63d": {
               "mean_excess_pct": -0.483,
@@ -1523,7 +1538,7 @@
             "series": "DFII10",
             "metric": "ret_bp",
             "window": 63,
-            "value": 31.0,
+            "value": 43.0,
             "op": "gt",
             "threshold": 15,
             "passed": true
@@ -1532,7 +1547,7 @@
             "series": "DFII10",
             "metric": "off_high_bp",
             "window": 10,
-            "value": 3.0,
+            "value": 0.0,
             "op": "lt",
             "threshold": 4,
             "passed": true
@@ -1573,7 +1588,7 @@
               "path": "vol_regime.vol_target_scalar",
               "op": "lt",
               "threshold": 0.85,
-              "value": 0.83,
+              "value": 0.7,
               "passed": true
             }
           ],
@@ -1600,10 +1615,10 @@
               "vs": "SPLV",
               "metric": "rs_pp",
               "window": 21,
-              "value": 3.724,
+              "value": -2.664,
               "op": "lt",
               "threshold": 0,
-              "passed": false
+              "passed": true
             }
           ],
           "base_rate": {
@@ -1634,7 +1649,7 @@
               "path": "vol_regime.vix",
               "op": "gte",
               "threshold": 25,
-              "value": 14.53,
+              "value": 17.1,
               "passed": false
             }
           ]
@@ -1648,7 +1663,7 @@
               "path": "vol_regime.vol_target_scalar",
               "op": "lt",
               "threshold": 0.85,
-              "value": 0.83,
+              "value": 0.7,
               "passed": true
             }
           ]
@@ -1656,17 +1671,17 @@
         {
           "id": "highbeta_unwind",
           "resolved": true,
-          "confirmed": false,
+          "confirmed": true,
           "receipts": [
             {
               "series": "SPHB",
               "vs": "SPLV",
               "metric": "rs_pp",
               "window": 21,
-              "value": 3.724,
+              "value": -2.664,
               "op": "lt",
               "threshold": 0,
-              "passed": false
+              "passed": true
             }
           ]
         }
@@ -1722,14 +1737,14 @@
           "note": "descriptive forward excess return of the terminal cohort proxy at terminal-node firings — NOT a forecast, NOT a signal (display-only).",
           "horizons": {
             "21d": {
-              "mean_excess_pct": 0.09,
-              "median_excess_pct": -0.082,
-              "n": 1869
+              "mean_excess_pct": 0.093,
+              "median_excess_pct": -0.081,
+              "n": 1871
             },
             "63d": {
-              "mean_excess_pct": 1.03,
-              "median_excess_pct": 0.587,
-              "n": 1842
+              "mean_excess_pct": 1.029,
+              "median_excess_pct": 0.581,
+              "n": 1843
             }
           }
         }
@@ -1757,7 +1772,7 @@
     "universe": 2946,
     "substrate_asof": {
       "min": "2026-05-07",
-      "max": "2026-09-05"
+      "max": "2026-09-16"
     }
   }
 }
