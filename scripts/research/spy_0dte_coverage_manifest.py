@@ -58,10 +58,10 @@ def _side_ok(row: Mapping[str, Any], side: str) -> bool:
     )
 
 
-def option_clock_coverage(
+def _quotes_by_clock(
     payload: Any, session_date: str
-) -> dict[str, dict[str, int]]:
-    """Derive quote/package availability at frozen clocks without future outcomes."""
+) -> dict[str, dict[tuple[str, float], Mapping[str, Any]]]:
+    """Parse exact 0DTE quote rows at the frozen clocks."""
     by_clock: dict[str, dict[tuple[str, float], Mapping[str, Any]]] = defaultdict(dict)
     for group in _response(payload):
         if not isinstance(group, Mapping) or set(group) != {"contract", "data"}:
@@ -74,8 +74,7 @@ def option_clock_coverage(
             raise CoverageError("option response contains a non-SPY contract")
         if str(contract.get("expiration")) != session_date:
             raise CoverageError("option response contains a non-0DTE contract")
-        right_text = str(contract.get("right", "")).upper()
-        right = right_text[:1]
+        right = str(contract.get("right", "")).upper()[:1]
         if right not in {"C", "P"}:
             raise CoverageError("option response right is malformed")
         try:
@@ -94,11 +93,79 @@ def option_clock_coverage(
             key = (right, strike)
             previous = by_clock[clock].get(key)
             if previous is not None and previous != row:
-                raise CoverageError(
-                    "conflicting interval quote for one contract/clock"
-                )
+                raise CoverageError("conflicting interval quote for one contract/clock")
             by_clock[clock][key] = row
+    return by_clock
 
+
+def _eligible_candidates_from_quotes(
+    session_date: str,
+    clock: str,
+    quotes: Mapping[tuple[str, float], Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    candidates: list[dict[str, Any]] = []
+    for right, strike in sorted(quotes, key=lambda item: (item[0] != "P", item[1])):
+        short_row = quotes[(right, strike)]
+        long_strike = round(strike - 2.0, 3) if right == "P" else round(strike + 2.0, 3)
+        long_row = quotes.get((right, long_strike))
+        if (
+            long_row is None
+            or not _side_ok(short_row, "bid")
+            or not _side_ok(long_row, "ask")
+        ):
+            continue
+        short_bid = float(short_row["bid"])
+        long_ask = float(long_row["ask"])
+        credit = short_bid - long_ask
+        if not (CREDIT_LOW - 1e-9 <= credit <= CREDIT_HIGH + 1e-9):
+            continue
+        width = 2.0
+        max_loss = (width - credit) * 100.0
+        candidates.append(
+            {
+                "session_date": session_date,
+                "decision_clock": clock,
+                "decision_timestamp": f"{session_date}T{clock}",
+                "family": "bull_put" if right == "P" else "bear_call",
+                "short_right": right,
+                "short_strike": strike,
+                "long_strike": long_strike,
+                "width": width,
+                "entry_credit": credit,
+                "max_loss_per_spread": max_loss,
+                "reward_risk": credit / (width - credit),
+                "short_bid": short_bid,
+                "short_bid_size": int(short_row["bid_size"]),
+                "short_bid_exchange": int(short_row["bid_exchange"]),
+                "short_bid_condition": int(short_row["bid_condition"]),
+                "long_ask": long_ask,
+                "long_ask_size": int(long_row["ask_size"]),
+                "long_ask_exchange": int(long_row["ask_exchange"]),
+                "long_ask_condition": int(long_row["ask_condition"]),
+            }
+        )
+    return candidates
+
+
+def eligible_candidates(
+    payload: Any, session_date: str, clock: str
+) -> list[dict[str, Any]]:
+    """Enumerate every executable $2 vertical in the frozen entry-credit band.
+
+    This is a pre-outcome candidate universe only. It performs no arm scoring,
+    containment filtering, trade selection, sizing, exits, or gamma logic.
+    """
+    if clock not in CLOCKS:
+        raise CoverageError("decision clock is not frozen")
+    quotes = _quotes_by_clock(payload, session_date).get(clock, {})
+    return _eligible_candidates_from_quotes(session_date, clock, quotes)
+
+
+def option_clock_coverage(
+    payload: Any, session_date: str
+) -> dict[str, dict[str, int]]:
+    """Derive quote/package availability at frozen clocks without future outcomes."""
+    by_clock = _quotes_by_clock(payload, session_date)
     out: dict[str, dict[str, int]] = {}
     for clock in CLOCKS:
         quotes = by_clock.get(clock, {})
@@ -107,30 +174,12 @@ def option_clock_coverage(
             for row in quotes.values()
             if _side_ok(row, "bid") and _side_ok(row, "ask")
         )
-        bull_band = 0
-        bear_band = 0
-        for (right, strike), short_row in quotes.items():
-            if right == "P":
-                long_row = quotes.get(("P", round(strike - 2.0, 3)))
-            else:
-                long_row = quotes.get(("C", round(strike + 2.0, 3)))
-            if (
-                long_row is None
-                or not _side_ok(short_row, "bid")
-                or not _side_ok(long_row, "ask")
-            ):
-                continue
-            credit = float(short_row["bid"]) - float(long_row["ask"])
-            if CREDIT_LOW - 1e-9 <= credit <= CREDIT_HIGH + 1e-9:
-                if right == "P":
-                    bull_band += 1
-                else:
-                    bear_band += 1
+        candidates = _eligible_candidates_from_quotes(session_date, clock, quotes)
         out[clock] = {
             "contracts": len(quotes),
             "valid_two_sided": valid_two_sided,
-            "bull_credit_band": bull_band,
-            "bear_credit_band": bear_band,
+            "bull_credit_band": sum(c["family"] == "bull_put" for c in candidates),
+            "bear_credit_band": sum(c["family"] == "bear_call" for c in candidates),
         }
     return out
 
