@@ -189,12 +189,26 @@ def _regular(frame: pd.DataFrame, day: str, calendar) -> pd.DataFrame | None:
     opening, closing = window; expected = list(range(opening, closing, 5))
     rows = _day_rows(frame, day); rows = rows.loc[rows["minute"].isin(expected)]
     if rows["minute"].tolist() != expected: return None
-    return rows.loc[:, ["o","h","l","c","v"]].copy()
+    raw = rows.loc[:, ["o","h","l","c","v"]].copy()
+    try:
+        tr.segment_features(raw)
+    except ValueError:
+        return None
+    return raw
 
 
 def _segment(frame: pd.DataFrame, day: str, start_minute: int, end_minute: int) -> tuple[pd.DataFrame, dict[str, Any]]:
     rows = _day_rows(frame, day); rows = rows.loc[(rows["minute"] >= start_minute) & ((rows["minute"] + 5) <= end_minute)]
-    raw = rows.loc[:, ["o","h","l","c","v"]].copy(); features = tr.segment_features(raw)
+    raw = rows.loc[:, ["o","h","l","c","v"]].copy()
+    try:
+        features = tr.segment_features(raw)
+    except ValueError:
+        return raw, {"invalid": True, "input_rows": int(len(raw)), "observations": 0,
+                     "return": None, "efficiency": None, "above_bar_vwap_fraction": None,
+                     "bar_vwap_proxy": None, "last_close": None, "low": None,
+                     "span_minutes": None, "max_gap_minutes": None,
+                     "first_start_minute": None, "last_end_minute": None}
+    features["invalid"] = False
     evidence_rows = rows.loc[rows["v"].astype(float) > 0]
     if not evidence_rows.empty:
         features["first_start_minute"] = int(evidence_rows.iloc[0]["minute"])
@@ -365,9 +379,13 @@ def run_study(input_dir: Path, manifest: Path, terminal_root: Path, output_dir: 
             raise ValueError(f"manifest_5m_missing:{symbol}")
         path=input_dir/f"{symbol}.5m.json"
         qualification=d0.qualify_store(path,symbol,"5m",calendar,cfg["start"],cfg["end"],None,"corrected_history")
-        if qualification.get("status")!="available" or qualification.get("errors"):
-            raise ValueError(f"input_qualification_failed:{symbol}:{qualification.get('errors')}")
-        frames[symbol]=_load_symbol(path,symbol,meta["sha256"],d0); input_receipts[symbol]={"sha256":meta["sha256"],"rows":int(len(frames[symbol]))}
+        qerrors=qualification.get("errors") or {}
+        hard_errors=set(qerrors)-{"invalid_bar"}
+        if qualification.get("status") in {"missing","unreadable","malformed","empty"} or hard_errors:
+            raise ValueError(f"input_qualification_failed:{symbol}:{qerrors}")
+        frames[symbol]=_load_symbol(path,symbol,meta["sha256"],d0)
+        input_receipts[symbol]={"sha256":meta["sha256"],"rows":int(len(frames[symbol])),
+                                "whole_file_diagnostics":qerrors}
     days=_scheduled_days(calendar,cfg["start"],cfg["end"]); daily=_daily_tables(frames,days,calendar)
     panel,reasons=_feature_panel(frames,daily,days,calendar,d0,cfg); outcomes=_outcome_rows(panel,frames,days,calendar,d0,cfg)
     aggregates=_aggregates(outcomes,cfg); primary=_primary(outcomes,cfg)

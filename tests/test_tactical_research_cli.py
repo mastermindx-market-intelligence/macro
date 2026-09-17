@@ -111,3 +111,19 @@ def test_segment_evidence_end_uses_last_positive_volume_bar():
     ]).set_index("event_start_utc")
     _,features=s._segment(frame,day,240,255)
     assert features["last_end_minute"]==250, "zero-volume rows remain visible but cannot extend price-evidence recency"
+
+
+def test_invalid_segment_is_local_unavailable_not_global_failure():
+    s=study(); day="2026-09-01"
+    frame=pd.DataFrame([
+        {"event_start_utc":1_000_000,"display_epoch":1,"date":day,"minute":240,"o":100.,"h":101.,"l":99.,"c":float("nan"),"v":1.},
+    ]).set_index("event_start_utc")
+    _,features=s._segment(frame,day,240,245)
+    assert features["invalid"] is True and features["observations"]==0
+
+
+def test_invalid_regular_session_is_missing_for_that_day_only():
+    s=study(); day="2026-09-01"
+    rows=_two_bar_day(day,1_000_000,100.); rows[1]["c"]=float("nan")
+    frame=pd.DataFrame(rows).set_index("event_start_utc")
+    assert s._regular(frame,day,_EveryDayCalendar()) is None
