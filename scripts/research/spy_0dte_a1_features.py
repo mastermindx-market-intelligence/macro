@@ -3,6 +3,8 @@
 
 Research only. This module has no network, outcome, gamma, sizing, signal, order,
 or trade authority. Inputs must already be point-in-time source observations.
+The option payload is the dedicated ThetaData implied-volatility response, not an
+omnibus Greeks response; gamma-bearing rows fail closed.
 """
 from __future__ import annotations
 
@@ -14,6 +16,10 @@ DECISION_CLOCKS = ("09:35:00.000", "09:45:00.000", "10:00:00.000")
 HORIZONS_MINUTES = (5, 15, 30)
 OPEN_CLOCK = "09:30:00.000"
 UNDERLYING_TOLERANCE = 1e-9
+# Frozen before economic-label unblind from the 928-session 2026-09-16 source audit.
+# Exact-ATM quote-side abs(iv_error) p99 was <= 0.000849 at every decision clock;
+# 0.001 is the preregistered solver-quality fence, not a performance-tuned threshold.
+IV_ERROR_MAX = 0.001
 EVENT_TYPES = ("CPI", "PPI", "NFP", "FOMC")
 
 
@@ -33,8 +39,13 @@ def _response(payload: Any) -> list[Any]:
     if isinstance(payload, Mapping) and set(payload) == {"response"}:
         payload = payload["response"]
     if not isinstance(payload, list):
-        raise FeatureError("Theta Greeks payload must be a list or exact response wrapper")
+        raise FeatureError("Theta IV payload must be a list or exact response wrapper")
     return payload
+
+
+def _reject_forbidden_source_fields(row: Mapping[str, Any]) -> None:
+    if any("gamma" in str(key).lower() or "gex" in str(key).lower() for key in row):
+        raise FeatureError("A1 source row contains forbidden gamma/GEX fields")
 
 
 def _clock_at(session_date: str, minutes_after_open: int) -> str:
@@ -47,28 +58,29 @@ def collapse_underlying_prices(payload: Any, session_date: str) -> dict[str, flo
     by_clock: dict[str, list[float]] = {}
     for group in _response(payload):
         if not isinstance(group, Mapping) or set(group) != {"contract", "data"}:
-            raise FeatureError("Greeks contract group fields are not exact")
+            raise FeatureError("IV contract group fields are not exact")
         contract, data = group["contract"], group["data"]
         if not isinstance(contract, Mapping) or not isinstance(data, list):
-            raise FeatureError("Greeks contract group is malformed")
+            raise FeatureError("IV contract group is malformed")
         if str(contract.get("symbol", "")).upper() != "SPY" or str(contract.get("expiration")) != session_date:
-            raise FeatureError("Greeks payload contains a different root/expiration")
+            raise FeatureError("IV payload contains a different root/expiration")
         for row in data:
             if not isinstance(row, Mapping):
-                raise FeatureError("Greeks row is malformed")
+                raise FeatureError("IV row is malformed")
+            _reject_forbidden_source_fields(row)
             timestamp = str(row.get("timestamp", ""))
             underlying_timestamp = str(row.get("underlying_timestamp", ""))
             if "T" not in timestamp or "T" not in underlying_timestamp:
-                raise FeatureError("Greeks timestamps are malformed")
+                raise FeatureError("IV timestamps are malformed")
             try:
                 observed = datetime.fromisoformat(timestamp)
                 underlying_observed = datetime.fromisoformat(underlying_timestamp)
             except ValueError as exc:
-                raise FeatureError("Greeks timestamps are malformed") from exc
+                raise FeatureError("IV timestamps are malformed") from exc
             if timestamp[:10] != session_date or underlying_timestamp[:10] != session_date:
-                raise FeatureError("Greeks timestamps cross the session")
+                raise FeatureError("IV timestamps cross the session")
             if underlying_observed > observed:
-                raise FeatureError("underlying price is future relative to the Greeks row")
+                raise FeatureError("underlying price is future relative to the IV row")
             price = _finite_positive(row.get("underlying_price"))
             if price is None:
                 raise FeatureError("underlying price is not finite/positive")
@@ -111,13 +123,22 @@ def price_features(prices: Mapping[str, float], decision_clock: str) -> dict[str
     return out
 
 
-def _valid_iv(value: Any, error: Any) -> float | None:
+def _valid_iv(value: Any, error: Any, bid: Any, ask: Any) -> float | None:
     iv = _finite_positive(value)
+    bid_px = _finite_positive(bid)
+    ask_px = _finite_positive(ask)
     try:
         iv_error = float(error)
     except (TypeError, ValueError):
         return None
-    if iv is None or not math.isfinite(iv_error) or iv_error != 0.0:
+    if (
+        iv is None
+        or bid_px is None
+        or ask_px is None
+        or ask_px < bid_px
+        or not math.isfinite(iv_error)
+        or abs(iv_error) > IV_ERROR_MAX + 1e-12
+    ):
         return None
     return iv
 
@@ -130,7 +151,7 @@ def _atm_iv_at_clock(
     for group in _response(payload):
         contract, data = group.get("contract"), group.get("data")
         if not isinstance(contract, Mapping) or not isinstance(data, list):
-            raise FeatureError("Greeks contract group is malformed")
+            raise FeatureError("IV contract group is malformed")
         if str(contract.get("symbol", "")).upper() != "SPY" or str(contract.get("expiration")) != session_date:
             continue
         right = str(contract.get("right", "")).upper()[:1]
@@ -144,9 +165,15 @@ def _atm_iv_at_clock(
         for row in data:
             if not isinstance(row, Mapping):
                 continue
+            _reject_forbidden_source_fields(row)
             if str(row.get("timestamp", "")) != session_date + "T" + clock:
                 continue
-            iv = _valid_iv(row.get("implied_vol"), row.get("iv_error"))
+            iv = _valid_iv(
+                row.get("implied_vol"),
+                row.get("iv_error"),
+                row.get("bid"),
+                row.get("ask"),
+            )
             if iv is None:
                 continue
             prior = valid_by_strike.setdefault(strike, {}).get(right)
@@ -156,8 +183,10 @@ def _atm_iv_at_clock(
     if not all_strikes:
         return None
     chosen = min(all_strikes, key=lambda strike: (abs(strike - underlying_price), strike))
-    values = list(valid_by_strike.get(chosen, {}).values())
-    return sum(values) / len(values) if values else None
+    sides = valid_by_strike.get(chosen, {})
+    if set(sides) != {"C", "P"}:
+        return None
+    return (sides["C"] + sides["P"]) / 2.0
 
 
 def atm_iv_features(
@@ -166,14 +195,14 @@ def atm_iv_features(
     """Frozen PIT same-day ATM IV level and change from first valid post-open IV.
 
     At each minute the chosen strike is nearest to contemporaneous spot; ties prefer
-    the lower strike. Valid call/put IVs at that strike are averaged. The change
-    anchor is the first valid minute from 09:30 through the decision clock.
+    the lower strike. Both valid call and put IVs are required and averaged. The change
+    anchor is the first valid minute strictly after 09:30 through the decision clock.
     """
     if decision_clock not in DECISION_CLOCKS:
         raise FeatureError("decision clock is not frozen")
     decision_minutes = {"09:35:00.000": 5, "09:45:00.000": 15, "10:00:00.000": 30}[decision_clock]
     observations: list[tuple[int, float]] = []
-    for minute in range(decision_minutes + 1):
+    for minute in range(1, decision_minutes + 1):
         clock = _clock_at("2000-01-01", minute)
         spot = _finite_positive(prices.get(clock))
         if spot is None:
@@ -193,6 +222,23 @@ def atm_iv_features(
         "atm_iv_level": level,
         "atm_iv_change_from_first_valid": level - anchor_iv,
         "atm_iv_anchor_minutes_from_open": float(anchor_minute),
+    }
+
+
+def gap_features(prior_close: Any, opening_price: Any) -> dict[str, float | int | None]:
+    """Overnight gap from exact previous-session raw close to the 09:30 PIT midpoint."""
+    if prior_close is None:
+        return {"gap_return": None, "gap_direction": None}
+    close = _finite_positive(prior_close)
+    opening = _finite_positive(opening_price)
+    if close is None:
+        raise FeatureError("prior close is not finite/positive")
+    if opening is None:
+        raise FeatureError("09:30 opening price is not finite/positive")
+    gap = opening / close - 1.0
+    return {
+        "gap_return": gap,
+        "gap_direction": 1 if gap > 0 else -1 if gap < 0 else 0,
     }
 
 
@@ -216,24 +262,24 @@ def build_a1_features(
     *,
     session_date: str,
     decision_clock: str,
-    greeks_payload: Any,
+    iv_payload: Any,
     event_fixture: Mapping[str, Any],
+    prior_close: Any = None,
 ) -> dict[str, Any]:
-    prices = collapse_underlying_prices(greeks_payload, session_date)
+    prices = collapse_underlying_prices(iv_payload, session_date)
+    opening_price = prices.get(OPEN_CLOCK)
     result: dict[str, Any] = {
         "session_date": session_date,
         "decision_clock": decision_clock,
         **price_features(prices, decision_clock),
         **atm_iv_features(
-            greeks_payload,
+            iv_payload,
             session_date,
             decision_clock=decision_clock,
             prices=prices,
         ),
+        **gap_features(prior_close, opening_price),
         **event_features(session_date, event_fixture),
-        # Parent prereg includes gap, but no lawful previous-close source is admitted yet.
-        "gap_return": None,
-        "gap_direction": None,
     }
     forbidden = ("gamma", "gex", "pnl", "profit", "stop", "take_profit", "outcome", "label")
     if any(any(token in key.lower() for token in forbidden) for key in result):
