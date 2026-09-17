@@ -1,7 +1,7 @@
 {
  "schema": "track_ledger/v1",
  "market": "HK",
- "as_of": "2026-09-15",
+ "as_of": "2026-09-16",
  "state": "accruing",
  "bench": {
   "code": "_HSI",
@@ -10,8 +10,8 @@
  },
  "summary": {
   "state": "accruing",
-  "n_calls": 407,
-  "n_logged": 407,
+  "n_calls": 421,
+  "n_logged": 421,
   "n_matured": 95,
   "n_beat": 42,
   "n_lag": 53,
@@ -23,6 +23,300 @@
   "first_read_est": "2026-08-24"
  },
  "rows": [
+  {
+   "t": "6808.HK",
+   "nm": "Sun Art Retail",
+   "sec": "Consumer",
+   "grp": "setting_up",
+   "d": "2026-09-15",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 1,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-09-16"
+  },
+  {
+   "t": "1997.HK",
+   "nm": "Wharf REIC",
+   "sec": "Property",
+   "grp": "watch",
+   "d": "2026-09-15",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 2,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-09-16"
+  },
+  {
+   "t": "2888.HK",
+   "nm": "Standard Chartered",
+   "sec": "Financials & Banks",
+   "grp": "watch",
+   "d": "2026-09-15",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 3,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-09-16"
+  },
+  {
+   "t": "1299.HK",
+   "nm": "AIA Group",
+   "sec": "Insurance",
+   "grp": "watch",
+   "d": "2026-09-15",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 4,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-09-16"
+  },
+  {
+   "t": "0322.HK",
+   "nm": null,
+   "sec": null,
+   "grp": "watch",
+   "d": "2026-09-15",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 5,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-09-16"
+  },
+  {
+   "t": "2883.HK",
+   "nm": "China Oilfield Services",
+   "sec": "Energy",
+   "grp": "watch",
+   "d": "2026-09-15",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 6,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-09-16"
+  },
+  {
+   "t": "0257.HK",
+   "nm": "China Everbright Environment",
+   "sec": "Telecom & Utilities",
+   "grp": "watch",
+   "d": "2026-09-15",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 7,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-09-16"
+  },
+  {
+   "t": "0867.HK",
+   "nm": "China Medical System",
+   "sec": "Healthcare & Pharma",
+   "grp": "watch",
+   "d": "2026-09-15",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 8,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-09-16"
+  },
+  {
+   "t": "0857.HK",
+   "nm": null,
+   "sec": null,
+   "grp": "watch",
+   "d": "2026-09-15",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 9,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-09-16"
+  },
+  {
+   "t": "6160.HK",
+   "nm": "BeiGene",
+   "sec": "Healthcare & Pharma",
+   "grp": "watch",
+   "d": "2026-09-15",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 3,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-09-16"
+  },
+  {
+   "t": "1898.HK",
+   "nm": "China Coal Energy",
+   "sec": "Energy",
+   "grp": "watch",
+   "d": "2026-09-15",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 5,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-09-16"
+  },
+  {
+   "t": "9999.HK",
+   "nm": null,
+   "sec": null,
+   "grp": "watch",
+   "d": "2026-09-15",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 7,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-09-16"
+  },
+  {
+   "t": "1816.HK",
+   "nm": null,
+   "sec": null,
+   "grp": "watch",
+   "d": "2026-09-15",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 8,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-09-16"
+  },
+  {
+   "t": "2319.HK",
+   "nm": null,
+   "sec": null,
+   "grp": "watch",
+   "d": "2026-09-15",
+   "e": null,
+   "l": null,
+   "p": null,
+   "x": null,
+   "dy": null,
+   "st": "early",
+   "m": false,
+   "rk": 9,
+   "tr": null,
+   "fl": [
+    "susp"
+   ],
+   "bd": "hk_prophet_v2",
+   "ed": "2026-09-16"
+  },
   {
    "t": "2196.HK",
    "nm": null,
@@ -172,8 +466,8 @@
   },
   {
    "t": "1997.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Wharf REIC",
+   "sec": "Property",
    "grp": "watch",
    "d": "2026-09-14",
    "e": null,
@@ -193,8 +487,8 @@
   },
   {
    "t": "0669.HK",
-   "nm": "Techtronic Industries",
-   "sec": "Industrials & Transport",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-09-14",
    "e": null,
@@ -214,8 +508,8 @@
   },
   {
    "t": "2888.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Standard Chartered",
+   "sec": "Financials & Banks",
    "grp": "watch",
    "d": "2026-09-14",
    "e": null,
@@ -235,8 +529,8 @@
   },
   {
    "t": "1816.HK",
-   "nm": "CGN Power",
-   "sec": "Energy",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-09-14",
    "e": null,
@@ -361,8 +655,8 @@
   },
   {
    "t": "2319.HK",
-   "nm": "Mengniu Dairy",
-   "sec": "Consumer",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-09-11",
    "e": null,
@@ -424,8 +718,8 @@
   },
   {
    "t": "0669.HK",
-   "nm": "Techtronic Industries",
-   "sec": "Industrials & Transport",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-09-11",
    "e": null,
@@ -466,8 +760,8 @@
   },
   {
    "t": "2888.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Standard Chartered",
+   "sec": "Financials & Banks",
    "grp": "watch",
    "d": "2026-09-11",
    "e": null,
@@ -550,8 +844,8 @@
   },
   {
    "t": "1816.HK",
-   "nm": "CGN Power",
-   "sec": "Energy",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-09-11",
    "e": null,
@@ -571,8 +865,8 @@
   },
   {
    "t": "1997.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Wharf REIC",
+   "sec": "Property",
    "grp": "watch",
    "d": "2026-09-11",
    "e": null,
@@ -949,8 +1243,8 @@
   },
   {
    "t": "1208.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "MMG",
+   "sec": "Materials",
    "grp": "watch",
    "d": "2026-09-10",
    "e": null,
@@ -970,8 +1264,8 @@
   },
   {
    "t": "2888.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Standard Chartered",
+   "sec": "Financials & Banks",
    "grp": "watch",
    "d": "2026-09-10",
    "e": null,
@@ -1012,8 +1306,8 @@
   },
   {
    "t": "0669.HK",
-   "nm": "Techtronic Industries",
-   "sec": "Industrials & Transport",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-09-10",
    "e": null,
@@ -1054,8 +1348,8 @@
   },
   {
    "t": "2888.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Standard Chartered",
+   "sec": "Financials & Banks",
    "grp": "entry_open",
    "d": "2026-09-09",
    "e": null,
@@ -1327,8 +1621,8 @@
   },
   {
    "t": "1208.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "MMG",
+   "sec": "Materials",
    "grp": "watch",
    "d": "2026-09-09",
    "e": null,
@@ -1348,8 +1642,8 @@
   },
   {
    "t": "0669.HK",
-   "nm": "Techtronic Industries",
-   "sec": "Industrials & Transport",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-09-09",
    "e": null,
@@ -1445,9 +1739,7 @@
    "m": false,
    "rk": 1,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-09"
   },
@@ -1466,9 +1758,7 @@
    "m": false,
    "rk": 2,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-09"
   },
@@ -1487,9 +1777,7 @@
    "m": false,
    "rk": 3,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-09"
   },
@@ -1508,9 +1796,7 @@
    "m": false,
    "rk": 4,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-09"
   },
@@ -1529,9 +1815,7 @@
    "m": false,
    "rk": 5,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-09"
   },
@@ -1550,9 +1834,7 @@
    "m": false,
    "rk": 6,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-09"
   },
@@ -1571,9 +1853,7 @@
    "m": false,
    "rk": 7,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-09"
   },
@@ -1592,9 +1872,7 @@
    "m": false,
    "rk": 8,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-09"
   },
@@ -1613,9 +1891,7 @@
    "m": false,
    "rk": 9,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-09"
   },
@@ -1634,9 +1910,7 @@
    "m": false,
    "rk": 10,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-09"
   },
@@ -1655,16 +1929,14 @@
    "m": false,
    "rk": 11,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-09"
   },
   {
    "t": "2888.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Standard Chartered",
+   "sec": "Financials & Banks",
    "grp": "watch",
    "d": "2026-09-08",
    "e": null,
@@ -1676,9 +1948,7 @@
    "m": false,
    "rk": 12,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-09"
   },
@@ -1697,9 +1967,7 @@
    "m": false,
    "rk": 13,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-09"
   },
@@ -1718,9 +1986,7 @@
    "m": false,
    "rk": 14,
    "tr": null,
-   "fl": [
-    "susp"
-   ],
+   "fl": [],
    "bd": "hk_prophet_v2",
    "ed": "2026-09-09"
   },
@@ -2220,8 +2486,8 @@
   },
   {
    "t": "2888.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Standard Chartered",
+   "sec": "Financials & Banks",
    "grp": "watch",
    "d": "2026-09-04",
    "e": null,
@@ -2353,8 +2619,8 @@
   },
   {
    "t": "1816.HK",
-   "nm": "CGN Power",
-   "sec": "Energy",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-09-03",
    "e": null,
@@ -2524,8 +2790,8 @@
   },
   {
    "t": "0669.HK",
-   "nm": "Techtronic Industries",
-   "sec": "Industrials & Transport",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-09-01",
    "e": null,
@@ -2543,8 +2809,8 @@
   },
   {
    "t": "2888.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Standard Chartered",
+   "sec": "Financials & Banks",
    "grp": "watch",
    "d": "2026-09-01",
    "e": null,
@@ -2638,8 +2904,8 @@
   },
   {
    "t": "1816.HK",
-   "nm": "CGN Power",
-   "sec": "Energy",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-09-01",
    "e": null,
@@ -2847,8 +3113,8 @@
   },
   {
    "t": "0669.HK",
-   "nm": "Techtronic Industries",
-   "sec": "Industrials & Transport",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-31",
    "e": null,
@@ -2923,8 +3189,8 @@
   },
   {
    "t": "2888.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Standard Chartered",
+   "sec": "Financials & Banks",
    "grp": "watch",
    "d": "2026-08-31",
    "e": null,
@@ -3132,8 +3398,8 @@
   },
   {
    "t": "0669.HK",
-   "nm": "Techtronic Industries",
-   "sec": "Industrials & Transport",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-28",
    "e": null,
@@ -3360,8 +3626,8 @@
   },
   {
    "t": "1816.HK",
-   "nm": "CGN Power",
-   "sec": "Energy",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-28",
    "e": null,
@@ -3645,8 +3911,8 @@
   },
   {
    "t": "1816.HK",
-   "nm": "CGN Power",
-   "sec": "Energy",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-27",
    "e": null,
@@ -3664,8 +3930,8 @@
   },
   {
    "t": "1208.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "MMG",
+   "sec": "Materials",
    "grp": "watch",
    "d": "2026-08-27",
    "e": null,
@@ -3683,8 +3949,8 @@
   },
   {
    "t": "0323.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Maanshan Iron & Steel",
+   "sec": "Materials",
    "grp": "watch",
    "d": "2026-08-27",
    "e": null,
@@ -3759,8 +4025,8 @@
   },
   {
    "t": "0669.HK",
-   "nm": "Techtronic Industries",
-   "sec": "Industrials & Transport",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-27",
    "e": null,
@@ -4044,8 +4310,8 @@
   },
   {
    "t": "0669.HK",
-   "nm": "Techtronic Industries",
-   "sec": "Industrials & Transport",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-26",
    "e": null,
@@ -4082,8 +4348,8 @@
   },
   {
    "t": "1816.HK",
-   "nm": "CGN Power",
-   "sec": "Energy",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-26",
    "e": null,
@@ -4101,8 +4367,8 @@
   },
   {
    "t": "1208.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "MMG",
+   "sec": "Materials",
    "grp": "watch",
    "d": "2026-08-26",
    "e": null,
@@ -4386,8 +4652,8 @@
   },
   {
    "t": "0669.HK",
-   "nm": "Techtronic Industries",
-   "sec": "Industrials & Transport",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-25",
    "e": null,
@@ -4823,8 +5089,8 @@
   },
   {
    "t": "2888.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Standard Chartered",
+   "sec": "Financials & Banks",
    "grp": "watch",
    "d": "2026-08-24",
    "e": null,
@@ -5260,8 +5526,8 @@
   },
   {
    "t": "1208.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "MMG",
+   "sec": "Materials",
    "grp": "watch",
    "d": "2026-08-21",
    "e": null,
@@ -5336,8 +5602,8 @@
   },
   {
    "t": "2888.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Standard Chartered",
+   "sec": "Financials & Banks",
    "grp": "watch",
    "d": "2026-08-21",
    "e": null,
@@ -5602,8 +5868,8 @@
   },
   {
    "t": "2888.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Standard Chartered",
+   "sec": "Financials & Banks",
    "grp": "watch",
    "d": "2026-08-20",
    "e": null,
@@ -5811,8 +6077,8 @@
   },
   {
    "t": "2888.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Standard Chartered",
+   "sec": "Financials & Banks",
    "grp": "watch",
    "d": "2026-08-19",
    "e": null,
@@ -6438,8 +6704,8 @@
   },
   {
    "t": "0316.HK",
-   "nm": "Orient Overseas",
-   "sec": "Exchange & Diversified",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-13",
    "e": null,
@@ -6590,8 +6856,8 @@
   },
   {
    "t": "0316.HK",
-   "nm": "Orient Overseas",
-   "sec": "Exchange & Diversified",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-12",
    "e": null,
@@ -6666,8 +6932,8 @@
   },
   {
    "t": "1208.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "MMG",
+   "sec": "Materials",
    "grp": "watch",
    "d": "2026-08-12",
    "e": null,
@@ -6723,8 +6989,8 @@
   },
   {
    "t": "1208.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "MMG",
+   "sec": "Materials",
    "grp": "watch",
    "d": "2026-08-11",
    "e": null,
@@ -6780,8 +7046,8 @@
   },
   {
    "t": "0316.HK",
-   "nm": "Orient Overseas",
-   "sec": "Exchange & Diversified",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-11",
    "e": null,
@@ -6932,8 +7198,8 @@
   },
   {
    "t": "2888.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Standard Chartered",
+   "sec": "Financials & Banks",
    "grp": "watch",
    "d": "2026-08-10",
    "e": null,
@@ -7008,8 +7274,8 @@
   },
   {
    "t": "1208.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "MMG",
+   "sec": "Materials",
    "grp": "watch",
    "d": "2026-08-10",
    "e": null,
@@ -7103,8 +7369,8 @@
   },
   {
    "t": "1208.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "MMG",
+   "sec": "Materials",
    "grp": "watch",
    "d": "2026-08-07",
    "e": null,
@@ -7122,8 +7388,8 @@
   },
   {
    "t": "9999.HK",
-   "nm": "NetEase",
-   "sec": "Internet & Tech",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-07",
    "e": null,
@@ -7331,8 +7597,8 @@
   },
   {
    "t": "1208.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "MMG",
+   "sec": "Materials",
    "grp": "watch",
    "d": "2026-08-06",
    "e": null,
@@ -7369,8 +7635,8 @@
   },
   {
    "t": "9999.HK",
-   "nm": "NetEase",
-   "sec": "Internet & Tech",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-06",
    "e": null,
@@ -7464,8 +7730,8 @@
   },
   {
    "t": "1024.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Kuaishou",
+   "sec": "Internet & Tech",
    "grp": "entry_open",
    "d": "2026-08-05",
    "e": null,
@@ -7521,8 +7787,8 @@
   },
   {
    "t": "0669.HK",
-   "nm": "Techtronic Industries",
-   "sec": "Industrials & Transport",
+   "nm": null,
+   "sec": null,
    "grp": "setting_up",
    "d": "2026-08-05",
    "e": null,
@@ -7559,8 +7825,8 @@
   },
   {
    "t": "1208.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "MMG",
+   "sec": "Materials",
    "grp": "watch",
    "d": "2026-08-05",
    "e": null,
@@ -7578,8 +7844,8 @@
   },
   {
    "t": "9999.HK",
-   "nm": "NetEase",
-   "sec": "Internet & Tech",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-05",
    "e": null,
@@ -7635,8 +7901,8 @@
   },
   {
    "t": "2888.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Standard Chartered",
+   "sec": "Financials & Banks",
    "grp": "watch",
    "d": "2026-08-05",
    "e": null,
@@ -7711,8 +7977,8 @@
   },
   {
    "t": "1024.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Kuaishou",
+   "sec": "Internet & Tech",
    "grp": "entry_open",
    "d": "2026-08-04",
    "e": null,
@@ -7787,8 +8053,8 @@
   },
   {
    "t": "9999.HK",
-   "nm": "NetEase",
-   "sec": "Internet & Tech",
+   "nm": null,
+   "sec": null,
    "grp": "watch",
    "d": "2026-08-04",
    "e": null,
@@ -7806,8 +8072,8 @@
   },
   {
    "t": "1208.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "MMG",
+   "sec": "Materials",
    "grp": "watch",
    "d": "2026-08-04",
    "e": null,
@@ -7901,8 +8167,8 @@
   },
   {
    "t": "2888.HK",
-   "nm": null,
-   "sec": null,
+   "nm": "Standard Chartered",
+   "sec": "Financials & Banks",
    "grp": "watch",
    "d": "2026-08-04",
    "e": null,
@@ -7920,7 +8186,7 @@
   }
  ],
  "meta": {
-  "n_total": 407,
+  "n_total": 421,
   "truncated": 0,
   "grain": "board_day",
   "survivorship": {
@@ -7951,8 +8217,8 @@
   "rows": [
    {
     "t": "9999.HK",
-    "nm": "NetEase",
-    "sec": "Internet & Tech",
+    "nm": null,
+    "sec": null,
     "grp": "entry_open",
     "d": "2026-08-03",
     "e": null,
@@ -7970,8 +8236,8 @@
    },
    {
     "t": "1024.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "Kuaishou",
+    "sec": "Internet & Tech",
     "grp": "entry_open",
     "d": "2026-08-03",
     "e": null,
@@ -8103,8 +8369,8 @@
    },
    {
     "t": "2888.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "Standard Chartered",
+    "sec": "Financials & Banks",
     "grp": "watch",
     "d": "2026-08-03",
     "e": null,
@@ -8122,8 +8388,8 @@
    },
    {
     "t": "1208.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "MMG",
+    "sec": "Materials",
     "grp": "watch",
     "d": "2026-08-03",
     "e": null,
@@ -8274,8 +8540,8 @@
    },
    {
     "t": "9999.HK",
-    "nm": "NetEase",
-    "sec": "Internet & Tech",
+    "nm": null,
+    "sec": null,
     "grp": "watch",
     "d": "2026-07-31",
     "e": null,
@@ -8331,8 +8597,8 @@
    },
    {
     "t": "1024.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "Kuaishou",
+    "sec": "Internet & Tech",
     "grp": "watch",
     "d": "2026-07-31",
     "e": null,
@@ -8388,8 +8654,8 @@
    },
    {
     "t": "2888.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "Standard Chartered",
+    "sec": "Financials & Banks",
     "grp": "watch",
     "d": "2026-07-31",
     "e": null,
@@ -8616,8 +8882,8 @@
    },
    {
     "t": "2888.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "Standard Chartered",
+    "sec": "Financials & Banks",
     "grp": "watch",
     "d": "2026-07-30",
     "e": null,
@@ -8920,8 +9186,8 @@
    },
    {
     "t": "9999.HK",
-    "nm": "NetEase",
-    "sec": "Internet & Tech",
+    "nm": null,
+    "sec": null,
     "grp": "watch",
     "d": "2026-07-29",
     "e": null,
@@ -9015,8 +9281,8 @@
    },
    {
     "t": "1816.HK",
-    "nm": "CGN Power",
-    "sec": "Energy",
+    "nm": null,
+    "sec": null,
     "grp": "setting_up",
     "d": "2026-07-28",
     "e": null,
@@ -9205,8 +9471,8 @@
    },
    {
     "t": "9999.HK",
-    "nm": "NetEase",
-    "sec": "Internet & Tech",
+    "nm": null,
+    "sec": null,
     "grp": "watch",
     "d": "2026-07-28",
     "e": null,
@@ -9224,8 +9490,8 @@
    },
    {
     "t": "2888.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "Standard Chartered",
+    "sec": "Financials & Banks",
     "grp": "watch",
     "d": "2026-07-28",
     "e": null,
@@ -9414,8 +9680,8 @@
    },
    {
     "t": "1816.HK",
-    "nm": "CGN Power",
-    "sec": "Energy",
+    "nm": null,
+    "sec": null,
     "grp": "setting_up",
     "d": "2026-07-27",
     "e": null,
@@ -9509,8 +9775,8 @@
    },
    {
     "t": "0371.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "Beijing Enterprises Water",
+    "sec": "Telecom & Utilities",
     "grp": "setting_up",
     "d": "2026-07-27",
     "e": null,
@@ -9965,8 +10231,8 @@
    },
    {
     "t": "1816.HK",
-    "nm": "CGN Power",
-    "sec": "Energy",
+    "nm": null,
+    "sec": null,
     "grp": "setting_up",
     "d": "2026-07-24",
     "e": null,
@@ -10060,8 +10326,8 @@
    },
    {
     "t": "0371.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "Beijing Enterprises Water",
+    "sec": "Telecom & Utilities",
     "grp": "setting_up",
     "d": "2026-07-24",
     "e": null,
@@ -10269,8 +10535,8 @@
    },
    {
     "t": "9999.HK",
-    "nm": "NetEase",
-    "sec": "Internet & Tech",
+    "nm": null,
+    "sec": null,
     "grp": "watch",
     "d": "2026-07-24",
     "e": null,
@@ -10288,8 +10554,8 @@
    },
    {
     "t": "1208.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "MMG",
+    "sec": "Materials",
     "grp": "watch",
     "d": "2026-07-24",
     "e": null,
@@ -10307,8 +10573,8 @@
    },
    {
     "t": "1208.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "MMG",
+    "sec": "Materials",
     "grp": "entry_open",
     "d": "2026-07-23",
     "e": null,
@@ -10535,8 +10801,8 @@
    },
    {
     "t": "0836.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "China Resources Power",
+    "sec": "Telecom & Utilities",
     "grp": "setting_up",
     "d": "2026-07-23",
     "e": null,
@@ -10592,8 +10858,8 @@
    },
    {
     "t": "0883.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "CNOOC",
+    "sec": "Energy",
     "grp": "setting_up",
     "d": "2026-07-23",
     "e": null,
@@ -10744,8 +11010,8 @@
    },
    {
     "t": "1816.HK",
-    "nm": "CGN Power",
-    "sec": "Energy",
+    "nm": null,
+    "sec": null,
     "grp": "setting_up",
     "d": "2026-07-23",
     "e": null,
@@ -10801,8 +11067,8 @@
    },
    {
     "t": "0371.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "Beijing Enterprises Water",
+    "sec": "Telecom & Utilities",
     "grp": "setting_up",
     "d": "2026-07-23",
     "e": null,
@@ -11162,8 +11428,8 @@
    },
    {
     "t": "1208.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "MMG",
+    "sec": "Materials",
     "grp": "setting_up",
     "d": "2026-07-21",
     "e": null,
@@ -11219,8 +11485,8 @@
    },
    {
     "t": "0836.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "China Resources Power",
+    "sec": "Telecom & Utilities",
     "grp": "setting_up",
     "d": "2026-07-21",
     "e": null,
@@ -11352,8 +11618,8 @@
    },
    {
     "t": "0371.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "Beijing Enterprises Water",
+    "sec": "Telecom & Utilities",
     "grp": "setting_up",
     "d": "2026-07-21",
     "e": null,
@@ -11998,8 +12264,8 @@
    },
    {
     "t": "0883.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "CNOOC",
+    "sec": "Energy",
     "grp": "setting_up",
     "d": "2026-07-20",
     "e": null,
@@ -12093,8 +12359,8 @@
    },
    {
     "t": "0371.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "Beijing Enterprises Water",
+    "sec": "Telecom & Utilities",
     "grp": "setting_up",
     "d": "2026-07-20",
     "e": null,
@@ -12302,8 +12568,8 @@
    },
    {
     "t": "1816.HK",
-    "nm": "CGN Power",
-    "sec": "Energy",
+    "nm": null,
+    "sec": null,
     "grp": "setting_up",
     "d": "2026-07-20",
     "e": null,
@@ -12644,8 +12910,8 @@
    },
    {
     "t": "9999.HK",
-    "nm": "NetEase",
-    "sec": "Internet & Tech",
+    "nm": null,
+    "sec": null,
     "grp": "watch",
     "d": "2026-07-20",
     "e": null,
@@ -12663,8 +12929,8 @@
    },
    {
     "t": "1024.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "Kuaishou",
+    "sec": "Internet & Tech",
     "grp": "watch",
     "d": "2026-07-20",
     "e": null,
@@ -12720,8 +12986,8 @@
    },
    {
     "t": "0019.HK",
-    "nm": "Swire Pacific",
-    "sec": "Exchange & Diversified",
+    "nm": null,
+    "sec": null,
     "grp": "entry_open",
     "d": "2026-07-17",
     "e": null,
@@ -12853,8 +13119,8 @@
    },
    {
     "t": "0883.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "CNOOC",
+    "sec": "Energy",
     "grp": "setting_up",
     "d": "2026-07-17",
     "e": null,
@@ -13347,8 +13613,8 @@
    },
    {
     "t": "0323.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "Maanshan Iron & Steel",
+    "sec": "Materials",
     "grp": "watch",
     "d": "2026-07-17",
     "e": null,
@@ -13404,8 +13670,8 @@
    },
    {
     "t": "9999.HK",
-    "nm": "NetEase",
-    "sec": "Internet & Tech",
+    "nm": null,
+    "sec": null,
     "grp": "watch",
     "d": "2026-07-17",
     "e": null,
@@ -13480,8 +13746,8 @@
    },
    {
     "t": "1024.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "Kuaishou",
+    "sec": "Internet & Tech",
     "grp": "watch",
     "d": "2026-07-16",
     "e": null,
@@ -13594,8 +13860,8 @@
    },
    {
     "t": "1024.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "Kuaishou",
+    "sec": "Internet & Tech",
     "grp": "entry_open",
     "d": "2026-07-15",
     "e": null,
@@ -13765,8 +14031,8 @@
    },
    {
     "t": "0019.HK",
-    "nm": "Swire Pacific",
-    "sec": "Exchange & Diversified",
+    "nm": null,
+    "sec": null,
     "grp": "watch",
     "d": "2026-07-15",
     "e": null,
@@ -13803,8 +14069,8 @@
    },
    {
     "t": "1024.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "Kuaishou",
+    "sec": "Internet & Tech",
     "grp": "entry_open",
     "d": "2026-07-14",
     "e": null,
@@ -13955,8 +14221,8 @@
    },
    {
     "t": "1024.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "Kuaishou",
+    "sec": "Internet & Tech",
     "grp": "setting_up",
     "d": "2026-07-13",
     "e": null,
@@ -14126,8 +14392,8 @@
    },
    {
     "t": "1024.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "Kuaishou",
+    "sec": "Internet & Tech",
     "grp": "entry_open",
     "d": "2026-07-10",
     "e": null,
@@ -14259,8 +14525,8 @@
    },
    {
     "t": "1024.HK",
-    "nm": null,
-    "sec": null,
+    "nm": "Kuaishou",
+    "sec": "Internet & Tech",
     "grp": "entry_open",
     "d": "2026-07-08",
     "e": null,

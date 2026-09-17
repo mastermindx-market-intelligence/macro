@@ -188,6 +188,11 @@ def _load_catalog() -> dict:
 
     try:
         cat = catalog_mod.read_strict(store)
+        # Display heals (markdown summaries, desk-type-safe titles, institution
+        # spellings) on the serving copy. The producer of those artifacts is the
+        # upstream sidecar, which this repo does not write; ingest republishes
+        # the same repair into R2 on the next hourly run.
+        catalog_mod.heal_display(cat)
     except catalog_mod.CatalogUnavailable as exc:
         log.warning("research_vault: catalog unavailable (%s) — %s", exc.reason, exc.detail)
         cached = _cached_good()

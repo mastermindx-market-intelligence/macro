@@ -1,7 +1,7 @@
 {
   "schema": "index_leadership.track_record.v1",
   "as_of": "2026-09-11",
-  "generated_at": "2026-09-14T08:47:22.885640+00:00",
+  "generated_at": "2026-09-16T06:57:49.126193+00:00",
   "is_context_only": true,
   "n_snapshots": 714,
   "n_days": 25,
@@ -11,22 +11,22 @@
       "by_stage": {
         "running": {
           "n": 544,
-          "mean_fwd_rel": -0.0047,
-          "hit_rate": 0.454
+          "mean_fwd_rel": -0.0048,
+          "hit_rate": 0.452
         },
         "coiling": {
           "n": 35,
-          "mean_fwd_rel": -0.0004,
+          "mean_fwd_rel": -0.0005,
           "hit_rate": 0.514
         },
         "coiling_primed": {
           "n": 37,
-          "mean_fwd_rel": 0.0119,
+          "mean_fwd_rel": 0.0115,
           "hit_rate": 0.595
         }
       },
-      "running_ic": -0.0463,
-      "running_ic_t_hac": -0.495,
+      "running_ic": -0.0471,
+      "running_ic_t_hac": -0.501,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -35,12 +35,12 @@
       "by_stage": {
         "running": {
           "n": 484,
-          "mean_fwd_rel": -0.0077,
-          "hit_rate": 0.434
+          "mean_fwd_rel": -0.0078,
+          "hit_rate": 0.43
         },
         "coiling": {
           "n": 33,
-          "mean_fwd_rel": -0.0023,
+          "mean_fwd_rel": -0.0026,
           "hit_rate": 0.455
         },
         "coiling_primed": {
@@ -49,8 +49,8 @@
           "hit_rate": 0.562
         }
       },
-      "running_ic": -0.0896,
-      "running_ic_t_hac": -0.964,
+      "running_ic": -0.0907,
+      "running_ic_t_hac": -0.967,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -59,22 +59,22 @@
       "by_stage": {
         "running": {
           "n": 363,
-          "mean_fwd_rel": -0.0102,
+          "mean_fwd_rel": -0.0109,
           "hit_rate": 0.438
         },
         "coiling": {
           "n": 20,
-          "mean_fwd_rel": -0.0085,
+          "mean_fwd_rel": -0.0092,
           "hit_rate": 0.5
         },
         "coiling_primed": {
           "n": 26,
-          "mean_fwd_rel": 0.0354,
+          "mean_fwd_rel": 0.035,
           "hit_rate": 0.692
         }
       },
-      "running_ic": 0.0162,
-      "running_ic_t_hac": 0.164,
+      "running_ic": 0.0185,
+      "running_ic_t_hac": 0.184,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -115,15 +115,7 @@
       "id": "russell:leisure",
       "name": "Leisure",
       "stage": "coiling_primed",
-      "fwd_rel": -0.1182,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-21",
-      "id": "russell:restaurants",
-      "name": "Restaurants",
-      "stage": "running",
-      "fwd_rel": -0.0935,
+      "fwd_rel": -0.1288,
       "horizon_d": 21
     },
     {
@@ -131,7 +123,15 @@
       "id": "russell:other-industrial-metals-mining",
       "name": "Other Industrial Metals & Mining",
       "stage": "running",
-      "fwd_rel": -0.0916,
+      "fwd_rel": -0.1081,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-08-21",
+      "id": "russell:restaurants",
+      "name": "Restaurants",
+      "stage": "running",
+      "fwd_rel": -0.1041,
       "horizon_d": 21
     },
     {
@@ -139,7 +139,7 @@
       "id": "russell:real-estate-services",
       "name": "Real Estate Services",
       "stage": "running",
-      "fwd_rel": -0.0896,
+      "fwd_rel": -0.1028,
       "horizon_d": 21
     },
     {
@@ -147,7 +147,7 @@
       "id": "subsectors:packaged-foods",
       "name": "Packaged Foods",
       "stage": "running",
-      "fwd_rel": -0.0723,
+      "fwd_rel": -0.0783,
       "horizon_d": 21
     },
     {
@@ -155,7 +155,7 @@
       "id": "nasdaq:software-application",
       "name": "Software - Application",
       "stage": "running",
-      "fwd_rel": -0.0721,
+      "fwd_rel": -0.0709,
       "horizon_d": 21
     },
     {

@@ -3,23 +3,23 @@
   "is_context_only": true,
   "display_only": true,
   "authority_tier": "display",
-  "generated_asof": "2026-09-15",
-  "generated_utc": "2026-09-15T15:22:31.778850+00:00",
+  "generated_asof": "2026-09-16",
+  "generated_utc": "2026-09-16T18:07:45.537571+00:00",
   "spec": "research/PROPHET_STAGE_FUSION_PREREG.md",
   "accrual_disclaimer": "accruing \u2014 first 126-day cohort matures ~2026-12; n is tiny until then; NOT yet decisive. The 2022-26 backtest on the T-cascade confluence proxy found no CI-clean win-rate edge (a quality right-shift only) \u2014 this forward-shadow is the definitive on-Prophet check, tagging Prophet's ACTUAL entries from go-live. Display / shadow tier only: it NEVER gates, ranks, or alters any Prophet decision.",
   "n_entries": 400,
   "n_tagged": 316,
   "n_stageable": 316,
   "n_matured": {
-    "21": 144,
+    "21": 165,
     "63": 0,
     "126": 0,
     "clean15_126": 0,
-    "clean8_21": 144
+    "clean8_21": 165
   },
   "integrity_projection": {
     "raw_rows": 400,
-    "revision_rows": 144,
+    "revision_rows": 165,
     "effective_rows": 400,
     "quarantined_excluded": 0,
     "quarantined_ids": [],
@@ -42,9 +42,9 @@
         "win_rate": null
       },
       "clean8_21": {
-        "n_matured": 57,
+        "n_matured": 66,
         "n_win": 16,
-        "win_rate": 0.2807017543859649
+        "win_rate": 0.24242424242424243
       }
     },
     "rest": {
@@ -55,9 +55,9 @@
         "win_rate": null
       },
       "clean8_21": {
-        "n_matured": 87,
+        "n_matured": 99,
         "n_win": 33,
-        "win_rate": 0.3793103448275862
+        "win_rate": 0.3333333333333333
       }
     },
     "fresh_stage2": {
@@ -68,9 +68,9 @@
         "win_rate": null
       },
       "clean8_21": {
-        "n_matured": 13,
+        "n_matured": 14,
         "n_win": 1,
-        "win_rate": 0.07692307692307693
+        "win_rate": 0.07142857142857142
       }
     },
     "positive_ec": {

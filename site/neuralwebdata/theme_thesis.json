@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_thesis.v1",
-  "as_of": "2026-09-14",
-  "generated_at": "2026-09-14T11:19:03Z",
+  "as_of": "2026-09-16",
+  "generated_at": "2026-09-16T09:39:33Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -28,10 +28,10 @@
   "theses": [
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-14",
+      "as_of": "2026-09-16",
       "thesis_id": "ai_semiconductors.v1",
-      "content_hash": "sha256:e5e49a7d80a00910ab32233fafb6bafe5601e6a98b6cda23e1064fb33e02bd6b",
-      "prev_content_hash": "sha256:3243e989b29b0fc56c461a8344fb7f3eaf00407564c3e21e3515acb885bf76fa",
+      "content_hash": "sha256:acabcaac5d83c41a0e8842b01718afa40ee39c46ea2fa9d2a5aebb0053aeaa36",
+      "prev_content_hash": "sha256:e5e49a7d80a00910ab32233fafb6bafe5601e6a98b6cda23e1064fb33e02bd6b",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -109,7 +109,7 @@
           "rule_en": "If crowding on the ai_semiconductors or ai_infra basket exceeds 0.7 (z-score), the risk-adjusted opportunity is diminished — variant perception has become consensus.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'basket_intel[*].crowding' gt 0.7 → value=0.412"
+          "detail": "threshold check: 'basket_intel[*].crowding' gt 0.7 → value=0.0"
         },
         {
           "id": "ai_semi_f4",
@@ -388,10 +388,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-09",
+      "as_of": "2026-09-16",
       "thesis_id": "cybersecurity.v1",
-      "content_hash": "sha256:a68948452be0825beb28f5d0156841f23c8982f2dfb28bdb88b3c4ec112fd7e8",
-      "prev_content_hash": "sha256:2fac0c1256928e7963a28bd6479cc83be053240116e601ab7a22133328929a11",
+      "content_hash": "sha256:218311c08dc9a1574684fa5a88d1aeb4b919d0290294a92678b8eab5cebf8ffb",
+      "prev_content_hash": "sha256:a68948452be0825beb28f5d0156841f23c8982f2dfb28bdb88b3c4ec112fd7e8",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -445,7 +445,7 @@
           "rule_en": "If revision_breadth for cybersecurity falls below 0.1, software IT budget compression is overriding the platform cycle tailwind.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.1 → value=0.576"
+          "detail": "threshold check: 'revision_breadth' lt 0.1 → value=0.563"
         },
         {
           "id": "cyber_f2",
@@ -465,10 +465,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-13",
+      "as_of": "2026-09-16",
       "thesis_id": "robotics_automation.v1",
-      "content_hash": "sha256:93bb4a916946f7622f081f099935933ae98598e7ba6f15e91fded1787c7c58f5",
-      "prev_content_hash": "sha256:78c5d30a024ed5509627e332d27b7af99674295c834ebd12cc356c03d830be00",
+      "content_hash": "sha256:0cbad9948c850ca9b9677c35a5bac0b50b24e3872d0251d1c80f9856c0725636",
+      "prev_content_hash": "sha256:93bb4a916946f7622f081f099935933ae98598e7ba6f15e91fded1787c7c58f5",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -534,7 +534,7 @@
           "rule_en": "If reshoring basket score falls below 30 or moves to 'avoid' label, the industrial-capex driver underpinning automation demand is weakening.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'basket_intel[*].score' lt 30 → value=53.0"
+          "detail": "threshold check: 'basket_intel[*].score' lt 30 → value=39.0"
         },
         {
           "id": "robo_f3",
@@ -554,10 +554,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-13",
+      "as_of": "2026-09-16",
       "thesis_id": "fintech_payments.v1",
-      "content_hash": "sha256:f27abe31a48b1b38ea03df6074dc67c27f583dd07f553cf19c196177e0ddf60e",
-      "prev_content_hash": "sha256:ab40d7150e328684c08fa6b9f45e6cfbd3fec61acf566cd2a94427142bc177a1",
+      "content_hash": "sha256:795af4d25fb13735fb3269640bd3ac0fa360b71498e47bd9cf2e83ca6f49d85b",
+      "prev_content_hash": "sha256:f27abe31a48b1b38ea03df6074dc67c27f583dd07f553cf19c196177e0ddf60e",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -611,7 +611,7 @@
           "rule_en": "If revision_breadth for fintech_payments falls negative, earnings consensus is cutting; stablecoin disruption may be larger than the on-ramp toll revenue offset.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=0.062"
+          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=0.137"
         },
         {
           "id": "finpay_f2",
@@ -1380,10 +1380,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-13",
+      "as_of": "2026-09-16",
       "thesis_id": "ag_fertilizer.v1",
-      "content_hash": "sha256:b8849607cf911c3fee313ed16db0ad1659eccd511a4c18bc9939b884bdc30130",
-      "prev_content_hash": "sha256:c23082ef112e3478ae9961641c718a0db4b94e0ae6295ca9b8fa79d63954030a",
+      "content_hash": "sha256:15587c0fe8cf26f1f45a752b5ae60ae0eab0f22757cd7a4d5bd3dcab18737c26",
+      "prev_content_hash": "sha256:b8849607cf911c3fee313ed16db0ad1659eccd511a4c18bc9939b884bdc30130",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -1437,7 +1437,7 @@
           "rule_en": "If revision_breadth for ag_fertilizer falls negative, crop commodity prices are declining faster than fertilizer input cost savings — farmer economics are deteriorating.\n",
           "state": "FIRED",
           "fired": true,
-          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=-0.467"
+          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=-0.447"
         },
         {
           "id": "ag_f2",
@@ -1535,7 +1535,7 @@
   ],
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-09-14T11:19:03Z",
-  "inputs_hash": "sha256:7c932aadfaa2f0f412284f2e3395e86b9144de244819b2689b0fa1bfcb3cd08d",
+  "produced_at": "2026-09-16T09:39:33Z",
+  "inputs_hash": "sha256:4bf7f592754af5844772f660a5616c843d6f260e11b1eea4362a9547b2712cc1",
   "tier": "display"
 }
