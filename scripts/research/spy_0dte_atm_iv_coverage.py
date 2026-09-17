@@ -113,13 +113,14 @@ def _audit_day(
         "start_time": "09:30:00.000",
         "end_time": "10:00:00.000",
         "interval": "1m",
-        "strike_range": "4",
+        "strike_range": "2",
         "right": "both",
+        "version": "latest",
         "format": "json",
     }
     try:
         payload = _fetch_json(
-            base_url, "/option/history/greeks/all", params, timeout
+            base_url, "/option/history/greeks/implied_volatility", params, timeout
         )
         return {
             "date": session_date,
