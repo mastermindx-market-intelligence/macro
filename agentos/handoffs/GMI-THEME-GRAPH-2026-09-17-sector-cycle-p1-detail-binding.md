@@ -10,6 +10,15 @@ state_before: 'P1 implementation PR #7252 was remotely backed up at 158909ba3753
   Its validator accepted empty or wrong-group pages carrying matching digest metadata. Prior local-only
   handoff source-publication claims were stale.'
 changed:
+- path: engine/group_member_observations.py
+  what: Require each member metric cell to bind to the metric-specific normalized-frame receipt basis.
+    Legacy activity and legacy 50/200 breadth can no longer cite the close panel as though it alone
+    proved the volume/benchmark/eligibility-derived state. Missing legacy-state receipts refuse the
+    companion before publication.
+- path: engine/group_pulse.py
+  what: Emit deterministic one-session normalized receipts for the exact legacy activity, legacy 50-day
+    and legacy 200-day member states from the same in-memory invocation. Eligibility is encoded as null,
+    while observed false and true remain distinct. No legacy pulse value or action input changes.
 - path: scripts/check_group_member_observations.py
   what: Parse the actual body and the existing template-owned inline DETAIL JSON literal; reject ambiguous/missing
     payloads; bind basket identity and every embedded member observation, metric, null and source field
@@ -108,6 +117,37 @@ verified:
     leave source JSON unchanged, no script errors, section widths 1340/366. Both desktop-dark English
     and mobile-light Chinese screenshots were inspected. Template SHA-256 bef4a8553b146cffd414ea44f3b786e4ad0bc89d2cd8c2b0a73ea1ca957c08e5.
     Normal local Playwright/Chromium completed without alternate-profile/security-policy bypass.
+- claim: Adversarial source review found and closed a provenance blocker before requesting approval.
+  command: Inspect project_group_members source_ref selection; add RED tests for missing legacy-state
+    receipts and a valid normalized receipt carrying the wrong metric basis; implement only after both
+    failure modes were observed.
+  result: The old candidate allowed legacy activity/trend cells to cite total_return_close. Source repair
+    b0a3fa2e6e195d99fafcd226c4902bef88456d91 emits exact derived-state receipts, requires them at
+    projection, and rejects wrong-basis cell bindings in the closed validator.
+- claim: Latest source-bound producer, consumer, semantics and surface suite is green.
+  command: python3 -m pytest -q tests/test_theme_detail_member_observations.py tests/test_group_member_observations.py
+    tests/test_group_pulse_contract.py tests/test_group_pulse_episodes.py tests/test_group_pulse_tripwire.py
+    tests/test_group_read_surface.py tests/test_theme_detail_cycles.py --tb=short
+  result: 271 passed in 7.49s, exit 0. Exact existing CI-owner commands separately passed 199 producer
+    and 71 interface tests.
+- claim: Current real-input generation binds the exact state receipts and all existing detail consumers.
+  command: python3 /tmp/mmx_p1_real_proof.py; python3 /tmp/mmx_p1_build_all_pages.py; python3
+    scripts/check_group_member_observations.py --site-root /tmp/mmx-sector-p1-proof/site
+  result: 49 pages and 49 groups coherent; AI Infrastructure kept 24 catalogue members, 23 strict-200
+    observations and CBRS unavailable. Pulse 0b85839b219e461cfaae38f0ead6f409978e3b06b7c3e434bab005855dbf854a;
+    projection ebb09b98c654994a6d375c375ea73e0aa7260fc0efdd6e7d611448485d124a88. The three
+    legacy metrics each cite only their exact state receipt.
+- claim: Browser and repository qualification were rerun after source binding changed.
+  command: research/sector_cycle_revamp/evidence/P1_MEMBER_UNITS_2026-09-17/verify_browser.py; compileall;
+    diff check; template/design/runtime/UI guards; check_contract_delta.py --base 8b688809239d760be0cdcf8cd64f0d6f7ee05316
+  result: 8/8 EN/ZH x dark/light x desktop/mobile browser states, zero script errors and unchanged analytical
+    data under search/filter. Contract delta 0 introduced / 1 inherited; all local guards exit 0. Receipt
+    and two screenshots were refreshed to projection ebb09b98c654994a6d375c375ea73e0aa7260fc0efdd6e7d611448485d124a88.
+- claim: Protected procedure and moving-base compatibility were refreshed before modifying the returned candidate.
+  command: Mastermind protected master aacf3df5a47ca37ce71cd47a3bd7caea81ad4cd2; compare merge-base
+    8b688809239d760be0cdcf8cd64f0d6f7ee05316 to current origin/main 07fc7d77bf844434ad8688af34c46cd5a60d48d3.
+  result: Skillpack v1.0.1 compatible. No candidate-owned path collision or relevant dependency movement;
+    no ancestry-only merge/rebase was performed merely to erase behind_by.
 unverified:
 - claim: Revised-head remote CI, independent review, merge and production acceptance.
   what_would_verify: Push this same branch once, verify remote expected head, obtain required exact-head
@@ -124,16 +164,17 @@ unverified:
 unresolved:
 - 'PR #7211 remains a separate publication source owner; inspected head 9b01c9bcae2b12f23ab0a2ab3a5054f81dcade02.
   Do not edit or replace that carrier without custody reconciliation.'
-- CI-closure head 1ae7932c3c255bd5cc26ded690dc28f8a08a67a4 was pushed and reconciled. The subsequent display-only
-  arithmetic-unit correction needs its own hosted exact-head proof and review; no previous queued pack
-  or local browser result is substituted for production acceptance.
+- Source-receipt hardening commit b0a3fa2e6e195d99fafcd226c4902bef88456d91 is locally verified on the
+  original carrier. It still needs one ordinary push plus fresh exact-head hosted proof and independent
+  review; no predecessor CI or browser receipt substitutes for those gates.
 - No worker, Executive Job or reciprocal watcher was started by this continuation. A PR comment is not
   receiver consumption.
 - 'Research PR #7234 remains Draft/HOLD and is not the implementation. Its older local-only source handoff
   is superseded only for the now-existing remote #7252 carrier.'
 next_actions:
-- Commit/push the display-unit repair plus exact retained browser evidence on this same branch, verify
-  remote head and fresh binding CI; do not poll or rerun unchanged queued predecessor jobs.
+- Commit this continuity update, push the original branch once, reconcile the exact remote head, and
+  consume fresh hosted checks. Request independent exact-head review only after the carrier is frozen;
+  do not rerun unchanged predecessor jobs or mark Ready/merge/deploy.
 - 'Reconcile pickup and implementation of integration contract #7211 comment 5711957268 with its incumbent
   source owner; delivery alone does not satisfy that edge.'
 - Complete required exact-head independent review and real-path release proof; keep Draft/BUILT_NOT_PROVEN
@@ -165,7 +206,7 @@ prs:
 
 ## Continuation boundary
 
-This is a source-repair checkpoint, not programme completion or an execution receipt. Current Chairman intent is the resumed Investigate Finviz Matrix Integration programme. Protected procedure was loaded from Mastermind `55a54fdaecef9cbf434492c3cce3b369dbc69b9b`, Skillpack 1.0.1.
+This is a source-repair checkpoint, not programme completion or an execution receipt. Current Chairman intent is the resumed Investigate Finviz Matrix Integration programme. Protected procedure was refreshed from Mastermind `aacf3df5a47ca37ce71cd47a3bd7caea81ad4cd2`, Skillpack 1.0.1.
 
 Operation: `sector-cycle-p1-detail-binding-repair-20260917-sol-001`. Original source carrier: PR #7252, branch `claude/sector-cycle-p1-member-observation-20260917-sol`, worktree `/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/sector-cycle-p1-member-observation-20260917-sol`. Direct principal work reason: PRINCIPAL_JUDGMENT / CRITICAL_PATH_SHORTCUT. Self-review is not independent review.
 
@@ -178,3 +219,14 @@ The consumer-binding source remains `317cab20b3971ba318829e6140aca2adeedd3639`; 
 ## Actual-unit consumer correction
 
 A further real-path mismatch was found: the Group Pulse arithmetic daily difference was printed as a percentage return. The P1 formatter now uses percentage points and preserves raw-return percent, null and boolean behavior. The source engine and closed JSON contract are unchanged. Eight current local browser states and two inspected screenshots are retained under `research/sector_cycle_revamp/evidence/P1_MEMBER_UNITS_2026-09-17/`; they do not establish deployed/authenticated production proof. P2 shared Atlas adaptation remains after the accepted real P1 read model under R6, not a reason to rebuild the finished synthetic reference.
+
+## Exact state-receipt correction
+
+The returned candidate's claim of exact source binding was too strong for three legacy metrics: each cell
+pointed at `total_return_close`, although activity can depend on benchmark-adjusted movement and reported
+volume, and legacy trend eligibility also depends on the current covered cohort. The same Group Pulse
+invocation now emits the exact current member-state frames as receipts and the projector refuses to create
+a companion without them. The closed validator enforces metric-to-receipt basis, so a well-formed but
+semantically unrelated normalized frame no longer passes. This is provenance hardening for existing
+context-only observations, not a formula, rank, recommendation, publication, source-rights or trade-authority
+change. The parent programme remains active and P1 remains `BUILT_NOT_PROVEN`.
