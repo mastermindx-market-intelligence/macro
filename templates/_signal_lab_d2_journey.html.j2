@@ -1,0 +1,75 @@
+{% set reason_labels = {
+  'no_source_generation': ('No prospective observation recorded yet', '尚未记录前瞻观察'),
+  'generation_integrity_error': ('Research evidence is damaged; original records retained', '研究证据损坏；原始记录已保留'),
+  'entry_asof_invalid': ('Entry date is invalid', '入场日期无效'),
+  'btc_close_source_unavailable': ('BTC daily closes are unavailable', 'BTC 日收盘数据不可用'),
+  'requires_previous_complete_source_and_entry_close': ('Complete source and entry closes are required', '需要完整来源和入场收盘数据'),
+  'previous_daily_btc_close_missing': ('The previous BTC daily close is missing', '缺少前一日 BTC 收盘数据'),
+  'dvol_source_unavailable': ('DVOL source is unavailable', 'DVOL 来源不可用'),
+  'dvol_columns_incomplete': ('DVOL fields are incomplete', 'DVOL 字段不完整'),
+  'previous_complete_dvol_bar_missing': ('The previous complete DVOL observation is missing', '缺少前一完整 DVOL 观察'),
+  'dvol_history_incomplete': ('DVOL history is too short', 'DVOL 历史数据不足'),
+  'dvol_values_invalid': ('DVOL values are invalid', 'DVOL 数值无效'),
+  'dvol_range_invalid': ('DVOL range is invalid', 'DVOL 区间无效'),
+  'late_source_arrival': ('Source arrived late', '来源延迟到达'),
+  'source_restatement': ('Source inputs restated', '来源输入已重述'),
+  'outcome_input_restatement': ('Forward closes restated', '后续收盘数据已重述')
+} %}
+{% macro observation(journey, heading_en, heading_zh) %}
+<div class="extra d2-observation" data-d2-entry="{{ journey.entry_asof or '' }}">
+  <strong>{{ t(heading_en, heading_zh) }}</strong><br>
+  {{ t('Observed: ' ~ (journey.source_asof or '—'), '观察：' ~ (journey.source_asof or '—')) }}<br>
+  {{ t('Entry close: ' ~ (journey.entry_asof or '—'), '入场收盘：' ~ (journey.entry_asof or '—')) }}<br>
+  {{ t('Grade after: ' ~ (journey.check_after or '—'), '评估日：' ~ (journey.check_after or '—')) }}<br>
+  {{ t('Immutable generations: ' ~ (journey.generation_count or 0), '不可变代次：' ~ (journey.generation_count or 0)) }}<br>
+  {% if journey.fired is sameas true %}
+    {{ t('Raw D2 observation: fired', '原始 D2 观察：已触发') }}
+  {% elif journey.fired is sameas false %}
+    {{ t('Raw D2 observation: did not fire', '原始 D2 观察：未触发') }}
+  {% else %}
+    {{ t('Raw D2 observation: unavailable', '原始 D2 观察：不可用') }}
+  {% endif %}<br>
+  {% if journey.status == 'matured' and journey.outcome %}
+    {% if journey.fired is not sameas true %}
+      {{ t('Matured · no signal fired', '已成熟 · 未触发信号') }}
+    {% elif journey.outcome.down_hit %}
+      {{ t('Matured · down target hit', '已成熟 · 下行目标命中') }}
+    {% else %}
+      {{ t('Matured · down target missed', '已成熟 · 下行目标未命中') }}
+    {% endif %}
+    · {{ journey.outcome.fwd_min_pct }}% / {{ journey.outcome.fwd_max_pct }}%
+  {% elif journey.status == 'pending' %}
+    {{ t('Pending outcome after three future closes', '等待未来三个收盘后的结果') }}
+  {% else %}
+    {% set label = reason_labels.get(journey.reason, ('Research input unavailable', '研究输入不可用')) %}
+    {{ t(label[0], label[1]) }}
+  {% endif %}<br>
+  {{ t('Research only — no trading authority', '仅供研究 — 无交易权限') }}
+  {% if journey.corrected %}
+    <div><strong>{{ t('Restated ' ~ journey.corrections|length ~ ' times', '已修订 ' ~ journey.corrections|length ~ ' 次') }}</strong></div>
+    <details class="d2-evidence">
+      <summary>{{ t('Correction history', '修订历史') }}</summary>
+      {% for correction in journey.corrections %}
+        {% set label = reason_labels.get(correction.reason, ('Research evidence restated', '研究证据已重述')) %}
+        <div>{{ t(label[0], label[1]) }}</div>
+        <div>{{ t('Supersedes: ', '取代：') }}<code>{{ correction.supersedes_generation_id }}</code></div>
+        <div>{{ t('Correction: ', '修订：') }}<code>{{ correction.generation_id }}</code></div>
+      {% endfor %}
+    </details>
+  {% endif %}
+  <details class="d2-evidence">
+    <summary>{{ t('Recorded evidence', '已记录证据') }}</summary>
+    <div>{{ t('Source recorded: ', '来源记录时间：') }}{{ journey.source_recorded_at or '—' }}</div>
+    <div>{{ t('Source generation: ', '来源代次：') }}<code>{{ journey.source_generation_id or '—' }}</code></div>
+    <div>{{ t('Outcome recorded: ', '结果记录时间：') }}{{ journey.outcome_recorded_at or '—' }}</div>
+    <div>{{ t('Outcome generation: ', '结果代次：') }}<code>{{ journey.outcome_generation_id or '—' }}</code></div>
+  </details>
+</div>
+{% endmacro %}
+{{ observation(r.research_journey, 'Prospective research journey', '前瞻研究轨迹') }}
+{% if r.research_journey.last_matured %}
+<details class="extra d2-history">
+  <summary>{{ t('Most recent completed observation', '最近完成的观察') }}</summary>
+  {{ observation(r.research_journey.last_matured, 'Historical research outcome', '历史研究结果') }}
+</details>
+{% endif %}

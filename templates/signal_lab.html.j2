@@ -188,6 +188,10 @@
     font-size:12.5px; }
   .sf-docket-note { font-size:12px; color:var(--muted); border-left:2px solid var(--up);
     padding-left:9px; margin:8px 0 4px; }
+  .alert-trust-table { min-width: 980px; }
+  .d2-observation { margin-top: 8px; }
+  .d2-evidence code { overflow-wrap: anywhere; white-space: normal; }
+  .d2-evidence summary, .d2-history summary { cursor: pointer; }
 </style>
 </head>
 <body>
@@ -269,38 +273,7 @@
           <div class="mkt">{{ t('Direction: ' ~ (r.direction or 'unknown'), '方向：' ~ ('下行' if r.direction == 'down' else ('上行' if r.direction == 'up' else '未知'))) }}</div>
           <div class="extra">{{ t(r.purpose, r.purpose_zh) }}</div>
           {% if r.identity == 'd2' and r.research_journey %}
-            {% set journey = r.research_journey %}
-            <div class="extra" style="margin-top:8px">
-              <strong>{{ t('Prospective research journey', '前瞻研究轨迹') }}</strong><br>
-              {{ t('Observed: ' ~ (journey.source_asof or '—'),
-                   '观察：' ~ (journey.source_asof or '—')) }}<br>
-              {{ t('Entry close: ' ~ (journey.entry_asof or '—'),
-                   '入场收盘：' ~ (journey.entry_asof or '—')) }}<br>
-              {{ t('Grade after: ' ~ (journey.check_after or '—'),
-                   '评估日：' ~ (journey.check_after or '—')) }}<br>
-              {{ t('Immutable generations: ' ~ (journey.generation_count or 0),
-                   '不可变代次：' ~ (journey.generation_count or 0)) }}<br>
-              {% if journey.fired is sameas true %}
-                {{ t('Raw D2 observation: fired', '原始 D2 观察：已触发') }}
-              {% elif journey.fired is sameas false %}
-                {{ t('Raw D2 observation: did not fire', '原始 D2 观察：未触发') }}
-              {% else %}
-                {{ t('Raw D2 observation: unavailable', '原始 D2 观察：不可用') }}
-              {% endif %}<br>
-              {% if journey.status == 'matured' and journey.outcome %}
-                {% if journey.outcome.down_hit %}
-                  {{ t('Matured · down target hit', '已成熟 · 下行目标命中') }}
-                {% else %}
-                  {{ t('Matured · down target missed', '已成熟 · 下行目标未命中') }}
-                {% endif %}
-                · {{ journey.outcome.fwd_min_pct }}% / {{ journey.outcome.fwd_max_pct }}%
-              {% elif journey.status == 'pending' %}
-                {{ t('Pending outcome after three future closes', '等待未来三个收盘后的结果') }}
-              {% else %}
-                {{ t('Source unavailable', '来源不可用') }}{% if journey.reason %}: {{ journey.reason }}{% endif %}
-              {% endif %}<br>
-              {{ t('Research only — no trading authority', '仅供研究 — 无交易权限') }}
-            </div>
+            {% include '_signal_lab_d2_journey.html.j2' %}
           {% endif %}
         </td>
         <td><span class="pill {{ status_class }}">{{ t(r.status_text, r.status_zh) }}</span></td>

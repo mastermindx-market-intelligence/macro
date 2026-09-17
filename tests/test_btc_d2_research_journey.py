@@ -220,7 +220,7 @@ def test_impulse_ledger_persists_and_grades_the_d2_journey_in_its_existing_row()
             radar,
             sig,
             dvol_df=dvol,
-            recorded_at="2026-09-17T05:00:00Z",
+            recorded_at=str((entry + pd.Timedelta(days=1)).date()) + "T05:00:00Z",
         )
         row = LED.load()[0]
         assert "research_d2" in row
@@ -300,7 +300,7 @@ def test_next_stamp_repairs_only_an_already_enrolled_unavailable_source():
         }
         LED.stamp(
             day1, sig, dvol_df=pd.DataFrame(),
-            recorded_at="2026-09-17T05:00:00Z",
+            recorded_at=str((entry + pd.Timedelta(days=1)).date()) + "T05:00:00Z",
         )
         rows = LED.load()
         enrolled = next(row for row in rows if row["asof"] == str(entry.date()))
@@ -311,7 +311,7 @@ def test_next_stamp_repairs_only_an_already_enrolled_unavailable_source():
         day2["asof"] = str(next_entry.date())
         LED.stamp(
             day2, sig_next, dvol_df=dvol,
-            recorded_at="2026-09-18T05:00:00Z",
+            recorded_at=str((next_entry + pd.Timedelta(days=1)).date()) + "T05:00:00Z",
         )
         rows = LED.load()
         assert "research_d2" not in rows[0]
@@ -451,3 +451,206 @@ def test_outcome_refuses_to_compress_a_missing_future_daily_close():
         recorded_at="2026-09-21T05:00:00Z",
     ) is False
     assert d2.project(journey)["status"] == "pending"
+
+
+def _rollover_rows():
+    d2, completed, entry, sig, _ = _capture_available(fired=True)
+    full = pd.concat([sig, pd.DataFrame(
+        {"close": [98.0, 94.0, 93.0]},
+        index=[entry + pd.Timedelta(days=i) for i in (1, 2, 3)],
+    )])
+    assert d2.mature_outcome(completed, full)
+    next_entry, next_sig, next_dvol = _frames(fired=False)
+    shift = pd.Timedelta(days=4)
+    next_sig.index += shift
+    next_dvol.index += shift
+    current = d2.new_journey()
+    d2.capture_source(current, entry_asof=str((next_entry + shift).date()),
+                      sig_df=next_sig, dvol_df=next_dvol)
+    return [
+        {"asof": str(entry.date()), "research_d2": completed},
+        {"asof": str((next_entry + shift).date()), "research_d2": current},
+    ]
+
+
+def test_latest_projection_retains_completed_observation_after_rollover():
+    rows = _rollover_rows()
+    before = copy.deepcopy(rows)
+    projected = LED.latest_d2_journey(rows)
+    assert projected["status"] == "pending"
+    assert projected["last_matured"] == _d2().project(rows[0]["research_d2"])
+    projected["last_matured"]["outcome"]["down_hit"] = False
+    assert rows == before
+
+
+@pytest.mark.parametrize("broken", [None, [], 17, {"schema": "btc_d2_forward.v1", "generations": None}])
+def test_corrupt_current_observation_never_impersonates_completed_history(broken):
+    rows = _rollover_rows()
+    rows[-1]["research_d2"] = broken
+    before = copy.deepcopy(rows)
+    projected = LED.latest_d2_journey(rows)
+    assert projected["status"] == "unavailable"
+    assert projected["reason"] == "generation_integrity_error"
+    assert projected["source_generation_id"] is None
+    assert projected["last_matured"]["entry_asof"] == rows[0]["asof"]
+    assert rows == before
+
+
+@pytest.mark.parametrize("generations", [None, 17, "broken"])
+def test_projection_fails_closed_on_invalid_generation_container(generations):
+    projected = _d2().project({"schema": "btc_d2_forward.v1", "generations": generations})
+    assert projected["status"] == "unavailable"
+    assert projected["reason"] == "generation_integrity_error"
+    assert projected["fired"] is None
+
+
+def test_completed_current_observation_is_not_duplicated_as_history():
+    rows = _rollover_rows()[:1]
+    projected = LED.latest_d2_journey(rows)
+    assert projected["status"] == "matured"
+    assert projected.get("last_matured") is None
+
+
+def test_nonfinite_research_generation_does_not_destroy_incumbent_summary():
+    rows = _rollover_rows()
+    rows[-1]["research_d2"]["generations"][0]["semantic"]["inputs"]["entry_close"] = float("nan")
+    summary = LED.render_summary(rows)
+    assert summary["ok"] is True
+    assert summary["n_rows"] == 2
+    assert summary["research_d2"]["reason"] == "generation_integrity_error"
+
+
+def test_source_correction_is_inspectable_and_invalidates_earlier_outcome():
+    d2 = _d2()
+    rows = _rollover_rows()
+    journey = rows[0]["research_d2"]
+    old_outcome_id = d2.project(journey)["outcome_generation_id"]
+    entry, sig, dvol = _frames(fired=False)
+    assert d2.capture_source(journey, entry_asof=str(entry.date()), sig_df=sig, dvol_df=dvol)
+    result = d2.project(journey)
+    assert result["status"] == "pending"
+    assert result["outcome_generation_id"] is None
+    assert result["corrected"] is True
+    assert result["corrections"][-1]["reason"] == "source_restatement"
+    assert result["corrections"][-1]["target_kind"] == "source"
+    assert result["corrections"][-1]["supersedes_generation_id"] == journey["generations"][0]["generation_id"]
+    assert any(g["generation_id"] == old_outcome_id for g in journey["generations"])
+
+
+def test_raw_fire_matches_incumbent_when_dvol_skips_a_btc_day():
+    from engine import btc_impulse_radar as radar
+    import math
+    days = pd.date_range("2024-01-01", periods=80, freq="D")
+    ranges = pd.Series([0.1 + 0.01 * math.sin(i) for i in range(80)], index=days)
+    ranges = ranges.drop(days[-2])
+    for day in (days[-3], days[-1]):
+        prior = ranges.loc[ranges.index < day].tail(60)
+        ranges.loc[day] = prior.mean() + 1.7 * prior.std()
+    entry = days[-1] + pd.Timedelta(days=1)
+    sig = pd.DataFrame({"close": 100.0}, index=days.append(pd.DatetimeIndex([entry])))
+    dvol = pd.DataFrame({"dvol_high": 90.0 + ranges * 100.0,
+                         "dvol_low": 90.0, "dvol_close": 100.0}, index=ranges.index)
+    expected = bool(radar._d2_cond(ranges, 60, days).iloc[-1])
+    assert expected is False
+    result = _d2().build_source_semantic(
+        entry_asof=str(entry.date()), sig_df=sig, dvol_df=dvol,
+    )
+    assert result["status"] == "available"
+    assert result["prediction"]["fired"] == expected
+    assert result["inputs"]["evaluation_dates"] == [str(days[-2].date()), str(days[-1].date())]
+
+
+@pytest.mark.parametrize("recorded_at", ["2026-09-17T05:00:00Z", "not-a-time"])
+def test_stale_or_invalid_recording_clock_cannot_mint_prospective_evidence(tmp_path, monkeypatch, recorded_at):
+    entry, sig, dvol = _frames(fired=True)
+    monkeypatch.setattr(LED, "_path", lambda: tmp_path / "ledger.jsonl")
+    radar = {"ok": True, "asof": str(entry.date()), "down": {}, "up": {}}
+    LED.stamp(radar, sig, dvol_df=dvol, recorded_at=recorded_at)
+    assert len(LED.load()) == 1
+    assert "research_d2" not in LED.load()[0]
+
+
+def test_tape_with_future_closes_cannot_be_enrolled_as_prospective(tmp_path, monkeypatch):
+    entry, sig, dvol = _frames(fired=True)
+    full = pd.concat([sig, pd.DataFrame(
+        {"close": [98.0]}, index=[entry + pd.Timedelta(days=1)],
+    )])
+    monkeypatch.setattr(LED, "_path", lambda: tmp_path / "ledger.jsonl")
+    radar = {"ok": True, "asof": str(entry.date()), "down": {}, "up": {}}
+    recorded_at = str((entry + pd.Timedelta(days=1)).date()) + "T05:00:00Z"
+    LED.stamp(radar, full, dvol_df=dvol, recorded_at=recorded_at)
+    assert "research_d2" not in LED.load()[0]
+
+
+def test_ledger_write_cannot_truncate_a_retained_generation_chain(tmp_path, monkeypatch):
+    target = tmp_path / "ledger.jsonl"
+    monkeypatch.setattr(LED, "_path", lambda: target)
+    rows = _rollover_rows()
+    LED._write(rows)
+    before = target.read_bytes()
+    rows[0]["research_d2"]["generations"].pop()
+    with pytest.raises(ValueError):
+        LED._write(rows)
+    assert target.read_bytes() == before
+
+
+def test_ledger_write_preserves_original_when_atomic_replace_fails(tmp_path, monkeypatch):
+    import os
+    target = tmp_path / "ledger.jsonl"
+    monkeypatch.setattr(LED, "_path", lambda: target)
+    rows = _rollover_rows()
+    LED._write(rows[:1])
+    before = target.read_bytes()
+    def fail_replace(*args, **kwargs):
+        raise OSError("simulated replacement failure")
+    monkeypatch.setattr(os, "replace", fail_replace)
+    with pytest.raises(OSError):
+        LED._write(rows)
+    assert target.read_bytes() == before
+
+
+def test_ledger_write_never_discards_an_unparseable_original_line(tmp_path, monkeypatch):
+    target = tmp_path / "ledger.jsonl"
+    monkeypatch.setattr(LED, "_path", lambda: target)
+    target.write_text('{"asof":"2024-03-03"}\n{"torn":')
+    before = target.read_bytes()
+    with pytest.raises(ValueError):
+        LED._write(LED.load())
+    assert target.read_bytes() == before
+
+
+@pytest.mark.parametrize("field,value", [("entry_asof", "2040-01-01"), ("spec", {"identity": "different-rule"})])
+def test_source_correction_cannot_retarget_the_frozen_question(field, value):
+    d2, journey, _, _, _ = _capture_available()
+    before = copy.deepcopy(journey)
+    root = journey["generations"][0]
+    replacement = copy.deepcopy(root["semantic"])
+    replacement[field] = value
+    correction = d2.make_generation("correction", {
+        "target_kind": "source", "supersedes_generation_id": root["generation_id"],
+        "reason": "source_restatement", "replacement": replacement,
+    })
+    with pytest.raises(d2.GenerationConflict):
+        d2.append_generation(journey, correction)
+    assert journey == before
+
+
+def test_new_ledger_observation_uses_incumbent_configured_dvol_window(tmp_path, monkeypatch):
+    from lib import store
+    entry, sig, dvol = _frames()
+    monkeypatch.setattr(LED, "_path", lambda: tmp_path / "ledger.jsonl")
+    monkeypatch.setattr(LED.config, "load", lambda: {"btc_impulse_radar": {"dvol_z_w": 30}})
+    monkeypatch.setattr(store, "read", lambda group, name: dvol if (group, name) == ("deribit", "dvol") else None)
+    radar = {"ok": True, "asof": str(entry.date()), "down": {}, "up": {}}
+    LED.stamp(radar, sig, recorded_at=str((entry + pd.Timedelta(days=1)).date()) + "T05:00:00Z")
+    source = LED.load()[0]["research_d2"]["generations"][0]["semantic"]
+    assert source["spec"]["dvol_z_window"] == 30
+    assert len(source["inputs"]["source_rows"]) == 32
+
+
+def test_config_change_does_not_rewrite_an_existing_frozen_window():
+    d2, journey, entry, sig, dvol = _capture_available()
+    before = copy.deepcopy(journey)
+    assert d2.capture_source(journey, entry_asof=str(entry.date()),
+                             sig_df=sig, dvol_df=dvol, dvol_w=30) is False
+    assert journey == before

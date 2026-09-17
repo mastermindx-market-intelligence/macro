@@ -22,6 +22,9 @@ from __future__ import annotations
 
 import json
 import logging
+import os
+import tempfile
+from datetime import datetime, timezone
 
 import pandas as pd
 
@@ -55,9 +58,58 @@ def load() -> list[dict]:
 
 
 def _write(rows: list[dict]) -> None:
+    """Crash-safe replacement by the incumbent single nightly writer.
+
+    Enforce preservation against the retained file before replacing it. This
+    is not authenticated anti-rollback storage: replacing the file externally
+    still requires reconciliation against its existing Git/publication owner.
+    """
     p = _path()
     p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text("\n".join(json.dumps(r) for r in rows) + ("\n" if rows else ""))
+    before = p.read_bytes() if p.exists() else None
+    previous = [json.loads(line) for line in (before or b"").splitlines() if line.strip()]
+    encode = lambda value: json.dumps(value, sort_keys=True, separators=(",", ":"))
+    for old in previous:
+        if not isinstance(old, dict):
+            if not any(encode(old) == encode(new) for new in rows):
+                raise ValueError("ledger row removal refused")
+            continue
+        matches = [new for new in rows if isinstance(new, dict) and new.get("asof") == old.get("asof")]
+        if len(matches) != 1:
+            raise ValueError("ledger row removal or ambiguous identity refused")
+        new = matches[0]
+        for key, value in old.items():
+            if key == "research_d2":
+                replacement = new.get(key)
+                generations = value.get("generations") if isinstance(value, dict) else None
+                if isinstance(generations, list) and isinstance(replacement, dict):
+                    new_generations = replacement.get("generations")
+                    if not isinstance(new_generations, list) or encode(new_generations[:len(generations)]) != encode(generations):
+                        raise ValueError("research generation truncation or rewrite refused")
+                    if encode({k: v for k, v in value.items() if k != "generations"}) != encode({k: v for k, v in replacement.items() if k != "generations"}):
+                        raise ValueError("research envelope rewrite refused")
+                elif encode(value) != encode(replacement):
+                    raise ValueError("unknown research envelope rewrite refused")
+            elif key != "outcome" or value is not None:
+                if key not in new or encode(new[key]) != encode(value):
+                    raise ValueError("frozen ledger field rewrite refused")
+    content = "\n".join(json.dumps(row) for row in rows) + ("\n" if rows else "")
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=p.parent,
+                                         prefix="." + p.name + ".", suffix=".tmp", delete=False) as handle:
+            temporary = handle.name
+            handle.write(content)
+            handle.flush()
+            os.fsync(handle.fileno())
+        # Never replace evidence changed since this write began. Publication
+        # serialization remains with the incumbent nightly/Git owner.
+        if (p.read_bytes() if p.exists() else None) != before:
+            raise ValueError("concurrent ledger change; reconcile before write")
+        os.replace(temporary, p)
+    finally:
+        if temporary is not None and os.path.exists(temporary):
+            os.unlink(temporary)
 
 
 def _fired(legs: list[dict], key: str) -> bool:
@@ -76,6 +128,20 @@ def _read_dvol():
         return None
 
 
+def _prospective_entry(asof, sig_df, recorded_at: str) -> bool:
+    """Enroll only the most recent completed UTC day, before future tape exists."""
+    try:
+        observed = pd.Timestamp(recorded_at)
+        if observed.tzinfo is None or sig_df is None or sig_df.empty:
+            return False
+        entry = btc_d2_research._date(asof)
+        expected = observed.tz_convert("UTC").normalize().tz_localize(None) - pd.Timedelta(days=1)
+        dates = pd.to_datetime(sig_df.index, errors="coerce", utc=True)
+        return bool(entry == expected and dates.max().normalize().tz_localize(None) == entry)
+    except (ValueError, TypeError, AttributeError):
+        return False
+
+
 def stamp(
     radar: dict | None,
     sig_df: pd.DataFrame | None = None,
@@ -90,6 +156,7 @@ def stamp(
         asof = radar.get("asof")
         if not asof:
             return
+        recorded_at = recorded_at if recorded_at is not None else datetime.now(timezone.utc).isoformat()
         rows = load()
         row = next((candidate for candidate in rows if candidate.get("asof") == asof), None)
         changed = False
@@ -115,9 +182,10 @@ def stamp(
             changed = True
 
         source = _read_dvol() if dvol_df is _DVOL_UNSET else dvol_df
+        dvol_w = int((config.load().get("btc_impulse_radar", {}) or {}).get("dvol_z_w", 60))
         for candidate in rows:
             journey = candidate.get("research_d2")
-            if candidate is row and row_created and journey is None:
+            if candidate is row and row_created and journey is None and _prospective_entry(asof, sig_df, recorded_at):
                 journey = btc_d2_research.new_journey()
                 candidate["research_d2"] = journey
                 changed = True
@@ -132,6 +200,7 @@ def stamp(
                     entry_asof=candidate.get("asof"),
                     sig_df=sig_df,
                     dvol_df=source,
+                    dvol_w=dvol_w,
                     recorded_at=recorded_at,
                 ):
                     changed = True
@@ -184,7 +253,7 @@ def grade(
                                 }
                                 changed = True
                 journey = row.get("research_d2")
-                if isinstance(journey, dict) and btc_d2_research.mature_outcome(
+                if isinstance(journey, dict) and journey.get("schema") == btc_d2_research.SCHEMA and btc_d2_research.mature_outcome(
                     journey, sig_df, recorded_at=recorded_at,
                 ):
                     changed = True
@@ -199,13 +268,32 @@ def grade(
 
 
 def latest_d2_journey(rows: list[dict] | None = None) -> dict:
-    """Read-only projection of the newest prospective D2 journey."""
+    """Current observation plus one explicitly historical completed result.
+
+    A bad current envelope must remain visibly bad, not be replaced by an older
+    good result. Both projections are derived copies of this ledger only.
+    """
     rows = rows if rows is not None else load()
+    current = None
     for row in reversed(rows):
-        journey = row.get("research_d2")
-        if isinstance(journey, dict):
-            return btc_d2_research.project(journey)
-    return btc_d2_research.project(None)
+        if not isinstance(row, dict) or "research_d2" not in row:
+            continue
+        journey = row["research_d2"]
+        projection = btc_d2_research.project(journey)
+        if not isinstance(journey, dict) or journey.get("schema") != btc_d2_research.SCHEMA:
+            projection["reason"] = "generation_integrity_error"
+        if current is None:
+            current = projection
+            current["last_matured"] = None
+            if current["status"] == "matured":
+                return current
+        elif projection["status"] == "matured":
+            current["last_matured"] = projection
+            return current
+    if current is None:
+        current = btc_d2_research.project(None)
+        current["last_matured"] = None
+    return current
 
 
 def render_summary(rows: list[dict] | None = None) -> dict:

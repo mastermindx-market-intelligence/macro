@@ -156,3 +156,71 @@ def test_signal_lab_exposes_the_append_only_d2_research_projection():
     assert len(cells) == 5
     assert "Prospective research journey" in cells[0].get_text(" ", strip=True)
     assert "Prospective research journey" not in cells[3].get_text(" ", strip=True)
+
+
+def _render_d2_scorecard(payload):
+    env = Environment(loader=FileSystemLoader(config.ROOT / "templates"))
+    env.filters["min"] = min
+    env.globals.update(t=i18n.t, td=i18n.td, tr=i18n.tr, zip=zip)
+    return env.get_template("signal_lab.html.j2").render(**payload)
+
+
+def test_scorecard_keeps_completed_d2_outcome_inspectable_after_rollover(monkeypatch):
+    from engine import btc_impulse_ledger
+    from tests.test_btc_d2_research_journey import _rollover_rows
+    rows = _rollover_rows()
+    monkeypatch.setattr(btc_impulse_ledger, "load", lambda: rows)
+    payload = signal_lab.build_scorecard(gate=_gate(), evaluation_date=date(2026, 9, 17))
+    d2_row = next(r for r in payload["alert_trust"]["rows"] if r["identity"] == "d2")
+    assert d2_row["research_journey"]["status"] == "pending"
+    assert d2_row["research_journey"]["last_matured"]["status"] == "matured"
+    assert d2_row["current_permitted"] is False
+    html = _render_d2_scorecard(payload)
+    assert "Most recent completed observation" in html
+    assert "最近完成的观察" in html
+    assert "Matured · down target hit" in html
+    assert "Pending outcome after three future closes" in html
+    assert "2024-03-03" in html and "2024-03-07" in html
+
+
+def test_matured_no_fire_observation_is_not_presented_as_a_prediction_miss():
+    from engine import btc_d2_research
+    from tests.test_btc_d2_research_journey import _capture_available
+    import pandas as pd
+    _, journey, entry, sig, _ = _capture_available(fired=False)
+    full = pd.concat([sig, pd.DataFrame(
+        {"close": [98.0, 94.0, 93.0]},
+        index=[entry + pd.Timedelta(days=i) for i in (1, 2, 3)],
+    )])
+    assert btc_d2_research.mature_outcome(journey, full)
+    payload = signal_lab.build_scorecard(
+        gate=_gate(), evaluation_date=date(2026, 9, 17),
+        d2_research=btc_d2_research.project(journey),
+    )
+    html = _render_d2_scorecard(payload)
+    assert "Matured · no signal fired" in html
+    assert "已成熟 · 未触发信号" in html
+    assert "Matured · down target missed" not in html
+    assert "Matured · down target hit" not in html
+    assert "Research only — no trading authority" in html
+
+
+def test_correction_history_is_visible_in_the_actual_d2_cell():
+    from engine import btc_d2_research
+    from tests.test_btc_d2_research_journey import _rollover_rows, _frames
+    from bs4 import BeautifulSoup
+    journey = _rollover_rows()[0]["research_d2"]
+    entry, sig, dvol = _frames(fired=False)
+    assert btc_d2_research.capture_source(
+        journey, entry_asof=str(entry.date()), sig_df=sig, dvol_df=dvol,
+    )
+    projected = btc_d2_research.project(journey)
+    payload = signal_lab.build_scorecard(
+        gate=_gate(), evaluation_date=date(2026, 9, 17), d2_research=projected,
+    )
+    html = _render_d2_scorecard(payload)
+    cell = BeautifulSoup(html, "html.parser").find(id="signal-lab-btc-impulse-d2")
+    assert "Correction history" in cell.get_text()
+    assert "修订历史" in cell.get_text()
+    assert "Source inputs restated" in cell.get_text()
+    assert projected["corrections"][0]["supersedes_generation_id"] in str(cell)

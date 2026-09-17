@@ -23,7 +23,7 @@ LABEL_H = 3
 LABEL_THR = 0.05
 DVOL_WINDOW = 60
 SOURCE_ROWS_REQUIRED = DVOL_WINDOW + 2
-SOURCE_EVALUATOR_VERSION = "btc_d2_source.v1"
+SOURCE_EVALUATOR_VERSION = "btc_d2_source.v2"
 OUTCOME_EVALUATOR_VERSION = "btc_d2_outcome.v1"
 COLLECTOR_VERSION = "btc_impulse_radar._d2_cond.v1"
 
@@ -68,6 +68,7 @@ def _validate_journey(journey: dict) -> None:
         raise GenerationConflict("invalid D2 journey envelope")
     seen: set[str] = set()
     source_generation = None
+    source_semantic = None
     outcome_generation = None
     for generation in journey["generations"]:
         if not isinstance(generation, dict):
@@ -91,6 +92,7 @@ def _validate_journey(journey: dict) -> None:
             if source_generation is not None:
                 raise GenerationConflict("D2 journey has more than one source root")
             source_generation = generation
+            source_semantic = semantic
             outcome_generation = None
             continue
         if kind == "outcome":
@@ -112,7 +114,11 @@ def _validate_journey(journey: dict) -> None:
                 raise GenerationConflict("D2 source correction has no source root")
             if semantic.get("supersedes_generation_id") != source_generation.get("generation_id"):
                 raise GenerationConflict("D2 source correction does not supersede the current source")
+            if any(replacement.get(key) != source_semantic.get(key)
+                   for key in ("entry_asof", "spec")):
+                raise GenerationConflict("D2 correction cannot retarget the frozen question")
             source_generation = generation
+            source_semantic = replacement
             outcome_generation = None
         elif target_kind == "outcome":
             if source_generation is None or outcome_generation is None:
@@ -298,7 +304,11 @@ def build_source_semantic(
         index=pd.to_datetime([row["asof"] for row in rows]),
         dtype=float,
     )
-    fired_series = btc_impulse_radar._d2_cond(ranges, int(dvol_w), ranges.index)
+    # Confirmation is lagged on the incumbent BTC index, not the DVOL row
+    # index. Keep exactly the two evaluation dates that can affect this fire;
+    # the rolling z-score still uses the frozen DVOL observations above.
+    evaluation_index = sig.index[sig.index <= source][-2:]
+    fired_series = btc_impulse_radar._d2_cond(ranges, int(dvol_w), evaluation_index)
     fired = bool(fired_series.iloc[-1])
     entry_close = float(sig.loc[entry, "close"])
     return {
@@ -310,6 +320,7 @@ def build_source_semantic(
         "spec": _spec(dvol_w=dvol_w),
         "inputs": {
             "entry_close": entry_close,
+            "evaluation_dates": [str(day.date()) for day in evaluation_index],
             "source_rows": rows,
             "source_digest": _digest(rows),
         },
@@ -370,10 +381,14 @@ def capture_source(
     dvol_df: pd.DataFrame | None, recorded_at: str | None = None,
     dvol_w: int = DVOL_WINDOW,
 ) -> bool:
+    current_generation, current_semantic = _effective_source(journey)
+    if current_semantic is not None:
+        # New configuration applies only to new observations, not to the
+        # historical question whose source inputs are being restated.
+        dvol_w = int((current_semantic.get("spec") or {}).get("dvol_z_window", dvol_w))
     candidate = build_source_semantic(
         entry_asof=entry_asof, sig_df=sig_df, dvol_df=dvol_df, dvol_w=dvol_w,
     )
-    current_generation, current_semantic = _effective_source(journey)
     if current_generation is None:
         return append_generation(
             journey, make_generation("source", candidate, recorded_at=recorded_at),
@@ -501,15 +516,27 @@ def project(journey: dict | None) -> dict:
         "generation_count": 0,
         "outcome": None,
         "reason": "no_source_generation",
+        "corrected": False,
+        "corrections": [],
+        "source_recorded_at": None,
+        "outcome_recorded_at": None,
     }
     if not isinstance(journey, dict) or journey.get("schema") != SCHEMA:
         return base
-    base["generation_count"] = len(journey.get("generations", []))
     try:
         _validate_journey(journey)
-    except GenerationConflict:
+    except (GenerationConflict, ValueError, TypeError, OverflowError):
         base["reason"] = "generation_integrity_error"
         return base
+    base["generation_count"] = len(journey["generations"])
+    base["corrections"] = [
+        {"generation_id": generation["generation_id"],
+         "target_kind": generation["semantic"]["target_kind"],
+         "reason": generation["semantic"].get("reason"),
+         "supersedes_generation_id": generation["semantic"]["supersedes_generation_id"]}
+        for generation in journey["generations"] if generation["kind"] == "correction"
+    ]
+    base["corrected"] = bool(base["corrections"])
     source_generation, source_semantic = _effective_source(journey)
     if source_generation is None or not isinstance(source_semantic, dict):
         return base
@@ -520,6 +547,7 @@ def project(journey: dict | None) -> dict:
         "check_after": source_semantic.get("check_after"),
         "fired": prediction.get("fired"),
         "source_generation_id": source_generation.get("generation_id"),
+        "source_recorded_at": source_generation["lifecycle"]["recorded_at"],
         "reason": source_semantic.get("reason"),
     })
     if source_semantic.get("status") != "available":
@@ -533,6 +561,7 @@ def project(journey: dict | None) -> dict:
     base.update({
         "status": "matured",
         "outcome_generation_id": outcome_generation.get("generation_id"),
+        "outcome_recorded_at": outcome_generation["lifecycle"]["recorded_at"],
         "outcome": copy.deepcopy(outcome_semantic.get("result")),
         "reason": None,
     })
