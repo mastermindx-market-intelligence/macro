@@ -154,3 +154,14 @@ def test_events_gap_null_and_no_forbidden_fields():
     assert features["gap_return"] is None and features["gap_direction"] is None
     forbidden = ("gamma", "gex", "pnl", "profit", "stop", "outcome", "label")
     assert not any(any(token in key.lower() for token in forbidden) for key in features)
+
+
+def test_invalid_nearest_strike_does_not_fall_through_to_farther_valid_iv():
+    p = payload(decision="09:45:00.000")
+    for group in p["response"][:2]:
+        for row in group["data"]:
+            if row["timestamp"].endswith("09:45:00.000"):
+                row["iv_error"] = 100.0
+    features = build(p)
+    assert features["atm_iv_level"] is None
+    assert features["atm_iv_change_from_first_valid"] is None
