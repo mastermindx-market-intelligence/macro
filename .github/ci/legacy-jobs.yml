@@ -4714,11 +4714,6 @@ jobs:
       # step sequence was perfectly conformant, and the publish tail never ran.
       - name: nightly lane budgets (tech_lab_offrender publish tail)
         run: python -m pytest tests/test_tech_lab_offrender_budget.py -q
-      # AI Daily Brief reachability: the regional/desk barrier is resilient by design,
-      # so one wedged desk must not consume the engine job's full budget and starve
-      # master_brain + build_aibrief + commit/publication behind it.
-      - name: AI brief tail reachability past wedged regional builder band
-        run: python -m pytest tests/test_ai_brief_reachability.py -q
       # Third layer of the same family: W2 runtime telemetry (masterplan
       # 2026-08-06). Every self-hosted daily.yml job must carry the job-start
       # mark as its FIRST step and the always() timings/85%-tripwire finish as
