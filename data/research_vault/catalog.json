@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T17:48:52.448198+00:00",
-  "count": 2305,
+  "generated_at": "2026-09-17T19:06:02.574724+00:00",
+  "count": 2309,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -86,6 +86,85 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-wvpzyhyjijm-d3dc59",
+      "title": "Americas Retail Retail sales above consensus in August",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:37:38Z",
+      "summary_points": [
+        "Americas Retail Beat & Core Growth: Sequential retail sales +1.2% (vs. 6% est), core retail +6.7% y/y, 2-year stacked growth +12.1%—signaling resilient underlying demand excluding volatile sectors.",
+        "Gas Stations & Electronics Acceleration: Gas stations y/y growth accelerated to +21.0% (vs.",
+        "+17.1% July), electronics & appliances +7.8% y/y—key technical catalysts for energy and consumer tech equities.",
+        "Durable Goods Vulnerability: Auto (-1.2% y/y) and Home Furnishings (-0.7% y/y) declines highlight consumer spending fatigue in critical segments, a material risk factor requiring defensive positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-kqwiltosusk-65080c",
+      "title": "GS Hafif Flow of Funds Flash Update 17 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:22:48Z",
+      "summary_points": [
+        "SPX CTA Threshold Near Threshold: Within 1.1% of short-term threshold; crossing would shift near-term estimates and dry up systematic supply.",
+        "Flow Data & Systematic Risk: $55.28B 1-week sellers, $199.06B 1-month sellers; weak gamma positioning amplifies US equity risk.",
+        "CTA Positioning: Net long $37.54B (vs. avg $29.39B), high volatility (std dev $30.02B), signaling bullish sentiment but overextension risk.",
+        "Dealer Gamma Dynamics: $3.84B long at +6/10; dealers to ramp to +8/10 on +1% move, amplifying upside momentum and reversal risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-aybb3ogdul2-c7adbf",
+      "title": "Daily ShortActivity16Sept2026 US CLEARED",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:17:07Z",
+      "summary_points": [
+        "Extreme Short Interest Concentration: AXON (32.9% short interest), NVDA (18.9%), and XEL (16.0%) exhibit critical short squeeze risk due to extreme bearish sentiment in Industrials, IT, and Utilities, requiring immediate portfolio monitoring.",
+        "Sector-Specific Short Exposure: Financials (Visa/BofA at 5.2% short) and Health Care (Amgen/Teva at 3.2%) show concentrated short interest, elevating volatility risk if earnings or policy catalysts emerge.",
+        "Top Shorted Stocks Driving Volatility: Caterpillar (7.7% short change) and Alphabet (3.1%) lead in shorted market value, signaling active bearish positioning in Industrials and Tech that may trigger sharp price moves."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-jedpyqnprym-8ba43c",
+      "title": "GS MidDay Color US Equities Mid Day Color 17 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:12:21Z",
+      "summary_points": [
+        "Oil Supply Easing Drives Equity Rally: SPX/NDX up 1.00%/1.58% as WTI falls 1.83% (Saudi constraints easing: East-West Pipeline restored, ship-to-ship transfers), with SPX reclaiming 50dma after 100dma bounce.",
+        "MegaCap Tech Dominates Flow Momentum: TMT stocks see strongest net buys (hyperscalers: Mag 7 allocation up to ~20% from YTD low), led by AI Semis (GSCBSMXH +325bps) and AI Leaders (GSX1AIL1 +215bps).",
+        "AI Tech Subsectors Lead Allocation Shift: GSPRHI (+360bps) and AI Semis (GSCBSMXH +325bps) show highest flow intensity, signaling concentrated portfolio rebalancing into AI infrastructure.",
+        "Technical Reversal Confirms Momentum: SPX’s 50dma reclaim after 100dma bounce validates short-term bullish technical structure amid oil-driven risk-on sentiment."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-t1t3iaqzdf9-7508b7",
       "title": "DB Sept FOMC recap Removing a dose of accommodation helps the inflation go down",
