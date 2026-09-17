@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T14:50:33.826739+00:00",
-  "count": 2297,
+  "generated_at": "2026-09-17T15:20:38.020044+00:00",
+  "count": 2298,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -220,6 +220,23 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-vnktc5add4y-859233",
+      "title": "JPM global macro conf",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T10:49:40Z",
+      "summary_points": [
+        "Fed Policy Structural Shift: Higher policy rates less effective on US real economy due to AI/healthcare/services growth; equity-breaking Treasury yield threshold 5.5%-6.0%, real yields attractive for high-quality fixed income - Geopolitics & AI Risks: Structural term premium, inflation above target; geopolitical risks (midterms, oil prices) underpriced; AI-driven risks (cyber, fraud) and \"affordability\" as political constraint - Equities-Yield Coexistence: S&P 500 remains up amid rising Treasury yields as corporate earnings less rate-sensitive; rate-sensitive sectors not driving investment - Treasury Yield Drivers: Long-end yields driven by global structural forces (deficits, issuance, term premium); persistent deficits and heavy issuance keep term premia elevated - Equity Resilience & Allocation: S&P 500 leads as preferred asset class (43% consensus), targeted at $8,000 (Q4 2026); 83% expect Fed hikes before end-2026 - AI Inflation vs Capex: 40% view AI as inflationary (vs 24% capex downturn); AI capex to exceed $750bn in 2026, $1.1tn in 2027, $5.5tn total through 2030 - Structural Yield Surge: Global fiscal deficits (e.g., Italy -7.2% fiscal balance), US debt issuance ($40tn gross), and term premium rise (125bps vs negative decade ago) drive long-end sell-off"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 30,
       "language": "en",
       "needs_metadata": false
     },
