@@ -16530,12 +16530,12 @@ html[data-theme="light"] :is(
       {%- set _life_visible_locked = (life_gate_visible_locked if (life_gate_visible_locked is defined and life_gate_visible_locked is not none) else life_gate.locked) -%}
       <div class="us-tier-wall" id="us-life-wall">
         <div class="us-tw-h">
-          <span class="l-en">{{ _life_visible_locked }} more plan rows on tonight's board</span>
-          <span class="l-zh">今晚榜单还有 {{ _life_visible_locked }} 条计划</span>
+          <span class="l-en">{{ _life_visible_locked }} more tracked plan rows in this plan book</span>
+          <span class="l-zh">计划簿中还有 {{ _life_visible_locked }} 条跟踪记录</span>
         </div>
         <div class="us-tw-p">
-          <span class="l-en">You're seeing the first {{ _life_visible_preview }} of {{ life_gate.total }} plan rows. Sign in to see the full ranked board, every lifecycle state, and the table view.</span>
-          <span class="l-zh">当前显示 {{ life_gate.total }} 条计划中的前 {{ _life_visible_preview }} 条。登录后可查看完整排名榜单、全部生命周期状态与表格视图。</span>
+          <span class="l-en">You're seeing the first {{ _life_visible_preview }} of {{ life_gate.total }} tracked plan rows. Sign in to see the full tracked plan book and every lifecycle state.</span>
+          <span class="l-zh">当前显示 {{ life_gate.total }} 条跟踪记录中的前 {{ _life_visible_preview }} 条。登录后可查看完整跟踪计划簿与全部生命周期状态。</span>
         </div>
         <div class="us-tw-acts">
           <a class="us-tw-btn" href="plans.html">{{ t('See plans', '查看方案') }}</a>

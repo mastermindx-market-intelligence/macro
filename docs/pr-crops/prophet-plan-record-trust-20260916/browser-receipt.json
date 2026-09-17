@@ -656,7 +656,7 @@
     "templates/_us_prophet_plan_cards.html.j2": "4835d85e7a5ac2a7f6a7225d9e9cf377304bc80630a8152dbd20ab8001eb3828",
     "templates/theme.css": "63df1679c57976ef2130022690fd31bbb23bf41982658b87a6117457fb02bdab",
     "templates/theme.js": "d4ef9d80813724242b7fa9d56b75d235930e658dbc418fe430331425249d74ee",
-    "templates/dashboard.html.j2": "af81e49495b901c915d682121d1fd626bff562e45a45543f382b51878be58a72",
+    "templates/dashboard.html.j2": "15823ed544dab8a0da18f426a38dc231ed93142c03138f7abf603264d386f883",
     "scripts/build_site.py": "f588bc6a2ead5eb3db04cb1cbe879b199cd5f57ae265591059cc3c250af891b2",
     "engine/i18n.py": "486116b2c2640bf164724a03d9a8871efef7977fb3b5bd7e8d5956e8d3675b44"
   },

@@ -419,10 +419,40 @@ def test_s7_wall_copy_says_plan_rows_not_names():
     book = _prophet_book(plans=plans)
     shell_book, life_gate, _locked = bs._split_us_prophet_board(book, 3, gated=True)
     html = _render_stocks({"us_prophet_book": shell_book, "life_gate": life_gate})
-    assert "plan rows on tonight's board" in html
+    assert "tracked plan rows in this plan book" in html
     assert "more names on tonight's board" not in html
-    assert "plan rows. Sign in" in html
+    assert "tracked plan rows. Sign in" in html
     assert "names. Sign in" not in html
+
+
+def test_s7b_plan_wall_describes_tracked_history_without_promising_rank_or_table():
+    """The Plans wall must sell the capability that actually exists.
+
+    Plans mode is a historical tracked-plan grid ordered by original priority.
+    Its own source-toggle law forces table mode off, so the paywall may not
+    promise a current ranked board or a plan table that does not exist.
+    """
+    plans = [_prophet_plan(id=f"P{i}", asset=f"T{i}") for i in range(5)]
+    book = _prophet_book(plans=plans)
+    shell_book, life_gate, _locked = bs._split_us_prophet_board(book, 3, gated=True)
+    visible = bs._us_life_visible_preview_count(shell_book)
+    html = _render_stocks({
+        "us_prophet_book": shell_book,
+        "life_gate": life_gate,
+        "life_gate_visible_preview": visible,
+        "life_gate_visible_locked": life_gate["total"] - visible,
+    })
+    start = html.index('<div class="us-tier-wall" id="us-life-wall">')
+    end = html.index('<div class="us-tw-signed"', start)
+    wall = html[start:end]
+
+    assert f"{life_gate['total'] - visible} more tracked plan rows in this plan book" in wall
+    assert f"计划簿中还有 {life_gate['total'] - visible} 条跟踪记录" in wall
+    assert f"first {visible} of {life_gate['total']} tracked plan rows" in wall
+    assert "full tracked plan book and every lifecycle state" in wall
+    assert "完整跟踪计划簿与全部生命周期状态" in wall
+    for false_promise in ("tonight's board", "full ranked board", "and the table view"):
+        assert false_promise not in wall
 
 
 # ─────────────────────────── S8 — resolved row inflates the preview claim ─
@@ -477,7 +507,7 @@ def test_r4_wall_arithmetic_stays_honest_when_a_resolved_row_sorts_top():
     html = _render_stocks({"us_prophet_book": shell_book, "life_gate": life_gate,
                             **ctx})
     assert f"first {visible_preview} of {life_gate['total']}" in html
-    assert f"{visible_locked} more plan rows" in html
+    assert f"{visible_locked} more tracked plan rows" in html
     # The two quoted numbers must literally sum to the quoted total.
     assert visible_preview + visible_locked == 5
 
