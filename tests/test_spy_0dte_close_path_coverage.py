@@ -148,3 +148,57 @@ def test_summary_stays_coverage_only():
     forbidden = ("pnl", "profit", "outcome", "label", "target", "stop", "debit")
     text = str(out).lower()
     assert not any(token in text for token in forbidden)
+
+
+def test_minute_presence_classifies_normal_zero_bid_and_unknown_without_synchrony():
+    short_payload = group("call", 389.0, [
+        row("2023-01-03T09:35:00.000", .04, .05),
+        row("2023-01-03T09:36:00.000", .04, .05),
+        row("2023-01-03T09:37:00.000", .04, .05),
+    ])
+    long_payload = group("call", 391.0, [
+        row("2023-01-03T09:35:00.000", .01, .02),
+        row("2023-01-03T09:36:00.000", 0, .01, bid_size=0),
+    ])
+    out = coverage.candidate_minute_presence(
+        candidate(), short_payload, long_payload, end_clock="09:37:00.000"
+    )
+    assert out["expected_minutes"] == 3
+    assert out["normal_package_minutes"] == 1
+    assert out["zero_bid_carry_minutes"] == 1
+    assert out["unknown_minutes"] == 1
+    assert out["first_unknown"] == "2023-01-03T09:37:00"
+    assert out["full_minute_presence"] is False
+    assert out["synchrony_proven"] is False
+
+
+def test_minute_presence_summary_cannot_claim_tick_synchrony_or_economics():
+    rows = [{
+        "date": "2023-01-03",
+        "partition": "development",
+        "entry_error": None,
+        "candidate_paths": [{
+            "decision_clock": "09:35:00.000",
+            "full_minute_presence": True,
+            "zero_bid_carry_minutes": 2,
+            "unknown_minutes": 0,
+            "synchrony_proven": False,
+        }],
+    }]
+    out = coverage.summarize(rows, mode="minute_presence")
+    clock = out["development"]["by_clock"]["09:35:00.000"]
+    assert clock["full_minute_presence"] == 1
+    assert clock["paths_with_zero_bid_carry"] == 1
+    assert clock["paths_with_unknown_minutes"] == 0
+    assert clock["synchrony_proven"] is False
+    forbidden = ("pnl", "profit", "outcome", "label", "target", "stop", "debit")
+    assert not any(token in str(out).lower() for token in forbidden)
+
+
+def test_close_path_mode_is_closed():
+    try:
+        coverage.summarize([], mode="midpoint_fantasy")
+    except coverage.ClosePathCoverageError as exc:
+        assert "mode" in str(exc)
+    else:
+        raise AssertionError("unfrozen close-path mode accepted")

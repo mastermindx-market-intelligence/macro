@@ -12,7 +12,7 @@ from __future__ import annotations
 import argparse
 import concurrent.futures
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
 from typing import Any, Mapping, Sequence
@@ -30,11 +30,27 @@ class ClosePathCoverageError(ValueError):
     pass
 
 
+MODES = ("tick_synchrony", "minute_presence")
+
+
 def _clock_dt(session_date: str, clock: str) -> datetime:
     try:
         return datetime.fromisoformat(f"{session_date}T{clock}")
     except ValueError as exc:
         raise ClosePathCoverageError("session date/clock is malformed") from exc
+
+
+def _minute_grid(session_date: str, start_clock: str, end_clock: str) -> list[datetime]:
+    start = _clock_dt(session_date, start_clock)
+    end = _clock_dt(session_date, end_clock)
+    if end < start:
+        raise ClosePathCoverageError("close-path end precedes decision clock")
+    out: list[datetime] = []
+    current = start
+    while current <= end:
+        out.append(current)
+        current += timedelta(minutes=1)
+    return out
 
 
 def _contract(candidate: Mapping[str, Any], role: str) -> replay.Contract:
@@ -54,6 +70,73 @@ def _contract(candidate: Mapping[str, Any], role: str) -> replay.Contract:
         replay.Decimal(str(strike)),
         "call" if right == "C" else "put",
     )
+
+
+def _rows_by_minute(
+    payload: Any, contract: replay.Contract, role: str
+) -> dict[datetime, replay.Quote]:
+    rows = replay.qualifying_exit_quotes(payload, contract, role=role)
+    out: dict[datetime, replay.Quote] = {}
+    for quote in rows:
+        stamp = quote.timestamp.replace(second=0, microsecond=0)
+        if quote.timestamp != stamp:
+            raise ClosePathCoverageError("minute-presence quote is not minute-aligned")
+        previous = out.get(stamp)
+        if previous is not None and previous != quote:
+            raise ClosePathCoverageError("conflicting quote for one contract/minute")
+        out[stamp] = quote
+    return out
+
+
+def candidate_minute_presence(
+    candidate: Mapping[str, Any],
+    short_payload: Any,
+    long_payload: Any,
+    *,
+    end_clock: str = END_CLOCK,
+) -> dict[str, Any]:
+    """Measure sampled minute source continuity; never claim leg synchrony."""
+    session_date = str(candidate.get("session_date", ""))
+    decision_clock = str(candidate.get("decision_clock", ""))
+    if decision_clock not in entry.CLOCKS:
+        raise ClosePathCoverageError("candidate decision clock is not frozen")
+    short_contract = _contract(candidate, "short")
+    long_contract = _contract(candidate, "long")
+    short_rows = _rows_by_minute(short_payload, short_contract, "short")
+    long_rows = _rows_by_minute(long_payload, long_contract, "long")
+
+    normal = 0
+    zero_bid = 0
+    unknown: list[str] = []
+    grid = _minute_grid(session_date, decision_clock, end_clock)
+    for stamp in grid:
+        short_quote = short_rows.get(stamp)
+        long_quote = long_rows.get(stamp)
+        if short_quote is None or long_quote is None:
+            unknown.append(stamp.isoformat())
+            continue
+        if long_quote.bid > 0:
+            normal += 1
+        elif long_quote.bid == 0:
+            zero_bid += 1
+        else:
+            unknown.append(stamp.isoformat())
+    return {
+        "session_date": session_date,
+        "decision_clock": decision_clock,
+        "family": str(candidate.get("family", "")),
+        "short_right": str(candidate.get("short_right", "")),
+        "short_strike": float(candidate["short_strike"]),
+        "long_strike": float(candidate["long_strike"]),
+        "expected_minutes": len(grid),
+        "normal_package_minutes": normal,
+        "zero_bid_carry_minutes": zero_bid,
+        "unknown_minutes": len(unknown),
+        "first_unknown": unknown[0] if unknown else None,
+        "last_unknown": unknown[-1] if unknown else None,
+        "full_minute_presence": not unknown,
+        "synchrony_proven": False,
+    }
 
 
 def _ready_summary(
@@ -187,8 +270,10 @@ def _fetch_entry_payload(base_url: str, session_date: str, timeout: int) -> Any:
 
 
 def _fetch_contract_path(
-    base_url: str, contract: replay.Contract, timeout: int
+    base_url: str, contract: replay.Contract, timeout: int, *, interval: str = "tick"
 ) -> Any:
+    if interval not in {"tick", "1m"}:
+        raise ClosePathCoverageError("close-path interval must be tick or 1m")
     ymd = contract.expiration.replace("-", "")
     return entry._fetch_json(
         base_url,
@@ -201,14 +286,18 @@ def _fetch_contract_path(
             "date": ymd,
             "start_time": entry.CLOCKS[0],
             "end_time": END_CLOCK,
-            "interval": "tick",
+            "interval": interval,
             "format": "json",
         },
         timeout,
     )
 
 
-def audit_day(base_url: str, session_date: str, timeout: int) -> dict[str, Any]:
+def audit_day(
+    base_url: str, session_date: str, timeout: int, *, mode: str = "tick_synchrony"
+) -> dict[str, Any]:
+    if mode not in MODES:
+        raise ClosePathCoverageError("close-path mode is not frozen")
     try:
         entry_payload = _fetch_entry_payload(base_url, session_date, timeout)
         candidates = [
@@ -233,7 +322,10 @@ def audit_day(base_url: str, session_date: str, timeout: int) -> dict[str, Any]:
     contract_errors: dict[tuple[str, str], str] = {}
     for key, contract in unique_contracts.items():
         try:
-            path_payloads[key] = _fetch_contract_path(base_url, contract, timeout)
+            path_payloads[key] = _fetch_contract_path(
+                base_url, contract, timeout,
+                interval="tick" if mode == "tick_synchrony" else "1m",
+            )
         except Exception as exc:  # source failure stays explicit, never imputed
             contract_errors[key] = type(exc).__name__
 
@@ -255,9 +347,14 @@ def audit_day(base_url: str, session_date: str, timeout: int) -> dict[str, Any]:
             })
             continue
         try:
-            paths.append(candidate_path_availability(
-                candidate, path_payloads[short_key], path_payloads[long_key]
-            ))
+            if mode == "tick_synchrony":
+                paths.append(candidate_path_availability(
+                    candidate, path_payloads[short_key], path_payloads[long_key]
+                ))
+            else:
+                paths.append(candidate_minute_presence(
+                    candidate, path_payloads[short_key], path_payloads[long_key]
+                ))
         except Exception as exc:
             paths.append({
                 "session_date": session_date,
@@ -276,7 +373,11 @@ def audit_day(base_url: str, session_date: str, timeout: int) -> dict[str, Any]:
     }
 
 
-def summarize(rows: list[Mapping[str, Any]]) -> dict[str, Any]:
+def summarize(
+    rows: list[Mapping[str, Any]], *, mode: str = "tick_synchrony"
+) -> dict[str, Any]:
+    if mode not in MODES:
+        raise ClosePathCoverageError("close-path mode is not frozen")
     summary: dict[str, Any] = {}
     for partition, start, end in entry.PARTITIONS:
         part_rows = [row for row in rows if start <= str(row["date"]) <= end]
@@ -285,6 +386,22 @@ def summarize(rows: list[Mapping[str, Any]]) -> dict[str, Any]:
         for clock in entry.CLOCKS:
             clock_paths = [p for p in paths if p.get("decision_clock") == clock]
             valid = [p for p in clock_paths if "source_error" not in p]
+            if mode == "minute_presence":
+                by_clock[clock] = {
+                    "candidate_paths": len(clock_paths),
+                    "source_errors": len(clock_paths) - len(valid),
+                    "full_minute_presence": sum(
+                        bool(p.get("full_minute_presence")) for p in valid
+                    ),
+                    "paths_with_zero_bid_carry": sum(
+                        int(p.get("zero_bid_carry_minutes", 0)) > 0 for p in valid
+                    ),
+                    "paths_with_unknown_minutes": sum(
+                        int(p.get("unknown_minutes", 0)) > 0 for p in valid
+                    ),
+                    "synchrony_proven": False,
+                }
+                continue
             grid_summary: dict[str, Any] = {}
             for limit in replay.SYNCHRONY_GRID_SECONDS:
                 key = str(limit)
@@ -316,6 +433,7 @@ def run_live(
     max_workers: int,
     start_date: str,
     end_date: str,
+    mode: str = "tick_synchrony",
 ) -> dict[str, Any]:
     if base_url.rstrip("/") not in {
         "http://127.0.0.1:25503/v3",
@@ -324,22 +442,25 @@ def run_live(
         raise ClosePathCoverageError("Theta source must be the incumbent localhost v3 Terminal")
     if not 1 <= max_workers <= MAX_WORKERS:
         raise ClosePathCoverageError(f"max_workers must be 1..{MAX_WORKERS}")
+    if mode not in MODES:
+        raise ClosePathCoverageError("close-path mode is not frozen")
     if not (PANEL_START <= start_date <= end_date <= PANEL_END):
         raise ClosePathCoverageError("requested range is outside the frozen panel")
     stock_dates, expiration_dates = entry._list_dates(base_url, timeout)
     expirations = set(expiration_dates)
     dates = [d for d in stock_dates if start_date <= d <= end_date and d in expirations]
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as pool:
-        rows = list(pool.map(lambda d: audit_day(base_url, d, timeout), dates))
+        rows = list(pool.map(lambda d: audit_day(base_url, d, timeout, mode=mode), dates))
     return {
         "schema": "spy_0dte_close_path_coverage/v1",
         "status": "coverage_only_no_economic_values",
-        "interval": "tick",
+        "mode": mode,
+        "interval": "tick" if mode == "tick_synchrony" else "1m",
         "synchrony_grid_seconds": [str(v) for v in replay.SYNCHRONY_GRID_SECONDS],
         "start_date": start_date,
         "end_date": end_date,
         "rows": rows,
-        "summary": summarize(rows),
+        "summary": summarize(rows, mode=mode),
     }
 
 
@@ -350,9 +471,13 @@ def main() -> int:
     parser.add_argument("--max-workers", type=int, default=4)
     parser.add_argument("--start-date", default=PANEL_START)
     parser.add_argument("--end-date", default=PANEL_END)
+    parser.add_argument("--mode", choices=MODES, default="tick_synchrony")
     parser.add_argument("--out")
     args = parser.parse_args()
-    result = run_live(args.base_url, args.timeout, args.max_workers, args.start_date, args.end_date)
+    result = run_live(
+        args.base_url, args.timeout, args.max_workers,
+        args.start_date, args.end_date, args.mode,
+    )
     text = json.dumps(result, sort_keys=True, separators=(",", ":"))
     if args.out:
         out = Path(args.out)
