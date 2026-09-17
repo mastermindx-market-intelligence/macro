@@ -1,0 +1,7 @@
+{# Same owner-derived calendar objects; never a separate event or forecast feed. #}
+{% set event_context_rows = [] %}
+{% for event in macro_catalysts | default([], true) %}
+  {% if event.get('intelligence') %}{% set _ = event_context_rows.append(event.intelligence) %}{% endif %}
+{% endfor %}
+<script type="application/json" id="calendar-event-context-data">{{ event_context_rows | tojson }}</script>
+<script>{% include 'calendar_event_context.js' %}</script>

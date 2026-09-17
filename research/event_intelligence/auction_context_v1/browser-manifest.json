@@ -1,0 +1,122 @@
+{
+  "scope": "real official API capture -> calendar adapter -> full production template -> extracted real event component + actual selector/renderer in local browser; surrounding VM synthetic; full app authentication NOT bypassed; NOT deployed/authenticated production acceptance",
+  "generated_at_utc": "2026-09-17T23:51:03.016090+00:00",
+  "source": {
+    "observed_at_utc": "2026-09-17T23:23:17.293106+00:00",
+    "url": "https://www.treasurydirect.gov/TA_WS/securities/upcoming?format=json",
+    "http_status": 200,
+    "sha256": "d171085597cfc49d99ccc12590e78481854228d927532f85a14c0969f6ae3c7a",
+    "rows": 7
+  },
+  "html_sha256": "4c8e73b6556f62bb9df1b21b055089b832a404586560cb717b09c1f7441b2033",
+  "source_file_hashes": {
+    "engine/event_calendar.py": "26feb9a98c5636c8b63a2637bf2a0b44176b7b8c0c2ed2b5a4815937a8c40ad8",
+    "engine/calendar_event_context.py": "e32499c3fa4c29fb0fe4412f4301066ad07d248e624b0354feaca5df0e9f6029",
+    "templates/dashboard.html.j2": "cf391c1ebd54c1cc4e2b2bd2c349ec96193b5c6bba42f0c3f8a608ed86bd16c6",
+    "templates/calendar_event_context.js": "3ab43ece608fc2372e8f689169e6a328229028e9db27323867f9d721ed38affc",
+    "templates/_calendar_event_context.html.j2": "ec4f0b58c3def83a28738c46cd6d015c18a4cfbddfae40373c3d3620c68bc506"
+  },
+  "cases": [
+    {
+      "viewport_width": 1440,
+      "theme": "dark",
+      "lang": "en",
+      "file": "1440-dark-en.png",
+      "sha256": "ed50904369c4dc453536451ab11192805c46ff55953b7683af0418cef3fb6619",
+      "cards": 2,
+      "bounds": {
+        "w": 926,
+        "scroll": 926
+      }
+    },
+    {
+      "viewport_width": 1440,
+      "theme": "dark",
+      "lang": "zh",
+      "file": "1440-dark-zh.png",
+      "sha256": "cdd6376fb1efd809f7b89ac7e24a0904d4b7535cd8c5e989e51bfa9f630ca403",
+      "cards": 2,
+      "bounds": {
+        "w": 926,
+        "scroll": 926
+      }
+    },
+    {
+      "viewport_width": 1440,
+      "theme": "light",
+      "lang": "en",
+      "file": "1440-light-en.png",
+      "sha256": "e3170101886672231ad634229dd178cf11023738aa2a7ef062f020857e20ab16",
+      "cards": 2,
+      "bounds": {
+        "w": 926,
+        "scroll": 926
+      }
+    },
+    {
+      "viewport_width": 1440,
+      "theme": "light",
+      "lang": "zh",
+      "file": "1440-light-zh.png",
+      "sha256": "2eab37a4d93754b57a0c65a5fd785fb2201606f21176cd455ec985fa4b3a8e9d",
+      "cards": 2,
+      "bounds": {
+        "w": 926,
+        "scroll": 926
+      }
+    },
+    {
+      "viewport_width": 390,
+      "theme": "dark",
+      "lang": "en",
+      "file": "390-dark-en.png",
+      "sha256": "93d8ce15b34b720806f8940a6303c029977dc497ddcaef9650fc609d8a83b1be",
+      "cards": 2,
+      "bounds": {
+        "w": 328,
+        "scroll": 328
+      }
+    },
+    {
+      "viewport_width": 390,
+      "theme": "dark",
+      "lang": "zh",
+      "file": "390-dark-zh.png",
+      "sha256": "7c6707ad8c86173024bf8b46412dcf5f9a6e7af5e0bb6bb71ebe9a6e63c1841d",
+      "cards": 2,
+      "bounds": {
+        "w": 328,
+        "scroll": 328
+      }
+    },
+    {
+      "viewport_width": 390,
+      "theme": "light",
+      "lang": "en",
+      "file": "390-light-en.png",
+      "sha256": "2909d73fb45f2e5f2b4139ba99b4ccdeb6ac22796de04bcffb1ad5dc23fe4ed8",
+      "cards": 2,
+      "bounds": {
+        "w": 328,
+        "scroll": 328
+      }
+    },
+    {
+      "viewport_width": 390,
+      "theme": "light",
+      "lang": "zh",
+      "file": "390-light-zh.png",
+      "sha256": "5038818bf54a11f464ac458a1a1da54f9011837b5a846f59db0b351441a8d90d",
+      "cards": 2,
+      "bounds": {
+        "w": 328,
+        "scroll": 328
+      }
+    }
+  ],
+  "page_errors": [],
+  "keyboard_disclosure": true,
+  "cross_date": true,
+  "same_date_multi_event": true,
+  "forecast_payload": "explicitly unavailable"
+}
