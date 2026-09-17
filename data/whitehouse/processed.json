@@ -1205,6 +1205,30 @@
       "at": "2026-09-17T18:13:34.704577+00:00",
       "activated": false,
       "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=50439": {
+      "id": "wh-2026-09-17-fact-sheet-president-donald-j-trump-reinvigorates-americas-hunting-heritage",
+      "at": "2026-09-17T22:13:01.855847+00:00",
+      "activated": false,
+      "importance": 15
+    },
+    "https://www.whitehouse.gov/?p=50437": {
+      "id": "wh-2026-09-17-fact-sheet-president-donald-j-trump-restores-american-saltwater-angling-and-recr",
+      "at": "2026-09-17T22:13:03.431458+00:00",
+      "activated": false,
+      "importance": 25
+    },
+    "https://www.whitehouse.gov/?p=50434": {
+      "id": "wh-2026-09-17-restoring-american-saltwater-angling-and-recreation",
+      "at": "2026-09-17T22:13:05.171669+00:00",
+      "activated": false,
+      "importance": 35
+    },
+    "https://www.whitehouse.gov/?p=50433": {
+      "id": "wh-2026-09-17-reinvigorating-americas-hunting-heritage",
+      "at": "2026-09-17T22:13:06.593848+00:00",
+      "activated": false,
+      "importance": 25
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."
