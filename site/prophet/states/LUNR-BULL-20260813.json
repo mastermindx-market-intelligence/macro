@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "LUNR-BULL-20260813",
-  "asof": "2026-09-16",
+  "asof": "2026-09-17",
   "phase": "pre_trigger",
   "detection_phase": "pre_trigger",
   "management_confidence": 34.5,
@@ -10,21 +10,21 @@
   "recommended_action": "wait",
   "human_state": "Approaching Trigger",
   "components": {
-    "validity": 19.5,
+    "validity": 19.9,
     "progress": 0.0,
-    "pace": 3.7,
+    "pace": 3.1,
     "retention": 50.0,
     "overlay": 50.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.298,
+    "dist_to_stop_r": 0.302,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 66.7,
-    "p1": -0.4677,
-    "p2": -0.2339,
+    "horizon_pct_used": 68.9,
+    "p1": -0.4652,
+    "p2": -0.2326,
     "p3": null,
-    "move_r": -0.702,
+    "move_r": -0.698,
     "mfe_r": 0.0,
     "mae_r": -0.702
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 30,
-  "tau": 0.6667
+  "days_elapsed": 31,
+  "tau": 0.6889
 }

@@ -203,6 +203,35 @@ waves:
       alongside the #7114 skill/profile integration and the real realm/capacity producer. Resolved only
       through the existing PF1 owner: never open a replacement worker, carrier or second native writer,
       and never satisfy this wave with the merged compatible-provider harness.
+      2026-09-17 BOUNDARY (see DSC:PF1-CLAUDE-WORK-LEG-BOUNDARY and handoff
+      EXECUTIVE-CAPACITY-FABRIC-2026-09-17): the native adapter is now BUILT but UNMERGED and
+      UNARMED — branch claude/ssd-pf1-native-claude-worker-adapter at
+      0df5e985c85ca4d3e16dcee075086d101ed0e722, no pull request, with the claude-code descriptor in
+      control_plane/worker_adapter.py carrying implementation=
+      "control_plane.claude_worker.ClaudeCodeWorkerAdapter" and implemented=False so the broker
+      cannot execute it. PR #455 is still OPEN/DRAFT/unmerged at 0a368935 under its ratified hold,
+      with its ordered repair already implemented and independently confirmed adversarially. Two
+      further architecture constraints are now measured, and they collapse the remaining gap into
+      ONE wall rather than two: the Executive work leg refuses every non-Codex execution surface at
+      four independent sites with _EXECUTION_SURFACES a CLOSED enum, leaving a profile-less Job as
+      the only lawful seam; and on that seam the fake-only PF1-F0 falsifier's fixed two-key
+      sealed-evidence result can never satisfy the supervisor's twelve-key closed per-Job schema, so
+      no COMPLETED Job is reachable while the effect ceiling holds. A Job-conformant result requires
+      a real model turn, which is exactly what the adjudicated dedicated-principal decision
+      withholds. Spend the next effort on that authority question, not on more adapter or test work,
+      and do not mirror tests/test_w6b_native_round_trip.py — it proves the PLAN leg and records in
+      its own source that the work leg cannot complete hermetically for any provider.
+      A THIRD constraint narrows the seam further: the supervisor's complete-launch-attestation gate
+      (executive_supervisor.py:1072-1075) requires the CODEX contract's
+      LAUNCH_ATTESTATION_SCHEMA_VERSION, lazily imported at :85-92, and fires whenever a Job carries
+      an effective grant regardless of its flag — so the lawful seam is profile-less AND grant-less,
+      and no non-Codex worker can serve a Job with an effective grant. LaunchAttestation is still
+      codex_worker.py-local and absent from worker_execution_contract.py. PF1 must NOT close this by
+      claiming the Codex schema version; the remedy is an HF1 promotion of the type plus a
+      provider-neutral schema version. One integration proof does exist and is green on the adapter
+      branch at 5b461fb2 (tests/test_executive_claude_lifecycle_integration.py, 3 passed): the real
+      adapter drives the live supervisor through a real subprocess to measured JobStatus.FAILED /
+      AttemptStatus.FAILED on the result-content refusal, which is the designed outcome.
   - id: MH1
     title: Authenticated multi-host Executive worker transport
     status: todo
@@ -219,8 +248,11 @@ decisions:
 discoveries:
   - DSC:CLAUDE-SUBSCRIPTION-HARNESS-IS-NOT-NATIVE-ANTHROPIC
   - DSC:VISIBLE-TURN-PROJECTION-IS-THE-EXISTING-READ-SEAM
+  - DSC:PF1-CLAUDE-WORK-LEG-BOUNDARY
 artifacts:
   - agentos/decisions/DEC-EXECUTIVE-CAPACITY-FABRIC-OWNERSHIP-AND-CONTRACT.md
+  - agentos/discoveries/DSC-PF1-CLAUDE-WORK-LEG-BOUNDARY.md
+  - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-17.md
   - agentos/decisions/DEC-AUTONOMY-V1-DISPATCH-DIALOGUE-RUNTIME-SEPARATION.md
   - agentos/discoveries/DSC-AGENT-DISPATCH-CURRENTLY-HAS-NO-WORKER-RECEIVER.md
   - agentos/discoveries/DSC-ASTRA-FABRIC-LIVE-CLIENT-AND-SUBSCRIPTION-GATES.md
