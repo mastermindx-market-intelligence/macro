@@ -421,7 +421,7 @@
         {
           "path": "templates/_aibrief_body.html.j2",
           "role": "jinja_template",
-          "sha256": "f758be7fc256a9dad50ea07542ef6d75b1aa6694be58eabd5627a351b74bd7c5"
+          "sha256": "583d01fffa6f61be91d0c17f9ef92455f36fcc99d543a3a21d37e1486642b18c"
         },
         {
           "path": "templates/_aibrief_css.j2",
