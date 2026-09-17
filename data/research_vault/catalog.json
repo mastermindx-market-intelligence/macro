@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T11:20:10.331997+00:00",
-  "count": 2287,
+  "generated_at": "2026-09-17T11:50:14.107511+00:00",
+  "count": 2288,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -123,6 +123,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-zsz18m2j10k-205255",
+      "title": "DB Early Morning Reid Macro Strategy",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T10:36:39Z",
+      "summary_points": [
+        "Fed's Hawkish Hike & Policy Shift: Fed raised rates 25bps to 3.75-4.00% (first since 2023), signaling 3+ hikes; removed \"dose of accommodation,\" with 16/18 officials expecting hikes, driving 2yr yield to 4.74% (2-yr high) and 10yr to 5.02% (post-2007 high).",
+        "Oil Geopolitics & Market Impact: Saudi pipeline repairs and Strait of Hormuz sales drove WTI down 3.21% and Brent down 2.69%, mitigating S&P 500 losses (down 0.45%) and influencing energy sector flows.",
+        "UK Inflation Miss Alters BoE Pricing: UK August CPI (headline +3.1% vs +3.5% expected, core +2.6% vs +3.5% expected) triggered Gilts rally (10yr yield -9.1bps) and cut BoE hike probability to 9% (from 23% earlier)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
