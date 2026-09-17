@@ -322,7 +322,7 @@ def _july_30_fetcher(spec, prior, timeout):
             last_modified="Thu, 30 Jul 2026 12:30:03 GMT",
         )
     if spec.source_id == "dol_claims":
-        assert spec.url == "https://www.dol.gov/newsroom/releases/eta"
+        assert spec.url == "https://www.dol.gov/index.php/newsroom/releases/eta"
         return _http_result(
             DOL_JULY_30_LISTING,
             last_modified="Thu, 30 Jul 2026 12:30:04 GMT",
@@ -843,7 +843,7 @@ def test_fomc_watcher_publishes_verified_decision_facts():
     assert publication["data_ready"] is True
     assert publication["scheduled_at"] == "2026-07-29T14:00:00-04:00"
     assert publication["source_released_at"] == "2026-07-29T18:00:15+00:00"
-    assert publication["parser"] == {"name": "fomc", "version": 1}
+    assert publication["parser"] == {"name": "fomc", "version": 2}
     assert publication["source_url"].endswith("/monetary20260729a.htm")
     assert publication["actual"] == {
         "kind": "policy_rate",
