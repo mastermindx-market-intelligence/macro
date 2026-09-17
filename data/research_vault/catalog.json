@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T13:53:45.048441+00:00",
-  "count": 2294,
+  "generated_at": "2026-09-17T14:05:29.051087+00:00",
+  "count": 2295,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -85,6 +85,23 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-gdlhajmxorn-7b9df9",
+      "title": "GS Novak GS U.S. Industrials Materials price cost TSLA FTAI DHI 16 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T12:50:29Z",
+      "summary_points": [
+        "Fed Hike Cycle & Sector Flows: Fed pricing 3.5 hikes by next summer; Industrials net sold (Electrical Equip & Machinery most net sold), US Power stocks allocation at two-year lows - TSLA Delivery Forecast Down: Q3 2026 deliveries lowered to 435K (from 490K) due to slower China/US/Europe sales; 4Q26 forecast 475K (above consensus) driven by FSD demand - US Economic Data Releases: ADP (labor), Empire Manufacturing, Retail Sales, NAHB (housing), Philly Fed pivotal for US economic sentiment and market direction"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-l4h7vckqngo-2f3e03",
       "title": "GS Crook GS MORNING FOMC Recap BoE Preview BoJ Preview Daan Struyven Latest Views GCEM Symposium Replay 17 Sep 2026",
