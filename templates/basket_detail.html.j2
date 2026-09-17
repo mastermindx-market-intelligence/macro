@@ -1125,7 +1125,7 @@ const MO_LABELS={
   strict_trend_50:['Strict 50-session breadth','严格50日广度'],
   strict_trend_200:['Strict 200-session breadth','严格200日广度'],
   raw_daily_change:['Member daily change','成分股日涨跌'],
-  benchmark_relative_daily_change:['Member daily change vs benchmark','成分股日相对基准'],
+  benchmark_relative_daily_change:['Member daily change minus benchmark (pp)','成分股日涨跌减基准（百分点）'],
 };
 let _moState={metric:'legacy_activity',filter:'all',query:''};
 const moLocal=(en,zh)=>_isZh()?zh:en;
@@ -1152,7 +1152,10 @@ function moCellValue(metricId,cell){
       ? `<span class="mo-state obs">${L('Above','线上')}</span>`
       : `<span class="mo-state obs">${L('Below','线下')}</span>`;
   }
-  return `<span class="${cls(cell.value)}" style="font-weight:700">${fmtPct(cell.value)}</span>`;
+  const text=metricId==='benchmark_relative_daily_change'
+    ? `${cell.value>=0?'+':''}${(cell.value*100).toFixed(1)} ${L('pp','个百分点')}`
+    : fmtPct(cell.value);
+  return `<span class="${cls(cell.value)}" style="font-weight:700">${text}</span>`;
 }
 function moRowRecords(obs,metricId){
   const group=(obs&&obs.group)||{}, members=group.members||{};
@@ -1189,6 +1192,9 @@ function moRowsHtml(obs,metricId){
   return {html:html,visible:rows.length,total:(group.member_keys||[]).length};
 }
 function moMetricNote(metricId){
+  if(metricId==='benchmark_relative_daily_change') return L(
+    'Member daily return minus the benchmark daily return, in percentage points; not a relative-price return. No group average is created.',
+    '成分股日收益率减去基准日收益率，以百分点表示；不是相对价格收益率，也不计算组级均值。');
   if(metricId.startsWith('legacy_trend_')) return L(
     'Compatibility view: the existing Group Pulse activity cohort and partial warm-up rules are preserved.',
     '兼容视图：保留现有 Group Pulse 的异动样本与部分预热规则。');

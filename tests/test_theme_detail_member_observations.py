@@ -521,3 +521,42 @@ def test_publication_validator_requires_unambiguous_real_body_payload(tmp_path, 
     result = CHECK.evaluate(site)
     assert result["ok"] is False, f"accepted ambiguous page: {mutation}"
     assert any("detail" in error.lower() for error in result["errors"])
+
+
+@needs_node
+@pytest.mark.parametrize("value, display", [(0.01, "+1.0"), (-0.015, "-1.5"), (0.0, "+0.0")])
+def test_member_relative_change_uses_percentage_points_not_return_percent(value, display):
+    result = _run_member_js({}, """
+const cell={value:%s}; const before=JSON.stringify(cell);
+console.log(JSON.stringify({
+  relative:moCellValue('benchmark_relative_daily_change',cell),
+  raw:moCellValue('raw_daily_change',cell),
+  note:moMetricNote('benchmark_relative_daily_change'),
+  label:moLabel('benchmark_relative_daily_change'),
+  unchanged:before===JSON.stringify(cell)
+}));
+""" % json.dumps(value))
+    assert display in result["relative"]
+    assert "pp" in result["relative"] and "个百分点" in result["relative"]
+    assert "%" not in result["relative"]
+    assert display + "%" in result["raw"]
+    assert "percentage points" in result["note"] and "百分点" in result["note"]
+    assert "minus" in result["note"] and "减去" in result["note"]
+    assert "pp" in result["label"][0] and "百分点" in result["label"][1]
+    assert result["unchanged"] is True
+
+
+@needs_node
+def test_member_relative_units_do_not_turn_null_or_boolean_into_numbers():
+    result = _run_member_js({}, r'''
+console.log(JSON.stringify({
+ missing:moCellValue('benchmark_relative_daily_change',{value:null}),
+ raw:moCellValue('raw_daily_change',{value:0.03}),
+ above:moCellValue('strict_trend_200',{value:true}),
+ below:moCellValue('strict_trend_200',{value:false})
+}));
+''')
+    assert "Unavailable" in result["missing"] and "不可用" in result["missing"]
+    assert "0.0" not in result["missing"] and "pp" not in result["missing"]
+    assert "+3.0%" in result["raw"]
+    assert "Above" in result["above"] and "Below" in result["below"]

@@ -21,6 +21,13 @@ changed:
   what: Wire the two new P1 suites into the existing group-pulse and group-read-surface jobs, add Jinja2/pyarrow
     to the latter dependencies, and widen two existing exclusive import closures for the projector and
     canonical Data OS null module. No new jobs, waiver, runner, gate or job-if change.
+- path: templates/basket_detail.html.j2
+  what: Correct arithmetic member-minus-benchmark daily differences to percentage-point display (pp /
+    个百分点), with a matching bilingual label and definition. Raw returns keep percent display; no source
+    value, recipe, aggregation or trade input changes.
+- path: research/sector_cycle_revamp/evidence/P1_MEMBER_UNITS_2026-09-17/
+  what: Retain the executed eight-state local Chromium harness, hashed JSON receipt and two inspected
+    screenshots. These are local real-input page evidence, not production or authentication acceptance.
 verified:
 - claim: The original local worktree and remote pre-repair carrier were reconciled without reconstruction.
   command: 'git rev-parse HEAD; git status --short --untracked-files=no; GitHub PR #7252 metadata; bounded
@@ -77,6 +84,30 @@ verified:
   result: 'Comment 5711957268 delivered. It keeps #7211 independent freshness release unblocked and specifies
     strict current-run, embedded-data validation and source-trigger obligations. No pickup, review acceptance
     or execution inferred.'
+- claim: The arithmetic benchmark-relative unit defect was reproduced and rejected before repair.
+  command: Read engine/group_pulse.py arithmetic rets.sub(bench_ret); run shipped member-evidence JS;
+    pytest -k "relative_change_uses_percentage_points or relative_units_do_not"
+  result: Original UI printed an arithmetic 0.01 return difference as +1.0%. The three positive/negative/zero
+    discriminators failed, then passed after pp/个百分点 display repair. Raw percent, boolean and missing-value
+    behavior remains unchanged.
+- claim: All focused tests pass after the actual visible unit repair.
+  command: python3 -m pytest -q tests/test_theme_detail_member_observations.py tests/test_group_member_observations.py
+    tests/test_group_pulse_contract.py tests/test_group_pulse_episodes.py tests/test_group_pulse_tripwire.py
+    tests/test_group_read_surface.py tests/test_theme_detail_cycles.py --tb=short
+  result: 269 passed in 8.11s, exit 0. This supersedes the 265-test count for the latest source; the prior
+    results remain historical.
+- claim: All 49 existing real-input detail pages render and bind under the corrected template.
+  command: python3 /tmp/mmx_p1_build_all_pages.py; python3 scripts/check_group_member_observations.py
+    --site-root /tmp/mmx-sector-p1-proof/site
+  result: 49 rendered pages, coherent 49-group validator exit 0; observation projection dac7aaad7a8ca9f5a7a5720ca57ff3218d16cb0ef52d74b389693b17e04a242f.
+    The input generation is existing committed/local evidence, not newly acquired data.
+- claim: The shipped corrected page passes the eight-state browser measurement and missingness matrix.
+  command: python3 -u /tmp/mmx_sector_p1_units_browser.py (exact executed harness retained at research/sector_cycle_revamp/evidence/P1_MEMBER_UNITS_2026-09-17/verify_browser.py)
+  result: 8/8 English/Chinese x dark/light x 1440/390 states. Raw values use %, arithmetic relative values
+    use pp or 个百分点. All 24 catalogue members retained, strict-200 23 observed plus CBRS unavailable, search/filter
+    leave source JSON unchanged, no script errors, section widths 1340/366. Both desktop-dark English
+    and mobile-light Chinese screenshots were inspected. Template SHA-256 bef4a8553b146cffd414ea44f3b786e4ad0bc89d2cd8c2b0a73ea1ca957c08e5.
+    Normal local Playwright/Chromium completed without alternate-profile/security-policy bypass.
 unverified:
 - claim: Revised-head remote CI, independent review, merge and production acceptance.
   what_would_verify: Push this same branch once, verify remote expected head, obtain required exact-head
@@ -93,16 +124,16 @@ unverified:
 unresolved:
 - 'PR #7211 remains a separate publication source owner; inspected head 9b01c9bcae2b12f23ab0a2ab3a5054f81dcade02.
   Do not edit or replace that carrier without custody reconciliation.'
-- At head 696ea76b67780de1c256061105d54f42f4179749, fences 35204042017 passed. CI 35204042317 had the
-  now-repaired contract-delta failure while 12 trusted executor packs were queued. The next published
-  head requires its own exact-head CI; queued packs are not RUNNING.
+- CI-closure head 1ae7932c3c255bd5cc26ded690dc28f8a08a67a4 was pushed and reconciled. The subsequent display-only
+  arithmetic-unit correction needs its own hosted exact-head proof and review; no previous queued pack
+  or local browser result is substituted for production acceptance.
 - No worker, Executive Job or reciprocal watcher was started by this continuation. A PR comment is not
   receiver consumption.
 - 'Research PR #7234 remains Draft/HOLD and is not the implementation. Its older local-only source handoff
   is superseded only for the now-existing remote #7252 carrier.'
 next_actions:
-- 'Commit and push the bounded CI closure on the same #7252 branch, reconcile exact remote head, and obtain
-  fresh concluded checks for that head without rerun/cancel/runner bypass.'
+- Commit/push the display-unit repair plus exact retained browser evidence on this same branch, verify
+  remote head and fresh binding CI; do not poll or rerun unchanged queued predecessor jobs.
 - 'Reconcile pickup and implementation of integration contract #7211 comment 5711957268 with its incumbent
   source owner; delivery alone does not satisfy that edge.'
 - Complete required exact-head independent review and real-path release proof; keep Draft/BUILT_NOT_PROVEN
@@ -143,3 +174,7 @@ The user journey remains Sector Intelligence hub -> group -> complete measured/u
 ## CI closure continuation
 
 The consumer-binding source remains `317cab20b3971ba318829e6140aca2adeedd3639`; remote predecessor `696ea76b67780de1c256061105d54f42f4179749` holds that repair and the initial handoff. This update records the distinct CI-integration defect and its bounded same-carrier repair. The parent programme remains ACTIVE and no production outcome, independent approval or worker start is asserted.
+
+## Actual-unit consumer correction
+
+A further real-path mismatch was found: the Group Pulse arithmetic daily difference was printed as a percentage return. The P1 formatter now uses percentage points and preserves raw-return percent, null and boolean behavior. The source engine and closed JSON contract are unchanged. Eight current local browser states and two inspected screenshots are retained under `research/sector_cycle_revamp/evidence/P1_MEMBER_UNITS_2026-09-17/`; they do not establish deployed/authenticated production proof. P2 shared Atlas adaptation remains after the accepted real P1 read model under R6, not a reason to rebuild the finished synthetic reference.
