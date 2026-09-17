@@ -239,7 +239,12 @@ def build_source_semantic(
             entry=entry, source=None, dvol_w=dvol_w,
             reason="requires_previous_complete_source_and_entry_close",
         )
-    source = prior[-1]
+    source = entry - timedelta(days=1)
+    if source not in sig.index or not _finite(sig.loc[source, "close"]):
+        return _unavailable_source(
+            entry=entry, source=None, dvol_w=dvol_w,
+            reason="previous_daily_btc_close_missing",
+        )
     dvol = _normalize_frame(dvol_df)
     if dvol is None:
         return _unavailable_source(
@@ -409,9 +414,12 @@ def build_outcome_semantic(
     if entry is None or sig is None or "close" not in sig.columns or entry not in sig.index:
         return None
     close = pd.to_numeric(sig["close"], errors="coerce").sort_index()
-    future = close.loc[close.index > entry].head(LABEL_H)
-    if len(future) < LABEL_H:
+    expected_future = pd.DatetimeIndex(
+        [entry + timedelta(days=offset) for offset in range(1, LABEL_H + 1)]
+    )
+    if not expected_future.isin(close.index).all():
         return None
+    future = close.reindex(expected_future)
     base = close.loc[entry]
     values = [base, *future.tolist()]
     if not all(_finite(value) for value in values) or float(base) <= 0:

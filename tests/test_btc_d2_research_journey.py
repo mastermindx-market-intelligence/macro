@@ -405,3 +405,49 @@ def test_stamp_never_enrolls_an_existing_legacy_current_row():
         assert "research_d2" not in row
     finally:
         LED._path = original_path
+
+
+def test_source_refuses_to_skip_a_missing_previous_daily_btc_close():
+    """An older BTC close cannot impersonate the exact day before entry."""
+    d2 = _d2()
+    entry, sig, dvol = _frames(fired=True)
+    extra_day = dvol.index[0] - pd.Timedelta(days=1)
+    extra_dvol = dvol.iloc[[0]].copy()
+    extra_dvol.index = pd.DatetimeIndex([extra_day])
+    extra_sig = pd.DataFrame({"close": [100.0]}, index=[extra_day])
+    gapped_sig = pd.concat([extra_sig, sig.drop(entry - pd.Timedelta(days=1))]).sort_index()
+    extended_dvol = pd.concat([extra_dvol, dvol]).sort_index()
+
+    journey = d2.new_journey()
+    assert d2.capture_source(
+        journey,
+        entry_asof=str(entry.date()),
+        sig_df=gapped_sig,
+        dvol_df=extended_dvol,
+        recorded_at="2026-09-17T05:00:00Z",
+    ) is True
+    projection = d2.project(journey)
+    assert projection["status"] == "unavailable"
+    assert projection["reason"] == "previous_daily_btc_close_missing"
+
+
+def test_outcome_refuses_to_compress_a_missing_future_daily_close():
+    """The first three available rows cannot impersonate t+1,t+2,t+3 daily closes."""
+    d2, journey, entry, sig, _dvol = _capture_available(fired=True)
+    gapped = pd.concat([
+        sig.loc[[entry]],
+        pd.DataFrame(
+            {"close": [98.0, 94.0, 93.0]},
+            index=[
+                entry + pd.Timedelta(days=1),
+                entry + pd.Timedelta(days=3),
+                entry + pd.Timedelta(days=4),
+            ],
+        ),
+    ])
+    assert d2.mature_outcome(
+        journey,
+        gapped,
+        recorded_at="2026-09-21T05:00:00Z",
+    ) is False
+    assert d2.project(journey)["status"] == "pending"
