@@ -13,6 +13,7 @@ from urllib.parse import quote
 
 from engine.biocatalyst.company_event_adapter import project_company_event_input
 from engine.biocatalyst.research_priority import (
+    METHOD_ID,
     classify_research_priority,
     interval_overlaps_horizon,
     sort_research_priority_rows,
@@ -585,6 +586,15 @@ def validate_wmn_inputs(
         )
 
     coverage = _wmn_coverage(item.get("coverage"))
+    family_counts: dict[str, int] = {}
+    for event in events:
+        family_counts[event["event_family"]] = family_counts.get(event["event_family"], 0) + 1
+    for family, count in family_counts.items():
+        state = coverage["family_states"].get(family)
+        if state is None:
+            raise ContractError("coverage.family_states missing an admitted event family")
+        if state["state"] not in {"supported", "partial"} or state["observed_count"] != count:
+            raise ContractError("coverage.family_states observed_count disagrees with events")
     authority = item.get("authority")
     if authority != CATALYST_SOURCE_FACT_AUTHORITY:
         raise ContractError("wmn_inputs authority invalid")
@@ -661,3 +671,278 @@ def compose_rows_from_wmn_inputs(
             str((row.get("issuer") or {}).get("issuer_id") or ""),
         ),
     )
+
+
+
+def normalize_wmn_query(
+    *,
+    view: object = "upcoming",
+    horizon_days: object | None = None,
+    q: object | None = None,
+    event_family: object | None = None,
+    lane: object | None = None,
+    limit: object = 50,
+) -> dict[str, Any]:
+    """Normalize the closed public WMN query before any projection I/O."""
+    if view not in _WMN_VIEWS:
+        raise ValueError("invalid WMN view")
+    if isinstance(limit, bool) or not isinstance(limit, int) or not 1 <= limit <= 250:
+        raise ValueError("invalid WMN limit")
+    normalized_horizon: int | None
+    if view == "upcoming":
+        normalized_horizon = 90 if horizon_days is None else horizon_days
+        if isinstance(normalized_horizon, bool) or normalized_horizon not in _WMN_HORIZONS:
+            raise ValueError("invalid WMN horizon")
+    else:
+        if horizon_days is not None:
+            raise ValueError("non-upcoming WMN view requires null horizon")
+        normalized_horizon = None
+    normalized_q: str | None = None
+    if q is not None:
+        if not isinstance(q, str):
+            raise ValueError("invalid WMN search query")
+        normalized_q = q.strip().casefold()
+        if not normalized_q or len(normalized_q) > 100:
+            raise ValueError("invalid WMN search query")
+    if event_family is not None and event_family not in _WMN_FAMILIES:
+        raise ValueError("invalid WMN event_family")
+    if lane is not None and lane not in _WMN_LANES:
+        raise ValueError("invalid WMN lane")
+    return {
+        "view": str(view),
+        "horizon_days": normalized_horizon,
+        "q": normalized_q,
+        "event_family": event_family,
+        "lane": lane,
+        "limit": limit,
+    }
+
+
+def wmn_row_cursor_key(row: Mapping[str, Any]) -> dict[str, Any]:
+    """Return the complete stable ordering identity used by the signed cursor."""
+    priority = row.get("research_priority")
+    timing = row.get("timing")
+    revision = row.get("revision_summary")
+    row_key = row.get("row_key")
+    if not all(isinstance(value, Mapping) for value in (priority, timing, revision, row_key)):
+        raise ValueError("WMN row cannot supply a stable cursor key")
+    lane = priority.get("lane")
+    if lane not in _WMN_LANES:
+        raise ValueError("WMN row cannot supply a selected lane")
+    event_fact_ref = row.get("event_fact_ref")
+    if not isinstance(event_fact_ref, str) or not event_fact_ref:
+        raise ValueError("WMN row event_fact_ref invalid")
+    issuer_id = row_key.get("issuer_id")
+    if issuer_id is not None and not isinstance(issuer_id, str):
+        raise ValueError("WMN row issuer key invalid")
+    return {
+        "lane": lane,
+        "upper_date": timing.get("upper_date"),
+        "lower_date": timing.get("lower_date"),
+        "last_material_revision_known_at": revision.get("last_material_revision_known_at"),
+        "event_fact_ref": event_fact_ref,
+        "row_key": {
+            "event_fact_ref": row_key.get("event_fact_ref"),
+            "issuer_id": issuer_id,
+        },
+    }
+
+
+def _wmn_global_coverage(
+    inputs: Mapping[str, Any],
+    rows: list[Mapping[str, Any]],
+    *,
+    selected_row_count: int,
+) -> dict[str, Any]:
+    source_events = {str(event["event_id"]) for event in inputs["events"]}
+    issuer_events: set[tuple[str, str]] = set()
+    securities: set[str] = set()
+    unresolved_events: set[str] = set()
+    superseded: set[str] = set()
+    lane_counts = {lane: 0 for lane in ("ACT_NOW", "RECONCILE", "RESEARCH_NEXT", "MONITOR")}
+    for row in rows:
+        event_ref = str(row["event_fact_ref"])
+        issuer = row.get("issuer")
+        if isinstance(issuer, Mapping) and issuer.get("state") == "resolved":
+            issuer_id = issuer.get("issuer_id")
+            if isinstance(issuer_id, str):
+                issuer_events.add((event_ref, issuer_id))
+            for security in issuer.get("securities", []):
+                if isinstance(security, Mapping) and isinstance(security.get("security_id"), str):
+                    securities.add(security["security_id"])
+        else:
+            unresolved_events.add(event_ref)
+        priority = row.get("research_priority")
+        if isinstance(priority, Mapping):
+            if priority.get("disposition") == "EXCLUDE_SUPERSEDED":
+                superseded.add(event_ref)
+            lane = priority.get("lane")
+            if priority.get("disposition") == "SELECTED" and lane in lane_counts:
+                lane_counts[str(lane)] += 1
+    coverage = inputs["coverage"]
+    return {
+        "declared_universe_ref": coverage["declared_universe_ref"],
+        "source_event_count": len(source_events),
+        "issuer_event_count": len(issuer_events),
+        "security_count": len(securities),
+        "unresolved_event_count": len(unresolved_events),
+        "rejected_count": 0,
+        "superseded_count": len(superseded),
+        "lane_counts": lane_counts,
+        "selected_row_count": selected_row_count,
+        "family_states": coverage["family_states"],
+        "missing_owner_ports": list(coverage["missing_owner_ports"]),
+    }
+
+
+def build_what_matters_next(
+    bundle: object,
+    *,
+    generation_id: object,
+    query: Mapping[str, Any],
+    evaluation_cutoff: object,
+    anchor_date: object,
+) -> dict[str, Any]:
+    """Build the closed request-relative WMN read projection from one immutable cut."""
+    if not isinstance(generation_id, str) or not generation_id:
+        raise ContractError("generation_id invalid")
+    normalized_query = normalize_wmn_query(**dict(query))
+    inputs = validate_wmn_inputs(bundle, forbidden_generation_id=generation_id)
+    rows = compose_rows_from_wmn_inputs(
+        inputs,
+        evaluation_cutoff=evaluation_cutoff,
+        anchor_date=anchor_date,
+    )
+    selected = select_what_matters_next_rows(
+        rows,
+        view=normalized_query["view"],
+        horizon_days=normalized_query["horizon_days"],
+        q=normalized_query["q"],
+        event_family=normalized_query["event_family"],
+        lane=normalized_query["lane"],
+        anchor_date=str(anchor_date),
+    )
+    coverage = _wmn_global_coverage(inputs, rows, selected_row_count=len(selected))
+    source_health = inputs["coverage"]["source_health"]
+    coverage_incomplete = (
+        bool(coverage["missing_owner_ports"])
+        or source_health in {"partial", "unavailable"}
+        or any(
+            state["state"] != "supported"
+            for state in coverage["family_states"].values()
+        )
+    )
+    if coverage_incomplete:
+        state = "partial"
+    elif source_health == "stale":
+        state = "stale"
+    elif not selected:
+        state = "empty"
+    else:
+        state = "ready"
+    cutoff_literal, _cutoff_time = _utc(evaluation_cutoff, field="evaluation_cutoff")
+    if not isinstance(anchor_date, str) or len(anchor_date) != 10:
+        raise ContractError("anchor_date invalid")
+    return {
+        "contract_id": "biocatalyst_what_matters_next.v1",
+        "schema_version": "1.0.0",
+        "generation_id": generation_id,
+        "state": state,
+        "reason_codes": [],
+        "input_cut": inputs["input_cut"],
+        "query": normalized_query,
+        "evaluation_cutoff": cutoff_literal,
+        "anchor_date": anchor_date,
+        "method_id": METHOD_ID,
+        "authority": {
+            "classification": "research_priority_only",
+            "trade_origination": False,
+            "changes_availability": False,
+            "position_sizing": False,
+            "prophet_admission": False,
+        },
+        "coverage": coverage,
+        "rows": selected,
+        "pagination": {
+            "limit": normalized_query["limit"],
+            "total": len(selected),
+            "next_cursor": None,
+        },
+    }
+
+
+def build_what_matters_next_detail(
+    bundle: object,
+    *,
+    generation_id: object,
+    event_fact_ref: object,
+    issuer_id: object | None,
+    evaluation_cutoff: object,
+    anchor_date: object,
+) -> dict[str, Any]:
+    """Resolve one WMN row and related rows strictly inside one generation.
+
+    The first executable slice contains Company Intelligence disclosure events,
+    so the existing Trial detail projection is intentionally absent and the
+    public reason is ``non_registry_event``.  Future registry-family support
+    must bind the trial object from this same generation rather than fetching
+    the latest Trial workspace.
+    """
+    if not isinstance(generation_id, str) or not generation_id:
+        raise ContractError("generation_id invalid")
+    if not isinstance(event_fact_ref, str) or not event_fact_ref:
+        raise ValueError("event_fact_ref invalid")
+    if issuer_id is not None and (not isinstance(issuer_id, str) or not issuer_id):
+        raise ValueError("issuer_id invalid")
+    inputs = validate_wmn_inputs(bundle, forbidden_generation_id=generation_id)
+    rows = compose_rows_from_wmn_inputs(
+        inputs,
+        evaluation_cutoff=evaluation_cutoff,
+        anchor_date=anchor_date,
+    )
+    current_rows = [
+        row for row in rows
+        if isinstance(row.get("research_priority"), Mapping)
+        and row["research_priority"].get("disposition") == "SELECTED"
+    ]
+    matches = [row for row in current_rows if row.get("event_fact_ref") == event_fact_ref]
+    if issuer_id is not None:
+        matches = [
+            row for row in matches
+            if isinstance(row.get("row_key"), Mapping)
+            and row["row_key"].get("issuer_id") == issuer_id
+        ]
+    if not matches:
+        raise LookupError("EVENT_NOT_IN_GENERATION")
+    if len(matches) != 1:
+        raise ValueError("issuer_id required to disambiguate event row")
+    selected = matches[0]
+    selected_issuer = None
+    issuer = selected.get("issuer")
+    if isinstance(issuer, Mapping) and isinstance(issuer.get("issuer_id"), str):
+        selected_issuer = issuer["issuer_id"]
+    related = []
+    if selected_issuer is not None:
+        related = [
+            row for row in current_rows
+            if row.get("event_fact_ref") != event_fact_ref
+            and isinstance(row.get("issuer"), Mapping)
+            and row["issuer"].get("issuer_id") == selected_issuer
+        ]
+        related = list(sort_research_priority_rows(related))
+    return {
+        "contract_id": "biocatalyst_wmn_detail.v1",
+        "schema_version": "1.0.0",
+        "generation_id": generation_id,
+        "event": selected,
+        "trial": None,
+        "related_events": related,
+        "reason_codes": ["non_registry_event"],
+        "authority": {
+            "classification": "research_priority_only",
+            "trade_origination": False,
+            "changes_availability": False,
+            "position_sizing": False,
+            "prophet_admission": False,
+        },
+    }

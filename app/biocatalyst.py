@@ -72,6 +72,10 @@ _TRIAL_SCREEN_CURSOR_VERSION = "s1"
 _TRIAL_SCREEN_CURSOR_DOMAIN = b"macro-biocatalyst:trial-screen:cursor-key:v1"
 _TRIAL_SCREEN_CURSOR_PROCESS_KEY = os.urandom(32)
 _TRIAL_SCREEN_MAX_CURSOR_OFFSET = 10_000
+_WMN_CURSOR_PURPOSE = "what_matters_next.v1"
+_WMN_CURSOR_DOMAIN = b"macro-biocatalyst:what-matters-next:cursor-key:v1"
+_WMN_CURSOR_PROCESS_KEY = os.urandom(32)
+_WMN_METHOD_ID = "biocatalyst.research_triage.v1"
 # Access domain already gated by require_site_full_user. Production GoTrue users
 # carry a stable id and do not carry a commercial pricing-tier field.
 _CALLER_ACCESS_DOMAIN = "site_full"
@@ -4409,6 +4413,325 @@ def trial_screen_facets(
             "BioCatalyst trial screen facets unavailable (%s)", type(exc).__name__
         )
         raise _unavailable() from None
+
+
+
+def _wmn_runtime() -> tuple[Any, Any, Any, type[Exception]]:
+    """Load the pure WMN composer/selector without adding a request-time owner read."""
+
+    from engine.biocatalyst.what_matters_next import (  # noqa: PLC0415
+        build_what_matters_next,
+        normalize_wmn_query,
+        wmn_row_cursor_key,
+    )
+    from engine.company_intelligence.contracts import ContractError  # noqa: PLC0415
+
+    return build_what_matters_next, normalize_wmn_query, wmn_row_cursor_key, ContractError
+
+
+def _wmn_now() -> datetime:
+    """Server-owned request clock; callers never provide evaluation cutoff."""
+
+    return datetime.now(timezone.utc)
+
+
+def _wmn_cursor_key() -> bytes:
+    """Use the existing Bio cursor secret with a WMN-only domain."""
+
+    configured = os.environ.get("BIOCATALYST_CURSOR_SECRET")
+    if configured is None:
+        return _WMN_CURSOR_PROCESS_KEY
+    try:
+        raw = configured.encode("utf-8")
+    except UnicodeEncodeError:
+        raise _unavailable() from None
+    if len(raw) < 32:
+        raise _unavailable()
+    return hmac.new(raw, _WMN_CURSOR_DOMAIN, sha256).digest()
+
+
+def _wmn_http_error(status_code: int, code: str) -> HTTPException:
+    return HTTPException(status_code=status_code, detail=code, headers=_PRIVATE_HEADERS)
+
+
+def _encode_wmn_cursor(
+    *,
+    generation_id: str,
+    query: Mapping[str, Any],
+    evaluation_cutoff: str,
+    anchor_date: str,
+    last_key: Mapping[str, Any],
+    method_id: str = _WMN_METHOD_ID,
+    purpose: str = _WMN_CURSOR_PURPOSE,
+    cursor_key: bytes | None = None,
+) -> str:
+    payload = {
+        "purpose": purpose,
+        "generation_id": generation_id,
+        "query": dict(query),
+        "method_id": method_id,
+        "evaluation_cutoff": evaluation_cutoff,
+        "anchor_date": anchor_date,
+        "last_key": dict(last_key),
+    }
+    try:
+        raw = json.dumps(
+            payload,
+            ensure_ascii=True,
+            allow_nan=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("ascii")
+    except (TypeError, ValueError, UnicodeError) as exc:
+        raise ValueError("WMN cursor payload is not canonical") from exc
+    key = cursor_key if cursor_key is not None else _wmn_cursor_key()
+    signature = hmac.new(key, raw, sha256).hexdigest().encode("ascii")
+    return base64.urlsafe_b64encode(raw + b"." + signature).decode("ascii").rstrip("=")
+
+
+def _decode_wmn_cursor(
+    cursor: str,
+    *,
+    cursor_key: bytes | None = None,
+) -> dict[str, Any]:
+    if (
+        not isinstance(cursor, str)
+        or not cursor
+        or len(cursor) > 8_192
+        or re.fullmatch(r"[A-Za-z0-9_-]+", cursor) is None
+    ):
+        raise _wmn_http_error(400, "INVALID_REQUEST")
+    try:
+        raw = base64.urlsafe_b64decode((cursor + "=" * (-len(cursor) % 4)).encode("ascii"))
+        payload_bytes, signature = raw.rsplit(b".", 1)
+        signature_text = signature.decode("ascii")
+    except (ValueError, UnicodeError, binascii.Error):
+        raise _wmn_http_error(400, "INVALID_REQUEST") from None
+    if re.fullmatch(r"[0-9a-f]{64}", signature_text) is None:
+        raise _wmn_http_error(400, "INVALID_REQUEST")
+    key = cursor_key if cursor_key is not None else _wmn_cursor_key()
+    expected = hmac.new(key, payload_bytes, sha256).hexdigest()
+    if not hmac.compare_digest(signature_text, expected):
+        raise _wmn_http_error(400, "INVALID_REQUEST")
+    try:
+        payload = json.loads(payload_bytes.decode("ascii"))
+    except (UnicodeError, json.JSONDecodeError):
+        raise _wmn_http_error(400, "INVALID_REQUEST") from None
+    expected_keys = {
+        "purpose", "generation_id", "query", "method_id",
+        "evaluation_cutoff", "anchor_date", "last_key",
+    }
+    if not isinstance(payload, Mapping) or set(payload) != expected_keys:
+        raise _wmn_http_error(400, "INVALID_REQUEST")
+    if payload.get("purpose") != _WMN_CURSOR_PURPOSE:
+        raise _wmn_http_error(400, "INVALID_REQUEST")
+    if not isinstance(payload.get("generation_id"), str) or not payload["generation_id"]:
+        raise _wmn_http_error(400, "INVALID_REQUEST")
+    if not isinstance(payload.get("query"), Mapping):
+        raise _wmn_http_error(400, "INVALID_REQUEST")
+    if not isinstance(payload.get("method_id"), str) or not payload["method_id"]:
+        raise _wmn_http_error(400, "INVALID_REQUEST")
+    evaluation_cutoff = payload.get("evaluation_cutoff")
+    anchor_date = payload.get("anchor_date")
+    if (
+        not isinstance(evaluation_cutoff, str)
+        or not evaluation_cutoff.endswith("Z")
+        or not isinstance(anchor_date, str)
+        or _FULL_ISO_DATE.fullmatch(anchor_date) is None
+        or not isinstance(payload.get("last_key"), Mapping)
+    ):
+        raise _wmn_http_error(400, "INVALID_REQUEST")
+    try:
+        cutoff_time = datetime.fromisoformat(evaluation_cutoff.replace("Z", "+00:00"))
+    except ValueError:
+        raise _wmn_http_error(400, "INVALID_REQUEST") from None
+    if cutoff_time.tzinfo is None or cutoff_time.astimezone(timezone.utc).date().isoformat() != anchor_date:
+        raise _wmn_http_error(400, "INVALID_REQUEST")
+    return {
+        "purpose": payload["purpose"],
+        "generation_id": payload["generation_id"],
+        "query": dict(payload["query"]),
+        "method_id": payload["method_id"],
+        "evaluation_cutoff": evaluation_cutoff,
+        "anchor_date": anchor_date,
+        "last_key": dict(payload["last_key"]),
+    }
+
+
+@router.get("/api/biocatalyst/v1/what-matters-next")
+def what_matters_next(
+    view: str = "upcoming",
+    horizon_days: str | None = None,
+    q: str | None = None,
+    event_family: str | None = None,
+    lane: str | None = None,
+    cursor: str | None = None,
+    limit: str = "50",
+    _user: dict = Depends(require_site_full_user),
+) -> JSONResponse:
+    """Return one generation-bound, request-relative WMN research page."""
+
+    build_model, normalize_query, row_cursor_key, contract_error = _wmn_runtime()
+    try:
+        page_limit = _query_limit(limit)
+        parsed_horizon: int | None = None
+        if horizon_days is not None:
+            if re.fullmatch(r"[0-9]{1,3}", horizon_days) is None:
+                raise ValueError("invalid horizon")
+            parsed_horizon = int(horizon_days)
+        query = normalize_query(
+            view=view,
+            horizon_days=parsed_horizon,
+            q=q,
+            event_family=event_family,
+            lane=lane,
+            limit=page_limit,
+        )
+    except (ValueError, HTTPException):
+        raise _wmn_http_error(400, "INVALID_REQUEST") from None
+
+    cursor_key = _wmn_cursor_key()
+    cursor_payload = (
+        _decode_wmn_cursor(cursor, cursor_key=cursor_key)
+        if cursor is not None
+        else None
+    )
+    now = _wmn_now().astimezone(timezone.utc)
+    current_day = now.date().isoformat()
+    if cursor_payload is not None:
+        if (
+            cursor_payload["query"] != query
+            or cursor_payload["method_id"] != _WMN_METHOD_ID
+            or cursor_payload["anchor_date"] != current_day
+        ):
+            raise _wmn_http_error(409, "RELOAD_REQUIRED")
+        evaluation_cutoff = cursor_payload["evaluation_cutoff"]
+        anchor_date = cursor_payload["anchor_date"]
+    else:
+        evaluation_cutoff = now.isoformat(timespec="seconds").replace("+00:00", "Z")
+        anchor_date = current_day
+
+    projection, _operational = _read_bundle()
+    generation = getattr(projection, "generation", None)
+    generation_id = getattr(generation, "generation_id", None)
+    if not isinstance(generation_id, str) or not generation_id:
+        raise _wmn_http_error(503, "OWNER_INPUT_UNAVAILABLE")
+    if cursor_payload is not None and cursor_payload["generation_id"] != generation_id:
+        raise _wmn_http_error(409, "RELOAD_REQUIRED")
+    owner_inputs = getattr(projection, "what_matters_next_inputs", None)
+    if not isinstance(owner_inputs, Mapping):
+        raise _wmn_http_error(503, "OWNER_INPUT_UNAVAILABLE")
+    try:
+        payload = build_model(
+            owner_inputs,
+            generation_id=generation_id,
+            query=query,
+            evaluation_cutoff=evaluation_cutoff,
+            anchor_date=anchor_date,
+        )
+    except (contract_error, ValueError) as exc:
+        log.warning("BioCatalyst WMN owner projection unavailable (%s)", type(exc).__name__)
+        raise _wmn_http_error(503, "OWNER_INPUT_UNAVAILABLE") from None
+
+    rows = payload.get("rows")
+    if not isinstance(rows, list):
+        raise _wmn_http_error(503, "OWNER_INPUT_UNAVAILABLE")
+    start = 0
+    if cursor_payload is not None:
+        matches = [
+            index
+            for index, row in enumerate(rows)
+            if isinstance(row, Mapping)
+            and row_cursor_key(row) == cursor_payload["last_key"]
+        ]
+        if len(matches) != 1:
+            raise _wmn_http_error(409, "RELOAD_REQUIRED")
+        start = matches[0] + 1
+    page = rows[start : start + page_limit]
+    next_index = start + len(page)
+    next_cursor = None
+    if next_index < len(rows) and page:
+        next_cursor = _encode_wmn_cursor(
+            generation_id=generation_id,
+            query=query,
+            evaluation_cutoff=evaluation_cutoff,
+            anchor_date=anchor_date,
+            last_key=row_cursor_key(page[-1]),
+            cursor_key=cursor_key,
+        )
+    response_payload = dict(payload)
+    response_payload["rows"] = page
+    response_payload["pagination"] = {
+        "limit": page_limit,
+        "total": len(rows),
+        "next_cursor": next_cursor,
+    }
+    return _response(response_payload)
+
+
+
+def _wmn_detail_runtime() -> tuple[Any, type[Exception]]:
+    from engine.biocatalyst.what_matters_next import build_what_matters_next_detail  # noqa: PLC0415
+    from engine.company_intelligence.contracts import ContractError  # noqa: PLC0415
+
+    return build_what_matters_next_detail, ContractError
+
+
+@router.get("/api/biocatalyst/v1/what-matters-next/detail")
+def what_matters_next_detail(
+    generation_id: str | None = None,
+    event_fact_ref: str | None = None,
+    issuer_id: str | None = None,
+    _user: dict = Depends(require_site_full_user),
+) -> JSONResponse:
+    """Resolve one retained WMN row strictly from the requested generation."""
+
+    if (
+        not isinstance(generation_id, str)
+        or not generation_id.strip()
+        or len(generation_id) > 512
+        or not isinstance(event_fact_ref, str)
+        or not event_fact_ref.strip()
+        or len(event_fact_ref) > 512
+        or (issuer_id is not None and (not issuer_id.strip() or len(issuer_id) > 512))
+    ):
+        raise _wmn_http_error(400, "INVALID_REQUEST")
+    generation_id = generation_id.strip()
+    event_fact_ref = event_fact_ref.strip()
+    issuer_id = issuer_id.strip() if issuer_id is not None else None
+
+    projection, _operational = _read_bundle()
+    generation = getattr(projection, "generation", None)
+    current_generation_id = getattr(generation, "generation_id", None)
+    if not isinstance(current_generation_id, str) or not current_generation_id:
+        raise _wmn_http_error(503, "OWNER_INPUT_UNAVAILABLE")
+    if current_generation_id != generation_id:
+        raise _wmn_http_error(409, "RELOAD_REQUIRED")
+    owner_inputs = getattr(projection, "what_matters_next_inputs", None)
+    if not isinstance(owner_inputs, Mapping):
+        raise _wmn_http_error(503, "OWNER_INPUT_UNAVAILABLE")
+
+    now = _wmn_now().astimezone(timezone.utc)
+    evaluation_cutoff = now.isoformat(timespec="seconds").replace("+00:00", "Z")
+    anchor_date = now.date().isoformat()
+    build_detail, contract_error = _wmn_detail_runtime()
+    try:
+        payload = build_detail(
+            owner_inputs,
+            generation_id=generation_id,
+            event_fact_ref=event_fact_ref,
+            issuer_id=issuer_id,
+            evaluation_cutoff=evaluation_cutoff,
+            anchor_date=anchor_date,
+        )
+    except LookupError:
+        raise _wmn_http_error(404, "EVENT_NOT_IN_GENERATION") from None
+    except ValueError:
+        raise _wmn_http_error(400, "INVALID_REQUEST") from None
+    except contract_error as exc:
+        log.warning("BioCatalyst WMN detail unavailable (%s)", type(exc).__name__)
+        raise _wmn_http_error(503, "OWNER_INPUT_UNAVAILABLE") from None
+    return _response(payload)
 
 
 @router.get("/api/biocatalyst/v1/trials/{nct_id}")

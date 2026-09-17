@@ -353,3 +353,141 @@ def test_wmn_inputs_bind_embedded_company_event_to_cut_hash() -> None:
     inputs["input_cut"]["members"][0]["sha256"] = "f" * 64
     with pytest.raises(ContractError, match="event hash mismatch"):
         validate_wmn_inputs(inputs)
+
+from engine.biocatalyst.what_matters_next import (
+    build_what_matters_next,
+    normalize_wmn_query,
+    wmn_row_cursor_key,
+)
+
+
+def test_wmn_read_model_counts_global_universe_before_view_and_partial_outranks_stale() -> None:
+    near = _event(native_event_key="doc#near-model")
+    unresolved = _event(native_event_key="doc#unresolved-model", timing=_timing("2026-10-01", "2026-10-01"))
+    inputs = _wmn_inputs(near, _resolved_identity(near))
+    inputs["events"].append(unresolved)
+    inputs["identity_projection"][unresolved["event_id"]] = _identity(unresolved)
+    inputs["input_cut"]["members"].append({
+        "contract_id": "company_catalyst_event.v1",
+        "ref": unresolved["event_id"],
+        "sha256": canonical_json_sha256(unresolved),
+        "observed_at": unresolved["observed_at"],
+        "accepted_at": unresolved["observed_at"],
+        "availability": "available",
+    })
+    inputs["coverage"]["family_states"]["issuer_readout_guidance"]["observed_count"] = 2
+    inputs["coverage"]["source_health"] = "stale"
+    query = normalize_wmn_query(view="upcoming", horizon_days=90, q=None, event_family=None, lane=None, limit=50)
+    model = build_what_matters_next(
+        inputs,
+        generation_id="ctgov_run_abcdef1234567890",
+        query=query,
+        evaluation_cutoff=CUTOFF,
+        anchor_date=ANCHOR,
+    )
+    assert model["state"] == "partial"
+    assert model["reason_codes"] == []
+    assert model["coverage"]["source_event_count"] == 2
+    assert model["coverage"]["issuer_event_count"] == 1
+    assert model["coverage"]["security_count"] == 1
+    assert model["coverage"]["unresolved_event_count"] == 1
+    assert model["coverage"]["selected_row_count"] == 0  # stale source routes rows to reconcile
+    assert model["coverage"]["lane_counts"]["RECONCILE"] == 2
+
+
+def test_wmn_read_model_empty_only_for_complete_selected_view() -> None:
+    event = _event(native_event_key="doc#empty-model")
+    inputs = _wmn_inputs(event, _resolved_identity(event))
+    inputs["coverage"]["missing_owner_ports"] = []
+    inputs["coverage"]["family_states"] = {
+        "issuer_readout_guidance": {
+            "declared_scope": "issuer_disclosure:first_slice",
+            "observed_count": 1,
+            "state": "supported",
+        }
+    }
+    query = normalize_wmn_query(view="upcoming", horizon_days=7, q="no-such-security", event_family=None, lane=None, limit=50)
+    model = build_what_matters_next(
+        inputs,
+        generation_id="ctgov_run_abcdef1234567890",
+        query=query,
+        evaluation_cutoff=CUTOFF,
+        anchor_date=ANCHOR,
+    )
+    assert model["state"] == "empty"
+    assert model["rows"] == []
+    assert model["coverage"]["source_event_count"] == 1
+    assert model["coverage"]["selected_row_count"] == 0
+
+
+def test_wmn_query_normalizer_is_closed_and_cursor_key_is_complete_row_identity() -> None:
+    assert normalize_wmn_query(view="upcoming", horizon_days=None, q="  AMLX  ", event_family=None, lane=None, limit=50) == {
+        "view": "upcoming", "horizon_days": 90, "q": "amlx", "event_family": None, "lane": None, "limit": 50,
+    }
+    assert normalize_wmn_query(view="history", horizon_days=None, q=None, event_family=None, lane="MONITOR", limit=25)["horizon_days"] is None
+    with pytest.raises(ValueError):
+        normalize_wmn_query(view="history", horizon_days=90, q=None, event_family=None, lane=None, limit=50)
+    with pytest.raises(ValueError):
+        normalize_wmn_query(view="upcoming", horizon_days=14, q=None, event_family=None, lane=None, limit=50)
+    with pytest.raises(ValueError):
+        normalize_wmn_query(view="upcoming", horizon_days=90, q="x" * 101, event_family=None, lane=None, limit=50)
+
+    event = _event(native_event_key="doc#cursor-key")
+    row = _rows(event, _resolved_identity(event))[0]
+    key = wmn_row_cursor_key(row)
+    assert key == {
+        "lane": "ACT_NOW",
+        "upper_date": "2026-09-07",
+        "lower_date": "2026-09-07",
+        "last_material_revision_known_at": None,
+        "event_fact_ref": event["event_id"],
+        "row_key": row["row_key"],
+    }
+
+from engine.biocatalyst.what_matters_next import build_what_matters_next_detail
+
+
+def test_wmn_detail_is_generation_local_and_related_rows_share_admitted_issuer() -> None:
+    first = _event(native_event_key="doc#detail-a")
+    second = _event(native_event_key="doc#detail-b", timing=_timing("2026-10-01", "2026-10-01"))
+    identity = _resolved_identity(first)
+    inputs = _wmn_inputs(first, identity)
+    inputs["events"].append(second)
+    inputs["identity_projection"][second["event_id"]] = deepcopy(identity)
+    inputs["input_cut"]["members"].append({
+        "contract_id": "company_catalyst_event.v1", "ref": second["event_id"],
+        "sha256": canonical_json_sha256(second), "observed_at": second["observed_at"],
+        "accepted_at": second["observed_at"], "availability": "available",
+    })
+    inputs["coverage"]["family_states"]["issuer_readout_guidance"]["observed_count"] = 2
+    detail = build_what_matters_next_detail(
+        inputs, generation_id="ctgov_run_detail", event_fact_ref=first["event_id"], issuer_id=None,
+        evaluation_cutoff=CUTOFF, anchor_date=ANCHOR,
+    )
+    assert set(detail) == {"contract_id", "schema_version", "generation_id", "event", "trial", "related_events", "reason_codes", "authority"}
+    assert detail["contract_id"] == "biocatalyst_wmn_detail.v1"
+    assert detail["generation_id"] == "ctgov_run_detail"
+    assert detail["event"]["event_fact_ref"] == first["event_id"]
+    assert detail["trial"] is None
+    assert detail["reason_codes"] == ["non_registry_event"]
+    assert [row["event_fact_ref"] for row in detail["related_events"]] == [second["event_id"]]
+
+
+def test_wmn_detail_requires_issuer_disambiguation_only_when_event_has_multiple_rows() -> None:
+    event = _event(native_event_key="doc#detail-issuer")
+    inputs = _wmn_inputs(event, _resolved_identity(event))
+    resolved = build_what_matters_next_detail(
+        inputs, generation_id="G", event_fact_ref=event["event_id"], issuer_id="ISS:US-XNAS-AMLX",
+        evaluation_cutoff=CUTOFF, anchor_date=ANCHOR,
+    )
+    assert resolved["event"]["issuer"]["issuer_id"] == "ISS:US-XNAS-AMLX"
+    with pytest.raises(LookupError):
+        build_what_matters_next_detail(
+            inputs, generation_id="G", event_fact_ref="evt_source_" + "f" * 64, issuer_id=None,
+            evaluation_cutoff=CUTOFF, anchor_date=ANCHOR,
+        )
+    with pytest.raises(LookupError):
+        build_what_matters_next_detail(
+            inputs, generation_id="G", event_fact_ref=event["event_id"], issuer_id="ISS:US-XNAS-WRONG",
+            evaluation_cutoff=CUTOFF, anchor_date=ANCHOR,
+        )
