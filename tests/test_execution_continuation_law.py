@@ -514,6 +514,53 @@ def test_case_10_reaching_the_outcome_early_stops_clean_and_only_that_does(
 # --------------------------------------------------------------------------------------
 
 
+def test_the_session_start_injection_actually_carries_the_law(tmp_path, capsys):
+    """HOOK, and the surface with the most leverage and the least visible failure.
+
+    `_session_start`'s `additionalContext` is the ONE place this law reaches a session
+    that never opens a repository file — Claude, Codex, Cursor and every other client
+    get it the same way. It is also the easiest thing in the guard to break silently:
+    hook stdout must be a SINGLE JSON value, and a second emitted object makes the whole
+    output unparseable, at which point the harness drops the injection and nothing says
+    so. The guard's own `_stop` carries that warning in a comment; nothing asserted it.
+
+    That is the `::warning`-through-a-logger defect in another costume: a call that
+    reviews as correct, runs clean, and produces nothing. So this parses the emitted
+    bytes rather than reading the source string.
+    """
+    repo, path = _commitless_session(tmp_path)
+    path.unlink()  # force the startup branch to mint fresh state
+    GUARD._session_start(repo, path, {"source": "startup"})
+
+    emitted = capsys.readouterr().out
+    payload = json.loads(emitted)  # fails loudly if a second value was ever printed
+    assert payload["hookSpecificOutput"]["hookEventName"] == "SessionStart"
+    context = payload["hookSpecificOutput"]["additionalContext"]
+
+    # The ship chain the law must never be read as releasing.
+    assert "MANDATORY SHIP LOOP" in context
+    # Each invariant, in the compressed form a bootstrap line can carry.
+    for clause in (
+        "EXECUTION CONTINUATION LAW",
+        "freeze",
+        "independent authorized lanes",
+        "bounded direct execution may continue",
+        "never spend principal capacity polling",
+        "no-delta cycles",
+        "DO_NOT_REDO unless materially invalidated",
+        "reconciled on the same carrier",
+        "SESSION END:",
+        "MORE_WORK_EXISTS is never a valid stopping state",
+    ):
+        assert clause in context, f"the bootstrap injection dropped {clause!r}"
+    # The full closed vocabulary, so a session is told the whole set, not a subset.
+    for state in GUARD.SESSION_END_STATES:
+        assert state in context, f"the bootstrap injection omits {state}"
+    # And the whole delivery ladder, since conflating two rungs needs both named.
+    for rung in GUARD.DELIVERY_LADDER:
+        assert rung in context, f"the bootstrap injection omits the rung {rung}"
+
+
 def test_the_session_end_vocabulary_is_closed_and_identical_in_code_and_law():
     """A code-to-law binding, the strongest form available for a rule a hook enforces.
 
