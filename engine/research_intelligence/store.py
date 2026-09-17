@@ -899,6 +899,17 @@ def _validate_expected_predecessor(value: str | None) -> str | None:
     return value
 
 
+def validate_analysis_for_persistence(
+    analysis: Any,
+    *,
+    source_body: Any,
+    expected_current_artifact_sha256: str | None = None,
+) -> None:
+    """Validate one W1 envelope and source body without touching a store."""
+    _validate_expected_predecessor(expected_current_artifact_sha256)
+    _build_artifact(analysis, source_body)
+
+
 def persist_analysis(
     store: Any,
     analysis: Any,

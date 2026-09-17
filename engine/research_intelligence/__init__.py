@@ -14,6 +14,7 @@ from .store import (
     load_latest_research_intelligence,
     load_research_intelligence_version,
     persist_analysis,
+    validate_analysis_for_persistence,
 )
 from .vault_adapter import analyze_and_persist_vault_report, analyze_vault_report
 
@@ -36,5 +37,6 @@ __all__ = [
     "parse_model_output",
     "persist_analysis",
     "summary_points",
+    "validate_analysis_for_persistence",
     "validate_rio",
 ]

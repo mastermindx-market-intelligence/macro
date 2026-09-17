@@ -24,6 +24,7 @@ from engine.research_intelligence.store import (
     load_latest_research_intelligence,
     load_research_intelligence_version,
     persist_analysis,
+    validate_analysis_for_persistence,
 )
 from engine.research_vault.r2_store import StrictConditionalWriteStore, build_store
 
@@ -222,6 +223,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         if args.command == "put":
             analysis = _load_json_object(args.analysis)
             source_body = _load_source_body(args.source_body)
+            validate_analysis_for_persistence(
+                analysis,
+                source_body=source_body,
+                expected_current_artifact_sha256=(
+                    args.expected_current_artifact_sha256
+                ),
+            )
             store = _active_store(args.local)
             return _put(
                 args,
