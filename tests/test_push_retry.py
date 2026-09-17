@@ -858,6 +858,27 @@ def test_abort_rebase_flags_a_conflict_only_when_a_rebase_is_in_progress(tmp_pat
     assert r.stdout.strip() == "rebase-conflict", r.stderr
 
 
+def test_abort_rebase_quits_malformed_stale_state_when_abort_cannot(tmp_path):
+    repo = tmp_path / "repo"
+    _init_repo(repo)
+    (repo / "a").write_text("a")
+    subprocess.run(["git", "-C", str(repo), "add", "."], check=True)
+    subprocess.run(["git", "-C", str(repo), "commit", "-qm", "c"], check=True)
+
+    # A cancelled self-hosted job can leave only the rebase directory behind.
+    # `git rebase --abort` cannot parse this state; the helper must still clear it
+    # so every retry does not die with "already a rebase-merge directory".
+    stale = repo / ".git" / "rebase-merge"
+    stale.mkdir()
+    r = run_sh(
+        'push_retry_init "t"; PUSH_FAIL_CLASS=contention; push_abort_rebase; echo "$PUSH_FAIL_CLASS"',
+        cwd=repo,
+    )
+    assert r.returncode == 0, r.stderr
+    assert r.stdout.strip() == "rebase-conflict", r.stderr
+    assert not stale.exists(), "malformed stale rebase metadata survived cleanup"
+
+
 # ---------------------------------------------------------------------------
 # 5. Step summary — contention becomes visible instead of silent
 # ---------------------------------------------------------------------------

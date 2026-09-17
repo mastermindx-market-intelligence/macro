@@ -325,7 +325,17 @@ push_abort_rebase() {
   gd=$(git rev-parse --git-dir 2>/dev/null) || gd=""
   if [ -n "$gd" ] && { [ -d "$gd/rebase-merge" ] || [ -d "$gd/rebase-apply" ]; }; then
     PUSH_FAIL_CLASS="rebase-conflict"
-    git rebase --abort 2>/dev/null || true
+    # A cancelled self-hosted job can leave only the rebase metadata directory.
+    # `--abort` then refuses because head-name/orig-head is missing and, when its
+    # error is swallowed, every retry dies with "already a rebase-merge directory".
+    # `--quit` is Git's cleanup-only path for exactly that malformed/stale state.
+    if ! git rebase --abort 2>/dev/null; then
+      git rebase --quit 2>/dev/null || true
+    fi
+    if [ -d "$gd/rebase-merge" ] || [ -d "$gd/rebase-apply" ]; then
+      echo "::error title=stale rebase state survived cleanup::git rebase --abort and --quit both failed; refusing to burn every push retry against the same poisoned workspace" >&2
+      return 1
+    fi
   fi
   return 0
 }
