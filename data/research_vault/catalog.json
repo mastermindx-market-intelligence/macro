@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T19:36:05.563133+00:00",
-  "count": 2311,
+  "generated_at": "2026-09-17T23:21:35.186689+00:00",
+  "count": 2322,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -127,6 +127,147 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-vby8jjpvg7b-d3855b",
+      "title": "Taiwan CBC on Hold as Expected on Benign Inflation Outlook",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:39:35Z",
+      "summary_points": [
+        "Taiwan CBC Policy & Housing Shifts: CBC raised LTV to 70% (2nd hike YTD), housing market cooling (real estate loans share down to 34.4%), inflation expected >2% through 2027 despite moderation next year.",
+        "Inflation & Geopolitical Risks: Headline CPI at 2.03% (vs 1.91% forecast), inflation >2% persisting through 2027; geopolitical risks (Middle East, US trade policies) and Fed rate hikes exacerbate TWD weakness.",
+        "Capital Flows & Policy Differentiation: Capital outflows driven by foreign investors diversifying post-equity rally (not rate differentials); CBC maintains \"slightly tight\" stance via quantity tools (LTV hikes), not rate changes.",
+        "Commodity Inflation Impact: Global commodity price surges accelerating inflation, increasing portfolio risk exposure amid persistent domestic inflation trends."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-lugymrlp9fr-cb908c",
+      "title": "Euro Area Final Inflation Details Show Easing Underlying Momentum but Energy Pressures Push Headline Higher",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:39:25Z",
+      "summary_points": [
+        "Revised Inflation Peak: Headline inflation revised down to 3.25% (from 3.26%), but energy pressures push peak to 3.8% in 2026Q4 (vs prior 3.6%), with core inflation firming at 2.40% (peaking at 2.7% in 2027Q1).",
+        "Services as Primary Driver: Services inflation contribution rose to 1.43pp (hospitality), exceeding historical averages, and remains the key inflation driver with core services peaking at 2.7% in 2027Q1.",
+        "Critical Data Release: Eurostat’s September flash HICP (Oct 2) is pivotal for validating near-term trends and informing positioning ahead of Q4 energy volatility.",
+        "Energy Component Upgrade: Energy contribution upgraded by 2pp to 18% for Q4, with peak energy inflation at 1.19pp (Aug), persisting risks from rising refined product prices and forward energy costs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rtdnhbohi41-410b5d",
+      "title": "Asia Pacific Portfolio Strategy Asian equity market daily update",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:39:16Z",
+      "summary_points": [
+        "Valuation Disparity: Taiwan (iPE 18.1) and India (iPE 19.4) show elevated valuations vs.",
+        "Hong Kong (iPB 1.2) and MXCN (iPB 1.3), with GS targeting 29% MXAPJ upside—signaling overvaluation in high-iPE markets amid potential capital reallocation to low-iPB regions.",
+        "FII Outflows vs.",
+        "DII Inflows: FII outflows dominate EM Asia ex-China (e.g., Taiwan: -42.8B USD YTD 2025), while DII inflows surge (Asia total: +121.3B USD YTD 2025), creating divergence and signaling market resilience despite foreign capital withdrawal.",
+        "Korea Concentration Risk: Korea (21% MXAPJ weight) drives 74% of MXAPJ’s Info Tech exposure (+145% YTD), amplifying volatility from tech policy shifts; MXAPJ’s high correlation with Korea (75%) and China A (60%) magnifies regional shock vulnerability."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-4pi9a20t0sx-49da66",
+      "title": "Unite Group (UTG.L) Trading update 95 of beds booked for AY26 27, FY26 EPS guidance reaffirmed",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:38:44Z",
+      "summary_points": [
+        "Booking & EPS: 95% bed occupancy for FY26/27 (matching prior year), EPS guidance reaffirmed at 41.5–43.0p; like-for-like income growth revised downward to 0.5–1.0% (vs prior 0–2%), signaling cautious revenue trajectory.",
+        "Risks & Rating: Buy rating with 23% upside (590p target), but key risks include supply constraints, policy shifts, PBSA demand volatility, affordability pressures, project delays, cost inflation, and interest rates—critical for portfolio risk assessment.",
+        "Profitability Momentum: ROCE improving from 3.7% to 9.1% and ROAE from 2.1% to 8.5% by 12/28E, supporting rising dividend yield (5.1% → 7.3%) and strong earnings momentum despite revised growth guidance."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-zc4djww047n-82f804",
+      "title": "ON Semiconductor Corp. (ON) Investor Day highlights 2030 financial targets, growth in power products, and the outlook for au...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:38:40Z",
+      "summary_points": [
+        "2030 Financial Targets: $11bn revenue by 2030 (12%-14% CAGR), 53% gross margin, 38% operating margin, $3.5bn+ FCF; assumes flat automotive SAR, no major capex.",
+        "Growth Catalysts: Power semis (SiC/GaN, Embedded Power Platform) and AI datacenter (revenue doubling 2026-2027 via power delivery shift/vGaN adoption).",
+        "Key Risk Factor: Automotive demand weakness and margin execution timing as primary downside risks to valuation.",
+        "Consensus Rating: 50% Buy (Goldman Sachs global coverage), neutral rating with $95 price target (20X P/E), indicating strong bullish consensus."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ovgkpymjj2u-86125b",
+      "title": "Oil Comment Recommending Gasoline High Diesel Prices Cause High Gasoline Prices",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:38:35Z",
+      "summary_points": [
+        "Diesel Supply Disruption Trigger: European Gasoil prices hit all-time highs due to East-West pipeline disruptions, forcing refiners to prioritize diesel (29.6% yield) over gasoline (54.9% yield), tightening gasoline supply.",
+        "Gasoline Inventory & Naphtha Data: OECD gasoline stocks down sharply vs seasonal norm; global naphtha exports down 30% YoY, pushing US octane $3/bbl above seasonal norms (critical flow/fundamental data).",
+        "Geopolitical Hedge Imperative: Outright European summer gasoline (EBOB Jun27) preferred over margins for Middle East escalation risk, as crude rallies would overprice infrastructure risks.",
+        "Gasoline Demand Shock: Global gasoline exports down 24% YoY (vs diesel -20%, crude -6%), signaling severe demand imbalance with gasoline facing steeper decline than crude/diesel."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-lluvzcu5woo-e7ec3e",
+      "title": "Global Markets Daily High Energy Carrying Returns in EM Frontier — KZT and NGN Stocktake",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:38:18Z",
+      "summary_points": [
+        "KZT/NGN Oil-Driven Carry: KZT offers elevated 12m nominal FX carry (vs EM peers) and real yields of 3.5-4% (NDF-implied 15-16%), supported by expected 125bp rate cut; NGN driven by >20% OMO yields, falling inflation, and reserve accumulation.",
+        "Frontier Carry Trade Recommendation: Long TRY, NGN, KZT vs USD with 12% total return target (up from 10%), tightening stops to 7%, leveraging high nominal FX carry vs EM HY and oil-driven spot returns.",
+        "KZT Oil Beta Vulnerability: Rising rolling six-month oil beta (Exhibit 7) exposes KZT to oil price deescalation (e.g., Iran war), despite defensive traits against global market volatility.",
+        "NGN Undervaluation & Carry: NGN spot upside potential via undervaluation (GSDEER model), central bank reserve accumulation, and ex-ante real rates >5% (near 2015 highs) from high OMO yields.",
+        "Revised NGN Forecast: USD/NGN 3m/6m forecasts raised to 1,300/1,275 (vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-wvpzyhyjijm-d3dc59",
       "title": "Americas Retail Retail sales above consensus in August",
       "institution": "Goldman Sachs",
@@ -143,6 +284,46 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-kluxnfqxc7x-cd141f",
+      "title": "USA Philly Fed Manufacturing Declines Less Than Expected",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:37:36Z",
+      "summary_points": [
+        "Philly Fed Manufacturing Supply Chain Risks: Delivery times hit highest since March 2022 (+22.8pt to 26.5), signaling persistent bottlenecks and near-term manufacturing slowdown (critical risk factor for industrial equities).",
+        "Housing Starts & GDP Catalyst: Single-family starts rose 7.6% (July growth revised +4.5pp), lifting Q3 GDP tracking estimate by 0.2pp to +3.2% (fundamental growth catalyst for real estate/financials).",
+        "Philly Fed Diffusion Index Expansion: Index at ~60 (above 50 threshold), signaling robust manufacturing expectations and leading indicator for industrial sector expansion (positive catalyst for cyclical equities).",
+        "Labor Market Cooling & Recession Risk: Continuing claims at lowest since Jan 2024 with sharp decline, signaling weakening labor dynamics, increased recession risk, and potential consumer spending sustainability concerns."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xa46sdqagup-a25f8e",
+      "title": "Ukraine NBU Hikes by 50bp As Expected, Delivers Balanced Guidance",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:37:34Z",
+      "summary_points": [
+        "NBU Rate Hike & Inflation Drivers: +50bp to 16.00% driven by oil price surges exceeding forecasts, with balanced guidance allowing flexibility for risk shifts.",
+        "Geopolitical Risk Balance: Russia war remains primary threat, but Black Sea agricultural exports may curb food inflation; Middle East tensions amplify oil-driven inflation risks.",
+        "Policy Response to Conflict: New business support measures + regulatory financing expansion; FX policy actively stabilizing Hryvnia amid inflation, targeting currency stability until inflation declines.",
+        "Monetary Policy Trigger: Potential easing if security deterioration causes significant slowdown in consumer demand/labor market, signaling conflict-sensitive policy tailoring."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
@@ -202,6 +383,47 @@
       "tickers": [],
       "top_pick": false,
       "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-m5zz92anfng-e35262",
+      "title": "GS Quinn Energy Futures Brent (Oil) Buying Backtracks 17 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:12:09Z",
+      "summary_points": [
+        "Managed Money & Geopolitical Shifts: Geopolitical events (Houthi advances, Saudi pipeline closures) drove +11.1% Brent price surge, but Saudi pipeline capacity return triggered -2.7% drop and $1.3bn OI unwinding, reducing supply outage fears.",
+        "Brent Managed Money Net Length Spike: Sharp net long positioning peak (April 2026 expiry) at ~$110 Brent, indicating strong bullish positioning and potential overextension.",
+        "Brent Price vs Open Interest Divergence: Brent price rose while Aggregate OI fell (Sep 7-14), signaling reduced speculative positioning, market fatigue, or institutional hedging shifts."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-jyzcyerp7rc-85b803",
+      "title": "GS McElligott STAY WEIRD 17 Sep 2026",
+      "institution": "Nomura",
+      "side": "sell",
+      "desk": "McElligott",
+      "published_at": "2026-09-17T18:11:56Z",
+      "summary_points": [
+        "Semi-Energy Barbell Outperformance: 54% YTD return, 2.9 Sharpe Ratio, -8.8% drawdown vs. peers (Equal-Weight CTA: 12% YTD, 1.9 Sharpe), driven by Long Commodities/Long Trend and Long AI Bottleneck Equities.",
+        "Diesel Export Ban Policy Risk: Trump’s proposed Diesel Export Ban (targeting 1.7M bpd global exports) risks systemic supply shock, disrupting gasoline/jet fuel amid Saudi pipeline closures, Houthi attacks, and Ukraine refinery damage.",
+        "SPR Drain & Policy Exhaustion: U.S.",
+        "Strategic Petroleum Reserve (SPR) depletion signals policy exhaustion, with WSJ confirming declining reserves as critical flow indicator amid energy volatility."
+      ],
+      "tags": [
+        "McElligott"
+      ],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
       "language": "en",
       "needs_metadata": false
     },
