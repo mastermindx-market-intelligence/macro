@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T21:06:16.763908+00:00",
-  "count": 2315,
+  "generated_at": "2026-09-17T21:21:22.003697+00:00",
+  "count": 2316,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -123,6 +123,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 29,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-4pi9a20t0sx-49da66",
+      "title": "Unite Group (UTG.L) Trading update 95 of beds booked for AY26 27, FY26 EPS guidance reaffirmed",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:38:44Z",
+      "summary_points": [
+        "Booking & EPS: 95% bed occupancy for FY26/27 (matching prior year), EPS guidance reaffirmed at 41.5–43.0p; like-for-like income growth revised downward to 0.5–1.0% (vs prior 0–2%), signaling cautious revenue trajectory.",
+        "Risks & Rating: Buy rating with 23% upside (590p target), but key risks include supply constraints, policy shifts, PBSA demand volatility, affordability pressures, project delays, cost inflation, and interest rates—critical for portfolio risk assessment.",
+        "Profitability Momentum: ROCE improving from 3.7% to 9.1% and ROAE from 2.1% to 8.5% by 12/28E, supporting rising dividend yield (5.1% → 7.3%) and strong earnings momentum despite revised growth guidance."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
