@@ -68,6 +68,7 @@ try:
         _spread_bp,
         _to_series,
         compute,
+        degraded_payload,
     )
     _ENGINE_AVAILABLE = True
 except ImportError:
@@ -549,6 +550,18 @@ class TestFailOpen:
         ]
         for key in required_keys:
             assert key in result, f"Fail-open: missing key {key!r} with missing regime"
+
+    def test_all_missing_sources_do_not_fabricate_fresh_asof(self):
+        """No observation date means asof=None, never the wall-clock build date."""
+        result = compute(None, None, None, None, None)
+        assert result["degraded"] is True
+        assert result["asof"] is None
+
+    def test_absolute_degraded_payload_has_unknown_asof(self):
+        """Absolute fail-open payloads must not masquerade as freshly observed data."""
+        result = degraded_payload(["synthetic failure"])
+        assert result["degraded"] is True
+        assert result["asof"] is None
 
     def test_never_raises(self):
         """compute() must never raise — fail-open law."""
