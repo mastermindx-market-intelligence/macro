@@ -99,6 +99,53 @@ def test_cli_refuses_destination_alias_change_after_preflight(tmp_path,monkeypat
     assert not (outside/'turns.json').exists()
 
 
+def test_cli_refuses_intermediate_ancestor_redirection_in_shared_publisher(
+    tmp_path, monkeypatch
+):
+    c = cli()
+    publisher = importlib.import_module("scripts.build_macro_turnaround_research")
+    root = tmp_path / "source"
+    gateway = root / "research"
+    safe_storage = root / "research-safe"
+    protected = root / "data"
+    (gateway / "leaf").mkdir(parents=True)
+    (protected / "leaf").mkdir(parents=True)
+    req = tmp_path / "request.json"
+    request(req, "0" * 64)
+    out = gateway / "leaf" / "turns.json"
+    original_assert = publisher._assert_research_output_path
+
+    def point_to_safe_tree():
+        if gateway.is_symlink():
+            gateway.unlink()
+            safe_storage.rename(gateway)
+
+    def point_to_protected_tree():
+        if not gateway.is_symlink():
+            gateway.rename(safe_storage)
+            gateway.symlink_to(protected, target_is_directory=True)
+
+    def alternating_guard(path, *, root=None, **kwargs):
+        point_to_safe_tree()
+        original_assert(path, root=root, **kwargs)
+        point_to_protected_tree()
+
+    monkeypatch.setattr(c, "load_panel", lambda *args, **kwargs: object())
+    monkeypatch.setattr(c, "replay", lambda *args, **kwargs: {"rows": []})
+    monkeypatch.setattr(publisher, "_assert_research_output_path", alternating_guard)
+    try:
+        assert c.main(
+            ["--root", str(root), "--input", str(req), "--output", str(out)]
+        ) == 2
+    finally:
+        point_to_safe_tree()
+
+    assert not (protected / "leaf" / "turns.json").exists()
+    assert not out.exists()
+    assert not list((protected / "leaf").glob(".*.tmp"))
+    assert not list((gateway / "leaf").glob(".*.tmp"))
+
+
 def test_cli_refuses_protected_root_change_after_preflight(tmp_path,monkeypatch):
     c=cli();root=tmp_path/'source';protected=root/'data';protected.mkdir(parents=True)
     outside=tmp_path/'outside';outside.mkdir();req=tmp_path/'request.json';request(req,'0'*64);out=outside/'turns.json'
