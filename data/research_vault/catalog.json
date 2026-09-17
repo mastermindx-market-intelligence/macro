@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T10:19:58.754117+00:00",
-  "count": 2284,
+  "generated_at": "2026-09-17T10:50:00.785695+00:00",
+  "count": 2285,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -85,6 +85,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-xbwag4sehxt-9d3835",
+      "title": "JPM US Market Intelligence | Morning Briefing",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T10:32:38Z",
+      "summary_points": [
+        "Fed Policy Confirmation: OIS eclipses prior tightening cycle highs, confirming \"higher-for-longer\" policy; median FOMC dot revised to 3.25% (highest since 2016), with 8 dots for hikes in 2027.",
+        "AI/Debasement Rally: AI/Debasement themes drive \"Everything Rally\"; fundamental buyer return to Mag7/Software and Semis, with dip-buying on AI pullback.",
+        "SPX EPS-GDP Disconnect: S&P 500 EPS growth lags Real GDP growth (2020-2024), signaling potential overvaluation or mispricing of growth expectations.",
+        "Positive Equity-Bond Correlation: Positive correlation (0.6071) deviates from historical negative, eroding diversification benefits; correlation trend rising since 2022.",
+        "Geopolitics as Primary Fed Driver: Warsh explicitly cites worsening geopolitics (Q5) as key factor overriding data, shifting Fed focus from traditional metrics to macro risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 28,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-udwrjbja6rb-b99edf",
       "title": "Problems in Houston",
