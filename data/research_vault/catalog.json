@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T16:50:49.258589+00:00",
-  "count": 2303,
+  "generated_at": "2026-09-17T17:20:52.140644+00:00",
+  "count": 2304,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -69,6 +69,7 @@
     "SocGen - Albert Edwards",
     "Societe Generale",
     "Société Générale",
+    "State Street",
     "Std Chartered",
     "TCW",
     "TS Lombard",
@@ -1865,6 +1866,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 18,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-t7xfpndfgo2-ef98f7",
+      "title": "wep",
+      "institution": "State Street",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T23:49:43Z",
+      "summary_points": [
+        "US Fed Hike Confirmed: Fed to hike 25bps on Sep 16 amid hawkish cues (CPI 2.4% y/y, Warsh speech), cementing September move despite limited inflation pass-through.",
+        "ECB Tightening Linked to Iran Conflict: ECB raised rates twice since Iran war start; second hike expected Sep 2024 due to energy cost pass-through and geopolitical inflation risks.",
+        "UK Fiscal Squeeze Intensifies: Rising bond yields tighten fiscal headroom; higher debt costs risk eroding budget forecasts despite July GDP growth, with slowdown expected before recovery.",
+        "Eurozone Inflation Dichotomy: ECB to hike Dec 2024 amid persistent inflation (above 2%) and resilient growth, balancing strong economy vs. elevated price pressures."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
