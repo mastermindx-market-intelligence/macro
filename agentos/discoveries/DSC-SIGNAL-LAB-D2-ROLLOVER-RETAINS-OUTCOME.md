@@ -28,3 +28,15 @@ confidence: verified
 Capability remains BUILT_NOT_PROVEN. No new workstream or runtime owner is implied.
 The retained-file guard and atomic replacement protect incumbent writes; they do
 not claim authenticated external rollback detection or create a second store.
+
+## Release frontier
+
+Child semantic source is frozen at bdd5ed2226f9299475685d3c0ea31cf0259bd12f.
+Parent PR 7173 has completed binding CI, but newer integrated dependencies still
+require independent review. The exact parent integration passed 192 tests with one
+skip and manifest validation; its immutable receipt is in the existing PR evidence.
+The independent-review lane is WAITING_CAPACITY / needs_placement: no callable
+approved reviewer admission is available in this session, and no START is claimed.
+Do not replace this gate with self-approval, raw provider spawning, or Chairman
+account-selection work. Parent release, child supported-base CI and installed
+authenticated-admin proof remain distinct and unaccepted.

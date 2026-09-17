@@ -1,0 +1,149 @@
+{
+  "repository": "mastermindx-market-intelligence/macro",
+  "pr": 7173,
+  "head": "6f794f525ffef4a1cae4729226529c036d977524",
+  "base": "423e106f9b3ebd92045d3e5ccdefcf769a3a1eed",
+  "integrated_tree": "72ddc034ad7949d59e06f927dabf734f974a9226",
+  "verified_blob_count": 11652,
+  "verified_bytes": 470918246,
+  "internal_links": [
+    {
+      "path": "collectors/marketdesk_extractor/feed.sh",
+      "target": "runtime/feed.sh"
+    }
+  ],
+  "purpose": "immutable scoped test input, not source carrier",
+  "production": false,
+  "data_inputs": {
+    "data/alerts/alerts_log.parquet": {
+      "git_blob": "c66b33565010ccbfdd068c3f8ff292d36d17b397",
+      "bytes": 19925,
+      "sha256": "b37c3c9fafaf8e6b312919acd16a216e7e5b20fcc223ca9d51209627a9855fd5"
+    },
+    "data/alerts/rule_scorecard.json": {
+      "git_blob": "adee612f16e8730046029a8241a5bd5c5a46d0c6",
+      "bytes": 14336,
+      "sha256": "f4650bb501423b03a9914d880e51e650874baf675aec4b0c02a36c928bf6df89"
+    },
+    "data/alerts/watchlist_alerts.jsonl": {
+      "git_blob": "4a4ab23945ff3cf54075529d6e29d597526e520d",
+      "bytes": 7056,
+      "sha256": "95320aef1d7e7146791b4558f03aa76fafe19ff8c6d2e9d41a8e8e62f4192203"
+    },
+    "data/altdata/alerts.jsonl": {
+      "git_blob": "75ea50ea1648094f292e4f7be530fe1a33b11090",
+      "bytes": 725122,
+      "sha256": "ce56577d3231364782de47a1f8462e630338d7403776a805543bb6ac288ac4ea"
+    },
+    "data/bonds/alerts.jsonl": {
+      "git_blob": "a01e1e6b5adbf70c554ce274f4a24ef12131bd5a",
+      "bytes": 403312,
+      "sha256": "39c2d3d5832e04aa48637b052c33c47818fcfdc96b4d087b26ffcf143e8f708e"
+    },
+    "data/commodity/alerts.jsonl": {
+      "git_blob": "6181852690c6e170ab4dbbe0a2181eebd87b42f9",
+      "bytes": 4125382,
+      "sha256": "a335b31eda7e2f2d6034e22049081ffd0743f859112fea0d03c3fc1d473fb155"
+    },
+    "data/demand_chain/alerts.jsonl": {
+      "git_blob": "16c9154e19d17be04e1444f33e04b382e57a0900",
+      "bytes": 44325,
+      "sha256": "0628a621e0dbb4957ad7bbd540df48e7addb5a6eacb8b1db1d29c6230f135ff3"
+    },
+    "data/emergence/alerts.jsonl": {
+      "git_blob": "b6ecbbfc2ab626d30daf968b25ed53529fb0eddd",
+      "bytes": 60276,
+      "sha256": "3eb20466d122f0f0da5b4d1a25789d7e39a9e24c42b333d3d6fa95410011e5e3"
+    },
+    "data/forex/alerts.jsonl": {
+      "git_blob": "3df65fbeb38048538645954ef6b65f1c41cdabf8",
+      "bytes": 6275204,
+      "sha256": "fbb5227816a906bdf1f34d5203a1cf5a3452e7ddd504129a145bceab18d6ec7a"
+    },
+    "data/oracle/oracle_alerts.jsonl": {
+      "git_blob": "533ee5d6acd4d97f26a152bdae475c454182525f",
+      "bytes": 115441,
+      "sha256": "c8005c01865f272d557652e8597cee6ac2b6443c5466d39cf77c9015339dabb6"
+    },
+    "data/regime/latest.json": {
+      "git_blob": "16fd6139e8c546982ea0dbca77b678c304a78d85",
+      "bytes": 859371,
+      "sha256": "85c127d5028dde89512936e76871b1a810de2e2a2ce78e85873f8a2a812c7893"
+    },
+    "data/subsector_rotation/alerts.jsonl": {
+      "git_blob": "d8af88e69aade7fcdc5b8f1adc0bd2ce8c291091",
+      "bytes": 1174199,
+      "sha256": "76b243fe58cca2f3b3888be255a6d05f2ba548ca6368a1fb885e6b6580fab596"
+    },
+    "data/themes/alerts.jsonl": {
+      "git_blob": "460a79ca2bdf1bd4c781ddaf0453ab4eb7bcc87e",
+      "bytes": 590516,
+      "sha256": "c9fab5304123fc0367084609b3f685fd79ceff6ca0b47f69e619ca19b4a780c9"
+    },
+    "data/vector/alerts.jsonl": {
+      "git_blob": "f51fece4b164f9111021056fd9e434267c6890dc",
+      "bytes": 3174988,
+      "sha256": "b7fbfd3ef08c5592d594c751e7e568a4f17a5e18a804a3f96a92bc2c8a5ae863"
+    },
+    "data/vector/impulse_legs_gate.json": {
+      "git_blob": "9af065b26fa1ee1f0b0b9829c527b01fa6d82d3e",
+      "bytes": 1379,
+      "sha256": "ce07014c28ec4e3e3d6b54881810f2648e900d7ae6185653340c5f63c3a3d7c8"
+    }
+  },
+  "verification": {
+    "command": [
+      "python3",
+      "-m",
+      "pytest",
+      "tests/test_alert_time_contract.py",
+      "tests/test_alert_triage.py",
+      "tests/test_alert_coverage_recurrence.py",
+      "tests/test_act_now_board_assembler.py",
+      "tests/test_alert_trust_projection.py",
+      "tests/test_signal_evidence.py",
+      "tests/test_signal_lab_alert_trust.py",
+      "-q",
+      "--tb=short"
+    ],
+    "result": "192 passed, 1 skipped",
+    "log_sha256": "065a5218efc3ce8b5ccf0b02be6838d7b62ac81212a24487234a0c326d858475",
+    "manifest_exit": 0,
+    "manifest_log_sha256": "3ffab6dc9b05ec5a14e45dd1883552378859e2b5c9b0127020d44bd71231fcf2",
+    "changed_manifest_jobs": [
+      "conviction-profile",
+      "research-vault-source-lineage"
+    ],
+    "alert_owner": [
+      {
+        "job": "unrun-template-chips",
+        "unchanged": true
+      }
+    ]
+  },
+  "negative_control": {
+    "no_data_snapshot_result": "5 failed, 187 passed, 1 skipped",
+    "reason": "Declared readers require physical canonical source inputs; missing stores correctly become no_coverage/unavailable. No application code or tests were changed.",
+    "raw_log_sha256": "08dd7e5b2b447f81241c02074e8021a970353e71c4e0f2f00c4e0a604492d535",
+    "published_log_sha256": "091193be449ee837a3f7e689ba88f598446936dcaa57aabaf19b97d8e1317b7f",
+    "published_log_transform": "Trailing line whitespace stripped for repository whitespace gate; outcome and diagnostic text unchanged."
+  },
+  "review_reuse": "HOLD_FOR_INDEPENDENT_INTEGRATION_REVIEW: retain original head approval; newer integrated CI/shared-display dependency changes are not automatically approved by that receipt.",
+  "prior_receipt_sha256": "c65aa292fe2dea109e824939e420ad3f3f24153deb9a132110b81046ea0190b2",
+  "subsequent_source_comparison": {
+    "observed_main": "cf9a85631e00afca9422363e3ee79ac459dc7c4b",
+    "changed_top_level": [
+      "data",
+      "scripts",
+      "tests"
+    ],
+    "changed_source_paths": [
+      "scripts/prophet_board_acceptance.py",
+      "scripts/prophet_rescue.py",
+      "tests/test_prophet_rescue.py",
+      "tests/test_prophet_surface_net.py"
+    ],
+    "qualification": "Source-path-disjoint from this alert-trust proof; data changed. Tests bind the exact proof-base data, NOT newer-main data or installed production."
+  },
+  "release_state": "HOLD; no parent branch movement, merge, install, or production acceptance"
+}
