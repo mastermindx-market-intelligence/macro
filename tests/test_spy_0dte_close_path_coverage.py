@@ -139,12 +139,19 @@ def test_summary_stays_coverage_only():
         "date": "2023-01-03",
         "partition": "development",
         "entry_error": None,
+        "entry_coverage": {"09:35:00.000": {
+            "valid_two_sided": 4, "bull_credit_band": 1, "bear_credit_band": 0
+        }},
         "candidate_paths": [{"decision_clock": "09:35:00.000", "synchrony": sync}],
     }]
     out = coverage.summarize(rows)
     clock = out["development"]["by_clock"]["09:35:00.000"]
     assert clock["candidate_paths"] == 1
     assert clock["grid"]["1"]["end_boundary_ready"] == 1
+    assert clock["sessions_any_valid_contract"] == 1
+    assert clock["sessions_bull_credit_band"] == 1
+    assert clock["sessions_bear_credit_band"] == 0
+    assert clock["sessions_either_credit_band"] == 1
     forbidden = ("pnl", "profit", "outcome", "label", "target", "stop", "debit")
     text = str(out).lower()
     assert not any(token in text for token in forbidden)
@@ -177,6 +184,9 @@ def test_minute_presence_summary_cannot_claim_tick_synchrony_or_economics():
         "date": "2023-01-03",
         "partition": "development",
         "entry_error": None,
+        "entry_coverage": {"09:35:00.000": {
+            "valid_two_sided": 4, "bull_credit_band": 1, "bear_credit_band": 1
+        }},
         "candidate_paths": [{
             "decision_clock": "09:35:00.000",
             "full_minute_presence": True,
@@ -191,6 +201,10 @@ def test_minute_presence_summary_cannot_claim_tick_synchrony_or_economics():
     assert clock["paths_with_zero_bid_carry"] == 1
     assert clock["paths_with_unknown_minutes"] == 0
     assert clock["synchrony_proven"] is False
+    assert clock["sessions_any_valid_contract"] == 1
+    assert clock["sessions_bull_credit_band"] == 1
+    assert clock["sessions_bear_credit_band"] == 1
+    assert clock["sessions_either_credit_band"] == 1
     forbidden = ("pnl", "profit", "outcome", "label", "target", "stop", "debit")
     assert not any(token in str(out).lower() for token in forbidden)
 
@@ -202,3 +216,20 @@ def test_close_path_mode_is_closed():
         assert "mode" in str(exc)
     else:
         raise AssertionError("unfrozen close-path mode accepted")
+
+
+def test_audit_day_reuses_entry_snapshot_for_coverage_and_candidates(monkeypatch):
+    ep = {"response": []}
+    monkeypatch.setattr(coverage, "_fetch_entry_payload", lambda *args: ep)
+    clock_state = {
+        "contracts": 8, "valid_two_sided": 6,
+        "bull_credit_band": 1, "bear_credit_band": 1,
+    }
+    monkeypatch.setattr(coverage.entry, "option_clock_coverage", lambda payload, date: {
+        clock: dict(clock_state) for clock in coverage.entry.CLOCKS
+    })
+    monkeypatch.setattr(coverage.entry, "eligible_candidates", lambda payload, date, clock: [])
+    out = coverage.audit_day("http://127.0.0.1:25503/v3", "2023-01-03", 1, mode="minute_presence")
+    assert out["entry_error"] is None
+    assert out["candidate_paths"] == []
+    assert out["entry_coverage"]["09:35:00.000"] == clock_state

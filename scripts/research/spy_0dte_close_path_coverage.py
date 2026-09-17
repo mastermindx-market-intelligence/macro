@@ -300,6 +300,7 @@ def audit_day(
         raise ClosePathCoverageError("close-path mode is not frozen")
     try:
         entry_payload = _fetch_entry_payload(base_url, session_date, timeout)
+        entry_coverage = entry.option_clock_coverage(entry_payload, session_date)
         candidates = [
             candidate
             for clock in entry.CLOCKS
@@ -310,6 +311,7 @@ def audit_day(
             "date": session_date,
             "partition": entry.partition_for_date(session_date),
             "entry_error": type(exc).__name__,
+            "entry_coverage": None,
             "candidate_paths": [],
         }
 
@@ -369,6 +371,7 @@ def audit_day(
         "date": session_date,
         "partition": entry.partition_for_date(session_date),
         "entry_error": None,
+        "entry_coverage": entry_coverage,
         "candidate_paths": paths,
     }
 
@@ -386,8 +389,29 @@ def summarize(
         for clock in entry.CLOCKS:
             clock_paths = [p for p in paths if p.get("decision_clock") == clock]
             valid = [p for p in clock_paths if "source_error" not in p]
+            entry_states = [
+                (row.get("entry_coverage") or {}).get(clock, {})
+                for row in part_rows if not row.get("entry_error")
+            ]
+            entry_summary = {
+                "sessions_any_valid_contract": sum(
+                    int(q.get("valid_two_sided", 0)) > 0 for q in entry_states
+                ),
+                "sessions_bull_credit_band": sum(
+                    int(q.get("bull_credit_band", 0)) > 0 for q in entry_states
+                ),
+                "sessions_bear_credit_band": sum(
+                    int(q.get("bear_credit_band", 0)) > 0 for q in entry_states
+                ),
+                "sessions_either_credit_band": sum(
+                    int(q.get("bull_credit_band", 0)) > 0
+                    or int(q.get("bear_credit_band", 0)) > 0
+                    for q in entry_states
+                ),
+            }
             if mode == "minute_presence":
                 by_clock[clock] = {
+                    **entry_summary,
                     "candidate_paths": len(clock_paths),
                     "source_errors": len(clock_paths) - len(valid),
                     "full_minute_presence": sum(
@@ -415,6 +439,7 @@ def summarize(
                     ),
                 }
             by_clock[clock] = {
+                **entry_summary,
                 "candidate_paths": len(clock_paths),
                 "source_errors": len(clock_paths) - len(valid),
                 "grid": grid_summary,
