@@ -5,14 +5,16 @@ import hashlib
 import json
 import logging
 import os
+import sys
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from jinja2 import Environment, FileSystemLoader
-
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+from jinja2 import Environment, FileSystemLoader  # noqa: E402
 log = logging.getLogger("build_sector_action_board")
 
 

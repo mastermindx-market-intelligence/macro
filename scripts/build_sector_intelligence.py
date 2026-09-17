@@ -2,7 +2,12 @@
 from __future__ import annotations
 
 import logging
+import sys
 from collections.abc import Callable, Iterable
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
 
 log = logging.getLogger("build_sector_intelligence")
 Step = tuple[str, Callable[[], int | None]]

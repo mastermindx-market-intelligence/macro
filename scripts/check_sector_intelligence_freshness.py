@@ -11,13 +11,15 @@ import argparse
 import hashlib
 import json
 import re
+import sys
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from lib import nyse_calendar
-
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+from lib import nyse_calendar  # noqa: E402
 _ACTION_LANES = (
     "buy_now", "buy_soon", "on_the_run", "take_profits", "hold", "avoid",
 )
