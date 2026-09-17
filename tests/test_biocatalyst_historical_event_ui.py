@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -131,3 +132,27 @@ def test_history_chinese_row_and_state_are_localized(tmp_path: Path) -> None:
     out = _run(tmp_path, {"status": 200, "body": json.dumps(_payload()), "contentType": "application/json"}, lang="zh")
     assert "身份未解析" in out["historyRows"]
     assert "已确定性修复" in out["historyRows"]
+
+
+@pytest.mark.parametrize(
+    ("selector", "expression"),
+    [
+        (".bci-history", "var(--r-panel,{panel})"),
+        (".bci-history-filters input,.bci-history-filters select", "var(--r-ctl,{ctl})"),
+        (".bci-history-submit,.bci-history-clear", "var(--r-ctl,{ctl})"),
+        (".bci-history-card", "0var(--r-card,{card})var(--r-card,{card})0"),
+        (".bci-history-topline span", "var(--r-pill,{pill})"),
+        (".bci-history-state", "var(--r-card,{card})"),
+    ],
+)
+def test_history_radius_tokens_have_canonical_fallbacks(selector: str, expression: str) -> None:
+    """Removing a fallback must not silently square the pre-DS-PR-0 page."""
+    specimen = (ROOT / "mockups/design_system/specimen.html").read_text(encoding="utf-8")
+    scale = dict(re.findall(r"--r-(ctl|card|panel|pill)\s*:\s*(\d+px)\s*;", specimen))
+    assert set(scale) == {"ctl", "card", "panel", "pill"}
+    css = (TEMPLATES / "biocatalyst.css").read_text(encoding="utf-8")
+    rule = re.search(re.escape(selector) + r"\s*\{([^{}]+)\}", css)
+    assert rule is not None, selector
+    radius = re.search(r"border-radius\s*:\s*([^;]+);", rule.group(1))
+    assert radius is not None, selector
+    assert re.sub(r"\s+", "", radius.group(1)) == expression.format(**scale)
