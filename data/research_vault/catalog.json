@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T22:21:29.792132+00:00",
-  "count": 2319,
+  "generated_at": "2026-09-17T23:21:35.186689+00:00",
+  "count": 2322,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -167,6 +167,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-rtdnhbohi41-410b5d",
+      "title": "Asia Pacific Portfolio Strategy Asian equity market daily update",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:39:16Z",
+      "summary_points": [
+        "Valuation Disparity: Taiwan (iPE 18.1) and India (iPE 19.4) show elevated valuations vs.",
+        "Hong Kong (iPB 1.2) and MXCN (iPB 1.3), with GS targeting 29% MXAPJ upside—signaling overvaluation in high-iPE markets amid potential capital reallocation to low-iPB regions.",
+        "FII Outflows vs.",
+        "DII Inflows: FII outflows dominate EM Asia ex-China (e.g., Taiwan: -42.8B USD YTD 2025), while DII inflows surge (Asia total: +121.3B USD YTD 2025), creating divergence and signaling market resilience despite foreign capital withdrawal.",
+        "Korea Concentration Risk: Korea (21% MXAPJ weight) drives 74% of MXAPJ’s Info Tech exposure (+145% YTD), amplifying volatility from tech policy shifts; MXAPJ’s high correlation with Korea (75%) and China A (60%) magnifies regional shock vulnerability."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-4pi9a20t0sx-49da66",
       "title": "Unite Group (UTG.L) Trading update 95 of beds booked for AY26 27, FY26 EPS guidance reaffirmed",
       "institution": "Goldman Sachs",
@@ -202,6 +223,47 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ovgkpymjj2u-86125b",
+      "title": "Oil Comment Recommending Gasoline High Diesel Prices Cause High Gasoline Prices",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:38:35Z",
+      "summary_points": [
+        "Diesel Supply Disruption Trigger: European Gasoil prices hit all-time highs due to East-West pipeline disruptions, forcing refiners to prioritize diesel (29.6% yield) over gasoline (54.9% yield), tightening gasoline supply.",
+        "Gasoline Inventory & Naphtha Data: OECD gasoline stocks down sharply vs seasonal norm; global naphtha exports down 30% YoY, pushing US octane $3/bbl above seasonal norms (critical flow/fundamental data).",
+        "Geopolitical Hedge Imperative: Outright European summer gasoline (EBOB Jun27) preferred over margins for Middle East escalation risk, as crude rallies would overprice infrastructure risks.",
+        "Gasoline Demand Shock: Global gasoline exports down 24% YoY (vs diesel -20%, crude -6%), signaling severe demand imbalance with gasoline facing steeper decline than crude/diesel."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-lluvzcu5woo-e7ec3e",
+      "title": "Global Markets Daily High Energy Carrying Returns in EM Frontier — KZT and NGN Stocktake",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:38:18Z",
+      "summary_points": [
+        "KZT/NGN Oil-Driven Carry: KZT offers elevated 12m nominal FX carry (vs EM peers) and real yields of 3.5-4% (NDF-implied 15-16%), supported by expected 125bp rate cut; NGN driven by >20% OMO yields, falling inflation, and reserve accumulation.",
+        "Frontier Carry Trade Recommendation: Long TRY, NGN, KZT vs USD with 12% total return target (up from 10%), tightening stops to 7%, leveraging high nominal FX carry vs EM HY and oil-driven spot returns.",
+        "KZT Oil Beta Vulnerability: Rising rolling six-month oil beta (Exhibit 7) exposes KZT to oil price deescalation (e.g., Iran war), despite defensive traits against global market volatility.",
+        "NGN Undervaluation & Carry: NGN spot upside potential via undervaluation (GSDEER model), central bank reserve accumulation, and ex-ante real rates >5% (near 2015 highs) from high OMO yields.",
+        "Revised NGN Forecast: USD/NGN 3m/6m forecasts raised to 1,300/1,275 (vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
       "language": "en",
       "needs_metadata": false
     },
