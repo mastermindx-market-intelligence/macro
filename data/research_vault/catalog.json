@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T09:49:55.003771+00:00",
-  "count": 2282,
+  "generated_at": "2026-09-17T10:04:54.849616+00:00",
+  "count": 2283,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1253,6 +1253,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-vkxiqg4v5xb-b8032a",
+      "title": "India Goods trade deficit narrows in August on lower oil and gold imports",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T02:53:10Z",
+      "summary_points": [
+        "Trade Deficit Narrowing: Merchandise trade deficit narrowed to $26.9bn (Aug) driven by 14% YoY oil import decline (lower volumes) and 58% YoY gold import drop (post-inventory), with non-oil exports up 1.4% mom s.a.",
+        "Services Surplus Strength: Services trade surplus robust at +$17.5bn (revised higher), exports up 24.6% YoY, offsetting oil price risks and mitigating current account pressure.",
+        "Current Account Financing: Current account deficit widened to $7.0bn (vs $6.2bn June) but fully financed by capital flows ($27.7bn), including $33.5bn in non-resident deposits (FCNR(B)).",
+        "Import Demand Slowdown: Sharp decline in oil (-14% YoY) and gold (-58% YoY) imports signals sustained import-driven demand slowdown, improving trade balance from -$32.0bn to -$26.9bn."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
