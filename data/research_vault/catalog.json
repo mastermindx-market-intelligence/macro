@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T10:50:00.785695+00:00",
-  "count": 2285,
+  "generated_at": "2026-09-17T11:05:02.737615+00:00",
+  "count": 2286,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -85,6 +85,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-g3bugkjjgib-77331c",
+      "title": "JPM International Market Intelligence | Morning Briefing",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T10:47:10Z",
+      "summary_points": [
+        "EU-China Trade Escalation: High probability of managed escalation (sector-specific retaliation) or full-spectrum trade war (China restricting critical inputs), costing EU ~0.7% GDP and threatening semis, pharma, defense, agri, and energy sectors.",
+        "China Chemical Dominance: China’s share of global chemical manufacturing value-added surged to ~30% (2021), overtaking US/EU27, signaling structural industry leadership shift.",
+        "Fed Policy Divergence: JPM forecasts show lower cumulative rate hikes than market (blue vs. orange), indicating potential mispricing of USD/JPY bond risks through 2027.",
+        "China Fuel Inventory Tightening: Sharp decline in SOE diesel/gasoline inventories (10M metric tons) since 2023, signaling tightening supply-demand dynamics and refiner margin pressure."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": true,
+      "pages": 19,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-xbwag4sehxt-9d3835",
       "title": "JPM US Market Intelligence | Morning Briefing",
